@@ -3,104 +3,20 @@
 import RouteHandler from 'app/App/RouteHandler';
 import { actions } from 'app/BasicReducer';
 import Loader from 'app/components/Elements/Loader';
+import * as entityActions from 'app/Entities/actions/actions';
+import * as uiActions from 'app/Entities/actions/uiActions';
 import EntityViewer from 'app/Entities/components/EntityViewer';
-import entitiesAPI from 'app/Entities/EntitiesAPI';
 import { setDocuments, unsetDocuments } from 'app/Library/actions/libraryActions';
-import * as metadataActions from 'app/Metadata/actions/actions';
 import { wrapDispatch } from 'app/Multireducer';
 import * as relationships from 'app/Relationships/utils/routeUtils';
 import relationTypesAPI from 'app/RelationTypes/RelationTypesAPI';
 import api from 'app/Search/SearchAPI';
 import TemplatesAPI from 'app/Templates/TemplatesAPI';
-import { advancedSort } from 'app/utils/advancedSort';
 import { setReferences } from 'app/Viewer/actions/referencesActions';
 import React from 'react';
 import { connect } from 'react-redux';
 import { actions as formActions } from 'react-redux-form';
-import { bindActionCreators } from 'redux';
 import { processQuery } from './helpers/requestState';
-import { RequestParams } from 'app/utils/RequestParams';
-import { wrapEntityMetadata } from 'app/Metadata/components/MetadataForm';
-
-function loadEntity(entity, templates) {
-  const form = 'entityView.entityForm';
-  const sortedTemplates = advancedSort(templates, { property: 'name' });
-  const defaultTemplate = sortedTemplates.find(t => t.default);
-  const template = entity.template || defaultTemplate._id;
-  const templateconfig = sortedTemplates.find(t => t._id === template);
-
-  const metadata = metadataActions.UnwrapMetadataObject(
-    metadataActions.resetMetadata(
-      entity.metadata || {},
-      templateconfig,
-      { resetExisting: false },
-      templateconfig
-    ),
-    templateconfig
-  );
-  const suggestedMetadata = metadataActions.UnwrapMetadataObject(
-    metadataActions.resetMetadata(
-      entity.suggestedMetadata || {},
-      templateconfig,
-      { resetExisting: false },
-      templateconfig
-    ),
-    templateconfig
-  );
-  return [
-    formActions.reset(form),
-    formActions.load(form, { ...entity, metadata, suggestedMetadata, template }),
-    formActions.setPristine(form),
-  ];
-}
-
-async function getAndLoadEntity(sharedId, templates, state) {
-  const [[entity], [connectionsGroups, searchResults, sort, filters]] = await Promise.all([
-    entitiesAPI.get(new RequestParams({ sharedId })),
-    relationships.requestState(new RequestParams({ sharedId }), state),
-  ]);
-
-  return [
-    actions.set('entityView/entity', entity),
-    relationships.setReduxState({
-      relationships: {
-        list: {
-          sharedId: entity.sharedId,
-          entity,
-          connectionsGroups,
-          searchResults,
-          sort,
-          filters,
-          view: 'graph',
-        },
-      },
-    }),
-    ...loadEntity(entity, templates),
-  ];
-}
-
-function oneUpSwitcher(delta, save) {
-  return async (dispatch, getState) => {
-    const state = getState();
-    if (save) {
-      const entity = wrapEntityMetadata(state.entityView.entityForm);
-      await entitiesAPI.save(new RequestParams(entity));
-    }
-
-    const templates = state.templates.toJS();
-    const current = state.entityView.entity.get('sharedId');
-    const index =
-      state.library.documents.get('rows').findIndex(e => e.get('sharedId') === current) + delta;
-    const sharedId = state.library.documents
-      .get('rows')
-      .get(index)
-      .get('sharedId');
-
-    (await getAndLoadEntity(sharedId, templates, state)).forEach(action => {
-      dispatch(action);
-    });
-  };
-}
 
 class LibraryOneUpReview extends RouteHandler {
   static async requestState(requestParams, state) {
@@ -128,7 +44,13 @@ class LibraryOneUpReview extends RouteHandler {
       dispatch => wrapDispatch(dispatch, 'library')(unsetDocuments()),
       actions.set('relationTypes', relationTypes),
       dispatch => wrapDispatch(dispatch, 'library')(setDocuments(documents)),
-      ...(await getAndLoadEntity(firstSharedId, templates, state)),
+      actions.set('entityView.oneUpState', {
+        enabled: true,
+        fullEdit: false,
+        indexInDocs: 0,
+        totalDocs: documents.rows.length,
+      }),
+      ...(await entityActions.getAndLoadEntity(firstSharedId, templates, state)),
     ];
   }
 
@@ -136,7 +58,9 @@ class LibraryOneUpReview extends RouteHandler {
     this.emptyState();
   }
 
-  componentWillMount() {}
+  componentWillMount() {
+    this.context.store.dispatch(uiActions.showTab('info'));
+  }
 
   componentDidMount() {}
 
@@ -158,7 +82,7 @@ class LibraryOneUpReview extends RouteHandler {
     if (!entity.get('_id')) {
       return <Loader />;
     }
-    return <EntityViewer {...this.props} oneUpMode />;
+    return <EntityViewer {...this.props} />;
   }
 }
 
@@ -168,21 +92,7 @@ const mapStateToProps = state => {
     : state.entityView.entity;
   return {
     entity,
-    rawEntity: state.entityView.entity,
-    templates: state.templates,
   };
 };
 
-function mapDispatchToProps(dispatch, props) {
-  return bindActionCreators(
-    {
-      oneUpSwitcher,
-    },
-    wrapDispatch(dispatch, props.storeKey)
-  );
-}
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(LibraryOneUpReview);
+export default connect(mapStateToProps)(LibraryOneUpReview);

@@ -14,6 +14,7 @@ import {
   LinkField,
   MarkDown,
   MultiDate,
+  MultiSuggest,
   MultiDateRange,
   MultiSelect,
   Nested,
@@ -115,32 +116,50 @@ export class MetadataFormFields extends Component {
   }
 
   render() {
-    const { thesauris, template, multipleEdition, model } = this.props;
+    const { thesauris, template, multipleEdition, model, showSubset } = this.props;
     const fields = template.get('properties').toJS();
     const templateID = template.get('_id');
 
     return (
       <div>
-        {fields.map(property => (
-          <FormGroup key={property.name} model={`.metadata.${property.name}`}>
-            <ul className="search__filter is-active">
-              <li>
-                <label>
-                  <MultipleEditionFieldWarning
-                    multipleEdition={multipleEdition}
-                    model={model}
-                    field={`metadata.${property.name}`}
-                  />
-                  {t(templateID, property.label)}
-                  {property.required ? <span className="required">*</span> : ''}
-                </label>
-              </li>
-              <li className="wide">
-                {this.getField(property, `.metadata.${property.name}`, thesauris.toJS())}
-              </li>
-            </ul>
-          </FormGroup>
-        ))}
+        {fields
+          .filter(p => {
+            if (showSubset === 'no-multiselect' && p.type === 'multiselect') {
+              return false;
+            }
+            if (showSubset === 'only-multiselect' && p.type !== 'multiselect') {
+              return false;
+            }
+            return true;
+          })
+          .map(property => (
+            <FormGroup key={property.name} model={`.metadata.${property.name}`}>
+              <ul className="search__filter is-active">
+                <li>
+                  <label>
+                    <MultipleEditionFieldWarning
+                      multipleEdition={multipleEdition}
+                      model={model}
+                      field={`metadata.${property.name}`}
+                    />
+                    {t(templateID, property.label)}
+                    {property.required ? <span className="required">*</span> : ''}
+                  </label>
+                </li>
+                {property.type === 'multiselect' ? (
+                  <li className="wide">
+                    <MultiSuggest
+                      model={`.suggestedMetadata.${property.name}`}
+                      selectModel={`.metadata.${property.name}`}
+                    />
+                  </li>
+                ) : null}
+                <li className="wide">
+                  {this.getField(property, `.metadata.${property.name}`, thesauris.toJS())}
+                </li>
+              </ul>
+            </FormGroup>
+          ))}
       </div>
     );
   }
@@ -157,6 +176,7 @@ MetadataFormFields.propTypes = {
   thesauris: PropTypes.instanceOf(Immutable.List).isRequired,
   multipleEdition: PropTypes.bool,
   dateFormat: PropTypes.string,
+  showSubset: PropTypes.string,
 };
 
 export const mapStateToProps = state => ({

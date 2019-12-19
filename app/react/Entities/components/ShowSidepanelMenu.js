@@ -1,3 +1,5 @@
+/** @format */
+
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
@@ -20,13 +22,11 @@ export class ShowSidepanelMenu extends Component {
 }
 
 ShowSidepanelMenu.defaultProps = {
-  active: false
+  active: false,
 };
 
 ShowSidepanelMenu.propTypes = {
   active: PropTypes.bool,
   panelIsOpen: PropTypes.bool.isRequired,
-  openPanel: PropTypes.func.isRequired
+  openPanel: PropTypes.func.isRequired,
 };
-
-export default ShowSidepanelMenu;

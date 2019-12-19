@@ -35,13 +35,8 @@ export function wrapEntityMetadata(_entity) {
       : [{ value: entity.metadata[key] }];
     return wrappedMo;
   }, {});
-  const suggestedMetadata = Object.keys(entity.suggestedMetadata).reduce((wrappedMo, key) => {
-    wrappedMo[key] = Array.isArray(entity.suggestedMetadata[key])
-      ? entity.suggestedMetadata[key].map(v => ({ value: v }))
-      : [{ value: entity.suggestedMetadata[key] }];
-    return wrappedMo;
-  }, {});
-  return { ...entity, metadata, suggestedMetadata };
+  // suggestedMetadata is always in metadata-object form.
+  return { ...entity, metadata };
 }
 
 export class MetadataForm extends Component {
@@ -95,7 +90,8 @@ export class MetadataForm extends Component {
   }
 
   render() {
-    const { model, template, templateOptions, id, multipleEdition } = this.props;
+    const { model, template, templateOptions, id, multipleEdition, showSubset } = this.props;
+    const metadataOnly = ['no-multiselect', 'only-multiselect'].includes(showSubset);
 
     if (!template) {
       return <div />;
@@ -116,7 +112,7 @@ export class MetadataForm extends Component {
         validators={validator.generate(template.toJS(), multipleEdition)}
         onSubmitFailed={this.onSubmitFailed}
       >
-        {!multipleEdition && (
+        {!multipleEdition && !metadataOnly && (
           <FormGroup model=".title">
             <ul className="search__filter">
               <li>
@@ -135,12 +131,13 @@ export class MetadataForm extends Component {
           </FormGroup>
         )}
 
-        {this.renderTemplateSelect(templateOptions, template)}
+        {!metadataOnly && this.renderTemplateSelect(templateOptions, template)}
         <MetadataFormFields
           multipleEdition={multipleEdition}
           thesauris={this.props.thesauris}
           model={model}
           template={template}
+          showSubset={showSubset}
         />
       </Form>
     );
@@ -162,6 +159,7 @@ MetadataForm.propTypes = {
   onSubmit: PropTypes.func,
   notify: PropTypes.func,
   id: PropTypes.string,
+  showSubset: PropTypes.string,
 };
 
 function mapDispatchToProps(dispatch) {
