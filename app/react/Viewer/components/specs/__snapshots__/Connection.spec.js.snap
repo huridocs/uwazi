@@ -2,18 +2,6 @@
 
 exports[`Connection should render the reference 1`] = `
 <Connect(Item)
-  additionalIcon={
-    <ShowIf
-      if={false}
-    >
-      <span>
-        <i
-          className="fa fa-sign-out-alt"
-        />
-         
-      </span>
-    </ShowIf>
-  }
   additionalMetadata={
     Array [
       Object {
