@@ -292,21 +292,6 @@ describe('templates', () => {
           })
           .catch(done.fail);
       });
-
-      it('should throw an error when deleting an inherited property', async () => {
-        const edited = {
-          _id: templateToBeInherited,
-          name: 'changed name',
-          commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
-          properties: [],
-        };
-        try {
-          await templates.save(edited);
-          fail('should throw an error');
-        } catch (e) {
-          expect(e.message).toEqual("Can't delte properties being inherited by others: inherit_me");
-        }
-      });
     });
   });
 

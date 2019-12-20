@@ -97,26 +97,10 @@ export default {
     }
   },
 
-  async _validateDeleteProperties(currentTemplate, template) {
-    const toRemoveProperties = currentTemplate.properties.filter(
-      prop => !template.properties.find(p => p._id === prop._id)
-    );
-
-    await Promise.all(
-      toRemoveProperties.map(async prop => {
-        const canDelete = await this.canDeleteProperty(template._id, prop._id);
-        if (!canDelete) {
-          throw createError(`Can't delte properties being inherited by others: ${prop.name}`, 400);
-        }
-      })
-    );
-  },
-
   async _update(template, language) {
     const currentTemplate = await this.getById(template._id);
     currentTemplate.properties = currentTemplate.properties || [];
     this._validateSwapPropertyNames(currentTemplate, template);
-    await this._validateDeleteProperties(currentTemplate, template);
     this._removeValuesFromEntities(currentTemplate, template);
     await updateTranslation(currentTemplate, template);
     const savedTemplate = await model.save(template);

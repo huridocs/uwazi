@@ -4,7 +4,7 @@ import Ajv from 'ajv';
 import db from 'api/utils/testing_db';
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import { validateTemplate } from '../templateSchema';
-import fixtures, { templateId } from './validatorFixtures';
+import fixtures, { templateId, templateToBeInherited } from './validatorFixtures';
 
 describe('template schema', () => {
   beforeEach(done => {
@@ -158,6 +158,24 @@ describe('template schema', () => {
         template.name = 'DuplicateName';
         await testInvalid();
       });
+    });
+  });
+
+  describe('cantDeleteInheritedProperties', () => {
+    it('invalid when trying to delete an inherited property', async () => {
+      const template = {
+        _id: templateToBeInherited,
+        name: 'changed name',
+        commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
+        properties: [],
+      };
+
+      try {
+        await validateTemplate(template);
+        fail('should throw error');
+      } catch (e) {
+        expect(e).toBeInstanceOf(Ajv.ValidationError);
+      }
     });
   });
 });
