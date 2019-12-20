@@ -2,7 +2,7 @@
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import createNightmare from '../helpers/nightmare';
 
-import insertFixtures from '../helpers/insertFixtures';
+import { insertFixturesWithoutRelationships } from '../helpers/insertFixtures';
 import { loginAsAdminAndGoToSettings } from '../helpers/commonTests';
 
 const localSelectors = {
@@ -16,7 +16,7 @@ const localSelectors = {
 const nightmare = createNightmare();
 
 describe('templates path', () => {
-  beforeAll(async () => insertFixtures(false));
+  beforeAll(async () => insertFixturesWithoutRelationships());
   afterAll(async () => nightmare.end());
 
   describe('login', () => {
