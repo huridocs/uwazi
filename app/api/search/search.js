@@ -337,21 +337,31 @@ const escapeCharByRegex = (query, regex, char) => {
   return escaped;
 };
 
-const escapeElasticSearchQueryString = query => {
-  const regex = /([^\\])"|^"/g;
+const checkCharParity = (query, regex) => {
   const indices = [];
 
+  regex.lastIndex = 0;
   let result = regex.exec(query);
   while (result) {
     indices.push(result.index);
     result = regex.exec(query);
   }
 
-  if (indices.length % 2 === 1) {
-    return escapeCharByRegex(query, regex, '"');
-  }
+  return !(indices.length % 2 === 1);
+};
 
-  return query;
+const escapeElasticSearchQueryString = query => {
+  const charsRegex = {
+    '"': /([^\\])"|^"/g,
+    '/': /([^\\])\/|^\//g,
+  };
+
+  return Object.keys(charsRegex).reduce((escaped, char) => {
+    if (!checkCharParity(escaped, charsRegex[char])) {
+      return escapeCharByRegex(escaped, charsRegex[char], char);
+    }
+    return escaped;
+  }, query);
 };
 
 const instanceSearch = elasticIndex => ({
