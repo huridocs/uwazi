@@ -229,7 +229,6 @@ Nightmare.action('waitForCardTemplate', function waitForCardTemplate(selector, t
 });
 
 Nightmare.action('manageItemFromList', function manageItemFromList(liElement, targetText, action, done) {
-  console.log('MANAGEITEMFROMLIST');
   this.wait((listSelector, textToMatch) => {
     let itemFound = false;
     const list = document.querySelectorAll(listSelector);
