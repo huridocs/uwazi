@@ -10,7 +10,7 @@ const localSelectors = {
   createNewTemplate: '#app > div.content > div > div > div.settings-content > div > div.settings-footer > a',
   templateTitle: '#app > div.content > div > div > div.settings-content > div > div > div.panel-body > div > main > div > form > div.metadataTemplate-heading > div > div > input',
   propertyList: '#app > div.content > div > div > div.settings-content > div > div > div.panel-body > div > main > div > form > ul',
-  relationshipProperty: `#app > div.content > div > div > div.settings-content > div > div > div.panel-body > div > aside > div > ul > li:nth-child(5) > button`,
+  relationshipProperty: '#app > div.content > div > div > div.settings-content > div > div > div.panel-body > div > aside > div > ul > li:nth-child(5) > button',
 };
 
 const nightmare = createNightmare();
