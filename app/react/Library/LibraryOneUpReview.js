@@ -47,10 +47,11 @@ class LibraryOneUpReview extends RouteHandler {
       actions.set('entityView.oneUpState', {
         enabled: true,
         fullEdit: false,
+        loadConnections: false,
         indexInDocs: 0,
         totalDocs: documents.rows.length,
       }),
-      ...(await entityActions.getAndLoadEntity(firstSharedId, templates, state)),
+      ...(await entityActions.getAndLoadEntity(firstSharedId, templates, state, false)),
     ];
   }
 

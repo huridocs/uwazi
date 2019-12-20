@@ -112,7 +112,7 @@ export class MetadataForm extends Component {
         validators={validator.generate(template.toJS(), multipleEdition)}
         onSubmitFailed={this.onSubmitFailed}
       >
-        {!multipleEdition && !metadataOnly && (
+        {!multipleEdition && showSubset !== 'only-multiselect' && (
           <FormGroup model=".title">
             <ul className="search__filter">
               <li>

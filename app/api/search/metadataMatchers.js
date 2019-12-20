@@ -13,7 +13,7 @@ const rangeFilter = (filter, path = 'metadata') => {
 // eslint-disable-next-line max-statements
 const multiselectFilter = (filter, path = 'metadata') => {
   const filterValue = filter.value;
-  const { values = [], is_suggested: isSuggested = false } = filterValue;
+  const { values = [] } = filterValue;
   let match;
   if (values.includes('missing') && !filterValue.and) {
     const _values = values.filter(v => v !== 'missing');

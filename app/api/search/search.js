@@ -17,13 +17,13 @@ import entities from '../entities';
 import templatesModel from '../templates';
 import { bulkIndex, indexEntities } from './entitiesIndex';
 
-function processFiltes(filters, properties, allUniqueProps) {
-  return Object.keys(filters || {}).map(propertyName => {
-    const property =
-      properties.find(p => p.name === propertyName) ||
-      allUniqueProps.find(p => p.name === propertyName);
+function processFiltes(filters, properties) {
+  return Object.keys(filters || {}).map(filterName => {
+    const suggested = filterName[0] === '_';
+    const propertyName = suggested ? filterName.substring(1) : filterName;
+    const property = properties.find(p => p.name === propertyName);
     let { type } = property;
-    const value = filters[property.name];
+    const value = filters[filterName];
     if (['date', 'multidate', 'numeric'].includes(property.type)) {
       type = 'range';
     }
@@ -43,12 +43,13 @@ function processFiltes(filters, properties, allUniqueProps) {
       return {
         ...property,
         value,
+        suggested,
         type,
         filters: property.filters.map(f => ({ ...f, name: `${f.name}.value` })),
       };
     }
 
-    return { ...property, value, type, name: `${property.name}.value` };
+    return { ...property, value, suggested, type, name: `${property.name}.value` };
   });
 }
 
@@ -402,7 +403,7 @@ const instanceSearch = elasticIndex => ({
       }
 
       const aggregations = agregationProperties(properties);
-      const filters = processFiltes(query.filters, properties, allUniqueProps);
+      const filters = processFiltes(query.filters, allUniqueProps);
       documentsQuery.filterMetadata(filters);
       documentsQuery.aggregations(aggregations, dictionaries);
       if (query.select) {

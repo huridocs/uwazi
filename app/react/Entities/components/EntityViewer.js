@@ -23,7 +23,12 @@ import { TabContent, TabLink, Tabs } from 'react-tabs-redux';
 import { bindActionCreators } from 'redux';
 import { createSelector } from 'reselect';
 import { Icon } from 'UI';
-import { deleteEntity, switchOneUpEntity, toggleOneUpFullEdit } from '../actions/actions';
+import {
+  deleteEntity,
+  switchOneUpEntity,
+  toggleOneUpFullEdit,
+  toggleOneUpLoadConnections,
+} from '../actions/actions';
 import { showTab } from '../actions/uiActions';
 import EntityForm from '../containers/EntityForm';
 import { ShowSidepanelMenu } from './ShowSidepanelMenu';
@@ -100,14 +105,29 @@ export class EntityViewer extends Component {
       <div className="row">
         <Helmet title={entity.title ? entity.title : 'Entity'} />
         <div className="content-header content-header-entity">
-          <div className="content-header-title">
-            <PropertyIcon className="item-icon item-icon-center" data={entity.icon} size="sm" />
-            <h1 className="item-name">{entity.title}</h1>
-            <TemplateLabel template={entity.template} />
-          </div>
+          <ShowIf if={!oneUpState.enabled}>
+            <div className="content-header-title">
+              <PropertyIcon className="item-icon item-icon-center" data={entity.icon} size="sm" />
+              <h1 className="item-name">{entity.title}</h1>
+              <TemplateLabel template={entity.template} />
+            </div>
+          </ShowIf>
           <ShowIf if={oneUpState.enabled}>
             <div className="content-header-title">
               {oneUpState.indexInDocs} of {oneUpState.totalDocs}
+              <button
+                onClick={() => this.props.toggleOneUpFullEdit()}
+                className={
+                  this.props.isPristine || !oneUpState.fullEdit
+                    ? 'btn btn-default'
+                    : 'btn btn-default btn-disabled'
+                }
+              >
+                <Icon icon="times" />
+                <span className="btn-label">
+                  {t('System', oneUpState.fullEdit ? 'Reduce Edit' : 'Full Edit')}
+                </span>
+              </button>
             </div>
           </ShowIf>
         </div>
@@ -121,6 +141,17 @@ export class EntityViewer extends Component {
                   <EntityForm showSubset={oneUpState.enabled ? 'no-multiselect' : 'all'} />
                 ) : (
                   <div>
+                    <ShowIf if={oneUpState.enabled}>
+                      <div className="content-header-title">
+                        <PropertyIcon
+                          className="item-icon item-icon-center"
+                          data={entity.icon}
+                          size="sm"
+                        />
+                        <h1 className="item-name">{entity.title}</h1>
+                        <TemplateLabel template={entity.template} />
+                      </div>
+                    </ShowIf>
                     <ShowMetadata
                       relationships={relationships}
                       entity={entity}
@@ -198,68 +229,41 @@ export class EntityViewer extends Component {
               <ResetSearch />
             </div>
           </ShowIf>
-          <ShowIf if={oneUpState.enabled && !this.props.isPristine}>
+          <ShowIf if={oneUpState.enabled}>
             <div className="sidepanel-footer">
-              <ShowIf if={oneUpState.indexInDocs > 0}>
-                <button
-                  onClick={() => this.props.switchOneUpEntity(-1, true)}
-                  className="delete-metadata btn"
-                >
-                  <Icon icon="times" />
-                  <span className="btn-label">{t('System', 'Save & Previous')}</span>
-                </button>
-              </ShowIf>
               <button
-                onClick={() => this.props.toggleOneUpFullEdit()}
-                className="delete-metadata btn btn-primary"
+                onClick={() => this.props.switchOneUpEntity(-1, !this.props.isPristine)}
+                className={
+                  oneUpState.indexInDocs > 0 ? 'btn btn-default' : 'btn btn-default btn-disabled'
+                }
               >
                 <Icon icon="times" />
-                <span className="btn-label">{t('System', 'Full Edit')}</span>
+                <span className="btn-label">
+                  {t('System', this.props.isPristine ? 'Previous' : 'Save & Previous')}
+                </span>
               </button>
               <button
                 onClick={() => this.props.switchOneUpEntity(0, false)}
-                className="cancel-edit-metadata btn btn-danger"
+                className={
+                  !this.props.isPristine
+                    ? 'cancel-edit-metadata btn btn-danger'
+                    : 'btn btn-default btn-disabled'
+                }
               >
                 <Icon icon="trash-alt" />
                 <span className="btn-label">{t('System', 'Discard')}</span>
               </button>
               <button
-                onClick={() => this.props.switchOneUpEntity(+1, true)}
-                className="delete-metadata btn btn-primary"
+                onClick={() => this.props.switchOneUpEntity(+1, !this.props.isPristine)}
+                className="btn btn-default"
               >
                 <Icon icon="times" />
-                <span className="btn-label">{t('System', 'Save & Next')}</span>
+                <span className="btn-label">
+                  {t('System', this.props.isPristine ? 'Next' : 'Save & Next')}
+                </span>
               </button>
             </div>
           </ShowIf>
-          <ShowIf if={oneUpState.enabled && this.props.isPristine}>
-            <div className="sidepanel-footer">
-              <ShowIf if={oneUpState.indexInDocs > 0}>
-                <button
-                  onClick={() => this.props.switchOneUpEntity(-1, false)}
-                  className="delete-metadata btn"
-                >
-                  <Icon icon="times" />
-                  <span className="btn-label">{t('System', 'Previous')}</span>
-                </button>
-              </ShowIf>
-              <button
-                onClick={() => this.props.toggleOneUpFullEdit()}
-                className="delete-metadata btn btn-primary"
-              >
-                <Icon icon="times" />
-                <span className="btn-label">{t('System', 'Full Edit')}</span>
-              </button>
-              <button
-                onClick={() => this.props.switchOneUpEntity(+1, false)}
-                className="delete-metadata btn btn-primary"
-              >
-                <Icon icon="times" />
-                <span className="btn-label">{t('System', 'Next')}</span>
-              </button>
-            </div>
-          </ShowIf>
-
           <div className="sidepanel-body">
             <Tabs selectedTab={selectedTab}>
               <TabContent
@@ -269,6 +273,22 @@ export class EntityViewer extends Component {
                     : 'none'
                 }
               >
+                <ShowIf if={oneUpState.enabled}>
+                  <button
+                    onClick={() => this.props.toggleOneUpLoadConnections()}
+                    className={
+                      this.props.isPristine ? 'btn btn-default' : 'btn btn-default btn-disabled'
+                    }
+                  >
+                    <Icon icon="times" />
+                    <span className="btn-label">
+                      {t(
+                        'System',
+                        oneUpState.loadConnections ? 'Hide Connections' : 'Load Connections'
+                      )}
+                    </span>
+                  </button>
+                </ShowIf>
                 <ConnectionsGroups />
               </TabContent>
               <TabContent for={oneUpState.enabled && selectedTab === 'info' ? selectedTab : 'none'}>
@@ -325,6 +345,7 @@ EntityViewer.propTypes = {
   // function(delta (-1, 0, +1) and shouldSave bool) => dispatch => {...}
   switchOneUpEntity: PropTypes.func,
   toggleOneUpFullEdit: PropTypes.func,
+  toggleOneUpLoadConnections: PropTypes.func,
   oneUpState: PropTypes.object,
 };
 
@@ -344,6 +365,7 @@ const selectRelationTypes = createSelector(
 
 const mapStateToProps = state => ({
   rawEntity: state.entityView.entity,
+  rawEntityForm: state.entityView.entityForm,
   relationTypes: selectRelationTypes(state),
   entity: selectEntity(state),
   relationships: state.entityView.entity.get('relationships'),
@@ -365,6 +387,7 @@ function mapDispatchToProps(dispatch) {
       startNewConnection: connectionsActions.startNewConnection,
       switchOneUpEntity,
       toggleOneUpFullEdit,
+      toggleOneUpLoadConnections,
     },
     dispatch
   );

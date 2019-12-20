@@ -15,6 +15,7 @@ import { actions as relationshipActions } from 'app/Relationships';
 import * as relationships from 'app/Relationships/utils/routeUtils';
 import { advancedSort } from 'app/utils/advancedSort';
 import { RequestParams } from 'app/utils/RequestParams';
+import Immutable from 'immutable';
 import { actions as formActions } from 'react-redux-form';
 
 export function saveEntity(entity) {
@@ -69,10 +70,12 @@ function loadEntity(entity, templates) {
   ];
 }
 
-export async function getAndLoadEntity(sharedId, templates, state) {
+export async function getAndLoadEntity(sharedId, templates, state, loadConnections) {
   const [[entity], [connectionsGroups, searchResults, sort, filters]] = await Promise.all([
     api.get(new RequestParams({ sharedId })),
-    relationships.requestState(new RequestParams({ sharedId }), state),
+    loadConnections
+      ? relationships.requestState(new RequestParams({ sharedId }), state)
+      : [[], { rows: [] }, {}, Immutable.fromJS({})],
   ]);
 
   return [
@@ -109,11 +112,11 @@ export function toggleOneUpFullEdit() {
 export function switchOneUpEntity(delta, save) {
   return async (dispatch, getState) => {
     const state = getState();
+    const oneUpState = state.entityView.oneUpState.toJS();
     if (save) {
       const entity = wrapEntityMetadata(state.entityView.entityForm);
       await api.save(new RequestParams(entity));
     }
-
     const templates = state.templates.toJS();
     const current = state.entityView.entity.get('sharedId');
     const index =
@@ -124,14 +127,27 @@ export function switchOneUpEntity(delta, save) {
       .get('sharedId');
 
     [
-      ...(await getAndLoadEntity(sharedId, templates, state)),
+      ...(await getAndLoadEntity(sharedId, templates, state, oneUpState.loadConnections)),
       actions.set('entityView.oneUpState', {
-        ...state.entityView.oneUpState.toJS(),
+        ...oneUpState,
         fullEdit: false,
         indexInDocs: index,
       }),
     ].forEach(action => {
       dispatch(action);
     });
+  };
+}
+
+export function toggleOneUpLoadConnections() {
+  return async (dispatch, getState) => {
+    const state = getState().entityView.oneUpState.toJS();
+    dispatch(
+      actions.set('entityView.oneUpState', {
+        ...state,
+        loadConnections: !state.loadConnections,
+      })
+    );
+    dispatch(switchOneUpEntity(0, false));
   };
 }

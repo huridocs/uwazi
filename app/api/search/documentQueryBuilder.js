@@ -239,7 +239,7 @@ export default function() {
 
     filterMetadata(filters = []) {
       filters.forEach(filter => {
-        const match = filterToMatch(filter);
+        const match = filterToMatch(filter, filter.suggested ? 'suggestedMetadata' : 'metadata');
         if (match) {
           addFilter(match);
         }
