@@ -92,6 +92,10 @@ describe('entity schema', () => {
           required_multiselect: ['one'],
           relationship: ['rel1', 'rel2'],
           link: { label: 'label', url: 'url' },
+          field_nested: [
+            { cadh: ['1.1', '25.1'], cipst: [], cbdp: [], cidfp: [] },
+            { cadh: ['1.1', '21.1', '21.2', '25', '1'], cipst: [], cbdp: [], cidfp: [] },
+          ],
           preview: '',
         },
       };
@@ -285,19 +289,16 @@ describe('entity schema', () => {
         it('should fail if value is not array of date ranges', async () => {
           entity.metadata.multidaterange = [{ from: 100, to: '200' }];
           await expectError('should be number', ".metadata['multidaterange']");
-
           entity.metadata.multidaterange = [100, 200];
           await expectError(
             customErrorMessages[templateTypes.multidaterange],
             ".metadata['multidaterange']"
           );
-
           entity.metadata.multidaterange = [{ from: 200, to: 100 }];
           await expectError(
             customErrorMessages[templateTypes.multidaterange],
             ".metadata['multidaterange']"
           );
-
           entity.metadata.multidaterange = [{ from: -200, to: -100 }];
           await testValid();
         });

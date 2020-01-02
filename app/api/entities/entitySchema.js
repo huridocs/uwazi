@@ -8,6 +8,7 @@ import {
   linkSchema,
   dateRangeSchema,
   geolocationSchema,
+  nestedSchema,
   tocSchema,
 } from 'api/utils/jsonSchemas';
 import { validators, customErrorMessages } from './metadataValidators.js';
@@ -144,7 +145,12 @@ const schema = {
               oneOf: [{ type: 'string' }, { type: 'number' }, { type: 'null' }],
             },
           },
+          nestedSchema,
           dateRangeSchema,
+          {
+            type: 'array',
+            items: dateRangeSchema,
+          },
           {
             type: 'array',
             items: dateRangeSchema,
