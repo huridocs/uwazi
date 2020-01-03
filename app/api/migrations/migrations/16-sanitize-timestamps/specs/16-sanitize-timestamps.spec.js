@@ -5,7 +5,7 @@ import testingDB from 'api/utils/testing_db';
 import migration from '../index.js';
 import fixtures from './fixtures.js';
 
-describe('migration remove_orphan_relations', () => {
+describe('migration sanitize-timestamops', () => {
   beforeEach(done => {
     spyOn(process.stdout, 'write');
     testingDB
@@ -28,8 +28,6 @@ describe('migration remove_orphan_relations', () => {
       .collection('entities')
       .find()
       .toArray();
-
-    console.log(entities[0].metadata);
 
     expect(Number.isInteger(entities[0].metadata.date)).toBe(true);
     expect(Number.isInteger(entities[0].metadata.multi_date[0])).toBe(true);
