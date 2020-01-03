@@ -48,6 +48,24 @@ describe('PropertyOption', () => {
       ).getWrappedInstance();
       expect(option.props.removeProperty).toEqual(jasmine.any(Function));
     });
+
+    it('should not add a property when clicked if disabled', () => {
+      const props = { label: 'test', disabled: true, type: 'optionType', addProperty: jasmine.createSpy().and.returnValue({}) };
+      TestComponent = wrapInTestContext(dragSourceOption);
+      component = renderComponent(TestComponent, props);
+      const button = TestUtils.findRenderedDOMComponentWithTag(component, 'button');
+      TestUtils.Simulate.click(button);
+      expect(props.addProperty).not.toHaveBeenCalled();
+    });
+
+    it('should add a property when clicked', () => {
+      const props = { label: 'test', type: 'optionType', addProperty: jasmine.createSpy().and.returnValue({}) };
+      TestComponent = wrapInTestContext(dragSourceOption);
+      component = renderComponent(TestComponent, props);
+      const button = TestUtils.findRenderedDOMComponentWithTag(component, 'button');
+      TestUtils.Simulate.click(button);
+      expect(props.addProperty).toHaveBeenCalled();
+    });
   });
 
   describe('DragSource', () => {
