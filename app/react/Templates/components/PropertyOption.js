@@ -18,7 +18,9 @@ export class PropertyOption extends Component {
   }
 
   addProperty() {
-    this.props.addProperty({ label: this.props.label, type: this.props.type });
+    if (!this.props.disabled) {
+      this.props.addProperty({ label: this.props.label, type: this.props.type });
+    }
   }
 
   render() {
