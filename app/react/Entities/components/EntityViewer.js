@@ -25,9 +25,9 @@ import { createSelector } from 'reselect';
 import { Icon } from 'UI';
 import {
   deleteEntity,
-  switchOneUpEntity,
   toggleOneUpFullEdit,
   toggleOneUpLoadConnections,
+  switchOneUpEntity,
 } from '../actions/actions';
 import { showTab } from '../actions/uiActions';
 import EntityForm from '../containers/EntityForm';
@@ -114,20 +114,7 @@ export class EntityViewer extends Component {
           </ShowIf>
           <ShowIf if={oneUpState.enabled}>
             <div className="content-header-title">
-              {oneUpState.indexInDocs} of {oneUpState.totalDocs}
-              <button
-                onClick={() => this.props.toggleOneUpFullEdit()}
-                className={
-                  this.props.isPristine || !oneUpState.fullEdit
-                    ? 'btn btn-default'
-                    : 'btn btn-default btn-disabled'
-                }
-              >
-                <Icon icon="times" />
-                <span className="btn-label">
-                  {t('System', oneUpState.fullEdit ? 'Reduce Edit' : 'Full Edit')}
-                </span>
-              </button>
+              Document {oneUpState.indexInDocs + 1} out of {oneUpState.totalDocs}
             </div>
           </ShowIf>
         </div>
@@ -170,6 +157,92 @@ export class EntityViewer extends Component {
                   </div>
                 )}
               </div>
+              <ShowIf if={oneUpState.enabled}>
+                <div className="sidepanel-footer">
+                  <button
+                    onClick={() => this.props.switchOneUpEntity(+1, true)}
+                    className={
+                      !this.props.isPristine
+                        ? 'save-and-next btn btn-default btn-success'
+                        : 'btn btn-default btn-disabled'
+                    }
+                  >
+                    <Icon icon="save" />
+                    <span className="btn-label">{t('System', 'Save and go to next')}</span>
+                  </button>
+                  <button
+                    onClick={() => this.props.switchOneUpEntity(0, true)}
+                    className={
+                      !this.props.isPristine
+                        ? 'save-metadata btn btn-default'
+                        : 'btn btn-default btn-disabled'
+                    }
+                  >
+                    <Icon icon="save" />
+                    <span className="btn-label">{t('System', 'Save document')}</span>
+                  </button>
+                  <button
+                    onClick={() => this.props.switchOneUpEntity(0, false)}
+                    className={
+                      !this.props.isPristine
+                        ? 'cancel-edit-metadata btn btn-danger'
+                        : 'btn btn-default btn-disabled'
+                    }
+                  >
+                    <Icon icon="undo" />
+                    <span className="btn-label">{t('System', 'Discard changes')}</span>
+                  </button>
+                  <button
+                    onClick={() => this.props.toggleOneUpFullEdit()}
+                    className={
+                      this.props.isPristine || !oneUpState.fullEdit
+                        ? 'btn btn-default'
+                        : 'btn btn-default btn-disabled'
+                    }
+                  >
+                    <Icon icon="pencil-alt" />
+                    <span className="btn-label">
+                      {t('System', oneUpState.fullEdit ? 'Cancel edit document' : 'Edit document')}
+                    </span>
+                  </button>
+                  <button
+                    onClick={() =>
+                      this.props.isPristine
+                        ? this.props.switchOneUpEntity(-1, false)
+                        : this.context.confirm({
+                            accept: () => this.props.switchOneUpEntity(-1, false),
+                            title: 'Confirm discard changes',
+                            message:
+                              'There are unsaved changes. Are you sure you want to discard them and switch to a different document?',
+                          })
+                    }
+                    className={
+                      oneUpState.indexInDocs > 0
+                        ? `btn ${this.props.isPristine ? 'btn-default' : 'btn-warning'}`
+                        : 'btn btn-default btn-disabled'
+                    }
+                  >
+                    <Icon icon="arrow-left" />
+                    <span className="btn-label">{t('System', 'Previous document')}</span>
+                  </button>
+                  <button
+                    onClick={() =>
+                      this.props.isPristine
+                        ? this.props.switchOneUpEntity(+1, false)
+                        : this.context.confirm({
+                            accept: () => this.props.switchOneUpEntity(+1, false),
+                            title: 'Confirm discard changes',
+                            message:
+                              'There are unsaved changes. Are you sure you want to discard them and switch to a different document?',
+                          })
+                    }
+                    className={`btn ${this.props.isPristine ? 'btn-default' : 'btn-warning'}`}
+                  >
+                    <Icon icon="arrow-right" />
+                    <span className="btn-label">{t('System', 'Next document')}</span>
+                  </button>
+                </div>
+              </ShowIf>
             </TabContent>
             <TabContent for="connections">
               <ConnectionsList deleteConnection={this.deleteConnection.bind(this)} searchCentered />
@@ -229,41 +302,6 @@ export class EntityViewer extends Component {
               <ResetSearch />
             </div>
           </ShowIf>
-          <ShowIf if={oneUpState.enabled}>
-            <div className="sidepanel-footer">
-              <button
-                onClick={() => this.props.switchOneUpEntity(-1, !this.props.isPristine)}
-                className={
-                  oneUpState.indexInDocs > 0 ? 'btn btn-default' : 'btn btn-default btn-disabled'
-                }
-              >
-                <Icon icon="times" />
-                <span className="btn-label">
-                  {t('System', this.props.isPristine ? 'Previous' : 'Save & Previous')}
-                </span>
-              </button>
-              <button
-                onClick={() => this.props.switchOneUpEntity(0, false)}
-                className={
-                  !this.props.isPristine
-                    ? 'cancel-edit-metadata btn btn-danger'
-                    : 'btn btn-default btn-disabled'
-                }
-              >
-                <Icon icon="trash-alt" />
-                <span className="btn-label">{t('System', 'Discard')}</span>
-              </button>
-              <button
-                onClick={() => this.props.switchOneUpEntity(+1, !this.props.isPristine)}
-                className="btn btn-default"
-              >
-                <Icon icon="times" />
-                <span className="btn-label">
-                  {t('System', this.props.isPristine ? 'Next' : 'Save & Next')}
-                </span>
-              </button>
-            </div>
-          </ShowIf>
           <div className="sidepanel-body">
             <Tabs selectedTab={selectedTab}>
               <TabContent
@@ -273,23 +311,25 @@ export class EntityViewer extends Component {
                     : 'none'
                 }
               >
-                <ShowIf if={oneUpState.enabled}>
-                  <button
-                    onClick={() => this.props.toggleOneUpLoadConnections()}
-                    className={
-                      this.props.isPristine ? 'btn btn-default' : 'btn btn-default btn-disabled'
-                    }
-                  >
-                    <Icon icon="times" />
-                    <span className="btn-label">
-                      {t(
-                        'System',
-                        oneUpState.loadConnections ? 'Hide Connections' : 'Load Connections'
-                      )}
-                    </span>
-                  </button>
-                </ShowIf>
                 <ConnectionsGroups />
+                <ShowIf if={oneUpState.enabled}>
+                  <div className="sidepanel-footer">
+                    <button
+                      onClick={() => this.props.toggleOneUpLoadConnections()}
+                      className={
+                        this.props.isPristine ? 'btn btn-default' : 'btn btn-default btn-disabled'
+                      }
+                    >
+                      <Icon icon="times" />
+                      <span className="btn-label">
+                        {t(
+                          'System',
+                          oneUpState.loadConnections ? 'Hide Connections' : 'Load Connections'
+                        )}
+                      </span>
+                    </button>
+                  </div>
+                </ShowIf>
               </TabContent>
               <TabContent for={oneUpState.enabled && selectedTab === 'info' ? selectedTab : 'none'}>
                 <EntityForm showSubset={oneUpState.enabled ? 'only-multiselect' : 'all'} />

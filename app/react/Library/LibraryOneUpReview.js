@@ -24,7 +24,7 @@ class LibraryOneUpReview extends RouteHandler {
       ...requestParams,
       data: {
         ...processQuery(requestParams.data, state),
-        limit: 10000,
+        limit: 5000,
         select: ['sharedId'],
       },
     };

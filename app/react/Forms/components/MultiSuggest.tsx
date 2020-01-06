@@ -1,9 +1,10 @@
 /** @format */
 
-import React, { Component } from 'react';
 import { MetadataObject } from 'api/entities/entitiesModel';
-import { actions as formActions, getModel } from 'react-redux-form';
+import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { actions as formActions, getModel } from 'react-redux-form';
+import { Icon } from 'UI';
 
 export interface MultiSuggestProps {
   // model: state model of suggestions, required through <Control>.
@@ -32,6 +33,7 @@ function acceptSuggestion(suggestion: string, selectModel: string, selectValue?:
 function mapStateToProps(state: any, props: MultiSuggestProps) {
   let { selectModel } = props;
   if (selectModel && selectModel[0] === '.') {
+    // TODO(bdittes): Correctly inherit parent path.
     selectModel = `entityView.entityForm${selectModel}`;
   }
   return { selectModel, selectValue: getModel<any, string[]>(state, selectModel) };
@@ -42,42 +44,60 @@ export const MultiSuggest = connect(
   { acceptSuggestion }
 )(
   class MultiSuggestBase extends Component<MultiSuggestProps> {
-    rejectSuggestion(index: number, e: any) {
+    rejectSuggestion(id: string, e: any) {
       e.preventDefault();
       const suggestedValues = (this.props.value || []).slice();
+      const index = suggestedValues.findIndex(v => v.value === id);
+      if (index < 0) {
+        return;
+      }
       suggestedValues.splice(index, 1);
       this.props.onChange(suggestedValues);
     }
 
     render() {
-      const { selectModel, selectValue, value: proposedValue } = this.props;
-      if (!proposedValue || !proposedValue.length) {
+      const { selectModel, selectValue, value: proposedValues } = this.props;
+      const filteredValues = !proposedValues
+        ? []
+        : proposedValues.filter(value => value.value && !(selectValue || []).includes(value.value));
+      if (!filteredValues.length) {
         return null;
       }
       return (
-        <div className="MultiDate">
+        <div className="multiselect">
+          <b>Suggestions ({filteredValues.length}):</b>
           {(() =>
-            proposedValue
-              .filter(value => value.value)
-              .map((value, index) =>
-                (selectValue || []).includes(value.value || '') ? null : (
-                  <div key={index} className="MultiDate-item">
-                    {value.label}
-                    {value.suggestion_confidence && value.suggestion_confidence < 0.6 ? ' ?' : ''}
-                    <button
-                      className="btn"
+            filteredValues.map(value => (
+              <div key={value.value!} className="multiselectItem">
+                <label className="multiselectItem-label">
+                  <span className="multiselectItem-icon">
+                    <Icon
+                      icon={['far', 'square']}
+                      className="checkbox-empty"
                       onClick={() =>
                         this.props.acceptSuggestion(value.value || '', selectModel, selectValue)
                       }
-                    >
-                      +
-                    </button>
-                    <button className="btn" onClick={this.rejectSuggestion.bind(this, index)}>
-                      -
-                    </button>
+                    />
+                  </span>
+                  <span
+                    className="multiselectItem-name"
+                    onClick={() =>
+                      this.props.acceptSuggestion(value.value || '', selectModel, selectValue)
+                    }
+                  >
+                    {value.label}
+                    {value.suggestion_confidence && value.suggestion_confidence < 0.6 ? ' ?' : ''}
+                  </span>
+                  <div
+                    className="multiselectItem-button"
+                    onClick={this.rejectSuggestion.bind(this, value.value!)}
+                  >
+                    Reject
                   </div>
-                )
-              ))()}
+                </label>
+              </div>
+            )))()}
+          <b>Selected items:</b>
         </div>
       );
     }
