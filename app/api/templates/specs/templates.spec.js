@@ -415,7 +415,7 @@ describe('templates', () => {
   });
 
   describe('canDeleteProperty()', () => {
-    it('shoul return false if the property is been inherited by others', async () => {
+    it('should return false if the property is been inherited by others', async () => {
       const canDelete = await templates.canDeleteProperty(
         templateToBeInherited,
         propertyToBeInherited
