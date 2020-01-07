@@ -13,6 +13,13 @@ interface ClassifierModel {
   preferred: string;
   bert: string;
   sample: number;
+  topics: {
+    [key: string]: {
+      name: string;
+      quality: number;
+      samples: number;
+    };
+  };
 }
 
 function toTwoDecimals(num: number) {
@@ -43,6 +50,38 @@ function qualityIcon(val: number) {
         </div>
       );
   }
+}
+
+function topicNode(topic: { label: string }, modelInfo: ClassifierModel) {
+  const { label } = topic;
+  const info = modelInfo.topics[label];
+  const { quality } = info;
+  const { samples } = info;
+
+  return (
+    <tr key={label}>
+      <th scope="row">{label}</th>
+      <td>
+        {qualityIcon(quality)}
+        {toTwoDecimals(quality)}
+      </td>
+      <td>{samples}</td>
+      <td>
+        <button className="btn btn-xs" type="button">
+          <Icon icon="search" />
+          &nbsp;
+          <span>{t('System', 'Review Suggestions')}</span>
+        </button>
+      </td>
+    </tr>
+  );
+}
+
+function topicNodes(topics: Array<any>, model: ClassifierModel) {
+  if (topics === undefined) {
+    return null;
+  }
+  return topics.map((topic: { label: string }) => topicNode(topic, model));
 }
 
 class ThesaurusCockpit extends RouteHandler {
@@ -76,27 +115,7 @@ class ThesaurusCockpit extends RouteHandler {
                 <th scope="col" />
               </tr>
             </thead>
-            <tbody>
-              {topics === undefined
-                ? null
-                : topics.map((topic: { label: string }) => (
-                    <tr key={topic.label}>
-                      <th scope="row">{topic.label}</th>
-                      <td>
-                        {qualityIcon(modelInfo.topics[topic.label].quality)}
-                        {toTwoDecimals(modelInfo.topics[topic.label].quality)}
-                      </td>
-                      <td>{modelInfo.topics[topic.label].samples}</td>
-                      <td>
-                        <button className="btn btn-xs" type="button">
-                          <Icon icon="search" />
-                          &nbsp;
-                          <span>{t('System', 'Review Suggestions')}</span>
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-            </tbody>
+            <tbody>{topicNodes(topics, modelInfo)}</tbody>
           </table>
         </div>
         <div className="settings-footer" />
