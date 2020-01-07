@@ -14,9 +14,13 @@ interface ClassifierModel {
   sample: number;
 }
 
+function toTwoDecimals(num: number) {
+  return (+num).toFixed(2);
+}
+
 class ThesaurusCockpit extends RouteHandler {
   static async requestState(requestParams: any) {
-    // Thesauri should always have a length of 1
+    // Thesauri should always have a length of 1, because a specific thesaurus ID is passed in the requestParams.
     const thesauri = await ThesaurisAPI.getThesauri(requestParams);
     const thesaurus = thesauri[0];
 
@@ -24,11 +28,7 @@ class ThesaurusCockpit extends RouteHandler {
     const modelParams = requestParams.onlyHeaders().set({ model: thesaurus.name });
     const model: ClassifierModel = await ThesaurisAPI.getModelStatus(modelParams);
 
-    return [
-      actions.set('dictionaries', thesauri),
-      actions.set('thesauri/thesaurus', thesaurus),
-      actions.set('thesauri/models', [model]),
-    ];
+    return [actions.set('thesauri/thesaurus', thesaurus), actions.set('thesauri/models', [model])];
   }
 
   render() {
@@ -44,22 +44,25 @@ class ThesaurusCockpit extends RouteHandler {
             <ul>
               <p>Classifier Instance: {modelInfo.preferred}</p>
               <p>BERT: {modelInfo.bert}</p>
+              <p>Completeness: {toTwoDecimals(modelInfo.completeness)}</p>
+              <p>Extraneous: {toTwoDecimals(modelInfo.extraneous)}</p>
             </ul>
           </div>
         )}
         <ul className="list-group">
-          {topics.map((topic: { label: string }) => (
-            <li key={topic.label} className="list-group-item">
-              {topic.label}
-              <div className="item item-info">
-                <ul>
-                  <p>Completeness: {modelInfo.topics[topic.label].completeness}</p>
-                  <p>Extraneous: {modelInfo.topics[topic.label].extraneous}</p>
-                  <p>Number of Samples: {modelInfo.topics[topic.label].samples}</p>
-                </ul>
-              </div>
-            </li>
-          ))}
+          {topics === undefined
+            ? null
+            : topics.map((topic: { label: string }) => (
+                <li key={topic.label} className="list-group-item">
+                  {topic.label}
+                  <div className="item item-info">
+                    <ul>
+                      <p>Quality: {toTwoDecimals(modelInfo.topics[topic.label].quality)}</p>
+                      <p>Number of Samples: {modelInfo.topics[topic.label].samples}</p>
+                    </ul>
+                  </div>
+                </li>
+              ))}
         </ul>
         <div className="settings-footer" />
       </div>
@@ -68,14 +71,8 @@ class ThesaurusCockpit extends RouteHandler {
 }
 
 function mapStateToProps(state: any) {
-  console.dir(`thesauri: ${state.thesauri.thesaurus.toJS()}`);
-  console.dir(`dictionaries: ${state.dictionaries.toJS()}`);
   return {
-    models: state.thesauri.models.toJS(),
-    //thesauri: state.dictionaries
-    //.find((thesaurus: any) => thesaurus.name === state.thesauri.models.toJS().name)
-    //.thesaurus.toJS(), // {name: Themes; values: [{label: Education, id: lkajsdf}, ...]}
-    // TODO: FIX ME I"M EMPTY
+    models: state.thesauri.models.toJS(), // {name: ModelName; bert: bert123; sample: 53}
     thesauri: state.thesauri.thesaurus.toJS(), // {name: Themes; values: [{label: Education, id: lkajsdf}, ...]}
   };
 }
