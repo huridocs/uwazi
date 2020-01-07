@@ -5,6 +5,7 @@ import { t } from 'app/I18N';
 import ThesaurisAPI from 'app/Thesauris/ThesaurisAPI';
 import React from 'react';
 import { connect } from 'react-redux';
+import { Icon } from 'UI';
 
 /** Model is the type used for holding information about a classifier model. */
 interface ClassifierModel {
@@ -16,6 +17,32 @@ interface ClassifierModel {
 
 function toTwoDecimals(num: number) {
   return (+num).toFixed(2);
+}
+
+function qualityIcon(val: number) {
+  switch (true) {
+    case val > 0.95:
+      return (
+        <div className="quality-icon quality-high">
+          <Icon icon="circle" />
+          <Icon icon="circle" />
+          <Icon icon="circle" />
+        </div>
+      );
+    case val > 0.9:
+      return (
+        <div className="quality-icon quality-med">
+          <Icon icon="circle" />
+          <Icon icon="circle" />
+        </div>
+      );
+    default:
+      return (
+        <div className="quality-icon quality-low">
+          <Icon icon="circle" />
+        </div>
+      );
+  }
 }
 
 class ThesaurusCockpit extends RouteHandler {
@@ -38,7 +65,7 @@ class ThesaurusCockpit extends RouteHandler {
 
     return (
       <div className="panel panel-default">
-        <div className="panel-heading">{t('System', `${name}`)}</div>
+        <div className="panel-heading">{t('System', `Thesauri > ${name}`)}</div>
         {modelInfo === undefined ? null : (
           <div className="item item-info">
             <ul>
@@ -49,21 +76,39 @@ class ThesaurusCockpit extends RouteHandler {
             </ul>
           </div>
         )}
-        <ul className="list-group">
-          {topics === undefined
-            ? null
-            : topics.map((topic: { label: string }) => (
-                <li key={topic.label} className="list-group-item">
-                  {topic.label}
-                  <div className="item item-info">
-                    <ul>
-                      <p>Quality: {toTwoDecimals(modelInfo.topics[topic.label].quality)}</p>
-                      <p>Number of Samples: {modelInfo.topics[topic.label].samples}</p>
-                    </ul>
-                  </div>
-                </li>
-              ))}
-        </ul>
+        <div className="cockpit">
+          <table>
+            <thead>
+              <tr>
+                <th scope="col" />
+                <th scope="col">Quality</th>
+                <th scope="col">Documents To Be Reviewed</th>
+                <th scope="col" />
+              </tr>
+            </thead>
+            <tbody>
+              {topics === undefined
+                ? null
+                : topics.map((topic: { label: string }) => (
+                    <tr key={topic.label}>
+                      <th scope="row">{topic.label}</th>
+                      <td>
+                        {qualityIcon(modelInfo.topics[topic.label].quality)}
+                        {toTwoDecimals(modelInfo.topics[topic.label].quality)}
+                      </td>
+                      <td>{modelInfo.topics[topic.label].samples}</td>
+                      <td>
+                        <button className="btn btn-xs" type="button">
+                          <Icon icon="search" />
+                          &nbsp;
+                          <span>{t('System', 'Review Suggestions')}</span>
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+            </tbody>
+          </table>
+        </div>
         <div className="settings-footer" />
       </div>
     );

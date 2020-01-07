@@ -1,0 +1,56 @@
+/** @format */
+
+.cockpit {
+  table {
+    table-layout: fixed;
+    width: 100%;
+    border-collapse: collapse;
+    border: 0px;
+  }
+  th,
+  td {
+    padding: 7px 10px;
+  }
+  th {
+    background-color: $c-white;
+    border-bottom: 1px solid $c-grey-light;
+  }
+  th:not(:last-of-type) {
+    border-right: 1px solid $c-white;
+  }
+  tr:not(:last-of-type) {
+    border-bottom: 1px solid $c-grey-light;
+  }
+
+  thead th:nth-child(1) {
+    width: 30%;
+  }
+
+  thead th:nth-child(2) {
+    width: 20%;
+  }
+
+  thead th:nth-child(3) {
+    width: 15%;
+  }
+
+  thead th:nth-child(4) {
+    width: 35%;
+  }
+
+  .quality-icon {
+    font-size: $f-size-xs;
+  }
+
+  .quality-high {
+    color: $c-success;
+  }
+
+  .quality-med {
+    color: $c-warning;
+  }
+
+  .quality-low {
+    color: $c-danger;
+  }
+}
