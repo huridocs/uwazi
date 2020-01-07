@@ -13,7 +13,6 @@
   }
   th {
     background-color: $c-white;
-    border-bottom: 1px solid $c-grey-light;
   }
   th:not(:last-of-type) {
     border-right: 1px solid $c-white;
@@ -23,7 +22,7 @@
   }
 
   thead th:nth-child(1) {
-    width: 30%;
+    width: 50%;
   }
 
   thead th:nth-child(2) {
@@ -31,11 +30,11 @@
   }
 
   thead th:nth-child(3) {
-    width: 15%;
+    width: 20%;
   }
 
   thead th:nth-child(4) {
-    width: 35%;
+    width: 10%;
   }
 
   .quality-icon {

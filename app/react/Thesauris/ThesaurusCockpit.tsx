@@ -66,16 +66,6 @@ class ThesaurusCockpit extends RouteHandler {
     return (
       <div className="panel panel-default">
         <div className="panel-heading">{t('System', `Thesauri > ${name}`)}</div>
-        {modelInfo === undefined ? null : (
-          <div className="item item-info">
-            <ul>
-              <p>Classifier Instance: {modelInfo.preferred}</p>
-              <p>BERT: {modelInfo.bert}</p>
-              <p>Completeness: {toTwoDecimals(modelInfo.completeness)}</p>
-              <p>Extraneous: {toTwoDecimals(modelInfo.extraneous)}</p>
-            </ul>
-          </div>
-        )}
         <div className="cockpit">
           <table>
             <thead>
