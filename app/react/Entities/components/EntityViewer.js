@@ -157,98 +157,98 @@ export class EntityViewer extends Component {
                   </div>
                 )}
               </div>
-              <ShowIf if={oneUpState.enabled}>
-                <div className="sidepanel-footer">
-                  <button
-                    onClick={() => this.props.switchOneUpEntity(+1, true)}
-                    className={
-                      !this.props.isPristine
-                        ? 'save-and-next btn btn-default btn-success'
-                        : 'btn btn-default btn-disabled'
-                    }
-                  >
-                    <Icon icon="save" />
-                    <span className="btn-label">{t('System', 'Save and go to next')}</span>
-                  </button>
-                  <button
-                    onClick={() => this.props.switchOneUpEntity(0, true)}
-                    className={
-                      !this.props.isPristine
-                        ? 'save-metadata btn btn-default'
-                        : 'btn btn-default btn-disabled'
-                    }
-                  >
-                    <Icon icon="save" />
-                    <span className="btn-label">{t('System', 'Save document')}</span>
-                  </button>
-                  <button
-                    onClick={() => this.props.switchOneUpEntity(0, false)}
-                    className={
-                      !this.props.isPristine
-                        ? 'cancel-edit-metadata btn btn-danger'
-                        : 'btn btn-default btn-disabled'
-                    }
-                  >
-                    <Icon icon="undo" />
-                    <span className="btn-label">{t('System', 'Discard changes')}</span>
-                  </button>
-                  <button
-                    onClick={() => this.props.toggleOneUpFullEdit()}
-                    className={
-                      this.props.isPristine || !oneUpState.fullEdit
-                        ? 'btn btn-default'
-                        : 'btn btn-default btn-disabled'
-                    }
-                  >
-                    <Icon icon="pencil-alt" />
-                    <span className="btn-label">
-                      {t('System', oneUpState.fullEdit ? 'Cancel edit document' : 'Edit document')}
-                    </span>
-                  </button>
-                  <button
-                    onClick={() =>
-                      this.props.isPristine
-                        ? this.props.switchOneUpEntity(-1, false)
-                        : this.context.confirm({
-                            accept: () => this.props.switchOneUpEntity(-1, false),
-                            title: 'Confirm discard changes',
-                            message:
-                              'There are unsaved changes. Are you sure you want to discard them and switch to a different document?',
-                          })
-                    }
-                    className={
-                      oneUpState.indexInDocs > 0
-                        ? `btn ${this.props.isPristine ? 'btn-default' : 'btn-warning'}`
-                        : 'btn btn-default btn-disabled'
-                    }
-                  >
-                    <Icon icon="arrow-left" />
-                    <span className="btn-label">{t('System', 'Previous document')}</span>
-                  </button>
-                  <button
-                    onClick={() =>
-                      this.props.isPristine
-                        ? this.props.switchOneUpEntity(+1, false)
-                        : this.context.confirm({
-                            accept: () => this.props.switchOneUpEntity(+1, false),
-                            title: 'Confirm discard changes',
-                            message:
-                              'There are unsaved changes. Are you sure you want to discard them and switch to a different document?',
-                          })
-                    }
-                    className={`btn ${this.props.isPristine ? 'btn-default' : 'btn-warning'}`}
-                  >
-                    <Icon icon="arrow-right" />
-                    <span className="btn-label">{t('System', 'Next document')}</span>
-                  </button>
-                </div>
-              </ShowIf>
             </TabContent>
             <TabContent for="connections">
               <ConnectionsList deleteConnection={this.deleteConnection.bind(this)} searchCentered />
             </TabContent>
           </Tabs>
         </main>
+        <ShowIf if={oneUpState.enabled}>
+          <div className="sidepanel-footer">
+            <button
+              onClick={() => this.props.switchOneUpEntity(+1, true)}
+              className={
+                !this.props.isPristine
+                  ? 'save-and-next btn btn-default btn-success'
+                  : 'btn btn-default btn-disabled'
+              }
+            >
+              <Icon icon="save" />
+              <span className="btn-label">{t('System', 'Save and go to next')}</span>
+            </button>
+            <button
+              onClick={() => this.props.switchOneUpEntity(0, true)}
+              className={
+                !this.props.isPristine
+                  ? 'save-metadata btn btn-default'
+                  : 'btn btn-default btn-disabled'
+              }
+            >
+              <Icon icon="save" />
+              <span className="btn-label">{t('System', 'Save document')}</span>
+            </button>
+            <button
+              onClick={() => this.props.switchOneUpEntity(0, false)}
+              className={
+                !this.props.isPristine
+                  ? 'cancel-edit-metadata btn btn-danger'
+                  : 'btn btn-default btn-disabled'
+              }
+            >
+              <Icon icon="undo" />
+              <span className="btn-label">{t('System', 'Discard changes')}</span>
+            </button>
+            <button
+              onClick={() => this.props.toggleOneUpFullEdit()}
+              className={
+                this.props.isPristine || !oneUpState.fullEdit
+                  ? 'btn btn-default'
+                  : 'btn btn-default btn-disabled'
+              }
+            >
+              <Icon icon="pencil-alt" />
+              <span className="btn-label">
+                {t('System', oneUpState.fullEdit ? 'Cancel edit document' : 'Edit document')}
+              </span>
+            </button>
+            <button
+              onClick={() =>
+                this.props.isPristine
+                  ? this.props.switchOneUpEntity(-1, false)
+                  : this.context.confirm({
+                      accept: () => this.props.switchOneUpEntity(-1, false),
+                      title: 'Confirm discard changes',
+                      message:
+                        'There are unsaved changes. Are you sure you want to discard them and switch to a different document?',
+                    })
+              }
+              className={
+                oneUpState.indexInDocs > 0
+                  ? `btn ${this.props.isPristine ? 'btn-default' : 'btn-warning'}`
+                  : 'btn btn-default btn-disabled'
+              }
+            >
+              <Icon icon="arrow-left" />
+              <span className="btn-label">{t('System', 'Previous document')}</span>
+            </button>
+            <button
+              onClick={() =>
+                this.props.isPristine
+                  ? this.props.switchOneUpEntity(+1, false)
+                  : this.context.confirm({
+                      accept: () => this.props.switchOneUpEntity(+1, false),
+                      title: 'Confirm discard changes',
+                      message:
+                        'There are unsaved changes. Are you sure you want to discard them and switch to a different document?',
+                    })
+              }
+              className={`btn ${this.props.isPristine ? 'btn-default' : 'btn-warning'}`}
+            >
+              <Icon icon="arrow-right" />
+              <span className="btn-label">{t('System', 'Next document')}</span>
+            </button>
+          </div>
+        </ShowIf>
         <ShowIf
           if={!oneUpState.enabled && (selectedTab === 'info' || selectedTab === 'attachments')}
         >
