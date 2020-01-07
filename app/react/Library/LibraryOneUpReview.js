@@ -45,7 +45,7 @@ class LibraryOneUpReview extends RouteHandler {
       actions.set('relationTypes', relationTypes),
       dispatch => wrapDispatch(dispatch, 'library')(setDocuments(documents)),
       actions.set('entityView.oneUpState', {
-        enabled: true,
+        enabled: true, //  remove ,
         fullEdit: false,
         loadConnections: false,
         indexInDocs: 0,
@@ -66,6 +66,7 @@ class LibraryOneUpReview extends RouteHandler {
   componentDidMount() {}
 
   emptyState() {
+    // TODO(bdittes): Empty library
     this.context.store.dispatch(actions.unset('viewer/doc'));
     this.context.store.dispatch(actions.unset('viewer/templates'));
     this.context.store.dispatch(actions.unset('viewer/thesauris'));
