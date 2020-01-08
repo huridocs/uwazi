@@ -6,24 +6,26 @@ import { List } from 'immutable';
 import './scss/stackTrace.scss';
 import { Icon } from 'UI';
 
-const conformValidations = (expand, validations) => {
+function conformValidations(expand, validations) {
   if (!expand || !validations) {
     return null;
   }
 
   return (
     <React.Fragment>
-      {validations.reduce((memo, v, i) => {
-        return memo.concat(
-          // eslint-disable-next-line react/no-array-index-key
-          <div key={i}>
-            {v.get('message')}: {v.get('dataPath')}
-          </div>
-        );
-      }, [])}
+      {validations.reduce(
+        (memo, v, i) =>
+          memo.concat(
+            // eslint-disable-next-line react/no-array-index-key
+            <div key={i}>
+              {v.get('message')}: {v.get('dataPath')}
+            </div>
+          ),
+        []
+      )}
     </React.Fragment>
   );
-};
+}
 
 class StackTrace extends Component {
   constructor(props) {
