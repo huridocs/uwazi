@@ -114,7 +114,7 @@ class ThesaurusCockpit extends RouteHandler {
               <tr>
                 <th scope="col" />
                 <th scope="col">Quality</th>
-                <th scope="col">Documents To Be Reviewed</th>
+                <th scope="col">Samples Used in Training</th>
                 <th scope="col" />
               </tr>
             </thead>
