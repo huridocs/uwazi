@@ -1,3 +1,5 @@
+/** @format */
+
 import url from 'url';
 
 import geolocation from './typeParsers/geolocation.js';
@@ -17,6 +19,11 @@ export default {
 
   async text(entityToImport, templateProperty) {
     return entityToImport[templateProperty.name];
+  },
+
+  async numeric(entityToImport, templateProperty) {
+    const value = entityToImport[templateProperty.name];
+    return Number.isNaN(Number(value)) ? value : Number(value);
   },
 
   async date(entityToImport, templateProperty) {
