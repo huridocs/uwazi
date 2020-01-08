@@ -6,7 +6,7 @@ import { List } from 'immutable';
 import './scss/stackTrace.scss';
 import { Icon } from 'UI';
 
-function conformValidations(expand, validations) {
+const conformValidations = (expand, validations) => {
   if (!expand || !validations) {
     return null;
   }
@@ -25,7 +25,7 @@ function conformValidations(expand, validations) {
       )}
     </React.Fragment>
   );
-}
+};
 
 class StackTrace extends Component {
   constructor(props) {
