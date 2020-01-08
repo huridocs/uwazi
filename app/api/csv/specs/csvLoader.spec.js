@@ -1,3 +1,5 @@
+/** @format */
+
 import db from 'api/utils/testing_db';
 import entities from 'api/entities';
 import path from 'path';
@@ -36,7 +38,7 @@ describe('csvLoader', () => {
     const events = [];
 
     beforeAll(async () => {
-      loader.on('entityLoaded', (entity) => {
+      loader.on('entityLoaded', entity => {
         events.push(entity.title);
       });
 
@@ -48,7 +50,6 @@ describe('csvLoader', () => {
 
       imported = await entities.get();
     });
-
 
     it('should load title', () => {
       const textValues = imported.map(i => i.title);
@@ -63,15 +64,14 @@ describe('csvLoader', () => {
       const metadataImported = Object.keys(imported[0].metadata);
       expect(metadataImported).toEqual([
         'text_label',
+        'numeric_label',
         'select_label',
-        'not_defined_type'
+        'not_defined_type',
       ]);
     });
 
     it('should ignore properties not configured in the template', () => {
-      const textValues = imported
-      .map(i => i.metadata.non_configured)
-      .filter(i => i);
+      const textValues = imported.map(i => i.metadata.non_configured).filter(i => i);
 
       expect(textValues.length).toEqual(0);
     });
@@ -80,6 +80,9 @@ describe('csvLoader', () => {
       it('should parse metadata properties by type using typeParsers', () => {
         const textValues = imported.map(i => i.metadata.text_label);
         expect(textValues).toEqual(['text', 'text', 'text']);
+
+        const numericValues = imported.map(i => i.metadata.numeric_label);
+        expect(numericValues).toEqual([1977, 2019, 2020]);
 
         const thesauriValues = imported.map(i => i.metadata.select_label);
         expect(thesauriValues).toEqual(['thesauri', 'thesauri', 'thesauri']);
@@ -99,7 +102,9 @@ describe('csvLoader', () => {
       const testingLoader = new CSVLoader();
 
       await db.clearAllAndLoad(fixtures);
-      spyOn(entities, 'save').and.callFake(entity => Promise.reject(new Error(`error-${entity.title}`)));
+      spyOn(entities, 'save').and.callFake(entity =>
+        Promise.reject(new Error(`error-${entity.title}`))
+      );
 
       try {
         await testingLoader.load(csvFile, template1Id);
@@ -112,9 +117,10 @@ describe('csvLoader', () => {
       const testingLoader = new CSVLoader();
 
       await db.clearAllAndLoad(fixtures);
-      jest.spyOn(entities, 'save')
-      .mockImplementationOnce(({ title }) => Promise.resolve(({ title })))
-      .mockImplementationOnce(({ title }) => Promise.reject(new Error(`error-${title}`)));
+      jest
+        .spyOn(entities, 'save')
+        .mockImplementationOnce(({ title }) => Promise.resolve({ title }))
+        .mockImplementationOnce(({ title }) => Promise.reject(new Error(`error-${title}`)));
 
       try {
         await testingLoader.load(csvFile, template1Id);
@@ -127,7 +133,7 @@ describe('csvLoader', () => {
 
   describe('no stop on errors', () => {
     beforeAll(async () => {
-      spyOn(entities, 'save').and.callFake((entity) => {
+      spyOn(entities, 'save').and.callFake(entity => {
         if (entity.title === 'title1' || entity.title === 'title3') {
           return Promise.reject(new Error(`error-${entity.title}`));
         }
@@ -171,7 +177,7 @@ describe('csvLoader', () => {
 
     it('should fail when parsing throws an error', async () => {
       entities.save.and.callFake(() => Promise.resolve({}));
-      spyOn(typeParsers, 'text').and.callFake((entity) => {
+      spyOn(typeParsers, 'text').and.callFake(entity => {
         if (entity.title === 'title2') {
           return Promise.reject(new Error(`error-${entity.title}`));
         }
@@ -206,7 +212,7 @@ describe('csvLoader', () => {
 
       const [expected] = await entities.get({
         sharedId: entity.sharedId,
-        language: 'en'
+        language: 'en',
       });
       expect(expected.title).toBe('new title');
     });
