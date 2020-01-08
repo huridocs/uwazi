@@ -64,7 +64,7 @@ describe('PropertyOption', () => {
       component = renderComponent(TestComponent, props);
       const button = TestUtils.findRenderedDOMComponentWithTag(component, 'button');
       TestUtils.Simulate.click(button);
-      expect(props.addProperty).toHaveBeenCalled();
+      expect(props.addProperty).toHaveBeenCalledWith({ label: 'test', type: 'optionType' });
     });
   });
 
