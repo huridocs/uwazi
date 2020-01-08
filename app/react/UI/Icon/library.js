@@ -26,6 +26,7 @@ import { faCoffee } from '@fortawesome/free-solid-svg-icons/faCoffee';
 import { faCog } from '@fortawesome/free-solid-svg-icons/faCog';
 import { faComment } from '@fortawesome/free-solid-svg-icons/faComment';
 import { faCubes } from '@fortawesome/free-solid-svg-icons/faCubes';
+import { faCircle as faEmptyCircle } from '@fortawesome/free-regular-svg-icons/faCircle';
 import { faEnvelope } from '@fortawesome/free-solid-svg-icons/faEnvelope';
 import { faExchangeAlt } from '@fortawesome/free-solid-svg-icons/faExchangeAlt';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons/faExclamationTriangle';
@@ -111,6 +112,7 @@ const icons = {
   faCog,
   faComment,
   faCubes,
+  faEmptyCircle,
   faEnvelope,
   faExchangeAlt,
   faExclamationTriangle,

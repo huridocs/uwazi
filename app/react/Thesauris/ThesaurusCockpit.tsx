@@ -41,12 +41,15 @@ function qualityIcon(val: number) {
         <div className="quality-icon quality-med">
           <Icon icon="circle" />
           <Icon icon="circle" />
+          <Icon icon={['far', 'circle']} />
         </div>
       );
     default:
       return (
         <div className="quality-icon quality-low">
           <Icon icon="circle" />
+          <Icon icon={['far', 'circle']} />
+          <Icon icon={['far', 'circle']} />
         </div>
       );
   }
