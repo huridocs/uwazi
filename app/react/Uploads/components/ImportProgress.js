@@ -1,3 +1,5 @@
+/** @format */
+
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
@@ -10,7 +12,10 @@ import StackTrace from 'app/components/Elements/StackTrace';
 
 export class ImportProgress extends Component {
   render() {
-    const { close, importState: { importStart, importProgress, importError, importEnd } } = this.props;
+    const {
+      close,
+      importState: { importStart, importProgress, importError, importEnd },
+    } = this.props;
     if (!importStart && !importProgress) {
       return false;
     }
@@ -19,11 +24,12 @@ export class ImportProgress extends Component {
         <div className="alert alert-info">
           <Icon icon="check" size="2x" />
           <div className="force-ltr">
-            <Translate>Import completed:</Translate>&nbsp;{importProgress} <Translate>created</Translate>
-            <br/>
+            <Translate>Import completed:</Translate>&nbsp;{importProgress}{' '}
+            <Translate>created</Translate>
+            <br />
             <Translate>Indexing entities may take a few minutes</Translate>
           </div>
-          <Icon style={{ cursor: 'pointer' }} icon="times" onClick={close}/>
+          <Icon style={{ cursor: 'pointer' }} icon="times" onClick={close} />
         </div>
       );
     }
@@ -36,11 +42,13 @@ export class ImportProgress extends Component {
             <div className="force-ltr">
               <Translate>The import process threw an error:</Translate>
             </div>
-            <Icon style={{ cursor: 'pointer' }} icon="times" onClick={close}/>
+            <Icon style={{ cursor: 'pointer' }} icon="times" onClick={close} />
           </div>
-          <StackTrace message={importError.get('message')}/>
+          <StackTrace
+            message={importError.get('message')}
+            validations={importError.get('validations')}
+          />
         </div>
-
       );
     }
 
@@ -60,17 +68,20 @@ ImportProgress.propTypes = {
     importStart: PropTypes.bool.isRequired,
     importEnd: PropTypes.bool.isRequired,
     importProgress: PropTypes.number.isRequired,
-    importError: PropTypes.instanceOf(Immutable.Map).isRequired
+    importError: PropTypes.instanceOf(Immutable.Map).isRequired,
   }).isRequired,
-  close: PropTypes.func.isRequired
+  close: PropTypes.func.isRequired,
 };
 
 export const mapStateToProps = state => ({
-    importState: state.importEntities
+  importState: state.importEntities,
 });
 
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({ close: closeImportProgress }, dispatch);
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(ImportProgress);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(ImportProgress);
