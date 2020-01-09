@@ -9,7 +9,6 @@ import {
   unselectDocument,
 } from 'app/Library/actions/libraryActions';
 import * as metadataActions from 'app/Metadata/actions/actions';
-import { wrapEntityMetadata } from 'app/Metadata/components/MetadataForm';
 import { notificationActions } from 'app/Notifications';
 import { actions as relationshipActions } from 'app/Relationships';
 import * as relationships from 'app/Relationships/utils/routeUtils';
@@ -95,59 +94,4 @@ export async function getAndLoadEntity(sharedId, templates, state, loadConnectio
     }),
     ...loadEntity(entity, templates),
   ];
-}
-
-export function toggleOneUpFullEdit() {
-  return async (dispatch, getState) => {
-    const state = getState().entityView.oneUpState.toJS();
-    dispatch(
-      actions.set('entityView.oneUpState', {
-        ...state,
-        fullEdit: !state.fullEdit,
-      })
-    );
-  };
-}
-
-export function switchOneUpEntity(delta, save) {
-  return async (dispatch, getState) => {
-    const state = getState();
-    const oneUpState = state.entityView.oneUpState.toJS();
-    if (save) {
-      const entity = wrapEntityMetadata(state.entityView.entityForm);
-      await api.save(new RequestParams(entity));
-    }
-    const templates = state.templates.toJS();
-    const current = state.entityView.entity.get('sharedId');
-    const index =
-      state.library.documents.get('rows').findIndex(e => e.get('sharedId') === current) + delta;
-    const sharedId = state.library.documents
-      .get('rows')
-      .get(index)
-      .get('sharedId');
-
-    [
-      ...(await getAndLoadEntity(sharedId, templates, state, oneUpState.loadConnections)),
-      actions.set('entityView.oneUpState', {
-        ...oneUpState,
-        fullEdit: false,
-        indexInDocs: index,
-      }),
-    ].forEach(action => {
-      dispatch(action);
-    });
-  };
-}
-
-export function toggleOneUpLoadConnections() {
-  return async (dispatch, getState) => {
-    const state = getState().entityView.oneUpState.toJS();
-    dispatch(
-      actions.set('entityView.oneUpState', {
-        ...state,
-        loadConnections: !state.loadConnections,
-      })
-    );
-    dispatch(switchOneUpEntity(0, false));
-  };
 }

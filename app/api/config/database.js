@@ -1,5 +1,5 @@
-const { DBHOST } = process.env;
-const { DATABASE_NAME } = process.env;
+export const { DBHOST } = process.env;
+export const { DATABASE_NAME } = process.env;
 
 // Keep in sync with elasticindexes.js!
 export default {

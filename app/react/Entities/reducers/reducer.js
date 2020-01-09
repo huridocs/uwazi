@@ -1,5 +1,3 @@
-/** @format */
-
 import { combineReducers } from 'redux';
 import createReducer from 'app/BasicReducer';
 import { modelReducer, formReducer } from 'react-redux-form';
@@ -11,6 +9,5 @@ export default combineReducers({
   entity: manageAttachmentsReducer(createReducer('entityView/entity', {})),
   entityForm: modelReducer('entityView.entityForm'),
   entityFormState: formReducer('entityView.entityForm'),
-  oneUpState: createReducer('entityView.oneUpState', {}),
-  uiState,
+  uiState
 });

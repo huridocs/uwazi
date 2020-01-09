@@ -58,11 +58,6 @@ const mongoSchema = new mongoose.Schema(
     suggestedMetadata: mongoose.Schema.Types.Mixed,
     pdfInfo: mongoose.Schema.Types.Mixed,
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'users' },
-    reviewed: {
-      user: String,
-      date: Number,
-    },
-    reviewLog: mongoose.Schema.Types.Mixed,
   },
   { emitIndexErrors: true }
 );

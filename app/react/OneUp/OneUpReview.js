@@ -5,7 +5,7 @@ import { actions } from 'app/BasicReducer';
 import Loader from 'app/components/Elements/Loader';
 import * as entityActions from 'app/Entities/actions/actions';
 import * as uiActions from 'app/Entities/actions/uiActions';
-import EntityViewer from 'app/Entities/components/EntityViewer';
+import { OneUpEntityViewer } from 'app/OneUp/components/OneUpEntityViewer';
 import { setDocuments, unsetDocuments } from 'app/Library/actions/libraryActions';
 import { wrapDispatch } from 'app/Multireducer';
 import * as relationships from 'app/Relationships/utils/routeUtils';
@@ -16,7 +16,7 @@ import { setReferences } from 'app/Viewer/actions/referencesActions';
 import React from 'react';
 import { connect } from 'react-redux';
 import { actions as formActions } from 'react-redux-form';
-import { processQuery } from './helpers/requestState';
+import { processQuery } from 'app/Library/helpers/requestState';
 
 class LibraryOneUpReview extends RouteHandler {
   static async requestState(requestParams, state) {
@@ -44,8 +44,7 @@ class LibraryOneUpReview extends RouteHandler {
       dispatch => wrapDispatch(dispatch, 'library')(unsetDocuments()),
       actions.set('relationTypes', relationTypes),
       dispatch => wrapDispatch(dispatch, 'library')(setDocuments(documents)),
-      actions.set('entityView.oneUpState', {
-        enabled: true, //  remove ,
+      actions.set('oneUpReview.state', {
         fullEdit: false,
         loadConnections: false,
         indexInDocs: 0,
@@ -84,7 +83,7 @@ class LibraryOneUpReview extends RouteHandler {
     if (!entity.get('_id')) {
       return <Loader />;
     }
-    return <EntityViewer {...this.props} />;
+    return <OneUpEntityViewer {...this.props} />;
   }
 }
 

@@ -57,7 +57,6 @@
   },
   "dependencies": {
     "@babel/core": "7.4.4",
-    "@babel/plugin-proposal-decorators": "7.6.0",
     "@babel/plugin-proposal-object-rest-spread": "7.5.2",
     "@babel/plugin-transform-modules-commonjs": "7.5.0",
     "@babel/plugin-transform-react-constant-elements": "7.5.0",
@@ -89,7 +88,6 @@
     "ajv": "^6.10.2",
     "ajv-keywords": "^3.4.1",
     "async": "^2.6.1",
-    "autobind-decorator": "2.4.0",
     "babel-loader": "8.0.6",
     "babel-plugin-add-module-exports": "1.0.0",
     "babel-plugin-module-resolver": "3.2.0",
@@ -101,7 +99,6 @@
     "bluebird": "^3.4.6",
     "body-parser": "1.18.2",
     "bootstrap": "3.4.0",
-    "c8": "^6.0.1",
     "child-process-promise": "^2.2.1",
     "compression": "^1.6.0",
     "connect-mongo": "2.0.1",

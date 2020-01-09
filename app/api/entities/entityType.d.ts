@@ -1,7 +1,7 @@
 /* eslint-disable */
 /**AUTO-GENERATED. RUN yarn emit-types to update.*/
 
-import { ObjectIdSchema, MetadataSchema, TocSchema, ReviewSchema } from 'shared/commonTypes';
+import { ObjectIdSchema, MetadataSchema, TocSchema } from 'shared/commonTypes';
 
 export interface EntitySchema {
   _id?: ObjectIdSchema;
@@ -56,7 +56,5 @@ export interface EntitySchema {
   user?: ObjectIdSchema;
   metadata?: MetadataSchema;
   suggestedMetadata?: MetadataSchema;
-  reviewed?: ReviewSchema;
-  reviewLog?: ReviewSchema[];
   [k: string]: any | undefined;
 }

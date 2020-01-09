@@ -91,7 +91,7 @@ const Metadata = ({ metadata, compact, renderLabel, showSubset }) => (
 
 Metadata.defaultProps = {
   compact: false,
-  renderLabel: (prop, label) => label,
+  renderLabel: (_prop, label) => label,
 };
 
 Metadata.propTypes = {

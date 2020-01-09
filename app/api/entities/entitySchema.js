@@ -3,7 +3,7 @@
 import Ajv from 'ajv';
 import templatesModel from 'api/templates/templatesModel';
 import { isNumber, isUndefined, isString, isObject, isNull } from 'util';
-import { objectIdSchema, metadataSchema, tocSchema, reviewSchema } from 'shared/commonSchemas';
+import { objectIdSchema, metadataSchema, tocSchema } from 'shared/commonSchemas';
 import { propertyTypes } from 'shared/propertyTypes';
 import { wrapValidator } from 'shared/tsUtils';
 
@@ -100,11 +100,7 @@ const validateMetadataField = (property, entity) => {
     return true;
   }
   const validator = propertyValidators[property.type];
-  const result = validator ? validator(value) : true;
-  if (result) {
-    return true;
-  }
-  return false;
+  return validator ? validator(value) : true;
 };
 
 ajv.addKeyword('metadataMatchesTemplateProperties', {
@@ -133,7 +129,6 @@ export const entitySchema = {
     objectIdSchema,
     metadataSchema,
     tocSchema,
-    reviewSchema,
   },
   properties: {
     _id: objectIdSchema,
@@ -208,11 +203,6 @@ export const entitySchema = {
     user: objectIdSchema,
     metadata: metadataSchema,
     suggestedMetadata: metadataSchema,
-    reviewed: reviewSchema,
-    reviewLog: {
-      type: 'array',
-      items: reviewSchema,
-    },
   },
 };
 

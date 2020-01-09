@@ -8,8 +8,7 @@ export default {
 
   getGroupedByConnection(requestParams) {
     return api.get('references/group_by_connection', requestParams)
-    .then(response => 
-      response.json);
+    .then(response => response.json);
   },
 
   getInbound(requestParams) {

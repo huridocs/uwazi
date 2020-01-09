@@ -1,6 +1,4 @@
-/**
- * @format
- */
+/* @format */
 
 import { Component } from 'react';
 import PropTypes from 'prop-types';
@@ -31,8 +29,8 @@ class RouteHandler extends Component {
 
   static renderTools() {}
 
+  //eslint-disable-next-line
   isRenderedFromServer() {
-    //eslint-disable-line
     const result = RouteHandler.renderedFromServer;
     RouteHandler.renderedFromServer = false;
     return result;

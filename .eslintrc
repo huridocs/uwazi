@@ -29,6 +29,15 @@
 
     "object-curly-spacing": ["warn", "always"],
     "max-len": ["error", 150],
+    "no-unused-vars": [
+      "error",
+      {
+        "vars": "all",
+        "argsIgnorePattern": "^_",
+        "args": "all",
+        "ignoreRestSiblings": false
+      }
+    ],
 
     //all warns are activated by default if removed
     "prefer-promise-reject-errors": ["warn"],

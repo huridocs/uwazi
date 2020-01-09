@@ -126,11 +126,3 @@ export const propertySchema = {
     },
   },
 };
-
-export const reviewSchema = {
-  type: 'object',
-  properties: {
-    user: { type: 'string' },
-    date: { type: 'number' },
-  },
-};
