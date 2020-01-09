@@ -28,7 +28,7 @@ function toTwoDecimals(num: number) {
 
 function qualityIcon(val: number) {
   switch (true) {
-    case val > 0.95:
+    case val > 0.85:
       return (
         <div className="quality-icon quality-high">
           <Icon icon="circle" />
@@ -36,7 +36,7 @@ function qualityIcon(val: number) {
           <Icon icon="circle" />
         </div>
       );
-    case val > 0.9:
+    case val > 0.7:
       return (
         <div className="quality-icon quality-med">
           <Icon icon="circle" />
