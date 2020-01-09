@@ -1,3 +1,5 @@
+/** @format */
+
 import React from 'react';
 
 import RouteHandler from 'app/App/RouteHandler';
@@ -9,9 +11,7 @@ export default class EditThesauri extends RouteHandler {
   static async requestState(requestParams) {
     const thesauris = await api.get(requestParams);
 
-    return [
-      editThesauri(thesauris[0])
-    ];
+    return [editThesauri(thesauris[0])];
   }
 
   render() {
