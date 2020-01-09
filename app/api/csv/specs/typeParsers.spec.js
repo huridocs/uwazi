@@ -1,14 +1,9 @@
+/** @format */
+
 import moment from 'moment';
-
-import db from 'api/utils/testing_db';
-
-import fixtures from './fixtures';
 import typeParsers from '../typeParsers';
 
 describe('csvLoader typeParsers', () => {
-  beforeEach(async () => db.clearAllAndLoad(fixtures));
-  afterAll(async () => db.disconnect());
-
   describe('default', () => {
     it('should use text parser', async () => {
       const templateProp = { name: 'text_prop' };
@@ -24,6 +19,22 @@ describe('csvLoader typeParsers', () => {
       const rawEntity = { text_prop: 'text' };
 
       expect(await typeParsers.text(rawEntity, templateProp)).toBe('text');
+    });
+  });
+
+  describe('numeric', () => {
+    it('should return numeric value', async () => {
+      const templateProp = { name: 'numeric_prop' };
+      const rawEntity = { numeric_prop: '2019' };
+
+      expect(await typeParsers.numeric(rawEntity, templateProp)).toBe(2019);
+    });
+
+    it('should return original value if value is NaN (will be catched by the entitiy validator)', async () => {
+      const templateProp = { name: 'numeric_prop' };
+      const rawEntity = { numeric_prop: 'Not a number' };
+
+      expect(await typeParsers.numeric(rawEntity, templateProp)).toBe('Not a number');
     });
   });
 
