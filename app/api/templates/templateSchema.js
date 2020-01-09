@@ -1,7 +1,10 @@
+/** @format */
+
 import Ajv from 'ajv';
 import ajvKeywords from 'ajv-keywords';
 import model from 'api/templates/templatesModel';
 import { objectIdSchema, propertySchema } from 'api/utils/jsonSchemas';
+import templates from 'api/templates';
 
 const ajv = ajvKeywords(Ajv({ allErrors: true }), ['uniqueItemProperties']);
 
@@ -19,7 +22,7 @@ ajv.addKeyword('uniqueName', {
       return false;
     }
     return true;
-  }
+  },
 });
 
 ajv.addKeyword('requireTitleProperty', {
@@ -27,7 +30,7 @@ ajv.addKeyword('requireTitleProperty', {
   type: 'array',
   validate(schema, properties) {
     return properties.some(prop => prop.name === 'title');
-  }
+  },
 });
 
 ajv.addKeyword('uniquePropertyFields', {
@@ -53,7 +56,7 @@ ajv.addKeyword('uniquePropertyFields', {
       }
     }
     return true;
-  }
+  },
 });
 
 ajv.addKeyword('requireContentForSelectFields', {
@@ -68,7 +71,7 @@ ajv.addKeyword('requireContentForSelectFields', {
     }
 
     return true;
-  }
+  },
 });
 
 ajv.addKeyword('requireRelationTypeForRelationship', {
@@ -82,7 +85,7 @@ ajv.addKeyword('requireRelationTypeForRelationship', {
       return !!(data.relationType && data.relationType.length);
     }
     return true;
-  }
+  },
 });
 
 ajv.addKeyword('requireInheritPropertyForInheritingRelationship', {
@@ -96,7 +99,42 @@ ajv.addKeyword('requireInheritPropertyForInheritingRelationship', {
       return !!data.inheritProperty;
     }
     return true;
-  }
+  },
+});
+
+ajv.addKeyword('cantDeleteInheritedProperties', {
+  async: true,
+  errors: true,
+  type: 'object',
+  async validate(schema, template) {
+    const [currentTemplate] = await model.get({ _id: template._id });
+    if (!currentTemplate) {
+      return true;
+    }
+    const toRemoveProperties = currentTemplate.properties.filter(
+      prop => !template.properties.find(p => p._id === prop._id)
+    );
+
+    const errors = [];
+    await Promise.all(
+      toRemoveProperties.map(async property => {
+        const canDelete = await templates.canDeleteProperty(template._id, property._id);
+
+        if (!canDelete) {
+          errors.push({
+            message: "Can't delete properties beign inherited",
+            dataPath: `.metadata['${property.name}']`,
+          });
+        }
+      })
+    );
+
+    if (errors.length) {
+      throw new Ajv.ValidationError(errors);
+    }
+
+    return true;
+  },
 });
 
 const schema = {
@@ -104,6 +142,7 @@ const schema = {
   $async: true,
   type: 'object',
   uniqueName: true,
+  cantDeleteInheritedProperties: true,
   required: ['name', 'commonProperties'],
   uniquePropertyFields: ['id', 'name', 'label', 'relationType'],
   properties: {
@@ -115,17 +154,15 @@ const schema = {
       type: 'array',
       requireTitleProperty: true,
       minItems: 1,
-      items: propertySchema
+      items: propertySchema,
     },
     properties: {
       type: 'array',
-      items: propertySchema
-    }
-  }
+      items: propertySchema,
+    },
+  },
 };
 
 const validateTemplate = ajv.compile(schema);
 
-export {
-  validateTemplate
-};
+export { validateTemplate };

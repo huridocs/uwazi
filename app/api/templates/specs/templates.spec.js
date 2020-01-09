@@ -18,6 +18,8 @@ import fixtures, {
   templateToBeDeleted,
   templateWithContents,
   swapTemplate,
+  templateToBeInherited,
+  propertyToBeInherited,
 } from './fixtures.js';
 
 describe('templates', () => {
@@ -409,6 +411,21 @@ describe('templates', () => {
           true
         );
       }
+    });
+  });
+
+  describe('canDeleteProperty()', () => {
+    it('should return false if the property is been inherited by others', async () => {
+      const canDelete = await templates.canDeleteProperty(
+        templateToBeInherited,
+        propertyToBeInherited
+      );
+      expect(canDelete).toBe(false);
+    });
+
+    it('should be true for other properties', async () => {
+      const canDelete = await templates.canDeleteProperty(swapTemplate, 'notMatchingId');
+      expect(canDelete).toBe(true);
     });
   });
 });
