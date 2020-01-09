@@ -16,7 +16,10 @@ import { MetadataObject } from '../app/api/entities/entitiesModel';
 import { EntitySchema } from '../app/api/entities/entityType';
 import { ThesaurusSchema } from '../app/api/thesauris/dictionariesType';
 
-const { limit } = yargs.option('limit', { default: 1000000 }).help().argv;
+const { limit, refresh_predictions } = yargs
+  .option('limit', { default: 1000000 })
+  .option('refresh_predictions', { default: false })
+  .help().argv;
 
 async function syncEntity(
   e: WithId<EntitySchema>,
@@ -33,9 +36,11 @@ async function syncEntity(
   }
   const propMeta = e.metadata[prop] || [];
   const request = {
+    refresh_predictions,
     samples: [
       {
         seq: sequence,
+        sharedId: e.sharedId,
         training_labels: propMeta.map(mo => ({
           topic: useThesaurusNames ? mo.label : mo.value,
         })),
