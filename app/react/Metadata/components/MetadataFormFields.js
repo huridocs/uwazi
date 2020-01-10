@@ -117,6 +117,7 @@ export class MetadataFormFields extends Component {
 
   render() {
     const { thesauris, template, multipleEdition, model, showSubset } = this.props;
+    const thesauriJs = thesauris.toJS();
     const fields = template.get('properties').toJS();
     const templateID = template.get('_id');
 
@@ -155,7 +156,7 @@ export class MetadataFormFields extends Component {
                   </li>
                 ) : null}
                 <li className="wide">
-                  {this.getField(property, `.metadata.${property.name}`, thesauris.toJS())}
+                  {this.getField(property, `.metadata.${property.name}`, thesauriJs)}
                 </li>
               </ul>
             </FormGroup>

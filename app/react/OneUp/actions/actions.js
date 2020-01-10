@@ -1,18 +1,25 @@
 /** @format */
 
 import { actions } from 'app/BasicReducer';
-import { actions as entityActions } from 'app/Entities/actions/actions';
+import { getAndLoadEntity } from 'app/Entities/actions/actions';
 import api from 'app/Entities/EntitiesAPI';
 import { wrapEntityMetadata } from 'app/Metadata/components/MetadataForm';
 import { RequestParams } from 'app/utils/RequestParams';
 
 export function toggleOneUpFullEdit() {
   return async (dispatch, getState) => {
-    const state = getState().oneUpReview.state.toJS();
+    const state = getState();
+    const oneUpState = state.oneUpReview.state.toJS();
+    if (oneUpState.fullEdit && !state.entityView.entityFormState.$form.pristine) {
+      const entity = await api.denormalize(
+        new RequestParams(wrapEntityMetadata(state.entityView.entityForm))
+      );
+      dispatch(actions.set('entityView/entity', entity));
+    }
     dispatch(
       actions.set('oneUpReview.state', {
-        ...state,
-        fullEdit: !state.fullEdit,
+        ...oneUpState,
+        fullEdit: !oneUpState.fullEdit,
       })
     );
   };
@@ -36,15 +43,10 @@ export function switchOneUpEntity(delta, save) {
       .get('sharedId');
 
     [
-      ...(await entityActions.getAndLoadEntity(
-        sharedId,
-        templates,
-        state,
-        oneUpState.loadConnections
-      )),
+      ...(await getAndLoadEntity(sharedId, templates, state, oneUpState.loadConnections)),
       actions.set('oneUpReview.state', {
         ...oneUpState,
-        fullEdit: false,
+        // fullEdit: false,
         indexInDocs: index,
       }),
     ].forEach(action => {
