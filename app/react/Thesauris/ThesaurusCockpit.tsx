@@ -1,7 +1,7 @@
 /** @format */
 import RouteHandler from 'app/App/RouteHandler';
 import { actions } from 'app/BasicReducer';
-import { t } from 'app/I18N';
+import { t, I18NLink } from 'app/I18N';
 import ThesaurisAPI from 'app/Thesauris/ThesaurisAPI';
 import React from 'react';
 import { connect } from 'react-redux';
@@ -121,7 +121,12 @@ class ThesaurusCockpit extends RouteHandler {
             <tbody>{topicNodes(topics, modelInfo)}</tbody>
           </table>
         </div>
-        <div className="settings-footer" />
+        <div className="settings-footer">
+          <I18NLink to="/settings/dictionaries" className="btn btn-default">
+            <Icon icon="arrow-left" />
+            <span className="btn-label">{t('System', 'Back')}</span>
+          </I18NLink>
+        </div>
       </div>
     );
   }
