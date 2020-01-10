@@ -5,7 +5,7 @@ import { actions } from 'app/BasicReducer';
 import Loader from 'app/components/Elements/Loader';
 import * as entityActions from 'app/Entities/actions/actions';
 import * as uiActions from 'app/Entities/actions/uiActions';
-import { OneUpEntityViewer } from 'app/OneUp/components/OneUpEntityViewer';
+import OneUpEntityViewer from 'app/OneUp/components/OneUpEntityViewer';
 import { setDocuments, unsetDocuments } from 'app/Library/actions/libraryActions';
 import { wrapDispatch } from 'app/Multireducer';
 import * as relationships from 'app/Relationships/utils/routeUtils';
@@ -18,7 +18,7 @@ import { connect } from 'react-redux';
 import { actions as formActions } from 'react-redux-form';
 import { processQuery } from 'app/Library/helpers/requestState';
 
-class LibraryOneUpReview extends RouteHandler {
+class OneUpReview extends RouteHandler {
   static async requestState(requestParams, state) {
     const documentsRequest = {
       ...requestParams,
@@ -96,4 +96,4 @@ const mapStateToProps = state => {
   };
 };
 
-export default connect(mapStateToProps)(LibraryOneUpReview);
+export default connect(mapStateToProps)(OneUpReview);

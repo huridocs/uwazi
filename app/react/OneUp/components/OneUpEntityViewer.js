@@ -18,12 +18,10 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import Helmet from 'react-helmet';
 import { connect } from 'react-redux';
-import { browserHistory } from 'react-router';
 import { TabContent, TabLink, Tabs } from 'react-tabs-redux';
 import { bindActionCreators } from 'redux';
 import { createSelector } from 'reselect';
 import { Icon } from 'UI';
-import { deleteEntity } from 'app/Entities/actions/actions';
 import {
   toggleOneUpFullEdit,
   toggleOneUpLoadConnections,
@@ -33,27 +31,14 @@ import { showTab } from 'app/Entities/actions/uiActions';
 import EntityForm from 'app/Entities/containers/EntityForm';
 import { ShowSidepanelMenu } from 'app/Entities/components/ShowSidepanelMenu';
 
-export class EntityViewer extends Component {
+export class OneUpEntityViewer extends Component {
   constructor(props, context) {
     super(props, context);
     this.state = {
       panelOpen: true,
     };
-    this.deleteEntity = this.deleteEntity.bind(this);
     this.closePanel = this.closePanel.bind(this);
     this.openPanel = this.openPanel.bind(this);
-  }
-
-  deleteEntity() {
-    this.context.confirm({
-      accept: () => {
-        this.props.deleteEntity(this.props.rawEntity.toJS()).then(() => {
-          browserHistory.goBack();
-        });
-      },
-      title: 'Confirm delete',
-      message: 'Are you sure you want to delete this entity?',
-    });
   }
 
   deleteConnection(reference) {
@@ -152,18 +137,16 @@ export class EntityViewer extends Component {
             </TabContent>
           </Tabs>
         </main>
+        {/* <ShowIf if={oneUpState.fullEdit}>
+          <div className="sidepanel-footer">
+            <button onClick={() => this.props.toggleOneUpFullEdit()} className="btn btn-default">
+              <Icon icon="arrow-up" />
+              <span className="btn-label">{t('System', 'Leave full edit')}</span>
+            </button>
+          </div>
+        </ShowIf>
+        <ShowIf if={!oneUpState.fullEdit}> */}
         <div className="sidepanel-footer">
-          <button
-            onClick={() => this.props.switchOneUpEntity(+1, true)}
-            className={
-              !this.props.isPristine
-                ? 'save-and-next btn btn-default btn-success'
-                : 'btn btn-default btn-disabled'
-            }
-          >
-            <Icon icon="save" />
-            <span className="btn-label">{t('System', 'Save and go to next')}</span>
-          </button>
           <button
             onClick={() => this.props.switchOneUpEntity(0, true)}
             className={
@@ -186,17 +169,10 @@ export class EntityViewer extends Component {
             <Icon icon="undo" />
             <span className="btn-label">{t('System', 'Discard changes')}</span>
           </button>
-          <button
-            onClick={() => this.props.toggleOneUpFullEdit()}
-            className={
-              this.props.isPristine || !oneUpState.fullEdit
-                ? 'btn btn-default'
-                : 'btn btn-default btn-disabled'
-            }
-          >
-            <Icon icon="pencil-alt" />
+          <button onClick={() => this.props.toggleOneUpFullEdit()} className="btn btn-default">
+            <Icon icon={oneUpState.fullEdit ? 'times' : 'pencil-alt'} />
             <span className="btn-label">
-              {t('System', oneUpState.fullEdit ? 'Cancel edit document' : 'Edit document')}
+              {t('System', oneUpState.fullEdit ? 'Leave edit' : 'Edit document')}
             </span>
           </button>
           <button
@@ -235,7 +211,19 @@ export class EntityViewer extends Component {
             <Icon icon="arrow-right" />
             <span className="btn-label">{t('System', 'Next document')}</span>
           </button>
+          <button
+            onClick={() => this.props.switchOneUpEntity(+1, true)}
+            className={
+              !this.props.isPristine
+                ? 'save-and-next btn btn-default btn-success'
+                : 'btn btn-default btn-disabled'
+            }
+          >
+            <Icon icon="save" />
+            <span className="btn-label">{t('System', 'Save and go to next')}</span>
+          </button>
         </div>
+        {/* </ShowIf> */}
         <ShowIf if={selectedTab === 'connections'}>
           <div className="sidepanel-footer">
             <RelationshipsFormButtons />
@@ -321,12 +309,12 @@ export class EntityViewer extends Component {
   }
 }
 
-EntityViewer.defaultProps = {
+OneUpEntityViewer.defaultProps = {
   relationships: Immutable([]),
   oneUpState: {},
 };
 
-EntityViewer.propTypes = {
+OneUpEntityViewer.propTypes = {
   entity: PropTypes.object,
   relationships: PropTypes.object,
   rawEntity: PropTypes.object,
@@ -334,7 +322,6 @@ EntityViewer.propTypes = {
   sidepanelOpen: PropTypes.bool,
   connectionsGroups: PropTypes.object,
   relationTypes: PropTypes.array,
-  deleteEntity: PropTypes.func,
   connectionsChanged: PropTypes.func,
   deleteConnection: PropTypes.func,
   startNewConnection: PropTypes.func,
@@ -349,7 +336,7 @@ EntityViewer.propTypes = {
   oneUpState: PropTypes.object,
 };
 
-EntityViewer.contextTypes = {
+OneUpEntityViewer.contextTypes = {
   confirm: PropTypes.func,
 };
 
@@ -380,7 +367,6 @@ const mapStateToProps = state => ({
 function mapDispatchToProps(dispatch) {
   return bindActionCreators(
     {
-      deleteEntity,
       connectionsChanged,
       deleteConnection,
       showTab,
@@ -396,4 +382,4 @@ function mapDispatchToProps(dispatch) {
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(EntityViewer);
+)(OneUpEntityViewer);

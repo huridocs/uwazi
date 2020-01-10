@@ -5,6 +5,7 @@ import { faAngleLeft } from '@fortawesome/free-solid-svg-icons/faAngleLeft';
 import { faAngleRight } from '@fortawesome/free-solid-svg-icons/faAngleRight';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons/faArrowLeft';
 import { faArrowRight } from '@fortawesome/free-solid-svg-icons/faArrowRight';
+import { faArrowUp } from '@fortawesome/free-solid-svg-icons/faArrowUp';
 import { faBars } from '@fortawesome/free-solid-svg-icons/faBars';
 import { faBook } from '@fortawesome/free-solid-svg-icons/faBook';
 import { faBullhorn } from '@fortawesome/free-solid-svg-icons/faBullhorn';
@@ -90,6 +91,7 @@ const icons = {
   faAngleRight,
   faArrowLeft,
   faArrowsAlt,
+  faArrowUp,
   faArrowRight,
   faBars,
   faBook,

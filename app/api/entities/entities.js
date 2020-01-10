@@ -301,6 +301,36 @@ export default {
     return entity;
   },
 
+  async denormalize(_doc, { user, language }) {
+    await validateEntity(_doc);
+    const doc = _doc;
+    if (!doc.sharedId) {
+      doc.user = user._id;
+      doc.creationDate = date.currentUTC();
+      doc.published = false;
+    }
+
+    doc.sharedId = doc.sharedId || ID();
+    const [template, [defaultTemplate]] = await Promise.all([
+      this.getEntityTemplate(doc, language),
+      templates.get({ default: true }),
+    ]);
+    let docTemplate = template;
+    if (!doc.template) {
+      doc.template = defaultTemplate._id;
+      doc.metadata = {};
+      docTemplate = defaultTemplate;
+    }
+    const entity = this.sanitize(doc, docTemplate);
+    entity.metadata = await denormalizeMetadata(entity.metadata, entity, docTemplate);
+    entity.suggestedMetadata = await denormalizeMetadata(
+      entity.suggestedMetadata,
+      entity,
+      docTemplate
+    );
+    return entity;
+  },
+
   /** Bulk rebuild relationship-based metadata objects as {value = id, label: title}. */
   async bulkUpdateMetadataFromRelationships(query, language, limit = 200) {
     const process = async (offset, totalRows) => {
