@@ -17,7 +17,7 @@ import entities from '../entities';
 import templatesModel from '../templates';
 import { bulkIndex, indexEntities } from './entitiesIndex';
 
-function processFiltes(filters, properties) {
+function processFilters(filters, properties) {
   return Object.keys(filters || {}).map(filterName => {
     const suggested = filterName[0] === '_';
     const propertyName = suggested ? filterName.substring(1) : filterName;
@@ -45,11 +45,28 @@ function processFiltes(filters, properties) {
         value,
         suggested,
         type,
-        filters: property.filters.map(f => ({ ...f, name: `${f.name}.value` })),
+        filters: property.filters.map(f => ({
+          ...f,
+          name: `${f.name}.value`,
+        })),
       };
     }
 
-    return { ...property, value, suggested, type, name: `${property.name}.value` };
+    /*
+    q=(filters:(document_type:(values:!(%2709fd9944-8717-45b5-93c8-1529b4e85f8a%27))),limit:30,order:desc,sort:creationDate)
+    property: Uwazi template property
+    value: list of allowed values (or if singular, just the value)
+      missing: handled specially
+      TODO: add 'any'
+    name: path to field name
+    */
+    return {
+      ...property,
+      value,
+      suggested,
+      type,
+      name: `${property.name}.value`,
+    };
   });
 }
 
@@ -402,9 +419,12 @@ const instanceSearch = elasticIndex => ({
         properties = allUniqueProps;
       }
 
+      // this is where we decide which aggregations to send to elastic
       const aggregations = agregationProperties(properties);
-      const filters = processFiltes(query.filters, allUniqueProps);
+      const filters = processFilters(query.filters, allUniqueProps);
+      // this is where the query filters are built
       documentsQuery.filterMetadata(filters);
+      // this is where the query aggregations are built
       documentsQuery.aggregations(aggregations, dictionaries);
       if (query.select) {
         documentsQuery.select(query.select);
@@ -414,6 +434,7 @@ const instanceSearch = elasticIndex => ({
         searchGeolocation(documentsQuery, templates);
       }
 
+      // documentsQuery.query() is the actual call
       return elastic
         .search({ index: elasticIndex || elasticIndexes.index, body: documentsQuery.query() })
         .then(processResponse)

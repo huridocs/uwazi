@@ -216,6 +216,7 @@ const filterToMatch = (filter, path = 'metadata') => {
     match = rangeFilter(filter, path);
   }
 
+  // this is what's most important for one-up review
   if (filter.type === 'multiselect' || filter.type === 'select' || filter.type === 'relationship') {
     match = multiselectFilter(filter, path);
   }

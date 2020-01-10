@@ -64,16 +64,13 @@ function topicNode(topic: { label: string }, modelInfo: ClassifierModel) {
   return (
     <tr key={label}>
       <th scope="row">{label}</th>
-      <td>
-        {qualityIcon(quality)}
-        {toTwoDecimals(quality)}
-      </td>
+      <td>{qualityIcon(quality)}</td>
       <td>{samples}</td>
       <td>
         <button className="btn btn-xs" type="button">
           <Icon icon="search" />
           &nbsp;
-          <span>{t('System', 'Review Suggestions')}</span>
+          <span>{t('system', 'View suggestions')}</span>
         </button>
       </td>
     </tr>
@@ -84,7 +81,14 @@ function topicNodes(topics: Array<any>, model: ClassifierModel) {
   if (topics === undefined) {
     return null;
   }
-  return topics.map((topic: { label: string }) => topicNode(topic, model));
+  return topics
+    .sort(
+      // Sort in order of descending model quality
+      // TODO: Make sort order configurable, or even better, dynamic
+      (topic1: { label: string }, topic2: { label: string }) =>
+        model.topics[topic2.label].quality - model.topics[topic1.label].quality
+    )
+    .map((topic: { label: string }) => topicNode(topic, model));
 }
 
 class ThesaurusCockpit extends RouteHandler {

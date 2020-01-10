@@ -7,7 +7,7 @@ import { connect } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { allLanguages as languagesList } from 'shared/languagesList';
 
-const Icon = ({ locale, ...ownProps }) => {
+const Icon = ({ locale, directionAware, ...ownProps }) => {
   const languageData = languagesList.find(l => l.key === locale);
   return (
     <FontAwesomeIcon {...ownProps} flip={languageData && languageData.rtl ? 'horizontal' : null} />

@@ -27,9 +27,9 @@ export class ThesaurisList extends Component {
           className="btn btn-success btn-xs"
           type="button"
         >
-          <Icon icon="code" />
+          <Icon icon="toggle-on" />
           &nbsp;
-          <span>{t('System', 'Enable Classification')}</span>
+          <span>{t('System', 'Enable')}</span>
         </button>
       );
     }
@@ -38,20 +38,20 @@ export class ThesaurisList extends Component {
         <div className="list-group-item-actions">
           <I18NLink
             to={`/settings/dictionaries/cockpit/${thesaurus._id}`}
-            className="btn btn-success btn-xs"
+            className="btn btn-primary btn-xs"
           >
-            <Icon icon="code" />
+            <Icon icon="search" />
             &nbsp;
-            <span>{t('System', 'Review ML')}</span>
-          </I18NLink>
+            <span>{t('System', 'View')}</span>
+          </I18NLink>{' '}
           <button
             onClick={this.disableClassification.bind(this, thesaurus)}
-            className="btn btn-danger btn-xs template-remove"
+            className="btn btn-xs template-remove"
             type="button"
           >
-            <Icon icon="trash-alt" />
+            <Icon icon="toggle-off" />
             &nbsp;
-            <span>{t('System', 'Disable Classification')}</span>
+            <span>{t('System', 'Disable')}</span>
           </button>
         </div>
       );
@@ -108,39 +108,56 @@ export class ThesaurisList extends Component {
       });
   }
 
+  thesaurusNode(thesaurus) {
+    return (
+      <tr key={thesaurus.name}>
+        <th scope="row">
+          <I18NLink to={`/settings/dictionaries/edit/${thesaurus._id}`}>{thesaurus.name}</I18NLink>
+        </th>
+        <td>{this.getThesaurusClassificationActions(thesaurus)}</td>
+        <td>
+          <I18NLink
+            to={`/settings/dictionaries/edit/${thesaurus._id}`}
+            className="btn btn-default btn-xs"
+          >
+            <Icon icon="pencil-alt" />
+            &nbsp;
+            <span>{t('System', 'Edit')}</span>
+          </I18NLink>{' '}
+          <button
+            onClick={this.deleteThesaurus.bind(this, thesaurus)}
+            className="btn btn-danger btn-xs template-remove"
+            type="button"
+          >
+            <Icon icon="trash-alt" />
+            &nbsp;
+            <span>{t('System', 'Delete')}</span>
+          </button>
+        </td>
+      </tr>
+    );
+  }
+
   render() {
     return (
       <div className="panel panel-default">
         <div className="panel-heading">{t('System', 'Thesauri')}</div>
-        <ul className="list-group">
-          {sortThesauri(this.props.dictionaries.toJS()).map(thesaurus => (
-            <li key={thesaurus.name} className="list-group-item">
-              <I18NLink to={`/settings/dictionaries/edit/${thesaurus._id}`}>
-                {thesaurus.name}
-              </I18NLink>
-              <div className="list-group-item-actions">
-                {this.getThesaurusClassificationActions(thesaurus)}
-                <I18NLink
-                  to={`/settings/dictionaries/edit/${thesaurus._id}`}
-                  className="btn btn-default btn-xs"
-                >
-                  <Icon icon="pencil-alt" />
-                  &nbsp;
-                  <span>{t('System', 'Edit')}</span>
-                </I18NLink>
-                <button
-                  onClick={this.deleteThesaurus.bind(this, thesaurus)}
-                  className="btn btn-danger btn-xs template-remove"
-                  type="button"
-                >
-                  <Icon icon="trash-alt" />
-                  &nbsp;
-                  <span>{t('System', 'Delete')}</span>
-                </button>
-              </div>
-            </li>
-          ))}
-        </ul>
+        <div className="thesauri-list">
+          <table>
+            <thead>
+              <tr>
+                <th scope="col" />
+                <th scope="col">Suggestions</th>
+                <th scope="col">Modify</th>
+              </tr>
+            </thead>
+            <tbody>
+              {sortThesauri(this.props.dictionaries.toJS()).map(thesaurus =>
+                this.thesaurusNode(thesaurus)
+              )}
+            </tbody>
+          </table>
+        </div>
         <div className="settings-footer">
           <I18NLink to="/settings/dictionaries/new" className="btn btn-success">
             <Icon icon="plus" />

@@ -75,6 +75,8 @@ import { faTerminal } from '@fortawesome/free-solid-svg-icons/faTerminal';
 import { faTh } from '@fortawesome/free-solid-svg-icons/faTh';
 import { faTimes } from '@fortawesome/free-solid-svg-icons/faTimes';
 import { faTimesCircle } from '@fortawesome/free-solid-svg-icons/faTimesCircle';
+import { faToggleOff } from '@fortawesome/free-solid-svg-icons/faToggleOff';
+import { faToggleOn } from '@fortawesome/free-solid-svg-icons/faToggleOn';
 import { faTrashAlt } from '@fortawesome/free-solid-svg-icons/faTrashAlt';
 import { faUndo } from '@fortawesome/free-solid-svg-icons/faUndo';
 import { faUpload } from '@fortawesome/free-solid-svg-icons/faUpload';
@@ -162,6 +164,8 @@ const icons = {
   faTh,
   faTimes,
   faTimesCircle,
+  faToggleOff,
+  faToggleOn,
   faTrashAlt,
   faUndo,
   faUpload,
