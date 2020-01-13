@@ -19,7 +19,7 @@ import { notificationActions } from 'app/Notifications';
 import sortThesauri from '../utils/sortThesauri';
 
 export class ThesaurisList extends Component {
-  getThesaurusClassificationActions(thesaurus) {
+  getThesaurusSuggestionActions(thesaurus) {
     if (!thesaurus.enable_classification && thesaurus.model_available) {
       return (
         <button
@@ -34,16 +34,22 @@ export class ThesaurisList extends Component {
       );
     }
     if (thesaurus.enable_classification) {
-      return (
-        <div className="list-group-item-actions">
+      const view = (
+        <div className="thesauri-list vertical-line">
+          {'2,345 unpublished documents to be reviewed'}
+          {'  '}
           <I18NLink
             to={`/settings/dictionaries/cockpit/${thesaurus._id}`}
             className="btn btn-primary btn-xs"
           >
             <Icon icon="search" />
             &nbsp;
-            <span>{t('System', 'View')}</span>
-          </I18NLink>{' '}
+            <span>{t('System', 'View Suggestions')}</span>
+          </I18NLink>
+        </div>
+      );
+      const disable = (
+        <div className="list-group-item-actions">
           <button
             onClick={this.disableClassification.bind(this, thesaurus)}
             className="btn btn-xs template-remove"
@@ -55,35 +61,34 @@ export class ThesaurisList extends Component {
           </button>
         </div>
       );
+      return view;
     }
     return null;
   }
 
-  async enableClassification(thesaurus) {
-    try {
-      const canBeEnabled = await this.props.checkThesaurusCanBeClassified(thesaurus);
-      if (canBeEnabled) {
-        this.props.enableClassification(thesaurus);
-      }
-    } catch (error) {
-      this.context.confirm({
-        accept: () => {},
-        noCancel: true,
-        title: `Cannot enable classification for thesaurus: ${thesaurus.name}`,
-        message: 'This thesaurus does not have its topic classification models in a good state.',
-      });
-    }
-  }
-
-  async disableClassification(thesaurus) {
-    this.props.disableClassification(thesaurus).catch(() => {
-      this.context.confirm({
-        accept: () => {},
-        noCancel: true,
-        title: `Cannot disable classification for thesaurus: ${thesaurus.name}`,
-        message: 'Unable to disable classification.',
-      });
-    });
+  getThesaurusModifyActions(thesaurus) {
+    return (
+      <div>
+        <I18NLink
+          to={`/settings/dictionaries/edit/${thesaurus._id}`}
+          className="btn btn-default btn-xs"
+        >
+          <Icon icon="pencil-alt" />
+          &nbsp;
+          <span>{t('System', 'Edit')}</span>
+        </I18NLink>
+        {'  '}
+        <button
+          onClick={this.deleteThesaurus.bind(this, thesaurus)}
+          className="btn btn-danger btn-xs template-remove"
+          type="button"
+        >
+          <Icon icon="trash-alt" />
+          &nbsp;
+          <span>{t('System', 'Delete')}</span>
+        </button>
+      </div>
+    );
   }
 
   deleteThesaurus(thesaurus) {
@@ -108,32 +113,41 @@ export class ThesaurisList extends Component {
       });
   }
 
+  async disableClassification(thesaurus) {
+    this.props.disableClassification(thesaurus).catch(() => {
+      this.context.confirm({
+        accept: () => {},
+        noCancel: true,
+        title: `Cannot disable classification for thesaurus: ${thesaurus.name}`,
+        message: 'Unable to disable classification.',
+      });
+    });
+  }
+
+  async enableClassification(thesaurus) {
+    try {
+      const canBeEnabled = await this.props.checkThesaurusCanBeClassified(thesaurus);
+      if (canBeEnabled) {
+        this.props.enableClassification(thesaurus);
+      }
+    } catch (error) {
+      this.context.confirm({
+        accept: () => {},
+        noCancel: true,
+        title: `Cannot enable classification for thesaurus: ${thesaurus.name}`,
+        message: 'This thesaurus does not have its topic classification models in a good state.',
+      });
+    }
+  }
+
   thesaurusNode(thesaurus) {
     return (
       <tr key={thesaurus.name}>
         <th scope="row">
           <I18NLink to={`/settings/dictionaries/edit/${thesaurus._id}`}>{thesaurus.name}</I18NLink>
         </th>
-        <td>{this.getThesaurusClassificationActions(thesaurus)}</td>
-        <td>
-          <I18NLink
-            to={`/settings/dictionaries/edit/${thesaurus._id}`}
-            className="btn btn-default btn-xs"
-          >
-            <Icon icon="pencil-alt" />
-            &nbsp;
-            <span>{t('System', 'Edit')}</span>
-          </I18NLink>{' '}
-          <button
-            onClick={this.deleteThesaurus.bind(this, thesaurus)}
-            className="btn btn-danger btn-xs template-remove"
-            type="button"
-          >
-            <Icon icon="trash-alt" />
-            &nbsp;
-            <span>{t('System', 'Delete')}</span>
-          </button>
-        </td>
+        <td>{this.getThesaurusSuggestionActions(thesaurus)}</td>
+        <td>{this.getThesaurusModifyActions(thesaurus)}</td>
       </tr>
     );
   }
@@ -146,9 +160,9 @@ export class ThesaurisList extends Component {
           <table>
             <thead>
               <tr>
+                <th className="nameCol" scope="col" />
                 <th scope="col" />
-                <th scope="col">Suggestions</th>
-                <th scope="col">Modify</th>
+                <th scope="col" />
               </tr>
             </thead>
             <tbody>

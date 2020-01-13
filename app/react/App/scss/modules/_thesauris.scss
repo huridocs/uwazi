@@ -106,15 +106,26 @@
 
 .thesauri-list {
   table {
-    table-layout: fixed;
+    //table-layout: fixed;
+    empty-cells: hide;
     width: 100%;
+    white-space: nowrap;
     text-align: justify;
-    border-collapse: collapse;
+    border-collapse: separate;
+
     border: 0px;
+  }
+  .nameCol {
+    width: 100%;
   }
   th,
   td {
     padding: 7px 10px;
+  }
+  td {
+    text-align: right;
+    color: $c-grey;
+    font-size: $f-size-xs;
   }
   th {
     background-color: $c-white;
@@ -126,15 +137,14 @@
     border-bottom: 1px solid $c-grey-light;
   }
 
-  thead th:nth-child(1) {
-    width: 80%;
+  /*thead th:nth-child(2) {
+    width: 40%;
+  }*/
+  td:nth-child(2) {
+    border-right: 1px solid $c-grey-light;
   }
 
-  thead th:nth-child(2) {
-    width: 10%;
-  }
-
-  thead th:nth-child(3) {
-    width: 10%;
+  .vertical-line {
+    border-right: $c-grey-light;
   }
 }
