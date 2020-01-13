@@ -8,7 +8,7 @@ import EditTranslations from 'app/I18N/EditTranslations';
 import blankState from 'app/Library/helpers/blankState';
 import Library from 'app/Library/Library';
 import LibraryMap from 'app/Library/LibraryMap';
-import OneUpReview from 'app/OneUp/OneUpReview';
+import OneUpReview from 'app/Review/OneUpReview';
 import EditPage from 'app/Pages/EditPage';
 import NewPage from 'app/Pages/NewPage';
 import Pages from 'app/Pages/Pages';

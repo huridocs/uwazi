@@ -58,10 +58,7 @@ const showByType = (prop, compact) => {
 
 function filterProps(showSubset) {
   return p => {
-    if (showSubset === 'no-multiselect' && p.type === 'multiselect') {
-      return false;
-    }
-    if (showSubset === 'only-multiselect' && p.type !== 'multiselect') {
+    if (showSubset && !showSubset.includes(p.name)) {
       return false;
     }
     if (Array.isArray(p.value)) {
@@ -114,7 +111,7 @@ Metadata.propTypes = {
   ).isRequired,
   compact: PropTypes.bool,
   renderLabel: PropTypes.func,
-  showSubset: PropTypes.string,
+  showSubset: PropTypes.array,
 };
 
 export default Metadata;

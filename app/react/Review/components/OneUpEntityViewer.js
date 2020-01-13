@@ -26,7 +26,7 @@ import {
   toggleOneUpFullEdit,
   toggleOneUpLoadConnections,
   switchOneUpEntity,
-} from 'app/OneUp/actions/actions';
+} from 'app/Review/actions/actions';
 import { showTab } from 'app/Entities/actions/uiActions';
 import EntityForm from 'app/Entities/containers/EntityForm';
 import { ShowSidepanelMenu } from 'app/Entities/components/ShowSidepanelMenu';
@@ -69,6 +69,8 @@ export class OneUpEntityViewer extends Component {
       connectionsGroups,
       relationships,
       oneUpState,
+      mlProps,
+      nonMlProps,
     } = this.props;
     const { panelOpen } = this.state;
     const selectedTab = tab || 'info';
@@ -101,7 +103,7 @@ export class OneUpEntityViewer extends Component {
             >
               <div className="entity-metadata">
                 {entityBeingEdited && oneUpState.fullEdit ? (
-                  <EntityForm showSubset="no-multiselect" />
+                  <EntityForm showSubset={[...nonMlProps, 'title']} />
                 ) : (
                   <div>
                     <div className="content-header-title">
@@ -118,7 +120,7 @@ export class OneUpEntityViewer extends Component {
                       entity={entity}
                       showTitle={false}
                       showType={false}
-                      showSubset="no-multiselect"
+                      showSubset={nonMlProps}
                     />
                     <AttachmentsList
                       files={Immutable(attachments)}
@@ -280,7 +282,7 @@ export class OneUpEntityViewer extends Component {
                 </div>
               </TabContent>
               <TabContent for={selectedTab === 'info' ? selectedTab : 'none'}>
-                <EntityForm showSubset="only-multiselect" />
+                <EntityForm showSubset={mlProps} />
               </TabContent>
             </Tabs>
           </div>
@@ -334,6 +336,8 @@ OneUpEntityViewer.propTypes = {
   toggleOneUpFullEdit: PropTypes.func,
   toggleOneUpLoadConnections: PropTypes.func,
   oneUpState: PropTypes.object,
+  templates: PropTypes.object,
+  thesauris: PropTypes.object,
 };
 
 OneUpEntityViewer.contextTypes = {
@@ -350,19 +354,38 @@ const selectRelationTypes = createSelector(
   r => r.toJS()
 );
 
-const mapStateToProps = state => ({
-  rawEntity: state.entityView.entity,
-  rawEntityForm: state.entityView.entityForm,
-  relationTypes: selectRelationTypes(state),
-  entity: selectEntity(state),
-  relationships: state.entityView.entity.get('relationships'),
-  connectionsGroups: state.relationships.list.connectionsGroups,
-  entityBeingEdited: !!state.entityView.entityForm._id,
-  tab: state.entityView.uiState.get('tab'),
-  library: state.library,
-  isPristine: state.entityView.entityFormState.$form.pristine,
-  oneUpState: state.oneUpReview.state.toJS(),
-});
+const mapStateToProps = state => {
+  const mlThesauri = state.thesauris
+    .filter(thes => !!thes.get('enable_classification'))
+    .map(thes => thes.get('_id'))
+    .toJS();
+  const properties = state.templates
+    .find(tmpl => tmpl.get('_id') === state.entityView.entity.get('template'))
+    .get('properties');
+  const mlProps = properties
+    .filter(p => mlThesauri.includes(p.get('content')))
+    .map(p => p.get('name'))
+    .toJS();
+  const nonMlProps = properties
+    .filter(p => !mlThesauri.includes(p.get('content')))
+    .map(p => p.get('name'))
+    .toJS();
+  return {
+    rawEntity: state.entityView.entity,
+    rawEntityForm: state.entityView.entityForm,
+    relationTypes: selectRelationTypes(state),
+    entity: selectEntity(state),
+    relationships: state.entityView.entity.get('relationships'),
+    connectionsGroups: state.relationships.list.connectionsGroups,
+    entityBeingEdited: !!state.entityView.entityForm._id,
+    tab: state.entityView.uiState.get('tab'),
+    library: state.library,
+    isPristine: state.entityView.entityFormState.$form.pristine,
+    oneUpState: state.oneUpReview.state.toJS(),
+    mlProps,
+    nonMlProps,
+  };
+};
 
 function mapDispatchToProps(dispatch) {
   return bindActionCreators(

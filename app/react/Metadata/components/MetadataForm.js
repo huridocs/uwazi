@@ -91,7 +91,6 @@ export class MetadataForm extends Component {
 
   render() {
     const { model, template, templateOptions, id, multipleEdition, showSubset } = this.props;
-    const metadataOnly = ['no-multiselect', 'only-multiselect'].includes(showSubset);
 
     if (!template) {
       return <div />;
@@ -112,7 +111,7 @@ export class MetadataForm extends Component {
         validators={validator.generate(template.toJS(), multipleEdition)}
         onSubmitFailed={this.onSubmitFailed}
       >
-        {!multipleEdition && showSubset !== 'only-multiselect' && (
+        {!multipleEdition && (!showSubset || showSubset.includes('title')) && (
           <FormGroup model=".title">
             <ul className="search__filter">
               <li>
@@ -131,7 +130,8 @@ export class MetadataForm extends Component {
           </FormGroup>
         )}
 
-        {!metadataOnly && this.renderTemplateSelect(templateOptions, template)}
+        {(!showSubset || showSubset.includes('template')) &&
+          this.renderTemplateSelect(templateOptions, template)}
         <MetadataFormFields
           multipleEdition={multipleEdition}
           thesauris={this.props.thesauris}
@@ -159,7 +159,7 @@ MetadataForm.propTypes = {
   onSubmit: PropTypes.func,
   notify: PropTypes.func,
   id: PropTypes.string,
-  showSubset: PropTypes.string,
+  showSubset: PropTypes.array,
 };
 
 function mapDispatchToProps(dispatch) {

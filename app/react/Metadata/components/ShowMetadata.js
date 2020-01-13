@@ -60,7 +60,7 @@ ShowMetadata.propTypes = {
   templates: PropTypes.object,
   showTitle: PropTypes.bool,
   showType: PropTypes.bool,
-  showSubset: PropTypes.string,
+  showSubset: PropTypes.array,
 };
 
 const mapStateToProps = ({ templates }) => ({ templates });

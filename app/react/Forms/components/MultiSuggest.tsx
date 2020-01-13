@@ -5,9 +5,12 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { actions as formActions, getModel } from 'react-redux-form';
 import { Icon } from 'UI';
+import { propertyTypes } from 'shared/propertyTypes';
 
 export interface MultiSuggestProps {
   // model: state model of suggestions, required through <Control>.
+
+  propertyType: string;
 
   // The state model path of the 'main' multi-select.
   // Accepted suggestions will be added there.
@@ -19,13 +22,29 @@ export interface MultiSuggestProps {
 
   // connect-provided
   selectValue?: string[];
-  acceptSuggestion: (suggestion: string, selectModel: string, selectValue?: string[]) => any;
+  acceptSuggestion: (
+    suggestion: string,
+    propertyType: string,
+    selectModel: string,
+    selectValue: string[]
+  ) => any;
 }
 
-function acceptSuggestion(suggestion: string, selectModel: string, selectValue?: string[]) {
+function acceptSuggestion(
+  suggestion: string,
+  propertyType: string,
+  selectModel: string,
+  selectValue: string[]
+) {
   return (dispatch: (_: any) => void) => {
-    if (!(selectValue || []).includes(suggestion)) {
-      dispatch(formActions.change(selectModel, [...(selectValue || []), suggestion]));
+    if (propertyType === propertyTypes.multiselect) {
+      if (!selectValue.includes(suggestion)) {
+        dispatch(formActions.change(selectModel, [...selectValue, suggestion]));
+      }
+    } else if (propertyType === propertyTypes.select) {
+      if (!selectValue || selectValue[0] !== suggestion) {
+        dispatch(formActions.change(selectModel, suggestion));
+      }
     }
   };
 }
@@ -36,7 +55,8 @@ function mapStateToProps(state: any, props: MultiSuggestProps) {
     // TODO(bdittes): Correctly inherit parent path.
     selectModel = `entityView.entityForm${selectModel}`;
   }
-  return { selectModel, selectValue: getModel<any, string[]>(state, selectModel) };
+  const rawValue = getModel<any, string[] | string>(state, selectModel) || [];
+  return { selectModel, selectValue: Array.isArray(rawValue) ? rawValue : [rawValue] };
 }
 
 export const MultiSuggest = connect(
@@ -56,10 +76,10 @@ export const MultiSuggest = connect(
     }
 
     render() {
-      const { selectModel, selectValue, value: proposedValues } = this.props;
+      const { propertyType, selectModel, selectValue, value: proposedValues } = this.props;
       const filteredValues = !proposedValues
         ? []
-        : proposedValues.filter(value => value.value && !(selectValue || []).includes(value.value));
+        : proposedValues.filter(value => value.value && !selectValue!.includes(value.value));
       if (!filteredValues.length) {
         return null;
       }
@@ -75,14 +95,24 @@ export const MultiSuggest = connect(
                       icon={['far', 'square']}
                       className="checkbox-empty"
                       onClick={() =>
-                        this.props.acceptSuggestion(value.value || '', selectModel, selectValue)
+                        this.props.acceptSuggestion(
+                          value.value || '',
+                          propertyType,
+                          selectModel,
+                          selectValue!
+                        )
                       }
                     />
                   </span>
                   <span
                     className="multiselectItem-name"
                     onClick={() =>
-                      this.props.acceptSuggestion(value.value || '', selectModel, selectValue)
+                      this.props.acceptSuggestion(
+                        value.value || '',
+                        propertyType,
+                        selectModel,
+                        selectValue!
+                      )
                     }
                   >
                     {value.label}
@@ -97,7 +127,7 @@ export const MultiSuggest = connect(
                 </label>
               </div>
             )))()}
-          <b>Selected items:</b>
+          <b>Selected item(s):</b>
         </div>
       );
     }

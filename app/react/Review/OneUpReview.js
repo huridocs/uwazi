@@ -5,7 +5,7 @@ import { actions } from 'app/BasicReducer';
 import Loader from 'app/components/Elements/Loader';
 import * as entityActions from 'app/Entities/actions/actions';
 import * as uiActions from 'app/Entities/actions/uiActions';
-import OneUpEntityViewer from 'app/OneUp/components/OneUpEntityViewer';
+import OneUpEntityViewer from 'app/Review/components/OneUpEntityViewer';
 import { setDocuments, unsetDocuments } from 'app/Library/actions/libraryActions';
 import { wrapDispatch } from 'app/Multireducer';
 import * as relationships from 'app/Relationships/utils/routeUtils';
