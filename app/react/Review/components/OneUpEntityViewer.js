@@ -1,4 +1,5 @@
 /** @format */
+import 'app/Review/scss/review.scss';
 
 import ShowIf from 'app/App/ShowIf';
 import { AttachmentsList } from 'app/Attachments';
@@ -98,6 +99,49 @@ export class OneUpEntityViewer extends Component {
             {oneUpState.totalDocs >= oneUpState.maxTotalDocs
               ? `>${oneUpState.totalDocs - 1}`
               : `${oneUpState.totalDocs}`}
+            <button
+              onClick={() =>
+                this.props.isPristine
+                  ? this.props.switchOneUpEntity(-1, false)
+                  : this.context.confirm({
+                      accept: () => this.props.switchOneUpEntity(-1, false),
+                      title: 'Confirm discard changes',
+                      message:
+                        'There are unsaved changes. Are you sure you want to discard them and switch to a different document?',
+                    })
+              }
+              className={
+                oneUpState.indexInDocs > 0
+                  ? `btn ${this.props.isPristine ? 'btn-default' : 'btn-default btn-warning'}`
+                  : 'btn btn-default btn-disabled'
+              }
+            >
+              <Icon icon="arrow-left" />
+              <span className="btn-label">{t('System', 'Previous document')}</span>
+            </button>
+            <button
+              onClick={() =>
+                this.props.isPristine
+                  ? this.props.switchOneUpEntity(+1, false)
+                  : this.context.confirm({
+                      accept: () => this.props.switchOneUpEntity(+1, false),
+                      title: 'Confirm discard changes',
+                      message:
+                        'There are unsaved changes. Are you sure you want to discard them and switch to a different document?',
+                    })
+              }
+              className={`btn ${this.props.isPristine ? 'btn-default' : 'btn-default btn-warning'}`}
+            >
+              <Icon icon="arrow-right" />
+              <span className="btn-label">{t('System', 'Next document')}</span>
+            </button>
+            <button
+              onClick={() => this.props.toggleOneUpFullEdit()}
+              className={oneUpState.fullEdit ? 'btn btn-default btn-toggle-on' : 'btn btn-default'}
+            >
+              <Icon icon="pencil-alt" />
+              <span className="btn-label">{t('System', 'Full edit mode')}</span>
+            </button>
           </div>
         </div>
         <main className={`entity-viewer ${panelOpen ? 'with-panel' : ''}`}>
@@ -148,16 +192,18 @@ export class OneUpEntityViewer extends Component {
             </TabContent>
           </Tabs>
         </main>
-        {/* <ShowIf if={oneUpState.fullEdit}>
-          <div className="sidepanel-footer">
-            <button onClick={() => this.props.toggleOneUpFullEdit()} className="btn btn-default">
-              <Icon icon="arrow-up" />
-              <span className="btn-label">{t('System', 'Leave full edit')}</span>
-            </button>
-          </div>
-        </ShowIf>
-        <ShowIf if={!oneUpState.fullEdit}> */}
         <div className="sidepanel-footer">
+          <button
+            onClick={() => this.props.switchOneUpEntity(0, false)}
+            className={
+              !this.props.isPristine
+                ? 'cancel-edit-metadata btn btn-default btn-danger'
+                : 'btn btn-default btn-disabled'
+            }
+          >
+            <Icon icon="undo" />
+            <span className="btn-label">{t('System', 'Discard changes')}</span>
+          </button>
           <button
             onClick={() => this.props.switchOneUpEntity(0, true)}
             className={
@@ -168,59 +214,6 @@ export class OneUpEntityViewer extends Component {
           >
             <Icon icon="save" />
             <span className="btn-label">{t('System', 'Save document')}</span>
-          </button>
-          <button
-            onClick={() => this.props.switchOneUpEntity(0, false)}
-            className={
-              !this.props.isPristine
-                ? 'cancel-edit-metadata btn btn-danger'
-                : 'btn btn-default btn-disabled'
-            }
-          >
-            <Icon icon="undo" />
-            <span className="btn-label">{t('System', 'Discard changes')}</span>
-          </button>
-          <button onClick={() => this.props.toggleOneUpFullEdit()} className="btn btn-default">
-            <Icon icon={oneUpState.fullEdit ? 'times' : 'pencil-alt'} />
-            <span className="btn-label">
-              {t('System', oneUpState.fullEdit ? 'Leave edit' : 'Edit document')}
-            </span>
-          </button>
-          <button
-            onClick={() =>
-              this.props.isPristine
-                ? this.props.switchOneUpEntity(-1, false)
-                : this.context.confirm({
-                    accept: () => this.props.switchOneUpEntity(-1, false),
-                    title: 'Confirm discard changes',
-                    message:
-                      'There are unsaved changes. Are you sure you want to discard them and switch to a different document?',
-                  })
-            }
-            className={
-              oneUpState.indexInDocs > 0
-                ? `btn ${this.props.isPristine ? 'btn-default' : 'btn-warning'}`
-                : 'btn btn-default btn-disabled'
-            }
-          >
-            <Icon icon="arrow-left" />
-            <span className="btn-label">{t('System', 'Previous document')}</span>
-          </button>
-          <button
-            onClick={() =>
-              this.props.isPristine
-                ? this.props.switchOneUpEntity(+1, false)
-                : this.context.confirm({
-                    accept: () => this.props.switchOneUpEntity(+1, false),
-                    title: 'Confirm discard changes',
-                    message:
-                      'There are unsaved changes. Are you sure you want to discard them and switch to a different document?',
-                  })
-            }
-            className={`btn ${this.props.isPristine ? 'btn-default' : 'btn-warning'}`}
-          >
-            <Icon icon="arrow-right" />
-            <span className="btn-label">{t('System', 'Next document')}</span>
           </button>
           <button
             onClick={() => this.props.switchOneUpEntity(+1, true)}
@@ -234,7 +227,6 @@ export class OneUpEntityViewer extends Component {
             <span className="btn-label">{t('System', 'Save and go to next')}</span>
           </button>
         </div>
-        {/* </ShowIf> */}
         <ShowIf if={selectedTab === 'connections'}>
           <div className="sidepanel-footer">
             <RelationshipsFormButtons />
