@@ -8,7 +8,7 @@ import entities from 'api/entities';
 import { QueryForEach } from 'api/odm';
 
 export default {
-  delta: 16,
+  delta: 17,
 
   name: 'metadata-structured-object',
 

@@ -15,6 +15,14 @@ const multiselectFilter = (filter, path = 'metadata') => {
   const filterValue = filter.value;
   const { values = [] } = filterValue;
   let match;
+  if (values.includes('any')) {
+    match = {
+      exists: {
+        field: `${path}.${filter.name}.raw`,
+      },
+    };
+    return match;
+  }
   if (values.includes('missing') && !filterValue.and) {
     const _values = values.filter(v => v !== 'missing');
     match = {

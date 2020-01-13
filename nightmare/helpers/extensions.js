@@ -129,7 +129,7 @@ Nightmare.action('logout', function logout(done) {
 });
 
 Nightmare.action('waitForTheEntityToBeIndexed', function waitForTheEntityToBeIndexed(done) {
-  this.wait(1900).then(() => {
+  this.wait(3000).then(() => {
     done();
   });
 });

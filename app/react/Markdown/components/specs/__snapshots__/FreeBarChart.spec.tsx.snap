@@ -1,0 +1,837 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`CustomTooltip should not render on inactive 1`] = `""`;
+
+exports[`CustomTooltip should render the tooltip on active 1`] = `
+<div
+  className="custom-tooltip"
+  style={
+    Object {
+      "backgroundColor": "rgba(255,255,255,0.9)",
+      "border": "1px solid #ccc",
+      "color": "#999",
+      "display": "block",
+      "padding": "10px",
+    }
+  }
+>
+  <p
+    className="tooltip-label"
+    style={
+      Object {
+        "margin": 0,
+      }
+    }
+  >
+    tooltipLabel
+     :
+     
+    <span
+      className="tooltip-label-value"
+      style={
+        Object {
+          "color": "#000",
+        }
+      }
+    >
+      3
+    </span>
+  </p>
+</div>
+`;
+
+exports[`CustomTooltip should render with payload color 1`] = `
+<div
+  className="custom-tooltip"
+  style={
+    Object {
+      "backgroundColor": "rgba(255,255,255,0.9)",
+      "border": "1px solid #ccc",
+      "color": "#999",
+      "display": "block",
+      "padding": "10px",
+    }
+  }
+>
+  <p
+    className="tooltip-label"
+    style={
+      Object {
+        "margin": 0,
+      }
+    }
+  >
+    tooltipLabel
+     :
+     
+    <span
+      className="tooltip-label-value"
+      style={
+        Object {
+          "color": "#f00",
+        }
+      }
+    >
+      5
+    </span>
+  </p>
+</div>
+`;
+
+exports[`FreeBarChart should output empty div if no data 1`] = `
+<div
+  className="BarChart "
+/>
+`;
+
+exports[`FreeBarChart when data should allow changing dataKeys with buttons 1`] = `
+<div
+  className="BarChart "
+>
+  <div
+    className="toggle-group"
+  >
+    <button
+      className="btn btn-primary toggle-group-button"
+      key="otherProp"
+      onClick={[Function]}
+      type="button"
+    >
+      Button 1 label
+    </button>
+    <button
+      className="btn btn-default toggle-group-button"
+      key="lastProp"
+      onClick={[Function]}
+      type="button"
+    >
+      Button 2 label
+    </button>
+  </div>
+  <ResponsiveContainer
+    debounce={0}
+    height={320}
+    width="100%"
+  >
+    <BarChart
+      barCategoryGap="10%"
+      barGap={4}
+      data={
+        Array [
+          Object {
+            "label": "col1",
+            "lastProp": 2,
+            "otherProp": 5,
+            "results": 3,
+          },
+          Object {
+            "label": "col2",
+            "lastProp": 3,
+            "otherProp": 2,
+            "results": 4,
+          },
+        ]
+      }
+      height={300}
+      layout="horizontal"
+      margin={
+        Object {
+          "bottom": 5,
+          "left": 5,
+          "right": 5,
+          "top": 5,
+        }
+      }
+      reverseStackOrder={false}
+      stackOffset="none"
+    >
+      <XAxis
+        allowDataOverflow={false}
+        allowDecimals={true}
+        allowDuplicatedCategory={true}
+        dataKey="label"
+        domain={
+          Array [
+            0,
+            "auto",
+          ]
+        }
+        height={30}
+        hide={false}
+        label=""
+        mirror={false}
+        orientation="bottom"
+        padding={
+          Object {
+            "left": 0,
+            "right": 0,
+          }
+        }
+        reversed={false}
+        scale="auto"
+        tickCount={5}
+        type="category"
+        width={0}
+        xAxisId={0}
+      />
+      <YAxis
+        allowDataOverflow={false}
+        allowDecimals={true}
+        allowDuplicatedCategory={true}
+        domain={
+          Array [
+            0,
+            "auto",
+          ]
+        }
+        height={0}
+        hide={false}
+        mirror={false}
+        orientation="left"
+        padding={
+          Object {
+            "bottom": 0,
+            "top": 0,
+          }
+        }
+        reversed={false}
+        scale="auto"
+        tickCount={5}
+        type="number"
+        width={60}
+        yAxisId={0}
+      />
+      <CartesianGrid
+        fill="none"
+        horizontal={true}
+        horizontalFill={Array []}
+        horizontalPoints={Array []}
+        stroke="#ccc"
+        strokeDasharray="2 4"
+        vertical={true}
+        verticalFill={Array []}
+        verticalPoints={Array []}
+      />
+      <Tooltip
+        active={false}
+        animationDuration={400}
+        animationEasing="ease"
+        content={
+          <CustomTooltip
+            active={false}
+          />
+        }
+        contentStyle={Object {}}
+        coordinate={
+          Object {
+            "x": 0,
+            "y": 0,
+          }
+        }
+        cursor={true}
+        cursorStyle={Object {}}
+        filterNull={true}
+        isAnimationActive={true}
+        itemSorter={[Function]}
+        itemStyle={Object {}}
+        labelStyle={Object {}}
+        offset={10}
+        separator=" : "
+        useTranslate3d={false}
+        viewBox={
+          Object {
+            "x1": 0,
+            "x2": 0,
+            "y1": 0,
+            "y2": 0,
+          }
+        }
+        wrapperStyle={Object {}}
+      />
+      <Bar
+        animationBegin={0}
+        animationDuration={400}
+        animationEasing="ease"
+        data={Array []}
+        dataKey="otherProp"
+        fill="rgb(30, 28, 138)"
+        hide={false}
+        isAnimationActive={true}
+        layout="vertical"
+        legendType="rect"
+        minPointSize={0}
+        onAnimationEnd={[Function]}
+        onAnimationStart={[Function]}
+        stackId="unique"
+        xAxisId={0}
+        yAxisId={0}
+      >
+        <Cell
+          cursor="pointer"
+          fill="#1e1c8a"
+          key="cell-0"
+        />
+        <Cell
+          cursor="pointer"
+          fill="#1e1c8a"
+          key="cell-1"
+        />
+      </Bar>
+    </BarChart>
+  </ResponsiveContainer>
+</div>
+`;
+
+exports[`FreeBarChart when data should allow changing dataKeys with buttons 2`] = `
+<div
+  className="BarChart "
+>
+  <div
+    className="toggle-group"
+  >
+    <button
+      className="btn btn-default toggle-group-button"
+      key="otherProp"
+      onClick={[Function]}
+      type="button"
+    >
+      Button 1 label
+    </button>
+    <button
+      className="btn btn-primary toggle-group-button"
+      key="lastProp"
+      onClick={[Function]}
+      type="button"
+    >
+      Button 2 label
+    </button>
+  </div>
+  <ResponsiveContainer
+    debounce={0}
+    height={320}
+    width="100%"
+  >
+    <BarChart
+      barCategoryGap="10%"
+      barGap={4}
+      data={
+        Array [
+          Object {
+            "label": "col1",
+            "lastProp": 2,
+            "otherProp": 5,
+            "results": 3,
+          },
+          Object {
+            "label": "col2",
+            "lastProp": 3,
+            "otherProp": 2,
+            "results": 4,
+          },
+        ]
+      }
+      height={300}
+      layout="horizontal"
+      margin={
+        Object {
+          "bottom": 5,
+          "left": 5,
+          "right": 5,
+          "top": 5,
+        }
+      }
+      reverseStackOrder={false}
+      stackOffset="none"
+    >
+      <XAxis
+        allowDataOverflow={false}
+        allowDecimals={true}
+        allowDuplicatedCategory={true}
+        dataKey="label"
+        domain={
+          Array [
+            0,
+            "auto",
+          ]
+        }
+        height={30}
+        hide={false}
+        label=""
+        mirror={false}
+        orientation="bottom"
+        padding={
+          Object {
+            "left": 0,
+            "right": 0,
+          }
+        }
+        reversed={false}
+        scale="auto"
+        tickCount={5}
+        type="category"
+        width={0}
+        xAxisId={0}
+      />
+      <YAxis
+        allowDataOverflow={false}
+        allowDecimals={true}
+        allowDuplicatedCategory={true}
+        domain={
+          Array [
+            0,
+            "auto",
+          ]
+        }
+        height={0}
+        hide={false}
+        mirror={false}
+        orientation="left"
+        padding={
+          Object {
+            "bottom": 0,
+            "top": 0,
+          }
+        }
+        reversed={false}
+        scale="auto"
+        tickCount={5}
+        type="number"
+        width={60}
+        yAxisId={0}
+      />
+      <CartesianGrid
+        fill="none"
+        horizontal={true}
+        horizontalFill={Array []}
+        horizontalPoints={Array []}
+        stroke="#ccc"
+        strokeDasharray="2 4"
+        vertical={true}
+        verticalFill={Array []}
+        verticalPoints={Array []}
+      />
+      <Tooltip
+        active={false}
+        animationDuration={400}
+        animationEasing="ease"
+        content={
+          <CustomTooltip
+            active={false}
+          />
+        }
+        contentStyle={Object {}}
+        coordinate={
+          Object {
+            "x": 0,
+            "y": 0,
+          }
+        }
+        cursor={true}
+        cursorStyle={Object {}}
+        filterNull={true}
+        isAnimationActive={true}
+        itemSorter={[Function]}
+        itemStyle={Object {}}
+        labelStyle={Object {}}
+        offset={10}
+        separator=" : "
+        useTranslate3d={false}
+        viewBox={
+          Object {
+            "x1": 0,
+            "x2": 0,
+            "y1": 0,
+            "y2": 0,
+          }
+        }
+        wrapperStyle={Object {}}
+      />
+      <Bar
+        animationBegin={0}
+        animationDuration={400}
+        animationEasing="ease"
+        data={Array []}
+        dataKey="lastProp"
+        fill="rgb(30, 28, 138)"
+        hide={false}
+        isAnimationActive={true}
+        layout="vertical"
+        legendType="rect"
+        minPointSize={0}
+        onAnimationEnd={[Function]}
+        onAnimationStart={[Function]}
+        stackId="unique"
+        xAxisId={0}
+        yAxisId={0}
+      >
+        <Cell
+          cursor="pointer"
+          fill="#1e1c8a"
+          key="cell-0"
+        />
+        <Cell
+          cursor="pointer"
+          fill="#1e1c8a"
+          key="cell-1"
+        />
+      </Bar>
+    </BarChart>
+  </ResponsiveContainer>
+</div>
+`;
+
+exports[`FreeBarChart when data should allow personalizing the options 1`] = `
+<div
+  className="BarChart custom-class"
+>
+  <ResponsiveContainer
+    debounce={0}
+    height={320}
+    width="100%"
+  >
+    <BarChart
+      barCategoryGap="10%"
+      barGap={4}
+      data={
+        Array [
+          Object {
+            "label": "col1",
+            "lastProp": 2,
+            "otherProp": 5,
+            "results": 3,
+          },
+          Object {
+            "label": "col2",
+            "lastProp": 3,
+            "otherProp": 2,
+            "results": 4,
+          },
+        ]
+      }
+      height={300}
+      layout="vertical"
+      margin={
+        Object {
+          "bottom": 5,
+          "left": 5,
+          "right": 5,
+          "top": 5,
+        }
+      }
+      reverseStackOrder={false}
+      stackOffset="none"
+    >
+      <XAxis
+        allowDataOverflow={false}
+        allowDecimals={true}
+        allowDuplicatedCategory={true}
+        dataKey="otherProp"
+        domain={
+          Array [
+            0,
+            "auto",
+          ]
+        }
+        height={30}
+        hide={false}
+        mirror={false}
+        orientation="bottom"
+        padding={
+          Object {
+            "left": 0,
+            "right": 0,
+          }
+        }
+        reversed={false}
+        scale="auto"
+        tickCount={5}
+        type="number"
+        width={0}
+        xAxisId={0}
+      />
+      <YAxis
+        allowDataOverflow={false}
+        allowDecimals={true}
+        allowDuplicatedCategory={true}
+        dataKey="label"
+        domain={
+          Array [
+            0,
+            "auto",
+          ]
+        }
+        height={0}
+        hide={false}
+        mirror={false}
+        orientation="left"
+        padding={
+          Object {
+            "bottom": 0,
+            "top": 0,
+          }
+        }
+        reversed={false}
+        scale="auto"
+        tickCount={5}
+        type="category"
+        width={200}
+        yAxisId={0}
+      />
+      <CartesianGrid
+        fill="none"
+        horizontal={true}
+        horizontalFill={Array []}
+        horizontalPoints={Array []}
+        stroke="#ccc"
+        strokeDasharray="2 4"
+        vertical={true}
+        verticalFill={Array []}
+        verticalPoints={Array []}
+      />
+      <Tooltip
+        active={false}
+        animationDuration={400}
+        animationEasing="ease"
+        content={
+          <CustomTooltip
+            active={false}
+          />
+        }
+        contentStyle={Object {}}
+        coordinate={
+          Object {
+            "x": 0,
+            "y": 0,
+          }
+        }
+        cursor={true}
+        cursorStyle={Object {}}
+        filterNull={true}
+        isAnimationActive={true}
+        itemSorter={[Function]}
+        itemStyle={Object {}}
+        labelStyle={Object {}}
+        offset={10}
+        separator=" : "
+        useTranslate3d={false}
+        viewBox={
+          Object {
+            "x1": 0,
+            "x2": 0,
+            "y1": 0,
+            "y2": 0,
+          }
+        }
+        wrapperStyle={Object {}}
+      />
+      <Bar
+        animationBegin={0}
+        animationDuration={400}
+        animationEasing="ease"
+        data={Array []}
+        dataKey="otherProp"
+        fill="rgb(30, 28, 138)"
+        hide={false}
+        isAnimationActive={true}
+        layout="vertical"
+        legendType="rect"
+        minPointSize={0}
+        onAnimationEnd={[Function]}
+        onAnimationStart={[Function]}
+        stackId="unique"
+        xAxisId={0}
+        yAxisId={0}
+      >
+        <Cell
+          cursor="pointer"
+          fill="#ff0"
+          key="cell-0"
+        />
+        <Cell
+          cursor="pointer"
+          fill="#00f"
+          key="cell-1"
+        />
+      </Bar>
+    </BarChart>
+  </ResponsiveContainer>
+</div>
+`;
+
+exports[`FreeBarChart when data should render basic data with correct defaults 1`] = `
+<div
+  className="BarChart "
+>
+  <ResponsiveContainer
+    debounce={0}
+    height={320}
+    width="100%"
+  >
+    <BarChart
+      barCategoryGap="10%"
+      barGap={4}
+      data={
+        Array [
+          Object {
+            "label": "col1",
+            "lastProp": 2,
+            "otherProp": 5,
+            "results": 3,
+          },
+          Object {
+            "label": "col2",
+            "lastProp": 3,
+            "otherProp": 2,
+            "results": 4,
+          },
+        ]
+      }
+      height={300}
+      layout="horizontal"
+      margin={
+        Object {
+          "bottom": 5,
+          "left": 5,
+          "right": 5,
+          "top": 5,
+        }
+      }
+      reverseStackOrder={false}
+      stackOffset="none"
+    >
+      <XAxis
+        allowDataOverflow={false}
+        allowDecimals={true}
+        allowDuplicatedCategory={true}
+        dataKey="label"
+        domain={
+          Array [
+            0,
+            "auto",
+          ]
+        }
+        height={30}
+        hide={false}
+        label=""
+        mirror={false}
+        orientation="bottom"
+        padding={
+          Object {
+            "left": 0,
+            "right": 0,
+          }
+        }
+        reversed={false}
+        scale="auto"
+        tickCount={5}
+        type="category"
+        width={0}
+        xAxisId={0}
+      />
+      <YAxis
+        allowDataOverflow={false}
+        allowDecimals={true}
+        allowDuplicatedCategory={true}
+        domain={
+          Array [
+            0,
+            "auto",
+          ]
+        }
+        height={0}
+        hide={false}
+        mirror={false}
+        orientation="left"
+        padding={
+          Object {
+            "bottom": 0,
+            "top": 0,
+          }
+        }
+        reversed={false}
+        scale="auto"
+        tickCount={5}
+        type="number"
+        width={60}
+        yAxisId={0}
+      />
+      <CartesianGrid
+        fill="none"
+        horizontal={true}
+        horizontalFill={Array []}
+        horizontalPoints={Array []}
+        stroke="#ccc"
+        strokeDasharray="2 4"
+        vertical={true}
+        verticalFill={Array []}
+        verticalPoints={Array []}
+      />
+      <Tooltip
+        active={false}
+        animationDuration={400}
+        animationEasing="ease"
+        content={
+          <CustomTooltip
+            active={false}
+          />
+        }
+        contentStyle={Object {}}
+        coordinate={
+          Object {
+            "x": 0,
+            "y": 0,
+          }
+        }
+        cursor={true}
+        cursorStyle={Object {}}
+        filterNull={true}
+        isAnimationActive={true}
+        itemSorter={[Function]}
+        itemStyle={Object {}}
+        labelStyle={Object {}}
+        offset={10}
+        separator=" : "
+        useTranslate3d={false}
+        viewBox={
+          Object {
+            "x1": 0,
+            "x2": 0,
+            "y1": 0,
+            "y2": 0,
+          }
+        }
+        wrapperStyle={Object {}}
+      />
+      <Bar
+        animationBegin={0}
+        animationDuration={400}
+        animationEasing="ease"
+        data={Array []}
+        dataKey="results"
+        fill="rgb(30, 28, 138)"
+        hide={false}
+        isAnimationActive={true}
+        layout="vertical"
+        legendType="rect"
+        minPointSize={0}
+        onAnimationEnd={[Function]}
+        onAnimationStart={[Function]}
+        stackId="unique"
+        xAxisId={0}
+        yAxisId={0}
+      >
+        <Cell
+          cursor="pointer"
+          fill="#1e1c8a"
+          key="cell-0"
+        />
+        <Cell
+          cursor="pointer"
+          fill="#1e1c8a"
+          key="cell-1"
+        />
+      </Bar>
+    </BarChart>
+  </ResponsiveContainer>
+</div>
+`;

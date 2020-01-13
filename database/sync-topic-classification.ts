@@ -16,9 +16,18 @@ import { MetadataObject } from '../app/api/entities/entitiesModel';
 import { EntitySchema } from '../app/api/entities/entityType';
 import { ThesaurusSchema } from '../app/api/thesauris/dictionariesType';
 
-const { limit, refresh_predictions } = yargs
+const { limit, recompute, overwrite } = yargs
   .option('limit', { default: 1000000 })
-  .option('refresh_predictions', { default: false })
+  .option('recompute', {
+    default: false,
+    usage: 'If true, force topic-classification to refresh all predictions. Can be slow.',
+  })
+  .option('overwrite', {
+    default: false,
+    usage:
+      'If true, replace suggestedMetadata in Uwazi with predictions, even if ' +
+      'suggestions exist. This potentially recreates previously-rejected suggestions.',
+  })
   .help().argv;
 
 async function syncEntity(
@@ -36,7 +45,7 @@ async function syncEntity(
   }
   const propMeta = e.metadata[prop] || [];
   const request = {
-    refresh_predictions,
+    refresh_predictions: recompute,
     samples: [
       {
         seq: sequence,
@@ -80,27 +89,29 @@ async function syncEntity(
     if (!e.suggestedMetadata) {
       e.suggestedMetadata = {};
     }
-    const newPropMetadata = response.json.samples[0].predicted_labels.reduce(
-      (res: MetadataObject<string>[], pred) => {
-        const thesValue = (thesaurus.values || []).find(v => v.label === pred.topic);
-        if (!thesValue || !thesValue.id) {
-          console.error(
-            `Model prediction "${pred.topic}" not found in thesaurus ${thesaurus.name}`
-          );
-          return res;
-        }
-        return [
-          ...res,
-          { value: thesValue.id, label: pred.topic, suggestion_confidence: pred.quality },
-        ];
-      },
-      []
-    );
-    // JSON.stringify provides an easy and fast deep-equal comparison.
-    if (JSON.stringify(newPropMetadata) !== JSON.stringify(e.suggestedMetadata[prop])) {
-      e.suggestedMetadata[prop] = newPropMetadata;
-      await entities.save(e, { user: 'sync-topic-classification', language: e.language });
-      console.info(`Saved ${e.sharedId}`);
+    if (!e.suggestedMetadata[prop] || overwrite) {
+      const newPropMetadata = response.json.samples[0].predicted_labels.reduce(
+        (res: MetadataObject<string>[], pred) => {
+          const thesValue = (thesaurus.values || []).find(v => v.label === pred.topic);
+          if (!thesValue || !thesValue.id) {
+            console.error(
+              `Model prediction "${pred.topic}" not found in thesaurus ${thesaurus.name}`
+            );
+            return res;
+          }
+          return [
+            ...res,
+            { value: thesValue.id, label: pred.topic, suggestion_confidence: pred.quality },
+          ];
+        },
+        []
+      );
+      // JSON.stringify provides an easy and fast deep-equal comparison.
+      if (JSON.stringify(newPropMetadata) !== JSON.stringify(e.suggestedMetadata[prop])) {
+        e.suggestedMetadata[prop] = newPropMetadata;
+        await entities.save(e, { user: 'sync-topic-classification', language: e.language });
+        console.info(`Saved ${e.sharedId}`);
+      }
     }
   }
   return true;

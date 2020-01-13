@@ -197,7 +197,7 @@ export function publishDocument(doc) {
 }
 
 export function unpublishEntity(entity) {
-  return dispatch => api.post('entities', new RequestParams({ ...entity, published: true }))
+  return dispatch => api.post('entities', new RequestParams({ _id: entity._id, sharedId: entity.sharedId, published: false }))
   .then((response) => {
     dispatch(notificationActions.notify('Entity unpublished', 'success'));
     dispatch({ type: types.REMOVE_DOCUMENT, doc: entity });
@@ -207,7 +207,7 @@ export function unpublishEntity(entity) {
 }
 
 export function unpublishDocument(doc) {
-  return dispatch => api.post('documents', new RequestParams({ ...doc, published: false }))
+  return dispatch => api.post('documents', new RequestParams({ _id: doc._id, sharedId: doc.sharedId, published: false }))
   .then((response) => {
     dispatch(notificationActions.notify('Document unpublished', 'success'));
     dispatch({ type: types.REMOVE_DOCUMENT, doc });
