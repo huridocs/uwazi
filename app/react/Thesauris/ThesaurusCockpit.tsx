@@ -22,10 +22,6 @@ interface ClassifierModel {
   };
 }
 
-function toTwoDecimals(num: number) {
-  return (+num).toFixed(2);
-}
-
 function qualityIcon(val: number) {
   switch (true) {
     case val > 0.85:
@@ -55,9 +51,11 @@ function qualityIcon(val: number) {
   }
 }
 
-function topicNode(topic: { label: string }, modelInfo: ClassifierModel) {
+function topicNode(topic: { label: string; id: string }, modelInfo: ClassifierModel) {
   const { label } = topic;
+  const { id } = topic;
   const info = modelInfo.topics[label];
+  const thesaurusName = modelInfo.name.toLowerCase();
   const { quality } = info;
   const { samples } = info;
 
@@ -67,11 +65,14 @@ function topicNode(topic: { label: string }, modelInfo: ClassifierModel) {
       <td>{qualityIcon(quality)}</td>
       <td>{samples}</td>
       <td>
-        <button className="btn btn-xs" type="button">
-          <Icon icon="search" />
+        <I18NLink
+          to={`/review?q=(filters:(_${thesaurusName}:(values:!(${id}))))`}
+          className="btn btn-default btn-xs"
+        >
+          <Icon icon="gavel" />
           &nbsp;
-          <span>{t('system', 'View suggestions')}</span>
-        </button>
+          <span>{t('system', 'Review suggestions')}</span>
+        </I18NLink>
       </td>
     </tr>
   );
