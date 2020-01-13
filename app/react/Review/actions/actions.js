@@ -1,10 +1,39 @@
 /** @format */
 
 import { actions } from 'app/BasicReducer';
-import { getAndLoadEntity } from 'app/Entities/actions/actions';
+import { loadEntity } from 'app/Entities/actions/actions';
 import api from 'app/Entities/EntitiesAPI';
 import { wrapEntityMetadata } from 'app/Metadata/components/MetadataForm';
+import * as relationships from 'app/Relationships/utils/routeUtils';
 import { RequestParams } from 'app/utils/RequestParams';
+import Immutable from 'immutable';
+
+export async function getAndLoadEntity(requestParams, templates, state, loadConnections) {
+  const [[entity], [connectionsGroups, searchResults, sort, filters]] = await Promise.all([
+    api.get(requestParams),
+    loadConnections
+      ? relationships.requestState(requestParams, state)
+      : [[], { rows: [] }, {}, Immutable.fromJS({})],
+  ]);
+
+  return [
+    actions.set('entityView/entity', entity),
+    relationships.setReduxState({
+      relationships: {
+        list: {
+          sharedId: entity.sharedId,
+          entity,
+          connectionsGroups,
+          searchResults,
+          sort,
+          filters,
+          view: 'graph',
+        },
+      },
+    }),
+    ...loadEntity(entity, templates),
+  ];
+}
 
 export function toggleOneUpFullEdit() {
   return async (dispatch, getState) => {
@@ -31,7 +60,7 @@ export function switchOneUpEntity(delta, save) {
     const oneUpState = state.oneUpReview.state.toJS();
     if (save) {
       const entity = wrapEntityMetadata(state.entityView.entityForm);
-      await api.save(new RequestParams(entity));
+      await api.save(new RequestParams(entity, oneUpState.requestHeaders));
     }
     const templates = state.templates.toJS();
     const current = state.entityView.entity.get('sharedId');
@@ -43,7 +72,12 @@ export function switchOneUpEntity(delta, save) {
       .get('sharedId');
 
     [
-      ...(await getAndLoadEntity(sharedId, templates, state, oneUpState.loadConnections)),
+      ...(await getAndLoadEntity(
+        new RequestParams({ sharedId }, oneUpState.requestHeaders),
+        templates,
+        state,
+        oneUpState.loadConnections
+      )),
       actions.set('oneUpReview.state', {
         ...oneUpState,
         // fullEdit: false,

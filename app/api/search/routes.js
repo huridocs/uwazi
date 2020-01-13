@@ -42,6 +42,8 @@ export default (app) => {
       req.query.fields = parseQueryProperty(req.query, 'fields');
       req.query.aggregations = parseQueryProperty(req.query, 'aggregations');
       req.query.select = parseQueryProperty(req.query, 'select');
+      req.query.unpublished = parseQueryProperty(req.query, 'unpublished');
+      req.query.includeUnpublished = parseQueryProperty(req.query, 'includeUnpublished');
 
       const action = req.query.geolocation ? 'searchGeolocations' : 'search';
 

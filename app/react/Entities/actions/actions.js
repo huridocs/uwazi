@@ -11,10 +11,8 @@ import {
 import * as metadataActions from 'app/Metadata/actions/actions';
 import { notificationActions } from 'app/Notifications';
 import { actions as relationshipActions } from 'app/Relationships';
-import * as relationships from 'app/Relationships/utils/routeUtils';
 import { advancedSort } from 'app/utils/advancedSort';
 import { RequestParams } from 'app/utils/RequestParams';
-import Immutable from 'immutable';
 import { actions as formActions } from 'react-redux-form';
 
 export function saveEntity(entity) {
@@ -45,7 +43,7 @@ export function deleteEntities(entities) {
     });
 }
 
-function loadEntity(entity, templates) {
+export function loadEntity(entity, templates) {
   const form = 'entityView.entityForm';
   const sortedTemplates = advancedSort(templates, { property: 'name' });
   const defaultTemplate = sortedTemplates.find(t => t.default);
@@ -66,32 +64,5 @@ function loadEntity(entity, templates) {
     formActions.reset(form),
     formActions.load(form, { ...entity, metadata, template }),
     formActions.setPristine(form),
-  ];
-}
-
-export async function getAndLoadEntity(sharedId, templates, state, loadConnections) {
-  const [[entity], [connectionsGroups, searchResults, sort, filters]] = await Promise.all([
-    api.get(new RequestParams({ sharedId })),
-    loadConnections
-      ? relationships.requestState(new RequestParams({ sharedId }), state)
-      : [[], { rows: [] }, {}, Immutable.fromJS({})],
-  ]);
-
-  return [
-    actions.set('entityView/entity', entity),
-    relationships.setReduxState({
-      relationships: {
-        list: {
-          sharedId: entity.sharedId,
-          entity,
-          connectionsGroups,
-          searchResults,
-          sort,
-          filters,
-          view: 'graph',
-        },
-      },
-    }),
-    ...loadEntity(entity, templates),
   ];
 }
