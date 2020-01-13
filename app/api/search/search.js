@@ -350,6 +350,52 @@ const processGeolocationResults = (_results, templatesInheritedProperties, inher
   return results;
 };
 
+const escapeCharByRegex = (query, regex, char) => {
+  let escaped = query;
+
+  regex.lastIndex = 0;
+  let result = regex.exec(escaped);
+  while (result) {
+    const firstPart = escaped.substr(0, result.index);
+    const charCount = result[1] ? 2 : 1;
+    const secondPart = escaped.substr(result.index + charCount, query.length);
+    const replacement = `${charCount === 2 ? result[1] : ''}\\${char}`;
+
+    escaped = firstPart + replacement + secondPart;
+    regex.lastIndex = 0;
+    result = regex.exec(escaped);
+  }
+
+  return escaped;
+};
+
+const checkCharParity = (query, regex) => {
+  const indices = [];
+
+  regex.lastIndex = 0;
+  let result = regex.exec(query);
+  while (result) {
+    indices.push(result.index);
+    result = regex.exec(query);
+  }
+
+  return !(indices.length % 2 === 1);
+};
+
+const escapeElasticSearchQueryString = query => {
+  const charsRegex = {
+    '"': /([^\\])"|^"/g,
+    '/': /([^\\])\/|^\//g,
+  };
+
+  return Object.keys(charsRegex).reduce((escaped, char) => {
+    if (!checkCharParity(escaped, charsRegex[char])) {
+      return escapeCharByRegex(escaped, charsRegex[char], char);
+    }
+    return escaped;
+  }, query);
+};
+
 const instanceSearch = elasticIndex => ({
   search(query, language, user) {
     return Promise.all([
@@ -368,8 +414,10 @@ const instanceSearch = elasticIndex => ({
               : `metadata.${prop.name}.label`
           )
           .concat(['title', 'fullText']);
+      const elasticSearchTerm =
+        query.searchTerm && escapeElasticSearchQueryString(query.searchTerm);
       const documentsQuery = documentQueryBuilder()
-        .fullTextSearch(query.searchTerm, textFieldsToSearch, 2)
+        .fullTextSearch(elasticSearchTerm, textFieldsToSearch, 2)
         .filterByTemplate(query.types)
         .filterById(query.ids)
         .language(language);
@@ -466,12 +514,14 @@ const instanceSearch = elasticIndex => ({
   async searchSnippets(searchTerm, sharedId, language) {
     const templates = await templatesModel.get();
 
+    const elasticSearchTerm = searchTerm && escapeElasticSearchQueryString(searchTerm);
+
     const searchFields = propertiesHelper
       .textFields(templates)
       .map(prop => `metadata.${prop.name}.value`)
       .concat(['title', 'fullText']);
     const query = documentQueryBuilder()
-      .fullTextSearch(searchTerm, searchFields, 9999)
+      .fullTextSearch(elasticSearchTerm, searchFields, 9999)
       .includeUnpublished()
       .filterById(sharedId)
       .language(language)

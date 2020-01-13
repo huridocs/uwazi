@@ -1,8 +1,5 @@
-/**
- * /* eslint-disable camelcase
- *
- * @format
- */
+/** @format */
+/* eslint-disable camelcase */
 
 import languages from '../app/shared/languages';
 
