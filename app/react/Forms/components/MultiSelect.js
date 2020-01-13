@@ -294,7 +294,7 @@ export default class MultiSelect extends Component {
       options = this.sortOnlyAggregates(options, optionsValue, optionsLabel);
     }
 
-    if (!this.props.sort && !this.state.showAll) {
+    if (this.props.forceHoist || (!this.props.sort && !this.state.showAll)) {
       options = this.hoistCheckedOptions(options);
     }
 
@@ -344,7 +344,7 @@ export default class MultiSelect extends Component {
         })}
 
         <li className="multiselectActions">
-          <ShowIf if={totalOptions.length > this.props.optionsToShow && !this.props.showAll}>
+          <ShowIf if={totalOptions.length > this.props.optionsToShow && !this.state.showAll}>
             <button onClick={this.showAll.bind(this)} className="btn btn-xs btn-default">
               <Icon icon={this.state.showAll ? 'caret-up' : 'caret-down'} />
               <i className={this.state.showAll ? 'fa fa-caret-up' : 'fa fa-caret-down'} />
@@ -369,6 +369,7 @@ MultiSelect.defaultProps = {
   hideSearch: false,
   sort: false,
   sortbyLabel: false,
+  forceHoist: false,
 };
 
 MultiSelect.propTypes = {
@@ -384,4 +385,5 @@ MultiSelect.propTypes = {
   hideSearch: PropTypes.bool,
   sort: PropTypes.bool,
   sortbyLabel: PropTypes.bool,
+  forceHoist: PropTypes.bool,
 };

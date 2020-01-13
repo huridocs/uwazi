@@ -57,6 +57,7 @@ export class MetadataFormFields extends Component {
             optionsValue="id"
             options={translateOptions(thesauri)}
             prefix={_model}
+            forceHoist
           />
         );
       case 'relationship':
