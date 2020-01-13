@@ -32,7 +32,7 @@ describe('thesaurisActions', () => {
 
   afterEach(() => backend.restore());
 
-  describe('saveThesauri', () => {
+  describe('saveThesaurus', () => {
     it('should save the thesauri and dispatch a thesauriSaved action and a notify', done => {
       const expectedActions = [
         { type: types.THESAURI_SAVED },

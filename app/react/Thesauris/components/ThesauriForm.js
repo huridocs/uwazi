@@ -126,7 +126,7 @@ export class ThesauriForm extends Component {
 
   save(thesauri) {
     const sanitizedThesauri = sanitizeThesauri(thesauri);
-    this.props.saveThesauri(sanitizedThesauri);
+    this.props.saveThesaurus(sanitizedThesauri);
   }
 
   renderItem(value, index) {
@@ -237,7 +237,7 @@ ThesauriForm.defaultProps = {
 ThesauriForm.propTypes = {
   resetForm: PropTypes.func.isRequired,
   setInitial: PropTypes.func.isRequired,
-  saveThesauri: PropTypes.func.isRequired,
+  saveThesaurus: PropTypes.func.isRequired,
   addValue: PropTypes.func.isRequired,
   addGroup: PropTypes.func.isRequired,
   sortValues: PropTypes.func.isRequired,

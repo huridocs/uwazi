@@ -21,8 +21,8 @@ describe('ThesauriForm', () => {
       resetForm: jasmine.createSpy('resetForm'),
       setInitial: jasmine.createSpy('setInitial'),
       thesauris: Immutable.fromJS([{ name: 'Countries' }]),
-      saveThesauri: jasmine.createSpy('saveThesauri'),
-      importThesauri: jasmine.createSpy('saveThesauri'),
+      saveThesaurus: jasmine.createSpy('saveThesaurus'),
+      importThesauri: jasmine.createSpy('saveThesaurus'),
       addValue: jasmine.createSpy('addValue'),
       addGroup: jasmine.createSpy('addGroup'),
       sortValues: jasmine.createSpy('sortValues'),
@@ -77,7 +77,7 @@ describe('ThesauriForm', () => {
       const sanitizedThesauri = {
         values: [{ label: 'Heroes', values: [{ label: 'Batman' }, { label: 'Robin' }], id: 0 }]
       };
-      expect(props.saveThesauri).toHaveBeenCalledWith(sanitizedThesauri);
+      expect(props.saveThesaurus).toHaveBeenCalledWith(sanitizedThesauri);
     });
   });
 
