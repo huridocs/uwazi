@@ -106,7 +106,6 @@
 
 .thesauri-list {
   table {
-    //table-layout: fixed;
     empty-cells: hide;
     width: 100%;
     white-space: nowrap;
@@ -146,5 +145,9 @@
 
   .vertical-line {
     border-right: $c-grey-light;
+  }
+
+  .thesaurus-suggestion-count {
+    padding-right: 5px;
   }
 }

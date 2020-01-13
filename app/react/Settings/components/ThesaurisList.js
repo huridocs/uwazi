@@ -36,8 +36,9 @@ export class ThesaurisList extends Component {
     if (thesaurus.enable_classification) {
       const view = (
         <div className="thesauri-list vertical-line">
-          {'2,345 unpublished documents to be reviewed'}
-          {'  '}
+          <span className="thesaurus-suggestion-count">
+            2,345 unpublished documents to be reviewed
+          </span>
           <I18NLink
             to={`/settings/dictionaries/cockpit/${thesaurus._id}`}
             className="btn btn-primary btn-xs"
