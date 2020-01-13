@@ -26,6 +26,11 @@ export default {
           name: templateUtils.safeName('text label'),
         },
         {
+          type: propertyTypes.numeric,
+          label: 'numeric label',
+          name: templateUtils.safeName('numeric label'),
+        },
+        {
           type: propertyTypes.select,
           label: 'select label',
           name: templateUtils.safeName('select label'),

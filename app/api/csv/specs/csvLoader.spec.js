@@ -60,7 +60,12 @@ describe('csvLoader', () => {
 
     it('should only import valid metadata', () => {
       const metadataImported = Object.keys(imported[0].metadata);
-      expect(metadataImported).toEqual(['text_label', 'select_label', 'not_defined_type']);
+      expect(metadataImported).toEqual([
+        'text_label',
+        'numeric_label',
+        'select_label',
+        'not_defined_type',
+      ]);
     });
 
     it('should ignore properties not configured in the template', () => {
@@ -74,8 +79,11 @@ describe('csvLoader', () => {
         const textValues = imported.map(i => i.metadata.text_label[0].value);
         expect(textValues).toEqual(['text value 1', 'text value 2', 'text value 3']);
 
-        const thesauriValues = imported.map(i => i.metadata.select_label[0].value);
-        expect(thesauriValues.length).toEqual(3);
+        const numericValues = imported.map(i => i.metadata.numeric_label[0].value);
+        expect(numericValues).toEqual([1977, 2019, 2020]);
+
+        const thesauriValues = imported.map(i => i.metadata.select_label[0].label);
+        expect(thesauriValues).toEqual(['thesauri1', 'thesauri2', 'thesauri2']);
       });
 
       describe('when parser not defined', () => {
@@ -109,11 +117,8 @@ describe('csvLoader', () => {
       await db.clearAllAndLoad(fixtures);
       jest
         .spyOn(entities, 'save')
-        .mockImplementationOnce(e => e)
-        .mockImplementationOnce(({ title }) => {
-          throw new Error(`error-${title}`);
-        })
-        .mockImplementationOnce(e => e);
+        .mockImplementationOnce(({ title }) => Promise.resolve({ title }))
+        .mockImplementationOnce(({ title }) => Promise.reject(new Error(`error-${title}`)));
 
       try {
         await testingLoader.load(csvFile, template1Id);
@@ -169,7 +174,7 @@ describe('csvLoader', () => {
     });
 
     it('should fail when parsing throws an error', async () => {
-      entities.save.and.callFake(e => e);
+      entities.save.and.callFake(() => Promise.resolve({}));
       spyOn(typeParsers, 'text').and.callFake(entity => {
         if (entity.title === 'title2') {
           throw new Error(`error-${entity.title}`);

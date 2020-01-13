@@ -65,6 +65,48 @@ exports[`ImportProgress rendering states should render a state for errors 1`] = 
   </div>
   <StackTrace
     message="Something bad happened"
+    validations={null}
+  />
+</div>
+`;
+
+exports[`ImportProgress rendering states should render a state for errors 2`] = `
+<div>
+  <div
+    className="alert alert-danger"
+  >
+    <Connect(Icon)
+      icon="exclamation-triangle"
+      size="2x"
+    />
+    <div
+      className="force-ltr"
+    >
+      <Connect(Translate)>
+        The import process threw an error:
+      </Connect(Translate)>
+    </div>
+    <Connect(Icon)
+      icon="times"
+      onClick={[Function]}
+      style={
+        Object {
+          "cursor": "pointer",
+        }
+      }
+    />
+  </div>
+  <StackTrace
+    message="validation error"
+    validations={
+      Immutable.List [
+        Immutable.Map {
+          "message": "should be number",
+          "dataPath": ".metadata['number']",
+          "schemaPath": "#/metadataMatchesTemplateProperties",
+        },
+      ]
+    }
   />
 </div>
 `;

@@ -1174,7 +1174,7 @@ describe('entities', () => {
   });
 
   describe('validation', () => {
-    fit('should validate on save', async () => {
+    it('should validate on save', async () => {
       const entity = {
         title: 'Test',
         template: templateId,

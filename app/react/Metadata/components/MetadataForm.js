@@ -34,14 +34,8 @@ export class MetadataForm extends Component {
     this.onSubmitFailed = this.onSubmitFailed.bind(this);
   }
 
-  wrapEntityMetadata(entity) {
-    const metadata = Object.keys(entity.metadata).reduce((wrappedMo, key) => {
-      wrappedMo[key] = Array.isArray(entity.metadata[key])
-        ? entity.metadata[key].map(v => ({ value: v }))
-        : [{ value: entity.metadata[key] }];
-      return wrappedMo;
-    }, {});
-    return { ...entity, metadata };
+  componentWillUnmount() {
+    this.props.componentWillUnmount();
   }
 
   onSubmit(entity) {
@@ -53,6 +47,16 @@ export class MetadataForm extends Component {
 
   onSubmitFailed() {
     this.props.notify(t('System', 'Invalid form', null, false), 'danger');
+  }
+
+  wrapEntityMetadata(entity) {
+    const metadata = Object.keys(entity.metadata).reduce((wrappedMo, key) => {
+      wrappedMo[key] = Array.isArray(entity.metadata[key])
+        ? entity.metadata[key].map(v => ({ value: v }))
+        : [{ value: entity.metadata[key] }];
+      return wrappedMo;
+    }, {});
+    return { ...entity, metadata };
   }
 
   renderTemplateSelect(templateOptions, template) {
@@ -146,18 +150,23 @@ export class MetadataForm extends Component {
 MetadataForm.defaultProps = {
   id: 'metadataForm',
   multipleEdition: false,
+  componentWillUnmount: () => {},
+  notify: () => {},
+  changeTemplate: () => {},
+  onSubmit: () => {},
 };
 
 MetadataForm.propTypes = {
   model: PropTypes.string.isRequired,
-  template: PropTypes.object,
+  template: PropTypes.instanceOf(Immutable.Map).isRequired,
   multipleEdition: PropTypes.bool,
-  templateOptions: PropTypes.object,
-  thesauris: PropTypes.object,
+  templateOptions: PropTypes.instanceOf(Immutable.List).isRequired,
+  thesauris: PropTypes.instanceOf(Immutable.List).isRequired,
   changeTemplate: PropTypes.func,
   onSubmit: PropTypes.func,
   notify: PropTypes.func,
   id: PropTypes.string,
+  componentWillUnmount: PropTypes.func,
 };
 
 function mapDispatchToProps(dispatch) {

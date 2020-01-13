@@ -3,8 +3,9 @@
 import Ajv from 'ajv';
 import ajvKeywords from 'ajv-keywords';
 import model from 'api/templates/templatesModel';
-import { objectIdSchema, propertySchema } from 'shared/commonSchemas';
 import { wrapValidator } from 'shared/tsUtils';
+import { objectIdSchema, propertySchema } from 'api/utils/jsonSchemas';
+import templates from 'api/templates';
 
 export const emitSchemaTypes = true;
 
@@ -104,11 +105,47 @@ ajv.addKeyword('requireInheritPropertyForInheritingRelationship', {
   },
 });
 
+ajv.addKeyword('cantDeleteInheritedProperties', {
+  async: true,
+  errors: true,
+  type: 'object',
+  async validate(schema, template) {
+    const [currentTemplate] = await model.get({ _id: template._id });
+    if (!currentTemplate) {
+      return true;
+    }
+    const toRemoveProperties = currentTemplate.properties.filter(
+      prop => !template.properties.find(p => p._id === prop._id)
+    );
+
+    const errors = [];
+    await Promise.all(
+      toRemoveProperties.map(async property => {
+        const canDelete = await templates.canDeleteProperty(template._id, property._id);
+
+        if (!canDelete) {
+          errors.push({
+            message: "Can't delete properties beign inherited",
+            dataPath: `.metadata['${property.name}']`,
+          });
+        }
+      })
+    );
+
+    if (errors.length) {
+      throw new Ajv.ValidationError(errors);
+    }
+
+    return true;
+  },
+});
+
 export const templateSchema = {
   $schema: 'http://json-schema.org/schema#',
   $async: true,
   type: 'object',
   uniqueName: true,
+  cantDeleteInheritedProperties: true,
   required: ['name', 'commonProperties'],
   uniquePropertyFields: ['id', 'name', 'label'],
   definitions: { objectIdSchema, propertySchema },
@@ -130,4 +167,5 @@ export const templateSchema = {
   },
 };
 
-export const validateTemplate = wrapValidator(ajv.compile(templateSchema));
+const validateTemplate = wrapValidator(ajv.compile(templateSchema));
+export { validateTemplate };
