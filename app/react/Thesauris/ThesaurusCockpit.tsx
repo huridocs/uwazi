@@ -22,6 +22,11 @@ interface ClassifierModel {
   };
 }
 
+interface ThesaurusTopic {
+  id: string;
+  label: string;
+}
+
 function qualityIcon(val: number) {
   switch (true) {
     case val > 0.85:
@@ -51,7 +56,7 @@ function qualityIcon(val: number) {
   }
 }
 
-function topicNode(topic: { label: string; id: string }, modelInfo: ClassifierModel) {
+function topicNode(topic: ThesaurusTopic, modelInfo: ClassifierModel) {
   const { label } = topic;
   const { id } = topic;
   const info = modelInfo.topics[label];
@@ -86,10 +91,10 @@ function topicNodes(topics: Array<any>, model: ClassifierModel) {
     .sort(
       // Sort in order of descending model quality
       // TODO: Make sort order configurable, or even better, dynamic
-      (topic1: { label: string }, topic2: { label: string }) =>
+      (topic1: ThesaurusTopic, topic2: ThesaurusTopic) =>
         model.topics[topic2.label].quality - model.topics[topic1.label].quality
     )
-    .map((topic: { label: string }) => topicNode(topic, model));
+    .map((topic: ThesaurusTopic) => topicNode(topic, model));
 }
 
 class ThesaurusCockpit extends RouteHandler {
