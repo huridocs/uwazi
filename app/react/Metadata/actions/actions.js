@@ -98,17 +98,9 @@ export function loadInReduxForm(form, _entity, templates) {
         ),
         templateconfig
       );
-      const suggestedMetadata = UnwrapMetadataObject(
-        resetMetadata(
-          entity.suggestedMetadata || {},
-          templateconfig,
-          { resetExisting: false },
-          templateconfig
-        ),
-        templateconfig
-      );
+      // suggestedMetadata is always in metadata-object form.
       dispatch(formActions.reset(form));
-      dispatch(formActions.load(form, { ...entity, metadata, suggestedMetadata, template }));
+      dispatch(formActions.load(form, { ...entity, metadata, template }));
       dispatch(formActions.setPristine(form));
     });
   };
