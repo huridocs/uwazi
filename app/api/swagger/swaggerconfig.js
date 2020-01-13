@@ -13,6 +13,7 @@ export default (app) => {
       description: `Uwazi is an open-source solution for building and sharing document collections.
       <br>Remember that using the "Try it out" functionality will execute the requests over your local instalation!`
     },
+    host: 'localhost:3000',
     basePath: '/api',
     tags: [
       { name: 'attachments' },
