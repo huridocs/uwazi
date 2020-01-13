@@ -3,31 +3,29 @@
 import RouteHandler from 'app/App/RouteHandler';
 import { actions } from 'app/BasicReducer';
 import Loader from 'app/components/Elements/Loader';
-import * as entityActions from 'app/Entities/actions/actions';
 import * as uiActions from 'app/Entities/actions/uiActions';
-import OneUpEntityViewer from 'app/Review/components/OneUpEntityViewer';
 import { setDocuments, unsetDocuments } from 'app/Library/actions/libraryActions';
+import { processQuery } from 'app/Library/helpers/requestState';
 import { wrapDispatch } from 'app/Multireducer';
 import * as relationships from 'app/Relationships/utils/routeUtils';
 import relationTypesAPI from 'app/RelationTypes/RelationTypesAPI';
+import * as reviewActions from 'app/Review/actions/actions';
+import OneUpEntityViewer from 'app/Review/components/OneUpEntityViewer';
 import api from 'app/Search/SearchAPI';
 import TemplatesAPI from 'app/Templates/TemplatesAPI';
 import { setReferences } from 'app/Viewer/actions/referencesActions';
 import React from 'react';
 import { connect } from 'react-redux';
 import { actions as formActions } from 'react-redux-form';
-import { processQuery } from 'app/Library/helpers/requestState';
 
 class OneUpReview extends RouteHandler {
   static async requestState(requestParams, state) {
-    const documentsRequest = {
-      ...requestParams,
-      data: {
-        ...processQuery(requestParams.data, state),
-        limit: 5000,
-        select: ['sharedId'],
-      },
-    };
+    const documentsRequest = requestParams.set({
+      ...processQuery(requestParams.data, state),
+      limit: 5001,
+      select: ['sharedId'],
+      unpublished: !!requestParams.data.unpublished,
+    });
     const [templates, relationTypes, documents] = await Promise.all([
       TemplatesAPI.get(requestParams.onlyHeaders()),
       relationTypesAPI.get(requestParams.onlyHeaders()),
@@ -49,8 +47,15 @@ class OneUpReview extends RouteHandler {
         loadConnections: false,
         indexInDocs: 0,
         totalDocs: documents.rows.length,
+        maxTotalDocs: 5001,
+        requestHeaders: requestParams.headers,
       }),
-      ...(await entityActions.getAndLoadEntity(firstSharedId, templates, state, false)),
+      ...(await reviewActions.getAndLoadEntity(
+        requestParams.set({ sharedId: firstSharedId }),
+        templates,
+        state,
+        false
+      )),
     ];
   }
 

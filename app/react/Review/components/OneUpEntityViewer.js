@@ -6,13 +6,22 @@ import { actions as connectionsActions, CreateConnectionPanel } from 'app/Connec
 import { ConnectionsGroups, ConnectionsList } from 'app/ConnectionsList';
 import { connectionsChanged, deleteConnection } from 'app/ConnectionsList/actions/actions';
 import ContextMenu from 'app/ContextMenu';
+import { showTab } from 'app/Entities/actions/uiActions';
+import { ShowSidepanelMenu } from 'app/Entities/components/ShowSidepanelMenu';
+import EntityForm from 'app/Entities/containers/EntityForm';
 import { t } from 'app/I18N';
 import { Icon as PropertyIcon, TemplateLabel } from 'app/Layout';
 import SidePanel from 'app/Layout/SidePanel';
+import Tip from 'app/Layout/Tip';
 import { ShowMetadata } from 'app/Metadata';
 import { RelationshipsFormButtons } from 'app/Relationships';
 import AddEntitiesPanel from 'app/Relationships/components/AddEntities';
 import RelationshipMetadata from 'app/Relationships/components/RelationshipMetadata';
+import {
+  switchOneUpEntity,
+  toggleOneUpFullEdit,
+  toggleOneUpLoadConnections,
+} from 'app/Review/actions/actions';
 import { fromJS as Immutable } from 'immutable';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
@@ -22,14 +31,6 @@ import { TabContent, TabLink, Tabs } from 'react-tabs-redux';
 import { bindActionCreators } from 'redux';
 import { createSelector } from 'reselect';
 import { Icon } from 'UI';
-import {
-  toggleOneUpFullEdit,
-  toggleOneUpLoadConnections,
-  switchOneUpEntity,
-} from 'app/Review/actions/actions';
-import { showTab } from 'app/Entities/actions/uiActions';
-import EntityForm from 'app/Entities/containers/EntityForm';
-import { ShowSidepanelMenu } from 'app/Entities/components/ShowSidepanelMenu';
 
 export class OneUpEntityViewer extends Component {
   constructor(props, context) {
@@ -93,7 +94,10 @@ export class OneUpEntityViewer extends Component {
         <Helmet title={entity.title ? entity.title : 'Entity'} />
         <div className="content-header content-header-entity">
           <div className="content-header-title">
-            Document {oneUpState.indexInDocs + 1} out of {oneUpState.totalDocs}
+            Document {oneUpState.indexInDocs + 1} out of{' '}
+            {oneUpState.totalDocs >= oneUpState.maxTotalDocs
+              ? `>${oneUpState.totalDocs - 1}`
+              : `${oneUpState.totalDocs}`}
           </div>
         </div>
         <main className={`entity-viewer ${panelOpen ? 'with-panel' : ''}`}>
@@ -114,6 +118,11 @@ export class OneUpEntityViewer extends Component {
                       />
                       <h1 className="item-name">{entity.title}</h1>
                       <TemplateLabel template={entity.template} />
+                      {entity.published ? (
+                        ''
+                      ) : (
+                        <Tip icon="eye-slash">This entity is not public.</Tip>
+                      )}
                     </div>
                     <ShowMetadata
                       relationships={relationships}
@@ -271,7 +280,7 @@ export class OneUpEntityViewer extends Component {
                       this.props.isPristine ? 'btn btn-default' : 'btn btn-default btn-disabled'
                     }
                   >
-                    <Icon icon="times" />
+                    <Icon icon={oneUpState.loadConnections ? 'times' : 'undo'} />
                     <span className="btn-label">
                       {t(
                         'System',
@@ -336,8 +345,8 @@ OneUpEntityViewer.propTypes = {
   toggleOneUpFullEdit: PropTypes.func,
   toggleOneUpLoadConnections: PropTypes.func,
   oneUpState: PropTypes.object,
-  templates: PropTypes.object,
-  thesauris: PropTypes.object,
+  mlProps: PropTypes.array,
+  nonMlProps: PropTypes.array,
 };
 
 OneUpEntityViewer.contextTypes = {
