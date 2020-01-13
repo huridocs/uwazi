@@ -1,12 +1,11 @@
-import { templateTypes } from 'shared/templateTypes';
+/** @format */
 
-const fieldTypes = Object.values(templateTypes);
+import { propertyTypes } from 'shared/propertyTypes';
+
+const fieldTypes = Object.values(propertyTypes);
 
 export const objectIdSchema = {
-  oneOf: [
-    { type: 'string' },
-    { type: 'object' }
-  ]
+  oneOf: [{ type: 'string' }, { type: 'object' }],
 };
 
 export const linkSchema = {
@@ -14,21 +13,21 @@ export const linkSchema = {
   required: ['label', 'url'],
   properties: {
     label: { type: 'string', minLength: 1 },
-    url: { type: 'string', minLength: 1 }
-  }
+    url: { type: 'string', minLength: 1 },
+  },
 };
 
 export const dateRangeSchema = {
   type: 'object',
   properties: {
     from: {
-      oneOf: [{ type: 'number' }, { type: 'null' }]
+      oneOf: [{ type: 'number' }, { type: 'null' }],
     },
     to: {
-      oneOf: [{ type: 'number' }, { type: 'null' }]
+      oneOf: [{ type: 'number' }, { type: 'null' }],
     },
   },
-  additionalProperties: false
+  additionalProperties: false,
 };
 
 export const latLonSchema = {
@@ -37,13 +36,27 @@ export const latLonSchema = {
   properties: {
     label: { type: 'string' },
     lat: { type: 'number', minimum: -90, maximum: 90 },
-    lon: { type: 'number', minimum: -180, maximum: 180 }
-  }
+    lon: { type: 'number', minimum: -180, maximum: 180 },
+  },
 };
 
 export const geolocationSchema = {
   type: 'array',
-  items: latLonSchema
+  items: latLonSchema,
+};
+
+export const nestedSchema = {
+  type: 'array',
+  items: {
+    oneOf: [
+      {
+        type: 'object',
+        patternProperties: {
+          '^(?!lat).*$': { type: 'array', items: { type: 'string' } },
+        },
+      },
+    ],
+  },
 };
 
 export const tocSchema = {
@@ -53,12 +66,12 @@ export const tocSchema = {
       type: 'object',
       properties: {
         start: { type: 'number' },
-        end: { type: 'number' }
-      }
+        end: { type: 'number' },
+      },
     },
     label: { type: 'string' },
-    indentation: { type: 'number' }
-  }
+    indentation: { type: 'number' },
+  },
 };
 
 export const propertySchema = {
@@ -88,8 +101,8 @@ export const propertySchema = {
     nestedProperties: {
       type: 'array',
       items: {
-        type: 'string'
-      }
-    }
-  }
+        type: 'string',
+      },
+    },
+  },
 };

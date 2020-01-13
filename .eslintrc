@@ -81,7 +81,7 @@
     "react/no-multi-comp": ["warn"],
     "react/jsx-closing-bracket-location": ["warn"],
     "react/jsx-boolean-value": ["warn"],
-    "react/jsx-indent": ["warn"],
+    "react/jsx-indent": ["off"], // handled by prettier,
     "react/jsx-indent-props": ["warn"],
     "react/no-array-index-key": ["warn"],
     "react/jsx-first-prop-new-line": ["warn"],

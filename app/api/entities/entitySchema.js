@@ -2,108 +2,30 @@
 
 import Ajv from 'ajv';
 import templatesModel from 'api/templates/templatesModel';
-import { isNumber, isUndefined, isString, isObject, isNull } from 'util';
-
+import { isUndefined, isNull } from 'util';
 import { objectIdSchema, metadataSchema, tocSchema } from 'shared/commonSchemas';
-import { propertyTypes } from 'shared/propertyTypes';
 import { wrapValidator } from 'shared/tsUtils';
+import { validators, customErrorMessages } from './metadataValidators.js';
 
 const ajv = Ajv({ allErrors: true });
 
-const isEmpty = value =>
-  isNull(value) || isUndefined(value) || !value.length || !value.some(v => v.value);
-
-const isNonArrayObject = value => isObject(value) && !Array.isArray(value);
-
-const validateDateProperty = value => isNumber(value);
-
-const isValidDateRange = value => {
-  if (!isNonArrayObject(value)) {
-    return false;
-  }
-  if (validateDateProperty(value.from) && validateDateProperty(value.to)) {
-    return value.from <= value.to;
-  }
-  return true;
-};
-
-const isValidSelect = value => isString(value);
-
-const isValidGeolocation = value =>
-  isString(value.label) && isNumber(value.lat) && isNumber(value.lon);
-
-const validateRequiredProperty = (property, value) => {
-  if (property.required) {
-    return !isEmpty(value);
-  }
-  return true;
-};
-
-const validateSingleWrappedValue = validationFn => value => {
-  if (!Array.isArray(value)) {
-    return false;
-  }
-  if (value.length !== 1) {
-    return !value.length;
-  }
-
-  if (value[0].value === null) {
-    return true;
-  }
-
-  const [{ value: pureValue }] = value;
-  return validationFn(pureValue);
-};
-
-const validateNumericProperty = value => isNumber(value) || value === '';
-
-const validateMultiDateProperty = value =>
-  Array.isArray(value) && value.every(item => isNumber(item.value) || isNull(item.value));
-
-const validateMultiDateRangeProperty = value =>
-  Array.isArray(value) && value.every(item => isValidDateRange(item.value));
-
-const validateGeolocationProperty = value =>
-  Array.isArray(value) && value.every(item => isValidGeolocation(item.value));
-
-const validateMultiSelectProperty = value =>
-  Array.isArray(value) && value.every(item => isValidSelect(item.value) && item.value);
-
-const isValidLinkField = value =>
-  isString(value.label) && value.label && isString(value.url) && value.url;
-
-const propertyValidators = {
-  [propertyTypes.date]: validateSingleWrappedValue(validateDateProperty),
-  [propertyTypes.multidate]: validateMultiDateProperty,
-  [propertyTypes.daterange]: validateSingleWrappedValue(isValidDateRange),
-  [propertyTypes.multidaterange]: validateMultiDateRangeProperty,
-  [propertyTypes.text]: validateSingleWrappedValue(isString),
-  [propertyTypes.markdown]: validateSingleWrappedValue(isString),
-  [propertyTypes.media]: validateSingleWrappedValue(isString),
-  [propertyTypes.image]: validateSingleWrappedValue(isString),
-  [propertyTypes.select]: validateSingleWrappedValue(isValidSelect),
-  [propertyTypes.numeric]: validateSingleWrappedValue(validateNumericProperty),
-  [propertyTypes.multiselect]: validateMultiSelectProperty,
-  [propertyTypes.relationship]: validateMultiSelectProperty,
-  [propertyTypes.link]: validateSingleWrappedValue(isValidLinkField),
-  [propertyTypes.geolocation]: validateGeolocationProperty,
-};
+const hasValue = value => !isUndefined(value) && !isNull(value);
 
 const validateMetadataField = (property, entity) => {
   const value = entity.metadata && entity.metadata[property.name];
-  if (!validateRequiredProperty(property, value)) {
-    return false;
+
+  if (!validators.validateRequiredProperty(property, value)) {
+    throw new Error(customErrorMessages.required);
   }
-  if (isUndefined(value) || isNull(value)) {
-    return true;
+
+  if (hasValue(value) && validators[property.type] && !validators[property.type](value)) {
+    throw new Error(customErrorMessages[property.type]);
   }
-  const validator = propertyValidators[property.type];
-  return validator ? validator(value) : true;
 };
 
 ajv.addKeyword('metadataMatchesTemplateProperties', {
   async: true,
-  errors: false,
+  errors: true,
   type: 'object',
   async validate(schema, entity) {
     if (!entity.template) {
@@ -111,10 +33,25 @@ ajv.addKeyword('metadataMatchesTemplateProperties', {
     }
     const [template] = await templatesModel.get({ _id: entity.template });
     if (!template) {
-      return false;
+      throw new Ajv.ValidationError([
+        { message: 'template does not exist', dataPath: '.template' },
+      ]);
     }
 
-    return template.properties.every(property => validateMetadataField(property, entity));
+    const errors = template.properties.reduce((err, property) => {
+      try {
+        validateMetadataField(property, entity);
+        return err;
+      } catch (e) {
+        return [{ message: e.message, dataPath: `.metadata['${property.name}']` }];
+      }
+    }, []);
+
+    if (errors.length) {
+      throw new Ajv.ValidationError(errors);
+    }
+
+    return true;
   },
 });
 
@@ -159,7 +96,7 @@ export const entitySchema = {
       type: 'object',
       additionalProperties: false,
       properties: {
-        _id: { type: 'string' },
+        _id: { anyOf: [{ type: 'string' }, { type: 'null' }] },
         label: { type: 'string' },
         type: { type: 'string' },
       },
