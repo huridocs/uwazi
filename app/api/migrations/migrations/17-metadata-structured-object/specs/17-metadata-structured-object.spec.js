@@ -14,7 +14,7 @@ describe('migration metadata-structured-object', () => {
   });
 
   it('should have a delta number', () => {
-    expect(migration.delta).toBe(16);
+    expect(migration.delta).toBe(17);
   });
 
   it('should add related entities title to the relationship value', async () => {
