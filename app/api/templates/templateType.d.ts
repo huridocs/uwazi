@@ -1,7 +1,7 @@
 /* eslint-disable */
-/**AUTO-GENERATED. RUN yarn emitTypes to update.*/
+/**AUTO-GENERATED. RUN yarn emit-types to update.*/
 
-import { ObjectIdSchema, PropertySchema } from 'shared/commonTypes';
+import { ObjectIdSchema, PropertySchema } from 'api/utils/jsonTypes';
 
 export interface TemplateSchema {
   _id?: ObjectIdSchema;
