@@ -23,7 +23,35 @@ export interface LatLonSchema {
   lon: number;
 }
 
-export type PropertyValueSchema = null | string | number | LinkSchema | DateRangeSchema | LatLonSchema;
+export type GeolocationSchema = {
+  label?: string;
+  lat: number;
+  lon: number;
+}[];
+
+export type NestedSchema = {
+  /**
+   * This interface was referenced by `undefined`'s JSON-Schema definition
+   * via the `patternProperty` "^(?!lat).*$".
+   */
+  [k: string]: string[];
+}[];
+
+export type PropertyValueSchema =
+  | null
+  | string
+  | number
+  | LinkSchema
+  | DateRangeSchema
+  | LatLonSchema
+  | LatLonSchema[]
+  | {
+      /**
+       * This interface was referenced by `undefined`'s JSON-Schema definition
+       * via the `patternProperty` "^(?!lat).*$".
+       */
+      [k: string]: string[];
+    }[];
 
 export interface MetadataObjectSchema {
   value: PropertyValueSchema;
