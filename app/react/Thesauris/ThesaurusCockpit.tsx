@@ -57,12 +57,10 @@ function qualityIcon(val: number) {
 }
 
 function topicNode(topic: ThesaurusTopic, modelInfo: ClassifierModel) {
-  const { label } = topic;
-  const { id } = topic;
-  const info = modelInfo.topics[label];
+  const { label, id } = topic;
+  const { quality = 0, samples = 0 } = modelInfo.topics[label] || {};
+  // TODO(sam): Use template field name instead of thesaurus name.
   const thesaurusName = modelInfo.name.toLowerCase();
-  const { quality } = info;
-  const { samples } = info;
 
   return (
     <tr key={label}>
@@ -71,7 +69,7 @@ function topicNode(topic: ThesaurusTopic, modelInfo: ClassifierModel) {
       <td>{samples}</td>
       <td>
         <I18NLink
-          to={`/review?q=(filters:(_${thesaurusName}:(values:!(${id}))))`}
+          to={`/review?q=(filters:(_${thesaurusName}:(values:!('${id}')),${thesaurusName}:(values:!(missing))))&includeUnpublished=1`}
           className="btn btn-default btn-xs"
         >
           <Icon icon="gavel" />
@@ -91,8 +89,11 @@ function topicNodes(topics: Array<any>, model: ClassifierModel) {
     .sort(
       // Sort in order of descending model quality
       // TODO: Make sort order configurable, or even better, dynamic
-      (topic1: ThesaurusTopic, topic2: ThesaurusTopic) =>
-        model.topics[topic2.label].quality - model.topics[topic1.label].quality
+      (topic1: ThesaurusTopic, topic2: ThesaurusTopic) => {
+        const { quality: q1 = 0 } = model.topics[topic1.label] || {};
+        const { quality: q2 = 0 } = model.topics[topic2.label] || {};
+        return q2 - q1;
+      }
     )
     .map((topic: ThesaurusTopic) => topicNode(topic, model));
 }
@@ -111,13 +112,25 @@ class ThesaurusCockpit extends RouteHandler {
   }
 
   render() {
-    const { values: topics } = this.props.thesauri; // {name: Themes; values: [{label: Education}, ...]}
-    const { name } = this.props.thesauri; // {name: Themes; values: [{label: Education}, ...]}
+    const { values: topics, name } = this.props.thesauri; // {name: Themes; values: [{label: Education}, ...]}
     const modelInfo = this.props.models.find((model: ClassifierModel) => model.name === name);
+
+    // TODO(sam): Use template field name instead of thesaurus name.
+    const thesaurusName = modelInfo.name.toLowerCase();
 
     return (
       <div className="panel panel-default">
-        <div className="panel-heading">{t('System', `Thesauri > ${name}`)}</div>
+        <div className="panel-heading">
+          {t('System', `Thesauri > ${name}`)}
+          <I18NLink
+            to={`/uploads/?q=(filters:(_${thesaurusName}:(values:!(any)),${thesaurusName}:(values:!(any))),limit:100,order:desc,sort:creationDate)&view=nosearch`}
+            className="btn btn-primary btn-xs"
+          >
+            <Icon icon="search" />
+            &nbsp;
+            <span>{t('System', 'Review & Publish')}</span>
+          </I18NLink>
+        </div>
         <div className="cockpit">
           <table>
             <thead>

@@ -25,6 +25,7 @@ class OneUpReview extends RouteHandler {
       limit: 5001,
       select: ['sharedId'],
       unpublished: !!requestParams.data.unpublished,
+      includeUnpublished: !!requestParams.data.includeUnpublished,
     });
     const [templates, relationTypes, documents] = await Promise.all([
       TemplatesAPI.get(requestParams.onlyHeaders()),
@@ -32,15 +33,11 @@ class OneUpReview extends RouteHandler {
       api.search(documentsRequest),
     ]);
 
-    if (!documents.rows.length) {
-      // TODO(bdittes): Forward to /library.
-      return [];
-    }
-    const firstSharedId = documents.rows[0].sharedId;
+    const firstSharedId = documents.rows.length ? documents.rows[0].sharedId : '';
 
     return [
-      dispatch => wrapDispatch(dispatch, 'library')(unsetDocuments()),
       actions.set('relationTypes', relationTypes),
+      dispatch => wrapDispatch(dispatch, 'library')(unsetDocuments()),
       dispatch => wrapDispatch(dispatch, 'library')(setDocuments(documents)),
       actions.set('oneUpReview.state', {
         fullEdit: false,
@@ -50,12 +47,14 @@ class OneUpReview extends RouteHandler {
         maxTotalDocs: 5001,
         requestHeaders: requestParams.headers,
       }),
-      ...(await reviewActions.getAndLoadEntity(
-        requestParams.set({ sharedId: firstSharedId }),
-        templates,
-        state,
-        false
-      )),
+      ...(firstSharedId
+        ? await reviewActions.getAndLoadEntity(
+            requestParams.set({ sharedId: firstSharedId }),
+            templates,
+            state,
+            false
+          )
+        : []),
     ];
   }
 
@@ -70,22 +69,16 @@ class OneUpReview extends RouteHandler {
   componentDidMount() {}
 
   emptyState() {
-    // TODO(bdittes): Empty library
-    this.context.store.dispatch(actions.unset('viewer/doc'));
-    this.context.store.dispatch(actions.unset('viewer/templates'));
-    this.context.store.dispatch(actions.unset('viewer/thesauris'));
-    this.context.store.dispatch(actions.unset('viewer/relationTypes'));
-    this.context.store.dispatch(actions.unset('viewer/rawText'));
-    this.context.store.dispatch(formActions.reset('documentViewer.tocForm'));
-    this.context.store.dispatch(actions.unset('viewer/targetDoc'));
+    wrapDispatch(this.context.store.dispatch, 'library')(unsetDocuments());
     this.context.store.dispatch(setReferences([]));
     this.context.store.dispatch(actions.unset('entityView/entity'));
+    this.context.store.dispatch(formActions.reset('entityView.entityForm'));
     this.context.store.dispatch(relationships.emptyState());
   }
 
   render() {
-    const { entity } = this.props;
-    if (!entity.get('_id')) {
+    const { entity, oneUpState } = this.props;
+    if (!oneUpState || (oneUpState.totalDocs && !entity.get('_id'))) {
       return <Loader />;
     }
     return <OneUpEntityViewer {...this.props} />;
@@ -93,11 +86,9 @@ class OneUpReview extends RouteHandler {
 }
 
 const mapStateToProps = state => {
-  const entity = state.documentViewer.doc.get('_id')
-    ? state.documentViewer.doc
-    : state.entityView.entity;
   return {
-    entity,
+    entity: state.entityView.entity,
+    oneUpState: state.oneUpReview.state,
   };
 };
 

@@ -356,13 +356,14 @@ const selectRelationTypes = createSelector(
 );
 
 const mapStateToProps = state => {
+  const { entity } = state.entityView;
   const mlThesauri = state.thesauris
     .filter(thes => !!thes.get('enable_classification'))
     .map(thes => thes.get('_id'))
     .toJS();
-  const properties = state.templates
-    .find(tmpl => tmpl.get('_id') === state.entityView.entity.get('template'))
-    .get('properties');
+  const template =
+    state.templates.find(tmpl => tmpl.get('_id') === entity.get('template')) || Immutable({});
+  const properties = template.get('properties') || Immutable([]);
   const mlProps = properties
     .filter(p => mlThesauri.includes(p.get('content')))
     .map(p => p.get('name'))
