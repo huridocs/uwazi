@@ -49,19 +49,6 @@ export class ThesaurisList extends Component {
           </I18NLink>
         </div>
       );
-      const disable = (
-        <div className="list-group-item-actions">
-          <button
-            onClick={this.disableClassification.bind(this, thesaurus)}
-            className="btn btn-xs template-remove"
-            type="button"
-          >
-            <Icon icon="toggle-off" />
-            &nbsp;
-            <span>{t('System', 'Disable')}</span>
-          </button>
-        </div>
-      );
       return view;
     }
     return null;

@@ -144,6 +144,13 @@ const config = {
           mapping: { type: 'object' },
         },
       },
+      {
+        object_fields: {
+          match_mapping_type: 'object',
+          path_match: 'suggestedMetadata.*',
+          mapping: { type: 'object' },
+        },
+      },
     ],
     properties: {
       '@timestamp': { type: 'date', doc_values: true },

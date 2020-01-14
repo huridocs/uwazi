@@ -57,6 +57,9 @@ function qualityIcon(val: number) {
 }
 
 function topicNode(topic: ThesaurusTopic, modelInfo: ClassifierModel) {
+  if (modelInfo === undefined) {
+    return null;
+  }
   const { label, id } = topic;
   const { quality = 0, samples = 0 } = modelInfo.topics[label] || {};
   // TODO(sam): Use template field name instead of thesaurus name.
@@ -111,12 +114,24 @@ class ThesaurusCockpit extends RouteHandler {
     return [actions.set('thesauri/thesaurus', thesaurus), actions.set('thesauri/models', [model])];
   }
 
+  componentWillUnmount() {
+    this.emptyState();
+  }
+
+  emptyState() {
+    this.context.store.dispatch(actions.unset('thesauri/models'));
+    this.context.store.dispatch(actions.unset('thesauri/thesaurus'));
+  }
+
   render() {
     const { values: topics, name } = this.props.thesauri; // {name: Themes; values: [{label: Education}, ...]}
     const modelInfo = this.props.models.find((model: ClassifierModel) => model.name === name);
 
     // TODO(sam): Use template field name instead of thesaurus name.
-    const thesaurusName = modelInfo.name.toLowerCase();
+    let thesaurusName = '';
+    if (modelInfo !== undefined) {
+      thesaurusName = modelInfo.name.toLowerCase();
+    }
 
     return (
       <div className="panel panel-default">
