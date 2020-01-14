@@ -1,7 +1,7 @@
 /** @format */
 
 import { actions } from 'app/BasicReducer';
-import { loadEntity } from 'app/Entities/actions/actions';
+import { loadFetchedInReduxForm } from 'app/Metadata/actions/actions';
 import api from 'app/Entities/EntitiesAPI';
 import { wrapEntityMetadata } from 'app/Metadata/components/MetadataForm';
 import * as relationships from 'app/Relationships/utils/routeUtils';
@@ -31,7 +31,7 @@ export async function getAndLoadEntity(requestParams, templates, state, loadConn
         },
       },
     }),
-    ...loadEntity(entity, templates),
+    ...loadFetchedInReduxForm('entityView.entityForm', entity, templates),
   ];
 }
 
