@@ -374,9 +374,11 @@ export class TimelineViewer extends Component {
                     >
                       <ShowIf if={reference.firstMilestone}>
                         <span className="timeline-milestone ">
-                          <span>{`${moment
-                            .utc(reference.additionalData.date * 1000)
-                            .format('MMM YYYY')}`}</span>
+                          <span>
+                            {`${moment
+                              .utc(reference.additionalData.date * 1000)
+                              .format('MMM YYYY')}`}
+                          </span>
                         </span>
                       </ShowIf>
                       <ShowIf if={reference.additionalData.type === 'judgement'}>
@@ -400,9 +402,9 @@ export class TimelineViewer extends Component {
                     >
                       <ShowIf if={reference.firstMilestone}>
                         <span className="timeline-milestone ">
-                          <span>{`${moment
-                            .utc(reference.timestamp * 1000)
-                            .format('MMM YYYY')}`}</span>
+                          <span>
+                            {`${moment.utc(reference.timestamp * 1000).format('MMM YYYY')}`}
+                          </span>
                         </span>
                       </ShowIf>
                     </span>
