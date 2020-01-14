@@ -166,11 +166,12 @@ export class TimelineViewer extends Component {
     const years = {};
     references.forEach(reference => {
       const isDesiredTemplate = desiredTemplates.indexOf(reference.data.template !== -1);
-      const hasDate = reference.data.metadata[dateProperties[reference.data.template]] !== null;
+      const hasDate =
+        reference.data.metadata[dateProperties[reference.data.template]][0].value !== null;
       if (isDesiredTemplate && hasDate) {
         assignDataToYear(
           years,
-          reference.data.metadata[dateProperties[reference.data.template]],
+          reference.data.metadata[dateProperties[reference.data.template]][0].value,
           reference
         );
         this.assignAdditionalData(reference);
@@ -291,8 +292,8 @@ export class TimelineViewer extends Component {
 
     reference.additionalData.className = this.getTemplateType(reference.data.template);
     reference.additionalData.date =
-      reference.data.metadata[dateProperties[reference.data.template]];
-    reference.timestamp = reference.data.metadata[dateProperties[reference.data.template]];
+      reference.data.metadata[dateProperties[reference.data.template]][0].value;
+    reference.timestamp = reference.data.metadata[dateProperties[reference.data.template]][0].value;
   }
 
   filterUsefulReferences(entity, references, relatedReferences, isCase) {
