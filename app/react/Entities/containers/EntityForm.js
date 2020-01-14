@@ -1,7 +1,9 @@
+/** @format */
+
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
-import { saveEntity } from 'app/Entities/actions/actions';
+import { saveEntity, resetForm } from 'app/Entities/actions/actions';
 import { actions, MetadataForm } from 'app/Metadata';
 
 function mapStateToProps(state) {
@@ -10,12 +12,22 @@ function mapStateToProps(state) {
     isEntity: state.entityView.entity.get('type') === 'entity',
     templateId: state.entityView.entityForm.template,
     templates: state.templates,
-    thesauris: state.thesauris
+    thesauris: state.thesauris,
   };
 }
 
 export function mapDispatchToProps(dispatch) {
-  return bindActionCreators({ changeTemplate: actions.changeTemplate, onSubmit: saveEntity }, dispatch);
+  return bindActionCreators(
+    {
+      changeTemplate: actions.changeTemplate,
+      onSubmit: saveEntity,
+      componentWillUnmount: resetForm,
+    },
+    dispatch
+  );
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(MetadataForm);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(MetadataForm);

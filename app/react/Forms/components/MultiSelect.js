@@ -1,3 +1,5 @@
+/** @format */
+
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 
@@ -25,7 +27,7 @@ export default class MultiSelect extends Component {
   changeGroup(group, e) {
     const selectedItems = this.props.value.slice(0);
     if (e.target.checked) {
-      group.options.forEach((_item) => {
+      group.options.forEach(_item => {
         if (!this.checked(_item)) {
           selectedItems.push(_item[this.props.optionsValue]);
         }
@@ -33,7 +35,7 @@ export default class MultiSelect extends Component {
     }
 
     if (!e.target.checked) {
-      group.options.forEach((_item) => {
+      group.options.forEach(_item => {
         if (this.checked(_item)) {
           const index = selectedItems.indexOf(_item[this.props.optionsValue]);
           selectedItems.splice(index, 1);
@@ -43,15 +45,17 @@ export default class MultiSelect extends Component {
     this.props.onChange(selectedItems);
   }
 
-
   checked(option) {
     if (!this.props.value) {
       return false;
     }
 
     if (option.options) {
-      return option.options.reduce((allIncluded, _option) => allIncluded &&
-        this.props.value.includes(_option[this.props.optionsValue]), true);
+      return option.options.reduce(
+        (allIncluded, _option) =>
+          allIncluded && this.props.value.includes(_option[this.props.optionsValue]),
+        true
+      );
     }
     return this.props.value.includes(option[this.props.optionsValue]);
   }
@@ -89,7 +93,9 @@ export default class MultiSelect extends Component {
     const sortedOptions = options.sort((a, b) => {
       let sorting = 0;
       if (!this.state.showAll) {
-        sorting = (this.checked(b) || this.anyChildChecked(b)) - (this.checked(a) || this.anyChildChecked(a));
+        sorting =
+          (this.checked(b) || this.anyChildChecked(b)) -
+          (this.checked(a) || this.anyChildChecked(a));
       }
 
       if (sorting === 0 && typeof options[0].results !== 'undefined' && a.results !== b.results) {
@@ -134,12 +140,15 @@ export default class MultiSelect extends Component {
   }
 
   hoistCheckedOptions(options) {
-    const [checkedOptions, otherOptions] = options.reduce(([checked, others], option) => {
-      if (this.checked(option) || this.anyChildChecked(option)) {
-        return [checked.concat([option]), others];
-      }
-      return [checked, others.concat([option])];
-    }, [[], []]);
+    const [checkedOptions, otherOptions] = options.reduce(
+      ([checked, others], option) => {
+        if (this.checked(option) || this.anyChildChecked(option)) {
+          return [checked.concat([option]), others];
+        }
+        return [checked, others.concat([option])];
+      },
+      [[], []]
+    );
     let partitionedOptions = checkedOptions.concat(otherOptions);
     const noValueOption = partitionedOptions.find(opt => opt.noValueKey);
     if (noValueOption && !this.checked(noValueOption)) {
@@ -154,7 +163,9 @@ export default class MultiSelect extends Component {
       return t('System', 'x less');
     }
     return (
-      <span>{totalOptions.length - this.props.optionsToShow} {t('System', 'x more')}</span>
+      <span>
+        {totalOptions.length - this.props.optionsToShow} {t('System', 'x more')}
+      </span>
     );
   }
 
@@ -176,22 +187,25 @@ export default class MultiSelect extends Component {
   label(option) {
     const { optionsValue, optionsLabel, prefix } = this.props;
     return (
-      <label className="multiselectItem-label" htmlFor={prefix + option[optionsValue]} >
+      <label className="multiselectItem-label" htmlFor={prefix + option[optionsValue]}>
         <span className="multiselectItem-icon">
           <Icon icon={['far', 'square']} className="checkbox-empty" />
           <Icon icon="check" className="checkbox-checked" />
         </span>
         <span className="multiselectItem-name">
-          <CustomIcon className="item-icon" data={option.icon}/>
+          <CustomIcon className="item-icon" data={option.icon} />
           {option[optionsLabel]}
         </span>
         <span className="multiselectItem-results">
           {option.results && <span>{option.results}</span>}
           {option.options && (
-          <span className="multiselectItem-action" onClick={this.toggleOptions.bind(this, option)}>
-            <Icon icon={this.state.ui[option.id] ? 'caret-up' : 'caret-down'} />
-          </span>
-)}
+            <span
+              className="multiselectItem-action"
+              onClick={this.toggleOptions.bind(this, option)}
+            >
+              <Icon icon={this.state.ui[option.id] ? 'caret-up' : 'caret-down'} />
+            </span>
+          )}
         </span>
       </label>
     );
@@ -245,15 +259,21 @@ export default class MultiSelect extends Component {
     optionsLabel = optionsLabel || 'label';
 
     let options = this.props.options.slice();
-    const totalOptions = options.filter((option) => {
+    const totalOptions = options.filter(option => {
       let notDefined;
-      return isNotAnEmptyGroup(option) &&
-        (option.results === notDefined || option.results > 0 || !option.options || option.options.length || this.checked(option));
+      return (
+        isNotAnEmptyGroup(option) &&
+        (option.results === notDefined ||
+          option.results > 0 ||
+          !option.options ||
+          option.options.length ||
+          this.checked(option))
+      );
     });
     options = totalOptions;
-    options = options.map((option) => {
+    options = options.map(option => {
       if (option.options) {
-        option.options = option.options.filter((_opt) => {
+        option.options = option.options.filter(_opt => {
           let notDefined;
           return _opt.results === notDefined || _opt.results > 0 || this.checked(_opt);
         });
@@ -280,11 +300,14 @@ export default class MultiSelect extends Component {
 
     if (tooManyOptions) {
       const numberOfActiveOptions = options.filter(opt => this.checked(opt)).length;
-      const optionsToShow = this.props.optionsToShow > numberOfActiveOptions ? this.props.optionsToShow : numberOfActiveOptions;
+      const optionsToShow =
+        this.props.optionsToShow > numberOfActiveOptions
+          ? this.props.optionsToShow
+          : numberOfActiveOptions;
       options = options.slice(0, optionsToShow);
     }
 
-    options.forEach((option) => {
+    options.forEach(option => {
       if (option.options) {
         option.options = this.sort(option.options, optionsValue, optionsLabel, true);
       }
@@ -293,9 +316,14 @@ export default class MultiSelect extends Component {
     return (
       <ul className="multiselect is-active">
         <li className="multiselectActions">
-          <ShowIf if={this.props.options.length > this.props.optionsToShow && !this.props.hideSearch}>
+          <ShowIf
+            if={this.props.options.length > this.props.optionsToShow && !this.props.hideSearch}
+          >
             <div className="form-group">
-              <Icon icon={this.state.filter ? 'times-circle' : 'search'} onClick={this.resetFilter.bind(this)} />
+              <Icon
+                icon={this.state.filter ? 'times-circle' : 'search'}
+                onClick={this.resetFilter.bind(this)}
+              />
               <input
                 className="form-control"
                 type="text"
@@ -306,7 +334,7 @@ export default class MultiSelect extends Component {
             </div>
           </ShowIf>
         </li>
-        {!options.length && <span>{ t('System', 'No options found') }</span> }
+        {!options.length && <span>{t('System', 'No options found')}</span>}
         {options.map((option, index) => {
           if (option.options) {
             return this.renderGroup(option, index);
@@ -340,7 +368,7 @@ MultiSelect.defaultProps = {
   showAll: false,
   hideSearch: false,
   sort: false,
-  sortbyLabel: false
+  sortbyLabel: false,
 };
 
 MultiSelect.propTypes = {
@@ -355,5 +383,5 @@ MultiSelect.propTypes = {
   showAll: PropTypes.bool,
   hideSearch: PropTypes.bool,
   sort: PropTypes.bool,
-  sortbyLabel: PropTypes.bool
+  sortbyLabel: PropTypes.bool,
 };

@@ -1,3 +1,5 @@
+/** @format */
+
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Icon } from 'UI';
@@ -6,7 +8,8 @@ import DatePicker from './DatePicker';
 export default class MultiDateRange extends Component {
   constructor(props) {
     super(props);
-    const values = this.props.value && this.props.value.length ? this.props.value : [{ from: null, to: null }];
+    const values =
+      this.props.value && this.props.value.length ? this.props.value : [{ from: null, to: null }];
     this.state = { values };
   }
 
@@ -44,23 +47,37 @@ export default class MultiDateRange extends Component {
   render() {
     return (
       <div className="multidate">
-        {(() => this.state.values.map((value, index) => (
-          <div key={index} className="multidate-item">
-            <div className="multidate-range">
-              <div className="DatePicker__From">
-                <span>From:&nbsp;</span>
-                <DatePicker format={this.props.format} value={value.from} onChange={this.fromChange.bind(this, index)}/>
+        {(() =>
+          this.state.values.map((value, index) => (
+            <div key={index} className="multidate-item">
+              <div className="multidate-range">
+                <div className="DatePicker__From">
+                  <span>From:&nbsp;</span>
+                  <DatePicker
+                    format={this.props.format}
+                    value={value.from}
+                    onChange={this.fromChange.bind(this, index)}
+                  />
+                </div>
+                <div className="DatePicker__To">
+                  <span>&nbsp;To:&nbsp;</span>
+                  <DatePicker
+                    format={this.props.format}
+                    value={value.to}
+                    endOfDay
+                    onChange={this.toChange.bind(this, index)}
+                  />
+                </div>
+                <button
+                  className="react-datepicker__delete-icon"
+                  onClick={this.remove.bind(this, index)}
+                />
               </div>
-              <div className="DatePicker__To">
-                <span>&nbsp;To:&nbsp;</span>
-                <DatePicker format={this.props.format} value={value.to} endOfDay onChange={this.toChange.bind(this, index)}/>
-              </div>
-              <button className="react-datepicker__delete-icon" onClick={this.remove.bind(this, index)} />
             </div>
-          </div>
-)))()}
+          )))()}
         <button className="btn btn-success add" onClick={this.add.bind(this)}>
-          <Icon icon="plus" />&nbsp;
+          <Icon icon="plus" />
+          &nbsp;
           <span>Add date</span>
         </button>
       </div>
@@ -71,5 +88,5 @@ export default class MultiDateRange extends Component {
 MultiDateRange.propTypes = {
   value: PropTypes.array,
   onChange: PropTypes.func,
-  format: PropTypes.string
+  format: PropTypes.string,
 };

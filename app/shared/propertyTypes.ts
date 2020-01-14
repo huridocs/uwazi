@@ -1,4 +1,4 @@
-const templateTypes = {
+const propertyTypes = {
   date: 'date',
   daterange: 'daterange',
   geolocation: 'geolocation',
@@ -17,4 +17,4 @@ const templateTypes = {
   text: 'text',
 };
 
-export { templateTypes };
+export { propertyTypes };

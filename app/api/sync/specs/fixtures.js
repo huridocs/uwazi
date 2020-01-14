@@ -1,4 +1,9 @@
-/* eslint-disable max-len */
+/**
+ * /* eslint-disable max-len
+ *
+ * @format
+ */
+
 import db from 'api/utils/testing_db';
 
 const oldDoc1 = db.id();
@@ -316,30 +321,30 @@ export default {
       template: template1,
       file: {
         filename: 'test.txt',
-        timestamp: 9500
+        timestamp: 9500,
       },
       attachments: [
         {
           filename: 'test_attachment.txt',
-          timestamp: 10000
+          timestamp: 10000,
         },
         {
           filename: 'test_attachment2.txt',
-          timestamp: 9500
+          timestamp: 9500,
         },
         {
           filename: 'test_attachment3.txt',
-          timestamp: 7000
+          timestamp: 7000,
         },
       ],
       metadata: {
-        t1Property1: 'sync property 1',
-        t1Property2: 'sync property 2',
-        t1Property3: 'sync property 3',
-        t1Thesauri1Select: thesauri1Value2,
-        t1Thesauri2Select: db.id(),
-        t1Thesauri3MultiSelect: [thesauri3Value2, thesauri3Value1],
-      }
+        t1Property1: [{ value: 'sync property 1' }],
+        t1Property2: [{ value: 'sync property 2' }],
+        t1Property3: [{ value: 'sync property 3' }],
+        t1Thesauri1Select: [{ value: thesauri1Value2 }],
+        t1Thesauri2Select: [{ value: db.id() }],
+        t1Thesauri3MultiSelect: [{ value: thesauri3Value2 }, { value: thesauri3Value1 }],
+      },
     },
     {
       _id: newDoc2,
@@ -347,13 +352,13 @@ export default {
       template: template1,
       file: {
         filename: 'test.txt',
-        timestamp: 7000
+        timestamp: 7000,
       },
       metadata: {
-        t1Property1: 'another doc property 1',
-        t1Property2: 'another doc property 2',
-        t1Thesauri3MultiSelect: [thesauri3Value2],
-      }
+        t1Property1: [{ value: 'another doc property 1' }],
+        t1Property2: [{ value: 'another doc property 2' }],
+        t1Thesauri3MultiSelect: [{ value: thesauri3Value2 }],
+      },
     },
     {
       _id: newDoc3,
@@ -373,7 +378,7 @@ export default {
       title: 'new doc 6',
       template: template3,
       file: {
-        filename: 'test.txt'
+        filename: 'test.txt',
       },
     },
     {
@@ -468,7 +473,7 @@ export default {
       entity: 'newDoc9SharedId',
       template: relationtype4,
       hub: hub3,
-    }
+    },
   ],
 
   relationtypes: [
@@ -506,21 +511,21 @@ export default {
           name: 't1Thesauri1Select',
           label: 't1Thesauri1SelectL',
           type: 'select',
-          content: thesauri1
+          content: thesauri1,
         },
         {
           _id: template1PropertyThesauri2Select,
           name: 't1Thesauri2Select',
           label: 't1Thesauri2SelectL',
           type: 'select',
-          content: thesauri2
+          content: thesauri2,
         },
         {
           _id: template1PropertyThesauri3MultiSelect,
           name: 't1Thesauri3MultiSelect',
           label: 't1Thesauri3MultiSelectL',
           type: 'multiselect',
-          content: thesauri3
+          content: thesauri3,
         },
         {
           _id: template1PropertyRelationship1,
@@ -528,7 +533,7 @@ export default {
           label: 't1Relationship1L',
           type: 'relationship',
           content: '',
-          relationType: relationtype4
+          relationType: relationtype4,
         },
         {
           _id: template1PropertyRelationship2,
@@ -536,8 +541,8 @@ export default {
           label: 't1Relationship2L',
           type: 'relationship',
           content: '',
-          relationType: relationtype5
-        }
+          relationType: relationtype5,
+        },
       ],
     },
     {
@@ -549,7 +554,7 @@ export default {
           name: 't2Thesauri3MultiSelect',
           label: 't2Thesauri3MultiSelectL',
           type: 'select',
-          content: thesauri5
+          content: thesauri5,
         },
         {
           _id: template2PropertyRelationship1,
@@ -557,7 +562,7 @@ export default {
           label: 't2Relationship1L',
           type: 'relationship',
           content: '',
-          relationType: relationtype6
+          relationType: relationtype6,
         },
         {
           _id: template2PropertyRelationship2,
@@ -565,9 +570,9 @@ export default {
           label: 't2Relationship2L',
           type: 'relationship',
           content: template1,
-          relationType: relationtype7
-        }
-      ]
+          relationType: relationtype7,
+        },
+      ],
     },
     {
       _id: template3,
@@ -577,10 +582,10 @@ export default {
           name: 't3Relationship2',
           type: 'relationship',
           content: '',
-          relationType: relationtype1
-        }
-      ]
-    }
+          relationType: relationtype1,
+        },
+      ],
+    },
   ],
 
   dictionaries: [
@@ -598,7 +603,7 @@ export default {
       ],
     },
     {
-      _id: thesauri2
+      _id: thesauri2,
     },
     {
       _id: thesauri3,
@@ -614,11 +619,11 @@ export default {
       ],
     },
     {
-      _id: thesauri4
+      _id: thesauri4,
     },
     {
-      _id: thesauri5
-    }
+      _id: thesauri5,
+    },
   ],
 
   translations: [
@@ -628,7 +633,7 @@ export default {
       contexts: [
         {
           id: 'System',
-          values: [{ key: 'Sytem Key', value: 'System Value' }]
+          values: [{ key: 'Sytem Key', value: 'System Value' }],
         },
         {
           type: 'Entity',
@@ -640,7 +645,7 @@ export default {
             { key: 't1Relationship2L', value: 't1Relationship2T' },
             { key: 't1Thesauri2SelectL', value: 't1Thesauri2SelectT' },
             { key: 't1Thesauri3MultiSelectL', value: 't1Thesauri3MultiSelectT' },
-          ]
+          ],
         },
         {
           type: 'Entity',
@@ -649,29 +654,29 @@ export default {
             { key: 'template2', value: 'template2T' },
             { key: 't2Relationship2L', value: 't2Relationship2T' },
             { key: 'anotherL', value: 'anotherT' },
-          ]
+          ],
         },
         {
           type: 'Entity',
-          id: template3
+          id: template3,
         },
         {
           type: 'Dictionary',
-          id: thesauri1
+          id: thesauri1,
         },
         {
           type: 'Dictionary',
-          id: thesauri2
+          id: thesauri2,
         },
         {
           type: 'Dictionary',
           id: thesauri3,
-          values: 'All values from t3'
+          values: 'All values from t3',
         },
         {
           type: 'Connection',
           id: relationtype1,
-          values: 'All values from r1'
+          values: 'All values from r1',
         },
         {
           type: 'Connection',
@@ -680,15 +685,15 @@ export default {
         {
           type: 'Connection',
           id: relationtype4,
-          values: 'All values from r4'
+          values: 'All values from r4',
         },
         {
           type: 'Connection',
           id: relationtype7,
-          values: 'All values from r7'
-        }
-      ]
-    }
+          values: 'All values from r7',
+        },
+      ],
+    },
   ],
 
   settings: [
@@ -698,14 +703,12 @@ export default {
       sync: {
         url: 'url',
         active: true,
-        config: {}
-      }
+        config: {},
+      },
     },
   ],
 
-  sessions: [
-    { _id: sessionsId }
-  ]
+  sessions: [{ _id: sessionsId }],
 };
 
 export {

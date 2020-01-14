@@ -1,3 +1,5 @@
+/** @format */
+
 import React from 'react';
 import { shallow } from 'enzyme';
 import { fromJS } from 'immutable';
@@ -15,21 +17,26 @@ describe('MetadataFormFields', () => {
     fieldsTemplate = [
       { name: 'field1', label: 'label1' },
       { name: 'field2', label: 'label2', type: 'relationship', content: '2' },
-      { name: 'field3', label: 'label3', type: 'date' }
+      { name: 'field3', label: 'label3', type: 'date' },
     ];
 
     props = {
-      metadata: { _id: 'docId', template: 'templateId', title: 'testTitle', metadata: { field1: 'field1value', field2: 'field2value' } },
+      metadata: {
+        _id: [{ value: 'docId' }],
+        template: [{ value: 'templateId' }],
+        title: [{ value: 'testTitle' }],
+        metadata: [{ value: { field1: 'field1value', field2: 'field2value' } }],
+      },
       template: fromJS({ name: 'template1', _id: 'templateId', properties: fieldsTemplate }),
       fields: fromJS(fieldsTemplate),
       thesauris: fromJS([{ _id: 2, name: 'thesauri', values: [{ label: 'option1', id: '1' }] }]),
       dateFormat: '',
-      model: 'metadata'
+      model: 'metadata',
     };
   });
 
   const render = () => {
-    component = shallow(<MetadataFormFields {...props}/>);
+    component = shallow(<MetadataFormFields {...props} />);
   };
 
   it('should pass the field state to every fields and MultipleEditionFieldWarning', () => {

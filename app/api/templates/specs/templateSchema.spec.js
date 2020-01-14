@@ -4,7 +4,7 @@ import Ajv from 'ajv';
 import db from 'api/utils/testing_db';
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import { validateTemplate } from '../templateSchema';
-import fixtures, { templateId } from './validatorFixtures';
+import fixtures, { templateId, templateToBeInherited } from './validatorFixtures';
 
 describe('template schema', () => {
   beforeEach(done => {
@@ -133,16 +133,6 @@ describe('template schema', () => {
         await testInvalid();
       });
 
-      it('invalid if relationship properties have same relationType', async () => {
-        template.properties.push(
-          makeProperty('foo', 'relationship', { content: 'content', relationType: 'rel1' })
-        );
-        template.properties.push(
-          makeProperty('bar', 'relationship', { content: 'content', relationType: 'rel1' })
-        );
-        await testInvalid();
-      });
-
       it('invalid if inherited relationship properties do not specify field to inherit', async () => {
         template.properties.push(
           makeProperty('foo', 'relationship', {
@@ -158,6 +148,24 @@ describe('template schema', () => {
         template.name = 'DuplicateName';
         await testInvalid();
       });
+    });
+  });
+
+  describe('cantDeleteInheritedProperties', () => {
+    it('invalid when trying to delete an inherited property', async () => {
+      const template = {
+        _id: templateToBeInherited,
+        name: 'changed name',
+        commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
+        properties: [],
+      };
+
+      try {
+        await validateTemplate(template);
+        fail('should throw error');
+      } catch (e) {
+        expect(e).toBeInstanceOf(Ajv.ValidationError);
+      }
     });
   });
 });

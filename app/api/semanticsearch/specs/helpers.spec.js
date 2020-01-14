@@ -1,3 +1,5 @@
+/** @format */
+
 import db from 'api/utils/testing_db';
 import { search } from '../../search';
 import * as helpers from '../helpers';
@@ -6,10 +8,10 @@ import resultsModel from '../resultsModel';
 import fixtures, { search2Id, template1Id } from './fixtures';
 
 describe('semanticSearch helpers', () => {
-  beforeEach((done) => {
+  beforeEach(done => {
     db.clearAllAndLoad(fixtures).then(done);
   });
-  afterAll((done) => {
+  afterAll(done => {
     db.disconnect().then(done);
   });
 
@@ -34,8 +36,8 @@ describe('semanticSearch helpers', () => {
         query: {
           limit: 30,
           searchTerm: 'test',
-          filters: {}
-        }
+          filters: {},
+        },
       };
       jest.spyOn(search, 'search').mockResolvedValue({ rows: [] });
     });
@@ -65,8 +67,8 @@ describe('semanticSearch helpers', () => {
           rows: [
             { sharedId: 'doc1', file: {} },
             { sharedId: 'doc2' },
-            { sharedId: 'doc3', file: {} }
-          ]
+            { sharedId: 'doc3', file: {} },
+          ],
         });
         const res = await getSearchDocs();
         expect(res).toEqual(['doc1', 'doc2', 'doc3']);
@@ -86,7 +88,10 @@ describe('semanticSearch helpers', () => {
     const areResultsEqual = (a, b) => a.text === b.text && a.page === b.page && a.score === b.score;
 
     it('should set the results of the specified document sorted by higher score', async () => {
-      const results = [{ page: '10', text: 't1', score: 0.2 }, { page: '20', text: 't2', score: 0.6 }];
+      const results = [
+        { page: '10', text: 't1', score: 0.2 },
+        { page: '20', text: 't2', score: 0.6 },
+      ];
       const searchId = db.id();
       await helpers.setSearchDocumentResults(searchId, 'doc1', results);
       const res = await resultsModel.db.findOne({ searchId, sharedId: 'doc1' });
@@ -104,10 +109,10 @@ describe('semanticSearch helpers', () => {
         template: template1Id,
         fullText: { 1: 'page 1', 2: 'page 2' },
         metadata: {
-          code: 'code',
-          description: 'a description',
-          bio: 'a bio'
-        }
+          code: [{ value: 'code' }],
+          description: [{ value: 'a description' }],
+          bio: [{ value: 'a bio' }],
+        },
       };
     });
     it('should return content from fullText and rich text fields grouped by page or field name', async () => {
@@ -115,8 +120,8 @@ describe('semanticSearch helpers', () => {
       expect(contents).toEqual({
         1: 'page 1',
         2: 'page 2',
-        description: 'a description',
-        bio: 'a bio'
+        bio: [{ value: 'a bio' }],
+        description: [{ value: 'a description' }],
       });
     });
 
@@ -131,8 +136,8 @@ describe('semanticSearch helpers', () => {
       delete doc.fullText;
       const contents = await helpers.extractDocumentContent(doc);
       expect(contents).toEqual({
-        description: 'a description',
-        bio: 'a bio'
+        bio: [{ value: 'a bio' }],
+        description: [{ value: 'a description' }],
       });
     });
 

@@ -3,14 +3,8 @@
 import Ajv from 'ajv';
 import templatesModel from 'api/templates/templatesModel';
 import { isUndefined, isNull } from 'util';
-import {
-  objectIdSchema,
-  linkSchema,
-  dateRangeSchema,
-  geolocationSchema,
-  nestedSchema,
-  tocSchema,
-} from 'api/utils/jsonSchemas';
+import { objectIdSchema, metadataSchema, tocSchema } from 'shared/commonSchemas';
+import { wrapValidator } from 'shared/tsUtils';
 import { validators, customErrorMessages } from './metadataValidators.js';
 
 const ajv = Ajv({ allErrors: true });
@@ -61,11 +55,16 @@ ajv.addKeyword('metadataMatchesTemplateProperties', {
   },
 });
 
-const schema = {
+export const entitySchema = {
   $schema: 'http://json-schema.org/schema#',
   $async: true,
   type: 'object',
   metadataMatchesTemplateProperties: true,
+  definitions: {
+    objectIdSchema,
+    metadataSchema,
+    tocSchema,
+  },
   properties: {
     _id: objectIdSchema,
     sharedId: { type: 'string', minLength: 1 },
@@ -75,6 +74,7 @@ const schema = {
     template: objectIdSchema,
     file: {
       type: 'object',
+      additionalProperties: false,
       properties: {
         originalname: { type: 'string' },
         filename: { type: 'string' },
@@ -86,6 +86,7 @@ const schema = {
     },
     fullText: {
       type: 'object',
+      additionalProperties: false,
       patternProperties: {
         '^[0-9]+$': { type: 'string' },
       },
@@ -93,6 +94,7 @@ const schema = {
     totalPages: { type: 'number' },
     icon: {
       type: 'object',
+      additionalProperties: false,
       properties: {
         _id: { anyOf: [{ type: 'string' }, { type: 'null' }] },
         label: { type: 'string' },
@@ -118,9 +120,11 @@ const schema = {
     published: { type: 'boolean' },
     pdfInfo: {
       type: 'object',
+      additionalProperties: false,
       patternProperties: {
         '^[0-9]+$': {
           type: 'object',
+          additionalProperties: false,
           properties: {
             chars: { type: 'number' },
           },
@@ -132,37 +136,8 @@ const schema = {
       items: tocSchema,
     },
     user: objectIdSchema,
-    metadata: {
-      type: 'object',
-      additionalProperties: {
-        anyOf: [
-          { type: 'null' },
-          { type: 'string' },
-          { type: 'number' },
-          {
-            type: 'array',
-            items: {
-              oneOf: [{ type: 'string' }, { type: 'number' }, { type: 'null' }],
-            },
-          },
-          nestedSchema,
-          dateRangeSchema,
-          {
-            type: 'array',
-            items: dateRangeSchema,
-          },
-          {
-            type: 'array',
-            items: dateRangeSchema,
-          },
-          linkSchema,
-          geolocationSchema,
-        ],
-      },
-    },
+    metadata: metadataSchema,
   },
 };
 
-const validateEntity = ajv.compile(schema);
-
-export { validateEntity };
+export const validateEntity = wrapValidator(ajv.compile(entitySchema));

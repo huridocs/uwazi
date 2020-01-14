@@ -69,8 +69,8 @@ describe('csvLoader languages', () => {
   });
 
   it('should import translated metadata properties', async () => {
-    const enText = imported.filter(e => e.language === 'en').map(i => i.metadata.text_label);
-    const esText = imported.filter(e => e.language === 'es').map(i => i.metadata.text_label);
+    const enText = imported.filter(e => e.language === 'en').map(i => i.metadata.text_label[0].value);
+    const esText = imported.filter(e => e.language === 'es').map(i => i.metadata.text_label[0].value);
     expect(enText).toEqual(['text_en1', 'text_en2', 'text_en3']);
     expect(esText).toEqual(['text_es1', 'text_es2', 'text_es3']);
   });

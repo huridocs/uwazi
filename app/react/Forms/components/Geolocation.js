@@ -1,3 +1,5 @@
+/** @format */
+
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import Map from 'app/Map/Map';
@@ -33,14 +35,14 @@ export default class Geolocation extends Component {
       return;
     }
     const valueToSend = value.slice(1);
-    valueToSend.unshift(newValue);
+    valueToSend.unshift({ value: newValue });
 
     onChange(valueToSend);
   }
 
   getInputValues() {
     const { value } = this.props;
-    const { lat, lon, label } = value && value[0] ? value[0] : { ...defaultValue };
+    const { lat, lon, label } = value && value[0] ? value[0].value : { ...defaultValue };
     return { lat, lon, label };
   }
 
@@ -78,7 +80,10 @@ export default class Geolocation extends Component {
     const markers = [];
 
     if (isCoordinateValid(currentLatitude) && isCoordinateValid(currentLongitude)) {
-      markers.push({ latitude: parseFloat(currentLatitude), longitude: parseFloat(currentLongitude) });
+      markers.push({
+        latitude: parseFloat(currentLatitude),
+        longitude: parseFloat(currentLongitude),
+      });
     }
 
     return (
@@ -126,5 +131,5 @@ Geolocation.defaultProps = {
 
 Geolocation.propTypes = {
   value: PropTypes.arrayOf(PropTypes.object),
-  onChange: PropTypes.func.isRequired
+  onChange: PropTypes.func.isRequired,
 };

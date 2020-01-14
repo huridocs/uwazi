@@ -1,5 +1,7 @@
+/** @format */
+
 import db from 'api/utils/testing_db';
-import { templateTypes } from 'shared/templateTypes';
+import { propertyTypes } from 'shared/propertyTypes';
 import { templateUtils } from 'api/templates';
 
 const template1Id = db.id();
@@ -12,19 +14,24 @@ export default {
     {
       _id: templateToRelateId,
       name: 'template to relate',
-      properties: []
+      properties: [],
     },
     {
       _id: template1Id,
       name: 'base template',
       properties: [
         {
-          type: templateTypes.text,
+          type: propertyTypes.text,
           label: 'text label',
           name: templateUtils.safeName('text label'),
         },
         {
-          type: templateTypes.select,
+          type: propertyTypes.numeric,
+          label: 'numeric label',
+          name: templateUtils.safeName('numeric label'),
+        },
+        {
+          type: propertyTypes.select,
           label: 'select label',
           name: templateUtils.safeName('select label'),
           content: thesauri1Id,
@@ -35,11 +42,11 @@ export default {
           name: templateUtils.safeName('not defined type'),
         },
         {
-          type: templateTypes.text,
+          type: propertyTypes.text,
           label: 'not configured on csv',
           name: templateUtils.safeName('not configured on csv'),
         },
-      ]
+      ],
     },
   ],
 
@@ -47,10 +54,12 @@ export default {
     {
       _id: thesauri1Id,
       name: 'thesauri1',
-      values: [{
-        label: ' value4 ',
-        id: db.id().toString(),
-      }],
+      values: [
+        {
+          label: ' value4 ',
+          id: db.id().toString(),
+        },
+      ],
     },
   ],
 
@@ -58,10 +67,8 @@ export default {
     {
       _id: db.id(),
       site_name: 'Uwazi',
-      languages: [
-        { key: 'en', label: 'English', default: true },
-      ]
-    }
+      languages: [{ key: 'en', label: 'English', default: true }],
+    },
   ],
 
   translations: [
@@ -69,13 +76,13 @@ export default {
       _id: db.id(),
       locale: 'en',
       contexts: [],
-    }
-  ]
+    },
+    {
+      _id: db.id(),
+      locale: 'es',
+      contexts: [],
+    },
+  ],
 };
 
-export {
-  template1Id,
-  thesauri1Id,
-  thesauri2Id,
-  templateToRelateId
-};
+export { template1Id, thesauri1Id, thesauri2Id, templateToRelateId };

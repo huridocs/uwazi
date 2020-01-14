@@ -1,3 +1,5 @@
+/** @format */
+
 import { fromJS as Immutable } from 'immutable';
 import React from 'react';
 
@@ -14,8 +16,12 @@ describe('PageViewer', () => {
 
   beforeEach(() => {
     props = {
-      page: Immutable({ _id: 1, title: 'Page 1', metadata: { content: 'MarkdownContent', script: 'JSScript' } }),
-      itemLists: Immutable([{ item: 'item' }])
+      page: Immutable({
+        _id: 1,
+        title: 'Page 1',
+        metadata: /*non-metadata-object*/ { content: 'MarkdownContent', script: 'JSScript' },
+      }),
+      itemLists: Immutable([{ item: 'item' }]),
     };
   });
 

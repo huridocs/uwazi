@@ -19,7 +19,7 @@ export class MetadataFormButtons extends Component {
     const data = this.props.data.toJS();
 
     const ViewButton = (
-      <I18NLink to={`${data.file ? 'document' : 'entity'}/${data.sharedId}`}>
+      <I18NLink to={`entity/${data.sharedId}`}>
         <button className="edit-metadata btn btn-primary">
           <Icon icon="file" /><span className="btn-label">{t('System', 'View')}</span>
         </button>

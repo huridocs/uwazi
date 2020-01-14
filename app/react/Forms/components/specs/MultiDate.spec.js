@@ -1,3 +1,5 @@
+/** @format */
+
 import React from 'react';
 import { shallow } from 'enzyme';
 
@@ -12,12 +14,12 @@ describe('MultiDate', () => {
     props = {
       label: 'input label',
       value: [1473984000, 1474070400, 1474156800],
-      onChange: jasmine.createSpy('onChange')
+      onChange: jasmine.createSpy('onChange'),
     };
   });
 
   const render = () => {
-    component = shallow(<MultiDate {...props}/>);
+    component = shallow(<MultiDate {...props} />);
   };
 
   it('should render a DatePicker for each value', () => {

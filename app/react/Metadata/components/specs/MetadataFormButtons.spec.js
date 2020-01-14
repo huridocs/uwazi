@@ -1,3 +1,5 @@
+/** @format */
+
 import React from 'react';
 import { shallow } from 'enzyme';
 import { fromJS as immutable } from 'immutable';
@@ -12,7 +14,6 @@ describe('MetadataFormButtons', () => {
   let props;
   let context;
 
-
   beforeEach(() => {
     context = { confirm: jasmine.createSpy('confirm') };
     props = {
@@ -26,7 +27,7 @@ describe('MetadataFormButtons', () => {
       formName: 'FormName',
       formStatePath: 'form',
       includeViewButton: true,
-      exclusivelyViewButton: false
+      exclusivelyViewButton: false,
     };
   });
 
@@ -41,7 +42,7 @@ describe('MetadataFormButtons', () => {
 
     it('should include a visible view button with the correct link', () => {
       const link = component.find(I18NLink);
-      expect(link.props().to).toBe('document/shId');
+      expect(link.props().to).toBe('entity/shId');
       expect(link.parent().props().if).toBe(true);
     });
 
@@ -60,8 +61,15 @@ describe('MetadataFormButtons', () => {
     });
 
     it('should load the entity on the reduxForm', () => {
-      component.find('.edit-metadata').at(1).simulate('click');
-      expect(props.loadInReduxForm).toHaveBeenCalledWith(props.formStatePath, props.data.toJS(), props.templates.toJS());
+      component
+        .find('.edit-metadata')
+        .at(1)
+        .simulate('click');
+      expect(props.loadInReduxForm).toHaveBeenCalledWith(
+        props.formStatePath,
+        props.data.toJS(),
+        props.templates.toJS()
+      );
     });
   });
 
@@ -134,9 +142,15 @@ describe('MetadataFormButtons', () => {
 
     it('should only render a view button', () => {
       const link = component.find(I18NLink);
-      expect(link.props().to).toBe('document/shId');
+      expect(link.props().to).toBe('entity/shId');
       expect(component.find('.edit-metadata').length).toBe(1);
-      expect(component.find('.edit-metadata').at(0).find(Icon).props().icon).toBe('file');
+      expect(
+        component
+          .find('.edit-metadata')
+          .at(0)
+          .find(Icon)
+          .props().icon
+      ).toBe('file');
       expect(component.find('.btn-success').length).toBe(0);
       expect(component.find('.delete-metadata').length).toBe(0);
     });

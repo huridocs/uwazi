@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`NumericRangeSlide should accept components as min and max labels 1`] = `
-<React.Fragment>
+<Fragment>
   <div
     className="NumericRangeSlide"
   >
@@ -83,11 +83,11 @@ exports[`NumericRangeSlide should accept components as min and max labels 1`] = 
       value={1}
     />
   </datalist>
-</React.Fragment>
+</Fragment>
 `;
 
 exports[`NumericRangeSlide should render range input component 1`] = `
-<React.Fragment>
+<Fragment>
   <div
     className="NumericRangeSlide"
   >
@@ -165,5 +165,5 @@ exports[`NumericRangeSlide should render range input component 1`] = `
       value={1}
     />
   </datalist>
-</React.Fragment>
+</Fragment>
 `;

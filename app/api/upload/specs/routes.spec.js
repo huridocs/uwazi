@@ -275,8 +275,8 @@ describe('upload routes', () => {
         size: 171411271,
         timestamp: 1100
       };
-      expect(_entities[0].file).toEqual(_file);
-      expect(_entities[1].file).toEqual(_file);
+      expect(_entities[0].file).toEqual(jasmine.objectContaining(_file));
+      expect(_entities[1].file).toEqual(jasmine.objectContaining(_file));
     });
   });
 

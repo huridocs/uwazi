@@ -90,6 +90,7 @@ describe('ODM Model', () => {
         name: 'edited name',
       } as unknown) as TestDoc);
       const logEntries = await updatelogsModel.find({});
+
       expect(logEntries.length).toBe(2);
       expect(
         ensure<UpdateLog>(

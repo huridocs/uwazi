@@ -1,3 +1,5 @@
+/** @format */
+
 import HtmlParser from 'htmlparser2/lib/Parser';
 import queryString from 'query-string';
 import rison from 'rison';
@@ -6,8 +8,6 @@ import Big from 'big.js';
 import searchApi from 'app/Search/SearchAPI';
 import api from 'app/utils/api';
 import entitiesApi from 'app/Entities/EntitiesAPI';
-
-let undefinedValue;
 
 const conformUrl = ({ url = '', geolocation = false }) => {
   const { q } = queryString.parse(url.substring(url.indexOf('?')));
@@ -30,11 +30,12 @@ const conformUrl = ({ url = '', geolocation = false }) => {
   return params;
 };
 
-const conformValues = attribs => attribs.entity ? attribs : conformUrl(attribs);
+const conformValues = attribs => (attribs.entity ? attribs : conformUrl(attribs));
 
-const parseDatasets = (markdown) => {
+const parseDatasets = markdown => {
   const result = {};
-  const parser = new HtmlParser({
+  const parser = new HtmlParser(
+    {
       onopentag(name, attribs) {
         if (name === 'dataset') {
           result[attribs.name || 'default'] = conformValues(attribs);
@@ -42,38 +43,41 @@ const parseDatasets = (markdown) => {
         if (name === 'query') {
           result[attribs.name || 'default'] = { url: attribs.url, query: true };
         }
-      }
-  }, { decodeEntities: true });
+      },
+    },
+    { decodeEntities: true }
+  );
 
   parser.parseComplete(markdown);
   return result;
 };
 
-const requestDatasets = (datasets, requestParams) => Promise.all(
-  Object.keys(datasets)
-  .map(
-    (name) => {
+const requestDatasets = (datasets, requestParams) =>
+  Promise.all(
+    Object.keys(datasets).map(name => {
       if (datasets[name].query) {
         return api.get(datasets[name].url, requestParams).then(data => ({ data: data.json, name }));
       }
       const apiAction = datasets[name].entity ? entitiesApi.get : searchApi.search;
       const params = datasets[name].entity ? { sharedId: datasets[name].entity } : datasets[name];
       const postAction = datasets[name].entity ? d => d[0] : d => d;
-      return apiAction(requestParams.set(params)).then(postAction).then(data => ({ data, name }));
-    }
-  )
-);
+      return apiAction(requestParams.set(params))
+        .then(postAction)
+        .then(data => ({ data, name }));
+    })
+  );
 
-const conformDatasets = sets => sets.reduce((memo, set) => Object.assign({}, memo, { [set.name]: set.data }), {});
+const conformDatasets = sets =>
+  sets.reduce((memo, set) => Object.assign({}, memo, { [set.name]: set.data }), {});
 
 const getAggregations = (state, { property, dataset = 'default' }) => {
   const data = state.page.datasets.get(dataset);
-  return !data ? undefinedValue : data.getIn(['aggregations', 'all', property, 'buckets']);
+  return !data ? undefined : data.getIn(['aggregations', 'all', property, 'buckets']);
 };
 
 const addValues = (aggregations, values) => {
   let result = new Big(0);
-  values.forEach((key) => {
+  values.forEach(key => {
     const value = aggregations.find(bucket => bucket.get('key') === key);
     const filteredValue = value ? value.getIn(['filtered', 'doc_count']) : 0;
     result = result.plus(filteredValue || 0);
@@ -89,7 +93,9 @@ export default {
 
   getRows(state, { dataset = 'default' }) {
     const data = state.page.datasets.get(dataset);
-    if (!data) { return undefinedValue; }
+    if (!data) {
+      return undefined;
+    }
     return data.get('rows');
   },
 
@@ -98,7 +104,7 @@ export default {
   getAggregation(state, { uniqueValues, property, value, dataset = 'default' }) {
     const aggregations = getAggregations(state, { property, dataset });
     if (!aggregations) {
-      return undefinedValue;
+      return undefined;
     }
 
     if (uniqueValues) {
@@ -111,6 +117,7 @@ export default {
 
   getMetadataValue(state, { property, dataset = 'default' }) {
     const data = state.page.datasets.get(dataset);
-    return !data ? undefinedValue : Number(data.getIn(['metadata', property]));
-  }
+    const mos = data ? data.getIn(['metadata', property]).toJS() : [];
+    return mos && mos.length && mos[0].value ? Number(mos[0].value) : undefined;
+  },
 };
