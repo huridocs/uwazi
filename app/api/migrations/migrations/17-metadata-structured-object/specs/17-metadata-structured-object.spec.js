@@ -24,6 +24,9 @@ describe('migration metadata-structured-object', () => {
       .find()
       .toArray();
 
+    expect(entities[0].metadata.year[0]).toEqual({
+      value: 2019,
+    });
     expect(entities[0].metadata.friends[0]).toEqual({
       value: 'shared-e2',
       label: 'e2',

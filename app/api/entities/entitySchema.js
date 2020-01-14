@@ -7,6 +7,8 @@ import { objectIdSchema, metadataSchema, tocSchema } from 'shared/commonSchemas'
 import { wrapValidator } from 'shared/tsUtils';
 import { validators, customErrorMessages } from './metadataValidators.js';
 
+export const emitSchemaTypes = true;
+
 const ajv = Ajv({ allErrors: true });
 
 const hasValue = value => !isUndefined(value) && !isNull(value);
