@@ -57,7 +57,7 @@ function processFilters(filters, properties) {
     property: Uwazi template property
     value: list of allowed values (or if singular, just the value)
       missing: handled specially
-      TODO: add 'any'
+      any: handled specially
     name: path to field name
     */
     return {

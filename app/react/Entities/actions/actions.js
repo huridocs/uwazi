@@ -8,10 +8,8 @@ import {
   unselectAllDocuments,
   unselectDocument,
 } from 'app/Library/actions/libraryActions';
-import * as metadataActions from 'app/Metadata/actions/actions';
 import { notificationActions } from 'app/Notifications';
 import { actions as relationshipActions } from 'app/Relationships';
-import { advancedSort } from 'app/utils/advancedSort';
 import { RequestParams } from 'app/utils/RequestParams';
 import { actions as formActions } from 'react-redux-form';
 
@@ -45,28 +43,4 @@ export function deleteEntities(entities) {
       dispatch(unselectAllDocuments());
       dispatch(removeDocuments(entities));
     });
-}
-
-export function loadEntity(entity, templates) {
-  const form = 'entityView.entityForm';
-  const sortedTemplates = advancedSort(templates, { property: 'name' });
-  const defaultTemplate = sortedTemplates.find(t => t.default);
-  const template = entity.template || defaultTemplate._id;
-  const templateconfig = sortedTemplates.find(t => t._id === template);
-
-  const metadata = metadataActions.UnwrapMetadataObject(
-    metadataActions.resetMetadata(
-      entity.metadata || {},
-      templateconfig,
-      { resetExisting: false },
-      templateconfig
-    ),
-    templateconfig
-  );
-  // suggestedMetadata remains in metadata-object form (all components consuming it are new).
-  return [
-    formActions.reset(form),
-    formActions.load(form, { ...entity, metadata, template }),
-    formActions.setPristine(form),
-  ];
 }
