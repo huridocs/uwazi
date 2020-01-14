@@ -4,7 +4,7 @@ import Ajv from 'ajv';
 import ajvKeywords from 'ajv-keywords';
 import model from 'api/templates/templatesModel';
 import { wrapValidator } from 'shared/tsUtils';
-import { objectIdSchema, propertySchema } from 'api/utils/jsonSchemas';
+import { objectIdSchema, propertySchema } from 'shared/commonSchemas';
 import templates from 'api/templates';
 
 export const emitSchemaTypes = true;
