@@ -22,7 +22,7 @@ import {
   Numeric,
   Select,
 } from '../../ReactReduxForms';
-import { MultipleEditionFieldWarning } from './MultipleEditionFieldWarning';
+import MultipleEditionFieldWarning from './MultipleEditionFieldWarning';
 
 const translateOptions = thesauri =>
   thesauri
@@ -43,7 +43,7 @@ const translateOptions = thesauri =>
 export class MetadataFormFields extends Component {
   getField(property, _model, thesauris) {
     let thesauri;
-    const { dateFormat } = this.props;
+    const { dateFormat, version } = this.props;
     const propertyType = property.type;
     switch (propertyType) {
       case 'select':
@@ -57,7 +57,8 @@ export class MetadataFormFields extends Component {
             optionsValue="id"
             options={translateOptions(thesauri)}
             prefix={_model}
-            forceHoist
+            forceHoist={version === 'OneUp'}
+            thesaurusName={version === 'OneUp' ? thesauri.get('name') : null}
           />
         );
       case 'relationship':
@@ -188,6 +189,7 @@ MetadataFormFields.propTypes = {
   multipleEdition: PropTypes.bool,
   dateFormat: PropTypes.string,
   showSubset: PropTypes.array,
+  version: PropTypes.string,
 };
 
 export const mapStateToProps = state => ({

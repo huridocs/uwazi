@@ -254,7 +254,7 @@ export default class MultiSelect extends Component {
   }
 
   render() {
-    let { optionsValue, optionsLabel } = this.props;
+    let { optionsValue, optionsLabel, thesaurusName } = this.props;
     optionsValue = optionsValue || 'value';
     optionsLabel = optionsLabel || 'label';
 
@@ -327,7 +327,11 @@ export default class MultiSelect extends Component {
               <input
                 className="form-control"
                 type="text"
-                placeholder={t('System', 'Search item', null, false)}
+                placeholder={
+                  thesaurusName
+                    ? `${t('System', 'Search', null, false)} '${thesaurusName}'`
+                    : t('System', 'Search item', null, false)
+                }
                 value={this.state.filter}
                 onChange={this.filter.bind(this)}
               />
@@ -386,4 +390,5 @@ MultiSelect.propTypes = {
   sort: PropTypes.bool,
   sortbyLabel: PropTypes.bool,
   forceHoist: PropTypes.bool,
+  thesaurusName: PropTypes.string,
 };

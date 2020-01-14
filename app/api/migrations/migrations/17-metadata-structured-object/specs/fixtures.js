@@ -41,7 +41,7 @@ export default {
           label: 'Year',
           type: 'numeric',
           name: 'year',
-        }
+        },
       ],
     },
   ],

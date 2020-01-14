@@ -151,7 +151,7 @@ export class OneUpEntityViewer extends Component {
             >
               <div className="entity-metadata">
                 {entityBeingEdited && oneUpState.fullEdit ? (
-                  <EntityForm showSubset={[...nonMlProps, 'title']} />
+                  <EntityForm showSubset={[...nonMlProps, 'title']} version="OneUp" />
                 ) : (
                   <div>
                     <div className="content-header-title">
@@ -283,7 +283,7 @@ export class OneUpEntityViewer extends Component {
                 </div>
               </TabContent>
               <TabContent for={selectedTab === 'info' ? selectedTab : 'none'}>
-                <EntityForm showSubset={mlProps} />
+                <EntityForm showSubset={mlProps} version="OneUp" />
               </TabContent>
             </Tabs>
           </div>
