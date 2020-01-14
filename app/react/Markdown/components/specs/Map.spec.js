@@ -1,3 +1,5 @@
+/** @format */
+
 import React from 'react';
 
 import { shallow } from 'enzyme';
@@ -15,19 +17,24 @@ describe('Map Markdown component', () => {
     const _dispatch = dispatch || jest.fn('dispatch');
     return {
       ...mapStateToProps(originalState, originalProps),
-      ...mapDispatchToProps(_dispatch)
+      ...mapDispatchToProps(_dispatch),
     };
   }
 
   function spyOnDatasetRows() {
-    spyOn(markdownDatasets, 'getRows').and.returnValue(Immutable.fromJS([
-      { template: 't1', metadata: { geoProperty: { lat: 7, lon: 13 } } },
-      { template: 't2', metadata: { anotherGeoProperty: { lat: 2018, lon: 6 } } },
-    ]));
+    spyOn(markdownDatasets, 'getRows').and.returnValue(
+      Immutable.fromJS([
+        { template: 't1', metadata: { geoProperty: [{ value: { lat: 7, lon: 13 } }] } },
+        { template: 't2', metadata: { anotherGeoProperty: [{ value: { lat: 2018, lon: 6 } }] } },
+      ])
+    );
   }
 
   function findInnerMapComponent(component) {
-    return component.find(Markers).props().children([{ value: 'markers' }]);
+    return component
+      .find(Markers)
+      .props()
+      .children([{ value: 'markers' }]);
   }
 
   it('should render the data passed by mapStateToProps', () => {
@@ -93,13 +100,13 @@ describe('Map Markdown component', () => {
       const component = shallow(<MapComponent {...props} />);
       const cluster = [
         { properties: { entity: { template: 't1', title: 'title', sharedId: 'id' } } },
-        { properties: { entity: { template: 't1', title: 'title', sharedId: 'id2' } } }
+        { properties: { entity: { template: 't1', title: 'title', sharedId: 'id2' } } },
       ];
       findInnerMapComponent(component).props.clickOnCluster(cluster);
       expect(unselectAllDocuments).toHaveBeenCalled();
       expect(selectDocuments).toHaveBeenCalledWith([
         { template: 't1', title: 'title', sharedId: 'id' },
-        { template: 't1', title: 'title', sharedId: 'id2' }
+        { template: 't1', title: 'title', sharedId: 'id2' },
       ]);
     });
   });

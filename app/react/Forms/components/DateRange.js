@@ -1,20 +1,14 @@
+/** @format */
+
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { t } from 'app/I18N';
 import DatePicker from './DatePicker';
 
 class DateRange extends Component {
-  constructor(props) {
-    super(props);
-    const value = props.value || {};
-    this.state = { from: value.from, to: value.to };
-  }
-
-  onChange(prop, value) {
-    const { onChange } = this.props;
-    const state = Object.assign({}, this.state);
-    state[prop] = value;
-    this.setState(state);
+  onChange(prop, propValue) {
+    const { value, onChange } = this.props;
+    const state = Object.assign({}, value, { [prop]: propValue });
     onChange(state);
   }
 
@@ -23,7 +17,8 @@ class DateRange extends Component {
     let { locale, format } = this.props;
     locale = locale || 'en';
     format = format || 'DD/MM/YYYY';
-    const { from: stateFrom, to: stateTo } = this.state;
+    const { value } = this.props;
+    const { from: stateFrom, to: stateTo } = value || { from: null, to: null };
 
     return (
       <div>
@@ -58,7 +53,7 @@ DateRange.defaultProps = {
   onChange: () => {},
   locale: undefined,
   format: undefined,
-  useTimezone: false
+  useTimezone: false,
 };
 
 DateRange.propTypes = {

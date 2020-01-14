@@ -88,199 +88,197 @@ exports[`FreeBarChart when data should allow changing dataKeys with buttons 1`] 
 <div
   className="BarChart "
 >
-  <React.Fragment>
-    <div
-      className="toggle-group"
+  <div
+    className="toggle-group"
+  >
+    <button
+      className="btn btn-primary toggle-group-button"
+      key="otherProp"
+      onClick={[Function]}
+      type="button"
     >
-      <button
-        className="btn btn-primary toggle-group-button"
-        key="otherProp"
-        onClick={[Function]}
-        type="button"
-      >
-        Button 1 label
-      </button>
-      <button
-        className="btn btn-default toggle-group-button"
-        key="lastProp"
-        onClick={[Function]}
-        type="button"
-      >
-        Button 2 label
-      </button>
-    </div>
-    <ResponsiveContainer
-      debounce={0}
-      height={320}
-      width="100%"
+      Button 1 label
+    </button>
+    <button
+      className="btn btn-default toggle-group-button"
+      key="lastProp"
+      onClick={[Function]}
+      type="button"
     >
-      <BarChart
-        barCategoryGap="10%"
-        barGap={4}
-        data={
+      Button 2 label
+    </button>
+  </div>
+  <ResponsiveContainer
+    debounce={0}
+    height={320}
+    width="100%"
+  >
+    <BarChart
+      barCategoryGap="10%"
+      barGap={4}
+      data={
+        Array [
+          Object {
+            "label": "col1",
+            "lastProp": 2,
+            "otherProp": 5,
+            "results": 3,
+          },
+          Object {
+            "label": "col2",
+            "lastProp": 3,
+            "otherProp": 2,
+            "results": 4,
+          },
+        ]
+      }
+      height={300}
+      layout="horizontal"
+      margin={
+        Object {
+          "bottom": 5,
+          "left": 5,
+          "right": 5,
+          "top": 5,
+        }
+      }
+      reverseStackOrder={false}
+      stackOffset="none"
+    >
+      <XAxis
+        allowDataOverflow={false}
+        allowDecimals={true}
+        allowDuplicatedCategory={true}
+        dataKey="label"
+        domain={
           Array [
-            Object {
-              "label": "col1",
-              "lastProp": 2,
-              "otherProp": 5,
-              "results": 3,
-            },
-            Object {
-              "label": "col2",
-              "lastProp": 3,
-              "otherProp": 2,
-              "results": 4,
-            },
+            0,
+            "auto",
           ]
         }
-        height={300}
-        layout="horizontal"
-        margin={
+        height={30}
+        hide={false}
+        label=""
+        mirror={false}
+        orientation="bottom"
+        padding={
           Object {
-            "bottom": 5,
-            "left": 5,
-            "right": 5,
-            "top": 5,
+            "left": 0,
+            "right": 0,
           }
         }
-        reverseStackOrder={false}
-        stackOffset="none"
+        reversed={false}
+        scale="auto"
+        tickCount={5}
+        type="category"
+        width={0}
+        xAxisId={0}
+      />
+      <YAxis
+        allowDataOverflow={false}
+        allowDecimals={true}
+        allowDuplicatedCategory={true}
+        domain={
+          Array [
+            0,
+            "auto",
+          ]
+        }
+        height={0}
+        hide={false}
+        mirror={false}
+        orientation="left"
+        padding={
+          Object {
+            "bottom": 0,
+            "top": 0,
+          }
+        }
+        reversed={false}
+        scale="auto"
+        tickCount={5}
+        type="number"
+        width={60}
+        yAxisId={0}
+      />
+      <CartesianGrid
+        fill="none"
+        horizontal={true}
+        horizontalFill={Array []}
+        horizontalPoints={Array []}
+        stroke="#ccc"
+        strokeDasharray="2 4"
+        vertical={true}
+        verticalFill={Array []}
+        verticalPoints={Array []}
+      />
+      <Tooltip
+        active={false}
+        animationDuration={400}
+        animationEasing="ease"
+        content={
+          <CustomTooltip
+            active={false}
+          />
+        }
+        contentStyle={Object {}}
+        coordinate={
+          Object {
+            "x": 0,
+            "y": 0,
+          }
+        }
+        cursor={true}
+        cursorStyle={Object {}}
+        filterNull={true}
+        isAnimationActive={true}
+        itemSorter={[Function]}
+        itemStyle={Object {}}
+        labelStyle={Object {}}
+        offset={10}
+        separator=" : "
+        useTranslate3d={false}
+        viewBox={
+          Object {
+            "x1": 0,
+            "x2": 0,
+            "y1": 0,
+            "y2": 0,
+          }
+        }
+        wrapperStyle={Object {}}
+      />
+      <Bar
+        animationBegin={0}
+        animationDuration={400}
+        animationEasing="ease"
+        data={Array []}
+        dataKey="otherProp"
+        fill="rgb(30, 28, 138)"
+        hide={false}
+        isAnimationActive={true}
+        layout="vertical"
+        legendType="rect"
+        minPointSize={0}
+        onAnimationEnd={[Function]}
+        onAnimationStart={[Function]}
+        stackId="unique"
+        xAxisId={0}
+        yAxisId={0}
       >
-        <XAxis
-          allowDataOverflow={false}
-          allowDecimals={true}
-          allowDuplicatedCategory={true}
-          dataKey="label"
-          domain={
-            Array [
-              0,
-              "auto",
-            ]
-          }
-          height={30}
-          hide={false}
-          label=""
-          mirror={false}
-          orientation="bottom"
-          padding={
-            Object {
-              "left": 0,
-              "right": 0,
-            }
-          }
-          reversed={false}
-          scale="auto"
-          tickCount={5}
-          type="category"
-          width={0}
-          xAxisId={0}
+        <Cell
+          cursor="pointer"
+          fill="#1e1c8a"
+          key="cell-0"
         />
-        <YAxis
-          allowDataOverflow={false}
-          allowDecimals={true}
-          allowDuplicatedCategory={true}
-          domain={
-            Array [
-              0,
-              "auto",
-            ]
-          }
-          height={0}
-          hide={false}
-          mirror={false}
-          orientation="left"
-          padding={
-            Object {
-              "bottom": 0,
-              "top": 0,
-            }
-          }
-          reversed={false}
-          scale="auto"
-          tickCount={5}
-          type="number"
-          width={60}
-          yAxisId={0}
+        <Cell
+          cursor="pointer"
+          fill="#1e1c8a"
+          key="cell-1"
         />
-        <CartesianGrid
-          fill="none"
-          horizontal={true}
-          horizontalFill={Array []}
-          horizontalPoints={Array []}
-          stroke="#ccc"
-          strokeDasharray="2 4"
-          vertical={true}
-          verticalFill={Array []}
-          verticalPoints={Array []}
-        />
-        <Tooltip
-          active={false}
-          animationDuration={400}
-          animationEasing="ease"
-          content={
-            <CustomTooltip
-              active={false}
-            />
-          }
-          contentStyle={Object {}}
-          coordinate={
-            Object {
-              "x": 0,
-              "y": 0,
-            }
-          }
-          cursor={true}
-          cursorStyle={Object {}}
-          filterNull={true}
-          isAnimationActive={true}
-          itemSorter={[Function]}
-          itemStyle={Object {}}
-          labelStyle={Object {}}
-          offset={10}
-          separator=" : "
-          useTranslate3d={false}
-          viewBox={
-            Object {
-              "x1": 0,
-              "x2": 0,
-              "y1": 0,
-              "y2": 0,
-            }
-          }
-          wrapperStyle={Object {}}
-        />
-        <Bar
-          animationBegin={0}
-          animationDuration={400}
-          animationEasing="ease"
-          data={Array []}
-          dataKey="otherProp"
-          fill="rgb(30, 28, 138)"
-          hide={false}
-          isAnimationActive={true}
-          layout="vertical"
-          legendType="rect"
-          minPointSize={0}
-          onAnimationEnd={[Function]}
-          onAnimationStart={[Function]}
-          stackId="unique"
-          xAxisId={0}
-          yAxisId={0}
-        >
-          <Cell
-            cursor="pointer"
-            fill="#1e1c8a"
-            key="cell-0"
-          />
-          <Cell
-            cursor="pointer"
-            fill="#1e1c8a"
-            key="cell-1"
-          />
-        </Bar>
-      </BarChart>
-    </ResponsiveContainer>
-  </React.Fragment>
+      </Bar>
+    </BarChart>
+  </ResponsiveContainer>
 </div>
 `;
 
@@ -288,199 +286,197 @@ exports[`FreeBarChart when data should allow changing dataKeys with buttons 2`] 
 <div
   className="BarChart "
 >
-  <React.Fragment>
-    <div
-      className="toggle-group"
+  <div
+    className="toggle-group"
+  >
+    <button
+      className="btn btn-default toggle-group-button"
+      key="otherProp"
+      onClick={[Function]}
+      type="button"
     >
-      <button
-        className="btn btn-default toggle-group-button"
-        key="otherProp"
-        onClick={[Function]}
-        type="button"
-      >
-        Button 1 label
-      </button>
-      <button
-        className="btn btn-primary toggle-group-button"
-        key="lastProp"
-        onClick={[Function]}
-        type="button"
-      >
-        Button 2 label
-      </button>
-    </div>
-    <ResponsiveContainer
-      debounce={0}
-      height={320}
-      width="100%"
+      Button 1 label
+    </button>
+    <button
+      className="btn btn-primary toggle-group-button"
+      key="lastProp"
+      onClick={[Function]}
+      type="button"
     >
-      <BarChart
-        barCategoryGap="10%"
-        barGap={4}
-        data={
+      Button 2 label
+    </button>
+  </div>
+  <ResponsiveContainer
+    debounce={0}
+    height={320}
+    width="100%"
+  >
+    <BarChart
+      barCategoryGap="10%"
+      barGap={4}
+      data={
+        Array [
+          Object {
+            "label": "col1",
+            "lastProp": 2,
+            "otherProp": 5,
+            "results": 3,
+          },
+          Object {
+            "label": "col2",
+            "lastProp": 3,
+            "otherProp": 2,
+            "results": 4,
+          },
+        ]
+      }
+      height={300}
+      layout="horizontal"
+      margin={
+        Object {
+          "bottom": 5,
+          "left": 5,
+          "right": 5,
+          "top": 5,
+        }
+      }
+      reverseStackOrder={false}
+      stackOffset="none"
+    >
+      <XAxis
+        allowDataOverflow={false}
+        allowDecimals={true}
+        allowDuplicatedCategory={true}
+        dataKey="label"
+        domain={
           Array [
-            Object {
-              "label": "col1",
-              "lastProp": 2,
-              "otherProp": 5,
-              "results": 3,
-            },
-            Object {
-              "label": "col2",
-              "lastProp": 3,
-              "otherProp": 2,
-              "results": 4,
-            },
+            0,
+            "auto",
           ]
         }
-        height={300}
-        layout="horizontal"
-        margin={
+        height={30}
+        hide={false}
+        label=""
+        mirror={false}
+        orientation="bottom"
+        padding={
           Object {
-            "bottom": 5,
-            "left": 5,
-            "right": 5,
-            "top": 5,
+            "left": 0,
+            "right": 0,
           }
         }
-        reverseStackOrder={false}
-        stackOffset="none"
+        reversed={false}
+        scale="auto"
+        tickCount={5}
+        type="category"
+        width={0}
+        xAxisId={0}
+      />
+      <YAxis
+        allowDataOverflow={false}
+        allowDecimals={true}
+        allowDuplicatedCategory={true}
+        domain={
+          Array [
+            0,
+            "auto",
+          ]
+        }
+        height={0}
+        hide={false}
+        mirror={false}
+        orientation="left"
+        padding={
+          Object {
+            "bottom": 0,
+            "top": 0,
+          }
+        }
+        reversed={false}
+        scale="auto"
+        tickCount={5}
+        type="number"
+        width={60}
+        yAxisId={0}
+      />
+      <CartesianGrid
+        fill="none"
+        horizontal={true}
+        horizontalFill={Array []}
+        horizontalPoints={Array []}
+        stroke="#ccc"
+        strokeDasharray="2 4"
+        vertical={true}
+        verticalFill={Array []}
+        verticalPoints={Array []}
+      />
+      <Tooltip
+        active={false}
+        animationDuration={400}
+        animationEasing="ease"
+        content={
+          <CustomTooltip
+            active={false}
+          />
+        }
+        contentStyle={Object {}}
+        coordinate={
+          Object {
+            "x": 0,
+            "y": 0,
+          }
+        }
+        cursor={true}
+        cursorStyle={Object {}}
+        filterNull={true}
+        isAnimationActive={true}
+        itemSorter={[Function]}
+        itemStyle={Object {}}
+        labelStyle={Object {}}
+        offset={10}
+        separator=" : "
+        useTranslate3d={false}
+        viewBox={
+          Object {
+            "x1": 0,
+            "x2": 0,
+            "y1": 0,
+            "y2": 0,
+          }
+        }
+        wrapperStyle={Object {}}
+      />
+      <Bar
+        animationBegin={0}
+        animationDuration={400}
+        animationEasing="ease"
+        data={Array []}
+        dataKey="lastProp"
+        fill="rgb(30, 28, 138)"
+        hide={false}
+        isAnimationActive={true}
+        layout="vertical"
+        legendType="rect"
+        minPointSize={0}
+        onAnimationEnd={[Function]}
+        onAnimationStart={[Function]}
+        stackId="unique"
+        xAxisId={0}
+        yAxisId={0}
       >
-        <XAxis
-          allowDataOverflow={false}
-          allowDecimals={true}
-          allowDuplicatedCategory={true}
-          dataKey="label"
-          domain={
-            Array [
-              0,
-              "auto",
-            ]
-          }
-          height={30}
-          hide={false}
-          label=""
-          mirror={false}
-          orientation="bottom"
-          padding={
-            Object {
-              "left": 0,
-              "right": 0,
-            }
-          }
-          reversed={false}
-          scale="auto"
-          tickCount={5}
-          type="category"
-          width={0}
-          xAxisId={0}
+        <Cell
+          cursor="pointer"
+          fill="#1e1c8a"
+          key="cell-0"
         />
-        <YAxis
-          allowDataOverflow={false}
-          allowDecimals={true}
-          allowDuplicatedCategory={true}
-          domain={
-            Array [
-              0,
-              "auto",
-            ]
-          }
-          height={0}
-          hide={false}
-          mirror={false}
-          orientation="left"
-          padding={
-            Object {
-              "bottom": 0,
-              "top": 0,
-            }
-          }
-          reversed={false}
-          scale="auto"
-          tickCount={5}
-          type="number"
-          width={60}
-          yAxisId={0}
+        <Cell
+          cursor="pointer"
+          fill="#1e1c8a"
+          key="cell-1"
         />
-        <CartesianGrid
-          fill="none"
-          horizontal={true}
-          horizontalFill={Array []}
-          horizontalPoints={Array []}
-          stroke="#ccc"
-          strokeDasharray="2 4"
-          vertical={true}
-          verticalFill={Array []}
-          verticalPoints={Array []}
-        />
-        <Tooltip
-          active={false}
-          animationDuration={400}
-          animationEasing="ease"
-          content={
-            <CustomTooltip
-              active={false}
-            />
-          }
-          contentStyle={Object {}}
-          coordinate={
-            Object {
-              "x": 0,
-              "y": 0,
-            }
-          }
-          cursor={true}
-          cursorStyle={Object {}}
-          filterNull={true}
-          isAnimationActive={true}
-          itemSorter={[Function]}
-          itemStyle={Object {}}
-          labelStyle={Object {}}
-          offset={10}
-          separator=" : "
-          useTranslate3d={false}
-          viewBox={
-            Object {
-              "x1": 0,
-              "x2": 0,
-              "y1": 0,
-              "y2": 0,
-            }
-          }
-          wrapperStyle={Object {}}
-        />
-        <Bar
-          animationBegin={0}
-          animationDuration={400}
-          animationEasing="ease"
-          data={Array []}
-          dataKey="lastProp"
-          fill="rgb(30, 28, 138)"
-          hide={false}
-          isAnimationActive={true}
-          layout="vertical"
-          legendType="rect"
-          minPointSize={0}
-          onAnimationEnd={[Function]}
-          onAnimationStart={[Function]}
-          stackId="unique"
-          xAxisId={0}
-          yAxisId={0}
-        >
-          <Cell
-            cursor="pointer"
-            fill="#1e1c8a"
-            key="cell-0"
-          />
-          <Cell
-            cursor="pointer"
-            fill="#1e1c8a"
-            key="cell-1"
-          />
-        </Bar>
-      </BarChart>
-    </ResponsiveContainer>
-  </React.Fragment>
+      </Bar>
+    </BarChart>
+  </ResponsiveContainer>
 </div>
 `;
 
@@ -488,179 +484,177 @@ exports[`FreeBarChart when data should allow personalizing the options 1`] = `
 <div
   className="BarChart custom-class"
 >
-  <React.Fragment>
-    <ResponsiveContainer
-      debounce={0}
-      height={320}
-      width="100%"
+  <ResponsiveContainer
+    debounce={0}
+    height={320}
+    width="100%"
+  >
+    <BarChart
+      barCategoryGap="10%"
+      barGap={4}
+      data={
+        Array [
+          Object {
+            "label": "col1",
+            "lastProp": 2,
+            "otherProp": 5,
+            "results": 3,
+          },
+          Object {
+            "label": "col2",
+            "lastProp": 3,
+            "otherProp": 2,
+            "results": 4,
+          },
+        ]
+      }
+      height={300}
+      layout="vertical"
+      margin={
+        Object {
+          "bottom": 5,
+          "left": 5,
+          "right": 5,
+          "top": 5,
+        }
+      }
+      reverseStackOrder={false}
+      stackOffset="none"
     >
-      <BarChart
-        barCategoryGap="10%"
-        barGap={4}
-        data={
+      <XAxis
+        allowDataOverflow={false}
+        allowDecimals={true}
+        allowDuplicatedCategory={true}
+        dataKey="otherProp"
+        domain={
           Array [
-            Object {
-              "label": "col1",
-              "lastProp": 2,
-              "otherProp": 5,
-              "results": 3,
-            },
-            Object {
-              "label": "col2",
-              "lastProp": 3,
-              "otherProp": 2,
-              "results": 4,
-            },
+            0,
+            "auto",
           ]
         }
-        height={300}
-        layout="vertical"
-        margin={
+        height={30}
+        hide={false}
+        mirror={false}
+        orientation="bottom"
+        padding={
           Object {
-            "bottom": 5,
-            "left": 5,
-            "right": 5,
-            "top": 5,
+            "left": 0,
+            "right": 0,
           }
         }
-        reverseStackOrder={false}
-        stackOffset="none"
+        reversed={false}
+        scale="auto"
+        tickCount={5}
+        type="number"
+        width={0}
+        xAxisId={0}
+      />
+      <YAxis
+        allowDataOverflow={false}
+        allowDecimals={true}
+        allowDuplicatedCategory={true}
+        dataKey="label"
+        domain={
+          Array [
+            0,
+            "auto",
+          ]
+        }
+        height={0}
+        hide={false}
+        mirror={false}
+        orientation="left"
+        padding={
+          Object {
+            "bottom": 0,
+            "top": 0,
+          }
+        }
+        reversed={false}
+        scale="auto"
+        tickCount={5}
+        type="category"
+        width={200}
+        yAxisId={0}
+      />
+      <CartesianGrid
+        fill="none"
+        horizontal={true}
+        horizontalFill={Array []}
+        horizontalPoints={Array []}
+        stroke="#ccc"
+        strokeDasharray="2 4"
+        vertical={true}
+        verticalFill={Array []}
+        verticalPoints={Array []}
+      />
+      <Tooltip
+        active={false}
+        animationDuration={400}
+        animationEasing="ease"
+        content={
+          <CustomTooltip
+            active={false}
+          />
+        }
+        contentStyle={Object {}}
+        coordinate={
+          Object {
+            "x": 0,
+            "y": 0,
+          }
+        }
+        cursor={true}
+        cursorStyle={Object {}}
+        filterNull={true}
+        isAnimationActive={true}
+        itemSorter={[Function]}
+        itemStyle={Object {}}
+        labelStyle={Object {}}
+        offset={10}
+        separator=" : "
+        useTranslate3d={false}
+        viewBox={
+          Object {
+            "x1": 0,
+            "x2": 0,
+            "y1": 0,
+            "y2": 0,
+          }
+        }
+        wrapperStyle={Object {}}
+      />
+      <Bar
+        animationBegin={0}
+        animationDuration={400}
+        animationEasing="ease"
+        data={Array []}
+        dataKey="otherProp"
+        fill="rgb(30, 28, 138)"
+        hide={false}
+        isAnimationActive={true}
+        layout="vertical"
+        legendType="rect"
+        minPointSize={0}
+        onAnimationEnd={[Function]}
+        onAnimationStart={[Function]}
+        stackId="unique"
+        xAxisId={0}
+        yAxisId={0}
       >
-        <XAxis
-          allowDataOverflow={false}
-          allowDecimals={true}
-          allowDuplicatedCategory={true}
-          dataKey="otherProp"
-          domain={
-            Array [
-              0,
-              "auto",
-            ]
-          }
-          height={30}
-          hide={false}
-          mirror={false}
-          orientation="bottom"
-          padding={
-            Object {
-              "left": 0,
-              "right": 0,
-            }
-          }
-          reversed={false}
-          scale="auto"
-          tickCount={5}
-          type="number"
-          width={0}
-          xAxisId={0}
+        <Cell
+          cursor="pointer"
+          fill="#ff0"
+          key="cell-0"
         />
-        <YAxis
-          allowDataOverflow={false}
-          allowDecimals={true}
-          allowDuplicatedCategory={true}
-          dataKey="label"
-          domain={
-            Array [
-              0,
-              "auto",
-            ]
-          }
-          height={0}
-          hide={false}
-          mirror={false}
-          orientation="left"
-          padding={
-            Object {
-              "bottom": 0,
-              "top": 0,
-            }
-          }
-          reversed={false}
-          scale="auto"
-          tickCount={5}
-          type="category"
-          width={200}
-          yAxisId={0}
+        <Cell
+          cursor="pointer"
+          fill="#00f"
+          key="cell-1"
         />
-        <CartesianGrid
-          fill="none"
-          horizontal={true}
-          horizontalFill={Array []}
-          horizontalPoints={Array []}
-          stroke="#ccc"
-          strokeDasharray="2 4"
-          vertical={true}
-          verticalFill={Array []}
-          verticalPoints={Array []}
-        />
-        <Tooltip
-          active={false}
-          animationDuration={400}
-          animationEasing="ease"
-          content={
-            <CustomTooltip
-              active={false}
-            />
-          }
-          contentStyle={Object {}}
-          coordinate={
-            Object {
-              "x": 0,
-              "y": 0,
-            }
-          }
-          cursor={true}
-          cursorStyle={Object {}}
-          filterNull={true}
-          isAnimationActive={true}
-          itemSorter={[Function]}
-          itemStyle={Object {}}
-          labelStyle={Object {}}
-          offset={10}
-          separator=" : "
-          useTranslate3d={false}
-          viewBox={
-            Object {
-              "x1": 0,
-              "x2": 0,
-              "y1": 0,
-              "y2": 0,
-            }
-          }
-          wrapperStyle={Object {}}
-        />
-        <Bar
-          animationBegin={0}
-          animationDuration={400}
-          animationEasing="ease"
-          data={Array []}
-          dataKey="otherProp"
-          fill="rgb(30, 28, 138)"
-          hide={false}
-          isAnimationActive={true}
-          layout="vertical"
-          legendType="rect"
-          minPointSize={0}
-          onAnimationEnd={[Function]}
-          onAnimationStart={[Function]}
-          stackId="unique"
-          xAxisId={0}
-          yAxisId={0}
-        >
-          <Cell
-            cursor="pointer"
-            fill="#ff0"
-            key="cell-0"
-          />
-          <Cell
-            cursor="pointer"
-            fill="#00f"
-            key="cell-1"
-          />
-        </Bar>
-      </BarChart>
-    </ResponsiveContainer>
-  </React.Fragment>
+      </Bar>
+    </BarChart>
+  </ResponsiveContainer>
 </div>
 `;
 
@@ -668,178 +662,176 @@ exports[`FreeBarChart when data should render basic data with correct defaults 1
 <div
   className="BarChart "
 >
-  <React.Fragment>
-    <ResponsiveContainer
-      debounce={0}
-      height={320}
-      width="100%"
+  <ResponsiveContainer
+    debounce={0}
+    height={320}
+    width="100%"
+  >
+    <BarChart
+      barCategoryGap="10%"
+      barGap={4}
+      data={
+        Array [
+          Object {
+            "label": "col1",
+            "lastProp": 2,
+            "otherProp": 5,
+            "results": 3,
+          },
+          Object {
+            "label": "col2",
+            "lastProp": 3,
+            "otherProp": 2,
+            "results": 4,
+          },
+        ]
+      }
+      height={300}
+      layout="horizontal"
+      margin={
+        Object {
+          "bottom": 5,
+          "left": 5,
+          "right": 5,
+          "top": 5,
+        }
+      }
+      reverseStackOrder={false}
+      stackOffset="none"
     >
-      <BarChart
-        barCategoryGap="10%"
-        barGap={4}
-        data={
+      <XAxis
+        allowDataOverflow={false}
+        allowDecimals={true}
+        allowDuplicatedCategory={true}
+        dataKey="label"
+        domain={
           Array [
-            Object {
-              "label": "col1",
-              "lastProp": 2,
-              "otherProp": 5,
-              "results": 3,
-            },
-            Object {
-              "label": "col2",
-              "lastProp": 3,
-              "otherProp": 2,
-              "results": 4,
-            },
+            0,
+            "auto",
           ]
         }
-        height={300}
-        layout="horizontal"
-        margin={
+        height={30}
+        hide={false}
+        label=""
+        mirror={false}
+        orientation="bottom"
+        padding={
           Object {
-            "bottom": 5,
-            "left": 5,
-            "right": 5,
-            "top": 5,
+            "left": 0,
+            "right": 0,
           }
         }
-        reverseStackOrder={false}
-        stackOffset="none"
+        reversed={false}
+        scale="auto"
+        tickCount={5}
+        type="category"
+        width={0}
+        xAxisId={0}
+      />
+      <YAxis
+        allowDataOverflow={false}
+        allowDecimals={true}
+        allowDuplicatedCategory={true}
+        domain={
+          Array [
+            0,
+            "auto",
+          ]
+        }
+        height={0}
+        hide={false}
+        mirror={false}
+        orientation="left"
+        padding={
+          Object {
+            "bottom": 0,
+            "top": 0,
+          }
+        }
+        reversed={false}
+        scale="auto"
+        tickCount={5}
+        type="number"
+        width={60}
+        yAxisId={0}
+      />
+      <CartesianGrid
+        fill="none"
+        horizontal={true}
+        horizontalFill={Array []}
+        horizontalPoints={Array []}
+        stroke="#ccc"
+        strokeDasharray="2 4"
+        vertical={true}
+        verticalFill={Array []}
+        verticalPoints={Array []}
+      />
+      <Tooltip
+        active={false}
+        animationDuration={400}
+        animationEasing="ease"
+        content={
+          <CustomTooltip
+            active={false}
+          />
+        }
+        contentStyle={Object {}}
+        coordinate={
+          Object {
+            "x": 0,
+            "y": 0,
+          }
+        }
+        cursor={true}
+        cursorStyle={Object {}}
+        filterNull={true}
+        isAnimationActive={true}
+        itemSorter={[Function]}
+        itemStyle={Object {}}
+        labelStyle={Object {}}
+        offset={10}
+        separator=" : "
+        useTranslate3d={false}
+        viewBox={
+          Object {
+            "x1": 0,
+            "x2": 0,
+            "y1": 0,
+            "y2": 0,
+          }
+        }
+        wrapperStyle={Object {}}
+      />
+      <Bar
+        animationBegin={0}
+        animationDuration={400}
+        animationEasing="ease"
+        data={Array []}
+        dataKey="results"
+        fill="rgb(30, 28, 138)"
+        hide={false}
+        isAnimationActive={true}
+        layout="vertical"
+        legendType="rect"
+        minPointSize={0}
+        onAnimationEnd={[Function]}
+        onAnimationStart={[Function]}
+        stackId="unique"
+        xAxisId={0}
+        yAxisId={0}
       >
-        <XAxis
-          allowDataOverflow={false}
-          allowDecimals={true}
-          allowDuplicatedCategory={true}
-          dataKey="label"
-          domain={
-            Array [
-              0,
-              "auto",
-            ]
-          }
-          height={30}
-          hide={false}
-          label=""
-          mirror={false}
-          orientation="bottom"
-          padding={
-            Object {
-              "left": 0,
-              "right": 0,
-            }
-          }
-          reversed={false}
-          scale="auto"
-          tickCount={5}
-          type="category"
-          width={0}
-          xAxisId={0}
+        <Cell
+          cursor="pointer"
+          fill="#1e1c8a"
+          key="cell-0"
         />
-        <YAxis
-          allowDataOverflow={false}
-          allowDecimals={true}
-          allowDuplicatedCategory={true}
-          domain={
-            Array [
-              0,
-              "auto",
-            ]
-          }
-          height={0}
-          hide={false}
-          mirror={false}
-          orientation="left"
-          padding={
-            Object {
-              "bottom": 0,
-              "top": 0,
-            }
-          }
-          reversed={false}
-          scale="auto"
-          tickCount={5}
-          type="number"
-          width={60}
-          yAxisId={0}
+        <Cell
+          cursor="pointer"
+          fill="#1e1c8a"
+          key="cell-1"
         />
-        <CartesianGrid
-          fill="none"
-          horizontal={true}
-          horizontalFill={Array []}
-          horizontalPoints={Array []}
-          stroke="#ccc"
-          strokeDasharray="2 4"
-          vertical={true}
-          verticalFill={Array []}
-          verticalPoints={Array []}
-        />
-        <Tooltip
-          active={false}
-          animationDuration={400}
-          animationEasing="ease"
-          content={
-            <CustomTooltip
-              active={false}
-            />
-          }
-          contentStyle={Object {}}
-          coordinate={
-            Object {
-              "x": 0,
-              "y": 0,
-            }
-          }
-          cursor={true}
-          cursorStyle={Object {}}
-          filterNull={true}
-          isAnimationActive={true}
-          itemSorter={[Function]}
-          itemStyle={Object {}}
-          labelStyle={Object {}}
-          offset={10}
-          separator=" : "
-          useTranslate3d={false}
-          viewBox={
-            Object {
-              "x1": 0,
-              "x2": 0,
-              "y1": 0,
-              "y2": 0,
-            }
-          }
-          wrapperStyle={Object {}}
-        />
-        <Bar
-          animationBegin={0}
-          animationDuration={400}
-          animationEasing="ease"
-          data={Array []}
-          dataKey="results"
-          fill="rgb(30, 28, 138)"
-          hide={false}
-          isAnimationActive={true}
-          layout="vertical"
-          legendType="rect"
-          minPointSize={0}
-          onAnimationEnd={[Function]}
-          onAnimationStart={[Function]}
-          stackId="unique"
-          xAxisId={0}
-          yAxisId={0}
-        >
-          <Cell
-            cursor="pointer"
-            fill="#1e1c8a"
-            key="cell-0"
-          />
-          <Cell
-            cursor="pointer"
-            fill="#1e1c8a"
-            key="cell-1"
-          />
-        </Bar>
-      </BarChart>
-    </ResponsiveContainer>
-  </React.Fragment>
+      </Bar>
+    </BarChart>
+  </ResponsiveContainer>
 </div>
 `;

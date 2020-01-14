@@ -1,3 +1,5 @@
+/** @format */
+
 import thesauris from 'api/thesauris';
 
 const select = async (entityToImport, templateProperty) => {
@@ -6,23 +8,23 @@ const select = async (entityToImport, templateProperty) => {
     return null;
   }
 
-  const thesauriMatching =
-    v => v.label.trim().toLowerCase() === entityToImport[templateProperty.name].trim().toLowerCase();
+  const thesauriMatching = v =>
+    v.label.trim().toLowerCase() === entityToImport[templateProperty.name].trim().toLowerCase();
 
-  const value = currentThesauri.values.find(thesauriMatching);
+  let value = currentThesauri.values.find(thesauriMatching);
 
-  if (value) {
-    return value.id;
+  if (!value) {
+    const updated = await thesauris.save({
+      ...currentThesauri,
+      values: currentThesauri.values.concat([
+        {
+          label: entityToImport[templateProperty.name],
+        },
+      ]),
+    });
+    value = updated.values.find(thesauriMatching);
   }
-
-  const updated = await thesauris.save({
-    ...currentThesauri,
-    values: currentThesauri.values.concat([{
-      label: entityToImport[templateProperty.name]
-    }])
-  });
-
-  return updated.values.find(thesauriMatching).id;
+  return [{ value: value.id, label: value.label }];
 };
 
 export default select;

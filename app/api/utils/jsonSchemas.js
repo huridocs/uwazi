@@ -1,8 +1,8 @@
 /** @format */
 
-import { templateTypes } from 'shared/templateTypes';
+import { propertyTypes } from 'shared/propertyTypes';
 
-const fieldTypes = Object.values(templateTypes);
+const fieldTypes = Object.values(propertyTypes);
 
 export const objectIdSchema = {
   oneOf: [{ type: 'string' }, { type: 'object' }],

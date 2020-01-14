@@ -1,6 +1,6 @@
 /* eslint-disable max-len */
 import db from 'api/utils/testing_db';
-import { templateTypes } from 'shared/templateTypes';
+import { propertyTypes } from 'shared/propertyTypes';
 import { templateUtils } from 'api/templates';
 
 const templateId = db.id();
@@ -12,27 +12,27 @@ export default {
       name: 'template',
       properties: [
         {
-          type: templateTypes.media,
+          type: propertyTypes.media,
           label: 'video',
           name: templateUtils.safeName('video'),
         },
         {
-          type: templateTypes.link,
+          type: propertyTypes.link,
           label: 'original url',
           name: templateUtils.safeName('original url'),
         },
         {
-          type: templateTypes.image,
+          type: propertyTypes.image,
           label: 'screenshot',
           name: templateUtils.safeName('screenshot'),
         },
         {
-          type: templateTypes.date,
+          type: propertyTypes.date,
           label: 'time of request',
           name: templateUtils.safeName('time of request'),
         },
         {
-          type: templateTypes.markdown,
+          type: propertyTypes.markdown,
           label: 'data',
           name: templateUtils.safeName('data'),
         },

@@ -1,3 +1,5 @@
+/** @format */
+
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { render } from 'enzyme';
@@ -13,13 +15,13 @@ describe('Repeat', () => {
   class DummyComponent extends Component {
     render() {
       const { myvalue } = this.props;
-      return (<span>{myvalue}</span>);
+      return <span>{myvalue}</span>;
     }
   }
   DummyComponent.propTypes = { myvalue: PropTypes.string.isRequired };
   beforeEach(() => {
     datasets = {
-      data: ['Batman', 'Spiderman']
+      data: ['Batman', 'Spiderman'],
     };
   });
 
@@ -28,7 +30,9 @@ describe('Repeat', () => {
       <ul>
         <PagesContext.Provider value={datasets}>
           <Repeat path="data">
-            <li>Name: <Value store={store}/></li>
+            <li>
+              Name: <Value store={store} />
+            </li>
           </Repeat>
         </PagesContext.Provider>
       </ul>
@@ -38,13 +42,20 @@ describe('Repeat', () => {
 
   it('should handle nested values in objects', () => {
     datasets = {
-      data: [{ title: 'Batman', metadata: { age: 42 } }, { title: 'Robin', metadata: { age: 24 } }]
+      data: [
+        { title: 'Batman', metadata: { age: [{ value: 42 }] } },
+        { title: 'Robin', metadata: { age: [{ value: 24 }] } },
+      ],
     };
     const component = render(
       <PagesContext.Provider value={datasets}>
         <Repeat path="data">
-          <span>Name: <Value store={store} path="title"/></span>
-          <span>Age: <Value store={store} path="metadata.age"/></span>
+          <span>
+            Name: <Value store={store} path="title" />
+          </span>
+          <span>
+            Age: <Value store={store} path="metadata.age.0.value" />
+          </span>
         </Repeat>
       </PagesContext.Provider>
     );

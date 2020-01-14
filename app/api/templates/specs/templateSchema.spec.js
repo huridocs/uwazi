@@ -133,16 +133,6 @@ describe('template schema', () => {
         await testInvalid();
       });
 
-      it('invalid if relationship properties have same relationType', async () => {
-        template.properties.push(
-          makeProperty('foo', 'relationship', { content: 'content', relationType: 'rel1' })
-        );
-        template.properties.push(
-          makeProperty('bar', 'relationship', { content: 'content', relationType: 'rel1' })
-        );
-        await testInvalid();
-      });
-
       it('invalid if inherited relationship properties do not specify field to inherit', async () => {
         template.properties.push(
           makeProperty('foo', 'relationship', {

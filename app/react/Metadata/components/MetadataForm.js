@@ -38,12 +38,25 @@ export class MetadataForm extends Component {
     this.props.componentWillUnmount();
   }
 
-  onSubmit(metadata) {
-    this.props.onSubmit(entitiesUtil.filterBaseProperties(metadata), this.props.model);
+  onSubmit(entity) {
+    this.props.onSubmit(
+      this.wrapEntityMetadata(entitiesUtil.filterBaseProperties(entity)),
+      this.props.model
+    );
   }
 
   onSubmitFailed() {
     this.props.notify(t('System', 'Invalid form', null, false), 'danger');
+  }
+
+  wrapEntityMetadata(entity) {
+    const metadata = Object.keys(entity.metadata).reduce((wrappedMo, key) => {
+      wrappedMo[key] = Array.isArray(entity.metadata[key])
+        ? entity.metadata[key].map(v => ({ value: v }))
+        : [{ value: entity.metadata[key] }];
+      return wrappedMo;
+    }, {});
+    return { ...entity, metadata };
   }
 
   renderTemplateSelect(templateOptions, template) {

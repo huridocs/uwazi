@@ -1,3 +1,5 @@
+/** @format */
+
 import React from 'react';
 import { Route, IndexRoute } from 'react-router';
 
@@ -20,7 +22,7 @@ import {
   FiltersForm,
   Languages,
   Customisation,
-  CustomUploads
+  CustomUploads,
 } from 'app/Settings';
 
 import Activitylog from 'app/Activitylog/Activitylog';
@@ -31,8 +33,7 @@ import PageView from 'app/Pages/PageView';
 
 import { Users, NewUser, EditUser } from 'app/Users';
 
-import ViewDocument from 'app/Viewer/ViewDocument';
-import EntityView from 'app/Entities/EntityView';
+import ViewerRoute from 'app/Viewer/ViewerRoute';
 import Uploads from 'app/Uploads/UploadsRoute';
 
 import EditTemplate from 'app/Templates/EditTemplate';
@@ -85,8 +86,9 @@ function getIndexRoute(nextState, callBack) {
   let component = Library;
   if (isPageRoute) {
     pageId = customHomePage[customHomePage.indexOf('page') + 1];
-    component = props => <PageView {...props} params={{ sharedId: pageId }}/>;
-    component.requestState = requestParams => PageView.requestState(requestParams.set({ sharedId: pageId }));
+    component = props => <PageView {...props} params={{ sharedId: pageId }} />;
+    component.requestState = requestParams =>
+      PageView.requestState(requestParams.set({ sharedId: pageId }));
   }
 
   const indexRoute = {
@@ -99,7 +101,7 @@ function getIndexRoute(nextState, callBack) {
         enterOnLibrary(nxtState, replace);
       }
     },
-    customHomePageId: pageId
+    customHomePageId: pageId,
   };
   callBack(null, indexRoute);
 }
@@ -136,7 +138,7 @@ const routes = (
         <Route path="new" component={NewThesauri} />
         <Route path="edit/:_id" component={EditThesauri} />
       </Route>
-      <Route path="languages" component={Languages}/>
+      <Route path="languages" component={Languages} />
       <Route path="translations">
         <IndexRoute component={TranslationsList} />
         <Route path="edit/:context" component={EditTranslations} />
@@ -146,16 +148,20 @@ const routes = (
       <Route path="custom-uploads" component={CustomUploads} />
       <Route path="activitylog" component={Activitylog} onEnter={needsAuth} />
     </Route>
-    <Route path="library" component={Library} onEnter={enterOnLibrary}/>
-    <Route path="library/map" component={LibraryMap} onEnter={onEnter}/>
+    <Route path="library" component={Library} onEnter={enterOnLibrary} />
+    <Route path="library/map" component={LibraryMap} onEnter={onEnter} />
     <Route path="uploads" component={Uploads} />
     <Route path="login" component={Login} />
     <Route path="setpassword/:key" component={ResetPassword} />
     <Route path="unlockaccount/:username/:code" component={UnlockAccount} />
-    <Route path="document/:sharedId*" component={ViewDocument} onEnter={onEnter}/>
-    <Route path="entity/:sharedId" component={EntityView} onEnter={onEnter}/>
-    <Route path="page/:sharedId" component={PageView} onEnter={onEnter}/>
-    <Route path="semanticsearch/:searchId" component={SemanticSearchResultsView} onEnter={onEnter}/>
+    <Route path="document/:sharedId*" component={ViewerRoute} onEnter={onEnter} />
+    <Route path="entity/:sharedId" component={ViewerRoute} onEnter={onEnter} />
+    <Route path="page/:sharedId" component={PageView} onEnter={onEnter} />
+    <Route
+      path="semanticsearch/:searchId"
+      component={SemanticSearchResultsView}
+      onEnter={onEnter}
+    />
     <Route path="404" component={NoMatch} />
   </Route>
 );

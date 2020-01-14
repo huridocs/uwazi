@@ -25,59 +25,57 @@ exports[`Login on instance should render the component with the login form 1`] =
         model="loginForm"
         onSubmit={[Function]}
       >
-        <React.Fragment>
-          <div
-            className="form-group login-email"
-          >
-            <Modeled(Connect(Field))
-              model=".username"
-            >
-              <label
-                className="form-group-label"
-                htmlFor="username"
-              >
-                User
-              </label>
-              <input
-                className="form-control"
-                id="username"
-                name="username"
-                type="text"
-              />
-            </Modeled(Connect(Field))>
-          </div>
-          <div
-            className="form-group login-password "
+        <div
+          className="form-group login-email"
+        >
+          <Modeled(Connect(Field))
+            model=".username"
           >
             <label
               className="form-group-label"
-              htmlFor="password"
+              htmlFor="username"
             >
-              Password
+              User
             </label>
-            <Modeled(Connect(Field))
-              model=".password"
+            <input
+              className="form-control"
+              id="username"
+              name="username"
+              type="text"
+            />
+          </Modeled(Connect(Field))>
+        </div>
+        <div
+          className="form-group login-password "
+        >
+          <label
+            className="form-group-label"
+            htmlFor="password"
+          >
+            Password
+          </label>
+          <Modeled(Connect(Field))
+            model=".password"
+          >
+            <input
+              className="form-control"
+              id="password"
+              name="password"
+              type="password"
+            />
+          </Modeled(Connect(Field))>
+          <div
+            className="form-text"
+          >
+            <span
+              className="button forgot-password "
+              onClick={[Function]}
+              title="Forgot Password?"
             >
-              <input
-                className="form-control"
-                id="password"
-                name="password"
-                type="password"
-              />
-            </Modeled(Connect(Field))>
-            <div
-              className="form-text"
-            >
-              <span
-                className="button forgot-password "
-                onClick={[Function]}
-                title="Forgot Password?"
-              >
-                Forgot Password?
-              </span>
-            </div>
+              Forgot Password?
+            </span>
           </div>
-        </React.Fragment>
+        </div>
         <p>
           <button
             className="btn btn-block btn-lg btn-primary"
@@ -222,14 +220,12 @@ exports[`Login submit() on response failure when authorization failure should se
               className="form-text"
             >
               <p>
-                <React.Fragment>
-                  <Connect(Icon)
-                    icon="exclamation-triangle"
-                  />
-                  <span>
-                    Two-factor verification failed
-                  </span>
-                </React.Fragment>
+                <Connect(Icon)
+                  icon="exclamation-triangle"
+                />
+                <span>
+                  Two-factor verification failed
+                </span>
               </p>
               <p>
                 Open the two-factor Authenticator app on your device 

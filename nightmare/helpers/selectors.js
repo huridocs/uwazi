@@ -1,5 +1,5 @@
 /*eslint max-len: ["error", 500], */
-/*eslint key-spacing: ["error", 500] */
+/*eslint key-spacing: "error" */
 export default {
   homeLink: 'header .logotype a',
   settingsView: {

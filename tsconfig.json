@@ -8,6 +8,8 @@
     "moduleResolution": "node",
     "isolatedModules": true,
     "esModuleInterop": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
     "strict": true,
     "baseUrl": ".",
     "paths": {
@@ -19,6 +21,6 @@
       "UI/*": ["./app/react/UI/*"]
     }
   },
-  "include": ["app"],
+  "include": ["app", "external_modules"],
   "exclude": ["node_modules", "**/node_modules/*", "fixtures", "dist", "prod"]
 }

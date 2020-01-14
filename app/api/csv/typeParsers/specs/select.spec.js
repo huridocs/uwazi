@@ -1,3 +1,5 @@
+/** @format */
+
 import thesauris from 'api/thesauris';
 import db from 'api/utils/testing_db';
 
@@ -17,8 +19,8 @@ describe('select', () => {
 
     expect(thesauri1.values[1].label).toBe('value');
     expect(thesauri1.values[2].label).toBe('value2');
-    expect(value1).toBe(thesauri1.values[1].id);
-    expect(value2).toBe(thesauri1.values[2].id);
+    expect(value1).toEqual([{ value: thesauri1.values[1].id, label: 'value' }]);
+    expect(value2).toEqual([{ value: thesauri1.values[2].id, label: 'value2' }]);
   });
 
   it('should not repeat case sensitive values', async () => {

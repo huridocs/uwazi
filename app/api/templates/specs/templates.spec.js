@@ -35,21 +35,16 @@ describe('templates', () => {
   });
 
   describe('save', () => {
-    it('should return the saved template', done => {
+    it('should return the saved template', async () => {
       const newTemplate = {
         name: 'created_template',
         commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
         properties: [{ label: 'fieldLabel', type: 'text' }],
       };
 
-      templates
-        .save(newTemplate)
-        .then(template => {
-          expect(template._id).toBeDefined();
-          expect(template.name).toBe('created_template');
-          done();
-        })
-        .catch(done.fail);
+      const template = await templates.save(newTemplate);
+      expect(template._id).toBeDefined();
+      expect(template.name).toBe('created_template');
     });
 
     it('should create a template', done => {
@@ -174,21 +169,15 @@ describe('templates', () => {
         .catch(catchErrors(done));
     });
 
-    it('should set a default value of [] to properties', done => {
+    it('should set a default value of [] to properties', async () => {
       const newTemplate = {
         name: 'created_template',
         commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
       };
-      templates
-        .save(newTemplate)
-        .then(templates.get)
-        .then(allTemplates => {
-          const newDoc = allTemplates.find(template => template.name === 'created_template');
-
-          expect(newDoc.properties).toEqual([]);
-          done();
-        })
-        .catch(done.fail);
+      await templates.save(newTemplate);
+      const allTemplates = await templates.get();
+      const newDoc = allTemplates.find(template => template.name === 'created_template');
+      expect(newDoc.properties).toEqual([]);
     });
 
     describe('when passing _id', () => {

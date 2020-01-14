@@ -24,6 +24,9 @@ export default class CSVLoader extends EventEmitter {
 
   async load(csvPath, templateId, options = { language: 'en' }) {
     const template = await templates.getById(templateId);
+    if (!template) {
+      throw new Error('template not found!');
+    }
     const file = importFile(csvPath);
     const availableLanguages = (await settings.get()).languages.map(l => l.key);
 
