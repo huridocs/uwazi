@@ -2,7 +2,6 @@
 
 /* eslint-disable max-lines,max-statements */
 
-import Ajv from 'ajv';
 import db from 'api/utils/testing_db';
 import { propertyTypes } from 'shared/propertyTypes';
 import { validateEntity } from '../entitySchema';
