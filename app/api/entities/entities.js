@@ -128,11 +128,18 @@ async function updateEntity(entity, _template) {
         ) {
           await this.renameRelatedEntityInMetadata({ ...currentDoc, ...entity });
         }
-        return model.save({
-          ...entity,
-          metadata: await denormalizeMetadata(entity.metadata, entity, template),
-          suggestedMetadata: await denormalizeMetadata(entity.suggestedMetadata, entity, template),
-        });
+        const toSave = { ...entity };
+        if (entity.metadata) {
+          toSave.metadata = await denormalizeMetadata(entity.metadata, entity, template);
+        }
+        if (entity.suggestedMetadata) {
+          toSave.suggestedMetadata = await denormalizeMetadata(
+            entity.suggestedMetadata,
+            entity,
+            template
+          );
+        }
+        return model.save(toSave);
       }
 
       if (entity.metadata) {

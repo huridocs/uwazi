@@ -22,7 +22,7 @@ import {
   Numeric,
   Select,
 } from '../../ReactReduxForms';
-import { MultipleEditionFieldWarning } from './MultipleEditionFieldWarning';
+import MultipleEditionFieldWarning from './MultipleEditionFieldWarning';
 
 const translateOptions = thesauri =>
   thesauri

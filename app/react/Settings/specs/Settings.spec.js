@@ -1,3 +1,5 @@
+/** @format */
+
 import UsersAPI from 'app/Users/UsersAPI';
 import ThesaurisAPI from 'app/Thesauris/ThesaurisAPI';
 import RelationTypesAPI from 'app/RelationTypes/RelationTypesAPI';
@@ -11,12 +13,14 @@ describe('Settings', () => {
     const user = { name: 'doe' };
     const dictionaries = [{ _id: 1, name: 'Countries' }];
     const relationTypes = [{ _id: 1, name: 'Supports' }];
+    const models = [];
     const translations = [{ _id: 1, locale: 'es', values: {} }];
     const settings = { siteName: 'BatCave' };
 
     beforeEach(() => {
       spyOn(UsersAPI, 'currentUser').and.returnValue(Promise.resolve(user));
-      spyOn(ThesaurisAPI, 'getDictionaries').and.returnValue(Promise.resolve(dictionaries));
+      spyOn(ThesaurisAPI, 'getThesauri').and.returnValue(Promise.resolve(dictionaries));
+      spyOn(ThesaurisAPI, 'getModelStatus').and.returnValue(Promise.resolve(models));
       spyOn(RelationTypesAPI, 'get').and.returnValue(Promise.resolve(relationTypes));
       spyOn(I18NApi, 'get').and.returnValue(Promise.resolve(translations));
       spyOn(SettingsAPI, 'get').and.returnValue(Promise.resolve(settings));

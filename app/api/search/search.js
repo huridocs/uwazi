@@ -469,7 +469,7 @@ const instanceSearch = elasticIndex => ({
 
       // this is where we decide which aggregations to send to elastic
       const aggregations = agregationProperties(properties);
-      const filters = processFilters(query.filters, allUniqueProps);
+      const filters = processFilters(query.filters, [...allUniqueProps, ...properties]);
       // this is where the query filters are built
       documentsQuery.filterMetadata(filters);
       // this is where the query aggregations are built
