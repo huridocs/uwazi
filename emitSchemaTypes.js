@@ -17,7 +17,7 @@ const opts = {
     singleQuote: true,
   },
 };
-const banner = '/* eslint-disable */\n/**AUTO-GENERATED. RUN yarn emitTypes to update.*/\n';
+const banner = '/* eslint-disable */\n/**AUTO-GENERATED. RUN yarn emit-types to update.*/\n';
 
 const firstUp = name => name.charAt(0).toUpperCase() + name.slice(1);
 const typesFileName = file =>

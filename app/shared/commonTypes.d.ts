@@ -1,5 +1,5 @@
 /* eslint-disable */
-/**AUTO-GENERATED. RUN yarn emitTypes to update.*/
+/**AUTO-GENERATED. RUN yarn emit-types to update.*/
 
 export type ObjectIdSchema =
   | string
@@ -23,13 +23,17 @@ export interface LatLonSchema {
   lon: number;
 }
 
-export type PropertyValueSchema = null | string | number | LinkSchema | DateRangeSchema | LatLonSchema;
+export type GeolocationSchema = {
+  label?: string;
+  lat: number;
+  lon: number;
+}[];
+
+export type PropertyValueSchema = null | string | number | LinkSchema | DateRangeSchema | LatLonSchema | LatLonSchema[];
 
 export interface MetadataObjectSchema {
   value: PropertyValueSchema;
   label?: string;
-  type?: string | null;
-  icon?: string | null;
   [k: string]: any | undefined;
 }
 

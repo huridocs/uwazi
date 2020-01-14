@@ -4,7 +4,7 @@ import entities from 'api/entities';
 import request from 'shared/JSONRequest.js';
 import translations from 'api/i18n/translations';
 import createError from 'api/utils/Error';
-import { db_url as dbURL } from '../config/database.js';
+import { DBHOST as dbHost } from '../config/database.js';
 import { generateNamesAndIds, getUpdatedNames, getDeletedProperties } from './utils';
 import model from './templatesModel';
 import { validateTemplate } from './templateSchema';
@@ -203,7 +203,7 @@ export default {
       const entitySelects = [];
       return Promise.all(
         selects.map(select =>
-          request.get(`${dbURL}/${select.content}`).then(result => {
+          request.get(`${dbHost}/${select.content}`).then(result => {
             if (result.json.type === 'template') {
               entitySelects.push(select.name);
             }

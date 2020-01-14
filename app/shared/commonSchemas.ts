@@ -44,6 +44,11 @@ export const latLonSchema = {
   },
 };
 
+export const geolocationSchema = {
+  type: 'array',
+  items: latLonSchema,
+};
+
 export const propertyValueSchema = {
   definitions: { linkSchema, dateRangeSchema, latLonSchema },
   oneOf: [
@@ -53,6 +58,7 @@ export const propertyValueSchema = {
     linkSchema,
     dateRangeSchema,
     latLonSchema,
+    geolocationSchema,
   ],
 };
 
