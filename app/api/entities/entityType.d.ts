@@ -27,7 +27,7 @@ export interface EntitySchema {
   };
   totalPages?: number;
   icon?: {
-    _id?: string;
+    _id?: string | null;
     label?: string;
     type?: string;
   };
