@@ -97,7 +97,15 @@ export class MetadataForm extends Component {
   }
 
   render() {
-    const { model, template, templateOptions, id, multipleEdition, showSubset } = this.props;
+    const {
+      model,
+      template,
+      templateOptions,
+      id,
+      multipleEdition,
+      showSubset,
+      version,
+    } = this.props;
 
     if (!template) {
       return <div />;
@@ -145,6 +153,7 @@ export class MetadataForm extends Component {
           model={model}
           template={template}
           showSubset={showSubset}
+          version={version}
         />
       </Form>
     );
@@ -171,6 +180,7 @@ MetadataForm.propTypes = {
   notify: PropTypes.func,
   id: PropTypes.string,
   showSubset: PropTypes.array,
+  version: PropTypes.string,
   componentWillUnmount: PropTypes.func,
 };
 

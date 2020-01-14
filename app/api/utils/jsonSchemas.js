@@ -2,6 +2,8 @@
 
 import { propertyTypes } from 'shared/propertyTypes';
 
+export const emitSchemaTypes = true;
+
 const fieldTypes = Object.values(propertyTypes);
 
 export const objectIdSchema = {
