@@ -25,6 +25,10 @@ export function saveEntity(entity) {
     });
 }
 
+export function resetForm() {
+  return dispatch => dispatch(formActions.reset('entityView.entityForm'));
+}
+
 export function deleteEntity(entity) {
   return dispatch =>
     api.delete(new RequestParams({ sharedId: entity.sharedId })).then(() => {

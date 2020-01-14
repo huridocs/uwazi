@@ -21,6 +21,11 @@ export default {
     return [{ value: entityToImport[templateProperty.name] }];
   },
 
+  async numeric(entityToImport, templateProperty) {
+    const value = entityToImport[templateProperty.name];
+    return Number.isNaN(Number(value)) ? [{ value }] : [{ value: Number(value) }];
+  },
+
   async date(entityToImport, templateProperty) {
     return [{ value: new Date(`${entityToImport[templateProperty.name]} UTC`).getTime() / 1000 }];
   },
