@@ -1,7 +1,7 @@
 /**
+ * @format
  * @jest-environment jsdom
  */
-/** @format */
 
 import React from 'react';
 import { shallow } from 'enzyme';
