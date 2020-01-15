@@ -80,10 +80,7 @@ $ yarn production-build
 ```
 
 The first time you run Uwazi, you will need to initialize the database with its default blank values. Do no run this command for existing projects, as this will erase the entire database. Note that from this point you need ElasticSearch and MongoDB running.
-<<<<<<< HEAD
 
-=======
->>>>>>> origin/development
 ```
 $ yarn blank-state
 ```
@@ -110,10 +107,7 @@ $ yarn migrate
 $ yarn production-build
 $ yarn run-production
 ```
-<<<<<<< HEAD
 
-=======
->>>>>>> origin/development
 - If you are not using git, just download and overwrite the code in the Uwazi directory.
 - 'yarn install' will automatically add, remove or replace any changes in module dependecies.
 - 'yarn migrate' will track your last data version and, if needed, run a script over your data to modify it so that is up to date with your Uwazi version.
