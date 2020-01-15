@@ -78,19 +78,25 @@ export class Settings extends RouteHandler {
 
     // documents.aggregations.all.body.buckets is len 53
     // template keys are thesaurus id
+    const thesaurusSuggestions = {};
     propToAgg.forEach(tuple => {
       const prop = tuple[0];
       const results = tuple[1];
       const { buckets } = results.aggregations.all[`_${prop.name}`];
       console.dir(`${prop.name} (${prop.content}):`);
       let soFar = 0;
+      thesaurusSuggestions[prop.content] = {};
       buckets.forEach(bucket => {
         console.dir(`  ${bucket.key}: ${bucket.filtered.doc_count}`);
         soFar += bucket.filtered.doc_count;
+        thesaurusSuggestions[prop.content][bucket.key] = bucket.filtered.doc_count;
       });
       console.dir(`Total: ${soFar}`);
+      thesaurusSuggestions[prop.content].total = soFar;
       console.dir('                  ');
     });
+
+    console.dir(thesaurusSuggestions);
     // Fetch models associated with known thesauri.
     const allModels = await Promise.all(
       thesauri.map(thesaurus => ThesaurisAPI.getModelStatus(request.set({ model: thesaurus.name })))
@@ -103,6 +109,7 @@ export class Settings extends RouteHandler {
         return {
           ...thesaurus,
           model_available: relevantModel.preferred != null,
+          suggestions: thesaurusSuggestions[thesaurus._id].total,
         };
       }
       return { ...thesaurus, model_available: false };
