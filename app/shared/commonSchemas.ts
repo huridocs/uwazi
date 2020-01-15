@@ -49,20 +49,6 @@ export const geolocationSchema = {
   items: latLonSchema,
 };
 
-export const nestedSchema = {
-  type: 'array',
-  items: {
-    oneOf: [
-      {
-        type: 'object',
-        patternProperties: {
-          '^(?!lat).*$': { type: 'array', items: { type: 'string' } },
-        },
-      },
-    ],
-  },
-};
-
 export const propertyValueSchema = {
   definitions: { linkSchema, dateRangeSchema, latLonSchema },
   oneOf: [
@@ -73,7 +59,6 @@ export const propertyValueSchema = {
     dateRangeSchema,
     latLonSchema,
     geolocationSchema,
-    nestedSchema,
   ],
 };
 
