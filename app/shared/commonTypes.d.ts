@@ -29,29 +29,7 @@ export type GeolocationSchema = {
   lon: number;
 }[];
 
-export type NestedSchema = {
-  /**
-   * This interface was referenced by `undefined`'s JSON-Schema definition
-   * via the `patternProperty` "^(?!lat).*$".
-   */
-  [k: string]: string[];
-}[];
-
-export type PropertyValueSchema =
-  | null
-  | string
-  | number
-  | LinkSchema
-  | DateRangeSchema
-  | LatLonSchema
-  | LatLonSchema[]
-  | {
-      /**
-       * This interface was referenced by `undefined`'s JSON-Schema definition
-       * via the `patternProperty` "^(?!lat).*$".
-       */
-      [k: string]: string[];
-    }[];
+export type PropertyValueSchema = null | string | number | LinkSchema | DateRangeSchema | LatLonSchema | LatLonSchema[];
 
 export interface MetadataObjectSchema {
   value: PropertyValueSchema;
