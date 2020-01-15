@@ -52,14 +52,6 @@ function processFilters(filters, properties) {
       };
     }
 
-    /*
-    q=(filters:(document_type:(values:!(%2709fd9944-8717-45b5-93c8-1529b4e85f8a%27))),limit:30,order:desc,sort:creationDate)
-    property: Uwazi template property
-    value: list of allowed values (or if singular, just the value)
-      missing: handled specially
-      any: handled specially
-    name: path to field name
-    */
     return {
       ...property,
       value,

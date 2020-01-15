@@ -255,6 +255,15 @@ export default function() {
           baseQuery
         );
       });
+      // suggested has an implied '_' as a prefix
+      properties.forEach(property => {
+        baseQuery.aggregations.all.aggregations[`_${property.name}`] = propertyToAggregation(
+          property,
+          dictionaries,
+          baseQuery,
+          true
+        );
+      });
       return this;
     },
 
