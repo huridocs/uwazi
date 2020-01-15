@@ -1,14 +1,14 @@
 /* eslint-disable */
 /**AUTO-GENERATED. RUN yarn emit-types to update.*/
 
-import { ObjectIdSchema, PropertySchema } from 'api/utils/jsonTypes';
+import { ObjectIdSchema, PropertySchema } from 'shared/commonTypes';
 
 export interface TemplateSchema {
   _id?: ObjectIdSchema;
   name: string;
   color?: string;
   default?: boolean;
-  commonProperties: [PropertySchema, ...PropertySchema[]];
+  commonProperties: [PropertySchema, ...(PropertySchema)[]];
   properties?: PropertySchema[];
   [k: string]: any | undefined;
 }
