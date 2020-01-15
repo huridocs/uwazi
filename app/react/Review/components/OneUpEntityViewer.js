@@ -3,14 +3,14 @@ import 'app/Review/scss/review.scss';
 
 import ShowIf from 'app/App/ShowIf';
 import { AttachmentsList } from 'app/Attachments';
-import { actions as connectionsActions, CreateConnectionPanel } from 'app/Connections';
+import { CreateConnectionPanel } from 'app/Connections';
 import { ConnectionsGroups, ConnectionsList } from 'app/ConnectionsList';
 import { connectionsChanged, deleteConnection } from 'app/ConnectionsList/actions/actions';
 import ContextMenu from 'app/ContextMenu';
 import { showTab } from 'app/Entities/actions/uiActions';
 import { ShowSidepanelMenu } from 'app/Entities/components/ShowSidepanelMenu';
-import EntityForm from 'app/Entities/containers/EntityForm';
-import { t } from 'app/I18N';
+import MetadataForm from 'app/Metadata/components/MetadataForm';
+import { t, I18NLink } from 'app/I18N';
 import { Icon as PropertyIcon, TemplateLabel } from 'app/Layout';
 import SidePanel from 'app/Layout/SidePanel';
 import Tip from 'app/Layout/Tip';
@@ -23,7 +23,7 @@ import {
   toggleOneUpFullEdit,
   toggleOneUpLoadConnections,
 } from 'app/Review/actions/actions';
-import { fromJS as Immutable } from 'immutable';
+import Immutable from 'immutable';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import Helmet from 'react-helmet';
@@ -66,7 +66,6 @@ export class OneUpEntityViewer extends Component {
   render() {
     const {
       entity,
-      entityBeingEdited,
       tab,
       connectionsGroups,
       relationships,
@@ -95,10 +94,25 @@ export class OneUpEntityViewer extends Component {
         <Helmet title={entity.title ? entity.title : 'Entity'} />
         <div className="content-header content-header-entity">
           <div className="content-header-title">
-            Document {oneUpState.indexInDocs + 1} out of{' '}
-            {oneUpState.totalDocs >= oneUpState.maxTotalDocs
-              ? `>${oneUpState.totalDocs - 1}`
-              : `${oneUpState.totalDocs}`}
+            {oneUpState.reviewThesaurusName ? (
+              <div>
+                <I18NLink
+                  to={`/settings/dictionaries/cockpit/${oneUpState.reviewThesaurusId}`}
+                  className="btn btn-default"
+                >
+                  <Icon icon="arrow-left" />
+                  <span className="btn-label">
+                    {t('System', 'Thesaurus')} '{oneUpState.reviewThesaurusName}'
+                  </span>
+                </I18NLink>
+              </div>
+            ) : null}
+            <span>
+              Document {oneUpState.indexInDocs + 1} out of{' '}
+              {oneUpState.totalDocs >= oneUpState.maxTotalDocs
+                ? `>${oneUpState.totalDocs - 1}`
+                : `${oneUpState.totalDocs}`}
+            </span>
             <button
               onClick={() =>
                 this.props.isPristine
@@ -150,9 +164,16 @@ export class OneUpEntityViewer extends Component {
               for={selectedTab === 'info' || selectedTab === 'attachments' ? selectedTab : 'none'}
             >
               <div className="entity-metadata">
-                {entityBeingEdited && oneUpState.fullEdit ? (
-                  <EntityForm showSubset={[...nonMlProps, 'title']} version="OneUp" />
-                ) : (
+                <ShowIf if={oneUpState.fullEdit}>
+                  <MetadataForm
+                    model="entityView.entityForm"
+                    templateId={entity.template}
+                    isEntity
+                    showSubset={[...nonMlProps, 'title']}
+                    version="OneUp"
+                  />
+                </ShowIf>
+                <ShowIf if={!oneUpState.fullEdit}>
                   <div>
                     <div className="content-header-title">
                       <PropertyIcon
@@ -176,7 +197,7 @@ export class OneUpEntityViewer extends Component {
                       showSubset={nonMlProps}
                     />
                     <AttachmentsList
-                      files={Immutable(attachments)}
+                      files={Immutable.fromJS(attachments)}
                       parentId={entity._id}
                       parentSharedId={entity.sharedId}
                       isDocumentAttachments={Boolean(entity.file)}
@@ -184,7 +205,7 @@ export class OneUpEntityViewer extends Component {
                       processed={entity.processed}
                     />
                   </div>
-                )}
+                </ShowIf>
               </div>
             </TabContent>
             <TabContent for="connections">
@@ -283,7 +304,13 @@ export class OneUpEntityViewer extends Component {
                 </div>
               </TabContent>
               <TabContent for={selectedTab === 'info' ? selectedTab : 'none'}>
-                <EntityForm showSubset={mlProps} version="OneUp" />
+                <MetadataForm
+                  model="entityView.entityForm"
+                  templateId={entity.template}
+                  isEntity
+                  showSubset={mlProps}
+                  version="OneUp"
+                />
               </TabContent>
             </Tabs>
           </div>
@@ -313,23 +340,18 @@ export class OneUpEntityViewer extends Component {
 }
 
 OneUpEntityViewer.defaultProps = {
-  relationships: Immutable([]),
+  relationships: Immutable.fromJS([]),
   oneUpState: {},
 };
 
 OneUpEntityViewer.propTypes = {
   entity: PropTypes.object,
   relationships: PropTypes.object,
-  rawEntity: PropTypes.object,
-  entityBeingEdited: PropTypes.bool,
   sidepanelOpen: PropTypes.bool,
   connectionsGroups: PropTypes.object,
-  relationTypes: PropTypes.array,
   connectionsChanged: PropTypes.func,
   deleteConnection: PropTypes.func,
-  startNewConnection: PropTypes.func,
   tab: PropTypes.string,
-  library: PropTypes.object,
   showTab: PropTypes.func,
   isPristine: PropTypes.bool,
   // function(delta (-1, 0, +1) and shouldSave bool) => dispatch => {...}
@@ -350,11 +372,6 @@ const selectEntity = createSelector(
   entity => entity.toJS()
 );
 
-const selectRelationTypes = createSelector(
-  s => s.relationTypes,
-  r => r.toJS()
-);
-
 const mapStateToProps = state => {
   const { entity } = state.entityView;
   const mlThesauri = state.thesauris
@@ -362,8 +379,9 @@ const mapStateToProps = state => {
     .map(thes => thes.get('_id'))
     .toJS();
   const template =
-    state.templates.find(tmpl => tmpl.get('_id') === entity.get('template')) || Immutable({});
-  const properties = template.get('properties') || Immutable([]);
+    state.templates.find(tmpl => tmpl.get('_id') === entity.get('template')) ||
+    Immutable.fromJS({});
+  const properties = template.get('properties') || Immutable.fromJS([]);
   const mlProps = properties
     .filter(p => mlThesauri.includes(p.get('content')))
     .map(p => p.get('name'))
@@ -373,15 +391,10 @@ const mapStateToProps = state => {
     .map(p => p.get('name'))
     .toJS();
   return {
-    rawEntity: state.entityView.entity,
-    rawEntityForm: state.entityView.entityForm,
-    relationTypes: selectRelationTypes(state),
     entity: selectEntity(state),
     relationships: state.entityView.entity.get('relationships'),
     connectionsGroups: state.relationships.list.connectionsGroups,
-    entityBeingEdited: !!state.entityView.entityForm._id,
     tab: state.entityView.uiState.get('tab'),
-    library: state.library,
     isPristine: state.entityView.entityFormState.$form.pristine,
     oneUpState: state.oneUpReview.state.toJS(),
     mlProps,
@@ -395,7 +408,6 @@ function mapDispatchToProps(dispatch) {
       connectionsChanged,
       deleteConnection,
       showTab,
-      startNewConnection: connectionsActions.startNewConnection,
       switchOneUpEntity,
       toggleOneUpFullEdit,
       toggleOneUpLoadConnections,

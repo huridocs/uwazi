@@ -64,20 +64,30 @@ export function switchOneUpEntity(delta, save) {
     }
     const templates = state.templates.toJS();
     const current = state.entityView.entity.get('sharedId');
-    const index =
-      state.library.documents.get('rows').findIndex(e => e.get('sharedId') === current) + delta;
-    const sharedId = state.library.documents
-      .get('rows')
-      .get(index)
-      .get('sharedId');
+    const index = Math.max(
+      0,
+      Math.min(
+        state.library.documents.get('rows').findIndex(e => e.get('sharedId') === current) + delta,
+        oneUpState.totalDocs - 1
+      )
+    );
+    const sharedId =
+      index < oneUpState.totalDocs
+        ? state.library.documents
+            .get('rows')
+            .get(index)
+            .get('sharedId')
+        : '';
 
     [
-      ...(await getAndLoadEntity(
-        new RequestParams({ sharedId }, oneUpState.requestHeaders),
-        templates,
-        state,
-        oneUpState.loadConnections
-      )),
+      ...(sharedId
+        ? await getAndLoadEntity(
+            new RequestParams({ sharedId }, oneUpState.requestHeaders),
+            templates,
+            state,
+            oneUpState.loadConnections
+          )
+        : []),
       actions.set('oneUpReview.state', {
         ...oneUpState,
         // fullEdit: false,

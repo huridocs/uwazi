@@ -189,6 +189,7 @@ function mapDispatchToProps(dispatch) {
 }
 
 export const mapStateToProps = (state, ownProps) => ({
+  thesauris: ownProps.thesauris ? ownProps.thesauris : state.thesauris || Immutable.fromJS([]),
   template: ownProps.template
     ? ownProps.template
     : state.templates.find(tmpl => tmpl.get('_id') === ownProps.templateId) ||

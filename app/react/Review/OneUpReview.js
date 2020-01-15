@@ -13,10 +13,12 @@ import * as reviewActions from 'app/Review/actions/actions';
 import OneUpEntityViewer from 'app/Review/components/OneUpEntityViewer';
 import api from 'app/Search/SearchAPI';
 import TemplatesAPI from 'app/Templates/TemplatesAPI';
+import ThesaurisAPI from 'app/Thesauris/ThesaurisAPI';
 import { setReferences } from 'app/Viewer/actions/referencesActions';
 import React from 'react';
 import { connect } from 'react-redux';
 import { actions as formActions } from 'react-redux-form';
+import { propertyTypes } from 'shared/propertyTypes';
 
 class OneUpReview extends RouteHandler {
   static async requestState(requestParams, state) {
@@ -27,11 +29,30 @@ class OneUpReview extends RouteHandler {
       unpublished: !!requestParams.data.unpublished,
       includeUnpublished: !!requestParams.data.includeUnpublished,
     });
-    const [templates, relationTypes, documents] = await Promise.all([
+    const [templates, thesauri, relationTypes, documents] = await Promise.all([
       TemplatesAPI.get(requestParams.onlyHeaders()),
+      ThesaurisAPI.getThesauri(requestParams.onlyHeaders()),
       relationTypesAPI.get(requestParams.onlyHeaders()),
       api.search(documentsRequest),
     ]);
+
+    const thesauriKeys = Object.keys(documentsRequest.data.filters).reduce((res, k) => {
+      const propName = k[0] === '_' ? k.substring(1) : k;
+      return {
+        ...res,
+        ...templates.reduce((res2, tmpl) => {
+          const prop = tmpl.properties.find(p => p.name === propName);
+          if (!prop || ![propertyTypes.select, propertyTypes.multiselect].includes(prop.type)) {
+            return res2;
+          }
+          return { ...res2, [prop.content]: true };
+        }, res),
+      };
+    }, {});
+    const thesaurus =
+      Object.keys(thesauriKeys).length === 1
+        ? thesauri.find(t => t._id.toString() === Object.keys(thesauriKeys)[0])
+        : null;
 
     const firstSharedId = documents.rows.length ? documents.rows[0].sharedId : '';
 
@@ -46,6 +67,8 @@ class OneUpReview extends RouteHandler {
         totalDocs: documents.rows.length,
         maxTotalDocs: 5001,
         requestHeaders: requestParams.headers,
+        reviewThesaurusName: thesaurus ? thesaurus.name : '',
+        reviewThesaurusId: thesaurus ? thesaurus._id.toString() : '',
       }),
       ...(firstSharedId
         ? await reviewActions.getAndLoadEntity(
