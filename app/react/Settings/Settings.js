@@ -13,8 +13,12 @@ import Helmet from 'react-helmet';
 import SettingsNav from './components/SettingsNavigation';
 import SettingsAPI from './SettingsAPI';
 
-/* A given template property may refer to an existing thesaurus to provide multi-select values. This function resolves a template property name that refers to a particular thesaurus. */
-function findMatchingTemplateProp(thesaurus, templates) {
+/**
+ * A given template property may refer to an existing thesaurus to provide
+ * multi-select values. This function resolves a template property name that
+ * refers to a particular thesaurus.
+ */
+function resolveTemplateProp(thesaurus, templates) {
   let matchingProp;
   for (let i = 0; i < templates.length; i += 1) {
     const template = templates[i];
@@ -28,13 +32,10 @@ function findMatchingTemplateProp(thesaurus, templates) {
   return matchingProp;
 }
 
-function buildSuggestionsQuery(matchingTemplateProperty, templateID) {
+function getSuggestionsQuery(matchingTemplateProperty, templateID) {
   const query = {
     select: ['sharedId'],
     limit: 1,
-    // add call to get templates to calculate
-    // list of all template._id with a property called themes
-    // property.id
     filters: {},
     unpublished: true,
     types: [templateID],
@@ -81,20 +82,22 @@ export class Settings extends RouteHandler {
       return { ...thesaurus, model_available: false };
     });
 
+    // This builds and queries elasticsearch for suggestion counts per thesaurus
     const props = modeledThesauri
       .filter(t => t.enable_classification)
-      .map(thesaurus => findMatchingTemplateProp(thesaurus, templates));
+      .map(thesaurus => resolveTemplateProp(thesaurus, templates));
     const allDocsWithSuggestions = await Promise.all(
       [].concat(
         ...props.map(p =>
           templates.map(t => {
-            const reqParams = requestParams.set(buildSuggestionsQuery(p, t._id));
+            const reqParams = requestParams.set(getSuggestionsQuery(p, t._id));
             return api.search(reqParams);
           })
         )
       )
     );
 
+    // This processes the search results per thesaurus and stores the aggregate  number of documents to review
     const propToAgg = props.map(p => templates.map(t => [p, [t, allDocsWithSuggestions.shift()]]));
     propToAgg.forEach(tup => {
       tup.forEach(perm => {
