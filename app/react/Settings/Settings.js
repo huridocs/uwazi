@@ -27,7 +27,8 @@ function findMatchingTemplateProp(thesaurus, templates) {
   }
   return matchingProp;
 }
-function buildSuggestionsQuery(matchingTemplateProps) {
+
+function buildSuggestionsQuery(matchingTemplateProperty, templateID) {
   const query = {
     select: ['sharedId'],
     limit: 1,
@@ -36,12 +37,9 @@ function buildSuggestionsQuery(matchingTemplateProps) {
     // property.id
     filters: {},
     unpublished: true,
-    types: ['5d305622ad878e81d220b324'], // this is one template ID
+    types: [templateID],
   };
-  //[matchingTemplateProps].forEach(t => {
-  const { name } = matchingTemplateProps;
-  const { content } = matchingTemplateProps;
-
+  const { name } = matchingTemplateProperty;
   const filters = {};
   filters[name] = {
     values: ['missing'],
@@ -64,55 +62,61 @@ export class Settings extends RouteHandler {
       TemplatesAPI.get(requestParams.onlyHeaders()),
     ]);
 
-    // extract name from matching template property content from templates
-    // TODO: decide what to do if two templates used with different field names
-    const props = thesauri.map(thesaurus => findMatchingTemplateProp(thesaurus, templates));
-    const allDocsWithSuggestions = await Promise.all(
-      props.map(p => {
-        const reqParams = requestParams.set(buildSuggestionsQuery(p));
-        return api.search(reqParams);
-      })
-    );
-
-    const propToAgg = props.map((p, i) => [p, allDocsWithSuggestions[i]]);
-
-    // documents.aggregations.all.body.buckets is len 53
-    // template keys are thesaurus id
-    const thesaurusSuggestions = {};
-    propToAgg.forEach(tuple => {
-      const prop = tuple[0];
-      const results = tuple[1];
-      const { buckets } = results.aggregations.all[`_${prop.name}`];
-      console.dir(`${prop.name} (${prop.content}):`);
-      let soFar = 0;
-      thesaurusSuggestions[prop.content] = {};
-      buckets.forEach(bucket => {
-        console.dir(`  ${bucket.key}: ${bucket.filtered.doc_count}`);
-        soFar += bucket.filtered.doc_count;
-        thesaurusSuggestions[prop.content][bucket.key] = bucket.filtered.doc_count;
-      });
-      console.dir(`Total: ${soFar}`);
-      thesaurusSuggestions[prop.content].total = soFar;
-      console.dir('                  ');
-    });
-
-    console.dir(thesaurusSuggestions);
     // Fetch models associated with known thesauri.
     const allModels = await Promise.all(
       thesauri.map(thesaurus => ThesaurisAPI.getModelStatus(request.set({ model: thesaurus.name })))
     );
     const models = allModels.filter(model => !model.hasOwnProperty('error'));
 
+    const withModels = [];
     const modeledThesauri = thesauri.map(thesaurus => {
       const relevantModel = models.find(model => model.name === thesaurus.name);
       if (relevantModel !== undefined) {
+        withModels.push(thesaurus._id);
         return {
           ...thesaurus,
           model_available: relevantModel.preferred != null,
-          suggestions: thesaurusSuggestions[thesaurus._id].total,
         };
       }
       return { ...thesaurus, model_available: false };
+    });
+
+    const props = modeledThesauri
+      .filter(t => t.enable_classification)
+      .map(thesaurus => findMatchingTemplateProp(thesaurus, templates));
+    const allDocsWithSuggestions = await Promise.all(
+      [].concat(
+        ...props.map(p =>
+          templates.map(t => {
+            const reqParams = requestParams.set(buildSuggestionsQuery(p, t._id));
+            return api.search(reqParams);
+          })
+        )
+      )
+    );
+
+    const propToAgg = props.map(p => templates.map(t => [p, [t, allDocsWithSuggestions.shift()]]));
+    propToAgg.forEach(tup => {
+      tup.forEach(perm => {
+        const prop = perm[0];
+        const results = perm[1][1];
+        if (results.aggregations.all.hasOwnProperty(`_${prop.name}`)) {
+          const { buckets } = results.aggregations.all[`_${prop.name}`];
+          let soFar = 0;
+          buckets.forEach(bucket => {
+            soFar += bucket.filtered.doc_count;
+          });
+          const thesaurus = modeledThesauri.find(t => t._id === prop.content);
+          // NOTE: These suggestions are totaling per-value suggestions per
+          // document, so certain documents with more than one suggested value
+          // may be counted more than once.
+          // TODO: Make document counts unique.
+          if (!thesaurus.hasOwnProperty('suggestions')) {
+            thesaurus.suggestions = 0;
+          }
+          thesaurus.suggestions += soFar;
+        }
+      });
     });
 
     return [
