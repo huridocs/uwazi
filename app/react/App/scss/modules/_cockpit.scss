@@ -10,9 +10,11 @@
   th,
   td {
     padding: 7px 10px;
-  }
-  th {
     background-color: $c-white;
+  }
+  th[scope='col'],
+  td {
+    text-align: center;
   }
   th:not(:last-of-type) {
     border-right: 1px solid $c-white;

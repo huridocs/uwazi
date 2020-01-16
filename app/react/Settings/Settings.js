@@ -9,48 +9,12 @@ import ThesaurisAPI from 'app/Thesauris/ThesaurisAPI';
 import UsersAPI from 'app/Users/UsersAPI';
 import React from 'react';
 import Helmet from 'react-helmet';
+import { resolveTemplateProp } from 'app/Settings/utils/resolveThesaurusNameToTemplateProperty';
+import { getSuggestionsQuery } from 'app/Settings/utils/suggestionsQueryBuilder';
 
 import SettingsNav from './components/SettingsNavigation';
 import SettingsAPI from './SettingsAPI';
 
-/**
- * A given template property may refer to an existing thesaurus to provide
- * multi-select values. This function resolves a template property name that
- * refers to a particular thesaurus.
- */
-function resolveTemplateProp(thesaurus, templates) {
-  let matchingProp;
-  for (let i = 0; i < templates.length; i += 1) {
-    const template = templates[i];
-    const matchProp = template.properties.find(prop => prop.content === thesaurus._id);
-    if (matchProp !== undefined) {
-      matchingProp = matchProp;
-      // TODO: Consider supporting multiple fields referring to the same thesaurus.
-      break;
-    }
-  }
-  return matchingProp;
-}
-
-function getSuggestionsQuery(matchingTemplateProperty, templateID) {
-  const query = {
-    select: ['sharedId'],
-    limit: 1,
-    filters: {},
-    unpublished: true,
-    types: [templateID],
-  };
-  const { name } = matchingTemplateProperty;
-  const filters = {};
-  filters[name] = {
-    values: ['missing'],
-  };
-  filters[`_${name}`] = {
-    values: ['any'],
-  };
-  query.filters = filters;
-  return query;
-}
 export class Settings extends RouteHandler {
   static async requestState(requestParams) {
     const request = requestParams.onlyHeaders();
