@@ -8,8 +8,8 @@ import ThesaurisAPI from 'app/Thesauris/ThesaurisAPI';
 import React from 'react';
 import { connect } from 'react-redux';
 import { Icon } from 'UI';
-import { resolveTemplateProp } from 'app/Settings/utils/resolveThesaurusNameToTemplateProperty';
-import { getSuggestionsQuery } from 'app/Settings/utils/suggestionsQueryBuilder';
+import { resolveTemplateProp } from 'app/Settings/utils/resolveProperty';
+import { getSuggestionsQuery } from 'app/Settings/utils/suggestions';
 
 /** Model is the type used for holding information about a classifier model. */
 interface ClassifierModel {
@@ -29,6 +29,7 @@ interface ClassifierModel {
 interface ThesaurusTopic {
   id: string;
   label: string;
+  suggestions: number;
 }
 
 class ThesaurusCockpit extends RouteHandler {
@@ -66,7 +67,7 @@ class ThesaurusCockpit extends RouteHandler {
       return null;
     }
     const { label, id, suggestions } = topic;
-    const { quality = 0, samples = 0 } = modelInfo.topics[label] || {};
+    const { quality = 0 } = modelInfo.topics[label] || {};
     // TODO(sam): Use template field name instead of thesaurus name.
     const thesaurusName = modelInfo.name.toLowerCase();
 

@@ -9,8 +9,8 @@ import ThesaurisAPI from 'app/Thesauris/ThesaurisAPI';
 import UsersAPI from 'app/Users/UsersAPI';
 import React from 'react';
 import Helmet from 'react-helmet';
-import { resolveTemplateProp } from 'app/Settings/utils/resolveThesaurusNameToTemplateProperty';
-import { getSuggestionsQuery } from 'app/Settings/utils/suggestionsQueryBuilder';
+import { resolveTemplateProp } from 'app/Settings/utils/resolveProperty';
+import { getSuggestionsQuery } from 'app/Settings/utils/suggestions';
 
 import SettingsNav from './components/SettingsNavigation';
 import SettingsAPI from './SettingsAPI';

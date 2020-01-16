@@ -1,6 +1,6 @@
 /** @format */
 
-export function getSuggestionsQuery(matchingTemplateProperty, templateID) {
+export function getSuggestionsQuery(matchingTemplateProperty: any, templateID: string) {
   const query = {
     select: ['sharedId'],
     limit: 1,
@@ -9,7 +9,7 @@ export function getSuggestionsQuery(matchingTemplateProperty, templateID) {
     types: [templateID],
   };
   const { name } = matchingTemplateProperty;
-  const filters = {};
+  const filters: any = {};
   filters[name] = {
     values: ['missing'],
   };
