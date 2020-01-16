@@ -42,9 +42,6 @@ function prepareData(countries, setA, setB) {
 
   return countries.map(_country => {
     const country = _country;
-    console.log('setA:');
-    console.log(countryKey, country.key);
-    console.log(setA);
     const caseResults = parsingUtils.findBucketsByCountry(setA, countryKey, country.key);
     const provisionalMeasureResults = parsingUtils.findBucketsByCountry(
       setB,
