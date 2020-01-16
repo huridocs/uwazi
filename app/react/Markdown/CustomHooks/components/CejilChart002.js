@@ -1,5 +1,8 @@
+/** @format */
+
 import { connect } from 'react-redux';
 
+import { RequestParams } from 'app/utils/RequestParams';
 import api from 'app/Search/SearchAPI';
 import { t } from 'app/I18N';
 
@@ -17,7 +20,7 @@ function assignFilter(filters, sex) {
 }
 
 function conformSearchQuery(filters) {
-  return api.search({ types: [judgesCommisionersTemplate], filters, limit: 0 });
+  return api.search(new RequestParams({ types: [judgesCommisionersTemplate], filters, limit: 0 }));
 }
 
 function getData() {
@@ -31,7 +34,7 @@ function getData() {
 }
 
 function prepareData(countries, setA, setB) {
-  return countries.map((_country) => {
+  return countries.map(_country => {
     const country = _country;
     const maleResults = parsingUtils.findBucketsByCountry(setA, countryKey, country.key);
     const femaleResults = parsingUtils.findBucketsByCountry(setB, countryKey, country.key);
