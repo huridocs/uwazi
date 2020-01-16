@@ -19,6 +19,7 @@ import IconField from './IconField';
 import MetadataFormFields from './MetadataFormFields';
 import validator from '../helpers/validator';
 import defaultTemplate from '../helpers/defaultTemplate';
+import wrapEntityMetadata from '../helpers/wrapper';
 
 const immutableDefaultTemplate = Immutable.fromJS(defaultTemplate);
 
@@ -40,23 +41,13 @@ export class MetadataForm extends Component {
 
   onSubmit(entity) {
     this.props.onSubmit(
-      this.wrapEntityMetadata(entitiesUtil.filterBaseProperties(entity)),
+      wrapEntityMetadata(entitiesUtil.filterBaseProperties(entity)),
       this.props.model
     );
   }
 
   onSubmitFailed() {
     this.props.notify(t('System', 'Invalid form', null, false), 'danger');
-  }
-
-  wrapEntityMetadata(entity) {
-    const metadata = Object.keys(entity.metadata).reduce((wrappedMo, key) => {
-      wrappedMo[key] = Array.isArray(entity.metadata[key])
-        ? entity.metadata[key].map(v => ({ value: v }))
-        : [{ value: entity.metadata[key] }];
-      return wrappedMo;
-    }, {});
-    return { ...entity, metadata };
   }
 
   renderTemplateSelect(templateOptions, template) {
