@@ -36,8 +36,16 @@ class OneUpReview extends RouteHandler {
       api.search(documentsRequest),
     ]);
 
+    const thesaurusValues = [];
     const thesauriKeys = Object.keys(documentsRequest.data.filters).reduce((res, k) => {
       const propName = k[0] === '_' ? k.substring(1) : k;
+      if (k[0] === '_') {
+        thesaurusValues.push(
+          ...documentsRequest.data.filters[k].values.filter(
+            v => v && !['any', 'missing'].includes(v)
+          )
+        );
+      }
       return {
         ...res,
         ...templates.reduce((res2, tmpl) => {
@@ -46,13 +54,21 @@ class OneUpReview extends RouteHandler {
             return res2;
           }
           return { ...res2, [prop.content]: true };
-        }, res),
+        }, {}),
       };
     }, {});
     const thesaurus =
       Object.keys(thesauriKeys).length === 1
         ? thesauri.find(t => t._id.toString() === Object.keys(thesauriKeys)[0])
         : null;
+    thesauri.forEach(t => {
+      t.values.forEach(tv => {
+        const i = thesaurusValues.findIndex(v => v === tv.id);
+        if (i >= 0) {
+          thesaurusValues[i] = tv.label;
+        }
+      });
+    });
 
     const firstSharedId = documents.rows.length ? documents.rows[0].sharedId : '';
 
@@ -69,6 +85,7 @@ class OneUpReview extends RouteHandler {
         requestHeaders: requestParams.headers,
         reviewThesaurusName: thesaurus ? thesaurus.name : '',
         reviewThesaurusId: thesaurus ? thesaurus._id.toString() : '',
+        reviewThesaurusValues: thesaurusValues,
       }),
       ...(firstSharedId
         ? await reviewActions.getAndLoadEntity(

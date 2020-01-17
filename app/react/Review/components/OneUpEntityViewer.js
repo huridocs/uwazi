@@ -32,6 +32,7 @@ import { TabContent, TabLink, Tabs } from 'react-tabs-redux';
 import { bindActionCreators } from 'redux';
 import { createSelector } from 'reselect';
 import { Icon } from 'UI';
+import Footer from 'app/App/Footer';
 
 export class OneUpEntityViewer extends Component {
   constructor(props, context) {
@@ -67,6 +68,7 @@ export class OneUpEntityViewer extends Component {
     const {
       entity,
       tab,
+      selectedConnection,
       connectionsGroups,
       relationships,
       oneUpState,
@@ -90,250 +92,292 @@ export class OneUpEntityViewer extends Component {
     );
 
     return (
-      <div className="row">
+      <div className="row flex">
         <Helmet title={entity.title ? entity.title : 'Entity'} />
-        <div className="content-header content-header-entity">
-          <div className="content-header-title">
-            {oneUpState.reviewThesaurusName ? (
-              <div>
-                <I18NLink
-                  to={`/settings/dictionaries/cockpit/${oneUpState.reviewThesaurusId}`}
-                  className="btn btn-default"
+        <div className="content-holder">
+          <main className="content-main">
+            <div className="content-header content-header-entity">
+              <div className="content-header-title">
+                {oneUpState.reviewThesaurusName ? (
+                  <I18NLink
+                    to={`/settings/dictionaries/cockpit/${oneUpState.reviewThesaurusId}`}
+                    className="btn btn-default"
+                  >
+                    <Icon icon="arrow-left" />
+                    <span className="btn-label">
+                      {t('System', 'Back to')} <span>{`'${oneUpState.reviewThesaurusName}'`}</span>
+                    </span>
+                  </I18NLink>
+                ) : null}
+                {oneUpState.reviewThesaurusValues &&
+                oneUpState.reviewThesaurusValues.length === 1 ? (
+                  <span className="large">
+                    <span className="space8" />
+                    {t('System', 'Documents including suggestion:')}{' '}
+                    <b>{`'${oneUpState.reviewThesaurusValues[0]}'`}</b>
+                    <span className="separator" />
+                  </span>
+                ) : (
+                  <span className="large">
+                    <span className="space8" />
+                    {t('System', 'Documents for custom filter')}
+                    <span className="separator" />
+                  </span>
+                )}
+                <div>
+                  {t('System', 'Document')} <span>{oneUpState.indexInDocs + 1}</span>{' '}
+                  {t('System', 'out of')}{' '}
+                  <span>
+                    {oneUpState.totalDocs >= oneUpState.maxTotalDocs
+                      ? `>${oneUpState.totalDocs - 1}`
+                      : `${oneUpState.totalDocs}`}
+                  </span>
+                  <span className="space8" />
+                </div>
+                <button
+                  onClick={() =>
+                    this.props.isPristine
+                      ? this.props.switchOneUpEntity(-1, false)
+                      : this.context.confirm({
+                          accept: () => this.props.switchOneUpEntity(-1, false),
+                          title: 'Confirm discard changes',
+                          message:
+                            'There are unsaved changes. Are you sure you want to discard them and switch to a different document?',
+                        })
+                  }
+                  className={
+                    oneUpState.indexInDocs > 0
+                      ? `btn ${this.props.isPristine ? 'btn-default' : 'btn-default btn-warning'}`
+                      : 'btn btn-default btn-disabled'
+                  }
                 >
                   <Icon icon="arrow-left" />
-                  <span className="btn-label">
-                    {t('System', 'Thesaurus')} '{oneUpState.reviewThesaurusName}'
-                  </span>
-                </I18NLink>
+                  {/* <span className="btn-label">{t('System', 'Previous document')}</span> */}
+                </button>
+                <button
+                  onClick={() =>
+                    this.props.isPristine
+                      ? this.props.switchOneUpEntity(+1, false)
+                      : this.context.confirm({
+                          accept: () => this.props.switchOneUpEntity(+1, false),
+                          title: 'Confirm discard changes',
+                          message:
+                            'There are unsaved changes. Are you sure you want to discard them and switch to a different document?',
+                        })
+                  }
+                  className={`btn ${
+                    this.props.isPristine ? 'btn-default' : 'btn-default btn-warning'
+                  }`}
+                >
+                  <Icon icon="arrow-right" />
+                  {/* <span className="btn-label">{t('System', 'Next document')}</span> */}
+                </button>
               </div>
-            ) : null}
-            <span>
-              Document {oneUpState.indexInDocs + 1} out of{' '}
-              {oneUpState.totalDocs >= oneUpState.maxTotalDocs
-                ? `>${oneUpState.totalDocs - 1}`
-                : `${oneUpState.totalDocs}`}
-            </span>
-            <button
-              onClick={() =>
-                this.props.isPristine
-                  ? this.props.switchOneUpEntity(-1, false)
-                  : this.context.confirm({
-                      accept: () => this.props.switchOneUpEntity(-1, false),
-                      title: 'Confirm discard changes',
-                      message:
-                        'There are unsaved changes. Are you sure you want to discard them and switch to a different document?',
-                    })
-              }
-              className={
-                oneUpState.indexInDocs > 0
-                  ? `btn ${this.props.isPristine ? 'btn-default' : 'btn-default btn-warning'}`
-                  : 'btn btn-default btn-disabled'
-              }
+              <button
+                onClick={() => this.props.toggleOneUpFullEdit()}
+                className={
+                  oneUpState.fullEdit
+                    ? 'btn btn-default btn-toggle-on'
+                    : 'btn btn-default btn-toggle-off'
+                }
+              >
+                <Icon icon={oneUpState.fullEdit ? 'toggle-on' : 'toggle-off'} />
+                <span className="btn-label">{t('System', 'Full edit mode')}</span>
+              </button>
+            </div>
+            <Tabs className="entity-viewer" selectedTab={selectedTab}>
+              <TabContent
+                for={selectedTab === 'info' || selectedTab === 'attachments' ? selectedTab : 'none'}
+              >
+                <div className="entity-metadata">
+                  <ShowIf if={oneUpState.fullEdit}>
+                    <MetadataForm
+                      model="entityView.entityForm"
+                      templateId={entity.template}
+                      isEntity
+                      showSubset={[...nonMlProps, 'title']}
+                      version="OneUp"
+                    />
+                  </ShowIf>
+                  <ShowIf if={!oneUpState.fullEdit}>
+                    <div>
+                      <div className="content-header-title">
+                        <PropertyIcon
+                          className="item-icon item-icon-center"
+                          data={entity.icon}
+                          size="sm"
+                        />
+                        <h1 className="item-name">{entity.title}</h1>
+                        <TemplateLabel template={entity.template} />
+                        {entity.published ? (
+                          ''
+                        ) : (
+                          <Tip icon="eye-slash">This entity is not public.</Tip>
+                        )}
+                      </div>
+                      <ShowMetadata
+                        relationships={relationships}
+                        entity={entity}
+                        showTitle={false}
+                        showType={false}
+                        showSubset={nonMlProps}
+                      />
+                      <AttachmentsList
+                        files={Immutable.fromJS(attachments)}
+                        parentId={entity._id}
+                        parentSharedId={entity.sharedId}
+                        isDocumentAttachments={Boolean(entity.file)}
+                        entityView
+                        processed={entity.processed}
+                      />
+                    </div>
+                  </ShowIf>
+                </div>
+              </TabContent>
+              <TabContent for="connections">
+                <ConnectionsList
+                  deleteConnection={this.deleteConnection.bind(this)}
+                  searchCentered
+                  hideFooter
+                />
+              </TabContent>
+            </Tabs>
+            <ShowIf if={selectedTab === 'connections'}>
+              <div className="content-footer">
+                <RelationshipsFormButtons />
+              </div>
+            </ShowIf>
+            <ShowIf if={selectedTab !== 'connections'}>
+              <div className="content-footer">
+                <button
+                  onClick={() => this.props.switchOneUpEntity(0, false)}
+                  className={
+                    !this.props.isPristine
+                      ? 'cancel-edit-metadata btn btn-default btn-danger'
+                      : 'btn btn-default btn-disabled'
+                  }
+                >
+                  <Icon icon="undo" />
+                  <span className="btn-label">{t('System', 'Discard changes')}</span>
+                </button>
+                <button
+                  onClick={() => this.props.switchOneUpEntity(0, true)}
+                  className={
+                    !this.props.isPristine
+                      ? 'save-metadata btn btn-default'
+                      : 'btn btn-default btn-disabled'
+                  }
+                >
+                  <Icon icon="save" />
+                  <span className="btn-label">{t('System', 'Save document')}</span>
+                </button>
+                <button
+                  onClick={() => this.props.switchOneUpEntity(+1, true)}
+                  className={
+                    !this.props.isPristine
+                      ? 'save-and-next btn btn-default btn-success'
+                      : 'btn btn-default btn-disabled'
+                  }
+                >
+                  <Icon icon="save" />
+                  <span className="btn-label">{t('System', 'Save and go to next')}</span>
+                </button>
+              </div>
+            </ShowIf>
+            <ContextMenu
+              align="bottom"
+              overrideShow
+              show={!panelOpen}
+              className="show-info-sidepanel-context-menu"
             >
-              <Icon icon="arrow-left" />
-              <span className="btn-label">{t('System', 'Previous document')}</span>
-            </button>
-            <button
-              onClick={() =>
-                this.props.isPristine
-                  ? this.props.switchOneUpEntity(+1, false)
-                  : this.context.confirm({
-                      accept: () => this.props.switchOneUpEntity(+1, false),
-                      title: 'Confirm discard changes',
-                      message:
-                        'There are unsaved changes. Are you sure you want to discard them and switch to a different document?',
-                    })
-              }
-              className={`btn ${this.props.isPristine ? 'btn-default' : 'btn-default btn-warning'}`}
-            >
-              <Icon icon="arrow-right" />
-              <span className="btn-label">{t('System', 'Next document')}</span>
-            </button>
-            <button
-              onClick={() => this.props.toggleOneUpFullEdit()}
-              className={oneUpState.fullEdit ? 'btn btn-default btn-toggle-on' : 'btn btn-default'}
-            >
-              <Icon icon="pencil-alt" />
-              <span className="btn-label">{t('System', 'Full edit mode')}</span>
-            </button>
-          </div>
-        </div>
-        <main className={`entity-viewer ${panelOpen ? 'with-panel' : ''}`}>
-          <Tabs selectedTab={selectedTab}>
-            <TabContent
-              for={selectedTab === 'info' || selectedTab === 'attachments' ? selectedTab : 'none'}
-            >
-              <div className="entity-metadata">
-                <ShowIf if={oneUpState.fullEdit}>
+              <ShowSidepanelMenu
+                className="show-info-sidepanel-menu"
+                panelIsOpen={panelOpen}
+                openPanel={this.openPanel}
+              />
+            </ContextMenu>
+          </main>
+          <SidePanel
+            className={`entity-connections entity-${this.props.tab}`}
+            open={panelOpen && !selectedConnection}
+          >
+            <div className="sidepanel-header">
+              <div className="blank" />
+              <Tabs
+                className="content-header-tabs"
+                selectedTab={selectedTab}
+                handleSelect={tabName => {
+                  this.props.showTab(tabName);
+                }}
+              >
+                <ul className="nav nav-tabs">
+                  <li>
+                    <TabLink to="info">
+                      <Icon icon="info-circle" />
+                      <span className="tab-link-tooltip">{t('System', 'Info')}</span>
+                    </TabLink>
+                  </li>
+                  <li>
+                    <TabLink to="connections">
+                      <Icon icon="exchange-alt" />
+                      <span className="connectionsNumber">{summary.totalConnections}</span>
+                      <span className="tab-link-tooltip">{t('System', 'Connections')}</span>
+                    </TabLink>
+                  </li>
+                </ul>
+              </Tabs>
+              <button
+                type="button"
+                className="closeSidepanel close-modal"
+                onClick={this.closePanel}
+              >
+                <Icon icon="times" />
+              </button>
+            </div>
+            <div className="sidepanel-body">
+              <Tabs selectedTab={selectedTab}>
+                <TabContent for={selectedTab === 'connections' ? selectedTab : 'none'}>
+                  <ConnectionsGroups />
+                </TabContent>
+                <TabContent for={selectedTab === 'info' ? selectedTab : 'none'}>
                   <MetadataForm
                     model="entityView.entityForm"
                     templateId={entity.template}
                     isEntity
-                    showSubset={[...nonMlProps, 'title']}
+                    showSubset={mlProps}
                     version="OneUp"
                   />
-                </ShowIf>
-                <ShowIf if={!oneUpState.fullEdit}>
-                  <div>
-                    <div className="content-header-title">
-                      <PropertyIcon
-                        className="item-icon item-icon-center"
-                        data={entity.icon}
-                        size="sm"
-                      />
-                      <h1 className="item-name">{entity.title}</h1>
-                      <TemplateLabel template={entity.template} />
-                      {entity.published ? (
-                        ''
-                      ) : (
-                        <Tip icon="eye-slash">This entity is not public.</Tip>
-                      )}
-                    </div>
-                    <ShowMetadata
-                      relationships={relationships}
-                      entity={entity}
-                      showTitle={false}
-                      showType={false}
-                      showSubset={nonMlProps}
-                    />
-                    <AttachmentsList
-                      files={Immutable.fromJS(attachments)}
-                      parentId={entity._id}
-                      parentSharedId={entity.sharedId}
-                      isDocumentAttachments={Boolean(entity.file)}
-                      entityView
-                      processed={entity.processed}
-                    />
-                  </div>
-                </ShowIf>
+                </TabContent>
+              </Tabs>
+            </div>
+            <ShowIf if={selectedTab === 'connections'}>
+              <div className="sidepanel-footer">
+                <button
+                  onClick={() => this.props.toggleOneUpLoadConnections()}
+                  className={
+                    this.props.isPristine ? 'btn btn-default' : 'btn btn-default btn-disabled'
+                  }
+                >
+                  <Icon icon={oneUpState.loadConnections ? 'times' : 'undo'} />
+                  <span className="btn-label">
+                    {t(
+                      'System',
+                      oneUpState.loadConnections ? 'Hide Connections' : 'Load Connections'
+                    )}
+                  </span>
+                </button>
               </div>
-            </TabContent>
-            <TabContent for="connections">
-              <ConnectionsList deleteConnection={this.deleteConnection.bind(this)} searchCentered />
-            </TabContent>
-          </Tabs>
-        </main>
-        <div className="sidepanel-footer">
-          <button
-            onClick={() => this.props.switchOneUpEntity(0, false)}
-            className={
-              !this.props.isPristine
-                ? 'cancel-edit-metadata btn btn-default btn-danger'
-                : 'btn btn-default btn-disabled'
-            }
-          >
-            <Icon icon="undo" />
-            <span className="btn-label">{t('System', 'Discard changes')}</span>
-          </button>
-          <button
-            onClick={() => this.props.switchOneUpEntity(0, true)}
-            className={
-              !this.props.isPristine
-                ? 'save-metadata btn btn-default'
-                : 'btn btn-default btn-disabled'
-            }
-          >
-            <Icon icon="save" />
-            <span className="btn-label">{t('System', 'Save document')}</span>
-          </button>
-          <button
-            onClick={() => this.props.switchOneUpEntity(+1, true)}
-            className={
-              !this.props.isPristine
-                ? 'save-and-next btn btn-default btn-success'
-                : 'btn btn-default btn-disabled'
-            }
-          >
-            <Icon icon="save" />
-            <span className="btn-label">{t('System', 'Save and go to next')}</span>
-          </button>
-        </div>
-        <ShowIf if={selectedTab === 'connections'}>
-          <div className="sidepanel-footer">
-            <RelationshipsFormButtons />
-          </div>
-        </ShowIf>
-        <SidePanel className={`entity-connections entity-${this.props.tab}`} open={panelOpen}>
-          <div className="sidepanel-header">
-            <button type="button" className="closeSidepanel close-modal" onClick={this.closePanel}>
-              <Icon icon="times" />
-            </button>
-            <Tabs
-              className="content-header-tabs"
-              selectedTab={selectedTab}
-              handleSelect={tabName => {
-                this.props.showTab(tabName);
-              }}
-            >
-              <ul className="nav nav-tabs">
-                <li>
-                  <TabLink to="info">
-                    <Icon icon="info-circle" />
-                    <span className="tab-link-tooltip">{t('System', 'Info')}</span>
-                  </TabLink>
-                </li>
-                <li>
-                  <TabLink to="connections">
-                    <Icon icon="exchange-alt" />
-                    <span className="connectionsNumber">{summary.totalConnections}</span>
-                    <span className="tab-link-tooltip">{t('System', 'Connections')}</span>
-                  </TabLink>
-                </li>
-              </ul>
-            </Tabs>
-          </div>
-          <div className="sidepanel-body">
-            <Tabs selectedTab={selectedTab}>
-              <TabContent for={selectedTab === 'connections' ? selectedTab : 'none'}>
-                <ConnectionsGroups />
-                <div className="sidepanel-footer">
-                  <button
-                    onClick={() => this.props.toggleOneUpLoadConnections()}
-                    className={
-                      this.props.isPristine ? 'btn btn-default' : 'btn btn-default btn-disabled'
-                    }
-                  >
-                    <Icon icon={oneUpState.loadConnections ? 'times' : 'undo'} />
-                    <span className="btn-label">
-                      {t(
-                        'System',
-                        oneUpState.loadConnections ? 'Hide Connections' : 'Load Connections'
-                      )}
-                    </span>
-                  </button>
-                </div>
-              </TabContent>
-              <TabContent for={selectedTab === 'info' ? selectedTab : 'none'}>
-                <MetadataForm
-                  model="entityView.entityForm"
-                  templateId={entity.template}
-                  isEntity
-                  showSubset={mlProps}
-                  version="OneUp"
-                />
-              </TabContent>
-            </Tabs>
-          </div>
-        </SidePanel>
-        <ContextMenu
-          align="bottom"
-          overrideShow
-          show={!panelOpen}
-          className="show-info-sidepanel-context-menu"
-        >
-          <ShowSidepanelMenu
-            className="show-info-sidepanel-menu"
-            panelIsOpen={panelOpen}
-            openPanel={this.openPanel}
+            </ShowIf>
+          </SidePanel>
+          <CreateConnectionPanel
+            className="entity-create-connection-panel"
+            containerId={entity.sharedId}
+            onCreate={this.props.connectionsChanged}
           />
-        </ContextMenu>
-        <CreateConnectionPanel
-          className="entity-create-connection-panel"
-          containerId={entity.sharedId}
-          onCreate={this.props.connectionsChanged}
-        />
-        <AddEntitiesPanel />
-        <RelationshipMetadata />
+          <AddEntitiesPanel />
+          <RelationshipMetadata />
+        </div>
+        <Footer />
       </div>
     );
   }
@@ -354,6 +398,7 @@ OneUpEntityViewer.propTypes = {
   tab: PropTypes.string,
   showTab: PropTypes.func,
   isPristine: PropTypes.bool,
+  selectedConnection: PropTypes.bool,
   // function(delta (-1, 0, +1) and shouldSave bool) => dispatch => {...}
   switchOneUpEntity: PropTypes.func,
   toggleOneUpFullEdit: PropTypes.func,
@@ -394,6 +439,9 @@ const mapStateToProps = state => {
     entity: selectEntity(state),
     relationships: state.entityView.entity.get('relationships'),
     connectionsGroups: state.relationships.list.connectionsGroups,
+    selectedConnection: Boolean(
+      state.relationships.connection && state.relationships.connection.get('_id')
+    ),
     tab: state.entityView.uiState.get('tab'),
     isPristine: state.entityView.entityFormState.$form.pristine,
     oneUpState: state.oneUpReview.state.toJS(),

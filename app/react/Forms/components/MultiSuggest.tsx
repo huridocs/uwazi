@@ -6,6 +6,7 @@ import { connect } from 'react-redux';
 import { actions as formActions, getModel } from 'react-redux-form';
 import { Icon } from 'UI';
 import { propertyTypes } from 'shared/propertyTypes';
+import { t } from 'app/I18N';
 
 export interface MultiSuggestProps {
   // model: state model of suggestions, required through <Control>.
@@ -84,8 +85,10 @@ export const MultiSuggest = connect(
         return null;
       }
       return (
-        <div className="multiselect">
-          <b>Suggestions ({filteredValues.length}):</b>
+        <div className="suggestions multiselect">
+          <b className="suggestions-title">
+            {t('System', 'Suggestions')} <span>({filteredValues.length})</span>
+          </b>
           {(() =>
             filteredValues.map(value => (
               <div key={value.value!} className="multiselectItem">
@@ -127,7 +130,6 @@ export const MultiSuggest = connect(
                 </label>
               </div>
             )))()}
-          <b>Selected item(s):</b>
         </div>
       );
     }

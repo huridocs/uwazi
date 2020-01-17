@@ -97,7 +97,7 @@ export class AttachmentsList extends Component {
     const mainFile = isDocumentAttachments ? sortedFiles[0] : null;
     const attachments = sortedFiles.filter((f, index) => mainFile && index !== 0 || !mainFile);
     return (
-      <div>
+      <div className="attachments-list-parent">
         {this.renderMainDocument(mainFile)}
         <h2>{t('System', 'Attachments')}</h2>
         <div className="attachments-list">
