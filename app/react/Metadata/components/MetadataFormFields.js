@@ -145,7 +145,7 @@ export class MetadataFormFields extends Component {
           .map(property => (
             <FormGroup key={property.name} model={`.metadata.${property.name}`}>
               <ul className="search__filter is-active">
-                <li>
+                <li className="title">
                   <label>
                     <MultipleEditionFieldWarning
                       multipleEdition={multipleEdition}
