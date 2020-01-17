@@ -108,7 +108,7 @@ export default {
       label: property.get('label'),
       name: property.get('name'),
       value,
-      timestamp: timestamp,
+      timestamp,
     };
   },
 
@@ -150,13 +150,13 @@ export default {
     return this.multimedia(property, value, 'media');
   },
 
-  link(property, value) {
-    const link = (
+  link(property, [{ value }]) {
+    const Link = (
       <a href={value.url} target="_blank" rel="noopener noreferrer">
         {value.label}
       </a>
     );
-    return { label: property.get('label'), name: property.get('name'), value: link };
+    return { label: property.get('label'), name: property.get('name'), value: Link };
   },
 
   geolocation(property, value, thesauris, { onlyForCards }) {
