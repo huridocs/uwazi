@@ -35,14 +35,14 @@ export default class Geolocation extends Component {
       return;
     }
     const valueToSend = value.slice(1);
-    valueToSend.unshift({ value: newValue });
+    valueToSend.unshift(newValue);
 
     onChange(valueToSend);
   }
 
   getInputValues() {
     const { value } = this.props;
-    const { lat, lon, label } = value && value[0] ? value[0].value : { ...defaultValue };
+    const { lat, lon, label } = value && value[0] ? value[0] : { ...defaultValue };
     return { lat, lon, label };
   }
 

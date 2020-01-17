@@ -18,8 +18,8 @@ describe('Geolocation', () => {
   beforeEach(() => {
     props = {
       value: [
-        { value: { lat: 32.18, lon: -17.2, label: 'home' } },
-        { value: { lat: 13.07, lon: 5.1, label: 'Created through migration?' } },
+        { lat: 32.18, lon: -17.2, label: 'home' },
+        { lat: 13.07, lon: 5.1, label: 'Created through migration?' },
       ],
       onChange: jasmine.createSpy('onChange'),
     };
@@ -47,7 +47,7 @@ describe('Geolocation', () => {
       const latInput = component.find('input').at(0);
       latInput.simulate('change', { target: { value: simulatedInput } });
       expect(props.onChange).toHaveBeenCalledWith([
-        { value: { lat: expectedValue, lon: -17.2, label: 'home' } },
+        { lat: expectedValue, lon: -17.2, label: 'home' },
         props.value[1],
       ]);
     }
@@ -81,7 +81,7 @@ describe('Geolocation', () => {
     it('should call onChange with the new value', () => {
       lonInput.simulate('change', { target: { value: '28' } });
       expect(props.onChange).toHaveBeenCalledWith([
-        { value: { lat: 32.18, lon: 28, label: 'home' } },
+        { lat: 32.18, lon: 28, label: 'home' },
         props.value[1],
       ]);
     });
@@ -97,7 +97,7 @@ describe('Geolocation', () => {
       const event = { lngLat: [5, 13] };
       instance.mapClick(event);
       expect(props.onChange).toHaveBeenCalledWith([
-        { value: { lat: 13, lon: 5, label: 'home' } },
+        { lat: 13, lon: 5, label: 'home' },
         props.value[1],
       ]);
       expect(
@@ -118,7 +118,7 @@ describe('Geolocation', () => {
       props.value = [null];
       render();
       instance.mapClick({ lngLat: [13, 7] });
-      expect(props.onChange).toHaveBeenCalledWith([{ value: { lat: 7, lon: 13, label: '' } }]);
+      expect(props.onChange).toHaveBeenCalledWith([{ lat: 7, lon: 13, label: '' }]);
     });
   });
 
@@ -165,8 +165,8 @@ describe('Geolocation', () => {
           .simulate('change', { target: { value: '2' } });
 
         expect(props.onChange).toHaveBeenCalledWith([
-          { value: { lat: 1, lon: 2, label: 'home' } },
-          { value: { label: 'Created through migration?', lat: 13.07, lon: 5.1 } },
+          { lat: 1, lon: 2, label: 'home' },
+          { label: 'Created through migration?', lat: 13.07, lon: 5.1 },
         ]);
       });
     });
@@ -200,7 +200,7 @@ describe('Geolocation', () => {
 
   describe('should hide clear fields button ', () => {
     it('when latitude and longitude are empty', () => {
-      props.value = [{ value: { lat: '', lon: '' } }];
+      props.value = [{ lat: '', lon: '' }];
       render();
       expect(component).toMatchSnapshot();
     });
