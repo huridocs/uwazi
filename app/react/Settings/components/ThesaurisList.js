@@ -37,7 +37,8 @@ export class ThesaurisList extends Component {
       const view = (
         <div className="thesauri-list vertical-line">
           <span className="thesaurus-suggestion-count">
-            {thesaurus.suggestions} unpublished documents to be reviewed
+            {thesaurus.suggestions ? thesaurus.suggestions : 'No'} unpublished documents to be
+            reviewed
           </span>
           <I18NLink
             to={`/settings/dictionaries/cockpit/${thesaurus._id}`}
