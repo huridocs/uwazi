@@ -120,13 +120,10 @@ class ThesaurusCockpit extends RouteHandler {
 
     return topics
       .sort(
-        // Sort in order of descending model quality
+        // Sort in order of descending number of documents with suggestions
         // TODO: Make sort order configurable, or even better, dynamic
-        (topic1: ThesaurusTopic, topic2: ThesaurusTopic) => {
-          const { quality: q1 = 0 } = model.topics[topic1.label] || {};
-          const { quality: q2 = 0 } = model.topics[topic2.label] || {};
-          return q2 - q1;
-        }
+        (topic1: ThesaurusTopic, topic2: ThesaurusTopic) =>
+          (dedupedSuggestions[topic2.id] || 0) - (dedupedSuggestions[topic1.id] || 0)
       )
       .map((topic: ThesaurusTopic) => {
         const topicWithSuggestions = { ...topic, suggestions: dedupedSuggestions[topic.id] };
