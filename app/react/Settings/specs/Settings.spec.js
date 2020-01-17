@@ -29,7 +29,7 @@ describe('Settings', () => {
       spyOn(I18NApi, 'get').and.returnValue(Promise.resolve(translations));
       spyOn(SettingsAPI, 'get').and.returnValue(Promise.resolve(settings));
       spyOn(TemplatesAPI, 'get').and.returnValue(Promise.resolve(templates));
-      spyOn(api, 'get').and.returnValue(Promise.resolve(suggestions));
+      spyOn(api, 'search').and.returnValue(Promise.resolve(suggestions));
     });
 
     it('should get the current user, and metadata', async () => {
