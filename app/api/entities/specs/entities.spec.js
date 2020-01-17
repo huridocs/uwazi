@@ -731,6 +731,14 @@ describe('entities', () => {
     });
   });
 
+  describe('denormalize', () => {
+    it('should denormalize entity with missing metadata labels', async () => {
+      const entity = (await entities.get({ sharedId: 'shared', language: 'en' }))[0];
+      entity.metadata.friends[0].label = '';
+      const denormalized = await entities.denormalize(entity, { user: 'dummy', language: 'en' });
+      expect(denormalized.metadata.friends[0].label).toBe('shared2title');
+    });
+  });
   describe('countByTemplate', () => {
     it('should return how many entities using the template passed', async () => {
       const count = await entities.countByTemplate(templateId);
