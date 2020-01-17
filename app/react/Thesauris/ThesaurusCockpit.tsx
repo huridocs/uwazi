@@ -126,7 +126,6 @@ class ThesaurusCockpit extends RouteHandler {
           (dedupedSuggestions[topic2.id] || 0) - (dedupedSuggestions[topic1.id] || 0)
       )
       .map((topic: ThesaurusTopic) => {
-        console.dir(`${topic.label}: ${dedupedSuggestions[topic.id]}`);
         const topicWithSuggestions = { ...topic, suggestions: dedupedSuggestions[topic.id] || 0 };
         return ThesaurusCockpit.topicNode(topicWithSuggestions, model);
       });
