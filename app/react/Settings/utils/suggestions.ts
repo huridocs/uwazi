@@ -5,7 +5,7 @@ export function getSuggestionsQuery(matchingTemplateProperty: any, templateID: s
     select: ['sharedId'],
     limit: 1,
     filters: {},
-    unpublished: true,
+    includeUnpublished: true,
     types: [templateID],
   };
   const { name } = matchingTemplateProperty;

@@ -77,14 +77,16 @@ class ThesaurusCockpit extends RouteHandler {
         <td>{this.qualityIcon(quality)}</td>
         <td>{suggestions}</td>
         <td>
-          <I18NLink
-            to={`/review?q=(filters:(_${thesaurusName}:(values:!('${id}')),${thesaurusName}:(values:!(missing))))&includeUnpublished=1`}
-            className="btn btn-default btn-xs"
-          >
-            <Icon icon="gavel" />
-            &nbsp;
-            <span>{t('system', 'Review suggestions')}</span>
-          </I18NLink>
+          {suggestions > 0 ? (
+            <I18NLink
+              to={`/review?q=(filters:(_${thesaurusName}:(values:!('${id}')),${thesaurusName}:(values:!(missing))))&includeUnpublished=1`}
+              className="btn btn-default btn-xs"
+            >
+              <Icon icon="gavel" />
+              &nbsp;
+              <span>{t('system', 'Review suggestions')}</span>
+            </I18NLink>
+          ) : null}
         </td>
       </tr>
     );
@@ -115,14 +117,6 @@ class ThesaurusCockpit extends RouteHandler {
       }
       return acc;
     }, {});
-    /* objectArray.reduce(function (acc, obj) {
-    let key = obj[property]
-    if (!acc[key]) {
-      acc[key] = []
-    }
-    acc[key].push(obj)
-    return acc
-  }, {})*/
 
     return topics
       .sort(
@@ -179,25 +173,34 @@ class ThesaurusCockpit extends RouteHandler {
     this.context.store.dispatch(actions.unset('thesauri/suggestions'));
   }
 
-  render() {
-    const { name } = this.props.thesaurus; // {name: Themes; values: [{label: Education}, ...]}
+  suggestionsButton() {
+    if (this.props.thesaurus === undefined || this.props.thesaurus.property === undefined) {
+      return null;
+    }
     const thesaurusPropertyRefName = this.props.thesaurus.property.name;
 
+    return (
+      <I18NLink
+        to={
+          `/uploads/?q=(filters:(_${thesaurusPropertyRefName}:(values:!(any)),${thesaurusPropertyRefName}:(values:!(any))),` +
+          'limit:100,order:desc,sort:creationDate)&view=nosearch'
+        }
+        className="btn btn-primary btn-xs"
+      >
+        <Icon icon="search" />
+        &nbsp;
+        <span>{t('System', 'Review & Publish')}</span>
+      </I18NLink>
+    );
+  }
+
+  render() {
+    const { name } = this.props.thesaurus; // {name: Themes; values: [{label: Education}, ...]}
     return (
       <div className="panel panel-default">
         <div className="panel-heading">
           {t('System', `Thesauri > ${name}`)}
-          <I18NLink
-            to={
-              `/uploads/?q=(filters:(_${thesaurusPropertyRefName}:(values:!(any)),${thesaurusPropertyRefName}:(values:!(any))),` +
-              'limit:100,order:desc,sort:creationDate)&view=nosearch'
-            }
-            className="btn btn-primary btn-xs"
-          >
-            <Icon icon="search" />
-            &nbsp;
-            <span>{t('System', 'Review & Publish')}</span>
-          </I18NLink>
+          {this.suggestionsButton()}
         </div>
         <div className="cockpit">
           <table>
