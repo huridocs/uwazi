@@ -23,7 +23,7 @@ export interface MultiSuggestProps {
 
   // connect-provided
   selectValue?: string[];
-  acceptSuggestion: (
+  acceptSuggestion?: (
     suggestion: string,
     propertyType: string,
     selectModel: string,
@@ -50,6 +50,77 @@ function acceptSuggestion(
   };
 }
 
+export class MultiSuggestBase extends Component<MultiSuggestProps> {
+  rejectSuggestion(id: string, e: any) {
+    e.preventDefault();
+    const suggestedValues = (this.props.value || []).slice();
+    const index = suggestedValues.findIndex(v => v.value === id);
+    if (index < 0) {
+      return;
+    }
+    suggestedValues.splice(index, 1);
+    this.props.onChange(suggestedValues);
+  }
+
+  render() {
+    const { propertyType, selectModel, selectValue, value: proposedValues } = this.props;
+    const filteredValues = !proposedValues
+      ? []
+      : proposedValues.filter(value => value.value && !selectValue!.includes(value.value));
+    if (!filteredValues.length) {
+      return null;
+    }
+    return (
+      <div className="suggestions multiselect">
+        <b className="suggestions-title">
+          {t('System', 'Suggestions')} <span>({filteredValues.length})</span>
+        </b>
+        {(() =>
+          filteredValues.map(value => (
+            <div key={value.value!} className="multiselectItem">
+              <label className="multiselectItem-label">
+                <span className="multiselectItem-icon">
+                  <Icon
+                    icon={['far', 'square']}
+                    className="checkbox-empty"
+                    onClick={() =>
+                      this.props.acceptSuggestion!(
+                        value.value || '',
+                        propertyType,
+                        selectModel,
+                        selectValue!
+                      )
+                    }
+                  />
+                </span>
+                <span
+                  className="multiselectItem-name"
+                  onClick={() =>
+                    this.props.acceptSuggestion!(
+                      value.value || '',
+                      propertyType,
+                      selectModel,
+                      selectValue!
+                    )
+                  }
+                >
+                  {value.label}
+                  {value.suggestion_confidence && value.suggestion_confidence < 0.6 ? ' ?' : ''}
+                </span>
+                <div
+                  className="multiselectItem-button"
+                  onClick={this.rejectSuggestion.bind(this, value.value!)}
+                >
+                  Reject
+                </div>
+              </label>
+            </div>
+          )))()}
+      </div>
+    );
+  }
+}
+
 function mapStateToProps(state: any, props: MultiSuggestProps) {
   let { selectModel } = props;
   if (selectModel && selectModel[0] === '.') {
@@ -63,75 +134,6 @@ function mapStateToProps(state: any, props: MultiSuggestProps) {
 export const MultiSuggest = connect(
   mapStateToProps,
   { acceptSuggestion }
-)(
-  class MultiSuggestBase extends Component<MultiSuggestProps> {
-    rejectSuggestion(id: string, e: any) {
-      e.preventDefault();
-      const suggestedValues = (this.props.value || []).slice();
-      const index = suggestedValues.findIndex(v => v.value === id);
-      if (index < 0) {
-        return;
-      }
-      suggestedValues.splice(index, 1);
-      this.props.onChange(suggestedValues);
-    }
+)(MultiSuggestBase);
 
-    render() {
-      const { propertyType, selectModel, selectValue, value: proposedValues } = this.props;
-      const filteredValues = !proposedValues
-        ? []
-        : proposedValues.filter(value => value.value && !selectValue!.includes(value.value));
-      if (!filteredValues.length) {
-        return null;
-      }
-      return (
-        <div className="suggestions multiselect">
-          <b className="suggestions-title">
-            {t('System', 'Suggestions')} <span>({filteredValues.length})</span>
-          </b>
-          {(() =>
-            filteredValues.map(value => (
-              <div key={value.value!} className="multiselectItem">
-                <label className="multiselectItem-label">
-                  <span className="multiselectItem-icon">
-                    <Icon
-                      icon={['far', 'square']}
-                      className="checkbox-empty"
-                      onClick={() =>
-                        this.props.acceptSuggestion(
-                          value.value || '',
-                          propertyType,
-                          selectModel,
-                          selectValue!
-                        )
-                      }
-                    />
-                  </span>
-                  <span
-                    className="multiselectItem-name"
-                    onClick={() =>
-                      this.props.acceptSuggestion(
-                        value.value || '',
-                        propertyType,
-                        selectModel,
-                        selectValue!
-                      )
-                    }
-                  >
-                    {value.label}
-                    {value.suggestion_confidence && value.suggestion_confidence < 0.6 ? ' ?' : ''}
-                  </span>
-                  <div
-                    className="multiselectItem-button"
-                    onClick={this.rejectSuggestion.bind(this, value.value!)}
-                  >
-                    Reject
-                  </div>
-                </label>
-              </div>
-            )))()}
-        </div>
-      );
-    }
-  }
-);
+export default MultiSuggest;
