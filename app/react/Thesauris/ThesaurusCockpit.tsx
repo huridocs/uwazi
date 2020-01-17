@@ -75,7 +75,7 @@ class ThesaurusCockpit extends RouteHandler {
       <tr key={label}>
         <th scope="row">{label}</th>
         <td>{this.qualityIcon(quality)}</td>
-        <td>{suggestions}</td>
+        <td>{suggestions || null}</td>
         <td>
           {suggestions > 0 ? (
             <I18NLink
@@ -126,7 +126,8 @@ class ThesaurusCockpit extends RouteHandler {
           (dedupedSuggestions[topic2.id] || 0) - (dedupedSuggestions[topic1.id] || 0)
       )
       .map((topic: ThesaurusTopic) => {
-        const topicWithSuggestions = { ...topic, suggestions: dedupedSuggestions[topic.id] };
+        console.dir(`${topic.label}: ${dedupedSuggestions[topic.id]}`);
+        const topicWithSuggestions = { ...topic, suggestions: dedupedSuggestions[topic.id] || 0 };
         return ThesaurusCockpit.topicNode(topicWithSuggestions, model);
       });
   }
@@ -204,7 +205,7 @@ class ThesaurusCockpit extends RouteHandler {
             <thead>
               <tr>
                 <th scope="col" />
-                <th scope="col">Quality</th>
+                <th scope="col">Confidence</th>
                 <th scope="col">Suggestions</th>
                 <th scope="col" />
               </tr>
