@@ -1,9 +1,10 @@
 /** @format */
 
 import { actions } from 'app/BasicReducer';
-import { loadFetchedInReduxForm } from 'app/Metadata/actions/actions';
 import api from 'app/Entities/EntitiesAPI';
-import { wrapEntityMetadata } from 'app/Metadata/components/MetadataForm';
+import entitiesUtil from 'app/Entities/utils/filterBaseProperties';
+import { wrapEntityMetadata } from 'app/Metadata';
+import { loadFetchedInReduxForm } from 'app/Metadata/actions/actions';
 import * as relationships from 'app/Relationships/utils/routeUtils';
 import { RequestParams } from 'app/utils/RequestParams';
 import Immutable from 'immutable';
@@ -41,7 +42,9 @@ export function toggleOneUpFullEdit() {
     const oneUpState = state.oneUpReview.state.toJS();
     if (oneUpState.fullEdit && !state.entityView.entityFormState.$form.pristine) {
       const entity = await api.denormalize(
-        new RequestParams(wrapEntityMetadata(state.entityView.entityForm))
+        new RequestParams(
+          wrapEntityMetadata(entitiesUtil.filterBaseProperties(state.entityView.entityForm))
+        )
       );
       dispatch(actions.set('entityView/entity', entity));
     }
@@ -59,7 +62,9 @@ export function switchOneUpEntity(delta, save) {
     const state = getState();
     const oneUpState = state.oneUpReview.state.toJS();
     if (save) {
-      const entity = wrapEntityMetadata(state.entityView.entityForm);
+      const entity = wrapEntityMetadata(
+        entitiesUtil.filterBaseProperties(state.entityView.entityForm)
+      );
       await api.save(new RequestParams(entity, oneUpState.requestHeaders));
     }
     const templates = state.templates.toJS();

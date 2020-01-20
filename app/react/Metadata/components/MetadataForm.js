@@ -1,24 +1,23 @@
 /** @format */
 
-import { Form, Field } from 'react-redux-form';
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
-import { createSelector } from 'reselect';
+import entitiesUtil from 'app/Entities/utils/filterBaseProperties';
+import { Select as SimpleSelect } from 'app/Forms';
+import { I18NLink, t, Translate } from 'app/I18N';
+import { notificationActions } from 'app/Notifications';
+import { FormGroup } from 'app/ReactReduxForms';
+import Immutable from 'immutable';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-
-import { FormGroup } from 'app/ReactReduxForms';
-import { Select as SimpleSelect } from 'app/Forms';
-import entitiesUtil from 'app/Entities/utils/filterBaseProperties';
-import { notificationActions } from 'app/Notifications';
-import { I18NLink, t, Translate } from 'app/I18N';
+import { connect } from 'react-redux';
+import { Field, Form } from 'react-redux-form';
+import { bindActionCreators } from 'redux';
+import { createSelector } from 'reselect';
 import { Icon } from 'UI';
-
-import Immutable from 'immutable';
+import defaultTemplate from '../helpers/defaultTemplate';
+import validator from '../helpers/validator';
+import { wrapEntityMetadata } from '../helpers/wrapper';
 import IconField from './IconField';
 import MetadataFormFields from './MetadataFormFields';
-import validator from '../helpers/validator';
-import defaultTemplate from '../helpers/defaultTemplate';
 
 const immutableDefaultTemplate = Immutable.fromJS(defaultTemplate);
 
@@ -26,21 +25,6 @@ const selectTemplateOptions = createSelector(
   s => s.templates,
   templates => templates.map(tmpl => ({ label: tmpl.get('name'), value: tmpl.get('_id') }))
 );
-
-export function wrapEntityMetadata(_entity) {
-  const entity = entitiesUtil.filterBaseProperties(_entity);
-  const metadata = Object.keys(entity.metadata).reduce(
-    (wrappedMo, key) => ({
-      ...wrappedMo,
-      [key]: Array.isArray(entity.metadata[key])
-        ? entity.metadata[key].map(v => ({ value: v }))
-        : [{ value: entity.metadata[key] }],
-    }),
-    {}
-  );
-  // suggestedMetadata is always in metadata-object form.
-  return { ...entity, metadata };
-}
 
 export class MetadataForm extends Component {
   constructor(props) {
@@ -54,7 +38,10 @@ export class MetadataForm extends Component {
   }
 
   onSubmit(entity) {
-    this.props.onSubmit(wrapEntityMetadata(entity), this.props.model);
+    this.props.onSubmit(
+      wrapEntityMetadata(entitiesUtil.filterBaseProperties(entity)),
+      this.props.model
+    );
   }
 
   onSubmitFailed() {
