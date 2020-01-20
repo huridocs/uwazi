@@ -256,14 +256,18 @@ export default function() {
         );
       });
       // suggested has an implied '_' as a prefix
-      properties.forEach(property => {
-        baseQuery.aggregations.all.aggregations[`_${property.name}`] = propertyToAggregation(
-          property,
-          dictionaries,
-          baseQuery,
-          true
-        );
-      });
+      properties
+        .filter(
+          p => (dictionaries.find(d => p.content === d._id.toString()) || {}).enable_classification
+        )
+        .forEach(property => {
+          baseQuery.aggregations.all.aggregations[`_${property.name}`] = propertyToAggregation(
+            property,
+            dictionaries,
+            baseQuery,
+            true
+          );
+        });
       return this;
     },
 
