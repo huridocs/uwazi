@@ -20,6 +20,7 @@ import { bulkIndex, indexEntities } from './entitiesIndex';
 function processFiltes(filters, properties) {
   return Object.keys(filters || {}).map(propertyName => {
     const property = properties.find(p => p.name === propertyName);
+
     let { type } = property;
     const value = filters[property.name];
     if (['date', 'multidate', 'numeric'].includes(property.type)) {
@@ -455,8 +456,6 @@ const instanceSearch = elasticIndex => ({
       if (query.geolocation) {
         searchGeolocation(documentsQuery, templates);
       }
-
-      console.log(JSON.stringify(documentsQuery.query(), null, 4));
 
       return elastic
         .search({ index: elasticIndex || elasticIndexes.index, body: documentsQuery.query() })
