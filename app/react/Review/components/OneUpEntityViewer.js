@@ -94,8 +94,8 @@ export class OneUpEntityViewerBase extends Component {
 
     const summary = connectionsGroups.reduce(
       (summaryData, g) => {
-        g.get('templates').forEach(t => {
-          summaryData.totalConnections += t.get('count');
+        g.get('templates').forEach(tmpl => {
+          summaryData.totalConnections += tmpl.get('count');
         });
         return summaryData;
       },
