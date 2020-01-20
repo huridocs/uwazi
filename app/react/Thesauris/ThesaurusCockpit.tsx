@@ -67,7 +67,7 @@ class ThesaurusCockpit extends RouteHandler {
       return null;
     }
     const { label, id, suggestions } = topic;
-    const { quality = 0 } = modelInfo.topics[label] || {};
+    const { quality = 0 } = (modelInfo.topics || {})[label] || {};
     // TODO(sam): Use template field name instead of thesaurus name.
     const thesaurusName = modelInfo.name.toLowerCase();
 
@@ -204,8 +204,8 @@ class ThesaurusCockpit extends RouteHandler {
             <thead>
               <tr>
                 <th scope="col" />
-                <th scope="col">Confidence</th>
-                <th scope="col">Suggestions</th>
+                <th scope="col">{t('System', 'Confidence')}</th>
+                <th scope="col">{t('System', 'Suggestions')}</th>
                 <th scope="col" />
               </tr>
             </thead>
