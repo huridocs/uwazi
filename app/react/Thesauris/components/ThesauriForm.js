@@ -120,7 +120,7 @@ export class ThesauriForm extends Component {
     this.fileFormRef.current.reset();
     const thes = sanitizeThesauri(this.props.thesauri);
     if (file) {
-      this.props.importThesauri(thes, file);
+      this.props.importThesaurus(thes, file);
     }
   }
 
@@ -243,7 +243,7 @@ ThesauriForm.propTypes = {
   sortValues: PropTypes.func.isRequired,
   removeValue: PropTypes.func.isRequired,
   updateValues: PropTypes.func.isRequired,
-  importThesauri: PropTypes.func.isRequired,
+  importThesaurus: PropTypes.func.isRequired,
   thesauris: PropTypes.object.isRequired,
   thesauri: PropTypes.object.isRequired,
   state: PropTypes.object.isRequired,
