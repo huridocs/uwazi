@@ -206,5 +206,11 @@ export default {
       firstSight: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div.view > dl:nth-child(7) > dd',
       whoIsHe: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div > dl:nth-child(8) > dd > div > p'
     }
+  },
+  review: {
+    toggleFullEditButton: '.content-header > button',
+    templateIcon: '.entity-metadata > div > div.content-header-title > span',
+    firstSuggestion: '.suggestions > .multiselectItem',
+    titleEditBox: '.content-main > .entity-viewer > div > div > form > div > ul'
   }
 };

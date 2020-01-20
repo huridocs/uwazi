@@ -42,17 +42,6 @@ export class OneUpEntityViewerBase extends Component {
     this.openPanel = this.openPanel.bind(this);
   }
 
-  shouldComponentUpdate(nextProps, nextState) {
-    return (
-      nextState.panelOpen !== this.state.panelOpen ||
-      JSON.stringify(nextProps.entity) !== JSON.stringify(this.props.entity) ||
-      nextProps.isPristine !== this.props.isPristine ||
-      nextProps.tab !== this.props.tab ||
-      nextProps.selectedConnection !== this.props.selectedConnection ||
-      JSON.stringify(nextProps.oneUpState) !== JSON.stringify(this.props.oneUpState)
-    );
-  }
-
   deleteConnection(reference) {
     if (reference.sourceType !== 'metadata') {
       this.context.confirm({
@@ -74,6 +63,7 @@ export class OneUpEntityViewerBase extends Component {
   }
 
   render() {
+    console.log('OneUpEntityViewer');
     const {
       entity,
       tab,
@@ -81,8 +71,8 @@ export class OneUpEntityViewerBase extends Component {
       connectionsGroups,
       relationships,
       oneUpState,
-      mlProps,
-      nonMlProps,
+      mlThesauri,
+      templates,
     } = this.props;
     const { panelOpen } = this.state;
     const selectedTab = tab || 'info';
@@ -90,10 +80,22 @@ export class OneUpEntityViewerBase extends Component {
     const docAttachments = entity.attachments ? entity.attachments : [];
     const attachments = entity.file ? [entity.file].concat(docAttachments) : docAttachments;
 
+    const template =
+      templates.find(tmpl => tmpl.get('_id') === entity.template) || Immutable.fromJS({});
+    const properties = template.get('properties') || Immutable.fromJS([]);
+    const mlProps = properties
+      .filter(p => mlThesauri.includes(p.get('content')))
+      .map(p => p.get('name'))
+      .toJS();
+    const nonMlProps = properties
+      .filter(p => !mlThesauri.includes(p.get('content')))
+      .map(p => p.get('name'))
+      .toJS();
+
     const summary = connectionsGroups.reduce(
       (summaryData, g) => {
-        g.get('templates').forEach(template => {
-          summaryData.totalConnections += template.get('count');
+        g.get('templates').forEach(t => {
+          summaryData.totalConnections += t.get('count');
         });
         return summaryData;
       },
@@ -408,13 +410,13 @@ OneUpEntityViewerBase.propTypes = {
   showTab: PropTypes.func,
   isPristine: PropTypes.bool,
   selectedConnection: PropTypes.bool,
+  templates: PropTypes.object,
+  mlThesauri: PropTypes.array,
   // function(delta (-1, 0, +1) and shouldSave bool) => dispatch => {...}
   switchOneUpEntity: PropTypes.func,
   toggleOneUpFullEdit: PropTypes.func,
   toggleOneUpLoadConnections: PropTypes.func,
   oneUpState: PropTypes.object,
-  mlProps: PropTypes.array,
-  nonMlProps: PropTypes.array,
 };
 
 OneUpEntityViewerBase.contextTypes = {
@@ -426,38 +428,33 @@ const selectEntity = createSelector(
   entity => entity.toJS()
 );
 
-const mapStateToProps = state => {
-  const { entity } = state.entityView;
-  const mlThesauri = state.thesauris
-    .filter(thes => !!thes.get('enable_classification'))
-    .map(thes => thes.get('_id'))
-    .toJS();
-  const template =
-    state.templates.find(tmpl => tmpl.get('_id') === entity.get('template')) ||
-    Immutable.fromJS({});
-  const properties = template.get('properties') || Immutable.fromJS([]);
-  const mlProps = properties
-    .filter(p => mlThesauri.includes(p.get('content')))
-    .map(p => p.get('name'))
-    .toJS();
-  const nonMlProps = properties
-    .filter(p => !mlThesauri.includes(p.get('content')))
-    .map(p => p.get('name'))
-    .toJS();
-  return {
-    entity: selectEntity(state),
-    relationships: state.entityView.entity.get('relationships'),
-    connectionsGroups: state.relationships.list.connectionsGroups,
-    selectedConnection: Boolean(
-      state.relationships.connection && state.relationships.connection.get('_id')
-    ),
-    tab: state.entityView.uiState.get('tab'),
-    isPristine: state.entityView.entityFormState.$form.pristine,
-    oneUpState: state.oneUpReview.state.toJS(),
-    mlProps,
-    nonMlProps,
-  };
-};
+const selectOneUpState = createSelector(
+  state => state.oneUpReview.state,
+  state => state.toJS()
+);
+
+const selectMlThesauri = createSelector(
+  state => state.thesauris,
+  thesauri =>
+    thesauri
+      .filter(thes => !!thes.get('enable_classification'))
+      .map(thes => thes.get('_id'))
+      .toJS()
+);
+
+const mapStateToProps = state => ({
+  entity: selectEntity(state),
+  relationships: state.entityView.entity.get('relationships'),
+  connectionsGroups: state.relationships.list.connectionsGroups,
+  selectedConnection: Boolean(
+    state.relationships.connection && state.relationships.connection.get('_id')
+  ),
+  tab: state.entityView.uiState.get('tab'),
+  isPristine: state.entityView.entityFormState.$form.pristine,
+  oneUpState: selectOneUpState(state),
+  templates: state.templates,
+  mlThesauri: selectMlThesauri(state),
+});
 
 function mapDispatchToProps(dispatch) {
   return bindActionCreators(
