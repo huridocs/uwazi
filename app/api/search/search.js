@@ -29,7 +29,7 @@ function processFiltes(filters, properties) {
       type = 'multiselect';
     }
     if (property.type === 'multidaterange' || property.type === 'daterange') {
-      type = 'nestedrange';
+      type = 'daterange';
     }
 
     if (['multidaterange', 'daterange', 'date', 'multidate'].includes(property.type)) {
@@ -455,6 +455,8 @@ const instanceSearch = elasticIndex => ({
       if (query.geolocation) {
         searchGeolocation(documentsQuery, templates);
       }
+
+      console.log(JSON.stringify(documentsQuery.query(), null, 4));
 
       return elastic
         .search({ index: elasticIndex || elasticIndexes.index, body: documentsQuery.query() })
