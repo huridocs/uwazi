@@ -35,7 +35,8 @@
         "vars": "all",
         "argsIgnorePattern": "^_",
         "args": "all",
-        "ignoreRestSiblings": false
+        "caughtErrors": "none",
+        "ignoreRestSiblings": true
       }
     ],
 
@@ -156,7 +157,8 @@
             "vars": "all",
             "argsIgnorePattern": "^_",
             "args": "all",
-            "ignoreRestSiblings": false
+            "caughtErrors": "none",
+            "ignoreRestSiblings": true
           }
         ],
         "@typescript-eslint/no-explicit-any": [

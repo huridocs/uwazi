@@ -1,6 +1,5 @@
 /** @format */
-import 'app/Review/scss/review.scss';
-
+import Footer from 'app/App/Footer';
 import ShowIf from 'app/App/ShowIf';
 import { AttachmentsList } from 'app/Attachments';
 import { CreateConnectionPanel } from 'app/Connections';
@@ -9,12 +8,11 @@ import { connectionsChanged, deleteConnection } from 'app/ConnectionsList/action
 import ContextMenu from 'app/ContextMenu';
 import { showTab } from 'app/Entities/actions/uiActions';
 import { ShowSidepanelMenu } from 'app/Entities/components/ShowSidepanelMenu';
-import MetadataForm from 'app/Metadata/components/MetadataForm';
-import { t, I18NLink } from 'app/I18N';
+import { I18NLink, t } from 'app/I18N';
 import { Icon as PropertyIcon, TemplateLabel } from 'app/Layout';
 import SidePanel from 'app/Layout/SidePanel';
 import Tip from 'app/Layout/Tip';
-import { ShowMetadata } from 'app/Metadata';
+import { MetadataForm, ShowMetadata } from 'app/Metadata';
 import { RelationshipsFormButtons } from 'app/Relationships';
 import AddEntitiesPanel from 'app/Relationships/components/AddEntities';
 import RelationshipMetadata from 'app/Relationships/components/RelationshipMetadata';
@@ -23,6 +21,7 @@ import {
   toggleOneUpFullEdit,
   toggleOneUpLoadConnections,
 } from 'app/Review/actions/actions';
+import 'app/Review/scss/review.scss';
 import Immutable from 'immutable';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
@@ -32,9 +31,8 @@ import { TabContent, TabLink, Tabs } from 'react-tabs-redux';
 import { bindActionCreators } from 'redux';
 import { createSelector } from 'reselect';
 import { Icon } from 'UI';
-import Footer from 'app/App/Footer';
 
-export class OneUpEntityViewer extends Component {
+export class OneUpEntityViewerBase extends Component {
   constructor(props, context) {
     super(props, context);
     this.state = {
@@ -42,6 +40,17 @@ export class OneUpEntityViewer extends Component {
     };
     this.closePanel = this.closePanel.bind(this);
     this.openPanel = this.openPanel.bind(this);
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    return (
+      nextState.panelOpen !== this.state.panelOpen ||
+      JSON.stringify(nextProps.entity) !== JSON.stringify(this.props.entity) ||
+      nextProps.isPristine !== this.props.isPristine ||
+      nextProps.tab !== this.props.tab ||
+      nextProps.selectedConnection !== this.props.selectedConnection ||
+      JSON.stringify(nextProps.oneUpState) !== JSON.stringify(this.props.oneUpState)
+    );
   }
 
   deleteConnection(reference) {
@@ -383,12 +392,12 @@ export class OneUpEntityViewer extends Component {
   }
 }
 
-OneUpEntityViewer.defaultProps = {
+OneUpEntityViewerBase.defaultProps = {
   relationships: Immutable.fromJS([]),
   oneUpState: {},
 };
 
-OneUpEntityViewer.propTypes = {
+OneUpEntityViewerBase.propTypes = {
   entity: PropTypes.object,
   relationships: PropTypes.object,
   sidepanelOpen: PropTypes.bool,
@@ -408,7 +417,7 @@ OneUpEntityViewer.propTypes = {
   nonMlProps: PropTypes.array,
 };
 
-OneUpEntityViewer.contextTypes = {
+OneUpEntityViewerBase.contextTypes = {
   confirm: PropTypes.func,
 };
 
@@ -467,4 +476,4 @@ function mapDispatchToProps(dispatch) {
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(OneUpEntityViewer);
+)(OneUpEntityViewerBase);

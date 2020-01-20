@@ -55,7 +55,7 @@ export class SemanticSearchResults extends Component {
     }
   }
 
-  onClick(e, doc) {
+  onClick(_e, doc) {
     this.props.selectSemanticSearchDocument(doc);
   }
 

@@ -85,7 +85,7 @@ export default (app) => {
     '/api/public',
     multer().any(),
     captchaAuthorization(),
-    (req, res, next) => { req.body = JSON.parse(req.body.entity); return next(); },
+    (req, _res, next) => { req.body = JSON.parse(req.body.entity); return next(); },
     validation.validateRequest(saveSchema),
     async (req, res, next) => {
       const entity = req.body;
@@ -181,7 +181,7 @@ export default (app) => {
     .catch(next);
   });
 
-  app.get('/api/customisation/upload', needsAuthorization(['admin', 'editor']), (req, res, next) => {
+  app.get('/api/customisation/upload', needsAuthorization(['admin', 'editor']), (_req, res, next) => {
     uploads.get()
     .then((result) => {
       res.json(result);

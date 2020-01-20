@@ -80,7 +80,7 @@ CustomUploads.propTypes = {
 
 export const mapStateToProps = ({ customUploads, progress }) => ({
   customUploads,
-  progress: !!progress.filter((v, key) => key.match(/customUpload/)).size
+  progress: !!progress.filter((_v, key) => key.match(/customUpload/)).size
 });
 
 const mapDispatchToProps = dispatch => bindActionCreators({ upload: uploadCustom, deleteCustomUpload }, dispatch);

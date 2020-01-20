@@ -7,7 +7,7 @@ import workers from './workerManager';
 import updateNotifier from './updateNotifier';
 
 
-workers.on('searchError', (searchId, error) => {
+workers.on('searchError', (_searchId, error) => {
   handleError(error);
 });
 

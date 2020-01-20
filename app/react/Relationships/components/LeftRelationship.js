@@ -28,7 +28,7 @@ export class LeftRelationship extends Component {
     this.onClick = this.onClick.bind(this);
   }
 
-  onClick(e, entity) {
+  onClick(_e, entity) {
     this.props.selectConnection(entity);
   }
 

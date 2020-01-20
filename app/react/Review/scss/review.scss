@@ -3,8 +3,6 @@
 @import '../../App/scss/config/_colors.scss';
 @import '../../App/scss/config/_materials.scss';
 @import '../../App/scss/config/_typography.scss';
-@import '../../App/scss/layout/_content.scss';
-@import '../../App/scss/layout/_sidepanel.scss';
 
 $header-height: 44px;
 
@@ -16,6 +14,7 @@ $header-height: 44px;
 }
 
 .flex {
+  @import '../../App/scss/layout/_sidepanel.scss';
   .content-holder {
     display: flex;
     flex-direction: row;

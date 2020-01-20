@@ -89,7 +89,7 @@ export default class MultiSelect extends Component {
     this.setState({ showAll: !this.state.showAll });
   }
 
-  sort(options, optionsValue, optionsLabel, isSubGroup = false) {
+  sort(options, _optionsValue, optionsLabel, isSubGroup = false) {
     const sortedOptions = options.sort((a, b) => {
       let sorting = 0;
       if (!this.state.showAll) {
@@ -113,7 +113,7 @@ export default class MultiSelect extends Component {
     return this.moveNoValueOptionToBottom(sortedOptions);
   }
 
-  sortOnlyAggregates(options, optionsvalue, optionsLabel) {
+  sortOnlyAggregates(options, _optionsvalue, optionsLabel) {
     if (!options.length || typeof options[0].results === 'undefined') {
       return options;
     }

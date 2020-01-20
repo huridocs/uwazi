@@ -59,7 +59,11 @@ export class Menu extends Component {
           <ul className="menuNav-list">
             <FeatureToggleSemanticSearch>
               <li className="menuNav-item semantic-search">
-                <button type="button" onClick={this.props.showSemanticSearch} className="menuNav-btn btn btn-default">
+                <button
+                  type="button"
+                  onClick={this.props.showSemanticSearch}
+                  className="menuNav-btn btn btn-default"
+                >
                   <Icon icon="flask" />
                   <span className="tab-link-tooltip">{t('System', 'Semantic search')}</span>
                 </button>
@@ -112,7 +116,7 @@ export class Menu extends Component {
 }
 
 Menu.defaultProps = {
-  showSemanticSearch: () => {}
+  showSemanticSearch: () => {},
 };
 
 Menu.propTypes = {
@@ -125,7 +129,7 @@ Menu.propTypes = {
   className: PropTypes.string,
   onClick: PropTypes.func,
   showSemanticSearch: PropTypes.func,
-  links: PropTypes.object
+  links: PropTypes.object,
 };
 
 export function mapStateToProps({ user, settings, library, uploads }) {

@@ -64,7 +64,7 @@ describe('thesaurisActions', () => {
     });
   });
 
-  describe('importThesauri', () => {
+  describe('importThesaurus', () => {
     const mockSuperAgent = (url = `${APIURL}thesauris`) => {
       const mockUpload = superagent.post(url);
       spyOn(mockUpload, 'field').and.returnValue(mockUpload);

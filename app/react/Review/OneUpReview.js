@@ -20,7 +20,7 @@ import { connect } from 'react-redux';
 import { actions as formActions } from 'react-redux-form';
 import { propertyTypes } from 'shared/propertyTypes';
 
-class OneUpReview extends RouteHandler {
+export class OneUpReviewBase extends RouteHandler {
   static async requestState(requestParams, state) {
     const documentsRequest = requestParams.set({
       ...processQuery(requestParams.data, state),
@@ -37,7 +37,7 @@ class OneUpReview extends RouteHandler {
     ]);
 
     const thesaurusValues = [];
-    const thesauriKeys = Object.keys(documentsRequest.data.filters).reduce((res, k) => {
+    const thesauriKeys = Object.keys(documentsRequest.data.filters || {}).reduce((res, k) => {
       const propName = k[0] === '_' ? k.substring(1) : k;
       if (k[0] === '_') {
         thesaurusValues.push(
@@ -98,6 +98,10 @@ class OneUpReview extends RouteHandler {
     ];
   }
 
+  urlHasChanged(nextProps) {
+    return nextProps.location.query.q !== this.props.location.query.q;
+  }
+
   componentWillUnmount() {
     this.emptyState();
   }
@@ -118,10 +122,10 @@ class OneUpReview extends RouteHandler {
 
   render() {
     const { entity, oneUpState } = this.props;
-    if (!oneUpState || (oneUpState.totalDocs && !entity.get('_id'))) {
+    if (!oneUpState || (oneUpState.get('totalDocs') && (!entity || !entity.get('_id')))) {
       return <Loader />;
     }
-    return <OneUpEntityViewer {...this.props} />;
+    return <OneUpEntityViewer />;
   }
 }
 
@@ -132,4 +136,4 @@ const mapStateToProps = state => {
   };
 };
 
-export default connect(mapStateToProps)(OneUpReview);
+export default connect(mapStateToProps)(OneUpReviewBase);

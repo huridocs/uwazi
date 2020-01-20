@@ -59,7 +59,7 @@ describe('Map', () => {
     });
 
     it('should use custom renderMarker method', () => {
-      props.renderMarker = (marker, onClick) => (<div className="custom-class" onClick={onClick}/>);
+      props.renderMarker = (_marker, onClick) => (<div className="custom-class" onClick={onClick}/>);
       render();
       expect(firstMarker().find('div').hasClass('custom-class')).toBe(true);
     });

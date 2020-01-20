@@ -29,7 +29,7 @@ ajv.addKeyword('metadataMatchesTemplateProperties', {
   async: true,
   errors: true,
   type: 'object',
-  async validate(schema, entity) {
+  async validate(_schema, entity) {
     if (!entity.template) {
       return true;
     }

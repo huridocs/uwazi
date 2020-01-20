@@ -49,13 +49,13 @@ function onEnter() {
   trackPage();
 }
 
-function needsAuth(nxtState, replace) {
+function needsAuth(_nxtState, replace) {
   if (!store.getState().user.get('_id')) {
     replace('/login');
   }
 }
 
-function enterOnLibrary(nxtState, replace) {
+function enterOnLibrary(_nxtState, replace) {
   const state = store.getState();
   if (blankState() && !state.user.get('_id')) {
     return replace('/login');
@@ -63,7 +63,7 @@ function enterOnLibrary(nxtState, replace) {
   trackPage();
 }
 
-function getIndexRoute(nextState, callBack) {
+function getIndexRoute(_nextState, callBack) {
   const state = store.getState();
   const homePageSetting = state.settings.collection.get('home_page');
   const customHomePage = homePageSetting ? homePageSetting.split('/') : [];

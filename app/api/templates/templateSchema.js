@@ -31,7 +31,7 @@ ajv.addKeyword('uniqueName', {
 ajv.addKeyword('requireTitleProperty', {
   errors: false,
   type: 'array',
-  validate(schema, properties) {
+  validate(_schema, properties) {
     return properties.some(prop => prop.name === 'title');
   },
 });
@@ -109,7 +109,7 @@ ajv.addKeyword('cantDeleteInheritedProperties', {
   async: true,
   errors: true,
   type: 'object',
-  async validate(schema, template) {
+  async validate(_schema, template) {
     const [currentTemplate] = await model.get({ _id: template._id });
     if (!currentTemplate) {
       return true;

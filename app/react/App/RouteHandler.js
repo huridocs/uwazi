@@ -1,14 +1,13 @@
-/* @format */
-
-import { Component } from 'react';
-import PropTypes from 'prop-types';
-import moment from 'moment';
+/** @format */
 
 import { I18NUtils } from 'app/I18N';
-import JSONUtils from 'shared/JSONUtils';
+import { isClient } from 'app/utils';
 import api from 'app/utils/api';
 import { RequestParams } from 'app/utils/RequestParams';
-import { isClient } from 'app/utils';
+import moment from 'moment';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
+import JSONUtils from 'shared/JSONUtils';
 
 const getLocale = ({ store }) => store.getState().locale;
 
