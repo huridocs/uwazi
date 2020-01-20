@@ -2,7 +2,6 @@
 
 /* eslint-disable max-statements */
 
-import React from 'react';
 import Immutable from 'immutable';
 
 import { metadataSelectors } from '../../selectors';
@@ -27,12 +26,6 @@ describe('metadata formater', () => {
       expect(value).toEqual(val);
     });
   }
-
-  const expectedLink = (
-    <a href="link url" rel="noopener noreferrer" target="_blank">
-      link label
-    </a>
-  );
 
   describe('prepareMetadata', () => {
     let data;
@@ -228,7 +221,12 @@ describe('metadata formater', () => {
     });
 
     it('should process link type', () => {
-      assessBasicProperties(link, ['Link', 'link', 'templateID', expectedLink]);
+      expect(link).toEqual(
+        expect.objectContaining({
+          value: { label: 'link label', url: 'link url' },
+          type: 'link',
+        })
+      );
     });
 
     it('should not fail when field do not exists on the document', () => {
@@ -297,7 +295,12 @@ describe('metadata formater', () => {
     });
 
     it('should process link type', () => {
-      assessBasicProperties(link, ['Link', 'link', 'templateID', expectedLink]);
+      expect(link).toEqual(
+        expect.objectContaining({
+          value: { label: 'link label', url: 'link url' },
+          type: 'link',
+        })
+      );
     });
 
     describe('when sort property passed', () => {
