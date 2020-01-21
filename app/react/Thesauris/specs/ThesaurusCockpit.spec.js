@@ -4,6 +4,7 @@ import Immutable from 'immutable';
 import React from 'react';
 import RouteHandler from 'app/App/RouteHandler';
 
+import { I18NLink } from 'app/I18N/components/I18NLink';
 import { ThesaurusCockpitBase } from '../ThesaurusCockpit';
 
 describe('ThesaurusCockpit', () => {
@@ -21,18 +22,18 @@ describe('ThesaurusCockpit', () => {
       name: 'ThesaurusName',
       preferred: 'timestamp',
       topics: {
-        Topic1: {
-          name: 'topic_1',
+        'Topic 1': {
+          name: 'Topic 1',
           quality: 0.8,
           samples: 20,
         },
-        Topic2: {
-          name: 'topic_2',
+        'Topic 2': {
+          name: 'Topic 2',
           quality: 0.92,
           samples: 25,
         },
-        Topic3: {
-          name: 'topic_3',
+        'Topic 3': {
+          name: 'Topic 3',
           quality: 0.62,
           samples: 2,
         },
@@ -42,22 +43,27 @@ describe('ThesaurusCockpit', () => {
   const thesaurus = {
     _id: 'underscoreId',
     enable_classification: true,
-    name: 'Topic1',
+    name: 'ThesaurusName',
     property: {
       content: 'content1',
-      label: 'Topic1',
-      name: 'topic_1',
+      label: 'ThesaurusName',
+      name: 'thesaurus_name',
     },
     values: [
       {
         _id: 'underscoreId1',
-        label: 'label1',
+        label: 'Topic 1',
         id: 'id1',
       },
       {
         _id: 'underscoreId2',
-        label: 'label2',
+        label: 'Topic 2',
         id: 'id2',
+      },
+      {
+        _id: 'underscoreId3',
+        label: 'Topic 3',
+        id: 'id3',
       },
     ],
   };
@@ -72,10 +78,10 @@ describe('ThesaurusCockpit', () => {
       aggregations: {
         all: {
           doc_count: 65460,
-          issues: {
+          thesaurus_name: {
             buckets: [],
           },
-          _topic_1: {
+          _thesaurus_name: {
             buckets: [
               {
                 key: 'id1',
@@ -133,5 +139,11 @@ describe('ThesaurusCockpit', () => {
   it('should find the cockpit table and verify names, values and quality icons', () => {
     render();
     expect(component.find('.cockpit').length).toBe(1);
+    expect(component.find({ scope: 'row' }).length).toBe(3);
+    /* We expect 5 data cells -- three with quality icons and 1 each of
+    suggestion counts and a review button */
+    expect(component.find('td').children().length).toBe(5);
+    expect(component.find({ title: 'review-button-title' }).length).toBe(1);
+    expect(component.contains(<td title="suggestions-count">{1}</td>)).toEqual(true);
   });
 });

@@ -83,9 +83,9 @@ export class ThesaurusCockpitBase extends RouteHandler {
     return (
       <tr key={label}>
         <th scope="row">{label}</th>
-        <td>{this.qualityIcon(label, quality)}</td>
-        <td>{suggestions || null}</td>
-        <td>
+        <td title="quality-icons">{this.qualityIcon(label, quality)}</td>
+        <td title="suggestions-count">{suggestions || null}</td>
+        <td title="review-button">
           {suggestions > 0 ? (
             <I18NLink
               to={`/review?q=(filters:(_${thesaurusName}:(values:!('${id}')),${thesaurusName}:(values:!(missing))))&includeUnpublished=1`}
@@ -93,7 +93,7 @@ export class ThesaurusCockpitBase extends RouteHandler {
             >
               <Icon icon="gavel" />
               &nbsp;
-              <span>{t('system', 'Review suggestions')}</span>
+              <span title="review-button-title">{t('system', 'Review suggestions')}</span>
             </I18NLink>
           ) : null}
         </td>

@@ -7,10 +7,10 @@ exports[`ThesaurusCockpit should render a ThesaurusCockpit 1`] = `
   <div
     className="panel-heading"
   >
-    Thesauri &gt; Topic1
+    Thesauri &gt; ThesaurusName
     <Connect(I18NLink)
       className="btn btn-primary btn-xs"
-      to="/uploads/?q=(filters:(_topic_1:(values:!(any)),topic_1:(values:!(any))),limit:100,order:desc,sort:creationDate)&view=nosearch"
+      to="/uploads/?q=(filters:(_thesaurus_name:(values:!(any)),thesaurus_name:(values:!(any))),limit:100,order:desc,sort:creationDate)&view=nosearch"
     >
       <Connect(Icon)
         icon="search"
@@ -45,7 +45,148 @@ exports[`ThesaurusCockpit should render a ThesaurusCockpit 1`] = `
           />
         </tr>
       </thead>
-      <tbody />
+      <tbody>
+        <tr
+          key="Topic 1"
+        >
+          <th
+            scope="row"
+          >
+            Topic 1
+          </th>
+          <td
+            title="quality-icons"
+          >
+            <div
+              className="quality-icon quality-med"
+              key="Topic 1"
+            >
+              <Connect(Icon)
+                icon="circle"
+                key="Topic 1_0"
+              />
+              <Connect(Icon)
+                icon="circle"
+                key="Topic 1_1"
+              />
+              <Connect(Icon)
+                icon={
+                  Array [
+                    "far",
+                    "circle",
+                  ]
+                }
+                key="Topic 1_2"
+              />
+            </div>
+          </td>
+          <td
+            title="suggestions-count"
+          >
+            1
+          </td>
+          <td
+            title="review-button"
+          >
+            <Connect(I18NLink)
+              className="btn btn-default btn-xs"
+              to="/review?q=(filters:(_thesaurusname:(values:!('id1')),thesaurusname:(values:!(missing))))&includeUnpublished=1"
+            >
+              <Connect(Icon)
+                icon="gavel"
+              />
+               
+              <span
+                title="review-button-title"
+              >
+                Review suggestions
+              </span>
+            </Connect(I18NLink)>
+          </td>
+        </tr>
+        <tr
+          key="Topic 2"
+        >
+          <th
+            scope="row"
+          >
+            Topic 2
+          </th>
+          <td
+            title="quality-icons"
+          >
+            <div
+              className="quality-icon quality-high"
+              key="Topic 2"
+            >
+              <Connect(Icon)
+                icon="circle"
+                key="Topic 2_0"
+              />
+              <Connect(Icon)
+                icon="circle"
+                key="Topic 2_1"
+              />
+              <Connect(Icon)
+                icon="circle"
+                key="Topic 2_2"
+              />
+            </div>
+          </td>
+          <td
+            title="suggestions-count"
+          />
+          <td
+            title="review-button"
+          />
+        </tr>
+        <tr
+          key="Topic 3"
+        >
+          <th
+            scope="row"
+          >
+            Topic 3
+          </th>
+          <td
+            title="quality-icons"
+          >
+            <div
+              className="quality-icon quality-low"
+              key="Topic 3"
+            >
+              <Connect(Icon)
+                icon="circle"
+                key="Topic 3_0"
+              />
+              <Connect(Icon)
+                icon={
+                  Array [
+                    "far",
+                    "circle",
+                  ]
+                }
+                key="Topic 3_1"
+              />
+              <Connect(Icon)
+                icon={
+                  Array [
+                    "far",
+                    "circle",
+                  ]
+                }
+                key="Topic 3_2"
+              />
+            </div>
+          </td>
+          <td
+            title="suggestions-count"
+          />
+          <td
+            title="review-button"
+          />
+        </tr>
+      </tbody>
     </table>
   </div>
   <div
