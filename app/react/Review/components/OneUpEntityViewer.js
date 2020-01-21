@@ -16,7 +16,6 @@ import { MetadataForm, ShowMetadata } from 'app/Metadata';
 import { RelationshipsFormButtons } from 'app/Relationships';
 import AddEntitiesPanel from 'app/Relationships/components/AddEntities';
 import RelationshipMetadata from 'app/Relationships/components/RelationshipMetadata';
-import StateSelector from './StateSelector';
 import {
   switchOneUpEntity,
   toggleOneUpFullEdit,
@@ -32,6 +31,7 @@ import { TabContent, TabLink, Tabs } from 'react-tabs-redux';
 import { bindActionCreators } from 'redux';
 import { createSelector } from 'reselect';
 import { Icon } from 'UI';
+import StateSelector from './StateSelector';
 
 export class OneUpEntityViewerBase extends Component {
   constructor(props, context) {
