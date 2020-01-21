@@ -103,7 +103,7 @@ export default class MultiSelect extends Component {
       }
 
       const showingAll = this.state.showAll || options.length < this.props.optionsToShow;
-      if (sorting === 0 || showingAll || this.state.sortbyLabel || isSubGroup) {
+      if (sorting === 0 || showingAll || this.props.sortbyLabel || isSubGroup) {
         sorting = a[optionsLabel] < b[optionsLabel] ? -1 : 1;
       }
 
@@ -254,7 +254,8 @@ export default class MultiSelect extends Component {
   }
 
   render() {
-    let { optionsValue, optionsLabel, thesaurusName } = this.props;
+    let { optionsValue, optionsLabel } = this.props;
+    const { thesaurusName } = this.props;
     optionsValue = optionsValue || 'value';
     optionsLabel = optionsLabel || 'label';
 
@@ -374,6 +375,7 @@ MultiSelect.defaultProps = {
   sort: false,
   sortbyLabel: false,
   forceHoist: false,
+  thesaurusName: '',
 };
 
 MultiSelect.propTypes = {

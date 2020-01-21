@@ -15,6 +15,19 @@ import { getSuggestionsQuery } from 'app/Settings/utils/suggestions';
 import SettingsNav from './components/SettingsNavigation';
 import SettingsAPI from './SettingsAPI';
 
+function findModeledThesauri(thesauri, models) {
+  return thesauri.map(thesaurus => {
+    const relevantModel = models.find(model => model.name === thesaurus.name);
+    if (relevantModel !== undefined) {
+      return {
+        ...thesaurus,
+        model_available: relevantModel.preferred != null,
+      };
+    }
+    return { ...thesaurus, model_available: false };
+  });
+}
+
 export class Settings extends RouteHandler {
   static async requestState(requestParams) {
     const request = requestParams.onlyHeaders();
@@ -33,18 +46,7 @@ export class Settings extends RouteHandler {
     );
     const models = allModels.filter(model => !model.hasOwnProperty('error'));
 
-    const withModels = [];
-    const modeledThesauri = thesauri.map(thesaurus => {
-      const relevantModel = models.find(model => model.name === thesaurus.name);
-      if (relevantModel !== undefined) {
-        withModels.push(thesaurus._id);
-        return {
-          ...thesaurus,
-          model_available: relevantModel.preferred != null,
-        };
-      }
-      return { ...thesaurus, model_available: false };
-    });
+    const modeledThesauri = findModeledThesauri(thesauri, models);
 
     // This builds and queries elasticsearch for suggestion counts per thesaurus
     const props = modeledThesauri

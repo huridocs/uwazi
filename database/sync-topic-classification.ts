@@ -1,5 +1,5 @@
 /** @format */
-/* eslint-disable no-await-in-loop, no-console */
+/* eslint-disable no-await-in-loop, no-console, camelcase */
 
 import { tcServer, useThesaurusNames } from 'api/config/topicclassification';
 import entities from 'api/entities';
@@ -10,7 +10,7 @@ import { extractSequence } from 'api/topicclassification/common';
 import connect, { disconnect } from 'api/utils/connect_to_mongo';
 import { buildModelName } from 'shared/commonTopicClassification';
 import JSONRequest from 'shared/JSONRequest';
-import { sleep } from 'shared/tsUtils';
+import { ensure, sleep } from 'shared/tsUtils';
 import yargs from 'yargs';
 import { MetadataObject } from '../app/api/entities/entitiesModel';
 import { EntitySchema } from '../app/api/entities/entityType';
@@ -30,41 +30,32 @@ const { limit, recompute, overwrite } = yargs
   })
   .help().argv;
 
-async function syncEntity(
-  e: WithId<EntitySchema>,
-  prop: string,
-  model: string,
-  thesaurus: ThesaurusSchema
-) {
-  if (!e.template || !e.metadata || e.language !== 'en' || !prop) {
-    return false;
-  }
-  const sequence = await extractSequence(e);
-  if (!sequence) {
-    return false;
-  }
-  const propMeta = e.metadata[prop] || [];
-  const request = {
-    refresh_predictions: recompute,
-    samples: [
-      {
-        seq: sequence,
-        sharedId: e.sharedId,
-        training_labels: propMeta.map(mo => ({
-          topic: useThesaurusNames ? mo.label : mo.value,
-        })),
-      },
-    ],
-  };
-  let response: {
-    json: { samples: { seq: string; predicted_labels: { topic: string; quality: number }[] }[] };
-    status: any;
-  } = { json: { samples: [] }, status: 0 };
+type ClassificationSampleRequest = {
+  refresh_predictions: boolean;
+  samples: {
+    seq: string;
+    sharedId: string | undefined;
+    training_labels: {
+      topic: string;
+    }[];
+  }[];
+};
+
+type ClassificationSampleResponse = {
+  json: { samples: { seq: string; predicted_labels: { topic: string; quality: number }[] }[] };
+  status: any;
+};
+
+async function sendSample(
+  path: string,
+  request: ClassificationSampleRequest
+): Promise<ClassificationSampleResponse | null> {
+  let response: ClassificationSampleResponse = { json: { samples: [] }, status: 0 };
   let lastErr;
   for (let i = 0; i < 10; i += 1) {
     lastErr = undefined;
     try {
-      response = await JSONRequest.put(`${tcServer}/classification_sample?model=${model}`, request);
+      response = await JSONRequest.put(path, request);
       if (response.status === 200) {
         break;
       }
@@ -79,41 +70,83 @@ async function syncEntity(
   }
   if (response.status !== 200) {
     console.error(response);
+    return null;
+  }
+  return response;
+}
+
+async function handleResponse(
+  e: WithId<EntitySchema>,
+  prop: string,
+  response: ClassificationSampleResponse,
+  thesaurus: ThesaurusSchema
+) {
+  if (!e.suggestedMetadata) {
+    e.suggestedMetadata = {};
+  }
+  if (!e.suggestedMetadata[prop] || overwrite) {
+    const newPropMetadata = response.json.samples[0].predicted_labels.reduce(
+      (res: MetadataObject<string>[], pred) => {
+        const thesValue = (thesaurus.values || []).find(v => v.label === pred.topic);
+        if (!thesValue || !thesValue.id) {
+          console.error(
+            `Model prediction "${pred.topic}" not found in thesaurus ${thesaurus.name}`
+          );
+          return res;
+        }
+        return [
+          ...res,
+          { value: thesValue.id, label: pred.topic, suggestion_confidence: pred.quality },
+        ];
+      },
+      []
+    );
+    // JSON.stringify provides an easy and fast deep-equal comparison.
+    if (JSON.stringify(newPropMetadata) !== JSON.stringify(e.suggestedMetadata[prop])) {
+      e.suggestedMetadata[prop] = newPropMetadata;
+      await entities.save(e, { user: 'sync-topic-classification', language: e.language });
+      console.info(`Saved ${e.sharedId}`);
+    }
+  }
+}
+
+async function syncEntity(
+  e: WithId<EntitySchema>,
+  prop: string,
+  model: string,
+  thesaurus: ThesaurusSchema
+) {
+  if (!e.template || !e.metadata || e.language !== 'en' || !prop) {
+    return false;
+  }
+  const sequence = await extractSequence(e);
+  if (!sequence) {
+    return false;
+  }
+  const request = {
+    refresh_predictions: recompute,
+    samples: [
+      {
+        seq: sequence,
+        sharedId: e.sharedId,
+        training_labels: (e.metadata[prop] || []).map(mo => ({
+          topic: ensure<string>(useThesaurusNames ? mo.label : mo.value),
+        })),
+      },
+    ],
+  };
+  const response = await sendSample(`${tcServer}/classification_sample?model=${model}`, request);
+  if (!response) {
     return false;
   }
   if (
-    response.json.samples &&
-    response.json.samples.length &&
-    response.json.samples[0].seq === sequence
+    !response.json.samples ||
+    !response.json.samples.length ||
+    response.json.samples[0].seq !== sequence
   ) {
-    if (!e.suggestedMetadata) {
-      e.suggestedMetadata = {};
-    }
-    if (!e.suggestedMetadata[prop] || overwrite) {
-      const newPropMetadata = response.json.samples[0].predicted_labels.reduce(
-        (res: MetadataObject<string>[], pred) => {
-          const thesValue = (thesaurus.values || []).find(v => v.label === pred.topic);
-          if (!thesValue || !thesValue.id) {
-            console.error(
-              `Model prediction "${pred.topic}" not found in thesaurus ${thesaurus.name}`
-            );
-            return res;
-          }
-          return [
-            ...res,
-            { value: thesValue.id, label: pred.topic, suggestion_confidence: pred.quality },
-          ];
-        },
-        []
-      );
-      // JSON.stringify provides an easy and fast deep-equal comparison.
-      if (JSON.stringify(newPropMetadata) !== JSON.stringify(e.suggestedMetadata[prop])) {
-        e.suggestedMetadata[prop] = newPropMetadata;
-        await entities.save(e, { user: 'sync-topic-classification', language: e.language });
-        console.info(`Saved ${e.sharedId}`);
-      }
-    }
+    return false;
   }
+  await handleResponse(e, prop, response, thesaurus);
   return true;
 }
 

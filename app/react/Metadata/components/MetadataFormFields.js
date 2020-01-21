@@ -180,6 +180,8 @@ export class MetadataFormFields extends Component {
 MetadataFormFields.defaultProps = {
   multipleEdition: false,
   dateFormat: null,
+  version: undefined,
+  showSubset: undefined,
 };
 
 MetadataFormFields.propTypes = {
@@ -188,7 +190,7 @@ MetadataFormFields.propTypes = {
   thesauris: PropTypes.instanceOf(Immutable.List).isRequired,
   multipleEdition: PropTypes.bool,
   dateFormat: PropTypes.string,
-  showSubset: PropTypes.array,
+  showSubset: PropTypes.arrayOf(PropTypes.string),
   version: PropTypes.string,
 };
 

@@ -41,6 +41,7 @@ export class OneUpEntityViewerBase extends Component {
     };
     this.closePanel = this.closePanel.bind(this);
     this.openPanel = this.openPanel.bind(this);
+    this.deleteConnection = this.deleteConnection.bind(this);
   }
 
   deleteConnection(reference) {
@@ -255,7 +256,7 @@ export class OneUpEntityViewerBase extends Component {
               </TabContent>
               <TabContent for="connections">
                 <ConnectionsList
-                  deleteConnection={this.deleteConnection.bind(this)}
+                  deleteConnection={this.deleteConnection}
                   searchCentered
                   hideFooter
                 />
@@ -419,27 +420,31 @@ export class OneUpEntityViewerBase extends Component {
 }
 
 OneUpEntityViewerBase.defaultProps = {
+  entity: {},
   relationships: Immutable.fromJS([]),
+  connectionsGroups: Immutable.fromJS([]),
+  templates: Immutable.fromJS([]),
+  mlThesauri: [],
   oneUpState: {},
+  tab: 'info',
+  selectedConnection: false,
 };
 
 OneUpEntityViewerBase.propTypes = {
   entity: PropTypes.object,
   relationships: PropTypes.object,
-  sidepanelOpen: PropTypes.bool,
   connectionsGroups: PropTypes.object,
-  connectionsChanged: PropTypes.func,
-  deleteConnection: PropTypes.func,
   tab: PropTypes.string,
-  showTab: PropTypes.func,
   selectedConnection: PropTypes.bool,
   templates: PropTypes.object,
-  mlThesauri: PropTypes.array,
-  // function(delta (-1, 0, +1) and shouldSave bool) => dispatch => {...}
-  switchOneUpEntity: PropTypes.func,
-  toggleOneUpFullEdit: PropTypes.func,
-  toggleOneUpLoadConnections: PropTypes.func,
+  mlThesauri: PropTypes.arrayOf(PropTypes.string),
   oneUpState: PropTypes.object,
+  showTab: PropTypes.func.isRequired,
+  connectionsChanged: PropTypes.func.isRequired,
+  deleteConnection: PropTypes.func.isRequired,
+  switchOneUpEntity: PropTypes.func.isRequired,
+  toggleOneUpFullEdit: PropTypes.func.isRequired,
+  toggleOneUpLoadConnections: PropTypes.func.isRequired,
 };
 
 OneUpEntityViewerBase.contextTypes = {
