@@ -80,7 +80,7 @@ describe('Entity zone', () => {
           realName:
             '#app > div.content > div > div > main > div > div.tab-content.tab-content-visible > div > div > div.view > dl:nth-child(1) > dd',
           age:
-            '#app > div.content > div > div > main > div > div.tab-content.tab-content-visible > div > div > div.view > dl:nth-child(2) > dd li',
+            '#app > div.content > div > div > main > div > div.tab-content.tab-content-visible > div > div > div.view > dl.metadata-type-numeric > dd',
           knownAccomplices:
             '#app > div.content > div > div > main > div > div.tab-content.tab-content-visible > div > div > div.view > dl > dd > ul > li > a',
           mainSuperpower:
