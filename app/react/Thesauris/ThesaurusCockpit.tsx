@@ -3,13 +3,14 @@ import RouteHandler from 'app/App/RouteHandler';
 import { actions } from 'app/BasicReducer';
 import { I18NLink, t } from 'app/I18N';
 import api from 'app/Search/SearchAPI';
+import { resolveTemplateProp } from 'app/Settings/utils/resolveProperty';
+import { getSuggestionsQuery } from 'app/Settings/utils/suggestions';
 import TemplatesAPI from 'app/Templates/TemplatesAPI';
 import ThesaurisAPI from 'app/Thesauris/ThesaurisAPI';
 import React from 'react';
 import { connect } from 'react-redux';
+import { createSelector } from 'reselect';
 import { Icon } from 'UI';
-import { resolveTemplateProp } from 'app/Settings/utils/resolveProperty';
-import { getSuggestionsQuery } from 'app/Settings/utils/suggestions';
 
 /** Model is the type used for holding information about a classifier model. */
 interface ClassifierModel {
@@ -32,31 +33,39 @@ interface ThesaurusTopic {
   suggestions: number;
 }
 
-class ThesaurusCockpit extends RouteHandler {
-  static qualityIcon(val: number) {
+export class ThesaurusCockpitBase extends RouteHandler {
+  static genIcons(label: string, actual: number, possible: number) {
+    const icons = [];
+    for (let i = 0; i < possible; i += 1) {
+      let iconClass: any;
+      if (i < actual) {
+        iconClass = 'circle';
+      } else {
+        iconClass = ['far', 'circle'];
+      }
+      icons.push(<Icon key={`${label}_${i}`} icon={iconClass} />);
+    }
+    return icons;
+  }
+
+  static qualityIcon(label: string, val: number) {
     switch (true) {
       case val > 0.85:
         return (
-          <div className="quality-icon quality-high">
-            <Icon icon="circle" />
-            <Icon icon="circle" />
-            <Icon icon="circle" />
+          <div key={label} className="quality-icon quality-high">
+            {ThesaurusCockpitBase.genIcons(label, 3, 3)}
           </div>
         );
       case val > 0.7:
         return (
-          <div className="quality-icon quality-med">
-            <Icon icon="circle" />
-            <Icon icon="circle" />
-            <Icon icon={['far', 'circle']} />
+          <div key={label} className="quality-icon quality-med">
+            {ThesaurusCockpitBase.genIcons(label, 2, 3)}
           </div>
         );
       default:
         return (
-          <div className="quality-icon quality-low">
-            <Icon icon="circle" />
-            <Icon icon={['far', 'circle']} />
-            <Icon icon={['far', 'circle']} />
+          <div key={label} className="quality-icon quality-low">
+            {ThesaurusCockpitBase.genIcons(label, 1, 3)}
           </div>
         );
     }
@@ -74,7 +83,7 @@ class ThesaurusCockpit extends RouteHandler {
     return (
       <tr key={label}>
         <th scope="row">{label}</th>
-        <td>{this.qualityIcon(quality)}</td>
+        <td>{this.qualityIcon(label, quality)}</td>
         <td>{suggestions || null}</td>
         <td>
           {suggestions > 0 ? (
@@ -95,7 +104,7 @@ class ThesaurusCockpit extends RouteHandler {
   topicNodes() {
     const { values: topics, name, property } = this.props.thesaurus; // {name: Themes; values: [{label: Education}, ...]}
 
-    if (topics === undefined) {
+    if (!topics) {
       return null;
     }
 
@@ -103,7 +112,10 @@ class ThesaurusCockpit extends RouteHandler {
     const { suggestions } = this.props;
     const thesaurusSuggestions: any = [];
     suggestions.forEach((templateResult: any) => {
-      if (templateResult.aggregations.all.hasOwnProperty(`_${property.name}`)) {
+      if (
+        templateResult.aggregations !== undefined &&
+        templateResult.aggregations.all.hasOwnProperty(`_${property.name}`)
+      ) {
         const { buckets } = templateResult.aggregations.all[`_${property.name}`];
         buckets.forEach((b: any) => thesaurusSuggestions.push(b));
       }
@@ -118,17 +130,17 @@ class ThesaurusCockpit extends RouteHandler {
       return acc;
     }, {});
 
-    return topics
-      .sort(
-        // Sort in order of descending number of documents with suggestions
-        // TODO: Make sort order configurable, or even better, dynamic
-        (topic1: ThesaurusTopic, topic2: ThesaurusTopic) =>
-          (dedupedSuggestions[topic2.id] || 0) - (dedupedSuggestions[topic1.id] || 0)
-      )
-      .map((topic: ThesaurusTopic) => {
-        const topicWithSuggestions = { ...topic, suggestions: dedupedSuggestions[topic.id] || 0 };
-        return ThesaurusCockpit.topicNode(topicWithSuggestions, model);
-      });
+    topics.sort(
+      // Sort in order of descending number of documents with suggestions
+      // TODO: Make sort order configurable, or even better, dynamic
+      (topic1: ThesaurusTopic, topic2: ThesaurusTopic) =>
+        (dedupedSuggestions[topic2.id] || 0) - (dedupedSuggestions[topic1.id] || 0)
+    );
+
+    return topics.map((topic: ThesaurusTopic) => {
+      const topicWithSuggestions = { ...topic, suggestions: dedupedSuggestions[topic.id] || 0 };
+      return ThesaurusCockpitBase.topicNode(topicWithSuggestions, model);
+    });
   }
 
   static async requestState(requestParams: any) {
@@ -223,11 +235,26 @@ class ThesaurusCockpit extends RouteHandler {
   }
 }
 
+const selectModels = createSelector(
+  (state: any) => state.thesauri.models,
+  models => models.toJS()
+);
+
+const selectThesaurus = createSelector(
+  (state: any) => state.thesauri.thesaurus,
+  thesaurus => thesaurus.toJS()
+);
+
+const selectSuggestions = createSelector(
+  (state: any) => state.thesauri.suggestions,
+  suggestions => suggestions.toJS()
+);
+
 function mapStateToProps(state: any) {
   return {
-    models: state.thesauri.models.toJS(), // {name: ModelName; bert: bert123; sample: 53}
-    thesaurus: state.thesauri.thesaurus.toJS(), // {name: Themes; values: [{label: Education, id: lkajsdf}, ...]}
-    suggestions: state.thesauri.suggestions.toJS(),
+    models: selectModels(state), // {name: ModelName; bert: bert123; sample: 53}
+    thesaurus: selectThesaurus(state), // {name: Themes; values: [{label: Education, id: lkajsdf}, ...]}
+    suggestions: selectSuggestions(state),
   };
 }
 
@@ -235,4 +262,4 @@ export default connect(
   mapStateToProps,
   null
   //{ withRef: true }
-)(ThesaurusCockpit);
+)(ThesaurusCockpitBase);

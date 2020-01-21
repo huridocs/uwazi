@@ -1,0 +1,69 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ThesaurusCockpit should render a ThesaurusCockpit 1`] = `
+<div
+  className="panel panel-default"
+>
+  <div
+    className="panel-heading"
+  >
+    Thesauri &gt; Topic1
+    <Connect(I18NLink)
+      className="btn btn-primary btn-xs"
+      to="/uploads/?q=(filters:(_topic_1:(values:!(any)),topic_1:(values:!(any))),limit:100,order:desc,sort:creationDate)&view=nosearch"
+    >
+      <Connect(Icon)
+        icon="search"
+      />
+       
+      <span>
+        Review & Publish
+      </span>
+    </Connect(I18NLink)>
+  </div>
+  <div
+    className="cockpit"
+  >
+    <table>
+      <thead>
+        <tr>
+          <th
+            scope="col"
+          />
+          <th
+            scope="col"
+          >
+            Confidence
+          </th>
+          <th
+            scope="col"
+          >
+            Suggestions
+          </th>
+          <th
+            scope="col"
+          />
+        </tr>
+      </thead>
+      <tbody />
+    </table>
+  </div>
+  <div
+    className="settings-footer"
+  >
+    <Connect(I18NLink)
+      className="btn btn-default"
+      to="/settings/dictionaries"
+    >
+      <Connect(Icon)
+        icon="arrow-left"
+      />
+      <span
+        className="btn-label"
+      >
+        Back
+      </span>
+    </Connect(I18NLink)>
+  </div>
+</div>
+`;
