@@ -1,7 +1,6 @@
 /** @format */
 
 import moment from 'moment';
-import React from 'react';
 import Immutable from 'immutable';
 import { advancedSort } from 'app/utils/advancedSort';
 import { store } from 'app/store';
@@ -79,11 +78,11 @@ export default {
     const { icon } = option;
 
     if (option) {
-      value = option.label;
+      value = option.label || option.value;
     }
 
     let url;
-    if (option && thesauri.get('type') === 'template') {
+    if (option && thesauri && thesauri.get('type') === 'template') {
       url = `/entity/${option.value}`;
     }
 
@@ -108,7 +107,7 @@ export default {
       label: property.get('label'),
       name: property.get('name'),
       value,
-      timestamp: timestamp,
+      timestamp,
     };
   },
 
@@ -150,13 +149,8 @@ export default {
     return this.multimedia(property, value, 'media');
   },
 
-  link(property, value) {
-    const link = (
-      <a href={value.url} target="_blank" rel="noopener noreferrer">
-        {value.label}
-      </a>
-    );
-    return { label: property.get('label'), name: property.get('name'), value: link };
+  default(_property, [value]) {
+    return value;
   },
 
   geolocation(property, value, _thesauris, { onlyForCards }) {
@@ -186,6 +180,9 @@ export default {
     const inheritedProperty = template
       .get('properties')
       .find(p => p.get('_id') === property.get('inheritProperty'));
+    const methodType = this[inheritedProperty.get('type')]
+      ? inheritedProperty.get('type')
+      : 'default';
     const type = inheritedProperty.get('type');
     let value = thesauriValues.map(referencedEntity => {
       const name = inheritedProperty.get('name');
@@ -193,8 +190,8 @@ export default {
         entityData: { metadata: {} },
       };
       const metadata = reference.entityData.metadata ? reference.entityData.metadata : {};
-      if (this[type] && (metadata[name] || type === 'preview')) {
-        return this[type](inheritedProperty, metadata[name], thesauris, options, templates);
+      if (metadata[name] || type === 'preview') {
+        return this[methodType](inheritedProperty, metadata[name], thesauris, options, templates);
       }
 
       return { value: metadata[name] };
@@ -255,10 +252,6 @@ export default {
       value,
       type: type || 'markdown',
     };
-  },
-
-  text(_property, value = [{}]) {
-    return value[0];
   },
 
   nested(property, rows, thesauris) {
@@ -334,7 +327,6 @@ export default {
     const value = doc.metadata[property.get('name')];
     const showInCard = property.get('showInCard');
 
-    const type = property.get('type');
     if (property.get('inherit') && relationships) {
       return this.inherit(
         property,
@@ -346,11 +338,13 @@ export default {
       );
     }
 
-    if (this[type] && ((value && value.length) || type === 'preview')) {
+    const methodType = this[property.get('type')] ? property.get('type') : 'default';
+
+    if ((value && value.length) || methodType === 'preview') {
       return Object.assign(
         {},
         { translateContext: template.get('_id'), ...property.toJS() },
-        this[type](property, value, thesauris, { ...options, doc })
+        this[methodType](property, value, thesauris, { ...options, doc })
       );
     }
 

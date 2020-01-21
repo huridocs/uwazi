@@ -50,6 +50,7 @@ export const doc = {
     geolocation: [{ value: { lat: 2, lon: 3 } }, { value: { lat: 13, lon: 7, label: 'home' } }],
     nested: [{ value: { nestedKey: [1, 2] } }, { value: { nestedKey: [3, 4] } }],
     select2: [],
+    link: [{ value: { label: 'link label', url: 'link url' } }],
   },
 };
 
@@ -147,6 +148,13 @@ export const templates = Immutable.fromJS([
       },
       { name: 'geolocation', type: 'geolocation', label: 'Geolocation', showInCard: true },
       { name: 'nested', type: 'nested', label: 'Nested' },
+      {
+        nestedProperties: [],
+        label: 'Link',
+        type: 'link',
+        showInCard: true,
+        name: 'link',
+      },
     ],
   },
 ]);

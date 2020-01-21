@@ -242,6 +242,7 @@ exports[`EntityViewer should render 1`] = `
     </SidePanel>
     <Connect(CreateConnectionPanel)
       className="entity-create-connection-panel"
+      onCreate={[Function]}
     />
     <Connect(AddEntities) />
     <Connect(RelationshipMetadata) />
