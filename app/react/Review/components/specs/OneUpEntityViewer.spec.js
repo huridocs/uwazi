@@ -38,6 +38,11 @@ describe('EntityViewer', () => {
       oneUpState: {},
       deleteConnection: jasmine.createSpy('deleteConnection'),
       startNewConnection: jasmine.createSpy('startNewConnection'),
+      showTab: jasmine.createSpy('showTab'),
+      connectionsChanged: jasmine.createSpy('connectionsChanged'),
+      switchOneUpEntity: jasmine.createSpy('switchOneUpEntity'),
+      toggleOneUpFullEdit: jasmine.createSpy('toggleOneUpFullEdit'),
+      toggleOneUpLoadConnections: jasmine.createSpy('toggleOneUpLoadConnections'),
       mlThesauri: [],
     };
   });
