@@ -63,7 +63,6 @@ export class OneUpEntityViewerBase extends Component {
   }
 
   render() {
-    console.log('OneUpEntityViewer');
     const {
       entity,
       tab,
