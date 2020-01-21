@@ -140,7 +140,10 @@ const propertyToAggregation = (property, dictionaries, baseQuery) => {
     match =>
       match &&
       (!match.terms || (match.terms && !match.terms[path])) &&
-      (!match.bool || !match.bool.should || !match.bool.should[1].terms[path])
+      (!match.bool ||
+        !match.bool.should ||
+        !match.bool.should[1].terms ||
+        !match.bool.should[1].terms[path])
   );
   filters = filters.concat(baseQuery.query.bool.must);
 
