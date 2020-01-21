@@ -10,6 +10,20 @@ const rangeFilter = (filter, path = 'metadata') => {
   return match;
 };
 
+function missingFilter(field) {
+  return {
+    bool: {
+      must_not: [
+        {
+          exists: {
+            field,
+          },
+        },
+      ],
+    },
+  };
+}
+
 // eslint-disable-next-line max-statements
 const multiselectFilter = (filter, path = 'metadata') => {
   const filterValue = filter.value;
@@ -28,17 +42,7 @@ const multiselectFilter = (filter, path = 'metadata') => {
     match = {
       bool: {
         should: [
-          {
-            bool: {
-              must_not: [
-                {
-                  exists: {
-                    field: `${path}.${filter.name}.raw`,
-                  },
-                },
-              ],
-            },
-          },
+          missingFilter(`${path}.${filter.name}.raw`),
           {
             terms: { [`${path}.${filter.name}.raw`]: _values },
           },

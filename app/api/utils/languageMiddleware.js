@@ -9,7 +9,7 @@ export default async (req, _res, next) => {
     [lang] = req.get('accept-language').split('-');
   }
 
-  const { languages } = await settings.get();
+  const { languages = [] } = await settings.get();
 
   const langExists = languages.find(l => l.key === lang);
   if (!langExists) {

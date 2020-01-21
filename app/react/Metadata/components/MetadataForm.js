@@ -150,6 +150,8 @@ export class MetadataForm extends Component {
 MetadataForm.defaultProps = {
   id: 'metadataForm',
   multipleEdition: false,
+  showSubset: undefined,
+  version: undefined,
   componentWillUnmount: () => {},
   notify: () => {},
   changeTemplate: () => {},
@@ -166,7 +168,7 @@ MetadataForm.propTypes = {
   onSubmit: PropTypes.func,
   notify: PropTypes.func,
   id: PropTypes.string,
-  showSubset: PropTypes.array,
+  showSubset: PropTypes.arrayOf(PropTypes.string),
   version: PropTypes.string,
   componentWillUnmount: PropTypes.func,
 };

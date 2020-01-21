@@ -53,6 +53,9 @@ export class ShowMetadata extends Component {
     );
   }
 }
+ShowMetadata.defaultProps = {
+  showSubset: undefined,
+};
 
 ShowMetadata.propTypes = {
   entity: PropTypes.object,
@@ -60,7 +63,7 @@ ShowMetadata.propTypes = {
   templates: PropTypes.object,
   showTitle: PropTypes.bool,
   showType: PropTypes.bool,
-  showSubset: PropTypes.array,
+  showSubset: PropTypes.arrayOf(PropTypes.string),
 };
 
 const mapStateToProps = ({ templates }) => ({ templates });

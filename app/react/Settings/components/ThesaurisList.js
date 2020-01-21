@@ -14,8 +14,6 @@ import {
 } from 'app/Thesauris/actions/thesaurisActions';
 import { Icon } from 'UI';
 
-import { notificationActions } from 'app/Notifications';
-
 import sortThesauri from '../utils/sortThesauri';
 
 export class ThesaurisList extends Component {
@@ -174,12 +172,11 @@ export class ThesaurisList extends Component {
 
 ThesaurisList.propTypes = {
   dictionaries: PropTypes.object,
-  deleteThesaurus: PropTypes.func,
-  disableClassification: PropTypes.func,
-  enableClassification: PropTypes.func,
-  checkThesaurusCanBeClassified: PropTypes.func,
-  notify: PropTypes.func,
-  checkThesaurusCanBeDeleted: PropTypes.func,
+  deleteThesaurus: PropTypes.func.isRequired,
+  disableClassification: PropTypes.func.isRequired,
+  enableClassification: PropTypes.func.isRequired,
+  checkThesaurusCanBeClassified: PropTypes.func.isRequired,
+  checkThesaurusCanBeDeleted: PropTypes.func.isRequired,
 };
 
 ThesaurisList.contextTypes = {
@@ -193,7 +190,6 @@ export function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
   return bindActionCreators(
     {
-      notify: notificationActions.notify,
       deleteThesaurus,
       checkThesaurusCanBeDeleted,
       disableClassification,

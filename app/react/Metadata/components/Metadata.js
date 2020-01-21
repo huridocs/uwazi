@@ -88,6 +88,7 @@ const Metadata = ({ metadata, compact, renderLabel, showSubset }) => (
 
 Metadata.defaultProps = {
   compact: false,
+  showSubset: undefined,
   renderLabel: (_prop, label) => label,
 };
 
@@ -111,7 +112,7 @@ Metadata.propTypes = {
   ).isRequired,
   compact: PropTypes.bool,
   renderLabel: PropTypes.func,
-  showSubset: PropTypes.array,
+  showSubset: PropTypes.arrayOf(PropTypes.string),
 };
 
 export default Metadata;

@@ -1,6 +1,6 @@
 /** @format */
 
-import { ConnectionsGroups, ConnectionsList } from 'app/ConnectionsList';
+import { ConnectionsList } from 'app/ConnectionsList';
 import { shallow } from 'enzyme';
 import Immutable from 'immutable';
 import React from 'react';
