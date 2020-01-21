@@ -1,6 +1,5 @@
 /** @format */
 import { shallow } from 'enzyme';
-import Immutable from 'immutable';
 import React from 'react';
 import RouteHandler from 'app/App/RouteHandler';
 
