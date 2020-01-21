@@ -36,6 +36,7 @@ describe('attachments', () => {
     });
 
     it('should remove main file and thumbnail if id matches entity', async () => {
+      console.log(await fs.readdir(paths.attachments));
       expect(await fs.exists(`${paths.attachments}attachment.txt`)).toBe(true);
 
       const response = await attachments.delete(toDeleteId);
