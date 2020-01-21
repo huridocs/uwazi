@@ -71,6 +71,30 @@ exports[`Metadata should render a Markdown when the metadata is type mardown 1`]
 </Fragment>
 `;
 
+exports[`Metadata should render a link 1`] = `
+<Fragment>
+  <dl
+    className="metadata-type-link "
+    key="link_0"
+  >
+    <dt>
+      Link
+    </dt>
+    <dd
+      className=""
+    >
+      <a
+        href="url"
+        rel="noopener noreferrer"
+        target="_blank"
+      >
+        label
+      </a>
+    </dd>
+  </dl>
+</Fragment>
+`;
+
 exports[`Metadata should render a media field 1`] = `
 <Fragment>
   <dl

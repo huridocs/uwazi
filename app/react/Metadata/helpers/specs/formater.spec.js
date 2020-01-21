@@ -46,6 +46,7 @@ describe('metadata formater', () => {
     let media;
     let geolocation;
     let nested;
+    let link;
 
     beforeAll(() => {
       data = formater.prepareMetadata(
@@ -72,6 +73,7 @@ describe('metadata formater', () => {
         relationship4,
         geolocation,
         nested,
+        link,
       ] = data.metadata;
     });
 
@@ -87,7 +89,7 @@ describe('metadata formater', () => {
     });
 
     it('should process all metadata', () => {
-      expect(data.metadata.length).toEqual(17);
+      expect(data.metadata.length).toEqual(18);
     });
 
     it('should process text type', () => {
@@ -218,12 +220,30 @@ describe('metadata formater', () => {
       expect(media.showInCard).toBe(true);
     });
 
+    it('should process link type', () => {
+      expect(link).toEqual(
+        expect.objectContaining({
+          value: { label: 'link label', url: 'link url' },
+          type: 'link',
+        })
+      );
+    });
+
     it('should not fail when field do not exists on the document', () => {
-      doc.metadata.relationship1 = null;
-      doc.metadata.multiselect = null;
-      doc.metadata.select = null;
-      expect(
-        formater.prepareMetadata.bind(formater, doc, templates, thesauris, relationships)
+      const clonedMetadata = Object.keys(doc.metadata).reduce(
+        (memo, property) => Object.assign({}, memo, { [property]: doc.metadata[property] }),
+        {}
+      );
+
+      const docCopy = Object.assign({}, doc, { metadata: clonedMetadata });
+
+      docCopy.metadata.relationship1 = null;
+      docCopy.metadata.multiselect = null;
+      docCopy.metadata.select = null;
+      docCopy.metadata.link = null;
+
+      expect(() =>
+        formater.prepareMetadata(docCopy, templates, thesauris, relationships)
       ).not.toThrow();
     });
   });
@@ -238,10 +258,11 @@ describe('metadata formater', () => {
     let preview;
     let media;
     let geolocation;
+    let link;
 
     beforeAll(() => {
       data = formater.prepareMetadataForCard(doc, templates, thesauris);
-      [text, markdown, image, preview, media, geolocation] = data.metadata;
+      [text, markdown, image, preview, media, geolocation, link] = data.metadata;
     });
 
     it('should process text type', () => {
@@ -273,13 +294,22 @@ describe('metadata formater', () => {
       expect(geolocation.onlyForCards).toBe(true);
     });
 
+    it('should process link type', () => {
+      expect(link).toEqual(
+        expect.objectContaining({
+          value: { label: 'link label', url: 'link url' },
+          type: 'link',
+        })
+      );
+    });
+
     describe('when sort property passed', () => {
       let date;
       it('should process also the sorted property even if its not a "showInCard"', () => {
         data = formater.prepareMetadataForCard(doc, templates, thesauris, 'metadata.date');
         [text, date, markdown] = data.metadata;
         assessBasicProperties(date, ['Date', 'date', 'templateID']);
-        expect(data.metadata.length).toEqual(7);
+        expect(data.metadata.length).toEqual(8);
         expect(date.value).toContain('1970');
       });
 
@@ -304,7 +334,7 @@ describe('metadata formater', () => {
       describe('when sort property is creationDate', () => {
         it('should add it as a value to show', () => {
           data = formater.prepareMetadataForCard(doc, templates, thesauris, 'creationDate');
-          [text, markdown, image, preview, media, geolocation, creationDate] = data.metadata;
+          [text, markdown, image, preview, media, geolocation, link, creationDate] = data.metadata;
           expect(text.sortedBy).toBe(false);
           expect(markdown.sortedBy).toBe(false);
           assessBasicProperties(creationDate, ['Date added', undefined, 'System', 'Jan 1, 1970']);
