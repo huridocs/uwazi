@@ -109,12 +109,12 @@ export class OneUpEntityViewerBase extends Component {
           <main className="content-main">
             <div className="content-header content-header-entity">
               <StateSelector
-                selector={createSelector(
+                isPristine={createSelector(
                   state => state.entityView.entityFormState.$form.pristine,
                   value => value
                 )}
               >
-                {isPristine => (
+                {({ isPristine }) => (
                   <div className="content-header-title">
                     {oneUpState.reviewThesaurusName ? (
                       <I18NLink
@@ -268,12 +268,12 @@ export class OneUpEntityViewerBase extends Component {
             </ShowIf>
             <ShowIf if={selectedTab !== 'connections'}>
               <StateSelector
-                selector={createSelector(
+                isPristine={createSelector(
                   state => state.entityView.entityFormState.$form.pristine,
                   value => value
                 )}
               >
-                {isPristine => (
+                {({ isPristine }) => (
                   <div className="content-footer">
                     <button
                       onClick={() => this.props.switchOneUpEntity(0, false)}
@@ -380,12 +380,12 @@ export class OneUpEntityViewerBase extends Component {
             </div>
             <ShowIf if={selectedTab === 'connections'}>
               <StateSelector
-                selector={createSelector(
+                isPristine={createSelector(
                   state => state.entityView.entityFormState.$form.pristine,
                   value => value
                 )}
               >
-                {isPristine => (
+                {({ isPristine }) => (
                   <div className="sidepanel-footer">
                     <button
                       onClick={() => this.props.toggleOneUpLoadConnections()}

@@ -15,8 +15,8 @@ class Parent extends Component {
     return (
       <div>
         <Static Parts ... />
-        <StateSelector selector={createSelector(state => state.path.to.obj, value => value)}>
-          {obj => (<Dynamic Parts prop={obj} ... />)}
+        <StateSelector myVal={createSelector(state => state.path.to.obj, value => value)}>
+          {({ myVal }) => (<Dynamic Parts propVal={myVal} ... />)}
         </StateSelector>
         <More Static Parts ... />
       </div>
@@ -26,16 +26,16 @@ class Parent extends Component {
 */
 export class StateSelectorBase extends Component {
   render() {
-    return this.props.children(this.props.value);
+    return this.props.children(this.props);
   }
 }
 
 StateSelectorBase.propTypes = {
   children: PropTypes.func.isRequired,
-  selector: PropTypes.func.isRequired,
-  value: PropTypes.any,
 };
 
-export default connect((state, ownProps) => ({ value: ownProps.selector(state) }))(
-  StateSelectorBase
-);
+export default connect((state, ownProps) =>
+  Object.keys(ownProps)
+    .filter(k => !['children'].includes(k))
+    .reduce((res, k) => ({ ...res, [k]: ownProps[k](state) }), {})
+)(StateSelectorBase);
