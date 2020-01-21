@@ -17,6 +17,13 @@ const showByType = (prop, compact) => {
     case 'markdown':
       result = <MarkdownViewer markdown={prop.value} />;
       break;
+    case 'link':
+      result = (
+        <a href={prop.value.url} target="_blank" rel="noopener noreferrer">
+          {prop.value.label}
+        </a>
+      );
+      break;
     case 'image':
       result = (
         <img
