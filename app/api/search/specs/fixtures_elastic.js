@@ -116,6 +116,7 @@ export default {
         nestedField_nested: [{ value: { nested1: ['1', '2', '3'] } }],
         city_geolocation: [{ value: { lat: 1, lon: 2 } }],
         daterange: [{ value: { from: 1547997735, to: 1579533735 } }],
+        date: [{ value: 10000 }],
       },
     },
     {
@@ -131,6 +132,7 @@ export default {
         field2: [{ value: 'bane' }],
         city_geolocation: [{ value: { lat: 1, lon: 2 } }],
         daterange: [{ value: { from: 1547997735, to: null } }],
+        date: [{ value: 10000 }],
       },
     },
     {
@@ -148,6 +150,7 @@ export default {
         multiselect1: [{ value: 'multiValue1' }],
         groupedDictionary: [{ value: 'spainID' }],
         daterange: [{ value: { from: 1579620135, to: 1611242535 } }],
+        date: [{ value: 20000 }],
       },
     },
     {
@@ -158,7 +161,11 @@ export default {
       title: 'metádata3',
       published: true,
       user: userId,
-      metadata: { select1: [{ value: 'selectValue2' }], multiselect1: [{ value: 'multiValue2' }] },
+      metadata: {
+        select1: [{ value: 'selectValue2' }],
+        multiselect1: [{ value: 'multiValue2' }],
+        date: [{ value: 30000 }],
+      },
     },
     {
       _id: db.id(),
@@ -285,6 +292,7 @@ export default {
         { name: 'select1', type: 'select', filter: true },
         { name: 'multiselect1', type: 'multiselect', filter: true },
         { name: 'daterange', type: 'daterange', filter: true },
+        { name: 'date', type: 'date', filter: true },
         {
           name: 'nestedField_nested',
           type: 'nested',
