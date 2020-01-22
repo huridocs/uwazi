@@ -1,44 +1,158 @@
-import React from 'react';
+/** @format */
 import { shallow } from 'enzyme';
 import Immutable from 'immutable';
-import { I18NLink } from 'app/I18N';
+import React from 'react';
 
-import { TranslationsList } from '../TranslationsList';
+import { doesNotReject } from 'assert';
+import { ThesaurisList } from '../ThesaurisList';
 
-describe('TranslationsList', () => {
+describe('ThesaurisList', () => {
   let component;
   let props;
   let context;
 
   beforeEach(() => {
     props = {
-      translations: Immutable.fromJS([{
-        locale: 'es',
-        contexts: [
-          { id: '1', label: 'X-Men' },
-          { id: '2', label: 'Avengers' },
-          { id: '3', label: 'Batman' }
-        ]
-      }]),
-      settings: Immutable.fromJS({ languages: [{ key: 'es', default: true }] })
+      deleteThesaurus: jasmine.createSpy('deleteThesaurus').and.returnValue(Promise.resolve()),
+      disableClassification: jasmine
+        .createSpy('disableClassification')
+        .and.returnValue(Promise.resolve()),
+      enableClassification: jasmine
+        .createSpy('enableClassification')
+        .and.returnValue(Promise.resolve()),
+      checkThesaurusCanBeClassified: jasmine
+        .createSpy('checkThesaurusCanBeClassified')
+        .and.returnValue(Promise.resolve()),
+      checkThesaurusCanBeDeleted: jasmine
+        .createSpy('checkThesaurusCanBeDeleted')
+        .and.returnValue(Promise.resolve()),
+      dictionaries: Immutable.fromJS([
+        {
+          _id: 'thesaurusUnderscoreId1',
+          name: 'Continents',
+          model_available: false,
+          values: [
+            {
+              _id: 'valueUnderscoreId1',
+              label: 'Africa',
+              id: 'valueId1',
+            },
+            {
+              _id: 'valueUnderscoreId2',
+              label: 'Asia',
+              id: 'valueId2',
+            },
+            {
+              _id: 'valueUnderscoreId3',
+              label: 'North America',
+              id: 'valueId3',
+            },
+            {
+              _id: 'valueUnderscoreId4',
+              label: 'South America',
+              id: 'valueId4',
+            },
+            {
+              _id: 'valueUnderscoreId5',
+              label: 'Oceania',
+              id: 'valueId5',
+            },
+            {
+              _id: 'valueUnderscoreId6',
+              label: 'Europe',
+              id: 'valueId6',
+            },
+          ],
+        },
+        {
+          _id: 'thesaurusUnderscoreId2',
+          name: 'Issues',
+          model_available: true,
+          enable_classification: true,
+          suggestions: 3,
+          values: [
+            {
+              _id: 'valueUnderscoreId1',
+              label: 'Detention',
+              id: 'valueId1',
+            },
+            {
+              _id: 'valueUnderscoreId2',
+              label: 'Elections',
+              id: 'valueId2',
+            },
+            {
+              _id: 'valueUnderscoreId3',
+              label: 'Freedom of Movement',
+              id: 'valueId3',
+            },
+          ],
+        },
+      ]),
     };
 
     context = {
-      confirm: jasmine.createSpy('confirm')
+      confirm: jasmine.createSpy('confirm'),
     };
   });
 
   const render = () => {
-    component = shallow(<TranslationsList {...props} />, { context });
+    component = shallow(<ThesaurisList {...props} />, { context });
   };
 
   describe('render', () => {
-    it('should a list of the different translations contexts', () => {
+    it('should match the snapshot', () => {
       render();
-      const renderedContexts = component.find('ul.relation-types').find(I18NLink);
-      expect(renderedContexts.at(0).props().children).toBe('Avengers');
-      expect(renderedContexts.at(2).props().children).toBe('Batman');
-      expect(renderedContexts.at(4).props().children).toBe('X-Men');
+      expect(component).toMatchSnapshot();
+    });
+
+    it('should render suggestions nodes when suggestions exist', () => {
+      render();
+      const renderedContexts = component.find('table');
+      expect(renderedContexts.length).toBe(1);
+      expect(renderedContexts.find({ scope: 'row' }).length).toBe(2);
+      expect(renderedContexts.find('.thesauri-list').find('.vertical-line').length).toBe(1);
+      expect(
+        renderedContexts
+          .find('td')
+          .find('.thesauri-list')
+          .find('.vertical-line')
+          .containsMatchingElement(<span>View Suggestions</span>)
+      ).toBeTruthy();
+      expect(
+        renderedContexts
+          .find('.thesaurus-suggestion-count')
+          .contains(
+            <span className="thesaurus-suggestion-count">{3}&nbsp;documents to be reviewed</span>
+          )
+      ).toBeTruthy();
+    });
+  });
+
+  describe('classification', () => {
+    it('should validate the classifier model before enabling', done => {
+      render();
+      component
+        .instance()
+        .enableClassification({ _id: 'thesaurusUnderscoreId2', name: 'Issues' })
+        .then(() => {
+          expect(props.checkThesaurusCanBeClassified).toHaveBeenCalled();
+          done();
+        });
+      component.instance().enableClassification({});
+    });
+
+    it('should confirm  before deleting the thesaurus', done => {
+      render();
+      component
+        .instance()
+        .deleteThesaurus({ _id: 'thesaurusUnderscoreId2', name: 'Issues' })
+        .then(() => {
+          expect(context.confirm).toHaveBeenCalled();
+          expect(props.checkThesaurusCanBeDeleted).toHaveBeenCalled();
+          done();
+        });
+      component.instance().enableClassification({});
     });
   });
 });

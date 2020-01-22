@@ -209,7 +209,7 @@ exports[`ThesaurusCockpit render should render a ThesaurusCockpit 1`] = `
 </div>
 `;
 
-exports[`ThesaurusCockpit requestState should get the current thesaurus, classification model and suggested values 1`] = `
+exports[`ThesaurusCockpit requestState should get the thesaurus, classification model and suggestion counts as react actions 1`] = `
 Array [
   Object {
     "type": "thesauri/thesaurus/SET",
