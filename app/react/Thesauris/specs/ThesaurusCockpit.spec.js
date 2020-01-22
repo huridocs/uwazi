@@ -1,13 +1,129 @@
 /** @format */
 import RouteHandler from 'app/App/RouteHandler';
 import api from 'app/Search/SearchAPI';
-import { RequestParams } from 'app/utils/RequestParams';
 import TemplatesAPI from 'app/Templates/TemplatesAPI';
 import ThesaurisAPI from 'app/Thesauris/ThesaurisAPI';
+import { RequestParams } from 'app/utils/RequestParams';
 import { shallow } from 'enzyme';
 import React from 'react';
 
 import { ThesaurusCockpitBase } from '../ThesaurusCockpit';
+
+const templates = [
+  {
+    _id: 'underscoreID',
+    name: 'Paragraph',
+    properties: [
+      {
+        name: 'thesaurus_name',
+        label: 'ThesaurusName',
+        content: 'thesaurusUnderscoreId1',
+        type: 'multiselect',
+      },
+    ],
+    default: true,
+  },
+  {
+    _id: 'underscoreID2',
+    name: 'Recommendation',
+    properties: [
+      {
+        name: 'recommendation',
+        label: 'Recommendation',
+        content: 'thesaurusUnderscoreId2',
+        type: 'multiselect',
+      },
+    ],
+    default: false,
+  },
+];
+const models = [
+  {
+    bert: 'testBert',
+    completeness: 0,
+    extraneous: 0,
+    instances: ['timestamp'],
+    name: 'ThesaurusName',
+    preferred: 'timestamp',
+    topics: {
+      'Topic 1': {
+        name: 'Topic 1',
+        quality: 0.8,
+        samples: 20,
+      },
+      'Topic 2': {
+        name: 'Topic 2',
+        quality: 0.92,
+        samples: 25,
+      },
+      'Topic 3': {
+        name: 'Topic 3',
+        quality: 0.62,
+        samples: 2,
+      },
+    },
+  },
+];
+const thesauri = [
+  {
+    _id: 'thesaurusUnderscoreId1',
+    name: 'ThesaurusName',
+    values: [
+      { _id: 'underscoreId1', label: 'Topic 1', id: 'id1' },
+      { _id: 'underscoreId2', label: 'Topic 2', id: 'id2' },
+      { _id: 'underscoreId3', label: 'Topic 3', id: 'id3' },
+    ],
+    enable_classification: true,
+  },
+  {
+    _id: 'thesaurusUnderscoreId2',
+    name: 'ThesaurusWithoutSuggestions',
+    values: [{ _id: 'underscoreId1', label: 'Topic 1', id: 'id1' }],
+    enable_classification: false,
+  },
+];
+const suggestions = [
+  {
+    aggregations: { all: {} },
+    rows: [],
+    totalRows: 0,
+  },
+  {
+    aggregations: {
+      all: {
+        doc_count: 65460,
+        thesaurus_name: {
+          buckets: [],
+        },
+        _thesaurus_name: {
+          buckets: [
+            {
+              key: 'id1',
+              doc_count: 8528,
+              filtered: {
+                doc_count: 1,
+                meta: {},
+              },
+            },
+            { key: 'id2', doc_count: 6923, filtered: {} },
+          ],
+        },
+      },
+    },
+    rows: [
+      {
+        sharedId: 'jo9dvda1ux',
+        snippets: '',
+        count: 0,
+        fullText: [],
+        metadata: [],
+        _explanation: {},
+        _id: 'docId1',
+      },
+    ],
+    totalRows: 1,
+  },
+];
 
 describe('ThesaurusCockpit', () => {
   describe('render', () => {
@@ -16,106 +132,15 @@ describe('ThesaurusCockpit', () => {
     let context;
     let dispatchCallsOrder = [];
 
-    const models = [
-      {
-        bert: 'testBert',
-        completeness: 0,
-        extraneous: 0,
-        instances: ['timestamp'],
-        name: 'ThesaurusName',
-        preferred: 'timestamp',
-        topics: {
-          'Topic 1': {
-            name: 'Topic 1',
-            quality: 0.8,
-            samples: 20,
-          },
-          'Topic 2': {
-            name: 'Topic 2',
-            quality: 0.92,
-            samples: 25,
-          },
-          'Topic 3': {
-            name: 'Topic 3',
-            quality: 0.62,
-            samples: 2,
-          },
-        },
-      },
-    ];
-    const thesaurus = {
-      _id: 'underscoreId',
-      enable_classification: true,
-      name: 'ThesaurusName',
-      property: {
+    beforeEach(() => {
+      const thesaurus = thesauri[0];
+      // The render function has already mapped this property back to the thesaurus by now
+      thesaurus.property = {
         content: 'content1',
         label: 'ThesaurusName',
         name: 'thesaurus_name',
-      },
-      values: [
-        {
-          _id: 'underscoreId1',
-          label: 'Topic 1',
-          id: 'id1',
-        },
-        {
-          _id: 'underscoreId2',
-          label: 'Topic 2',
-          id: 'id2',
-        },
-        {
-          _id: 'underscoreId3',
-          label: 'Topic 3',
-          id: 'id3',
-        },
-      ],
-    };
-
-    const suggestions = [
-      {
-        aggregations: { all: {} },
-        rows: [],
-        totalRows: 0,
-      },
-      {
-        aggregations: {
-          all: {
-            doc_count: 65460,
-            thesaurus_name: {
-              buckets: [],
-            },
-            _thesaurus_name: {
-              buckets: [
-                {
-                  key: 'id1',
-                  doc_count: 8528,
-                  filtered: {
-                    doc_count: 1,
-                    meta: {},
-                  },
-                },
-                { key: 'id2', doc_count: 6923, filtered: {} },
-              ],
-            },
-          },
-        },
-        rows: [
-          {
-            sharedId: 'jo9dvda1ux',
-            snippets: '',
-            count: 0,
-            fullText: [],
-            metadata: [],
-            _explanation: {},
-            _id: 'docId1',
-          },
-        ],
-        totalRows: 1,
-      },
-    ];
-
-    beforeEach(() => {
-      props = { models, thesaurus, suggestions };
+      };
+      props = { models, thesaurus: thesauri[0], suggestions };
       RouteHandler.renderedFromServer = true;
       dispatchCallsOrder = [];
       context = {
@@ -152,99 +177,6 @@ describe('ThesaurusCockpit', () => {
   });
 
   describe('requestState', () => {
-    const thesauri = [
-      {
-        _id: 'thesaurusUnderscoreId1',
-        name: 'ThesaurusName',
-        values: [{ _id: 'underscoreId1', label: 'Topic 1', id: 'id1' }],
-        enable_classification: true,
-      },
-      {
-        _id: 'thesaurusUnderscoreId2',
-        name: 'ThesaurusWithoutSuggestions',
-        values: [{ _id: 'underscoreId1', label: 'Topic 1', id: 'id1' }],
-        enable_classification: false,
-      },
-    ];
-    const models = [
-      {
-        bert: 'testBert',
-        completeness: 0,
-        extraneous: 0,
-        instances: ['timestamp'],
-        name: 'ThesaurusName',
-        preferred: 'timestamp',
-        topics: {
-          'Topic 1': {
-            name: 'Topic 1',
-            quality: 0.8,
-            samples: 20,
-          },
-          'Topic 2': {
-            name: 'Topic 2',
-            quality: 0.92,
-            samples: 25,
-          },
-          'Topic 3': {
-            name: 'Topic 3',
-            quality: 0.62,
-            samples: 2,
-          },
-        },
-      },
-    ];
-    const templates = [
-      {
-        _id: 'underscoreID',
-        name: 'Paragraph',
-        properties: [
-          {
-            name: 'thesaurus_name',
-            label: 'ThesaurusName',
-            content: 'thesaurusUnderscoreId1',
-            type: 'multiselect',
-          },
-        ],
-        default: true,
-      },
-      {
-        _id: 'underscoreID2',
-        name: 'Recommendation',
-        properties: [
-          {
-            name: 'recommendation',
-            label: 'Recommendation',
-            content: 'thesaurusUnderscoreId2',
-            type: 'multiselect',
-          },
-        ],
-        default: false,
-      },
-    ];
-    const suggestions = [
-      {
-        rows: [{ sharedId: 'docId', _id: 'underscoreDocID' }],
-        totalRows: 1,
-        aggregations: {
-          all: {
-            _paragraph: {
-              buckets: [
-                {
-                  key: 'content1',
-                  filtered: {
-                    doc_count: 5,
-                  },
-                },
-              ],
-            },
-            paragraph: {
-              buckets: [{}],
-            },
-          },
-        },
-      },
-    ];
-
     beforeEach(() => {
       spyOn(ThesaurisAPI, 'getThesauri').and.returnValue(Promise.resolve(thesauri));
       spyOn(ThesaurisAPI, 'getModelStatus').and.returnValue(Promise.resolve(models));
@@ -252,7 +184,7 @@ describe('ThesaurusCockpit', () => {
       spyOn(api, 'search').and.returnValue(Promise.resolve(suggestions));
     });
 
-    it('should get the current thesaurus, classification model and suggested values', async () => {
+    it('should get the thesaurus, classification model and suggestion counts as react actions', async () => {
       const actions = await ThesaurusCockpitBase.requestState(new RequestParams());
       expect(actions).toMatchSnapshot();
     });

@@ -229,6 +229,16 @@ Array [
           "id": "id1",
           "label": "Topic 1",
         },
+        Object {
+          "_id": "underscoreId2",
+          "id": "id2",
+          "label": "Topic 2",
+        },
+        Object {
+          "_id": "underscoreId3",
+          "id": "id3",
+          "label": "Topic 3",
+        },
       ],
     },
   },
@@ -272,28 +282,46 @@ Array [
       Array [
         Object {
           "aggregations": Object {
+            "all": Object {},
+          },
+          "rows": Array [],
+          "totalRows": 0,
+        },
+        Object {
+          "aggregations": Object {
             "all": Object {
-              "_paragraph": Object {
+              "_thesaurus_name": Object {
                 "buckets": Array [
                   Object {
+                    "doc_count": 8528,
                     "filtered": Object {
-                      "doc_count": 5,
+                      "doc_count": 1,
+                      "meta": Object {},
                     },
-                    "key": "content1",
+                    "key": "id1",
+                  },
+                  Object {
+                    "doc_count": 6923,
+                    "filtered": Object {},
+                    "key": "id2",
                   },
                 ],
               },
-              "paragraph": Object {
-                "buckets": Array [
-                  Object {},
-                ],
+              "doc_count": 65460,
+              "thesaurus_name": Object {
+                "buckets": Array [],
               },
             },
           },
           "rows": Array [
             Object {
-              "_id": "underscoreDocID",
-              "sharedId": "docId",
+              "_explanation": Object {},
+              "_id": "docId1",
+              "count": 0,
+              "fullText": Array [],
+              "metadata": Array [],
+              "sharedId": "jo9dvda1ux",
+              "snippets": "",
             },
           ],
           "totalRows": 1,
@@ -302,28 +330,46 @@ Array [
       Array [
         Object {
           "aggregations": Object {
+            "all": Object {},
+          },
+          "rows": Array [],
+          "totalRows": 0,
+        },
+        Object {
+          "aggregations": Object {
             "all": Object {
-              "_paragraph": Object {
+              "_thesaurus_name": Object {
                 "buckets": Array [
                   Object {
+                    "doc_count": 8528,
                     "filtered": Object {
-                      "doc_count": 5,
+                      "doc_count": 1,
+                      "meta": Object {},
                     },
-                    "key": "content1",
+                    "key": "id1",
+                  },
+                  Object {
+                    "doc_count": 6923,
+                    "filtered": Object {},
+                    "key": "id2",
                   },
                 ],
               },
-              "paragraph": Object {
-                "buckets": Array [
-                  Object {},
-                ],
+              "doc_count": 65460,
+              "thesaurus_name": Object {
+                "buckets": Array [],
               },
             },
           },
           "rows": Array [
             Object {
-              "_id": "underscoreDocID",
-              "sharedId": "docId",
+              "_explanation": Object {},
+              "_id": "docId1",
+              "count": 0,
+              "fullText": Array [],
+              "metadata": Array [],
+              "sharedId": "jo9dvda1ux",
+              "snippets": "",
             },
           ],
           "totalRows": 1,
