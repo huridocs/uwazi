@@ -4,7 +4,11 @@ import Ajv from 'ajv';
 import db from 'api/utils/testing_db';
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import { validateTemplate } from '../templateSchema';
-import fixtures, { templateId, templateToBeInherited } from './validatorFixtures';
+import fixtures, {
+  templateId,
+  templateToBeInherited,
+  propertyToBeInherited,
+} from './validatorFixtures';
 
 describe('template schema', () => {
   beforeEach(done => {
@@ -166,6 +170,26 @@ describe('template schema', () => {
       } catch (e) {
         expect(e).toBeInstanceOf(Ajv.ValidationError);
       }
+    });
+
+    it('should be ok with other scenarios', async () => {
+      const template = {
+        _id: templateToBeInherited,
+        name: 'changed name',
+        commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
+        properties: [
+          {
+            _id: propertyToBeInherited.toString(),
+            name: 'inherit_me',
+            type: 'text',
+            label: 'Inherited',
+          },
+          { name: 'new_one', type: 'text', label: 'New one' },
+        ],
+      };
+
+      await validateTemplate(template);
+      expect(template.properties.length).toBe(2);
     });
   });
 });
