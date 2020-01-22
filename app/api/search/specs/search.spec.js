@@ -740,6 +740,16 @@ describe('search', () => {
       .catch(catchErrors(done));
   });
 
+  it('sort by metadata values', async () => {
+    const entities = await search.search(
+      { types: [ids.templateMetadata1], order: 'desc', sort: 'metadata.date' },
+      'en'
+    );
+    expect(entities.rows[2].title).toBe('metadata1');
+    expect(entities.rows[1].title).toBe('Metadata2');
+    expect(entities.rows[0].title).toBe('metádata3');
+  });
+
   it('should allow including unpublished documents if user', async () => {
     const { rows } = await search.search(
       {
