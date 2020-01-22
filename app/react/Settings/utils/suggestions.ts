@@ -1,6 +1,9 @@
 /** @format */
 
 export function getSuggestionsQuery(matchingTemplateProperty: any, templateID: string) {
+  if (!matchingTemplateProperty) {
+    return {};
+  }
   const query = {
     select: ['sharedId'],
     limit: 1,

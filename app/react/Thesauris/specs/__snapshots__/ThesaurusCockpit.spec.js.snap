@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`ThesaurusCockpit should render a ThesaurusCockpit 1`] = `
+exports[`ThesaurusCockpit render should render a ThesaurusCockpit 1`] = `
 <div
   className="panel panel-default"
 >
@@ -207,4 +207,129 @@ exports[`ThesaurusCockpit should render a ThesaurusCockpit 1`] = `
     </Connect(I18NLink)>
   </div>
 </div>
+`;
+
+exports[`ThesaurusCockpit requestState should get the current thesaurus, classification model and suggested values 1`] = `
+Array [
+  Object {
+    "type": "thesauri/thesaurus/SET",
+    "value": Object {
+      "_id": "thesaurusUnderscoreId1",
+      "enable_classification": true,
+      "name": "ThesaurusName",
+      "property": Object {
+        "content": "thesaurusUnderscoreId1",
+        "label": "ThesaurusName",
+        "name": "thesaurus_name",
+        "type": "multiselect",
+      },
+      "values": Array [
+        Object {
+          "_id": "underscoreId1",
+          "id": "id1",
+          "label": "Topic 1",
+        },
+      ],
+    },
+  },
+  Object {
+    "type": "thesauri/models/SET",
+    "value": Array [
+      Array [
+        Object {
+          "bert": "testBert",
+          "completeness": 0,
+          "extraneous": 0,
+          "instances": Array [
+            "timestamp",
+          ],
+          "name": "ThesaurusName",
+          "preferred": "timestamp",
+          "topics": Object {
+            "Topic 1": Object {
+              "name": "Topic 1",
+              "quality": 0.8,
+              "samples": 20,
+            },
+            "Topic 2": Object {
+              "name": "Topic 2",
+              "quality": 0.92,
+              "samples": 25,
+            },
+            "Topic 3": Object {
+              "name": "Topic 3",
+              "quality": 0.62,
+              "samples": 2,
+            },
+          },
+        },
+      ],
+    ],
+  },
+  Object {
+    "type": "thesauri/suggestions/SET",
+    "value": Array [
+      Array [
+        Object {
+          "aggregations": Object {
+            "all": Object {
+              "_paragraph": Object {
+                "buckets": Array [
+                  Object {
+                    "filtered": Object {
+                      "doc_count": 5,
+                    },
+                    "key": "content1",
+                  },
+                ],
+              },
+              "paragraph": Object {
+                "buckets": Array [
+                  Object {},
+                ],
+              },
+            },
+          },
+          "rows": Array [
+            Object {
+              "_id": "underscoreDocID",
+              "sharedId": "docId",
+            },
+          ],
+          "totalRows": 1,
+        },
+      ],
+      Array [
+        Object {
+          "aggregations": Object {
+            "all": Object {
+              "_paragraph": Object {
+                "buckets": Array [
+                  Object {
+                    "filtered": Object {
+                      "doc_count": 5,
+                    },
+                    "key": "content1",
+                  },
+                ],
+              },
+              "paragraph": Object {
+                "buckets": Array [
+                  Object {},
+                ],
+              },
+            },
+          },
+          "rows": Array [
+            Object {
+              "_id": "underscoreDocID",
+              "sharedId": "docId",
+            },
+          ],
+          "totalRows": 1,
+        },
+      ],
+    ],
+  },
+]
 `;
