@@ -172,7 +172,7 @@ describe('template schema', () => {
       }
     });
 
-    it('should be ok with other scenarios', async () => {
+    it("should work with ID's stored as either strings or mongo ID's", async () => {
       const template = {
         _id: templateToBeInherited,
         name: 'changed name',
