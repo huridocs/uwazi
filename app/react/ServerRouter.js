@@ -70,7 +70,7 @@ function handle404(res) {
 
 function respondError(res, error) {
   handleError(error);
-  res.status(500).send(error.message);
+  res.status(error.status || 500).send(error.message);
 }
 
 function handleRedirect(res, redirectLocation) {
@@ -178,11 +178,7 @@ function handleRoute(res, renderProps, req) {
       return Promise.reject(error);
     }
 
-    if (error.status === 500) {
-      respondError(res, error);
-      return Promise.reject(error);
-    }
-
+    respondError(res, error);
     return Promise.reject(error);
   })
   .then(([initialData, globalResources]) => {
