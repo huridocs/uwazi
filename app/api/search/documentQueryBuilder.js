@@ -191,7 +191,11 @@ export default function() {
         return baseQuery.sort.push('_score');
       }
       const sort = {};
-      sort[`${property}.sort`] = { order, unmapped_type: 'boolean' };
+
+      const sortKey = property.includes('metadata') ? `${property}.value.sort` : `${property}.sort`;
+
+      sort[sortKey] = { order, unmapped_type: 'boolean' };
+
       baseQuery.sort.push(sort);
       return this;
     },

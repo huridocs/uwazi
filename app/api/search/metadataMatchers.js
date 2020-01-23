@@ -65,15 +65,10 @@ const multiselectFilter = (filter, path = 'metadata') => {
   return match;
 };
 
-const nestedrangeFilter = (filter, path = 'metadata') => {
+const daterange = (filter, path = 'metadata') => {
   const match = {
-    nested: {
-      path: `${path}.${filter.name}`,
-      query: {
-        bool: {
-          should: [],
-        },
-      },
+    bool: {
+      should: [],
     },
   };
   const fromMatch = { range: {} };
@@ -81,8 +76,8 @@ const nestedrangeFilter = (filter, path = 'metadata') => {
   const toMatch = { range: {} };
   toMatch.range[`${path}.${filter.name}.to`] = { gte: filter.value.from, lte: filter.value.to };
 
-  match.nested.query.bool.should.push(fromMatch);
-  match.nested.query.bool.should.push(toMatch);
+  match.bool.should.push(fromMatch);
+  match.bool.should.push(toMatch);
   return match;
 };
 
@@ -241,8 +236,8 @@ const filterToMatch = (filter, path = 'metadata') => {
     match = nestedFilter(filter);
   }
 
-  if (filter.type === 'nestedrange') {
-    match = nestedrangeFilter(filter, path);
+  if (filter.type === 'daterange') {
+    match = daterange(filter, path);
   }
 
   if (filter.type === 'relationshipfilter') {
@@ -257,7 +252,7 @@ export {
   textFilter,
   rangeFilter,
   multiselectFilter,
-  nestedrangeFilter,
+  daterange,
   strictNestedFilter,
   nestedFilter,
   relationshipfilter,

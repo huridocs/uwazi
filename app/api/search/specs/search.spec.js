@@ -332,6 +332,32 @@ describe('search', () => {
       .catch(catchErrors(done));
   });
 
+  it('should filter by daterange metadata', async () => {
+    let entities = await search.search(
+      {
+        types: [ids.templateMetadata1],
+        filters: { daterange: { from: 1547997735, to: 1579533735 } },
+      },
+      'en',
+      { _id: 'user' }
+    );
+
+    expect(entities.rows.length).toBe(1);
+    expect(entities.rows[0].title).toBe('metadata1');
+
+    entities = await search.search(
+      {
+        types: [ids.templateMetadata1],
+        filters: { daterange: { from: 1547997735, to: null } },
+      },
+      'en',
+      { _id: 'user' }
+    );
+
+    expect(entities.rows.length).toBe(2);
+    expect(entities.rows[0].title).toBe('metadata1');
+  });
+
   it('should filter by relationships metadata selects', async () => {
     const response = await search.search(
       {
@@ -712,6 +738,16 @@ describe('search', () => {
         done();
       })
       .catch(catchErrors(done));
+  });
+
+  it('sort by metadata values', async () => {
+    const entities = await search.search(
+      { types: [ids.templateMetadata1], order: 'desc', sort: 'metadata.date' },
+      'en'
+    );
+    expect(entities.rows[2].title).toBe('metadata1');
+    expect(entities.rows[1].title).toBe('Metadata2');
+    expect(entities.rows[0].title).toBe('metádata3');
   });
 
   it('should allow including unpublished documents if user', async () => {

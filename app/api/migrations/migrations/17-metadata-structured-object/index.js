@@ -1,11 +1,106 @@
-/**
- * @format
- */
-/* eslint-disable no-await-in-loop */
-/* eslint-disable max-statements */
+/** @format */
 
-import entities from 'api/entities';
-import { QueryForEach } from 'api/odm';
+/* eslint-disable no-await-in-loop, max-statements */
+
+async function collectionForEach(collection, batchSize, fn) {
+  const totalNumber = await collection.count({});
+  let offset = 0;
+  while (offset < totalNumber) {
+    const batch = await collection
+      .find({})
+      .skip(offset)
+      .limit(batchSize)
+      .toArray();
+    if (!batch || !batch.length) {
+      break;
+    }
+    await Promise.all(batch.map(fn));
+    offset += batch.length;
+  }
+}
+
+function getContext(translation, contextId = '') {
+  return (
+    translation.contexts.find(ctx => ctx.id.toString() === contextId.toString()) || { values: {} }
+  );
+}
+
+function translate(context, key, text) {
+  return context.values[key] || text;
+}
+
+async function denormalizeMetadata(db, entity, template, dictionariesByKey) {
+  if (!entity.metadata) {
+    return entity.metadata;
+  }
+
+  const translation = (await db
+    .collection('translations')
+    .find({ locale: entity.language })
+    .toArray())[0];
+
+  const resolveProp = async (key, value) => {
+    if (!Array.isArray(value)) {
+      throw new Error('denormalizeMetadata received non-array prop!');
+    }
+    const prop = template.properties.find(p => p.name === key);
+    return Promise.all(
+      value.map(async _elem => {
+        const elem = { ..._elem };
+        if (!elem.hasOwnProperty('value')) {
+          throw new Error('denormalizeMetadata received non-value prop!');
+        }
+        if (!prop) {
+          return elem;
+        }
+        if (prop.content && ['select', 'multiselect'].includes(prop.type)) {
+          const dict = dictionariesByKey
+            ? dictionariesByKey[prop.content]
+            : await db.collection('dictionaries').findById(prop.content);
+          if (dict) {
+            const context = getContext(translation, prop.content);
+            const flattenValues = dict.values.reduce(
+              (result, dv) => (dv.values ? result.concat(dv.values) : result.concat([dv])),
+              []
+            );
+            const dictElem = flattenValues.find(v => v.id === elem.value);
+
+            if (dictElem && dictElem.label) {
+              elem.label = translate(context, dictElem.label, dictElem.label);
+            }
+          }
+        }
+
+        if (prop.type === 'relationship') {
+          const partner = await db
+            .collection('entities')
+            .find({ sharedId: elem.value, language: entity.language })
+            .toArray();
+
+          if (partner && partner[0] && partner[0].title) {
+            elem.label = partner[0].title;
+            elem.icon = partner[0].icon;
+            elem.type = partner[0].file ? 'document' : 'entity';
+          }
+        }
+        return elem;
+      })
+    );
+  };
+  if (!template) {
+    template = await db.collection('templates').findById(entity.template);
+    if (!template) {
+      return entity.metadata;
+    }
+  }
+  return Object.keys(entity.metadata).reduce(
+    async (meta, prop) => ({
+      ...(await meta),
+      [prop]: await resolveProp(prop, entity.metadata[prop]),
+    }),
+    Promise.resolve({})
+  );
+}
 
 export default {
   delta: 17,
@@ -57,17 +152,13 @@ export default {
 
     let index = 0;
 
-    const total = await entities.count({});
-    await QueryForEach(entities.get({}), 1000, async entity => {
+    const total = await db.collection('entities').count({});
+    await collectionForEach(db.collection('entities'), 1000, async entity => {
       const template = templatesByKey[entity.template ? entity.template.toString() : null];
       index += 1;
       if (entity.metadata && template) {
-        entity.metadata = await entities.denormalizeMetadata(
-          this.expandMetadata(entity.metadata),
-          entity,
-          template,
-          dictionariesByKey
-        );
+        entity.metadata = this.expandMetadata(entity.metadata);
+        entity.metadata = await denormalizeMetadata(db, entity, template, dictionariesByKey);
         await db
           .collection('entities')
           .update({ _id: entity._id }, { $set: { metadata: entity.metadata } });

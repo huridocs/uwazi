@@ -115,7 +115,7 @@ ajv.addKeyword('cantDeleteInheritedProperties', {
       return true;
     }
     const toRemoveProperties = currentTemplate.properties.filter(
-      prop => !template.properties.find(p => p._id === prop._id)
+      prop => !template.properties.find(p => p._id && p._id.toString() === prop._id.toString())
     );
 
     const errors = [];

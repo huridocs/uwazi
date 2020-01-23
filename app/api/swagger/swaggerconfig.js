@@ -3,6 +3,8 @@ import swaggerJSDoc from 'swagger-jsdoc';
 
 import path from 'path';
 
+import paths from '../config/paths';
+
 export default (app) => {
   const swaggerDefinition = {
     info: {
@@ -37,5 +39,5 @@ export default (app) => {
     res.send(swaggerSpec);
   });
 
-  app.use('/api', express.static(path.resolve(__dirname, '../../../public/swaggerUI')));
+  app.use('/api', express.static(path.resolve(paths.publicAssets, 'swaggerUI')));
 };

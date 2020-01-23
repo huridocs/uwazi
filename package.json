@@ -58,6 +58,7 @@
   "dependencies": {
     "@babel/core": "7.4.4",
     "@babel/plugin-proposal-object-rest-spread": "7.5.2",
+    "@babel/plugin-syntax-dynamic-import": "^7.2.0",
     "@babel/plugin-transform-modules-commonjs": "7.5.0",
     "@babel/plugin-transform-react-constant-elements": "7.5.0",
     "@babel/plugin-transform-react-inline-elements": "7.2.0",
@@ -181,7 +182,7 @@
     "socket.io-client": "2.0.4",
     "superagent": "^5.0.6",
     "svg-captcha": "^1.4.0",
-    "swagger-jsdoc": "^1.9.6",
+    "swagger-jsdoc": "^3.5.0",
     "tiny-cookie": "2.1.1",
     "typescript": "^3.6.4",
     "underscore.string": "3.3.5",

@@ -22,6 +22,7 @@ function processFilters(filters, properties) {
     const suggested = filterName[0] === '_';
     const propertyName = suggested ? filterName.substring(1) : filterName;
     const property = properties.find(p => p.name === propertyName);
+
     let { type } = property;
     const value = filters[filterName];
     if (['date', 'multidate', 'numeric'].includes(property.type)) {
@@ -31,7 +32,7 @@ function processFilters(filters, properties) {
       type = 'multiselect';
     }
     if (property.type === 'multidaterange' || property.type === 'daterange') {
-      type = 'nestedrange';
+      type = 'daterange';
     }
 
     if (['multidaterange', 'daterange', 'date', 'multidate'].includes(property.type)) {
