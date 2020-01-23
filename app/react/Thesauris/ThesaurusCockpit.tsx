@@ -71,14 +71,16 @@ export class ThesaurusCockpitBase extends RouteHandler {
     }
   }
 
-  static topicNode(topic: ThesaurusTopic, modelInfo: ClassifierModel) {
+  static topicNode(
+    topic: ThesaurusTopic,
+    modelInfo: ClassifierModel,
+    propName: string | undefined
+  ) {
     if (modelInfo === undefined) {
       return null;
     }
     const { label, id, suggestions } = topic;
     const { quality = 0 } = (modelInfo.topics || {})[label] || {};
-    // TODO(sam): Use template field name instead of thesaurus name.
-    const thesaurusName = modelInfo.name.toLowerCase();
 
     return (
       <tr key={label}>
@@ -86,9 +88,9 @@ export class ThesaurusCockpitBase extends RouteHandler {
         <td title="quality-icons">{this.qualityIcon(label, quality)}</td>
         <td title="suggestions-count">{suggestions || null}</td>
         <td title="review-button">
-          {suggestions > 0 ? (
+          {suggestions > 0 && propName ? (
             <I18NLink
-              to={`/review?q=(filters:(_${thesaurusName}:(values:!('${id}')),${thesaurusName}:(values:!(missing))))&includeUnpublished=1`}
+              to={`/review?q=(filters:(_${propName}:(values:!('${id}')),${propName}:(values:!(missing))))&includeUnpublished=1`}
               className="btn btn-default btn-xs"
             >
               <Icon icon="gavel" />
@@ -109,6 +111,7 @@ export class ThesaurusCockpitBase extends RouteHandler {
     }
 
     const model = this.props.models.find((modelInfo: ClassifierModel) => modelInfo.name === name);
+    const propName: string | undefined = (this.props.thesaurus.property || {}).name;
     const { suggestions } = this.props;
     const thesaurusSuggestions: any = [];
     suggestions.forEach((templateResult: any) => {
@@ -139,7 +142,7 @@ export class ThesaurusCockpitBase extends RouteHandler {
 
     return topics.map((topic: ThesaurusTopic) => {
       const topicWithSuggestions = { ...topic, suggestions: dedupedSuggestions[topic.id] || 0 };
-      return ThesaurusCockpitBase.topicNode(topicWithSuggestions, model);
+      return ThesaurusCockpitBase.topicNode(topicWithSuggestions, model, propName);
     });
   }
 

@@ -12,6 +12,8 @@ export default {
     accountButton: '#app > div.content > div > div > div.settings-navigation > div > div:nth-child(1) > div.list-group > a:nth-child(1)',
     collectionButton: '#app > div.content > div > div > div.settings-navigation > div > div:nth-child(1) > div.list-group > a:nth-child(3)',
     dictionariesButton: '#app > div.content > div > div > div.settings-navigation > div > div:nth-child(2) > div.list-group > a:nth-child(2)',
+    dictionariesViewSuggestionsButton: '#app > div.content > div > div > div.settings-content > div > div.thesauri-list > table > tbody > tr:nth-child(1) > td:nth-child(2) > div > a',
+    dictionariesReviewSuggestionsButton: '#app > div.content > div > div > div.settings-content > div > div.cockpit > table > tbody > tr:nth-child(1) > td:nth-child(4) > a',
     entitiesButton: '#app > div.content > div > div > div.settings-navigation > div > div:nth-child(2) > div.list-group > a:nth-child(1)',
     connectionsButton: '#app > div.content > div > div > div.settings-navigation > div > div:nth-child(2) > div.list-group > a:nth-child(3)',
     filtersButton: '#app > div.content > div > div > div.settings-navigation > div > div:nth-child(1) > div.list-group > a:nth-child(8)',
@@ -208,9 +210,14 @@ export default {
     }
   },
   review: {
-    toggleFullEditButton: '.content-header > button',
-    templateIcon: '.entity-metadata > div > div.content-header-title > span',
-    firstSuggestion: '.suggestions > .multiselectItem',
-    titleEditBox: '.content-main > .entity-viewer > div > div > form > div > ul'
+    toggleFullEditButton: '#app > div.content > div > div > div > main > div.content-header.content-header-entity > button',
+    documentCount: '#app > div.content > div > div > div > main > div.content-header.content-header-entity > div > div',
+    firstSuggestion: '#sidePanelMetadataForm > div > div > ul > li:nth-child(2) > div > div:nth-child(2) > label',
+    firstSuggestReject: '#sidePanelMetadataForm > div > div > ul > li:nth-child(2) > div > div:nth-child(2) > label > div',
+    secondMultiSelectItem: '#sidePanelMetadataForm > div > div > ul > li:nth-child(3) > ul > li:nth-child(3) > label',
+    titleEditBox: '#fullEditMetadataForm > div.form-group > ul > li.wide > div > textarea',
+    disabledDiscardButton: '#app > div.content > div > div > div > main > div.content-footer > button:nth-child(1).btn-disabled',
+    discardButton: '#app > div.content > div > div > div > main > div.content-footer > button.cancel-edit-metadata.btn.btn-default.btn-danger',
+    saveAndGoToNext: '#app > div.content > div > div > div > main > div.content-footer > button.save-and-next.btn.btn-default.btn-success'
   }
 };

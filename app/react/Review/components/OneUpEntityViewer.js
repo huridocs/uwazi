@@ -144,16 +144,18 @@ export class OneUpEntityViewerBase extends Component {
                         <span className="separator" />
                       </span>
                     )}
-                    <div>
-                      {t('System', 'Document')} <span>{oneUpState.indexInDocs + 1}</span>{' '}
-                      {t('System', 'out of')}{' '}
-                      <span>
-                        {oneUpState.totalDocs >= oneUpState.maxTotalDocs
-                          ? `>${oneUpState.totalDocs - 1}`
-                          : `${oneUpState.totalDocs}`}
-                      </span>
-                      <span className="space8" />
-                    </div>
+                    {oneUpState.totalDocs && (
+                      <div>
+                        {t('System', 'Document')} <span>{oneUpState.indexInDocs + 1}</span>{' '}
+                        {t('System', 'out of')}{' '}
+                        <span>
+                          {oneUpState.totalDocs >= oneUpState.maxTotalDocs
+                            ? `>${oneUpState.totalDocs - 1}`
+                            : `${oneUpState.totalDocs}`}
+                        </span>
+                        <span className="space8" />
+                      </div>
+                    )}
                     <button
                       onClick={() =>
                         isPristine
@@ -212,6 +214,7 @@ export class OneUpEntityViewerBase extends Component {
                 <div className="entity-metadata">
                   <ShowIf if={oneUpState.fullEdit}>
                     <MetadataForm
+                      id="fullEditMetadataForm"
                       model="entityView.entityForm"
                       templateId={entity.template}
                       isEntity
@@ -370,6 +373,7 @@ export class OneUpEntityViewerBase extends Component {
                 </TabContent>
                 <TabContent for={selectedTab === 'info' ? selectedTab : 'none'}>
                   <MetadataForm
+                    id="sidePanelMetadataForm"
                     model="entityView.entityForm"
                     templateId={entity.template}
                     isEntity

@@ -53,6 +53,7 @@ function buildInitialOneUpState(documentsRequest, documents, thesauri, templates
     });
   });
   return {
+    loaded: true,
     fullEdit: false,
     loadConnections: false,
     indexInDocs: 0,
@@ -122,11 +123,16 @@ export class OneUpReviewBase extends RouteHandler {
     this.context.store.dispatch(actions.unset('entityView/entity'));
     this.context.store.dispatch(formActions.reset('entityView.entityForm'));
     this.context.store.dispatch(relationships.emptyState());
+    actions.set('oneUpReview.state', {});
   }
 
   render() {
     const { entity, oneUpState } = this.props;
-    if (!oneUpState || (oneUpState.get('totalDocs') && (!entity || !entity.get('_id')))) {
+    if (
+      !oneUpState ||
+      !oneUpState.get('loaded') ||
+      (oneUpState.get('totalDocs') && (!entity || !entity.get('_id')))
+    ) {
       return <Loader />;
     }
     return <OneUpEntityViewer />;
