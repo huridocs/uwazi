@@ -49,6 +49,7 @@ exports[`EntityViewer should render 1`] = `
           >
             <ShowIf>
               <Connect(MetadataForm)
+                id="fullEditMetadataForm"
                 isEntity={true}
                 model="entityView.entityForm"
                 showSubset={
@@ -222,6 +223,7 @@ exports[`EntityViewer should render 1`] = `
             for="info"
           >
             <Connect(MetadataForm)
+              id="sidePanelMetadataForm"
               isEntity={true}
               model="entityView.entityForm"
               showSubset={Array []}

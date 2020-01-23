@@ -90,7 +90,7 @@ exports[`ThesaurusCockpit render should render a ThesaurusCockpit 1`] = `
           >
             <Connect(I18NLink)
               className="btn btn-default btn-xs"
-              to="/review?q=(filters:(_thesaurusname:(values:!('id1')),thesaurusname:(values:!(missing))))&includeUnpublished=1"
+              to="/review?q=(filters:(_thesaurus_name:(values:!('id1')),thesaurus_name:(values:!(missing))))&includeUnpublished=1"
             >
               <Connect(Icon)
                 icon="gavel"

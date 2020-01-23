@@ -25,6 +25,7 @@ describe('Library', () => {
     metadata: { p: [{ value: '123' }] },
   });
   const oneUpState = Immutable.fromJS({
+    loaded: true,
     fullEdit: false,
     indexInDocs: 0,
     totalDocs: 10,
