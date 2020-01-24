@@ -18,7 +18,7 @@ const getVisibleItems = (data, currentIndex, visibleCount) => {
     return [];
   }
 
-  let visibleIndices = data.map((item, index) => index);
+  let visibleIndices = data.map((_item, index) => index);
 
   if (data.length > visibleCount) {
     visibleIndices = getVisibleIndices(currentIndex, visibleCount, data.length);

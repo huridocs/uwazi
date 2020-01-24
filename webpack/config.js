@@ -26,7 +26,7 @@ module.exports = function(production) {
 
   return {
     context: rootPath,
-    devtool: "#eval-source-map",
+    devtool: "eval-source-map",
     mode: "development",
     entry: {
       main: path.join(rootPath, "app/react/index.js"),
@@ -35,7 +35,8 @@ module.exports = function(production) {
     output: {
       path: outputPath,
       publicPath: "/",
-      filename: "[name]" + jsChunkHashName + ".js"
+      filename: "[name]" + jsChunkHashName + ".js",
+      chunkFilename: '[name].bundle.js'
     },
     resolve: {
       extensions: ["*", ".webpack.js", ".web.js", ".js", ".tsx", ".ts"]
@@ -54,6 +55,11 @@ module.exports = function(production) {
               if (packageName.match(/pdfjs-dist/)) {
                 return packageName;
               }
+
+              if (packageName.match(/qrcode.react/)) {
+                return packageName;
+              }
+
               return 'vendor';
             },
           },
@@ -66,7 +72,10 @@ module.exports = function(production) {
           test: /\.(js|jsx|ts|tsx)$/,
           loader: "babel-loader?cacheDirectory",
           include: path.join(rootPath, "app"),
-          exclude: /node_modules/
+          exclude: /node_modules/,
+          options: {
+            sourceMap: process.env.BABEL_ENV === 'debug'
+          }
         },
         {
           test: /\.s?[ac]ss$/,

@@ -29,7 +29,7 @@ function formatPayload(data) {
   }));
 }
 
-const formatDataForChart = (data, property, thesauris, { context, excludeZero, maxCategories, aggregateOthers = false }) => {
+const formatDataForChart = (data, _property, thesauris, { context, excludeZero, maxCategories, aggregateOthers = false }) => {
   const res = populateOptions([{ content: context }], thesauris.toJS());
   const { options } = res[0];
 

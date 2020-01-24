@@ -1,3 +1,5 @@
+/** @format */
+
 import React from 'react';
 import { shallow } from 'enzyme';
 import Immutable from 'immutable';
@@ -12,13 +14,18 @@ describe('SelectMultiplePanel', () => {
 
   beforeEach(() => {
     props = {
-      entitiesSelected: Immutable.fromJS([{ title: 'A rude awakening', template: '1' }, { title: 'A falling star', template: '2' }]),
+      entitiesSelected: Immutable.fromJS([
+        { title: 'A rude awakening', template: '1' },
+        { title: 'A falling star', template: '2' },
+      ]),
       unselectAllDocuments: jasmine.createSpy('unselectAllDocuments'),
       deleteEntities: jasmine.createSpy('deleteEntities'),
       updateSelectedEntities: jasmine.createSpy('updateSelectedEntities'),
       getAndSelectDocument: jasmine.createSpy('getAndSelectDocument'),
       updateEntities: jasmine.createSpy('updateEntities'),
-      multipleUpdate: jasmine.createSpy('multipleUpdate').and.returnValue(Promise.resolve('updated entities')),
+      multipleUpdate: jasmine
+        .createSpy('multipleUpdate')
+        .and.returnValue(Promise.resolve('updated entities')),
       resetForm: jasmine.createSpy('resetForm'),
       loadForm: jasmine.createSpy('resetForm'),
       templates: Immutable.fromJS([]),
@@ -26,13 +33,13 @@ describe('SelectMultiplePanel', () => {
       formState: { icon: {}, metadata: {} },
       formKey: 'library.sidepanel.multipleEdit',
       thesauris: Immutable.fromJS([]),
-      template: Immutable.fromJS({ properties: [] })
+      template: Immutable.fromJS({ properties: [] }),
     };
     context = { confirm: jasmine.createSpy('confirm') };
   });
 
   const render = () => {
-    component = shallow(<SelectMultiplePanel {...props}/>, { context });
+    component = shallow(<SelectMultiplePanel {...props} />, { context });
     instance = component.instance();
   };
 
@@ -45,8 +52,18 @@ describe('SelectMultiplePanel', () => {
   it('should render a list of documents with a TemplateLabel', () => {
     render();
     expect(component.find(TemplateLabel).length).toBe(2);
-    expect(component.find('.entities-list li span').first().text()).toBe('A rude awakening');
-    expect(component.find('.entities-list li span').last().text()).toBe('A falling star');
+    expect(
+      component
+        .find('.entities-list li span')
+        .first()
+        .text()
+    ).toBe('A rude awakening');
+    expect(
+      component
+        .find('.entities-list li span')
+        .last()
+        .text()
+    ).toBe('A falling star');
   });
 
   describe('when props.open', () => {
@@ -80,32 +97,42 @@ describe('SelectMultiplePanel', () => {
     it('should update the template in all the selectedEntities', () => {
       render();
       instance.changeTemplate({}, '3');
-      const expectedEntities = [{ title: 'A rude awakening', template: '3' }, { title: 'A falling star', template: '3' }];
+      const expectedEntities = [
+        { title: 'A rude awakening', template: '3' },
+        { title: 'A falling star', template: '3' },
+      ];
       const entities = props.updateSelectedEntities.calls.mostRecent().args[0].toJS();
       expect(entities).toEqual(expectedEntities);
     });
   });
 
   describe('save()', () => {
-    it('should update the entities with the modified values and save', (done) => {
+    it('should update the entities with the modified values and save', done => {
       props.template = Immutable.fromJS({ _id: '4', properties: [] });
       props.formState = {
         icon: { pristine: false },
         metadata: {
           title: { pristine: false },
-          date: { pristine: true }
-        }
+          date: { pristine: true },
+        },
       };
       render();
-      instance.save({ icon: 'doc-icon', metadata: { title: 'new title', date: '' } })
-      .then(() => {
-        expect(props.multipleUpdate)
-        .toHaveBeenCalledWith(props.entitiesSelected, { template: '4', metadata: { title: 'new title' }, icon: 'doc-icon' });
-        expect(props.updateEntities).toHaveBeenCalledWith('updated entities');
-        expect(props.unselectAllDocuments).toHaveBeenCalled();
-        expect(props.resetForm).toHaveBeenCalledWith(props.formKey);
-        done();
-      });
+      instance
+        .save({
+          icon: 'doc-icon',
+          metadata: { title: [{ value: 'new title' }], date: [{ value: '' }] },
+        })
+        .then(() => {
+          expect(props.multipleUpdate).toHaveBeenCalledWith(props.entitiesSelected, {
+            template: '4',
+            metadata: { title: [{ value: 'new title' }] },
+            icon: 'doc-icon',
+          });
+          expect(props.updateEntities).toHaveBeenCalledWith('updated entities');
+          expect(props.unselectAllDocuments).toHaveBeenCalled();
+          expect(props.resetForm).toHaveBeenCalledWith(props.formKey);
+          done();
+        });
     });
   });
 
@@ -113,7 +140,10 @@ describe('SelectMultiplePanel', () => {
     it('should load the form with the comon properties for the selectedEntities', () => {
       render();
       component.find('.edit').simulate('click');
-      expect(props.loadForm).toHaveBeenCalledWith('library.sidepanel.multipleEdit', props.template.toJS());
+      expect(props.loadForm).toHaveBeenCalledWith(
+        'library.sidepanel.multipleEdit',
+        props.template.toJS()
+      );
     });
   });
 
@@ -133,8 +163,8 @@ describe('SelectMultiplePanel', () => {
             { name: 'year', type: 'numeric' },
             { name: 'powers', content: '1', type: 'multiselect' },
             { name: 'enemies', content: '2', type: 'multiselect' },
-            { name: 'color', type: 'text', required: true }
-          ]
+            { name: 'color', type: 'text', required: true },
+          ],
         },
         {
           _id: '2',
@@ -143,11 +173,14 @@ describe('SelectMultiplePanel', () => {
             { name: 'year', type: 'date' },
             { name: 'powers', content: '1', type: 'multiselect' },
             { name: 'enemies', content: '3', type: 'multiselect' },
-            { name: 'color', type: 'text', required: false }
-          ]
-        }
+            { name: 'color', type: 'text', required: false },
+          ],
+        },
       ]);
-      ownProps.entitiesSelected = Immutable.fromJS([{ title: 'A rude awakening', template: '1' }, { title: 'A falling star', template: '2' }]);
+      ownProps.entitiesSelected = Immutable.fromJS([
+        { title: 'A rude awakening', template: '1' },
+        { title: 'A falling star', template: '2' },
+      ]);
     });
 
     describe('when templates are diferent', () => {
@@ -156,8 +189,8 @@ describe('SelectMultiplePanel', () => {
           _id: '',
           properties: [
             { name: 'powers', content: '1', type: 'multiselect' },
-            { name: 'color', type: 'text', required: true }
-          ]
+            { name: 'color', type: 'text', required: true },
+          ],
         };
         expect(mapStateToProps(state, ownProps).template.toJS()).toEqual(expectedTemplate);
       });
@@ -165,22 +198,28 @@ describe('SelectMultiplePanel', () => {
 
     describe('when templates are the same', () => {
       it('should return the template', () => {
-        ownProps.entitiesSelected = Immutable.fromJS([{ title: 'A rude awakening', template: '1' }, { title: 'A falling star', template: '1' }]);
+        ownProps.entitiesSelected = Immutable.fromJS([
+          { title: 'A rude awakening', template: '1' },
+          { title: 'A falling star', template: '1' },
+        ]);
         const expectedTemplate = {
           _id: '1',
           properties: [
             { name: 'year', type: 'numeric' },
             { name: 'powers', content: '1', type: 'multiselect' },
             { name: 'enemies', content: '2', type: 'multiselect' },
-            { name: 'color', type: 'text', required: true }
-          ]
+            { name: 'color', type: 'text', required: true },
+          ],
         };
         expect(mapStateToProps(state, ownProps).template.toJS()).toEqual(expectedTemplate);
       });
 
       describe('undefined template', () => {
         it('should return the first template', () => {
-          ownProps.entitiesSelected = Immutable.fromJS([{ title: 'A rude awakening' }, { title: 'A falling star' }]);
+          ownProps.entitiesSelected = Immutable.fromJS([
+            { title: 'A rude awakening' },
+            { title: 'A falling star' },
+          ]);
           const expectedTemplate = {
             _id: '1',
             name: 'first',
@@ -189,8 +228,8 @@ describe('SelectMultiplePanel', () => {
               { name: 'year', type: 'numeric' },
               { name: 'powers', content: '1', type: 'multiselect' },
               { name: 'enemies', content: '2', type: 'multiselect' },
-              { name: 'color', type: 'text', required: true }
-            ]
+              { name: 'color', type: 'text', required: true },
+            ],
           };
           expect(mapStateToProps(state, ownProps).template.toJS()).toEqual(expectedTemplate);
         });

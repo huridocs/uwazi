@@ -12,7 +12,11 @@ Array [
         "icon": "icon3",
         "language": "en",
         "metadata": Object {
-          "data": "data2",
+          "data": Array [
+            Object {
+              "value": "data2",
+            },
+          ],
         },
         "published": true,
         "sharedId": "entity3",

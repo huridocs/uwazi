@@ -14,6 +14,7 @@
     "prettier/prettier": ["error", { "requirePragma": true }],
     "indent": "off", // handled by prettier
     "operator-linebreak": "off", // handled by prettier
+    "space-before-function-paren": "off", // handled by prettier
     "no-mixed-operators": "off",
     "no-underscore-dangle": "off",
     "comma-dangle": "off",
@@ -28,6 +29,16 @@
 
     "object-curly-spacing": ["warn", "always"],
     "max-len": ["error", 150],
+    "no-unused-vars": [
+      "error",
+      {
+        "vars": "all",
+        "argsIgnorePattern": "^_",
+        "args": "all",
+        "caughtErrors": "none",
+        "ignoreRestSiblings": true
+      }
+    ],
 
     //all warns are activated by default if removed
     "prefer-promise-reject-errors": ["warn"],
@@ -80,7 +91,7 @@
     "react/no-multi-comp": ["warn"],
     "react/jsx-closing-bracket-location": ["warn"],
     "react/jsx-boolean-value": ["warn"],
-    "react/jsx-indent": ["warn"],
+    "react/jsx-indent": ["off"], // handled by prettier,
     "react/jsx-indent-props": ["warn"],
     "react/no-array-index-key": ["warn"],
     "react/jsx-first-prop-new-line": ["warn"],
@@ -98,7 +109,7 @@
     "react/jsx-no-target-blank": ["warn"],
     "react/jsx-filename-extension": "off",
     "react/jsx-tag-spacing": "off",
-    "react/destructuring-assignment": ["warn"],
+    "react/destructuring-assignment": ["off"],
     "react/jsx-one-expression-per-line": "off",
     "import/no-useless-path-segments": ["warn"],
     "react/button-has-type": ["warn"],
@@ -125,7 +136,7 @@
       }
     },
     {
-      "files": ["app/**/*.ts*"],
+      "files": ["app/**/*.ts*", "database/**/*.ts"],
       "parser": "@typescript-eslint/parser",
       "parserOptions": {
         "project": "./tsconfig.json"
@@ -146,7 +157,8 @@
             "vars": "all",
             "argsIgnorePattern": "^_",
             "args": "all",
-            "ignoreRestSiblings": false
+            "caughtErrors": "none",
+            "ignoreRestSiblings": true
           }
         ],
         "@typescript-eslint/no-explicit-any": [
@@ -163,7 +175,10 @@
           }
         ],
         // This is broken for ts, but circleci protects us.
-        "import/no-extraneous-dependencies": "off"
+        "import/no-extraneous-dependencies": "off",
+        "@typescript-eslint/no-floating-promises": "error",
+        "@typescript-eslint/no-misused-promises": "error",
+        "@typescript-eslint/promise-function-async": "error"
       }
     }
   ]

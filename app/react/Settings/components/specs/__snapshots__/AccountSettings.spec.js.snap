@@ -1,0 +1,273 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`AccountSettings 2fa should render a success area if user has already activated 2fa 1`] = `
+<div
+  className="account-settings"
+>
+  <div
+    className="panel panel-default"
+  >
+    <div
+      className="panel-heading"
+    >
+      Account
+    </div>
+    <div
+      className="panel-body"
+    >
+      <h5>
+        Email address
+      </h5>
+      <form
+        onSubmit={[Function]}
+      >
+        <div
+          className="form-group"
+        >
+          <label
+            className="form-group-label"
+            htmlFor="collection_name"
+          >
+            Email
+          </label>
+          <input
+            className="form-control"
+            onChange={[Function]}
+            type="email"
+            value=""
+          />
+        </div>
+        <button
+          className="btn btn-success"
+          type="submit"
+        >
+          Update
+        </button>
+      </form>
+      <hr />
+      <h5>
+        Change password
+      </h5>
+      <form
+        onSubmit={[Function]}
+      >
+        <div
+          className="form-group"
+        >
+          <label
+            className="form-group-label"
+            htmlFor="password"
+          >
+            New password
+          </label>
+          <input
+            className="form-control"
+            id="password"
+            onChange={[Function]}
+            type="password"
+            value=""
+          />
+        </div>
+        <div
+          className="form-group"
+        >
+          <label
+            className="form-group-label"
+            htmlFor="repeatPassword"
+          >
+            Confirm new password
+          </label>
+          <input
+            className="form-control"
+            id="repeatPassword"
+            onChange={[Function]}
+            type="password"
+            value=""
+          />
+        </div>
+        <button
+          className="btn btn-success"
+          type="submit"
+        >
+          Update
+        </button>
+      </form>
+      <hr />
+      <h5>
+        Two-step verification
+      </h5>
+      <div
+        className="alert alert-info"
+      >
+        <Connect(Icon)
+          icon="check"
+          size="2x"
+        />
+        <div
+          className="force-ltr"
+        >
+          Your account is protected by 2fa.
+        </div>
+      </div>
+    </div>
+  </div>
+  <div
+    className="settings-footer"
+  >
+    <a
+      className="btn btn-danger"
+      href="/logout"
+    >
+      <Connect(Icon)
+        icon="power-off"
+      />
+      <span
+        className="btn-label"
+      >
+        Logout
+      </span>
+    </a>
+  </div>
+</div>
+`;
+
+exports[`AccountSettings 2fa should render a warning and link to protect account if user not using 2fa 1`] = `
+<div
+  className="account-settings"
+>
+  <div
+    className="panel panel-default"
+  >
+    <div
+      className="panel-heading"
+    >
+      Account
+    </div>
+    <div
+      className="panel-body"
+    >
+      <h5>
+        Email address
+      </h5>
+      <form
+        onSubmit={[Function]}
+      >
+        <div
+          className="form-group"
+        >
+          <label
+            className="form-group-label"
+            htmlFor="collection_name"
+          >
+            Email
+          </label>
+          <input
+            className="form-control"
+            onChange={[Function]}
+            type="email"
+            value=""
+          />
+        </div>
+        <button
+          className="btn btn-success"
+          type="submit"
+        >
+          Update
+        </button>
+      </form>
+      <hr />
+      <h5>
+        Change password
+      </h5>
+      <form
+        onSubmit={[Function]}
+      >
+        <div
+          className="form-group"
+        >
+          <label
+            className="form-group-label"
+            htmlFor="password"
+          >
+            New password
+          </label>
+          <input
+            className="form-control"
+            id="password"
+            onChange={[Function]}
+            type="password"
+            value=""
+          />
+        </div>
+        <div
+          className="form-group"
+        >
+          <label
+            className="form-group-label"
+            htmlFor="repeatPassword"
+          >
+            Confirm new password
+          </label>
+          <input
+            className="form-control"
+            id="repeatPassword"
+            onChange={[Function]}
+            type="password"
+            value=""
+          />
+        </div>
+        <button
+          className="btn btn-success"
+          type="submit"
+        >
+          Update
+        </button>
+      </form>
+      <hr />
+      <h5>
+        Two-step verification
+      </h5>
+      <div>
+        <div
+          className="alert alert-warning"
+        >
+          <Connect(Icon)
+            icon="exclamation-triangle"
+            size="2x"
+          />
+          <div
+            className="force-ltr"
+          >
+            You should activate this feature for enhanced account security
+          </div>
+        </div>
+        <div>
+          <Connect(I18NLink)
+            className="btn btn-success"
+            to="/settings/2fa"
+          >
+            Protect your account
+          </Connect(I18NLink)>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div
+    className="settings-footer"
+  >
+    <a
+      className="btn btn-danger"
+      href="/logout"
+    >
+      <Connect(Icon)
+        icon="power-off"
+      />
+      <span
+        className="btn-label"
+      >
+        Logout
+      </span>
+    </a>
+  </div>
+</div>
+`;

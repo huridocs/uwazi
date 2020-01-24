@@ -2,6 +2,7 @@ import path from 'path';
 import fs from 'fs';
 import db from 'api/utils/testing_db';
 import entities from 'api/entities';
+import { search } from 'api/search';
 import settings from 'api/settings';
 import * as fileUtils from 'api/utils/files';
 
@@ -24,7 +25,7 @@ describe('csvLoader languages', () => {
 
   beforeAll(async () => {
     await db.clearAllAndLoad(fixtures);
-    spyOn(entities, 'indexEntities').and.returnValue(Promise.resolve());
+    spyOn(search, 'indexEntities').and.returnValue(Promise.resolve());
 
     const { languages } = await settings.get();
     await settings.save({ languages: [...languages, { key: 'es' }] });
@@ -68,8 +69,8 @@ describe('csvLoader languages', () => {
   });
 
   it('should import translated metadata properties', async () => {
-    const enText = imported.filter(e => e.language === 'en').map(i => i.metadata.text_label);
-    const esText = imported.filter(e => e.language === 'es').map(i => i.metadata.text_label);
+    const enText = imported.filter(e => e.language === 'en').map(i => i.metadata.text_label[0].value);
+    const esText = imported.filter(e => e.language === 'es').map(i => i.metadata.text_label[0].value);
     expect(enText).toEqual(['text_en1', 'text_en2', 'text_en3']);
     expect(esText).toEqual(['text_es1', 'text_es2', 'text_es3']);
   });

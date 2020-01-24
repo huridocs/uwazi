@@ -76,7 +76,7 @@ describe('upload routes', () => {
   beforeEach((done) => {
     deleteAllFiles(() => {
       spyOn(search, 'delete').and.returnValue(Promise.resolve());
-      spyOn(entities, 'indexEntities').and.returnValue(Promise.resolve());
+      spyOn(search, 'indexEntities').and.returnValue(Promise.resolve());
       iosocket = jasmine.createSpyObj('socket', ['emit']);
       routes = instrumentRoutes(uploadRoutes);
       file = {
@@ -275,8 +275,8 @@ describe('upload routes', () => {
         size: 171411271,
         timestamp: 1100
       };
-      expect(_entities[0].file).toEqual(_file);
-      expect(_entities[1].file).toEqual(_file);
+      expect(_entities[0].file).toEqual(jasmine.objectContaining(_file));
+      expect(_entities[1].file).toEqual(jasmine.objectContaining(_file));
     });
   });
 
@@ -451,7 +451,7 @@ describe('upload routes', () => {
     let remoteApp;
     beforeEach(() => {
       app = express();
-      app.use((_req, res, next) => {
+      app.use((_req, _res, next) => {
         _req.session = { remotecookie: 'connect.ssid: 12n32ndi23j4hsj;' }; //eslint-disable-line
         next();
       });

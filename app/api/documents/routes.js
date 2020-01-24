@@ -10,12 +10,9 @@ import documents from './documents';
 import needsAuthorization from '../auth/authMiddleware';
 import templates from '../templates';
 
-import { endpointSchema } from '../entities';
-
 export default (app) => {
   app.post('/api/documents',
   needsAuthorization(['admin', 'editor']),
-  validation.validateRequest(endpointSchema.saveSchema),
   (req, res, next) => documents
   .save(req.body, { user: req.user, language: req.language })
   .then(doc => res.json(doc))

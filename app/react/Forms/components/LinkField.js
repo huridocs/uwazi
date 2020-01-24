@@ -1,3 +1,5 @@
+/** @format */
+
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 
@@ -6,40 +8,50 @@ export default class LinkField extends Component {
     super(props);
     this.urlChange = this.urlChange.bind(this);
     this.labelChange = this.labelChange.bind(this);
-    this.mapClick = this.mapClick.bind(this);
   }
 
-  onChange(value) {
-    this.props.onChange(value);
+  onChange(diffValue) {
+    const { value, onChange } = this.props;
+    const newValue = Object.assign({}, value, diffValue);
+    onChange(newValue);
   }
 
   urlChange(e) {
     const label = e.target.value;
-    this.onChange({ label, url: this.props.value.url });
+    this.onChange({ label });
   }
 
   labelChange(e) {
     const url = e.target.value;
-    this.onChange({ label: this.props.value.label, url });
-  }
-
-  mapClick(event) {
-    this.onChange({ label: event.lngLat[1], url: event.lngLat[0] });
+    this.onChange({ url });
   }
 
   render() {
-    const { label, url } = this.props.value;
+    const { value } = this.props;
+    const { label, url } = value || { label: '', url: '' };
 
     return (
       <div className="link form-inline">
         <div className="form-row">
           <div className="form-group">
             <label>Label&nbsp;</label>
-            <input onChange={this.urlChange} className="form-control" id="label" value={label} step="any"/>
+            <input
+              onChange={this.urlChange}
+              className="form-control"
+              id="label"
+              value={label || ''}
+              step="any"
+            />
           </div>
           <div className="form-group">
             <label>URL&nbsp;</label>
-            <input onChange={this.labelChange} className="form-control" id="url" value={url} step="any"/>
+            <input
+              onChange={this.labelChange}
+              className="form-control"
+              id="url"
+              value={url || ''}
+              step="any"
+            />
           </div>
         </div>
       </div>
@@ -48,10 +60,10 @@ export default class LinkField extends Component {
 }
 
 LinkField.defaultProps = {
-  value: { label: '', url: '' }
+  value: { label: '', url: '' },
 };
 
 LinkField.propTypes = {
-  value: PropTypes.instanceOf(Object),
-  onChange: PropTypes.func.isRequired
+  value: PropTypes.shape({ label: PropTypes.string, url: PropTypes.string }),
+  onChange: PropTypes.func.isRequired,
 };

@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`RelationshipsGraphEdit when relationship is text range reference should render the Doc with the target reference 1`] = `
-<React.Fragment>
+<Fragment>
   <div
     className="leftRelationshipType "
     key="leftRelationshipType"
@@ -76,5 +76,5 @@ exports[`RelationshipsGraphEdit when relationship is text range reference should
   >
     <figure />
   </div>
-</React.Fragment>
+</Fragment>
 `;

@@ -1,0 +1,258 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Login on instance should render the component with the login form 1`] = `
+<div
+  className="content login-content"
+>
+  <div
+    className="row"
+  >
+    <div
+      className="col-xs-12 col-sm-4 col-sm-offset-4"
+    >
+      <h1
+        className="login-title"
+      >
+        <img
+          alt="uwazi"
+          src="/public/logo.svg"
+          title="uwazi"
+        />
+      </h1>
+      <LocalForm
+        getDispatch={[Function]}
+        initialState={Object {}}
+        model="loginForm"
+        onSubmit={[Function]}
+      >
+        <div
+          className="form-group login-email"
+        >
+          <Modeled(Connect(Field))
+            model=".username"
+          >
+            <label
+              className="form-group-label"
+              htmlFor="username"
+            >
+              User
+            </label>
+            <input
+              className="form-control"
+              id="username"
+              name="username"
+              type="text"
+            />
+          </Modeled(Connect(Field))>
+        </div>
+        <div
+          className="form-group login-password "
+        >
+          <label
+            className="form-group-label"
+            htmlFor="password"
+          >
+            Password
+          </label>
+          <Modeled(Connect(Field))
+            model=".password"
+          >
+            <input
+              className="form-control"
+              id="password"
+              name="password"
+              type="password"
+            />
+          </Modeled(Connect(Field))>
+          <div
+            className="form-text"
+          >
+            <span
+              className="button forgot-password "
+              onClick={[Function]}
+              title="Forgot Password?"
+            >
+              Forgot Password?
+            </span>
+          </div>
+        </div>
+        <p>
+          <button
+            className="btn btn-block btn-lg btn-primary"
+            type="submit"
+          >
+            Login
+          </button>
+        </p>
+      </LocalForm>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Login submit() on response failure when authorization conflict (2fa required) should not set error and flag "tokenRequired" 1`] = `
+<div
+  className="content login-content"
+>
+  <div
+    className="row"
+  >
+    <div
+      className="col-xs-12 col-sm-4 col-sm-offset-4"
+    >
+      <h1
+        className="login-title"
+      >
+        <img
+          alt="uwazi"
+          src="/public/logo.svg"
+          title="uwazi"
+        />
+      </h1>
+      <LocalForm
+        getDispatch={[Function]}
+        initialState={Object {}}
+        model="loginForm"
+        onSubmit={[Function]}
+      >
+        <div
+          className="form-group login-token"
+        >
+          <h5>
+            Two-step verification
+          </h5>
+          <Modeled(Connect(Field))
+            model=".token"
+          >
+            <label
+              className="form-group-label"
+              htmlFor="token"
+            >
+              Authentication code
+            </label>
+            <input
+              className="form-control"
+              id="token"
+              name="token"
+              type="text"
+            />
+            <div
+              className="form-text"
+            >
+              <p />
+              <p>
+                Open the two-factor Authenticator app on your device 
+                <br />
+                to view your authentication code and verify your identity.
+              </p>
+              <p>
+                <span
+                  className="button forgot-password "
+                  onClick={[Function]}
+                >
+                  Return to login
+                </span>
+              </p>
+            </div>
+          </Modeled(Connect(Field))>
+        </div>
+        <p>
+          <button
+            className="btn btn-block btn-lg btn-primary"
+            type="submit"
+          >
+            Verify
+          </button>
+        </p>
+      </LocalForm>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Login submit() on response failure when authorization failure should set error2fa on token failure, and reset loginForm.token value 1`] = `
+<div
+  className="content login-content"
+>
+  <div
+    className="row"
+  >
+    <div
+      className="col-xs-12 col-sm-4 col-sm-offset-4"
+    >
+      <h1
+        className="login-title"
+      >
+        <img
+          alt="uwazi"
+          src="/public/logo.svg"
+          title="uwazi"
+        />
+      </h1>
+      <LocalForm
+        getDispatch={[Function]}
+        initialState={Object {}}
+        model="loginForm"
+        onSubmit={[Function]}
+      >
+        <div
+          className="form-group login-token has-error"
+        >
+          <h5>
+            Two-step verification
+          </h5>
+          <Modeled(Connect(Field))
+            model=".token"
+          >
+            <label
+              className="form-group-label"
+              htmlFor="token"
+            >
+              Authentication code
+            </label>
+            <input
+              className="form-control"
+              id="token"
+              name="token"
+              type="text"
+            />
+            <div
+              className="form-text"
+            >
+              <p>
+                <Connect(Icon)
+                  icon="exclamation-triangle"
+                />
+                <span>
+                  Two-factor verification failed
+                </span>
+              </p>
+              <p>
+                Open the two-factor Authenticator app on your device 
+                <br />
+                to view your authentication code and verify your identity.
+              </p>
+              <p>
+                <span
+                  className="button forgot-password label-danger"
+                  onClick={[Function]}
+                >
+                  Return to login
+                </span>
+              </p>
+            </div>
+          </Modeled(Connect(Field))>
+        </div>
+        <p>
+          <button
+            className="btn btn-block btn-lg btn-primary"
+            type="submit"
+          >
+            Verify
+          </button>
+        </p>
+      </LocalForm>
+    </div>
+  </div>
+</div>
+`;

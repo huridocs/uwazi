@@ -5,6 +5,7 @@ import debugLog from 'api/log/debugLog';
 import entities from 'api/entities';
 import errorLog from 'api/log/errorLog';
 import relationships from 'api/relationships';
+import { search } from 'api/search';
 
 import CSVLoader from 'api/csv';
 import { saveSchema } from 'api/entities/endpointSchema';
@@ -57,7 +58,7 @@ export default (app) => {
       })
       .start();
 
-      await entities.indexEntities({ sharedId: req.body.document }, '+fullText');
+      await search.indexEntities({ sharedId: req.body.document }, '+fullText');
       socket(req).emit('documentProcessed', req.body.document);
     } catch (err) {
       errorLog.error(err);
@@ -84,7 +85,7 @@ export default (app) => {
     '/api/public',
     multer().any(),
     captchaAuthorization(),
-    (req, res, next) => { req.body = JSON.parse(req.body.entity); return next(); },
+    (req, _res, next) => { req.body = JSON.parse(req.body.entity); return next(); },
     validation.validateRequest(saveSchema),
     async (req, res, next) => {
       const entity = req.body;
@@ -108,7 +109,7 @@ export default (app) => {
         storeFile(file).then(async (_file) => {
           const newEntities = await entities.getAllLanguages(newEntity.sharedId);
           await uploadFile(newEntities, _file).start();
-          await entities.indexEntities({ sharedId: newEntity.sharedId }, '+fullText');
+          await search.indexEntities({ sharedId: newEntity.sharedId }, '+fullText');
           socket(req).emit('documentProcessed', newEntity.sharedId);
         });
       }
@@ -180,7 +181,7 @@ export default (app) => {
     .catch(next);
   });
 
-  app.get('/api/customisation/upload', needsAuthorization(['admin', 'editor']), (req, res, next) => {
+  app.get('/api/customisation/upload', needsAuthorization(['admin', 'editor']), (_req, res, next) => {
     uploads.get()
     .then((result) => {
       res.json(result);

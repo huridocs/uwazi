@@ -1,0 +1,8 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`PDFView when raw should render link canonical to the not raw version 1`] = `
+<link
+  href="pathname?page=1"
+  rel="canonical"
+/>
+`;

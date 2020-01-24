@@ -1,3 +1,5 @@
+/** @format */
+
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Translate } from 'app/I18N';
@@ -22,8 +24,7 @@ export class ContactForm extends Component {
 
   submit(e) {
     e.preventDefault();
-    api.post('contact', this.state)
-    .then(() => {
+    api.post('contact', this.state).then(() => {
       this.props.notify('Message sent', 'success');
       this.setState({ name: '', email: '', message: '' });
     });
@@ -33,20 +34,47 @@ export class ContactForm extends Component {
     return (
       <form onSubmit={this.submit} className="contact-form">
         <div className="form-group">
-          <label className="form-group-label" htmlFor="name"><Translate>Name</Translate></label>
-          <input required name="name" className="form-control" onChange={this.onChange.bind(this, 'name')} value={this.state.name}/>
+          <label className="form-group-label" htmlFor="name">
+            <Translate>Name</Translate>
+          </label>
+          <input
+            required
+            name="name"
+            className="form-control"
+            onChange={this.onChange.bind(this, 'name')}
+            value={this.state.name}
+          />
         </div>
         <div className="form-group">
-          <label className="form-group-label" htmlFor="email"><Translate>Email</Translate></label>
-          <input required name="email" className="form-control" onChange={this.onChange.bind(this, 'email')} value={this.state.email}/>
+          <label className="form-group-label" htmlFor="email">
+            <Translate>Email</Translate>
+          </label>
+          <input
+            required
+            name="email"
+            className="form-control"
+            onChange={this.onChange.bind(this, 'email')}
+            value={this.state.email}
+          />
         </div>
         <div className="form-group">
-          <label className="form-group-label" htmlFor="message"><Translate>Message</Translate></label>
-          <textarea required name="message" className="form-control" onChange={this.onChange.bind(this, 'message')} value={this.state.message}/>
+          <label className="form-group-label" htmlFor="message">
+            <Translate>Message</Translate>
+          </label>
+          <textarea
+            required
+            name="message"
+            className="form-control"
+            onChange={this.onChange.bind(this, 'message')}
+            value={this.state.message}
+          />
         </div>
         <button type="submit" className="btn btn-success">
-          <Icon icon="paper-plane" />&nbsp;
-          <span className="btn-label"><Translate>Send</Translate></span>
+          <Icon icon="paper-plane" />
+          &nbsp;
+          <span className="btn-label">
+            <Translate>Send</Translate>
+          </span>
         </button>
       </form>
     );
@@ -54,11 +82,14 @@ export class ContactForm extends Component {
 }
 
 ContactForm.propTypes = {
-  notify: PropTypes.func
+  notify: PropTypes.func,
 };
 
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({ notify }, dispatch);
 }
 
-export default connect(null, mapDispatchToProps)(ContactForm);
+export default connect(
+  null,
+  mapDispatchToProps
+)(ContactForm);

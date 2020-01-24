@@ -1,3 +1,5 @@
+/** @format */
+
 import React from 'react';
 import { shallow } from 'enzyme';
 import Immutable from 'immutable';
@@ -6,8 +8,6 @@ import { Form, Field } from 'react-redux-form';
 import { MetadataForm, mapStateToProps } from '../MetadataForm';
 import MetadataFormFields from '../MetadataFormFields';
 import { Select as SimpleSelect } from '../../../Forms';
-import entitiesUtils from '../../../Entities/utils/filterBaseProperties';
-
 
 describe('MetadataForm', () => {
   let component;
@@ -20,35 +20,57 @@ describe('MetadataForm', () => {
       { name: 'field1', label: 'label1' },
       { name: 'field2', label: 'label2', type: 'select', content: '2' },
       { name: 'field3', label: 'label3', type: 'multiselect', content: '2' },
-      { name: 'field4', label: 'label4', type: 'date' }
+      { name: 'field4', label: 'label4', type: 'date' },
     ];
 
     templates = Immutable.fromJS([
-      { name: 'template1', _id: 'templateId', properties: fieldsTemplate, commonProperties: [{ name: 'title', label: 'Title' }] },
-      { name: 'template2', _id: '2', properties: [{ name: 'field3' }], commonProperties: [{ name: 'title', label: 'Title' }], isEntity: false },
-      { name: 'template3', _id: '3', properties: [{ name: 'field4' }], commonProperties: [{ name: 'title', label: 'Title' }], isEntity: true }
+      {
+        name: 'template1',
+        _id: 'templateId',
+        properties: fieldsTemplate,
+        commonProperties: [{ name: 'title', label: 'Title' }],
+      },
+      {
+        name: 'template2',
+        _id: '2',
+        properties: [{ name: 'field3' }],
+        commonProperties: [{ name: 'title', label: 'Title' }],
+        isEntity: false,
+      },
+      {
+        name: 'template3',
+        _id: '3',
+        properties: [{ name: 'field4' }],
+        commonProperties: [{ name: 'title', label: 'Title' }],
+        isEntity: true,
+      },
     ]);
 
     props = {
-      metadata: { _id: 'docId', template: 'templateId', title: 'testTitle', metadata: { field1: 'field1value', field2: 'field2value' } },
+      metadata: {
+        _id: [{ value: 'docId' }],
+        template: [{ value: 'templateId' }],
+        title: [{ value: 'testTitle' }],
+        metadata: [{ value: { field1: 'field1value', field2: 'field2value' } }],
+      },
       templates,
       template: templates.get(0),
       templateOptions: Immutable.fromJS([{ label: 'template1', value: 'templateId' }]),
-      thesauris: Immutable.fromJS([{ _id: 2, name: 'thesauri', values: [{ label: 'option1', id: '1' }] }]),
+      thesauris: Immutable.fromJS([
+        { _id: 2, name: 'thesauri', values: [{ label: 'option1', id: '1' }] },
+      ]),
       onSubmit: jasmine.createSpy('onSubmit'),
       changeTemplate: jasmine.createSpy('changeTemplate'),
-      model: 'metadata'
+      model: 'metadata',
     };
   });
 
   const render = () => {
-    component = shallow(<MetadataForm {...props}/>);
+    component = shallow(<MetadataForm {...props} />);
   };
 
   describe('Icon field', () => {
-    it('should remove icon', () => {
-
-    });
+    it('should remove icon', () => {});
   });
 
   it('should render a form with metadata as model', () => {
@@ -61,10 +83,8 @@ describe('MetadataForm', () => {
     props.template = Immutable.fromJS({
       name: 'template4',
       _id: 'template4',
-      commonProperties: [
-        { name: 'title', label: 'Name' }
-      ],
-      properties: []
+      commonProperties: [{ name: 'title', label: 'Name' }],
+      properties: [],
     });
     render();
     expect(component).toMatchSnapshot();
@@ -102,12 +122,32 @@ describe('MetadataForm', () => {
   });
 
   describe('submit', () => {
-    it('should call onSubmit with the values', () => {
-      spyOn(entitiesUtils, 'filterBaseProperties').and.returnValue('filteredProperties');
+    it('should call onSubmit with the values wrapped', () => {
       render();
-      component.find(Form).simulate('submit', 'values');
-      expect(entitiesUtils.filterBaseProperties).toHaveBeenCalledWith('values');
-      expect(props.onSubmit).toHaveBeenCalledWith('filteredProperties', 'metadata');
+      const UnwrapedEntity = {
+        _id: '123',
+        template: '456',
+        language: 'en',
+        metadata: {
+          prop_one: ['one', 'two', 'three'],
+          prop_two: 'Doctor who?',
+          prop_three: null,
+        },
+        file: {},
+        fullText: [],
+      };
+      const WrapedEntity = {
+        _id: '123',
+        template: '456',
+        language: 'en',
+        metadata: {
+          prop_one: [{ value: 'one' }, { value: 'two' }, { value: 'three' }],
+          prop_two: [{ value: 'Doctor who?' }],
+          prop_three: [{ value: null }],
+        },
+      };
+      component.find(Form).simulate('submit', UnwrapedEntity);
+      expect(props.onSubmit).toHaveBeenCalledWith(WrapedEntity, 'metadata');
     });
   });
 

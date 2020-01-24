@@ -1,3 +1,5 @@
+/** @format */
+
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import Map from 'app/Map/Map';
@@ -78,7 +80,10 @@ export default class Geolocation extends Component {
     const markers = [];
 
     if (isCoordinateValid(currentLatitude) && isCoordinateValid(currentLongitude)) {
-      markers.push({ latitude: parseFloat(currentLatitude), longitude: parseFloat(currentLongitude) });
+      markers.push({
+        latitude: parseFloat(currentLatitude),
+        longitude: parseFloat(currentLongitude),
+      });
     }
 
     return (
@@ -126,5 +131,5 @@ Geolocation.defaultProps = {
 
 Geolocation.propTypes = {
   value: PropTypes.arrayOf(PropTypes.object),
-  onChange: PropTypes.func.isRequired
+  onChange: PropTypes.func.isRequired,
 };

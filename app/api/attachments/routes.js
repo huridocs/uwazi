@@ -15,10 +15,10 @@ import { validation } from '../utils';
 import needsAuthorization from '../auth/authMiddleware';
 
 const storage = multer.diskStorage({
-  destination(req, file, cb) {
+  destination(_req, _file, cb) {
     cb(null, paths.attachments);
   },
-  filename(req, file, cb) {
+  filename(_req, file, cb) {
     cb(null, Date.now() + ID() + path.extname(file.originalname));
   }
 });

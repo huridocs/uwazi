@@ -1,117 +1,176 @@
+/** @format */
+
+import { FormGroup } from 'app/Forms';
+import t from 'app/I18N/t';
+import Immutable from 'immutable';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import Immutable from 'immutable';
-import { FormGroup } from 'app/Forms';
-import { Field } from 'react-redux-form';
-import t from 'app/I18N/t';
 import { connect } from 'react-redux';
+import { Field } from 'react-redux-form';
+import { propertyTypes } from 'shared/propertyTypes';
 import {
-  Select,
-  MultiSelect,
-  MarkDown,
   DatePicker,
-  Nested,
   DateRange,
-  MultiDate,
-  MultiDateRange,
-  Numeric,
   Geolocation,
   LinkField,
+  MarkDown,
+  MultiDate,
+  MultiDateRange,
+  MultiSelect,
+  MultiSuggest,
+  Nested,
+  Numeric,
+  Select,
 } from '../../ReactReduxForms';
 import MultipleEditionFieldWarning from './MultipleEditionFieldWarning';
 
-const translateOptions = thesauri => thesauri.values.map((option) => {
-  option.label = t(thesauri._id, option.label, null, false);
-  if (option.values) {
-    option.options = option.values.map((val) => {
-      val.label = t(thesauri._id, val.label, null, false);
-      return val;
-    });
-  }
-  return option;
-});
+const translateOptions = thesauri =>
+  thesauri
+    .get('values')
+    .map(optionIm => {
+      const option = optionIm.toJS();
+      option.label = t(thesauri._id, option.label, null, false);
+      if (option.values) {
+        option.options = option.values.map(val => {
+          val.label = t(thesauri._id, val.label, null, false);
+          return val;
+        });
+      }
+      return option;
+    })
+    .toJS();
 
 export class MetadataFormFields extends Component {
   getField(property, _model, thesauris) {
     let thesauri;
-    const { dateFormat } = this.props;
+    const { dateFormat, version } = this.props;
     const propertyType = property.type;
     switch (propertyType) {
-    case 'select':
-      thesauri = thesauris.find(opt => opt._id.toString() === property.content.toString());
-      return <Select model={_model} optionsValue="id" options={translateOptions(thesauri)}/>;
-    case 'multiselect':
-      thesauri = thesauris.find(opt => opt._id.toString() === property.content.toString());
-      return <MultiSelect model={_model} optionsValue="id" options={translateOptions(thesauri)} prefix={_model} />;
-    case 'relationship':
-      if (property.content) {
-        const source = (thesauris.find(opt => opt._id.toString() === property.content.toString()));
-        thesauri = translateOptions(source);
-      }
+      case 'select':
+        thesauri = thesauris.find(opt => opt.get('_id').toString() === property.content.toString());
+        return <Select model={_model} optionsValue="id" options={translateOptions(thesauri)} />;
+      case 'multiselect':
+        thesauri = thesauris.find(opt => opt.get('_id').toString() === property.content.toString());
+        return (
+          <MultiSelect
+            model={_model}
+            optionsValue="id"
+            options={translateOptions(thesauri)}
+            prefix={_model}
+            forceHoist={version === 'OneUp'}
+            thesaurusName={version === 'OneUp' ? thesauri.get('name') : null}
+          />
+        );
+      case 'relationship':
+        if (property.content) {
+          const source = thesauris.find(
+            opt => opt.get('_id').toString() === property.content.toString()
+          );
+          thesauri = translateOptions(source);
+        }
 
-      if (!property.content) {
-        thesauri = Array.prototype.concat(...thesauris.filter(filterThesauri => filterThesauri.type === 'template').map(translateOptions));
-      }
-      return <MultiSelect model={_model} optionsValue="id" options={thesauri} prefix={_model} sort />;
-    case 'date':
-      return <DatePicker model={_model} format={dateFormat}/>;
-    case 'daterange':
-      return <DateRange model={_model} format={dateFormat}/>;
-    case 'numeric':
-      return <Numeric model={_model}/>;
-    case 'markdown':
-      return <MarkDown model={_model}/>;
-    case 'nested':
-      return <Nested model={_model}/>;
-    case 'multidate':
-      return <MultiDate model={_model} format={dateFormat}/>;
-    case 'multidaterange':
-      return <MultiDateRange model={_model} format={dateFormat}/>;
-    case 'geolocation':
-      return <Geolocation model={_model} />;
-    case 'link':
-      return <LinkField model={_model} />;
-    case 'media':
-    case 'image':
-      return (
-        <div>
-          <Field model={_model}><textarea rows="6" className="form-control"/></Field>
-          &nbsp;<em>URL (address for image or media file)</em>
-        </div>
-      );
-    case 'preview':
-      return <div><em>This content is automatically generated</em></div>;
-    case 'text':
-      return <Field model={_model}><input type="text" className="form-control"/></Field>;
-    default:
-      return false;
+        if (!property.content) {
+          thesauri = Array.prototype.concat(
+            ...thesauris
+              .filter(filterThesauri => filterThesauri.get('type') === 'template')
+              .map(translateOptions)
+          );
+        }
+        return (
+          <MultiSelect model={_model} optionsValue="id" options={thesauri} prefix={_model} sort />
+        );
+      case 'date':
+        return <DatePicker model={_model} format={dateFormat} />;
+      case 'daterange':
+        return <DateRange model={_model} format={dateFormat} />;
+      case 'numeric':
+        return <Numeric model={_model} />;
+      case 'markdown':
+        return <MarkDown model={_model} />;
+      case 'nested':
+        return <Nested model={_model} />;
+      case 'multidate':
+        return <MultiDate model={_model} format={dateFormat} />;
+      case 'multidaterange':
+        return <MultiDateRange model={_model} format={dateFormat} />;
+      case 'geolocation':
+        return <Geolocation model={_model} />;
+      case 'link':
+        return <LinkField model={_model} />;
+      case 'media':
+      case 'image':
+        return (
+          <div>
+            <Field model={_model}>
+              <textarea rows="6" className="form-control" />
+            </Field>
+            &nbsp;<em>URL (address for image or media file)</em>
+          </div>
+        );
+      case 'preview':
+        return (
+          <div>
+            <em>This content is automatically generated</em>
+          </div>
+        );
+      case 'text':
+        return (
+          <Field model={_model}>
+            <input type="text" className="form-control" />
+          </Field>
+        );
+      default:
+        return false;
     }
   }
 
   render() {
-    const { thesauris, template, multipleEdition, model } = this.props;
+    const { thesauris, template, multipleEdition, model, showSubset } = this.props;
+    const mlThesauri = thesauris
+      .filter(thes => !!thes.get('enable_classification'))
+      .map(thes => thes.get('_id'))
+      .toJS();
     const fields = template.get('properties').toJS();
     const templateID = template.get('_id');
 
     return (
       <div>
-        {fields.map(property => (
-          <FormGroup key={property.name} model={`.metadata.${property.name}`}>
-            <ul className="search__filter is-active">
-              <li>
-                <label>
-                  <MultipleEditionFieldWarning
-                    multipleEdition={multipleEdition}
-                    model={model}
-                    field={`metadata.${property.name}`}
-                  />
-                  {t(templateID, property.label)}
-                  {property.required ? <span className="required">*</span> : ''}
-                </label>
-              </li>
-              <li className="wide">{this.getField(property, `.metadata.${property.name}`, thesauris.toJS())}</li>
-            </ul>
-          </FormGroup>
+        {fields
+          .filter(p => {
+            if (showSubset && !showSubset.includes(p.name)) {
+              return false;
+            }
+            return true;
+          })
+          .map(property => (
+            <FormGroup key={property.name} model={`.metadata.${property.name}`}>
+              <ul className="search__filter is-active">
+                <li className="title">
+                  <label>
+                    <MultipleEditionFieldWarning
+                      multipleEdition={multipleEdition}
+                      model={model}
+                      field={`metadata.${property.name}`}
+                    />
+                    {t(templateID, property.label)}
+                    {property.required ? <span className="required">*</span> : ''}
+                  </label>
+                </li>
+                {mlThesauri.includes(property.content) &&
+                [propertyTypes.multiselect, propertyTypes.select].includes(property.type) ? (
+                  <li className="wide">
+                    <MultiSuggest
+                      model={`.suggestedMetadata.${property.name}`}
+                      selectModel={`.metadata.${property.name}`}
+                      propertyType={property.type}
+                    />
+                  </li>
+                ) : null}
+                <li className="wide">
+                  {this.getField(property, `.metadata.${property.name}`, thesauris)}
+                </li>
+              </ul>
+            </FormGroup>
           ))}
       </div>
     );
@@ -120,7 +179,9 @@ export class MetadataFormFields extends Component {
 
 MetadataFormFields.defaultProps = {
   multipleEdition: false,
-  dateFormat: null
+  dateFormat: null,
+  version: undefined,
+  showSubset: undefined,
 };
 
 MetadataFormFields.propTypes = {
@@ -128,11 +189,13 @@ MetadataFormFields.propTypes = {
   model: PropTypes.string.isRequired,
   thesauris: PropTypes.instanceOf(Immutable.List).isRequired,
   multipleEdition: PropTypes.bool,
-  dateFormat: PropTypes.string
+  dateFormat: PropTypes.string,
+  showSubset: PropTypes.arrayOf(PropTypes.string),
+  version: PropTypes.string,
 };
 
 export const mapStateToProps = state => ({
-    dateFormat: state.settings.collection.get('dateFormat')
+  dateFormat: state.settings.collection.get('dateFormat'),
 });
 
 export default connect(mapStateToProps)(MetadataFormFields);

@@ -1,6 +1,7 @@
+/** @format */
+
 import superagent from 'superagent';
 import thunk from 'redux-thunk';
-
 
 import { APIURL } from 'app/config.js';
 import { actions as basicActions } from 'app/BasicReducer';
@@ -44,8 +45,10 @@ describe('uploadsActions', () => {
     mockID();
     backend.restore();
     backend
-    .post(`${APIURL}documents`, { body: JSON.stringify({ testBackendResult: 'ok' }) })
-    .delete(`${APIURL}documents?name=doc&_id=abc1`, { body: JSON.stringify({ testBackendResult: 'ok' }) });
+      .post(`${APIURL}documents`, { body: JSON.stringify({ testBackendResult: 'ok' }) })
+      .delete(`${APIURL}documents?name=doc&_id=abc1`, {
+        body: JSON.stringify({ testBackendResult: 'ok' }),
+      });
   });
 
   afterEach(() => backend.restore());
@@ -93,44 +96,45 @@ describe('uploadsActions', () => {
 
   describe('async actions', () => {
     describe('createDocument', () => {
-      it('should create a document', (done) => {
+      it('should create a document', done => {
         backend.restore();
-        backend
-        .post(`${APIURL}documents`, { body: JSON.stringify({ _id: 'test', sharedId: 'sharedId' }) });
+        backend.post(`${APIURL}documents`, {
+          body: JSON.stringify({ _id: 'test', sharedId: 'sharedId' }),
+        });
 
         const newDoc = { name: 'doc' };
         const store = mockStore({});
 
         const expectedActions = [
           { type: types.NEW_UPLOAD_DOCUMENT, doc: 'sharedId' },
-          { type: types.ELEMENT_CREATED, doc: { _id: 'test', sharedId: 'sharedId' } }
+          { type: types.ELEMENT_CREATED, doc: { _id: 'test', sharedId: 'sharedId' } },
         ];
 
-        store.dispatch(actions.createDocument(newDoc))
-        .then((createdDoc) => {
-          expect(createdDoc).toEqual({ _id: 'test', sharedId: 'sharedId' });
-          expect(backend.lastOptions().body).toEqual(JSON.stringify({ name: 'doc' }));
-          expect(store.getActions()).toEqual(expectedActions);
-          done();
-        })
-        .catch(done.fail);
+        store
+          .dispatch(actions.createDocument(newDoc))
+          .then(createdDoc => {
+            expect(createdDoc).toEqual({ _id: 'test', sharedId: 'sharedId' });
+            expect(backend.lastOptions().body).toEqual(JSON.stringify({ name: 'doc' }));
+            expect(store.getActions()).toEqual(expectedActions);
+            done();
+          })
+          .catch(done.fail);
       });
     });
 
     describe('importData', () => {
-      it('should upload a file and then import the data', (done) => {
+      it('should upload a file and then import the data', done => {
         const mockUpload = mockSuperAgent();
 
         const expectedActions = [
           { type: 'importUploadProgress/SET', value: 65 },
           { type: 'importUploadProgress/SET', value: 75 },
-          { type: 'importUploadProgress/SET', value: 0 }
+          { type: 'importUploadProgress/SET', value: 0 },
         ];
         const store = mockStore({});
         const file = getMockFile();
 
-        store.dispatch(actions.importData([file], '123'))
-        .then(() => {
+        store.dispatch(actions.importData([file], '123')).then(() => {
           expect(mockUpload.attach).toHaveBeenCalledWith('file', file, file.name);
           expect(store.getActions()).toEqual(expectedActions);
           done();
@@ -151,20 +155,26 @@ describe('uploadsActions', () => {
 
         formData = {
           title: 'test',
-          metadata: { prop: 'value' },
+          metadata: { prop: [{ value: 'value' }] },
           template: '123',
           captcha: 23,
           file,
-          attachments: [file, file]
+          attachments: [file, file],
         };
       });
 
-      it('should send the form data and upload the files', (done) => {
+      it('should send the form data and upload the files', done => {
         const mockUpload = mockSuperAgent(`${APIURL}public`);
-        store.dispatch(actions.publicSubmit(formData))
-        .then(() => {
+        store.dispatch(actions.publicSubmit(formData)).then(() => {
           delete formData.captcha;
-          expect(mockUpload.field).toHaveBeenCalledWith('entity', JSON.stringify({ title: 'test', template: '123', metadata: { prop: 'value' } }));
+          expect(mockUpload.field).toHaveBeenCalledWith(
+            'entity',
+            JSON.stringify({
+              title: 'test',
+              template: '123',
+              metadata: { prop: [{ value: 'value' }] },
+            })
+          );
           expect(mockUpload.field).toHaveBeenCalledWith('captcha', 23);
           expect(mockUpload.attach).toHaveBeenCalledWith('file', file);
           expect(mockUpload.attach).toHaveBeenCalledWith('attachments[0]', file);
@@ -173,52 +183,64 @@ describe('uploadsActions', () => {
           done();
         });
 
-        emitProgressAndResponse(mockUpload, { text: JSON.stringify({ test: 'test' }), body: 'ok', status: 200 });
+        emitProgressAndResponse(mockUpload, {
+          text: JSON.stringify({ test: 'test' }),
+          body: 'ok',
+          status: 200,
+        });
       });
 
-      it('should send data to remotepublic if remote is set to true', (done) => {
+      it('should send data to remotepublic if remote is set to true', done => {
         const mockUpload = mockSuperAgent(`${APIURL}remotepublic`);
 
-        store.dispatch(actions.publicSubmit(formData, true))
-        .then(() => {
+        store.dispatch(actions.publicSubmit(formData, true)).then(() => {
           expect(superagent.post).toHaveBeenCalledWith(`${APIURL}remotepublic`);
           done();
         });
 
-        emitProgressAndResponse(mockUpload, { text: JSON.stringify({ test: 'test' }), body: 'ok', status: 200 });
+        emitProgressAndResponse(mockUpload, {
+          text: JSON.stringify({ test: 'test' }),
+          body: 'ok',
+          status: 200,
+        });
       });
 
-      it('should return promise that will be resolved after upload is complete', (done) => {
+      it('should return promise that will be resolved after upload is complete', done => {
         const mockUpload = mockSuperAgent(`${APIURL}public`);
         jest.spyOn(store, 'dispatch');
-        store.dispatch(actions.publicSubmit(formData))
-        .then((progress) => {
-          progress.promise.then((res) => {
+        store.dispatch(actions.publicSubmit(formData)).then(progress => {
+          progress.promise.then(res => {
             expect(res.status).toBe(200);
             expect(res.body).toEqual({ ok: 1 });
             done();
           });
         });
 
-        emitProgressAndResponse(mockUpload, { text: JSON.stringify({ test: 'test' }), body: { ok: 1 }, status: 200 });
+        emitProgressAndResponse(mockUpload, {
+          text: JSON.stringify({ test: 'test' }),
+          body: { ok: 1 },
+          status: 200,
+        });
       });
 
-      it('should return promise that rejects if upload completes with error status code', (done) => {
+      it('should return promise that rejects if upload completes with error status code', done => {
         const mockUpload = mockSuperAgent(`${APIURL}public`);
         jest.spyOn(store, 'dispatch');
-        store.dispatch(actions.publicSubmit(formData))
-        .then((progress) => {
-          progress.promise.catch((res) => {
+        store.dispatch(actions.publicSubmit(formData)).then(progress => {
+          progress.promise.catch(res => {
             expect(res.status).toBe(403);
             expect(res.body).toEqual({ error: 'error' });
             done();
           });
         });
 
-        emitProgressAndResponse(mockUpload, { text: JSON.stringify({ error: 'error' }), body: { error: 'error' }, status: 403 });
+        emitProgressAndResponse(mockUpload, {
+          text: JSON.stringify({ error: 'error' }),
+          body: { error: 'error' },
+          status: 403,
+        });
       });
     });
-
 
     describe('uploadDocument', () => {
       it('should create a document and upload file while dispatching the upload progress', () => {
@@ -227,7 +249,11 @@ describe('uploadsActions', () => {
         const expectedActions = [
           { type: types.UPLOAD_PROGRESS, doc: 'abc1', progress: 65 },
           { type: types.UPLOAD_PROGRESS, doc: 'abc1', progress: 75 },
-          { type: types.UPLOAD_COMPLETE, doc: 'abc1', file: { filename: 'a', originalname: 'a', size: 1 } }
+          {
+            type: types.UPLOAD_COMPLETE,
+            doc: 'abc1',
+            file: { filename: 'a', originalname: 'a', size: 1 },
+          },
         ];
         const store = mockStore({});
         const file = getMockFile();
@@ -236,47 +262,53 @@ describe('uploadsActions', () => {
         expect(mockUpload.field).toHaveBeenCalledWith('document', 'abc1');
         expect(mockUpload.attach).toHaveBeenCalledWith('file', file, file.name);
 
-        emitProgressAndResponse(mockUpload, { text: JSON.stringify({ test: 'test' }), body: { filename: 'a', originalname: 'a', size: 1 } });
+        emitProgressAndResponse(mockUpload, {
+          text: JSON.stringify({ test: 'test' }),
+          body: { filename: 'a', originalname: 'a', size: 1 },
+        });
         expect(store.getActions()).toEqual(expectedActions);
       });
     });
 
     describe('uploadCustom', () => {
-      it('should upload a file and then add it to the customUploads', (done) => {
+      it('should upload a file and then add it to the customUploads', done => {
         const mockUpload = mockSuperAgent();
 
         const expectedActions = [
           { type: types.UPLOAD_PROGRESS, doc: 'customUpload_unique_id', progress: 65 },
           { type: types.UPLOAD_PROGRESS, doc: 'customUpload_unique_id', progress: 75 },
-          { type: types.UPLOAD_COMPLETE, doc: 'customUpload_unique_id', file: { filename: 'a', originalname: 'a', size: 1 } },
-          basicActions.push('customUploads', { test: 'test' })
+          {
+            type: types.UPLOAD_COMPLETE,
+            doc: 'customUpload_unique_id',
+            file: { filename: 'a', originalname: 'a', size: 1 },
+          },
+          basicActions.push('customUploads', { test: 'test' }),
         ];
         const store = mockStore({});
         const file = getMockFile();
 
-        store.dispatch(actions.uploadCustom(file))
-        .then(() => {
+        store.dispatch(actions.uploadCustom(file)).then(() => {
           expect(mockUpload.attach).toHaveBeenCalledWith('file', file, file.name);
           expect(store.getActions()).toEqual(expectedActions);
           done();
         });
 
-        emitProgressAndResponse(mockUpload, { text: JSON.stringify({ test: 'test' }), body: { filename: 'a', originalname: 'a', size: 1 } });
+        emitProgressAndResponse(mockUpload, {
+          text: JSON.stringify({ test: 'test' }),
+          body: { filename: 'a', originalname: 'a', size: 1 },
+        });
       });
     });
 
     describe('deleteCustomUpload', () => {
-      it('should delete the upload and remove it locally on success', (done) => {
+      it('should delete the upload and remove it locally on success', done => {
         spyOn(api, 'delete').and.returnValue(Promise.resolve({ json: { _id: 'deleted' } }));
 
-        const expectedActions = [
-          basicActions.remove('customUploads', { _id: 'deleted' })
-        ];
+        const expectedActions = [basicActions.remove('customUploads', { _id: 'deleted' })];
 
         const store = mockStore({});
 
-        store.dispatch(actions.deleteCustomUpload('id'))
-        .then(() => {
+        store.dispatch(actions.deleteCustomUpload('id')).then(() => {
           expect(store.getActions()).toEqual(expectedActions);
           done();
         });
@@ -284,24 +316,30 @@ describe('uploadsActions', () => {
     });
 
     describe('publishDocument', () => {
-      it('should save the document with published:true and dispatch notification on success', (done) => {
+      it('should save the document with published:true and dispatch notification on success', done => {
         const document = { name: 'doc', _id: 'abc1' };
 
         const expectedActions = [
-          { type: notificationsTypes.NOTIFY, notification: { message: 'Document published', type: 'success', id: 'unique_id' } },
+          {
+            type: notificationsTypes.NOTIFY,
+            notification: { message: 'Document published', type: 'success', id: 'unique_id' },
+          },
           { type: types.REMOVE_DOCUMENT, doc: document },
           { type: 'viewer/doc/SET', value: { testBackendResult: 'ok' } },
-          { type: 'UNSELECT_ALL_DOCUMENTS' }
+          { type: 'UNSELECT_ALL_DOCUMENTS' },
         ];
         const store = mockStore({});
 
-        store.dispatch(actions.publishDocument(document))
-        .then(() => {
-          expect(backend.lastOptions().body).toEqual(JSON.stringify({ name: 'doc', _id: 'abc1', published: true }));
-          expect(store.getActions()).toEqual(expectedActions);
-        })
-        .then(done)
-        .catch(done.fail);
+        store
+          .dispatch(actions.publishDocument(document))
+          .then(() => {
+            expect(backend.lastOptions().body).toEqual(
+              JSON.stringify({ name: 'doc', _id: 'abc1', published: true })
+            );
+            expect(store.getActions()).toEqual(expectedActions);
+          })
+          .then(done)
+          .catch(done.fail);
       });
     });
   });

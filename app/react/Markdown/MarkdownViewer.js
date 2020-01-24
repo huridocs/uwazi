@@ -71,7 +71,7 @@ class MarkdownViewer extends Component {
     return false;
   }
 
-  list(config, index) {
+  list(_config, index) {
     const listData = this.props.lists[this.renderedLists] || {};
     const output = <CustomComponents.ItemList key={index} link={`/library/${listData.params}`} items={listData.items} options={listData.options}/>;
     this.renderedLists += 1;

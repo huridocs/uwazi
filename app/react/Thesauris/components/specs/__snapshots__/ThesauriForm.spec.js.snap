@@ -94,9 +94,10 @@ exports[`ThesauriForm render should render DragAndDropContainer with thesauri it
         <BackButton
           to="/settings/dictionaries"
         />
-        <a
+        <button
           className="btn btn-primary"
           onClick={[Function]}
+          type="button"
         >
           <Connect(Icon)
             icon="plus"
@@ -106,10 +107,11 @@ exports[`ThesauriForm render should render DragAndDropContainer with thesauri it
           >
             Add group
           </span>
-        </a>
-        <a
+        </button>
+        <button
           className="btn btn-primary"
           onClick={[Function]}
+          type="button"
         >
           <Connect(Icon)
             icon="sort-alpha-down"
@@ -119,7 +121,7 @@ exports[`ThesauriForm render should render DragAndDropContainer with thesauri it
           >
             Sort
           </span>
-        </a>
+        </button>
         <button
           className="btn btn-primary import-template"
           onClick={[Function]}

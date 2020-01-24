@@ -1,7 +1,10 @@
+/** @format */
+
 import path from 'path';
 import moment from 'moment';
 import db from 'api/utils/testing_db';
 import entities from 'api/entities';
+import { search } from 'api/search';
 import { deleteFiles, deleteFile, getFileContent } from 'api/utils/files';
 import asyncFS from 'api/utils/async-fs';
 
@@ -17,7 +20,7 @@ describe('vaultSync', () => {
   beforeEach(async () => {
     await db.clearAllAndLoad(fixtures);
     configPaths.uploadedDocuments = path.join(__dirname, 'uploads');
-    spyOn(entities, 'indexEntities').and.returnValue(Promise.resolve());
+    spyOn(search, 'indexEntities').and.returnValue(Promise.resolve());
   });
 
   afterEach(async () => {
@@ -25,7 +28,8 @@ describe('vaultSync', () => {
     await deleteFile(path.join(__dirname, '/zips/package2.zip'));
     await deleteFile(path.join(__dirname, '/zips/package3.zip'));
     const files = (await asyncFS.readdir(configPaths.uploadedDocuments))
-    .filter(f => f !== 'index.html').map(f => path.join(configPaths.uploadedDocuments, f));
+      .filter(f => f !== 'index.html')
+      .map(f => path.join(configPaths.uploadedDocuments, f));
 
     await deleteFiles(files);
   });
@@ -55,8 +59,8 @@ describe('vaultSync', () => {
             status: '201',
             time_of_request: '2018-05-25 09:31:25',
           },
-          jsonInfo: { title: 'title2' }
-        }
+          jsonInfo: { title: 'title2' },
+        },
       ];
 
       await mockVault(evidences);
@@ -73,7 +77,7 @@ describe('vaultSync', () => {
     it('should assign url to link field', async () => {
       const imported = await entities.get();
 
-      expect(imported.map(e => e.metadata.original_url)).toEqual([
+      expect(imported.map(e => e.metadata.original_url[0].value)).toEqual([
         { label: 'url 1', url: 'url 1' },
         { label: 'url 2', url: 'url 2' },
       ]);
@@ -82,7 +86,9 @@ describe('vaultSync', () => {
     it('should assign time of request', async () => {
       const imported = await entities.get();
 
-      const dates = imported.map(e => moment.utc(e.metadata.time_of_request, 'X').format('DD-MM-YYYY'));
+      const dates = imported.map(e =>
+        moment.utc(e.metadata.time_of_request[0].value, 'X').format('DD-MM-YYYY')
+      );
       expect(dates).toEqual(['30-05-2019', '25-05-2018']);
     });
 
@@ -94,13 +100,13 @@ describe('vaultSync', () => {
 
       expect(imported[0].attachments.find(a => a.filename.match(/zip/))).toEqual(
         expect.objectContaining({
-          filename: '1.zip'
+          filename: '1.zip',
         })
       );
 
       expect(imported[1].attachments.find(a => a.filename.match(/zip/))).toEqual(
         expect.objectContaining({
-          filename: '2.zip'
+          filename: '2.zip',
         })
       );
     });
@@ -111,20 +117,20 @@ describe('vaultSync', () => {
       expect(await getFileContent('1.png')).toBe('this is a fake image');
       expect(await getFileContent('2.png')).toBe('this is a fake image');
 
-      expect(imported.map(e => e.metadata.screenshot)).toEqual([
+      expect(imported.map(e => e.metadata.screenshot[0].value)).toEqual([
         `/api/attachments/download?_id=${imported[0]._id}&file=1.png`,
         `/api/attachments/download?_id=${imported[1]._id}&file=2.png`,
       ]);
 
       expect(imported[0].attachments.find(a => a.filename.match(/png/))).toEqual(
         expect.objectContaining({
-          filename: '1.png'
+          filename: '1.png',
         })
       );
 
       expect(imported[1].attachments.find(a => a.filename.match(/png/))).toEqual(
         expect.objectContaining({
-          filename: '2.png'
+          filename: '2.png',
         })
       );
     });
@@ -135,20 +141,20 @@ describe('vaultSync', () => {
       expect(await getFileContent('1.mp4')).toBe('this is a fake video');
       expect(await getFileContent('2.mp4')).toBe('this is a fake video');
 
-      expect(imported.map(e => e.metadata.video)).toEqual([
+      expect(imported.map(e => e.metadata.video[0].value)).toEqual([
         `/api/attachments/download?_id=${imported[0]._id}&file=1.mp4`,
         `/api/attachments/download?_id=${imported[1]._id}&file=2.mp4`,
       ]);
 
       expect(imported[0].attachments.find(a => a.filename.match(/mp4/))).toEqual(
         expect.objectContaining({
-          filename: '1.mp4'
+          filename: '1.mp4',
         })
       );
 
       expect(imported[1].attachments.find(a => a.filename.match(/mp4/))).toEqual(
         expect.objectContaining({
-          filename: '2.mp4'
+          filename: '2.mp4',
         })
       );
     });
@@ -162,11 +168,11 @@ describe('vaultSync', () => {
           filename: 'package1.zip',
           status: '201',
         },
-        jsonInfo: { title: 'title1' }
+        jsonInfo: { title: 'title1' },
       },
       {
-        listItem: { request: '2', filename: 'package2.zip', status: '201' }
-      }
+        listItem: { request: '2', filename: 'package2.zip', status: '201' },
+      },
     ];
 
     await mockVault(evidences);
@@ -175,40 +181,40 @@ describe('vaultSync', () => {
 
     expect(await getFileContent('1.mp4')).toBe('this is a fake video');
 
-    expect(imported.map(e => e.metadata.video)).toEqual([
+    expect(imported.map(e => e.metadata.video[0].value)).toEqual([
       `/api/attachments/download?_id=${imported[0]._id}&file=1.mp4`,
-      ''
+      '',
     ]);
 
-    expect(imported.map(e => e.metadata.screenshot)).toEqual([
+    expect(imported.map(e => e.metadata.screenshot[0].value)).toEqual([
       `/api/attachments/download?_id=${imported[0]._id}&file=1.png`,
-      ''
+      '',
     ]);
 
     expect(imported[0].attachments).toEqual([
       expect.objectContaining({
-        filename: '1.mp4'
+        filename: '1.mp4',
       }),
       expect.objectContaining({
-        filename: '1.png'
+        filename: '1.png',
       }),
       expect.objectContaining({
-        filename: '1.zip'
-      })
+        filename: '1.zip',
+      }),
     ]);
 
     expect(imported[1].attachments).toEqual([
       expect.objectContaining({
-        filename: '2.zip'
-      })
+        filename: '2.zip',
+      }),
     ]);
   });
 
   it('should not import already imported evidences', async () => {
     await vaultEvidencesModel.saveMultiple([{ request: '1' }, { request: '3' }]);
     const evidences = [
-      { listItem: { request: '1', filename: 'package1.zip' }, jsonInfo: { title: 'title1', } },
-      { listItem: { request: '3', filename: 'package3.zip' }, jsonInfo: { title: 'title3', } },
+      { listItem: { request: '1', filename: 'package1.zip' }, jsonInfo: { title: 'title1' } },
+      { listItem: { request: '3', filename: 'package3.zip' }, jsonInfo: { title: 'title3' } },
       {
         listItem: {
           request: '2',
@@ -219,8 +225,8 @@ describe('vaultSync', () => {
         },
         jsonInfo: {
           title: 'title2',
-        }
-      }
+        },
+      },
     ];
 
     await mockVault(evidences);
@@ -233,10 +239,19 @@ describe('vaultSync', () => {
 
   it('should not import evidences with 202, 203 or 501 status', async () => {
     const evidences = [
-      { listItem: { status: '201', request: '1', filename: 'package1.zip' }, jsonInfo: { title: 'title1', } },
-      { listItem: { status: '203', request: '2', filename: 'package2.zip' }, jsonInfo: { title: 'title2', } },
-      { listItem: { status: '202', request: '3', filename: 'package3.zip' }, jsonInfo: { title: 'title3', } },
-      { listItem: { status: '501', request: '4', filename: null }, jsonInfo: { title: 'title4', } },
+      {
+        listItem: { status: '201', request: '1', filename: 'package1.zip' },
+        jsonInfo: { title: 'title1' },
+      },
+      {
+        listItem: { status: '203', request: '2', filename: 'package2.zip' },
+        jsonInfo: { title: 'title2' },
+      },
+      {
+        listItem: { status: '202', request: '3', filename: 'package3.zip' },
+        jsonInfo: { title: 'title3' },
+      },
+      { listItem: { status: '501', request: '4', filename: null }, jsonInfo: { title: 'title4' } },
     ];
 
     await mockVault(evidences);

@@ -1,16 +1,20 @@
-import { Tabs, TabLink, TabContent } from 'react-tabs-redux';
-import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+/** @format */
 
 import MarkdownViewer from 'app/Markdown';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
+import { TabContent, TabLink, Tabs } from 'react-tabs-redux';
 
 export default class MarkDown extends Component {
   render() {
     const { rows } = this.props;
+    const { value, onChange } = this.props;
     return (
       <Tabs renderActiveTabContentOnly className="markdownEditor">
         <div className="tab-nav">
-          <TabLink to="edit" default>Edit</TabLink>
+          <TabLink to="edit" default>
+            Edit
+          </TabLink>
           <TabLink to="preview">Preview</TabLink>
           <a
             className="tab-link tab-link--help"
@@ -22,10 +26,10 @@ export default class MarkDown extends Component {
           </a>
         </div>
         <TabContent for="edit">
-          <textarea className="form-control" rows={rows} onChange={this.props.onChange} value={this.props.value}/>
+          <textarea className="form-control" rows={rows} onChange={onChange} value={value} />
         </TabContent>
         <TabContent for="preview" className="markdownViewer">
-          <MarkdownViewer html={this.props.htmlOnViewer} markdown={this.props.value}/>
+          <MarkdownViewer html={this.props.htmlOnViewer} markdown={value} />
         </TabContent>
       </Tabs>
     );
@@ -35,12 +39,12 @@ export default class MarkDown extends Component {
 MarkDown.defaultProps = {
   value: '',
   rows: 6,
-  htmlOnViewer: false
+  htmlOnViewer: false,
 };
 
 MarkDown.propTypes = {
   onChange: PropTypes.func.isRequired,
   value: PropTypes.string,
   rows: PropTypes.number,
-  htmlOnViewer: PropTypes.bool
+  htmlOnViewer: PropTypes.bool,
 };
