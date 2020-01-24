@@ -9,10 +9,11 @@ export function aggregateSuggestionCount(
     tup.forEach((perm: any) => {
       const prop = perm[0];
       const results = perm[1][1];
+      console.dir(results);
       if (results.aggregations.all.hasOwnProperty(`_${prop.name}`)) {
         const { buckets } = results.aggregations.all[`_${prop.name}`];
         let soFar = 0;
-        buckets.forEach(bucket => {
+        buckets.forEach((bucket: any) => {
           soFar += bucket.filtered.doc_count;
         });
         const thesaurus = modeledThesauri.find(t => t._id === prop.content);
