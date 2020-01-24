@@ -1,12 +1,13 @@
 /** @format */
 
-export function aggregateSuggestionCount(templatePropsResults, modeledThesauri) {
+export function aggregateSuggestionCount(
+  templatePropsResults: Array<any>,
+  modeledThesauri: Array<any>
+) {
   // This processes the search results per thesaurus and stores the aggregate  number of documents to review
-  templatePropsResults.forEach(tup => {
-    tup.forEach(perm => {
-      console.dir(perm[0]);
+  templatePropsResults.forEach((tup: any) => {
+    tup.forEach((perm: any) => {
       const prop = perm[0];
-      console.dir(perm[1]);
       const results = perm[1][1];
       if (results.aggregations.all.hasOwnProperty(`_${prop.name}`)) {
         const { buckets } = results.aggregations.all[`_${prop.name}`];
