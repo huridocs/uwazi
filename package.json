@@ -258,7 +258,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "sh ./no-commit-master.sh && sh ./no-merge-conflicts.sh",
+      "pre-commit": "sh ./hooks/no-commit-master.sh && sh ./hooks/no-merge-conflicts.sh",
       "pre-push": "yarn check-types && yarn eslint && yarn prettier && yarn test"
     }
   }
