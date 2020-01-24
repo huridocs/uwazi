@@ -1,4 +1,8 @@
-/*eslint no-console: 0*/
+/**
+ * /*eslint no-console: 0
+ *
+ * @format
+ */
 
 /* eslint import/no-extraneous-dependencies: ["error", {"peerDependencies": true}] */
 import Nightmare from 'nightmare';
@@ -20,8 +24,8 @@ export default function createNightmare(width = 1200, height = 600) {
     x: 0,
     y: 0,
     webPreferences: {
-      preload: `${__dirname}/custom-preload.js`
-    }
+      preload: `${__dirname}/custom-preload.js`,
+    },
   }).viewport(width, height);
 
   nightmare.on('page', (_type, _message, error) => {

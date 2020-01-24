@@ -1,5 +1,9 @@
 /** @format */
 
+import { validation } from 'api/utils';
+
+/** @format */
+
 export function notEmpty(val) {
   if (Array.isArray(val)) {
     return Boolean(val.length);
@@ -30,6 +34,30 @@ export function latAndLon(val) {
   );
 }
 
+const geolocationValidation = property => {
+  const validationObject = {};
+  if (property.required) {
+    validationObject[`metadata.${property.name}[0].lat`] = { required: notEmpty };
+    validationObject[`metadata.${property.name}[0].lon`] = { required: notEmpty };
+    return validationObject;
+  }
+
+  validationObject[`metadata.${property.name}`] = { required: latAndLon };
+  return validationObject;
+};
+
+const linkValidation = property => {
+  const validationObject = {};
+  if (property.required) {
+    validationObject[`metadata.${property.name}.label`] = { required: notEmpty };
+    validationObject[`metadata.${property.name}.url`] = { required: notEmpty };
+    return validationObject;
+  }
+
+  validationObject[`metadata.${property.name}`] = { required: labelAndUrl };
+  return validationObject;
+};
+
 export default {
   generate(template, noTitle = false) {
     const validationObject = {
@@ -44,22 +72,13 @@ export default {
       if (property.required) {
         validationObject[`metadata.${property.name}`] = { required: notEmpty };
       }
-      if (property.type === 'link' && property.required) {
-        validationObject[`metadata.${property.name}.label`] = { required: notEmpty };
-        validationObject[`metadata.${property.name}.url`] = { required: notEmpty };
-      }
 
       if (property.type === 'link') {
-        validationObject[`metadata.${property.name}`] = { required: labelAndUrl };
-      }
-
-      if (property.type === 'geolocation' && property.required) {
-        validationObject[`metadata.${property.name}[0].lat`] = { required: notEmpty };
-        validationObject[`metadata.${property.name}[0].lon`] = { required: notEmpty };
+        Object.assign(validationObject, linkValidation(property));
       }
 
       if (property.type === 'geolocation') {
-        validationObject[`metadata.${property.name}`] = { required: latAndLon };
+        Object.assign(validationObject, geolocationValidation(property));
       }
     });
 
