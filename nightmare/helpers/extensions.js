@@ -354,6 +354,7 @@ Nightmare.action('editItemFromList', function editItemFromList(liElement, target
 Nightmare.action('selectDate', function selectDate(dateField, date, done) {
   this.wait(dateField)
     .type(dateField, date)
+    .wait(50)
     .waitToClick('.react-datepicker__day--selected')
     .then(done);
 });

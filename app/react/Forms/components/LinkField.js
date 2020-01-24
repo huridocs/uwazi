@@ -28,7 +28,7 @@ export default class LinkField extends Component {
 
   render() {
     const { value } = this.props;
-    const { label, url } = value || { label: '', url: '' };
+    const { label, url } = value;
 
     return (
       <div className="link form-inline">

@@ -355,7 +355,7 @@ describe('metadata path', () => {
         .wait(localSelectors.form.text)
         .type(localSelectors.form.text, 'demo text')
         .type(localSelectors.form.numeric, '42')
-        .selectByLabel(localSelectors.form.select, 'This')
+        .selectByLabel(localSelectors.form.select, 'Select...')
         .click(localSelectors.form.multiselectOptionOne)
         .click(localSelectors.form.relationshipOptionOne)
         .selectDate(localSelectors.form.date, '08/09/1966')
@@ -369,10 +369,7 @@ describe('metadata path', () => {
         .selectDate(localSelectors.form.multidaterangeToInputOne, '12/09/1964')
         .selectDate(localSelectors.form.multidaterangeFromInputTwo, '23/11/1963')
         .selectDate(localSelectors.form.multidaterangeToInputTwo, '12/09/1964')
-        .type(
-          localSelectors.form.richText,
-          '"There is a fine line between consideration and hesitation. The former is wisdom, the latter is fear." -- Emperor Izaro Phrecius'
-        )
+        .type(localSelectors.form.richText, '*** smile ***')
         .type(localSelectors.form.linkLabel, 'Huridocs')
         .type(localSelectors.form.linkUrl, 'https://www.huridocs.org/')
         .type(localSelectors.form.image, 'test')
@@ -387,8 +384,8 @@ describe('metadata path', () => {
       await nightmare
         .waitToClick(selectors.documentView.editButton)
         .wait(localSelectors.form.text)
-        .type(localSelectors.form.text)
-        .type(localSelectors.form.numeric)
+        .clearInput(localSelectors.form.text)
+        .clearInput(localSelectors.form.numeric)
         .selectByLabel(localSelectors.form.select, 'This')
         .click(localSelectors.form.multiselectOptionOne)
         .click(localSelectors.form.relationshipOptionOne)
@@ -399,13 +396,13 @@ describe('metadata path', () => {
         .click(localSelectors.form.multiDateRemoveDateOne)
         .click(localSelectors.form.multidaterangeRemoveDateTwo)
         .click(localSelectors.form.multidaterangeRemoveDateOne)
-        .type(localSelectors.form.richText)
-        .type(localSelectors.form.linkLabel)
-        .type(localSelectors.form.linkUrl)
-        .type(localSelectors.form.image)
-        .type(localSelectors.form.media)
-        .type(localSelectors.form.geolocationLat)
-        .type(localSelectors.form.geolocationLon)
+        .clearInput(localSelectors.form.richText)
+        .clearInput(localSelectors.form.linkLabel)
+        .clearInput(localSelectors.form.linkUrl)
+        .clearInput(localSelectors.form.image)
+        .clearInput(localSelectors.form.media)
+        .clearInput(localSelectors.form.geolocationLat)
+        .clearInput(localSelectors.form.geolocationLon)
         .click(localSelectors.form.save)
         .waitToClick('.alert.alert-success');
     });

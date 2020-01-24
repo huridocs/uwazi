@@ -1,5 +1,3 @@
-/** @format */
-
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import Map from 'app/Map/Map';
@@ -8,7 +6,7 @@ import { Translate } from 'app/I18N';
 const defaultValue = { lat: '', lon: '', label: '' };
 
 function isCoordinateValid(coord) {
-  return typeof coord === 'number' && !Number.isNaN(coord);
+  return typeof coord && coord === 'number' && !Number.isNaN(coord);
 }
 
 export default class Geolocation extends Component {
