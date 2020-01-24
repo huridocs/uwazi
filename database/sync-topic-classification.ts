@@ -16,7 +16,7 @@ import { MetadataObject } from '../app/api/entities/entitiesModel';
 import { EntitySchema } from '../app/api/entities/entityType';
 import { ThesaurusSchema } from '../app/api/thesauris/dictionariesType';
 
-const { limit, recompute, overwrite } = yargs
+const { limit, recompute, overwrite, mode } = yargs
   .option('limit', { default: 1000000 })
   .option('recompute', {
     default: false,
@@ -27,6 +27,12 @@ const { limit, recompute, overwrite } = yargs
     usage:
       'If true, replace suggestedMetadata in Uwazi with predictions, even if ' +
       'suggestions exist. This potentially recreates previously-rejected suggestions.',
+  })
+  .option('mode', {
+    default: 'onlynew',
+    usage:
+      'onlynew: only process entities that have no value for the thesaurus; ' +
+      'all: process all entities',
   })
   .help().argv;
 
@@ -118,6 +124,11 @@ async function syncEntity(
 ) {
   if (!e.template || !e.metadata || e.language !== 'en' || !prop) {
     return false;
+  }
+  if (mode === 'onlynew') {
+    if (e.metadata[prop] && e.metadata[prop]!.length) {
+      return false;
+    }
   }
   const sequence = await extractSequence(e);
   if (!sequence) {
