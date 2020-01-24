@@ -223,6 +223,7 @@
     "eslint-plugin-prettier": "^3.1.1",
     "eslint-plugin-react": "v7.12.4",
     "fetch-mock": "v7.3.3",
+    "husky": "^4.2.1",
     "identity-obj-proxy": "^3.0.0",
     "img-loader": "2.0.1",
     "jasmine": "2.7.0",
@@ -256,5 +257,10 @@
     "webpack-dev-middleware": "3.6.0",
     "webpack-hot-middleware": "^2.21.0",
     "yargs": "^13.2.2"
+  },
+  "husky": {
+    "hooks": {
+      "pre-push": "yarn test"
+    }
   }
 }
