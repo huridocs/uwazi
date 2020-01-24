@@ -351,6 +351,28 @@ Nightmare.action('editItemFromList', function editItemFromList(liElement, target
     });
 });
 
+Nightmare.action('selectDate', function selectDate(dateField, date, done) {
+  this.wait(dateField)
+    .type(dateField, date)
+    .waitToClick('.react-datepicker__day--selected')
+    .then(done);
+});
+
+Nightmare.action('selectByLabel', function selectByLabel(elementSelector, targetText, done) {
+  this.waitToClick(elementSelector)
+    .evaluate(
+      (selector, text) => {
+        const select = document.querySelector(selector);
+        const options = Array.from(select.querySelectorAll('option'));
+
+        return options.find(option => option.innerText === text).value;
+      },
+      elementSelector,
+      targetText
+    )
+    .then(value => this.select(elementSelector, value).then(done));
+});
+
 Nightmare.action('clickMultiselectOption', function clickMultiselectOption(
   liElement,
   targetText,
@@ -453,9 +475,6 @@ Nightmare.action('selectText', function selectText(selector, done) {
     .catch(done);
 });
 
-//this.write(selectors.libraryView.searchInput, itemName)
-//.type(selectors.libraryView.searchInput, '\u000d')
-//.wait(selectors.libraryView.anyItemSnippet)
 Nightmare.action('clickCardOnLibrary', function clickCardOnLibrary(itemName, done) {
   this.evaluate(nameToFind => {
     const cards = document.querySelectorAll(
