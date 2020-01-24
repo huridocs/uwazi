@@ -144,7 +144,7 @@ export class OneUpEntityViewerBase extends Component {
                         <span className="separator" />
                       </span>
                     )}
-                    {oneUpState.totalDocs && (
+                    {oneUpState.totalDocs ? (
                       <div>
                         {t('System', 'Document')} <span>{oneUpState.indexInDocs + 1}</span>{' '}
                         {t('System', 'out of')}{' '}
@@ -155,6 +155,8 @@ export class OneUpEntityViewerBase extends Component {
                         </span>
                         <span className="space8" />
                       </div>
+                    ) : (
+                      t('System', 'No Documents found')
                     )}
                     <button
                       onClick={() =>
