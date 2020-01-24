@@ -240,8 +240,8 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "yarn check-types && sh ./no-commit-master.sh",
-      "pre-push": "yarn eslint && yarn prettier && yarn test"
+      "pre-commit": "sh ./no-commit-master.sh",
+      "pre-push": "yarn check-types && yarn eslint && yarn prettier && yarn test"
     }
   }
 }
