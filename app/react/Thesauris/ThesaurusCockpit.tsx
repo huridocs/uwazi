@@ -11,6 +11,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
 import { Icon } from 'UI';
+import { aggregateSuggestionCount } from 'app/Settings/utils/aggregateThesaurusSuggestionCount';
 
 /** Model is the type used for holding information about a classifier model. */
 interface ClassifierModel {
@@ -168,6 +169,12 @@ export class ThesaurusCockpitBase extends RouteHandler {
     );
     thesaurus.property = assocProp;
 
+    const templateProps = resolveTemplateProp(thesaurus, templates);
+
+    const propToAgg = templates.map(t => [templateProps, [t, allDocsWithSuggestions.shift()]]);
+
+    aggregateSuggestionCount([propToAgg], [thesaurus]);
+
     return [
       actions.set('thesauri/thesaurus', thesaurus),
       actions.set('thesauri/models', [model]),
@@ -185,12 +192,15 @@ export class ThesaurusCockpitBase extends RouteHandler {
     this.context.store.dispatch(actions.unset('thesauri/suggestions'));
   }
 
-  suggestionsButton() {
-    if (this.props.thesaurus === undefined || this.props.thesaurus.property === undefined) {
+  allThesaurusSuggestionsButton() {
+    if (
+      this.props.thesaurus === undefined ||
+      this.props.thesaurus.property === undefined ||
+      this.props.thesaurus.suggestions < 1
+    ) {
       return null;
     }
     const thesaurusPropertyRefName = this.props.thesaurus.property.name;
-
     return (
       <I18NLink
         to={
@@ -212,7 +222,7 @@ export class ThesaurusCockpitBase extends RouteHandler {
       <div className="panel panel-default">
         <div className="panel-heading">
           {t('System', `Thesauri > ${name}`)}
-          {this.suggestionsButton()}
+          {this.allThesaurusSuggestionsButton()}
         </div>
         <div className="cockpit">
           <table>

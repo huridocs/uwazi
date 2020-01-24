@@ -14,6 +14,7 @@ import { getSuggestionsQuery } from 'app/Settings/utils/suggestions';
 
 import SettingsNav from './components/SettingsNavigation';
 import SettingsAPI from './SettingsAPI';
+import { aggregateSuggestionCount } from './utils/aggregateThesaurusSuggestionCount';
 
 function findModeledThesauri(thesauri, models) {
   return thesauri.map(thesaurus => {
@@ -49,12 +50,12 @@ export class Settings extends RouteHandler {
     const modeledThesauri = findModeledThesauri(thesauri, models);
 
     // This builds and queries elasticsearch for suggestion counts per thesaurus
-    const props = modeledThesauri
+    const templateProps = modeledThesauri
       .filter(t => t.enable_classification)
       .map(thesaurus => resolveTemplateProp(thesaurus, templates));
     const allDocsWithSuggestions = await Promise.all(
       [].concat(
-        ...props.map(p =>
+        ...templateProps.map(p =>
           templates.map(t => {
             const reqParams = requestParams.set(getSuggestionsQuery(p, t._id));
             return api.search(reqParams);
@@ -64,29 +65,11 @@ export class Settings extends RouteHandler {
     );
 
     // This processes the search results per thesaurus and stores the aggregate  number of documents to review
-    const propToAgg = props.map(p => templates.map(t => [p, [t, allDocsWithSuggestions.shift()]]));
-    propToAgg.forEach(tup => {
-      tup.forEach(perm => {
-        const prop = perm[0];
-        const results = perm[1][1];
-        if (results.aggregations.all.hasOwnProperty(`_${prop.name}`)) {
-          const { buckets } = results.aggregations.all[`_${prop.name}`];
-          let soFar = 0;
-          buckets.forEach(bucket => {
-            soFar += bucket.filtered.doc_count;
-          });
-          const thesaurus = modeledThesauri.find(t => t._id === prop.content);
-          // NOTE: These suggestions are totaling per-value suggestions per
-          // document, so certain documents with more than one suggested value
-          // may be counted more than once.
-          // TODO: Make document counts unique.
-          if (!thesaurus.hasOwnProperty('suggestions')) {
-            thesaurus.suggestions = 0;
-          }
-          thesaurus.suggestions += soFar;
-        }
-      });
-    });
+    const propToAgg = templateProps.map(p =>
+      templates.map(t => [p, [t, allDocsWithSuggestions.shift()]])
+    );
+
+    aggregateSuggestionCount(propToAgg, modeledThesauri);
 
     return [
       actions.set('auth/user', user),
