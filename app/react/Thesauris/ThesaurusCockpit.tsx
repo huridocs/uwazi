@@ -171,10 +171,7 @@ export class ThesaurusCockpitBase extends RouteHandler {
 
     const templateProps = resolveTemplateProp(thesaurus, templates);
 
-    const propToAgg = templates.map((template: any) => [
-      templateProps,
-      [template, allDocsWithSuggestions.shift()],
-    ]);
+    const propToAgg = templates.map(t => [templateProps, [t, allDocsWithSuggestions.shift()]]);
 
     aggregateSuggestionCount([propToAgg], [thesaurus]);
 
