@@ -113,6 +113,24 @@ Uwazi supports the following environment variables to customize its deployment
 
 # Development
 
+### Development Process
+
+The following git hooks are set up to ensure the code that's pushed is good to go:
+
+#### Pre-Commit
+
+Fast checks go here.
+
+- Develop on a branch other than `Master`.
+
+#### Pre-Push
+
+Slower checks that are still useful go here.
+
+- All objects delared in TypeScript (`.ts`) files should have types assigned to them.
+- Prettier and ESLint checks should pass
+- All unit tests should pass
+
 ### Development Run
 
 ```
