@@ -3,7 +3,7 @@ export default function (links) {
     '': {}
   };
 
-  links.forEach((_link, index) => {
+  links.forEach((link, index) => {
     validator[''][`links.${index}.title.required`] = (form) => {
       if (!form.links[index]) {
         return true;

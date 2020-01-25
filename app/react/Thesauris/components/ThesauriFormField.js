@@ -9,7 +9,7 @@ export class ThesauriFormField extends Component {
     this.focus = () => { this.groupInput.focus(); };
   }
 
-  renderValue(_value, index, groupIndex) {
+  renderValue(value, index, groupIndex) {
     const { removeValue } = this.props;
     let model = `thesauri.data.values[${index}].label`;
     if (groupIndex !== undefined) {

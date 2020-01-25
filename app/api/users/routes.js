@@ -111,7 +111,7 @@ export default app => {
     }
   );
 
-  app.get('/api/users', needsAuthorization(), (_req, res, next) => {
+  app.get('/api/users', needsAuthorization(), (req, res, next) => {
     users
       .get()
       .then(response => res.json(response))

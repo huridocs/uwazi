@@ -1,9 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`AttachmentsList When parent is Target Document should treat all Attachments as read only 1`] = `
-<div
-  className="attachments-list-parent"
->
+<div>
   <h2>
     Attachments
   </h2>
@@ -43,9 +41,7 @@ exports[`AttachmentsList When parent is Target Document should treat all Attachm
 `;
 
 exports[`AttachmentsList should render a sorted list of attachments (files) 1`] = `
-<div
-  className="attachments-list-parent"
->
+<div>
   <Connect(NeedAuthorization)>
     <div
       className="attachment-buttons main-file"
@@ -121,9 +117,7 @@ exports[`AttachmentsList should render a sorted list of attachments (files) 1`] 
 `;
 
 exports[`AttachmentsList when files is empty should add button in Downloads section 1`] = `
-<div
-  className="attachments-list-parent"
->
+<div>
   <Connect(NeedAuthorization)>
     <div
       className="attachment-buttons main-file"
@@ -170,9 +164,7 @@ exports[`AttachmentsList when files is empty should add button in Downloads sect
 `;
 
 exports[`AttachmentsList when files is empty should render nothing if user not logged in 1`] = `
-<div
-  className="attachments-list-parent"
->
+<div>
   <Connect(NeedAuthorization)>
     <div
       className="attachment-buttons main-file"

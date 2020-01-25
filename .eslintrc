@@ -29,16 +29,6 @@
 
     "object-curly-spacing": ["warn", "always"],
     "max-len": ["error", 150],
-    "no-unused-vars": [
-      "error",
-      {
-        "vars": "all",
-        "argsIgnorePattern": "^_",
-        "args": "all",
-        "caughtErrors": "none",
-        "ignoreRestSiblings": true
-      }
-    ],
 
     //all warns are activated by default if removed
     "prefer-promise-reject-errors": ["warn"],
@@ -136,7 +126,7 @@
       }
     },
     {
-      "files": ["app/**/*.ts*", "database/**/*.ts"],
+      "files": ["app/**/*.ts*"],
       "parser": "@typescript-eslint/parser",
       "parserOptions": {
         "project": "./tsconfig.json"
@@ -157,8 +147,7 @@
             "vars": "all",
             "argsIgnorePattern": "^_",
             "args": "all",
-            "caughtErrors": "none",
-            "ignoreRestSiblings": true
+            "ignoreRestSiblings": false
           }
         ],
         "@typescript-eslint/no-explicit-any": [
@@ -175,10 +164,7 @@
           }
         ],
         // This is broken for ts, but circleci protects us.
-        "import/no-extraneous-dependencies": "off",
-        "@typescript-eslint/no-floating-promises": "error",
-        "@typescript-eslint/no-misused-promises": "error",
-        "@typescript-eslint/promise-function-async": "error"
+        "import/no-extraneous-dependencies": "off"
       }
     }
   ]

@@ -213,7 +213,7 @@ $c-sidebar: $c-white;
 }
 .sidepanel-footer {
   position: absolute;
-  bottom: 2em;
+  bottom: 0;
   left: 50%;
   transform: translateX(-50%);
   padding: 0 0 20px;
@@ -228,7 +228,7 @@ $c-sidebar: $c-white;
     line-height: $header-height;
     font-size: $f-size-lg;
     padding: 0;
-    margin: 0 12px;
+    margin: 0 6px;
   }
 
   .btn-label {
@@ -241,8 +241,6 @@ $c-sidebar: $c-white;
     transform: translateX(-50%) translateY(2px);
     background: rgba(255, 255, 255, 0.8);
     padding: 0 5px;
-    width: 6em;
-    white-space: pre-line;
   }
 
   .btn:hover .btn-label {

@@ -13,15 +13,8 @@ Array [
     "value": Array [
       Object {
         "_id": 1,
-        "model_available": false,
         "name": "Countries",
       },
-    ],
-  },
-  Object {
-    "type": "thesauri/models/SET",
-    "value": Array [
-      Array [],
     ],
   },
   Object {

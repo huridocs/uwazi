@@ -29,7 +29,7 @@ ajv.addKeyword('metadataMatchesTemplateProperties', {
   async: true,
   errors: true,
   type: 'object',
-  async validate(_schema, entity) {
+  async validate(schema, entity) {
     if (!entity.template) {
       return true;
     }
@@ -139,7 +139,6 @@ export const entitySchema = {
     },
     user: objectIdSchema,
     metadata: metadataSchema,
-    suggestedMetadata: metadataSchema,
   },
 };
 

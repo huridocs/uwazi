@@ -89,7 +89,7 @@ export default class MultiSelect extends Component {
     this.setState({ showAll: !this.state.showAll });
   }
 
-  sort(options, _optionsValue, optionsLabel, isSubGroup = false) {
+  sort(options, optionsValue, optionsLabel, isSubGroup = false) {
     const sortedOptions = options.sort((a, b) => {
       let sorting = 0;
       if (!this.state.showAll) {
@@ -103,7 +103,7 @@ export default class MultiSelect extends Component {
       }
 
       const showingAll = this.state.showAll || options.length < this.props.optionsToShow;
-      if (sorting === 0 || showingAll || this.props.sortbyLabel || isSubGroup) {
+      if (sorting === 0 || showingAll || this.state.sortbyLabel || isSubGroup) {
         sorting = a[optionsLabel] < b[optionsLabel] ? -1 : 1;
       }
 
@@ -113,7 +113,7 @@ export default class MultiSelect extends Component {
     return this.moveNoValueOptionToBottom(sortedOptions);
   }
 
-  sortOnlyAggregates(options, _optionsvalue, optionsLabel) {
+  sortOnlyAggregates(options, optionsvalue, optionsLabel) {
     if (!options.length || typeof options[0].results === 'undefined') {
       return options;
     }
@@ -255,7 +255,6 @@ export default class MultiSelect extends Component {
 
   render() {
     let { optionsValue, optionsLabel } = this.props;
-    const { thesaurusName } = this.props;
     optionsValue = optionsValue || 'value';
     optionsLabel = optionsLabel || 'label';
 
@@ -295,7 +294,7 @@ export default class MultiSelect extends Component {
       options = this.sortOnlyAggregates(options, optionsValue, optionsLabel);
     }
 
-    if (this.props.forceHoist || (!this.props.sort && !this.state.showAll)) {
+    if (!this.props.sort && !this.state.showAll) {
       options = this.hoistCheckedOptions(options);
     }
 
@@ -328,11 +327,7 @@ export default class MultiSelect extends Component {
               <input
                 className="form-control"
                 type="text"
-                placeholder={
-                  thesaurusName
-                    ? `${t('System', 'Search', null, false)} '${thesaurusName}'`
-                    : t('System', 'Search item', null, false)
-                }
+                placeholder={t('System', 'Search item', null, false)}
                 value={this.state.filter}
                 onChange={this.filter.bind(this)}
               />
@@ -349,7 +344,7 @@ export default class MultiSelect extends Component {
         })}
 
         <li className="multiselectActions">
-          <ShowIf if={totalOptions.length > this.props.optionsToShow && !this.state.showAll}>
+          <ShowIf if={totalOptions.length > this.props.optionsToShow && !this.props.showAll}>
             <button onClick={this.showAll.bind(this)} className="btn btn-xs btn-default">
               <Icon icon={this.state.showAll ? 'caret-up' : 'caret-down'} />
               <i className={this.state.showAll ? 'fa fa-caret-up' : 'fa fa-caret-down'} />
@@ -374,8 +369,6 @@ MultiSelect.defaultProps = {
   hideSearch: false,
   sort: false,
   sortbyLabel: false,
-  forceHoist: false,
-  thesaurusName: '',
 };
 
 MultiSelect.propTypes = {
@@ -391,6 +384,4 @@ MultiSelect.propTypes = {
   hideSearch: PropTypes.bool,
   sort: PropTypes.bool,
   sortbyLabel: PropTypes.bool,
-  forceHoist: PropTypes.bool,
-  thesaurusName: PropTypes.string,
 };

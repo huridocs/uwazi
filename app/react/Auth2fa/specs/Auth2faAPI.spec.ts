@@ -14,7 +14,7 @@ describe('Auth2faAPI', () => {
 
   beforeEach(() => {
     request = new RequestParams();
-    spyOn(api, 'post').and.callFake(async path => {
+    spyOn(api, 'post').and.callFake(path => {
       const json: Secret | Success =
         path === 'auth2fa-secret' ? { otpauth: 'url', secret: 'secret' } : { success: true };
       return Promise.resolve({ json });

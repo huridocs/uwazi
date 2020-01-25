@@ -5,8 +5,8 @@ import { createSelector } from 'reselect';
 
 const getTitle = createSelector(
   s => s.thesauris,
-  (_s, p) => p.entity,
-  (_s, p) => p.context,
+  (s, p) => p.entity,
+  (s, p) => p.context,
   (thesauris, entity, context) => {
     const thesauri = thesauris.find(t => t.get('type') === 'template' && t.get('_id').toString() === context.toString());
     return thesauri.get('values').find(v => v.get('id') === entity).get('label');

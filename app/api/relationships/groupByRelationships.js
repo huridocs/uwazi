@@ -1,4 +1,4 @@
-function getGroupData(reference, groupedReferences, _templates, relationTypes) {
+function getGroupData(reference, groupedReferences, templates, relationTypes) {
   const key = reference.template ? reference.template.toString() : null;
   let groupData = groupedReferences.find(ref => ref.key === key);
   if (!groupData) {
@@ -13,7 +13,7 @@ function getGroupData(reference, groupedReferences, _templates, relationTypes) {
   return groupData;
 }
 
-const filterRelevantRelationships = (relationships, id, _locale, user) => relationships.filter(
+const filterRelevantRelationships = (relationships, id, locale, user) => relationships.filter(
   ref => Boolean(ref.entity !== id && (ref.entityData && ref.entityData.published || user))
 );
 

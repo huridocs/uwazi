@@ -1,10 +1,10 @@
-/** @format */
-
 import api from 'app/utils/api';
 
 export default {
   get(requestParams) {
-    return api.get('entities', requestParams).then(response => response.json.rows);
+    return api
+    .get('entities', requestParams)
+    .then(response => response.json.rows);
   },
 
   countByTemplate(requestParams) {
@@ -39,19 +39,21 @@ export default {
     return api.post('entities', requestParams).then(response => response.json);
   },
 
-  denormalize(requestParams) {
-    return api.post('entity_denormalize', requestParams).then(response => response.json);
-  },
-
   multipleUpdate(requestParams) {
-    return api.post('entities/multipleupdate', requestParams).then(response => response.json);
+    return api
+    .post('entities/multipleupdate', requestParams)
+    .then(response => response.json);
   },
 
   delete(requestParams) {
-    return api.delete('entities', requestParams).then(response => response.json);
+    return api
+    .delete('entities', requestParams)
+    .then(response => response.json);
   },
 
   deleteMultiple(requestParams) {
-    return api.post('entities/bulkdelete', requestParams).then(response => response.json);
-  },
+    return api
+    .post('entities/bulkdelete', requestParams)
+    .then(response => response.json);
+  }
 };

@@ -19,7 +19,7 @@ export class ItemList extends Component {
     const searchParams = sort ? { sort } : { sort: 'title' };
 
     const mapDispatchToProps = dispatch => bindActionCreators({
-        onClick: (_e, item) => selectSingleDocument(item)
+        onClick: (e, item) => selectSingleDocument(item)
     }, wrapDispatch(dispatch, 'library'));
 
     const toRenderItems = items.map((item, index) => {

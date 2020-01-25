@@ -43,7 +43,6 @@ describe('entities', () => {
 
     it('should need authorization', () => {
       expect(routes._post('/api/entities', req)).toNeedAuthorization();
-      expect(routes._post('/api/entity_denormalize', req)).toNeedAuthorization();
     });
 
     it('should create a new document with current user', done => {
@@ -60,17 +59,6 @@ describe('entities', () => {
           language: 'lang',
         });
         done();
-      });
-    });
-
-    it('should denormalize an entity', async () => {
-      spyOn(entities, 'denormalize').and.returnValue(Promise.resolve('entity'));
-
-      const document = await routes.post('/api/entity_denormalize', req);
-      expect(document).toBe('entity');
-      expect(entities.denormalize).toHaveBeenCalledWith(req.body, {
-        user: req.user,
-        language: 'lang',
       });
     });
 

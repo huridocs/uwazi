@@ -1,5 +1,3 @@
-/** @format */
-
 import superagent from 'superagent';
 import { actions as formActions } from 'react-redux-form';
 import { t } from 'app/I18N';
@@ -11,44 +9,42 @@ import * as notifications from 'app/Notifications/actions/notificationsActions';
 import { advancedSort } from 'app/utils/advancedSort';
 import { RequestParams } from 'app/utils/RequestParams';
 
-export function saveThesaurus(thesaurus) {
-  return dispatch =>
-    api.save(new RequestParams(thesaurus)).then(_thesauri => {
-      dispatch({ type: types.THESAURI_SAVED });
-      notifications.notify(t('System', 'Thesaurus saved', null, false), 'success')(dispatch);
-      dispatch(formActions.change('thesauri.data', _thesauri));
-    });
+
+export function saveThesauri(thesauri) {
+  return dispatch => api.save(new RequestParams(thesauri)).then((_thesauri) => {
+    dispatch({ type: types.THESAURI_SAVED });
+    notifications.notify(t('System', 'Thesaurus saved', null, false), 'success')(dispatch);
+    dispatch(formActions.change('thesauri.data', _thesauri));
+  });
 }
 
-export function importThesaurus(thesaurus, file) {
-  return dispatch =>
-    new Promise(resolve =>
-      superagent
-        .post(`${APIURL}thesauris`)
-        .set('Accept', 'application/json')
-        .set('X-Requested-With', 'XMLHttpRequest')
-        .field('thesauri', JSON.stringify(thesaurus))
-        .attach('file', file, file.name)
-        .on('response', response => {
-          const data = JSON.parse(response.text);
-          if (response.status === 200) {
-            dispatch({ type: types.THESAURI_SAVED });
-            notifications.notify(t('System', 'Data imported', null, false), 'success')(dispatch);
-            dispatch(formActions.change('thesauri.data', data));
-          } else {
-            notifications.notify(t('System', data.error, null, false), 'danger')(dispatch);
-          }
-          resolve();
-        })
-        .end()
-    );
+export function importThesauri(thesauri, file) {
+  return dispatch => new Promise(resolve =>
+    superagent.post(`${APIURL}thesauris`)
+    .set('Accept', 'application/json')
+    .set('X-Requested-With', 'XMLHttpRequest')
+    .field('thesauri', JSON.stringify(thesauri))
+    .attach('file', file, file.name)
+    .on('response', (response) => {
+      const data = JSON.parse(response.text);
+      if (response.status === 200) {
+        dispatch({ type: types.THESAURI_SAVED });
+        notifications.notify(t('System', 'Data imported', null, false), 'success')(dispatch);
+        dispatch(formActions.change('thesauri.data', data));
+      } else {
+        notifications.notify(t('System', data.error, null, false), 'danger')(dispatch);
+      }
+      resolve();
+    })
+    .end()
+  );
 }
 
 export function sortValues() {
   return (dispatch, getState) => {
     let values = getState().thesauri.data.values.slice(0);
     values = advancedSort(values, { property: 'label' });
-    values = values.map(_value => {
+    values = values.map((_value) => {
       const value = Object.assign({}, _value);
       if (value.values) {
         value.values = value.values.slice(0);
@@ -81,7 +77,7 @@ function moveEmptyItemToBottom(values) {
 }
 
 function areGroupsRemovedFromList(newValues, oldValues) {
-  return oldValues.some(item => {
+  return oldValues.some((item) => {
     if (!item.values) {
       return false;
     }

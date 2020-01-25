@@ -9,7 +9,7 @@ const ignorelist = [
   'POST/api/recoverpassword'
 ];
 
-export default (req, _res, next) => {
+export default (req, res, next) => {
   const { url, method, params, query, body, user = {} } = req;
   const baseurl = url.split('?').shift();
 

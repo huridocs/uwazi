@@ -55,7 +55,6 @@ const mongoSchema = new mongoose.Schema(
     uploaded: Boolean,
     published: Boolean,
     metadata: mongoose.Schema.Types.Mixed,
-    suggestedMetadata: mongoose.Schema.Types.Mixed,
     pdfInfo: mongoose.Schema.Types.Mixed,
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'users' },
   },
@@ -66,11 +65,8 @@ mongoSchema.index({ title: 'text' }, { language_override: 'mongoLanguage' });
 
 const Model = instanceModel<EntitySchema>('entities', mongoSchema);
 Model.db.collection.dropIndex('title_text', () => {
-  // We deliberately kick this promise into the void and ignore the result,
-  // because it's usually fast and we can't await here...
-  Model.db.ensureIndexes().then(() => {}, () => {});
+  Model.db.ensureIndexes();
 });
-
 const suportedLanguages = [
   'da',
   'nl',
@@ -103,6 +99,6 @@ const setMongoLanguage = (doc: EntitySchema) => {
 };
 
 const modelSaveRaw = Model.save.bind(Model);
-Model.save = async doc => modelSaveRaw(setMongoLanguage(doc));
+Model.save = doc => modelSaveRaw(setMongoLanguage(doc));
 
 export default Model;

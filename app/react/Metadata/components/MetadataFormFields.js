@@ -7,7 +7,6 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field } from 'react-redux-form';
-import { propertyTypes } from 'shared/propertyTypes';
 import {
   DatePicker,
   DateRange,
@@ -17,7 +16,6 @@ import {
   MultiDate,
   MultiDateRange,
   MultiSelect,
-  MultiSuggest,
   Nested,
   Numeric,
   Select,
@@ -25,54 +23,46 @@ import {
 import MultipleEditionFieldWarning from './MultipleEditionFieldWarning';
 
 const translateOptions = thesauri =>
-  thesauri
-    .get('values')
-    .map(optionIm => {
-      const option = optionIm.toJS();
-      option.label = t(thesauri._id, option.label, null, false);
-      if (option.values) {
-        option.options = option.values.map(val => {
-          val.label = t(thesauri._id, val.label, null, false);
-          return val;
-        });
-      }
-      return option;
-    })
-    .toJS();
+  thesauri.values.map(option => {
+    option.label = t(thesauri._id, option.label, null, false);
+    if (option.values) {
+      option.options = option.values.map(val => {
+        val.label = t(thesauri._id, val.label, null, false);
+        return val;
+      });
+    }
+    return option;
+  });
 
 export class MetadataFormFields extends Component {
   getField(property, _model, thesauris) {
     let thesauri;
-    const { dateFormat, version } = this.props;
+    const { dateFormat } = this.props;
     const propertyType = property.type;
     switch (propertyType) {
       case 'select':
-        thesauri = thesauris.find(opt => opt.get('_id').toString() === property.content.toString());
+        thesauri = thesauris.find(opt => opt._id.toString() === property.content.toString());
         return <Select model={_model} optionsValue="id" options={translateOptions(thesauri)} />;
       case 'multiselect':
-        thesauri = thesauris.find(opt => opt.get('_id').toString() === property.content.toString());
+        thesauri = thesauris.find(opt => opt._id.toString() === property.content.toString());
         return (
           <MultiSelect
             model={_model}
             optionsValue="id"
             options={translateOptions(thesauri)}
             prefix={_model}
-            forceHoist={version === 'OneUp'}
-            thesaurusName={version === 'OneUp' ? thesauri.get('name') : null}
           />
         );
       case 'relationship':
         if (property.content) {
-          const source = thesauris.find(
-            opt => opt.get('_id').toString() === property.content.toString()
-          );
+          const source = thesauris.find(opt => opt._id.toString() === property.content.toString());
           thesauri = translateOptions(source);
         }
 
         if (!property.content) {
           thesauri = Array.prototype.concat(
             ...thesauris
-              .filter(filterThesauri => filterThesauri.get('type') === 'template')
+              .filter(filterThesauri => filterThesauri.type === 'template')
               .map(translateOptions)
           );
         }
@@ -125,53 +115,32 @@ export class MetadataFormFields extends Component {
   }
 
   render() {
-    const { thesauris, template, multipleEdition, model, showSubset } = this.props;
-    const mlThesauri = thesauris
-      .filter(thes => !!thes.get('enable_classification'))
-      .map(thes => thes.get('_id'))
-      .toJS();
+    const { thesauris, template, multipleEdition, model } = this.props;
     const fields = template.get('properties').toJS();
     const templateID = template.get('_id');
 
     return (
       <div>
-        {fields
-          .filter(p => {
-            if (showSubset && !showSubset.includes(p.name)) {
-              return false;
-            }
-            return true;
-          })
-          .map(property => (
-            <FormGroup key={property.name} model={`.metadata.${property.name}`}>
-              <ul className="search__filter is-active">
-                <li className="title">
-                  <label>
-                    <MultipleEditionFieldWarning
-                      multipleEdition={multipleEdition}
-                      model={model}
-                      field={`metadata.${property.name}`}
-                    />
-                    {t(templateID, property.label)}
-                    {property.required ? <span className="required">*</span> : ''}
-                  </label>
-                </li>
-                {mlThesauri.includes(property.content) &&
-                [propertyTypes.multiselect, propertyTypes.select].includes(property.type) ? (
-                  <li className="wide">
-                    <MultiSuggest
-                      model={`.suggestedMetadata.${property.name}`}
-                      selectModel={`.metadata.${property.name}`}
-                      propertyType={property.type}
-                    />
-                  </li>
-                ) : null}
-                <li className="wide">
-                  {this.getField(property, `.metadata.${property.name}`, thesauris)}
-                </li>
-              </ul>
-            </FormGroup>
-          ))}
+        {fields.map(property => (
+          <FormGroup key={property.name} model={`.metadata.${property.name}`}>
+            <ul className="search__filter is-active">
+              <li>
+                <label>
+                  <MultipleEditionFieldWarning
+                    multipleEdition={multipleEdition}
+                    model={model}
+                    field={`metadata.${property.name}`}
+                  />
+                  {t(templateID, property.label)}
+                  {property.required ? <span className="required">*</span> : ''}
+                </label>
+              </li>
+              <li className="wide">
+                {this.getField(property, `.metadata.${property.name}`, thesauris.toJS())}
+              </li>
+            </ul>
+          </FormGroup>
+        ))}
       </div>
     );
   }
@@ -180,8 +149,6 @@ export class MetadataFormFields extends Component {
 MetadataFormFields.defaultProps = {
   multipleEdition: false,
   dateFormat: null,
-  version: undefined,
-  showSubset: undefined,
 };
 
 MetadataFormFields.propTypes = {
@@ -190,8 +157,6 @@ MetadataFormFields.propTypes = {
   thesauris: PropTypes.instanceOf(Immutable.List).isRequired,
   multipleEdition: PropTypes.bool,
   dateFormat: PropTypes.string,
-  showSubset: PropTypes.arrayOf(PropTypes.string),
-  version: PropTypes.string,
 };
 
 export const mapStateToProps = state => ({

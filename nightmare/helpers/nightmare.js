@@ -24,7 +24,7 @@ export default function createNightmare(width = 1200, height = 600) {
     }
   }).viewport(width, height);
 
-  nightmare.on('page', (_type, _message, error) => {
+  nightmare.on('page', (type, message, error) => {
     fail(error);
   });
 

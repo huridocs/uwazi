@@ -1,35 +1,31 @@
-/** @format */
+import { Component } from 'react';
+import PropTypes from 'prop-types';
+import moment from 'moment';
 
 import { I18NUtils } from 'app/I18N';
-import { isClient } from 'app/utils';
+import JSONUtils from 'shared/JSONUtils';
 import api from 'app/utils/api';
 import { RequestParams } from 'app/utils/RequestParams';
-import moment from 'moment';
-import PropTypes from 'prop-types';
-import React, { Component } from 'react';
-import JSONUtils from 'shared/JSONUtils';
+import { isClient } from 'app/utils';
 
 const getLocale = ({ store }) => store.getState().locale;
 
-const setLocale = locale => {
+const setLocale = (locale) => {
   moment.locale(locale);
   api.locale(locale);
   I18NUtils.saveLocale(locale);
 };
 
 class RouteHandler extends Component {
-  static async requestState(_requestParams) {
-    return new Promise((resolve, _reject) => {
-      resolve([]);
-    });
+  static requestState() {
+    return Promise.resolve([]);
   }
 
   emptyState() {} //eslint-disable-line
 
   static renderTools() {}
 
-  //eslint-disable-next-line
-  isRenderedFromServer() {
+  isRenderedFromServer() { //eslint-disable-line
     const result = RouteHandler.renderedFromServer;
     RouteHandler.renderedFromServer = false;
     return result;
@@ -63,7 +59,7 @@ class RouteHandler extends Component {
     const requestParams = new RequestParams({ ...query, ...params }, headers);
     const actions = await this.constructor.requestState(requestParams, store.getState());
 
-    actions.forEach(action => {
+    actions.forEach((action) => {
       store.dispatch(action);
     });
   }
@@ -72,10 +68,7 @@ class RouteHandler extends Component {
     const { params: nextParams = {}, routes: nextRoutes = [] } = nextProps;
     const { params, routes } = this.props;
 
-    const sameParams = Object.keys(nextParams).reduce(
-      (memo, key) => memo && nextProps.params[key] === params[key],
-      true
-    );
+    const sameParams = Object.keys(nextParams).reduce((memo, key) => memo && nextProps.params[key] === params[key], true);
     const sameAmountOfparams = Object.keys(nextParams).length === Object.keys(params).length;
     const currentPath = routes.reduce((path, r) => path + r.path, '');
     const newPath = nextRoutes.reduce((path, r) => path + r.path, '');
@@ -84,27 +77,27 @@ class RouteHandler extends Component {
   }
 
   render() {
-    return <div>{false}</div>;
+    return false;
   }
 }
 
 RouteHandler.renderedFromServer = true;
 
 RouteHandler.defaultProps = {
-  params: {},
+  params: {}
 };
 
 RouteHandler.contextTypes = {
   getInitialData: PropTypes.func,
   isRenderedFromServer: PropTypes.func,
   router: PropTypes.object,
-  store: PropTypes.object,
+  store: PropTypes.object
 };
 
 RouteHandler.propTypes = {
   params: PropTypes.object,
   routes: PropTypes.array,
-  location: PropTypes.object,
+  location: PropTypes.object
 };
 
 export default RouteHandler;

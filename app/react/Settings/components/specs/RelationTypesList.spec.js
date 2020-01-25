@@ -1,5 +1,3 @@
-/** @format */
-
 import React from 'react';
 import { shallow } from 'enzyme';
 import Immutable from 'immutable';
@@ -15,16 +13,12 @@ describe('RelationTypesList', () => {
     props = {
       relationTypes: Immutable.fromJS([{ _id: 1, name: 'Against' }, { _id: 2, name: 'Supports' }]),
       notify: jasmine.createSpy('notify'),
-      deleteRelationType: jasmine
-        .createSpy('deleteRelationType')
-        .and.returnValue(Promise.resolve()),
-      checkRelationTypeCanBeDeleted: jasmine
-        .createSpy('checkRelationTypeCanBeDeleted')
-        .and.returnValue(Promise.resolve()),
+      deleteRelationType: jasmine.createSpy('deleteRelationType').and.returnValue(Promise.resolve()),
+      checkRelationTypeCanBeDeleted: jasmine.createSpy('checkRelationTypeCanBeDeleted').and.returnValue(Promise.resolve())
     };
 
     context = {
-      confirm: jasmine.createSpy('confirm'),
+      confirm: jasmine.createSpy('confirm')
     };
   });
 
@@ -40,26 +34,22 @@ describe('RelationTypesList', () => {
   });
 
   describe('when deleting a relation type', () => {
-    it('should check if can be deleted', done => {
+    it('should check if can be deleted', (done) => {
       render();
-      component
-        .instance()
-        .deleteRelationType({ _id: 1, name: 'Decision' })
-        .then(() => {
-          expect(props.checkRelationTypeCanBeDeleted).toHaveBeenCalled();
-          done();
-        });
+      component.instance().deleteRelationType({ _id: 1, name: 'Decision' })
+      .then(() => {
+        expect(props.checkRelationTypeCanBeDeleted).toHaveBeenCalled();
+        done();
+      });
     });
 
-    it('should confirm the action', done => {
+    it('should confirm the action', (done) => {
       render();
-      component
-        .instance()
-        .deleteRelationType({ _id: 1, name: 'Decision' })
-        .then(() => {
-          expect(context.confirm).toHaveBeenCalled();
-          done();
-        });
+      component.instance().deleteRelationType({ _id: 1, name: 'Decision' })
+      .then(() => {
+        expect(context.confirm).toHaveBeenCalled();
+        done();
+      });
     });
   });
 });

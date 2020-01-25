@@ -289,7 +289,7 @@ describe('Users', () => {
         testUser.using2fa = true;
         testUser.failedLogins = 4;
 
-        spyOn(usersUtils, 'verifyToken').and.callFake((_user, token) => {
+        spyOn(usersUtils, 'verifyToken').and.callFake((user, token) => {
           if (token === 'correctToken') {
             return Promise.resolve({ validToken: true });
           }

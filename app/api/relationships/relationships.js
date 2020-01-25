@@ -438,7 +438,7 @@ export default {
     });
   },
 
-  async delete(relationQuery, _language, updateMetdata = true) {
+  async delete(relationQuery, language, updateMetdata = true) {
     if (!relationQuery) {
       return Promise.reject(createError('Cant delete without a condition'));
     }

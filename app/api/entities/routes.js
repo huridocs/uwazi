@@ -25,15 +25,6 @@ export default app => {
       .catch(next)
   );
 
-  app.post('/api/entity_denormalize', needsAuthorization(['admin', 'editor']), (req, res, next) =>
-    entities
-      .denormalize(req.body, { user: req.user, language: req.language })
-      .then(response => {
-        res.json(response);
-      })
-      .catch(next)
-  );
-
   app.post(
     '/api/entities/multipleupdate',
     needsAuthorization(['admin', 'editor']),

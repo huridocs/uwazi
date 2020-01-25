@@ -12,7 +12,7 @@ import { Icon } from 'UI';
 import { t } from 'app/I18N';
 import { reconnectSocket } from 'app/socket';
 import RouteHandler from 'app/App/RouteHandler';
-import { reloadThesauri } from 'app/Thesauris/actions/thesaurisActions';
+import { reloadThesauris } from 'app/Thesauris/actions/thesaurisActions';
 
 import auth from 'app/Auth';
 
@@ -229,7 +229,7 @@ function mapDispatchToProps(dispatch) {
     {
       login: auth.actions.login,
       recoverPassword: auth.actions.recoverPassword,
-      reloadThesauris: reloadThesauri,
+      reloadThesauris,
     },
     dispatch
   );

@@ -11,7 +11,7 @@ import needsAuthorization from '../auth/authMiddleware';
 import translations from './translations';
 
 export default app => {
-  app.get('/api/translations', (_req, res, next) => {
+  app.get('/api/translations', (req, res, next) => {
     translations
       .get()
       .then(response => res.json({ rows: response }))

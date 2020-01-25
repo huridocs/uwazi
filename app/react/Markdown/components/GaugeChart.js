@@ -31,7 +31,7 @@ export const GaugeChartComponent = (props) => {
             cy={height}
           >
             {
-              formattedData.map((_entry, index) => <Cell key={index} fill={sliceColors[index % sliceColors.length]} />)
+              formattedData.map((entry, index) => <Cell key={index} fill={sliceColors[index % sliceColors.length]} />)
             }
           </Pie>
           {propedChildren.length && (

@@ -1,10 +1,8 @@
-/** @format */
-
 import React from 'react';
 import { shallow } from 'enzyme';
 import { Icon } from 'UI';
 
-import { MultipleEditionFieldWarningBase, mapStateToProps } from '../MultipleEditionFieldWarning';
+import { MultipleEditionFieldWarning, mapStateToProps } from '../MultipleEditionFieldWarning';
 
 describe('FormGroup', () => {
   let component;
@@ -15,7 +13,7 @@ describe('FormGroup', () => {
   });
 
   const render = () => {
-    component = shallow(<MultipleEditionFieldWarningBase {...props} />);
+    component = shallow(<MultipleEditionFieldWarning {...props} />);
   };
 
   describe('when multipleEdition and touched', () => {
@@ -52,17 +50,13 @@ describe('FormGroup', () => {
       let state = { namespace: { $form: { model: 'namespace' }, field: { pristine: false } } };
       expect(mapStateToProps(state, { model: 'namespace', field: 'field' }).touched).toEqual(true);
 
-      state = {
-        namespace: { $form: { model: 'namespace' }, field: { $form: { pristine: false } } },
-      };
+      state = { namespace: { $form: { model: 'namespace' }, field: { $form: { pristine: false } } } };
       expect(mapStateToProps(state, { model: 'namespace', field: 'field' }).touched).toEqual(true);
 
       state = { namespace: { $form: { model: 'namespace' }, field: { pristine: true } } };
       expect(mapStateToProps(state, { model: 'namespace', field: 'field' }).touched).toEqual(false);
 
-      state = {
-        namespace: { $form: { model: 'namespace' }, field: { $form: { pristine: true } } },
-      };
+      state = { namespace: { $form: { model: 'namespace' }, field: { $form: { pristine: true } } } };
       expect(mapStateToProps(state, { model: 'namespace', field: 'field' }).touched).toEqual(false);
     });
   });

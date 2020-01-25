@@ -17,7 +17,6 @@ export const thesaurusSchema = {
       uniqueName: '',
       minLength: 1,
     },
-    enable_classification: { type: 'boolean' },
     values: {
       type: 'array',
       items: {

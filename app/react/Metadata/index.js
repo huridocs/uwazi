@@ -8,8 +8,6 @@ import MetadataFormButtons from './components/MetadataFormButtons';
 import MetadataFormFields from './components/MetadataFormFields';
 import SelectMultiplePanel from './components/SelectMultiplePanel';
 
-export * from './helpers/wrapper';
-
 export {
   validator,
   actions,

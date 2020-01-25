@@ -10,57 +10,48 @@ const rangeFilter = (filter, path = 'metadata') => {
   return match;
 };
 
-function missingFilter(field) {
-  return {
-    bool: {
-      must_not: [
-        {
-          exists: {
-            field,
-          },
-        },
-      ],
-    },
-  };
-}
-
 // eslint-disable-next-line max-statements
 const multiselectFilter = (filter, path = 'metadata') => {
   const filterValue = filter.value;
   const { values = [] } = filterValue;
   let match;
-  if (values.includes('any')) {
-    match = {
-      exists: {
-        field: `${path}.${filter.name}.raw`,
-      },
-    };
-    return match;
-  }
   if (values.includes('missing') && !filterValue.and) {
     const _values = values.filter(v => v !== 'missing');
     match = {
       bool: {
         should: [
-          missingFilter(`${path}.${filter.name}.raw`),
           {
-            terms: { [`${path}.${filter.name}.raw`]: _values },
+            bool: {
+              must_not: [
+                {
+                  exists: {
+                    field: `${path}.${filter.name}.raw`,
+                  },
+                },
+              ],
+            },
+          },
+          {
+            terms: {},
           },
         ],
       },
     };
+    match.bool.should[1].terms[`${path}.${filter.name}.raw`] = _values;
     return match;
   }
   if (!values.includes('missing') && !filterValue.and) {
-    match = { terms: { [`${path}.${filter.name}.raw`]: values } };
+    match = { terms: {} };
+    match.terms[`${path}.${filter.name}.raw`] = values;
   }
 
   if (filterValue.and) {
-    match = {
-      bool: {
-        must: values.map(value => ({ term: { [`${path}.${filter.name}.raw`]: value } })),
-      },
-    };
+    match = { bool: { must: [] } };
+    match.bool.must = values.map(value => {
+      const m = { term: {} };
+      m.term[`${path}.${filter.name}.raw`] = value;
+      return m;
+    });
   }
   return match;
 };
@@ -223,7 +214,6 @@ const filterToMatch = (filter, path = 'metadata') => {
     match = rangeFilter(filter, path);
   }
 
-  // this is what's most important for one-up review
   if (filter.type === 'multiselect' || filter.type === 'select' || filter.type === 'relationship') {
     match = multiselectFilter(filter, path);
   }

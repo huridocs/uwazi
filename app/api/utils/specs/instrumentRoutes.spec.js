@@ -5,27 +5,27 @@ describe('routesMock', () => {
   function middleware2() {}
 
   let testingRoute = (app) => {
-    app.get('/routeWith/middleware', middleware1, middleware2, (_req, res) => {
+    app.get('/routeWith/middleware', middleware1, middleware2, (req, res) => {
       res.json({ response: 'middleware route' });
     });
 
-    app.post('/routeWith/middleware', middleware1, middleware2, (_req, res) => {
+    app.post('/routeWith/middleware', middleware1, middleware2, (req, res) => {
       res.json({ response: 'middleware route' });
     });
 
-    app.delete('/routeWith/middleware', middleware1, middleware2, (_req, res) => {
+    app.delete('/routeWith/middleware', middleware1, middleware2, (req, res) => {
       res.json({ response: 'middleware route' });
     });
 
-    app.get('/test/route', (_req, res) => {
+    app.get('/test/route', (req, res) => {
       res.json({ response: 'get' });
     });
 
-    app.delete('/test/route', (_req, res) => {
+    app.delete('/test/route', (req, res) => {
       res.json({ response: 'delete' });
     });
 
-    app.post('/test/route', (_req, res) => {
+    app.post('/test/route', (req, res) => {
       res.json({ response: 'post' });
     });
   };
@@ -98,7 +98,7 @@ describe('routesMock', () => {
 
   it('should put the status in the response', (done) => {
     testingRoute = (app) => {
-      app.get('/test/route', (_req, res) => {
+      app.get('/test/route', (req, res) => {
         res.status(404);
         res.json({ response: 'get' });
       });

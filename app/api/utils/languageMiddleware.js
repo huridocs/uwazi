@@ -1,6 +1,6 @@
 import settings from 'api/settings/settings';
 
-export default async (req, _res, next) => {
+export default async (req, res, next) => {
   let lang = req.get('content-language');
   if (!lang && req.cookies) {
     lang = req.cookies.locale;
@@ -9,7 +9,7 @@ export default async (req, _res, next) => {
     [lang] = req.get('accept-language').split('-');
   }
 
-  const { languages = [] } = await settings.get();
+  const { languages } = await settings.get();
 
   const langExists = languages.find(l => l.key === lang);
   if (!langExists) {

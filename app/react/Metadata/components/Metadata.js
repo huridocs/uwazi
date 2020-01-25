@@ -1,10 +1,12 @@
 /** @format */
 
-import { I18NLink, t } from 'app/I18N';
-import { Icon } from 'app/Layout';
-import MarkdownViewer from 'app/Markdown';
 import PropTypes from 'prop-types';
 import React from 'react';
+
+import { t, I18NLink } from 'app/I18N';
+import MarkdownViewer from 'app/Markdown';
+import { Icon } from 'app/Layout';
+
 import GeolocationViewer from './GeolocationViewer';
 import ValueList from './ValueList';
 
@@ -63,21 +65,16 @@ const showByType = (prop, compact) => {
   return result;
 };
 
-function filterProps(showSubset) {
-  return p => {
-    if (showSubset && !showSubset.includes(p.name)) {
-      return false;
-    }
-    if (Array.isArray(p.value)) {
-      return p.value.length;
-    }
-    return p.value || p.type === null;
-  };
-}
+const removeEmptyValues = p => {
+  if (Array.isArray(p.value)) {
+    return p.value.length;
+  }
+  return p.value || p.type === null;
+};
 
-const Metadata = ({ metadata, compact, renderLabel, showSubset }) => (
+const Metadata = ({ metadata, compact, renderLabel }) => (
   <React.Fragment>
-    {metadata.filter(filterProps(showSubset)).map((prop, index) => {
+    {metadata.filter(removeEmptyValues).map((prop, index) => {
       let type = prop.type ? prop.type : 'default';
       type = type === 'image' || type === 'media' ? 'multimedia' : type;
       return (
@@ -95,8 +92,7 @@ const Metadata = ({ metadata, compact, renderLabel, showSubset }) => (
 
 Metadata.defaultProps = {
   compact: false,
-  showSubset: undefined,
-  renderLabel: (_prop, label) => label,
+  renderLabel: (prop, label) => label,
 };
 
 Metadata.propTypes = {
@@ -119,7 +115,6 @@ Metadata.propTypes = {
   ).isRequired,
   compact: PropTypes.bool,
   renderLabel: PropTypes.func,
-  showSubset: PropTypes.arrayOf(PropTypes.string),
 };
 
 export default Metadata;

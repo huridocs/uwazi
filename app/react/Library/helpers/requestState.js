@@ -4,7 +4,7 @@ import api from 'app/Search/SearchAPI';
 import libraryHelpers from 'app/Library/helpers/libraryFilters';
 import setReduxState from './setReduxState.js';
 
-export function processQuery(_query, globalResources, key) {
+function processQuery(_query, globalResources, key) {
   const defaultSearch = prioritySortingCriteria.get({ templates: globalResources.templates });
 
   let query;

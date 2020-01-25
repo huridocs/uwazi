@@ -1,5 +1,3 @@
-/** @format */
-
 import React from 'react';
 import { shallow } from 'enzyme';
 import Immutable from 'immutable';
@@ -17,25 +15,25 @@ describe('ThesauriForm', () => {
         name: 'thesauri name',
         values: [
           { label: 'Heroes', values: [{ label: 'Batman' }, { label: 'Robin' }] },
-          { label: 'Villains', values: [{ label: 'Joker' }, { label: 'Penguin' }] },
-        ],
+          { label: 'Villains', values: [{ label: 'Joker' }, { label: 'Penguin' }] }
+        ]
       },
       resetForm: jasmine.createSpy('resetForm'),
       setInitial: jasmine.createSpy('setInitial'),
       thesauris: Immutable.fromJS([{ name: 'Countries' }]),
-      saveThesaurus: jasmine.createSpy('saveThesaurus'),
-      importThesaurus: jasmine.createSpy('importThesaurus'),
+      saveThesauri: jasmine.createSpy('saveThesauri'),
+      importThesauri: jasmine.createSpy('saveThesauri'),
       addValue: jasmine.createSpy('addValue'),
       addGroup: jasmine.createSpy('addGroup'),
       sortValues: jasmine.createSpy('sortValues'),
       removeValue: jasmine.createSpy('removeValue'),
       updateValues: jasmine.createSpy('updateValues'),
-      state: { fields: [], $form: {} },
+      state: { fields: [], $form: {} }
     };
   });
 
   const render = () => {
-    component = shallow(<ThesauriForm {...props} />);
+    component = shallow(<ThesauriForm {...props}/>);
     instance = component.instance();
   };
 
@@ -51,9 +49,7 @@ describe('ThesauriForm', () => {
   describe('render', () => {
     it('should render DragAndDropContainer with thesauri items', () => {
       render();
-      expect(component.find(DragAndDropContainer).props().renderItem).toBe(
-        component.instance().renderItem
-      );
+      expect(component.find(DragAndDropContainer).props().renderItem).toBe(component.instance().renderItem);
       expect(component).toMatchSnapshot();
     });
   });
@@ -74,14 +70,14 @@ describe('ThesauriForm', () => {
           { label: 'Heroes', values: [{ label: 'Batman' }, { label: 'Robin' }], id: 0 },
           { label: '', values: [{ label: 'Joker' }, { label: 'Penguin' }], id: 1 },
           { label: 'I have no values', values: [], id: 3 },
-          { label: '', id: 4 },
-        ],
+          { label: '', id: 4 }
+        ]
       };
       instance.save(thesauri);
       const sanitizedThesauri = {
-        values: [{ label: 'Heroes', values: [{ label: 'Batman' }, { label: 'Robin' }], id: 0 }],
+        values: [{ label: 'Heroes', values: [{ label: 'Batman' }, { label: 'Robin' }], id: 0 }]
       };
-      expect(props.saveThesaurus).toHaveBeenCalledWith(sanitizedThesauri);
+      expect(props.saveThesauri).toHaveBeenCalledWith(sanitizedThesauri);
     });
   });
 
@@ -89,10 +85,7 @@ describe('ThesauriForm', () => {
     it('should open file dialog when import button is clicked', () => {
       render();
       instance.fileInputRef.current = { click: jest.fn() };
-      component
-        .find('.import-template')
-        .first()
-        .simulate('click');
+      component.find('.import-template').first().simulate('click');
       expect(instance.fileInputRef.current.click).toHaveBeenCalled();
     });
 
@@ -100,31 +93,25 @@ describe('ThesauriForm', () => {
       render();
       const file = { name: 'file.csv' };
       instance.fileInputRef.current = {
-        files: [file],
+        files: [file]
       };
       instance.fileFormRef.current = {
-        reset: jest.fn(),
+        reset: jest.fn()
       };
-      component
-        .find('input[type="file"]')
-        .first()
-        .simulate('change');
-      expect(props.importThesaurus).toHaveBeenCalledWith(props.thesauri, file);
+      component.find('input[type="file"]').first().simulate('change');
+      expect(props.importThesauri).toHaveBeenCalledWith(props.thesauri, file);
       expect(instance.fileFormRef.current.reset).toHaveBeenCalled();
     });
     it('should not import thesauri if no file was selected', () => {
       render();
       instance.fileInputRef.current = {
-        files: [],
+        files: []
       };
       instance.fileFormRef.current = {
-        reset: jest.fn(),
+        reset: jest.fn()
       };
-      component
-        .find('input[type="file"]')
-        .first()
-        .simulate('change');
-      expect(props.importThesaurus).not.toHaveBeenCalled();
+      component.find('input[type="file"]').first().simulate('change');
+      expect(props.importThesauri).not.toHaveBeenCalled();
       expect(instance.fileFormRef.current.reset).toHaveBeenCalled();
     });
   });
@@ -142,13 +129,15 @@ describe('ThesauriForm', () => {
         thesauri: {
           _id: '123',
           name: 'thesauri name',
-          values: [{ label: 'Heroes', values: [{ label: 'Batman' }, { label: 'Robin' }] }],
-        },
+          values: [
+            { label: 'Heroes', values: [{ label: 'Batman' }, { label: 'Robin' }] }
+          ]
+        }
       };
       instance.firstLoad = false;
       instance.groups = [
         { focus: jasmine.createSpy('focus') },
-        { focus: jasmine.createSpy('focus') },
+        { focus: jasmine.createSpy('focus') }
       ];
       instance.componentDidUpdate(previousProps);
       expect(instance.groups[1].focus).toHaveBeenCalled();
@@ -159,14 +148,14 @@ describe('ThesauriForm', () => {
         thesauri: {
           _id: '123',
           name: 'thesauri name',
-          values: [],
-        },
+          values: []
+        }
       };
       instance.firstLoad = false;
       instance.props = props;
       instance.groups = [
         { focus: jasmine.createSpy('focus') },
-        { focus: jasmine.createSpy('focus') },
+        { focus: jasmine.createSpy('focus') }
       ];
       instance.componentDidUpdate(props);
       expect(instance.groups[1].focus).not.toHaveBeenCalled();
@@ -179,9 +168,9 @@ describe('ThesauriForm', () => {
       state = {
         thesauri: {
           data: { name: 'thesauri name', values: [] },
-          state: 'thesauri form state',
+          state: 'thesauri form state'
         },
-        thesauris: Immutable.fromJS([{ name: 'Countries' }]),
+        thesauris: Immutable.fromJS([{ name: 'Countries' }])
       };
     });
 
@@ -208,14 +197,12 @@ describe('ThesauriForm', () => {
         thesauris = [
           { _id: 'id1', name: 'Countries' },
           { _id: 'id2', name: 'Cities' },
-          { _id: 'id3', name: 'People', type: 'template' },
+          { _id: 'id3', name: 'People', type: 'template' }
         ];
         id = 'id1';
       });
       function testValidationResult(inputValue, expectedResult) {
-        const {
-          name: { duplicated },
-        } = ThesauriForm.validation(thesauris, id);
+        const { name: { duplicated } } = ThesauriForm.validation(thesauris, id);
         const res = duplicated(inputValue);
         expect(res).toBe(expectedResult);
       }

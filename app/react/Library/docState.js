@@ -2,10 +2,10 @@ import { createSelector } from 'reselect';
 
 const docState = createSelector(
   (state, props) => state.progress.get(props.doc.get('sharedId')),
-  (_state, props) => props.doc.get('uploaded'),
-  (_state, props) => props.doc.get('processed'),
-  (_state, props) => !props.doc.get('file'),
-  (_state, props) => props.doc.get('template'),
+  (state, props) => props.doc.get('uploaded'),
+  (state, props) => props.doc.get('processed'),
+  (state, props) => !props.doc.get('file'),
+  (state, props) => props.doc.get('template'),
   (progress, uploaded, processed, isEntity, template) => {
     if (!uploaded && !isEntity && (progress || progress === 0)) {
       return {

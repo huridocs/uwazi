@@ -451,7 +451,7 @@ describe('upload routes', () => {
     let remoteApp;
     beforeEach(() => {
       app = express();
-      app.use((_req, _res, next) => {
+      app.use((_req, res, next) => {
         _req.session = { remotecookie: 'connect.ssid: 12n32ndi23j4hsj;' }; //eslint-disable-line
         next();
       });

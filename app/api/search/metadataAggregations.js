@@ -134,10 +134,8 @@ const relationshipAggregation = (property, should, readOnlyFilters) => {
   return nestedAggregation(property, should, readOnlyFilters, 'relationships', false);
 };
 
-const propertyToAggregation = (property, dictionaries, baseQuery, suggested = false) => {
-  const path = suggested
-    ? `suggestedMetadata.${property.name}.raw`
-    : `metadata.${property.name}.raw`;
+const propertyToAggregation = (property, dictionaries, baseQuery) => {
+  const path = `metadata.${property.name}.raw`;
   let filters = baseQuery.query.bool.filter.filter(
     match =>
       match &&

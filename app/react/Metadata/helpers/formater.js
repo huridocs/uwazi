@@ -136,7 +136,7 @@ export default {
     return this.multimedia(property, value, 'image');
   },
 
-  preview(property, _value, _thesauris, { doc }) {
+  preview(property, value, thesauris, { doc }) {
     const reloadHack = doc.file && doc.file.filename ? doc.file.filename : '';
     return this.multimedia(
       property,
@@ -149,11 +149,11 @@ export default {
     return this.multimedia(property, value, 'media');
   },
 
-  default(_property, [value]) {
+  default(property, [value]) {
     return value;
   },
 
-  geolocation(property, value, _thesauris, { onlyForCards }) {
+  geolocation(property, value, thesauris, { onlyForCards }) {
     return {
       label: property.get('label'),
       name: property.get('name'),
@@ -245,7 +245,7 @@ export default {
     return { label: property.get('label'), name: property.get('name'), value: sortedValues };
   },
 
-  markdown(property, [{ value }], _thesauris, { type }) {
+  markdown(property, [{ value }], thesauris, { type }) {
     return {
       label: property.get('label'),
       name: property.get('name'),

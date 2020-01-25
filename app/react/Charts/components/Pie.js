@@ -1,5 +1,3 @@
-/** @format */
-
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -21,9 +19,7 @@ export class RechartsPie extends Component {
   mountData(props) {
     let fullData = Immutable.fromJS([]);
     if (props.data) {
-      fullData = Immutable.fromJS(
-        props.data.map(item => ({ name: item.label, value: item.results, enabled: true }))
-      );
+      fullData = Immutable.fromJS(props.data.map(item => ({ name: item.label, value: item.results, enabled: true })));
     }
     this.setState({ activeIndex: 0, fullData });
   }
@@ -40,19 +36,7 @@ export class RechartsPie extends Component {
 
   renderActiveShape(props) {
     const RADIAN = Math.PI / 180;
-    const {
-      cx,
-      cy,
-      midAngle,
-      innerRadius,
-      outerRadius,
-      startAngle,
-      endAngle,
-      fill,
-      payload,
-      percent,
-      value,
-    } = props;
+    const { cx, cy, midAngle, innerRadius, outerRadius, startAngle, endAngle, fill, payload, percent, value } = props;
     const sin = Math.sin(-RADIAN * midAngle);
     const cos = Math.cos(-RADIAN * midAngle);
     const sx = cx + (outerRadius + 10) * cos;
@@ -65,9 +49,7 @@ export class RechartsPie extends Component {
 
     return (
       <g>
-        <text x={cx} y={cy} dy={8} textAnchor="middle" fill={fill}>
-          {ellipsisString(payload.name, 14)}
-        </text>
+        <text x={cx} y={cy} dy={8} textAnchor="middle" fill={fill}>{ellipsisString(payload.name, 14)}</text>
         <Sector
           cx={cx}
           cy={cy}
@@ -87,14 +69,9 @@ export class RechartsPie extends Component {
           outerRadius={outerRadius + 10}
           fill={fill}
         />
-        <path d={`M${sx},${sy}L${mx},${my}L${ex},${ey}`} stroke={fill} fill="none" />
-        <circle cx={ex} cy={ey} r={2} fill={fill} stroke="none" />
-        <text
-          x={ex + (cos >= 0 ? 1 : -1) * 12}
-          y={ey}
-          textAnchor={textAnchor}
-          fill="#333"
-        >{`${payload.name}: ${value}`}</text>
+        <path d={`M${sx},${sy}L${mx},${my}L${ex},${ey}`} stroke={fill} fill="none"/>
+        <circle cx={ex} cy={ey} r={2} fill={fill} stroke="none"/>
+        <text x={ex + (cos >= 0 ? 1 : -1) * 12} y={ey} textAnchor={textAnchor} fill="#333">{`${payload.name}: ${value}`}</text>
         <text x={ex + (cos >= 0 ? 1 : -1) * 12} y={ey} dy={18} textAnchor={textAnchor} fill="#999">
           {`(${(percent * 100).toFixed(2)}%)`}
         </text>
@@ -117,15 +94,15 @@ export class RechartsPie extends Component {
     return filteredIndexMap[index];
   }
 
-  onIndexEnter(_data, index) {
+  onIndexEnter(data, index) {
     this.setState({ activeIndex: index });
   }
 
-  onFullIndexEnter(_data, index) {
+  onFullIndexEnter(data, index) {
     this.onIndexEnter(null, this.getFilteredIndex(this.state.fullData, index));
   }
 
-  onIndexClick(_data, index) {
+  onIndexClick(data, index) {
     const oldData = this.state.fullData;
     const enabled = !oldData.getIn([index, 'enabled']);
     let activeIndex = null;
@@ -168,23 +145,18 @@ export class RechartsPie extends Component {
             onClick={this.onIndexEnter.bind(this)}
             fill="#8884d8"
           >
-            {filteredData.map((_entry, index) => (
-              <Cell key={index} fill={filteredColors[index]} opacity={0.8} />
-            ))}
+            {filteredData.map((entry, index) => <Cell key={index} fill={filteredColors[index]} opacity={0.8} />
+            )}
           </Pie>
           <Legend
             onMouseEnter={this.onFullIndexEnter.bind(this)}
             onClick={this.onIndexClick.bind(this)}
             payload={fullData.map((item, index) => ({
-              value: item.name,
-              type: 'rect',
-              color: fullData[index].enabled ? colorScheme[index % colorScheme.length] : '#aaa',
-              formatter: () => (
-                <span style={{ color: fullData[index].enabled ? '#333' : '#999' }}>
-                  {item.name}
-                </span>
-              ),
-            }))}
+                      value: item.name,
+                      type: 'rect',
+                      color: fullData[index].enabled ? colorScheme[index % colorScheme.length] : '#aaa',
+                      formatter: () => <span style={{ color: fullData[index].enabled ? '#333' : '#999' }}>{item.name}</span>
+                    }))}
           />
         </PieChart>
       </ResponsiveContainer>
@@ -193,7 +165,7 @@ export class RechartsPie extends Component {
 }
 
 RechartsPie.propTypes = {
-  data: PropTypes.array,
+  data: PropTypes.array
 };
 
 export default connect()(RechartsPie);

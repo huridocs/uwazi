@@ -3,12 +3,12 @@ import socketIo from 'socket.io';
 
 export default (server, app) => {
   const io = socketIo(server);
-  app.use((req, _res, next) => {
+  app.use((req, res, next) => {
     req.io = io;
     next();
   });
 
-  app.use((req, _res, next) => {
+  app.use((req, res, next) => {
     req.getCurrentSessionSockets = () => {
       const sessionSockets = {
         sockets: [],

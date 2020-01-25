@@ -19,7 +19,7 @@ const indexedThesaurus = createSelector(
 const formatMetadata = createSelector(
   s => s.templates,
   indexedThesaurus,
-  (_s, doc, sortProperty, references) => ({ doc, sortProperty, references }),
+  (s, doc, sortProperty, references) => ({ doc, sortProperty, references }),
   (templates, thesauris, { doc, sortProperty, references }) => {
     if (sortProperty) {
       return formater.prepareMetadataForCard(doc, templates, thesauris, sortProperty).metadata;

@@ -7,7 +7,7 @@ import t from '../I18N/t';
 
 const getTemplateInfo = createSelector(
   s => s.templates,
-  (_s, p) => p.template,
+  (s, p) => p.template,
   (templates, currentTemplate) => {
     let styleProps;
     const name = templates.reduce((result, template, index) => {

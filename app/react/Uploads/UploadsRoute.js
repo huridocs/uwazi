@@ -1,40 +1,41 @@
-/** @format */
+import React from 'react';
+import Helmet from 'react-helmet';
+import rison from 'rison';
 
+import api from 'app/Search/SearchAPI';
 import RouteHandler from 'app/App/RouteHandler';
-import { actions } from 'app/BasicReducer';
-import LibraryCharts from 'app/Charts/components/LibraryCharts';
-import { t } from 'app/I18N';
-import { enterLibrary, setDocuments } from 'app/Library/actions/libraryActions';
 import DocumentsList from 'app/Library/components/DocumentsList';
+import LibraryCharts from 'app/Charts/components/LibraryCharts';
 import LibraryFilters from 'app/Library/components/LibraryFilters';
-import SearchBar from 'app/Library/components/SearchBar';
+// import ListChartToggleButtons from 'app/Charts/components/ListChartToggleButtons';
+import { enterLibrary, setDocuments } from 'app/Library/actions/libraryActions';
+import libraryHelpers from 'app/Library/helpers/libraryFilters';
 import SearchButton from 'app/Library/components/SearchButton';
 import ViewMetadataPanel from 'app/Library/components/ViewMetadataPanel';
 import SelectMultiplePanelContainer from 'app/Library/containers/SelectMultiplePanelContainer';
-import libraryHelpers from 'app/Library/helpers/libraryFilters';
+import { actions } from 'app/BasicReducer';
+import { actions as formActions } from 'react-redux-form';
+import { t } from 'app/I18N';
 import { wrapDispatch } from 'app/Multireducer';
-import api from 'app/Search/SearchAPI';
-import ImportPanel from 'app/Uploads/components/ImportPanel';
+
 import UploadBox from 'app/Uploads/components/UploadBox';
 import UploadsHeader from 'app/Uploads/components/UploadsHeader';
+import ImportPanel from 'app/Uploads/components/ImportPanel';
 import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
-import React from 'react';
-import Helmet from 'react-helmet';
-import { actions as formActions } from 'react-redux-form';
-import rison from 'rison';
 import socket from '../socket';
 
-const setReduxState = state => _dispatch => {
-  const dispatch = wrapDispatch(_dispatch, 'uploads');
-  dispatch(setDocuments(state.uploads.documents));
-  dispatch(actions.set('aggregations', state.uploads.aggregations));
-  dispatch(formActions.load('uploads.search', state.uploads.search));
-  dispatch({
-    type: 'SET_LIBRARY_FILTERS',
-    documentTypes: state.uploads.filters.documentTypes,
-    libraryFilters: state.uploads.filters.properties,
-  });
-};
+
+const setReduxState = state =>
+  (_dispatch) => {
+    const dispatch = wrapDispatch(_dispatch, 'uploads');
+    dispatch(setDocuments(state.uploads.documents));
+    dispatch(actions.set('aggregations', state.uploads.aggregations));
+    dispatch(formActions.load('uploads.search', state.uploads.search));
+    dispatch({ type: 'SET_LIBRARY_FILTERS',
+      documentTypes: state.uploads.filters.documentTypes,
+      libraryFilters: state.uploads.filters.properties }
+    );
+  };
 
 export default class Uploads extends RouteHandler {
   constructor(props, context) {
@@ -46,7 +47,7 @@ export default class Uploads extends RouteHandler {
   static renderTools() {
     return (
       <div className="searchBox">
-        <SearchButton storeKey="uploads" />
+        <SearchButton storeKey="uploads"/>
       </div>
     );
   }
@@ -76,9 +77,9 @@ export default class Uploads extends RouteHandler {
           documents,
           filters: { documentTypes: query.types || [], properties: filterState.properties },
           aggregations: documents.aggregations,
-          search: filterState.search,
-        },
-      }),
+          search: filterState.search
+        }
+      })
     ];
   }
 
@@ -104,27 +105,22 @@ export default class Uploads extends RouteHandler {
 
   render() {
     const query = rison.decode(this.props.location.query.q || '()');
-    const viewOnly = this.props.location.query.view === 'nosearch';
     const chartView = this.props.location.query.view === 'chart';
-    const mainView = !chartView ? (
-      <DocumentsList storeKey="uploads" SearchBar={viewOnly ? null : SearchBar} />
-    ) : (
-      <LibraryCharts storeKey="uploads" />
-    );
+    const mainView = !chartView ? <DocumentsList storeKey="uploads"/> : <LibraryCharts storeKey="uploads" />;
 
     return (
       <div className="row panels-layout">
         <Helmet title={t('System', 'Uploads', null, false)} />
-        {!viewOnly && <UploadsHeader />}
+        <UploadsHeader/>
         <main className="uploads-viewer document-viewer with-panel">
-          {!viewOnly && <UploadBox />}
+          <UploadBox />
           {/*<ListChartToggleButtons active={chartView ? 'chart' : 'list'} />*/}
           {mainView}
         </main>
-        {!viewOnly && <LibraryFilters uploadsSection storeKey="uploads" />}
-        <ViewMetadataPanel storeKey="uploads" searchTerm={query.searchTerm} />
-        <SelectMultiplePanelContainer storeKey="uploads" />
-        {!viewOnly && <ImportPanel />}
+        <LibraryFilters uploadsSection storeKey="uploads"/>
+        <ViewMetadataPanel storeKey="uploads" searchTerm={query.searchTerm}/>
+        <SelectMultiplePanelContainer storeKey="uploads"/>
+        <ImportPanel/>
       </div>
     );
   }

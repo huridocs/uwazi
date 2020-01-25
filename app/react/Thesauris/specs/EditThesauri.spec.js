@@ -1,5 +1,3 @@
-/** @format */
-
 import React from 'react';
 import backend from 'fetch-mock';
 import { shallow } from 'enzyme';
@@ -10,23 +8,19 @@ import ThesauriForm from 'app/Thesauris/components/ThesauriForm';
 import RouteHandler from 'app/App/RouteHandler';
 
 describe('EditThesauri', () => {
-  const thesauri = {
-    name: 'Countries',
-    values: [{ id: '1', label: 'label1' }, { id: '2', label: 'label2' }],
-  };
+  const thesauri = { name: 'Countries', values: [{ id: '1', label: 'label1' }, { id: '2', label: 'label2' }] };
   let component;
-  const props = jasmine.createSpyObj(['editThesaurus']);
+  const props = jasmine.createSpyObj(['editThesauri']);
   let context;
 
   beforeEach(() => {
     RouteHandler.renderedFromServer = true;
     context = { store: { getState: () => ({}), dispatch: jasmine.createSpy('dispatch') } };
-    component = shallow(<EditThesauri {...props} />, { context });
+    component = shallow(<EditThesauri {...props}/>, { context });
 
     backend.restore();
-    backend.get(`${APIURL}thesauris?_id=thesauriId`, {
-      body: JSON.stringify({ rows: [thesauri] }),
-    });
+    backend
+    .get(`${APIURL}thesauris?_id=thesauriId`, { body: JSON.stringify({ rows: [thesauri] }) });
   });
 
   afterEach(() => backend.restore());

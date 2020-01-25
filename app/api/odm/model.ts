@@ -9,17 +9,6 @@ import { OdmModel, WithId, models } from './models';
 const generateID = mongoose.Types.ObjectId;
 export { generateID };
 
-function asyncPost(fn: () => Promise<void>, next: (err?: mongoose.NativeError) => void) {
-  fn().then(
-    () => {
-      next();
-    },
-    err => {
-      next(err);
-    }
-  );
-}
-
 class UpdateLogHelper {
   collectionName: string;
 
@@ -31,15 +20,14 @@ class UpdateLogHelper {
     return mongoose.models[this.collectionName].distinct('_id', conditions);
   }
 
-  upsertLogOne(doc: mongoose.Document, next: (err?: mongoose.NativeError) => void) {
+  async upsertLogOne(doc: mongoose.Document, next: (err?: mongoose.NativeError) => void) {
     const logData = { namespace: this.collectionName, mongoId: doc._id };
-    asyncPost(async () => {
-      await updatelogsModel.findOneAndUpdate(
-        logData,
-        { ...logData, timestamp: Date.now(), deleted: false },
-        { upsert: true }
-      );
-    }, next);
+    await updatelogsModel.findOneAndUpdate(
+      logData,
+      { ...logData, timestamp: Date.now(), deleted: false },
+      { upsert: true }
+    );
+    next();
   }
 
   async upsertLogMany(affectedIds: any[], deleted = false) {
@@ -78,19 +66,19 @@ class OdmModelImpl<T> implements OdmModel<T> {
     return saved.toObject() as WithId<T>;
   }
 
-  async saveMultiple(data: Readonly<Partial<T>>[]) {
-    return Promise.all(data.map(async d => this.save(d)));
+  saveMultiple(data: Readonly<Partial<T>>[]) {
+    return Promise.all(data.map(d => this.save(d)));
   }
 
   get(query: any, select = '', pagination = {}) {
     return this.db.find(query, select, Object.assign({ lean: true }, pagination));
   }
 
-  async count(condition: any) {
+  count(condition: any) {
     return this.db.count(condition).exec();
   }
 
-  async getById(id: any | string | number) {
+  getById(id: any | string | number) {
     return this.db.findById(id, {}, { lean: true }).exec();
   }
 
@@ -115,11 +103,10 @@ export function instanceModel<T = any>(collectionName: string, schema: mongoose.
   const logHelper = new UpdateLogHelper(collectionName);
   schema.post('save', logHelper.upsertLogOne.bind(logHelper));
   schema.post('findOneAndUpdate', logHelper.upsertLogOne.bind(logHelper));
-  schema.post('updateMany', function updateMany(this: any, _doc: any, next: any) {
-    asyncPost(async () => {
-      const affectedIds = await logHelper.getAffectedIds(this._conditions);
-      await logHelper.upsertLogMany(affectedIds);
-    }, next);
+  schema.post('updateMany', async function updateMany(this: any, _doc: any, next: any) {
+    const affectedIds = await logHelper.getAffectedIds(this._conditions);
+    await logHelper.upsertLogMany(affectedIds);
+    next();
   });
   const model = new OdmModelImpl<T>(
     logHelper,

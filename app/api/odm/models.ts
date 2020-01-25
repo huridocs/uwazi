@@ -6,7 +6,7 @@ import { DeleteWriteOpResultObject } from 'mongodb';
 /** WithId<T> represents objects received from MongoDB, which are guaranteed to have
  *  the _id field populated, even though T always has _id? optional for validation reasons.
  */
-export type WithId<T> = T & {
+export type WithId<T> = Omit<T, '_id'> & {
   _id: Schema.Types.ObjectId;
 };
 

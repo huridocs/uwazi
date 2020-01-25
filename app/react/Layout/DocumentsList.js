@@ -77,7 +77,7 @@ class DocumentsList extends Component {
         <div className="main-wrapper">
           <div className={`search-list ${searchCentered ? 'centered' : ''}`}>
             {ActionButtons}
-            {Search && <Search storeKey={this.props.storeKey}/>}
+            <Search storeKey={this.props.storeKey}/>
           </div>
           <div className={`sort-by ${searchCentered ? 'centered' : ''}`}>
             <div className="documents-counter">

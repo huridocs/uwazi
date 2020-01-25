@@ -88,7 +88,7 @@ export default (app) => {
     .catch(next);
   });
 
-  app.get('/api/templates', (_req, res, next) => {
+  app.get('/api/templates', (req, res, next) => {
     templates.get()
     .then(response => res.json({ rows: response }))
     .catch(next);

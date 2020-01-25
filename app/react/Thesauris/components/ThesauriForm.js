@@ -1,39 +1,31 @@
-/** @format */
-import ShowIf from 'app/App/ShowIf';
-import FormGroup from 'app/DocumentForm/components/FormGroup';
-import { BackButton } from 'app/Layout';
-import { DragAndDropContainer } from 'app/Layout/DragAndDrop';
-import { notEmpty } from 'app/Metadata/helpers/validator';
-import {
-  addGroup,
-  addValue,
-  importThesaurus,
-  removeValue,
-  saveThesaurus,
-  sortValues,
-  updateValues,
-} from 'app/Thesauris/actions/thesauriActions';
+import { Field, Form, actions as formActions } from 'react-redux-form';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import { actions as formActions, Field, Form } from 'react-redux-form';
-import { bindActionCreators } from 'redux';
-import { Icon } from 'UI';
 
-import { ThesauriFormItem } from './ThesauriFormItem';
+import { BackButton } from 'app/Layout';
+import { DragAndDropContainer } from 'app/Layout/DragAndDrop';
+import { Icon } from 'UI';
+import { notEmpty } from 'app/Metadata/helpers/validator';
+import { saveThesauri, addValue, removeValue, addGroup, sortValues, updateValues, importThesauri } from 'app/Thesauris/actions/thesauriActions';
+import FormGroup from 'app/DocumentForm/components/FormGroup';
+import ShowIf from 'app/App/ShowIf';
+
+import ThesauriFormItem from './ThesauriFormItem';
 
 function sanitizeThesauri(thesaurus) {
   const sanitizedThesauri = Object.assign({}, thesaurus);
   sanitizedThesauri.values = sanitizedThesauri.values
-    .filter(value => value.label)
-    .filter(value => !value.values || value.values.length)
-    .map(value => {
-      const _value = Object.assign({}, value);
-      if (_value.values) {
-        _value.values = _value.values.filter(_v => _v.label);
-      }
-      return _value;
-    });
+  .filter(value => value.label)
+  .filter(value => !value.values || value.values.length)
+  .map((value) => {
+    const _value = Object.assign({}, value);
+    if (_value.values) {
+      _value.values = _value.values.filter(_v => _v.label);
+    }
+    return _value;
+  });
   return sanitizedThesauri;
 }
 
@@ -41,15 +33,11 @@ export class ThesauriForm extends Component {
   static validation(thesauris, id) {
     return {
       name: {
-        duplicated: val =>
-          !thesauris.find(
-            thesauri =>
-              thesauri.type !== 'template' &&
-              thesauri._id !== id &&
-              thesauri.name.trim().toLowerCase() === val.trim().toLowerCase()
-          ),
-        required: notEmpty,
-      },
+        duplicated: val => !thesauris.find(thesauri => thesauri.type !== 'template' &&
+          thesauri._id !== id &&
+          thesauri.name.trim().toLowerCase() === val.trim().toLowerCase()),
+        required: notEmpty
+      }
     };
   }
 
@@ -68,20 +56,15 @@ export class ThesauriForm extends Component {
     this.firstLoad = true;
   }
 
+
   componentWillReceiveProps(props) {
     props.thesauri.values.forEach((value, index) => {
-      if (
-        value.values &&
-        (!value.values.length || value.values[value.values.length - 1].label !== '')
-      ) {
+      if (value.values && (!value.values.length || value.values[value.values.length - 1].label !== '')) {
         props.addValue(index);
       }
     });
 
-    if (
-      !props.thesauri.values.length ||
-      props.thesauri.values[props.thesauri.values.length - 1].label !== ''
-    ) {
+    if (!props.thesauri.values.length || props.thesauri.values[props.thesauri.values.length - 1].label !== '') {
       props.addValue();
     }
   }
@@ -95,8 +78,7 @@ export class ThesauriForm extends Component {
     const previousValues = previousProps.thesauri.values;
     const addedValue = values.length > previousProps.thesauri.values.length;
     const lasValueIsGroup = values.length && values[values.length - 1].values;
-    const previousLasValueWasGroup =
-      previousValues.length && previousValues[previousValues.length - 1].values;
+    const previousLasValueWasGroup = previousValues.length && previousValues[previousValues.length - 1].values;
     if (lasValueIsGroup && (!previousLasValueWasGroup || addedValue)) {
       this.groups[this.groups.length - 1].focus();
     }
@@ -120,13 +102,13 @@ export class ThesauriForm extends Component {
     this.fileFormRef.current.reset();
     const thes = sanitizeThesauri(this.props.thesauri);
     if (file) {
-      this.props.importThesaurus(thes, file);
+      this.props.importThesauri(thes, file);
     }
   }
 
   save(thesauri) {
     const sanitizedThesauri = sanitizeThesauri(thesauri);
-    this.props.saveThesaurus(sanitizedThesauri);
+    this.props.saveThesauri(sanitizedThesauri);
   }
 
   renderItem(value, index) {
@@ -160,19 +142,8 @@ export class ThesauriForm extends Component {
             <div className="panel-heading">
               <FormGroup {...this.props.state.name} submitFailed={this.props.state.submitFailed}>
                 <Field model=".name">
-                  <input
-                    id="thesauriName"
-                    className="form-control"
-                    type="text"
-                    placeholder="Thesauri name"
-                  />
-                  <ShowIf
-                    if={
-                      this.props.state.$form.touched &&
-                      this.props.state.name &&
-                      this.props.state.name.errors.duplicated
-                    }
-                  >
+                  <input id="thesauriName" className="form-control" type="text" placeholder="Thesauri name" />
+                  <ShowIf if={this.props.state.$form.touched && this.props.state.name && this.props.state.name.errors.duplicated}>
                     <div className="validation-error">
                       <Icon icon="exclamation-triangle" size="xs" /> Duplicated name
                     </div>
@@ -193,24 +164,20 @@ export class ThesauriForm extends Component {
             </div>
             <div className="settings-footer">
               <BackButton to="/settings/dictionaries" />
-              <button type="button" className="btn btn-primary" onClick={this.props.addGroup}>
+              <a className="btn btn-primary" onClick={this.props.addGroup}>
                 <Icon icon="plus" />
                 <span className="btn-label">Add group</span>
-              </button>
-              <button type="button" className="btn btn-primary" onClick={this.props.sortValues}>
+              </a>
+              <a className="btn btn-primary" onClick={this.props.sortValues}>
                 <Icon icon="sort-alpha-down" />
                 <span className="btn-label">Sort</span>
-              </button>
-              <button
-                type="button"
-                className="btn btn-primary import-template"
-                onClick={this.onImportClicked}
-              >
-                <Icon icon="upload" />
+              </a>
+              <button type="button" className="btn btn-primary import-template" onClick={this.onImportClicked}>
+                <Icon icon="upload"/>
                 <span className="btn-label">Import</span>
               </button>
               <button type="submit" className="btn btn-success save-template">
-                <Icon icon="save" />
+                <Icon icon="save"/>
                 <span className="btn-label">Save</span>
               </button>
             </div>
@@ -231,54 +198,46 @@ export class ThesauriForm extends Component {
 }
 
 ThesauriForm.defaultProps = {
-  new: false,
+  new: false
 };
 
 ThesauriForm.propTypes = {
   resetForm: PropTypes.func.isRequired,
   setInitial: PropTypes.func.isRequired,
-  saveThesaurus: PropTypes.func.isRequired,
+  saveThesauri: PropTypes.func.isRequired,
   addValue: PropTypes.func.isRequired,
   addGroup: PropTypes.func.isRequired,
   sortValues: PropTypes.func.isRequired,
   removeValue: PropTypes.func.isRequired,
   updateValues: PropTypes.func.isRequired,
-  importThesaurus: PropTypes.func.isRequired,
+  importThesauri: PropTypes.func.isRequired,
   thesauris: PropTypes.object.isRequired,
   thesauri: PropTypes.object.isRequired,
   state: PropTypes.object.isRequired,
-  new: PropTypes.bool,
+  new: PropTypes.bool
 };
 
 export function mapStateToProps(state) {
   return {
     thesauri: state.thesauri.data,
     thesauris: state.thesauris,
-    state: state.thesauri.formState,
+    state: state.thesauri.formState
   };
 }
 
 function bindActions(dispatch) {
-  return bindActionCreators(
-    {
-      saveThesaurus,
-      importThesaurus,
-      addValue,
-      addGroup,
-      sortValues,
-      removeValue,
-      updateValues,
-      resetForm: formActions.reset,
-      setInitial: formActions.setInitial,
-      validate: formActions.validate,
-    },
-    dispatch
-  );
+  return bindActionCreators({
+    saveThesauri,
+    importThesauri,
+    addValue,
+    addGroup,
+    sortValues,
+    removeValue,
+    updateValues,
+    resetForm: formActions.reset,
+    setInitial: formActions.setInitial,
+    validate: formActions.validate
+  }, dispatch);
 }
 
-export default connect(
-  mapStateToProps,
-  bindActions,
-  null,
-  { withRef: true }
-)(ThesauriForm);
+export default connect(mapStateToProps, bindActions, null, { withRef: true })(ThesauriForm);

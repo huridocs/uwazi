@@ -12,7 +12,7 @@ import { t, I18NLink } from 'app/I18N';
 import { enable2fa as enable2faAction, enable2faType } from './actions/actions';
 import Auth2faAPI from './Auth2faAPI';
 
-const QRCode = loadable(async () => import(/* webpackChunkName: "qrcode.react" */ 'qrcode.react'));
+const QRCode = loadable(() => import(/* webpackChunkName: "qrcode.react" */ 'qrcode.react'));
 
 type Configure2faProps = {
   userUsing2fa: boolean;
