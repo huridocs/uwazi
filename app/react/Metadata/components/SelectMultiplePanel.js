@@ -107,7 +107,7 @@ export class SelectMultiplePanel extends Component {
     });
   }
 
-  changeTemplate(formModel, template) {
+  changeTemplate(_formModel, template) {
     const updatedEntities = this.props.entitiesSelected.map(entity => entity.set('template', template));
     this.props.updateSelectedEntities(updatedEntities);
   }
@@ -271,7 +271,7 @@ SelectMultiplePanel.contextTypes = {
   confirm: PropTypes.func
 };
 
-export const mapStateToProps = (state, props) => ({
+export const mapStateToProps = (_state, props) => ({
     template: commonTemplate(props),
     open: props.entitiesSelected.size > 1,
     editing: Object.keys(props.state).length > 0

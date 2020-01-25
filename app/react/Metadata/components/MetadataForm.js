@@ -1,25 +1,23 @@
 /** @format */
 
-import { Form, Field } from 'react-redux-form';
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
-import { createSelector } from 'reselect';
+import entitiesUtil from 'app/Entities/utils/filterBaseProperties';
+import { Select as SimpleSelect } from 'app/Forms';
+import { I18NLink, t, Translate } from 'app/I18N';
+import { notificationActions } from 'app/Notifications';
+import { FormGroup } from 'app/ReactReduxForms';
+import Immutable from 'immutable';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-
-import { FormGroup } from 'app/ReactReduxForms';
-import { Select as SimpleSelect } from 'app/Forms';
-import entitiesUtil from 'app/Entities/utils/filterBaseProperties';
-import { notificationActions } from 'app/Notifications';
-import { I18NLink, t, Translate } from 'app/I18N';
+import { connect } from 'react-redux';
+import { Field, Form } from 'react-redux-form';
+import { bindActionCreators } from 'redux';
+import { createSelector } from 'reselect';
 import { Icon } from 'UI';
-
-import Immutable from 'immutable';
+import defaultTemplate from '../helpers/defaultTemplate';
+import validator from '../helpers/validator';
+import { wrapEntityMetadata } from '../helpers/wrapper';
 import IconField from './IconField';
 import MetadataFormFields from './MetadataFormFields';
-import validator from '../helpers/validator';
-import defaultTemplate from '../helpers/defaultTemplate';
-import wrapEntityMetadata from '../helpers/wrapper';
 
 const immutableDefaultTemplate = Immutable.fromJS(defaultTemplate);
 
@@ -86,7 +84,15 @@ export class MetadataForm extends Component {
   }
 
   render() {
-    const { model, template, templateOptions, id, multipleEdition } = this.props;
+    const {
+      model,
+      template,
+      templateOptions,
+      id,
+      multipleEdition,
+      showSubset,
+      version,
+    } = this.props;
 
     if (!template) {
       return <div />;
@@ -107,7 +113,7 @@ export class MetadataForm extends Component {
         validators={validator.generate(template.toJS(), multipleEdition)}
         onSubmitFailed={this.onSubmitFailed}
       >
-        {!multipleEdition && (
+        {!multipleEdition && (!showSubset || showSubset.includes('title')) && (
           <FormGroup model=".title">
             <ul className="search__filter">
               <li>
@@ -126,12 +132,15 @@ export class MetadataForm extends Component {
           </FormGroup>
         )}
 
-        {this.renderTemplateSelect(templateOptions, template)}
+        {(!showSubset || showSubset.includes('template')) &&
+          this.renderTemplateSelect(templateOptions, template)}
         <MetadataFormFields
           multipleEdition={multipleEdition}
           thesauris={this.props.thesauris}
           model={model}
           template={template}
+          showSubset={showSubset}
+          version={version}
         />
       </Form>
     );
@@ -141,6 +150,8 @@ export class MetadataForm extends Component {
 MetadataForm.defaultProps = {
   id: 'metadataForm',
   multipleEdition: false,
+  showSubset: undefined,
+  version: undefined,
   componentWillUnmount: () => {},
   notify: () => {},
   changeTemplate: () => {},
@@ -157,6 +168,8 @@ MetadataForm.propTypes = {
   onSubmit: PropTypes.func,
   notify: PropTypes.func,
   id: PropTypes.string,
+  showSubset: PropTypes.arrayOf(PropTypes.string),
+  version: PropTypes.string,
   componentWillUnmount: PropTypes.func,
 };
 
@@ -165,6 +178,7 @@ function mapDispatchToProps(dispatch) {
 }
 
 export const mapStateToProps = (state, ownProps) => ({
+  thesauris: ownProps.thesauris ? ownProps.thesauris : state.thesauris || Immutable.fromJS([]),
   template: ownProps.template
     ? ownProps.template
     : state.templates.find(tmpl => tmpl.get('_id') === ownProps.templateId) ||

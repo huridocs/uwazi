@@ -26,7 +26,7 @@ import SidePanel from 'app/Layout/SidePanel';
 import ContextMenu from 'app/ContextMenu';
 import { Icon } from 'UI';
 
-import ShowSidepanelMenu from './ShowSidepanelMenu';
+import { ShowSidepanelMenu } from './ShowSidepanelMenu';
 import { deleteEntity } from '../actions/actions';
 import { showTab } from '../actions/uiActions';
 import EntityForm from '../containers/EntityForm';

@@ -7,6 +7,7 @@ export interface ThesaurusSchema {
   _id?: ObjectIdSchema;
   type?: 'thesauri';
   name: string;
+  enable_classification?: boolean;
   values?: {
     _id?: ObjectIdSchema;
     id?: string;

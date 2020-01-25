@@ -1,0 +1,281 @@
+/** @format */
+
+@import '../../App/scss/config/_colors.scss';
+@import '../../App/scss/config/_materials.scss';
+@import '../../App/scss/config/_typography.scss';
+
+$header-height: 44px;
+
+.row.flex {
+  display: flex;
+  flex-direction: column;
+  // This is just to allow 'absolute' children to be relative to this.
+  position: relative;
+}
+
+.flex {
+  @import '../../App/scss/layout/_sidepanel.scss';
+  .content-holder {
+    display: flex;
+    flex-direction: row;
+    height: 0;
+    flex-grow: 1;
+    // This is just to allow 'absolute' children to be relative to this.
+    position: relative;
+  }
+  .content-header {
+    display: flex;
+    flex-direction: row;
+    height: $header-height;
+    min-height: $header-height;
+    line-height: $header-height;
+    align-items: center;
+
+    .content-header-title {
+      font-size: 14px;
+      display: flex;
+      position: unset;
+      width: 0;
+      height: $header-height;
+      flex-grow: 1;
+      overflow: hidden;
+      white-space: nowrap;
+
+      .large {
+        font-size: 14px;
+      }
+
+      span.space8 {
+        width: 8px;
+        height: 28px;
+        display: inline-block;
+      }
+      span.separator {
+        width: 0px;
+        height: 28px;
+        border-right: 1px solid #d7d7dc;
+        margin: 0 16px;
+      }
+    }
+
+    .btn {
+      height: 28px;
+      line-height: 0;
+      margin-left: 4px;
+      margin-right: 5px;
+      .btn-label {
+        margin-left: 5px;
+        margin-right: 0;
+      }
+      &:focus {
+        color: #333;
+        background-color: #fff;
+        border-color: #ccc;
+      }
+    }
+
+    .btn-toggle-on {
+      border-color: white;
+      &:hover {
+        border-color: #ccc;
+      }
+    }
+    .btn-toggle-off {
+      @extend .btn-toggle-on;
+    }
+  }
+
+  .sidepanel-header {
+    display: flex;
+    flex-direction: row;
+    height: $header-height;
+    min-height: $header-height;
+
+    .content-header-tabs {
+      width: unset;
+      position: unset;
+    }
+
+    .blank {
+      width: 0;
+      flex-grow: 1;
+    }
+
+    .nav-tabs {
+      position: unset;
+      height: $header-height;
+      li {
+        width: $header-height;
+        div {
+          padding: unset;
+        }
+      }
+    }
+  }
+  .side-panel {
+    display: flex;
+    flex-direction: column;
+    .closeSidepanel {
+      position: unset;
+      height: $header-height;
+      width: $header-height;
+    }
+  }
+  .sidepanel-footer {
+    position: unset;
+    transform: unset;
+    background-color: white;
+    padding-top: 12px;
+    padding-bottom: 50px;
+    border-top: 1px solid #d7d7dc;
+  }
+
+  .content-main {
+    width: 0;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    // This is just to allow 'absolute' children to be relative to this.
+    position: relative;
+  }
+
+  .side-panel {
+    position: unset;
+  }
+  .side-panel.is-hidden {
+    width: 0;
+    visibility: hidden;
+  }
+
+  .content-footer {
+    @extend .sidepanel-footer;
+    position: unset;
+    transform: unset;
+    background-color: white;
+    padding-top: 12px;
+    padding-bottom: 50px;
+    border-top: 1px solid #d7d7dc;
+  }
+
+  footer {
+    position: unset;
+    border-top: 1px solid #d7d7dc;
+    margin-top: 0;
+  }
+
+  .entity-viewer {
+    height: 0;
+    flex-grow: 1;
+    height: unset;
+  }
+
+  .entity-metadata {
+    .content-header-title {
+      justify-content: flex-start;
+      width: unset;
+      height: unset;
+      line-height: unset;
+      padding-top: 1px;
+      padding-bottom: 12px;
+      .btn-color {
+        margin: 0 16px;
+      }
+      h1 {
+        font-style: normal;
+        font-weight: normal;
+        font-size: 15px;
+        line-height: 20px;
+        letter-spacing: -0.00458773px;
+        overflow: hidden;
+        flex-grow: 1;
+        line-height: unset;
+      }
+    }
+    .view {
+      dl {
+        padding: 12px 15px;
+        dt {
+          font-size: 15px;
+          font-weight: normal;
+          line-height: 20px;
+          color: #222222;
+          letter-spacing: -0.00458773px;
+        }
+        dd {
+          font-size: 14px;
+          font-weight: 350;
+          line-height: 16px;
+          color: #222222;
+          letter-spacing: -0.00458773px;
+        }
+      }
+    }
+  }
+  .attachments-list-parent {
+    margin-top: 36px;
+  }
+  .form-group {
+    ul {
+      li.title {
+        label {
+          font-style: normal;
+          font-weight: bold;
+          font-size: 15px;
+          line-height: 20px;
+          align-items: center;
+          letter-spacing: -0.00458773px;
+          color: #222222;
+          padding-top: 1px;
+          padding-bottom: 16px;
+        }
+      }
+      li {
+        select {
+          margin-top: -8px;
+          font-style: normal;
+          font-weight: normal;
+          font-size: 14px;
+          line-height: 115%;
+          color: #444444;
+          padding: 0px 12px;
+        }
+      }
+    }
+    .multiselectItem {
+      padding: 0;
+      padding-top: 4px;
+      height: 28px;
+      font-style: normal;
+      font-weight: normal;
+      font-size: 14px;
+      line-height: 115%;
+      color: #444444;
+    }
+    .multiselectActions {
+      .form-group {
+        width: 100%;
+        input {
+          width: 100%;
+        }
+      }
+      .btn {
+        border: 1px solid rgba(0, 0, 0, 0.2);
+        border-radius: 4px;
+      }
+    }
+    .suggestions.multiselect {
+      padding-bottom: 8px;
+      .suggestions-title {
+        font-style: normal;
+        font-weight: 500;
+        font-size: 14px;
+        line-height: 16px;
+        color: #555555;
+        padding-bottom: 4px;
+      }
+    }
+  }
+  .ContextMenu {
+    z-index: 100;
+  }
+}

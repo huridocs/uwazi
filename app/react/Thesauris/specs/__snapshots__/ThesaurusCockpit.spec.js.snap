@@ -1,0 +1,377 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ThesaurusCockpit render should render a ThesaurusCockpit 1`] = `
+<div
+  className="panel panel-default"
+>
+  <div
+    className="panel-heading"
+  >
+    Thesauri &gt; ThesaurusName
+    <Connect(I18NLink)
+      className="btn btn-primary btn-xs"
+      to="/uploads/?q=(filters:(_thesaurus_name:(values:!(any)),thesaurus_name:(values:!(any))),limit:100,order:desc,sort:creationDate)&view=nosearch"
+    >
+      <Connect(Icon)
+        icon="search"
+      />
+       
+      <span>
+        Review & Publish
+      </span>
+    </Connect(I18NLink)>
+  </div>
+  <div
+    className="cockpit"
+  >
+    <table>
+      <thead>
+        <tr>
+          <th
+            scope="col"
+          />
+          <th
+            scope="col"
+          >
+            Confidence
+          </th>
+          <th
+            scope="col"
+          >
+            Suggestions
+          </th>
+          <th
+            scope="col"
+          />
+        </tr>
+      </thead>
+      <tbody>
+        <tr
+          key="Topic 1"
+        >
+          <th
+            scope="row"
+          >
+            Topic 1
+          </th>
+          <td
+            title="quality-icons"
+          >
+            <div
+              className="quality-icon quality-med"
+              key="Topic 1"
+            >
+              <Connect(Icon)
+                icon="circle"
+                key="Topic 1_0"
+              />
+              <Connect(Icon)
+                icon="circle"
+                key="Topic 1_1"
+              />
+              <Connect(Icon)
+                icon={
+                  Array [
+                    "far",
+                    "circle",
+                  ]
+                }
+                key="Topic 1_2"
+              />
+            </div>
+          </td>
+          <td
+            title="suggestions-count"
+          >
+            1
+          </td>
+          <td
+            title="review-button"
+          >
+            <Connect(I18NLink)
+              className="btn btn-default btn-xs"
+              to="/review?q=(filters:(_thesaurus_name:(values:!('id1')),thesaurus_name:(values:!(missing))))&includeUnpublished=1"
+            >
+              <Connect(Icon)
+                icon="gavel"
+              />
+               
+              <span
+                title="review-button-title"
+              >
+                Review suggestions
+              </span>
+            </Connect(I18NLink)>
+          </td>
+        </tr>
+        <tr
+          key="Topic 2"
+        >
+          <th
+            scope="row"
+          >
+            Topic 2
+          </th>
+          <td
+            title="quality-icons"
+          >
+            <div
+              className="quality-icon quality-high"
+              key="Topic 2"
+            >
+              <Connect(Icon)
+                icon="circle"
+                key="Topic 2_0"
+              />
+              <Connect(Icon)
+                icon="circle"
+                key="Topic 2_1"
+              />
+              <Connect(Icon)
+                icon="circle"
+                key="Topic 2_2"
+              />
+            </div>
+          </td>
+          <td
+            title="suggestions-count"
+          />
+          <td
+            title="review-button"
+          />
+        </tr>
+        <tr
+          key="Topic 3"
+        >
+          <th
+            scope="row"
+          >
+            Topic 3
+          </th>
+          <td
+            title="quality-icons"
+          >
+            <div
+              className="quality-icon quality-low"
+              key="Topic 3"
+            >
+              <Connect(Icon)
+                icon="circle"
+                key="Topic 3_0"
+              />
+              <Connect(Icon)
+                icon={
+                  Array [
+                    "far",
+                    "circle",
+                  ]
+                }
+                key="Topic 3_1"
+              />
+              <Connect(Icon)
+                icon={
+                  Array [
+                    "far",
+                    "circle",
+                  ]
+                }
+                key="Topic 3_2"
+              />
+            </div>
+          </td>
+          <td
+            title="suggestions-count"
+          />
+          <td
+            title="review-button"
+          />
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div
+    className="settings-footer"
+  >
+    <Connect(I18NLink)
+      className="btn btn-default"
+      to="/settings/dictionaries"
+    >
+      <Connect(Icon)
+        icon="arrow-left"
+      />
+      <span
+        className="btn-label"
+      >
+        Back
+      </span>
+    </Connect(I18NLink)>
+  </div>
+</div>
+`;
+
+exports[`ThesaurusCockpit requestState should get the thesaurus, classification model and suggestion counts as react actions 1`] = `
+Array [
+  Object {
+    "type": "thesauri/thesaurus/SET",
+    "value": Object {
+      "_id": "thesaurusUnderscoreId1",
+      "enable_classification": true,
+      "name": "ThesaurusName",
+      "property": Object {
+        "content": "thesaurusUnderscoreId1",
+        "label": "ThesaurusName",
+        "name": "thesaurus_name",
+        "type": "multiselect",
+      },
+      "values": Array [
+        Object {
+          "_id": "underscoreId1",
+          "id": "id1",
+          "label": "Topic 1",
+        },
+        Object {
+          "_id": "underscoreId2",
+          "id": "id2",
+          "label": "Topic 2",
+        },
+        Object {
+          "_id": "underscoreId3",
+          "id": "id3",
+          "label": "Topic 3",
+        },
+      ],
+    },
+  },
+  Object {
+    "type": "thesauri/models/SET",
+    "value": Array [
+      Array [
+        Object {
+          "bert": "testBert",
+          "completeness": 0,
+          "extraneous": 0,
+          "instances": Array [
+            "timestamp",
+          ],
+          "name": "ThesaurusName",
+          "preferred": "timestamp",
+          "topics": Object {
+            "Topic 1": Object {
+              "name": "Topic 1",
+              "quality": 0.8,
+              "samples": 20,
+            },
+            "Topic 2": Object {
+              "name": "Topic 2",
+              "quality": 0.92,
+              "samples": 25,
+            },
+            "Topic 3": Object {
+              "name": "Topic 3",
+              "quality": 0.62,
+              "samples": 2,
+            },
+          },
+        },
+      ],
+    ],
+  },
+  Object {
+    "type": "thesauri/suggestions/SET",
+    "value": Array [
+      Array [
+        Object {
+          "aggregations": Object {
+            "all": Object {},
+          },
+          "rows": Object {},
+          "totalRows": 0,
+        },
+        Object {
+          "aggregations": Object {
+            "all": Object {
+              "_thesaurus_name": Object {
+                "buckets": Array [
+                  Object {
+                    "doc_count": 8528,
+                    "filtered": Object {
+                      "doc_count": 1,
+                      "meta": Object {},
+                    },
+                    "key": "id1",
+                  },
+                  Object {
+                    "doc_count": 6923,
+                    "filtered": Object {},
+                    "key": "id2",
+                  },
+                ],
+              },
+              "doc_count": 65460,
+              "thesaurus_name": Object {
+                "buckets": Array [],
+              },
+            },
+          },
+          "rows": Object {
+            "_explanation": Object {},
+            "_id": "docId1",
+            "count": 0,
+            "fullText": Array [],
+            "metadata": Array [],
+            "sharedId": "jo9dvda1ux",
+            "snippets": "",
+          },
+          "totalRows": 1,
+        },
+      ],
+      Array [
+        Object {
+          "aggregations": Object {
+            "all": Object {},
+          },
+          "rows": Object {},
+          "totalRows": 0,
+        },
+        Object {
+          "aggregations": Object {
+            "all": Object {
+              "_thesaurus_name": Object {
+                "buckets": Array [
+                  Object {
+                    "doc_count": 8528,
+                    "filtered": Object {
+                      "doc_count": 1,
+                      "meta": Object {},
+                    },
+                    "key": "id1",
+                  },
+                  Object {
+                    "doc_count": 6923,
+                    "filtered": Object {},
+                    "key": "id2",
+                  },
+                ],
+              },
+              "doc_count": 65460,
+              "thesaurus_name": Object {
+                "buckets": Array [],
+              },
+            },
+          },
+          "rows": Object {
+            "_explanation": Object {},
+            "_id": "docId1",
+            "count": 0,
+            "fullText": Array [],
+            "metadata": Array [],
+            "sharedId": "jo9dvda1ux",
+            "snippets": "",
+          },
+          "totalRows": 1,
+        },
+      ],
+    ],
+  },
+]
+`;

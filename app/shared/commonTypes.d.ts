@@ -34,6 +34,7 @@ export type PropertyValueSchema = null | string | number | LinkSchema | DateRang
 export interface MetadataObjectSchema {
   value: PropertyValueSchema;
   label?: string;
+  suggestion_confidence?: number;
   [k: string]: any | undefined;
 }
 

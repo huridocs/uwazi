@@ -66,7 +66,7 @@ export class SemanticSearchMultieditPanel extends Component {
     });
   }
 
-  changeTemplate(formModel, template) {
+  changeTemplate(_formModel, template) {
     const updatedEntities = this.props.entities.map(entity => entity.set('template', template));
     this.props.setEntities(updatedEntities);
   }

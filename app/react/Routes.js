@@ -1,74 +1,61 @@
 /** @format */
-
-import React from 'react';
-import { Route, IndexRoute } from 'react-router';
-
+import Activitylog from 'app/Activitylog/Activitylog';
 import App from 'app/App/App';
+import { trackPage } from 'app/App/GoogleAnalytics';
 import NoMatch from 'app/App/NoMatch';
-
+import Configure2fa from 'app/Auth2fa/Configure2fa';
+import EditTranslations from 'app/I18N/EditTranslations';
+import blankState from 'app/Library/helpers/blankState';
+import Library from 'app/Library/Library';
+import LibraryMap from 'app/Library/LibraryMap';
+import OneUpReview from 'app/Review/OneUpReview';
+import EditPage from 'app/Pages/EditPage';
+import NewPage from 'app/Pages/NewPage';
+import Pages from 'app/Pages/Pages';
+import PageView from 'app/Pages/PageView';
+import EditRelationType from 'app/RelationTypes/EditRelationType';
+import NewRelationType from 'app/RelationTypes/NewRelationType';
+import SemanticSearchResultsView from 'app/SemanticSearch/SemanticSearchResultsView';
+import {
+  AccountSettings,
+  CollectionSettings,
+  Customisation,
+  CustomUploads,
+  EntityTypesList,
+  FiltersForm,
+  Languages,
+  NavlinksSettings,
+  RelationTypesList,
+  Settings,
+  ThesaurisList,
+  TranslationsList,
+} from 'app/Settings';
+import EditTemplate from 'app/Templates/EditTemplate';
+import NewTemplate from 'app/Templates/NewTemplate';
+import EditThesauri from 'app/Thesauris/EditThesauri';
+import NewThesauri from 'app/Thesauris/NewThesauri';
+import ThesaurusCockpit from 'app/Thesauris/ThesaurusCockpit';
+import Uploads from 'app/Uploads/UploadsRoute';
+import { EditUser, NewUser, Users } from 'app/Users';
 import Login from 'app/Users/Login';
 import ResetPassword from 'app/Users/ResetPassword';
 import UnlockAccount from 'app/Users/UnlockAccount';
-
-import {
-  Settings,
-  AccountSettings,
-  CollectionSettings,
-  NavlinksSettings,
-  EntityTypesList,
-  RelationTypesList,
-  ThesaurisList,
-  TranslationsList,
-  FiltersForm,
-  Languages,
-  Customisation,
-  CustomUploads,
-} from 'app/Settings';
-
-import Activitylog from 'app/Activitylog/Activitylog';
-import Pages from 'app/Pages/Pages';
-import NewPage from 'app/Pages/NewPage';
-import EditPage from 'app/Pages/EditPage';
-import PageView from 'app/Pages/PageView';
-
-import { Users, NewUser, EditUser } from 'app/Users';
-
 import ViewerRoute from 'app/Viewer/ViewerRoute';
-import Uploads from 'app/Uploads/UploadsRoute';
-
-import EditTemplate from 'app/Templates/EditTemplate';
-import NewTemplate from 'app/Templates/NewTemplate';
-
-import EditThesauri from 'app/Thesauris/EditThesauri';
-import NewThesauri from 'app/Thesauris/NewThesauri';
-
-import EditRelationType from 'app/RelationTypes/EditRelationType';
-import NewRelationType from 'app/RelationTypes/NewRelationType';
-
-import EditTranslations from 'app/I18N/EditTranslations';
-
-import Library from 'app/Library/Library';
-import LibraryMap from 'app/Library/LibraryMap';
-
-import Configure2fa from 'app/Auth2fa/Configure2fa';
-
-import SemanticSearchResultsView from 'app/SemanticSearch/SemanticSearchResultsView';
-
-import { trackPage } from 'app/App/GoogleAnalytics';
-import blankState from 'app/Library/helpers/blankState';
+import React from 'react';
+import { IndexRoute, Route } from 'react-router';
 import { store } from './store';
 
 function onEnter() {
   trackPage();
 }
 
-function needsAuth(nxtState, replace) {
+function needsAuth(_nxtState, replace) {
   if (!store.getState().user.get('_id')) {
     replace('/login');
   }
 }
 
-function enterOnLibrary(nxtState, replace) {
+function enterOnLibrary(_nxtState, replace) {
   const state = store.getState();
   if (blankState() && !state.user.get('_id')) {
     return replace('/login');
@@ -76,7 +63,7 @@ function enterOnLibrary(nxtState, replace) {
   trackPage();
 }
 
-function getIndexRoute(nextState, callBack) {
+function getIndexRoute(_nextState, callBack) {
   const state = store.getState();
   const homePageSetting = state.settings.collection.get('home_page');
   const customHomePage = homePageSetting ? homePageSetting.split('/') : [];
@@ -137,6 +124,7 @@ const routes = (
         <IndexRoute component={ThesaurisList} />
         <Route path="new" component={NewThesauri} />
         <Route path="edit/:_id" component={EditThesauri} />
+        <Route path="cockpit/:_id" component={ThesaurusCockpit} />
       </Route>
       <Route path="languages" component={Languages} />
       <Route path="translations">
@@ -150,6 +138,7 @@ const routes = (
     </Route>
     <Route path="library" component={Library} onEnter={enterOnLibrary} />
     <Route path="library/map" component={LibraryMap} onEnter={onEnter} />
+    <Route path="review" component={OneUpReview} onEnter={needsAuth} />
     <Route path="uploads" component={Uploads} />
     <Route path="login" component={Login} />
     <Route path="setpassword/:key" component={ResetPassword} />

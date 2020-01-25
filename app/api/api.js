@@ -1,3 +1,5 @@
+/** @format */
+
 import languageMiddleware from './utils/languageMiddleware';
 import activitylogMiddleware from './activitylog/activitylogMiddleware';
 import elasticConfig from './config/elasticIndexes';
@@ -13,24 +15,25 @@ export default (app, server) => {
   //module routes
   //require('./auth/routes.js')(app);
 
-  require('./socketio/middleware.js').default(server, app);
+  require('./socketio/middleware').default(server, app);
   require('./auth2fa/routes').default(app);
-  require('./relationships/routes.js').default(app);
-  require('./activitylog/routes.js').default(app);
-  require('./users/routes.js').default(app);
-  require('./templates/routes.js').default(app);
-  require('./search/routes.js').default(app);
-  require('./semanticsearch/routes.js').default(app);
-  require('./thesauris/routes.js').default(app);
-  require('./relationtypes/routes.js').default(app);
-  require('./documents/routes.js').default(app);
-  require('./contact/routes.js').default(app);
-  require('./entities/routes.js').default(app);
-  require('./pages/routes.js').default(app);
-  require('./upload/routes.js').default(app);
-  require('./settings/routes.js').default(app);
-  require('./i18n/routes.js').default(app);
-  require('./attachments/routes.js').default(app);
-  require('./sync/routes.js').default(app);
-  require('./swagger/swaggerconfig.js').default(app);
+  require('./relationships/routes').default(app);
+  require('./activitylog/routes').default(app);
+  require('./users/routes').default(app);
+  require('./templates/routes').default(app);
+  require('./search/routes').default(app);
+  require('./semanticsearch/routes').default(app);
+  require('./topicclassification/routes').default(app);
+  require('./thesauris/routes').default(app);
+  require('./relationtypes/routes').default(app);
+  require('./documents/routes').default(app);
+  require('./contact/routes').default(app);
+  require('./entities/routes').default(app);
+  require('./pages/routes').default(app);
+  require('./upload/routes').default(app);
+  require('./settings/routes').default(app);
+  require('./i18n/routes').default(app);
+  require('./attachments/routes').default(app);
+  require('./sync/routes').default(app);
+  require('./swagger/swaggerconfig').default(app);
 };

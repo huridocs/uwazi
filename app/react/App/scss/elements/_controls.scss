@@ -20,6 +20,7 @@
 
 .btn-default.btn-disabled {
   &, &:hover, &:focus, &:active {
+    pointer-events: none;
     cursor: default;
     background: $c-white;
     border-color: $c-grey;

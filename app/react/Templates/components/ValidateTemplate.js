@@ -62,7 +62,7 @@ export default function (properties, commonProperties, templates, id) {
     validator[''][`commonProperties.${titleIndex}.label.duplicated`] = getLabelDuplicatedValidator('commonProperties', titleIndex);
   }
 
-  properties.forEach((property, index) => {
+  properties.forEach((_property, index) => {
     validator[''][`properties.${index}.label.required`] = getLabelRequiredValidator('properties', index);
     validator[''][`properties.${index}.label.duplicated`] = getLabelDuplicatedValidator('properties', index);
 
