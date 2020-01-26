@@ -1,9 +1,5 @@
 /** @format */
 
-import { validation } from 'api/utils';
-
-/** @format */
-
 export function notEmpty(val) {
   if (Array.isArray(val)) {
     return Boolean(val.length);
