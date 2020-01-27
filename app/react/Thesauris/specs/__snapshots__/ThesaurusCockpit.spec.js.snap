@@ -284,7 +284,7 @@ Array [
           "aggregations": Object {
             "all": Object {},
           },
-          "rows": Array [],
+          "rows": Object {},
           "totalRows": 0,
         },
         Object {
@@ -313,17 +313,15 @@ Array [
               },
             },
           },
-          "rows": Array [
-            Object {
-              "_explanation": Object {},
-              "_id": "docId1",
-              "count": 0,
-              "fullText": Array [],
-              "metadata": Array [],
-              "sharedId": "jo9dvda1ux",
-              "snippets": "",
-            },
-          ],
+          "rows": Object {
+            "_explanation": Object {},
+            "_id": "docId1",
+            "count": 0,
+            "fullText": Array [],
+            "metadata": Array [],
+            "sharedId": "jo9dvda1ux",
+            "snippets": "",
+          },
           "totalRows": 1,
         },
       ],
@@ -332,7 +330,7 @@ Array [
           "aggregations": Object {
             "all": Object {},
           },
-          "rows": Array [],
+          "rows": Object {},
           "totalRows": 0,
         },
         Object {
@@ -361,17 +359,15 @@ Array [
               },
             },
           },
-          "rows": Array [
-            Object {
-              "_explanation": Object {},
-              "_id": "docId1",
-              "count": 0,
-              "fullText": Array [],
-              "metadata": Array [],
-              "sharedId": "jo9dvda1ux",
-              "snippets": "",
-            },
-          ],
+          "rows": Object {
+            "_explanation": Object {},
+            "_id": "docId1",
+            "count": 0,
+            "fullText": Array [],
+            "metadata": Array [],
+            "sharedId": "jo9dvda1ux",
+            "snippets": "",
+          },
           "totalRows": 1,
         },
       ],

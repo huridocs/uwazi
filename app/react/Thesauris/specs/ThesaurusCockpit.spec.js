@@ -85,7 +85,7 @@ const thesauri = [
 const suggestions = [
   {
     aggregations: { all: {} },
-    rows: [],
+    rows: {},
     totalRows: 0,
   },
   {
@@ -110,17 +110,15 @@ const suggestions = [
         },
       },
     },
-    rows: [
-      {
-        sharedId: 'jo9dvda1ux',
-        snippets: '',
-        count: 0,
-        fullText: [],
-        metadata: [],
-        _explanation: {},
-        _id: 'docId1',
-      },
-    ],
+    rows: {
+      sharedId: 'jo9dvda1ux',
+      snippets: '',
+      count: 0,
+      fullText: [],
+      metadata: [],
+      _explanation: {},
+      _id: 'docId1',
+    },
     totalRows: 1,
   },
 ];
