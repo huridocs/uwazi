@@ -17,7 +17,7 @@ describe('templates utils', () => {
 
   describe('buildModelName', () => {
     process.env.DATABASE_NAME = 'test-db';
-    expect(buildModelName('Abc-D e')).toBe('test-db-abc-d_e');
+    expect(buildModelName('Abc-D e(F)g')).toBe('test-db-abcdefg');
   });
 
   describe('extractSequence', () => {
