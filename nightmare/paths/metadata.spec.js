@@ -1,6 +1,6 @@
 /** @format */
-/** eslint max-len: ["error", 500] */
-/** eslint max-nested-callbacks: ["error", 10] */
+/* eslint max-len: ["error", 500] */
+/* eslint max-nested-callbacks: ["error", 10] */
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import selectors from '../helpers/selectors.js';
 import createNightmare from '../helpers/nightmare';
