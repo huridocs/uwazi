@@ -38,7 +38,7 @@ exports[`ThesaurusCockpit render should render a ThesaurusCockpit 1`] = `
           <th
             scope="col"
           >
-            Suggestions
+            Documents to be reviewed
           </th>
           <th
             scope="col"
