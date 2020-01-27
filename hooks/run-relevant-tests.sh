@@ -26,7 +26,7 @@ do
     fi
 done
 
-yarn test --bail --findRelatedTests $STAGED_FILES
+yarn test --bail --findRelatedTests --passWithNoTests $STAGED_FILES
 if [ "$?" == 0 ]; then
     echo "\t\033[32mJest Tests Passed\033[0m"
 else
