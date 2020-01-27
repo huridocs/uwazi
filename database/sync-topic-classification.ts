@@ -195,7 +195,7 @@ connect().then(
           await QueryForEach(
             entities
               .get({ language: 'en' })
-              .sort('-_id')
+              .sort('_id')
               .limit(limit),
             300,
             async (e: WithId<EntitySchema>) => {
