@@ -6,7 +6,7 @@ import { Translate } from 'app/I18N';
 const defaultValue = { lat: '', lon: '', label: '' };
 
 function isCoordinateValid(coord) {
-  return typeof coord && coord === 'number' && !Number.isNaN(coord);
+  return coord && typeof coord === 'number' && !Number.isNaN(coord);
 }
 
 export default class Geolocation extends Component {
