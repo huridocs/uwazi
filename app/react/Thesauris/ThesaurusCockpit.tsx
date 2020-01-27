@@ -6,14 +6,16 @@ import api from 'app/Search/SearchAPI';
 import { resolveTemplateProp } from 'app/Settings/utils/resolveProperty';
 import { getSuggestionsQuery } from 'app/Settings/utils/suggestions';
 import TemplatesAPI from 'app/Templates/TemplatesAPI';
+import { ITemplateProperty } from 'app/Templates/components/MetadataTemplate';
 import ThesaurisAPI from 'app/Thesauris/ThesaurisAPI';
 import React from 'react';
 import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
 import { Icon } from 'UI';
+import { IRequestParams } from 'app/utils/RequestParams';
 
 /** Model is the type used for holding information about a classifier model. */
-interface ClassifierModel {
+interface IClassifierModel {
   name: string;
   preferred: string;
   bert: string;
@@ -27,11 +29,54 @@ interface ClassifierModel {
   };
 }
 
+interface IImmutable<T> {
+  toJS(): T;
+}
+
+interface ThesaurusCockpitState {
+  thesauri: {
+    thesaurus: IImmutable<IThesaurus>;
+    models: Array<IImmutable<IClassifierModel>>;
+    suggestions: Array<IImmutable<ISuggestionResult>>;
+  };
+}
 interface ThesaurusTopic {
   id: string;
   label: string;
   suggestions: number;
 }
+
+interface IThesaurus {
+  _id: string;
+  name: string;
+  values: Array<ThesaurusTopic>;
+  __v: number;
+  enableClassification: boolean;
+  property: ITemplateProperty;
+}
+interface IResultBucket {
+  key: string;
+  doc_count: number; // eslint-disable-line camelcase
+  filtered: {
+    meta: any;
+    doc_count: number; // eslint-disable-line camelcase
+  };
+}
+interface ISuggestionResult {
+  aggregations: {
+    rows: any;
+    totalRows: number;
+    all: {
+      [x: string]: { buckets: Array<IResultBucket> };
+    };
+  };
+}
+
+type ThesaurusCockpitProps = {
+  thesaurus: IThesaurus;
+  models: Array<IClassifierModel>;
+  suggestions: Array<ISuggestionResult>;
+};
 
 export class ThesaurusCockpitBase extends RouteHandler {
   static genIcons(label: string, actual: number, possible: number) {
@@ -73,7 +118,7 @@ export class ThesaurusCockpitBase extends RouteHandler {
 
   static topicNode(
     topic: ThesaurusTopic,
-    modelInfo: ClassifierModel,
+    modelInfo: IClassifierModel,
     propName: string | undefined
   ) {
     if (modelInfo === undefined) {
@@ -110,43 +155,47 @@ export class ThesaurusCockpitBase extends RouteHandler {
       return null;
     }
 
-    const model = this.props.models.find((modelInfo: ClassifierModel) => modelInfo.name === name);
+    const model = this.props.models.find((modelInfo: IClassifierModel) => modelInfo.name === name);
     const propName: string | undefined = (this.props.thesaurus.property || {}).name;
     const { suggestions } = this.props;
-    const thesaurusSuggestions: any = [];
-    suggestions.forEach((templateResult: any) => {
+    const thesaurusSuggestions: Array<IResultBucket> = [];
+    suggestions.forEach((templateResult: ISuggestionResult) => {
       if (
         templateResult.aggregations !== undefined &&
         templateResult.aggregations.all.hasOwnProperty(`_${property.name}`)
       ) {
         const { buckets } = templateResult.aggregations.all[`_${property.name}`];
-        buckets.forEach((b: any) => thesaurusSuggestions.push(b));
+        buckets.forEach((b: IResultBucket) => thesaurusSuggestions.push(b));
       }
     });
-    const dedupedSuggestions = thesaurusSuggestions.reduce((acc: any, obj: any) => {
-      const { key } = obj;
-      if (!acc[key]) {
-        acc[key] = obj.filtered.doc_count;
-      } else {
-        acc[key] += obj.filtered.doc_count;
-      }
-      return acc;
-    }, {});
+    const dedupedSuggestions: Map<string, number> = thesaurusSuggestions.reduce(
+      (acc: Map<string, number>, obj: IResultBucket) => {
+        const { key } = obj;
+        if (!acc.get(key)) {
+          acc.set(key, obj.filtered.doc_count);
+        } else {
+          const current: number = acc.get(key) || 0;
+          acc.set(key, current + obj.filtered.doc_count);
+        }
+        return acc;
+      },
+      new Map()
+    );
 
     topics.sort(
       // Sort in order of descending number of documents with suggestions
       // TODO: Make sort order configurable, or even better, dynamic
       (topic1: ThesaurusTopic, topic2: ThesaurusTopic) =>
-        (dedupedSuggestions[topic2.id] || 0) - (dedupedSuggestions[topic1.id] || 0)
+        (dedupedSuggestions.get(topic2.id) || 0) - (dedupedSuggestions.get(topic1.id) || 0)
     );
 
     return topics.map((topic: ThesaurusTopic) => {
-      const topicWithSuggestions = { ...topic, suggestions: dedupedSuggestions[topic.id] || 0 };
+      const topicWithSuggestions = { ...topic, suggestions: dedupedSuggestions.get(topic.id) || 0 };
       return ThesaurusCockpitBase.topicNode(topicWithSuggestions, model, propName);
     });
   }
 
-  static async requestState(requestParams: any) {
+  static async requestState(requestParams: IRequestParams) {
     // Thesauri should always have a length of 1, because a specific thesaurus ID is passed in the requestParams.
     const [thesauri, templates] = await Promise.all([
       ThesaurisAPI.getThesauri(requestParams),
@@ -156,7 +205,7 @@ export class ThesaurusCockpitBase extends RouteHandler {
 
     // Fetch models associated with known thesauri.
     const modelParams = requestParams.onlyHeaders().set({ model: thesaurus.name });
-    const model: ClassifierModel = await ThesaurisAPI.getModelStatus(modelParams);
+    const model: IClassifierModel = await ThesaurisAPI.getModelStatus(modelParams);
 
     // Get aggregate document count of documents with suggestions on this thesaurus
     const assocProp = resolveTemplateProp(thesaurus, templates);
@@ -239,21 +288,21 @@ export class ThesaurusCockpitBase extends RouteHandler {
 }
 
 const selectModels = createSelector(
-  (state: any) => state.thesauri.models,
-  models => models.toJS()
+  (state: ThesaurusCockpitState) => state.thesauri.models,
+  models => models.map(m => m.toJS())
 );
 
 const selectThesaurus = createSelector(
-  (state: any) => state.thesauri.thesaurus,
+  (state: ThesaurusCockpitState) => state.thesauri.thesaurus,
   thesaurus => thesaurus.toJS()
 );
 
 const selectSuggestions = createSelector(
-  (state: any) => state.thesauri.suggestions,
-  suggestions => suggestions.toJS()
+  (state: ThesaurusCockpitState) => state.thesauri.suggestions,
+  suggestions => suggestions.map(s => s.toJS())
 );
 
-function mapStateToProps(state: any) {
+function mapStateToProps(state: ThesaurusCockpitState) {
   return {
     models: selectModels(state), // {name: ModelName; bert: bert123; sample: 53}
     thesaurus: selectThesaurus(state), // {name: Themes; values: [{label: Education, id: lkajsdf}, ...]}
