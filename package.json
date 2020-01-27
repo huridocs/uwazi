@@ -230,6 +230,7 @@
     "jest": "24.8.0",
     "jest-extended": "^0.8.1",
     "jest-immutable-matchers": "^2.0.1",
+    "lint-staged": "^10.0.0",
     "mini-css-extract-plugin": "^0.5.0",
     "mongodb-memory-server": "^5.2.6",
     "mongodb_fixtures": "1.0.3",
@@ -258,7 +259,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "sh ./hooks/no-commit-master.sh && sh ./hooks/no-merge-conflicts.sh",
+      "pre-commit": "sh ./hooks/no-commit-master.sh && sh ./hooks/no-merge-conflicts.sh && sh ./hooks/run-relevant-tests.sh",
       "pre-push": "yarn check-types && yarn eslint && yarn prettier && yarn test"
     }
   }
