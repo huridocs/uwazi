@@ -13,7 +13,7 @@ describe('metadata path', () => {
   beforeAll(async () => insertFixtures());
   afterAll(async () => nightmare.end());
 
-  fdescribe('login', () => {
+  describe('login', () => {
     it('should log in as admin then click the settings nav button', done => {
       loginAsAdminAndGoToSettings(nightmare, catchErrors, done);
     });
@@ -245,8 +245,6 @@ describe('metadata path', () => {
         '#app > div.content > div > div > div.settings-content > div > div > div.panel-body > div > aside > div > ul > li',
       relationshipPropertyType:
         '#app > div.content > div > div > div.settings-content > div > div > div.panel-body > div > main > div > form > ul > li:nth-child(7) > div.propery-form.expand > div > div:nth-child(2) > select',
-      relationshipPropertyEntity:
-        '#app > div.content > div > div > div.settings-content > div > div > div.panel-body > div > main > div > form > ul > li:nth-child(7) > div.propery-form.expand > div > div:nth-child(3) > select > option:nth-child(2)',
       editRelationshipProperty:
         '#app > div.content > div > div > div.settings-content > div > div > div.panel-body > div > main > div > form > ul > li:nth-child(7) > div.list-group-item > div > button.btn.btn-default.btn-xs.property-edit',
       form: {
@@ -337,8 +335,7 @@ describe('metadata path', () => {
 
       await nightmare
         .waitToClick(localSelectors.editRelationshipProperty)
-        .select(localSelectors.relationshipPropertyType, '5a8480eac464318833d9b54e')
-        .select(localSelectors.relationshipPropertyEntity, '58ad7d240d44252fee4e61fd')
+        .selectByLabel(localSelectors.relationshipPropertyType, 'Perpetrator')
         .waitToClick(selectors.settingsView.saveTemplateButton)
         .waitToClick('.alert.alert-success');
     });

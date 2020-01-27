@@ -74,7 +74,14 @@ exports[`Geolocation should render button to clear fields when longitude and lat
     interactiveLayerIds={Array []}
     latitude={null}
     longitude={null}
-    markers={Array []}
+    markers={
+      Array [
+        Object {
+          "latitude": 32.18,
+          "longitude": -17.2,
+        },
+      ]
+    }
     onClick={[Function]}
     renderMarker={null}
     renderPopupInfo={null}

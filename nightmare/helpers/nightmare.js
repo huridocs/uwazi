@@ -1,9 +1,4 @@
-/**
- * /*eslint no-console: 0
- *
- * @format
- */
-
+/*eslint no-console: 0 */
 /* eslint import/no-extraneous-dependencies: ["error", {"peerDependencies": true}] */
 import Nightmare from 'nightmare';
 import nightmareUpload from 'nightmare-upload';
@@ -37,9 +32,6 @@ export default function createNightmare(width = 1200, height = 600) {
   });
 
   nightmare.on('console', (type, message) => {
-    //if (message.match(/Unknown prop `storeSubscription`/)) {
-    //return;
-    //}
     if (type === 'error') {
       fail(message);
     }
