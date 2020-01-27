@@ -18,10 +18,13 @@ import templatesModel from '../templates';
 import { bulkIndex, indexEntities } from './entitiesIndex';
 
 function processFilters(filters, properties) {
-  return Object.keys(filters || {}).map(filterName => {
+  return Object.keys(filters || {}).reduce((res, filterName) => {
     const suggested = filterName[0] === '_';
     const propertyName = suggested ? filterName.substring(1) : filterName;
     const property = properties.find(p => p.name === propertyName);
+    if (!property) {
+      return res;
+    }
 
     let { type } = property;
     const value = filters[filterName];
@@ -41,26 +44,32 @@ function processFilters(filters, properties) {
     }
 
     if (property.type === 'relationshipfilter') {
-      return {
+      return [
+        ...res,
+        {
+          ...property,
+          value,
+          suggested,
+          type,
+          filters: property.filters.map(f => ({
+            ...f,
+            name: `${f.name}.value`,
+          })),
+        },
+      ];
+    }
+
+    return [
+      ...res,
+      {
         ...property,
         value,
         suggested,
         type,
-        filters: property.filters.map(f => ({
-          ...f,
-          name: `${f.name}.value`,
-        })),
-      };
-    }
-
-    return {
-      ...property,
-      value,
-      suggested,
-      type,
-      name: `${property.name}.value`,
-    };
-  });
+        name: `${property.name}.value`,
+      },
+    ];
+  }, []);
 }
 
 function agregationProperties(properties) {
