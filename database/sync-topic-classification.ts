@@ -10,11 +10,13 @@ import { extractSequence } from 'api/topicclassification/common';
 import connect, { disconnect } from 'api/utils/connect_to_mongo';
 import { buildModelName } from 'shared/commonTopicClassification';
 import JSONRequest from 'shared/JSONRequest';
+import { propertyTypes } from 'shared/propertyTypes';
 import { ensure, sleep } from 'shared/tsUtils';
 import yargs from 'yargs';
 import { MetadataObject } from '../app/api/entities/entitiesModel';
 import { EntitySchema } from '../app/api/entities/entityType';
 import { ThesaurusSchema } from '../app/api/thesauris/dictionariesType';
+import { PropertySchema } from '../app/shared/commonTypes';
 
 const { limit, recompute, overwrite, mode, model: fixedModel } = yargs
   .option('limit', { default: 1000000 })
@@ -87,16 +89,19 @@ async function sendSample(
 
 async function handleResponse(
   e: WithId<EntitySchema>,
-  prop: string,
+  prop: PropertySchema,
   response: ClassificationSampleResponse,
   thesaurus: ThesaurusSchema
 ) {
+  if (!prop.name) {
+    return;
+  }
   if (!e.suggestedMetadata) {
     e.suggestedMetadata = {};
   }
-  if (!e.suggestedMetadata[prop] || overwrite) {
-    const newPropMetadata = response.json.samples[0].predicted_labels.reduce(
-      (res: MetadataObject<string>[], pred) => {
+  if (!e.suggestedMetadata[prop.name] || overwrite) {
+    let newPropMetadata = response.json.samples[0].predicted_labels
+      .reduce((res: MetadataObject<string>[], pred) => {
         const thesValue = (thesaurus.values || []).find(v => v.label === pred.topic);
         if (!thesValue || !thesValue.id) {
           console.error(
@@ -108,12 +113,14 @@ async function handleResponse(
           ...res,
           { value: thesValue.id, label: pred.topic, suggestion_confidence: pred.quality },
         ];
-      },
-      []
-    );
+      }, [])
+      .sort((v1, v2) => (v2.suggestion_confidence || 0) - (v1.suggestion_confidence || 0));
+    if (prop.type === propertyTypes.select && newPropMetadata.length) {
+      newPropMetadata = [newPropMetadata[0]];
+    }
     // JSON.stringify provides an easy and fast deep-equal comparison.
-    if (JSON.stringify(newPropMetadata) !== JSON.stringify(e.suggestedMetadata[prop])) {
-      e.suggestedMetadata[prop] = newPropMetadata;
+    if (JSON.stringify(newPropMetadata) !== JSON.stringify(e.suggestedMetadata[prop.name])) {
+      e.suggestedMetadata[prop.name] = newPropMetadata;
       await entities.save(e, { user: 'sync-topic-classification', language: e.language });
       console.info(`Saved ${e.sharedId}`);
     }
@@ -122,15 +129,15 @@ async function handleResponse(
 
 async function syncEntity(
   e: WithId<EntitySchema>,
-  prop: string,
+  prop: PropertySchema,
   model: string,
   thesaurus: ThesaurusSchema
 ) {
-  if (!e.template || !e.metadata || e.language !== 'en' || !prop) {
+  if (!e.template || !e.metadata || e.language !== 'en' || !prop.name) {
     return false;
   }
   if (mode === 'onlynew') {
-    if (e.metadata[prop] && e.metadata[prop]!.length) {
+    if (e.metadata[prop.name] && e.metadata[prop.name]!.length) {
       return false;
     }
   }
@@ -144,7 +151,7 @@ async function syncEntity(
       {
         seq: sequence,
         sharedId: e.sharedId,
-        training_labels: (e.metadata[prop] || []).map(mo => ({
+        training_labels: (e.metadata[prop.name] || []).map(mo => ({
           topic: ensure<string>(useThesaurusNames ? mo.label : mo.value),
         })),
       },
@@ -177,7 +184,7 @@ connect().then(
         .filter(t => t.enable_classification)
         .reduce(async (prom, selectedThesaurus) => {
           await prom;
-          const templateAndProp = allTemplates.reduce((res: { [k: string]: string }, t) => {
+          const templateAndProp = allTemplates.reduce((res: { [k: string]: PropertySchema }, t) => {
             if (!t.properties) {
               return res;
             }
@@ -189,7 +196,7 @@ connect().then(
             }
             return {
               ...res,
-              [t._id.toString()]: thesProp.name,
+              [t._id.toString()]: thesProp,
             };
           }, {});
 
