@@ -16,7 +16,7 @@ import { MetadataObject } from '../app/api/entities/entitiesModel';
 import { EntitySchema } from '../app/api/entities/entityType';
 import { ThesaurusSchema } from '../app/api/thesauris/dictionariesType';
 
-const { limit, recompute, overwrite, mode } = yargs
+const { limit, recompute, overwrite, mode, model: fixedModel } = yargs
   .option('limit', { default: 1000000 })
   .option('recompute', {
     default: false,
@@ -33,6 +33,10 @@ const { limit, recompute, overwrite, mode } = yargs
     usage:
       'onlynew: only process entities that have no value for the thesaurus; ' +
       'all: process all entities',
+  })
+  .option('model', {
+    default: '',
+    usage: 'If set, only run on this model.',
   })
   .help().argv;
 
@@ -190,15 +194,19 @@ connect().then(
           }, {});
 
           const modelName = buildModelName(selectedThesaurus.name);
+          if (fixedModel && modelName !== fixedModel) {
+            console.log(`Skipped ${modelName}.`);
+            return;
+          }
 
           let index = 0;
           await QueryForEach(
-            entities
-              .get({ language: 'en' })
-              .sort('_id')
-              .limit(limit),
+            entities.get({ language: 'en' }).sort('_id'),
             300,
             async (e: WithId<EntitySchema>) => {
+              if (index > limit) {
+                return;
+              }
               const didSomething = await syncEntity(
                 e,
                 templateAndProp[(e.template || '').toString()],
