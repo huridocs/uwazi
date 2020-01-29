@@ -18,7 +18,7 @@ import { EntitySchema } from '../app/api/entities/entityType';
 import { ThesaurusSchema } from '../app/api/thesauris/dictionariesType';
 import { PropertySchema } from '../app/shared/commonTypes';
 
-const { limit, recompute, overwrite, mode, model: fixedModel } = yargs
+const { limit, recompute, overwrite, mode, model: fixedModel, sharedIds: sharedIdsStr } = yargs
   .option('limit', { default: 1000000 })
   .option('recompute', {
     default: false,
@@ -34,13 +34,17 @@ const { limit, recompute, overwrite, mode, model: fixedModel } = yargs
     default: 'onlynew',
     usage:
       'onlynew: only process entities that have no value for the thesaurus; ' +
-      'all: process all entities',
+      'all: process all entities; ' +
+      'purge: delete suggestions;',
   })
+  .option('sharedIds', { default: '' })
   .option('model', {
     default: '',
     usage: 'If set, only run on this model.',
   })
   .help().argv;
+
+const sharedIds = sharedIdsStr ? sharedIdsStr.split(',') : [];
 
 type ClassificationSampleRequest = {
   refresh_predictions: boolean;
@@ -133,13 +137,23 @@ async function syncEntity(
   model: string,
   thesaurus: ThesaurusSchema
 ) {
-  if (!e.template || !e.metadata || e.language !== 'en' || !prop.name) {
+  if (!e.template || !e.metadata || e.language !== 'en' || !prop || !prop.name) {
     return false;
   }
   if (mode === 'onlynew') {
     if (e.metadata[prop.name] && e.metadata[prop.name]!.length) {
       return false;
     }
+  }
+  if (mode === 'purge') {
+    const suggestedMetadata = e.suggestedMetadata || {};
+    if (!suggestedMetadata[prop.name]) {
+      return false;
+    }
+    delete e.suggestedMetadata![prop.name];
+    await entities.save(e, { user: 'sync-topic-classification', language: e.language });
+    console.info(`Purged ${e.sharedId}`);
+    return true;
   }
   const sequence = await extractSequence(e);
   if (!sequence) {
@@ -214,6 +228,9 @@ connect().then(
               if (index > limit) {
                 return;
               }
+              if (sharedIds.length && !sharedIds.includes(e.sharedId || '')) {
+                return;
+              }
               const didSomething = await syncEntity(
                 e,
                 templateAndProp[(e.template || '').toString()],
@@ -224,7 +241,7 @@ connect().then(
                 index += 1;
                 if (index % 100 === 0) {
                   process.stdout.write(
-                    `${selectedThesaurus.name}: syncronized entities -> ${index}\r`
+                    `${selectedThesaurus.name}: syncronized entities -> ${index}\n`
                   );
                 }
               }
