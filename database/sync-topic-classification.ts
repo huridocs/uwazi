@@ -241,13 +241,13 @@ connect().then(
                 index += 1;
                 if (index % 100 === 0) {
                   process.stdout.write(
-                    `${selectedThesaurus.name}: syncronized entities -> ${index}\n`
+                    `\n${selectedThesaurus.name}: syncronized entities -> ${index}\n`
                   );
                 }
               }
             }
           );
-          process.stdout.write(`${selectedThesaurus.name}: syncronized entities -> ${index}\n`);
+          process.stdout.write(`\n${selectedThesaurus.name}: syncronized entities -> ${index}\n`);
         }, Promise.resolve());
     } catch (err) {
       console.error(err);
