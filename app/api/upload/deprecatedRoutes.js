@@ -179,55 +179,6 @@ export default app => {
   );
 
   app.post(
-    '/api/customisation/upload',
-    needsAuthorization(['admin', 'editor']),
-    upload.any(),
-    (req, res, next) => {
-      uploads
-        .save(req.files[0])
-        .then(saved => {
-          res.json(saved);
-        })
-        .catch(next);
-    }
-  );
-
-  app.get(
-    '/api/customisation/upload',
-    needsAuthorization(['admin', 'editor']),
-    (_req, res, next) => {
-      uploads
-        .get()
-        .then(result => {
-          res.json(result);
-        })
-        .catch(next);
-    }
-  );
-
-  app.delete(
-    '/api/customisation/upload',
-
-    needsAuthorization(['admin', 'editor']),
-
-    validation.validateRequest(
-      Joi.object({
-        _id: Joi.string().required(),
-      }).required(),
-      'query'
-    ),
-
-    (req, res, next) => {
-      uploads
-        .delete(req.query._id)
-        .then(result => {
-          res.json(result);
-        })
-        .catch(next);
-    }
-  );
-
-  app.post(
     '/api/reupload',
 
     needsAuthorization(['admin', 'editor']),

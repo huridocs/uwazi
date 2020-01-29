@@ -86,14 +86,6 @@ export const entitySchema = {
         language: { type: 'string' },
       },
     },
-    fullText: {
-      type: 'object',
-      additionalProperties: false,
-      patternProperties: {
-        '^[0-9]+$': { type: 'string' },
-      },
-    },
-    totalPages: { type: 'number' },
     icon: {
       type: 'object',
       additionalProperties: false,
@@ -117,26 +109,6 @@ export const entitySchema = {
       },
     },
     creationDate: { type: 'number' },
-    processed: { type: 'boolean' },
-    uploaded: { type: 'boolean' },
-    published: { type: 'boolean' },
-    pdfInfo: {
-      type: 'object',
-      additionalProperties: false,
-      patternProperties: {
-        '^[0-9]+$': {
-          type: 'object',
-          additionalProperties: false,
-          properties: {
-            chars: { type: 'number' },
-          },
-        },
-      },
-    },
-    toc: {
-      type: 'array',
-      items: tocSchema,
-    },
     user: objectIdSchema,
     metadata: metadataSchema,
     suggestedMetadata: metadataSchema,

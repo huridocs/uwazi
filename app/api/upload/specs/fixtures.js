@@ -1,3 +1,5 @@
+/** @format */
+
 import db from 'api/utils/testing_db';
 
 const entityId = db.id();
@@ -13,13 +15,13 @@ export default {
       language: 'es',
       title: 'Gadgets 01 ES',
       toc: [{ _id: db.id(), label: 'existingToc' }],
-      file: {},
     },
     { _id: entityEnId, sharedId: 'sharedId1', language: 'en', title: 'Gadgets 01 EN' },
   ],
   uploads: [
-    { _id: uploadId, originalname: 'upload1' },
-    { _id: db.id(), originalname: 'upload2' },
+    { _id: uploadId, originalname: 'upload1', type: 'custom' },
+    { _id: db.id(), originalname: 'upload2', type: 'custom' },
+    { _id: db.id(), originalname: 'upload3', type: 'document' },
   ],
   templates: [{ _id: templateId, default: true, name: 'mydoc', properties: [] }],
   settings: [

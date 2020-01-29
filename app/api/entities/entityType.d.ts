@@ -18,14 +18,6 @@ export interface EntitySchema {
     timestamp?: number;
     language?: string;
   };
-  fullText?: {
-    /**
-     * This interface was referenced by `undefined`'s JSON-Schema definition
-     * via the `patternProperty` "^[0-9]+$".
-     */
-    [k: string]: string;
-  };
-  totalPages?: number;
   icon?: {
     _id?: string | null;
     label?: string;
@@ -40,19 +32,6 @@ export interface EntitySchema {
     [k: string]: any | undefined;
   }[];
   creationDate?: number;
-  processed?: boolean;
-  uploaded?: boolean;
-  published?: boolean;
-  pdfInfo?: {
-    /**
-     * This interface was referenced by `undefined`'s JSON-Schema definition
-     * via the `patternProperty` "^[0-9]+$".
-     */
-    [k: string]: {
-      chars?: number;
-    };
-  };
-  toc?: TocSchema[];
   user?: ObjectIdSchema;
   metadata?: MetadataSchema;
   suggestedMetadata?: MetadataSchema;

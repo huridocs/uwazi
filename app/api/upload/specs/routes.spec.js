@@ -14,7 +14,7 @@ import express from 'express';
 
 import fixtures, { entityId, entityEnId, templateId } from './fixtures.js';
 import instrumentRoutes from '../../utils/instrumentRoutes';
-import uploadRoutes from '../routes.js';
+import uploadRoutes from '../deprecatedRoutes.js';
 import errorLog from '../../log/errorLog';
 import uploads from '../uploads.js';
 import paths from '../../config/paths';
@@ -119,25 +119,35 @@ describe('upload routes', () => {
     it('should process the document after upload', async () => {
       spyOn(Date, 'now').and.returnValue(1000);
       await onSocketRespond('post', '/api/upload', req);
-      const [docES, docEN] = await Promise.all([
-        documents.get({ sharedId: 'sharedId1', language: 'es' }, '+fullText'),
-        documents.get({ sharedId: 'sharedId1', language: 'en' }, '+fullText'),
+      const [[docES], [docEN]] = await Promise.all([
+        entities.get({ sharedId: 'sharedId1', language: 'es' }, '+fullText'),
+        entities.get({ sharedId: 'sharedId1', language: 'en' }, '+fullText')
       ]);
+
       expect(iosocket.emit).toHaveBeenCalledWith('conversionStart', 'sharedId1');
       expect(iosocket.emit).toHaveBeenCalledWith('documentProcessed', 'sharedId1');
-      expect(docEN[0].processed).toBe(true);
-      expect(docEN[0].fullText[1]).toMatch(/Test\[\[1\]\] file/);
-      expect(docEN[0].totalPages).toBe(1);
-      expect(docEN[0].language).toBe('en');
-      expect(docEN[0].file.filename).toBe(file.filename);
-      expect(docEN[0].file.timestamp).toBe(1000);
 
-      expect(docES[0].processed).toBe(true);
-      expect(docES[0].fullText[1]).toMatch(/Test\[\[1\]\] file/);
-      expect(docES[0].totalPages).toBe(1);
-      expect(docES[0].language).toBe('es');
-      expect(docES[0].file.filename).toBe(file.filename);
-      expect(docES[0].file.timestamp).toBe(1000);
+      expect(docEN).toEqual(expect.objectContaining({
+        processed: true,
+        // fullText[1]: /Test\[\[1\]\] file/,
+        totalPages: 1,
+        language: 'en',
+        file: expect.objectContaining({
+          filename: file.filename,
+          timestamp: 1000,
+        })
+      }));
+
+      expect(docES).toEqual(expect.objectContaining({
+        processed: true,
+        // fullText[1]: /Test\[\[1\]\] file/,
+        totalPages: 1,
+        language: 'es',
+        file: expect.objectContaining({
+          filename: file.filename,
+          timestamp: 1000,
+        })
+      }));
 
       await checkThumbnails();
     });
@@ -288,22 +298,6 @@ describe('upload routes', () => {
       };
       expect(_entities[0].file).toEqual(jasmine.objectContaining(_file));
       expect(_entities[1].file).toEqual(jasmine.objectContaining(_file));
-    });
-  });
-
-  describe('POST/customisation/upload', () => {
-    it('should save the upload and return it', async () => {
-      const result = await routes.post('/api/customisation/upload', req);
-      delete result._id;
-      delete result.creationDate;
-      expect(result).toMatchSnapshot();
-    });
-  });
-
-  describe('GET/customisation/upload', () => {
-    it('should return all uploads', async () => {
-      const result = await routes.get('/api/customisation/upload', {});
-      expect(result.map(r => r.originalname)).toMatchSnapshot();
     });
   });
 
