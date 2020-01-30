@@ -46,19 +46,21 @@ const { limit, recompute, overwrite, mode, model: fixedModel, sharedIds: sharedI
 
 const sharedIds = sharedIdsStr ? sharedIdsStr.split(',') : [];
 
-type ClassificationSampleRequest = {
-  refresh_predictions: boolean;
-  samples: {
-    seq: string;
-    sharedId: string | undefined;
-    training_labels: {
-      topic: string;
-    }[];
+type ClassificationSample = {
+  seq: string;
+  sharedId: string | undefined;
+  training_labels: {
+    topic: string;
   }[];
 };
 
+type ClassificationSampleRequest = {
+  refresh_predictions: boolean;
+  samples: ClassificationSample[];
+};
+
 type ClassificationSampleResponse = {
-  json: { samples: { seq: string; predicted_labels: { topic: string; quality: number }[] }[] };
+  json: { samples: { sharedId: string; predicted_labels: { topic: string; quality: number }[] }[] };
   status: any;
 };
 
@@ -93,18 +95,24 @@ async function sendSample(
 
 async function handleResponse(
   e: WithId<EntitySchema>,
-  prop: PropertySchema,
+  templateAndProp: any,
   response: ClassificationSampleResponse,
   thesaurus: ThesaurusSchema
 ) {
-  if (!prop.name) {
-    return;
+  const prop = templateAndProp[(e.template || '').toString()];
+  if (!prop || !prop.name) {
+    return false;
+  }
+  const sample = response.json.samples.find(s => s.sharedId === e.sharedId);
+  if (!sample) {
+    console.error(`Missing response for ${e.sharedId}`);
+    return false;
   }
   if (!e.suggestedMetadata) {
     e.suggestedMetadata = {};
   }
   if (!e.suggestedMetadata[prop.name] || overwrite) {
-    let newPropMetadata = response.json.samples[0].predicted_labels
+    let newPropMetadata = sample.predicted_labels
       .reduce((res: MetadataObject<string>[], pred) => {
         const thesValue = (thesaurus.values || []).find(v => v.label === pred.topic);
         if (!thesValue || !thesValue.id) {
@@ -129,61 +137,78 @@ async function handleResponse(
       console.info(`Saved ${e.sharedId}`);
     }
   }
+  return true;
 }
 
-async function syncEntity(
-  e: WithId<EntitySchema>,
-  prop: PropertySchema,
+async function syncEntities(
+  es: WithId<EntitySchema>[],
+  templateAndProp: any,
   model: string,
   thesaurus: ThesaurusSchema
 ) {
-  if (!e.template || !e.metadata || e.language !== 'en' || !prop || !prop.name) {
-    return false;
-  }
-  if (mode === 'onlynew') {
-    if (e.metadata[prop.name] && e.metadata[prop.name]!.length) {
-      return false;
-    }
-  }
   if (mode === 'purge') {
-    const suggestedMetadata = e.suggestedMetadata || {};
-    if (!suggestedMetadata[prop.name]) {
-      return false;
-    }
-    delete e.suggestedMetadata![prop.name];
-    await entities.save(e, { user: 'sync-topic-classification', language: e.language });
-    console.info(`Purged ${e.sharedId}`);
-    return true;
+    return (await Promise.all(
+      es.map(async e => {
+        const prop = templateAndProp[(e.template || '').toString()];
+        if (!prop || !prop.name) {
+          return false;
+        }
+        const suggestedMetadata = e.suggestedMetadata || {};
+        if (!suggestedMetadata[prop.name!]) {
+          return false;
+        }
+        delete e.suggestedMetadata![prop.name!];
+        await entities.save(e, { user: 'sync-topic-classification', language: e.language });
+        console.info(`Purged ${e.sharedId}`);
+        return true;
+      })
+    )).reduce((sum, b) => sum + (b ? 1 : 0), 0);
   }
-  const sequence = await extractSequence(e);
-  if (!sequence) {
-    return false;
+  const samples = (await Promise.all(
+    es.map(async e => {
+      const prop = templateAndProp[(e.template || '').toString()];
+      if (!prop || !prop.name) {
+        return null;
+      }
+
+      if (!e.template || !e.metadata || e.language !== 'en') {
+        return null;
+      }
+      if (mode === 'onlynew') {
+        if (e.metadata[prop.name!] && e.metadata[prop.name!]!.length) {
+          return null;
+        }
+      }
+      const sequence = await extractSequence(e);
+      if (!sequence) {
+        return null;
+      }
+      return {
+        seq: sequence,
+        sharedId: e.sharedId,
+        training_labels: (e.metadata[prop.name!] || []).map(mo => ({
+          topic: ensure<string>(useThesaurusNames ? mo.label : mo.value),
+        })),
+      } as ClassificationSample;
+    })
+  )).reduce((res, s) => (s ? [...res, s] : res), [] as ClassificationSample[]);
+  if (!samples.length) {
+    return 0;
   }
   const request = {
     refresh_predictions: recompute,
-    samples: [
-      {
-        seq: sequence,
-        sharedId: e.sharedId,
-        training_labels: (e.metadata[prop.name] || []).map(mo => ({
-          topic: ensure<string>(useThesaurusNames ? mo.label : mo.value),
-        })),
-      },
-    ],
+    samples,
   };
   const response = await sendSample(`${tcServer}/classification_sample?model=${model}`, request);
   if (!response) {
-    return false;
+    return 0;
   }
-  if (
-    !response.json.samples ||
-    !response.json.samples.length ||
-    response.json.samples[0].seq !== sequence
-  ) {
-    return false;
+  if (!response.json.samples) {
+    return 0;
   }
-  await handleResponse(e, prop, response, thesaurus);
-  return true;
+  return (await Promise.all(
+    es.map(async e => handleResponse(e, templateAndProp, response, thesaurus))
+  )).reduce((sum, b) => sum + (b ? 1 : 0), 0);
 }
 
 connect().then(
@@ -221,6 +246,7 @@ connect().then(
           }
 
           let index = 0;
+          let batch = [] as WithId<EntitySchema>[];
           await QueryForEach(
             entities.get({ language: 'en' }).sort('_id'),
             300,
@@ -231,15 +257,18 @@ connect().then(
               if (sharedIds.length && !sharedIds.includes(e.sharedId || '')) {
                 return;
               }
-              const didSomething = await syncEntity(
-                e,
-                templateAndProp[(e.template || '').toString()],
-                modelName,
-                selectedThesaurus
-              );
-              if (didSomething) {
-                index += 1;
-                if (index % 100 === 0) {
+              batch.push(e);
+              if (batch.length >= 200) {
+                const runNow = [...batch];
+                batch = [];
+                const done = await syncEntities(
+                  runNow,
+                  templateAndProp,
+                  modelName,
+                  selectedThesaurus
+                );
+                if (done) {
+                  index += done;
                   process.stdout.write(
                     `${selectedThesaurus.name}: syncronized entities -> ${index}\n`
                   );
@@ -247,7 +276,10 @@ connect().then(
               }
             }
           );
-          process.stdout.write(`${selectedThesaurus.name}: syncronized entities -> ${index}\n`);
+          if (batch.length > 0) {
+            index += await syncEntities(batch, templateAndProp, modelName, selectedThesaurus);
+            process.stdout.write(`${selectedThesaurus.name}: syncronized entities -> ${index}\n`);
+          }
         }, Promise.resolve());
     } catch (err) {
       console.error(err);
