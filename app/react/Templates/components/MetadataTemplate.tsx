@@ -19,24 +19,7 @@ import { bindActionCreators } from 'redux';
 import { Icon } from 'UI';
 
 import validator from './ValidateTemplate'; // eslint-disable-line import/no-named-as-default-member
-
-export interface ITemplateProperty {
-  id: string;
-  _id: string;
-  name: string;
-  label: string;
-  content: string; // this value ought to correspond with a thesaurus._id
-  showInCard: boolean;
-  nestedProperties: Array<any>;
-  filter: boolean;
-  defaultfilter: boolean;
-  type: string;
-}
-
-export interface ITemplate {
-  _id: string;
-  properties: Array<ITemplateProperty>;
-}
+import { ITemplateProperty, IMetadataTemplate } from '../interfaces/MetadataTemplate.interface';
 
 interface MetadataTemplateProps {
   notify(message: any, type: any): any;
@@ -51,7 +34,7 @@ interface MetadataTemplateProps {
   templates?: any;
   _id?: string;
 }
-const getTemplateDefaultColor = (allTemplates: List<ITemplate>, templateId: string) => {
+const getTemplateDefaultColor = (allTemplates: List<IMetadataTemplate>, templateId: string) => {
   if (!templateId) {
     return COLORS[allTemplates.size % COLORS.length];
   }
@@ -76,7 +59,7 @@ export class MetadataTemplate extends Component<MetadataTemplateProps> {
     this.onSubmitFailed = this.onSubmitFailed.bind(this);
   }
 
-  onSubmit = (_template: ITemplate) => {
+  onSubmit = (_template: IMetadataTemplate) => {
     const template = Object.assign({}, _template);
     template.properties = template.properties.map(_prop => {
       const prop = Object.assign({}, _prop);
