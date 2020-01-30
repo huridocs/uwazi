@@ -609,7 +609,10 @@ describe('relationships', () => {
 
       const args = entities.updateMetdataFromRelationships.calls.allArgs();
       args.forEach(arg => {
-        arg[0].forEach(doc => expect(['doc2', 'IHaveNoTemplate', 'thomasWayne', 'bruceWayne']).toContain(doc));
+        ['doc2', 'IHaveNoTemplate', 'thomasWayne', 'bruceWayne'].forEach(doc => {
+          expect(arg[0]).toContain(doc);
+        });
+
         expect(['en', 'es']).toContain(arg[1]);
       })
     });
