@@ -1,19 +1,19 @@
 /** @format */
 
 export interface IRequestParams {
-  data: Object | undefined;
-  headers: Object;
+  data?: { token?: string } | undefined;
+  headers?: Object;
   add(data: Object): IRequestParams;
   set(data: Object): IRequestParams;
   onlyHeaders(): IRequestParams;
 }
 
 class RequestParams {
-  data: Object | undefined;
+  data: { token?: string } | undefined = {};
 
-  headers: Object;
+  headers: Object = {};
 
-  constructor(data: Object | undefined, headers: Object = {}) {
+  constructor(data: Object | undefined = undefined, headers: Object = {}) {
     this.data = data;
     this.headers = headers;
   }
