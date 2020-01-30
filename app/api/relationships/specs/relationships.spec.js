@@ -32,6 +32,7 @@ import fixtures, {
 } from './fixtures';
 import relationships from '../relationships';
 import search from '../../search/search';
+import { exceptions } from 'winston';
 
 describe('relationships', () => {
   beforeEach(done => {
@@ -607,14 +608,22 @@ describe('relationships', () => {
     it('should call entities to update the metadata', async () => {
       await relationships.delete({ entity: 'bruceWayne' }, 'en');
 
+      expect(entities.updateMetdataFromRelationships).toHaveBeenCalledTimes(2);
+
+      const expectedDocs = ['doc2', 'IHaveNoTemplate', 'thomasWayne', 'bruceWayne'];
+      let expectedLanguages = ['en', 'es'];
       const args = entities.updateMetdataFromRelationships.calls.allArgs();
       args.forEach(arg => {
-        ['doc2', 'IHaveNoTemplate', 'thomasWayne', 'bruceWayne'].forEach(doc => {
-          expect(arg[0]).toContain(doc);
+        const [docs, languages] = arg;
+        expectedDocs.forEach(doc => {
+          expect(docs).toContain(doc);
         });
 
-        expect(['en', 'es']).toContain(arg[1]);
+        expect(expectedLanguages).toContain(languages);
+        expectedLanguages = expectedLanguages.filter(lang => lang != languages);
       })
+
+      expect(expectedLanguages).toEqual([]);
     });
 
     describe('when there is no condition', () => {
