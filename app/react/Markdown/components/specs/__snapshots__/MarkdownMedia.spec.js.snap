@@ -18,6 +18,7 @@ exports[`MarkdownMedia render should render an iframe with the correct video id 
           },
           "facebook": Object {
             "appId": "1309697205772819",
+            "version": "v3.3",
           },
           "file": Object {
             "attributes": Object {},
@@ -159,6 +160,7 @@ exports[`MarkdownMedia render should use compact class name if compact prop is s
           },
           "facebook": Object {
             "appId": "1309697205772819",
+            "version": "v3.3",
           },
           "file": Object {
             "attributes": Object {},
