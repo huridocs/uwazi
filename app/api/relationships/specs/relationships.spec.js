@@ -607,14 +607,11 @@ describe('relationships', () => {
     it('should call entities to update the metadata', async () => {
       await relationships.delete({ entity: 'bruceWayne' }, 'en');
 
-      expect(entities.updateMetdataFromRelationships).toHaveBeenCalledWith(
-        ['doc2', 'IHaveNoTemplate', 'thomasWayne', 'bruceWayne'],
-        'en'
-      );
-      expect(entities.updateMetdataFromRelationships).toHaveBeenCalledWith(
-        ['doc2', 'IHaveNoTemplate', 'thomasWayne', 'bruceWayne'],
-        'es'
-      );
+      const args = entities.updateMetdataFromRelationships.calls.allArgs();
+      args.forEach(arg => {
+        arg[0].forEach(doc => expect(['doc2', 'IHaveNoTemplate', 'thomasWayne', 'bruceWayne']).toContain(doc));
+        expect(['en', 'es']).toContain(arg[1]);
+      })
     });
 
     describe('when there is no condition', () => {
