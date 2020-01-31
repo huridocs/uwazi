@@ -5,7 +5,7 @@ import { APIURL } from 'app/config.js';
 
 import * as actions from 'app/Thesauri/actions/thesaurisActions';
 import { actions as formActions } from 'react-redux-form';
-import api from 'app/Thesauri/ThesaurisAPI';
+import api from 'app/Thesauri/ThesauriAPI';
 
 describe('thesaurisActions', () => {
   describe('editThesaurus', () => {

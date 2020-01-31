@@ -1,10 +1,10 @@
-import thesaurisAPI from 'app/Thesauri/ThesaurisAPI';
+import thesaurisAPI from 'app/Thesauri/ThesauriAPI';
 import { APIURL } from 'app/config.js';
 import backend from 'fetch-mock';
 import { RequestParams } from 'app/utils/RequestParams';
 
 
-describe('ThesaurisAPI', () => {
+describe('ThesauriAPI', () => {
   const arrayResponse = [{ thesauris: 'array' }];
   const singleResponse = [{ thesauris: 'single' }];
 

@@ -1,7 +1,6 @@
 /** @format */
 
 import api from 'app/utils/api';
-import { CLASSIFIER_MODELS_ENDPOINT } from 'api/topicclassification/routes';
 
 export default {
   get(requestParams) {
@@ -15,7 +14,7 @@ export default {
   },
 
   getModelStatus(requestParams) {
-    return api.get(CLASSIFIER_MODELS_ENDPOINT, requestParams).then(response => response.json);
+    return api.get('models', requestParams).then(response => response.json);
   },
 
   save(requestParams) {

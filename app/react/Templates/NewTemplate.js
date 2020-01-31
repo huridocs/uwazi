@@ -4,7 +4,7 @@ import { actions as formActions } from 'react-redux-form';
 import React from 'react';
 
 import templatesAPI from 'app/Templates/TemplatesAPI';
-import thesaurisAPI from 'app/Thesauri/ThesaurisAPI';
+import thesaurisAPI from 'app/Thesauri/ThesauriAPI';
 import relationTypesAPI from 'app/RelationTypes/RelationTypesAPI';
 import { actions } from 'app/BasicReducer';
 import TemplateCreator from 'app/Templates/components/TemplateCreator';

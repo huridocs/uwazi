@@ -14,7 +14,7 @@ import * as reviewActions from 'app/Review/actions/actions';
 import OneUpEntityViewer from 'app/Review/components/OneUpEntityViewer';
 import api from 'app/Search/SearchAPI';
 import TemplatesAPI from 'app/Templates/TemplatesAPI';
-import ThesaurisAPI from 'app/Thesauri/ThesaurisAPI';
+import ThesauriAPI from 'app/Thesauri/ThesauriAPI';
 import { RequestParams } from 'app/utils/RequestParams';
 import { setReferences } from 'app/Viewer/actions/referencesActions';
 import React from 'react';
@@ -100,7 +100,7 @@ export class OneUpReviewBase extends RouteHandler {
     });
     const [templates, thesauri, relationTypes, documents] = await Promise.all([
       TemplatesAPI.get(requestParams.onlyHeaders()),
-      ThesaurisAPI.getThesauri(requestParams.onlyHeaders()),
+      ThesauriAPI.getThesauri(requestParams.onlyHeaders()),
       relationTypesAPI.get(requestParams.onlyHeaders()),
       api.search(documentsRequest),
     ]);

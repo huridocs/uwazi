@@ -8,13 +8,13 @@ import EditTranslations from 'app/I18N/EditTranslations';
 import blankState from 'app/Library/helpers/blankState';
 import Library from 'app/Library/Library';
 import LibraryMap from 'app/Library/LibraryMap';
-import OneUpReview from 'app/Review/OneUpReview';
 import EditPage from 'app/Pages/EditPage';
 import NewPage from 'app/Pages/NewPage';
 import Pages from 'app/Pages/Pages';
 import PageView from 'app/Pages/PageView';
 import EditRelationType from 'app/RelationTypes/EditRelationType';
 import NewRelationType from 'app/RelationTypes/NewRelationType';
+import OneUpReview from 'app/Review/OneUpReview';
 import SemanticSearchResultsView from 'app/SemanticSearch/SemanticSearchResultsView';
 import {
   AccountSettings,
@@ -27,7 +27,7 @@ import {
   NavlinksSettings,
   RelationTypesList,
   Settings,
-  ThesaurisList,
+  ThesauriList,
   TranslationsList,
 } from 'app/Settings';
 import EditTemplate from 'app/Templates/EditTemplate';
@@ -43,6 +43,7 @@ import UnlockAccount from 'app/Users/UnlockAccount';
 import ViewerRoute from 'app/Viewer/ViewerRoute';
 import React from 'react';
 import { IndexRoute, Route } from 'react-router';
+
 import { store } from './store';
 
 function onEnter() {
@@ -121,7 +122,7 @@ const routes = (
         <Route path="edit/:_id" component={EditRelationType} />
       </Route>
       <Route path="dictionaries">
-        <IndexRoute component={ThesaurisList} />
+        <IndexRoute component={ThesauriList} />
         <Route path="new" component={NewThesauri} />
         <Route path="edit/:_id" component={EditThesauri} />
         <Route path="cockpit/:_id" component={ThesaurusCockpit} />

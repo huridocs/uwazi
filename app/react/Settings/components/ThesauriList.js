@@ -16,7 +16,7 @@ import { Icon } from 'UI';
 
 import sortThesauri from '../utils/sortThesauri';
 
-export class ThesaurisList extends Component {
+export class ThesauriList extends Component {
   getThesaurusSuggestionActions(thesaurus) {
     if (!thesaurus.enable_classification && thesaurus.model_available) {
       return (
@@ -170,7 +170,7 @@ export class ThesaurisList extends Component {
   }
 }
 
-ThesaurisList.propTypes = {
+ThesauriList.propTypes = {
   dictionaries: PropTypes.object,
   deleteThesaurus: PropTypes.func.isRequired,
   disableClassification: PropTypes.func.isRequired,
@@ -179,7 +179,7 @@ ThesaurisList.propTypes = {
   checkThesaurusCanBeDeleted: PropTypes.func.isRequired,
 };
 
-ThesaurisList.contextTypes = {
+ThesauriList.contextTypes = {
   confirm: PropTypes.func,
 };
 
@@ -200,4 +200,4 @@ function mapDispatchToProps(dispatch) {
   );
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(ThesaurisList);
+export default connect(mapStateToProps, mapDispatchToProps)(ThesauriList);

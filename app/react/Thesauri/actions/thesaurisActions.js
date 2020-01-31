@@ -3,7 +3,7 @@ import { actions } from 'app/BasicReducer';
 import { t } from 'app/I18N';
 import * as notifications from 'app/Notifications/actions/notificationsActions';
 import TemplatesAPI from 'app/Templates/TemplatesAPI';
-import api from 'app/Thesauri/ThesaurisAPI';
+import api from 'app/Thesauri/ThesauriAPI';
 import { RequestParams } from 'app/utils/RequestParams';
 import { actions as formActions } from 'react-redux-form';
 

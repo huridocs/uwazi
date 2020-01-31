@@ -5,7 +5,7 @@ import { I18NApi } from 'app/I18N';
 import RelationTypesAPI from 'app/RelationTypes/RelationTypesAPI';
 import api from 'app/Search/SearchAPI';
 import TemplatesAPI from 'app/Templates/TemplatesAPI';
-import ThesaurisAPI from 'app/Thesauri/ThesaurisAPI';
+import ThesauriAPI from 'app/Thesauri/ThesauriAPI';
 import UsersAPI from 'app/Users/UsersAPI';
 import React from 'react';
 import Helmet from 'react-helmet';
@@ -33,7 +33,7 @@ export class Settings extends RouteHandler {
     const request = requestParams.onlyHeaders();
     const [user, thesauri, relationTypes, translations, collection, templates] = await Promise.all([
       UsersAPI.currentUser(request),
-      ThesaurisAPI.getThesauri(request),
+      ThesauriAPI.getThesauri(request),
       RelationTypesAPI.get(request),
       I18NApi.get(request),
       SettingsAPI.get(request),
@@ -42,7 +42,7 @@ export class Settings extends RouteHandler {
 
     // Fetch models associated with known thesauri.
     const allModels = await Promise.all(
-      thesauri.map(thesaurus => ThesaurisAPI.getModelStatus(request.set({ model: thesaurus.name })))
+      thesauri.map(thesaurus => ThesauriAPI.getModelStatus(request.set({ model: thesaurus.name })))
     );
     const models = allModels.filter(model => !model.hasOwnProperty('error'));
 

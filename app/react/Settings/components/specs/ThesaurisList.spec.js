@@ -3,7 +3,7 @@ import { shallow } from 'enzyme';
 import Immutable from 'immutable';
 import React from 'react';
 
-import { ThesaurisList } from '../ThesaurisList';
+import { ThesauriList } from '../ThesauriList';
 
 describe('ThesaurisList', () => {
   let component;
@@ -96,7 +96,7 @@ describe('ThesaurisList', () => {
   });
 
   const render = () => {
-    component = shallow(<ThesaurisList {...props} />, { context });
+    component = shallow(<ThesauriList {...props} />, { context });
   };
 
   describe('render', () => {

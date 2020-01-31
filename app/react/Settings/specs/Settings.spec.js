@@ -1,7 +1,7 @@
 /** @format */
 
 import UsersAPI from 'app/Users/UsersAPI';
-import ThesaurisAPI from 'app/Thesauri/ThesaurisAPI';
+import ThesauriAPI from 'app/Thesauri/ThesauriAPI';
 import RelationTypesAPI from 'app/RelationTypes/RelationTypesAPI';
 import { I18NApi } from 'app/I18N';
 import { RequestParams } from 'app/utils/RequestParams';
@@ -23,8 +23,8 @@ describe('Settings', () => {
 
     beforeEach(() => {
       spyOn(UsersAPI, 'currentUser').and.returnValue(Promise.resolve(user));
-      spyOn(ThesaurisAPI, 'getThesauri').and.returnValue(Promise.resolve(dictionaries));
-      spyOn(ThesaurisAPI, 'getModelStatus').and.returnValue(Promise.resolve(models));
+      spyOn(ThesauriAPI, 'getThesauri').and.returnValue(Promise.resolve(dictionaries));
+      spyOn(ThesauriAPI, 'getModelStatus').and.returnValue(Promise.resolve(models));
       spyOn(RelationTypesAPI, 'get').and.returnValue(Promise.resolve(relationTypes));
       spyOn(I18NApi, 'get').and.returnValue(Promise.resolve(translations));
       spyOn(SettingsAPI, 'get').and.returnValue(Promise.resolve(settings));

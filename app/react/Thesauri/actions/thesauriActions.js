@@ -6,7 +6,7 @@ import { t } from 'app/I18N';
 import ID from 'shared/uniqueID';
 import * as types from 'app/Thesauri/actions/actionTypes';
 import { APIURL } from 'app/config';
-import api from 'app/Thesauri/ThesaurisAPI';
+import api from 'app/Thesauri/ThesauriAPI';
 import * as notifications from 'app/Notifications/actions/notificationsActions';
 import { advancedSort } from 'app/utils/advancedSort';
 import { RequestParams } from 'app/utils/RequestParams';

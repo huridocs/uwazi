@@ -1,14 +1,24 @@
+/** @format */
+
 import React from 'react';
 import { shallow } from 'enzyme';
 
 import NewThesauri from 'app/Thesauri/NewThesauri';
 import ThesauriForm from 'app/Thesauri/components/ThesauriForm';
-import api from 'app/Thesauri/ThesaurisAPI';
+import api from 'app/Thesauri/ThesauriAPI';
 
 describe('NewThesauri', () => {
   let component;
   let context;
-  const thesauris = [{ name: 'Countries', values: [{ id: '1', label: 'label1' }, { id: '2', label: 'label2' }] }];
+  const thesauris = [
+    {
+      name: 'Countries',
+      values: [
+        { id: '1', label: 'label1' },
+        { id: '2', label: 'label2' },
+      ],
+    },
+  ];
 
   beforeEach(() => {
     context = { store: { getState: () => ({}), dispatch: jasmine.createSpy('dispatch') } };

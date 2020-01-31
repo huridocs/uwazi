@@ -7,7 +7,7 @@ import api from 'app/Search/SearchAPI';
 import { resolveTemplateProp } from 'app/Settings/utils/resolveProperty';
 import { getSuggestionsQuery } from 'app/Settings/utils/suggestions';
 import TemplatesAPI from 'app/Templates/TemplatesAPI';
-import ThesaurisAPI from 'app/Thesauri/ThesaurisAPI';
+import ThesauriAPI from 'app/Thesauri/ThesauriAPI';
 import { RequestParams } from 'app/utils/RequestParams';
 import React from 'react';
 import { connect } from 'react-redux';
@@ -114,14 +114,14 @@ export class ThesaurusCockpitBase extends RouteHandler {
   static async requestState(requestParams: RequestParams) {
     // Thesauri should always have a length of 1, because a specific thesaurus ID is passed in the requestParams.
     const [thesauri, templates] = await Promise.all([
-      ThesaurisAPI.getThesauri(requestParams),
+      ThesauriAPI.getThesauri(requestParams),
       TemplatesAPI.get(requestParams.onlyHeaders()),
     ]);
     const thesaurus = thesauri[0];
 
     // Fetch models associated with known thesauri.
     const modelParams = requestParams.onlyHeaders().set({ model: thesaurus.name });
-    const model: ClassifierModelSchema = await ThesaurisAPI.getModelStatus(modelParams);
+    const model: ClassifierModelSchema = await ThesauriAPI.getModelStatus(modelParams);
 
     // Get aggregate document count of documents with suggestions on this thesaurus
     const assocProp = resolveTemplateProp(thesaurus, templates);

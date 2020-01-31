@@ -2,7 +2,7 @@
 import RouteHandler from 'app/App/RouteHandler';
 import api from 'app/Search/SearchAPI';
 import TemplatesAPI from 'app/Templates/TemplatesAPI';
-import ThesaurisAPI from 'app/Thesauri/ThesaurisAPI';
+import ThesauriAPI from 'app/Thesauri/ThesauriAPI';
 import { RequestParams } from 'app/utils/RequestParams';
 import { shallow, ShallowWrapper } from 'enzyme';
 import React from 'react';
@@ -167,8 +167,8 @@ describe('ThesaurusCockpit', () => {
 
   describe('requestState', () => {
     beforeEach(() => {
-      spyOn(ThesaurisAPI, 'getThesauri').and.returnValue(Promise.resolve(thesauri));
-      spyOn(ThesaurisAPI, 'getModelStatus').and.returnValue(Promise.resolve(models));
+      spyOn(ThesauriAPI, 'getThesauri').and.returnValue(Promise.resolve(thesauri));
+      spyOn(ThesauriAPI, 'getModelStatus').and.returnValue(Promise.resolve(models));
       spyOn(TemplatesAPI, 'get').and.returnValue(Promise.resolve(templates));
       spyOn(api, 'search').and.returnValue(Promise.resolve(suggestions));
     });
