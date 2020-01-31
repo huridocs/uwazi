@@ -1,4 +1,5 @@
 /** @format */
+import { EntitySchema } from 'api/entities/entityType';
 import { TemplateSchema } from 'api/templates/templateType';
 import RouteHandler from 'app/App/RouteHandler';
 import { actions } from 'app/BasicReducer';
@@ -21,9 +22,8 @@ import { connect } from 'react-redux';
 import { actions as formActions } from 'react-redux-form';
 import { propertyTypes } from 'shared/propertyTypes';
 import { ThesaurusSchema } from 'shared/thesaurusType';
+import { IImmutable } from 'shared/types/Immutable';
 
-import { EntitySchema } from '../../api/entities/entityType';
-import { IImmutable } from '../../shared/interfaces/Immutable.interface';
 import { OneUpState } from './common';
 
 export type OneUpReviewProps = {

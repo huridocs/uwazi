@@ -12,7 +12,7 @@ import { RequestParams } from 'app/utils/RequestParams';
 import React from 'react';
 import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
-import { IImmutable } from 'shared/interfaces/Immutable.interface';
+import { IImmutable } from 'shared/types/Immutable';
 import { Icon } from 'UI';
 import { IClassifierModel } from './interfaces/ClassifierModel.interface';
 import { ISuggestionResult } from './interfaces/SuggestionResult.interface';

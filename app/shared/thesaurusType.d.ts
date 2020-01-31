@@ -1,13 +1,16 @@
-/* eslint-disable */
+/**
+ * @format
+ */
+
 /**AUTO-GENERATED. RUN yarn emit-types to update.*/
 
-import { ObjectIdSchema } from 'shared/commonTypes';
+import { ObjectIdSchema } from 'shared/types/commonTypes';
 
 export interface ThesaurusSchema {
   _id?: ObjectIdSchema;
   type?: 'thesauri';
   name: string;
-  enable_classification?: boolean;
+  enable_classification?: boolean; // eslint-disable-line camelcase
   values?: {
     _id?: ObjectIdSchema;
     id?: string;

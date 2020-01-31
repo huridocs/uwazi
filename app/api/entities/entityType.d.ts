@@ -1,7 +1,12 @@
-/* eslint-disable */
+/**
+ * /* eslint-disable
+ *
+ * @format
+ */
+
 /**AUTO-GENERATED. RUN yarn emit-types to update.*/
 
-import { ObjectIdSchema, MetadataSchema, TocSchema } from 'shared/commonTypes';
+import { ObjectIdSchema, MetadataSchema, TocSchema } from 'shared/types/commonTypes';
 
 export interface EntitySchema {
   _id?: ObjectIdSchema;
