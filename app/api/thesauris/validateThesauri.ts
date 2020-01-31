@@ -5,9 +5,9 @@
 import Ajv from 'ajv';
 import ajvKeywords from 'ajv-keywords';
 import { wrapValidator } from 'shared/tsUtils';
+import { thesaurusSchema } from 'shared/thesaurusSchema';
+import { ThesaurusSchema } from 'shared/thesaurusType';
 import model from './dictionariesModel';
-import { thesaurusSchema } from './dictionariesSchema';
-import { ThesaurusSchema } from './dictionariesType';
 
 const ajv = ajvKeywords(Ajv({ allErrors: true }), ['uniqueItemProperties']);
 

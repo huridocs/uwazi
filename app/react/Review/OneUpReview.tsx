@@ -1,7 +1,5 @@
 /** @format */
-
 import { TemplateSchema } from 'api/templates/templateType';
-import { ThesaurusSchema } from 'api/thesauris/dictionariesType';
 import RouteHandler from 'app/App/RouteHandler';
 import { actions } from 'app/BasicReducer';
 import Loader from 'app/components/Elements/Loader';
@@ -22,9 +20,11 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { actions as formActions } from 'react-redux-form';
 import { propertyTypes } from 'shared/propertyTypes';
-import { OneUpState } from './common';
-import { IImmutable } from '../../shared/interfaces/Immutable.interface';
+import { ThesaurusSchema } from 'shared/thesaurusType';
+
 import { EntitySchema } from '../../api/entities/entityType';
+import { IImmutable } from '../../shared/interfaces/Immutable.interface';
+import { OneUpState } from './common';
 
 export type OneUpReviewProps = {
   entity?: IImmutable<EntitySchema>;
