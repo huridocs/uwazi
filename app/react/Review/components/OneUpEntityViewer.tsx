@@ -1,4 +1,6 @@
-/** @format */
+/** @format */ // eslint-disable-line max-lines
+import 'app/Review/scss/review.scss';
+
 import { EntitySchema } from 'api/entities/entityType';
 import Footer from 'app/App/Footer';
 import ShowIf from 'app/App/ShowIf';
@@ -23,7 +25,6 @@ import {
   toggleOneUpLoadConnections,
 } from 'app/Review/actions/actions';
 import { StateSelector } from 'app/Review/components/StateSelector';
-import 'app/Review/scss/review.scss';
 import Immutable from 'immutable';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
@@ -36,6 +37,7 @@ import { PropertySchema } from 'shared/types/commonTypes';
 import { IImmutable } from 'shared/types/Immutable';
 import { TemplateSchema } from 'shared/types/templateType';
 import { Icon } from 'UI';
+
 import { OneUpState, StoreState } from '../common';
 
 const defaultProps = {
@@ -134,7 +136,7 @@ export class OneUpEntityViewerBase extends Component<
     const summary = connectionsGroups.reduce(
       (summaryData, g: any) => {
         g.get('templates').forEach((tmpl: any) => {
-          summaryData.totalConnections += tmpl.get('count');
+          summaryData.totalConnections += tmpl.get('count'); // eslint-disable-line no-param-reassign
         });
         return summaryData;
       },
@@ -197,6 +199,7 @@ export class OneUpEntityViewerBase extends Component<
                       t('System', 'No Documents found')
                     )}
                     <button
+                      type="button"
                       onClick={() =>
                         isPristine
                           ? this.props.switchOneUpEntity(-1, false)
@@ -217,6 +220,7 @@ export class OneUpEntityViewerBase extends Component<
                       {/* <span className="btn-label">{t('System', 'Previous document')}</span> */}
                     </button>
                     <button
+                      type="button"
                       onClick={() =>
                         isPristine
                           ? this.props.switchOneUpEntity(+1, false)
@@ -236,6 +240,7 @@ export class OneUpEntityViewerBase extends Component<
                 )}
               </StateSelector>
               <button
+                type="button"
                 onClick={() => this.props.toggleOneUpFullEdit()}
                 className={
                   oneUpState.fullEdit
@@ -323,6 +328,7 @@ export class OneUpEntityViewerBase extends Component<
                 {({ isPristine = false }: { isPristine: boolean }) => (
                   <div className="content-footer">
                     <button
+                      type="button"
                       onClick={() => this.props.switchOneUpEntity(0, false)}
                       className={
                         !isPristine
@@ -334,6 +340,7 @@ export class OneUpEntityViewerBase extends Component<
                       <span className="btn-label">{t('System', 'Discard changes')}</span>
                     </button>
                     <button
+                      type="button"
                       onClick={() => this.props.switchOneUpEntity(0, true)}
                       className={
                         !isPristine
@@ -345,6 +352,7 @@ export class OneUpEntityViewerBase extends Component<
                       <span className="btn-label">{t('System', 'Save document')}</span>
                     </button>
                     <button
+                      type="button"
                       onClick={() => this.props.switchOneUpEntity(+1, true)}
                       className={
                         !isPristine
@@ -434,6 +442,7 @@ export class OneUpEntityViewerBase extends Component<
                 {({ isPristine = false }: { isPristine: boolean }) => (
                   <div className="sidepanel-footer">
                     <button
+                      type="button"
                       onClick={() => this.props.toggleOneUpLoadConnections()}
                       className={isPristine ? 'btn btn-default' : 'btn btn-default btn-disabled'}
                     >

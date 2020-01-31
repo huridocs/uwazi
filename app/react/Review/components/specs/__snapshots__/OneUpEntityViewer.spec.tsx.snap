@@ -26,6 +26,7 @@ exports[`EntityViewer should render 1`] = `
         <button
           className="btn btn-default btn-toggle-off"
           onClick={[Function]}
+          type="button"
         >
           <Connect(Icon)
             icon="toggle-off"

@@ -1,10 +1,5 @@
 /** @format */
-
-import { PropertySchema } from './../app/shared/types/commonTypes.d';
-/** @format */
-/* eslint-disable no-await-in-loop, no-console, no-continue */
-
-import { tcServer } from 'api/config/topicclassification';
+import { tcServer } from 'api/config/topicClassification';
 import entities from 'api/entities';
 import { EntitySchema } from 'api/entities/entityType';
 import search from 'api/search/search';
@@ -12,10 +7,13 @@ import templates from 'api/templates';
 import thesauri from 'api/thesauris';
 import connect, { disconnect } from 'api/utils/connect_to_mongo';
 import csv from 'csvtojson';
+import JSONRequest from 'shared/JSONRequest';
 import { propertyTypes } from 'shared/propertyTypes';
 import { ensure } from 'shared/tsUtils';
-import JSONRequest from 'shared/JSONRequest';
+import { PropertySchema } from 'shared/types/commonTypes.d';
 import yargs from 'yargs';
+
+/* eslint-disable no-await-in-loop, no-console, no-continue */
 
 const { input_csv: inputCsv, format: csvColumnsStr, store_model: storeModel, force } = yargs
   .option('input_csv', { default: '/home/bdittes/Downloads/PlanInternational_themes.csv' })

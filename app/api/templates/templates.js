@@ -1,21 +1,21 @@
 /** @format */
-
+import { DBHOST as dbHost } from 'api/config/database.js';
 import entities from 'api/entities';
-import request from 'shared/JSONRequest.js';
 import translations from 'api/i18n/translations';
 import createError from 'api/utils/Error';
-import { DBHOST as dbHost } from '../config/database.js';
-import { generateNamesAndIds, getUpdatedNames, getDeletedProperties } from './utils';
-import model from './templatesModel';
-import { validateTemplate } from '../../shared/types/templateSchema';
+import request from 'shared/JSONRequest.js';
 
-const removePropsWithUnexistentId = async unexistentId => {
-  const relatedTemplates = await model.get({ 'properties.content': unexistentId });
+import { validateTemplate } from '../../shared/types/templateSchema';
+import model from './templatesModel';
+import { generateNamesAndIds, getDeletedProperties, getUpdatedNames } from './utils';
+
+const removePropsWithNonexistentId = async nonexistentId => {
+  const relatedTemplates = await model.get({ 'properties.content': nonexistentId });
   await Promise.all(
     relatedTemplates.map(t =>
       model.save({
         ...t,
-        properties: t.properties.filter(prop => prop.content !== unexistentId),
+        properties: t.properties.filter(prop => prop.content !== nonexistentId),
       })
     )
   );
@@ -106,7 +106,6 @@ export default {
         }
         return entities.removeValuesFromEntities(toRemoveValues, currentTemplate._id);
       })
-
       .then(() => model.save(template))
       .then(savedTemplate =>
         entities
@@ -182,10 +181,10 @@ export default {
   async delete(template) {
     const count = await this.countByTemplate(template._id);
     if (count > 0) {
-      return Promise.reject({ key: 'documents_using_template', value: count });
+      return Promise.reject(new Error({ key: 'documents_using_template', value: count }));
     }
     await translations.deleteContext(template._id);
-    await removePropsWithUnexistentId(template._id);
+    await removePropsWithNonexistentId(template._id);
     await model.delete(template._id);
 
     return template;

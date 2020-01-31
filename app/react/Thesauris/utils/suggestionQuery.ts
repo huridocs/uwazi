@@ -1,7 +1,8 @@
 /** @format */
 import { SuggestionResultSchema } from '../types/suggestionResultType';
 
-/*. Unsanitized Elastic Search Result
+/* An Un-sanitized Elastic Search Result
+.
 └── template results: []
     ├── result 1: {}
     └── result 2: {}

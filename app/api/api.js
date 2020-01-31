@@ -1,9 +1,8 @@
 /** @format */
 /* eslint-disable global-require */
-
-import languageMiddleware from './utils/languageMiddleware';
 import activitylogMiddleware from './activitylog/activitylogMiddleware';
 import elasticConfig from './config/elasticIndexes';
+import languageMiddleware from './utils/languageMiddleware';
 
 export default (app, server) => {
   //set db to use

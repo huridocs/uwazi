@@ -2,7 +2,7 @@
 
 import 'isomorphic-fetch';
 import isReachable from 'is-reachable';
-import { tcServer } from 'api/config/topicclassification';
+import { tcServer } from 'api/config/topicClassification';
 import { URL } from 'url';
 
 export async function getModels() {

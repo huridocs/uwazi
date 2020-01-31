@@ -1,6 +1,6 @@
-/** @format */
+/** @format */ // eslint-disable-line max-lines
 /* eslint-disable no-await-in-loop, no-console, camelcase */
-import { tcServer, useThesaurusNames } from 'api/config/topicclassification';
+import { tcServer, useThesaurusNames } from 'api/config/topicClassification';
 import entities from 'api/entities';
 import { MetadataObject } from 'api/entities/entitiesModel';
 import { EntitySchema } from 'api/entities/entityType';
@@ -146,51 +146,55 @@ async function syncEntities(
   thesaurus: ThesaurusSchema
 ) {
   if (mode === 'purge') {
-    return (await Promise.all(
+    return (
+      await Promise.all(
+        es.map(async e => {
+          const prop = templateAndProp[(e.template || '').toString()];
+          if (!prop || !prop.name) {
+            return false;
+          }
+          const suggestedMetadata = e.suggestedMetadata || {};
+          if (!suggestedMetadata[prop.name!]) {
+            return false;
+          }
+          delete e.suggestedMetadata![prop.name!];
+          await entities.save(e, { user: 'sync-topic-classification', language: e.language });
+          console.info(`Purged ${e.sharedId}`);
+          return true;
+        })
+      )
+    ).reduce((sum, b) => sum + (b ? 1 : 0), 0);
+  }
+  const samples = (
+    await Promise.all(
       es.map(async e => {
         const prop = templateAndProp[(e.template || '').toString()];
         if (!prop || !prop.name) {
-          return false;
-        }
-        const suggestedMetadata = e.suggestedMetadata || {};
-        if (!suggestedMetadata[prop.name!]) {
-          return false;
-        }
-        delete e.suggestedMetadata![prop.name!];
-        await entities.save(e, { user: 'sync-topic-classification', language: e.language });
-        console.info(`Purged ${e.sharedId}`);
-        return true;
-      })
-    )).reduce((sum, b) => sum + (b ? 1 : 0), 0);
-  }
-  const samples = (await Promise.all(
-    es.map(async e => {
-      const prop = templateAndProp[(e.template || '').toString()];
-      if (!prop || !prop.name) {
-        return null;
-      }
-
-      if (!e.template || !e.metadata || e.language !== 'en') {
-        return null;
-      }
-      if (mode === 'onlynew') {
-        if (e.metadata[prop.name!] && e.metadata[prop.name!]!.length) {
           return null;
         }
-      }
-      const sequence = await extractSequence(e);
-      if (!sequence) {
-        return null;
-      }
-      return {
-        seq: sequence,
-        sharedId: e.sharedId,
-        training_labels: (e.metadata[prop.name!] || []).map(mo => ({
-          topic: ensure<string>(useThesaurusNames ? mo.label : mo.value),
-        })),
-      } as ClassificationSample;
-    })
-  )).reduce((res, s) => (s ? [...res, s] : res), [] as ClassificationSample[]);
+
+        if (!e.template || !e.metadata || e.language !== 'en') {
+          return null;
+        }
+        if (mode === 'onlynew') {
+          if (e.metadata[prop.name!] && e.metadata[prop.name!]!.length) {
+            return null;
+          }
+        }
+        const sequence = await extractSequence(e);
+        if (!sequence) {
+          return null;
+        }
+        return {
+          seq: sequence,
+          sharedId: e.sharedId,
+          training_labels: (e.metadata[prop.name!] || []).map(mo => ({
+            topic: ensure<string>(useThesaurusNames ? mo.label : mo.value),
+          })),
+        } as ClassificationSample;
+      })
+    )
+  ).reduce((res, s) => (s ? [...res, s] : res), [] as ClassificationSample[]);
   if (!samples.length) {
     return 0;
   }
@@ -205,9 +209,9 @@ async function syncEntities(
   if (!response.json.samples) {
     return 0;
   }
-  return (await Promise.all(
-    es.map(async e => handleResponse(e, templateAndProp, response, thesaurus))
-  )).reduce((sum, b) => sum + (b ? 1 : 0), 0);
+  return (
+    await Promise.all(es.map(async e => handleResponse(e, templateAndProp, response, thesaurus)))
+  ).reduce((sum, b) => sum + (b ? 1 : 0), 0);
 }
 
 connect().then(

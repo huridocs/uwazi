@@ -159,10 +159,10 @@ export class MetadataTemplate extends Component<MetadataTemplateProps> {
     );
   }
 }
-
+/* eslint-disable react/forbid-prop-types, react/require-default-props */
 MetadataTemplate.propTypes = {
   connectDropTarget: PropTypes.func.isRequired,
-  formState: PropTypes.object, // eslint-disable-line react/forbid-prop-types
+  formState: PropTypes.object,
   backUrl: PropTypes.string,
   _id: PropTypes.string,
   saveTemplate: PropTypes.func.isRequired,
@@ -170,11 +170,12 @@ MetadataTemplate.propTypes = {
   relationType: PropTypes.bool,
   setErrors: PropTypes.func,
   notify: PropTypes.func,
-  properties: PropTypes.array, // eslint-disable-line react/forbid-prop-types
-  commonProperties: PropTypes.array, // eslint-disable-line react/forbid-prop-types
-  templates: PropTypes.object, // eslint-disable-line react/forbid-prop-types
+  properties: PropTypes.array,
+  commonProperties: PropTypes.array,
+  templates: PropTypes.object,
   defaultColor: PropTypes.string,
 };
+/* eslint-enable react/forbid-prop-types, react/require-default-props */
 
 const target = {
   canDrop() {
