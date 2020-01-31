@@ -6,7 +6,7 @@ import { needsAuthorization } from 'api/auth';
 import { validation } from 'api/utils';
 import { getAllModels, modelReady } from './topicClassification';
 
-export const CLASSIFIER_MODELS_ENDPOINT = 'classifiers';
+export const CLASSIFIER_MODELS_ENDPOINT = 'models';
 const tcModelPrefix = `/api/${CLASSIFIER_MODELS_ENDPOINT}`;
 
 export default (app: Application) => {
