@@ -1,6 +1,6 @@
 /** @format */
 import { EntitySchema } from 'api/entities/entityType';
-import { TemplateSchema } from 'api/templates/templateType';
+import { TemplateSchema } from 'shared/types/templateType';
 import RouteHandler from 'app/App/RouteHandler';
 import { actions } from 'app/BasicReducer';
 import Loader from 'app/components/Elements/Loader';

@@ -1,19 +1,19 @@
 /** @format */
 import RouteHandler from 'app/App/RouteHandler';
 import api from 'app/Search/SearchAPI';
-import { IMetadataTemplate } from 'app/Templates/interfaces/MetadataTemplate.interface';
 import TemplatesAPI from 'app/Templates/TemplatesAPI';
 import ThesaurisAPI from 'app/Thesauris/ThesaurisAPI';
 import { RequestParams } from 'app/utils/RequestParams';
 import { shallow, ShallowWrapper } from 'enzyme';
 import React from 'react';
+import { TemplateSchema } from 'shared/types/templateType';
 import { ThesaurusSchema } from 'shared/types/thesaurusType';
 
 import { ThesaurusCockpitBase, ThesaurusCockpitProps } from '../ThesaurusCockpit';
 import { ClassifierModelSchema } from '../types/classifierModelType';
 import { SuggestionResultSchema } from '../types/suggestionResultType';
 
-const templates: IMetadataTemplate[] = [
+const templates: TemplateSchema[] = [
   {
     _id: 'underscoreID',
     name: 'Paragraph',
@@ -28,6 +28,12 @@ const templates: IMetadataTemplate[] = [
       },
     ],
     default: true,
+    commonProperties: [
+      {
+        label: 'commonProp1',
+        type: 'multiselect',
+      },
+    ],
   },
   {
     _id: 'underscoreID2',
@@ -43,6 +49,12 @@ const templates: IMetadataTemplate[] = [
       },
     ],
     default: false,
+    commonProperties: [
+      {
+        label: 'commonProp2',
+        type: 'multiselect',
+      },
+    ],
   },
 ];
 const models: ClassifierModelSchema[] = [

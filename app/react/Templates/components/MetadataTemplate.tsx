@@ -1,4 +1,5 @@
 /** @format */
+import { TemplateSchema } from 'shared/types/templateType';
 import ShowIf from 'app/App/ShowIf';
 import { FormGroup } from 'app/Forms';
 import ColorPicker from 'app/Forms/components/ColorPicker';
@@ -16,10 +17,10 @@ import { DropTarget } from 'react-dnd';
 import { connect } from 'react-redux';
 import { actions as formActions, Control, Field, Form } from 'react-redux-form';
 import { bindActionCreators } from 'redux';
+import { PropertySchema } from 'shared/types/commonTypes';
 import { Icon } from 'UI';
 
-import validator from './ValidateTemplate'; // eslint-disable-line import/no-named-as-default-member
-import { ITemplateProperty, IMetadataTemplate } from '../interfaces/MetadataTemplate.interface';
+import validator from './ValidateTemplate'; // eslint-disable-line import/no-named-as-default, import/no-named-as-default-member
 
 interface MetadataTemplateProps {
   notify(message: any, type: any): any;
@@ -28,13 +29,13 @@ interface MetadataTemplateProps {
   commonProperties?: any;
   connectDropTarget?: any;
   defaultColor: any;
-  properties: ITemplateProperty[];
+  properties: PropertySchema[];
   relationType?: any;
   savingTemplate: boolean;
   templates?: any;
   _id?: string;
 }
-const getTemplateDefaultColor = (allTemplates: List<IMetadataTemplate>, templateId: string) => {
+const getTemplateDefaultColor = (allTemplates: List<TemplateSchema>, templateId: string) => {
   if (!templateId) {
     return COLORS[allTemplates.size % COLORS.length];
   }
@@ -59,9 +60,9 @@ export class MetadataTemplate extends Component<MetadataTemplateProps> {
     this.onSubmitFailed = this.onSubmitFailed.bind(this);
   }
 
-  onSubmit = (_template: IMetadataTemplate) => {
+  onSubmit = (_template: TemplateSchema) => {
     const template = Object.assign({}, _template);
-    template.properties = template.properties.map(_prop => {
+    template.properties = template.properties?.map(_prop => {
       const prop = Object.assign({}, _prop);
       prop.label = _prop.label.trim();
       return prop;
@@ -161,7 +162,7 @@ export class MetadataTemplate extends Component<MetadataTemplateProps> {
 
 MetadataTemplate.propTypes = {
   connectDropTarget: PropTypes.func.isRequired,
-  formState: PropTypes.object,
+  formState: PropTypes.object, // eslint-disable-line react/forbid-prop-types
   backUrl: PropTypes.string,
   _id: PropTypes.string,
   saveTemplate: PropTypes.func.isRequired,
@@ -169,9 +170,9 @@ MetadataTemplate.propTypes = {
   relationType: PropTypes.bool,
   setErrors: PropTypes.func,
   notify: PropTypes.func,
-  properties: PropTypes.array,
-  commonProperties: PropTypes.array,
-  templates: PropTypes.object,
+  properties: PropTypes.array, // eslint-disable-line react/forbid-prop-types
+  commonProperties: PropTypes.array, // eslint-disable-line react/forbid-prop-types
+  templates: PropTypes.object, // eslint-disable-line react/forbid-prop-types
   defaultColor: PropTypes.string,
 };
 

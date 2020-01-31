@@ -1,4 +1,7 @@
 /** @format */
+
+import { PropertySchema } from './../app/shared/types/commonTypes.d';
+/** @format */
 /* eslint-disable no-await-in-loop, no-console, no-continue */
 
 import { tcServer } from 'api/config/topicclassification';
@@ -46,7 +49,7 @@ async function buildMO(e: EntitySchema, propName: string, label: string) {
   if (!template || !template.properties) {
     throw new Error('Could not find template!');
   }
-  const prop = template.properties.find(p => p.name === propName);
+  const prop = template.properties.find((p: PropertySchema) => p.name === propName);
   if (!prop) {
     return undefined;
   }

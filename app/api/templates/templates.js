@@ -7,7 +7,7 @@ import createError from 'api/utils/Error';
 import { DBHOST as dbHost } from '../config/database.js';
 import { generateNamesAndIds, getUpdatedNames, getDeletedProperties } from './utils';
 import model from './templatesModel';
-import { validateTemplate } from './templateSchema';
+import { validateTemplate } from '../../shared/types/templateSchema';
 
 const removePropsWithUnexistentId = async unexistentId => {
   const relatedTemplates = await model.get({ 'properties.content': unexistentId });

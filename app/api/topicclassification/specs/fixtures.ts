@@ -2,7 +2,7 @@
 
 import db from 'api/utils/testing_db';
 import { propertyTypes } from 'shared/propertyTypes';
-import { TemplateSchema } from 'api/templates/templateType';
+import { TemplateSchema } from 'shared/types/templateType';
 
 export const template1 = db.id();
 

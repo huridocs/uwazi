@@ -2,7 +2,7 @@
 
 import { instanceModel } from 'api/odm';
 import mongoose from 'mongoose';
-import { TemplateSchema } from './templateType';
+import { TemplateSchema } from '../../shared/types/templateType';
 
 const mongoSchema = new mongoose.Schema({
   name: String,

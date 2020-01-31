@@ -3,7 +3,7 @@
 import Ajv from 'ajv';
 import db from 'api/utils/testing_db';
 import { catchErrors } from 'api/utils/jasmineHelpers';
-import { validateTemplate } from '../templateSchema';
+import { validateTemplate } from '../../../shared/types/templateSchema';
 import fixtures, {
   templateId,
   templateToBeInherited,
