@@ -1,56 +1,73 @@
 /** @format */
 
+import { Dispatch } from 'redux';
 import { MetadataObject } from 'api/entities/entitiesModel';
-import React, { Component } from 'react';
+import React, { Component, ComponentClass } from 'react';
 import { connect } from 'react-redux';
 import { actions as formActions, getModel } from 'react-redux-form';
 import { Icon } from 'UI';
 import { propertyTypes } from 'shared/propertyTypes';
 import { t } from 'app/I18N';
 
-export interface MultiSuggestProps {
-  // model: state model of suggestions, required through <Control>.
+const defaultProps = {
+  // The suggestions value, provided by redux Component.
+  value: [] as MetadataObject<string>[],
+  // The 'main' value, provided by mapStateToProps.
+  selectValue: [] as string[],
+  acceptSuggestion: (
+    _suggestion: string,
+    _propertyType: string,
+    _selectModel: string,
+    _selectValue: string[]
+  ) => {},
+  onChange: (_event: any) => {},
+};
 
+export type MultiSuggestProps = Partial<typeof defaultProps> & {
+  // The template property type.
   propertyType: string;
+
+  // The state model path of the suggestions.
+  // Rejected suggestions will be removed from here.
+  model: string;
 
   // The state model path of the 'main' multi-select.
   // Accepted suggestions will be added there.
   selectModel: string;
+};
 
-  // redux-form-provided
-  value?: MetadataObject<string>[];
-  onChange: (event: any) => void;
-
-  // connect-provided
-  selectValue?: string[];
-  acceptSuggestion?: (
-    suggestion: string,
-    propertyType: string,
-    selectModel: string,
-    selectValue: string[]
-  ) => any;
-}
-
-function acceptSuggestion(
+export function acceptSuggestion(
   suggestion: string,
   propertyType: string,
   selectModel: string,
   selectValue: string[]
 ) {
-  return (dispatch: (_: any) => void) => {
-    if (propertyType === propertyTypes.multiselect) {
-      if (!selectValue.includes(suggestion)) {
-        dispatch(formActions.change(selectModel, [...selectValue, suggestion]));
-      }
-    } else if (propertyType === propertyTypes.select) {
-      if (!selectValue || selectValue[0] !== suggestion) {
-        dispatch(formActions.change(selectModel, suggestion));
-      }
+  return (dispatch: Dispatch<{}>) => {
+    switch (propertyType) {
+      case propertyTypes.multiselect:
+        if (!selectValue.includes(suggestion)) {
+          dispatch(formActions.change(selectModel, [...selectValue, suggestion]));
+        }
+        break;
+      case propertyTypes.select:
+        if (!selectValue.length || selectValue[0] !== suggestion) {
+          dispatch(formActions.change(selectModel, suggestion));
+        }
+        break;
+      default:
+        break;
     }
   };
 }
 
-export class MultiSuggestBase extends Component<MultiSuggestProps> {
+export const MultiSuggestBase = class extends Component<MultiSuggestProps & typeof defaultProps> {
+  public static defaultProps = defaultProps;
+
+  acceptSuggestion(id: string) {
+    const { propertyType, selectModel, selectValue } = this.props;
+    this.props.acceptSuggestion(id, propertyType, selectModel, selectValue);
+  }
+
   rejectSuggestion(id: string, e: any) {
     e.preventDefault();
     const suggestedValues = (this.props.value || []).slice();
@@ -63,10 +80,10 @@ export class MultiSuggestBase extends Component<MultiSuggestProps> {
   }
 
   render() {
-    const { propertyType, selectModel, selectValue, value: proposedValues } = this.props;
-    const filteredValues = !proposedValues
-      ? []
-      : proposedValues.filter(value => value.value && !selectValue!.includes(value.value));
+    const { selectValue, value: proposedValues } = this.props;
+    const filteredValues = proposedValues.filter(
+      value => value.value && !selectValue.includes(value.value)
+    );
     if (!filteredValues.length) {
       return null;
     }
@@ -79,30 +96,15 @@ export class MultiSuggestBase extends Component<MultiSuggestProps> {
           filteredValues.map(value => (
             <div key={value.value!} className="multiselectItem">
               <label className="multiselectItem-label">
-                <span className="multiselectItem-icon">
-                  <Icon
-                    icon={['far', 'square']}
-                    className="checkbox-empty"
-                    onClick={() =>
-                      this.props.acceptSuggestion!(
-                        value.value || '',
-                        propertyType,
-                        selectModel,
-                        selectValue!
-                      )
-                    }
-                  />
+                <span
+                  className="multiselectItem-icon"
+                  onClick={this.acceptSuggestion.bind(this, value.value!)}
+                >
+                  <Icon icon={['far', 'square']} className="checkbox-empty" />
                 </span>
                 <span
                   className="multiselectItem-name"
-                  onClick={() =>
-                    this.props.acceptSuggestion!(
-                      value.value || '',
-                      propertyType,
-                      selectModel,
-                      selectValue!
-                    )
-                  }
+                  onClick={this.acceptSuggestion.bind(this, value.value!)}
                 >
                   {value.label}
                   {value.suggestion_confidence && value.suggestion_confidence < 0.6 ? ' ?' : ''}
@@ -119,9 +121,9 @@ export class MultiSuggestBase extends Component<MultiSuggestProps> {
       </div>
     );
   }
-}
+} as ComponentClass<MultiSuggestProps>;
 
-function mapStateToProps(state: any, props: MultiSuggestProps) {
+export function mapStateToProps(state: any, props: Pick<MultiSuggestProps, 'selectModel'>) {
   let { selectModel } = props;
   if (selectModel && selectModel[0] === '.') {
     // TODO(bdittes): Correctly inherit parent path.
@@ -135,5 +137,3 @@ export const MultiSuggest = connect(
   mapStateToProps,
   { acceptSuggestion }
 )(MultiSuggestBase);
-
-export default MultiSuggest;

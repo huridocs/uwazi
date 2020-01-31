@@ -15,9 +15,7 @@ exports[`Icon should allow configuring the icon as directionAware 1`] = `
   rotation={null}
   size={null}
   spin={false}
-  swapOpacity={false}
   symbol={false}
-  title=""
   transform={null}
 />
 `;
@@ -37,9 +35,7 @@ exports[`Icon should allow configuring the icon as directionAware 2`] = `
   rotation={null}
   size={null}
   spin={false}
-  swapOpacity={false}
   symbol={false}
-  title=""
   transform={null}
 />
 `;
@@ -59,9 +55,7 @@ exports[`Icon should instantiate a FontAwesomeIcon 1`] = `
   rotation={null}
   size="xs"
   spin={false}
-  swapOpacity={false}
   symbol={false}
-  title=""
   transform={null}
 />
 `;
