@@ -6,7 +6,7 @@
  * @format
  */
 
-export function resolveTemplateProp(thesaurus: any, templates: Array<any>) {
+export function resolveTemplateProp(thesaurus: any, templates: any[]) {
   let matchingProp;
   for (let i = 0; i < templates.length; i += 1) {
     const template = templates[i];

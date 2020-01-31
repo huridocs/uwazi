@@ -13,7 +13,7 @@ import { ThesaurusCockpitBase, ThesaurusCockpitProps } from '../ThesaurusCockpit
 import { ClassifierModelSchema } from '../types/classifierModelType';
 import { SuggestionResultSchema } from '../types/suggestionResultType';
 
-const templates: Array<IMetadataTemplate> = [
+const templates: IMetadataTemplate[] = [
   {
     _id: 'underscoreID',
     name: 'Paragraph',
@@ -45,7 +45,7 @@ const templates: Array<IMetadataTemplate> = [
     default: false,
   },
 ];
-const models: Array<ClassifierModelSchema> = [
+const models: ClassifierModelSchema[] = [
   {
     bert: 'testBert',
     completeness: 0,
@@ -72,7 +72,7 @@ const models: Array<ClassifierModelSchema> = [
     },
   },
 ];
-const thesauri: Array<ThesaurusSchema> = [
+const thesauri: ThesaurusSchema[] = [
   {
     _id: 'thesaurusUnderscoreId1',
     name: 'ThesaurusName',
@@ -107,7 +107,7 @@ describe('ThesaurusCockpit', () => {
     let component: ShallowWrapper<typeof ThesaurusCockpitBase>;
     let props: ThesaurusCockpitProps;
     let context: any;
-    let dispatchCallsOrder: Array<any>;
+    let dispatchCallsOrder: any[];
 
     beforeEach(() => {
       const thesaurus = thesauri[0];

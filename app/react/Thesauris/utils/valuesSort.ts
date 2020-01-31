@@ -6,7 +6,7 @@ import { ClassifierModelSchema } from '../types/classifierModelType';
 import { SuggestionResultSchema } from '../types/suggestionResultType';
 
 /* Get thesaurus values sorted by name. */
-export function getValuesSortedByName(thesaurus: ThesaurusSchema): Array<ThesaurusValueSchema> {
+export function getValuesSortedByName(thesaurus: ThesaurusSchema): ThesaurusValueSchema[] {
   const { values = [] } = thesaurus;
   // Ascending
   return values.sort((a, b) => `${a.label}`.localeCompare(b.label));

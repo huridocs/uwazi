@@ -7,7 +7,7 @@ export interface ITemplateProperty {
   label: string;
   content: string; // this value ought to correspond with a thesaurus._id
   showInCard?: boolean;
-  nestedProperties?: Array<any>;
+  nestedProperties?: any[];
   filter?: boolean;
   defaultfilter?: boolean;
   type?: string;
@@ -19,6 +19,6 @@ export interface IMetadataTemplate {
   name: string;
   color?: string;
   default?: boolean;
-  properties: Array<ITemplateProperty>;
-  commonProperties?: Array<ITemplateProperty>;
+  properties: ITemplateProperty[];
+  commonProperties?: ITemplateProperty[];
 }

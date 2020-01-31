@@ -21,7 +21,7 @@ import { SuggestionResultSchema } from './types/suggestionResultType';
 
 export type ThesaurusCockpitProps = {
   thesaurus: ThesaurusSchema;
-  models: Array<ClassifierModelSchema>;
+  models: ClassifierModelSchema[];
   suggestions: SuggestionResultSchema;
 };
 
@@ -213,7 +213,7 @@ export class ThesaurusCockpitBase extends RouteHandler {
 interface ThesaurusCockpitStore {
   thesauri: {
     thesaurus: IImmutable<ThesaurusSchema>;
-    models: Array<IImmutable<ClassifierModelSchema>>;
+    models: IImmutable<ClassifierModelSchema>[];
     suggestions: IImmutable<SuggestionResultSchema>;
   };
 }

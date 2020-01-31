@@ -54,7 +54,7 @@ export function buildSuggestionResult(
 
 /* Flattens SuggestionResult[] into a single SuggestionResult. */
 export function flattenSuggestionResults(
-  perTemplate: Array<SuggestionResultSchema>,
+  perTemplate: SuggestionResultSchema[],
   thesaurusPropertyName: string
 ): SuggestionResultSchema {
   const result: SuggestionResultSchema = {
