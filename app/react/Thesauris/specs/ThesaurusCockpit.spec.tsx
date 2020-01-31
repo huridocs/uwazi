@@ -1,17 +1,17 @@
 /** @format */
 import RouteHandler from 'app/App/RouteHandler';
 import api from 'app/Search/SearchAPI';
+import { IMetadataTemplate } from 'app/Templates/interfaces/MetadataTemplate.interface';
 import TemplatesAPI from 'app/Templates/TemplatesAPI';
 import ThesaurisAPI from 'app/Thesauris/ThesaurisAPI';
 import { RequestParams } from 'app/utils/RequestParams';
 import { shallow, ShallowWrapper } from 'enzyme';
 import React from 'react';
+import { ThesaurusSchema } from 'shared/types/thesaurusType';
 
-import { IMetadataTemplate } from 'app/Templates/interfaces/MetadataTemplate.interface';
 import { ThesaurusCockpitBase, ThesaurusCockpitProps } from '../ThesaurusCockpit';
-import { IClassifierModel } from '../interfaces/ClassifierModel.interface';
-import { ISuggestionResult } from '../interfaces/SuggestionResult.interface';
-import { IThesaurus } from '../interfaces/Thesaurus.interface';
+import { ClassifierModelSchema } from '../types/classifierModelType';
+import { SuggestionResultSchema } from '../types/suggestionResultType';
 
 const templates: Array<IMetadataTemplate> = [
   {
@@ -45,7 +45,7 @@ const templates: Array<IMetadataTemplate> = [
     default: false,
   },
 ];
-const models: Array<IClassifierModel> = [
+const models: Array<ClassifierModelSchema> = [
   {
     bert: 'testBert',
     completeness: 0,
@@ -72,7 +72,7 @@ const models: Array<IClassifierModel> = [
     },
   },
 ];
-const thesauri: Array<IThesaurus> = [
+const thesauri: Array<ThesaurusSchema> = [
   {
     _id: 'thesaurusUnderscoreId1',
     name: 'ThesaurusName',
@@ -90,7 +90,7 @@ const thesauri: Array<IThesaurus> = [
     enableClassification: false,
   },
 ];
-const suggestions: ISuggestionResult = {
+const suggestions: SuggestionResultSchema = {
   totalRows: 1,
   totalSuggestions: 1,
   thesaurus: {

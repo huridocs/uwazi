@@ -4,20 +4,21 @@ import { objectIdSchema } from 'shared/types/commonSchemas';
 
 export const emitSchemaTypes = true;
 
-export const thesaurusSchema = {
-  $async: true,
+export const thesaurusValueSchema = {
   type: 'object',
-  required: ['name'],
   definitions: { objectIdSchema },
+  required: ['label'],
+  additionalProperties: false,
   properties: {
     _id: objectIdSchema,
-    type: { type: 'string', enum: ['thesauri'] },
-    name: {
+    id: {
       type: 'string',
-      uniqueName: '',
       minLength: 1,
     },
-    enable_classification: { type: 'boolean' },
+    label: {
+      type: 'string',
+      minLength: 1,
+    },
     values: {
       type: 'array',
       items: {
@@ -34,27 +35,29 @@ export const thesaurusSchema = {
             type: 'string',
             minLength: 1,
           },
-          values: {
-            type: 'array',
-            items: {
-              type: 'object',
-              required: ['label'],
-              additionalProperties: false,
-              properties: {
-                _id: objectIdSchema,
-                id: {
-                  type: 'string',
-                  minLength: 1,
-                },
-                label: {
-                  type: 'string',
-                  minLength: 1,
-                },
-              },
-            },
-          },
         },
       },
+    },
+  },
+};
+
+export const thesaurusSchema = {
+  $async: true,
+  type: 'object',
+  required: ['name'],
+  definitions: { objectIdSchema, thesaurusValueSchema },
+  properties: {
+    _id: objectIdSchema,
+    type: { type: 'string', enum: ['thesauri'] },
+    name: {
+      type: 'string',
+      uniqueName: '',
+      minLength: 1,
+    },
+    enable_classification: { type: 'boolean' },
+    values: {
+      type: 'array',
+      items: thesaurusValueSchema,
     },
   },
 };

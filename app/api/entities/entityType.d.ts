@@ -1,9 +1,4 @@
-/**
- * /* eslint-disable
- *
- * @format
- */
-
+/* eslint-disable */
 /**AUTO-GENERATED. RUN yarn emit-types to update.*/
 
 import { ObjectIdSchema, MetadataSchema, TocSchema } from 'shared/types/commonTypes';

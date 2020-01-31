@@ -1,5 +1,5 @@
 /** @format */
-import { ISuggestionResult } from 'app/Thesauris/interfaces/SuggestionResult.interface';
+import { SuggestionResultSchema } from '../types/suggestionResultType';
 
 /*. Unsanitized Elastic Search Result
 └── template results: []
@@ -25,9 +25,12 @@ import { ISuggestionResult } from 'app/Thesauris/interfaces/SuggestionResult.int
                                     */
 
 /* Takes an elastic query response and transforms it into a SuggestionResult.*/
-export function buildSuggestionResult(raw: any, thesaurusPropertyName: string): ISuggestionResult {
+export function buildSuggestionResult(
+  raw: any,
+  thesaurusPropertyName: string
+): SuggestionResultSchema {
   const suggestionFieldName = `_${thesaurusPropertyName}`;
-  const result: Partial<ISuggestionResult> = {};
+  const result: Partial<SuggestionResultSchema> = {};
   result.totalRows = raw.totalRows || 0;
   result.totalSuggestions = 0;
   if (
@@ -46,20 +49,20 @@ export function buildSuggestionResult(raw: any, thesaurusPropertyName: string): 
       values,
     };
   }
-  return result as ISuggestionResult;
+  return result as SuggestionResultSchema;
 }
 
 /* Flattens SuggestionResult[] into a single SuggestionResult. */
 export function flattenSuggestionResults(
-  perTemplate: Array<ISuggestionResult>,
+  perTemplate: Array<SuggestionResultSchema>,
   thesaurusPropertyName: string
-): ISuggestionResult {
-  const result: ISuggestionResult = {
+): SuggestionResultSchema {
+  const result: SuggestionResultSchema = {
     totalRows: 0,
     totalSuggestions: 0,
     thesaurus: { propertyName: thesaurusPropertyName, values: {} },
   };
-  perTemplate.forEach((templateResult: ISuggestionResult) => {
+  perTemplate.forEach((templateResult: SuggestionResultSchema) => {
     result.totalRows += templateResult.totalRows;
     result.totalSuggestions += templateResult.totalSuggestions;
     if (
@@ -70,7 +73,7 @@ export function flattenSuggestionResults(
         if (!result.thesaurus.values.hasOwnProperty(key)) {
           result.thesaurus.values[key] = 0;
         }
-        result.thesaurus.values[key] += value || 0;
+        result.thesaurus.values[key]! += value || 0;
       });
     }
   });
