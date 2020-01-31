@@ -1,3 +1,5 @@
+/** @format */
+
 import { RequestParams } from '../RequestParams';
 
 describe('RequestParams', () => {
@@ -19,7 +21,10 @@ describe('RequestParams', () => {
 
   describe('add', () => {
     it('should return a new RequestParams with data merged', () => {
-      const requestParams = new RequestParams({ param: 'value' }, 'headers');
+      const requestParams = new RequestParams<{ param?: string; param2?: string }>(
+        { param: 'value' },
+        'headers'
+      );
 
       const newRequestParams = requestParams.add({ param2: 'value2' });
 

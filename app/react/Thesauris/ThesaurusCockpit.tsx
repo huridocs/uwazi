@@ -12,17 +12,17 @@ import { RequestParams } from 'app/utils/RequestParams';
 import React from 'react';
 import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
-import { IImmutable } from 'shared/interfaces/Immutable.interface';
+import { IImmutable } from 'shared/types/Immutable';
 import { Icon } from 'UI';
-import { IClassifierModel } from './interfaces/ClassifierModel.interface';
-import { ISuggestionResult } from './interfaces/SuggestionResult.interface';
-import { IThesaurus, IThesaurusTopic } from './interfaces/Thesaurus.interface';
-import { buildSuggestionResult, flattenSuggestionResults } from './utils/SuggestionQuery';
+import { ThesaurusSchema, ThesaurusValueSchema } from 'shared/types/thesaurusType';
+import { buildSuggestionResult, flattenSuggestionResults } from './utils/suggestionQuery';
+import { ClassifierModelSchema } from './types/classifierModelType';
+import { SuggestionResultSchema } from './types/suggestionResultType';
 
 export type ThesaurusCockpitProps = {
-  thesaurus: IThesaurus;
-  models: Array<IClassifierModel>;
-  suggestions: ISuggestionResult;
+  thesaurus: ThesaurusSchema;
+  models: ClassifierModelSchema[];
+  suggestions: SuggestionResultSchema;
 };
 
 export class ThesaurusCockpitBase extends RouteHandler {
@@ -64,9 +64,9 @@ export class ThesaurusCockpitBase extends RouteHandler {
   }
 
   static topicNode(
-    topic: IThesaurusTopic,
-    suggestionResult: ISuggestionResult,
-    modelInfo: IClassifierModel,
+    topic: ThesaurusValueSchema,
+    suggestionResult: SuggestionResultSchema,
+    modelInfo: ClassifierModelSchema,
     propName: string | undefined
   ) {
     if (modelInfo === undefined) {
@@ -99,14 +99,14 @@ export class ThesaurusCockpitBase extends RouteHandler {
 
   topicNodes() {
     const { suggestions, thesaurus, models } = this.props as ThesaurusCockpitProps;
-    const { values: topics, name, property } = thesaurus;
-    const model = models.find((modelInfo: IClassifierModel) => modelInfo.name === name);
+    const { values, name, property } = thesaurus;
+    const model = models.find((modelInfo: ClassifierModelSchema) => modelInfo.name === name);
 
-    if (!topics || !model || !property) {
+    if (!values || !model || !property) {
       return null;
     }
 
-    return topics.map((topic: IThesaurusTopic) =>
+    return values.map((topic: ThesaurusValueSchema) =>
       ThesaurusCockpitBase.topicNode(topic, suggestions, model, property.name)
     );
   }
@@ -121,7 +121,7 @@ export class ThesaurusCockpitBase extends RouteHandler {
 
     // Fetch models associated with known thesauri.
     const modelParams = requestParams.onlyHeaders().set({ model: thesaurus.name });
-    const model: IClassifierModel = await ThesaurisAPI.getModelStatus(modelParams);
+    const model: ClassifierModelSchema = await ThesaurisAPI.getModelStatus(modelParams);
 
     // Get aggregate document count of documents with suggestions on this thesaurus
     const assocProp = resolveTemplateProp(thesaurus, templates);
@@ -138,7 +138,7 @@ export class ThesaurusCockpitBase extends RouteHandler {
     );
     const flattenedSuggestions = flattenSuggestionResults(sanitizedSuggestions, assocProp.name);
     return [
-      actions.set('thesauri/thesaurus', thesaurus),
+      actions.set('thesauri/thesaurus', thesaurus as ThesaurusSchema),
       actions.set('thesauri/models', [model]),
       actions.set('thesauri/suggestions', flattenedSuggestions),
     ];
@@ -212,9 +212,9 @@ export class ThesaurusCockpitBase extends RouteHandler {
 
 interface ThesaurusCockpitStore {
   thesauri: {
-    thesaurus: IImmutable<IThesaurus>;
-    models: Array<IImmutable<IClassifierModel>>;
-    suggestions: IImmutable<ISuggestionResult>;
+    thesaurus: IImmutable<ThesaurusSchema>;
+    models: IImmutable<ClassifierModelSchema>[];
+    suggestions: IImmutable<SuggestionResultSchema>;
   };
 }
 

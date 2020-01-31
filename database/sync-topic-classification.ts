@@ -1,8 +1,9 @@
 /** @format */
 /* eslint-disable no-await-in-loop, no-console, camelcase */
-
 import { tcServer, useThesaurusNames } from 'api/config/topicclassification';
 import entities from 'api/entities';
+import { MetadataObject } from 'api/entities/entitiesModel';
+import { EntitySchema } from 'api/entities/entityType';
 import { QueryForEach, WithId } from 'api/odm';
 import templates from 'api/templates';
 import thesauri from 'api/thesauris';
@@ -12,11 +13,9 @@ import { buildModelName } from 'shared/commonTopicClassification';
 import JSONRequest from 'shared/JSONRequest';
 import { propertyTypes } from 'shared/propertyTypes';
 import { ensure, sleep } from 'shared/tsUtils';
+import { PropertySchema } from 'shared/types/commonTypes';
+import { ThesaurusSchema } from 'shared/types/thesaurusType';
 import yargs from 'yargs';
-import { MetadataObject } from '../app/api/entities/entitiesModel';
-import { EntitySchema } from '../app/api/entities/entityType';
-import { ThesaurusSchema } from '../app/api/thesauris/dictionariesType';
-import { PropertySchema } from '../app/shared/commonTypes';
 
 const { limit, recompute, overwrite, mode, model: fixedModel, sharedIds: sharedIdsStr } = yargs
   .option('limit', { default: 1000000 })

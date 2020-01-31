@@ -28,7 +28,7 @@ interface MetadataTemplateProps {
   commonProperties?: any;
   connectDropTarget?: any;
   defaultColor: any;
-  properties: Array<ITemplateProperty>;
+  properties: ITemplateProperty[];
   relationType?: any;
   savingTemplate: boolean;
   templates?: any;
@@ -231,9 +231,4 @@ function mapDispatchToProps(dispatch: any) {
   );
 }
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps,
-  null,
-  { withRef: true }
-)(dropTarget);
+export default connect(mapStateToProps, mapDispatchToProps, null, { withRef: true })(dropTarget);
