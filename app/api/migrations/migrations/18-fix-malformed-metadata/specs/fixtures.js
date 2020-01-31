@@ -6,7 +6,7 @@ const template1 = db.id();
 const [thesauri1, thesauri2] = [db.id(), db.id()];
 const [country1, country2, country3] = ['123-c1', 4, '5'];
 const [issue1, issue2, issue3] = [6, 7, '345-i1'];
-const [entity1, entity2] = [db.id(), db.id()];
+const [entity1, entity2, entity3] = [db.id(), db.id(), db.id()];
 
 export default {
   templates: [
@@ -85,7 +85,23 @@ export default {
       metadata: {
         free_text: [{ value: 'some Spanish text' }],
         country: [{ value: country2 }],
-        issues: [{ value: Number(issue2) }, { value: issue1.toString() }, { value: issue3 }],
+        issues: [
+          { value: 'missingID', label: 'missingID' },
+          { value: Number(issue2) },
+          { value: issue1.toString() },
+          { value: issue3 },
+        ],
+      },
+    },
+    {
+      _id: entity3,
+      title: 'entity2',
+      language: 'es',
+      template: template1,
+      sharedId: 'shared-e2',
+      metadata: {
+        free_text: [{ value: 'some Spanish text' }],
+        country: [{ value: 'missingID', label: 'missingID' }],
       },
     },
     {
@@ -140,4 +156,4 @@ export default {
   ],
 };
 
-export { thesauri1, thesauri2 };
+export { thesauri1, thesauri2, entity1, entity2, entity3 };
