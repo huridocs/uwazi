@@ -6,16 +6,17 @@ import { needsAuthorization } from 'api/auth';
 import { validation } from 'api/utils';
 import { getAllModels, modelReady } from './topicClassification';
 
-const tcUrlPrefix = '/api/models';
+export const CLASSIFIER_MODELS_ENDPOINT = 'classifiers';
+const tcModelPrefix = `/api/${CLASSIFIER_MODELS_ENDPOINT}`;
 
 export default (app: Application) => {
   app.get(
-    tcUrlPrefix,
+    tcModelPrefix,
     needsAuthorization(),
     validation.validateRequest(Joi.object().keys({ model: Joi.string() })),
     (req: Request, res: Response, next: NextFunction) => {
       if (typeof req.query.model === 'undefined') {
-        getAllModels(req.query.model)
+        getAllModels()
           .then(models => res.json(models))
           .catch(next);
         return;

@@ -3,7 +3,7 @@ import { buildModelName } from 'shared/commonTopicClassification';
 
 import { checkModelReady, getModels } from './api';
 
-export async function getAllModels(thesauri: string[]) {
+export async function getAllModels(thesauri: string[] = []) {
   const results =
     thesauri !== undefined
       ? await Promise.all(

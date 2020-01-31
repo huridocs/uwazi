@@ -17,14 +17,8 @@ export async function getModels() {
     };
   }
   return request
-    .get(
-      tcUrl.href,
-      {},
-      {
-        'Content-Type': 'application/json',
-      }
-    )
-    .then(async res => res.json())
+    .get(tcUrl.href)
+    .then(async res => res.json)
     .catch(err => ({
       models: {},
       error: `Error from topic-classification server: ${err.toString()}`,
@@ -40,14 +34,8 @@ export async function checkModelReady(arg: { model: string }) {
     return { models: {}, error: `Topic Classification server is unreachable (${msTimeout})` };
   }
   return request
-    .get(
-      tcUrl.href,
-      {},
-      {
-        'Content-Type': 'application/json',
-      }
-    )
-    .then(async res => res.json())
+    .get(tcUrl.href)
+    .then(async res => res.json)
     .catch(err => ({
       models: '',
       error: `Error from topic-classification server: ${err.toString()}`,

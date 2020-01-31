@@ -95,17 +95,17 @@ const _fetch = (url, data, method, _headers) => {
       return Promise.all([res.json(), setCookie]);
     })
     .then(([json, setCookie]) => {
-      const procesedResponse = {
+      const processedResponse = {
         json,
         status: response.status,
         cookie: setCookie,
       };
 
       if (response.status > 399) {
-        throw procesedResponse;
+        throw processedResponse;
       }
 
-      return procesedResponse;
+      return processedResponse;
     });
 };
 
