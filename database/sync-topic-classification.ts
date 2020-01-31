@@ -12,9 +12,9 @@ import connect, { disconnect } from 'api/utils/connect_to_mongo';
 import { buildModelName } from 'shared/commonTopicClassification';
 import JSONRequest from 'shared/JSONRequest';
 import { propertyTypes } from 'shared/propertyTypes';
-import { ThesaurusSchema } from 'shared/thesaurusType';
 import { ensure, sleep } from 'shared/tsUtils';
 import { PropertySchema } from 'shared/types/commonTypes';
+import { ThesaurusSchema } from 'shared/types/thesaurusType';
 import yargs from 'yargs';
 
 const { limit, recompute, overwrite, mode, model: fixedModel, sharedIds: sharedIdsStr } = yargs

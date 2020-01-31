@@ -21,8 +21,8 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { actions as formActions } from 'react-redux-form';
 import { propertyTypes } from 'shared/propertyTypes';
-import { ThesaurusSchema } from 'shared/thesaurusType';
 import { IImmutable } from 'shared/types/Immutable';
+import { ThesaurusSchema } from 'shared/types/thesaurusType';
 
 import { OneUpState } from './common';
 

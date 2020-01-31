@@ -1,13 +1,13 @@
 /** @format */
-
-/* eslint-disable max-params */
-
 import Ajv from 'ajv';
 import ajvKeywords from 'ajv-keywords';
 import { wrapValidator } from 'shared/tsUtils';
-import { thesaurusSchema } from 'shared/thesaurusSchema';
-import { ThesaurusSchema } from 'shared/thesaurusType';
+import { thesaurusSchema } from 'shared/types/thesaurusSchema';
+import { ThesaurusSchema } from 'shared/types/thesaurusType';
+
 import model from './dictionariesModel';
+
+/* eslint-disable max-params */
 
 const ajv = ajvKeywords(Ajv({ allErrors: true }), ['uniqueItemProperties']);
 
