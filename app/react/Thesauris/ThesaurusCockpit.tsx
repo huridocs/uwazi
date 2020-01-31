@@ -134,9 +134,12 @@ export class ThesaurusCockpitBase extends RouteHandler {
       })
     );
     const sanitizedSuggestions = allDocsWithSuggestions.map((s: any) =>
-      buildSuggestionResult(s, assocProp.name)
+      buildSuggestionResult(s, assocProp?.name ?? '')
     );
-    const flattenedSuggestions = flattenSuggestionResults(sanitizedSuggestions, assocProp.name);
+    const flattenedSuggestions = flattenSuggestionResults(
+      sanitizedSuggestions,
+      assocProp?.name ?? ''
+    );
     return [
       actions.set('thesauri/thesaurus', thesaurus as ThesaurusSchema),
       actions.set('thesauri/models', [model]),

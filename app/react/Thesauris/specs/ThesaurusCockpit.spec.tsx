@@ -123,7 +123,6 @@ describe('ThesaurusCockpit', () => {
 
     beforeEach(() => {
       const thesaurus = thesauri[0];
-      // The render function has already mapped this property back to the thesaurus by now
       thesaurus.property = {
         id: 'ID1',
         _id: '_ID1',
@@ -135,7 +134,6 @@ describe('ThesaurusCockpit', () => {
       RouteHandler.renderedFromServer = true;
       dispatchCallsOrder = [];
       context = {
-        subscribe: jest.fn(), // Find out why this needs to be here.
         confirm: jasmine.createSpy('confirm'),
         store: {
           getState: () => ({}),

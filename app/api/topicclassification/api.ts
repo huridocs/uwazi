@@ -4,6 +4,7 @@ import 'isomorphic-fetch';
 import isReachable from 'is-reachable';
 import { tcServer } from 'api/config/topicClassification';
 import { URL } from 'url';
+import request from 'shared/JSONRequest';
 
 export async function getModels() {
   const tcUrl = new URL('models', tcServer);
@@ -15,12 +16,14 @@ export async function getModels() {
       error: `Topic Classification server is unreachable (${msTimeout})`,
     };
   }
-  return fetch(tcUrl.href, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  })
+  return request
+    .get(
+      tcUrl.href,
+      {},
+      {
+        'Content-Type': 'application/json',
+      }
+    )
     .then(async res => res.json())
     .catch(err => ({
       models: {},
@@ -36,29 +39,17 @@ export async function checkModelReady(arg: { model: string }) {
     // TODO: move this backend check to server start-up time, maybe
     return { models: {}, error: `Topic Classification server is unreachable (${msTimeout})` };
   }
-  return fetch(tcUrl.href, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  })
+  return request
+    .get(
+      tcUrl.href,
+      {},
+      {
+        'Content-Type': 'application/json',
+      }
+    )
     .then(async res => res.json())
     .catch(err => ({
       models: '',
       error: `Error from topic-classification server: ${err.toString()}`,
     }));
-}
-
-export async function processDocument(arg: { seq: string; model: string }) {
-  const url = new URL(tcServer);
-  url.searchParams.set('model', arg.model);
-  const res = await fetch(url.pathname, {
-    method: 'POST',
-    body: JSON.stringify(arg.seq),
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
-  const body = await res.json();
-  return body;
 }

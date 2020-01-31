@@ -1,3 +1,5 @@
+/** @format */
+
 import 'isomorphic-fetch';
 import superagent from 'superagent';
 import { URLSearchParams } from 'url';
@@ -6,13 +8,13 @@ import rison from 'rison';
 
 let cookie;
 
-const attemptRisonDecode = (string) => {
-  const errcb = (e) => {
+const attemptRisonDecode = string => {
+  const errcb = e => {
     throw Error(`rison decoder error: ${e}`);
   };
 
   const risonParser = new rison.parser(errcb); // eslint-disable-line new-cap
-  risonParser.error = function (message) {
+  risonParser.error = function(message) {
     this.message = message;
   };
 
@@ -25,27 +27,30 @@ export function toUrlParams(_data) {
     return '';
   }
 
-  return `?${Object.keys(data).map((key) => {
-    if (typeof data[key] === 'undefined' || data[key] === null) {
-      return;
-    }
-
-    if (typeof data[key] === 'object') {
-      data[key] = JSON.stringify(data[key]);
-    }
-
-    let encodedValue = encodeURIComponent(data[key]);
-
-    if (encodeURIComponent(key) === 'q') {
-      try {
-        attemptRisonDecode(data[key]);
-        encodedValue = data[key];
-      } catch (err) {
-        encodedValue = encodeURIComponent(data[key]);
+  return `?${Object.keys(data)
+    .map(key => {
+      if (typeof data[key] === 'undefined' || data[key] === null) {
+        return;
       }
-    }
-    return `${encodeURIComponent(key)}=${encodedValue}`;
-  }).filter(param => param).join('&')}`;
+
+      if (typeof data[key] === 'object') {
+        data[key] = JSON.stringify(data[key]);
+      }
+
+      let encodedValue = encodeURIComponent(data[key]);
+
+      if (encodeURIComponent(key) === 'q') {
+        try {
+          attemptRisonDecode(data[key]);
+          encodedValue = data[key];
+        } catch (err) {
+          encodedValue = encodeURIComponent(data[key]);
+        }
+      }
+      return `${encodeURIComponent(key)}=${encodedValue}`;
+    })
+    .filter(param => param)
+    .join('&')}`;
 }
 
 const _fetch = (url, data, method, _headers) => {
@@ -53,12 +58,15 @@ const _fetch = (url, data, method, _headers) => {
   let params = '';
   let body;
 
-  const headers = Object.assign({
-    Accept: 'application/json',
-    'Content-Type': 'application/json',
-    'X-Requested-With': 'XMLHttpRequest',
-    Cookie: cookie,
-  }, _headers);
+  const headers = Object.assign(
+    {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+      'X-Requested-With': 'XMLHttpRequest',
+      Cookie: cookie,
+    },
+    _headers
+  );
 
   if (method === 'GET' || method === 'DELETE') {
     params = toUrlParams(data);
@@ -76,31 +84,30 @@ const _fetch = (url, data, method, _headers) => {
     method,
     headers,
     credentials: 'same-origin',
-    body
+    body,
   })
-  .then((res) => {
-    let setCookie;
-    if (res.headers.get('set-cookie')) {
-      setCookie = res.headers.get('set-cookie');
-    }
-    response = res;
-    return Promise.all([res.json(), setCookie]);
-  })
-  .then(([json, setCookie]) => {
-    const procesedResponse = {
-      json,
-      status: response.status,
-      cookie: setCookie,
-    };
+    .then(res => {
+      let setCookie;
+      if (res.headers.get('set-cookie')) {
+        setCookie = res.headers.get('set-cookie');
+      }
+      response = res;
+      return Promise.all([res.json(), setCookie]);
+    })
+    .then(([json, setCookie]) => {
+      const procesedResponse = {
+        json,
+        status: response.status,
+        cookie: setCookie,
+      };
 
-    if (response.status > 399) {
-      throw procesedResponse;
-    }
+      if (response.status > 399) {
+        throw procesedResponse;
+      }
 
-    return procesedResponse;
-  });
+      return procesedResponse;
+    });
 };
-
 
 export default {
   post: (url, data, headers) => _fetch(url, data, 'POST', headers),
@@ -111,21 +118,23 @@ export default {
 
   delete: (url, data, headers) => _fetch(url, data, 'DELETE', headers),
 
-  uploadFile: (url, filename, file) => new Promise((resolve, reject) => {
-    superagent.post(url)
-    .set('Accept', 'application/json')
-    .set('X-Requested-With', 'XMLHttpRequest')
-    .set('Cookie', cookie || '')
-    .attach('file', file, filename)
-    .then(() => {
-      resolve();
-    })
-    .catch((err) => {
-      reject(err);
-    });
-  }),
+  uploadFile: (url, filename, file) =>
+    new Promise((resolve, reject) => {
+      superagent
+        .post(url)
+        .set('Accept', 'application/json')
+        .set('X-Requested-With', 'XMLHttpRequest')
+        .set('Cookie', cookie || '')
+        .attach('file', file, filename)
+        .then(() => {
+          resolve();
+        })
+        .catch(err => {
+          reject(err);
+        });
+    }),
 
-  cookie: (c) => {
+  cookie: c => {
     cookie = c;
-  }
+  },
 };
