@@ -346,7 +346,10 @@ export default {
         {
           label: 'Europe',
           id: 'bce629bf-efc1-40dd-9af0-0542422dcbc5',
-          values: [{ label: 'Spain', id: 'spainID' }, { label: 'France', id: 'franceID' }],
+          values: [
+            { label: 'Spain', id: 'spainID' },
+            { label: 'France', id: 'franceID' },
+          ],
         },
       ],
     },

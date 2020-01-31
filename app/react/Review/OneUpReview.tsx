@@ -39,7 +39,7 @@ function buildInitialOneUpState(
   templates: TemplateSchema[]
 ): OneUpState {
   const thesaurusValues = [] as string[];
-  const thesauriKeys = Object.keys((documentsRequest.data || {}).filters || {}).reduce((res, k) => {
+  const thesauriKeys = Object.keys(documentsRequest.data?.filters ?? {}).reduce((res, k) => {
     const propName = k[0] === '_' ? k.substring(1) : k;
     if (k[0] === '_') {
       thesaurusValues.push(

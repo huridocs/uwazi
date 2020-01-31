@@ -179,7 +179,4 @@ export function mapDispatchToProps(dispatch) {
   return bindActionCreators({ submit: publicSubmit }, dispatch);
 }
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(PublicForm);
+export default connect(mapStateToProps, mapDispatchToProps)(PublicForm);

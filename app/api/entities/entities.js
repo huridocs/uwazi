@@ -346,7 +346,10 @@ export default {
       }
 
       const entities = await this.get(query, 'sharedId', { skip: offset, limit });
-      await this.updateMetdataFromRelationships(entities.map(entity => entity.sharedId), language);
+      await this.updateMetdataFromRelationships(
+        entities.map(entity => entity.sharedId),
+        language
+      );
       await process(offset + limit, totalRows);
     };
     const totalRows = await this.count(query);

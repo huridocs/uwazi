@@ -276,9 +276,4 @@ function bindActions(dispatch) {
   );
 }
 
-export default connect(
-  mapStateToProps,
-  bindActions,
-  null,
-  { withRef: true }
-)(ThesauriForm);
+export default connect(mapStateToProps, bindActions, null, { withRef: true })(ThesauriForm);

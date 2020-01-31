@@ -57,7 +57,4 @@ function mapDispatchToProps(dispatch) {
   return bindActionCreators({ removeIcon: actions.removeIcon }, dispatch);
 }
 
-export const IconField = connect(
-  null,
-  mapDispatchToProps
-)(IconFieldBase);
+export const IconField = connect(null, mapDispatchToProps)(IconFieldBase);

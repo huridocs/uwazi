@@ -74,7 +74,7 @@ export class ThesaurusCockpitBase extends RouteHandler {
     }
     const { label, id } = topic;
     const { quality = 0 } = (modelInfo.topics || {})[label] || {};
-    const suggestionCount = suggestionResult.thesaurus.values[`${id}`] || 0;
+    const suggestionCount = suggestionResult.thesaurus?.values[`${id}`] ?? 0;
 
     return (
       <tr key={label}>

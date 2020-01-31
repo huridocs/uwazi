@@ -18,12 +18,18 @@ export default {
     {
       _id: db.id(dictionaryId),
       name: 'dictionary 2',
-      values: [{ id: '1', label: 'value 1' }, { id: '2', label: 'value 2' }],
+      values: [
+        { id: '1', label: 'value 1' },
+        { id: '2', label: 'value 2' },
+      ],
     },
     {
       _id: db.id(dictionaryIdToTranslate),
       name: 'Top 2 scify books',
-      values: [{ id: dictionaryValueId, label: 'Enders game' }, { id: '2', label: 'Fundation' }],
+      values: [
+        { id: dictionaryValueId, label: 'Enders game' },
+        { id: '2', label: 'Fundation' },
+      ],
     },
     {
       _id: dictionaryWithValueGroups,
@@ -32,12 +38,18 @@ export default {
         {
           id: '1',
           label: 'scy fi',
-          values: [{ id: '1.1', label: 'groundhog day' }, { id: '1.2', label: 'terminator 2' }],
+          values: [
+            { id: '1.1', label: 'groundhog day' },
+            { id: '1.2', label: 'terminator 2' },
+          ],
         },
         {
           id: '2',
           label: 'superheros',
-          values: [{ id: '2.1', label: 'batman' }, { id: '2.2', label: 'spiderman' }],
+          values: [
+            { id: '2.1', label: 'batman' },
+            { id: '2.2', label: 'spiderman' },
+          ],
         },
         { id: '3', label: 'single value' },
       ],
@@ -89,7 +101,10 @@ export default {
       icon: 'Icon',
       published: true,
       metadata: {
-        multiselect: [{ value: '1', label: '1' }, { value: '2', label: 'value 2' }],
+        multiselect: [
+          { value: '1', label: '1' },
+          { value: '2', label: 'value 2' },
+        ],
       },
     },
     {
