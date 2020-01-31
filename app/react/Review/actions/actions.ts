@@ -9,7 +9,7 @@ import * as relationships from 'app/Relationships/utils/routeUtils';
 import { RequestParams } from 'app/utils/RequestParams';
 import Immutable from 'immutable';
 import { Action, Dispatch } from 'redux';
-import { TemplateSchema } from '../../../api/templates/templateType';
+import { TemplateSchema } from 'shared/types/templateType';
 import { StoreState } from '../common';
 
 export async function getAndLoadEntity(

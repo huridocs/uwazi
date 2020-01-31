@@ -37,84 +37,87 @@ exports[`EntityViewer should render 1`] = `
           </span>
         </button>
       </div>
-      <Tabs
-        selectedTab="info"
+      <div
+        className="entity-viewer"
       >
-        <TabContent
-          className="entity-viewer"
-          for="info"
+        <Tabs
+          selectedTab="info"
         >
-          <div
-            className="entity-metadata"
+          <TabContent
+            for="info"
           >
-            <ShowIf>
-              <Connect(MetadataForm)
-                id="fullEditMetadataForm"
-                model="entityView.entityForm"
-                showSubset={
-                  Array [
-                    "title",
-                  ]
-                }
-                templateId=""
-                version="OneUp"
-              />
-            </ShowIf>
-            <ShowIf
-              if={true}
+            <div
+              className="entity-metadata"
             >
-              <div>
-                <div
-                  className="content-header-title"
-                >
-                  <Connect(Icon)
-                    className="item-icon item-icon-center"
-                    size="sm"
-                  />
-                  <h1
-                    className="item-name"
-                  >
-                    Title
-                  </h1>
-                  <Connect(TemplateLabel)
-                    template=""
-                  />
-                  <Tip
-                    icon="eye-slash"
-                  >
-                    This entity is not public.
-                  </Tip>
-                </div>
-                <Connect(ShowMetadata)
-                  entity={
-                    Object {
-                      "title": "Title",
-                    }
+              <ShowIf>
+                <Connect(MetadataForm)
+                  id="fullEditMetadataForm"
+                  model="entityView.entityForm"
+                  showSubset={
+                    Array [
+                      "title",
+                    ]
                   }
-                  relationships={Immutable.List []}
-                  showSubset={Array []}
-                  showTitle={false}
-                  showType={false}
+                  templateId=""
+                  version="OneUp"
                 />
-                <Connect(AttachmentsList)
-                  entityView={true}
-                  files={Immutable.List []}
-                  isDocumentAttachments={false}
-                />
-              </div>
-            </ShowIf>
-          </div>
-        </TabContent>
-        <TabContent
-          for="connections"
-        >
-          <Connect(withRouter(DocumentsList))
-            deleteConnection={[Function]}
-            hideFooter={true}
-            searchCentered={true}
-          />
-        </TabContent>
-      </Tabs>
+              </ShowIf>
+              <ShowIf
+                if={true}
+              >
+                <div>
+                  <div
+                    className="content-header-title"
+                  >
+                    <Connect(Icon)
+                      className="item-icon item-icon-center"
+                      size="sm"
+                    />
+                    <h1
+                      className="item-name"
+                    >
+                      Title
+                    </h1>
+                    <Connect(TemplateLabel)
+                      template=""
+                    />
+                    <Tip
+                      icon="eye-slash"
+                    >
+                      This entity is not public.
+                    </Tip>
+                  </div>
+                  <Connect(ShowMetadata)
+                    entity={
+                      Object {
+                        "title": "Title",
+                      }
+                    }
+                    relationships={Immutable.List []}
+                    showSubset={Array []}
+                    showTitle={false}
+                    showType={false}
+                  />
+                  <Connect(AttachmentsList)
+                    entityView={true}
+                    files={Immutable.List []}
+                    isDocumentAttachments={false}
+                  />
+                </div>
+              </ShowIf>
+            </div>
+          </TabContent>
+          <TabContent
+            for="connections"
+          >
+            <Connect(withRouter(DocumentsList))
+              deleteConnection={[Function]}
+              hideFooter={true}
+              searchCentered={true}
+            />
+          </TabContent>
+        </Tabs>
+      </div>
       <ShowIf
         if={false}
       >

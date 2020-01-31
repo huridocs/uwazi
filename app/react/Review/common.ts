@@ -1,9 +1,9 @@
 /** @format */
 
-import { IImmutable } from 'shared/interfaces/Immutable.interface';
 import { EntitySchema } from 'api/entities/entityType';
-import { TemplateSchema } from 'api/templates/templateType';
-import { ThesaurusSchema } from 'api/thesauris/dictionariesType';
+import { IImmutable } from 'shared/types/Immutable';
+import { TemplateSchema } from 'shared/types/templateType';
+import { ThesaurusSchema } from 'shared/types/thesaurusType';
 
 export interface OneUpState {
   loaded: boolean;

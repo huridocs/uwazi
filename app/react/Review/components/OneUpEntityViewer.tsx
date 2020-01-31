@@ -1,6 +1,5 @@
 /** @format */
 import { EntitySchema } from 'api/entities/entityType';
-import { TemplateSchema } from 'api/templates/templateType';
 import Footer from 'app/App/Footer';
 import ShowIf from 'app/App/ShowIf';
 import { AttachmentsList } from 'app/Attachments';
@@ -33,8 +32,9 @@ import { connect } from 'react-redux';
 import { TabContent, TabLink, Tabs } from 'react-tabs-redux';
 import { Action, bindActionCreators, Dispatch } from 'redux';
 import { createSelector } from 'reselect';
-import { PropertySchema } from 'shared/commonTypes';
-import { IImmutable } from 'shared/interfaces/Immutable.interface';
+import { PropertySchema } from 'shared/types/commonTypes';
+import { IImmutable } from 'shared/types/Immutable';
+import { TemplateSchema } from 'shared/types/templateType';
 import { Icon } from 'UI';
 import { OneUpState, StoreState } from '../common';
 
