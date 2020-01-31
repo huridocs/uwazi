@@ -12,7 +12,10 @@ import RouteHandler from 'app/App/RouteHandler';
 describe('EditThesauri', () => {
   const thesauri = {
     name: 'Countries',
-    values: [{ id: '1', label: 'label1' }, { id: '2', label: 'label2' }],
+    values: [
+      { id: '1', label: 'label1' },
+      { id: '2', label: 'label2' },
+    ],
   };
   let component;
   const props = jasmine.createSpyObj(['editThesaurus']);

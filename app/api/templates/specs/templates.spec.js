@@ -119,7 +119,10 @@ describe('templates', () => {
       const newTemplate = {
         name: 'created template',
         commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
-        properties: [{ label: 'label 1', type: 'text' }, { label: 'label 2', type: 'text' }],
+        properties: [
+          { label: 'label 1', type: 'text' },
+          { label: 'label 2', type: 'text' },
+        ],
       };
 
       templates.save(newTemplate).then(response => {
@@ -229,7 +232,10 @@ describe('templates', () => {
         const newTemplate = {
           name: 'created template',
           commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
-          properties: [{ label: 'label 1', type: 'text' }, { label: 'label 2', type: 'text' }],
+          properties: [
+            { label: 'label 1', type: 'text' },
+            { label: 'label 2', type: 'text' },
+          ],
         };
         spyOn(translations, 'updateContext');
         templates

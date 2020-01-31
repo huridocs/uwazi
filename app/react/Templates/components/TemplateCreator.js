@@ -140,8 +140,5 @@ const mapStateToProps = ({ settings, relationTypes, thesauris }) => ({
 });
 
 export default DragDropContext(HTML5Backend)(
-  connect(
-    mapStateToProps,
-    mapDispatchToProps
-  )(TemplateCreator)
+  connect(mapStateToProps, mapDispatchToProps)(TemplateCreator)
 );

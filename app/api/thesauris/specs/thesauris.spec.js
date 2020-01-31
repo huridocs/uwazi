@@ -142,7 +142,13 @@ describe('thesauris', () => {
         name: 'Batman wish list',
         values: [
           { id: '1', label: 'Joker BFF' },
-          { label: 'Heroes', values: [{ id: '2', label: 'Batman' }, { id: '3', label: 'Robin' }] },
+          {
+            label: 'Heroes',
+            values: [
+              { id: '2', label: 'Batman' },
+              { id: '3', label: 'Robin' },
+            ],
+          },
         ],
       };
       spyOn(translations, 'addContext').and.returnValue(Promise.resolve());
@@ -247,7 +253,10 @@ describe('thesauris', () => {
         const thesauri = {
           name: 'dictionary 2',
           _id: dictionaryId,
-          values: [{ id: '1', label: 'value 1 changed' }, { id: '2', label: 'value 2' }],
+          values: [
+            { id: '1', label: 'value 1 changed' },
+            { id: '2', label: 'value 2' },
+          ],
         };
 
         await thesauris.save(thesauri);

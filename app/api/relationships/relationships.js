@@ -262,10 +262,12 @@ export default {
 
     const rel = !Array.isArray(_relationships) ? [_relationships] : _relationships;
 
-    const existingEntities = (await entities.get({
-      sharedId: { $in: rel.map(r => r.entity) },
-      language,
-    })).map(r => r.sharedId);
+    const existingEntities = (
+      await entities.get({
+        sharedId: { $in: rel.map(r => r.entity) },
+        language,
+      })
+    ).map(r => r.sharedId);
 
     const relationships = rel.filter(r => existingEntities.includes(r.entity));
 
@@ -465,7 +467,12 @@ export default {
 
     if (updateMetdata) {
       await Promise.all(
-        languages.map(l => this.updateEntitiesMetadata(entitiesAffected.map(e => e._id), l.key))
+        languages.map(l =>
+          this.updateEntitiesMetadata(
+            entitiesAffected.map(e => e._id),
+            l.key
+          )
+        )
       );
     }
 

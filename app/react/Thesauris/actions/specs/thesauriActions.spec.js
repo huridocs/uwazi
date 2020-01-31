@@ -254,7 +254,10 @@ describe('thesaurisActions', () => {
       getState.and.returnValue({
         thesauri: {
           data: {
-            values: [{ label: 'root1', id: 'root1' }, { label: 'group', id: 'group', values: [] }],
+            values: [
+              { label: 'root1', id: 'root1' },
+              { label: 'group', id: 'group', values: [] },
+            ],
           },
         },
       });
@@ -268,7 +271,10 @@ describe('thesaurisActions', () => {
       getState.and.returnValue({
         thesauri: {
           data: {
-            values: [{ label: 'root1', id: 'root1' }, { label: 'group', id: 'group', values: [] }],
+            values: [
+              { label: 'root1', id: 'root1' },
+              { label: 'group', id: 'group', values: [] },
+            ],
           },
         },
       });
@@ -279,7 +285,10 @@ describe('thesaurisActions', () => {
       getState.and.returnValue({
         thesauri: {
           data: {
-            values: [{ label: 'root1', id: 'root1' }, { label: 'group', id: 'group', values: [] }],
+            values: [
+              { label: 'root1', id: 'root1' },
+              { label: 'group', id: 'group', values: [] },
+            ],
           },
         },
       });

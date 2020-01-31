@@ -200,7 +200,4 @@ function mapDispatchToProps(dispatch) {
   );
 }
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(ThesaurisList);
+export default connect(mapStateToProps, mapDispatchToProps)(ThesaurisList);

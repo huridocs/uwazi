@@ -152,7 +152,4 @@ export const mapStateToProps = (state: any): { userUsing2fa: boolean } => ({
 export const mapDispatchToProps = (dispatch: Dispatch<enable2faType>) =>
   bindActionCreators<ActionCreatorsMapObject>({ enable2fa: enable2faAction }, dispatch);
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(Configure2fa);
+export default connect(mapStateToProps, mapDispatchToProps)(Configure2fa);

@@ -133,7 +133,4 @@ export function mapStateToProps(state: any, props: Pick<MultiSuggestProps, 'sele
   return { selectModel, selectValue: Array.isArray(rawValue) ? rawValue : [rawValue] };
 }
 
-export const MultiSuggest = connect(
-  mapStateToProps,
-  { acceptSuggestion }
-)(MultiSuggestBase);
+export const MultiSuggest = connect(mapStateToProps, { acceptSuggestion })(MultiSuggestBase);

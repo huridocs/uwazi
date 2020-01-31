@@ -18,7 +18,10 @@ const getMarkersBoudingBox = markers =>
       }
       return b;
     },
-    [[null, null], [null, null]]
+    [
+      [null, null],
+      [null, null],
+    ]
   );
 
 const markersToStyleFormat = markers =>

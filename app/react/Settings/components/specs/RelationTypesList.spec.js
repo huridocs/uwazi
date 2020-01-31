@@ -13,7 +13,10 @@ describe('RelationTypesList', () => {
 
   beforeEach(() => {
     props = {
-      relationTypes: Immutable.fromJS([{ _id: 1, name: 'Against' }, { _id: 2, name: 'Supports' }]),
+      relationTypes: Immutable.fromJS([
+        { _id: 1, name: 'Against' },
+        { _id: 2, name: 'Supports' },
+      ]),
       notify: jasmine.createSpy('notify'),
       deleteRelationType: jasmine
         .createSpy('deleteRelationType')

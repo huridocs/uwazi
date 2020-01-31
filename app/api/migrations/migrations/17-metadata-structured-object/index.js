@@ -34,10 +34,12 @@ async function denormalizeMetadata(db, entity, template, dictionariesByKey) {
     return entity.metadata;
   }
 
-  const translation = (await db
-    .collection('translations')
-    .find({ locale: entity.language })
-    .toArray())[0];
+  const translation = (
+    await db
+      .collection('translations')
+      .find({ locale: entity.language })
+      .toArray()
+  )[0];
 
   const resolveProp = async (key, value) => {
     if (!Array.isArray(value)) {
