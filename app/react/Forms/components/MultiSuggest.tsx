@@ -2,7 +2,7 @@
 
 import { Dispatch } from 'redux';
 import { MetadataObject } from 'api/entities/entitiesModel';
-import React, { Component, ComponentClass } from 'react';
+import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { actions as formActions, getModel } from 'react-redux-form';
 import { Icon } from 'UI';
@@ -23,7 +23,7 @@ const defaultProps = {
   onChange: (_event: any) => {},
 };
 
-export type MultiSuggestProps = Partial<typeof defaultProps> & {
+export type MultiSuggestProps = typeof defaultProps & {
   // The template property type.
   propertyType: string;
 
@@ -60,7 +60,7 @@ export function acceptSuggestion(
   };
 }
 
-export const MultiSuggestBase = class extends Component<MultiSuggestProps & typeof defaultProps> {
+export class MultiSuggestBase extends Component<MultiSuggestProps> {
   public static defaultProps = defaultProps;
 
   acceptSuggestion(id: string) {
@@ -121,7 +121,7 @@ export const MultiSuggestBase = class extends Component<MultiSuggestProps & type
       </div>
     );
   }
-} as ComponentClass<MultiSuggestProps>;
+}
 
 export function mapStateToProps(state: any, props: Pick<MultiSuggestProps, 'selectModel'>) {
   let { selectModel } = props;

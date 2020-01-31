@@ -1484,10 +1484,10 @@
     "@types/cheerio" "*"
     "@types/react" "*"
 
-"@types/enzyme@3.1.10":
-  version "3.1.10"
-  resolved "https://registry.yarnpkg.com/@types/enzyme/-/enzyme-3.1.10.tgz#28108a9864e65699751469551a803a35d2e26160"
-  integrity sha512-90MTwbHmNJybcbHQvSQLbeebROnAXSK216Jl2wo+Yy6Xp0KA7d0NlJcx5nyV03agFUgk7sRmZTTbuhpjMkgNOQ==
+"@types/enzyme@3.10.0":
+  version "3.10.0"
+  resolved "https://registry.yarnpkg.com/@types/enzyme/-/enzyme-3.10.0.tgz#252356f8e447d7de06458399d269f4dbafecb7a5"
+  integrity sha512-ng4baHsyl8BxtW0xgEHBSUOrthfdct9RKgv75ntWEFbLRjwy/P+qIGT6z30GyWgDyIZ7teqvjehHKAvLMRWEoA==
   dependencies:
     "@types/cheerio" "*"
     "@types/react" "*"
@@ -1701,6 +1701,13 @@
   integrity sha512-0sx2ThGYgblXPf8we/c+umFzP3RCbBp1bbFmd3pO1UaOYnTDno82iql3MQTVqB09rhopKORNfakDU/9xZ4QR6g==
   dependencies:
     "@types/history" "^3"
+    "@types/react" "*"
+
+"@types/react-tabs-redux@^4.0.0":
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/@types/react-tabs-redux/-/react-tabs-redux-4.0.0.tgz#88504398553e0b4dd2d3997e8a986bf147daff48"
+  integrity sha512-5RsX7ghbRslWmzfMrRlWfb5PuHP+Kp/AYn2L9BD98+INl+H4NCpPl+UTRJihkVjcSB6v2mIrd+wNvrPO0ag2sg==
+  dependencies:
     "@types/react" "*"
 
 "@types/react@*", "@types/react@^16.8.6":
@@ -5968,10 +5975,10 @@ eslint-plugin-jsx-a11y@^6.0.3:
     has "^1.0.3"
     jsx-ast-utils "^2.0.1"
 
-eslint-plugin-prettier@^3.1.1:
-  version "3.1.1"
-  resolved "https://registry.yarnpkg.com/eslint-plugin-prettier/-/eslint-plugin-prettier-3.1.1.tgz#507b8562410d02a03f0ddc949c616f877852f2ba"
-  integrity sha512-A+TZuHZ0KU0cnn56/9mfR7/KjUJ9QNVXUhwvRFSR7PGPe0zQR6PTkmyqg1AtUUEOzTqeRsUwyKFh0oVZKVCrtA==
+eslint-plugin-prettier@^3.1.2:
+  version "3.1.2"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-prettier/-/eslint-plugin-prettier-3.1.2.tgz#432e5a667666ab84ce72f945c72f77d996a5c9ba"
+  integrity sha512-GlolCC9y3XZfv3RQfwGew7NnuFDKsfI4lbvRK+PIIo23SFH+LemGs4cKwzAaRa+Mdb+lQO/STaIayno8T5sJJA==
   dependencies:
     prettier-linter-helpers "^1.0.0"
 

@@ -116,7 +116,7 @@ const suggestions: SuggestionResultSchema = {
 
 describe('ThesaurusCockpit', () => {
   describe('render', () => {
-    let component: ShallowWrapper<typeof ThesaurusCockpitBase>;
+    let component: ShallowWrapper<ThesaurusCockpitProps, {}, ThesaurusCockpitBase>;
     let props: ThesaurusCockpitProps;
     let context: any;
     let dispatchCallsOrder: any[];

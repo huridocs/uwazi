@@ -34,7 +34,7 @@ StateSelectorBase.propTypes = {
   children: PropTypes.func.isRequired,
 };
 
-export default connect((state, ownProps) =>
+export const StateSelector = connect((state, ownProps) =>
   Object.keys(ownProps)
     .filter(k => !['children'].includes(k))
     .reduce((res, k) => ({ ...res, [k]: ownProps[k](state) }), {})

@@ -12,7 +12,7 @@ import {
 } from '../MultiSuggest';
 
 describe('MultiSelect', () => {
-  let component: ShallowWrapper<typeof MultiSuggestBase>;
+  let component: ShallowWrapper<MultiSuggestProps, {}, MultiSuggestBase>;
   let props: MultiSuggestProps;
 
   beforeEach(() => {
@@ -32,9 +32,9 @@ describe('MultiSelect', () => {
   };
 
   it('should extrace selectValue correctly', () => {
-    expect(mapStateToProps({ a: { b: { c: 'a' } } }, { selectModel: 'a.b.c' }).selectValue).toEqual(
-      ['a']
-    );
+    expect(
+      mapStateToProps({ a: { b: { c: 'a' } } }, { selectModel: 'a.b.c' }).selectValue
+    ).toEqual(['a']);
     expect(
       mapStateToProps({ a: { b: { c: ['a', 'b'] } } }, { selectModel: 'a.b.c' }).selectValue
     ).toEqual(['a', 'b']);
@@ -52,7 +52,7 @@ describe('MultiSelect', () => {
   });
 
   it('should render the nothing if no suggestions', () => {
-    props.selectValue = undefined;
+    props.value = [];
     render();
     expect(component).toEqual({});
   });

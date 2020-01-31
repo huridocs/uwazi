@@ -161,6 +161,7 @@ MetadataForm.defaultProps = {
 MetadataForm.propTypes = {
   model: PropTypes.string.isRequired,
   template: PropTypes.instanceOf(Immutable.Map).isRequired,
+  templateId: PropTypes.string,
   multipleEdition: PropTypes.bool,
   templateOptions: PropTypes.instanceOf(Immutable.List).isRequired,
   thesauris: PropTypes.instanceOf(Immutable.List).isRequired,
@@ -186,7 +187,4 @@ export const mapStateToProps = (state, ownProps) => ({
   templateOptions: selectTemplateOptions(state),
 });
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(MetadataForm);
+export default connect(mapStateToProps, mapDispatchToProps)(MetadataForm);
