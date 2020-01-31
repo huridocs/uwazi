@@ -85,8 +85,11 @@ describe('MultiSelect', () => {
     expect(dispatch.calls.argsFor(2)[0].value).toEqual('C');
     acceptSuggestion('C', propertyTypes.select, 'a.b.c', [])(dispatch);
     expect(dispatch.calls.argsFor(3)[0].value).toEqual('C');
+  });
+  it('should ignore already-accepted suggestions', () => {
+    const dispatch = jasmine.createSpy('dispatch');
     acceptSuggestion('C', propertyTypes.multiselect, 'a.b.c', ['C'])(dispatch);
     acceptSuggestion('C', propertyTypes.select, 'a.b.c', ['C'])(dispatch);
-    expect(dispatch.calls.count()).toEqual(4);
+    expect(dispatch.calls.count()).toEqual(0);
   });
 });

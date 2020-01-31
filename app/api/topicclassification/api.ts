@@ -22,12 +22,10 @@ export async function getModels() {
     },
   })
     .then(async res => res.json())
-    .catch(err => {
-      return {
-        models: {},
-        error: `Error from topic-classification server: ${err.toString()}`,
-      };
-    });
+    .catch(err => ({
+      models: {},
+      error: `Error from topic-classification server: ${err.toString()}`,
+    }));
 }
 
 export async function checkModelReady(arg: { model: string }) {
@@ -45,12 +43,10 @@ export async function checkModelReady(arg: { model: string }) {
     },
   })
     .then(async res => res.json())
-    .catch(err => {
-      return {
-        models: '',
-        error: `Error from topic-classification server: ${err.toString()}`,
-      };
-    });
+    .catch(err => ({
+      models: '',
+      error: `Error from topic-classification server: ${err.toString()}`,
+    }));
 }
 
 export async function processDocument(arg: { seq: string; model: string }) {

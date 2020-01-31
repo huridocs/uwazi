@@ -1,4 +1,5 @@
 /** @format */
+
 import RouteHandler from 'app/App/RouteHandler';
 import { actions } from 'app/BasicReducer';
 import { I18NLink, t } from 'app/I18N';
@@ -7,25 +8,16 @@ import { resolveTemplateProp } from 'app/Settings/utils/resolveProperty';
 import { getSuggestionsQuery } from 'app/Settings/utils/suggestions';
 import TemplatesAPI from 'app/Templates/TemplatesAPI';
 import ThesaurisAPI from 'app/Thesauris/ThesaurisAPI';
-import { IRequestParams } from 'app/utils/RequestParams';
+import { RequestParams } from 'app/utils/RequestParams';
 import React from 'react';
 import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
 import { IImmutable } from 'shared/interfaces/Immutable.interface';
 import { Icon } from 'UI';
-
 import { IClassifierModel } from './interfaces/ClassifierModel.interface';
 import { ISuggestionResult } from './interfaces/SuggestionResult.interface';
 import { IThesaurus, IThesaurusTopic } from './interfaces/Thesaurus.interface';
 import { buildSuggestionResult, flattenSuggestionResults } from './utils/SuggestionQuery';
-
-interface ThesaurusCockpitState {
-  thesauri: {
-    thesaurus: IImmutable<IThesaurus>;
-    models: Array<IImmutable<IClassifierModel>>;
-    suggestions: IImmutable<ISuggestionResult>;
-  };
-}
 
 export type ThesaurusCockpitProps = {
   thesaurus: IThesaurus;
@@ -106,13 +98,11 @@ export class ThesaurusCockpitBase extends RouteHandler {
   }
 
   topicNodes() {
-    const { values: topics, name, property } = this.props.thesaurus; // {name: Themes; values: [{label: Education}, ...]}
-    const { suggestions } = this.props;
-    const model: IClassifierModel = this.props.models.find(
-      (modelInfo: IClassifierModel) => modelInfo.name === name
-    );
+    const { suggestions, thesaurus, models } = this.props as ThesaurusCockpitProps;
+    const { values: topics, name, property } = thesaurus;
+    const model = models.find((modelInfo: IClassifierModel) => modelInfo.name === name);
 
-    if (!topics) {
+    if (!topics || !model || !property) {
       return null;
     }
 
@@ -121,7 +111,7 @@ export class ThesaurusCockpitBase extends RouteHandler {
     );
   }
 
-  static async requestState(requestParams: IRequestParams) {
+  static async requestState(requestParams: RequestParams) {
     // Thesauri should always have a length of 1, because a specific thesaurus ID is passed in the requestParams.
     const [thesauri, templates] = await Promise.all([
       ThesaurisAPI.getThesauri(requestParams),
@@ -165,10 +155,12 @@ export class ThesaurusCockpitBase extends RouteHandler {
   }
 
   suggestionsButton() {
-    if (this.props.thesaurus === undefined || this.props.thesaurus.property === undefined) {
+    const { thesaurus } = this.props as ThesaurusCockpitProps;
+
+    if (!thesaurus || !thesaurus.property) {
       return null;
     }
-    const thesaurusPropertyRefName = this.props.thesaurus.property.name;
+    const thesaurusPropertyRefName = thesaurus.property.name;
 
     return (
       <I18NLink
@@ -186,7 +178,8 @@ export class ThesaurusCockpitBase extends RouteHandler {
   }
 
   render() {
-    const { name } = this.props.thesaurus; // {name: Themes; values: [{label: Education}, ...]}
+    const { thesaurus } = this.props as ThesaurusCockpitProps;
+    const { name } = thesaurus;
     return (
       <div className="panel panel-default">
         <div className="panel-heading">
@@ -217,22 +210,30 @@ export class ThesaurusCockpitBase extends RouteHandler {
   }
 }
 
+interface ThesaurusCockpitStore {
+  thesauri: {
+    thesaurus: IImmutable<IThesaurus>;
+    models: Array<IImmutable<IClassifierModel>>;
+    suggestions: IImmutable<ISuggestionResult>;
+  };
+}
+
 const selectModels = createSelector(
-  (state: ThesaurusCockpitState) => state.thesauri.models,
+  (state: ThesaurusCockpitStore) => state.thesauri.models,
   models => models.map(m => m.toJS())
 );
 
 const selectThesaurus = createSelector(
-  (state: ThesaurusCockpitState) => state.thesauri.thesaurus,
+  (state: ThesaurusCockpitStore) => state.thesauri.thesaurus,
   thesaurus => thesaurus.toJS()
 );
 
 const selectSuggestions = createSelector(
-  (state: ThesaurusCockpitState) => state.thesauri.suggestions,
+  (state: ThesaurusCockpitStore) => state.thesauri.suggestions,
   suggestions => suggestions.toJS()
 );
 
-function mapStateToProps(state: ThesaurusCockpitState) {
+function mapStateToProps(state: ThesaurusCockpitStore) {
   return {
     models: selectModels(state),
     thesaurus: selectThesaurus(state),

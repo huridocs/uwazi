@@ -96,7 +96,7 @@
     "react/no-array-index-key": ["warn"],
     "react/jsx-first-prop-new-line": ["warn"],
     "react/no-unused-state": ["warn"],
-    "react/jsx-wrap-multilines": ["warn"],
+    "react/jsx-wrap-multilines": ["off"], // handled by prettier,
     "react/jsx-curly-brace-presence": ["warn"],
     "react/require-default-props": ["warn"],
     "react/forbid-prop-types": ["warn"],

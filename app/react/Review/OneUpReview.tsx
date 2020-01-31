@@ -1,5 +1,7 @@
 /** @format */
 
+import { TemplateSchema } from 'api/templates/templateType';
+import { ThesaurusSchema } from 'api/thesauris/dictionariesType';
 import RouteHandler from 'app/App/RouteHandler';
 import { actions } from 'app/BasicReducer';
 import Loader from 'app/components/Elements/Loader';
@@ -14,26 +16,47 @@ import OneUpEntityViewer from 'app/Review/components/OneUpEntityViewer';
 import api from 'app/Search/SearchAPI';
 import TemplatesAPI from 'app/Templates/TemplatesAPI';
 import ThesaurisAPI from 'app/Thesauris/ThesaurisAPI';
+import { RequestParams } from 'app/utils/RequestParams';
 import { setReferences } from 'app/Viewer/actions/referencesActions';
 import React from 'react';
 import { connect } from 'react-redux';
 import { actions as formActions } from 'react-redux-form';
 import { propertyTypes } from 'shared/propertyTypes';
+import { OneUpState } from './common';
+import { IImmutable } from '../../shared/interfaces/Immutable.interface';
+import { EntitySchema } from '../../api/entities/entityType';
 
-function buildInitialOneUpState(documentsRequest, documents, thesauri, templates) {
-  const thesaurusValues = [];
-  const thesauriKeys = Object.keys(documentsRequest.data.filters || {}).reduce((res, k) => {
+export type OneUpReviewProps = {
+  entity?: IImmutable<EntitySchema>;
+  oneUpState?: IImmutable<OneUpState>;
+  location?: { query: { q?: string } };
+};
+
+function buildInitialOneUpState(
+  documentsRequest: RequestParams<{ filters: any }>,
+  numDocuments: number,
+  thesauri: ThesaurusSchema[],
+  templates: TemplateSchema[]
+): OneUpState {
+  const thesaurusValues = [] as string[];
+  const thesauriKeys = Object.keys((documentsRequest.data || {}).filters || {}).reduce((res, k) => {
     const propName = k[0] === '_' ? k.substring(1) : k;
     if (k[0] === '_') {
       thesaurusValues.push(
-        ...documentsRequest.data.filters[k].values.filter(v => v && !['any', 'missing'].includes(v))
+        ...documentsRequest.data!.filters[k].values.filter(
+          (v: string) => v && !['any', 'missing'].includes(v)
+        )
       );
     }
     return {
       ...res,
       ...templates.reduce((res2, tmpl) => {
-        const prop = tmpl.properties.find(p => p.name === propName);
-        if (!prop || ![propertyTypes.select, propertyTypes.multiselect].includes(prop.type)) {
+        const prop = (tmpl.properties || []).find(p => p.name === propName);
+        if (
+          !prop ||
+          !prop.content ||
+          ![propertyTypes.select, propertyTypes.multiselect].includes(prop.type)
+        ) {
           return res2;
         }
         return { ...res2, [prop.content]: true };
@@ -42,10 +65,10 @@ function buildInitialOneUpState(documentsRequest, documents, thesauri, templates
   }, {});
   const thesaurus =
     Object.keys(thesauriKeys).length === 1
-      ? thesauri.find(t => t._id.toString() === Object.keys(thesauriKeys)[0])
+      ? thesauri.find(t => t._id!.toString() === Object.keys(thesauriKeys)[0])
       : null;
   thesauri.forEach(t => {
-    t.values.forEach(tv => {
+    (t.values || []).forEach(tv => {
       const i = thesaurusValues.findIndex(v => v === tv.id);
       if (i >= 0) {
         thesaurusValues[i] = tv.label;
@@ -57,17 +80,17 @@ function buildInitialOneUpState(documentsRequest, documents, thesauri, templates
     fullEdit: false,
     loadConnections: false,
     indexInDocs: 0,
-    totalDocs: documents.rows.length,
+    totalDocs: numDocuments,
     maxTotalDocs: 5001,
     requestHeaders: documentsRequest.headers,
     reviewThesaurusName: thesaurus ? thesaurus.name : '',
-    reviewThesaurusId: thesaurus ? thesaurus._id.toString() : '',
+    reviewThesaurusId: thesaurus ? thesaurus._id!.toString() : '',
     reviewThesaurusValues: thesaurusValues,
   };
 }
 
 export class OneUpReviewBase extends RouteHandler {
-  static async requestState(requestParams, state) {
+  static async requestState(requestParams: RequestParams, state: any) {
     const documentsRequest = requestParams.set({
       ...processQuery(requestParams.data, state),
       limit: 5001,
@@ -86,11 +109,11 @@ export class OneUpReviewBase extends RouteHandler {
 
     return [
       actions.set('relationTypes', relationTypes),
-      dispatch => wrapDispatch(dispatch, 'library')(unsetDocuments()),
-      dispatch => wrapDispatch(dispatch, 'library')(setDocuments(documents)),
+      (dispatch: any) => wrapDispatch(dispatch, 'library')(unsetDocuments()),
+      (dispatch: any) => wrapDispatch(dispatch, 'library')(setDocuments(documents)),
       actions.set(
         'oneUpReview.state',
-        buildInitialOneUpState(documentsRequest, documents, thesauri, templates)
+        buildInitialOneUpState(documentsRequest, documents.rows.length, thesauri, templates)
       ),
       ...(firstSharedId
         ? await reviewActions.getAndLoadEntity(
@@ -103,7 +126,7 @@ export class OneUpReviewBase extends RouteHandler {
     ];
   }
 
-  urlHasChanged(nextProps) {
+  urlHasChanged(nextProps: any) {
     return nextProps.location.query.q !== this.props.location.query.q;
   }
 
@@ -127,7 +150,7 @@ export class OneUpReviewBase extends RouteHandler {
   }
 
   render() {
-    const { entity, oneUpState } = this.props;
+    const { entity, oneUpState } = this.props as OneUpReviewProps;
     if (
       !oneUpState ||
       !oneUpState.get('loaded') ||
@@ -139,7 +162,19 @@ export class OneUpReviewBase extends RouteHandler {
   }
 }
 
-export default connect(state => ({
-  entity: state.entityView.entity,
-  oneUpState: state.oneUpReview.state,
-}))(OneUpReviewBase);
+interface OneUpReviewStore {
+  entityView: {
+    entity?: IImmutable<EntitySchema>;
+  };
+  oneUpReview: {
+    state?: IImmutable<OneUpState>;
+  };
+}
+
+export default connect(
+  (state: OneUpReviewStore) =>
+    ({
+      entity: state.entityView.entity,
+      oneUpState: state.oneUpReview.state,
+    } as OneUpReviewProps)
+)(OneUpReviewBase);

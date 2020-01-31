@@ -1,6 +1,6 @@
 /** @format */
+/* eslint-disable max-nested-callbacks,max-statements */
 
-/* eslint-disable max-nested-callbacks, max-statements */
 import Ajv from 'ajv';
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import date from 'api/utils/date.js';

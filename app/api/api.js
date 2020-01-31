@@ -1,4 +1,5 @@
 /** @format */
+/* eslint-disable global-require */
 
 import languageMiddleware from './utils/languageMiddleware';
 import activitylogMiddleware from './activitylog/activitylogMiddleware';

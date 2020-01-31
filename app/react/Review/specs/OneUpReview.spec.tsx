@@ -1,13 +1,14 @@
 /** @format */
 
 import React from 'react';
-import { shallow } from 'enzyme';
-import { OneUpReviewBase } from 'app/Review/OneUpReview';
+import { shallow, ShallowWrapper } from 'enzyme';
+import { OneUpReviewBase, OneUpReviewProps } from 'app/Review/OneUpReview';
 import RouteHandler from 'app/App/RouteHandler';
 import OneUpEntityViewer from 'app/Review/components/OneUpEntityViewer';
 import Loader from 'app/components/Elements/Loader';
 import createStore from 'app/store';
 import Immutable from 'immutable';
+import { OneUpState } from '../common';
 
 describe('Library', () => {
   const templates = Immutable.fromJS([
@@ -31,12 +32,12 @@ describe('Library', () => {
     totalDocs: 10,
     reviewThesaurusName: 'Issues',
     reviewThesaurusId: 'beef',
-  });
+  } as OneUpState);
   createStore({ templates, thesauris, entityView: { entity }, oneUpReview: { state: oneUpState } });
-  let component;
-  let instance;
-  let context;
-  let props;
+  let component: ShallowWrapper<typeof OneUpReviewBase>;
+  let instance: OneUpReviewBase;
+  let context = {};
+  let props: OneUpReviewProps;
   let dispatchCallsOrder = [];
 
   beforeEach(() => {
@@ -55,7 +56,7 @@ describe('Library', () => {
 
   const render = () => {
     component = shallow(<OneUpReviewBase {...props} />, { context });
-    instance = component.instance();
+    instance = component.instance() as OneUpReviewBase;
   };
 
   it('should render the OneUpEntityViewer (with Entity)', () => {

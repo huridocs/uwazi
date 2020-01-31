@@ -18,7 +18,7 @@ const setLocale = locale => {
 };
 
 class RouteHandler extends Component {
-  static async requestState(_requestParams) {
+  static async requestState(_requestParams, _state) {
     return new Promise((resolve, _reject) => {
       resolve([]);
     });

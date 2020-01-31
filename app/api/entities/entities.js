@@ -1,5 +1,5 @@
 /** @format */
-/* eslint-disable no-param-reassign */
+/* eslint-disable no-param-reassign,max-statements */
 
 import { generateNamesAndIds } from 'api/templates/utils';
 import ID from 'shared/uniqueID';

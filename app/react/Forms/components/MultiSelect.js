@@ -16,6 +16,9 @@ export default class MultiSelect extends Component {
   constructor(props) {
     super(props);
     this.state = { filter: props.filter, showAll: props.showAll, ui: {} };
+    this.filter = this.filter.bind(this);
+    this.resetFilter = this.resetFilter.bind(this);
+    this.showAll = this.showAll.bind(this);
   }
 
   componentWillReceiveProps(props) {
@@ -86,7 +89,7 @@ export default class MultiSelect extends Component {
 
   showAll(e) {
     e.preventDefault();
-    this.setState({ showAll: !this.state.showAll });
+    this.setState(prevState => ({ showAll: !prevState.showAll }));
   }
 
   sort(options, _optionsValue, optionsLabel, isSubGroup = false) {
@@ -273,14 +276,16 @@ export default class MultiSelect extends Component {
     });
     options = totalOptions;
     options = options.map(option => {
-      if (option.options) {
-        option.options = option.options.filter(_opt => {
+      if (!option.options) {
+        return option;
+      }
+      return {
+        ...option,
+        options: option.options.filter(_opt => {
           let notDefined;
           return _opt.results === notDefined || _opt.results > 0 || this.checked(_opt);
-        });
-      }
-
-      return option;
+        }),
+      };
     });
 
     if (this.state.filter) {
@@ -308,10 +313,11 @@ export default class MultiSelect extends Component {
       options = options.slice(0, optionsToShow);
     }
 
-    options.forEach(option => {
-      if (option.options) {
-        option.options = this.sort(option.options, optionsValue, optionsLabel, true);
+    options = options.map(option => {
+      if (!option.options) {
+        return option;
       }
+      return { ...option, options: this.sort(option.options, optionsValue, optionsLabel, true) };
     });
 
     return (
@@ -323,7 +329,7 @@ export default class MultiSelect extends Component {
             <div className="form-group">
               <Icon
                 icon={this.state.filter ? 'times-circle' : 'search'}
-                onClick={this.resetFilter.bind(this)}
+                onClick={this.resetFilter}
               />
               <input
                 className="form-control"
@@ -334,7 +340,7 @@ export default class MultiSelect extends Component {
                     : t('System', 'Search item', null, false)
                 }
                 value={this.state.filter}
-                onChange={this.filter.bind(this)}
+                onChange={this.filter}
               />
             </div>
           </ShowIf>
@@ -350,7 +356,7 @@ export default class MultiSelect extends Component {
 
         <li className="multiselectActions">
           <ShowIf if={totalOptions.length > this.props.optionsToShow && !this.state.showAll}>
-            <button onClick={this.showAll.bind(this)} className="btn btn-xs btn-default">
+            <button onClick={this.showAll} className="btn btn-xs btn-default">
               <Icon icon={this.state.showAll ? 'caret-up' : 'caret-down'} />
               <i className={this.state.showAll ? 'fa fa-caret-up' : 'fa fa-caret-down'} />
               {this.moreLessLabel(totalOptions)}

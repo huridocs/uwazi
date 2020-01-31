@@ -16,7 +16,7 @@ import { Icon } from 'UI';
 import defaultTemplate from '../helpers/defaultTemplate';
 import validator from '../helpers/validator';
 import { wrapEntityMetadata } from '../helpers/wrapper';
-import IconField from './IconField';
+import { IconField } from './IconField';
 import MetadataFormFields from './MetadataFormFields';
 
 const immutableDefaultTemplate = Immutable.fromJS(defaultTemplate);
