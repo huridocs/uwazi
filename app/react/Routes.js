@@ -32,9 +32,9 @@ import {
 } from 'app/Settings';
 import EditTemplate from 'app/Templates/EditTemplate';
 import NewTemplate from 'app/Templates/NewTemplate';
-import EditThesauri from 'app/Thesauris/EditThesauri';
-import NewThesauri from 'app/Thesauris/NewThesauri';
-import ThesaurusCockpit from 'app/Thesauris/ThesaurusCockpit';
+import EditThesauri from 'app/Thesauri/EditThesauri';
+import NewThesauri from 'app/Thesauri/NewThesauri';
+import ThesaurusCockpit from 'app/Thesauri/ThesaurusCockpit';
 import Uploads from 'app/Uploads/UploadsRoute';
 import { EditUser, NewUser, Users } from 'app/Users';
 import Login from 'app/Users/Login';

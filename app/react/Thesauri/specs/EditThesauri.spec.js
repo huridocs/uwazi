@@ -5,8 +5,8 @@ import backend from 'fetch-mock';
 import { shallow } from 'enzyme';
 
 import { APIURL } from 'app/config.js';
-import EditThesauri from 'app/Thesauris/EditThesauri';
-import ThesauriForm from 'app/Thesauris/components/ThesauriForm';
+import EditThesauri from 'app/Thesauri/EditThesauri';
+import ThesauriForm from 'app/Thesauri/components/ThesauriForm';
 import RouteHandler from 'app/App/RouteHandler';
 
 describe('EditThesauri', () => {

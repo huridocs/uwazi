@@ -3,9 +3,9 @@
 import React from 'react';
 
 import RouteHandler from 'app/App/RouteHandler';
-import ThesauriForm from 'app/Thesauris/components/ThesauriForm';
-import { editThesaurus } from 'app/Thesauris/actions/thesaurisActions';
-import api from 'app/Thesauris/ThesaurisAPI';
+import ThesauriForm from 'app/Thesauri/components/ThesauriForm';
+import { editThesaurus } from 'app/Thesauri/actions/thesaurisActions';
+import api from 'app/Thesauri/ThesaurisAPI';
 
 export default class EditThesauri extends RouteHandler {
   static async requestState(requestParams) {

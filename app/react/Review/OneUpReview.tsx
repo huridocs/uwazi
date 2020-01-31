@@ -14,7 +14,7 @@ import * as reviewActions from 'app/Review/actions/actions';
 import OneUpEntityViewer from 'app/Review/components/OneUpEntityViewer';
 import api from 'app/Search/SearchAPI';
 import TemplatesAPI from 'app/Templates/TemplatesAPI';
-import ThesaurisAPI from 'app/Thesauris/ThesaurisAPI';
+import ThesaurisAPI from 'app/Thesauri/ThesaurisAPI';
 import { RequestParams } from 'app/utils/RequestParams';
 import { setReferences } from 'app/Viewer/actions/referencesActions';
 import React from 'react';

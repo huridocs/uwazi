@@ -1,7 +1,7 @@
 /** @format */
 
 import UsersAPI from 'app/Users/UsersAPI';
-import ThesaurisAPI from 'app/Thesauris/ThesaurisAPI';
+import ThesaurisAPI from 'app/Thesauri/ThesaurisAPI';
 import RelationTypesAPI from 'app/RelationTypes/RelationTypesAPI';
 import { I18NApi } from 'app/I18N';
 import { RequestParams } from 'app/utils/RequestParams';

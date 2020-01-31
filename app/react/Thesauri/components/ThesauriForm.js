@@ -12,7 +12,7 @@ import {
   saveThesaurus,
   sortValues,
   updateValues,
-} from 'app/Thesauris/actions/thesauriActions';
+} from 'app/Thesauri/actions/thesauriActions';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';

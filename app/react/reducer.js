@@ -7,7 +7,7 @@ import template from 'app/Templates/reducers/reducer';
 import page from 'app/Pages/reducers/reducer';
 import notifications from 'app/Notifications/reducers/notificationsReducer';
 
-import thesauri from 'app/Thesauris/reducers/reducer';
+import thesauri from 'app/Thesauri/reducers/reducer';
 import activitylog from 'app/Activitylog/reducer';
 import documentViewer from 'app/Viewer/reducers/reducer';
 import entityView from 'app/Entities/reducers/reducer';

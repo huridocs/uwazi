@@ -7,7 +7,7 @@ import api from 'app/Search/SearchAPI';
 import { resolveTemplateProp } from 'app/Settings/utils/resolveProperty';
 import { getSuggestionsQuery } from 'app/Settings/utils/suggestions';
 import TemplatesAPI from 'app/Templates/TemplatesAPI';
-import ThesaurisAPI from 'app/Thesauris/ThesaurisAPI';
+import ThesaurisAPI from 'app/Thesauri/ThesaurisAPI';
 import { RequestParams } from 'app/utils/RequestParams';
 import React from 'react';
 import { connect } from 'react-redux';

@@ -3,9 +3,9 @@
 import backend from 'fetch-mock';
 import { APIURL } from 'app/config.js';
 
-import * as actions from 'app/Thesauris/actions/thesaurisActions';
+import * as actions from 'app/Thesauri/actions/thesaurisActions';
 import { actions as formActions } from 'react-redux-form';
-import api from 'app/Thesauris/ThesaurisAPI';
+import api from 'app/Thesauri/ThesaurisAPI';
 
 describe('thesaurisActions', () => {
   describe('editThesaurus', () => {

@@ -8,8 +8,8 @@ import { mockID } from 'shared/uniqueID';
 import thunk from 'redux-thunk';
 import { actions as formActions } from 'react-redux-form';
 
-import * as actions from 'app/Thesauris/actions/thesauriActions';
-import * as types from 'app/Thesauris/actions/actionTypes';
+import * as actions from 'app/Thesauri/actions/thesauriActions';
+import * as types from 'app/Thesauri/actions/actionTypes';
 import * as notificationsTypes from 'app/Notifications/actions/actionTypes';
 
 const middlewares = [thunk];

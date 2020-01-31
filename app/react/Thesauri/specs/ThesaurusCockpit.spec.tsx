@@ -2,7 +2,7 @@
 import RouteHandler from 'app/App/RouteHandler';
 import api from 'app/Search/SearchAPI';
 import TemplatesAPI from 'app/Templates/TemplatesAPI';
-import ThesaurisAPI from 'app/Thesauris/ThesaurisAPI';
+import ThesaurisAPI from 'app/Thesauri/ThesaurisAPI';
 import { RequestParams } from 'app/utils/RequestParams';
 import { shallow, ShallowWrapper } from 'enzyme';
 import React from 'react';

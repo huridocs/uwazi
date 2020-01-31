@@ -11,7 +11,7 @@ import {
   deleteThesaurus,
   disableClassification,
   enableClassification,
-} from 'app/Thesauris/actions/thesaurisActions';
+} from 'app/Thesauri/actions/thesaurisActions';
 import { Icon } from 'UI';
 
 import sortThesauri from '../utils/sortThesauri';
@@ -200,7 +200,4 @@ function mapDispatchToProps(dispatch) {
   );
 }
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(ThesaurisList);
+export default connect(mapStateToProps, mapDispatchToProps)(ThesaurisList);

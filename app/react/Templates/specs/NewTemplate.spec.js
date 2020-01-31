@@ -1,7 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 
-import thesaurisAPI from 'app/Thesauris/ThesaurisAPI';
+import thesaurisAPI from 'app/Thesauri/ThesaurisAPI';
 import relationTypesAPI from 'app/RelationTypes/RelationTypesAPI';
 import { RequestParams } from 'app/utils/RequestParams';
 

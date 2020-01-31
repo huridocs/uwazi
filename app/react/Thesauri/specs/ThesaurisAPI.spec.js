@@ -1,4 +1,4 @@
-import thesaurisAPI from 'app/Thesauris/ThesaurisAPI';
+import thesaurisAPI from 'app/Thesauri/ThesaurisAPI';
 import { APIURL } from 'app/config.js';
 import backend from 'fetch-mock';
 import { RequestParams } from 'app/utils/RequestParams';

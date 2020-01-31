@@ -5,7 +5,7 @@ import { I18NApi } from 'app/I18N';
 import RelationTypesAPI from 'app/RelationTypes/RelationTypesAPI';
 import api from 'app/Search/SearchAPI';
 import TemplatesAPI from 'app/Templates/TemplatesAPI';
-import ThesaurisAPI from 'app/Thesauris/ThesaurisAPI';
+import ThesaurisAPI from 'app/Thesauri/ThesaurisAPI';
 import UsersAPI from 'app/Users/UsersAPI';
 import React from 'react';
 import Helmet from 'react-helmet';

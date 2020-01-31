@@ -12,7 +12,7 @@ import { Icon } from 'UI';
 import { t } from 'app/I18N';
 import { reconnectSocket } from 'app/socket';
 import RouteHandler from 'app/App/RouteHandler';
-import { reloadThesauri } from 'app/Thesauris/actions/thesaurisActions';
+import { reloadThesauri } from 'app/Thesauri/actions/thesaurisActions';
 
 import auth from 'app/Auth';
 
@@ -235,7 +235,4 @@ function mapDispatchToProps(dispatch) {
   );
 }
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(Login);
+export default connect(mapStateToProps, mapDispatchToProps)(Login);

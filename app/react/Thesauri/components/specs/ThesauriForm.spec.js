@@ -4,7 +4,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import Immutable from 'immutable';
 import { DragAndDropContainer } from 'app/Layout/DragAndDrop';
-import { mapStateToProps, ThesauriForm } from 'app/Thesauris/components/ThesauriForm.js';
+import { mapStateToProps, ThesauriForm } from 'app/Thesauri/components/ThesauriForm.js';
 
 describe('ThesauriForm', () => {
   let props;
