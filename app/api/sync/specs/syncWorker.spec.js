@@ -1,7 +1,7 @@
 /** @format */
 
 import 'api/entities';
-import 'api/thesauris/dictionariesModel';
+import 'api/thesauri/dictionariesModel';
 import fs from 'fs';
 import path from 'path';
 import errorLog from 'api/log/errorLog';

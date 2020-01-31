@@ -4,7 +4,7 @@ import entities from 'api/entities';
 import { EntitySchema } from 'api/entities/entityType';
 import search from 'api/search/search';
 import templates from 'api/templates';
-import thesauri from 'api/thesauris';
+import thesauri from 'api/thesauri';
 import connect, { disconnect } from 'api/utils/connect_to_mongo';
 import csv from 'csvtojson';
 import JSONRequest from 'shared/JSONRequest';

@@ -7,7 +7,7 @@ import search from 'api/search/search';
 import { catchErrors } from 'api/utils/jasmineHelpers';
 
 import db from 'api/utils/testing_db';
-import thesauris from '../thesauris.js';
+import thesauri from '../thesauri.js';
 import fixtures, {
   dictionaryId,
   dictionaryIdToTranslate,
@@ -15,7 +15,7 @@ import fixtures, {
   dictionaryWithValueGroups,
 } from './fixtures.js';
 
-describe('thesauris', () => {
+describe('thesauri', () => {
   beforeEach(async () => {
     spyOn(search, 'indexEntities').and.returnValue(Promise.resolve());
     await db.clearAllAndLoad(fixtures);
@@ -26,13 +26,13 @@ describe('thesauris', () => {
   });
 
   describe('get()', () => {
-    it('should return all thesauris including entity templates as options', async () => {
-      const dictionaties = await thesauris.get(null, 'es');
-      expect(dictionaties.length).toBe(6);
-      expect(dictionaties[0].name).toBe('dictionary');
-      expect(dictionaties[1].name).toBe('dictionary 2');
-      expect(dictionaties[4].name).toBe('entityTemplate');
-      expect(dictionaties[4].values).toEqual([
+    it('should return all thesauri including entity templates as options', async () => {
+      const dictionaries = await thesauri.get(null, 'es');
+      expect(dictionaries.length).toBe(6);
+      expect(dictionaries[0].name).toBe('dictionary');
+      expect(dictionaries[1].name).toBe('dictionary 2');
+      expect(dictionaries[4].name).toBe('entityTemplate');
+      expect(dictionaries[4].values).toEqual([
         {
           id: 'sharedId',
           label: 'spanish entity',
@@ -40,13 +40,13 @@ describe('thesauris', () => {
           type: 'entity',
         },
       ]);
-      expect(dictionaties[4].type).toBe('template');
+      expect(dictionaries[4].type).toBe('template');
     });
 
-    it('should return all thesauris including unpublished documents if user', async () => {
-      const dictionaties = await thesauris.get(null, 'es', 'user');
-      expect(dictionaties.length).toBe(6);
-      expect(dictionaties[4].values).toEqual([
+    it('should return all thesauri including unpublished documents if user', async () => {
+      const dictionaries = await thesauri.get(null, 'es', 'user');
+      expect(dictionaries.length).toBe(6);
+      expect(dictionaries[4].values).toEqual([
         { id: 'sharedId2', type: 'entity' },
         { id: 'sharedId', label: 'spanish entity', icon: 'Icon', type: 'entity' },
         { id: 'other', label: 'unpublished entity', type: 'entity' },
@@ -55,7 +55,7 @@ describe('thesauris', () => {
 
     describe('when passing id', () => {
       it('should return matching thesauri', async () => {
-        const response = await thesauris.get(dictionaryId);
+        const response = await thesauri.get(dictionaryId);
         expect(response[0].name).toBe('dictionary 2');
         expect(response[0].values[0].label).toBe('value 1');
         expect(response[0].values[1].label).toBe('value 2');
@@ -65,17 +65,17 @@ describe('thesauris', () => {
 
   describe('dictionaries()', () => {
     it('should return all dictionaries', async () => {
-      const dictionaties = await thesauris.dictionaries();
-      expect(dictionaties.length).toBe(4);
-      expect(dictionaties[0].name).toBe('dictionary');
-      expect(dictionaties[1].name).toBe('dictionary 2');
-      expect(dictionaties[2].name).toBe('Top 2 scify books');
-      expect(dictionaties[3].name).toBe('Top movies');
+      const dictionaries = await thesauri.dictionaries();
+      expect(dictionaries.length).toBe(4);
+      expect(dictionaries[0].name).toBe('dictionary');
+      expect(dictionaries[1].name).toBe('dictionary 2');
+      expect(dictionaries[2].name).toBe('Top 2 scify books');
+      expect(dictionaries[3].name).toBe('Top movies');
     });
 
     describe('when passing a query', () => {
       it('should return matching thesauri', async () => {
-        const response = await thesauris.dictionaries({ _id: dictionaryId });
+        const response = await thesauri.dictionaries({ _id: dictionaryId });
         expect(response.length).toBe(1);
         expect(response[0].name).toBe('dictionary 2');
         expect(response[0].values[0].label).toBe('value 1');
@@ -92,11 +92,11 @@ describe('thesauris', () => {
     });
 
     it('should delete a thesauri', done =>
-      thesauris
+      thesauri
         .delete(dictionaryId)
         .then(response => {
           expect(response.ok).toBe(true);
-          return thesauris.get({ _id: dictionaryId });
+          return thesauri.get({ _id: dictionaryId });
         })
         .then(dictionaries => {
           expect(dictionaries.length).toBe(0);
@@ -105,7 +105,7 @@ describe('thesauris', () => {
         .catch(catchErrors(done)));
 
     it('should delete the translation', async () => {
-      const response = await thesauris.delete(dictionaryId);
+      const response = await thesauri.delete(dictionaryId);
       expect(response.ok).toBe(true);
       expect(translations.deleteContext).toHaveBeenCalledWith(dictionaryId);
     });
@@ -113,7 +113,7 @@ describe('thesauris', () => {
     describe('when the dictionary is in use', () => {
       it('should return an error in the response', done => {
         templatesCountSpy.and.returnValue(Promise.resolve(1));
-        thesauris
+        thesauri
           .delete(dictionaryId)
           .then(catchErrors(done))
           .catch(response => {
@@ -133,7 +133,7 @@ describe('thesauris', () => {
       const _id = db.id();
       const data = { name: 'Batman wish list', values: [{ _id, id: '1', label: 'Joker BFF' }] };
 
-      const response = await thesauris.save(data);
+      const response = await thesauri.save(data);
       expect(response.values).toEqual([{ _id, id: '1', label: 'Joker BFF' }]);
     });
 
@@ -152,7 +152,7 @@ describe('thesauris', () => {
         ],
       };
       spyOn(translations, 'addContext').and.returnValue(Promise.resolve());
-      const response = await thesauris.save(data);
+      const response = await thesauri.save(data);
       expect(translations.addContext).toHaveBeenCalledWith(
         response._id,
         'Batman wish list',
@@ -170,11 +170,11 @@ describe('thesauris', () => {
     it('should set a default value of [] to values property if its missing', done => {
       const data = { name: 'Scarecrow nightmares' };
 
-      thesauris
+      thesauri
         .save(data)
-        .then(() => thesauris.get())
+        .then(() => thesauri.get())
         .then(response => {
-          const newThesauri = response.find(thesauri => thesauri.name === 'Scarecrow nightmares');
+          const newThesauri = response.find(thesaurus => thesaurus.name === 'Scarecrow nightmares');
 
           expect(newThesauri.name).toBe('Scarecrow nightmares');
           expect(newThesauri.values).toEqual([]);
@@ -187,9 +187,9 @@ describe('thesauris', () => {
       it('should edit an existing one', done => {
         spyOn(translations, 'addContext').and.returnValue(Promise.resolve());
         const data = { _id: dictionaryId, name: 'changed name' };
-        return thesauris
+        return thesauri
           .save(data)
-          .then(() => thesauris.getById(dictionaryId))
+          .then(() => thesauri.getById(dictionaryId))
           .then(edited => {
             expect(edited.name).toBe('changed name');
             done();
@@ -203,7 +203,7 @@ describe('thesauris', () => {
           name: 'Top 1 games',
           values: [{ id: dictionaryValueId, label: 'Marios game' }],
         };
-        return thesauris
+        return thesauri
           .save(data)
           .then(response => {
             expect(translations.updateContext).toHaveBeenCalledWith(
@@ -227,7 +227,7 @@ describe('thesauris', () => {
           values: [{ id: dictionaryValueId, label: 'Marios game' }],
         };
 
-        await thesauris.save(data);
+        await thesauri.save(data);
         expect(entities.deleteThesaurusFromMetadata.calls.count()).toBe(1);
         expect(entities.deleteThesaurusFromMetadata).toHaveBeenCalledWith(
           '2',
@@ -235,12 +235,12 @@ describe('thesauris', () => {
         );
       });
 
-      it('should properly delete values when thesauris have subgroups', async () => {
+      it('should properly delete values when thesauri have subgroups', async () => {
         spyOn(entities, 'deleteThesaurusFromMetadata');
-        const thesauri = await thesauris.getById(dictionaryWithValueGroups);
-        thesauri.values = thesauri.values.filter(value => value.id !== '3');
+        const thesaurus = await thesauri.getById(dictionaryWithValueGroups);
+        thesaurus.values = thesaurus.values.filter(value => value.id !== '3');
 
-        await thesauris.save(thesauri);
+        await thesauri.save(thesaurus);
 
         const deletedValuesFromEntities = entities.deleteThesaurusFromMetadata.calls
           .allArgs()
@@ -250,7 +250,7 @@ describe('thesauris', () => {
       });
 
       it('should update labels on entities with the thesauri values', async () => {
-        const thesauri = {
+        const thesaurus = {
           name: 'dictionary 2',
           _id: dictionaryId,
           values: [
@@ -259,7 +259,7 @@ describe('thesauris', () => {
           ],
         };
 
-        await thesauris.save(thesauri);
+        await thesauri.save(thesaurus);
 
         const changedEntities = await entities.get({ language: 'es' });
 
@@ -286,7 +286,7 @@ describe('thesauris', () => {
 
           let error;
           try {
-            await thesauris.save(data);
+            await thesauri.save(data);
           } catch (e) {
             error = e;
           }
@@ -297,14 +297,14 @@ describe('thesauris', () => {
         it('should not fail when name is contained as substring on another thesauri name', async () => {
           const data = { name: 'ary' };
 
-          const thesauri = await thesauris.save(data);
-          expect(thesauri.name).toBe('ary');
+          const thesaurus = await thesauri.save(data);
+          expect(thesaurus.name).toBe('ary');
         });
 
         it('should fail if the name is blank', async () => {
           let data = { values: [{ label: 'test' }] };
           try {
-            await thesauris.save(data);
+            await thesauri.save(data);
             fail('should throw error');
           } catch (e) {
             expect(e).toBeDefined();
@@ -312,7 +312,7 @@ describe('thesauris', () => {
 
           data = { name: '', values: [{ label: 'test' }] };
           try {
-            await thesauris.save(data);
+            await thesauri.save(data);
             fail('should throw error');
           } catch (e) {
             expect(e).toBeDefined();
@@ -333,7 +333,7 @@ describe('thesauris', () => {
 
           let error;
           try {
-            await thesauris.save(data);
+            await thesauri.save(data);
           } catch (e) {
             error = e;
           }

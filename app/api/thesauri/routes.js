@@ -4,7 +4,7 @@ import Joi from 'joi';
 import multer from 'multer';
 import { validation } from '../utils';
 import needsAuthorization from '../auth/authMiddleware';
-import thesauris from './thesauris';
+import thesauri from './thesauri';
 import storageConfig from '../upload/storageConfig';
 import CSVLoader from '../csv';
 
@@ -51,7 +51,7 @@ export default app => {
     async (req, res, next) => {
       try {
         const data = req.files && req.files.length ? JSON.parse(req.body.thesauri) : req.body;
-        let response = await thesauris.save(data);
+        let response = await thesauri.save(data);
         if (req.files && req.files.length) {
           const file = req.files[0];
           const loader = new CSVLoader();
@@ -78,7 +78,7 @@ export default app => {
       if (req.query) {
         id = req.query._id;
       }
-      thesauris
+      thesauri
         .get(id, req.language, req.user)
         .then(response => res.json({ rows: response }))
         .catch(next);
@@ -98,7 +98,7 @@ export default app => {
       if (req.query && req.query._id) {
         id = { _id: req.query._id };
       }
-      thesauris
+      thesauri
         .dictionaries(id)
         .then(response => res.json({ rows: response }))
         .catch(next);
@@ -118,7 +118,7 @@ export default app => {
       'query'
     ),
     (req, res, next) => {
-      thesauris
+      thesauri
         .delete(req.query._id, req.query._rev)
         .then(response => {
           res.json(response);

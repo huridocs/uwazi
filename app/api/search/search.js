@@ -8,7 +8,7 @@ import translate, { getLocaleTranslation, getContext } from 'shared/translate';
 import translations from 'api/i18n/translations';
 import elasticIndexes from 'api/config/elasticIndexes';
 
-import dictionariesModel from 'api/thesauris/dictionariesModel';
+import dictionariesModel from 'api/thesauri/dictionariesModel';
 import { createError } from 'api/utils';
 import relationtypes from 'api/relationtypes';
 import documentQueryBuilder from './documentQueryBuilder';

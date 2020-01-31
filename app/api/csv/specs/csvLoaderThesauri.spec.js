@@ -1,5 +1,7 @@
+/** @format */
+
 import db from 'api/utils/testing_db';
-import thesauris from 'api/thesauris';
+import thesauri from 'api/thesauri';
 import translations from 'api/i18n';
 import settings from 'api/settings';
 
@@ -24,7 +26,10 @@ describe('csvLoader thesauri', () => {
       await translations.addLanguage('fr');
       await settings.addLanguage({ key: 'fr', label: 'french' });
 
-      const { _id } = await thesauris.save({ name: 'thesauri2Id', values: [{ label: 'existing value' }] });
+      const { _id } = await thesauri.save({
+        name: 'thesauri2Id',
+        values: [{ label: 'existing value' }],
+      });
 
       const nonExistent = 'Russian';
 
@@ -33,23 +38,27 @@ describe('csvLoader thesauri', () => {
                    value 2, valor 2, valeur 2, 2               ,
                    value 3, valor 3, valeur 3, 3               ,`;
 
-
       thesauriId = _id;
       result = await loader.loadThesauri(stream(csv), _id, { language: 'en' });
     });
 
     const getTranslation = async lang =>
       (await translations.get())
-      .find(t => t.locale === lang)
-      .contexts.find(c => c.id === thesauriId.toString()).values;
+        .find(t => t.locale === lang)
+        .contexts.find(c => c.id === thesauriId.toString()).values;
 
     it('should set thesauri values using the language passed and ignore blank values', async () => {
-      const thesauri = await thesauris.getById(thesauriId);
-      expect(thesauri.values.map(v => v.label)).toEqual(['existing value', 'value 1', 'value 2', 'value 3']);
+      const thesaurus = await thesauri.getById(thesauriId);
+      expect(thesaurus.values.map(v => v.label)).toEqual([
+        'existing value',
+        'value 1',
+        'value 2',
+        'value 3',
+      ]);
     });
 
     it('should return the updated thesaurus', async () => {
-      const thesaurus = await thesauris.getById(thesauriId);
+      const thesaurus = await thesauri.getById(thesauriId);
       expect(thesaurus).toEqual(result);
     });
 

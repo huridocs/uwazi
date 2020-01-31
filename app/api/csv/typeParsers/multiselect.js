@@ -1,10 +1,10 @@
 /** @format */
 
-import thesauris from 'api/thesauris';
+import thesauri from 'api/thesauri';
 import { unique, emptyString } from 'api/utils/filters';
 
 const multiselect = async (entityToImport, templateProperty) => {
-  const currentThesauri = await thesauris.getById(templateProperty.content);
+  const currentThesauri = await thesauri.getById(templateProperty.content);
 
   const values = entityToImport[templateProperty.name]
     .split('|')
@@ -23,7 +23,7 @@ const multiselect = async (entityToImport, templateProperty) => {
       .map(value => ({ value: value.id, label: value.label }));
   }
 
-  const updated = await thesauris.save({
+  const updated = await thesauri.save({
     ...currentThesauri,
     values: currentThesauri.values.concat(newValues.map(label => ({ label }))),
   });

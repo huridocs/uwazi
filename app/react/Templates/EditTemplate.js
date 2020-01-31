@@ -4,7 +4,7 @@ import React from 'react';
 import { actions as formActions } from 'react-redux-form';
 
 import templatesAPI from 'app/Templates/TemplatesAPI';
-import thesaurisAPI from 'app/Thesauri/ThesauriAPI';
+import thesauriAPI from 'app/Thesauri/ThesauriAPI';
 import relationTypesAPI from 'app/RelationTypes/RelationTypesAPI';
 import TemplateCreator from 'app/Templates/components/TemplateCreator';
 import { actions } from 'app/BasicReducer';
@@ -29,7 +29,7 @@ export default class EditTemplate extends RouteHandler {
     const { templateId } = requestParams.data;
     const [templates, thesauris, relationTypes] = await Promise.all([
       templatesAPI.get(requestParams.onlyHeaders()),
-      thesaurisAPI.get(requestParams.onlyHeaders()),
+      thesauriAPI.get(requestParams.onlyHeaders()),
       relationTypesAPI.get(requestParams.onlyHeaders()),
     ]);
 

@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`thesauris routes DELETE should have a validation schema 1`] = `
+exports[`thesauri routes DELETE should have a validation schema 1`] = `
 Object {
   "children": Object {
     "_id": Object {
@@ -23,7 +23,7 @@ Object {
 }
 `;
 
-exports[`thesauris routes GET dictionaries should have a validation schema 1`] = `
+exports[`thesauri routes GET dictionaries should have a validation schema 1`] = `
 Object {
   "children": Object {
     "_id": Object {
@@ -37,7 +37,7 @@ Object {
 }
 `;
 
-exports[`thesauris routes GET should have a validation schema 1`] = `
+exports[`thesauri routes GET should have a validation schema 1`] = `
 Object {
   "children": Object {
     "_id": Object {
@@ -51,7 +51,7 @@ Object {
 }
 `;
 
-exports[`thesauris routes POST should have a validation schema 1`] = `
+exports[`thesauri routes POST should have a validation schema 1`] = `
 Object {
   "alternatives": Array [
     Object {

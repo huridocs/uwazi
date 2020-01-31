@@ -13,7 +13,7 @@ import translationsModel from 'api/i18n/translations';
 import path from 'path';
 import PDF from 'api/upload/PDF';
 import paths from 'api/config/paths';
-import dictionariesModel from 'api/thesauris/dictionariesModel';
+import dictionariesModel from 'api/thesauri/dictionariesModel';
 import translate, { getContext } from 'shared/translate';
 import { deleteFiles } from '../utils/files.js';
 import model from './entitiesModel';

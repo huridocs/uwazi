@@ -5,7 +5,7 @@ import dbConfig from '../app/api/config/database';
 import indexConfig from '../app/api/config/elasticIndexes';
 
 import templatesModel from '../app/api/templates/templates';
-import dictionariesModel from '../app/api/thesauris/dictionariesModel';
+import dictionariesModel from '../app/api/thesauri/dictionariesModel';
 import entitiesModel from '../app/api/entities/entitiesModel';
 
 let fix = false;

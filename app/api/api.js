@@ -24,7 +24,7 @@ export default (app, server) => {
   require('./search/routes').default(app);
   require('./semanticsearch/routes').default(app);
   require('./topicclassification/routes').default(app);
-  require('./thesauris/routes').default(app);
+  require('./thesauri/routes').default(app);
   require('./relationtypes/routes').default(app);
   require('./documents/routes').default(app);
   require('./contact/routes').default(app);

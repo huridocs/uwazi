@@ -4,7 +4,7 @@ import Joi from 'joi';
 import objectId from 'joi-objectid';
 import entities from './entities';
 import templates from '../templates/templates';
-import thesauris from '../thesauris/thesauris';
+import thesauri from '../thesauri/thesauri';
 import needsAuthorization from '../auth/authMiddleware';
 import { validation } from '../utils';
 
@@ -18,7 +18,7 @@ export default app => {
         res.json(response);
         return templates.getById(response.template);
       })
-      .then(template => thesauris.templateToThesauri(template, req.language, req.user))
+      .then(template => thesauri.templateToThesauri(template, req.language, req.user))
       .then(templateTransformed => {
         req.io.sockets.emit('thesauriChange', templateTransformed);
       })

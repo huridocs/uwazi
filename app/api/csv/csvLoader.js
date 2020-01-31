@@ -1,10 +1,12 @@
+/** @format */
+
 import EventEmitter from 'events';
 
 import templates from 'api/templates';
 import settings from 'api/settings';
 import translations from 'api/i18n';
 import translationsModel from 'api/i18n/translationsModel';
-import thesauris from 'api/thesauris';
+import thesauri from 'api/thesauri';
 
 import csv from './csv';
 import importFile from './importFile';
@@ -31,21 +33,24 @@ export default class CSVLoader extends EventEmitter {
     const availableLanguages = (await settings.get()).languages.map(l => l.key);
 
     await csv(await file.readStream(), this.stopOnError)
-    .onRow(async (row) => {
-      const { rawEntity, rawTranslations } =
-        extractEntity(row, availableLanguages, options.language);
+      .onRow(async row => {
+        const { rawEntity, rawTranslations } = extractEntity(
+          row,
+          availableLanguages,
+          options.language
+        );
 
-      const entity = await importEntity(rawEntity, template, file, options);
-      if (rawTranslations.length) {
-        await translateEntity(entity, rawTranslations, template, file);
-      }
-      this.emit('entityLoaded', entity);
-    })
-    .onError((e, row, index) => {
-      this._errors[index] = e;
-      this.emit('loadError', e, toSafeName(row), index);
-    })
-    .read();
+        const entity = await importEntity(rawEntity, template, file, options);
+        if (rawTranslations.length) {
+          await translateEntity(entity, rawTranslations, template, file);
+        }
+        this.emit('entityLoaded', entity);
+      })
+      .onError((e, row, index) => {
+        this._errors[index] = e;
+        this.emit('loadError', e, toSafeName(row), index);
+      })
+      .read();
 
     if (Object.keys(this._errors).length === 1) {
       const firstKey = Object.keys(this._errors)[0];
@@ -57,19 +62,29 @@ export default class CSVLoader extends EventEmitter {
     }
   }
 
-  async loadThesauri(csvPath, thesauriId, { language }) { //eslint-disable-line class-methods-use-this
+  /* eslint-disable class-methods-use-this */
+  async loadThesauri(csvPath, thesaurusId, { language }) {
     const file = importFile(csvPath);
-    const availableLanguages = (await settings.get()).languages.map(l => l.key).filter(l => l !== language);
-    const { thesauriValues, thesauriTranslations } = await csv(await file.readStream()).toThesauri(language, availableLanguages);
+    const availableLanguages = (await settings.get()).languages
+      .map(l => l.key)
+      .filter(l => l !== language);
+    const { thesauriValues: thesaurusValues, thesauriTranslations } = await csv(
+      await file.readStream()
+    ).toThesauri(language, availableLanguages);
 
-    const thesauri = await thesauris.getById(thesauriId);
-    const saved = await thesauris.save({ ...thesauri, values: [...thesauri.values, ...thesauriValues] });
+    const thesaurus = await thesauri.getById(thesaurusId);
+    const saved = await thesauri.save({
+      ...thesaurus,
+      values: [...thesaurus.values, ...thesaurusValues],
+    });
 
     await Object.keys(thesauriTranslations).reduce(async (prev, lang) => {
       await prev;
       const translationValues = thesauriTranslations[lang];
-      const [currentTranslation] = (await translationsModel.get({ locale: lang }));
-      const currentContext = currentTranslation.contexts.find(c => c.id.toString() === thesauriId.toString());
+      const [currentTranslation] = await translationsModel.get({ locale: lang });
+      const currentContext = currentTranslation.contexts.find(
+        c => c.id.toString() === thesaurusId.toString()
+      );
 
       return translations.save({
         ...currentTranslation,
@@ -77,10 +92,11 @@ export default class CSVLoader extends EventEmitter {
           {
             ...currentContext,
             values: [...currentContext.values, ...translationValues],
-          }
-        ]
+          },
+        ],
       });
     }, Promise.resolve());
     return saved;
   }
+  /* eslint-enable class-methods-use-this */
 }

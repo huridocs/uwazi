@@ -6,7 +6,7 @@ import { MetadataObject } from 'api/entities/entitiesModel';
 import { EntitySchema } from 'api/entities/entityType';
 import { QueryForEach, WithId } from 'api/odm';
 import templates from 'api/templates';
-import thesauri from 'api/thesauris';
+import thesauri from 'api/thesauri';
 import { extractSequence } from 'api/topicclassification/common';
 import connect, { disconnect } from 'api/utils/connect_to_mongo';
 import { buildModelName } from 'shared/commonTopicClassification';
