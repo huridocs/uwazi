@@ -38,10 +38,10 @@ exports[`EntityViewer should render 1`] = `
         </button>
       </div>
       <Tabs
-        className="entity-viewer"
         selectedTab="info"
       >
         <TabContent
+          className="entity-viewer"
           for="info"
         >
           <div
@@ -50,13 +50,13 @@ exports[`EntityViewer should render 1`] = `
             <ShowIf>
               <Connect(MetadataForm)
                 id="fullEditMetadataForm"
-                isEntity={true}
                 model="entityView.entityForm"
                 showSubset={
                   Array [
                     "title",
                   ]
                 }
+                templateId=""
                 version="OneUp"
               />
             </ShowIf>
@@ -76,7 +76,9 @@ exports[`EntityViewer should render 1`] = `
                   >
                     Title
                   </h1>
-                  <Connect(TemplateLabel) />
+                  <Connect(TemplateLabel)
+                    template=""
+                  />
                   <Tip
                     icon="eye-slash"
                   >
@@ -150,13 +152,12 @@ exports[`EntityViewer should render 1`] = `
       open={true}
     >
       <div
-        className="sidepanel-header"
+        className="sidepanel-header content-header-tabs"
       >
         <div
           className="blank"
         />
         <Tabs
-          className="content-header-tabs"
           handleSelect={[Function]}
           selectedTab="info"
         >
@@ -224,9 +225,9 @@ exports[`EntityViewer should render 1`] = `
           >
             <Connect(MetadataForm)
               id="sidePanelMetadataForm"
-              isEntity={true}
               model="entityView.entityForm"
               showSubset={Array []}
+              templateId=""
               version="OneUp"
             />
           </TabContent>

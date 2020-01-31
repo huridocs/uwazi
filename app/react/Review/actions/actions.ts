@@ -8,8 +8,16 @@ import { loadFetchedInReduxForm } from 'app/Metadata/actions/actions';
 import * as relationships from 'app/Relationships/utils/routeUtils';
 import { RequestParams } from 'app/utils/RequestParams';
 import Immutable from 'immutable';
+import { Action, Dispatch } from 'redux';
+import { TemplateSchema } from '../../../api/templates/templateType';
+import { StoreState } from '../common';
 
-export async function getAndLoadEntity(requestParams, templates, state, loadConnections) {
+export async function getAndLoadEntity(
+  requestParams: RequestParams,
+  templates: TemplateSchema[],
+  state: StoreState,
+  loadConnections: boolean
+) {
   const [[entity], [connectionsGroups, searchResults, sort, filters]] = await Promise.all([
     api.get(requestParams),
     loadConnections
@@ -37,10 +45,10 @@ export async function getAndLoadEntity(requestParams, templates, state, loadConn
 }
 
 export function toggleOneUpFullEdit() {
-  return async (dispatch, getState) => {
+  return async (dispatch: Dispatch<StoreState>, getState: () => StoreState) => {
     const state = getState();
-    const oneUpState = state.oneUpReview.state.toJS();
-    if (oneUpState.fullEdit && !state.entityView.entityFormState.$form.pristine) {
+    const oneUpState = state.oneUpReview.state?.toJS();
+    if (oneUpState && oneUpState.fullEdit && !state.entityView.entityFormState.$form.pristine) {
       const entity = await api.denormalize(
         new RequestParams(
           wrapEntityMetadata(entitiesUtil.filterBaseProperties(state.entityView.entityForm))
@@ -51,16 +59,19 @@ export function toggleOneUpFullEdit() {
     dispatch(
       actions.set('oneUpReview.state', {
         ...oneUpState,
-        fullEdit: !oneUpState.fullEdit,
+        fullEdit: oneUpState ? !oneUpState.fullEdit : false,
       })
     );
   };
 }
 
-export function switchOneUpEntity(delta, save) {
-  return async (dispatch, getState) => {
+export function switchOneUpEntity(delta: number, save: boolean) {
+  return async (dispatch: Dispatch<StoreState>, getState: () => StoreState) => {
     const state = getState();
-    const oneUpState = state.oneUpReview.state.toJS();
+    const oneUpState = state.oneUpReview.state?.toJS();
+    if (!oneUpState) {
+      return;
+    }
     if (save) {
       const entity = wrapEntityMetadata(
         entitiesUtil.filterBaseProperties(state.entityView.entityForm)
@@ -99,20 +110,24 @@ export function switchOneUpEntity(delta, save) {
         indexInDocs: index,
       }),
     ].forEach(action => {
-      dispatch(action);
+      dispatch(action as Action);
     });
   };
 }
 
 export function toggleOneUpLoadConnections() {
-  return async (dispatch, getState) => {
-    const state = getState().oneUpReview.state.toJS();
+  return async (dispatch: Dispatch<StoreState>, getState: () => StoreState) => {
+    const state = getState();
+    const oneUpState = state.oneUpReview.state?.toJS();
+    if (!oneUpState) {
+      return;
+    }
     dispatch(
       actions.set('oneUpReview.state', {
-        ...state,
-        loadConnections: !state.loadConnections,
+        ...oneUpState,
+        loadConnections: !oneUpState.loadConnections,
       })
     );
-    dispatch(switchOneUpEntity(0, false));
+    await dispatch(switchOneUpEntity(0, false));
   };
 }

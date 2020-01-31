@@ -1,4 +1,6 @@
 /** @format */
+import { EntitySchema } from 'api/entities/entityType';
+import { TemplateSchema } from 'api/templates/templateType';
 import Footer from 'app/App/Footer';
 import ShowIf from 'app/App/ShowIf';
 import { AttachmentsList } from 'app/Attachments';
@@ -21,6 +23,7 @@ import {
   toggleOneUpFullEdit,
   toggleOneUpLoadConnections,
 } from 'app/Review/actions/actions';
+import { StateSelector } from 'app/Review/components/StateSelector';
 import 'app/Review/scss/review.scss';
 import Immutable from 'immutable';
 import PropTypes from 'prop-types';
@@ -28,13 +31,47 @@ import React, { Component } from 'react';
 import Helmet from 'react-helmet';
 import { connect } from 'react-redux';
 import { TabContent, TabLink, Tabs } from 'react-tabs-redux';
-import { bindActionCreators } from 'redux';
+import { Action, bindActionCreators, Dispatch } from 'redux';
 import { createSelector } from 'reselect';
+import { PropertySchema } from 'shared/commonTypes';
+import { IImmutable } from 'shared/interfaces/Immutable.interface';
 import { Icon } from 'UI';
-import StateSelector from './StateSelector';
+import { OneUpState, StoreState } from '../common';
 
-export class OneUpEntityViewerBase extends Component {
-  constructor(props, context) {
+const defaultProps = {
+  entity: {} as EntitySchema,
+  relationships: Immutable.fromJS([]) as IImmutable<any>,
+  connectionsGroups: Immutable.fromJS([]) as IImmutable<any[]>,
+  templates: Immutable.fromJS([]) as IImmutable<TemplateSchema[]>,
+  mlThesauri: [] as string[],
+  oneUpState: {} as OneUpState,
+  tab: 'info',
+  selectedConnection: false,
+  showTab: (_tab: string) => ({} as Action),
+  connectionsChanged: () => {},
+  deleteConnection: (_reference: any) => {},
+  switchOneUpEntity: (_delta: number, _save: boolean) => {},
+  toggleOneUpFullEdit: () => {},
+  toggleOneUpLoadConnections: () => {},
+};
+
+export type OneUpEntityViewerProps = typeof defaultProps;
+
+export interface OneUpEntityViewerState {
+  panelOpen: boolean;
+}
+
+export class OneUpEntityViewerBase extends Component<
+  OneUpEntityViewerProps,
+  OneUpEntityViewerState
+> {
+  static defaultProps = defaultProps;
+
+  static contextTypes = {
+    confirm: PropTypes.func,
+  };
+
+  constructor(props: OneUpEntityViewerProps, context: any) {
     super(props, context);
     this.state = {
       panelOpen: true,
@@ -44,7 +81,7 @@ export class OneUpEntityViewerBase extends Component {
     this.deleteConnection = this.deleteConnection.bind(this);
   }
 
-  deleteConnection(reference) {
+  deleteConnection(reference: any) {
     if (reference.sourceType !== 'metadata') {
       this.context.confirm({
         accept: () => {
@@ -76,26 +113,27 @@ export class OneUpEntityViewerBase extends Component {
       templates,
     } = this.props;
     const { panelOpen } = this.state;
-    const selectedTab = tab || 'info';
+    const selectedTab = tab ?? 'info';
 
     const docAttachments = entity.attachments ? entity.attachments : [];
     const attachments = entity.file ? [entity.file].concat(docAttachments) : docAttachments;
 
-    const template =
-      templates.find(tmpl => tmpl.get('_id') === entity.template) || Immutable.fromJS({});
-    const properties = template.get('properties') || Immutable.fromJS([]);
+    const template: IImmutable<TemplateSchema> =
+      templates.find(tmpl => tmpl.get('_id') === entity.template) ?? Immutable.fromJS({});
+    const properties: IImmutable<PropertySchema[]> =
+      template.get('properties') ?? Immutable.fromJS([]);
     const mlProps = properties
-      .filter(p => mlThesauri.includes(p.get('content')))
+      .filter(p => mlThesauri.includes(p.get('content') ?? ''))
       .map(p => p.get('name'))
       .toJS();
     const nonMlProps = properties
-      .filter(p => !mlThesauri.includes(p.get('content')))
+      .filter(p => !mlThesauri.includes(p.get('content') ?? ''))
       .map(p => p.get('name'))
       .toJS();
 
     const summary = connectionsGroups.reduce(
-      (summaryData, g) => {
-        g.get('templates').forEach(tmpl => {
+      (summaryData, g: any) => {
+        g.get('templates').forEach((tmpl: any) => {
           summaryData.totalConnections += tmpl.get('count');
         });
         return summaryData;
@@ -111,11 +149,11 @@ export class OneUpEntityViewerBase extends Component {
             <div className="content-header content-header-entity">
               <StateSelector
                 isPristine={createSelector(
-                  state => state.entityView.entityFormState.$form.pristine,
+                  (state: StoreState) => state.entityView.entityFormState.$form.pristine,
                   value => value
                 )}
               >
-                {({ isPristine }) => (
+                {({ isPristine = false }: { isPristine: boolean }) => (
                   <div className="content-header-title">
                     {oneUpState.reviewThesaurusName ? (
                       <I18NLink
@@ -209,64 +247,67 @@ export class OneUpEntityViewerBase extends Component {
                 <span className="btn-label">{t('System', 'Full edit mode')}</span>
               </button>
             </div>
-            <Tabs className="entity-viewer" selectedTab={selectedTab}>
-              <TabContent
-                for={selectedTab === 'info' || selectedTab === 'attachments' ? selectedTab : 'none'}
-              >
-                <div className="entity-metadata">
-                  <ShowIf if={oneUpState.fullEdit}>
-                    <MetadataForm
-                      id="fullEditMetadataForm"
-                      model="entityView.entityForm"
-                      templateId={entity.template}
-                      isEntity
-                      showSubset={[...nonMlProps, 'title']}
-                      version="OneUp"
-                    />
-                  </ShowIf>
-                  <ShowIf if={!oneUpState.fullEdit}>
-                    <div>
-                      <div className="content-header-title">
-                        <PropertyIcon
-                          className="item-icon item-icon-center"
-                          data={entity.icon}
-                          size="sm"
+            <div className="entity-viewer">
+              <Tabs selectedTab={selectedTab}>
+                <TabContent
+                  for={
+                    selectedTab === 'info' || selectedTab === 'attachments' ? selectedTab : 'none'
+                  }
+                >
+                  <div className="entity-metadata">
+                    <ShowIf if={oneUpState.fullEdit}>
+                      <MetadataForm
+                        id="fullEditMetadataForm"
+                        model="entityView.entityForm"
+                        templateId={entity.template?.toString() ?? ''}
+                        showSubset={[...nonMlProps, 'title']}
+                        version="OneUp"
+                      />
+                    </ShowIf>
+                    <ShowIf if={!oneUpState.fullEdit}>
+                      <div>
+                        <div className="content-header-title">
+                          <PropertyIcon
+                            className="item-icon item-icon-center"
+                            data={entity.icon}
+                            size="sm"
+                          />
+                          <h1 className="item-name">{entity.title}</h1>
+                          <TemplateLabel template={entity.template?.toString() ?? ''} />
+                          {entity.published ? (
+                            ''
+                          ) : (
+                            <Tip icon="eye-slash">This entity is not public.</Tip>
+                          )}
+                        </div>
+                        <ShowMetadata
+                          relationships={relationships}
+                          entity={entity}
+                          showTitle={false}
+                          showType={false}
+                          showSubset={nonMlProps}
                         />
-                        <h1 className="item-name">{entity.title}</h1>
-                        <TemplateLabel template={entity.template} />
-                        {entity.published ? (
-                          ''
-                        ) : (
-                          <Tip icon="eye-slash">This entity is not public.</Tip>
-                        )}
+                        <AttachmentsList
+                          files={Immutable.fromJS(attachments)}
+                          parentId={entity._id}
+                          parentSharedId={entity.sharedId}
+                          isDocumentAttachments={Boolean(entity.file)}
+                          entityView
+                          processed={entity.processed}
+                        />
                       </div>
-                      <ShowMetadata
-                        relationships={relationships}
-                        entity={entity}
-                        showTitle={false}
-                        showType={false}
-                        showSubset={nonMlProps}
-                      />
-                      <AttachmentsList
-                        files={Immutable.fromJS(attachments)}
-                        parentId={entity._id}
-                        parentSharedId={entity.sharedId}
-                        isDocumentAttachments={Boolean(entity.file)}
-                        entityView
-                        processed={entity.processed}
-                      />
-                    </div>
-                  </ShowIf>
-                </div>
-              </TabContent>
-              <TabContent for="connections">
-                <ConnectionsList
-                  deleteConnection={this.deleteConnection}
-                  searchCentered
-                  hideFooter
-                />
-              </TabContent>
-            </Tabs>
+                    </ShowIf>
+                  </div>
+                </TabContent>
+                <TabContent for="connections">
+                  <ConnectionsList
+                    deleteConnection={this.deleteConnection}
+                    searchCentered
+                    hideFooter
+                  />
+                </TabContent>
+              </Tabs>
+            </div>
             <ShowIf if={selectedTab === 'connections'}>
               <div className="content-footer">
                 <RelationshipsFormButtons />
@@ -275,11 +316,11 @@ export class OneUpEntityViewerBase extends Component {
             <ShowIf if={selectedTab !== 'connections'}>
               <StateSelector
                 isPristine={createSelector(
-                  state => state.entityView.entityFormState.$form.pristine,
+                  (state: StoreState) => state.entityView.entityFormState.$form.pristine,
                   value => value
                 )}
               >
-                {({ isPristine }) => (
+                {({ isPristine = false }: { isPristine: boolean }) => (
                   <div className="content-footer">
                     <button
                       onClick={() => this.props.switchOneUpEntity(0, false)}
@@ -335,10 +376,9 @@ export class OneUpEntityViewerBase extends Component {
             className={`entity-connections entity-${this.props.tab}`}
             open={panelOpen && !selectedConnection}
           >
-            <div className="sidepanel-header">
+            <div className="sidepanel-header content-header-tabs">
               <div className="blank" />
               <Tabs
-                className="content-header-tabs"
                 selectedTab={selectedTab}
                 handleSelect={tabName => {
                   this.props.showTab(tabName);
@@ -377,8 +417,7 @@ export class OneUpEntityViewerBase extends Component {
                   <MetadataForm
                     id="sidePanelMetadataForm"
                     model="entityView.entityForm"
-                    templateId={entity.template}
-                    isEntity
+                    templateId={entity.template?.toString() ?? ''}
                     showSubset={mlProps}
                     version="OneUp"
                   />
@@ -388,11 +427,11 @@ export class OneUpEntityViewerBase extends Component {
             <ShowIf if={selectedTab === 'connections'}>
               <StateSelector
                 isPristine={createSelector(
-                  state => state.entityView.entityFormState.$form.pristine,
+                  (state: StoreState) => state.entityView.entityFormState.$form.pristine,
                   value => value
                 )}
               >
-                {({ isPristine }) => (
+                {({ isPristine = false }: { isPristine: boolean }) => (
                   <div className="sidepanel-footer">
                     <button
                       onClick={() => this.props.toggleOneUpLoadConnections()}
@@ -425,58 +464,26 @@ export class OneUpEntityViewerBase extends Component {
   }
 }
 
-OneUpEntityViewerBase.defaultProps = {
-  entity: {},
-  relationships: Immutable.fromJS([]),
-  connectionsGroups: Immutable.fromJS([]),
-  templates: Immutable.fromJS([]),
-  mlThesauri: [],
-  oneUpState: {},
-  tab: 'info',
-  selectedConnection: false,
-};
-
-OneUpEntityViewerBase.propTypes = {
-  entity: PropTypes.object,
-  relationships: PropTypes.object,
-  connectionsGroups: PropTypes.object,
-  tab: PropTypes.string,
-  selectedConnection: PropTypes.bool,
-  templates: PropTypes.object,
-  mlThesauri: PropTypes.arrayOf(PropTypes.string),
-  oneUpState: PropTypes.object,
-  showTab: PropTypes.func.isRequired,
-  connectionsChanged: PropTypes.func.isRequired,
-  deleteConnection: PropTypes.func.isRequired,
-  switchOneUpEntity: PropTypes.func.isRequired,
-  toggleOneUpFullEdit: PropTypes.func.isRequired,
-  toggleOneUpLoadConnections: PropTypes.func.isRequired,
-};
-
-OneUpEntityViewerBase.contextTypes = {
-  confirm: PropTypes.func,
-};
-
 const selectEntity = createSelector(
-  state => state.entityView.entity,
+  (state: StoreState) => state.entityView.entity,
   entity => entity.toJS()
 );
 
 const selectOneUpState = createSelector(
-  state => state.oneUpReview.state,
-  state => state.toJS()
+  (state: StoreState) => state.oneUpReview.state,
+  state => state?.toJS()
 );
 
 const selectMlThesauri = createSelector(
-  state => state.thesauris,
+  (state: StoreState) => state.thesauris,
   thesauri =>
     thesauri
       .filter(thes => !!thes.get('enable_classification'))
-      .map(thes => thes.get('_id'))
+      .map(thes => thes.get('_id')?.toString() ?? '')
       .toJS()
 );
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state: StoreState) => ({
   entity: selectEntity(state),
   relationships: state.entityView.entity.get('relationships'),
   connectionsGroups: state.relationships.list.connectionsGroups,
@@ -484,12 +491,12 @@ const mapStateToProps = state => ({
     state.relationships.connection && state.relationships.connection.get('_id')
   ),
   tab: state.entityView.uiState.get('tab'),
-  oneUpState: selectOneUpState(state),
+  oneUpState: selectOneUpState(state) ?? ({} as OneUpState),
   templates: state.templates,
   mlThesauri: selectMlThesauri(state),
 });
 
-function mapDispatchToProps(dispatch) {
+function mapDispatchToProps(dispatch: Dispatch<StoreState>) {
   return bindActionCreators(
     {
       connectionsChanged,
@@ -503,7 +510,4 @@ function mapDispatchToProps(dispatch) {
   );
 }
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(OneUpEntityViewerBase);
+export default connect(mapStateToProps, mapDispatchToProps)(OneUpEntityViewerBase);

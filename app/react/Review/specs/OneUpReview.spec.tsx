@@ -34,8 +34,7 @@ describe('Library', () => {
     reviewThesaurusId: 'beef',
   } as OneUpState);
   createStore({ templates, thesauris, entityView: { entity }, oneUpReview: { state: oneUpState } });
-  let component: ShallowWrapper<typeof OneUpReviewBase>;
-  let instance: OneUpReviewBase;
+  let component: ShallowWrapper<OneUpReviewProps, {}, OneUpReviewBase>;
   let context = {};
   let props: OneUpReviewProps;
   let dispatchCallsOrder = [];
@@ -56,7 +55,6 @@ describe('Library', () => {
 
   const render = () => {
     component = shallow(<OneUpReviewBase {...props} />, { context });
-    instance = component.instance() as OneUpReviewBase;
   };
 
   it('should render the OneUpEntityViewer (with Entity)', () => {
@@ -74,13 +72,13 @@ describe('Library', () => {
     it('return true when q has changed', () => {
       render();
       const nextProps = { location: { query: { q: '(a:2)' } } };
-      expect(instance.urlHasChanged(nextProps)).toBe(true);
+      expect(component.instance().urlHasChanged(nextProps)).toBe(true);
     });
 
     it('should not update if "q" is the same', () => {
       render();
       const nextProps = { location: { query: { q: '(a:1)' } } };
-      expect(instance.urlHasChanged(nextProps)).toBe(false);
+      expect(component.instance().urlHasChanged(nextProps)).toBe(false);
     });
   });
 });

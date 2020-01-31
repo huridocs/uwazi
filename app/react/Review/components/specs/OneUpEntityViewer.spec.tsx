@@ -1,16 +1,24 @@
 /** @format */
 
 import { ConnectionsList } from 'app/ConnectionsList';
-import { shallow } from 'enzyme';
+import { shallow, ShallowWrapper } from 'enzyme';
 import Immutable from 'immutable';
 import React from 'react';
-import { OneUpEntityViewerBase } from '../OneUpEntityViewer';
+import { OneUpState } from '../../common';
+import {
+  OneUpEntityViewerBase,
+  OneUpEntityViewerProps,
+  OneUpEntityViewerState,
+} from '../OneUpEntityViewer';
 
 describe('EntityViewer', () => {
-  let component;
-  let props;
-  let context;
-  let instance;
+  let component: ShallowWrapper<
+    OneUpEntityViewerProps,
+    OneUpEntityViewerState,
+    OneUpEntityViewerBase
+  >;
+  let props: OneUpEntityViewerProps;
+  let context: any;
 
   beforeEach(() => {
     context = { confirm: jasmine.createSpy('confirm') };
@@ -28,16 +36,21 @@ describe('EntityViewer', () => {
           name: 'template2Name',
         },
       ]),
-      relationTypes: [{ _id: 'abc', name: 'relationTypeName' }],
+      relationships: Immutable.fromJS([]),
       connectionsGroups: Immutable.fromJS([
         { key: 'g1', templates: [{ _id: 't1', count: 1 }] },
-        { key: 'g2', templates: [{ _id: 't2', count: 2 }, { _id: 't3', count: 3 }] },
+        {
+          key: 'g2',
+          templates: [
+            { _id: 't2', count: 2 },
+            { _id: 't3', count: 3 },
+          ],
+        },
       ]),
       selectedConnection: false,
       tab: 'info',
-      oneUpState: {},
+      oneUpState: {} as OneUpState,
       deleteConnection: jasmine.createSpy('deleteConnection'),
-      startNewConnection: jasmine.createSpy('startNewConnection'),
       showTab: jasmine.createSpy('showTab'),
       connectionsChanged: jasmine.createSpy('connectionsChanged'),
       switchOneUpEntity: jasmine.createSpy('switchOneUpEntity'),
@@ -49,7 +62,6 @@ describe('EntityViewer', () => {
 
   const render = () => {
     component = shallow(<OneUpEntityViewerBase {...props} />, { context });
-    instance = component.instance();
   };
 
   it('should render', () => {
@@ -73,21 +85,21 @@ describe('EntityViewer', () => {
     });
 
     it('should confirm deleting a Reference', () => {
-      instance.deleteConnection({});
+      component.instance().deleteConnection({});
       expect(context.confirm).toHaveBeenCalled();
       expect(props.deleteConnection).not.toHaveBeenCalled();
     });
 
     it('should delete the reference upon accepting', () => {
       const ref = { _id: 'r1' };
-      instance.deleteConnection(ref);
+      component.instance().deleteConnection(ref);
       context.confirm.calls.argsFor(0)[0].accept();
       expect(props.deleteConnection).toHaveBeenCalledWith(ref);
     });
 
     it('should not atempt to delete references whos source is metadata', () => {
       const ref = { _id: 'r1', sourceType: 'metadata' };
-      instance.deleteConnection(ref);
+      component.instance().deleteConnection(ref);
       expect(context.confirm).not.toHaveBeenCalled();
       expect(props.deleteConnection).not.toHaveBeenCalled();
     });
@@ -107,7 +119,7 @@ describe('EntityViewer', () => {
     it('should reveal side panel when context menu is clicked', () => {
       expect(component.find('.entity-info').prop('open')).toBe(false);
 
-      component.find('.show-info-sidepanel-menu').prop('openPanel')();
+      (component.find('.show-info-sidepanel-menu').prop('openPanel') as () => {})();
       component.update();
 
       expect(component.find('.entity-info').prop('open')).toBe(true);
