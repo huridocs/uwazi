@@ -191,6 +191,10 @@ Nightmare.action('isVisible', function checkIsVisible(selector, done) {
           e.preventDefault();
           isVisible = true;
         };
+        // otherwise the mouseover test isn't possible:
+        const origPointerEvents = element.style.pointerEvents;
+        element.style.pointerEvents = 'all';
+
         element.addEventListener('mouseover', eventHandler);
         const elementBoundaries = element.getBoundingClientRect();
         const x = elementBoundaries.left + element.offsetWidth / 2;
@@ -219,6 +223,7 @@ Nightmare.action('isVisible', function checkIsVisible(selector, done) {
           elementInBottomRight.dispatchEvent(e);
         }
         element.removeEventListener('mouseover', eventHandler);
+        element.style.pointerEvents = origPointerEvents;
       }
       return isVisible;
     },
@@ -376,6 +381,15 @@ Nightmare.action('waitForText', function waitForText(selector, done) {
       document.querySelector(elementToSelect) && document.querySelector(elementToSelect).innerText,
     selector
   ).then(() => {
+    done();
+  });
+});
+
+Nightmare.action('waitToBeGone', function waitToBeGone(selector, done) {
+  this.wait(elementToSelect => {
+    const elems = document.querySelectorAll(elementToSelect);
+    return !elems || !elems.length;
+  }, selector).then(() => {
     done();
   });
 });

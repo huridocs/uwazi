@@ -23,7 +23,7 @@ describe('EntityViewer', () => {
   beforeEach(() => {
     context = { confirm: jasmine.createSpy('confirm') };
     props = {
-      entity: { title: 'Title' },
+      entity: { title: 'Title', template: 'template1' },
       templates: Immutable.fromJS([
         {
           _id: 'template1',
@@ -37,25 +37,11 @@ describe('EntityViewer', () => {
         },
       ]),
       relationships: Immutable.fromJS([]),
-      connectionsGroups: Immutable.fromJS([
-        { key: 'g1', templates: [{ _id: 't1', count: 1 }] },
-        {
-          key: 'g2',
-          templates: [
-            { _id: 't2', count: 2 },
-            { _id: 't3', count: 3 },
-          ],
-        },
-      ]),
-      selectedConnection: false,
       tab: 'info',
       oneUpState: {} as OneUpState,
       deleteConnection: jasmine.createSpy('deleteConnection'),
-      showTab: jasmine.createSpy('showTab'),
       connectionsChanged: jasmine.createSpy('connectionsChanged'),
-      switchOneUpEntity: jasmine.createSpy('switchOneUpEntity'),
       toggleOneUpFullEdit: jasmine.createSpy('toggleOneUpFullEdit'),
-      toggleOneUpLoadConnections: jasmine.createSpy('toggleOneUpLoadConnections'),
       mlThesauri: [],
     };
   });
@@ -64,9 +50,17 @@ describe('EntityViewer', () => {
     component = shallow(<OneUpEntityViewerBase {...props} />, { context });
   };
 
-  it('should render', () => {
+  // Note: this component is mostly tested through nightmare/paths/review.spec.js
+
+  it('nonMlProps', () => {
     render();
-    expect(component).toMatchSnapshot();
+    expect(component.instance().nonMlProps()).toEqual(['source_property']);
+  });
+
+  it('should toggle full edit', () => {
+    render();
+    component.find('.content-header > .btn').simulate('click');
+    expect(props.toggleOneUpFullEdit).toHaveBeenCalled();
   });
 
   it('should render the ConnectionsList passing deleteConnection as prop', () => {
@@ -102,28 +96,6 @@ describe('EntityViewer', () => {
       component.instance().deleteConnection(ref);
       expect(context.confirm).not.toHaveBeenCalled();
       expect(props.deleteConnection).not.toHaveBeenCalled();
-    });
-  });
-
-  describe('closing side panel', () => {
-    beforeEach(() => {
-      render();
-      component.find('.closeSidepanel').simulate('click');
-      component.update();
-    });
-    it('should close the side panel when close button is clicked', () => {
-      expect(component.find('.entity-info').prop('open')).toBe(false);
-      expect(component.find('.entity-connections').prop('open')).toBe(false);
-      expect(component.find('.show-info-sidepanel-context-menu').prop('show')).toBe(true);
-    });
-    it('should reveal side panel when context menu is clicked', () => {
-      expect(component.find('.entity-info').prop('open')).toBe(false);
-
-      (component.find('.show-info-sidepanel-menu').prop('openPanel') as () => {})();
-      component.update();
-
-      expect(component.find('.entity-info').prop('open')).toBe(true);
-      expect(component.find('.show-info-sidepanel-context-menu').prop('show')).toBe(false);
     });
   });
 });

@@ -99,13 +99,14 @@ export class ThesaurusCockpitBase extends RouteHandler {
   topicNodes() {
     const { suggestions, thesaurus, models } = this.props as ThesaurusCockpitProps;
     const { name, property } = thesaurus;
+    const values = getValuesSortedByName(thesaurus);
     const model = models.find((modelInfo: ClassifierModelSchema) => modelInfo.name === name);
 
     if (!model || !property) {
       return null;
     }
 
-    return getValuesSortedByName(thesaurus).map((topic: ThesaurusValueSchema) =>
+    return values.map((topic: ThesaurusValueSchema) =>
       ThesaurusCockpitBase.topicNode(topic, suggestions, model, property.name)
     );
   }

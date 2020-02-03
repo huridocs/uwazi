@@ -11,7 +11,7 @@ import { wrapDispatch } from 'app/Multireducer';
 import * as relationships from 'app/Relationships/utils/routeUtils';
 import relationTypesAPI from 'app/RelationTypes/RelationTypesAPI';
 import * as reviewActions from 'app/Review/actions/actions';
-import OneUpEntityViewer from 'app/Review/components/OneUpEntityViewer';
+import { OneUpEntityViewer } from 'app/Review/components/OneUpEntityViewer';
 import api from 'app/Search/SearchAPI';
 import TemplatesAPI from 'app/Templates/TemplatesAPI';
 import ThesauriAPI from 'app/Thesauri/ThesauriAPI';

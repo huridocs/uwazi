@@ -10,7 +10,7 @@ import { RequestParams } from 'app/utils/RequestParams';
 import Immutable from 'immutable';
 import { Action, Dispatch } from 'redux';
 import { TemplateSchema } from 'shared/types/templateType';
-import { StoreState } from '../common';
+import { StoreState, OneUpState } from '../common';
 
 export async function getAndLoadEntity(
   requestParams: RequestParams,
@@ -65,6 +65,38 @@ export function toggleOneUpFullEdit() {
   };
 }
 
+async function switchToEntity(
+  dispatch: Dispatch<StoreState>,
+  index: number,
+  state: StoreState,
+  oneUpState: OneUpState
+) {
+  const sharedId =
+    index < oneUpState.totalDocs
+      ? state.library.documents
+          .get('rows')
+          .get(index)
+          .get('sharedId')
+      : '';
+
+  [
+    ...(sharedId
+      ? await getAndLoadEntity(
+          new RequestParams({ sharedId }, oneUpState.requestHeaders),
+          state.templates.toJS(),
+          state,
+          oneUpState.loadConnections
+        )
+      : []),
+    actions.set('oneUpReview.state', {
+      ...oneUpState,
+      indexInDocs: index,
+    }),
+  ].forEach(action => {
+    dispatch(action as Action);
+  });
+}
+
 export function switchOneUpEntity(delta: number, save: boolean) {
   return async (dispatch: Dispatch<StoreState>, getState: () => StoreState) => {
     const state = getState();
@@ -78,7 +110,6 @@ export function switchOneUpEntity(delta: number, save: boolean) {
       );
       await api.save(new RequestParams(entity, oneUpState.requestHeaders));
     }
-    const templates = state.templates.toJS();
     const current = state.entityView.entity.get('sharedId');
     const index = Math.max(
       0,
@@ -87,31 +118,7 @@ export function switchOneUpEntity(delta: number, save: boolean) {
         oneUpState.totalDocs - 1
       )
     );
-    const sharedId =
-      index < oneUpState.totalDocs
-        ? state.library.documents
-            .get('rows')
-            .get(index)
-            .get('sharedId')
-        : '';
-
-    [
-      ...(sharedId
-        ? await getAndLoadEntity(
-            new RequestParams({ sharedId }, oneUpState.requestHeaders),
-            templates,
-            state,
-            oneUpState.loadConnections
-          )
-        : []),
-      actions.set('oneUpReview.state', {
-        ...oneUpState,
-        // fullEdit: false,
-        indexInDocs: index,
-      }),
-    ].forEach(action => {
-      dispatch(action as Action);
-    });
+    await switchToEntity(dispatch, index, state, oneUpState);
   };
 }
 
