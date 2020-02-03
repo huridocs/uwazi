@@ -742,7 +742,7 @@ export default {
     );
   },
 
-  async addLanguage(language, limit = 100) {
+  async addLanguage(language, limit = 50) {
     const [lanuageTranslationAlreadyExists] = await this.get({ locale: language }, null, {
       limit: 1,
     });
