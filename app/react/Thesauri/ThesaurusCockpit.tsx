@@ -30,10 +30,8 @@ export class ThesaurusCockpitBase extends RouteHandler {
   static genIcons(label: string, actual: number, possible: number) {
     const icons = [];
     for (let i = 0; i < possible; i += 1) {
-      let iconClass: any;
-      if (i < actual) {
-        iconClass = 'circle';
-      } else {
+      let iconClass: any = 'circle';
+      if (i >= actual) {
         iconClass = ['far', 'circle'];
       }
       icons.push(<Icon key={`${label}_${i}`} icon={iconClass} />);
@@ -104,7 +102,7 @@ export class ThesaurusCockpitBase extends RouteHandler {
     const values = getValuesSortedByName(thesaurus);
     const model = models.find((modelInfo: ClassifierModelSchema) => modelInfo.name === name);
 
-    if (!values || !model || !property) {
+    if (!model || !property) {
       return null;
     }
 
@@ -144,7 +142,7 @@ export class ThesaurusCockpitBase extends RouteHandler {
     );
     return [
       actions.set('thesauri/thesaurus', thesaurus as ThesaurusSchema),
-      actions.set('thesauri/models', [model]),
+      actions.set('thesauri/models', [model as ClassifierModelSchema]),
       actions.set('thesauri/suggestions', flattenedSuggestions),
     ];
   }
