@@ -18,6 +18,7 @@ import { ThesaurusSchema, ThesaurusValueSchema } from 'shared/types/thesaurusTyp
 import { buildSuggestionResult, flattenSuggestionResults } from './utils/suggestionQuery';
 import { ClassifierModelSchema } from './types/classifierModelType';
 import { SuggestionResultSchema } from './types/suggestionResultType';
+import { getValuesSortedByName } from './utils/valuesSort';
 
 export type ThesaurusCockpitProps = {
   thesaurus: ThesaurusSchema;
@@ -99,7 +100,8 @@ export class ThesaurusCockpitBase extends RouteHandler {
 
   topicNodes() {
     const { suggestions, thesaurus, models } = this.props as ThesaurusCockpitProps;
-    const { values, name, property } = thesaurus;
+    const { name, property } = thesaurus;
+    const values = getValuesSortedByName(thesaurus);
     const model = models.find((modelInfo: ClassifierModelSchema) => modelInfo.name === name);
 
     if (!values || !model || !property) {
