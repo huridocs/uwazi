@@ -19,6 +19,7 @@ app/api/csv/specs/*.jpg
 !app/api/upload/specs/uploads/eng.pdf
 !app/api/upload/specs/uploads/spn.pdf
 !app/api/upload/specs/uploads/import.zip
+!app/api/upload/specs/uploads/invalid_document.txt
 app/api/attachments/specs/uploads/toDelete.txt
 uploaded_documents/*
 custom_uploads/*

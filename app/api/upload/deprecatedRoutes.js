@@ -1,34 +1,24 @@
 import Joi from 'joi';
 import multer from 'multer';
-
-import debugLog from 'api/log/debugLog';
-import entities from 'api/entities';
-import errorLog from 'api/log/errorLog';
-import relationships from 'api/relationships';
-import { search } from 'api/search';
-
-import CSVLoader from 'api/csv';
-import { saveSchema } from 'api/entities/endpointSchema';
-import { generateFileName } from 'api/utils/files';
 import fs from 'fs';
 import path from 'path';
 import proxy from 'express-http-proxy';
+
+import entities from 'api/entities';
+import { search } from 'api/search';
+import CSVLoader from 'api/csv';
+import { saveSchema } from 'api/entities/endpointSchema';
+import { generateFileName } from 'api/utils/files';
 import settings from 'api/settings';
+import { processDocument } from 'api/upload/processDocument';
+
 import configPaths from '../config/paths';
 import { validation, handleError, createError } from '../utils';
 import needsAuthorization from '../auth/authMiddleware';
 import captchaAuthorization from '../auth/captchaMiddleware';
-import uploads from './uploads';
 import storageConfig from './storageConfig';
-import uploadFile from './uploadProcess';
 
 const storage = multer.diskStorage(storageConfig);
-
-const getDocuments = (sharedId, allLanguages, language) =>
-  entities.get({
-    sharedId,
-    ...(!allLanguages && { language }),
-  });
 
 const storeFile = file =>
   new Promise((resolve, reject) => {
@@ -49,40 +39,24 @@ export default app => {
 
   const socket = req => req.getCurrentSessionSockets();
 
-  const uploadProcess = async (req, res, allLanguages = true) => {
-    try {
-      const docs = await getDocuments(req.body.document, allLanguages, req.language);
-      await uploadFile(docs, req.files[0])
-        .on('conversionStart', () => {
-          res.json(req.files[0]);
-          socket(req).emit('conversionStart', req.body.document);
-        })
-        .start();
+  // const uploadProcess = async (req, res, allLanguages = true) => {
+  //   try {
+  //     const docs = await getDocuments(req.body.document, allLanguages, req.language);
+  //     await uploadFile(docs, req.files[0])
+  //     .on('conversionStart', () => {
+  //       res.json(req.files[0]);
+  //       socket(req).emit('conversionStart', req.body.document);
+  //     })
+  //     .start();
 
-      await search.indexEntities({ sharedId: req.body.document }, '+fullText');
-      socket(req).emit('documentProcessed', req.body.document);
-    } catch (err) {
-      errorLog.error(err);
-      debugLog.debug(err);
-      socket(req).emit('conversionFailed', req.body.document);
-    }
-  };
-
-  app.post(
-    '/api/upload',
-
-    needsAuthorization(['admin', 'editor']),
-
-    upload.any(),
-
-    validation.validateRequest(
-      Joi.object({
-        document: Joi.string().required(),
-      }).required()
-    ),
-
-    (req, res) => uploadProcess(req, res)
-  );
+  //     await search.indexEntities({ sharedId: req.body.document }, '+fullText');
+  //     socket(req).emit('documentProcessed', req.body.document);
+  //   } catch (err) {
+  //     errorLog.error(err);
+  //     debugLog.debug(err);
+  //     socket(req).emit('conversionFailed', req.body.document);
+  //   }
+  // };
 
   app.post(
     '/api/public',
@@ -113,8 +87,7 @@ export default app => {
       const file = req.files.find(_file => _file.fieldname.includes('file'));
       if (file) {
         storeFile(file).then(async _file => {
-          const newEntities = await entities.getAllLanguages(newEntity.sharedId);
-          await uploadFile(newEntities, _file).start();
+          await processDocument(newEntity.sharedId, _file);
           await search.indexEntities({ sharedId: newEntity.sharedId }, '+fullText');
           socket(req).emit('documentProcessed', newEntity.sharedId);
         });
@@ -178,33 +151,29 @@ export default app => {
     }
   );
 
-  app.post(
-    '/api/reupload',
+  // app.post(
+  //   '/api/reupload',
 
-    needsAuthorization(['admin', 'editor']),
+  //   needsAuthorization(['admin', 'editor']),
 
-    upload.any(),
+  //   upload.any(),
 
-    validation.validateRequest(
-      Joi.object({
-        document: Joi.string().required(),
-      }).required()
-    ),
+  //   validation.validateRequest(Joi.object({
+  //     document: Joi.string().required()
+  //   }).required()),
 
-    (req, res, next) =>
-      entities
-        .getById(req.body.document, req.language)
-        .then(doc => {
-          let deleteReferences = Promise.resolve();
-          if (doc.file) {
-            deleteReferences = relationships.deleteTextReferences(doc.sharedId, doc.language);
-          }
-          return Promise.all([doc, deleteReferences]);
-        })
-        .then(([doc]) => entities.saveMultiple([{ _id: doc._id, toc: [] }]))
-        .then(([{ sharedId }]) => entities.get({ sharedId }))
-        .then(docs => docs.reduce((addToAllLanguages, doc) => addToAllLanguages && !doc.file, true))
-        .then(addToAllLanguages => uploadProcess(req, res, addToAllLanguages))
-        .catch(next)
-  );
+  //   (req, res, next) => entities.getById(req.body.document, req.language)
+  //   .then((doc) => {
+  //     let deleteReferences = Promise.resolve();
+  //     if (doc.file) {
+  //       deleteReferences = relationships.deleteTextReferences(doc.sharedId, doc.language);
+  //     }
+  //     return Promise.all([doc, deleteReferences]);
+  //   })
+  //   .then(([doc]) => entities.saveMultiple([{ _id: doc._id, toc: [] }]))
+  //   .then(([{ sharedId }]) => entities.get({ sharedId }))
+  //   .then(docs => docs.reduce((addToAllLanguages, doc) => addToAllLanguages && !doc.file, true))
+  //   .then(addToAllLanguages => uploadProcess(req, res, addToAllLanguages))
+  //   .catch(next)
+  // );
 };

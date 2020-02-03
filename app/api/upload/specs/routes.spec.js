@@ -16,7 +16,6 @@ import fixtures, { entityId, entityEnId, templateId } from './fixtures.js';
 import instrumentRoutes from '../../utils/instrumentRoutes';
 import uploadRoutes from '../deprecatedRoutes.js';
 import errorLog from '../../log/errorLog';
-import uploads from '../uploads.js';
 import paths from '../../config/paths';
 
 const writeFile = promisify(fs.writeFile);
@@ -115,206 +114,79 @@ describe('upload routes', () => {
     });
   });
 
-  describe('POST/upload', () => {
-    it('should process the document after upload', async () => {
-      spyOn(Date, 'now').and.returnValue(1000);
-      await onSocketRespond('post', '/api/upload', req);
-      const [[docES], [docEN]] = await Promise.all([
-        entities.get({ sharedId: 'sharedId1', language: 'es' }, '+fullText'),
-        entities.get({ sharedId: 'sharedId1', language: 'en' }, '+fullText')
-      ]);
+  // describe('POST/reupload', () => {
+  //   beforeEach(() => {
+  //     spyOn(relationships, 'deleteTextReferences').and.returnValue(Promise.resolve());
+  //   });
 
-      expect(iosocket.emit).toHaveBeenCalledWith('conversionStart', 'sharedId1');
-      expect(iosocket.emit).toHaveBeenCalledWith('documentProcessed', 'sharedId1');
+  //   it('should reupload a document', (done) => {
+  //     iosocket.emit.and.callFake((eventName) => {
+  //       if (eventName === 'documentProcessed') {
+  //         expect(relationships.deleteTextReferences).toHaveBeenCalledWith(sharedId, 'es');
+  //         documents.getById(sharedId, 'es')
+  //         .then((modifiedDoc) => {
+  //           expect(modifiedDoc.toc.length).toBe(0);
+  //           done();
+  //         })
+  //         .catch(done.fail);
+  //       }
+  //     });
+  //     req.body.document = sharedId;
 
-      expect(docEN).toEqual(expect.objectContaining({
-        processed: true,
-        // fullText[1]: /Test\[\[1\]\] file/,
-        totalPages: 1,
-        language: 'en',
-        file: expect.objectContaining({
-          filename: file.filename,
-          timestamp: 1000,
-        })
-      }));
+  //     routes.post('/api/reupload', req)
+  //     .then((response) => {
+  //       expect(response).toEqual(file);
+  //     })
+  //     .catch(done.fail);
+  //   });
 
-      expect(docES).toEqual(expect.objectContaining({
-        processed: true,
-        // fullText[1]: /Test\[\[1\]\] file/,
-        totalPages: 1,
-        language: 'es',
-        file: expect.objectContaining({
-          filename: file.filename,
-          timestamp: 1000,
-        })
-      }));
+  //   it('should not remove old document when assigned to other entities', async () => {
+  //     paths.uploadedDocuments = `${__dirname}/uploads/`;
+  //     req.body.document = sharedId;
+  //     await writeFile(`${__dirname}/uploads/test`, 'data');
+  //     await Promise.all([
+  //       entitiesModel.save({ title: 'title', _id: entityId, file: { filename: 'test' } }),
+  //       entitiesModel.save({ title: 'title', file: { filename: 'test' } }),
+  //     ]);
+  //     await onSocketRespond('post', '/api/reupload', req);
+  //     await fileExists(path.resolve(`${__dirname}/uploads/test`));
+  //   });
 
-      await checkThumbnails();
-    });
+  //   it('should remove old document on reupload', async () => {
+  //     paths.uploadedDocuments = `${__dirname}/uploads/`;
+  //     req.body.document = sharedId;
+  //     await writeFile(`${__dirname}/uploads/test`, 'data');
 
-    describe('Language detection', () => {
-      it('should detect English documents and store the result', async () => {
-        file.filename = 'eng.pdf';
-        file.path = `${__dirname}/uploads/eng.pdf`;
+  //     await entitiesModel.save({ _id: entityId, file: { filename: 'test' } });
+  //     await onSocketRespond('post', '/api/reupload', req);
 
-        await onSocketRespond('post', '/api/upload', req);
+  //     try {
+  //       await fileExists(path.resolve(`${__dirname}/uploads/test`));
+  //       fail('file should be deleted on reupload');
+  //     } catch (e) {} //eslint-disable-line
+  //   });
 
-        const [docES, docEN] = await Promise.all([
-          documents.get({ sharedId: 'sharedId1', language: 'es' }, '+fullText'),
-          documents.get({ sharedId: 'sharedId1', language: 'en' }, '+fullText'),
-        ]);
+  //   it('should upload too all entities when none has file', async () => {
+  //     spyOn(Date, 'now').and.returnValue(1100);
+  //     paths.uploadedDocuments = `${__dirname}/uploads/`;
+  //     req.body.document = sharedId;
+  //     await writeFile(`${__dirname}/uploads/test`, 'data');
+  //     await entitiesModel.save({ _id: entityId, file: null });
+  //     await onSocketRespond('post', '/api/reupload', req);
 
-        expect(docEN[0].file.language).toBe('eng');
-        expect(docES[0].file.language).toBe('eng');
-      });
-
-      it('should detect Spanish documents and store the result', async () => {
-        file.filename = 'spn.pdf';
-        file.path = `${__dirname}/uploads/spn.pdf`;
-
-        await onSocketRespond('post', '/api/upload', req);
-
-        const [docES, docEN] = await Promise.all([
-          documents.get({ sharedId: 'sharedId1', language: 'es' }, '+fullText'),
-          documents.get({ sharedId: 'sharedId1', language: 'en' }, '+fullText'),
-        ]);
-        expect(docEN[0].file.language).toBe('spa');
-        expect(docEN[0].file.originalname).toBeDefined();
-        expect(docES[0].file.language).toBe('spa');
-      });
-    });
-
-    describe('when conversion fails', () => {
-      it('should set document processed to false and emit a socket conversionFailed event with the id of the document', done => {
-        iosocket.emit.and.callFake(eventName => {
-          if (eventName === 'conversionFailed') {
-            setTimeout(() => {
-              entities.getAllLanguages('sharedId1').then(docs => {
-                expect(docs[0].processed).toBe(false);
-                expect(docs[1].processed).toBe(false);
-                done();
-              });
-            }, 500);
-          }
-        });
-
-        req.files = ['invalid_file'];
-        routes.post('/api/upload', req).catch(done.fail);
-      });
-    });
-
-    describe('when upload finishes', () => {
-      it('should update the document with the file path and uploaded flag to true', done => {
-        iosocket.emit.and.callFake(eventName => {
-          if (eventName === 'documentProcessed') {
-            documents.getById('sharedId1', 'es').then(modifiedDoc => {
-              expect(modifiedDoc.file.originalname).toEqual(file.originalname);
-              expect(modifiedDoc.file.filename).toEqual(file.filename);
-              expect(modifiedDoc.uploaded).toEqual(true);
-              done();
-            });
-          }
-        });
-        routes
-          .post('/api/upload', req)
-          .then(response => {
-            expect(response).toEqual(file);
-          })
-          .catch(done.fail);
-      });
-    });
-  });
-
-  describe('POST/reupload', () => {
-    beforeEach(() => {
-      spyOn(relationships, 'deleteTextReferences').and.returnValue(Promise.resolve());
-    });
-
-    it('should reupload a document', done => {
-      iosocket.emit.and.callFake(eventName => {
-        if (eventName === 'documentProcessed') {
-          expect(relationships.deleteTextReferences).toHaveBeenCalledWith(sharedId, 'es');
-          documents
-            .getById(sharedId, 'es')
-            .then(modifiedDoc => {
-              expect(modifiedDoc.toc.length).toBe(0);
-              done();
-            })
-            .catch(done.fail);
-        }
-      });
-      req.body.document = sharedId;
-
-      routes
-        .post('/api/reupload', req)
-        .then(response => {
-          expect(response).toEqual(file);
-        })
-        .catch(done.fail);
-    });
-
-    it('should not remove old document when assigned to other entities', async () => {
-      paths.uploadedDocuments = `${__dirname}/uploads/`;
-      req.body.document = sharedId;
-      await writeFile(`${__dirname}/uploads/test`, 'data');
-      await Promise.all([
-        entitiesModel.save({ title: 'title', _id: entityId, file: { filename: 'test' } }),
-        entitiesModel.save({ title: 'title', file: { filename: 'test' } }),
-      ]);
-      await onSocketRespond('post', '/api/reupload', req);
-      await fileExists(path.resolve(`${__dirname}/uploads/test`));
-    });
-
-    it('should remove old document on reupload', async () => {
-      paths.uploadedDocuments = `${__dirname}/uploads/`;
-      req.body.document = sharedId;
-      await writeFile(`${__dirname}/uploads/test`, 'data');
-
-      await entitiesModel.save({ _id: entityId, file: { filename: 'test' } });
-      await onSocketRespond('post', '/api/reupload', req);
-
-      try {
-        await fileExists(path.resolve(`${__dirname}/uploads/test`));
-        fail('file should be deleted on reupload');
-      } catch (e) {} //eslint-disable-line
-    });
-
-    it('should upload too all entities when none has file', async () => {
-      spyOn(Date, 'now').and.returnValue(1100);
-      paths.uploadedDocuments = `${__dirname}/uploads/`;
-      req.body.document = sharedId;
-      await writeFile(`${__dirname}/uploads/test`, 'data');
-      await entitiesModel.save({ _id: entityId, file: null });
-      await onSocketRespond('post', '/api/reupload', req);
-
-      const _entities = await entities.get({ sharedId });
-      const _file = {
-        filename: 'f2082bf51b6ef839690485d7153e847a.pdf',
-        language: 'other',
-        mimetype: 'application/octet-stream',
-        originalname: 'gadgets-01.pdf',
-        size: 171411271,
-        timestamp: 1100,
-      };
-      expect(_entities[0].file).toEqual(jasmine.objectContaining(_file));
-      expect(_entities[1].file).toEqual(jasmine.objectContaining(_file));
-    });
-  });
-
-  describe('DELETE/customisation/upload', () => {
-    it('should have a validation schema', () => {
-      expect(routes.delete.validation('/api/customisation/upload')).toMatchSnapshot();
-    });
-
-    it('should delete upload and return the response', async () => {
-      spyOn(uploads, 'delete').and.returnValue(Promise.resolve('upload_deleted'));
-      const result = await routes.delete('/api/customisation/upload', {
-        query: { _id: 'upload_id' },
-      });
-      expect(result).toBe('upload_deleted');
-      expect(uploads.delete).toHaveBeenCalledWith('upload_id');
-    });
-  });
+  //     const _entities = await entities.get({ sharedId });
+  //     const _file = {
+  //       filename: 'f2082bf51b6ef839690485d7153e847a.pdf',
+  //       language: 'other',
+  //       mimetype: 'application/octet-stream',
+  //       originalname: 'gadgets-01.pdf',
+  //       size: 171411271,
+  //       timestamp: 1100
+  //     };
+  //     expect(_entities[0].file).toEqual(jasmine.objectContaining(_file));
+  //     expect(_entities[1].file).toEqual(jasmine.objectContaining(_file));
+  //   });
+  // });
 
   describe('POST/import', () => {
     beforeEach(() => {
@@ -411,6 +283,7 @@ describe('upload routes', () => {
       });
     });
 
+    // eslint-disable-next-line
     it('should create the entity and store the files', async () => {
       await onSocketRespond('post', '/api/public', req);
       const [newEntity] = await entities.get({ title: 'public submit' });

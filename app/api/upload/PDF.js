@@ -94,7 +94,7 @@ export default class PDF extends EventEmitter {
   convert() {
     return this.extractText().then(conversion => ({
       ...conversion,
-      file: this.generateFileInfo(conversion),
+      ...this.generateFileInfo(conversion),
       processed: true,
       toc: [],
     }));

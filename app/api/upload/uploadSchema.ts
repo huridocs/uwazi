@@ -16,6 +16,7 @@ export const uploadSchema = {
   additionalProperties: false,
   properties: {
     _id: objectIdSchema,
+    entity: { type: 'string', minLength: 1 },
     originalname: { type: 'string', minLength: 1 },
     filename: { type: 'string', minLength: 1 },
     mimetype: { type: 'string', minLength: 1 },
@@ -24,6 +25,7 @@ export const uploadSchema = {
     language: { type: 'string', minLength: 1 },
     type: { type: 'string', enum: ['custom', 'document'] },
     totalPages: { type: 'number' },
+    processed: { type: 'boolean' },
     fullText: {
       type: 'object',
       additionalProperties: false,

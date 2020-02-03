@@ -1,3 +1,5 @@
+/** @format */
+
 import path from 'path';
 import fs from 'fs';
 import errorLog from 'api/log/errorLog';
@@ -42,14 +44,11 @@ describe('PDF', () => {
       expect(conversion).toEqual(
         expect.objectContaining({
           totalPages: 11,
-          processed: true,
           toc: [],
-          file: {
-            language: 'eng',
-            filename: '12345.test.pdf',
-            originalname: 'originalName.pdf',
-            destination: __dirname,
-          },
+          language: 'eng',
+          filename: '12345.test.pdf',
+          originalname: 'originalName.pdf',
+          destination: __dirname,
         })
       );
     });

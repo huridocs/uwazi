@@ -9,6 +9,7 @@ export interface UploadSchema {
     | {
         [k: string]: any | undefined;
       };
+  entity?: string;
   originalname?: string;
   filename?: string;
   mimetype?: string;
@@ -17,6 +18,7 @@ export interface UploadSchema {
   language?: string;
   type?: 'custom' | 'document';
   totalPages?: number;
+  processed?: boolean;
   fullText?: {
     /**
      * This interface was referenced by `undefined`'s JSON-Schema definition
