@@ -100,6 +100,7 @@ async function handleResponse(
 ) {
   const prop = templateAndProp[(e.template || '').toString()];
   if (!prop || !prop.name) {
+    console.error(`Missing prop for ${e.sharedId}`);
     return false;
   }
   const sample = response.json.samples.find(s => s.sharedId === e.sharedId);
@@ -110,6 +111,11 @@ async function handleResponse(
   if (!e.suggestedMetadata) {
     e.suggestedMetadata = {};
   }
+  if (!sample.predicted_labels.length) {
+    console.error(`No predictions for ${e.sharedId}`);
+  }
+  // We explicitely preserve empty arrays in suggestedMetadata to not
+  // recreate rejected suggestions.
   if (!e.suggestedMetadata[prop.name] || overwrite) {
     let newPropMetadata = sample.predicted_labels
       .reduce((res: MetadataObject<string>[], pred) => {
@@ -203,10 +209,8 @@ async function syncEntities(
     samples,
   };
   const response = await sendSample(`${tcServer}/classification_sample?model=${model}`, request);
-  if (!response) {
-    return 0;
-  }
-  if (!response.json.samples) {
+  if (!response || !response.json.samples) {
+    console.error(`Failed request for ${request.samples.map(s => s.sharedId)}`);
     return 0;
   }
   return (
