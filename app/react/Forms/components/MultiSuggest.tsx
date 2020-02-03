@@ -92,32 +92,31 @@ export class MultiSuggestBase extends Component<MultiSuggestProps> {
         <b className="suggestions-title">
           {t('System', 'Suggestions')} <span>({filteredValues.length})</span>
         </b>
-        {(() =>
-          filteredValues.map(value => (
-            <div key={value.value!} className="multiselectItem">
-              <label className="multiselectItem-label">
-                <span
-                  className="multiselectItem-icon"
-                  onClick={this.acceptSuggestion.bind(this, value.value!)}
-                >
-                  <Icon icon={['far', 'square']} className="checkbox-empty" />
-                </span>
-                <span
-                  className="multiselectItem-name"
-                  onClick={this.acceptSuggestion.bind(this, value.value!)}
-                >
-                  {value.label}
-                  {value.suggestion_confidence && value.suggestion_confidence < 0.6 ? ' ?' : ''}
-                </span>
-                <div
-                  className="multiselectItem-button"
-                  onClick={this.rejectSuggestion.bind(this, value.value!)}
-                >
-                  Reject
-                </div>
-              </label>
-            </div>
-          )))()}
+        {filteredValues.map(value => (
+          <div key={value.value!} className="multiselectItem">
+            <label className="multiselectItem-label">
+              <span
+                className="multiselectItem-icon"
+                onClick={this.acceptSuggestion.bind(this, value.value!)}
+              >
+                <Icon icon={['far', 'square']} className="checkbox-empty" />
+              </span>
+              <span
+                className="multiselectItem-name"
+                onClick={this.acceptSuggestion.bind(this, value.value!)}
+              >
+                {value.label}
+                {(value.suggestion_confidence ?? 0) < 0.6 ? ' ?' : ''}
+              </span>
+              <div
+                className="multiselectItem-button"
+                onClick={this.rejectSuggestion.bind(this, value.value!)}
+              >
+                Reject
+              </div>
+            </label>
+          </div>
+        ))}
       </div>
     );
   }

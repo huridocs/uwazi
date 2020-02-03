@@ -19,7 +19,11 @@ describe('MultiSelect', () => {
     props = {
       model: 'dummy',
       propertyType: propertyTypes.select,
-      value: [{ value: 'B', label: 'Bl' }, { value: 'C', label: 'Cl' }, { value: '' }],
+      value: [
+        { value: 'B', label: 'Bl' },
+        { value: 'C', label: 'Cl', suggestion_confidence: 0.7 },
+        { value: '' },
+      ],
       selectModel: 'model.path',
       selectValue: ['A', 'B'],
       acceptSuggestion: jasmine.createSpy('acceptSuggestion'),
@@ -49,6 +53,14 @@ describe('MultiSelect', () => {
     const optionElements = component.find('span[className="multiselectItem-name"]');
     expect(optionElements.length).toBe(1);
     expect(optionElements.at(0).props().children).toEqual(['Cl', '']);
+  });
+
+  it('should render the valid, not-already-accepted low-confidence suggestions', () => {
+    props.value[1].suggestion_confidence = 0.4;
+    render();
+    const optionElements = component.find('span[className="multiselectItem-name"]');
+    expect(optionElements.length).toBe(1);
+    expect(optionElements.at(0).props().children).toEqual(['Cl', ' ?']);
   });
 
   it('should render the nothing if no suggestions', () => {
