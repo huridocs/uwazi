@@ -64,6 +64,7 @@
     "@babel/plugin-transform-react-constant-elements": "7.5.0",
     "@babel/plugin-transform-react-inline-elements": "7.2.0",
     "@babel/plugin-transform-typeof-symbol": "7.2.0",
+    "@babel/plugin-proposal-class-properties": "7.8.3",
     "@babel/preset-env": "^7.8.3",
     "@babel/preset-react": "7.0.0",
     "@babel/preset-typescript": "^7.6.0",
