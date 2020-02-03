@@ -19,17 +19,13 @@ export class OneUpEntityButtonsBase extends Component<OneUpEntityButtonsProps> {
 
   render() {
     const { isPristine } = this.props;
-
+    const btnClass = isPristine ? 'btn btn-default btn-disabled' : 'btn btn-default';
     return (
       <div className="content-footer">
         <button
           type="button"
           onClick={() => this.props.switchOneUpEntity(0, false)}
-          className={
-            !isPristine
-              ? 'cancel-edit-metadata btn btn-default btn-danger'
-              : 'btn btn-default btn-disabled'
-          }
+          className={`cancel-edit-metadata btn-danger ${btnClass}`}
         >
           <Icon icon="undo" />
           <span className="btn-label">{t('System', 'Discard changes')}</span>
@@ -37,7 +33,7 @@ export class OneUpEntityButtonsBase extends Component<OneUpEntityButtonsProps> {
         <button
           type="button"
           onClick={() => this.props.switchOneUpEntity(0, true)}
-          className={!isPristine ? 'save-metadata btn btn-default' : 'btn btn-default btn-disabled'}
+          className={`save-metadata ${btnClass}`}
         >
           <Icon icon="save" />
           <span className="btn-label">{t('System', 'Save document')}</span>
@@ -45,11 +41,7 @@ export class OneUpEntityButtonsBase extends Component<OneUpEntityButtonsProps> {
         <button
           type="button"
           onClick={() => this.props.switchOneUpEntity(+1, true)}
-          className={
-            !isPristine
-              ? 'save-and-next btn btn-default btn-success'
-              : 'btn btn-default btn-disabled'
-          }
+          className={`save-and-next btn-success ${btnClass}`}
         >
           <Icon icon="save" />
           <span className="btn-label">{t('System', 'Save and go to next')}</span>
