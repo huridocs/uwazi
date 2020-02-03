@@ -4,7 +4,7 @@ import React from 'react';
 import { shallow, ShallowWrapper } from 'enzyme';
 import { OneUpReviewBase, OneUpReviewProps } from 'app/Review/OneUpReview';
 import RouteHandler from 'app/App/RouteHandler';
-import OneUpEntityViewer from 'app/Review/components/OneUpEntityViewer';
+import { OneUpEntityViewer } from 'app/Review/components/OneUpEntityViewer';
 import Loader from 'app/components/Elements/Loader';
 import createStore from 'app/store';
 import Immutable from 'immutable';
