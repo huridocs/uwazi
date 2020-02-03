@@ -257,11 +257,7 @@ export default class MultiSelect extends Component {
   }
 
   render() {
-    const {
-      optionsValue,
-      optionsLabel,
-      placeholder = t('System', 'Search item', null, false),
-    } = this.props;
+    const { optionsValue, optionsLabel, placeholder } = this.props;
 
     let options = this.props.options.slice();
     const totalOptions = options.filter(option => {
@@ -335,7 +331,7 @@ export default class MultiSelect extends Component {
               <input
                 className="form-control"
                 type="text"
-                placeholder={placeholder}
+                placeholder={placeholder || t('System', 'Search item', null, false)}
                 value={this.state.filter}
                 onChange={this.filter}
               />
@@ -378,7 +374,7 @@ MultiSelect.defaultProps = {
   sort: false,
   sortbyLabel: false,
   forceHoist: false,
-  placeholder: null,
+  placeholder: '',
 };
 
 MultiSelect.propTypes = {
@@ -395,5 +391,5 @@ MultiSelect.propTypes = {
   sort: PropTypes.bool,
   sortbyLabel: PropTypes.bool,
   forceHoist: PropTypes.bool,
-  placeholder: PropTypes.object,
+  placeholder: PropTypes.string,
 };
