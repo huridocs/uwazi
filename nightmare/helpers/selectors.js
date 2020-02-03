@@ -218,8 +218,8 @@ export default {
     secondMultiSelectItem: '#sidePanelMetadataForm > div > div > ul > li:nth-child(3) > ul > li:nth-child(3) > label',
     secondMultiSelectItemSelected: '#sidePanelMetadataForm > div > div > ul > li:nth-child(3) > ul > li:nth-child(3) > label > span.multiselectItem-icon > svg.checkbox-checked',
     titleEditBox: '#fullEditMetadataForm > div.form-group > ul > li.wide > div > textarea',
-    discardButtonDisabled: '#app > div.content > div > div > div > main > div.content-footer > button:nth-child(1).btn-disabled',
-    discardButtonEnabled: '#app > div.content > div > div > div > main > div.content-footer > button.cancel-edit-metadata.btn.btn-default.btn-danger',
-    saveAndGoToNextEnabled: '#app > div.content > div > div > div > main > div.content-footer > button.save-and-next.btn.btn-default.btn-success'
+    discardButtonDisabled: '#app > div.content > div > div > div > main > div.content-footer > button.cancel-edit-metadata.btn-disabled',
+    discardButtonEnabled: '#app > div.content > div > div > div > main > div.content-footer > button.cancel-edit-metadata.btn-danger',
+    saveAndGoToNextEnabled: '#app > div.content > div > div > div > main > div.content-footer > button.save-and-next.btn-success'
   }
 };

@@ -25,7 +25,7 @@ export class OneUpEntityButtonsBase extends Component<OneUpEntityButtonsProps> {
         <button
           type="button"
           onClick={() => this.props.switchOneUpEntity(0, false)}
-          className={`cancel-edit-metadata btn-danger ${btnClass}`}
+          className={`cancel-edit-metadata ${!isPristine ? 'btn-danger' : ''} ${btnClass}`}
         >
           <Icon icon="undo" />
           <span className="btn-label">{t('System', 'Discard changes')}</span>
@@ -41,7 +41,7 @@ export class OneUpEntityButtonsBase extends Component<OneUpEntityButtonsProps> {
         <button
           type="button"
           onClick={() => this.props.switchOneUpEntity(+1, true)}
-          className={`save-and-next btn-success ${btnClass}`}
+          className={`save-and-next ${!isPristine ? 'btn-success' : ''} ${btnClass}`}
         >
           <Icon icon="save" />
           <span className="btn-label">{t('System', 'Save and go to next')}</span>
