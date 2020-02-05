@@ -1,3 +1,1 @@
-import translations from './translations.js';
-
-export default translations;
+export { default } from './translations';

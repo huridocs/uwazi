@@ -1,10 +1,26 @@
+/** @format */
+
 import { isNumber, isUndefined, isString, isObject, isNull } from 'util';
-import { templateTypes } from 'shared/templateTypes';
+import { propertyTypes } from 'shared/propertyTypes';
+
+const validateSingleWrappedValue = validationFn => value => {
+  if (!Array.isArray(value)) {
+    return false;
+  }
+  if (value.length !== 1) {
+    return !value.length;
+  }
+
+  if (value[0].value === null) {
+    return true;
+  }
+
+  const [{ value: pureValue }] = value;
+  return validationFn(pureValue);
+};
 
 const isEmpty = value =>
-  isNull(value) ||
-  isUndefined(value) ||
-  ((isString(value) || Array.isArray(value)) && !value.length);
+  isNull(value) || isUndefined(value) || !value.length || !value.some(v => v.value);
 
 const isNonArrayObject = value => isObject(value) && !Array.isArray(value);
 
@@ -14,13 +30,19 @@ const isValidDateRange = value => {
   if (!isNonArrayObject(value)) {
     return false;
   }
+
   if (validateDateProperty(value.from) && validateDateProperty(value.to)) {
     return value.from <= value.to;
   }
+
+  if (isString(value.from) || isString(value.to)) {
+    return false;
+  }
+
   return true;
 };
 
-const isValidSelect = value => isString(value) && value;
+const isValidSelect = value => isString(value);
 
 const isValidGeolocation = value =>
   isString(value.label) && isNumber(value.lat) && isNumber(value.lon);
@@ -32,61 +54,60 @@ const validateRequiredProperty = (property, value) => {
   return true;
 };
 
-const validateTextProperty = value => isString(value);
+const isValidLinkField = value =>
+  isString(value.label) && value.label && isString(value.url) && value.url;
 
-const validateNumericProperty = value => isNumber(value) || value === '';
+const validateNumericProperty = value =>
+  isNumber(value) || value === '' || (isString(value) && `${parseInt(value, 10)}` === value);
 
 const validateMultiDateProperty = value =>
-  Array.isArray(value) && value.every(item => validateDateProperty(item) || isNull(item));
+  Array.isArray(value) && value.every(item => isNumber(item.value) || isNull(item.value));
 
-const validateDateRangeProperty = value => isValidDateRange(value);
-
-const validateMultiDateRangeProperty = value => value.every(isValidDateRange);
+const validateMultiDateRangeProperty = value =>
+  Array.isArray(value) && value.every(item => isValidDateRange(item.value));
 
 const validateGeolocationProperty = value =>
-  Array.isArray(value) && value.every(isValidGeolocation);
+  Array.isArray(value) && value.every(item => isValidGeolocation(item.value));
 
-const validateMultiSelectProperty = value => Array.isArray(value) && value.every(isValidSelect);
-
-const validateLinkProperty = value =>
-  isString(value.label) && value.label && isString(value.url) && value.url;
+const validateMultiSelectProperty = value =>
+  Array.isArray(value) && value.every(item => isValidSelect(item.value) && item.value);
 
 export const customErrorMessages = {
   required: 'property is required',
-  [templateTypes.date]: 'should be number',
-  [templateTypes.multidate]: 'should be an array of numbers',
-  [templateTypes.daterange]:
+  [propertyTypes.date]: 'should be number',
+  [propertyTypes.multidate]: 'should be an array of numbers',
+  [propertyTypes.daterange]:
     'should be a "{ to: number, from: number }" object, "to" should be greater than "from"',
-  [templateTypes.multidaterange]:
+  [propertyTypes.multidaterange]:
     'should be a "[ { to: number, from: number } ]" collection, "to" should be greater than "from"',
-  [templateTypes.text]: 'should be a string',
-  [templateTypes.markdown]: 'should be a string',
-  [templateTypes.media]: 'should be a string',
-  [templateTypes.image]: 'should be a string',
-  [templateTypes.select]: 'should be string',
-  [templateTypes.multiselect]: 'should be an array of non empty strings',
-  [templateTypes.relationship]: 'should be an array of non empty strings',
-  [templateTypes.numeric]: 'should be number',
-  [templateTypes.link]:
+  [propertyTypes.text]: 'should be a string',
+  [propertyTypes.markdown]: 'should be a string',
+  [propertyTypes.media]: 'should be a string',
+  [propertyTypes.image]: 'should be a string',
+  [propertyTypes.select]: 'should be string',
+  [propertyTypes.multiselect]: 'should be an array of non empty strings',
+  [propertyTypes.relationship]: 'should be an array of non empty strings',
+  [propertyTypes.numeric]: 'should be number',
+  [propertyTypes.link]:
     'should be a "{ label: string, url: string }" object properties can not be blank',
-  [templateTypes.geolocation]:
+  [propertyTypes.geolocation]:
     'should be a "[ { lat: number, lon: number, label: string } ]" collection, lat and lon are required',
 };
 
 export const validators = {
-  [templateTypes.date]: validateDateProperty,
-  [templateTypes.multidate]: validateMultiDateProperty,
-  [templateTypes.daterange]: validateDateRangeProperty,
-  [templateTypes.multidaterange]: validateMultiDateRangeProperty,
-  [templateTypes.text]: validateTextProperty,
-  [templateTypes.markdown]: validateTextProperty,
-  [templateTypes.media]: validateTextProperty,
-  [templateTypes.image]: validateTextProperty,
-  [templateTypes.select]: validateTextProperty,
-  [templateTypes.multiselect]: validateMultiSelectProperty,
-  [templateTypes.relationship]: validateMultiSelectProperty,
-  [templateTypes.numeric]: validateNumericProperty,
-  [templateTypes.link]: validateLinkProperty,
-  [templateTypes.geolocation]: validateGeolocationProperty,
+  [propertyTypes.date]: validateSingleWrappedValue(validateDateProperty),
+  [propertyTypes.multidate]: validateMultiDateProperty,
+  [propertyTypes.daterange]: validateSingleWrappedValue(isValidDateRange),
+  [propertyTypes.multidaterange]: validateMultiDateRangeProperty,
+  [propertyTypes.text]: validateSingleWrappedValue(isString),
+  [propertyTypes.markdown]: validateSingleWrappedValue(isString),
+  [propertyTypes.media]: validateSingleWrappedValue(isString),
+  [propertyTypes.image]: validateSingleWrappedValue(isString),
+  [propertyTypes.select]: validateSingleWrappedValue(isValidSelect),
+  [propertyTypes.numeric]: validateSingleWrappedValue(validateNumericProperty),
+  [propertyTypes.multiselect]: validateMultiSelectProperty,
+  [propertyTypes.relationship]: validateMultiSelectProperty,
+  [propertyTypes.link]: validateSingleWrappedValue(isValidLinkField),
+  [propertyTypes.geolocation]: validateGeolocationProperty,
   validateRequiredProperty,
 };

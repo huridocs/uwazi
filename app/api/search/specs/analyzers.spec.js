@@ -25,10 +25,9 @@ describe('custom language analyzers', () => {
 
       await elastic.index({
         index: elasticIndex,
-        type: 'fullText',
+        type: '_doc',
         body: { fullText_persian: persianText },
         id: '123_whatever',
-        parent: 123,
       });
     });
   });

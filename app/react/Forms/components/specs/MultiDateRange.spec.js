@@ -1,3 +1,5 @@
+/** @format */
+
 import React from 'react';
 import { shallow } from 'enzyme';
 
@@ -12,12 +14,12 @@ describe('MultiDateRange', () => {
     props = {
       label: 'input label',
       value: [{ from: 1473984000, to: 1473984001 }, { from: 1474156800, to: 1474156801 }],
-      onChange: jasmine.createSpy('onChange')
+      onChange: jasmine.createSpy('onChange'),
     };
   });
 
   const render = () => {
-    component = shallow(<MultiDateRange {...props}/>);
+    component = shallow(<MultiDateRange {...props} />);
   };
 
   it('should render a pair of DatePickers for each value', () => {
@@ -31,7 +33,10 @@ describe('MultiDateRange', () => {
       render();
       const datepickers = component.find(DatePicker);
       datepickers.first().simulate('change', 1234);
-      expect(props.onChange).toHaveBeenCalledWith([{ from: 1234, to: 1473984001 }, { from: 1474156800, to: 1474156801 }]);
+      expect(props.onChange).toHaveBeenCalledWith([
+        { from: 1234, to: 1473984001 },
+        { from: 1474156800, to: 1474156801 },
+      ]);
     });
   });
 
@@ -43,7 +48,7 @@ describe('MultiDateRange', () => {
       expect(component.state().values).toEqual([
         { from: 1473984000, to: 1473984001 },
         { from: 1474156800, to: 1474156801 },
-        { from: null, to: null }
+        { from: null, to: null },
       ]);
     });
   });

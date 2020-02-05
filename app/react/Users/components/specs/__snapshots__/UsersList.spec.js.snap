@@ -59,17 +59,15 @@ exports[`UsersList render should render a list with all users names, edit and de
         <span>
           User 2
         </span>
-        <React.Fragment>
-             
-          <span
-            className="btn-xs btn-color btn-color-9"
-          >
-            <Connect(Icon)
-              icon="check"
-            />
-             2fa
-          </span>
-        </React.Fragment>
+           
+        <span
+          className="btn-xs btn-color btn-color-9"
+        >
+          <Connect(Icon)
+            icon="check"
+          />
+           2fa
+        </span>
       </div>
       <div
         className="list-group-item-actions"

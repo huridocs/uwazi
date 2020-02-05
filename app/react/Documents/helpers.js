@@ -1,3 +1,5 @@
+/** @format */
+
 import moment from 'moment';
 
 export default {
@@ -8,10 +10,15 @@ export default {
       return Object.assign({}, doc, { metadata: [], documentType: '' });
     }
 
-    const metadata = template.properties.map((property) => {
-      let value = doc.metadata[property.name];
+    const metadata = template.properties.map(property => {
+      let value = null;
+      if (doc.metadata[property.name] && doc.metadata[property.name][0]) {
+        [{ value }] = doc.metadata[property.name];
+      }
       if (property.type === 'select' && value) {
-        const thesauri = thesauris.find(t => t._id === property.content).values.find(v => v.id.toString() === value.toString());
+        const thesauri = thesauris
+          .find(t => t._id === property.content)
+          .values.find(v => v.id.toString() === value.toString());
 
         value = '';
         if (thesauri) {
@@ -27,5 +34,5 @@ export default {
     });
 
     return Object.assign({}, doc, { metadata, documentType: template.name });
-  }
+  },
 };

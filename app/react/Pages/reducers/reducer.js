@@ -1,3 +1,5 @@
+/** @format */
+
 import { combineReducers } from 'redux';
 import { modelReducer, formReducer } from 'react-redux-form';
 import createReducer from 'app/BasicReducer';
@@ -8,7 +10,7 @@ export default combineReducers({
   pageView: createReducer('page/pageView', {}),
   datasets: createReducer('page/datasets', {}),
   itemLists: createReducer('page/itemLists', []),
-  data: modelReducer('page.data', { title: '', metadata: { content: '' } }),
+  data: modelReducer('page.data', { title: '', metadata: /*non-metadata-object*/ { content: '' } }),
   formState: formReducer('page.data'),
-  uiState: ui
+  uiState: ui,
 });

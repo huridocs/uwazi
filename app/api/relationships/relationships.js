@@ -1,3 +1,5 @@
+/** @format */
+
 import { fromJS } from 'immutable';
 import templatesAPI from 'api/templates';
 import settings from 'api/settings';
@@ -38,16 +40,19 @@ const createRelationship = async (relationship, language) => {
   return model.save({ ...relationship, filename });
 };
 
-const updateRelationship = async relationship => model.save({
+const updateRelationship = async relationship =>
+  model.save({
     ...relationship,
-    template: relationship.template && relationship.template._id !== null ? relationship.template : null
-});
+    template:
+      relationship.template && relationship.template._id !== null ? relationship.template : null,
+  });
 
 function findPropertyHub(propertyRelationType, hubs, entitySharedId) {
   return hubs.reduce((result, hub) => {
     const allReferencesAreOfTheType = hub.every(
-      reference => reference.entity === entitySharedId ||
-      (reference.template && reference.template.toString() === propertyRelationType)
+      reference =>
+        reference.entity === entitySharedId ||
+        (reference.template && reference.template.toString() === propertyRelationType)
     );
     if (allReferencesAreOfTheType) {
       return hub;
@@ -57,17 +62,19 @@ function findPropertyHub(propertyRelationType, hubs, entitySharedId) {
   }, null);
 }
 
-// Code mostly copied from react/Relationships/reducer/hubsReducer.js, abstract this QUICKLY!!
+// Code mostly copied from react/Relationships/reducer/hubsReducer.js, abstract this QUICKLY!!!
 const conformRelationships = (rows, parentEntitySharedId) => {
   let order = -1;
-  const hubsObject = fromJS(rows)
-  .reduce((hubs, row) => {
+  const hubsObject = fromJS(rows).reduce((hubs, row) => {
     let hubsImmutable = hubs;
-    row.get('connections').forEach((connection) => {
+    row.get('connections').forEach(connection => {
       const hubId = connection.get('hub').toString();
       if (!hubsImmutable.has(hubId)) {
         order += 1;
-        hubsImmutable = hubsImmutable.set(hubId, fromJS({ hub: hubId, order, leftRelationship: {}, rightRelationships: {} }));
+        hubsImmutable = hubsImmutable.set(
+          hubId,
+          fromJS({ hub: hubId, order, leftRelationship: {}, rightRelationships: {} })
+        );
       }
 
       if (row.get('sharedId') === parentEntitySharedId) {
@@ -75,11 +82,16 @@ const conformRelationships = (rows, parentEntitySharedId) => {
       } else {
         const templateId = connection.get('template');
         if (!hubsImmutable.getIn([hubId, 'rightRelationships']).has(templateId)) {
-          hubsImmutable = hubsImmutable.setIn([hubId, 'rightRelationships', templateId], fromJS([]));
+          hubsImmutable = hubsImmutable.setIn(
+            [hubId, 'rightRelationships', templateId],
+            fromJS([])
+          );
         }
         const newConnection = connection.set('entity', row.delete('connections'));
-        hubsImmutable = hubsImmutable.setIn([hubId, 'rightRelationships', templateId],
-          hubsImmutable.getIn([hubId, 'rightRelationships', templateId]).push(newConnection));
+        hubsImmutable = hubsImmutable.setIn(
+          [hubId, 'rightRelationships', templateId],
+          hubsImmutable.getIn([hubId, 'rightRelationships', templateId]).push(newConnection)
+        );
       }
     });
 
@@ -87,10 +99,16 @@ const conformRelationships = (rows, parentEntitySharedId) => {
   }, fromJS({}));
 
   return hubsObject.reduce((hubs, hub) => {
-    const rightRelationships = hub.get('rightRelationships').reduce((memo, relationshipsArray, template) => {
-      const newMemo = memo.push(fromJS({}).set('template', template).set('relationships', relationshipsArray));
-      return newMemo;
-    }, fromJS([]));
+    const rightRelationships = hub
+      .get('rightRelationships')
+      .reduce((memo, relationshipsArray, template) => {
+        const newMemo = memo.push(
+          fromJS({})
+            .set('template', template)
+            .set('relationships', relationshipsArray)
+        );
+        return newMemo;
+      }, fromJS([]));
     return hubs.set(hub.get('order'), hub.set('rightRelationships', rightRelationships));
   }, fromJS([]));
 };
@@ -126,7 +144,7 @@ const limitRelationshipResults = (results, entitySharedId, hubsLimit) => {
 const determinePropertyValues = (entity, propertyName) => {
   const metadata = entity.metadata || {};
   const propertyValues = metadata[propertyName] || [];
-  return (typeof propertyValues === 'string') ? [propertyValues] : propertyValues;
+  return propertyValues.map(mo => mo.value);
 };
 
 const getHub = (propertyRelationType, hubs, sharedId) => {
@@ -159,30 +177,38 @@ export default {
   },
 
   getByDocument(sharedId, language, unpublished = true) {
-    return this.getDocumentHubs(sharedId)
-    .then((_relationships) => {
+    return this.getDocumentHubs(sharedId).then(_relationships => {
       const connectedEntitiesSharedId = _relationships.map(relationship => relationship.entity);
-      return entities.get(
-        { sharedId: { $in: connectedEntitiesSharedId }, language },
-        ['template', 'creationDate', 'title', 'file', 'sharedId', 'uploaded', 'processed', 'type', 'published', 'metadata']
-      )
-      .then((_connectedDocuments) => {
-        const connectedDocuments = _connectedDocuments.reduce((res, doc) => {
-          res[doc.sharedId] = doc;
-          return res;
-        }, {});
-        let relationshipsCollection = new RelationshipCollection(..._relationships)
-        .removeOtherLanguageTextReferences(connectedDocuments)
-        .withConnectedData(connectedDocuments)
-        .removeSingleHubs()
-        .removeOrphanHubsOf(sharedId);
+      return entities
+        .get({ sharedId: { $in: connectedEntitiesSharedId }, language }, [
+          'template',
+          'creationDate',
+          'title',
+          'file',
+          'sharedId',
+          'uploaded',
+          'processed',
+          'type',
+          'published',
+          'metadata',
+        ])
+        .then(_connectedDocuments => {
+          const connectedDocuments = _connectedDocuments.reduce((res, doc) => {
+            res[doc.sharedId] = doc;
+            return res;
+          }, {});
+          let relationshipsCollection = new RelationshipCollection(..._relationships)
+            .removeOtherLanguageTextReferences(connectedDocuments)
+            .withConnectedData(connectedDocuments)
+            .removeSingleHubs()
+            .removeOrphanHubsOf(sharedId);
 
-        if (!unpublished) {
-          relationshipsCollection = relationshipsCollection.removeUnpublished();
-        }
+          if (!unpublished) {
+            relationshipsCollection = relationshipsCollection.removeUnpublished();
+          }
 
-        return relationshipsCollection;
-      });
+          return relationshipsCollection;
+        });
     });
   },
 
@@ -190,14 +216,18 @@ export default {
     return Promise.all([
       this.getByDocument(id, language),
       templatesAPI.get(),
-      relationtypes.get()
-    ])
-    .then(([references, templates, relationTypes]) => {
-      const relevantReferences = filterRelevantRelationships(references, id, language, options.user);
+      relationtypes.get(),
+    ]).then(([references, templates, relationTypes]) => {
+      const relevantReferences = filterRelevantRelationships(
+        references,
+        id,
+        language,
+        options.user
+      );
       const groupedReferences = groupRelationships(relevantReferences, templates, relationTypes);
 
       if (options.excludeRefs) {
-        groupedReferences.forEach((g) => {
+        groupedReferences.forEach(g => {
           g.templates = g.templates.map(excludeRefs);
         });
       }
@@ -219,20 +249,23 @@ export default {
 
   async bulk(bulkData, language) {
     const saves = await Promise.all(bulkData.save.map(reference => this.save(reference, language)));
-    const deletions = await Promise.all(bulkData.delete.map(reference => this.delete(reference, language)));
+    const deletions = await Promise.all(
+      bulkData.delete.map(reference => this.delete(reference, language))
+    );
     return saves.concat(deletions);
   },
 
-
-  async save(_relationships, language) {
+  async save(_relationships, language, updateEntities = true) {
     if (!language) {
       throw createError('Language cant be undefined');
     }
 
     const rel = !Array.isArray(_relationships) ? [_relationships] : _relationships;
 
-    const existingEntities = (await entities.get({ sharedId: { $in: rel.map(r => r.entity) }, language }))
-    .map(r => r.sharedId);
+    const existingEntities = (await entities.get({
+      sharedId: { $in: rel.map(r => r.entity) },
+      language,
+    })).map(r => r.sharedId);
 
     const relationships = rel.filter(r => existingEntities.includes(r.entity));
 
@@ -246,21 +279,30 @@ export default {
 
     const hub = relationships[0].hub || generateID();
 
-    const result = await Promise.all(relationships.map((relationship) => {
-      const action = relationship._id ? updateRelationship : createRelationship;
+    const result = await Promise.all(
+      relationships.map(relationship => {
+        const action = relationship._id ? updateRelationship : createRelationship;
 
-      return action({ ...relationship, hub }, language)
-      .then(savedRelationship => Promise.all([savedRelationship, entities.getById(savedRelationship.entity, language)]))
-      .then(([savedRelationship, connectedEntity]) => normalizeConnectedDocumentData(savedRelationship, connectedEntity));
-    }));
+        return action({ ...relationship, hub }, language)
+          .then(savedRelationship =>
+            Promise.all([savedRelationship, entities.getById(savedRelationship.entity, language)])
+          )
+          .then(([savedRelationship, connectedEntity]) =>
+            normalizeConnectedDocumentData(savedRelationship, connectedEntity)
+          );
+      })
+    );
 
-    await this.updateEntitiesMetadataByHub(hub, language);
+    if (updateEntities) {
+      await this.updateEntitiesMetadataByHub(hub, language);
+    }
     return result;
   },
 
-  updateEntitiesMetadataByHub(hubId, language) {
-    return this.getHub(hubId)
-    .then(hub => entities.updateMetdataFromRelationships(hub.map(r => r.entity), language));
+  async updateEntitiesMetadataByHub(hubId, language) {
+    const hub = await this.getHub(hubId);
+    const entitiesIds = hub.map(r => r.entity);
+    return entities.updateMetdataFromRelationships(entitiesIds, language);
   },
 
   updateEntitiesMetadata(entitiesIds, language) {
@@ -276,35 +318,62 @@ export default {
       return Promise.resolve([]);
     }
 
-    return templatesAPI.getById(entity.template)
-    .then(getPropertiesToBeConnections)
-    .then(properties => Promise.all([properties, this.getByDocument(entity.sharedId, language)]))
-    .then(([properties, references]) => Promise.all(properties.map((property) => {
-      const propertyValues = determinePropertyValues(entity, property.name);
-      const { propertyRelationType, entityType, hub } = determineReferenceValues(references, property, entity);
+    return templatesAPI
+      .getById(entity.template)
+      .then(getPropertiesToBeConnections)
+      .then(properties => Promise.all([properties, this.getByDocument(entity.sharedId, language)]))
+      .then(([properties, references]) =>
+        Promise.all(
+          properties.map(property => {
+            const propertyValues = determinePropertyValues(entity, property.name);
+            const { propertyRelationType, entityType, hub } = determineReferenceValues(
+              references,
+              property,
+              entity
+            );
 
-      const referencesOfThisType = references.filter(reference => reference.template &&
-        reference.template.toString() === propertyRelationType.toString()
+            const referencesOfThisType = references.filter(
+              reference =>
+                reference.template &&
+                reference.template.toString() === propertyRelationType.toString()
+            );
+
+            propertyValues.forEach(entitySharedId => {
+              const relationshipDoesNotExists = !referencesOfThisType.find(
+                reference => reference.entity === entitySharedId
+              );
+              if (relationshipDoesNotExists) {
+                hub.push({
+                  entity: entitySharedId,
+                  hub: hub[0].hub,
+                  template: propertyRelationType,
+                });
+              }
+            });
+            const referencesToBeDeleted = references.filter(
+              reference =>
+                !(reference.entity === entity.sharedId) &&
+                reference.template &&
+                reference.template.toString() === propertyRelationType &&
+                (!entityType || reference.entityData.template.toString() === entityType) &&
+                !propertyValues.includes(reference.entity)
+            );
+
+            let save = Promise.resolve();
+            if (hub.length > 1) {
+              save = this.save(hub, language, false);
+            }
+
+            return save.then(() =>
+              Promise.all(
+                referencesToBeDeleted.map(reference =>
+                  this.delete({ _id: reference._id }, language, false)
+                )
+              )
+            );
+          })
+        )
       );
-
-      propertyValues.forEach((entitySharedId) => {
-        const relationshipDoesNotExists = !referencesOfThisType.find(reference => reference.entity === entitySharedId);
-        if (relationshipDoesNotExists) {
-          hub.push({ entity: entitySharedId, hub: hub[0].hub, template: propertyRelationType });
-        }
-      });
-      const referencesToBeDeleted = references.filter(reference => !(reference.entity === entity.sharedId) &&
-        reference.template && reference.template.toString() === propertyRelationType &&
-        (!entityType || reference.entityData.template.toString() === entityType) &&
-        !propertyValues.includes(reference.entity));
-
-      let save = Promise.resolve();
-      if (hub.length > 1) {
-        save = this.save(hub, language, false);
-      }
-
-      return save.then(() => Promise.all(referencesToBeDeleted.map(reference => this.delete({ _id: reference._id }, language, false))));
-    })));
   },
 
   search(entitySharedId, query, language, user) {
@@ -313,43 +382,56 @@ export default {
     if (!language) {
       return Promise.reject(createError('Language cant be undefined'));
     }
-    return Promise.all([this.getByDocument(entitySharedId, language), entities.getById(entitySharedId, language)])
-    .then(([relationships, entity]) => {
-      relationships.sort((a, b) => (a.entity + a.hub.toString()).localeCompare(b.entity + b.hub.toString()));
+    return Promise.all([
+      this.getByDocument(entitySharedId, language),
+      entities.getById(entitySharedId, language),
+    ]).then(([relationships, entity]) => {
+      relationships.sort((a, b) =>
+        (a.entity + a.hub.toString()).localeCompare(b.entity + b.hub.toString())
+      );
 
-      const filter = Object.keys(query.filter).reduce((result, filterGroupKey) => result.concat(query.filter[filterGroupKey]), []);
-      const filteredRelationships = relationships.filter(relationship => !filter.length ||
-        filter.includes(relationship.template + relationship.entityData.template)
+      const filter = Object.keys(query.filter).reduce(
+        (result, filterGroupKey) => result.concat(query.filter[filterGroupKey]),
+        []
+      );
+      const filteredRelationships = relationships.filter(
+        relationship =>
+          !filter.length ||
+          filter.includes(relationship.template + relationship.entityData.template)
       );
 
       const ids = filteredRelationships
-      .map(relationship => relationship.entity)
-      .reduce((result, id) => {
-        if (!result.includes(id) && id !== entitySharedId) {
-          result.push(id);
-        }
-        return result;
-      }, []);
+        .map(relationship => relationship.entity)
+        .reduce((result, id) => {
+          if (!result.includes(id) && id !== entitySharedId) {
+            result.push(id);
+          }
+          return result;
+        }, []);
       query.ids = ids.length ? ids : ['no_results'];
       query.includeUnpublished = true;
       query.limit = 9999;
       delete query.filter;
 
-      return search.search(query, language, user)
-      .then((results) => {
-        results.rows.forEach((item) => {
-          item.connections = filteredRelationships.filter(relationship => relationship.entity === item.sharedId);
+      return search.search(query, language, user).then(results => {
+        results.rows.forEach(item => {
+          item.connections = filteredRelationships.filter(
+            relationship => relationship.entity === item.sharedId
+          );
         });
 
         if (results.rows.length) {
-          let filteredRelationshipsHubs = results.rows.map(item => item.connections.map(relationship => relationship.hub.toString()));
+          let filteredRelationshipsHubs = results.rows.map(item =>
+            item.connections.map(relationship => relationship.hub.toString())
+          );
           filteredRelationshipsHubs = Array.prototype.concat(...filteredRelationshipsHubs);
-          entity.connections = relationships.filter(relationship => relationship.entity === entitySharedId &&
-            filteredRelationshipsHubs.includes(relationship.hub.toString())
+          entity.connections = relationships.filter(
+            relationship =>
+              relationship.entity === entitySharedId &&
+              filteredRelationshipsHubs.includes(relationship.hub.toString())
           );
           results.rows.push(entity);
         }
-
 
         return limitRelationshipResults(results, entitySharedId, hubsLimit);
       });
@@ -376,13 +458,15 @@ export default {
     const hubsToDelete = await model.db.aggregate([
       { $match: { hub: { $in: hubsAffected } } },
       { $group: { _id: '$hub', length: { $sum: 1 } } },
-      { $match: { length: { $lt: 2 } } }
+      { $match: { length: { $lt: 2 } } },
     ]);
 
     await model.delete({ hub: { $in: hubsToDelete.map(h => h._id) } });
 
     if (updateMetdata) {
-      await Promise.all(languages.map(l => this.updateEntitiesMetadata(entitiesAffected.map(e => e._id), l.key)));
+      await Promise.all(
+        languages.map(l => this.updateEntitiesMetadata(entitiesAffected.map(e => e._id), l.key))
+      );
     }
 
     return response;
@@ -390,7 +474,11 @@ export default {
 
   async deleteTextReferences(sharedId, language) {
     const [{ _id, file = {} }] = await entities.get({ sharedId, language }, 'file');
-    const languagesWithSameFile = await entities.count({ 'file.filename': file.filename, sharedId, _id: { $ne: _id } });
+    const languagesWithSameFile = await entities.count({
+      'file.filename': file.filename,
+      sharedId,
+      _id: { $ne: _id },
+    });
     if (!languagesWithSameFile && file.filename) {
       return this.delete({ filename: file.filename });
     }
@@ -402,14 +490,14 @@ export default {
     actions.$rename = {};
     actions.$unset = {};
     template.properties = generateNamesAndIds(template.properties);
-    template.properties.forEach((property) => {
+    template.properties.forEach(property => {
       const currentProperty = currentTemplate.properties.find(p => p.id === property.id);
       if (currentProperty && currentProperty.name !== property.name) {
         actions.$rename[`metadata.${currentProperty.name}`] = `metadata.${property.name}`;
       }
     });
     currentTemplate.properties = currentTemplate.properties || [];
-    currentTemplate.properties.forEach((property) => {
+    currentTemplate.properties.forEach(property => {
       if (!template.properties.find(p => p.id === property.id)) {
         actions.$unset[`metadata.${property.name}`] = '';
       }
@@ -432,5 +520,5 @@ export default {
     return model.db.updateMany({ template }, actions);
   },
 
-  count: model.count.bind(model)
+  count: model.count.bind(model),
 };

@@ -19,6 +19,7 @@ import IconField from './IconField';
 import MetadataFormFields from './MetadataFormFields';
 import validator from '../helpers/validator';
 import defaultTemplate from '../helpers/defaultTemplate';
+import wrapEntityMetadata from '../helpers/wrapper';
 
 const immutableDefaultTemplate = Immutable.fromJS(defaultTemplate);
 
@@ -38,8 +39,11 @@ export class MetadataForm extends Component {
     this.props.componentWillUnmount();
   }
 
-  onSubmit(metadata) {
-    this.props.onSubmit(entitiesUtil.filterBaseProperties(metadata), this.props.model);
+  onSubmit(entity) {
+    this.props.onSubmit(
+      wrapEntityMetadata(entitiesUtil.filterBaseProperties(entity)),
+      this.props.model
+    );
   }
 
   onSubmitFailed() {

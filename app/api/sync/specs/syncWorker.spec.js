@@ -1,3 +1,5 @@
+/** @format */
+
 import 'api/entities';
 import 'api/thesauris/dictionariesModel';
 import fs from 'fs';
@@ -66,21 +68,23 @@ describe('syncWorker', () => {
     await db.disconnect();
   });
 
-  const syncWorkerWithConfig = async config => syncWorker.syncronize({
-    url: 'url',
-    config
-  });
+  const syncWorkerWithConfig = async config =>
+    syncWorker.syncronize({
+      url: 'url',
+      config,
+    });
 
-  const syncAllTemplates = async () => syncWorker.syncronize({
-    url: 'url',
-    config: {
-      templates: {
-        [template1.toString()]: [],
-        [template2.toString()]: [],
-        [template3.toString()]: [],
-      }
-    }
-  });
+  const syncAllTemplates = async () =>
+    syncWorker.syncronize({
+      url: 'url',
+      config: {
+        templates: {
+          [template1.toString()]: [],
+          [template2.toString()]: [],
+          [template3.toString()]: [],
+        },
+      },
+    });
 
   const expectCallToEqual = (call, namespace, data) => {
     expect(call).toEqual(['url/api/sync', { namespace, data }]);
@@ -91,10 +95,14 @@ describe('syncWorker', () => {
   };
 
   const getCallsToIds = (namespace, ids) => {
-    const namespaceCallsOnly = request.post.calls.allArgs().filter(args => args[1].namespace === namespace);
+    const namespaceCallsOnly = request.post.calls
+      .allArgs()
+      .filter(args => args[1].namespace === namespace);
     return {
-      calls: ids.map(id => namespaceCallsOnly.find(c => c[1].data._id.toString() === id.toString())),
-      callsCount: namespaceCallsOnly.length
+      calls: ids.map(id =>
+        namespaceCallsOnly.find(c => c[1].data._id.toString() === id.toString())
+      ),
+      callsCount: namespaceCallsOnly.length,
     };
   };
 
@@ -115,7 +123,7 @@ describe('syncWorker', () => {
           [deletedTemplate.toString()]: [],
           [template2.toString()]: [],
         },
-        relationtypes: [relationtype1.toString(), deletedRelationtype.toString()]
+        relationtypes: [relationtype1.toString(), deletedRelationtype.toString()],
       });
 
       const { callsCount: templateCalls } = getCallsToIds('templates', []);
@@ -135,16 +143,19 @@ describe('syncWorker', () => {
     describe('settings', () => {
       it('should only include languages from settings', async () => {
         await syncWorkerWithConfig({
-          templates: {}
+          templates: {},
         });
 
-        const { calls: [settingsCall], callsCount } = getCallsToIds('settings', [settingsId]);
+        const {
+          calls: [settingsCall],
+          callsCount,
+        } = getCallsToIds('settings', [settingsId]);
 
         expect(callsCount).toBe(1);
 
         expectCallToEqual(settingsCall, 'settings', {
           _id: settingsId,
-          languages: [{ key: 'es', default: true }]
+          languages: [{ key: 'es', default: true }],
         });
       });
     });
@@ -154,21 +165,32 @@ describe('syncWorker', () => {
         const deletedProperty = db.id();
         await syncWorkerWithConfig({
           templates: {
-            [template1.toString()]: [template1Property1.toString(), template1Property3.toString(), deletedProperty.toString()],
+            [template1.toString()]: [
+              template1Property1.toString(),
+              template1Property3.toString(),
+              deletedProperty.toString(),
+            ],
             [template2.toString()]: [],
-          }
+          },
         });
 
-        const { calls: [template1Call, template2Call], callsCount } = getCallsToIds('templates', [template1, template2]);
+        const {
+          calls: [template1Call, template2Call],
+          callsCount,
+        } = getCallsToIds('templates', [template1, template2]);
 
         expect(callsCount).toBe(2);
 
-        expectCallToEqual(template1Call, 'templates', expect.objectContaining({
-          properties: [
-            expect.objectContaining({ _id: template1Property1 }),
-            expect.objectContaining({ _id: template1Property3 })
-          ]
-        }));
+        expectCallToEqual(
+          template1Call,
+          'templates',
+          expect.objectContaining({
+            properties: [
+              expect.objectContaining({ _id: template1Property1 }),
+              expect.objectContaining({ _id: template1Property3 }),
+            ],
+          })
+        );
 
         expectCallToEqual(template2Call, 'templates', expect.objectContaining({ _id: template2 }));
       });
@@ -184,16 +206,26 @@ describe('syncWorker', () => {
               template1PropertyThesauri3MultiSelect.toString(),
             ],
             [template2.toString()]: [template2PropertyThesauri5Select.toString()],
-          }
+          },
         });
 
-        const { calls: [thesauri1Call, thesauri3Call, thesauri5Call], callsCount } = getCallsToIds('dictionaries', [thesauri1, thesauri3, thesauri5]);
+        const {
+          calls: [thesauri1Call, thesauri3Call, thesauri5Call],
+          callsCount,
+        } = getCallsToIds('dictionaries', [thesauri1, thesauri3, thesauri5]);
 
         expect(callsCount).toBe(3);
 
-        expectCallToEqual(thesauri1Call, 'dictionaries', expect.objectContaining({
-          values: [expect.objectContaining({ _id: thesauri1Value1 }), expect.objectContaining({ _id: thesauri1Value2 })]
-        }));
+        expectCallToEqual(
+          thesauri1Call,
+          'dictionaries',
+          expect.objectContaining({
+            values: [
+              expect.objectContaining({ _id: thesauri1Value1 }),
+              expect.objectContaining({ _id: thesauri1Value2 }),
+            ],
+          })
+        );
 
         expect(thesauri3Call).toBeDefined();
         expect(thesauri5Call).toBeDefined();
@@ -208,13 +240,18 @@ describe('syncWorker', () => {
             [template1.toString()]: [template1PropertyRelationship1.toString()],
             [template2.toString()]: [template2PropertyRelationship2.toString()],
           },
-          relationtypes: [relationtype1.toString(), relationtype3.toString()]
+          relationtypes: [relationtype1.toString(), relationtype3.toString()],
         });
 
         const {
           calls: [relationtype1Call, relationtype3Call, relationtype4Call, relationtype7Call],
-          callsCount
-        } = getCallsToIds('relationtypes', [relationtype1, relationtype3, relationtype4, relationtype7]);
+          callsCount,
+        } = getCallsToIds('relationtypes', [
+          relationtype1,
+          relationtype3,
+          relationtype4,
+          relationtype7,
+        ]);
 
         expect(callsCount).toBe(4);
         expect(relationtype1Call).toBeDefined();
@@ -225,10 +262,13 @@ describe('syncWorker', () => {
 
       it('should allow syncing only from templates, without whitelisting a whole relationtype', async () => {
         await syncWorkerWithConfig({
-          templates: { [template1.toString()]: [template1PropertyRelationship1.toString()] }
+          templates: { [template1.toString()]: [template1PropertyRelationship1.toString()] },
         });
 
-        const { calls: [relationtype4Call], callsCount } = getCallsToIds('relationtypes', [relationtype4]);
+        const {
+          calls: [relationtype4Call],
+          callsCount,
+        } = getCallsToIds('relationtypes', [relationtype4]);
 
         expect(callsCount).toBe(1);
         expect(relationtype4Call).toBeDefined();
@@ -238,10 +278,14 @@ describe('syncWorker', () => {
     describe('translations', () => {
       it('should include System context and exclude non-whitelisted templates, thesauris and relationtypes', async () => {
         await syncWorkerWithConfig({ templates: {} });
-        const { calls: [translation1Call] } = getCallsToIds('translations', [translation1]);
+        const {
+          calls: [translation1Call],
+        } = getCallsToIds('translations', [translation1]);
         const { contexts } = translation1Call[1].data;
 
-        expect(contexts.find(c => c.id === 'System').values).toEqual([{ key: 'Sytem Key', value: 'System Value' }]);
+        expect(contexts.find(c => c.id === 'System').values).toEqual([
+          { key: 'Sytem Key', value: 'System Value' },
+        ]);
         expect(contexts.length).toBe(1);
       });
 
@@ -257,7 +301,9 @@ describe('syncWorker', () => {
           relationtypes: [relationtype1.toString()],
         });
 
-        const { calls: [translation1Call] } = getCallsToIds('translations', [translation1]);
+        const {
+          calls: [translation1Call],
+        } = getCallsToIds('translations', [translation1]);
         const { contexts } = translation1Call[1].data;
 
         expect(contexts.find(c => c.id.toString() === template1.toString()).values).toEqual([
@@ -269,10 +315,18 @@ describe('syncWorker', () => {
           { key: 'template2', value: 'template2T' },
           { key: 't2Relationship2L', value: 't2Relationship2T' },
         ]);
-        expect(contexts.find(c => c.id.toString() === relationtype1.toString()).values).toBe('All values from r1');
-        expect(contexts.find(c => c.id.toString() === relationtype4.toString()).values).toBe('All values from r4');
-        expect(contexts.find(c => c.id.toString() === relationtype7.toString()).values).toBe('All values from r7');
-        expect(contexts.find(c => c.id.toString() === thesauri3.toString()).values).toBe('All values from t3');
+        expect(contexts.find(c => c.id.toString() === relationtype1.toString()).values).toBe(
+          'All values from r1'
+        );
+        expect(contexts.find(c => c.id.toString() === relationtype4.toString()).values).toBe(
+          'All values from r4'
+        );
+        expect(contexts.find(c => c.id.toString() === relationtype7.toString()).values).toBe(
+          'All values from r7'
+        );
+        expect(contexts.find(c => c.id.toString() === thesauri3.toString()).values).toBe(
+          'All values from t3'
+        );
         expect(contexts.length).toBe(7);
       });
     });
@@ -281,26 +335,45 @@ describe('syncWorker', () => {
       it('should only sync entities belonging to a whitelisted template and properties and exclude non-templated entities', async () => {
         await syncWorkerWithConfig({
           templates: {
-            [template1.toString()]: [template1Property2.toString(), template1Property3.toString(), template1PropertyThesauri1Select.toString()],
+            [template1.toString()]: [
+              template1Property2.toString(),
+              template1Property3.toString(),
+              template1PropertyThesauri1Select.toString(),
+            ],
             [template2.toString()]: [],
-          }
+          },
         });
 
-        const { calls: [entity1Call, entity2Call], callsCount } = getCallsToIds('entities', [newDoc1, newDoc2]);
+        const {
+          calls: [entity1Call, entity2Call],
+          callsCount,
+        } = getCallsToIds('entities', [newDoc1, newDoc2]);
 
         expect(callsCount).toBe(2);
 
-        expectCallToEqual(entity1Call, 'entities', expect.objectContaining({
-          metadata: { t1Property2: 'sync property 2', t1Property3: 'sync property 3', t1Thesauri1Select: thesauri1Value2 }
-        }));
+        expectCallToEqual(
+          entity1Call,
+          'entities',
+          expect.objectContaining({
+            metadata: {
+              t1Property2: [{ value: 'sync property 2' }],
+              t1Property3: [{ value: 'sync property 3' }],
+              t1Thesauri1Select: [{ value: thesauri1Value2 }],
+            },
+          })
+        );
 
-        expectCallToEqual(entity2Call, 'entities', expect.objectContaining({
-          metadata: { t1Property2: 'another doc property 2' },
-        }));
+        expectCallToEqual(
+          entity2Call,
+          'entities',
+          expect.objectContaining({
+            metadata: { t1Property2: [{ value: 'another doc property 2' }] },
+          })
+        );
 
         expect(request.post).not.toHaveBeenCalledWith('url/api/sync', {
           namespace: 'entities',
-          data: expect.objectContaining({ title: 'not to sync' })
+          data: expect.objectContaining({ title: 'not to sync' }),
         });
       });
 
@@ -309,11 +382,15 @@ describe('syncWorker', () => {
           templates: {
             [template1.toString()]: [],
             [template3.toString()]: [],
-          }
+          },
         });
 
         expect(request.uploadFile.calls.count()).toBe(4);
-        expect(request.uploadFile).toHaveBeenCalledWith('url/api/sync/upload', 'test.txt', fs.readFileSync(path.join(__dirname, 'test.txt')));
+        expect(request.uploadFile).toHaveBeenCalledWith(
+          'url/api/sync/upload',
+          'test.txt',
+          fs.readFileSync(path.join(__dirname, 'test.txt'))
+        );
         expect(request.uploadFile).toHaveBeenCalledWith(
           'url/api/sync/upload',
           'test_attachment.txt',
@@ -339,10 +416,13 @@ describe('syncWorker', () => {
             [template1.toString()]: [],
             [template2.toString()]: [],
           },
-          relationtypes: [relationtype1.toString(), relationtype3.toString()]
+          relationtypes: [relationtype1.toString(), relationtype3.toString()],
         });
 
-        const { calls: [relationship1Call, relationship2Call], callsCount } = getCallsToIds('connections', [relationship1, relationship2]);
+        const {
+          calls: [relationship1Call, relationship2Call],
+          callsCount,
+        } = getCallsToIds('connections', [relationship1, relationship2]);
 
         expect(callsCount).toBe(2);
         expect(relationship1Call).toBeDefined();
@@ -352,12 +432,15 @@ describe('syncWorker', () => {
       it('should allow including null relationTypes', async () => {
         await syncWorkerWithConfig({
           templates: {
-            [template1.toString()]: []
+            [template1.toString()]: [],
           },
-          relationtypes: [null]
+          relationtypes: [null],
         });
 
-        const { calls: [relationship9Call], callsCount } = getCallsToIds('connections', [relationship9]);
+        const {
+          calls: [relationship9Call],
+          callsCount,
+        } = getCallsToIds('connections', [relationship9]);
 
         expect(callsCount).toBe(1);
         expect(relationship9Call).toBeDefined();
@@ -368,13 +451,25 @@ describe('syncWorker', () => {
           templates: {
             [template1.toString()]: [template1PropertyRelationship1.toString()],
             [template2.toString()]: [template2PropertyRelationship2.toString()],
-          }
+          },
         });
 
         const {
-          calls: [relationsihp5Call, relationsihp7Call, relationsihp9Call, relationsihp10Call, relationsihp11Call],
-          callsCount
-        } = getCallsToIds('connections', [relationship5, relationship7, relationship9, relationship10, relationship11]);
+          calls: [
+            relationsihp5Call,
+            relationsihp7Call,
+            relationsihp9Call,
+            relationsihp10Call,
+            relationsihp11Call,
+          ],
+          callsCount,
+        } = getCallsToIds('connections', [
+          relationship5,
+          relationship7,
+          relationship9,
+          relationship10,
+          relationship11,
+        ]);
 
         expect(callsCount).toBe(5);
         expect(relationsihp5Call).toBeDefined();
@@ -399,9 +494,15 @@ describe('syncWorker', () => {
     });
 
     it('should update lastSync on each operation', async () => {
-      request.post.and.callFake((url, body) => body.data._id.equals(relationship1) ? Promise.reject(new Error('post failed')) : Promise.resolve()
+      request.post.and.callFake((url, body) =>
+        body.data._id.equals(relationship1)
+          ? Promise.reject(new Error('post failed'))
+          : Promise.resolve()
       );
-      request.delete.and.callFake((url, body) => body.data._id.equals(newDoc4) ? Promise.reject(new Error('delete failed')) : Promise.resolve()
+      request.delete.and.callFake((url, body) =>
+        body.data._id.equals(newDoc4)
+          ? Promise.reject(new Error('delete failed'))
+          : Promise.resolve()
       );
 
       try {
@@ -458,7 +559,10 @@ describe('syncWorker', () => {
       });
 
       const interval = 0;
-      await syncWorker.intervalSync({ url: 'url', username: 'configUser', password: 'configPassword' }, interval);
+      await syncWorker.intervalSync(
+        { url: 'url', username: 'configUser', password: 'configPassword' },
+        interval
+      );
       expect(syncWorker.login).toHaveBeenCalledWith('url', 'configUser', 'configPassword');
     });
   });
@@ -466,7 +570,10 @@ describe('syncWorker', () => {
   describe('login', () => {
     it('should login to the target api and set the cookie', async () => {
       backend.restore();
-      backend.post('http://localhost/api/login', { body: '{}', headers: { 'set-cookie': 'cookie' } });
+      backend.post('http://localhost/api/login', {
+        body: '{}',
+        headers: { 'set-cookie': 'cookie' },
+      });
       spyOn(request, 'cookie');
       await syncWorker.login('http://localhost', 'username', 'password');
       expect(request.cookie).toHaveBeenCalledWith('cookie');
@@ -507,7 +614,10 @@ describe('syncWorker', () => {
       const interval = 2000;
 
       await syncWorker.start(interval);
-      expect(syncWorker.intervalSync).toHaveBeenCalledWith({ url: 'url', active: true, config: {} }, interval);
+      expect(syncWorker.intervalSync).toHaveBeenCalledWith(
+        { url: 'url', active: true, config: {} },
+        interval
+      );
     });
 
     describe('when there is no sync config', () => {

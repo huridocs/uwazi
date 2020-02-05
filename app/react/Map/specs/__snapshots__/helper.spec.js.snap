@@ -12,58 +12,76 @@ Array [
         "metadata": Object {
           "geoProperty": Array [
             Object {
-              "lat": 7,
-              "lon": 13,
+              "value": Object {
+                "lat": 7,
+                "lon": 13,
+              },
             },
             Object {
-              "label": "home",
-              "lat": 13,
-              "lon": 7,
+              "value": Object {
+                "label": "home",
+                "lat": 13,
+                "lon": 7,
+              },
             },
           ],
           "inheritedGeo1": Array [
             Object {
-              "entity": "e5",
               "inherit_geolocation": Array [
                 Object {
-                  "lat": 23,
-                  "lon": 1946,
+                  "value": Object {
+                    "lat": 23,
+                    "lon": 1946,
+                  },
                 },
               ],
+              "value": "e5",
             },
             Object {
-              "entity": "e4",
               "inherit_geolocation": Array [
                 Object {
-                  "lat": 2018,
-                  "lon": 6,
+                  "value": Object {
+                    "lat": 2018,
+                    "lon": 6,
+                  },
                 },
                 Object {
-                  "label": "inherited label",
-                  "lat": 1977,
-                  "lon": 1982,
+                  "value": Object {
+                    "label": "inherited label",
+                    "lat": 1977,
+                    "lon": 1982,
+                  },
                 },
               ],
+              "value": "e4",
             },
           ],
           "inheritedGeo2": Array [
             Object {
-              "entity": "e5",
               "inherit_geolocation": Array [
                 Object {
-                  "lat": 23,
-                  "lon": 1946,
+                  "value": Object {
+                    "lat": 23,
+                    "lon": 1946,
+                  },
                 },
               ],
+              "value": "e5",
             },
           ],
           "secondGeoProperty": Array [
             Object {
-              "lat": 5,
-              "lon": 13,
+              "value": Object {
+                "lat": 5,
+                "lon": 13,
+              },
             },
           ],
-          "text": "text value",
+          "text": Array [
+            Object {
+              "value": "text value",
+            },
+          ],
         },
         "sharedId": "e1",
         "template": "t1",
@@ -81,58 +99,76 @@ Array [
         "metadata": Object {
           "geoProperty": Array [
             Object {
-              "lat": 7,
-              "lon": 13,
+              "value": Object {
+                "lat": 7,
+                "lon": 13,
+              },
             },
             Object {
-              "label": "home",
-              "lat": 13,
-              "lon": 7,
+              "value": Object {
+                "label": "home",
+                "lat": 13,
+                "lon": 7,
+              },
             },
           ],
           "inheritedGeo1": Array [
             Object {
-              "entity": "e5",
               "inherit_geolocation": Array [
                 Object {
-                  "lat": 23,
-                  "lon": 1946,
+                  "value": Object {
+                    "lat": 23,
+                    "lon": 1946,
+                  },
                 },
               ],
+              "value": "e5",
             },
             Object {
-              "entity": "e4",
               "inherit_geolocation": Array [
                 Object {
-                  "lat": 2018,
-                  "lon": 6,
+                  "value": Object {
+                    "lat": 2018,
+                    "lon": 6,
+                  },
                 },
                 Object {
-                  "label": "inherited label",
-                  "lat": 1977,
-                  "lon": 1982,
+                  "value": Object {
+                    "label": "inherited label",
+                    "lat": 1977,
+                    "lon": 1982,
+                  },
                 },
               ],
+              "value": "e4",
             },
           ],
           "inheritedGeo2": Array [
             Object {
-              "entity": "e5",
               "inherit_geolocation": Array [
                 Object {
-                  "lat": 23,
-                  "lon": 1946,
+                  "value": Object {
+                    "lat": 23,
+                    "lon": 1946,
+                  },
                 },
               ],
+              "value": "e5",
             },
           ],
           "secondGeoProperty": Array [
             Object {
-              "lat": 5,
-              "lon": 13,
+              "value": Object {
+                "lat": 5,
+                "lon": 13,
+              },
             },
           ],
-          "text": "text value",
+          "text": Array [
+            Object {
+              "value": "text value",
+            },
+          ],
         },
         "sharedId": "e1",
         "template": "t1",
@@ -150,58 +186,76 @@ Array [
         "metadata": Object {
           "geoProperty": Array [
             Object {
-              "lat": 7,
-              "lon": 13,
+              "value": Object {
+                "lat": 7,
+                "lon": 13,
+              },
             },
             Object {
-              "label": "home",
-              "lat": 13,
-              "lon": 7,
+              "value": Object {
+                "label": "home",
+                "lat": 13,
+                "lon": 7,
+              },
             },
           ],
           "inheritedGeo1": Array [
             Object {
-              "entity": "e5",
               "inherit_geolocation": Array [
                 Object {
-                  "lat": 23,
-                  "lon": 1946,
+                  "value": Object {
+                    "lat": 23,
+                    "lon": 1946,
+                  },
                 },
               ],
+              "value": "e5",
             },
             Object {
-              "entity": "e4",
               "inherit_geolocation": Array [
                 Object {
-                  "lat": 2018,
-                  "lon": 6,
+                  "value": Object {
+                    "lat": 2018,
+                    "lon": 6,
+                  },
                 },
                 Object {
-                  "label": "inherited label",
-                  "lat": 1977,
-                  "lon": 1982,
+                  "value": Object {
+                    "label": "inherited label",
+                    "lat": 1977,
+                    "lon": 1982,
+                  },
                 },
               ],
+              "value": "e4",
             },
           ],
           "inheritedGeo2": Array [
             Object {
-              "entity": "e5",
               "inherit_geolocation": Array [
                 Object {
-                  "lat": 23,
-                  "lon": 1946,
+                  "value": Object {
+                    "lat": 23,
+                    "lon": 1946,
+                  },
                 },
               ],
+              "value": "e5",
             },
           ],
           "secondGeoProperty": Array [
             Object {
-              "lat": 5,
-              "lon": 13,
+              "value": Object {
+                "lat": 5,
+                "lon": 13,
+              },
             },
           ],
-          "text": "text value",
+          "text": Array [
+            Object {
+              "value": "text value",
+            },
+          ],
         },
         "sharedId": "e1",
         "template": "t1",
@@ -220,65 +274,83 @@ Array [
         "metadata": Object {
           "geoProperty": Array [
             Object {
-              "lat": 7,
-              "lon": 13,
+              "value": Object {
+                "lat": 7,
+                "lon": 13,
+              },
             },
             Object {
-              "label": "home",
-              "lat": 13,
-              "lon": 7,
+              "value": Object {
+                "label": "home",
+                "lat": 13,
+                "lon": 7,
+              },
             },
           ],
           "inheritedGeo1": Array [
             Object {
-              "entity": "e5",
               "inherit_geolocation": Array [
                 Object {
-                  "lat": 23,
-                  "lon": 1946,
+                  "value": Object {
+                    "lat": 23,
+                    "lon": 1946,
+                  },
                 },
               ],
+              "value": "e5",
             },
             Object {
-              "entity": "e4",
               "inherit_geolocation": Array [
                 Object {
-                  "lat": 2018,
-                  "lon": 6,
+                  "value": Object {
+                    "lat": 2018,
+                    "lon": 6,
+                  },
                 },
                 Object {
-                  "label": "inherited label",
-                  "lat": 1977,
-                  "lon": 1982,
+                  "value": Object {
+                    "label": "inherited label",
+                    "lat": 1977,
+                    "lon": 1982,
+                  },
                 },
               ],
+              "value": "e4",
             },
           ],
           "inheritedGeo2": Array [
             Object {
-              "entity": "e5",
               "inherit_geolocation": Array [
                 Object {
-                  "lat": 23,
-                  "lon": 1946,
+                  "value": Object {
+                    "lat": 23,
+                    "lon": 1946,
+                  },
                 },
               ],
+              "value": "e5",
             },
           ],
           "secondGeoProperty": Array [
             Object {
-              "lat": 5,
-              "lon": 13,
+              "value": Object {
+                "lat": 5,
+                "lon": 13,
+              },
             },
           ],
-          "text": "text value",
+          "text": Array [
+            Object {
+              "value": "text value",
+            },
+          ],
         },
         "sharedId": "e1",
         "template": "t1",
       },
       "info": undefined,
       "inherited": true,
-      "inheritedEntity": "e5",
+      "inheritedEntity": undefined,
     },
   },
   Object {
@@ -292,65 +364,83 @@ Array [
         "metadata": Object {
           "geoProperty": Array [
             Object {
-              "lat": 7,
-              "lon": 13,
+              "value": Object {
+                "lat": 7,
+                "lon": 13,
+              },
             },
             Object {
-              "label": "home",
-              "lat": 13,
-              "lon": 7,
+              "value": Object {
+                "label": "home",
+                "lat": 13,
+                "lon": 7,
+              },
             },
           ],
           "inheritedGeo1": Array [
             Object {
-              "entity": "e5",
               "inherit_geolocation": Array [
                 Object {
-                  "lat": 23,
-                  "lon": 1946,
+                  "value": Object {
+                    "lat": 23,
+                    "lon": 1946,
+                  },
                 },
               ],
+              "value": "e5",
             },
             Object {
-              "entity": "e4",
               "inherit_geolocation": Array [
                 Object {
-                  "lat": 2018,
-                  "lon": 6,
+                  "value": Object {
+                    "lat": 2018,
+                    "lon": 6,
+                  },
                 },
                 Object {
-                  "label": "inherited label",
-                  "lat": 1977,
-                  "lon": 1982,
+                  "value": Object {
+                    "label": "inherited label",
+                    "lat": 1977,
+                    "lon": 1982,
+                  },
                 },
               ],
+              "value": "e4",
             },
           ],
           "inheritedGeo2": Array [
             Object {
-              "entity": "e5",
               "inherit_geolocation": Array [
                 Object {
-                  "lat": 23,
-                  "lon": 1946,
+                  "value": Object {
+                    "lat": 23,
+                    "lon": 1946,
+                  },
                 },
               ],
+              "value": "e5",
             },
           ],
           "secondGeoProperty": Array [
             Object {
-              "lat": 5,
-              "lon": 13,
+              "value": Object {
+                "lat": 5,
+                "lon": 13,
+              },
             },
           ],
-          "text": "text value",
+          "text": Array [
+            Object {
+              "value": "text value",
+            },
+          ],
         },
         "sharedId": "e1",
         "template": "t1",
       },
       "info": undefined,
       "inherited": true,
-      "inheritedEntity": "e4",
+      "inheritedEntity": undefined,
     },
   },
   Object {
@@ -364,65 +454,83 @@ Array [
         "metadata": Object {
           "geoProperty": Array [
             Object {
-              "lat": 7,
-              "lon": 13,
+              "value": Object {
+                "lat": 7,
+                "lon": 13,
+              },
             },
             Object {
-              "label": "home",
-              "lat": 13,
-              "lon": 7,
+              "value": Object {
+                "label": "home",
+                "lat": 13,
+                "lon": 7,
+              },
             },
           ],
           "inheritedGeo1": Array [
             Object {
-              "entity": "e5",
               "inherit_geolocation": Array [
                 Object {
-                  "lat": 23,
-                  "lon": 1946,
+                  "value": Object {
+                    "lat": 23,
+                    "lon": 1946,
+                  },
                 },
               ],
+              "value": "e5",
             },
             Object {
-              "entity": "e4",
               "inherit_geolocation": Array [
                 Object {
-                  "lat": 2018,
-                  "lon": 6,
+                  "value": Object {
+                    "lat": 2018,
+                    "lon": 6,
+                  },
                 },
                 Object {
-                  "label": "inherited label",
-                  "lat": 1977,
-                  "lon": 1982,
+                  "value": Object {
+                    "label": "inherited label",
+                    "lat": 1977,
+                    "lon": 1982,
+                  },
                 },
               ],
+              "value": "e4",
             },
           ],
           "inheritedGeo2": Array [
             Object {
-              "entity": "e5",
               "inherit_geolocation": Array [
                 Object {
-                  "lat": 23,
-                  "lon": 1946,
+                  "value": Object {
+                    "lat": 23,
+                    "lon": 1946,
+                  },
                 },
               ],
+              "value": "e5",
             },
           ],
           "secondGeoProperty": Array [
             Object {
-              "lat": 5,
-              "lon": 13,
+              "value": Object {
+                "lat": 5,
+                "lon": 13,
+              },
             },
           ],
-          "text": "text value",
+          "text": Array [
+            Object {
+              "value": "text value",
+            },
+          ],
         },
         "sharedId": "e1",
         "template": "t1",
       },
       "info": "inherited label",
       "inherited": true,
-      "inheritedEntity": "e4",
+      "inheritedEntity": undefined,
     },
   },
   Object {
@@ -436,65 +544,83 @@ Array [
         "metadata": Object {
           "geoProperty": Array [
             Object {
-              "lat": 7,
-              "lon": 13,
+              "value": Object {
+                "lat": 7,
+                "lon": 13,
+              },
             },
             Object {
-              "label": "home",
-              "lat": 13,
-              "lon": 7,
+              "value": Object {
+                "label": "home",
+                "lat": 13,
+                "lon": 7,
+              },
             },
           ],
           "inheritedGeo1": Array [
             Object {
-              "entity": "e5",
               "inherit_geolocation": Array [
                 Object {
-                  "lat": 23,
-                  "lon": 1946,
+                  "value": Object {
+                    "lat": 23,
+                    "lon": 1946,
+                  },
                 },
               ],
+              "value": "e5",
             },
             Object {
-              "entity": "e4",
               "inherit_geolocation": Array [
                 Object {
-                  "lat": 2018,
-                  "lon": 6,
+                  "value": Object {
+                    "lat": 2018,
+                    "lon": 6,
+                  },
                 },
                 Object {
-                  "label": "inherited label",
-                  "lat": 1977,
-                  "lon": 1982,
+                  "value": Object {
+                    "label": "inherited label",
+                    "lat": 1977,
+                    "lon": 1982,
+                  },
                 },
               ],
+              "value": "e4",
             },
           ],
           "inheritedGeo2": Array [
             Object {
-              "entity": "e5",
               "inherit_geolocation": Array [
                 Object {
-                  "lat": 23,
-                  "lon": 1946,
+                  "value": Object {
+                    "lat": 23,
+                    "lon": 1946,
+                  },
                 },
               ],
+              "value": "e5",
             },
           ],
           "secondGeoProperty": Array [
             Object {
-              "lat": 5,
-              "lon": 13,
+              "value": Object {
+                "lat": 5,
+                "lon": 13,
+              },
             },
           ],
-          "text": "text value",
+          "text": Array [
+            Object {
+              "value": "text value",
+            },
+          ],
         },
         "sharedId": "e1",
         "template": "t1",
       },
       "info": undefined,
       "inherited": true,
-      "inheritedEntity": "e5",
+      "inheritedEntity": undefined,
     },
   },
   Object {
@@ -507,11 +633,17 @@ Array [
         "metadata": Object {
           "geoProperty": Array [
             Object {
-              "lat": 5,
-              "lon": 22,
+              "value": Object {
+                "lat": 5,
+                "lon": 22,
+              },
             },
           ],
-          "secondGeoProperty": null,
+          "secondGeoProperty": Array [
+            Object {
+              "value": null,
+            },
+          ],
         },
         "template": "t1",
       },
@@ -528,8 +660,10 @@ Array [
         "metadata": Object {
           "anotherGeoProperty": Array [
             Object {
-              "lat": 2018,
-              "lon": 6,
+              "value": Object {
+                "lat": 2018,
+                "lon": 6,
+              },
             },
           ],
         },
@@ -550,8 +684,10 @@ Array [
         "metadata": Object {
           "anotherGeoProperty": Array [
             Object {
-              "lat": 23,
-              "lon": 1946,
+              "value": Object {
+                "lat": 23,
+                "lon": 1946,
+              },
             },
           ],
         },
@@ -572,14 +708,16 @@ Array [
         "metadata": Object {
           "anotherInheritedGeo": Array [
             Object {
-              "entity": "e1",
               "inherit_geolocation": Array [
                 Object {
-                  "label": "home",
-                  "lat": 13,
-                  "lon": 7,
+                  "value": Object {
+                    "label": "home",
+                    "lat": 13,
+                    "lon": 7,
+                  },
                 },
               ],
+              "value": "e1",
             },
           ],
         },
@@ -587,7 +725,7 @@ Array [
       },
       "info": "home",
       "inherited": true,
-      "inheritedEntity": "e1",
+      "inheritedEntity": undefined,
     },
   },
 ]
@@ -605,22 +743,32 @@ Array [
         "metadata": Object {
           "geoProperty": Array [
             Object {
-              "lat": 7,
-              "lon": 13,
+              "value": Object {
+                "lat": 7,
+                "lon": 13,
+              },
             },
             Object {
-              "label": "home",
-              "lat": 13,
-              "lon": 7,
+              "value": Object {
+                "label": "home",
+                "lat": 13,
+                "lon": 7,
+              },
             },
           ],
           "secondGeoProperty": Array [
             Object {
-              "lat": 5,
-              "lon": 13,
+              "value": Object {
+                "lat": 5,
+                "lon": 13,
+              },
             },
           ],
-          "text": "text value",
+          "text": Array [
+            Object {
+              "value": "text value",
+            },
+          ],
         },
         "sharedId": "e1",
         "template": "t1",
@@ -638,22 +786,32 @@ Array [
         "metadata": Object {
           "geoProperty": Array [
             Object {
-              "lat": 7,
-              "lon": 13,
+              "value": Object {
+                "lat": 7,
+                "lon": 13,
+              },
             },
             Object {
-              "label": "home",
-              "lat": 13,
-              "lon": 7,
+              "value": Object {
+                "label": "home",
+                "lat": 13,
+                "lon": 7,
+              },
             },
           ],
           "secondGeoProperty": Array [
             Object {
-              "lat": 5,
-              "lon": 13,
+              "value": Object {
+                "lat": 5,
+                "lon": 13,
+              },
             },
           ],
-          "text": "text value",
+          "text": Array [
+            Object {
+              "value": "text value",
+            },
+          ],
         },
         "sharedId": "e1",
         "template": "t1",
@@ -671,22 +829,32 @@ Array [
         "metadata": Object {
           "geoProperty": Array [
             Object {
-              "lat": 7,
-              "lon": 13,
+              "value": Object {
+                "lat": 7,
+                "lon": 13,
+              },
             },
             Object {
-              "label": "home",
-              "lat": 13,
-              "lon": 7,
+              "value": Object {
+                "label": "home",
+                "lat": 13,
+                "lon": 7,
+              },
             },
           ],
           "secondGeoProperty": Array [
             Object {
-              "lat": 5,
-              "lon": 13,
+              "value": Object {
+                "lat": 5,
+                "lon": 13,
+              },
             },
           ],
-          "text": "text value",
+          "text": Array [
+            Object {
+              "value": "text value",
+            },
+          ],
         },
         "sharedId": "e1",
         "template": "t1",
@@ -704,11 +872,17 @@ Array [
         "metadata": Object {
           "geoProperty": Array [
             Object {
-              "lat": 5,
-              "lon": 22,
+              "value": Object {
+                "lat": 5,
+                "lon": 22,
+              },
             },
           ],
-          "secondGeoProperty": null,
+          "secondGeoProperty": Array [
+            Object {
+              "value": null,
+            },
+          ],
         },
         "template": "t1",
       },
@@ -725,8 +899,10 @@ Array [
         "metadata": Object {
           "anotherGeoProperty": Array [
             Object {
-              "lat": 2018,
-              "lon": 6,
+              "value": Object {
+                "lat": 2018,
+                "lon": 6,
+              },
             },
           ],
         },

@@ -3,8 +3,11 @@
 import Ajv from 'ajv';
 import ajvKeywords from 'ajv-keywords';
 import model from 'api/templates/templatesModel';
-import { objectIdSchema, propertySchema } from 'api/utils/jsonSchemas';
+import { wrapValidator } from 'shared/tsUtils';
+import { objectIdSchema, propertySchema } from 'shared/commonSchemas';
 import templates from 'api/templates';
+
+export const emitSchemaTypes = true;
 
 const ajv = ajvKeywords(Ajv({ allErrors: true }), ['uniqueItemProperties']);
 
@@ -112,7 +115,7 @@ ajv.addKeyword('cantDeleteInheritedProperties', {
       return true;
     }
     const toRemoveProperties = currentTemplate.properties.filter(
-      prop => !template.properties.find(p => p._id === prop._id)
+      prop => !template.properties.find(p => p._id && p._id.toString() === prop._id.toString())
     );
 
     const errors = [];
@@ -137,14 +140,15 @@ ajv.addKeyword('cantDeleteInheritedProperties', {
   },
 });
 
-const schema = {
+export const templateSchema = {
   $schema: 'http://json-schema.org/schema#',
   $async: true,
   type: 'object',
   uniqueName: true,
   cantDeleteInheritedProperties: true,
   required: ['name', 'commonProperties'],
-  uniquePropertyFields: ['id', 'name', 'label', 'relationType'],
+  uniquePropertyFields: ['id', 'name', 'label'],
+  definitions: { objectIdSchema, propertySchema },
   properties: {
     _id: objectIdSchema,
     name: { type: 'string', minLength: 1 },
@@ -163,6 +167,5 @@ const schema = {
   },
 };
 
-const validateTemplate = ajv.compile(schema);
-
+const validateTemplate = wrapValidator(ajv.compile(templateSchema));
 export { validateTemplate };

@@ -12,22 +12,20 @@ exports[`StackTrace expanded should display the full message 1`] = `
   <span>
     ValidationError: title: Path \`title\` is required. at new ValidationError (/Users/user/Sites/uwazi/node_modules/mongoose/lib /error/validation.js:27:11) at model.Document.invalidate (/Users/user/Sites/uwazi/node_modules/mongoose /lib/document.js:1775:32) at /Users/user/Sites/uwazi/node_modules/mongoose/lib/document.js:1647:17 at /Users/user/Sites/uwazi/node_modules/mongoose/lib/schematype.js:808:9 at _combinedTickCallback (internal/process/next_tick.js:131:7) at process._tickCallback (internal/process/next_tick.js:180:9)
   </span>
-  <React.Fragment>
-    <div
-      key="0"
-    >
-      should be number
-      : 
-      .metadata['number']
-    </div>
-    <div
-      key="1"
-    >
-      should be a date
-      : 
-      .metadata['date']
-    </div>
-  </React.Fragment>
+  <div
+    key="0"
+  >
+    should be number
+    : 
+    .metadata['number']
+  </div>
+  <div
+    key="1"
+  >
+    should be a date
+    : 
+    .metadata['date']
+  </div>
 </div>
 `;
 

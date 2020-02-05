@@ -45,7 +45,7 @@ const conformMessage = (result, routeCanFail, expected) =>
 export function catchErrors(done) {
   return error => {
     if (error instanceof Error) {
-      return done.fail(error.stack);
+      return done.fail(error);
     }
     return done.fail(JSON.stringify(error));
   };

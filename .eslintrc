@@ -26,7 +26,7 @@
     "newline-per-chained-call": "off",
     "no-prototype-builtins": "off",
     "implicit-arrow-linebreak": "off",
-
+    "jasmine/no-focused-tests": "error",
     "object-curly-spacing": ["warn", "always"],
     "max-len": ["error", 150],
 
@@ -99,7 +99,7 @@
     "react/jsx-no-target-blank": ["warn"],
     "react/jsx-filename-extension": "off",
     "react/jsx-tag-spacing": "off",
-    "react/destructuring-assignment": ["warn"],
+    "react/destructuring-assignment": ["off"],
     "react/jsx-one-expression-per-line": "off",
     "import/no-useless-path-segments": ["warn"],
     "react/button-has-type": ["warn"],

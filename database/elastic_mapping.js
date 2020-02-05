@@ -1,9 +1,11 @@
 /** @format */
 /* eslint-disable camelcase */
+
 import languages from '../app/shared/languages';
 
 const config = {
   settings: {
+    'index.mapping.total_fields.limit': 2000,
     analysis: {
       char_filter: {
         remove_annotation: {
@@ -32,160 +34,138 @@ const config = {
     },
   },
   mappings: {
-    fullText: {
-      _parent: {
-        type: 'entity',
+    dynamic_templates: [
+      {
+        message_field: {
+          match: 'message',
+          match_mapping_type: 'string',
+          mapping: {
+            type: 'string',
+            index: true,
+            omit_norms: true,
+            fielddata: { format: 'disabled' },
+          },
+        },
       },
-    },
-    _default_: {
-      _all: { enabled: true, omit_norms: true },
-      dynamic_templates: [
-        {
-          message_field: {
-            match: 'message',
-            match_mapping_type: 'string',
-            mapping: {
-              type: 'string',
-              index: 'analyzed',
-              omit_norms: true,
-              fielddata: { format: 'disabled' },
+      {
+        fullText_other: {
+          match: 'fullText_other',
+          match_mapping_type: 'string',
+          mapping: {
+            type: 'text',
+            index: true,
+            omit_norms: true,
+            analyzer: 'other',
+            term_vector: 'with_positions_offsets',
+          },
+        },
+      },
+      {
+        string_fields: {
+          match: '*',
+          match_mapping_type: 'string',
+          mapping: {
+            type: 'text',
+            index: true,
+            omit_norms: true,
+            analyzer: 'tokenizer',
+            fields: {
+              raw: { type: 'keyword' },
+              sort: { type: 'text', fielddata: true, analyzer: 'string_sorter' },
+            },
+            term_vector: 'with_positions_offsets',
+          },
+        },
+      },
+      {
+        double_fields: {
+          match: '*',
+          match_mapping_type: 'double',
+          mapping: {
+            type: 'double',
+            doc_values: true,
+            fields: {
+              sort: { type: 'double' },
             },
           },
         },
-        {
-          fullText_other: {
-            match: 'fullText_other',
-            match_mapping_type: 'string',
-            mapping: {
-              type: 'text',
-              index: 'analyzed',
-              omit_norms: true,
-              analyzer: 'other',
-              term_vector: 'with_positions_offsets',
+      },
+      {
+        binary_fields: {
+          match: '*',
+          match_mapping_type: 'binary',
+          mapping: { type: 'binary', doc_values: true },
+        },
+      },
+      {
+        long_fields: {
+          match: '*',
+          match_mapping_type: 'long',
+          mapping: {
+            type: 'double',
+            doc_values: true,
+            fields: {
+              raw: { type: 'double', index: false },
+              sort: { type: 'double' },
             },
           },
         },
-        {
-          string_fields: {
-            match: '*',
-            match_mapping_type: 'string',
-            mapping: {
-              type: 'text',
-              index: 'analyzed',
-              omit_norms: true,
-              analyzer: 'tokenizer',
-              fields: {
-                raw: { type: 'keyword' },
-                sort: { type: 'text', fielddata: true, analyzer: 'string_sorter' },
-              },
-              term_vector: 'with_positions_offsets',
-            },
-          },
+      },
+      {
+        date_fields: {
+          match: '*',
+          match_mapping_type: 'date',
+          mapping: { type: 'date', doc_values: true },
         },
-        {
-          float_fields: {
-            match: '*',
-            match_mapping_type: 'float',
-            mapping: { type: 'float', doc_values: true },
-          },
+      },
+      {
+        relationships_fields: {
+          path_match: 'relationships',
+          mapping: { type: 'nested' },
         },
-        {
-          double_fields: {
-            match: '*',
-            match_mapping_type: 'double',
-            mapping: {
-              type: 'double',
-              doc_values: true,
-              fields: {
-                sort: { type: 'double' },
-              },
-            },
-          },
+      },
+      {
+        geo_point_fields: {
+          match: '*_geolocation',
+          path_match: 'metadata.*',
+          mapping: { type: 'object' },
         },
-        {
-          byte_fields: {
-            match: '*',
-            match_mapping_type: 'byte',
-            mapping: { type: 'byte', doc_values: true },
-          },
+      },
+      {
+        nested_fields: {
+          match_mapping_type: 'object',
+          path_match: '*_nested.value',
+          mapping: { type: 'nested' },
         },
-        {
-          short_fields: {
-            match: '*',
-            match_mapping_type: 'short',
-            mapping: { type: 'short', doc_values: true },
-          },
+      },
+      {
+        object_fields: {
+          match_mapping_type: 'object',
+          path_match: 'metadata.*',
+          mapping: { type: 'object' },
         },
-        {
-          integer_fields: {
-            match: '*',
-            match_mapping_type: 'integer',
-            mapping: { type: 'integer', doc_values: true },
-          },
+      },
+    ],
+    properties: {
+      '@timestamp': { type: 'date', doc_values: true },
+      '@version': { type: 'text', index: false },
+      fullText: { type: 'join', relations: { entity: 'fullText' } },
+      creationDate: {
+        type: 'long',
+        doc_values: true,
+        fields: {
+          raw: { type: 'long', index: false },
+          sort: { type: 'long' },
         },
-        {
-          long_fields: {
-            match: '*',
-            match_mapping_type: 'long',
-            mapping: {
-              type: 'double',
-              doc_values: true,
-              fields: {
-                raw: { type: 'double', index: 'not_analyzed' },
-                sort: { type: 'double' },
-              },
-            },
-          },
-        },
-        {
-          date_fields: {
-            match: '*',
-            match_mapping_type: 'date',
-            mapping: { type: 'date', doc_values: true },
-          },
-        },
-        {
-          geo_point_fields: {
-            match: '*_geolocation',
-            path_match: 'metadata.*',
-            mapping: { type: 'object' },
-          },
-        },
-        {
-          nested_fields: {
-            match_mapping_type: 'object',
-            path_match: 'metadata.*',
-            path_unmatch: 'metadata.*.*',
-            mapping: { type: 'nested' },
-          },
-        },
-        {
-          relationships_fields: {
-            path_match: 'relationships',
-            mapping: { type: 'nested' },
-          },
-        },
-      ],
-      properties: {
-        '@timestamp': { type: 'date', doc_values: true },
-        '@version': { type: 'string', index: 'not_analyzed', doc_values: true },
-        creationDate: {
-          type: 'long',
-          doc_values: true,
-          fields: {
-            raw: { type: 'long', index: 'not_analyzed' },
-            sort: { type: 'long' },
-          },
-        },
-        geoip: {
-          type: 'object',
-          dynamic: true,
-          properties: {
-            ip: { type: 'ip', doc_values: true },
-            location: { type: 'geo_point', doc_values: true },
-            latitude: { type: 'float', doc_values: true },
-            longitude: { type: 'float', doc_values: true },
-          },
+      },
+      geoip: {
+        type: 'object',
+        dynamic: true,
+        properties: {
+          ip: { type: 'ip', doc_values: true },
+          location: { type: 'geo_point', doc_values: true },
+          latitude: { type: 'float', doc_values: true },
+          longitude: { type: 'float', doc_values: true },
         },
       },
     },
@@ -206,7 +186,7 @@ languages.getAll().forEach(language => {
     filters.push('arabic_normalization');
     filters.push('persian_normalization');
   }
-  if (language !== 'persian' && language !== 'thai') {
+  if (language !== 'persian' && language !== 'thai' && language !== 'cjk') {
     config.settings.analysis.filter[`${language}_stemmer`] = {
       type: 'stemmer',
       language,
@@ -234,7 +214,7 @@ languages.getAll().forEach(language => {
     match_mapping_type: 'string',
     mapping: {
       type: 'text',
-      index: 'analyzed',
+      index: true,
       omit_norms: true,
       analyzer: `fulltext_${language}`,
       search_analyzer: `stop_${language}`,
@@ -243,7 +223,7 @@ languages.getAll().forEach(language => {
     },
   };
 
-  config.mappings._default_.dynamic_templates.unshift(mapping);
+  config.mappings.dynamic_templates.unshift(mapping);
 });
 
 export default config;

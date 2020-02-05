@@ -15,4 +15,6 @@ cp ./uploaded_documents/*.jpg ../../uploaded_documents/
 
 echo "Indexing into ElasticSearch..."
 cd ../../
-npm run reindex
+export DATABASE_NAME=$DB
+yarn migrate
+yarn reindex

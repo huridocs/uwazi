@@ -1,3 +1,5 @@
+/** @format */
+
 import 'react-datepicker/dist/react-datepicker.css';
 
 import DatePickerComponent from 'react-datepicker';
@@ -8,22 +10,12 @@ import moment from 'moment';
 class DatePicker extends Component {
   constructor(props) {
     super(props);
-    this.state = {};
     this.onChange = this.onChange.bind(this);
-    if (props.value) {
-      this.state.value = moment.utc(props.value, 'X');
-    }
-  }
-
-  componentWillReceiveProps(newProps) {
-    if (newProps.value) {
-      this.setState({ value: moment.utc(newProps.value, 'X') });
-    }
   }
 
   onChange(value) {
-    const { onChange, endOfDay, useTimezone } = this.props;
-    this.setState({ value });
+    const { endOfDay, useTimezone } = this.props;
+    const { onChange } = this.props;
     if (!value) {
       onChange(null);
     } else {
@@ -44,7 +36,8 @@ class DatePicker extends Component {
     let { locale, format } = this.props;
     locale = locale || 'en';
     format = format || 'DD/MM/YYYY';
-    const { value } = this.state;
+    let { value } = this.props;
+    value = value ? moment.utc(value, 'X') : null;
 
     return (
       <DatePickerComponent
@@ -63,21 +56,20 @@ class DatePicker extends Component {
 }
 
 DatePicker.defaultProps = {
-  onChange: () => {},
   value: undefined,
   endOfDay: false,
   locale: undefined,
   format: undefined,
-  useTimezone: false
+  useTimezone: false,
 };
 
 DatePicker.propTypes = {
-  onChange: PropTypes.func,
+  onChange: PropTypes.func.isRequired,
   value: PropTypes.number,
   endOfDay: PropTypes.bool,
   locale: PropTypes.string,
   format: PropTypes.string,
-  useTimezone: PropTypes.bool
+  useTimezone: PropTypes.bool,
 };
 
 export default DatePicker;

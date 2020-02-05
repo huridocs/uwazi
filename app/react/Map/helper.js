@@ -1,33 +1,40 @@
-const getMarkersBoudingBox = markers => markers.reduce((_b, marker) => {
-  const b = _b.slice();
-  if (!b[0][0] || marker.longitude < b[0][0]) {
-    b[0][0] = marker.longitude;
-  }
-  if (!b[1][0] || marker.longitude > b[1][0]) {
-    b[1][0] = marker.longitude;
-  }
-  if (!b[1][1] || marker.latitude > b[1][1]) {
-    b[1][1] = marker.latitude;
-  }
-  if (!b[0][1] || marker.latitude < b[0][1]) {
-    b[0][1] = marker.latitude;
-  }
-  return b;
-}, [[null, null], [null, null]]);
+/** @format */
 
-const markersToStyleFormat = markers => markers.map((marker, index) => {
-  const properties = marker.properties || {};
-  const { longitude, latitude } = marker;
-  properties.index = index;
-  return {
-          type: 'Feature',
-          properties,
-          geometry: {
-            type: 'Point',
-            coordinates: [longitude, latitude]
-          }
-  };
-});
+const getMarkersBoudingBox = markers =>
+  markers.reduce(
+    (_b, marker) => {
+      const b = _b.slice();
+      if (!b[0][0] || marker.longitude < b[0][0]) {
+        b[0][0] = marker.longitude;
+      }
+      if (!b[1][0] || marker.longitude > b[1][0]) {
+        b[1][0] = marker.longitude;
+      }
+      if (!b[1][1] || marker.latitude > b[1][1]) {
+        b[1][1] = marker.latitude;
+      }
+      if (!b[0][1] || marker.latitude < b[0][1]) {
+        b[0][1] = marker.latitude;
+      }
+      return b;
+    },
+    [[null, null], [null, null]]
+  );
+
+const markersToStyleFormat = markers =>
+  markers.map((marker, index) => {
+    const properties = marker.properties || {};
+    const { longitude, latitude } = marker;
+    properties.index = index;
+    return {
+      type: 'Feature',
+      properties,
+      geometry: {
+        type: 'Point',
+        coordinates: [longitude, latitude],
+      },
+    };
+  });
 
 const noop = () => {};
 
@@ -38,13 +45,20 @@ const getPropertyBasedMarkers = (template, entity, color) => {
   const geolocationPropNames = geolocationProps.map(p => p.name);
 
   if (geolocationProps.length && entity.metadata) {
-    Object.keys(entity.metadata).forEach((property) => {
+    Object.keys(entity.metadata).forEach(property => {
       if (geolocationPropNames.includes(property) && entity.metadata[property]) {
         const { label } = geolocationProps.find(p => p.name === property);
-        entity.metadata[property].forEach((point) => {
-          const { lat, lon } = point;
-          markers.push({ properties: { entity, color, info: point.label }, latitude: lat, longitude: lon, label });
-        });
+        entity.metadata[property]
+          .filter(mo => mo.value)
+          .forEach(({ value: point }) => {
+            const { lat, lon } = point;
+            markers.push({
+              properties: { entity, color, info: point.label },
+              latitude: lat,
+              longitude: lon,
+              label,
+            });
+          });
       }
     });
   }
@@ -55,10 +69,14 @@ const getPropertyBasedMarkers = (template, entity, color) => {
 const getInheritedMarkers = (template, entity, templates, color) => {
   const markers = [];
 
-  const inheritedGeolocationProps = template.properties.filter((property) => {
+  const inheritedGeolocationProps = template.properties.filter(property => {
     if (property.type === 'relationship' && property.inheritProperty) {
-      const contentTemplate = templates.find(t => t.get('_id').toString() === property.content.toString());
-      const inheritedProperty = contentTemplate.get('properties').find(p => p.get('_id').toString() === property.inheritProperty.toString());
+      const contentTemplate = templates.find(
+        t => t.get('_id').toString() === property.content.toString()
+      );
+      const inheritedProperty = contentTemplate
+        .get('properties')
+        .find(p => p.get('_id').toString() === property.inheritProperty.toString());
       return inheritedProperty.get('type') === 'geolocation';
     }
 
@@ -68,16 +86,28 @@ const getInheritedMarkers = (template, entity, templates, color) => {
   const inheritedGeolocationPropNames = inheritedGeolocationProps.map(p => p.name);
 
   if (inheritedGeolocationProps.length && entity.metadata) {
-    Object.keys(entity.metadata).forEach((property) => {
+    Object.keys(entity.metadata).forEach(property => {
       if (inheritedGeolocationPropNames.includes(property) && entity.metadata[property]) {
-        const { label, content: context } = inheritedGeolocationProps.find(p => p.name === property);
-        entity.metadata[property].forEach((relatedProperty) => {
-          if (relatedProperty.inherit_geolocation) { // conditional is a quick hack to prevent app crash
-            relatedProperty.inherit_geolocation.forEach((point) => {
-              const { lat, lon } = point;
-              const properties = { entity, color, info: point.label, inherited: true, inheritedEntity: relatedProperty.entity, context };
-              markers.push({ properties, latitude: lat, longitude: lon, label });
-            });
+        const { label, content: context } = inheritedGeolocationProps.find(
+          p => p.name === property
+        );
+        entity.metadata[property].forEach(relatedProperty => {
+          if (relatedProperty.inherit_geolocation) {
+            // conditional is a quick hack to prevent app crash
+            relatedProperty.inherit_geolocation
+              .filter(mo => mo.value)
+              .forEach(({ value: point }) => {
+                const { lat, lon } = point;
+                const properties = {
+                  entity,
+                  color,
+                  info: point.label,
+                  inherited: true,
+                  inheritedEntity: relatedProperty.entity,
+                  context,
+                };
+                markers.push({ properties, latitude: lat, longitude: lon, label });
+              });
           }
         });
       }
@@ -101,7 +131,7 @@ const getEntityMarkers = (entity, templates) => {
 
 const getMarkers = (entities, templates) => {
   let markers = [];
-  entities.forEach((entity) => {
+  entities.forEach(entity => {
     const entityMarkers = getEntityMarkers(entity, templates); //).toJS().filter(m => m);
     markers = markers.concat(entityMarkers);
   });
@@ -117,12 +147,7 @@ const TRANSITION_PROPS = {
   onTransitionInterrupt: noop,
   onTransitionEnd: noop,
   onViewportChange: noop,
-  onStateChange: noop
+  onStateChange: noop,
 };
 
-export {
-  getMarkersBoudingBox,
-  markersToStyleFormat,
-  getMarkers,
-  TRANSITION_PROPS,
-};
+export { getMarkersBoudingBox, markersToStyleFormat, getMarkers, TRANSITION_PROPS };

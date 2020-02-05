@@ -1,6 +1,9 @@
+/** @format */
+
 import translations from 'api/i18n/translations';
 import templates from 'api/templates/templates';
 import entities from 'api/entities/entities';
+import search from 'api/search/search';
 import { catchErrors } from 'api/utils/jasmineHelpers';
 
 import db from 'api/utils/testing_db';
@@ -14,6 +17,7 @@ import fixtures, {
 
 describe('thesauris', () => {
   beforeEach(async () => {
+    spyOn(search, 'indexEntities').and.returnValue(Promise.resolve());
     await db.clearAllAndLoad(fixtures);
   });
 
@@ -28,12 +32,14 @@ describe('thesauris', () => {
       expect(dictionaties[0].name).toBe('dictionary');
       expect(dictionaties[1].name).toBe('dictionary 2');
       expect(dictionaties[4].name).toBe('entityTemplate');
-      expect(dictionaties[4].values).toEqual([{
-        id: 'sharedId',
-        label: 'spanish entity',
-        icon: 'Icon',
-        type: 'entity'
-      }]);
+      expect(dictionaties[4].values).toEqual([
+        {
+          id: 'sharedId',
+          label: 'spanish entity',
+          icon: 'Icon',
+          type: 'entity',
+        },
+      ]);
       expect(dictionaties[4].type).toBe('template');
     });
 
@@ -41,8 +47,9 @@ describe('thesauris', () => {
       const dictionaties = await thesauris.get(null, 'es', 'user');
       expect(dictionaties.length).toBe(6);
       expect(dictionaties[4].values).toEqual([
+        { id: 'sharedId2', type: 'entity' },
         { id: 'sharedId', label: 'spanish entity', icon: 'Icon', type: 'entity' },
-        { id: 'other', label: 'unpublished entity', type: 'entity' }
+        { id: 'other', label: 'unpublished entity', type: 'entity' },
       ]);
     });
 
@@ -84,16 +91,18 @@ describe('thesauris', () => {
       spyOn(translations, 'deleteContext').and.returnValue(Promise.resolve());
     });
 
-    it('should delete a thesauri', done => thesauris.delete(dictionaryId)
-    .then((response) => {
-      expect(response.ok).toBe(true);
-      return thesauris.get({ _id: dictionaryId });
-    })
-    .then((dictionaries) => {
-      expect(dictionaries.length).toBe(0);
-      done();
-    })
-    .catch(catchErrors(done)));
+    it('should delete a thesauri', done =>
+      thesauris
+        .delete(dictionaryId)
+        .then(response => {
+          expect(response.ok).toBe(true);
+          return thesauris.get({ _id: dictionaryId });
+        })
+        .then(dictionaries => {
+          expect(dictionaries.length).toBe(0);
+          done();
+        })
+        .catch(catchErrors(done)));
 
     it('should delete the translation', async () => {
       const response = await thesauris.delete(dictionaryId);
@@ -102,14 +111,15 @@ describe('thesauris', () => {
     });
 
     describe('when the dictionary is in use', () => {
-      it('should return an error in the response', (done) => {
+      it('should return an error in the response', done => {
         templatesCountSpy.and.returnValue(Promise.resolve(1));
-        thesauris.delete(dictionaryId)
-        .then(catchErrors(done))
-        .catch((response) => {
-          expect(response.key).toBe('templates_using_dictionary');
-          done();
-        });
+        thesauris
+          .delete(dictionaryId)
+          .then(catchErrors(done))
+          .catch(response => {
+            expect(response.key).toBe('templates_using_dictionary');
+            done();
+          });
       });
     });
   });
@@ -128,16 +138,13 @@ describe('thesauris', () => {
     });
 
     it('should create a translation context', async () => {
-      const data = { name: 'Batman wish list',
+      const data = {
+        name: 'Batman wish list',
         values: [
           { id: '1', label: 'Joker BFF' },
-          { label: 'Heroes',
-            values: [
-              { id: '2', label: 'Batman' },
-              { id: '3', label: 'Robin' }
-            ]
-          }
-        ] };
+          { label: 'Heroes', values: [{ id: '2', label: 'Batman' }, { id: '3', label: 'Robin' }] },
+        ],
+      };
       spyOn(translations, 'addContext').and.returnValue(Promise.resolve());
       const response = await thesauris.save(data);
       expect(translations.addContext).toHaveBeenCalledWith(
@@ -148,91 +155,118 @@ describe('thesauris', () => {
           'Batman wish list': 'Batman wish list',
           Heroes: 'Heroes',
           'Joker BFF': 'Joker BFF',
-          Robin: 'Robin'
+          Robin: 'Robin',
         },
         'Dictionary'
       );
     });
 
-    it('should set a default value of [] to values property if its missing', (done) => {
+    it('should set a default value of [] to values property if its missing', done => {
       const data = { name: 'Scarecrow nightmares' };
 
-      thesauris.save(data)
-      .then(() => thesauris.get())
-      .then((response) => {
-        const newThesauri = response.find(thesauri => thesauri.name === 'Scarecrow nightmares');
+      thesauris
+        .save(data)
+        .then(() => thesauris.get())
+        .then(response => {
+          const newThesauri = response.find(thesauri => thesauri.name === 'Scarecrow nightmares');
 
-        expect(newThesauri.name).toBe('Scarecrow nightmares');
-        expect(newThesauri.values).toEqual([]);
-        done();
-      })
-      .catch(catchErrors(done));
+          expect(newThesauri.name).toBe('Scarecrow nightmares');
+          expect(newThesauri.values).toEqual([]);
+          done();
+        })
+        .catch(catchErrors(done));
     });
 
     describe('when passing _id', () => {
-      it('should edit an existing one', (done) => {
+      it('should edit an existing one', done => {
         spyOn(translations, 'addContext').and.returnValue(Promise.resolve());
         const data = { _id: dictionaryId, name: 'changed name' };
-        return thesauris.save(data)
-        .then(() => thesauris.getById(dictionaryId))
-        .then((edited) => {
-          expect(edited.name).toBe('changed name');
-          done();
-        })
-        .catch(catchErrors(done));
+        return thesauris
+          .save(data)
+          .then(() => thesauris.getById(dictionaryId))
+          .then(edited => {
+            expect(edited.name).toBe('changed name');
+            done();
+          })
+          .catch(catchErrors(done));
       });
 
-      it('should update the translation', (done) => {
+      it('should update the translation', done => {
         const data = {
           _id: dictionaryIdToTranslate,
           name: 'Top 1 games',
-          values: [
-            { id: dictionaryValueId, label: 'Marios game' }
-          ]
+          values: [{ id: dictionaryValueId, label: 'Marios game' }],
         };
-        return thesauris.save(data)
-        .then((response) => {
-          expect(translations.updateContext)
-          .toHaveBeenCalledWith(
-            response._id,
-            'Top 1 games',
-            { 'Enders game': 'Marios game', 'Top 2 scify books': 'Top 1 games' },
-            ['Fundation'],
-            { 'Top 1 games': 'Top 1 games', 'Marios game': 'Marios game' },
-            'Dictionary'
-          );
-          done();
-        })
-        .catch(catchErrors(done));
+        return thesauris
+          .save(data)
+          .then(response => {
+            expect(translations.updateContext).toHaveBeenCalledWith(
+              response._id,
+              'Top 1 games',
+              { 'Enders game': 'Marios game', 'Top 2 scify books': 'Top 1 games' },
+              ['Fundation'],
+              { 'Top 1 games': 'Top 1 games', 'Marios game': 'Marios game' },
+              'Dictionary'
+            );
+            done();
+          })
+          .catch(catchErrors(done));
       });
 
       it('should remove deleted values from entities', async () => {
-        spyOn(entities, 'deleteEntityFromMetadata');
+        spyOn(entities, 'deleteThesaurusFromMetadata');
         const data = {
           _id: dictionaryIdToTranslate,
           name: 'Top 1 games',
-          values: [{ id: dictionaryValueId, label: 'Marios game' }]
+          values: [{ id: dictionaryValueId, label: 'Marios game' }],
         };
 
         await thesauris.save(data);
-        expect(entities.deleteEntityFromMetadata.calls.count()).toBe(1);
-        expect(entities.deleteEntityFromMetadata).toHaveBeenCalledWith(
+        expect(entities.deleteThesaurusFromMetadata.calls.count()).toBe(1);
+        expect(entities.deleteThesaurusFromMetadata).toHaveBeenCalledWith(
           '2',
           dictionaryIdToTranslate
         );
       });
 
       it('should properly delete values when thesauris have subgroups', async () => {
-        spyOn(entities, 'deleteEntityFromMetadata');
+        spyOn(entities, 'deleteThesaurusFromMetadata');
         const thesauri = await thesauris.getById(dictionaryWithValueGroups);
         thesauri.values = thesauri.values.filter(value => value.id !== '3');
 
         await thesauris.save(thesauri);
 
-        const deletedValuesFromEntities = entities.deleteEntityFromMetadata
-        .calls.allArgs().map(args => args[0]);
+        const deletedValuesFromEntities = entities.deleteThesaurusFromMetadata.calls
+          .allArgs()
+          .map(args => args[0]);
 
         expect(deletedValuesFromEntities).toEqual(['3']);
+      });
+
+      it('should update labels on entities with the thesauri values', async () => {
+        const thesauri = {
+          name: 'dictionary 2',
+          _id: dictionaryId,
+          values: [{ id: '1', label: 'value 1 changed' }, { id: '2', label: 'value 2' }],
+        };
+
+        await thesauris.save(thesauri);
+
+        const changedEntities = await entities.get({ language: 'es' });
+
+        expect(changedEntities[0].metadata).toEqual(
+          expect.objectContaining({
+            multiselect: [{ value: '1', label: 'value 1 changed' }],
+          })
+        );
+        expect(changedEntities[1].metadata).toEqual(
+          expect.objectContaining({
+            multiselect: [
+              { value: '1', label: 'value 1 changed' },
+              { value: '2', label: 'value 2' },
+            ],
+          })
+        );
       });
     });
 
@@ -283,9 +317,9 @@ describe('thesauris', () => {
             name: 'thesauri_with_blank_value',
             values: [
               {
-                label: ''
-              }
-            ]
+                label: '',
+              },
+            ],
           };
 
           let error;

@@ -5,47 +5,79 @@ Immutable.List [
   Immutable.Map {
     "template": "1",
     "metadata": Immutable.Map {
-      "geo_prop": Immutable.Map {
-        "lat": 1,
-        "lon": 2,
-      },
-      "age": "23",
+      "geo_prop": Immutable.List [
+        Immutable.Map {
+          "value": Immutable.Map {
+            "lat": 1,
+            "lon": 2,
+          },
+        },
+      ],
+      "age": Immutable.List [
+        Immutable.Map {
+          "value": "23",
+        },
+      ],
     },
     "sharedId": "1",
   },
   Immutable.Map {
     "template": "1",
     "metadata": Immutable.Map {
-      "age": "23",
+      "age": Immutable.List [
+        Immutable.Map {
+          "value": "23",
+        },
+      ],
     },
     "sharedId": "2",
   },
   Immutable.Map {
     "template": "2",
     "metadata": Immutable.Map {
-      "other_geo_prop": Immutable.Map {
-        "lat": 3,
-        "lon": 4,
-      },
-      "age": "23",
+      "other_geo_prop": Immutable.List [
+        Immutable.Map {
+          "value": Immutable.Map {
+            "lat": 3,
+            "lon": 4,
+          },
+        },
+      ],
+      "age": Immutable.List [
+        Immutable.Map {
+          "value": "23",
+        },
+      ],
     },
     "sharedId": "3",
   },
   Immutable.Map {
     "template": "2",
     "metadata": Immutable.Map {
-      "other_geo_prop": Immutable.Map {
-        "lat": 1,
-        "lon": 2,
-      },
-      "age": "23",
+      "other_geo_prop": Immutable.List [
+        Immutable.Map {
+          "value": Immutable.Map {
+            "lat": 1,
+            "lon": 2,
+          },
+        },
+      ],
+      "age": Immutable.List [
+        Immutable.Map {
+          "value": "23",
+        },
+      ],
     },
     "sharedId": "4",
   },
   Immutable.Map {
     "template": "3",
     "metadata": Immutable.Map {
-      "age": "23",
+      "age": Immutable.List [
+        Immutable.Map {
+          "value": "23",
+        },
+      ],
     },
     "sharedId": "4",
   },

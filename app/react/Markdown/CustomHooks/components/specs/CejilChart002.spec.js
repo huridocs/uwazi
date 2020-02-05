@@ -1,22 +1,30 @@
+/** @format */
+
 import React from 'react';
 import { shallow } from 'enzyme';
 import { fromJS } from 'immutable';
 
 import api from 'app/Search/SearchAPI';
-import CejilChart, { mapStateToProps, judgesCommisionersTemplate as template, male, female } from '../CejilChart002';
+import CejilChart, {
+  mapStateToProps,
+  judgesCommisionersTemplate as template,
+  male,
+  female,
+} from '../CejilChart002';
 import { countriesTemplate, countryKey } from '../CejilChart';
-
 
 describe('CejilChart002', () => {
   let props;
 
   function conformAggregations(count) {
-    const response = { aggregations: { all: { } } };
-    response.aggregations.all[countryKey] = { buckets: [
-      { key: 'keyA', filtered: { doc_count: count.a } },
-      { key: 'keyB', filtered: { doc_count: count.b } },
-      { key: 'missing', filtered: { doc_count: 1 } },
-    ] };
+    const response = { aggregations: { all: {} } };
+    response.aggregations.all[countryKey] = {
+      buckets: [
+        { key: 'keyA', filtered: { doc_count: count.a } },
+        { key: 'keyB', filtered: { doc_count: count.b } },
+        { key: 'missing', filtered: { doc_count: 1 } },
+      ],
+    };
     return response;
   }
 
@@ -30,12 +38,18 @@ describe('CejilChart002', () => {
   }
 
   beforeEach(() => {
-    props = mapStateToProps({
-      thesauris: fromJS([
-        { _id: countriesTemplate, values: [{ id: 'keyA', label: 'labelA' }, { id: 'keyB', label: 'labelB' }] },
-        { _id: 'otherThesauri' }
-      ])
-    }, {});
+    props = mapStateToProps(
+      {
+        thesauris: fromJS([
+          {
+            _id: countriesTemplate,
+            values: [{ id: 'keyA', label: 'labelA' }, { id: 'keyB', label: 'labelB' }],
+          },
+          { _id: 'otherThesauri' },
+        ]),
+      },
+      {}
+    );
   });
 
   describe('When no data loaded', () => {
@@ -47,7 +61,8 @@ describe('CejilChart002', () => {
 
   describe('When data loaded', () => {
     beforeEach(() => {
-      spyOn(api, 'search').and.callFake((args) => {
+      spyOn(api, 'search').and.callFake(RequestParams => {
+        const args = RequestParams.data;
         const combinedQuery = args.types[0] === template && !args.filters.sexo;
         const maleQuery = testQuery(args, male);
         const femaleQuery = testQuery(args, female);
@@ -78,7 +93,7 @@ describe('CejilChart002', () => {
       });
     });
 
-    it('should sort and format the results appropriately', (done) => {
+    it('should sort and format the results appropriately', done => {
       const tree = shallow(<CejilChart.WrappedComponent {...props} />);
       setImmediate(() => {
         tree.update();
@@ -87,7 +102,7 @@ describe('CejilChart002', () => {
       }, 0);
     });
 
-    it('should allow changing the filter property', (done) => {
+    it('should allow changing the filter property', done => {
       props.filterProperty = 'mandatos_de_la_comisi_n';
       const tree = shallow(<CejilChart.WrappedComponent {...props} />);
       setImmediate(() => {

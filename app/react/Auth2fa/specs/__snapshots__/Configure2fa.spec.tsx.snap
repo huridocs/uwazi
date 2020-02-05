@@ -39,7 +39,7 @@ exports[`Configure2fa Component enable2fa (form submit) should set state to "con
               <div
                 className="qr-code"
               >
-                <[object Object]
+                <ForwardRef
                   includeMargin={false}
                   level="Q"
                   renderAs="svg"
@@ -110,28 +110,26 @@ exports[`Configure2fa Component when user already using 2fa should show a "succe
     <div
       className="panel-body"
     >
-      <React.Fragment>
+      <div
+        className="alert alert-success"
+      >
+        <Connect(Icon)
+          icon="check"
+        />
         <div
-          className="alert alert-success"
+          className="force-ltr"
         >
-          <Connect(Icon)
-            icon="check"
-          />
-          <div
-            className="force-ltr"
-          >
-            Congratulations!
-            <br />
-            You have successfully configured two-step verification.
-          </div>
+          Congratulations!
+          <br />
+          You have successfully configured two-step verification.
         </div>
-        <Connect(I18NLink)
-          className="btn btn-success"
-          to="/settings/account"
-        >
-          OK
-        </Connect(I18NLink)>
-      </React.Fragment>
+      </div>
+      <Connect(I18NLink)
+        className="btn btn-success"
+        to="/settings/account"
+      >
+        OK
+      </Connect(I18NLink)>
     </div>
   </div>
 </div>
@@ -176,7 +174,7 @@ exports[`Configure2fa Component when user not already using 2fa should show a QR
               <div
                 className="qr-code"
               >
-                <[object Object]
+                <ForwardRef
                   includeMargin={false}
                   level="Q"
                   renderAs="svg"

@@ -1,9 +1,6 @@
-/**
- * /* eslint-disable max-len
- *
- * @format
- */
+/** @format */
 
+/* eslint-disable max-len */
 import db from 'api/utils/testing_db';
 
 const userId = db.id();
@@ -110,14 +107,16 @@ export default {
       published: true,
       user: userId,
       metadata: {
-        field1: 'joker',
-        field2: 'bane',
-        select1: 'selectValue1',
-        rich_text: 'rich',
-        multiselect1: ['multiValue1', 'multiValue2'],
-        groupedDictionary: ['spainID'],
-        nestedField: [{ nested1: ['1', '2', '3'] }],
-        city_geolocation: { lat: 1, lon: 2 },
+        field1: [{ value: 'joker' }],
+        field2: [{ value: 'bane' }],
+        select1: [{ value: 'selectValue1' }],
+        rich_text: [{ value: 'rich' }],
+        multiselect1: [{ value: 'multiValue1' }, { value: 'multiValue2' }],
+        groupedDictionary: [{ value: 'spainID' }],
+        nestedField_nested: [{ value: { nested1: ['1', '2', '3'] } }],
+        city_geolocation: [{ value: { lat: 1, lon: 2 } }],
+        daterange: [{ value: { from: 1547997735, to: 1579533735 } }],
+        date: [{ value: 10000 }],
       },
     },
     {
@@ -128,7 +127,13 @@ export default {
       title: 'metadata1 es',
       published: true,
       user: userId,
-      metadata: { field1: 'joker', field2: 'bane', city_geolocation: { lat: 1, lon: 2 } },
+      metadata: {
+        field1: [{ value: 'joker' }],
+        field2: [{ value: 'bane' }],
+        city_geolocation: [{ value: { lat: 1, lon: 2 } }],
+        daterange: [{ value: { from: 1547997735, to: null } }],
+        date: [{ value: 10000 }],
+      },
     },
     {
       _id: db.id(),
@@ -139,11 +144,13 @@ export default {
       published: true,
       user: userId,
       metadata: {
-        field1: 'joker',
-        field2: 'penguin',
-        select1: 'selectValue1',
-        multiselect1: ['multiValue1'],
-        groupedDictionary: ['spainID'],
+        field1: [{ value: 'joker' }],
+        field2: [{ value: 'penguin' }],
+        select1: [{ value: 'selectValue1' }],
+        multiselect1: [{ value: 'multiValue1' }],
+        groupedDictionary: [{ value: 'spainID' }],
+        daterange: [{ value: { from: 1579620135, to: 1611242535 } }],
+        date: [{ value: 20000 }],
       },
     },
     {
@@ -154,7 +161,11 @@ export default {
       title: 'metádata3',
       published: true,
       user: userId,
-      metadata: { select1: 'selectValue2', multiselect1: ['multiValue2'] },
+      metadata: {
+        select1: [{ value: 'selectValue2' }],
+        multiselect1: [{ value: 'multiValue2' }],
+        date: [{ value: 30000 }],
+      },
     },
     {
       _id: db.id(),
@@ -165,12 +176,12 @@ export default {
       published: true,
       user: userId,
       metadata: {
-        field1: 'bane',
-        field3: 'penguin',
-        select1: 'selectValue2',
-        multiselect1: ['multiValue2'],
-        nestedField: [{ nested1: ['3', '4', '5'] }],
-        country_geolocation: { lat: 1, lon: 2 },
+        field1: [{ value: 'bane' }],
+        field3: [{ value: 'penguin' }],
+        select1: [{ value: 'selectValue2' }],
+        multiselect1: [{ value: 'multiValue2' }],
+        nestedField_nested: [{ value: { nested1: ['3', '4', '5'] } }],
+        country_geolocation: [{ value: { lat: 1, lon: 2 } }],
       },
     },
     {
@@ -182,10 +193,10 @@ export default {
       published: true,
       user: userId,
       metadata: {
-        field1: 'penguin',
-        field3: 'joker',
-        nestedField: [{ nested1: ['5', '6', '7'] }],
-        country_geolocation: { lat: 1, lon: 2 },
+        field1: [{ value: 'penguin' }],
+        field3: [{ value: 'joker' }],
+        nestedField_nested: [{ value: { nested1: ['5', '6', '7'] } }],
+        country_geolocation: [{ value: { lat: 1, lon: 2 } }],
       },
     },
     {
@@ -205,7 +216,7 @@ export default {
       fullText: { 1: 'unpublished document' },
       published: false,
       user: userId,
-      metadata: { field1: 'joker' },
+      metadata: { field1: [{ value: 'joker' }] },
     },
     {
       _id: db.id(),
@@ -223,7 +234,7 @@ export default {
       title: 'Something',
       published: true,
       user: userId,
-      metadata: { multiselect1: ['abc123'] },
+      metadata: { multiselect1: [{ value: 'abc123', label: 'Country Egypt' }] },
     },
     {
       _id: db.id(),
@@ -233,7 +244,9 @@ export default {
       title: 'Something',
       published: true,
       user: userId,
-      metadata: { multiselect1: ['35ae6c24-9f4c-4017-9f01-2bc42ff7ad83'] },
+      metadata: {
+        multiselect1: [{ value: '35ae6c24-9f4c-4017-9f01-2bc42ff7ad83', label: 'Egypt' }],
+      },
     },
     {
       _id: db.id(),
@@ -243,7 +256,7 @@ export default {
       title: 'Something',
       published: true,
       user: userId,
-      metadata: { multiselect1: ['bce629bf-efc1-40dd-9af0-0542422dcbc3'] },
+      metadata: { multiselect1: [{ value: 'bce629bf-efc1-40dd-9af0-0542422dcbc3' }] },
     },
     // snippets in metadata
     {
@@ -251,9 +264,7 @@ export default {
       sharedId: metadataSnippets,
       language: 'en',
       title: 'Document about gargoyles',
-      metadata: {
-        field1: 'This is some text containing the word gargoyles.',
-      },
+      metadata: { field1: [{ value: 'This is some text containing the word gargoyles.' }] },
       fullText: {
         1: 'Once upon a time[[1]]',
         2: ' gargoyles lived on building ledges[[13]]',
@@ -280,8 +291,10 @@ export default {
         { name: 'field2', type: 'text', filter: true },
         { name: 'select1', type: 'select', filter: true },
         { name: 'multiselect1', type: 'multiselect', filter: true },
+        { name: 'daterange', type: 'daterange', filter: true },
+        { name: 'date', type: 'date', filter: true },
         {
-          name: 'nestedField',
+          name: 'nestedField_nested',
           type: 'nested',
           nestedProperties: ['nested1', 'nested2'],
           filter: true,
@@ -304,7 +317,7 @@ export default {
         { name: 'select1', type: 'select', filter: true },
         { name: 'multiselect1', type: 'multiselect', filter: true },
         {
-          name: 'nestedField',
+          name: 'nestedField_nested',
           type: 'nested',
           nestedProperties: ['nested1', 'nested2'],
           filter: true,
@@ -352,43 +365,43 @@ export default {
     {
       entity: batmanFinishes,
       template: relationType,
-      metadata: { status: 'open', description: 'red' },
+      metadata: { status: [{ value: 'open' }], description: [{ value: 'red' }] },
       language: 'en',
     },
     {
       entity: 'shared4',
       template: 'anotherone',
-      metadata: { status: 'open', description: 'red' },
+      metadata: { status: [{ value: 'open' }], description: [{ value: 'red' }] },
       language: 'en',
     },
     {
       entity: 'shared3',
       template: relationType,
-      metadata: { status: 'open', description: 'red' },
+      metadata: { status: [{ value: 'open' }], description: [{ value: 'red' }] },
       language: 'en',
     },
     {
       entity: batmanFinishes,
       template: relationType,
-      metadata: { status: 'closed', description: 'yellow' },
+      metadata: { status: [{ value: 'closed' }], description: [{ value: 'yellow' }] },
       language: 'en',
     },
     {
       entity: batmanFinishes,
       template: relationType,
-      metadata: { status: 'open', description: 'red' },
+      metadata: { status: [{ value: 'open' }], description: [{ value: 'red' }] },
       language: 'es',
     },
     {
       entity: 'shared3',
       template: relationType,
-      metadata: { status: 'open', description: 'red' },
+      metadata: { status: [{ value: 'open' }], description: [{ value: 'red' }] },
       language: 'es',
     },
     {
       entity: batmanFinishes,
       template: relationType,
-      metadata: { status: 'closed', description: 'yellow' },
+      metadata: { status: [{ value: 'closed' }], description: [{ value: 'yellow' }] },
       language: 'es',
     },
   ],

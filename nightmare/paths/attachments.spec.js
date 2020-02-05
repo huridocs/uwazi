@@ -1,3 +1,5 @@
+/** @format */
+
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import createNightmare from '../helpers/nightmare';
 import selectors from '../helpers/selectors.js';
@@ -14,140 +16,140 @@ describe('attachments path', () => {
   afterAll(async () => nightmare.end());
 
   describe('login', () => {
-    it('should log in as admin', (done) => {
+    it('should log in as admin', done => {
       nightmare
-      .login('admin', 'admin')
-      .then(() => {
-        done();
-      })
-      .catch(catchErrors(done));
+        .login('admin', 'admin')
+        .then(() => {
+          done();
+        })
+        .catch(catchErrors(done));
     });
   });
 
   describe('main document pdf', () => {
-    it('should open the second document', (done) => {
+    it('should open the second document', done => {
       nightmare
-      .waitToClick(selectors.libraryView.librarySecondDocumentLink)
-      .wait(selectors.documentView.documentPage)
-      .isVisible(selectors.documentView.documentPage)
-      .then((result) => {
-        expect(result).toBe(true);
-        done();
-      })
-      .catch(catchErrors(done));
+        .waitToClick(selectors.libraryView.librarySecondDocumentLink)
+        .wait(selectors.documentView.documentPage)
+        .isVisible(selectors.documentView.documentPage)
+        .then(result => {
+          expect(result).toBe(true);
+          done();
+        })
+        .catch(catchErrors(done));
     });
 
-    it('should show the source document as file in the Downloads section', (done) => {
+    it('should show the source document as file in the Downloads section', done => {
       nightmare
-      .waitToClick(selectors.documentView.sidePanelInfoTab)
-      .wait(selectors.documentView.sidePanelFirstAttachmentTitle)
-      .evaluate(getInnerText, selectors.documentView.sidePanelFirstAttachmentTitle)
-      .then((attachmentName) => {
-        expect(attachmentName).toBe('Batman - Wikipedia.pdf');
-        done();
-      })
-      .catch(catchErrors(done));
-    });
-
-    it('should allow entering edit mode for the title, keeping the original text as first value', (done) => {
-      nightmare
-      .waitToClick(selectors.documentView.sidePanelFirstAttachmentEditTitleButton)
-      .wait(selectors.documentView.attachmentFormInput)
-      .evaluate(getValue, selectors.documentView.attachmentFormInput)
-      .then((inputValue) => {
-        expect(inputValue).toBe('Batman - Wikipedia.pdf');
-        done();
-      })
-      .catch(catchErrors(done));
-    });
-
-    it('should allow changing the name of the title', (done) => {
-      nightmare
-      .clearInput(selectors.documentView.attachmentFormInput)
-      .insert(selectors.documentView.attachmentFormInput, 'Batman - the whole story.pdf')
-      .waitToClick(selectors.documentView.attachmentFormSubmit)
-      .wait(selectors.documentView.sidePanelFirstAttachmentTitle)
-      .evaluate(getInnerText, selectors.documentView.sidePanelFirstAttachmentTitle)
-      .then((attachmentName) => {
-        expect(attachmentName).toBe('Batman - the whole story.pdf');
-        done();
-      })
-      .catch(catchErrors(done));
-    });
-
-    it('should allow canceling a name edit of the title', (done) => {
-      nightmare
-      .waitToClick(selectors.documentView.sidePanelFirstAttachmentEditTitleButton)
-      .wait(selectors.documentView.attachmentFormInput)
-      .type(selectors.documentView.attachmentFormInput, '\u0008\u0008\u0008')
-      .insert(selectors.documentView.attachmentFormInput, 'jpg')
-      .evaluate(getValue, selectors.documentView.attachmentFormInput)
-      .then((inputValue) => {
-        expect(inputValue).toEqual('Batman - the whole story.jpg');
-
-        return nightmare
-        .waitToClick(selectors.documentView.attachmentFormCancel)
+        .waitToClick(selectors.documentView.sidePanelInfoTab)
         .wait(selectors.documentView.sidePanelFirstAttachmentTitle)
         .evaluate(getInnerText, selectors.documentView.sidePanelFirstAttachmentTitle)
-        .then((attachmentName) => {
+        .then(attachmentName => {
+          expect(attachmentName).toBe('Batman - Wikipedia.pdf');
+          done();
+        })
+        .catch(catchErrors(done));
+    });
+
+    it('should allow entering edit mode for the title, keeping the original text as first value', done => {
+      nightmare
+        .waitToClick(selectors.documentView.sidePanelFirstAttachmentEditTitleButton)
+        .wait(selectors.documentView.attachmentFormInput)
+        .evaluate(getValue, selectors.documentView.attachmentFormInput)
+        .then(inputValue => {
+          expect(inputValue).toBe('Batman - Wikipedia.pdf');
+          done();
+        })
+        .catch(catchErrors(done));
+    });
+
+    it('should allow changing the name of the title', done => {
+      nightmare
+        .clearInput(selectors.documentView.attachmentFormInput)
+        .insert(selectors.documentView.attachmentFormInput, 'Batman - the whole story.pdf')
+        .waitToClick(selectors.documentView.attachmentFormSubmit)
+        .wait(selectors.documentView.sidePanelFirstAttachmentTitle)
+        .evaluate(getInnerText, selectors.documentView.sidePanelFirstAttachmentTitle)
+        .then(attachmentName => {
           expect(attachmentName).toBe('Batman - the whole story.pdf');
           done();
-        });
-      })
-      .catch(catchErrors(done));
+        })
+        .catch(catchErrors(done));
+    });
+
+    it('should allow canceling a name edit of the title', done => {
+      nightmare
+        .waitToClick(selectors.documentView.sidePanelFirstAttachmentEditTitleButton)
+        .wait(selectors.documentView.attachmentFormInput)
+        .type(selectors.documentView.attachmentFormInput, '\u0008\u0008\u0008')
+        .insert(selectors.documentView.attachmentFormInput, 'jpg')
+        .evaluate(getValue, selectors.documentView.attachmentFormInput)
+        .then(inputValue => {
+          expect(inputValue).toEqual('Batman - the whole story.jpg');
+
+          return nightmare
+            .waitToClick(selectors.documentView.attachmentFormCancel)
+            .wait(selectors.documentView.sidePanelFirstAttachmentTitle)
+            .evaluate(getInnerText, selectors.documentView.sidePanelFirstAttachmentTitle)
+            .then(attachmentName => {
+              expect(attachmentName).toBe('Batman - the whole story.pdf');
+              done();
+            });
+        })
+        .catch(catchErrors(done));
     });
   });
 
   describe('entity attachment', () => {
-    it('should go into the entity viewer for the desired entity', (done) => {
+    it('should go into the entity viewer for the desired entity', done => {
       const entityTitle = 'Man-bat';
 
       nightmare
-      .gotoLibrary()
-      .openEntityFromLibrary(entityTitle)
-      .getInnerText(selectors.entityView.contentHeader)
-      .then((headerText) => {
-        expect(headerText).toContain(entityTitle);
-        done();
-      })
-      .catch(catchErrors(done));
+        .gotoLibrary()
+        .openEntityFromLibrary(entityTitle)
+        .getInnerText(selectors.entityView.contentHeader)
+        .then(headerText => {
+          expect(headerText).toContain(entityTitle);
+          done();
+        })
+        .catch(catchErrors(done));
     });
 
-    it('should show the first attachment in the main entity view', (done) => {
+    it('should show the first attachment in the main entity view', done => {
       nightmare
-      .wait(selectors.entityView.firstAttachmentTitle)
-      .evaluate(getInnerText, selectors.entityView.firstAttachmentTitle)
-      .then((attachmentName) => {
-        expect(attachmentName).toBe('ManBatCv3.jpg');
-        done();
-      })
-      .catch(catchErrors(done));
+        .wait(selectors.entityView.firstAttachmentTitle)
+        .evaluate(getInnerText, selectors.entityView.firstAttachmentTitle)
+        .then(attachmentName => {
+          expect(attachmentName).toBe('ManBatCv3.jpg');
+          done();
+        })
+        .catch(catchErrors(done));
     });
 
-    it('should allow entering edit mode for the title, keeping the original text as first value', (done) => {
+    it('should allow entering edit mode for the title, keeping the original text as first value', done => {
       nightmare
-      .waitToClick(selectors.entityView.firstAttachmentEditTitleButton)
-      .wait(selectors.entityView.attachmentFormInput)
-      .evaluate(getValue, selectors.entityView.attachmentFormInput)
-      .then((inputValue) => {
-        expect(inputValue).toBe('ManBatCv3.jpg');
-        done();
-      })
-      .catch(catchErrors(done));
+        .waitToClick(selectors.entityView.firstAttachmentEditTitleButton)
+        .wait(selectors.entityView.attachmentFormInput)
+        .evaluate(getValue, selectors.entityView.attachmentFormInput)
+        .then(inputValue => {
+          expect(inputValue).toBe('ManBatCv3.jpg');
+          done();
+        })
+        .catch(catchErrors(done));
     });
 
-    it('should allow changing the name of the title', (done) => {
+    it('should allow changing the name of the title', done => {
       nightmare
-      .clearInput(selectors.entityView.attachmentFormInput)
-      .insert(selectors.entityView.attachmentFormInput, 'Only known picture.jpg')
-      .waitToClick(selectors.entityView.attachmentFormSubmit)
-      .wait(selectors.entityView.firstAttachmentTitle)
-      .evaluate(getInnerText, selectors.entityView.firstAttachmentTitle)
-      .then((attachmentName) => {
-        expect(attachmentName).toBe('Only known picture.jpg');
-        done();
-      })
-      .catch(catchErrors(done));
+        .clearInput(selectors.entityView.attachmentFormInput)
+        .insert(selectors.entityView.attachmentFormInput, 'Only known picture.jpg')
+        .waitToClick(selectors.entityView.attachmentFormSubmit)
+        .wait(selectors.entityView.firstAttachmentTitle)
+        .evaluate(getInnerText, selectors.entityView.firstAttachmentTitle)
+        .then(attachmentName => {
+          expect(attachmentName).toBe('Only known picture.jpg');
+          done();
+        })
+        .catch(catchErrors(done));
     });
   });
 });

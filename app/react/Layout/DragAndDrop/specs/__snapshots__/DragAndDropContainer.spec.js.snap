@@ -37,7 +37,9 @@ exports[`DragAndDropContainer react component should enable iconHandle for child
         }
       }
       removeItem={[Function]}
-    />
+    >
+      <Component />
+    </Connect(DragSource(DropTarget(DragAndDropItem)))>
     <Connect(DragSource(DropTarget(DragAndDropItem)))
       container={
         Object {
@@ -56,7 +58,9 @@ exports[`DragAndDropContainer react component should enable iconHandle for child
         }
       }
       removeItem={[Function]}
-    />
+    >
+      <Component />
+    </Connect(DragSource(DropTarget(DragAndDropItem)))>
     <div
       className="no-properties"
     >
@@ -93,7 +97,9 @@ exports[`DragAndDropContainer react component should enable iconHandle on childr
         }
       }
       removeItem={[Function]}
-    />
+    >
+      <Component />
+    </Connect(DragSource(DropTarget(DragAndDropItem)))>
     <Connect(DragSource(DropTarget(DragAndDropItem)))
       container={
         Object {
@@ -112,7 +118,9 @@ exports[`DragAndDropContainer react component should enable iconHandle on childr
         }
       }
       removeItem={[Function]}
-    />
+    >
+      <Component />
+    </Connect(DragSource(DropTarget(DragAndDropItem)))>
     <div
       className="no-properties"
     >

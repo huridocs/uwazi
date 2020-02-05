@@ -1,8 +1,10 @@
 /** @format */
 
-import { templateTypes } from 'shared/templateTypes';
+import { propertyTypes } from 'shared/propertyTypes';
 
-const fieldTypes = Object.values(templateTypes);
+export const emitSchemaTypes = true;
+
+const fieldTypes = Object.values(propertyTypes);
 
 export const objectIdSchema = {
   oneOf: [{ type: 'string' }, { type: 'object' }],
@@ -11,6 +13,7 @@ export const objectIdSchema = {
 export const linkSchema = {
   type: 'object',
   required: ['label', 'url'],
+  additionalProperties: false,
   properties: {
     label: { type: 'string', minLength: 1 },
     url: { type: 'string', minLength: 1 },
@@ -19,6 +22,7 @@ export const linkSchema = {
 
 export const dateRangeSchema = {
   type: 'object',
+  additionalProperties: false,
   properties: {
     from: {
       oneOf: [{ type: 'number' }, { type: 'null' }],
@@ -27,12 +31,12 @@ export const dateRangeSchema = {
       oneOf: [{ type: 'number' }, { type: 'null' }],
     },
   },
-  additionalProperties: false,
 };
 
 export const latLonSchema = {
   type: 'object',
   required: ['lon', 'lat'],
+  additionalProperties: false,
   properties: {
     label: { type: 'string' },
     lat: { type: 'number', minimum: -90, maximum: 90 },
@@ -45,22 +49,43 @@ export const geolocationSchema = {
   items: latLonSchema,
 };
 
-export const nestedSchema = {
-  type: 'array',
-  items: {
-    oneOf: [
-      {
-        type: 'object',
-        patternProperties: {
-          '^(?!lat).*$': { type: 'array', items: { type: 'string' } },
-        },
-      },
-    ],
+export const propertyValueSchema = {
+  definitions: { linkSchema, dateRangeSchema, latLonSchema },
+  oneOf: [
+    { type: 'null' },
+    { type: 'string' },
+    { type: 'number' },
+    linkSchema,
+    dateRangeSchema,
+    latLonSchema,
+    geolocationSchema,
+  ],
+};
+
+export const metadataObjectSchema = {
+  type: 'object',
+  definitions: { propertyValueSchema },
+  required: ['value'],
+  properties: {
+    value: propertyValueSchema,
+    label: { type: 'string' },
+  },
+};
+
+export const metadataSchema = {
+  definitions: { metadataObjectSchema },
+  type: 'object',
+  additionalProperties: {
+    anyOf: [{ type: 'array', items: metadataObjectSchema }],
+  },
+  patternProperties: {
+    '^.*_nested$': { type: 'array', items: { type: 'object' } },
   },
 };
 
 export const tocSchema = {
   type: 'object',
+  additionalProperties: false,
   properties: {
     range: {
       type: 'object',

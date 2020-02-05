@@ -38,7 +38,9 @@ exports[`Map Markdown component should render the data passed by mapStateToProps
         "passed entities",
       ]
     }
-  />
+  >
+    <Component />
+  </Connect(MarkersComponent)>
 </div>
 `;
 

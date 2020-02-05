@@ -1,12 +1,11 @@
-import React from 'react';
+/** @format */
 
-import { shallow } from 'enzyme';
 import RelationTypesAPI from 'app/RelationTypes/RelationTypesAPI';
 import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
 import * as relationships from 'app/Relationships/utils/routeUtils';
 
 import { RequestParams } from 'app/utils/RequestParams';
-import EntitiesAPI from '../EntitiesAPI';
+import EntitiesAPI from '../../Entities/EntitiesAPI';
 import EntityView from '../EntityView';
 
 describe('EntityView', () => {
@@ -18,9 +17,13 @@ describe('EntityView', () => {
       spyOn(EntitiesAPI, 'get').and.returnValue(Promise.resolve(entities));
       spyOn(RelationTypesAPI, 'get').and.returnValue(Promise.resolve(relationTypes));
       spyOn(prioritySortingCriteria, 'get').and.returnValue({ sort: 'priorized' });
-      spyOn(relationships, 'requestState').and.returnValue(Promise.resolve(['connectionsGroups', 'searchResults', 'sort', 'filters']));
+      spyOn(relationships, 'requestState').and.returnValue(
+        Promise.resolve(['connectionsGroups', 'searchResults', 'sort', 'filters'])
+      );
       spyOn(relationships, 'emptyState').and.returnValue({ type: 'RELATIONSHIPS_EMPTY_STATE' });
-      spyOn(relationships, 'setReduxState').and.returnValue({ type: 'RELATIONSHIPS_SET_REDUX_STATE' });
+      spyOn(relationships, 'setReduxState').and.returnValue({
+        type: 'RELATIONSHIPS_SET_REDUX_STATE',
+      });
     });
 
     it('should get the entity, and all connectionsList items', async () => {
@@ -32,16 +35,6 @@ describe('EntityView', () => {
       expect(RelationTypesAPI.get).toHaveBeenCalledWith({ headers: 'headers' });
 
       expect(actions).toMatchSnapshot();
-    });
-
-    describe('componentWillUnmount()', () => {
-      it('should unset the state', () => {
-        const context = { store: { getState: () => ({}), dispatch: jasmine.createSpy('dispatch') } };
-        const component = shallow(<EntityView params={{ entityId: 123 }} />, { context });
-        component.instance().componentWillUnmount();
-        expect(context.store.dispatch).toHaveBeenCalledWith({ type: 'entityView/entity/UNSET' });
-        expect(context.store.dispatch).toHaveBeenCalledWith({ type: 'RELATIONSHIPS_EMPTY_STATE' });
-      });
     });
   });
 });

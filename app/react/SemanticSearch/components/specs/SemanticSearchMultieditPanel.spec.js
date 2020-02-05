@@ -1,3 +1,5 @@
+/** @format */
+
 import React from 'react';
 import Immutable from 'immutable';
 import { shallow } from 'enzyme';
@@ -5,7 +7,11 @@ import { shallow } from 'enzyme';
 import multiReducer from 'app/Multireducer';
 import * as metadataActions from 'app/Metadata/actions/actions';
 import * as searchActions from 'app/SemanticSearch/actions/actions';
-import { mapStateToProps, mapDispatchToProps, SemanticSearchMultieditPanel } from '../SemanticSearchMultieditPanel';
+import {
+  mapStateToProps,
+  mapDispatchToProps,
+  SemanticSearchMultieditPanel,
+} from '../SemanticSearchMultieditPanel';
 
 describe('SemanticSearchMultieditPanel', () => {
   let state;
@@ -17,7 +23,7 @@ describe('SemanticSearchMultieditPanel', () => {
     props = {
       storeKey: 'library',
       formKey: 'semanticSearch.multipleEdit',
-      searchId: 'searchId'
+      searchId: 'searchId',
     };
     state = {
       semanticSearch: {
@@ -30,27 +36,22 @@ describe('SemanticSearchMultieditPanel', () => {
           metadata: {
             unchangedField: { pristine: true },
             changedField: { pristine: false },
-          }
-        }
+          },
+        },
       },
       templates: Immutable.fromJS([
         {
           _id: 'tpl1',
-          properties: [
-            { name: 'p1', type: 'select', content: 't1' },
-          ],
+          properties: [{ name: 'p1', type: 'select', content: 't1' }],
         },
         {
           _id: 'tpl2',
-          properties: [
-            { name: 'p1', type: 'select', content: 't1' },
-            { name: 'p2', type: 'text' },
-          ]
-        }
+          properties: [{ name: 'p1', type: 'select', content: 't1' }, { name: 'p2', type: 'text' }],
+        },
       ]),
       thesauris: Immutable.fromJS([
-        { _id: 't1', name: 'T1', values: [{ _id: 'v1', id: 'v1', label: 'V1' }] }
-      ])
+        { _id: 't1', name: 'T1', values: [{ _id: 'v1', id: 'v1', label: 'V1' }] },
+      ]),
     };
     mockAction(metadataActions, 'loadTemplate');
     mockAction(metadataActions, 'resetReduxForm');
@@ -64,7 +65,7 @@ describe('SemanticSearchMultieditPanel', () => {
   const getProps = () => ({
     ...props,
     ...mapStateToProps(state),
-    ...mapDispatchToProps(dispatch, props)
+    ...mapDispatchToProps(dispatch, props),
   });
 
   const render = () => shallow(<SemanticSearchMultieditPanel {...getProps()} />);
@@ -88,10 +89,7 @@ describe('SemanticSearchMultieditPanel', () => {
     let component;
     beforeEach(() => {
       formValues = {
-        metadata: {
-          unchangedField: 'val1',
-          changedField: 'val2'
-        }
+        metadata: { unchangedField: [{ value: 'val1' }], changedField: [{ value: 'val2' }] },
       };
       component = render();
       instance = component.instance();
@@ -100,37 +98,37 @@ describe('SemanticSearchMultieditPanel', () => {
 
     it('should apply changes to entities and re-fetch the search', async () => {
       await instance.save(formValues);
-      expect(metadataActions.multipleUpdate).toHaveBeenCalledWith(
-        state.semanticSearch.multiedit,
-        { metadata: { changedField: 'val2' } }
-      );
+      expect(metadataActions.multipleUpdate).toHaveBeenCalledWith(state.semanticSearch.multiedit, {
+        metadata: { changedField: [{ value: 'val2' }] },
+      });
       expect(searchActions.getSearch).toHaveBeenCalledWith('searchId');
       expect(instance.close).toHaveBeenCalled();
     });
     it('should update entities icon if icon changed', async () => {
       formValues.icon = 'icon';
       state.semanticSearch.multipleEditForm.icon = {
-        pristine: false
+        pristine: false,
       };
       await instance.save(formValues);
-      expect(metadataActions.multipleUpdate).toHaveBeenCalledWith(
-        state.semanticSearch.multiedit,
-        { metadata: { changedField: 'val2' }, icon: 'icon' }
-      );
+      expect(metadataActions.multipleUpdate).toHaveBeenCalledWith(state.semanticSearch.multiedit, {
+        metadata: { changedField: [{ value: 'val2' }] },
+        icon: 'icon',
+      });
     });
     it('should set template if common template found', async () => {
       state = {
         ...state,
       };
-      state.semanticSearch.multiedit =
-        state.semanticSearch.multiedit.map(item => item.set('template', 'tpl1'));
+      state.semanticSearch.multiedit = state.semanticSearch.multiedit.map(item =>
+        item.set('template', 'tpl1')
+      );
       instance = render().instance();
       spyOn(instance, 'close');
       await instance.save(formValues);
-      expect(metadataActions.multipleUpdate).toHaveBeenCalledWith(
-        state.semanticSearch.multiedit,
-        { metadata: { changedField: 'val2' }, template: 'tpl1' }
-      );
+      expect(metadataActions.multipleUpdate).toHaveBeenCalledWith(state.semanticSearch.multiedit, {
+        metadata: { changedField: [{ value: 'val2' }] },
+        template: 'tpl1',
+      });
     });
   });
 
