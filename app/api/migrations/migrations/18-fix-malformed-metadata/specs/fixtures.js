@@ -52,9 +52,12 @@ export default {
         { _id: db.id(), id: issue1, label: 'Murder' },
         {
           _id: db.id(),
-          id: issue3,
+          id: 'group',
           label: 'Others',
-          values: [{ _id: db.id(), id: issue2, label: 'Kidnapping' }],
+          values: [
+            { _id: db.id(), id: issue2, label: 'Kidnapping' },
+            { _id: db.id(), id: issue3, label: 'Violence' },
+          ],
         },
       ],
     },
@@ -124,9 +127,9 @@ export default {
         {
           id: thesauri2,
           values: [
-            { key: 'Issue1', value: 'Issue1_en' },
-            { key: 'Issue2', value: 'Issue2_en' },
-            { key: 'Issue3', value: 'Issue3_en' },
+            { key: 'Murder', value: 'Murder_en' },
+            { key: 'Kidnapping', value: 'Kidnapping_en' },
+            { key: 'Violence', value: 'Violence_en' },
           ],
         },
       ],
@@ -146,9 +149,9 @@ export default {
         {
           id: thesauri2,
           values: [
-            { key: 'Issue1', value: 'Issue1_es' },
-            { key: 'Issue2', value: 'Issue2_es' },
-            { key: 'Issue3', value: 'Issue3_es' },
+            { key: 'Murder', value: 'Murder_es' },
+            { key: 'Kidnapping', value: 'Kidnapping_es' },
+            { key: 'Violence', value: 'Violence_es' },
           ],
         },
       ],

@@ -1,7 +1,6 @@
 /** @format */
 /* eslint-disable max-statements, no-await-in-loop */
 
-const stringifyValue = data => ({ ...data, value: data.value.toString() });
 const stringifyId = data => ({ ...data, id: data.id.toString() });
 
 const sanitizeThesaurus = thesaurus => {
@@ -18,7 +17,26 @@ const sanitizeThesaurus = thesaurus => {
   });
 };
 
-const determineMetadata = (entity, templatesById) => {
+const findLabel = (value, propertyData, thesauriById, translation) => {
+  const thesauri = thesauriById[propertyData.content.toString()];
+  const flattenedValues = thesauri.values.reduce(
+    (result, thesauriValue) =>
+      thesauriValue.values ? result.concat(thesauriValue.values) : result.concat([thesauriValue]),
+    []
+  );
+
+  const thesaurusElement = flattenedValues.find(v => v.id === value.toString());
+  if (thesaurusElement) {
+    const context = translation.contexts.find(
+      ctx => ctx.id.toString() === propertyData.content.toString()
+    );
+    const translationElement = context.values.find(v => v.key === thesaurusElement.label);
+    return translationElement ? translationElement.value : thesaurusElement.label;
+  }
+  return 'missingThesaurusElement';
+};
+
+const determineMetadata = (entity, templatesById, thesauriById, translation) => {
   let shouldProcess = false;
   const newMetadata = Object.keys(entity.metadata).reduce((metadata, property) => {
     const propertyData = templatesById[entity.template.toString()].properties.find(
@@ -31,15 +49,13 @@ const determineMetadata = (entity, templatesById) => {
       if (values) {
         shouldProcess = true;
         const newValues = values.reduce((results, data) => {
-          const value = data.value.toString();
-          let label = data.label;
+          let { label, value } = data;
+          value = value.toString();
+          label = findLabel(value, propertyData, thesauriById, translation);
 
-          if (!Object.keys(data).includes('label')) {
-            console.log('miising label', data);
-          }
-
-          return results.concat([{ ...data, value }]);
+          return results.concat([{ ...data, value, label }]);
         }, []);
+
         return Object.assign({}, metadata, {
           [property]: newValues.length ? newValues : undefined,
         });
@@ -47,6 +63,7 @@ const determineMetadata = (entity, templatesById) => {
 
       return metadata;
     }
+
     return metadata;
   }, {});
 
@@ -72,23 +89,22 @@ export default {
     process.stdout.write(' -> Processing thesauri values...\r\n');
 
     const thesauri = await getDocumentsFrom('dictionaries');
-    const thesauriById = thesauri.reduce(
-      (results, t) => Object.assign({}, results, { [t._id.toString()]: t }),
-      {}
-    );
 
     thesauri.forEach(async thesaurus => {
       const values = sanitizeThesaurus(thesaurus);
       await db.collection('dictionaries').update({ _id: thesaurus._id }, { ...thesaurus, values });
     });
 
+    const upadtedThesauri = await getDocumentsFrom('dictionaries');
+    const thesauriById = upadtedThesauri.reduce(
+      (results, t) => Object.assign({}, results, { [t._id.toString()]: t }),
+      {}
+    );
+
     process.stdout.write(' -> Processing entity values...\r\n');
 
     const cursor = db.collection('entities').find({});
-    const templates = await db
-      .collection('templates')
-      .find()
-      .toArray();
+    const templates = await getDocumentsFrom('templates');
     const templatesById = templates.reduce(
       (results, t) => Object.assign({}, results, { [t._id.toString()]: t }),
       {}
@@ -99,11 +115,17 @@ export default {
     while (await cursor.hasNext()) {
       const entity = await cursor.next();
 
+      const [translation] = await db
+        .collection('translations')
+        .find({ locale: entity.language })
+        .toArray();
+
       if (entity.metadata) {
         const { shouldProcess, newMetadata } = determineMetadata(
           entity,
           templatesById,
-          thesauriById
+          thesauriById,
+          translation
         );
 
         if (shouldProcess) {

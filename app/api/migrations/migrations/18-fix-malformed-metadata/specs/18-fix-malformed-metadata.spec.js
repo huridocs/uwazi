@@ -33,8 +33,8 @@ describe('migration fix-malformed-metadata', () => {
       const issuesThesaurus = thesauri.find(t => t._id.toString() === thesauri2.toString());
 
       expect(countriesThesaurus.values.map(v => v.id)).toEqual(['123-c1', '4', '5']);
-      expect(issuesThesaurus.values.map(v => v.id)).toEqual(['6', '345-i1']);
-      expect(issuesThesaurus.values[1].values.map(v => v.id)).toEqual(['7']);
+      expect(issuesThesaurus.values.map(v => v.id)).toEqual(['6', 'group']);
+      expect(issuesThesaurus.values[1].values.map(v => v.id)).toEqual(['7', '345-i1']);
     });
   });
 
@@ -76,9 +76,9 @@ describe('migration fix-malformed-metadata', () => {
       };
 
       expect(e1.selectValues).toEqual(['123-c1', '6', '7']);
-      expect(e1.selectLabels).toEqual(['Country1_en', 'Issue1_en', 'Issue2_en']);
+      expect(e1.selectLabels).toEqual(['Country1_en', 'Murder_en', 'Kidnapping_en']);
       expect(e2.selectValues).toEqual(['4', '7', '6', '345-i1']);
-      expect(e2.selectLabels).toEqual(['Country2_en', 'Issue2_en', 'Issue1_en', 'Issue3_en']);
+      expect(e2.selectLabels).toEqual(['Country2_es', 'Kidnapping_es', 'Murder_es', 'Violence_es']);
       expect(e3.selectValues).toEqual([undefined]);
       expect(e3.selectLabels).toEqual([undefined]);
     });
