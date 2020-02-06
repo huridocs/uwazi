@@ -141,7 +141,7 @@ export class ThesaurusCockpitBase extends RouteHandler {
     return [
       actions.set('thesauri/thesaurus', thesaurus as ThesaurusSchema),
       actions.set('thesauri/models', [model as ClassifierModelSchema]),
-      actions.set('thesauri/suggestions', flattenedSuggestions),
+      actions.set('thesauri/suggestions', flattenedSuggestions as SuggestionResultSchema),
     ];
   }
 
@@ -156,8 +156,7 @@ export class ThesaurusCockpitBase extends RouteHandler {
   }
 
   suggestionsButton() {
-    const { thesaurus } = this.props as ThesaurusCockpitProps;
-    const { suggestions } = this.props;
+    const { thesaurus, suggestions } = this.props as ThesaurusCockpitProps;
 
     if (!thesaurus || !thesaurus.property || suggestions.totalSuggestions === 0) {
       return null;
