@@ -34,19 +34,32 @@ describe('review path', () => {
       expect(await nightmare.isVisible(selectors.review.titleEditBox)).toBe(true);
     });
 
-    it('should allow accepting a suggestion', async () => {
-      await nightmare.waitToClick(selectors.review.firstSuggestion).wait(100);
-      await nightmare.waitToClick(selectors.review.firstSuggestReject).wait(100);
-      await nightmare.waitToClick(selectors.review.secondMultiSelectItem).wait(100);
+    it('should allow accepting a suggestion and discard', async () => {
+      expect(await nightmare.isVisible(selectors.review.discardButtonDisabled)).toBe(true);
+      await nightmare.waitToClick(selectors.review.firstSuggestion);
+      expect(await nightmare.isVisible(selectors.review.firstMultiSelectItemSelected)).toBe(true);
       await nightmare
-        .waitToClick(selectors.review.discardButton)
-        .wait(selectors.review.disabledDiscardButton);
-      await nightmare.waitToClick(selectors.review.firstSuggestion).wait(100);
-      await nightmare.waitToClick(selectors.review.firstSuggestReject).wait(100);
-      await nightmare.waitToClick(selectors.review.secondMultiSelectItem).wait(100);
+        .waitToClick(selectors.review.firstSuggestReject)
+        .waitToBeGone(selectors.review.firstSuggestion);
+      await nightmare.waitToClick(selectors.review.secondMultiSelectItem);
+      expect(await nightmare.isVisible(selectors.review.secondMultiSelectItemSelected)).toBe(true);
+      expect(await nightmare.isVisible(selectors.review.discardButtonEnabled)).toBe(true);
+      await nightmare.waitToClick(selectors.review.discardButtonEnabled);
+    });
+
+    it('should allow accepting a suggestion and save', async () => {
+      expect(
+        await nightmare
+          .waitToBeGone(selectors.review.discardButtonEnabled)
+          .isVisible(selectors.review.discardButtonDisabled)
+      ).toBe(true);
+      await nightmare.waitToClick(selectors.review.firstSuggestion);
+      expect(await nightmare.isVisible(selectors.review.firstMultiSelectItemSelected)).toBe(true);
+      expect(await nightmare.isVisible(selectors.review.saveAndGoToNextEnabled)).toBe(true);
       await nightmare
-        .waitToClick(selectors.review.saveAndGoToNext)
-        .wait(selectors.review.disabledDiscardButton);
+        .waitToClick(selectors.review.saveAndGoToNextEnabled)
+        .waitToBeGone(selectors.review.discardButtonEnabled);
+      expect(await nightmare.isVisible(selectors.review.discardButtonDisabled)).toBe(true);
     });
   });
 });

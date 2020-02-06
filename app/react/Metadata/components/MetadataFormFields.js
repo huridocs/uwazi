@@ -57,7 +57,11 @@ export class MetadataFormFields extends Component {
             options={translateOptions(thesauri)}
             prefix={_model}
             forceHoist={version === 'OneUp'}
-            thesaurusName={version === 'OneUp' ? thesauri.get('name') : null}
+            placeholder={
+              version === 'OneUp'
+                ? `${t('System', 'Search', null, false)} '${thesauri.get('name')}'`
+                : null
+            }
           />
         );
       case 'relationship':
@@ -135,12 +139,7 @@ export class MetadataFormFields extends Component {
     return (
       <div>
         {fields
-          .filter(p => {
-            if (showSubset && !showSubset.includes(p.name)) {
-              return false;
-            }
-            return true;
-          })
+          .filter(p => !showSubset || showSubset.includes(p.name))
           .map(property => (
             <FormGroup key={property.name} model={`.metadata.${property.name}`}>
               <ul className="search__filter is-active">

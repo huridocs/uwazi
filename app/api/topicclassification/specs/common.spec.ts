@@ -2,7 +2,7 @@
 
 import { EntitySchema } from 'api/entities/entityType';
 import db from 'api/utils/testing_db';
-import { buildModelName } from 'shared/commonTopicClassification';
+import { buildFullModelName } from 'shared/commonTopicClassification';
 import { extractSequence } from 'api/topicclassification/common';
 import fixtures, { template1 } from './fixtures';
 
@@ -17,7 +17,7 @@ describe('templates utils', () => {
 
   describe('buildModelName', () => {
     process.env.DATABASE_NAME = 'test-db';
-    expect(buildModelName('Abc-D e(F)g')).toBe('test-db-abcdefg');
+    expect(buildFullModelName('Abc-D e(F)g')).toBe('test-db-abcdefg');
   });
 
   describe('extractSequence', () => {
