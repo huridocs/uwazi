@@ -32,7 +32,6 @@ import fixtures, {
 } from './fixtures';
 import relationships from '../relationships';
 import search from '../../search/search';
-import { exceptions } from 'winston';
 
 describe('relationships', () => {
   beforeEach(done => {
@@ -620,8 +619,8 @@ describe('relationships', () => {
         });
 
         expect(expectedLanguages).toContain(languages);
-        expectedLanguages = expectedLanguages.filter(lang => lang != languages);
-      })
+        expectedLanguages = expectedLanguages.filter(lang => lang !== languages);
+      });
 
       expect(expectedLanguages).toEqual([]);
     });
