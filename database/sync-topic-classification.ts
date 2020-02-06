@@ -9,7 +9,7 @@ import templates from 'api/templates';
 import thesauri from 'api/thesauri';
 import { extractSequence } from 'api/topicclassification/common';
 import connect, { disconnect } from 'api/utils/connect_to_mongo';
-import { buildModelName } from 'shared/commonTopicClassification';
+import { buildFullModelName } from 'shared/commonTopicClassification';
 import JSONRequest from 'shared/JSONRequest';
 import { propertyTypes } from 'shared/propertyTypes';
 import { ensure, sleep } from 'shared/tsUtils';
@@ -246,7 +246,7 @@ connect().then(
             };
           }, {});
 
-          const modelName = buildModelName(selectedThesaurus.name);
+          const modelName = buildFullModelName(selectedThesaurus.name);
           if (fixedModel && modelName !== fixedModel) {
             console.log(`Skipped ${modelName}.`);
             return;
