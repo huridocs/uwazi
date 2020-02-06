@@ -30,41 +30,55 @@ const findLabel = (value, propertyData, thesauriById, translation) => {
     const context = translation.contexts.find(
       ctx => ctx.id.toString() === propertyData.content.toString()
     );
-    const translationElement = context.values.find(v => v.key === thesaurusElement.label);
-    return translationElement ? translationElement.value : thesaurusElement.label;
+
+    if (context) {
+      const translationElement = context.values.find(v => v.key === thesaurusElement.label);
+      return translationElement ? translationElement.value : thesaurusElement.label;
+    }
+
+    return thesaurusElement.label;
   }
-  return 'missingThesaurusElement';
+  throw new Error('missingThesaurusElement');
 };
 
 const determineMetadata = (entity, templatesById, thesauriById, translation) => {
   let shouldProcess = false;
+
   const newMetadata = Object.keys(entity.metadata).reduce((metadata, property) => {
     const propertyData = templatesById[entity.template.toString()].properties.find(
       p => p.name === property
     );
 
     if (propertyData && (propertyData.type === 'select' || propertyData.type === 'multiselect')) {
-      const values = entity.metadata[property];
+      const entries = entity.metadata[property];
 
-      if (values) {
+      if (entries) {
         shouldProcess = true;
-        const newValues = values.reduce((results, data) => {
+
+        const newEntries = entries.reduce((results, data) => {
           let { label, value } = data;
           value = value.toString();
-          label = findLabel(value, propertyData, thesauriById, translation);
+          try {
+            label = findLabel(value, propertyData, thesauriById, translation);
+          } catch (err) {
+            if (err.message === 'missingThesaurusElement') {
+              return results;
+            }
+            throw err;
+          }
 
           return results.concat([{ ...data, value, label }]);
         }, []);
 
         return Object.assign({}, metadata, {
-          [property]: newValues.length ? newValues : undefined,
+          [property]: newEntries.length ? newEntries : [],
         });
       }
 
-      return metadata;
+      return Object.assign({}, metadata, { [property]: [] });
     }
 
-    return metadata;
+    return Object.assign({}, metadata, { [property]: entity.metadata[property] });
   }, {});
 
   return { shouldProcess, newMetadata };
