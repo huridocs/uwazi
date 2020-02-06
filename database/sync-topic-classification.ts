@@ -17,6 +17,8 @@ import { PropertySchema } from 'shared/types/commonTypes';
 import { ThesaurusSchema } from 'shared/types/thesaurusType';
 import yargs from 'yargs';
 
+const modes = { onlynew: 'onlynew', all: 'all', autoaccept: 'autoaccept', purge: 'purge' };
+
 const {
   limit,
   recompute,
@@ -25,6 +27,7 @@ const {
   model: fixedModel,
   sharedIds: sharedIdsStr,
   dryRun,
+  autoAcceptConfidence,
   batchSize,
 } = yargs
   .option('limit', { default: 1000000 })
@@ -33,29 +36,35 @@ const {
     usage: "If true, don't apply any changes to Uwazi",
   })
   .option('recompute', {
-    default: false,
-    usage: 'If true, force topic-classification to refresh all predictions. Can be slow.',
+    default: true,
+    usage: 'If true, force topic-classification to refresh all suggestions. Can be slow.',
   })
   .option('overwrite', {
     default: false,
     usage:
-      'If true, replace suggestedMetadata in Uwazi with predictions, even if ' +
+      'If true, replace suggestedMetadata in Uwazi with suggestions, even if ' +
       'suggestions exist. This potentially recreates previously-rejected suggestions.',
   })
   .option('mode', {
-    default: 'onlynew',
+    default: modes.onlynew,
     usage:
       'onlynew: only process entities that have no value for the thesaurus; ' +
       'all: process all entities; ' +
+      'autoaccept: modify metadata directly to apply labels, needs --autoAcceptConfidence, implies onlynew; ' +
       'purge: delete suggestions;',
+  })
+  .option('autoAcceptConfidence', {
+    default: 0.0,
+    usage:
+      'apply all suggestions for an entity if ALL suggestions are >= this confidence, e.g. 0.75',
   })
   .option('sharedIds', { default: '' })
   .option('model', {
     default: '',
-    usage: 'If set, only run on this model.',
+    usage: 'If set, only run on this model, e.g. plan-staging-topics.',
   })
   .option('batchSize', {
-    default: 200,
+    default: 50,
     usage: 'Batch size for topic classification server calls.',
   })
   .help().argv;
@@ -122,36 +131,60 @@ async function handleResponse(
   }
   const sample = response.json.samples.find(s => s.sharedId === e.sharedId);
   if (!sample) {
-    console.error(`Missing response for ${e.sharedId}`);
     return false;
   }
+  if (!sample.predicted_labels.length) {
+    console.error(`No suggestions for ${e.sharedId}`);
+  }
+  let newPropMetadata = sample.predicted_labels
+    .reduce((res: MetadataObject<string>[], pred) => {
+      const thesValue = (thesaurus.values || []).find(v => v.label === pred.topic);
+      if (!thesValue || !thesValue.id) {
+        console.error(`Model suggestion "${pred.topic}" not found in thesaurus ${thesaurus.name}`);
+        return res;
+      }
+      return [
+        ...res,
+        { value: thesValue.id, label: pred.topic, suggestion_confidence: pred.quality },
+      ];
+    }, [])
+    .sort((v1, v2) => (v2.suggestion_confidence || 0) - (v1.suggestion_confidence || 0));
+  if (prop.type === propertyTypes.select && newPropMetadata.length) {
+    newPropMetadata = [newPropMetadata[0]];
+  }
+
+  if (mode === modes.autoaccept) {
+    if (((e.metadata ?? {})[prop.name] ?? []).length) {
+      console.error(`Will not overwrite previous metadata for ${e.sharedId}`);
+      return false;
+    }
+    if (!newPropMetadata.length) {
+      return false;
+    }
+    if (!newPropMetadata.every(v => (v.suggestion_confidence ?? 0) >= autoAcceptConfidence)) {
+      console.info(`Suggestions below threshold for ${e.sharedId} (${newPropMetadata.length})`);
+      return false;
+    }
+    if (!e.metadata) {
+      e.metadata = {};
+    }
+    newPropMetadata = newPropMetadata.map(v => ({ ...v, provenance: 'BULK_ACCEPT' }));
+    if (JSON.stringify(newPropMetadata) !== JSON.stringify(e.metadata[prop.name])) {
+      e.metadata[prop.name] = newPropMetadata;
+      if (!dryRun) {
+        await entities.save(e, { user: 'sync-topic-classification', language: e.language });
+      }
+      console.info(`${dryRun ? '[DRY-RUN] ' : ' '}Saved ${e.sharedId} (${newPropMetadata.length})`);
+    }
+    return true;
+  }
+
   if (!e.suggestedMetadata) {
     e.suggestedMetadata = {};
-  }
-  if (!sample.predicted_labels.length) {
-    console.error(`No predictions for ${e.sharedId}`);
   }
   // We explicitely preserve empty arrays in suggestedMetadata to not
   // recreate rejected suggestions.
   if (!e.suggestedMetadata[prop.name] || overwrite) {
-    let newPropMetadata = sample.predicted_labels
-      .reduce((res: MetadataObject<string>[], pred) => {
-        const thesValue = (thesaurus.values || []).find(v => v.label === pred.topic);
-        if (!thesValue || !thesValue.id) {
-          console.error(
-            `Model prediction "${pred.topic}" not found in thesaurus ${thesaurus.name}`
-          );
-          return res;
-        }
-        return [
-          ...res,
-          { value: thesValue.id, label: pred.topic, suggestion_confidence: pred.quality },
-        ];
-      }, [])
-      .sort((v1, v2) => (v2.suggestion_confidence || 0) - (v1.suggestion_confidence || 0));
-    if (prop.type === propertyTypes.select && newPropMetadata.length) {
-      newPropMetadata = [newPropMetadata[0]];
-    }
     // JSON.stringify provides an easy and fast deep-equal comparison.
     if (JSON.stringify(newPropMetadata) !== JSON.stringify(e.suggestedMetadata[prop.name])) {
       e.suggestedMetadata[prop.name] = newPropMetadata;
@@ -170,7 +203,7 @@ async function syncEntities(
   model: string,
   thesaurus: ThesaurusSchema
 ) {
-  if (mode === 'purge') {
+  if (mode === modes.purge) {
     return (
       await Promise.all(
         es.map(async e => {
@@ -203,7 +236,7 @@ async function syncEntities(
         if (!e.template || !e.metadata || e.language !== 'en') {
           return null;
         }
-        if (mode === 'onlynew') {
+        if ([modes.onlynew, modes.autoaccept].includes(mode)) {
           if (e.metadata[prop.name!] && e.metadata[prop.name!]!.length) {
             return null;
           }
@@ -244,6 +277,9 @@ connect().then(
     try {
       if (!process.env.DATABASE_NAME) {
         throw new Error('You need to set $DATABASE_NAME!');
+      }
+      if (mode === modes.autoaccept && !autoAcceptConfidence) {
+        throw new Error('With --mode=autoaccept you need to set --autoAcceptConfidence.');
       }
       const allThesauri: WithId<ThesaurusSchema>[] = await thesauri.get();
       const allTemplates = await templates.get();
