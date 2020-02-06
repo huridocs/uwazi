@@ -160,8 +160,26 @@ describe('ThesaurusCockpit', () => {
       /* We expect 5 data cells -- three with quality icons and 1 each of
     suggestion counts and a review button */
       expect(component.find('td').children().length).toBe(5);
+      expect(component.find({ title: 'publish-button' }).length).toBe(1);
       expect(component.find({ title: 'review-button-title' }).length).toBe(1);
       expect(component.contains(<td title="suggestions-count">{1}</td>)).toEqual(true);
+    });
+
+    it('should not render the publish button when there are < 1 suggestions', () => {
+      props.suggestions = {
+        totalRows: 0,
+        totalSuggestions: 0,
+        thesaurus: {
+          propertyName: 'thesaurus_name',
+          values: {
+            id1: 1,
+            id2: 0,
+          },
+        },
+      };
+      component = shallow(<ThesaurusCockpitBase {...props} />, { context });
+      expect(component.find({ title: 'publish-button' }).length).toBe(0);
+      expect(component.find('td').children().length).toBe(5);
     });
   });
 

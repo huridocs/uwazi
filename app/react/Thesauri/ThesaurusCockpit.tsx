@@ -1,5 +1,4 @@
 /** @format */
-
 import RouteHandler from 'app/App/RouteHandler';
 import { actions } from 'app/BasicReducer';
 import Loader from 'app/components/Elements/Loader';
@@ -14,11 +13,12 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
 import { IImmutable } from 'shared/types/Immutable';
-import { Icon } from 'UI';
 import { ThesaurusSchema, ThesaurusValueSchema } from 'shared/types/thesaurusType';
-import { buildSuggestionResult, flattenSuggestionResults } from './utils/suggestionQuery';
+import { Icon } from 'UI';
+
 import { ClassifierModelSchema } from './types/classifierModelType';
 import { SuggestionResultSchema } from './types/suggestionResultType';
+import { buildSuggestionResult, flattenSuggestionResults } from './utils/suggestionQuery';
 import { getValuesSortedByName } from './utils/valuesSort';
 
 export type ThesaurusCockpitProps = {
@@ -165,6 +165,7 @@ export class ThesaurusCockpitBase extends RouteHandler {
 
     return (
       <I18NLink
+        title="publish-button"
         to={
           `/uploads/?q=(filters:(_${thesaurusPropertyRefName}:(values:!(any)),${thesaurusPropertyRefName}:(values:!(any))),` +
           'limit:100,order:desc,sort:creationDate)&view=nosearch'
