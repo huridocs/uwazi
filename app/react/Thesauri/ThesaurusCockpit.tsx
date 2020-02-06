@@ -2,6 +2,7 @@
 
 import RouteHandler from 'app/App/RouteHandler';
 import { actions } from 'app/BasicReducer';
+import Loader from 'app/components/Elements/Loader';
 import { I18NLink, t } from 'app/I18N';
 import api from 'app/Search/SearchAPI';
 import { resolveTemplateProp } from 'app/Settings/utils/resolveProperty';
@@ -120,10 +121,10 @@ export class ThesaurusCockpitBase extends RouteHandler {
     const modelParams = requestParams.onlyHeaders().set({ model: thesaurus.name });
     const model: ClassifierModelSchema = await ThesauriAPI.getModelStatus(modelParams);
 
-    // Get aggregate document count of documents with suggestions on this thesaurus
     const assocProp = resolveTemplateProp(thesaurus, templates);
     thesaurus.property = assocProp;
 
+    // Get aggregate document count of documents with suggestions on this thesaurus
     const allDocsWithSuggestions = await Promise.all(
       templates.map((template: { _id: string }) => {
         const reqParams = requestParams.set(getSuggestionsQuery(assocProp, template._id));
@@ -140,7 +141,7 @@ export class ThesaurusCockpitBase extends RouteHandler {
     return [
       actions.set('thesauri/thesaurus', thesaurus as ThesaurusSchema),
       actions.set('thesauri/models', [model as ClassifierModelSchema]),
-      actions.set('thesauri/suggestions', flattenedSuggestions),
+      actions.set('thesauri/suggestions', flattenedSuggestions as SuggestionResultSchema),
     ];
   }
 
@@ -155,9 +156,9 @@ export class ThesaurusCockpitBase extends RouteHandler {
   }
 
   suggestionsButton() {
-    const { thesaurus } = this.props as ThesaurusCockpitProps;
+    const { thesaurus, suggestions } = this.props as ThesaurusCockpitProps;
 
-    if (!thesaurus || !thesaurus.property) {
+    if (!thesaurus || !thesaurus.property || suggestions.totalSuggestions === 0) {
       return null;
     }
     const thesaurusPropertyRefName = thesaurus.property.name;
@@ -180,6 +181,9 @@ export class ThesaurusCockpitBase extends RouteHandler {
   render() {
     const { thesaurus } = this.props as ThesaurusCockpitProps;
     const { name } = thesaurus;
+    if (!name) {
+      return <Loader />;
+    }
     return (
       <div className="panel panel-default">
         <div className="panel-heading">
