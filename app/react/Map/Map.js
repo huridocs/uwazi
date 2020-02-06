@@ -328,7 +328,7 @@ Map.defaultProps = {
   autoCenter: true,
   scrollZoom: true,
   showControls: false,
-  interactiveLayerIds: null
+  interactiveLayerIds: []
 };
 
 Map.propTypes = {
