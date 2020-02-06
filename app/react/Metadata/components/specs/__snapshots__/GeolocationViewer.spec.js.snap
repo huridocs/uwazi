@@ -8,7 +8,7 @@ exports[`GeolocationViewer should not fail if points is just an empty array 1`] 
   cluster={false}
   height={370}
   hoverOnMarker={[Function]}
-  interactiveLayerIds={null}
+  interactiveLayerIds={Array []}
   latitude={null}
   longitude={null}
   markers={Array []}
@@ -30,7 +30,7 @@ exports[`GeolocationViewer should render a map with markers when onlyForCards is
   cluster={false}
   height={370}
   hoverOnMarker={[Function]}
-  interactiveLayerIds={null}
+  interactiveLayerIds={Array []}
   latitude={13}
   longitude={7}
   markers={
