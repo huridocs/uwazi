@@ -2,6 +2,7 @@
 
 import RouteHandler from 'app/App/RouteHandler';
 import { actions } from 'app/BasicReducer';
+import Loader from 'app/components/Elements/Loader';
 import { I18NLink, t } from 'app/I18N';
 import api from 'app/Search/SearchAPI';
 import { resolveTemplateProp } from 'app/Settings/utils/resolveProperty';
@@ -65,14 +66,11 @@ export class ThesaurusCockpitBase extends RouteHandler {
   static topicNode(
     topic: ThesaurusValueSchema,
     suggestionResult: SuggestionResultSchema,
-    modelInfo: ClassifierModelSchema,
+    modelInfo: ClassifierModelSchema | undefined,
     propName: string | undefined
   ) {
-    if (modelInfo === undefined) {
-      return null;
-    }
     const { label, id } = topic;
-    const { quality = 0 } = (modelInfo.topics || {})[label] || {};
+    const { quality = 0 } = (modelInfo?.topics ?? {})[label] || {};
     const suggestionCount = suggestionResult.thesaurus?.values[`${id}`] ?? 0;
 
     return (
@@ -102,7 +100,7 @@ export class ThesaurusCockpitBase extends RouteHandler {
     const values = getValuesSortedByName(thesaurus);
     const model = models.find((modelInfo: ClassifierModelSchema) => modelInfo.name === name);
 
-    if (!model || !property) {
+    if (!property) {
       return null;
     }
 
@@ -183,6 +181,9 @@ export class ThesaurusCockpitBase extends RouteHandler {
   render() {
     const { thesaurus } = this.props as ThesaurusCockpitProps;
     const { name } = thesaurus;
+    if (!name) {
+      return <Loader />;
+    }
     return (
       <div className="panel panel-default">
         <div className="panel-heading">
