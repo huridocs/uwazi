@@ -2,6 +2,7 @@
 
 import RouteHandler from 'app/App/RouteHandler';
 import { actions } from 'app/BasicReducer';
+import Loader from 'app/components/Elements/Loader';
 import { I18NLink, t } from 'app/I18N';
 import api from 'app/Search/SearchAPI';
 import { resolveTemplateProp } from 'app/Settings/utils/resolveProperty';
@@ -180,6 +181,9 @@ export class ThesaurusCockpitBase extends RouteHandler {
   render() {
     const { thesaurus } = this.props as ThesaurusCockpitProps;
     const { name } = thesaurus;
+    if (!name) {
+      return <Loader />;
+    }
     return (
       <div className="panel panel-default">
         <div className="panel-heading">
