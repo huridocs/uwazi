@@ -1,3 +1,6 @@
+/**
+ * @jest-environment jsdom
+ */
 import { Form } from 'react-redux-form';
 import { browserHistory } from 'react-router';
 import React from 'react';

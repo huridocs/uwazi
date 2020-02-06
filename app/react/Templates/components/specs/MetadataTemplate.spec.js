@@ -1,3 +1,6 @@
+/**
+ * @jest-environment jsdom
+ */
 import React, { Component } from 'react';
 import TestUtils from 'react-dom/test-utils';
 import TestBackend from 'react-dnd-test-backend';

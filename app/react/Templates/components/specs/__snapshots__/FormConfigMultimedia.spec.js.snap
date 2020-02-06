@@ -83,7 +83,7 @@ exports[`FormConfigMultimedia should allow excluding "required" 1`] = `
         <b>
           Fill
         </b>
-         will attempt to fill the container, using it's entire width.  In cards, cropping is likely to occur.
+         will attempt to fill the container, using it's entire width. In cards, cropping is likely to occur.
       </p>
     </div>
   </div>
@@ -173,7 +173,7 @@ exports[`FormConfigMultimedia should allow excluding "show in card" 1`] = `
         <b>
           Fill
         </b>
-         will attempt to fill the container, using it's entire width.  In cards, cropping is likely to occur.
+         will attempt to fill the container, using it's entire width. In cards, cropping is likely to occur.
       </p>
     </div>
   </div>
@@ -258,8 +258,8 @@ exports[`FormConfigMultimedia should allow setting a help text 1`] = `
   <div
     className="protip"
   >
-    <i
-      className="fa fa-lightbulb-o"
+    <Connect(Icon)
+      icon="lightbulb"
     />
     <span>
       Some help text
@@ -342,7 +342,7 @@ exports[`FormConfigMultimedia should allow setting a help text 1`] = `
         <b>
           Fill
         </b>
-         will attempt to fill the container, using it's entire width.  In cards, cropping is likely to occur.
+         will attempt to fill the container, using it's entire width. In cards, cropping is likely to occur.
       </p>
     </div>
   </div>
@@ -442,7 +442,7 @@ exports[`FormConfigMultimedia should hold show label, show in card and select ca
         <b>
           Fill
         </b>
-         will attempt to fill the container, using it's entire width.  In cards, cropping is likely to occur.
+         will attempt to fill the container, using it's entire width. In cards, cropping is likely to occur.
       </p>
     </div>
   </div>

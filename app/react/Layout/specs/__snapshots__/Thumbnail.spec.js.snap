@@ -22,8 +22,8 @@ exports[`Thumbnail should render pdf icon when .pdf extension 1`] = `
   className="thumbnail"
 >
   <span>
-    <i
-      className="far fa-file-pdf"
+    <Connect(Icon)
+      icon="file-pdf"
     />
      pdf
   </span>

@@ -1,3 +1,6 @@
+/**
+ * @jest-environment jsdom
+ */
 /* eslint-disable max-statements */
 import React from 'react';
 import backend from 'fetch-mock';

@@ -43,9 +43,7 @@ exports[`MultiSelect should display a not found message when there are no option
         <Connect(Icon)
           icon="caret-down"
         />
-        <i
-          className="fa fa-caret-down"
-        />
+         
         <span>
           -5
            
@@ -385,9 +383,7 @@ exports[`MultiSelect should not render an empty group 1`] = `
         <Connect(Icon)
           icon="caret-down"
         />
-        <i
-          className="fa fa-caret-down"
-        />
+         
         <span>
           -2
            
