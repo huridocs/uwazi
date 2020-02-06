@@ -167,6 +167,15 @@ $header-height: 44px;
     height: 0;
     flex-grow: 1;
     height: unset;
+
+    .view {
+      max-width: 1000px;
+      justify-content: inherit;
+
+      dl {
+        min-width: 250px;
+      }
+    }
   }
 
   .entity-metadata {

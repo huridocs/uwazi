@@ -121,10 +121,10 @@ export class ThesaurusCockpitBase extends RouteHandler {
     const modelParams = requestParams.onlyHeaders().set({ model: thesaurus.name });
     const model: ClassifierModelSchema = await ThesauriAPI.getModelStatus(modelParams);
 
-    // Get aggregate document count of documents with suggestions on this thesaurus
     const assocProp = resolveTemplateProp(thesaurus, templates);
     thesaurus.property = assocProp;
 
+    // Get aggregate document count of documents with suggestions on this thesaurus
     const allDocsWithSuggestions = await Promise.all(
       templates.map((template: { _id: string }) => {
         const reqParams = requestParams.set(getSuggestionsQuery(assocProp, template._id));
@@ -141,7 +141,7 @@ export class ThesaurusCockpitBase extends RouteHandler {
     return [
       actions.set('thesauri/thesaurus', thesaurus as ThesaurusSchema),
       actions.set('thesauri/models', [model as ClassifierModelSchema]),
-      actions.set('thesauri/suggestions', flattenedSuggestions),
+      actions.set('thesauri/suggestions', flattenedSuggestions as SuggestionResultSchema),
     ];
   }
 
@@ -156,9 +156,9 @@ export class ThesaurusCockpitBase extends RouteHandler {
   }
 
   suggestionsButton() {
-    const { thesaurus } = this.props as ThesaurusCockpitProps;
+    const { thesaurus, suggestions } = this.props as ThesaurusCockpitProps;
 
-    if (!thesaurus || !thesaurus.property) {
+    if (!thesaurus || !thesaurus.property || suggestions.totalSuggestions === 0) {
       return null;
     }
     const thesaurusPropertyRefName = thesaurus.property.name;
