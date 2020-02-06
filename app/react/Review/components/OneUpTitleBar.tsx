@@ -1,7 +1,7 @@
 /** @format */
 
 import { I18NLink, t } from 'app/I18N';
-import { toggleOneUpFullEdit } from 'app/Review/actions/actions';
+import { toggleOneUpFullEdit, switchOneUpEntity } from 'app/Review/actions/actions';
 import 'app/Review/scss/review.scss';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
@@ -44,27 +44,22 @@ export class OneUpTitleBarBase extends Component<OneUpTitleBarProps> {
   }
 
   navButtons() {
-    const { oneUpState, isPristine, switchOneUpEntity } = this.props;
-    const prevBtnClass =
-      oneUpState.indexInDocs > 0
-        ? `btn ${isPristine ? 'btn-default' : 'btn-default btn-warning'}`
-        : 'btn btn-default btn-disabled';
-    const nextBtnClass = `btn ${isPristine ? 'btn-default' : 'btn-default btn-warning'}`;
+    const { isPristine, switchOneUpEntity } = this.props;
     const navAction = isPristine
       ? (delta: number) => () => switchOneUpEntity(delta, false)
       : (delta: number) => () =>
           this.context.confirm({
-            accept: () => this.props.switchOneUpEntity(delta, false),
+            accept: () => switchOneUpEntity(delta, false),
             title: 'Confirm discard changes',
             message:
               'There are unsaved changes. Are you sure you want to discard them and switch to a different document?',
           });
     return (
       <span>
-        <button type="button" onClick={navAction(-1)} className={prevBtnClass}>
+        <button type="button" onClick={navAction(-1)} className="btn btn-default">
           <Icon icon="arrow-left" />
         </button>
-        <button type="button" onClick={navAction(+1)} className={nextBtnClass}>
+        <button type="button" onClick={navAction(+1)} className="btn btn-default">
           <Icon icon="arrow-right" />
         </button>
       </span>
@@ -119,6 +114,7 @@ const mapStateToProps = (state: StoreState) => ({
 function mapDispatchToProps(dispatch: Dispatch<StoreState>) {
   return bindActionCreators(
     {
+      switchOneUpEntity,
       toggleOneUpFullEdit,
     },
     dispatch
