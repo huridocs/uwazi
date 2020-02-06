@@ -17,8 +17,20 @@ import { PropertySchema } from 'shared/types/commonTypes';
 import { ThesaurusSchema } from 'shared/types/thesaurusType';
 import yargs from 'yargs';
 
-const { limit, recompute, overwrite, mode, model: fixedModel, sharedIds: sharedIdsStr } = yargs
+const {
+  limit,
+  recompute,
+  overwrite,
+  mode,
+  model: fixedModel,
+  sharedIds: sharedIdsStr,
+  dryRun,
+} = yargs
   .option('limit', { default: 1000000 })
+  .option('dryRun', {
+    default: true,
+    usage: "If true, don't apply any changes to Uwazi",
+  })
   .option('recompute', {
     default: false,
     usage: 'If true, force topic-classification to refresh all predictions. Can be slow.',
@@ -138,8 +150,10 @@ async function handleResponse(
     // JSON.stringify provides an easy and fast deep-equal comparison.
     if (JSON.stringify(newPropMetadata) !== JSON.stringify(e.suggestedMetadata[prop.name])) {
       e.suggestedMetadata[prop.name] = newPropMetadata;
-      await entities.save(e, { user: 'sync-topic-classification', language: e.language });
-      console.info(`Saved ${e.sharedId}`);
+      if (!dryRun) {
+        await entities.save(e, { user: 'sync-topic-classification', language: e.language });
+      }
+      console.info(`${dryRun ? '[DRY-RUN] ' : ' '}Saved ${e.sharedId}`);
     }
   }
   return true;
@@ -164,8 +178,10 @@ async function syncEntities(
             return false;
           }
           delete e.suggestedMetadata![prop.name!];
-          await entities.save(e, { user: 'sync-topic-classification', language: e.language });
-          console.info(`Purged ${e.sharedId}`);
+          if (!dryRun) {
+            await entities.save(e, { user: 'sync-topic-classification', language: e.language });
+          }
+          console.info(`${dryRun ? '[DRY-RUN] ' : ' '}Purged ${e.sharedId}`);
           return true;
         })
       )
