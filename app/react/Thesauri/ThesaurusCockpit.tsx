@@ -76,7 +76,9 @@ export class ThesaurusCockpitBase extends RouteHandler {
     return (
       <tr key={label}>
         <th scope="row">{label}</th>
-        <td title="suggestions-count">{suggestionCount ? suggestionCount.toLocaleString() : null}</td>
+        <td title="suggestions-count">
+          {suggestionCount ? suggestionCount.toLocaleString() : null}
+        </td>
         <td title="review-button">
           {suggestionCount > 0 && propName ? (
             <I18NLink
@@ -168,7 +170,7 @@ export class ThesaurusCockpitBase extends RouteHandler {
         }
         className="btn btn-primary btn-xs"
       >
-        <span>{t('System', 'Final review of unpublished documents')}</span>
+        <span>{t('System', 'Review of unpublished documents')}</span>
       </I18NLink>
     );
   }
