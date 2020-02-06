@@ -44,12 +44,12 @@ export class OneUpTitleBarBase extends Component<OneUpTitleBarProps> {
   }
 
   navButtons() {
-    const { isPristine, switchOneUpEntity } = this.props;
+    const { isPristine } = this.props;
     const navAction = isPristine
-      ? (delta: number) => () => switchOneUpEntity(delta, false)
+      ? (delta: number) => () => this.props.switchOneUpEntity(delta, false)
       : (delta: number) => () =>
           this.context.confirm({
-            accept: () => switchOneUpEntity(delta, false),
+            accept: () => this.props.switchOneUpEntity(delta, false),
             title: 'Confirm discard changes',
             message:
               'There are unsaved changes. Are you sure you want to discard them and switch to a different document?',
