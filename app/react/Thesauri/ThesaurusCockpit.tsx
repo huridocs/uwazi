@@ -76,17 +76,14 @@ export class ThesaurusCockpitBase extends RouteHandler {
     return (
       <tr key={label}>
         <th scope="row">{label}</th>
-        <td title="quality-icons">{this.qualityIcon(label, quality)}</td>
-        <td title="suggestions-count">{suggestionCount || null}</td>
+        <td title="suggestions-count">{suggestionCount ? suggestionCount.toLocaleString() : null}</td>
         <td title="review-button">
           {suggestionCount > 0 && propName ? (
             <I18NLink
               to={`/review?q=(filters:(_${propName}:(values:!('${id}')),${propName}:(values:!(missing))))&includeUnpublished=1`}
               className="btn btn-default btn-xs"
             >
-              <Icon icon="gavel" />
-              &nbsp;
-              <span title="review-button-title">{t('system', 'Review suggestions')}</span>
+              <span title="review-button-title">{t('system', 'View suggestions')}</span>
             </I18NLink>
           ) : null}
         </td>
@@ -171,9 +168,7 @@ export class ThesaurusCockpitBase extends RouteHandler {
         }
         className="btn btn-primary btn-xs"
       >
-        <Icon icon="search" />
-        &nbsp;
-        <span>{t('System', 'Review & Publish')}</span>
+        <span>{t('System', 'Final review of unpublished documents')}</span>
       </I18NLink>
     );
   }
@@ -195,7 +190,6 @@ export class ThesaurusCockpitBase extends RouteHandler {
             <thead>
               <tr>
                 <th scope="col" />
-                <th scope="col">{t('System', 'Confidence')}</th>
                 <th scope="col">{t('System', 'Documents to be reviewed')}</th>
                 <th scope="col" />
               </tr>
