@@ -87,7 +87,7 @@ import { faEyeSlash } from '@fortawesome/free-solid-svg-icons/faEyeSlash';
 import { faUsers } from '@fortawesome/free-solid-svg-icons/faUsers';
 import { faUserTimes } from '@fortawesome/free-solid-svg-icons/faUserTimes';
 import { faHandPaper } from '@fortawesome/free-solid-svg-icons/faHandPaper';
-import {saveAndNext} from './save-and-next';
+import { saveAndNext } from './save-and-next';
 
 const icons = {
   faAngleLeft,
