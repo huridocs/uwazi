@@ -25,6 +25,7 @@ const {
   model: fixedModel,
   sharedIds: sharedIdsStr,
   dryRun,
+  batchSize,
 } = yargs
   .option('limit', { default: 1000000 })
   .option('dryRun', {
@@ -52,6 +53,10 @@ const {
   .option('model', {
     default: '',
     usage: 'If set, only run on this model.',
+  })
+  .option('batchSize', {
+    default: 200,
+    usage: 'Batch size for topic classification server calls.',
   })
   .help().argv;
 
@@ -272,7 +277,7 @@ connect().then(
           let batch = [] as WithId<EntitySchema>[];
           await QueryForEach(
             entities.get({ language: 'en' }).sort('_id'),
-            300,
+            batchSize + 1,
             async (e: WithId<EntitySchema>) => {
               if (index > limit) {
                 return;
@@ -281,7 +286,7 @@ connect().then(
                 return;
               }
               batch.push(e);
-              if (batch.length >= 200) {
+              if (batch.length >= batchSize) {
                 const runNow = [...batch];
                 batch = [];
                 const done = await syncEntities(
