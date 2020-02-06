@@ -73,11 +73,11 @@
   .view {
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-between;
+    max-width: 1000px;
     overflow: auto;
     dl {
       width: auto;
-      min-width: 120px;
+      min-width: 250px;
       padding: 30px 15px;
     }
     .metadata-type-markdown,
