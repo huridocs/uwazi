@@ -119,7 +119,10 @@ describe('templates', () => {
       const newTemplate = {
         name: 'created template',
         commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
-        properties: [{ label: 'label 1', type: 'text' }, { label: 'label 2', type: 'text' }],
+        properties: [
+          { label: 'label 1', type: 'text' },
+          { label: 'label 2', type: 'text' },
+        ],
       };
 
       templates.save(newTemplate).then(response => {
@@ -229,9 +232,13 @@ describe('templates', () => {
         const newTemplate = {
           name: 'created template',
           commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
-          properties: [{ label: 'label 1', type: 'text' }, { label: 'label 2', type: 'text' }],
+          properties: [
+            { label: 'label 1', type: 'text' },
+            { label: 'label 2', type: 'text' },
+          ],
         };
         spyOn(translations, 'updateContext');
+        /* eslint-disable no-param-reassign */
         templates
           .save(newTemplate)
           .then(template => {
@@ -242,6 +249,7 @@ describe('templates', () => {
             template.commonProperties[0].label = 'new title label';
             translations.addContext.calls.reset();
             return templates.save(template);
+            /* eslint-enable no-param-reassign */
           })
           .then(response => {
             expect(translations.addContext).not.toHaveBeenCalled();

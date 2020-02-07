@@ -46,7 +46,7 @@ exports[`MetadataForm should display custom title label 1`] = `
           />
         </Modeled(Connect(Field))>
       </li>
-      <Connect(IconField)
+      <Connect(IconFieldBase)
         model="metadata"
       />
     </ul>

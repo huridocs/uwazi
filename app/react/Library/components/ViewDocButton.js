@@ -89,7 +89,4 @@ export function mapDispatchToProps(dispatch) {
   );
 }
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(ViewDocButton);
+export default connect(mapStateToProps, mapDispatchToProps)(ViewDocButton);

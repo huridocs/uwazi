@@ -1,6 +1,6 @@
 /** @format */
 
-import thesauris from 'api/thesauris';
+import thesauri from 'api/thesauri';
 import db from 'api/utils/testing_db';
 
 import fixtures, { thesauri1Id } from '../../specs/fixtures';
@@ -15,7 +15,7 @@ describe('select', () => {
 
     const value1 = await typeParsers.select({ select_prop: 'value' }, templateProp);
     const value2 = await typeParsers.select({ select_prop: 'value2' }, templateProp);
-    const thesauri1 = await thesauris.getById(thesauri1Id);
+    const thesauri1 = await thesauri.getById(thesauri1Id);
 
     expect(thesauri1.values[1].label).toBe('value');
     expect(thesauri1.values[2].label).toBe('value2');
@@ -35,7 +35,7 @@ describe('select', () => {
     await typeParsers.select({ select_prop: 'value4' }, templateProp);
     await typeParsers.select({ select_prop: 'ValUe4' }, templateProp);
 
-    const thesauri1 = await thesauris.getById(thesauri1Id);
+    const thesauri1 = await thesauri.getById(thesauri1Id);
 
     expect(thesauri1.values.map(v => v.label)).toEqual([' value4 ', 'Value', 'vAlue2']);
   });
@@ -48,7 +48,7 @@ describe('select', () => {
     await typeParsers.select({ select_prop: 'value' }, templateProp);
     await typeParsers.select({ select_prop: ' value ' }, templateProp);
     await typeParsers.select({ select_prop: 'value4' }, templateProp);
-    const thesauri1 = await thesauris.getById(thesauri1Id);
+    const thesauri1 = await thesauri.getById(thesauri1Id);
 
     expect(thesauri1.values.length).toBe(2);
   });
@@ -58,7 +58,7 @@ describe('select', () => {
     const rawEntity = { select_prop: ' ' };
 
     const value = await typeParsers.select(rawEntity, templateProp);
-    const thesauri1 = await thesauris.getById(thesauri1Id);
+    const thesauri1 = await thesauri.getById(thesauri1Id);
 
     expect(thesauri1.values.length).toBe(1);
     expect(value).toBe(null);

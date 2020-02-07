@@ -40,6 +40,7 @@ const childrenType = PropTypes.oneOfType([
 ContextMenu.propTypes = {
   open: PropTypes.bool,
   type: PropTypes.string,
+  className: PropTypes.string,
   overrideShow: PropTypes.bool,
   show: PropTypes.bool,
   align: PropTypes.string,

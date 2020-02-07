@@ -27,7 +27,4 @@ export function mapDispatchToProps(dispatch) {
   );
 }
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(MetadataForm);
+export default connect(mapStateToProps, mapDispatchToProps)(MetadataForm);

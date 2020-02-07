@@ -20,14 +20,20 @@ describe('BasicReducer', () => {
 
       const state1 = reducer1(
         {},
-        actions.set('1', [{ _id: 1, title: 'test' }, { _id: 2, title: 'test2' }])
+        actions.set('1', [
+          { _id: 1, title: 'test' },
+          { _id: 2, title: 'test2' },
+        ])
       );
       const state2 = reducer2({}, actions.set('2', [{ _id: 2, title: 'test2' }]));
 
       const newState1 = reducer1(state1, actions.update('1', { _id: 2, title: 'updated' }));
       const newState2 = reducer1(state2, actions.update('2', { _id: 2, title: 'updated' }));
 
-      expect(newState1.toJS()).toEqual([{ _id: 1, title: 'test' }, { _id: 2, title: 'updated' }]);
+      expect(newState1.toJS()).toEqual([
+        { _id: 1, title: 'test' },
+        { _id: 2, title: 'updated' },
+      ]);
       expect(newState2.toJS()).toEqual([{ _id: 2, title: 'test2' }]);
     });
 
@@ -38,7 +44,10 @@ describe('BasicReducer', () => {
 
         const state1 = reducer1(
           {},
-          actions.set('1', [{ _id: 1, title: 'test' }, { _id: 2, title: 'test2' }])
+          actions.set('1', [
+            { _id: 1, title: 'test' },
+            { _id: 2, title: 'test2' },
+          ])
         );
         const state2 = reducer2({}, actions.set('2', [{ _id: 2, title: 'test2' }]));
 
@@ -61,7 +70,12 @@ describe('BasicReducer', () => {
     beforeEach(() => {
       reducer = createReducer('1', { nested: { key: [] } });
       state = Immutable({
-        nested: { key: [{ _id: 1, title: 'test' }, { _id: 2, title: 'test2' }] },
+        nested: {
+          key: [
+            { _id: 1, title: 'test' },
+            { _id: 2, title: 'test2' },
+          ],
+        },
       });
     });
     it('should update passed value in a list in a nested key at the namespace', () => {
@@ -70,7 +84,12 @@ describe('BasicReducer', () => {
         actions.updateIn('1', ['nested', 'key'], { _id: 1, title: 'changed test' })
       );
       expect(newState.toJS()).toEqual({
-        nested: { key: [{ _id: 1, title: 'changed test' }, { _id: 2, title: 'test2' }] },
+        nested: {
+          key: [
+            { _id: 1, title: 'changed test' },
+            { _id: 2, title: 'test2' },
+          ],
+        },
       });
     });
     describe('when value does not exist', () => {
@@ -81,7 +100,11 @@ describe('BasicReducer', () => {
         );
         expect(newState.toJS()).toEqual({
           nested: {
-            key: [{ _id: 1, title: 'test' }, { _id: 2, title: 'test2' }, { _id: 3, title: 'new' }],
+            key: [
+              { _id: 1, title: 'test' },
+              { _id: 2, title: 'test2' },
+              { _id: 3, title: 'new' },
+            ],
           },
         });
       });

@@ -4,7 +4,7 @@
 import paths from 'api/config/paths';
 import fs from 'fs';
 import path from 'path';
-import index from './index';
+import index from 'api/migrations/migrations/17-metadata-structured-object';
 
 function walk(dir: string, callback: (file: string, stats: fs.Stats) => void) {
   fs.readdir(dir, (err, files) => {

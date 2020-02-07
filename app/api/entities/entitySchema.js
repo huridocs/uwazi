@@ -3,7 +3,7 @@
 import Ajv from 'ajv';
 import templatesModel from 'api/templates/templatesModel';
 import { isUndefined, isNull } from 'util';
-import { objectIdSchema, metadataSchema, tocSchema } from 'shared/commonSchemas';
+import { objectIdSchema, metadataSchema, tocSchema } from 'shared/types/commonSchemas';
 import { wrapValidator } from 'shared/tsUtils';
 import { validators, customErrorMessages } from './metadataValidators.js';
 
@@ -29,7 +29,7 @@ ajv.addKeyword('metadataMatchesTemplateProperties', {
   async: true,
   errors: true,
   type: 'object',
-  async validate(schema, entity) {
+  async validate(_schema, entity) {
     if (!entity.template) {
       return true;
     }
@@ -139,6 +139,7 @@ export const entitySchema = {
     },
     user: objectIdSchema,
     metadata: metadataSchema,
+    suggestedMetadata: metadataSchema,
   },
 };
 
