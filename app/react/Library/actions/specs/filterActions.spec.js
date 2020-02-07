@@ -1,3 +1,6 @@
+/**
+ * @jest-environment jsdom
+ */
 import { browserHistory } from 'react-router';
 import { actions as formActions } from 'react-redux-form';
 import Immutable from 'immutable';

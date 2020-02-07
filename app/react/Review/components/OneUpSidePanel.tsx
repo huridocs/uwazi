@@ -1,4 +1,6 @@
-/** @format */ // eslint-disable-line max-lines
+/** @format */
+// eslint-disable-line max-lines
+
 import { EntitySchema } from 'api/entities/entityType';
 import ShowIf from 'app/App/ShowIf';
 import { ConnectionsGroups } from 'app/ConnectionsList';
@@ -21,11 +23,11 @@ import { TemplateSchema } from 'shared/types/templateType';
 import { Icon } from 'UI';
 import {
   OneUpState,
-  StoreState,
   selectEntity,
+  selectIsPristine,
   selectMlThesauri,
   selectOneUpState,
-  selectIsPristine,
+  StoreState,
 } from '../common';
 
 const defaultProps = {

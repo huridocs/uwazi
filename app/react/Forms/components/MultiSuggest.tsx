@@ -63,6 +63,16 @@ export function acceptSuggestion(
 export class MultiSuggestBase extends Component<MultiSuggestProps> {
   public static defaultProps = defaultProps;
 
+  static confidenceBlob(suggestionConfidence?: number) {
+    let label = 'low';
+    if ((suggestionConfidence ?? 0.0) >= 0.75) {
+      label = 'high';
+    } else if ((suggestionConfidence ?? 0.0) >= 0.5) {
+      label = 'medium';
+    }
+    return <span className={`multiselectItem-confidence ${label}`}>{label}</span>;
+  }
+
   acceptSuggestion(id: string) {
     const { propertyType, selectModel, selectValue } = this.props;
     this.props.acceptSuggestion(id, propertyType, selectModel, selectValue);
@@ -79,16 +89,6 @@ export class MultiSuggestBase extends Component<MultiSuggestProps> {
     }
     suggestedValues.splice(index, 1);
     this.props.onChange(suggestedValues);
-  }
-
-  static confidenceBlob(suggestionConfidence?: number) {
-    let label = 'low';
-    if ((suggestionConfidence ?? 0.0) >= 0.75) {
-      label = 'high';
-    } else if ((suggestionConfidence ?? 0.0) >= 0.5) {
-      label = 'medium';
-    }
-    return <span className={`multiselectItem-confidence ${label}`}>{label}</span>;
   }
 
   render() {

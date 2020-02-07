@@ -385,6 +385,27 @@ Nightmare.action('waitForText', function waitForText(selector, done) {
   });
 });
 
+Nightmare.action('waitForTextMatch', function waitForTextMatch(selector, matchWord, done) {
+  this.wait(
+    (elementToSelect, word) => {
+      return (
+        document.querySelector(elementToSelect) &&
+        document.querySelector(elementToSelect).innerText &&
+        document.querySelector(elementToSelect).innerText.match(word)
+      );
+    },
+    selector,
+    matchWord
+  )
+    .evaluate(elementToSelect => {
+      const helpers = document.__helpers;
+      return helpers.querySelector(elementToSelect).innerText;
+    }, selector)
+    .then(v => {
+      done(null, v);
+    });
+});
+
 Nightmare.action('waitToBeGone', function waitToBeGone(selector, done) {
   this.wait(elementToSelect => {
     const elems = document.querySelectorAll(elementToSelect);

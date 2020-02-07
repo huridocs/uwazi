@@ -1,3 +1,6 @@
+/**
+ * @jest-environment jsdom
+ */
 /* eslint-disable react/no-multi-comp */
 import React, { Component } from 'react';
 import TestUtils from 'react-dom/test-utils';

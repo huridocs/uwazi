@@ -1,3 +1,6 @@
+/**
+ * @jest-environment jsdom
+ */
 import PDFUtils from '../utils';
 import PDFJS from '../PDFJS';
 
