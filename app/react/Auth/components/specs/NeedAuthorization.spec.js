@@ -13,7 +13,11 @@ describe('NeedAuthorization', () => {
   });
 
   const render = () => {
-    component = shallow(<NeedAuthorization {...props}><div/></NeedAuthorization>);
+    component = shallow(
+      <NeedAuthorization {...props}>
+        <div />
+      </NeedAuthorization>
+    );
   };
 
   describe('when authorized', () => {
@@ -34,7 +38,7 @@ describe('NeedAuthorization', () => {
   describe('maped state', () => {
     it('should map authorized true if user in the store', () => {
       const store = {
-        user: Immutable.fromJS({ _id: 1, role: 'admin' })
+        user: Immutable.fromJS({ _id: 1, role: 'admin' }),
       };
       const state = mapStateToProps(store, { roles: ['admin'] });
       expect(state).toEqual({ authorized: true });
@@ -42,7 +46,7 @@ describe('NeedAuthorization', () => {
 
     it('should map authorized false if user not in the store', () => {
       const store = {
-        user: Immutable.fromJS({})
+        user: Immutable.fromJS({}),
       };
       const state = mapStateToProps(store, { roles: ['admin'] });
       expect(state).toEqual({ authorized: false });

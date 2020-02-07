@@ -4,20 +4,20 @@ import { Rectangle } from 'recharts';
 
 import colorScheme, { light as colorSchemeLight } from '../utils/colorScheme';
 
-const ColoredBar = (props) => {
+const ColoredBar = props => {
   const { index, color } = props;
   const colorPallete = color !== 'light' ? colorScheme : colorSchemeLight;
-  return <Rectangle {...props} stroke="none" fill={colorPallete[index % colorScheme.length]}/>;
+  return <Rectangle {...props} stroke="none" fill={colorPallete[index % colorScheme.length]} />;
 };
 
 ColoredBar.defaultProps = {
   color: 'default',
-  index: 0
+  index: 0,
 };
 
 ColoredBar.propTypes = {
   color: PropTypes.string,
-  index: PropTypes.number
+  index: PropTypes.number,
 };
 
 export default ColoredBar;

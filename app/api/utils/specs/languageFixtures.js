@@ -5,10 +5,7 @@ export default {
     {
       _id: db.id(),
       site_name: 'Uwazi',
-      languages: [
-        { key: 'es', default: true },
-        { key: 'en' },
-      ]
-    }
-  ]
+      languages: [{ key: 'es', default: true }, { key: 'en' }],
+    },
+  ],
 };

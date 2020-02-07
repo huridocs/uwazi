@@ -9,9 +9,7 @@ import pagesAPI from './PagesAPI';
 export default class EditPage extends RouteHandler {
   static async requestState(requestParams) {
     const [page] = await pagesAPI.get(requestParams);
-    return [
-      formActions.load('page.data', page),
-    ];
+    return [formActions.load('page.data', page)];
   }
 
   componentDidMount() {

@@ -1,7 +1,7 @@
 import yauzl from 'yauzl';
 import { streamToString } from './files';
 
-export default function (zipFile) {
+export default function(zipFile) {
   return {
     async getFileContent(matchFile) {
       const stream = await this.findReadStream(matchFile);
@@ -26,7 +26,7 @@ export default function (zipFile) {
                 resolve(null);
               }
             });
-            zipfile.on('entry', (entry) => {
+            zipfile.on('entry', entry => {
               if (matchFile(entry)) {
                 found = true;
                 zipfile.openReadStream(entry, (error, readStream) => {
@@ -41,6 +41,6 @@ export default function (zipFile) {
           }
         });
       });
-    }
+    },
   };
 }

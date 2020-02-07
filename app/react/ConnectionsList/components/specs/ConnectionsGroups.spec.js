@@ -13,8 +13,14 @@ describe('ConnectionsGroups', () => {
     props = {
       connectionsGroups: Immutable([
         { key: 'g1', templates: [{ _id: 't1', count: 1 }] },
-        { key: 'g2', templates: [{ _id: 't2', count: 2 }, { _id: 't3', count: 3 }] }
-      ])
+        {
+          key: 'g2',
+          templates: [
+            { _id: 't2', count: 2 },
+            { _id: 't3', count: 3 },
+          ],
+        },
+      ]),
     };
   });
 

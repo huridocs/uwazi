@@ -6,7 +6,7 @@ const ignorelist = [
   'POST/api/contact',
   'POST/api/unlockaccount',
   'POST/api/resetpassword',
-  'POST/api/recoverpassword'
+  'POST/api/recoverpassword',
 ];
 
 export default (req, _res, next) => {
@@ -23,7 +23,7 @@ export default (req, _res, next) => {
       body: JSON.stringify(body),
       user: user._id,
       username: user.username,
-      time
+      time,
     };
     activitylog.save(entry);
   }

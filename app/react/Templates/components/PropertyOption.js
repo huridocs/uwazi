@@ -26,13 +26,15 @@ export class PropertyOption extends Component {
     const { label } = this.props;
     const iconClass = Icons[this.props.type] || 'font';
     const liClass = `list-group-item${this.props.disabled ? ' disabled' : ''}`;
-    return (
-      connectDragSource(
-        <li className={liClass}>
-          <button onClick={this.addProperty}><Icon icon="plus" /></button>
-          <span><Icon icon={iconClass} /> {label}</span>
-        </li>
-      )
+    return connectDragSource(
+      <li className={liClass}>
+        <button onClick={this.addProperty}>
+          <Icon icon="plus" />
+        </button>
+        <span>
+          <Icon icon={iconClass} /> {label}
+        </span>
+      </li>
     );
   }
 }
@@ -42,7 +44,7 @@ PropertyOption.propTypes = {
   addProperty: PropTypes.func.isRequired,
   label: PropTypes.string.isRequired,
   type: PropTypes.string.isRequired,
-  disabled: PropTypes.bool
+  disabled: PropTypes.bool,
 };
 
 const optionSource = {
@@ -60,11 +62,11 @@ const optionSource = {
     if (!dropResult && item.index) {
       props.removeProperty(item.index);
     }
-  }
+  },
 };
 
 const dragSource = DragSource('METADATA_OPTION', optionSource, connector => ({
-  connectDragSource: connector.dragSource()
+  connectDragSource: connector.dragSource(),
 }))(PropertyOption);
 
 export { dragSource };

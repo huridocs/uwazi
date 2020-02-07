@@ -32,13 +32,19 @@ export class ShowToc extends Component {
           {toc.map((tocElement, index) => (
             <li className={`toc-indent-${tocElement.get('indentation')}`} key={index}>
               <ShowIf if={!this.props.readOnly}>
-                <a className="toc-view-link" href="#" onClick={this.scrollTo.bind(this, tocElement)}>{tocElement.get('label')}</a>
+                <a
+                  className="toc-view-link"
+                  href="#"
+                  onClick={this.scrollTo.bind(this, tocElement)}
+                >
+                  {tocElement.get('label')}
+                </a>
               </ShowIf>
               <ShowIf if={this.props.readOnly}>
                 <span className="toc-view-link">{tocElement.get('label')}</span>
               </ShowIf>
             </li>
-              ))}
+          ))}
         </ul>
       </div>
     );
@@ -49,11 +55,11 @@ ShowToc.propTypes = {
   toc: PropTypes.object,
   readOnly: PropTypes.bool,
   pdfInfo: PropTypes.object,
-  scrollTo: PropTypes.func
+  scrollTo: PropTypes.func,
 };
 
 export const mapStateToProps = ({ documentViewer }) => ({
-    pdfInfo: documentViewer.doc.get('pdfInfo')
+  pdfInfo: documentViewer.doc.get('pdfInfo'),
 });
 
 function mapDispatchToProps() {

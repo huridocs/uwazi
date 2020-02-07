@@ -27,7 +27,7 @@ export class GoogleAnalytics extends Component {
     window.dataLayer = window.dataLayer || [];
     window.gtag = function() {
       window.dataLayer.push(arguments);
-    }
+    };
     window.gtag('js', new Date());
     window.gtag('config', props.analyticsTrackingId);
     trackPage();
@@ -38,21 +38,26 @@ export class GoogleAnalytics extends Component {
     if (!this.props.analyticsTrackingId) {
       return false;
     }
-    return <script async src={`https://www.googletagmanager.com/gtag/js?id=${this.props.analyticsTrackingId}`} />;
+    return (
+      <script
+        async
+        src={`https://www.googletagmanager.com/gtag/js?id=${this.props.analyticsTrackingId}`}
+      />
+    );
   }
 }
 
 GoogleAnalytics.defaultProps = {
-  analyticsTrackingId: ''
+  analyticsTrackingId: '',
 };
 
 GoogleAnalytics.propTypes = {
-  analyticsTrackingId: PropTypes.string
+  analyticsTrackingId: PropTypes.string,
 };
 
 export function mapStateToProps({ settings }) {
   return {
-    analyticsTrackingId: settings.collection.get('analyticsTrackingId')
+    analyticsTrackingId: settings.collection.get('analyticsTrackingId'),
   };
 }
 

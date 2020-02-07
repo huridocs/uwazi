@@ -14,19 +14,17 @@ const vault = {
     const body = new URLSearchParams();
     body.append('token', token);
 
-    const evidencesTracked = (await vaultEvidencesModel.get()).map(
-      e => e.request
-    );
+    const evidencesTracked = (await vaultEvidencesModel.get()).map(e => e.request);
 
     return request
-    .post(`${vaultUrl}list.php`, body, {
-        'Content-Type': 'application/x-www-form-urlencoded'
-    })
-    .then(res =>
-      res.json
-      .filter(e => !evidencesTracked.includes(e.request))
-      .filter(e => statusToProcess.includes(e.status))
-    );
+      .post(`${vaultUrl}list.php`, body, {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      })
+      .then(res =>
+        res.json
+          .filter(e => !evidencesTracked.includes(e.request))
+          .filter(e => statusToProcess.includes(e.status))
+      );
   },
 
   async downloadPackage(evidence) {
@@ -36,7 +34,7 @@ const vault = {
     );
 
     return evidencePackage(fileName, evidence);
-  }
+  },
 };
 
 export default vault;

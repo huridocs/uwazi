@@ -15,8 +15,8 @@ describe('DocumentLanguage', () => {
         title: 'doc title',
         template: 'templateId',
         creationDate: 123,
-        snippets: []
-      })
+        snippets: [],
+      }),
     };
   });
 

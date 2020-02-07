@@ -12,7 +12,10 @@ export class ViewerDefaultMenu extends Component {
     return (
       <div className={this.props.active ? 'active' : ''}>
         <ShowIf if={!this.props.panelIsOpen}>
-          <div className="btn btn-primary" onClick={this.props.openPanel.bind(null, 'viewMetadataPanel')}>
+          <div
+            className="btn btn-primary"
+            onClick={this.props.openPanel.bind(null, 'viewMetadataPanel')}
+          >
             <Icon icon="chart-bar" />
           </div>
         </ShowIf>
@@ -22,9 +25,9 @@ export class ViewerDefaultMenu extends Component {
 }
 
 const mapStateToProps = ({ documentViewer }) => ({
-    panelIsOpen: !!documentViewer.uiState.get('panel'),
-    doc: documentViewer.doc,
-    targetDoc: !!documentViewer.targetDoc.get('_id')
+  panelIsOpen: !!documentViewer.uiState.get('panel'),
+  doc: documentViewer.doc,
+  targetDoc: !!documentViewer.targetDoc.get('_id'),
 });
 
 ViewerDefaultMenu.propTypes = {
@@ -32,11 +35,11 @@ ViewerDefaultMenu.propTypes = {
   panelIsOpen: PropTypes.bool,
   targetDoc: PropTypes.bool,
   openPanel: PropTypes.func,
-  doc: PropTypes.object
+  doc: PropTypes.object,
 };
 
 ViewerDefaultMenu.contextTypes = {
-  confirm: PropTypes.func
+  confirm: PropTypes.func,
 };
 
 function mapDispatchToProps(dispatch) {

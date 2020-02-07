@@ -18,19 +18,34 @@ export class ItemList extends Component {
     const { sort } = queryString.parse(link.substring(link.indexOf('?')));
     const searchParams = sort ? { sort } : { sort: 'title' };
 
-    const mapDispatchToProps = dispatch => bindActionCreators({
-        onClick: (_e, item) => selectSingleDocument(item)
-    }, wrapDispatch(dispatch, 'library'));
+    const mapDispatchToProps = dispatch =>
+      bindActionCreators(
+        {
+          onClick: (_e, item) => selectSingleDocument(item),
+        },
+        wrapDispatch(dispatch, 'library')
+      );
 
     const toRenderItems = items.map((item, index) => {
       const ConnectedItem = connect(null, mapDispatchToProps)(Doc);
-      return <ConnectedItem key={index} doc={Immutable(item)} searchParams={searchParams} storeKey="library"/>;
+      return (
+        <ConnectedItem
+          key={index}
+          doc={Immutable(item)}
+          searchParams={searchParams}
+          storeKey="library"
+        />
+      );
     });
 
     let list = <RowList>{toRenderItems}</RowList>;
 
     if (this.props.options.slider) {
-      list = <RowList><Slider visibleCount={3}>{toRenderItems}</Slider></RowList>;
+      list = (
+        <RowList>
+          <Slider visibleCount={3}>{toRenderItems}</Slider>
+        </RowList>
+      );
     }
 
     return (
@@ -50,13 +65,13 @@ export class ItemList extends Component {
 
 ItemList.defaultProps = {
   items: [],
-  options: {}
+  options: {},
 };
 
 ItemList.propTypes = {
   items: PropTypes.array,
   options: PropTypes.object,
-  link: PropTypes.string
+  link: PropTypes.string,
 };
 
 export default ItemList;

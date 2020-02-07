@@ -16,7 +16,11 @@ describe('DragAndDropItem', () => {
         id: 1,
         originalItem: { label: 'item1' },
         moveItem: jasmine.createSpy('moveItem'),
-        children: (item, index) => <span>Showing item {item.label} {index}</span>
+        children: (item, index) => (
+          <span>
+            Showing item {item.label} {index}
+          </span>
+        ),
       };
     });
 

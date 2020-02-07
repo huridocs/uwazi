@@ -38,9 +38,7 @@ export class AttachmentsList extends Component {
       mainFile._id = parentId;
       return (
         <div>
-          <h2>
-            {t('System', 'Document')}
-          </h2>
+          <h2>{t('System', 'Document')}</h2>
           <div className="attachments-list">
             <Attachment
               file={mainFile}
@@ -52,9 +50,14 @@ export class AttachmentsList extends Component {
               deleteMessage="Warning, Deleting the main file will also delete table of content and main files for the other languages of this entity"
             />
           </div>
-          {this.props.entityView && mainFile &&
-            <ViewDocButton file={mainFile} sharedId={parentSharedId} processed={this.props.processed} storeKey={storeKey}/>
-          }
+          {this.props.entityView && mainFile && (
+            <ViewDocButton
+              file={mainFile}
+              sharedId={parentSharedId}
+              processed={this.props.processed}
+              storeKey={storeKey}
+            />
+          )}
         </div>
       );
     }
@@ -65,11 +68,13 @@ export class AttachmentsList extends Component {
           <div className="attachment-buttons main-file">
             <h2>
               {t('System', 'Document')}
-              <Tip>
-              Main file: add a file as the main content
-              </Tip>
+              <Tip>Main file: add a file as the main content</Tip>
             </h2>
-            <UploadButton documentId={parentId} documentSharedId={parentSharedId} storeKey={storeKey}/>
+            <UploadButton
+              documentId={parentId}
+              documentSharedId={parentSharedId}
+              storeKey={storeKey}
+            />
           </div>
         </NeedAuthorization>
       );
@@ -88,14 +93,14 @@ export class AttachmentsList extends Component {
       uploadAttachmentButton = (
         <NeedAuthorization roles={['admin', 'editor']}>
           <div className="attachment-add">
-            <UploadAttachment entity={this.props.parentId} storeKey={storeKey}/>
+            <UploadAttachment entity={this.props.parentId} storeKey={storeKey} />
           </div>
         </NeedAuthorization>
       );
     }
 
     const mainFile = isDocumentAttachments ? sortedFiles[0] : null;
-    const attachments = sortedFiles.filter((_f, index) => mainFile && index !== 0 || !mainFile);
+    const attachments = sortedFiles.filter((_f, index) => (mainFile && index !== 0) || !mainFile);
     return (
       <div className="attachments-list-parent">
         {this.renderMainDocument(mainFile)}
@@ -132,18 +137,18 @@ AttachmentsList.propTypes = {
   deleteAttachment: PropTypes.func,
   loadForm: PropTypes.func,
   storeKey: PropTypes.string,
-  user: PropTypes.object
+  user: PropTypes.object,
 };
 
 AttachmentsList.contextTypes = {
-  confirm: PropTypes.func
+  confirm: PropTypes.func,
 };
 
 function mapStateToProps({ user }) {
   return {
     user,
     progress: null,
-    model: 'documentViewer.sidepanel.attachment'
+    model: 'documentViewer.sidepanel.attachment',
   };
 }
 

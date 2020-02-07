@@ -10,8 +10,7 @@ export default {
 
   //test (this is a temporary fix to be able to save pdfInfo from client without being logged)
   savePDFInfo(doc, params) {
-    return this.getById(doc.sharedId, params.language)
-    .then((existingDoc) => {
+    return this.getById(doc.sharedId, params.language).then(existingDoc => {
       if (existingDoc.pdfInfo) {
         return existingDoc;
       }
@@ -33,8 +32,7 @@ export default {
   },
 
   getHTML(id, language) {
-    return this.get(id, language)
-    .then((docResponse) => {
+    return this.get(id, language).then(docResponse => {
       const doc = docResponse.rows[0];
       const path = `${__dirname}/../../../conversions/${doc._id}.json`;
       return new Promise((resolve, reject) => {
@@ -61,7 +59,7 @@ export default {
     conversion.type = 'conversion';
     const path = `${__dirname}/../../../conversions/${conversion.document}.json`;
     return new Promise((resolve, reject) => {
-      fs.writeFile(path, JSON.stringify(conversion), (err) => {
+      fs.writeFile(path, JSON.stringify(conversion), err => {
         if (err) {
           reject(err);
         }
@@ -73,5 +71,5 @@ export default {
 
   delete(id) {
     return entities.delete(id);
-  }
+  },
 };

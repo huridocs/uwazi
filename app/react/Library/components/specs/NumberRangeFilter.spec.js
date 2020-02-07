@@ -11,7 +11,7 @@ describe('NumberRangeFilter', () => {
       model: 'model',
     };
 
-    const component = shallow(<NumberRangeFilter {...props}/>);
+    const component = shallow(<NumberRangeFilter {...props} />);
     expect(component).toMatchSnapshot();
   });
 });

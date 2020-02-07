@@ -23,10 +23,12 @@ class Worker extends EventEmitter {
   start() {
     async.whilst(
       () => !(this.done || this.stopped),
-      (cb) => {
-        this.processBatch().then(cb).catch(cb);
+      cb => {
+        this.processBatch()
+          .then(cb)
+          .catch(cb);
       },
-      (err) => {
+      err => {
         if (err) {
           // eslint-disable-next-line
           err.message = `Semantic search ${this.searchId} error: ${err.message}`;

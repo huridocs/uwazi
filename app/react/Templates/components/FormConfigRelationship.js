@@ -20,23 +20,39 @@ export class FormConfigRelationship extends Component {
     const property = data.properties[index];
 
     const options = templates.toJS().filter(template => template._id !== data._id);
-    const labelError = formState.$form.errors[`properties.${index}.label.required`] || formState.$form.errors[`properties.${index}.label.duplicated`];
-    const relationTypeError = formState.$form.errors[`properties.${index}.relationType.required`] && formState.$form.submitFailed;
-    const inheritPropertyError = formState.$form.errors[`properties.${index}.inheritProperty.required`] && formState.$form.submitFailed;
+    const labelError =
+      formState.$form.errors[`properties.${index}.label.required`] ||
+      formState.$form.errors[`properties.${index}.label.duplicated`];
+    const relationTypeError =
+      formState.$form.errors[`properties.${index}.relationType.required`] &&
+      formState.$form.submitFailed;
+    const inheritPropertyError =
+      formState.$form.errors[`properties.${index}.inheritProperty.required`] &&
+      formState.$form.submitFailed;
     const labelClass = labelError ? 'form-group has-error' : 'form-group';
-    const template = templates.toJS().find(t => formState.properties[index].content && t._id === formState.properties[index].content.value);
+    const template = templates
+      .toJS()
+      .find(
+        t =>
+          formState.properties[index].content && t._id === formState.properties[index].content.value
+      );
     const templateProperties = template ? template.properties : [];
 
     return (
       <div>
         <div className={labelClass}>
-          <label htmlFor="label"><Translate>Label</Translate></label>
+          <label htmlFor="label">
+            <Translate>Label</Translate>
+          </label>
           <Field model={`template.data.properties[${index}].label`}>
-            <input id="label" className="form-control"/>
+            <input id="label" className="form-control" />
           </Field>
         </div>
         <div className={relationTypeError ? 'form-group has-error' : 'form-group'}>
-          <label><Translate>Relationship</Translate><span className="required">*</span></label>
+          <label>
+            <Translate>Relationship</Translate>
+            <span className="required">*</span>
+          </label>
           <Select
             model={`template.data.properties[${index}].relationType`}
             options={relationTypes.toJS()}
@@ -46,7 +62,9 @@ export class FormConfigRelationship extends Component {
           />
         </div>
         <div className="form-group">
-          <label><Translate>Entities</Translate></label>
+          <label>
+            <Translate>Entities</Translate>
+          </label>
           <Select
             model={`template.data.properties[${index}].content`}
             options={options}
@@ -56,11 +74,21 @@ export class FormConfigRelationship extends Component {
           />
         </div>
         {Boolean(formState.properties[index].content && templateProperties.length) && (
-          <PropertyConfigOption label="Inherit property" model={`template.data.properties[${index}].inherit`}>
-            <Tip>This property will be inherited from the related entities and shown as metadata of this type of entities.</Tip>
+          <PropertyConfigOption
+            label="Inherit property"
+            model={`template.data.properties[${index}].inherit`}
+          >
+            <Tip>
+              This property will be inherited from the related entities and shown as metadata of
+              this type of entities.
+            </Tip>
           </PropertyConfigOption>
         )}
-        { Boolean(formState.properties[index].inherit && formState.properties[index].inherit.value && templateProperties.length) && (
+        {Boolean(
+          formState.properties[index].inherit &&
+            formState.properties[index].inherit.value &&
+            templateProperties.length
+        ) && (
           <div className={inheritPropertyError ? 'form-group has-error' : 'form-group'}>
             <Select
               model={`template.data.properties[${index}].inheritProperty`}
@@ -90,7 +118,7 @@ export function mapStateToProps(state) {
     data: state.template.data,
     templates: state.templates,
     relationTypes: state.relationTypes,
-    formState: state.template.formState
+    formState: state.template.formState,
   };
 }
 

@@ -19,19 +19,13 @@ export class ViewerTextSelectedMenu extends Component {
     return (
       <div className={this.props.active ? 'active' : ''}>
         <ShowIf if={this.props.hasRelationTypes}>
-          <div
-            className="btn btn-primary"
-            onClick={this.showPanel.bind(this, 'targetRanged')}
-          >
+          <div className="btn btn-primary" onClick={this.showPanel.bind(this, 'targetRanged')}>
             <span className="ContextMenu-tooltip">Connect to a paragraph</span>
             <Icon icon="paragraph" />
           </div>
         </ShowIf>
         <ShowIf if={this.props.hasRelationTypes}>
-          <div
-            className="btn btn-primary"
-            onClick={this.showPanel.bind(this, 'ranged')}
-          >
+          <div className="btn btn-primary" onClick={this.showPanel.bind(this, 'ranged')}>
             <span className="ContextMenu-tooltip">Connect to a document</span>
             <Icon icon="file" />
           </div>
@@ -55,23 +49,26 @@ ViewerTextSelectedMenu.propTypes = {
   openPanel: PropTypes.func,
   addToToc: PropTypes.func,
   active: PropTypes.bool,
-  hasRelationTypes: PropTypes.bool
+  hasRelationTypes: PropTypes.bool,
 };
 
 function mapStateToProps({ documentViewer, relationTypes }) {
   return {
     doc: documentViewer.doc,
     reference: documentViewer.uiState.get('reference'),
-    hasRelationTypes: !!relationTypes.size
+    hasRelationTypes: !!relationTypes.size,
   };
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({
-    startNewConnection: connectionsActions.startNewConnection,
-    openPanel,
-    addToToc
-  }, dispatch);
+  return bindActionCreators(
+    {
+      startNewConnection: connectionsActions.startNewConnection,
+      openPanel,
+      addToToc,
+    },
+    dispatch
+  );
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(ViewerTextSelectedMenu);

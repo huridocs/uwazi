@@ -5,7 +5,7 @@ window.Measures = {
     if (!this.times[name]) {
       this.times[name] = {
         totalTime: time,
-        calls: 1
+        calls: 1,
       };
       return;
     }
@@ -14,7 +14,7 @@ window.Measures = {
   },
   clear() {
     this.times = {};
-  }
+  },
 };
 
 Function.prototype.MeasurePerformance = function(context) {
@@ -26,4 +26,4 @@ Function.prototype.MeasurePerformance = function(context) {
   //console.log(performance.now() - start);
   window.Measures.add(this.name, performance.now() - start);
   return result;
-}
+};

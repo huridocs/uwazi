@@ -54,14 +54,14 @@ AddEntities.propTypes = {
   searchResults: PropTypes.object,
   hubIndex: PropTypes.number,
   rightRelationshipIndex: PropTypes.number,
-  closePanel: PropTypes.func
+  closePanel: PropTypes.func,
 };
 
 export const mapStateToProps = ({ relationships }) => ({
-    uiState: relationships.uiState,
-    searchResults: relationships.searchResults,
-    hubIndex: relationships.hubActions.getIn(['addTo', 'hubIndex']),
-    rightRelationshipIndex: relationships.hubActions.getIn(['addTo', 'rightRelationshipIndex'])
+  uiState: relationships.uiState,
+  searchResults: relationships.searchResults,
+  hubIndex: relationships.hubActions.getIn(['addTo', 'hubIndex']),
+  rightRelationshipIndex: relationships.hubActions.getIn(['addTo', 'rightRelationshipIndex']),
 });
 
 function mapDispatchToProps(dispatch) {

@@ -21,7 +21,7 @@ export class RelationshipMetadata extends Component {
           <ShowMetadata entity={this.props.entity} showTitle showType />
         </div>
         <div className="sidepanel-footer">
-          <MetadataFormButtons exclusivelyViewButton data={Immutable(this.props.entity)}/>
+          <MetadataFormButtons exclusivelyViewButton data={Immutable(this.props.entity)} />
         </div>
       </SidePanel>
     );
@@ -31,23 +31,28 @@ export class RelationshipMetadata extends Component {
 RelationshipMetadata.propTypes = {
   selectedConnection: PropTypes.bool,
   entity: PropTypes.object,
-  unselectConnection: PropTypes.func
+  unselectConnection: PropTypes.func,
 };
 
 const connectionSelector = createSelector(
   state => state.relationships.connection,
-  entity => entity && entity.toJS ? entity.toJS() : { metadata: {} }
+  entity => (entity && entity.toJS ? entity.toJS() : { metadata: {} })
 );
 
 const mapStateToProps = state => ({
-  selectedConnection: Boolean(state.relationships.connection && state.relationships.connection.get('_id')),
-  entity: connectionSelector(state)
+  selectedConnection: Boolean(
+    state.relationships.connection && state.relationships.connection.get('_id')
+  ),
+  entity: connectionSelector(state),
 });
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({
-    unselectConnection
-  }, dispatch);
+  return bindActionCreators(
+    {
+      unselectConnection,
+    },
+    dispatch
+  );
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(RelationshipMetadata);

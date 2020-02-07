@@ -5,7 +5,13 @@ import { search } from 'api/search';
 
 import attachmentsRoutes from '../routes';
 import entities from '../../entities';
-import fixtures, { entityId, entityIdEn, entityIdPt, attachmentToDelete, attachmentToEdit } from './fixtures';
+import fixtures, {
+  entityId,
+  entityIdEn,
+  entityIdPt,
+  attachmentToDelete,
+  attachmentToEdit,
+} from './fixtures';
 import instrumentRoutes from '../../utils/instrumentRoutes';
 import paths from '../../config/paths';
 import attachments from '../attachments';
@@ -27,7 +33,9 @@ describe('Attachments Routes', () => {
     await db.clearAllAndLoad(fixtures);
   });
 
-  afterEach(() => { paths.attachments = originalAttachmentsPath; });
+  afterEach(() => {
+    paths.attachments = originalAttachmentsPath;
+  });
 
   afterAll(async () => db.disconnect());
 
@@ -35,11 +43,19 @@ describe('Attachments Routes', () => {
     it('should send the requested existing file', async () => {
       paths.attachments = `${__dirname}/uploads/`;
       const expected = `sendFile:${paths.attachments}mockfile.doc`;
-      await testRouteResponse('/api/attachment/:file', { params: { file: 'mockfile.doc' } }, expected);
+      await testRouteResponse(
+        '/api/attachment/:file',
+        { params: { file: 'mockfile.doc' } },
+        expected
+      );
     });
 
     it('should redirect to no_preview if file doesnt exist', async () => {
-      await testRouteResponse('/api/attachment/:file', { params: { file: 'missing.jpg' } }, 'redirect:/public/no-preview.png');
+      await testRouteResponse(
+        '/api/attachment/:file',
+        { params: { file: 'missing.jpg' } },
+        'redirect:/public/no-preview.png'
+      );
     });
   });
 
@@ -64,10 +80,16 @@ describe('Attachments Routes', () => {
       paths.attachments = `${__dirname}/uploads`;
 
       await routes.get('/api/attachments/download', req, res);
-      expect(res.download).toHaveBeenCalledWith(`${__dirname}/uploads/${req.query.file}`, 'common name 2.doc');
+      expect(res.download).toHaveBeenCalledWith(
+        `${__dirname}/uploads/${req.query.file}`,
+        'common name 2.doc'
+      );
       paths.attachments = `${__dirname}/uploads/`;
       await routes.get('/api/attachments/download', req, res);
-      expect(res.download).toHaveBeenCalledWith(`${__dirname}/uploads/${req.query.file}`, 'common name 2.doc');
+      expect(res.download).toHaveBeenCalledWith(
+        `${__dirname}/uploads/${req.query.file}`,
+        'common name 2.doc'
+      );
     });
 
     it('should fail when entity does not exists', async () => {
@@ -95,7 +117,7 @@ describe('Attachments Routes', () => {
     beforeEach(() => {
       file = {
         originalname: 'new original name.miss',
-        filename: 'mockfile.doc'
+        filename: 'mockfile.doc',
       };
       req = { user: 'admin', headers: {}, body: { entityId }, files: [file] };
     });
@@ -139,7 +161,7 @@ describe('Attachments Routes', () => {
           filename: file.filename,
           originalname: file.originalname,
           _id: addedFile._id,
-          timestamp: 1000
+          timestamp: 1000,
         })
       );
 
@@ -148,7 +170,7 @@ describe('Attachments Routes', () => {
           filename: file.filename,
           originalname: file.originalname,
           _id: addedFile._id,
-          timestamp: 1000
+          timestamp: 1000,
         })
       );
 
@@ -161,7 +183,7 @@ describe('Attachments Routes', () => {
         expect.objectContaining({
           filename: file.filename,
           originalname: file.originalname,
-          timestamp: 1000
+          timestamp: 1000,
         })
       );
 
@@ -172,7 +194,7 @@ describe('Attachments Routes', () => {
         expect.objectContaining({
           filename: file.filename,
           originalname: file.originalname,
-          timestamp: 1000
+          timestamp: 1000,
         })
       );
     });
@@ -182,11 +204,16 @@ describe('Attachments Routes', () => {
     let req;
 
     beforeEach(() => {
-      req = { user: 'admin', body: { entityId, _id: attachmentToEdit.toString(), originalname: 'edited name' } };
+      req = {
+        user: 'admin',
+        body: { entityId, _id: attachmentToEdit.toString(), originalname: 'edited name' },
+      };
     });
 
     it('should need authorization', () => {
-      expect(routes._post('/api/attachments/rename', { body: { entityId: 'a' } })).toNeedAuthorization();
+      expect(
+        routes._post('/api/attachments/rename', { body: { entityId: 'a' } })
+      ).toNeedAuthorization();
     });
 
     it('should have a validation schema', () => {
@@ -232,7 +259,9 @@ describe('Attachments Routes', () => {
     });
 
     it('should need authorization', () => {
-      expect(routes._delete('/api/attachments/delete', { query: { attachmentId: attachmentToDelete } })).toNeedAuthorization();
+      expect(
+        routes._delete('/api/attachments/delete', { query: { attachmentId: attachmentToDelete } })
+      ).toNeedAuthorization();
     });
 
     it('should call attachments delete and respond the result', async () => {

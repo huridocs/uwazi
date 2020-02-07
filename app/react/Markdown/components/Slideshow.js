@@ -3,7 +3,14 @@ import 'react-image-gallery/styles/scss/image-gallery.scss';
 import PropTypes from 'prop-types';
 import React from 'react';
 
-const Slideshow = ({ children, showNav, showFullscreenButton, showPlayButton, autoPlay, classname }) => {
+const Slideshow = ({
+  children,
+  showNav,
+  showFullscreenButton,
+  showPlayButton,
+  autoPlay,
+  classname,
+}) => {
   const items = children.map(c => ({ renderItem: () => c }));
   return (
     <ImageGallery

@@ -46,11 +46,17 @@ export class UploadButton extends Component {
     const file = e.target.files[0];
     this.context.confirm({
       accept: () => {
-        this.props.reuploadDocument(this.props.documentId, file, this.props.documentSharedId, this.props.storeKey);
+        this.props.reuploadDocument(
+          this.props.documentId,
+          file,
+          this.props.documentSharedId,
+          this.props.storeKey
+        );
       },
       title: 'Confirm upload',
-      message: 'Are you sure you want to upload a new document?\n\n' +
-               'All Table of Contents (TOC) and all text-based references linked to the previous document will be lost.'
+      message:
+        'Are you sure you want to upload a new document?\n\n' +
+        'All Table of Contents (TOC) and all text-based references linked to the previous document will be lost.',
     });
   }
 
@@ -150,11 +156,11 @@ UploadButton.propTypes = {
   documentId: PropTypes.string,
   documentSharedId: PropTypes.string,
   progress: PropTypes.object,
-  storeKey: PropTypes.string
+  storeKey: PropTypes.string,
 };
 
 UploadButton.contextTypes = {
-  confirm: PropTypes.func
+  confirm: PropTypes.func,
 };
 
 const mapStateToProps = ({ metadata }) => ({ progress: metadata.progress });

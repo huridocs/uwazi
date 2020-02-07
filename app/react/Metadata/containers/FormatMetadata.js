@@ -5,9 +5,17 @@ import Immutable from 'immutable';
 import { metadataSelectors } from '../selectors';
 import Metadata from '../components/Metadata';
 
-const FormatMetadata = ({ additionalMetadata, sortedProperty, entity, relationships, ...props }) => (
+const FormatMetadata = ({
+  additionalMetadata,
+  sortedProperty,
+  entity,
+  relationships,
+  ...props
+}) => (
   <Metadata
-    metadata={additionalMetadata.concat(metadataSelectors.formatMetadata(props, entity, sortedProperty, relationships))}
+    metadata={additionalMetadata.concat(
+      metadataSelectors.formatMetadata(props, entity, sortedProperty, relationships)
+    )}
     compact={!!sortedProperty}
     {...props}
   />
@@ -21,21 +29,25 @@ FormatMetadata.defaultProps = {
 
 FormatMetadata.propTypes = {
   entity: PropTypes.shape({
-    metadata: PropTypes.object
+    metadata: PropTypes.object,
   }).isRequired,
   relationships: PropTypes.object,
-  additionalMetadata: PropTypes.arrayOf(PropTypes.shape({
-    label: PropTypes.string,
-    value: PropTypes.oneOfType([
-      PropTypes.string,
-      PropTypes.number,
-      PropTypes.arrayOf(PropTypes.string),
-      PropTypes.arrayOf(PropTypes.shape({
-        value: PropTypes.string
-      }))
-    ])
-  })),
-  sortedProperty: PropTypes.string
+  additionalMetadata: PropTypes.arrayOf(
+    PropTypes.shape({
+      label: PropTypes.string,
+      value: PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.number,
+        PropTypes.arrayOf(PropTypes.string),
+        PropTypes.arrayOf(
+          PropTypes.shape({
+            value: PropTypes.string,
+          })
+        ),
+      ]),
+    })
+  ),
+  sortedProperty: PropTypes.string,
 };
 
 export function mapStateToProps(state, { entity, sortedProperty }) {
@@ -43,7 +55,7 @@ export function mapStateToProps(state, { entity, sortedProperty }) {
     templates: state.templates,
     thesauris: state.thesauris,
     entity,
-    sortedProperty
+    sortedProperty,
   };
 }
 

@@ -12,14 +12,11 @@ describe('Activitylog', () => {
   beforeEach(() => {
     context = { store: { getState: () => ({}) } };
     backend.restore();
-    backend
-    .get(`${APIURL}activitylog`, { body: JSON.stringify([
-      { url: '/api/entities' }
-    ]) });
+    backend.get(`${APIURL}activitylog`, { body: JSON.stringify([{ url: '/api/entities' }]) });
   });
 
   const render = () => {
-    component = shallow(<Activitylog {...props}/>, { context });
+    component = shallow(<Activitylog {...props} />, { context });
   };
 
   it('should render an ActivitylogForm and ActivitylogList', () => {

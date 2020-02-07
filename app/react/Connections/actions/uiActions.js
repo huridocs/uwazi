@@ -4,18 +4,18 @@ export function openPanel(connectionType, sourceDocument) {
   return {
     type: types.OPEN_CONNECTION_PANEL,
     sourceDocument,
-    connectionType
+    connectionType,
   };
 }
 
 export function closePanel() {
   return {
-    type: types.CLOSE_CONNECTION_PANEL
+    type: types.CLOSE_CONNECTION_PANEL,
   };
 }
 
 export function searching() {
   return {
-    type: types.SEARCHING_CONNECTIONS
+    type: types.SEARCHING_CONNECTIONS,
   };
 }

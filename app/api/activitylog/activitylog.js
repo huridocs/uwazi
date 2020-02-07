@@ -1,27 +1,35 @@
 import model from './activitylogModel';
 import { getSemanticData } from './activitylogParser';
 
-const prepareRegexpQueries = (query) => {
+const prepareRegexpQueries = query => {
   const result = {};
 
   result.url = query.url ? new RegExp(query.url) : { $ne: '/api/semantic-search/notify-updates' };
 
-  if (query.query) { result.query = new RegExp(query.query); }
-  if (query.body) { result.body = new RegExp(query.body); }
-  if (query.params) { result.params = new RegExp(query.params); }
+  if (query.query) {
+    result.query = new RegExp(query.query);
+  }
+  if (query.body) {
+    result.body = new RegExp(query.body);
+  }
+  if (query.params) {
+    result.params = new RegExp(query.params);
+  }
 
   return result;
 };
 
-const prepareQuery = (query) => {
+const prepareQuery = query => {
   if (!query.find) {
     return prepareRegexpQueries(query);
   }
   const term = new RegExp(query.find);
-  return { $or: [{ method: term }, { url: term }, { query: term }, { body: term }, { params: term }] };
+  return {
+    $or: [{ method: term }, { url: term }, { query: term }, { body: term }, { params: term }],
+  };
 };
 
-const prepareToFromRanges = (sanitizedTime) => {
+const prepareToFromRanges = sanitizedTime => {
   const time = {};
 
   if (sanitizedTime.from) {
@@ -36,7 +44,10 @@ const prepareToFromRanges = (sanitizedTime) => {
 };
 
 const timeQuery = ({ time = {}, before = null }) => {
-  const sanitizedTime = Object.keys(time).reduce((memo, k) => time[k] !== null ? Object.assign(memo, { [k]: time[k] }) : memo, {});
+  const sanitizedTime = Object.keys(time).reduce(
+    (memo, k) => (time[k] !== null ? Object.assign(memo, { [k]: time[k] }) : memo),
+    {}
+  );
 
   if (before === null && !Object.keys(sanitizedTime).length) {
     return {};
@@ -51,7 +62,7 @@ const timeQuery = ({ time = {}, before = null }) => {
   return result;
 };
 
-const getLimit = (query) => {
+const getLimit = query => {
   const limit = parseInt(query.limit || 15, 10);
   return { limit, sort: { time: -1 } };
 };
@@ -83,6 +94,10 @@ export default {
       return results.concat([{ ...logEntry, semantic }]);
     }, Promise.resolve([]));
 
-    return { rows: semanticResults, remainingRows: totalRows - dbResults.length, limit: limitQuery.limit };
-  }
+    return {
+      rows: semanticResults,
+      remainingRows: totalRows - dbResults.length,
+      limit: limitQuery.limit,
+    };
+  },
 };

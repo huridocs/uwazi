@@ -13,7 +13,9 @@ describe('Markers component', () => {
   let props;
 
   beforeEach(() => {
-    spyOn(helper, 'getMarkers').and.callFake((_entities, templates) => _entities.toJS().concat(templates.toJS()));
+    spyOn(helper, 'getMarkers').and.callFake((_entities, templates) =>
+      _entities.toJS().concat(templates.toJS())
+    );
     props = mapStateToProps(state);
   });
 

@@ -10,7 +10,7 @@ describe('ResetSearch', () => {
   beforeEach(() => {
     props = {
       connectionsGroups: Immutable([]),
-      resetSearch: jasmine.createSpy('resetSearch')
+      resetSearch: jasmine.createSpy('resetSearch'),
     };
   });
 

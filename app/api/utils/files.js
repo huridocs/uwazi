@@ -8,7 +8,7 @@ import configPaths from '../config/paths';
 
 function deleteFile(file) {
   return new Promise((resolve, reject) => {
-    fs.unlink(file, (err) => {
+    fs.unlink(file, err => {
       if (err && err.code !== 'ENOENT') {
         reject(err);
       }
@@ -24,19 +24,19 @@ function deleteFiles(files) {
 const deleteUploadedFile = filename =>
   deleteFile(path.join(configPaths.uploadedDocuments, filename));
 
-const generateFileName = file =>
-  Date.now() + ID() + path.extname(file.originalname);
+const generateFileName = file => Date.now() + ID() + path.extname(file.originalname);
 
 const fileFromReadStream = (fileName, readStream) =>
   new Promise((resolve, reject) => {
     const filePath = path.join(configPaths.uploadedDocuments, fileName);
     const writeStream = fs.createWriteStream(filePath);
-    readStream.pipe(writeStream)
-    .on('finish', () => resolve(filePath))
-    .on('error', reject);
+    readStream
+      .pipe(writeStream)
+      .on('finish', () => resolve(filePath))
+      .on('error', reject);
   });
 
-const streamToString = (stream) => {
+const streamToString = stream => {
   const chunks = [];
   return new Promise((resolve, reject) => {
     stream.on('data', chunk => chunks.push(chunk));
@@ -45,7 +45,7 @@ const streamToString = (stream) => {
   });
 };
 
-const getFileContent = (fileName) => {
+const getFileContent = fileName => {
   const filePath = path.join(configPaths.uploadedDocuments, fileName);
   return asyncFS.readFile(filePath, 'utf8');
 };

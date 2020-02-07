@@ -12,7 +12,7 @@ describe('FormGroup', () => {
   });
 
   const render = () => {
-    component = shallow(<FormGroup {...props}/>);
+    component = shallow(<FormGroup {...props} />);
   };
 
   it('should render errors when touched and invalid', () => {

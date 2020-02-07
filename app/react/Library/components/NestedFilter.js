@@ -14,11 +14,7 @@ class NestedFilter extends Component {
           <label>{label}</label>
           <div className="nested-strict">
             <Field model={`${model}.strict`}>
-              <input
-                id={`${model}strict`}
-                type="checkbox"
-                onChange={onChange}
-              />
+              <input id={`${model}strict`} type="checkbox" onChange={onChange} />
             </Field>
             <label htmlFor={`${model}strict`}>
               <span>&nbsp;Strict mode</span>
@@ -26,11 +22,7 @@ class NestedFilter extends Component {
           </div>
         </li>
         <li className="wide">
-          <NestedMultiselect
-            aggregations={aggregations}
-            property={property}
-            onChange={onChange}
-          />
+          <NestedMultiselect aggregations={aggregations} property={property} onChange={onChange} />
         </li>
       </ul>
     );
@@ -48,10 +40,7 @@ NestedFilter.propTypes = {
   onChange: PropTypes.func,
   property: PropTypes.object.isRequired,
   aggregations: PropTypes.instanceOf(Immutable.Map),
-  label: PropTypes.oneOfType([
-    PropTypes.node,
-    PropTypes.string
-  ])
+  label: PropTypes.oneOfType([PropTypes.node, PropTypes.string]),
 };
 
 export default NestedFilter;

@@ -9,5 +9,5 @@ export default combineReducers({
   entity: manageAttachmentsReducer(createReducer('entityView/entity', {})),
   entityForm: modelReducer('entityView.entityForm'),
   entityFormState: formReducer('entityView.entityForm'),
-  uiState
+  uiState,
 });

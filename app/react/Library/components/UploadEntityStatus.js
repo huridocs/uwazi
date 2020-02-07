@@ -23,9 +23,7 @@ export class UploadEntityStatus extends Component {
     return (
       <div>
         {ProgressBar}
-        <ItemFooter.Label status={this.props.status}>
-          {this.props.message}
-        </ItemFooter.Label>
+        <ItemFooter.Label status={this.props.status}>{this.props.message}</ItemFooter.Label>
       </div>
     );
   }
@@ -34,7 +32,7 @@ export class UploadEntityStatus extends Component {
 UploadEntityStatus.propTypes = {
   progress: PropTypes.number,
   status: PropTypes.string,
-  message: PropTypes.string
+  message: PropTypes.string,
 };
 
 export function mapStateToProps(state, props) {

@@ -11,9 +11,10 @@ export class PrioritySortingLabel extends Component {
         <span className="property-help">
           <Icon icon="question-circle" />
           <div className="property-description">
-            Properties marked as priority sorting will be used as default sorting criteria.
-            If more than one property is marked as priority sorting the system will try to pick-up the best fit.
-            When listing mixed template types, the system will pick-up the best combined priority sorting.
+            Properties marked as priority sorting will be used as default sorting criteria. If more
+            than one property is marked as priority sorting the system will try to pick-up the best
+            fit. When listing mixed template types, the system will pick-up the best combined
+            priority sorting.
           </div>
         </span>
       </label>
@@ -22,7 +23,7 @@ export class PrioritySortingLabel extends Component {
 }
 
 PrioritySortingLabel.propTypes = {
-  htmlFor: PropTypes.string
+  htmlFor: PropTypes.string,
 };
 
 export default connect()(PrioritySortingLabel);

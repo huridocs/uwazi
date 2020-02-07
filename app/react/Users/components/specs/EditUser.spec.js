@@ -11,7 +11,7 @@ describe('EditUser', () => {
   beforeEach(() => {
     props = {
       user: Immutable.fromJS({}),
-      saveUser: jasmine.createSpy('saveUser').and.returnValue(Promise.resolve())
+      saveUser: jasmine.createSpy('saveUser').and.returnValue(Promise.resolve()),
     };
   });
 
@@ -32,7 +32,10 @@ describe('EditUser', () => {
     it('should find the correct user', () => {
       const _props = { params: { userId: 1 } };
       const state = {
-        users: [Immutable.fromJS({ _id: 1, name: 'Batman' }), Immutable.fromJS({ _id: 2, name: 'Joker' })]
+        users: [
+          Immutable.fromJS({ _id: 1, name: 'Batman' }),
+          Immutable.fromJS({ _id: 2, name: 'Joker' }),
+        ],
       };
       const mappedProps = mapStateToProps(state, _props);
       expect(mappedProps.user.get('name')).toBe('Batman');

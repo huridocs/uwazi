@@ -10,17 +10,17 @@ import { arrayUtils } from 'app/Charts';
 import MarkdownLink from './MarkdownLink';
 import markdownDatasets from '../markdownDatasets';
 
-export const ListChartComponent = (props) => {
+export const ListChartComponent = props => {
   const { excludeZero, property, data, classname, context, colors, thesauris } = props;
   const sliceColors = colors.split(',');
 
-  let output = <Loader/>;
+  let output = <Loader />;
 
   if (data) {
     const formattedData = arrayUtils.sortValues(
       arrayUtils.formatDataForChart(data, property, thesauris, {
         excludeZero: Boolean(excludeZero),
-        context
+        context,
       })
     );
     let query = { filters: {} };
@@ -36,7 +36,10 @@ export const ListChartComponent = (props) => {
         {formattedData.map((item, index) => {
           const Content = (
             <div>
-              <div className="list-bullet" style={{ backgroundColor: sliceColors[index % sliceColors.length] }}>
+              <div
+                className="list-bullet"
+                style={{ backgroundColor: sliceColors[index % sliceColors.length] }}
+              >
                 <span>{item.results}</span>
               </div>
               <span className="list-label">{item.label}</span>
@@ -47,7 +50,11 @@ export const ListChartComponent = (props) => {
 
           return (
             <li key={item.id}>
-              {props.baseUrl && <MarkdownLink url={`/library/?q=${rison.encode(query)}`} classname="list-link">{Content}</MarkdownLink>}
+              {props.baseUrl && (
+                <MarkdownLink url={`/library/?q=${rison.encode(query)}`} classname="list-link">
+                  {Content}
+                </MarkdownLink>
+              )}
               {!props.baseUrl && Content}
             </li>
           );
@@ -76,10 +83,7 @@ ListChartComponent.propTypes = {
   colors: PropTypes.string,
   data: PropTypes.instanceOf(Immutable.List),
   baseUrl: PropTypes.string,
-  excludeZero: PropTypes.oneOfType([
-    PropTypes.string,
-    PropTypes.bool
-  ]),
+  excludeZero: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
 };
 
 export const mapStateToProps = (state, props) => ({

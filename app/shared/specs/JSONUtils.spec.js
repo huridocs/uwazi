@@ -14,7 +14,10 @@ describe('JSONUtils', () => {
 
     it('should parse a nested object to object', () => {
       const object = { test: 'test', nested: '{"nestedProp": "nestedValue"}' };
-      expect(JSONUtils.parseNested(object)).toEqual({ test: 'test', nested: { nestedProp: 'nestedValue' } });
+      expect(JSONUtils.parseNested(object)).toEqual({
+        test: 'test',
+        nested: { nestedProp: 'nestedValue' },
+      });
     });
   });
 });

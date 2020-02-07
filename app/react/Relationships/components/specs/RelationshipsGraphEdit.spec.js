@@ -21,17 +21,17 @@ describe('RelationshipsGraphEdit', () => {
             template: null,
             relationships: [
               { entity: 'sharedId2', hub: 1, template: null },
-              { entity: 'sharedId3', hub: 1, template: null }
-            ]
+              { entity: 'sharedId3', hub: 1, template: null },
+            ],
           },
           {
             template: '456',
             relationships: [
               { entity: 'sharedId2', hub: 1, template: '456' },
-              { entity: 'sharedId3', hub: 1, template: '456' }
-            ]
-          }
-        ]
+              { entity: 'sharedId3', hub: 1, template: '456' },
+            ],
+          },
+        ],
       },
       {
         hub: '2',
@@ -41,11 +41,11 @@ describe('RelationshipsGraphEdit', () => {
             template: '789',
             relationships: [
               { entity: 'sharedId2', hub: '2', template: '789' },
-              { entity: 'sharedId4', hub: '2', template: '789' }
-            ]
-          }
-        ]
-      }
+              { entity: 'sharedId4', hub: '2', template: '789' },
+            ],
+          },
+        ],
+      },
     ];
 
     props = {
@@ -54,7 +54,7 @@ describe('RelationshipsGraphEdit', () => {
       editing: false,
       searchResults: fromJS({ rows: [] }),
       parseResults: jasmine.createSpy('parseResults'),
-      addHub: jasmine.createSpy('addHub')
+      addHub: jasmine.createSpy('addHub'),
     };
   });
 
@@ -94,7 +94,11 @@ describe('RelationshipsGraphEdit', () => {
       render();
       const instance = component.instance();
       instance.componentWillMount();
-      expect(props.parseResults).toHaveBeenCalledWith(props.searchResults, props.parentEntity, props.editing);
+      expect(props.parseResults).toHaveBeenCalledWith(
+        props.searchResults,
+        props.parentEntity,
+        props.editing
+      );
     });
   });
 
@@ -107,7 +111,11 @@ describe('RelationshipsGraphEdit', () => {
       expect(props.parseResults).not.toHaveBeenCalled();
       props.searchResults = fromJS({ rows: [] });
       instance.componentWillUpdate(props);
-      expect(props.parseResults).toHaveBeenCalledWith(props.searchResults, props.parentEntity, props.editing);
+      expect(props.parseResults).toHaveBeenCalledWith(
+        props.searchResults,
+        props.parentEntity,
+        props.editing
+      );
     });
   });
 });

@@ -24,7 +24,7 @@ describe('Provider', () => {
     }
 
     render() {
-      return <div/>;
+      return <div />;
     }
   }
 
@@ -38,8 +38,8 @@ describe('Provider', () => {
   describe('context', () => {
     it('should be provided to RouteHandler with getInitialData', () => {
       TestUtils.renderIntoDocument(
-        <Provider initialData={initialData} >
-          <TestController ref={ref => component = ref} />
+        <Provider initialData={initialData}>
+          <TestController ref={ref => (component = ref)} />
         </Provider>
       );
       expect(component.context.getInitialData).toEqual(jasmine.any(Function));
@@ -47,8 +47,8 @@ describe('Provider', () => {
 
     it('should be provided to RouteHandler with getUser', () => {
       TestUtils.renderIntoDocument(
-        <Provider initialData={initialData} user={user} >
-          <TestController ref={ref => component = ref} />
+        <Provider initialData={initialData} user={user}>
+          <TestController ref={ref => (component = ref)} />
         </Provider>
       );
       expect(component.context.getUser).toEqual(jasmine.any(Function));
@@ -59,7 +59,8 @@ describe('Provider', () => {
     describe('when is in props', () => {
       beforeEach(() => {
         TestUtils.renderIntoDocument(
-          <Provider initialData={initialData} ><TestController ref={ref => component = ref} />
+          <Provider initialData={initialData}>
+            <TestController ref={ref => (component = ref)} />
           </Provider>
         );
       });
@@ -73,7 +74,9 @@ describe('Provider', () => {
       beforeEach(() => {
         window.__reduxData__ = { data: 'some data' };
         TestUtils.renderIntoDocument(
-          <Provider><TestController ref={ref => component = ref} /></Provider>
+          <Provider>
+            <TestController ref={ref => (component = ref)} />
+          </Provider>
         );
       });
 
@@ -87,8 +90,8 @@ describe('Provider', () => {
       describe('when is in props', () => {
         beforeEach(() => {
           TestUtils.renderIntoDocument(
-            <Provider initialData={initialData} user={user} >
-              <TestController ref={ref => component = ref} />
+            <Provider initialData={initialData} user={user}>
+              <TestController ref={ref => (component = ref)} />
             </Provider>
           );
         });
@@ -102,7 +105,8 @@ describe('Provider', () => {
         beforeEach(() => {
           window.__user__ = user;
           TestUtils.renderIntoDocument(
-            <Provider initialData={initialData} ><TestController ref={ref => component = ref} />
+            <Provider initialData={initialData}>
+              <TestController ref={ref => (component = ref)} />
             </Provider>
           );
         });

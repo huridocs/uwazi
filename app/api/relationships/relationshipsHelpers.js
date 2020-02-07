@@ -13,9 +13,11 @@ function groupByHubs(references) {
 
 class RelationshipCollection extends Array {
   removeOtherLanguageTextReferences(connectedDocuments) {
-    return this.filter((r) => {
+    return this.filter(r => {
       if (r.filename) {
-        const filename = connectedDocuments[r.entity].file ? connectedDocuments[r.entity].file.filename : '';
+        const filename = connectedDocuments[r.entity].file
+          ? connectedDocuments[r.entity].file.filename
+          : '';
         return r.filename === filename;
       }
       return true;
@@ -41,9 +43,11 @@ class RelationshipCollection extends Array {
       template: null,
       entityData: connectedDocuments[relationship.entity],
       ...relationship,
-    })).filter((relationship) => {
+    })).filter(relationship => {
       if (!relationship.entityData) {
-        errorLog.error(`There's a connection to entity: ${relationship.entity} on hub: ${relationship.hub}, but no entity data.`);
+        errorLog.error(
+          `There's a connection to entity: ${relationship.entity} on hub: ${relationship.hub}, but no entity data.`
+        );
         return false;
       }
       return true;
@@ -55,7 +59,4 @@ class RelationshipCollection extends Array {
   }
 }
 
-export {
-  RelationshipCollection,
-  groupByHubs,
-};
+export { RelationshipCollection, groupByHubs };

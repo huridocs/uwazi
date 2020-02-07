@@ -634,7 +634,7 @@ export const fontawesomeIcons = [
   'yoast',
   'youtube',
   'youtube-play',
-  'youtube-square'
+  'youtube-square',
 ];
 
 export default fontawesomeIcons;

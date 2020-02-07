@@ -7,7 +7,7 @@ import t from '../t';
 import I18NApi from '../I18NApi';
 
 export function inlineEditTranslation(contextId, key) {
-  return (dispatch) => {
+  return dispatch => {
     const state = store.getState();
     const translations = state.translations.toJS();
     const languages = translations.map(_t => _t.locale);
@@ -24,7 +24,7 @@ export function inlineEditTranslation(contextId, key) {
 }
 
 export function closeInlineEditTranslation() {
-  return (dispatch) => {
+  return dispatch => {
     dispatch({ type: 'CLOSE_INLINE_EDIT_FORM' });
     dispatch(formActions.reset('inlineEditModel'));
   };
@@ -35,43 +35,47 @@ export function toggleInlineEdit() {
 }
 
 export function saveTranslations(translations) {
-  return (dispatch) => {
-    Promise.all(translations.map(translation => I18NApi.save(new RequestParams(translation))))
-    .then(() => {
-      notifications.notify(t('System', 'Translations saved', null, false), 'success')(dispatch);
-    });
+  return dispatch => {
+    Promise.all(translations.map(translation => I18NApi.save(new RequestParams(translation)))).then(
+      () => {
+        notifications.notify(t('System', 'Translations saved', null, false), 'success')(dispatch);
+      }
+    );
   };
 }
 
 export function editTranslations(translations) {
-  return (dispatch) => {
+  return dispatch => {
     dispatch(formActions.load('translationsForm', translations));
   };
 }
 
 export function resetForm() {
-  return (dispatch) => {
+  return dispatch => {
     dispatch(formActions.reset('translationsForm'));
   };
 }
 
 export function addLanguage(language) {
-  return dispatch => I18NApi.addLanguage(new RequestParams(language))
-  .then(() => {
-    notifications.notify(t('System', 'New language added', null, false), 'success')(dispatch);
-  });
+  return dispatch =>
+    I18NApi.addLanguage(new RequestParams(language)).then(() => {
+      notifications.notify(t('System', 'New language added', null, false), 'success')(dispatch);
+    });
 }
 
 export function deleteLanguage(key) {
-  return dispatch => I18NApi.deleteLanguage(new RequestParams({ key }))
-  .then(() => {
-    notifications.notify(t('System', 'Language deleted', null, false), 'success')(dispatch);
-  });
+  return dispatch =>
+    I18NApi.deleteLanguage(new RequestParams({ key })).then(() => {
+      notifications.notify(t('System', 'Language deleted', null, false), 'success')(dispatch);
+    });
 }
 
 export function setDefaultLanguage(key) {
-  return dispatch => I18NApi.setDefaultLanguage(new RequestParams({ key }))
-  .then(() => {
-    notifications.notify(t('System', 'Default language change success', null, false), 'success')(dispatch);
-  });
+  return dispatch =>
+    I18NApi.setDefaultLanguage(new RequestParams({ key })).then(() => {
+      notifications.notify(
+        t('System', 'Default language change success', null, false),
+        'success'
+      )(dispatch);
+    });
 }

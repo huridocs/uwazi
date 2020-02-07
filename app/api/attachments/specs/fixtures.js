@@ -44,9 +44,7 @@ export default {
       sharedId,
       _id: entityIdEn,
       file: { originalname: 'source doc', filename: 'filenameEn' },
-      attachments: [
-        { _id: db.id(), originalname: 'o1', filename: 'otherEn.doc' },
-      ],
+      attachments: [{ _id: db.id(), originalname: 'o1', filename: 'otherEn.doc' }],
     },
     {
       title: 'title',
@@ -54,7 +52,7 @@ export default {
       _id: entityIdPt,
       file: { originalname: 'source doc', filename: 'filenamePt' },
     },
-  ]
+  ],
 };
 
 export {

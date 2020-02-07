@@ -5,44 +5,60 @@ describe('entityRow', () => {
   const currentLanguage = 'en';
 
   it('should return entity for the current language (not missinterpreting coincidences in letters as language escaping)', () => {
-    const { rawEntity } = extractEntity({
-      title__es: 'test_es',
-      title__en: 'test_en',
-      not_portuguese_ptescaped_property: 'not portuguese'
-    }, languages, currentLanguage);
+    const { rawEntity } = extractEntity(
+      {
+        title__es: 'test_es',
+        title__en: 'test_en',
+        not_portuguese_ptescaped_property: 'not portuguese',
+      },
+      languages,
+      currentLanguage
+    );
 
-    expect(rawEntity).toEqual({ title: 'test_en', not_portuguese_ptescaped_property: 'not portuguese', language: 'en' });
+    expect(rawEntity).toEqual({
+      title: 'test_en',
+      not_portuguese_ptescaped_property: 'not portuguese',
+      language: 'en',
+    });
   });
 
   it('should return translations for languages that have it', () => {
-    const { rawTranslations } = extractEntity({
-      title__es: 'test_es',
-      title__en: 'test_en',
-    }, languages, currentLanguage);
-
-    expect(rawTranslations).toEqual(
-      [{ title: 'test_es', language: 'es' }]
+    const { rawTranslations } = extractEntity(
+      {
+        title__es: 'test_es',
+        title__en: 'test_en',
+      },
+      languages,
+      currentLanguage
     );
+
+    expect(rawTranslations).toEqual([{ title: 'test_es', language: 'es' }]);
   });
 
   it('should return translations for languages that have values not blank', () => {
-    const { rawTranslations } = extractEntity({
-      title__es: 'test_es',
-      title__en: 'test_en',
-      title__pt: ' ',
-    }, languages, currentLanguage);
-
-    expect(rawTranslations).toEqual(
-      [{ title: 'test_es', language: 'es' }]
+    const { rawTranslations } = extractEntity(
+      {
+        title__es: 'test_es',
+        title__en: 'test_en',
+        title__pt: ' ',
+      },
+      languages,
+      currentLanguage
     );
+
+    expect(rawTranslations).toEqual([{ title: 'test_es', language: 'es' }]);
   });
 
   it('should return all translations when everything is translated', () => {
-    const { rawTranslations } = extractEntity({
-      title__es: 'test_es',
-      title__en: 'test_en',
-      text__pt: 'text_pt',
-    }, languages, currentLanguage);
+    const { rawTranslations } = extractEntity(
+      {
+        title__es: 'test_es',
+        title__en: 'test_en',
+        text__pt: 'text_pt',
+      },
+      languages,
+      currentLanguage
+    );
 
     expect(rawTranslations).toEqual([
       { title: 'test_es', language: 'es' },
@@ -51,19 +67,31 @@ describe('entityRow', () => {
   });
 
   it('should not missinterpret middle-word coincidences with language matches', () => {
-    const { rawEntity, rawTranslations } = extractEntity({
-      title__es: 'test_es',
-      title__en: 'test_en',
+    const { rawEntity, rawTranslations } = extractEntity(
+      {
+        title__es: 'test_es',
+        title__en: 'test_en',
+        some__entirely_new_property: 'has __en in name, but is not english',
+        a__pt_property: 'not portugese',
+      },
+      languages,
+      'es'
+    );
+
+    expect(rawEntity).toEqual({
+      title: 'test_es',
       some__entirely_new_property: 'has __en in name, but is not english',
       a__pt_property: 'not portugese',
-    }, languages, 'es');
+      language: 'es',
+    });
 
-    expect(rawEntity).toEqual(
-      { title: 'test_es', some__entirely_new_property: 'has __en in name, but is not english', a__pt_property: 'not portugese', language: 'es' }
-    );
-
-    expect(rawTranslations).toEqual(
-      [{ title: 'test_en', some__entirely_new_property: 'has __en in name, but is not english', a__pt_property: 'not portugese', language: 'en' }]
-    );
+    expect(rawTranslations).toEqual([
+      {
+        title: 'test_en',
+        some__entirely_new_property: 'has __en in name, but is not english',
+        a__pt_property: 'not portugese',
+        language: 'en',
+      },
+    ]);
   });
 });

@@ -12,12 +12,21 @@ describe('Link', () => {
   });
 
   it('should allow to set a custom class to the component', () => {
-    const component = shallow(<MarkdownLink url="url" className="custom class">label</MarkdownLink>);
+    const component = shallow(
+      <MarkdownLink url="url" className="custom class">
+        label
+      </MarkdownLink>
+    );
     expect(component).toMatchSnapshot();
   });
 
   it('should allow nesting children inside', () => {
-    const component = shallow(<MarkdownLink url="url"><div>Extra content</div><span>Label</span></MarkdownLink>);
+    const component = shallow(
+      <MarkdownLink url="url">
+        <div>Extra content</div>
+        <span>Label</span>
+      </MarkdownLink>
+    );
     expect(component).toMatchSnapshot();
   });
 });

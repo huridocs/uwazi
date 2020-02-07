@@ -5,11 +5,15 @@ import zipFile from '../zipFile';
 
 describe('zipFile', () => {
   beforeAll(async () => {
-    await createTestingZip([
-      path.join(__dirname, '/zipData/test.csv'),
-      path.join(__dirname, '/zipData/1.pdf'),
-      path.join(__dirname, '/zipData/2.pdf'),
-    ], 'zipTest.zip', __dirname);
+    await createTestingZip(
+      [
+        path.join(__dirname, '/zipData/test.csv'),
+        path.join(__dirname, '/zipData/1.pdf'),
+        path.join(__dirname, '/zipData/2.pdf'),
+      ],
+      'zipTest.zip',
+      __dirname
+    );
   });
 
   afterAll(() => {
@@ -18,28 +22,30 @@ describe('zipFile', () => {
   });
 
   describe('findReadStream', () => {
-    it('should return a readable stream for matched file', async (done) => {
+    it('should return a readable stream for matched file', async done => {
       let fileContents;
       (
-        await zipFile(path.join(__dirname, '/zipData/zipTest.zip'))
-        .findReadStream(entry => entry.fileName === 'test.csv')
+        await zipFile(path.join(__dirname, '/zipData/zipTest.zip')).findReadStream(
+          entry => entry.fileName === 'test.csv'
+        )
       )
-      .on('data', (chunk) => {
-        fileContents += chunk;
-      })
-      .on('end', () => {
-        expect(fileContents).toMatchSnapshot();
-        done();
-      })
-      .on('error', (e) => {
-        done.fail(e);
-      });
+        .on('data', chunk => {
+          fileContents += chunk;
+        })
+        .on('end', () => {
+          expect(fileContents).toMatchSnapshot();
+          done();
+        })
+        .on('error', e => {
+          done.fail(e);
+        });
     });
 
     describe('when not file found', () => {
       it('should return null', async () => {
-        const stream = await zipFile(path.join(__dirname, '/zipData/zipTest.zip'))
-        .findReadStream(entry => entry.fileName === 'non_existent');
+        const stream = await zipFile(path.join(__dirname, '/zipData/zipTest.zip')).findReadStream(
+          entry => entry.fileName === 'non_existent'
+        );
 
         expect(stream).toBe(null);
       });
@@ -49,8 +55,9 @@ describe('zipFile', () => {
       it('should throw an error', async () => {
         fs.closeSync(fs.openSync(path.join(__dirname, '/invalid_zip.zip'), 'w'));
         try {
-          await zipFile(path.join(__dirname, '/invalid_zip.zip'))
-          .findReadStream(entry => entry.fileName === 'test.csv');
+          await zipFile(path.join(__dirname, '/invalid_zip.zip')).findReadStream(
+            entry => entry.fileName === 'test.csv'
+          );
           fail('should throw an error');
         } catch (e) {
           expect(e).toBeDefined();

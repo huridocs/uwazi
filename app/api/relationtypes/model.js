@@ -12,12 +12,12 @@ const propertiesSchema = new mongoose.Schema({
   sortable: Boolean,
   showInCard: Boolean,
   prioritySorting: Boolean,
-  nestedProperties: [String]
+  nestedProperties: [String],
 });
 
 const templateSchema = new mongoose.Schema({
   name: String,
-  properties: [propertiesSchema]
+  properties: [propertiesSchema],
 });
 
 export default instanceModel('relationtypes', templateSchema);

@@ -19,7 +19,6 @@ import errorLog from '../../log/errorLog';
 import uploads from '../uploads.js';
 import paths from '../../config/paths';
 
-
 const writeFile = promisify(fs.writeFile);
 const fileExists = promisify(fs.stat);
 
@@ -31,8 +30,8 @@ describe('upload routes', () => {
   const sharedId = 'sharedId1';
 
   const onSocketRespond = (method, url, reqObject, eventName = 'documentProcessed') => {
-    const promise = new Promise((resolve) => {
-      iosocket.emit.and.callFake((event) => {
+    const promise = new Promise(resolve => {
+      iosocket.emit.and.callFake(event => {
         if (event === eventName) {
           resolve();
         }
@@ -41,17 +40,23 @@ describe('upload routes', () => {
     return Promise.all([promise, routes[method](url, reqObject)]);
   };
 
-  const deleteAllFiles = (cb) => {
+  const deleteAllFiles = cb => {
     const directory = `${__dirname}/uploads/`;
-    const dontDeleteFiles = ['import.zip', 'eng.pdf', 'spn.pdf', 'importcsv.csv', 'f2082bf51b6ef839690485d7153e847a.pdf'];
+    const dontDeleteFiles = [
+      'import.zip',
+      'eng.pdf',
+      'spn.pdf',
+      'importcsv.csv',
+      'f2082bf51b6ef839690485d7153e847a.pdf',
+    ];
     fs.readdir(directory, (err, files) => {
       if (err) throw err;
 
-      files.forEach((fileName) => {
+      files.forEach(fileName => {
         if (dontDeleteFiles.includes(fileName)) {
           return;
         }
-        fs.unlink(path.join(directory, fileName), (error) => {
+        fs.unlink(path.join(directory, fileName), error => {
           if (error) throw error;
         });
       });
@@ -63,17 +68,21 @@ describe('upload routes', () => {
     const thumbnail1URI = `${__dirname}/uploads/${entityId}.jpg`;
     const thumbnail2URI = `${__dirname}/uploads/${entityEnId}.jpg`;
     return new Promise((resolve, reject) => {
-      fs.stat(path.resolve(thumbnail1URI), (err1) => {
-        if (err1) { reject(new Error(`Missing thumbnail: ${thumbnail1URI}`)); }
-        fs.stat(path.resolve(thumbnail2URI), (err2) => {
-          if (err2) { reject(new Error(`Missing thumbnail: ${thumbnail2URI}`)); }
+      fs.stat(path.resolve(thumbnail1URI), err1 => {
+        if (err1) {
+          reject(new Error(`Missing thumbnail: ${thumbnail1URI}`));
+        }
+        fs.stat(path.resolve(thumbnail2URI), err2 => {
+          if (err2) {
+            reject(new Error(`Missing thumbnail: ${thumbnail2URI}`));
+          }
           resolve();
         });
       });
     });
   };
 
-  beforeEach((done) => {
+  beforeEach(done => {
     deleteAllFiles(() => {
       spyOn(search, 'delete').and.returnValue(Promise.resolve());
       spyOn(search, 'indexEntities').and.returnValue(Promise.resolve());
@@ -87,7 +96,7 @@ describe('upload routes', () => {
         destination: `${__dirname}/uploads/`,
         filename: 'f2082bf51b6ef839690485d7153e847a.pdf',
         path: `${__dirname}/uploads/f2082bf51b6ef839690485d7153e847a.pdf`,
-        size: 171411271
+        size: 171411271,
       };
       req = {
         language: 'es',
@@ -96,10 +105,12 @@ describe('upload routes', () => {
         body: { document: 'sharedId1' },
         files: [file],
         io: {},
-        getCurrentSessionSockets: () => ({ sockets: [iosocket], emit: iosocket.emit })
+        getCurrentSessionSockets: () => ({ sockets: [iosocket], emit: iosocket.emit }),
       };
 
-      db.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
+      db.clearAllAndLoad(fixtures)
+        .then(done)
+        .catch(catchErrors(done));
       spyOn(errorLog, 'error'); //just to avoid annoying console output
     });
   });
@@ -110,7 +121,7 @@ describe('upload routes', () => {
       await onSocketRespond('post', '/api/upload', req);
       const [docES, docEN] = await Promise.all([
         documents.get({ sharedId: 'sharedId1', language: 'es' }, '+fullText'),
-        documents.get({ sharedId: 'sharedId1', language: 'en' }, '+fullText')
+        documents.get({ sharedId: 'sharedId1', language: 'en' }, '+fullText'),
       ]);
       expect(iosocket.emit).toHaveBeenCalledWith('conversionStart', 'sharedId1');
       expect(iosocket.emit).toHaveBeenCalledWith('documentProcessed', 'sharedId1');
@@ -140,7 +151,7 @@ describe('upload routes', () => {
 
         const [docES, docEN] = await Promise.all([
           documents.get({ sharedId: 'sharedId1', language: 'es' }, '+fullText'),
-          documents.get({ sharedId: 'sharedId1', language: 'en' }, '+fullText')
+          documents.get({ sharedId: 'sharedId1', language: 'en' }, '+fullText'),
         ]);
 
         expect(docEN[0].file.language).toBe('eng');
@@ -155,7 +166,7 @@ describe('upload routes', () => {
 
         const [docES, docEN] = await Promise.all([
           documents.get({ sharedId: 'sharedId1', language: 'es' }, '+fullText'),
-          documents.get({ sharedId: 'sharedId1', language: 'en' }, '+fullText')
+          documents.get({ sharedId: 'sharedId1', language: 'en' }, '+fullText'),
         ]);
         expect(docEN[0].file.language).toBe('spa');
         expect(docEN[0].file.originalname).toBeDefined();
@@ -164,12 +175,11 @@ describe('upload routes', () => {
     });
 
     describe('when conversion fails', () => {
-      it('should set document processed to false and emit a socket conversionFailed event with the id of the document', (done) => {
-        iosocket.emit.and.callFake((eventName) => {
+      it('should set document processed to false and emit a socket conversionFailed event with the id of the document', done => {
+        iosocket.emit.and.callFake(eventName => {
           if (eventName === 'conversionFailed') {
             setTimeout(() => {
-              entities.getAllLanguages('sharedId1')
-              .then((docs) => {
+              entities.getAllLanguages('sharedId1').then(docs => {
                 expect(docs[0].processed).toBe(false);
                 expect(docs[1].processed).toBe(false);
                 done();
@@ -179,17 +189,15 @@ describe('upload routes', () => {
         });
 
         req.files = ['invalid_file'];
-        routes.post('/api/upload', req)
-        .catch(done.fail);
+        routes.post('/api/upload', req).catch(done.fail);
       });
     });
 
     describe('when upload finishes', () => {
-      it('should update the document with the file path and uploaded flag to true', (done) => {
-        iosocket.emit.and.callFake((eventName) => {
+      it('should update the document with the file path and uploaded flag to true', done => {
+        iosocket.emit.and.callFake(eventName => {
           if (eventName === 'documentProcessed') {
-            documents.getById('sharedId1', 'es')
-            .then((modifiedDoc) => {
+            documents.getById('sharedId1', 'es').then(modifiedDoc => {
               expect(modifiedDoc.file.originalname).toEqual(file.originalname);
               expect(modifiedDoc.file.filename).toEqual(file.filename);
               expect(modifiedDoc.uploaded).toEqual(true);
@@ -197,11 +205,12 @@ describe('upload routes', () => {
             });
           }
         });
-        routes.post('/api/upload', req)
-        .then((response) => {
-          expect(response).toEqual(file);
-        })
-        .catch(done.fail);
+        routes
+          .post('/api/upload', req)
+          .then(response => {
+            expect(response).toEqual(file);
+          })
+          .catch(done.fail);
       });
     });
   });
@@ -211,25 +220,27 @@ describe('upload routes', () => {
       spyOn(relationships, 'deleteTextReferences').and.returnValue(Promise.resolve());
     });
 
-    it('should reupload a document', (done) => {
-      iosocket.emit.and.callFake((eventName) => {
+    it('should reupload a document', done => {
+      iosocket.emit.and.callFake(eventName => {
         if (eventName === 'documentProcessed') {
           expect(relationships.deleteTextReferences).toHaveBeenCalledWith(sharedId, 'es');
-          documents.getById(sharedId, 'es')
-          .then((modifiedDoc) => {
-            expect(modifiedDoc.toc.length).toBe(0);
-            done();
-          })
-          .catch(done.fail);
+          documents
+            .getById(sharedId, 'es')
+            .then(modifiedDoc => {
+              expect(modifiedDoc.toc.length).toBe(0);
+              done();
+            })
+            .catch(done.fail);
         }
       });
       req.body.document = sharedId;
 
-      routes.post('/api/reupload', req)
-      .then((response) => {
-        expect(response).toEqual(file);
-      })
-      .catch(done.fail);
+      routes
+        .post('/api/reupload', req)
+        .then(response => {
+          expect(response).toEqual(file);
+        })
+        .catch(done.fail);
     });
 
     it('should not remove old document when assigned to other entities', async () => {
@@ -273,7 +284,7 @@ describe('upload routes', () => {
         mimetype: 'application/octet-stream',
         originalname: 'gadgets-01.pdf',
         size: 171411271,
-        timestamp: 1100
+        timestamp: 1100,
       };
       expect(_entities[0].file).toEqual(jasmine.objectContaining(_file));
       expect(_entities[1].file).toEqual(jasmine.objectContaining(_file));
@@ -303,7 +314,9 @@ describe('upload routes', () => {
 
     it('should delete upload and return the response', async () => {
       spyOn(uploads, 'delete').and.returnValue(Promise.resolve('upload_deleted'));
-      const result = await routes.delete('/api/customisation/upload', { query: { _id: 'upload_id' } });
+      const result = await routes.delete('/api/customisation/upload', {
+        query: { _id: 'upload_id' },
+      });
       expect(result).toBe('upload_deleted');
       expect(uploads.delete).toHaveBeenCalledWith('upload_id');
     });
@@ -319,7 +332,7 @@ describe('upload routes', () => {
         destination: `${__dirname}/uploads/`,
         filename: 'importcsv.csv',
         path: `${__dirname}/uploads/importcsv.csv`,
-        size: 112
+        size: 112,
       };
       req = {
         language: 'es',
@@ -328,11 +341,11 @@ describe('upload routes', () => {
         body: { template: templateId },
         files: [file],
         io: {},
-        getCurrentSessionSockets: () => ({ sockets: [iosocket], emit: iosocket.emit })
+        getCurrentSessionSockets: () => ({ sockets: [iosocket], emit: iosocket.emit }),
       };
     });
 
-    it('should import a csv', (done) => {
+    it('should import a csv', done => {
       let start = false;
       let progress = 0;
       iosocket.emit.and.callFake((eventName, data) => {
@@ -345,8 +358,7 @@ describe('upload routes', () => {
         if (eventName === 'IMPORT_CSV_END') {
           expect(start).toBe(true);
           expect(progress).toBe(2);
-          entities.get({ template: templateId })
-          .then((entitiesCreated) => {
+          entities.get({ template: templateId }).then(entitiesCreated => {
             expect(entitiesCreated.length).toBe(2);
             expect(entitiesCreated[0].title).toBe('imported entity one');
             expect(entitiesCreated[1].title).toBe('imported entity two');
@@ -359,7 +371,7 @@ describe('upload routes', () => {
     });
 
     describe('on error', () => {
-      it('should emit the error', (done) => {
+      it('should emit the error', done => {
         file.path = `${__dirname}/uploads/import.zip`;
         iosocket.emit.and.callFake((eventName, data) => {
           if (eventName === 'IMPORT_CSV_ERROR') {
@@ -373,7 +385,7 @@ describe('upload routes', () => {
   });
 
   describe('api/public', () => {
-    beforeEach((done) => {
+    beforeEach(done => {
       deleteAllFiles(() => {
         spyOn(Date, 'now').and.returnValue(1000);
         paths.uploadedDocuments = `${__dirname}/uploads/`;
@@ -383,7 +395,7 @@ describe('upload routes', () => {
           originalname: 'gadgets-01.pdf',
           encoding: '7bit',
           mimetype: 'application/octet-stream',
-          buffer
+          buffer,
         };
 
         const attachment = {
@@ -391,7 +403,7 @@ describe('upload routes', () => {
           originalname: 'attachment-01.pdf',
           encoding: '7bit',
           mimetype: 'application/octet-stream',
-          buffer
+          buffer,
         };
         req = {
           language: 'es',
@@ -399,7 +411,7 @@ describe('upload routes', () => {
           body: { title: 'public submit', template: templateId.toString() },
           files: [file, attachment],
           io: {},
-          getCurrentSessionSockets: () => ({ sockets: [iosocket], emit: iosocket.emit })
+          getCurrentSessionSockets: () => ({ sockets: [iosocket], emit: iosocket.emit }),
         };
         done();
       });
@@ -413,8 +425,12 @@ describe('upload routes', () => {
       expect(newEntity.processed).toBe(true);
       expect(newEntity.attachments.length).toBe(1);
       expect(newEntity.attachments[0].originalname).toBe('attachment-01.pdf');
-      expect(fs.existsSync(path.resolve(`${__dirname}/uploads/${newEntity.file.filename}`))).toBe(true);
-      expect(fs.existsSync(path.resolve(`${__dirname}/uploads/${newEntity.attachments[0].filename}`))).toBe(true);
+      expect(fs.existsSync(path.resolve(`${__dirname}/uploads/${newEntity.file.filename}`))).toBe(
+        true
+      );
+      expect(
+        fs.existsSync(path.resolve(`${__dirname}/uploads/${newEntity.attachments[0].filename}`))
+      ).toBe(true);
     });
 
     it('should not create entity if settings has no allowedPublicTemplates option', async () => {
@@ -458,7 +474,7 @@ describe('upload routes', () => {
       uploadRoutes(app);
     });
 
-    it('should return the captcha and store its value in session', (done) => {
+    it('should return the captcha and store its value in session', done => {
       remoteApp = express();
       remoteApp.post('/api/public', (_req, res) => {
         expect(_req.headers.cookie).toBe('connect.ssid: 12n32ndi23j4hsj;');
@@ -467,17 +483,16 @@ describe('upload routes', () => {
 
       const remoteServer = remoteApp.listen(54321, async () => {
         await request(app)
-        .post('/api/remotepublic')
-        .send({ title: 'Title' })
-        .expect(200);
+          .post('/api/remotepublic')
+          .send({ title: 'Title' })
+          .expect(200);
         remoteServer.close();
         done();
       });
     });
   });
 
-
-  afterAll((done) => {
+  afterAll(done => {
     deleteAllFiles(() => {
       db.disconnect().then(done);
     });

@@ -9,16 +9,16 @@ describe('ThesauriFormItem', () => {
     props = {
       value: {
         label: 'Item1',
-        id: 'item1'
+        id: 'item1',
       },
       index: 1,
       removeValue: jest.fn(),
-      onChange: jest.fn()
+      onChange: jest.fn(),
     };
   });
 
   const render = () => {
-    component = shallow(<ThesauriFormItem {...props}/>);
+    component = shallow(<ThesauriFormItem {...props} />);
   };
 
   it('should render ThesauriFormField if single item is provided', () => {

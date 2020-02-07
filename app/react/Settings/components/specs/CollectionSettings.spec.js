@@ -16,7 +16,7 @@ describe('CollectionSettings', () => {
       settings: {
         _id: 'id',
         dateFormat: 'DD-MM-YYYY',
-        allowedPublicTemplates: ['existingId1', 'existingId2']
+        allowedPublicTemplates: ['existingId1', 'existingId2'],
       },
       notify: jasmine.createSpy('notify'),
       setSettings: jasmine.createSpy('setSettings'),
@@ -57,7 +57,7 @@ describe('CollectionSettings', () => {
         customLandingpage: false,
         matomoConfig: 'matomo',
         private: false,
-        allowedPublicTemplatesString: 'id1,id2'
+        allowedPublicTemplatesString: 'id1,id2',
       };
 
       expectedData = {
@@ -70,7 +70,7 @@ describe('CollectionSettings', () => {
         matomoConfig: 'matomo',
         private: false,
         site_name: 'Uwazi',
-        allowedPublicTemplates: ['id1', 'id2']
+        allowedPublicTemplates: ['id1', 'id2'],
       };
 
       component = shallow(<CollectionSettings {...props} />);

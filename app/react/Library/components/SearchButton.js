@@ -45,26 +45,29 @@ SearchButton.propTypes = {
   hideFilters: PropTypes.func,
   unselectAllDocuments: PropTypes.func,
   open: PropTypes.bool,
-  metadataPanelIsOpen: PropTypes.bool
+  metadataPanelIsOpen: PropTypes.bool,
 };
 
 SearchButton.contextTypes = {
-  storeKey: PropTypes.string
+  storeKey: PropTypes.string,
 };
 
 export function mapStateToProps(state, props) {
   return {
     open: state[props.storeKey].ui.get('filtersPanel') !== false,
-    metadataPanelIsOpen: state[props.storeKey].ui.get('selectedDocuments').size > 0
+    metadataPanelIsOpen: state[props.storeKey].ui.get('selectedDocuments').size > 0,
   };
 }
 
 function mapDispatchToProps(dispatch, props) {
-  return bindActionCreators({
-    showFilters,
-    hideFilters,
-    unselectAllDocuments
-  }, wrapDispatch(dispatch, props.storeKey));
+  return bindActionCreators(
+    {
+      showFilters,
+      hideFilters,
+      unselectAllDocuments,
+    },
+    wrapDispatch(dispatch, props.storeKey)
+  );
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(SearchButton);

@@ -19,24 +19,32 @@ const findResultsAboveThreshold = (results, threshold) => {
 };
 
 const getSnippetsFromResults = (results, template) => {
-  const snippets = results.reduce((_memo, item) => {
-    const memo = _memo;
-    const text = `${item.text} (${(item.score * 100).toFixed(2)}%)`;
-    memo.count += 1;
-    if (isNaN(Number(item.page))) {
-      const field = template.get('properties').find(p => p.get('name') === item.page).get('label');
-      memo.metadata[field] = (memo.metadata[field] || []).concat([text]);
+  const snippets = results.reduce(
+    (_memo, item) => {
+      const memo = _memo;
+      const text = `${item.text} (${(item.score * 100).toFixed(2)}%)`;
+      memo.count += 1;
+      if (isNaN(Number(item.page))) {
+        const field = template
+          .get('properties')
+          .find(p => p.get('name') === item.page)
+          .get('label');
+        memo.metadata[field] = (memo.metadata[field] || []).concat([text]);
+        return memo;
+      }
+      memo.fullText.push({
+        page: Number(item.page),
+        text,
+      });
       return memo;
-    }
-    memo.fullText.push({
-      page: Number(item.page),
-      text
-    });
-    return memo;
-  }, { count: 0, metadata: {}, fullText: [] });
+    },
+    { count: 0, metadata: {}, fullText: [] }
+  );
 
-  snippets.metadata = Object.keys(snippets.metadata)
-  .map(field => ({ field, texts: snippets.metadata[field] }));
+  snippets.metadata = Object.keys(snippets.metadata).map(field => ({
+    field,
+    texts: snippets.metadata[field],
+  }));
   return snippets;
 };
 
@@ -48,7 +56,9 @@ export class DocumentResults extends Component {
         documentViewUrl={documentViewUrl}
         snippets={snippets}
         searchTerm=""
-        selectSnippet={(...args) => { this.props.selectSnippet(...args); }}
+        selectSnippet={(...args) => {
+          this.props.selectSnippet(...args);
+        }}
       />
     );
   }
@@ -98,16 +108,22 @@ export class DocumentResults extends Component {
                 <DocumentLanguage doc={Immutable.fromJS(doc)} />
               </h1>
             </div>
-            <TemplateLabel template={doc.template}/>
+            <TemplateLabel template={doc.template} />
           </div>
           {this.renderFilter()}
           <dl className="metadata-type-numeric">
-            <dt><Translate>Number of sentences above threshold</Translate></dt>
-            <dd>{ filteredResults.length }</dd>
+            <dt>
+              <Translate>Number of sentences above threshold</Translate>
+            </dt>
+            <dd>{filteredResults.length}</dd>
           </dl>
           <dl className="metadata-type-numeric">
-            <dt><Translate>% of sentences above threshold</Translate></dt>
-            <dd>{ (filteredResults.length / doc.semanticSearch.totalResults * 100).toFixed(2) }%</dd>
+            <dt>
+              <Translate>% of sentences above threshold</Translate>
+            </dt>
+            <dd>
+              {((filteredResults.length / doc.semanticSearch.totalResults) * 100).toFixed(2)}%
+            </dd>
           </dl>
         </div>
         {this.renderSnippetsList(doc, snippets, documentViewUrl)}
@@ -117,21 +133,22 @@ export class DocumentResults extends Component {
 }
 
 DocumentResults.defaultProps = {
-  template: undefined
+  template: undefined,
 };
 
 DocumentResults.propTypes = {
   doc: PropTypes.shape({ sharedId: PropTypes.string }).isRequired,
   threshold: PropTypes.number.isRequired,
   selectSnippet: PropTypes.func.isRequired,
-  template: PropTypes.instanceOf(Immutable.Map)
+  template: PropTypes.instanceOf(Immutable.Map),
 };
 
 const mapStateToProps = ({ semanticSearch, templates }) => ({
   threshold: semanticSearch.resultsFilters.threshold,
-  template: templates.find(tpl => tpl.get('_id') === semanticSearch.selectedDocument.get('template'))
+  template: templates.find(
+    tpl => tpl.get('_id') === semanticSearch.selectedDocument.get('template')
+  ),
 });
-
 
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({ selectSnippet }, dispatch);
