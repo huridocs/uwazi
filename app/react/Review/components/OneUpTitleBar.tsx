@@ -44,7 +44,9 @@ export class OneUpTitleBarBase extends Component<OneUpTitleBarProps> {
   }
 
   navButtons() {
-    const { isPristine } = this.props;
+    const { oneUpState, isPristine } = this.props;
+    const prevClass = oneUpState.indexInDocs > 0 ? '' : ' btn-disabled';
+    const nextClass = oneUpState.indexInDocs < oneUpState.totalDocs - 1 ? '' : ' btn-disabled';
     const navAction = isPristine
       ? (delta: number) => () => this.props.switchOneUpEntity(delta, false)
       : (delta: number) => () =>
@@ -56,10 +58,10 @@ export class OneUpTitleBarBase extends Component<OneUpTitleBarProps> {
           });
     return (
       <span>
-        <button type="button" onClick={navAction(-1)} className="btn btn-default">
+        <button type="button" onClick={navAction(-1)} className={`btn btn-default${prevClass}`}>
           <Icon icon="arrow-left" />
         </button>
-        <button type="button" onClick={navAction(+1)} className="btn btn-default">
+        <button type="button" onClick={navAction(+1)} className={`btn btn-default${nextClass}`}>
           <Icon icon="arrow-right" />
         </button>
       </span>

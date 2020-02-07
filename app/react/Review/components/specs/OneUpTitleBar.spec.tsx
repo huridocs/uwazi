@@ -53,7 +53,10 @@ describe('EntityViewer', () => {
     };
     render();
     expect(component).toMatchSnapshot();
-    component.find('.btn-warning').simulate('click');
+    component
+      .find('.btn-default')
+      .at(1)
+      .simulate('click');
     expect(context.confirm).toHaveBeenCalled();
   });
 });
