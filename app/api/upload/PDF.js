@@ -6,7 +6,7 @@ import { spawn } from 'child-process-promise';
 import errorLog from 'api/log/errorLog';
 import { createError } from 'api/utils';
 
-export default class PDF extends EventEmitter {
+class PDF extends EventEmitter {
   constructor(file) {
     super();
     this.file = file;
@@ -100,3 +100,5 @@ export default class PDF extends EventEmitter {
     }));
   }
 }
+
+export { PDF };

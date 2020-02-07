@@ -35,8 +35,8 @@ describe('upload routes', () => {
 
   afterAll(async () => db.disconnect());
 
-  const uploadDocument = (filepath: string): Promise<SuperTestResponse> =>
-    socketEmit('documentProcessed', () =>
+  const uploadDocument = async (filepath: string): Promise<SuperTestResponse> =>
+    socketEmit('documentProcessed', async () =>
       request(app)
         .post('/api/upload/document')
         .field('entity', 'sharedId1')
@@ -70,6 +70,7 @@ describe('upload routes', () => {
       expect(upload).toEqual(
         expect.objectContaining({
           entity: 'sharedId1',
+          type: 'document',
           processed: true,
           fullText: { 1: 'Test[[1]] file[[1]]\n\n' },
           totalPages: 1,
@@ -108,7 +109,7 @@ describe('upload routes', () => {
 
     describe('when conversion fails', () => {
       it('should set document processed to false and emit a socket conversionFailed event with the id of the document', async () => {
-        await socketEmit('conversionFailed', () =>
+        await socketEmit('conversionFailed', async () =>
           request(app)
             .post('/api/upload/document')
             .field('entity', 'sharedId1')
