@@ -1,3 +1,6 @@
+/**
+ * @jest-environment jsdom
+ */
 import Immutable from 'immutable';
 
 import Marker from 'app/Viewer/utils/Marker.js';

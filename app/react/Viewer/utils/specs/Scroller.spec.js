@@ -1,3 +1,6 @@
+/**
+ * @jest-environment jsdom
+ */
 import scroller from '../Scroller.js';
 
 describe('scroller', () => {
