@@ -18,7 +18,10 @@ const style = index => (
       <label>{t('System', 'Style')}</label>
       <Select
         model={`template.data.properties[${index}].style`}
-        options={[{ _id: 'contain', name: 'Fit' }, { _id: 'cover', name: 'Fill' }]}
+        options={[
+          { _id: 'contain', name: 'Fit' },
+          { _id: 'cover', name: 'Fill' },
+        ]}
         optionsLabel="name"
         optionsValue="_id"
       />
