@@ -10,12 +10,12 @@ describe('Numeric', () => {
   beforeEach(() => {
     props = {
       value: 23,
-      onChange: jasmine.createSpy('onChange')
+      onChange: jasmine.createSpy('onChange'),
     };
   });
 
   const render = () => {
-    component = shallow(<Numeric {...props}/>);
+    component = shallow(<Numeric {...props} />);
   };
 
   it('should render an input with the date passed', () => {

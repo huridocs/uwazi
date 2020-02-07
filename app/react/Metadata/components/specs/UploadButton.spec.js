@@ -23,7 +23,7 @@ describe('UploadButton', () => {
       documentId: 'abc1',
       documentSharedId: 'sharedabc1',
       reuploadDocument: jasmine.createSpy('reuploadDocument'),
-      storeKey: 'storeKey'
+      storeKey: 'storeKey',
     };
   });
 

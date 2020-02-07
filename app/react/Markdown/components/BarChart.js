@@ -3,15 +3,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import Immutable from 'immutable';
 
-import {
-  ResponsiveContainer,
-  BarChart,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Bar,
-  Tooltip
-} from 'recharts';
+import { ResponsiveContainer, BarChart, XAxis, YAxis, CartesianGrid, Bar, Tooltip } from 'recharts';
 
 import Loader from 'app/components/Elements/Loader';
 import { arrayUtils } from 'app/Charts';
@@ -33,8 +25,17 @@ const Y = ({ layout }) => {
   return <YAxis />;
 };
 
-export const BarChartComponent = (props) => {
-  const { excludeZero, maxCategories, layout, property, data, classname, context, thesauris } = props;
+export const BarChartComponent = props => {
+  const {
+    excludeZero,
+    maxCategories,
+    layout,
+    property,
+    data,
+    classname,
+    context,
+    thesauris,
+  } = props;
   let output = <Loader />;
 
   if (data) {
@@ -44,17 +45,13 @@ export const BarChartComponent = (props) => {
         excludeZero: Boolean(excludeZero),
         context,
         maxCategories,
-        aggregateOthers
+        aggregateOthers,
       })
     );
 
     output = (
       <ResponsiveContainer height={320}>
-        <BarChart
-          height={300}
-          data={formattedData}
-          layout={layout}
-        >
+        <BarChart height={300} data={formattedData} layout={layout}>
           {X({ layout })}
           {Y({ layout })}
 
@@ -76,27 +73,24 @@ BarChartComponent.defaultProps = {
   maxCategories: '0',
   aggregateOthers: 'false',
   classname: '',
-  data: null
+  data: null,
 };
 
 BarChartComponent.propTypes = {
   thesauris: PropTypes.instanceOf(Immutable.List).isRequired,
   property: PropTypes.string.isRequired,
   context: PropTypes.string,
-  excludeZero: PropTypes.oneOfType([
-    PropTypes.string,
-    PropTypes.bool
-  ]),
+  excludeZero: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
   classname: PropTypes.string,
   layout: PropTypes.string,
   maxCategories: PropTypes.string,
   aggregateOthers: PropTypes.string,
-  data: PropTypes.instanceOf(Immutable.List)
+  data: PropTypes.instanceOf(Immutable.List),
 };
 
 export const mapStateToProps = (state, props) => ({
   data: markdownDatasets.getAggregations(state, props),
-  thesauris: state.thesauris
+  thesauris: state.thesauris,
 });
 
 export default connect(mapStateToProps)(BarChartComponent);

@@ -5,7 +5,11 @@ import ui from './uiReducer.js';
 import templateCommonProperties from '../utils/templateCommonProperties';
 
 export default combineReducers({
-  data: modelReducer('template.data', { name: '', properties: [], commonProperties: templateCommonProperties.get() }),
+  data: modelReducer('template.data', {
+    name: '',
+    properties: [],
+    commonProperties: templateCommonProperties.get(),
+  }),
   formState: formReducer('template.data'),
-  uiState: ui
+  uiState: ui,
 });

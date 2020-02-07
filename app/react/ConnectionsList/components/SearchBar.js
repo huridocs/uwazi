@@ -40,7 +40,11 @@ export class SearchBar extends Component {
 
     return (
       <div className="search-box">
-        <Form model="relationships/list/search" onSubmit={this.props.searchReferences} autoComplete="off">
+        <Form
+          model="relationships/list/search"
+          onSubmit={this.props.searchReferences}
+          autoComplete="off"
+        >
           <div className={`input-group${searchTerm ? ' is-active' : ''}`}>
             <Field model="relationships/list/search.searchTerm">
               <Icon icon="search" />
@@ -65,22 +69,25 @@ SearchBar.propTypes = {
   searchReferences: PropTypes.func.isRequired,
   change: PropTypes.func.isRequired,
   search: PropTypes.object,
-  entityId: PropTypes.string
+  entityId: PropTypes.string,
 };
 
 export function mapStateToProps({ relationships }) {
   const { entityId, search } = relationships.list;
   return {
     entityId,
-    search
+    search,
   };
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({
-    searchReferences,
-    change: formActions.change
-  }, dispatch);
+  return bindActionCreators(
+    {
+      searchReferences,
+      change: formActions.change,
+    },
+    dispatch
+  );
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(SearchBar);

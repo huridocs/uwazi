@@ -4,12 +4,12 @@ import ID from 'shared/uniqueID';
 export function removeNotification(id) {
   return {
     type: actions.REMOVE_NOTIFICATION,
-    id
+    id,
   };
 }
 
 export function notify(message, type, delay = 6000) {
-  return (dispatch) => {
+  return dispatch => {
     const id = ID();
     dispatch({ type: actions.NOTIFY, notification: { message, type, id } });
     if (delay) {

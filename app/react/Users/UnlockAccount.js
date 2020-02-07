@@ -10,13 +10,14 @@ import auth from 'app/Auth';
 export class UnlockAccount extends RouteHandler {
   unlockAccount() {
     const { username, code } = this.props.params;
-    this.props.unlockAccount({ username, code })
-    .then(() => {
-      browserHistory.push('/login');
-    })
-    .catch(() => {
-      browserHistory.push('/login');
-    });
+    this.props
+      .unlockAccount({ username, code })
+      .then(() => {
+        browserHistory.push('/login');
+      })
+      .catch(() => {
+        browserHistory.push('/login');
+      });
   }
 
   componentDidMount() {
@@ -27,9 +28,7 @@ export class UnlockAccount extends RouteHandler {
     return (
       <div className="content login-content">
         <div className="row">
-          <div className="col-xs-12 col-sm-4 col-sm-offset-4 text-center">
-            Verifying...
-          </div>
+          <div className="col-xs-12 col-sm-4 col-sm-offset-4 text-center">Verifying...</div>
         </div>
       </div>
     );
@@ -40,14 +39,17 @@ UnlockAccount.propTypes = {
   unlockAccount: PropTypes.func,
   params: PropTypes.shape({
     username: PropTypes.string,
-    code: PropTypes.string
-  })
+    code: PropTypes.string,
+  }),
 };
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({
-    unlockAccount: auth.actions.unlockAccount
-  }, dispatch);
+  return bindActionCreators(
+    {
+      unlockAccount: auth.actions.unlockAccount,
+    },
+    dispatch
+  );
 }
 
 export default connect(null, mapDispatchToProps)(UnlockAccount);

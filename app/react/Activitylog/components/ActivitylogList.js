@@ -19,7 +19,9 @@ class ActivityLogList extends Component {
             </tr>
           </thead>
           <tbody>
-            {list.map(entry => <ActivitylogRow entry={entry} key={entry.get('_id')} />)}
+            {list.map(entry => (
+              <ActivitylogRow entry={entry} key={entry.get('_id')} />
+            ))}
           </tbody>
         </table>
       </div>

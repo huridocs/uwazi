@@ -13,12 +13,12 @@ describe('activitylogMiddleware', () => {
       query: { a: 'query' },
       body: { title: 'Hi' },
       user: { _id: 123, username: 'admin' },
-      params: { some: 'params' }
+      params: { some: 'params' },
     };
 
     res = {
       status: jasmine.createSpy('status'),
-      json: jasmine.createSpy('json')
+      json: jasmine.createSpy('json'),
     };
 
     next = jasmine.createSpy('next');
@@ -41,7 +41,7 @@ describe('activitylogMiddleware', () => {
       time: 1,
       url: '/api/entities',
       user: 123,
-      username: 'admin'
+      username: 'admin',
     });
   });
 
@@ -62,10 +62,10 @@ describe('activitylogMiddleware', () => {
       '/api/contact',
       '/api/unlockaccount',
       '/api/recoverpassword',
-      '/api/resetpassword'
+      '/api/resetpassword',
     ];
 
-    urls.forEach((url) => {
+    urls.forEach(url => {
       req.url = url;
       testActivityLogNotSaved();
     });

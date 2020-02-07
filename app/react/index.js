@@ -7,7 +7,7 @@ import App from './App.js';
 
 import './App/sockets';
 
-const render = (Component) => {
+const render = Component => {
   ReactDOM.render(
     <AppContainer>
       <Component />

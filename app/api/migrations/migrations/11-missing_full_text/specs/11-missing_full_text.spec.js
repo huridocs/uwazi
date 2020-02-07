@@ -4,12 +4,15 @@ import migration from '../index.js';
 import fixtures from './fixtures.js';
 
 describe('migration missing_full_text', () => {
-  beforeEach((done) => {
+  beforeEach(done => {
     spyOn(process.stdout, 'write');
-    testingDB.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
+    testingDB
+      .clearAllAndLoad(fixtures)
+      .then(done)
+      .catch(catchErrors(done));
   });
 
-  afterAll((done) => {
+  afterAll(done => {
     testingDB.disconnect().then(done);
   });
 
@@ -19,7 +22,10 @@ describe('migration missing_full_text', () => {
 
   it('should copy fulltext for entities with files from the default language', async () => {
     await migration.up(testingDB.mongodb);
-    const entities = await testingDB.mongodb.collection('entities').find({ language: 'pt' }).toArray();
+    const entities = await testingDB.mongodb
+      .collection('entities')
+      .find({ language: 'pt' })
+      .toArray();
     expect(entities[0].fullText).toBe('some full text');
   });
 });

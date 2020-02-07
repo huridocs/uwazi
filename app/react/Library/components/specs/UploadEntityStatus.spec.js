@@ -4,7 +4,6 @@ import { shallow } from 'enzyme';
 import { ItemFooter } from 'app/Layout/Lists';
 import { UploadEntityStatus, mapStateToProps } from '../UploadEntityStatus';
 
-
 describe('UploadEntityStatus', () => {
   describe('render', () => {
     let component;
@@ -15,7 +14,7 @@ describe('UploadEntityStatus', () => {
     });
 
     const render = () => {
-      component = shallow(<UploadEntityStatus {...props}/>);
+      component = shallow(<UploadEntityStatus {...props} />);
     };
 
     it('should not render anything on null status', () => {
@@ -52,14 +51,14 @@ describe('UploadEntityStatus', () => {
     beforeEach(() => {
       store = {
         progress: Immutable({ docId: 30 }),
-        user: Immutable({ _id: 'batId' })
+        user: Immutable({ _id: 'batId' }),
       };
 
       doc = Immutable({
         _id: '123',
         sharedId: 'docId',
         uploaded: false,
-        file: {}
+        file: {},
       });
     });
 

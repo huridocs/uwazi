@@ -8,7 +8,11 @@ describe('Modal', () => {
   let component;
 
   const render = (props = {}) => {
-    component = shallow(<Modal {...props}><div /></Modal>);
+    component = shallow(
+      <Modal {...props}>
+        <div />
+      </Modal>
+    );
   };
 
   it('should pass isOpen props', () => {

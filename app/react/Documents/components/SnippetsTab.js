@@ -13,12 +13,12 @@ const SnippetsTab = ({ snippets }) => (
 );
 
 SnippetsTab.propTypes = {
-  snippets: PropTypes.object
+  snippets: PropTypes.object,
 };
 
 function mapStateToProps(state, props) {
   return {
-    snippets: state[props.storeKey].sidepanel.snippets
+    snippets: state[props.storeKey].sidepanel.snippets,
   };
 }
 

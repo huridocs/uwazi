@@ -29,17 +29,14 @@ export class Notification extends Component {
 }
 
 Notification.defaultProps = {
-  type: 'success'
+  type: 'success',
 };
 
 Notification.propTypes = {
   type: PropTypes.string,
   id: PropTypes.string.isRequired,
-  message: PropTypes.oneOfType([
-    PropTypes.string,
-    PropTypes.node,
-  ]).isRequired,
-  removeNotification: PropTypes.func.isRequired
+  message: PropTypes.oneOfType([PropTypes.string, PropTypes.node]).isRequired,
+  removeNotification: PropTypes.func.isRequired,
 };
 
 function mapDispatchToProps(dispatch) {

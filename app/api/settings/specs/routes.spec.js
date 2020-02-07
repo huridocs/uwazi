@@ -12,15 +12,16 @@ describe('relationtypes routes', () => {
   });
 
   describe('GET', () => {
-    it('should respond with settings', (done) => {
+    it('should respond with settings', done => {
       spyOn(settings, 'get').and.returnValue(mockRequest);
-      routes.get('/api/settings')
-      .then((response) => {
-        expect(settings.get).toHaveBeenCalled();
-        expect(response).toEqual({ settings: 'response' });
-        done();
-      })
-      .catch(catchErrors(done));
+      routes
+        .get('/api/settings')
+        .then(response => {
+          expect(settings.get).toHaveBeenCalled();
+          expect(response).toEqual({ settings: 'response' });
+          done();
+        })
+        .catch(catchErrors(done));
     });
   });
 
@@ -29,15 +30,16 @@ describe('relationtypes routes', () => {
       expect(routes.post.validation('/api/settings')).toMatchSnapshot();
     });
 
-    it('should save settings', (done) => {
+    it('should save settings', done => {
       spyOn(settings, 'save').and.returnValue(mockRequest);
-      routes.post('/api/settings', { body: { collection_name: 'my new name' } })
-      .then((response) => {
-        expect(settings.save).toHaveBeenCalledWith({ collection_name: 'my new name' });
-        expect(response).toEqual({ settings: 'response' });
-        done();
-      })
-      .catch(catchErrors(done));
+      routes
+        .post('/api/settings', { body: { collection_name: 'my new name' } })
+        .then(response => {
+          expect(settings.save).toHaveBeenCalledWith({ collection_name: 'my new name' });
+          expect(response).toEqual({ settings: 'response' });
+          done();
+        })
+        .catch(catchErrors(done));
     });
   });
 });

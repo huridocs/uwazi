@@ -1,12 +1,8 @@
 export default {
   settings: [
     {
-      languages: [
-        { key: 'en', default: true },
-        { key: 'es' },
-        { key: 'pt' },
-      ]
-    }
+      languages: [{ key: 'en', default: true }, { key: 'es' }, { key: 'pt' }],
+    },
   ],
   connections: [
     { entity: 'entity1', language: 'es', sharedId: 'shared' },
@@ -29,7 +25,12 @@ export default {
     { entity: 'entity5', sharedId: 'sameFileOn2Languages', language: 'en', range: {} },
     { entity: 'entity5', sharedId: 'anotherFile', language: 'pt', range: { text: 'text_a' } },
 
-    { entity: 'entity5', sharedId: 'anotherTextConnection', language: 'pt', range: { text: 'text_b' } },
+    {
+      entity: 'entity5',
+      sharedId: 'anotherTextConnection',
+      language: 'pt',
+      range: { text: 'text_b' },
+    },
   ],
   entities: [
     { sharedId: 'entity3', language: 'es', file: { filename: 'esFile' } },
@@ -43,5 +44,5 @@ export default {
     { sharedId: 'entity5', language: 'es', file: { filename: 'sameFileOn2' } },
     { sharedId: 'entity5', language: 'en', file: { filename: 'sameFileOn2' } },
     { sharedId: 'entity5', language: 'pt', file: { filename: 'anotherFile' } },
-  ]
+  ],
 };

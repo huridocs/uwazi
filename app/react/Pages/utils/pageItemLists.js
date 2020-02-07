@@ -23,19 +23,22 @@ const extractAdditionalOptions = (content, match) => {
 };
 
 export default {
-  generate: (originalText) => {
+  generate: originalText => {
     const values = markdownEscapedValues(originalText, '(...)', listEscape);
     const options = [];
     let content = originalText || '';
 
-    const params = values.map((match) => {
+    const params = values.map(match => {
       const additionalOptions = extractAdditionalOptions(content, match);
       options.push(additionalOptions.options);
-      content = content.replace(`${listEscape}(${match})${additionalOptions.matchString}`, listPlaceholder);
+      content = content.replace(
+        `${listEscape}(${match})${additionalOptions.matchString}`,
+        listPlaceholder
+      );
       const urlParams = /\?(.*)/g.exec(match);
       return urlParams ? urlParams[0] : '';
     });
 
     return { params, content, options };
-  }
+  },
 };

@@ -7,19 +7,19 @@ import * as types from 'app/Viewer/actions/actionTypes';
 
 export function closePanel() {
   return {
-    type: types.CLOSE_PANEL
+    type: types.CLOSE_PANEL,
   };
 }
 
 export function openPanel(panel) {
   return {
     type: types.OPEN_PANEL,
-    panel
+    panel,
   };
 }
 
 export function resetReferenceCreation() {
-  return function (dispatch) {
+  return function(dispatch) {
     dispatch({ type: types.RESET_REFERENCE_CREATION });
     dispatch(actions.unset('viewer/targetDoc'));
     dispatch(actions.unset('viewer/targetDocHTML'));
@@ -30,27 +30,27 @@ export function resetReferenceCreation() {
 export function selectTargetDocument(id) {
   return {
     type: types.SELECT_TARGET_DOCUMENT,
-    id
+    id,
   };
 }
 
 export function highlightReference(reference) {
   return {
     type: types.HIGHLIGHT_REFERENCE,
-    reference
+    reference,
   };
 }
 
 export function deactivateReference() {
   return {
-    type: types.DEACTIVATE_REFERENCE
+    type: types.DEACTIVATE_REFERENCE,
   };
 }
 
 export function goToActive(value = true) {
   return {
     type: types.GO_TO_ACTIVE,
-    value
+    value,
   };
 }
 
@@ -62,12 +62,13 @@ export function highlightSnippet(snippet) {
     return;
   }
 
-  const textToMatcherRegExp = _text => _text
-  .replace(/…/g, '...')
-  .replace(/[-[\]{}()*+?.,\\^$|#]/g, '\\$&')
-  .replace(/<[^>]*>/g, '')
-  .replace(/\s+/g, '\\s*')
-  .replace(/\n/g, '\\s*');
+  const textToMatcherRegExp = _text =>
+    _text
+      .replace(/…/g, '...')
+      .replace(/[-[\]{}()*+?.,\\^$|#]/g, '\\$&')
+      .replace(/<[^>]*>/g, '')
+      .replace(/\s+/g, '\\s*')
+      .replace(/\n/g, '\\s*');
 
   const rawMatches = text.match(/<b>(.|\n)*?<\/b>/g);
   const matches = rawMatches ? rawMatches.map(m => m.replace(/<.*?>/g, '')) : [];
@@ -75,7 +76,13 @@ export function highlightSnippet(snippet) {
 
   const markSearchTerm = () => {
     Marker.init('mark');
-    Marker.mark(matches, { className: 'searchTerm', diacritics: false, acrossElements: false, separateWordSearch: true, accuracy: 'exactly' });
+    Marker.mark(matches, {
+      className: 'searchTerm',
+      diacritics: false,
+      acrossElements: false,
+      separateWordSearch: true,
+      accuracy: 'exactly',
+    });
   };
 
   const tryFuzziMark = (chunkLenght = 20) => {
@@ -83,14 +90,16 @@ export function highlightSnippet(snippet) {
       return;
     }
     const startOfText = textToMatcherRegExp(text.substring(0, chunkLenght));
-    const endOfText = textToMatcherRegExp(text.substring(text.length - chunkLenght - 1, text.length - 1));
+    const endOfText = textToMatcherRegExp(
+      text.substring(text.length - chunkLenght - 1, text.length - 1)
+    );
     const fuzziText = `${startOfText}.{1,200}${endOfText}`;
     const regexp = new RegExp(fuzziText);
     Marker.markRegExp(regexp, {
       separateWordSearch: false,
       acrossElements: true,
       done: markSearchTerm,
-      noMatch: tryFuzziMark.bind(this, chunkLenght - 5)
+      noMatch: tryFuzziMark.bind(this, chunkLenght - 5),
     });
   };
 
@@ -99,12 +108,16 @@ export function highlightSnippet(snippet) {
     separateWordSearch: false,
     acrossElements: true,
     done: markSearchTerm,
-    noMatch: tryFuzziMark.bind(this, 20)
+    noMatch: tryFuzziMark.bind(this, 20),
   });
 }
 
 export function scrollToPage(page, duration = 50) {
-  scroller.to(`.document-viewer div#page-${page}`, '.document-viewer', { duration, dividerOffset: 1, offset: 50 });
+  scroller.to(`.document-viewer div#page-${page}`, '.document-viewer', {
+    duration,
+    dividerOffset: 1,
+    offset: 50,
+  });
 }
 
 export function scrollTomark() {
@@ -112,29 +125,55 @@ export function scrollTomark() {
 }
 
 export function scrollTo(reference, docInfo, element = 'a') {
-  const page = Object.keys(docInfo).find(pageNumber => docInfo[pageNumber].chars >= reference.range.start);
-  if (window.document.querySelector(`.document-viewer ${element}[data-${reference._id}="${reference._id}"]`, '.document-viewer')) {
-    scroller.to(`.document-viewer ${element}[data-${reference._id}="${reference._id}"]`, '.document-viewer', { duration: 50 });
+  const page = Object.keys(docInfo).find(
+    pageNumber => docInfo[pageNumber].chars >= reference.range.start
+  );
+  if (
+    window.document.querySelector(
+      `.document-viewer ${element}[data-${reference._id}="${reference._id}"]`,
+      '.document-viewer'
+    )
+  ) {
+    scroller.to(
+      `.document-viewer ${element}[data-${reference._id}="${reference._id}"]`,
+      '.document-viewer',
+      { duration: 50 }
+    );
   } else {
-    const scroll = scroller.to(`.document-viewer div#page-${page}`, '.document-viewer', { duration: 0, dividerOffset: 1 });
+    const scroll = scroller.to(`.document-viewer div#page-${page}`, '.document-viewer', {
+      duration: 0,
+      dividerOffset: 1,
+    });
 
-    events.on('referenceRendered', (renderedReference) => {
-      if (renderedReference.ids.includes(reference._id) &&
-          window.document.querySelector(`.document-viewer ${element}[data-${reference._id}="${reference._id}"]`, '.document-viewer')
+    events.on('referenceRendered', renderedReference => {
+      if (
+        renderedReference.ids.includes(reference._id) &&
+        window.document.querySelector(
+          `.document-viewer ${element}[data-${reference._id}="${reference._id}"]`,
+          '.document-viewer'
+        )
       ) {
         window.clearInterval(scroll);
-        scroller.to(`.document-viewer ${element}[data-${reference._id}="${reference._id}"]`, '.document-viewer', { duration: 50 });
+        scroller.to(
+          `.document-viewer ${element}[data-${reference._id}="${reference._id}"]`,
+          '.document-viewer',
+          { duration: 50 }
+        );
         events.removeAllListeners('referenceRendered');
       }
     });
   }
-  scroller.to(`.metadata-sidepanel .item-${reference._id}`, '.metadata-sidepanel .sidepanel-body', { duration: 50 });
+  scroller.to(`.metadata-sidepanel .item-${reference._id}`, '.metadata-sidepanel .sidepanel-body', {
+    duration: 50,
+  });
 }
 
 export function selectSnippet(page, snippet) {
   scrollToPage(page);
-  setTimeout(() => { scrollTomark(); }, 500);
-  return (dispatch) => {
+  setTimeout(() => {
+    scrollTomark();
+  }, 500);
+  return dispatch => {
     dispatch({ type: types.SELECT_SNIPPET, snippet });
   };
 }
@@ -143,7 +182,7 @@ export function activateReference(reference, docInfo, tab, delayActivation = fal
   const tabName = tab && !Array.isArray(tab) ? tab : 'references';
   events.removeAllListeners('referenceRendered');
 
-  return (dispatch) => {
+  return dispatch => {
     dispatch({ type: types.ACTIVE_REFERENCE, reference: reference._id });
     if (delayActivation) {
       dispatch(goToActive());
@@ -159,7 +198,7 @@ export function activateReference(reference, docInfo, tab, delayActivation = fal
 }
 
 export function scrollToActive(reference, docInfo, tab, doScroll) {
-  return (dispatch) => {
+  return dispatch => {
     if (doScroll) {
       dispatch(goToActive(false));
       dispatch(activateReference(reference, docInfo, tab));
@@ -167,9 +206,8 @@ export function scrollToActive(reference, docInfo, tab, doScroll) {
   };
 }
 
-
 export function selectReference(reference, docInfo) {
-  return (dispatch) => {
+  return dispatch => {
     dispatch(activateReference(reference, docInfo));
     dispatch(setTargetSelection(reference.range));
   };

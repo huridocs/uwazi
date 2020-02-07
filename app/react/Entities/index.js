@@ -1,5 +1,3 @@
 import EntitiesAPI from './EntitiesAPI';
 
-export {
-  EntitiesAPI as api
-};
+export { EntitiesAPI as api };

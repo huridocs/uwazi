@@ -37,30 +37,32 @@ class ResetPassword extends RouteHandler {
       return;
     }
 
-    this.props.resetPassword(this.state.password, this.props.params.key)
-    .then(() => {
+    this.props.resetPassword(this.state.password, this.props.params.key).then(() => {
       browserHistory.push('/login');
     });
 
     this.setState({ password: '', repeatPassword: '' });
   }
 
-
   render() {
     return (
       <div className="content login-content">
         <div className="row">
           <div className="col-xs-12 col-sm-4 col-sm-offset-4">
-            {
-              queryString.parse(this.context.router.location.search).createAccount === 'true' && (
+            {queryString.parse(this.context.router.location.search).createAccount === 'true' && (
               <div className="alert alert-info">
                 <Icon icon="info-circle" />
-                <div>To complete the account creation process, please create a password for your account</div>
+                <div>
+                  To complete the account creation process, please create a password for your
+                  account
+                </div>
               </div>
-)}
+            )}
             <form onSubmit={this.submit}>
               <div className={`form-group login-email ${this.state.error ? 'has-error' : ''}`}>
-                <label className="form-group-label" htmlFor="password">Password</label>
+                <label className="form-group-label" htmlFor="password">
+                  Password
+                </label>
                 <input
                   onChange={this.passwordChange}
                   value={this.state.password}
@@ -71,7 +73,9 @@ class ResetPassword extends RouteHandler {
                 />
               </div>
               <div className={`form-group login-password ${this.state.error ? 'has-error' : ''}`}>
-                <label className="form-group-label" htmlFor="repeat-password">Repeat Password</label>
+                <label className="form-group-label" htmlFor="repeat-password">
+                  Repeat Password
+                </label>
                 <input
                   value={this.state.repeatPassword}
                   onChange={this.repeatPasswordChange}
@@ -96,7 +100,7 @@ class ResetPassword extends RouteHandler {
 ResetPassword.propTypes = {
   resetPassword: PropTypes.func,
   params: PropTypes.shape({
-    key: PropTypes.string
+    key: PropTypes.string,
   }),
 };
 

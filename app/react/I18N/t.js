@@ -6,7 +6,7 @@ import { Translate } from '.';
 const testingEnvironment = process.env.NODE_ENV === 'test';
 const t = (contextId, key, _text, returnComponent = true) => {
   if (returnComponent && !testingEnvironment) {
-    return (<Translate context={contextId}>{key}</Translate>);
+    return <Translate context={contextId}>{key}</Translate>;
   }
   const text = _text || key;
 
@@ -24,6 +24,5 @@ const t = (contextId, key, _text, returnComponent = true) => {
 t.resetCachedTranslation = () => {
   t.translation = null;
 };
-
 
 export default t;

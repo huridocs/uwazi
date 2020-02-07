@@ -5,7 +5,11 @@ const prioritySortingCriteria = prioritySorting.get;
 
 describe('prioritySortingCriteria', () => {
   it('should return an object with global default sort and oder', () => {
-    expect(prioritySortingCriteria()).toEqual({ sort: 'creationDate', order: 'desc', treatAs: 'number' });
+    expect(prioritySortingCriteria()).toEqual({
+      sort: 'creationDate',
+      order: 'desc',
+      treatAs: 'number',
+    });
   });
 
   it('should allow overriding the entire result (useful for fixed orders)', () => {
@@ -20,7 +24,7 @@ describe('prioritySortingCriteria', () => {
       options = {
         currentCriteria: { sort: 'title', order: 'asc', treatAs: 'string' },
         filteredTemplates: [],
-        templates: Immutable([])
+        templates: Immutable([]),
       };
 
       expect(prioritySortingCriteria(options)).toBe(options.currentCriteria);
@@ -28,7 +32,7 @@ describe('prioritySortingCriteria', () => {
       options = {
         currentCriteria: { sort: 'creationDate', order: 'asc', treatAs: 'number' },
         filteredTemplates: [],
-        templates: Immutable([])
+        templates: Immutable([]),
       };
 
       expect(prioritySortingCriteria(options)).toBe(options.currentCriteria);
@@ -40,8 +44,8 @@ describe('prioritySortingCriteria', () => {
         filteredTemplates: [],
         templates: Immutable([
           { properties: [{ name: 'property0', filter: false, type: 'text' }] },
-          { properties: [{ name: 'property1', filter: true, type: 'date' }] }
-        ])
+          { properties: [{ name: 'property1', filter: true, type: 'date' }] },
+        ]),
       };
 
       expect(prioritySortingCriteria(options)).toBe(options.currentCriteria);
@@ -53,11 +57,15 @@ describe('prioritySortingCriteria', () => {
         filteredTemplates: [],
         templates: Immutable([
           { properties: [{ name: 'property0', filter: false, type: 'text' }] },
-          { properties: [{ name: 'property1', filter: true, type: 'date' }] }
-        ])
+          { properties: [{ name: 'property1', filter: true, type: 'date' }] },
+        ]),
       };
 
-      expect(prioritySortingCriteria(options)).toEqual({ sort: 'creationDate', order: 'desc', treatAs: 'number' });
+      expect(prioritySortingCriteria(options)).toEqual({
+        sort: 'creationDate',
+        order: 'desc',
+        treatAs: 'number',
+      });
     });
 
     it('should validate the current sorting criteria when filtered templates passed and selection is valid', () => {
@@ -66,8 +74,8 @@ describe('prioritySortingCriteria', () => {
         filteredTemplates: ['t2'],
         templates: Immutable([
           { _id: 't1', properties: [{ name: 'property0', filter: false, type: 'text' }] },
-          { _id: 't2', properties: [{ name: 'property1', filter: true, type: 'date' }] }
-        ])
+          { _id: 't2', properties: [{ name: 'property1', filter: true, type: 'date' }] },
+        ]),
       };
 
       expect(prioritySortingCriteria(options)).toBe(options.currentCriteria);
@@ -79,11 +87,15 @@ describe('prioritySortingCriteria', () => {
         filteredTemplates: ['t1'],
         templates: Immutable([
           { _id: 't1', properties: [{ name: 'property0', filter: false, type: 'text' }] },
-          { _id: 't2', properties: [{ name: 'property1', filter: true, type: 'date' }] }
-        ])
+          { _id: 't2', properties: [{ name: 'property1', filter: true, type: 'date' }] },
+        ]),
       };
 
-      expect(prioritySortingCriteria(options)).toEqual({ sort: 'creationDate', order: 'desc', treatAs: 'number' });
+      expect(prioritySortingCriteria(options)).toEqual({
+        sort: 'creationDate',
+        order: 'desc',
+        treatAs: 'number',
+      });
     });
 
     it('should override creationDate as default with weighted templates priority sorting if any exists', () => {
@@ -92,14 +104,27 @@ describe('prioritySortingCriteria', () => {
         filteredTemplates: [],
         templates: Immutable([
           { _id: 't1', properties: [{ name: 'property0', filter: false, type: 'text' }] },
-          { _id: 't2', properties: [{ name: 'property1', prioritySorting: true, filter: true, type: 'date' }] },
-          { _id: 't3', properties: [{ name: 'property2', prioritySorting: true, filter: true, type: 'text' }] },
+          {
+            _id: 't2',
+            properties: [{ name: 'property1', prioritySorting: true, filter: true, type: 'date' }],
+          },
+          {
+            _id: 't3',
+            properties: [{ name: 'property2', prioritySorting: true, filter: true, type: 'text' }],
+          },
           { _id: 't4', properties: [{ name: 'property1', filter: true, type: 'date' }] },
-          { _id: 't5', properties: [{ name: 'property2', prioritySorting: true, filter: true, type: 'text' }] }
-        ])
+          {
+            _id: 't5',
+            properties: [{ name: 'property2', prioritySorting: true, filter: true, type: 'text' }],
+          },
+        ]),
       };
 
-      expect(prioritySortingCriteria(options)).toEqual({ sort: 'metadata.property2', order: 'asc', treatAs: 'string' });
+      expect(prioritySortingCriteria(options)).toEqual({
+        sort: 'metadata.property2',
+        order: 'asc',
+        treatAs: 'string',
+      });
     });
 
     it('should weight the priority sorting criteria when all templates passed and selection is invalid', () => {
@@ -108,14 +133,27 @@ describe('prioritySortingCriteria', () => {
         filteredTemplates: [],
         templates: Immutable([
           { _id: 't1', properties: [{ name: 'property0', filter: false, type: 'text' }] },
-          { _id: 't2', properties: [{ name: 'property1', prioritySorting: true, filter: true, type: 'date' }] },
-          { _id: 't3', properties: [{ name: 'property2', prioritySorting: true, filter: true, type: 'date' }] },
+          {
+            _id: 't2',
+            properties: [{ name: 'property1', prioritySorting: true, filter: true, type: 'date' }],
+          },
+          {
+            _id: 't3',
+            properties: [{ name: 'property2', prioritySorting: true, filter: true, type: 'date' }],
+          },
           { _id: 't4', properties: [{ name: 'property1', filter: true, type: 'date' }] },
-          { _id: 't5', properties: [{ name: 'property2', prioritySorting: true, filter: true, type: 'date' }] }
-        ])
+          {
+            _id: 't5',
+            properties: [{ name: 'property2', prioritySorting: true, filter: true, type: 'date' }],
+          },
+        ]),
       };
 
-      expect(prioritySortingCriteria(options)).toEqual({ sort: 'metadata.property2', order: 'desc', treatAs: 'number' });
+      expect(prioritySortingCriteria(options)).toEqual({
+        sort: 'metadata.property2',
+        order: 'desc',
+        treatAs: 'number',
+      });
     });
 
     it('should weight the priority sorting criteria and include the common properties into the mix', () => {
@@ -125,25 +163,41 @@ describe('prioritySortingCriteria', () => {
         templates: Immutable([
           {
             _id: 't1',
-            commonProperties: [{ name: '' }, { name: 'title', type: 'text', prioritySorting: true }],
-            properties: [{ name: 'property0', filter: false, type: 'text' }]
+            commonProperties: [
+              { name: '' },
+              { name: 'title', type: 'text', prioritySorting: true },
+            ],
+            properties: [{ name: 'property0', filter: false, type: 'text' }],
           },
-          { _id: 't2', properties: [{ name: 'property1', prioritySorting: true, filter: true, type: 'date' }] },
+          {
+            _id: 't2',
+            properties: [{ name: 'property1', prioritySorting: true, filter: true, type: 'date' }],
+          },
           {
             _id: 't3',
-            commonProperties: [{ name: '' }, { name: 'title', type: 'text', prioritySorting: true }],
-            properties: [{ name: 'property2', prioritySorting: true, filter: true, type: 'date' }]
+            commonProperties: [
+              { name: '' },
+              { name: 'title', type: 'text', prioritySorting: true },
+            ],
+            properties: [{ name: 'property2', prioritySorting: true, filter: true, type: 'date' }],
           },
           { _id: 't4', properties: [{ name: 'property1', filter: true, type: 'date' }] },
           {
             _id: 't5',
-            commonProperties: [{ name: '' }, { name: 'title', type: 'text', prioritySorting: true }],
-            properties: [{ name: 'property2', prioritySorting: true, filter: true, type: 'date' }]
-          }
-        ])
+            commonProperties: [
+              { name: '' },
+              { name: 'title', type: 'text', prioritySorting: true },
+            ],
+            properties: [{ name: 'property2', prioritySorting: true, filter: true, type: 'date' }],
+          },
+        ]),
       };
 
-      expect(prioritySortingCriteria(options)).toEqual({ sort: 'title', order: 'asc', treatAs: 'string' });
+      expect(prioritySortingCriteria(options)).toEqual({
+        sort: 'title',
+        order: 'asc',
+        treatAs: 'string',
+      });
     });
 
     it('should weight the new sorting criteria and choose the first if there is a tie', () => {
@@ -152,14 +206,24 @@ describe('prioritySortingCriteria', () => {
         filteredTemplates: [],
         templates: Immutable([
           { _id: 't1', properties: [{ name: 'property0', filter: false, type: 'text' }] },
-          { _id: 't2', properties: [{ name: 'property1', prioritySorting: true, filter: true, type: 'text' }] },
+          {
+            _id: 't2',
+            properties: [{ name: 'property1', prioritySorting: true, filter: true, type: 'text' }],
+          },
           { _id: 't3', properties: [{ name: 'property2', filter: true, type: 'date' }] },
           { _id: 't4', properties: [{ name: 'property1', filter: true, type: 'text' }] },
-          { _id: 't5', properties: [{ name: 'property2', prioritySorting: true, filter: true, type: 'date' }] }
-        ])
+          {
+            _id: 't5',
+            properties: [{ name: 'property2', prioritySorting: true, filter: true, type: 'date' }],
+          },
+        ]),
       };
 
-      expect(prioritySortingCriteria(options)).toEqual({ sort: 'metadata.property1', order: 'asc', treatAs: 'string' });
+      expect(prioritySortingCriteria(options)).toEqual({
+        sort: 'metadata.property1',
+        order: 'asc',
+        treatAs: 'string',
+      });
     });
 
     it('should keep the selectedSorting if one exists and is valid for the selection', () => {
@@ -168,9 +232,15 @@ describe('prioritySortingCriteria', () => {
         filteredTemplates: [],
         templates: Immutable([
           { properties: [{ name: 'property0', filter: true, type: 'text' }] },
-          { properties: [{ name: 'property1', filter: true, type: 'date', prioritySorting: true }] }
+          {
+            properties: [{ name: 'property1', filter: true, type: 'date', prioritySorting: true }],
+          },
         ]),
-        selectedSorting: Immutable({ sort: 'metadata.property0', order: 'desc', treatAs: 'string' })
+        selectedSorting: Immutable({
+          sort: 'metadata.property0',
+          order: 'desc',
+          treatAs: 'string',
+        }),
       };
 
       expect(prioritySortingCriteria(options)).toEqual(options.selectedSorting.toJS());
@@ -182,12 +252,22 @@ describe('prioritySortingCriteria', () => {
         filteredTemplates: [],
         templates: Immutable([
           { properties: [{ name: 'property0', filter: false, type: 'text' }] },
-          { properties: [{ name: 'property1', filter: true, type: 'date', prioritySorting: true }] }
+          {
+            properties: [{ name: 'property1', filter: true, type: 'date', prioritySorting: true }],
+          },
         ]),
-        selectedSorting: Immutable({ sort: 'metadata.nonExistentProperty', order: 'desc', treatAs: 'string' })
+        selectedSorting: Immutable({
+          sort: 'metadata.nonExistentProperty',
+          order: 'desc',
+          treatAs: 'string',
+        }),
       };
 
-      expect(prioritySortingCriteria(options)).toEqual({ sort: 'metadata.property1', order: 'desc', treatAs: 'number' });
+      expect(prioritySortingCriteria(options)).toEqual({
+        sort: 'metadata.property1',
+        order: 'desc',
+        treatAs: 'number',
+      });
     });
 
     it('should default to prioritySorting instead of currentCriteria', () => {
@@ -196,11 +276,17 @@ describe('prioritySortingCriteria', () => {
         filteredTemplates: [],
         templates: Immutable([
           { properties: [{ name: 'property0', filter: true, type: 'text' }] },
-          { properties: [{ name: 'property1', filter: true, type: 'date', prioritySorting: true }] }
-        ])
+          {
+            properties: [{ name: 'property1', filter: true, type: 'date', prioritySorting: true }],
+          },
+        ]),
       };
 
-      expect(prioritySortingCriteria(options)).toEqual({ sort: 'metadata.property1', order: 'desc', treatAs: 'number' });
+      expect(prioritySortingCriteria(options)).toEqual({
+        sort: 'metadata.property1',
+        order: 'desc',
+        treatAs: 'number',
+      });
     });
   });
 });

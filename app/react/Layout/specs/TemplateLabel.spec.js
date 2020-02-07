@@ -14,15 +14,15 @@ describe('TemplateLabel', () => {
     initialState = {
       templates: immutable([
         { _id: 'templateId', name: 'title' },
-        { _id: 'templateId2', name: 'title 2', isEntity: true }
-      ])
+        { _id: 'templateId2', name: 'title 2', isEntity: true },
+      ]),
     };
   });
 
   const render = () => {
     const mockStore = configureMockStore();
     const store = mockStore(initialState);
-    component = shallow(<TemplateLabel store={store} {...props}/>);
+    component = shallow(<TemplateLabel store={store} {...props} />);
   };
 
   it('should render the name of the template', () => {

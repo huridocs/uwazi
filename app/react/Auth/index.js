@@ -2,7 +2,7 @@ import * as actions from './actions';
 import NeedAuthorization from './components/NeedAuthorization';
 
 export default {
-  actions
+  actions,
 };
 
 export { NeedAuthorization };

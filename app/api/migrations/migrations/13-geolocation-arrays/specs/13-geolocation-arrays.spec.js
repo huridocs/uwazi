@@ -4,12 +4,15 @@ import migration from '../index.js';
 import fixtures from './fixtures.js';
 
 describe('migration geolocation-arrays', () => {
-  beforeEach((done) => {
+  beforeEach(done => {
     spyOn(process.stdout, 'write');
-    testingDB.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
+    testingDB
+      .clearAllAndLoad(fixtures)
+      .then(done)
+      .catch(catchErrors(done));
   });
 
-  afterAll((done) => {
+  afterAll(done => {
     testingDB.disconnect().then(done);
   });
 
@@ -20,9 +23,10 @@ describe('migration geolocation-arrays', () => {
   it('should replace every geolocation metadata value with an array ommiting already migrated data', async () => {
     await migration.up(testingDB.mongodb);
 
-    const entities = await testingDB.mongodb.collection('entities')
-    .find({}, { projection: { template: false, _id: false }, sort: { title: 1 } })
-    .toArray();
+    const entities = await testingDB.mongodb
+      .collection('entities')
+      .find({}, { projection: { template: false, _id: false }, sort: { title: 1 } })
+      .toArray();
 
     expect(entities).toMatchSnapshot();
   });

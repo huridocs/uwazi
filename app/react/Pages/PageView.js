@@ -17,21 +17,23 @@ import pageItemLists from './utils/pageItemLists';
 function prepareLists(content, requestParams) {
   const listsData = pageItemLists.generate(content);
 
-  listsData.searchs = Promise.all(listsData.params.map((params, index) => {
-    const sanitizedParams = params ? decodeURI(params) : '';
-    const queryDefault = { filters: {}, types: [] };
-    let query = queryDefault;
+  listsData.searchs = Promise.all(
+    listsData.params.map((params, index) => {
+      const sanitizedParams = params ? decodeURI(params) : '';
+      const queryDefault = { filters: {}, types: [] };
+      let query = queryDefault;
 
-    if (sanitizedParams) {
-      query = rison.decode(sanitizedParams.replace('?q=', '') || '()');
-      if (typeof query !== 'object') {
-        query = queryDefault;
+      if (sanitizedParams) {
+        query = rison.decode(sanitizedParams.replace('?q=', '') || '()');
+        if (typeof query !== 'object') {
+          query = queryDefault;
+        }
       }
-    }
 
-    query.limit = listsData.options[index].limit ? String(listsData.options[index].limit) : '6';
-    return api.search(requestParams.set(query));
-  }));
+      query.limit = listsData.options[index].limit ? String(listsData.options[index].limit) : '6';
+      return api.search(requestParams.set(query));
+    })
+  );
 
   return listsData;
 }
@@ -43,13 +45,18 @@ class PageView extends RouteHandler {
     const listsData = prepareLists(page.metadata.content, requestParams);
     const dataSets = markdownDatasets.fetch(page.metadata.content, requestParams.onlyHeaders());
 
-    const [pageView, searchParams, searchOptions, datasets, listSearchs] =
-      await Promise.all([page, listsData.params, listsData.options, dataSets, listsData.searchs]);
+    const [pageView, searchParams, searchOptions, datasets, listSearchs] = await Promise.all([
+      page,
+      listsData.params,
+      listsData.options,
+      dataSets,
+      listsData.searchs,
+    ]);
 
     const itemLists = searchParams.map((p, index) => ({
       params: p,
       items: listSearchs[index].rows,
-      options: searchOptions[index]
+      options: searchOptions[index],
     }));
 
     return [

@@ -42,7 +42,7 @@ const evidencePackage = (filePath, evidence) => {
 
     async evidences() {
       return [await this.json(), await this.video(), await this.screenshot()];
-    }
+    },
   };
 };
 

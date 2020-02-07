@@ -8,9 +8,10 @@ export default function inlineEditReducer(state = initialState, action = {}) {
   }
 
   if (action.type === 'OPEN_INLINE_EDIT_FORM') {
-    return state.set('showInlineEditForm', true)
-    .set('context', action.context)
-    .set('key', action.key);
+    return state
+      .set('showInlineEditForm', true)
+      .set('context', action.context)
+      .set('key', action.key);
   }
 
   if (action.type === 'CLOSE_INLINE_EDIT_FORM') {

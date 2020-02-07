@@ -12,7 +12,7 @@ describe('MarkdownViewer', () => {
 
   beforeEach(() => {
     props = {
-      markdown: '## MarkdownContent'
+      markdown: '## MarkdownContent',
     };
   });
 
@@ -74,7 +74,7 @@ describe('MarkdownViewer', () => {
       props.lists = [
         { params: 'param1', items: ['items1'], options: { option1: 'optionValue' } },
         { params: 'param2', items: ['items2'] },
-        { params: 'param3', items: ['items3'] }
+        { params: 'param3', items: ['items3'] },
       ];
 
       props.markdown = `{list}(first list)
@@ -119,7 +119,8 @@ describe('MarkdownViewer', () => {
     });
 
     it('should render Link', () => {
-      props.markdown = '{link}(url:this_is_the_url,label:\'this is a label\')' +
+      props.markdown =
+        "{link}(url:this_is_the_url,label:'this is a label')" +
         '\n<MarkdownLink url="the_url">label</MarkDownLink>';
       props.html = true;
 
@@ -159,7 +160,7 @@ describe('MarkdownViewer', () => {
     });
 
     it('should render a searchbox', () => {
-      props.markdown = '{searchbox}(placeholder:\'this is a placeholder\')';
+      props.markdown = "{searchbox}(placeholder:'this is a placeholder')";
 
       render();
       expect(component).toMatchSnapshot();
@@ -167,10 +168,7 @@ describe('MarkdownViewer', () => {
 
     it('should render single tags as self closing', () => {
       props.html = true;
-      props.markdown = '' +
-        'test\n\n' +
-        '***\n' +
-        'test';
+      props.markdown = 'test\n\n***\ntest';
 
       render();
       expect(component).toMatchSnapshot();
@@ -178,10 +176,7 @@ describe('MarkdownViewer', () => {
 
     it('should render properly a selfclosing XML tags', () => {
       props.html = true;
-      props.markdown = '' +
-        'test\n\n' +
-        '<SearchBox/>\n' +
-        '<div>test</div>';
+      props.markdown = 'test\n\n<SearchBox/>\n<div>test</div>';
 
       render();
       expect(component).toMatchSnapshot();
@@ -189,7 +184,8 @@ describe('MarkdownViewer', () => {
 
     it('should remove Dataset and Query tags', () => {
       props.html = true;
-      props.markdown = '' +
+      props.markdown =
+        '' +
         'test\n\n' +
         '<Dataset />\n' +
         '<Query />\n' +

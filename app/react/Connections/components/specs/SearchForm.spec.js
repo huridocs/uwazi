@@ -11,9 +11,9 @@ describe('SearchForm', () => {
   beforeEach(() => {
     props = {
       search: jasmine.createSpy('search'),
-      connectionType: 'basic'
+      connectionType: 'basic',
     };
-    component = shallow(<SearchForm {...props}/>);
+    component = shallow(<SearchForm {...props} />);
   });
 
   describe('onChange', () => {

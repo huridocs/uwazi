@@ -23,11 +23,12 @@ describe('User actions', () => {
     });
 
     describe('upon success', () => {
-      beforeEach((done) => {
-        actions.deleteUser('data')(dispatch)
-        .then(() => {
-          done();
-        });
+      beforeEach(done => {
+        actions
+          .deleteUser('data')(dispatch)
+          .then(() => {
+            done();
+          });
       });
 
       it('should remove user', () => {
@@ -47,11 +48,12 @@ describe('User actions', () => {
     });
 
     describe('upon success', () => {
-      beforeEach((done) => {
-        actions.saveUser({ username, email })(dispatch)
-        .then(() => {
-          done();
-        });
+      beforeEach(done => {
+        actions
+          .saveUser({ username, email })(dispatch)
+          .then(() => {
+            done();
+          });
       });
 
       it('should remove user', () => {

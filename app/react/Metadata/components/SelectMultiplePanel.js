@@ -17,17 +17,13 @@ import comonTemplate from '../helpers/comonTemplate';
 
 const sortedTemplates = createSelector(
   s => s.templates,
-  (templates) => {
+  templates => {
     const _templates = templates ? templates.toJS() : [];
     return advancedSort(_templates, { property: 'name' });
   }
 );
 
-const commonTemplate = createSelector(
-  sortedTemplates,
-  s => s.entitiesSelected,
-  comonTemplate
-);
+const commonTemplate = createSelector(sortedTemplates, s => s.entitiesSelected, comonTemplate);
 
 export class SelectMultiplePanel extends Component {
   constructor(props) {
@@ -53,19 +49,22 @@ export class SelectMultiplePanel extends Component {
         this.props.deleteEntities(this.props.entitiesSelected.toJS());
       },
       title: t('System', 'Confirm', null, false),
-      message: t('System', 'Confirm delete multiple items', null, false)
+      message: t('System', 'Confirm delete multiple items', null, false),
     });
   }
 
   metadataFieldModified(key) {
-    return !this.props.formState.metadata[key].pristine &&
-    (!this.props.formState.metadata[key].$form || !this.props.formState.metadata[key].$form.pristine);
+    return (
+      !this.props.formState.metadata[key].pristine &&
+      (!this.props.formState.metadata[key].$form ||
+        !this.props.formState.metadata[key].$form.pristine)
+    );
   }
 
   save(formValues) {
     const modifiedValues = { metadata: {} };
     const template = this.props.template.toJS();
-    Object.keys(formValues.metadata).forEach((key) => {
+    Object.keys(formValues.metadata).forEach(key => {
       if (this.metadataFieldModified(key)) {
         modifiedValues.metadata[key] = formValues.metadata[key];
       }
@@ -79,12 +78,13 @@ export class SelectMultiplePanel extends Component {
       modifiedValues.icon = formValues.icon;
     }
 
-    return this.props.multipleUpdate(this.props.entitiesSelected, modifiedValues)
-    .then((updatedEntities) => {
-      this.props.updateEntities(updatedEntities);
-      this.props.unselectAllDocuments();
-      this.props.resetForm(this.props.formKey);
-    });
+    return this.props
+      .multipleUpdate(this.props.entitiesSelected, modifiedValues)
+      .then(updatedEntities => {
+        this.props.updateEntities(updatedEntities);
+        this.props.unselectAllDocuments();
+        this.props.resetForm(this.props.formKey);
+      });
   }
 
   publish() {
@@ -94,7 +94,7 @@ export class SelectMultiplePanel extends Component {
       },
       title: t('System', 'Confirm', null, false),
       message: t('System', 'Confirm publish multiple items', null, false),
-      type: 'success'
+      type: 'success',
     });
   }
 
@@ -103,12 +103,14 @@ export class SelectMultiplePanel extends Component {
       accept: () => this.props.multipleUpdate(this.props.entitiesSelected, { published: false }),
       title: t('System', 'Confirm', null, false),
       message: t('System', 'Confirm unpublish multiple items', null, false),
-      type: 'success'
+      type: 'success',
     });
   }
 
   changeTemplate(_formModel, template) {
-    const updatedEntities = this.props.entitiesSelected.map(entity => entity.set('template', template));
+    const updatedEntities = this.props.entitiesSelected.map(entity =>
+      entity.set('template', template)
+    );
     this.props.updateSelectedEntities(updatedEntities);
   }
 
@@ -118,7 +120,7 @@ export class SelectMultiplePanel extends Component {
         this.props.resetForm(this.props.formKey);
       },
       title: t('System', 'Confirm', null, false),
-      message: t('System', 'Discard changes', null, false)
+      message: t('System', 'Discard changes', null, false),
     });
   }
 
@@ -134,8 +136,8 @@ export class SelectMultiplePanel extends Component {
         <div className="alert alert-warning">
           <Icon icon="exclamation-triangle" size="2x" />
           <p>
-          Warning: you are editing multiple files.
-          Fields marked with a <Icon icon="exclamation-triangle" /> will be updated with the same value.
+            Warning: you are editing multiple files. Fields marked with a{' '}
+            <Icon icon="exclamation-triangle" /> will be updated with the same value.
           </p>
         </div>
         <MetadataForm
@@ -154,7 +156,11 @@ export class SelectMultiplePanel extends Component {
   renderEditingButtons() {
     return (
       <React.Fragment>
-        <button type="button" onClick={this.cancel} className="cancel-edit-metadata btn btn-primary">
+        <button
+          type="button"
+          onClick={this.cancel}
+          className="cancel-edit-metadata btn btn-primary"
+        >
           <Icon icon="times" />
           <span className="btn-label">{t('System', 'Cancel')}</span>
         </button>
@@ -202,9 +208,9 @@ export class SelectMultiplePanel extends Component {
           return (
             <li key={index} onClick={onClick}>
               <span className="entity-title">{entity.get('title')}</span>
-              <TemplateLabel template={entity.get('template')}/>
+              <TemplateLabel template={entity.get('template')} />
             </li>
-        );
+          );
         })}
       </ul>
     );
@@ -214,15 +220,26 @@ export class SelectMultiplePanel extends Component {
     const { entitiesSelected, open, editing } = this.props;
     const canBePublished = this.props.entitiesSelected.reduce((previousCan, entity) => {
       const isEntity = !entity.get('file');
-      return previousCan && (entity.get('processed') || isEntity) && !entity.get('published') && !!entity.get('template');
+      return (
+        previousCan &&
+        (entity.get('processed') || isEntity) &&
+        !entity.get('published') &&
+        !!entity.get('template')
+      );
     }, true);
 
-    const canBeUnPublished = this.props.entitiesSelected.reduce((previousCan, entity) => previousCan && entity.get('published'), true);
+    const canBeUnPublished = this.props.entitiesSelected.reduce(
+      (previousCan, entity) => previousCan && entity.get('published'),
+      true
+    );
 
     return (
       <SidePanel open={open} className="multi-edit">
         <div className="sidepanel-header">
-          <Icon icon="check" /> <span>{entitiesSelected.size} {t('System', 'selected')}</span>
+          <Icon icon="check" />{' '}
+          <span>
+            {entitiesSelected.size} {t('System', 'selected')}
+          </span>
           <button type="button" className="closeSidepanel close-modal" onClick={this.close}>
             <Icon icon="times" />
           </button>
@@ -264,26 +281,29 @@ SelectMultiplePanel.propTypes = {
   thesauris: PropTypes.instanceOf(Immutable.List).isRequired,
   formState: PropTypes.instanceOf(Object).isRequired,
   state: PropTypes.instanceOf(Object).isRequired,
-  formKey: PropTypes.string.isRequired
+  formKey: PropTypes.string.isRequired,
 };
 
 SelectMultiplePanel.contextTypes = {
-  confirm: PropTypes.func
+  confirm: PropTypes.func,
 };
 
 export const mapStateToProps = (_state, props) => ({
-    template: commonTemplate(props),
-    open: props.entitiesSelected.size > 1,
-    editing: Object.keys(props.state).length > 0
+  template: commonTemplate(props),
+  open: props.entitiesSelected.size > 1,
+  editing: Object.keys(props.state).length > 0,
 });
 
 function mapDispatchToProps(dispatch, props) {
-  return bindActionCreators({
-    deleteEntities,
-    loadForm: metadataActions.loadTemplate,
-    resetForm: metadataActions.resetReduxForm,
-    multipleUpdate: metadataActions.multipleUpdate,
-  }, wrapDispatch(dispatch, props.storeKey));
+  return bindActionCreators(
+    {
+      deleteEntities,
+      loadForm: metadataActions.loadTemplate,
+      resetForm: metadataActions.resetReduxForm,
+      multipleUpdate: metadataActions.multipleUpdate,
+    },
+    wrapDispatch(dispatch, props.storeKey)
+  );
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(SelectMultiplePanel);

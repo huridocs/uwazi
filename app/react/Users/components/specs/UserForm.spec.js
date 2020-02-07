@@ -11,7 +11,7 @@ describe('NewUser', () => {
   beforeEach(() => {
     props = {
       submit: jasmine.createSpy('submit').and.returnValue(Promise.resolve()),
-      user: Immutable.fromJS({ _id: 1, username: 'admin' })
+      user: Immutable.fromJS({ _id: 1, username: 'admin' }),
     };
   });
 

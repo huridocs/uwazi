@@ -7,7 +7,6 @@ import RouteHandler from 'app/App/RouteHandler';
 import { fromJS as Immutable } from 'immutable';
 import { RequestParams } from 'app/utils/RequestParams';
 
-
 import searchAPI from 'app/Search/SearchAPI';
 import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
 
@@ -18,15 +17,25 @@ describe('UploadsRoute', () => {
   let context;
   const props = { location: { query: { q: '(a:1)' } } };
   const templates = [
-    { name: 'Decision', _id: 'abc1', properties: [{ name: 'p', filter: true, type: 'text', prioritySorting: true }] },
-    { name: 'Ruling', _id: 'abc2', properties: [] }
+    {
+      name: 'Decision',
+      _id: 'abc1',
+      properties: [{ name: 'p', filter: true, type: 'text', prioritySorting: true }],
+    },
+    { name: 'Ruling', _id: 'abc2', properties: [] },
   ];
-  const globalResources = { templates: Immutable(templates), thesauris: Immutable([]), relationTypes: Immutable([]) };
+  const globalResources = {
+    templates: Immutable(templates),
+    thesauris: Immutable([]),
+    relationTypes: Immutable([]),
+  };
 
   beforeEach(() => {
     RouteHandler.renderedFromServer = true;
     context = { store: { getState: () => ({}), dispatch: jasmine.createSpy('dispatch') } };
-    component = shallow(<UploadsRoute {...props} templates={globalResources.templates}/>, { context });
+    component = shallow(<UploadsRoute {...props} templates={globalResources.templates} />, {
+      context,
+    });
     instance = component.instance();
 
     spyOn(searchAPI, 'search').and.returnValue(Promise.resolve(documents));
@@ -40,7 +49,7 @@ describe('UploadsRoute', () => {
         order: prioritySortingCriteria.get({ templates: Immutable(templates) }).order,
         filters: { something: 1 },
         types: ['types'],
-        unpublished: true
+        unpublished: true,
       };
 
       const requestParams = new RequestParams(query);

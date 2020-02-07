@@ -12,15 +12,15 @@ describe('ActionButton', () => {
       sourceDocument: 'sourceId',
       targetDocument: 'targetId',
       template: 'template',
-      type: 'basic'
+      type: 'basic',
     }),
     ranged: Immutable({
       sourceDocument: 'sourceId',
       sourceRange: 'sourceRange',
       targetDocument: 'targetId',
       template: 'template',
-      type: 'ranged'
-    })
+      type: 'ranged',
+    }),
   };
 
   beforeEach(() => {
@@ -31,7 +31,7 @@ describe('ActionButton', () => {
       selectRangedTarget: jasmine.createSpy('selectRangedTarget'),
       action: 'save',
       onCreate: () => {},
-      onRangedConnect: () => {}
+      onRangedConnect: () => {},
     };
   });
 
@@ -67,7 +67,10 @@ describe('ActionButton', () => {
         props.connection = connections.basic.set('sourceRange', 'uselessRange');
         render();
         component.find('button').simulate('click');
-        expect(props.saveConnection).toHaveBeenCalledWith(props.connection.delete('sourceRange').toJS(), props.onCreate);
+        expect(props.saveConnection).toHaveBeenCalledWith(
+          props.connection.delete('sourceRange').toJS(),
+          props.onCreate
+        );
       });
     });
 
@@ -111,7 +114,10 @@ describe('ActionButton', () => {
       render();
       component.find('button').simulate('click');
       expect(props.saveConnection).not.toHaveBeenCalled();
-      expect(props.selectRangedTarget).toHaveBeenCalledWith(props.connection.toJS(), props.onRangedConnect);
+      expect(props.selectRangedTarget).toHaveBeenCalledWith(
+        props.connection.toJS(),
+        props.onRangedConnect
+      );
     });
   });
 
@@ -119,10 +125,12 @@ describe('ActionButton', () => {
     let state;
 
     beforeEach(() => {
-      state = { connections: {
-        connection: props.connection,
-        uiState: Immutable({ creating: false, connecting: false })
-      } };
+      state = {
+        connections: {
+          connection: props.connection,
+          uiState: Immutable({ creating: false, connecting: false }),
+        },
+      };
     });
 
     it('should map type and connection and busy', () => {

@@ -13,7 +13,7 @@ describe('UploadBox', () => {
   let component;
   let instance;
 
-  const documentCreation = new Promise((resolve) => {
+  const documentCreation = new Promise(resolve => {
     resolve({ sharedId: 'abc1' });
   });
 
@@ -26,20 +26,22 @@ describe('UploadBox', () => {
   };
 
   const render = () => {
-    component = shallow(<UploadBox {...props}/>);
+    component = shallow(<UploadBox {...props} />);
     instance = component.instance();
   };
 
   describe('onDrop', () => {
-    it('should upload all documents passed', (done) => {
+    it('should upload all documents passed', done => {
       render();
       instance.onDrop(files);
       expect(props.createDocument).toHaveBeenCalledWith({ title: 'Fighting crime 101' });
-      documentCreation.then(() => {
-        expect(props.uploadDocument).toHaveBeenCalledWith('abc1', files[0]);
-        expect(props.uploadDocument).toHaveBeenCalledWith('abc1', files[1]);
-        done();
-      }).catch(done.fail);
+      documentCreation
+        .then(() => {
+          expect(props.uploadDocument).toHaveBeenCalledWith('abc1', files[0]);
+          expect(props.uploadDocument).toHaveBeenCalledWith('abc1', files[1]);
+          done();
+        })
+        .catch(done.fail);
     });
 
     it('should should call unselectAllDocuments to close the document form being edited', () => {

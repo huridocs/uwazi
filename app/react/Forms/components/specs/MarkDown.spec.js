@@ -13,12 +13,12 @@ describe('MarkDown', () => {
   beforeEach(() => {
     props = {
       value: '<b>This is a title</b>',
-      onChange: jasmine.createSpy('onChange')
+      onChange: jasmine.createSpy('onChange'),
     };
   });
 
   const render = () => {
-    component = shallow(<MarkDown {...props}/>);
+    component = shallow(<MarkDown {...props} />);
   };
 
   it('should have an edit tab with a textarea', () => {
@@ -36,7 +36,10 @@ describe('MarkDown', () => {
 
   it('should put the value in the textarea and default to 6 rows', () => {
     render();
-    const textarea = component.find(TabContent).first().find('textarea');
+    const textarea = component
+      .find(TabContent)
+      .first()
+      .find('textarea');
     expect(textarea.props().value).toBe('<b>This is a title</b>');
     expect(textarea.props().rows).toBe(6);
   });
@@ -44,7 +47,10 @@ describe('MarkDown', () => {
   it('should allow to customize de number of rows', () => {
     props.rows = 12;
     render();
-    const textarea = component.find(TabContent).first().find('textarea');
+    const textarea = component
+      .find(TabContent)
+      .first()
+      .find('textarea');
     expect(textarea.props().rows).toBe(12);
   });
 

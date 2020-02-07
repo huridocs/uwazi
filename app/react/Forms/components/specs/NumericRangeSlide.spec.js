@@ -15,12 +15,12 @@ describe('NumericRangeSlide', () => {
       max: 1,
       step: 0.1,
       minLabel: 'Min',
-      maxLabel: 'Max'
+      maxLabel: 'Max',
     };
   });
 
   const render = () => {
-    component = shallow(<NumericRangeSlide {...props}/>);
+    component = shallow(<NumericRangeSlide {...props} />);
   };
 
   it('should render range input component', () => {
@@ -30,7 +30,10 @@ describe('NumericRangeSlide', () => {
 
   it('should trigger onChange events', () => {
     render();
-    component.find('input').first().simulate('change', { target: { value: '0.6' } });
+    component
+      .find('input')
+      .first()
+      .simulate('change', { target: { value: '0.6' } });
     expect(props.onChange).toHaveBeenCalledWith(0.6);
   });
 

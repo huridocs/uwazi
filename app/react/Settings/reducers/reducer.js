@@ -12,5 +12,5 @@ export default combineReducers({
   formState: formReducer('account.form'),
   settingForm: formReducer('settings.settings'),
   settings: modelReducer('settings.settings', {}),
-  uiState: ui
+  uiState: ui,
 });

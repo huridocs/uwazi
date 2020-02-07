@@ -5,5 +5,5 @@ import cejilHero from './components/cejilHero';
 export default {
   cejilChart001,
   CejilChart002,
-  cejilHero
+  cejilHero,
 };

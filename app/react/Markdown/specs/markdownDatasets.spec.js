@@ -11,22 +11,28 @@ import fixtures from './fixtures';
 describe('markdownDatasets', () => {
   let requestParams;
 
-  const getTestState = (method) => {
+  const getTestState = method => {
     const { dataset1, dataset2 } = fixtures[method];
 
     return {
       page: {
-        datasets: Immutable.fromJS({ default: dataset1, another_dataset: dataset2 })
-      }
+        datasets: Immutable.fromJS({ default: dataset1, another_dataset: dataset2 }),
+      },
     };
   };
 
   describe('request', () => {
     beforeEach(() => {
       requestParams = new RequestParams({}, 'headers');
-      spyOn(searchApi, 'search').and.callFake(params => Promise.resolve(Object.assign({ isSearch: true, headers: params.headers }, params.data)));
-      spyOn(entitiesApi, 'get').and.callFake(params => Promise.resolve([{ isEntity: true, data: params.data, headers: params.headers }]));
-      spyOn(api, 'get').and.callFake((url, pasedRequestParams) => Promise.resolve({ json: { url, headers: pasedRequestParams.headers } }));
+      spyOn(searchApi, 'search').and.callFake(params =>
+        Promise.resolve(Object.assign({ isSearch: true, headers: params.headers }, params.data))
+      );
+      spyOn(entitiesApi, 'get').and.callFake(params =>
+        Promise.resolve([{ isEntity: true, data: params.data, headers: params.headers }])
+      );
+      spyOn(api, 'get').and.callFake((url, pasedRequestParams) =>
+        Promise.resolve({ json: { url, headers: pasedRequestParams.headers } })
+      );
     });
 
     it('should not fetch anything if no datasets defined', async () => {
@@ -43,7 +49,9 @@ describe('markdownDatasets', () => {
 
       const datasets = await markdownDatasets.fetch(markdown, requestParams);
 
-      expect(datasets).toEqual({ default: { allAggregations: true, limit: 0, isSearch: true, headers: 'headers' } });
+      expect(datasets).toEqual({
+        default: { allAggregations: true, limit: 0, isSearch: true, headers: 'headers' },
+      });
     });
 
     it('should fetch named datasets and return it indexed by name attrib key', async () => {
@@ -82,7 +90,13 @@ describe('markdownDatasets', () => {
         default: { allAggregations: true, limit: 0, isSearch: true, headers: 'headers' },
         dataset1: { key: 'value2', limit: 0, isSearch: true, headers: 'headers' },
         dataset2: { key: 'value', limit: 0, geolocation: true, isSearch: true, headers: 'headers' },
-        dataset3: { allAggregations: true, limit: 0, geolocation: true, isSearch: true, headers: 'headers' },
+        dataset3: {
+          allAggregations: true,
+          limit: 0,
+          geolocation: true,
+          isSearch: true,
+          headers: 'headers',
+        },
       });
     });
 
@@ -96,7 +110,7 @@ describe('markdownDatasets', () => {
       const datasets = await markdownDatasets.fetch(markdown, requestParams);
 
       expect(datasets).toEqual({
-        customQuery: { url: 'users?_id=23234324', headers: 'headers' }
+        customQuery: { url: 'users?_id=23234324', headers: 'headers' },
       });
     });
   });
@@ -105,7 +119,7 @@ describe('markdownDatasets', () => {
     const state = getTestState('getRows');
 
     it('should get the rows for the default dataset', () => {
-      let rows = markdownDatasets.getRows(state, { });
+      let rows = markdownDatasets.getRows(state, {});
       expect(rows).toBe('rows dataset 1');
 
       rows = markdownDatasets.getRows(state, { dataset: 'another_dataset' });
@@ -123,21 +137,34 @@ describe('markdownDatasets', () => {
 
     it('should get the aggregation for the type/property and value', () => {
       let aggregations = markdownDatasets.getAggregations(state, { property: 'property1' });
-      expect(aggregations).toEqual(Immutable.fromJS([
-        { key: 'id3', filtered: { doc_count: 5 } }, { key: 'id4', filtered: { doc_count: 7 } }
-      ]));
+      expect(aggregations).toEqual(
+        Immutable.fromJS([
+          { key: 'id3', filtered: { doc_count: 5 } },
+          { key: 'id4', filtered: { doc_count: 7 } },
+        ])
+      );
 
       aggregations = markdownDatasets.getAggregations(state, { property: 'property2' });
-      expect(aggregations).toEqual(Immutable.fromJS([
-        { key: 'id5', filtered: { doc_count: 5 } }, { key: 'id6', filtered: { doc_count: 7 } }
-      ]));
+      expect(aggregations).toEqual(
+        Immutable.fromJS([
+          { key: 'id5', filtered: { doc_count: 5 } },
+          { key: 'id6', filtered: { doc_count: 7 } },
+        ])
+      );
 
-      aggregations = markdownDatasets.getAggregations(state, { property: 'property4', dataset: 'another_dataset' });
-      expect(aggregations).toEqual(Immutable.fromJS([{ key: 'id36', filtered: { doc_count: 36 } }]));
+      aggregations = markdownDatasets.getAggregations(state, {
+        property: 'property4',
+        dataset: 'another_dataset',
+      });
+      expect(aggregations).toEqual(
+        Immutable.fromJS([{ key: 'id36', filtered: { doc_count: 36 } }])
+      );
     });
 
     it('should return null when dataset do not exists', () => {
-      const aggregations = markdownDatasets.getAggregations(state, { dataset: 'non_existent_dataset' });
+      const aggregations = markdownDatasets.getAggregations(state, {
+        dataset: 'non_existent_dataset',
+      });
       expect(aggregations).toBeUndefined();
     });
   });
@@ -153,7 +180,10 @@ describe('markdownDatasets', () => {
       });
 
       it('should return null when dataset do not exists', () => {
-        const aggregation = markdownDatasets.getAggregation(state, { uniqueValues: 'true', dataset: 'non_existent_dataset' });
+        const aggregation = markdownDatasets.getAggregation(state, {
+          uniqueValues: 'true',
+          dataset: 'non_existent_dataset',
+        });
         expect(aggregation).toBeUndefined();
       });
     });
@@ -167,11 +197,17 @@ describe('markdownDatasets', () => {
     it('should get multiple values, adding them together if value is a list, omitting undefined', () => {
       expectAggregation({ property: '_types', value: 'id1,id2' }).toBe(26);
       expectAggregation({ property: '_types', value: 'id4,id3' }).toBe(13.4);
-      expectAggregation({ dataset: 'another_dataset', property: '_types', value: 'id5,id7,id8' }).toBe(82);
+      expectAggregation({
+        dataset: 'another_dataset',
+        property: '_types',
+        value: 'id5,id7,id8',
+      }).toBe(82);
     });
 
     it('should return null when dataset do not exists', () => {
-      const aggregation = markdownDatasets.getAggregation(state, { dataset: 'non_existent_dataset' });
+      const aggregation = markdownDatasets.getAggregation(state, {
+        dataset: 'non_existent_dataset',
+      });
       expect(aggregation).toBeUndefined();
     });
   });
@@ -181,11 +217,18 @@ describe('markdownDatasets', () => {
 
     it('should get the value for the property', () => {
       expect(markdownDatasets.getMetadataValue(state, { property: 'progress' })).toBe(3.5);
-      expect(markdownDatasets.getMetadataValue(state, { property: 'otherProperty', dataset: 'another_dataset' })).toBe(4);
+      expect(
+        markdownDatasets.getMetadataValue(state, {
+          property: 'otherProperty',
+          dataset: 'another_dataset',
+        })
+      ).toBe(4);
     });
 
     it('should return undefined when dataset does not exist', () => {
-      expect(markdownDatasets.getMetadataValue(state, { dataset: 'non_existent_dataset' })).toBeUndefined();
+      expect(
+        markdownDatasets.getMetadataValue(state, { dataset: 'non_existent_dataset' })
+      ).toBeUndefined();
     });
   });
 });

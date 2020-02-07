@@ -1,6 +1,4 @@
-import francLanguages, {
-  allLanguages as languagesList
-} from 'shared/languagesList';
+import francLanguages, { allLanguages as languagesList } from 'shared/languagesList';
 
 export default ({ language }) => {
   const languageKey = francLanguages(language, 'ISO639_1');

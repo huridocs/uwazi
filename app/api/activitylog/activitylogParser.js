@@ -7,17 +7,19 @@ import {
   generateDeleteBeautifier,
   generatePlainDescriptionBeautifier,
   generateSemanticSearchUpdateBeautifier,
-  formatLanguage
+  formatLanguage,
 } from './helpers';
 
-const entitiesPOST = async (log) => {
+const entitiesPOST = async log => {
   const data = JSON.parse(log.body);
   const template = await templates.getById(data.template);
 
   const semantic = {
     beautified: true,
     name: data.title,
-    extra: `of type ${template ? template.name : `(${data.template ? data.template.toString() : 'unassigned'})`}`
+    extra: `of type ${
+      template ? template.name : `(${data.template ? data.template.toString() : 'unassigned'})`
+    }`,
   };
 
   if (data.sharedId) {
@@ -32,14 +34,14 @@ const entitiesPOST = async (log) => {
   return semantic;
 };
 
-const documentsPdfInfoPOST = async (log) => {
+const documentsPdfInfoPOST = async log => {
   const data = JSON.parse(log.body);
   const [entity] = await entities.get({ _id: data._id, sharedId: data.sharedId });
 
   const semantic = {
     beautified: true,
     action: methods.update,
-    description: 'Processed document pdf'
+    description: 'Processed document pdf',
   };
 
   if (entity) {
@@ -54,7 +56,7 @@ const documentsPdfInfoPOST = async (log) => {
 
 const entitiesDELETE = generateDeleteBeautifier('entity / document', 'sharedId');
 
-const attachmentsRenamePOST = async (log) => {
+const attachmentsRenamePOST = async log => {
   const data = JSON.parse(log.body);
   const [entity] = await entities.get({ _id: data.entityId });
 
@@ -62,16 +64,18 @@ const attachmentsRenamePOST = async (log) => {
     beautified: true,
     action: methods.update,
     description: 'Renamed attachment',
-    name: `${data.originalname} (${data._id})`
+    name: `${data.originalname} (${data._id})`,
   };
 
   if (entity) {
-    semantic.extra = `of entity '${entity.title}' (${entity.sharedId}) ${formatLanguage(entity.language)} version`;
+    semantic.extra = `of entity '${entity.title}' (${entity.sharedId}) ${formatLanguage(
+      entity.language
+    )} version`;
   }
   return semantic;
 };
 
-const templatesAsDefaultPOST = async (log) => {
+const templatesAsDefaultPOST = async log => {
   const data = JSON.parse(log.body);
   const template = await templates.getById(data._id);
 
@@ -83,7 +87,7 @@ const templatesAsDefaultPOST = async (log) => {
   };
 };
 
-const translationsPOST = async (log) => {
+const translationsPOST = async log => {
   const data = JSON.parse(log.body);
   const [context] = data.contexts;
   let name = 'in multiple contexts';
@@ -96,44 +100,44 @@ const translationsPOST = async (log) => {
     action: methods.update,
     description: 'Updated translations',
     name,
-    extra: `in ${formatLanguage(data.locale)}`
+    extra: `in ${formatLanguage(data.locale)}`,
   };
 };
 
-const translationsLanguagesPOST = async (log) => {
+const translationsLanguagesPOST = async log => {
   const data = JSON.parse(log.body);
 
   return {
     beautified: true,
     action: methods.create,
     description: 'Added language',
-    name: `${data.label} (${data.key})`
+    name: `${data.label} (${data.key})`,
   };
 };
 
-const translationsLanguagesDELETE = async (log) => {
+const translationsLanguagesDELETE = async log => {
   const data = JSON.parse(log.query);
 
   return {
     beautified: true,
     action: methods.delete,
     description: 'Removed language',
-    name: formatLanguage(data.key)
+    name: formatLanguage(data.key),
   };
 };
 
-const translationsAsDefaultPOST = async (log) => {
+const translationsAsDefaultPOST = async log => {
   const data = JSON.parse(log.body);
 
   return {
     beautified: true,
     action: methods.update,
     description: 'Set default language',
-    name: formatLanguage(data.key)
+    name: formatLanguage(data.key),
   };
 };
 
-const usersNewPOST = async (log) => {
+const usersNewPOST = async log => {
   const data = JSON.parse(log.body);
 
   return {
@@ -141,18 +145,18 @@ const usersNewPOST = async (log) => {
     action: methods.create,
     description: 'Added new user',
     name: data.username,
-    extra: `with ${data.role} role`
+    extra: `with ${data.role} role`,
   };
 };
 
-const semanticSearchPOST = async (log) => {
+const semanticSearchPOST = async log => {
   const data = JSON.parse(log.body);
 
   return {
     beautified: true,
     action: methods.create,
     description: 'Started semantic search',
-    name: data.searchTerm
+    name: data.searchTerm,
   };
 };
 
@@ -161,10 +165,18 @@ const actions = {
   'POST/api/documents': entitiesPOST,
   'POST/api/documents/pdfInfo': documentsPdfInfoPOST,
   'DELETE/api/entities': entitiesDELETE,
-  'POST/api/entities/multipleupdate': generatePlainDescriptionBeautifier('Updated multiple entities'),
-  'POST/api/entities/bulkdelete': generatePlainDescriptionBeautifier('Deleted multiple entities', methods.delete),
+  'POST/api/entities/multipleupdate': generatePlainDescriptionBeautifier(
+    'Updated multiple entities'
+  ),
+  'POST/api/entities/bulkdelete': generatePlainDescriptionBeautifier(
+    'Deleted multiple entities',
+    methods.delete
+  ),
   'DELETE/api/documents': entitiesDELETE,
-  'POST/api/attachments/upload': generatePlainDescriptionBeautifier('Uploaded attachment', methods.create),
+  'POST/api/attachments/upload': generatePlainDescriptionBeautifier(
+    'Uploaded attachment',
+    methods.create
+  ),
   'POST/api/attachments/rename': attachmentsRenamePOST,
   'DELETE/api/attachments/delete': generateDeleteBeautifier('attachment', 'attachmentId'),
   'POST/api/templates': generateCreateUpdateBeautifier('template', '_id', 'name'),
@@ -186,19 +198,35 @@ const actions = {
   'DELETE/api/references': generateDeleteBeautifier('relationship', '_id'),
   'POST/api/upload': generatePlainDescriptionBeautifier('Uploaded document', methods.create),
   'POST/api/reupload': generatePlainDescriptionBeautifier('Re-uploaded document', methods.update),
-  'POST/api/customisation/upload': generatePlainDescriptionBeautifier('Uploaded custom file', methods.create),
+  'POST/api/customisation/upload': generatePlainDescriptionBeautifier(
+    'Uploaded custom file',
+    methods.create
+  ),
   'DELETE/api/customisation/upload': generateDeleteBeautifier('custom file', '_id'),
-  'POST/api/import': generatePlainDescriptionBeautifier('Imported entities from file', methods.create),
-  'POST/api/public': generatePlainDescriptionBeautifier('Created entity coming from a public form', methods.create),
-  'POST/api/remotepublic': generatePlainDescriptionBeautifier('Submitted entity to a remote instance', methods.create),
+  'POST/api/import': generatePlainDescriptionBeautifier(
+    'Imported entities from file',
+    methods.create
+  ),
+  'POST/api/public': generatePlainDescriptionBeautifier(
+    'Created entity coming from a public form',
+    methods.create
+  ),
+  'POST/api/remotepublic': generatePlainDescriptionBeautifier(
+    'Submitted entity to a remote instance',
+    methods.create
+  ),
   'POST/api/users/new': usersNewPOST,
   'POST/api/semantic-search': semanticSearchPOST,
   'DELETE/api/semantic-search': generateDeleteBeautifier('semantic search', 'searchId'),
-  'POST/api/semantic-search/stop': generateSemanticSearchUpdateBeautifier('Stopped semantic search'),
-  'POST/api/semantic-search/resume': generateSemanticSearchUpdateBeautifier('Resumed semantic search')
+  'POST/api/semantic-search/stop': generateSemanticSearchUpdateBeautifier(
+    'Stopped semantic search'
+  ),
+  'POST/api/semantic-search/resume': generateSemanticSearchUpdateBeautifier(
+    'Resumed semantic search'
+  ),
 };
 
-const getSemanticData = async (data) => {
+const getSemanticData = async data => {
   if (actions[`${data.method}${data.url}`]) {
     return actions[`${data.method}${data.url}`](data);
   }
@@ -206,6 +234,4 @@ const getSemanticData = async (data) => {
   return { beautified: false };
 };
 
-export {
-  getSemanticData
-};
+export { getSemanticData };

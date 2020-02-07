@@ -8,7 +8,7 @@ import { setReferences } from './referencesActions';
 import entitiesAPI from '../../Entities/EntitiesAPI';
 
 export function setViewerState(state) {
-  return (dispatch) => {
+  return dispatch => {
     const { documentViewer } = state;
     dispatch(actions.set('relationTypes', state.relationTypes));
     dispatch(actions.set('viewer/doc', documentViewer.doc));
@@ -26,28 +26,27 @@ export function requestViewerState(requestParams, globalResources) {
     referencesAPI.get(requestParams.set({ sharedId })),
     relationTypesAPI.get(requestParams.onlyHeaders()),
     relationships.requestState(requestParams.set({ sharedId }), globalResources.templates),
-    raw ? entitiesAPI.getRawPage(requestParams.set({ sharedId, pageNumber: page })) : ''
-  ])
-  .then(([doc, references, relationTypes, [connectionsGroups, searchResults, sort], rawText]) => [
-      setViewerState({
-        documentViewer: {
-          doc,
-          references,
-          relationTypes,
-          rawText,
-        },
-        relationships: {
-          list: {
-            sharedId: doc.sharedId,
-            entity: doc,
-            connectionsGroups,
-            searchResults,
-            sort,
-            filters: {},
-            view: 'graph'
-          }
-        },
+    raw ? entitiesAPI.getRawPage(requestParams.set({ sharedId, pageNumber: page })) : '',
+  ]).then(([doc, references, relationTypes, [connectionsGroups, searchResults, sort], rawText]) => [
+    setViewerState({
+      documentViewer: {
+        doc,
+        references,
         relationTypes,
-      })
+        rawText,
+      },
+      relationships: {
+        list: {
+          sharedId: doc.sharedId,
+          entity: doc,
+          connectionsGroups,
+          searchResults,
+          sort,
+          filters: {},
+          view: 'graph',
+        },
+      },
+      relationTypes,
+    }),
   ]);
 }

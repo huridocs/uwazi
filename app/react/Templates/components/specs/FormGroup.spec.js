@@ -13,7 +13,14 @@ describe('FormGroup', () => {
   });
 
   const render = () => {
-    component = shallow(<FormGroup {...props}><label>label</label><Field><input /></Field></FormGroup>);
+    component = shallow(
+      <FormGroup {...props}>
+        <label>label</label>
+        <Field>
+          <input />
+        </Field>
+      </FormGroup>
+    );
   };
 
   it('should render the children', () => {
