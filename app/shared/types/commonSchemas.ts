@@ -70,6 +70,7 @@ export const metadataObjectSchema = {
     value: propertyValueSchema,
     label: { type: 'string' },
     suggestion_confidence: { type: 'number' },
+    provenance: { type: 'string' },
   },
 };
 
