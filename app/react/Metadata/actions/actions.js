@@ -54,8 +54,8 @@ export const resetMetadata = (metadata, template, options, previousTemplate) => 
   return resetedMetadata;
 };
 
-export const UnwrapMetadataObject = (MetadataObject, Template) => {
-  return Object.keys(MetadataObject).reduce((UnwrapedMO, key) => {
+export const UnwrapMetadataObject = (MetadataObject, Template) =>
+  Object.keys(MetadataObject).reduce((UnwrapedMO, key) => {
     if (!MetadataObject[key].length) {
       return UnwrapedMO;
     }
@@ -75,7 +75,6 @@ export const UnwrapMetadataObject = (MetadataObject, Template) => {
       [key]: isMultiProperty ? MetadataObject[key].map(v => v.value) : MetadataObject[key][0].value,
     };
   }, {});
-};
 
 export function loadFetchedInReduxForm(form, entity, templates) {
   const sortedTemplates = advancedSort(templates, { property: 'name' });

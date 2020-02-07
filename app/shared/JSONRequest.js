@@ -14,7 +14,7 @@ const attemptRisonDecode = string => {
   };
 
   const risonParser = new rison.parser(errcb); // eslint-disable-line new-cap
-  risonParser.error = function(message) {
+  risonParser.error = message => {
     this.message = message;
   };
 
