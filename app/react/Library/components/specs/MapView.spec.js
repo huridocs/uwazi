@@ -35,11 +35,17 @@ describe('MapView', () => {
   const templates = [
     {
       _id: '1',
-      properties: [{ name: 'geo_prop', type: 'geolocation' }, { name: 'age', type: 'text' }],
+      properties: [
+        { name: 'geo_prop', type: 'geolocation' },
+        { name: 'age', type: 'text' },
+      ],
     },
     {
       _id: '2',
-      properties: [{ name: 'other_geo_prop', type: 'geolocation' }, { name: 'age', type: 'text' }],
+      properties: [
+        { name: 'other_geo_prop', type: 'geolocation' },
+        { name: 'age', type: 'text' },
+      ],
     },
     { _id: '3', properties: [{ name: 'age', type: 'text' }] },
   ];

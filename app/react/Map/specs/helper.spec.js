@@ -14,7 +14,10 @@ describe('map helper', () => {
 
   describe('getMarkersBoudingBox()', () => {
     it('should parse all the markers and return the bounding box for them', () => {
-      expect(getMarkersBoudingBox(markers)).toEqual([[-21, 2], [32, 23]]);
+      expect(getMarkersBoudingBox(markers)).toEqual([
+        [-21, 2],
+        [32, 23],
+      ]);
     });
   });
 

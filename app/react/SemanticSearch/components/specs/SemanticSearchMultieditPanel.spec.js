@@ -46,7 +46,10 @@ describe('SemanticSearchMultieditPanel', () => {
         },
         {
           _id: 'tpl2',
-          properties: [{ name: 'p1', type: 'select', content: 't1' }, { name: 'p2', type: 'text' }],
+          properties: [
+            { name: 'p1', type: 'select', content: 't1' },
+            { name: 'p2', type: 'text' },
+          ],
         },
       ]),
       thesauris: Immutable.fromJS([

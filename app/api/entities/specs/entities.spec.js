@@ -1,6 +1,6 @@
 /** @format */
+/* eslint-disable max-nested-callbacks,max-statements */
 
-/* eslint-disable max-nested-callbacks, max-statements */
 import Ajv from 'ajv';
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import date from 'api/utils/date.js';
@@ -184,26 +184,26 @@ describe('entities', () => {
         .catch(catchErrors(done));
     });
 
-    it('should allow partial saves with correct full indexing (NOTE!: partial update requires sending sharedId)', done => {
+    it('should allow partial saves with correct full indexing (NOTE!: partial update requires sending sharedId)', async () => {
       const partialDoc = {
         _id: batmanFinishesId,
         sharedId: 'shared',
         title: 'Updated title',
         language: 'en',
       };
-      entities
-        .save(partialDoc, { language: 'en' })
-        .then(() => entities.getById(batmanFinishesId))
-        .then(savedEntity => {
-          expect(savedEntity.title).toBe('Updated title');
-          expect(savedEntity.metadata.property1).toEqual([{ value: 'value1' }]);
-          expect(savedEntity.metadata.friends).toEqual([
-            { icon: null, label: 'shared2title', type: 'entity', value: 'shared2' },
-          ]);
-          expect(search.indexEntities).toHaveBeenCalled();
-          done();
-        })
-        .catch(done.fail);
+      const savedEntity = await entities.save(partialDoc, { language: 'en' });
+      expect(savedEntity.title).toBe('Updated title');
+      expect(savedEntity.metadata.property1).toEqual([{ value: 'value1' }]);
+      expect(savedEntity.metadata.friends).toEqual([
+        { icon: null, label: 'shared2title', type: 'entity', value: 'shared2' },
+      ]);
+      const refetchedEntity = await entities.getById(batmanFinishesId);
+      expect(refetchedEntity.title).toBe('Updated title');
+      expect(refetchedEntity.metadata.property1).toEqual([{ value: 'value1' }]);
+      expect(refetchedEntity.metadata.friends).toEqual([
+        { icon: null, label: 'shared2title', type: 'entity', value: 'shared2' },
+      ]);
+      expect(search.indexEntities).toHaveBeenCalled();
     });
 
     describe('when other languages have no metadata', () => {
@@ -731,6 +731,14 @@ describe('entities', () => {
     });
   });
 
+  describe('denormalize', () => {
+    it('should denormalize entity with missing metadata labels', async () => {
+      const entity = (await entities.get({ sharedId: 'shared', language: 'en' }))[0];
+      entity.metadata.friends[0].label = '';
+      const denormalized = await entities.denormalize(entity, { user: 'dummy', language: 'en' });
+      expect(denormalized.metadata.friends[0].label).toBe('shared2title');
+    });
+  });
   describe('countByTemplate', () => {
     it('should return how many entities using the template passed', async () => {
       const count = await entities.countByTemplate(templateId);
@@ -812,7 +820,7 @@ describe('entities', () => {
   });
 
   describe('saveMultiple()', () => {
-    it('should allow partial saves with correct full indexing', done => {
+    it('should allow partial saveMultiple with correct full indexing', done => {
       const partialDoc = { _id: batmanFinishesId, sharedId: 'shared', title: 'Updated title' };
       const partialDoc2 = {
         _id: syncPropertiesEntityId,

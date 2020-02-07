@@ -56,7 +56,7 @@ Nightmare.action('connections', {
     .catch(done);
   },
   selectRightHandRelation(optionSelector, number, done) {
-    this.evaluate((option, relationshipNumber) => {
+    this.evaluate((_option, relationshipNumber) => {
       const helpers = document.__helpers;
       const relation = helpers.querySelectorAll('div.rightRelationshipsTypeGroup > div.rightRelationshipType')[relationshipNumber];
       helpers.querySelector('button', relation).click();
@@ -91,7 +91,7 @@ Nightmare.action('connections', {
     .catch(done);
   },
   selectLeftHandRelation(optionSelector, number, done) {
-    this.evaluate((option, relationshipNumber) => {
+    this.evaluate((_option, relationshipNumber) => {
       const helpers = document.__helpers;
       const relation = helpers.querySelectorAll('div.leftRelationshipType')[relationshipNumber];
       helpers.querySelector('button', relation).click();

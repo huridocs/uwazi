@@ -133,7 +133,4 @@ function mapDispatchToProps(dispatch) {
   return bindActionCreators({ deleteUser: deleteUserAction, reset2fa: reset2faAction }, dispatch);
 }
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(UsersList);
+export default connect(mapStateToProps, mapDispatchToProps)(UsersList);

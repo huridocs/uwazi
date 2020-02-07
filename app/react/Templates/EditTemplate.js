@@ -1,8 +1,10 @@
+/** @format */
+
 import React from 'react';
 import { actions as formActions } from 'react-redux-form';
 
 import templatesAPI from 'app/Templates/TemplatesAPI';
-import thesaurisAPI from 'app/Thesauris/ThesaurisAPI';
+import thesauriAPI from 'app/Thesauri/ThesauriAPI';
 import relationTypesAPI from 'app/RelationTypes/RelationTypesAPI';
 import TemplateCreator from 'app/Templates/components/TemplateCreator';
 import { actions } from 'app/BasicReducer';
@@ -10,13 +12,15 @@ import RouteHandler from 'app/App/RouteHandler';
 import ID from 'shared/uniqueID';
 import templateCommonProperties from './utils/templateCommonProperties';
 
-const prepareTemplate = (template) => {
+const prepareTemplate = template => {
   const commonPropertiesExists = template.commonProperties && template.commonProperties.length;
 
   return {
     ...template,
     properties: template.properties.map(p => ({ ...p, localID: ID() })),
-    commonProperties: commonPropertiesExists ? template.commonProperties : templateCommonProperties.get()
+    commonProperties: commonPropertiesExists
+      ? template.commonProperties
+      : templateCommonProperties.get(),
   };
 };
 
@@ -25,11 +29,14 @@ export default class EditTemplate extends RouteHandler {
     const { templateId } = requestParams.data;
     const [templates, thesauris, relationTypes] = await Promise.all([
       templatesAPI.get(requestParams.onlyHeaders()),
-      thesaurisAPI.get(requestParams.onlyHeaders()),
-      relationTypesAPI.get(requestParams.onlyHeaders())
+      thesauriAPI.get(requestParams.onlyHeaders()),
+      relationTypesAPI.get(requestParams.onlyHeaders()),
     ]);
 
-    const template = Object.assign({}, templates.find(tmpl => tmpl._id === templateId));
+    const template = Object.assign(
+      {},
+      templates.find(tmpl => tmpl._id === templateId)
+    );
 
     return [
       formActions.load('template.data', prepareTemplate(template)),

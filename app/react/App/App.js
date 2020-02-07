@@ -9,7 +9,6 @@ import Notifications from 'app/Notifications';
 import Cookiepopup from 'app/App/Cookiepopup';
 import { TranslateForm } from 'app/I18N';
 
-import { loadIcons } from 'UI/Icon/library';
 import { Icon } from 'UI';
 
 import './scss/styles.scss';
@@ -19,8 +18,6 @@ import SiteName from './SiteName';
 import Confirm from './Confirm';
 import GoogleAnalytics from './GoogleAnalytics';
 import Matomo from './Matomo';
-
-loadIcons();
 
 class App extends Component {
   constructor(props, context) {

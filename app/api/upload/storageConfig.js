@@ -4,12 +4,12 @@ import configPaths from '../config/paths';
 
 
 const storageConfig = {
-  destination(req, file, cb) {
+  destination(req, _file, cb) {
     const dir = req.route.path.includes('customisation') ?
       configPaths.customUploads : configPaths.uploadedDocuments;
     cb(null, path.normalize(`${dir}/`));
   },
-  filename(req, file, cb) {
+  filename(_req, file, cb) {
     cb(null, generateFileName(file));
   }
 };

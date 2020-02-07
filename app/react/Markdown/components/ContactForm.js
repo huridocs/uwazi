@@ -89,7 +89,4 @@ function mapDispatchToProps(dispatch) {
   return bindActionCreators({ notify }, dispatch);
 }
 
-export default connect(
-  null,
-  mapDispatchToProps
-)(ContactForm);
+export default connect(null, mapDispatchToProps)(ContactForm);

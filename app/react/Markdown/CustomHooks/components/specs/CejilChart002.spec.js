@@ -43,7 +43,10 @@ describe('CejilChart002', () => {
         thesauris: fromJS([
           {
             _id: countriesTemplate,
-            values: [{ id: 'keyA', label: 'labelA' }, { id: 'keyB', label: 'labelB' }],
+            values: [
+              { id: 'keyA', label: 'labelA' },
+              { id: 'keyB', label: 'labelB' },
+            ],
           },
           { _id: 'otherThesauri' },
         ]),

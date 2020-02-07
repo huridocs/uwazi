@@ -47,7 +47,7 @@ export const PieChartComponent = (props) => {
             label={shouldShowLabel ? <PieChartLabel data={formattedData}/> : undefined}
           >
             {
-              formattedData.map((entry, index) => <Cell key={index} fill={sliceColors[index % sliceColors.length]} />)
+              formattedData.map((_entry, index) => <Cell key={index} fill={sliceColors[index % sliceColors.length]} />)
             }
           </Pie>
           { !shouldShowLabel && <Tooltip/> }

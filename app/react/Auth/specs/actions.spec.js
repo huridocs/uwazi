@@ -64,7 +64,10 @@ describe('auth actions', () => {
     it('should post to resetPassword with new password and the key', done => {
       spyOn(notifications, 'notify');
       actions
-        .resetPassword('asd123', 'uniqueKey')(jasmine.createSpy('dispatch'))
+        .resetPassword(
+          'asd123',
+          'uniqueKey'
+        )(jasmine.createSpy('dispatch'))
         .then(() => {
           expect(backend.calls(`${APIURL}resetpassword`)[0][1].body).toEqual(
             JSON.stringify({ password: 'asd123', key: 'uniqueKey' })

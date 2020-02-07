@@ -289,7 +289,10 @@ describe('metadata formater', () => {
         'Geolocation',
         'geolocation',
         'templateID',
-        [{ lat: 2, lon: 3 }, { label: 'home', lat: 13, lon: 7 }],
+        [
+          { lat: 2, lon: 3 },
+          { label: 'home', lat: 13, lon: 7 },
+        ],
       ]);
       expect(geolocation.onlyForCards).toBe(true);
     });

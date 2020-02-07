@@ -1,3 +1,5 @@
+/** @format */
+
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
@@ -9,14 +11,19 @@ import { Icon } from 'UI';
 
 import ShowIf from 'app/App/ShowIf';
 import { deleteReference } from 'app/Viewer/actions/referencesActions';
-import { highlightReference, activateReference, selectReference, deactivateReference } from 'app/Viewer/actions/uiActions';
+import {
+  highlightReference,
+  activateReference,
+  selectReference,
+  deactivateReference,
+} from 'app/Viewer/actions/uiActions';
 import { Item } from 'app/Layout';
 import { createSelector } from 'reselect';
 
 const selectDoc = createSelector(
   s => s.documentViewer.targetDoc,
   s => s.documentViewer.doc,
-  (targetDoc, doc) => targetDoc.get('_id') ? targetDoc.toJS() : doc.toJS()
+  (targetDoc, doc) => (targetDoc.get('_id') ? targetDoc.toJS() : doc.toJS())
 );
 
 export class Connection extends Component {
@@ -38,7 +45,7 @@ export class Connection extends Component {
         this.props.deleteReference(reference);
       },
       title: 'Confirm delete connection',
-      message: 'Are you sure you want to delete this connection?'
+      message: 'Are you sure you want to delete this connection?',
     });
   }
 
@@ -50,11 +57,9 @@ export class Connection extends Component {
   }
 
   render() {
-    const useSourceTargetIcons = typeof this.props.useSourceTargetIcons !== 'undefined' ? this.props.useSourceTargetIcons : true;
     const { reference } = this.props;
     let itemClass = '';
     const disabled = this.props.targetDoc && typeof reference.range.start === 'undefined';
-    const referenceIcon = 'fa-sign-out-alt';
 
     if (this.props.highlighted) {
       itemClass = 'relationship-hover';
@@ -80,23 +85,27 @@ export class Connection extends Component {
         onClick={this.clickReference.bind(this, reference)}
         doc={doc}
         noMetadata
-        className={`${itemClass} item-${reference._id} ${disabled ? 'disabled' : ''} ${this.props.readOnly ? 'readOnly' : ''}`}
+        className={`${itemClass} item-${reference._id} ${disabled ? 'disabled' : ''} ${
+          this.props.readOnly ? 'readOnly' : ''
+        }`}
         data-id={reference._id}
-        additionalIcon={(
-          <ShowIf if={useSourceTargetIcons}>
-            <span><i className={`fa ${referenceIcon}`} />&nbsp;</span>
-          </ShowIf>
-)}
-        additionalText={reference.associatedRelationship.range ? reference.associatedRelationship.range.text : null}
+        additionalText={
+          reference.associatedRelationship.range
+            ? reference.associatedRelationship.range.text
+            : null
+        }
         additionalMetadata={[
-          { label: 'Connection type', value: this.relationType(reference.template) }
+          { label: 'Connection type', value: this.relationType(reference.template) },
         ]}
         evalPublished
-        buttons={(
+        buttons={
           <div className="item-shortcut-group">
             <ShowIf if={!this.props.targetDoc && !this.props.readOnly}>
               <NeedAuthorization roles={['admin', 'editor']}>
-                <a className="item-shortcut btn btn-default btn-hover-danger" onClick={this.deleteReference.bind(this, reference)}>
+                <a
+                  className="item-shortcut btn btn-default btn-hover-danger"
+                  onClick={this.deleteReference.bind(this, reference)}
+                >
                   <Icon icon="trash-alt" />
                 </a>
               </NeedAuthorization>
@@ -112,26 +121,24 @@ export class Connection extends Component {
               </I18NLink>
             </ShowIf>
           </div>
-)}
+        }
       />
     );
   }
 }
 
 Connection.contextTypes = {
-  confirm: PropTypes.func
+  confirm: PropTypes.func,
 };
 
 Connection.defaultProps = {
   targetDoc: false,
-  useSourceTargetIcons: false,
 };
 
 Connection.propTypes = {
   targetDoc: PropTypes.bool,
   readOnly: PropTypes.bool,
   highlighted: PropTypes.bool.isRequired,
-  useSourceTargetIcons: PropTypes.bool,
   active: PropTypes.bool.isRequired,
   targetRange: PropTypes.object,
   doc: PropTypes.object,
@@ -152,12 +159,21 @@ const mapStateToProps = (state, ownProps) => {
     targetRange: documentViewer.uiState.get('reference').get('targetRange'),
     targetDoc: !!documentViewer.targetDoc.get('_id'),
     relationTypes: documentViewer.relationTypes,
-    doc: selectDoc(state)
+    doc: selectDoc(state),
   };
 };
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({ highlightReference, activateReference, selectReference, deactivateReference, deleteReference }, dispatch);
+  return bindActionCreators(
+    {
+      highlightReference,
+      activateReference,
+      selectReference,
+      deactivateReference,
+      deleteReference,
+    },
+    dispatch
+  );
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Connection);

@@ -1,3 +1,6 @@
+/**
+ * @jest-environment jsdom
+ */
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import TestUtils from 'react-dom/test-utils';

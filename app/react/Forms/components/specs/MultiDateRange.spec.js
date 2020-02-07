@@ -13,7 +13,10 @@ describe('MultiDateRange', () => {
   beforeEach(() => {
     props = {
       label: 'input label',
-      value: [{ from: 1473984000, to: 1473984001 }, { from: 1474156800, to: 1474156801 }],
+      value: [
+        { from: 1473984000, to: 1473984001 },
+        { from: 1474156800, to: 1474156801 },
+      ],
       onChange: jasmine.createSpy('onChange'),
     };
   });

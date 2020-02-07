@@ -1,21 +1,21 @@
 /** @format */
-
+import { DBHOST as dbHost } from 'api/config/database.js';
 import entities from 'api/entities';
-import request from 'shared/JSONRequest.js';
 import translations from 'api/i18n/translations';
 import createError from 'api/utils/Error';
-import { DBHOST as dbHost } from '../config/database.js';
-import { generateNamesAndIds, getUpdatedNames, getDeletedProperties } from './utils';
-import model from './templatesModel';
-import { validateTemplate } from './templateSchema';
+import request from 'shared/JSONRequest.js';
 
-const removePropsWithUnexistentId = async unexistentId => {
-  const relatedTemplates = await model.get({ 'properties.content': unexistentId });
+import { validateTemplate } from '../../shared/types/templateSchema';
+import model from './templatesModel';
+import { generateNamesAndIds, getDeletedProperties, getUpdatedNames } from './utils';
+
+const removePropsWithNonexistentId = async nonexistentId => {
+  const relatedTemplates = await model.get({ 'properties.content': nonexistentId });
   await Promise.all(
     relatedTemplates.map(t =>
       model.save({
         ...t,
-        properties: t.properties.filter(prop => prop.content !== unexistentId),
+        properties: t.properties.filter(prop => prop.content !== nonexistentId),
       })
     )
   );
@@ -60,8 +60,10 @@ const updateTranslation = (currentTemplate, template) => {
 export default {
   async save(template, language) {
     await validateTemplate(template);
+    /* eslint-disable no-param-reassign */
     template.properties = template.properties || [];
     template.properties = generateNamesAndIds(template.properties);
+    /* eslint-enable no-param-reassign */
 
     if (template._id) {
       return this._update(template, language);
@@ -75,7 +77,7 @@ export default {
     let _currentTemplate;
     return this.getById(template._id)
       .then(currentTemplate => {
-        currentTemplate.properties = currentTemplate.properties || [];
+        currentTemplate.properties = currentTemplate.properties || []; // eslint-disable-line no-param-reassign
         currentTemplate.properties.forEach(prop => {
           const swapingNameWithExistingProperty = template.properties.find(
             p => p.name === prop.name && p.id !== prop.id
@@ -104,9 +106,8 @@ export default {
         if (Object.keys(toRemoveValues).length === 0) {
           return;
         }
-        return entities.removeValuesFromEntities(toRemoveValues, currentTemplate._id);
+        return entities.removeValuesFromEntities(toRemoveValues, currentTemplate._id); // eslint-disable-line consistent-return
       })
-
       .then(() => model.save(template))
       .then(savedTemplate =>
         entities
@@ -182,10 +183,10 @@ export default {
   async delete(template) {
     const count = await this.countByTemplate(template._id);
     if (count > 0) {
-      return Promise.reject({ key: 'documents_using_template', value: count });
+      return Promise.reject({ key: 'documents_using_template', value: count }); // eslint-disable-line prefer-promise-reject-errors
     }
     await translations.deleteContext(template._id);
-    await removePropsWithUnexistentId(template._id);
+    await removePropsWithNonexistentId(template._id);
     await model.delete(template._id);
 
     return template;
