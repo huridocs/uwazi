@@ -27,6 +27,7 @@ const {
   model: fixedModel,
   sharedIds: sharedIdsStr,
   dryRun,
+  autoAcceptRequireAll,
   autoAcceptConfidence,
   batchSize,
 } = yargs
@@ -53,10 +54,14 @@ const {
       'autoaccept: modify metadata directly to apply labels, needs --autoAcceptConfidence, implies onlynew; ' +
       'purge: delete suggestions;',
   })
+  .option('autoAcceptRequireAll', {
+    default: false,
+    usage: 'if true, require ALL suggestions to be >= autoAcceptConfidence to apply an entity.',
+  })
   .option('autoAcceptConfidence', {
     default: 0.0,
     usage:
-      'apply all suggestions for an entity if ALL suggestions are >= this confidence, e.g. 0.75',
+      'apply suggestions that are >= this confidence, e.g. 0.1 to trust F1-based suggested confidences',
   })
   .option('sharedIds', { default: '' })
   .option('model', {
@@ -161,14 +166,19 @@ async function handleResponse(
     if (!newPropMetadata.length) {
       return false;
     }
-    if (!newPropMetadata.every(v => (v.suggestion_confidence ?? 0) >= autoAcceptConfidence)) {
+    if (
+      autoAcceptRequireAll &&
+      !newPropMetadata.every(v => (v.suggestion_confidence ?? 0) >= autoAcceptConfidence)
+    ) {
       console.info(`Suggestions below threshold for ${e.sharedId} (${newPropMetadata.length})`);
       return false;
     }
+    newPropMetadata = newPropMetadata
+      .filter(v => (v.suggestion_confidence ?? 0) >= autoAcceptConfidence)
+      .map(v => ({ ...v, provenance: 'BULK_ACCEPT' }));
     if (!e.metadata) {
       e.metadata = {};
     }
-    newPropMetadata = newPropMetadata.map(v => ({ ...v, provenance: 'BULK_ACCEPT' }));
     if (JSON.stringify(newPropMetadata) !== JSON.stringify(e.metadata[prop.name])) {
       e.metadata[prop.name] = newPropMetadata;
       if (!dryRun) {
