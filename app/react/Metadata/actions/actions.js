@@ -68,6 +68,7 @@ const UnwrapMetadataObject = (MetadataObject, Template) => {
       'nested',
       'relationship',
       'multidate',
+      'geolocation',
     ].includes(property.type);
 
     UnwrapedMO[key] = isMultiProperty

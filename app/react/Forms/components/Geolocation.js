@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import Map from 'app/Map/Map';
 import { Translate } from 'app/I18N';
+import { isArray } from 'util';
 
 const defaultValue = { lat: '', lon: '', label: '' };
 
@@ -36,7 +37,6 @@ export default class Geolocation extends Component {
     }
     const valueToSend = value.slice(1);
     valueToSend.unshift(newValue);
-
     onChange(valueToSend);
   }
 
