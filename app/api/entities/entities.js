@@ -1,4 +1,3 @@
-/** @format */
 /* eslint-disable no-param-reassign,max-statements */
 
 import { generateNamesAndIds } from 'api/templates/utils';
@@ -11,7 +10,7 @@ import search from 'api/search/search';
 import templates from 'api/templates/templates';
 import translationsModel from 'api/i18n/translations';
 import path from 'path';
-import PDF from 'api/upload/PDF';
+import { PDF, uploads } from 'api/upload';
 import paths from 'api/config/paths';
 import dictionariesModel from 'api/thesauri/dictionariesModel';
 import translate, { getContext } from 'shared/translate';
@@ -352,12 +351,18 @@ export default {
     await process(0, totalRows);
   },
 
-  get(query, select, pagination) {
-    return model.get(query, select, pagination);
+  async get(query, select, pagination) {
+    const entities = await model.get(query, select, pagination);
+    return Promise.all(
+      entities.map(async entity => {
+        entity.documents = await uploads.get({ entity: entity.sharedId, type: 'document' });
+        return entity;
+      })
+    );
   },
 
   async getWithRelationships(query, select, pagination) {
-    const entities = await model.get(query, select, pagination);
+    const entities = await this.get(query, select, pagination);
     return Promise.all(
       entities.map(async entity => {
         entity.relations = await relationships.getByDocument(entity.sharedId, entity.language);

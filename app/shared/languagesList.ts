@@ -1,5 +1,3 @@
-/** @format */
-
 const elasticLanguages: { [index: string]: { [index: string]: string | null } } = {
   arb: { franc: 'arb', elastic: 'arabic', ISO639_1: 'ar' },
   bul: { franc: 'bul', elastic: 'bulgarian', ISO639_1: 'bg' },

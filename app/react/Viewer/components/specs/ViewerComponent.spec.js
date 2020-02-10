@@ -9,10 +9,10 @@ import EntityView from '../../EntityView';
 
 describe('ViewerComponent', () => {
   let component;
-  const entity = { _id: 'id', sharedId: 'sharedId', file: {} };
+  const entity = { _id: 'id', sharedId: 'sharedId', documents: [{}] };
 
   const render = () => {
-    component = shallow(<ViewerComponent entity={fromJS(entity)} location={{}} />);
+    component = shallow(<ViewerComponent locale="es" entity={fromJS(entity)} location={{}} />);
   };
   describe('when the entity has file', () => {
     it('should render a PDFView', () => {
@@ -23,7 +23,7 @@ describe('ViewerComponent', () => {
 
   describe('when the entity does not have file', () => {
     it('should render a EntityView', () => {
-      delete entity.file;
+      entity.documents = [];
       render();
       expect(component.find(EntityView).length).toBe(1);
     });

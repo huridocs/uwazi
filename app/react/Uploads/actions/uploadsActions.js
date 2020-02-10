@@ -83,17 +83,21 @@ export function importData([file], template) {
     });
 }
 
-export function upload(docId, file, endpoint = 'upload') {
+export function upload(docId, file, endpoint = 'upload/document') {
   return dispatch =>
     new Promise(resolve => {
       superagent
         .post(APIURL + endpoint)
         .set('Accept', 'application/json')
         .set('X-Requested-With', 'XMLHttpRequest')
-        .field('document', docId)
+        .field('entity', docId)
         .attach('file', file, file.name)
         .on('progress', data => {
-          dispatch({ type: types.UPLOAD_PROGRESS, doc: docId, progress: Math.floor(data.percent) });
+          dispatch({
+            type: types.UPLOAD_PROGRESS,
+            doc: docId,
+            progress: Math.floor(data.percent),
+          });
         })
         .on('response', response => {
           const _file = {

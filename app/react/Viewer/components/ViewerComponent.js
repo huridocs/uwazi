@@ -14,7 +14,12 @@ export class ViewerComponent extends Component {
     if (!entity.get('_id')) {
       return <Loader />;
     }
-    return entity.get('file') ? <PDFView {...this.props} /> : <EntityView {...this.props} />;
+
+    return entity.get('documents').size ? (
+      <PDFView {...this.props} />
+    ) : (
+      <EntityView {...this.props} />
+    );
   }
 }
 

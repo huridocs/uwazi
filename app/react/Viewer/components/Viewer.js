@@ -19,6 +19,7 @@ import RelationshipMetadata from 'app/Relationships/components/RelationshipMetad
 import ShowIf from 'app/App/ShowIf';
 import { RequestParams } from 'app/utils/RequestParams';
 
+import entityDocument from 'shared/entityDocument';
 import { PaginatorWithPage } from './Paginator';
 import { addReference as addReferenceAction } from '../actions/referencesActions';
 import {
@@ -129,9 +130,10 @@ export class Viewer extends Component {
       loadTargetDocument,
       panelIsOpen,
       showTextSelectMenu,
+      locale,
     } = this.props;
     const { firstRender } = this.state;
-    if (doc.get('_id') && !doc.get('file')) {
+    if (doc.get('_id') && !doc.get('documents').size) {
       return this.renderNoDoc();
     }
 
@@ -139,7 +141,10 @@ export class Viewer extends Component {
 
     const { raw, searchTerm, pageText, page } = this.props;
     const documentTitle = doc.get('title') ? doc.get('title') : '';
-    const documentFile = doc.get('file') ? doc.get('file').toJS() : {};
+
+    const documentFile = doc.get('documents')
+      ? entityDocument(doc.get('documents').toJS(), doc.get('language'), locale)
+      : {};
 
     return (
       <div className="row">
@@ -246,7 +251,7 @@ Viewer.propTypes = {
   panelIsOpen: PropTypes.bool,
   addReference: PropTypes.func,
   targetDoc: PropTypes.bool,
-  // TEST!!!!!!
+  // TEST!!!!!!!
   sidepanelTab: PropTypes.string,
   loadTargetDocument: PropTypes.func,
   showConnections: PropTypes.bool,
@@ -265,13 +270,16 @@ Viewer.contextTypes = {
 const mapStateToProps = state => {
   const { documentViewer } = state;
   const uiState = documentViewer.uiState.toJS();
+  console.log(state);
+
   return {
     pageText: documentViewer.rawText,
     doc: selectDoc(state),
     panelIsOpen: !!uiState.panel,
     targetDoc: !!documentViewer.targetDoc.get('_id'),
     templates: state.templates,
-    // TEST!!!!
+    locale: state.locale,
+    // TEST!!!!!
     sidepanelTab: documentViewer.sidepanel.tab,
     showConnections: documentViewer.sidepanel.tab === 'references',
     showTextSelectMenu: Boolean(
