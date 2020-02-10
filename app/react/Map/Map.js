@@ -37,8 +37,8 @@ export default class Map extends Component {
 
     this.mapStyle = Immutable.fromJS(_style);
     this.supercluster = new Supercluster({
-        radius: _style.sources.markers.clusterRadius,
-        maxZoom: _style.sources.markers.clusterMaxZoom
+      radius: _style.sources.markers.clusterRadius,
+      maxZoom: _style.sources.markers.clusterMaxZoom,
     });
 
     this.updateMapStyle(props);
@@ -100,7 +100,7 @@ export default class Map extends Component {
     onClick(e);
   }
 
-onHover(e) {
+  onHover(e) {
     const { markers, cluster } = this.props;
     const { selectedMarker } = this.state;
     let feature = null;
@@ -156,7 +156,8 @@ onHover(e) {
 
     this.interactiveLayerIds = [];
     if (this.mapStyle.has('layers')) {
-      this.interactiveLayerIds = this.mapStyle.get('layers')
+      this.interactiveLayerIds = this.mapStyle
+        .get('layers')
         .filter(l => l.get('interactive'))
         .map(l => l.get('id'))
         .toJS();
@@ -374,7 +375,7 @@ Map.defaultProps = {
   autoCenter: true,
   scrollZoom: true,
   showControls: false,
-  interactiveLayerIds: []
+  interactiveLayerIds: [],
 };
 
 Map.propTypes = {
@@ -394,5 +395,5 @@ Map.propTypes = {
   autoCenter: PropTypes.bool,
   scrollZoom: PropTypes.bool,
   showControls: PropTypes.bool,
-  interactiveLayerIds: PropTypes.arrayOf(PropTypes.string)
+  interactiveLayerIds: PropTypes.arrayOf(PropTypes.string),
 };
