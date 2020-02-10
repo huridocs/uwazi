@@ -83,7 +83,7 @@ const indexEntities = (
     }
 
     return entities
-      .get(query, select, { skip: offset, limit })
+      .get(query, '', { skip: offset, limit })
       .then(entitiesToIndex =>
         Promise.all(
           entitiesToIndex.map(entity =>
