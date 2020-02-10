@@ -4,12 +4,15 @@ import migration from '../index.js';
 import fixtures from './fixtures.js';
 
 describe('migration remove_orphan_relations', () => {
-  beforeEach((done) => {
+  beforeEach(done => {
     spyOn(process.stdout, 'write');
-    testingDB.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
+    testingDB
+      .clearAllAndLoad(fixtures)
+      .then(done)
+      .catch(catchErrors(done));
   });
 
-  afterAll((done) => {
+  afterAll(done => {
     testingDB.disconnect().then(done);
   });
 
@@ -19,7 +22,10 @@ describe('migration remove_orphan_relations', () => {
 
   it('should remove connections that have entities that no longer exists', async () => {
     await migration.up(testingDB.mongodb);
-    const connections = await testingDB.mongodb.collection('connections').find().toArray();
+    const connections = await testingDB.mongodb
+      .collection('connections')
+      .find()
+      .toArray();
 
     expect(connections.map(c => c.entity)).toEqual(['entity1', 'entity2']);
   });

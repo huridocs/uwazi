@@ -26,7 +26,7 @@ const propertyExists = (property, previousTemplate) =>
     )
   );
 
-const resetMetadata = (metadata, template, options, previousTemplate) => {
+export const resetMetadata = (metadata, template, options, previousTemplate) => {
   const resetedMetadata = {};
   template.properties.forEach(property => {
     const resetValue =
@@ -54,8 +54,8 @@ const resetMetadata = (metadata, template, options, previousTemplate) => {
   return resetedMetadata;
 };
 
-const UnwrapMetadataObject = (MetadataObject, Template) => {
-  return Object.keys(MetadataObject).reduce((UnwrapedMO, key) => {
+export const UnwrapMetadataObject = (MetadataObject, Template) =>
+  Object.keys(MetadataObject).reduce((UnwrapedMO, key) => {
     if (!MetadataObject[key].length) {
       return UnwrapedMO;
     }
@@ -71,13 +71,29 @@ const UnwrapMetadataObject = (MetadataObject, Template) => {
       'geolocation',
     ].includes(property.type);
 
-    UnwrapedMO[key] = isMultiProperty
-      ? MetadataObject[key].map(v => v.value)
-      : MetadataObject[key][0].value;
-
-    return UnwrapedMO;
+    return {
+      ...UnwrapedMO,
+      [key]: isMultiProperty ? MetadataObject[key].map(v => v.value) : MetadataObject[key][0].value,
+    };
   }, {});
-};
+
+export function loadFetchedInReduxForm(form, entity, templates) {
+  const sortedTemplates = advancedSort(templates, { property: 'name' });
+  const defaultTemplate = sortedTemplates.find(t => t.default);
+  const template = entity.template || defaultTemplate._id;
+  const templateconfig = sortedTemplates.find(t => t._id === template) || emptyTemplate;
+
+  const metadata = UnwrapMetadataObject(
+    resetMetadata(entity.metadata || {}, templateconfig, { resetExisting: false }, templateconfig),
+    templateconfig
+  );
+  // suggestedMetadata remains in metadata-object form (all components consuming it are new).
+  return [
+    formActions.reset(form),
+    formActions.load(form, { ...entity, metadata, template }),
+    formActions.setPristine(form),
+  ];
+}
 
 export function loadInReduxForm(form, _entity, templates) {
   return dispatch => {
@@ -85,21 +101,7 @@ export function loadInReduxForm(form, _entity, templates) {
       ? api.get(new RequestParams({ sharedId: _entity.sharedId }))
       : Promise.resolve([_entity])
     ).then(([entity]) => {
-      const sortedTemplates = advancedSort(templates, { property: 'name' });
-      const defaultTemplate = sortedTemplates.find(t => t.default);
-      const template = entity.template || defaultTemplate._id;
-      const templateconfig = sortedTemplates.find(t => t._id === template) || emptyTemplate;
-
-      const _metadata = resetMetadata(
-        entity.metadata || {},
-        templateconfig,
-        { resetExisting: false },
-        templateconfig
-      );
-      const metadata = UnwrapMetadataObject(_metadata, templateconfig);
-      dispatch(formActions.reset(form));
-      dispatch(formActions.load(form, { ...entity, metadata, template }));
-      dispatch(formActions.setPristine(form));
+      loadFetchedInReduxForm(form, entity, templates).forEach(action => dispatch(action));
     });
   };
 }

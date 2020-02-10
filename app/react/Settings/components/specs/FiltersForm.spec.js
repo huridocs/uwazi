@@ -16,19 +16,25 @@ describe('FiltersForm', () => {
     filters = [
       { id: 1, name: 'Country', container: '', index: 0 },
       { id: 2, name: 'Case', container: '', index: 1 },
-      { id: 'asd',
+      {
+        id: 'asd',
         name: 'Institutions',
         container: '',
         index: 2,
-        items: [{ id: 4, name: 'Court' }]
-      }
+        items: [{ id: 4, name: 'Court' }],
+      },
     ];
 
     props = {
       notify: () => {},
       setSettings: () => {},
       settings: { collection: fromJS({ filters }) },
-      templates: fromJS([{ _id: 1, name: 'Country' }, { _id: 2, name: 'Case' }, { _id: 3, name: 'Judge' }, { _id: 4, name: 'Court' }])
+      templates: fromJS([
+        { _id: 1, name: 'Country' },
+        { _id: 2, name: 'Case' },
+        { _id: 3, name: 'Judge' },
+        { _id: 4, name: 'Court' },
+      ]),
     };
   });
 
@@ -55,9 +61,7 @@ describe('FiltersForm', () => {
 
   it('should not allow nesting a group inside a group', () => {
     render();
-    component
-    .instance()
-    .activesChange([
+    component.instance().activesChange([
       { id: 2, name: 'single', container: '', index: 1 },
       {
         id: 1,
@@ -67,9 +71,9 @@ describe('FiltersForm', () => {
         items: [
           { id: 1, name: 'filter1', container: '', index: 0 },
           { id: 1, name: 'filter2', container: '', index: 1 },
-          { id: 1, name: 'group2', container: '', index: 1, items: [] }
-        ]
-      }
+          { id: 1, name: 'group2', container: '', index: 1, items: [] },
+        ],
+      },
     ]);
 
     expect(component.state().activeFilters).toEqual([
@@ -81,10 +85,10 @@ describe('FiltersForm', () => {
         index: 2,
         items: [
           { id: 1, name: 'filter1', container: '', index: 0 },
-          { id: 1, name: 'filter2', container: '', index: 1 }
-        ]
+          { id: 1, name: 'filter2', container: '', index: 1 },
+        ],
       },
-      { id: 1, name: 'group2', container: '', index: 1, items: [] }
+      { id: 1, name: 'group2', container: '', index: 1, items: [] },
     ]);
   });
 
@@ -103,10 +107,10 @@ describe('FiltersForm', () => {
           filters: [
             { id: 1, name: 'Country' },
             { id: 2, name: 'Case' },
-            { id: 'asd', items: [{ id: 4, name: 'Court' }], name: 'Institutions' }
-          ]
+            { id: 'asd', items: [{ id: 4, name: 'Court' }], name: 'Institutions' },
+          ],
         },
-        headers: {}
+        headers: {},
       };
       expect(SettingsAPI.save).toHaveBeenCalledWith(expectedFilters);
     });

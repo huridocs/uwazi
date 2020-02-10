@@ -81,7 +81,4 @@ function mapDispatchToProps(dispatch) {
   return bindActionCreators({ close: closeImportProgress }, dispatch);
 }
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(ImportProgress);
+export default connect(mapStateToProps, mapDispatchToProps)(ImportProgress);

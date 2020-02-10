@@ -13,8 +13,10 @@ export default {
 
     const elementBounds = element.getBoundingClientRect();
     const parentBounds = parent.getBoundingClientRect();
-    return elementBounds.top < parentBounds.top && elementBounds.bottom > parentBounds.top ||
-      elementBounds.top > parentBounds.top && elementBounds.top < parentBounds.bottom;
+    return (
+      (elementBounds.top < parentBounds.top && elementBounds.bottom > parentBounds.top) ||
+      (elementBounds.top > parentBounds.top && elementBounds.top < parentBounds.bottom)
+    );
   },
 
   to(selector, parentSelector, opt = {}) {
@@ -34,14 +36,17 @@ export default {
   },
 
   getTargetScrollTop(element, parent, options) {
-    const elementOffsetToParent = element.getBoundingClientRect().top - parent.getBoundingClientRect().top + parent.scrollTop;
+    const elementOffsetToParent =
+      element.getBoundingClientRect().top - parent.getBoundingClientRect().top + parent.scrollTop;
     const parentVisibleScroll = parent.scrollHeight - parent.offsetHeight;
     const elementPositionInParent = parent.scrollHeight - elementOffsetToParent;
-    return parentVisibleScroll -
+    return (
+      parentVisibleScroll -
       elementPositionInParent +
       options.offset +
       element.scrollHeight +
-      (parent.offsetHeight - element.offsetHeight) / options.dividerOffset;
+      (parent.offsetHeight - element.offsetHeight) / options.dividerOffset
+    );
   },
 
   animateScroll(_parent, scrollTop, options) {
@@ -70,5 +75,5 @@ export default {
 
   easeOut(t) {
     return t * (2 - t);
-  }
+  },
 };

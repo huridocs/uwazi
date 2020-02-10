@@ -1,4 +1,3 @@
-
 import configureMockStore from 'redux-mock-store';
 import Immutable from 'immutable';
 import React from 'react';
@@ -15,12 +14,12 @@ describe('TargetDocument', () => {
   const state = {
     documentViewer: {
       uiState: Immutable.fromJS({
-        reference: { targetRange: { selection: 'selection' } }
+        reference: { targetRange: { selection: 'selection' } },
       }),
       targetDoc: Immutable.fromJS({ name: 'document' }),
       targetDocHTML: Immutable.fromJS({ pages: 'pages', css: 'css' }),
-      selectedTargetReferences: Immutable.fromJS({ keysOf: 'selectTargetReferences' })
-    }
+      selectedTargetReferences: Immutable.fromJS({ keysOf: 'selectTargetReferences' }),
+    },
   };
 
   const render = () => {
@@ -29,8 +28,9 @@ describe('TargetDocument', () => {
   };
 
   it('should map props', () => {
-    spyOn(viewerSelectors, 'selectTargetReferences').and
-    .callFake(fnSstate => fnSstate.documentViewer.selectedTargetReferences);
+    spyOn(viewerSelectors, 'selectTargetReferences').and.callFake(
+      fnSstate => fnSstate.documentViewer.selectedTargetReferences
+    );
     render();
 
     const props = component.props();

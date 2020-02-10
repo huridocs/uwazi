@@ -17,22 +17,23 @@ import FormConfigCommon from './FormConfigCommon';
 import FormConfigMultimedia from './FormConfigMultimedia';
 import Icons from './Icons';
 
-
 export class MetadataProperty extends Component {
   isLabelDuplicated() {
     const { index, template, formState } = this.props;
     const commonPropIndex = index + template.commonProperties.length;
-    return Boolean(formState.$form.errors[`properties.${index}.label.duplicated`]) ||
-      Boolean(formState.$form.errors[`commonProperties.${commonPropIndex}.label.duplicated`]);
+    return (
+      Boolean(formState.$form.errors[`properties.${index}.label.duplicated`]) ||
+      Boolean(formState.$form.errors[`commonProperties.${commonPropIndex}.label.duplicated`])
+    );
   }
 
   isErrorOnThisField(error) {
     const { index, isCommonProperty, template } = this.props;
     const commonPropIndex = index + template.commonProperties.length;
     const [errorRoot, errorIndex] = error.split('.');
-    return errorRoot === 'commonProperties' ?
-      errorIndex === commonPropIndex.toString() && isCommonProperty :
-      errorIndex === index.toString() && !isCommonProperty;
+    return errorRoot === 'commonProperties'
+      ? errorIndex === commonPropIndex.toString() && isCommonProperty
+      : errorIndex === index.toString() && !isCommonProperty;
   }
 
   renderForm() {
@@ -40,19 +41,19 @@ export class MetadataProperty extends Component {
     let defaultInput = <FormConfigInput type={type} index={index} />;
 
     if (this.props.isCommonProperty) {
-      return <FormConfigCommon index={index} type={type}/>;
+      return <FormConfigCommon index={index} type={type} />;
     }
     if (type === 'relationship') {
-      defaultInput = <FormConfigRelationship index={index} type={type}/>;
+      defaultInput = <FormConfigRelationship index={index} type={type} />;
     }
     if (type === 'relationshipfilter') {
-      defaultInput = <FormConfigRelationshipFilter index={index} type={type}/>;
+      defaultInput = <FormConfigRelationshipFilter index={index} type={type} />;
     }
     if (type === 'select' || type === 'multiselect') {
-      defaultInput = <FormConfigSelect index={index} type={type}/>;
+      defaultInput = <FormConfigSelect index={index} type={type} />;
     }
     if (type === 'nested') {
-      defaultInput = <FormConfigNested index={index} type={type}/>;
+      defaultInput = <FormConfigNested index={index} type={type} />;
     }
     if (type === 'media' || type === 'image' || type === 'preview') {
       defaultInput = (
@@ -65,13 +66,23 @@ export class MetadataProperty extends Component {
       );
     }
     if (type === 'geolocation' || type === 'link') {
-      defaultInput = <FormConfigInput type={type} index={index} canBeFilter={false}/>;
+      defaultInput = <FormConfigInput type={type} index={index} canBeFilter={false} />;
     }
     return defaultInput;
   }
 
   render() {
-    const { label, connectDragSource, isDragging, connectDropTarget, uiState, index, localID, inserting, formState } = this.props;
+    const {
+      label,
+      connectDragSource,
+      isDragging,
+      connectDropTarget,
+      uiState,
+      index,
+      localID,
+      inserting,
+      formState,
+    } = this.props;
     const { editingProperty } = uiState.toJS();
 
     let propertyClass = 'list-group-item';
@@ -79,8 +90,11 @@ export class MetadataProperty extends Component {
       propertyClass += ' dragging';
     }
 
-    const hasErrors = Object.keys(formState.$form.errors)
-    .reduce((result, error) => result || this.isErrorOnThisField(error) && formState.$form.errors[error], false);
+    const hasErrors = Object.keys(formState.$form.errors).reduce(
+      (result, error) =>
+        result || (this.isErrorOnThisField(error) && formState.$form.errors[error]),
+      false
+    );
     if (hasErrors && formState.$form.submitFailed) {
       propertyClass += ' error';
     }
@@ -95,7 +109,6 @@ export class MetadataProperty extends Component {
           <Icon icon={iconClass} fixedWidth /> {label}
         </span>
         <div className="list-group-item-actions">
-
           {this.isLabelDuplicated() && (
             <span className="validation-error">
               <Icon icon="exclamation-triangle" /> Duplicated label
@@ -103,7 +116,8 @@ export class MetadataProperty extends Component {
           )}
           {Boolean(formState.$form.errors[`properties.${index}.relationType.duplicated`]) && (
             <span className="validation-error">
-              <Icon icon="exclamation-triangle" /> Relationship fields must have diferent relationship or diferent type of entity.
+              <Icon icon="exclamation-triangle" /> Relationship fields must have diferent
+              relationship or diferent type of entity.
             </span>
           )}
           <button
@@ -113,15 +127,15 @@ export class MetadataProperty extends Component {
           >
             <Icon icon="pencil-alt" /> Edit
           </button>
-          { !this.props.isCommonProperty && (
-          <button
-            type="button"
-            className="btn btn-danger btn-xs property-remove"
-            onClick={() => this.props.removeProperty('RemovePropertyModal', index)}
-          >
-            <Icon icon="trash-alt" /> Delete
-          </button>
-)}
+          {!this.props.isCommonProperty && (
+            <button
+              type="button"
+              className="btn btn-danger btn-xs property-remove"
+              onClick={() => this.props.removeProperty('RemovePropertyModal', index)}
+            >
+              <Icon icon="trash-alt" /> Delete
+            </button>
+          )}
         </div>
       </div>
     );
@@ -167,13 +181,12 @@ MetadataProperty.propTypes = {
   editProperty: PropTypes.func,
   formState: PropTypes.object,
   template: PropTypes.shape({
-    properties: PropTypes.array, commonProperties: PropTypes.array
-  }).isRequired
+    properties: PropTypes.array,
+    commonProperties: PropTypes.array,
+  }).isRequired,
 };
 
-
 const target = {
-
   hover(props, monitor) {
     const dragIndex = monitor.getItem().index;
     const hoverIndex = props.index;
@@ -200,11 +213,11 @@ const target = {
     props.reorderProperty(dragIndex, hoverIndex);
     item.index = hoverIndex;
     item.alreadyReordered = true;
-  }
+  },
 };
 
 const dropTarget = DropTarget(['METADATA_PROPERTY', 'METADATA_OPTION'], target, connector => ({
-  connectDropTarget: connector.dropTarget()
+  connectDropTarget: connector.dropTarget(),
 }))(MetadataProperty);
 
 const source = {
@@ -213,28 +226,31 @@ const source = {
       index: props.index,
       label: props.label,
       type: props.type,
-      editingProperty: props.uiState.get('editingProperty')
+      editingProperty: props.uiState.get('editingProperty'),
     };
   },
   endDrag(props, monitor) {
     const item = monitor.getItem();
     props.editProperty(item.editingProperty);
-  }
+  },
 };
 
 const dragSource = DragSource('METADATA_PROPERTY', source, (connector, monitor) => ({
   connectDragSource: connector.dragSource(),
-  isDragging: monitor.isDragging()
+  isDragging: monitor.isDragging(),
 }))(dropTarget);
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({ removeProperty: showModal, reorderProperty, addProperty, editProperty }, dispatch);
+  return bindActionCreators(
+    { removeProperty: showModal, reorderProperty, addProperty, editProperty },
+    dispatch
+  );
 }
 
 const mapStateToProps = ({ template }) => ({
   uiState: template.uiState,
   formState: template.formState,
-  template: template.data
+  template: template.data,
 });
 
 export { dragSource, dropTarget };

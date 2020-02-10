@@ -1,3 +1,6 @@
+/**
+ * @jest-environment jsdom
+ */
 import PDFUtils from '../utils';
 import PDFJS from '../PDFJS';
 
@@ -8,7 +11,7 @@ const mockDefaultTextLayerFactory = () => {
     div = container;
     div.innerText = 'test !';
     return {
-      promise: Promise.resolve()
+      promise: Promise.resolve(),
     };
   };
 
@@ -22,15 +25,14 @@ describe('PDF utils', () => {
     beforeEach(() => {
       pdf = {
         numPages: 2,
-        getPage: jest.fn().mockReturnValue(Promise.resolve())
+        getPage: jest.fn().mockReturnValue(Promise.resolve()),
       };
       spyOn(PDFJS, 'getDocument').and.returnValue({ promise: Promise.resolve(pdf) });
       spyOn(PDFUtils, 'extractPageInfo').and.returnValue(Promise.resolve(55));
     });
 
-    it('should return page character count added for all pages', (done) => {
-      PDFUtils.extractPDFInfo('pdfFile')
-      .then((pdfInfo) => {
+    it('should return page character count added for all pages', done => {
+      PDFUtils.extractPDFInfo('pdfFile').then(pdfInfo => {
         expect(pdfInfo).toEqual({ 1: { chars: 55 }, 2: { chars: 110 } });
         done();
       });
@@ -38,16 +40,15 @@ describe('PDF utils', () => {
   });
 
   describe('extractPageInfo', () => {
-    it('should return number of characters on the page', (done) => {
+    it('should return number of characters on the page', done => {
       const page = {
         getViewport: jest.fn(),
-        getTextContent: jest.fn().mockReturnValue(Promise.resolve({}))
+        getTextContent: jest.fn().mockReturnValue(Promise.resolve({})),
       };
 
       mockDefaultTextLayerFactory();
 
-      PDFUtils.extractPageInfo(page)
-      .then((chars) => {
+      PDFUtils.extractPageInfo(page).then(chars => {
         expect(chars).toEqual(6);
         done();
       });

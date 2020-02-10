@@ -12,38 +12,48 @@ export default class SearchTips extends Component {
     const searchTipsText = (
       <ul>
         <li>
-          {t('System',
+          {t(
+            'System',
             'Search Tips: wildcard',
             'Use an * for wildcard search. Ie: "juris*" will match words  ' +
-            'such as jurisdiction, jurisdictional, jurists, jurisprudence, etc.',
-            false)}
+              'such as jurisdiction, jurisdictional, jurists, jurisprudence, etc.',
+            false
+          )}
         </li>
         <li>
-          {t('System',
+          {t(
+            'System',
             'Search Tips: one char wildcard',
             '? for one character wildcard. Ie: "198?" will match 1980 to 1989 and also 198a, 198b, etc.',
-            false)}
+            false
+          )}
         </li>
         <li>
-          {t('System',
+          {t(
+            'System',
             'Search Tips: exact term',
             'Exact term match by enclosing your search string with quotes. Ie. "Costa Rica"' +
-            ' will toss different results compared to Costa Rica without quotes.',
-            false)}
+              ' will toss different results compared to Costa Rica without quotes.',
+            false
+          )}
         </li>
         <li>
-          {t('System',
+          {t(
+            'System',
             'Search Tips: proximity',
             '~ for proximity searches. Ie: "the status"~5 will find anything having "the" and' +
-            '"status" within a distance of 5 words, such as "the procedural status", "the specific legal status".',
-            false)}
+              '"status" within a distance of 5 words, such as "the procedural status", "the specific legal status".',
+            false
+          )}
         </li>
         <li>
-          {t('System',
+          {t(
+            'System',
             'Search Tips: boolean',
             'AND, OR and NOT for boolean searches. Ie. "status AND women NOT Nicaragua" will match anything ' +
-            'containing both the words status and women, and necessarily not containing the word Nicaragua.',
-            false)}
+              'containing both the words status and women, and necessarily not containing the word Nicaragua.',
+            false
+          )}
         </li>
       </ul>
     );
@@ -53,16 +63,13 @@ export default class SearchTips extends Component {
       type: 'info',
       title: t('System', 'Narrow down your searches', null, false),
       message: searchTipsText,
-      noCancel: true
+      noCancel: true,
     });
   }
 
   render() {
     return (
-      <div
-        className="search-tips"
-        onClick={this.showSearchTips}
-      >
+      <div className="search-tips" onClick={this.showSearchTips}>
         {t('System', 'Search tips', null, false)}
       </div>
     );
@@ -70,5 +77,5 @@ export default class SearchTips extends Component {
 }
 
 SearchTips.contextTypes = {
-  confirm: PropTypes.func
+  confirm: PropTypes.func,
 };

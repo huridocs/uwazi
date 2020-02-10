@@ -9,16 +9,16 @@ describe('EntityInfo', () => {
   let actions;
   const dispatch = () => {};
 
-  const render = (customProps) => {
+  const render = customProps => {
     props = {
       entity: 'sharedId',
       classname: 'passed classnames',
-      children: [<span key="1">multiple</span>, <b key="2">children</b>]
+      children: [<span key="1">multiple</span>, <b key="2">children</b>],
     };
     actions = mapDispatchToProps(dispatch);
     spyOn(actions, 'getAndSelectDocument');
     const mappedProps = { ...props, ...customProps, ...actions };
-    component = shallow(<EntityInfo.WrappedComponent {...mappedProps}/>);
+    component = shallow(<EntityInfo.WrappedComponent {...mappedProps} />);
   };
 
   it('should wrap children in a div, passing classname', () => {

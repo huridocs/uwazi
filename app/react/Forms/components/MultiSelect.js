@@ -16,6 +16,9 @@ export default class MultiSelect extends Component {
   constructor(props) {
     super(props);
     this.state = { filter: props.filter, showAll: props.showAll, ui: {} };
+    this.filter = this.filter.bind(this);
+    this.resetFilter = this.resetFilter.bind(this);
+    this.showAll = this.showAll.bind(this);
   }
 
   componentWillReceiveProps(props) {
@@ -86,10 +89,10 @@ export default class MultiSelect extends Component {
 
   showAll(e) {
     e.preventDefault();
-    this.setState({ showAll: !this.state.showAll });
+    this.setState(prevState => ({ showAll: !prevState.showAll }));
   }
 
-  sort(options, optionsValue, optionsLabel, isSubGroup = false) {
+  sort(options, _optionsValue, optionsLabel, isSubGroup = false) {
     const sortedOptions = options.sort((a, b) => {
       let sorting = 0;
       if (!this.state.showAll) {
@@ -103,7 +106,7 @@ export default class MultiSelect extends Component {
       }
 
       const showingAll = this.state.showAll || options.length < this.props.optionsToShow;
-      if (sorting === 0 || showingAll || this.state.sortbyLabel || isSubGroup) {
+      if (sorting === 0 || showingAll || this.props.sortbyLabel || isSubGroup) {
         sorting = a[optionsLabel] < b[optionsLabel] ? -1 : 1;
       }
 
@@ -113,7 +116,7 @@ export default class MultiSelect extends Component {
     return this.moveNoValueOptionToBottom(sortedOptions);
   }
 
-  sortOnlyAggregates(options, optionsvalue, optionsLabel) {
+  sortOnlyAggregates(options, _optionsvalue, optionsLabel) {
     if (!options.length || typeof options[0].results === 'undefined') {
       return options;
     }
@@ -254,9 +257,7 @@ export default class MultiSelect extends Component {
   }
 
   render() {
-    let { optionsValue, optionsLabel } = this.props;
-    optionsValue = optionsValue || 'value';
-    optionsLabel = optionsLabel || 'label';
+    const { optionsValue, optionsLabel, placeholder } = this.props;
 
     let options = this.props.options.slice();
     const totalOptions = options.filter(option => {
@@ -272,14 +273,16 @@ export default class MultiSelect extends Component {
     });
     options = totalOptions;
     options = options.map(option => {
-      if (option.options) {
-        option.options = option.options.filter(_opt => {
+      if (!option.options) {
+        return option;
+      }
+      return {
+        ...option,
+        options: option.options.filter(_opt => {
           let notDefined;
           return _opt.results === notDefined || _opt.results > 0 || this.checked(_opt);
-        });
-      }
-
-      return option;
+        }),
+      };
     });
 
     if (this.state.filter) {
@@ -294,7 +297,7 @@ export default class MultiSelect extends Component {
       options = this.sortOnlyAggregates(options, optionsValue, optionsLabel);
     }
 
-    if (!this.props.sort && !this.state.showAll) {
+    if (this.props.forceHoist || (!this.props.sort && !this.state.showAll)) {
       options = this.hoistCheckedOptions(options);
     }
 
@@ -307,10 +310,11 @@ export default class MultiSelect extends Component {
       options = options.slice(0, optionsToShow);
     }
 
-    options.forEach(option => {
-      if (option.options) {
-        option.options = this.sort(option.options, optionsValue, optionsLabel, true);
+    options = options.map(option => {
+      if (!option.options) {
+        return option;
       }
+      return { ...option, options: this.sort(option.options, optionsValue, optionsLabel, true) };
     });
 
     return (
@@ -322,14 +326,14 @@ export default class MultiSelect extends Component {
             <div className="form-group">
               <Icon
                 icon={this.state.filter ? 'times-circle' : 'search'}
-                onClick={this.resetFilter.bind(this)}
+                onClick={this.resetFilter}
               />
               <input
                 className="form-control"
                 type="text"
-                placeholder={t('System', 'Search item', null, false)}
+                placeholder={placeholder || t('System', 'Search item', null, false)}
                 value={this.state.filter}
-                onChange={this.filter.bind(this)}
+                onChange={this.filter}
               />
             </div>
           </ShowIf>
@@ -344,10 +348,10 @@ export default class MultiSelect extends Component {
         })}
 
         <li className="multiselectActions">
-          <ShowIf if={totalOptions.length > this.props.optionsToShow && !this.props.showAll}>
-            <button onClick={this.showAll.bind(this)} className="btn btn-xs btn-default">
+          <ShowIf if={totalOptions.length > this.props.optionsToShow && !this.state.showAll}>
+            <button onClick={this.showAll} className="btn btn-xs btn-default">
               <Icon icon={this.state.showAll ? 'caret-up' : 'caret-down'} />
-              <i className={this.state.showAll ? 'fa fa-caret-up' : 'fa fa-caret-down'} />
+              &nbsp;
               {this.moreLessLabel(totalOptions)}
             </button>
           </ShowIf>
@@ -369,6 +373,8 @@ MultiSelect.defaultProps = {
   hideSearch: false,
   sort: false,
   sortbyLabel: false,
+  forceHoist: false,
+  placeholder: '',
 };
 
 MultiSelect.propTypes = {
@@ -384,4 +390,6 @@ MultiSelect.propTypes = {
   hideSearch: PropTypes.bool,
   sort: PropTypes.bool,
   sortbyLabel: PropTypes.bool,
+  forceHoist: PropTypes.bool,
+  placeholder: PropTypes.string,
 };

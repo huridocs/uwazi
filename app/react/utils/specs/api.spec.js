@@ -1,3 +1,6 @@
+/**
+ * @jest-environment jsdom
+ */
 /** @format */
 
 import { browserHistory } from 'react-router';

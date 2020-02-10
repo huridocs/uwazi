@@ -1,13 +1,16 @@
-export default function () {
-  const hit = () => Object.assign({}, {
-      _index: 'uwazi',
-      _type: 'logs',
-      _id: 'id1',
-      _score: 0.05050901,
-      _source: {
-      },
-      highlight: {}
-  });
+export default function() {
+  const hit = () =>
+    Object.assign(
+      {},
+      {
+        _index: 'uwazi',
+        _type: 'logs',
+        _id: 'id1',
+        _score: 0.05050901,
+        _source: {},
+        highlight: {},
+      }
+    );
 
   const result = {
     took: 7,
@@ -15,16 +18,16 @@ export default function () {
     _shards: {
       total: 5,
       successful: 5,
-      failed: 0
+      failed: 0,
     },
     hits: {
       total: 10,
       max_score: 0.05050901,
-      hits: []
+      hits: [],
     },
     aggregations: {
-      all: {}
-    }
+      all: {},
+    },
   };
 
   return {
@@ -34,7 +37,7 @@ export default function () {
 
     withDocs(docs) {
       result.hits.hits = [];
-      docs.forEach((doc) => {
+      docs.forEach(doc => {
         const newHit = hit();
         newHit._id = doc._id;
         delete doc._id;
@@ -56,6 +59,6 @@ export default function () {
         }
       });
       return this;
-    }
+    },
   };
 }

@@ -3,20 +3,20 @@ import socketIo from 'socket.io';
 
 export default (server, app) => {
   const io = socketIo(server);
-  app.use((req, res, next) => {
+  app.use((req, _res, next) => {
     req.io = io;
     next();
   });
 
-  app.use((req, res, next) => {
+  app.use((req, _res, next) => {
     req.getCurrentSessionSockets = () => {
       const sessionSockets = {
         sockets: [],
         emit(...args) {
-          this.sockets.forEach((socket) => {
+          this.sockets.forEach(socket => {
             socket.emit(...args);
           });
-        }
+        },
       };
 
       Object.keys(req.io.sockets.connected).reduce((sockets, socketId) => {

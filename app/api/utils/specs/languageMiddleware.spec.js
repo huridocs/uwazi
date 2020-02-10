@@ -9,7 +9,7 @@ describe('languageMiddleware', () => {
   beforeEach(async () => {
     await db.clearAllAndLoad(fixtures);
     req = {
-      get: headerName => ({ 'content-language': 'es', 'accept-language': 'en-US' }[headerName])
+      get: headerName => ({ 'content-language': 'es', 'accept-language': 'en-US' }[headerName]),
     };
     next = jasmine.createSpy('next');
   });
@@ -31,8 +31,8 @@ describe('languageMiddleware', () => {
         req = {
           get: () => {},
           cookies: {
-            locale: 'en'
-          }
+            locale: 'en',
+          },
         };
         await middleware(req, res, next);
         expect(req.language).toBe('en');
@@ -43,7 +43,7 @@ describe('languageMiddleware', () => {
     describe('when no content-language and no cookie', () => {
       it('should use accept-language', async () => {
         req = {
-          get: headerName => ({ 'accept-language': 'en-US' }[headerName])
+          get: headerName => ({ 'accept-language': 'en-US' }[headerName]),
         };
         await middleware(req, res, next);
         expect(req.language).toBe('en');
@@ -55,7 +55,7 @@ describe('languageMiddleware', () => {
   describe('when language do not exist on the config', () => {
     it('should set the default one "es"', async () => {
       req = {
-        get: headerName => ({ 'content-language': 'nonExistent' }[headerName])
+        get: headerName => ({ 'content-language': 'nonExistent' }[headerName]),
       };
 
       await middleware(req, res, next);

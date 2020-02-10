@@ -10,9 +10,9 @@ describe('SearchInput', () => {
   const render = () => {
     props = {
       prop1: 'prop1',
-      prop2: 'prop2'
+      prop2: 'prop2',
     };
-    component = shallow(<SearchInput {...props}/>);
+    component = shallow(<SearchInput {...props} />);
   };
 
   it('should pass all props to the input', () => {

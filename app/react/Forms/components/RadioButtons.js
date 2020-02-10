@@ -34,12 +34,10 @@ export default class RadioButtons extends Component {
                 onChange={this.change.bind(this, option[optionsValue])}
                 checked={this.checked(option[optionsValue])}
               />
-              <span className="multiselectItem-name">
-                {this.renderLabel(option)}
-              </span>
+              <span className="multiselectItem-name">{this.renderLabel(option)}</span>
             </label>
           </div>
-          ))}
+        ))}
       </div>
     );
   }
@@ -59,5 +57,5 @@ RadioButtons.propTypes = {
   optionsValue: PropTypes.string,
   optionsLabel: PropTypes.string,
   prefix: PropTypes.string,
-  renderLabel: PropTypes.func
+  renderLabel: PropTypes.func,
 };

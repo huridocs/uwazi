@@ -19,7 +19,7 @@ describe('DescriptionWrapper', () => {
         query: 'Long text for query',
         body: 'Very complex body text',
       }),
-      toggleExpand
+      toggleExpand,
     };
     children = <span>Some children</span>;
   });

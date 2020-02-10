@@ -25,8 +25,8 @@ describe('templateActions', () => {
     formModel = {
       thesauris: Immutable.fromJS([{ _id: 'first_thesauri_id' }, { _id: 2 }]),
       template: {
-        data: { properties: [{ name: 'property1' }, { name: 'property2' }] }
-      }
+        data: { properties: [{ name: 'property1' }, { name: 'property2' }] },
+      },
     };
     dispatch = jasmine.createSpy('dispatch');
     getState = jasmine.createSpy('getState').and.returnValue(formModel);
@@ -44,7 +44,7 @@ describe('templateActions', () => {
       expect(formActions.change).toHaveBeenCalledWith('template.data.properties', [
         { name: 'property3', localID: 'unique_id' },
         { name: 'property1' },
-        { name: 'property2' }
+        { name: 'property2' },
       ]);
     });
 
@@ -54,14 +54,19 @@ describe('templateActions', () => {
         expect(formActions.change).toHaveBeenCalledWith('template.data.properties', [
           { name: 'property3', type: 'select', localID: 'unique_id', content: 'first_thesauri_id' },
           { name: 'property1' },
-          { name: 'property2' }
+          { name: 'property2' },
         ]);
 
         actions.addProperty({ name: 'property4', type: 'multiselect' }, 0)(dispatch, getState);
         expect(formActions.change).toHaveBeenCalledWith('template.data.properties', [
-          { name: 'property4', type: 'multiselect', localID: 'unique_id', content: 'first_thesauri_id' },
+          {
+            name: 'property4',
+            type: 'multiselect',
+            localID: 'unique_id',
+            content: 'first_thesauri_id',
+          },
           { name: 'property1' },
-          { name: 'property2' }
+          { name: 'property2' },
         ]);
       });
     });
@@ -70,7 +75,10 @@ describe('templateActions', () => {
   describe('setNestedProperties()', () => {
     it('should update the property in the index provided', () => {
       actions.setNestedProperties(0, ['123', '456'])(dispatch, getState);
-      expect(formActions.load).toHaveBeenCalledWith('template.data.properties[0].nestedProperties', ['123', '456']);
+      expect(formActions.load).toHaveBeenCalledWith(
+        'template.data.properties[0].nestedProperties',
+        ['123', '456']
+      );
     });
   });
 
@@ -79,7 +87,7 @@ describe('templateActions', () => {
       actions.updateProperty({ name: 'new name' }, 0)(dispatch, getState);
       expect(formActions.change).toHaveBeenCalledWith('template.data.properties', [
         { name: 'new name' },
-        { name: 'property2' }
+        { name: 'property2' },
       ]);
     });
   });
@@ -117,8 +125,7 @@ describe('templateActions', () => {
     beforeEach(() => {
       spyOn(notifications, 'notify');
       backend.restore();
-      backend
-      .post(`${APIURL}templates`, { body: JSON.stringify({ name: 'saved_template' }) });
+      backend.post(`${APIURL}templates`, { body: JSON.stringify({ name: 'saved_template' }) });
     });
 
     afterEach(() => backend.restore());
@@ -126,53 +133,84 @@ describe('templateActions', () => {
     describe('saveTemplate', () => {
       it('should sanitize the properties before saving', () => {
         spyOn(api, 'save').and.returnValue(Promise.resolve({}));
-        const originalTemplateData = { name: 'name',
-          properties: [{ localID: '1', label: 'label', type: 'relationship', inherit: true, relationType: '1', content: '' }]
+        const originalTemplateData = {
+          name: 'name',
+          properties: [
+            {
+              localID: '1',
+              label: 'label',
+              type: 'relationship',
+              inherit: true,
+              relationType: '1',
+              content: '',
+            },
+          ],
         };
         actions.saveTemplate(originalTemplateData)(() => {});
-        expect(api.save).toHaveBeenCalledWith(new RequestParams({
-          name: 'name',
-          properties: [{ content: '', inherit: false, label: 'label', localID: '1', relationType: '1', type: 'relationship' }]
-        }));
+        expect(api.save).toHaveBeenCalledWith(
+          new RequestParams({
+            name: 'name',
+            properties: [
+              {
+                content: '',
+                inherit: false,
+                label: 'label',
+                localID: '1',
+                relationType: '1',
+                type: 'relationship',
+              },
+            ],
+          })
+        );
       });
 
-      it('should save the template and dispatch a TEMPLATE_SAVED action', (done) => {
+      it('should save the template and dispatch a TEMPLATE_SAVED action', done => {
         spyOn(formActions, 'merge').and.returnValue({ type: 'mergeAction' });
-        const originalTemplateData = { name: 'my template',
+        const originalTemplateData = {
+          name: 'my template',
           properties: [
             { localID: 'a1b2', label: 'my property' },
-            { localID: 'a1b3', label: 'my property' }
-          ] };
+            { localID: 'a1b3', label: 'my property' },
+          ],
+        };
 
         const expectedActions = [
           { type: types.SAVING_TEMPLATE },
           { type: types.TEMPLATE_SAVED, data: { name: 'saved_template' } },
           { type: 'templates/UPDATE', value: { name: 'saved_template' } },
           { type: 'mergeAction' },
-          { type: notificationsTypes.NOTIFY, notification: { message: 'Saved successfully.', type: 'success', id: 'unique_id' } }
+          {
+            type: notificationsTypes.NOTIFY,
+            notification: { message: 'Saved successfully.', type: 'success', id: 'unique_id' },
+          },
         ];
         const store = mockStore({});
 
-        store.dispatch(actions.saveTemplate(originalTemplateData))
-        .then(() => {
-          expect(store.getActions()).toEqual(expectedActions);
+        store
+          .dispatch(actions.saveTemplate(originalTemplateData))
+          .then(() => {
+            expect(store.getActions()).toEqual(expectedActions);
 
-          expect(originalTemplateData.properties[0].localID).toBe('a1b2');
-          expect(formActions.merge).toHaveBeenCalledWith('template.data', { name: 'saved_template' });
-        })
-        .then(done)
-        .catch(done.fail);
+            expect(originalTemplateData.properties[0].localID).toBe('a1b2');
+            expect(formActions.merge).toHaveBeenCalledWith('template.data', {
+              name: 'saved_template',
+            });
+          })
+          .then(done)
+          .catch(done.fail);
       });
 
       describe('on error', () => {
-        it('should dispatch template_saved', (done) => {
+        it('should dispatch template_saved', done => {
           spyOn(api, 'save').and.callFake(() => Promise.reject(new Error()));
           spyOn(formActions, 'merge').and.returnValue({ type: 'mergeAction' });
-          const originalTemplateData = { name: 'my template',
+          const originalTemplateData = {
+            name: 'my template',
             properties: [
               { localID: 'a1b2', label: 'my property' },
-              { localID: 'a1b3', label: 'my property' }
-            ] };
+              { localID: 'a1b3', label: 'my property' },
+            ],
+          };
 
           const expectedActions = [
             { type: types.SAVING_TEMPLATE },
@@ -181,12 +219,13 @@ describe('templateActions', () => {
 
           const store = mockStore({});
 
-          store.dispatch(actions.saveTemplate(originalTemplateData))
-          .then(() => {
-            expect(store.getActions()).toEqual(expectedActions);
-          })
-          .then(done)
-          .catch(done.fail);
+          store
+            .dispatch(actions.saveTemplate(originalTemplateData))
+            .then(() => {
+              expect(store.getActions()).toEqual(expectedActions);
+            })
+            .then(done)
+            .catch(done.fail);
         });
       });
     });

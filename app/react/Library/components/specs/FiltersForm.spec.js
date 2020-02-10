@@ -6,7 +6,6 @@ import { Form } from 'react-redux-form';
 import { FiltersForm, mapStateToProps } from 'app/Library/components/FiltersForm';
 import FiltersFromProperties from '../FiltersFromProperties';
 
-
 describe('FiltersForm', () => {
   let component;
   let props;
@@ -27,8 +26,14 @@ describe('FiltersForm', () => {
           options: [
             { id: 'a', label: 'a', value: 'a', results: 1 },
             { id: 'b', label: 'b', value: 'b', results: 1 },
-            { id: 'c', label: 'c', value: 'c', results: 1, values: [{ id: 'd', label: 'd', value: 'd', results: 1 }] }
-          ]
+            {
+              id: 'c',
+              label: 'c',
+              value: 'c',
+              results: 1,
+              values: [{ id: 'd', label: 'd', value: 'd', results: 1 }],
+            },
+          ],
         },
         {
           _id: '6',
@@ -38,9 +43,15 @@ describe('FiltersForm', () => {
           options: [
             { id: 'a', label: 'a', value: 'a', results: 1 },
             { id: 'b', label: 'b', value: 'b', results: 1 },
-            { id: 'c', label: 'c', value: 'c', values: [{ id: 'd', label: 'd', value: 'd', results: 1 }], results: 1 }
-          ]
-        }
+            {
+              id: 'c',
+              label: 'c',
+              value: 'c',
+              values: [{ id: 'd', label: 'd', value: 'd', results: 1 }],
+              results: 1,
+            },
+          ],
+        },
       ]),
       documentTypes: Immutable([]),
       templates: Immutable([]),
@@ -51,23 +62,23 @@ describe('FiltersForm', () => {
               { key: 'a', filtered: { doc_count: 1 } },
               { key: 'b', filtered: { doc_count: 1 } },
               { key: 'c', filtered: { doc_count: 1 } },
-              { key: 'd', filtered: { doc_count: 1 } }
-            ]
+              { key: 'd', filtered: { doc_count: 1 } },
+            ],
           },
           multiselect: {
             buckets: [
               { key: 'a', filtered: { doc_count: 1 } },
               { key: 'b', filtered: { doc_count: 1 } },
               { key: 'c', filtered: { doc_count: 1 } },
-              { key: 'd', filtered: { doc_count: 1 } }
-            ]
-          }
-        }
+              { key: 'd', filtered: { doc_count: 1 } },
+            ],
+          },
+        },
       }),
       search: { searchTerm: 'Batman' },
-      storeKey: 'library'
+      storeKey: 'library',
     };
-    component = shallow(<FiltersForm {...props}/>);
+    component = shallow(<FiltersForm {...props} />);
   });
 
   describe('form on submit', () => {
@@ -89,13 +100,13 @@ describe('FiltersForm', () => {
       const store = {
         library: {
           ui: Immutable({ searchTerm: 'do a barrel roll' }),
-          filters: Immutable({ properties: [{ name: 'author' }], documentTypes: { a: true } })
+          filters: Immutable({ properties: [{ name: 'author' }], documentTypes: { a: true } }),
         },
         form: {
-          filters: 'filtersForm'
+          filters: 'filtersForm',
         },
         templates: Immutable([]),
-        settings: { collection: Immutable({}) }
+        settings: { collection: Immutable({}) },
       };
       const state = mapStateToProps(store, { storeKey: 'library' });
       expect(state.fields.toJS()).toEqual([{ name: 'author' }]);

@@ -6,7 +6,7 @@ import documentRoutes from '../routes.js';
 import instrumentRoutes from '../../utils/instrumentRoutes';
 import entities from '../entities';
 import templates from '../../templates/templates';
-import thesauris from '../../thesauris/thesauris';
+import thesauri from '../../thesauri';
 import fixtures, { templateId, unpublishedDocId, batmanFinishesId } from './fixtures.js';
 
 describe('entities', () => {
@@ -43,12 +43,13 @@ describe('entities', () => {
 
     it('should need authorization', () => {
       expect(routes._post('/api/entities', req)).toNeedAuthorization();
+      expect(routes._post('/api/entity_denormalize', req)).toNeedAuthorization();
     });
 
     it('should create a new document with current user', done => {
       spyOn(entities, 'save').and.returnValue(Promise.resolve('entity'));
       spyOn(templates, 'getById').and.returnValue(new Promise(resolve => resolve({ values: [] })));
-      spyOn(thesauris, 'templateToThesauri').and.returnValue(
+      spyOn(thesauri, 'templateToThesauri').and.returnValue(
         new Promise(resolve => resolve('document'))
       );
 
@@ -62,7 +63,18 @@ describe('entities', () => {
       });
     });
 
-    it('should emit thesauriChange socket event with the modified thesauri based on the entity template', done => {
+    it('should denormalize an entity', async () => {
+      spyOn(entities, 'denormalize').and.returnValue(Promise.resolve('entity'));
+
+      const document = await routes.post('/api/entity_denormalize', req);
+      expect(document).toBe('entity');
+      expect(entities.denormalize).toHaveBeenCalledWith(req.body, {
+        user: req.user,
+        language: 'lang',
+      });
+    });
+
+    it('should emit thesauriChange socket event with the modified thesaurus based on the entity template', done => {
       const user = {
         _id: 'c08ef2532f0bd008ac5174b45e033c93',
         username: 'admin',
@@ -76,11 +88,11 @@ describe('entities', () => {
         language: 'lang',
         io: {
           sockets: {
-            emit: jest.fn((event, thesauri) => {
+            emit: jest.fn((event, thesaurus) => {
               try {
                 expect(event).toBe('thesauriChange');
-                expect(thesauri).toBe('templateTransformed');
-                expect(thesauris.templateToThesauri).toHaveBeenCalledWith('template', 'lang', user);
+                expect(thesaurus).toBe('templateTransformed');
+                expect(thesauri.templateToThesauri).toHaveBeenCalledWith('template', 'lang', user);
                 done();
               } catch (err) {
                 done.fail(err);
@@ -95,7 +107,7 @@ describe('entities', () => {
         Promise.resolve(['entityWithRelationShips'])
       );
       spyOn(templates, 'getById').and.returnValue(new Promise(resolve => resolve('template')));
-      spyOn(thesauris, 'templateToThesauri').and.returnValue(
+      spyOn(thesauri, 'templateToThesauri').and.returnValue(
         new Promise(resolve => resolve('templateTransformed'))
       );
       routes.post('/api/entities', req).catch(catchErrors(done));

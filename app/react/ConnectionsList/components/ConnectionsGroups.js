@@ -25,11 +25,8 @@ export class ConnectionsGroups extends Component {
           <div className="nested-selector">
             <ul className="multiselect is-active">
               {connectionsGroups.map(group => (
-                <ConnectionsGroup
-                  key={group.get('key')}
-                  group={group}
-                />
-))}
+                <ConnectionsGroup key={group.get('key')} group={group} />
+              ))}
             </ul>
           </div>
         </div>
@@ -41,12 +38,12 @@ export class ConnectionsGroups extends Component {
 }
 
 ConnectionsGroups.propTypes = {
-  connectionsGroups: PropTypes.object
+  connectionsGroups: PropTypes.object,
 };
 
 function mapStateToProps({ relationships }) {
   return {
-    connectionsGroups: relationships.list.connectionsGroups
+    connectionsGroups: relationships.list.connectionsGroups,
   };
 }
 

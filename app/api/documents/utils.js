@@ -1,7 +1,7 @@
 export function updateMetadataNames(documents, nameMatches) {
-  documents.forEach((doc) => {
+  documents.forEach(doc => {
     const oldMetadata = Object.assign({}, doc.metadata);
-    Object.keys(doc.metadata).forEach((propertyName) => {
+    Object.keys(doc.metadata).forEach(propertyName => {
       if (nameMatches[propertyName]) {
         delete doc.metadata[propertyName];
         doc.metadata[nameMatches[propertyName]] = oldMetadata[propertyName];
@@ -13,8 +13,8 @@ export function updateMetadataNames(documents, nameMatches) {
 }
 
 export function deleteMetadataProperties(documents, properties = []) {
-  documents.forEach((doc) => {
-    properties.forEach((property) => {
+  documents.forEach(doc => {
+    properties.forEach(property => {
       delete doc.metadata[property];
     });
   });

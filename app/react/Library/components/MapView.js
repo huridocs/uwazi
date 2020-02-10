@@ -5,13 +5,22 @@ import Immutable from 'immutable';
 import { Map, Markers } from 'app/Map';
 import { bindActionCreators } from 'redux';
 import { wrapDispatch } from 'app/Multireducer';
-import { getAndSelectDocument, selectDocuments, unselectAllDocuments } from 'app/Library/actions/libraryActions';
+import {
+  getAndSelectDocument,
+  selectDocuments,
+  unselectAllDocuments,
+} from 'app/Library/actions/libraryActions';
 import SearchBar from 'app/Library/components/SearchBar';
 import { TemplateLabel, EntityTitle } from 'app/Layout';
 import { t } from 'app/I18N';
 import { Icon } from 'app/UI';
 
-const markerInfo = info => <div className="marker-info"><Icon className="tag-icon" icon="tag" />{info}</div>;
+const markerInfo = info => (
+  <div className="marker-info">
+    <Icon className="tag-icon" icon="tag" />
+    {info}
+  </div>
+);
 
 export class MapView extends Component {
   static renderInfo(marker) {
@@ -23,10 +32,20 @@ export class MapView extends Component {
         <div className="entity-data">
           <div>
             <span className="popup-name">{marker.properties.entity.title}</span>
-            <span className="popup-metadata-property">({t(marker.properties.entity.template, marker.label)})</span>
+            <span className="popup-metadata-property">
+              ({t(marker.properties.entity.template, marker.label)})
+            </span>
           </div>
-          {marker.properties.inherited && markerInfo(<EntityTitle context={marker.properties.context} entity={marker.properties.inheritedEntity} />)}
-          {marker.properties.info && !marker.properties.inherited && markerInfo(marker.properties.info)}
+          {marker.properties.inherited &&
+            markerInfo(
+              <EntityTitle
+                context={marker.properties.context}
+                entity={marker.properties.inheritedEntity}
+              />
+            )}
+          {marker.properties.info &&
+            !marker.properties.inherited &&
+            markerInfo(marker.properties.info)}
         </div>
       </div>
     );
@@ -51,14 +70,20 @@ export class MapView extends Component {
     const { storeKey, markers } = this.props;
     return (
       <div className="library-map main-wrapper" style={{ width: '100%', height: '100%' }}>
-        <div className="search-list"><SearchBar storeKey={storeKey}/></div>
+        <div className="search-list">
+          <SearchBar storeKey={storeKey} />
+        </div>
         <div className="documents-counter">
-          <span><b>{markers.get('totalRows')}</b> {t('System', 'documents')}</span>
+          <span>
+            <b>{markers.get('totalRows')}</b> {t('System', 'documents')}
+          </span>
         </div>
         <Markers entities={markers.get('rows')}>
           {processedMarkers => (
             <Map
-              ref={(ref) => { this.map = ref; }}
+              ref={ref => {
+                this.map = ref;
+              }}
               markers={processedMarkers}
               zoom={1}
               clickOnMarker={this.clickOnMarker}
@@ -78,7 +103,7 @@ MapView.propTypes = {
   storeKey: PropTypes.string.isRequired,
   getAndSelectDocument: PropTypes.func.isRequired,
   selectDocuments: PropTypes.func.isRequired,
-  unselectAllDocuments: PropTypes.func.isRequired
+  unselectAllDocuments: PropTypes.func.isRequired,
 };
 
 export function mapStateToProps(state, props) {
@@ -88,7 +113,10 @@ export function mapStateToProps(state, props) {
 }
 
 function mapDispatchToProps(dispatch, props) {
-  return bindActionCreators({ getAndSelectDocument, selectDocuments, unselectAllDocuments }, wrapDispatch(dispatch, props.storeKey));
+  return bindActionCreators(
+    { getAndSelectDocument, selectDocuments, unselectAllDocuments },
+    wrapDispatch(dispatch, props.storeKey)
+  );
 }
 
 export default connect(mapStateToProps, mapDispatchToProps, null, { withRef: true })(MapView);

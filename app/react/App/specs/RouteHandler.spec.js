@@ -1,3 +1,6 @@
+/**
+ * @jest-environment jsdom
+ */
 /* eslint-disable max-statements */
 import React from 'react';
 import backend from 'fetch-mock';
@@ -34,7 +37,7 @@ describe('RouteHandler', () => {
   const location = { pathname: '', query: { key: 'value' } };
   const languages = [
     { key: 'en', label: 'English', default: true },
-    { key: 'es', label: 'Español' }
+    { key: 'es', label: 'Español' },
   ];
   let state;
 
@@ -53,14 +56,16 @@ describe('RouteHandler', () => {
     };
 
     backend.restore();
-    backend
-    .get(`${APIURL}templates`, { body: JSON.stringify({ rows: [] }) });
+    backend.get(`${APIURL}templates`, { body: JSON.stringify({ rows: [] }) });
     delete window.__initialData__;
 
     spyOn(TestController, 'requestState').and.callThrough();
 
     RouteHandler.renderedFromServer = false;
-    component = shallow(<TestController params={routeParams} location={location} routes={[{ path: '' }]}/>, { context });
+    component = shallow(
+      <TestController params={routeParams} location={location} routes={[{ path: '' }]} />,
+      { context }
+    );
     instance = component.instance();
     instance.constructor = TestController;
   });
@@ -68,19 +73,22 @@ describe('RouteHandler', () => {
   afterEach(() => backend.restore());
 
   describe('static requestState', () => {
-    it('should return a promise with an empty array', (done) => {
+    it('should return a promise with an empty array', done => {
       RouteHandler.requestState()
-      .then((response) => {
-        expect(response).toEqual([]);
-        done();
-      })
-      .catch(done.fail);
+        .then(response => {
+          expect(response).toEqual([]);
+          done();
+        })
+        .catch(done.fail);
     });
   });
 
   describe('on instance', () => {
     it('should request for initialState and dispatch actions returned', () => {
-      expect(TestController.requestState).toHaveBeenCalledWith(new RequestParams({ ...location.query, ...routeParams }, headers), state);
+      expect(TestController.requestState).toHaveBeenCalledWith(
+        new RequestParams({ ...location.query, ...routeParams }, headers),
+        state
+      );
       expect(context.store.dispatch).toHaveBeenCalledWith({ type: 'action1', value: 'value1' });
       expect(context.store.dispatch).toHaveBeenCalledWith({ type: 'action2', value: 'value2' });
     });
@@ -95,7 +103,11 @@ describe('RouteHandler', () => {
   describe('componentWillReceiveProps', () => {
     let props;
     beforeEach(() => {
-      props = { params: { id: '456' }, location: { pathname: '/es', query: '' }, routes: [{ path: '' }] };
+      props = {
+        params: { id: '456' },
+        location: { pathname: '/es', query: '' },
+        routes: [{ path: '' }],
+      };
     });
 
     describe('when params change', () => {
@@ -115,7 +127,11 @@ describe('RouteHandler', () => {
     describe('when path changes', () => {
       it('should request the clientState', () => {
         spyOn(instance, 'getClientState');
-        props = { params: { ...routeParams }, location, routes: [{ path: '' }, { path: 'subpath' }] };
+        props = {
+          params: { ...routeParams },
+          location,
+          routes: [{ path: '' }, { path: 'subpath' }],
+        };
         instance.componentWillReceiveProps(props);
         expect(instance.getClientState).toHaveBeenCalledWith(props);
       });

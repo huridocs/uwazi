@@ -14,24 +14,18 @@ export default class Modal extends Component {
         contentLabel=""
         ariaHideApp={false}
       >
-        <div className="modal-content">
-          {this.props.children}
-        </div>
+        <div className="modal-content">{this.props.children}</div>
       </ReactModal>
     );
   }
 }
 
-const childrenType = PropTypes.oneOfType([
-  PropTypes.object,
-  PropTypes.array,
-  PropTypes.string
-]);
+const childrenType = PropTypes.oneOfType([PropTypes.object, PropTypes.array, PropTypes.string]);
 
 Modal.propTypes = {
   isOpen: PropTypes.bool,
   type: PropTypes.string,
-  children: childrenType
+  children: childrenType,
 };
 
 const Body = ({ children }) => <div className="modal-body">{children}</div>;

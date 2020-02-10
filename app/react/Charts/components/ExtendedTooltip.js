@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-const ExtendedTooltip = (props) => {
+const ExtendedTooltip = props => {
   if (props.active) {
     const dataSetA = props.payload[0];
     const dataSetB = props.payload[1];
@@ -13,7 +13,8 @@ const ExtendedTooltip = (props) => {
           <b style={{ color: '#600' }}>{dataSetA.value + dataSetB.value}</b>
         </div>
         <div style={{ padding: '5px' }}>
-          {dataSetA.payload.setALabel}:&nbsp;&nbsp;<b style={{ color: '#600' }}>{dataSetA.value}</b><br />
+          {dataSetA.payload.setALabel}:&nbsp;&nbsp;<b style={{ color: '#600' }}>{dataSetA.value}</b>
+          <br />
           {dataSetB.payload.setBLabel}:&nbsp;&nbsp;<b style={{ color: '#600' }}>{dataSetB.value}</b>
         </div>
       </div>
@@ -24,7 +25,7 @@ const ExtendedTooltip = (props) => {
 
 ExtendedTooltip.defaultProps = {
   payload: [],
-  active: false
+  active: false,
 };
 
 ExtendedTooltip.propTypes = {

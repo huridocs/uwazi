@@ -19,9 +19,9 @@ export default class Library extends RouteHandler {
     return (
       <React.Fragment>
         <div className="searchBox">
-          <SearchButton storeKey="library"/>
+          <SearchButton storeKey="library" />
         </div>
-        <ImportProgress/>
+        <ImportProgress />
       </React.Fragment>
     );
   }
@@ -49,7 +49,7 @@ export default class Library extends RouteHandler {
     return (
       <LibraryLayout>
         <LibraryModeToggleButtons storeKey="library" zoomIn={this.zoomIn} zoomOut={this.zoomOut} />
-        <DocumentsList storeKey="library"/>
+        <DocumentsList storeKey="library" />
       </LibraryLayout>
     );
   }

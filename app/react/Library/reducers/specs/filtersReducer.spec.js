@@ -14,7 +14,15 @@ describe('filtersReducer', () => {
     });
   });
 
-  const libraryFilters = [{ name: 'country', filter: true, type: 'select', content: 'abc1', options: ['thesauri values'] }];
+  const libraryFilters = [
+    {
+      name: 'country',
+      filter: true,
+      type: 'select',
+      content: 'abc1',
+      options: ['thesauri values'],
+    },
+  ];
 
   describe('SET_LIBRARY_FILTERS', () => {
     it('should set the properties', () => {
@@ -29,7 +37,10 @@ describe('filtersReducer', () => {
     it('should set the properties', () => {
       const state = Immutable.fromJS({ properties: [] });
 
-      const newState = filtersReducer(state, { type: types.INITIALIZE_FILTERS_FORM, libraryFilters });
+      const newState = filtersReducer(state, {
+        type: types.INITIALIZE_FILTERS_FORM,
+        libraryFilters,
+      });
       expect(newState.get('properties').toJS()).toEqual(libraryFilters);
     });
   });

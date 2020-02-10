@@ -8,5 +8,5 @@ export default {
     { entity: 'entity2' },
     { entity: 'non_existent' },
     { entity: 'non_existent2' },
-  ]
+  ],
 };

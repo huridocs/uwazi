@@ -14,7 +14,7 @@ describe('RelationshipFilter', () => {
       storeKey: 'storeKey',
     };
 
-    const component = shallow(<RelationshipFilter {...props}/>);
+    const component = shallow(<RelationshipFilter {...props} />);
     expect(component).toMatchSnapshot();
   });
 });

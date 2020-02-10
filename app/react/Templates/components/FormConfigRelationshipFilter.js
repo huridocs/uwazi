@@ -22,7 +22,9 @@ export class FormConfigRelationship extends Component {
     const labelKey = `properties.${index}.label`;
     const requiredLabel = formState.$form.errors[`${labelKey}.required`];
     const duplicatedLabel = formState.$form.errors[`${labelKey}.duplicated`];
-    const relationTypeError = formState.$form.errors[`properties.${index}.relationType.required`] && formState.$form.submitFailed;
+    const relationTypeError =
+      formState.$form.errors[`properties.${index}.relationType.required`] &&
+      formState.$form.submitFailed;
     if (requiredLabel || duplicatedLabel) {
       labelClass += ' has-error';
     }
@@ -32,11 +34,14 @@ export class FormConfigRelationship extends Component {
         <div className={labelClass}>
           <label>Label</label>
           <Field model={`template.data.properties[${index}].label`}>
-            <input className="form-control"/>
+            <input className="form-control" />
           </Field>
         </div>
         <div className={relationTypeError ? 'form-group has-error' : 'form-group'}>
-          <label>{t('System', 'Relationship type')}<span className="required">*</span></label>
+          <label>
+            {t('System', 'Relationship type')}
+            <span className="required">*</span>
+          </label>
           <Select
             model={`template.data.properties[${index}].relationType`}
             options={relationTypes}
@@ -48,7 +53,7 @@ export class FormConfigRelationship extends Component {
 
         <div>
           <Field className="filter" model={`template.data.properties[${index}].filter`}>
-            <input id={`filter${this.props.index}`} type="checkbox" checked="checked" disabled/>
+            <input id={`filter${this.props.index}`} type="checkbox" checked="checked" disabled />
             &nbsp;
             <label className="property-label" htmlFor={`filter${this.props.index}`}>
               Use as filter
@@ -66,7 +71,7 @@ FormConfigRelationship.propTypes = {
   relationTypes: PropTypes.instanceOf(Immutable.List).isRequired,
   data: PropTypes.object.isRequired,
   index: PropTypes.number.isRequired,
-  formState: PropTypes.object.isRequired
+  formState: PropTypes.object.isRequired,
 };
 
 export function mapStateToProps(state) {
@@ -74,7 +79,7 @@ export function mapStateToProps(state) {
     data: state.template.data,
     thesauris: state.thesauris,
     relationTypes: state.relationTypes,
-    formState: state.template.formState
+    formState: state.template.formState,
   };
 }
 

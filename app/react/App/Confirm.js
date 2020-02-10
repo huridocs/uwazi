@@ -11,7 +11,7 @@ export class Confirm extends Component {
     this.state = {
       isOpen: props.isOpen,
       isLoading: props.isLoading,
-      confirmInputValue: ''
+      confirmInputValue: '',
     };
 
     this.accept = this.accept.bind(this);
@@ -67,32 +67,33 @@ export class Confirm extends Component {
     const { type } = this.props;
     return (
       <Modal isOpen={this.state.isOpen} type={type}>
-
         <Modal.Body>
           <h4>{this.props.title}</h4>
           <p>{this.props.message}</p>
           {this.props.extraConfirm && !this.state.isLoading && this.renderExtraConfirm()}
-          {this.state.isLoading && <Loader/>}
+          {this.state.isLoading && <Loader />}
         </Modal.Body>
 
-        {
-          !this.state.isLoading && (
+        {!this.state.isLoading && (
           <Modal.Footer>
-            {
-              !this.props.noCancel &&
-              <button type="button" className="btn btn-default cancel-button" onClick={this.cancel}>{t('System', 'Cancel')}</button>
-            }
+            {!this.props.noCancel && (
+              <button type="button" className="btn btn-default cancel-button" onClick={this.cancel}>
+                {t('System', 'Cancel')}
+              </button>
+            )}
             <button
               type="button"
-              disabled={this.props.extraConfirm && this.state.confirmInputValue !== this.props.extraConfirmWord}
+              disabled={
+                this.props.extraConfirm &&
+                this.state.confirmInputValue !== this.props.extraConfirmWord
+              }
               className={`btn confirm-button btn-${type}`}
               onClick={this.accept}
             >
               {t('System', 'Accept')}
             </button>
           </Modal.Footer>
-)}
-
+        )}
       </Modal>
     );
   }
@@ -106,7 +107,7 @@ Confirm.defaultProps = {
   type: 'danger',
   title: 'Confirm action',
   message: 'Are you sure you want to continue?',
-  extraConfirmWord: 'CONFIRM'
+  extraConfirmWord: 'CONFIRM',
 };
 
 Confirm.propTypes = {
@@ -119,7 +120,7 @@ Confirm.propTypes = {
   cancel: PropTypes.func,
   type: PropTypes.string,
   title: PropTypes.string,
-  message: PropTypes.string
+  message: PropTypes.string,
 };
 
 export default Confirm;

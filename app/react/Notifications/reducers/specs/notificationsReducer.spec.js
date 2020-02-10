@@ -15,7 +15,10 @@ describe('templateReducer', () => {
   describe('NOTIFY', () => {
     it('should add a notification', () => {
       const currentState = Immutable.fromJS([{ message: 'message' }]);
-      const newState = notificationsReducer(currentState, { type: types.NOTIFY, notification: { message: 'another message' } });
+      const newState = notificationsReducer(currentState, {
+        type: types.NOTIFY,
+        notification: { message: 'another message' },
+      });
       const expected = Immutable.fromJS([{ message: 'message' }, { message: 'another message' }]);
 
       expect(newState).toBeImmutable();
@@ -26,7 +29,10 @@ describe('templateReducer', () => {
   describe('REMOVE_NOTIFICATION', () => {
     it('should add a notification', () => {
       const currentState = Immutable.fromJS([{ id: 1 }, { id: 2 }]);
-      const newState = notificationsReducer(currentState, { type: types.REMOVE_NOTIFICATION, id: 2 });
+      const newState = notificationsReducer(currentState, {
+        type: types.REMOVE_NOTIFICATION,
+        id: 2,
+      });
       const expected = Immutable.fromJS([{ id: 1 }]);
 
       expect(newState).toBeImmutable();

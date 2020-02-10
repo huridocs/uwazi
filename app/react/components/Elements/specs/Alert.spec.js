@@ -18,11 +18,9 @@ describe('Alert', () => {
     render();
     expect(component).toMatchSnapshot();
 
-
     props = { message: 'Warning!', type: 'warning' };
     render();
     expect(component).toMatchSnapshot();
-
 
     props = { message: 'Danger!', type: 'danger' };
     render();

@@ -4,18 +4,18 @@ import moment from 'moment';
 import { Map } from 'immutable';
 import DescriptionWrapper from './DescriptionWrapper';
 
-const label = (method) => {
+const label = method => {
   switch (method) {
-  case 'CREATE':
-    return (<span className="badge btn-color-9">{method}</span>);
-  case 'UPDATE':
-    return (<span className="badge btn-color-6">{method}</span>);
-  case 'DELETE':
-    return (<span className="badge btn-color-2">{method}</span>);
-  case 'RAW':
-    return (<span className="badge btn-color-17">{method}</span>);
-  default:
-    return (<span className="badge btn-color-17">{method}</span>);
+    case 'CREATE':
+      return <span className="badge btn-color-9">{method}</span>;
+    case 'UPDATE':
+      return <span className="badge btn-color-6">{method}</span>;
+    case 'DELETE':
+      return <span className="badge btn-color-2">{method}</span>;
+    case 'RAW':
+      return <span className="badge btn-color-17">{method}</span>;
+    default:
+      return <span className="badge btn-color-17">{method}</span>;
   }
 };
 
@@ -35,12 +35,16 @@ class ActivitylogRow extends Component {
     const { entry } = this.props;
     const { expanded } = this.state;
 
-    const time = `${moment(entry.get('time')).format('L')} ${moment(entry.get('time')).locale('en').format('LTS')}`;
+    const time = `${moment(entry.get('time')).format('L')} ${moment(entry.get('time'))
+      .locale('en')
+      .format('LTS')}`;
     const semanticData = entry.get('semantic').toJS();
 
     let description = (
       <DescriptionWrapper entry={entry} toggleExpand={this.toggleExpand} expanded={expanded}>
-        <span className="activitylog-extra">{ entry.get('method') } : { entry.get('url') }</span>
+        <span className="activitylog-extra">
+          {entry.get('method')} : {entry.get('url')}
+        </span>
       </DescriptionWrapper>
     );
 
@@ -57,7 +61,10 @@ class ActivitylogRow extends Component {
     }
 
     return (
-      <tr className={semanticData.beautified ? 'activitylog-beautified' : 'activitylog-raw'} key={entry.get('_id')}>
+      <tr
+        className={semanticData.beautified ? 'activitylog-beautified' : 'activitylog-raw'}
+        key={entry.get('_id')}
+      >
         <td>{semanticData.beautified ? label(semanticData.action) : label('RAW')}</td>
         <td>{entry.get('username') || '-'}</td>
         <td>{description}</td>

@@ -12,12 +12,14 @@ describe('saveSettings', () => {
   it('should save the settings using the api', () => {
     saveSettings({ customSettings: 'anything' })(dispatch);
 
-    expect(SettingsAPI.save).toHaveBeenCalledWith({ data: { customSettings: 'anything' }, headers: {} });
+    expect(SettingsAPI.save).toHaveBeenCalledWith({
+      data: { customSettings: 'anything' },
+      headers: {},
+    });
   });
 
-  it('should call notify after saving settings', (done) => {
-    saveSettings({ customSettings: 'anything' })(dispatch)
-    .then(() => {
+  it('should call notify after saving settings', done => {
+    saveSettings({ customSettings: 'anything' })(dispatch).then(() => {
       expect(dispatch).toHaveBeenCalled();
       done();
     });

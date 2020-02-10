@@ -1,6 +1,7 @@
-const timeout = async interval => new Promise((resolve) => {
-  setTimeout(resolve, interval);
-});
+const timeout = async interval =>
+  new Promise(resolve => {
+    setTimeout(resolve, interval);
+  });
 
 export default {
   stopped: false,
@@ -15,5 +16,5 @@ export default {
 
   stop() {
     this.stopped = true;
-  }
+  },
 };

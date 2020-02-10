@@ -7,14 +7,11 @@ export default {
   relationtypes: [
     { _id: against, name: 'Against', properties: [] },
     { _id: db.id(), name: 'Suports', properties: [] },
-    { _id: canNotBeDeleted, name: 'Related', properties: [] }
+    { _id: canNotBeDeleted, name: 'Related', properties: [] },
   ],
   connections: [
-    { _id: db.id(), title: 'reference1', sourceDocument: 'source1', template: canNotBeDeleted }
-  ]
+    { _id: db.id(), title: 'reference1', sourceDocument: 'source1', template: canNotBeDeleted },
+  ],
 };
 
-export {
-  against,
-  canNotBeDeleted
-};
+export { against, canNotBeDeleted };

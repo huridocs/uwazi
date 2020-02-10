@@ -10,12 +10,15 @@ function mapStateToProps({ uploads, templates, thesauris }) {
     isEntity: false,
     templateId: uploads.metadata.template,
     templates,
-    thesauris
+    thesauris,
   };
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({ changeTemplate: actions.changeTemplate, onSubmit: saveDocument }, dispatch);
+  return bindActionCreators(
+    { changeTemplate: actions.changeTemplate, onSubmit: saveDocument },
+    dispatch
+  );
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(MetadataForm);

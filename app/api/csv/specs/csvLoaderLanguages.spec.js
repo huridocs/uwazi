@@ -13,7 +13,7 @@ import { createTestingZip } from './helpers';
 import configPaths from '../../config/paths';
 
 const removeTestingZip = () =>
-  new Promise((resolve) => {
+  new Promise(resolve => {
     fs.unlink(path.join(__dirname, 'zipData/testLanguages.zip'), () => {
       resolve();
     });
@@ -30,15 +30,16 @@ describe('csvLoader languages', () => {
     const { languages } = await settings.get();
     await settings.save({ languages: [...languages, { key: 'es' }] });
 
-    await createTestingZip([
-      path.join(__dirname, 'zipData/languages/import.csv'),
-      path.join(__dirname, '/zipData/1.pdf'),
-      path.join(__dirname, '/zipData/2.pdf'),
-    ], 'testLanguages.zip');
-    const csv = path.join(__dirname, 'zipData/testLanguages.zip');
-    spyOn(fileUtils, 'generateFileName').and.callFake(
-      file => `generated${file.originalname}`
+    await createTestingZip(
+      [
+        path.join(__dirname, 'zipData/languages/import.csv'),
+        path.join(__dirname, '/zipData/1.pdf'),
+        path.join(__dirname, '/zipData/2.pdf'),
+      ],
+      'testLanguages.zip'
     );
+    const csv = path.join(__dirname, 'zipData/testLanguages.zip');
+    spyOn(fileUtils, 'generateFileName').and.callFake(file => `generated${file.originalname}`);
     configPaths.uploadedDocuments = path.join(__dirname, '/');
     await loader.load(csv, template1Id, { language: 'en' });
 
@@ -69,8 +70,12 @@ describe('csvLoader languages', () => {
   });
 
   it('should import translated metadata properties', async () => {
-    const enText = imported.filter(e => e.language === 'en').map(i => i.metadata.text_label[0].value);
-    const esText = imported.filter(e => e.language === 'es').map(i => i.metadata.text_label[0].value);
+    const enText = imported
+      .filter(e => e.language === 'en')
+      .map(i => i.metadata.text_label[0].value);
+    const esText = imported
+      .filter(e => e.language === 'es')
+      .map(i => i.metadata.text_label[0].value);
     expect(enText).toEqual(['text_en1', 'text_en2', 'text_en3']);
     expect(esText).toEqual(['text_es1', 'text_es2', 'text_es3']);
   });

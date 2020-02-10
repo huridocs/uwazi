@@ -8,26 +8,29 @@ const nonExistentId = db.id();
 
 export default {
   activitylogs: [
-    { method: 'POST', url: '/api/entities', query: '{}', body: '{"_id":"123","title":"Hello"}', time: 1560770143000, username: 'admin' }
+    {
+      method: 'POST',
+      url: '/api/entities',
+      query: '{}',
+      body: '{"_id":"123","title":"Hello"}',
+      time: 1560770143000,
+      username: 'admin',
+    },
   ],
 
-  templates: [
-    { _id: firstTemplate, name: 'Existing Template' }
-  ],
+  templates: [{ _id: firstTemplate, name: 'Existing Template' }],
 
   entities: [
-    { _id: firstDoc, title: 'My Doc', sharedId: firstDocSharedId, language: 'es', attachments: [{ _id: 'attach1' }] }
+    {
+      _id: firstDoc,
+      title: 'My Doc',
+      sharedId: firstDocSharedId,
+      language: 'es',
+      attachments: [{ _id: 'attach1' }],
+    },
   ],
 
-  semanticsearches: [
-    { _id: firstSemanticSearch, searchTerm: 'foo' }
-  ]
+  semanticsearches: [{ _id: firstSemanticSearch, searchTerm: 'foo' }],
 };
 
-export {
-  firstTemplate,
-  firstDoc,
-  firstDocSharedId,
-  firstSemanticSearch,
-  nonExistentId
-};
+export { firstTemplate, firstDoc, firstDocSharedId, firstSemanticSearch, nonExistentId };

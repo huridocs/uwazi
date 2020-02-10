@@ -1,3 +1,6 @@
+/**
+ * @jest-environment jsdom
+ */
 import { fromJS } from 'immutable';
 import React from 'react';
 import { shallow } from 'enzyme';
@@ -10,7 +13,6 @@ import { Viewer } from '../Viewer';
 import SourceDocument from '../SourceDocument';
 import TargetDocument from '../TargetDocument';
 import * as routeActions from '../../actions/routeActions';
-
 
 describe('Viewer', () => {
   let component;
@@ -30,7 +32,7 @@ describe('Viewer', () => {
 
   const render = ({ mount = false } = {}) => {
     context = { store: { dispatch: jasmine.createSpy('dispatch') } };
-    component = shallow(<Viewer {...props}/>, { context, disableLifecycleMethods: true });
+    component = shallow(<Viewer {...props} />, { context, disableLifecycleMethods: true });
 
     if (mount) {
       component.instance().componentDidMount();
@@ -60,7 +62,12 @@ describe('Viewer', () => {
   it('should not render SourceDocument when targetDocument loaded', () => {
     props.targetDoc = true;
     render({ mount: true });
-    expect(component.find(SourceDocument).parent(ShowIf).props().if).toBe(false);
+    expect(
+      component
+        .find(SourceDocument)
+        .parent(ShowIf)
+        .props().if
+    ).toBe(false);
   });
 
   it('should render Document after component did mount', () => {
@@ -73,11 +80,31 @@ describe('Viewer', () => {
     expect(component.find(SourceDocument).length).toBe(1);
     expect(component.find(TargetDocument).length).toBe(1);
 
-    expect(component.find(ContextMenu).at(0).props().overrideShow).toBe(true);
-    expect(component.find(ContextMenu).at(1).props().overrideShow).toBe(true);
+    expect(
+      component
+        .find(ContextMenu)
+        .at(0)
+        .props().overrideShow
+    ).toBe(true);
+    expect(
+      component
+        .find(ContextMenu)
+        .at(1)
+        .props().overrideShow
+    ).toBe(true);
 
-    expect(component.find(ContextMenu).at(0).props().show).toBe(false);
-    expect(component.find(ContextMenu).at(1).props().show).toBe(false);
+    expect(
+      component
+        .find(ContextMenu)
+        .at(0)
+        .props().show
+    ).toBe(false);
+    expect(
+      component
+        .find(ContextMenu)
+        .at(1)
+        .props().show
+    ).toBe(false);
   });
 
   it('should show the correct panels and menus', () => {
@@ -86,8 +113,18 @@ describe('Viewer', () => {
 
     render();
 
-    expect(component.find(ContextMenu).at(0).props().show).toBe(true);
-    expect(component.find(ContextMenu).at(1).props().show).toBe(true);
+    expect(
+      component
+        .find(ContextMenu)
+        .at(0)
+        .props().show
+    ).toBe(true);
+    expect(
+      component
+        .find(ContextMenu)
+        .at(1)
+        .props().show
+    ).toBe(true);
   });
 
   it('should render plain text always, if raw is false should render SourceDocument on update', () => {
@@ -137,9 +174,11 @@ describe('Viewer', () => {
 
   describe('on mount', () => {
     beforeEach(() => {
-      spyOn(routeActions, 'requestViewerState').and.returnValue({ then: (callback) => {
-        callback(['requestViewerState:action1', 'requestViewerState:action2']);
-      } });
+      spyOn(routeActions, 'requestViewerState').and.returnValue({
+        then: callback => {
+          callback(['requestViewerState:action1', 'requestViewerState:action2']);
+        },
+      });
     });
 
     it('should loadDefaultViewerMenu()', () => {
@@ -151,7 +190,10 @@ describe('Viewer', () => {
       props.doc = props.doc.set('pdfInfo', undefined);
       render({ mount: true });
 
-      expect(routeActions.requestViewerState).toHaveBeenCalledWith(new RequestParams({ sharedId: 'sharedId' }), { templates: [] });
+      expect(routeActions.requestViewerState).toHaveBeenCalledWith(
+        new RequestParams({ sharedId: 'sharedId' }),
+        { templates: [] }
+      );
       expect(context.store.dispatch).toHaveBeenCalledWith('requestViewerState:action1');
       expect(context.store.dispatch).toHaveBeenCalledWith('requestViewerState:action2');
     });

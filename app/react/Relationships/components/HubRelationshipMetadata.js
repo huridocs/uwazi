@@ -29,32 +29,30 @@ const conformDl = ({ label, name, value }) => (
 conformDl.propTypes = {
   label: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
-  value: PropTypes.string.isRequired
+  value: PropTypes.string.isRequired,
 };
 
 const extendedMetadata = (relationship, text, relationTypes, thesauris) => {
-  const formattedMetadata = formater.prepareMetadata(relationship.toJS(), relationTypes, thesauris).metadata;
+  const formattedMetadata = formater.prepareMetadata(relationship.toJS(), relationTypes, thesauris)
+    .metadata;
   return (
     <div className="relationship-metadata">
       <div className="item-metadata">
         {formattedMetadata.map(conformDl)}
-        {text && conformDl({
-          label: t('System', 'Text'),
-          name: 'text',
-          value: conformQuote(relationship.getIn(['range', 'text']))
-        })}
+        {text &&
+          conformDl({
+            label: t('System', 'Text'),
+            name: 'text',
+            value: conformQuote(relationship.getIn(['range', 'text'])),
+          })}
       </div>
     </div>
   );
 };
 
-const justText = text => (
-  <div className="relationship-metadata">
-    {conformQuote(text)}
-  </div>
-);
+const justText = text => <div className="relationship-metadata">{conformQuote(text)}</div>;
 
-const HubRelationshipMetadata = (props) => {
+const HubRelationshipMetadata = props => {
   const { relationship, relationTypes, thesauris } = props;
   const text = relationship.getIn(['range', 'text']);
   const metadata = relationship.get('metadata');
@@ -71,13 +69,13 @@ const HubRelationshipMetadata = (props) => {
 };
 
 HubRelationshipMetadata.defaultProps = {
-  relationship: Map({})
+  relationship: Map({}),
 };
 
 HubRelationshipMetadata.propTypes = {
   relationship: PropTypes.instanceOf(Map),
   relationTypes: PropTypes.instanceOf(List).isRequired,
-  thesauris: PropTypes.instanceOf(List).isRequired
+  thesauris: PropTypes.instanceOf(List).isRequired,
 };
 
 export function mapStateToProps({ relationTypes, thesauris }) {

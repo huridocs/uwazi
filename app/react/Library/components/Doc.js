@@ -13,11 +13,15 @@ import { is, Map } from 'immutable';
 
 export class Doc extends Component {
   shouldComponentUpdate(nextProps) {
-    return !is(this.props.doc, nextProps.doc) ||
-           !is(this.props.targetReference, nextProps.targetReference) ||
-           this.props.additionalText !== nextProps.additionalText ||
-           this.props.active !== nextProps.active ||
-           this.props.searchParams && nextProps.searchParams && this.props.searchParams.sort !== nextProps.searchParams.sort;
+    return (
+      !is(this.props.doc, nextProps.doc) ||
+      !is(this.props.targetReference, nextProps.targetReference) ||
+      this.props.additionalText !== nextProps.additionalText ||
+      this.props.active !== nextProps.active ||
+      (this.props.searchParams &&
+        nextProps.searchParams &&
+        this.props.searchParams.sort !== nextProps.searchParams.sort)
+    );
   }
 
   onClick(e) {
@@ -40,14 +44,16 @@ export class Doc extends Component {
             </div>
             <NeedAuthorization roles={['admin', 'editor']}>
               <ShowIf if={connection.sourceType !== 'metadata'}>
-                <button className="btn btn-default btn-hover-danger btn-xs" onClick={e => this.deleteConnection(e, connection)}>
+                <button
+                  className="btn btn-default btn-hover-danger btn-xs"
+                  onClick={e => this.deleteConnection(e, connection)}
+                >
                   <Icon icon="trash-alt" />
                 </button>
               </ShowIf>
             </NeedAuthorization>
           </div>
-)
-        )}
+        ))}
       </div>
     );
   }
@@ -91,7 +97,7 @@ export class Doc extends Component {
         deleteConnection={this.props.deleteConnection}
         itemHeader={itemConnections}
         buttons={buttons}
-        labels={<UploadEntityStatus doc={this.props.doc}/>}
+        labels={<UploadEntityStatus doc={this.props.doc} />}
         className={className}
       />
     );
@@ -99,7 +105,7 @@ export class Doc extends Component {
 }
 
 Doc.defaultProps = {
-  targetReference: null
+  targetReference: null,
 };
 
 Doc.propTypes = {
@@ -113,18 +119,21 @@ Doc.propTypes = {
   className: PropTypes.string,
   additionalText: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
   storeKey: PropTypes.string,
-  targetReference: PropTypes.instanceOf(Map)
+  targetReference: PropTypes.instanceOf(Map),
 };
 
 Doc.contextTypes = {
-  confirm: PropTypes.func
+  confirm: PropTypes.func,
 };
 
 export function mapStateToProps(state, ownProps) {
-  const active = ownProps.storeKey ? !!state[ownProps.storeKey].ui.get('selectedDocuments')
-  .find(doc => doc.get('_id') === ownProps.doc.get('_id')) : false;
+  const active = ownProps.storeKey
+    ? !!state[ownProps.storeKey].ui
+        .get('selectedDocuments')
+        .find(doc => doc.get('_id') === ownProps.doc.get('_id'))
+    : false;
   return {
-    active
+    active,
   };
 }
 

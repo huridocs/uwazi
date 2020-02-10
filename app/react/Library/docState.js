@@ -2,16 +2,16 @@ import { createSelector } from 'reselect';
 
 const docState = createSelector(
   (state, props) => state.progress.get(props.doc.get('sharedId')),
-  (state, props) => props.doc.get('uploaded'),
-  (state, props) => props.doc.get('processed'),
-  (state, props) => !props.doc.get('file'),
-  (state, props) => props.doc.get('template'),
+  (_state, props) => props.doc.get('uploaded'),
+  (_state, props) => props.doc.get('processed'),
+  (_state, props) => !props.doc.get('file'),
+  (_state, props) => props.doc.get('template'),
   (progress, uploaded, processed, isEntity, template) => {
     if (!uploaded && !isEntity && (progress || progress === 0)) {
       return {
         progress,
         status: 'processing',
-        message: 'Uploading...'
+        message: 'Uploading...',
       };
     }
 
@@ -19,7 +19,7 @@ const docState = createSelector(
       return {
         progress: 100,
         status: 'processing',
-        message: 'Processing...'
+        message: 'Processing...',
       };
     }
 
@@ -27,7 +27,7 @@ const docState = createSelector(
       return {
         progress,
         status: 'warning',
-        message: 'No type selected'
+        message: 'No type selected',
       };
     }
 
@@ -35,14 +35,14 @@ const docState = createSelector(
       return {
         progress,
         status: 'danger',
-        message: 'Upload failed'
+        message: 'Upload failed',
       };
     }
 
     if (processed === false && !isEntity) {
       return {
         status: 'danger',
-        message: 'Conversion failed'
+        message: 'Conversion failed',
       };
     }
 

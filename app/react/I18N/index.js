@@ -8,14 +8,4 @@ import I18NUtils from './utils';
 import I18NApi from './I18NApi';
 import * as actions from './actions/I18NActions';
 
-export {
-  I18NMenu,
-  I18NLink,
-  I18NUtils,
-  I18N,
-  Translate,
-  TranslateForm,
-  t,
-  I18NApi,
-  actions
-};
+export { I18NMenu, I18NLink, I18NUtils, I18N, Translate, TranslateForm, t, I18NApi, actions };

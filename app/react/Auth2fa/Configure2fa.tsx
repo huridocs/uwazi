@@ -12,7 +12,7 @@ import { t, I18NLink } from 'app/I18N';
 import { enable2fa as enable2faAction, enable2faType } from './actions/actions';
 import Auth2faAPI from './Auth2faAPI';
 
-const QRCode = loadable(() => import(/* webpackChunkName: "qrcode.react" */ 'qrcode.react'));
+const QRCode = loadable(async () => import(/* webpackChunkName: "qrcode.react" */ 'qrcode.react'));
 
 type Configure2faProps = {
   userUsing2fa: boolean;
@@ -152,7 +152,4 @@ export const mapStateToProps = (state: any): { userUsing2fa: boolean } => ({
 export const mapDispatchToProps = (dispatch: Dispatch<enable2faType>) =>
   bindActionCreators<ActionCreatorsMapObject>({ enable2fa: enable2faAction }, dispatch);
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(Configure2fa);
+export default connect(mapStateToProps, mapDispatchToProps)(Configure2fa);

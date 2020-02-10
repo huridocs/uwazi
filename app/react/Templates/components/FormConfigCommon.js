@@ -38,9 +38,7 @@ export class FormConfigCommon extends Component {
 
     return (
       <div>
-        {property.name === 'title' && (
-          this.renderTitleField()
-        )}
+        {property.name === 'title' && this.renderTitleField()}
         <Field model={`template.data.commonProperties[${this.getZeroIndex()}].prioritySorting`}>
           <input id={`prioritySorting${index}`} type="checkbox" />
           &nbsp;
@@ -54,13 +52,13 @@ export class FormConfigCommon extends Component {
 FormConfigCommon.propTypes = {
   data: PropTypes.shape({ commonProperties: PropTypes.array }).isRequired,
   formState: PropTypes.shape({ $form: PropTypes.object }).isRequired,
-  index: PropTypes.number
+  index: PropTypes.number,
 };
 
 export function mapStateToProps({ template }) {
   return {
     data: template.data,
-    formState: template.formState
+    formState: template.formState,
   };
 }
 

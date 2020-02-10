@@ -57,7 +57,11 @@ export class Document extends Component {
   handleOver() {}
 
   handleClick(e) {
-    if (e.target.className && e.target.className.indexOf('reference') !== -1 && !this.text.selected()) {
+    if (
+      e.target.className &&
+      e.target.className.indexOf('reference') !== -1 &&
+      !this.text.selected()
+    ) {
       const references = this.props.references.toJS();
       return this.props.activateReference(
         references.find(r => r._id === e.target.getAttribute('data-id')),
@@ -102,23 +106,31 @@ export class Document extends Component {
   render() {
     const doc = this.props.doc.toJS();
 
-    const Header = this.props.header || function () {
-      return false;
-    };
+    const Header =
+      this.props.header ||
+      function() {
+        return false;
+      };
 
     return (
       <div>
-        <div className={`_${doc._id} document ${this.props.className} ${determineDirection(doc.file || {})}`} >
-          <Header/>
+        <div
+          className={`_${doc._id} document ${this.props.className} ${determineDirection(
+            doc.file || {}
+          )}`}
+        >
+          <Header />
           <div
             className="pages"
-            ref={ref => this.pagesContainer = ref}
+            ref={ref => (this.pagesContainer = ref)}
             onMouseUp={this.handleMouseUp.bind(this)}
             onTouchEnd={this.handleMouseUp.bind(this)}
             onClick={this.handleClick.bind(this)}
             onMouseOver={this.handleOver.bind(this)}
           >
-            <ShowIf if={!doc._id || !doc.pdfInfo}><Loader /></ShowIf>
+            <ShowIf if={!doc._id || !doc.pdfInfo}>
+              <Loader />
+            </ShowIf>
             <ShowIf if={!!doc._id && !!doc.pdfInfo}>
               <PDF
                 onPageChange={this.props.onPageChange}
@@ -139,7 +151,7 @@ export class Document extends Component {
 Document.defaultProps = {
   onDocumentReady: () => {},
   onPageChange: () => {},
-  selectedSnippet: Immutable.fromJS({})
+  selectedSnippet: Immutable.fromJS({}),
 };
 
 Document.propTypes = {

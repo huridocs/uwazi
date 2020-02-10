@@ -11,7 +11,7 @@ describe('I18NMenu', () => {
   beforeEach(() => {
     const languages = [
       { key: 'en', label: 'English', default: true },
-      { key: 'es', label: 'Español' }
+      { key: 'es', label: 'Español' },
     ];
 
     props = {
@@ -20,7 +20,7 @@ describe('I18NMenu', () => {
       i18nmode: false,
       location: {
         pathname: '/templates/2452345',
-        search: '?query=weneedmoreclerics'
+        search: '?query=weneedmoreclerics',
       },
       locale: 'es',
     };
@@ -72,20 +72,35 @@ describe('I18NMenu', () => {
       expect(links.length).toBe(2);
       expect(links.first().props().href).toBe('/en/templates/2452345?query=weneedmoreclerics');
       expect(links.last().props().href).toBe('/es/templates/2452345?query=weneedmoreclerics');
-      expect(component.find('li').last().props().className).toBe('menuNav-item is-active');
+      expect(
+        component
+          .find('li')
+          .last()
+          .props().className
+      ).toBe('menuNav-item is-active');
     });
 
     it('should render as active the passed language when params.lang is not defined', () => {
       props.params = {};
       props.language = 'es';
       render();
-      expect(component.find('li').last().props().className).toBe('menuNav-item is-active');
+      expect(
+        component
+          .find('li')
+          .last()
+          .props().className
+      ).toBe('menuNav-item is-active');
     });
 
     it('should render as active the selected language', () => {
       props.location.pathname = '/es/templates/2452345';
       render();
-      expect(component.find('li').last().props().className).toBe('menuNav-item is-active');
+      expect(
+        component
+          .find('li')
+          .last()
+          .props().className
+      ).toBe('menuNav-item is-active');
     });
 
     it('should render links for each language', () => {

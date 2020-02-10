@@ -1,5 +1,5 @@
 /** @format */
-/* eslint-disable no-param-reassign */
+/* eslint-disable no-param-reassign,max-statements */
 
 import { generateNamesAndIds } from 'api/templates/utils';
 import ID from 'shared/uniqueID';
@@ -13,7 +13,7 @@ import translationsModel from 'api/i18n/translations';
 import path from 'path';
 import PDF from 'api/upload/PDF';
 import paths from 'api/config/paths';
-import dictionariesModel from 'api/thesauris/dictionariesModel';
+import dictionariesModel from 'api/thesauri/dictionariesModel';
 import translate, { getContext } from 'shared/translate';
 import { deleteFiles } from '../utils/files.js';
 import model from './entitiesModel';
@@ -21,9 +21,9 @@ import { validateEntity } from './entitySchema';
 import settings from '../settings';
 
 /** Repopulate metadata object .label from thesauri and relationships. */
-async function denormalizeMetadata(entity, template, dictionariesByKey) {
-  if (!entity.metadata) {
-    return entity.metadata;
+async function denormalizeMetadata(metadata, entity, template, dictionariesByKey) {
+  if (!metadata) {
+    return metadata;
   }
 
   const translation = (await translationsModel.get({ locale: entity.language }))[0];
@@ -76,13 +76,13 @@ async function denormalizeMetadata(entity, template, dictionariesByKey) {
   if (!template) {
     template = await templates.getById(entity.template);
     if (!template) {
-      return entity.metadata;
+      return metadata;
     }
   }
-  return Object.keys(entity.metadata).reduce(
+  return Object.keys(metadata).reduce(
     async (meta, prop) => ({
       ...(await meta),
-      [prop]: await resolveProp(prop, entity.metadata[prop]),
+      [prop]: await resolveProp(prop, metadata[prop]),
     }),
     Promise.resolve({})
   );
@@ -120,14 +120,6 @@ async function updateEntity(entity, _template) {
   const currentDoc = docLanguages.find(d => d._id.toString() === entity._id.toString());
   return Promise.all(
     docLanguages.map(async d => {
-      if (entity.metadata) {
-        d.metadata = d.metadata || entity.metadata;
-        toSyncProperties.forEach(p => {
-          d.metadata[p] = entity.metadata[p] || [];
-        });
-        d.metadata = await denormalizeMetadata(d, template);
-      }
-
       if (d._id.toString() === entity._id.toString()) {
         if (
           (entity.title && currentDoc.title !== entity.title) ||
@@ -136,9 +128,34 @@ async function updateEntity(entity, _template) {
         ) {
           await this.renameRelatedEntityInMetadata({ ...currentDoc, ...entity });
         }
-        return entity.metadata
-          ? model.save({ ...entity, metadata: await denormalizeMetadata(entity, template) })
-          : model.save(entity);
+        const toSave = { ...entity };
+        if (entity.metadata) {
+          toSave.metadata = await denormalizeMetadata(entity.metadata, entity, template);
+        }
+        if (entity.suggestedMetadata) {
+          toSave.suggestedMetadata = await denormalizeMetadata(
+            entity.suggestedMetadata,
+            entity,
+            template
+          );
+        }
+        return model.save(toSave);
+      }
+
+      if (entity.metadata) {
+        d.metadata = d.metadata || entity.metadata;
+        toSyncProperties.forEach(p => {
+          d.metadata[p] = entity.metadata[p] || [];
+        });
+        d.metadata = await denormalizeMetadata(d.metadata, d, template);
+      }
+
+      if (entity.suggestedMetadata) {
+        d.suggestedMetadata = d.suggestedMetadata || entity.suggestedMetadata;
+        toSyncProperties.forEach(p => {
+          d.suggestedMetadata[p] = entity.suggestedMetadata[p] || [];
+        });
+        d.suggestedMetadata = await denormalizeMetadata(d.suggestedMetadata, d, template);
       }
 
       if (typeof entity.published !== 'undefined') {
@@ -168,7 +185,12 @@ async function createEntity(doc, languages, sharedId) {
       }
       langDoc.language = lang.key;
       langDoc.sharedId = sharedId;
-      langDoc.metadata = await denormalizeMetadata(langDoc, template);
+      langDoc.metadata = await denormalizeMetadata(langDoc.metadata, langDoc, template);
+      langDoc.suggestedMetadata = await denormalizeMetadata(
+        langDoc.suggestedMetadata,
+        langDoc,
+        template
+      );
       return model.save(langDoc);
     })
   );
@@ -286,6 +308,36 @@ export default {
     return entity;
   },
 
+  async denormalize(_doc, { user, language }) {
+    await validateEntity(_doc);
+    const doc = _doc;
+    if (!doc.sharedId) {
+      doc.user = user._id;
+      doc.creationDate = date.currentUTC();
+      doc.published = false;
+    }
+
+    doc.sharedId = doc.sharedId || ID();
+    const [template, [defaultTemplate]] = await Promise.all([
+      this.getEntityTemplate(doc, language),
+      templates.get({ default: true }),
+    ]);
+    let docTemplate = template;
+    if (!doc.template) {
+      doc.template = defaultTemplate._id;
+      doc.metadata = {};
+      docTemplate = defaultTemplate;
+    }
+    const entity = this.sanitize(doc, docTemplate);
+    entity.metadata = await denormalizeMetadata(entity.metadata, entity, docTemplate);
+    entity.suggestedMetadata = await denormalizeMetadata(
+      entity.suggestedMetadata,
+      entity,
+      docTemplate
+    );
+    return entity;
+  },
+
   /** Bulk rebuild relationship-based metadata objects as {value = id, label: title}. */
   async bulkUpdateMetadataFromRelationships(query, language, limit = 200) {
     const process = async (offset, totalRows) => {
@@ -294,7 +346,10 @@ export default {
       }
 
       const entities = await this.get(query, 'sharedId', { skip: offset, limit });
-      await this.updateMetdataFromRelationships(entities.map(entity => entity.sharedId), language);
+      await this.updateMetdataFromRelationships(
+        entities.map(entity => entity.sharedId),
+        language
+      );
       await process(offset + limit, totalRows);
     };
     const totalRows = await this.count(query);
@@ -680,7 +735,8 @@ export default {
         delete entity._id;
         delete entity.__v;
         entity.language = language;
-        entity.metadata = await this.denormalizeMetadata(entity);
+        entity.metadata = await this.denormalizeMetadata(entity.metadata, entity);
+        entity.suggestedMetadata = await this.denormalizeMetadata(entity.suggestedMetadata, entity);
         return entity;
       })
     );

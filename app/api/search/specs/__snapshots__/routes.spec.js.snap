@@ -66,6 +66,12 @@ Object {
         "",
       ],
     },
+    "select": Object {
+      "flags": Object {
+        "sparse": false,
+      },
+      "type": "array",
+    },
     "sort": Object {
       "invalids": Array [
         "",

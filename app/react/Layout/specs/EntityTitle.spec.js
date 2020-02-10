@@ -12,25 +12,25 @@ describe('EntityTitle', () => {
   beforeEach(() => {
     props = {
       context: 'template1',
-      entity: 'entity1SharedId'
+      entity: 'entity1SharedId',
     };
 
     state = {
       thesauris: Immutable.fromJS([
         { type: 'notTemplate' },
-        { type: 'template',
+        {
+          type: 'template',
           _id: 'template1',
           values: [
             { id: 'entity1SharedId', label: 'Entity 1' },
             { id: 'entity2SharedId', label: 'Entity 2' },
-          ]
+          ],
         },
-        { type: 'template',
+        {
+          type: 'template',
           _id: 'template2',
-          values: [
-            { id: 'entity3SharedId', label: 'Entity 3' },
-          ]
-        }
+          values: [{ id: 'entity3SharedId', label: 'Entity 3' }],
+        },
       ]),
     };
   });

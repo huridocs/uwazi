@@ -243,7 +243,7 @@ export default function() {
 
     filterMetadata(filters = []) {
       filters.forEach(filter => {
-        const match = filterToMatch(filter);
+        const match = filterToMatch(filter, filter.suggested ? 'suggestedMetadata' : 'metadata');
         if (match) {
           addFilter(match);
         }
@@ -259,6 +259,19 @@ export default function() {
           baseQuery
         );
       });
+      // suggested has an implied '_' as a prefix
+      properties
+        .filter(
+          p => (dictionaries.find(d => p.content === d._id.toString()) || {}).enable_classification
+        )
+        .forEach(property => {
+          baseQuery.aggregations.all.aggregations[`_${property.name}`] = propertyToAggregation(
+            property,
+            dictionaries,
+            baseQuery,
+            true
+          );
+        });
       return this;
     },
 

@@ -17,18 +17,18 @@ describe('NestedMultiselect', () => {
               doc_count: 4,
               filtered: {
                 doc_count: 2,
-                total: { doc_count: 4, filtered: { doc_count: 2 } }
-              }
+                total: { doc_count: 4, filtered: { doc_count: 2 } },
+              },
             },
             {
               key: '1.1',
               doc_count: 3,
               filtered: {
                 doc_count: 2,
-                total: { doc_count: 3, filtered: { doc_count: 2 } }
-              }
-            }
-          ]
+                total: { doc_count: 3, filtered: { doc_count: 2 } },
+              },
+            },
+          ],
         },
         cjh: {
           buckets: [
@@ -37,18 +37,18 @@ describe('NestedMultiselect', () => {
               doc_count: 4,
               filtered: {
                 doc_count: 2,
-                total: { doc_count: 4, filtered: { doc_count: 2 } }
-              }
+                total: { doc_count: 4, filtered: { doc_count: 2 } },
+              },
             },
             {
               key: '1.2',
               doc_count: 3,
               filtered: {
                 doc_count: 2,
-                total: { doc_count: 4, filtered: { doc_count: 2 } }
-              }
-            }
-          ]
+                total: { doc_count: 4, filtered: { doc_count: 2 } },
+              },
+            },
+          ],
         },
         acb: {
           buckets: [
@@ -57,13 +57,13 @@ describe('NestedMultiselect', () => {
               doc_count: 3,
               filtered: {
                 doc_count: 2,
-                total: { doc_count: 4, filtered: { doc_count: 2 } }
-              }
-            }
-          ]
-        }
-      }
-    }
+                total: { doc_count: 4, filtered: { doc_count: 2 } },
+              },
+            },
+          ],
+        },
+      },
+    },
   };
 
   beforeEach(() => {
@@ -72,22 +72,32 @@ describe('NestedMultiselect', () => {
       value: [],
       property: { name: 'nested_property', nestedProperties: ['acd', 'cjh', 'acb'] },
       onChange: jasmine.createSpy('onChange'),
-      aggregations: Immutable.fromJS(aggregations)
+      aggregations: Immutable.fromJS(aggregations),
     };
   });
 
   const render = () => {
-    component = shallow(<NestedMultiselect {...props}/>);
+    component = shallow(<NestedMultiselect {...props} />);
   };
 
   it('should render the groups', () => {
     render();
     const optionElements = component.find(Control);
     expect(optionElements.length).toBe(2);
-    expect(optionElements.first().props().model).toBe('.filters.nested_property.properties.acd.values');
-    expect(optionElements.first().props().options).toEqual([{ label: '1', results: 2, value: '1' }, { label: '1.1', results: 2, value: '1.1' }]);
+    expect(optionElements.first().props().model).toBe(
+      '.filters.nested_property.properties.acd.values'
+    );
+    expect(optionElements.first().props().options).toEqual([
+      { label: '1', results: 2, value: '1' },
+      { label: '1.1', results: 2, value: '1.1' },
+    ]);
 
-    expect(optionElements.last().props().model).toBe('.filters.nested_property.properties.cjh.values');
-    expect(optionElements.first().props().options).toEqual([{ label: '1', results: 2, value: '1' }, { label: '1.1', results: 2, value: '1.1' }]);
+    expect(optionElements.last().props().model).toBe(
+      '.filters.nested_property.properties.cjh.values'
+    );
+    expect(optionElements.first().props().options).toEqual([
+      { label: '1', results: 2, value: '1' },
+      { label: '1.1', results: 2, value: '1.1' },
+    ]);
   });
 });

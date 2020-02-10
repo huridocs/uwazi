@@ -2,13 +2,18 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Map } from 'immutable';
 
-const DescriptionWrapper = (props) => {
+const DescriptionWrapper = props => {
   const { entry, toggleExpand, expanded, children } = props;
 
   return (
     <div>
       <div>
-        <span className="expand" onClick={() => { toggleExpand(); }}>
+        <span
+          className="expand"
+          onClick={() => {
+            toggleExpand();
+          }}
+        >
           {children}
         </span>
       </div>
@@ -19,7 +24,9 @@ const DescriptionWrapper = (props) => {
               {entry.getIn(['semantic', 'beautified']) && (
                 <tr>
                   <td>Route</td>
-                  <td>{entry.get('method')} : {entry.get('url')}</td>
+                  <td>
+                    {entry.get('method')} : {entry.get('url')}
+                  </td>
                 </tr>
               )}
               <tr>
@@ -47,7 +54,7 @@ DescriptionWrapper.propTypes = {
   entry: PropTypes.instanceOf(Map).isRequired,
   toggleExpand: PropTypes.func.isRequired,
   expanded: PropTypes.bool,
-  children: PropTypes.node
+  children: PropTypes.node,
 };
 
 export default DescriptionWrapper;

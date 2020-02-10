@@ -15,10 +15,12 @@ describe('pagesAPI', () => {
   beforeEach(() => {
     backend.restore();
     backend
-    .get(`${APIURL}pages?param=value`, { body: JSON.stringify([singleResponse]) })
-    .get(`${APIURL}page?param=id`, { body: JSON.stringify(singleResponse) })
-    .post(`${APIURL}pages`, { body: JSON.stringify({ backendResponse: 'post' }) })
-    .delete(`${APIURL}pages?sharedId=id`, { body: JSON.stringify({ backendResponse: 'delete' }) });
+      .get(`${APIURL}pages?param=value`, { body: JSON.stringify([singleResponse]) })
+      .get(`${APIURL}page?param=id`, { body: JSON.stringify(singleResponse) })
+      .post(`${APIURL}pages`, { body: JSON.stringify({ backendResponse: 'post' }) })
+      .delete(`${APIURL}pages?sharedId=id`, {
+        body: JSON.stringify({ backendResponse: 'delete' }),
+      });
   });
 
   afterEach(() => backend.restore());
@@ -40,7 +42,9 @@ describe('pagesAPI', () => {
   describe('save()', () => {
     it('should post the document data to /pages', async () => {
       const response = await requestFor(pagesAPI.save, { title: 'document name' });
-      expect(JSON.parse(backend.lastOptions(`${APIURL}pages`).body)).toEqual({ title: 'document name' });
+      expect(JSON.parse(backend.lastOptions(`${APIURL}pages`).body)).toEqual({
+        title: 'document name',
+      });
       expect(response).toEqual({ backendResponse: 'post' });
     });
   });

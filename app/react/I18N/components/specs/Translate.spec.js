@@ -11,12 +11,12 @@ describe('Translate', () => {
     props = {
       translationKey: 'Search',
       text: 'Buscar',
-      edit: jasmine.createSpy('edit')
+      edit: jasmine.createSpy('edit'),
     };
   });
 
   const render = () => {
-    component = shallow(<Translate {...props} >Search</Translate>);
+    component = shallow(<Translate {...props}>Search</Translate>);
   };
 
   describe('render', () => {
@@ -68,7 +68,7 @@ describe('Translate', () => {
     beforeEach(() => {
       translations = [
         { locale: 'en', contexts: [{ id: 'System', values: { Search: 'Search' } }] },
-        { locale: 'es', contexts: [{ id: 'System', values: { Search: 'Buscar' } }] }
+        { locale: 'es', contexts: [{ id: 'System', values: { Search: 'Buscar' } }] },
       ];
     });
 
@@ -77,7 +77,7 @@ describe('Translate', () => {
       const state = {
         locale: 'es',
         inlineEdit: Immutable.fromJS({ inlineEdit: true }),
-        translations: Immutable.fromJS(translations)
+        translations: Immutable.fromJS(translations),
       };
       expect(mapStateToProps(state, props).text).toBe('Buscar');
       expect(mapStateToProps(state, props).i18nmode).toBe(true);
@@ -88,7 +88,7 @@ describe('Translate', () => {
       const state = {
         locale: 'es',
         inlineEdit: Immutable.fromJS({ inlineEdit: true }),
-        translations: Immutable.fromJS(translations)
+        translations: Immutable.fromJS(translations),
       };
       expect(mapStateToProps(state, props).text).toBe('Buscar');
       expect(mapStateToProps(state, props).i18nmode).toBe(true);
@@ -99,7 +99,7 @@ describe('Translate', () => {
       const state = {
         locale: 'es',
         inlineEdit: Immutable.fromJS({ inlineEdit: true }),
-        translations: Immutable.fromJS(translations)
+        translations: Immutable.fromJS(translations),
       };
       mapStateToProps(state, props);
       expect(Translate.translation.locale).toBe('es');

@@ -53,15 +53,20 @@ export class ListItem extends Component {
 export class IconSelector extends Component {
   componentWillMount() {
     const listOptions = [{ _id: null, type: 'Empty' }]
-    .concat(iconNames.map(icon => ({
-      _id: icon,
-      type: 'Icons',
-      label: icon
-    }))).concat(countries.map(country => ({
-      _id: country.cca3,
-      type: 'Flags',
-      label: country.name.common
-    })));
+      .concat(
+        iconNames.map(icon => ({
+          _id: icon,
+          type: 'Icons',
+          label: icon,
+        }))
+      )
+      .concat(
+        countries.map(country => ({
+          _id: country.cca3,
+          type: 'Flags',
+          label: country.name.common,
+        }))
+      );
 
     this.setState({ listOptions });
   }
@@ -77,14 +82,14 @@ export class IconSelector extends Component {
         defaultValue={this.state.listOptions[0]}
         filter="contains"
         groupBy="type"
-        {... this.props}
+        {...this.props}
       />
     );
   }
 }
 
 ListItem.propTypes = {
-  item: PropTypes.object
+  item: PropTypes.object,
 };
 
 export default IconSelector;

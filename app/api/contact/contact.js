@@ -12,5 +12,5 @@ export default {
     };
 
     return mailer.send(mailOptions);
-  }
+  },
 };

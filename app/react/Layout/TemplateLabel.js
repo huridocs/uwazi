@@ -7,14 +7,14 @@ import t from '../I18N/t';
 
 const getTemplateInfo = createSelector(
   s => s.templates,
-  (s, p) => p.template,
+  (_s, p) => p.template,
   (templates, currentTemplate) => {
     let styleProps;
     const name = templates.reduce((result, template, index) => {
       if (template.get('_id') === currentTemplate) {
-        styleProps = template.get('color') ?
-          { className: 'btn-color', style: { backgroundColor: template.get('color') } } :
-          { className: `btn-color btn-color-${index % COLORS.length}` };
+        styleProps = template.get('color')
+          ? { className: 'btn-color', style: { backgroundColor: template.get('color') } }
+          : { className: `btn-color btn-color-${index % COLORS.length}` };
         return template.get('name');
       }
       return result;
@@ -37,14 +37,14 @@ export class TemplateLabel extends Component {
 
 TemplateLabel.defaultProps = {
   className: 'btn-color',
-  style: undefined
+  style: undefined,
 };
 
 TemplateLabel.propTypes = {
   template: PropTypes.string,
   name: PropTypes.string,
   className: PropTypes.string,
-  style: PropTypes.shape({ backgroundColor: PropTypes.string })
+  style: PropTypes.shape({ backgroundColor: PropTypes.string }),
 };
 
 const mapStateToProps = (state, props) => {
@@ -52,7 +52,7 @@ const mapStateToProps = (state, props) => {
   return {
     name: template.name,
     template: props.template,
-    ...template.styleProps
+    ...template.styleProps,
   };
 };
 

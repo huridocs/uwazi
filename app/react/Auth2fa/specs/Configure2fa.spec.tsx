@@ -24,6 +24,7 @@ const mockSetSecret = () => {
 
 const mockEnable = () => {
   spyOn(Auth2faAPI, 'enable').and.callFake(params => {
+    // @ts-ignore params.data may be undefined
     if (params instanceof RequestParams && params.data.token === 'correctToken') {
       return { success: true };
     }
