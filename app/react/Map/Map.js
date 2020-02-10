@@ -2,9 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import ReactMapGL, { Marker, Popup, NavigationControl } from 'react-map-gl';
 import Immutable from 'immutable';
-
 import { Icon } from 'UI';
-
 import { isClient } from 'app/utils';
 import Supercluster from 'supercluster'; //eslint-disable-line
 import _style from './style.json';
