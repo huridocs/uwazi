@@ -10,6 +10,7 @@ export interface EntitySchema {
   mongoLanguage?: string;
   title?: string;
   template?: ObjectIdSchema;
+  published?: boolean;
   file?: {
     originalname?: string;
     filename?: string;

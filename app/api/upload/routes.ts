@@ -33,6 +33,30 @@ export default (app: Application) => {
     }
   );
 
+  app.delete(
+    '/api/upload/document',
+    needsAuthorization(['admin', 'editor']),
+
+    validation.validateRequest({
+      properties: {
+        query: {
+          properties: {
+            _id: { type: 'string' },
+          },
+        },
+      },
+    }),
+
+    (req: Request, res: Response, next: NextFunction) => {
+      uploads
+        .delete(req.query._id)
+        .then(result => {
+          res.json(result);
+        })
+        .catch(next);
+    }
+  );
+
   app.post(
     '/api/customisation/upload',
     needsAuthorization(['admin', 'editor']),

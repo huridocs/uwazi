@@ -162,10 +162,6 @@ async function updateEntity(entity, _template) {
         d.published = entity.published;
       }
 
-      if (entity.toc && currentDoc.file && d.file.filename === currentDoc.file.filename) {
-        d.toc = entity.toc;
-      }
-
       if (typeof entity.template !== 'undefined') {
         d.template = entity.template;
       }
@@ -758,7 +754,7 @@ export default {
         return;
       }
 
-      const entities = await this.get({ language: defaultLanguage }, '+fullText', {
+      const entities = await this.get({ language: defaultLanguage }, '', {
         skip: offset,
         limit,
       });

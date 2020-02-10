@@ -239,41 +239,6 @@ describe('entities', () => {
       });
     });
 
-    describe('when other languages have the same file', () => {
-      it('should replicate the toc being saved', done => {
-        const doc = {
-          _id: batmanFinishesId,
-          sharedId: 'shared',
-          metadata: { text: [{ value: 'newMetadata' }] },
-          template: templateId,
-          toc: [{ label: 'entry1' }],
-          file: { filename: '8202c463d6158af8065022d9b5014cc1.pdf' },
-        };
-
-        entities
-          .save(doc, { language: 'en' })
-          .then(updatedDoc => {
-            expect(updatedDoc.language).toBe('en');
-            return Promise.all([
-              entities.getById('shared', 'es'),
-              entities.getById('shared', 'en'),
-              entities.getById('shared', 'pt'),
-            ]);
-          })
-          .then(([docES, docEN, docPT]) => {
-            expect(docEN.published).toBe(true);
-            expect(docES.published).toBe(true);
-            expect(docPT.published).toBe(true);
-
-            expect(docEN.toc[0].label).toBe(doc.toc[0].label);
-            expect(docES.toc).toBeUndefined();
-            expect(docPT.toc[0].label).toBe(doc.toc[0].label);
-            done();
-          })
-          .catch(catchErrors(done));
-      });
-    });
-
     describe('when icon changes', () => {
       it('should update icon on entities with the entity as relationship', async () => {
         const doc = {
@@ -1161,9 +1126,8 @@ describe('entities', () => {
 
       await entities.saveMultiple([{ _id: docId1, file: {} }]);
       await entities.addLanguage('ab', 2);
-      const newEntities = await entities.get({ language: 'ab' }, '+fullText');
+      const newEntities = await entities.get({ language: 'ab' });
 
-      expect(newEntities.find(e => e.sharedId === 'shared1').fullText).toEqual({ 1: 'text' });
       expect(newEntities.length).toBe(11);
     });
   });

@@ -74,6 +74,7 @@ export const entitySchema = {
     mongoLanguage: { type: 'string' },
     title: { type: 'string', minLength: 1 },
     template: objectIdSchema,
+    published: { type: 'boolean' },
     file: {
       type: 'object',
       additionalProperties: false,
