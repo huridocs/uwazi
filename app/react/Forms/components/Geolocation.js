@@ -4,7 +4,6 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import Map from 'app/Map/Map';
 import { Translate } from 'app/I18N';
-import { isArray } from 'util';
 
 const defaultValue = { lat: '', lon: '', label: '' };
 
