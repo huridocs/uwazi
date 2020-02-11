@@ -50,7 +50,12 @@ describe('PropertyOption', () => {
     });
 
     it('should not add a property when clicked if disabled', () => {
-      const props = { label: 'test', disabled: true, type: 'optionType', addProperty: jasmine.createSpy().and.returnValue({}) };
+      const props = {
+        label: 'test',
+        disabled: true,
+        type: 'optionType',
+        addProperty: jasmine.createSpy().and.returnValue({}),
+      };
       TestComponent = wrapInTestContext(dragSourceOption);
       component = renderComponent(TestComponent, props);
       const button = TestUtils.findRenderedDOMComponentWithTag(component, 'button');
@@ -59,7 +64,11 @@ describe('PropertyOption', () => {
     });
 
     it('should add a property when clicked', () => {
-      const props = { label: 'test', type: 'optionType', addProperty: jasmine.createSpy().and.returnValue({}) };
+      const props = {
+        label: 'test',
+        type: 'optionType',
+        addProperty: jasmine.createSpy().and.returnValue({}),
+      };
       TestComponent = wrapInTestContext(dragSourceOption);
       component = renderComponent(TestComponent, props);
       const button = TestUtils.findRenderedDOMComponentWithTag(component, 'button');
