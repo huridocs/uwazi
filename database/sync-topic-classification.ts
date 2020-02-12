@@ -160,8 +160,10 @@ async function handleResponse(
 
   if (mode === modes.autoaccept) {
     if (((e.metadata ?? {})[prop.name] ?? []).length) {
-      console.error(`Will not overwrite previous metadata for ${e.sharedId}`);
-      return false;
+      if (!overwrite || !e.metadata![prop.name]!.every(v => v.provenance === 'BULK_ACCEPT')) {
+        console.error(`Will not overwrite previous metadata for ${e.sharedId}`);
+        return false;
+      }
     }
     if (!newPropMetadata.length) {
       return false;
