@@ -13,6 +13,7 @@ class PDFPage extends Component {
     }
 
     this.props.getViewportContainer().addEventListener('scroll', this.scrollCallback);
+    this._mounted = true;
   }
 
   componentWillUnmount() {
@@ -20,6 +21,7 @@ class PDFPage extends Component {
       this.pdfPageView.destroy();
     }
     this.props.getViewportContainer().removeEventListener('scroll', this.scrollCallback);
+    this._mounted = false;
   }
 
   scroll() {
@@ -105,7 +107,9 @@ class PDFPage extends Component {
         this.pdfPageView
           .draw()
           .then(() => {
-            this.setState({ height: this.pdfPageView.viewport.height });
+            if (this._mounted) {
+              this.setState({ height: this.pdfPageView.viewport.height });
+            }
           })
           .catch(e => e);
       });
