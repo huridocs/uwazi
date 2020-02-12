@@ -79,8 +79,8 @@ export default app => {
   });
 
   app.get('/remotecaptcha', async (req, res) => {
-    const _settings = await settings.get(true);
-    const remoteResponse = await fetch(urljoin(_settings.publicFormDestination, '/captcha'));
+    const { publicFormDestination } = await settings.get({}, { publicFormDestination: 1 });
+    const remoteResponse = await fetch(urljoin(publicFormDestination, '/captcha'));
     const [remotecookie] = remoteResponse.headers._headers['set-cookie'];
     req.session.remotecookie = remotecookie;
     res.type('svg');
