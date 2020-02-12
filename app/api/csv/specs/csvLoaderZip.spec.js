@@ -40,7 +40,7 @@ describe('csvLoader zip file', () => {
     spyOn(fileUtils, 'generateFileName').and.callFake(file => `generated${file.originalname}`);
     configPaths.uploadedDocuments = path.join(__dirname, '/zipData/');
     await loader.load(zip, template1Id);
-    imported = await uploads.get({}, '+fullText');
+    imported = await uploads.get({ type: 'document' }, '+fullText');
   });
 
   afterAll(async () => {

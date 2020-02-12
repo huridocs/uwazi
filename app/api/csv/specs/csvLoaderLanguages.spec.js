@@ -85,7 +85,7 @@ describe('csvLoader languages', () => {
   });
 
   it('should import translated files', async () => {
-    const importedFiles = await uploads.get();
+    const importedFiles = await uploads.get({ type: 'document' });
     expect(importedFiles.map(f => f.filename)).toEqual(['generated2.pdf', 'generated1.pdf']);
   });
 });
