@@ -1,5 +1,3 @@
-/** @format */
-
 import db from 'api/utils/testing_db';
 
 const entityId = db.id();

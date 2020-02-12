@@ -23,7 +23,7 @@ export const uploadSchema = {
     size: { type: 'number' },
     creationDate: { type: 'number' },
     language: { type: 'string', minLength: 1 },
-    type: { type: 'string', enum: ['custom', 'document'] },
+    type: { type: 'string', enum: ['custom', 'document', 'thumbnail'] },
     totalPages: { type: 'number' },
     processed: { type: 'boolean' },
     fullText: {

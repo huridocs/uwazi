@@ -49,22 +49,15 @@ class PDF extends EventEmitter {
   }
 
   async createThumbnail(documentId) {
+    const thumbnailPath = this.getThumbnailPath(documentId);
     let response;
     try {
-      response = await spawn(
+      await spawn(
         'pdftoppm',
-        [
-          '-f',
-          '1',
-          '-singlefile',
-          '-scale-to',
-          '320',
-          '-jpeg',
-          this.filepath,
-          this.getThumbnailPath(documentId),
-        ],
+        ['-f', '1', '-singlefile', '-scale-to', '320', '-jpeg', this.filepath, thumbnailPath],
         { capture: ['stdout', 'stderr'] }
       );
+      response = `${documentId}.jpg`;
     } catch (err) {
       response = err;
       errorLog.error(`Thumbnail creation error for: ${this.filepath}`);

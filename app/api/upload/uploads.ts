@@ -1,22 +1,8 @@
-import fs from 'fs';
-import path from 'path';
+import { deleteFiles, uploadsPath } from 'api/utils/files';
 
-import { ObjectIdSchema } from 'shared/types/commonTypes';
-
-import paths from '../config/paths';
 import model from './uploadsModel';
 import { validateUpload } from './uploadSchema';
 import { UploadSchema } from './uploadType';
-
-const deleteFile = async (filename: string) =>
-  new Promise((resolve, reject) => {
-    fs.unlink(path.join(paths.customUploads, filename), err => {
-      if (err) {
-        reject(err);
-      }
-      resolve();
-    });
-  });
 
 export default {
   async save(upload: UploadSchema) {
@@ -25,12 +11,17 @@ export default {
 
   get: model.get.bind(model),
 
-  async delete(_id: ObjectIdSchema) {
-    const upload: UploadSchema = (await model.getById(_id)) || { filename: '' };
+  async delete(query: any = {}) {
+    const uploads: UploadSchema[] = (await model.get(query)) || { filename: '' };
 
-    await model.delete(_id);
-    await deleteFile(upload.filename || '');
+    await model.delete(query);
 
-    return upload;
+    const files = uploads.map(u => uploadsPath(u.filename || ''));
+    // get rid of this special case by treating thumbnails as another upload
+    const thumbnails = uploads.map(u => uploadsPath(`${u._id?.toString()}.jpg` || ''));
+    //
+    await deleteFiles(files.concat(thumbnails));
+
+    return uploads;
   },
 };

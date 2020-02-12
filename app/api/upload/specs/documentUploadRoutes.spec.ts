@@ -1,5 +1,3 @@
-/** @format */
-
 import path from 'path';
 import fs from 'fs';
 import request, { Response as SuperTestResponse } from 'supertest';
@@ -85,10 +83,13 @@ describe('upload routes', () => {
     it('should generate a thumbnail for the document', async () => {
       await uploadDocument('uploads/f2082bf51b6ef839690485d7153e847a.pdf');
 
-      const [upload] = await uploads.get({ entity: 'sharedId1' }, '+fullText');
-      const thumbnailName = `${upload._id}.jpg`;
+      const [{ filename = '', language }] = await uploads.get({
+        entity: 'sharedId1',
+        type: 'thumbnail',
+      });
 
-      expect(fs.readFileSync(uploadsPath(thumbnailName))).toBeDefined();
+      expect(language).toBe('other');
+      expect(fs.readFileSync(uploadsPath(filename))).toBeDefined();
     });
 
     describe('Language detection', () => {

@@ -16,7 +16,7 @@ export interface UploadSchema {
   size?: number;
   creationDate?: number;
   language?: string;
-  type?: 'custom' | 'document';
+  type?: 'custom' | 'document' | 'thumbnail';
   totalPages?: number;
   processed?: boolean;
   fullText?: {

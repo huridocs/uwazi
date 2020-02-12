@@ -18,6 +18,7 @@ import { deleteFiles } from '../utils/files';
 import model from './entitiesModel';
 import { validateEntity } from './entitySchema';
 import settings from '../settings';
+import uploads from '../upload/uploads';
 
 /** Repopulate metadata object .label from thesauri and relationships. */
 async function denormalizeMetadata(metadata, entity, template, dictionariesByKey) {
@@ -564,6 +565,7 @@ export default {
     }
     await Promise.all([
       relationships.delete({ entity: sharedId }, null, false),
+      uploads.delete({ entity: sharedId }),
       this.deleteFiles(docs),
       this.deleteRelatedEntityFromMetadata(docs[0]),
     ]);

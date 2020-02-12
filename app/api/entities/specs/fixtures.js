@@ -31,8 +31,67 @@ const relationType1 = db.id();
 const relationType2 = db.id();
 const relationType3 = db.id();
 const relationType4 = db.id();
+const uploadId1 = db.id();
+const uploadId2 = db.id();
 
 export default {
+  uploads: [
+    {
+      _id: uploadId1,
+      entity: 'shared',
+      filename: '8202c463d6158af8065022d9b5014cc1.pdf',
+      language: 'en',
+      fullText: {
+        1: 'page[[1]] 1[[1]]',
+        2: 'page[[2]] 2[[2]]',
+        3: '',
+      },
+    },
+    {
+      _id: uploadId2,
+      entity: 'shared',
+      filename: '8202c463d6158af8065022d9b5014ccb.pdf',
+      language: 'es',
+      fullText: { 1: 'text' },
+    },
+    {
+      entity: 'shared',
+      filename: '8202c463d6158af8065022d9b5014ccc.pdf',
+      language: 'pt',
+    },
+    {
+      entity: 'shared1',
+      language: 'en',
+      filename: 'nonexistent.pdf',
+      fullText: { 1: 'text' },
+    },
+    {
+      entity: 'shared1',
+      filename: 'nonexistent.pdf',
+      language: 'es',
+    },
+    {
+      entity: 'shared1',
+      filename: 'nonexistent.pdf',
+      language: 'pt',
+    },
+    {
+      entity: 'shared10',
+      filename: '123.pdf',
+      language: 'pt',
+    },
+    {
+      entity: 'multiselect',
+      filename: '123.pdf',
+      language: 'en',
+    },
+    {
+      entity: 'multiselect',
+      filename: '123.pdf',
+      language: 'es',
+      fullText: { 1: 'text' },
+    },
+  ],
   entities: [
     {
       _id: batmanFinishesId,
@@ -42,18 +101,10 @@ export default {
       language: 'en',
       title: 'Batman finishes',
       published: true,
-      fullText: {
-        1: 'page[[1]] 1[[1]]',
-        2: 'page[[2]] 2[[2]]',
-        3: '',
-      },
       metadata: {
         property1: [{ value: 'value1' }],
         friends: [{ icon: null, label: 'shared2title', type: 'entity', value: 'shared2' }],
         enemies: [{ icon: null, label: 'shared2title', type: 'entity', value: 'shared2' }],
-      },
-      file: {
-        filename: '8202c463d6158af8065022d9b5014cc1.pdf',
       },
     },
     {
@@ -64,9 +115,7 @@ export default {
       title: 'Penguin almost done',
       creationDate: 1,
       published: true,
-      file: { filename: '8202c463d6158af8065022d9b5014ccb.pdf' },
       attachments: [{ filename: '8202c463d6158af8065022d9b5014ccc.pdf' }],
-      fullText: { 1: 'text' },
     },
     {
       _id: docId2,
@@ -77,7 +126,6 @@ export default {
       creationDate: 1,
       published: true,
       metadata: { text: [{ value: 'test' }] },
-      file: { filename: '8202c463d6158af8065022d9b5014cc1.pdf' },
     },
     {
       _id: unpublishedDocId,
@@ -118,7 +166,6 @@ export default {
       title: 'EN',
       published: true,
       metadata: { property1: [{ value: 'text' }] },
-      file: { filename: 'nonexistent.pdf' },
     },
     {
       _id: db.id(),
@@ -130,8 +177,6 @@ export default {
       creationDate: 1,
       published: true,
       metadata: { property1: [{ value: 'text' }] },
-      file: { filename: 'nonexistent.pdf' },
-      fullText: { 1: 'text' },
     },
     {
       _id: db.id(),
@@ -143,7 +188,6 @@ export default {
       creationDate: 1,
       published: true,
       metadata: { property1: [{ value: 'text' }] },
-      file: { filename: 'nonexistent.pdf' },
     },
     //docs to change metadata property names
     {
@@ -160,7 +204,6 @@ export default {
         property2: [{ value: 'value2' }],
         property3: [{ value: 'value3' }],
       },
-      file: { filename: '123.pdf' },
     },
     {
       _id: db.id(),
@@ -176,7 +219,6 @@ export default {
         property2: [{ value: 'value2' }],
         property3: [{ value: 'value3' }],
       },
-      file: { filename: '123.pdf' },
     },
     //docs using entity as thesauri
     {
@@ -187,7 +229,6 @@ export default {
       type: 'entity',
       language: 'en',
       metadata: { multiselect: [{ value: 'shared' }, { value: 'value1' }] },
-      file: { filename: '123.pdf' },
     },
     {
       title: 'title',
@@ -197,8 +238,6 @@ export default {
       type: 'entity',
       language: 'es',
       metadata: { multiselect2: [{ value: 'shared' }, { value: 'value2' }] },
-      file: { filename: '123.pdf' },
-      fullText: { 1: 'text' },
     },
     {
       title: 'title',
@@ -425,4 +464,6 @@ export {
   c1,
   c2,
   unpublishedDocId,
+  uploadId1,
+  uploadId2,
 };

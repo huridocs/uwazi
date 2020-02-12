@@ -75,18 +75,6 @@ export const entitySchema = {
     title: { type: 'string', minLength: 1 },
     template: objectIdSchema,
     published: { type: 'boolean' },
-    file: {
-      type: 'object',
-      additionalProperties: false,
-      properties: {
-        originalname: { type: 'string' },
-        filename: { type: 'string' },
-        mimetype: { type: 'string' },
-        size: { type: 'number' },
-        timestamp: { type: 'number' },
-        language: { type: 'string' },
-      },
-    },
     icon: {
       type: 'object',
       additionalProperties: false,

@@ -11,14 +11,6 @@ export interface EntitySchema {
   title?: string;
   template?: ObjectIdSchema;
   published?: boolean;
-  file?: {
-    originalname?: string;
-    filename?: string;
-    mimetype?: string;
-    size?: number;
-    timestamp?: number;
-    language?: string;
-  };
   icon?: {
     _id?: string | null;
     label?: string;

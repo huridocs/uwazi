@@ -12,7 +12,7 @@ import configPaths from '../config/paths';
 export type FilePath = string;
 export type File = Express.Multer.File;
 
-function deleteFile(file: FilePath) {
+async function deleteFile(file: FilePath) {
   return new Promise((resolve, reject) => {
     fs.unlink(file, err => {
       if (err && err.code !== 'ENOENT') {
@@ -23,18 +23,18 @@ function deleteFile(file: FilePath) {
   });
 }
 
-function deleteFiles(files: FilePath[]) {
-  return Promise.all(files.map(file => deleteFile(file)));
+async function deleteFiles(files: FilePath[]) {
+  return Promise.all(files.map(async file => deleteFile(file)));
 }
 
 const uploadsPath = (fileName: FilePath): FilePath =>
   path.join(configPaths.uploadedDocuments, fileName);
 
-const deleteUploadedFile = (fileName: FilePath) => deleteFile(uploadsPath(fileName));
+const deleteUploadedFile = async (fileName: FilePath) => deleteFile(uploadsPath(fileName));
 
 const generateFileName = (file: File) => Date.now() + ID() + path.extname(file.originalname);
 
-const fileFromReadStream = (fileName: FilePath, readStream: Readable): Promise<FilePath> =>
+const fileFromReadStream = async (fileName: FilePath, readStream: Readable): Promise<FilePath> =>
   new Promise((resolve, reject) => {
     const filePath = uploadsPath(fileName);
     const writeStream = fs.createWriteStream(filePath);
@@ -44,7 +44,7 @@ const fileFromReadStream = (fileName: FilePath, readStream: Readable): Promise<F
       .on('error', reject);
   });
 
-const streamToString = (stream: Readable): Promise<string> =>
+const streamToString = async (stream: Readable): Promise<string> =>
   new Promise((resolve, reject) => {
     const chunks: any[] = [];
     stream.on('data', (chunk: any) => chunks.push(chunk));
@@ -52,7 +52,7 @@ const streamToString = (stream: Readable): Promise<string> =>
     stream.on('end', () => resolve(Buffer.concat(chunks).toString('utf8')));
   });
 
-const getFileContent = (fileName: FilePath): Promise<string> =>
+const getFileContent = async (fileName: FilePath): Promise<string> =>
   asyncFS.readFile(uploadsPath(fileName), 'utf8');
 
 export {

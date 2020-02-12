@@ -17,7 +17,14 @@ export const processDocument = async (entitySharedId: string, file: File) => {
 
   const conversion = await pdf.convert();
 
-  await pdf.createThumbnail(upload._id.toString());
+  const thumbnail = await pdf.createThumbnail(upload._id.toString());
+
+  // await uploads.save({
+  //   entity: entitySharedId,
+  //   type: 'thumbnail',
+  //   language: conversion.language,
+  //   filename: thumbnail,
+  // });
 
   return uploads.save({
     ...upload,
