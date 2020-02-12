@@ -103,34 +103,4 @@ export default app => {
         .catch(next);
     }
   );
-
-  app.get(
-    '/api/documents/download',
-
-    validation.validateRequest(
-      Joi.object({
-        _id: Joi.objectId().required(),
-      }).required(),
-      'query'
-    ),
-
-    (req, res, next) => {
-      documents
-        .getById(req.query._id)
-        .then(response => {
-          if (!response) {
-            throw createError('document does not exist', 404);
-          }
-          const basename = path.basename(
-            response.file.originalname,
-            path.extname(response.file.originalname)
-          );
-          res.download(
-            path.join(paths.uploadedDocuments, response.file.filename),
-            sanitize(basename + path.extname(response.file.filename))
-          );
-        })
-        .catch(next);
-    }
-  );
 };

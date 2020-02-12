@@ -35,6 +35,10 @@ Object {
   "language": "en",
   "results": Array [
     Object {
+      "documents": Array [],
+      "fullText": Object {
+        "1": "text2",
+      },
       "language": "en",
       "semanticSearch": Object {
         "numRelevant": 2,
@@ -62,6 +66,11 @@ Object {
       "sharedId": "doc2",
     },
     Object {
+      "documents": Array [],
+      "fullText": Object {
+        "1": "page 1",
+        "2": "page 2",
+      },
       "language": "en",
       "semanticSearch": Object {
         "numRelevant": 1,

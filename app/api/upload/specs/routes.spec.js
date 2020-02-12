@@ -13,7 +13,7 @@ import request from 'supertest';
 import express from 'express';
 import uploads from 'api/upload/uploads';
 
-import fixtures, { entityId, entityEnId, templateId } from './fixtures.js';
+import { fixtures, entityId, entityEnId, templateId } from './fixtures';
 import instrumentRoutes from '../../utils/instrumentRoutes';
 import uploadRoutes from '../deprecatedRoutes.js';
 import errorLog from '../../log/errorLog';

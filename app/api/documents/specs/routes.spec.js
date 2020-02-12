@@ -114,40 +114,4 @@ describe('documents', () => {
         .catch(catchErrors(done));
     });
   });
-
-  describe('/download', () => {
-    it('should have a validation schema', () => {
-      expect(routes.get.validation('/api/documents/download')).toMatchSnapshot();
-    });
-
-    it('should download the document with the originalname as file name', done => {
-      const req = { query: { _id: batmanFinishesId } };
-      const res = { download: jasmine.createSpy('download') };
-
-      routes
-        .get('/api/documents/download', req, res)
-        .then(() => {
-          expect(res.download).toHaveBeenCalledWith(jasmine.any(String), 'Batman original.pdf');
-          done();
-        })
-        .catch(catchErrors(done));
-    });
-
-    describe('when document does not exist', () => {
-      it('should throw a 404 error', done => {
-        const nonExistent = db.id();
-        const req = { query: { _id: nonExistent } };
-
-        routes
-          .get('/api/documents/download', req)
-          .then(() => {
-            done.fail('should throw a 404');
-          })
-          .catch(e => {
-            expect(e.code).toBe(404);
-            done();
-          });
-      });
-    });
-  });
 });

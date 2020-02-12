@@ -7,7 +7,7 @@ import db from 'api/utils/testing_db';
 import errorLog from 'api/log/errorLog';
 import { uploadsPath } from 'api/utils/files';
 
-import fixtures from './fixtures.js';
+import { fixtures } from './fixtures';
 import uploads from '../uploads';
 
 import uploadRoutes from '../routes';
@@ -36,12 +36,12 @@ describe('upload routes', () => {
   const uploadDocument = async (filepath: string): Promise<SuperTestResponse> =>
     socketEmit('documentProcessed', async () =>
       request(app)
-        .post('/api/upload/document')
+        .post('/api/documents/upload')
         .field('entity', 'sharedId1')
         .attach('file', path.join(__dirname, filepath))
     );
 
-  describe('POST/upload/document', () => {
+  describe('POST/documents/upload', () => {
     it('should upload the file', async () => {
       await uploadDocument('uploads/f2082bf51b6ef839690485d7153e847a.pdf');
 
@@ -112,7 +112,7 @@ describe('upload routes', () => {
       it('should set document processed to false and emit a socket conversionFailed event with the id of the document', async () => {
         await socketEmit('conversionFailed', async () =>
           request(app)
-            .post('/api/upload/document')
+            .post('/api/documents/upload')
             .field('entity', 'sharedId1')
             .attach('file', path.join(__dirname, 'uploads/invalid_document.txt'))
         );

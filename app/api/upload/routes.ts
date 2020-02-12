@@ -1,12 +1,16 @@
 /** @format */
 
+import path from 'path';
 import multer from 'multer';
 import { Application, Request, Response, NextFunction } from 'express';
+//@ts-ignore
+import sanitize from 'sanitize-filename';
 import debugLog from 'api/log/debugLog';
 import errorLog from 'api/log/errorLog';
 import { processDocument } from 'api/upload/processDocument';
+import { uploadsPath } from 'api/utils/files';
 
-import { validation } from '../utils';
+import { validation, createError } from '../utils';
 import needsAuthorization from '../auth/authMiddleware';
 import uploads from './uploads';
 import storageConfig from './storageConfig';
@@ -16,7 +20,7 @@ const upload = multer({ storage });
 
 export default (app: Application) => {
   app.post(
-    '/api/upload/document',
+    '/api/documents/upload',
     needsAuthorization(['admin', 'editor']),
     upload.single('file'),
     async (req: Request, res: Response, _next: NextFunction) => {
@@ -29,6 +33,34 @@ export default (app: Application) => {
         errorLog.error(err);
         debugLog.debug(err);
         req.getCurrentSessionSockets().emit('conversionFailed', req.body.document);
+      }
+    }
+  );
+
+  app.get(
+    '/api/download',
+    validation.validateRequest({
+      properties: {
+        query: {
+          properties: {
+            _id: { type: 'string' },
+          },
+        },
+      },
+    }),
+
+    async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        const [file] = await uploads.get({ _id: req.query._id });
+        if (!file) {
+          throw createError('file not found', 404);
+        }
+        const originalname = file.originalname || '';
+        const filename = file.filename || '';
+        const basename = path.basename(originalname, path.extname(originalname));
+        res.download(uploadsPath(filename), sanitize(basename + path.extname(filename)));
+      } catch (e) {
+        next(e);
       }
     }
   );

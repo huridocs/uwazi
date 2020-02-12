@@ -7,7 +7,7 @@ import db from 'api/utils/testing_db';
 
 import { UploadSchema } from '../uploadType';
 
-import fixtures from './fixtures.js';
+import { fixtures } from './fixtures';
 import uploads from '../uploads';
 
 import uploadRoutes from '../routes';

@@ -1,11 +1,31 @@
 import db from 'api/utils/testing_db';
+import { EntitySchema } from 'api/entities/entityType';
+
+import { UploadSchema } from '../uploadType';
 
 const entityId = db.id();
 const entityEnId = db.id();
 const uploadId = db.id();
 const templateId = db.id();
 
-export default {
+interface DBFixture {
+  uploads?: UploadSchema[];
+  entities?: EntitySchema[];
+  templates?: Object[];
+  settings?: Object[];
+}
+
+const fixtures: DBFixture = {
+  uploads: [
+    {
+      _id: uploadId,
+      originalname: 'upload1',
+      filename: 'f2082bf51b6ef839690485d7153e847a.pdf',
+      type: 'custom',
+    },
+    { _id: db.id(), originalname: 'upload2', type: 'custom' },
+    { _id: db.id(), originalname: 'upload3', type: 'document' },
+  ],
   entities: [
     {
       _id: entityId,
@@ -15,11 +35,6 @@ export default {
       toc: [{ _id: db.id(), label: 'existingToc' }],
     },
     { _id: entityEnId, sharedId: 'sharedId1', language: 'en', title: 'Gadgets 01 EN' },
-  ],
-  uploads: [
-    { _id: uploadId, originalname: 'upload1', type: 'custom' },
-    { _id: db.id(), originalname: 'upload2', type: 'custom' },
-    { _id: db.id(), originalname: 'upload3', type: 'document' },
   ],
   templates: [{ _id: templateId, default: true, name: 'mydoc', properties: [] }],
   settings: [
@@ -32,4 +47,4 @@ export default {
   ],
 };
 
-export { entityId, entityEnId, uploadId, templateId };
+export { fixtures, entityId, entityEnId, uploadId, templateId };
