@@ -22,6 +22,7 @@ describe('Document', () => {
       unsetSelection: jasmine.createSpy('unsetSelection'),
       onClick: jasmine.createSpy('onClick'),
       doc: Immutable.fromJS({ _id: 'documentId', pdfInfo: { test: 'pdfInfo' } }),
+      file: { language: 'eng' },
       onDocumentReady: jasmine.createSpy('onDocumentReady'),
       selectedSnippet: Immutable.fromJS({}),
       docHTML: Immutable.fromJS({
@@ -60,11 +61,10 @@ describe('Document', () => {
   });
 
   it('should add the correct LTR or RTL direction according to file franc language', () => {
-    props.doc = props.doc.set('file', Immutable.fromJS({ language: 'eng' }));
     render();
     expect(component.find('.document').hasClass('force-ltr')).toBe(true);
 
-    props.doc = props.doc.set('file', Immutable.fromJS({ language: 'arb' }));
+    props.file.language = 'arb';
     render();
     expect(component.find('.document').hasClass('force-rtl')).toBe(true);
   });

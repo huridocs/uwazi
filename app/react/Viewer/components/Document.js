@@ -105,20 +105,13 @@ export class Document extends Component {
 
   render() {
     const doc = this.props.doc.toJS();
+    const { file } = this.props;
 
-    const Header =
-      this.props.header ||
-      function() {
-        return false;
-      };
+    const Header = this.props.header ? this.props.header : () => false;
 
     return (
       <div>
-        <div
-          className={`_${doc._id} document ${this.props.className} ${determineDirection(
-            doc.file || {}
-          )}`}
-        >
+        <div className={`_${doc._id} document ${this.props.className} ${determineDirection(file)}`}>
           <Header />
           <div
             className="pages"
@@ -138,7 +131,7 @@ export class Document extends Component {
                 pdfInfo={this.props.doc.get('pdfInfo')}
                 onLoad={this.pdfLoaded}
                 file={`${APIURL}documents/download?_id=${doc._id}`}
-                filename={doc.file ? doc.file.filename : null}
+                filename={file.filename}
               />
             </ShowIf>
           </div>
@@ -152,12 +145,14 @@ Document.defaultProps = {
   onDocumentReady: () => {},
   onPageChange: () => {},
   selectedSnippet: Immutable.fromJS({}),
+  file: {},
 };
 
 Document.propTypes = {
   onPageChange: PropTypes.func,
   onDocumentReady: PropTypes.func,
   doc: PropTypes.object,
+  file: PropTypes.object,
   docHTML: PropTypes.object,
   setSelection: PropTypes.func,
   unsetSelection: PropTypes.func,

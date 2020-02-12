@@ -13,7 +13,7 @@ import ViewerComponent from '../components/ViewerComponent';
 
 describe('ViewerRoute', () => {
   describe('requestState', () => {
-    const entity = { _id: 1, sharedId: 'sid', file: {} };
+    const entity = { _id: 1, sharedId: 'sid', documents: [{}] };
 
     beforeEach(() => {
       spyOn(EntitiesAPI, 'get').and.returnValue(Promise.resolve([entity]));
@@ -31,7 +31,7 @@ describe('ViewerRoute', () => {
 
     describe('when the entity does not have a pdf', () => {
       it('should return the PDFView state', async () => {
-        delete entity.file;
+        entity.documents = [];
         const request = new RequestParams({ sharedId: '123' }, 'headers');
         const state = await ViewerRoute.requestState(request, { templates: 'templates' });
         expect(state).toBe('EntityView state');
@@ -41,13 +41,13 @@ describe('ViewerRoute', () => {
 
   describe('render', () => {
     it('should render a ViewerComponent', () => {
-      let context = {
+      const context = {
         store: {
           getState: () => ({}),
           dispatch: () => {},
         },
       };
-      let component = shallow(<ViewerRoute />, { context });
+      const component = shallow(<ViewerRoute />, { context });
       expect(component.find(ViewerComponent).length).toBe(1);
     });
   });

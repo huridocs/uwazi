@@ -259,7 +259,7 @@ describe('uploadsActions', () => {
         const file = getMockFile();
 
         store.dispatch(actions.uploadDocument('abc1', file));
-        expect(mockUpload.field).toHaveBeenCalledWith('document', 'abc1');
+        expect(mockUpload.field).toHaveBeenCalledWith('entity', 'abc1');
         expect(mockUpload.attach).toHaveBeenCalledWith('file', file, file.name);
 
         emitProgressAndResponse(mockUpload, {

@@ -21,12 +21,18 @@ describe('Viewer', () => {
 
   beforeEach(() => {
     props = {
-      doc: fromJS({ _id: 'id', sharedId: 'sharedId', file: {}, pdfInfo: 'already parsed' }),
+      doc: fromJS({
+        _id: 'id',
+        sharedId: 'sharedId',
+        documents: [{ language: 'eng' }],
+        pdfInfo: 'already parsed',
+      }),
       targetDoc: false,
       addReference: () => {},
       loadTargetDocument: () => {},
       location: { query: {} },
       templates: fromJS([]),
+      locale: 'es',
     };
   });
 
@@ -143,11 +149,11 @@ describe('Viewer', () => {
     render();
     expect(component.find('pre').props().className).toBe('force-ltr');
 
-    props.doc = props.doc.set('file', fromJS({ language: 'arb' }));
+    props.doc = props.doc.set('documents', fromJS([{ language: 'arb' }]));
     render();
     expect(component.find('pre').props().className).toBe('force-rtl');
 
-    props.doc = props.doc.set('file', null);
+    props.doc = props.doc.set('documents', fromJS([]));
     props.doc = props.doc.set('_id', null);
     render();
     expect(component.find('pre').props().className).toBe('force-ltr');

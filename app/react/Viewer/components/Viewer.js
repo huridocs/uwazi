@@ -142,7 +142,7 @@ export class Viewer extends Component {
     const { raw, searchTerm, pageText, page } = this.props;
     const documentTitle = doc.get('title') ? doc.get('title') : '';
 
-    const documentFile = doc.get('documents')
+    const documentFile = doc.get('documents').size
       ? entityDocument(doc.get('documents').toJS(), doc.get('language'), locale)
       : {};
 
@@ -181,6 +181,7 @@ export class Viewer extends Component {
                   searchTerm={searchTerm}
                   onPageChange={onPageChange}
                   onDocumentReady={onDocumentReady}
+                  file={documentFile}
                 />
               )}
             </ShowIf>
@@ -261,6 +262,7 @@ Viewer.propTypes = {
   showTab: PropTypes.func,
   page: PropTypes.number,
   templates: PropTypes.instanceOf(List),
+  locale: PropTypes.string.isRequired,
 };
 
 Viewer.contextTypes = {
@@ -270,7 +272,6 @@ Viewer.contextTypes = {
 const mapStateToProps = state => {
   const { documentViewer } = state;
   const uiState = documentViewer.uiState.toJS();
-  console.log(state);
 
   return {
     pageText: documentViewer.rawText,

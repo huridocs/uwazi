@@ -16,7 +16,7 @@ class ViewerRoute extends RouteHandler {
     const { sharedId } = requestParams.data;
     const [entity] = await EntitiesAPI.get(requestParams.set({ sharedId }));
 
-    return entity.file
+    return entity.documents.length
       ? PDFView.requestState(requestParams, globalResources)
       : EntityView.requestState(requestParams, globalResources);
   }
