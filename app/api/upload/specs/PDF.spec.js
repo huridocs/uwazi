@@ -3,7 +3,7 @@
 import path from 'path';
 import fs from 'fs';
 import errorLog from 'api/log/errorLog';
-import PDFObject from '../PDF.js';
+import { PDF } from '../PDF.js';
 
 describe('PDF', () => {
   let pdf;
@@ -26,7 +26,7 @@ describe('PDF', () => {
   };
 
   beforeEach(() => {
-    pdf = new PDFObject(file);
+    pdf = new PDF(file);
   });
 
   describe('convert', () => {
@@ -59,7 +59,7 @@ describe('PDF', () => {
         originalname: 'originalName.pdf',
         destination: __dirname,
       };
-      pdf = new PDFObject(invalidFile);
+      pdf = new PDF(invalidFile);
       try {
         await pdf.convert();
         fail('should throw error');
@@ -78,26 +78,14 @@ describe('PDF', () => {
       deleteThumbnail(done);
     });
 
-    it('should send a spawn process to create image (implementation test)', async () => {
-      const thumbnailResponse = await pdf.createThumbnail('documentId');
-      expect(thumbnailResponse.childProcess.spawnfile).toBe('pdftoppm');
-      expect(thumbnailResponse.childProcess.spawnargs).toEqual([
-        'pdftoppm',
-        '-f',
-        '1',
-        '-singlefile',
-        '-scale-to',
-        '320',
-        '-jpeg',
-        filepath,
-        `${__dirname}/documentId`,
-      ]);
+    it('should create thumbnail', async () => {
+      await pdf.createThumbnail('documentId');
       expect(fs.existsSync(thumbnailName)).toBe(true);
     });
 
     it('should correctly log errors, but continue with the flow', async () => {
       spyOn(errorLog, 'error');
-      pdf = new PDFObject({
+      pdf = new PDF({
         filename: '/missingpath/pdf.pdf',
       });
       const thumbnailResponse = await pdf.createThumbnail('documentId');
