@@ -17,10 +17,7 @@ export default {
     await model.delete(query);
 
     const files = uploads.map(u => uploadsPath(u.filename || ''));
-    // get rid of this special case by treating thumbnails as another upload
-    const thumbnails = uploads.map(u => uploadsPath(`${u._id?.toString()}.jpg` || ''));
-    //
-    await deleteFiles(files.concat(thumbnails));
+    await deleteFiles(files);
 
     return uploads;
   },

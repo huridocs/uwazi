@@ -1,4 +1,3 @@
-/** @format */
 /* eslint-disable max-nested-callbacks,max-statements */
 
 import Ajv from 'ajv';
@@ -9,8 +8,6 @@ import entitiesModel from 'api/entities/entitiesModel';
 import fs from 'fs';
 import relationships from 'api/relationships';
 import search from 'api/search/search';
-import paths from 'api/config/paths';
-import path from 'path';
 import { uploadsPath } from 'api/utils/files';
 
 import entities from '../entities.js';
@@ -22,7 +19,6 @@ import fixtures, {
   syncPropertiesEntityId,
   templateWithEntityAsThesauri,
   docId1,
-  docId2,
   uploadId1,
   uploadId2,
 } from './fixtures.js';
@@ -1034,8 +1030,7 @@ describe('entities', () => {
         })
         .catch(catchErrors(done)));
 
-    // eslint-disable-next-line
-    fit('should delete the original file', async () => {
+    it('should delete the original file', async () => {
       fs.writeFileSync(uploadsPath('8202c463d6158af8065022d9b5014cc1.pdf'));
       fs.writeFileSync(uploadsPath('8202c463d6158af8065022d9b5014ccb.pdf'));
       fs.writeFileSync(uploadsPath('8202c463d6158af8065022d9b5014ccc.pdf'));

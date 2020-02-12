@@ -11,20 +11,17 @@ export const processDocument = async (entitySharedId: string, file: File) => {
     entity: entitySharedId,
     type: 'document',
     processed: false,
-    //mongo default ?
-    creationDate: Date.now(),
   });
 
   const conversion = await pdf.convert();
-
   const thumbnail = await pdf.createThumbnail(upload._id.toString());
 
-  // await uploads.save({
-  //   entity: entitySharedId,
-  //   type: 'thumbnail',
-  //   language: conversion.language,
-  //   filename: thumbnail,
-  // });
+  await uploads.save({
+    entity: entitySharedId,
+    type: 'thumbnail',
+    language: conversion.language,
+    filename: thumbnail,
+  });
 
   return uploads.save({
     ...upload,

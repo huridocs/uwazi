@@ -1,5 +1,3 @@
-/** @format */
-
 /* eslint-disable max-len */
 import db from 'api/utils/testing_db';
 
@@ -36,6 +34,18 @@ const uploadId2 = db.id();
 
 export default {
   uploads: [
+    {
+      _id: db.id(),
+      entity: 'shared',
+      filename: `${uploadId1}.jpg`,
+      language: 'en',
+    },
+    {
+      _id: db.id(),
+      entity: 'shared',
+      filename: `${uploadId2}.jpg`,
+      language: 'es',
+    },
     {
       _id: uploadId1,
       entity: 'shared',
