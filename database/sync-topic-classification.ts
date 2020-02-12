@@ -250,7 +250,13 @@ async function syncEntities(
         }
         if ([modes.onlynew, modes.autoaccept].includes(mode)) {
           if (e.metadata[prop.name!] && e.metadata[prop.name!]!.length) {
-            return null;
+            if (
+              mode !== modes.autoaccept ||
+              !overwrite ||
+              !e.metadata![prop.name]!.every(v => v.provenance === 'BULK_ACCEPT')
+            ) {
+              return null;
+            }
           }
         }
         const sequence = await extractSequence(e);
