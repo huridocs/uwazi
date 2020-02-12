@@ -66,9 +66,9 @@ export default app => {
   );
 
   app.get('/api/settings', (req, res, next) => {
-    const adminUser = Boolean(req.user && req.user.role === 'admin');
+    const select = req.user && req.user.role === 'admin' ? '+publicFormDestination' : {};
     settings
-      .get(adminUser)
+      .get({}, select)
       .then(response => res.json(response))
       .catch(next);
   });
