@@ -26,43 +26,13 @@ const attachmentPresentOn = (siblings, attachment) =>
 
 export default {
   async delete(attachmentId) {
-    let [entity] = await entities.get({ 'attachments._id': attachmentId });
+    const [entity] = await entities.get({ 'attachments._id': attachmentId });
     let result;
     if (entity) {
       result = this.removeAttachment(entity, attachmentId);
     }
 
-    entity = await entities.getById(attachmentId);
-    if (entity) {
-      result = this.removeMainFile(entity, attachmentId);
-    }
-
     return result;
-  },
-
-  async removeMainFile(entity) {
-    const textReferencesDeletions = [];
-    const deleteThumbnails = [];
-    let siblings = await model.get({ sharedId: entity.sharedId, _id: { $ne: entity._id } });
-
-    textReferencesDeletions.push(deleteTextReferences(entity.sharedId, entity.language));
-    deleteThumbnails.push(deleteFile(`${entity._id}.jpg`));
-
-    siblings = siblings.map(e => {
-      textReferencesDeletions.push(deleteTextReferences(e.sharedId, e.language));
-      deleteThumbnails.push(deleteFile(`${e._id}.jpg`));
-      return { ...e, file: null, toc: null };
-    });
-
-    const [[savedEntity]] = await Promise.all([
-      entities.saveMultiple([{ ...entity, file: null, toc: null }]),
-      entities.saveMultiple(siblings),
-      textReferencesDeletions,
-      deleteThumbnails,
-      deleteFile(entity.file.filename),
-    ]);
-
-    return savedEntity;
   },
 
   async removeAttachment(entity, attachmentId) {

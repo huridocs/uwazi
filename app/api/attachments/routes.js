@@ -148,34 +148,17 @@ export default app => {
       return entities
         .getById(req.body.entityId)
         .then(entity => {
-          let entityWithRenamedAttachment;
-          if (entity._id.toString() === req.body._id) {
-            entityWithRenamedAttachment = {
-              ...entity,
-              file: {
-                ...entity.file,
-                originalname: req.body.originalname,
-                language: req.body.language,
-              },
-            };
-            renamedAttachment = Object.assign(
-              { _id: entity._id.toString() },
-              entityWithRenamedAttachment.file
-            );
-          } else {
-            entityWithRenamedAttachment = {
-              ...entity,
-              attachments: (entity.attachments || []).map(attachment => {
-                if (attachment._id.toString() === req.body._id) {
-                  renamedAttachment = { ...attachment, originalname: req.body.originalname };
-                  return renamedAttachment;
-                }
+          const entityWithRenamedAttachment = {
+            ...entity,
+            attachments: (entity.attachments || []).map(attachment => {
+              if (attachment._id.toString() === req.body._id) {
+                renamedAttachment = { ...attachment, originalname: req.body.originalname };
+                return renamedAttachment;
+              }
 
-                return attachment;
-              }),
-            };
-          }
-
+              return attachment;
+            }),
+          };
           return entities.saveMultiple([entityWithRenamedAttachment]);
         })
         .then(() => {
