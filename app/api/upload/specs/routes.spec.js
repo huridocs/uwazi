@@ -11,6 +11,7 @@ import settingsModel from 'api/settings/settingsModel';
 import search from 'api/search/search';
 import request from 'supertest';
 import express from 'express';
+import uploads from 'api/upload/uploads';
 
 import fixtures, { entityId, entityEnId, templateId } from './fixtures.js';
 import instrumentRoutes from '../../utils/instrumentRoutes';
@@ -44,6 +45,7 @@ describe('upload routes', () => {
     const dontDeleteFiles = [
       'import.zip',
       'eng.pdf',
+      'invalid_document.txt',
       'spn.pdf',
       'importcsv.csv',
       'f2082bf51b6ef839690485d7153e847a.pdf',
@@ -283,18 +285,17 @@ describe('upload routes', () => {
       });
     });
 
-    // eslint-disable-next-line
     it('should create the entity and store the files', async () => {
       await onSocketRespond('post', '/api/public', req);
       const [newEntity] = await entities.get({ title: 'public submit' });
       expect(newEntity.title).toBe('public submit');
-      expect(newEntity.file.originalname).toBe('gadgets-01.pdf');
-      expect(newEntity.processed).toBe(true);
       expect(newEntity.attachments.length).toBe(1);
       expect(newEntity.attachments[0].originalname).toBe('attachment-01.pdf');
-      expect(fs.existsSync(path.resolve(`${__dirname}/uploads/${newEntity.file.filename}`))).toBe(
-        true
-      );
+
+      const [uploadedFile] = await uploads.get({ entity: newEntity.sharedId });
+      expect(uploadedFile.originalname).toBe('gadgets-01.pdf');
+      expect(uploadedFile.processed).toBe(true);
+      expect(fs.existsSync(path.resolve(`${__dirname}/uploads/${file.filename}`))).toBe(true);
       expect(
         fs.existsSync(path.resolve(`${__dirname}/uploads/${newEntity.attachments[0].filename}`))
       ).toBe(true);
