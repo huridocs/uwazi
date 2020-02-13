@@ -7,6 +7,9 @@ export default {
 
   async up(db) {
     process.stdout.write(`${this.name}...\r\n`);
+
     await db.collection('uploads').rename('files');
+
+    process.stdout.write('\r\n');
   },
 };
