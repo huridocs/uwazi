@@ -206,7 +206,10 @@ export class OneUpEntityViewerBase extends Component<
               </div>
             </ShowIf>
             <ShowIf if={selectedTab !== 'connections'}>
-              <OneUpEntityButtons />
+              <OneUpEntityButtons
+                isLast={oneUpState.indexInDocs === oneUpState.totalDocs - 1}
+                thesaurusName={oneUpState.reviewThesaurusValues[0]}
+              />
             </ShowIf>
             <ContextMenu
               align="bottom"
