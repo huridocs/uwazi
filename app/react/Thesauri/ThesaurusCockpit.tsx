@@ -170,7 +170,7 @@ export class ThesaurusCockpitBase extends RouteHandler {
         }
         className="btn btn-primary btn-xs"
       >
-        <span>{t('System', 'Review of unpublished documents')}</span>
+        <span>{t('System', 'Review unpublished documents')}</span>
       </I18NLink>
     );
   }
