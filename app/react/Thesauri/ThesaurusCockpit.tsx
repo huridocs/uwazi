@@ -66,11 +66,9 @@ export class ThesaurusCockpitBase extends RouteHandler {
   static topicNode(
     topic: ThesaurusValueSchema,
     suggestionResult: SuggestionResultSchema,
-    modelInfo: ClassifierModelSchema | undefined,
     propName: string | undefined
   ) {
     const { label, id } = topic;
-    const { quality = 0 } = (modelInfo?.topics ?? {})[label] || {};
     const suggestionCount = suggestionResult.thesaurus?.values[`${id}`] ?? 0;
 
     return (
@@ -104,7 +102,7 @@ export class ThesaurusCockpitBase extends RouteHandler {
     }
 
     return values.map((topic: ThesaurusValueSchema) =>
-      ThesaurusCockpitBase.topicNode(topic, suggestions, model, property.name)
+      ThesaurusCockpitBase.topicNode(topic, suggestions, property.name)
     );
   }
 
