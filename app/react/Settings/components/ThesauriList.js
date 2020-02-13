@@ -35,16 +35,14 @@ export class ThesauriList extends Component {
       const view = (
         <div className="thesauri-list vertical-line">
           <span className="thesaurus-suggestion-count">
-            {thesaurus.suggestions ? thesaurus.suggestions : 'No'}&nbsp;
+            {thesaurus.suggestions ? thesaurus.suggestions.toLocaleString() : 'No'}&nbsp;
             {t('System', 'documents to be reviewed')}
           </span>
           <I18NLink
             to={`/settings/dictionaries/cockpit/${thesaurus._id}`}
             className="btn btn-primary btn-xs"
           >
-            <Icon icon="search" />
-            &nbsp;
-            <span>{t('System', 'View Suggestions')}</span>
+            <span>{t('System', 'View suggestions')}</span>
           </I18NLink>
         </div>
       );
@@ -130,9 +128,7 @@ export class ThesauriList extends Component {
   thesaurusNode(thesaurus) {
     return (
       <tr key={thesaurus.name}>
-        <th scope="row">
-          <I18NLink to={`/settings/dictionaries/edit/${thesaurus._id}`}>{thesaurus.name}</I18NLink>
-        </th>
+        <th scope="row">{thesaurus.name}</th>
         <td>{this.getThesaurusSuggestionActions(thesaurus)}</td>
         <td>{this.getThesaurusModifyActions(thesaurus)}</td>
       </tr>
