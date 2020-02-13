@@ -183,8 +183,4 @@ export const loadIcons = () => {
   library.add(...Object.keys(icons).map(key => icons[key]));
 };
 
-// This watches the DOM for icons being added or modified.
-// https://fontawesome.com/how-to-use/with-the-api/methods/dom-watch
-dom.watch();
-
 export const iconNames = Object.keys(icons).map(key => icons[key].iconName);
