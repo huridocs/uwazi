@@ -1,10 +1,10 @@
-import { UploadSchema } from 'api/upload/uploadType';
+import { FileSchema } from 'api/files/fileType';
 import entityDocument from '../entityDocument';
 
 describe('entityDocument', () => {
-  let espDoc: UploadSchema;
-  let engDoc: UploadSchema;
-  let fraDoc: UploadSchema;
+  let espDoc: FileSchema;
+  let engDoc: FileSchema;
+  let fraDoc: FileSchema;
   beforeEach(() => {
     engDoc = { language: 'eng' };
     espDoc = { language: 'esp' };

@@ -3,13 +3,13 @@
 import Ajv from 'ajv';
 import { objectIdSchema, tocSchema } from 'shared/types/commonSchemas';
 import { wrapValidator } from 'shared/tsUtils';
-import { UploadSchema } from './uploadType';
+import { FileSchema } from './fileType';
 
 export const emitSchemaTypes = true;
 
 const ajv = Ajv({ allErrors: true, removeAdditional: true });
 
-export const uploadSchema = {
+export const fileSchema = {
   $schema: 'http://json-schema.org/schema#',
   $async: true,
   type: 'object',
@@ -53,7 +53,7 @@ export const uploadSchema = {
   },
 };
 
-const validate = wrapValidator(ajv.compile(uploadSchema));
+const validate = wrapValidator(ajv.compile(fileSchema));
 
-export const validateUpload = async (upload: UploadSchema): Promise<UploadSchema> =>
-  validate({ ...upload });
+export const validateFile = async (file: FileSchema): Promise<FileSchema> =>
+  validate({ ...file });

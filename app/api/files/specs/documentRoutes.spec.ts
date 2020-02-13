@@ -5,10 +5,10 @@ import { Application, Request, Response, NextFunction } from 'express';
 
 import db from 'api/utils/testing_db';
 import errorLog from 'api/log/errorLog';
-import { uploadsPath } from 'api/utils/files';
+import { uploadsPath } from 'api/files/filesystem';
 
 import { fixtures } from './fixtures';
-import uploads from '../uploads';
+import { files } from '../files';
 
 import uploadRoutes from '../routes';
 import paths from '../../config/paths';
@@ -36,7 +36,7 @@ describe('upload routes', () => {
   const uploadDocument = async (filepath: string): Promise<SuperTestResponse> =>
     socketEmit('documentProcessed', async () =>
       request(app)
-        .post('/api/documents/upload')
+        .post('/api/files/upload/document')
         .field('entity', 'sharedId1')
         .attach('file', path.join(__dirname, filepath))
     );
@@ -45,7 +45,7 @@ describe('upload routes', () => {
     it('should upload the file', async () => {
       await uploadDocument('uploads/f2082bf51b6ef839690485d7153e847a.pdf');
 
-      const [upload] = await uploads.get({ entity: 'sharedId1' }, '+fullText');
+      const [upload] = await files.get({ entity: 'sharedId1' }, '+fullText');
       expect(fs.readFileSync(uploadsPath(upload.filename || ''))).toBeDefined();
     });
 
@@ -63,7 +63,7 @@ describe('upload routes', () => {
       expect(iosocket.emit).toHaveBeenCalledWith('conversionStart', 'sharedId1');
       expect(iosocket.emit).toHaveBeenCalledWith('documentProcessed', 'sharedId1');
 
-      const [upload] = await uploads.get({ entity: 'sharedId1' }, '+fullText');
+      const [upload] = await files.get({ entity: 'sharedId1' }, '+fullText');
 
       expect(upload).toEqual(
         expect.objectContaining({
@@ -83,7 +83,7 @@ describe('upload routes', () => {
     it('should generate a thumbnail for the document', async () => {
       await uploadDocument('uploads/f2082bf51b6ef839690485d7153e847a.pdf');
 
-      const [{ filename = '', language }] = await uploads.get({
+      const [{ filename = '', language }] = await files.get({
         entity: 'sharedId1',
         type: 'thumbnail',
       });
@@ -96,14 +96,14 @@ describe('upload routes', () => {
       it('should detect English documents and store the result', async () => {
         await uploadDocument('uploads/eng.pdf');
 
-        const [upload] = await uploads.get({ entity: 'sharedId1' });
+        const [upload] = await files.get({ entity: 'sharedId1' });
         expect(upload.language).toBe('eng');
       });
 
       it('should detect Spanish documents and store the result', async () => {
         await uploadDocument('uploads/spn.pdf');
 
-        const [upload] = await uploads.get({ entity: 'sharedId1' });
+        const [upload] = await files.get({ entity: 'sharedId1' });
         expect(upload.language).toBe('spa');
       });
     });
@@ -112,12 +112,12 @@ describe('upload routes', () => {
       it('should set document processed to false and emit a socket conversionFailed event with the id of the document', async () => {
         await socketEmit('conversionFailed', async () =>
           request(app)
-            .post('/api/documents/upload')
+            .post('/api/files/upload/document')
             .field('entity', 'sharedId1')
             .attach('file', path.join(__dirname, 'uploads/invalid_document.txt'))
         );
 
-        const [upload] = await uploads.get({ entity: 'sharedId1' }, '+fullText');
+        const [upload] = await files.get({ entity: 'sharedId1' }, '+fullText');
         expect(upload.processed).toBe(false);
       });
     });

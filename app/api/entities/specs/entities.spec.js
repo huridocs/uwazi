@@ -8,7 +8,7 @@ import entitiesModel from 'api/entities/entitiesModel';
 import fs from 'fs';
 import relationships from 'api/relationships';
 import search from 'api/search/search';
-import { uploadsPath } from 'api/utils/files';
+import { uploadsPath } from 'api/files/filesystem';
 
 import entities from '../entities.js';
 import fixtures, {

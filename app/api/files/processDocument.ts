@@ -1,13 +1,13 @@
 /** @format */
 
-import { File } from 'api/utils/files';
+import { FileSchema } from 'api/files/fileType';
 
-import uploads from './uploads';
+import { files } from './files';
 import { PDF } from './PDF.js';
 
-export const processDocument = async (entitySharedId: string, file: File) => {
+export const processDocument = async (entitySharedId: string, file: FileSchema) => {
   const pdf = new PDF(file);
-  const upload = await uploads.save({
+  const upload = await files.save({
     entity: entitySharedId,
     type: 'document',
     processed: false,
@@ -16,14 +16,14 @@ export const processDocument = async (entitySharedId: string, file: File) => {
   const conversion = await pdf.convert();
   const thumbnail = await pdf.createThumbnail(upload._id.toString());
 
-  await uploads.save({
+  await files.save({
     entity: entitySharedId,
     type: 'thumbnail',
     language: conversion.language,
     filename: thumbnail,
   });
 
-  return uploads.save({
+  return files.save({
     ...upload,
     ...conversion,
   });

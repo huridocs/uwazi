@@ -1,5 +1,5 @@
 import fs from 'fs';
-import { deleteFiles } from '../files';
+import { deleteFiles } from '../filesystem';
 
 describe('files', () => {
   beforeEach(() => {

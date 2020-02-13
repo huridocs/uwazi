@@ -3,7 +3,7 @@
 import entities from 'api/entities';
 import { search } from 'api/search';
 import entitiesModel from 'api/entities/entitiesModel';
-import { processDocument } from 'api/upload/processDocument';
+import { processDocument } from 'api/files/processDocument';
 import typeParsers from './typeParsers';
 
 const toMetadata = async (template, entityToImport) =>

@@ -4,10 +4,10 @@ import path from 'path';
 import fs from 'fs';
 import db from 'api/utils/testing_db';
 import entities from 'api/entities';
-import uploads from 'api/upload/uploads';
+import { files } from 'api/files/files';
 import { search } from 'api/search';
 import settings from 'api/settings';
-import * as fileUtils from 'api/utils/files';
+import * as fileUtils from 'api/files/filesystem';
 
 import CSVLoader from '../csvLoader';
 import fixtures, { template1Id } from './fixtures';
@@ -50,7 +50,7 @@ describe('csvLoader languages', () => {
   });
 
   afterAll(async () => {
-    const generatedImages = (await uploads.get({})).map(u => u._id.toString());
+    const generatedImages = (await files.get({})).map(u => u._id.toString());
     await fileUtils.deleteFiles([
       path.join(configPaths.uploadedDocuments, 'generated1.pdf'),
       path.join(configPaths.uploadedDocuments, 'generated2.pdf'),
@@ -85,7 +85,7 @@ describe('csvLoader languages', () => {
   });
 
   it('should import translated files', async () => {
-    const importedFiles = await uploads.get({ type: 'document' });
+    const importedFiles = await files.get({ type: 'document' });
     expect(importedFiles.map(f => f.filename)).toEqual(['generated2.pdf', 'generated1.pdf']);
   });
 });

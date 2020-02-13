@@ -1,5 +1,5 @@
 import path from 'path';
-import { generateFileName } from 'api/utils/files';
+import { generateFileName } from 'api/files/filesystem';
 import configPaths from '../config/paths';
 
 const storageConfig = {

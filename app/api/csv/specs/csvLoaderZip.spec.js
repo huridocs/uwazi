@@ -1,11 +1,11 @@
 /** @format */
 
 import db from 'api/utils/testing_db';
-import uploads from 'api/upload/uploads';
+import { files } from 'api/files/files';
 import { search } from 'api/search';
 import path from 'path';
 import fs from 'fs';
-import * as fileUtils from 'api/utils/files';
+import * as fileUtils from 'api/files/filesystem';
 
 import CSVLoader from '../csvLoader';
 import fixtures, { template1Id } from './fixtures';
@@ -40,7 +40,7 @@ describe('csvLoader zip file', () => {
     spyOn(fileUtils, 'generateFileName').and.callFake(file => `generated${file.originalname}`);
     configPaths.uploadedDocuments = path.join(__dirname, '/zipData/');
     await loader.load(zip, template1Id);
-    imported = await uploads.get({ type: 'document' }, '+fullText');
+    imported = await files.get({ type: 'document' }, '+fullText');
   });
 
   afterAll(async () => {

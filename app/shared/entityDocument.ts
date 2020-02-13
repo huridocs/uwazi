@@ -1,18 +1,18 @@
-import { UploadSchema } from 'api/upload/uploadType';
+import { FileSchema } from 'api/files/fileType';
 import language from 'shared/languagesList';
 
 export default function getEntityDocument(
-  documents: Array<UploadSchema>,
+  documents: Array<FileSchema>,
   entityLanguage: string,
   defaultLanguage: string
 ) {
   const documentMatchingEntity = documents.find(
-    (document: UploadSchema) =>
+    (document: FileSchema) =>
       document.language && language(document.language, 'ISO639_1') === entityLanguage
   );
 
   const documentMatchingDefault = documents.find(
-    (document: UploadSchema) =>
+    (document: FileSchema) =>
       document.language && language(document.language, 'ISO639_1') === defaultLanguage
   );
 

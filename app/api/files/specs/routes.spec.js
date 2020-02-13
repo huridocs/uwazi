@@ -11,7 +11,7 @@ import settingsModel from 'api/settings/settingsModel';
 import search from 'api/search/search';
 import request from 'supertest';
 import express from 'express';
-import uploads from 'api/upload/uploads';
+import { files } from 'api/files/files';
 
 import { fixtures, entityId, entityEnId, templateId } from './fixtures';
 import instrumentRoutes from '../../utils/instrumentRoutes';
@@ -292,7 +292,7 @@ describe('upload routes', () => {
       expect(newEntity.attachments.length).toBe(1);
       expect(newEntity.attachments[0].originalname).toBe('attachment-01.pdf');
 
-      const [uploadedFile] = await uploads.get({ entity: newEntity.sharedId });
+      const [uploadedFile] = await files.get({ entity: newEntity.sharedId });
       expect(uploadedFile.originalname).toBe('gadgets-01.pdf');
       expect(uploadedFile.processed).toBe(true);
       expect(fs.existsSync(path.resolve(`${__dirname}/uploads/${file.filename}`))).toBe(true);

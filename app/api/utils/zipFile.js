@@ -1,5 +1,5 @@
 import yauzl from 'yauzl';
-import { streamToString } from './files';
+import { streamToString } from '../files/filesystem';
 
 export default function(zipFile) {
   return {

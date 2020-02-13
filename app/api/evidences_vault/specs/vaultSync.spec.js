@@ -5,7 +5,7 @@ import moment from 'moment';
 import db from 'api/utils/testing_db';
 import entities from 'api/entities';
 import { search } from 'api/search';
-import { deleteFiles, deleteFile, getFileContent } from 'api/utils/files';
+import { deleteFiles, deleteFile, getFileContent } from 'api/files/filesystem';
 import asyncFS from 'api/utils/async-fs';
 
 import fixtures, { templateId } from './fixtures';

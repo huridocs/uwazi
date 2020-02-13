@@ -1,7 +1,7 @@
 /* eslint-disable no-await-in-loop */
 import path from 'path';
 import paths from 'api/config/paths';
-import { PDF } from 'api/upload/PDF';
+import { PDF } from 'api/files/PDF';
 
 export default {
   delta: 4,

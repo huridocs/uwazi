@@ -8,9 +8,9 @@ import entities from 'api/entities';
 import { search } from 'api/search';
 import CSVLoader from 'api/csv';
 import { saveSchema } from 'api/entities/endpointSchema';
-import { generateFileName } from 'api/utils/files';
+import { generateFileName } from 'api/files/filesystem';
 import settings from 'api/settings';
-import { processDocument } from 'api/upload/processDocument';
+import { processDocument } from 'api/files/processDocument';
 
 import configPaths from '../config/paths';
 import { validation, handleError, createError } from '../utils';

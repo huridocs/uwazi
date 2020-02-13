@@ -7,12 +7,12 @@ import { Application, Request, Response, NextFunction } from 'express';
 import sanitize from 'sanitize-filename';
 import debugLog from 'api/log/debugLog';
 import errorLog from 'api/log/errorLog';
-import { processDocument } from 'api/upload/processDocument';
-import { uploadsPath } from 'api/utils/files';
+import { processDocument } from 'api/files/processDocument';
+import { uploadsPath } from 'api/files/filesystem';
 
 import { validation, createError } from '../utils';
 import needsAuthorization from '../auth/authMiddleware';
-import uploads from './uploads';
+import { files } from './files';
 import storageConfig from './storageConfig';
 
 const storage = multer.diskStorage(storageConfig);
@@ -20,7 +20,7 @@ const upload = multer({ storage });
 
 export default (app: Application) => {
   app.post(
-    '/api/documents/upload',
+    '/api/files/upload/document',
     needsAuthorization(['admin', 'editor']),
     upload.single('file'),
     async (req: Request, res: Response, _next: NextFunction) => {
@@ -37,8 +37,22 @@ export default (app: Application) => {
     }
   );
 
+  app.post(
+    '/api/files/upload/custom',
+    needsAuthorization(['admin', 'editor']),
+    upload.single('file'),
+    (req: Request, res: Response, next: NextFunction) => {
+      files
+        .save({ ...req.file, type: 'custom' })
+        .then(saved => {
+          res.json(saved);
+        })
+        .catch(next);
+    }
+  );
+
   app.get(
-    '/api/download',
+    '/api/files/download',
     validation.validateRequest({
       properties: {
         query: {
@@ -51,7 +65,7 @@ export default (app: Application) => {
 
     async (req: Request, res: Response, next: NextFunction) => {
       try {
-        const [file] = await uploads.get({ _id: req.query._id });
+        const [file] = await files.get({ _id: req.query._id });
         if (!file) {
           throw createError('file not found', 404);
         }
@@ -66,7 +80,7 @@ export default (app: Application) => {
   );
 
   app.delete(
-    '/api/upload/document',
+    '/api/files',
     needsAuthorization(['admin', 'editor']),
 
     validation.validateRequest({
@@ -80,59 +94,21 @@ export default (app: Application) => {
     }),
 
     (req: Request, res: Response, next: NextFunction) => {
-      uploads
+      files
         .delete(req.query._id)
         .then(result => {
           res.json(result);
-        })
-        .catch(next);
-    }
-  );
-
-  app.post(
-    '/api/customisation/upload',
-    needsAuthorization(['admin', 'editor']),
-    upload.single('file'),
-    (req: Request, res: Response, next: NextFunction) => {
-      uploads
-        .save({ ...req.file, type: 'custom' })
-        .then(saved => {
-          res.json(saved);
         })
         .catch(next);
     }
   );
 
   app.get(
-    '/api/customisation/upload',
+    '/api/files',
     needsAuthorization(['admin', 'editor']),
     (_req: Request, res: Response, next: NextFunction) => {
-      uploads
+      files
         .get({ type: 'custom' })
-        .then(result => {
-          res.json(result);
-        })
-        .catch(next);
-    }
-  );
-
-  app.delete(
-    '/api/customisation/upload',
-    needsAuthorization(['admin', 'editor']),
-
-    validation.validateRequest({
-      properties: {
-        query: {
-          properties: {
-            _id: { type: 'string' },
-          },
-        },
-      },
-    }),
-
-    (req: Request, res: Response, next: NextFunction) => {
-      uploads
-        .delete(req.query._id)
         .then(result => {
           res.json(result);
         })

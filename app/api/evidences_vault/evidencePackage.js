@@ -1,6 +1,6 @@
 import path from 'path';
 import zipFile from 'api/utils/zipFile';
-import { fileFromReadStream } from 'api/utils/files';
+import { fileFromReadStream } from 'api/files/filesystem';
 
 const matchJson = entry => path.extname(entry.fileName) === '.json';
 const matchVideo = entry => path.extname(entry.fileName) === '.mp4';

@@ -4,7 +4,7 @@ import mongoose from 'mongoose';
 import date from 'api/utils/date.js';
 
 import { instanceModel } from 'api/odm';
-import { UploadSchema } from './uploadType';
+import { FileSchema } from './fileType';
 
 const propsWithDBSpecifics = {
   creationDate: { type: Number, default: date.currentUTC },
@@ -16,6 +16,6 @@ const mongoSchema = new mongoose.Schema(propsWithDBSpecifics, {
   strict: false,
 });
 
-const Model = instanceModel<UploadSchema>('uploads', mongoSchema);
+const Model = instanceModel<FileSchema>('uploads', mongoSchema);
 
 export default Model;

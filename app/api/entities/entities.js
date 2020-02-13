@@ -10,11 +10,11 @@ import search from 'api/search/search';
 import templates from 'api/templates/templates';
 import translationsModel from 'api/i18n/translations';
 import path from 'path';
-import { PDF, uploads } from 'api/upload';
+import { PDF, files } from 'api/files';
 import paths from 'api/config/paths';
 import dictionariesModel from 'api/thesauri/dictionariesModel';
 import translate, { getContext } from 'shared/translate';
-import { deleteFiles } from '../utils/files';
+import { deleteFiles } from '../files/filesystem';
 import model from './entitiesModel';
 import { validateEntity } from './entitySchema';
 import settings from '../settings';
@@ -355,7 +355,7 @@ export default {
     const entities = await model.get(query, select, pagination);
     return Promise.all(
       entities.map(async entity => {
-        entity.documents = await uploads.get({ entity: entity.sharedId, type: 'document' });
+        entity.documents = await files.get({ entity: entity.sharedId, type: 'document' });
         return entity;
       })
     );
@@ -564,7 +564,7 @@ export default {
     }
     await Promise.all([
       relationships.delete({ entity: sharedId }, null, false),
-      uploads.delete({ entity: sharedId }),
+      files.delete({ entity: sharedId }),
       this.deleteFiles(docs),
       this.deleteRelatedEntityFromMetadata(docs[0]),
     ]);

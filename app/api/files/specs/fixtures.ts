@@ -1,7 +1,7 @@
 import db from 'api/utils/testing_db';
 import { EntitySchema } from 'api/entities/entityType';
 
-import { UploadSchema } from '../uploadType';
+import { FileSchema } from '../fileType';
 
 const entityId = db.id();
 const entityEnId = db.id();
@@ -9,7 +9,7 @@ const uploadId = db.id();
 const templateId = db.id();
 
 interface DBFixture {
-  uploads?: UploadSchema[];
+  uploads?: FileSchema[];
   entities?: EntitySchema[];
   templates?: Object[];
   settings?: Object[];

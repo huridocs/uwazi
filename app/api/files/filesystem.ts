@@ -8,9 +8,9 @@ import ID from 'shared/uniqueID';
 import asyncFS from 'api/utils/async-fs';
 
 import configPaths from '../config/paths';
+import { FileSchema } from './fileType';
 
 export type FilePath = string;
-export type File = Express.Multer.File;
 
 async function deleteFile(file: FilePath) {
   return new Promise((resolve, reject) => {
@@ -32,7 +32,8 @@ const uploadsPath = (fileName: FilePath): FilePath =>
 
 const deleteUploadedFile = async (fileName: FilePath) => deleteFile(uploadsPath(fileName));
 
-const generateFileName = (file: File) => Date.now() + ID() + path.extname(file.originalname);
+const generateFileName = ({ originalname = '' }: FileSchema) =>
+  Date.now() + ID() + path.extname(originalname);
 
 const fileFromReadStream = async (fileName: FilePath, readStream: Readable): Promise<FilePath> =>
   new Promise((resolve, reject) => {
