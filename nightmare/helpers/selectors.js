@@ -13,7 +13,7 @@ export default {
     collectionButton: '#app > div.content > div > div > div.settings-navigation > div > div:nth-child(1) > div.list-group > a:nth-child(3)',
     dictionariesButton: '#app > div.content > div > div > div.settings-navigation > div > div:nth-child(2) > div.list-group > a:nth-child(2)',
     dictionariesViewSuggestionsButton: '#app > div.content > div > div > div.settings-content > div > div.thesauri-list > table > tbody > tr:nth-child(1) > td:nth-child(2) > div > a',
-    dictionariesReviewSuggestionsButton: '#app > div.content > div > div > div.settings-content > div > div.cockpit > table > tbody > tr:nth-child(2) > td:nth-child(4) > a',
+    dictionariesReviewSuggestionsButton: '#app [title="review-button-title"]',
     entitiesButton: '#app > div.content > div > div > div.settings-navigation > div > div:nth-child(2) > div.list-group > a:nth-child(1)',
     connectionsButton: '#app > div.content > div > div > div.settings-navigation > div > div:nth-child(2) > div.list-group > a:nth-child(3)',
     filtersButton: '#app > div.content > div > div > div.settings-navigation > div > div:nth-child(1) > div.list-group > a:nth-child(8)',
@@ -210,7 +210,7 @@ export default {
     }
   },
   review: {
-    toggleFullEditButton: '#app > div.content > div > div > div > main > div.content-header.content-header-entity > button',
+    toggleFullEditButton: '#app [data-icon="toggle-on"]',
     documentCount: '#app > div.content > div > div > div > main > div.content-header.content-header-entity > div > div',
     firstSuggestion: '#sidePanelMetadataForm > div > div > ul > li:nth-child(2) > div > div:nth-child(2) > label > span.multiselectItem-icon',
     firstSuggestReject: '#sidePanelMetadataForm > div > div > ul > li:nth-child(2) > div > div:nth-child(2) > label > div',
