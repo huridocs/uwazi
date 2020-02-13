@@ -16,6 +16,6 @@ const mongoSchema = new mongoose.Schema(propsWithDBSpecifics, {
   strict: false,
 });
 
-const Model = instanceModel<FileSchema>('uploads', mongoSchema);
+const Model = instanceModel<FileSchema>('files', mongoSchema);
 
 export default Model;
