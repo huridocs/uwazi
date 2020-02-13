@@ -90,8 +90,7 @@ export class OneUpTitleBarBase extends Component<OneUpTitleBarProps> {
         )}
         {oneUpState.totalDocs ? (
           <div>
-            {t('System', 'Document')} <span>{oneUpState.indexInDocs + 1}</span>{' '}
-            {t('System', 'out of')}{' '}
+            {t('System', 'Document')} <span>{oneUpState.indexInDocs + 1}</span> {t('System', 'of')}{' '}
             <span>
               {oneUpState.totalDocs >= oneUpState.maxTotalDocs
                 ? `>${oneUpState.totalDocs - 1}`
