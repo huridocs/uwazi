@@ -29,7 +29,7 @@ describe('upload routes', () => {
   describe('GET/download', () => {
     it('should download the file', async () => {
       const response = await request(app)
-        .get('/api/download')
+        .get('/api/files/download')
         .query({ _id: uploadId.toString() });
 
       expect(response.body instanceof Buffer).toBe(true);
@@ -38,7 +38,7 @@ describe('upload routes', () => {
     describe('when file does not exist', () => {
       it('should respond with 404', async () => {
         const response = await request(app)
-          .get('/api/download')
+          .get('/api/files/download')
           .query({ _id: db.id().toString() });
 
         expect(response.status).toBe(404);

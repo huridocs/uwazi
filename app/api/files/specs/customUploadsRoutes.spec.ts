@@ -26,7 +26,7 @@ describe('custom upload routes', () => {
   beforeEach(async () => db.clearAllAndLoad(fixtures));
   afterAll(async () => db.disconnect());
 
-  describe('POST/customisation/upload', () => {
+  describe('POST/files/upload/custom', () => {
     it('should save the upload and return it', async () => {
       const response: SuperTestResponse = await request(app)
         .post('/api/files/upload/custom')
@@ -44,22 +44,22 @@ describe('custom upload routes', () => {
     });
   });
 
-  describe('GET/customisation/upload', () => {
+  describe('GET/files', () => {
     it('should return all uploads', async () => {
-      const response: SuperTestResponse = await request(app).get('/api/customisation/upload');
+      const response: SuperTestResponse = await request(app).get('/api/files');
 
-      expect(response.body.map((file: FileSchema) => upload.originalname)).toEqual([
+      expect(response.body.map((file: FileSchema) => file.originalname)).toEqual([
         'upload1',
         'upload2',
       ]);
     });
   });
 
-  describe('DELETE/customisation/upload', () => {
+  describe('DELETE/api/files', () => {
     it('should delete upload and return the response', async () => {
       spyOn(files, 'delete').and.returnValue(Promise.resolve('upload_deleted'));
       const response: SuperTestResponse = await request(app)
-        .delete('/api/customisation/upload')
+        .delete('/api/files')
         .query({ _id: 'upload_id' });
 
       expect(response.body).toBe('upload_deleted');
@@ -68,7 +68,7 @@ describe('custom upload routes', () => {
 
     it('should validate _id as string', async () => {
       const response: SuperTestResponse = await request(app)
-        .delete('/api/customisation/upload')
+        .delete('/api/files')
         .query({ _id: { test: 'test' } });
 
       expect(response.body.errors[0].message).toBe('should be string');
