@@ -21,7 +21,7 @@ export class AttachmentsList extends Component {
     const { parentId, parentSharedId, readOnly, storeKey } = this.props;
     const forcedReadOnly = readOnly || Boolean(this.props.isTargetDoc);
 
-    mockDocuments = [
+    const mockDocuments = [
       {
         _id: '5e43d56243a8bb1ac84c4067',
         entity: 'fp5xamr15de',
