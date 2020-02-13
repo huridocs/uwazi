@@ -116,7 +116,7 @@ describe('ThesaurisList', () => {
           .find('td')
           .find('.thesauri-list')
           .find('.vertical-line')
-          .containsMatchingElement(<span>View Suggestions</span>)
+          .containsMatchingElement(<span>View suggestions</span>)
       ).toBeTruthy();
       expect(
         renderedContexts

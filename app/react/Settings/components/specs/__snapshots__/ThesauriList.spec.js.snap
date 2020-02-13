@@ -34,11 +34,7 @@ exports[`ThesaurisList render should match the snapshot 1`] = `
           <th
             scope="row"
           >
-            <Connect(I18NLink)
-              to="/settings/dictionaries/edit/thesaurusUnderscoreId1"
-            >
-              Continents
-            </Connect(I18NLink)>
+            Continents
           </th>
           <td />
           <td>
@@ -78,11 +74,7 @@ exports[`ThesaurisList render should match the snapshot 1`] = `
           <th
             scope="row"
           >
-            <Connect(I18NLink)
-              to="/settings/dictionaries/edit/thesaurusUnderscoreId2"
-            >
-              Issues
-            </Connect(I18NLink)>
+            Issues
           </th>
           <td>
             <div
@@ -99,12 +91,8 @@ exports[`ThesaurisList render should match the snapshot 1`] = `
                 className="btn btn-primary btn-xs"
                 to="/settings/dictionaries/cockpit/thesaurusUnderscoreId2"
               >
-                <Connect(Icon)
-                  icon="search"
-                />
-                 
                 <span>
-                  View Suggestions
+                  View suggestions
                 </span>
               </Connect(I18NLink)>
             </div>
