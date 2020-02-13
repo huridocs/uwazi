@@ -45,8 +45,10 @@ describe('custom upload routes', () => {
   });
 
   describe('GET/files', () => {
-    it('should return all uploads', async () => {
-      const response: SuperTestResponse = await request(app).get('/api/files');
+    it('should return all uploads based on the filter', async () => {
+      const response: SuperTestResponse = await request(app)
+        .get('/api/files')
+        .query({ type: 'custom' });
 
       expect(response.body.map((file: FileSchema) => file.originalname)).toEqual([
         'upload1',

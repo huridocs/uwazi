@@ -106,9 +106,9 @@ export default (app: Application) => {
   app.get(
     '/api/files',
     needsAuthorization(['admin', 'editor']),
-    (_req: Request, res: Response, next: NextFunction) => {
+    (req: Request, res: Response, next: NextFunction) => {
       files
-        .get({ type: 'custom' })
+        .get(req.query)
         .then(result => {
           res.json(result);
         })
