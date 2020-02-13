@@ -9,14 +9,14 @@ const uploadId = db.id();
 const templateId = db.id();
 
 interface DBFixture {
-  uploads?: FileSchema[];
+  files?: FileSchema[];
   entities?: EntitySchema[];
   templates?: Object[];
   settings?: Object[];
 }
 
 const fixtures: DBFixture = {
-  uploads: [
+  files: [
     {
       _id: uploadId,
       originalname: 'upload1',
