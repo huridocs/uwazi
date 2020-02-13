@@ -13,35 +13,54 @@ import ViewDocButton from 'app/Library/components/ViewDocButton';
 import Tip from '../../Layout/Tip';
 
 export class AttachmentsList extends Component {
-  getExtension(filename) {
-    return filename.substr(filename.lastIndexOf('.') + 1);
+  static arrangeFiles(files = []) {
+    return advancedSort(files, { property: 'originalname' });
   }
 
-  arrangeFiles(files, isDocumentAttachments) {
-    if (!files.length) {
-      return files;
-    }
-
-    const firstFiles = [];
-    if (isDocumentAttachments) {
-      firstFiles.push(files.shift());
-    }
-
-    const sortedFiles = advancedSort(files, { property: 'originalname' });
-    return firstFiles.concat(sortedFiles);
-  }
-
-  renderMainDocument(mainFile) {
+  renderDocuments(documents) {
     const { parentId, parentSharedId, readOnly, storeKey } = this.props;
     const forcedReadOnly = readOnly || Boolean(this.props.isTargetDoc);
-    if (mainFile) {
-      mainFile._id = parentId;
+
+    mockDocuments = [
+      {
+        _id: '5e43d56243a8bb1ac84c4067',
+        entity: 'fp5xamr15de',
+        type: 'document',
+        processed: true,
+        creationDate: 1581503842258.0,
+        __v: 0,
+        filename: '158150384221104cmib6gw3zy.pdf',
+        language: 'eng',
+        mimetype: 'application/pdf',
+        originalname: 'DnD_BasicRules_2018.pdf',
+        size: 11537210,
+        toc: [],
+        totalPages: 180,
+      },
+      {
+        _id: '5e43d56243a8bb1ac84c4067',
+        entity: 'fp5xamr15de',
+        type: 'document',
+        processed: true,
+        creationDate: 1581503842258.0,
+        __v: 0,
+        filename: '158150384221104cmib6gw3zy.pdf',
+        language: 'eng',
+        mimetype: 'application/pdf',
+        originalname: 'DnD_BasicRules_2018.pdf',
+        size: 11537210,
+        toc: [],
+        totalPages: 180,
+      },
+    ];
+    if (documents[0]) {
+      documents[0]._id = parentId;
       return (
         <div>
           <h2>{t('System', 'Document')}</h2>
           <div className="attachments-list">
             <Attachment
-              file={mainFile}
+              file={documents[0]}
               parentId={parentId}
               readOnly={forcedReadOnly}
               storeKey={storeKey}
@@ -50,9 +69,9 @@ export class AttachmentsList extends Component {
               deleteMessage="Warning, Deleting the main file will also delete table of content and main files for the other languages of this entity"
             />
           </div>
-          {this.props.entityView && mainFile && (
+          {this.props.entityView && documents[0] && (
             <ViewDocButton
-              file={mainFile}
+              file={documents[0]}
               sharedId={parentSharedId}
               processed={this.props.processed}
               storeKey={storeKey}
@@ -84,8 +103,7 @@ export class AttachmentsList extends Component {
   }
 
   render() {
-    const { parentId, parentSharedId, isDocumentAttachments, readOnly, storeKey } = this.props;
-    const sortedFiles = this.arrangeFiles(this.props.files.toJS(), isDocumentAttachments);
+    const { parentId, parentSharedId, readOnly, storeKey } = this.props;
     const forcedReadOnly = readOnly || Boolean(this.props.isTargetDoc);
 
     let uploadAttachmentButton = null;
@@ -99,11 +117,11 @@ export class AttachmentsList extends Component {
       );
     }
 
-    const mainFile = isDocumentAttachments ? sortedFiles[0] : null;
-    const attachments = sortedFiles.filter((_f, index) => (mainFile && index !== 0) || !mainFile);
+    const attachments = AttachmentsList.arrangeFiles(this.props.attachments);
+    const documents = AttachmentsList.arrangeFiles(this.props.documents);
     return (
       <div className="attachments-list-parent">
-        {this.renderMainDocument(mainFile)}
+        {this.renderDocuments(documents)}
         <h2>{t('System', 'Attachments')}</h2>
         <div className="attachments-list">
           {attachments.map((file, index) => (
@@ -124,19 +142,26 @@ export class AttachmentsList extends Component {
   }
 }
 
+AttachmentsList.defaultProps = {
+  attachments: [],
+  documents: [],
+  readOnly: true,
+  entityView: false,
+  processed: false,
+  isTargetDoc: false,
+  user: null,
+};
+
 AttachmentsList.propTypes = {
-  files: PropTypes.object,
-  parentId: PropTypes.string,
-  model: PropTypes.string,
-  parentSharedId: PropTypes.string,
-  isDocumentAttachments: PropTypes.bool,
+  attachments: PropTypes.arrayOf(PropTypes.object),
+  documents: PropTypes.arrayOf(PropTypes.object),
+  parentId: PropTypes.string.isRequired,
+  parentSharedId: PropTypes.string.isRequired,
   readOnly: PropTypes.bool,
   entityView: PropTypes.bool,
   processed: PropTypes.bool,
   isTargetDoc: PropTypes.bool,
-  deleteAttachment: PropTypes.func,
-  loadForm: PropTypes.func,
-  storeKey: PropTypes.string,
+  storeKey: PropTypes.string.isRequired,
   user: PropTypes.object,
 };
 

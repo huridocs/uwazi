@@ -89,9 +89,7 @@ export class DocumentSidePanel extends Component {
     } = this.props;
     const TocForm = this.props.tocFormComponent;
 
-    const docAttachments = doc.get('attachments') ? doc.get('attachments').toJS() : [];
-    const docFile = Object.assign({}, doc.get('file') ? doc.get('file').toJS() : {});
-    const attachments = doc.get('file') ? [docFile].concat(docAttachments) : docAttachments;
+    const { attachments, documents } = doc.toJS();
 
     const isEntity = !this.props.doc.get('file');
 
@@ -277,7 +275,8 @@ export class DocumentSidePanel extends Component {
                       showType
                     />
                     <AttachmentsList
-                      files={fromJS(attachments)}
+                      attachments={attachments}
+                      documents={documents}
                       readOnly={false}
                       isTargetDoc={isTargetDoc}
                       isDocumentAttachments={Boolean(doc.get('file'))}

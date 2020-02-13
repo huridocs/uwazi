@@ -141,9 +141,6 @@ export class OneUpEntityViewerBase extends Component<
     const { panelOpen } = this.state;
     const selectedTab = tab ?? 'info';
 
-    const docAttachments = entity.attachments ? entity.attachments : [];
-    const attachments = entity.file ? [entity.file].concat(docAttachments) : docAttachments;
-
     return (
       <div className="row flex">
         <Helmet title={entity.title ? entity.title : 'Entity'} />
@@ -194,7 +191,8 @@ export class OneUpEntityViewerBase extends Component<
                           showSubset={this.nonMlProps()}
                         />
                         <AttachmentsList
-                          files={Immutable.fromJS(attachments)}
+                          attachments={entity.attachments}
+                          documents={entity.documents}
                           parentId={entity._id}
                           parentSharedId={entity.sharedId}
                           isDocumentAttachments={Boolean(entity.file)}
