@@ -43,7 +43,7 @@ export class OneUpEntityButtonsBase extends Component<OneUpEntityButtonsProps> {
           onClick={() => this.props.switchOneUpEntity(+1, true)}
           className={`save-and-next ${!isPristine ? 'btn-success' : ''} ${btnClass}`}
         >
-          <Icon icon="save" />
+          <Icon icon="save-and-next" />
           <span className="btn-label">{t('System', 'Save and go to next')}</span>
         </button>
       </div>
