@@ -1,4 +1,4 @@
-import { deleteFiles, uploadsPath } from 'api/files/filesystem';
+import { deleteUploadedFiles } from 'api/files/filesystem';
 
 import model from './filesModel';
 import { validateFile } from './fileSchema';
@@ -16,7 +16,7 @@ export const files = {
 
     await model.delete(query);
 
-    await deleteFiles(toDeleteFiles.map(u => uploadsPath(u.filename || '')));
+    await deleteUploadedFiles(toDeleteFiles);
 
     return toDeleteFiles;
   },

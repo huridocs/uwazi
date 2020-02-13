@@ -170,7 +170,7 @@ export function uploadCustom(file) {
     return upload(
       id,
       file,
-      'customisation/upload'
+      'files/upload/custom'
     )(dispatch).then(response => {
       dispatch(basicActions.push('customUploads', response));
     });
@@ -179,7 +179,7 @@ export function uploadCustom(file) {
 
 export function deleteCustomUpload(_id) {
   return dispatch =>
-    api.delete('customisation/upload', new RequestParams({ _id })).then(response => {
+    api.delete('files', new RequestParams({ _id })).then(response => {
       dispatch(basicActions.remove('customUploads', response.json));
     });
 }

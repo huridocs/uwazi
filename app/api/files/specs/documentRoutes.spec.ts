@@ -5,13 +5,12 @@ import { Application, Request, Response, NextFunction } from 'express';
 
 import db from 'api/utils/testing_db';
 import errorLog from 'api/log/errorLog';
-import { uploadsPath } from 'api/files/filesystem';
+import { uploadsPath, setupTestUploadedPaths } from 'api/files/filesystem';
 
 import { fixtures } from './fixtures';
 import { files } from '../files';
 
 import uploadRoutes from '../routes';
-import paths from '../../config/paths';
 import { setUpApp, socketEmit, iosocket } from './helpers';
 
 jest.mock(
@@ -25,7 +24,7 @@ describe('upload routes', () => {
   const app: Application = setUpApp(uploadRoutes);
 
   beforeEach(async () => {
-    paths.uploadedDocuments = `${__dirname}/uploads/`;
+    setupTestUploadedPaths();
     spyOn(Date, 'now').and.returnValue(1000);
     spyOn(errorLog, 'error'); //just to avoid annoying console output
     await db.clearAllAndLoad(fixtures);

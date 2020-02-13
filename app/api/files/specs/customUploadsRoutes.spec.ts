@@ -1,17 +1,19 @@
 /** @format */
 
 import path from 'path';
+import fs from 'fs';
 import request, { Response as SuperTestResponse } from 'supertest';
 import { Application, Request, Response, NextFunction } from 'express';
+
+import { setupTestUploadedPaths, customUploadsPath } from 'api/files/filesystem';
 import db from 'api/utils/testing_db';
 
 import { FileSchema } from '../fileType';
-
 import { fixtures } from './fixtures';
 import { files } from '../files';
-
 import uploadRoutes from '../routes';
 import { setUpApp } from './helpers';
+import {fileExists} from 'api/csv/specs/helpers';
 
 jest.mock(
   '../../auth/authMiddleware.js',
@@ -23,7 +25,10 @@ jest.mock(
 describe('custom upload routes', () => {
   const app: Application = setUpApp(uploadRoutes);
 
-  beforeEach(async () => db.clearAllAndLoad(fixtures));
+  beforeEach(async () => {
+    setupTestUploadedPaths();
+    await db.clearAllAndLoad(fixtures);
+  });
   afterAll(async () => db.disconnect());
 
   describe('POST/files/upload/custom', () => {
@@ -42,6 +47,16 @@ describe('custom upload routes', () => {
         })
       );
     });
+
+    it('should save the file on customUploads path', async () => {
+      await request(app)
+        .post('/api/files/upload/custom')
+        .attach('file', path.join(__dirname, 'test.txt'));
+
+      const [file]: FileSchema[] = await files.get({ originalname: 'test.txt' });
+
+      expect(fs.readFileSync(customUploadsPath(file.filename || ''))).toBeDefined();
+    });
   });
 
   describe('GET/files', () => {
@@ -59,13 +74,17 @@ describe('custom upload routes', () => {
 
   describe('DELETE/api/files', () => {
     it('should delete upload and return the response', async () => {
-      spyOn(files, 'delete').and.returnValue(Promise.resolve('upload_deleted'));
-      const response: SuperTestResponse = await request(app)
-        .delete('/api/files')
-        .query({ _id: 'upload_id' });
+      await request(app)
+        .post('/api/files/upload/custom')
+        .attach('file', path.join(__dirname, 'test.txt'));
 
-      expect(response.body).toBe('upload_deleted');
-      expect(files.delete).toHaveBeenCalledWith('upload_id');
+      const [file]: FileSchema[] = await files.get({ originalname: 'test.txt' });
+
+      await request(app)
+        .delete('/api/files')
+        .query({ _id: file._id?.toString() });
+
+      expect(await fileExists(customUploadsPath(file.filename || ''))).toBe(false);
     });
 
     it('should validate _id as string', async () => {

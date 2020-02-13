@@ -95,7 +95,7 @@ export default (app: Application) => {
 
     (req: Request, res: Response, next: NextFunction) => {
       files
-        .delete(req.query._id)
+        .delete(req.query)
         .then(result => {
           res.json(result);
         })

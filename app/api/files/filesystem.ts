@@ -4,11 +4,13 @@ import fs from 'fs';
 import path from 'path';
 import { Readable } from 'stream';
 
+import paths from 'api/config/paths';
 import ID from 'shared/uniqueID';
 import asyncFS from 'api/utils/async-fs';
 
 import configPaths from '../config/paths';
 import { FileSchema } from './fileType';
+import { log } from 'util';
 
 export type FilePath = string;
 
@@ -27,10 +29,41 @@ async function deleteFiles(files: FilePath[]) {
   return Promise.all(files.map(async file => deleteFile(file)));
 }
 
+const setupTestUploadedPaths = () => {
+  paths.uploadedDocuments = `${__dirname}/specs/uploads/`;
+  paths.customUploads = `${__dirname}/specs/customUploads/`;
+};
+
 const uploadsPath = (fileName: FilePath): FilePath =>
   path.join(configPaths.uploadedDocuments, fileName);
 
-const deleteUploadedFile = async (fileName: FilePath) => deleteFile(uploadsPath(fileName));
+const customUploadsPath = (fileName: FilePath): FilePath =>
+  path.join(configPaths.customUploads, fileName);
+
+const deleteUploadedFiles = async (files: FileSchema[]) =>
+  deleteFiles(
+    files.map(({ filename = '', type }) => {
+      if (type === 'custom') {
+        return customUploadsPath(filename);
+      }
+      return uploadsPath(filename);
+    })
+  );
+
+const fileExists = async (filePath: FilePath): Promise<boolean> =>
+  new Promise((resolve, reject) => {
+    fs.stat(filePath, err => {
+      if (err === null) {
+        resolve(true);
+      }
+      if (err?.code === 'ENOENT') {
+        resolve(false);
+      }
+      if (err) {
+        reject(err);
+      }
+    });
+  });
 
 const generateFileName = ({ originalname = '' }: FileSchema) =>
   Date.now() + ID() + path.extname(originalname);
@@ -57,12 +90,15 @@ const getFileContent = async (fileName: FilePath): Promise<string> =>
   asyncFS.readFile(uploadsPath(fileName), 'utf8');
 
 export {
-  deleteUploadedFile,
+  setupTestUploadedPaths,
+  deleteUploadedFiles,
   deleteFiles,
   deleteFile,
   generateFileName,
   fileFromReadStream,
+  fileExists,
   streamToString,
   getFileContent,
+  customUploadsPath,
   uploadsPath,
 };
