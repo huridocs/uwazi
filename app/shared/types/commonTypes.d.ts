@@ -35,6 +35,7 @@ export interface MetadataObjectSchema {
   value: PropertyValueSchema;
   label?: string;
   suggestion_confidence?: number;
+  provenance?: string;
   [k: string]: any | undefined;
 }
 

@@ -1,3 +1,6 @@
+/**
+ * @jest-environment jsdom
+ */
 import NProgress from 'nprogress';
 import LoadingProgressBar from '../LoadingProgressBar';
 

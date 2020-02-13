@@ -55,16 +55,14 @@ describe('FilterSuggestions', () => {
   it('should always render the current property as a guide', () => {
     renderComponent('Year', 'date');
     const suggestion = component.find('tbody > tr').at(0);
-    expect(suggestion.text().trim())
-    .toBe('Current template Date');
+    expect(suggestion).toMatchSnapshot();
   });
 
   describe('when matches type and label as other template property', () => {
     it('should show a message', () => {
       renderComponent('author', 'text');
       const suggestion = component.find('tbody > tr').at(1);
-      expect(suggestion.text().trim())
-      .toBe('Template 2 Text');
+      expect(suggestion).toMatchSnapshot();
     });
   });
 
@@ -72,8 +70,7 @@ describe('FilterSuggestions', () => {
     it('should mark it as conflict', () => {
       renderComponent('author', 'date');
       const suggestion = component.find('.conflict');
-      expect(suggestion.text().trim())
-      .toBe('Text');
+      expect(suggestion).toMatchSnapshot();
     });
   });
 
@@ -81,8 +78,7 @@ describe('FilterSuggestions', () => {
     it('should mark it as conflict', () => {
       renderComponent('authors', 'select', 'abc2');
       const suggestion = component.find('.conflict');
-      expect(suggestion.text().trim())
-      .toBe('Best SCI FI Authors');
+      expect(suggestion).toMatchSnapshot();
     });
   });
 
@@ -90,8 +86,7 @@ describe('FilterSuggestions', () => {
     it('should not show anything', () => {
       renderComponent('authors', 'select', 'non existent thesauri');
       const suggestion = component.find('tbody > tr').at(1);
-      expect(suggestion.text().trim())
-      .toBe('Template 2 Select Best SCI FI Authors');
+      expect(suggestion).toMatchSnapshot();
     });
   });
 
@@ -99,7 +94,7 @@ describe('FilterSuggestions', () => {
     it('should now show the preoperty with same name', () => {
       renderComponent('filterFalse', 'text');
       const suggestion = component.find('tbody > tr').at(1);
-      expect(suggestion.text().trim()).toBe('Template 3 Text');
+      expect(suggestion).toMatchSnapshot();
     });
   });
 });

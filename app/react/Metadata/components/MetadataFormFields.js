@@ -31,9 +31,10 @@ const translateOptions = thesauri =>
       const option = optionIm.toJS();
       option.label = t(thesauri._id, option.label, null, false);
       if (option.values) {
-        option.options = option.values.map(val => {
-          return { ...val, label: t(thesauri._id, val.label, null, false) };
-        });
+        option.options = option.values.map(val => ({
+          ...val,
+          label: t(thesauri._id, val.label, null, false),
+        }));
       }
       return option;
     })

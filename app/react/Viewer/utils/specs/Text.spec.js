@@ -1,3 +1,6 @@
+/**
+ * @jest-environment jsdom
+ */
 import TextRange from 'batarange';
 
 import Text from 'app/Viewer/utils/Text';
