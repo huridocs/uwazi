@@ -304,7 +304,7 @@ describe('uploadsActions', () => {
 
     describe('deleteCustomUpload', () => {
       it('should delete the upload and remove it locally on success', done => {
-        spyOn(api, 'delete').and.returnValue(Promise.resolve({ json: { _id: 'deleted' } }));
+        spyOn(api, 'delete').and.returnValue(Promise.resolve({ json: [{ _id: 'deleted' }] }));
 
         const expectedActions = [basicActions.remove('customUploads', { _id: 'deleted' })];
 
@@ -312,10 +312,7 @@ describe('uploadsActions', () => {
 
         store.dispatch(actions.deleteCustomUpload('id')).then(() => {
           expect(store.getActions()).toEqual(expectedActions);
-          expect(api.delete).toHaveBeenCalledWith(
-            `${APIURL}files`,
-            new RequestParams({ _id: 'id' })
-          );
+          expect(api.delete).toHaveBeenCalledWith('files', new RequestParams({ _id: 'id' }));
           done();
         });
       });
