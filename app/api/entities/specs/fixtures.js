@@ -33,7 +33,7 @@ const uploadId1 = db.id();
 const uploadId2 = db.id();
 
 export default {
-  uploads: [
+  files: [
     {
       _id: db.id(),
       entity: 'shared',
