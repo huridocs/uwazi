@@ -19,7 +19,7 @@ import RelationshipMetadata from 'app/Relationships/components/RelationshipMetad
 import ShowIf from 'app/App/ShowIf';
 import { RequestParams } from 'app/utils/RequestParams';
 
-import entityDocument from 'shared/entityDocument';
+import { entityDefaultDocument } from 'shared/entityDefaultDocument';
 import { PaginatorWithPage } from './Paginator';
 import { addReference as addReferenceAction } from '../actions/referencesActions';
 import {
@@ -143,7 +143,7 @@ export class Viewer extends Component {
     const documentTitle = doc.get('title') ? doc.get('title') : '';
 
     const documentFile = doc.get('documents').size
-      ? entityDocument(doc.get('documents').toJS(), doc.get('language'), locale)
+      ? entityDefaultDocument(doc.get('documents').toJS(), doc.get('language'), locale)
       : {};
 
     return (

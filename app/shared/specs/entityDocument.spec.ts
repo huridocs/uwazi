@@ -1,5 +1,5 @@
 import { FileSchema } from 'api/files/fileType';
-import entityDocument from '../entityDocument';
+import entityDocument from '../entityDefaultDocument';
 
 describe('entityDocument', () => {
   let espDoc: FileSchema;

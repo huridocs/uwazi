@@ -1,11 +1,11 @@
 import { FileSchema } from 'api/files/fileType';
 import language from 'shared/languagesList';
 
-export default function getEntityDocument(
+export const entityDefaultDocument = (
   documents: Array<FileSchema>,
   entityLanguage: string,
   defaultLanguage: string
-) {
+) => {
   const documentMatchingEntity = documents.find(
     (document: FileSchema) =>
       document.language && language(document.language, 'ISO639_1') === entityLanguage
@@ -17,4 +17,4 @@ export default function getEntityDocument(
   );
 
   return documentMatchingEntity || documentMatchingDefault || documents[0];
-}
+};
