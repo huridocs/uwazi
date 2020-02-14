@@ -39,25 +39,6 @@ export default app => {
 
   const socket = req => req.getCurrentSessionSockets();
 
-  // const uploadProcess = async (req, res, allLanguages = true) => {
-  //   try {
-  //     const docs = await getDocuments(req.body.document, allLanguages, req.language);
-  //     await uploadFile(docs, req.files[0])
-  //     .on('conversionStart', () => {
-  //       res.json(req.files[0]);
-  //       socket(req).emit('conversionStart', req.body.document);
-  //     })
-  //     .start();
-
-  //     await search.indexEntities({ sharedId: req.body.document }, '+fullText');
-  //     socket(req).emit('documentProcessed', req.body.document);
-  //   } catch (err) {
-  //     errorLog.error(err);
-  //     debugLog.debug(err);
-  //     socket(req).emit('conversionFailed', req.body.document);
-  //   }
-  // };
-
   app.post(
     '/api/public',
     multer().any(),
@@ -150,30 +131,4 @@ export default app => {
       res.json('ok');
     }
   );
-
-  // app.post(
-  //   '/api/reupload',
-
-  //   needsAuthorization(['admin', 'editor']),
-
-  //   upload.any(),
-
-  //   validation.validateRequest(Joi.object({
-  //     document: Joi.string().required()
-  //   }).required()),
-
-  //   (req, res, next) => entities.getById(req.body.document, req.language)
-  //   .then((doc) => {
-  //     let deleteReferences = Promise.resolve();
-  //     if (doc.file) {
-  //       deleteReferences = relationships.deleteTextReferences(doc.sharedId, doc.language);
-  //     }
-  //     return Promise.all([doc, deleteReferences]);
-  //   })
-  //   .then(([doc]) => entities.saveMultiple([{ _id: doc._id, toc: [] }]))
-  //   .then(([{ sharedId }]) => entities.get({ sharedId }))
-  //   .then(docs => docs.reduce((addToAllLanguages, doc) => addToAllLanguages && !doc.file, true))
-  //   .then(addToAllLanguages => uploadProcess(req, res, addToAllLanguages))
-  //   .catch(next)
-  // );
 };

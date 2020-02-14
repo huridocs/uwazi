@@ -1,33 +1,25 @@
-import { promisify } from 'util';
 import fs from 'fs';
 import path from 'path';
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import db from 'api/utils/testing_db';
-import documents from 'api/documents';
 import entities from 'api/entities';
-import entitiesModel from 'api/entities/entitiesModel';
-import relationships from 'api/relationships';
 import settingsModel from 'api/settings/settingsModel';
 import search from 'api/search/search';
 import request from 'supertest';
 import express from 'express';
 import { files } from 'api/files/files';
 
-import { fixtures, entityId, entityEnId, templateId } from './fixtures';
+import { fixtures, templateId } from './fixtures';
 import instrumentRoutes from '../../utils/instrumentRoutes';
 import uploadRoutes from '../deprecatedRoutes.js';
 import errorLog from '../../log/errorLog';
 import paths from '../../config/paths';
-
-const writeFile = promisify(fs.writeFile);
-const fileExists = promisify(fs.stat);
 
 describe('upload routes', () => {
   let routes;
   let req;
   let file;
   let iosocket;
-  const sharedId = 'sharedId1';
 
   const onSocketRespond = (method, url, reqObject, eventName = 'documentProcessed') => {
     const promise = new Promise(resolve => {
@@ -50,10 +42,10 @@ describe('upload routes', () => {
       'importcsv.csv',
       'f2082bf51b6ef839690485d7153e847a.pdf',
     ];
-    fs.readdir(directory, (err, files) => {
+    fs.readdir(directory, (err, filesList) => {
       if (err) throw err;
 
-      files.forEach(fileName => {
+      filesList.forEach(fileName => {
         if (dontDeleteFiles.includes(fileName)) {
           return;
         }
@@ -62,24 +54,6 @@ describe('upload routes', () => {
         });
       });
       cb();
-    });
-  };
-
-  const checkThumbnails = () => {
-    const thumbnail1URI = `${__dirname}/uploads/${entityId}.jpg`;
-    const thumbnail2URI = `${__dirname}/uploads/${entityEnId}.jpg`;
-    return new Promise((resolve, reject) => {
-      fs.stat(path.resolve(thumbnail1URI), err1 => {
-        if (err1) {
-          reject(new Error(`Missing thumbnail: ${thumbnail1URI}`));
-        }
-        fs.stat(path.resolve(thumbnail2URI), err2 => {
-          if (err2) {
-            reject(new Error(`Missing thumbnail: ${thumbnail2URI}`));
-          }
-          resolve();
-        });
-      });
     });
   };
 
@@ -115,80 +89,6 @@ describe('upload routes', () => {
       spyOn(errorLog, 'error'); //just to avoid annoying console output
     });
   });
-
-  // describe('POST/reupload', () => {
-  //   beforeEach(() => {
-  //     spyOn(relationships, 'deleteTextReferences').and.returnValue(Promise.resolve());
-  //   });
-
-  //   it('should reupload a document', (done) => {
-  //     iosocket.emit.and.callFake((eventName) => {
-  //       if (eventName === 'documentProcessed') {
-  //         expect(relationships.deleteTextReferences).toHaveBeenCalledWith(sharedId, 'es');
-  //         documents.getById(sharedId, 'es')
-  //         .then((modifiedDoc) => {
-  //           expect(modifiedDoc.toc.length).toBe(0);
-  //           done();
-  //         })
-  //         .catch(done.fail);
-  //       }
-  //     });
-  //     req.body.document = sharedId;
-
-  //     routes.post('/api/reupload', req)
-  //     .then((response) => {
-  //       expect(response).toEqual(file);
-  //     })
-  //     .catch(done.fail);
-  //   });
-
-  //   it('should not remove old document when assigned to other entities', async () => {
-  //     paths.uploadedDocuments = `${__dirname}/uploads/`;
-  //     req.body.document = sharedId;
-  //     await writeFile(`${__dirname}/uploads/test`, 'data');
-  //     await Promise.all([
-  //       entitiesModel.save({ title: 'title', _id: entityId, file: { filename: 'test' } }),
-  //       entitiesModel.save({ title: 'title', file: { filename: 'test' } }),
-  //     ]);
-  //     await onSocketRespond('post', '/api/reupload', req);
-  //     await fileExists(path.resolve(`${__dirname}/uploads/test`));
-  //   });
-
-  //   it('should remove old document on reupload', async () => {
-  //     paths.uploadedDocuments = `${__dirname}/uploads/`;
-  //     req.body.document = sharedId;
-  //     await writeFile(`${__dirname}/uploads/test`, 'data');
-
-  //     await entitiesModel.save({ _id: entityId, file: { filename: 'test' } });
-  //     await onSocketRespond('post', '/api/reupload', req);
-
-  //     try {
-  //       await fileExists(path.resolve(`${__dirname}/uploads/test`));
-  //       fail('file should be deleted on reupload');
-  //     } catch (e) {} //eslint-disable-line
-  //   });
-
-  //   it('should upload too all entities when none has file', async () => {
-  //     spyOn(Date, 'now').and.returnValue(1100);
-  //     paths.uploadedDocuments = `${__dirname}/uploads/`;
-  //     req.body.document = sharedId;
-  //     await writeFile(`${__dirname}/uploads/test`, 'data');
-  //     await entitiesModel.save({ _id: entityId, file: null });
-  //     await onSocketRespond('post', '/api/reupload', req);
-
-  //     const _entities = await entities.get({ sharedId });
-  //     const _file = {
-  //       filename: 'f2082bf51b6ef839690485d7153e847a.pdf',
-  //       language: 'other',
-  //       mimetype: 'application/octet-stream',
-  //       originalname: 'gadgets-01.pdf',
-  //       size: 171411271,
-  //       timestamp: 1100
-  //     };
-  //     expect(_entities[0].file).toEqual(jasmine.objectContaining(_file));
-  //     expect(_entities[1].file).toEqual(jasmine.objectContaining(_file));
-  //   });
-  // });
 
   describe('POST/import', () => {
     beforeEach(() => {
