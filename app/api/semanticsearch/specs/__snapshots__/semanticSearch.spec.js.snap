@@ -35,10 +35,13 @@ Object {
   "language": "en",
   "results": Array [
     Object {
-      "documents": Array [],
-      "fullText": Object {
-        "1": "text2",
-      },
+      "documents": Array [
+        Object {
+          "entity": "doc2",
+          "language": "en",
+          "type": "document",
+        },
+      ],
       "language": "en",
       "semanticSearch": Object {
         "numRelevant": 2,
@@ -66,11 +69,13 @@ Object {
       "sharedId": "doc2",
     },
     Object {
-      "documents": Array [],
-      "fullText": Object {
-        "1": "page 1",
-        "2": "page 2",
-      },
+      "documents": Array [
+        Object {
+          "entity": "doc1",
+          "language": "en",
+          "type": "document",
+        },
+      ],
       "language": "en",
       "semanticSearch": Object {
         "numRelevant": 1,

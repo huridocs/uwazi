@@ -221,7 +221,7 @@ describe('entities', () => {
       });
 
       expect(response.rows.length).toEqual(1);
-      expect(response.rows[0]).toEqual(expectedEntity);
+      expect(response.rows[0]).toEqual(expect.objectContaining(expectedEntity));
     });
 
     it('should not return unpublished documents when user not logged in', async () => {

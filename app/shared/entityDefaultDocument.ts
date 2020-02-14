@@ -2,7 +2,7 @@ import { FileSchema } from 'shared/types/fileType';
 import language from 'shared/languagesList';
 
 export const entityDefaultDocument = (
-  documents: Array<FileSchema>,
+  documents: Array<FileSchema> = [],
   entityLanguage: string,
   defaultLanguage: string
 ) => {

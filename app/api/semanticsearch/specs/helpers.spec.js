@@ -5,7 +5,7 @@ import { search } from '../../search';
 import * as helpers from '../helpers';
 import model from '../model';
 import resultsModel from '../resultsModel';
-import fixtures, { search2Id, template1Id } from './fixtures';
+import fixtures, { fileId, search2Id, template1Id } from './fixtures';
 
 describe('semanticSearch helpers', () => {
   beforeEach(done => {
@@ -107,7 +107,11 @@ describe('semanticSearch helpers', () => {
     beforeEach(() => {
       doc = {
         template: template1Id,
-        fullText: { 1: 'page 1', 2: 'page 2' },
+        documents: [
+          {
+            _id: fileId,
+          },
+        ],
         metadata: {
           code: [{ value: 'code' }],
           description: [{ value: 'a description' }],
@@ -115,6 +119,7 @@ describe('semanticSearch helpers', () => {
         },
       };
     });
+
     it('should return content from fullText and rich text fields grouped by page or field name', async () => {
       const contents = await helpers.extractDocumentContent(doc);
       expect(contents).toEqual({
@@ -133,7 +138,7 @@ describe('semanticSearch helpers', () => {
     });
 
     it('should return metadata results when there is no full text', async () => {
-      delete doc.fullText;
+      doc.documents = [{}];
       const contents = await helpers.extractDocumentContent(doc);
       expect(contents).toEqual({
         bio: [{ value: 'a bio' }],
@@ -158,8 +163,8 @@ describe('semanticSearch helpers', () => {
     });
 
     it('should return empty object if there is no full text or rich text fields', async () => {
-      delete doc.fullText;
       delete doc.metadata;
+      delete doc.documents;
 
       const contents = await helpers.extractDocumentContent(doc);
       expect(contents).toEqual({});

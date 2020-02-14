@@ -7,6 +7,7 @@ import resultsModel from './resultsModel';
 import api from './api';
 import documentsModel from '../documents';
 import workers from './workerManager';
+import settings from 'api/settings';
 import { createError } from '../utils';
 import { PENDING, COMPLETED, PROCESSING, IN_PROGRESS, STOPPED } from './statuses';
 import {
@@ -21,10 +22,12 @@ const SEARCH_BATCH_SIZE = 5;
 const eachLimitAsync = promisify(async.eachLimit);
 
 const processDocument = async (searchId, searchTerm, sharedId, language) => {
-  const [doc] = await documentsModel.get({ sharedId, language }, '+fullText');
+  const [doc] = await documentsModel.get({ sharedId, language });
+  const { languages } = await settings.get();
+  const defaultLanguage = languages.find(l => l.default);
 
   await updateSearchDocumentStatus(searchId, sharedId, PROCESSING);
-  const contents = await extractDocumentContent(doc);
+  const contents = await extractDocumentContent(doc, defaultLanguage);
   if (!Object.keys(contents).length) {
     return updateSearchDocumentStatus(searchId, sharedId, COMPLETED);
   }
