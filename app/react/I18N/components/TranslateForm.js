@@ -16,7 +16,7 @@ export class TranslateForm extends Component {
 
   submit(values) {
     let translations = this.props.translations.toJS();
-    translations = translations.map((t) => {
+    translations = translations.map(t => {
       const { locale } = t;
       const context = t.contexts.find(c => c.id === this.props.context);
       context.values[this.props.value] = values[locale];
@@ -45,26 +45,29 @@ export class TranslateForm extends Component {
                 <Field model={`.${language}`}>
                   <label className="form-group-label" htmlFor={language}>
                     {language}
-                    <input id={language} className="form-control"/>
+                    <input id={language} className="form-control" />
                   </label>
                 </Field>
               </FormGroup>
-              ))}
+            ))}
           </Form>
         </Modal.Body>
 
         <Modal.Footer>
-          <button type="button" className="btn btn-default cancel-button" onClick={this.cancel}>Cancel</button>
-          <button type="submit" form="inlineEdit" className="btn confirm-button btn-primary">Submit</button>
+          <button type="button" className="btn btn-default cancel-button" onClick={this.cancel}>
+            Cancel
+          </button>
+          <button type="submit" form="inlineEdit" className="btn confirm-button btn-primary">
+            Submit
+          </button>
         </Modal.Footer>
-
       </Modal>
     );
   }
 }
 
 TranslateForm.defaultProps = {
-  isOpen: false
+  isOpen: false,
 };
 
 TranslateForm.propTypes = {
@@ -73,7 +76,7 @@ TranslateForm.propTypes = {
   isOpen: PropTypes.bool,
   context: PropTypes.string.isRequired,
   value: PropTypes.string.isRequired,
-  translations: PropTypes.instanceOf(Object).isRequired
+  translations: PropTypes.instanceOf(Object).isRequired,
 };
 
 export function mapStateToProps(state) {
@@ -81,12 +84,15 @@ export function mapStateToProps(state) {
     translations: state.translations,
     isOpen: state.inlineEdit.get('showInlineEditForm'),
     context: state.inlineEdit.get('context'),
-    value: state.inlineEdit.get('key')
+    value: state.inlineEdit.get('key'),
   };
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({ saveTranslations: actions.saveTranslations, close: actions.closeInlineEditTranslation }, dispatch);
+  return bindActionCreators(
+    { saveTranslations: actions.saveTranslations, close: actions.closeInlineEditTranslation },
+    dispatch
+  );
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(TranslateForm);

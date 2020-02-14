@@ -17,14 +17,18 @@ export class FormConfigInput extends Component {
 
     return (
       <div>
-
         <div className={labelClass}>
           <label>Name</label>
           <Field model={`template.data.properties[${index}].label`}>
             <input className="form-control" />
           </Field>
         </div>
-        <PropertyConfigOptions index={index} property={property} type={type} canBeFilter={canBeFilter} />
+        <PropertyConfigOptions
+          index={index}
+          property={property}
+          type={type}
+          canBeFilter={canBeFilter}
+        />
       </div>
     );
   }
@@ -45,7 +49,7 @@ FormConfigInput.propTypes = {
 export function mapStateToProps({ template }, props) {
   return {
     property: template.data.properties[props.index],
-    formState: template.formState
+    formState: template.formState,
   };
 }
 

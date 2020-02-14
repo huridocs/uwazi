@@ -18,14 +18,20 @@ describe('SemanticSearchAPI', () => {
     searchId = 'searchId';
     backend.restore();
     backend
-    .get(`${APIURL}semantic-search?searchId=${searchId}`, { body: JSON.stringify(singleResponse) })
-    .get(`${APIURL}semantic-search/list?searchId=searchId&minRelevantSentences=5&threshold=0.5`, { body: JSON.stringify(resultListResponse) })
-    .get(`${APIURL}semantic-search`, { body: JSON.stringify(searchListResponse) })
-    .delete(`${APIURL}semantic-search?searchId=${searchId}`, { body: JSON.stringify(deletedResponse) })
-    .post(`${APIURL}semantic-search/stop`, { body: JSON.stringify(stoppedResponse) })
-    .post(`${APIURL}semantic-search/resume`, { body: JSON.stringify(resumedResponse) })
-    .post(`${APIURL}semantic-search`, { body: JSON.stringify(createdResponse) })
-    .post(`${APIURL}semantic-search/notify-updates`, { body: JSON.stringify(okResponse) });
+      .get(`${APIURL}semantic-search?searchId=${searchId}`, {
+        body: JSON.stringify(singleResponse),
+      })
+      .get(`${APIURL}semantic-search/list?searchId=searchId&minRelevantSentences=5&threshold=0.5`, {
+        body: JSON.stringify(resultListResponse),
+      })
+      .get(`${APIURL}semantic-search`, { body: JSON.stringify(searchListResponse) })
+      .delete(`${APIURL}semantic-search?searchId=${searchId}`, {
+        body: JSON.stringify(deletedResponse),
+      })
+      .post(`${APIURL}semantic-search/stop`, { body: JSON.stringify(stoppedResponse) })
+      .post(`${APIURL}semantic-search/resume`, { body: JSON.stringify(resumedResponse) })
+      .post(`${APIURL}semantic-search`, { body: JSON.stringify(createdResponse) })
+      .post(`${APIURL}semantic-search/notify-updates`, { body: JSON.stringify(okResponse) });
   });
 
   afterEach(() => {
@@ -37,7 +43,9 @@ describe('SemanticSearchAPI', () => {
       const requestParams = new RequestParams({ searchTerm: 'term' });
       const response = await semanticSearchAPI.search(requestParams);
       expect(response).toEqual(createdResponse);
-      expect(JSON.parse(backend.lastOptions(`${APIURL}semantic-search`).body)).toEqual(requestParams.data);
+      expect(JSON.parse(backend.lastOptions(`${APIURL}semantic-search`).body)).toEqual(
+        requestParams.data
+      );
     });
   });
 
@@ -85,7 +93,11 @@ describe('SemanticSearchAPI', () => {
 
   describe('getEntitiesMatchingFilters', () => {
     it('should request list of all results matching filters', async () => {
-      const requestParams = new RequestParams({ searchId, minRelevantSentences: 5, threshold: 0.5 });
+      const requestParams = new RequestParams({
+        searchId,
+        minRelevantSentences: 5,
+        threshold: 0.5,
+      });
       const response = await semanticSearchAPI.getEntitiesMatchingFilters(requestParams);
       expect(response).toEqual(resultListResponse);
     });

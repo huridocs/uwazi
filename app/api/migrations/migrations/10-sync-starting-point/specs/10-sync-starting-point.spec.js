@@ -8,32 +8,39 @@ import fixtures, {
   entity3,
   translation1,
   connection1,
-  migration1
+  migration1,
 } from './fixtures.js';
 
 describe('migration sync-starting-point', () => {
   let updatelogs;
 
-  const expectLog = id => ({ toBelongTo: (namespace) => {
-    const log = updatelogs.find(l => l.mongoId.toString() === id.toString());
-    const expectedOrder = {
-      settings: 1,
-      dictionaries: 2,
-      relationtypes: 2,
-      translations: 2,
-      templates: 3,
-      entities: 4,
-      connections: 5
-    };
-    expect(log).toEqual(expect.objectContaining({ namespace, timestamp: expectedOrder[namespace], deleted: false }));
-  } });
-
-  beforeEach((done) => {
-    spyOn(process.stdout, 'write');
-    testingDB.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
+  const expectLog = id => ({
+    toBelongTo: namespace => {
+      const log = updatelogs.find(l => l.mongoId.toString() === id.toString());
+      const expectedOrder = {
+        settings: 1,
+        dictionaries: 2,
+        relationtypes: 2,
+        translations: 2,
+        templates: 3,
+        entities: 4,
+        connections: 5,
+      };
+      expect(log).toEqual(
+        expect.objectContaining({ namespace, timestamp: expectedOrder[namespace], deleted: false })
+      );
+    },
   });
 
-  afterAll((done) => {
+  beforeEach(done => {
+    spyOn(process.stdout, 'write');
+    testingDB
+      .clearAllAndLoad(fixtures)
+      .then(done)
+      .catch(catchErrors(done));
+  });
+
+  afterAll(done => {
     testingDB.disconnect().then(done);
   });
 
@@ -44,7 +51,10 @@ describe('migration sync-starting-point', () => {
   it('should generate update logs of all the required collections, clearing previous logs', async () => {
     await migration.up(testingDB.mongodb);
 
-    updatelogs = await testingDB.mongodb.collection('updatelogs').find().toArray();
+    updatelogs = await testingDB.mongodb
+      .collection('updatelogs')
+      .find()
+      .toArray();
 
     expect(updatelogs.length).toBe(10);
     expectLog(template1).toBelongTo('templates');

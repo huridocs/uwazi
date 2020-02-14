@@ -13,17 +13,17 @@ describe('ThesauriFormGroup', () => {
         id: 'group',
         values: [
           { label: 'Item1', id: 'item1' },
-          { label: 'Item2', id: 'item2' }
-        ]
+          { label: 'Item2', id: 'item2' },
+        ],
       },
       index: 1,
       removeValue: jest.fn(),
-      onChange: jest.fn()
+      onChange: jest.fn(),
     };
   });
 
   const render = () => {
-    component = shallow(<ThesauriFormGroup {...props}/>);
+    component = shallow(<ThesauriFormGroup {...props} />);
     instance = component.instance();
   };
 
@@ -52,7 +52,10 @@ describe('ThesauriFormGroup', () => {
   describe('delete button', () => {
     it('should remove group when clicked', () => {
       render();
-      component.find('button').first().simulate('click');
+      component
+        .find('button')
+        .first()
+        .simulate('click');
       expect(props.removeValue).toHaveBeenCalledWith(props.index);
     });
   });

@@ -24,7 +24,7 @@ describe('ExtendedTooltip', () => {
     props.active = true;
     props.payload = [
       { value: 1, payload: { name: 'nameA', setALabel: 'labelA' } },
-      { value: 2, payload: { name: 'nameB', setBLabel: 'labelB' } }
+      { value: 2, payload: { name: 'nameB', setBLabel: 'labelB' } },
     ];
 
     render();

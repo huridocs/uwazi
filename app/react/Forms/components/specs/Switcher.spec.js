@@ -11,12 +11,12 @@ describe('Switcher', () => {
     props = {
       value: true,
       onChange: jasmine.createSpy('onChange'),
-      prefix: 'my'
+      prefix: 'my',
     };
   });
 
   const render = () => {
-    component = shallow(<Switcher {...props}/>);
+    component = shallow(<Switcher {...props} />);
   };
 
   it('should render an input with the value and prefix passed', () => {

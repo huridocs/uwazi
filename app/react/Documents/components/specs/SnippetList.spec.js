@@ -9,7 +9,7 @@ describe('SnippetList', () => {
   let props;
 
   const render = () => {
-    component = shallow(<SnippetList {...props}/>);
+    component = shallow(<SnippetList {...props} />);
   };
 
   beforeEach(() => {
@@ -23,22 +23,18 @@ describe('SnippetList', () => {
         metadata: [
           {
             field: 'title',
-            texts: [
-              'metadata <b>snippet m1</b> found'
-            ]
+            texts: ['metadata <b>snippet m1</b> found'],
           },
           {
             field: 'metadata.summary',
-            texts: [
-              'metadata <b>snippet m2</b>'
-            ]
-          }
+            texts: ['metadata <b>snippet m2</b>'],
+          },
         ],
         fullText: [
           { text: 'first <b>snippet 1</b> found', page: 1 },
           { text: 'second <b>snippet 3</b> found', page: 2 },
-          { text: 'third <b>snippet 3</b> found', page: 3 }
-        ]
+          { text: 'third <b>snippet 3</b> found', page: 3 },
+        ],
       }),
       template: Immutable.fromJS({
         _id: 'template',
@@ -46,10 +42,10 @@ describe('SnippetList', () => {
         properties: [
           {
             name: 'summary',
-            label: 'Summary'
-          }
-        ]
-      })
+            label: 'Summary',
+          },
+        ],
+      }),
     };
   });
 

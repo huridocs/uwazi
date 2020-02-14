@@ -13,12 +13,15 @@ function mapStateToProps(state, props) {
     isEntity: !state[props.storeKey].sidepanel.file,
     templateId: state[props.storeKey].sidepanel.metadata.template,
     templates,
-    thesauris
+    thesauris,
   };
 }
 
 function mapDispatchToProps(dispatch, props) {
-  return bindActionCreators({ changeTemplate: actions.changeTemplate, onSubmit: saveDocument }, wrapDispatch(dispatch, props.storeKey));
+  return bindActionCreators(
+    { changeTemplate: actions.changeTemplate, onSubmit: saveDocument },
+    wrapDispatch(dispatch, props.storeKey)
+  );
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(MetadataForm);

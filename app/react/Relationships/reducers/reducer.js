@@ -7,7 +7,6 @@ import hubs from './hubsReducer';
 import hubActions from './hubActionsReducer';
 import uiState from './uiReducer';
 
-
 export default combineReducers({
   hubs,
   hubActions,
@@ -19,10 +18,10 @@ export default combineReducers({
     sort: modelReducer('relationships/list.sort', prioritySortingCriteria.get()),
     filters: createReducer('relationships/list/filters', {}),
     search: formReducer('relationships/list/search'),
-    view: createReducer('relationships/list/view', 'graph')
+    view: createReducer('relationships/list/view', 'graph'),
   }),
   searchResults: createReducer('relationships/searchResults', []),
   searchTerm: createReducer('relationships/searchTerm', ''),
   connection: createReducer('relationships/connection', {}),
-  uiState
+  uiState,
 });

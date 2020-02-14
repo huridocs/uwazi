@@ -21,16 +21,19 @@ describe('CreateConnectionPanel', () => {
         template: 'rt3',
         type: 'basic',
         sourceDocument: 'sourceId',
-        targetDocument: 'targetId'
+        targetDocument: 'targetId',
       }),
       pdfInfo: Immutable([]),
-      relationTypes: Immutable([{ _id: 'rt1', name: 'relationType1' }, { _id: 'rt2', name: 'relationType2' }]),
+      relationTypes: Immutable([
+        { _id: 'rt1', name: 'relationType1' },
+        { _id: 'rt2', name: 'relationType2' },
+      ]),
       searchResults: Immutable([{ _id: 'sr1' }, { _id: 'sr2' }]),
       uiState: Immutable({ searching: true }),
       setRelationType: jasmine.createSpy('setRelationType'),
       setTargetDocument: () => {},
       onCreate: jasmine.createSpy('onCreate'),
-      onRangedConnect: () => {}
+      onRangedConnect: () => {},
     };
   });
 
@@ -57,25 +60,45 @@ describe('CreateConnectionPanel', () => {
       template: 'rt1',
       type: 'basic',
       sourceDocument: 'sourceId',
-      targetDocument: 'targetId'
+      targetDocument: 'targetId',
     });
 
     render();
     let options = component.find('.connections-list li');
-    expect(options.at(0).find(Icon).props().icon).toBe('check');
-    expect(options.at(1).find(Icon).props().icon).not.toBe('check');
+    expect(
+      options
+        .at(0)
+        .find(Icon)
+        .props().icon
+    ).toBe('check');
+    expect(
+      options
+        .at(1)
+        .find(Icon)
+        .props().icon
+    ).not.toBe('check');
 
     props.connection = Immutable({
       template: 'rt2',
       type: 'basic',
       sourceDocument: 'sourceId',
-      targetDocument: 'targetId'
+      targetDocument: 'targetId',
     });
 
     render();
     options = component.find('.connections-list li');
-    expect(options.at(0).find(Icon).props().icon).not.toBe('check');
-    expect(options.at(1).find(Icon).props().icon).toBe('check');
+    expect(
+      options
+        .at(0)
+        .find(Icon)
+        .props().icon
+    ).not.toBe('check');
+    expect(
+      options
+        .at(1)
+        .find(Icon)
+        .props().icon
+    ).toBe('check');
   });
 
   it('should have a search form with the connection type', () => {
@@ -90,7 +113,13 @@ describe('CreateConnectionPanel', () => {
     saveButton.props().onCreate();
     expect(props.onCreate).toHaveBeenCalled();
     expect(saveButton.parent().props().if).toBe(true);
-    expect(component.find(ActionButton).at(1).parent().props().if).toBe(false);
+    expect(
+      component
+        .find(ActionButton)
+        .at(1)
+        .parent()
+        .props().if
+    ).toBe(false);
   });
 
   it('should have connect button with an onRangedConnect callback for targetRanged connections', () => {
@@ -100,7 +129,13 @@ describe('CreateConnectionPanel', () => {
     expect(connectButton.props().action).toBe('connect');
     expect(connectButton.props().onRangedConnect).toBe(props.onRangedConnect);
     expect(connectButton.parent().props().if).toBe(true);
-    expect(component.find(ActionButton).at(0).parent().props().if).toBe(false);
+    expect(
+      component
+        .find(ActionButton)
+        .at(0)
+        .parent()
+        .props().if
+    ).toBe(false);
   });
 
   it('should list the search results and pass props required', () => {

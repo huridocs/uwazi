@@ -13,9 +13,11 @@ describe('PDF', () => {
   const filepath = `${__dirname}/12345.test.pdf`;
   const thumbnailName = `${__dirname}/documentId.jpg`;
 
-  const deleteThumbnail = (done) => {
-    fs.stat(path.resolve(thumbnailName), (err) => {
-      if (err) { return done(); }
+  const deleteThumbnail = done => {
+    fs.stat(path.resolve(thumbnailName), err => {
+      if (err) {
+        return done();
+      }
       fs.unlinkSync(thumbnailName);
       return done();
     });
@@ -37,17 +39,19 @@ describe('PDF', () => {
 
     it('should return the conversion object', async () => {
       const conversion = await pdf.convert();
-      expect(conversion).toEqual(expect.objectContaining({
-        totalPages: 11,
-        processed: true,
-        toc: [],
-        file: {
-          language: 'eng',
-          filename: '12345.test.pdf',
-          originalname: 'originalName.pdf',
-          destination: __dirname,
-        }
-      }));
+      expect(conversion).toEqual(
+        expect.objectContaining({
+          totalPages: 11,
+          processed: true,
+          toc: [],
+          file: {
+            language: 'eng',
+            filename: '12345.test.pdf',
+            originalname: 'originalName.pdf',
+            destination: __dirname,
+          },
+        })
+      );
     });
 
     it('should throw error with proper error message pdf is invalid or malformed', async () => {
@@ -67,11 +71,11 @@ describe('PDF', () => {
   });
 
   describe('createThumbnail', () => {
-    beforeEach((done) => {
+    beforeEach(done => {
       deleteThumbnail(done);
     });
 
-    afterEach((done) => {
+    afterEach(done => {
       deleteThumbnail(done);
     });
 
@@ -80,12 +84,14 @@ describe('PDF', () => {
       expect(thumbnailResponse.childProcess.spawnfile).toBe('pdftoppm');
       expect(thumbnailResponse.childProcess.spawnargs).toEqual([
         'pdftoppm',
-        '-f', '1',
+        '-f',
+        '1',
         '-singlefile',
-        '-scale-to', '320',
+        '-scale-to',
+        '320',
         '-jpeg',
         filepath,
-        `${__dirname}/documentId`
+        `${__dirname}/documentId`,
       ]);
       expect(fs.existsSync(thumbnailName)).toBe(true);
     });
@@ -93,11 +99,13 @@ describe('PDF', () => {
     it('should correctly log errors, but continue with the flow', async () => {
       spyOn(errorLog, 'error');
       pdf = new PDFObject({
-        filename: '/missingpath/pdf.pdf'
+        filename: '/missingpath/pdf.pdf',
       });
       const thumbnailResponse = await pdf.createThumbnail('documentId');
       expect(thumbnailResponse instanceof Error).toBe(true);
-      expect(errorLog.error).toHaveBeenCalledWith('Thumbnail creation error for: /missingpath/pdf.pdf');
+      expect(errorLog.error).toHaveBeenCalledWith(
+        'Thumbnail creation error for: /missingpath/pdf.pdf'
+      );
     });
   });
 

@@ -9,19 +9,27 @@ import requestState from '../requestState';
 describe('static requestState()', () => {
   const aggregations = { buckets: [] };
   const templates = [
-    { name: 'Decision', _id: 'abc1', properties: [{ name: 'p', filter: true, type: 'text', prioritySorting: true }] },
-    { name: 'Ruling', _id: 'abc2', properties: [] }
+    {
+      name: 'Decision',
+      _id: 'abc1',
+      properties: [{ name: 'p', filter: true, type: 'text', prioritySorting: true }],
+    },
+    { name: 'Ruling', _id: 'abc2', properties: [] },
   ];
   const relationTypes = [
-    { name: 'Victim', _id: 'abc3', properties: [{ name: 'p', filter: true, type: 'text' }] }
+    { name: 'Victim', _id: 'abc3', properties: [{ name: 'p', filter: true, type: 'text' }] },
   ];
 
   const thesauris = [{ name: 'countries', _id: '1', values: [] }];
-  const documents = { rows: [{ title: 'Something to publish' }, { title: 'My best recipes' }], totalRows: 2, aggregations };
+  const documents = {
+    rows: [{ title: 'Something to publish' }, { title: 'My best recipes' }],
+    totalRows: 2,
+    aggregations,
+  };
   const globalResources = {
     templates: Immutable.fromJS(templates),
     thesauris: Immutable.fromJS(thesauris),
-    relationTypes: Immutable.fromJS(relationTypes)
+    relationTypes: Immutable.fromJS(relationTypes),
   };
 
   beforeEach(() => {
@@ -37,7 +45,7 @@ describe('static requestState()', () => {
         sort: prioritySortingCriteria.get({ templates: Immutable.fromJS(templates) }).sort,
         order: prioritySortingCriteria.get({ templates: Immutable.fromJS(templates) }).order,
         filters: { something: 1 },
-        types: []
+        types: [],
       },
       headers: 'headers',
     };
@@ -49,13 +57,21 @@ describe('static requestState()', () => {
   });
 
   it('should process the query url params and transform it to state', async () => {
-    spyOn(libraryHelpers, 'URLQueryToState').and.returnValue({ properties: 'properties', search: 'search' });
+    spyOn(libraryHelpers, 'URLQueryToState').and.returnValue({
+      properties: 'properties',
+      search: 'search',
+    });
     const q = { filters: {}, types: ['type1'], order: 'desc', sort: 'creationDate' };
     const query = { q: rison.encode(q) };
     const request = { data: query };
     await requestState(request, globalResources);
 
-    expect(libraryHelpers.URLQueryToState).toHaveBeenCalledWith(q, templates, thesauris, relationTypes);
+    expect(libraryHelpers.URLQueryToState).toHaveBeenCalledWith(
+      q,
+      templates,
+      thesauris,
+      relationTypes
+    );
   });
 
   describe('when is for geolocation', () => {
@@ -67,8 +83,8 @@ describe('static requestState()', () => {
           order: prioritySortingCriteria.get({ templates: Immutable.fromJS(templates) }).order,
           filters: { something: 1 },
           types: [],
-          geolocation: true
-        }
+          geolocation: true,
+        },
       };
 
       const request = { data: query };

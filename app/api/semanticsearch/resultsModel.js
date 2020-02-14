@@ -6,11 +6,13 @@ const resultSchema = new mongoose.Schema({
   searchId: mongoose.Schema.Types.ObjectId,
   status: String,
   averageScore: Number,
-  results: [{
+  results: [
+    {
       text: String,
       score: Number,
-      page: String
-  }]
+      page: String,
+    },
+  ],
 });
 
 export default instanceModel('semanticsearchresults', resultSchema);

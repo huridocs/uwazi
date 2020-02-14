@@ -5,13 +5,18 @@ import Loader from 'app/components/Elements/Loader';
 
 export class SearchResults extends Component {
   render() {
-    const loading = <div className="cs-loader-container">&nbsp;<Loader /></div>;
+    const loading = (
+      <div className="cs-loader-container">
+        &nbsp;
+        <Loader />
+      </div>
+    );
     const results = this.props.results.toJS().map((result, index) => (
       <div
         className={`item ${this.props.selected === result.sharedId ? 'is-selected' : ''}`}
         key={index}
         onClick={() => this.props.onClick(result.sharedId, result)}
-        >
+      >
         <div className="item-info">
           <div className="item-name">
             <Icon className="item-icon item-icon-center" data={result.icon} />
@@ -19,7 +24,7 @@ export class SearchResults extends Component {
           </div>
         </div>
         <div className="item-actions">
-          <TemplateLabel template={result.template}/>
+          <TemplateLabel template={result.template} />
         </div>
       </div>
     ));
@@ -27,9 +32,7 @@ export class SearchResults extends Component {
     return (
       <div>
         {this.props.searching ? loading : ''}
-        <div className="item-group">
-          {results}
-        </div>
+        <div className="item-group">{results}</div>
       </div>
     );
   }
@@ -39,7 +42,7 @@ SearchResults.propTypes = {
   results: PropTypes.object,
   selected: PropTypes.string,
   searching: PropTypes.bool,
-  onClick: PropTypes.func
+  onClick: PropTypes.func,
 };
 
 export default SearchResults;

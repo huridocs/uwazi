@@ -2,7 +2,6 @@ import 'api/utils/jasmineHelpers';
 
 import express from 'express';
 
-
 import requestAPI from 'supertest';
 import path from 'path';
 import fs from 'fs';
@@ -27,9 +26,9 @@ describe('sync', () => {
       syncRoutes(app);
 
       const response = await requestAPI(app)
-      .post('/api/sync/upload')
-      .set('X-Requested-With', 'XMLHttpRequest')
-      .attach('file', path.join(__dirname, 'test.txt'));
+        .post('/api/sync/upload')
+        .set('X-Requested-With', 'XMLHttpRequest')
+        .attach('file', path.join(__dirname, 'test.txt'));
 
       const properlyUploaded = fs.existsSync(path.join(paths.uploadedDocuments, 'test.txt'));
       expect(response.status).toBe(200);

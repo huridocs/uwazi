@@ -16,11 +16,10 @@ describe('ImportPanel', () => {
     importProgress: 0,
     closeImportPanel: jasmine.createSpy('closeImportPanel'),
     importData: jasmine.createSpy('importData'),
-
   };
 
   const render = () => {
-    component = shallow(<ImportPanel {...props}/>);
+    component = shallow(<ImportPanel {...props} />);
   };
 
   describe('submiting the form', () => {
@@ -28,7 +27,7 @@ describe('ImportPanel', () => {
       render();
       const values = {
         template: 234,
-        file: { name: 'im a file!' }
+        file: { name: 'im a file!' },
       };
       component.find(LocalForm).simulate('submit', values);
       expect(props.importData).toHaveBeenCalledWith(values.file, values.template);

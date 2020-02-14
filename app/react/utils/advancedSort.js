@@ -30,7 +30,10 @@ const compareDottedList = (a, b, options) => {
     return memo;
   }, []);
 
-  return compareArray.reduce((memo, indexCompare) => !memo && indexCompare ? indexCompare : memo, 0);
+  return compareArray.reduce(
+    (memo, indexCompare) => (!memo && indexCompare ? indexCompare : memo),
+    0
+  );
 };
 
 const compare = (baseA, baseB, options) => {
@@ -48,7 +51,8 @@ const compare = (baseA, baseB, options) => {
   return localCompare(a, b);
 };
 
-const evalIfHasProperty = (data, property) => typeof data === 'object' && data !== null && Object.keys(data).indexOf(property) !== -1;
+const evalIfHasProperty = (data, property) =>
+  typeof data === 'object' && data !== null && Object.keys(data).indexOf(property) !== -1;
 
 const advancedSort = (array, options = {}) => {
   options.order = options.order || 'asc';
@@ -65,8 +69,14 @@ const advancedSort = (array, options = {}) => {
       }
 
       if (Array.isArray(options.property)) {
-        a = options.property.reduce((memo, property) => evalIfHasProperty(memo, property) ? memo[property] : null, baseA);
-        b = options.property.reduce((memo, property) => evalIfHasProperty(memo, property) ? memo[property] : null, baseB);
+        a = options.property.reduce(
+          (memo, property) => (evalIfHasProperty(memo, property) ? memo[property] : null),
+          baseA
+        );
+        b = options.property.reduce(
+          (memo, property) => (evalIfHasProperty(memo, property) ? memo[property] : null),
+          baseB
+        );
       }
 
       if (!a) {
@@ -86,6 +96,4 @@ const advancedSort = (array, options = {}) => {
   return sortedArray;
 };
 
-export {
-  advancedSort
-};
+export { advancedSort };

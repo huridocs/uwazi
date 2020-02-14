@@ -12,7 +12,7 @@ describe('ConfirmButton', () => {
 
   beforeEach(() => {
     props = {
-      action: jasmine.createSpy('action')
+      action: jasmine.createSpy('action'),
     };
   });
 
@@ -38,7 +38,10 @@ describe('ConfirmButton', () => {
         render();
         component.find('button').simulate('click');
         component.update();
-        component.find(ConfirmModal).props().onAccept();
+        component
+          .find(ConfirmModal)
+          .props()
+          .onAccept();
         component.update();
 
         expect(component).toMatchSnapshot();
@@ -51,7 +54,10 @@ describe('ConfirmButton', () => {
         render();
         component.find('button').simulate('click');
         component.update();
-        component.find(ConfirmModal).props().onCancel();
+        component
+          .find(ConfirmModal)
+          .props()
+          .onCancel();
         component.update();
 
         expect(component).toMatchSnapshot();

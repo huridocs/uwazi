@@ -27,7 +27,7 @@ export default {
         { label: 'Xhosa', key: 'xh' },
         { label: 'Yiddish', key: 'yi' },
         { label: 'Zulu', key: 'zu' },
-      ]
-    }
+      ],
+    },
   ],
 };

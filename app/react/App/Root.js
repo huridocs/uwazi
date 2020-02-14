@@ -15,21 +15,16 @@ const determineHotAssets = query => ({
     `http://localhost:8080/CSS/vendor.css${query}`,
     `http://localhost:8080/CSS/main.css${query}`,
     'http://localhost:8080/pdfjs-dist.css',
-  ]
+  ],
 });
 
 const determineAssets = (assets, languageData) => ({
-  JS: [
-    assets['pdfjs-dist'].js,
-    assets.nprogress.js,
-    assets.vendor.js,
-    assets.main.js,
-  ],
+  JS: [assets['pdfjs-dist'].js, assets.nprogress.js, assets.vendor.js, assets.main.js],
   CSS: [
     assets.vendor.css[languageData.rtl ? 1 : 0],
     assets.main.css[languageData.rtl ? 1 : 0],
     assets['pdfjs-dist'].css[0],
-  ]
+  ],
 });
 
 const googelFonts = (
@@ -45,10 +40,15 @@ const headTag = (head, CSS, reduxData) => (
     {head.meta.toComponent()}
     {head.link.toComponent()}
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    {CSS.map((style, key) => <link key={key} href={style} rel="stylesheet" type="text/css" />)}
-    <style type="text/css" dangerouslySetInnerHTML={{ __html: reduxData.settings.collection.get('customCSS') }} />
+    {CSS.map((style, key) => (
+      <link key={key} href={style} rel="stylesheet" type="text/css" />
+    ))}
+    <style
+      type="text/css"
+      dangerouslySetInnerHTML={{ __html: reduxData.settings.collection.get('customCSS') }}
+    />
     {googelFonts}
-    <link rel="shortcut icon" href="/public/favicon.ico"/>
+    <link rel="shortcut icon" href="/public/favicon.ico" />
   </head>
 );
 
@@ -73,9 +73,11 @@ class Root extends Component {
     const { head, language, assets, reduxData, content } = this.props;
 
     const languageData = languagesList.find(l => l.key === language);
-    const query = (languageData && languageData.rtl) ? '?rtl=true' : '';
+    const query = languageData && languageData.rtl ? '?rtl=true' : '';
 
-    const { JS, CSS } = isHotReload ? determineHotAssets(query) : determineAssets(assets, languageData);
+    const { JS, CSS } = isHotReload
+      ? determineHotAssets(query)
+      : determineAssets(assets, languageData);
 
     return (
       <html lang={language}>
@@ -84,7 +86,9 @@ class Root extends Component {
           <div id="root" dangerouslySetInnerHTML={{ __html: content }} />
           {this.renderInitialData()}
           {head.script.toComponent()}
-          {JS.map((file, index) => <script key={index} src={file} />)}
+          {JS.map((file, index) => (
+            <script key={index} src={file} />
+          ))}
         </body>
       </html>
     );
@@ -98,7 +102,7 @@ Root.propTypes = {
   head: PropTypes.object,
   content: PropTypes.string,
   language: PropTypes.string,
-  assets: PropTypes.object
+  assets: PropTypes.object,
 };
 
 export default Root;

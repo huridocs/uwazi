@@ -5,15 +5,17 @@ const contextSchema = new mongoose.Schema({
   id: String,
   label: String,
   type: String,
-  values: [{
-    key: String,
-    value: String
-  }]
+  values: [
+    {
+      key: String,
+      value: String,
+    },
+  ],
 });
 
 const translationSchema = new mongoose.Schema({
   locale: String,
-  contexts: [contextSchema]
+  contexts: [contextSchema],
 });
 
 export default instanceModel('translations', translationSchema);

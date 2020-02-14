@@ -8,24 +8,17 @@ export class FormGroup extends Component {
       className += ' has-error';
     }
 
-    return (
-      <div className={className}>
-        {this.props.children}
-      </div>
-    );
+    return <div className={className}>{this.props.children}</div>;
   }
 }
 
-const childrenType = PropTypes.oneOfType([
-  PropTypes.object,
-  PropTypes.array
-]);
+const childrenType = PropTypes.oneOfType([PropTypes.object, PropTypes.array]);
 
 FormGroup.propTypes = {
   touched: PropTypes.bool,
   valid: PropTypes.bool,
   submitFailed: PropTypes.bool,
-  children: childrenType
+  children: childrenType,
 };
 
 export default FormGroup;

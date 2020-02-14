@@ -24,20 +24,21 @@ describe('LibraryCharts', () => {
         {
           locale: 'es',
           contexts: [
-          {
-            id: 'tcontext',
-            values: { 'Document and entity types': 'Document and entity types translated' }
-          },
-          {
-            id: 't2',
-            values: { t2name: 't2nameTranslated' }
-          },
-          {
-            id: 'cid',
-            values: { n: 'nTranslated' }
-          }
-          ] }
-      ])
+            {
+              id: 'tcontext',
+              values: { 'Document and entity types': 'Document and entity types translated' },
+            },
+            {
+              id: 't2',
+              values: { t2name: 't2nameTranslated' },
+            },
+            {
+              id: 'cid',
+              values: { n: 'nTranslated' },
+            },
+          ],
+        },
+      ]),
     };
 
     spyOn(store, 'getState').and.returnValue(state);
@@ -47,21 +48,25 @@ describe('LibraryCharts', () => {
     beforeEach(() => {
       props = {
         aggregations: fromJS({
-          all: { types: { buckets: [
-            { key: 't1', filtered: { doc_count: 5 } }, // eslint-disable-line camelcase
-            { key: 't2', filtered: { doc_count: 1 } }, // eslint-disable-line camelcase
-            { key: 't3', filtered: { doc_count: 10 } }, // eslint-disable-line camelcase
-            { key: 'missing', filtered: { doc_count: 13 } } // eslint-disable-line camelcase
-          ] } }
+          all: {
+            types: {
+              buckets: [
+                { key: 't1', filtered: { doc_count: 5 } }, // eslint-disable-line camelcase
+                { key: 't2', filtered: { doc_count: 1 } }, // eslint-disable-line camelcase
+                { key: 't3', filtered: { doc_count: 10 } }, // eslint-disable-line camelcase
+                { key: 'missing', filtered: { doc_count: 13 } }, // eslint-disable-line camelcase
+              ],
+            },
+          },
         }),
         fields: fromJS([]),
         collection: fromJS({ filters: [] }),
         templates: fromJS([
           { _id: 't1', name: 't1name' },
           { _id: 't2', name: 't2name' },
-          { _id: 't3', name: 't3name' }
+          { _id: 't3', name: 't3name' },
         ]),
-        translationContext: 'tcontext'
+        translationContext: 'tcontext',
       };
     });
 
@@ -72,7 +77,10 @@ describe('LibraryCharts', () => {
 
       expect(LibraryChartElement.props().label).toBe('Document and entity types translated');
       expect(LibraryChartElement.props().options[0]).toEqual({ label: 't1name', results: 5 });
-      expect(LibraryChartElement.props().options[1]).toEqual({ label: 't2nameTranslated', results: 1 });
+      expect(LibraryChartElement.props().options[1]).toEqual({
+        label: 't2nameTranslated',
+        results: 1,
+      });
       expect(LibraryChartElement.props().options[2]).toEqual({ label: 't3name', results: 10 });
     });
 
@@ -84,15 +92,27 @@ describe('LibraryCharts', () => {
 
       expect(LibraryChartElement.props().options[0]).toEqual({ label: 'No type', results: 13 });
       expect(LibraryChartElement.props().options[1]).toEqual({ label: 't1name', results: 5 });
-      expect(LibraryChartElement.props().options[2]).toEqual({ label: 't2nameTranslated', results: 1 });
+      expect(LibraryChartElement.props().options[2]).toEqual({
+        label: 't2nameTranslated',
+        results: 1,
+      });
       expect(LibraryChartElement.props().options[3]).toEqual({ label: 't3name', results: 10 });
     });
 
     it('should add the results of sub-items in filters', () => {
-      props.collection = fromJS({ filters: [
-        { id: 'g1', name: 'group1', items: [{ id: 't1', filtered: { doc_count: 5 } }, { id: 't2', filtered: { doc_count: 1 } }] }, // eslint-disable-line camelcase, max-len
-        { id: 't3', name: 't3name', filtered: { doc_count: 10 } } // eslint-disable-line camelcase
-      ] });
+      props.collection = fromJS({
+        filters: [
+          {
+            id: 'g1',
+            name: 'group1',
+            items: [
+              { id: 't1', filtered: { doc_count: 5 } },
+              { id: 't2', filtered: { doc_count: 1 } },
+            ],
+          }, // eslint-disable-line camelcase, max-len
+          { id: 't3', name: 't3name', filtered: { doc_count: 10 } }, // eslint-disable-line camelcase
+        ],
+      });
       render();
       expect(component.find(LibraryChart).length).toBe(1);
       const LibraryChartElement = component.find(LibraryChart);
@@ -106,20 +126,24 @@ describe('LibraryCharts', () => {
     beforeEach(() => {
       props = {
         aggregations: fromJS({
-          all: { types: { buckets: [
-            { key: 't1', filtered: { doc_count: 5 } }, // eslint-disable-line camelcase
-            { key: 't2', filtered: { doc_count: 1 } }, // eslint-disable-line camelcase
-            { key: 't3', filtered: { doc_count: 10 } }, // eslint-disable-line camelcase
-            { key: 'missing', filtered: { doc_count: 13 } } // eslint-disable-line camelcase
-          ] } }
+          all: {
+            types: {
+              buckets: [
+                { key: 't1', filtered: { doc_count: 5 } }, // eslint-disable-line camelcase
+                { key: 't2', filtered: { doc_count: 1 } }, // eslint-disable-line camelcase
+                { key: 't3', filtered: { doc_count: 10 } }, // eslint-disable-line camelcase
+                { key: 'missing', filtered: { doc_count: 13 } }, // eslint-disable-line camelcase
+              ],
+            },
+          },
         }),
         fields: fromJS([{ type: 'not-valid' }]),
         collection: fromJS({ filters: [] }),
         templates: fromJS([
           { _id: 't1', name: 't1name' },
           { _id: 't2', name: 't2name' },
-          { _id: 't3', name: 't3name' }
-        ])
+          { _id: 't3', name: 't3name' },
+        ]),
       };
     });
 
@@ -129,7 +153,10 @@ describe('LibraryCharts', () => {
       const LibraryChartElement = component.find(LibraryChart);
 
       expect(LibraryChartElement.props().options[0]).toEqual({ label: 't1name', results: 5 });
-      expect(LibraryChartElement.props().options[1]).toEqual({ label: 't2nameTranslated', results: 1 });
+      expect(LibraryChartElement.props().options[1]).toEqual({
+        label: 't2nameTranslated',
+        results: 1,
+      });
       expect(LibraryChartElement.props().options[2]).toEqual({ label: 't3name', results: 10 });
     });
   });
@@ -139,19 +166,23 @@ describe('LibraryCharts', () => {
       props = {
         aggregations: fromJS({
           all: {
-            types: { buckets: [
-              { key: 'f1', filtered: { doc_count: 5 } }, // eslint-disable-line camelcase
-              { key: 'f2', filtered: { doc_count: 1 } }, // eslint-disable-line camelcase
-              { key: 'f3', filtered: { doc_count: 10 } } // eslint-disable-line camelcase
-            ] },
-            pname: { buckets: [
-              { key: 'o1', filtered: { doc_count: 10 } }, // eslint-disable-line camelcase
-              { key: 'o2', filtered: { doc_count: 8 } }, // eslint-disable-line camelcase
-              { key: 'o3', filtered: { doc_count: 8 } }, // eslint-disable-line camelcase
-              { key: 'o4', filtered: { doc_count: 8 } }, // eslint-disable-line camelcase
-              { key: 'o5', filtered: { doc_count: 2 } } // eslint-disable-line camelcase
-            ] }
-          }
+            types: {
+              buckets: [
+                { key: 'f1', filtered: { doc_count: 5 } }, // eslint-disable-line camelcase
+                { key: 'f2', filtered: { doc_count: 1 } }, // eslint-disable-line camelcase
+                { key: 'f3', filtered: { doc_count: 10 } }, // eslint-disable-line camelcase
+              ],
+            },
+            pname: {
+              buckets: [
+                { key: 'o1', filtered: { doc_count: 10 } }, // eslint-disable-line camelcase
+                { key: 'o2', filtered: { doc_count: 8 } }, // eslint-disable-line camelcase
+                { key: 'o3', filtered: { doc_count: 8 } }, // eslint-disable-line camelcase
+                { key: 'o4', filtered: { doc_count: 8 } }, // eslint-disable-line camelcase
+                { key: 'o5', filtered: { doc_count: 2 } }, // eslint-disable-line camelcase
+              ],
+            },
+          },
         }),
         fields: fromJS([
           {
@@ -163,8 +194,9 @@ describe('LibraryCharts', () => {
               { id: 'o2', label: 'z', results: 8 },
               { id: 'o3', label: 'a', results: 8 },
               { id: 'o4', label: 'n', results: 8 },
-              { id: 'o5', label: 'a', results: 2 }
-            ] },
+              { id: 'o5', label: 'a', results: 2 },
+            ],
+          },
           { type: 'not-valid' },
           {
             type: 'multiselect',
@@ -173,11 +205,12 @@ describe('LibraryCharts', () => {
               { label: 'A', results: 8 },
               { label: 'Z', results: 8 },
               { label: 'g', results: 8 },
-              { label: 'a', results: 2 }
-            ] },
-          { type: 'multiselect', options: [] }
+              { label: 'a', results: 2 },
+            ],
+          },
+          { type: 'multiselect', options: [] },
         ]),
-        collection: fromJS({ filters: [] })
+        collection: fromJS({ filters: [] }),
       };
     });
 
@@ -187,9 +220,17 @@ describe('LibraryCharts', () => {
 
       const LibraryChartElement1 = component.find(LibraryChart).at(0);
 
-      expect(LibraryChartElement1.props().options[0]).toEqual({ id: 'o1', label: 'a', results: 10 });
+      expect(LibraryChartElement1.props().options[0]).toEqual({
+        id: 'o1',
+        label: 'a',
+        results: 10,
+      });
       expect(LibraryChartElement1.props().options[1]).toEqual({ id: 'o3', label: 'a', results: 8 });
-      expect(LibraryChartElement1.props().options[2]).toEqual({ id: 'o4', label: 'nTranslated', results: 8 });
+      expect(LibraryChartElement1.props().options[2]).toEqual({
+        id: 'o4',
+        label: 'nTranslated',
+        results: 8,
+      });
       expect(LibraryChartElement1.props().options[3]).toEqual({ id: 'o2', label: 'z', results: 8 });
       expect(LibraryChartElement1.props().options[4]).toEqual({ id: 'o5', label: 'a', results: 2 });
     });
@@ -201,7 +242,7 @@ describe('LibraryCharts', () => {
         a: { aggregations: 'a', filters: fromJS({ properties: 'a', documentTypes: ['dt1'] }) },
         b: { aggregations: 'b', filters: fromJS({ properties: 'b', documentTypes: ['dt2'] }) },
         settings: { collection: 'collection' },
-        templates: 'templates'
+        templates: 'templates',
       };
     });
 

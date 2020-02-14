@@ -9,8 +9,7 @@ import zipFile from 'api/utils/zipFile';
 import configPaths from '../config/paths';
 
 const extractFromZip = async (filePath, fileName) => {
-  const readStream = await zipFile(filePath)
-  .findReadStream(entry => entry.fileName === fileName);
+  const readStream = await zipFile(filePath).findReadStream(entry => entry.fileName === fileName);
 
   if (!readStream) {
     throw createError(`${fileName} file not found`);
@@ -40,7 +39,7 @@ const importFile = filePath => ({
       originalname: fileName,
       filename: generatedName,
     };
-  }
+  },
 });
 
 export default importFile;

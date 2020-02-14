@@ -15,23 +15,17 @@ describe('ItemSnippet', () => {
         metadata: [
           {
             field: 'title',
-            texts: [
-              'title 1 <b>snippet</b> found',
-              'title 2 <b>snippet</b> found'
-            ]
+            texts: ['title 1 <b>snippet</b> found', 'title 2 <b>snippet</b> found'],
           },
           {
             field: 'metadata.summary',
-            texts: [
-              'metadata 1 <b>snippet</b> found',
-              'metadata 2 <b>snippet</b> found'
-            ]
-          }
+            texts: ['metadata 1 <b>snippet</b> found', 'metadata 2 <b>snippet</b> found'],
+          },
         ],
         fullText: [
           { text: 'doc <b>snippet</b> found', page: 1 },
           { text: 'other doc <b>snippet</b> found', page: 2 },
-        ]
+        ],
       },
       onSnippetClick: jest.fn(),
       template: Immutable.fromJS({
@@ -40,10 +34,10 @@ describe('ItemSnippet', () => {
         properties: [
           {
             name: 'summary',
-            label: 'Summary'
-          }
-        ]
-      })
+            label: 'Summary',
+          },
+        ],
+      }),
     };
   });
 
@@ -63,10 +57,8 @@ describe('ItemSnippet', () => {
     props.snippets.metadata = [
       {
         field: 'title',
-        texts: [
-          'title 1 <b>snippet</b> found'
-        ]
-      }
+        texts: ['title 1 <b>snippet</b> found'],
+      },
     ];
     render();
     expect(component).toMatchSnapshot();
@@ -75,10 +67,8 @@ describe('ItemSnippet', () => {
     props.snippets.metadata = [
       {
         field: 'metadata.summary',
-        texts: [
-          'metadata 1 <b>snippet</b> found'
-        ]
-      }
+        texts: ['metadata 1 <b>snippet</b> found'],
+      },
     ];
     render();
     expect(component).toMatchSnapshot();

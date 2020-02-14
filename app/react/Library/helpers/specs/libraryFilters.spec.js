@@ -3,31 +3,57 @@ import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
 
 describe('library helper', () => {
   const templates = [
-    { _id: '1',
+    {
+      _id: '1',
       properties: [
         { name: 'author', filter: false, type: 'text' },
         { name: 'country', filter: true, type: 'select', content: 'abc1' },
         { name: 'date', filter: true, type: 'text' },
         { name: 'language', filter: true, type: 'text' },
         { name: 'rich', filter: true, type: 'markdown' },
-      ] },
-    { _id: '2',
+      ],
+    },
+    {
+      _id: '2',
       properties: [
         { name: 'author', filter: false, type: 'text' },
         { name: 'country', filter: true, type: 'select', content: 'abc1' },
         { name: 'language', filter: false, type: 'text' },
-      ] },
-    { _id: '3',
+      ],
+    },
+    {
+      _id: '3',
       properties: [
         { name: 'author', filter: false, type: 'select' },
         { name: 'country', filter: true, type: 'text' },
-      ] }
+      ],
+    },
   ];
 
   const thesauris = [
-    { _id: 'abc1', values: [{ id: 1, value: 'value1' }, { id: 2, value: 'value2' }] },
-    { _id: 'thesauri2', type: 'template', values: [{ id: 3, value: 'value3' }, { id: 4, value: 'value4' }] },
-    { _id: 'thesauri3', type: 'template', values: [{ id: 5, value: 'value5' }, { id: 6, value: 'value6' }] }
+    {
+      _id: 'abc1',
+      values: [
+        { id: 1, value: 'value1' },
+        { id: 2, value: 'value2' },
+      ],
+    },
+    {
+      _id: 'thesauri2',
+      type: 'template',
+      values: [
+        { id: 3, value: 'value3' },
+        { id: 4, value: 'value4' },
+      ],
+    },
+    {
+      _id: 'thesauri3',
+      type: 'template',
+      values: [
+        { id: 5, value: 'value5' },
+        { id: 6, value: 'value6' },
+      ],
+    },
   ];
 
   describe('URLQueryToState', () => {
@@ -41,7 +67,7 @@ describe('library helper', () => {
     it('should return default values when not set', () => {
       const query = {
         searchTerm: 'searchTerm',
-        types: []
+        types: [],
       };
 
       const state = libraryHelper.URLQueryToState(query, templates, thesauris);
@@ -50,14 +76,13 @@ describe('library helper', () => {
       expect(state.search.sort).toEqual(prioritySortingCriteria.get().sort);
     });
 
-
     it('should return the query transformed to the application state', () => {
       const query = {
         searchTerm: 'searchTerm',
         order: 'order',
         sort: 'sort',
         types: ['3'],
-        filters: { country: 'countryValue', rich: 'search' }
+        filters: { country: 'countryValue', rich: 'search' },
       };
 
       const state = libraryHelper.URLQueryToState(query, templates, thesauris);
@@ -73,7 +98,7 @@ describe('library helper', () => {
       const query = {
         searchTerm: 'searchTerm',
         types: ['1'],
-        filters: {}
+        filters: {},
       };
 
       const state = libraryHelper.URLQueryToState(query, templates, thesauris);
@@ -93,22 +118,26 @@ describe('library helper', () => {
           name: 'friend',
           filter: true,
           type: 'relationshipfilter',
-          filters: [
-            { name: 'pepinillos', filter: true, type: 'select', content: 'abc1' }
-          ]
-        }
+          filters: [{ name: 'pepinillos', filter: true, type: 'select', content: 'abc1' }],
+        },
       ];
 
       const populatedFilters = libraryHelper.populateOptions(filters, thesauris);
-      expect(populatedFilters[0].options).toEqual([{ id: 1, value: 'value1' }, { id: 2, value: 'value2' }]);
+      expect(populatedFilters[0].options).toEqual([
+        { id: 1, value: 'value1' },
+        { id: 2, value: 'value2' },
+      ]);
       expect(populatedFilters[1]).toEqual(filters[1]);
       expect(populatedFilters[2].options).toEqual([
         { id: 3, value: 'value3' },
         { id: 4, value: 'value4' },
         { id: 5, value: 'value5' },
-        { id: 6, value: 'value6' }
+        { id: 6, value: 'value6' },
       ]);
-      expect(populatedFilters[3].filters[0].options).toEqual([{ id: 1, value: 'value1' }, { id: 2, value: 'value2' }]);
+      expect(populatedFilters[3].filters[0].options).toEqual([
+        { id: 1, value: 'value1' },
+        { id: 2, value: 'value2' },
+      ]);
     });
     describe('when property unknown content id is provided', () => {
       it('should return null as options', () => {
@@ -122,8 +151,17 @@ describe('library helper', () => {
   describe('parseWithAggregations', () => {
     it('should add the number of results for facet browsing of each option', () => {
       const filters = [
-        { name: 'country', filter: true, type: 'select', content: 'abc1', options: [{ id: 1, value: 'value1' }, { id: 2, value: 'value2' }] },
-        { name: 'date', filter: true, type: 'text' }
+        {
+          name: 'country',
+          filter: true,
+          type: 'select',
+          content: 'abc1',
+          options: [
+            { id: 1, value: 'value1' },
+            { id: 2, value: 'value2' },
+          ],
+        },
+        { name: 'date', filter: true, type: 'text' },
       ];
 
       const aggregations = {
@@ -133,22 +171,22 @@ describe('library helper', () => {
               {
                 key: 1,
                 doc_count: 4,
-                filtered: { doc_count: 2 }
+                filtered: { doc_count: 2 },
               },
               {
                 key: 'missing',
                 doc_count: 3,
-                filtered: { doc_count: 2 }
-              }
-            ]
-          }
-        }
+                filtered: { doc_count: 2 },
+              },
+            ],
+          },
+        },
       };
 
       const populatedFilters = libraryHelper.parseWithAggregations(filters, aggregations);
       expect(populatedFilters[0].options).toEqual([
         { id: 1, value: 'value1', results: 2 },
-        { id: 'missing', label: 'No Value', results: 2, noValueKey: true }
+        { id: 'missing', label: 'No Value', results: 2, noValueKey: true },
       ]);
     });
   });

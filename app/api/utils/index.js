@@ -6,9 +6,4 @@ const validation = {
   validateRequest,
 };
 
-export {
-  validation,
-  createError,
-  handleError,
-};
-
+export { validation, createError, handleError };

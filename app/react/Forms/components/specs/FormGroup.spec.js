@@ -10,12 +10,19 @@ describe('FormGroup', () => {
 
   beforeEach(() => {
     props = {
-      model: 'username'
+      model: 'username',
     };
   });
 
   const render = () => {
-    component = shallow(<FormGroup {...props}><label>label</label><Field><input /></Field></FormGroup>);
+    component = shallow(
+      <FormGroup {...props}>
+        <label>label</label>
+        <Field>
+          <input />
+        </Field>
+      </FormGroup>
+    );
   };
 
   it('should render render children', () => {

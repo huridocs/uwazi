@@ -6,35 +6,35 @@ import { Icon as UIIcon } from 'UI';
 
 function getPngSize(size) {
   switch (size) {
-  case 'xs':
-    return 16;
-  case 'sm':
-    return 24;
-  case 'md':
-    return 32;
-  case 'lg':
-    return 48;
-  case 'xlg':
-    return 64;
-  default:
-    return 16;
+    case 'xs':
+      return 16;
+    case 'sm':
+      return 24;
+    case 'md':
+      return 32;
+    case 'lg':
+      return 48;
+    case 'xlg':
+      return 64;
+    default:
+      return 16;
   }
 }
 
 function getFaSize(size) {
   switch (size) {
-  case 'xs':
-    return 'sm';
-  case 'sm':
-    return 'lg';
-  case 'md':
-    return '2x';
-  case 'lg':
-    return '2x';
-  case 'xlg':
-    return '2x';
-  default:
-    return 'sm';
+    case 'xs':
+      return 'sm';
+    case 'sm':
+      return 'lg';
+    case 'md':
+      return '2x';
+    case 'lg':
+      return '2x';
+    case 'xlg':
+      return '2x';
+    default:
+      return 'sm';
   }
 }
 
@@ -78,7 +78,7 @@ export class Icon extends Component {
 Icon.propTypes = {
   data: PropTypes.object,
   className: PropTypes.string,
-  size: PropTypes.string
+  size: PropTypes.string,
 };
 
 export default connect()(Icon);

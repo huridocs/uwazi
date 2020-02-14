@@ -10,10 +10,10 @@ describe('Paginator', () => {
     const props = {
       page: 5,
       totalPages: 25,
-      baseUrl: 'url'
+      baseUrl: 'url',
     };
 
-    const component = shallow(<Paginator {...props}/>);
+    const component = shallow(<Paginator {...props} />);
     expect(component).toMatchSnapshot();
   });
 
@@ -22,10 +22,10 @@ describe('Paginator', () => {
       const props = {
         page: 3,
         totalPages: 25,
-        baseUrl: 'url?param=value'
+        baseUrl: 'url?param=value',
       };
 
-      const component = shallow(<Paginator {...props}/>);
+      const component = shallow(<Paginator {...props} />);
       expect(component).toMatchSnapshot();
     });
   });
@@ -35,10 +35,10 @@ describe('Paginator', () => {
       const props = {
         page: 1,
         totalPages: 25,
-        baseUrl: 'url'
+        baseUrl: 'url',
       };
 
-      const component = shallow(<Paginator {...props}/>);
+      const component = shallow(<Paginator {...props} />);
       expect(component).toMatchSnapshot();
     });
   });
@@ -48,10 +48,10 @@ describe('Paginator', () => {
       const props = {
         page: 25,
         totalPages: 25,
-        baseUrl: 'url'
+        baseUrl: 'url',
       };
 
-      const component = shallow(<Paginator {...props}/>);
+      const component = shallow(<Paginator {...props} />);
       expect(component).toMatchSnapshot();
     });
   });
@@ -65,12 +65,18 @@ describe('Paginator', () => {
         onPageChange: jasmine.createSpy('onPageChange'),
       };
 
-      const component = shallow(<Paginator {...props}/>);
+      const component = shallow(<Paginator {...props} />);
 
-      component.find(CurrentLocationLink).at(0).simulate('click', { preventDefault: () => {} });
+      component
+        .find(CurrentLocationLink)
+        .at(0)
+        .simulate('click', { preventDefault: () => {} });
       expect(props.onPageChange).toHaveBeenCalledWith(4);
 
-      component.find(CurrentLocationLink).at(1).simulate('click', { preventDefault: () => {} });
+      component
+        .find(CurrentLocationLink)
+        .at(1)
+        .simulate('click', { preventDefault: () => {} });
       expect(props.onPageChange).toHaveBeenCalledWith(6);
     });
   });

@@ -12,7 +12,7 @@ export function processQuery(_query, globalResources, key) {
     query = rison.decode(_query.q || '()');
   } catch (error) {
     error.status = 404;
-    throw (error);
+    throw error;
   }
 
   query.order = query.order || defaultSearch.order;
@@ -34,29 +34,31 @@ export default function requestState(request, globalResources) {
 
   const markersRequest = {
     ...request,
-    data: processQuery(request.data, globalResources, 'markers')
+    data: processQuery(request.data, globalResources, 'markers'),
   };
 
-  return Promise.all([api.search(documentsRequest), api.search(markersRequest)])
-  .then(([documents, markers]) => {
-    const filterState = libraryHelpers.URLQueryToState(
-      documentsRequest.data,
-      globalResources.templates.toJS(),
-      globalResources.thesauris.toJS(),
-      globalResources.relationTypes.toJS()
-    );
-    const state = {
-      library: {
-        filters: { documentTypes: documentsRequest.data.types || [], properties: filterState.properties },
-        aggregations: documents.aggregations,
-        search: filterState.search,
-        documents,
-        markers
-      }
-    };
+  return Promise.all([api.search(documentsRequest), api.search(markersRequest)]).then(
+    ([documents, markers]) => {
+      const filterState = libraryHelpers.URLQueryToState(
+        documentsRequest.data,
+        globalResources.templates.toJS(),
+        globalResources.thesauris.toJS(),
+        globalResources.relationTypes.toJS()
+      );
+      const state = {
+        library: {
+          filters: {
+            documentTypes: documentsRequest.data.types || [],
+            properties: filterState.properties,
+          },
+          aggregations: documents.aggregations,
+          search: filterState.search,
+          documents,
+          markers,
+        },
+      };
 
-    return [
-      setReduxState(state)
-    ];
-  });
+      return [setReduxState(state)];
+    }
+  );
 }

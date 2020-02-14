@@ -14,25 +14,27 @@ export class ValueComponent extends Component {
 
   render() {
     const { property, value } = this.props;
-    return property ? this.renderChildren(value) : (<PagesContext.Consumer>{val => this.renderChildren(val)}</PagesContext.Consumer>);
+    return property ? (
+      this.renderChildren(value)
+    ) : (
+      <PagesContext.Consumer>{val => this.renderChildren(val)}</PagesContext.Consumer>
+    );
   }
 }
 
 ValueComponent.defaultProps = {
   value: '-',
   path: '',
-  property: ''
+  property: '',
 };
 
 ValueComponent.propTypes = {
-  value: PropTypes.oneOfType([
-    PropTypes.number,
-    PropTypes.string,
-  ]),
+  value: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   path: PropTypes.string,
   property: PropTypes.string,
 };
 
-export const mapStateToProps = (state, props) => props.property ? { value: markdownDatasets.getMetadataValue(state, props) } : {};
+export const mapStateToProps = (state, props) =>
+  props.property ? { value: markdownDatasets.getMetadataValue(state, props) } : {};
 
 export default connect(mapStateToProps)(ValueComponent);

@@ -3,7 +3,6 @@ import { shallow } from 'enzyme';
 
 import BackButton from '../BackButton';
 
-
 describe('Icon', () => {
   let component;
   let props;

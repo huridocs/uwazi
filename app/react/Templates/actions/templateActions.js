@@ -8,7 +8,7 @@ import ID from 'shared/uniqueID';
 import { actions } from 'app/BasicReducer';
 
 export function resetTemplate() {
-  return (dispatch) => {
+  return dispatch => {
     dispatch(formActions.reset('template.data'));
     dispatch(formActions.setInitial('template.data'));
   };
@@ -20,7 +20,9 @@ export function addProperty(property = {}, _index) {
     const properties = getState().template.data.properties.slice(0);
     const index = _index !== undefined ? _index : properties.length;
     if (property.type === 'select' || property.type === 'multiselect') {
-      property.content = getState().thesauris.get(0).get('_id');
+      property.content = getState()
+        .thesauris.get(0)
+        .get('_id');
     }
 
     if (property.type === 'relationship') {
@@ -37,8 +39,10 @@ export function addProperty(property = {}, _index) {
 }
 
 export function setNestedProperties(propertyIndex, properties) {
-  return (dispatch) => {
-    dispatch(formActions.load(`template.data.properties[${propertyIndex}].nestedProperties`, properties));
+  return dispatch => {
+    dispatch(
+      formActions.load(`template.data.properties[${propertyIndex}].nestedProperties`, properties)
+    );
   };
 }
 
@@ -51,7 +55,7 @@ export function updateProperty(property, index) {
 }
 
 export function inserted(index) {
-  return (dispatch) => {
+  return dispatch => {
     dispatch(formActions.change(`template.data.properties[${index}].inserting`, null));
   };
 }
@@ -59,25 +63,25 @@ export function inserted(index) {
 export function selectProperty(index) {
   return {
     type: types.SELECT_PROPERTY,
-    index
+    index,
   };
 }
 
 export function removeProperty(index) {
-  return (dispatch) => {
+  return dispatch => {
     dispatch(formActions.remove('template.data.properties', index));
     dispatch(formActions.resetErrors('template.data'));
   };
 }
 
 export function reorderProperty(originIndex, targetIndex) {
-  return (dispatch) => {
+  return dispatch => {
     dispatch(formActions.move('template.data.properties', originIndex, targetIndex));
   };
 }
 
-const sanitize = (data) => {
-  data.properties = data.properties.map((_prop) => {
+const sanitize = data => {
+  data.properties = data.properties.map(_prop => {
     const prop = { ..._prop };
     if (prop.inherit && !prop.content) {
       prop.inherit = false;
@@ -89,18 +93,19 @@ const sanitize = (data) => {
 
 export function saveTemplate(data) {
   const template = sanitize(data);
-  return (dispatch) => {
+  return dispatch => {
     dispatch({ type: types.SAVING_TEMPLATE });
-    return api.save(new RequestParams(template))
-    .then((response) => {
-      dispatch({ type: types.TEMPLATE_SAVED, data: response });
-      dispatch(actions.update('templates', response));
+    return api
+      .save(new RequestParams(template))
+      .then(response => {
+        dispatch({ type: types.TEMPLATE_SAVED, data: response });
+        dispatch(actions.update('templates', response));
 
-      dispatch(formActions.merge('template.data', response));
-      dispatch(notificationActions.notify('Saved successfully.', 'success'));
-    })
-    .catch(() => {
-      dispatch({ type: types.TEMPLATE_SAVED, data });
-    });
+        dispatch(formActions.merge('template.data', response));
+        dispatch(notificationActions.notify('Saved successfully.', 'success'));
+      })
+      .catch(() => {
+        dispatch({ type: types.TEMPLATE_SAVED, data });
+      });
   };
 }

@@ -7,12 +7,7 @@ const Main = ({ children, onClick, disabled }) => (
   </div>
 );
 
-
-const childrenType = PropTypes.oneOfType([
-  PropTypes.object,
-  PropTypes.array,
-  PropTypes.string
-]);
+const childrenType = PropTypes.oneOfType([PropTypes.object, PropTypes.array, PropTypes.string]);
 
 Main.propTypes = { children: childrenType, onClick: PropTypes.func, disabled: PropTypes.bool };
 

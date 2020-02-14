@@ -11,7 +11,9 @@ import ThesauriFormField from './ThesauriFormField';
 export class ThesauriFormGroup extends Component {
   constructor(props) {
     super(props);
-    this.focus = () => { this.groupInput.focus(); };
+    this.focus = () => {
+      this.groupInput.focus();
+    };
     this.renderItem = this.renderItem.bind(this);
     this.onChange = this.onChange.bind(this);
     this.removeGroup = this.removeGroup.bind(this);
@@ -29,9 +31,7 @@ export class ThesauriFormGroup extends Component {
 
   renderItem(item, index) {
     const { index: groupIndex } = this.props;
-    return (
-      <ThesauriFormField {...this.props} value={item} index={index} groupIndex={groupIndex} />
-    );
+    return <ThesauriFormField {...this.props} value={item} index={index} groupIndex={groupIndex} />;
   }
 
   render() {
@@ -40,7 +40,14 @@ export class ThesauriFormGroup extends Component {
       <div key={`group-${groupIndex}`} className="group">
         <FormGroup>
           <Field model={`thesauri.data.values[${groupIndex}].label`}>
-            <input ref={(i) => { this.groupInput = i; }} className="form-control" type="text" placeholder="Group name" />
+            <input
+              ref={i => {
+                this.groupInput = i;
+              }}
+              className="form-control"
+              type="text"
+              placeholder="Group name"
+            />
             <button
               tabIndex={groupIndex + 500}
               type="button"
@@ -66,11 +73,11 @@ ThesauriFormGroup.propTypes = {
   value: PropTypes.shape({
     id: PropTypes.string,
     label: PropTypes.string,
-    values: PropTypes.array
+    values: PropTypes.array,
   }).isRequired,
   index: PropTypes.number.isRequired,
   removeValue: PropTypes.func.isRequired,
-  onChange: PropTypes.func.isRequired
+  onChange: PropTypes.func.isRequired,
 };
 
 export default ThesauriFormGroup;

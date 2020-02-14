@@ -8,9 +8,9 @@ export default {
       publicFormDestination: 'secret.place.io',
       languages: [
         { key: 'es', label: 'Español', default: true },
-        { key: 'en', label: 'English' }
+        { key: 'en', label: 'English' },
       ],
-      allowedPublicTemplates: ['id1', 'id2']
-    }
-  ]
+      allowedPublicTemplates: ['id1', 'id2'],
+    },
+  ],
 };

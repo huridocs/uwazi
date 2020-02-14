@@ -5,22 +5,22 @@ const languagesSchema = new mongoose.Schema({
   key: String,
   label: String,
   rtl: Boolean,
-  default: Boolean
+  default: Boolean,
 });
 
 const linksSchema = new mongoose.Schema({
   title: String,
-  url: String
+  url: String,
 });
 
 const filtersSchema = new mongoose.Schema({
   id: String,
   name: String,
-  items: mongoose.Schema.Types.Mixed
+  items: mongoose.Schema.Types.Mixed,
 });
 
 const featuresSchema = new mongoose.Schema({
-  semanticSearch: Boolean
+  semanticSearch: Boolean,
 });
 
 const settingsSchema = new mongoose.Schema({
@@ -43,7 +43,7 @@ const settingsSchema = new mongoose.Schema({
   custom: mongoose.Schema.Types.Mixed,
   sync: mongoose.Schema.Types.Mixed,
   evidencesVault: mongoose.Schema.Types.Mixed,
-  customCSS: String
+  customCSS: String,
 });
 
 export default instanceModel('settings', settingsSchema);

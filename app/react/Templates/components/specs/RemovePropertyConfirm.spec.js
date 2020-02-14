@@ -12,7 +12,7 @@ describe('RemovePropertyConfirm', () => {
     props = {
       hideModal: jasmine.createSpy('hideModal'),
       removeProperty: jasmine.createSpy('removeProperty'),
-      propertyBeingDeleted: 1
+      propertyBeingDeleted: 1,
     };
   });
 

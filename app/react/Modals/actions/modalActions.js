@@ -4,13 +4,13 @@ export function showModal(modal, data) {
   return {
     type: types.SHOW_MODAL,
     modal,
-    data
+    data,
   };
 }
 
 export function hideModal(modal) {
   return {
     type: types.HIDE_MODAL,
-    modal
+    modal,
   };
 }

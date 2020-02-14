@@ -12,7 +12,9 @@ class MarkdownViewer extends Component {
     return (
       <p key={index} className="error">
         <br />
-        <strong><i>Custom component markup error: unsuported values! Please check your configuration</i></strong>
+        <strong>
+          <i>Custom component markup error: unsuported values! Please check your configuration</i>
+        </strong>
         <br />
         {message}
         <br />
@@ -37,15 +39,15 @@ class MarkdownViewer extends Component {
     }
 
     if (type === 'link') {
-      result = <CustomComponents.MarkdownLink {...rison.decode(config)} key={index}/>;
+      result = <CustomComponents.MarkdownLink {...rison.decode(config)} key={index} />;
     }
 
     if (type === 'searchbox') {
-      result = <CustomComponents.SearchBox {...rison.decode(config)} key={index}/>;
+      result = <CustomComponents.SearchBox {...rison.decode(config)} key={index} />;
     }
 
     if (['vimeo', 'youtube', 'media'].includes(type)) {
-      result = <CustomComponents.MarkdownMedia key={index} config={config} compact={compact}/>;
+      result = <CustomComponents.MarkdownMedia key={index} config={config} compact={compact} />;
     }
 
     if (type === 'customhook') {
@@ -58,7 +60,11 @@ class MarkdownViewer extends Component {
     try {
       if (typeof type === 'function') {
         const Element = type;
-        return <Element {...config} key={index}>{children}</Element>;
+        return (
+          <Element {...config} key={index}>
+            {children}
+          </Element>
+        );
       }
 
       if (type) {
@@ -73,7 +79,14 @@ class MarkdownViewer extends Component {
 
   list(_config, index) {
     const listData = this.props.lists[this.renderedLists] || {};
-    const output = <CustomComponents.ItemList key={index} link={`/library/${listData.params}`} items={listData.items} options={listData.options}/>;
+    const output = (
+      <CustomComponents.ItemList
+        key={index}
+        link={`/library/${listData.params}`}
+        items={listData.items}
+        options={listData.options}
+      />
+    );
     this.renderedLists += 1;
     return output;
   }
@@ -81,7 +94,11 @@ class MarkdownViewer extends Component {
   render() {
     this.renderedLists = 0;
 
-    const ReactFromMarkdown = markdownToReact(this.props.markdown, this.customComponent.bind(this), this.props.html);
+    const ReactFromMarkdown = markdownToReact(
+      this.props.markdown,
+      this.customComponent.bind(this),
+      this.props.html
+    );
 
     if (!ReactFromMarkdown) {
       return false;
@@ -95,14 +112,14 @@ MarkdownViewer.defaultProps = {
   lists: [],
   markdown: '',
   html: false,
-  compact: false
+  compact: false,
 };
 
 MarkdownViewer.propTypes = {
   markdown: PropTypes.string,
   lists: PropTypes.arrayOf(PropTypes.object),
   html: PropTypes.bool,
-  compact: PropTypes.bool
+  compact: PropTypes.bool,
 };
 
 export default MarkdownViewer;

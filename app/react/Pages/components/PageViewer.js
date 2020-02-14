@@ -25,9 +25,9 @@ export class PageViewer extends Component {
         <main className="page-viewer document-viewer">
           <div className="main-wrapper">
             <Context.Provider value={datasets}>
-              <MarkdownViewer html markdown={originalText} lists={lists}/>
+              <MarkdownViewer html markdown={originalText} lists={lists} />
             </Context.Provider>
-            <Footer/>
+            <Footer />
           </div>
         </main>
         <Script>{scriptCode}</Script>
@@ -39,7 +39,7 @@ export class PageViewer extends Component {
 PageViewer.defaultProps = {
   page: Immutable.fromJS({}),
   itemLists: Immutable.fromJS([]),
-  datasets: Immutable.fromJS({})
+  datasets: Immutable.fromJS({}),
 };
 
 PageViewer.propTypes = {
@@ -49,9 +49,9 @@ PageViewer.propTypes = {
 };
 
 const mapStateToProps = ({ page }) => ({
-    page: page.pageView,
-    datasets: page.datasets,
-    itemLists: page.itemLists
+  page: page.pageView,
+  datasets: page.datasets,
+  itemLists: page.itemLists,
 });
 
 export default connect(mapStateToProps)(PageViewer);

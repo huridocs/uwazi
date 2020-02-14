@@ -4,7 +4,6 @@ import { shallow } from 'enzyme';
 
 import ValueList from '../ValueList';
 
-
 describe('ValueList', () => {
   const props = {};
 
@@ -17,7 +16,11 @@ describe('ValueList', () => {
     props.property = {
       label: 'label',
       name: 'label',
-      value: [{ value: 'first_value', url: 'url1' }, { value: 'second_value' }, { value: 'third value', url: 'url2' }]
+      value: [
+        { value: 'first_value', url: 'url1' },
+        { value: 'second_value' },
+        { value: 'third value', url: 'url2' },
+      ],
     };
   });
 
@@ -32,8 +35,8 @@ describe('ValueList', () => {
       value: [
         { value: 'first_value', url: 'url1', icon: { icon: 'icon' } },
         { value: 'second_value', icon: { icon: 'icon2' } },
-        { value: 'third value', url: 'url2' }
-      ]
+        { value: 'third value', url: 'url2' },
+      ],
     };
     testSnapshot();
   });
@@ -48,7 +51,7 @@ describe('ValueList', () => {
     beforeEach(() => {
       props.property = {
         label: 'label',
-        value: [{ value: 'first_value', }, { value: 'second_value' }, { value: 'third value', }]
+        value: [{ value: 'first_value' }, { value: 'second_value' }, { value: 'third value' }],
       };
     });
 
@@ -72,8 +75,8 @@ describe('ValueList', () => {
         value: [
           { value: 'first_value' },
           { value: 'second_value', icon: { icon: 'icon2' } },
-          { value: 'third value' }
-        ]
+          { value: 'third value' },
+        ],
       };
       props.compact = true;
       testSnapshot();

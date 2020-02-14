@@ -11,7 +11,7 @@ jest.mock('moment', function baseCall() {
   function locale(localeString) {
     this.locale = localeString;
     return {
-      format: format.bind(this)
+      format: format.bind(this),
     };
   }
 
@@ -20,7 +20,7 @@ jest.mock('moment', function baseCall() {
     this.locale = null;
     return {
       format: format.bind(this),
-      locale: locale.bind(this)
+      locale: locale.bind(this),
     };
   }
 
@@ -37,8 +37,8 @@ describe('ActivitylogRow', () => {
         semantic: { beautified: false },
         url: '/api/entities',
         method: 'POST',
-        time: '12345'
-      })
+        time: '12345',
+      }),
     };
   });
 
@@ -54,19 +54,22 @@ describe('ActivitylogRow', () => {
   describe('when beautified', () => {
     beforeEach(() => {
       props.entry = props.entry
-      .set('semantic', Immutable.fromJS({
-        beautified: true,
-        description: 'descrip',
-        name: 'name',
-        extra: 'extra'
-      }))
-      .set('time', '54321');
+        .set(
+          'semantic',
+          Immutable.fromJS({
+            beautified: true,
+            description: 'descrip',
+            name: 'name',
+            extra: 'extra',
+          })
+        )
+        .set('time', '54321');
     });
 
-    const prepareAction = (action) => {
+    const prepareAction = action => {
       props.entry = props.entry
-      .setIn(['semantic', 'action'], action)
-      .set('username', 'defined user');
+        .setIn(['semantic', 'action'], action)
+        .set('username', 'defined user');
       render();
     };
 
@@ -83,7 +86,7 @@ describe('ActivitylogRow', () => {
   });
 
   describe('toggleExpand', () => {
-    const toggle = (instance) => {
+    const toggle = instance => {
       instance.toggleExpand();
       component.update();
     };

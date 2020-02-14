@@ -3,13 +3,11 @@ import api from 'app/utils/api';
 export default {
   search(requestParams) {
     const url = 'semantic-search';
-    return api.post(url, requestParams)
-    .then(response => response.json);
+    return api.post(url, requestParams).then(response => response.json);
   },
   getAllSearches(requestParams) {
     const url = 'semantic-search';
-    return api.get(url, requestParams)
-    .then(response => response.json);
+    return api.get(url, requestParams).then(response => response.json);
   },
   getEntitiesMatchingFilters(requestParams) {
     const url = 'semantic-search/list';
@@ -34,5 +32,5 @@ export default {
   registerForUpdates(requestParams) {
     const url = 'semantic-search/notify-updates';
     return api.post(url, requestParams).then(response => response.json);
-  }
+  },
 };

@@ -8,13 +8,17 @@ const mockWorkerOnFn = jest.fn();
 jest.mock('../worker');
 
 describe('WorkerManager', () => {
-  beforeEach((done) => {
+  beforeEach(done => {
     Worker.mockClear();
-    db.clearAllAndLoad(fixtures).then(done).catch(done);
+    db.clearAllAndLoad(fixtures)
+      .then(done)
+      .catch(done);
   });
 
-  afterAll((done) => {
-    db.disconnect().then(done).catch(done);
+  afterAll(done => {
+    db.disconnect()
+      .then(done)
+      .catch(done);
   });
 
   describe('notifyNewSearch', () => {
@@ -33,7 +37,7 @@ describe('WorkerManager', () => {
       manager.workers = {
         search1: {},
         search2: {},
-        search3: {}
+        search3: {},
       };
       manager.notifyNewSearch('search4');
       expect(Worker).not.toHaveBeenCalled();
@@ -45,7 +49,7 @@ describe('WorkerManager', () => {
       mockWorkerOnFn.mockClear();
       Worker.mockImplementation(() => ({
         on: mockWorkerOnFn,
-        start: jest.fn()
+        start: jest.fn(),
       }));
     });
     function createManager() {
@@ -70,7 +74,7 @@ describe('WorkerManager', () => {
     }
 
     describe('handling worker error event', () => {
-      it('emit searchError event and replace worker after delay', (done) => {
+      it('emit searchError event and replace worker after delay', done => {
         const manager = createManager();
         const searchId = 'search';
         const error = new Error('test error');
@@ -150,7 +154,7 @@ describe('WorkerManager', () => {
         await model.save({ _id: search4Id, status: 'completed' });
         manager.workers = {
           [search1Id]: {},
-          [search2Id]: {}
+          [search2Id]: {},
         };
         await manager.startNewSearchIfFree();
         expect(manager.notifyNewSearch).toHaveBeenCalledWith(search3Id);
@@ -162,7 +166,7 @@ describe('WorkerManager', () => {
         await model.save({ _id: search3Id, status: 'completed' });
         manager.workers = {
           [search1Id]: {},
-          [search2Id]: {}
+          [search2Id]: {},
         };
         await manager.startNewSearchIfFree();
         expect(manager.notifyNewSearch).not.toHaveBeenCalled();
@@ -173,7 +177,7 @@ describe('WorkerManager', () => {
         manager.workers = {
           search1: {},
           search2: {},
-          search3: {}
+          search3: {},
         };
         await manager.startNewSearchIfFree();
         expect(manager.notifyNewSearch).not.toHaveBeenCalled();

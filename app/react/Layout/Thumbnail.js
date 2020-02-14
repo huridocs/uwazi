@@ -18,7 +18,11 @@ export class Thumbnail extends Component {
     }
 
     if (extension === 'pdf') {
-      thumbnail = <span><Icon icon="file-pdf" /> pdf</span>;
+      thumbnail = (
+        <span>
+          <Icon icon="file-pdf" /> pdf
+        </span>
+      );
     }
 
     return <div className="thumbnail">{thumbnail}</div>;
@@ -26,12 +30,12 @@ export class Thumbnail extends Component {
 }
 
 Thumbnail.defaultProps = {
-  alt: ''
+  alt: '',
 };
 
 Thumbnail.propTypes = {
   file: PropTypes.string.isRequired,
-  alt: PropTypes.string
+  alt: PropTypes.string,
 };
 
 export default Thumbnail;
