@@ -4,7 +4,7 @@ import fixtures from './fixtures.js';
 
 describe('migration rename-uploads-to-files', () => {
   beforeEach(async () => {
-    // spyOn(process.stdout, 'write');
+    spyOn(process.stdout, 'write');
     await testingDB.clearAllAndLoad(fixtures);
   });
 
