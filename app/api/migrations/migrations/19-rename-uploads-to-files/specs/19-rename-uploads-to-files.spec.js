@@ -1,19 +1,15 @@
-import { catchErrors } from 'api/utils/jasmineHelpers';
 import testingDB from 'api/utils/testing_db';
 import migration from '../index.js';
 import fixtures from './fixtures.js';
 
 describe('migration rename-uploads-to-files', () => {
-  beforeEach(done => {
-    spyOn(process.stdout, 'write');
-    testingDB
-      .clearAllAndLoad(fixtures)
-      .then(done)
-      .catch(catchErrors(done));
+  beforeEach(async () => {
+    // spyOn(process.stdout, 'write');
+    await testingDB.clearAllAndLoad(fixtures);
   });
 
-  afterAll(done => {
-    testingDB.disconnect().then(done);
+  afterAll(async () => {
+    await testingDB.disconnect();
   });
 
   it('should have a delta number', () => {
@@ -39,5 +35,10 @@ describe('migration rename-uploads-to-files', () => {
       expect.objectContaining({ filename: 'test.txt' }),
       expect.objectContaining({ filename: 'test2.txt' }),
     ]);
+  });
+
+  it('should not fail when uploads collection does not exist', async () => {
+    await testingDB.mongodb.collection('uploads').drop();
+    await migration.up(testingDB.mongodb);
   });
 });

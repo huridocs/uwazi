@@ -8,7 +8,13 @@ export default {
   async up(db) {
     process.stdout.write(`${this.name}...\r\n`);
 
-    await db.collection('uploads').rename('files');
+    try {
+      await db.collection('uploads').rename('files');
+    } catch (e) {
+      if (e.message !== 'source namespace does not exist') {
+        throw e;
+      }
+    }
 
     process.stdout.write('\r\n');
   },
