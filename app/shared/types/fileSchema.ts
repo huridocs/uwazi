@@ -1,5 +1,3 @@
-/** @format */
-
 import Ajv from 'ajv';
 import { objectIdSchema, tocSchema } from 'shared/types/commonSchemas';
 import { wrapValidator } from 'shared/tsUtils';
@@ -55,5 +53,4 @@ export const fileSchema = {
 
 const validate = wrapValidator(ajv.compile(fileSchema));
 
-export const validateFile = async (file: FileSchema): Promise<FileSchema> =>
-  validate({ ...file });
+export const validateFile = async (file: FileSchema): Promise<FileSchema> => validate({ ...file });

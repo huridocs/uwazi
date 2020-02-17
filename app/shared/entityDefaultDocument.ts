@@ -1,4 +1,4 @@
-import { FileSchema } from 'api/files/fileType';
+import { FileSchema } from 'shared/types/fileType';
 import language from 'shared/languagesList';
 
 export const entityDefaultDocument = (

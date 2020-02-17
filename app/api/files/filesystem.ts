@@ -9,7 +9,7 @@ import ID from 'shared/uniqueID';
 import asyncFS from 'api/utils/async-fs';
 
 import configPaths from '../config/paths';
-import { FileSchema } from './fileType';
+import { FileSchema } from '../../shared/types/fileType';
 import { log } from 'util';
 
 export type FilePath = string;

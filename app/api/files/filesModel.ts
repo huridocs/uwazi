@@ -1,10 +1,8 @@
-/** @format */
-
 import mongoose from 'mongoose';
 import date from 'api/utils/date.js';
 
 import { instanceModel } from 'api/odm';
-import { FileSchema } from './fileType';
+import { FileSchema } from '../../shared/types/fileType';
 
 const propsWithDBSpecifics = {
   creationDate: { type: Number, default: date.currentUTC },

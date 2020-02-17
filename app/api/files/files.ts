@@ -1,8 +1,8 @@
 import { deleteUploadedFiles } from 'api/files/filesystem';
 
 import model from './filesModel';
-import { validateFile } from './fileSchema';
-import { FileSchema } from './fileType';
+import { validateFile } from '../../shared/types/fileSchema';
+import { FileSchema } from '../../shared/types/fileType';
 
 export const files = {
   async save(file: FileSchema) {
