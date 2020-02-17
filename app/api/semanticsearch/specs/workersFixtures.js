@@ -11,13 +11,8 @@ export default {
     { _id: search2Id, status: 'inProgress' },
     { _id: search3Id, status: 'pending' },
     { _id: db.id(), status: 'completed' },
-    { _id: search4Id, status: 'inProgress' }
-  ]
+    { _id: search4Id, status: 'inProgress' },
+  ],
 };
 
-export {
-  search1Id,
-  search2Id,
-  search3Id,
-  search4Id
-};
+export { search1Id, search2Id, search3Id, search4Id };

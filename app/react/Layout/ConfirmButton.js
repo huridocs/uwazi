@@ -7,7 +7,7 @@ class ConfirmButton extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      showModal: false
+      showModal: false,
     };
     this.openModal = this.openModal.bind(this);
     this.onAccept = this.onAccept.bind(this);
@@ -31,15 +31,14 @@ class ConfirmButton extends Component {
     return (
       <React.Fragment>
         <button onClick={this.openModal}>{this.props.children}</button>
-        {
-          this.state.showModal && (
+        {this.state.showModal && (
           <ConfirmModal
             message={this.props.message}
             title={this.props.title}
             onAccept={this.onAccept}
             onCancel={this.closeModal}
           />
-)}
+        )}
       </React.Fragment>
     );
   }
@@ -49,7 +48,7 @@ ConfirmButton.defaultProps = {
   children: '',
   message: 'Are you sure you want to continue?',
   title: 'Confirm action',
-  action: () => false
+  action: () => false,
 };
 
 ConfirmButton.propTypes = {
@@ -60,7 +59,7 @@ ConfirmButton.propTypes = {
     PropTypes.arrayOf(PropTypes.node),
     PropTypes.node,
     PropTypes.string,
-  ])
+  ]),
 };
 
 export default ConfirmButton;

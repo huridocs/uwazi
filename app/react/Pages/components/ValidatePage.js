@@ -1,13 +1,13 @@
 function validateTitle() {
   return {
-    required: val => val && val.trim() !== ''
+    required: val => val && val.trim() !== '',
   };
 }
 
-export default function () {
+export default function() {
   const validator = {
     '': {},
-    title: validateTitle()
+    title: validateTitle(),
   };
 
   return validator;

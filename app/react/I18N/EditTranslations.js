@@ -8,9 +8,7 @@ import { I18NApi } from 'app/I18N';
 export default class EditTranslations extends RouteHandler {
   static async requestState(requestParams) {
     const translations = await I18NApi.get(requestParams);
-    return [
-      actions.editTranslations(translations)
-    ];
+    return [actions.editTranslations(translations)];
   }
 
   render() {

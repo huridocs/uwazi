@@ -31,13 +31,17 @@ export class FormConfigSelect extends Component {
     const thesauris = this.props.thesauris.toJS();
     const property = data.properties[index];
 
-    const options = thesauris.filter(thesauri => thesauri._id !== data._id && thesauri.type !== 'template');
+    const options = thesauris.filter(
+      thesauri => thesauri._id !== data._id && thesauri.type !== 'template'
+    );
 
     let labelClass = 'form-group';
     const labelKey = `properties.${index}.label`;
     const requiredLabel = formState.$form.errors[`${labelKey}.required`];
     const duplicatedLabel = formState.$form.errors[`${labelKey}.duplicated`];
-    const contentRequiredError = formState.$form.errors[`properties.${index}.content.required`] && formState.$form.submitFailed;
+    const contentRequiredError =
+      formState.$form.errors[`properties.${index}.content.required`] &&
+      formState.$form.submitFailed;
     if (requiredLabel || duplicatedLabel) {
       labelClass += ' has-error';
     }
@@ -47,19 +51,23 @@ export class FormConfigSelect extends Component {
         <div className={labelClass}>
           <label>Label</label>
           <Field model={`template.data.properties[${index}].label`}>
-            <input className="form-control"/>
+            <input className="form-control" />
           </Field>
         </div>
 
         <div className={contentRequiredError ? 'form-group has-error' : 'form-group'}>
-          <label>{t('System', 'Select list')}<span className="required">*</span></label>
+          <label>
+            {t('System', 'Select list')}
+            <span className="required">*</span>
+          </label>
           {this.warning && (
-          <Warning inline>
-            <Translate>
-                All entities and documents that have already this property assigned will loose its current value
-            </Translate>
-          </Warning>
-)}
+            <Warning inline>
+              <Translate>
+                All entities and documents that have already this property assigned will loose its
+                current value
+              </Translate>
+            </Warning>
+          )}
           <Select
             model={`template.data.properties[${index}].content`}
             options={options}
@@ -69,7 +77,6 @@ export class FormConfigSelect extends Component {
         </div>
 
         <PropertyConfigOptions index={index} property={property} type={type} />
-
       </div>
     );
   }
@@ -88,7 +95,7 @@ export function mapStateToProps(state) {
   return {
     data: state.template.data,
     thesauris: state.thesauris,
-    formState: state.template.formState
+    formState: state.template.formState,
   };
 }
 

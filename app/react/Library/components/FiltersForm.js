@@ -17,7 +17,7 @@ import Filters from './FiltersFromProperties';
 export class FiltersForm extends Component {
   constructor(props) {
     super(props);
-    this.search = debounce((search) => {
+    this.search = debounce(search => {
       this.props.searchDocuments({ search }, this.props.storeKey);
     }, 300);
 
@@ -30,9 +30,11 @@ export class FiltersForm extends Component {
   }
 
   shouldComponentUpdate(nextProps) {
-    return !is(this.props.fields, nextProps.fields) ||
+    return (
+      !is(this.props.fields, nextProps.fields) ||
       !is(this.props.aggregations, nextProps.aggregations) ||
-      !is(this.props.documentTypes, nextProps.documentTypes);
+      !is(this.props.documentTypes, nextProps.documentTypes)
+    );
   }
 
   onChange(search) {
@@ -53,20 +55,32 @@ export class FiltersForm extends Component {
     const translationContext = documentTypes.get(0);
     const allFields = this.props.fields.toJS();
     const showNoValueOnFilters = documentTypes.size;
-    const fields = libraryHelper.parseWithAggregations(allFields.slice(0), aggregations, showNoValueOnFilters)
-    .filter(field => !field.options || field.options.length);
+    const fields = libraryHelper
+      .parseWithAggregations(allFields.slice(0), aggregations, showNoValueOnFilters)
+      .filter(field => !field.options || field.options.length);
     const model = `${this.props.storeKey}.search`;
     return (
       <div className="filters-box">
         {(() => {
-          const activeTypes = templates.filter(template => documentTypes.includes(template.get('_id')));
+          const activeTypes = templates.filter(template =>
+            documentTypes.includes(template.get('_id'))
+          );
           if (activeTypes.size > 0 && fields.length === 0) {
             return (
               <div className="blank-state">
                 <Icon icon="times" />
                 <h4>{t('System', 'No common filters')}</h4>
-                <p>The combination of document and entity types doesn&#39;t have any filters in common.</p>
-                <a href="https://github.com/huridocs/uwazi/wiki/Filter" target="_blank" rel="noopener noreferrer">Learn more</a>
+                <p>
+                  The combination of document and entity types doesn&#39;t have any filters in
+                  common.
+                </p>
+                <a
+                  href="https://github.com/huridocs/uwazi/wiki/Filter"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Learn more
+                </a>
               </div>
             );
           }

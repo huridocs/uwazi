@@ -12,20 +12,26 @@ describe('NumericRange', () => {
     props = {
       model: 'model',
       onChange: jasmine.createSpy('onChange'),
-      value: { from: 2, to: 4 }
+      value: { from: 2, to: 4 },
     };
   });
 
   const render = () => {
-    component = shallow(<NumericRange {...props}/>);
+    component = shallow(<NumericRange {...props} />);
   };
 
   describe('when a date is selected', () => {
     it('should triger onChange events', () => {
       render();
-      component.find(Numeric).first().simulate('change', 0.23);
+      component
+        .find(Numeric)
+        .first()
+        .simulate('change', 0.23);
       expect(props.onChange).toHaveBeenCalledWith({ from: 0.23, to: 4 });
-      component.find(Numeric).last().simulate('change', 86);
+      component
+        .find(Numeric)
+        .last()
+        .simulate('change', 86);
       expect(props.onChange).toHaveBeenCalledWith({ from: 0.23, to: 86 });
     });
   });

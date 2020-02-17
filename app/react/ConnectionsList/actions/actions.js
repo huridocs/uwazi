@@ -10,7 +10,10 @@ import * as uiActions from 'app/Entities/actions/uiActions';
 
 export function search(requestParams) {
   const { sharedId, sort, filters } = requestParams.data;
-  const searchTerm = requestParams.data.search && requestParams.data.search.searchTerm ? requestParams.data.search.searchTerm.value : '';
+  const searchTerm =
+    requestParams.data.search && requestParams.data.search.searchTerm
+      ? requestParams.data.search.searchTerm.value
+      : '';
 
   let options = { sharedId, ...sort };
   if (filters) {
@@ -33,22 +36,26 @@ export function connectionsChanged() {
     const relationshipsList = getState().relationships.list;
     const { sharedId } = relationshipsList;
 
-    return referencesAPI.getGroupedByConnection(new RequestParams({ sharedId }))
-    .then((connectionsGroups) => {
-      const filteredTemplates = connectionsGroups.reduce((templateIds, group) => templateIds.concat(group.templates.map(t => t._id.toString())), []);
+    return referencesAPI
+      .getGroupedByConnection(new RequestParams({ sharedId }))
+      .then(connectionsGroups => {
+        const filteredTemplates = connectionsGroups.reduce(
+          (templateIds, group) => templateIds.concat(group.templates.map(t => t._id.toString())),
+          []
+        );
 
-      const sortOptions = prioritySortingCriteria.get({
-        currentCriteria: relationshipsList.sort,
-        filteredTemplates,
-        templates: getState().templates
+        const sortOptions = prioritySortingCriteria.get({
+          currentCriteria: relationshipsList.sort,
+          filteredTemplates,
+          templates: getState().templates,
+        });
+        return Promise.all([connectionsGroups, sortOptions]);
+      })
+      .then(([connectionsGroups, sort]) => {
+        dispatch(actions.set('relationships/list/connectionsGroups', connectionsGroups));
+        dispatch(formActions.merge('relationships/list.sort', sort));
+        return searchReferences()(dispatch, getState);
       });
-      return Promise.all([connectionsGroups, sortOptions]);
-    })
-    .then(([connectionsGroups, sort]) => {
-      dispatch(actions.set('relationships/list/connectionsGroups', connectionsGroups));
-      dispatch(formActions.merge('relationships/list.sort', sort));
-      return searchReferences()(dispatch, getState);
-    });
   };
 }
 
@@ -63,31 +70,37 @@ export function deleteConnection(connection) {
 export function loadAllReferences() {
   return async (dispatch, getState) => {
     const relationshipsList = getState().relationships.list;
-    dispatch(actions.set('relationships/list/filters', relationshipsList.filters.set('limit', 9999)));
+    dispatch(
+      actions.set('relationships/list/filters', relationshipsList.filters.set('limit', 9999))
+    );
     return searchReferences()(dispatch, getState);
   };
 }
 
 export function loadMoreReferences(limit) {
-  return function (dispatch, getState) {
+  return function(dispatch, getState) {
     const relationshipsList = getState().relationships.list;
-    dispatch(actions.set('relationships/list/filters', relationshipsList.filters.set('limit', limit)));
+    dispatch(
+      actions.set('relationships/list/filters', relationshipsList.filters.set('limit', limit))
+    );
     return searchReferences()(dispatch, getState);
   };
 }
 
 export function setFilter(groupFilterValues) {
-  return function (dispatch, getState) {
+  return function(dispatch, getState) {
     const relationshipsList = getState().relationships.list;
     const currentFilter = relationshipsList.filters.get('filter') || Immutable({});
     const newFilter = currentFilter.merge(groupFilterValues);
-    dispatch(actions.set('relationships/list/filters', relationshipsList.filters.set('filter', newFilter)));
+    dispatch(
+      actions.set('relationships/list/filters', relationshipsList.filters.set('filter', newFilter))
+    );
     return searchReferences()(dispatch, getState);
   };
 }
 
 export function resetSearch() {
-  return function (dispatch, getState) {
+  return function(dispatch, getState) {
     dispatch(formActions.change('relationships/list/search.searchTerm', ''));
     dispatch(actions.set('relationships/list/filters', Immutable({})));
     return searchReferences()(dispatch, getState);
@@ -95,7 +108,7 @@ export function resetSearch() {
 }
 
 export function switchView(type) {
-  return function (dispatch, getState) {
+  return function(dispatch, getState) {
     dispatch(actions.set('relationships/list/view', type));
     if (type === 'graph') {
       return loadAllReferences()(dispatch, getState);

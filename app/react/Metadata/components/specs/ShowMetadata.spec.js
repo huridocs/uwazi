@@ -5,13 +5,12 @@ import { shallow } from 'enzyme';
 
 import { ShowMetadata } from '../ShowMetadata';
 
-
 describe('Metadata', () => {
   let props;
 
   beforeEach(() => {
     props = {
-      entity: {}
+      entity: {},
     };
   });
 
@@ -36,14 +35,14 @@ describe('Metadata', () => {
 
   it('should render cejil timeline when template is cejils timeline configured templates', () => {
     props.entity = {
-      template: caseTemplate
+      template: caseTemplate,
     };
 
     let component = shallow(<ShowMetadata {...props} />).find('.metadata-timeline-viewer');
     expect(component).toMatchSnapshot();
 
     props.entity = {
-      template: matterTemplate
+      template: matterTemplate,
     };
 
     component = shallow(<ShowMetadata {...props} />).find('.metadata-timeline-viewer');

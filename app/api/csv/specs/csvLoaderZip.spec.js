@@ -12,7 +12,7 @@ import configPaths from '../../config/paths';
 import { createTestingZip, fileExists } from './helpers';
 
 const removeTestingZip = () =>
-  new Promise((resolve) => {
+  new Promise(resolve => {
     fs.unlink(path.join(__dirname, '/zipData/test.zip'), () => {
       resolve();
     });
@@ -25,17 +25,18 @@ describe('csvLoader zip file', () => {
     const zip = path.join(__dirname, '/zipData/test.zip');
     const loader = new CSVLoader();
     await db.clearAllAndLoad(fixtures);
-    await createTestingZip([
-      path.join(__dirname, '/zipData/test.csv'),
-      path.join(__dirname, '/zipData/import.csv'),
-      path.join(__dirname, '/zipData/1.pdf'),
-      path.join(__dirname, '/zipData/2.pdf'),
-      path.join(__dirname, '/zipData/3.pdf'),
-    ], 'test.zip');
-    spyOn(search, 'indexEntities').and.returnValue(Promise.resolve());
-    spyOn(fileUtils, 'generateFileName').and.callFake(
-      file => `generated${file.originalname}`
+    await createTestingZip(
+      [
+        path.join(__dirname, '/zipData/test.csv'),
+        path.join(__dirname, '/zipData/import.csv'),
+        path.join(__dirname, '/zipData/1.pdf'),
+        path.join(__dirname, '/zipData/2.pdf'),
+        path.join(__dirname, '/zipData/3.pdf'),
+      ],
+      'test.zip'
     );
+    spyOn(search, 'indexEntities').and.returnValue(Promise.resolve());
+    spyOn(fileUtils, 'generateFileName').and.callFake(file => `generated${file.originalname}`);
     configPaths.uploadedDocuments = path.join(__dirname, '/zipData/');
     await loader.load(zip, template1Id);
     imported = await entities.get({}, '+fullText');
@@ -68,27 +69,27 @@ describe('csvLoader zip file', () => {
   it('should import the file asociated with each entity', async () => {
     expect(imported.length).toBe(3);
 
-    expect(imported[0]).toEqual(expect.objectContaining(
-      {
+    expect(imported[0]).toEqual(
+      expect.objectContaining({
         uploaded: true,
         processed: true,
         fullText: { 1: '1[[1]]\n\n' },
         file: expect.objectContaining({
           filename: 'generated1.pdf',
           originalname: '1.pdf',
-        })
-      }
-    ));
-    expect(imported[1]).toEqual(expect.objectContaining(
-      {
+        }),
+      })
+    );
+    expect(imported[1]).toEqual(
+      expect.objectContaining({
         uploaded: true,
         processed: true,
         fullText: { 1: '2[[1]]\n\n' },
         file: expect.objectContaining({
           filename: 'generated2.pdf',
           originalname: '2.pdf',
-        })
-      }
-    ));
+        }),
+      })
+    );
   });
 });

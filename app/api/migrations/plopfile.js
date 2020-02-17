@@ -1,7 +1,8 @@
 /* eslint-disable import/no-dynamic-require, global-require */
+
 require('@babel/register')({ extensions: ['.js', '.jsx', '.ts', '.tsx'] });
 
-module.exports = (plop) => {
+module.exports = plop => {
   let currentDelta;
   plop.setHelper('nextMigrationDelta', () => {
     if (currentDelta) {
@@ -10,17 +11,20 @@ module.exports = (plop) => {
 
     const fs = require('fs');
     const path = require('path');
-    const migrator = require('./migrator');
+    const migrator = require('./migrator').default;
 
     const { migrationsDir } = migrator;
     let migrations = fs.readdirSync(migrationsDir);
-    migrations = migrations.map((migration) => {
-      try {
-        return require(path.join(migrationsDir, migration)).delta;
-      } catch (e) {
-        return null;
-      }
-    }).filter(m => m).sort((a, b) => b - a);
+    migrations = migrations
+      .map(migration => {
+        try {
+          return require(path.join(migrationsDir, migration)).default.delta;
+        } catch (e) {
+          return null;
+        }
+      })
+      .filter(m => m)
+      .sort((a, b) => b - a);
     currentDelta = migrations.length ? migrations[0] + 1 : 1;
     return currentDelta;
   });
@@ -31,30 +35,31 @@ module.exports = (plop) => {
       {
         type: 'input',
         name: 'name',
-        message: 'name for the migration'
+        message: 'name for the migration',
       },
       {
         type: 'input',
         name: 'description',
-        message: 'description for the migration'
-      }
+        message: 'description for the migration',
+      },
     ],
     actions: [
       {
         type: 'add',
         path: './migrations/{{nextMigrationDelta}}-{{name}}/index.js',
-        templateFile: './templates/migration.txt'
+        templateFile: './templates/migration.txt',
       },
       {
         type: 'add',
-        path: './migrations/{{nextMigrationDelta}}-{{name}}/specs/{{nextMigrationDelta}}-{{name}}.spec.js',
-        templateFile: './templates/migration.spec.txt'
+        path:
+          './migrations/{{nextMigrationDelta}}-{{name}}/specs/{{nextMigrationDelta}}-{{name}}.spec.js',
+        templateFile: './templates/migration.spec.txt',
       },
       {
         type: 'add',
         path: './migrations/{{nextMigrationDelta}}-{{name}}/specs/fixtures.js',
-        templateFile: './templates/fixtures.txt'
-      }
-    ]
+        templateFile: './templates/fixtures.txt',
+      },
+    ],
   });
 };

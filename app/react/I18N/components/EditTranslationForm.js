@@ -37,9 +37,12 @@ export class EditTranslationForm extends Component {
 
     if (translationsForm.length) {
       const { languages } = settings.collection.toJS();
-      languages.forEach((lang) => {
+      languages.forEach(lang => {
         if (!EditTranslationForm.translationExists(translationsForm, lang.key)) {
-          const defaultTranslation = EditTranslationForm.getDefaultTranslation(translationsForm, languages);
+          const defaultTranslation = EditTranslationForm.getDefaultTranslation(
+            translationsForm,
+            languages
+          );
           const translation = { locale: lang.key };
           translation.values = Object.assign({}, defaultTranslation.values);
           translationsForm.push(translation);
@@ -51,9 +54,11 @@ export class EditTranslationForm extends Component {
   }
 
   save(_translations) {
-    const translations = _translations.map((_translationLanguage) => {
+    const translations = _translations.map(_translationLanguage => {
       const translationLanguage = Object.assign({}, _translationLanguage);
-      translationLanguage.contexts = translationLanguage.contexts.filter(ctx => ctx.id === this.props.context);
+      translationLanguage.contexts = translationLanguage.contexts.filter(
+        ctx => ctx.id === this.props.context
+      );
       return translationLanguage;
     });
     this.props.saveTranslations(translations);
@@ -65,7 +70,8 @@ export class EditTranslationForm extends Component {
 
     const translations = this.prepareTranslations.call(this);
     if (translations.length) {
-      defaultTranslationContext = translations[0].contexts.find(ctx => ctx.id === contextId) || defaultTranslationContext;
+      defaultTranslationContext =
+        translations[0].contexts.find(ctx => ctx.id === contextId) || defaultTranslationContext;
     }
 
     const contextKeys = Object.keys(defaultTranslationContext.values);
@@ -73,38 +79,37 @@ export class EditTranslationForm extends Component {
     const contextName = defaultTranslationContext.label;
     return (
       <div className="EditTranslationForm">
-        <Form
-          model="translationsForm"
-          onSubmit={this.save}
-        >
+        <Form model="translationsForm" onSubmit={this.save}>
           <div className="panel panel-default">
             <div className="panel-heading">
               {t('System', 'Translations')} <Icon icon="angle-right" /> {contextName}
             </div>
             <ul className="list-group">
               {(() => {
-                  if (translations.length) {
-                    return contextKeys.sort().map(value => (
-                      <li key={value} className="list-group-item">
-                        <h5>{value}</h5>
-                        {translations.map((translation, i) => {
-                          const context = translation.contexts.find(ctx => ctx.id === contextId);
-                          const index = translation.contexts.indexOf(context);
-                          return (
-                            <FormGroup key={`${translation.locale}-${value}-${i}`}>
-                              <div className="input-group">
-                                <span className="input-group-addon">{translation.locale}</span>
-                                <Field model={['translationsForm', i, 'contexts', index, 'values', value]}>
-                                  <input className="form-control" type="text" />
-                                </Field>
-                              </div>
-                            </FormGroup>
-);
-                        })}
-                      </li>
-));
-                  }
-                })()}
+                if (translations.length) {
+                  return contextKeys.sort().map(value => (
+                    <li key={value} className="list-group-item">
+                      <h5>{value}</h5>
+                      {translations.map((translation, i) => {
+                        const context = translation.contexts.find(ctx => ctx.id === contextId);
+                        const index = translation.contexts.indexOf(context);
+                        return (
+                          <FormGroup key={`${translation.locale}-${value}-${i}`}>
+                            <div className="input-group">
+                              <span className="input-group-addon">{translation.locale}</span>
+                              <Field
+                                model={['translationsForm', i, 'contexts', index, 'values', value]}
+                              >
+                                <input className="form-control" type="text" />
+                              </Field>
+                            </div>
+                          </FormGroup>
+                        );
+                      })}
+                    </li>
+                  ));
+                }
+              })()}
             </ul>
           </div>
           <div className="settings-footer">
@@ -126,19 +131,22 @@ EditTranslationForm.propTypes = {
   settings: PropTypes.object,
   saveTranslations: PropTypes.func,
   resetForm: PropTypes.func,
-  formState: PropTypes.object
+  formState: PropTypes.object,
 };
 
 export function mapStateToProps({ translationsForm, translationsFormState, settings }) {
   return {
     translationsForm,
     settings,
-    formState: translationsFormState
+    formState: translationsFormState,
   };
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({ saveTranslations: actions.saveTranslations, resetForm: actions.resetForm }, dispatch);
+  return bindActionCreators(
+    { saveTranslations: actions.saveTranslations, resetForm: actions.resetForm },
+    dispatch
+  );
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(EditTranslationForm);

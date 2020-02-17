@@ -8,6 +8,5 @@
   "htmlWhitespaceSensitivity": "css",
   "useTabs": false,
   "quoteProps": "as-needed",
-  "printWidth": 100,
-  "insertPragma": true
+  "printWidth": 100
 }

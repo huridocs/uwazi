@@ -41,7 +41,10 @@ export default function documents(state = initialState, action = {}) {
   if (action.type === uploadTypes.UPLOAD_COMPLETE) {
     const docIndex = state.get('rows').findIndex(doc => doc.get('sharedId') === action.doc);
 
-    const doc = state.get('rows').get(docIndex).toJS();
+    const doc = state
+      .get('rows')
+      .get(docIndex)
+      .toJS();
     doc.uploaded = true;
     doc.file = action.file;
     return state.setIn(['rows', docIndex], Immutable.fromJS(doc));
@@ -50,7 +53,10 @@ export default function documents(state = initialState, action = {}) {
   if (action.type === uploadTypes.DOCUMENT_PROCESSED) {
     const docIndex = state.get('rows').findIndex(doc => doc.get('sharedId') === action.sharedId);
 
-    const doc = state.get('rows').get(docIndex).toJS();
+    const doc = state
+      .get('rows')
+      .get(docIndex)
+      .toJS();
     doc.processed = true;
     return state.setIn(['rows', docIndex], Immutable.fromJS(doc));
   }
@@ -58,7 +64,10 @@ export default function documents(state = initialState, action = {}) {
   if (action.type === uploadTypes.DOCUMENT_PROCESS_ERROR) {
     const docIndex = state.get('rows').findIndex(doc => doc.get('sharedId') === action.sharedId);
 
-    const doc = state.get('rows').get(docIndex).toJS();
+    const doc = state
+      .get('rows')
+      .get(docIndex)
+      .toJS();
     doc.processed = false;
     return state.setIn(['rows', docIndex], Immutable.fromJS(doc));
   }

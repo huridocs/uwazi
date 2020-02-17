@@ -14,7 +14,7 @@ describe('DocumentSidePanel', () => {
   let component;
   let props;
   const context = {
-    confirm: jasmine.createSpy('confirm')
+    confirm: jasmine.createSpy('confirm'),
   };
 
   beforeEach(() => {
@@ -35,13 +35,13 @@ describe('DocumentSidePanel', () => {
       formPath: 'formPath',
       connectionsGroups: Immutable.fromJS([
         { templates: [{ count: 1 }, { count: 2 }] },
-        { templates: [{ count: 3 }, { count: 4 }] }
-      ])
+        { templates: [{ count: 3 }, { count: 4 }] },
+      ]),
     };
   });
 
   const render = () => {
-    component = shallow(<DocumentSidePanel {...props}/>, { context });
+    component = shallow(<DocumentSidePanel {...props} />, { context });
   };
 
   it('should have default props values assigned', () => {
@@ -68,7 +68,12 @@ describe('DocumentSidePanel', () => {
 
   describe('connections', () => {
     it('should render 2 connections sections, for connections and references', () => {
-      expect(component.find(Connections).at(0).props().references).toEqual(props.references);
+      expect(
+        component
+          .find(Connections)
+          .at(0)
+          .props().references
+      ).toEqual(props.references);
       expect(component.find(ConnectionsGroups).length).toBe(1);
     });
   });
@@ -77,7 +82,12 @@ describe('DocumentSidePanel', () => {
     it('should set tab in props as selected', () => {
       props.tab = 'selected-tab';
       render();
-      expect(component.find(Tabs).at(0).props().selectedTab).toBe('selected-tab');
+      expect(
+        component
+          .find(Tabs)
+          .at(0)
+          .props().selectedTab
+      ).toBe('selected-tab');
     });
 
     describe('when doc passed is an entity', () => {
@@ -85,13 +95,23 @@ describe('DocumentSidePanel', () => {
         props.doc = Immutable.fromJS({ metadata: [], attachments: [], type: 'entity' });
         props.tab = 'toc';
         render();
-        expect(component.find(Tabs).at(0).props().selectedTab).toBe('metadata');
+        expect(
+          component
+            .find(Tabs)
+            .at(0)
+            .props().selectedTab
+        ).toBe('metadata');
       });
       it('should set metadata as selected if tab is references', () => {
         props.doc = Immutable.fromJS({ metadata: [], attachments: [], type: 'entity' });
         props.tab = 'references';
         render();
-        expect(component.find(Tabs).at(0).props().selectedTab).toBe('metadata');
+        expect(
+          component
+            .find(Tabs)
+            .at(0)
+            .props().selectedTab
+        ).toBe('metadata');
       });
     });
   });
@@ -130,13 +150,18 @@ describe('DocumentSidePanel', () => {
       state = {
         documentViewer: { targetDoc: Immutable.fromJS({ _id: null }) },
         relationships: { list: { connectionsGroups: 'connectionsGroups' } },
-        relationTypes: Immutable.fromJS(['a', 'b'])
+        relationTypes: Immutable.fromJS(['a', 'b']),
       };
-      spyOn(viewerModule.selectors, 'parseReferences').and.callFake((doc, refs) => `Parsed ${doc} refs: ${refs}`);
-      spyOn(viewerModule.selectors, 'selectReferences').and
-      .callFake(fakeState => `References selector used ${fakeState === state ? 'correctly' : 'incorrectly'}`);
-      spyOn(viewerModule.selectors, 'selectTargetReferences').and
-      .callFake(fakeState => `Target references selector used ${fakeState === state ? 'correctly' : 'incorrectly'}`);
+      spyOn(viewerModule.selectors, 'parseReferences').and.callFake(
+        (doc, refs) => `Parsed ${doc} refs: ${refs}`
+      );
+      spyOn(viewerModule.selectors, 'selectReferences').and.callFake(
+        fakeState => `References selector used ${fakeState === state ? 'correctly' : 'incorrectly'}`
+      );
+      spyOn(viewerModule.selectors, 'selectTargetReferences').and.callFake(
+        fakeState =>
+          `Target references selector used ${fakeState === state ? 'correctly' : 'incorrectly'}`
+      );
     });
 
     it('should map parsed references from ownProps if present and set the excludeConnectionsTab to true', () => {
@@ -147,14 +172,18 @@ describe('DocumentSidePanel', () => {
 
     it('should map selected references from viewer when no ownProps and not targetDoc', () => {
       const ownProps = {};
-      expect(mapStateToProps(state, ownProps).references).toBe('References selector used correctly');
+      expect(mapStateToProps(state, ownProps).references).toBe(
+        'References selector used correctly'
+      );
       expect(mapStateToProps(state, ownProps).excludeConnectionsTab).toBe(false);
     });
 
     it('should map selected target references from viewer when no ownProps and targetDoc', () => {
       const ownProps = {};
       state.documentViewer.targetDoc = Immutable.fromJS({ _id: 'targetDocId' });
-      expect(mapStateToProps(state, ownProps).references).toBe('Target references selector used correctly');
+      expect(mapStateToProps(state, ownProps).references).toBe(
+        'Target references selector used correctly'
+      );
       expect(mapStateToProps(state, ownProps).excludeConnectionsTab).toBe(false);
     });
 

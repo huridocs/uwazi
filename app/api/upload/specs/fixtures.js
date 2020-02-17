@@ -7,29 +7,29 @@ const templateId = db.id();
 
 export default {
   entities: [
-    { _id: entityId, sharedId: 'sharedId1', language: 'es', title: 'Gadgets 01 ES', toc: [{ _id: db.id(), label: 'existingToc' }], file: {} },
-    { _id: entityEnId, sharedId: 'sharedId1', language: 'en', title: 'Gadgets 01 EN' }
+    {
+      _id: entityId,
+      sharedId: 'sharedId1',
+      language: 'es',
+      title: 'Gadgets 01 ES',
+      toc: [{ _id: db.id(), label: 'existingToc' }],
+      file: {},
+    },
+    { _id: entityEnId, sharedId: 'sharedId1', language: 'en', title: 'Gadgets 01 EN' },
   ],
   uploads: [
     { _id: uploadId, originalname: 'upload1' },
     { _id: db.id(), originalname: 'upload2' },
   ],
-  templates: [
-    { _id: templateId, default: true, name: 'mydoc', properties: [] }
-  ],
+  templates: [{ _id: templateId, default: true, name: 'mydoc', properties: [] }],
   settings: [
     {
       _id: db.id(),
       languages: [{ key: 'es', default: true }],
       publicFormDestination: 'http://localhost:54321',
-      allowedPublicTemplates: [templateId.toString()]
-    }
+      allowedPublicTemplates: [templateId.toString()],
+    },
   ],
 };
 
-export {
-  entityId,
-  entityEnId,
-  uploadId,
-  templateId
-};
+export { entityId, entityEnId, uploadId, templateId };

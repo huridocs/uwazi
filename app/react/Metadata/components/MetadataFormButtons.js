@@ -21,7 +21,8 @@ export class MetadataFormButtons extends Component {
     const ViewButton = (
       <I18NLink to={`entity/${data.sharedId}`}>
         <button className="edit-metadata btn btn-primary">
-          <Icon icon="file" /><span className="btn-label">{t('System', 'View')}</span>
+          <Icon icon="file" />
+          <span className="btn-label">{t('System', 'View')}</span>
         </button>
       </I18NLink>
     );
@@ -30,8 +31,7 @@ export class MetadataFormButtons extends Component {
       return <span>{ViewButton}</span>;
     }
 
-
-    const _publish = (e) => {
+    const _publish = e => {
       e.stopPropagation();
       this.context.confirm({
         accept: () => {
@@ -39,10 +39,10 @@ export class MetadataFormButtons extends Component {
         },
         title: 'Confirm',
         message: 'Are you sure you want to publish this entity?',
-        type: 'success'
+        type: 'success',
       });
     };
-    const _unpublish = (e) => {
+    const _unpublish = e => {
       e.stopPropagation();
       this.context.confirm({
         accept: () => {
@@ -50,20 +50,24 @@ export class MetadataFormButtons extends Component {
         },
         title: 'Confirm',
         message: 'Are you sure you want to unpublish this entity?',
-        type: 'warning'
+        type: 'warning',
       });
     };
     const isEntity = !data.file;
     const canBePublished = (data.processed || isEntity) && !data.published && !!data.template;
     return (
       <span>
-        <ShowIf if={this.props.includeViewButton}>
-          {ViewButton}
-        </ShowIf>
+        <ShowIf if={this.props.includeViewButton}>{ViewButton}</ShowIf>
         <NeedAuthorization roles={['admin', 'editor']}>
           <ShowIf if={!entityBeingEdited}>
             <button
-              onClick={() => this.props.loadInReduxForm(this.props.formStatePath, data, this.props.templates.toJS())}
+              onClick={() =>
+                this.props.loadInReduxForm(
+                  this.props.formStatePath,
+                  data,
+                  this.props.templates.toJS()
+                )
+              }
               className="edit-metadata btn btn-primary"
             >
               <Icon icon="pencil-alt" />
@@ -116,7 +120,7 @@ export class MetadataFormButtons extends Component {
 }
 
 MetadataFormButtons.contextTypes = {
-  confirm: PropTypes.func
+  confirm: PropTypes.func,
 };
 
 MetadataFormButtons.defaultProps = {
@@ -137,18 +141,21 @@ MetadataFormButtons.propTypes = {
   formStatePath: PropTypes.string,
   formName: PropTypes.string,
   includeViewButton: PropTypes.bool,
-  exclusivelyViewButton: PropTypes.bool
+  exclusivelyViewButton: PropTypes.bool,
 };
 
 const mapStateToProps = ({ templates }) => ({ templates });
 
 function mapDispatchToProps(dispatch, props) {
-  return bindActionCreators({
-    loadInReduxForm: actions.loadInReduxForm,
-    resetForm: actions.resetReduxForm,
-    publish,
-    unpublish
-  }, wrapDispatch(dispatch, props.storeKey));
+  return bindActionCreators(
+    {
+      loadInReduxForm: actions.loadInReduxForm,
+      resetForm: actions.resetReduxForm,
+      publish,
+      unpublish,
+    },
+    wrapDispatch(dispatch, props.storeKey)
+  );
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(MetadataFormButtons);

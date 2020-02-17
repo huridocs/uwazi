@@ -39,14 +39,17 @@ export class SemanticSearchMultieditPanel extends Component {
   }
 
   metadataFieldModified(key) {
-    return !this.props.formState.metadata[key].pristine &&
-    (!this.props.formState.metadata[key].$form || !this.props.formState.metadata[key].$form.pristine);
+    return (
+      !this.props.formState.metadata[key].pristine &&
+      (!this.props.formState.metadata[key].$form ||
+        !this.props.formState.metadata[key].$form.pristine)
+    );
   }
 
   save(formValues) {
     const { entities, template, formState, searchId } = this.props;
     const modifiedValues = { metadata: {} };
-    Object.keys(formValues.metadata).forEach((key) => {
+    Object.keys(formValues.metadata).forEach(key => {
       if (this.metadataFieldModified(key)) {
         modifiedValues.metadata[key] = formValues.metadata[key];
       }
@@ -59,8 +62,7 @@ export class SemanticSearchMultieditPanel extends Component {
     if (formState.icon && !formState.icon.pristine) {
       modifiedValues.icon = formValues.icon;
     }
-    return this.props.multipleUpdate(entities, modifiedValues)
-    .then(() => {
+    return this.props.multipleUpdate(entities, modifiedValues).then(() => {
       this.close();
       this.props.getSearch(searchId);
     });
@@ -78,7 +80,7 @@ export class SemanticSearchMultieditPanel extends Component {
         this.close();
       },
       title: t('System', 'Confirm', null, false),
-      message: t('System', 'Discard changes', null, false)
+      message: t('System', 'Discard changes', null, false),
     });
   }
 
@@ -90,8 +92,8 @@ export class SemanticSearchMultieditPanel extends Component {
         <div className="alert alert-warning">
           <Icon icon="exclamation-triangle" size="2x" />
           <p>
-          Warning: you are editing multiple files.
-          Fields marked with a <Icon icon="exclamation-triangle" /> will be updated with the same value.
+            Warning: you are editing multiple files. Fields marked with a{' '}
+            <Icon icon="exclamation-triangle" /> will be updated with the same value.
           </p>
         </div>
         <MetadataForm
@@ -110,7 +112,11 @@ export class SemanticSearchMultieditPanel extends Component {
   renderEditingButtons() {
     return (
       <React.Fragment>
-        <button type="button" onClick={this.cancel} className="cancel-edit-metadata btn btn-primary">
+        <button
+          type="button"
+          onClick={this.cancel}
+          className="cancel-edit-metadata btn btn-primary"
+        >
           <Icon icon="times" />
           <span className="btn-label">{t('System', 'Cancel')}</span>
         </button>
@@ -131,12 +137,8 @@ export class SemanticSearchMultieditPanel extends Component {
             <Icon icon="times" />
           </button>
         </div>
-        <div className="sidepanel-body">
-          {this.renderEditingForm()}
-        </div>
-        <div className="sidepanel-footer">
-          {this.renderEditingButtons()}
-        </div>
+        <div className="sidepanel-body">{this.renderEditingForm()}</div>
+        <div className="sidepanel-footer">{this.renderEditingButtons()}</div>
       </SidePanel>
     );
   }
@@ -158,32 +160,35 @@ SemanticSearchMultieditPanel.propTypes = {
   formState: PropTypes.instanceOf(Object).isRequired,
   entities: PropTypes.instanceOf(Object).isRequired,
   formKey: PropTypes.string.isRequired,
-  searchId: PropTypes.string.isRequired
+  searchId: PropTypes.string.isRequired,
 };
 
 SemanticSearchMultieditPanel.contextTypes = {
-  confirm: PropTypes.func
+  confirm: PropTypes.func,
 };
 
-export const mapStateToProps = (state) => {
+export const mapStateToProps = state => {
   const entities = state.semanticSearch.multiedit;
   return {
-      template: commonTemplateSelector(state),
-      thesauris: state.thesauris,
-      entities,
-      open: Boolean(entities.size),
-      formState: state.semanticSearch.multipleEditForm,
+    template: commonTemplateSelector(state),
+    thesauris: state.thesauris,
+    entities,
+    open: Boolean(entities.size),
+    formState: state.semanticSearch.multipleEditForm,
   };
 };
 
 export function mapDispatchToProps(dispatch, props) {
-  return bindActionCreators({
-    loadForm: metadataActions.loadTemplate,
-    resetForm: metadataActions.resetReduxForm,
-    setEntities: setEditSearchEntities,
-    getSearch,
-    multipleUpdate: metadataActions.multipleUpdate,
-  }, wrapDispatch(dispatch, props.storeKey));
+  return bindActionCreators(
+    {
+      loadForm: metadataActions.loadTemplate,
+      resetForm: metadataActions.resetReduxForm,
+      setEntities: setEditSearchEntities,
+      getSearch,
+      multipleUpdate: metadataActions.multipleUpdate,
+    },
+    wrapDispatch(dispatch, props.storeKey)
+  );
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(SemanticSearchMultieditPanel);

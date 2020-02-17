@@ -23,21 +23,23 @@ export class DocumentTypesList extends Component {
     }
     this.state = {
       items,
-      ui: {}
+      ui: {},
     };
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    return !is(this.props.libraryFilters, nextProps.libraryFilters) ||
-           !is(this.props.settings, nextProps.settings) ||
-           !is(this.props.aggregations, nextProps.aggregations) ||
-           this.stateChanged(nextState);
+    return (
+      !is(this.props.libraryFilters, nextProps.libraryFilters) ||
+      !is(this.props.settings, nextProps.settings) ||
+      !is(this.props.aggregations, nextProps.aggregations) ||
+      this.stateChanged(nextState)
+    );
   }
 
   changeAll(item, e) {
     const selectedItems = this.props.libraryFilters.toJS().documentTypes || [];
     if (e.target.checked) {
-      item.items.forEach((_item) => {
+      item.items.forEach(_item => {
         if (!this.checked(_item)) {
           selectedItems.push(_item.id);
         }
@@ -45,7 +47,7 @@ export class DocumentTypesList extends Component {
     }
 
     if (!e.target.checked) {
-      item.items.forEach((_item) => {
+      item.items.forEach(_item => {
         if (this.checked(_item)) {
           const index = selectedItems.indexOf(_item.id);
           selectedItems.splice(index, 1);
@@ -83,7 +85,8 @@ export class DocumentTypesList extends Component {
 
   aggregations(item) {
     const aggregations = this.aggs;
-    const buckets = aggregations.all && aggregations.all._types ? aggregations.all._types.buckets : [];
+    const buckets =
+      aggregations.all && aggregations.all._types ? aggregations.all._types.buckets : [];
     const found = buckets.find(agg => agg.key === item.id);
     if (found) {
       return found.filtered.doc_count;
@@ -103,15 +106,23 @@ export class DocumentTypesList extends Component {
 
   checked(item) {
     if (item.items) {
-      return item.items.reduce((result, _item) => result && this.checked(_item), item.items.length > 0);
+      return item.items.reduce(
+        (result, _item) => result && this.checked(_item),
+        item.items.length > 0
+      );
     }
 
     return this.props.libraryFilters.toJS().documentTypes.includes(item.id);
   }
 
   stateChanged(nextState) {
-    return Object.keys(nextState.ui).length === Object.keys(this.state.ui).length ||
-           Object.keys(nextState.ui).reduce((result, key) => result || nextState.ui[key] === this.state.ui[key], false);
+    return (
+      Object.keys(nextState.ui).length === Object.keys(this.state.ui).length ||
+      Object.keys(nextState.ui).reduce(
+        (result, key) => result || nextState.ui[key] === this.state.ui[key],
+        false
+      )
+    );
   }
 
   renderSingleType(item, index) {
@@ -126,19 +137,16 @@ export class DocumentTypesList extends Component {
           onChange={this.change.bind(this, item)}
           checked={this.checked(item)}
         />
-        <label
-          className="multiselectItem-label"
-          htmlFor={item.id}
-        >
+        <label className="multiselectItem-label" htmlFor={item.id}>
           <span className="multiselectItem-icon">
             <Icon icon={['far', 'square']} className="checkbox-empty" />
             <Icon icon="check" className="checkbox-checked" />
           </span>
-          <span className="multiselectItem-name"><Translate context={context}>{item.name}</Translate></span>
+          <span className="multiselectItem-name">
+            <Translate context={context}>{item.name}</Translate>
+          </span>
         </label>
-        <span className="multiselectItem-results">
-          {this.aggregations(item)}
-        </span>
+        <span className="multiselectItem-results">{this.aggregations(item)}</span>
       </li>
     );
   }
@@ -159,7 +167,9 @@ export class DocumentTypesList extends Component {
               <Icon icon={['far', 'square']} className="checkbox-empty" />
               <Icon icon="check" className="checkbox-checked" />
             </span>
-            <span className="multiselectItem-name"><b>{t('Filters', item.name)}</b></span>
+            <span className="multiselectItem-name">
+              <b>{t('Filters', item.name)}</b>
+            </span>
           </label>
           <span className="multiselectItem-results">
             <span>{this.aggregations(item)}</span>
@@ -198,7 +208,7 @@ DocumentTypesList.propTypes = {
   templates: PropTypes.object,
   filterDocumentTypes: PropTypes.func,
   aggregations: PropTypes.object,
-  storeKey: PropTypes.string
+  storeKey: PropTypes.string,
 };
 
 export function mapStateToProps(state, props) {
@@ -206,7 +216,7 @@ export function mapStateToProps(state, props) {
     libraryFilters: state[props.storeKey].filters,
     settings: state.settings,
     templates: state.templates,
-    aggregations: state[props.storeKey].aggregations
+    aggregations: state[props.storeKey].aggregations,
   };
 }
 

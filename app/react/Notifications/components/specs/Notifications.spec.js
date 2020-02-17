@@ -9,8 +9,13 @@ describe('Notifications', () => {
   let props;
 
   beforeEach(() => {
-    props = { notifications: [{ message: '1', type: '1', id: 1 }, { message: '2', type: '2', id: 2 }] };
-    component = shallow(<Notifications {...props}/>);
+    props = {
+      notifications: [
+        { message: '1', type: '1', id: 1 },
+        { message: '2', type: '2', id: 2 },
+      ],
+    };
+    component = shallow(<Notifications {...props} />);
   });
 
   it('should render all notifications passed', () => {

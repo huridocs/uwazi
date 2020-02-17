@@ -11,7 +11,8 @@ describe('MarkdownMedia', () => {
 
   beforeEach(() => {
     props = {
-      config: '(https://www.vimeo.com/253530307, {"timelinks": {"02:10": "A rude awakening", "05:30": "Finally, you are up!"}})'
+      config:
+        '(https://www.vimeo.com/253530307, {"timelinks": {"02:10": "A rude awakening", "05:30": "Finally, you are up!"}})',
     };
   });
 

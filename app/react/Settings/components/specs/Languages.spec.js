@@ -10,13 +10,15 @@ describe('Languages', () => {
   let context;
   const currentLanguages = [
     { label: 'Español', key: 'es', default: true },
-    { label: 'English', key: 'en' }
+    { label: 'English', key: 'en' },
   ];
 
   beforeEach(() => {
     props = {
       languages: Immutable.fromJS(currentLanguages),
-      setDefaultLanguage: jasmine.createSpy('setDefaultLanguage').and.returnValue(Promise.resolve('ok')),
+      setDefaultLanguage: jasmine
+        .createSpy('setDefaultLanguage')
+        .and.returnValue(Promise.resolve('ok')),
       addLanguage: jasmine.createSpy('addLanguage').and.returnValue(Promise.resolve('ok')),
       deleteLanguage: jasmine.createSpy('deleteLanguage').and.returnValue(Promise.resolve('ok')),
       locale: 'es',
@@ -30,16 +32,22 @@ describe('Languages', () => {
   });
 
   describe('clicking on Set as default', () => {
-    it('should call setDefaultLanguage', (done) => {
-      component.find('.btn-success').at(0).simulate('click');
+    it('should call setDefaultLanguage', done => {
+      component
+        .find('.btn-success')
+        .at(0)
+        .simulate('click');
       expect(props.setDefaultLanguage).toHaveBeenCalledWith('en');
       done();
     });
   });
 
   describe('clicking on Delete Language', () => {
-    it('should call delete languae', (done) => {
-      component.find('.btn-danger').at(0).simulate('click');
+    it('should call delete languae', done => {
+      component
+        .find('.btn-danger')
+        .at(0)
+        .simulate('click');
       expect(context.confirm).toHaveBeenCalled();
       const confirmArguments = context.confirm.calls.allArgs()[0][0];
       confirmArguments.accept();
@@ -49,8 +57,11 @@ describe('Languages', () => {
   });
 
   describe('clicking on Add Language', () => {
-    it('should call add language', (done) => {
-      component.find('.btn-success').at(1).simulate('click');
+    it('should call add language', done => {
+      component
+        .find('.btn-success')
+        .at(1)
+        .simulate('click');
       expect(context.confirm).toHaveBeenCalled();
       const confirmArguments = context.confirm.calls.allArgs()[0][0];
       confirmArguments.accept();

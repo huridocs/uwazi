@@ -10,20 +10,23 @@ describe('migration separate-custom-uploads-from-documents', () => {
   let originalDocumentsPath;
   let originalUploadsPath;
 
-  beforeEach((done) => {
+  beforeEach(done => {
     spyOn(process.stdout, 'write');
     originalDocumentsPath = paths.uploadedDocuments;
     originalUploadsPath = paths.customUploads;
-    testingDB.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
+    testingDB
+      .clearAllAndLoad(fixtures)
+      .then(done)
+      .catch(catchErrors(done));
   });
 
-  afterEach((done) => {
+  afterEach(done => {
     paths.uploadedDocuments = originalDocumentsPath;
     paths.customUploads = originalUploadsPath;
     done();
   });
 
-  afterAll((done) => {
+  afterAll(done => {
     testingDB.disconnect().then(done);
   });
 
@@ -40,17 +43,19 @@ describe('migration separate-custom-uploads-from-documents', () => {
     });
     afterEach(async () => {
       await Promise.all(
-        files.map(async (f) => {
+        files.map(async f => {
           try {
             await fs.unlink(path.join(paths.customUploads, f));
-          // eslint-disable-next-line
+            // eslint-disable-next-line
           } catch (e) {}
         })
       );
     });
     const initFiles = async () =>
       Promise.all(
-        files.map(f => fs.writeFile(path.join(paths.uploadedDocuments, f), `contents for file ${f}`))
+        files.map(f =>
+          fs.writeFile(path.join(paths.uploadedDocuments, f), `contents for file ${f}`)
+        )
       );
     it('should move all uploads from uploaded documents folder to custom uploads folder', async () => {
       await initFiles();

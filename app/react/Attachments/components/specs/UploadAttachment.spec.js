@@ -16,12 +16,12 @@ describe('UploadAttachment', () => {
       entity: 'idE1',
       progress: Immutable({}),
       languages: Immutable(['en']),
-      storeKey: 'library'
+      storeKey: 'library',
     };
   });
 
   const render = () => {
-    component = shallow(<UploadAttachment {...props}/>);
+    component = shallow(<UploadAttachment {...props} />);
   };
 
   it('should include label and input to upload attachment', () => {
@@ -31,7 +31,10 @@ describe('UploadAttachment', () => {
     expect(component.find('label > input').props().id).toBe('upload-attachment-input');
 
     expect(props.uploadAttachment).not.toHaveBeenCalled();
-    component.find('label > input').props().onChange(e);
+    component
+      .find('label > input')
+      .props()
+      .onChange(e);
     expect(props.uploadAttachment).toHaveBeenCalledWith(props.entity, { id: 'f1' }, 'library');
   });
 
@@ -42,20 +45,50 @@ describe('UploadAttachment', () => {
 
       expect(component.find('input').length).toBe(2);
 
-      expect(component.find('label').at(0).props().htmlFor).toBe('upload-attachment-input');
-      expect(component.find('label > input').at(0).props().id).toBe('upload-attachment-input');
-      expect(component.find('label').at(1).props().htmlFor).toBe('upload-attachment-all-input');
-      expect(component.find('label > input').at(1).props().id).toBe('upload-attachment-all-input');
+      expect(
+        component
+          .find('label')
+          .at(0)
+          .props().htmlFor
+      ).toBe('upload-attachment-input');
+      expect(
+        component
+          .find('label > input')
+          .at(0)
+          .props().id
+      ).toBe('upload-attachment-input');
+      expect(
+        component
+          .find('label')
+          .at(1)
+          .props().htmlFor
+      ).toBe('upload-attachment-all-input');
+      expect(
+        component
+          .find('label > input')
+          .at(1)
+          .props().id
+      ).toBe('upload-attachment-all-input');
 
       expect(props.uploadAttachment).not.toHaveBeenCalled();
-      component.find('label > input').at(0).props().onChange(e);
+      component
+        .find('label > input')
+        .at(0)
+        .props()
+        .onChange(e);
       expect(props.uploadAttachment).toHaveBeenCalledWith(props.entity, { id: 'f1' }, 'library');
 
       props.uploadAttachment.calls.reset();
 
       expect(props.uploadAttachment).not.toHaveBeenCalled();
-      component.find('label > input').at(1).props().onChange(e);
-      expect(props.uploadAttachment).toHaveBeenCalledWith(props.entity, { id: 'f1' }, 'library', { allLanguages: true });
+      component
+        .find('label > input')
+        .at(1)
+        .props()
+        .onChange(e);
+      expect(props.uploadAttachment).toHaveBeenCalledWith(props.entity, { id: 'f1' }, 'library', {
+        allLanguages: true,
+      });
     });
   });
 
@@ -68,7 +101,12 @@ describe('UploadAttachment', () => {
 
       expect(component.find('input').length).toBe(0);
 
-      expect(component.find('span').at(1).text()).toMatch('77%');
+      expect(
+        component
+          .find('span')
+          .at(1)
+          .text()
+      ).toMatch('77%');
     });
   });
 });

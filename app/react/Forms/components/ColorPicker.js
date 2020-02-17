@@ -38,7 +38,7 @@ class ColorPicker extends Component {
         />
         {active && (
           <div className="ColorPicker__popover">
-            <div className="ColorPicker__cover" onClick={this.onBlur}/>
+            <div className="ColorPicker__cover" onClick={this.onBlur} />
             <TwitterPicker
               color={value || defaultValue}
               colors={COLORS}
@@ -53,7 +53,7 @@ class ColorPicker extends Component {
 
 ColorPicker.defaultProps = {
   value: '',
-  defaultValue: ''
+  defaultValue: '',
 };
 
 ColorPicker.propTypes = {

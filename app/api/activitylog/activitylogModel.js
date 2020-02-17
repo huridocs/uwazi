@@ -9,7 +9,7 @@ const pagesSchema = new mongoose.Schema({
   params: String,
   body: String,
   username: String,
-  user: { type: mongoose.Schema.Types.ObjectId, ref: 'users' }
+  user: { type: mongoose.Schema.Types.ObjectId, ref: 'users' },
 });
 
 export default instanceModel('activitylog', pagesSchema);

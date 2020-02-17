@@ -9,12 +9,16 @@ import api from 'app/Search/SearchAPI';
 
 const processesIds = ['58b2f3a35d59f31e1345b48a'];
 const provisionalMeasuresIds = ['58b2f3a35d59f31e1345b4a4'];
-const documentsIds = ['58b2f3a35d59f31e1345b4ac', '58b2f3a35d59f31e1345b471', '58b2f3a35d59f31e1345b482', '58b2f3a35d59f31e1345b479'];
+const documentsIds = [
+  '58b2f3a35d59f31e1345b4ac',
+  '58b2f3a35d59f31e1345b471',
+  '58b2f3a35d59f31e1345b482',
+  '58b2f3a35d59f31e1345b479',
+];
 
 export class cejilChart001 extends Component {
   getData() {
-    api.search({ limit: 0 })
-    .then((results) => {
+    api.search({ limit: 0 }).then(results => {
       this.setState({ data: results.aggregations.all });
     });
   }
@@ -24,7 +28,9 @@ export class cejilChart001 extends Component {
     if (link && link.indexOf('/library/') !== -1) {
       return link.substring(link.indexOf('/library/'), link.length);
     }
-    return `/library/?q=(order:desc,sort:creationDate,types:!(${escapedValues.join(',')}),userSelectedSorting:!t)`;
+    return `/library/?q=(order:desc,sort:creationDate,types:!(${escapedValues.join(
+      ','
+    )}),userSelectedSorting:!t)`;
   }
 
   getCount(ids) {
@@ -56,15 +62,24 @@ export class cejilChart001 extends Component {
       <div className="hero">
         <h1>{title}</h1>
         <div className="hero-stats">
-          <I18NLink to={this.conformLibraryLink(processesIds, links.length && links[0] ? links[0] : null)}>
+          <I18NLink
+            to={this.conformLibraryLink(processesIds, links.length && links[0] ? links[0] : null)}
+          >
             <h2>{processesCount}</h2>
             <span>{buttons[0]}</span>
           </I18NLink>
-          <I18NLink to={this.conformLibraryLink(provisionalMeasuresIds, links.length && links[1] ? links[1] : null)}>
+          <I18NLink
+            to={this.conformLibraryLink(
+              provisionalMeasuresIds,
+              links.length && links[1] ? links[1] : null
+            )}
+          >
             <h2>{provisionalMeasuresCount}</h2>
             <span>{buttons[1]}</span>
           </I18NLink>
-          <I18NLink to={this.conformLibraryLink(documentsIds, links.length && links[2] ? links[2] : null)}>
+          <I18NLink
+            to={this.conformLibraryLink(documentsIds, links.length && links[2] ? links[2] : null)}
+          >
             <h2>{documentsCount}</h2>
             <span>{buttons[2]}</span>
           </I18NLink>
@@ -78,7 +93,7 @@ cejilChart001.propTypes = {
   title: PropTypes.string,
   subtitle: PropTypes.string,
   buttons: PropTypes.array,
-  links: PropTypes.array
+  links: PropTypes.array,
 };
 
 export function mapStateToProps({ templates, thesauris }) {

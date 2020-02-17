@@ -11,13 +11,16 @@ describe('RadioButtons', () => {
     props = {
       label: 'input label',
       value: '',
-      options: [{ label: 'Option1', value: 'option1' }, { label: 'Option2', value: 'option2' }],
-      onChange: jasmine.createSpy('onChange')
+      options: [
+        { label: 'Option1', value: 'option1' },
+        { label: 'Option2', value: 'option2' },
+      ],
+      onChange: jasmine.createSpy('onChange'),
     };
   });
 
   const render = () => {
-    component = shallow(<RadioButtons {...props}/>);
+    component = shallow(<RadioButtons {...props} />);
   };
 
   it('should render the radio buttons', () => {
@@ -32,9 +35,15 @@ describe('RadioButtons', () => {
   describe('when clicking an option', () => {
     it('should call onChange with the new value', () => {
       render();
-      component.find('input[type="radio"]').first().simulate('change');
+      component
+        .find('input[type="radio"]')
+        .first()
+        .simulate('change');
       expect(props.onChange).toHaveBeenCalledWith('option1');
-      component.find('input[type="radio"]').last().simulate('change');
+      component
+        .find('input[type="radio"]')
+        .last()
+        .simulate('change');
       expect(props.onChange).toHaveBeenCalledWith('option2');
     });
   });
@@ -44,12 +53,15 @@ describe('RadioButtons', () => {
       props = {
         label: 'input label',
         value: '',
-        options: [{ name: 'Option1', id: 'option1' }, { name: 'Option2', id: 'option2' }],
+        options: [
+          { name: 'Option1', id: 'option1' },
+          { name: 'Option2', id: 'option2' },
+        ],
         optionsValue: 'id',
         optionsLabel: 'name',
-        onChange: () => {}
+        onChange: () => {},
       };
-      component = shallow(<RadioButtons {...props}/>);
+      component = shallow(<RadioButtons {...props} />);
     });
 
     it('should render the options', () => {

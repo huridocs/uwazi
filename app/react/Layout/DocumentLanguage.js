@@ -27,14 +27,18 @@ export class DocumentLanguage extends Component {
         );
       }
 
-      return <span className="item-type__documentLanguage"><span>{t('System', 'Other')}</span></span>;
+      return (
+        <span className="item-type__documentLanguage">
+          <span>{t('System', 'Other')}</span>
+        </span>
+      );
     }
   }
 }
 
 DocumentLanguage.propTypes = {
   doc: PropTypes.object,
-  locale: PropTypes.string
+  locale: PropTypes.string,
 };
 
 export const mapStateToProps = ({ locale }) => ({ locale });

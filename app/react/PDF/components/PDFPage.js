@@ -13,6 +13,7 @@ class PDFPage extends Component {
     }
 
     this.props.getViewportContainer().addEventListener('scroll', this.scrollCallback);
+    this._mounted = true;
   }
 
   componentWillUnmount() {
@@ -20,6 +21,7 @@ class PDFPage extends Component {
       this.pdfPageView.destroy();
     }
     this.props.getViewportContainer().removeEventListener('scroll', this.scrollCallback);
+    this._mounted = false;
   }
 
   scroll() {
@@ -42,7 +44,12 @@ class PDFPage extends Component {
     const vWidth = window.innerWidth || document.documentElement.clientWidth;
     const vHeight = window.innerHeight || document.documentElement.clientHeight;
 
-    if (pageRectangle.right < 0 || pageRectangle.bottom < -500 || pageRectangle.left > vWidth || pageRectangle.top > vHeight + 500) {
+    if (
+      pageRectangle.right < 0 ||
+      pageRectangle.bottom < -500 ||
+      pageRectangle.left > vWidth ||
+      pageRectangle.top > vHeight + 500
+    ) {
       this.props.onHidden(this.props.page);
       return false;
     }
@@ -55,13 +62,15 @@ class PDFPage extends Component {
 
     const relativeElementRect = {
       top: pageRectangle.top - viewportRect.top,
-      bottom: pageRectangle.bottom
+      bottom: pageRectangle.bottom,
     };
 
     const offsetTop = relativeElementRect.top < 0 ? -relativeElementRect.top : 0;
-    const offsetBottom = pageRectangle.bottom - viewportRect.bottom > 0 ? pageRectangle.bottom - viewportRect.bottom : 0;
+    const offsetBottom =
+      pageRectangle.bottom - viewportRect.bottom > 0
+        ? pageRectangle.bottom - viewportRect.bottom
+        : 0;
     const visibility = pageRectangle.height - offsetTop - offsetBottom;
-
 
     if (visibility > 0) {
       this.props.onVisible(this.props.page, visibility);
@@ -75,15 +84,14 @@ class PDFPage extends Component {
   renderPage() {
     if (!this.rendered && this.pdfPageView) {
       this.props.onLoading(this.props.page);
-      this.pdfPageView.draw()
-      .catch(e => e);
+      this.pdfPageView.draw().catch(e => e);
       this.rendered = true;
       return;
     }
     if (!this.rendered) {
       this.props.onLoading(this.props.page);
       this.rendered = true;
-      this.props.pdf.getPage(this.props.page).then((page) => {
+      this.props.pdf.getPage(this.props.page).then(page => {
         const scale = 1;
 
         this.pdfPageView = new PDFJS.PDFPageView({
@@ -96,11 +104,14 @@ class PDFPage extends Component {
         });
 
         this.pdfPageView.setPdfPage(page);
-        this.pdfPageView.draw()
-        .then(() => {
-          this.setState({ height: this.pdfPageView.viewport.height });
-        })
-        .catch(e => e);
+        this.pdfPageView
+          .draw()
+          .then(() => {
+            if (this._mounted) {
+              this.setState({ height: this.pdfPageView.viewport.height });
+            }
+          })
+          .catch(e => e);
       });
     }
   }
@@ -110,12 +121,21 @@ class PDFPage extends Component {
     if (this.state && this.state.height) {
       style.height = this.state.height + 20;
     }
-    return <div id={`page-${this.props.page}`} className="doc-page" ref={(ref) => { this.pageContainer = ref; }} style={style}/>;
+    return (
+      <div
+        id={`page-${this.props.page}`}
+        className="doc-page"
+        ref={ref => {
+          this.pageContainer = ref;
+        }}
+        style={style}
+      />
+    );
   }
 }
 
 PDFPage.defaultProps = {
-  getViewportContainer: () => isClient ? document.querySelector('.document-viewer') : null,
+  getViewportContainer: () => (isClient ? document.querySelector('.document-viewer') : null),
   onVisible: () => {},
   onHidden: () => {},
 };

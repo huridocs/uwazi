@@ -10,7 +10,7 @@ exports[`Tip should render children inside tooltip classed containers 1`] = `
   <div
     className="property-description"
   >
-    this is  a tip !!
+    this is a tip !!
   </div>
 </span>
 `;

@@ -16,7 +16,9 @@ export default class Nested extends Component {
     const keys = Object.keys(rows[0]).sort();
     let result = `| ${keys.join(' | ')} |\n`;
     result += `| ${keys.map(() => '-').join(' | ')} |\n`;
-    result += `${rows.map(row => `| ${keys.map(key => (row[key] || []).join(',')).join(' | ')}`).join(' |\n')} |`;
+    result += `${rows
+      .map(row => `| ${keys.map(key => (row[key] || []).join(',')).join(' | ')}`)
+      .join(' |\n')} |`;
 
     return result;
   }
@@ -27,27 +29,38 @@ export default class Nested extends Component {
     this.setState({ value });
     if (value) {
       const rows = value.split('\n').filter(row => row);
-      const keys = rows[0].split('|').map(key => key.trim()).filter(key => key);
+      const keys = rows[0]
+        .split('|')
+        .map(key => key.trim())
+        .filter(key => key);
       const entries = rows.splice(2);
-      formatedValues = entries.map(row => row.split('|').splice(1).reduce((result, val, index) => {
-        if (!keys[index]) {
-          return result;
-        }
-        const values = val.split(',').map(v => v.trim()).filter(v => v);
-        result[keys[index]] = values;
-        return result;
-      }, {}));
+      formatedValues = entries.map(row =>
+        row
+          .split('|')
+          .splice(1)
+          .reduce((result, val, index) => {
+            if (!keys[index]) {
+              return result;
+            }
+            const values = val
+              .split(',')
+              .map(v => v.trim())
+              .filter(v => v);
+            result[keys[index]] = values;
+            return result;
+          }, {})
+      );
     }
 
     this.props.onChange(formatedValues);
   }
 
   render() {
-    return <MarkDown onChange={this.onChange.bind(this)} value={this.state.value}/>;
+    return <MarkDown onChange={this.onChange.bind(this)} value={this.state.value} />;
   }
 }
 
 Nested.propTypes = {
   onChange: PropTypes.func,
-  value: PropTypes.array
+  value: PropTypes.array,
 };

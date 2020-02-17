@@ -17,7 +17,9 @@ export class ConnectionsGroup extends Component {
 
   toggleSelectGroup() {
     const { group } = this.props;
-    const selectedItems = !this.state.selected ? group.get('templates').map(i => group.get('key') + i.get('_id')) : Immutable([]);
+    const selectedItems = !this.state.selected
+      ? group.get('templates').map(i => group.get('key') + i.get('_id'))
+      : Immutable([]);
 
     this.setGroupFilter(selectedItems);
     this.setState({ selected: !this.state.selected, selectedItems });
@@ -52,10 +54,12 @@ export class ConnectionsGroup extends Component {
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    return !is(this.props.group, nextProps.group) ||
-           this.state.expanded !== nextState.expanded ||
-           this.state.selected !== nextState.selected ||
-           this.state.selectedItems.size !== nextState.selectedItems.size;
+    return (
+      !is(this.props.group, nextProps.group) ||
+      this.state.expanded !== nextState.expanded ||
+      this.state.selected !== nextState.selected ||
+      this.state.selectedItems.size !== nextState.selectedItems.size
+    );
   }
 
   componentWillReceiveProps(nextProps) {
@@ -88,9 +92,7 @@ export class ConnectionsGroup extends Component {
               <Icon icon="check" className="checkbox-checked" />
             </span>
             <span className="multiselectItem-name">
-              <b>{group.key ?
-                  t(group.context, connectionLabel) : t('System', 'No Label')}
-              </b>
+              <b>{group.key ? t(group.context, connectionLabel) : t('System', 'No Label')}</b>
             </span>
           </label>
           <span className="multiselectItem-results">
@@ -111,21 +113,16 @@ export class ConnectionsGroup extends Component {
                   onChange={this.toggleSelectItem.bind(this, group.key + template._id)}
                   checked={this.state.selectedItems.includes(group.key + template._id)}
                 />
-                <label
-                  className="multiselectItem-label"
-                  htmlFor={group.key + template._id}
-                >
+                <label className="multiselectItem-label" htmlFor={group.key + template._id}>
                   <span className="multiselectItem-icon">
                     <Icon icon={['far', 'square']} className="checkbox-empty" />
                     <Icon icon="check" className="checkbox-checked" />
                   </span>
                   <span className="multiselectItem-name">{t(template._id, template.label)}</span>
                 </label>
-                <span className="multiselectItem-results">
-                  {template.count}
-                </span>
+                <span className="multiselectItem-results">{template.count}</span>
               </li>
-              ))}
+            ))}
           </ul>
         </ShowIf>
       </li>
@@ -136,13 +133,17 @@ export class ConnectionsGroup extends Component {
 ConnectionsGroup.propTypes = {
   group: PropTypes.object,
   setFilter: PropTypes.func,
-  filters: PropTypes.object
+  filters: PropTypes.object,
 };
 
 export const mapStateToProps = ({ relationships }) => ({ filters: relationships.list.filters });
 
-export const mapDispatchToProps = dispatch => bindActionCreators({
-    setFilter
-}, dispatch);
+export const mapDispatchToProps = dispatch =>
+  bindActionCreators(
+    {
+      setFilter,
+    },
+    dispatch
+  );
 
 export default connect(mapStateToProps, mapDispatchToProps)(ConnectionsGroup);

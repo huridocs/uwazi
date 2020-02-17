@@ -6,7 +6,11 @@ import Immutable from 'immutable';
 
 import { Map, Markers } from 'app/Map';
 import { TemplateLabel } from 'app/Layout';
-import { getAndSelectDocument, selectDocuments, unselectAllDocuments } from 'app/Library/actions/libraryActions';
+import {
+  getAndSelectDocument,
+  selectDocuments,
+  unselectAllDocuments,
+} from 'app/Library/actions/libraryActions';
 import { wrapDispatch } from 'app/Multireducer';
 
 import Loader from 'app/components/Elements/Loader';
@@ -19,10 +23,10 @@ const renderInfo = marker => (
   </div>
 );
 
-export const MapComponent = (props) => {
+export const MapComponent = props => {
   const { data, classname, scrollZoom, showControls } = props;
   const clickOnMarker = marker => props.getAndSelectDocument(marker.properties.entity.sharedId);
-  const clickOnCluster = (cluster) => {
+  const clickOnCluster = cluster => {
     props.unselectAllDocuments();
     props.selectDocuments(cluster.map(m => m.properties.entity));
   };
@@ -44,7 +48,9 @@ export const MapComponent = (props) => {
             />
           )}
         </Markers>
-      ) : <Loader/>}
+      ) : (
+        <Loader />
+      )}
     </div>
   );
 };
@@ -70,8 +76,10 @@ export const mapStateToProps = (state, props) => ({
   data: markdownDatasets.getRows(state, props),
 });
 
-export const mapDispatchToProps = dispatch => bindActionCreators(
+export const mapDispatchToProps = dispatch =>
+  bindActionCreators(
     { getAndSelectDocument, selectDocuments, unselectAllDocuments },
-    wrapDispatch(dispatch, 'library'));
+    wrapDispatch(dispatch, 'library')
+  );
 
 export default connect(mapStateToProps, mapDispatchToProps, null)(MapComponent);

@@ -3,12 +3,7 @@ import sortThesauri from '../sortThesauri';
 describe('Sort Thesauri List', () => {
   describe('sortThesauriList', () => {
     it('should sort the thesauri by name', () => {
-      const unsortedValues = [
-        { name: 'Ba' },
-        { name: 'ab' },
-        { name: 'za' },
-        { name: 'Xi' }
-      ];
+      const unsortedValues = [{ name: 'Ba' }, { name: 'ab' }, { name: 'za' }, { name: 'Xi' }];
 
       expect(sortThesauri(unsortedValues)[0]).toEqual({ name: 'ab' });
       expect(sortThesauri(unsortedValues)[1]).toEqual({ name: 'Ba' });

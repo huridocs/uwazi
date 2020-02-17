@@ -18,7 +18,10 @@ describe('aggregationsReducer', () => {
     it('should set the properties', () => {
       const state = Immutable.fromJS({});
 
-      const newState = aggregationsReducer(state, actions.initializeFiltersForm({ aggregations: 'aggregations' }));
+      const newState = aggregationsReducer(
+        state,
+        actions.initializeFiltersForm({ aggregations: 'aggregations' })
+      );
       expect(newState).toBe('aggregations');
     });
   });

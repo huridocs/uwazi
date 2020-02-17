@@ -4,11 +4,11 @@ import { connect } from 'react-redux';
 
 import { ContextMenu } from 'app/ContextMenu/components/ContextMenu';
 
-const SubMenu = () => <div/>;
+const SubMenu = () => <div />;
 
 class SubMenu2 extends Component {
   render() {
-    return <div/>;
+    return <div />;
   }
 }
 
@@ -18,7 +18,12 @@ describe('ContextMenu', () => {
   let component;
 
   const render = (withProps = {}) => {
-    component = shallow(<ContextMenu {...withProps}><SubMenu/><SubMenu2Container/></ContextMenu>);
+    component = shallow(
+      <ContextMenu {...withProps}>
+        <SubMenu />
+        <SubMenu2Container />
+      </ContextMenu>
+    );
   };
 
   describe('on mouseEnter', () => {

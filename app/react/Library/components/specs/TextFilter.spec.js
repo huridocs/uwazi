@@ -11,7 +11,7 @@ describe('TextFilter', () => {
       model: 'model',
     };
 
-    const component = shallow(<TextFilter {...props}/>);
+    const component = shallow(<TextFilter {...props} />);
     expect(component).toMatchSnapshot();
   });
 });

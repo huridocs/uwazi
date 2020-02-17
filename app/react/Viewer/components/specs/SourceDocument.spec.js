@@ -14,22 +14,33 @@ describe('SourceDocument', () => {
     user: Immutable.fromJS({ _id: 1 }),
     documentViewer: {
       sidepanel: {
-        snippets: Immutable.fromJS([])
+        snippets: Immutable.fromJS([]),
       },
       uiState: Immutable.fromJS({
         reference: { sourceRange: { selection: 'selection' } },
-        highlightedReference: 'highlightedReference'
+        highlightedReference: 'highlightedReference',
       }),
       doc: Immutable.fromJS({ sharedId: 'docSharedId', name: 'document' }),
       targetDoc: Immutable.fromJS({}),
       references: Immutable.fromJS([
-        { _id: 'r1', entity: 'docSharedId', range: { start: 0 }, reference: 'reference', hub: 'hub1' },
-        { _id: 'r2', entity: 'docSharedId', reference: 'should not generate a reference, its not text based', hub: 'hub2' },
+        {
+          _id: 'r1',
+          entity: 'docSharedId',
+          range: { start: 0 },
+          reference: 'reference',
+          hub: 'hub1',
+        },
+        {
+          _id: 'r2',
+          entity: 'docSharedId',
+          reference: 'should not generate a reference, its not text based',
+          hub: 'hub2',
+        },
         { _id: 'r3', entity: 'id1', reference: 'should be excluded', hub: 'hub2' },
         { _id: 'r4', entity: 'id2', reference: 'should be associated', hub: 'hub1' },
-        { _id: 'r5', entity: 'id3', reference: 'should also be associated', hub: 'hub1' }
-      ])
-    }
+        { _id: 'r5', entity: 'id3', reference: 'should also be associated', hub: 'hub1' },
+      ]),
+    },
   };
 
   const render = () => {
@@ -49,7 +60,12 @@ describe('SourceDocument', () => {
         range: { start: 0 },
         reference: 'reference',
         hub: 'hub1',
-        associatedRelationship: { _id: 'r4', entity: 'id2', reference: 'should be associated', hub: 'hub1' }
+        associatedRelationship: {
+          _id: 'r4',
+          entity: 'id2',
+          reference: 'should be associated',
+          hub: 'hub1',
+        },
       },
       {
         _id: 'r1',
@@ -57,8 +73,13 @@ describe('SourceDocument', () => {
         range: { start: 0 },
         reference: 'reference',
         hub: 'hub1',
-        associatedRelationship: { _id: 'r5', entity: 'id3', reference: 'should also be associated', hub: 'hub1' }
-      }
+        associatedRelationship: {
+          _id: 'r5',
+          entity: 'id3',
+          reference: 'should also be associated',
+          hub: 'hub1',
+        },
+      },
     ]);
     expect(props.className).toBe('sourceDocument');
     expect(props.executeOnClickHandler).toBe(false);
@@ -70,7 +91,10 @@ describe('SourceDocument', () => {
     let props = component.props();
     expect(props.forceSimulateSelection).toBe(true);
 
-    state.documentViewer.uiState = state.documentViewer.uiState.set('panel', 'targetReferencePanel');
+    state.documentViewer.uiState = state.documentViewer.uiState.set(
+      'panel',
+      'targetReferencePanel'
+    );
     render();
     props = component.props();
     expect(props.forceSimulateSelection).toBe(true);

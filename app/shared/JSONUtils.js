@@ -4,7 +4,7 @@ export default {
       return object;
     }
     const result = Object.assign({}, object);
-    Object.keys(object).forEach((index) => {
+    Object.keys(object).forEach(index => {
       try {
         result[index] = JSON.parse(object[index]);
       } catch (e) {
@@ -12,5 +12,5 @@ export default {
       }
     });
     return result;
-  }
+  },
 };

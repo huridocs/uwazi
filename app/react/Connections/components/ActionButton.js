@@ -24,7 +24,7 @@ export class ActionButton extends Component {
     const validator = {
       sourceDocument: { presence: true },
       targetDocument: { presence: true },
-      template: { presence: true }
+      template: { presence: true },
     };
 
     if (this.props.type === 'basic') {
@@ -37,7 +37,8 @@ export class ActionButton extends Component {
 
     const connectionValid = !validate(connection, validator);
     const enabled = connectionValid && !this.props.busy;
-    const buttonClass = this.props.action === 'save' ? 'btn btn-success' : 'edit-metadata btn btn-success';
+    const buttonClass =
+      this.props.action === 'save' ? 'btn btn-success' : 'edit-metadata btn btn-success';
     let buttonIcon = 'arrow-right';
     if (this.props.busy) {
       buttonIcon = 'spinner';
@@ -51,7 +52,7 @@ export class ActionButton extends Component {
         className={buttonClass}
         disabled={!enabled}
         onClick={this.onClick.bind(this, enabled, connection)}
-        >
+      >
         <Icon icon={buttonIcon} spin={!!this.props.busy} />
       </button>
     );
@@ -66,14 +67,14 @@ ActionButton.propTypes = {
   onCreate: PropTypes.func,
   onRangedConnect: PropTypes.func,
   action: PropTypes.string,
-  busy: PropTypes.bool
+  busy: PropTypes.bool,
 };
 
 export function mapStateToProps({ connections }) {
   return {
     type: connections.connection.get('type'),
     connection: connections.connection,
-    busy: connections.uiState.get('creating') || connections.uiState.get('connecting')
+    busy: connections.uiState.get('creating') || connections.uiState.get('connecting'),
   };
 }
 

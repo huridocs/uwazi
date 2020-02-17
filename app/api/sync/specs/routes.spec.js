@@ -14,7 +14,10 @@ describe('sync', () => {
   const setReqDefault = (property, type = 'object') => {
     req = {};
     dataObject = { _id: 'dataId' };
-    req[property] = { namespace: 'model1', data: type === 'string' ? JSON.stringify(dataObject) : dataObject };
+    req[property] = {
+      namespace: 'model1',
+      data: type === 'string' ? JSON.stringify(dataObject) : dataObject,
+    };
   };
 
   beforeEach(async () => {
@@ -22,12 +25,12 @@ describe('sync', () => {
     routes = instrumentRoutes(syncRoutes);
     models.model1 = {
       save: jasmine.createSpy('model1.save'),
-      delete: jasmine.createSpy('model1.delete')
+      delete: jasmine.createSpy('model1.delete'),
     };
 
     models.model2 = {
       save: jasmine.createSpy('model2.save'),
-      delete: jasmine.createSpy('model2.delete')
+      delete: jasmine.createSpy('model2.delete'),
     };
     spyOn(search, 'delete');
     spyOn(search, 'indexEntities');
@@ -73,7 +76,7 @@ describe('sync', () => {
 
         req.body = {
           namespace: 'entities',
-          data: { _id: 'id' }
+          data: { _id: 'id' },
         };
 
         await routes.post('/api/sync', req);
@@ -90,7 +93,7 @@ describe('sync', () => {
 
         req.body = {
           namespace: 'settings',
-          data: { _id: 'masterId', languages: 'ln' }
+          data: { _id: 'masterId', languages: 'ln' },
         };
 
         await routes.post('/api/sync', req);
@@ -145,7 +148,7 @@ describe('sync', () => {
 
         req.query = {
           namespace: 'entities',
-          data: JSON.stringify({ _id: 'id' })
+          data: JSON.stringify({ _id: 'id' }),
         };
       });
 

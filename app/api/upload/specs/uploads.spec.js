@@ -12,7 +12,7 @@ describe('uploads', () => {
   let file;
   const uploadId = db.id();
 
-  beforeEach((done) => {
+  beforeEach(done => {
     file = {
       fieldname: 'file',
       originalname: 'gadgets-01.pdf',
@@ -21,13 +21,15 @@ describe('uploads', () => {
       destination: `${__dirname}/uploads/`,
       filename: 'f2082bf51b6ef839690485d7153e847a.pdf',
       path: `${__dirname}/uploads/f2082bf51b6ef839690485d7153e847a.pdf`,
-      size: 171411271
+      size: 171411271,
     };
 
-    db.clearAllAndLoad({ uploads: [{ _id: uploadId, filename: 'upload.filename' }] }).then(done).catch(catchErrors(done));
+    db.clearAllAndLoad({ uploads: [{ _id: uploadId, filename: 'upload.filename' }] })
+      .then(done)
+      .catch(catchErrors(done));
   });
 
-  afterAll((done) => {
+  afterAll(done => {
     db.disconnect().then(done);
   });
 
@@ -42,7 +44,7 @@ describe('uploads', () => {
         originalname: 'gadgets-01.pdf',
         mimetype: 'application/octet-stream',
         filename: 'f2082bf51b6ef839690485d7153e847a.pdf',
-        size: 171411271
+        size: 171411271,
       });
     });
   });

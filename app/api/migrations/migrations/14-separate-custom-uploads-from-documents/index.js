@@ -33,5 +33,5 @@ export default {
     }
 
     process.stdout.write('\r\n');
-  }
+  },
 };

@@ -9,7 +9,10 @@ export default {
 
   async up(db) {
     process.stdout.write(`${this.name}...\r\n`);
-    const templates = await db.collection('templates').find().toArray();
+    const templates = await db
+      .collection('templates')
+      .find()
+      .toArray();
     if (!templates.length) {
       templates.push({ name: 'Entity', default: true, properties: [] });
     }
@@ -20,11 +23,12 @@ export default {
         defaultTemplate = template;
       }
       delete template.isEntity;
-      await db.collection('templates').findOneAndUpdate({ _id: template._id }, template, { new: true, lean: true });
+      await db
+        .collection('templates')
+        .findOneAndUpdate({ _id: template._id }, template, { new: true, lean: true });
     }
-
 
     process.stdout.write('Added default template\r');
     process.stdout.write('\r\n');
-  }
+  },
 };

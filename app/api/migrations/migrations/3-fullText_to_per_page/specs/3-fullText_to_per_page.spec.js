@@ -21,7 +21,10 @@ describe('migration fullText_to_per_page', () => {
 
   it('should migrate properly', async () => {
     await migration.up(testingDB.mongodb);
-    const entities = await testingDB.mongodb.collection('entities').find().toArray();
+    const entities = await testingDB.mongodb
+      .collection('entities')
+      .find()
+      .toArray();
 
     const doc1 = entities.find(e => e.title === 'doc1');
     expect(doc1.fullText[1]).toMatch('This[[1]]');

@@ -9,10 +9,10 @@ describe('ResultsFiltersPanel', () => {
   beforeEach(() => {
     props = {
       open: true,
-      filtersValues: { threshold: 0.8 }
+      filtersValues: { threshold: 0.8 },
     };
 
-    component = shallow(<ResultsFiltersPanel {...props}/>);
+    component = shallow(<ResultsFiltersPanel {...props} />);
   });
 
   describe('render', () => {

@@ -1,10 +1,10 @@
-export default function (links) {
+export default function(links) {
   const validator = {
-    '': {}
+    '': {},
   };
 
   links.forEach((_link, index) => {
-    validator[''][`links.${index}.title.required`] = (form) => {
+    validator[''][`links.${index}.title.required`] = form => {
       if (!form.links[index]) {
         return true;
       }

@@ -27,11 +27,15 @@ describe('LibraryFilters', () => {
       const store = {
         library: {
           filters: Immutable.fromJS({ properties: 'filters state', documentTypes: ['Decision'] }),
-          ui: Immutable.fromJS({ searchTerm: 'Zerg Rush', filtersPanel: true, selectedDocuments: [] }),
+          ui: Immutable.fromJS({
+            searchTerm: 'Zerg Rush',
+            filtersPanel: true,
+            selectedDocuments: [],
+          }),
           aggregations: Immutable.fromJS({ types: { buckets: [] } }),
-          settings: Immutable.fromJS({ collection: { filters: [] } })
+          settings: Immutable.fromJS({ collection: { filters: [] } }),
         },
-        templates: Immutable.fromJS([])
+        templates: Immutable.fromJS([]),
       };
 
       const state = mapStateToProps(store, { storeKey: 'library' });
