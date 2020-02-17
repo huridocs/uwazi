@@ -91,7 +91,8 @@ export class DocumentSidePanel extends Component {
 
     const { attachments, documents } = doc.toJS();
 
-    const isEntity = !this.props.doc.get('file');
+    const isEntity = !documents || !documents.length;
+    console.log(this.props.doc.toJS());
 
     let { tab } = this.props;
     if (isEntity && (tab === 'references' || tab === 'toc')) {
