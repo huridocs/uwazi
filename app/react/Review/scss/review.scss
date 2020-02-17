@@ -75,12 +75,21 @@ $header-height: 44px;
     }
 
     .btn-toggle-on {
+      background-color: #ccc;
+      &:focus {
+        background-color: #ccc;
+      }
       &:hover {
         border-color: #ccc;
       }
+      svg {
+        color: darkgreen;
+      }
     }
     .btn-toggle-off {
-      @extend .btn-toggle-on;
+      svg {
+        color: grey;
+      }
     }
   }
 

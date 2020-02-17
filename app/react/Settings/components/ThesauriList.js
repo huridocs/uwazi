@@ -57,6 +57,15 @@ export class ThesauriList extends Component {
         <I18NLink
           to={`/settings/dictionaries/edit/${thesaurus._id}`}
           className="btn btn-default btn-xs"
+          confirmTitle={
+            thesaurus.enable_classification ? 'Confirm edit suggestion-enabled Thesaurus' : ''
+          }
+          confirmMessage={
+            thesaurus.enable_classification
+              ? 'Uwazi suggests labels based on the current content of the document collection and its metadata. ' +
+                'Editing this thesaurus, the content of the documents or other metadata can affect Uwazi’s understanding of what to suggest.'
+              : ''
+          }
         >
           <Icon icon="pencil-alt" />
           &nbsp;
