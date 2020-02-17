@@ -20,32 +20,6 @@ export type OneUpEntityButtonsProps = typeof defaultProps;
 export class OneUpEntityButtonsBase extends Component<OneUpEntityButtonsProps> {
   static defaultProps = defaultProps;
 
-  render() {
-    const { isPristine } = this.props;
-    const btnClass = isPristine ? 'btn btn-default btn-disabled' : 'btn btn-default';
-    return (
-      <div className="content-footer">
-        <button
-          type="button"
-          onClick={() => this.props.switchOneUpEntity(0, false)}
-          className={`cancel-edit-metadata ${!isPristine ? 'btn-danger' : ''} ${btnClass}`}
-        >
-          <Icon icon="undo" />
-          <span className="btn-label">{t('System', 'Discard changes')}</span>
-        </button>
-        <button
-          type="button"
-          onClick={() => this.props.switchOneUpEntity(0, true)}
-          className={`save-metadata ${btnClass}`}
-        >
-          <Icon icon="save" />
-          <span className="btn-label">{t('System', 'Save document')}</span>
-        </button>
-        {this.renderNextButton(isPristine, btnClass)}
-      </div>
-    );
-  }
-
   renderNextButton(isPristine: boolean, btnClass: string) {
     let retVal;
 
@@ -74,6 +48,32 @@ export class OneUpEntityButtonsBase extends Component<OneUpEntityButtonsProps> {
     }
 
     return retVal;
+  }
+
+  render() {
+    const { isPristine } = this.props;
+    const btnClass = isPristine ? 'btn btn-default btn-disabled' : 'btn btn-default';
+    return (
+      <div className="content-footer">
+        <button
+          type="button"
+          onClick={() => this.props.switchOneUpEntity(0, false)}
+          className={`cancel-edit-metadata ${!isPristine ? 'btn-danger' : ''} ${btnClass}`}
+        >
+          <Icon icon="undo" />
+          <span className="btn-label">{t('System', 'Discard changes')}</span>
+        </button>
+        <button
+          type="button"
+          onClick={() => this.props.switchOneUpEntity(0, true)}
+          className={`save-metadata ${btnClass}`}
+        >
+          <Icon icon="save" />
+          <span className="btn-label">{t('System', 'Save document')}</span>
+        </button>
+        {this.renderNextButton(isPristine, btnClass)}
+      </div>
+    );
   }
 }
 

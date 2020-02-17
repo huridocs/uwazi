@@ -38,7 +38,7 @@ describe('EntityViewer', () => {
       ]),
       relationships: Immutable.fromJS([]),
       tab: 'info',
-      oneUpState: {reviewThesaurusValues: ['foo']} as OneUpState,
+      oneUpState: { reviewThesaurusValues: ['foo'] } as OneUpState,
       deleteConnection: jasmine.createSpy('deleteConnection'),
       connectionsChanged: jasmine.createSpy('connectionsChanged'),
       toggleOneUpFullEdit: jasmine.createSpy('toggleOneUpFullEdit'),
