@@ -10,7 +10,11 @@ indexConfig.index = indexConfig[index];
 
 export default () =>
   new Promise((resolve, reject) => {
-    mongoose.connect(dbConfig[index]);
+    mongoose.connect(dbConfig[index], {
+      useUnifiedTopology: true,
+      useNewUrlParser: true,
+      useCreateIndex: true,
+    });
     const db = mongoose.connection;
     db.on('error', reject);
     db.once('open', () => {
