@@ -13,7 +13,7 @@ describe('Thumbnail', () => {
   });
 
   const render = () => {
-    component = shallow(<Thumbnail {...props}/>);
+    component = shallow(<Thumbnail {...props} />);
   };
 
   it('should render an image when file has image extension', () => {

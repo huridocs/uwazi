@@ -66,14 +66,15 @@ export class DragAndDropContainer extends Component {
             <div className="no-properties">
               <div className="no-properties-wrap">Drag items here</div>
             </div>
-          </ul>)}
+          </ul>
+        )}
       </div>
     );
   }
 }
 
 DragAndDropContainer.defaultProps = {
-  iconHandle: false
+  iconHandle: false,
 };
 
 DragAndDropContainer.propTypes = {
@@ -83,7 +84,7 @@ DragAndDropContainer.propTypes = {
   renderItem: PropTypes.func,
   connectDropTarget: PropTypes.func,
   onChange: PropTypes.func,
-  iconHandle: PropTypes.bool
+  iconHandle: PropTypes.bool,
 };
 
 export const containerTarget = {
@@ -100,11 +101,11 @@ export const containerTarget = {
       }
       return { id: component.state.id };
     }
-  }
+  },
 };
 
 const dragAndDropContainer = DropTarget('DRAG_AND_DROP_ITEM', containerTarget, connect => ({
-  connectDropTarget: connect.dropTarget()
+  connectDropTarget: connect.dropTarget(),
 }))(DragAndDropContainer);
 
 export default DragDropContext(HTML5Backend)(dragAndDropContainer);

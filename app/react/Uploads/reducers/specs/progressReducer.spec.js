@@ -17,7 +17,10 @@ describe('uploadsReducer', () => {
   describe('NEW_UPLOAD_DOCUMENT', () => {
     it('should set the progress for the document to 0', () => {
       const currentState = Immutable.fromJS({ doc1: 45 });
-      const newState = progressReducer(currentState, { type: types.NEW_UPLOAD_DOCUMENT, doc: 'doc2' });
+      const newState = progressReducer(currentState, {
+        type: types.NEW_UPLOAD_DOCUMENT,
+        doc: 'doc2',
+      });
       expect(newState).toEqualImmutable(Immutable.fromJS({ doc1: 45, doc2: 0 }));
     });
   });
@@ -25,7 +28,11 @@ describe('uploadsReducer', () => {
   describe('UPLOAD_PROGRESS', () => {
     it('should set the progress for a document', () => {
       const currentState = Immutable.fromJS({ doc1: 45 });
-      const newState = progressReducer(currentState, { type: types.UPLOAD_PROGRESS, doc: 'doc2', progress: 36 });
+      const newState = progressReducer(currentState, {
+        type: types.UPLOAD_PROGRESS,
+        doc: 'doc2',
+        progress: 36,
+      });
       expect(newState).toEqualImmutable(Immutable.fromJS({ doc1: 45, doc2: 36 }));
     });
   });

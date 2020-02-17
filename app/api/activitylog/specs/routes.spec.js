@@ -22,12 +22,15 @@ describe('Activitylog routes', () => {
 
       const response = await routes.get('/api/activitylog', req);
 
-      expect(activitylog.get).toHaveBeenCalledWith({ method: { action: 'POST' }, time: { from: 1234 } });
+      expect(activitylog.get).toHaveBeenCalledWith({
+        method: { action: 'POST' },
+        time: { from: 1234 },
+      });
       expect(response).toBe('activitylogs');
     });
 
     it('should not attempt to parse undefined method and time', async () => {
-      const req = { query: { } };
+      const req = { query: {} };
       await routes.get('/api/activitylog', req);
       expect(activitylog.get).toHaveBeenCalledWith({ method: undefined, time: undefined });
     });

@@ -8,41 +8,34 @@ export default {
 
   countByTemplate(requestParams) {
     const url = 'documents/count_by_template';
-    return api.get(url, requestParams)
-    .then(response => response.json);
+    return api.get(url, requestParams).then(response => response.json);
   },
 
   uploads() {
     const url = 'documents/uploads';
-    return api.get(url)
-    .then(response => response.json.rows);
+    return api.get(url).then(response => response.json.rows);
   },
 
   search(requestParams) {
     const url = 'documents/search';
-    return api.get(url, requestParams)
-    .then(response => response.json);
+    return api.get(url, requestParams).then(response => response.json);
   },
 
   getSuggestions(requestParams) {
     const url = 'documents/match_title';
-    return api.get(url, requestParams)
-    .then(response => response.json);
+    return api.get(url, requestParams).then(response => response.json);
   },
 
   list(requestParams) {
     const url = 'documents/list';
-    return api.get(url, requestParams)
-    .then(response => response.json.rows);
+    return api.get(url, requestParams).then(response => response.json.rows);
   },
 
   save(requestParams) {
-    return api.post('documents', requestParams)
-    .then(response => response.json);
+    return api.post('documents', requestParams).then(response => response.json);
   },
 
   delete(requestParams) {
-    return api.delete('documents', requestParams)
-    .then(response => response.json);
-  }
+    return api.delete('documents', requestParams).then(response => response.json);
+  },
 };

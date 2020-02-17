@@ -9,9 +9,7 @@ import UsersList from './components/UsersList';
 export class Users extends RouteHandler {
   static async requestState(requestParams) {
     const users = await UsersAPI.get(requestParams);
-    return [
-      actions.set('users', users),
-    ];
+    return [actions.set('users', users)];
   }
 
   render() {

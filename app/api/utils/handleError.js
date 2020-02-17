@@ -42,9 +42,14 @@ const prettifyError = (error, { req = {}, uncaught = false } = {}) => {
     req.body.username = '########';
   }
 
-  const errorMessage = (req.originalUrl ? `\nurl: ${req.originalUrl}` : '') +
-    (req.body && Object.keys(req.body).length ? `\nbody: ${JSON.stringify(req.body, null, ' ')}` : '') +
-    (req.query && Object.keys(req.query).length ? `\nquery: ${JSON.stringify(req.query, null, ' ')}` : '') +
+  const errorMessage =
+    (req.originalUrl ? `\nurl: ${req.originalUrl}` : '') +
+    (req.body && Object.keys(req.body).length
+      ? `\nbody: ${JSON.stringify(req.body, null, ' ')}`
+      : '') +
+    (req.query && Object.keys(req.query).length
+      ? `\nquery: ${JSON.stringify(req.query, null, ' ')}`
+      : '') +
     `\n${result.message || JSON.stringify(error.json)}`;
 
   result.prettyMessage = errorMessage;

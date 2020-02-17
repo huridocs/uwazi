@@ -19,11 +19,15 @@ export class RelationTypeForm extends Component {
     return {
       name: {
         required: val => val && val.trim() !== '',
-        duplicated: (val) => {
+        duplicated: val => {
           const name = val || '';
-          return !relationTypes.find(relationType => relationType._id !== id && relationType.name.trim().toLowerCase() === name.trim().toLowerCase());
-        }
-      }
+          return !relationTypes.find(
+            relationType =>
+              relationType._id !== id &&
+              relationType.name.trim().toLowerCase() === name.trim().toLowerCase()
+          );
+        },
+      },
     };
   }
 
@@ -39,16 +43,25 @@ export class RelationTypeForm extends Component {
             <div className="panel-heading">
               <FormGroup {...this.props.state.name} submitFailed={this.props.state.submitFailed}>
                 <Field model=".name">
-                  <input id="relationTypeName" className="form-control" type="text" placeholder="Connection name"/>
+                  <input
+                    id="relationTypeName"
+                    className="form-control"
+                    type="text"
+                    placeholder="Connection name"
+                  />
                   {(() => {
-                        if (this.props.state.dirty && this.props.state.fields.name && this.props.state.fields.name.errors.duplicated) {
-                          return (
-                            <div className="validation-error">
-                              <Icon icon="exclamation-triangle" /> Duplicated name
-                            </div>
-);
-                        }
-                      })()}
+                    if (
+                      this.props.state.dirty &&
+                      this.props.state.fields.name &&
+                      this.props.state.fields.name.errors.duplicated
+                    ) {
+                      return (
+                        <div className="validation-error">
+                          <Icon icon="exclamation-triangle" /> Duplicated name
+                        </div>
+                      );
+                    }
+                  })()}
                 </Field>
               </FormGroup>
             </div>
@@ -56,7 +69,7 @@ export class RelationTypeForm extends Component {
             <div className="settings-footer">
               <BackButton to="/settings/connections" />
               <button type="submit" className="btn btn-success save-template">
-                <Icon icon="save"/>
+                <Icon icon="save" />
                 <span className="btn-label">Save</span>
               </button>
             </div>
@@ -74,19 +87,27 @@ RelationTypeForm.propTypes = {
   resetRelationType: PropTypes.func,
   resetForm: PropTypes.func,
   setInitial: PropTypes.func,
-  state: PropTypes.object
+  state: PropTypes.object,
 };
 
 export function mapStateToProps(state) {
   return {
     relationType: state.relationType,
     relationTypes: state.relationTypes,
-    state: state.relationTypeForm
+    state: state.relationTypeForm,
   };
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({ saveRelationType, resetRelationType, resetForm: formActions.reset, setInitial: formActions.setInitial }, dispatch);
+  return bindActionCreators(
+    {
+      saveRelationType,
+      resetRelationType,
+      resetForm: formActions.reset,
+      setInitial: formActions.setInitial,
+    },
+    dispatch
+  );
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(RelationTypeForm);

@@ -11,5 +11,5 @@ export default {
   attachments,
   customUploads,
   uploadedDocuments,
-  publicAssets
+  publicAssets,
 };

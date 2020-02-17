@@ -19,14 +19,14 @@ export class CollectionSettings extends Component {
   static dateFormatSeparatorOptions() {
     return [
       { label: '/', value: '/' },
-      { label: '-', value: '-' }
+      { label: '-', value: '-' },
     ];
   }
 
   static landingPageOptions() {
     return [
       { label: 'Library', value: false },
-      { label: 'Custom Page', value: true }
+      { label: 'Custom Page', value: true },
     ];
   }
 
@@ -34,7 +34,7 @@ export class CollectionSettings extends Component {
     return [
       { label: 'Year, Month, Day', value: 0, separator },
       { label: 'Day, Month, Year', value: 1, separator },
-      { label: 'Month, Day, Year', value: 2, separator }
+      { label: 'Month, Day, Year', value: 2, separator },
     ];
   }
 
@@ -42,7 +42,7 @@ export class CollectionSettings extends Component {
     const formatOptions = [
       `YYYY${separator}MM${separator}DD`,
       `DD${separator}MM${separator}YYYY`,
-      `MM${separator}DD${separator}YYYY`
+      `MM${separator}DD${separator}YYYY`,
     ];
 
     return formatOptions.indexOf(format);
@@ -52,7 +52,7 @@ export class CollectionSettings extends Component {
     const formatOptions = [
       `YYYY${separator}MM${separator}DD`,
       `DD${separator}MM${separator}YYYY`,
-      `MM${separator}DD${separator}YYYY`
+      `MM${separator}DD${separator}YYYY`,
     ];
 
     return formatOptions[value];
@@ -60,17 +60,29 @@ export class CollectionSettings extends Component {
 
   static renderDateFormatLabel(option) {
     const { separator, label, value } = option;
-    return <span>{label} <code>{moment().format(CollectionSettings.getDateFormat(value, separator))}</code></span>;
+    return (
+      <span>
+        {label} <code>{moment().format(CollectionSettings.getDateFormat(value, separator))}</code>
+      </span>
+    );
   }
 
   constructor(props, context) {
     super(props, context);
     const { settings } = this.props;
-    const dateSeparator = props.settings.dateFormat && props.settings.dateFormat.includes('/') ? '/' : '-';
+    const dateSeparator =
+      props.settings.dateFormat && props.settings.dateFormat.includes('/') ? '/' : '-';
     const dateFormat = CollectionSettings.getDateFormatValue(settings.dateFormat, dateSeparator);
     const customLandingpage = Boolean(props.settings.home_page);
-    const allowedPublicTemplatesString = settings.allowedPublicTemplates ? settings.allowedPublicTemplates.join(',') : '';
-    this.state = Object.assign({}, settings, { dateSeparator, customLandingpage, dateFormat, allowedPublicTemplatesString });
+    const allowedPublicTemplatesString = settings.allowedPublicTemplates
+      ? settings.allowedPublicTemplates.join(',')
+      : '';
+    this.state = Object.assign({}, settings, {
+      dateSeparator,
+      customLandingpage,
+      dateFormat,
+      allowedPublicTemplatesString,
+    });
     this.updateSettings = this.updateSettings.bind(this);
   }
 
@@ -86,10 +98,11 @@ export class CollectionSettings extends Component {
       settings.home_page = '';
     }
 
-    settings.allowedPublicTemplates = values.allowedPublicTemplatesString ? values.allowedPublicTemplatesString.split(',') : [];
+    settings.allowedPublicTemplates = values.allowedPublicTemplatesString
+      ? values.allowedPublicTemplatesString.split(',')
+      : [];
 
-    SettingsAPI.save(new RequestParams(settings))
-    .then((result) => {
+    SettingsAPI.save(new RequestParams(settings)).then(result => {
       const { notify, setSettings } = this.props;
       notify(t('System', 'Settings updated', null, false), 'success');
       setSettings(result);
@@ -103,16 +116,23 @@ export class CollectionSettings extends Component {
       <div className="panel panel-default">
         <div className="panel-heading">{t('System', 'Collection')}</div>
         <div className="panel-body">
-          <LocalForm id="collectionSettingsForm" onSubmit={this.updateSettings} initialState={this.state} onChange={values => this.setState(values)}>
+          <LocalForm
+            id="collectionSettingsForm"
+            onSubmit={this.updateSettings}
+            initialState={this.state}
+            onChange={values => this.setState(values)}
+          >
             <div className="form-group">
-              <label className="form-group-label" htmlFor="collection_name">{t('System', 'Name')}</label>
-              <Control.text id="collection_name" model=".site_name" className="form-control"/>
+              <label className="form-group-label" htmlFor="collection_name">
+                {t('System', 'Name')}
+              </label>
+              <Control.text id="collection_name" model=".site_name" className="form-control" />
             </div>
             <div className="form-group">
               <span className="form-group-label">{t('System', 'Private instance')}</span>
               <div className="checkbox">
                 <label>
-                  <Control.checkbox id="collection_name" model=".private"/>
+                  <Control.checkbox id="collection_name" model=".private" />
                   {t('System', 'check as private instance')}
                 </label>
               </div>
@@ -152,7 +172,9 @@ export class CollectionSettings extends Component {
             <div className="alert alert-info">
               <Icon icon="home" size="2x" />
               <div className="force-ltr">
-                The landing page is the first thing users will see when visiting your Uwazi instance.<br />
+                The landing page is the first thing users will see when visiting your Uwazi
+                instance.
+                <br />
                 You can use any URL from your Uwazi instance as a landing page, examples:
                 <ul>
                   <li>A page: /page/dicxg0oagy3xgr7ixef80k9</li>
@@ -160,56 +182,60 @@ export class CollectionSettings extends Component {
                   <li>An entity: /entity/9htbkgpkyy7j5rk9</li>
                   <li>A document: /document/4y9i99fadjp833di</li>
                 </ul>
-                Always use URLs relative to your site, starting with / and skipping the https://yoursite.com/.
+                Always use URLs relative to your site, starting with / and skipping the
+                https://yoursite.com/.
               </div>
             </div>
             <div className="form-group">
-              <label className="form-group-label" htmlFor="analyticsTrackingId">{t('System', 'Google Analytics ID')}</label>
-              <Control.text
-                model=".analyticsTrackingId"
-                className="form-control"
-              />
+              <label className="form-group-label" htmlFor="analyticsTrackingId">
+                {t('System', 'Google Analytics ID')}
+              </label>
+              <Control.text model=".analyticsTrackingId" className="form-control" />
             </div>
             <div className="form-group">
-              <label className="form-group-label" htmlFor="matomoConfig">{t('System', 'Matomo configuration')}</label>
-              <Control.textarea
-                model=".matomoConfig"
-                className="form-control"
-                rows="5"
-              />
+              <label className="form-group-label" htmlFor="matomoConfig">
+                {t('System', 'Matomo configuration')}
+              </label>
+              <Control.textarea model=".matomoConfig" className="form-control" rows="5" />
             </div>
             <div className="alert alert-info">
               <Icon icon="question-circle" size="2x" />
               <div className="force-ltr">
-                {'This is a JSON configuration object like {"url": "matomo.server.url", "id": "site_id"}.'}
+                {
+                  'This is a JSON configuration object like {"url": "matomo.server.url", "id": "site_id"}.'
+                }
               </div>
             </div>
             <div className="form-group">
-              <label className="form-group-label" htmlFor="collectionMailerConfig">{t('System', 'Mailer configuration')}</label>
-              <Control.textarea
-                model=".mailerConfig"
-                className="form-control"
-                rows="5"
-              />
+              <label className="form-group-label" htmlFor="collectionMailerConfig">
+                {t('System', 'Mailer configuration')}
+              </label>
+              <Control.textarea model=".mailerConfig" className="form-control" rows="5" />
             </div>
             <div className="alert alert-info">
               <Icon icon="envelope" size="2x" />
               <div className="force-ltr">
-                This is a JSON configuration object that should match the options values required by Nodemailer,
-                as explained in <a href="https://nodemailer.com/smtp/" target="_blank" rel="noopener noreferrer">nodemailer.com/smtp/</a><br />
-                This setting takes precedence over all other mailer configuration.<br />
+                This is a JSON configuration object that should match the options values required by
+                Nodemailer, as explained in{' '}
+                <a href="https://nodemailer.com/smtp/" target="_blank" rel="noopener noreferrer">
+                  nodemailer.com/smtp/
+                </a>
+                <br />
+                This setting takes precedence over all other mailer configuration.
+                <br />
                 If left blank, then the configuration file in /api/config/mailer.js will be used.
               </div>
             </div>
             <div className="form-group">
-              <label className="form-group-label" htmlFor="collectionContactEmail">{t('System', 'Contact email')}</label>
-              <Control.text
-                model=".contactEmail"
-                className="form-control"
-              />
+              <label className="form-group-label" htmlFor="collectionContactEmail">
+                {t('System', 'Contact email')}
+              </label>
+              <Control.text model=".contactEmail" className="form-control" />
             </div>
             <div className="form-group">
-              <label className="form-group-label" htmlFor="collectionPublicFormDestination">{t('System', 'Public Form destination')}</label>
+              <label className="form-group-label" htmlFor="collectionPublicFormDestination">
+                {t('System', 'Public Form destination')}
+              </label>
               <Control.text
                 id="collectionPublicFormDestination"
                 model=".publicFormDestination"
@@ -218,11 +244,14 @@ export class CollectionSettings extends Component {
             </div>
             <div className="alert alert-info">
               <div className="force-ltr">
-                You can configure the URL of a different Uwazi to receive the submits from your Public Form
+                You can configure the URL of a different Uwazi to receive the submits from your
+                Public Form
               </div>
             </div>
             <div className="form-group">
-              <label className="form-group-label" htmlFor="collectionAllowedPublicTemplates">{t('System', 'Allowed Public Templates')}</label>
+              <label className="form-group-label" htmlFor="collectionAllowedPublicTemplates">
+                {t('System', 'Allowed Public Templates')}
+              </label>
               <Control.text
                 id="collectionAllowedPublicTemplates"
                 model=".allowedPublicTemplatesString"
@@ -231,19 +260,20 @@ export class CollectionSettings extends Component {
             </div>
             <div className="alert alert-info">
               <div className="force-ltr">
-                If you wish to include Public Forms on your pages, you must white-list the template IDs for which Public Forms are expected.
-                Please include a comma-separated list of tempate IDs without spaces. For example:<br/ >
+                If you wish to include Public Forms on your pages, you must white-list the template
+                IDs for which Public Forms are expected. Please include a comma-separated list of
+                tempate IDs without spaces. For example:
+                <br />
                 5d5b0698e28d130bc98efc8b,5d5d876aa77a121bf9cdd1ff
               </div>
             </div>
-            <span className="form-group-label" >{t('System', 'Show Cookie policy')}</span>
+            <span className="form-group-label">{t('System', 'Show Cookie policy')}</span>
             <div className="checkbox">
               <label>
-                <Control.checkbox
-                  model=".cookiepolicy"
-                  type="checkbox"
-                />
-                <Translate>This option will show a notification about the use of cookies in your instance.</Translate>
+                <Control.checkbox model=".cookiepolicy" type="checkbox" />
+                <Translate>
+                  This option will show a notification about the use of cookies in your instance.
+                </Translate>
               </label>
             </div>
           </LocalForm>
@@ -280,7 +310,7 @@ export class CollectionSettings extends Component {
 CollectionSettings.propTypes = {
   settings: PropTypes.object.isRequired,
   setSettings: PropTypes.func.isRequired,
-  notify: PropTypes.func.isRequired
+  notify: PropTypes.func.isRequired,
 };
 
 export function mapStateToProps(state) {
@@ -288,7 +318,13 @@ export function mapStateToProps(state) {
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({ setSettings: actions.set.bind(null, 'settings/collection'), notify: notificationActions.notify }, dispatch);
+  return bindActionCreators(
+    {
+      setSettings: actions.set.bind(null, 'settings/collection'),
+      notify: notificationActions.notify,
+    },
+    dispatch
+  );
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(CollectionSettings);

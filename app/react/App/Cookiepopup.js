@@ -23,13 +23,15 @@ export class Cookiepopup extends Component {
     const { cookiepolicy } = this.props;
     const { cookieExists } = this.state;
     if (!cookiepolicy || cookieExists) {
-      return (<div className="alert-wrapper" />);
+      return <div className="alert-wrapper" />;
     }
 
-    const message = (<Translate>To bring you a better experience, this site uses cookies.</Translate>);
+    const message = (
+      <Translate>To bring you a better experience, this site uses cookies.</Translate>
+    );
     return (
       <div className="alert-wrapper">
-        <Notification id="cookiepolicy" removeNotification={this.close} message={message}/>
+        <Notification id="cookiepolicy" removeNotification={this.close} message={message} />
       </div>
     );
   }
@@ -40,7 +42,7 @@ Cookiepopup.propTypes = {
 };
 
 const mapStateToProps = state => ({
-    cookiepolicy: Boolean(state.settings.collection.get('cookiepolicy'))
+  cookiepolicy: Boolean(state.settings.collection.get('cookiepolicy')),
 });
 
 export default connect(mapStateToProps)(Cookiepopup);

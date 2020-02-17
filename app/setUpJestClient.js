@@ -5,7 +5,7 @@ const Adapter = require('enzyme-adapter-react-16');
 configure({ adapter: new Adapter() });
 
 const error = console.error.bind(console);
-console.error = function (message) {
+console.error = function(message) {
   if (message.match('/api/i18n/systemKeys')) {
     return;
   }
@@ -32,6 +32,6 @@ jasmine.createSpyObj = (name, methodNames) => {
 const clock = {
   install: jest.useFakeTimers,
   uninstall: jest.clearAllTimers,
-  tick: jest.advanceTimersByTime
+  tick: jest.advanceTimersByTime,
 };
 jasmine.clock = () => clock;

@@ -22,8 +22,12 @@ function renderAditionalText(doc) {
   return (
     <div className="item-metadata">
       <div className="metadata-type-text">
-        <div><Translate>Sentences above threshold</Translate></div>
-        <div>{aboveThreshold} out of {resultsSize} ({percentage.toFixed(2)}%)</div>
+        <div>
+          <Translate>Sentences above threshold</Translate>
+        </div>
+        <div>
+          {aboveThreshold} out of {resultsSize} ({percentage.toFixed(2)}%)
+        </div>
       </div>
     </div>
   );
@@ -40,17 +44,21 @@ export class SemanticSearchResults extends Component {
 
   shouldComponentUpdate(nextProps) {
     const { items, filters, isEmpty, searchTerm } = this.props;
-    return (!Immutable.is(nextProps.items, items)) ||
-    Boolean(nextProps.filters.threshold !== filters.threshold) ||
-    Boolean(nextProps.filters.minRelevantSentences !== filters.minRelevantSentences) ||
-    Boolean(nextProps.isEmpty !== isEmpty) ||
-    Boolean(nextProps.searchTerm !== searchTerm);
+    return (
+      !Immutable.is(nextProps.items, items) ||
+      Boolean(nextProps.filters.threshold !== filters.threshold) ||
+      Boolean(nextProps.filters.minRelevantSentences !== filters.minRelevantSentences) ||
+      Boolean(nextProps.isEmpty !== isEmpty) ||
+      Boolean(nextProps.searchTerm !== searchTerm)
+    );
   }
 
   componentDidUpdate(prevProps) {
     const { filters, searchId } = this.props;
-    if (filters.minRelevantSentences !== prevProps.filters.minRelevantSentences ||
-      filters.threshold !== prevProps.filters.threshold) {
+    if (
+      filters.minRelevantSentences !== prevProps.filters.minRelevantSentences ||
+      filters.threshold !== prevProps.filters.threshold
+    ) {
       this.props.getSearch(searchId, filters);
     }
   }
@@ -78,32 +86,34 @@ export class SemanticSearchResults extends Component {
     const { items, isEmpty, searchTerm, totalCount, query, searchId } = this.props;
     return (
       <div className="row panels-layout">
-        { isEmpty && (
+        {isEmpty && (
           <React.Fragment>
             <p>Search not found</p>
             <Helmet title="Semantic search not found" />
           </React.Fragment>
         )}
-        { !isEmpty && (
+        {!isEmpty && (
           <React.Fragment>
             <Helmet title={`${searchTerm} - Semantic search results`} />
             <main className="semantic-search-results-viewer document-viewer with-panel">
               <div>
                 <h3>
-                  <Translate>Semantic search</Translate>: <SearchDescription searchTerm={searchTerm} query={query}/>
+                  <Translate>Semantic search</Translate>:{' '}
+                  <SearchDescription searchTerm={searchTerm} query={query} />
                 </h3>
                 <button
                   type="button"
                   onClick={this.multiEdit}
                   className="btn btn-success edit-semantic-search"
                 >
-                  <Icon icon="pencil-alt"/>&nbsp;
+                  <Icon icon="pencil-alt" />
+                  &nbsp;
                   <Translate>Edit all documents matching this criteria</Translate>
                 </button>
               </div>
               <div className="documents-counter">
                 <span className="documents-counter-label">
-                  <b>{ totalCount }</b> <Translate>documents</Translate>
+                  <b>{totalCount}</b> <Translate>documents</Translate>
                 </span>
               </div>
               <RowList>
@@ -114,20 +124,27 @@ export class SemanticSearchResults extends Component {
                     onClick={this.onClick}
                     additionalText={renderAditionalText(doc)}
                   />
-                  ))}
+                ))}
               </RowList>
               <p className="col-sm-12 text-center documents-counter">
                 <b> {items.size} </b> <Translate>of</Translate>
                 <b> {totalCount} </b> <Translate>documents</Translate>
               </p>
               <div className="col-sm-12 text-center documents-counter">
-                <button onClick={this.onLoadMoreClick} type="button" className="btn btn-default btn-load-more">
+                <button
+                  onClick={this.onLoadMoreClick}
+                  type="button"
+                  className="btn btn-default btn-load-more"
+                >
                   30 <Translate>x more</Translate>
                 </button>
               </div>
             </main>
             <ResultsSidePanel />
-            <SemanticSearchMultieditPanel searchId={searchId} formKey="semanticSearch.multipleEdit"/>
+            <SemanticSearchMultieditPanel
+              searchId={searchId}
+              formKey="semanticSearch.multipleEdit"
+            />
           </React.Fragment>
         )}
       </div>
@@ -142,7 +159,6 @@ SemanticSearchResults.defaultProps = {
   searchId: '',
 };
 
-
 SemanticSearchResults.propTypes = {
   searchId: PropTypes.string,
   totalCount: PropTypes.number.isRequired,
@@ -156,14 +172,14 @@ SemanticSearchResults.propTypes = {
   getMoreSearchResults: PropTypes.func.isRequired,
   filters: PropTypes.shape({
     minRelevantSentences: PropTypes.number,
-    threshold: PropTypes.number
+    threshold: PropTypes.number,
   }).isRequired,
   query: PropTypes.shape({
-    searchTerm: PropTypes.string
-  })
+    searchTerm: PropTypes.string,
+  }),
 };
 
-export const mapStateToProps = (state) => {
+export const mapStateToProps = state => {
   const { search } = state.semanticSearch;
   const searchTerm = search.get('searchTerm');
   const items = search.get('results');
@@ -178,7 +194,7 @@ export const mapStateToProps = (state) => {
     searchTerm,
     filters,
     items,
-    isEmpty
+    isEmpty,
   };
 };
 

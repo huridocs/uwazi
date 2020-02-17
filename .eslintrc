@@ -11,7 +11,7 @@
   "plugins": ["react", "jasmine", "@typescript-eslint", "prettier"],
 
   "rules": {
-    "prettier/prettier": ["error", { "requirePragma": true }],
+    "prettier/prettier": ["error", { "requirePragma": false }],
     "indent": "off", // handled by prettier
     "operator-linebreak": "off", // handled by prettier
     "space-before-function-paren": "off", // handled by prettier

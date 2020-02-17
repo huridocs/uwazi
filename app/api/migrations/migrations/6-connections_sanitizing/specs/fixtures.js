@@ -16,23 +16,25 @@ const shared6 = db.id().toString();
 const shared7 = db.id().toString();
 
 export default {
-  settings: [{
-    languages: [
-      {
-        key: 'es',
-        label: 'Español',
-        default: true
-      },
-      {
-        key: 'en',
-        label: 'English',
-      },
-      {
-        key: 'pt',
-        label: 'Português',
-      }
-    ]
-  }],
+  settings: [
+    {
+      languages: [
+        {
+          key: 'es',
+          label: 'Español',
+          default: true,
+        },
+        {
+          key: 'en',
+          label: 'English',
+        },
+        {
+          key: 'pt',
+          label: 'Português',
+        },
+      ],
+    },
+  ],
   connections: [
     // Good connections
     {
@@ -178,14 +180,4 @@ export default {
   ],
 };
 
-export {
-  hub1,
-  hub2,
-  hub3,
-  shared1,
-  shared2,
-  shared3,
-  shared4,
-  shared5,
-  shared6,
-};
+export { hub1, hub2, hub3, shared1, shared2, shared3, shared4, shared5, shared6 };

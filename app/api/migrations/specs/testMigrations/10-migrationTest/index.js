@@ -3,8 +3,8 @@ export default {
   description: 'migration test 10',
 
   up() {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       setTimeout(resolve, 10);
     });
-  }
+  },
 };

@@ -21,7 +21,6 @@ import SearchText from './SearchText';
 import ShowToc from './ShowToc';
 import SnippetsTab from './SnippetsTab';
 
-
 export class DocumentSidePanel extends Component {
   constructor(props) {
     super(props);
@@ -30,7 +29,11 @@ export class DocumentSidePanel extends Component {
   }
 
   componentWillReceiveProps(newProps) {
-    if (newProps.doc.get('_id') && newProps.doc.get('_id') !== this.props.doc.get('_id') && this.props.getDocumentReferences) {
+    if (
+      newProps.doc.get('_id') &&
+      newProps.doc.get('_id') !== this.props.doc.get('_id') &&
+      this.props.getDocumentReferences
+    ) {
       this.props.getDocumentReferences(newProps.doc.get('sharedId'), this.props.storeKey);
     }
   }
@@ -38,8 +41,7 @@ export class DocumentSidePanel extends Component {
   deleteDocument() {
     this.context.confirm({
       accept: () => {
-        this.props.deleteDocument(this.props.doc.toJS())
-        .then(() => {
+        this.props.deleteDocument(this.props.doc.toJS()).then(() => {
           const currentPath = browserHistory.getCurrentLocation().pathname;
           const isLibraryorUploads = /library|uploads|^\/$|^\/..\/$/;
           if (!currentPath.match(isLibraryorUploads)) {
@@ -48,7 +50,7 @@ export class DocumentSidePanel extends Component {
         });
       },
       title: 'Confirm',
-      message: 'Are you sure you want to delete this item?'
+      message: 'Are you sure you want to delete this item?',
     });
   }
 
@@ -64,7 +66,7 @@ export class DocumentSidePanel extends Component {
           this.props.closePanel();
         },
         title: 'Confirm',
-        message: 'All changes will be lost, are you sure you want to proceed?'
+        message: 'All changes will be lost, are you sure you want to proceed?',
       });
       return;
     }
@@ -73,8 +75,18 @@ export class DocumentSidePanel extends Component {
   }
 
   render() {
-    const { doc, docBeingEdited, DocumentForm, readOnly, references, EntityForm,
-           connectionsGroups, isTargetDoc, excludeConnectionsTab, relationships } = this.props;
+    const {
+      doc,
+      docBeingEdited,
+      DocumentForm,
+      readOnly,
+      references,
+      EntityForm,
+      connectionsGroups,
+      isTargetDoc,
+      excludeConnectionsTab,
+      relationships,
+    } = this.props;
     const TocForm = this.props.tocFormComponent;
 
     const docAttachments = doc.get('attachments') ? doc.get('attachments').toJS() : [];
@@ -88,12 +100,15 @@ export class DocumentSidePanel extends Component {
       tab = 'metadata';
     }
 
-    const summary = connectionsGroups.reduce((summaryData, g) => {
-      g.get('templates').forEach((template) => {
-        summaryData.totalConnections += template.get('count');
-      });
-      return summaryData;
-    }, { totalConnections: 0 });
+    const summary = connectionsGroups.reduce(
+      (summaryData, g) => {
+        g.get('templates').forEach(template => {
+          summaryData.totalConnections += template.get('count');
+        });
+        return summaryData;
+      },
+      { totalConnections: 0 }
+    );
 
     return (
       <SidePanel open={this.props.open} className="metadata-sidepanel">
@@ -109,7 +124,9 @@ export class DocumentSidePanel extends Component {
                     <li>
                       <TabLink to="semantic-search-results">
                         <Icon icon="flask" />
-                        <span className="tab-link-tooltip">{t('System', 'Semantic search results')}</span>
+                        <span className="tab-link-tooltip">
+                          {t('System', 'Semantic search results')}
+                        </span>
                       </TabLink>
                     </li>
                   );
@@ -123,7 +140,7 @@ export class DocumentSidePanel extends Component {
                         <SnippetsTab storeKey={this.props.storeKey} />
                       </TabLink>
                     </li>
-);
+                  );
                 }
               })()}
               {(() => {
@@ -135,9 +152,9 @@ export class DocumentSidePanel extends Component {
                         <span className="tab-link-tooltip">{t('System', 'Table of Content')}</span>
                       </TabLink>
                     </li>
-);
+                  );
                 }
-                return <span/>;
+                return <span />;
               })()}
               {(() => {
                 if (!isEntity && !this.props.raw) {
@@ -149,15 +166,15 @@ export class DocumentSidePanel extends Component {
                         <span className="tab-link-tooltip">{t('System', 'References')}</span>
                       </TabLink>
                     </li>
-);
+                  );
                 }
-                return <span/>;
+                return <span />;
               })()}
               {(() => {
                 if (!this.props.raw) {
                   return <li className="tab-separator" />;
                 }
-                return <span/>;
+                return <span />;
               })()}
               <li>
                 <TabLink to="metadata" default>
@@ -175,7 +192,7 @@ export class DocumentSidePanel extends Component {
                         <span className="tab-link-tooltip">{t('System', 'Connections')}</span>
                       </TabLink>
                     </li>
-);
+                  );
                 }
               })()}
             </ul>
@@ -208,7 +225,10 @@ export class DocumentSidePanel extends Component {
         <NeedAuthorization roles={['admin', 'editor']}>
           <ShowIf if={this.props.tab === 'toc' && !this.props.tocBeingEdited && !readOnly}>
             <div className="sidepanel-footer">
-              <button onClick={() => this.props.editToc(this.props.doc.get('toc').toJS() || [])} className="edit-toc btn btn-success">
+              <button
+                onClick={() => this.props.editToc(this.props.doc.get('toc').toJS() || [])}
+                className="edit-toc btn btn-success"
+              >
                 <Icon icon="pencil-alt" />
                 <span className="btn-label">Edit</span>
               </button>
@@ -219,7 +239,11 @@ export class DocumentSidePanel extends Component {
         <div className="sidepanel-body">
           <Tabs selectedTab={this.props.tab || 'metadata'}>
             <TabContent for="text-search">
-              <SearchText doc={doc} storeKey={this.props.storeKey} searchTerm={this.props.searchTerm}/>
+              <SearchText
+                doc={doc}
+                storeKey={this.props.storeKey}
+                searchTerm={this.props.searchTerm}
+              />
             </TabContent>
             <TabContent for="toc">
               <ShowIf if={!this.props.tocBeingEdited}>
@@ -246,7 +270,12 @@ export class DocumentSidePanel extends Component {
                 }
                 return (
                   <div>
-                    <ShowMetadata relationships={relationships} entity={this.props.doc.toJS()} showTitle showType />
+                    <ShowMetadata
+                      relationships={relationships}
+                      entity={this.props.doc.toJS()}
+                      showTitle
+                      showType
+                    />
                     <AttachmentsList
                       files={fromJS(attachments)}
                       readOnly={false}
@@ -271,7 +300,7 @@ export class DocumentSidePanel extends Component {
               <ConnectionsGroups />
             </TabContent>
             <TabContent for="semantic-search-results">
-              <DocumentSemanticSearchResults doc={this.props.doc.toJS()}/>
+              <DocumentSemanticSearchResults doc={this.props.doc.toJS()} />
             </TabContent>
           </Tabs>
         </div>
@@ -292,7 +321,7 @@ DocumentSidePanel.defaultProps = {
   formDirty: false,
   isTargetDoc: false,
   readOnly: false,
-  getDocumentReferences: undefined
+  getDocumentReferences: undefined,
 };
 
 DocumentSidePanel.propTypes = {
@@ -330,7 +359,7 @@ DocumentSidePanel.propTypes = {
 };
 
 DocumentSidePanel.contextTypes = {
-  confirm: PropTypes.func
+  confirm: PropTypes.func,
 };
 
 DocumentSidePanel.defaultProps = {
@@ -342,13 +371,17 @@ DocumentSidePanel.defaultProps = {
 
 export const mapStateToProps = (state, ownProps) => {
   const isTargetDoc = state.documentViewer.targetDoc.get('_id');
-  const relevantReferences = isTargetDoc ? viewerModule.selectors.selectTargetReferences(state) : viewerModule.selectors.selectReferences(state);
-  const references = ownProps.references ? viewerModule.selectors.parseReferences(ownProps.doc, ownProps.references) : relevantReferences;
+  const relevantReferences = isTargetDoc
+    ? viewerModule.selectors.selectTargetReferences(state)
+    : viewerModule.selectors.selectReferences(state);
+  const references = ownProps.references
+    ? viewerModule.selectors.parseReferences(ownProps.doc, ownProps.references)
+    : relevantReferences;
   return {
     references,
     excludeConnectionsTab: Boolean(ownProps.references),
     connectionsGroups: state.relationships.list.connectionsGroups,
-    relationships: ownProps.references
+    relationships: ownProps.references,
   };
 };
 

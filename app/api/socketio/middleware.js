@@ -13,10 +13,10 @@ export default (server, app) => {
       const sessionSockets = {
         sockets: [],
         emit(...args) {
-          this.sockets.forEach((socket) => {
+          this.sockets.forEach(socket => {
             socket.emit(...args);
           });
-        }
+        },
       };
 
       Object.keys(req.io.sockets.connected).reduce((sockets, socketId) => {

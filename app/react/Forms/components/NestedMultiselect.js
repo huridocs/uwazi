@@ -42,8 +42,17 @@ export default class NestedMultiselect extends Component {
       return [];
     }
     options = options
-    .map(item => ({ label: item.key, value: item.key, results: item.filtered.total.filtered.doc_count })).filter(option => option.results);
-    return advancedSort(options, { property: 'value', treatAs: 'dottedList', listTypes: [Number, Number, String] });
+      .map(item => ({
+        label: item.key,
+        value: item.key,
+        results: item.filtered.total.filtered.doc_count,
+      }))
+      .filter(option => option.results);
+    return advancedSort(options, {
+      property: 'value',
+      treatAs: 'dottedList',
+      listTypes: [Number, Number, String],
+    });
   }
 
   resetFilter() {
@@ -77,7 +86,10 @@ export default class NestedMultiselect extends Component {
       <ul className="multiselect is-active">
         <li className="multiselectActions">
           <div className="form-group">
-            <Icon icon={this.state.filter ? 'times-circle' : 'search'} onClick={this.resetFilter.bind(this)} />
+            <Icon
+              icon={this.state.filter ? 'times-circle' : 'search'}
+              onClick={this.resetFilter.bind(this)}
+            />
             <input
               className="form-control"
               type="text"
@@ -87,49 +99,57 @@ export default class NestedMultiselect extends Component {
             />
           </div>
         </li>
-        {(() => property.nestedProperties.map((prop, index) => {
-        const options = this.getOptions(prop, aggregations);
-        if (!options.length) {
-          return false;
-        }
-        const label = nestedProperties[prop.toLowerCase()] ? nestedProperties[prop.toLowerCase()][`label_${locale}`] : prop;
-        return (
-          <li key={index}>
-            <Field model={`.filters.${property.name}.properties.${prop}.any`}>
-              <div className="multiselectItem">
-                <input
-                  type="checkbox"
-                  className="form-control multiselectItem-input"
-                  id={prop.key}
-                  onChange={this.selectAnyChange.bind(this, prop)}
-                />
-                <label htmlFor={prop} className="multiselectItem-label">
-                  <span className="multiselectItem-icon" />
-                  <span className="multiselectItem-name" title={label}><b>{label}</b></span>
-                </label>
-                <span className="multiselectItem-results">
-                  <span className="multiselectItem-action" onClick={this.toggleOptions.bind(this, prop)}>
-                    <Icon icon={this.state[prop] ? 'caret-up' : 'caret-down'} />
-                  </span>
-                </span>
-              </div>
-            </Field>
-            <ShowIf if={this.state[prop]}>
-              <Control
-                component={MultiSelect}
-                model={`.filters.${property.name}.properties.${prop}.values`}
-                prefix={property.name + prop}
-                options={options}
-                onChange={this.onChange.bind(this, prop)}
-                showAll
-                hideSearch
-                sortbyLabel
-                filter={this.state.filter}
-              />
-            </ShowIf>
-          </li>
-      );
-      }))()}
+        {(() =>
+          property.nestedProperties.map((prop, index) => {
+            const options = this.getOptions(prop, aggregations);
+            if (!options.length) {
+              return false;
+            }
+            const label = nestedProperties[prop.toLowerCase()]
+              ? nestedProperties[prop.toLowerCase()][`label_${locale}`]
+              : prop;
+            return (
+              <li key={index}>
+                <Field model={`.filters.${property.name}.properties.${prop}.any`}>
+                  <div className="multiselectItem">
+                    <input
+                      type="checkbox"
+                      className="form-control multiselectItem-input"
+                      id={prop.key}
+                      onChange={this.selectAnyChange.bind(this, prop)}
+                    />
+                    <label htmlFor={prop} className="multiselectItem-label">
+                      <span className="multiselectItem-icon" />
+                      <span className="multiselectItem-name" title={label}>
+                        <b>{label}</b>
+                      </span>
+                    </label>
+                    <span className="multiselectItem-results">
+                      <span
+                        className="multiselectItem-action"
+                        onClick={this.toggleOptions.bind(this, prop)}
+                      >
+                        <Icon icon={this.state[prop] ? 'caret-up' : 'caret-down'} />
+                      </span>
+                    </span>
+                  </div>
+                </Field>
+                <ShowIf if={this.state[prop]}>
+                  <Control
+                    component={MultiSelect}
+                    model={`.filters.${property.name}.properties.${prop}.values`}
+                    prefix={property.name + prop}
+                    options={options}
+                    onChange={this.onChange.bind(this, prop)}
+                    showAll
+                    hideSearch
+                    sortbyLabel
+                    filter={this.state.filter}
+                  />
+                </ShowIf>
+              </li>
+            );
+          }))()}
       </ul>
     );
   }
@@ -137,7 +157,7 @@ export default class NestedMultiselect extends Component {
 
 NestedMultiselect.defaultProps = {
   value: {},
-  options: undefined
+  options: undefined,
 };
 
 NestedMultiselect.propTypes = {
@@ -145,5 +165,5 @@ NestedMultiselect.propTypes = {
   value: PropTypes.instanceOf(Object),
   property: PropTypes.instanceOf(Object).isRequired,
   options: PropTypes.instanceOf(Array),
-  aggregations: PropTypes.instanceOf(Object).isRequired
+  aggregations: PropTypes.instanceOf(Object).isRequired,
 };

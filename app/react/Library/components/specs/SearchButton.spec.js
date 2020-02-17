@@ -12,8 +12,8 @@ describe('SearchButton', () => {
     props.open = true;
   });
 
-  const render = function () {
-    component = shallow(<SearchButton {...props}/>);
+  const render = function() {
+    component = shallow(<SearchButton {...props} />);
   };
 
   describe('when open', () => {

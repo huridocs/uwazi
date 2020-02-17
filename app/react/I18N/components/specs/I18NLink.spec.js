@@ -18,7 +18,7 @@ describe('I18NLink', () => {
       activeClass: 'is-active',
       onClick: clickAction,
       onMouseOver: mouseOverAction,
-      dispatch: () => {}
+      dispatch: () => {},
     };
   });
 

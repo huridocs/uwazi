@@ -18,12 +18,12 @@ export default {
       const doc = await cursor.next();
       if (doc.file && doc.file.filename) {
         await new PDF({
-          filename: path.join(paths.uploadedDocuments, doc.file.filename)
+          filename: path.join(paths.uploadedDocuments, doc.file.filename),
         }).createThumbnail(doc._id.toString());
         process.stdout.write(`processed -> ${index}\r`);
         index += 1;
       }
     }
     process.stdout.write('\r\n');
-  }
+  },
 };

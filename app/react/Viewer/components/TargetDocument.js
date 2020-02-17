@@ -8,7 +8,7 @@ import { selectTargetDoc, selectTargetReferences } from '../selectors';
 import Document from './Document';
 import TargetDocumentHeader from './TargetDocumentHeader';
 
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
   const { documentViewer } = state;
   const uiState = documentViewer.uiState.toJS();
 
@@ -20,18 +20,20 @@ const mapStateToProps = (state) => {
     className: 'targetDocument',
     activeReference: uiState.activeReference,
     disableTextSelection: false,
-    header: TargetDocumentHeader
+    header: TargetDocumentHeader,
   };
 };
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({
-    setSelection: setTargetSelection,
-    unsetSelection: unsetTargetSelection,
-    highlightReference,
-    activateReference: selectReference
-  },
-  dispatch);
+  return bindActionCreators(
+    {
+      setSelection: setTargetSelection,
+      unsetSelection: unsetTargetSelection,
+      highlightReference,
+      activateReference: selectReference,
+    },
+    dispatch
+  );
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Document);

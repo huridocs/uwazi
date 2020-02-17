@@ -16,17 +16,17 @@ describe('FormConfigMultimedia', () => {
           $form: {
             errors: {
               'properties.0.label.required': false,
-              'properties.0.label.duplicated': false
-            }
-          }
-        }
-      }
+              'properties.0.label.duplicated': false,
+            },
+          },
+        },
+      },
     };
   });
 
   const render = () => {
     const mappedProps = Object.assign({}, props, mapStateToProps(state, props));
-    component = shallow(<FormConfigMultimedia.WrappedComponent {...mappedProps}/>);
+    component = shallow(<FormConfigMultimedia.WrappedComponent {...mappedProps} />);
   };
 
   const expectMatch = () => {
@@ -34,7 +34,7 @@ describe('FormConfigMultimedia', () => {
     expect(component).toMatchSnapshot();
   };
 
-  const expectErrorLengthToBe = (length) => {
+  const expectErrorLengthToBe = length => {
     render();
     expect(component.find('.has-error').length).toBe(length);
   };

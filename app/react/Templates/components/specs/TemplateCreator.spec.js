@@ -25,7 +25,7 @@ describe('TemplateCreator', () => {
     component = shallow(<TemplateCreator {...props} />, { context });
   };
 
-  const expectSave = (expectedSave) => {
+  const expectSave = expectedSave => {
     render();
     expect(component.find(MetadataTemplate).props().saveTemplate).toBe(expectedSave);
   };

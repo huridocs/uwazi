@@ -54,9 +54,12 @@ export class LibraryChartComponent extends Component {
       return null;
     }
 
-    const chart = this.state.type === 'pie' ?
-      <Pie data={this.clusterResults(this.props.options)} /> :
-      <Bar data={this.props.options} chartLabel={this.props.label} />;
+    const chart =
+      this.state.type === 'pie' ? (
+        <Pie data={this.clusterResults(this.props.options)} />
+      ) : (
+        <Bar data={this.props.options} chartLabel={this.props.label} />
+      );
 
     return (
       <div className="item item-chart">
@@ -75,12 +78,12 @@ export class LibraryChartComponent extends Component {
 
 LibraryChartComponent.defaultProps = {
   options: [],
-  label: null
+  label: null,
 };
 
 LibraryChartComponent.propTypes = {
   options: PropTypes.arrayOf(PropTypes.object),
-  label: PropTypes.string
+  label: PropTypes.string,
 };
 
 export default connect()(LibraryChartComponent);

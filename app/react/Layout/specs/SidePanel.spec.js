@@ -7,7 +7,11 @@ describe('SidePanel', () => {
   let component;
 
   const render = (props = {}) => {
-    component = shallow(<SidePanel {...props}><div /></SidePanel>);
+    component = shallow(
+      <SidePanel {...props}>
+        <div />
+      </SidePanel>
+    );
   };
 
   it('should render children', () => {

@@ -16,7 +16,9 @@ describe('Page actions', () => {
 
   beforeEach(() => {
     dispatch = jasmine.createSpy('dispatch');
-    spyOn(api, 'save').and.returnValue(Promise.resolve({ _id: 'newId', sharedId: 'newSharedId', _rev: 'newRev' }));
+    spyOn(api, 'save').and.returnValue(
+      Promise.resolve({ _id: 'newId', sharedId: 'newSharedId', _rev: 'newRev' })
+    );
     spyOn(api, 'delete').and.returnValue(Promise.resolve());
     spyOn(formActions, 'reset').and.returnValue('PAGE DATA RESET');
     spyOn(formActions, 'merge').and.returnValue('PAGE DATA MERGED');
@@ -42,19 +44,27 @@ describe('Page actions', () => {
     });
 
     describe('upon success', () => {
-      beforeEach((done) => {
-        actions.savePage('data')(dispatch)
-        .then(() => {
-          done();
-        });
+      beforeEach(done => {
+        actions
+          .savePage('data')(dispatch)
+          .then(() => {
+            done();
+          });
       });
 
       it('should dispatch a page saved with response', () => {
-        expect(dispatch).toHaveBeenCalledWith({ type: 'PAGE_SAVED', data: { _id: 'newId', sharedId: 'newSharedId', _rev: 'newRev' } });
+        expect(dispatch).toHaveBeenCalledWith({
+          type: 'PAGE_SAVED',
+          data: { _id: 'newId', sharedId: 'newSharedId', _rev: 'newRev' },
+        });
       });
 
       it('should merge response data', () => {
-        expect(formActions.merge).toHaveBeenCalledWith('page.data', { _id: 'newId', sharedId: 'newSharedId', _rev: 'newRev' });
+        expect(formActions.merge).toHaveBeenCalledWith('page.data', {
+          _id: 'newId',
+          sharedId: 'newSharedId',
+          _rev: 'newRev',
+        });
         expect(dispatch).toHaveBeenCalledWith('PAGE DATA MERGED');
       });
 
@@ -68,13 +78,14 @@ describe('Page actions', () => {
       });
     });
     describe('on error', () => {
-      it('should dispatch page saved', (done) => {
+      it('should dispatch page saved', done => {
         api.save.and.callFake(() => Promise.reject(new Error()));
-        actions.savePage('data')(dispatch)
-        .then(() => {
-          expect(dispatch).toHaveBeenCalledWith({ type: 'PAGE_SAVED', data: {} });
-          done();
-        });
+        actions
+          .savePage('data')(dispatch)
+          .then(() => {
+            expect(dispatch).toHaveBeenCalledWith({ type: 'PAGE_SAVED', data: {} });
+            done();
+          });
       });
     });
   });
@@ -87,11 +98,12 @@ describe('Page actions', () => {
     });
 
     describe('upon success', () => {
-      beforeEach((done) => {
-        actions.deletePage(data)(dispatch)
-        .then(() => {
-          done();
-        });
+      beforeEach(done => {
+        actions
+          .deletePage(data)(dispatch)
+          .then(() => {
+            done();
+          });
       });
 
       it('should remove page', () => {

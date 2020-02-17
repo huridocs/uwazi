@@ -36,7 +36,7 @@ export class RightRelationship extends Component {
   }
 
   updateRightRelationshipType(index, rightRelationshipIndex) {
-    return (value) => {
+    return value => {
       this.props.updateRightRelationshipType(index, rightRelationshipIndex, value._id);
     };
   }
@@ -60,24 +60,37 @@ export class RightRelationship extends Component {
       <div className="rightRelationships">
         {hub.get('rightRelationships').map((rightRelationshipGroup, rightRelationshipIndex) => (
           <div
-            className={`rightRelationshipsTypeGroup ${rightRelationshipGroup.get('deleted') ? 'deleted' : ''}`}
+            className={`rightRelationshipsTypeGroup ${
+              rightRelationshipGroup.get('deleted') ? 'deleted' : ''
+            }`}
             key={rightRelationshipIndex}
           >
-            <div className={`rightRelationshipType
-                             ${rightRelationshipIndex === hub.get('rightRelationships').size - 1 ? 'last-of-type' : ''}`}
+            <div
+              className={`rightRelationshipType
+                             ${
+                               rightRelationshipIndex === hub.get('rightRelationships').size - 1
+                                 ? 'last-of-type'
+                                 : ''
+                             }`}
             >
               {!editing && (
                 <div className="rw-dropdown-list rw-widget no-edit">
                   <div className="rw-widget-input rw-widget-picker rw-widget-container no-edit">
                     <div className="rw-input rw-dropdown-list-input no-edit">
                       {(() => {
-                       if (relationTypes.find(r => r._id === rightRelationshipGroup.get('template'))) {
-                         return rightRelationshipGroup.get('template') ?
-                           relationTypes.find(r => r._id === rightRelationshipGroup.get('template')).name :
-                           <Icon icon="link" />;
-                       }
-                       return null;
-                     })()}
+                        if (
+                          relationTypes.find(r => r._id === rightRelationshipGroup.get('template'))
+                        ) {
+                          return rightRelationshipGroup.get('template') ? (
+                            relationTypes.find(
+                              r => r._id === rightRelationshipGroup.get('template')
+                            ).name
+                          ) : (
+                            <Icon icon="link" />
+                          );
+                        }
+                        return null;
+                      })()}
                     </div>
                   </div>
                 </div>
@@ -100,12 +113,17 @@ export class RightRelationship extends Component {
                   if (rightRelationshipGroup.has('template')) {
                     return (
                       <button
-                        onClick={this.toggleRemoveRightRelationshipGroup(index, rightRelationshipIndex)}
+                        onClick={this.toggleRemoveRightRelationshipGroup(
+                          index,
+                          rightRelationshipIndex
+                        )}
                         className="relationships-icon"
                       >
-                        <Icon icon={!rightRelationshipGroup.get('deleted') ? 'trash-alt' : 'undo'} />
+                        <Icon
+                          icon={!rightRelationshipGroup.get('deleted') ? 'trash-alt' : 'undo'}
+                        />
                       </button>
-);
+                    );
                   }
 
                   return <span>&nbsp;</span>;
@@ -121,7 +139,9 @@ export class RightRelationship extends Component {
               const move = relationship.get('move');
               return (
                 <div
-                  className={`rightRelationship ${!rightRelationshipDeleted && deleted ? 'deleted' : ''} ${move ? 'move' : ''}`}
+                  className={`rightRelationship ${
+                    !rightRelationshipDeleted && deleted ? 'deleted' : ''
+                  } ${move ? 'move' : ''}`}
                   key={relationshipIndex}
                 >
                   <div className="rightRelationshipType">
@@ -137,30 +157,40 @@ export class RightRelationship extends Component {
                   {editing && (
                     <div className="removeEntity">
                       <button
-                        onClick={this.toggleRemoveEntity(index, rightRelationshipIndex, relationshipIndex)}
+                        onClick={this.toggleRemoveEntity(
+                          index,
+                          rightRelationshipIndex,
+                          relationshipIndex
+                        )}
                         className="relationships-icon"
                       >
                         <Icon icon={!deleted ? 'trash-alt' : 'undo'} />
                       </button>
                     </div>
-                )}
+                  )}
                   {editing && (
                     <div className="moveEntity">
                       <button
-                        onClick={this.props.toggleMoveEntity.bind(this, index, rightRelationshipIndex, relationshipIndex)}
+                        onClick={this.props.toggleMoveEntity.bind(
+                          this,
+                          index,
+                          rightRelationshipIndex,
+                          relationshipIndex
+                        )}
                         className={`relationships-icon ${!move ? '' : 'moving'}`}
                       >
                         <Icon icon="check" />
                       </button>
                     </div>
-                )}
+                  )}
                 </div>
               );
             })}
             {(() => {
               if (editing && rightRelationshipGroup.has('template')) {
-                const isActive = hubActions.getIn(['addTo', 'hubIndex']) === index &&
-                                 hubActions.getIn(['addTo', 'rightRelationshipIndex']) === rightRelationshipIndex;
+                const isActive =
+                  hubActions.getIn(['addTo', 'hubIndex']) === index &&
+                  hubActions.getIn(['addTo', 'rightRelationshipIndex']) === rightRelationshipIndex;
                 return (
                   <div className="rightRelationshipAdd">
                     <button
@@ -185,8 +215,7 @@ export class RightRelationship extends Component {
               return null;
             })()}
           </div>
-)
-        )}
+        ))}
       </div>
     );
   }
@@ -205,7 +234,7 @@ RightRelationship.propTypes = {
   toggleRemoveEntity: PropTypes.func.isRequired,
   moveEntities: PropTypes.func.isRequired,
   openAddEntitiesPanel: PropTypes.func.isRequired,
-  selectConnection: PropTypes.func.isRequired
+  selectConnection: PropTypes.func.isRequired,
 };
 
 const selectRelationTypes = createSelector(
@@ -219,21 +248,24 @@ export function mapStateToProps(state) {
     search: relationships.list.sort,
     hubs: relationships.hubs,
     hubActions: relationships.hubActions,
-    relationTypes: selectRelationTypes(state)
+    relationTypes: selectRelationTypes(state),
   };
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({
-    selectConnection: actions.selectConnection,
-    updateRightRelationshipType: actions.updateRightRelationshipType,
-    toggleRemoveRightRelationshipGroup: actions.toggleRemoveRightRelationshipGroup,
-    setAddToData: actions.setAddToData,
-    toggleRemoveEntity: actions.toggleRemoveEntity,
-    moveEntities: actions.moveEntities,
-    toggleMoveEntity: actions.toggleMoveEntity,
-    openAddEntitiesPanel: uiActions.openPanel
-  }, dispatch);
+  return bindActionCreators(
+    {
+      selectConnection: actions.selectConnection,
+      updateRightRelationshipType: actions.updateRightRelationshipType,
+      toggleRemoveRightRelationshipGroup: actions.toggleRemoveRightRelationshipGroup,
+      setAddToData: actions.setAddToData,
+      toggleRemoveEntity: actions.toggleRemoveEntity,
+      moveEntities: actions.moveEntities,
+      toggleMoveEntity: actions.toggleMoveEntity,
+      openAddEntitiesPanel: uiActions.openPanel,
+    },
+    dispatch
+  );
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(RightRelationship);

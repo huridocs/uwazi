@@ -10,12 +10,14 @@ import templates from '../../templates';
 describe('documents', () => {
   let routes;
 
-  beforeEach((done) => {
-    db.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
+  beforeEach(done => {
+    db.clearAllAndLoad(fixtures)
+      .then(done)
+      .catch(catchErrors(done));
     routes = instrumentRoutes(documentRoutes);
   });
 
-  afterAll((done) => {
+  afterAll(done => {
     db.disconnect().then(done);
   });
 
@@ -26,7 +28,7 @@ describe('documents', () => {
       req = {
         body: { title: 'Batman begins' },
         user: { _id: db.id(), username: 'admin' },
-        language: 'es'
+        language: 'es',
       };
     });
 
@@ -35,15 +37,19 @@ describe('documents', () => {
       expect(routes.post('/api/documents', req)).toNeedAuthorization();
     });
 
-    it('should create a new document with current user', (done) => {
+    it('should create a new document with current user', done => {
       spyOn(documents, 'save').and.returnValue(new Promise(resolve => resolve('document')));
-      routes.post('/api/documents', req)
-      .then((document) => {
-        expect(document).toBe('document');
-        expect(documents.save).toHaveBeenCalledWith(req.body, { user: req.user, language: req.language });
-        done();
-      })
-      .catch(catchErrors(done));
+      routes
+        .post('/api/documents', req)
+        .then(document => {
+          expect(document).toBe('document');
+          expect(documents.save).toHaveBeenCalledWith(req.body, {
+            user: req.user,
+            language: req.language,
+          });
+          done();
+        })
+        .catch(catchErrors(done));
     });
   });
 
@@ -54,15 +60,16 @@ describe('documents', () => {
     it('should have a validation schema', () => {
       expect(routes.get.validation('/api/documents')).toMatchSnapshot();
     });
-    it('should return documents.get', (done) => {
+    it('should return documents.get', done => {
       const req = { query: { _id: 'id' }, language: 'es' };
-      routes.get('/api/documents', req)
-      .then((response) => {
-        expect(documents.getById).toHaveBeenCalledWith(req.query._id, req.language);
-        expect(response).toEqual({ rows: ['documents'] });
-        done();
-      })
-      .catch(catchErrors(done));
+      routes
+        .get('/api/documents', req)
+        .then(response => {
+          expect(documents.getById).toHaveBeenCalledWith(req.query._id, req.language);
+          expect(response).toEqual({ rows: ['documents'] });
+          done();
+        })
+        .catch(catchErrors(done));
     });
   });
 
@@ -73,16 +80,17 @@ describe('documents', () => {
     it('should have a validation schema', () => {
       expect(routes.get.validation('/api/documents/count_by_template')).toMatchSnapshot();
     });
-    it('should return count of documents using a specific template', (done) => {
+    it('should return count of documents using a specific template', done => {
       const req = { query: { templateId: 'templateId' } };
 
-      routes.get('/api/documents/count_by_template', req)
-      .then((response) => {
-        expect(templates.countByTemplate).toHaveBeenCalledWith('templateId');
-        expect(response).toEqual(2);
-        done();
-      })
-      .catch(catchErrors(done));
+      routes
+        .get('/api/documents/count_by_template', req)
+        .then(response => {
+          expect(templates.countByTemplate).toHaveBeenCalledWith('templateId');
+          expect(response).toEqual(2);
+          done();
+        })
+        .catch(catchErrors(done));
     });
   });
 
@@ -95,14 +103,15 @@ describe('documents', () => {
       expect(routes.delete.validation('/api/documents')).toMatchSnapshot();
     });
 
-    it('should use documents to delete it', (done) => {
+    it('should use documents to delete it', done => {
       const req = { query: { sharedId: 123, _rev: 456 } };
-      return routes.delete('/api/documents', req)
-      .then(() => {
-        expect(documents.delete).toHaveBeenCalledWith(req.query.sharedId);
-        done();
-      })
-      .catch(catchErrors(done));
+      return routes
+        .delete('/api/documents', req)
+        .then(() => {
+          expect(documents.delete).toHaveBeenCalledWith(req.query.sharedId);
+          done();
+        })
+        .catch(catchErrors(done));
     });
   });
 
@@ -111,31 +120,33 @@ describe('documents', () => {
       expect(routes.get.validation('/api/documents/download')).toMatchSnapshot();
     });
 
-    it('should download the document with the originalname as file name', (done) => {
+    it('should download the document with the originalname as file name', done => {
       const req = { query: { _id: batmanFinishesId } };
       const res = { download: jasmine.createSpy('download') };
 
-      routes.get('/api/documents/download', req, res)
-      .then(() => {
-        expect(res.download).toHaveBeenCalledWith(jasmine.any(String), 'Batman original.pdf');
-        done();
-      })
-      .catch(catchErrors(done));
+      routes
+        .get('/api/documents/download', req, res)
+        .then(() => {
+          expect(res.download).toHaveBeenCalledWith(jasmine.any(String), 'Batman original.pdf');
+          done();
+        })
+        .catch(catchErrors(done));
     });
 
     describe('when document does not exist', () => {
-      it('should throw a 404 error', (done) => {
+      it('should throw a 404 error', done => {
         const nonExistent = db.id();
         const req = { query: { _id: nonExistent } };
 
-        routes.get('/api/documents/download', req)
-        .then(() => {
-          done.fail('should throw a 404');
-        })
-        .catch((e) => {
-          expect(e.code).toBe(404);
-          done();
-        });
+        routes
+          .get('/api/documents/download', req)
+          .then(() => {
+            done.fail('should throw a 404');
+          })
+          .catch(e => {
+            expect(e.code).toBe(404);
+            done();
+          });
       });
     });
   });

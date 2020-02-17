@@ -9,22 +9,27 @@ export default {
   async up(db) {
     process.stdout.write(`${this.name}...\r\n`);
 
-
-    const templates = await db.collection('templates').find().toArray();
-    const templatesByKey = templates.reduce((memo, t) => Object.assign({}, memo, { [t._id.toString()]: t }), {});
+    const templates = await db
+      .collection('templates')
+      .find()
+      .toArray();
+    const templatesByKey = templates.reduce(
+      (memo, t) => Object.assign({}, memo, { [t._id.toString()]: t }),
+      {}
+    );
 
     const templatesWithGeolocation = templates
-    .filter((t) => {
-      let hasGeolocation = false;
-      t.properties.forEach((p) => {
-        if (p.type === 'geolocation') {
-          hasGeolocation = true;
-        }
-      });
+      .filter(t => {
+        let hasGeolocation = false;
+        t.properties.forEach(p => {
+          if (p.type === 'geolocation') {
+            hasGeolocation = true;
+          }
+        });
 
-      return hasGeolocation;
-    })
-    .map(t => t._id);
+        return hasGeolocation;
+      })
+      .map(t => t._id);
 
     let index = 1;
     const cursor = db.collection('entities').find({ template: { $in: templatesWithGeolocation } });
@@ -34,14 +39,22 @@ export default {
 
       if (entity.metadata) {
         const newMetadata = Object.keys(entity.metadata).reduce((metadata, property) => {
-          const propertyData = templatesByKey[entity.template.toString()].properties.find(p => p.name === property);
-          if (propertyData && propertyData.type === 'geolocation' && !Array.isArray(entity.metadata[property])) {
+          const propertyData = templatesByKey[entity.template.toString()].properties.find(
+            p => p.name === property
+          );
+          if (
+            propertyData &&
+            propertyData.type === 'geolocation' &&
+            !Array.isArray(entity.metadata[property])
+          ) {
             return Object.assign({}, metadata, { [property]: [entity.metadata[property]] });
           }
           return Object.assign({}, metadata, { [property]: entity.metadata[property] });
         }, {});
 
-        await db.collection('entities').update({ _id: entity._id }, { $set: { metadata: newMetadata } });
+        await db
+          .collection('entities')
+          .update({ _id: entity._id }, { $set: { metadata: newMetadata } });
       }
 
       process.stdout.write(`processed -> ${index}\r`);
@@ -49,5 +62,5 @@ export default {
     }
 
     process.stdout.write('\r\n');
-  }
+  },
 };

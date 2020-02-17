@@ -15,7 +15,7 @@ class UserForm extends Component {
       <FormGroup model={`.${key}`}>
         <Field model={`.${key}`}>
           <label className="form-group-label" htmlFor={key}>
-            <input type={type} id={key} className="form-control"/>
+            <input type={type} id={key} className="form-control" />
             {label}
           </label>
         </Field>
@@ -49,56 +49,90 @@ class UserForm extends Component {
       <div className="col-sm-6">
         <div className="well">
           <label htmlFor={role}>
-            <input type="radio" id={role} name="role" value={role}/>&nbsp;
+            <input type="radio" id={role} name="role" value={role} />
+            &nbsp;
             {t('System', label)}
           </label>
           <hr />
           <p>
-            <Icon icon="check" className="label-success"/>&nbsp;
+            <Icon icon="check" className="label-success" />
+            &nbsp;
             {t('System', 'Upload documents and create entities')}
           </p>
           <p>
-            <Icon icon="check" className="label-success"/>&nbsp;
+            <Icon icon="check" className="label-success" />
+            &nbsp;
             {t('System', 'Delete documents and entities')}
           </p>
           <p>
-            <Icon icon="check" className="label-success"/>&nbsp;
+            <Icon icon="check" className="label-success" />
+            &nbsp;
             {t('System', 'Apply properties to documents/entities')}
           </p>
           <p>
-            <Icon icon="check" className="label-success"/>&nbsp;
+            <Icon icon="check" className="label-success" />
+            &nbsp;
             {t('System', 'Create connections and references')}
           </p>
           <p>
-            <Icon icon="check" className="label-success"/>&nbsp;
+            <Icon icon="check" className="label-success" />
+            &nbsp;
             {t('System', 'Create a table of contents')}
           </p>
           <p>
-            <Icon icon={UserForm.getIconBasedOnRole(role)} className={UserForm.getClassBasedOnRole(role)} />&nbsp;
+            <Icon
+              icon={UserForm.getIconBasedOnRole(role)}
+              className={UserForm.getClassBasedOnRole(role)}
+            />
+            &nbsp;
             {t('System', 'Manage site settings and configuration')}
           </p>
           <p>
-            <Icon icon={UserForm.getIconBasedOnRole(role)} className={UserForm.getClassBasedOnRole(role)} />&nbsp;
+            <Icon
+              icon={UserForm.getIconBasedOnRole(role)}
+              className={UserForm.getClassBasedOnRole(role)}
+            />
+            &nbsp;
             {t('System', 'Add/delete users and assign roles')}
           </p>
           <p>
-            <Icon icon={UserForm.getIconBasedOnRole(role)} className={UserForm.getClassBasedOnRole(role)} />&nbsp;
+            <Icon
+              icon={UserForm.getIconBasedOnRole(role)}
+              className={UserForm.getClassBasedOnRole(role)}
+            />
+            &nbsp;
             {t('System', 'Configure filters')}
           </p>
           <p>
-            <Icon icon={UserForm.getIconBasedOnRole(role)} className={UserForm.getClassBasedOnRole(role)} />&nbsp;
+            <Icon
+              icon={UserForm.getIconBasedOnRole(role)}
+              className={UserForm.getClassBasedOnRole(role)}
+            />
+            &nbsp;
             {t('System', 'Add/edit translations')}
           </p>
           <p>
-            <Icon icon={UserForm.getIconBasedOnRole(role)} className={UserForm.getClassBasedOnRole(role)} />&nbsp;
+            <Icon
+              icon={UserForm.getIconBasedOnRole(role)}
+              className={UserForm.getClassBasedOnRole(role)}
+            />
+            &nbsp;
             {t('System', 'Create document and entity types')}
           </p>
           <p>
-            <Icon icon={UserForm.getIconBasedOnRole(role)} className={UserForm.getClassBasedOnRole(role)} />&nbsp;
+            <Icon
+              icon={UserForm.getIconBasedOnRole(role)}
+              className={UserForm.getClassBasedOnRole(role)}
+            />
+            &nbsp;
             {t('System', 'Create dictionaries')}
           </p>
           <p>
-            <Icon icon={UserForm.getIconBasedOnRole(role)} className={UserForm.getClassBasedOnRole(role)} />&nbsp;
+            <Icon
+              icon={UserForm.getIconBasedOnRole(role)}
+              className={UserForm.getClassBasedOnRole(role)}
+            />
+            &nbsp;
             {t('System', 'Name connections')}
           </p>
         </div>
@@ -119,7 +153,7 @@ class UserForm extends Component {
     const validator = {
       username: { required: notEmpty },
       email: { required: notEmpty },
-      role: { required: notEmpty }
+      role: { required: notEmpty },
     };
     return (
       <div className="user-creator">
@@ -129,9 +163,7 @@ class UserForm extends Component {
           validators={validator}
         >
           <div className="panel-default panel">
-            <div className="panel-heading">
-              {this.props.user.get('username') || 'New User'}
-            </div>
+            <div className="panel-heading">{this.props.user.get('username') || 'New User'}</div>
             <div className="panel-body">
               {UserForm.formGroup('username', t('System', 'Username'))}
               {UserForm.formGroup('email', t('System', 'Email'))}
@@ -155,12 +187,12 @@ class UserForm extends Component {
 }
 
 UserForm.defaultProps = {
-  user: Immutable.fromJS({})
+  user: Immutable.fromJS({}),
 };
 
 UserForm.propTypes = {
   submit: PropTypes.func.isRequired,
-  user: PropTypes.instanceOf(Immutable.Map)
+  user: PropTypes.instanceOf(Immutable.Map),
 };
 
 export default UserForm;

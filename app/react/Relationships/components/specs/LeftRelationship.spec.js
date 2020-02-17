@@ -15,23 +15,28 @@ describe('RelationshipsGraphEdit', () => {
   beforeEach(() => {
     hub = {
       hub: '1',
-      leftRelationship: { entity: 'sharedId1', hub: 1, template: '123', entityData: { sharedId: 'sharedId1' } },
+      leftRelationship: {
+        entity: 'sharedId1',
+        hub: 1,
+        template: '123',
+        entityData: { sharedId: 'sharedId1' },
+      },
       rightRelationships: [
         {
           template: null,
           relationships: [
             { entity: 'sharedId2', hub: 1, template: null, entityData: { sharedId: 'sharedId2' } },
-            { entity: 'sharedId4', hub: 1, template: null, entityData: { sharedId: 'sharedId4' } }
-          ]
+            { entity: 'sharedId4', hub: 1, template: null, entityData: { sharedId: 'sharedId4' } },
+          ],
         },
         {
           template: '456',
           relationships: [
             { entity: 'sharedId2', hub: 1, template: '456', entityData: { sharedId: 'sharedId2' } },
-            { entity: 'sharedId3', hub: 1, template: '456', entityData: { sharedId: 'sharedId3' } }
-          ]
-        }
-      ]
+            { entity: 'sharedId3', hub: 1, template: '456', entityData: { sharedId: 'sharedId3' } },
+          ],
+        },
+      ],
     };
 
     props = {
@@ -43,7 +48,7 @@ describe('RelationshipsGraphEdit', () => {
       editing: false,
       updateLeftRelationshipType: jasmine.createSpy('updateLeftRelationshipType'),
       toggelRemoveLeftRelationship: jasmine.createSpy('toggelRemoveLeftRelationship'),
-      selectConnection: jasmine.createSpy('selectConnection')
+      selectConnection: jasmine.createSpy('selectConnection'),
     };
   });
 
@@ -56,14 +61,19 @@ describe('RelationshipsGraphEdit', () => {
 
     it('should render the relationship', () => {
       expect(component.find(Doc).props().doc).toEqual(fromJS(props.parentEntity));
-      expect(component.find(HubRelationshipMetadata).props().relationship).toEqual(fromJS(hub.leftRelationship));
+      expect(component.find(HubRelationshipMetadata).props().relationship).toEqual(
+        fromJS(hub.leftRelationship)
+      );
     });
   });
 
   describe('clicking in a relationship', () => {
     it('should select that connection', () => {
       render();
-      component.find(Doc).at(0).simulate('click');
+      component
+        .find(Doc)
+        .at(0)
+        .simulate('click');
       expect(props.selectConnection).toHaveBeenCalled();
     });
   });
@@ -76,7 +86,10 @@ describe('RelationshipsGraphEdit', () => {
 
     describe('changing the template of a group', () => {
       it('should call updateLeftRelationshipType', () => {
-        component.find(DropdownList).at(0).simulate('change', { _id: 3 });
+        component
+          .find(DropdownList)
+          .at(0)
+          .simulate('change', { _id: 3 });
         expect(props.updateLeftRelationshipType).toHaveBeenCalledWith(0, { _id: 3 });
       });
     });

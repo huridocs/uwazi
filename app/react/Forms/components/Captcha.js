@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
-
 class Captcha extends Component {
   constructor(props) {
     super(props);
@@ -28,12 +27,8 @@ class Captcha extends Component {
     const { captchaUrl } = this.state;
     return (
       <div className="captcha">
-        <img src={captchaUrl} alt="captcha"/>
-        <input
-          className="form-control"
-          onChange={this.onChange}
-          value={value}
-        />
+        <img src={captchaUrl} alt="captcha" />
+        <input className="form-control" onChange={this.onChange} value={value} />
       </div>
     );
   }
@@ -42,14 +37,14 @@ class Captcha extends Component {
 Captcha.defaultProps = {
   value: '',
   refresh: () => {},
-  remote: false
+  remote: false,
 };
 
 Captcha.propTypes = {
   value: PropTypes.string,
   onChange: PropTypes.func.isRequired,
   refresh: PropTypes.func,
-  remote: PropTypes.bool
+  remote: PropTypes.bool,
 };
 
 export default Captcha;

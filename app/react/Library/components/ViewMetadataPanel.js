@@ -11,7 +11,11 @@ import { deleteEntity } from 'app/Entities/actions/actions';
 import { wrapDispatch } from 'app/Multireducer';
 import modals from 'app/Modals';
 
-import { getDocumentReferences, unselectAllDocuments, saveDocument } from '../actions/libraryActions';
+import {
+  getDocumentReferences,
+  unselectAllDocuments,
+  saveDocument,
+} from '../actions/libraryActions';
 import DocumentForm from '../containers/DocumentForm';
 import EntityForm from '../containers/EntityForm';
 
@@ -31,26 +35,29 @@ const mapStateToProps = (state, props) => {
     formPath: `${props.storeKey}.sidepanel.metadata`,
     readOnly: true,
     DocumentForm,
-    EntityForm
+    EntityForm,
   };
 };
 
 function mapDispatchToProps(dispatch, props) {
-  return bindActionCreators({
-    loadInReduxForm: actions.loadInReduxForm,
-    getDocumentReferences,
-    closePanel: unselectAllDocuments,
-    resetForm: () => (_dispatch) => {
-      _dispatch(formActions.setInitial(`${props.storeKey}.sidepanel.metadata`));
-      _dispatch(formActions.reset(`${props.storeKey}.sidepanel.metadata`));
+  return bindActionCreators(
+    {
+      loadInReduxForm: actions.loadInReduxForm,
+      getDocumentReferences,
+      closePanel: unselectAllDocuments,
+      resetForm: () => _dispatch => {
+        _dispatch(formActions.setInitial(`${props.storeKey}.sidepanel.metadata`));
+        _dispatch(formActions.reset(`${props.storeKey}.sidepanel.metadata`));
+      },
+      saveDocument,
+      deleteDocument,
+      searchSnippets,
+      deleteEntity,
+      showModal: modals.actions.showModal,
+      showTab: tab => actionCreators.set(`${props.storeKey}.sidepanel.tab`, tab),
     },
-    saveDocument,
-    deleteDocument,
-    searchSnippets,
-    deleteEntity,
-    showModal: modals.actions.showModal,
-    showTab: tab => actionCreators.set(`${props.storeKey}.sidepanel.tab`, tab)
-  }, wrapDispatch(dispatch, props.storeKey));
+    wrapDispatch(dispatch, props.storeKey)
+  );
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(DocumentSidePanel);

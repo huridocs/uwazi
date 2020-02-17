@@ -15,27 +15,30 @@ describe('relationTypesActions', () => {
   beforeEach(() => {
     mockID();
     backend.restore();
-    backend
-    .post(`${APIURL}relationtypes`, { body: JSON.stringify({ testBackendResult: 'ok' }) });
+    backend.post(`${APIURL}relationtypes`, { body: JSON.stringify({ testBackendResult: 'ok' }) });
   });
 
   afterEach(() => backend.restore());
 
   describe('saveRelationType', () => {
-    it('should save the relationType and dispatch a relationTypeSaved action and a notify', (done) => {
+    it('should save the relationType and dispatch a relationTypeSaved action and a notify', done => {
       const relationType = { name: 'Secret list of things', values: [] };
       const expectedActions = [
         { type: types.RELATION_TYPE_SAVED },
-        { type: notificationsTypes.NOTIFY, notification: { message: 'RelationType saved', type: 'success', id: 'unique_id' } }
+        {
+          type: notificationsTypes.NOTIFY,
+          notification: { message: 'RelationType saved', type: 'success', id: 'unique_id' },
+        },
       ];
       const store = mockStore({});
 
-      actions.saveRelationType(relationType)(store.dispatch)
-      .then(() => {
-        expect(store.getActions()).toEqual(expectedActions);
-      })
-      .then(done)
-      .catch(done.fail);
+      actions
+        .saveRelationType(relationType)(store.dispatch)
+        .then(() => {
+          expect(store.getActions()).toEqual(expectedActions);
+        })
+        .then(done)
+        .catch(done.fail);
 
       expect(JSON.parse(backend.lastOptions(`${APIURL}relationtypes`).body)).toEqual(relationType);
     });

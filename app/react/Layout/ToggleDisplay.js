@@ -5,7 +5,7 @@ class ToggleDisplay extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      show: props.open
+      show: props.open,
     };
     this.show = this.show.bind(this);
     this.hide = this.hide.bind(this);
@@ -38,10 +38,7 @@ ToggleDisplay.defaultProps = {
   open: false,
 };
 
-const labelType = PropTypes.oneOfType([
-  PropTypes.string,
-  PropTypes.element,
-]);
+const labelType = PropTypes.oneOfType([PropTypes.string, PropTypes.element]);
 
 ToggleDisplay.propTypes = {
   children: PropTypes.element.isRequired,

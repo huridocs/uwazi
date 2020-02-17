@@ -24,7 +24,11 @@ describe('inlineEditReducer', () => {
 
   describe('OPEN_INLINE_EDIT_FORM', () => {
     it('should set showInlineEditForm to true, and set the given context and key', () => {
-      const state = inlineEditReducer(initialState, { type: 'OPEN_INLINE_EDIT_FORM', context: 'System', key: 'Search' });
+      const state = inlineEditReducer(initialState, {
+        type: 'OPEN_INLINE_EDIT_FORM',
+        context: 'System',
+        key: 'Search',
+      });
       expect(state.get('showInlineEditForm')).toBe(true);
       expect(state.get('context')).toBe('System');
       expect(state.get('key')).toBe('Search');

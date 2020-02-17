@@ -9,7 +9,7 @@ describe('Captcha', () => {
 
   beforeEach(() => {
     props = {
-      onChange: () => {}
+      onChange: () => {},
     };
   });
 
@@ -23,9 +23,9 @@ describe('Captcha', () => {
   });
 
   describe('refresh()', () => {
-    it('should return the refresh captcha method', (done) => {
+    it('should return the refresh captcha method', done => {
       let refreshCaptcha;
-      props.refresh = (_refreshCaptcha) => {
+      props.refresh = _refreshCaptcha => {
         refreshCaptcha = _refreshCaptcha;
       };
       render();

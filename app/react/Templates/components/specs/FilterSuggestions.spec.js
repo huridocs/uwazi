@@ -12,31 +12,37 @@ describe('FilterSuggestions', () => {
 
   function renderComponent(label = 'test', type = 'text', content) {
     templates = [
-      { _id: 'template1',
+      {
+        _id: 'template1',
         properties: [
           { localID: 1, label, filter: true, type },
-          { localID: 2, label: 'something else' }
-        ] },
-      { _id: 'template2',
+          { localID: 2, label: 'something else' },
+        ],
+      },
+      {
+        _id: 'template2',
         name: 'Template 2',
         properties: [
           { label: 'Date', type: 'date', filter: true },
           { label: 'Author', type: 'text', filter: true },
           { label: 'filterFalse', type: 'text', filter: false },
-          { label: 'Authors', type: 'select', filter: true, content: 'abc1' }
-        ] },
-      { _id: 'template3',
+          { label: 'Authors', type: 'select', filter: true, content: 'abc1' },
+        ],
+      },
+      {
+        _id: 'template3',
         name: 'Template 3',
         properties: [
           { label: 'date ', type: 'date', filter: true },
           { label: 'filterFalse', type: 'text', filter: true },
-          { label: 'Keywords', type: 'text', filter: true }
-        ] }
+          { label: 'Keywords', type: 'text', filter: true },
+        ],
+      },
     ];
 
     thesauris = [
       { _id: 'abc1', name: 'Best SCI FI Authors' },
-      { _id: 'abc2', name: 'Favourite dessert recipes' }
+      { _id: 'abc2', name: 'Favourite dessert recipes' },
     ];
 
     props = {
@@ -46,10 +52,10 @@ describe('FilterSuggestions', () => {
       content,
       data: { name: 'Current template', _id: 'template1' },
       templates: Immutable.fromJS(templates),
-      thesauris: Immutable.fromJS(thesauris)
+      thesauris: Immutable.fromJS(thesauris),
     };
 
-    component = shallow(<FilterSuggestions {...props}/>);
+    component = shallow(<FilterSuggestions {...props} />);
   }
 
   it('should always render the current property as a guide', () => {

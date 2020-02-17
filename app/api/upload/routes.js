@@ -27,23 +27,24 @@ const storage = multer.diskStorage(storageConfig);
 const getDocuments = (sharedId, allLanguages, language) =>
   entities.get({
     sharedId,
-    ...(!allLanguages && { language })
+    ...(!allLanguages && { language }),
   });
 
-const storeFile = file => new Promise((resolve, reject) => {
-  const filename = generateFileName(file);
-  const destination = configPaths.uploadedDocuments;
-  const pathToFile = path.join(destination, filename);
-  fs.appendFile(pathToFile, file.buffer, (err) => {
-    if (err) {
-      reject(err);
-    }
-    resolve(Object.assign(file, { filename, destination }));
+const storeFile = file =>
+  new Promise((resolve, reject) => {
+    const filename = generateFileName(file);
+    const destination = configPaths.uploadedDocuments;
+    const pathToFile = path.join(destination, filename);
+    fs.appendFile(pathToFile, file.buffer, err => {
+      if (err) {
+        reject(err);
+      }
+      resolve(Object.assign(file, { filename, destination }));
+    });
   });
-});
 
 /*eslint-disable max-statements*/
-export default (app) => {
+export default app => {
   const upload = multer({ storage });
 
   const socket = req => req.getCurrentSessionSockets();
@@ -52,11 +53,11 @@ export default (app) => {
     try {
       const docs = await getDocuments(req.body.document, allLanguages, req.language);
       await uploadFile(docs, req.files[0])
-      .on('conversionStart', () => {
-        res.json(req.files[0]);
-        socket(req).emit('conversionStart', req.body.document);
-      })
-      .start();
+        .on('conversionStart', () => {
+          res.json(req.files[0]);
+          socket(req).emit('conversionStart', req.body.document);
+        })
+        .start();
 
       await search.indexEntities({ sharedId: req.body.document }, '+fullText');
       socket(req).emit('documentProcessed', req.body.document);
@@ -74,9 +75,11 @@ export default (app) => {
 
     upload.any(),
 
-    validation.validateRequest(Joi.object({
-      document: Joi.string().required()
-    }).required()),
+    validation.validateRequest(
+      Joi.object({
+        document: Joi.string().required(),
+      }).required()
+    ),
 
     (req, res) => uploadProcess(req, res)
   );
@@ -85,7 +88,10 @@ export default (app) => {
     '/api/public',
     multer().any(),
     captchaAuthorization(),
-    (req, _res, next) => { req.body = JSON.parse(req.body.entity); return next(); },
+    (req, _res, next) => {
+      req.body = JSON.parse(req.body.entity);
+      return next();
+    },
     validation.validateRequest(saveSchema),
     async (req, res, next) => {
       const entity = req.body;
@@ -99,14 +105,14 @@ export default (app) => {
       if (req.files.length) {
         await Promise.all(
           req.files
-          .filter(file => file.fieldname.includes('attachment'))
-          .map(file => storeFile(file).then(_file => entity.attachments.push(_file)))
+            .filter(file => file.fieldname.includes('attachment'))
+            .map(file => storeFile(file).then(_file => entity.attachments.push(_file)))
         );
       }
       const newEntity = await entities.save(entity, { user: {}, language: req.language });
       const file = req.files.find(_file => _file.fieldname.includes('file'));
       if (file) {
-        storeFile(file).then(async (_file) => {
+        storeFile(file).then(async _file => {
           const newEntities = await entities.getAllLanguages(newEntity.sharedId);
           await uploadFile(newEntities, _file).start();
           await search.indexEntities({ sharedId: newEntity.sharedId }, '+fullText');
@@ -117,24 +123,20 @@ export default (app) => {
     }
   );
 
-  app.post(
-    '/api/remotepublic',
-    async (req, res, next) => {
-      const { publicFormDestination } = await settings.get(true);
-      proxy(publicFormDestination, {
-        limit: '20mb',
-        proxyReqPathResolver() {
-          return '/api/public';
-        },
-        proxyReqOptDecorator(proxyReqOpts, srcReq) {
-          const options = Object.assign({}, proxyReqOpts);
-          options.headers.Cookie = srcReq.session.remotecookie;
-          return options;
-        }
-      })(req, res, next);
-    }
-
-  );
+  app.post('/api/remotepublic', async (req, res, next) => {
+    const { publicFormDestination } = await settings.get(true);
+    proxy(publicFormDestination, {
+      limit: '20mb',
+      proxyReqPathResolver() {
+        return '/api/public';
+      },
+      proxyReqOptDecorator(proxyReqOpts, srcReq) {
+        const options = Object.assign({}, proxyReqOpts);
+        options.headers.Cookie = srcReq.session.remotecookie;
+        return options;
+      },
+    })(req, res, next);
+  });
 
   app.post(
     '/api/import',
@@ -143,9 +145,11 @@ export default (app) => {
 
     upload.any(),
 
-    validation.validateRequest(Joi.object({
-      template: Joi.string().required()
-    }).required()),
+    validation.validateRequest(
+      Joi.object({
+        template: Joi.string().required(),
+      }).required()
+    ),
 
     (req, res) => {
       const loader = new CSVLoader();
@@ -156,54 +160,70 @@ export default (app) => {
         req.getCurrentSessionSockets().emit('IMPORT_CSV_PROGRESS', loaded);
       });
 
-      loader.on('loadError', (error) => {
+      loader.on('loadError', error => {
         req.getCurrentSessionSockets().emit('IMPORT_CSV_ERROR', handleError(error));
       });
 
       req.getCurrentSessionSockets().emit('IMPORT_CSV_START');
-      loader.load(req.files[0].path, req.body.template, { language: req.language, user: req.user })
-      .then(() => {
-        req.getCurrentSessionSockets().emit('IMPORT_CSV_END');
-      })
-      .catch((e) => {
-        req.getCurrentSessionSockets().emit('IMPORT_CSV_ERROR', handleError(e));
-      });
+      loader
+        .load(req.files[0].path, req.body.template, { language: req.language, user: req.user })
+        .then(() => {
+          req.getCurrentSessionSockets().emit('IMPORT_CSV_END');
+        })
+        .catch(e => {
+          req.getCurrentSessionSockets().emit('IMPORT_CSV_ERROR', handleError(e));
+        });
 
       res.json('ok');
     }
   );
 
-  app.post('/api/customisation/upload', needsAuthorization(['admin', 'editor']), upload.any(), (req, res, next) => {
-    uploads.save(req.files[0])
-    .then((saved) => {
-      res.json(saved);
-    })
-    .catch(next);
-  });
+  app.post(
+    '/api/customisation/upload',
+    needsAuthorization(['admin', 'editor']),
+    upload.any(),
+    (req, res, next) => {
+      uploads
+        .save(req.files[0])
+        .then(saved => {
+          res.json(saved);
+        })
+        .catch(next);
+    }
+  );
 
-  app.get('/api/customisation/upload', needsAuthorization(['admin', 'editor']), (_req, res, next) => {
-    uploads.get()
-    .then((result) => {
-      res.json(result);
-    })
-    .catch(next);
-  });
+  app.get(
+    '/api/customisation/upload',
+    needsAuthorization(['admin', 'editor']),
+    (_req, res, next) => {
+      uploads
+        .get()
+        .then(result => {
+          res.json(result);
+        })
+        .catch(next);
+    }
+  );
 
   app.delete(
     '/api/customisation/upload',
 
     needsAuthorization(['admin', 'editor']),
 
-    validation.validateRequest(Joi.object({
-      _id: Joi.string().required()
-    }).required(), 'query'),
+    validation.validateRequest(
+      Joi.object({
+        _id: Joi.string().required(),
+      }).required(),
+      'query'
+    ),
 
     (req, res, next) => {
-      uploads.delete(req.query._id)
-      .then((result) => {
-        res.json(result);
-      })
-      .catch(next);
+      uploads
+        .delete(req.query._id)
+        .then(result => {
+          res.json(result);
+        })
+        .catch(next);
     }
   );
 
@@ -214,22 +234,26 @@ export default (app) => {
 
     upload.any(),
 
-    validation.validateRequest(Joi.object({
-      document: Joi.string().required()
-    }).required()),
+    validation.validateRequest(
+      Joi.object({
+        document: Joi.string().required(),
+      }).required()
+    ),
 
-    (req, res, next) => entities.getById(req.body.document, req.language)
-    .then((doc) => {
-      let deleteReferences = Promise.resolve();
-      if (doc.file) {
-        deleteReferences = relationships.deleteTextReferences(doc.sharedId, doc.language);
-      }
-      return Promise.all([doc, deleteReferences]);
-    })
-    .then(([doc]) => entities.saveMultiple([{ _id: doc._id, toc: [] }]))
-    .then(([{ sharedId }]) => entities.get({ sharedId }))
-    .then(docs => docs.reduce((addToAllLanguages, doc) => addToAllLanguages && !doc.file, true))
-    .then(addToAllLanguages => uploadProcess(req, res, addToAllLanguages))
-    .catch(next)
+    (req, res, next) =>
+      entities
+        .getById(req.body.document, req.language)
+        .then(doc => {
+          let deleteReferences = Promise.resolve();
+          if (doc.file) {
+            deleteReferences = relationships.deleteTextReferences(doc.sharedId, doc.language);
+          }
+          return Promise.all([doc, deleteReferences]);
+        })
+        .then(([doc]) => entities.saveMultiple([{ _id: doc._id, toc: [] }]))
+        .then(([{ sharedId }]) => entities.get({ sharedId }))
+        .then(docs => docs.reduce((addToAllLanguages, doc) => addToAllLanguages && !doc.file, true))
+        .then(addToAllLanguages => uploadProcess(req, res, addToAllLanguages))
+        .catch(next)
   );
 };

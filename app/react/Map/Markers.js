@@ -4,7 +4,8 @@ import Immutable from 'immutable';
 
 import { getMarkers } from './helper';
 
-export const MarkersComponent = ({ children, entities, templates }) => children(getMarkers(entities, templates));
+export const MarkersComponent = ({ children, entities, templates }) =>
+  children(getMarkers(entities, templates));
 
 MarkersComponent.defaultProps = {
   entities: Immutable.List(),

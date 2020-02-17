@@ -14,7 +14,7 @@ export const itemSource = {
       items: props.items,
       container: props.container,
       index: props.index,
-      originalItem: props.originalItem
+      originalItem: props.originalItem,
     };
   },
 
@@ -23,7 +23,7 @@ export const itemSource = {
     if (container && container.id !== props.container.id) {
       props.removeItem(props.id);
     }
-  }
+  },
 };
 
 export const itemTarget = {
@@ -80,12 +80,18 @@ export const itemTarget = {
     // to avoid expensive index searches.
     item.index = hoverIndex;
     return null;
-  }
+  },
 };
 
 export class DragAndDropItem extends Component {
   render() {
-    const { iconHandle, isDragging, connectDragPreview, connectDragSource, connectDropTarget } = this.props;
+    const {
+      iconHandle,
+      isDragging,
+      connectDragPreview,
+      connectDragSource,
+      connectDropTarget,
+    } = this.props;
     let propertyClass = 'list-group-item';
     if (isDragging) {
       propertyClass += ' dragging';
@@ -97,7 +103,15 @@ export class DragAndDropItem extends Component {
 
     const result = connectDropTarget(
       <div className={propertyClass}>
-        {iconHandle ? connectDragSource(<span className="draggable"><Icon icon="bars" /></span>) : <Icon icon="bars" />}
+        {iconHandle ? (
+          connectDragSource(
+            <span className="draggable">
+              <Icon icon="bars" />
+            </span>
+          )
+        ) : (
+          <Icon icon="bars" />
+        )}
         {this.props.children(this.props.originalItem, this.props.index)}
       </div>
     );
@@ -125,17 +139,17 @@ DragAndDropItem.propTypes = {
   id: PropTypes.any.isRequired,
   moveItem: PropTypes.func.isRequired,
   children: PropTypes.func,
-  originalItem: PropTypes.object.isRequired
+  originalItem: PropTypes.object.isRequired,
 };
 
 let dragAndDropItem = DropTarget('DRAG_AND_DROP_ITEM', itemTarget, connector => ({
-  connectDropTarget: connector.dropTarget()
+  connectDropTarget: connector.dropTarget(),
 }))(DragAndDropItem);
 
 dragAndDropItem = DragSource('DRAG_AND_DROP_ITEM', itemSource, (connector, monitor) => ({
   connectDragSource: connector.dragSource(),
   connectDragPreview: connector.dragPreview(),
-  isDragging: monitor.isDragging()
+  isDragging: monitor.isDragging(),
 }))(dragAndDropItem);
 
 export default connect()(dragAndDropItem);

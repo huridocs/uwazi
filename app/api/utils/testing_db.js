@@ -15,8 +15,7 @@ let mongod;
 
 const initMongoServer = () => {
   mongod = new MongodbMemoryServer();
-  return mongod.getConnectionString()
-  .then((uri) => {
+  return mongod.getConnectionString().then(uri => {
     connected = true;
     db = pow.connect(uri);
     testingDB.clear = db.clear.bind(db);
@@ -33,31 +32,36 @@ testingDB.connect = () => {
   });
 };
 
-testingDB.clearAllAndLoad = fixtures => testingDB.connect()
-.then(() => new Promise((resolve, reject) => {
-  db.clearAllAndLoad(fixtures, (error) => {
-    if (error) {
-      reject(error);
-    }
-    resolve();
-  });
-}));
+testingDB.clearAllAndLoad = fixtures =>
+  testingDB.connect().then(
+    () =>
+      new Promise((resolve, reject) => {
+        db.clearAllAndLoad(fixtures, error => {
+          if (error) {
+            reject(error);
+          }
+          resolve();
+        });
+      })
+  );
 
-testingDB.disconnect = () => new Promise((resolve) => {
-  connected = false;
-  mongoose.disconnect()
-  .then(() => {
-    if (mongod) {
-      return mongod.stop();
-    }
-    return Promise.resolve();
-  })
-  .then(() => {
-    if (db) {
-      return db.close(resolve);
-    }
-    return Promise.resolve();
+testingDB.disconnect = () =>
+  new Promise(resolve => {
+    connected = false;
+    mongoose
+      .disconnect()
+      .then(() => {
+        if (mongod) {
+          return mongod.stop();
+        }
+        return Promise.resolve();
+      })
+      .then(() => {
+        if (db) {
+          return db.close(resolve);
+        }
+        return Promise.resolve();
+      });
   });
-});
 
 export default testingDB;

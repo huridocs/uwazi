@@ -23,14 +23,15 @@ describe('entities', () => {
       expect(routes.post.validation('/api/contact')).toMatchSnapshot();
     });
 
-    it('should send an email', (done) => {
+    it('should send an email', done => {
       spyOn(contact, 'sendMessage').and.returnValue(Promise.resolve());
-      routes.post('/api/contact', req)
-      .then(() => {
-        expect(contact.sendMessage).toHaveBeenCalledWith(req.body);
-        done();
-      })
-      .catch(catchErrors(done));
+      routes
+        .post('/api/contact', req)
+        .then(() => {
+          expect(contact.sendMessage).toHaveBeenCalledWith(req.body);
+          done();
+        })
+        .catch(catchErrors(done));
     });
   });
 });
