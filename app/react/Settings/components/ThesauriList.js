@@ -1,19 +1,19 @@
 /** @format */
 
-import PropTypes from 'prop-types';
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
+import Footer from 'app/App/Footer';
 import { I18NLink, t } from 'app/I18N';
 import {
-  checkThesaurusCanBeDeleted,
   checkThesaurusCanBeClassified,
+  checkThesaurusCanBeDeleted,
   deleteThesaurus,
   disableClassification,
   enableClassification,
 } from 'app/Thesauri/actions/thesaurisActions';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 import { Icon } from 'UI';
-
 import sortThesauri from '../utils/sortThesauri';
 
 export class ThesauriList extends Component {
@@ -33,7 +33,7 @@ export class ThesauriList extends Component {
     }
     if (thesaurus.enable_classification) {
       const view = (
-        <div className="thesauri-list vertical-line">
+        <div className="vertical-line">
           <span className="thesaurus-suggestion-count">
             {thesaurus.suggestions ? thesaurus.suggestions.toLocaleString() : 'No'}&nbsp;
             {t('System', 'documents to be reviewed')}
@@ -146,7 +146,7 @@ export class ThesauriList extends Component {
 
   render() {
     return (
-      <div className="panel panel-default">
+      <div className="flex panel panel-default">
         <div className="panel-heading">{t('System', 'Thesauri')}</div>
         <div className="thesauri-list">
           <table>
@@ -170,6 +170,7 @@ export class ThesauriList extends Component {
             <span className="btn-label">{t('System', 'Add thesaurus')}</span>
           </I18NLink>
         </div>
+        <Footer />
       </div>
     );
   }
