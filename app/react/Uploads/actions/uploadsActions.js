@@ -83,7 +83,7 @@ export function importData([file], template) {
     });
 }
 
-export function upload(docId, file, endpoint = 'documents/upload') {
+export function upload(docId, file, endpoint = 'files/upload/document') {
   return dispatch =>
     new Promise(resolve => {
       superagent

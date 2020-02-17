@@ -1,12 +1,13 @@
 import db from 'api/utils/testing_db';
-import { EntitySchema } from 'api/entities/entityType';
 
-import { FileSchema } from '../fileType';
+import { EntitySchema } from 'api/entities/entityType';
+import { FileSchema } from 'shared/types/fileType';
 
 const entityId = db.id();
 const entityEnId = db.id();
 const uploadId = db.id();
 const templateId = db.id();
+const fileName1 = 'f2082bf51b6ef839690485d7153e847a.pdf';
 
 interface DBFixture {
   files?: FileSchema[];
@@ -20,7 +21,7 @@ const fixtures: DBFixture = {
     {
       _id: uploadId,
       originalname: 'upload1',
-      filename: 'f2082bf51b6ef839690485d7153e847a.pdf',
+      filename: fileName1,
       type: 'custom',
     },
     { _id: db.id(), originalname: 'upload2', type: 'custom' },
@@ -47,4 +48,4 @@ const fixtures: DBFixture = {
   ],
 };
 
-export { fixtures, entityId, entityEnId, uploadId, templateId };
+export { fixtures, entityId, entityEnId, fileName1, uploadId, templateId };

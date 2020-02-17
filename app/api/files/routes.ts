@@ -52,12 +52,12 @@ export default (app: Application) => {
   );
 
   app.get(
-    '/api/files/download',
+    '/api/files/:filename',
     validation.validateRequest({
       properties: {
-        query: {
+        params: {
           properties: {
-            _id: { type: 'string' },
+            filename: { type: 'string' },
           },
         },
       },
@@ -65,14 +65,13 @@ export default (app: Application) => {
 
     async (req: Request, res: Response, next: NextFunction) => {
       try {
-        const [file] = await files.get({ _id: req.query._id });
+        const [file] = await files.get({ filename: req.params.filename });
         if (!file) {
           throw createError('file not found', 404);
         }
-        const originalname = file.originalname || '';
+
         const filename = file.filename || '';
-        const basename = path.basename(originalname, path.extname(originalname));
-        res.download(uploadsPath(filename), sanitize(basename + path.extname(filename)));
+        res.sendFile(uploadsPath(filename));
       } catch (e) {
         next(e);
       }

@@ -1,9 +1,9 @@
-import request from 'supertest';
+import request, { Response as SuperTestResponse } from 'supertest';
 import { Application, Request, Response, NextFunction } from 'express';
 
 import db from 'api/utils/testing_db';
 
-import { fixtures, uploadId } from './fixtures';
+import { fixtures, fileName1 } from './fixtures';
 
 import uploadRoutes from '../routes';
 import paths from '../../config/paths';
@@ -16,7 +16,7 @@ jest.mock(
   }
 );
 
-describe('upload routes', () => {
+describe('files routes download', () => {
   const app: Application = setUpApp(uploadRoutes);
 
   beforeEach(async () => {
@@ -26,19 +26,18 @@ describe('upload routes', () => {
 
   afterAll(async () => db.disconnect());
 
-  describe('GET/download', () => {
-    it('should download the file', async () => {
-      const response = await request(app)
-        .get('/api/files/download')
-        .query({ _id: uploadId.toString() });
+  describe('GET/', () => {
+    it('should send the file the file', async () => {
+      const response: SuperTestResponse = await request(app).get(`/api/files/${fileName1}`);
 
+      expect(response.header['content-disposition']).not.toBeDefined();
       expect(response.body instanceof Buffer).toBe(true);
     });
 
     describe('when file does not exist', () => {
       it('should respond with 404', async () => {
         const response = await request(app)
-          .get('/api/files/download')
+          .get('/api/files/unexistent.pdf')
           .query({ _id: db.id().toString() });
 
         expect(response.status).toBe(404);
