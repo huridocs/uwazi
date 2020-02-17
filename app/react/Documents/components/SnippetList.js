@@ -11,12 +11,14 @@ export const MetadataFieldSnippets = ({ fieldSnippets, documentViewUrl, template
   <React.Fragment>
     <li className="snippet-list-item-header metadata-snippet-header">
       <I18NLink to={`${documentViewUrl}?searchTerm=${searchTerm}`}>
-        { getFieldLabel(fieldSnippets.get('field'), template) }
+        {getFieldLabel(fieldSnippets.get('field'), template)}
       </I18NLink>
     </li>
     {fieldSnippets.get('texts').map((snippet, index) => (
       <li key={index} className="snippet-list-item metadata-snippet">
-        <span><SafeHTML>{snippet}</SafeHTML></span>
+        <span>
+          <SafeHTML>{snippet}</SafeHTML>
+        </span>
       </li>
     ))}
   </React.Fragment>
@@ -29,26 +31,32 @@ MetadataFieldSnippets.defaultProps = {
 MetadataFieldSnippets.propTypes = {
   fieldSnippets: PropTypes.shape({
     texts: PropTypes.array,
-    field: PropTypes.string
+    field: PropTypes.string,
   }).isRequired,
   documentViewUrl: PropTypes.string.isRequired,
   searchTerm: PropTypes.string,
   template: PropTypes.shape({
-    get: PropTypes.func
-  })
+    get: PropTypes.func,
+  }),
 };
 
 MetadataFieldSnippets.defaultProps = {
-  template: undefined
+  template: undefined,
 };
 
-export const DocumentContentSnippets = ({ selectSnippet, documentSnippets, documentViewUrl, searchTerm, selectedSnippet }) => (
+export const DocumentContentSnippets = ({
+  selectSnippet,
+  documentSnippets,
+  documentViewUrl,
+  searchTerm,
+  selectedSnippet,
+}) => (
   <React.Fragment>
     <li className="snippet-list-item-header fulltext-snippet-header">
       {t('System', 'Document contents')}
     </li>
     {documentSnippets.map((snippet, index) => {
-      const selected = (snippet.get('text') === selectedSnippet.get('text')) ? 'selected' : '';
+      const selected = snippet.get('text') === selectedSnippet.get('text') ? 'selected' : '';
       return (
         <li key={index} className={`snippet-list-item fulltext-snippet ${selected}`}>
           <I18NLink
@@ -56,7 +64,9 @@ export const DocumentContentSnippets = ({ selectSnippet, documentSnippets, docum
             to={`${documentViewUrl}?page=${snippet.get('page')}&searchTerm=${searchTerm || ''}`}
           >
             <span className="page-number">{snippet.get('page')}</span>
-            <span className="snippet-text"><SafeHTML>{snippet.get('text')}</SafeHTML></span>
+            <span className="snippet-text">
+              <SafeHTML>{snippet.get('text')}</SafeHTML>
+            </span>
           </I18NLink>
         </li>
       );
@@ -67,16 +77,23 @@ export const DocumentContentSnippets = ({ selectSnippet, documentSnippets, docum
 DocumentContentSnippets.propTypes = {
   selectSnippet: PropTypes.func.isRequired,
   documentSnippets: PropTypes.shape({
-    map: PropTypes.func
+    map: PropTypes.func,
   }).isRequired,
   selectedSnippet: PropTypes.shape({
-    get: PropTypes.func
+    get: PropTypes.func,
   }).isRequired,
   documentViewUrl: PropTypes.string.isRequired,
-  searchTerm: PropTypes.string.isRequired
+  searchTerm: PropTypes.string.isRequired,
 };
 
-export const SnippetList = ({ snippets, documentViewUrl, searchTerm, selectSnippet, template, selectedSnippet }) => (
+export const SnippetList = ({
+  snippets,
+  documentViewUrl,
+  searchTerm,
+  selectSnippet,
+  template,
+  selectedSnippet,
+}) => (
   <ul className="snippet-list">
     {snippets.get('metadata').map(fieldSnippets => (
       <MetadataFieldSnippets
@@ -95,7 +112,9 @@ export const SnippetList = ({ snippets, documentViewUrl, searchTerm, selectSnipp
         selectedSnippet={selectedSnippet}
         searchTerm={searchTerm}
       />
-     ) : ''}
+    ) : (
+      ''
+    )}
   </ul>
 );
 
@@ -104,18 +123,18 @@ SnippetList.propTypes = {
   selectSnippet: PropTypes.func.isRequired,
   searchTerm: PropTypes.string.isRequired,
   selectedSnippet: PropTypes.shape({
-    get: PropTypes.func
+    get: PropTypes.func,
   }).isRequired,
   snippets: PropTypes.shape({
-    get: PropTypes.func
+    get: PropTypes.func,
   }).isRequired,
   template: PropTypes.shape({
-    get: PropTypes.func
-  })
+    get: PropTypes.func,
+  }),
 };
 
 SnippetList.defaultProps = {
-  template: undefined
+  template: undefined,
 };
 
 export const mapStateToProps = (state, ownProps) => ({

@@ -55,7 +55,10 @@ describe('Semantic Search actions', () => {
       const action = actions.submitNewSearch(args);
       await action(dispatch);
       expect(api.search).toHaveBeenCalledWith(
-        new RequestParams({ searchTerm: 'search', query: { searchTerm: '', filters: { b: { values: ['c'] } } } })
+        new RequestParams({
+          searchTerm: 'search',
+          query: { searchTerm: '', filters: { b: { values: ['c'] } } },
+        })
       );
       expectFetchSearchesToHaveBeenDispatched(dispatch);
     });
@@ -136,9 +139,9 @@ describe('Semantic Search actions', () => {
     const getState = () => ({
       semanticSearch: {
         search: Immutable.fromJS({
-          results: currentResults
-        })
-      }
+          results: currentResults,
+        }),
+      },
     });
     it('should add specified documents to current search results', () => {
       const newDocs = [{ _id: 'new1' }, { _id: 'new2' }];
@@ -165,8 +168,8 @@ describe('Semantic Search actions', () => {
       search = { _id: 'searchId' };
       state = {
         semanticSearch: {
-          selectedDocument: null
-        }
+          selectedDocument: null,
+        },
       };
     });
     const makeMocks = () => {
@@ -177,32 +180,33 @@ describe('Semantic Search actions', () => {
       makeMocks();
       const action = actions.getSearch('searchId', args);
       await action(dispatch, getState);
-      expect(api.getSearch).toHaveBeenCalledWith(new RequestParams({ searchId: 'searchId', ...args }));
+      expect(api.getSearch).toHaveBeenCalledWith(
+        new RequestParams({ searchId: 'searchId', ...args })
+      );
       expect(dispatch).toHaveBeenCalledWith(basicActions.set('semanticSearch/search', search));
     });
     it('should update selected document if its among search results', async () => {
       const updatedDoc = {
         sharedId: 'doc1',
-        semanticSearch: {}
+        semanticSearch: {},
       };
       search = {
         _id: 'searchId',
-        results: [
-          updatedDoc,
-          { sharedId: 'otherDoc' }
-        ]
+        results: [updatedDoc, { sharedId: 'otherDoc' }],
       };
       state = {
         semanticSearch: {
           selectedDocument: Immutable.fromJS({
-            sharedId: 'doc1'
-          })
-        }
+            sharedId: 'doc1',
+          }),
+        },
       };
       makeMocks();
       const action = actions.getSearch('searchId', args);
       await action(dispatch, getState);
-      expect(dispatch).toHaveBeenCalledWith(basicActions.set('semanticSearch/selectedDocument', updatedDoc));
+      expect(dispatch).toHaveBeenCalledWith(
+        basicActions.set('semanticSearch/selectedDocument', updatedDoc)
+      );
     });
   });
 
@@ -214,8 +218,12 @@ describe('Semantic Search actions', () => {
       const action = actions.getMoreSearchResults('searchId', args);
 
       await action(dispatch);
-      expect(api.getSearch).toHaveBeenCalledWith(new RequestParams({ searchId: 'searchId', ...args }));
-      expect(dispatch).toHaveBeenCalledWith(basicActions.concatIn('semanticSearch/search', ['results'], results));
+      expect(api.getSearch).toHaveBeenCalledWith(
+        new RequestParams({ searchId: 'searchId', ...args })
+      );
+      expect(dispatch).toHaveBeenCalledWith(
+        basicActions.concatIn('semanticSearch/search', ['results'], results)
+      );
     });
   });
 

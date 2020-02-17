@@ -15,14 +15,14 @@ describe('DocumentResultsPanel', () => {
 
   beforeEach(() => {
     localProps = {
-      storeKey: 'library'
+      storeKey: 'library',
     };
     dispatch = jest.fn().mockImplementation(() => Promise.resolve());
     spyOn(multiReducer, 'wrapDispatch').and.returnValue(dispatch);
     state = {
       templates: [],
       semanticSearch: {
-        selectedDocument: Immutable.fromJS({ _id: 'sharedId' })
+        selectedDocument: Immutable.fromJS({ _id: 'sharedId' }),
       },
       library: {
         sidepanel: {
@@ -30,24 +30,24 @@ describe('DocumentResultsPanel', () => {
           tab: 'tab',
           metadata: [],
           metadataForm: {
-            $form: { pristine: true }
-          }
+            $form: { pristine: true },
+          },
         },
         search: {
-          searchTerm: 'search term'
-        }
-      }
+          searchTerm: 'search term',
+        },
+      },
     };
     store = {
       getState: jest.fn(() => state),
       subscribe: jest.fn(),
-      dispatch
+      dispatch,
     };
   });
   const render = () => shallow(<DocumentResultsPanel store={store} />);
   const getProps = () => ({
     ...mapDispatchToProps(dispatch, localProps),
-    ...mapStateToProps(state, localProps)
+    ...mapStateToProps(state, localProps),
   });
 
   it('should render DocumentSidePanel with the current semantic search document', () => {

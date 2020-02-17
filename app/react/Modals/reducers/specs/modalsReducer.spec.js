@@ -16,7 +16,11 @@ describe('modalsReducer', () => {
 
   describe('SHOW_MODAL', () => {
     it('should assign a key with modal name and data', () => {
-      const newState = modalsReducer(initialState, { type: types.SHOW_MODAL, modal: 'modalName', data: 'data' });
+      const newState = modalsReducer(initialState, {
+        type: types.SHOW_MODAL,
+        modal: 'modalName',
+        data: 'data',
+      });
       expect(newState.toJS().modalName).toEqual('data');
     });
   });

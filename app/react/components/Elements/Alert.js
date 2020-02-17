@@ -53,7 +53,7 @@ Alert.defaultProps = {
 
 Alert.propTypes = {
   message: PropTypes.string,
-  type: PropTypes.string
+  type: PropTypes.string,
 };
 
 export default Alert;

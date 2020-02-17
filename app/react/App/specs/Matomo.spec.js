@@ -33,12 +33,16 @@ describe('Matomo', () => {
 
   describe('mapStateToProps', () => {
     it('should parse and map id and url', () => {
-      const state = { settings: { collection: Immutable.fromJS({ matomoConfig: '{"id":"id", "url": "url"}' }) } };
+      const state = {
+        settings: { collection: Immutable.fromJS({ matomoConfig: '{"id":"id", "url": "url"}' }) },
+      };
       expect(mapStateToProps(state)).toEqual({ id: 'id', url: 'url' });
     });
 
     it('should not fail when json is malformed', () => {
-      const state = { settings: { collection: Immutable.fromJS({ matomoConfig: '{\'id\':"id", "url": "url"}' }) } };
+      const state = {
+        settings: { collection: Immutable.fromJS({ matomoConfig: '{\'id\':"id", "url": "url"}' }) },
+      };
       expect(mapStateToProps(state)).toEqual({});
     });
   });

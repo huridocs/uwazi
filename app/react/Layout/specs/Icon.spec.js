@@ -14,7 +14,7 @@ describe('Icon', () => {
       props = {
         data: { _id: 'iconid', type: 'Icons', label: 'iconlabel' },
         className: 'passed-classname',
-        size: 'md'
+        size: 'md',
       };
     });
 
@@ -43,7 +43,7 @@ describe('Icon', () => {
       props = {
         data: { _id: 'flagid', type: 'Flags', label: 'flaglabel' },
         className: 'passed-flag-classname',
-        size: 'md'
+        size: 'md',
       };
     });
 

@@ -21,10 +21,7 @@ export const ItemSnippet = ({ snippets, onSnippetClick, template }) => {
   const snippetElement = (
     <React.Fragment>
       <div className="item-snippet-source">{source}</div>
-      <div
-        onClick={onSnippetClick}
-        className="item-snippet"
-      >
+      <div onClick={onSnippetClick} className="item-snippet">
         <SafeHTML>{content}</SafeHTML>
       </div>
     </React.Fragment>
@@ -48,23 +45,23 @@ ItemSnippet.propTypes = {
   snippets: PropTypes.shape({
     count: PropTypes.number,
     metadata: PropTypes.array,
-    fullText: PropTypes.array
+    fullText: PropTypes.array,
   }).isRequired,
   onSnippetClick: PropTypes.func,
   doc: PropTypes.shape({
-    template: PropTypes.string
+    template: PropTypes.string,
   }).isRequired,
   template: PropTypes.shape({
-    get: PropTypes.func
-  }).isRequired
+    get: PropTypes.func,
+  }).isRequired,
 };
 
 ItemSnippet.defaultProps = {
-  onSnippetClick: undefined
+  onSnippetClick: undefined,
 };
 
 export const mapStateToProps = (state, ownProps) => ({
-  template: state.templates.find(tmpl => tmpl.get('_id') === ownProps.doc.template)
+  template: state.templates.find(tmpl => tmpl.get('_id') === ownProps.doc.template),
 });
 
 export default connect(mapStateToProps)(ItemSnippet);

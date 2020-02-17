@@ -5,7 +5,11 @@ describe('modalsActions', () => {
   describe('showModal', () => {
     it('should return a SHOW_MODAL action with modal name and data', () => {
       const action = actions.showModal('modalName', { data: 'data' });
-      expect(action).toEqual({ type: types.SHOW_MODAL, modal: 'modalName', data: { data: 'data' } });
+      expect(action).toEqual({
+        type: types.SHOW_MODAL,
+        modal: 'modalName',
+        data: { data: 'data' },
+      });
     });
   });
   describe('hideModal', () => {

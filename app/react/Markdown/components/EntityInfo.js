@@ -46,8 +46,10 @@ EntityInfo.propTypes = {
   ]),
 };
 
-export const mapDispatchToProps = dispatch => bindActionCreators(
-  { getAndSelectDocument: getAndSelectDocumentAction }, wrapDispatch(dispatch, 'library')
-);
+export const mapDispatchToProps = dispatch =>
+  bindActionCreators(
+    { getAndSelectDocument: getAndSelectDocumentAction },
+    wrapDispatch(dispatch, 'library')
+  );
 
 export default connect(() => ({}), mapDispatchToProps)(EntityInfo);

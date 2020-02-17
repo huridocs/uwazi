@@ -29,7 +29,7 @@ describe('Attachment', () => {
       loadForm: jasmine.createSpy('loadForm'),
       submitForm: jasmine.createSpy('submitForm'),
       resetForm: jasmine.createSpy('resetForm'),
-      isSourceDocument: false
+      isSourceDocument: false,
     };
 
     context = { confirm: jasmine.createSpy('confirm') };
@@ -55,7 +55,12 @@ describe('Attachment', () => {
       render();
 
       expect(component.find(AttachmentForm).length).toBe(1);
-      expect(component.find('.attachment-name').at(0).text()).not.toContain('Human name 1');
+      expect(
+        component
+          .find('.attachment-name')
+          .at(0)
+          .text()
+      ).not.toContain('Human name 1');
 
       const submit = component.find(AttachmentForm).props().onSubmit;
       submit();
@@ -66,7 +71,10 @@ describe('Attachment', () => {
     it('should have a cancel edit button', () => {
       render();
 
-      const cancelButton = component.find('.item-shortcut-group').find('button').at(0);
+      const cancelButton = component
+        .find('.item-shortcut-group')
+        .find('button')
+        .at(0);
 
       expect(props.resetForm).not.toHaveBeenCalled();
 
@@ -78,7 +86,9 @@ describe('Attachment', () => {
     it('should have a save edit button that submits form', () => {
       render();
 
-      const saveButton = component.find('.item-shortcut-group').find('button.item-shortcut.btn-success');
+      const saveButton = component
+        .find('.item-shortcut-group')
+        .find('button.item-shortcut.btn-success');
 
       expect(props.submitForm).not.toHaveBeenCalled();
 
@@ -90,9 +100,17 @@ describe('Attachment', () => {
 
   it('should include an authorized delete button for each file', () => {
     render();
-    const deleteButton = component.find('.attachment-buttons').find('button').at(1);
+    const deleteButton = component
+      .find('.attachment-buttons')
+      .find('button')
+      .at(1);
 
-    expect(deleteButton.parents().at(2).is(NeedAuthorization)).toBe(true);
+    expect(
+      deleteButton
+        .parents()
+        .at(2)
+        .is(NeedAuthorization)
+    ).toBe(true);
     expect(deleteButton.parent().props().if).toBe(true);
 
     deleteButton.simulate('click');
@@ -105,16 +123,25 @@ describe('Attachment', () => {
   it('should hold a thumbnail for PDFs and valid images', () => {
     props.file.filename = 'document.pdf';
     render();
-    expect(component.find('.attachment-thumbnail').find(Icon).props().icon).toContain('file-pdf');
+    expect(
+      component
+        .find('.attachment-thumbnail')
+        .find(Icon)
+        .props().icon
+    ).toContain('file-pdf');
     expect(component.find('.attachment-thumbnail > span').text()).toContain(' pdf');
 
     props.file.filename = 'image.jpg';
     render();
-    expect(component.find('.attachment-thumbnail img').props().src).toBe('/api/attachments/download?_id=parentId&file=image.jpg');
+    expect(component.find('.attachment-thumbnail img').props().src).toBe(
+      '/api/attachments/download?_id=parentId&file=image.jpg'
+    );
 
     props.file.filename = 'image.JPG';
     render();
-    expect(component.find('.attachment-thumbnail img').props().src).toBe('/api/attachments/download?_id=parentId&file=image.JPG');
+    expect(component.find('.attachment-thumbnail img').props().src).toBe(
+      '/api/attachments/download?_id=parentId&file=image.JPG'
+    );
 
     props.file.filename = 'image.doc';
     render();
@@ -140,15 +167,21 @@ describe('Attachment', () => {
       expect(replaceButton.props().documentId).toBe(props.parentId);
       expect(replaceButton.props().storeKey).toBe('storeKey');
       expect(replaceButton.props().documentSharedId).toBe(props.parentSharedId);
-      expect(replaceButton.parents().at(2).is(NeedAuthorization)).toBe(true);
+      expect(
+        replaceButton
+          .parents()
+          .at(2)
+          .is(NeedAuthorization)
+      ).toBe(true);
       expect(replaceButton.parent().props().if).toBe(true);
     });
   });
 
-
   it('should allow downloading the attachment', () => {
     render();
-    expect(component.find('.attachment-link').props().href).toBe('/api/attachments/download?_id=parentId&file=filename.ext');
+    expect(component.find('.attachment-link').props().href).toBe(
+      '/api/attachments/download?_id=parentId&file=filename.ext'
+    );
   });
 
   describe('mapStateToProps', () => {

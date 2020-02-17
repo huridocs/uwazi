@@ -7,13 +7,7 @@ describe('Navlinks Validator', () => {
   beforeEach(() => {
     const links = [1, 2, 3, 4, 5, 6];
     form = {
-      links: [
-        { title: '' },
-        { title: 'goodTitle' },
-        { title: '  ' },
-        { title: '0' },
-        {}
-      ]
+      links: [{ title: '' }, { title: 'goodTitle' }, { title: '  ' }, { title: '0' }, {}],
     };
     validationRules = validator(links);
   });

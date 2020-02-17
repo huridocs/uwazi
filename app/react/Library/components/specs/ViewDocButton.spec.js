@@ -15,12 +15,12 @@ describe('ViewDocButton', () => {
       format: 'format',
       sharedId: '123',
       searchTerm: '',
-      openReferencesTab: jest.fn()
+      openReferencesTab: jest.fn(),
     };
   });
 
   const render = () => {
-    component = shallow(<ViewDocButton {...props}/>);
+    component = shallow(<ViewDocButton {...props} />);
     return component;
   };
 
@@ -58,7 +58,9 @@ describe('ViewDocButton', () => {
         const dispatch = jest.fn(fn => fn(innerDispatch));
         const mappedProps = mapDispatchToProps(dispatch);
         mappedProps.openReferencesTab();
-        expect(innerDispatch).toHaveBeenCalledWith(actions.set('viewer.sidepanel.tab', 'references'));
+        expect(innerDispatch).toHaveBeenCalledWith(
+          actions.set('viewer.sidepanel.tab', 'references')
+        );
       });
     });
   });

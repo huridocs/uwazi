@@ -25,7 +25,7 @@ describe('StackedDualBarChart', () => {
   it('should allow overriding default data and label and map the Legend payload', () => {
     props = {
       data: [{ name: 'd1' }, { name: 'd2' }],
-      chartLabel: 'someLabel'
+      chartLabel: 'someLabel',
     };
 
     testSnapshot();

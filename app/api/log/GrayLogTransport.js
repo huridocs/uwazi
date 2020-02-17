@@ -7,15 +7,14 @@ export default class GrayLogTransport extends winston.Transport {
     super(opts);
 
     this.instanceName = opts.instance_name;
-    this.graylog = new graylog2.graylog({ //eslint-disable-line new-cap
-      servers: [
-            { host: opts.server, port: 12201 }
-      ],
+    // eslint-disable-next-line new-cap
+    this.graylog = new graylog2.graylog({
+      servers: [{ host: opts.server, port: 12201 }],
       hostname: this.instanceName,
-      facility: 'Uwazi instances'
+      facility: 'Uwazi instances',
     });
 
-    this.graylog.on('error', (error) => {
+    this.graylog.on('error', error => {
       console.error('Error while trying to write to graylog2:', error); //eslint-disable-line no-console
     });
   }

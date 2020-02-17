@@ -9,9 +9,11 @@ describe('RelationTypesAPI', () => {
   beforeEach(() => {
     backend.restore();
     backend
-    .get(`${APIURL}relationtypes?param=value`, { body: JSON.stringify({ rows: arrayResponse }) })
-    .delete(`${APIURL}relationtypes?_id=id`, { body: JSON.stringify({ backednResponse: 'testdelete' }) })
-    .post(`${APIURL}relationtypes`, { body: JSON.stringify({ backednResponse: 'test' }) });
+      .get(`${APIURL}relationtypes?param=value`, { body: JSON.stringify({ rows: arrayResponse }) })
+      .delete(`${APIURL}relationtypes?_id=id`, {
+        body: JSON.stringify({ backednResponse: 'testdelete' }),
+      })
+      .post(`${APIURL}relationtypes`, { body: JSON.stringify({ backednResponse: 'test' }) });
   });
 
   afterEach(() => backend.restore());

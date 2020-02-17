@@ -54,7 +54,7 @@
     "e2e-restore-fixtures": "cd nightmare/fixtures;./restore.sh",
     "eslint": "./node_modules/.bin/eslint app --quiet --ext js,ts,tsx",
     "eslint-fulldiff": "git diff-index --name-only origin/development | grep ^app/ | grep -v snap | xargs ls -d 2>/dev/null | xargs ./node_modules/.bin/eslint ",
-    "prettier": "./node_modules/.bin/prettier --loglevel warn --write --require-pragma 'app/**/*.{js,ts,tsx}'"
+    "prettier": "./node_modules/.bin/prettier --write 'app/**/*.{js,ts,tsx}'"
   },
   "dependencies": {
     "@babel/core": "7.4.4",

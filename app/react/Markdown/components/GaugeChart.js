@@ -7,18 +7,23 @@ import { ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import Loader from 'app/components/Elements/Loader';
 import markdownDatasets from '../markdownDatasets';
 
-export const GaugeChartComponent = (props) => {
+export const GaugeChartComponent = props => {
   const { dataset, property, value, max, height, classname, colors, children } = props;
-  let output = <Loader/>;
+  let output = <Loader />;
 
-  const propedChildren = React.Children.map(children, c => React.isValidElement(c) ? React.cloneElement(c, { dataset, property }) : c);
+  const propedChildren = React.Children.map(children, c =>
+    React.isValidElement(c) ? React.cloneElement(c, { dataset, property }) : c
+  );
 
   if (value !== null) {
-    const formattedData = [{ label: 'progress', results: value }, { label: '', results: max - value }];
+    const formattedData = [
+      { label: 'progress', results: value },
+      { label: '', results: max - value },
+    ];
     const sliceColors = colors.split(',');
     output = (
       <ResponsiveContainer width="100%" height={height}>
-        <PieChart width={height * 2} height={height * 2} >
+        <PieChart width={height * 2} height={height * 2}>
           <Pie
             data={formattedData}
             dataKey="results"
@@ -30,13 +35,20 @@ export const GaugeChartComponent = (props) => {
             endAngle={0}
             cy={height}
           >
-            {
-              formattedData.map((_entry, index) => <Cell key={index} fill={sliceColors[index % sliceColors.length]} />)
-            }
+            {formattedData.map((_entry, index) => (
+              <Cell key={index} fill={sliceColors[index % sliceColors.length]} />
+            ))}
           </Pie>
           {propedChildren.length && (
             <g>
-              <text x="50%" y={height} dy={-1} style={{ fontSize: `${height / 2}px` }} textAnchor="middle" fill={sliceColors[0]}>
+              <text
+                x="50%"
+                y={height}
+                dy={-1}
+                style={{ fontSize: `${height / 2}px` }}
+                textAnchor="middle"
+                fill={sliceColors[0]}
+              >
                 {propedChildren}
               </text>
             </g>
@@ -73,9 +85,9 @@ GaugeChartComponent.propTypes = {
 };
 
 export const mapStateToProps = (state, props) => ({
-    value: markdownDatasets.getMetadataValue(state, props),
-    max: Number(props.max) || 100,
-    height: Number(props.height) || 110,
+  value: markdownDatasets.getMetadataValue(state, props),
+  max: Number(props.max) || 100,
+  height: Number(props.height) || 110,
 });
 
 export default connect(mapStateToProps)(GaugeChartComponent);

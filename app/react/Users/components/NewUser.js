@@ -7,14 +7,12 @@ import UserForm from './UserForm';
 
 export class NewUser extends Component {
   render() {
-    return (
-      <UserForm submit={this.props.newUser}/>
-    );
+    return <UserForm submit={this.props.newUser} />;
   }
 }
 
 NewUser.propTypes = {
-  newUser: PropTypes.func.isRequired
+  newUser: PropTypes.func.isRequired,
 };
 
 function mapDispatchToProps(dispatch) {

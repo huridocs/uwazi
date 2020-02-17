@@ -12,7 +12,7 @@ describe('DateFilter', () => {
       format: 'format',
     };
 
-    const component = shallow(<DateFilter {...props}/>);
+    const component = shallow(<DateFilter {...props} />);
     expect(component).toMatchSnapshot();
   });
 });

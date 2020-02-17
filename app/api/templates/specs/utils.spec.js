@@ -6,7 +6,7 @@ describe('templates utils', () => {
       const properties = [
         { label: ' my prop ', type: 'text' },
         { label: 'my^foreïgn$próp"', type: 'text' },
-        { label: ' my prop ', type: 'geolocation' }
+        { label: ' my prop ', type: 'geolocation' },
       ];
       const result = generateNames(properties);
       expect(result[0].name).toBe('my_prop');
@@ -60,9 +60,7 @@ describe('templates utils', () => {
         { id: 1, name: 'my_prop' },
         { id: 2, name: 'boromir' },
       ];
-      const newProperties = [
-        { id: 1, name: 'I_just_changed_my_name' }
-      ];
+      const newProperties = [{ id: 1, name: 'I_just_changed_my_name' }];
 
       const result = getDeletedProperties(oldProperties, newProperties);
       expect(result).toEqual(['boromir']);
@@ -75,7 +73,7 @@ describe('templates utils', () => {
       ];
       const newProperties = [
         { id: 2, name: 'my_prop_two', values: [] },
-        { id: 4, name: 'vip', values: [{ id: 1, name: 'my_prop' }] }
+        { id: 4, name: 'vip', values: [{ id: 1, name: 'my_prop' }] },
       ];
       const result = getDeletedProperties(oldProperties, newProperties);
       expect(result).toEqual(['boromir']);

@@ -9,7 +9,6 @@ import * as types from './actionTypes';
 import * as uiActions from './uiActions';
 import * as routeUtils from '../utils/routeUtils';
 
-
 export function parseResults(results, parentEntity, editing) {
   return { type: types.PARSE_RELATIONSHIPS_RESULTS, results, parentEntity, editing };
 }
@@ -41,9 +40,16 @@ export function setAddToData(index, rightIndex) {
 export function updateRightRelationshipType(index, rightIndex, _id) {
   return (dispatch, getState) => {
     const { hubs } = getState().relationships;
-    const newRightRelationshipType = rightIndex === hubs.getIn([index, 'rightRelationships']).size - 1;
+    const newRightRelationshipType =
+      rightIndex === hubs.getIn([index, 'rightRelationships']).size - 1;
 
-    dispatch({ type: types.UPDATE_RELATIONSHIPS_RIGHT_TYPE, index, rightIndex, _id, newRightRelationshipType });
+    dispatch({
+      type: types.UPDATE_RELATIONSHIPS_RIGHT_TYPE,
+      index,
+      rightIndex,
+      _id,
+      newRightRelationshipType,
+    });
 
     if (newRightRelationshipType) {
       dispatch(setAddToData(index, rightIndex));
@@ -53,9 +59,14 @@ export function updateRightRelationshipType(index, rightIndex, _id) {
 }
 
 export function addEntity(index, rightIndex, entity) {
-  return (dispatch) => {
+  return dispatch => {
     const title = entity.title.length > 75 ? `${entity.title.slice(0, 75)}(...)` : entity.title;
-    dispatch(notificationActions.notify(`${title} added to hub.  Save your work to make change permanent.`, 'success'));
+    dispatch(
+      notificationActions.notify(
+        `${title} added to hub.  Save your work to make change permanent.`,
+        'success'
+      )
+    );
     dispatch({ type: types.ADD_RELATIONSHIPS_ENTITY, index, rightIndex, entity });
   };
 }
@@ -73,11 +84,13 @@ export function moveEntities(index, rightRelationshipIndex) {
 }
 
 export function reloadRelationships(sharedId) {
-  return (dispatch, getState) => routeUtils.requestState(new RequestParams({ sharedId }), getState())
-  .then(([connectionsGroups, searchResults]) => {
-    dispatch(actions.set('relationships/list/connectionsGroups', connectionsGroups));
-    dispatch(actions.set('relationships/list/searchResults', searchResults));
-  });
+  return (dispatch, getState) =>
+    routeUtils
+      .requestState(new RequestParams({ sharedId }), getState())
+      .then(([connectionsGroups, searchResults]) => {
+        dispatch(actions.set('relationships/list/connectionsGroups', connectionsGroups));
+        dispatch(actions.set('relationships/list/searchResults', searchResults));
+      });
 }
 
 export function saveRelationships() {
@@ -86,77 +99,106 @@ export function saveRelationships() {
     const parentEntityId = getState().relationships.list.sharedId;
     const hubs = getState().relationships.hubs.toJS();
 
-    const apiCall = hubs.reduce((apiActions, hubData) => {
-      if (!hubData.hub && !hubData.deleted) {
-        const leftRelationship = Object.assign({ entity: parentEntityId }, hubData.leftRelationship);
-        const rightRelationships = hubData.rightRelationships.reduce((relationships, rightGroup) => {
-          if (!rightGroup.deleted) {
-            const newRelationships = rightGroup.relationships
-            .filter(r => !r.deleted);
+    const apiCall = hubs.reduce(
+      (apiActions, hubData) => {
+        if (!hubData.hub && !hubData.deleted) {
+          const leftRelationship = Object.assign(
+            { entity: parentEntityId },
+            hubData.leftRelationship
+          );
+          const rightRelationships = hubData.rightRelationships.reduce(
+            (relationships, rightGroup) => {
+              if (!rightGroup.deleted) {
+                const newRelationships = rightGroup.relationships.filter(r => !r.deleted);
 
-            return relationships.concat(newRelationships);
+                return relationships.concat(newRelationships);
+              }
+
+              return relationships;
+            },
+            []
+          );
+          const fullHubData = [leftRelationship].concat(rightRelationships);
+          apiActions.save.push(fullHubData);
+        }
+
+        if (hubData.hub) {
+          if (hubData.deleted) {
+            apiActions.delete.push({ _id: hubData.leftRelationship._id, entity: parentEntityId });
           }
 
-          return relationships;
-        }, []);
-        const fullHubData = [leftRelationship].concat(rightRelationships);
-        apiActions.save.push(fullHubData);
-      }
+          if (hubData.modified && !hubData.deleted) {
+            apiActions.save.push(
+              Object.assign({ entity: parentEntityId, hub: hubData.hub }, hubData.leftRelationship)
+            );
+          }
 
-      if (hubData.hub) {
-        if (hubData.deleted) {
-          apiActions.delete.push({ _id: hubData.leftRelationship._id, entity: parentEntityId });
-        }
+          hubData.rightRelationships.forEach(rightGroup => {
+            rightGroup.relationships.forEach(r => {
+              const deleted = rightGroup.deleted || r.deleted || r.moved;
 
-        if (hubData.modified && !hubData.deleted) {
-          apiActions.save.push(Object.assign({ entity: parentEntityId, hub: hubData.hub }, hubData.leftRelationship));
-        }
+              if (deleted && r._id) {
+                apiActions.delete.push(Object.assign({ _id: r._id, entity: r.entity }));
+              }
 
-        hubData.rightRelationships.forEach((rightGroup) => {
-          rightGroup.relationships.forEach((r) => {
-            const deleted = rightGroup.deleted || r.deleted || r.moved;
-
-            if (deleted && r._id) {
-              apiActions.delete.push(Object.assign({ _id: r._id, entity: r.entity }));
-            }
-
-            const toSave = rightGroup.modified || !r._id;
-            if (toSave && !deleted) {
-              apiActions.save.push(Object.assign(r, { entity: r.entity, hub: hubData.hub, template: rightGroup.template }));
-            }
+              const toSave = rightGroup.modified || !r._id;
+              if (toSave && !deleted) {
+                apiActions.save.push(
+                  Object.assign(r, {
+                    entity: r.entity,
+                    hub: hubData.hub,
+                    template: rightGroup.template,
+                  })
+                );
+              }
+            });
           });
-        });
-      }
-      return apiActions;
-    }, { save: [], delete: [] });
+        }
+        return apiActions;
+      },
+      { save: [], delete: [] }
+    );
 
-    return api.post('relationships/bulk', new RequestParams(apiCall))
-    .then(response => Promise.all([
-      response,
-      api.get('entities', new RequestParams({ sharedId: parentEntityId })).then(r => r.json.rows[0]),
-      reloadRelationships(parentEntityId)(dispatch, getState)
-    ]))
-    .then(([response, parentEntity]) => {
-      dispatch(actions.set('entityView/entity', parentEntity));
-      dispatch(actions.set('viewer/doc', parentEntity));
+    return api
+      .post('relationships/bulk', new RequestParams(apiCall))
+      .then(response =>
+        Promise.all([
+          response,
+          api
+            .get('entities', new RequestParams({ sharedId: parentEntityId }))
+            .then(r => r.json.rows[0]),
+          reloadRelationships(parentEntityId)(dispatch, getState),
+        ])
+      )
+      .then(([response, parentEntity]) => {
+        dispatch(actions.set('entityView/entity', parentEntity));
+        dispatch(actions.set('viewer/doc', parentEntity));
 
-      dispatch(uiActions.closePanel());
-      dispatch(edit(false, getState().relationships.list.searchResults, getState().relationships.list.entity));
-      dispatch(referencesActions.loadReferences(parentEntityId));
-      dispatch({ type: types.SAVED_RELATIONSHIPS, response });
-      dispatch(notificationActions.notify('Relationships saved', 'success'));
-    });
+        dispatch(uiActions.closePanel());
+        dispatch(
+          edit(
+            false,
+            getState().relationships.list.searchResults,
+            getState().relationships.list.entity
+          )
+        );
+        dispatch(referencesActions.loadReferences(parentEntityId));
+        dispatch({ type: types.SAVED_RELATIONSHIPS, response });
+        dispatch(notificationActions.notify('Relationships saved', 'success'));
+      });
   };
 }
-
 
 export function immidiateSearch(dispatch, searchTerm) {
   dispatch(uiActions.searching());
 
-  const requestParams = new RequestParams({ searchTerm, fields: ['title'], includeUnpublished: true });
+  const requestParams = new RequestParams({
+    searchTerm,
+    fields: ['title'],
+    includeUnpublished: true,
+  });
 
-  return api.get('search', requestParams)
-  .then((response) => {
+  return api.get('search', requestParams).then(response => {
     const results = response.json.rows;
     dispatch(actions.set('relationships/searchResults', results));
   });
@@ -165,7 +207,7 @@ export function immidiateSearch(dispatch, searchTerm) {
 const debouncedSearch = debounce(immidiateSearch, 400);
 
 export function search(searchTerm) {
-  return (dispatch) => {
+  return dispatch => {
     dispatch(actions.set('relationships/searchTerm', searchTerm));
     return debouncedSearch(dispatch, searchTerm);
   };

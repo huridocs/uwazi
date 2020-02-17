@@ -14,10 +14,14 @@ export class UploadsHeader extends Component {
         <div className="content-header-title">
           <h1 className="item-name">{t('System', 'My Files')}</h1>
           <button type="button" className="btn btn-success btn-xs" onClick={this.props.newEntity}>
-            <Icon icon="plus"/> {t('System', 'New entity')}
+            <Icon icon="plus" /> {t('System', 'New entity')}
           </button>
-          <button type="button" className="btn btn-success btn-xs" onClick={this.props.showImportPanel}>
-            <Icon icon="upload"/> {t('System', 'Import')}
+          <button
+            type="button"
+            className="btn btn-success btn-xs"
+            onClick={this.props.showImportPanel}
+          >
+            <Icon icon="upload" /> {t('System', 'Import')}
           </button>
         </div>
       </div>

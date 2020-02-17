@@ -12,7 +12,7 @@ describe('FormatMetadata', () => {
       templates: [],
       thesauris: [],
       entity: {},
-      sortedProperty: 'sortedProperty'
+      sortedProperty: 'sortedProperty',
     };
     const component = shallow(<FormatMetadata.WrappedComponent {...props} />);
     expect(component).toMatchSnapshot();
@@ -25,7 +25,7 @@ describe('FormatMetadata', () => {
       thesauris: [],
       entity: {},
       sortedProperty: 'sortedProperty',
-      additionalMetadata: [{ more: 'data' }, { and: 'more' }]
+      additionalMetadata: [{ more: 'data' }, { and: 'more' }],
     };
     const component = shallow(<FormatMetadata.WrappedComponent {...props} />);
     expect(component).toMatchSnapshot();

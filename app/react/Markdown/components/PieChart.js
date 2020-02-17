@@ -10,7 +10,7 @@ import { arrayUtils } from 'app/Charts';
 import PieChartLabel from './PieChartLabel';
 import markdownDatasets from '../markdownDatasets';
 
-export const PieChartComponent = (props) => {
+export const PieChartComponent = props => {
   const {
     showLabel,
     outerRadius,
@@ -24,12 +24,17 @@ export const PieChartComponent = (props) => {
     maxCategories,
   } = props;
 
-  let output = <Loader/>;
+  let output = <Loader />;
 
   if (data) {
     const aggregateOthers = props.aggregateOthers === 'true';
     const formattedData = arrayUtils.sortValues(
-      arrayUtils.formatDataForChart(data, property, thesauris, { context, excludeZero: true, maxCategories, aggregateOthers })
+      arrayUtils.formatDataForChart(data, property, thesauris, {
+        context,
+        excludeZero: true,
+        maxCategories,
+        aggregateOthers,
+      })
     );
     const sliceColors = colors.split(',');
     const shouldShowLabel = showLabel === 'true';
@@ -44,13 +49,13 @@ export const PieChartComponent = (props) => {
             outerRadius={outerRadius}
             fill="#8884d8"
             labelLine={shouldShowLabel}
-            label={shouldShowLabel ? <PieChartLabel data={formattedData}/> : undefined}
+            label={shouldShowLabel ? <PieChartLabel data={formattedData} /> : undefined}
           >
-            {
-              formattedData.map((_entry, index) => <Cell key={index} fill={sliceColors[index % sliceColors.length]} />)
-            }
+            {formattedData.map((_entry, index) => (
+              <Cell key={index} fill={sliceColors[index % sliceColors.length]} />
+            ))}
           </Pie>
-          { !shouldShowLabel && <Tooltip/> }
+          {!shouldShowLabel && <Tooltip />}
         </PieChart>
       </ResponsiveContainer>
     );

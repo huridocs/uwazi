@@ -14,10 +14,7 @@ export class ResetSearch extends Component {
     const { connectionsGroups } = this.props;
     return (
       <ShowIf if={Boolean(connectionsGroups.size)}>
-        <button
-          onClick={this.props.resetSearch}
-          className="btn btn-primary"
-        >
+        <button onClick={this.props.resetSearch} className="btn btn-primary">
           <Icon icon="sync" />
           <span className="btn-label">{t('System', 'Reset')}</span>
         </button>
@@ -28,12 +25,12 @@ export class ResetSearch extends Component {
 
 ResetSearch.propTypes = {
   connectionsGroups: PropTypes.object,
-  resetSearch: PropTypes.func
+  resetSearch: PropTypes.func,
 };
 
 function mapStateToProps({ relationships }) {
   return {
-    connectionsGroups: relationships.list.connectionsGroups
+    connectionsGroups: relationships.list.connectionsGroups,
   };
 }
 

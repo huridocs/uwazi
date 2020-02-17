@@ -1,7 +1,17 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { ResponsiveContainer, BarChart, XAxis, YAxis, CartesianGrid, Bar, Tooltip, Rectangle, Legend } from 'recharts';
+import {
+  ResponsiveContainer,
+  BarChart,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Bar,
+  Tooltip,
+  Rectangle,
+  Legend,
+} from 'recharts';
 
 import arrayUtils from '../utils/arrayUtils';
 
@@ -16,7 +26,8 @@ class ExtendedTooltip extends React.Component {
             {this.props.chartLabel}
           </div>
           <div style={{ padding: '5px' }}>
-            {this.props.payload[0].payload.name}:&nbsp;&nbsp;<b style={{ color: '#600' }}>{this.props.payload[0].value}</b>
+            {this.props.payload[0].payload.name}:&nbsp;&nbsp;
+            <b style={{ color: '#600' }}>{this.props.payload[0].value}</b>
           </div>
         </div>
       );
@@ -28,12 +39,12 @@ class ExtendedTooltip extends React.Component {
 ExtendedTooltip.propTypes = {
   payload: PropTypes.array,
   active: PropTypes.bool,
-  chartLabel: PropTypes.string
+  chartLabel: PropTypes.string,
 };
 
-const ColoredBar = (props) => {
+const ColoredBar = props => {
   const { index } = props;
-  return <Rectangle {...props} stroke="none" fill={colorScheme[index % colorScheme.length]}/>;
+  return <Rectangle {...props} stroke="none" fill={colorScheme[index % colorScheme.length]} />;
 };
 
 ColoredBar.propTypes = {
@@ -42,7 +53,7 @@ ColoredBar.propTypes = {
   y: PropTypes.number,
   width: PropTypes.number,
   height: PropTypes.number,
-  index: PropTypes.number
+  index: PropTypes.number,
 };
 
 export class RechartsBar extends Component {
@@ -73,10 +84,17 @@ export class RechartsBar extends Component {
           data={this.state.fullData}
           margin={{ top: 0, right: 30, left: 0, bottom: 0 }}
         >
-          <XAxis dataKey="xAxisName" label={this.props.chartLabel}/>
-          <YAxis/>
-          <CartesianGrid strokeDasharray="2 4"/>
-          <Tooltip content={<ExtendedTooltip parentData={this.state.fullData} chartLabel={this.props.chartLabel} />}/>
+          <XAxis dataKey="xAxisName" label={this.props.chartLabel} />
+          <YAxis />
+          <CartesianGrid strokeDasharray="2 4" />
+          <Tooltip
+            content={
+              <ExtendedTooltip
+                parentData={this.state.fullData}
+                chartLabel={this.props.chartLabel}
+              />
+            }
+          />
           <Bar dataKey="value" fill="#D24040" shape={<ColoredBar />} />
           <Legend payload={arrayUtils.formatPayload(this.state.fullData)} />
         </BarChart>
@@ -87,7 +105,7 @@ export class RechartsBar extends Component {
 
 RechartsBar.propTypes = {
   data: PropTypes.array,
-  chartLabel: PropTypes.string
+  chartLabel: PropTypes.string,
 };
 
 export default connect()(RechartsBar);

@@ -10,11 +10,14 @@ export default {
   async up(db) {
     process.stdout.write(`${this.name}...\r\n`);
 
-    const [settings] = await db.collection('settings').find().toArray();
+    const [settings] = await db
+      .collection('settings')
+      .find()
+      .toArray();
 
     let { languages } = settings;
 
-    languages = languages.map((l) => {
+    languages = languages.map(l => {
       const migratedLanguage = l;
       if (this.rtlLanguagesList.includes(l.key)) {
         migratedLanguage.rtl = true;
@@ -24,5 +27,5 @@ export default {
     });
 
     return db.collection('settings').update({ _id: settings._id }, { $set: { languages } });
-  }
+  },
 };

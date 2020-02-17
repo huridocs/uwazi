@@ -7,16 +7,23 @@ import * as routeActions from '../routeActions';
 describe('Viewer routeActions', () => {
   const document = { _id: '1', sharedId: 'sid', title: 'title', pdfInfo: 'test' };
   const relationTypes = { rows: [{ name: 'Supports', _id: '1' }] };
-  const references = [{ _id: '1', connectedDocument: '1' }, { _id: '2', connectedDocument: '2' }];
+  const references = [
+    { _id: '1', connectedDocument: '1' },
+    { _id: '2', connectedDocument: '2' },
+  ];
 
   beforeEach(() => {
     backend.restore();
     backend
-    .get(`${APIURL}entities?sharedId=documentId`, { body: JSON.stringify({ rows: [document] }) })
-    .get(`${APIURL}relationtypes`, { body: JSON.stringify(relationTypes) })
-    .get(`${APIURL}references/by_document?sharedId=documentId`, { body: JSON.stringify(references) });
+      .get(`${APIURL}entities?sharedId=documentId`, { body: JSON.stringify({ rows: [document] }) })
+      .get(`${APIURL}relationtypes`, { body: JSON.stringify(relationTypes) })
+      .get(`${APIURL}references/by_document?sharedId=documentId`, {
+        body: JSON.stringify(references),
+      });
 
-    spyOn(relationships, 'requestState').and.returnValue(Promise.resolve(['connectionsGroups', 'searchResults', 'sort']));
+    spyOn(relationships, 'requestState').and.returnValue(
+      Promise.resolve(['connectionsGroups', 'searchResults', 'sort'])
+    );
   });
 
   afterEach(() => backend.restore());
@@ -27,11 +34,13 @@ describe('Viewer routeActions', () => {
 
     beforeEach(() => {
       dispatch = jasmine.createSpy('dispatch');
-      spyOn(relationships, 'setReduxState').and.callFake(argState => ({ type: 'relationshipsSetReduxState', value: argState }));
+      spyOn(relationships, 'setReduxState').and.callFake(argState => ({
+        type: 'relationshipsSetReduxState',
+        value: argState,
+      }));
 
       state = {
-        documentViewer:
-        {
+        documentViewer: {
           doc: 'doc',
           references: 'references',
           templates: 'templates',
@@ -39,7 +48,7 @@ describe('Viewer routeActions', () => {
           relationTypes: 'relationTypes',
           rawText: 'rawText',
         },
-        relationTypes: 'relationTypes'
+        relationTypes: 'relationTypes',
       };
 
       routeActions.setViewerState(state)(dispatch);
@@ -49,7 +58,10 @@ describe('Viewer routeActions', () => {
       expect(dispatch).toHaveBeenCalledWith({ type: 'relationTypes/SET', value: 'relationTypes' });
       expect(dispatch).toHaveBeenCalledWith({ type: 'SET_REFERENCES', references: 'references' });
       expect(dispatch).toHaveBeenCalledWith({ type: 'viewer/doc/SET', value: 'doc' });
-      expect(dispatch).toHaveBeenCalledWith({ type: 'viewer/relationTypes/SET', value: 'relationTypes' });
+      expect(dispatch).toHaveBeenCalledWith({
+        type: 'viewer/relationTypes/SET',
+        value: 'relationTypes',
+      });
       expect(dispatch).toHaveBeenCalledWith({ type: 'relationshipsSetReduxState', value: state });
       expect(dispatch).toHaveBeenCalledWith({ type: 'viewer/rawText/SET', value: 'rawText' });
     });

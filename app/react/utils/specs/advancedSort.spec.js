@@ -27,7 +27,13 @@ describe('Advanced Sort', () => {
     const baseArray = ['1', '10', '3.1', '3', '200'];
 
     expect(advancedSort(baseArray, { treatAs: 'number' })).toEqual(['1', '3', '3.1', '10', '200']);
-    expect(advancedSort(baseArray, { treatAs: 'number', order: 'desc' })).toEqual(['200', '10', '3.1', '3', '1']);
+    expect(advancedSort(baseArray, { treatAs: 'number', order: 'desc' })).toEqual([
+      '200',
+      '10',
+      '3.1',
+      '3',
+      '1',
+    ]);
     expect(baseArray).toEqual(['1', '10', '3.1', '3', '200']);
   });
 
@@ -49,9 +55,21 @@ describe('Advanced Sort', () => {
     it('should allow sorting by a single property (not affecting original)', () => {
       const baseArray = [indexA, indexB, indexC, indexD, indexE];
 
-      expect(advancedSort(baseArray, { property: 'b' })).toEqual([indexB, indexC, indexE, indexD, indexA]);
+      expect(advancedSort(baseArray, { property: 'b' })).toEqual([
+        indexB,
+        indexC,
+        indexE,
+        indexD,
+        indexA,
+      ]);
       expect(baseArray).toEqual([indexA, indexB, indexC, indexD, indexE]);
-      expect(advancedSort(baseArray, { property: 'a' })).toEqual([indexA, indexB, indexC, indexD, indexE]);
+      expect(advancedSort(baseArray, { property: 'a' })).toEqual([
+        indexA,
+        indexB,
+        indexC,
+        indexD,
+        indexE,
+      ]);
       expect(baseArray).toEqual([indexA, indexB, indexC, indexD, indexE]);
     });
 
@@ -59,8 +77,20 @@ describe('Advanced Sort', () => {
       delete indexB.b;
       const baseArray = [indexA, indexB, indexC, indexD, indexE];
 
-      expect(advancedSort(baseArray, { property: 'b' })).toEqual([indexC, indexE, indexD, indexA, indexB]);
-      expect(advancedSort(baseArray, { property: 'b', order: 'desc' })).toEqual([indexA, indexD, indexE, indexC, indexB]);
+      expect(advancedSort(baseArray, { property: 'b' })).toEqual([
+        indexC,
+        indexE,
+        indexD,
+        indexA,
+        indexB,
+      ]);
+      expect(advancedSort(baseArray, { property: 'b', order: 'desc' })).toEqual([
+        indexA,
+        indexD,
+        indexE,
+        indexC,
+        indexB,
+      ]);
       expect(baseArray).toEqual([indexA, indexB, indexC, indexD, indexE]);
     });
 
@@ -77,17 +107,54 @@ describe('Advanced Sort', () => {
       const baseArray = [indexA, indexB, indexC, indexD, indexE];
       const options = { property: ['sub', 'a'] };
       expect(advancedSort(baseArray, options).slice(0, 3)).toEqual([indexC, indexB, indexA]);
-      expect(advancedSort(baseArray, options)[3] === indexD || advancedSort(baseArray, options)[3] === indexE).toBe(true);
-      expect(advancedSort(baseArray, options)[4] === indexD || advancedSort(baseArray, options)[4] === indexE).toBe(true);
+      expect(
+        advancedSort(baseArray, options)[3] === indexD ||
+          advancedSort(baseArray, options)[3] === indexE
+      ).toBe(true);
+      expect(
+        advancedSort(baseArray, options)[4] === indexD ||
+          advancedSort(baseArray, options)[4] === indexE
+      ).toBe(true);
     });
   });
 
   describe('Sorting doted list numbers', () => {
     it('should sort list according to parameters passed', () => {
-      const list = ['1.1.c', '1.1.a', '0.3', '1.1.b', '1.10', '1.2', '1', '1.2.a', '1.2.b', '3.1', '20.2.a', '1.1', '10.5.c', '2', '10.5.a'];
+      const list = [
+        '1.1.c',
+        '1.1.a',
+        '0.3',
+        '1.1.b',
+        '1.10',
+        '1.2',
+        '1',
+        '1.2.a',
+        '1.2.b',
+        '3.1',
+        '20.2.a',
+        '1.1',
+        '10.5.c',
+        '2',
+        '10.5.a',
+      ];
       const options = { treatAs: 'dottedList', listTypes: [Number, Number, String] };
-      const expectedResult = ['0.3', '1', '1.1', '1.1.a', '1.1.b', '1.1.c', '1.2', '1.2.a', '1.2.b', '1.10',
-                              '2', '3.1', '10.5.a', '10.5.c', '20.2.a'];
+      const expectedResult = [
+        '0.3',
+        '1',
+        '1.1',
+        '1.1.a',
+        '1.1.b',
+        '1.1.c',
+        '1.2',
+        '1.2.a',
+        '1.2.b',
+        '1.10',
+        '2',
+        '3.1',
+        '10.5.a',
+        '10.5.c',
+        '20.2.a',
+      ];
       expect(advancedSort(list, options)).toEqual(expectedResult);
     });
 

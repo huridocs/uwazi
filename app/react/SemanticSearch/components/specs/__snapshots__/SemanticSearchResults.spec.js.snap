@@ -17,7 +17,8 @@ exports[`SemanticSearchResults should render results in ItemList 1`] = `
         <Connect(Translate)>
           Semantic search
         </Connect(Translate)>
-        : 
+        :
+         
         <Connect(SearchDescription)
           query={Object {}}
           searchTerm="query"

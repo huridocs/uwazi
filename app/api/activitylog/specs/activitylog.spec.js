@@ -6,7 +6,9 @@ import fixtures from './fixtures';
 describe('activitylog', () => {
   beforeEach(async () => {
     await db.clearAllAndLoad(fixtures);
-    spyOn(activityLogParser, 'getSemanticData').and.returnValue(Promise.resolve({ beautified: true }));
+    spyOn(activityLogParser, 'getSemanticData').and.returnValue(
+      Promise.resolve({ beautified: true })
+    );
   });
 
   afterAll(async () => {
@@ -16,7 +18,9 @@ describe('activitylog', () => {
   describe('save()', () => {
     it('should save the entry', async () => {
       await activitylog.save({ method: 'DELETE', url: '/api/thesauri' });
-      const { rows: [log] } = await activitylog.get({ url: '/api/thesauri' });
+      const {
+        rows: [log],
+      } = await activitylog.get({ url: '/api/thesauri' });
       expect(log.method).toBe('DELETE');
     });
   });
@@ -31,9 +35,14 @@ describe('activitylog', () => {
       const { rows: entries } = await activitylog.get();
       expect(activityLogParser.getSemanticData.calls.count()).toBe(5);
       expect(activityLogParser.getSemanticData).toHaveBeenCalledWith(
-        expect.objectContaining({ method: 'DELETE', query: '{"sharedId":"123"}', url: '/api/entities', username: 'admin' })
+        expect.objectContaining({
+          method: 'DELETE',
+          query: '{"sharedId":"123"}',
+          url: '/api/entities',
+          username: 'admin',
+        })
       );
-      entries.forEach((e) => {
+      entries.forEach(e => {
         expect(e.semantic).toEqual({ beautified: true });
       });
     });

@@ -13,12 +13,17 @@ describe('NavlinksSettings', () => {
 
   beforeEach(() => {
     props = {
-      collection: fromJS({ _id: 'abc', _rev: 'xyz', name: 'name', links: [{ localID: 'existingLink' }] }),
+      collection: fromJS({
+        _id: 'abc',
+        _rev: 'xyz',
+        name: 'name',
+        links: [{ localID: 'existingLink' }],
+      }),
       links: [{ localID: 'newLink1' }, { localID: 'newLink2' }],
       loadLinks: jasmine.createSpy('loadLinks'),
       addLink: jasmine.createSpy('addLink'),
       sortLink: jasmine.createSpy('sortLink'),
-      saveLinks: jasmine.createSpy('saveLinks')
+      saveLinks: jasmine.createSpy('saveLinks'),
     };
     component = shallow(<NavlinksSettings {...props} />);
   });
@@ -35,25 +40,51 @@ describe('NavlinksSettings', () => {
   });
 
   it('should save links upon submit', () => {
-    component.find(Form).props().onSubmit();
+    component
+      .find(Form)
+      .props()
+      .onSubmit();
     expect(props.saveLinks).toHaveBeenCalledWith({ _id: 'abc', _rev: 'xyz', links: props.links });
   });
 
   it('should disable saving if savingNavlinks', () => {
     props.savingNavlinks = true;
     component = shallow(<NavlinksSettings {...props} />);
-    expect(component.find('button').first().props().disabled).toBe(true);
+    expect(
+      component
+        .find('button')
+        .first()
+        .props().disabled
+    ).toBe(true);
   });
 
   it('should list all existing links', () => {
     expect(component.find(NavlinkForm).length).toBe(2);
-    expect(component.find(NavlinkForm).first().props().link).toBe(props.links[0]);
-    expect(component.find(NavlinkForm).last().props().link).toBe(props.links[1]);
-    expect(component.find(NavlinkForm).first().props().sortLink).toBe(props.sortLink);
+    expect(
+      component
+        .find(NavlinkForm)
+        .first()
+        .props().link
+    ).toBe(props.links[0]);
+    expect(
+      component
+        .find(NavlinkForm)
+        .last()
+        .props().link
+    ).toBe(props.links[1]);
+    expect(
+      component
+        .find(NavlinkForm)
+        .first()
+        .props().sortLink
+    ).toBe(props.sortLink);
   });
 
   it('should have an add button that calls on addLink with links', () => {
-    component.find('a.btn-primary').props().onClick();
+    component
+      .find('a.btn-primary')
+      .props()
+      .onClick();
     expect(props.addLink).toHaveBeenCalledWith(props.links);
   });
 
@@ -61,7 +92,7 @@ describe('NavlinksSettings', () => {
     const settings = {
       collection: fromJS({ id: 'collection' }),
       navlinksData: { links: [{ localID: 'existingLink' }] },
-      uiState: fromJS({ savingNavlinks: true })
+      uiState: fromJS({ savingNavlinks: true }),
     };
 
     it('should return the right props', () => {
@@ -77,8 +108,13 @@ describe('NavlinksSettings', () => {
         subscribe: jasmine.createSpy('subscribe'),
         dispatch: jasmine.createSpy('dispatch'),
         getState: jasmine.createSpy('getState').and.returnValue({
-          settings: { collection: props.collection, navlinksData: { links: [] }, uiState: { get: jasmine.createSpy('get') } }
-        }) };
+          settings: {
+            collection: props.collection,
+            navlinksData: { links: [] },
+            uiState: { get: jasmine.createSpy('get') },
+          },
+        }),
+      };
     });
 
     it('should decorate the component as a Drag and Drop context', () => {

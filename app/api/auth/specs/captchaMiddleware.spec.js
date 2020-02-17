@@ -9,7 +9,7 @@ describe('captchaMiddleware', () => {
     req = { body: {}, session: {} };
     res = {
       status: jasmine.createSpy('status'),
-      json: jasmine.createSpy('json')
+      json: jasmine.createSpy('json'),
     };
     next = jasmine.createSpy('next');
   });

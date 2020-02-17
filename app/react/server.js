@@ -1,5 +1,5 @@
 import Router from './ServerRouter.js';
 
-export default (app) => {
+export default app => {
   app.get(/^\/(?!api(\/|$)).*$/, Router);
 };

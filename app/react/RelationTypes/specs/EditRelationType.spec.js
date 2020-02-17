@@ -16,11 +16,12 @@ describe('EditRelationType', () => {
   beforeEach(() => {
     RouteHandler.renderedFromServer = true;
     context = { store: { getState: () => ({}), dispatch: jasmine.createSpy('dispatch') } };
-    component = shallow(<EditRelationType {...props}/>, { context });
+    component = shallow(<EditRelationType {...props} />, { context });
 
     backend.restore();
-    backend
-    .get(`${APIURL}relationtypes?_id=relationTypeId`, { body: JSON.stringify({ rows: [relationType] }) });
+    backend.get(`${APIURL}relationtypes?_id=relationTypeId`, {
+      body: JSON.stringify({ rows: [relationType] }),
+    });
   });
 
   afterEach(() => backend.restore());

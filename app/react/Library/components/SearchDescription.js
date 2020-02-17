@@ -28,27 +28,36 @@ export class SearchDescription extends Component {
     const descriptions = query && query.filters ? getPropertiesTexts(query, properties) : [];
     const descriptionText = descriptions.length ? ` ${descriptions.join(' - ')}` : '';
     return (
-      <span>{ searchTerm }{ descriptionText }</span>
+      <span>
+        {searchTerm}
+        {descriptionText}
+      </span>
     );
   }
 }
 
 SearchDescription.defaultProps = {
-  query: undefined
+  query: undefined,
 };
 
 SearchDescription.propTypes = {
   query: PropTypes.shape({ filters: PropTypes.object, types: PropTypes.array }),
   searchTerm: PropTypes.string.isRequired,
-  properties: PropTypes.arrayOf(PropTypes.object).isRequired
+  properties: PropTypes.arrayOf(PropTypes.object).isRequired,
 };
 
 export function mapStateToProps({ thesauris, templates, relationTypes }, { query }) {
-  const properties = query && query.filters ?
-    libraryHelpers.URLQueryToState(query, templates.toJS(), thesauris.toJS(), relationTypes.toJS()).properties :
-    [];
+  const properties =
+    query && query.filters
+      ? libraryHelpers.URLQueryToState(
+          query,
+          templates.toJS(),
+          thesauris.toJS(),
+          relationTypes.toJS()
+        ).properties
+      : [];
   return {
-    properties
+    properties,
   };
 }
 

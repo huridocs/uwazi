@@ -13,7 +13,14 @@ export class ThesauriFormItem extends Component {
   render() {
     const { value } = this.props;
     if (value.values) {
-      return <ThesauriFormGroup ref={(f) => { this.groupItem = f; }} {...this.props} />;
+      return (
+        <ThesauriFormGroup
+          ref={f => {
+            this.groupItem = f;
+          }}
+          {...this.props}
+        />
+      );
     }
     return <ThesauriFormField {...this.props} />;
   }
@@ -23,9 +30,9 @@ ThesauriFormItem.propTypes = {
   value: PropTypes.shape({
     id: PropTypes.string,
     label: PropTypes.string,
-    values: PropTypes.array
+    values: PropTypes.array,
   }).isRequired,
-  index: PropTypes.number.isRequired
+  index: PropTypes.number.isRequired,
 };
 
 export default ThesauriFormItem;

@@ -22,7 +22,8 @@ export class Customisation extends Component {
         <div className="panel-body">
           <Form model="settings.settings" onSubmit={this.props.saveSettings}>
             <Field model=".customCSS">
-              <label className="form-group-label" htmlFor="custom_css">{t('System', 'Custom CSS')}
+              <label className="form-group-label" htmlFor="custom_css">
+                {t('System', 'Custom CSS')}
                 <textarea className="form-control" id="custom_css" />
               </label>
             </Field>
@@ -42,13 +43,17 @@ export class Customisation extends Component {
 Customisation.propTypes = {
   loadForm: PropTypes.func.isRequired,
   settings: PropTypes.instanceOf(Immutable.Map).isRequired,
-  saveSettings: PropTypes.func.isRequired
+  saveSettings: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = state => ({ settings: state.settings.collection });
-const mapDispatchToProps = dispatch => bindActionCreators({
-  loadForm: formActions.load,
-  saveSettings
-}, dispatch);
+const mapDispatchToProps = dispatch =>
+  bindActionCreators(
+    {
+      loadForm: formActions.load,
+      saveSettings,
+    },
+    dispatch
+  );
 
 export default connect(mapStateToProps, mapDispatchToProps)(Customisation);

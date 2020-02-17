@@ -11,17 +11,30 @@ describe('EditTranslationForm', () => {
 
   beforeEach(() => {
     const collectionSettings = Immutable.fromJS({
-      languages: [{ key: 'en', label: 'English', default: true }, { key: 'es', label: 'Spanish', default: false }]
+      languages: [
+        { key: 'en', label: 'English', default: true },
+        { key: 'es', label: 'Spanish', default: false },
+      ],
     });
     props = {
       saveTranslations: jasmine.createSpy('saveTranslations'),
       translationsForm: [
-        { locale: 'en', contexts: [{ id: 'System', label: 'System', values: { User: 'User', Password: 'Password' } }] },
-        { locale: 'es', contexts: [{ id: 'System', label: 'System', values: { User: 'Usuario', Password: 'Contraseña' } }] }
+        {
+          locale: 'en',
+          contexts: [
+            { id: 'System', label: 'System', values: { User: 'User', Password: 'Password' } },
+          ],
+        },
+        {
+          locale: 'es',
+          contexts: [
+            { id: 'System', label: 'System', values: { User: 'Usuario', Password: 'Contraseña' } },
+          ],
+        },
       ],
       formState: {},
       settings: { collection: collectionSettings },
-      context: 'System'
+      context: 'System',
     };
   });
 
@@ -39,8 +52,22 @@ describe('EditTranslationForm', () => {
     it('should render fields alphabetically', () => {
       render();
       const fields = component.find(Field);
-      expect(fields.at(0).props().model).toEqual(['translationsForm', 0, 'contexts', 0, 'values', 'Password']);
-      expect(fields.at(2).props().model).toEqual(['translationsForm', 0, 'contexts', 0, 'values', 'User']);
+      expect(fields.at(0).props().model).toEqual([
+        'translationsForm',
+        0,
+        'contexts',
+        0,
+        'values',
+        'Password',
+      ]);
+      expect(fields.at(2).props().model).toEqual([
+        'translationsForm',
+        0,
+        'contexts',
+        0,
+        'values',
+        'User',
+      ]);
     });
   });
 
@@ -52,21 +79,21 @@ describe('EditTranslationForm', () => {
           locale: 'es',
           contexts: [
             { id: 'System', values: { hello: 'hola' } },
-            { id: 'superheroes', values: { batman: 'joan' } }
-          ]
+            { id: 'superheroes', values: { batman: 'joan' } },
+          ],
         },
         {
           locale: 'en',
           contexts: [
             { id: 'System', values: { hello: 'hello' } },
-            { id: 'superheroes', values: { batman: 'batman' } }
-          ]
-        }
+            { id: 'superheroes', values: { batman: 'batman' } },
+          ],
+        },
       ];
 
       const expectedSave = [
         { contexts: [{ id: 'System', values: { hello: 'hola' } }], locale: 'es' },
-        { contexts: [{ id: 'System', values: { hello: 'hello' } }], locale: 'en' }
+        { contexts: [{ id: 'System', values: { hello: 'hello' } }], locale: 'en' },
       ];
       component.find(Form).simulate('submit', translations);
       expect(props.saveTranslations).toHaveBeenCalledWith(expectedSave);

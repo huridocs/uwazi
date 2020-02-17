@@ -9,7 +9,10 @@ export default {
   async up(db) {
     process.stdout.write(`${this.name}...\r\n`);
     let index = 1;
-    const [{ languages }] = await db.collection('settings').find().toArray();
+    const [{ languages }] = await db
+      .collection('settings')
+      .find()
+      .toArray();
     const languagesToRemove = languages.filter(l => !l.default).map(l => l.key);
 
     const cursor = db.collection('connections').find();
@@ -17,14 +20,23 @@ export default {
       const relation = await cursor.next();
       const isTextReference = relation.range;
       if (!isTextReference) {
-        await db.collection('connections').deleteMany({ sharedId: relation.sharedId, language: { $in: languagesToRemove } });
-        await db.collection('connections').update({ sharedId: relation.sharedId }, { $unset: { language: 1, sharedId: 1 } });
+        await db
+          .collection('connections')
+          .deleteMany({ sharedId: relation.sharedId, language: { $in: languagesToRemove } });
+        await db
+          .collection('connections')
+          .update({ sharedId: relation.sharedId }, { $unset: { language: 1, sharedId: 1 } });
       }
 
       if (isTextReference) {
-        const [entityRelated] = await db.collection('entities').find({ sharedId: relation.entity, language: relation.language }).toArray();
+        const [entityRelated] = await db
+          .collection('entities')
+          .find({ sharedId: relation.entity, language: relation.language })
+          .toArray();
 
-        await db.collection('connections').deleteMany({ sharedId: relation.sharedId, _id: { $ne: relation._id } });
+        await db
+          .collection('connections')
+          .deleteMany({ sharedId: relation.sharedId, _id: { $ne: relation._id } });
 
         await db.collection('connections').update(relation, {
           $set: { filename: entityRelated.file.filename },
@@ -35,5 +47,5 @@ export default {
       index += 1;
     }
     process.stdout.write('\r\n');
-  }
+  },
 };
