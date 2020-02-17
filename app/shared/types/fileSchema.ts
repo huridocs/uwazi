@@ -1,7 +1,7 @@
 import Ajv from 'ajv';
 import { objectIdSchema, tocSchema } from 'shared/types/commonSchemas';
 import { wrapValidator } from 'shared/tsUtils';
-import { FileSchema } from './fileType';
+import { FileType } from './fileType';
 
 export const emitSchemaTypes = true;
 
@@ -12,6 +12,7 @@ export const fileSchema = {
   $async: true,
   type: 'object',
   additionalProperties: false,
+  title: 'FileType',
   properties: {
     _id: objectIdSchema,
     entity: { type: 'string', minLength: 1 },
@@ -53,4 +54,4 @@ export const fileSchema = {
 
 const validate = wrapValidator(ajv.compile(fileSchema));
 
-export const validateFile = async (file: FileSchema): Promise<FileSchema> => validate({ ...file });
+export const validateFile = async (file: FileType): Promise<FileType> => validate({ ...file });

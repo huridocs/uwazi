@@ -3,7 +3,7 @@
 
 import { ObjectIdSchema, TocSchema } from 'shared/types/commonTypes';
 
-export interface FileSchema {
+export interface FileType {
   _id?:
     | string
     | {

@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 import date from 'api/utils/date.js';
 
 import { instanceModel } from 'api/odm';
-import { FileSchema } from '../../shared/types/fileType';
+import { FileType } from '../../shared/types/fileType';
 
 const propsWithDBSpecifics = {
   creationDate: { type: Number, default: date.currentUTC },
@@ -14,6 +14,6 @@ const mongoSchema = new mongoose.Schema(propsWithDBSpecifics, {
   strict: false,
 });
 
-const Model = instanceModel<FileSchema>('files', mongoSchema);
+const Model = instanceModel<FileType>('files', mongoSchema);
 
 export default Model;

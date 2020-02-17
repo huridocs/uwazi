@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Translate } from 'app/I18N';
 import languages from 'shared/languagesList.ts';
 import { Icon } from 'UI';
-import { FileSchema } from 'shared/types/fileType';
+import { FileType } from 'shared/types/fileType';
 
 const defaultProps = {
   file: null,
@@ -11,14 +11,14 @@ const defaultProps = {
 };
 
 export type FileProps = {
-  file: FileSchema;
+  file: FileType;
   entitySharedId: string;
   readonly: boolean;
 };
 
 type FileState = {
   editing: boolean;
-  file: FileSchema;
+  file: FileType;
 };
 
 export class File extends Component<FileProps, FileState> {

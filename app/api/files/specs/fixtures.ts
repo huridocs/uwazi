@@ -1,7 +1,7 @@
 import db from 'api/utils/testing_db';
 
 import { EntitySchema } from 'api/entities/entityType';
-import { FileSchema } from 'shared/types/fileType';
+import { FileType } from 'shared/types/fileType';
 
 const entityId = db.id();
 const entityEnId = db.id();
@@ -10,7 +10,7 @@ const templateId = db.id();
 const fileName1 = 'f2082bf51b6ef839690485d7153e847a.pdf';
 
 interface DBFixture {
-  files?: FileSchema[];
+  files?: FileType[];
   entities?: EntitySchema[];
   templates?: Object[];
   settings?: Object[];

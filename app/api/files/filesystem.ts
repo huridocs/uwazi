@@ -9,7 +9,7 @@ import ID from 'shared/uniqueID';
 import asyncFS from 'api/utils/async-fs';
 
 import configPaths from '../config/paths';
-import { FileSchema } from '../../shared/types/fileType';
+import { FileType } from '../../shared/types/fileType';
 import { log } from 'util';
 
 export type FilePath = string;
@@ -40,7 +40,7 @@ const uploadsPath = (fileName: FilePath): FilePath =>
 const customUploadsPath = (fileName: FilePath): FilePath =>
   path.join(configPaths.customUploads, fileName);
 
-const deleteUploadedFiles = async (files: FileSchema[]) =>
+const deleteUploadedFiles = async (files: FileType[]) =>
   deleteFiles(
     files.map(({ filename = '', type }) => {
       if (type === 'custom') {
@@ -65,7 +65,7 @@ const fileExists = async (filePath: FilePath): Promise<boolean> =>
     });
   });
 
-const generateFileName = ({ originalname = '' }: FileSchema) =>
+const generateFileName = ({ originalname = '' }: FileType) =>
   Date.now() + ID() + path.extname(originalname);
 
 const fileFromReadStream = async (fileName: FilePath, readStream: Readable): Promise<FilePath> =>
