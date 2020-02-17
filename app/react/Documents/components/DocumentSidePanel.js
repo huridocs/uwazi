@@ -8,7 +8,7 @@ import React, { Component } from 'react';
 import { MetadataFormButtons, ShowMetadata } from 'app/Metadata';
 import { NeedAuthorization } from 'app/Auth';
 import { t } from 'app/I18N';
-import AttachmentsList from 'app/Attachments/components/AttachmentsList';
+import { AttachmentsList, FileList } from 'app/Attachments';
 import Connections from 'app/Viewer/components/ConnectionsList';
 import { ConnectionsGroups } from 'app/ConnectionsList';
 import ShowIf from 'app/App/ShowIf';
@@ -107,7 +107,40 @@ export class DocumentSidePanel extends Component {
       },
       { totalConnections: 0 }
     );
-
+    const mockDocuments = [
+      {
+        _id: '5e43d56243a8bb1ac84c4067',
+        entity: 'fp5xamr15de',
+        title: 'Demo title one',
+        type: 'document',
+        processed: true,
+        creationDate: 1581503842258.0,
+        __v: 0,
+        filename: '158150384221104cmib6gw3zy.pdf',
+        language: 'eng',
+        mimetype: 'application/pdf',
+        originalname: 'DnD_BasicRules_2018.pdf',
+        size: 11537210,
+        toc: [],
+        totalPages: 180,
+      },
+      {
+        _id: '5e43d56243a8bb1ac84c4067',
+        entity: 'fp5xamr15de',
+        title: 'demo title two this is a very long title to see if it fits',
+        type: 'document',
+        processed: true,
+        creationDate: 1581503842258.0,
+        __v: 0,
+        filename: '158150384221104cmib6gw3zy.pdf',
+        language: 'eng',
+        mimetype: 'application/pdf',
+        originalname: 'DnD_BasicRules_2018.pdf',
+        size: 11537210,
+        toc: [],
+        totalPages: 180,
+      },
+    ];
     return (
       <SidePanel open={this.props.open} className="metadata-sidepanel">
         <div className="sidepanel-header">
@@ -274,6 +307,7 @@ export class DocumentSidePanel extends Component {
                       showTitle
                       showType
                     />
+                    <FileList files={mockDocuments} />
                     <AttachmentsList
                       attachments={attachments}
                       documents={documents}

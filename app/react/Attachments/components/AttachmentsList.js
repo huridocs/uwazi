@@ -21,43 +21,11 @@ export class AttachmentsList extends Component {
     const { parentId, parentSharedId, readOnly, storeKey } = this.props;
     const forcedReadOnly = readOnly || Boolean(this.props.isTargetDoc);
 
-    const mockDocuments = [
-      {
-        _id: '5e43d56243a8bb1ac84c4067',
-        entity: 'fp5xamr15de',
-        type: 'document',
-        processed: true,
-        creationDate: 1581503842258.0,
-        __v: 0,
-        filename: '158150384221104cmib6gw3zy.pdf',
-        language: 'eng',
-        mimetype: 'application/pdf',
-        originalname: 'DnD_BasicRules_2018.pdf',
-        size: 11537210,
-        toc: [],
-        totalPages: 180,
-      },
-      {
-        _id: '5e43d56243a8bb1ac84c4067',
-        entity: 'fp5xamr15de',
-        type: 'document',
-        processed: true,
-        creationDate: 1581503842258.0,
-        __v: 0,
-        filename: '158150384221104cmib6gw3zy.pdf',
-        language: 'eng',
-        mimetype: 'application/pdf',
-        originalname: 'DnD_BasicRules_2018.pdf',
-        size: 11537210,
-        toc: [],
-        totalPages: 180,
-      },
-    ];
     if (documents[0]) {
       documents[0]._id = parentId;
       return (
         <div>
-          <h2>{t('System', 'Document')}</h2>
+          <h2>{t('System', 'Documents')}</h2>
           <div className="attachments-list">
             <Attachment
               file={documents[0]}
@@ -150,13 +118,15 @@ AttachmentsList.defaultProps = {
   processed: false,
   isTargetDoc: false,
   user: null,
+  parentId: null,
+  parentSharedId: null,
 };
 
 AttachmentsList.propTypes = {
   attachments: PropTypes.arrayOf(PropTypes.object),
   documents: PropTypes.arrayOf(PropTypes.object),
-  parentId: PropTypes.string.isRequired,
-  parentSharedId: PropTypes.string.isRequired,
+  parentId: PropTypes.string,
+  parentSharedId: PropTypes.string,
   readOnly: PropTypes.bool,
   entityView: PropTypes.bool,
   processed: PropTypes.bool,
