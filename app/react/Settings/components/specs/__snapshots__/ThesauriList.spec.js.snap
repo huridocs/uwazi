@@ -2,7 +2,7 @@
 
 exports[`ThesaurisList render should match the snapshot 1`] = `
 <div
-  className="panel panel-default"
+  className="flex panel panel-default"
 >
   <div
     className="panel-heading"
@@ -80,7 +80,7 @@ exports[`ThesaurisList render should match the snapshot 1`] = `
           </th>
           <td>
             <div
-              className="thesauri-list vertical-line"
+              className="vertical-line"
             >
               <span
                 className="thesaurus-suggestion-count"
@@ -152,5 +152,6 @@ exports[`ThesaurisList render should match the snapshot 1`] = `
       </span>
     </Connect(I18NLink)>
   </div>
+  <Connect(Footer) />
 </div>
 `;
