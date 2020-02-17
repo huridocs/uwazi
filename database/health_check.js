@@ -27,15 +27,13 @@ let dictionaries;
 let templates;
 
 function getDicionaries() {
-  return dictionariesModel.get()
-  .then((_dictionaries) => {
+  return dictionariesModel.get().then(_dictionaries => {
     dictionaries = _dictionaries;
   });
 }
 
 function getTemplates() {
-  return templatesModel.get()
-  .then((_templates) => {
+  return templatesModel.get().then(_templates => {
     templates = _templates.reduce((response, template) => {
       response[template._id] = template;
       return response;
@@ -48,12 +46,13 @@ function logProcess(type, processed, length) {
 }
 
 function entityExists(sharedId) {
-  return entitiesModel.get({ sharedId }, { _id: 1 })
-  .then(results => results.length);
+  return entitiesModel.get({ sharedId }, { _id: 1 }).then(results => results.length);
 }
 
 function dictionaryEntryExists(id) {
-  const found = dictionaries.find(dictionary => dictionary.values.find(enrty => enrty.id.toString() === id));
+  const found = dictionaries.find(dictionary =>
+    dictionary.values.find(enrty => enrty.id.toString() === id)
+  );
   return Promise.resolve(found);
 }
 
@@ -62,36 +61,43 @@ function processForeignIdProperty(property, entity, checkFunction) {
   let action = Promise.resolve();
   if (property.type === 'select') {
     const value = entity.metadata[property.name];
-    action = checkFunction(value)
-    .then((exists) => {
+    action = checkFunction(value).then(exists => {
       if (!exists) {
         if (verbose) {
-          console.log(`Entity ${entity.title} (${entity.sharedId}) in ${property.name} has an unexistant value: ${value}`);
+          console.log(
+            `Entity ${entity.title} (${entity.sharedId}) in ${property.name} has an unexistant value: ${value}`
+          );
         }
         unExistant.push(entity.metadata[property.name]);
       }
     });
   } else {
-    action = Promise.all(entity.metadata[property.name].map(sharedId => checkFunction(sharedId)
-    .then((exists) => {
-      if (!exists) {
-        if (verbose) {
-          console.log(`Entity ${entity.title} (${entity.sharedId}) in ${property.name} has an unexistant value: ${sharedId}`);
-        }
-        unExistant.push(sharedId);
-      }
-    })));
+    action = Promise.all(
+      entity.metadata[property.name].map(sharedId =>
+        checkFunction(sharedId).then(exists => {
+          if (!exists) {
+            if (verbose) {
+              console.log(
+                `Entity ${entity.title} (${entity.sharedId}) in ${property.name} has an unexistant value: ${sharedId}`
+              );
+            }
+            unExistant.push(sharedId);
+          }
+        })
+      )
+    );
   }
 
-  return action
-  .then(() => {
+  return action.then(() => {
     if (unExistant.length) {
       //intentionaly modifying by reference
       if (property.type === 'select') {
         delete entity.metadata[property.name]; //eslint-disable-line
         return Promise.reject();
       }
-      entity.metadata[property.name] = entity.metadata[property.name].filter(sharedId => !unExistant.includes(sharedId));  //eslint-disable-line
+      entity.metadata[property.name] = entity.metadata[property.name].filter(
+        sharedId => !unExistant.includes(sharedId)
+      ); //eslint-disable-line
       return Promise.reject();
     }
 
@@ -104,7 +110,10 @@ function processProperty(property, entity) {
     return processForeignIdProperty(property, entity, entityExists);
   }
 
-  if ((property.type === 'select' || property.type === 'multiselect') && entity.metadata[property.name]) {
+  if (
+    (property.type === 'select' || property.type === 'multiselect') &&
+    entity.metadata[property.name]
+  ) {
     return processForeignIdProperty(property, entity, dictionaryEntryExists);
   }
 
@@ -117,11 +126,13 @@ function processEntity(entity) {
   }
   const template = templates[entity.template];
   let needToFix = false;
-  return Promise.all(template.properties.map(property => processProperty(property, entity)
-  .catch(() => {
-    needToFix = true;
-  })))
-  .then(() => {
+  return Promise.all(
+    template.properties.map(property =>
+      processProperty(property, entity).catch(() => {
+        needToFix = true;
+      })
+    )
+  ).then(() => {
     if (needToFix) {
       entitiesNeedToBeFixed.push(entity);
     }
@@ -136,33 +147,39 @@ function processEntity(entity) {
 }
 
 function processEntities() {
-  return entitiesModel.get({}, { _id: 1 })
-  .then((_entities) => {
+  return entitiesModel.get({}, { _id: 1 }).then(_entities => {
     totalEntities = _entities.length;
-    return P.resolve(_entities).map(({ _id }) => entitiesModel.getById(_id)
-    .then(entity => processEntity(entity)
-    .then(() => {
-      entitiesProcessed += 1;
-      logProcess('Entities', entitiesProcessed, totalEntities);
-    })), { concurrency: 10 });
+    return P.resolve(_entities).map(
+      ({ _id }) =>
+        entitiesModel.getById(_id).then(entity =>
+          processEntity(entity).then(() => {
+            entitiesProcessed += 1;
+            logProcess('Entities', entitiesProcessed, totalEntities);
+          })
+        ),
+      { concurrency: 10 }
+    );
   });
 }
 
-
 indexConfig.index = indexConfig.development;
 mongoose.Promise = Promise;
-mongoose.connect(dbConfig.development, { useMongoClient: true });
+mongoose.connect(dbConfig.development, {
+  useUnifiedTopology: true,
+  useNewUrlParser: true,
+  useCreateIndex: true,
+});
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:')); //eslint-disable-line
 db.once('open', () => {
   getTemplates()
-  .then(getDicionaries)
-  .then(processEntities)
-  .then(() => {
-    process.stdout.write(`Entities processed: ${entitiesProcessed} of ${totalEntities}\n`);
-    process.stdout.write(`Entities with errors: ${entitiesNeedToBeFixed.length}\n`);
-    process.stdout.write(`Entities fixed: ${fixed}\n`);
-    process.exit(0);
-  })
-  .catch(console.log); //eslint-disable-line
+    .then(getDicionaries)
+    .then(processEntities)
+    .then(() => {
+      process.stdout.write(`Entities processed: ${entitiesProcessed} of ${totalEntities}\n`);
+      process.stdout.write(`Entities with errors: ${entitiesNeedToBeFixed.length}\n`);
+      process.stdout.write(`Entities fixed: ${fixed}\n`);
+      process.exit(0);
+    })
+    .catch(console.log); //eslint-disable-line
 });

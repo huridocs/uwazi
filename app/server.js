@@ -84,40 +84,47 @@ if (process.env.DBUSER) {
 }
 
 console.info('==> Connecting to', dbConfig[app.get('env')]);
-mongoose.connect(dbConfig[app.get('env')], { ...dbAuth }).then(async () => {
-  console.info('==> Processing system keys...');
-  await translations.processSystemKeys(systemKeys);
+mongoose
+  .connect(dbConfig[app.get('env')], {
+    ...dbAuth,
+    useUnifiedTopology: true,
+    useNewUrlParser: true,
+    useCreateIndex: true,
+  })
+  .then(async () => {
+    console.info('==> Processing system keys...');
+    await translations.processSystemKeys(systemKeys);
 
-  const shouldMigrate = await migrator.shouldMigrate();
-  if (shouldMigrate) {
-    console.info('\x1b[33m%s\x1b[0m', '==> Your database needs to be migrated, please wait.');
-    await migrator.migrate();
-  }
-
-  const port = ports[app.get('env')];
-
-  const bindAddress = { true: 'localhost' }[process.env.LOCALHOST_ONLY];
-
-  semanticSearchManager.start();
-
-  http.listen(port, bindAddress, async () => {
-    syncWorker.start();
-
-    const { evidencesVault } = await settings.get();
-    if (evidencesVault && evidencesVault.token && evidencesVault.template) {
-      console.info('==> 📥 evidences vault config detected, started sync ....');
-      repeater.start(() => vaultSync.sync(evidencesVault.token, evidencesVault.template), 10000);
+    const shouldMigrate = await migrator.shouldMigrate();
+    if (shouldMigrate) {
+      console.info('\x1b[33m%s\x1b[0m', '==> Your database needs to be migrated, please wait.');
+      await migrator.migrate();
     }
 
-    console.info(
-      '==> 🌎 Listening on port %s. Open up http://localhost:%s/ in your browser.',
-      port,
-      port
-    );
-    if (process.env.HOT) {
-      console.info('');
-      console.info('==> 📦 webpack is watching...');
-      console.info(uwaziMessage);
-    }
+    const port = ports[app.get('env')];
+
+    const bindAddress = { true: 'localhost' }[process.env.LOCALHOST_ONLY];
+
+    semanticSearchManager.start();
+
+    http.listen(port, bindAddress, async () => {
+      syncWorker.start();
+
+      const { evidencesVault } = await settings.get();
+      if (evidencesVault && evidencesVault.token && evidencesVault.template) {
+        console.info('==> 📥 evidences vault config detected, started sync ....');
+        repeater.start(() => vaultSync.sync(evidencesVault.token, evidencesVault.template), 10000);
+      }
+
+      console.info(
+        '==> 🌎 Listening on port %s. Open up http://localhost:%s/ in your browser.',
+        port,
+        port
+      );
+      if (process.env.HOT) {
+        console.info('');
+        console.info('==> 📦 webpack is watching...');
+        console.info(uwaziMessage);
+      }
+    });
   });
-});
