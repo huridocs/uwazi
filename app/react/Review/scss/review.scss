@@ -181,10 +181,12 @@ $header-height: 44px;
   .thesauri-list {
     height: 0;
     flex-grow: 1;
+    overflow-y: scroll;
   }
   .cockpit {
     height: 0;
     flex-grow: 1;
+    overflow-y: scroll;
   }
 
   .settings-footer {
