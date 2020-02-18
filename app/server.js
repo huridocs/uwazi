@@ -2,33 +2,32 @@
 
 /* eslint-disable no-console */
 
+import { TaskProvider } from 'api/tasks/tasks';
 import bodyParser from 'body-parser';
 import compression from 'compression';
 import express from 'express';
 import helmet from 'helmet';
-import mongoose from 'mongoose';
-
 import { Server } from 'http';
+import mongoose from 'mongoose';
 import path from 'path';
-
-import paths from './api/config/paths';
+import uwaziMessage from '../message';
 import apiRoutes from './api/api';
+import privateInstanceMiddleware from './api/auth/privateInstanceMiddleware';
 import authRoutes from './api/auth/routes';
 import dbConfig from './api/config/database';
-import migrator from './api/migrations/migrator';
-import errorHandlingMiddleware from './api/utils/error_handling_middleware';
-import handleError from './api/utils/handleError.js';
+import paths from './api/config/paths';
 import ports from './api/config/ports.js';
-import privateInstanceMiddleware from './api/auth/privateInstanceMiddleware';
-import serverRenderingRoutes from './react/server.js';
+import vaultSync from './api/evidences_vault';
 import systemKeys from './api/i18n/systemKeys.js';
 import translations from './api/i18n/translations.js';
-import uwaziMessage from '../message';
+import migrator from './api/migrations/migrator';
 import { workerManager as semanticSearchManager } from './api/semanticsearch';
-import syncWorker from './api/sync/syncWorker';
-import repeater from './api/utils/Repeater';
-import vaultSync from './api/evidences_vault';
 import settings from './api/settings';
+import syncWorker from './api/sync/syncWorker';
+import errorHandlingMiddleware from './api/utils/error_handling_middleware';
+import handleError from './api/utils/handleError.js';
+import repeater from './api/utils/Repeater';
+import serverRenderingRoutes from './react/server.js';
 
 mongoose.Promise = Promise;
 
@@ -115,6 +114,13 @@ mongoose
         console.info('==> 📥 evidences vault config detected, started sync ....');
         repeater.start(() => vaultSync.sync(evidencesVault.token, evidencesVault.template), 10000);
       }
+      repeater.start(
+        () =>
+          TaskProvider.runAndWait('TopicClassificationSync', 'TopicClassificationSync', {
+            mode: 'onlynew',
+          }),
+        10000
+      );
 
       console.info(
         '==> 🌎 Listening on port %s. Open up http://localhost:%s/ in your browser.',
