@@ -65,7 +65,7 @@ export class Document extends Component {
       const references = this.props.references.toJS();
       return this.props.activateReference(
         references.find(r => r._id === e.target.getAttribute('data-id')),
-        this.props.doc.get('pdfInfo').toJS(),
+        this.props.file.pdfInfo,
         references
       );
     }
@@ -91,7 +91,7 @@ export class Document extends Component {
       const references = this.props.references.toJS();
       this.props.scrollToActive(
         references.find(r => r._id === this.props.activeReference),
-        this.props.doc.get('pdfInfo').toJS(),
+        this.props.file.pdfInfo,
         references,
         this.props.doScrollToActive
       );
@@ -121,16 +121,16 @@ export class Document extends Component {
             onClick={this.handleClick.bind(this)}
             onMouseOver={this.handleOver.bind(this)}
           >
-            <ShowIf if={!doc._id || !doc.pdfInfo}>
+            <ShowIf if={!file._id || !file.pdfInfo}>
               <Loader />
             </ShowIf>
-            <ShowIf if={!!doc._id && !!doc.pdfInfo}>
+            <ShowIf if={!!file._id && !!file.pdfInfo}>
               <PDF
                 onPageChange={this.props.onPageChange}
                 onPDFReady={this.onDocumentReady}
-                pdfInfo={this.props.doc.get('pdfInfo')}
+                pdfInfo={file.pdfInfo}
                 onLoad={this.pdfLoaded}
-                file={`${APIURL}documents/download?_id=${doc._id}`}
+                file={`${APIURL}files/${file.filename}`}
                 filename={file.filename}
               />
             </ShowIf>

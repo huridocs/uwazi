@@ -154,7 +154,10 @@ export class Viewer extends Component {
             <div className="content-header-title">
               {sidepanelTab !== 'connections' && (
                 <React.Fragment>
-                  <PaginatorWithPage totalPages={doc.get('totalPages')} onPageChange={changePage} />
+                  <PaginatorWithPage
+                    totalPages={documentFile.totalPages}
+                    onPageChange={changePage}
+                  />
                   <CurrentLocationLink
                     onClick={!raw ? this.handlePlainTextClick : () => {}}
                     className="btn btn-default"

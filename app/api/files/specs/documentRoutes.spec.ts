@@ -131,9 +131,9 @@ describe('upload routes', () => {
       it('should set document processed to false and emit a socket conversionFailed event with the id of the document', async () => {
         await socketEmit('conversionFailed', async () =>
           request(app)
-          .post('/api/files/upload/document')
-          .field('entity', 'sharedId1')
-          .attach('file', path.join(__dirname, 'uploads/invalid_document.txt'))
+            .post('/api/files/upload/document')
+            .field('entity', 'sharedId1')
+            .attach('file', path.join(__dirname, 'uploads/invalid_document.txt'))
         );
 
         const [upload] = await files.get({ entity: 'sharedId1' }, '+fullText');

@@ -1,10 +1,5 @@
 import Joi from 'joi';
-import sanitize from 'sanitize-filename';
 
-import { createError } from 'api/utils';
-import path from 'path';
-
-import paths from '../config/paths';
 import { validation } from '../utils';
 import documents from './documents';
 import needsAuthorization from '../auth/authMiddleware';
@@ -24,7 +19,6 @@ export default app => {
       Joi.object()
         .keys({
           _id: Joi.objectId(),
-          sharedId: Joi.string(),
           pdfInfo: Joi.object().pattern(
             Joi.number(),
             Joi.object().keys({
@@ -36,7 +30,7 @@ export default app => {
     ),
     (req, res, next) =>
       documents
-        .savePDFInfo(req.body, { language: req.language })
+        .savePDFInfo(req.body._id, req.body.pdfInfo)
         .then(doc => res.json(doc))
         .catch(next)
   );

@@ -187,14 +187,24 @@ describe('documentActions', () => {
           body: JSON.stringify('documents'),
         })
         .get(`${APIURL}entities?sharedId=targetId`, {
-          body: JSON.stringify({ rows: [{ target: 'document', pdfInfo: 'test' }] }),
+          body: JSON.stringify({
+            rows: [{ documents: [{ pdfInfo: 'test' }] }],
+          }),
         })
         .get(`${APIURL}entities?sharedId=docWithPDFRdy`, {
-          body: JSON.stringify({ rows: [{ pdfInfo: 'processed pdf', _id: 'pdfReady' }] }),
+          body: JSON.stringify({
+            rows: [{ documents: [{ pdfInfo: 'processed pdf', _id: 'pdfReady' }] }],
+          }),
         })
         .get(`${APIURL}entities?sharedId=docWithPDFNotRdy`, {
           body: JSON.stringify({
-            rows: [{ _id: 'pdfNotReady', sharedId: 'shared', unwantedProp: 'unwanted', file: {} }],
+            rows: [
+              {
+                _id: 'pdfNotReady',
+                sharedId: 'shared',
+                documents: [{ _id: 'pdfNotReady', filename: 'filename' }],
+              },
+            ],
           }),
         })
         .get(`${APIURL}references/by_document?sharedId=targetId`, {
@@ -239,25 +249,27 @@ describe('documentActions', () => {
       it('should return the document requested', async () => {
         const requestParams = new RequestParams({ sharedId: 'docWithPDFRdy' });
         const doc = await actions.getDocument(requestParams);
-        expect(doc.pdfInfo).toBe('processed pdf');
+        expect(doc.documents[0].pdfInfo).toBe('processed pdf');
       });
 
       describe('when the doc does not have the pdf processed', () => {
         it('should process it and save it before it gets returned', async () => {
           spyOn(PDFUtils, 'extractPDFInfo').and.returnValue(Promise.resolve('test'));
-          const expected = { sharedId: 'shared', _id: 'pdfNotReady', pdfInfo: 'test' };
-          spyOn(api, 'post').and.returnValue(Promise.resolve({ json: expected }));
+          const expected = {
+            sharedId: 'shared',
+            _id: 'pdfNotReady',
+            documents: [{ _id: 'pdfNotReady', pdfInfo: 'test' }],
+          };
+          spyOn(api, 'post').and.returnValue(Promise.resolve({ json: expected.documents[0] }));
           const requestParams = new RequestParams({ sharedId: 'docWithPDFNotRdy' });
 
           const doc = await actions.getDocument(requestParams);
-          expect(PDFUtils.extractPDFInfo).toHaveBeenCalledWith(
-            `${APIURL}documents/download?_id=${expected._id}`
-          );
+          expect(PDFUtils.extractPDFInfo).toHaveBeenCalledWith(`${APIURL}files/filename`);
           expect(api.post).toHaveBeenCalledWith('documents/pdfInfo', {
-            data: expected,
+            data: { _id: 'pdfNotReady', pdfInfo: 'test' },
             headers: {},
           });
-          expect(expected).toBe(doc);
+          expect(expected).toEqual(doc);
         });
       });
     });
@@ -361,7 +373,7 @@ describe('documentActions', () => {
         const targetId = 'targetId';
 
         const expectedActions = [
-          { type: 'viewer/targetDoc/SET', value: { target: 'document', pdfInfo: 'test' } },
+          { type: 'viewer/targetDoc/SET', value: { documents: [{ pdfInfo: 'test' }] } },
           { type: 'viewer/targetDocReferences/SET', value: [{ connectedDocument: '1' }] },
         ];
         const store = mockStore({ locale: 'es' });

@@ -21,7 +21,7 @@ describe('Document', () => {
       PDFReady: jasmine.createSpy('PDFReady'),
       unsetSelection: jasmine.createSpy('unsetSelection'),
       onClick: jasmine.createSpy('onClick'),
-      doc: Immutable.fromJS({ _id: 'documentId', pdfInfo: { test: 'pdfInfo' } }),
+      doc: Immutable.fromJS({ _id: 'documentId', documents: [{ pdfInfo: { test: 'pdfInfo' } }] }),
       file: { language: 'eng' },
       onDocumentReady: jasmine.createSpy('onDocumentReady'),
       selectedSnippet: Immutable.fromJS({}),
