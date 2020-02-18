@@ -51,6 +51,19 @@ export default (app: Application) => {
     }
   );
 
+  app.post(
+    '/api/files',
+    needsAuthorization(['admin', 'editor']),
+    (req: Request, res: Response, next: NextFunction) => {
+      files
+        .save(req.body)
+        .then(result => {
+          res.json(result);
+        })
+        .catch(next);
+    }
+  );
+
   app.get(
     '/api/files/:filename',
     validation.validateRequest({

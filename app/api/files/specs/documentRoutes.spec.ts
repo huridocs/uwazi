@@ -8,7 +8,7 @@ import db from 'api/utils/testing_db';
 import errorLog from 'api/log/errorLog';
 import { uploadsPath, setupTestUploadedPaths } from 'api/files/filesystem';
 
-import { fixtures } from './fixtures';
+import { fixtures, uploadId } from './fixtures';
 import { files } from '../files';
 
 import uploadRoutes from '../routes';
@@ -42,7 +42,23 @@ describe('upload routes', () => {
         .attach('file', path.join(__dirname, filepath))
     );
 
-  describe('POST/documents/upload', () => {
+  describe('POST/files', () => {
+    it('should save file on the body', async () => {
+      await request(app)
+        .post('/api/files')
+        .send({ _id: uploadId.toString(), originalname: 'newName' });
+
+      const [upload] = await files.get({ _id: uploadId.toString() });
+
+      expect(upload).toEqual(
+        expect.objectContaining({
+          originalname: 'newName',
+        })
+      );
+    });
+  });
+
+  describe('POST/files/upload/documents', () => {
     it('should upload the file', async () => {
       await uploadDocument('uploads/f2082bf51b6ef839690485d7153e847a.pdf');
 
@@ -80,7 +96,7 @@ describe('upload routes', () => {
         })
       );
 
-      expect(search.indexEntities).toHaveBeenCalledWith({ sharedId: 'sharedId1' });
+      expect(search.indexEntities).toHaveBeenCalledWith({ sharedId: 'sharedId1' }, '+fullText');
     });
 
     it('should generate a thumbnail for the document', async () => {
@@ -115,9 +131,9 @@ describe('upload routes', () => {
       it('should set document processed to false and emit a socket conversionFailed event with the id of the document', async () => {
         await socketEmit('conversionFailed', async () =>
           request(app)
-            .post('/api/files/upload/document')
-            .field('entity', 'sharedId1')
-            .attach('file', path.join(__dirname, 'uploads/invalid_document.txt'))
+          .post('/api/files/upload/document')
+          .field('entity', 'sharedId1')
+          .attach('file', path.join(__dirname, 'uploads/invalid_document.txt'))
         );
 
         const [upload] = await files.get({ entity: 'sharedId1' }, '+fullText');
