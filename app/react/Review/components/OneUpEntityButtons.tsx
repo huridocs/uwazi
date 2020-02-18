@@ -21,10 +21,8 @@ export class OneUpEntityButtonsBase extends Component<OneUpEntityButtonsProps> {
   static defaultProps = defaultProps;
 
   renderNextButton(isPristine: boolean, btnClass: string) {
-    let retVal;
-
     if (this.props.isLast) {
-      retVal = (
+      return (
         <button
           type="button"
           onClick={() => this.props.reviewAndPublish(this.props.thesaurusName)}
@@ -34,20 +32,17 @@ export class OneUpEntityButtonsBase extends Component<OneUpEntityButtonsProps> {
           <span className="btn-label">{t('System', 'Review & Publish')}</span>
         </button>
       );
-    } else {
-      retVal = (
-        <button
-          type="button"
-          onClick={() => this.props.switchOneUpEntity(+1, true)}
-          className={`save-and-next ${!isPristine ? 'btn-success' : ''} ${btnClass}`}
-        >
-          <Icon icon="save-and-next" />
-          <span className="btn-label">{t('System', 'Save and go to next')}</span>
-        </button>
-      );
     }
-
-    return retVal;
+    return (
+      <button
+        type="button"
+        onClick={() => this.props.switchOneUpEntity(+1, true)}
+        className={`save-and-next ${!isPristine ? 'btn-success' : ''} ${btnClass}`}
+      >
+        <Icon icon="save-and-next" />
+        <span className="btn-label">{t('System', 'Save and go to next')}</span>
+      </button>
+    );
   }
 
   render() {
