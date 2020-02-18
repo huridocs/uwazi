@@ -1,5 +1,3 @@
-/** @format */
-
 import languagesUtil from 'shared/languages';
 import languages from 'shared/languagesList';
 import errorLog from 'api/log/errorLog';
@@ -80,7 +78,7 @@ const bulkIndex = (docs, _action = 'index', elasticIndex) => {
 
 const indexEntities = (
   query,
-  select,
+  select = '',
   limit = 50,
   { batchCallback = () => {}, elasticIndex, searchInstance }
 ) => {
@@ -90,7 +88,11 @@ const indexEntities = (
     }
 
     return entities
-      .get(query, select, { skip: offset, limit, documentsFullText: true })
+      .get(query, '', {
+        skip: offset,
+        limit,
+        documentsFullText: select && select.includes('+fullText'),
+      })
       .then(entitiesToIndex =>
         Promise.all(
           entitiesToIndex.map(entity =>

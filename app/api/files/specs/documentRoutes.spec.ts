@@ -2,6 +2,7 @@ import path from 'path';
 import fs from 'fs';
 import request, { Response as SuperTestResponse } from 'supertest';
 import { Application, Request, Response, NextFunction } from 'express';
+import { search } from 'api/search';
 
 import db from 'api/utils/testing_db';
 import errorLog from 'api/log/errorLog';
@@ -25,6 +26,7 @@ describe('upload routes', () => {
 
   beforeEach(async () => {
     setupTestUploadedPaths();
+    spyOn(search, 'indexEntities').and.returnValue(Promise.resolve());
     spyOn(Date, 'now').and.returnValue(1000);
     spyOn(errorLog, 'error'); //just to avoid annoying console output
     await db.clearAllAndLoad(fixtures);
@@ -48,7 +50,7 @@ describe('upload routes', () => {
       expect(fs.readFileSync(uploadsPath(upload.filename || ''))).toBeDefined();
     });
 
-    it('should process the document after upload', async () => {
+    it('should process and reindex the document after upload', async () => {
       const res: SuperTestResponse = await uploadDocument(
         'uploads/f2082bf51b6ef839690485d7153e847a.pdf'
       );
@@ -77,6 +79,8 @@ describe('upload routes', () => {
           creationDate: 1000,
         })
       );
+
+      expect(search.indexEntities).toHaveBeenCalledWith({ sharedId: 'sharedId1' });
     });
 
     it('should generate a thumbnail for the document', async () => {

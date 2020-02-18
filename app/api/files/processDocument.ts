@@ -1,11 +1,12 @@
 /** @format */
 
-import { FileSchema } from 'api/files/fileType';
+import { FileType } from 'shared/types/fileType';
+import { search } from 'api/search';
 
 import { files } from './files';
 import { PDF } from './PDF.js';
 
-export const processDocument = async (entitySharedId: string, file: FileSchema) => {
+export const processDocument = async (entitySharedId: string, file: FileType) => {
   const pdf = new PDF(file);
   const upload = await files.save({
     entity: entitySharedId,
@@ -23,8 +24,12 @@ export const processDocument = async (entitySharedId: string, file: FileSchema) 
     filename: thumbnail,
   });
 
-  return files.save({
+  const saved = await files.save({
     ...upload,
     ...conversion,
   });
+
+  await search.indexEntities({ sharedId: entitySharedId }, '+fullText');
+
+  return saved;
 };

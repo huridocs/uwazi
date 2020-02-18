@@ -14,7 +14,7 @@ export default (elasticIndex, search) => ({
   },
   reindex() {
     return this.resetIndex()
-      .then(() => search.indexEntities({}))
+      .then(() => search.indexEntities({}, '+fullText'))
       .then(() => this.refresh());
   },
 

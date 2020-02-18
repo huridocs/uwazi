@@ -19,26 +19,6 @@ import model from './entitiesModel';
 import { validateEntity } from './entitySchema';
 import settings from '../settings';
 
-const withDocuments = async (entities, select = {}) => {
-  const sharedIds = entities.map(e => e.sharedId);
-  const documents = await files.get({ entity: { $in: sharedIds }, type: 'document' }, '+fullText');
-
-  const test = entities.map(e => {
-    e.documents = documents.filter(d => d.entity === e.sharedId);
-    return e;
-  });
-
-  return Promise.all(
-    entities.map(async entity => {
-      entity.documents = await files.get(
-        { entity: entity.sharedId, type: 'document' },
-        '+fullText'
-      );
-      return entity;
-    })
-  );
-};
-
 /** Repopulate metadata object .label from thesauri and relationships. */
 async function denormalizeMetadata(metadata, entity, template, dictionariesByKey) {
   if (!metadata) {

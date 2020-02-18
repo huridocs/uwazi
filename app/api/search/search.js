@@ -1,5 +1,3 @@
-/** @format */
-
 import date from 'api/utils/date';
 
 import propertiesHelper from 'shared/comonProperties';
@@ -543,7 +541,7 @@ const instanceSearch = elasticIndex => ({
     return snippetsFromSearchHit(response.hits.hits[0]);
   },
 
-  async indexEntities(query, select, limit = 200, batchCallback = () => {}) {
+  async indexEntities(query, select = '', limit = 200, batchCallback = () => {}) {
     return indexEntities(query, select, limit, {
       batchCallback,
       elasticIndex: elasticIndex || elasticIndexes.index,
