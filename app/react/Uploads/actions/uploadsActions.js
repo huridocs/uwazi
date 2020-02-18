@@ -9,9 +9,9 @@ import * as libraryTypes from 'app/Library/actions/actionTypes';
 import uniqueID from 'shared/uniqueID';
 import { RequestParams } from 'app/utils/RequestParams';
 
+import { deleteFile } from 'api/files/filesystem.js';
 import { APIURL } from '../../config.js';
 import api from '../../utils/api';
-import { deleteFile } from 'api/files/filesystem.js';
 
 export function enterUploads() {
   return {
@@ -119,12 +119,6 @@ export function updateFile(fileData) {
       const file = response.json;
       dispatch({ type: types.UPDATED_FILE, file, entity: file.entity });
       dispatch(notificationActions.notify('File updated'));
-    });
-}
-
-deleteFile(_id) {
-  return api.delete('files', new RequestParams({ _id })).then(response => {
-      dispatch(notificationActions.notify('File deleted'));
     });
 }
 
