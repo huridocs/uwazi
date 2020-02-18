@@ -88,7 +88,8 @@
   }
 }
 
-.file {
+.file,
+.file-form {
   padding: 15px;
   border-bottom: 1px solid #f4f4f4;
   .btn {
@@ -108,5 +109,16 @@
     border-radius: 4px;
     display: inline-block;
     padding: 3px;
+  }
+}
+
+.file-form {
+  padding: 0;
+  overflow: hidden;
+  .form-group {
+    padding: 0;
+    > div {
+      margin-bottom: 15px;
+    }
   }
 }

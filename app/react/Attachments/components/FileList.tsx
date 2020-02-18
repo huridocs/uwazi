@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 
 import { advancedSort } from 'app/utils/advancedSort';
 import { Translate } from 'app/I18N';
-import { File } from './File';
+import { ConnectedFile as File } from './File';
 import { FileType } from 'shared/types/fileType';
 
 const defaultProps = {

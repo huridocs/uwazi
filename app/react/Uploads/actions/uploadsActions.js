@@ -11,6 +11,7 @@ import { RequestParams } from 'app/utils/RequestParams';
 
 import { APIURL } from '../../config.js';
 import api from '../../utils/api';
+import { deleteFile } from 'api/files/filesystem.js';
 
 export function enterUploads() {
   return {
@@ -112,6 +113,35 @@ export function upload(docId, file, endpoint = 'files/upload/document') {
     });
 }
 
+export function updateFile(fileData) {
+  return dispatch =>
+    api.post('files', new RequestParams(fileData)).then(response => {
+      const file = response.json;
+      dispatch({ type: types.UPDATED_FILE, file, entity: file.entity });
+      dispatch(notificationActions.notify('File updated'));
+    });
+}
+
+deleteFile(_id) {
+  return api.delete('files', new RequestParams({ _id })).then(response => {
+      dispatch(notificationActions.notify('File deleted'));
+    });
+}
+
+export function deleteDocument(_id) {
+  return dispatch =>
+    deleteFile(_id).then(() => {
+      dispatch({ type: types.DELETED_FILE, file, entity: file.entity });
+    });
+}
+
+export function deleteCustomUpload(_id) {
+  return dispatch =>
+    deleteFile(_id).then(response => {
+      dispatch(basicActions.remove('customUploads', response.json[0]));
+    });
+}
+
 export function publicSubmit(data, remote = false) {
   return dispatch =>
     new Promise(resolve => {
@@ -175,13 +205,6 @@ export function uploadCustom(file) {
       dispatch(basicActions.push('customUploads', response));
     });
   };
-}
-
-export function deleteCustomUpload(_id) {
-  return dispatch =>
-    api.delete('files', new RequestParams({ _id })).then(response => {
-      dispatch(basicActions.remove('customUploads', response.json[0]));
-    });
 }
 
 export function uploadDocument(docId, file) {

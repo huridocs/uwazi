@@ -16,14 +16,12 @@ export default function documents(state = initialState, action = {}) {
     return state.setIn(['rows', docIndex], Immutable.fromJS(action.doc));
   }
 
-  if (action.type === types.UPDATE_DOCUMENT) {
-    const docIndex = state.get('rows').findIndex(doc => doc.get('_id') === action.doc._id);
-    return state.setIn(['rows', docIndex], Immutable.fromJS(action.doc));
-  }
-
   if (action.type === attachmentsTypes.UPDATE_DOCUMENT_FILE) {
     const docIndex = state.get('rows').findIndex(doc => doc.get('_id') === action.entity);
-    return state.setIn(['rows', docIndex, 'file'], Immutable.fromJS(action.file));
+    const fileIndex = state
+      .get('rows')
+      [docIndex].documents.findIndex(file => file.get('_id') === action.file._id);
+    return state.setIn(['rows', docIndex, 'file', fileIndex], Immutable.fromJS(action.file));
   }
 
   if (action.type === types.UPDATE_DOCUMENTS) {
@@ -46,7 +44,7 @@ export default function documents(state = initialState, action = {}) {
       .get(docIndex)
       .toJS();
     doc.uploaded = true;
-    doc.file = action.file;
+    doc.documents.push(action.file);
     return state.setIn(['rows', docIndex], Immutable.fromJS(doc));
   }
 

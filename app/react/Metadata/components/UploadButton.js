@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { reuploadDocument } from 'app/Metadata/actions/actions';
+import { uploadDocument } from 'app/Metadata/actions/actions';
 import { documentProcessed } from 'app/Uploads/actions/uploadsActions';
 import socket from 'app/socket';
 import { Icon } from 'UI';
@@ -46,12 +46,7 @@ export class UploadButton extends Component {
     const file = e.target.files[0];
     this.context.confirm({
       accept: () => {
-        this.props.reuploadDocument(
-          this.props.documentId,
-          file,
-          this.props.documentSharedId,
-          this.props.storeKey
-        );
+        this.props.uploadDocument(file, this.props.documentSharedId, this.props.storeKey);
       },
       title: 'Confirm upload',
       message:
@@ -141,7 +136,7 @@ export class UploadButton extends Component {
       return this.renderCompleted();
     }
 
-    const progress = this.props.progress.get(this.props.documentId);
+    const progress = this.props.progress.get(this.props.documentSharedId);
     if (progress) {
       return renderProgress(progress);
     }
@@ -151,7 +146,7 @@ export class UploadButton extends Component {
 }
 
 UploadButton.propTypes = {
-  reuploadDocument: PropTypes.func,
+  uploadDocument: PropTypes.func,
   documentProcessed: PropTypes.func,
   documentId: PropTypes.string,
   documentSharedId: PropTypes.string,
@@ -166,7 +161,7 @@ UploadButton.contextTypes = {
 const mapStateToProps = ({ metadata }) => ({ progress: metadata.progress });
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({ reuploadDocument, documentProcessed }, dispatch);
+  return bindActionCreators({ uploadDocument, documentProcessed }, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(UploadButton);

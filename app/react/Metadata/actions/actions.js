@@ -137,23 +137,27 @@ export function loadTemplate(form, template) {
   };
 }
 
-export function reuploadDocument(docId, file, docSharedId, __reducerKey) {
+export function uploadDocument(file, sharedId, __reducerKey) {
   return (dispatch, getState) => {
-    dispatch({ type: types.START_REUPLOAD_DOCUMENT, doc: docId });
+    dispatch({ type: types.START_REUPLOAD_DOCUMENT, doc: sharedId });
     superagent
-      .post(`${APIURL}reupload`)
+      .post(`${APIURL}files/upload/document`)
       .set('Accept', 'application/json')
       .set('X-Requested-With', 'XMLHttpRequest')
       .set('Content-Language', getState().locale)
-      .field('document', docSharedId)
+      .field('document', sharedId)
       .attach('file', file, file.name)
       .on('progress', data => {
-        dispatch({ type: types.REUPLOAD_PROGRESS, doc: docId, progress: Math.floor(data.percent) });
+        dispatch({
+          type: types.REUPLOAD_PROGRESS,
+          doc: sharedId,
+          progress: Math.floor(data.percent),
+        });
       })
       .on('response', ({ body }) => {
         const _file = { filename: body.filename, size: body.size, originalname: body.originalname };
-        dispatch({ type: types.REUPLOAD_COMPLETE, doc: docId, file: _file, __reducerKey });
-        api.get(new RequestParams({ sharedId: docSharedId })).then(([doc]) => {
+        dispatch({ type: types.REUPLOAD_COMPLETE, doc: sharedId, file: _file, __reducerKey });
+        api.get(new RequestParams({ sharedId })).then(([doc]) => {
           dispatch({ type: libraryTypes.UPDATE_DOCUMENT, doc, __reducerKey });
           dispatch({ type: libraryTypes.UNSELECT_ALL_DOCUMENTS, __reducerKey });
           dispatch({ type: libraryTypes.SELECT_DOCUMENT, doc, __reducerKey });

@@ -9,6 +9,19 @@ import { RequestParams } from 'app/utils/RequestParams';
 
 import * as types from './actionTypes';
 
+export function updateFile(file, __reducerKey) {
+  return dispatch => {
+    api.post('files', new RequestParams(file)).then(({ json: updatedFile }) => {
+      dispatch({
+        type: types.UPDATE_DOCUMENT_FILE,
+        entity: updatedFile.entity,
+        file: updatedFile,
+        __reducerKey,
+      });
+    });
+  };
+}
+
 export function uploadAttachment(entity, file, __reducerKey, options = {}) {
   return dispatch => {
     dispatch({ type: types.START_UPLOAD_ATTACHMENT, entity });

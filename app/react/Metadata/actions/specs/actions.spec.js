@@ -230,7 +230,7 @@ describe('Metadata Actions', () => {
     });
   });
 
-  describe('reuploadDocument', () => {
+  describe('uploadDocument', () => {
     let mockUpload;
     let store;
     let file;
@@ -259,7 +259,7 @@ describe('Metadata Actions', () => {
 
     it('should upload the file while dispatching the upload progress (including the language and storeKey to update the results)', () => {
       api.get = () => Promise.resolve([doc]);
-      store.dispatch(actions.reuploadDocument('abc1', file, 'sharedId', 'storeKey'));
+      store.dispatch(actions.uploadDocument('abc1', file, 'sharedId', 'storeKey'));
       const expectedActions = [
         { type: types.START_REUPLOAD_DOCUMENT, doc: 'abc1' },
         { type: types.REUPLOAD_PROGRESS, doc: 'abc1', progress: 55 },
