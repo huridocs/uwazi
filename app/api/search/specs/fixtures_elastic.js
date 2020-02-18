@@ -18,6 +18,54 @@ const relationType = db.id();
 const fixturesTimeOut = 20000;
 
 export default {
+  files: [
+    {
+      entity: metadataSnippets,
+      type: 'document',
+      language: 'eng',
+      fullText: {
+        1: 'Once upon a time[[1]]',
+        2: ' gargoyles lived on building ledges[[13]]',
+      },
+    },
+    {
+      type: 'document',
+      entity: 'unpublishedSharedId',
+      language: 'eng',
+      fullText: { 1: 'unpublished document' },
+    },
+    {
+      type: 'document',
+      entity: batmanFinishes,
+      language: 'eng',
+      title: 'Batman finishes en',
+      fullText: { 1: 'english[[12]]', 2: 'document[[2]]', 3: 'english[[123]]' },
+    },
+    {
+      type: 'document',
+      entity: batmanFinishes,
+      language: 'spa',
+      title: 'Batman finishes es',
+      fullText: { 1: 'spanish[[34]]', 2: 'document[[4]]' },
+    },
+    {
+      type: 'document',
+      entity: batmanBegins,
+      language: 'eng',
+      title: 'Batman begins en',
+      fullText: {
+        1: 'english[[2]]',
+        2: 'another[[5]]',
+      },
+    },
+    {
+      type: 'document',
+      entity: batmanBegins,
+      language: 'spa',
+      title: 'Batman begins es',
+      fullText: {},
+    },
+  ],
   entities: [
     {
       _id: db.id(),
@@ -25,7 +73,6 @@ export default {
       template: template1,
       language: 'en',
       title: 'Batman finishes en',
-      fullText: { 1: 'english[[12]]', 2: 'document[[2]]', 3: 'english[[123]]' },
       published: true,
       user: userId,
     },
@@ -35,7 +82,6 @@ export default {
       template: template1,
       language: 'es',
       title: 'Batman finishes es',
-      fullText: { 1: 'spanish[[34]]', 2: 'document[[4]]' },
       published: true,
       user: userId,
     },
@@ -45,10 +91,6 @@ export default {
       template: template2,
       language: 'en',
       title: 'Batman begins en',
-      fullText: {
-        1: 'english[[2]]',
-        2: 'another[[5]]',
-      },
       published: true,
       user: userId,
     },
@@ -213,7 +255,6 @@ export default {
       template: templateMetadata1,
       language: 'en',
       title: 'metadata6',
-      fullText: { 1: 'unpublished document' },
       published: false,
       user: userId,
       metadata: { field1: [{ value: 'joker' }] },
@@ -265,10 +306,6 @@ export default {
       language: 'en',
       title: 'Document about gargoyles',
       metadata: { field1: [{ value: 'This is some text containing the word gargoyles.' }] },
-      fullText: {
-        1: 'Once upon a time[[1]]',
-        2: ' gargoyles lived on building ledges[[13]]',
-      },
     },
   ],
   templates: [

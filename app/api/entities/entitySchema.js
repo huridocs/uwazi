@@ -3,7 +3,7 @@
 import Ajv from 'ajv';
 import templatesModel from 'api/templates/templatesModel';
 import { isUndefined, isNull } from 'util';
-import { objectIdSchema, metadataSchema, tocSchema } from 'shared/types/commonSchemas';
+import { objectIdSchema, metadataSchema } from 'shared/types/commonSchemas';
 import { wrapValidator } from 'shared/tsUtils';
 import { validators, customErrorMessages } from './metadataValidators.js';
 
@@ -65,7 +65,6 @@ export const entitySchema = {
   definitions: {
     objectIdSchema,
     metadataSchema,
-    tocSchema,
   },
   properties: {
     _id: objectIdSchema,
