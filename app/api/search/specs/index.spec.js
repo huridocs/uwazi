@@ -1,7 +1,5 @@
 /**
- * /* eslint-disable max-nested-callbacks
- *
- * @format
+ * eslint-disable max-nested-callbacks
  */
 
 import { catchErrors } from 'api/utils/jasmineHelpers';
@@ -68,6 +66,7 @@ describe('search', () => {
               { index: { _index: elasticIndex, _id: 'id2' } },
               { title: 'test2', fullText: 'entity' },
             ],
+            requestTimeout: 40000,
           });
           done();
         })
@@ -119,6 +118,7 @@ describe('search', () => {
                   fullText: { name: 'fullText', parent: 'id2' },
                 },
               ],
+              requestTimeout: 40000,
             });
             done();
           })
