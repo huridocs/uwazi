@@ -959,45 +959,6 @@ describe('entities', () => {
       });
     });
 
-    describe('getRawePage', () => {
-      it('should return the page text', async () => {
-        const pageNumber = 2;
-        const page = await entities.getRawPage('shared', 'en', pageNumber);
-
-        expect(page).toBe('page 2');
-      });
-
-      describe('when entity do not exists', () => {
-        it('should throw 404 error', async () => {
-          const pageNumber = 2;
-          try {
-            await entities.getRawPage('nonexistent', 'en', pageNumber);
-          } catch (e) {
-            expect(e.code).toBe(404);
-          }
-        });
-      });
-
-      describe('when page is blank', () => {
-        it('should not throw a 404', async () => {
-          const pageNumber = 3;
-          const page = await entities.getRawPage('shared', 'en', pageNumber);
-
-          expect(page).toBe('');
-        });
-      });
-      describe('when page do not exists', () => {
-        it('should throw 404 error', async () => {
-          const pageNumber = 200;
-          try {
-            await entities.getRawPage('shared', 'en', pageNumber);
-          } catch (e) {
-            expect(e.code).toBe(404);
-          }
-        });
-      });
-    });
-
     it('should delete the document in the database', done => {
       entities
         .delete('shared')

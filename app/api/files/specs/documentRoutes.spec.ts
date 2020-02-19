@@ -12,7 +12,7 @@ import { fixtures, uploadId } from './fixtures';
 import { files } from '../files';
 
 import uploadRoutes from '../routes';
-import { setUpApp, socketEmit, iosocket } from './helpers';
+import { setUpApp, socketEmit, iosocket } from 'api/utils/testingRoutes';
 
 jest.mock(
   '../../auth/authMiddleware.js',

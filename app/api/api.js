@@ -26,7 +26,8 @@ export default (app, server) => {
   require('./topicclassification/routes').default(app);
   require('./thesauri/routes').default(app);
   require('./relationtypes/routes').default(app);
-  require('./documents/routes').default(app);
+  require('./documents/deprecatedRoutes').default(app);
+  require('./documents/routes').documentRoutes(app);
   require('./contact/routes').default(app);
   require('./entities/routes').default(app);
   require('./pages/routes').default(app);

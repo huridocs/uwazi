@@ -1,9 +1,9 @@
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import db from 'api/utils/testing_db';
 
-import documentRoutes from '../routes.js';
+import documentRoutes from '../deprecatedRoutes.js';
 import documents from '../documents';
-import fixtures, { batmanFinishesId } from './fixtures.js';
+import fixtures from './fixtures.js';
 import instrumentRoutes from '../../utils/instrumentRoutes';
 import templates from '../../templates';
 

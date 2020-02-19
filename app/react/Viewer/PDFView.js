@@ -44,8 +44,11 @@ class PDFView extends Component {
       query.raw === 'true'
     ) {
       const { sharedId } = props.params;
+
       entitiesAPI
-        .getRawPage(new RequestParams({ sharedId, pageNumber: query.page }))
+        .getRawPage(
+          new RequestParams({ _id: props.entity.toJS().documents[0]._id, page: query.page })
+        )
         .then(pageText => {
           this.context.store.dispatch(actions.set('viewer/rawText', pageText));
         });

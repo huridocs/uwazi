@@ -577,20 +577,6 @@ export default {
     return docs;
   },
 
-  async getRawPage(sharedId, language, pageNumber) {
-    const [entity] = await model.get({ sharedId, language }, { [`fullText.${pageNumber}`]: true });
-    if (!entity || !entity.fullText) {
-      throw createError('entity does not exists', 404);
-    }
-
-    if (typeof entity.fullText[pageNumber] === 'undefined') {
-      throw createError('page does not exist', 404);
-    }
-
-    const pageNumberMatch = /\[\[(\d+)\]\]/g;
-    return entity.fullText[pageNumber].replace(pageNumberMatch, '');
-  },
-
   async removeValuesFromEntities(properties, template) {
     const query = { template, $or: [] };
     const changes = {};

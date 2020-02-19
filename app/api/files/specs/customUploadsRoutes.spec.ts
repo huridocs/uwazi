@@ -5,15 +5,15 @@ import fs from 'fs';
 import request, { Response as SuperTestResponse } from 'supertest';
 import { Application, Request, Response, NextFunction } from 'express';
 
+import { fileExists } from 'api/csv/specs/helpers';
 import { setupTestUploadedPaths, customUploadsPath } from 'api/files/filesystem';
 import db from 'api/utils/testing_db';
+import { setUpApp } from 'api/utils/testingRoutes';
 
-import { FileSchema } from '../fileType';
+import { FileType } from 'shared/types/fileType';
 import { fixtures } from './fixtures';
 import { files } from '../files';
 import uploadRoutes from '../routes';
-import { setUpApp } from './helpers';
-import {fileExists} from 'api/csv/specs/helpers';
 
 jest.mock(
   '../../auth/authMiddleware.js',
@@ -53,7 +53,7 @@ describe('custom upload routes', () => {
         .post('/api/files/upload/custom')
         .attach('file', path.join(__dirname, 'test.txt'));
 
-      const [file]: FileSchema[] = await files.get({ originalname: 'test.txt' });
+      const [file]: FileType[] = await files.get({ originalname: 'test.txt' });
 
       expect(fs.readFileSync(customUploadsPath(file.filename || ''))).toBeDefined();
     });
@@ -65,7 +65,7 @@ describe('custom upload routes', () => {
         .get('/api/files')
         .query({ type: 'custom' });
 
-      expect(response.body.map((file: FileSchema) => file.originalname)).toEqual([
+      expect(response.body.map((file: FileType) => file.originalname)).toEqual([
         'upload1',
         'upload2',
       ]);
@@ -78,7 +78,7 @@ describe('custom upload routes', () => {
         .post('/api/files/upload/custom')
         .attach('file', path.join(__dirname, 'test.txt'));
 
-      const [file]: FileSchema[] = await files.get({ originalname: 'test.txt' });
+      const [file]: FileType[] = await files.get({ originalname: 'test.txt' });
 
       await request(app)
         .delete('/api/files')
