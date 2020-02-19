@@ -1,0 +1,45 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`file should render the file originalName and language 1`] = `
+<div
+  className="file"
+>
+  <div
+    className="file-originalname"
+  >
+    Human name 1
+  </div>
+  <div>
+    <div
+      className="file-language"
+    >
+      english
+    </div>
+    <a
+      className="file-download btn btn-outline-secondary"
+      href="/api/files/filename.ext"
+    >
+      <Connect(Icon)
+        icon="cloud-download-alt"
+      />
+       
+      <Connect(Translate)>
+        Download
+      </Connect(Translate)>
+    </a>
+    <button
+      className="file-edit btn btn-outline-success"
+      onClick={[Function]}
+      type="button"
+    >
+      <Connect(Icon)
+        icon="pencil-alt"
+      />
+       
+      <Connect(Translate)>
+        Edit
+      </Connect(Translate)>
+    </button>
+  </div>
+</div>
+`;

@@ -28,7 +28,7 @@ describe('ViewerRoute', () => {
     });
 
     describe('when the entity does not have a pdf', () => {
-      it('should return the PDFView state', async () => {
+      it('should return the entityView state', async () => {
         entity.documents = [];
         const request = new RequestParams({ sharedId: '123' }, 'headers');
         const state = await ViewerRoute.requestState(request, { templates: 'templates' });

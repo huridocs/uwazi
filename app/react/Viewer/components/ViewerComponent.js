@@ -1,4 +1,4 @@
-import { Map } from 'immutable';
+import { Map, List } from 'immutable';
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
@@ -11,18 +11,29 @@ import PDFView from '../PDFView';
 
 export class ViewerComponent extends Component {
   render() {
-    const { entity, document } = this.props;
+    const { entity, languages } = this.props;
+
     if (!entity.get('_id')) {
       return <Loader />;
     }
 
-    return document ? <PDFView {...this.props} /> : <EntityView {...this.props} />;
+    const defaultLanguage = languages.find(l => l.get('default')).get('key');
+
+    const document = entity.get('documents')
+      ? entityDefaultDocument(entity.get('documents').toJS(), entity.language, defaultLanguage)
+      : null;
+
+    return document ? (
+      <PDFView {...this.props} document={document} />
+    ) : (
+      <EntityView {...this.props} />
+    );
   }
 }
 
 ViewerComponent.propTypes = {
   entity: PropTypes.instanceOf(Map).isRequired,
-  document: PropTypes.object,
+  languages: PropTypes.instanceOf(List).isRequired,
 };
 
 const mapStateToProps = state => {
@@ -30,16 +41,9 @@ const mapStateToProps = state => {
     ? state.documentViewer.doc
     : state.entityView.entity;
 
-  const defaultLanguage = state.settings.collection
-    .get('languages')
-    .find(l => l.get('default'))
-    .get('key');
-
   return {
     entity,
-    document: entity.get('documents')
-      ? entityDefaultDocument(entity.get('documents').toJS(), entity.language, defaultLanguage)
-      : null,
+    languages: state.settings.collection.get('languages'),
   };
 };
 
