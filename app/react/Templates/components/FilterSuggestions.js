@@ -87,7 +87,7 @@ export class FilterSuggestions extends Component {
     const { content } = this.props;
     const hasThesauri = typeof content !== 'undefined';
     const activeClass = this.props.filter ? 'property-atributes is-active' : 'property-atributes';
-    const title = 'This is the current property and will be used togheter with equal properties.';
+    const title = 'This is the current property and will be used together with equal properties.';
     const icon = FilterSuggestions.getTypeIcon(type);
 
     return (
