@@ -112,15 +112,6 @@ export function upload(docId, file, endpoint = 'files/upload/document') {
     });
 }
 
-export function updateFile(fileData) {
-  return dispatch =>
-    api.post('files', new RequestParams(fileData)).then(response => {
-      const file = response.json;
-      dispatch({ type: types.UPDATED_FILE, file, entity: file.entity });
-      dispatch(notificationActions.notify('File updated'));
-    });
-}
-
 export function publicSubmit(data, remote = false) {
   return dispatch =>
     new Promise(resolve => {

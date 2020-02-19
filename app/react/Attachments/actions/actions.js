@@ -18,6 +18,21 @@ export function updateFile(file, __reducerKey) {
         file: updatedFile,
         __reducerKey,
       });
+      dispatch(notify('File updated', 'success'));
+    });
+  };
+}
+
+export function deleteFile(file, __reducerKey) {
+  return dispatch => {
+    api.delete('files', new RequestParams({ _id: file._id })).then(() => {
+      dispatch({
+        type: types.DELETE_DOCUMENT_FILE,
+        entity: file.entity,
+        file,
+        __reducerKey,
+      });
+      dispatch(notify('File deleted', 'success'));
     });
   };
 }

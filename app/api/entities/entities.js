@@ -356,10 +356,12 @@ export default {
     const entities = await model.get(query, select, restOfOptions);
     return Promise.all(
       entities.map(async entity => {
-        entity.documents = await files.get(
+        const documents = await files.get(
           { entity: entity.sharedId, type: 'document' },
           documentsFullText ? '+fullText' : ''
         );
+
+        entity.documents = documents;
         return entity;
       })
     );

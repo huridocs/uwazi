@@ -93,7 +93,6 @@ export class DocumentSidePanel extends Component {
     const { attachments, documents } = doc.toJS();
 
     const isEntity = !documents || !documents.length;
-    console.log(this.props.doc.toJS());
 
     let { tab } = this.props;
     if (isEntity && (tab === 'references' || tab === 'toc')) {
@@ -109,40 +108,7 @@ export class DocumentSidePanel extends Component {
       },
       { totalConnections: 0 }
     );
-    const mockDocuments = [
-      {
-        _id: '5e43d56243a8bb1ac84c4067',
-        entity: 'fp5xamr15de',
-        title: 'Demo title one',
-        type: 'document',
-        processed: true,
-        creationDate: 1581503842258.0,
-        __v: 0,
-        filename: '158150384221104cmib6gw3zy.pdf',
-        language: 'eng',
-        mimetype: 'application/pdf',
-        originalname: 'DnD_BasicRules_2018.pdf',
-        size: 11537210,
-        toc: [],
-        totalPages: 180,
-      },
-      {
-        _id: '5e43d56243a8bb1ac84c4067',
-        entity: 'fp5xamr15de',
-        title: 'demo title two this is a very long title to see if it fits',
-        type: 'document',
-        processed: true,
-        creationDate: 1581503842258.0,
-        __v: 0,
-        filename: '158150384221104cmib6gw3zy.pdf',
-        language: 'eng',
-        mimetype: 'application/pdf',
-        originalname: 'DnD_BasicRules_2018.pdf',
-        size: 11537210,
-        toc: [],
-        totalPages: 180,
-      },
-    ];
+
     return (
       <SidePanel open={this.props.open} className="metadata-sidepanel">
         <div className="sidepanel-header">
@@ -309,7 +275,7 @@ export class DocumentSidePanel extends Component {
                       showTitle
                       showType
                     />
-                    <FileList files={mockDocuments} />
+                    <FileList files={documents} />
                     <AttachmentsList
                       attachments={attachments}
                       documents={documents}

@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
 import { Translate } from 'app/I18N';
@@ -7,13 +8,14 @@ import { Icon } from 'UI';
 import { FileType } from 'shared/types/fileType';
 import { APIURL } from 'app/config.js';
 import { LocalForm, Control } from 'react-redux-form';
-import { updateFile } from 'app/Attachments/actions/actions';
+import { updateFile, deleteFile } from 'app/Attachments/actions/actions';
 
 export type FileProps = {
   file: FileType;
   entitySharedId: string;
   readonly: boolean;
   updateFile: (file: FileType) => any | void;
+  deleteFile: (file: FileType) => any | void;
 };
 
 type FileState = {
@@ -22,6 +24,10 @@ type FileState = {
 };
 
 export class File extends Component<FileProps, FileState> {
+  static contextTypes = {
+    confirm: PropTypes.func,
+  };
+
   constructor(props: FileProps) {
     super(props);
     this.state = {
@@ -30,6 +36,7 @@ export class File extends Component<FileProps, FileState> {
     };
     this.edit = this.edit.bind(this);
     this.cancel = this.cancel.bind(this);
+    this.delete = this.delete.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
@@ -46,10 +53,20 @@ export class File extends Component<FileProps, FileState> {
     this.setState({ editing: false });
   }
 
-  handleSubmit(file: FileType) {
-    console.log(this.props.updateFile);
+  delete() {
+    this.context.confirm({
+      accept: () => {
+        this.props.deleteFile(this.state.file);
+        this.setState({ editing: false });
+      },
+      title: 'Confirm delete file',
+      message: 'Are you sure you want to delete this file?',
+    });
+  }
 
+  handleSubmit(file: FileType) {
     this.props.updateFile(file);
+    this.setState({ editing: false });
   }
 
   renderView() {
@@ -118,7 +135,12 @@ export class File extends Component<FileProps, FileState> {
             </button>
           </div>
           <div className="col-sm-4">
-            <button type="button" className="btn btn-outline-danger" value="Delete">
+            <button
+              type="button"
+              className="btn btn-outline-danger"
+              value="Delete"
+              onClick={this.delete}
+            >
               <Icon icon="trash-alt" />
               &nbsp;
               <Translate>Delete</Translate>
@@ -134,6 +156,7 @@ export class File extends Component<FileProps, FileState> {
   }
 }
 
-const mapDispatchToProps = (dispatch: Dispatch<{}>) => bindActionCreators({ updateFile }, dispatch);
+const mapDispatchToProps = (dispatch: Dispatch<{}>) =>
+  bindActionCreators({ updateFile, deleteFile }, dispatch);
 
 export const ConnectedFile = connect(null, mapDispatchToProps)(File);

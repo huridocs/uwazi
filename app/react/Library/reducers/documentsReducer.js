@@ -21,7 +21,15 @@ export default function documents(state = initialState, action = {}) {
     const fileIndex = state
       .get('rows')
       [docIndex].documents.findIndex(file => file.get('_id') === action.file._id);
-    return state.setIn(['rows', docIndex, 'file', fileIndex], Immutable.fromJS(action.file));
+    return state.setIn(['rows', docIndex, 'documents', fileIndex], Immutable.fromJS(action.file));
+  }
+
+  if (action.type === attachmentsTypes.DELETE_DOCUMENT_FILE) {
+    const docIndex = state.get('rows').findIndex(doc => doc.get('_id') === action.entity);
+    const fileIndex = state
+      .get('rows')
+      [docIndex].documents.findIndex(file => file.get('_id') === action.file._id);
+    return state.deleteIn(['rows', docIndex, 'documents', fileIndex]);
   }
 
   if (action.type === types.UPDATE_DOCUMENTS) {
