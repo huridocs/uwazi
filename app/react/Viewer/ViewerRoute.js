@@ -1,5 +1,3 @@
-/** @format */
-
 import RouteHandler from 'app/App/RouteHandler';
 import EntitiesAPI from 'app/Entities/EntitiesAPI';
 import React from 'react';
