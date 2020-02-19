@@ -3,7 +3,7 @@
 exports[`FilterSuggestions should always render the current property as a guide 1`] = `
 <tr
   className="property-atributes is-active"
-  title="This is the current property and will be used togheter with equal properties."
+  title="This is the current property and will be used together with equal properties."
 >
   <td>
     <Connect(Icon)
