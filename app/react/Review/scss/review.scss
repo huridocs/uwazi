@@ -182,7 +182,16 @@ $header-height: 44px;
     height: 0;
     flex-grow: 1;
     overflow-y: scroll;
+
+    table {
+      border-collapse: collapse;
+    }
+
+    th {
+      font-weight: normal;
+    }
   }
+
   .cockpit {
     height: 0;
     flex-grow: 1;
@@ -191,6 +200,7 @@ $header-height: 44px;
 
   .settings-footer {
     @extend .sidepanel-footer;
+    border: none;
   }
 
   .entity-viewer {
