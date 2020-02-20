@@ -1,13 +1,12 @@
 import request, { Response as SuperTestResponse } from 'supertest';
 import { Application, Request, Response, NextFunction } from 'express';
-
+import { setUpApp } from 'api/utils/testingRoutes';
 import db from 'api/utils/testing_db';
 
 import { fixtures, fileName1 } from './fixtures';
 
 import uploadRoutes from '../routes';
 import paths from '../../config/paths';
-import { setUpApp } from './helpers';
 
 jest.mock(
   '../../auth/authMiddleware.js',

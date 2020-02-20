@@ -99,33 +99,3 @@ Object {
   "type": "object",
 }
 `;
-
-exports[`entities POST get_raw_page should have a validation schema 1`] = `
-Object {
-  "children": Object {
-    "pageNumber": Object {
-      "flags": Object {
-        "presence": "required",
-      },
-      "invalids": Array [
-        Infinity,
-        -Infinity,
-      ],
-      "type": "number",
-    },
-    "sharedId": Object {
-      "flags": Object {
-        "presence": "required",
-      },
-      "invalids": Array [
-        "",
-      ],
-      "type": "string",
-    },
-  },
-  "flags": Object {
-    "presence": "required",
-  },
-  "type": "object",
-}
-`;

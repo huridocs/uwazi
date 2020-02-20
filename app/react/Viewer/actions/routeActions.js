@@ -3,6 +3,7 @@ import { getDocument } from 'app/Viewer/actions/documentActions';
 import referencesAPI from 'app/Viewer/referencesAPI';
 import relationTypesAPI from 'app/RelationTypes/RelationTypesAPI';
 import * as relationships from 'app/Relationships/utils/routeUtils';
+import { entityDefaultDocument } from 'shared/entityDefaultDocument';
 
 import { setReferences } from './referencesActions';
 import entitiesAPI from '../../Entities/EntitiesAPI';
@@ -19,15 +20,27 @@ export function setViewerState(state) {
   };
 }
 
-export function requestViewerState(requestParams, globalResources) {
+export async function requestViewerState(requestParams, globalResources) {
   const { sharedId, raw, page } = requestParams.data;
-  return Promise.all([
+
+  const [
+    doc,
+    references,
+    relationTypes,
+    [connectionsGroups, searchResults, sort],
+  ] = await Promise.all([
     getDocument(requestParams.set({ sharedId })),
     referencesAPI.get(requestParams.set({ sharedId })),
     relationTypesAPI.get(requestParams.onlyHeaders()),
     relationships.requestState(requestParams.set({ sharedId }), globalResources.templates),
-    raw ? entitiesAPI.getRawPage(requestParams.set({ sharedId, pageNumber: page })) : '',
-  ]).then(([doc, references, relationTypes, [connectionsGroups, searchResults, sort], rawText]) => [
+  ]);
+
+  const defaultDoc = entityDefaultDocument(doc.documents, doc.language, 'change this');
+  const rawText = raw
+    ? await entitiesAPI.getRawPage(requestParams.set({ _id: defaultDoc._id, page }))
+    : '';
+
+  return [
     setViewerState({
       documentViewer: {
         doc,
@@ -48,5 +61,5 @@ export function requestViewerState(requestParams, globalResources) {
       },
       relationTypes,
     }),
-  ]);
+  ];
 }

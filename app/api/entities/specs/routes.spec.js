@@ -182,7 +182,7 @@ describe('entities', () => {
               published: true,
             },
             {},
-            1
+            { limit: 1 }
           );
           expect(response).toEqual({ rows: expectedEntity });
           done();
@@ -240,7 +240,7 @@ describe('entities', () => {
           published: true,
         },
         {},
-        1
+        { limit: 1 }
       );
     });
 
