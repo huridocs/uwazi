@@ -86,6 +86,11 @@
   li {
     list-style: none;
   }
+
+  .btn {
+    border-radius: 2px;
+    margin-left: 15px;
+  }
 }
 
 .file,
@@ -93,9 +98,7 @@
   padding: 15px;
   border-bottom: 1px solid #f4f4f4;
   .btn {
-    border-radius: 2px;
     float: right;
-    margin-left: 15px;
   }
 
   &-originalname {

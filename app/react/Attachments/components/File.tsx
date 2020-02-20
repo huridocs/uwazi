@@ -75,6 +75,8 @@ export class File extends Component<FileProps, FileState> {
           <div className="file-language">{language ? transformLanguage(language) : ''}</div>
           <a
             href={`${APIURL}files/${filename}`}
+            target="_blank"
+            rel="noopener noreferrer"
             className="file-download btn btn-outline-secondary"
           >
             <Icon icon="cloud-download-alt" />

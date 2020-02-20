@@ -280,7 +280,11 @@ export class DocumentSidePanel extends Component {
                       showTitle
                       showType
                     />
-                    <FileList files={documents} storeKey={this.props.storeKey} />
+                    <FileList
+                      files={documents}
+                      storeKey={this.props.storeKey}
+                      entitySharedId={doc.get('sharedId')}
+                    />
                     <AttachmentsList
                       attachments={attachments}
                       readOnly={false}

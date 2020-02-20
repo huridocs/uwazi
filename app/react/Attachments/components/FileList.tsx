@@ -4,6 +4,7 @@ import { advancedSort } from 'app/utils/advancedSort';
 import { Translate } from 'app/I18N';
 import { ConnectedFile as File } from './File';
 import { FileType } from 'shared/types/fileType';
+import UploadButton from 'app/Metadata/components/UploadButton';
 
 const defaultProps = {
   files: [],
@@ -42,6 +43,7 @@ export class FileList extends Component<FileListProps> {
           <Translate>Documents</Translate>
         </h2>
         <ul>{files.map(file => this.renderFile(file))}</ul>
+        <UploadButton entitySharedId={this.props.entitySharedId} />
       </div>
     );
   }

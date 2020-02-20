@@ -7,7 +7,6 @@ import filesize from 'filesize';
 import { NeedAuthorization } from 'app/Auth';
 import ShowIf from 'app/App/ShowIf';
 
-import UploadButton from 'app/Metadata/components/UploadButton';
 import AttachmentForm from 'app/Attachments/components/AttachmentForm';
 import { wrapDispatch } from 'app/Multireducer';
 import { Icon } from 'UI';
@@ -67,7 +66,7 @@ export class Attachment extends Component {
   }
 
   render() {
-    const { file, parentId, parentSharedId, model, isSourceDocument, storeKey } = this.props;
+    const { file, parentId, model, isSourceDocument, storeKey } = this.props;
     const sizeString = file.size ? filesize(file.size) : '';
     const item = getItemOptions(isSourceDocument, parentId, file.filename);
 
@@ -102,13 +101,6 @@ export class Attachment extends Component {
               >
                 <Icon icon="trash-alt" />
               </button>
-            </ShowIf>
-            <ShowIf if={item.replaceable && !this.props.readOnly}>
-              <UploadButton
-                documentId={parentId}
-                documentSharedId={parentSharedId}
-                storeKey={storeKey}
-              />
             </ShowIf>
           </div>
         </NeedAuthorization>

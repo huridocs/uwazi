@@ -1,5 +1,3 @@
-/** @format */
-
 import { actions as formActions, getModel } from 'react-redux-form';
 import superagent from 'superagent';
 
@@ -138,6 +136,8 @@ export function loadTemplate(form, template) {
 }
 
 export function uploadDocument(file, sharedId, __reducerKey) {
+  console.log(sharedId);
+
   return (dispatch, getState) => {
     dispatch({ type: types.START_REUPLOAD_DOCUMENT, doc: sharedId });
     superagent
@@ -145,7 +145,7 @@ export function uploadDocument(file, sharedId, __reducerKey) {
       .set('Accept', 'application/json')
       .set('X-Requested-With', 'XMLHttpRequest')
       .set('Content-Language', getState().locale)
-      .field('document', sharedId)
+      .field('entity', sharedId)
       .attach('file', file, file.name)
       .on('progress', data => {
         dispatch({
