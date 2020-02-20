@@ -225,7 +225,7 @@ export class DocumentSidePanel extends Component {
           <ShowIf if={this.props.tab === 'toc' && !this.props.tocBeingEdited && !readOnly}>
             <div className="sidepanel-footer">
               <button
-                onClick={() => this.props.editToc(this.props.doc.get('toc').toJS() || [])}
+                onClick={() => this.props.editToc(this.props.file.toc || [])}
                 className="edit-toc btn btn-success"
               >
                 <Icon icon="pencil-alt" />
@@ -246,7 +246,11 @@ export class DocumentSidePanel extends Component {
             </TabContent>
             <TabContent for="toc">
               <ShowIf if={!this.props.tocBeingEdited}>
-                <ShowToc toc={doc.get('toc')} readOnly={readOnly} />
+                <ShowToc
+                  toc={this.props.file.toc}
+                  pdfInfo={this.props.file.pdfInfo}
+                  readOnly={readOnly}
+                />
               </ShowIf>
               <ShowIf if={this.props.tocBeingEdited}>
                 <TocForm
@@ -256,6 +260,7 @@ export class DocumentSidePanel extends Component {
                   model="documentViewer.tocForm"
                   state={this.props.tocFormState}
                   toc={this.props.tocForm}
+                  file={this.props.file}
                 />
               </ShowIf>
             </TabContent>
@@ -356,6 +361,7 @@ DocumentSidePanel.propTypes = {
   excludeConnectionsTab: PropTypes.bool.isRequired,
   storeKey: PropTypes.string.isRequired,
   raw: PropTypes.bool,
+  file: PropTypes.object,
 };
 
 DocumentSidePanel.contextTypes = {
@@ -367,6 +373,7 @@ DocumentSidePanel.defaultProps = {
   DocumentForm: () => false,
   EntityForm: () => false,
   raw: false,
+  file: {},
 };
 
 export const mapStateToProps = (state, ownProps) => {

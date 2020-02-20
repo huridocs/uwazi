@@ -62,9 +62,9 @@ export class Viewer extends Component {
     Marker.init('div.main-wrapper');
     this.setState({ firstRender: false }); // eslint-disable-line react/no-did-mount-set-state
 
-    const { templates, doc } = this.props;
+    const { templates, doc, file } = this.props;
 
-    if (doc.size && !doc.get('pdfInfo')) {
+    if (file && !file.pdfInfo) {
       requestViewerState(new RequestParams({ sharedId: doc.get('sharedId') }), {
         templates: templates.toJS(),
       }).then(viewerActions => {
@@ -130,7 +130,7 @@ export class Viewer extends Component {
       loadTargetDocument,
       panelIsOpen,
       showTextSelectMenu,
-      locale,
+      file,
     } = this.props;
     const { firstRender } = this.state;
     if (doc.get('_id') && !doc.get('documents').size) {
@@ -142,10 +142,6 @@ export class Viewer extends Component {
     const { raw, searchTerm, pageText, page } = this.props;
     const documentTitle = doc.get('title') ? doc.get('title') : '';
 
-    const documentFile = doc.get('documents').size
-      ? entityDefaultDocument(doc.get('documents').toJS(), doc.get('language'), locale)
-      : {};
-
     return (
       <div className="row">
         <Helmet title={`${documentTitle} • Page ${page}`} />
@@ -154,10 +150,7 @@ export class Viewer extends Component {
             <div className="content-header-title">
               {sidepanelTab !== 'connections' && (
                 <React.Fragment>
-                  <PaginatorWithPage
-                    totalPages={documentFile.totalPages}
-                    onPageChange={changePage}
-                  />
+                  <PaginatorWithPage totalPages={file.totalPages} onPageChange={changePage} />
                   <CurrentLocationLink
                     onClick={!raw ? this.handlePlainTextClick : () => {}}
                     className="btn btn-default"
@@ -178,13 +171,13 @@ export class Viewer extends Component {
           <div className="main-wrapper">
             <ShowIf if={sidepanelTab !== 'connections' && !targetDoc}>
               {raw || firstRender ? (
-                <pre className={determineDirection(documentFile)}>{pageText}</pre>
+                <pre className={determineDirection(file)}>{pageText}</pre>
               ) : (
                 <SourceDocument
                   searchTerm={searchTerm}
                   onPageChange={onPageChange}
                   onDocumentReady={onDocumentReady}
-                  file={documentFile}
+                  file={file}
                 />
               )}
             </ShowIf>
@@ -201,6 +194,7 @@ export class Viewer extends Component {
           raw={raw || firstRender}
           storeKey="documentViewer"
           searchTerm={searchTerm}
+          file={file}
         />
         <CreateConnectionPanel
           containerId={targetDoc ? 'target' : doc.get('sharedId')}
@@ -226,7 +220,7 @@ export class Viewer extends Component {
           <ViewerDefaultMenu />
         </ContextMenu>
         <ContextMenu align="center" overrideShow show={showTextSelectMenu}>
-          <ViewerTextSelectedMenu />
+          <ViewerTextSelectedMenu file={file} />
         </ContextMenu>
       </div>
     );
@@ -242,6 +236,7 @@ Viewer.defaultProps = {
   page: 1,
   templates: List(),
   doc: Map(),
+  file: {},
 };
 
 Viewer.propTypes = {
@@ -266,6 +261,7 @@ Viewer.propTypes = {
   page: PropTypes.number,
   templates: PropTypes.instanceOf(List),
   locale: PropTypes.string.isRequired,
+  file: PropTypes.object,
 };
 
 Viewer.contextTypes = {

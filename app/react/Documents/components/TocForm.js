@@ -18,10 +18,14 @@ export class TocForm extends Component {
     );
   }
 
+  submit(toc) {
+    this.props.onSubmit(toc, this.props.file._id);
+  }
+
   render() {
     const { toc, model, removeEntry, onSubmit } = this.props;
     return (
-      <Form className="toc" id="tocForm" model={model} onSubmit={onSubmit}>
+      <Form className="toc" id="tocForm" model={model} onSubmit={this.submit.bind(this)}>
         {toc.map((tocElement, index) => (
           <div className={`toc-indent-${tocElement.indentation}`} key={index}>
             <div className="toc-edit">

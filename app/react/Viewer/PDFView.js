@@ -86,6 +86,7 @@ class PDFView extends Component {
 
   render() {
     const { query = {}, pathname } = this.props.location;
+    const { document } = this.props;
     const raw = query.raw === 'true' || !isClient;
     const page = Number(query.page || 1);
     return (
@@ -98,6 +99,7 @@ class PDFView extends Component {
           onDocumentReady={this.onDocumentReady}
           changePage={this.changePage}
           page={page}
+          file={document}
         />
       </React.Fragment>
     );
@@ -111,10 +113,12 @@ PDFView.contextTypes = {
 PDFView.propTypes = {
   location: PropTypes.instanceOf(Object).isRequired,
   params: PropTypes.instanceOf(Object),
+  document: PropTypes.object,
 };
 
 PDFView.defaultProps = {
   params: {},
+  document: {},
 };
 
 export default PDFView;

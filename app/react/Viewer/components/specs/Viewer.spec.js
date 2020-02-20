@@ -24,9 +24,9 @@ describe('Viewer', () => {
       doc: fromJS({
         _id: 'id',
         sharedId: 'sharedId',
-        documents: [{ language: 'eng' }],
-        pdfInfo: 'already parsed',
+        documents: [{ language: 'eng', pdfInfo: 'already parsed' }],
       }),
+      file: { language: 'eng', pdfInfo: 'already parsed' },
       targetDoc: false,
       addReference: () => {},
       loadTargetDocument: () => {},
@@ -149,12 +149,11 @@ describe('Viewer', () => {
     render();
     expect(component.find('pre').props().className).toBe('force-ltr');
 
-    props.doc = props.doc.set('documents', fromJS([{ language: 'arb' }]));
+    props.file.language = 'arb';
     render();
     expect(component.find('pre').props().className).toBe('force-rtl');
 
-    props.doc = props.doc.set('documents', fromJS([]));
-    props.doc = props.doc.set('_id', null);
+    props.file = {};
     render();
     expect(component.find('pre').props().className).toBe('force-ltr');
   });
@@ -193,7 +192,7 @@ describe('Viewer', () => {
     });
 
     it('should requestViewerState to populate pdfInfo when pdf not yet rendered for the first time', () => {
-      props.doc = props.doc.set('pdfInfo', undefined);
+      props.file = { language: 'eng' };
       render({ mount: true });
 
       expect(routeActions.requestViewerState).toHaveBeenCalledWith(

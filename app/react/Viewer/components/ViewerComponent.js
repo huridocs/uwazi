@@ -21,7 +21,7 @@ export class ViewerComponent extends Component {
 
     const document = entity.get('documents')
       ? entityDefaultDocument(entity.get('documents').toJS(), entity.language, defaultLanguage)
-      : null;
+      : {};
 
     return document ? (
       <PDFView {...this.props} document={document} />

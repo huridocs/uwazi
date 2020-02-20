@@ -55,12 +55,28 @@ export function saveDocument(doc) {
     });
 }
 
-export function saveToc(toc) {
-  return (dispatch, getState) => {
-    const { _id, _rev, sharedId, file } = getState().documentViewer.doc.toJS();
+export function saveToc(toc, fileId) {
+  return async (dispatch, getState) => {
+    const currentDoc = getState().documentViewer.doc.toJS();
     dispatch(formActions.reset('documentViewer.sidepanel.metadata'));
     dispatch(actions.set('documentViewer/tocBeingEdited', false));
-    return dispatch(saveDocument({ _id, _rev, sharedId, toc, file }));
+
+    const updatedFile = (await api.post('files', new RequestParams({ toc, _id: fileId }))).json;
+    const doc = {
+      ...currentDoc,
+      documents: currentDoc.documents.map(d => {
+        if (d._id === updatedFile._id) {
+          return updatedFile;
+        }
+        return d;
+      }),
+    };
+
+    dispatch(notificationActions.notify('Document updated', 'success'));
+    dispatch({ type: types.VIEWER_UPDATE_DOCUMENT, doc });
+    dispatch(formActions.reset('documentViewer.sidepanel.metadata'));
+    dispatch(actions.set('viewer/doc', doc));
+    // dispatch(relationshipActions.reloadRelationships(updatedDoc.sharedId));
   };
 }
 
@@ -156,12 +172,12 @@ export function indentTocElement(tocElement, indentation) {
   };
 }
 
-export function addToToc(textSelectedObject) {
+export function addToToc(textSelectedObject, currentToc) {
   return (dispatch, getState) => {
     const state = getState();
     let toc = state.documentViewer.tocForm.concat();
     if (!toc.length) {
-      toc = state.documentViewer.doc.toJS().toc || [];
+      toc = currentToc;
     }
     const tocElement = {
       range: {
