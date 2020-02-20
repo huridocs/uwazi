@@ -113,16 +113,22 @@
   @include tooltip('bottom');
   z-index: 9999;
 }
+.property-description-top-left {
+  @include tooltip('top-left');
+  transform: translate(-175px, -5px);
+}
+.property-description-top-left:after {
+  transform: translateX(175px);
+}
 .property-description,
-.property-description-bottom {
+.property-description-bottom,
+.property-description-top-left {
   width: 200px;
   white-space: normal;
 
   .property-help:hover &{
     display: block;
   }
-
-
 }
 
 .nested-properties {

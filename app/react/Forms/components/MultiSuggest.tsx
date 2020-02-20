@@ -1,5 +1,6 @@
 /** @format */
 
+import Tip from 'app/Layout/Tip';
 import { Dispatch } from 'redux';
 import { MetadataObject } from 'api/entities/entitiesModel';
 import React, { Component } from 'react';
@@ -122,7 +123,13 @@ export class MultiSuggestBase extends Component<MultiSuggestProps> {
                 className="multiselectItem-button"
                 onClick={this.rejectSuggestion.bind(this, value.value!)}
               >
-                Reject
+                <div className="property-help">
+                  Reject
+                  <div className="property-description-top-left">
+                    Is the suggestion incorrect? Click on 'Reject' and Uwazi will improve on the
+                    suggestions it makes
+                  </div>
+                </div>
               </div>
             </label>
           </div>
