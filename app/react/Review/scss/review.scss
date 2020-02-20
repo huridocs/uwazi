@@ -19,6 +19,10 @@ $header-height: 44px;
   flex-direction: column;
 }
 
+.panel-default > .panel-heading {
+  border: none;
+}
+
 .flex {
   @import '../../App/scss/layout/_sidepanel.scss';
 
@@ -178,10 +182,10 @@ $header-height: 44px;
     margin-top: 0;
   }
 
-  .thesauri-list {
+  .thesauri-list,
+  .cockpit {
     height: 0;
     flex-grow: 1;
-    overflow-y: scroll;
 
     table {
       border-collapse: collapse;
@@ -189,12 +193,19 @@ $header-height: 44px;
 
     th {
       font-weight: normal;
+      color: #555555;
+    }
+
+    tbody tr {
+      border-top: 1px solid #d7d7dc;
+    }
+
+    tr:not(:last-of-type) {
+      border-bottom: none;
     }
   }
 
   .cockpit {
-    height: 0;
-    flex-grow: 1;
     overflow-y: scroll;
   }
 
