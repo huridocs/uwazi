@@ -1,5 +1,3 @@
-
-/** @format */
 // eslint-disable-line max-lines
 
 import { EntitySchema } from 'api/entities/entityType';

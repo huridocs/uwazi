@@ -58,6 +58,7 @@ describe('EntityViewer', () => {
   });
 
   it('should toggle full edit', () => {
+    props.oneUpState.fullEdit = true;
     render();
     component.find('.content-header > .btn').simulate('click');
     expect(props.toggleOneUpFullEdit).toHaveBeenCalled();
