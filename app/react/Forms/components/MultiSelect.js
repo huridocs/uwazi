@@ -323,7 +323,7 @@ export default class MultiSelect extends Component {
           <ShowIf
             if={this.props.options.length > this.props.optionsToShow && !this.props.hideSearch}
           >
-            <div>
+            <div className="form-group">
               <Icon
                 icon={this.state.filter ? 'times-circle' : 'search'}
                 onClick={this.resetFilter}
