@@ -189,7 +189,7 @@ export class ThesaurusCockpitBase extends RouteHandler {
           <table>
             <thead>
               <tr>
-                <th scope="col" />
+                <th scope="col">{name}</th>
                 <th scope="col">{t('System', 'Documents to be reviewed')}</th>
                 <th scope="col" />
               </tr>

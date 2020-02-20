@@ -189,6 +189,7 @@ $header-height: 44px;
 
     table {
       border-collapse: collapse;
+      font-size: 14px;
     }
 
     th {
@@ -207,6 +208,20 @@ $header-height: 44px;
 
   .cockpit {
     overflow-y: scroll;
+
+    thead th:nth-child(2) {
+      width: 15%;
+      text-align: right;
+    }
+
+    thead th {
+      font-weight: bold;
+      text-align: left;
+    }
+
+    td {
+      text-align: right;
+    }
   }
 
   .settings-footer {
