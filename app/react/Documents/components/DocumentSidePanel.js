@@ -275,10 +275,9 @@ export class DocumentSidePanel extends Component {
                       showTitle
                       showType
                     />
-                    <FileList files={documents} />
+                    <FileList files={documents} storeKey={this.props.storeKey} />
                     <AttachmentsList
                       attachments={attachments}
-                      documents={documents}
                       readOnly={false}
                       isTargetDoc={isTargetDoc}
                       isDocumentAttachments={Boolean(doc.get('file'))}

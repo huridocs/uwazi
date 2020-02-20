@@ -8,66 +8,10 @@ import { t } from 'app/I18N';
 import { NeedAuthorization } from 'app/Auth';
 import Attachment from 'app/Attachments/components/Attachment';
 import UploadAttachment from 'app/Attachments/components/UploadAttachment';
-import UploadButton from 'app/Metadata/components/UploadButton';
-import ViewDocButton from 'app/Library/components/ViewDocButton';
-import Tip from '../../Layout/Tip';
 
 export class AttachmentsList extends Component {
   static arrangeFiles(files = []) {
     return advancedSort(files, { property: 'originalname' });
-  }
-
-  renderDocuments(documents) {
-    const { parentId, parentSharedId, readOnly, storeKey } = this.props;
-    const forcedReadOnly = readOnly || Boolean(this.props.isTargetDoc);
-
-    if (documents[0]) {
-      documents[0]._id = parentId;
-      return (
-        <div>
-          <h2>{t('System', 'Documents')}</h2>
-          <div className="attachments-list">
-            <Attachment
-              file={documents[0]}
-              parentId={parentId}
-              readOnly={forcedReadOnly}
-              storeKey={storeKey}
-              parentSharedId={parentSharedId}
-              isSourceDocument
-              deleteMessage="Warning, Deleting the main file will also delete table of content and main files for the other languages of this entity"
-            />
-          </div>
-          {this.props.entityView && documents[0] && (
-            <ViewDocButton
-              file={documents[0]}
-              sharedId={parentSharedId}
-              processed={this.props.processed}
-              storeKey={storeKey}
-            />
-          )}
-        </div>
-      );
-    }
-
-    if (!forcedReadOnly) {
-      return (
-        <NeedAuthorization>
-          <div className="attachment-buttons main-file">
-            <h2>
-              {t('System', 'Document')}
-              <Tip>Main file: add a file as the main content</Tip>
-            </h2>
-            <UploadButton
-              documentId={parentId}
-              documentSharedId={parentSharedId}
-              storeKey={storeKey}
-            />
-          </div>
-        </NeedAuthorization>
-      );
-    }
-
-    return null;
   }
 
   render() {
@@ -86,10 +30,8 @@ export class AttachmentsList extends Component {
     }
 
     const attachments = AttachmentsList.arrangeFiles(this.props.attachments);
-    const documents = AttachmentsList.arrangeFiles(this.props.documents);
     return (
       <div className="attachments-list-parent">
-        {this.renderDocuments(documents)}
         <h2>{t('System', 'Attachments')}</h2>
         <div className="attachments-list">
           {attachments.map((file, index) => (
@@ -112,7 +54,6 @@ export class AttachmentsList extends Component {
 
 AttachmentsList.defaultProps = {
   attachments: [],
-  documents: [],
   readOnly: true,
   entityView: false,
   processed: false,
@@ -124,7 +65,6 @@ AttachmentsList.defaultProps = {
 
 AttachmentsList.propTypes = {
   attachments: PropTypes.arrayOf(PropTypes.object),
-  documents: PropTypes.arrayOf(PropTypes.object),
   parentId: PropTypes.string,
   parentSharedId: PropTypes.string,
   readOnly: PropTypes.bool,

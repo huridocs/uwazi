@@ -9,6 +9,7 @@ import ShowIf from 'app/App/ShowIf';
 
 import UploadButton from 'app/Metadata/components/UploadButton';
 import AttachmentForm from 'app/Attachments/components/AttachmentForm';
+import { wrapDispatch } from 'app/Multireducer';
 import { Icon } from 'UI';
 
 import {
@@ -193,10 +194,10 @@ export function mapStateToProps({ attachments }, ownProps) {
   };
 }
 
-function mapDispatchToProps(dispatch) {
+function mapDispatchToProps(dispatch, props) {
   return bindActionCreators(
     { deleteAttachment, renameAttachment, loadForm, submitForm, resetForm },
-    dispatch
+    wrapDispatch(dispatch, props.storeKey)
   );
 }
 

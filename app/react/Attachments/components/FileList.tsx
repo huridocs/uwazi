@@ -9,12 +9,14 @@ const defaultProps = {
   files: [],
   entitySharedId: null,
   readOnly: false,
+  storeKey: '',
 };
 
 type FileListProps = {
   files: Array<FileType>;
-  entitySharedId: String;
-  readOnly: Boolean;
+  entitySharedId: string;
+  readOnly: boolean;
+  storeKey: string;
 };
 
 export class FileList extends Component<FileListProps> {
@@ -24,23 +26,22 @@ export class FileList extends Component<FileListProps> {
 
   static defaultProps = defaultProps;
 
-  static renderFile(file: FileType) {
+  renderFile(file: FileType) {
     return (
-      <li key={Math.random()}>
-        <File file={file} />
+      <li key={file._id}>
+        <File file={file} storeKey={this.props.storeKey} readOnly={this.props.readOnly} />
       </li>
     );
   }
 
   render() {
     const { files } = this.props;
-
     return (
       <div className="filelist">
         <h2>
           <Translate>Documents</Translate>
         </h2>
-        <ul>{files.map(FileList.renderFile)}</ul>
+        <ul>{files.map(file => this.renderFile(file))}</ul>
       </div>
     );
   }

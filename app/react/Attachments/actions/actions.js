@@ -3,35 +3,42 @@ import superagent from 'superagent';
 
 import { APIURL } from 'app/config.js';
 import { notify } from 'app/Notifications/actions/notificationsActions';
-import * as libraryTypes from 'app/Library/actions/actionTypes';
+import { updateEntity, selectSingleDocument } from 'app/Library/actions/libraryActions';
 import api from 'app/utils/api';
 import { RequestParams } from 'app/utils/RequestParams';
 
 import * as types from './actionTypes';
 
 export function updateFile(file, __reducerKey) {
-  return dispatch => {
+  return (dispatch, getState) => {
     api.post('files', new RequestParams(file)).then(({ json: updatedFile }) => {
-      dispatch({
-        type: types.UPDATE_DOCUMENT_FILE,
-        entity: updatedFile.entity,
-        file: updatedFile,
-        __reducerKey,
+      const entities = getState()[__reducerKey].documents.get('rows');
+      const entity = entities.find(d => d.get('sharedId') === file.entity).toJS();
+
+      entity.documents = entity.documents.map(f => {
+        if (f._id === updatedFile._id) {
+          return updatedFile;
+        }
+        return f;
       });
+
+      dispatch(updateEntity(entity));
+      dispatch(selectSingleDocument(entity));
       dispatch(notify('File updated', 'success'));
     });
   };
 }
 
 export function deleteFile(file, __reducerKey) {
-  return dispatch => {
+  return (dispatch, getState) => {
     api.delete('files', new RequestParams({ _id: file._id })).then(() => {
-      dispatch({
-        type: types.DELETE_DOCUMENT_FILE,
-        entity: file.entity,
-        file,
-        __reducerKey,
-      });
+      const entities = getState()[__reducerKey].documents.get('rows');
+      const entity = entities.find(d => d.get('sharedId') === file.entity).toJS();
+
+      entity.documents = entity.documents.filter(f => f._id !== file._id);
+
+      dispatch(updateEntity(entity));
+      dispatch(selectSingleDocument(entity));
       dispatch(notify('File deleted', 'success'));
     });
   };
@@ -103,16 +110,16 @@ export function deleteAttachment(entityId, attachment, __reducerKey) {
           attachmentId: attachment._id,
         })
       )
-      .then(response => {
+      .then(({ json: updatedEntity }) => {
         dispatch({
           type: types.ATTACHMENT_DELETED,
           entity: entityId,
           file: attachment,
           __reducerKey,
         });
-        dispatch({ type: libraryTypes.UPDATE_DOCUMENT, doc: response.json, __reducerKey });
-        dispatch({ type: libraryTypes.UNSELECT_ALL_DOCUMENTS, __reducerKey });
-        dispatch({ type: libraryTypes.SELECT_DOCUMENT, doc: response.json, __reducerKey });
+
+        dispatch(updateEntity(updatedEntity));
+        dispatch(selectSingleDocument(updatedEntity));
         dispatch(notify('Attachment deleted', 'success'));
       });
 }

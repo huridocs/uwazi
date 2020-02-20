@@ -16,22 +16,6 @@ export default function documents(state = initialState, action = {}) {
     return state.setIn(['rows', docIndex], Immutable.fromJS(action.doc));
   }
 
-  if (action.type === attachmentsTypes.UPDATE_DOCUMENT_FILE) {
-    const docIndex = state.get('rows').findIndex(doc => doc.get('_id') === action.entity);
-    const fileIndex = state
-      .get('rows')
-      [docIndex].documents.findIndex(file => file.get('_id') === action.file._id);
-    return state.setIn(['rows', docIndex, 'documents', fileIndex], Immutable.fromJS(action.file));
-  }
-
-  if (action.type === attachmentsTypes.DELETE_DOCUMENT_FILE) {
-    const docIndex = state.get('rows').findIndex(doc => doc.get('_id') === action.entity);
-    const fileIndex = state
-      .get('rows')
-      [docIndex].documents.findIndex(file => file.get('_id') === action.file._id);
-    return state.deleteIn(['rows', docIndex, 'documents', fileIndex]);
-  }
-
   if (action.type === types.UPDATE_DOCUMENTS) {
     return action.docs.reduce((_state, doc) => {
       const docIndex = state.get('rows').findIndex(_doc => _doc.get('_id') === doc._id);

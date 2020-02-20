@@ -9,18 +9,18 @@ import { FileType } from 'shared/types/fileType';
 import { APIURL } from 'app/config.js';
 import { LocalForm, Control } from 'react-redux-form';
 import { updateFile, deleteFile } from 'app/Attachments/actions/actions';
+import { wrapDispatch } from 'app/Multireducer';
 
 export type FileProps = {
   file: FileType;
-  entitySharedId: string;
-  readonly: boolean;
-  updateFile: (file: FileType) => any | void;
-  deleteFile: (file: FileType) => any | void;
+  storeKey: string;
+  readOnly: boolean;
+  updateFile: (file: FileType, storeKey: string) => any | void;
+  deleteFile: (file: FileType, storeKey: string) => any | void;
 };
 
 type FileState = {
   editing: boolean;
-  file: FileType;
 };
 
 export class File extends Component<FileProps, FileState> {
@@ -30,19 +30,15 @@ export class File extends Component<FileProps, FileState> {
 
   constructor(props: FileProps) {
     super(props);
+
     this.state = {
       editing: false,
-      file: props.file,
     };
+
     this.edit = this.edit.bind(this);
     this.cancel = this.cancel.bind(this);
     this.delete = this.delete.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
-  }
-
-  componentWillReceiveProps(props: FileProps) {
-    const { file } = props;
-    this.setState({ file });
   }
 
   edit() {
@@ -56,7 +52,7 @@ export class File extends Component<FileProps, FileState> {
   delete() {
     this.context.confirm({
       accept: () => {
-        this.props.deleteFile(this.state.file);
+        this.props.deleteFile(this.props.file, this.props.storeKey);
         this.setState({ editing: false });
       },
       title: 'Confirm delete file',
@@ -65,12 +61,13 @@ export class File extends Component<FileProps, FileState> {
   }
 
   handleSubmit(file: FileType) {
-    this.props.updateFile(file);
+    this.props.updateFile(file, this.props.storeKey);
     this.setState({ editing: false });
   }
 
   renderView() {
-    const { originalname, language, filename } = this.state.file;
+    const { originalname, language, filename } = this.props.file;
+
     return (
       <div className="file">
         <div className="file-originalname">{originalname}</div>
@@ -96,7 +93,7 @@ export class File extends Component<FileProps, FileState> {
 
   renderEditing() {
     return (
-      <LocalForm onSubmit={this.handleSubmit} initialState={this.state.file} className="file-form">
+      <LocalForm onSubmit={this.handleSubmit} initialState={this.props.file} className="file-form">
         <div className="form-group row">
           <div className="col-sm-12">
             <label htmlFor="originalname">Document Title*</label>
@@ -156,7 +153,7 @@ export class File extends Component<FileProps, FileState> {
   }
 }
 
-const mapDispatchToProps = (dispatch: Dispatch<{}>) =>
-  bindActionCreators({ updateFile, deleteFile }, dispatch);
+const mapDispatchToProps = (dispatch: Dispatch<{}>, props: FileProps) =>
+  bindActionCreators({ updateFile, deleteFile }, wrapDispatch(dispatch, props.storeKey));
 
 export const ConnectedFile = connect(null, mapDispatchToProps)(File);
