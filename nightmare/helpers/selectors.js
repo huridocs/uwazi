@@ -226,7 +226,7 @@ export default {
     discardButtonDisabled: '#app > div.content > div > div > div > main > div.content-footer > button.cancel-edit-metadata.btn-disabled',
     discardButtonEnabled: '#app > div.content > div > div > div > main > div.content-footer > button.cancel-edit-metadata.btn-danger',
     saveAndGoToNextEnabled: '#app > div.content > div > div > div > main > div.content-footer > button.save-and-next.btn-success',
-    confirmDiscardChanges: 'body > div:nth-child(7) > div > div > div > div.modal-footer > button.btn.confirm-button.btn-danger',
-    cancelDiscardChanges: 'body > div:nth-child(7) > div > div > div > div.modal-footer > button.btn.btn-default.cancel-button'
+    acceptConfirmDialog: 'body > div:nth-child(7) > div > div > div > div.modal-footer > button.btn.confirm-button.btn-danger',
+    cancelConfirmDialog: 'body > div:nth-child(7) > div > div > div > div.modal-footer > button.btn.btn-default.cancel-button'
   }
 };
