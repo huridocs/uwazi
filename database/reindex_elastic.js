@@ -13,14 +13,11 @@ connect().then(() => {
   const spinner = ['|', '/', '-', '\\'];
 
   function indexEntities() {
-    return search.indexEntities({}, '+fullText', 200, indexed => {
+    return search.indexEntities({}, '+fullText', 50, indexed => {
       process.stdout.write(
         `Indexing documents and entities... ${spinner[pos]} - ${docsIndexed} indexed\r`
       );
-      pos += 1;
-      if (pos > 3) {
-        pos = 0;
-      }
+      pos = (pos + 1) % 4;
       docsIndexed += indexed;
     });
   }
@@ -46,7 +43,7 @@ connect().then(() => {
       return disconnect();
     })
     .catch(error => {
-      console.log('Migration error: ', error);
+      console.log('Indexing error: ', error);
       process.exit(1);
     });
 });
