@@ -2,9 +2,9 @@ import React, { Component } from 'react';
 
 import { advancedSort } from 'app/utils/advancedSort';
 import { Translate } from 'app/I18N';
-import { ConnectedFile as File } from './File';
 import { FileType } from 'shared/types/fileType';
 import UploadButton from 'app/Metadata/components/UploadButton';
+import { ConnectedFile as File } from './File';
 
 const defaultProps = {
   files: [],
@@ -13,7 +13,7 @@ const defaultProps = {
   storeKey: '',
 };
 
-type FileListProps = {
+export type FileListProps = {
   files: Array<FileType>;
   entitySharedId: string;
   readOnly: boolean;
@@ -28,9 +28,10 @@ export class FileList extends Component<FileListProps> {
   static defaultProps = defaultProps;
 
   renderFile(file: FileType) {
+    const { readOnly, storeKey } = this.props;
     return (
       <li key={file._id}>
-        <File file={file} storeKey={this.props.storeKey} readOnly={this.props.readOnly} />
+        <File file={file} storeKey={storeKey} readOnly={readOnly} />
       </li>
     );
   }

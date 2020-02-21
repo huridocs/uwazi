@@ -94,15 +94,29 @@ export class File extends Component<FileProps, FileState> {
   }
 
   renderEditing() {
+    const mapProps = {
+      className: ({ fieldValue }: any) =>
+        fieldValue.submitFailed && !fieldValue.valid ? 'form-control has-error' : 'form-control',
+    };
     return (
       <LocalForm onSubmit={this.handleSubmit} initialState={this.props.file} className="file-form">
         <div className="form-group row">
           <div className="col-sm-12">
-            <label htmlFor="originalname">Document Title*</label>
-            <Control.text className="form-control" model=".originalname" id="originalname" />
+            <label htmlFor="originalname">
+              <Translate>Document Title</Translate>&nbsp;*
+            </label>
+            <Control.text
+              validators={{ required: (val: string) => val && val.length }}
+              className="form-control"
+              model=".originalname"
+              id="originalname"
+              mapProps={mapProps}
+            />
           </div>
           <div className="col-sm-3">
-            <label htmlFor="language">Language</label>
+            <label htmlFor="language">
+              <Translate>Language</Translate>
+            </label>
           </div>
           <div className="col-sm-9">
             <Control.select className="form-control" model=".language" id="language">
@@ -111,7 +125,9 @@ export class File extends Component<FileProps, FileState> {
                   {transformLanguage(language)}
                 </option>
               ))}
-              <option value="other">other</option>
+              <option value="other">
+                <Translate>other</Translate>
+              </option>
             </Control.select>
           </div>
           <div className="col-sm-4">

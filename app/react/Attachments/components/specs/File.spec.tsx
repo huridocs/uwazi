@@ -1,6 +1,7 @@
 import React from 'react';
 import { shallow, ShallowWrapper } from 'enzyme';
 import { File, FileProps } from '../File';
+import { LocalForm } from 'react-redux-form';
 
 describe('file', () => {
   let component: ShallowWrapper<File>;
@@ -12,8 +13,8 @@ describe('file', () => {
 
     props = {
       file,
-      entitySharedId: 'parentId',
-      readonly: false,
+      readOnly: false,
+      storeKey: 'library',
       updateFile: jasmine.createSpy('updateFile'),
       deleteFile: jasmine.createSpy('deleteFile'),
     };
@@ -35,10 +36,29 @@ describe('file', () => {
   });
 
   describe('editing the file', () => {
-    // it('should render a form', () => {
-    //   const editButton = component.find('.file-edit');
-    //   editButton.simulate('click');
-    //   expect(component).toMatchSnapshot();
-    // });
+    it('should render a form with the file', () => {
+      render();
+      const editButton = component.find('.file-edit');
+      editButton.simulate('click');
+      expect(component.find(LocalForm).props().initialState).toEqual(props.file);
+    });
+
+    it('should call updateFile on submit', () => {
+      render();
+      const editButton = component.find('.file-edit');
+      editButton.simulate('click');
+      const form = component.find(LocalForm);
+      form.simulate('submit', props.file);
+      expect(props.updateFile).toHaveBeenCalledWith(props.file, 'library');
+    });
+
+    it('should confirm the delete', () => {
+      render();
+      component.find('.file-edit').simulate('click');
+      component.find('.btn-outline-danger').simulate('click');
+      expect(context.confirm).toHaveBeenCalled();
+      context.confirm.calls.argsFor(0)[0].accept();
+      expect(props.deleteFile).toHaveBeenCalledWith(props.file, 'library');
+    });
   });
 });
