@@ -19,33 +19,26 @@ const renderComponent = (store: MockStore<object>) =>
     .dive();
 
 describe('ViewerComponent', () => {
-  const entity = { _id: 'id', sharedId: 'sharedId', documents: [{ _id: 'docId' }] };
+  const entity = { _id: 'id', sharedId: 'sharedId', documents: [{ _id: 'docId' }], defaultDoc: {} };
 
-  describe('when there is documents on the entity', () => {
+  describe('when there is defaultDoc on the entity', () => {
     it('should render PDFView and pass down default document', () => {
       const store: MockStore<object> = mockStoreCreator({
         documentViewer: {
           doc: Immutable.fromJS(entity),
         },
-        settings: {
-          collection: Immutable.fromJS({ languages: [{ key: 'es', default: true }] }),
-        },
       });
 
       const component = renderComponent(store);
       expect(component.find(PDFView).length).toBe(1);
-      expect(component.find(PDFView).props().document).toEqual({ _id: 'docId' });
     });
   });
 
-  describe('when there is no documents on the entity', () => {
+  describe('when there is no defaultDoc on the entity', () => {
     it('should render entityView', () => {
       const store: MockStore<object> = mockStoreCreator({
         documentViewer: {
-          doc: Immutable.fromJS({ ...entity, documents: [] }),
-        },
-        settings: {
-          collection: Immutable.fromJS({ languages: [{ key: 'es', default: true }] }),
+          doc: Immutable.fromJS({ ...entity, defaultDoc: null }),
         },
       });
 

@@ -35,7 +35,7 @@ export async function requestViewerState(requestParams, globalResources) {
     relationships.requestState(requestParams.set({ sharedId }), globalResources.templates),
   ]);
 
-  const defaultDoc = entityDefaultDocument(doc.documents, doc.language, 'change this');
+  const { defaultDoc } = doc;
   const rawText = raw
     ? await entitiesAPI.getRawPage(requestParams.set({ _id: defaultDoc._id, page }))
     : '';

@@ -256,6 +256,7 @@ describe('documentActions', () => {
           const expected = {
             sharedId: 'shared',
             _id: 'pdfNotReady',
+            defaultDoc: expect.objectContaining({ _id: 'pdfNotReady' }),
             documents: [{ _id: 'pdfNotReady', pdfInfo: 'test' }],
           };
           spyOn(api, 'post').and.returnValue(Promise.resolve({ json: expected.documents[0] }));
@@ -387,7 +388,10 @@ describe('documentActions', () => {
         const targetId = 'targetId';
 
         const expectedActions = [
-          { type: 'viewer/targetDoc/SET', value: { documents: [{ pdfInfo: 'test' }] } },
+          {
+            type: 'viewer/targetDoc/SET',
+            value: { defaultDoc: { pdfInfo: 'test' }, documents: [{ pdfInfo: 'test' }] },
+          },
           { type: 'viewer/targetDocReferences/SET', value: [{ connectedDocument: '1' }] },
         ];
         const store = mockStore({ locale: 'es' });

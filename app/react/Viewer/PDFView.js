@@ -43,8 +43,12 @@ class PDFView extends Component {
         query.raw !== this.props.location.query.raw) &&
       query.raw === 'true'
     ) {
+      const defaultDoc = props.entity.get('defaultDoc')
+        ? this.props.entity.get('defaultDoc').toJS()
+        : {};
+
       entitiesAPI
-        .getRawPage(new RequestParams({ _id: props.document._id, page: query.page }))
+        .getRawPage(new RequestParams({ _id: defaultDoc._id, page: query.page }))
         .then(pageText => {
           this.context.store.dispatch(actions.set('viewer/rawText', pageText));
         });
@@ -86,9 +90,12 @@ class PDFView extends Component {
 
   render() {
     const { query = {}, pathname } = this.props.location;
-    const { document } = this.props;
     const raw = query.raw === 'true' || !isClient;
     const page = Number(query.page || 1);
+    const defaultDoc = this.props.entity.get('defaultDoc')
+      ? this.props.entity.get('defaultDoc').toJS()
+      : {};
+
     return (
       <React.Fragment>
         <Helmet>{raw && <link rel="canonical" href={`${pathname}?page=${page}`} />}</Helmet>
@@ -99,7 +106,7 @@ class PDFView extends Component {
           onDocumentReady={this.onDocumentReady}
           changePage={this.changePage}
           page={page}
-          file={document}
+          file={defaultDoc}
         />
       </React.Fragment>
     );
@@ -112,13 +119,12 @@ PDFView.contextTypes = {
 
 PDFView.propTypes = {
   location: PropTypes.instanceOf(Object).isRequired,
+  entity: PropTypes.instanceOf(Object).isRequired,
   params: PropTypes.instanceOf(Object),
-  document: PropTypes.object,
 };
 
 PDFView.defaultProps = {
   params: {},
-  document: {},
 };
 
 export default PDFView;

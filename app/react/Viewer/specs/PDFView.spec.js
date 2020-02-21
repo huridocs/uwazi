@@ -38,7 +38,12 @@ describe('PDFView', () => {
         ),
       },
     };
-    props = { location: { query: {} }, routes: [] };
+
+    props = {
+      entity: fromJS({ defaultDoc: { _id: 'documentId' } }),
+      location: { query: {} },
+      routes: [],
+    };
 
     render();
 
@@ -215,7 +220,7 @@ describe('PDFView', () => {
       await instance.componentWillReceiveProps({
         params: { sharedId: 'entityId' },
         location: { query: { page: 17, raw: 'true' } },
-        document: { _id: 'documentId' },
+        entity: fromJS({ defaultDoc: { _id: 'documentId' } }),
       });
       expect(context.store.dispatch).toHaveBeenCalledWith(
         actions.set('viewer/rawText', 'raw text')
