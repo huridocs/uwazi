@@ -1,19 +1,19 @@
 /** @format */
 
-import PropTypes from 'prop-types';
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
+import Footer from 'app/App/Footer';
 import { I18NLink, t } from 'app/I18N';
 import {
-  checkThesaurusCanBeDeleted,
   checkThesaurusCanBeClassified,
+  checkThesaurusCanBeDeleted,
   deleteThesaurus,
   disableClassification,
   enableClassification,
 } from 'app/Thesauri/actions/thesaurisActions';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 import { Icon } from 'UI';
-
 import sortThesauri from '../utils/sortThesauri';
 
 export class ThesauriList extends Component {
@@ -33,18 +33,16 @@ export class ThesauriList extends Component {
     }
     if (thesaurus.enable_classification) {
       const view = (
-        <div className="thesauri-list vertical-line">
+        <div className="vertical-line">
           <span className="thesaurus-suggestion-count">
-            {thesaurus.suggestions ? thesaurus.suggestions : 'No'}&nbsp;
+            {thesaurus.suggestions ? thesaurus.suggestions.toLocaleString() : 'No'}&nbsp;
             {t('System', 'documents to be reviewed')}
           </span>
           <I18NLink
             to={`/settings/dictionaries/cockpit/${thesaurus._id}`}
             className="btn btn-primary btn-xs"
           >
-            <Icon icon="search" />
-            &nbsp;
-            <span>{t('System', 'View Suggestions')}</span>
+            <span>{t('System', 'View suggestions')}</span>
           </I18NLink>
         </div>
       );
@@ -59,6 +57,15 @@ export class ThesauriList extends Component {
         <I18NLink
           to={`/settings/dictionaries/edit/${thesaurus._id}`}
           className="btn btn-default btn-xs"
+          confirmTitle={
+            thesaurus.enable_classification ? 'Confirm edit suggestion-enabled Thesaurus' : ''
+          }
+          confirmMessage={
+            thesaurus.enable_classification
+              ? 'Uwazi suggests labels based on the current content of the document collection and its metadata. ' +
+                'Editing this thesaurus, the content of the documents or other metadata can affect Uwazi’s understanding of what to suggest.'
+              : ''
+          }
         >
           <Icon icon="pencil-alt" />
           &nbsp;
@@ -130,9 +137,7 @@ export class ThesauriList extends Component {
   thesaurusNode(thesaurus) {
     return (
       <tr key={thesaurus.name}>
-        <th scope="row">
-          <I18NLink to={`/settings/dictionaries/edit/${thesaurus._id}`}>{thesaurus.name}</I18NLink>
-        </th>
+        <th scope="row">{thesaurus.name}</th>
         <td>{this.getThesaurusSuggestionActions(thesaurus)}</td>
         <td>{this.getThesaurusModifyActions(thesaurus)}</td>
       </tr>
@@ -141,7 +146,7 @@ export class ThesauriList extends Component {
 
   render() {
     return (
-      <div className="panel panel-default">
+      <div className="flex panel panel-default">
         <div className="panel-heading">{t('System', 'Thesauri')}</div>
         <div className="thesauri-list">
           <table>
@@ -165,6 +170,7 @@ export class ThesauriList extends Component {
             <span className="btn-label">{t('System', 'Add thesaurus')}</span>
           </I18NLink>
         </div>
+        <Footer />
       </div>
     );
   }
