@@ -1,4 +1,3 @@
-/** @format */
 // eslint-disable-line max-lines
 
 import { EntitySchema } from 'api/entities/entityType';
@@ -111,6 +110,32 @@ export class OneUpEntityViewerBase extends Component<
       .toJS();
   }
 
+  renderFullEditToggle() {
+    const { oneUpState } = this.props;
+    let onClick = () => this.props.toggleOneUpFullEdit();
+    if (!oneUpState.fullEdit) {
+      onClick = () =>
+        this.context.confirm({
+          accept: () => this.props.toggleOneUpFullEdit(),
+          title: 'Keep this in mind if you want to edit:',
+          message:
+            "Changes can't be undone after saving. Chaning text fields may invalidate the suggestions.",
+        });
+    }
+    return (
+      <button
+        type="button"
+        onClick={onClick}
+        className={
+          oneUpState.fullEdit ? 'btn btn-default btn-toggle-on' : 'btn btn-default btn-toggle-off'
+        }
+      >
+        <Icon icon={oneUpState.fullEdit ? 'toggle-on' : 'toggle-off'} />
+        <span className="btn-label">{t('System', 'Full edit mode')}</span>
+      </button>
+    );
+  }
+
   render() {
     const { entity, tab, relationships, oneUpState } = this.props;
     const { panelOpen } = this.state;
@@ -126,18 +151,7 @@ export class OneUpEntityViewerBase extends Component<
           <main className="content-main">
             <div className="content-header content-header-entity">
               <OneUpTitleBar />
-              <button
-                type="button"
-                onClick={() => this.props.toggleOneUpFullEdit()}
-                className={
-                  oneUpState.fullEdit
-                    ? 'btn btn-default btn-toggle-on'
-                    : 'btn btn-default btn-toggle-off'
-                }
-              >
-                <Icon icon={oneUpState.fullEdit ? 'toggle-on' : 'toggle-off'} />
-                <span className="btn-label">{t('System', 'Full edit mode')}</span>
-              </button>
+              {this.renderFullEditToggle()}
             </div>
             <div className="entity-viewer">
               <Tabs selectedTab={selectedTab}>
@@ -206,7 +220,10 @@ export class OneUpEntityViewerBase extends Component<
               </div>
             </ShowIf>
             <ShowIf if={selectedTab !== 'connections'}>
-              <OneUpEntityButtons />
+              <OneUpEntityButtons
+                isLast={oneUpState.indexInDocs === oneUpState.totalDocs - 1}
+                thesaurusName={oneUpState.reviewThesaurusValues[0]}
+              />
             </ShowIf>
             <ContextMenu
               align="bottom"

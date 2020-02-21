@@ -4,7 +4,7 @@ export default {
   homeLink: 'header .logotype a',
   settingsView: {
     liElementsOfSection: '#app > div.content > div > div > div.settings-content > div > ul > li',
-    tableElementsOfSection: '#app > div.content > div > div > div.settings-content > div > div.thesauri-list > table > tbody',
+    tableElementsOfSection: '#app > div.content > div > div > div.settings-content > div > div.thesauri-list > table > tbody > tr',
     firstEditButton: '#app > div.content > div > div > div.settings-content > div > ul > li:nth-child(1) > div > a > i',
     collectionNameForm: '#app > div.content > div > div > div.settings-content > div > div.panel-body > form > div:nth-child(1) > input',
     settingsHeader: '#app > div.content > header > ul > li.menuActions > ul.menuNav-list > li:nth-child(3) > a',
@@ -13,7 +13,7 @@ export default {
     collectionButton: '#app > div.content > div > div > div.settings-navigation > div > div:nth-child(1) > div.list-group > a:nth-child(3)',
     dictionariesButton: '#app > div.content > div > div > div.settings-navigation > div > div:nth-child(2) > div.list-group > a:nth-child(2)',
     dictionariesViewSuggestionsButton: '#app > div.content > div > div > div.settings-content > div > div.thesauri-list > table > tbody > tr:nth-child(2) > td:nth-child(2) > div > a',
-    dictionariesReviewSuggestionsButton: '#app > div.content > div > div > div.settings-content > div > div.cockpit > table > tbody > tr:nth-child(2) > td:nth-child(4) > a',
+    dictionariesReviewSuggestionsButton: '#app > div.content > div > div > div.settings-content > div > div.cockpit > table > tbody > tr:nth-child(2) > td:nth-child(3) > a',
     entitiesButton: '#app > div.content > div > div > div.settings-navigation > div > div:nth-child(2) > div.list-group > a:nth-child(1)',
     connectionsButton: '#app > div.content > div > div > div.settings-navigation > div > div:nth-child(2) > div.list-group > a:nth-child(3)',
     filtersButton: '#app > div.content > div > div > div.settings-navigation > div > div:nth-child(1) > div.list-group > a:nth-child(8)',
@@ -226,7 +226,7 @@ export default {
     discardButtonDisabled: '#app > div.content > div > div > div > main > div.content-footer > button.cancel-edit-metadata.btn-disabled',
     discardButtonEnabled: '#app > div.content > div > div > div > main > div.content-footer > button.cancel-edit-metadata.btn-danger',
     saveAndGoToNextEnabled: '#app > div.content > div > div > div > main > div.content-footer > button.save-and-next.btn-success',
-    confirmDiscardChanges: 'body > div:nth-child(7) > div > div > div > div.modal-footer > button.btn.confirm-button.btn-danger',
-    cancelDiscardChanges: 'body > div:nth-child(7) > div > div > div > div.modal-footer > button.btn.btn-default.cancel-button'
+    acceptConfirmDialog: 'body > div:nth-child(7) > div > div > div > div.modal-footer > button.btn.confirm-button.btn-danger',
+    cancelConfirmDialog: 'body > div:nth-child(7) > div > div > div > div.modal-footer > button.btn.btn-default.cancel-button'
   }
 };

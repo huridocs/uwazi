@@ -1,5 +1,6 @@
 /** @format */
 
+import Footer from 'app/App/Footer';
 import RouteHandler from 'app/App/RouteHandler';
 import { actions } from 'app/BasicReducer';
 import Loader from 'app/components/Elements/Loader';
@@ -14,11 +15,11 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
 import { IImmutable } from 'shared/types/Immutable';
-import { Icon } from 'UI';
 import { ThesaurusSchema, ThesaurusValueSchema } from 'shared/types/thesaurusType';
-import { buildSuggestionResult, flattenSuggestionResults } from './utils/suggestionQuery';
+import { Icon } from 'UI';
 import { ClassifierModelSchema } from './types/classifierModelType';
 import { SuggestionResultSchema } from './types/suggestionResultType';
+import { buildSuggestionResult, flattenSuggestionResults } from './utils/suggestionQuery';
 import { getValuesSortedByName } from './utils/valuesSort';
 
 export type ThesaurusCockpitProps = {
@@ -66,27 +67,24 @@ export class ThesaurusCockpitBase extends RouteHandler {
   static topicNode(
     topic: ThesaurusValueSchema,
     suggestionResult: SuggestionResultSchema,
-    modelInfo: ClassifierModelSchema | undefined,
     propName: string | undefined
   ) {
     const { label, id } = topic;
-    const { quality = 0 } = (modelInfo?.topics ?? {})[label] || {};
     const suggestionCount = suggestionResult.thesaurus?.values[`${id}`] ?? 0;
 
     return (
       <tr key={label}>
         <th scope="row">{label}</th>
-        <td title="quality-icons">{this.qualityIcon(label, quality)}</td>
-        <td title="suggestions-count">{suggestionCount || null}</td>
+        <td title="suggestions-count">
+          {suggestionCount ? suggestionCount.toLocaleString() : null}
+        </td>
         <td title="review-button">
           {suggestionCount > 0 && propName ? (
             <I18NLink
               to={`/review?q=(filters:(_${propName}:(values:!('${id}')),${propName}:(values:!(missing))))&includeUnpublished=1`}
               className="btn btn-default btn-xs"
             >
-              <Icon icon="gavel" />
-              &nbsp;
-              <span title="review-button-title">{t('system', 'Review suggestions')}</span>
+              <span title="review-button-title">{t('system', 'View suggestions')}</span>
             </I18NLink>
           ) : null}
         </td>
@@ -95,17 +93,16 @@ export class ThesaurusCockpitBase extends RouteHandler {
   }
 
   topicNodes() {
-    const { suggestions, thesaurus, models } = this.props as ThesaurusCockpitProps;
-    const { name, property } = thesaurus;
+    const { suggestions, thesaurus } = this.props as ThesaurusCockpitProps;
+    const { property } = thesaurus;
     const values = getValuesSortedByName(thesaurus);
-    const model = models.find((modelInfo: ClassifierModelSchema) => modelInfo.name === name);
 
     if (!property) {
       return null;
     }
 
     return values.map((topic: ThesaurusValueSchema) =>
-      ThesaurusCockpitBase.topicNode(topic, suggestions, model, property.name)
+      ThesaurusCockpitBase.topicNode(topic, suggestions, property.name)
     );
   }
 
@@ -171,9 +168,7 @@ export class ThesaurusCockpitBase extends RouteHandler {
         }
         className="btn btn-primary btn-xs"
       >
-        <Icon icon="search" />
-        &nbsp;
-        <span>{t('System', 'Review & Publish')}</span>
+        <span>{t('System', 'Review unpublished documents')}</span>
       </I18NLink>
     );
   }
@@ -185,7 +180,7 @@ export class ThesaurusCockpitBase extends RouteHandler {
       return <Loader />;
     }
     return (
-      <div className="panel panel-default">
+      <div className="flex panel panel-default">
         <div className="panel-heading">
           {t('System', `Thesauri > ${name}`)}
           {this.suggestionsButton()}
@@ -194,8 +189,7 @@ export class ThesaurusCockpitBase extends RouteHandler {
           <table>
             <thead>
               <tr>
-                <th scope="col" />
-                <th scope="col">{t('System', 'Confidence')}</th>
+                <th scope="col">{name}</th>
                 <th scope="col">{t('System', 'Documents to be reviewed')}</th>
                 <th scope="col" />
               </tr>
@@ -209,6 +203,7 @@ export class ThesaurusCockpitBase extends RouteHandler {
             <span className="btn-label">{t('System', 'Back')}</span>
           </I18NLink>
         </div>
+        <Footer />
       </div>
     );
   }

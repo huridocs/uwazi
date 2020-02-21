@@ -6,6 +6,8 @@ exports[`EntityViewer should render 1 1`] = `
 >
   <Connect(I18NLink)
     className="btn btn-default"
+    confirmMessage=""
+    confirmTitle=""
     to="/settings/dictionaries/cockpit/id-thes"
   >
     <Connect(Icon)
@@ -43,7 +45,7 @@ exports[`EntityViewer should render 1 1`] = `
       4
     </span>
      
-    out of
+    of
      
     <span>
       &gt;39
@@ -97,7 +99,7 @@ exports[`EntityViewer should render 2 1`] = `
       1
     </span>
      
-    out of
+    of
      
     <span>
       10
