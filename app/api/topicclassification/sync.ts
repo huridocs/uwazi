@@ -1,35 +1,37 @@
-/** @format */ // eslint-disable-line max-lines
+// eslint-disable-line max-lines
 /* eslint-disable no-await-in-loop, no-console, camelcase */
-import { TaskProvider, Task } from 'api/tasks/tasks';
-import { tcServer, useThesaurusNames } from 'api/config/topicClassification';
+import * as util from 'util';
+import { tcServer } from 'api/config/topicClassification';
 import entities from 'api/entities';
 import { MetadataObject } from 'api/entities/entitiesModel';
 import { EntitySchema } from 'api/entities/entityType';
 import { QueryForEach, WithId } from 'api/odm';
+import { Task, TaskProvider } from 'api/tasks/tasks';
 import templates from 'api/templates';
 import thesauri from 'api/thesauri';
 import { extractSequence } from 'api/topicclassification/common';
-import connect, { disconnect } from 'api/utils/connect_to_mongo';
 import { buildFullModelName } from 'shared/commonTopicClassification';
 import JSONRequest from 'shared/JSONRequest';
 import { propertyTypes } from 'shared/propertyTypes';
-import { ensure, sleep } from 'shared/tsUtils';
+import { sleep } from 'shared/tsUtils';
 import { PropertySchema } from 'shared/types/commonTypes';
 import { ThesaurusSchema } from 'shared/types/thesaurusType';
-import { provenanceTypes } from 'shared/provenanceTypes';
+import { TemplateSchema } from '../../shared/types/templateType';
+import { ThesaurusValueSchema } from '../../shared/types/thesaurusType';
 
 export interface SyncArgs {
   limit?: number;
   mode: 'onlynew' | 'autoaccept';
   model?: string;
   noDryRun?: boolean;
+  overwrite?: boolean;
   autoAcceptConfidence?: number;
 }
 
 type ClassificationSample = {
   seq: string;
   sharedId: string | undefined;
-  training_labels: {
+  training_labels?: {
     topic: string;
   }[];
 };
@@ -40,7 +42,13 @@ type ClassificationSampleRequest = {
 };
 
 type ClassificationSampleResponse = {
-  json: { samples: { sharedId: string; predicted_labels: { topic: string; quality: number }[] }[] };
+  json: {
+    samples: {
+      sharedId: string;
+      predicted_labels: { topic: string; quality: number }[];
+      model_version?: number;
+    }[];
+  };
   status: any;
 };
 
@@ -73,94 +81,133 @@ async function sendSample(
   return response;
 }
 
-async function handleResponse(
-  args: SyncArgs,
-  e: WithId<EntitySchema>,
-  templateAndProp: any,
-  response: ClassificationSampleResponse,
-  thesaurus: ThesaurusSchema
+async function fetchSuggestions(
+  e: EntitySchema,
+  prop: PropertySchema,
+  seq: string,
+  thes: ThesaurusSchema
 ) {
-  const prop = templateAndProp[(e.template || '').toString()];
-  if (!prop || !prop.name) {
-    console.error(`Missing prop for ${e.sharedId}`);
-    return false;
-  }
-  const sample = response.json.samples.find(s => s.sharedId === e.sharedId);
+  const model = buildFullModelName(thes.name);
+  const request = { refresh_predictions: true, samples: [{ seq, sharedId: e.sharedId }] };
+  const response = await sendSample(`${tcServer}/classification_sample?model=${model}`, request);
+  const sample = response?.json?.samples?.find(s => s.sharedId === e.sharedId);
   if (!sample) {
-    return false;
-  }
-  if (!sample.predicted_labels.length) {
-    console.error(`No suggestions for ${e.sharedId}`);
+    return null;
   }
   let newPropMetadata = sample.predicted_labels
     .reduce((res: MetadataObject<string>[], pred) => {
-      const thesValue = (thesaurus.values || []).find(v => v.label === pred.topic);
+      const flattenValues = (thes.values ?? []).reduce(
+        (result, dv) => (dv.values ? result.concat(dv.values) : result.concat([dv])),
+        [] as ThesaurusValueSchema[]
+      );
+      const thesValue = flattenValues.find(v => v.label === pred.topic || v.id === pred.topic);
       if (!thesValue || !thesValue.id) {
-        console.error(`Model suggestion "${pred.topic}" not found in thesaurus ${thesaurus.name}`);
-        return res;
+        throw Error(`Model suggestion "${pred.topic}" not found in thesaurus ${thes.name}`);
       }
       return [
         ...res,
-        { value: thesValue.id, label: pred.topic, suggestion_confidence: pred.quality },
+        {
+          value: thesValue.id,
+          label: thesValue.label,
+          suggestion_confidence: pred.quality,
+          suggestion_model: sample.model_version,
+        },
       ];
     }, [])
     .sort((v1, v2) => (v2.suggestion_confidence || 0) - (v1.suggestion_confidence || 0));
   if (prop.type === propertyTypes.select && newPropMetadata.length) {
     newPropMetadata = [newPropMetadata[0]];
   }
+  return newPropMetadata;
+}
 
-  if (args.mode === 'autoaccept') {
-    if (((e.metadata ?? {})[prop.name] ?? []).length) {
-      if (
-        !overwrite ||
-        !e.metadata![prop.name]!.every(v => v.provenance === provenanceTypes.bulk)
-      ) {
-        console.error(`Will not overwrite previous metadata for ${e.sharedId}`);
-        return false;
-      }
-    }
-    if (!newPropMetadata.length) {
+async function handleProp(
+  e: EntitySchema,
+  args: SyncArgs,
+  prop: PropertySchema,
+  thes: ThesaurusSchema
+): Promise<boolean> {
+  const seq = await extractSequence(e);
+  if (args.mode === 'onlynew') {
+    if (e.metadata![prop.name!] && (e.metadata![prop.name!] ?? []).length) {
       return false;
     }
-    newPropMetadata = newPropMetadata
-      .filter(v => (v.suggestion_confidence ?? 0) >= (args.autoAcceptConfidence ?? 2.0))
-      .map(v => ({ ...v, provenance: provenanceTypes.bulk }));
-    if (!e.metadata) {
-      e.metadata = {};
+    if (!args.overwrite && e.suggestedMetadata![prop.name!]) {
+      return false;
     }
-    if (JSON.stringify(newPropMetadata) !== JSON.stringify(e.metadata[prop.name])) {
-      e.metadata[prop.name] = newPropMetadata;
-      if (args.noDryRun) {
-        await entities.save(e, { user: 'sync-topic-classification', language: e.language });
-      }
-      console.info(
-        `${!args.noDryRun ? '[DRY-RUN] ' : ' '}Saved ${e.sharedId} (${newPropMetadata.length})`
-      );
+    const suggestions = await fetchSuggestions(e, prop, seq, thes);
+    if (
+      !suggestions ||
+      JSON.stringify(suggestions) === JSON.stringify(e.suggestedMetadata![prop.name!])
+    ) {
+      return false;
     }
+    e.suggestedMetadata![prop.name!] = suggestions;
     return true;
   }
+  return false;
+}
 
+export async function syncEntity(
+  e: EntitySchema,
+  args: SyncArgs,
+  templateDictP?: { [k: string]: TemplateSchema },
+  thesaurusDictP?: { [k: string]: ThesaurusSchema }
+): Promise<boolean> {
+  if (!e.metadata) {
+    e.metadata = {};
+  }
   if (!e.suggestedMetadata) {
     e.suggestedMetadata = {};
   }
-  // We explicitely preserve empty arrays in suggestedMetadata to not
-  // recreate rejected suggestions.
-  if (!e.suggestedMetadata[prop.name] || overwrite) {
-    // JSON.stringify provides an easy and fast deep-equal comparison.
-    if (JSON.stringify(newPropMetadata) !== JSON.stringify(e.suggestedMetadata[prop.name])) {
-      e.suggestedMetadata[prop.name] = newPropMetadata;
-      if (!dryRun) {
-        await entities.save(e, { user: 'sync-topic-classification', language: e.language });
+  const template: TemplateSchema =
+    (templateDictP ?? {})[e.template?.toString() ?? ''] ?? (await templates.getById(e.template));
+  const thesaurusDict =
+    thesaurusDictP ??
+    (await thesauri.get(null)).reduce((res, t) => ({ ...res, [t._id.toString()]: t }), {});
+  let didSth = false;
+  await Promise.all(
+    (template.properties ?? []).map(async prop => {
+      const thesaurus = thesaurusDict[prop?.content ?? ''];
+      if (!prop || !thesaurus || !thesaurus.enable_classification) {
+        return;
       }
-      console.info(`${dryRun ? '[DRY-RUN] ' : ' '}Saved ${e.sharedId}`);
-    }
-  }
-  return true;
+      didSth = didSth || (await handleProp(e, args, prop, thesaurus));
+    })
+  );
+  return didSth;
 }
 
 class SyncTask extends Task {
   protected async run(args: SyncArgs) {
-    this.status.message = `Started with ${require('util').inspect(args)}`;
+    this.status.message = `Started with ${util.inspect(args)}`;
+    const templatesDict = (await templates.get(null)).reduce(
+      (res, t) => ({ ...res, [t._id.toString()]: t }),
+      {}
+    );
+    const thesaurusDict = (await thesauri.get(null)).reduce(
+      (res, t) => ({ ...res, [t._id.toString()]: t }),
+      {}
+    );
+    let seen = 0;
+    let index = 0;
+    await QueryForEach(
+      entities.get({ language: 'en' }).sort('_id'),
+      50,
+      async (e: WithId<EntitySchema>) => {
+        if (index > (args.limit ?? 1000000)) {
+          return;
+        }
+        seen += 1;
+        if (await syncEntity(e, args, templatesDict, thesaurusDict)) {
+          index += 1;
+          if (args.noDryRun) {
+            await entities.save(e, { user: 'sync-topic-classification', language: e.language });
+          }
+        }
+        this.status.message = `Running with ${util.inspect(args)}: ${seen} seen, ${index} changed`;
+      }
+    );
   }
 }
 

@@ -11,6 +11,7 @@ class TestTask extends Task {
       throw Error('Bad a!');
     }
     this.status.message = `${args.a}`;
+    this.status.result.a = args.a;
   }
 }
 TaskProvider.registerClass('TestTask', TestTask);
@@ -47,6 +48,7 @@ describe('task routes', () => {
         response = await routes.get('/api/tasks', { query: { name: 'a' } }); // eslint-disable-line
       }
       expect(response.message).toBe('1');
+      expect(response.result).toEqual({ a: 1 });
     });
   });
 });

@@ -3,6 +3,7 @@ import { sleep } from 'shared/tsUtils';
 export interface TaskStatus {
   state: 'undefined' | 'created' | 'running' | 'done' | 'failed';
   message?: string;
+  result: any;
   startTime?: number;
   endTime?: number;
   previousTaskStatus?: TaskStatus;
@@ -12,7 +13,7 @@ export abstract class Task {
   status: TaskStatus;
 
   constructor() {
-    this.status = { state: 'created' };
+    this.status = { state: 'created', result: {} };
   }
 
   start(args: any) {
@@ -66,15 +67,15 @@ export class TaskProvider {
   static getOrCreate(name: string, type: string) {
     let task = this.runningTasks[name];
     if (!task || ['done', 'failed'].includes(task.status.state)) {
-      const Provider = this.taskClasses[type];
-      if (!Provider) {
+      const TaskClass = this.taskClasses[type];
+      if (!TaskClass) {
         throw Error(`No task provider found for task class ${type}!`);
       }
       const previousStatus = task?.status;
       if (previousStatus) {
         previousStatus.previousTaskStatus = undefined;
       }
-      task = new Provider();
+      task = new TaskClass();
       if (!task) {
         throw Error(`Could not create instance of task class ${type}!`);
       }
