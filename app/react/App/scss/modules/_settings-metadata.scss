@@ -105,6 +105,9 @@
   position: relative;
   color: $c-grey-dark;
 }
+.no-margin {
+  margin: 0 !important;
+}
 
 .property-description {
   @include tooltip('top');
