@@ -102,13 +102,36 @@ const thesauri: ThesaurusSchema[] = [
     enableClassification: false,
   },
 ];
-const suggestions: SuggestionResultSchema = {
+const rawSuggestionResult: any = {
   totalRows: 1,
-  totalSuggestions: 1,
+  aggregations: {
+    all: {
+      _thesaurus_name: {
+        buckets: [
+          {
+            key: 'id1',
+            filtered: {
+              doc_count: 2,
+            },
+          },
+          {
+            key: 'id2',
+            filtered: {
+              doc_count: 0,
+            },
+          },
+        ],
+      },
+    },
+  },
+};
+const flattenedSuggestions: SuggestionResultSchema = {
+  totalRows: 2,
+  totalSuggestions: 4,
   thesaurus: {
     propertyName: 'thesaurus_name',
     values: {
-      id1: 1,
+      id1: 4,
       id2: 0,
     },
   },
@@ -130,7 +153,7 @@ describe('ThesaurusCockpit', () => {
         label: 'ThesaurusName',
         name: 'thesaurus_name',
       };
-      props = { models, thesaurus: thesauri[0], suggestions };
+      props = { models, thesaurus: thesauri[0], suggestions: flattenedSuggestions };
       RouteHandler.renderedFromServer = true;
       dispatchCallsOrder = [];
       context = {
@@ -162,7 +185,7 @@ describe('ThesaurusCockpit', () => {
       expect(component.find('td').children().length).toBe(5);
       expect(component.find({ title: 'publish-button' }).length).toBe(1);
       expect(component.find({ title: 'review-button-title' }).length).toBe(1);
-      expect(component.contains(<td title="suggestions-count">{1}</td>)).toEqual(true);
+      expect(component.contains(<td title="suggestions-count">{4}</td>)).toEqual(true);
     });
 
     it('should not render the publish button when there are < 1 suggestions', () => {
@@ -172,14 +195,16 @@ describe('ThesaurusCockpit', () => {
         thesaurus: {
           propertyName: 'thesaurus_name',
           values: {
-            id1: 1,
+            id1: 0,
             id2: 0,
           },
         },
       };
       component = shallow(<ThesaurusCockpitBase {...props} />, { context });
       expect(component.find({ title: 'publish-button' }).length).toBe(0);
-      expect(component.find('td').children().length).toBe(5);
+      expect(component.find({ scope: 'row' }).length).toBe(3);
+      // We don't expect a 'to be reviewed' count, nor a 'suggestions button'
+      expect(component.find('td').children().length).toBe(3);
     });
   });
 
@@ -188,12 +213,31 @@ describe('ThesaurusCockpit', () => {
       spyOn(ThesauriAPI, 'getThesauri').and.returnValue(Promise.resolve(thesauri));
       spyOn(ThesauriAPI, 'getModelStatus').and.returnValue(Promise.resolve(models));
       spyOn(TemplatesAPI, 'get').and.returnValue(Promise.resolve(templates));
-      spyOn(api, 'search').and.returnValue(Promise.resolve(suggestions));
+      spyOn(api, 'search').and.returnValue(Promise.resolve(rawSuggestionResult));
     });
 
     it('should get the thesaurus, classification model and suggestion counts as react actions', async () => {
-      await ThesaurusCockpitBase.requestState(new RequestParams());
-      //expect(actions).toMatchSnapshot();
+      const actions = await ThesaurusCockpitBase.requestState(new RequestParams());
+      expect(ThesauriAPI.getThesauri).toHaveBeenCalled();
+      expect(TemplatesAPI.get).toHaveBeenCalled();
+      expect(ThesauriAPI.getModelStatus).toHaveBeenCalled();
+      expect(api.search).toHaveBeenCalledTimes(2);
+
+      expect(actions.length).toBe(3);
+      actions.forEach(action => {
+        switch (action.type) {
+          case 'thesauri/thesaurus/SET':
+            expect(action.value).toEqual(thesauri[0]);
+            break;
+          case 'thesauri/suggestions/SET':
+            expect(action.value).toEqual(flattenedSuggestions);
+            break;
+          case 'thesauri/model/SET':
+            expect(action.value).toEqual(models);
+            break;
+          default:
+        }
+      });
     });
   });
 });
