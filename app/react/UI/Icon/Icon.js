@@ -6,6 +6,9 @@ import { connect } from 'react-redux';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { allLanguages as languagesList } from 'shared/languagesList';
+import { loadIcons } from './library';
+
+loadIcons();
 
 const Icon = ({ locale, directionAware, ...ownProps }) => {
   const languageData = languagesList.find(l => l.key === locale);

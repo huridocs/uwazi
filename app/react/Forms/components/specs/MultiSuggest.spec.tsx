@@ -50,17 +50,40 @@ describe('MultiSelect', () => {
 
   it('should render the valid, not-already-accepted suggestions', () => {
     render();
-    const optionElements = component.find('span[className="multiselectItem-name"]');
-    expect(optionElements.length).toBe(1);
-    expect(optionElements.at(0).props().children).toEqual(['Cl', '']);
+    expect(
+      component
+        .find('span[className="multiselectItem-name"]')
+        .at(0)
+        .props().children
+    ).toEqual('Cl');
+    expect(
+      component
+        .find('span[className="multiselectItem-confidence medium"]')
+        .at(0)
+        .props().children
+    ).toEqual('medium');
   });
 
   it('should render the valid, not-already-accepted low-confidence suggestions', () => {
     props.value[1].suggestion_confidence = 0.4;
     render();
-    const optionElements = component.find('span[className="multiselectItem-name"]');
-    expect(optionElements.length).toBe(1);
-    expect(optionElements.at(0).props().children).toEqual(['Cl', ' ?']);
+    expect(
+      component
+        .find('span[className="multiselectItem-confidence low"]')
+        .at(0)
+        .props().children
+    ).toEqual('low');
+  });
+
+  it('should render the valid, not-already-accepted high-confidence suggestions', () => {
+    props.value[1].suggestion_confidence = 0.9;
+    render();
+    expect(
+      component
+        .find('span[className="multiselectItem-confidence high"]')
+        .at(0)
+        .props().children
+    ).toEqual('high');
   });
 
   it('should render the nothing if no suggestions', () => {
@@ -74,14 +97,14 @@ describe('MultiSelect', () => {
     component
       .find('div[className="multiselectItem-button"]')
       .at(0)
-      .simulate('click', { preventDefault: () => {} });
+      .simulate('click', { preventDefault: () => {}, stopPropagation: () => {} });
     expect(props.onChange).toHaveBeenCalledWith([{ value: 'B', label: 'Bl' }, { value: '' }]);
   });
 
   it('should accept clicked values', () => {
     render();
     component
-      .find('span[className="multiselectItem-name"]')
+      .find('label[className="multiselectItem-label"]')
       .at(0)
       .simulate('click', { preventDefault: () => {} });
     expect(props.acceptSuggestion).toHaveBeenCalledWith('C', 'select', 'model.path', ['A', 'B']);

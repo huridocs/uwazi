@@ -63,12 +63,24 @@ export function acceptSuggestion(
 export class MultiSuggestBase extends Component<MultiSuggestProps> {
   public static defaultProps = defaultProps;
 
+  static confidenceBlob(suggestionConfidence?: number) {
+    let label = 'low';
+    if ((suggestionConfidence ?? 0.0) >= 0.75) {
+      label = 'high';
+    } else if ((suggestionConfidence ?? 0.0) >= 0.5) {
+      label = 'medium';
+    }
+    return <span className={`multiselectItem-confidence ${label}`}>{label}</span>;
+  }
+
   acceptSuggestion(id: string) {
     const { propertyType, selectModel, selectValue } = this.props;
     this.props.acceptSuggestion(id, propertyType, selectModel, selectValue);
   }
 
   rejectSuggestion(id: string, e: any) {
+    // Don't bubble the event up to onClick handlers of parents.
+    e.stopPropagation();
     e.preventDefault();
     const suggestedValues = (this.props.value || []).slice();
     const index = suggestedValues.findIndex(v => v.value === id);
@@ -94,20 +106,15 @@ export class MultiSuggestBase extends Component<MultiSuggestProps> {
         </b>
         {filteredValues.map(value => (
           <div key={value.value!} className="multiselectItem">
-            <label className="multiselectItem-label">
-              <span
-                className="multiselectItem-icon"
-                onClick={this.acceptSuggestion.bind(this, value.value!)}
-              >
+            <label
+              className="multiselectItem-label"
+              onClick={this.acceptSuggestion.bind(this, value.value!)}
+            >
+              <span className="multiselectItem-icon">
                 <Icon icon={['far', 'square']} className="checkbox-empty" />
               </span>
-              <span
-                className="multiselectItem-name"
-                onClick={this.acceptSuggestion.bind(this, value.value!)}
-              >
-                {value.label}
-                {(value.suggestion_confidence ?? 0) < 0.6 ? ' ?' : ''}
-              </span>
+              <span className="multiselectItem-name">{value.label}</span>
+              {MultiSuggestBase.confidenceBlob(value.suggestion_confidence)}
               <div
                 className="multiselectItem-button"
                 onClick={this.rejectSuggestion.bind(this, value.value!)}

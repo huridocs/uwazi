@@ -1,0 +1,149 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`FilterSuggestions should always render the current property as a guide 1`] = `
+<tr
+  className="property-atributes is-active"
+  title="This is the current property and will be used togheter with equal properties."
+>
+  <td>
+    <Connect(Icon)
+      icon="file"
+    />
+     
+    Current template
+  </td>
+  <td>
+    <Connect(Icon)
+      icon="calendar"
+    />
+     
+    Date
+  </td>
+</tr>
+`;
+
+exports[`FilterSuggestions when content does not match with a thesauri (happening when opening property and the dictionary has been deleted) should not show anything 1`] = `
+<tr
+  className="property-atributes is-active"
+  key="0"
+  title="This property has different Thesauri and wont't be used together."
+>
+  <td>
+    <Connect(Icon)
+      icon="file"
+    />
+     
+    Template 2
+  </td>
+  <td
+    className=""
+  >
+    <Connect(Icon)
+      icon="warning"
+    />
+    <Connect(Icon)
+      icon="sort"
+    />
+     
+    Select
+  </td>
+  <td
+    className="conflict"
+  >
+    <Connect(Icon)
+      icon="warning"
+    />
+    <Connect(Icon)
+      icon="book"
+    />
+     
+    Best SCI FI Authors
+  </td>
+</tr>
+`;
+
+exports[`FilterSuggestions when label is the same but different content should mark it as conflict 1`] = `
+<td
+  className="conflict"
+>
+  <Connect(Icon)
+    icon="warning"
+  />
+  <Connect(Icon)
+    icon="book"
+  />
+   
+  Best SCI FI Authors
+</td>
+`;
+
+exports[`FilterSuggestions when label is the same but different type should mark it as conflict 1`] = `
+<td
+  className="conflict"
+>
+  <Connect(Icon)
+    icon="warning"
+  />
+  <Connect(Icon)
+    icon="font"
+  />
+   
+  Text
+</td>
+`;
+
+exports[`FilterSuggestions when matches type and label as other template property should show a message 1`] = `
+<tr
+  className="property-atributes is-active"
+  key="0"
+  title="This property has the same configuration and will be used together."
+>
+  <td>
+    <Connect(Icon)
+      icon="file"
+    />
+     
+    Template 2
+  </td>
+  <td
+    className=""
+  >
+    <Connect(Icon)
+      icon="warning"
+    />
+    <Connect(Icon)
+      icon="font"
+    />
+     
+    Text
+  </td>
+</tr>
+`;
+
+exports[`FilterSuggestions when props.filter = flase should now show the preoperty with same name 1`] = `
+<tr
+  className="property-atributes is-active"
+  key="0"
+  title="This property has the same configuration and will be used together."
+>
+  <td>
+    <Connect(Icon)
+      icon="file"
+    />
+     
+    Template 3
+  </td>
+  <td
+    className=""
+  >
+    <Connect(Icon)
+      icon="warning"
+    />
+    <Connect(Icon)
+      icon="font"
+    />
+     
+    Text
+  </td>
+</tr>
+`;

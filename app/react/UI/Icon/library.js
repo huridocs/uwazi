@@ -1,6 +1,6 @@
 /** @format */
 
-import { library } from '@fortawesome/fontawesome-svg-core';
+import { library, dom } from '@fortawesome/fontawesome-svg-core';
 import { faAngleLeft } from '@fortawesome/free-solid-svg-icons/faAngleLeft';
 import { faAngleRight } from '@fortawesome/free-solid-svg-icons/faAngleRight';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons/faArrowLeft';
@@ -87,6 +87,7 @@ import { faEyeSlash } from '@fortawesome/free-solid-svg-icons/faEyeSlash';
 import { faUsers } from '@fortawesome/free-solid-svg-icons/faUsers';
 import { faUserTimes } from '@fortawesome/free-solid-svg-icons/faUserTimes';
 import { faHandPaper } from '@fortawesome/free-solid-svg-icons/faHandPaper';
+import { saveAndNext } from './save-and-next';
 
 const icons = {
   faAngleLeft,
@@ -175,6 +176,7 @@ const icons = {
   faUsers,
   faUserTimes,
   faHandPaper,
+  saveAndNext,
 };
 
 export const loadIcons = () => {

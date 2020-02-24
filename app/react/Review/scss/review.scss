@@ -188,16 +188,18 @@ $header-height: 44px;
       padding-bottom: 12px;
       .btn-color {
         margin: 0 16px;
+        white-space: nowrap;
+        height: 23px;
       }
       h1 {
         font-style: normal;
-        font-weight: normal;
+        font-weight: 600;
         font-size: 15px;
         line-height: 20px;
         letter-spacing: -0.00458773px;
         overflow: hidden;
-        flex-grow: 1;
         line-height: unset;
+        white-space: pre-wrap !important;
       }
     }
     .view {
@@ -259,6 +261,31 @@ $header-height: 44px;
       font-size: 14px;
       line-height: 115%;
       color: #444444;
+
+      .multiselectItem-name {
+        max-width: calc(100% - 110px);
+      }
+
+      .multiselectItem-confidence {
+        font-size: 12px;
+        height: 16px;
+        border-radius: 5px;
+        padding: 0px 3px;
+        margin-left: 4px;
+      }
+
+      .multiselectItem-confidence.low {
+        color: #541a1a;
+        background-color: #e9afaf;
+      }
+      .multiselectItem-confidence.medium {
+        color: #574e1f;
+        background-color: #e9dcaf;
+      }
+      .multiselectItem-confidence.high {
+        color: #1f572b;
+        background-color: #afe9bb;
+      }
     }
     .multiselectActions {
       .form-group {
@@ -286,5 +313,9 @@ $header-height: 44px;
   }
   .ContextMenu {
     z-index: 100;
+  }
+
+  .fa-save-and-next {
+    fill-rule: evenodd;
   }
 }

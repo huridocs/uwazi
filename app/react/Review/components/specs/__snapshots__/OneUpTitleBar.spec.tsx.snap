@@ -117,7 +117,7 @@ exports[`EntityViewer should render 2 1`] = `
       />
     </button>
     <button
-      className="btn btn-default btn-warning"
+      className="btn btn-default"
       onClick={[Function]}
       type="button"
     >
