@@ -173,7 +173,6 @@ describe('ThesaurusCockpit', () => {
 
     it('should render a ThesaurusCockpit', () => {
       render();
-      //expect(component).toMatchSnapshot();
     });
 
     it('should find the cockpit table and verify names, values and quality icons', () => {
