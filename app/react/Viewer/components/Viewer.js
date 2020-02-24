@@ -151,15 +151,15 @@ export class Viewer extends Component {
                 <React.Fragment>
                   <PaginatorWithPage totalPages={file.totalPages} onPageChange={changePage} />
                   <CurrentLocationLink
-                    onClick={!raw ? this.handlePlainTextClick : () => { }}
+                    onClick={!raw ? this.handlePlainTextClick : () => {}}
                     className="btn btn-default"
                     queryParams={{ raw: raw || firstRender ? '' : 'true' }}
                   >
                     {raw || firstRender ? (
                       <Translate>Normal view</Translate>
                     ) : (
-                        <Translate>Plain text</Translate>
-                      )}
+                      <Translate>Plain text</Translate>
+                    )}
                   </CurrentLocationLink>
                 </React.Fragment>
               )}
@@ -172,13 +172,13 @@ export class Viewer extends Component {
               {raw || firstRender ? (
                 <pre className={determineDirection(file)}>{pageText}</pre>
               ) : (
-                  <SourceDocument
-                    searchTerm={searchTerm}
-                    onPageChange={onPageChange}
-                    onDocumentReady={onDocumentReady}
-                    file={file}
-                  />
-                )}
+                <SourceDocument
+                  searchTerm={searchTerm}
+                  onPageChange={onPageChange}
+                  onDocumentReady={onDocumentReady}
+                  file={file}
+                />
+              )}
             </ShowIf>
             <ShowIf if={sidepanelTab === 'connections'}>
               <ConnectionsList hideFooter searchCentered />
@@ -230,9 +230,9 @@ export class Viewer extends Component {
 Viewer.defaultProps = {
   searchTerm: '',
   raw: false,
-  onPageChange: () => { },
-  changePage: () => { },
-  onDocumentReady: () => { },
+  onPageChange: () => {},
+  changePage: () => {},
+  onDocumentReady: () => {},
   page: 1,
   templates: List(),
   doc: Map(),

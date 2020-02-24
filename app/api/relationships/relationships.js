@@ -29,9 +29,7 @@ function getPropertiesToBeConnections(template) {
   return template.properties.filter(prop => prop.type === 'relationship');
 }
 
-const createRelationship = async (relationship, language) => {
-  return model.save(relationship);
-};
+const createRelationship = async relationship => model.save(relationship);
 
 const updateRelationship = async relationship =>
   model.save({

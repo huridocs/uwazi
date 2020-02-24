@@ -12,7 +12,6 @@ describe('PDF', () => {
     originalname: 'originalName.pdf',
     destination: __dirname,
   };
-  const filepath = `${__dirname}/12345.test.pdf`;
   const thumbnailName = `${__dirname}/documentId.jpg`;
 
   const deleteThumbnail = done => {
