@@ -4,7 +4,11 @@ import React from 'react';
 
 const MarkdownLink = ({ url, classname, children }) => {
   console.warn('MarkdownLink is deprecated, use <Link to="url"></Link> instead');
-  return <Link to={url} className={classname} href={url}>{children}</Link>;
+  return (
+    <Link to={url} className={classname} href={url}>
+      {children}
+    </Link>
+  );
 };
 
 MarkdownLink.defaultProps = {

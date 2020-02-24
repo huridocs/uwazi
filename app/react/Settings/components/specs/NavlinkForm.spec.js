@@ -9,7 +9,10 @@ import { NavlinkForm, LinkSource, LinkTarget, mapStateToProps } from '../Navlink
 describe('Drag and Drop functions', () => {
   describe('LinkSource', () => {
     it('should have a beginDrag function that returns the index and id of the linked object', () => {
-      expect(LinkSource.beginDrag({ localID: 'localID', index: 3 })).toEqual({ id: 'localID', index: 3 });
+      expect(LinkSource.beginDrag({ localID: 'localID', index: 3 })).toEqual({
+        id: 'localID',
+        index: 3,
+      });
     });
   });
 
@@ -23,7 +26,7 @@ describe('Drag and Drop functions', () => {
       monitor = {
         getItem() {
           return { index: 3 };
-        }
+        },
       };
     });
 
@@ -84,19 +87,43 @@ describe('NavlinkForm', () => {
   });
 
   it('should have an edit button to activate editing link mode', () => {
-    component.find('button').first().props().onClick();
+    component
+      .find('button')
+      .first()
+      .props()
+      .onClick();
     expect(props.editLink).toHaveBeenCalledWith('newLink1');
   });
 
   it('should have a remove button to remove a link', () => {
-    component.find('button').last().props().onClick();
+    component
+      .find('button')
+      .last()
+      .props()
+      .onClick();
     expect(props.removeLink).toHaveBeenCalledWith(1);
   });
 
   it('should have a title and URL fields', () => {
-    expect(component.find(Field).first().props().model).toBe('settings.navlinksData.links[1].title');
-    expect(component.find(Field).first().parent().props().className).toBe('input-group');
-    expect(component.find(Field).last().props().model).toBe('settings.navlinksData.links[1].url');
+    expect(
+      component
+        .find(Field)
+        .first()
+        .props().model
+    ).toBe('settings.navlinksData.links[1].title');
+    expect(
+      component
+        .find(Field)
+        .first()
+        .parent()
+        .props().className
+    ).toBe('input-group');
+    expect(
+      component
+        .find(Field)
+        .last()
+        .props().model
+    ).toBe('settings.navlinksData.links[1].url');
   });
 
   describe('validation error states', () => {
@@ -105,14 +132,20 @@ describe('NavlinkForm', () => {
       component = shallow(<NavlinkForm {...props} />);
 
       expect(component.find('li').props().className).toBe('list-group-item error');
-      expect(component.find(Field).first().parent().props().className).toBe('input-group has-error');
+      expect(
+        component
+          .find(Field)
+          .first()
+          .parent()
+          .props().className
+      ).toBe('input-group has-error');
     });
   });
 
   describe('mapStateToProps', () => {
     const settings = {
       navlinksFormState: 'formState',
-      uiState: 'uiState'
+      uiState: 'uiState',
     };
 
     it('should return the right props', () => {

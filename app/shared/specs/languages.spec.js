@@ -42,15 +42,25 @@ describe('languages', () => {
     });
 
     it('should return the text language for a specific purpose if selected', () => {
-      expect(languages.detect('de que color es el caballo blanco de santiago', 'ISO639_1')).toBe('es');
-      expect(languages.detect('what is the colour of the white horse of santiago', 'ISO639_1')).toBe('en');
-      expect(languages.detect('de que color es el caballo blanco de santiago', 'franc')).toBe('spa');
-      expect(languages.detect('what is the colour of the white horse of santiago', 'franc')).toBe('eng');
+      expect(languages.detect('de que color es el caballo blanco de santiago', 'ISO639_1')).toBe(
+        'es'
+      );
+      expect(
+        languages.detect('what is the colour of the white horse of santiago', 'ISO639_1')
+      ).toBe('en');
+      expect(languages.detect('de que color es el caballo blanco de santiago', 'franc')).toBe(
+        'spa'
+      );
+      expect(languages.detect('what is the colour of the white horse of santiago', 'franc')).toBe(
+        'eng'
+      );
     });
 
     it('should return other when the language is not supported', () => {
       expect(languages.detect('color chIS Sargh santiago')).toBe('other');
-      expect(languages.detect('sdgfghhg hgjk ljhgfhgjk ghgjh ghfdfgfartytuasd fjh fghjgjasd')).toBe('other');
+      expect(languages.detect('sdgfghhg hgjk ljhgfhgjk ghgjh ghfdfgfartytuasd fjh fghjgjasd')).toBe(
+        'other'
+      );
     });
   });
 });

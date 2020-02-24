@@ -34,7 +34,9 @@ describe('Error handling middleware', () => {
     const error = { message: 'error', code: 500 };
     req.body = { param: 'value', param2: 'value2' };
     middleware(error, req, res, next);
-    expect(errorLog.error).toHaveBeenCalledWith(`\nbody: ${JSON.stringify(req.body, null, ' ')}\nerror`);
+    expect(errorLog.error).toHaveBeenCalledWith(
+      `\nbody: ${JSON.stringify(req.body, null, ' ')}\nerror`
+    );
 
     req.body = {};
     middleware(error, req, res, next);
@@ -46,6 +48,8 @@ describe('Error handling middleware', () => {
     req.query = { param: 'value', param2: 'value2' };
     middleware(error, req, res, next);
 
-    expect(errorLog.error).toHaveBeenCalledWith(`\nquery: ${JSON.stringify(req.query, null, ' ')}\nerror`);
+    expect(errorLog.error).toHaveBeenCalledWith(
+      `\nquery: ${JSON.stringify(req.query, null, ' ')}\nerror`
+    );
   });
 });

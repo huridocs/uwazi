@@ -41,7 +41,9 @@ describe('Attachments actions', () => {
 
     it('should start the upload', () => {
       store.dispatch(actions.uploadAttachment('sharedId', file));
-      expect(store.getActions()).toEqual([{ type: types.START_UPLOAD_ATTACHMENT, entity: 'sharedId' }]);
+      expect(store.getActions()).toEqual([
+        { type: types.START_UPLOAD_ATTACHMENT, entity: 'sharedId' },
+      ]);
     });
 
     it('should upload the file while dispatching the upload progress', () => {
@@ -49,7 +51,12 @@ describe('Attachments actions', () => {
         { type: types.START_UPLOAD_ATTACHMENT, entity: 'sharedId' },
         { type: types.ATTACHMENT_PROGRESS, entity: 'sharedId', progress: 55 },
         { type: types.ATTACHMENT_PROGRESS, entity: 'sharedId', progress: 65 },
-        { type: types.ATTACHMENT_COMPLETE, entity: 'sharedId', file: { text: 'file' }, __reducerKey: 'storeKey' }
+        {
+          type: types.ATTACHMENT_COMPLETE,
+          entity: 'sharedId',
+          file: { text: 'file' },
+          __reducerKey: 'storeKey',
+        },
       ];
 
       store.dispatch(actions.uploadAttachment('sharedId', file, 'storeKey'));
@@ -77,47 +84,73 @@ describe('Attachments actions', () => {
     });
 
     it('should call on attachments/rename, with entity, file id and originalname', () => {
-      store.dispatch(actions.renameAttachment('id', 'form', 'storeKey', { _id: 'fid', originalname: 'originalname', language: 'spa' }));
+      store.dispatch(
+        actions.renameAttachment('id', 'form', 'storeKey', {
+          _id: 'fid',
+          originalname: 'originalname',
+          language: 'spa',
+        })
+      );
 
       const expectedActions = [
         { type: 'ATTACHMENT_RENAMED', entity: 'id', file: 'file', __reducerKey: 'storeKey' },
         { type: 'formReset', value: 'form' },
-        { type: 'NOTIFY', notification: { message: 'Attachment renamed', type: 'success', id: 'unique_id' } }
+        {
+          type: 'NOTIFY',
+          notification: { message: 'Attachment renamed', type: 'success', id: 'unique_id' },
+        },
       ];
 
-      const expectedParams = new RequestParams({ entityId: 'id', _id: 'fid', originalname: 'originalname', language: 'spa' });
+      const expectedParams = new RequestParams({
+        entityId: 'id',
+        _id: 'fid',
+        originalname: 'originalname',
+        language: 'spa',
+      });
       expect(api.post).toHaveBeenCalledWith('attachments/rename', expectedParams);
       expect(store.getActions()).toEqual(expectedActions);
     });
   });
 
   describe('deleteAttachment', () => {
-    it('should call on attachments/delete, with entity and filename and dispatch deleted and notification actions', (done) => {
+    it('should call on attachments/delete, with entity and filename and dispatch deleted and notification actions', done => {
       spyOn(api, 'delete').and.returnValue(Promise.resolve({}));
       mockID();
       const dispatch = jasmine.createSpy('dispatch');
-      actions.deleteAttachment('id', { _id: 'attachmentId', filename: 'filename' }, 'storeKey')(dispatch).then(() => {
-        expect(api.delete).toHaveBeenCalledWith('attachments/delete', new RequestParams({
-          attachmentId: 'attachmentId'
-        }));
-        expect(dispatch).toHaveBeenCalledWith({
-          type: types.ATTACHMENT_DELETED,
-          entity: 'id',
-          file: {
-            _id: 'attachmentId',
-            filename: 'filename'
-          },
-          __reducerKey: 'storeKey'
+      actions
+        .deleteAttachment(
+          'id',
+          { _id: 'attachmentId', filename: 'filename' },
+          'storeKey'
+        )(dispatch)
+        .then(() => {
+          expect(api.delete).toHaveBeenCalledWith(
+            'attachments/delete',
+            new RequestParams({
+              attachmentId: 'attachmentId',
+            })
+          );
+          expect(dispatch).toHaveBeenCalledWith({
+            type: types.ATTACHMENT_DELETED,
+            entity: 'id',
+            file: {
+              _id: 'attachmentId',
+              filename: 'filename',
+            },
+            __reducerKey: 'storeKey',
+          });
+          done();
         });
-        done();
-      });
     });
   });
 
   describe('loadForm', () => {
     beforeEach(() => {
       spyOn(formActions, 'reset').and.callFake(form => ({ type: 'formReset', value: form }));
-      spyOn(formActions, 'load').and.callFake((form, attachment) => ({ type: 'formLoad', value: `${form}, ${attachment}` }));
+      spyOn(formActions, 'load').and.callFake((form, attachment) => ({
+        type: 'formLoad',
+        value: `${form}, ${attachment}`,
+      }));
     });
 
     it('should reset and load passed form', () => {
@@ -125,7 +158,7 @@ describe('Attachments actions', () => {
 
       const expectedActions = [
         { type: 'formReset', value: 'form' },
-        { type: 'formLoad', value: 'form, attachment' }
+        { type: 'formLoad', value: 'form, attachment' },
       ];
 
       expect(store.getActions()).toEqual(expectedActions);
@@ -140,9 +173,7 @@ describe('Attachments actions', () => {
     it('should submit the form', () => {
       store.dispatch(actions.submitForm('form'));
 
-      const expectedActions = [
-        { type: 'formSubmit', value: 'form' }
-      ];
+      const expectedActions = [{ type: 'formSubmit', value: 'form' }];
 
       expect(store.getActions()).toEqual(expectedActions);
     });
@@ -156,9 +187,7 @@ describe('Attachments actions', () => {
     it('should reset and load passed form', () => {
       store.dispatch(actions.resetForm('form'));
 
-      const expectedActions = [
-        { type: 'formReset', value: 'form' }
-      ];
+      const expectedActions = [{ type: 'formReset', value: 'form' }];
 
       expect(store.getActions()).toEqual(expectedActions);
     });

@@ -13,7 +13,7 @@ describe('LoadMoreRelationshipsButton', () => {
       totalHubs: 4,
       requestedHubs: 4,
       action: jasmine.createSpy('action'),
-      loadMoreAmmount: 2
+      loadMoreAmmount: 2,
     };
   });
 
@@ -46,11 +46,19 @@ describe('LoadMoreRelationshipsButton', () => {
 
   describe('mapStateToProps', () => {
     it('should map the relationships list search results', () => {
-      const state = { relationships: { list: {
-        searchResults: fromJS({ totalHubs: 'totalHubs', requestedHubs: 'requestedHubs' })
-      } } };
+      const state = {
+        relationships: {
+          list: {
+            searchResults: fromJS({ totalHubs: 'totalHubs', requestedHubs: 'requestedHubs' }),
+          },
+        },
+      };
 
-      expect(mapStateToProps(state)).toEqual({ totalHubs: 'totalHubs', requestedHubs: 'requestedHubs', loadMoreAmmount: 10 });
+      expect(mapStateToProps(state)).toEqual({
+        totalHubs: 'totalHubs',
+        requestedHubs: 'requestedHubs',
+        loadMoreAmmount: 10,
+      });
     });
   });
 });

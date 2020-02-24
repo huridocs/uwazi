@@ -3,7 +3,6 @@ import { shallow } from 'enzyme';
 
 import Icon, { mapStateToProps } from '../Icon';
 
-
 describe('Icon', () => {
   let component;
   let props;

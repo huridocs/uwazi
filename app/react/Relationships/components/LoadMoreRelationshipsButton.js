@@ -7,7 +7,12 @@ import { t } from 'app/I18N';
 
 import { loadMoreReferences } from '../../ConnectionsList/actions/actions';
 
-export const LoadMoreRelationshipsButton = ({ totalHubs, requestedHubs, action, loadMoreAmmount }) => {
+export const LoadMoreRelationshipsButton = ({
+  totalHubs,
+  requestedHubs,
+  action,
+  loadMoreAmmount,
+}) => {
   if (requestedHubs < totalHubs) {
     const actionFunction = () => {
       action(requestedHubs + loadMoreAmmount);
@@ -32,19 +37,22 @@ LoadMoreRelationshipsButton.propTypes = {
   totalHubs: PropTypes.number,
   requestedHubs: PropTypes.number,
   loadMoreAmmount: PropTypes.number,
-  action: PropTypes.func
+  action: PropTypes.func,
 };
 
 export const mapStateToProps = ({ relationships }) => ({
-    totalHubs: relationships.list.searchResults.get('totalHubs'),
-    requestedHubs: relationships.list.searchResults.get('requestedHubs'),
-    loadMoreAmmount: 10
+  totalHubs: relationships.list.searchResults.get('totalHubs'),
+  requestedHubs: relationships.list.searchResults.get('requestedHubs'),
+  loadMoreAmmount: 10,
 });
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({
-    action: loadMoreReferences
-  }, dispatch);
+  return bindActionCreators(
+    {
+      action: loadMoreReferences,
+    },
+    dispatch
+  );
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(LoadMoreRelationshipsButton);

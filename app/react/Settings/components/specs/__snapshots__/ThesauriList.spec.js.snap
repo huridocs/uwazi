@@ -2,7 +2,7 @@
 
 exports[`ThesaurisList render should match the snapshot 1`] = `
 <div
-  className="panel panel-default"
+  className="flex panel panel-default"
 >
   <div
     className="panel-heading"
@@ -34,17 +34,15 @@ exports[`ThesaurisList render should match the snapshot 1`] = `
           <th
             scope="row"
           >
-            <Connect(I18NLink)
-              to="/settings/dictionaries/edit/thesaurusUnderscoreId1"
-            >
-              Continents
-            </Connect(I18NLink)>
+            Continents
           </th>
           <td />
           <td>
             <div>
               <Connect(I18NLink)
                 className="btn btn-default btn-xs"
+                confirmMessage=""
+                confirmTitle=""
                 to="/settings/dictionaries/edit/thesaurusUnderscoreId1"
               >
                 <Connect(Icon)
@@ -78,15 +76,11 @@ exports[`ThesaurisList render should match the snapshot 1`] = `
           <th
             scope="row"
           >
-            <Connect(I18NLink)
-              to="/settings/dictionaries/edit/thesaurusUnderscoreId2"
-            >
-              Issues
-            </Connect(I18NLink)>
+            Issues
           </th>
           <td>
             <div
-              className="thesauri-list vertical-line"
+              className="vertical-line"
             >
               <span
                 className="thesaurus-suggestion-count"
@@ -99,12 +93,8 @@ exports[`ThesaurisList render should match the snapshot 1`] = `
                 className="btn btn-primary btn-xs"
                 to="/settings/dictionaries/cockpit/thesaurusUnderscoreId2"
               >
-                <Connect(Icon)
-                  icon="search"
-                />
-                 
                 <span>
-                  View Suggestions
+                  View suggestions
                 </span>
               </Connect(I18NLink)>
             </div>
@@ -113,6 +103,8 @@ exports[`ThesaurisList render should match the snapshot 1`] = `
             <div>
               <Connect(I18NLink)
                 className="btn btn-default btn-xs"
+                confirmMessage="Uwazi suggests labels based on the current content of the document collection and its metadata. Editing this thesaurus, the content of the documents or other metadata can affect Uwazi’s understanding of what to suggest."
+                confirmTitle="Confirm edit suggestion-enabled Thesaurus"
                 to="/settings/dictionaries/edit/thesaurusUnderscoreId2"
               >
                 <Connect(Icon)
@@ -160,5 +152,6 @@ exports[`ThesaurisList render should match the snapshot 1`] = `
       </span>
     </Connect(I18NLink)>
   </div>
+  <Connect(Footer) />
 </div>
 `;

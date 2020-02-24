@@ -6,7 +6,11 @@ const PayPalDonateLink = ({ paypalid, classname, children, currency, amount }) =
   const amountParam = amount ? `&amount=${amount}` : '';
   const url = `https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=${paypalid}&currency_code=${currency}${amountParam}&source=url`;
   classname += ' paypal-donate';
-  return <Link className={classname} href={url} target="_blank" rel="noreferrer noopener">{children}</Link>;
+  return (
+    <Link className={classname} href={url} target="_blank" rel="noreferrer noopener">
+      {children}
+    </Link>
+  );
 };
 
 PayPalDonateLink.defaultProps = {

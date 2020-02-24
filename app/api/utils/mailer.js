@@ -8,8 +8,8 @@ let transporterOptions = {
   path: '/usr/sbin/sendmail',
   secure: false,
   tls: {
-    rejectUnauthorized: false
-  }
+    rejectUnauthorized: false,
+  },
 };
 
 if (Object.keys(mailerConfig).length) {
@@ -20,22 +20,25 @@ export default {
   send(mailOptions) {
     let transporter;
     return new Promise((resolve, reject) => {
-      settings.get()
-      .then((config) => {
-        try {
-          transporter = nodemailer.createTransport(config.mailerConfig ? JSON.parse(config.mailerConfig) : transporterOptions);
-          transporter.sendMail(mailOptions, (error, info) => {
-            if (error) {
-              reject(error);
-              return;
-            }
-            resolve(info);
-          });
-        } catch (err) {
-          reject(err);
-        }
-      })
-      .catch(reject);
+      settings
+        .get()
+        .then(config => {
+          try {
+            transporter = nodemailer.createTransport(
+              config.mailerConfig ? JSON.parse(config.mailerConfig) : transporterOptions
+            );
+            transporter.sendMail(mailOptions, (error, info) => {
+              if (error) {
+                reject(error);
+                return;
+              }
+              resolve(info);
+            });
+          } catch (err) {
+            reject(err);
+          }
+        })
+        .catch(reject);
     });
-  }
+  },
 };

@@ -6,7 +6,6 @@ if (isClient) {
   window.Marker = Mark;
 }
 
-
 let marker;
 export default {
   init(selector) {
@@ -26,5 +25,5 @@ export default {
 
   unmark() {
     marker.unmark();
-  }
+  },
 };

@@ -1,6 +1,6 @@
 /* eslint-disable */
 export default {
-  'daddh': {
+  daddh: {
     key_es: 'DADDH',
     key_en: 'ADRDM',
     key_pt: 'DADDH',
@@ -8,7 +8,7 @@ export default {
     label_en: 'American Declaration of the Rights and Duties of Man',
     label_pt: 'Declaração Americana dos Direitos e Deveres do Homem',
   },
-  'dple': {
+  dple: {
     key_es: 'DPLE',
     key_en: 'DPFE',
     key_pt: 'DPLE',
@@ -16,15 +16,17 @@ export default {
     label_en: 'Declaration of Principles on Freedom of Expresion',
     label_pt: 'Declaração de Princípios sobre Liberdade de Expressão ',
   },
-  'pbpppl': {
+  pbpppl: {
     key_es: 'PBPPPL',
     key_en: 'PBPPDL',
     key_pt: 'PBPPPL',
-    label_es: 'Principios y Buenas Prácticas sobre la Protección de las Personas Privadas de Libertad en las Américas',
-    label_en: 'Principles and Best Practices on the Protection of Persons Deprived of Liberty in the Americas',
+    label_es:
+      'Principios y Buenas Prácticas sobre la Protección de las Personas Privadas de Libertad en las Américas',
+    label_en:
+      'Principles and Best Practices on the Protection of Persons Deprived of Liberty in the Americas',
     label_pt: 'Princípios e Boas Prácticas para as Pessoas Privadas de Liberdade nas Américas',
   },
-  'cadh': {
+  cadh: {
     key_es: 'CADH',
     key_en: 'ACHR',
     key_pt: 'CADH',
@@ -36,9 +38,11 @@ export default {
     key_es: 'Prot-PdM',
     key_en: 'Prot-DP',
     key_pt: 'Prot-PdM',
-    label_es: 'Protocolo a la Convención Americana sobre Derechos Humanos relativo a la Abolición de la Pena de Muerte',
+    label_es:
+      'Protocolo a la Convención Americana sobre Derechos Humanos relativo a la Abolición de la Pena de Muerte',
     label_en: 'Protocol to the American Convention on Human Rights to Abolish the Death Penalty',
-    label_pt: 'Protocolo à Convenção Americana sobre Direitos Humanos relativo à abolição da Pena de Morte',
+    label_pt:
+      'Protocolo à Convenção Americana sobre Direitos Humanos relativo à abolição da Pena de Morte',
   },
   'prot-desc': {
     key_es: 'Prot-DESC',
@@ -48,7 +52,7 @@ export default {
     label_en: `Additional Protocol to the American Convention on Human Rights in the Area of Economic, Social and Cultural Rights 'Protocol of San Salvador'`,
     label_pt: `Protocolo adicional à Convenção Americana sobre Direitos Humanos em matéria de Direitos Econômicos, sociais e culturais 'Protocolo de São Salvador'`,
   },
-  'cipst': {
+  cipst: {
     key_es: 'CIPST',
     key_en: 'IACPPT',
     key_pt: 'CIPST',
@@ -56,7 +60,7 @@ export default {
     label_en: 'Inter-American Convention to Prevent and Punish Torture',
     label_pt: 'Convenção Interamericana para Prevenir e Sancionar a Tortura',
   },
-  'cidfp': {
+  cidfp: {
     key_es: 'CIDFP',
     key_en: 'IACFDP',
     key_pt: 'CIDFP',
@@ -64,15 +68,18 @@ export default {
     label_en: 'Inter-American Convention on Forced Disappearance of Persons',
     label_pt: 'Convenção Interamericana sobre Desaparecimento Forçado de Pessoas',
   },
-  'ciedpd': {
+  ciedpd: {
     key_es: 'CIEDPD',
     key_en: 'IACEDAPD',
     key_pt: 'CIEDPD',
-    label_es: 'Convención Interamericana para la Eliminación de todas las Formas de Discriminación contra las Personas con Discapacidad',
-    label_en: 'Inter-American Convention on the Elimination of All Forms of Discrimination Against Persons with Disabilities',
-    label_pt: 'Convenção Interamericana para a eliminação de todas as formas de discriminação contra as pessoas portadoras de deficiência',
+    label_es:
+      'Convención Interamericana para la Eliminación de todas las Formas de Discriminación contra las Personas con Discapacidad',
+    label_en:
+      'Inter-American Convention on the Elimination of All Forms of Discrimination Against Persons with Disabilities',
+    label_pt:
+      'Convenção Interamericana para a eliminação de todas as formas de discriminação contra as pessoas portadoras de deficiência',
   },
-  'cbdopara': {
+  cbdopara: {
     key_es: 'CBdoPara',
     key_en: 'IACBdoPara',
     key_pt: 'CIBdoPara',
@@ -80,7 +87,7 @@ export default {
     label_en: `Inter-American Convention on the Prevention, Punishment and Eradication of Violence Against Women 'Convention of Belém Do Pará'`,
     label_pt: `Convenção Interamericana para Prevenir, Punir e Erradicar a violência contra a mulher 'Convenção de Belém do Pará'`,
   },
-  'cicc': {
+  cicc: {
     key_es: 'CICC',
     key_en: 'IACAC',
     key_pt: 'CICC',
@@ -88,7 +95,7 @@ export default {
     label_en: 'Inter-American Convention Against Corruption',
     label_pt: 'Convenção Interamericana contra a corrupção',
   },
-  'cdi': {
+  cdi: {
     key_es: 'CDI',
     key_en: 'IADC',
     key_pt: 'CDI',
@@ -96,7 +103,7 @@ export default {
     label_en: 'Inter-American Democratic Charter',
     label_pt: 'Carta Democrática Interamericana',
   },
-  'cicdi': {
+  cicdi: {
     key_es: 'CICDI',
     key_en: 'IACDI',
     key_pt: 'CICDI',
@@ -104,13 +111,16 @@ export default {
     label_en: 'Inter-American Convention against all forms of Discrimination and Intolerance',
     label_pt: 'Convenção Interamericana contra toda a Forma de Discriminação y Intolerância ',
   },
-  'cirdri': {
+  cirdri: {
     key_es: 'CIRDRI',
     key_en: 'IACRDRI',
     key_pt: 'CIRDRI',
-    label_es: 'Convención Interamericana contra el Racismo, la Discriminación Racial y Formas Conexas de Intolerancia',
-    label_en: 'Inter-American Convention against Racism, Racial Discrimination and related forms of Intolerance',
-    label_pt: 'Convenção Interamericana contra o Racismo, a Discriminação Racial y Formas Correlatas de Intolerância',
+    label_es:
+      'Convención Interamericana contra el Racismo, la Discriminación Racial y Formas Conexas de Intolerancia',
+    label_en:
+      'Inter-American Convention against Racism, Racial Discrimination and related forms of Intolerance',
+    label_pt:
+      'Convenção Interamericana contra o Racismo, a Discriminação Racial y Formas Correlatas de Intolerância',
   },
   'e-cidh': {
     key_es: 'E-CIDH',
@@ -133,7 +143,8 @@ export default {
     key_en: 'R-IACHR (2013)',
     key_pt: 'R-CIDH (2013)',
     label_es: 'Reglamento de la Comisión Interamericana de Derechos Humanos (2013 – vigente)',
-    label_en: 'Rules of Procedure of the Inter-American Commission on Human Rights (2013 - in force)',
+    label_en:
+      'Rules of Procedure of the Inter-American Commission on Human Rights (2013 - in force)',
     label_pt: 'Regulamento da Comissão Interamericana de Direitos Humanos (2013 – em vigor)',
   },
   'r-cidh (2011)': {
@@ -264,20 +275,26 @@ export default {
     label_en: 'Rules of Procedure of the Inter-American Court of Human Rights (1980)',
     label_pt: 'Regulamento da Corte Interamericana de Direitos Humanos (1980)',
   },
-  'rcfal': {
+  rcfal: {
     key_es: 'RCFAL',
     key_en: 'RICLAF',
     key_pt: 'RCFAJ',
-    label_es: 'Reglamento de la Comisión Interamericana de derechos humanos sobre el Fondo de Asistencia Legal del Sistema Interamericano de Derechos Humanos',
-    label_en: 'Rules of Procedure of the Inter-American Commission of Human Rights on the Legal Assistance Fund of the Inter-American Human Rights System',
-    label_pt: 'Regulamento da Comissão Interamericana sobre o Fundo de Assistência Jurídica do Sistema Interamericano de Direitos Humanos',
+    label_es:
+      'Reglamento de la Comisión Interamericana de derechos humanos sobre el Fondo de Asistencia Legal del Sistema Interamericano de Derechos Humanos',
+    label_en:
+      'Rules of Procedure of the Inter-American Commission of Human Rights on the Legal Assistance Fund of the Inter-American Human Rights System',
+    label_pt:
+      'Regulamento da Comissão Interamericana sobre o Fundo de Assistência Jurídica do Sistema Interamericano de Direitos Humanos',
   },
-  'rcofalv': {
+  rcofalv: {
     key_es: 'RCoFALV',
     key_en: 'RCoVLAF',
     key_pt: 'RCoFALV',
-    label_es: 'Reglamento de la Corte Interamericana de derechos humanos sobre el funcionamiento del fondo de asistencia legal de victimas',
-    label_en: 'Rules of Procedure of the Inter-American Court of Human Rights on the Victims Legal Assistance Fund',
-    label_pt: 'Regulamento da Corte Interamericana de Direitos Humanos sobre o funcionamento do Fundo de Assistência Jurídica às Vítimas',
-  }
-}
+    label_es:
+      'Reglamento de la Corte Interamericana de derechos humanos sobre el funcionamiento del fondo de asistencia legal de victimas',
+    label_en:
+      'Rules of Procedure of the Inter-American Court of Human Rights on the Victims Legal Assistance Fund',
+    label_pt:
+      'Regulamento da Corte Interamericana de Direitos Humanos sobre o funcionamento do Fundo de Assistência Jurídica às Vítimas',
+  },
+};

@@ -14,7 +14,6 @@ import validator from 'app/Settings/utils/ValidateNavlinks';
 
 import NavlinkForm from './NavlinkForm';
 
-
 export class NavlinksSettings extends Component {
   componentWillMount() {
     this.props.loadLinks(this.props.collection.get('links').toJS());
@@ -35,22 +34,20 @@ export class NavlinksSettings extends Component {
           className="navLinks"
           validators={validator(links)}
         >
-
           <div className="panel panel-default">
-
             <div className="panel-heading">
-              <div className={nameGroupClass}>
-                {t('System', 'Menu')}
-              </div>
+              <div className={nameGroupClass}>{t('System', 'Menu')}</div>
             </div>
             <ul className="list-group">
               <li className="list-group-item">
                 <div className="alert alert-info">
                   <Icon icon="info-circle" size="2x" />
                   <div className="force-ltr">
-                    If it is an external URL, use a fully formed URL. Ie. http://www.uwazi.io.<br />
-                    If it is an internal URL within this website, be sure to delete the first part ({hostname}),
-                     leaving only a relative URL starting with a slash character. Ie. /some_url.
+                    If it is an external URL, use a fully formed URL. Ie. http://www.uwazi.io.
+                    <br />
+                    If it is an internal URL within this website, be sure to delete the first part (
+                    {hostname}), leaving only a relative URL starting with a slash character. Ie.
+                    /some_url.
                   </div>
                 </div>
               </li>
@@ -62,13 +59,10 @@ export class NavlinksSettings extends Component {
                   link={link}
                   sortLink={this.props.sortLink}
                 />
-                ))}
+              ))}
             </ul>
             <div className="settings-footer">
-              <a
-                className="btn btn-primary"
-                onClick={this.props.addLink.bind(this, links)}
-              >
+              <a className="btn btn-primary" onClick={this.props.addLink.bind(this, links)}>
                 <Icon icon="plus" />
                 <span className="btn-label">{t('System', 'Add link')}</span>
               </a>
@@ -77,7 +71,7 @@ export class NavlinksSettings extends Component {
                 className="btn btn-success"
                 disabled={!!this.props.savingNavlinks}
               >
-                <Icon icon="save"/>
+                <Icon icon="save" />
                 <span className="btn-label">{t('System', 'Save')}</span>
               </button>
             </div>
@@ -95,10 +89,10 @@ NavlinksSettings.propTypes = {
   addLink: PropTypes.func.isRequired,
   sortLink: PropTypes.func.isRequired,
   saveLinks: PropTypes.func.isRequired,
-  savingNavlinks: PropTypes.bool
+  savingNavlinks: PropTypes.bool,
 };
 
-export const mapStateToProps = (state) => {
+export const mapStateToProps = state => {
   const { settings } = state;
   const { collection } = settings;
   const { links } = settings.navlinksData;

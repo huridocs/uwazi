@@ -11,7 +11,7 @@ const pagesSchema = new mongoose.Schema({
     content: String,
     script: String,
   }),
-  user: { type: mongoose.Schema.Types.ObjectId, ref: 'users', select: false }
+  user: { type: mongoose.Schema.Types.ObjectId, ref: 'users', select: false },
 });
 
 export default instanceModel('pages', pagesSchema);

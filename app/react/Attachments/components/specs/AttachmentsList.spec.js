@@ -13,7 +13,7 @@ describe('AttachmentsList', () => {
   beforeEach(() => {
     files = Immutable([
       { originalname: 'Human name 1', filename: 'filename1.ext' },
-      { originalname: 'A Human name 2', filename: 'filename2.ext' }
+      { originalname: 'A Human name 2', filename: 'filename2.ext' },
     ]);
 
     props = {
@@ -23,12 +23,12 @@ describe('AttachmentsList', () => {
       isDocumentAttachments: false,
       readOnly: false,
       storeKey: 'storeKey',
-      user: Immutable({})
+      user: Immutable({}),
     };
   });
 
   const render = () => {
-    component = shallow(<AttachmentsList {...props}/>);
+    component = shallow(<AttachmentsList {...props} />);
   };
 
   it('should render a sorted list of attachments (files)', () => {
@@ -69,9 +69,24 @@ describe('AttachmentsList', () => {
     });
 
     it('should pass isSourceDocument true to the first attachment and the entity id', () => {
-      expect(component.find(Attachment).at(0).props().isSourceDocument).toBe(true);
-      expect(component.find(Attachment).at(0).props().file._id).toBe('parentId');
-      expect(component.find(Attachment).at(1).props().isSourceDocument).toBe(false);
+      expect(
+        component
+          .find(Attachment)
+          .at(0)
+          .props().isSourceDocument
+      ).toBe(true);
+      expect(
+        component
+          .find(Attachment)
+          .at(0)
+          .props().file._id
+      ).toBe('parentId');
+      expect(
+        component
+          .find(Attachment)
+          .at(1)
+          .props().isSourceDocument
+      ).toBe(false);
     });
   });
 });

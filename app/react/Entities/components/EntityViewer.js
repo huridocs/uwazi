@@ -10,10 +10,7 @@ import React, { Component } from 'react';
 
 import { AttachmentsList } from 'app/Attachments';
 import { ConnectionsGroups, ConnectionsList, ResetSearch } from 'app/ConnectionsList';
-import {
-  CreateConnectionPanel,
-  actions as connectionsActions
-} from 'app/Connections';
+import { CreateConnectionPanel, actions as connectionsActions } from 'app/Connections';
 import { MetadataFormButtons, ShowMetadata } from 'app/Metadata';
 import { RelationshipsFormButtons } from 'app/Relationships';
 import { TemplateLabel, Icon as PropertyIcon } from 'app/Layout';
@@ -31,12 +28,11 @@ import { deleteEntity } from '../actions/actions';
 import { showTab } from '../actions/uiActions';
 import EntityForm from '../containers/EntityForm';
 
-
 export class EntityViewer extends Component {
   constructor(props, context) {
     super(props, context);
     this.state = {
-      panelOpen: true
+      panelOpen: true,
     };
     this.deleteEntity = this.deleteEntity.bind(this);
     this.closePanel = this.closePanel.bind(this);
@@ -46,13 +42,12 @@ export class EntityViewer extends Component {
   deleteEntity() {
     this.context.confirm({
       accept: () => {
-        this.props.deleteEntity(this.props.rawEntity.toJS())
-        .then(() => {
+        this.props.deleteEntity(this.props.rawEntity.toJS()).then(() => {
           browserHistory.goBack();
         });
       },
       title: 'Confirm delete',
-      message: 'Are you sure you want to delete this entity?'
+      message: 'Are you sure you want to delete this entity?',
     });
   }
 
@@ -63,7 +58,7 @@ export class EntityViewer extends Component {
           this.props.deleteConnection(reference);
         },
         title: 'Confirm delete connection',
-        message: 'Are you sure you want to delete this connection?'
+        message: 'Are you sure you want to delete this connection?',
       });
     }
   }
@@ -76,7 +71,6 @@ export class EntityViewer extends Component {
     this.setState({ panelOpen: true });
   }
 
-
   render() {
     const { entity, entityBeingEdited, tab, connectionsGroups, relationships } = this.props;
     const { panelOpen } = this.state;
@@ -85,12 +79,15 @@ export class EntityViewer extends Component {
     const docAttachments = entity.attachments ? entity.attachments : [];
     const attachments = entity.file ? [entity.file].concat(docAttachments) : docAttachments;
 
-    const summary = connectionsGroups.reduce((summaryData, g) => {
-      g.get('templates').forEach((template) => {
-        summaryData.totalConnections += template.get('count');
-      });
-      return summaryData;
-    }, { totalConnections: 0 });
+    const summary = connectionsGroups.reduce(
+      (summaryData, g) => {
+        g.get('templates').forEach(template => {
+          summaryData.totalConnections += template.get('count');
+        });
+        return summaryData;
+      },
+      { totalConnections: 0 }
+    );
 
     return (
       <div className="row">
@@ -98,24 +95,30 @@ export class EntityViewer extends Component {
 
         <div className="content-header content-header-entity">
           <div className="content-header-title">
-            <PropertyIcon className="item-icon item-icon-center" data={entity.icon} size="sm"/>
+            <PropertyIcon className="item-icon item-icon-center" data={entity.icon} size="sm" />
             <h1 className="item-name">{entity.title}</h1>
-            <TemplateLabel template={entity.template}/>
+            <TemplateLabel template={entity.template} />
           </div>
         </div>
 
         <main className={`entity-viewer ${panelOpen ? 'with-panel' : ''}`}>
-
           <Tabs selectedTab={selectedTab}>
-            <TabContent for={selectedTab === 'info' || selectedTab === 'attachments' ? selectedTab : 'none'}>
+            <TabContent
+              for={selectedTab === 'info' || selectedTab === 'attachments' ? selectedTab : 'none'}
+            >
               <div className="entity-metadata">
                 {(() => {
                   if (entityBeingEdited) {
-                    return <EntityForm/>;
+                    return <EntityForm />;
                   }
                   return (
                     <div>
-                      <ShowMetadata relationships={relationships} entity={entity} showTitle={false} showType={false} />
+                      <ShowMetadata
+                        relationships={relationships}
+                        entity={entity}
+                        showTitle={false}
+                        showType={false}
+                      />
                       <AttachmentsList
                         files={Immutable(attachments)}
                         parentId={entity._id}
@@ -154,15 +157,19 @@ export class EntityViewer extends Component {
 
         <SidePanel className={`entity-connections entity-${this.props.tab}`} open={panelOpen}>
           <div className="sidepanel-header">
-            <button type="button" className="closeSidepanel close-modal" onClick={this.closePanel.bind(this)}>
+            <button
+              type="button"
+              className="closeSidepanel close-modal"
+              onClick={this.closePanel.bind(this)}
+            >
               <Icon icon="times" />
             </button>
             <Tabs
               className="content-header-tabs"
               selectedTab={selectedTab}
-              handleSelect={(tabName) => {
-                    this.props.showTab(tabName);
-                  }}
+              handleSelect={tabName => {
+                this.props.showTab(tabName);
+              }}
             >
               <ul className="nav nav-tabs">
                 <li>
@@ -189,18 +196,33 @@ export class EntityViewer extends Component {
 
           <div className="sidepanel-body">
             <Tabs selectedTab={selectedTab}>
-              <TabContent for={selectedTab === 'info' || selectedTab === 'connections' ? selectedTab : 'none'}>
+              <TabContent
+                for={selectedTab === 'info' || selectedTab === 'connections' ? selectedTab : 'none'}
+              >
                 <ConnectionsGroups />
               </TabContent>
             </Tabs>
           </div>
         </SidePanel>
 
-        <ContextMenu align="bottom" overrideShow show={!panelOpen} className="show-info-sidepanel-context-menu">
-          <ShowSidepanelMenu className="show-info-sidepanel-menu" panelIsOpen={panelOpen} openPanel={this.openPanel} />
+        <ContextMenu
+          align="bottom"
+          overrideShow
+          show={!panelOpen}
+          className="show-info-sidepanel-context-menu"
+        >
+          <ShowSidepanelMenu
+            className="show-info-sidepanel-menu"
+            panelIsOpen={panelOpen}
+            openPanel={this.openPanel}
+          />
         </ContextMenu>
 
-        <CreateConnectionPanel className="entity-create-connection-panel" containerId={entity.sharedId} onCreate={this.props.connectionsChanged}/>
+        <CreateConnectionPanel
+          className="entity-create-connection-panel"
+          containerId={entity.sharedId}
+          onCreate={this.props.connectionsChanged}
+        />
         <AddEntitiesPanel />
         <RelationshipMetadata />
       </div>
@@ -209,7 +231,7 @@ export class EntityViewer extends Component {
 }
 
 EntityViewer.defaultProps = {
-  relationships: Immutable([])
+  relationships: Immutable([]),
 };
 
 EntityViewer.propTypes = {
@@ -226,11 +248,11 @@ EntityViewer.propTypes = {
   startNewConnection: PropTypes.func,
   tab: PropTypes.string,
   library: PropTypes.object,
-  showTab: PropTypes.func
+  showTab: PropTypes.func,
 };
 
 EntityViewer.contextTypes = {
-  confirm: PropTypes.func
+  confirm: PropTypes.func,
 };
 
 const selectEntity = createSelector(
@@ -238,27 +260,33 @@ const selectEntity = createSelector(
   entity => entity.toJS()
 );
 
-const selectRelationTypes = createSelector(s => s.relationTypes, r => r.toJS());
+const selectRelationTypes = createSelector(
+  s => s.relationTypes,
+  r => r.toJS()
+);
 
 const mapStateToProps = state => ({
-      rawEntity: state.entityView.entity,
-      relationTypes: selectRelationTypes(state),
-      entity: selectEntity(state),
-      relationships: state.entityView.entity.get('relationships'),
-      connectionsGroups: state.relationships.list.connectionsGroups,
-      entityBeingEdited: !!state.entityView.entityForm._id,
-      tab: state.entityView.uiState.get('tab'),
-      library: state.library
+  rawEntity: state.entityView.entity,
+  relationTypes: selectRelationTypes(state),
+  entity: selectEntity(state),
+  relationships: state.entityView.entity.get('relationships'),
+  connectionsGroups: state.relationships.list.connectionsGroups,
+  entityBeingEdited: !!state.entityView.entityForm._id,
+  tab: state.entityView.uiState.get('tab'),
+  library: state.library,
 });
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({
-    deleteEntity,
-    connectionsChanged,
-    deleteConnection,
-    showTab,
-    startNewConnection: connectionsActions.startNewConnection
-  }, dispatch);
+  return bindActionCreators(
+    {
+      deleteEntity,
+      connectionsChanged,
+      deleteConnection,
+      showTab,
+      startNewConnection: connectionsActions.startNewConnection,
+    },
+    dispatch
+  );
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(EntityViewer);

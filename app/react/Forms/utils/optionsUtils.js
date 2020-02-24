@@ -5,11 +5,13 @@ function matchesFilter(subject, filter) {
 }
 
 export function filterOptions(filter, options, optionsLabel) {
-  return options.filter(opt => matchesFilter(opt[optionsLabel], filter) || (
-    opt.options && opt.options.some(childOpt => matchesFilter(childOpt[optionsLabel], filter)))
+  return options.filter(
+    opt =>
+      matchesFilter(opt[optionsLabel], filter) ||
+      (opt.options && opt.options.some(childOpt => matchesFilter(childOpt[optionsLabel], filter)))
   );
 }
 
 export default {
-  filterOptions
+  filterOptions,
 };

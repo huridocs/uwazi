@@ -16,13 +16,13 @@ describe('PagesList', () => {
       pages: fromJS([
         { _id: 1, title: 'Page 1', sharedId: 'a1' },
         { _id: 2, title: 'Page 2', sharedId: 'a2' },
-        { _id: 3, title: 'Page 3', sharedId: 'a3' }
+        { _id: 3, title: 'Page 3', sharedId: 'a3' },
       ]),
-      deletePage: jasmine.createSpy('deletePage').and.returnValue(Promise.resolve())
+      deletePage: jasmine.createSpy('deletePage').and.returnValue(Promise.resolve()),
     };
 
     context = {
-      confirm: jasmine.createSpy('confirm')
+      confirm: jasmine.createSpy('confirm'),
     };
   });
 
@@ -34,14 +34,24 @@ describe('PagesList', () => {
     it('should render a list with all pages names', () => {
       render();
       expect(component.find('ul.pages').find('li').length).toBe(3);
-      const nameLink = component.find('ul.pages').find('li').last().find(I18NLink).first();
+      const nameLink = component
+        .find('ul.pages')
+        .find('li')
+        .last()
+        .find(I18NLink)
+        .first();
       expect(nameLink.props().to).toBe('/settings/pages/edit/a3');
       expect(nameLink.props().children).toBe('Page 3');
     });
 
     it('should have a button to add a page', () => {
       render();
-      expect(component.find(I18NLink).last().props().to).toBe('/settings/pages/new');
+      expect(
+        component
+          .find(I18NLink)
+          .last()
+          .props().to
+      ).toBe('/settings/pages/new');
     });
   });
 

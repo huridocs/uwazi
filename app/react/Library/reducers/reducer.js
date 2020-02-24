@@ -14,17 +14,27 @@ import aggregationsReducer from './aggregationsReducer';
 
 let templates = null;
 if (isClient) {
-  templates = window.__reduxData__ && window.__reduxData__.templates ? Immutable.fromJS(window.__reduxData__.templates) : null;
+  templates =
+    window.__reduxData__ && window.__reduxData__.templates
+      ? Immutable.fromJS(window.__reduxData__.templates)
+      : null;
 }
 
 const defaultSearch = prioritySortingCriteria.get({ templates });
 defaultSearch.searchTerm = '';
 defaultSearch.filters = {};
 
-export default storeKey => combineReducers({
+export default storeKey =>
+  combineReducers({
     aggregations: multireducer(aggregationsReducer, storeKey),
     documents: multireducer(documents, storeKey),
-    ui: multireducer(manageAttachmentsReducer(libraryUI, { useDefaults: false, setInArray: ['selectedDocuments', 0] }), storeKey),
+    ui: multireducer(
+      manageAttachmentsReducer(libraryUI, {
+        useDefaults: false,
+        setInArray: ['selectedDocuments', 0],
+      }),
+      storeKey
+    ),
     filters: multireducer(libraryFilters, storeKey),
     search: modelReducer(`${storeKey}.search`, defaultSearch),
     searchForm: formReducer(`${storeKey}.search`, defaultSearch),
@@ -37,7 +47,11 @@ export default storeKey => combineReducers({
       multipleEdit: modelReducer(`${storeKey}.sidepanel.multipleEdit`, {}),
       multipleEditForm: formReducer(`${storeKey}.sidepanel.multipleEdit`, {}),
       references: createReducer(`${storeKey}.sidepanel.references`, []),
-      snippets: createReducer(`${storeKey}.sidepanel.snippets`, { count: 0, metadata: [], fullText: [] }),
-      tab: createReducer(`${storeKey}.sidepanel.tab`, '')
-    })
-});
+      snippets: createReducer(`${storeKey}.sidepanel.snippets`, {
+        count: 0,
+        metadata: [],
+        fullText: [],
+      }),
+      tab: createReducer(`${storeKey}.sidepanel.tab`, ''),
+    }),
+  });

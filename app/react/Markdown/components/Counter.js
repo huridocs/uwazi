@@ -10,14 +10,11 @@ CounterComponent.defaultProps = {
 };
 
 CounterComponent.propTypes = {
-  count: PropTypes.oneOfType([
-    PropTypes.number,
-    PropTypes.string,
-  ]),
+  count: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
 };
 
 export const mapStateToProps = (state, props) => ({
-  count: markdownDatasets.getAggregation(state, props)
+  count: markdownDatasets.getAggregation(state, props),
 });
 
 export default connect(mapStateToProps)(CounterComponent);

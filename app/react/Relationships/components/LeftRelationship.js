@@ -24,7 +24,10 @@ export class LeftRelationship extends Component {
 
   constructor(props) {
     super(props);
-    this.toggelRemoveLeftRelationship = this.props.toggelRemoveLeftRelationship.bind(null, props.index);
+    this.toggelRemoveLeftRelationship = this.props.toggelRemoveLeftRelationship.bind(
+      null,
+      props.index
+    );
     this.onClick = this.onClick.bind(this);
   }
 
@@ -33,16 +36,15 @@ export class LeftRelationship extends Component {
   }
 
   renderTrashButton(hub) {
-    return (this.props.editing && (
-    <div key="toggelRemoveLeftRelationship" className="removeHub">
-      <button
-        onClick={this.toggelRemoveLeftRelationship}
-        className="relationships-icon"
-      >
-        <Icon icon={!hub.get('deleted') ? 'trash-alt' : 'undo'} />
-      </button>
-    </div>
-    ));
+    return (
+      this.props.editing && (
+        <div key="toggelRemoveLeftRelationship" className="removeHub">
+          <button onClick={this.toggelRemoveLeftRelationship} className="relationships-icon">
+            <Icon icon={!hub.get('deleted') ? 'trash-alt' : 'undo'} />
+          </button>
+        </div>
+      )
+    );
   }
 
   renderRelationship() {
@@ -50,32 +52,38 @@ export class LeftRelationship extends Component {
     const relationship = hub.get('leftRelationship');
     const targetReference = relationship.get('range') ? relationship : null;
     return (
-      <div key="leftRelationshipType" className={`leftRelationshipType ${hub.get('deleted') ? 'deleted' : ''}`}>
-        {!editing && hub.getIn(['leftRelationship', 'template']) &&
-            (
-            <div className="rw-dropdown-list rw-widget">
-              <div className="rw-widget-input rw-widget-picker rw-widget-container no-edit">
-                <div className="rw-input rw-dropdown-list-input no-edit">
-                  {relationTypes.find(r => r._id === hub.getIn(['leftRelationship', 'template'])).name}
-                </div>
+      <div
+        key="leftRelationshipType"
+        className={`leftRelationshipType ${hub.get('deleted') ? 'deleted' : ''}`}
+      >
+        {!editing && hub.getIn(['leftRelationship', 'template']) && (
+          <div className="rw-dropdown-list rw-widget">
+            <div className="rw-widget-input rw-widget-picker rw-widget-container no-edit">
+              <div className="rw-input rw-dropdown-list-input no-edit">
+                {
+                  relationTypes.find(r => r._id === hub.getIn(['leftRelationship', 'template']))
+                    .name
+                }
               </div>
             </div>
-)
-          }
-        {editing &&
-            (
-            <DropdownList
-              valueField="_id"
-              textField="name"
-              data={relationTypes}
-              value={hub.getIn(['leftRelationship', 'template'])}
-              filter="contains"
-              onChange={this.props.updateLeftRelationshipType.bind(null, index)}
-            />
-)
-            }
-        <div className={`leftDocument ${!hub.getIn(['leftRelationship', 'template']) && !editing ?
-                              'docWithoutRelationshipType' : ''}`}
+          </div>
+        )}
+        {editing && (
+          <DropdownList
+            valueField="_id"
+            textField="name"
+            data={relationTypes}
+            value={hub.getIn(['leftRelationship', 'template'])}
+            filter="contains"
+            onChange={this.props.updateLeftRelationshipType.bind(null, index)}
+          />
+        )}
+        <div
+          className={`leftDocument ${
+            !hub.getIn(['leftRelationship', 'template']) && !editing
+              ? 'docWithoutRelationshipType'
+              : ''
+          }`}
         >
           <Doc
             className="item-collapsed"
@@ -114,7 +122,7 @@ LeftRelationship.propTypes = {
   relationTypes: PropTypes.instanceOf(Array).isRequired,
   updateLeftRelationshipType: PropTypes.func.isRequired,
   toggelRemoveLeftRelationship: PropTypes.func.isRequired,
-  selectConnection: PropTypes.func.isRequired
+  selectConnection: PropTypes.func.isRequired,
 };
 
 const selectRelationTypes = createSelector(
@@ -128,16 +136,19 @@ export function mapStateToProps(state) {
     parentEntity: relationships.list.entity,
     search: relationships.list.sort,
     editing: relationships.hubActions.get('editing'),
-    relationTypes: selectRelationTypes(state)
+    relationTypes: selectRelationTypes(state),
   };
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({
-    selectConnection: actions.selectConnection,
-    updateLeftRelationshipType: actions.updateLeftRelationshipType,
-    toggelRemoveLeftRelationship: actions.toggelRemoveLeftRelationship,
-  }, dispatch);
+  return bindActionCreators(
+    {
+      selectConnection: actions.selectConnection,
+      updateLeftRelationshipType: actions.updateLeftRelationshipType,
+      toggelRemoveLeftRelationship: actions.toggelRemoveLeftRelationship,
+    },
+    dispatch
+  );
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(LeftRelationship);

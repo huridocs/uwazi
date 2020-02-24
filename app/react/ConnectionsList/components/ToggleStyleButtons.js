@@ -22,10 +22,16 @@ export class ToggleStyleButtons extends Component {
     const { view } = this.props;
     return (
       <div className="search-list-actions">
-        <button onClick={this.switchView('list')} className={`btn ${view !== 'graph' ? 'btn-success' : 'btn-default'}`}>
+        <button
+          onClick={this.switchView('list')}
+          className={`btn ${view !== 'graph' ? 'btn-success' : 'btn-default'}`}
+        >
           <Icon icon="th" />
         </button>
-        <button onClick={this.switchView('graph')} className={`btn ${view === 'graph' ? 'btn-success' : 'btn-default'}`}>
+        <button
+          onClick={this.switchView('graph')}
+          className={`btn ${view === 'graph' ? 'btn-success' : 'btn-default'}`}
+        >
           <Icon icon="sitemap" transform={{ rotate: 270 }} />
         </button>
       </div>
@@ -35,19 +41,22 @@ export class ToggleStyleButtons extends Component {
 
 ToggleStyleButtons.propTypes = {
   view: PropTypes.string,
-  switchView: PropTypes.func
+  switchView: PropTypes.func,
 };
 
 export function mapStateToProps({ connectionsList }) {
   return {
-    view: connectionsList.view
+    view: connectionsList.view,
   };
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({
-    switchView: switchViewAction
-  }, dispatch);
+  return bindActionCreators(
+    {
+      switchView: switchViewAction,
+    },
+    dispatch
+  );
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(ToggleStyleButtons);

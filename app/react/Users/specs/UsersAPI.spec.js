@@ -7,9 +7,9 @@ describe('UsersAPI', () => {
   beforeEach(() => {
     backend.restore();
     backend
-    .post(`${APIURL}users`, { body: JSON.stringify('ok') })
-    .post(`${APIURL}users/new`, { body: JSON.stringify('ok new') })
-    .get(`${APIURL}user`, { body: JSON.stringify({ name: 'doe' }) });
+      .post(`${APIURL}users`, { body: JSON.stringify('ok') })
+      .post(`${APIURL}users/new`, { body: JSON.stringify('ok new') })
+      .get(`${APIURL}user`, { body: JSON.stringify({ name: 'doe' }) });
   });
 
   afterEach(() => backend.restore());
@@ -20,7 +20,7 @@ describe('UsersAPI', () => {
     beforeEach(() => {
       user = {
         name: 'doe',
-        _id: '123'
+        _id: '123',
       };
     });
 
@@ -37,7 +37,7 @@ describe('UsersAPI', () => {
     beforeEach(() => {
       user = {
         name: 'doe',
-        _id: '123'
+        _id: '123',
       };
     });
 

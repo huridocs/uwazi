@@ -29,8 +29,18 @@ describe('LibraryModeToggleButtons', () => {
 
     it('should render two links to the library and the map', () => {
       expect(component.find(I18NLink).length).toBe(2);
-      expect(component.find(I18NLink).at(0).props().to).toBe('library?q="asd"');
-      expect(component.find(I18NLink).at(1).props().to).toBe('library/map?q="asd"');
+      expect(
+        component
+          .find(I18NLink)
+          .at(0)
+          .props().to
+      ).toBe('library?q="asd"');
+      expect(
+        component
+          .find(I18NLink)
+          .at(1)
+          .props().to
+      ).toBe('library/map?q="asd"');
     });
 
     it('should hold zoom buttons', () => {
@@ -65,13 +75,13 @@ describe('LibraryModeToggleButtons', () => {
     beforeEach(() => {
       props = { storeKey: 'library' };
       state = {
-       library: {
-         search: {},
-         filters: Immutable.fromJS({ properties: [] }),
-         ui: Immutable.fromJS({ zoomLevel: 1 }),
-         markers: Immutable.fromJS({ rows: [] })
-       },
-       templates: Immutable.fromJS([{ properties: [{ type: 'geolocation' }] }])
+        library: {
+          search: {},
+          filters: Immutable.fromJS({ properties: [] }),
+          ui: Immutable.fromJS({ zoomLevel: 1 }),
+          markers: Immutable.fromJS({ rows: [] }),
+        },
+        templates: Immutable.fromJS([{ properties: [{ type: 'geolocation' }] }]),
       };
     });
     it('should map the search url and check if any template has a geolocation field', () => {
@@ -82,7 +92,10 @@ describe('LibraryModeToggleButtons', () => {
 
     it('should map the zoom level', () => {
       expect(mapStateToProps(state, props).zoomLevel).toBe(1);
-      expect(mapStateToProps(state, Object.assign({}, props, { zoomLevel: 'externallyPassed' })).zoomLevel).toBe('externallyPassed');
+      expect(
+        mapStateToProps(state, Object.assign({}, props, { zoomLevel: 'externallyPassed' }))
+          .zoomLevel
+      ).toBe('externallyPassed');
     });
   });
 });

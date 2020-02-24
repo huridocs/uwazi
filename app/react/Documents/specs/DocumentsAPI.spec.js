@@ -13,136 +13,156 @@ describe('DocumentsAPI', () => {
   beforeEach(() => {
     backend.restore();
     backend
-    .get(`${APIURL}entities`, { body: JSON.stringify({ rows: arrayResponse }) })
-    .get(`${APIURL}entities?_id=documentId`, { body: JSON.stringify({ rows: singleResponse }) })
-    .get(`${APIURL}documents/search`, { body: JSON.stringify(searchResponse) })
-    .get(`${APIURL}documents/list?keys=%5B%221%22%2C%222%22%5D`, { body: JSON.stringify({ rows: listResponse }) })
-    .get(`${APIURL}documents/uploads`, { body: JSON.stringify({ rows: 'uploads' }) })
-    .get(`${APIURL}documents/count_by_template?templateId=templateId`, { body: JSON.stringify(1) })
-    .get(`${APIURL}documents/match_title?searchTerm=term`, { body: JSON.stringify(searchResponse) })
-    .get(`${APIURL}documents/search?searchTerm=Batman&joker=true`, { body: JSON.stringify(filteredSearchResult) })
-    .delete(`${APIURL}documents?sharedId=shared`, { body: JSON.stringify({ backednResponse: 'testdelete' }) })
-    .post(`${APIURL}documents`, { body: JSON.stringify({ backednResponse: 'test' }) });
+      .get(`${APIURL}entities`, { body: JSON.stringify({ rows: arrayResponse }) })
+      .get(`${APIURL}entities?_id=documentId`, { body: JSON.stringify({ rows: singleResponse }) })
+      .get(`${APIURL}documents/search`, { body: JSON.stringify(searchResponse) })
+      .get(`${APIURL}documents/list?keys=%5B%221%22%2C%222%22%5D`, {
+        body: JSON.stringify({ rows: listResponse }),
+      })
+      .get(`${APIURL}documents/uploads`, { body: JSON.stringify({ rows: 'uploads' }) })
+      .get(`${APIURL}documents/count_by_template?templateId=templateId`, {
+        body: JSON.stringify(1),
+      })
+      .get(`${APIURL}documents/match_title?searchTerm=term`, {
+        body: JSON.stringify(searchResponse),
+      })
+      .get(`${APIURL}documents/search?searchTerm=Batman&joker=true`, {
+        body: JSON.stringify(filteredSearchResult),
+      })
+      .delete(`${APIURL}documents?sharedId=shared`, {
+        body: JSON.stringify({ backednResponse: 'testdelete' }),
+      })
+      .post(`${APIURL}documents`, { body: JSON.stringify({ backednResponse: 'test' }) });
   });
 
   afterEach(() => backend.restore());
 
   describe('uploads', () => {
-    it('should request uploads', (done) => {
-      documentsAPI.uploads()
-      .then((response) => {
-        expect(response).toEqual('uploads');
-        done();
-      })
-      .catch(done.fail);
+    it('should request uploads', done => {
+      documentsAPI
+        .uploads()
+        .then(response => {
+          expect(response).toEqual('uploads');
+          done();
+        })
+        .catch(done.fail);
     });
   });
 
   describe('get()', () => {
-    it('should request documents', (done) => {
-      documentsAPI.get()
-      .then((response) => {
-        expect(response).toEqual(arrayResponse);
-        done();
-      })
-      .catch(done.fail);
-    });
-
-    describe('when passing an id', () => {
-      it('should request for the thesauri', (done) => {
-        const requestParams = new RequestParams({ _id: 'documentId' });
-        documentsAPI.get(requestParams)
-        .then((response) => {
-          expect(response).toEqual(singleResponse);
+    it('should request documents', done => {
+      documentsAPI
+        .get()
+        .then(response => {
+          expect(response).toEqual(arrayResponse);
           done();
         })
         .catch(done.fail);
+    });
+
+    describe('when passing an id', () => {
+      it('should request for the thesauri', done => {
+        const requestParams = new RequestParams({ _id: 'documentId' });
+        documentsAPI
+          .get(requestParams)
+          .then(response => {
+            expect(response).toEqual(singleResponse);
+            done();
+          })
+          .catch(done.fail);
       });
     });
   });
 
   describe('list()', () => {
-    it('should request documents list', (done) => {
+    it('should request documents list', done => {
       const requestParams = new RequestParams({ keys: ['1', '2'] });
-      documentsAPI.list(requestParams)
-      .then((response) => {
-        expect(response).toEqual(listResponse);
-        done();
-      })
-      .catch(done.fail);
+      documentsAPI
+        .list(requestParams)
+        .then(response => {
+          expect(response).toEqual(listResponse);
+          done();
+        })
+        .catch(done.fail);
     });
   });
 
   describe('getSuggestions()', () => {
-    it('should match_title ', (done) => {
+    it('should match_title ', done => {
       const requestParams = new RequestParams({ searchTerm: 'term' });
-      documentsAPI.getSuggestions(requestParams)
-      .then((response) => {
-        expect(response).toEqual(searchResponse);
-        done();
-      })
-      .catch(done.fail);
+      documentsAPI
+        .getSuggestions(requestParams)
+        .then(response => {
+          expect(response).toEqual(searchResponse);
+          done();
+        })
+        .catch(done.fail);
     });
   });
 
   describe('countByTemplate()', () => {
-    it('should count_by_template', (done) => {
+    it('should count_by_template', done => {
       const requestParams = new RequestParams({ templateId: 'templateId' });
-      documentsAPI.countByTemplate(requestParams)
-      .then((response) => {
-        expect(response).toEqual(1);
-        done();
-      })
-      .catch(done.fail);
+      documentsAPI
+        .countByTemplate(requestParams)
+        .then(response => {
+          expect(response).toEqual(1);
+          done();
+        })
+        .catch(done.fail);
     });
   });
 
   describe('search()', () => {
-    it('should search documents', (done) => {
-      documentsAPI.search()
-      .then((response) => {
-        expect(response).toEqual(searchResponse);
-        done();
-      })
-      .catch(done.fail);
-    });
-
-    describe('when passing filters', () => {
-      it('should search for it', (done) => {
-        const requestParams = new RequestParams({ searchTerm: 'Batman', joker: true });
-        documentsAPI.search(requestParams)
-        .then((response) => {
-          expect(response).toEqual(filteredSearchResult);
+    it('should search documents', done => {
+      documentsAPI
+        .search()
+        .then(response => {
+          expect(response).toEqual(searchResponse);
           done();
         })
         .catch(done.fail);
+    });
+
+    describe('when passing filters', () => {
+      it('should search for it', done => {
+        const requestParams = new RequestParams({ searchTerm: 'Batman', joker: true });
+        documentsAPI
+          .search(requestParams)
+          .then(response => {
+            expect(response).toEqual(filteredSearchResult);
+            done();
+          })
+          .catch(done.fail);
       });
     });
   });
 
   describe('save()', () => {
-    it('should post the document data to /documents', (done) => {
+    it('should post the document data to /documents', done => {
       const doc = { name: 'document name' };
       const requestParams = new RequestParams(doc);
-      documentsAPI.save(requestParams)
-      .then((response) => {
-        expect(JSON.parse(backend.lastOptions(`${APIURL}documents`).body)).toEqual(doc);
-        expect(response).toEqual({ backednResponse: 'test' });
-        done();
-      })
-      .catch(done.fail);
+      documentsAPI
+        .save(requestParams)
+        .then(response => {
+          expect(JSON.parse(backend.lastOptions(`${APIURL}documents`).body)).toEqual(doc);
+          expect(response).toEqual({ backednResponse: 'test' });
+          done();
+        })
+        .catch(done.fail);
     });
   });
 
   describe('delete()', () => {
-    it('should delete the document', (done) => {
+    it('should delete the document', done => {
       const requestParams = new RequestParams({ sharedId: 'shared' });
-      documentsAPI.delete(requestParams)
-      .then((response) => {
-        expect(response).toEqual({ backednResponse: 'testdelete' });
-        done();
-      })
-      .catch(done.fail);
+      documentsAPI
+        .delete(requestParams)
+        .then(response => {
+          expect(response).toEqual({ backednResponse: 'testdelete' });
+          done();
+        })
+        .catch(done.fail);
     });
   });
 });

@@ -19,5 +19,5 @@ export {
   MetadataFormFields,
   ShowMetadata,
   SelectMultiplePanel,
-  FormatMetadata
+  FormatMetadata,
 };

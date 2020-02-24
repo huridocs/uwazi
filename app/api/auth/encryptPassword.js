@@ -7,6 +7,4 @@ const comparePasswords = async (plain, hashed) => bcrypt.compare(plain, hashed);
 
 export default encryptPassowrd;
 
-export {
-  comparePasswords
-};
+export { comparePasswords };

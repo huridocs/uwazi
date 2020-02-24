@@ -22,7 +22,7 @@ const RelationshipFilter = ({ onChange, label, property, storeKey, translationCo
 
 RelationshipFilter.defaultProps = {
   onChange: () => {},
-  label: ''
+  label: '',
 };
 
 RelationshipFilter.propTypes = {
@@ -30,10 +30,7 @@ RelationshipFilter.propTypes = {
   translationContext: PropTypes.string.isRequired,
   property: PropTypes.object,
   onChange: PropTypes.func,
-  label: PropTypes.oneOfType([
-    PropTypes.node,
-    PropTypes.string
-  ])
+  label: PropTypes.oneOfType([PropTypes.node, PropTypes.string]),
 };
 
 export default RelationshipFilter;

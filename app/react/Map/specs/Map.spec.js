@@ -25,14 +25,22 @@ describe('Map', () => {
       latitude: 103,
       longitude: -63,
       zoom: 8,
-      markers: [{ latitude: 2, longitude: 32, properties: { info: 'Some info' } }, { latitude: 23, longitude: 21 }]
+      markers: [
+        { latitude: 2, longitude: 32, properties: { info: 'Some info' } },
+        { latitude: 23, longitude: 21 },
+      ],
     };
   });
 
   const render = () => {
     component = shallow(<Map {...props} />, { disableLifecycleMethods: true });
     instance = component.instance();
-    instance.container = { style: {}, offsetWidth: 400, offsetHeight: 300, childNodes: [{ style: {} }] };
+    instance.container = {
+      style: {},
+      offsetWidth: 400,
+      offsetHeight: 300,
+      childNodes: [{ style: {} }],
+    };
     map = jasmine.createSpyObj(['on', 'fitBounds', 'getZoom', 'stop']);
     map.getZoom.and.returnValue(5);
     instance.map = { getMap: () => map };
@@ -54,7 +62,11 @@ describe('Map', () => {
     it('should render a Markers component', () => {
       expect(markers.length).toBe(2);
       expect(firstMarker().props().latitude).toBe(2);
-      expect(firstMarker().find(Icon).props().icon).toBe('map-marker');
+      expect(
+        firstMarker()
+          .find(Icon)
+          .props().icon
+      ).toBe('map-marker');
       expect(firstMarker().props().longitude).toBe(32);
 
       expect(secondMarker().props().latitude).toBe(23);
@@ -62,9 +74,13 @@ describe('Map', () => {
     });
 
     it('should use custom renderMarker method', () => {
-      props.renderMarker = (_marker, onClick) => (<div className="custom-class" onClick={onClick}/>);
+      props.renderMarker = (_marker, onClick) => <div className="custom-class" onClick={onClick} />;
       render();
-      expect(firstMarker().find('div').hasClass('custom-class')).toBe(true);
+      expect(
+        firstMarker()
+          .find('div')
+          .hasClass('custom-class')
+      ).toBe(true);
     });
 
     describe('when clustering', () => {
@@ -104,14 +120,16 @@ describe('Map', () => {
         { latitude: 2, longitude: 32 },
         { latitude: 23, longitude: 21 },
         { latitude: 7, longitude: 11 },
-        { latitude: 22, longitude: -21 }
+        { latitude: 22, longitude: -21 },
       ];
 
       map.stop.and.returnValue(map);
       instance.centerOnMarkers(_markers);
-      expect(map.fitBounds)
-      .toHaveBeenCalledWith(
-        [[-21, 2], [32, 23]],
+      expect(map.fitBounds).toHaveBeenCalledWith(
+        [
+          [-21, 2],
+          [32, 23],
+        ],
         { padding: { bottom: 20, left: 20, right: 20, top: 70 }, maxZoom: 5, duration: 0 },
         { autoCentered: true }
       );
@@ -179,7 +197,10 @@ describe('Map', () => {
     it('should add and remove event listeners for resize', () => {
       expect(window.addEventListener).toHaveBeenCalledWith('resize', component.instance().setSize);
       component.instance().componentWillUnmount();
-      expect(window.removeEventListener).toHaveBeenCalledWith('resize', component.instance().setSize);
+      expect(window.removeEventListener).toHaveBeenCalledWith(
+        'resize',
+        component.instance().setSize
+      );
     });
 
     it('should add events to the map for after is loaded', () => {
@@ -209,9 +230,11 @@ describe('Map', () => {
       instance.zoomOut();
       expect(instance._onViewStateChange.calls.mostRecent().args[0].zoom).toBe(4);
 
-      Object.keys(TRANSITION_PROPS).forEach((prop) => {
+      Object.keys(TRANSITION_PROPS).forEach(prop => {
         if (prop !== 'transitionDuration') {
-          expect(instance._onViewStateChange.calls.mostRecent().args[0][prop]).toBe(TRANSITION_PROPS[prop]);
+          expect(instance._onViewStateChange.calls.mostRecent().args[0][prop]).toBe(
+            TRANSITION_PROPS[prop]
+          );
         } else {
           expect(instance._onViewStateChange.calls.mostRecent().args[0][prop]).toBe(500);
         }
@@ -222,7 +245,10 @@ describe('Map', () => {
   describe('clicking on a marker', () => {
     beforeEach(() => {
       render();
-      firstMarker().find(Icon).first().simulate('click');
+      firstMarker()
+        .find(Icon)
+        .first()
+        .simulate('click');
       component.update();
     });
 
@@ -235,7 +261,10 @@ describe('Map', () => {
     let popup;
     beforeEach(() => {
       render();
-      firstMarker().find(Icon).first().simulate('mouseOver');
+      firstMarker()
+        .find(Icon)
+        .first()
+        .simulate('mouseOver');
       component.update();
       popup = component.find(Popup);
     });
@@ -245,7 +274,10 @@ describe('Map', () => {
     });
 
     it('should not render a popup when has no info', () => {
-      secondMarker().find(Icon).first().simulate('mouseOver');
+      secondMarker()
+        .find(Icon)
+        .first()
+        .simulate('mouseOver');
       component.update();
       popup = component.find(Popup);
       expect(popup.length).toBe(0);
@@ -272,7 +304,7 @@ describe('Map', () => {
       it('should call props.clickOnCluster with the markers', () => {
         const features = [
           { layer: { id: 'unclustered-point' }, properties: { index: 0 } },
-          { layer: { id: 'unclustered-point' }, properties: { index: 1 } }
+          { layer: { id: 'unclustered-point' }, properties: { index: 1 } },
         ];
         instance.onClick({ lngLat: [1, 2], features });
         expect(props.clickOnCluster).toHaveBeenCalledWith([props.markers[0], props.markers[1]]);
@@ -307,9 +339,7 @@ describe('Map', () => {
     describe('when clicking a cluster', () => {
       it('should call props.clickOnCluster with the markers', () => {
         map.getZoom.and.returnValue(0);
-        const features = [
-          { layer: { id: 'clusters' }, properties: { cluster_id: 1 } },
-        ];
+        const features = [{ layer: { id: 'clusters' }, properties: { cluster_id: 1 } }];
         spyOn(instance.supercluster, 'getLeaves').and.returnValue(props.markers);
         instance.onClick({ lngLat: [1, 2], features });
         expect(props.clickOnCluster).toHaveBeenCalledWith(props.markers);

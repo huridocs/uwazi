@@ -11,15 +11,15 @@ import * as uiActions from './uiActions';
 export function setReferences(references) {
   return {
     type: types.SET_REFERENCES,
-    references
+    references,
   };
 }
 
 export function loadReferences(sharedId) {
-  return dispatch => referencesAPI.get(new RequestParams({ sharedId }))
-  .then((references) => {
-    dispatch(setReferences(references));
-  });
+  return dispatch =>
+    referencesAPI.get(new RequestParams({ sharedId })).then(references => {
+      dispatch(setReferences(references));
+    });
 }
 
 export function addReference(references, docInfo, delayActivation) {
@@ -42,7 +42,10 @@ export function saveTargetRangedReference(connection, targetRange, onCreate) {
   return (dispatch, getState) => {
     if (targetRange.text) {
       dispatch(actions.unset('viewer/targetDocReferences'));
-      return connectionsActions.saveConnection({ ...connection, targetRange }, onCreate)(dispatch, getState);
+      return connectionsActions.saveConnection({ ...connection, targetRange }, onCreate)(
+        dispatch,
+        getState
+      );
     }
     return undefined;
   };
@@ -50,10 +53,10 @@ export function saveTargetRangedReference(connection, targetRange, onCreate) {
 
 export function deleteReference(reference) {
   const { _id } = reference.associatedRelationship;
-  return (dispatch, getState) => referencesAPI.delete(new RequestParams({ _id }))
-  .then(() => {
-    dispatch(reloadRelationships(getState().relationships.list.sharedId));
-    dispatch({ type: types.REMOVE_REFERENCE, reference });
-    dispatch(notificationActions.notify('Connection deleted', 'success'));
-  });
+  return (dispatch, getState) =>
+    referencesAPI.delete(new RequestParams({ _id })).then(() => {
+      dispatch(reloadRelationships(getState().relationships.list.sharedId));
+      dispatch({ type: types.REMOVE_REFERENCE, reference });
+      dispatch(notificationActions.notify('Connection deleted', 'success'));
+    });
 }

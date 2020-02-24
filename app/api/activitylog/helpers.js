@@ -4,21 +4,21 @@ import { allLanguages } from 'shared/languagesList';
 export const methods = {
   create: 'CREATE',
   update: 'UPDATE',
-  delete: 'DELETE'
+  delete: 'DELETE',
 };
 
-export const formatLanguage = (langKey) => {
+export const formatLanguage = langKey => {
   const lang = allLanguages.find(({ key }) => key === langKey);
   return lang ? `${lang.label} (${lang.key})` : langKey;
 };
 
-export const generateCreateUpdateBeautifier = (resourceName, idField, nameField) => async (log) => {
+export const generateCreateUpdateBeautifier = (resourceName, idField, nameField) => async log => {
   const data = JSON.parse(log.body);
   const name = data[nameField];
 
   const semantic = {
     beautified: true,
-    name
+    name,
   };
 
   if (data[idField]) {
@@ -33,25 +33,27 @@ export const generateCreateUpdateBeautifier = (resourceName, idField, nameField)
   return semantic;
 };
 
-
-export const generateDeleteBeautifier = (resourceName, idField) => async (log) => {
+export const generateDeleteBeautifier = (resourceName, idField) => async log => {
   const data = JSON.parse(log.query);
 
   return {
     beautified: true,
     action: methods.delete,
     description: `Deleted ${resourceName}`,
-    name: data[idField]
+    name: data[idField],
   };
 };
 
-export const generatePlainDescriptionBeautifier = (description, action = methods.update) => async () => ({
+export const generatePlainDescriptionBeautifier = (
+  description,
+  action = methods.update
+) => async () => ({
   beautified: true,
   action,
-  description
+  description,
 });
 
-export const generateSemanticSearchUpdateBeautifier = description => async (log) => {
+export const generateSemanticSearchUpdateBeautifier = description => async log => {
   const data = JSON.parse(log.body);
   const search = await semanticSearchModel.getById(data.searchId);
 
@@ -59,7 +61,7 @@ export const generateSemanticSearchUpdateBeautifier = description => async (log)
     beautified: true,
     action: methods.update,
     description,
-    name: data.searchId
+    name: data.searchId,
   };
 
   if (search) {

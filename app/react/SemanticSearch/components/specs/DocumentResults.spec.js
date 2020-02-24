@@ -14,13 +14,13 @@ describe('DocumentResults', () => {
             { score: 0.6, text: 'bio two', page: 'bio' },
             { score: 0.5, text: 'page one', page: '1' },
             { score: 0.2, text: 'page two', page: '2' },
-            { score: 0.1, text: 'bio one', page: 'bio' }
+            { score: 0.1, text: 'bio one', page: 'bio' },
           ],
           relevantRate: 0.5,
           numRelevant: 2,
           totalResults: 4,
         },
-        avgScore: 0.4
+        avgScore: 0.4,
       },
       threshold: 0.3,
       changeTreshHold: jasmine.createSpy('changeTreshhold'),
@@ -28,13 +28,11 @@ describe('DocumentResults', () => {
       selectSnippet: jasmine.createSpy('selectSnippet'),
       template: Immutable.fromJS({
         commonProperties: [],
-        properties: [
-          { name: 'bio', label: 'Biography' }
-        ]
-      })
+        properties: [{ name: 'bio', label: 'Biography' }],
+      }),
     };
 
-    component = shallow(<DocumentResults {...props}/>);
+    component = shallow(<DocumentResults {...props} />);
   });
 
   describe('render', () => {

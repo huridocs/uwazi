@@ -47,7 +47,10 @@ export class ConnectionsList extends Component {
 
     return (
       <div className="item-group">
-        {(() => references.map(reference => <Connection key={reference._id} readOnly={this.props.readOnly} reference={reference} />))()}
+        {(() =>
+          references.map(reference => (
+            <Connection key={reference._id} readOnly={this.props.readOnly} reference={reference} />
+          )))()}
       </div>
     );
   }

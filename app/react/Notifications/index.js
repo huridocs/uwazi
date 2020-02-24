@@ -3,11 +3,9 @@ import Notifications from './components/Notifications';
 
 const notificationActions = {
   notify,
-  removeNotification
+  removeNotification,
 };
 
-export {
-  notificationActions
-};
+export { notificationActions };
 
 export default Notifications;

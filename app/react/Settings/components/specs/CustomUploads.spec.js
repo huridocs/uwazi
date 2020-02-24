@@ -17,20 +17,17 @@ describe('CustomUploads', () => {
     props = {
       upload: jasmine.createSpy('upload'),
       deleteCustomUpload: jasmine.createSpy('deleteCustomUpload'),
-      customUploads: Immutable.fromJS([])
+      customUploads: Immutable.fromJS([]),
     };
   });
 
   const render = () => {
     context = { store: { getState: () => ({}), dispatch: jasmine.createSpy('dispatch') } };
-    component = shallow(<CustomUploads {...props}/>, { context });
+    component = shallow(<CustomUploads {...props} />, { context });
   };
 
   it('should render CustomUploads component with uploaded files', () => {
-    props.customUploads = Immutable.fromJS([
-      { filename: 'file1' },
-      { filename: 'file2' },
-    ]);
+    props.customUploads = Immutable.fromJS([{ filename: 'file1' }, { filename: 'file2' }]);
     render();
     expect(component).toMatchSnapshot();
   });
@@ -48,7 +45,10 @@ describe('CustomUploads', () => {
       props.customUploads = Immutable.fromJS([{ _id: 'upload', filename: 'name' }]);
       render();
 
-      component.find(ConfirmButton).props().action();
+      component
+        .find(ConfirmButton)
+        .props()
+        .action();
 
       expect(props.deleteCustomUpload).toHaveBeenCalledWith('upload');
     });
@@ -58,14 +58,17 @@ describe('CustomUploads', () => {
     it('should map current progress and files to props', () => {
       const state = {
         customUploads: 'customUploads',
-        progress: Immutable.fromJS({})
+        progress: Immutable.fromJS({}),
       };
 
       props = mapStateToProps(state);
       expect(props.customUploads).toBe('customUploads');
       expect(props.progress).toBe(false);
 
-      state.progress = Immutable.fromJS({ customUpload_unique_id: 1, customUpload_unique_id2: 100 });
+      state.progress = Immutable.fromJS({
+        customUpload_unique_id: 1,
+        customUpload_unique_id2: 100,
+      });
       props = mapStateToProps(state);
       expect(props.progress).toBe(true);
 

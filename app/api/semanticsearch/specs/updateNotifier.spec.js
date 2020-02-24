@@ -27,27 +27,28 @@ describe('updateNotifier', () => {
   describe('notifySearchUpdate', () => {
     let updates;
     beforeEach(() => {
-      jest.spyOn(semanticSearch, 'getDocumentResultsByIds').mockResolvedValue(['doc1Res', 'doc2Res']);
+      jest
+        .spyOn(semanticSearch, 'getDocumentResultsByIds')
+        .mockResolvedValue(['doc1Res', 'doc2Res']);
       updates = { updatedSearch: { _id: 'search' }, processedDocuments: ['res1', 'res2'] };
     });
 
     const makeRequest = (id, sockets) => ({
       session: { id },
-      getCurrentSessionSockets: jest.fn().mockReturnValue(sockets)
+      getCurrentSessionSockets: jest.fn().mockReturnValue(sockets),
     });
 
     it('should fetched updated docs and send updates to all tracked sessions', async () => {
       const socks1 = { sockets: ['s1', 's2'], emit: jest.fn() };
       const socks2 = { sockets: ['s3', 's4'], emit: jest.fn() };
-      const reqs = [
-        makeRequest('req1', socks1),
-        makeRequest('req2', socks2)
-      ];
+      const reqs = [makeRequest('req1', socks1), makeRequest('req2', socks2)];
       reqs.forEach(req => notifier.addRequest(req));
       await notifier.notifySearchUpdate('searchId', updates);
-      [socks1, socks2].forEach((sock) => {
-        expect(sock.emit).toHaveBeenCalledWith(
-          'semanticSearchUpdated', { updatedSearch: { _id: 'search' }, docs: ['doc1Res', 'doc2Res'] });
+      [socks1, socks2].forEach(sock => {
+        expect(sock.emit).toHaveBeenCalledWith('semanticSearchUpdated', {
+          updatedSearch: { _id: 'search' },
+          docs: ['doc1Res', 'doc2Res'],
+        });
       });
     });
     it('should remove closed sessions', async () => {

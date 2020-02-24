@@ -8,14 +8,17 @@ const getTitle = createSelector(
   (_s, p) => p.entity,
   (_s, p) => p.context,
   (thesauris, entity, context) => {
-    const thesauri = thesauris.find(t => t.get('type') === 'template' && t.get('_id').toString() === context.toString());
-    return thesauri.get('values').find(v => v.get('id') === entity).get('label');
+    const thesauri = thesauris.find(
+      t => t.get('type') === 'template' && t.get('_id').toString() === context.toString()
+    );
+    return thesauri
+      .get('values')
+      .find(v => v.get('id') === entity)
+      .get('label');
   }
 );
 
-const EntityTitle = ({ title }) => (
-  <span className="entity-title">{title}</span>
-);
+const EntityTitle = ({ title }) => <span className="entity-title">{title}</span>;
 
 EntityTitle.defaultProps = {
   title: '',

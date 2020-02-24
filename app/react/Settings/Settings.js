@@ -79,7 +79,7 @@ export class Settings extends RouteHandler {
           // NOTE: These suggestions are totaling per-value suggestions per
           // document, so certain documents with more than one suggested value
           // may be counted more than once.
-          // TODO: Make document counts unique.
+          // TODO(sam): Make document counts unique.
           if (!thesaurus.hasOwnProperty('suggestions')) {
             thesaurus.suggestions = 0;
           }

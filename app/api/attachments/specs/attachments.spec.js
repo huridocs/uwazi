@@ -5,7 +5,13 @@ import fs from 'api/utils/async-fs';
 import { search } from 'api/search';
 
 import entities from '../../entities';
-import fixtures, { sharedId, entityId, entityIdEn, attachmentToDelete, toDeleteId } from './fixtures';
+import fixtures, {
+  sharedId,
+  entityId,
+  entityIdEn,
+  attachmentToDelete,
+  toDeleteId,
+} from './fixtures';
 import paths from '../../config/paths';
 import attachments from '../attachments';
 
@@ -29,9 +35,15 @@ describe('attachments', () => {
     beforeEach(async () => {
       await fs.writeFile(path.join(paths.attachments, 'attachment.txt'), 'dummy file');
       await fs.writeFile(path.join(paths.attachments, 'mainFile.txt'), 'dummy file');
-      await fs.writeFile(path.join(paths.attachments, `${toDeleteId.toString()}.jpg`), 'dummy file');
+      await fs.writeFile(
+        path.join(paths.attachments, `${toDeleteId.toString()}.jpg`),
+        'dummy file'
+      );
       await fs.writeFile(path.join(paths.attachments, `${entityId.toString()}.jpg`), 'dummy file');
-      await fs.writeFile(path.join(paths.attachments, `${entityIdEn.toString()}.jpg`), 'dummy file');
+      await fs.writeFile(
+        path.join(paths.attachments, `${entityIdEn.toString()}.jpg`),
+        'dummy file'
+      );
       spyOn(relationships, 'deleteTextReferences').and.returnValue(Promise.resolve());
     });
 
@@ -46,7 +58,9 @@ describe('attachments', () => {
       expect(response.file).toBe(null);
       expect(dbEntity.file).toBe(null);
       expect(await fs.exists(path.join(paths.attachments, 'mainFile.txt'))).toBe(false);
-      expect(await fs.exists(path.join(paths.attachments, `${toDeleteId.toString()}.jpg`))).toBe(false);
+      expect(await fs.exists(path.join(paths.attachments, `${toDeleteId.toString()}.jpg`))).toBe(
+        false
+      );
     });
 
     it('should remove main file on sibling entities', async () => {
@@ -58,12 +72,16 @@ describe('attachments', () => {
       expect(response.toc).toBe(null);
 
       const changedEntities = await entities.get({ sharedId });
-      await Promise.all(changedEntities.map(async (e) => {
-        expect(e.file).toBe(null);
-        expect(e.file).toBe(null);
-        expect(relationships.deleteTextReferences).toHaveBeenCalledWith(sharedId, e.language);
-        expect(await fs.exists(path.join(paths.attachments, `${e._id.toString()}.jpg`))).toBe(false);
-      }));
+      await Promise.all(
+        changedEntities.map(async e => {
+          expect(e.file).toBe(null);
+          expect(e.file).toBe(null);
+          expect(relationships.deleteTextReferences).toHaveBeenCalledWith(sharedId, e.language);
+          expect(await fs.exists(path.join(paths.attachments, `${e._id.toString()}.jpg`))).toBe(
+            false
+          );
+        })
+      );
     });
 
     it('should remove the passed file from attachments and delte the local file', async () => {
@@ -83,10 +101,12 @@ describe('attachments', () => {
       const sibling = {
         title: 'title',
         sharedId: toDeleteId.toString(),
-        attachments: [{
-          filename: 'attachment.txt',
-          originalname: 'common name 1.not'
-        }]
+        attachments: [
+          {
+            filename: 'attachment.txt',
+            originalname: 'common name 1.not',
+          },
+        ],
       };
       await entities.saveMultiple([sibling]);
       const response = await attachments.delete(attachmentToDelete);

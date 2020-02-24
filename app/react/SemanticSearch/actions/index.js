@@ -14,7 +14,7 @@ import {
   updateSearch,
   addSearchResults,
   getSearch,
-  getMoreSearchResults
+  getMoreSearchResults,
 } from './actions';
 
 export default {
@@ -33,5 +33,5 @@ export default {
   updateSearch,
   addSearchResults,
   getSearch,
-  getMoreSearchResults
+  getMoreSearchResults,
 };

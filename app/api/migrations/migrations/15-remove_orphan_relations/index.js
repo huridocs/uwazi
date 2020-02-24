@@ -14,7 +14,13 @@ export default {
     while (await cursor.hasNext()) {
       const connection = await cursor.next();
 
-      const nonExistent = (await db.collection('entities').find({ sharedId: connection.entity }).toArray()).length === 0;
+      const nonExistent =
+        (
+          await db
+            .collection('entities')
+            .find({ sharedId: connection.entity })
+            .toArray()
+        ).length === 0;
 
       if (nonExistent) {
         await db.collection('connections').remove({ _id: connection._id });
@@ -23,5 +29,5 @@ export default {
     }
     process.stdout.write(`deleted orphan entities -> ${index}\r`);
     process.stdout.write('\r\n');
-  }
+  },
 };
