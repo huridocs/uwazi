@@ -1,7 +1,6 @@
 import entities, { model } from 'api/entities';
 import fs from 'fs';
 import path from 'path';
-import relationships from 'api/relationships';
 
 import paths from '../config/paths';
 
@@ -12,9 +11,6 @@ const deleteFile = fileName =>
       resolve(filePath);
     });
   });
-
-const deleteTextReferences = async (id, language) =>
-  relationships.deleteTextReferences(id, language);
 
 const attachmentPresentOn = (siblings, attachment) =>
   siblings.reduce((memo, sibling) => {

@@ -5,13 +5,7 @@ import fs from 'api/utils/async-fs';
 import { search } from 'api/search';
 
 import entities from '../../entities';
-import fixtures, {
-  sharedId,
-  entityId,
-  entityIdEn,
-  attachmentToDelete,
-  toDeleteId,
-} from './fixtures';
+import fixtures, { entityId, entityIdEn, attachmentToDelete, toDeleteId } from './fixtures';
 import paths from '../../config/paths';
 import attachments from '../attachments';
 

@@ -5,7 +5,6 @@ import ID from 'shared/uniqueID';
 import { propertyTypes } from 'shared/propertyTypes';
 import date from 'api/utils/date';
 import relationships from 'api/relationships/relationships';
-import createError from 'api/utils/Error';
 import search from 'api/search/search';
 import templates from 'api/templates/templates';
 import translationsModel from 'api/i18n/translations';

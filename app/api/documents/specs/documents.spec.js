@@ -1,5 +1,4 @@
 import { catchErrors } from 'api/utils/jasmineHelpers';
-import date from 'api/utils/date.js';
 import fs from 'fs';
 import { mockID } from 'shared/uniqueID';
 import relationships from 'api/relationships';
@@ -8,7 +7,7 @@ import search from 'api/search/search';
 import db from 'api/utils/testing_db';
 import path from 'path';
 import documents from '../documents.js';
-import fixtures, { templateId } from './fixtures.js';
+import fixtures from './fixtures.js';
 import paths from '../../config/paths';
 
 describe('documents', () => {
