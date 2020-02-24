@@ -10,7 +10,7 @@ import arrayUtils from '../utils/arrayUtils';
 
 function translateOptions(_property) {
   const property = _property;
-  property.options = property.options.map((_option) => {
+  property.options = property.options.map(_option => {
     const option = _option;
     option.label = t(property.content, option.label, null, false);
     return option;
@@ -27,7 +27,8 @@ function sortFields(_field) {
 export class LibraryCharts extends Component {
   itemResults(item) {
     const { aggregations } = this;
-    const buckets = aggregations.all && aggregations.all.types ? aggregations.all.types.buckets : [];
+    const buckets =
+      aggregations.all && aggregations.all.types ? aggregations.all.types.buckets : [];
     const found = buckets.find(agg => agg.key === item.id);
 
     if (found) {
@@ -52,10 +53,15 @@ export class LibraryCharts extends Component {
       items.unshift({ id: 'missing', name: t('System', 'No type') });
     }
 
-    const fields = [{
-      options: items.map(item => ({ label: t(item.id, item.name), results: this.itemResults(item) })),
-      label: t('System', 'Document and entity types')
-    }];
+    const fields = [
+      {
+        options: items.map(item => ({
+          label: t(item.id, item.name),
+          results: this.itemResults(item),
+        })),
+        label: t('System', 'Document and entity types'),
+      },
+    ];
 
     return fields;
   }
@@ -68,9 +74,12 @@ export class LibraryCharts extends Component {
 
       if (this.props.fields.size) {
         fields = parseWithAggregations(this.props.fields.toJS(), this.aggregations)
-        .filter(field => (field.type === 'select' || field.type === 'multiselect') && field.options.length)
-        .map(translateOptions)
-        .map(sortFields);
+          .filter(
+            field =>
+              (field.type === 'select' || field.type === 'multiselect') && field.options.length
+          )
+          .map(translateOptions)
+          .map(sortFields);
       }
 
       fields = fields.length ? fields : this.conformDocumentTypesToFields();
@@ -86,7 +95,7 @@ export class LibraryCharts extends Component {
                 options={field.options}
                 label={t(this.props.translationContext, field.label)}
               />
-))}
+            ))}
           </div>
         </div>
       </div>
@@ -100,7 +109,7 @@ LibraryCharts.propTypes = {
   collection: PropTypes.object,
   templates: PropTypes.object,
   storeKey: PropTypes.string,
-  translationContext: PropTypes.string
+  translationContext: PropTypes.string,
 };
 
 export function mapStateToProps(state, props) {
@@ -111,7 +120,9 @@ export function mapStateToProps(state, props) {
     fields: props.storeKey ? state[props.storeKey].filters.get('properties') : null,
     collection: state.settings.collection,
     templates: state.templates,
-    translationContext: documentTypesExist ? state[props.storeKey].filters.getIn(['documentTypes', 0]) : null
+    translationContext: documentTypesExist
+      ? state[props.storeKey].filters.getIn(['documentTypes', 0])
+      : null,
   };
 }
 

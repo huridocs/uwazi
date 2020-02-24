@@ -24,10 +24,9 @@ export class RelationshipsGraphEdit extends Component {
     const { hubs, addHub } = this.props;
     return (
       <div className="relationships-graph">
-
         <div>
           {hubs.map((hub, index) => (
-            <div className="relationshipsHub" key={index} >
+            <div className="relationshipsHub" key={index}>
               <LeftRelationship index={index} hub={hub} />
               <RightRelationship index={index} hub={hub} />
             </div>
@@ -43,9 +42,7 @@ export class RelationshipsGraphEdit extends Component {
               </div>
             </div>
           )}
-
         </div>
-
       </div>
     );
   }
@@ -57,7 +54,7 @@ RelationshipsGraphEdit.propTypes = {
   editing: PropTypes.bool.isRequired,
   searchResults: PropTypes.instanceOf(Map).isRequired,
   parseResults: PropTypes.func.isRequired,
-  addHub: PropTypes.func.isRequired
+  addHub: PropTypes.func.isRequired,
 };
 
 export function mapStateToProps(state) {
@@ -72,10 +69,13 @@ export function mapStateToProps(state) {
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({
-    parseResults: actions.parseResults,
-    addHub: actions.addHub
-  }, dispatch);
+  return bindActionCreators(
+    {
+      parseResults: actions.parseResults,
+      addHub: actions.addHub,
+    },
+    dispatch
+  );
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(RelationshipsGraphEdit);

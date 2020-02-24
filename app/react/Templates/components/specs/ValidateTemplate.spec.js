@@ -1,17 +1,19 @@
-import getValidator, { validateDuplicatedLabel, validateDuplicatedRelationship, validateRequiredInheritproperty } from '../ValidateTemplate';
+import getValidator, {
+  validateDuplicatedLabel,
+  validateDuplicatedRelationship,
+  validateRequiredInheritproperty,
+} from '../ValidateTemplate';
 
 describe('ValidateTemplate', () => {
   let template;
   describe('validateDuplicatedLabel', () => {
     beforeEach(() => {
       template = {
-        commonProperties: [
-          { _id: 't', localID: 'title', name: 'title', label: 'Title' }
-        ],
+        commonProperties: [{ _id: 't', localID: 'title', name: 'title', label: 'Title' }],
         properties: [
           { _id: '1', localID: 'local0', label: 'Label1' },
-          { localID: 'local1', label: 'Label2 ' }
-        ]
+          { localID: 'local1', label: 'Label2 ' },
+        ],
       };
     });
 
@@ -53,30 +55,60 @@ describe('ValidateTemplate', () => {
   describe('validate duplicated relationship', () => {
     beforeEach(() => {
       template = [
-        { localID: 'local0', label: 'Label0', type: 'relationship', relationType: '1', content: '1' },
+        {
+          localID: 'local0',
+          label: 'Label0',
+          type: 'relationship',
+          relationType: '1',
+          content: '1',
+        },
       ];
     });
 
     it('should not allow 2 relationships that are equaly configured', () => {
-      const prop = { localID: 'local1', label: 'Label1', type: 'relationship', relationType: '1', content: '1' };
+      const prop = {
+        localID: 'local1',
+        label: 'Label1',
+        type: 'relationship',
+        relationType: '1',
+        content: '1',
+      };
       template.push(prop);
       expect(validateDuplicatedRelationship(prop, template)).toBe(false);
     });
 
     it('should not allow 2 relationships with same relationType and one with any template configured', () => {
-      const prop = { localID: 'local1', label: 'Label1', type: 'relationship', relationType: '1', content: '' };
+      const prop = {
+        localID: 'local1',
+        label: 'Label1',
+        type: 'relationship',
+        relationType: '1',
+        content: '',
+      };
       template.push(prop);
       expect(validateDuplicatedRelationship(prop, template)).toBe(false);
     });
 
     it('should allow 2 relationships with diferent relationType configured', () => {
-      const prop = { localID: 'local1', label: 'Label1', type: 'relationship', relationType: '2', content: '1' };
+      const prop = {
+        localID: 'local1',
+        label: 'Label1',
+        type: 'relationship',
+        relationType: '2',
+        content: '1',
+      };
       template.push(prop);
       expect(validateDuplicatedRelationship(prop, template)).toBe(true);
     });
 
     it('should allow 2 relationships with same relationType  but different content configured', () => {
-      const prop = { localID: 'local1', label: 'Label1', type: 'relationship', relationType: '1', content: '2' };
+      const prop = {
+        localID: 'local1',
+        label: 'Label1',
+        type: 'relationship',
+        relationType: '1',
+        content: '2',
+      };
       template.push(prop);
       expect(validateDuplicatedRelationship(prop, template)).toBe(true);
     });
@@ -84,7 +116,13 @@ describe('ValidateTemplate', () => {
     it('should allow new added relationship properties', () => {
       template = [
         { localID: 'local0', label: 'Label1', type: 'text' },
-        { localID: 'local1', label: 'Label0', type: 'relationship', relationType: '1', content: '1' }
+        {
+          localID: 'local1',
+          label: 'Label0',
+          type: 'relationship',
+          relationType: '1',
+          content: '1',
+        },
       ];
       const prop = { localID: 'local2', label: 'Label1', type: 'relationship' };
       template.push(prop);
@@ -94,7 +132,14 @@ describe('ValidateTemplate', () => {
 
   describe('validate required inherit property', () => {
     it('should not pass validation when a property is check as inherit but has no inherit property selected', () => {
-      const prop = { localID: 'local1', label: 'Label0', type: 'relationship', inherit: true, relationType: '1', content: '1' };
+      const prop = {
+        localID: 'local1',
+        label: 'Label0',
+        type: 'relationship',
+        inherit: true,
+        relationType: '1',
+        content: '1',
+      };
       expect(validateRequiredInheritproperty(prop, template)).toBe(false);
     });
   });
@@ -112,16 +157,14 @@ describe('ValidateTemplate', () => {
       properties = [];
       commonProperties = [
         { localID: 't', name: 'title', label: 'Title' },
-        { localID: 'cd', name: 'creationDate', label: 'Date added' }
+        { localID: 'cd', name: 'creationDate', label: 'Date added' },
       ];
       template = {
         commonProperties: [
           { localID: 't', name: 'title', label: 'Title' },
-          { localID: 'cd', name: 'creationDate', label: 'Date added' }
+          { localID: 'cd', name: 'creationDate', label: 'Date added' },
         ],
-        properties: [
-          { localID: '1', name: 'f1', label: 'F1' }
-        ]
+        properties: [{ localID: '1', name: 'f1', label: 'F1' }],
       };
     });
 

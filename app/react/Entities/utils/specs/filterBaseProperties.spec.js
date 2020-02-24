@@ -12,7 +12,7 @@ describe('filterBaseProperties', () => {
       icon: 'icon',
       attachemnts: 'should not be sent',
       toc: 'should not be sent',
-      file: 'should not be sent'
+      file: 'should not be sent',
     };
 
     const expectedData = {
@@ -22,7 +22,7 @@ describe('filterBaseProperties', () => {
       metadata: data.metadata,
       template: data.template,
       title: data.title,
-      icon: data.icon
+      icon: data.icon,
     };
 
     expect(util.filterBaseProperties(data)).toEqual(expectedData);

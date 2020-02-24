@@ -4,7 +4,9 @@ import { connect } from 'react-redux';
 
 export class I18N extends Component {
   render() {
-    const dictionary = this.props.dictionaries.toJS().find(d => d.locale === this.props.locale) || { values: {} };
+    const dictionary = this.props.dictionaries.toJS().find(d => d.locale === this.props.locale) || {
+      values: {},
+    };
     let text = this.props.children;
     text = dictionary.values[text] || text;
     return <span>{text}</span>;
@@ -14,7 +16,7 @@ export class I18N extends Component {
 I18N.propTypes = {
   children: PropTypes.string,
   locale: PropTypes.string,
-  dictionaries: PropTypes.object
+  dictionaries: PropTypes.object,
 };
 
 const mapStateToProps = ({ locale, dictionaries }) => ({ locale, dictionaries });

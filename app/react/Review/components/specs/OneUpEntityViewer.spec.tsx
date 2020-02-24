@@ -38,7 +38,7 @@ describe('EntityViewer', () => {
       ]),
       relationships: Immutable.fromJS([]),
       tab: 'info',
-      oneUpState: {} as OneUpState,
+      oneUpState: { reviewThesaurusValues: ['foo'] } as OneUpState,
       deleteConnection: jasmine.createSpy('deleteConnection'),
       connectionsChanged: jasmine.createSpy('connectionsChanged'),
       toggleOneUpFullEdit: jasmine.createSpy('toggleOneUpFullEdit'),
@@ -58,6 +58,7 @@ describe('EntityViewer', () => {
   });
 
   it('should toggle full edit', () => {
+    props.oneUpState.fullEdit = true;
     render();
     component.find('.content-header > .btn').simulate('click');
     expect(props.toggleOneUpFullEdit).toHaveBeenCalled();

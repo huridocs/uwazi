@@ -12,7 +12,11 @@ describe('ShowIf', () => {
   });
 
   const render = () => {
-    component = shallow(<ShowIf {...props}><div/></ShowIf>);
+    component = shallow(
+      <ShowIf {...props}>
+        <div />
+      </ShowIf>
+    );
   };
 
   describe('when if property is true', () => {

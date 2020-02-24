@@ -64,7 +64,9 @@ describe('handleError', () => {
     it('should append the info into the message', () => {
       const uncaught = true;
       const error = handleError({ message: 'error' }, { uncaught });
-      expect(error.message).toBe('uncaught exception or unhandled rejection, Node process finished !!\n error');
+      expect(error.message).toBe(
+        'uncaught exception or unhandled rejection, Node process finished !!\n error'
+      );
     });
   });
 
@@ -100,7 +102,9 @@ describe('handleError', () => {
 
   describe('when the body contains the user and password', () => {
     it('should not show them in the log', () => {
-      handleError(createError('test error', 400), { req: { body: { username: 'admin', password: '1234' } } });
+      handleError(createError('test error', 400), {
+        req: { body: { username: 'admin', password: '1234' } },
+      });
       expect(debugLog.debug.calls.allArgs()).toMatchSnapshot();
     });
   });

@@ -31,7 +31,7 @@ class App extends Component {
 
   getChildContext() {
     return {
-      confirm: this.confirm.bind(this)
+      confirm: this.confirm.bind(this),
     };
   }
 
@@ -48,7 +48,7 @@ class App extends Component {
   }
 
   renderTools() {
-    return React.Children.map(this.props.children, (child) => {
+    return React.Children.map(this.props.children, child => {
       //condition not tested
       if (child.type.renderTools) {
         return child.type.renderTools();
@@ -85,22 +85,26 @@ class App extends Component {
         <Cookiepopup />
         <div className="content">
           <nav>
-            <h1><SiteName/></h1>
+            <h1>
+              <SiteName />
+            </h1>
           </nav>
           <header>
             <button className="menu-button" onClick={this.toggleMenu}>
               <Icon icon={MenuButtonIcon} />
             </button>
-            <h1 className="logotype"><SiteName/></h1>
+            <h1 className="logotype">
+              <SiteName />
+            </h1>
             {this.renderTools()}
             <Menu location={location} onClick={this.toggleMenu} className={navClass} />
           </header>
           <div className="app-content container-fluid">
-            <Confirm {...this.state.confirmOptions}/>
-            <TranslateForm/>
+            <Confirm {...this.state.confirmOptions} />
+            <TranslateForm />
             {this.props.children}
-            <GoogleAnalytics/>
-            <Matomo/>
+            <GoogleAnalytics />
+            <Matomo />
           </div>
         </div>
       </div>
@@ -123,7 +127,7 @@ App.propTypes = {
 
 App.childContextTypes = {
   confirm: PropTypes.func,
-  locale: PropTypes.string
+  locale: PropTypes.string,
 };
 
 App.contextTypes = {

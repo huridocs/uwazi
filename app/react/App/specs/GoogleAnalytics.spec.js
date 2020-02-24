@@ -13,7 +13,7 @@ describe('GoogleAnalytics', () => {
 
   beforeEach(() => {
     props = {
-      analyticsTrackingId: 'X-AAA-Y'
+      analyticsTrackingId: 'X-AAA-Y',
     };
   });
 

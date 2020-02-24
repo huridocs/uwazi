@@ -15,18 +15,21 @@ describe('TargetDocumentHeader', () => {
       targetDocument: 'abc2',
       saveTargetRangedReference: jasmine.createSpy('saveTargetRangedReference'),
       cancelTargetDocument: jasmine.createSpy('cancelTargetDocument'),
-      addReference: () => {}
+      addReference: () => {},
     };
   });
 
   const render = () => {
-    component = shallow(<TargetDocumentHeader {...props}/>);
+    component = shallow(<TargetDocumentHeader {...props} />);
   };
 
   describe('back button', () => {
     it('should cancelTargetDocument', () => {
       render();
-      component.find('button').first().simulate('click');
+      component
+        .find('button')
+        .first()
+        .simulate('click');
       expect(props.cancelTargetDocument).toHaveBeenCalled();
     });
   });
@@ -34,8 +37,15 @@ describe('TargetDocumentHeader', () => {
   describe('save button', () => {
     it('should save the reference', () => {
       render();
-      component.find('button').last().simulate('click');
-      expect(props.saveTargetRangedReference).toHaveBeenCalledWith({ _id: 'connection' }, { text: 'text' }, jasmine.any(Function));
+      component
+        .find('button')
+        .last()
+        .simulate('click');
+      expect(props.saveTargetRangedReference).toHaveBeenCalledWith(
+        { _id: 'connection' },
+        { text: 'text' },
+        jasmine.any(Function)
+      );
     });
   });
 });

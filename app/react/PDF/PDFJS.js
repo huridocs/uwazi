@@ -19,6 +19,4 @@ if (isClient) {
 
 export default { ...PDFJS, ...pdfjsLib };
 
-export {
-  textLayerFactory
-};
+export { textLayerFactory };

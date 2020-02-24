@@ -21,10 +21,7 @@ export class SearchText extends Component {
 
   componentDidMount() {
     if (this.props.storeKey === 'documentViewer') {
-      this.searchSnippets(
-        this.props.searchTerm,
-        this.props.doc.get('sharedId')
-      );
+      this.searchSnippets(this.props.searchTerm, this.props.doc.get('sharedId'));
     }
   }
 
@@ -47,9 +44,7 @@ export class SearchText extends Component {
     if (sharedId) {
       this.props.searchSnippets(searchTerm, sharedId, this.props.storeKey);
       if (this.formDispatch) {
-        this.formDispatch(
-          formActions.change('searchText.searchTerm', searchTerm)
-        );
+        this.formDispatch(formActions.change('searchText.searchTerm', searchTerm));
       }
     }
   }
@@ -70,7 +65,9 @@ export class SearchText extends Component {
 
   render() {
     const { doc, snippets } = this.props;
-    const documentViewUrl = doc.get('file') ? `/document/${doc.get('sharedId')}` : `/entity/${doc.get('sharedId')}`;
+    const documentViewUrl = doc.get('file')
+      ? `/document/${doc.get('sharedId')}`
+      : `/entity/${doc.get('sharedId')}`;
     return (
       <div>
         <LocalForm
@@ -101,11 +98,12 @@ export class SearchText extends Component {
         {!snippets.get('count') && (
           <div className="blank-state">
             <Icon icon="search" />
-            <h4>
-              {t('System', !this.props.searchTerm ? 'Search text' : 'No text match')}
-            </h4>
+            <h4>{t('System', !this.props.searchTerm ? 'Search text' : 'No text match')}</h4>
             <p>
-              {t('System', !this.props.searchTerm ? 'Search text description' : 'No text match description')}
+              {t(
+                'System',
+                !this.props.searchTerm ? 'Search text description' : 'No text match description'
+              )}
             </p>
           </div>
         )}
@@ -127,13 +125,13 @@ export class SearchText extends Component {
 
 SearchText.propTypes = {
   snippets: PropTypes.shape({
-    toJS: PropTypes.func
+    toJS: PropTypes.func,
   }),
   storeKey: PropTypes.string,
   searchTerm: PropTypes.string,
   doc: PropTypes.object,
   searchSnippets: PropTypes.func,
-  selectSnippet: PropTypes.func.isRequired
+  selectSnippet: PropTypes.func.isRequired,
 };
 
 SearchText.defaultProps = {
@@ -141,13 +139,13 @@ SearchText.defaultProps = {
   snippets: {
     count: 0,
     metadata: [],
-    fullText: []
-  }
+    fullText: [],
+  },
 };
 
 function mapStateToProps(state, props) {
   return {
-    snippets: state[props.storeKey].sidepanel.snippets
+    snippets: state[props.storeKey].sidepanel.snippets,
   };
 }
 
@@ -155,7 +153,4 @@ function mapDispatchToProps(dispatch) {
   return bindActionCreators({ searchSnippets, selectSnippet }, dispatch);
 }
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(SearchText);
+export default connect(mapStateToProps, mapDispatchToProps)(SearchText);

@@ -17,15 +17,25 @@ describe('users routes', () => {
         expect(routes.post.validation('/api/users')).toMatchSnapshot();
       });
 
-      it('should call users save with the body', (done) => {
+      it('should call users save with the body', done => {
         spyOn(users, 'save').and.returnValue(Promise.resolve());
-        const req = { body: 'changes', user: { _id: 'currentUser' }, protocol: 'http', get: () => 'localhost' };
-        routes.post('/api/users', req)
-        .then(() => {
-          expect(users.save).toHaveBeenCalledWith('changes', { _id: 'currentUser' }, 'http://localhost');
-          done();
-        })
-        .catch(catchErrors(done));
+        const req = {
+          body: 'changes',
+          user: { _id: 'currentUser' },
+          protocol: 'http',
+          get: () => 'localhost',
+        };
+        routes
+          .post('/api/users', req)
+          .then(() => {
+            expect(users.save).toHaveBeenCalledWith(
+              'changes',
+              { _id: 'currentUser' },
+              'http://localhost'
+            );
+            done();
+          })
+          .catch(catchErrors(done));
       });
     });
 
@@ -34,15 +44,21 @@ describe('users routes', () => {
         expect(routes.post.validation('/api/users/new')).toMatchSnapshot();
       });
 
-      it('should call users newUser with the body', (done) => {
+      it('should call users newUser with the body', done => {
         spyOn(users, 'newUser').and.returnValue(Promise.resolve());
-        const req = { body: 'changes', user: { _id: 'currentUser' }, protocol: 'http', get: () => 'localhost' };
-        routes.post('/api/users/new', req)
-        .then(() => {
-          expect(users.newUser).toHaveBeenCalledWith('changes', 'http://localhost');
-          done();
-        })
-        .catch(catchErrors(done));
+        const req = {
+          body: 'changes',
+          user: { _id: 'currentUser' },
+          protocol: 'http',
+          get: () => 'localhost',
+        };
+        routes
+          .post('/api/users/new', req)
+          .then(() => {
+            expect(users.newUser).toHaveBeenCalledWith('changes', 'http://localhost');
+            done();
+          })
+          .catch(catchErrors(done));
       });
     });
 
@@ -51,16 +67,20 @@ describe('users routes', () => {
         expect(routes.post.validation('/api/recoverpassword')).toMatchSnapshot();
       });
 
-      it('should call users update with the body email', (done) => {
+      it('should call users update with the body email', done => {
         spyOn(users, 'recoverPassword').and.returnValue(Promise.resolve());
         const req = { body: { email: 'recover@me.com' }, protocol: 'http', get: () => 'localhost' };
-        routes.post('/api/recoverpassword', req)
-        .then((response) => {
-          expect(response).toBe('OK');
-          expect(users.recoverPassword).toHaveBeenCalledWith('recover@me.com', 'http://localhost');
-          done();
-        })
-        .catch(catchErrors(done));
+        routes
+          .post('/api/recoverpassword', req)
+          .then(response => {
+            expect(response).toBe('OK');
+            expect(users.recoverPassword).toHaveBeenCalledWith(
+              'recover@me.com',
+              'http://localhost'
+            );
+            done();
+          })
+          .catch(catchErrors(done));
       });
 
       it('should return an error if recover password fails', async () => {
@@ -80,15 +100,16 @@ describe('users routes', () => {
         expect(routes.post.validation('/api/resetpassword')).toMatchSnapshot();
       });
 
-      it('should call users update with the body', (done) => {
+      it('should call users update with the body', done => {
         spyOn(users, 'resetPassword').and.returnValue(Promise.resolve());
         const req = { body: 'changes' };
-        routes.post('/api/resetpassword', req)
-        .then(() => {
-          expect(users.resetPassword).toHaveBeenCalledWith('changes');
-          done();
-        })
-        .catch(catchErrors(done));
+        routes
+          .post('/api/resetpassword', req)
+          .then(() => {
+            expect(users.resetPassword).toHaveBeenCalledWith('changes');
+            done();
+          })
+          .catch(catchErrors(done));
       });
     });
 
@@ -97,15 +118,16 @@ describe('users routes', () => {
         expect(routes.post.validation('/api/unlockaccount')).toMatchSnapshot();
       });
 
-      it('should call users.unlockAccount with the body', (done) => {
+      it('should call users.unlockAccount with the body', done => {
         jest.spyOn(users, 'unlockAccount').mockResolvedValue();
         const req = { body: 'credentials' };
-        routes.post('/api/unlockaccount', req)
-        .then(() => {
-          expect(users.unlockAccount).toHaveBeenCalledWith('credentials');
-          done();
-        })
-        .catch(catchErrors(done));
+        routes
+          .post('/api/unlockaccount', req)
+          .then(() => {
+            expect(users.unlockAccount).toHaveBeenCalledWith('credentials');
+            done();
+          })
+          .catch(catchErrors(done));
       });
     });
   });
@@ -116,16 +138,17 @@ describe('users routes', () => {
       expect(routes.get('/api/users', req)).toNeedAuthorization();
     });
 
-    it('should call users get', (done) => {
+    it('should call users get', done => {
       spyOn(users, 'get').and.returnValue(Promise.resolve(['users']));
       const req = {};
-      routes.get('/api/users', req)
-      .then((res) => {
-        expect(users.get).toHaveBeenCalled();
-        expect(res).toEqual(['users']);
-        done();
-      })
-      .catch(catchErrors(done));
+      routes
+        .get('/api/users', req)
+        .then(res => {
+          expect(users.get).toHaveBeenCalled();
+          expect(res).toEqual(['users']);
+          done();
+        })
+        .catch(catchErrors(done));
     });
 
     it('should call next on error', async () => {
@@ -155,13 +178,14 @@ describe('users routes', () => {
       expect(routes.delete('/api/users', req)).toNeedAuthorization();
     });
 
-    it('should use users to delete it', (done) => {
-      routes.delete('/api/users', req)
-      .then(() => {
-        expect(users.delete).toHaveBeenCalledWith(req.query._id, { _id: 'currentUser' });
-        done();
-      })
-      .catch(catchErrors(done));
+    it('should use users to delete it', done => {
+      routes
+        .delete('/api/users', req)
+        .then(() => {
+          expect(users.delete).toHaveBeenCalledWith(req.query._id, { _id: 'currentUser' });
+          done();
+        })
+        .catch(catchErrors(done));
     });
   });
 });

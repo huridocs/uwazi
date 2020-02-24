@@ -10,11 +10,15 @@ describe('TemplatesAPI', () => {
   beforeEach(() => {
     backend.restore();
     backend
-    .get(`${APIURL}templates`, { body: JSON.stringify({ rows: mockResponse }) })
-    .get(`${APIURL}templates/count_by_thesauri?_id=id`, { body: JSON.stringify({ total: 1 }) })
-    .get(`${APIURL}templates?_id=templateId`, { body: JSON.stringify({ rows: templateResponse }) })
-    .delete(`${APIURL}templates?_id=id`, { body: JSON.stringify({ backednResponse: 'testdelete' }) })
-    .post(`${APIURL}templates`, { body: JSON.stringify({ backednResponse: 'test' }) });
+      .get(`${APIURL}templates`, { body: JSON.stringify({ rows: mockResponse }) })
+      .get(`${APIURL}templates/count_by_thesauri?_id=id`, { body: JSON.stringify({ total: 1 }) })
+      .get(`${APIURL}templates?_id=templateId`, {
+        body: JSON.stringify({ rows: templateResponse }),
+      })
+      .delete(`${APIURL}templates?_id=id`, {
+        body: JSON.stringify({ backednResponse: 'testdelete' }),
+      })
+      .post(`${APIURL}templates`, { body: JSON.stringify({ backednResponse: 'test' }) });
   });
 
   afterEach(() => backend.restore());

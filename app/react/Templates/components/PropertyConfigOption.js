@@ -6,20 +6,20 @@ import { Translate } from 'app/I18N';
 const PropertyConfigOption = ({ children, model, label }) => (
   <Field model={model}>
     <label className="property-label" htmlFor={`test${model}`}>
-      <input id={`test${model}`} type="checkbox"/> <Translate>{label}</Translate>
+      <input id={`test${model}`} type="checkbox" /> <Translate>{label}</Translate>
     </label>
     {children}
   </Field>
 );
 
 PropertyConfigOption.defaultProps = {
-  children: ''
+  children: '',
 };
 
 PropertyConfigOption.propTypes = {
   children: PropTypes.node,
   model: PropTypes.string.isRequired,
-  label: PropTypes.string.isRequired
+  label: PropTypes.string.isRequired,
 };
 
 export default PropertyConfigOption;

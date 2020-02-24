@@ -13,16 +13,17 @@ import { notify as notifyAction } from 'app/Notifications/actions/notificationsA
 import { t } from 'app/I18N';
 import { Icon } from 'UI';
 
-const removeItem = (itemId) => {
-  const removeItemIterator = items => items
-  .filter(item => item.id !== itemId)
-  .map((_item) => {
-    const item = { ..._item };
-    if (item.items) {
-      item.items = removeItemIterator(item.items);
-    }
-    return item;
-  });
+const removeItem = itemId => {
+  const removeItemIterator = items =>
+    items
+      .filter(item => item.id !== itemId)
+      .map(_item => {
+        const item = { ..._item };
+        if (item.items) {
+          item.items = removeItemIterator(item.items);
+        }
+        return item;
+      });
 
   return removeItemIterator;
 };
@@ -31,15 +32,21 @@ export class FiltersForm extends Component {
   constructor(props) {
     super(props);
     const activeFilters = props.settings.collection.toJS().filters || [];
-    const inactiveFilters = props.templates.toJS().filter(tpl => !activeFilters.find((filt) => {
-      const matchId = filt.id === tpl._id;
-      let insideGroup = false;
-      if (filt.items) {
-        insideGroup = filt.items.find(_filt => _filt.id === tpl._id);
-      }
+    const inactiveFilters = props.templates
+      .toJS()
+      .filter(
+        tpl =>
+          !activeFilters.find(filt => {
+            const matchId = filt.id === tpl._id;
+            let insideGroup = false;
+            if (filt.items) {
+              insideGroup = filt.items.find(_filt => _filt.id === tpl._id);
+            }
 
-      return matchId || insideGroup;
-    })).map(tpl => ({ id: tpl._id, name: tpl.name }));
+            return matchId || insideGroup;
+          })
+      )
+      .map(tpl => ({ id: tpl._id, name: tpl.name }));
 
     this.state = { activeFilters, inactiveFilters };
     this.activesChange = this.activesChange.bind(this);
@@ -49,12 +56,12 @@ export class FiltersForm extends Component {
   }
 
   activesChange(items) {
-    items.forEach((item) => {
+    items.forEach(item => {
       if (!item.items) {
         return;
       }
       // eslint-disable-next-line
-      item.items = item.items.filter((subitem) => {
+      item.items = item.items.filter(subitem => {
         if (subitem.items) {
           items.push(subitem);
           return false;
@@ -87,8 +94,7 @@ export class FiltersForm extends Component {
     const settings = propSettings.collection.toJS();
     const filters = activeFilters.map(filter => this.sanitizeFilterForSave(filter));
     settings.filters = filters;
-    SettingsAPI.save(new RequestParams(settings))
-    .then((result) => {
+    SettingsAPI.save(new RequestParams(settings)).then(result => {
       notify(t('System', 'Settings updated', null, false), 'success');
       setSettings(Object.assign(settings, result));
     });
@@ -113,12 +119,12 @@ export class FiltersForm extends Component {
   }
 
   renderGroup(group) {
-    const onChange = (items) => {
+    const onChange = items => {
       group.items = items;
       this.setState(this.state);
     };
 
-    const nameChange = (e) => {
+    const nameChange = e => {
       const name = e.target.value;
       group.name = name;
       this.setState(this.state);
@@ -127,14 +133,29 @@ export class FiltersForm extends Component {
     return (
       <div>
         <div className="input-group">
-          <input type="text" className="form-control" value={group.name} onChange={nameChange.bind(this)} />
+          <input
+            type="text"
+            className="form-control"
+            value={group.name}
+            onChange={nameChange.bind(this)}
+          />
           <span className="input-group-btn">
-            <button type="button" className="btn btn-danger" onClick={this.removeGroup.bind(this, group)} disabled={group.items.length}>
+            <button
+              type="button"
+              className="btn btn-danger"
+              onClick={this.removeGroup.bind(this, group)}
+              disabled={group.items.length}
+            >
               <Icon icon="trash-alt" />
             </button>
           </span>
         </div>
-        <DragAndDropContainer id={group.id} onChange={onChange.bind(this)} renderItem={this.renderActiveItems} items={group.items}/>
+        <DragAndDropContainer
+          id={group.id}
+          onChange={onChange.bind(this)}
+          renderItem={this.renderActiveItems}
+          items={group.items}
+        />
       </div>
     );
   }
@@ -146,7 +167,11 @@ export class FiltersForm extends Component {
     return (
       <div>
         <span>{item.name}</span>
-        <button type="button" className="btn btn-xs btn-danger" onClick={this.removeItem.bind(this, item)}>
+        <button
+          type="button"
+          className="btn btn-xs btn-danger"
+          onClick={this.removeItem.bind(this, item)}
+        >
           <Icon icon="trash-alt" />
         </button>
       </div>
@@ -157,7 +182,11 @@ export class FiltersForm extends Component {
     if (item.items) {
       return this.renderGroup(item);
     }
-    return (<div><span>{item.name}</span></div>);
+    return (
+      <div>
+        <span>{item.name}</span>
+      </div>
+    );
   }
 
   render() {
@@ -166,9 +195,7 @@ export class FiltersForm extends Component {
       <div className="FiltersForm">
         <div className="FiltersForm-list">
           <div className="panel panel-default">
-            <div className="panel-heading">
-              {t('System', 'Filters configuration')}
-            </div>
+            <div className="panel-heading">{t('System', 'Filters configuration')}</div>
             <div className="panel-body">
               <div className="row">
                 <div className="col-sm-9">
@@ -176,15 +203,18 @@ export class FiltersForm extends Component {
                     <Icon icon="info-circle" size="2x" />
                     <div className="force-ltr">
                       <p>
-                        By default, users can filter the documents
-                        or entities in the library based on the types of documents/entities you have defined.
-                        However, you can configure how these document/entity types will be displayed:
+                        By default, users can filter the documents or entities in the library based
+                        on the types of documents/entities you have defined. However, you can
+                        configure how these document/entity types will be displayed:
                       </p>
                       <ul>
-                        <li>drag and drop each document/entity type into the window in order to configure their order</li>
                         <li>
-                          select &quote;Create group&quote; below to group filters
-                          under a label (e.g. &quote;Documents&quote; or &quote;People&quote;)
+                          drag and drop each document/entity type into the window in order to
+                          configure their order
+                        </li>
+                        <li>
+                          select &quote;Create group&quote; below to group filters under a label
+                          (e.g. &quote;Documents&quote; or &quote;People&quote;)
                         </li>
                       </ul>
                     </div>
@@ -198,7 +228,9 @@ export class FiltersForm extends Component {
                 </div>
                 <div className="col-sm-3">
                   <div className="FiltersForm-constructor">
-                    <div><i>{t('System', 'Document and entity types')}</i></div>
+                    <div>
+                      <i>{t('System', 'Document and entity types')}</i>
+                    </div>
                     <DragAndDropContainer
                       id="inactive"
                       onChange={this.unactivesChange}
@@ -212,7 +244,11 @@ export class FiltersForm extends Component {
           </div>
         </div>
         <div className="settings-footer">
-          <button type="button" onClick={this.addGroup.bind(this)} className="btn btn-sm btn-primary">
+          <button
+            type="button"
+            onClick={this.addGroup.bind(this)}
+            className="btn btn-sm btn-primary"
+          >
             <Icon icon="plus" />
             <span className="btn-label">{t('System', 'Create group')}</span>
           </button>
@@ -230,16 +266,19 @@ FiltersForm.propTypes = {
   templates: PropTypes.instanceOf(List).isRequired,
   settings: PropTypes.instanceOf(Object).isRequired,
   setSettings: PropTypes.func.isRequired,
-  notify: PropTypes.func.isRequired
+  notify: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = state => ({
-    templates: state.templates,
-    settings: state.settings
+  templates: state.templates,
+  settings: state.settings,
 });
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({ setSettings: actions.set.bind(null, 'settings/collection'), notify: notifyAction }, dispatch);
+  return bindActionCreators(
+    { setSettings: actions.set.bind(null, 'settings/collection'), notify: notifyAction },
+    dispatch
+  );
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(FiltersForm);

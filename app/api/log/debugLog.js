@@ -7,7 +7,7 @@ export default winston.createLogger({
     new winston.transports.File({
       filename: `${LOGS_DIR}/debug.log`,
       json: false,
-      level: 'debug'
-    })
-  ]
+      level: 'debug',
+    }),
+  ],
 });

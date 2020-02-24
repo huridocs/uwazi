@@ -1,6 +1,6 @@
 import handleError from './handleError';
 
-export default function (error, req, res, next) {
+export default function(error, req, res, next) {
   const handled = handleError(error, { req });
 
   const { message, code, ...rest } = handled;

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Icon } from 'UI';
 
-const normalizeIndex = (index, length) => index >= 0 ? index % length : length + index;
+const normalizeIndex = (index, length) => (index >= 0 ? index % length : length + index);
 
 const getVisibleIndices = (centerIndex, visibleCount, totalLength) => {
   const minIndex = -Math.floor(visibleCount / 2);
@@ -33,14 +33,14 @@ export default class VictimSlider extends Component {
     super(props);
     this.state = {
       // initialize slider with a victim that has an image
-      currentIndex: 0
+      currentIndex: 0,
     };
   }
 
   componentWillMount() {
     const { initialIndex } = this.props;
     this.setState({
-      currentIndex: initialIndex || 0
+      currentIndex: initialIndex || 0,
     });
   }
 
@@ -59,24 +59,16 @@ export default class VictimSlider extends Component {
     return (
       <div className="slider">
         {children.length > visibleCount && (
-        <div className="slider-buttons">
-          <button
-            className="slider-btn"
-            onClick={() => this.slide(-1)}
-          >
-            <Icon icon="angle-left" />
-          </button>
-          <button
-            className="slider-btn"
-            onClick={() => this.slide(1)}
-          >
-            <Icon icon="angle-right" />
-          </button>
-        </div>
-)}
-        <div className="slider-items">
-          { items }
-        </div>
+          <div className="slider-buttons">
+            <button className="slider-btn" onClick={() => this.slide(-1)}>
+              <Icon icon="angle-left" />
+            </button>
+            <button className="slider-btn" onClick={() => this.slide(1)}>
+              <Icon icon="angle-right" />
+            </button>
+          </div>
+        )}
+        <div className="slider-items">{items}</div>
       </div>
     );
   }
@@ -86,5 +78,5 @@ VictimSlider.propTypes = {
   visibleCount: PropTypes.number,
   initialIndex: PropTypes.number,
   title: PropTypes.string,
-  children: PropTypes.array
+  children: PropTypes.array,
 };

@@ -9,12 +9,14 @@ describe('Library DocumentsList container', () => {
   let component;
   let instance;
   let props;
-  const documents = Immutable.fromJS({ rows: [
-    { title: 'Document one', _id: '1' },
-    { title: 'Document two', _id: '2' },
-    { title: 'Document three', _id: '3' }
-  ],
-totalRows: 3 });
+  const documents = Immutable.fromJS({
+    rows: [
+      { title: 'Document one', _id: '1' },
+      { title: 'Document two', _id: '2' },
+      { title: 'Document three', _id: '3' },
+    ],
+    totalRows: 3,
+  });
 
   beforeEach(() => {
     props = {
@@ -29,7 +31,7 @@ totalRows: 3 });
       selectDocuments: jasmine.createSpy('selectDocuments'),
       unselectDocument: jasmine.createSpy('unselectDocument'),
       authorized: true,
-      storeKey: 'library'
+      storeKey: 'library',
     };
   });
 
@@ -84,9 +86,9 @@ totalRows: 3 });
           documents,
           filters,
           ui: fromJS({ filtersPanel: 'panel', selectedDocuments: ['selected'], zoomLevel: 2 }),
-          search: { sort: 'sortProperty' }
+          search: { sort: 'sortProperty' },
         },
-        user: fromJS({ _id: 'uid' })
+        user: fromJS({ _id: 'uid' }),
       };
 
       const state = mapStateToProps(store, { storeKey: 'library' });
@@ -99,7 +101,7 @@ totalRows: 3 });
         multipleSelected: false,
         authorized: true,
         rowListZoomLevel: 2,
-        clickOnDocument
+        clickOnDocument,
       });
     });
   });

@@ -9,7 +9,7 @@ describe('SnippetList', () => {
   let props;
 
   const render = () => {
-    component = shallow(<MetadataFieldSnippets {...props}/>);
+    component = shallow(<MetadataFieldSnippets {...props} />);
   };
 
   beforeEach(() => {
@@ -19,17 +19,12 @@ describe('SnippetList', () => {
       documentViewUrl: '/document/sharedId',
       fieldSnippets: Immutable.fromJS({
         field: 'metadata.summary',
-        texts: [
-          'metadata <b>snippet m1</b> found',
-          'metadata <b>snippet m2</b> found'
-        ]
+        texts: ['metadata <b>snippet m1</b> found', 'metadata <b>snippet m2</b> found'],
       }),
       template: Immutable.fromJS({
         _id: 'template',
-        properties: [
-          { name: 'summary', label: 'Summary' }
-        ]
-      })
+        properties: [{ name: 'summary', label: 'Summary' }],
+      }),
     };
   });
 
@@ -39,13 +34,12 @@ describe('SnippetList', () => {
     expect(snippets).toMatchSnapshot();
   });
   it('should properly render title snippets with Title label as heading', () => {
-    props.fieldSnippets = Immutable.fromJS(Immutable.fromJS({
-      field: 'metadata.summary',
-      texts: [
-        'title <b>snippet m1</b> found',
-        'title <b>snippet m2</b> found'
-      ]
-    }));
+    props.fieldSnippets = Immutable.fromJS(
+      Immutable.fromJS({
+        field: 'metadata.summary',
+        texts: ['title <b>snippet m1</b> found', 'title <b>snippet m2</b> found'],
+      })
+    );
     render();
     const snippets = component;
     expect(snippets).toMatchSnapshot();

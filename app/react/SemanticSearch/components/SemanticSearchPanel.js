@@ -4,11 +4,17 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { List } from 'immutable';
 import socket from 'app/socket';
-import { Icon, } from 'UI';
+import { Icon } from 'UI';
 import ShowIf from 'app/App/ShowIf';
 
 import SidePanel from 'app/Layout/SidePanel';
-import { fetchSearches, submitNewSearch, registerForUpdates, updateSearch, hideSemanticSearch } from '../actions/actions';
+import {
+  fetchSearches,
+  submitNewSearch,
+  registerForUpdates,
+  updateSearch,
+  hideSemanticSearch,
+} from '../actions/actions';
 
 import SearchList from './SearchList';
 
@@ -52,13 +58,17 @@ export class SemanticSearchSidePanel extends Component {
     return (
       <SidePanel open={open} className="metadata-sidepanel semantic-search">
         <div className="sidepanel-header">
-          <button type="button" className="closeSidepanel close-modal" onClick={this.props.hideSemanticSearch}>
-            <Icon icon="times"/>
+          <button
+            type="button"
+            className="closeSidepanel close-modal"
+            onClick={this.props.hideSemanticSearch}
+          >
+            <Icon icon="times" />
           </button>
         </div>
         <div className="sidepanel-body">
           <ShowIf if={!!searches}>
-            <SearchList searches={searches}/>
+            <SearchList searches={searches} />
           </ShowIf>
         </div>
       </SidePanel>
@@ -72,25 +82,28 @@ SemanticSearchSidePanel.propTypes = {
   fetchSearches: PropTypes.func.isRequired,
   registerForUpdates: PropTypes.func.isRequired,
   updateSearch: PropTypes.func.isRequired,
-  open: PropTypes.bool.isRequired
+  open: PropTypes.bool.isRequired,
 };
 
 export function mapStateToProps(state) {
   return {
     searches: state.semanticSearch.searches,
     search: state.semanticSearch.search,
-    open: state.semanticSearch.showSemanticSearchPanel
+    open: state.semanticSearch.showSemanticSearchPanel,
   };
 }
 
 export function mapDispatchToProps(dispatch) {
-  return bindActionCreators({
-    fetchSearches,
-    submitNewSearch,
-    registerForUpdates,
-    updateSearch,
-    hideSemanticSearch
-  }, dispatch);
+  return bindActionCreators(
+    {
+      fetchSearches,
+      submitNewSearch,
+      registerForUpdates,
+      updateSearch,
+      hideSemanticSearch,
+    },
+    dispatch
+  );
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(SemanticSearchSidePanel);

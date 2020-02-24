@@ -14,7 +14,7 @@ describe('SearchItem', () => {
       _id: 'id',
       searchTerm: 'query',
       documents: [],
-      status: 'completed'
+      status: 'completed',
     };
     dispatch = jest.fn();
     context = { confirm: jasmine.createSpy('confirm') };
@@ -22,7 +22,7 @@ describe('SearchItem', () => {
 
   const getProps = () => ({
     search,
-    ...mapDispatchToProps(dispatch)
+    ...mapDispatchToProps(dispatch),
   });
 
   const render = () => shallow(<SearchItem {...getProps()} />, { context });

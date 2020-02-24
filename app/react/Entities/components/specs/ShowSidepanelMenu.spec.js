@@ -11,7 +11,7 @@ describe('ShowSidepanelMenu', () => {
     props = {
       active: false,
       panelIsOpen: true,
-      openPanel: jest.fn()
+      openPanel: jest.fn(),
     };
   });
 

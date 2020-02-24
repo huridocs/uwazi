@@ -11,7 +11,7 @@ describe('ConfirmModal', () => {
   beforeEach(() => {
     props = {
       onAccept: jasmine.createSpy('onAccept'),
-      onCancel: jasmine.createSpy('onCancel')
+      onCancel: jasmine.createSpy('onCancel'),
     };
   });
 

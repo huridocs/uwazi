@@ -25,7 +25,7 @@ describe('Item', () => {
         title: 'doc title',
         template: 'templateId',
         creationDate: 123,
-        snippets: []
+        snippets: [],
       }),
       active: true,
       className: 'custom-class',
@@ -36,7 +36,7 @@ describe('Item', () => {
       additionalIcon: <div>additionalIcon</div>,
       buttons: <div>Buttons</div>,
       templates: Immutable([]),
-      thesauris: Immutable([])
+      thesauris: Immutable([]),
     };
   });
 
@@ -79,8 +79,18 @@ describe('Item', () => {
     render();
     expect(component.find('.item-name').text()).toContain('additionalIcon');
     expect(component.find('.item-name').text()).toContain('doc title');
-    expect(component.find('.item-name').find(Icon.default).props().data).toEqual({ _id: 'icon', type: 'Icons' });
-    expect(component.find('.item-name').find(DocumentLanguage).props().doc).toBe(props.doc);
+    expect(
+      component
+        .find('.item-name')
+        .find(Icon.default)
+        .props().data
+    ).toEqual({ _id: 'icon', type: 'Icons' });
+    expect(
+      component
+        .find('.item-name')
+        .find(DocumentLanguage)
+        .props().doc
+    ).toBe(props.doc);
   });
 
   it('should accept a different property name for the title', () => {
@@ -92,8 +102,19 @@ describe('Item', () => {
 
   it('should include a template label and custom buttons inside the footer', () => {
     render();
-    expect(component.find(ItemFooter).find(TemplateLabel).props().template).toBe('templateId');
-    expect(component.find(ItemFooter).find('div').at(0).text()).toContain('Buttons');
+    expect(
+      component
+        .find(ItemFooter)
+        .find(TemplateLabel)
+        .props().template
+    ).toBe('templateId');
+    expect(
+      component
+        .find(ItemFooter)
+        .find('div')
+        .at(0)
+        .text()
+    ).toContain('Buttons');
   });
 
   describe('Metadata', () => {
@@ -103,7 +124,9 @@ describe('Item', () => {
       render();
       expect(component.find(FormatMetadata).props().entity).toEqual(props.doc.toJS());
       expect(component.find(FormatMetadata).props().sortedProperty).toBe(props.search.sort);
-      expect(component.find(FormatMetadata).props().additionalMetadata).toBe(props.additionalMetadata);
+      expect(component.find(FormatMetadata).props().additionalMetadata).toBe(
+        props.additionalMetadata
+      );
     });
   });
 
@@ -114,7 +137,7 @@ describe('Item', () => {
         icon: { _id: 'icon', type: 'Icons' },
         title: 'doc title',
         template: 'templateId',
-        creationDate: 123
+        creationDate: 123,
       });
 
       render();
@@ -127,7 +150,7 @@ describe('Item', () => {
         title: 'doc title',
         template: 'templateId',
         creationDate: 123,
-        snippets: []
+        snippets: [],
       });
 
       render();
@@ -146,8 +169,8 @@ describe('Item', () => {
         snippets: {
           count: 1,
           metadata: [],
-          fullText: [{ text: '<span>snippet!</span>', page: 1 }]
-        }
+          fullText: [{ text: '<span>snippet!</span>', page: 1 }],
+        },
       });
 
       render();
@@ -166,12 +189,20 @@ describe('Item', () => {
     });
 
     it('should include templates, thesauris and default sort', () => {
-      expect(mapStateToProps({ templates, thesauris }, {})).toEqual({ templates, thesauris, search });
+      expect(mapStateToProps({ templates, thesauris }, {})).toEqual({
+        templates,
+        thesauris,
+        search,
+      });
     });
 
     it('should allow overriding the default sort', () => {
       const ownProps = { searchParams: { sort: 'newSort' } };
-      expect(mapStateToProps({ templates, thesauris }, ownProps)).toEqual({ templates, thesauris, search: { sort: 'newSort' } });
+      expect(mapStateToProps({ templates, thesauris }, ownProps)).toEqual({
+        templates,
+        thesauris,
+        search: { sort: 'newSort' },
+      });
     });
   });
 });

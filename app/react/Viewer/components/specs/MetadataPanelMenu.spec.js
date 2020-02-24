@@ -10,7 +10,7 @@ describe('MetadataPanelMenu', () => {
   let props;
 
   const render = () => {
-    component = shallow(<MetadataPanelMenu {...props}/>);
+    component = shallow(<MetadataPanelMenu {...props} />);
   };
 
   describe('when document is not being edited', () => {
@@ -18,12 +18,16 @@ describe('MetadataPanelMenu', () => {
       props = {
         doc: Immutable.fromJS({ _id: 1 }),
         templates: Immutable.fromJS({ templates: 'tempaltes' }),
-        loadInReduxForm: jasmine.createSpy('loadInReduxForm')
+        loadInReduxForm: jasmine.createSpy('loadInReduxForm'),
       };
       render();
 
       component.find(MenuButtons.Main).simulate('click');
-      expect(props.loadInReduxForm).toHaveBeenCalledWith('documentViewer.docForm', props.doc.toJS(), props.templates.toJS());
+      expect(props.loadInReduxForm).toHaveBeenCalledWith(
+        'documentViewer.docForm',
+        props.doc.toJS(),
+        props.templates.toJS()
+      );
     });
   });
 
@@ -34,7 +38,7 @@ describe('MetadataPanelMenu', () => {
         doc: Immutable.fromJS({ _id: 1 }),
         templates: { templates: 'tempaltes' },
         saveDocument: jasmine.createSpy('saveDocument'),
-        formState: { dirty: false }
+        formState: { dirty: false },
       };
       render();
 
@@ -46,7 +50,7 @@ describe('MetadataPanelMenu', () => {
       it('should disable the buttons', () => {
         props = {
           docForm: { _id: 1 },
-          formState: { dirty: false }
+          formState: { dirty: false },
         };
         render();
 
@@ -61,7 +65,7 @@ describe('MetadataPanelMenu', () => {
       it('should not disable the buttons', () => {
         props = {
           docForm: { _id: 1 },
-          formState: { dirty: true }
+          formState: { dirty: true },
         };
         render();
 

@@ -10,10 +10,7 @@ export class SiteName extends Component {
       <div>
         <Helmet
           titleTemplate={`%s • ${this.props.siteName}`}
-          meta={[
-            { 'char-set': 'utf-8' },
-            { name: 'description', content: 'Uwazi docs' }
-          ]}
+          meta={[{ 'char-set': 'utf-8' }, { name: 'description', content: 'Uwazi docs' }]}
         />
         <I18NLink to="/">{this.props.siteName}</I18NLink>
       </div>
@@ -22,7 +19,7 @@ export class SiteName extends Component {
 }
 
 SiteName.propTypes = {
-  siteName: PropTypes.string
+  siteName: PropTypes.string,
 };
 
 export function mapStateToProps(state) {

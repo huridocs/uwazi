@@ -6,7 +6,9 @@ import { Icon } from 'UI';
 export class ThesauriFormField extends Component {
   constructor(props) {
     super(props);
-    this.focus = () => { this.groupInput.focus(); };
+    this.focus = () => {
+      this.groupInput.focus();
+    };
   }
 
   renderValue(_value, index, groupIndex) {
@@ -39,14 +41,14 @@ export class ThesauriFormField extends Component {
 }
 
 ThesauriFormField.defaultProps = {
-  groupIndex: undefined
+  groupIndex: undefined,
 };
 
 ThesauriFormField.propTypes = {
   removeValue: PropTypes.func.isRequired,
   value: PropTypes.shape({
     id: PropTypes.string,
-    label: PropTypes.string
+    label: PropTypes.string,
   }).isRequired,
   index: PropTypes.number.isRequired,
   groupIndex: PropTypes.number,

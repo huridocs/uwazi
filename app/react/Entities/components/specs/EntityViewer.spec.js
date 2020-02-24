@@ -17,16 +17,30 @@ describe('EntityViewer', () => {
     props = {
       entity: { title: 'Title' },
       templates: [
-        { _id: 'template1', properties: [{ name: 'source_property', label: 'label1' }], name: 'template1Name' },
-        { _id: 'template2', properties: [{ name: 'source_property', label: 'label2' }], name: 'template2Name' }
+        {
+          _id: 'template1',
+          properties: [{ name: 'source_property', label: 'label1' }],
+          name: 'template1Name',
+        },
+        {
+          _id: 'template2',
+          properties: [{ name: 'source_property', label: 'label2' }],
+          name: 'template2Name',
+        },
       ],
       relationTypes: [{ _id: 'abc', name: 'relationTypeName' }],
       connectionsGroups: Immutable([
         { key: 'g1', templates: [{ _id: 't1', count: 1 }] },
-        { key: 'g2', templates: [{ _id: 't2', count: 2 }, { _id: 't3', count: 3 }] }
+        {
+          key: 'g2',
+          templates: [
+            { _id: 't2', count: 2 },
+            { _id: 't3', count: 3 },
+          ],
+        },
       ]),
       deleteConnection: jasmine.createSpy('deleteConnection'),
-      startNewConnection: jasmine.createSpy('startNewConnection')
+      startNewConnection: jasmine.createSpy('startNewConnection'),
     };
   });
 
@@ -44,7 +58,10 @@ describe('EntityViewer', () => {
   it('should render the ConnectionsList passing deleteConnection as prop', () => {
     render();
 
-    component.find(ConnectionsList).props().deleteConnection({ sourceType: 'not metadata' });
+    component
+      .find(ConnectionsList)
+      .props()
+      .deleteConnection({ sourceType: 'not metadata' });
     expect(context.confirm).toHaveBeenCalled();
   });
 

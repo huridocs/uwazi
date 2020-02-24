@@ -4,14 +4,15 @@ import path from 'path';
 import paths from '../config/paths';
 import model from './uploadsModel';
 
-const deleteFile = filename => new Promise((resolve, reject) => {
-  fs.unlink(path.join(paths.customUploads, filename), (err) => {
-    if (err) {
-      reject(err);
-    }
-    resolve();
+const deleteFile = filename =>
+  new Promise((resolve, reject) => {
+    fs.unlink(path.join(paths.customUploads, filename), err => {
+      if (err) {
+        reject(err);
+      }
+      resolve();
+    });
   });
-});
 
 export default {
   save: model.save.bind(model),
@@ -25,5 +26,5 @@ export default {
     await deleteFile(upload.filename);
 
     return upload;
-  }
+  },
 };

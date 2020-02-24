@@ -74,7 +74,7 @@ Model.db.collection.dropIndex('title_text', () => {
   );
 });
 
-const suportedLanguages = [
+const supportedLanguages = [
   'da',
   'nl',
   'en',
@@ -98,7 +98,7 @@ const setMongoLanguage = (doc: EntitySchema) => {
   }
 
   let mongoLanguage = doc.language;
-  if (!suportedLanguages.includes(mongoLanguage)) {
+  if (!supportedLanguages.includes(mongoLanguage)) {
     mongoLanguage = 'none';
   }
 

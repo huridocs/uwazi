@@ -36,20 +36,16 @@ export default {
           label: 'data',
           name: templateUtils.safeName('data'),
         },
-      ]
+      ],
     },
   ],
   settings: [
     {
       _id: db.id(),
       site_name: 'Uwazi',
-      languages: [
-        { key: 'en', label: 'English', default: true },
-      ]
-    }
-  ]
+      languages: [{ key: 'en', label: 'English', default: true }],
+    },
+  ],
 };
 
-export {
-  templateId
-};
+export { templateId };

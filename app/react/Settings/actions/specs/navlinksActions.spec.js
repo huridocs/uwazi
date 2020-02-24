@@ -74,19 +74,26 @@ describe('Settings/Navlinks actions', () => {
     });
 
     describe('upon success', () => {
-      beforeEach((done) => {
-        actions.saveLinks('data')(dispatch)
-        .then(() => {
-          done();
-        });
+      beforeEach(done => {
+        actions
+          .saveLinks('data')(dispatch)
+          .then(() => {
+            done();
+          });
       });
 
       it('should dispatch a NAVLINKS_SAVED with response', () => {
-        expect(dispatch).toHaveBeenCalledWith({ type: 'NAVLINKS_SAVED', data: { _id: 'newId', _rev: 'newRev' } });
+        expect(dispatch).toHaveBeenCalledWith({
+          type: 'NAVLINKS_SAVED',
+          data: { _id: 'newId', _rev: 'newRev' },
+        });
       });
 
       it('should set settings/collection to response', () => {
-        expect(basicActions.set).toHaveBeenCalledWith('settings/collection', { _id: 'newId', _rev: 'newRev' });
+        expect(basicActions.set).toHaveBeenCalledWith('settings/collection', {
+          _id: 'newId',
+          _rev: 'newRev',
+        });
         expect(dispatch).toHaveBeenCalledWith('DATA SET');
       });
 

@@ -24,9 +24,13 @@ export class LibraryModeToggleButtons extends Component {
           </button>
         </div>
 
-        { showGeolocation && (
+        {showGeolocation && (
           <div className="list-view-mode-map buttons-group">
-            <I18NLink to={`library${searchUrl}`} className="btn btn-default" activeClassName="is-active">
+            <I18NLink
+              to={`library${searchUrl}`}
+              className="btn btn-default"
+              activeClassName="is-active"
+            >
               <Icon icon="th" />
               <span className="tab-link-tooltip">{t('System', 'List view')}</span>
             </I18NLink>
@@ -60,13 +64,21 @@ export function mapStateToProps(state, props) {
   const filters = state[props.storeKey].filters.toJS();
   const params = processFilters(state[props.storeKey].search, filters);
   const { templates } = state;
-  const showGeolocation = Boolean(templates.find(_t => _t.get('properties').find(p => p.get('type') === 'geolocation')));
-  const numberOfMarkers = mapHelper.getMarkers(state[props.storeKey].markers.get('rows'), state.templates).length;
+  const showGeolocation = Boolean(
+    templates.find(_t => _t.get('properties').find(p => p.get('type') === 'geolocation'))
+  );
+  const numberOfMarkers = mapHelper.getMarkers(
+    state[props.storeKey].markers.get('rows'),
+    state.templates
+  ).length;
   return {
     searchUrl: encodeSearch(params),
     showGeolocation,
     numberOfMarkers,
-    zoomLevel: Object.keys(props).indexOf('zoomLevel') !== -1 ? props.zoomLevel : state[props.storeKey].ui.get('zoomLevel'),
+    zoomLevel:
+      Object.keys(props).indexOf('zoomLevel') !== -1
+        ? props.zoomLevel
+        : state[props.storeKey].ui.get('zoomLevel'),
   };
 }
 

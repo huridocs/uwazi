@@ -33,8 +33,12 @@ class DocumentsList extends Component {
   }
 
   loadMoreDocuments(amount) {
-    this.setState({ loading: true }); this.setState({ loading: true });
-    this.props.loadMoreDocuments(this.props.storeKey, this.props.documents.get('rows').size + amount);
+    this.setState({ loading: true });
+    this.setState({ loading: true });
+    this.props.loadMoreDocuments(
+      this.props.storeKey,
+      this.props.documents.get('rows').size + amount
+    );
   }
 
   loadMoreButton(amount) {
@@ -44,32 +48,57 @@ class DocumentsList extends Component {
     query.q = rison.encode(q);
     const url = `${this.props.location.pathname}${toUrlParams(query)}`;
     return (
-      <Link to={url} className="btn btn-default btn-load-more" onClick={this.loadMoreDocuments.bind(this, amount)}>
+      <Link
+        to={url}
+        className="btn btn-default btn-load-more"
+        onClick={this.loadMoreDocuments.bind(this, amount)}
+      >
         {amount} {t('System', 'x more')}
       </Link>
     );
   }
 
   render() {
-    const { documents, connections, GraphView, view, searchCentered, hideFooter,
-            connectionsGroups, LoadMoreButton, rowListZoomLevel } = this.props;
-    let counter = <span><b>{documents.get('totalRows')}</b> <Translate>documents</Translate></span>;
+    const {
+      documents,
+      connections,
+      GraphView,
+      view,
+      searchCentered,
+      hideFooter,
+      connectionsGroups,
+      LoadMoreButton,
+      rowListZoomLevel,
+    } = this.props;
+    let counter = (
+      <span>
+        <b>{documents.get('totalRows')}</b> <Translate>documents</Translate>
+      </span>
+    );
     if (connections) {
-      const summary = connectionsGroups.reduce((summaryData, g) => {
-        g.get('templates').forEach((template) => {
-          summaryData.totalConnections += template.get('count');
-        });
-        return summaryData;
-      }, { totalConnections: 0 });
+      const summary = connectionsGroups.reduce(
+        (summaryData, g) => {
+          g.get('templates').forEach(template => {
+            summaryData.totalConnections += template.get('count');
+          });
+          return summaryData;
+        },
+        { totalConnections: 0 }
+      );
       counter = (
         <span>
-          <b>{summary.totalConnections}</b> {t('System', 'connections')}, <b>{documents.get('totalRows')}</b> {t('System', 'documents')}
+          <b>{summary.totalConnections}</b> {t('System', 'connections')},{' '}
+          <b>{documents.get('totalRows')}</b> {t('System', 'documents')}
         </span>
       );
     }
 
     const Search = this.props.SearchBar;
-    const ActionButtons = this.props.ActionButtons ? <div className="search-list-actions"><this.props.ActionButtons /></div> : null;
+    const ActionButtons = this.props.ActionButtons ? (
+      <div className="search-list-actions">
+        <this.props.ActionButtons />
+      </div>
+    ) : null;
     const FooterComponent = !hideFooter ? <Footer /> : null;
 
     return (
@@ -77,7 +106,7 @@ class DocumentsList extends Component {
         <div className="main-wrapper">
           <div className={`search-list ${searchCentered ? 'centered' : ''}`}>
             {ActionButtons}
-            {Search && <Search storeKey={this.props.storeKey}/>}
+            {Search && <Search storeKey={this.props.storeKey} />}
           </div>
           <div className={`sort-by ${searchCentered ? 'centered' : ''}`}>
             <div className="documents-counter">
@@ -111,7 +140,7 @@ class DocumentsList extends Component {
             }
 
             if (view === 'graph') {
-              return <GraphView clickOnDocument={this.clickOnDocument}/>;
+              return <GraphView clickOnDocument={this.clickOnDocument} />;
             }
 
             return null;
@@ -121,8 +150,10 @@ class DocumentsList extends Component {
               if (view !== 'graph') {
                 return (
                   <p className="col-sm-12 text-center documents-counter">
-                    <b> {documents.get('rows').size} </b>{t('System', 'of')}
-                    <b> {documents.get('totalRows')} </b>{t('System', 'documents')}
+                    <b> {documents.get('rows').size} </b>
+                    {t('System', 'of')}
+                    <b> {documents.get('totalRows')} </b>
+                    {t('System', 'documents')}
                   </p>
                 );
               }
@@ -142,7 +173,7 @@ class DocumentsList extends Component {
                 );
               }
               if (this.state.loading) {
-                return <Loader/>;
+                return <Loader />;
               }
 
               return null;
@@ -150,8 +181,9 @@ class DocumentsList extends Component {
             <NeedAuthorization>
               <div className="col-sm-12 force-ltr text-center protip">
                 <Icon icon="lightbulb" /> <b>ProTip!</b>
-                <span>Use <span className="protip-key">cmd</span> or <span className="protip-key">shift</span>&nbsp;
-                + click to select multiple files.
+                <span>
+                  Use <span className="protip-key">cmd</span> or{' '}
+                  <span className="protip-key">shift</span>&nbsp; + click to select multiple files.
                 </span>
               </div>
             </NeedAuthorization>
@@ -184,10 +216,7 @@ DocumentsList.propTypes = {
   storeKey: PropTypes.string,
   LoadMoreButton: PropTypes.func,
   onSnippetClick: PropTypes.func,
-  clickOnDocument: PropTypes.oneOfType([
-    PropTypes.func,
-    PropTypes.object
-  ]),
+  clickOnDocument: PropTypes.oneOfType([PropTypes.func, PropTypes.object]),
   rowListZoomLevel: PropTypes.number,
   connectionsGroups: PropTypes.object,
   searchCentered: PropTypes.bool,
@@ -195,7 +224,7 @@ DocumentsList.propTypes = {
   view: PropTypes.string,
   location: PropTypes.shape({
     pathname: PropTypes.string,
-    query: PropTypes.object
+    query: PropTypes.object,
   }),
 };
 

@@ -23,7 +23,7 @@ export class MetadataPanelMenu extends Component {
             }
 
             return (
-              <MenuButtons.Main disabled={disabled} >
+              <MenuButtons.Main disabled={disabled}>
                 <button type="submit" form="metadataForm" disabled={disabled}>
                   <Icon icon="save" />
                 </button>
@@ -33,7 +33,13 @@ export class MetadataPanelMenu extends Component {
           return (
             <NeedAuthorization roles={['admin', 'editor']}>
               <MenuButtons.Main
-                onClick={() => this.props.loadInReduxForm('documentViewer.docForm', this.props.doc.toJS(), this.props.templates.toJS())}
+                onClick={() =>
+                  this.props.loadInReduxForm(
+                    'documentViewer.docForm',
+                    this.props.doc.toJS(),
+                    this.props.templates.toJS()
+                  )
+                }
               >
                 <Icon icon="pencil-alt" />
               </MenuButtons.Main>
@@ -51,15 +57,15 @@ MetadataPanelMenu.propTypes = {
   docForm: PropTypes.object,
   formState: PropTypes.object,
   loadInReduxForm: PropTypes.func,
-  targetDoc: PropTypes.bool
+  targetDoc: PropTypes.bool,
 };
 
 const mapStateToProps = ({ documentViewer, templates }) => ({
-    doc: documentViewer.doc,
-    templates,
-    docForm: documentViewer.docForm,
-    formState: documentViewer.docFormState,
-    targetDoc: !!documentViewer.targetDoc.get('_id')
+  doc: documentViewer.doc,
+  templates,
+  docForm: documentViewer.docForm,
+  formState: documentViewer.docFormState,
+  targetDoc: !!documentViewer.targetDoc.get('_id'),
 });
 
 function mapDispatchToProps(dispatch) {

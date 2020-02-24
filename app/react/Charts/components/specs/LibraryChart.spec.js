@@ -20,7 +20,7 @@ describe('LibraryChart', () => {
     beforeEach(() => {
       props = {
         options: [],
-        label: 'chartLabel'
+        label: 'chartLabel',
       };
     });
 
@@ -85,7 +85,7 @@ describe('LibraryChart', () => {
           { label: 'p', results: 1 },
           { label: 'q', results: 1 },
           { label: 'r', results: 2 },
-          { label: 's', results: 3 }
+          { label: 's', results: 3 },
         ];
       });
 
@@ -96,7 +96,10 @@ describe('LibraryChart', () => {
         expect(component.find(Pie).props().data[0]).toEqual(props.options[0]);
         expect(component.find(Pie).props().data[2]).toEqual(props.options[2]);
         expect(component.find(Pie).props().data[5]).toEqual(props.options[5]);
-        expect(component.find(Pie).props().data[instance.maxPieItems]).toEqual({ label: 'Other', results: 8 });
+        expect(component.find(Pie).props().data[instance.maxPieItems]).toEqual({
+          label: 'Other',
+          results: 8,
+        });
       });
 
       it('should not cluster the options for the Bar chart', () => {
@@ -104,7 +107,10 @@ describe('LibraryChart', () => {
         component.setState({ type: 'chart' });
 
         expect(component.find(Bar).props().data).toEqual(props.options);
-        expect(component.find(Bar).props().data[instance.maxPieItems]).not.toEqual({ label: 'Other', results: 8 });
+        expect(component.find(Bar).props().data[instance.maxPieItems]).not.toEqual({
+          label: 'Other',
+          results: 8,
+        });
       });
     });
   });

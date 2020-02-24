@@ -21,7 +21,9 @@ export default {
     const firstCursor = db.collection('connections').find();
     while (await firstCursor.hasNext()) {
       const connection = await firstCursor.next();
-      const sharedConnections = await db.collection('connections').count({ sharedId: connection.sharedId });
+      const sharedConnections = await db
+        .collection('connections')
+        .count({ sharedId: connection.sharedId });
 
       if (!(connection.range && connection.range.text) && sharedConnections < languages.length) {
         incomplete += 1;
@@ -42,10 +44,15 @@ export default {
     while (await secondCursor.hasNext()) {
       const hub = await secondCursor.next();
 
-      const hubConnections = await db.collection('connections').find({ hub: hub._id }).toArray();
+      const hubConnections = await db
+        .collection('connections')
+        .find({ hub: hub._id })
+        .toArray();
 
       const shouldDeleteHub = languages.reduce(
-        (shouldDelete, currentLanguage) => hubConnections.filter(c => c.language === currentLanguage.key).length < 2 && shouldDelete, true
+        (shouldDelete, currentLanguage) =>
+          hubConnections.filter(c => c.language === currentLanguage.key).length < 2 && shouldDelete,
+        true
       );
 
       if (shouldDeleteHub) {
@@ -58,5 +65,5 @@ export default {
     }
 
     process.stdout.write('\r\n');
-  }
+  },
 };

@@ -7,7 +7,10 @@ export default combineReducers({
   search: createReducer('semanticSearch/search', {}),
   searches: createReducer('semanticSearch/searches', []),
   resultsFiltersForm: formReducer('semanticSearch.resultsFilters'),
-  resultsFilters: modelReducer('semanticSearch.resultsFilters', { threshold: 0.4, minRelevantSentences: 5 }),
+  resultsFilters: modelReducer('semanticSearch.resultsFilters', {
+    threshold: 0.4,
+    minRelevantSentences: 5,
+  }),
   resultsThreshold: modelReducer('semanticSearch.resultsThreshold'),
   minRelevantSentences: modelReducer('semanticSearch.minRelevantSentences'),
   minRelevantScore: modelReducer('semanticSearch.minRelevantScore'),

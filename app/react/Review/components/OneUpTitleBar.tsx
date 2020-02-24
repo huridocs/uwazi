@@ -26,12 +26,18 @@ export class OneUpTitleBarBase extends Component<OneUpTitleBarProps> {
   };
 
   backToThesaurus() {
-    const { oneUpState } = this.props;
+    const { oneUpState, isPristine } = this.props;
     if (oneUpState.reviewThesaurusName) {
       return (
         <I18NLink
           to={`/settings/dictionaries/cockpit/${oneUpState.reviewThesaurusId}`}
           className="btn btn-default"
+          confirmTitle={isPristine ? '' : 'Confirm discard changes'}
+          confirmMessage={
+            isPristine
+              ? ''
+              : 'There are unsaved changes. Are you sure you want to discard them and navigate away?'
+          }
         >
           <Icon icon="arrow-left" />
           <span className="btn-label">
@@ -90,8 +96,7 @@ export class OneUpTitleBarBase extends Component<OneUpTitleBarProps> {
         )}
         {oneUpState.totalDocs ? (
           <div>
-            {t('System', 'Document')} <span>{oneUpState.indexInDocs + 1}</span>{' '}
-            {t('System', 'out of')}{' '}
+            {t('System', 'Document')} <span>{oneUpState.indexInDocs + 1}</span> {t('System', 'of')}{' '}
             <span>
               {oneUpState.totalDocs >= oneUpState.maxTotalDocs
                 ? `>${oneUpState.totalDocs - 1}`

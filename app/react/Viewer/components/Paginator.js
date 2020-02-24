@@ -6,8 +6,8 @@ import { withRouter } from 'react-router';
 import { CurrentLocationLink } from 'app/Layout';
 
 const disableButton = (page, pageToDisable) => ({
-    className: page === pageToDisable ? 'btn disabled' : 'btn',
-    rel: page === pageToDisable ? 'nofollow' : undefined
+  className: page === pageToDisable ? 'btn disabled' : 'btn',
+  rel: page === pageToDisable ? 'nofollow' : undefined,
 });
 
 const Paginator = ({ page, totalPages, onPageChange }) => {
@@ -17,7 +17,7 @@ const Paginator = ({ page, totalPages, onPageChange }) => {
     <div className="paginator">
       <CurrentLocationLink
         queryParams={{ page: prevPage }}
-        onClick={(e) => {
+        onClick={e => {
           e.preventDefault();
           onPageChange(prevPage);
         }}
@@ -28,7 +28,7 @@ const Paginator = ({ page, totalPages, onPageChange }) => {
       <span>{` ${page} / ${totalPages} `}</span>
       <CurrentLocationLink
         queryParams={{ page: nextPage }}
-        onClick={(e) => {
+        onClick={e => {
           e.preventDefault();
           onPageChange(nextPage);
         }}
@@ -43,18 +43,18 @@ const Paginator = ({ page, totalPages, onPageChange }) => {
 Paginator.defaultProps = {
   page: 1,
   totalPages: 1,
-  onPageChange: () => {}
+  onPageChange: () => {},
 };
 
 Paginator.propTypes = {
   page: PropTypes.number,
   totalPages: PropTypes.number,
-  onPageChange: PropTypes.func
+  onPageChange: PropTypes.func,
 };
 
 export default Paginator;
 
-const PaginatorWithPage = withRouter((props) => {
+const PaginatorWithPage = withRouter(props => {
   const { location, ...restProps } = props;
   return <Paginator {...restProps} page={Number(location.query.page || 1)} />;
 });

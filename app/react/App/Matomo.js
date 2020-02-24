@@ -13,7 +13,8 @@ export class Matomo extends Component {
     return (
       <script
         type="text/javascript"
-        dangerouslySetInnerHTML={{ __html: `
+        dangerouslySetInnerHTML={{
+          __html: `
               var _paq = _paq || [];
               _paq.push(['trackPageView']);
               _paq.push(['enableLinkTracking']);
@@ -24,7 +25,8 @@ export class Matomo extends Component {
                 var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
                 g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
               })();
-        ` }}
+        `,
+        }}
       />
     );
   }

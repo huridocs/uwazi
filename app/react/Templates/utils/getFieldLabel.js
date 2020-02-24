@@ -8,7 +8,7 @@ function getTitleLabel(template) {
 function getMetadataFieldLabel(field, template) {
   const name = field.split('.')[1];
   const property = template.properties.find(p => p.name === name);
-  return property && t(template._id, property.label) || field;
+  return (property && t(template._id, property.label)) || field;
 }
 
 export default function getFieldLabel(field, template) {

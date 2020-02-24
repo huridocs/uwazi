@@ -22,11 +22,11 @@ export default class NumericRange extends Component {
       <div>
         <div className="Numeric__From">
           <span>{t('System', 'Label date "From"')}</span>
-          <Numeric value={this.state.from} onChange={val => this.onChange('from', val)}/>
+          <Numeric value={this.state.from} onChange={val => this.onChange('from', val)} />
         </div>
         <div className="Numeric__To">
           <span>&nbsp;{t('System', 'Label date "to"')}</span>
-          <Numeric value={this.state.to} onChange={val => this.onChange('to', val)}/>
+          <Numeric value={this.state.to} onChange={val => this.onChange('to', val)} />
         </div>
       </div>
     );
@@ -36,5 +36,5 @@ export default class NumericRange extends Component {
 NumericRange.propTypes = {
   model: PropTypes.string,
   value: PropTypes.object,
-  onChange: PropTypes.func
+  onChange: PropTypes.func,
 };

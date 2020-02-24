@@ -50,7 +50,8 @@ exports[`SemanticSearchMultieditPanel open should not open side panel if there a
         size="2x"
       />
       <p>
-        Warning: you are editing multiple files. Fields marked with a 
+        Warning: you are editing multiple files. Fields marked with a
+         
         <Connect(Icon)
           icon="exclamation-triangle"
         />
@@ -145,7 +146,8 @@ exports[`SemanticSearchMultieditPanel should render multi edit form for semantic
         size="2x"
       />
       <p>
-        Warning: you are editing multiple files. Fields marked with a 
+        Warning: you are editing multiple files. Fields marked with a
+         
         <Connect(Icon)
           icon="exclamation-triangle"
         />

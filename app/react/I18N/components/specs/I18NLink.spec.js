@@ -18,7 +18,7 @@ describe('I18NLink', () => {
       activeClass: 'is-active',
       onClick: clickAction,
       onMouseOver: mouseOverAction,
-      dispatch: () => {}
+      dispatch: () => {},
     };
   });
 
@@ -28,6 +28,7 @@ describe('I18NLink', () => {
 
   describe('render', () => {
     it('should pass other props, except for dispatch', () => {
+      I18NLink.navigate = jasmine.createSpy('navigate');
       spyOn(props, 'onClick');
       render();
       const link = component.find(Link);
@@ -35,17 +36,20 @@ describe('I18NLink', () => {
       expect(link.props().dispatch).toBeUndefined();
       component.simulate('click', event);
       expect(props.onClick).toHaveBeenCalledWith(event);
+      expect(I18NLink.navigate).toHaveBeenCalledWith(props.to);
     });
   });
 
   describe('when its disabled', () => {
     it('should do nothing when clicked', () => {
+      I18NLink.navigate = jasmine.createSpy('navigate');
       spyOn(props, 'onClick');
       props.disabled = true;
       render();
       component.simulate('click', event);
       expect(props.onClick).not.toHaveBeenCalled();
       expect(event.preventDefault).toHaveBeenCalled();
+      expect(I18NLink.navigate).not.toHaveBeenCalled();
     });
   });
 

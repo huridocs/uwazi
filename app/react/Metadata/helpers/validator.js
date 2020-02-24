@@ -15,19 +15,19 @@ export function notEmpty(val) {
 export default {
   generate(template, noTitle = false) {
     const validationObject = {
-      title: { required: notEmpty }
+      title: { required: notEmpty },
     };
 
     if (noTitle) {
       delete validationObject.title;
     }
 
-    template.properties.forEach((property) => {
+    template.properties.forEach(property => {
       if (property.required) {
         validationObject[`metadata.${property.name}`] = { required: notEmpty };
       }
     });
 
     return validationObject;
-  }
+  },
 };

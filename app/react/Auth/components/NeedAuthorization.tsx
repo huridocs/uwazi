@@ -6,22 +6,17 @@ type PropTypes = {
   children: React.ReactNode;
 };
 
-const NeedAuthorization: React.FC<PropTypes> = ({
-  authorized,
-  children,
-}: PropTypes) =>
-  authorized ? (
-    <React.Fragment>{children}</React.Fragment>
-  ) : null;
+const NeedAuthorization: React.FC<PropTypes> = ({ authorized, children }: PropTypes) =>
+  authorized ? <React.Fragment>{children}</React.Fragment> : null;
 
 type mapStateProps = {
-  roles: string[]
-}
+  roles: string[];
+};
 
 export function mapStateToProps({ user }: any, props: mapStateProps) {
   const roles = props.roles || ['admin'];
   return {
-    authorized: !!(user.get('_id') && roles.includes(user.get('role')))
+    authorized: !!(user.get('_id') && roles.includes(user.get('role'))),
   };
 }
 

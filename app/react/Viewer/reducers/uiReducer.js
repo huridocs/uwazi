@@ -5,7 +5,7 @@ const initialState = { reference: {}, snippet: {} };
 
 const unsetPanelsWhenUnsetSelections = ['targetReferencePanel', 'referencePanel'];
 
-export default function (state = initialState, action = {}) {
+export default function(state = initialState, action = {}) {
   if (action.type === types.HIGHLIGHT_REFERENCE) {
     return state.set('highlightedReference', action.reference);
   }
@@ -64,7 +64,9 @@ export default function (state = initialState, action = {}) {
 
   if (action.type === 'viewer/documentResults/SET') {
     let newState = state;
-    const selectedInResults = action.value.find(result => result._id === state.getIn(['reference', 'targetDocument']));
+    const selectedInResults = action.value.find(
+      result => result._id === state.getIn(['reference', 'targetDocument'])
+    );
     if (!selectedInResults) {
       newState = state.deleteIn(['reference', 'targetDocument']);
     }
