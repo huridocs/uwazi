@@ -179,12 +179,13 @@ describe('ThesaurusCockpit', () => {
       render();
       expect(component.find('.cockpit').length).toBe(1);
       expect(component.find({ scope: 'row' }).length).toBe(3);
-      /* We expect 5 data cells -- three with quality icons and 1 each of
-    suggestion counts and a review button */
-      expect(component.find('td').children().length).toBe(5);
+      /* We expect 2 data cells -- suggestion counts and a review button */
+      expect(component.find('td').children().length).toBe(2);
       expect(component.find({ title: 'publish-button' }).length).toBe(1);
       expect(component.find({ title: 'review-button-title' }).length).toBe(1);
-      expect(component.contains(<td title="suggestions-count">{4}</td>)).toEqual(true);
+      expect(component.find({ title: 'suggestions-count' }).someWhere(n => n.text() === '4')).toBe(
+        true
+      );
     });
 
     it('should not render the publish button when there are < 1 suggestions', () => {
@@ -203,7 +204,7 @@ describe('ThesaurusCockpit', () => {
       expect(component.find({ title: 'publish-button' }).length).toBe(0);
       expect(component.find({ scope: 'row' }).length).toBe(3);
       // We don't expect a 'to be reviewed' count, nor a 'suggestions button'
-      expect(component.find('td').children().length).toBe(3);
+      expect(component.find('td').children().length).toBe(0);
     });
 
     it('should not render the publish button when there are < 1 suggestions', () => {
@@ -220,7 +221,7 @@ describe('ThesaurusCockpit', () => {
       };
       component = shallow(<ThesaurusCockpitBase {...props} />, { context });
       expect(component.find({ title: 'publish-button' }).length).toBe(0);
-      expect(component.find('td').children().length).toBe(5);
+      expect(component.find('td').children().length).toBe(2);
     });
   });
 
