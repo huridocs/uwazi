@@ -61,7 +61,7 @@ function mapStateToProps({ documentViewer, connections }) {
     connection: connections.connection,
     reference: documentViewer.uiState.toJS().reference,
     targetDocument: documentViewer.targetDoc.get('_id'),
-    pdfInfo: documentViewer.doc.get('pdfInfo'),
+    pdfInfo: documentViewer.doc.getIn(['defaultDoc', 'pdfInfo']),
   };
 }
 

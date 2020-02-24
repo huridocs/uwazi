@@ -4,7 +4,13 @@ import * as viewerTypes from 'app/Viewer/actions/actionTypes';
 
 import * as types from '../actions/actionTypes';
 
-const initialState = { template: '', targetDocument: '', sourceDocument: '' };
+const initialState = {
+  template: '',
+  targetDocument: '',
+  sourceDocument: '',
+  sourceFile: '',
+  targetFile: '',
+};
 
 const resetState = state => {
   const propertiesToReset = ['template', 'targetDocument', 'sourceDocument'];
@@ -21,7 +27,9 @@ export default function(state = initialState, action = {}) {
   switch (action.type) {
     case types.OPEN_CONNECTION_PANEL:
       newState = resetState(state.set('type', action.connectionType));
-      return newState.set('sourceDocument', action.sourceDocument);
+      return newState
+        .set('sourceDocument', action.sourceDocument)
+        .set('sourceFile', action.sourceFile);
 
     case types.SET_RELATION_TYPE:
       return state.set('template', action.template);

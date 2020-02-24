@@ -90,9 +90,10 @@ export function deleteDocument(doc) {
     });
 }
 
-export async function getDocument(requestParams) {
+export async function getDocument(requestParams, defaultLanguage) {
   const [entity] = (await api.get('entities', requestParams)).json.rows;
-  const defaultDoc = entityDefaultDocument(entity.documents, entity.language, 'change this');
+
+  const defaultDoc = entityDefaultDocument(entity.documents, entity.language, defaultLanguage);
   entity.defaultDoc = defaultDoc;
   if (!isClient) {
     return entity;
@@ -118,9 +119,9 @@ export async function getDocument(requestParams) {
 }
 
 export function loadTargetDocument(sharedId) {
-  return dispatch =>
+  return (dispatch, getState) =>
     Promise.all([
-      getDocument(new RequestParams({ sharedId })),
+      getDocument(new RequestParams({ sharedId }), getState().locale),
       referencesAPI.get(new RequestParams({ sharedId })),
     ]).then(([targetDoc, references]) => {
       dispatch(actions.set('viewer/targetDoc', targetDoc));

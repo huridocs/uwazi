@@ -30,14 +30,7 @@ function getPropertiesToBeConnections(template) {
 }
 
 const createRelationship = async (relationship, language) => {
-  const isATextReference = relationship.range;
-  let filename;
-  if (isATextReference) {
-    const [entity] = await entities.get({ sharedId: relationship.entity, language });
-    ({ filename } = entity.file);
-  }
-
-  return model.save({ ...relationship, filename });
+  return model.save(relationship);
 };
 
 const updateRelationship = async relationship =>

@@ -60,6 +60,7 @@ export class ActionButton extends Component {
 }
 
 ActionButton.propTypes = {
+  file: PropTypes.object,
   type: PropTypes.string,
   connection: PropTypes.object,
   saveConnection: PropTypes.func,

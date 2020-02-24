@@ -6,7 +6,6 @@ import React, { Component } from 'react';
 
 import Loader from 'app/components/Elements/Loader';
 import PDF from 'app/PDF';
-import ShowIf from 'app/App/ShowIf';
 import Text from 'app/Viewer/utils/Text';
 import Immutable from 'immutable';
 import { highlightSnippet } from 'app/Viewer/actions/uiActions';
@@ -103,12 +102,28 @@ export class Document extends Component {
     this.componentDidUpdate();
   }
 
+  renderPDF(file) {
+    if (!(file._id && file.pdfInfo)) {
+      return <Loader />;
+    }
+
+    return (
+      <PDF
+        onPageChange={this.props.onPageChange}
+        onPDFReady={this.onDocumentReady}
+        pdfInfo={file.pdfInfo}
+        onLoad={this.pdfLoaded}
+        file={`${APIURL}files/${file.filename}`}
+        filename={file.filename}
+      />
+    );
+  }
+
   render() {
     const doc = this.props.doc.toJS();
     const { file } = this.props;
 
     const Header = this.props.header ? this.props.header : () => false;
-
     return (
       <div>
         <div className={`_${doc._id} document ${this.props.className} ${determineDirection(file)}`}>
@@ -121,19 +136,7 @@ export class Document extends Component {
             onClick={this.handleClick.bind(this)}
             onMouseOver={this.handleOver.bind(this)}
           >
-            <ShowIf if={!file._id || !file.pdfInfo}>
-              <Loader />
-            </ShowIf>
-            <ShowIf if={!!file._id && !!file.pdfInfo}>
-              <PDF
-                onPageChange={this.props.onPageChange}
-                onPDFReady={this.onDocumentReady}
-                pdfInfo={file.pdfInfo}
-                onLoad={this.pdfLoaded}
-                file={`${APIURL}files/${file.filename}`}
-                filename={file.filename}
-              />
-            </ShowIf>
+            {this.renderPDF(file)}
           </div>
         </div>
       </div>
@@ -144,8 +147,11 @@ export class Document extends Component {
 Document.defaultProps = {
   onDocumentReady: () => {},
   onPageChange: () => {},
-  selectedSnippet: Immutable.fromJS({}),
+  onClick: () => {},
   file: {},
+  searchTerm: '',
+  page: 1,
+  selectedSnippet: Immutable.fromJS({}),
 };
 
 Document.propTypes = {
@@ -153,12 +159,11 @@ Document.propTypes = {
   onDocumentReady: PropTypes.func,
   doc: PropTypes.object,
   file: PropTypes.object,
-  docHTML: PropTypes.object,
+  selectedSnippet: PropTypes.instanceOf(Immutable.Map),
   setSelection: PropTypes.func,
   unsetSelection: PropTypes.func,
   header: PropTypes.func,
   searchTerm: PropTypes.string,
-  selectedSnippet: PropTypes.object,
   page: PropTypes.number,
   activateReference: PropTypes.func,
   doScrollToActive: PropTypes.bool,

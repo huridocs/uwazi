@@ -324,22 +324,6 @@ describe('relationships', () => {
         expect(doc4Connection.hub).toBeDefined();
         expect(doc4Connection.hub.toString()).toBe(entity3Connection.hub.toString());
       });
-
-      describe('when creating text references', () => {
-        it('should assign them the file they belong to', async () => {
-          const saveResult = await relationships.save(
-            [
-              { entity: 'doc5', range: { text: 'one thing' } },
-              { entity: 'doc4', range: { text: 'something' } },
-            ],
-            'es'
-          );
-
-          expect(saveResult.length).toBe(2);
-          expect(saveResult[0].filename).toBe('doc5enFile');
-          expect(saveResult[1].filename).toBe('doc4enFile');
-        });
-      });
     });
 
     describe('when the reference exists', () => {

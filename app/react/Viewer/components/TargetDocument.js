@@ -11,9 +11,12 @@ import TargetDocumentHeader from './TargetDocumentHeader';
 const mapStateToProps = state => {
   const { documentViewer } = state;
   const uiState = documentViewer.uiState.toJS();
+  const doc = selectTargetDoc(state);
+  const file = doc.get('defaultDoc') ? doc.get('defaultDoc').toJS() : {};
 
   return {
-    doc: selectTargetDoc(state),
+    doc,
+    file,
     references: selectTargetReferences(state),
     docHTML: documentViewer.targetDocHTML,
     selection: uiState.reference.targetRange,

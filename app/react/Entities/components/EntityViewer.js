@@ -22,6 +22,7 @@ import ShowIf from 'app/App/ShowIf';
 import SidePanel from 'app/Layout/SidePanel';
 import ContextMenu from 'app/ContextMenu';
 import { Icon } from 'UI';
+import { FileList } from 'app/Attachments/components/FileList';
 
 import { ShowSidepanelMenu } from './ShowSidepanelMenu';
 import { deleteEntity } from '../actions/actions';
@@ -116,9 +117,12 @@ export class EntityViewer extends Component {
                         showTitle={false}
                         showType={false}
                       />
+                      <FileList
+                        files={entity.documentsdocuments}
+                        entitySharedId={entity.sharedId}
+                      />
                       <AttachmentsList
                         attachments={entity.attachments}
-                        documents={entity.documents}
                         parentId={entity._id}
                         parentSharedId={entity.sharedId}
                         entityView

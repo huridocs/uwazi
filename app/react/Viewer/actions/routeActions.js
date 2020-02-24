@@ -3,7 +3,6 @@ import { getDocument } from 'app/Viewer/actions/documentActions';
 import referencesAPI from 'app/Viewer/referencesAPI';
 import relationTypesAPI from 'app/RelationTypes/RelationTypesAPI';
 import * as relationships from 'app/Relationships/utils/routeUtils';
-import { entityDefaultDocument } from 'shared/entityDefaultDocument';
 
 import { setReferences } from './referencesActions';
 import entitiesAPI from '../../Entities/EntitiesAPI';

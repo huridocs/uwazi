@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
 
 import { advancedSort } from 'app/utils/advancedSort';
 import { t } from 'app/I18N';
@@ -9,7 +8,7 @@ import { NeedAuthorization } from 'app/Auth';
 import Attachment from 'app/Attachments/components/Attachment';
 import UploadAttachment from 'app/Attachments/components/UploadAttachment';
 
-export class AttachmentsList extends Component {
+export default class AttachmentsList extends Component {
   static arrangeFiles(files = []) {
     return advancedSort(files, { property: 'originalname' });
   }
@@ -55,12 +54,10 @@ export class AttachmentsList extends Component {
 AttachmentsList.defaultProps = {
   attachments: [],
   readOnly: true,
-  entityView: false,
-  processed: false,
   isTargetDoc: false,
-  user: null,
   parentId: null,
   parentSharedId: null,
+  storeKey: '',
 };
 
 AttachmentsList.propTypes = {
@@ -68,23 +65,10 @@ AttachmentsList.propTypes = {
   parentId: PropTypes.string,
   parentSharedId: PropTypes.string,
   readOnly: PropTypes.bool,
-  entityView: PropTypes.bool,
-  processed: PropTypes.bool,
   isTargetDoc: PropTypes.bool,
-  storeKey: PropTypes.string.isRequired,
-  user: PropTypes.object,
+  storeKey: PropTypes.string,
 };
 
 AttachmentsList.contextTypes = {
   confirm: PropTypes.func,
 };
-
-function mapStateToProps({ user }) {
-  return {
-    user,
-    progress: null,
-    model: 'documentViewer.sidepanel.attachment',
-  };
-}
-
-export default connect(mapStateToProps)(AttachmentsList);

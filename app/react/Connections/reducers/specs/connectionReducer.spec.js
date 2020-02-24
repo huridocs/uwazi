@@ -8,7 +8,13 @@ describe('Connections connection reducer', () => {
   describe('when state is undefined', () => {
     it('should return a default state', () => {
       const newState = reducer();
-      expect(newState.toJS()).toEqual({ template: '', targetDocument: '', sourceDocument: '' });
+      expect(newState.toJS()).toEqual({
+        template: '',
+        targetDocument: '',
+        sourceDocument: '',
+        sourceFile: '',
+        targetFile: '',
+      });
     });
   });
 
