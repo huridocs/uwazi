@@ -9,9 +9,10 @@ import { fileExists } from 'api/csv/specs/helpers';
 import { setupTestUploadedPaths, customUploadsPath } from 'api/files/filesystem';
 import db from 'api/utils/testing_db';
 import { setUpApp } from 'api/utils/testingRoutes';
+import connections from 'api/relationships';
 
 import { FileType } from 'shared/types/fileType';
-import { fixtures } from './fixtures';
+import { fixtures, uploadId } from './fixtures';
 import { files } from '../files';
 import uploadRoutes from '../routes';
 
@@ -85,6 +86,16 @@ describe('custom upload routes', () => {
         .query({ _id: file._id?.toString() });
 
       expect(await fileExists(customUploadsPath(file.filename || ''))).toBe(false);
+    });
+
+    it('should delete all connections related to the file', async () => {
+      await request(app)
+        .delete('/api/files')
+        .query({ _id: uploadId.toString() });
+
+      const allConnections = await connections.get();
+      expect(allConnections.length).toBe(1);
+      expect(allConnections[0]).toEqual(expect.objectContaining({ entity: 'entity3' }));
     });
 
     it('should validate _id as string', async () => {

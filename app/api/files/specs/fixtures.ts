@@ -14,6 +14,7 @@ interface DBFixture {
   entities?: EntitySchema[];
   templates?: Object[];
   settings?: Object[];
+  connections?: Object[];
 }
 
 const fixtures: DBFixture = {
@@ -26,6 +27,11 @@ const fixtures: DBFixture = {
     },
     { _id: db.id(), originalname: 'upload2', type: 'custom' },
     { _id: db.id(), originalname: 'upload3', type: 'document' },
+  ],
+  connections: [
+    { entity: 'entity1', file: uploadId.toString(), hub: '1' },
+    { entity: 'entity2', file: uploadId.toString(), hub: '2' },
+    { entity: 'entity3', hub: '3' },
   ],
   entities: [
     {

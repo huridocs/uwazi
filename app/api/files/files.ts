@@ -1,4 +1,5 @@
 import { deleteUploadedFiles } from 'api/files/filesystem';
+import connections from 'api/relationships';
 
 import model from './filesModel';
 import { validateFile } from '../../shared/types/fileSchema';
@@ -15,7 +16,7 @@ export const files = {
     const toDeleteFiles: FileType[] = (await model.get(query)) || { filename: '' };
 
     await model.delete(query);
-
+    await connections.delete({ file: { $in: toDeleteFiles.map(f => f._id?.toString()) } });
     await deleteUploadedFiles(toDeleteFiles);
 
     return toDeleteFiles;
