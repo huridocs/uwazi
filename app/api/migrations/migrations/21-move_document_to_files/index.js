@@ -1,4 +1,39 @@
-/* eslint-disable no-await-in-loop */
+/* eslint-disable no-await-in-loop, max-statements */
+import fs from 'fs';
+import path from 'path';
+
+import paths from 'api/config/paths';
+
+const rename = async (current, newPath) =>
+  new Promise((resolve, reject) => {
+    fs.rename(current, newPath, err => {
+      if (err === null) {
+        resolve(true);
+      }
+      if (err) {
+        reject(err);
+      }
+    });
+  });
+
+export const fileExists = async filePath =>
+  new Promise((resolve, reject) => {
+    fs.stat(filePath, err => {
+      if (err === null) {
+        resolve(true);
+      }
+      if (err && err.code === 'ENOENT') {
+        resolve(false);
+      }
+      if (err) {
+        reject(err);
+      }
+    });
+  });
+
+const oldThumbnailExists = async entity =>
+  fileExists(path.join(paths.uploadedDocuments, `${entity._id}.jpg`));
+
 export default {
   delta: 21,
 
@@ -35,8 +70,23 @@ export default {
           .toArray();
 
         if (!alreadyExists) {
-          await db.collection('files').save(fileToCreate);
+          const {
+            ops: [created],
+          } = await db.collection('files').insert(fileToCreate);
+
+          if (await oldThumbnailExists(entity)) {
+            const thumbnailToCreate = {
+              filename: `${created._id}.jpg`,
+              type: 'thumbnail',
+            };
+            await db.collection('files').save(thumbnailToCreate);
+            await rename(
+              path.join(paths.uploadedDocuments, `${entity._id}.jpg`),
+              path.join(paths.uploadedDocuments, thumbnailToCreate.filename)
+            );
+          }
         }
+
         await db.collection('entities').update({ _id: entity._id }, newEntity);
 
         process.stdout.write(` -> processed: ${index} \r`);

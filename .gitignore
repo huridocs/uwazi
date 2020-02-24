@@ -14,6 +14,8 @@ uwazi-fixtures
 cejil-fixtures
 conversions/*.json
 app/api/files/specs/uploads/*
+app/api/migrations/**/uploads/*
+!app/api/migrations/**/uploads/index.html
 app/api/files/specs/customUploads/*
 !app/api/files/specs/customUploads/index.html
 app/api/csv/specs/*.jpg

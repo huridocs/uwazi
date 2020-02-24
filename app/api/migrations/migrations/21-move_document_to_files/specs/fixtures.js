@@ -1,6 +1,9 @@
+import db from 'api/utils/testing_db';
+
 export default {
   entities: [
     {
+      _id: db.id(),
       sharedId: 'sharedId',
       title: 'test_doc1',
       fullText: { 1: 'page1 spanish' },
@@ -12,6 +15,7 @@ export default {
       pdfInfo: { 1: 15 },
     },
     {
+      _id: db.id(),
       sharedId: 'sharedId',
       title: 'test_doc2',
       fullText: { 1: 'page1 english' },
@@ -23,16 +27,19 @@ export default {
       pdfInfo: { 1: 10 },
     },
     {
+      _id: db.id(),
       sharedId: 'sharedId2',
       language: 'es',
       file: { language: 'en', filename: 'sharedId2.pdf' },
     },
     {
+      _id: db.id(),
       sharedId: 'sharedId2',
       language: 'en',
       file: { language: 'en', filename: 'sharedId2.pdf' },
     },
     {
+      _id: db.id(),
       sharedId: 'withoutFile',
       language: 'en',
     },
