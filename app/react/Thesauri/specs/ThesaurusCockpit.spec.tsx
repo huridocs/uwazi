@@ -206,23 +206,6 @@ describe('ThesaurusCockpit', () => {
       // We don't expect a 'to be reviewed' count, nor a 'suggestions button'
       expect(component.find('td').children().length).toBe(3);
     });
-
-    it('should not render the publish button when there are < 1 suggestions', () => {
-      props.suggestions = {
-        totalRows: 0,
-        totalSuggestions: 0,
-        thesaurus: {
-          propertyName: 'thesaurus_name',
-          values: {
-            id1: 1,
-            id2: 0,
-          },
-        },
-      };
-      component = shallow(<ThesaurusCockpitBase {...props} />, { context });
-      expect(component.find({ title: 'publish-button' }).length).toBe(0);
-      expect(component.find('td').children().length).toBe(5);
-    });
   });
 
   describe('requestState', () => {
