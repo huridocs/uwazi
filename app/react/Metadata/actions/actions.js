@@ -136,8 +136,6 @@ export function loadTemplate(form, template) {
 }
 
 export function uploadDocument(file, sharedId, __reducerKey) {
-  console.log(sharedId);
-
   return (dispatch, getState) => {
     dispatch({ type: types.START_REUPLOAD_DOCUMENT, doc: sharedId });
     superagent

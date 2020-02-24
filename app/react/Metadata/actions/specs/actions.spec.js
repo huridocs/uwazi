@@ -259,21 +259,21 @@ describe('Metadata Actions', () => {
 
     it('should upload the file while dispatching the upload progress (including the language and storeKey to update the results)', () => {
       api.get = () => Promise.resolve([doc]);
-      store.dispatch(actions.uploadDocument('abc1', file, 'sharedId', 'storeKey'));
+      store.dispatch(actions.uploadDocument(file, 'sharedId', 'storeKey'));
       const expectedActions = [
-        { type: types.START_REUPLOAD_DOCUMENT, doc: 'abc1' },
-        { type: types.REUPLOAD_PROGRESS, doc: 'abc1', progress: 55 },
-        { type: types.REUPLOAD_PROGRESS, doc: 'abc1', progress: 65 },
+        { type: types.START_REUPLOAD_DOCUMENT, doc: 'sharedId' },
+        { type: types.REUPLOAD_PROGRESS, doc: 'sharedId', progress: 55 },
+        { type: types.REUPLOAD_PROGRESS, doc: 'sharedId', progress: 65 },
         {
           type: types.REUPLOAD_COMPLETE,
-          doc: 'abc1',
+          doc: 'sharedId',
           file: { filename: 'filename', size: 34, originalname: 'name' },
           __reducerKey: 'storeKey',
         },
       ];
 
       expect(mockUpload.set).toHaveBeenCalledWith('Content-Language', 'es');
-      expect(mockUpload.field).toHaveBeenCalledWith('document', 'sharedId');
+      expect(mockUpload.field).toHaveBeenCalledWith('entity', 'sharedId');
       expect(mockUpload.attach).toHaveBeenCalledWith('file', file, 'filename');
 
       mockUpload.emit('progress', { percent: 55.1 });
