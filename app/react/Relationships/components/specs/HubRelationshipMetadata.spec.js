@@ -1,3 +1,5 @@
+/** @format */
+
 import React from 'react';
 import { shallow } from 'enzyme';
 import { fromJS } from 'immutable';
@@ -13,31 +15,35 @@ describe('HubRelationshipMetadata', () => {
   beforeEach(() => {
     template = 't1';
 
-    const relationTypes = fromJS([{
-      _id: 't1',
-      properties: [
-        { name: 'propertyA', label: 'labelA' },
-        { name: 'propertyB', label: 'labelB' },
-        { name: 'propertyC', label: 'labelC' }
-      ]
-    }]);
+    const relationTypes = fromJS([
+      {
+        _id: 't1',
+        properties: [
+          { name: 'propertyA', label: 'labelA' },
+          { name: 'propertyB', label: 'labelB' },
+          { name: 'propertyC', label: 'labelC', type: 'multiselect' },
+        ],
+      },
+    ]);
 
-    const thesauris = fromJS([{ _id: 'Value A' }, { _id: 'Value B' }]);
+    const thesauris = fromJS([{ _id: 'Value C1' }, { _id: 'Value C2' }]);
 
-    props = Object.assign(
-      mapStateToProps({ relationTypes, thesauris }),
-      { relationship: fromJS({ template }) }
-    );
+    props = Object.assign(mapStateToProps({ relationTypes, thesauris }), {
+      relationship: fromJS({ template }),
+    });
 
     range = { text: 'Some quoted text' };
-    metadata = { propertyA: 'Value B', propertyB: 'Value B', propertyC: [{ value: 'Value C1' }, { value: 'Value C2' }] };
+    metadata = {
+      propertyA: [{ value: 'Value B' }],
+      propertyB: [{ value: 'Value B' }],
+      propertyC: [{ value: 'Value C1' }, { value: 'Value C2' }],
+    };
   });
 
   function testSnapshot() {
     const component = shallow(<HubRelationshipMetadata.WrappedComponent {...props} />);
     expect(component).toMatchSnapshot();
   }
-
 
   it('should render null if relationship lacks metadata or text', () => {
     testSnapshot();

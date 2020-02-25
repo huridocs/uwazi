@@ -10,7 +10,9 @@ export default class Switcher extends Component {
   render() {
     return (
       <div className="switcher-wrapper">
-        <span className={this.props.value ? 'is-active' : ''}>{t('System', 'Filters AND operator')}</span>
+        <span className={this.props.value ? 'is-active' : ''}>
+          {t('System', 'Filters AND operator')}
+        </span>
         <input
           id={`${this.props.prefix}switcher`}
           type="checkbox"
@@ -18,7 +20,9 @@ export default class Switcher extends Component {
           onChange={this.onChange.bind(this)}
         />
         <label htmlFor={`${this.props.prefix}switcher`} className="switcher" />
-        <span className={this.props.value ? '' : 'is-active'}>{t('System', 'Filters OR operator')}</span>
+        <span className={this.props.value ? '' : 'is-active'}>
+          {t('System', 'Filters OR operator')}
+        </span>
       </div>
     );
   }
@@ -27,5 +31,5 @@ export default class Switcher extends Component {
 Switcher.propTypes = {
   onChange: PropTypes.func,
   value: PropTypes.bool,
-  prefix: PropTypes.string
+  prefix: PropTypes.string,
 };

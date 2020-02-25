@@ -13,6 +13,8 @@ export class SearchItem extends Component {
   constructor(props) {
     super(props);
     this.delete = this.delete.bind(this);
+    this.handleResumeClicked = this.handleResumeClicked.bind(this);
+    this.handleStopClicked = this.handleStopClicked.bind(this);
   }
 
   delete(e) {
@@ -22,38 +24,46 @@ export class SearchItem extends Component {
     confirm({
       accept: onDeleteClicked.bind(this, search._id),
       title: 'Confirm delete',
-      message: 'Are you sure you want to delete this search?'
+      message: 'Are you sure you want to delete this search?',
     });
   }
 
+  handleStopClicked(e) {
+    const { search, onStopClicked } = this.props;
+    onStopClicked(search._id);
+    e.preventDefault();
+  }
+
+  handleResumeClicked(e) {
+    const { search, onResumeClicked } = this.props;
+    onResumeClicked(search._id);
+    e.preventDefault();
+  }
+
   renderButtons() {
-    const { search, onStopClicked, onResumeClicked } = this.props;
+    const { search } = this.props;
     const { status } = search;
     return (
       <div className="buttons">
-        <button
-          type="button"
-          className="btn btn-danger delete-search btn-xs"
-          onClick={this.delete}
-        >
+        <button type="button" className="btn btn-danger delete-search btn-xs" onClick={this.delete}>
           <Icon icon="trash-alt" size="sm" />
         </button>
-        { ['inProgress', 'pending'].includes(status) && (
+        {['inProgress', 'pending'].includes(status) && (
           <button
             type="button"
             className="btn btn-warning stop-search btn-xs"
-            onClick={() => onStopClicked(search._id)}
+            onClick={this.handleStopClicked}
           >
             <Icon icon="stop" size="sm" />
           </button>
         )}
-        { status === 'stopped' && (
+        {status === 'stopped' && (
           <button
             type="button"
             className="btn btn-success resume-search btn-xs"
-            onClick={() => onResumeClicked(search._id)}
+            onClick={this.handleResumeClicked}
           >
-            <Icon icon="play" size="sm"/>
+            <Icon icon="play" size="sm" />
           </button>
         )}
       </div>
@@ -68,21 +78,19 @@ export class SearchItem extends Component {
     return (
       <I18NLink className="semantic-search-list-item" to={`semanticsearch/${search._id}`}>
         <div className="item-header">
-          <div className="title"><SearchDescription searchTerm={search.searchTerm} query={search.query} /></div>
-          { this.renderButtons() }
+          <div className="title">
+            <SearchDescription searchTerm={search.searchTerm} query={search.query} />
+          </div>
+          {this.renderButtons()}
         </div>
-        <div>
-          { status !== 'completed' &&
-            <ProgressBar value={completed} max={max} />
-          }
-        </div>
+        <div>{status !== 'completed' && <ProgressBar value={completed} max={max} />}</div>
       </I18NLink>
     );
   }
 }
 
 SearchItem.contextTypes = {
-  confirm: PropTypes.func
+  confirm: PropTypes.func,
 };
 
 SearchItem.propTypes = {
@@ -90,19 +98,22 @@ SearchItem.propTypes = {
     _id: PropTypes.string,
     searchTerm: PropTypes.string,
     documents: PropTypes.array,
-    status: PropTypes.string
+    status: PropTypes.string,
   }).isRequired,
   onDeleteClicked: PropTypes.func.isRequired,
   onStopClicked: PropTypes.func.isRequired,
-  onResumeClicked: PropTypes.func.isRequired
+  onResumeClicked: PropTypes.func.isRequired,
 };
 
 export function mapDispatchToProps(dispatch) {
-  return bindActionCreators({
-    onDeleteClicked: deleteSearch,
-    onStopClicked: stopSearch,
-    onResumeClicked: resumeSearch
-  }, dispatch);
+  return bindActionCreators(
+    {
+      onDeleteClicked: deleteSearch,
+      onStopClicked: stopSearch,
+      onResumeClicked: resumeSearch,
+    },
+    dispatch
+  );
 }
 
 export default connect(null, mapDispatchToProps)(SearchItem);

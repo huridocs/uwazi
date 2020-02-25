@@ -4,28 +4,32 @@ import translations from 'api/i18n/translations';
 import { generateNamesAndIds, getUpdatedNames, getDeletedProperties } from '../templates/utils';
 import model from './model';
 
-const checkDuplicated = relationtype => model.get()
-.then((response) => {
-  const duplicated = response.find((entry) => {
-    const sameEntity = entry._id.equals(relationtype._id);
-    const sameName = entry.name.trim().toLowerCase() === relationtype.name.trim().toLowerCase();
-    return sameName && !sameEntity;
-  });
+const checkDuplicated = relationtype =>
+  model.get().then(response => {
+    const duplicated = response.find(entry => {
+      const sameEntity = entry._id.equals(relationtype._id);
+      const sameName = entry.name.trim().toLowerCase() === relationtype.name.trim().toLowerCase();
+      return sameName && !sameEntity;
+    });
 
-  if (duplicated) {
-    return Promise.reject('duplicated_entry');
-  }
-});
+    if (duplicated) {
+      return Promise.reject('duplicated_entry');
+    }
+  });
 
 function _save(relationtype) {
   const values = {};
   values[relationtype.name] = relationtype.name;
-  relationtype.properties.forEach((property) => {
+  relationtype.properties.forEach(property => {
     values[property.label] = property.label;
   });
-  return model.save(relationtype)
-  .then(response => translations.addContext(response._id, relationtype.name, values, 'Connection')
-  .then(() => response));
+  return model
+    .save(relationtype)
+    .then(response =>
+      translations
+        .addContext(response._id, relationtype.name, values, 'Connection')
+        .then(() => response)
+    );
 }
 
 const updateTranslation = (currentTemplate, template) => {
@@ -44,12 +48,18 @@ const updateTranslation = (currentTemplate, template) => {
 
   context[template.name] = template.name;
 
-  return translations.updateContext(currentTemplate._id, template.name, updatedLabels, deletedPropertiesByLabel, context, 'Connection');
+  return translations.updateContext(
+    currentTemplate._id,
+    template.name,
+    updatedLabels,
+    deletedPropertiesByLabel,
+    context,
+    'Connection'
+  );
 };
 
 function _update(newTemplate) {
-  return model.getById({ _id: newTemplate._id })
-  .then((currentTemplate) => {
+  return model.getById({ _id: newTemplate._id }).then(currentTemplate => {
     updateTranslation(currentTemplate, newTemplate);
     relationships.updateMetadataProperties(newTemplate, currentTemplate);
     return model.save(newTemplate);
@@ -68,8 +78,7 @@ export default {
   save(relationtype) {
     relationtype.properties = generateNamesAndIds(relationtype.properties || []);
 
-    return checkDuplicated(relationtype)
-    .then(() => {
+    return checkDuplicated(relationtype).then(() => {
       if (!relationtype._id) {
         return _save(relationtype);
       }
@@ -78,15 +87,15 @@ export default {
   },
 
   delete(id) {
-    return relationships.countByRelationType(id)
-    .then((relationshipsUsingIt) => {
+    return relationships.countByRelationType(id).then(relationshipsUsingIt => {
       if (relationshipsUsingIt === 0) {
-        return translations.deleteContext(id)
-        .then(() => model.delete(id))
-        .then(() => true);
+        return translations
+          .deleteContext(id)
+          .then(() => model.delete(id))
+          .then(() => true);
       }
 
       return false;
     });
-  }
+  },
 };

@@ -15,7 +15,7 @@ describe('ConfirmCloseForm', () => {
       hideModal: jasmine.createSpy('hideModal'),
       resetForm: jasmine.createSpy('resetForm'),
       closePanel: jasmine.createSpy('closePanel'),
-      doc: Immutable.fromJS({ _id: 'docId', title: 'test' })
+      doc: Immutable.fromJS({ _id: 'docId', title: 'test' }),
     };
   });
 

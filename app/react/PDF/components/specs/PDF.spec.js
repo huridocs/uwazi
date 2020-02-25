@@ -1,3 +1,6 @@
+/**
+ * @jest-environment jsdom
+ */
 import React from 'react';
 import { shallow } from 'enzyme';
 import Immutable from 'immutable';
@@ -25,19 +28,19 @@ describe('PDF', () => {
         2: { chars: 20 },
         3: { chars: 30 },
         4: { chars: 40 },
-        5: { chars: 50 }
-      })
+        5: { chars: 50 },
+      }),
     };
   });
 
   const render = () => {
-    component = shallow(<PDF {...props}/>);
+    component = shallow(<PDF {...props} />);
     instance = component.instance();
     spyOn(instance, 'setState').and.callThrough();
   };
 
   describe('on instance', () => {
-    it('should get the pdf with pdfjs', (done) => {
+    it('should get the pdf with pdfjs', done => {
       render();
       expect(PDFJS.getDocument).toHaveBeenCalledWith(props.file);
       setTimeout(() => {
@@ -70,7 +73,7 @@ describe('PDF', () => {
       expect(PDFJS.getDocument.calls.count()).toBe(1);
     });
 
-    it('should get the new PDF if filename changed', (done) => {
+    it('should get the new PDF if filename changed', done => {
       render();
       instance.componentWillReceiveProps({ filename: 'newfile.pdf' });
       expect(Object.keys(instance.pagesLoaded).length).toBe(0);

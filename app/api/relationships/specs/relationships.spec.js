@@ -1,3 +1,5 @@
+/** @format */
+
 /* eslint-disable max-nested-callbacks */
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import db from 'api/utils/testing_db';
@@ -26,25 +28,27 @@ import fixtures, {
   family,
   relation1,
   relation2,
-  template
+  template,
 } from './fixtures';
 import relationships from '../relationships';
 import search from '../../search/search';
 
 describe('relationships', () => {
-  beforeEach((done) => {
+  beforeEach(done => {
     spyOn(errorLog, 'error');
     spyOn(entities, 'updateMetdataFromRelationships').and.returnValue(Promise.resolve());
-    db.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
+    db.clearAllAndLoad(fixtures)
+      .then(done)
+      .catch(catchErrors(done));
   });
 
-  afterAll((done) => {
+  afterAll(done => {
     db.disconnect().then(done);
   });
 
   describe('getByDocument()', () => {
     const testEntityData = (connection, testValues) => {
-      Object.keys(testValues).forEach((property) => {
+      Object.keys(testValues).forEach(property => {
         expect(connection.entityData[property]).toEqual(testValues[property]);
       });
     };
@@ -53,10 +57,21 @@ describe('relationships', () => {
       const result = await relationships.getByDocument('entity2', 'en');
       expect(result.length).toBe(12);
       const entity1Connection = result.find(connection => connection.entity === 'entity1');
-      testEntityData(entity1Connection, { title: 'entity1 title', type: 'document', creationDate: 123, template });
+      testEntityData(entity1Connection, {
+        title: 'entity1 title',
+        type: 'document',
+        creationDate: 123,
+        template,
+      });
 
       const entity3Connection = result.find(connection => connection.entity === 'entity3');
-      testEntityData(entity3Connection, { title: 'entity3 title', type: 'entity', published: true, creationDate: 456, template });
+      testEntityData(entity3Connection, {
+        title: 'entity3 title',
+        type: 'entity',
+        published: true,
+        creationDate: 456,
+        template,
+      });
       expect(entity3Connection.entityData.file).toBeUndefined();
     });
 
@@ -71,15 +86,25 @@ describe('relationships', () => {
       const entity1PtRelationships = await relationships.getByDocument('entity1', 'pt');
 
       expect(entity1EnRelationships.length).toBe(5);
-      expect(entity1EnRelationships.filter(r => r.hub.toString() === hub1.toString()).length).toBe(2);
-      expect(entity1EnRelationships.filter(r => r.hub.toString() === hub12.toString()).length).toBe(3);
+      expect(entity1EnRelationships.filter(r => r.hub.toString() === hub1.toString()).length).toBe(
+        2
+      );
+      expect(entity1EnRelationships.filter(r => r.hub.toString() === hub12.toString()).length).toBe(
+        3
+      );
 
       expect(entity1EsRelationships.length).toBe(4);
-      expect(entity1EsRelationships.filter(r => r.hub.toString() === hub1.toString()).length).toBe(2);
-      expect(entity1EsRelationships.filter(r => r.hub.toString() === hub12.toString()).length).toBe(2);
+      expect(entity1EsRelationships.filter(r => r.hub.toString() === hub1.toString()).length).toBe(
+        2
+      );
+      expect(entity1EsRelationships.filter(r => r.hub.toString() === hub12.toString()).length).toBe(
+        2
+      );
 
       expect(entity1PtRelationships.length).toBe(2);
-      expect(entity1PtRelationships.filter(r => r.hub.toString() === hub1.toString()).length).toBe(2);
+      expect(entity1PtRelationships.filter(r => r.hub.toString() === hub1.toString()).length).toBe(
+        2
+      );
     });
 
     it('should set template to null if no template found', async () => {
@@ -141,7 +166,9 @@ describe('relationships', () => {
     });
 
     it('should return groups of connection wihtout refs if excluded', async () => {
-      const groups = await relationships.getGroupsByConnection('entity2', 'en', { excludeRefs: true });
+      const groups = await relationships.getGroupsByConnection('entity2', 'en', {
+        excludeRefs: true,
+      });
       expect(groups.length).toBe(3);
       expect(groups[0].templates[0].refs).toBeUndefined();
       expect(groups[1].templates[0].refs).toBeUndefined();
@@ -172,7 +199,7 @@ describe('relationships', () => {
   });
 
   describe('bulk()', () => {
-    const cleanSnapshot = (_value) => {
+    const cleanSnapshot = _value => {
       const [[_savedItem], ...deletes] = _value;
       const savedItem = {
         ..._savedItem,
@@ -184,7 +211,9 @@ describe('relationships', () => {
       savedItem.entityData = {
         ...savedItem.entityData,
         _id: savedItem.entityData._id.equals(entity3) ? 'entity3' : savedItem.entityData._id,
-        template: savedItem.entityData.template.equals(template) ? 'template' : savedItem.entityData.template,
+        template: savedItem.entityData.template.equals(template)
+          ? 'template'
+          : savedItem.entityData.template,
       };
 
       return [[savedItem], ...deletes];
@@ -192,8 +221,16 @@ describe('relationships', () => {
 
     it('should save or delete the relationships', async () => {
       const data = {
-        save: [{ _id: connectionID5, entity: 'entity3', hub: hub2, template: relation2, range: { text: 'changed text' } }],
-        delete: [{ _id: connectionID2 }, { _id: connectionID3 }]
+        save: [
+          {
+            _id: connectionID5,
+            entity: 'entity3',
+            hub: hub2,
+            template: relation2,
+            range: { text: 'changed text' },
+          },
+        ],
+        delete: [{ _id: connectionID2 }, { _id: connectionID3 }],
       };
 
       const response = await relationships.bulk(data, 'en');
@@ -211,7 +248,7 @@ describe('relationships', () => {
     it('should first save and then delete to prevent sidefects of hub sanitizing', async () => {
       const data = {
         save: [{ entity: 'entity3', hub: hub11 }],
-        delete: [{ _id: connectionID6 }]
+        delete: [{ _id: connectionID6 }],
       };
 
       await relationships.bulk(data, 'en');
@@ -235,13 +272,19 @@ describe('relationships', () => {
 
       it('should call entities to update the metadata', async () => {
         await relationships.save({ entity: 'entity3', hub: hub1 }, 'en');
-        expect(entities.updateMetdataFromRelationships).toHaveBeenCalledWith(['entity1', 'entity2', 'entity3'], 'en');
+        expect(entities.updateMetdataFromRelationships).toHaveBeenCalledWith(
+          ['entity1', 'entity2', 'entity3'],
+          'en'
+        );
       });
     });
 
     describe('when creating relationships to non existent entities', () => {
       it('should not create them', async () => {
-        const relations = await relationships.save([{ entity: 'non existent' }, { entity: 'entity3' }, { entity: 'doc4' }], 'en');
+        const relations = await relationships.save(
+          [{ entity: 'non existent' }, { entity: 'entity3' }, { entity: 'doc4' }],
+          'en'
+        );
         expect(relations.length).toBe(2);
 
         const [entity3Connection, doc4Connection] = relations;
@@ -257,7 +300,10 @@ describe('relationships', () => {
 
     describe('When creating new relationships', () => {
       it('should assign them a hub and return them with the entity data', async () => {
-        const [entity3Connection, doc4Connection] = await relationships.save([{ entity: 'entity3' }, { entity: 'doc4' }], 'en');
+        const [entity3Connection, doc4Connection] = await relationships.save(
+          [{ entity: 'entity3' }, { entity: 'doc4' }],
+          'en'
+        );
 
         expect(entity3Connection.entity).toBe('entity3');
         expect(entity3Connection.entityData.template).toEqual(template);
@@ -281,10 +327,13 @@ describe('relationships', () => {
 
       describe('when creating text references', () => {
         it('should assign them the file they belong to', async () => {
-          const saveResult = await relationships.save([
-            { entity: 'doc5', range: { text: 'one thing' } },
-            { entity: 'doc4', range: { text: 'something' } },
-          ], 'es');
+          const saveResult = await relationships.save(
+            [
+              { entity: 'doc5', range: { text: 'one thing' } },
+              { entity: 'doc4', range: { text: 'something' } },
+            ],
+            'es'
+          );
 
           expect(saveResult.length).toBe(2);
           expect(saveResult[0].filename).toBe('doc5enFile');
@@ -326,15 +375,16 @@ describe('relationships', () => {
     });
 
     describe('when saving one reference without hub', () => {
-      it('should throw an error', (done) => {
-        relationships.save({ entity: 'entity3', range: { text: 'range' } }, 'en')
-        .then(() => {
-          done.fail('Should throw an error');
-        })
-        .catch((error) => {
-          expect(error.code).toBe(500);
-          done();
-        });
+      it('should throw an error', done => {
+        relationships
+          .save({ entity: 'entity3', range: { text: 'range' } }, 'en')
+          .then(() => {
+            done.fail('Should throw an error');
+          })
+          .catch(error => {
+            expect(error.code).toBe(500);
+            done();
+          });
       });
     });
   });
@@ -346,17 +396,20 @@ describe('relationships', () => {
       entity = {
         template: template.toString(),
         sharedId: 'bruceWayne',
-        metadata: { family: ['thomasWayne'], friend: ['robin', 'alfred'] }
+        metadata: {
+          family: [{ value: 'thomasWayne' }],
+          friend: [{ value: 'robin' }, { value: 'alfred' }],
+        },
       };
     });
 
-    const saveReferencesChangingMetadataTo = async (metadata) => {
+    const saveReferencesChangingMetadataTo = async metadata => {
       entity.metadata = metadata;
       await relationships.saveEntityBasedReferences(entity, 'en');
     };
 
     it('should create connections based on properties', async () => {
-      await saveReferencesChangingMetadataTo({ friend: ['robin'] });
+      await saveReferencesChangingMetadataTo({ friend: [{ value: 'robin' }] });
       const connections = await relationships.getByDocument('bruceWayne', 'en');
       expect(connections.find(connection => connection.entity === 'bruceWayne')).toBeDefined();
       expect(connections.find(connection => connection.entity === 'robin')).toBeDefined();
@@ -381,24 +434,36 @@ describe('relationships', () => {
       expect(existingHubConnections.length).toBe(4);
 
       expect(newHubCreated.length).toBe(3);
-      expect(newHubCreated.find(c => c.entity === 'robin').template.toString()).toBe(friend.toString());
-      expect(newHubCreated.find(c => c.entity === 'alfred').template.toString()).toBe(friend.toString());
+      expect(newHubCreated.find(c => c.entity === 'robin').template.toString()).toBe(
+        friend.toString()
+      );
+      expect(newHubCreated.find(c => c.entity === 'alfred').template.toString()).toBe(
+        friend.toString()
+      );
       expect(newHubCreated.find(c => c.entity === 'bruceWayne').template).toBe(null);
     });
 
     it('should delete connections based on properties', async () => {
       await relationships.saveEntityBasedReferences(entity, 'en');
 
-      await saveReferencesChangingMetadataTo({ family: ['thomasWayne'], friend: ['alfred'] });
+      await saveReferencesChangingMetadataTo({
+        family: [{ value: 'thomasWayne' }],
+        friend: [{ value: 'alfred' }],
+      });
       let connections = await relationships.getByDocument('bruceWayne', 'en');
       expect(connections.length).toBe(6);
       expect(connections.find(c => c.entity === 'robin')).not.toBeDefined();
 
-      await saveReferencesChangingMetadataTo({ family: ['alfred'], friend: ['robin'] });
+      await saveReferencesChangingMetadataTo({
+        family: [{ value: 'alfred' }],
+        friend: [{ value: 'robin' }],
+      });
       connections = await relationships.getByDocument('bruceWayne', 'en');
 
       expect(connections.find(c => c.entity === 'thomasWayne')).not.toBeDefined();
-      expect(connections.find(c => c.entity === 'alfred').template.toString()).toBe(family.toString());
+      expect(connections.find(c => c.entity === 'alfred').template.toString()).toBe(
+        family.toString()
+      );
       expect(connections.length).toBe(7);
     });
   });
@@ -437,16 +502,20 @@ describe('relationships', () => {
     });
 
     it('should return the matching entities with their relationships and the current entity with the respective relationships', async () => {
-      const searchResponse = Promise.resolve(
-        { rows: [
+      const searchResponse = Promise.resolve({
+        rows: [
           { sharedId: 'entity1' },
           { sharedId: 'entity3' },
           { sharedId: 'doc4' },
-          { sharedId: 'doc5' }
-        ] }
-      );
+          { sharedId: 'doc5' },
+        ],
+      });
       spyOn(search, 'search').and.returnValue(searchResponse);
-      const result = await relationships.search('entity2', { filter: {}, searchTerm: 'something' }, 'en');
+      const result = await relationships.search(
+        'entity2',
+        { filter: {}, searchTerm: 'something' },
+        'en'
+      );
       expect(result.rows.length).toBe(5);
       expect(result.rows[0].connections.length).toBe(1);
       expect(result.rows[1].connections.length).toBe(4);
@@ -456,20 +525,27 @@ describe('relationships', () => {
     });
 
     it('should return number of hubs (total and requested) and allow limiting the number of HUBs returned', async () => {
-      const searchResponse = Promise.resolve(
-        { rows: [
+      const searchResponse = Promise.resolve({
+        rows: [
           { sharedId: 'entity1' },
           { sharedId: 'entity3' },
           { sharedId: 'doc4' },
-          { sharedId: 'doc5' }
-        ] });
+          { sharedId: 'doc5' },
+        ],
+      });
       spyOn(search, 'search').and.returnValue(searchResponse);
 
-      const result = await relationships.search('entity2', { filter: {}, searchTerm: 'something', limit: 2 }, 'en');
+      const result = await relationships.search(
+        'entity2',
+        { filter: {}, searchTerm: 'something', limit: 2 },
+        'en'
+      );
       expect(result.totalHubs).toBe(5);
       expect(result.requestedHubs).toBe(2);
 
-      const expectedHubIds = result.rows[result.rows.length - 1].connections.map(c => c.hub.toString());
+      const expectedHubIds = result.rows[result.rows.length - 1].connections.map(c =>
+        c.hub.toString()
+      );
       expect(expectedHubIds.length).toBe(2);
       expect(expectedHubIds).toContain(result.rows[0].connections[0].hub.toString());
       expect(expectedHubIds).toContain(result.rows[1].connections[0].hub.toString());
@@ -490,7 +566,9 @@ describe('relationships', () => {
     it('should delete the relationship', async () => {
       const response = await relationships.delete({ _id: connectionID1 }, 'en');
       const hub7Connections = await relationships.get({ hub: hub7 });
-      expect(hub7Connections.filter(c => c._id.toString() === connectionID1.toString()).length).toBe(0);
+      expect(
+        hub7Connections.filter(c => c._id.toString() === connectionID1.toString()).length
+      ).toBe(0);
       expect(response.ok).toBe(1);
     });
 
@@ -529,20 +607,35 @@ describe('relationships', () => {
     it('should call entities to update the metadata', async () => {
       await relationships.delete({ entity: 'bruceWayne' }, 'en');
 
-      expect(entities.updateMetdataFromRelationships).toHaveBeenCalledWith(['doc2', 'IHaveNoTemplate', 'thomasWayne', 'bruceWayne'], 'en');
-      expect(entities.updateMetdataFromRelationships).toHaveBeenCalledWith(['doc2', 'IHaveNoTemplate', 'thomasWayne', 'bruceWayne'], 'es');
+      expect(entities.updateMetdataFromRelationships).toHaveBeenCalledTimes(2);
+
+      const expectedDocs = ['doc2', 'IHaveNoTemplate', 'thomasWayne', 'bruceWayne'];
+      let expectedLanguages = ['en', 'es'];
+      const args = entities.updateMetdataFromRelationships.calls.allArgs();
+      args.forEach(arg => {
+        const [docs, languages] = arg;
+        expectedDocs.forEach(doc => {
+          expect(docs).toContain(doc);
+        });
+
+        expect(expectedLanguages).toContain(languages);
+        expectedLanguages = expectedLanguages.filter(lang => lang !== languages);
+      });
+
+      expect(expectedLanguages).toEqual([]);
     });
 
     describe('when there is no condition', () => {
-      it('should throw an error', (done) => {
-        relationships.delete()
-        .then(() => {
-          done.fail('Should throw an error');
-        })
-        .catch((error) => {
-          expect(error.code).toBe(500);
-          done();
-        });
+      it('should throw an error', done => {
+        relationships
+          .delete()
+          .then(() => {
+            done.fail('Should throw an error');
+          })
+          .catch(error => {
+            expect(error.code).toBe(500);
+            done();
+          });
       });
     });
   });

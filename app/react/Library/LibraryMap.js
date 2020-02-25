@@ -15,11 +15,20 @@ export default class LibraryMap extends Library {
       <LibraryLayout className="library-map-layout">
         <LibraryModeToggleButtons
           storeKey="library"
-          zoomIn={() => { this.mapView.getWrappedInstance().map.zoomIn(); }}
-          zoomOut={() => { this.mapView.getWrappedInstance().map.zoomOut(); }}
+          zoomIn={() => {
+            this.mapView.getWrappedInstance().map.zoomIn();
+          }}
+          zoomOut={() => {
+            this.mapView.getWrappedInstance().map.zoomOut();
+          }}
           zoomLevel={0}
         />
-        <MapView storeKey="library" ref={(ref) => { this.mapView = ref; }}/>
+        <MapView
+          storeKey="library"
+          ref={ref => {
+            this.mapView = ref;
+          }}
+        />
       </LibraryLayout>
     );
   }

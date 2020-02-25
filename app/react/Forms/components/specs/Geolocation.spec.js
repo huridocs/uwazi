@@ -1,3 +1,5 @@
+/** @format */
+
 import React from 'react';
 import { shallow } from 'enzyme';
 
@@ -9,7 +11,7 @@ describe('Geolocation', () => {
   let props;
 
   const render = () => {
-    component = shallow(<Geolocation {...props}/>);
+    component = shallow(<Geolocation {...props} />);
     instance = component.instance();
   };
 
@@ -17,9 +19,9 @@ describe('Geolocation', () => {
     props = {
       value: [
         { lat: 32.18, lon: -17.2, label: 'home' },
-        { lat: 13.07, lon: 5.10, label: 'Created through migration?' },
+        { lat: 13.07, lon: 5.1, label: 'Created through migration?' },
       ],
-      onChange: jasmine.createSpy('onChange')
+      onChange: jasmine.createSpy('onChange'),
     };
 
     render();
@@ -44,7 +46,10 @@ describe('Geolocation', () => {
     function expectOnChangeCallWhenInputSimulation(simulatedInput, expectedValue) {
       const latInput = component.find('input').at(0);
       latInput.simulate('change', { target: { value: simulatedInput } });
-      expect(props.onChange).toHaveBeenCalledWith([{ lat: expectedValue, lon: -17.2, label: 'home' }, props.value[1]]);
+      expect(props.onChange).toHaveBeenCalledWith([
+        { lat: expectedValue, lon: -17.2, label: 'home' },
+        props.value[1],
+      ]);
     }
 
     it('should call onChange with the new value', () => {
@@ -75,7 +80,10 @@ describe('Geolocation', () => {
 
     it('should call onChange with the new value', () => {
       lonInput.simulate('change', { target: { value: '28' } });
-      expect(props.onChange).toHaveBeenCalledWith([{ lat: 32.18, lon: 28, label: 'home' }, props.value[1]]);
+      expect(props.onChange).toHaveBeenCalledWith([
+        { lat: 32.18, lon: 28, label: 'home' },
+        props.value[1],
+      ]);
     });
 
     it('should call onChange with empty value when invalid longitude', () => {
@@ -88,9 +96,22 @@ describe('Geolocation', () => {
     it('should call onChange with the map value', () => {
       const event = { lngLat: [5, 13] };
       instance.mapClick(event);
-      expect(props.onChange).toHaveBeenCalledWith([{ lat: 13, lon: 5, label: 'home' }, props.value[1]]);
-      expect(component.find('input').at(0).props().value).toEqual(13);
-      expect(component.find('input').at(1).props().value).toEqual(5);
+      expect(props.onChange).toHaveBeenCalledWith([
+        { lat: 13, lon: 5, label: 'home' },
+        props.value[1],
+      ]);
+      expect(
+        component
+          .find('input')
+          .at(0)
+          .props().value
+      ).toEqual(13);
+      expect(
+        component
+          .find('input')
+          .at(1)
+          .props().value
+      ).toEqual(5);
     });
 
     it('should work assign default values if original point was null', () => {
@@ -125,22 +146,42 @@ describe('Geolocation', () => {
 
     describe('when they are no empty anymore', () => {
       it('should call onChange with the correct values', () => {
-        component.find('input').at(0).simulate('change', { target: { value: '' } });
-        component.find('input').at(1).simulate('change', { target: { value: '' } });
+        component
+          .find('input')
+          .at(0)
+          .simulate('change', { target: { value: '' } });
+        component
+          .find('input')
+          .at(1)
+          .simulate('change', { target: { value: '' } });
 
-        component.find('input').at(0).simulate('change', { target: { value: '1' } });
-        component.find('input').at(1).simulate('change', { target: { value: '2' } });
+        component
+          .find('input')
+          .at(0)
+          .simulate('change', { target: { value: '1' } });
+        component
+          .find('input')
+          .at(1)
+          .simulate('change', { target: { value: '2' } });
 
-        expect(props.onChange).toHaveBeenCalledWith([{ lat: 1, lon: 2, label: 'home' },
-         { label: 'Created through migration?', lat: 13.07, lon: 5.1 }]);
+        expect(props.onChange).toHaveBeenCalledWith([
+          { lat: 1, lon: 2, label: 'home' },
+          { label: 'Created through migration?', lat: 13.07, lon: 5.1 },
+        ]);
       });
     });
   });
 
   describe('should render button to clear fields', () => {
     function expectRenderButton(latitude, longitude) {
-      component.find('input').at(0).simulate('change', { target: { value: latitude } });
-      component.find('input').at(1).simulate('change', { target: { value: longitude } });
+      component
+        .find('input')
+        .at(0)
+        .simulate('change', { target: { value: latitude } });
+      component
+        .find('input')
+        .at(1)
+        .simulate('change', { target: { value: longitude } });
       expect(component.exists('.clear-field-button')).toEqual(true);
     }
 
@@ -176,8 +217,18 @@ describe('Geolocation', () => {
     });
 
     it('should remove the inputs values', () => {
-      expect(component.find('input').at(0).props().value).toEqual('');
-      expect(component.find('input').at(1).props().value).toEqual('');
+      expect(
+        component
+          .find('input')
+          .at(0)
+          .props().value
+      ).toEqual('');
+      expect(
+        component
+          .find('input')
+          .at(1)
+          .props().value
+      ).toEqual('');
     });
   });
 });

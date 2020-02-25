@@ -42,80 +42,77 @@ exports[`SemanticSearchMultieditPanel open should not open side panel if there a
   <div
     className="sidepanel-body"
   >
-    <React.Fragment>
-      <div
-        className="alert alert-warning"
-      >
+    <div
+      className="alert alert-warning"
+    >
+      <Connect(Icon)
+        icon="exclamation-triangle"
+        size="2x"
+      />
+      <p>
+        Warning: you are editing multiple files. Fields marked with a
+         
         <Connect(Icon)
           icon="exclamation-triangle"
-          size="2x"
         />
-        <p>
-          Warning: you are editing multiple files. Fields marked with a 
-          <Connect(Icon)
-            icon="exclamation-triangle"
-          />
-           will be updated with the same value.
-        </p>
-      </div>
-      <Connect(MetadataForm)
-        changeTemplate={[Function]}
-        id="multiEdit"
-        model="semanticSearch.multipleEdit"
-        multipleEdition={true}
-        onSubmit={[Function]}
-        template={null}
-        thesauris={
-          Immutable.List [
-            Immutable.Map {
-              "_id": "t1",
-              "name": "T1",
-              "values": Immutable.List [
-                Immutable.Map {
-                  "_id": "v1",
-                  "id": "v1",
-                  "label": "V1",
-                },
-              ],
-            },
-          ]
-        }
-      />
-    </React.Fragment>
+         will be updated with the same value.
+      </p>
+    </div>
+    <Connect(MetadataForm)
+      changeTemplate={[Function]}
+      id="multiEdit"
+      model="semanticSearch.multipleEdit"
+      multipleEdition={true}
+      onSubmit={[Function]}
+      template={null}
+      thesauris={
+        Immutable.List [
+          Immutable.Map {
+            "_id": "t1",
+            "name": "T1",
+            "values": Immutable.List [
+              Immutable.Map {
+                "_id": "v1",
+                "id": "v1",
+                "label": "V1",
+              },
+            ],
+          },
+        ]
+      }
+    />
   </div>
   <div
     className="sidepanel-footer"
   >
-    <React.Fragment>
-      <button
-        className="cancel-edit-metadata btn btn-primary"
-        onClick={[Function]}
-        type="button"
+    <button
+      className="cancel-edit-metadata btn btn-primary"
+      onClick={[Function]}
+      type="button"
+    >
+      <Connect(Icon)
+        icon="times"
+      />
+      <span
+        className="btn-label"
       >
-        <Connect(Icon)
-          icon="times"
-        />
-        <span
-          className="btn-label"
-        >
-          Cancel
-        </span>
-      </button>
-      <button
-        className="btn btn-success"
-        form="multiEdit"
-        type="submit"
+        Cancel
+      </span>
+    </button>
+    <button
+      className="btn btn-success"
+      form="multiEdit"
+      type="submit"
+    >
+      <Connect(Icon)
+        icon="save"
+      />
+      <span
+        className="btn-label"
       >
-        <Connect(Icon)
-          icon="save"
-        />
-        <span
-          className="btn-label"
-        >
-          Save
-        </span>
-      </button>
-    </React.Fragment>
+        Save
+      </span>
+    </button>
   </div>
 </SidePanel>
 `;
@@ -141,91 +138,88 @@ exports[`SemanticSearchMultieditPanel should render multi edit form for semantic
   <div
     className="sidepanel-body"
   >
-    <React.Fragment>
-      <div
-        className="alert alert-warning"
-      >
+    <div
+      className="alert alert-warning"
+    >
+      <Connect(Icon)
+        icon="exclamation-triangle"
+        size="2x"
+      />
+      <p>
+        Warning: you are editing multiple files. Fields marked with a
+         
         <Connect(Icon)
           icon="exclamation-triangle"
-          size="2x"
         />
-        <p>
-          Warning: you are editing multiple files. Fields marked with a 
-          <Connect(Icon)
-            icon="exclamation-triangle"
-          />
-           will be updated with the same value.
-        </p>
-      </div>
-      <Connect(MetadataForm)
-        changeTemplate={[Function]}
-        id="multiEdit"
-        model="semanticSearch.multipleEdit"
-        multipleEdition={true}
-        onSubmit={[Function]}
-        template={
+         will be updated with the same value.
+      </p>
+    </div>
+    <Connect(MetadataForm)
+      changeTemplate={[Function]}
+      id="multiEdit"
+      model="semanticSearch.multipleEdit"
+      multipleEdition={true}
+      onSubmit={[Function]}
+      template={
+        Immutable.Map {
+          "_id": "",
+          "properties": Immutable.List [
+            Immutable.Map {
+              "name": "p1",
+              "type": "select",
+              "content": "t1",
+            },
+          ],
+        }
+      }
+      thesauris={
+        Immutable.List [
           Immutable.Map {
-            "_id": "",
-            "properties": Immutable.List [
+            "_id": "t1",
+            "name": "T1",
+            "values": Immutable.List [
               Immutable.Map {
-                "name": "p1",
-                "type": "select",
-                "content": "t1",
+                "_id": "v1",
+                "id": "v1",
+                "label": "V1",
               },
             ],
-          }
-        }
-        thesauris={
-          Immutable.List [
-            Immutable.Map {
-              "_id": "t1",
-              "name": "T1",
-              "values": Immutable.List [
-                Immutable.Map {
-                  "_id": "v1",
-                  "id": "v1",
-                  "label": "V1",
-                },
-              ],
-            },
-          ]
-        }
-      />
-    </React.Fragment>
+          },
+        ]
+      }
+    />
   </div>
   <div
     className="sidepanel-footer"
   >
-    <React.Fragment>
-      <button
-        className="cancel-edit-metadata btn btn-primary"
-        onClick={[Function]}
-        type="button"
+    <button
+      className="cancel-edit-metadata btn btn-primary"
+      onClick={[Function]}
+      type="button"
+    >
+      <Connect(Icon)
+        icon="times"
+      />
+      <span
+        className="btn-label"
       >
-        <Connect(Icon)
-          icon="times"
-        />
-        <span
-          className="btn-label"
-        >
-          Cancel
-        </span>
-      </button>
-      <button
-        className="btn btn-success"
-        form="multiEdit"
-        type="submit"
+        Cancel
+      </span>
+    </button>
+    <button
+      className="btn btn-success"
+      form="multiEdit"
+      type="submit"
+    >
+      <Connect(Icon)
+        icon="save"
+      />
+      <span
+        className="btn-label"
       >
-        <Connect(Icon)
-          icon="save"
-        />
-        <span
-          className="btn-label"
-        >
-          Save
-        </span>
-      </button>
-    </React.Fragment>
+        Save
+      </span>
+    </button>
   </div>
 </SidePanel>
 `;

@@ -15,32 +15,41 @@ export const getSearchDocuments = async ({ documents, query }, language, user) =
 
 export const removePageAnnotations = text => text.replace(/\[\[\d+\]\]/g, '');
 
-export const updateSearchDocumentStatus = async (searchId, sharedId, status) => model.db.findOneAndUpdate({
-  _id: searchId,
-  'documents.sharedId': sharedId
-}, {
-  $set: { 'documents.$.status': status }
-}, { new: true, lean: true });
+export const updateSearchDocumentStatus = async (searchId, sharedId, status) =>
+  model.db.findOneAndUpdate(
+    {
+      _id: searchId,
+      'documents.sharedId': sharedId,
+    },
+    {
+      $set: { 'documents.$.status': status },
+    },
+    { new: true, lean: true }
+  );
 
 export const setSearchDocumentResults = async (searchId, sharedId, results) => {
-  const averageScore = results.length ?
-    results.reduce((total, curr) => total + curr.score, 0) / results.length :
-    0;
+  const averageScore = results.length
+    ? results.reduce((total, curr) => total + curr.score, 0) / results.length
+    : 0;
   const _results = [...results];
-  const docResults = await resultsModel.db.findOneAndUpdate({
-    sharedId,
-    searchId
-  }, {
-    sharedId,
-    searchId,
-    averageScore,
-    results: _results.sort((r1, r2) => r2.score - r1.score),
-    status: COMPLETED
-  }, { upsert: true, new: true });
+  const docResults = await resultsModel.db.findOneAndUpdate(
+    {
+      sharedId,
+      searchId,
+    },
+    {
+      sharedId,
+      searchId,
+      averageScore,
+      results: _results.sort((r1, r2) => r2.score - r1.score),
+      status: COMPLETED,
+    },
+    { upsert: true, new: true }
+  );
   return docResults;
 };
 
-export const extractDocumentContent = async (doc) => {
+export const extractDocumentContent = async doc => {
   const { fullText, metadata } = doc;
   const contents = {};
 
@@ -48,7 +57,7 @@ export const extractDocumentContent = async (doc) => {
     const template = await templates.getById(doc.template);
     const metadataFields = template.properties.filter(prop => prop.type === 'markdown');
 
-    metadataFields.forEach((field) => {
+    metadataFields.forEach(field => {
       if (metadata[field.name]) {
         contents[field.name] = metadata[field.name];
       }
@@ -56,7 +65,7 @@ export const extractDocumentContent = async (doc) => {
   }
 
   if (fullText) {
-    Object.keys(fullText).forEach((page) => {
+    Object.keys(fullText).forEach(page => {
       contents[page] = removePageAnnotations(fullText[page]);
     });
   }

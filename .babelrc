@@ -1,9 +1,16 @@
 {
-  "presets": [["@babel/preset-env", {
-    "targets": {
-      "node": "current"
-    }
-  }], "@babel/preset-react", "@babel/preset-typescript"],
+  "presets": [
+    [
+      "@babel/preset-env",
+      {
+        "targets": {
+          "node": "current"
+        }
+      }
+    ],
+    "@babel/preset-react",
+    "@babel/preset-typescript"
+  ],
   "retainLines": true,
   "env": {
     "production": {
@@ -19,14 +26,19 @@
   },
   "plugins": [
     "@babel/plugin-proposal-object-rest-spread",
+    "@babel/plugin-proposal-class-properties",
     "@babel/plugin-transform-typeof-symbol",
-    ["module-resolver", {
-      "alias": {
-        "app": "./app/react",
-        "shared": "./app/shared",
-        "api": "./app/api",
-        "UI": "./app/react/UI"
+    "@babel/plugin-syntax-dynamic-import",
+    [
+      "module-resolver",
+      {
+        "alias": {
+          "app": "./app/react",
+          "shared": "./app/shared",
+          "api": "./app/api",
+          "UI": "./app/react/UI"
+        }
       }
-    }]
+    ]
   ]
 }

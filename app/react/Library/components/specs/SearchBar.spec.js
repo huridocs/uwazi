@@ -13,14 +13,16 @@ describe('SearchBar', () => {
     props = jasmine.createSpyObj(['searchDocuments', 'change', 'semanticSearch']);
     props.search = { searchTerm: 'Find my document', sort: 'title', filters: { isBatman: true } };
     props.storeKey = 'library';
-    props.semanticSearchEnabled = true;
-    component = shallow(<SearchBar {...props}/>);
+    component = shallow(<SearchBar {...props} />);
   });
 
   describe('form on submit', () => {
     it('should call searchDocuments, with the searchTerm filters and sort', () => {
       component.find(Form).simulate('submit', 'SEARCH MODEL VALUES');
-      expect(props.searchDocuments).toHaveBeenCalledWith({ search: 'SEARCH MODEL VALUES' }, props.storeKey);
+      expect(props.searchDocuments).toHaveBeenCalledWith(
+        { search: 'SEARCH MODEL VALUES' },
+        props.storeKey
+      );
     });
   });
 
@@ -32,11 +34,12 @@ describe('SearchBar', () => {
           search: { searchTerm: 'search' },
           filters: Immutable.fromJS({ properties: [], documentTypes: [] }),
         },
-        settings: { collection: Immutable.fromJS({ features: { semanticSearch: false } }) },
       };
 
       const state = mapStateToProps(store, { storeKey: 'library' });
-      expect(state).toEqual({ search: { searchTerm: 'search', filters: {}, limit: undefined, types: [], }, semanticSearchEnabled: false });
+      expect(state).toEqual({
+        search: { searchTerm: 'search', filters: {}, limit: undefined, types: [] },
+      });
     });
   });
 });

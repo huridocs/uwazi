@@ -7,7 +7,6 @@ import { NeedAuthorization } from 'app/Auth';
 import { mapStateToProps } from '../Doc';
 import { Doc } from '../Doc';
 
-
 describe('Doc', () => {
   let component;
   let props = {};
@@ -20,7 +19,10 @@ describe('Doc', () => {
       type: 'document',
       sharedId: 'id',
       processed: true,
-      connections: [{ sourceType: 'metadata' }, { _id: 'c1', sourceType: 'other', nonRelevant: true }]
+      connections: [
+        { sourceType: 'metadata' },
+        { _id: 'c1', sourceType: 'other', nonRelevant: true },
+      ],
     };
 
     props = {
@@ -33,12 +35,12 @@ describe('Doc', () => {
       unselectAllDocuments: jasmine.createSpy('unselectAllDocuments'),
       searchParams: { sort: 'sortProperty' },
       storeKey: 'library',
-      additionalText: 'passedAdditionalText'
+      additionalText: 'passedAdditionalText',
     };
   });
 
   const render = () => {
-    component = shallow(<Doc {...props}/>);
+    component = shallow(<Doc {...props} />);
   };
 
   describe('Item data', () => {
@@ -57,16 +59,38 @@ describe('Doc', () => {
 
       it('should pass the connections and include delete button for only non-metadata properties', () => {
         expect(header.find('.item-connection').length).toBe(2);
-        expect(header.find('button').at(0).parents().at(1).is(NeedAuthorization)).toBe(true);
-        expect(header.find('button').at(0).parent().props().if).toBe(false);
-        expect(header.find('button').at(1).parent().props().if).toBe(true);
+        expect(
+          header
+            .find('button')
+            .at(0)
+            .parents()
+            .at(1)
+            .is(NeedAuthorization)
+        ).toBe(true);
+        expect(
+          header
+            .find('button')
+            .at(0)
+            .parent()
+            .props().if
+        ).toBe(false);
+        expect(
+          header
+            .find('button')
+            .at(1)
+            .parent()
+            .props().if
+        ).toBe(true);
       });
 
       it('should alow deleting non-metadata connections', () => {
         const eMock = { stopPropagation: jasmine.createSpy('stopPropagation') };
         expect(props.deleteConnection).not.toHaveBeenCalled();
 
-        header.find('button').at(1).simulate('click', eMock);
+        header
+          .find('button')
+          .at(1)
+          .simulate('click', eMock);
 
         expect(eMock.stopPropagation).toHaveBeenCalled();
         expect(props.deleteConnection).toHaveBeenCalledWith({ _id: 'c1', sourceType: 'other' });
@@ -136,22 +160,28 @@ describe('Doc', () => {
     beforeEach(() => {
       store = {
         library: {
-          ui: Immutable({ selectedDocuments: [{ _id: 'docId' }] })
+          ui: Immutable({ selectedDocuments: [{ _id: 'docId' }] }),
         },
         uploads: {
-          progress: Immutable({})
+          progress: Immutable({}),
         },
-        user: Immutable({ _id: 'batId' })
+        user: Immutable({ _id: 'batId' }),
       };
     });
 
     it('should set active as true if ownProps match selected ID', () => {
-      const state = mapStateToProps(store, { doc: Immutable({ _id: 'docId' }), storeKey: 'library' });
+      const state = mapStateToProps(store, {
+        doc: Immutable({ _id: 'docId' }),
+        storeKey: 'library',
+      });
       expect(state.active).toBe(true);
     });
 
     it('should set active as false if ownProps holds unselected document', () => {
-      const state = mapStateToProps(store, { doc: Immutable({ _id: 'anotherId' }), storeKey: 'library' });
+      const state = mapStateToProps(store, {
+        doc: Immutable({ _id: 'anotherId' }),
+        storeKey: 'library',
+      });
       expect(state.active).toBe(false);
     });
   });

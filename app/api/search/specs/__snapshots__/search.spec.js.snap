@@ -1,13 +1,14 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`search search multiselect aggregations allAggregations should return all aggregations 1`] = `
+exports[`search multiselect aggregations allAggregations should return all aggregations 1`] = `
 Array [
+  "meta",
   "doc_count",
-  "select1",
-  "multiselect1",
   "groupedDictionary",
-  "nestedField",
+  "nestedField_nested",
+  "select1",
   "_types",
+  "multiselect1",
   "nested2",
   "nested1",
 ]

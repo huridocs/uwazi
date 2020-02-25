@@ -9,19 +9,23 @@ describe('Custom Hooks Parsing utils', () => {
         aggregations: {
           all: {
             country1: {
-              buckets: [{ key: 'keyA' }, { key: 'keyB' }]
+              buckets: [{ key: 'keyA' }, { key: 'keyB' }],
             },
             country2: {
-              buckets: [{ key: 'keyB' }, { key: 'keyC' }]
-            }
-          }
-        }
+              buckets: [{ key: 'keyB' }, { key: 'keyC' }],
+            },
+          },
+        },
       };
     });
 
     it('should find buckets that match country key', () => {
-      expect(utils.findBucketsByCountry(set, 'country2', 'keyC')).toBe(set.aggregations.all.country2.buckets[1]);
-      expect(utils.findBucketsByCountry(set, 'country1', 'keyA')).toBe(set.aggregations.all.country1.buckets[0]);
+      expect(utils.findBucketsByCountry(set, 'country2', 'keyC')).toBe(
+        set.aggregations.all.country2.buckets[1]
+      );
+      expect(utils.findBucketsByCountry(set, 'country1', 'keyA')).toBe(
+        set.aggregations.all.country1.buckets[0]
+      );
     });
   });
 });

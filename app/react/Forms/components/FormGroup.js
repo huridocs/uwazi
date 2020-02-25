@@ -6,10 +6,8 @@ import { Control } from 'react-redux-form';
 const mapProps = {
   className: ({ fieldValue }) => {
     const _fieldValue = fieldValue.$form || fieldValue;
-    return _fieldValue.submitFailed && !_fieldValue.valid ?
-      'has-error' :
-      '';
-  }
+    return _fieldValue.submitFailed && !_fieldValue.valid ? 'has-error' : '';
+  },
 };
 
 export class FormGroup extends Component {
@@ -19,7 +17,9 @@ export class FormGroup extends Component {
       return (
         <Control.custom
           model={this.props.model}
-          component={props => <div className={`${className} ${props.className}`}>{props.children}</div>}
+          component={props => (
+            <div className={`${className} ${props.className}`}>{props.children}</div>
+          )}
           mapProps={mapProps}
         >
           {this.props.children}
@@ -31,16 +31,13 @@ export class FormGroup extends Component {
   }
 }
 
-const childrenType = PropTypes.oneOfType([
-  PropTypes.object,
-  PropTypes.array
-]);
+const childrenType = PropTypes.oneOfType([PropTypes.object, PropTypes.array]);
 
 FormGroup.propTypes = {
   hasError: PropTypes.bool,
   className: PropTypes.string,
   model: PropTypes.any,
-  children: childrenType
+  children: childrenType,
 };
 
 export default connect()(FormGroup);

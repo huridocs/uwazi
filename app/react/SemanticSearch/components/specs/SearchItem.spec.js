@@ -14,7 +14,7 @@ describe('SearchItem', () => {
       _id: 'id',
       searchTerm: 'query',
       documents: [],
-      status: 'completed'
+      status: 'completed',
     };
     dispatch = jest.fn();
     context = { confirm: jasmine.createSpy('confirm') };
@@ -22,7 +22,7 @@ describe('SearchItem', () => {
 
   const getProps = () => ({
     search,
-    ...mapDispatchToProps(dispatch)
+    ...mapDispatchToProps(dispatch),
   });
 
   const render = () => shallow(<SearchItem {...getProps()} />, { context });
@@ -51,7 +51,7 @@ describe('SearchItem', () => {
       jest.spyOn(actions, 'stopSearch').mockImplementation(() => {});
       search.status = 'inProgress';
       const component = render();
-      component.find('.stop-search').simulate('click');
+      component.find('.stop-search').simulate('click', { preventDefault: () => {} });
       expect(actions.stopSearch).toHaveBeenCalledWith(search._id);
     });
   });
@@ -66,7 +66,7 @@ describe('SearchItem', () => {
       jest.spyOn(actions, 'resumeSearch').mockImplementation(() => {});
       search.status = 'stopped';
       const component = render();
-      component.find('.resume-search').simulate('click');
+      component.find('.resume-search').simulate('click', { preventDefault: () => {} });
       expect(actions.resumeSearch).toHaveBeenCalledWith(search._id);
     });
   });

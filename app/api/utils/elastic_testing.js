@@ -1,28 +1,24 @@
-import entities from 'api/entities/entities';
-import elasticConfig from 'api/config/elasticIndexes';
-import elastic from 'api/search/elastic';
+/** @format */
+
+import { elastic } from 'api/search';
 import elasticMapping from '../../../database/elastic_mapping';
 
-export default (elasticIndex) => {
-  elasticConfig.index = elasticIndex;
-  return {
-    resetIndex() {
-      return elastic.indices.delete({ index: elasticIndex, ignore_unavailable: true })
-      .then(() => elastic.indices.create({
-          index: elasticIndex,
-          body: elasticMapping
-      }))
-      .then(() => null);
-    },
-    reindex() {
-      return this.resetIndex()
-      .then(() => entities.indexEntities({}, '+fullText'))
-      .then(() => elastic.indices.refresh({ index: elasticIndex }))
-      .then(() => null);
-    },
+export default (elasticIndex, search) => ({
+  resetIndex() {
+    return elastic.indices.delete({ index: elasticIndex, ignore_unavailable: true }).then(() =>
+      elastic.indices.create({
+        index: elasticIndex,
+        body: elasticMapping,
+      })
+    );
+  },
+  reindex() {
+    return this.resetIndex()
+      .then(() => search.indexEntities({}, '+fullText'))
+      .then(() => this.refresh());
+  },
 
-    refresh() {
-      return elastic.indices.refresh({ index: elasticIndex });
-    }
-  };
-};
+  async refresh() {
+    await elastic.indices.refresh({ index: elasticIndex });
+  },
+});

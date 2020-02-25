@@ -14,9 +14,10 @@ export function mapStateToProps({ relationships }) {
   return {
     documents,
     connections: {
-      totalRows: documents.get('rows')
-      .filter(r => r.get('sharedId') !== relationships.list.sharedId)
-      .reduce((total, r) => total + r.get('connections').size, 0)
+      totalRows: documents
+        .get('rows')
+        .filter(r => r.get('sharedId') !== relationships.list.sharedId)
+        .reduce((total, r) => total + r.get('connections').size, 0),
     },
     filters: Immutable({ documentTypes: [] }),
     search: relationships.list.sort,
@@ -25,14 +26,17 @@ export function mapStateToProps({ relationships }) {
     GraphView: RelationshipsGraph,
     view: 'graph',
     LoadMoreButton: LoadMoreRelationshipsButton,
-    connectionsGroups: relationships.list.connectionsGroups
+    connectionsGroups: relationships.list.connectionsGroups,
   };
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({
-    searchDocuments: searchReferences
-  }, dispatch);
+  return bindActionCreators(
+    {
+      searchDocuments: searchReferences,
+    },
+    dispatch
+  );
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(DocumentsList);

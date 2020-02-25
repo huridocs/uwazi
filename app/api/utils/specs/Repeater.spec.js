@@ -8,17 +8,18 @@ describe('repeat', () => {
   beforeEach(() => {
     counter = 1;
     callback = jasmine.createSpy('callback').and.callFake(
-      () => new Promise((resolve) => {
-        setTimeout(() => {
-          if (counter === stopOn) {
-            resolve();
-            repeater.stop();
-          } else {
-            counter += 1;
-            resolve();
-          }
-        }, 1);
-      })
+      () =>
+        new Promise(resolve => {
+          setTimeout(() => {
+            if (counter === stopOn) {
+              resolve();
+              repeater.stop();
+            } else {
+              counter += 1;
+              resolve();
+            }
+          }, 1);
+        })
     );
   });
 

@@ -13,6 +13,4 @@ const reconnectSocket = () => {
   socket.connect();
 };
 
-export {
-  reconnectSocket
-};
+export { reconnectSocket };

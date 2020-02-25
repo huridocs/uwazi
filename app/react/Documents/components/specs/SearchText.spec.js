@@ -1,3 +1,6 @@
+/**
+ * @jest-environment jsdom
+ */
 import React from 'react';
 import { shallow } from 'enzyme';
 
@@ -13,38 +16,39 @@ describe('SearchText', () => {
   let props;
 
   const render = () => {
-    component = shallow(<SearchText {...props}/>);
+    component = shallow(<SearchText {...props} />);
     instance = component.instance();
   };
 
   beforeEach(() => {
-    spyOn(browserHistory, 'getCurrentLocation').and.returnValue({ pathname: 'path', query: { page: 1 } });
+    spyOn(browserHistory, 'getCurrentLocation').and.returnValue({
+      pathname: 'path',
+      query: { page: 1 },
+    });
     props = {
       doc: Immutable.fromJS({ _id: 'id', sharedId: 'sharedId', type: 'document' }),
       storeKey: 'storeKey',
-      searchSnippets: jasmine.createSpy('searchSnippets').and.returnValue(Promise.resolve([{ page: 2 }])),
+      searchSnippets: jasmine
+        .createSpy('searchSnippets')
+        .and.returnValue(Promise.resolve([{ page: 2 }])),
       selectSnippet: jest.fn(),
       snippets: Immutable.fromJS({
         metadata: [
           {
             field: 'title',
-            texts: [
-              'metadata <b>snippet m1</b> found'
-            ]
+            texts: ['metadata <b>snippet m1</b> found'],
           },
           {
             field: 'metadata.summary',
-            texts: [
-              'metadata <b>snippets m2</b>'
-            ]
-          }
+            texts: ['metadata <b>snippets m2</b>'],
+          },
         ],
         fullText: [
           { text: 'first <b>snippet 1</b> found', page: 1 },
           { text: 'second <b>snippet 3</b> found', page: 2 },
-          { text: 'third <b>snippet 3</b> found', page: 3 }
-        ]
-      })
+          { text: 'third <b>snippet 3</b> found', page: 3 },
+        ],
+      }),
     };
   });
 
@@ -140,19 +144,21 @@ describe('SearchText', () => {
       instance.componentWillReceiveProps({ searchTerm: 'another term', doc: props.doc });
       expect(instance.searchSnippets).toHaveBeenCalledWith('another term', 'sharedId');
 
-      instance.componentWillReceiveProps({ searchTerm: 'term', doc: props.doc.set('sharedId', 'another id') });
+      instance.componentWillReceiveProps({
+        searchTerm: 'term',
+        doc: props.doc.set('sharedId', 'another id'),
+      });
       expect(instance.searchSnippets).toHaveBeenCalledWith('term', 'another id');
     });
   });
 
   describe('submit', () => {
-    it('should searchSnippets with value, doc id and storeKey', (done) => {
+    it('should searchSnippets with value, doc id and storeKey', done => {
       props.doc = Immutable.fromJS({ _id: 'id', sharedId: 'sharedId' });
       spyOn(browserHistory, 'push');
       render();
 
-      instance.submit({ searchTerm: 'value' })
-      .then(() => {
+      instance.submit({ searchTerm: 'value' }).then(() => {
         expect(props.searchSnippets).toHaveBeenCalledWith('value', 'sharedId', 'storeKey');
         done();
       });
@@ -180,7 +186,9 @@ describe('SearchText', () => {
 
       instance.componentWillReceiveProps(props);
       expect(props.searchSnippets).toHaveBeenCalledWith('newSearchTerm', 'sharedId2', 'storeKey');
-      expect(instance.formDispatch).toHaveBeenCalledWith(formActions.change('searchText.searchTerm', 'newSearchTerm'));
+      expect(instance.formDispatch).toHaveBeenCalledWith(
+        formActions.change('searchText.searchTerm', 'newSearchTerm')
+      );
     });
   });
 });

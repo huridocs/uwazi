@@ -1,6 +1,9 @@
-Math.uniqueID = () => Math.random().toString(36).substr(2);
+Math.uniqueID = () =>
+  Math.random()
+    .toString(36)
+    .substr(2);
 
-export default function () {
+export default function() {
   return Math.uniqueID();
 }
 

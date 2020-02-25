@@ -45,8 +45,8 @@ describe('metadata path', () => {
     it('should go back to dictionaries then edit the created dictionary', (done) => {
       nightmare
       .waitToClick(selectors.settingsView.dictionariesBackButton)
-      .wait(selectors.settingsView.liElementsOfSection)
-      .editItemFromList(selectors.settingsView.liElementsOfSection, 'test')
+      .wait(selectors.settingsView.tableElementsOfSection)
+      .editItemFromList(selectors.settingsView.tableElementsOfSection, 'test')
       .write(selectors.settingsView.dictionaryNameForm, 'edited')
       .waitToClick(selectors.settingsView.saveDictionaryButton)
       .waitToClick('.alert.alert-success')
@@ -63,7 +63,7 @@ describe('metadata path', () => {
     it('should go back to dictionaries then delete the created dictionary', (done) => {
       nightmare
       .waitToClick(selectors.settingsView.dictionariesBackButton)
-      .deleteItemFromList(selectors.settingsView.liElementsOfSection, 'edited')
+      .deleteItemFromList(selectors.settingsView.tableElementsOfSection, 'edited')
       .waitToClick(selectors.settingsView.deleteButtonConfirmation)
       .then(() => { done(); })
       .catch(catchErrors(done));

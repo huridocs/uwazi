@@ -1,29 +1,29 @@
-import { Form, Field } from 'react-redux-form';
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
-import { createSelector } from 'reselect';
+/** @format */
+
+import entitiesUtil from 'app/Entities/utils/filterBaseProperties';
+import { Select as SimpleSelect } from 'app/Forms';
+import { I18NLink, t, Translate } from 'app/I18N';
+import { notificationActions } from 'app/Notifications';
+import { FormGroup } from 'app/ReactReduxForms';
+import Immutable from 'immutable';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-
-import { FormGroup } from 'app/ReactReduxForms';
-import { Select as SimpleSelect } from 'app/Forms';
-import entitiesUtil from 'app/Entities/utils/filterBaseProperties';
-import { notificationActions } from 'app/Notifications';
-import { I18NLink, t, Translate } from 'app/I18N';
+import { connect } from 'react-redux';
+import { Field, Form } from 'react-redux-form';
+import { bindActionCreators } from 'redux';
+import { createSelector } from 'reselect';
 import { Icon } from 'UI';
-
-import Immutable from 'immutable';
-import IconField from './IconField';
-import MetadataFormFields from './MetadataFormFields';
-import validator from '../helpers/validator';
 import defaultTemplate from '../helpers/defaultTemplate';
+import validator from '../helpers/validator';
+import { wrapEntityMetadata } from '../helpers/wrapper';
+import { IconField } from './IconField';
+import MetadataFormFields from './MetadataFormFields';
 
 const immutableDefaultTemplate = Immutable.fromJS(defaultTemplate);
 
 const selectTemplateOptions = createSelector(
   s => s.templates,
-  templates => templates
-  .map(tmpl => ({ label: tmpl.get('name'), value: tmpl.get('_id') }))
+  templates => templates.map(tmpl => ({ label: tmpl.get('name'), value: tmpl.get('_id') }))
 );
 
 export class MetadataForm extends Component {
@@ -33,8 +33,15 @@ export class MetadataForm extends Component {
     this.onSubmitFailed = this.onSubmitFailed.bind(this);
   }
 
-  onSubmit(metadata) {
-    this.props.onSubmit(entitiesUtil.filterBaseProperties(metadata), this.props.model);
+  componentWillUnmount() {
+    this.props.componentWillUnmount();
+  }
+
+  onSubmit(entity) {
+    this.props.onSubmit(
+      wrapEntityMetadata(entitiesUtil.filterBaseProperties(entity)),
+      this.props.model
+    );
   }
 
   onSubmitFailed() {
@@ -46,13 +53,15 @@ export class MetadataForm extends Component {
       return (
         <FormGroup>
           <ul className="search__filter">
-            <li><label>{t('System', 'Type')}</label></li>
+            <li>
+              <label>{t('System', 'Type')}</label>
+            </li>
             <li className="wide">
               <SimpleSelect
                 className="form-control"
                 value={template.get('_id')}
                 options={templateOptions.toJS()}
-                onChange={(e) => {
+                onChange={e => {
                   this.props.changeTemplate(this.props.model, e.target.value);
                 }}
               />
@@ -67,7 +76,7 @@ export class MetadataForm extends Component {
         <div className="text-center protip">
           <Icon icon="lightbulb" /> <b>ProTip!</b>
           <span>
-          You can create metadata templates in <I18NLink to="/settings">settings</I18NLink>.
+            You can create metadata templates in <I18NLink to="/settings">settings</I18NLink>.
           </span>
         </div>
       </ul>
@@ -75,15 +84,26 @@ export class MetadataForm extends Component {
   }
 
   render() {
-    const { model, template, templateOptions, id, multipleEdition } = this.props;
+    const {
+      model,
+      template,
+      templateOptions,
+      id,
+      multipleEdition,
+      showSubset,
+      version,
+    } = this.props;
 
     if (!template) {
       return <div />;
     }
 
-    const titleLabel = template.get('commonProperties') ?
-      template.get('commonProperties').find(p => p.get('name') === 'title').get('label') :
-      'Title';
+    const titleLabel = template.get('commonProperties')
+      ? template
+          .get('commonProperties')
+          .find(p => p.get('name') === 'title')
+          .get('label')
+      : 'Title';
 
     return (
       <Form
@@ -93,22 +113,35 @@ export class MetadataForm extends Component {
         validators={validator.generate(template.toJS(), multipleEdition)}
         onSubmitFailed={this.onSubmitFailed}
       >
-        {!multipleEdition && (
+        {!multipleEdition && (!showSubset || showSubset.includes('title')) && (
           <FormGroup model=".title">
             <ul className="search__filter">
-              <li><label><Translate context={template.get('_id')}>{titleLabel}</Translate> <span className="required">*</span></label></li>
+              <li>
+                <label>
+                  <Translate context={template.get('_id')}>{titleLabel}</Translate>{' '}
+                  <span className="required">*</span>
+                </label>
+              </li>
               <li className="wide">
                 <Field model=".title">
-                  <textarea className="form-control"/>
+                  <textarea className="form-control" />
                 </Field>
               </li>
-              <IconField model={model}/>
+              <IconField model={model} />
             </ul>
           </FormGroup>
         )}
 
-        {this.renderTemplateSelect(templateOptions, template)}
-        <MetadataFormFields multipleEdition={multipleEdition} thesauris={this.props.thesauris} model={model} template={template} />
+        {(!showSubset || showSubset.includes('template')) &&
+          this.renderTemplateSelect(templateOptions, template)}
+        <MetadataFormFields
+          multipleEdition={multipleEdition}
+          thesauris={this.props.thesauris}
+          model={model}
+          template={template}
+          showSubset={showSubset}
+          version={version}
+        />
       </Form>
     );
   }
@@ -116,19 +149,29 @@ export class MetadataForm extends Component {
 
 MetadataForm.defaultProps = {
   id: 'metadataForm',
-  multipleEdition: false
+  multipleEdition: false,
+  showSubset: undefined,
+  version: undefined,
+  componentWillUnmount: () => {},
+  notify: () => {},
+  changeTemplate: () => {},
+  onSubmit: () => {},
 };
 
 MetadataForm.propTypes = {
   model: PropTypes.string.isRequired,
-  template: PropTypes.object,
+  template: PropTypes.instanceOf(Immutable.Map).isRequired,
+  templateId: PropTypes.string,
   multipleEdition: PropTypes.bool,
-  templateOptions: PropTypes.object,
-  thesauris: PropTypes.object,
+  templateOptions: PropTypes.instanceOf(Immutable.List).isRequired,
+  thesauris: PropTypes.instanceOf(Immutable.List).isRequired,
   changeTemplate: PropTypes.func,
   onSubmit: PropTypes.func,
   notify: PropTypes.func,
   id: PropTypes.string,
+  showSubset: PropTypes.arrayOf(PropTypes.string),
+  version: PropTypes.string,
+  componentWillUnmount: PropTypes.func,
 };
 
 function mapDispatchToProps(dispatch) {
@@ -136,8 +179,12 @@ function mapDispatchToProps(dispatch) {
 }
 
 export const mapStateToProps = (state, ownProps) => ({
-  template: ownProps.template ? ownProps.template : state.templates.find(tmpl => tmpl.get('_id') === ownProps.templateId) || immutableDefaultTemplate,
-  templateOptions: selectTemplateOptions(state)
+  thesauris: ownProps.thesauris ? ownProps.thesauris : state.thesauris || Immutable.fromJS([]),
+  template: ownProps.template
+    ? ownProps.template
+    : state.templates.find(tmpl => tmpl.get('_id') === ownProps.templateId) ||
+      immutableDefaultTemplate,
+  templateOptions: selectTemplateOptions(state),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(MetadataForm);

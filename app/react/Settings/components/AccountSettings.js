@@ -1,28 +1,35 @@
+/** @format */
+
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { actions } from 'app/BasicReducer';
 
+import { actions } from 'app/BasicReducer';
 import UsersAPI from 'app/Users/UsersAPI';
 import { notify as notifyAction } from 'app/Notifications/actions/notificationsActions';
 import { RequestParams } from 'app/utils/RequestParams';
-import { t } from 'app/I18N';
+import { t, I18NLink } from 'app/I18N';
 import { Icon } from 'UI';
-
 
 export class AccountSettings extends Component {
   constructor(props, context) {
     super(props, context);
-    this.state = { email: props.user.email || '', password: '', repeatPassword: '' };
+    this.state = {
+      email: props.user.email || '',
+      password: '',
+      repeatPassword: '',
+      using2fa: props.user.using2fa,
+    };
+    this.passwordChange = this.passwordChange.bind(this);
+    this.repeatPasswordChange = this.repeatPasswordChange.bind(this);
+    this.updatePassword = this.updatePassword.bind(this);
+    this.updateEmail = this.updateEmail.bind(this);
+    this.emailChange = this.emailChange.bind(this);
   }
 
   componentWillReceiveProps(props) {
     this.setState({ email: props.user.email || '' });
-  }
-
-  emailChange(e) {
-    this.setState({ email: e.target.value });
   }
 
   passwordChange(e) {
@@ -41,8 +48,7 @@ export class AccountSettings extends Component {
 
     e.preventDefault();
     const userData = Object.assign({}, user, { email });
-    UsersAPI.save(new RequestParams(userData))
-    .then((result) => {
+    UsersAPI.save(new RequestParams(userData)).then(result => {
       notify(t('System', 'Email updated', null, false), 'success');
       setUser(Object.assign(userData, { _rev: result.rev }));
     });
@@ -61,55 +67,69 @@ export class AccountSettings extends Component {
       return;
     }
 
-    UsersAPI.save(new RequestParams(Object.assign({}, user, { password })))
-    .then((result) => {
+    UsersAPI.save(new RequestParams(Object.assign({}, user, { password }))).then(result => {
       notify(t('System', 'Password updated', null, false), 'success');
       setUser(Object.assign(user, { _rev: result.rev }));
     });
     this.setState({ password: '', repeatPassword: '' });
   }
 
+  emailChange(e) {
+    this.setState({ email: e.target.value });
+  }
+
+  renderPasswordField(id, value, label, passwordError) {
+    return (
+      <div className={`form-group${passwordError ? ' has-error' : ''}`}>
+        <label className="form-group-label" htmlFor={id}>
+          {t('System', label)}
+        </label>
+        <input
+          type="password"
+          onChange={this[`${id}Change`]}
+          value={value}
+          id={id}
+          className="form-control"
+        />
+      </div>
+    );
+  }
+
   render() {
-    const { email, password, repeatPassword, passwordError } = this.state;
+    const { email, password, repeatPassword, passwordError, using2fa } = this.state;
 
     return (
       <div className="account-settings">
         <div className="panel panel-default">
-          <div className="panel-heading">
-            {t('System', 'Account')}
-          </div>
+          <div className="panel-heading">{t('System', 'Account')}</div>
           <div className="panel-body">
             <h5>{t('System', 'Email address')}</h5>
-            <form onSubmit={this.updateEmail.bind(this)}>
+            <form onSubmit={this.updateEmail}>
               <div className="form-group">
-                <label className="form-group-label" htmlFor="collection_name">{t('System', 'Email')}</label>
-                <input type="email" onChange={this.emailChange.bind(this)} value={email} className="form-control"/>
+                <label className="form-group-label" htmlFor="collection_name">
+                  {t('System', 'Email')}
+                </label>
+                <input
+                  type="email"
+                  onChange={this.emailChange}
+                  value={email}
+                  className="form-control"
+                />
               </div>
-              <button type="submit" className="btn btn-success">{t('System', 'Update')}</button>
+              <button type="submit" className="btn btn-success">
+                {t('System', 'Update')}
+              </button>
             </form>
             <hr />
             <h5>{t('System', 'Change password')}</h5>
-            <form onSubmit={this.updatePassword.bind(this)}>
-              <div className={`form-group${passwordError ? ' has-error' : ''}`}>
-                <label className="form-group-label" htmlFor="password">{t('System', 'New password')}</label>
-                <input
-                  type="password"
-                  onChange={this.passwordChange.bind(this)}
-                  value={password}
-                  id="password"
-                  className="form-control"
-                />
-              </div>
-              <div className={`form-group${passwordError ? ' has-error' : ''}`}>
-                <label className="form-group-label" htmlFor="repeatPassword">{t('System', 'Confirm new password')}</label>
-                <input
-                  type="password"
-                  onChange={this.repeatPasswordChange.bind(this)}
-                  value={repeatPassword}
-                  id="repeatPassword"
-                  className="form-control"
-                />
-              </div>
+            <form onSubmit={this.updatePassword}>
+              {this.renderPasswordField('password', password, 'New password', passwordError)}
+              {this.renderPasswordField(
+                'repeatPassword',
+                repeatPassword,
+                'Confirm new password',
+                passwordError
+              )}
               {passwordError && (
                 <div className="validation-error validation-error-centered">
                   <Icon icon="exclamation-triangle" />
@@ -117,8 +137,33 @@ export class AccountSettings extends Component {
                   {t('System', 'Password Error')}
                 </div>
               )}
-              <button type="submit" className="btn btn-success">{t('System', 'Update')}</button>
+              <button type="submit" className="btn btn-success">
+                {t('System', 'Update')}
+              </button>
             </form>
+            <hr />
+            <h5>{t('System', 'Two-step verification')}</h5>
+            {using2fa && (
+              <div className="alert alert-info">
+                <Icon icon="check" size="2x" />
+                <div className="force-ltr">Your account is protected by 2fa.</div>
+              </div>
+            )}
+            {!using2fa && (
+              <div>
+                <div className="alert alert-warning">
+                  <Icon icon="exclamation-triangle" size="2x" />
+                  <div className="force-ltr">
+                    You should activate this feature for enhanced account security
+                  </div>
+                </div>
+                <div>
+                  <I18NLink to="/settings/2fa" className="btn btn-success">
+                    {t('System', 'Protect your account')}
+                  </I18NLink>
+                </div>
+              </div>
+            )}
           </div>
         </div>
         <div className="settings-footer">
@@ -147,7 +192,10 @@ export function mapStateToProps(state) {
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({ setUser: actions.set.bind(null, 'auth/user'), notify: notifyAction }, dispatch);
+  return bindActionCreators(
+    { setUser: actions.set.bind(null, 'auth/user'), notify: notifyAction },
+    dispatch
+  );
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(AccountSettings);

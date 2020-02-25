@@ -35,18 +35,20 @@ export class FormConfigNested extends Component {
         <div className={labelClass}>
           <label>Label</label>
           <Field model={`template.data.properties[${index}].label`}>
-            <input className="form-control"/>
+            <input className="form-control" />
           </Field>
         </div>
 
         <Field model={`template.data.properties[${index}].required`}>
-          <input id={`required${this.props.index}`} type="checkbox"/>
+          <input id={`required${this.props.index}`} type="checkbox" />
           &nbsp;
           <label className="property-label" htmlFor={`required${this.props.index}`}>
             Required property
             <span className="property-help">
               <Icon icon="question-circle" />
-              <div className="property-description">You won&#39;t be able to publish a document if this property is empty.</div>
+              <div className="property-description">
+                You won&#39;t be able to publish a document if this property is empty.
+              </div>
             </span>
           </label>
         </Field>
@@ -69,7 +71,7 @@ FormConfigNested.propTypes = {
 export function mapStateToProps(state) {
   return {
     data: state.template.data,
-    formState: state.template.formState
+    formState: state.template.formState,
   };
 }
 

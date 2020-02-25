@@ -12,9 +12,9 @@ selectors.doc = {
     title: '#metadataForm > div:nth-child(1) > ul > li.wide > div > textarea',
     type: '#metadataForm > div.form-group.undefined > ul > li.wide > select',
     company: '#metadataForm > div:nth-child(3) > div:nth-child(1) > ul > li.wide > div > input',
-    superPowersSearch: '#metadataForm > div:nth-child(3) > div:nth-child(3) > ul > li.wide > ul > li:nth-child(1) > div > input',
+    superPowersSearch: '#metadataForm > div:nth-child(3) > div:nth-child(4) > ul > li.wide > ul > li:nth-child(1) > div > input',
     suporPowers: {
-      regeneration: '#metadataForm > div:nth-child(3) > div:nth-child(3) > ul > li.wide > ul > li.multiselectItem > label'
+      regeneration: '#metadataForm > div:nth-child(3) > div:nth-child(4) > ul > li.wide > ul > li.multiselectItem > label'
     },
     nemesis: {
       daneryl: '#metadataForm > div:nth-child(3) > div:nth-child(2) > ul > li.wide > ul > li:nth-child(2) > label',
@@ -43,7 +43,7 @@ describe('PublishDocument', () => {
 
   it('should fill a document metadata and publish it', (done) => {
     nightmare
-    .click(selectors.libraryView.libraryFirstDocument)
+    .click(selectors.libraryView.librarySecondDocument)
     .waitToClick(selectors.libraryView.editEntityButton)
     .clearInput(selectors.doc.form.title)
     .write(selectors.doc.form.title, 'Wolverine')

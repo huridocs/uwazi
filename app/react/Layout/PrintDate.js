@@ -16,5 +16,5 @@ export default function PrintDate({ utc, toLocal }) {
 
 PrintDate.propTypes = {
   utc: PropTypes.number,
-  toLocal: PropTypes.bool
+  toLocal: PropTypes.bool,
 };

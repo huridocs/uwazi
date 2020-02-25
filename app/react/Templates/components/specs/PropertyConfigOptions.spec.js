@@ -16,7 +16,7 @@ describe('PropertyConfigOptions', () => {
   });
 
   const expectMatch = () => {
-    component = shallow(<PropertyConfigOptions {...props}/>);
+    component = shallow(<PropertyConfigOptions {...props} />);
     expect(component).toMatchSnapshot();
   };
 

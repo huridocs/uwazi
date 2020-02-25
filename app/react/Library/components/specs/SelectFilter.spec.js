@@ -16,7 +16,7 @@ describe('SelectFilter', () => {
   });
 
   it('should render a text filter field with a label and passing the model', () => {
-    const component = shallow(<SelectFilter {...props}/>);
+    const component = shallow(<SelectFilter {...props} />);
     expect(component).toMatchSnapshot();
   });
 
@@ -27,10 +27,10 @@ describe('SelectFilter', () => {
         model: 'model',
         prefix: 'prefix',
         options: ['options'],
-        showBoolSwitch: true
+        showBoolSwitch: true,
       };
 
-      const component = shallow(<SelectFilter {...props}/>);
+      const component = shallow(<SelectFilter {...props} />);
       expect(component).toMatchSnapshot();
     });
   });
@@ -38,7 +38,7 @@ describe('SelectFilter', () => {
   describe('when sort prop is set to true', () => {
     it('should activate sorting in the MultiSelect', () => {
       props.sort = true;
-      const component = shallow(<SelectFilter {...props}/>);
+      const component = shallow(<SelectFilter {...props} />);
       expect(component).toMatchSnapshot();
     });
   });

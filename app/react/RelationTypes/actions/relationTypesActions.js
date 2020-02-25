@@ -9,7 +9,7 @@ export function editRelationType(relationType) {
 }
 
 export function deleteRelationType(relationType) {
-  return function (dispatch) {
+  return function(dispatch) {
     return api.delete(new RequestParams({ _id: relationType._id })).then(() => {
       dispatch(actions.remove('relationTypes', relationType));
     });
@@ -17,12 +17,13 @@ export function deleteRelationType(relationType) {
 }
 
 export function checkRelationTypeCanBeDeleted(relationType) {
-  return function () {
-    return referencesAPI.countByRelationType(new RequestParams({ relationtypeId: relationType._id }))
-    .then((count) => {
-      if (count) {
-        return Promise.reject();
-      }
-    });
+  return function() {
+    return referencesAPI
+      .countByRelationType(new RequestParams({ relationtypeId: relationType._id }))
+      .then(count => {
+        if (count) {
+          return Promise.reject();
+        }
+      });
   };
 }

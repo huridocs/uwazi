@@ -7,7 +7,11 @@ import Immutable from 'immutable';
 import Doc from 'app/Library/components/Doc';
 import * as actions from 'app/SemanticSearch/actions/actions';
 
-import { SemanticSearchResults, mapStateToProps, mapDispatchToProps } from '../SemanticSearchResults';
+import {
+  SemanticSearchResults,
+  mapStateToProps,
+  mapDispatchToProps,
+} from '../SemanticSearchResults';
 
 describe('SemanticSearchResults', () => {
   let state;
@@ -17,7 +21,7 @@ describe('SemanticSearchResults', () => {
       semanticSearch: {
         resultsFilters: {
           threshold: 0.3,
-          minRelevantSentences: 1
+          minRelevantSentences: 1,
         },
         search: Immutable.fromJS({
           _id: 'id',
@@ -32,8 +36,8 @@ describe('SemanticSearchResults', () => {
                 averageScore: 0.6,
                 numRelevant: 2,
                 relevantRate: 0.5,
-                results: [{ score: 0.7 }, { score: 0.2 }, { score: 0.1 }]
-              }
+                results: [{ score: 0.7 }, { score: 0.2 }, { score: 0.1 }],
+              },
             },
             {
               sharedId: 'two',
@@ -41,19 +45,19 @@ describe('SemanticSearchResults', () => {
                 averageScore: 0.4,
                 numRelevant: 1,
                 relevantRate: 0.4,
-                results: [{ score: 0.6 }, { score: 0.5 }, { score: 0.2 }]
-              }
-            }
-          ]
-        })
-      }
+                results: [{ score: 0.6 }, { score: 0.5 }, { score: 0.2 }],
+              },
+            },
+          ],
+        }),
+      },
     };
     dispatch = jest.fn();
   });
 
   const getProps = () => ({
     ...mapStateToProps(state),
-    ...mapDispatchToProps(dispatch)
+    ...mapDispatchToProps(dispatch),
   });
 
   const render = () => shallow(<SemanticSearchResults {...getProps()} />);
@@ -73,7 +77,10 @@ describe('SemanticSearchResults', () => {
   it('should select document when item is clicked', () => {
     jest.spyOn(actions, 'selectSemanticSearchDocument').mockImplementation(() => {});
     const component = render();
-    component.find(Doc).first().simulate('click');
+    component
+      .find(Doc)
+      .first()
+      .simulate('click');
     expect(actions.selectSemanticSearchDocument).toHaveBeenCalled();
   });
 
@@ -81,11 +88,27 @@ describe('SemanticSearchResults', () => {
     it('should fetch the next 30 results using the same filters', () => {
       jest.spyOn(actions, 'getMoreSearchResults').mockImplementation(() => {});
       const component = render();
-      component.find('.btn-load-more').first().simulate('click');
-      expect(actions.getMoreSearchResults).toHaveBeenCalledWith('id', { limit: 30, minRelevantSentences: 1, threshold: 0.3, skip: 30 });
+      component
+        .find('.btn-load-more')
+        .first()
+        .simulate('click');
+      expect(actions.getMoreSearchResults).toHaveBeenCalledWith('id', {
+        limit: 30,
+        minRelevantSentences: 1,
+        threshold: 0.3,
+        skip: 30,
+      });
       component.update();
-      component.find('.btn-load-more').first().simulate('click');
-      expect(actions.getMoreSearchResults).toHaveBeenCalledWith('id', { limit: 30, minRelevantSentences: 1, threshold: 0.3, skip: 60 });
+      component
+        .find('.btn-load-more')
+        .first()
+        .simulate('click');
+      expect(actions.getMoreSearchResults).toHaveBeenCalledWith('id', {
+        limit: 30,
+        minRelevantSentences: 1,
+        threshold: 0.3,
+        skip: 60,
+      });
     });
   });
 
@@ -93,8 +116,14 @@ describe('SemanticSearchResults', () => {
     it('should edit all documents that match the search filters', () => {
       jest.spyOn(actions, 'editSearchEntities').mockImplementation(() => {});
       const component = render();
-      component.find('.edit-semantic-search').first().simulate('click');
-      expect(actions.editSearchEntities).toHaveBeenCalledWith('id', { minRelevantSentences: 1, threshold: 0.3 });
+      component
+        .find('.edit-semantic-search')
+        .first()
+        .simulate('click');
+      expect(actions.editSearchEntities).toHaveBeenCalledWith('id', {
+        minRelevantSentences: 1,
+        threshold: 0.3,
+      });
     });
   });
 });

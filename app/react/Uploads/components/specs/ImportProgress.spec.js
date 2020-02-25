@@ -1,3 +1,5 @@
+/** @format */
+
 import React from 'react';
 
 import { ImportProgress } from 'app/Uploads/components/ImportProgress';
@@ -10,31 +12,50 @@ describe('ImportProgress', () => {
 
   beforeEach(() => {
     props = {
-      importState: { importStart: true, importProgress: 5, importError: Immutable.fromJS({}), importEnd: false },
+      importState: {
+        importStart: true,
+        importProgress: 5,
+        importError: Immutable.fromJS({}),
+        importEnd: false,
+      },
       close: jasmine.createSpy('close'),
     };
   });
 
   const render = () => {
-    component = shallow(<ImportProgress {...props}/>);
+    component = shallow(<ImportProgress {...props} />);
+  };
+
+  const expectSnapshot = () => {
+    render();
+    expect(component).toMatchSnapshot();
   };
 
   describe('rendering states', () => {
     it('should render a state for normal progress', () => {
-      render();
-      expect(component).toMatchSnapshot();
+      expectSnapshot();
     });
 
     it('should render a state for errors', () => {
       props.importState.importError = Immutable.fromJS({ message: 'Something bad happened' });
-      render();
-      expect(component).toMatchSnapshot();
+      expectSnapshot();
+
+      props.importState.importError = Immutable.fromJS({
+        message: 'validation error',
+        validations: [
+          {
+            message: 'should be number',
+            dataPath: ".metadata['number']",
+            schemaPath: '#/metadataMatchesTemplateProperties',
+          },
+        ],
+      });
+      expectSnapshot();
     });
 
     it('should render a state for end', () => {
       props.importState.importEnd = true;
-      render();
-      expect(component).toMatchSnapshot();
+      expectSnapshot();
     });
   });
 });

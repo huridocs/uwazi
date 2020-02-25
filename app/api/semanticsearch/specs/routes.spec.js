@@ -19,7 +19,7 @@ describe('search routes', () => {
       const body = {
         searchTerm: 'term',
         query: {},
-        documents: []
+        documents: [],
       };
       jest.spyOn(semanticSearch, 'create').mockResolvedValue(result);
       const req = { language: 'en', user: 'user', body };
@@ -51,13 +51,17 @@ describe('search routes', () => {
       const result = { _id: 's1' };
       jest.spyOn(semanticSearch, 'getSearch').mockResolvedValue(result);
       const req = {
-        query: { searchId: 's1', limit: '30', skip: '90', threshold: '0.5' }
+        query: { searchId: 's1', limit: '30', skip: '90', threshold: '0.5' },
       };
 
       const response = await routes.get('/api/semantic-search', req);
       expect(response).toEqual(result);
-      expect(semanticSearch.getSearch).toHaveBeenCalledWith('s1',
-        { limit: 30, skip: 90, threshold: 0.5, minRelevantSentences: 5 });
+      expect(semanticSearch.getSearch).toHaveBeenCalledWith('s1', {
+        limit: 30,
+        skip: 90,
+        threshold: 0.5,
+        minRelevantSentences: 5,
+      });
     });
   });
 
@@ -73,7 +77,10 @@ describe('search routes', () => {
 
       const response = await routes.get('/api/semantic-search/list', req);
       expect(response).toEqual(result);
-      expect(semanticSearch.listSearchResultsDocs).toHaveBeenCalledWith('s1', { threshold: 0.5, minRelevantSentences: 2 });
+      expect(semanticSearch.listSearchResultsDocs).toHaveBeenCalledWith('s1', {
+        threshold: 0.5,
+        minRelevantSentences: 2,
+      });
     });
   });
 
@@ -93,7 +100,7 @@ describe('search routes', () => {
     it('should stop the search', async () => {
       const result = { _id: 's1' };
       jest.spyOn(semanticSearch, 'stopSearch').mockResolvedValue(result);
-      const req = { query: { searchId: 's1' } };
+      const req = { body: { searchId: 's1' } };
 
       const response = await routes.post('/api/semantic-search/stop', req);
       expect(response).toEqual(result);
@@ -105,7 +112,7 @@ describe('search routes', () => {
     it('should resume the search', async () => {
       const result = { _id: 's1' };
       jest.spyOn(semanticSearch, 'resumeSearch').mockResolvedValue(result);
-      const req = { query: { searchId: 's1' } };
+      const req = { body: { searchId: 's1' } };
 
       const response = await routes.post('/api/semantic-search/resume', req);
       expect(response).toEqual(result);

@@ -11,8 +11,8 @@ const relationshipsSchema = new mongoose.Schema({
   range: {
     start: Number,
     end: Number,
-    text: String
-  }
+    text: String,
+  },
 });
 
 export default instanceModel('connections', relationshipsSchema);

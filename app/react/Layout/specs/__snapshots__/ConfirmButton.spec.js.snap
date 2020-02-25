@@ -1,27 +1,27 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`ConfirmButton on click onAccept should execute action and close modal 1`] = `
-<React.Fragment>
+<Fragment>
   <button
     onClick={[Function]}
   >
     text
   </button>
-</React.Fragment>
+</Fragment>
 `;
 
 exports[`ConfirmButton on click onCancel should should close modal 1`] = `
-<React.Fragment>
+<Fragment>
   <button
     onClick={[Function]}
   >
     text
   </button>
-</React.Fragment>
+</Fragment>
 `;
 
 exports[`ConfirmButton on click should render a Confirm modal 1`] = `
-<React.Fragment>
+<Fragment>
   <button
     onClick={[Function]}
   >
@@ -35,15 +35,15 @@ exports[`ConfirmButton on click should render a Confirm modal 1`] = `
     title="Confirm action"
     type="danger"
   />
-</React.Fragment>
+</Fragment>
 `;
 
 exports[`ConfirmButton should render a button 1`] = `
-<React.Fragment>
+<Fragment>
   <button
     onClick={[Function]}
   >
     text
   </button>
-</React.Fragment>
+</Fragment>
 `;

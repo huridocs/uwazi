@@ -18,15 +18,14 @@ export default {
 
     return settings.get().then(({ languages }) => {
       const sharedId = ID();
-      const docs = languages.map((lang) => {
+      const docs = languages.map(lang => {
         const langDoc = Object.assign({}, doc);
         langDoc.language = lang.key;
         langDoc.sharedId = sharedId;
         return langDoc;
       });
 
-      return model.saveMultiple(docs)
-      .then(() => this.getById(sharedId, language));
+      return model.saveMultiple(docs).then(() => this.getById(sharedId, language));
     });
   },
 
@@ -35,8 +34,9 @@ export default {
   },
 
   getById(sharedId, language, select) {
-    return this.get({ sharedId, language }, select)
-    .then(results => results[0] ? results[0] : Promise.reject(createError('Page not found', 404)));
+    return this.get({ sharedId, language }, select).then(results =>
+      results[0] ? results[0] : Promise.reject(createError('Page not found', 404))
+    );
   },
 
   delete(sharedId) {
@@ -44,7 +44,9 @@ export default {
   },
 
   async addLanguage(language) {
-    const [lanuageTranslationAlreadyExists] = await this.get({ locale: language }, null, { limit: 1 });
+    const [lanuageTranslationAlreadyExists] = await this.get({ locale: language }, null, {
+      limit: 1,
+    });
     if (lanuageTranslationAlreadyExists) {
       return Promise.resolve();
     }
@@ -59,27 +61,26 @@ export default {
       }
 
       return this.get({ language: defaultLanguage }, null, { skip: offset, limit })
-      .then((pages) => {
-        const savePages = pages.map((_page) => {
-          const page = Object.assign({}, _page);
-          delete page._id;
-          delete page.__v;
-          page.language = language;
-          return this.save(page);
-        });
+        .then(pages => {
+          const savePages = pages.map(_page => {
+            const page = Object.assign({}, _page);
+            delete page._id;
+            delete page.__v;
+            page.language = language;
+            return this.save(page);
+          });
 
-        return Promise.all(savePages);
-      })
-      .then(() => duplicate(offset + limit, totalRows));
+          return Promise.all(savePages);
+        })
+        .then(() => duplicate(offset + limit, totalRows));
     };
 
-    return this.count({ language: defaultLanguage })
-    .then(totalRows => duplicate(0, totalRows));
+    return this.count({ language: defaultLanguage }).then(totalRows => duplicate(0, totalRows));
   },
 
   async removeLanguage(language) {
     return model.delete({ language });
   },
 
-  count: model.count.bind(model)
+  count: model.count.bind(model),
 };

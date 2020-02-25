@@ -1,8 +1,10 @@
+/** @format */
+
 import 'isomorphic-fetch';
 import mongoose from 'mongoose';
 import { isNumber } from 'util';
 
-import { templateTypes } from 'shared/templateTypes';
+import { propertyTypes } from 'shared/propertyTypes';
 
 import entities from 'api/entities';
 import templates from 'api/templates';
@@ -11,18 +13,13 @@ import dateHelper from 'api/utils/date';
 import vault from './vault';
 import vaultEvidencesModel from './vaultEvidencesModel';
 
+const linkProp = template => template.properties.find(p => p.type === propertyTypes.link).name;
 
-const linkProp = template =>
-  template.properties.find(p => p.type === templateTypes.link).name;
+const mediaProp = template => template.properties.find(p => p.type === propertyTypes.media).name;
 
-const mediaProp = template =>
-  template.properties.find(p => p.type === templateTypes.media).name;
+const imageProp = template => template.properties.find(p => p.type === propertyTypes.image).name;
 
-const imageProp = template =>
-  template.properties.find(p => p.type === templateTypes.image).name;
-
-const dateProp = template =>
-  template.properties.find(p => p.type === templateTypes.date).name;
+const dateProp = template => template.properties.find(p => p.type === propertyTypes.date).name;
 
 const createEntityFromEvidence = async (evidence, template) => {
   const _id = mongoose.Types.ObjectId();
@@ -32,37 +29,43 @@ const createEntityFromEvidence = async (evidence, template) => {
     _id,
     title: json.title,
     metadata: {
-      [mediaProp(template)]: video ?
-        `/api/attachments/download?_id=${_id}&file=${evidence.request}.mp4` :
-        '',
-      [imageProp(template)]: screenshot ?
-        `/api/attachments/download?_id=${_id}&file=${evidence.request}.png` :
-        ''
+      [mediaProp(template)]: [
+        {
+          value: video ? `/api/attachments/download?_id=${_id}&file=${evidence.request}.mp4` : '',
+        },
+      ],
+      [imageProp(template)]: [
+        {
+          value: screenshot
+            ? `/api/attachments/download?_id=${_id}&file=${evidence.request}.png`
+            : '',
+        },
+      ],
     },
     template: template._id,
     attachments: [
       video && {
         filename: `${evidence.request}.mp4`,
-        originalname: `${json.title}.mp4`
+        originalname: `${json.title}.mp4`,
       },
       screenshot && {
         filename: `${evidence.request}.png`,
-        originalname: `${json.title}.png`
+        originalname: `${json.title}.png`,
       },
       {
         filename: `${evidence.request}.zip`,
-        originalname: `${json.title}.zip`
+        originalname: `${json.title}.zip`,
       },
-    ].filter(a => a)
+    ].filter(a => a),
   };
 
   const timeOfRequest = dateHelper.stringDateToUTCTimestamp(evidence.time_of_request);
   // eslint-disable-next-line no-restricted-globals
   if (isNumber(timeOfRequest) && !isNaN(timeOfRequest)) {
-    entity.metadata[dateProp(template)] = timeOfRequest;
+    entity.metadata[dateProp(template)] = [{ value: timeOfRequest }];
   }
   if (evidence.url) {
-    entity.metadata[linkProp(template)] = { label: evidence.url, url: evidence.url };
+    entity.metadata[linkProp(template)] = [{ value: { label: evidence.url, url: evidence.url } }];
   }
 
   await entities.save(entity, { language: 'en', user: {} });
@@ -79,7 +82,7 @@ const vaultSync = {
       await createEntityFromEvidence(evidence, template);
       return vaultEvidencesModel.save({ request: evidence.request });
     }, Promise.resolve());
-  }
+  },
 };
 
 export default vaultSync;

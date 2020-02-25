@@ -2,7 +2,10 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import Immutable from 'immutable';
 
-import { mapStateToProps, RelationTypeForm } from 'app/RelationTypes/components/RelationTypeForm.js';
+import {
+  mapStateToProps,
+  RelationTypeForm,
+} from 'app/RelationTypes/components/RelationTypeForm.js';
 
 describe('RelationTypeForm', () => {
   let props;
@@ -14,10 +17,10 @@ describe('RelationTypeForm', () => {
       resetForm: jasmine.createSpy('resetForm'),
       setInitial: jasmine.createSpy('setInitial'),
       handleSubmit: jasmine.createSpy('handleSubmit'),
-      state: { fields: [] }
+      state: { fields: [] },
     };
 
-    component = shallow(<RelationTypeForm {...props}/>);
+    component = shallow(<RelationTypeForm {...props} />);
   });
 
   describe('when unmount', () => {
@@ -32,7 +35,7 @@ describe('RelationTypeForm', () => {
     let state;
     beforeEach(() => {
       state = {
-        relationType: Immutable.fromJS({ name: 'relationType name' })
+        relationType: Immutable.fromJS({ name: 'relationType name' }),
       };
     });
 

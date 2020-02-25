@@ -80,28 +80,26 @@ exports[`PropertyConfigOptions Once the property is checked as filter should ren
         This property will be used for filtering the library results. When properties match in equal name and field type with other document types, they will be combined for filtering.
       </Tip>
     </PropertyConfigOption>
-    <React.Fragment>
-      <PropertyConfigOption
-        label="Default filter"
-        model="template.data.properties[2].defaultfilter"
+    <PropertyConfigOption
+      label="Default filter"
+      model="template.data.properties[2].defaultfilter"
+    >
+      <Tip
+        icon="question-circle"
       >
-        <Tip
-          icon="question-circle"
-        >
-          Use this property as a default filter in the library. When there are no document types selected, this property will show as a default filter for your collection.
-        </Tip>
-      </PropertyConfigOption>
-      <PropertyConfigOption
-        label="Priority sorting"
-        model="template.data.properties[2].prioritySorting"
+        Use this property as a default filter in the library. When there are no document types selected, this property will show as a default filter for your collection.
+      </Tip>
+    </PropertyConfigOption>
+    <PropertyConfigOption
+      label="Priority sorting"
+      model="template.data.properties[2].prioritySorting"
+    >
+      <Tip
+        icon="question-circle"
       >
-        <Tip
-          icon="question-circle"
-        >
-          Properties marked as priority sorting will be used as default sorting criteria. If more than one property is marked as priority sorting the system will try to pick-up the best fit. When listing mixed template types, the system will pick-up the best combined priority sorting.
-        </Tip>
-      </PropertyConfigOption>
-    </React.Fragment>
+        Properties marked as priority sorting will be used as default sorting criteria. If more than one property is marked as priority sorting the system will try to pick-up the best fit. When listing mixed template types, the system will pick-up the best combined priority sorting.
+      </Tip>
+    </PropertyConfigOption>
     <Connect(FilterSuggestions)
       filter={true}
     />
@@ -362,28 +360,26 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
         This property will be used for filtering the library results. When properties match in equal name and field type with other document types, they will be combined for filtering.
       </Tip>
     </PropertyConfigOption>
-    <React.Fragment>
-      <PropertyConfigOption
-        label="Default filter"
-        model="template.data.properties[2].defaultfilter"
+    <PropertyConfigOption
+      label="Default filter"
+      model="template.data.properties[2].defaultfilter"
+    >
+      <Tip
+        icon="question-circle"
       >
-        <Tip
-          icon="question-circle"
-        >
-          Use this property as a default filter in the library. When there are no document types selected, this property will show as a default filter for your collection.
-        </Tip>
-      </PropertyConfigOption>
-      <PropertyConfigOption
-        label="Priority sorting"
-        model="template.data.properties[2].prioritySorting"
+        Use this property as a default filter in the library. When there are no document types selected, this property will show as a default filter for your collection.
+      </Tip>
+    </PropertyConfigOption>
+    <PropertyConfigOption
+      label="Priority sorting"
+      model="template.data.properties[2].prioritySorting"
+    >
+      <Tip
+        icon="question-circle"
       >
-        <Tip
-          icon="question-circle"
-        >
-          Properties marked as priority sorting will be used as default sorting criteria. If more than one property is marked as priority sorting the system will try to pick-up the best fit. When listing mixed template types, the system will pick-up the best combined priority sorting.
-        </Tip>
-      </PropertyConfigOption>
-    </React.Fragment>
+        Properties marked as priority sorting will be used as default sorting criteria. If more than one property is marked as priority sorting the system will try to pick-up the best fit. When listing mixed template types, the system will pick-up the best combined priority sorting.
+      </Tip>
+    </PropertyConfigOption>
     <Connect(FilterSuggestions)
       filter={true}
     />
@@ -436,28 +432,26 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
         This property will be used for filtering the library results. When properties match in equal name and field type with other document types, they will be combined for filtering.
       </Tip>
     </PropertyConfigOption>
-    <React.Fragment>
-      <PropertyConfigOption
-        label="Default filter"
-        model="template.data.properties[2].defaultfilter"
+    <PropertyConfigOption
+      label="Default filter"
+      model="template.data.properties[2].defaultfilter"
+    >
+      <Tip
+        icon="question-circle"
       >
-        <Tip
-          icon="question-circle"
-        >
-          Use this property as a default filter in the library. When there are no document types selected, this property will show as a default filter for your collection.
-        </Tip>
-      </PropertyConfigOption>
-      <PropertyConfigOption
-        label="Priority sorting"
-        model="template.data.properties[2].prioritySorting"
+        Use this property as a default filter in the library. When there are no document types selected, this property will show as a default filter for your collection.
+      </Tip>
+    </PropertyConfigOption>
+    <PropertyConfigOption
+      label="Priority sorting"
+      model="template.data.properties[2].prioritySorting"
+    >
+      <Tip
+        icon="question-circle"
       >
-        <Tip
-          icon="question-circle"
-        >
-          Properties marked as priority sorting will be used as default sorting criteria. If more than one property is marked as priority sorting the system will try to pick-up the best fit. When listing mixed template types, the system will pick-up the best combined priority sorting.
-        </Tip>
-      </PropertyConfigOption>
-    </React.Fragment>
+        Properties marked as priority sorting will be used as default sorting criteria. If more than one property is marked as priority sorting the system will try to pick-up the best fit. When listing mixed template types, the system will pick-up the best combined priority sorting.
+      </Tip>
+    </PropertyConfigOption>
     <Connect(FilterSuggestions)
       filter={true}
     />
@@ -510,28 +504,26 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
         This property will be used for filtering the library results. When properties match in equal name and field type with other document types, they will be combined for filtering.
       </Tip>
     </PropertyConfigOption>
-    <React.Fragment>
-      <PropertyConfigOption
-        label="Default filter"
-        model="template.data.properties[2].defaultfilter"
+    <PropertyConfigOption
+      label="Default filter"
+      model="template.data.properties[2].defaultfilter"
+    >
+      <Tip
+        icon="question-circle"
       >
-        <Tip
-          icon="question-circle"
-        >
-          Use this property as a default filter in the library. When there are no document types selected, this property will show as a default filter for your collection.
-        </Tip>
-      </PropertyConfigOption>
-      <PropertyConfigOption
-        label="Priority sorting"
-        model="template.data.properties[2].prioritySorting"
+        Use this property as a default filter in the library. When there are no document types selected, this property will show as a default filter for your collection.
+      </Tip>
+    </PropertyConfigOption>
+    <PropertyConfigOption
+      label="Priority sorting"
+      model="template.data.properties[2].prioritySorting"
+    >
+      <Tip
+        icon="question-circle"
       >
-        <Tip
-          icon="question-circle"
-        >
-          Properties marked as priority sorting will be used as default sorting criteria. If more than one property is marked as priority sorting the system will try to pick-up the best fit. When listing mixed template types, the system will pick-up the best combined priority sorting.
-        </Tip>
-      </PropertyConfigOption>
-    </React.Fragment>
+        Properties marked as priority sorting will be used as default sorting criteria. If more than one property is marked as priority sorting the system will try to pick-up the best fit. When listing mixed template types, the system will pick-up the best combined priority sorting.
+      </Tip>
+    </PropertyConfigOption>
     <Connect(FilterSuggestions)
       filter={true}
     />
@@ -584,28 +576,26 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
         This property will be used for filtering the library results. When properties match in equal name and field type with other document types, they will be combined for filtering.
       </Tip>
     </PropertyConfigOption>
-    <React.Fragment>
-      <PropertyConfigOption
-        label="Default filter"
-        model="template.data.properties[2].defaultfilter"
+    <PropertyConfigOption
+      label="Default filter"
+      model="template.data.properties[2].defaultfilter"
+    >
+      <Tip
+        icon="question-circle"
       >
-        <Tip
-          icon="question-circle"
-        >
-          Use this property as a default filter in the library. When there are no document types selected, this property will show as a default filter for your collection.
-        </Tip>
-      </PropertyConfigOption>
-      <PropertyConfigOption
-        label="Priority sorting"
-        model="template.data.properties[2].prioritySorting"
+        Use this property as a default filter in the library. When there are no document types selected, this property will show as a default filter for your collection.
+      </Tip>
+    </PropertyConfigOption>
+    <PropertyConfigOption
+      label="Priority sorting"
+      model="template.data.properties[2].prioritySorting"
+    >
+      <Tip
+        icon="question-circle"
       >
-        <Tip
-          icon="question-circle"
-        >
-          Properties marked as priority sorting will be used as default sorting criteria. If more than one property is marked as priority sorting the system will try to pick-up the best fit. When listing mixed template types, the system will pick-up the best combined priority sorting.
-        </Tip>
-      </PropertyConfigOption>
-    </React.Fragment>
+        Properties marked as priority sorting will be used as default sorting criteria. If more than one property is marked as priority sorting the system will try to pick-up the best fit. When listing mixed template types, the system will pick-up the best combined priority sorting.
+      </Tip>
+    </PropertyConfigOption>
     <Connect(FilterSuggestions)
       filter={true}
     />

@@ -1,3 +1,6 @@
+/**
+ * @jest-environment jsdom
+ */
 /* eslint-disable max-nested-callbacks */
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
@@ -48,7 +51,10 @@ describe('documentActions', () => {
   describe('addToToc', () => {
     it('should populate doc form, and add the selected text to its correct place', () => {
       spyOn(formActions, 'load').and.returnValue({ type: 'loadAction' });
-      const reference = { sourceDocument: '123', sourceRange: { start: 12, end: 23, text: 'Chapter 1' } };
+      const reference = {
+        sourceDocument: '123',
+        sourceRange: { start: 12, end: 23, text: 'Chapter 1' },
+      };
       const chapter1 = { range: { start: 12, end: 23 }, label: 'Chapter 1', indentation: 0 };
       const chapter2 = { range: { start: 22, end: 43 }, label: 'Chapter 2', indentation: 0 };
 
@@ -56,16 +62,16 @@ describe('documentActions', () => {
         { type: 'documentViewer/tocBeingEdited/SET', value: true },
         { type: 'loadAction' },
         { type: types.OPEN_PANEL, panel: 'viewMetadataPanel' },
-        { type: 'viewer.sidepanel.tab/SET', value: 'toc' }
+        { type: 'viewer.sidepanel.tab/SET', value: 'toc' },
       ];
 
       const store = mockStore({
         documentViewer: {
           tocForm: [],
           doc: Immutable.fromJS({
-            toc: [chapter2]
-          })
-        }
+            toc: [chapter2],
+          }),
+        },
       });
 
       store.dispatch(actions.addToToc(reference));
@@ -77,25 +83,31 @@ describe('documentActions', () => {
     describe('if document is already loaded', () => {
       it('should not reload the form', () => {
         spyOn(formActions, 'load').and.returnValue({ type: 'loadAction' });
-        const reference = { sourceDocument: '123', sourceRange: { start: 12, end: 23, text: 'Chapter 1' } };
+        const reference = {
+          sourceDocument: '123',
+          sourceRange: { start: 12, end: 23, text: 'Chapter 1' },
+        };
         const chapter1 = { range: { start: 12, end: 23 }, label: 'Chapter 1', indentation: 0 };
         const chapter2 = { range: { start: 22, end: 43 }, label: 'Chapter 2', indentation: 0 };
         const expectedActions = [
           { type: 'documentViewer/tocBeingEdited/SET', value: true },
           { type: 'loadAction' },
           { type: types.OPEN_PANEL, panel: 'viewMetadataPanel' },
-          { type: 'viewer.sidepanel.tab/SET', value: 'toc' }
+          { type: 'viewer.sidepanel.tab/SET', value: 'toc' },
         ];
         const store = mockStore({
           documentViewer: {
             tocForm: [chapter2],
-            doc: Immutable.fromJS({})
-          }
+            doc: Immutable.fromJS({}),
+          },
         });
 
         store.dispatch(actions.addToToc(reference));
         expect(store.getActions()).toEqual(expectedActions);
-        expect(formActions.load).toHaveBeenCalledWith('documentViewer.tocForm', [chapter1, chapter2]);
+        expect(formActions.load).toHaveBeenCalledWith('documentViewer.tocForm', [
+          chapter1,
+          chapter2,
+        ]);
       });
     });
   });
@@ -103,20 +115,28 @@ describe('documentActions', () => {
   describe('removeFromToc', () => {
     it('should remove the toc entry from the form', () => {
       spyOn(formActions, 'load').and.returnValue({ type: 'loadAction' });
-      const chapter1 = { range: { start: 12, end: 23 }, label: 'Chapter 1', indentation: 0, _id: 1 };
-      const chapter2 = { range: { start: 22, end: 43 }, label: 'Chapter 2', indentation: 0, _id: 2 };
+      const chapter1 = {
+        range: { start: 12, end: 23 },
+        label: 'Chapter 1',
+        indentation: 0,
+        _id: 1,
+      };
+      const chapter2 = {
+        range: { start: 22, end: 43 },
+        label: 'Chapter 2',
+        indentation: 0,
+        _id: 2,
+      };
 
-      const expectedActions = [
-        { type: 'loadAction' }
-      ];
+      const expectedActions = [{ type: 'loadAction' }];
 
       const store = mockStore({
         documentViewer: {
           tocForm: [chapter1, chapter2],
           doc: Immutable.fromJS({
-            toc: []
-          })
-        }
+            toc: [],
+          }),
+        },
       });
 
       store.dispatch(actions.removeFromToc(chapter2));
@@ -128,17 +148,27 @@ describe('documentActions', () => {
 
   describe('indentTocElement', () => {
     it('should change the toc entry indentation', () => {
-      const chapter1 = { range: { start: 12, end: 23 }, label: 'Chapter 1', indentation: 0, _id: 1 };
-      const chapter2 = { range: { start: 22, end: 43 }, label: 'Chapter 2', indentation: 0, _id: 2 };
+      const chapter1 = {
+        range: { start: 12, end: 23 },
+        label: 'Chapter 1',
+        indentation: 0,
+        _id: 1,
+      };
+      const chapter2 = {
+        range: { start: 22, end: 43 },
+        label: 'Chapter 2',
+        indentation: 0,
+        _id: 2,
+      };
 
       const formState = [chapter1, chapter2];
       const store = mockStore({
         documentViewer: {
           tocForm: formState,
           doc: Immutable.fromJS({
-            toc: []
-          })
-        }
+            toc: [],
+          }),
+        },
       });
 
       store.dispatch(actions.indentTocElement(chapter2, 1));
@@ -153,39 +183,55 @@ describe('documentActions', () => {
       mockID();
       backend.restore();
       backend
-      .get(`${APIURL}documents/search?searchTerm=term&fields=%5B%22field%22%5D`, { body: JSON.stringify('documents') })
-      .get(`${APIURL}entities?sharedId=targetId`, { body: JSON.stringify({ rows: [{ target: 'document', pdfInfo: 'test' }] }) })
-      .get(`${APIURL}entities?sharedId=docWithPDFRdy`, { body: JSON.stringify({ rows: [{ pdfInfo: 'processed pdf', _id: 'pdfReady' }] }) })
-      .get(`${APIURL}entities?sharedId=docWithPDFNotRdy`, {
-        body: JSON.stringify({ rows: [{ _id: 'pdfNotReady', sharedId: 'shared', unwantedProp: 'unwanted', file: {} }] })
-      })
-      .get(`${APIURL}references/by_document?sharedId=targetId`, { body: JSON.stringify([{ connectedDocument: '1' }]) });
+        .get(`${APIURL}documents/search?searchTerm=term&fields=%5B%22field%22%5D`, {
+          body: JSON.stringify('documents'),
+        })
+        .get(`${APIURL}entities?sharedId=targetId`, {
+          body: JSON.stringify({ rows: [{ target: 'document', pdfInfo: 'test' }] }),
+        })
+        .get(`${APIURL}entities?sharedId=docWithPDFRdy`, {
+          body: JSON.stringify({ rows: [{ pdfInfo: 'processed pdf', _id: 'pdfReady' }] }),
+        })
+        .get(`${APIURL}entities?sharedId=docWithPDFNotRdy`, {
+          body: JSON.stringify({
+            rows: [{ _id: 'pdfNotReady', sharedId: 'shared', unwantedProp: 'unwanted', file: {} }],
+          }),
+        })
+        .get(`${APIURL}references/by_document?sharedId=targetId`, {
+          body: JSON.stringify([{ connectedDocument: '1' }]),
+        });
     });
 
     afterEach(() => backend.restore());
 
     describe('saveDocument', () => {
-      it('should save the document (omitting fullText) and dispatch a notification on success', (done) => {
+      it('should save the document (omitting fullText) and dispatch a notification on success', done => {
         spyOn(documentsApi, 'save').and.returnValue(Promise.resolve({ sharedId: 'responseId' }));
         const doc = { name: 'doc', fullText: 'fullText' };
-        spyOn(relationshipActions, 'reloadRelationships').and.returnValue({ type: 'reloadRelationships' });
+        spyOn(relationshipActions, 'reloadRelationships').and.returnValue({
+          type: 'reloadRelationships',
+        });
 
         const expectedActions = [
-          { type: notificationsTypes.NOTIFY, notification: { message: 'Document updated', type: 'success', id: 'unique_id' } },
+          {
+            type: notificationsTypes.NOTIFY,
+            notification: { message: 'Document updated', type: 'success', id: 'unique_id' },
+          },
           { type: types.VIEWER_UPDATE_DOCUMENT, doc: { name: 'doc', fullText: 'fullText' } },
           { type: 'rrf/reset', model: 'documentViewer.sidepanel.metadata' },
           { type: 'viewer/doc/SET', value: { sharedId: 'responseId' } },
-          { type: 'reloadRelationships' }
+          { type: 'reloadRelationships' },
         ];
         const store = mockStore({});
 
-        store.dispatch(actions.saveDocument(doc))
-        .then(() => {
-          expect(documentsApi.save).toHaveBeenCalledWith({ data: { name: 'doc' }, headers: {} });
-          expect(store.getActions()).toEqual(expectedActions);
-        })
-        .then(done)
-        .catch(done.fail);
+        store
+          .dispatch(actions.saveDocument(doc))
+          .then(() => {
+            expect(documentsApi.save).toHaveBeenCalledWith({ data: { name: 'doc' }, headers: {} });
+            expect(store.getActions()).toEqual(expectedActions);
+          })
+          .then(done)
+          .catch(done.fail);
       });
     });
 
@@ -204,89 +250,129 @@ describe('documentActions', () => {
           const requestParams = new RequestParams({ sharedId: 'docWithPDFNotRdy' });
 
           const doc = await actions.getDocument(requestParams);
-          expect(PDFUtils.extractPDFInfo).toHaveBeenCalledWith(`${APIURL}documents/download?_id=${expected._id}`);
-          expect(api.post).toHaveBeenCalledWith('documents/pdfInfo', { data: expected, headers: {} });
+          expect(PDFUtils.extractPDFInfo).toHaveBeenCalledWith(
+            `${APIURL}documents/download?_id=${expected._id}`
+          );
+          expect(api.post).toHaveBeenCalledWith('documents/pdfInfo', {
+            data: expected,
+            headers: {},
+          });
           expect(expected).toBe(doc);
         });
       });
     });
 
     describe('saveToc', () => {
-      it('should save the document with the new toc and dispatch a notification on success', (done) => {
+      it('should save the document with the new toc and dispatch a notification on success', done => {
         spyOn(documentsApi, 'save').and.returnValue(Promise.resolve('response'));
-        spyOn(relationshipActions, 'reloadRelationships').and.returnValue({ type: 'reloadRelationships' });
-        const doc = { name: 'doc', _id: 'id', _rev: 'rev', sharedId: 'sharedId', file: { fileName: '123.pdf' } };
+        spyOn(relationshipActions, 'reloadRelationships').and.returnValue({
+          type: 'reloadRelationships',
+        });
+        const doc = {
+          name: 'doc',
+          _id: 'id',
+          _rev: 'rev',
+          sharedId: 'sharedId',
+          file: { fileName: '123.pdf' },
+        };
         const toc = [
           { range: { start: 12, end: 23 }, label: 'Chapter 1', indentation: 0 },
-          { range: { start: 22, end: 44 }, label: 'Chapter 1.1', indentation: 1 }
+          { range: { start: 22, end: 44 }, label: 'Chapter 1.1', indentation: 1 },
         ];
 
         const expectedActions = [
           { type: 'rrf/reset', model: 'documentViewer.sidepanel.metadata' },
           { type: 'documentViewer/tocBeingEdited/SET', value: false },
-          { type: notificationsTypes.NOTIFY, notification: { message: 'Document updated', type: 'success', id: 'unique_id' } },
-          { type: types.VIEWER_UPDATE_DOCUMENT, doc: { _id: 'id', _rev: 'rev', sharedId: 'sharedId', toc, file: { fileName: '123.pdf' } } },
+          {
+            type: notificationsTypes.NOTIFY,
+            notification: { message: 'Document updated', type: 'success', id: 'unique_id' },
+          },
+          {
+            type: types.VIEWER_UPDATE_DOCUMENT,
+            doc: {
+              _id: 'id',
+              _rev: 'rev',
+              sharedId: 'sharedId',
+              toc,
+              file: { fileName: '123.pdf' },
+            },
+          },
           { type: 'rrf/reset', model: 'documentViewer.sidepanel.metadata' },
           { type: 'viewer/doc/SET', value: 'response' },
-          { type: 'reloadRelationships' }
+          { type: 'reloadRelationships' },
         ];
         const store = mockStore({
           documentViewer: {
-            doc: Immutable.fromJS(doc)
-          }
+            doc: Immutable.fromJS(doc),
+          },
         });
 
-        store.dispatch(actions.saveToc(toc))
-        .then(() => {
-          expect(documentsApi.save).toHaveBeenCalledWith(
-            { data: { _id: 'id', _rev: 'rev', sharedId: 'sharedId', toc, file: { fileName: '123.pdf' } }, headers: {} }
-          );
-          expect(store.getActions()).toEqual(expectedActions);
-        })
-        .then(done)
-        .catch(done.fail);
+        store
+          .dispatch(actions.saveToc(toc))
+          .then(() => {
+            expect(documentsApi.save).toHaveBeenCalledWith({
+              data: {
+                _id: 'id',
+                _rev: 'rev',
+                sharedId: 'sharedId',
+                toc,
+                file: { fileName: '123.pdf' },
+              },
+              headers: {},
+            });
+            expect(store.getActions()).toEqual(expectedActions);
+          })
+          .then(done)
+          .catch(done.fail);
       });
     });
 
     describe('deleteDocument', () => {
-      it('should delete the document and dispatch a notification on success', (done) => {
+      it('should delete the document and dispatch a notification on success', done => {
         spyOn(documentsApi, 'delete').and.returnValue(Promise.resolve('response'));
         const doc = { sharedId: 'sharedId', name: 'doc' };
 
         const expectedActions = [
-          { type: notificationsTypes.NOTIFY, notification: { message: 'Document deleted', type: 'success', id: 'unique_id' } },
+          {
+            type: notificationsTypes.NOTIFY,
+            notification: { message: 'Document deleted', type: 'success', id: 'unique_id' },
+          },
           { type: types.RESET_DOCUMENT_VIEWER },
           { type: 'REMOVE_DOCUMENT', doc: { sharedId: 'sharedId', name: 'doc' } },
-          { type: 'UNSELECT_ALL_DOCUMENTS' }
+          { type: 'UNSELECT_ALL_DOCUMENTS' },
         ];
         const store = mockStore({});
 
-        store.dispatch(actions.deleteDocument(doc))
-        .then(() => {
-          expect(documentsApi.delete).toHaveBeenCalledWith(new RequestParams({ sharedId: 'sharedId' }));
-          expect(store.getActions()).toEqual(expectedActions);
-        })
-        .then(done)
-        .catch(done.fail);
+        store
+          .dispatch(actions.deleteDocument(doc))
+          .then(() => {
+            expect(documentsApi.delete).toHaveBeenCalledWith(
+              new RequestParams({ sharedId: 'sharedId' })
+            );
+            expect(store.getActions()).toEqual(expectedActions);
+          })
+          .then(done)
+          .catch(done.fail);
       });
     });
 
     describe('loadTargetDocument', () => {
-      it('should loadTargetDocument with id passed', (done) => {
+      it('should loadTargetDocument with id passed', done => {
         const targetId = 'targetId';
 
         const expectedActions = [
           { type: 'viewer/targetDoc/SET', value: { target: 'document', pdfInfo: 'test' } },
-          { type: 'viewer/targetDocReferences/SET', value: [{ connectedDocument: '1' }] }
+          { type: 'viewer/targetDocReferences/SET', value: [{ connectedDocument: '1' }] },
         ];
         const store = mockStore({ locale: 'es' });
 
-        store.dispatch(actions.loadTargetDocument(targetId))
-        .then(() => {
-          expect(store.getActions()).toEqual(expectedActions);
-        })
-        .then(done)
-        .catch(done.fail);
+        store
+          .dispatch(actions.loadTargetDocument(targetId))
+          .then(() => {
+            expect(store.getActions()).toEqual(expectedActions);
+          })
+          .then(done)
+          .catch(done.fail);
       });
     });
 
@@ -297,7 +383,7 @@ describe('documentActions', () => {
           { type: 'viewer/targetDoc/UNSET' },
           { type: 'viewer/targetDocReferences/UNSET' },
           { type: 'UNSET_TARGET_SELECTION' },
-          { type: 'OPEN_PANEL', panel: 'viewMetadataPanel' }
+          { type: 'OPEN_PANEL', panel: 'viewMetadataPanel' },
         ];
         const store = mockStore({});
 

@@ -12,7 +12,7 @@ describe('uiReducer', () => {
     suggestions: [],
     selectedDocuments: [],
     filtersPanel: false,
-    zoomLevel: 0
+    zoomLevel: 0,
   });
 
   describe('when state is undefined', () => {
@@ -24,60 +24,123 @@ describe('uiReducer', () => {
 
   describe('selectDocument', () => {
     it('should set selected document', () => {
-      const newState = uiReducer(initialState, { type: types.SELECT_DOCUMENT, doc: { _id: 'document' } });
-      expect(newState.get('selectedDocuments').first().get('_id')).toBe('document');
+      const newState = uiReducer(initialState, {
+        type: types.SELECT_DOCUMENT,
+        doc: { _id: 'document' },
+      });
+      expect(
+        newState
+          .get('selectedDocuments')
+          .first()
+          .get('_id')
+      ).toBe('document');
     });
 
     it('should not select an already selected document', () => {
-      let newState = uiReducer(initialState, { type: types.SELECT_DOCUMENT, doc: { _id: 'document' } });
-      newState = uiReducer(newState, { type: types.SELECT_DOCUMENT, doc: { _id: 'document', something: 'change' } });
+      let newState = uiReducer(initialState, {
+        type: types.SELECT_DOCUMENT,
+        doc: { _id: 'document' },
+      });
+      newState = uiReducer(newState, {
+        type: types.SELECT_DOCUMENT,
+        doc: { _id: 'document', something: 'change' },
+      });
       expect(newState.get('selectedDocuments').size).toBe(1);
     });
   });
 
   describe('selectSingleDocument', () => {
     it('should set document and remove any other', () => {
-      let newState = uiReducer(initialState, { type: types.SELECT_DOCUMENT, doc: { _id: 'document' } });
-      newState = uiReducer(initialState, { type: types.SELECT_SINGLE_DOCUMENT, doc: { _id: 'other_document' } });
-      expect(newState.get('selectedDocuments').first().get('_id')).toBe('other_document');
+      let newState = uiReducer(initialState, {
+        type: types.SELECT_DOCUMENT,
+        doc: { _id: 'document' },
+      });
+      newState = uiReducer(initialState, {
+        type: types.SELECT_SINGLE_DOCUMENT,
+        doc: { _id: 'other_document' },
+      });
+      expect(
+        newState
+          .get('selectedDocuments')
+          .first()
+          .get('_id')
+      ).toBe('other_document');
       expect(newState.get('selectedDocuments').size).toBe(1);
     });
   });
 
   describe('selectDocuments', () => {
     it('should add the documents to the selected document list', () => {
-      const newState = uiReducer(initialState, { type: types.SELECT_DOCUMENTS, docs: [{ _id: 'document' }, { _id: 'document2' }] });
-      expect(newState.get('selectedDocuments').first().get('_id')).toBe('document');
+      const newState = uiReducer(initialState, {
+        type: types.SELECT_DOCUMENTS,
+        docs: [{ _id: 'document' }, { _id: 'document2' }],
+      });
+      expect(
+        newState
+          .get('selectedDocuments')
+          .first()
+          .get('_id')
+      ).toBe('document');
       expect(newState.get('selectedDocuments').size).toBe(2);
-      expect(newState.get('selectedDocuments').last().get('_id')).toBe('document2');
+      expect(
+        newState
+          .get('selectedDocuments')
+          .last()
+          .get('_id')
+      ).toBe('document2');
     });
 
     it('should not select an already selected document', () => {
-      let newState = uiReducer(initialState, { type: types.SELECT_DOCUMENTS, docs: [{ _id: 'document' }] });
-      newState = uiReducer(newState, { type: types.SELECT_DOCUMENTS, docs: [{ _id: 'document' }, { _id: 'document2' }, { _id: 'document3' }] });
-      expect(newState.get('selectedDocuments').first().get('_id')).toBe('document');
+      let newState = uiReducer(initialState, {
+        type: types.SELECT_DOCUMENTS,
+        docs: [{ _id: 'document' }],
+      });
+      newState = uiReducer(newState, {
+        type: types.SELECT_DOCUMENTS,
+        docs: [{ _id: 'document' }, { _id: 'document2' }, { _id: 'document3' }],
+      });
+      expect(
+        newState
+          .get('selectedDocuments')
+          .first()
+          .get('_id')
+      ).toBe('document');
       expect(newState.get('selectedDocuments').size).toBe(3);
-      expect(newState.get('selectedDocuments').last().get('_id')).toBe('document3');
+      expect(
+        newState
+          .get('selectedDocuments')
+          .last()
+          .get('_id')
+      ).toBe('document3');
     });
   });
 
   describe('unselectDocument', () => {
     it('should set selected document', () => {
-      const newState = uiReducer(Immutable.fromJS({ selectedDocuments: [{ _id: 'document' }] }), actions.unselectDocument('document'));
+      const newState = uiReducer(
+        Immutable.fromJS({ selectedDocuments: [{ _id: 'document' }] }),
+        actions.unselectDocument('document')
+      );
       expect(newState.toJS().selectedDocuments.length).toBe(0);
     });
   });
 
   describe('unselectAllDocuments', () => {
     it('should set selected document', () => {
-      const newState = uiReducer(Immutable.fromJS({ selectedDocuments: [{ _id: 'document' }] }), actions.unselectAllDocuments());
+      const newState = uiReducer(
+        Immutable.fromJS({ selectedDocuments: [{ _id: 'document' }] }),
+        actions.unselectAllDocuments()
+      );
       expect(newState.toJS().selectedDocuments.length).toBe(0);
     });
   });
 
   describe('SET_SEARCHTERM', () => {
     it('should set the searchTerm in the state', () => {
-      const newState = uiReducer(initialState, { type: types.SET_SEARCHTERM, searchTerm: 'something cool' });
+      const newState = uiReducer(initialState, {
+        type: types.SET_SEARCHTERM,
+        searchTerm: 'something cool',
+      });
       expect(newState.toJS().searchTerm).toBe('something cool');
     });
 

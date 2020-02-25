@@ -4,29 +4,50 @@ import setReduxState from '../setReduxState';
 
 describe('setReduxState()', () => {
   const aggregations = { buckets: [] };
-  const documents = { rows: [{ title: 'Something to publish' }, { title: 'My best recipes' }], totalRows: 2, aggregations };
+  const documents = {
+    rows: [{ title: 'Something to publish' }, { title: 'My best recipes' }],
+    totalRows: 2,
+    aggregations,
+  };
   const dispatchCallsOrder = [];
   let context;
 
   beforeEach(() => {
     spyOn(libraryActions, 'setTemplates');
-    context = { store: { dispatch: jasmine.createSpy('dispatch').and.callFake((action) => {
-      dispatchCallsOrder.push(action.type);
-    }) } };
-    const state = { library: { documents, aggregations, filters: { documentTypes: 'types', properties: 'properties' } } };
+    context = {
+      store: {
+        dispatch: jasmine.createSpy('dispatch').and.callFake(action => {
+          dispatchCallsOrder.push(action.type);
+        }),
+      },
+    };
+    const state = {
+      library: {
+        documents,
+        aggregations,
+        filters: { documentTypes: 'types', properties: 'properties' },
+      },
+    };
     setReduxState(state)(context.store.dispatch);
   });
 
   it('should set the documents and aggregations and Unset the documents as first action', () => {
     expect(dispatchCallsOrder[1]).toBe(actionTypes.UNSET_DOCUMENTS);
-    expect(context.store.dispatch).toHaveBeenCalledWith({ type: actionTypes.UNSET_DOCUMENTS, __reducerKey: 'library' });
-    expect(context.store.dispatch).toHaveBeenCalledWith({ type: actionTypes.SET_DOCUMENTS, documents, __reducerKey: 'library' });
+    expect(context.store.dispatch).toHaveBeenCalledWith({
+      type: actionTypes.UNSET_DOCUMENTS,
+      __reducerKey: 'library',
+    });
+    expect(context.store.dispatch).toHaveBeenCalledWith({
+      type: actionTypes.SET_DOCUMENTS,
+      documents,
+      __reducerKey: 'library',
+    });
     expect(context.store.dispatch).toHaveBeenCalledWith({
       type: actionTypes.INITIALIZE_FILTERS_FORM,
       documentTypes: 'types',
       libraryFilters: 'properties',
       aggregations,
-      __reducerKey: 'library'
+      __reducerKey: 'library',
     });
   });
 });

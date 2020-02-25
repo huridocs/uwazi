@@ -9,7 +9,7 @@ import { cancelTargetDocument } from '../actions/documentActions';
 
 export class TargetDocumentHeader extends Component {
   save(connection, targetRange) {
-    return this.props.saveTargetRangedReference(connection.toJS(), targetRange, (ref) => {
+    return this.props.saveTargetRangedReference(connection.toJS(), targetRange, ref => {
       this.props.addReference(ref, this.props.pdfInfo.toJS(), true);
     });
   }
@@ -31,13 +31,12 @@ export class TargetDocumentHeader extends Component {
             <Icon icon="arrow-left" />
             Back
           </button>
-          <h2>Select target paragraph<small>3</small></h2>
+          <h2>
+            Select target paragraph<small>3</small>
+          </h2>
         </div>
         <div className="ContextMenu ContextMenu-center">
-          <button
-            onClick={this.save.bind(this, connection, targetRange)}
-            className={className}
-          >
+          <button onClick={this.save.bind(this, connection, targetRange)} className={className}>
             <Icon icon="save" />
             <span className="ContextMenu-tooltip">Save</span>
           </button>
@@ -54,25 +53,27 @@ TargetDocumentHeader.propTypes = {
   targetDocument: PropTypes.string,
   saveTargetRangedReference: PropTypes.func,
   cancelTargetDocument: PropTypes.func,
-  addReference: PropTypes.func
+  addReference: PropTypes.func,
 };
-
 
 function mapStateToProps({ documentViewer, connections }) {
   return {
     connection: connections.connection,
     reference: documentViewer.uiState.toJS().reference,
     targetDocument: documentViewer.targetDoc.get('_id'),
-    pdfInfo: documentViewer.doc.get('pdfInfo')
+    pdfInfo: documentViewer.doc.get('pdfInfo'),
   };
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({
-    saveTargetRangedReference,
-    cancelTargetDocument,
-    addReference
-  }, dispatch);
+  return bindActionCreators(
+    {
+      saveTargetRangedReference,
+      cancelTargetDocument,
+      addReference,
+    },
+    dispatch
+  );
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(TargetDocumentHeader);

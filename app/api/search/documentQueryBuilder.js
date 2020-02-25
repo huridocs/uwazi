@@ -1,16 +1,33 @@
-/* eslint-disable camelcase */
+/**
+ * /* eslint-disable camelcase
+ *
+ * @format
+ */
+
 import filterToMatch, { multiselectFilter } from './metadataMatchers';
 import propertyToAggregation from './metadataAggregations';
 
-export default function () {
+export default function() {
   const baseQuery = {
     explain: true,
     _source: {
       include: [
-        'title', 'icon', 'processed', 'creationDate', 'template',
-        'metadata', 'type', 'sharedId', 'toc', 'attachments',
-        'language', 'file', 'uploaded', 'published', 'relationships'
-      ]
+        'title',
+        'icon',
+        'processed',
+        'creationDate',
+        'template',
+        'metadata',
+        'type',
+        'sharedId',
+        'toc',
+        'attachments',
+        'language',
+        'file',
+        'uploaded',
+        'published',
+        'relationships',
+      ],
     },
     from: 0,
     size: 30,
@@ -18,10 +35,8 @@ export default function () {
       bool: {
         must: [{ bool: { should: [] } }],
         must_not: [],
-        filter: [
-          { term: { published: true } }
-        ]
-      }
+        filter: [{ term: { published: true } }],
+      },
     },
     sort: [],
     aggregations: {
@@ -32,24 +47,22 @@ export default function () {
             terms: {
               field: 'template.raw',
               missing: 'missing',
-              size: 9999
+              size: 9999,
             },
             aggregations: {
               filtered: {
                 filter: {
                   bool: {
                     must: [{ bool: { should: [] } }],
-                    filter: [
-                      { match: { published: true } }
-                    ]
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
+                    filter: [{ match: { published: true } }],
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
   };
 
   const { aggregations } = baseQuery.aggregations.all;
@@ -62,7 +75,9 @@ export default function () {
 
   function addFilter(filter) {
     baseQuery.query.bool.filter.push(filter);
-    baseQuery.aggregations.all.aggregations._types.aggregations.filtered.filter.bool.filter.push(filter);
+    baseQuery.aggregations.all.aggregations._types.aggregations.filtered.filter.bool.filter.push(
+      filter
+    );
   }
 
   return {
@@ -78,7 +93,13 @@ export default function () {
       return this;
     },
 
-    fullTextSearch(term, fieldsToSearch = ['title', 'fullText'], number_of_fragments = 1, type = 'fvh', fragment_size = 300) {
+    fullTextSearch(
+      term,
+      fieldsToSearch = ['title', 'fullText'],
+      number_of_fragments = 1,
+      type = 'fvh',
+      fragment_size = 300
+    ) {
       if (!term) {
         return this;
       }
@@ -87,11 +108,11 @@ export default function () {
       const fields = fieldsToSearch.filter(field => field !== 'fullText');
       if (fields.length) {
         should.push({
-            query_string: {
-              query: term,
-              fields,
-              boost: 2
-            }
+          query_string: {
+            query: term,
+            fields,
+            boost: 2,
+          },
         });
 
         baseQuery.highlight = {
@@ -120,19 +141,20 @@ export default function () {
                     number_of_fragments,
                     type,
                     fragment_size,
-                    fragmenter: 'span'
+                    fragmenter: 'span',
                   },
-                }
-              }
+                },
+              },
             },
             query: {
               query_string: {
                 query: term,
-                fields: ['fullText_*']
-              }
-            }
-          }
+                fields: ['fullText_*'],
+              },
+            },
+          },
         };
+
         should.unshift(fullTextQuery);
       }
 
@@ -169,7 +191,11 @@ export default function () {
         return baseQuery.sort.push('_score');
       }
       const sort = {};
-      sort[`${property}.sort`] = { order, unmapped_type: 'boolean' };
+
+      const sortKey = property.includes('metadata') ? `${property}.value.sort` : `${property}.sort`;
+
+      sort[sortKey] = { order, unmapped_type: 'boolean' };
+
       baseQuery.sort.push(sort);
       return this;
     },
@@ -181,7 +207,8 @@ export default function () {
         type: 'string',
         script: {
           params: { keys },
-          source: `try {params.keys[doc['${property}.sort'].value] != null ? params.keys[doc['${property}.sort'].value] : '|'}catch(Exception e){'|'}`
+          source: `try {params.keys[doc['${property}.sort'].value] != null ?
+          params.keys[doc['${property}.sort'].value] : '|'}catch(Exception e){'|'}`,
         },
       };
       baseQuery.sort.push(sort);
@@ -199,11 +226,10 @@ export default function () {
       const match = {
         bool: {
           minimum_should_match: 1,
-          should: [
-          ]
-        }
+          should: [],
+        },
       };
-      filters.forEach((filter) => {
+      filters.forEach(filter => {
         const _match = multiselectFilter(filter);
         if (_match) {
           match.bool.should.push(_match);
@@ -216,8 +242,8 @@ export default function () {
     },
 
     filterMetadata(filters = []) {
-      filters.forEach((filter) => {
-        const match = filterToMatch(filter);
+      filters.forEach(filter => {
+        const match = filterToMatch(filter, filter.suggested ? 'suggestedMetadata' : 'metadata');
         if (match) {
           addFilter(match);
         }
@@ -226,9 +252,26 @@ export default function () {
     },
 
     aggregations(properties, dictionaries) {
-      properties.forEach((property) => {
-        baseQuery.aggregations.all.aggregations[property.name] = propertyToAggregation(property, dictionaries, baseQuery);
+      properties.forEach(property => {
+        baseQuery.aggregations.all.aggregations[property.name] = propertyToAggregation(
+          property,
+          dictionaries,
+          baseQuery
+        );
       });
+      // suggested has an implied '_' as a prefix
+      properties
+        .filter(
+          p => (dictionaries.find(d => p.content === d._id.toString()) || {}).enable_classification
+        )
+        .forEach(property => {
+          baseQuery.aggregations.all.aggregations[`_${property.name}`] = propertyToAggregation(
+            property,
+            dictionaries,
+            baseQuery,
+            true
+          );
+        });
       return this;
     },
 
@@ -243,19 +286,19 @@ export default function () {
                   must_not: [
                     {
                       exists: {
-                        field: 'template'
-                      }
-                    }
-                  ]
-                }
+                        field: 'template',
+                      },
+                    },
+                  ],
+                },
               },
               {
                 terms: {
-                  template: _templates
-                }
-              }
-            ]
-          }
+                  template: _templates,
+                },
+              },
+            ],
+          },
         };
         baseQuery.query.bool.filter.push(match);
         return this;
@@ -286,10 +329,10 @@ export default function () {
     highlight(fields) {
       baseQuery.highlight = {
         pre_tags: ['<b>'],
-        post_tags: ['</b>']
+        post_tags: ['</b>'],
       };
       baseQuery.highlight.fields = {};
-      fields.forEach((field) => {
+      fields.forEach(field => {
         baseQuery.highlight.fields[field] = {};
       });
       return this;
@@ -303,6 +346,6 @@ export default function () {
     limit(size) {
       baseQuery.size = size;
       return this;
-    }
+    },
   };
 }

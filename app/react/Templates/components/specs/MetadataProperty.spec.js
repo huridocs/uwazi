@@ -1,3 +1,6 @@
+/**
+ * @jest-environment jsdom
+ */
 /* eslint-disable react/no-multi-comp */
 import React, { Component } from 'react';
 import TestUtils from 'react-dom/test-utils';
@@ -19,7 +22,7 @@ function wrapInTestContext(DecoratedComponent) {
   return DragDropContext(TestBackend)(
     class TestContextContainer extends Component {
       render() {
-        return <DecoratedComponent {...this.props} errors={{}}/>;
+        return <DecoratedComponent {...this.props} errors={{}} />;
       }
     }
   );
@@ -40,8 +43,8 @@ function sourceTargetTestContext(Target, Source, actions) {
           templates: Immutable.fromJS([]),
           formState: { fields: [], $form: { errors: {} } },
           template: {
-            commonProperties: [{ name: 'title', label: 'Title' }]
-          }
+            commonProperties: [{ name: 'title', label: 'Title' }],
+          },
         };
         const sourceProps = {
           label: 'source',
@@ -54,12 +57,12 @@ function sourceTargetTestContext(Target, Source, actions) {
           templates: Immutable.fromJS([]),
           formState: { fields: [], $form: { errors: {} } },
           template: {
-            commonProperties: [{ name: 'title', label: 'Title' }]
-          }
+            commonProperties: [{ name: 'title', label: 'Title' }],
+          },
         };
         return (
           <div>
-            <Target {...targetProps} {...actions}/>
+            <Target {...targetProps} {...actions} />
             <Source {...sourceProps} />
           </div>
         );
@@ -88,16 +91,16 @@ describe('MetadataProperty', () => {
         localID: 'id',
         formState: { fields: [], $form: { errors: {} } },
         template: {
-          commonProperties: [{ name: 'title', label: 'Title' }, { name: 'creationDate' }]
+          commonProperties: [{ name: 'title', label: 'Title' }, { name: 'creationDate' }],
         },
         editProperty,
         uiState: Immutable.fromJS({ editingProperty: '' }),
-        templates: Immutable.fromJS([])
+        templates: Immutable.fromJS([]),
       };
     });
 
     const render = () => {
-      component = shallow(<MetadataProperty {...props}/>);
+      component = shallow(<MetadataProperty {...props} />);
       return component;
     };
 
@@ -114,14 +117,14 @@ describe('MetadataProperty', () => {
     describe('ui actions', () => {
       describe('delete button', () => {
         it('should not be there', () => {
-          component = shallow(<MetadataProperty {...props}/>);
+          component = shallow(<MetadataProperty {...props} />);
           expect(component.find('.property-remove').length).toBe(0);
         });
       });
 
       describe('edit button', () => {
         it('should editProperty', () => {
-          component = shallow(<MetadataProperty {...props}/>);
+          component = shallow(<MetadataProperty {...props} />);
           component.find('.property-edit').simulate('click');
           expect(editProperty).toHaveBeenCalledWith('id');
         });
@@ -148,15 +151,15 @@ describe('MetadataProperty', () => {
         localID: 'id',
         formState: { fields: [], $form: { errors: {} } },
         template: {
-          commonProperties: [{ name: 'title', label: 'Title' }, { name: 'creationDate' }]
+          commonProperties: [{ name: 'title', label: 'Title' }, { name: 'creationDate' }],
         },
         removeProperty,
         editProperty,
         uiState: Immutable.fromJS({ editingProperty: '' }),
-        templates: Immutable.fromJS([])
+        templates: Immutable.fromJS([]),
       };
 
-      component = shallow(<MetadataProperty {...props}/>);
+      component = shallow(<MetadataProperty {...props} />);
     });
 
     describe('when marked as inserting', () => {
@@ -167,7 +170,12 @@ describe('MetadataProperty', () => {
 
     describe('FormConfigInput', () => {
       it('should pass the type to the component', () => {
-        expect(component.find(FormConfigInput).first().props().type).toBe('propertyType');
+        expect(
+          component
+            .find(FormConfigInput)
+            .first()
+            .props().type
+        ).toBe('propertyType');
       });
     });
 
@@ -213,13 +221,13 @@ describe('MetadataProperty', () => {
       describe('errors', () => {
         it('should render duplicated relation error', () => {
           props.formState.$form.errors['properties.1.relationType.duplicated'] = true;
-          component = shallow(<MetadataProperty {...props}/>);
+          component = shallow(<MetadataProperty {...props} />);
           expect(component).toMatchSnapshot();
         });
 
         it('should render duplicated label error', () => {
           props.formState.$form.errors['properties.1.label.duplicated'] = true;
-          component = shallow(<MetadataProperty {...props}/>);
+          component = shallow(<MetadataProperty {...props} />);
           expect(component).toMatchSnapshot();
         });
       });
@@ -252,18 +260,26 @@ describe('MetadataProperty', () => {
       const templateData = {
         name: '',
         commonProperties: [{ name: 'title', label: 'Title' }],
-        properties: [{ label: '', type: 'text' }, { label: '', type: 'text' }, { label: '', type: 'text' }]
+        properties: [
+          { label: '', type: 'text' },
+          { label: '', type: 'text' },
+          { label: '', type: 'text' },
+        ],
       };
       store = createStore(() => ({
-          template: {
-            data: templateData,
-            uiState: Immutable.fromJS({ templates: [] }),
-            formState: { fields: [], errors: {} }
-          },
-          templates: Immutable.fromJS([]),
-          modals: Immutable.fromJS({})
+        template: {
+          data: templateData,
+          uiState: Immutable.fromJS({ templates: [] }),
+          formState: { fields: [], errors: {} },
+        },
+        templates: Immutable.fromJS([]),
+        modals: Immutable.fromJS({}),
       }));
-      TestUtils.renderIntoDocument(<Provider store={store}><ComponentToRender ref={ref => result = ref} {...props} index={0}/></Provider>);
+      TestUtils.renderIntoDocument(
+        <Provider store={store}>
+          <ComponentToRender ref={ref => (result = ref)} {...props} index={0} />
+        </Provider>
+      );
       return result;
     }
 
@@ -278,9 +294,9 @@ describe('MetadataProperty', () => {
           uiState: Immutable.fromJS({}),
           formState: { fields: [], $form: { errors: {} } },
           template: {
-            commonProperties: [{ name: 'title', label: 'Title' }]
-          }
-        },);
+            commonProperties: [{ name: 'title', label: 'Title' }],
+          },
+        });
         backend = component.getManager().getBackend();
         monitor = component.getManager().getMonitor();
       });
@@ -334,7 +350,10 @@ describe('MetadataProperty', () => {
           backend.simulateHover([target.getHandlerId()]);
 
           expect(monitor.getItem().index).toBe(0);
-          expect(actions.addProperty).toHaveBeenCalledWith({ label: 'source', type: 'type', inserting: true }, 0);
+          expect(actions.addProperty).toHaveBeenCalledWith(
+            { label: 'source', type: 'type', inserting: true },
+            0
+          );
         });
       });
     });

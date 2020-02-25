@@ -2,8 +2,9 @@ import Immutable from 'immutable';
 import comonProperties from 'shared/comonProperties';
 
 export default (templates, entities) => {
-  const selectedTemplates = entities.map(entity => entity.get('template'))
-  .filter((type, index, _types) => _types.indexOf(type) === index);
+  const selectedTemplates = entities
+    .map(entity => entity.get('template'))
+    .filter((type, index, _types) => _types.indexOf(type) === index);
   const properties = comonProperties.comonProperties(templates, selectedTemplates);
   const _id = selectedTemplates.size === 1 ? selectedTemplates.first() : '';
 

@@ -1,71 +1,62 @@
-import React from 'react';
-import { Route, IndexRoute } from 'react-router';
-
+/** @format */
+import Activitylog from 'app/Activitylog/Activitylog';
 import App from 'app/App/App';
+import { trackPage } from 'app/App/GoogleAnalytics';
 import NoMatch from 'app/App/NoMatch';
-
+import Configure2fa from 'app/Auth2fa/Configure2fa';
+import EditTranslations from 'app/I18N/EditTranslations';
+import blankState from 'app/Library/helpers/blankState';
+import Library from 'app/Library/Library';
+import LibraryMap from 'app/Library/LibraryMap';
+import EditPage from 'app/Pages/EditPage';
+import NewPage from 'app/Pages/NewPage';
+import Pages from 'app/Pages/Pages';
+import PageView from 'app/Pages/PageView';
+import EditRelationType from 'app/RelationTypes/EditRelationType';
+import NewRelationType from 'app/RelationTypes/NewRelationType';
+import OneUpReview from 'app/Review/OneUpReview';
+import SemanticSearchResultsView from 'app/SemanticSearch/SemanticSearchResultsView';
+import {
+  AccountSettings,
+  CollectionSettings,
+  Customisation,
+  CustomUploads,
+  EntityTypesList,
+  FiltersForm,
+  Languages,
+  NavlinksSettings,
+  RelationTypesList,
+  Settings,
+  ThesauriList,
+  TranslationsList,
+} from 'app/Settings';
+import EditTemplate from 'app/Templates/EditTemplate';
+import NewTemplate from 'app/Templates/NewTemplate';
+import EditThesauri from 'app/Thesauri/EditThesauri';
+import NewThesauri from 'app/Thesauri/NewThesauri';
+import ThesaurusCockpit from 'app/Thesauri/ThesaurusCockpit';
+import Uploads from 'app/Uploads/UploadsRoute';
+import { EditUser, NewUser, Users } from 'app/Users';
 import Login from 'app/Users/Login';
 import ResetPassword from 'app/Users/ResetPassword';
 import UnlockAccount from 'app/Users/UnlockAccount';
+import ViewerRoute from 'app/Viewer/ViewerRoute';
+import React from 'react';
+import { IndexRoute, Route } from 'react-router';
 
-import {
-  Settings,
-  AccountSettings,
-  CollectionSettings,
-  NavlinksSettings,
-  EntityTypesList,
-  RelationTypesList,
-  ThesaurisList,
-  TranslationsList,
-  FiltersForm,
-  Languages,
-  Customisation,
-  CustomUploads
-} from 'app/Settings';
-
-import Activitylog from 'app/Activitylog/Activitylog';
-import Pages from 'app/Pages/Pages';
-import NewPage from 'app/Pages/NewPage';
-import EditPage from 'app/Pages/EditPage';
-import PageView from 'app/Pages/PageView';
-
-import { Users, NewUser, EditUser } from 'app/Users';
-
-import ViewDocument from 'app/Viewer/ViewDocument';
-import EntityView from 'app/Entities/EntityView';
-import Uploads from 'app/Uploads/UploadsRoute';
-
-import EditTemplate from 'app/Templates/EditTemplate';
-import NewTemplate from 'app/Templates/NewTemplate';
-
-import EditThesauri from 'app/Thesauris/EditThesauri';
-import NewThesauri from 'app/Thesauris/NewThesauri';
-
-import EditRelationType from 'app/RelationTypes/EditRelationType';
-import NewRelationType from 'app/RelationTypes/NewRelationType';
-
-import EditTranslations from 'app/I18N/EditTranslations';
-
-import Library from 'app/Library/Library';
-import LibraryMap from 'app/Library/LibraryMap';
-
-import SemanticSearchResultsView from 'app/SemanticSearch/SemanticSearchResultsView';
-
-import { trackPage } from 'app/App/GoogleAnalytics';
-import blankState from 'app/Library/helpers/blankState';
 import { store } from './store';
 
 function onEnter() {
   trackPage();
 }
 
-function needsAuth(nxtState, replace) {
+function needsAuth(_nxtState, replace) {
   if (!store.getState().user.get('_id')) {
     replace('/login');
   }
 }
 
-function enterOnLibrary(nxtState, replace) {
+function enterOnLibrary(_nxtState, replace) {
   const state = store.getState();
   if (blankState() && !state.user.get('_id')) {
     return replace('/login');
@@ -73,7 +64,7 @@ function enterOnLibrary(nxtState, replace) {
   trackPage();
 }
 
-function getIndexRoute(nextState, callBack) {
+function getIndexRoute(_nextState, callBack) {
   const state = store.getState();
   const homePageSetting = state.settings.collection.get('home_page');
   const customHomePage = homePageSetting ? homePageSetting.split('/') : [];
@@ -83,8 +74,9 @@ function getIndexRoute(nextState, callBack) {
   let component = Library;
   if (isPageRoute) {
     pageId = customHomePage[customHomePage.indexOf('page') + 1];
-    component = props => <PageView {...props} params={{ sharedId: pageId }}/>;
-    component.requestState = requestParams => PageView.requestState(requestParams.set({ sharedId: pageId }));
+    component = props => <PageView {...props} params={{ sharedId: pageId }} />;
+    component.requestState = requestParams =>
+      PageView.requestState(requestParams.set({ sharedId: pageId }));
   }
 
   const indexRoute = {
@@ -97,7 +89,7 @@ function getIndexRoute(nextState, callBack) {
         enterOnLibrary(nxtState, replace);
       }
     },
-    customHomePageId: pageId
+    customHomePageId: pageId,
   };
   callBack(null, indexRoute);
 }
@@ -106,6 +98,7 @@ const routes = (
   <Route getIndexRoute={getIndexRoute}>
     <Route path="settings" component={Settings} onEnter={needsAuth}>
       <Route path="account" component={AccountSettings} />
+      <Route path="2fa" component={Configure2fa} />
       <Route path="collection" component={CollectionSettings} />
       <Route path="navlinks" component={NavlinksSettings} />
       <Route path="users">
@@ -129,11 +122,12 @@ const routes = (
         <Route path="edit/:_id" component={EditRelationType} />
       </Route>
       <Route path="dictionaries">
-        <IndexRoute component={ThesaurisList} />
+        <IndexRoute component={ThesauriList} />
         <Route path="new" component={NewThesauri} />
         <Route path="edit/:_id" component={EditThesauri} />
+        <Route path="cockpit/:_id" component={ThesaurusCockpit} />
       </Route>
-      <Route path="languages" component={Languages}/>
+      <Route path="languages" component={Languages} />
       <Route path="translations">
         <IndexRoute component={TranslationsList} />
         <Route path="edit/:context" component={EditTranslations} />
@@ -143,16 +137,21 @@ const routes = (
       <Route path="custom-uploads" component={CustomUploads} />
       <Route path="activitylog" component={Activitylog} onEnter={needsAuth} />
     </Route>
-    <Route path="library" component={Library} onEnter={enterOnLibrary}/>
-    <Route path="library/map" component={LibraryMap} onEnter={onEnter}/>
+    <Route path="library" component={Library} onEnter={enterOnLibrary} />
+    <Route path="library/map" component={LibraryMap} onEnter={onEnter} />
+    <Route path="review" component={OneUpReview} onEnter={needsAuth} />
     <Route path="uploads" component={Uploads} />
     <Route path="login" component={Login} />
     <Route path="setpassword/:key" component={ResetPassword} />
     <Route path="unlockaccount/:username/:code" component={UnlockAccount} />
-    <Route path="document/:sharedId*" component={ViewDocument} onEnter={onEnter}/>
-    <Route path="entity/:sharedId" component={EntityView} onEnter={onEnter}/>
-    <Route path="page/:sharedId" component={PageView} onEnter={onEnter}/>
-    <Route path="semanticsearch/:searchId" component={SemanticSearchResultsView} onEnter={onEnter}/>
+    <Route path="document/:sharedId*" component={ViewerRoute} onEnter={onEnter} />
+    <Route path="entity/:sharedId" component={ViewerRoute} onEnter={onEnter} />
+    <Route path="page/:sharedId" component={PageView} onEnter={onEnter} />
+    <Route
+      path="semanticsearch/:searchId"
+      component={SemanticSearchResultsView}
+      onEnter={onEnter}
+    />
     <Route path="404" component={NoMatch} />
   </Route>
 );

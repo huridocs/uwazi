@@ -17,21 +17,19 @@ export class SearchEntitiesForm extends Component {
   }
 
   render() {
-    return (
-      <SearchInput value={this.props.searchTerm} onChange={this.search} />
-    );
+    return <SearchInput value={this.props.searchTerm} onChange={this.search} />;
   }
 }
 
 SearchEntitiesForm.propTypes = {
   search: PropTypes.func,
   searchTerm: PropTypes.string,
-  connectionType: PropTypes.string
+  connectionType: PropTypes.string,
 };
 
 function mapStateToProps({ relationships }) {
   return {
-    searchTerm: relationships.searchTerm
+    searchTerm: relationships.searchTerm,
   };
 }
 

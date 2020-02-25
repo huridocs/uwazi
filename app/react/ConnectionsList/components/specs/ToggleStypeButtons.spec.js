@@ -10,7 +10,7 @@ describe('ToggleStyleButtons', () => {
   beforeEach(() => {
     props = {
       view: 'another',
-      switchView: jasmine.createSpy('switchView')
+      switchView: jasmine.createSpy('switchView'),
     };
   });
 
@@ -22,11 +22,17 @@ describe('ToggleStyleButtons', () => {
     render();
     expect(props.switchView).not.toHaveBeenCalled();
 
-    component.find('button').at(0).simulate('click');
+    component
+      .find('button')
+      .at(0)
+      .simulate('click');
     expect(props.switchView).toHaveBeenCalledWith('list');
     props.switchView.calls.reset();
 
-    component.find('button').at(1).simulate('click');
+    component
+      .find('button')
+      .at(1)
+      .simulate('click');
     expect(props.switchView).toHaveBeenCalledWith('graph');
   });
 

@@ -1,3 +1,6 @@
+/**
+ * @jest-environment jsdom
+ */
 import React from 'react';
 
 import { shallow } from 'enzyme';
@@ -10,7 +13,7 @@ describe('GoogleAnalytics', () => {
 
   beforeEach(() => {
     props = {
-      analyticsTrackingId: 'X-AAA-Y'
+      analyticsTrackingId: 'X-AAA-Y',
     };
   });
 

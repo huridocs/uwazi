@@ -1,7 +1,6 @@
 import 'api/utils/jasmineHelpers';
 
 import { models } from 'api/odm';
-import entities from 'api/entities';
 import search from 'api/search/search';
 
 import instrumentRoutes from '../../utils/instrumentRoutes';
@@ -15,7 +14,10 @@ describe('sync', () => {
   const setReqDefault = (property, type = 'object') => {
     req = {};
     dataObject = { _id: 'dataId' };
-    req[property] = { namespace: 'model1', data: type === 'string' ? JSON.stringify(dataObject) : dataObject };
+    req[property] = {
+      namespace: 'model1',
+      data: type === 'string' ? JSON.stringify(dataObject) : dataObject,
+    };
   };
 
   beforeEach(async () => {
@@ -23,15 +25,15 @@ describe('sync', () => {
     routes = instrumentRoutes(syncRoutes);
     models.model1 = {
       save: jasmine.createSpy('model1.save'),
-      delete: jasmine.createSpy('model1.delete')
+      delete: jasmine.createSpy('model1.delete'),
     };
 
     models.model2 = {
       save: jasmine.createSpy('model2.save'),
-      delete: jasmine.createSpy('model2.delete')
+      delete: jasmine.createSpy('model2.delete'),
     };
     spyOn(search, 'delete');
-    spyOn(entities, 'indexEntities');
+    spyOn(search, 'indexEntities');
   });
 
   describe('POST', () => {
@@ -51,7 +53,7 @@ describe('sync', () => {
       req.body.namespace = 'model2';
       await routes.post('/api/sync', req);
       expect(models.model2.save).toHaveBeenCalledWith(dataObject);
-      expect(entities.indexEntities).not.toHaveBeenCalled();
+      expect(search.indexEntities).not.toHaveBeenCalled();
     });
 
     describe('on error', () => {
@@ -74,11 +76,11 @@ describe('sync', () => {
 
         req.body = {
           namespace: 'entities',
-          data: { _id: 'id' }
+          data: { _id: 'id' },
         };
 
         await routes.post('/api/sync', req);
-        expect(entities.indexEntities).toHaveBeenCalledWith({ _id: 'id' }, '+fullText');
+        expect(search.indexEntities).toHaveBeenCalledWith({ _id: 'id' }, '+fullText');
       });
     });
 
@@ -91,7 +93,7 @@ describe('sync', () => {
 
         req.body = {
           namespace: 'settings',
-          data: { _id: 'masterId', languages: 'ln' }
+          data: { _id: 'masterId', languages: 'ln' },
         };
 
         await routes.post('/api/sync', req);
@@ -146,7 +148,7 @@ describe('sync', () => {
 
         req.query = {
           namespace: 'entities',
-          data: JSON.stringify({ _id: 'id' })
+          data: JSON.stringify({ _id: 'id' }),
         };
       });
 

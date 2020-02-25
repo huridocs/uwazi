@@ -13,8 +13,7 @@ export class ShowIf extends Component {
 
 ShowIf.propTypes = {
   children: PropTypes.object,
-  if: PropTypes.bool
+  if: PropTypes.bool,
 };
-
 
 export default ShowIf;

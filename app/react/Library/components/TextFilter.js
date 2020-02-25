@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 
 const TextFilter = ({ onChange, model, label }) => (
-  <Field model={model} >
+  <Field model={model}>
     <ul className="search__filter is-active">
       <li>
         <label>{label}</label>
@@ -17,16 +17,13 @@ const TextFilter = ({ onChange, model, label }) => (
 
 TextFilter.defaultProps = {
   onChange: () => {},
-  label: ''
+  label: '',
 };
 
 TextFilter.propTypes = {
   model: PropTypes.string.isRequired,
   onChange: PropTypes.func,
-  label: PropTypes.oneOfType([
-    PropTypes.node,
-    PropTypes.string
-  ])
+  label: PropTypes.oneOfType([PropTypes.node, PropTypes.string]),
 };
 
 export default TextFilter;

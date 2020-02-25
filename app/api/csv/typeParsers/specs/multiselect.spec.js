@@ -1,4 +1,6 @@
-import thesauris from 'api/thesauris';
+/** @format */
+
+import thesauri from 'api/thesauri';
 import db from 'api/utils/testing_db';
 
 import fixtures, { thesauri1Id } from '../../specs/fixtures';
@@ -16,10 +18,7 @@ describe('multiselect', () => {
   afterAll(async () => db.disconnect());
   beforeAll(async () => {
     await db.clearAllAndLoad(fixtures);
-    value1 = await typeParsers.multiselect(
-      { multiselect_prop: 'value4' },
-      templateProp
-    );
+    value1 = await typeParsers.multiselect({ multiselect_prop: 'value4' }, templateProp);
 
     value2 = await typeParsers.multiselect(
       { multiselect_prop: 'Value1|value3| value3' },
@@ -36,17 +35,11 @@ describe('multiselect', () => {
       templateProp
     );
 
-    await typeParsers.multiselect(
-      { multiselect_prop: '' },
-      templateProp
-    );
+    await typeParsers.multiselect({ multiselect_prop: '' }, templateProp);
 
-    await typeParsers.multiselect(
-      { multiselect_prop: '|' },
-      templateProp
-    );
+    await typeParsers.multiselect({ multiselect_prop: '|' }, templateProp);
 
-    thesauri1 = await thesauris.getById(thesauri1Id);
+    thesauri1 = await thesauri.getById(thesauri1Id);
   });
 
   it('should create thesauri values and return an array of ids', async () => {
@@ -55,10 +48,21 @@ describe('multiselect', () => {
     expect(thesauri1.values[2].label).toBe('value3');
     expect(thesauri1.values[3].label).toBe('value2');
 
-    expect(value1).toEqual([thesauri1.values[0].id]);
-    expect(value2).toEqual([thesauri1.values[1].id, thesauri1.values[2].id]);
-    expect(value3).toEqual([thesauri1.values[1].id, thesauri1.values[2].id, thesauri1.values[3].id]);
-    expect(value4).toEqual([thesauri1.values[0].id, thesauri1.values[1].id, thesauri1.values[3].id]);
+    expect(value1).toEqual([{ value: thesauri1.values[0].id, label: ' value4 ' }]);
+    expect(value2).toEqual([
+      { value: thesauri1.values[1].id, label: 'Value1' },
+      { value: thesauri1.values[2].id, label: 'value3' },
+    ]);
+    expect(value3).toEqual([
+      { value: thesauri1.values[1].id, label: 'Value1' },
+      { value: thesauri1.values[2].id, label: 'value3' },
+      { value: thesauri1.values[3].id, label: 'value2' },
+    ]);
+    expect(value4).toEqual([
+      { value: thesauri1.values[0].id, label: ' value4 ' },
+      { value: thesauri1.values[1].id, label: 'Value1' },
+      { value: thesauri1.values[3].id, label: 'value2' },
+    ]);
   });
 
   it('should not create blank values, or repeat values', async () => {

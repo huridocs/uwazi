@@ -9,7 +9,7 @@ describe('NewUser', () => {
 
   beforeEach(() => {
     props = {
-      newUser: jasmine.createSpy('newUser').and.returnValue(Promise.resolve())
+      newUser: jasmine.createSpy('newUser').and.returnValue(Promise.resolve()),
     };
   });
 

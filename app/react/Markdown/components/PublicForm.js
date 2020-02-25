@@ -1,8 +1,10 @@
+/** @format */
+
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import Immutable from 'immutable';
-import { MetadataFormFields, validator } from 'app/Metadata';
+import { MetadataFormFields, validator, wrapEntityMetadata } from 'app/Metadata';
 import { LocalForm, actions, Control } from 'react-redux-form';
 import { Captcha } from 'app/ReactReduxForms';
 import { Translate } from 'app/I18N';
@@ -17,7 +19,10 @@ class PublicForm extends Component {
       <FormGroup key="title" model=".title">
         <ul className="search__filter">
           <li>
-            <label htmlFor="title"><Translate>Title</Translate><span className="required">*</span></label>
+            <label htmlFor="title">
+              <Translate>Title</Translate>
+              <span className="required">*</span>
+            </label>
           </li>
           <li className="wide">
             <Control.text id="title" className="form-control" model=".title" />
@@ -30,8 +35,10 @@ class PublicForm extends Component {
   static renderSubmitState() {
     return (
       <div className="public-form submiting">
-        <h3><Translate>Submiting</Translate></h3>
-        <Loader/>
+        <h3>
+          <Translate>Submiting</Translate>
+        </h3>
+        <Loader />
       </div>
     );
   }
@@ -56,7 +63,10 @@ class PublicForm extends Component {
   constructor(props) {
     super(props);
     this.handleSubmit = this.handleSubmit.bind(this);
-    this.validators = Object.assign({ captcha: { required: val => val && val.length } }, validator.generate(props.template.toJS()));
+    this.validators = Object.assign(
+      { captcha: { required: val => val && val.length } },
+      validator.generate(props.template.toJS())
+    );
     this.state = { submiting: false };
   }
 
@@ -69,25 +79,29 @@ class PublicForm extends Component {
   }
 
   handleSubmit(_values) {
-    const values = { ..._values };
+    const values = wrapEntityMetadata(_values);
     const { submit, template, remote } = this.props;
     values.file = _values.file ? _values.file[0] : undefined;
     values.template = template.get('_id');
 
-    submit(values, remote).then((uploadCompletePromise) => {
-      this.setState({ submiting: true });
-      return uploadCompletePromise.promise.then(() => {
-        this.setState({ submiting: false });
-        this.resetForm();
-        this.refreshCaptcha();
-      }).catch(() => {
+    submit(values, remote)
+      .then(uploadCompletePromise => {
+        this.setState({ submiting: true });
+        return uploadCompletePromise.promise
+          .then(() => {
+            this.setState({ submiting: false });
+            this.resetForm();
+            this.refreshCaptcha();
+          })
+          .catch(() => {
+            this.setState({ submiting: false });
+            this.refreshCaptcha();
+          });
+      })
+      .catch(() => {
         this.setState({ submiting: false });
         this.refreshCaptcha();
       });
-    }).catch(() => {
-      this.setState({ submiting: false });
-      this.refreshCaptcha();
-    });
   }
 
   renderCaptcha() {
@@ -95,9 +109,20 @@ class PublicForm extends Component {
     return (
       <FormGroup key="captcha" model=".captcha">
         <ul className="search__filter">
-          <li><label><Translate>Captcha</Translate><span className="required">*</span></label></li>
+          <li>
+            <label>
+              <Translate>Captcha</Translate>
+              <span className="required">*</span>
+            </label>
+          </li>
           <li className="wide">
-            <Captcha remote={remote} refresh={(refresh) => { this.refreshCaptcha = refresh; }} model=".captcha"/>
+            <Captcha
+              remote={remote}
+              refresh={refresh => {
+                this.refreshCaptcha = refresh;
+              }}
+              model=".captcha"
+            />
           </li>
         </ul>
       </FormGroup>
@@ -114,14 +139,18 @@ class PublicForm extends Component {
         getDispatch={dispatch => this.attachDispatch(dispatch)}
         onSubmit={this.handleSubmit}
       >
-        {submiting ? PublicForm.renderSubmitState() : (
+        {submiting ? (
+          PublicForm.renderSubmitState()
+        ) : (
           <div className="public-form">
             {PublicForm.renderTitle()}
             <MetadataFormFields thesauris={thesauris} model="publicform" template={template} />
             {file ? PublicForm.renderFileField('file', { accept: '.pdf' }) : false}
-            {attachments ? PublicForm.renderFileField('attachments', { multiple: 'multiple' }) : false}
+            {attachments
+              ? PublicForm.renderFileField('attachments', { multiple: 'multiple' })
+              : false}
             {this.renderCaptcha()}
-            <input type="submit" className="btn btn-success" value="Submit"/>
+            <input type="submit" className="btn btn-success" value="Submit" />
           </div>
         )}
       </LocalForm>
@@ -139,11 +168,11 @@ PublicForm.propTypes = {
 };
 
 export const mapStateToProps = (state, props) => ({
-    template: state.templates.find(template => template.get('_id') === props.template),
-    thesauris: state.thesauris,
-    file: props.file !== undefined,
-    remote: props.remote !== undefined,
-    attachments: props.attachments !== undefined,
+  template: state.templates.find(template => template.get('_id') === props.template),
+  thesauris: state.thesauris,
+  file: props.file !== undefined,
+  remote: props.remote !== undefined,
+  attachments: props.attachments !== undefined,
 });
 
 export function mapDispatchToProps(dispatch) {

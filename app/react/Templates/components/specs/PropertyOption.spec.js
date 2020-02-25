@@ -1,10 +1,15 @@
+/**
+ * @jest-environment jsdom
+ */
 import React from 'react';
 import TestUtils from 'react-dom/test-utils';
 import TestBackend from 'react-dnd-test-backend';
 import { DragDropContext } from 'react-dnd';
 import { Provider } from 'react-redux';
 import { createStore } from 'redux';
-import PropertyOption, { dragSource as dragSourceOption } from 'app/Templates/components/PropertyOption';
+import PropertyOption, {
+  dragSource as dragSourceOption,
+} from 'app/Templates/components/PropertyOption';
 
 function wrapInTestContext(DecoratedComponent) {
   return DragDropContext(TestBackend)(DecoratedComponent);
@@ -21,15 +26,26 @@ describe('PropertyOption', () => {
   function renderComponent(ComponentToRender, props) {
     let result;
     store = createStore(() => ({}));
-    TestUtils.renderIntoDocument(<Provider store={store}><ComponentToRender ref={ref => result = ref} {...props}/></Provider>);
+    TestUtils.renderIntoDocument(
+      <Provider store={store}>
+        <ComponentToRender ref={ref => (result = ref)} {...props} />
+      </Provider>
+    );
     return result;
   }
 
   describe('PropertyOption', () => {
     it('should have mapped removeProperty action into props', () => {
       TestComponent = wrapInTestContext(PropertyOption);
-      component = renderComponent(TestComponent, { label: 'test', type: 'optionType', addProperty: () => {} });
-      const option = TestUtils.findRenderedComponentWithType(component, PropertyOption).getWrappedInstance();
+      component = renderComponent(TestComponent, {
+        label: 'test',
+        type: 'optionType',
+        addProperty: () => {},
+      });
+      const option = TestUtils.findRenderedComponentWithType(
+        component,
+        PropertyOption
+      ).getWrappedInstance();
       expect(option.props.removeProperty).toEqual(jasmine.any(Function));
     });
   });
@@ -54,7 +70,12 @@ describe('PropertyOption', () => {
     describe('endDrag', () => {
       describe('when item has no index', () => {
         it('should not call REMOVE_FIELD', () => {
-          const props = { label: 'test', removeProperty: jasmine.createSpy(), type: 'optionType', addProperty: () => {} };
+          const props = {
+            label: 'test',
+            removeProperty: jasmine.createSpy(),
+            type: 'optionType',
+            addProperty: () => {},
+          };
           component = renderComponent(TestComponent, props);
           backend = component.getManager().getBackend();
           monitor = component.getManager().getMonitor();
@@ -70,7 +91,12 @@ describe('PropertyOption', () => {
       });
       describe('when not droped on a target and item has an index', () => {
         it('should call REMOVE_FIELD with the index', () => {
-          const props = { label: 'test', removeProperty: jasmine.createSpy(), type: 'optionType', addProperty: () => {} };
+          const props = {
+            label: 'test',
+            removeProperty: jasmine.createSpy(),
+            type: 'optionType',
+            addProperty: () => {},
+          };
           component = renderComponent(TestComponent, props);
           backend = component.getManager().getBackend();
           monitor = component.getManager().getMonitor();

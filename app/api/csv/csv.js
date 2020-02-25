@@ -1,3 +1,5 @@
+/** @format */
+
 import csvtojson from 'csvtojson';
 
 import { allLanguages } from 'shared/languagesList';
@@ -14,23 +16,24 @@ const csv = (readStream, stopOnError = false) => ({
   },
 
   async read() {
-    return new Promise((resolve, reject) => {
-      csvtojson({ delimiter: [',', ';'] })
+    this.reading = true;
+    return csvtojson({ delimiter: [',', ';'] })
       .fromStream(readStream)
       .subscribe(async (row, index) => {
+        if (!this.reading) {
+          return;
+        }
         try {
           await this.onRowCallback(row, index);
         } catch (e) {
+          this.onErrorCallback(e, row, index);
           if (stopOnError) {
+            this.reading = false;
             readStream.unpipe();
             readStream.destroy();
-            resolve();
           }
-
-          this.onErrorCallback(e, row, index);
         }
-      }, reject, resolve);
-    });
+      });
   },
 
   async toThesauri(language, availableLanguages) {
@@ -38,26 +41,23 @@ const csv = (readStream, stopOnError = false) => ({
     const languageLabel = allLanguages.find(l => l.key === language).label;
 
     const languagesToTranslate = allLanguages
-    .filter(
-      l =>
-        availableLanguages.includes(l.key) &&
-        Object.keys(values[0]).includes(l.label)
-    )
-    .reduce((map, lang) => ({ ...map, [lang.key]: lang.label }), {});
+      .filter(l => availableLanguages.includes(l.key) && Object.keys(values[0]).includes(l.label))
+      .reduce((map, lang) => ({ ...map, [lang.key]: lang.label }), {});
 
     return {
       thesauriValues: values.map(v => ({ label: v[languageLabel] })),
 
       thesauriTranslations: Object.keys(languagesToTranslate).reduce((translations, lang) => {
-        translations[lang] = values.map(t => ({ // eslint-disable-line no-param-reassign
+        translations[lang] = values.map(t => ({
+          // eslint-disable-line no-param-reassign
           key: t[languageLabel],
           value: t[languagesToTranslate[lang]],
         }));
 
         return translations;
-      }, {})
+      }, {}),
     };
-  }
+  },
 });
 
 export default csv;

@@ -1,3 +1,8 @@
+/**
+ * @jest-environment jsdom
+ */
+/** @format */
+
 import { browserHistory } from 'react-router';
 import { RequestParams } from 'app/utils/RequestParams';
 
@@ -17,17 +22,18 @@ describe('api', () => {
     spyOn(browserHistory, 'replace');
     backend.restore();
     backend
-    .get(`${APIURL}test_get`, JSON.stringify({ method: 'GET' }))
-    .get(`${APIURL}test_get?key=value`, JSON.stringify({ method: 'GET' }))
-    .post(`${APIURL}test_post`, JSON.stringify({ method: 'POST' }))
-    .delete(`${APIURL}test_delete?data=delete`, JSON.stringify({ method: 'DELETE' }))
-    .get(`${APIURL}unauthorised`, { status: 401, body: {} })
-    .get(`${APIURL}notfound`, { status: 404, body: {} })
-    .get(`${APIURL}error_url`, { status: 500, body: {} })
-    .get(`${APIURL}network_error`, {
-      throws: new TypeError('Failed to fetch')
-    })
-    .get(`${APIURL}unknown_error`, { throws: new Error('some error') });
+      .get(`${APIURL}test_get`, JSON.stringify({ method: 'GET' }))
+      .get(`${APIURL}test_get?key=value`, JSON.stringify({ method: 'GET' }))
+      .post(`${APIURL}test_post`, JSON.stringify({ method: 'POST' }))
+      .delete(`${APIURL}test_delete?data=delete`, JSON.stringify({ method: 'DELETE' }))
+      .get(`${APIURL}unauthorised`, { status: 401, body: {} })
+      .get(`${APIURL}notfound`, { status: 404, body: {} })
+      .get(`${APIURL}conflict`, { status: 409, body: { error: 'conflict error' } })
+      .get(`${APIURL}error_url`, { status: 500, body: {} })
+      .get(`${APIURL}network_error`, {
+        throws: new TypeError('Failed to fetch'),
+      })
+      .get(`${APIURL}unknown_error`, { throws: new Error('some error') });
   });
 
   afterEach(() => backend.restore());
@@ -45,7 +51,10 @@ describe('api', () => {
     });
 
     it('should add headers and data as query string', async () => {
-      const requestParams = new RequestParams({ key: 'value' }, { header: 'value', header2: 'value2' });
+      const requestParams = new RequestParams(
+        { key: 'value' },
+        { header: 'value', header2: 'value2' }
+      );
       await api.get('test_get', requestParams);
 
       expect(backend.calls()[0][1].headers.header).toBe('value');
@@ -55,7 +64,10 @@ describe('api', () => {
 
   describe('POST', () => {
     it('should prefix url with config api url', async () => {
-      const requestParams = new RequestParams({ key: 'value' }, { header: 'value', header2: 'value2' });
+      const requestParams = new RequestParams(
+        { key: 'value' },
+        { header: 'value', header2: 'value2' }
+      );
       const response = await api.post('test_post', requestParams);
 
       expect(backend.calls()[0][1].body).toBe(JSON.stringify({ key: 'value' }));
@@ -75,7 +87,10 @@ describe('api', () => {
 
   describe('DELETE', () => {
     it('should prefix url with config api url', async () => {
-      const requestParams = new RequestParams({ data: 'delete' }, { header: 'value', header2: 'value2' });
+      const requestParams = new RequestParams(
+        { data: 'delete' },
+        { header: 'value', header2: 'value2' }
+      );
       const response = await api.delete('test_delete', requestParams);
 
       expect(response.json.method).toBe('DELETE');
@@ -84,7 +99,10 @@ describe('api', () => {
     });
 
     it('should start and end the loading bar', async () => {
-      const requestParams = new RequestParams({ data: 'delete' }, { header: 'value', header2: 'value2' });
+      const requestParams = new RequestParams(
+        { data: 'delete' },
+        { header: 'value', header2: 'value2' }
+      );
       const promise = api.delete('test_delete', requestParams);
       expect(loadingBar.start).toHaveBeenCalled();
 
@@ -120,6 +138,14 @@ describe('api', () => {
       it('should redirect to login', async () => {
         await testErrorHandling('notfound', () => {
           expect(browserHistory.replace).toHaveBeenCalledWith('/404');
+        });
+      });
+    });
+
+    describe('409 (Conflict)', () => {
+      it('should notify as a warning, not danger', async () => {
+        await testErrorHandling('conflict', () => {
+          testNotificationDisplayed('conflict error', 'warning');
         });
       });
     });

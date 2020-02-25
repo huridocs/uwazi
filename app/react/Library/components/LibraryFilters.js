@@ -32,9 +32,9 @@ export class LibraryFilters extends Component {
         <div className="sidepanel-body">
           <p className="sidepanel-title">{t('System', 'Filters configuration')}</p>
           <div className="documentTypes-selector nested-selector">
-            <DocumentTypesList storeKey={this.props.storeKey}/>
+            <DocumentTypesList storeKey={this.props.storeKey} />
           </div>
-          <FiltersForm storeKey={this.props.storeKey}/>
+          <FiltersForm storeKey={this.props.storeKey} />
         </div>
       </SidePanel>
     );
@@ -44,12 +44,14 @@ export class LibraryFilters extends Component {
 LibraryFilters.propTypes = {
   resetFilters: PropTypes.func,
   open: PropTypes.bool,
-  storeKey: PropTypes.string
+  storeKey: PropTypes.string,
 };
 
 export function mapStateToProps(state, props) {
   return {
-    open: state[props.storeKey].ui.get('filtersPanel') !== false && !state[props.storeKey].ui.get('selectedDocuments').size > 0
+    open:
+      state[props.storeKey].ui.get('filtersPanel') !== false &&
+      !state[props.storeKey].ui.get('selectedDocuments').size > 0,
   };
 }
 

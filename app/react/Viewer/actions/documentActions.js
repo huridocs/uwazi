@@ -20,38 +20,38 @@ export function setDocument(document, html) {
   return {
     type: types.SET_DOCUMENT,
     document,
-    html
+    html,
   };
 }
 
 export function resetDocumentViewer() {
   return {
-    type: types.RESET_DOCUMENT_VIEWER
+    type: types.RESET_DOCUMENT_VIEWER,
   };
 }
 
 export function loadDefaultViewerMenu() {
   return {
-    type: types.LOAD_DEFAULT_VIEWER_MENU
+    type: types.LOAD_DEFAULT_VIEWER_MENU,
   };
 }
 
 export function saveDocument(doc) {
   const updateDoc = {};
-  Object.keys(doc).forEach((key) => {
+  Object.keys(doc).forEach(key => {
     if (key !== 'fullText') {
       updateDoc[key] = doc[key];
     }
   });
 
-  return dispatch => documentsApi.save(new RequestParams(updateDoc))
-  .then((updatedDoc) => {
-    dispatch(notificationActions.notify('Document updated', 'success'));
-    dispatch({ type: types.VIEWER_UPDATE_DOCUMENT, doc });
-    dispatch(formActions.reset('documentViewer.sidepanel.metadata'));
-    dispatch(actions.set('viewer/doc', updatedDoc));
-    dispatch(relationshipActions.reloadRelationships(updatedDoc.sharedId));
-  });
+  return dispatch =>
+    documentsApi.save(new RequestParams(updateDoc)).then(updatedDoc => {
+      dispatch(notificationActions.notify('Document updated', 'success'));
+      dispatch({ type: types.VIEWER_UPDATE_DOCUMENT, doc });
+      dispatch(formActions.reset('documentViewer.sidepanel.metadata'));
+      dispatch(actions.set('viewer/doc', updatedDoc));
+      dispatch(relationshipActions.reloadRelationships(updatedDoc.sharedId));
+    });
 }
 
 export function saveToc(toc) {
@@ -64,18 +64,17 @@ export function saveToc(toc) {
 }
 
 export function deleteDocument(doc) {
-  return dispatch => documentsApi.delete(new RequestParams({ sharedId: doc.sharedId }))
-  .then(() => {
-    dispatch(notificationActions.notify('Document deleted', 'success'));
-    dispatch(resetDocumentViewer());
-    dispatch(removeDocument(doc));
-    dispatch(unselectAllDocuments());
-  });
+  return dispatch =>
+    documentsApi.delete(new RequestParams({ sharedId: doc.sharedId })).then(() => {
+      dispatch(notificationActions.notify('Document deleted', 'success'));
+      dispatch(resetDocumentViewer());
+      dispatch(removeDocument(doc));
+      dispatch(unselectAllDocuments());
+    });
 }
 
 export function getDocument(requestParams) {
-  return api.get('entities', requestParams)
-  .then((response) => {
+  return api.get('entities', requestParams).then(response => {
     const doc = response.json.rows[0];
     if (!isClient) {
       return doc;
@@ -83,28 +82,28 @@ export function getDocument(requestParams) {
     if (doc.pdfInfo || !doc.file) {
       return doc;
     }
-    return PDFUtils.extractPDFInfo(`${APIURL}documents/download?_id=${doc._id}`)
-    .then((pdfInfo) => {
+    return PDFUtils.extractPDFInfo(`${APIURL}documents/download?_id=${doc._id}`).then(pdfInfo => {
       const { _id, sharedId } = doc;
-      return api.post('documents/pdfInfo', new RequestParams({ _id, sharedId, pdfInfo }))
-      .then(res => res.json);
+      return api
+        .post('documents/pdfInfo', new RequestParams({ _id, sharedId, pdfInfo }))
+        .then(res => res.json);
     });
   });
 }
 
 export function loadTargetDocument(sharedId) {
-  return dispatch => Promise.all([
+  return dispatch =>
+    Promise.all([
       getDocument(new RequestParams({ sharedId })),
-      referencesAPI.get(new RequestParams({ sharedId }))
-  ])
-  .then(([targetDoc, references]) => {
-    dispatch(actions.set('viewer/targetDoc', targetDoc));
-    dispatch(actions.set('viewer/targetDocReferences', references));
-  });
+      referencesAPI.get(new RequestParams({ sharedId })),
+    ]).then(([targetDoc, references]) => {
+      dispatch(actions.set('viewer/targetDoc', targetDoc));
+      dispatch(actions.set('viewer/targetDocReferences', references));
+    });
 }
 
 export function cancelTargetDocument() {
-  return (dispatch) => {
+  return dispatch => {
     dispatch({ type: connectionsTypes.CANCEL_RANGED_CONNECTION });
     dispatch(actions.unset('viewer/targetDoc'));
     dispatch(actions.unset('viewer/targetDocReferences'));
@@ -114,7 +113,7 @@ export function cancelTargetDocument() {
 }
 
 export function editToc(toc) {
-  return (dispatch) => {
+  return dispatch => {
     dispatch(actions.set('documentViewer/tocBeingEdited', true));
     dispatch(formActions.load('documentViewer.tocForm', toc));
     dispatch(uiActions.openPanel('viewMetadataPanel'));
@@ -136,7 +135,7 @@ export function removeFromToc(tocElement) {
 export function indentTocElement(tocElement, indentation) {
   return (dispatch, getState) => {
     const state = getState();
-    const toc = state.documentViewer.tocForm.map((_entry) => {
+    const toc = state.documentViewer.tocForm.map(_entry => {
       const entry = Object.assign({}, _entry);
       if (_entry === tocElement) {
         entry.indentation = indentation;
@@ -158,10 +157,10 @@ export function addToToc(textSelectedObject) {
     const tocElement = {
       range: {
         start: textSelectedObject.sourceRange.start,
-        end: textSelectedObject.sourceRange.end
+        end: textSelectedObject.sourceRange.end,
       },
       label: textSelectedObject.sourceRange.text,
-      indentation: 0
+      indentation: 0,
     };
 
     toc.push(tocElement);

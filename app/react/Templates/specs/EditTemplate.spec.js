@@ -11,9 +11,13 @@ import { RequestParams } from 'app/utils/RequestParams';
 
 describe('EditTemplate', () => {
   const templates = [
-    { _id: 'abc1', properties: [{ label: 'label1' }, { label: 'label2' }], commonProperties: [{ label: 'existingProperty' }] },
+    {
+      _id: 'abc1',
+      properties: [{ label: 'label1' }, { label: 'label2' }],
+      commonProperties: [{ label: 'existingProperty' }],
+    },
     { _id: 'abc2', properties: [{ label: 'label3' }, { label: 'label4' }] },
-    { _id: 'abc3', properties: [{ label: 'label3' }, { label: 'label4' }], commonProperties: [] }
+    { _id: 'abc3', properties: [{ label: 'label3' }, { label: 'label4' }], commonProperties: [] },
   ];
   const thesauris = [{ label: '1' }, { label: '2' }];
   const relationTypes = [{ name: 'Friend' }, { name: 'Family' }];
@@ -29,9 +33,9 @@ describe('EditTemplate', () => {
 
     backend.restore();
     backend
-    .get(`${APIURL}templates`, { body: JSON.stringify({ rows: templates }) })
-    .get(`${APIURL}relationtypes`, { body: JSON.stringify({ rows: relationTypes }) })
-    .get(`${APIURL}thesauris`, { body: JSON.stringify({ rows: thesauris }) });
+      .get(`${APIURL}templates`, { body: JSON.stringify({ rows: templates }) })
+      .get(`${APIURL}relationtypes`, { body: JSON.stringify({ rows: relationTypes }) })
+      .get(`${APIURL}thesauris`, { body: JSON.stringify({ rows: thesauris }) });
   });
 
   afterEach(() => backend.restore());

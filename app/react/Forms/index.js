@@ -1,3 +1,5 @@
+/** @format */
+
 import Select from './components/Select';
 import DatePicker from './components/DatePicker';
 import Captcha from './components/Captcha';
@@ -19,6 +21,8 @@ import Switcher from './components/Switcher';
 import Geolocation from './components/Geolocation';
 import LinkField from './components/LinkField';
 import FormValue from './components/FormValue';
+
+export * from './components/MultiSuggest';
 
 export {
   Select,
