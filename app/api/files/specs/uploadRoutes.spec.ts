@@ -2,17 +2,17 @@ import path from 'path';
 import fs from 'fs';
 import request, { Response as SuperTestResponse } from 'supertest';
 import { Application, Request, Response, NextFunction } from 'express';
-import { search } from 'api/search';
 
+import { search } from 'api/search';
 import db from 'api/utils/testing_db';
 import errorLog from 'api/log/errorLog';
-import { uploadsPath, setupTestUploadedPaths } from 'api/files/filesystem';
-
-import { fixtures, uploadId } from './fixtures';
-import { files } from '../files';
-
-import uploadRoutes from '../routes';
+import { uploadsPath, customUploadsPath, setupTestUploadedPaths } from 'api/files/filesystem';
 import { setUpApp, socketEmit, iosocket } from 'api/utils/testingRoutes';
+import { FileType } from 'shared/types/fileType';
+
+import { fixtures } from './fixtures';
+import { files } from '../files';
+import uploadRoutes from '../routes';
 
 jest.mock(
   '../../auth/authMiddleware.js',
@@ -41,22 +41,6 @@ describe('upload routes', () => {
         .field('entity', 'sharedId1')
         .attach('file', path.join(__dirname, filepath))
     );
-
-  describe('POST/files', () => {
-    it('should save file on the body', async () => {
-      await request(app)
-        .post('/api/files')
-        .send({ _id: uploadId.toString(), originalname: 'newName' });
-
-      const [upload] = await files.get({ _id: uploadId.toString() });
-
-      expect(upload).toEqual(
-        expect.objectContaining({
-          originalname: 'newName',
-        })
-      );
-    });
-  });
 
   describe('POST/files/upload/documents', () => {
     it('should upload the file', async () => {
@@ -139,6 +123,34 @@ describe('upload routes', () => {
         const [upload] = await files.get({ entity: 'sharedId1' }, '+fullText');
         expect(upload.processed).toBe(false);
       });
+    });
+  });
+
+  describe('POST/files/upload/custom', () => {
+    it('should save the upload and return it', async () => {
+      const response: SuperTestResponse = await request(app)
+        .post('/api/files/upload/custom')
+        .attach('file', path.join(__dirname, 'test.txt'));
+
+      expect(response.body).toEqual(
+        expect.objectContaining({
+          type: 'custom',
+          filename: expect.stringMatching(/.*\.txt/),
+          mimetype: 'text/plain',
+          originalname: 'test.txt',
+          size: 5,
+        })
+      );
+    });
+
+    it('should save the file on customUploads path', async () => {
+      await request(app)
+        .post('/api/files/upload/custom')
+        .attach('file', path.join(__dirname, 'test.txt'));
+
+      const [file]: FileType[] = await files.get({ originalname: 'test.txt' });
+
+      expect(fs.readFileSync(customUploadsPath(file.filename || ''))).toBeDefined();
     });
   });
 });

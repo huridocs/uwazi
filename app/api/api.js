@@ -31,7 +31,7 @@ export default (app, server) => {
   require('./contact/routes').default(app);
   require('./entities/routes').default(app);
   require('./pages/routes').default(app);
-  require('./files/deprecatedRoutes.js').default(app);
+  require('./files/jsRoutes.js').default(app);
   require('./files/routes').default(app);
   require('./settings/routes').default(app);
   require('./i18n/routes').default(app);

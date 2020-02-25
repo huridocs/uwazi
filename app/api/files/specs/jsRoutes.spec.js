@@ -11,7 +11,7 @@ import { files } from 'api/files/files';
 
 import { fixtures, templateId } from './fixtures';
 import instrumentRoutes from '../../utils/instrumentRoutes';
-import uploadRoutes from '../deprecatedRoutes.js';
+import uploadRoutes from '../jsRoutes.js';
 import errorLog from '../../log/errorLog';
 import paths from '../../config/paths';
 

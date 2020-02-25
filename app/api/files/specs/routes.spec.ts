@@ -1,7 +1,4 @@
-/** @format */
-
 import path from 'path';
-import fs from 'fs';
 import request, { Response as SuperTestResponse } from 'supertest';
 import { Application, Request, Response, NextFunction } from 'express';
 
@@ -23,7 +20,7 @@ jest.mock(
   }
 );
 
-describe('custom upload routes', () => {
+describe('files routes', () => {
   const app: Application = setUpApp(uploadRoutes);
 
   beforeEach(async () => {
@@ -32,31 +29,19 @@ describe('custom upload routes', () => {
   });
   afterAll(async () => db.disconnect());
 
-  describe('POST/files/upload/custom', () => {
-    it('should save the upload and return it', async () => {
-      const response: SuperTestResponse = await request(app)
-        .post('/api/files/upload/custom')
-        .attach('file', path.join(__dirname, 'test.txt'));
+  describe('POST/files', () => {
+    it('should save file on the body', async () => {
+      await request(app)
+        .post('/api/files')
+        .send({ _id: uploadId.toString(), originalname: 'newName' });
 
-      expect(response.body).toEqual(
+      const [upload] = await files.get({ _id: uploadId.toString() });
+
+      expect(upload).toEqual(
         expect.objectContaining({
-          type: 'custom',
-          filename: expect.stringMatching(/.*\.txt/),
-          mimetype: 'text/plain',
-          originalname: 'test.txt',
-          size: 5,
+          originalname: 'newName',
         })
       );
-    });
-
-    it('should save the file on customUploads path', async () => {
-      await request(app)
-        .post('/api/files/upload/custom')
-        .attach('file', path.join(__dirname, 'test.txt'));
-
-      const [file]: FileType[] = await files.get({ originalname: 'test.txt' });
-
-      expect(fs.readFileSync(customUploadsPath(file.filename || ''))).toBeDefined();
     });
   });
 
