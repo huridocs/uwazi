@@ -8,7 +8,6 @@ import UploadButton from 'app/Metadata/components/UploadButton';
 describe('FileList', () => {
   let component: ShallowWrapper<FileList>;
   let props: FileListProps;
-  let context: any;
   let file: FileType;
   let file2: FileType;
 

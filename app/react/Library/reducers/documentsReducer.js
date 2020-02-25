@@ -2,7 +2,6 @@ import Immutable from 'immutable';
 
 import * as types from 'app/Library/actions/actionTypes';
 import * as uploadTypes from 'app/Uploads/actions/actionTypes';
-import * as attachmentsTypes from 'app/Attachments/actions/actionTypes';
 
 const initialState = { rows: [] };
 

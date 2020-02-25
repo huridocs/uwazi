@@ -3,7 +3,6 @@ import { shallow } from 'enzyme';
 import { fromJS as Immutable } from 'immutable';
 
 import AttachmentsList from '../AttachmentsList';
-import Attachment from '../Attachment';
 
 describe('AttachmentsList', () => {
   let component;

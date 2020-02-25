@@ -10,7 +10,6 @@ import asyncFS from 'api/utils/async-fs';
 
 import configPaths from '../config/paths';
 import { FileType } from '../../shared/types/fileType';
-import { log } from 'util';
 
 export type FilePath = string;
 

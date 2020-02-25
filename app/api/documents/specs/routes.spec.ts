@@ -1,10 +1,7 @@
 import request, { Response as SuperTestResponse } from 'supertest';
 import { Application, Request, Response, NextFunction } from 'express';
-import { search } from 'api/search';
 
 import db from 'api/utils/testing_db';
-import errorLog from 'api/log/errorLog';
-import { uploadsPath, setupTestUploadedPaths } from 'api/files/filesystem';
 
 import fixtures, { document1 } from './fixtures';
 

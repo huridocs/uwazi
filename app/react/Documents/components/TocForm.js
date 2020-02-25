@@ -23,7 +23,7 @@ export class TocForm extends Component {
   }
 
   render() {
-    const { toc, model, removeEntry, onSubmit } = this.props;
+    const { toc, model, removeEntry } = this.props;
     return (
       <Form className="toc" id="tocForm" model={model} onSubmit={this.submit.bind(this)}>
         {toc.map((tocElement, index) => (
@@ -58,6 +58,7 @@ TocForm.defaultProps = {
 
 TocForm.propTypes = {
   toc: PropTypes.array,
+  file: PropTypes.object,
   model: PropTypes.string.isRequired,
   removeEntry: PropTypes.func,
   indent: PropTypes.func,

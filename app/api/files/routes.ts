@@ -1,19 +1,17 @@
 /** @format */
 
-import path from 'path';
 import multer from 'multer';
 import { Application, Request, Response, NextFunction } from 'express';
 //@ts-ignore
-import sanitize from 'sanitize-filename';
 import debugLog from 'api/log/debugLog';
 import errorLog from 'api/log/errorLog';
 import { processDocument } from 'api/files/processDocument';
 import { uploadsPath } from 'api/files/filesystem';
 
-import { validation, createError } from '../utils';
-import needsAuthorization from '../auth/authMiddleware';
+import needsAuthorization from 'api/auth/authMiddleware';
+import storageConfig from 'api/files/storageConfig';
 import { files } from './files';
-import storageConfig from './storageConfig';
+import { validation, createError } from '../utils';
 
 const storage = multer.diskStorage(storageConfig);
 const upload = multer({ storage });
