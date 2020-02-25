@@ -22,7 +22,7 @@ describe('Document', () => {
       unsetSelection: jasmine.createSpy('unsetSelection'),
       onClick: jasmine.createSpy('onClick'),
       doc: Immutable.fromJS({ _id: 'documentId', documents: [{ pdfInfo: { test: 'pdfInfo' } }] }),
-      file: { language: 'eng' },
+      file: { language: 'eng', _id: 'fileId', pdfInfo: { test: 'pdfInfo' } },
       onDocumentReady: jasmine.createSpy('onDocumentReady'),
       selectedSnippet: Immutable.fromJS({}),
       docHTML: Immutable.fromJS({
@@ -106,7 +106,7 @@ describe('Document', () => {
         });
         expect(props.activateReference).toHaveBeenCalledWith(
           props.references.get(0).toJS(),
-          props.doc.toJS().pdfInfo,
+          props.file.pdfInfo,
           props.references.toJS()
         );
         expect(props.onClick).not.toHaveBeenCalled();
@@ -250,7 +250,7 @@ describe('Document', () => {
 
     it('should setSelection with the range serialized', () => {
       instance.onTextSelected();
-      expect(props.setSelection).toHaveBeenCalledWith('serializedRange');
+      expect(props.setSelection).toHaveBeenCalledWith('serializedRange', 'fileId');
     });
 
     describe('componentDidUpdate', () => {
