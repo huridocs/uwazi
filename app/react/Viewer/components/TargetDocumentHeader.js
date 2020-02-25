@@ -22,7 +22,7 @@ export class TargetDocumentHeader extends Component {
   }
 
   render() {
-    const { targetDocument, reference, connection } = this.props;
+    const { targetDocument, reference } = this.props;
     const { targetRange } = reference;
 
     let className = 'btn btn-default hidden';

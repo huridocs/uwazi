@@ -7,6 +7,7 @@ import { documentProcessed } from 'app/Uploads/actions/uploadsActions';
 import socket from 'app/socket';
 import { Icon } from 'UI';
 import { Translate } from 'app/I18N';
+import Immutable from 'immutable';
 
 const renderProgress = progress => (
   <div className="upload-button btn btn-default btn-disabled">
@@ -64,13 +65,13 @@ export class UploadButton extends Component {
   }
 
   conversionStart(docId) {
-    if (docId === this.props.documentId) {
+    if (docId === this.props.entitySharedId) {
       this.setState({ processing: true, failed: false, completed: false });
     }
   }
 
   conversionFailed(docId) {
-    if (docId === this.props.documentId) {
+    if (docId === this.props.entitySharedId) {
       this.setState({ processing: false, failed: true, completed: false });
     }
   }
@@ -106,6 +107,7 @@ export class UploadButton extends Component {
     }
 
     const progress = this.props.progress.get(this.props.entitySharedId);
+
     if (progress) {
       return renderProgress(progress);
     }
@@ -114,11 +116,17 @@ export class UploadButton extends Component {
   }
 }
 
+UploadButton.defaultProps = {
+  documentProcessed: () => {},
+  progress: Immutable.fromJS({}),
+  storeKey: '',
+};
+
 UploadButton.propTypes = {
-  uploadDocument: PropTypes.func,
+  uploadDocument: PropTypes.func.isRequired,
   documentProcessed: PropTypes.func,
-  entitySharedId: PropTypes.string,
-  progress: PropTypes.object,
+  entitySharedId: PropTypes.string.isRequired,
+  progress: PropTypes.instanceOf(Immutable.Map),
   storeKey: PropTypes.string,
 };
 
