@@ -227,7 +227,7 @@ describe('documentActions', () => {
           },
           { type: types.VIEWER_UPDATE_DOCUMENT, doc: { name: 'doc', fullText: 'fullText' } },
           { type: 'rrf/reset', model: 'documentViewer.sidepanel.metadata' },
-          { type: 'viewer/doc/SET', value: { sharedId: 'responseId' } },
+          { type: 'viewer/doc/UPDATE', value: { sharedId: 'responseId' } },
           { type: 'reloadRelationships' },
         ];
         const store = mockStore({});
@@ -307,6 +307,10 @@ describe('documentActions', () => {
           name: 'doc',
           _id: 'id',
           sharedId: 'sharedId',
+          defaultDoc: {
+            _id: fileId,
+            toc,
+          },
           documents: [
             {
               _id: fileId,

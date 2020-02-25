@@ -50,7 +50,7 @@ export function saveDocument(doc) {
       dispatch(notificationActions.notify('Document updated', 'success'));
       dispatch({ type: types.VIEWER_UPDATE_DOCUMENT, doc });
       dispatch(formActions.reset('documentViewer.sidepanel.metadata'));
-      dispatch(actions.set('viewer/doc', updatedDoc));
+      dispatch(actions.update('viewer/doc', updatedDoc));
       dispatch(relationshipActions.reloadRelationships(updatedDoc.sharedId));
     });
 }
@@ -64,6 +64,7 @@ export function saveToc(toc, fileId) {
     const updatedFile = (await api.post('files', new RequestParams({ toc, _id: fileId }))).json;
     const doc = {
       ...currentDoc,
+      defaultDoc: updatedFile,
       documents: currentDoc.documents.map(d => {
         if (d._id === updatedFile._id) {
           return updatedFile;

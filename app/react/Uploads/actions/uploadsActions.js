@@ -196,8 +196,8 @@ export function documentProcessed(sharedId, __reducerKey) {
       dispatch({ type: libraryTypes.UPDATE_DOCUMENT, doc, __reducerKey });
       dispatch({ type: libraryTypes.UNSELECT_ALL_DOCUMENTS, __reducerKey });
       dispatch({ type: libraryTypes.SELECT_DOCUMENT, doc, __reducerKey });
-      dispatch(basicActions.set('entityView/entity', doc));
-      dispatch(basicActions.set('viewer/doc', doc));
+      dispatch(basicActions.update('entityView/entity', doc));
+      dispatch(basicActions.update('viewer/doc', doc));
     });
   };
 }
