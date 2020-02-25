@@ -1,5 +1,8 @@
 import { fromJS as Immutable } from 'immutable';
+import * as matchers from 'jest-immutable-matchers';
 import multireducer from '../multireducer';
+
+jest.addMatchers(matchers);
 
 describe('multireducer', () => {
   const reducerKey = 'customKey';

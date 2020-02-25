@@ -4,8 +4,7 @@ export default {
 
   name: 'entities_override_mongo_language',
 
-  description:
-  `duplicates entities.language propery to mongoLanguage, 
+  description: `duplicates entities.language propery to mongoLanguage, 
   this is to be able to configure language "none" 
   when the language is unsuported for text indexes`,
 
@@ -25,5 +24,5 @@ export default {
       index += 1;
     }
     process.stdout.write('\r\n');
-  }
+  },
 };

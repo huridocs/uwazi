@@ -53,7 +53,7 @@ const bulkIndex = (docs, _action = 'index', elasticIndex) => {
     }
   });
 
-  return elastic.bulk({ body }).then(res => {
+  return elastic.bulk({ body, requestTimeout: 40000 }).then(res => {
     if (res.items) {
       res.items.forEach(f => {
         if (f.index.error) {
@@ -74,7 +74,7 @@ const bulkIndex = (docs, _action = 'index', elasticIndex) => {
 const indexEntities = (
   query,
   select,
-  limit = 200,
+  limit = 50,
   { batchCallback = () => {}, elasticIndex, searchInstance }
 ) => {
   const index = (offset, totalRows) => {

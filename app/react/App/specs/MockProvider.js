@@ -14,7 +14,7 @@ class MockProvider extends Component {
       getUser() {
         return props.user;
       },
-      router: props.router
+      router: props.router,
     };
   }
 
@@ -28,11 +28,11 @@ MockProvider.childContextTypes = {
   getInitialData: PropTypes.func,
   isRenderedFromServer: PropTypes.func,
   getUser: PropTypes.func,
-  router: PropTypes.object
+  router: PropTypes.object,
 };
 
 MockProvider.propTypes = {
-  children: PropTypes.object
+  children: PropTypes.object,
 };
 
 export default MockProvider;

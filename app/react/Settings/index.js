@@ -1,16 +1,17 @@
-import Settings from './Settings';
-import SettingsAPI from './SettingsAPI';
-
+/** @format */
+/* eslint-disable import/no-named-as-default */
 import AccountSettings from './components/AccountSettings';
 import CollectionSettings from './components/CollectionSettings';
-import NavlinksSettings from './components/NavlinksSettings';
+import Customisation from './components/Customisation';
 import EntityTypesList from './components/EntityTypesList';
-import RelationTypesList from './components/RelationTypesList';
-import ThesaurisList from './components/ThesaurisList';
-import TranslationsList from './components/TranslationsList';
 import FiltersForm from './components/FiltersForm';
 import Languages from './components/Languages';
-import Customisation from './components/Customisation';
+import NavlinksSettings from './components/NavlinksSettings';
+import RelationTypesList from './components/RelationTypesList';
+import ThesauriList from './components/ThesauriList';
+import TranslationsList from './components/TranslationsList';
+import Settings from './Settings';
+import SettingsAPI from './SettingsAPI';
 
 export { default as CustomUploads } from './components/CustomUploads';
 
@@ -22,9 +23,9 @@ export {
   NavlinksSettings,
   EntityTypesList,
   RelationTypesList,
-  ThesaurisList,
+  ThesauriList,
   TranslationsList,
   FiltersForm,
   Languages,
-  Customisation
+  Customisation,
 };

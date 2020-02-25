@@ -10,18 +10,18 @@ describe('getFieldLabel', () => {
       _id: 'tpl1',
       commonProperties: [
         { name: 'creationDate', label: 'Date added' },
-        { name: 'title', label: 'Name' }
+        { name: 'title', label: 'Name' },
       ],
       properties: [
         {
           name: 'prop1',
-          label: 'Prop 1'
+          label: 'Prop 1',
         },
         {
           name: 'prop2',
-          label: 'Prop 2'
-        }
-      ]
+          label: 'Prop 2',
+        },
+      ],
     };
     field = 'metadata.prop2';
   });

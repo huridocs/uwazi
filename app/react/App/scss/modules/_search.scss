@@ -544,6 +544,28 @@
   }
 }
 
+.multiselectItem-button {
+  position: absolute;
+  top: 0;
+  right: 0;
+  font-size: $f-size-sm;
+  font-weight: 700;
+  width: 50px;
+  line-height: 24px;
+  height: 24px;
+  padding: 0px 3px;
+  color: $c-grey-dark;
+  text-align: center;
+  vertical-align: middle;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+  &:hover {
+    border-color: $c-black;
+    background: rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+  }
+}
+
 .multiselectItem-input {
   display: none;
 }

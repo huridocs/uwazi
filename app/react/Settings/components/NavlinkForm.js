@@ -15,9 +15,9 @@ export const LinkSource = {
   beginDrag(props) {
     return {
       id: props.localID,
-      index: props.index
+      index: props.index,
     };
-  }
+  },
 };
 
 export const LinkTarget = {
@@ -64,12 +64,21 @@ export const LinkTarget = {
     // but it's good here for the sake of performance
     // to avoid expensive index searches.
     monitor.getItem().index = hoverIndex;
-  }
+  },
 };
 
 export class NavlinkForm extends Component {
   render() {
-    const { link, index, isDragging, connectDragPreview, connectDragSource, connectDropTarget, formState, uiState } = this.props;
+    const {
+      link,
+      index,
+      isDragging,
+      connectDragPreview,
+      connectDragSource,
+      connectDropTarget,
+      formState,
+      uiState,
+    } = this.props;
     let className = `list-group-item${isDragging ? ' dragging' : ''}`;
     let titleClass = 'input-group';
 
@@ -78,65 +87,64 @@ export class NavlinkForm extends Component {
       titleClass += ' has-error';
     }
 
-    return connectDragPreview(connectDropTarget(
-      <li className={className}>
+    return connectDragPreview(
+      connectDropTarget(
+        <li className={className}>
+          <div>
+            {connectDragSource(
+              <span className="property-name">
+                <Icon icon="bars" className="reorder" />
+                &nbsp;
+                <Icon icon="link" />
+                &nbsp;&nbsp;
+                {link.title && link.title.trim().length ? link.title : <em>no title</em>}
+              </span>
+            )}
+          </div>
+          <div>
+            <button
+              type="button"
+              className="btn btn-default btn-xs property-edit"
+              onClick={() => this.props.editLink(link.localID)}
+            >
+              <Icon icon="pencil-alt" /> Edit
+            </button>
+            <button
+              type="button"
+              className="btn btn-danger btn-xs property-remove"
+              onClick={() => this.props.removeLink(index)}
+            >
+              <Icon icon="trash-alt" /> Delete
+            </button>
+          </div>
 
-        <div>
-          {connectDragSource(
-            <span className="property-name">
-              <Icon icon="bars" className="reorder" />&nbsp;
-              <Icon icon="link" />&nbsp;&nbsp;{link.title && link.title.trim().length ? link.title : <em>no title</em>}
-            </span>
-          )}
-        </div>
-        <div>
-          <button
-            type="button"
-            className="btn btn-default btn-xs property-edit"
-            onClick={() => this.props.editLink(link.localID)}
-          >
-            <Icon icon="pencil-alt" /> Edit
-          </button>
-          <button
-            type="button"
-            className="btn btn-danger btn-xs property-remove"
-            onClick={() => this.props.removeLink(index)}
-          >
-            <Icon icon="trash-alt" /> Delete
-          </button>
-        </div>
-
-        <ShowIf if={uiState.get('editingLink') === link.localID}>
-          <div className="propery-form expand">
-            <div>
-              <div className="row">
-                <div className="col-sm-4">
-                  <div className={titleClass}>
-                    <span className="input-group-addon">
-                      Title
-                    </span>
-                    <Field model={`settings.navlinksData.links[${index}].title`}>
-                      <input className="form-control" />
-                    </Field>
+          <ShowIf if={uiState.get('editingLink') === link.localID}>
+            <div className="propery-form expand">
+              <div>
+                <div className="row">
+                  <div className="col-sm-4">
+                    <div className={titleClass}>
+                      <span className="input-group-addon">Title</span>
+                      <Field model={`settings.navlinksData.links[${index}].title`}>
+                        <input className="form-control" />
+                      </Field>
+                    </div>
                   </div>
-                </div>
-                <div className="col-sm-8">
-                  <div className="input-group">
-                    <span className="input-group-addon">
-                      URL
-                    </span>
-                    <Field model={`settings.navlinksData.links[${index}].url`}>
-                      <input className="form-control" />
-                    </Field>
+                  <div className="col-sm-8">
+                    <div className="input-group">
+                      <span className="input-group-addon">URL</span>
+                      <Field model={`settings.navlinksData.links[${index}].url`}>
+                        <input className="form-control" />
+                      </Field>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-        </ShowIf>
-
-      </li>
-    ));
+          </ShowIf>
+        </li>
+      )
+    );
   }
 }
 
@@ -152,17 +160,17 @@ NavlinkForm.propTypes = {
   editLink: PropTypes.func,
   removeLink: PropTypes.func,
   formState: PropTypes.object.isRequired,
-  uiState: PropTypes.object.isRequired
+  uiState: PropTypes.object.isRequired,
 };
 
 const dropTarget = DropTarget('LINK', LinkTarget, connectDND => ({
-  connectDropTarget: connectDND.dropTarget()
+  connectDropTarget: connectDND.dropTarget(),
 }))(NavlinkForm);
 
 const dragSource = DragSource('LINK', LinkSource, (connectDND, monitor) => ({
   connectDragSource: connectDND.dragSource(),
   connectDragPreview: connectDND.dragPreview(),
-  isDragging: monitor.isDragging()
+  isDragging: monitor.isDragging(),
 }))(dropTarget);
 
 export function mapStateToProps({ settings }) {

@@ -2,7 +2,7 @@
 
 import { instanceModel } from 'api/odm';
 import mongoose from 'mongoose';
-import { MetadataObjectSchema, PropertyValueSchema } from 'shared/commonTypes';
+import { MetadataObjectSchema, PropertyValueSchema } from 'shared/types/commonTypes';
 import { EntitySchema } from './entityType';
 
 export interface MetadataObject<T extends PropertyValueSchema> extends MetadataObjectSchema {
@@ -55,6 +55,7 @@ const mongoSchema = new mongoose.Schema(
     uploaded: Boolean,
     published: Boolean,
     metadata: mongoose.Schema.Types.Mixed,
+    suggestedMetadata: mongoose.Schema.Types.Mixed,
     pdfInfo: mongoose.Schema.Types.Mixed,
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'users' },
   },
@@ -65,9 +66,15 @@ mongoSchema.index({ title: 'text' }, { language_override: 'mongoLanguage' });
 
 const Model = instanceModel<EntitySchema>('entities', mongoSchema);
 Model.db.collection.dropIndex('title_text', () => {
-  Model.db.ensureIndexes();
+  // We deliberately kick this promise into the void and ignore the result,
+  // because it's usually fast and we can't await here...
+  Model.db.ensureIndexes().then(
+    () => {},
+    () => {}
+  );
 });
-const suportedLanguages = [
+
+const supportedLanguages = [
   'da',
   'nl',
   'en',
@@ -91,7 +98,7 @@ const setMongoLanguage = (doc: EntitySchema) => {
   }
 
   let mongoLanguage = doc.language;
-  if (!suportedLanguages.includes(mongoLanguage)) {
+  if (!supportedLanguages.includes(mongoLanguage)) {
     mongoLanguage = 'none';
   }
 
@@ -99,6 +106,6 @@ const setMongoLanguage = (doc: EntitySchema) => {
 };
 
 const modelSaveRaw = Model.save.bind(Model);
-Model.save = doc => modelSaveRaw(setMongoLanguage(doc));
+Model.save = async doc => modelSaveRaw(setMongoLanguage(doc));
 
 export default Model;

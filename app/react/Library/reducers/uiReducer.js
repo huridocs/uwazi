@@ -21,9 +21,13 @@ export default function ui(state = initialState, action = {}) {
   }
 
   if (action.type === types.SELECT_DOCUMENT) {
-    const alreadySelected = state.get('selectedDocuments').filter(doc => doc.get('_id') === action.doc._id).size;
+    const alreadySelected = state
+      .get('selectedDocuments')
+      .filter(doc => doc.get('_id') === action.doc._id).size;
     if (!alreadySelected) {
-      return state.update('selectedDocuments', selectedDocuments => selectedDocuments.push(Immutable.fromJS(action.doc)));
+      return state.update('selectedDocuments', selectedDocuments =>
+        selectedDocuments.push(Immutable.fromJS(action.doc))
+      );
     }
 
     return state;
@@ -36,16 +40,22 @@ export default function ui(state = initialState, action = {}) {
 
   if (action.type === types.SELECT_DOCUMENTS) {
     return action.docs.reduce((_state, doc) => {
-      const alreadySelected = _state.get('selectedDocuments').filter(_doc => _doc.get('_id') === doc._id).size;
+      const alreadySelected = _state
+        .get('selectedDocuments')
+        .filter(_doc => _doc.get('_id') === doc._id).size;
       if (!alreadySelected) {
-        return _state.update('selectedDocuments', selectedDocuments => selectedDocuments.push(Immutable.fromJS(doc)));
+        return _state.update('selectedDocuments', selectedDocuments =>
+          selectedDocuments.push(Immutable.fromJS(doc))
+        );
       }
       return _state;
     }, state);
   }
 
   if (action.type === types.UNSELECT_DOCUMENT) {
-    return state.update('selectedDocuments', selectedDocuments => selectedDocuments.filter(doc => doc.get('_id') !== action.docId));
+    return state.update('selectedDocuments', selectedDocuments =>
+      selectedDocuments.filter(doc => doc.get('_id') !== action.docId)
+    );
   }
 
   if (action.type === types.UNSELECT_ALL_DOCUMENTS) {

@@ -1,7 +1,7 @@
 /** @format */
 
 import entities from 'api/entities/entities';
-import thesauris from 'api/thesauris/thesauris';
+import thesauri from 'api/thesauri/thesauri';
 import settings from 'api/settings/settings';
 
 import model from './translationsModel.js';
@@ -43,7 +43,7 @@ const propagateTranslation = async (translation, currentTranslationData) => {
     );
 
     if (isPresentInTheComingData && isPresentInTheComingData.type === 'Dictionary') {
-      const thesauri = await thesauris.getById(context.id);
+      const thesaurus = await thesauri.getById(context.id);
 
       const valuesChanged = isPresentInTheComingData.values.reduce((changes, value) => {
         const currentValue = context.values.find(v => v.key === value.key);
@@ -55,7 +55,7 @@ const propagateTranslation = async (translation, currentTranslationData) => {
 
       const changesMathingDictionaryId = Object.keys(valuesChanged)
         .map(valueChanged => {
-          const valueFound = thesauri.values.find(v => v.label === valueChanged);
+          const valueFound = thesaurus.values.find(v => v.label === valueChanged);
           if (valueFound) {
             return { id: valueFound.id, value: valuesChanged[valueChanged] };
           }
@@ -260,8 +260,8 @@ export default {
   },
 
   async addLanguage(language) {
-    const [lanuageTranslationAlreadyExists] = await model.get({ locale: language });
-    if (lanuageTranslationAlreadyExists) {
+    const [languageTranslationAlreadyExists] = await model.get({ locale: language });
+    if (languageTranslationAlreadyExists) {
       return Promise.resolve();
     }
 

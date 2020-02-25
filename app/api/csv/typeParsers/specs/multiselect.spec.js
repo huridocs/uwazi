@@ -1,6 +1,6 @@
 /** @format */
 
-import thesauris from 'api/thesauris';
+import thesauri from 'api/thesauri';
 import db from 'api/utils/testing_db';
 
 import fixtures, { thesauri1Id } from '../../specs/fixtures';
@@ -39,7 +39,7 @@ describe('multiselect', () => {
 
     await typeParsers.multiselect({ multiselect_prop: '|' }, templateProp);
 
-    thesauri1 = await thesauris.getById(thesauri1Id);
+    thesauri1 = await thesauri.getById(thesauri1Id);
   });
 
   it('should create thesauri values and return an array of ids', async () => {

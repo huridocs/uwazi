@@ -11,15 +11,15 @@ const createTestingZip = (filesToZip, fileName, directory = __dirname) =>
   new Promise((resolve, reject) => {
     const zipfile = new yazl.ZipFile();
 
-    filesToZip.forEach((file) => {
+    filesToZip.forEach(file => {
       zipfile.addFile(file, path.basename(file));
     });
 
     zipfile.end();
     zipfile.outputStream
-    .pipe(fs.createWriteStream(path.join(directory, `/zipData/${fileName}`)))
-    .on('close', resolve)
-    .on('error', reject);
+      .pipe(fs.createWriteStream(path.join(directory, `/zipData/${fileName}`)))
+      .on('close', resolve)
+      .on('error', reject);
   });
 
 const fileExists = async fileName =>
@@ -30,11 +30,7 @@ const stream = string =>
     read() {
       this.push(string);
       this.push(null);
-    }
+    },
   });
 
-export {
-  stream,
-  createTestingZip,
-  fileExists
-};
+export { stream, createTestingZip, fileExists };

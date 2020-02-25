@@ -11,7 +11,11 @@ describe('Tip', () => {
   });
 
   it('should render children', () => {
-    const component = shallow(<PropertyConfigOption model="model" label="label">children text!</PropertyConfigOption>);
+    const component = shallow(
+      <PropertyConfigOption model="model" label="label">
+        children text!
+      </PropertyConfigOption>
+    );
     expect(component).toMatchSnapshot();
   });
 });

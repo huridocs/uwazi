@@ -10,9 +10,7 @@ export default class EditRelationType extends RouteHandler {
     const [relationType] = await relationTypesAPI.get(requestParams);
     relationType.properties = relationType.properties || [];
 
-    return [
-      editRelationType(relationType)
-    ];
+    return [editRelationType(relationType)];
   }
 
   render() {

@@ -1,3 +1,6 @@
+/**
+ * @jest-environment jsdom
+ */
 import React from 'react';
 import { shallow } from 'enzyme';
 import Immutable from 'immutable';
@@ -23,25 +26,37 @@ describe('Document', () => {
       selectedSnippet: Immutable.fromJS({}),
       docHTML: Immutable.fromJS({
         pages: ['page1', 'page2', 'page3'],
-        css: 'css'
-      })
+        css: 'css',
+      }),
     };
   });
 
   const render = () => {
-    component = shallow(<Document {...props}/>);
+    component = shallow(<Document {...props} />);
     instance = component.instance();
   };
 
   it('should add id as a className', () => {
     render();
-    expect(component.find('div').children().first().hasClass('_documentId')).toBe(true);
+    expect(
+      component
+        .find('div')
+        .children()
+        .first()
+        .hasClass('_documentId')
+    ).toBe(true);
   });
 
   it('should add the className passed', () => {
     props.className = 'aClass';
     render();
-    expect(component.find('div').children().first().hasClass('aClass')).toBe(true);
+    expect(
+      component
+        .find('div')
+        .children()
+        .first()
+        .hasClass('aClass')
+    ).toBe(true);
   });
 
   it('should add the correct LTR or RTL direction according to file franc language', () => {
@@ -86,8 +101,14 @@ describe('Document', () => {
         props.activateReference = jasmine.createSpy('activateReference');
         render();
         instance.text = { selected: jasmine.createSpy('selected').and.returnValue(false) };
-        component.find('.pages').simulate('click', { target: { className: 'reference', getAttribute: () => 'referenceId' } });
-        expect(props.activateReference).toHaveBeenCalledWith(props.references.get(0).toJS(), props.doc.toJS().pdfInfo, props.references.toJS());
+        component.find('.pages').simulate('click', {
+          target: { className: 'reference', getAttribute: () => 'referenceId' },
+        });
+        expect(props.activateReference).toHaveBeenCalledWith(
+          props.references.get(0).toJS(),
+          props.doc.toJS().pdfInfo,
+          props.references.toJS()
+        );
         expect(props.onClick).not.toHaveBeenCalled();
       });
 
@@ -98,8 +119,13 @@ describe('Document', () => {
           props.references = Immutable.fromJS([{ _id: 'referenceId', test: 'test' }]);
           render();
           instance.text = { selected: jasmine.createSpy('selected').and.returnValue(true) };
-          component.find('.pages').simulate('click', { target: { className: 'reference', getAttribute: () => 'referenceId' } });
-          expect(props.activateReference).not.toHaveBeenCalledWith(props.references.get(0).toJS(), props.doc.toJS().pdfInfo);
+          component.find('.pages').simulate('click', {
+            target: { className: 'reference', getAttribute: () => 'referenceId' },
+          });
+          expect(props.activateReference).not.toHaveBeenCalledWith(
+            props.references.get(0).toJS(),
+            props.doc.toJS().pdfInfo
+          );
           expect(props.onClick).toHaveBeenCalled();
         });
       });
@@ -119,9 +145,15 @@ describe('Document', () => {
     it('should unset selection if different doc', () => {
       render();
       expect(props.unsetSelection.calls.count()).toBe(1);
-      instance.componentWillReceiveProps({ doc: Immutable.fromJS({ _id: 'documentId' }), selectedSnippet: Immutable.fromJS({}) });
+      instance.componentWillReceiveProps({
+        doc: Immutable.fromJS({ _id: 'documentId' }),
+        selectedSnippet: Immutable.fromJS({}),
+      });
       expect(props.unsetSelection.calls.count()).toBe(1);
-      instance.componentWillReceiveProps({ doc: Immutable.fromJS({ _id: 'anotherId' }), selectedSnippet: Immutable.fromJS({}) });
+      instance.componentWillReceiveProps({
+        doc: Immutable.fromJS({ _id: 'anotherId' }),
+        selectedSnippet: Immutable.fromJS({}),
+      });
       expect(props.unsetSelection.calls.count()).toBe(2);
     });
   });
@@ -224,7 +256,10 @@ describe('Document', () => {
     describe('componentDidUpdate', () => {
       it('should simulateSelection', () => {
         instance.componentDidUpdate();
-        expect(instance.text.simulateSelection).toHaveBeenCalledWith({ selection: 'selection' }, props.forceSimulateSelection);
+        expect(instance.text.simulateSelection).toHaveBeenCalledWith(
+          { selection: 'selection' },
+          props.forceSimulateSelection
+        );
       });
 
       it('should render the references', () => {

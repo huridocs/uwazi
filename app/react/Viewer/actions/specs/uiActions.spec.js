@@ -1,3 +1,6 @@
+/**
+ * @jest-environment jsdom
+ */
 import Immutable from 'immutable';
 
 import Marker from 'app/Viewer/utils/Marker.js';
@@ -70,22 +73,34 @@ describe('Viewer uiActions', () => {
       actions.activateReference({ _id: 'id' }, {})(dispatch);
       expect(dispatch).toHaveBeenCalledWith({ type: types.ACTIVE_REFERENCE, reference: 'id' });
       expect(dispatch).toHaveBeenCalledWith({ type: types.OPEN_PANEL, panel: 'viewMetadataPanel' });
-      expect(dispatch).toHaveBeenCalledWith({ type: 'viewer.sidepanel.tab/SET', value: 'references' });
+      expect(dispatch).toHaveBeenCalledWith({
+        type: 'viewer.sidepanel.tab/SET',
+        value: 'references',
+      });
     });
 
     it('should dispatch a SHOW_TAB references by default', () => {
       actions.activateReference({ _id: 'id' }, {})(dispatch);
-      expect(dispatch).toHaveBeenCalledWith({ type: 'viewer.sidepanel.tab/SET', value: 'references' });
+      expect(dispatch).toHaveBeenCalledWith({
+        type: 'viewer.sidepanel.tab/SET',
+        value: 'references',
+      });
     });
 
     it('should dispatch a SHOW_TAB to a diferent tab if passed', () => {
       actions.activateReference({ _id: 'id' }, {}, 'another tab')(dispatch);
-      expect(dispatch).toHaveBeenCalledWith({ type: 'viewer.sidepanel.tab/SET', value: 'another tab' });
+      expect(dispatch).toHaveBeenCalledWith({
+        type: 'viewer.sidepanel.tab/SET',
+        value: 'another tab',
+      });
     });
 
     it('should dispatch a SHOW_TAB references if Array is passed (when selecting a doc reference)', () => {
       actions.activateReference({ _id: 'id' }, {}, [])(dispatch);
-      expect(dispatch).toHaveBeenCalledWith({ type: 'viewer.sidepanel.tab/SET', value: 'references' });
+      expect(dispatch).toHaveBeenCalledWith({
+        type: 'viewer.sidepanel.tab/SET',
+        value: 'references',
+      });
     });
 
     it('should goToActive on delayActivation', () => {
@@ -93,11 +108,19 @@ describe('Viewer uiActions', () => {
       expect(dispatch).toHaveBeenCalledWith(actions.goToActive());
     });
 
-    it('should scroll to the elements', (done) => {
+    it('should scroll to the elements', done => {
       actions.activateReference({ _id: 'id' }, {})(dispatch);
       setTimeout(() => {
-        expect(scroller.to).toHaveBeenCalledWith('.document-viewer a[data-id="id"]', '.document-viewer', { duration: 50 });
-        expect(scroller.to).toHaveBeenCalledWith('.metadata-sidepanel .item-id', '.metadata-sidepanel .sidepanel-body', { duration: 50 });
+        expect(scroller.to).toHaveBeenCalledWith(
+          '.document-viewer a[data-id="id"]',
+          '.document-viewer',
+          { duration: 50 }
+        );
+        expect(scroller.to).toHaveBeenCalledWith(
+          '.metadata-sidepanel .item-id',
+          '.metadata-sidepanel .sidepanel-body',
+          { duration: 50 }
+        );
         done();
       });
     });
@@ -120,7 +143,10 @@ describe('Viewer uiActions', () => {
     });
 
     it('should dispatch a SET_TARGET_SELECTION with found range', () => {
-      expect(dispatch).toHaveBeenCalledWith({ type: types.SET_TARGET_SELECTION, targetRange: 'range' });
+      expect(dispatch).toHaveBeenCalledWith({
+        type: types.SET_TARGET_SELECTION,
+        targetRange: 'range',
+      });
     });
   });
 
@@ -153,7 +179,9 @@ describe('Viewer uiActions', () => {
       document.body.appendChild(container);
       Marker.init('div.main-wrapper');
 
-      actions.highlightSnippet(Immutable.fromJS({ text: 'snippet <b>marked</b> (with) multiple spaces', page: 3 }));
+      actions.highlightSnippet(
+        Immutable.fromJS({ text: 'snippet <b>marked</b> (with) multiple spaces', page: 3 })
+      );
       let marks = document.querySelectorAll('mark');
       expect(marks.length).toBe(4);
       expect(marks[0].innerHTML).toBe('snippet ');

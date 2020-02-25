@@ -4,8 +4,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import Immutable from 'immutable';
-import { MetadataFormFields, validator } from 'app/Metadata';
-import wrapEntityMetadata from 'app/Metadata/helpers/wrapper';
+import { MetadataFormFields, validator, wrapEntityMetadata } from 'app/Metadata';
 import { LocalForm, actions, Control } from 'react-redux-form';
 import { Captcha } from 'app/ReactReduxForms';
 import { Translate } from 'app/I18N';
@@ -180,7 +179,4 @@ export function mapDispatchToProps(dispatch) {
   return bindActionCreators({ submit: publicSubmit }, dispatch);
 }
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(PublicForm);
+export default connect(mapStateToProps, mapDispatchToProps)(PublicForm);

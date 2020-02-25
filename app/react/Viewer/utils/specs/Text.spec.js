@@ -1,3 +1,6 @@
+/**
+ * @jest-environment jsdom
+ */
 import TextRange from 'batarange';
 
 import Text from 'app/Viewer/utils/Text';
@@ -170,14 +173,20 @@ describe('Text', () => {
       it('should throw an error', () => {
         document.innerHTML = '';
         text = Text(document);
-        const references = [{ _id: '1', range: 'sourceRange1' }, { _id: '2', range: 'sourceRange2' }];
+        const references = [
+          { _id: '1', range: 'sourceRange1' },
+          { _id: '2', range: 'sourceRange2' },
+        ];
 
         expect(text.renderReferences.bind(text, references)).toThrow();
       });
     });
 
     it('should wrap a collection of references using range by default', () => {
-      const references = [{ _id: '1', range: { start: 1, end: 2 } }, { _id: '2', range: { start: 3, end: 4 } }];
+      const references = [
+        { _id: '1', range: { start: 1, end: 2 } },
+        { _id: '2', range: { start: 3, end: 4 } },
+      ];
       text.charRange = { start: 0, end: 100 };
       text.renderReferences(references);
       expect(TextRange.restore).toHaveBeenCalledWith({ start: 1, end: 2 }, document);
@@ -187,7 +196,10 @@ describe('Text', () => {
     });
 
     it('should wrap a collection of references using identifier passed', () => {
-      const references = [{ _id: '1', range: { start: 1, end: 2 } }, { _id: '2', range: { start: 3, end: 4 } }];
+      const references = [
+        { _id: '1', range: { start: 1, end: 2 } },
+        { _id: '2', range: { start: 3, end: 4 } },
+      ];
 
       text.charRange = { start: 0, end: 100 };
       text.renderReferences(references, 'identifier');
@@ -200,12 +212,12 @@ describe('Text', () => {
     it('should not render references already rendered', () => {
       const firstReferneces = [
         { _id: '1', range: { start: 1, end: 2 } },
-        { _id: '2', range: { start: 3, end: 4 } }
+        { _id: '2', range: { start: 3, end: 4 } },
       ];
       const secondReferences = [
         { _id: '1', range: { start: 1, end: 2 } },
         { _id: '2', range: { start: 3, end: 4 } },
-        { _id: '3', range: { start: 5, end: 6 } }
+        { _id: '3', range: { start: 5, end: 6 } },
       ];
       text.charRange = { start: 0, end: 100 };
       text.renderReferences(firstReferneces);
@@ -222,11 +234,11 @@ describe('Text', () => {
     it('should unwrap references that are passed by propertyRange in multiple calls', () => {
       const firstReferneces = [
         { _id: '1', range: { start: 1, end: 2 } },
-        { _id: '2', range: { start: 3, end: 4 } }
+        { _id: '2', range: { start: 3, end: 4 } },
       ];
       const secondReferences = [
         { _id: '2', range: { start: 3, end: 4 } },
-        { _id: '3', range: { start: 5, end: 6 } }
+        { _id: '3', range: { start: 5, end: 6 } },
       ];
       text.charRange = { start: 0, end: 100 };
       text.renderReferences(firstReferneces);
@@ -243,7 +255,7 @@ describe('Text', () => {
           { _id: '1', range: { start: 14, end: 45 } },
           { _id: '2', range: { start: 4, end: 16 } },
           { _id: '3', range: { start: 3, end: 5 } },
-          { _id: '4', range: { start: 56, end: 60 } }
+          { _id: '4', range: { start: 56, end: 60 } },
         ];
 
         text.range({ start: 10, end: 55 });
@@ -263,14 +275,14 @@ describe('Text', () => {
       text.renderedReferences = {
         targetRange: {
           reference1: {
-            nodes: [createElement(), createElement()]
-          }
+            nodes: [createElement(), createElement()],
+          },
         },
         sourceRange: {
           reference2: {
-            nodes: [createElement(), createElement(), createElement()]
-          }
-        }
+            nodes: [createElement(), createElement(), createElement()],
+          },
+        },
       };
     });
 
@@ -309,14 +321,14 @@ describe('Text', () => {
       text.renderedReferences = {
         sourceRange: {
           reference1: {
-            nodes: [createElement(), createElement()]
-          }
+            nodes: [createElement(), createElement()],
+          },
         },
         targetRange: {
           reference2: {
-            nodes: [createElement(), createElement(), createElement()]
-          }
-        }
+            nodes: [createElement(), createElement(), createElement()],
+          },
+        },
       };
     });
 

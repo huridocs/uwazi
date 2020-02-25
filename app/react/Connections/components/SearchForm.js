@@ -6,7 +6,6 @@ import { bindActionCreators } from 'redux';
 import SearchInput from 'app/Layout/SearchInput';
 import { search } from '../actions/actions';
 
-
 export class SearchForm extends Component {
   render() {
     return (
@@ -21,12 +20,12 @@ export class SearchForm extends Component {
 SearchForm.propTypes = {
   search: PropTypes.func,
   searchTerm: PropTypes.string,
-  connectionType: PropTypes.string
+  connectionType: PropTypes.string,
 };
 
 function mapStateToProps({ connections }) {
   return {
-    searchTerm: connections.searchTerm
+    searchTerm: connections.searchTerm,
   };
 }
 

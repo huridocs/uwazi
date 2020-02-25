@@ -1,3 +1,6 @@
+/**
+ * @jest-environment jsdom
+ */
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { DragSource } from 'react-dnd';
@@ -15,21 +18,25 @@ export class PropertyOption extends Component {
   }
 
   addProperty() {
-    this.props.addProperty({ label: this.props.label, type: this.props.type });
+    const { disabled, label, type, addProperty: addPropertyAction } = this.props;
+    if (!disabled) {
+      addPropertyAction({ label, type });
+    }
   }
 
   render() {
-    const { connectDragSource } = this.props;
-    const { label } = this.props;
-    const iconClass = Icons[this.props.type] || 'font';
-    const liClass = `list-group-item${this.props.disabled ? ' disabled' : ''}`;
-    return (
-      connectDragSource(
-        <li className={liClass}>
-          <button onClick={this.addProperty}><Icon icon="plus" /></button>
-          <span><Icon icon={iconClass} /> {label}</span>
-        </li>
-      )
+    const { connectDragSource, label, disabled, type } = this.props;
+    const iconClass = Icons[type] || 'font';
+    const liClass = `list-group-item${disabled ? ' disabled' : ''}`;
+    return connectDragSource(
+      <li className={liClass}>
+        <button type="button" onClick={this.addProperty}>
+          <Icon icon="plus" />
+        </button>
+        <span>
+          <Icon icon={iconClass} /> {label}
+        </span>
+      </li>
     );
   }
 }
@@ -39,7 +46,7 @@ PropertyOption.propTypes = {
   addProperty: PropTypes.func.isRequired,
   label: PropTypes.string.isRequired,
   type: PropTypes.string.isRequired,
-  disabled: PropTypes.bool
+  disabled: PropTypes.bool,
 };
 
 const optionSource = {
@@ -57,11 +64,11 @@ const optionSource = {
     if (!dropResult && item.index) {
       props.removeProperty(item.index);
     }
-  }
+  },
 };
 
 const dragSource = DragSource('METADATA_OPTION', optionSource, connector => ({
-  connectDragSource: connector.dragSource()
+  connectDragSource: connector.dragSource(),
 }))(PropertyOption);
 
 export { dragSource };

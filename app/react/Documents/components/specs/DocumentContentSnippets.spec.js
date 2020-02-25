@@ -1,3 +1,6 @@
+/**
+ * @jest-environment jsdom
+ */
 import React from 'react';
 import { shallow } from 'enzyme';
 
@@ -11,11 +14,14 @@ describe('SnippetList', () => {
   let props;
 
   const render = () => {
-    component = shallow(<DocumentContentSnippets {...props}/>);
+    component = shallow(<DocumentContentSnippets {...props} />);
   };
 
   beforeEach(() => {
-    spyOn(browserHistory, 'getCurrentLocation').and.returnValue({ pathname: 'path', query: { page: 1 } });
+    spyOn(browserHistory, 'getCurrentLocation').and.returnValue({
+      pathname: 'path',
+      query: { page: 1 },
+    });
     props = {
       doc: Immutable.fromJS({ _id: 'id', sharedId: 'sharedId', type: 'document' }),
       searchTerm: 'snippet',
@@ -25,7 +31,7 @@ describe('SnippetList', () => {
       documentSnippets: Immutable.fromJS([
         { text: 'first <b>snippet 1</b> found', page: 1 },
         { text: 'second <b>snippet 3</b> found', page: 2 },
-        { text: 'third <b>snippet 3</b> found', page: 3 }
+        { text: 'third <b>snippet 3</b> found', page: 3 },
       ]),
     };
   });
@@ -40,7 +46,13 @@ describe('SnippetList', () => {
     props.doc = Immutable.fromJS({ _id: 'id', sharedId: 'sharedId', type: 'document' });
     props.selectSnippet = jest.fn();
     render();
-    component.find(I18NLink).at(1).simulate('click');
-    expect(props.selectSnippet).toHaveBeenCalledWith(2, Immutable.fromJS({ text: 'second <b>snippet 3</b> found', page: 2 }));
+    component
+      .find(I18NLink)
+      .at(1)
+      .simulate('click');
+    expect(props.selectSnippet).toHaveBeenCalledWith(
+      2,
+      Immutable.fromJS({ text: 'second <b>snippet 3</b> found', page: 2 })
+    );
   });
 });

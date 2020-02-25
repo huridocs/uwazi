@@ -7,17 +7,20 @@ import { SearchList } from '../SearchList';
 describe('SearchList', () => {
   let searches;
   beforeEach(() => {
-    searches = [{
-      _id: 'id1',
-      searchTerm: 'query',
-      documents: [],
-      status: 'completed'
-    }, {
+    searches = [
+      {
+        _id: 'id1',
+        searchTerm: 'query',
+        documents: [],
+        status: 'completed',
+      },
+      {
         _id: 'id2',
         searchTerm: 'query',
         documents: [],
-        status: 'completed'
-    }];
+        status: 'completed',
+      },
+    ];
   });
 
   const getProps = () => ({ searches });

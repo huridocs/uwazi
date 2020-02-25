@@ -8,8 +8,12 @@ import LibraryModeToggleButtons from 'app/Library/components/LibraryModeToggleBu
 
 describe('Library', () => {
   const templates = [
-    { name: 'Decision', _id: 'abc1', properties: [{ name: 'p', filter: true, type: 'text', prioritySorting: true }] },
-    { name: 'Ruling', _id: 'abc2', properties: [] }
+    {
+      name: 'Decision',
+      _id: 'abc1',
+      properties: [{ name: 'p', filter: true, type: 'text', prioritySorting: true }],
+    },
+    { name: 'Ruling', _id: 'abc2', properties: [] },
   ];
   const thesauris = [{ name: 'countries', _id: '1', values: [] }];
   createStore({ templates, thesauris });
@@ -22,12 +26,16 @@ describe('Library', () => {
   beforeEach(() => {
     RouteHandler.renderedFromServer = true;
     dispatchCallsOrder = [];
-    context = { store: {
-      getState: () => ({}),
-      dispatch: jasmine.createSpy('dispatch').and.callFake((action) => { dispatchCallsOrder.push(action.type); }),
-    } };
+    context = {
+      store: {
+        getState: () => ({}),
+        dispatch: jasmine.createSpy('dispatch').and.callFake(action => {
+          dispatchCallsOrder.push(action.type);
+        }),
+      },
+    };
 
-    component = shallow(<Library {...props}/>, { context });
+    component = shallow(<Library {...props} />, { context });
     instance = component.instance();
   });
 

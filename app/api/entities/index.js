@@ -1,7 +1,7 @@
 /** @format */
 
-import model, { MetadataObject } from './entitiesModel';
+import model from './entitiesModel';
 import * as endpointSchema from './endpointSchema';
 
 export { default } from './entities.js';
-export { model, MetadataObject, endpointSchema };
+export { model, endpointSchema };

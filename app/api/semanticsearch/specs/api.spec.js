@@ -1,5 +1,7 @@
+/** @format */
+
 import backend from 'fetch-mock';
-import SEMANTIC_SEARCH_URL from 'api/config/semanticsearch';
+import SEMANTIC_SEARCH_URL from 'api/config/semanticSearch';
 
 import api from '../api';
 

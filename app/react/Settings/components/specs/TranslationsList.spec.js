@@ -12,19 +12,21 @@ describe('TranslationsList', () => {
 
   beforeEach(() => {
     props = {
-      translations: Immutable.fromJS([{
-        locale: 'es',
-        contexts: [
-          { id: '1', label: 'X-Men' },
-          { id: '2', label: 'Avengers' },
-          { id: '3', label: 'Batman' }
-        ]
-      }]),
-      settings: Immutable.fromJS({ languages: [{ key: 'es', default: true }] })
+      translations: Immutable.fromJS([
+        {
+          locale: 'es',
+          contexts: [
+            { id: '1', label: 'X-Men' },
+            { id: '2', label: 'Avengers' },
+            { id: '3', label: 'Batman' },
+          ],
+        },
+      ]),
+      settings: Immutable.fromJS({ languages: [{ key: 'es', default: true }] }),
     };
 
     context = {
-      confirm: jasmine.createSpy('confirm')
+      confirm: jasmine.createSpy('confirm'),
     };
   });
 

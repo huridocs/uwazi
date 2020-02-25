@@ -8,11 +8,7 @@ const DateFilter = ({ onChange, model, label, format }) => (
       <label>{label}</label>
     </li>
     <li className="wide">
-      <DateRange
-        model={model}
-        onChange={onChange}
-        format={format}
-      />
+      <DateRange model={model} onChange={onChange} format={format} />
     </li>
   </ul>
 );
@@ -20,17 +16,14 @@ const DateFilter = ({ onChange, model, label, format }) => (
 DateFilter.defaultProps = {
   onChange: () => {},
   label: '',
-  format: ''
+  format: '',
 };
 
 DateFilter.propTypes = {
   model: PropTypes.string.isRequired,
   format: PropTypes.string,
   onChange: PropTypes.func,
-  label: PropTypes.oneOfType([
-    PropTypes.node,
-    PropTypes.string
-  ])
+  label: PropTypes.oneOfType([PropTypes.node, PropTypes.string]),
 };
 
 export default DateFilter;

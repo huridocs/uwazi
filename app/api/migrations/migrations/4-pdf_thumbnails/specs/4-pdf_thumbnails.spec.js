@@ -11,14 +11,17 @@ import fixtures, { docId1, docId4 } from './fixtures.js';
 const exists = promisify(fs.stat);
 
 describe('migration pdf_thumbnails', () => {
-  beforeEach((done) => {
+  beforeEach(done => {
     spyOn(process.stdout, 'write');
     spyOn(errorLog, 'error');
     paths.uploadedDocuments = __dirname;
-    testingDB.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
+    testingDB
+      .clearAllAndLoad(fixtures)
+      .then(done)
+      .catch(catchErrors(done));
   });
 
-  afterAll((done) => {
+  afterAll(done => {
     testingDB.disconnect().then(done);
   });
 
@@ -30,7 +33,7 @@ describe('migration pdf_thumbnails', () => {
     const thumbnail1 = `${__dirname}/${docId1}.jpg`;
     const thumbnail2 = `${__dirname}/${docId4}.jpg`;
 
-    const deleteThumbnails = (done) => {
+    const deleteThumbnails = done => {
       try {
         fs.unlinkSync(thumbnail1);
         fs.unlinkSync(thumbnail2);
@@ -40,11 +43,11 @@ describe('migration pdf_thumbnails', () => {
       }
     };
 
-    beforeEach((done) => {
+    beforeEach(done => {
       deleteThumbnails(done);
     });
 
-    afterEach((done) => {
+    afterEach(done => {
       deleteThumbnails(done);
     });
 

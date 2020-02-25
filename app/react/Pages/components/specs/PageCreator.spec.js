@@ -14,7 +14,7 @@ describe('PageCreator', () => {
       page: { data: { title: 'Page title', metadata: {} } },
       formState: { title: {}, $form: { errors: {} } },
       savePage: jasmine.createSpy('savePage'),
-      resetPage: jasmine.createSpy('deletePage')
+      resetPage: jasmine.createSpy('deletePage'),
     };
   });
 
@@ -31,19 +31,40 @@ describe('PageCreator', () => {
     it('should disable saving while savingPage', () => {
       props.savingPage = true;
       render();
-      expect(component.find('button').first().props().disabled).toBe(true);
+      expect(
+        component
+          .find('button')
+          .first()
+          .props().disabled
+      ).toBe(true);
     });
 
     it('should have a title field associated to the page title', () => {
       render();
-      expect(component.find(Field).first().props().model).toBe('.title');
-      expect(component.find(Field).first().parent().props().className).toBe('template-name form-group');
+      expect(
+        component
+          .find(Field)
+          .first()
+          .props().model
+      ).toBe('.title');
+      expect(
+        component
+          .find(Field)
+          .first()
+          .parent()
+          .props().className
+      ).toBe('template-name form-group');
     });
 
     it('should hold the different input fields', () => {
       render();
       expect(component.find(MarkDown).props().model).toBe('.metadata.content');
-      expect(component.find('textarea').parent().props().model).toBe('.metadata.script');
+      expect(
+        component
+          .find('textarea')
+          .parent()
+          .props().model
+      ).toBe('.metadata.script');
     });
 
     describe('when Title is invalid', () => {
@@ -51,7 +72,13 @@ describe('PageCreator', () => {
         props.formState.title.valid = false;
         props.formState.title.touched = true;
         render();
-        expect(component.find(Field).first().parent().props().className).toBe('template-name form-group has-error');
+        expect(
+          component
+            .find(Field)
+            .first()
+            .parent()
+            .props().className
+        ).toBe('template-name form-group has-error');
       });
     });
   });

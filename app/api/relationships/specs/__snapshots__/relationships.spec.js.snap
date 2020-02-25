@@ -32,10 +32,12 @@ Array [
     },
   ],
   Object {
+    "deletedCount": 1,
     "n": 1,
     "ok": 1,
   },
   Object {
+    "deletedCount": 1,
     "n": 1,
     "ok": 1,
   },

@@ -18,22 +18,36 @@ export class Item extends Component {
       return false;
     }
     return (
-      <ItemSnippet
-        onSnippetClick={this.props.onSnippetClick}
-        snippets={doc.snippets}
-        doc={doc}
-      />
+      <ItemSnippet onSnippetClick={this.props.onSnippetClick} snippets={doc.snippets} doc={doc} />
     );
   }
 
   render() {
-    const { onClick, onMouseEnter, onMouseLeave, active, additionalIcon,
-           additionalText, buttons } = this.props;
+    const {
+      onClick,
+      onMouseEnter,
+      onMouseLeave,
+      active,
+      additionalIcon,
+      additionalText,
+      buttons,
+    } = this.props;
 
     const doc = this.props.doc.toJS();
-    const Snippet = additionalText ? <div className="item-snippet-wrapper"><div className="item-snippet">{additionalText}</div></div> : null;
+    const Snippet = additionalText ? (
+      <div className="item-snippet-wrapper">
+        <div className="item-snippet">{additionalText}</div>
+      </div>
+    ) : null;
     const itemClassName = `item-document ${this.props.className || ''}`;
-    const itemProps = { className: itemClassName, onClick, onMouseEnter, onMouseLeave, active, tabIndex: '1' };
+    const itemProps = {
+      className: itemClassName,
+      onClick,
+      onMouseEnter,
+      onMouseLeave,
+      active,
+      tabIndex: '1',
+    };
 
     return (
       <RowList.Item {...itemProps}>
@@ -57,7 +71,7 @@ export class Item extends Component {
           />
         </div>
         <ItemFooter>
-          {doc.template ? <TemplateLabel template={doc.template}/> : false}
+          {doc.template ? <TemplateLabel template={doc.template} /> : false}
           {doc.published ? '' : <Tip icon="eye-slash">This entity is not public.</Tip>}
           {this.props.labels}
           {buttons}
@@ -93,12 +107,12 @@ Item.propTypes = {
   labels: PropTypes.object,
   className: PropTypes.string,
   titleProperty: PropTypes.string,
-  evalPublished: PropTypes.bool
+  evalPublished: PropTypes.bool,
 };
 
 Item.defaultProps = {
   search: prioritySortingCriteria.get(),
-  titleProperty: 'title'
+  titleProperty: 'title',
 };
 
 export const mapStateToProps = ({ templates, thesauris }, ownProps) => {

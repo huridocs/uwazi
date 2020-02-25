@@ -7,14 +7,22 @@ import resultsModel from '../resultsModel';
 import api from '../api';
 import * as helpers from '../helpers';
 
-import fixtures, { search1Id, search2Id, search3Id, searchIdForFilters, doc1Id, doc1ObjectId, docWithoutTextId } from './fixtures';
+import fixtures, {
+  search1Id,
+  search2Id,
+  search3Id,
+  searchIdForFilters,
+  doc1Id,
+  doc1ObjectId,
+  docWithoutTextId,
+} from './fixtures';
 import { createError } from '../../utils';
 
 describe('semanticSearch', () => {
-  beforeEach((done) => {
+  beforeEach(done => {
     db.clearAllAndLoad(fixtures).then(done);
   });
-  afterAll((done) => {
+  afterAll(done => {
     db.disconnect().then(done);
   });
 
@@ -47,12 +55,12 @@ describe('semanticSearch', () => {
     beforeEach(() => {
       expectedResults = [
         { page: 1, text: 'page 1', score: 0.2 },
-        { page: 2, text: 'page 2', score: 0.6 }
+        { page: 2, text: 'page 2', score: 0.6 },
       ];
       jest.spyOn(api, 'processDocument').mockResolvedValue(expectedResults);
       jest.spyOn(helpers, 'extractDocumentContent').mockResolvedValue({
         1: 'page 1',
-        2: 'page 2'
+        2: 'page 2',
       });
       api.processDocument.mockClear();
     });
@@ -65,14 +73,14 @@ describe('semanticSearch', () => {
         _id: doc1ObjectId,
         sharedId: doc1Id,
         fullText: { 1: 'page 1', 2: 'page 2' },
-        language: 'en'
+        language: 'en',
       });
       expect(api.processDocument).toHaveBeenCalledWith({
         searchTerm: 'legal',
         contents: {
           1: 'page 1',
-          2: 'page 2'
-        }
+          2: 'page 2',
+        },
       });
     });
     it('should update the status of the document to be completed', async () => {
@@ -87,8 +95,7 @@ describe('semanticSearch', () => {
       expect(docResults.status).toBe('completed');
       expect(docResults.averageScore).toBe((0.2 + 0.6) / 2);
       expect(
-        docResults.results
-        .map(({ page, text, score }) => ({ page, text, score }))
+        docResults.results.map(({ page, text, score }) => ({ page, text, score }))
       ).toMatchSnapshot();
     });
     describe('if document has no fullText or rich text fields', () => {
@@ -108,7 +115,7 @@ describe('semanticSearch', () => {
   describe('processSearchLimit', () => {
     const expectedResults = [
       { page: '1', text: 'page 1', score: 0.6 },
-      { page: '2', text: 'page 2', score: 0.2 }
+      { page: '2', text: 'page 2', score: 0.2 },
     ];
     beforeEach(() => {
       jest.spyOn(api, 'processDocument').mockResolvedValue(expectedResults);
@@ -119,19 +126,22 @@ describe('semanticSearch', () => {
       expect(api.processDocument).toHaveBeenCalledTimes(2);
       expect(api.processDocument).toHaveBeenCalledWith({
         searchTerm: 'injustice',
-        contents: { 1: 'text2' }
+        contents: { 1: 'text2' },
       });
       expect(api.processDocument).toHaveBeenCalledWith({
         searchTerm: 'injustice',
-        contents: { 1: 'text3' }
+        contents: { 1: 'text3' },
       });
       const theSearch = await model.getById(search2Id);
-      expect(theSearch.documents.some(
-        doc => doc.sharedId === 'doc2' && doc.status === 'completed')).toBe(true);
-      expect(theSearch.documents.some(
-        doc => doc.sharedId === 'doc3' && doc.status === 'completed')).toBe(true);
-      expect(theSearch.documents.some(
-        doc => doc.sharedId === 'doc5' && doc.status === 'pending')).toBe(true);
+      expect(
+        theSearch.documents.some(doc => doc.sharedId === 'doc2' && doc.status === 'completed')
+      ).toBe(true);
+      expect(
+        theSearch.documents.some(doc => doc.sharedId === 'doc3' && doc.status === 'completed')
+      ).toBe(true);
+      expect(
+        theSearch.documents.some(doc => doc.sharedId === 'doc5' && doc.status === 'pending')
+      ).toBe(true);
       const res = await resultsModel.get({ searchId: search2Id });
       expect(res.some(r => r.sharedId === 'doc2')).toBe(true);
       expect(res.some(r => r.sharedId === 'doc3')).toBe(true);
@@ -191,23 +201,28 @@ describe('semanticSearch', () => {
         skip: 1,
         limit: 2,
         minRelevantSentences: 1,
-        threshold: 0.6
+        threshold: 0.6,
       };
       const results = await semanticSearch.getSearchResults(searchIdForFilters, args);
       expect(results.map(r => r.sharedId)).toEqual(['3', '2']);
-      expect(results.map((r) => {
-        const withoutIds = { ...r };
-        delete withoutIds._id;
-        delete withoutIds.searchId;
-        return withoutIds;
-      })).toMatchSnapshot();
+      expect(
+        results.map(r => {
+          const withoutIds = { ...r };
+          delete withoutIds._id;
+          delete withoutIds.searchId;
+          return withoutIds;
+        })
+      ).toMatchSnapshot();
     });
   });
 
   describe('getSearch', () => {
     it('should fetch a search by id and its document entities with filtered semantic search results', async () => {
-      const res = await semanticSearch.getSearch(search3Id, { threshold: 0.5, minRelevantSentences: 1 });
-      res.results.forEach((doc) => {
+      const res = await semanticSearch.getSearch(search3Id, {
+        threshold: 0.5,
+        minRelevantSentences: 1,
+      });
+      res.results.forEach(doc => {
         //eslint-disable-next-line no-param-reassign
         delete doc._id;
         //eslint-disable-next-line no-param-reassign
@@ -233,7 +248,7 @@ describe('semanticSearch', () => {
     it('should return the shared id and templates of all results that match the filters', async () => {
       const args = {
         minRelevantSentences: 2,
-        threshold: 0.6
+        threshold: 0.6,
       };
       const results = await semanticSearch.listSearchResultsDocs(searchIdForFilters, args);
       const docIds = results.map(r => r.sharedId);
@@ -339,7 +354,9 @@ describe('semanticSearch', () => {
     it('should throw error if search is not stopped', async () => {
       const statuses = ['completed', 'pending', 'inProgress'];
       const searchIds = [search1Id, search2Id, search3Id];
-      await Promise.all(statuses.map((status, index) => testErrorIfWrongStatus(searchIds[index], status)));
+      await Promise.all(
+        statuses.map((status, index) => testErrorIfWrongStatus(searchIds[index], status))
+      );
     });
   });
 });

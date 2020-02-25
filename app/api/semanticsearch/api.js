@@ -1,5 +1,7 @@
+/** @format */
+
 import 'isomorphic-fetch';
-import SEMANTIC_SEARCH_URL from 'api/config/semanticsearch';
+import SEMANTIC_SEARCH_URL from 'api/config/semanticSearch';
 
 const semanticSearchAPI = {
   async processDocument(args) {
@@ -7,12 +9,12 @@ const semanticSearchAPI = {
       method: 'POST',
       body: JSON.stringify(args),
       headers: {
-        'Content-Type': 'application/json'
-      }
+        'Content-Type': 'application/json',
+      },
     });
     const body = await res.json();
     return body;
-  }
+  },
 };
 
 export default semanticSearchAPI;

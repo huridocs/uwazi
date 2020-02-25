@@ -51,20 +51,33 @@ class ActivitylogForm extends Component {
     return (
       <div>
         <div className="activity-log-form">
-          <LocalForm onSubmit={this.handleSubmit} >
+          <LocalForm onSubmit={this.handleSubmit}>
             <div className="form-group col-sm-12 col-md-6 col-lg-2">
               <label htmlFor="find">User</label>
               <Control.text className="form-control" model=".username" id="username" />
             </div>
             <div className="form-group col-sm-12 col-md-6 col-lg-4">
               <label htmlFor="find">Find</label>
-              <Control.text className="form-control" model=".find" id="find" placeholder="by ids, methods, keywords, etc." />
+              <Control.text
+                className="form-control"
+                model=".find"
+                id="find"
+                placeholder="by ids, methods, keywords, etc."
+              />
             </div>
             <div className="form-group col-sm-12 col-lg-6">
               <label htmlFor="time">Time</label>
-              <DateRange className="form-control" model=".time" id="time" format="YYYY-MM-DD" useTimezone />
+              <DateRange
+                className="form-control"
+                model=".time"
+                id="time"
+                format="YYYY-MM-DD"
+                useTimezone
+              />
             </div>
-            <div className="form-group col-sm-12"><input type="submit" className="btn btn-success" value="Search"/></div>
+            <div className="form-group col-sm-12">
+              <input type="submit" className="btn btn-success" value="Search" />
+            </div>
           </LocalForm>
         </div>
 
@@ -73,8 +86,12 @@ class ActivitylogForm extends Component {
         <div className="text-center">
           <button
             type="button"
-            className={`btn btn-default btn-load-more ${searchResults.get('remainingRows') ? '' : 'disabled'}`}
-            onClick={() => { this.loadMore(); }}
+            className={`btn btn-default btn-load-more ${
+              searchResults.get('remainingRows') ? '' : 'disabled'
+            }`}
+            onClick={() => {
+              this.loadMore();
+            }}
           >
             {t('System', 'x more')}
           </button>
@@ -97,8 +114,10 @@ ActivitylogForm.propTypes = {
 
 export const mapStateToProps = ({ activitylog }) => ({ searchResults: activitylog.search });
 
-export const mapDispatchToProps = dispatch => (
-  bindActionCreators({ submit: actions.activitylogSearch, searchMore: actions.activitylogSearchMore }, dispatch)
-);
+export const mapDispatchToProps = dispatch =>
+  bindActionCreators(
+    { submit: actions.activitylogSearch, searchMore: actions.activitylogSearchMore },
+    dispatch
+  );
 
 export default connect(mapStateToProps, mapDispatchToProps)(ActivitylogForm);

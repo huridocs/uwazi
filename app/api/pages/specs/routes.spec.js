@@ -17,7 +17,7 @@ describe('Pages Routes', () => {
       req = {
         body: { title: 'Batman begins' },
         user: { username: 'admin' },
-        language: 'lang'
+        language: 'lang',
       };
     });
 
@@ -25,15 +25,16 @@ describe('Pages Routes', () => {
       expect(routes.post('/api/pages', req)).toNeedAuthorization();
     });
 
-    it('should create a new document with current user', (done) => {
+    it('should create a new document with current user', done => {
       spyOn(pages, 'save').and.returnValue(new Promise(resolve => resolve('document')));
-      routes.post('/api/pages', req)
-      .then((document) => {
-        expect(document).toBe('document');
-        expect(pages.save).toHaveBeenCalledWith(req.body, req.user, 'lang');
-        done();
-      })
-      .catch(catchErrors(done));
+      routes
+        .post('/api/pages', req)
+        .then(document => {
+          expect(document).toBe('document');
+          expect(pages.save).toHaveBeenCalledWith(req.body, req.user, 'lang');
+          done();
+        })
+        .catch(catchErrors(done));
     });
   });
 
@@ -42,36 +43,38 @@ describe('Pages Routes', () => {
       expect(routes.post.validation('/api/pages')).toMatchSnapshot();
     });
 
-    it('should ask pages model for the page in the current locale', (done) => {
+    it('should ask pages model for the page in the current locale', done => {
       const req = {
         query: { sharedId: '123' },
-        language: 'es'
+        language: 'es',
       };
       spyOn(pages, 'get').and.returnValue(Promise.resolve('page'));
-      routes.get('/api/pages', req)
-      .then((response) => {
-        expect(pages.get).toHaveBeenCalledWith({ sharedId: '123', language: 'es' });
-        expect(response).toBe('page');
-        done();
-      })
-      .catch(catchErrors(done));
+      routes
+        .get('/api/pages', req)
+        .then(response => {
+          expect(pages.get).toHaveBeenCalledWith({ sharedId: '123', language: 'es' });
+          expect(response).toBe('page');
+          done();
+        })
+        .catch(catchErrors(done));
     });
   });
 
   describe('/api/page', () => {
-    it('should ask pages model for the page in the current locale', (done) => {
+    it('should ask pages model for the page in the current locale', done => {
       const req = {
         query: { sharedId: '123' },
-        language: 'es'
+        language: 'es',
       };
       spyOn(pages, 'getById').and.returnValue(Promise.resolve('page'));
-      routes.get('/api/page', req)
-      .then((response) => {
-        expect(pages.getById).toHaveBeenCalledWith('123', 'es');
-        expect(response).toBe('page');
-        done();
-      })
-      .catch(catchErrors(done));
+      routes
+        .get('/api/page', req)
+        .then(response => {
+          expect(pages.getById).toHaveBeenCalledWith('123', 'es');
+          expect(response).toBe('page');
+          done();
+        })
+        .catch(catchErrors(done));
     });
   });
 
@@ -92,14 +95,15 @@ describe('Pages Routes', () => {
       expect(routes.delete.validation('/api/pages')).toMatchSnapshot();
     });
 
-    it('should use pages to delete it', (done) => {
+    it('should use pages to delete it', done => {
       const req = { query: { _id: 123, _rev: 456, sharedId: '456' } };
-      return routes.delete('/api/pages', req)
-      .then(() => {
-        expect(pages.delete).toHaveBeenCalledWith(req.query.sharedId);
-        done();
-      })
-      .catch(catchErrors(done));
+      return routes
+        .delete('/api/pages', req)
+        .then(() => {
+          expect(pages.delete).toHaveBeenCalledWith(req.query.sharedId);
+          done();
+        })
+        .catch(catchErrors(done));
     });
   });
 });

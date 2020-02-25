@@ -10,13 +10,16 @@ describe('Select', () => {
   beforeEach(() => {
     props = {
       label: 'input label',
-      options: [{ label: 'Option1', value: 'option1' }, { label: 'Option2', value: 'option2' }],
-      onChange: () => {}
+      options: [
+        { label: 'Option1', value: 'option1' },
+        { label: 'Option2', value: 'option2' },
+      ],
+      onChange: () => {},
     };
   });
 
   const render = () => {
-    component = shallow(<Select {...props}/>);
+    component = shallow(<Select {...props} />);
   };
 
   it('should render select with properties passed', () => {
@@ -67,12 +70,16 @@ describe('Select', () => {
     beforeEach(() => {
       props = {
         label: 'input label',
-        options: [{ name: 'Option1', id: 'option1' }, { name: 'Option2', id: 'option2' }, { name: 'An Option', id: 'option3' }],
+        options: [
+          { name: 'Option1', id: 'option1' },
+          { name: 'Option2', id: 'option2' },
+          { name: 'An Option', id: 'option3' },
+        ],
         optionsValue: 'id',
         optionsLabel: 'name',
-        onChange: () => {}
+        onChange: () => {},
       };
-      component = shallow(<Select {...props}/>);
+      component = shallow(<Select {...props} />);
     });
 
     it('should render the options', () => {
@@ -93,14 +100,26 @@ describe('Select', () => {
       props = {
         label: 'input label',
         options: [
-          { label: 'Option group 1', options: [{ name: 'opt 1', id: 1 }, { name: 'opt 1', id: 4 }] },
-          { label: 'An option group', options: [{ name: 'opt 3', id: 3 }, { name: 'opt 4', id: 4 }] }
+          {
+            label: 'Option group 1',
+            options: [
+              { name: 'opt 1', id: 1 },
+              { name: 'opt 1', id: 4 },
+            ],
+          },
+          {
+            label: 'An option group',
+            options: [
+              { name: 'opt 3', id: 3 },
+              { name: 'opt 4', id: 4 },
+            ],
+          },
         ],
         optionsValue: 'id',
         optionsLabel: 'name',
-        onChange: () => {}
+        onChange: () => {},
       };
-      component = shallow(<Select {...props}/>);
+      component = shallow(<Select {...props} />);
     });
 
     it('should render the option groups', () => {
@@ -116,12 +135,25 @@ describe('Select', () => {
     it('should render the inner options alphabetically (but not the groups) if sort=true', () => {
       props.sort = true;
       props.options = [
-        { label: 'Option group 1', options: [{ label: 'opt 1', id: 1 }, { label: 'opt 1', id: 4 }] },
-        { label: 'An option group', options: [{ label: 'opt 3', id: 3 }, { label: 'opt 4', id: 4 }, { label: 'An Option', id: 5 }] }
+        {
+          label: 'Option group 1',
+          options: [
+            { label: 'opt 1', id: 1 },
+            { label: 'opt 1', id: 4 },
+          ],
+        },
+        {
+          label: 'An option group',
+          options: [
+            { label: 'opt 3', id: 3 },
+            { label: 'opt 4', id: 4 },
+            { label: 'An Option', id: 5 },
+          ],
+        },
       ];
       props.optionsLabel = 'label';
 
-      component = shallow(<Select {...props}/>);
+      component = shallow(<Select {...props} />);
       const optionGroups = component.find('optgroup');
       const optionElements = component.find('option');
 

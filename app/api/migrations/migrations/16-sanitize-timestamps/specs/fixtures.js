@@ -13,7 +13,10 @@ export default {
         other_date: 322342,
         multi_date: ['12344', 34234, ''],
         date_range: { from: '234842', to: '3243423' },
-        multi_date_range: [{ from: '23442', to: '3243423' }, { from: '23442', to: 3243423 }],
+        multi_date_range: [
+          { from: '23442', to: '3243423' },
+          { from: '23442', to: 3243423 },
+        ],
         text: '23442',
         country: ['sdf3fsf4'],
       },
@@ -27,7 +30,10 @@ export default {
         other_date: null,
         multi_date: ['12344', 34234, ''],
         date_range: { from: '23442', to: null },
-        multi_date_range: [{ from: null, to: '3243423' }, { from: '23442', to: 3243423 }],
+        multi_date_range: [
+          { from: null, to: '3243423' },
+          { from: '23442', to: 3243423 },
+        ],
         text: '23442',
         country: ['sdf3fsf4'],
       },

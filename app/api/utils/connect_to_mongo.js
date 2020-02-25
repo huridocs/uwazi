@@ -8,14 +8,19 @@ mongoose.Promise = Promise;
 const index = 'development';
 indexConfig.index = indexConfig[index];
 
-export default () => new Promise((resolve, reject) => {
-  mongoose.connect(dbConfig[index]);
-  const db = mongoose.connection;
-  db.on('error', reject);
-  db.once('open', () => {
-    resolve();
+export default () =>
+  new Promise((resolve, reject) => {
+    mongoose.connect(dbConfig[index], {
+      useUnifiedTopology: true,
+      useNewUrlParser: true,
+      useCreateIndex: true,
+    });
+    const db = mongoose.connection;
+    db.on('error', reject);
+    db.once('open', () => {
+      resolve();
+    });
   });
-});
 
 const disconnect = () => mongoose.disconnect();
 

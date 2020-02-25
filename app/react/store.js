@@ -9,13 +9,7 @@ const data = isClient && window.__reduxData__ ? window.__reduxData__ : {};
 let store;
 
 export default function create(initialData = data) {
-  store = createStore(
-    reducer,
-    initialData,
-    composeWithDevTools(
-      applyMiddleware(thunk)
-    )
-  );
+  store = createStore(reducer, initialData, composeWithDevTools(applyMiddleware(thunk)));
 
   return store;
 }

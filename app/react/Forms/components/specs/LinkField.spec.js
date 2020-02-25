@@ -10,12 +10,12 @@ describe('LinkField', () => {
   beforeEach(() => {
     props = {
       value: { label: 'huridocs', url: 'https://www.huridocs.org/' },
-      onChange: jasmine.createSpy('onChange')
+      onChange: jasmine.createSpy('onChange'),
     };
   });
 
   const render = () => {
-    component = shallow(<LinkField {...props}/>);
+    component = shallow(<LinkField {...props} />);
   };
 
   it('should render 2 inputs with the lat and lon values', () => {
@@ -33,7 +33,10 @@ describe('LinkField', () => {
       const inputs = component.find('input');
       const latInput = inputs.first();
       latInput.simulate('change', { target: { value: 'uwazi' } });
-      expect(props.onChange).toHaveBeenCalledWith({ label: 'uwazi', url: 'https://www.huridocs.org/' });
+      expect(props.onChange).toHaveBeenCalledWith({
+        label: 'uwazi',
+        url: 'https://www.huridocs.org/',
+      });
     });
   });
 
@@ -43,7 +46,10 @@ describe('LinkField', () => {
       const inputs = component.find('input');
       const lonInput = inputs.last();
       lonInput.simulate('change', { target: { value: 'https://www.uwazi.org/' } });
-      expect(props.onChange).toHaveBeenCalledWith({ label: 'huridocs', url: 'https://www.uwazi.org/' });
+      expect(props.onChange).toHaveBeenCalledWith({
+        label: 'huridocs',
+        url: 'https://www.uwazi.org/',
+      });
     });
   });
 });

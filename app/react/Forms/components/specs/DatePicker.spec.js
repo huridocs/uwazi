@@ -15,12 +15,12 @@ describe('DatePicker', () => {
   beforeEach(() => {
     props = {
       value: Number(date.format('X')),
-      onChange: jasmine.createSpy('onChange')
+      onChange: jasmine.createSpy('onChange'),
     };
   });
 
   const render = () => {
-    component = shallow(<DatePicker {...props}/>);
+    component = shallow(<DatePicker {...props} />);
     input = component.find(DatePickerComponent);
   };
 

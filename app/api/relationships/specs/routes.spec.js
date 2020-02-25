@@ -8,14 +8,14 @@ import relationshipsRroutes from '../routes.js';
 describe('relationships routes', () => {
   let routes;
 
-  beforeEach((done) => {
+  beforeEach(done => {
     routes = instrumentRoutes(relationshipsRroutes);
     spyOn(relationships, 'save').and.returnValue(Promise.resolve());
     spyOn(relationships, 'delete').and.returnValue(Promise.resolve());
     db.clearAllAndLoad({}).then(done);
   });
 
-  afterAll((done) => {
+  afterAll(done => {
     db.disconnect().then(done);
   });
 
@@ -41,7 +41,7 @@ describe('relationships routes', () => {
       const req = {
         body: {
           save: [{ _id: 1 }, { _id: 2 }],
-          delete: [{ _id: 3 }]
+          delete: [{ _id: 3 }],
         },
         language: 'es',
       };
@@ -83,10 +83,15 @@ describe('relationships routes', () => {
     it('should return grouped refernces by connection', async () => {
       const req = { query: { sharedId: 'documentId' }, language: 'es', user: 'user' };
 
-      spyOn(relationships, 'getGroupsByConnection').and.returnValue(Promise.resolve('groupedByConnection'));
+      spyOn(relationships, 'getGroupsByConnection').and.returnValue(
+        Promise.resolve('groupedByConnection')
+      );
 
       const response = await routes.get('/api/references/group_by_connection/', req);
-      expect(relationships.getGroupsByConnection).toHaveBeenCalledWith('documentId', 'es', { excludeRefs: true, user: 'user' });
+      expect(relationships.getGroupsByConnection).toHaveBeenCalledWith('documentId', 'es', {
+        excludeRefs: true,
+        user: 'user',
+      });
       expect(response).toBe('groupedByConnection');
     });
   });
@@ -101,10 +106,19 @@ describe('relationships routes', () => {
     });
 
     it('should return entities from relationships search() passing the user', async () => {
-      const req = { language: 'es', user: 'user', query: { searchTerm: 'Something', sharedId: 'documentId' } };
+      const req = {
+        language: 'es',
+        user: 'user',
+        query: { searchTerm: 'Something', sharedId: 'documentId' },
+      };
 
       const response = await routes.get('/api/references/search/', req);
-      expect(relationships.search).toHaveBeenCalledWith('documentId', { searchTerm: 'Something', filter: {} }, 'es', 'user');
+      expect(relationships.search).toHaveBeenCalledWith(
+        'documentId',
+        { searchTerm: 'Something', filter: {} },
+        'es',
+        'user'
+      );
       expect(response).toBe('search results');
     });
   });

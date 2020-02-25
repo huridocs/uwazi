@@ -6,13 +6,24 @@ import Modal from 'app/Layout/Modal';
 import { FormGroup } from 'app/Forms';
 import { TranslateForm } from '../TranslateForm';
 
-
 describe('TranslateForm', () => {
   let component;
   let props;
   const translations = Immutable.fromJS([
-    { locale: 'en', contexts: [{ id: 'System', values: { Search: 'Search', Find: 'Find' } }, { id: '123', values: { } }] },
-    { locale: 'es', contexts: [{ id: 'System', values: { Search: 'Buscar', Find: 'Encontrar' } }, { id: '123', values: { } }] }
+    {
+      locale: 'en',
+      contexts: [
+        { id: 'System', values: { Search: 'Search', Find: 'Find' } },
+        { id: '123', values: {} },
+      ],
+    },
+    {
+      locale: 'es',
+      contexts: [
+        { id: 'System', values: { Search: 'Buscar', Find: 'Encontrar' } },
+        { id: '123', values: {} },
+      ],
+    },
   ]);
 
   beforeEach(() => {
@@ -22,7 +33,7 @@ describe('TranslateForm', () => {
       isOpen: true,
       context: 'System',
       value: 'Search',
-      translations
+      translations,
     };
   });
 
@@ -42,13 +53,33 @@ describe('TranslateForm', () => {
     });
 
     it('should redner a FormGroup for each language', () => {
-      expect(component.find(FormGroup).at(0).props().model).toBe('.en');
-      expect(component.find(FormGroup).at(1).props().model).toBe('.es');
+      expect(
+        component
+          .find(FormGroup)
+          .at(0)
+          .props().model
+      ).toBe('.en');
+      expect(
+        component
+          .find(FormGroup)
+          .at(1)
+          .props().model
+      ).toBe('.es');
     });
 
     it('should redner a Field for each language', () => {
-      expect(component.find(Field).at(0).props().model).toBe('.en');
-      expect(component.find(Field).at(1).props().model).toBe('.es');
+      expect(
+        component
+          .find(Field)
+          .at(0)
+          .props().model
+      ).toBe('.en');
+      expect(
+        component
+          .find(Field)
+          .at(1)
+          .props().model
+      ).toBe('.es');
     });
   });
 
@@ -63,8 +94,14 @@ describe('TranslateForm', () => {
   describe('submit', () => {
     it('should call saveTranslations with only the updated context', () => {
       const expectedTranslations = [
-        { locale: 'en', contexts: [{ id: 'System', values: { Search: 'Search en', Find: 'Find' } }] },
-        { locale: 'es', contexts: [{ id: 'System', values: { Search: 'Buscar es', Find: 'Encontrar' } }] }
+        {
+          locale: 'en',
+          contexts: [{ id: 'System', values: { Search: 'Search en', Find: 'Find' } }],
+        },
+        {
+          locale: 'es',
+          contexts: [{ id: 'System', values: { Search: 'Buscar es', Find: 'Encontrar' } }],
+        },
       ];
       render();
       component.instance().submit({ en: 'Search en', es: 'Buscar es' });

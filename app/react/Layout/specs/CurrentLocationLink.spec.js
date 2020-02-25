@@ -10,7 +10,7 @@ describe('Link', () => {
 
   beforeEach(() => {
     props = {
-      location: { pathname: 'pathanem', query: { param: 'value', param2: 'value2' } }
+      location: { pathname: 'pathanem', query: { param: 'value', param2: 'value2' } },
     };
   });
 

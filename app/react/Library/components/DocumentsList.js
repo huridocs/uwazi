@@ -9,7 +9,7 @@ import {
   selectDocument,
   unselectDocument,
   unselectAllDocuments,
-  selectDocuments
+  selectDocuments,
 } from 'app/Library/actions/libraryActions';
 import DocumentsList from '../../Layout/DocumentsList';
 
@@ -21,7 +21,7 @@ export function clickOnDocument(e, doc, active) {
     this.props.unselectAllDocuments();
   }
 
-  if (active && !specialkeyPressed || !canSelectMultiple) {
+  if ((active && !specialkeyPressed) || !canSelectMultiple) {
     return this.props.selectDocument(doc);
   }
 
@@ -66,20 +66,23 @@ export function mapStateToProps(state, props) {
     selectedDocuments: state[props.storeKey].ui.get('selectedDocuments'),
     multipleSelected: state[props.storeKey].ui.get('selectedDocuments').size > 1,
     rowListZoomLevel: state[props.storeKey].ui.get('zoomLevel'),
-    clickOnDocument
+    clickOnDocument,
   };
 }
 
 function mapDispatchToProps(dispatch, props) {
-  return bindActionCreators({
-    loadMoreDocuments,
-    searchDocuments,
-    selectDocument,
-    selectDocuments,
-    unselectDocument,
-    unselectAllDocuments,
-    onSnippetClick: () => actionCreators.set(`${props.storeKey}.sidepanel.tab`, 'text-search')
-  }, wrapDispatch(dispatch, props.storeKey));
+  return bindActionCreators(
+    {
+      loadMoreDocuments,
+      searchDocuments,
+      selectDocument,
+      selectDocuments,
+      unselectDocument,
+      unselectAllDocuments,
+      onSnippetClick: () => actionCreators.set(`${props.storeKey}.sidepanel.tab`, 'text-search'),
+    },
+    wrapDispatch(dispatch, props.storeKey)
+  );
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(DocumentsList);

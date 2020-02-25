@@ -14,13 +14,20 @@ export default {
     const processedIds = [];
     while (await cursor.hasNext()) {
       const entity = await cursor.next();
-      if(entity.metadata) {
+      if (entity.metadata) {
         const sharedId = entity.sharedId;
         const entityPropertiesNames = Object.keys(entity.metadata);
-        const geolocationProperty = entityPropertiesNames.find(propertyName => propertyName.match('geolocation'));
+        const geolocationProperty = entityPropertiesNames.find(propertyName =>
+          propertyName.match('geolocation')
+        );
         const propertyValue = entity.metadata[geolocationProperty];
 
-        if (!processedIds.includes(sharedId) && geolocationProperty && propertyValue && (propertyValue.lat !== undefined || propertyValue.lon !== undefined)) {
+        if (
+          !processedIds.includes(sharedId) &&
+          geolocationProperty &&
+          propertyValue &&
+          (propertyValue.lat !== undefined || propertyValue.lon !== undefined)
+        ) {
           const changes = {};
           changes[`metadata.${geolocationProperty}`] = propertyValue;
           processedIds.push(sharedId);
@@ -32,5 +39,5 @@ export default {
       index += 1;
     }
     process.stdout.write('\r\n');
-  }
+  },
 };

@@ -17,17 +17,19 @@ import SearchResults from './SearchResults';
 export class CreateConnectionPanel extends Component {
   renderCheckType(template) {
     if (this.props.connection.get('template') === template.get('_id')) {
-      return <Icon icon="check"/>;
+      return <Icon icon="check" />;
     }
 
-    return <Icon icon={['far', 'square']}/>;
+    return <Icon icon={['far', 'square']} />;
   }
 
   render() {
     const { uiState, searchResults } = this.props;
     const connection = this.props.connection.toJS();
     const typeLabel = connection.type === 'basic' ? 'Connection' : 'Reference';
-    const open = Boolean(this.props.uiState.get('open') && this.props.containerId === connection.sourceDocument);
+    const open = Boolean(
+      this.props.uiState.get('open') && this.props.containerId === connection.sourceDocument
+    );
     const pdfInfo = this.props.pdfInfo ? this.props.pdfInfo.toJS() : null;
     const className = `${this.props.className} create-reference`;
 
@@ -38,16 +40,20 @@ export class CreateConnectionPanel extends Component {
           <button className="closeSidepanel close-modal" onClick={this.props.closePanel}>
             <Icon icon="times" />
           </button>
-          <div className="connections-list-title">{ t('System', 'Select relationship type') }</div>
+          <div className="connections-list-title">{t('System', 'Select relationship type')}</div>
           <ul className="connections-list multiselect">
             {this.props.relationTypes.map(template => (
-              <li onClick={() => this.props.setRelationType(template.get('_id'))} key={template.get('_id')} className="multiselectItem">
+              <li
+                onClick={() => this.props.setRelationType(template.get('_id'))}
+                key={template.get('_id')}
+                className="multiselectItem"
+              >
                 <label className="multiselectItem-label" htmlFor={template.get('_id')}>
                   <span className="multiselectItem-icon">{this.renderCheckType(template)}</span>
                   <span className="multiselectItem-name">{template.get('name')}</span>
                 </label>
               </li>
-))}
+            ))}
           </ul>
         </div>
 
@@ -58,19 +64,19 @@ export class CreateConnectionPanel extends Component {
           <ShowIf if={connection.type !== 'targetRanged'}>
             <ActionButton
               action="save"
-              onCreate={(reference) => {
-              this.props.onCreate(reference, pdfInfo);
-            }}
+              onCreate={reference => {
+                this.props.onCreate(reference, pdfInfo);
+              }}
             />
           </ShowIf>
           <ShowIf if={connection.type === 'targetRanged'}>
-            <ActionButton action="connect" onRangedConnect={this.props.onRangedConnect}/>
+            <ActionButton action="connect" onRangedConnect={this.props.onRangedConnect} />
           </ShowIf>
         </div>
 
         <div className="sidepanel-body">
           <div className="search-box">
-            <SearchForm connectionType={connection.type}/>
+            <SearchForm connectionType={connection.type} />
           </div>
           <SearchResults
             results={searchResults}
@@ -96,15 +102,15 @@ CreateConnectionPanel.propTypes = {
   searchResults: PropTypes.object,
   onCreate: PropTypes.func,
   onRangedConnect: PropTypes.func,
-  closePanel: PropTypes.func
+  closePanel: PropTypes.func,
 };
 
 export const mapStateToProps = ({ connections, relationTypes, documentViewer }) => ({
-    uiState: connections.uiState,
-    pdfInfo: documentViewer.doc.get('pdfInfo'),
-    connection: connections.connection,
-    searchResults: connections.searchResults,
-    relationTypes
+  uiState: connections.uiState,
+  pdfInfo: documentViewer.doc.get('pdfInfo'),
+  connection: connections.connection,
+  searchResults: connections.searchResults,
+  relationTypes,
 });
 
 function mapDispatchToProps(dispatch) {

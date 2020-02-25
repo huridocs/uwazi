@@ -13,7 +13,7 @@ import {
   getSearchDocuments,
   updateSearchDocumentStatus,
   setSearchDocumentResults,
-  extractDocumentContent
+  extractDocumentContent,
 } from './helpers';
 
 const SEARCH_BATCH_SIZE = 5;
@@ -31,7 +31,7 @@ const processDocument = async (searchId, searchTerm, sharedId, language) => {
 
   const results = await api.processDocument({
     searchTerm,
-    contents
+    contents,
   });
   const savedResults = await setSearchDocumentResults(searchId, sharedId, results);
   await updateSearchDocumentStatus(searchId, sharedId, COMPLETED);
@@ -41,12 +41,11 @@ const processDocument = async (searchId, searchTerm, sharedId, language) => {
 const processSearchLimit = async (searchId, docLimit) => {
   const searchObject = await model.save({ _id: searchId, status: IN_PROGRESS });
   const { language, searchTerm } = searchObject;
-  const docs = searchObject.documents
-  .filter(doc => doc.status !== COMPLETED);
-  const docsToSearch = docs.length > docLimit ?
-    docs.slice(0, docLimit) : docs;
-  await eachLimitAsync(docsToSearch, SEARCH_BATCH_SIZE, async doc => processDocument(
-    searchId, searchTerm, doc.sharedId, language));
+  const docs = searchObject.documents.filter(doc => doc.status !== COMPLETED);
+  const docsToSearch = docs.length > docLimit ? docs.slice(0, docLimit) : docs;
+  await eachLimitAsync(docsToSearch, SEARCH_BATCH_SIZE, async doc =>
+    processDocument(searchId, searchTerm, doc.sharedId, language)
+  );
   const updatedSearch = await model.getById(searchId);
   const isNotDone = updatedSearch.documents.some(doc => doc.status !== COMPLETED);
   if (isNotDone) {
@@ -54,7 +53,7 @@ const processSearchLimit = async (searchId, docLimit) => {
   }
   return {
     updatedSearch: await model.save({ _id: searchId, status: COMPLETED }),
-    processedDocuments: docsToSearch.map(d => d.sharedId)
+    processedDocuments: docsToSearch.map(d => d.sharedId),
   };
 };
 
@@ -63,23 +62,26 @@ const create = async (args, language, user) => {
   const newSearch = {
     documents: docs.map(docId => ({
       sharedId: docId,
-      status: PENDING
+      status: PENDING,
     })),
     status: PENDING,
     searchTerm: args.searchTerm,
     query: args.query,
     language,
-    creationDate: date.currentUTC()
+    creationDate: date.currentUTC(),
   };
   const savedSearch = await model.save(newSearch);
   workers.notifyNewSearch(savedSearch._id);
   return savedSearch;
 };
 
-const getSearchResults = async (searchId, { skip = 0, limit = 30, threshold = 0.4, minRelevantSentences = 5 }) =>
+const getSearchResults = async (
+  searchId,
+  { skip = 0, limit = 30, threshold = 0.4, minRelevantSentences = 5 }
+) =>
   resultsModel.db.aggregate([
     {
-      $match: { searchId: Types.ObjectId(searchId) }
+      $match: { searchId: Types.ObjectId(searchId) },
     },
     {
       $project: {
@@ -88,8 +90,16 @@ const getSearchResults = async (searchId, { skip = 0, limit = 30, threshold = 0.
         status: 1,
         results: 1,
         totalResults: { $size: '$results' },
-        numRelevant: { $size: { $filter: { input: '$results', as: 'result', cond: { $gte: ['$$result.score', threshold] } } } }
-      }
+        numRelevant: {
+          $size: {
+            $filter: {
+              input: '$results',
+              as: 'result',
+              cond: { $gte: ['$$result.score', threshold] },
+            },
+          },
+        },
+      },
     },
     {
       $project: {
@@ -99,21 +109,21 @@ const getSearchResults = async (searchId, { skip = 0, limit = 30, threshold = 0.
         status: 1,
         results: 1,
         numRelevant: 1,
-        relevantRate: { $divide: ['$numRelevant', '$totalResults'] }
-      }
+        relevantRate: { $divide: ['$numRelevant', '$totalResults'] },
+      },
     },
     {
-      $match: { numRelevant: { $gte: minRelevantSentences } }
+      $match: { numRelevant: { $gte: minRelevantSentences } },
     },
     {
-      $sort: { relevantRate: -1 }
+      $sort: { relevantRate: -1 },
     },
     {
-      $skip: skip
+      $skip: skip,
     },
     {
-      $limit: limit
-    }
+      $limit: limit,
+    },
   ]);
 
 const getSearch = async (searchId, args) => {
@@ -124,13 +134,14 @@ const getSearch = async (searchId, args) => {
 
   const results = await getSearchResults(searchId, args);
   const docIds = results.map(r => r.sharedId);
-  const docs = await documentsModel.get({ sharedId: { $in: docIds }, language: theSearch.language });
-  const docsWithResults = results.map(result => (
-    {
-      ...docs.find(doc => doc.sharedId === result.sharedId),
-      semanticSearch: result
-    }
-  ));
+  const docs = await documentsModel.get({
+    sharedId: { $in: docIds },
+    language: theSearch.language,
+  });
+  const docsWithResults = results.map(result => ({
+    ...docs.find(doc => doc.sharedId === result.sharedId),
+    semanticSearch: result,
+  }));
   theSearch.results = docsWithResults;
   return theSearch;
 };
@@ -147,42 +158,58 @@ const listSearchResultsDocs = async (searchId, args) => {
     {
       $project: {
         sharedId: 1,
-        numRelevant: { $size: { $filter: { input: '$results', as: 'result', cond: { $gte: ['$$result.score', threshold] } } } }
-      }
+        numRelevant: {
+          $size: {
+            $filter: {
+              input: '$results',
+              as: 'result',
+              cond: { $gte: ['$$result.score', threshold] },
+            },
+          },
+        },
+      },
     },
     { $match: { numRelevant: { $gte: minRelevantSentences } } },
-    { $lookup: { from: 'entities', localField: 'sharedId', foreignField: 'sharedId', as: 'document' } },
+    {
+      $lookup: {
+        from: 'entities',
+        localField: 'sharedId',
+        foreignField: 'sharedId',
+        as: 'document',
+      },
+    },
     { $unwind: '$document' },
     { $match: { 'document.language': theSearch.language } },
-    { $project: { _id: 0, sharedId: 1, template: '$document.template' } }
+    { $project: { _id: 0, sharedId: 1, template: '$document.template' } },
   ]);
 };
 
 const getDocumentResultsByIds = async (searchId, docIds) => {
   const theSearch = searchId._id ? searchId : await model.getById(searchId);
   const results = await resultsModel.get({ searchId, sharedId: { $in: docIds } });
-  const docs = await documentsModel.get({ sharedId: { $in: docIds }, language: theSearch.language });
-  const docsWithResults = docs.map(doc => (
-    {
-      ...doc,
-      semanticSearch: results.find(res => res.sharedId === doc.sharedId)
-    }
-  ));
+  const docs = await documentsModel.get({
+    sharedId: { $in: docIds },
+    language: theSearch.language,
+  });
+  const docsWithResults = docs.map(doc => ({
+    ...doc,
+    semanticSearch: results.find(res => res.sharedId === doc.sharedId),
+  }));
   return docsWithResults;
 };
 
-const getSearchesByDocument = async (docId) => {
+const getSearchesByDocument = async docId => {
   const results = await resultsModel.get({ sharedId: docId });
   const searchPromises = results.map(({ searchId }) => model.getById(searchId));
   const searches = await Promise.all(searchPromises);
   searches.map((theSearch, index) => ({
     ...theSearch,
-    results: results[index]
+    results: results[index],
   }));
   return searches;
 };
 
-const deleteSearch = async (searchId) => {
+const deleteSearch = async searchId => {
   const res = await model.delete(searchId);
   if (res.n !== 1) {
     throw createError('Search not found', 404);
@@ -191,26 +218,32 @@ const deleteSearch = async (searchId) => {
   return { deleted: true };
 };
 
-const stopSearch = async (searchId) => {
-  const res = await model.db.updateOne({
-    _id: searchId,
-    status: { $in: [IN_PROGRESS, PENDING] }
-  }, {
-    $set: { status: STOPPED }
-  });
+const stopSearch = async searchId => {
+  const res = await model.db.updateOne(
+    {
+      _id: searchId,
+      status: { $in: [IN_PROGRESS, PENDING] },
+    },
+    {
+      $set: { status: STOPPED },
+    }
+  );
   if (!res.n) {
     throw createError('Only running searches can be stopped', 400);
   }
   return model.getById(searchId);
 };
 
-const resumeSearch = async (searchId) => {
-  const res = await model.db.updateOne({
-    _id: searchId,
-    status: { $in: [STOPPED] }
-  }, {
-    $set: { status: PENDING }
-  });
+const resumeSearch = async searchId => {
+  const res = await model.db.updateOne(
+    {
+      _id: searchId,
+      status: { $in: [STOPPED] },
+    },
+    {
+      $set: { status: PENDING },
+    }
+  );
   if (!res.n) {
     throw createError('Only stopped searches can be resumed', 400);
   }
@@ -239,7 +272,7 @@ const semanticSearch = {
   getSearchesByDocument,
   deleteSearch,
   stopSearch,
-  resumeSearch
+  resumeSearch,
 };
 
 export default semanticSearch;

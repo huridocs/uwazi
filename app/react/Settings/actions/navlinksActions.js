@@ -15,7 +15,7 @@ export function loadLinks(links) {
 
 export function addLink(links) {
   const link = { title: `Item ${links.length + 1}`, localID: ID() };
-  return (dispatch) => {
+  return dispatch => {
     dispatch(formActions.push('settings.navlinksData.links', link));
     dispatch(editLink(link.localID));
   };
@@ -30,16 +30,17 @@ export function removeLink(index) {
 }
 
 export function saveLinks(data) {
-  return (dispatch) => {
+  return dispatch => {
     dispatch({ type: types.SAVING_NAVLINKS });
-    return api.save(new RequestParams(data))
-    .then((response) => {
-      dispatch({ type: types.NAVLINKS_SAVED, data: response });
-      dispatch(actions.set('settings/collection', response));
-      dispatch(notificationActions.notify('Saved successfully.', 'success'));
-    })
-    .catch(() => {
-      dispatch({ type: types.NAVLINKS_SAVED, data });
-    });
+    return api
+      .save(new RequestParams(data))
+      .then(response => {
+        dispatch({ type: types.NAVLINKS_SAVED, data: response });
+        dispatch(actions.set('settings/collection', response));
+        dispatch(notificationActions.notify('Saved successfully.', 'success'));
+      })
+      .catch(() => {
+        dispatch({ type: types.NAVLINKS_SAVED, data });
+      });
   };
 }

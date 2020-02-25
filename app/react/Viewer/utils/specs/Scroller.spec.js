@@ -1,3 +1,6 @@
+/**
+ * @jest-environment jsdom
+ */
 import scroller from '../Scroller.js';
 
 describe('scroller', () => {
@@ -19,7 +22,7 @@ describe('scroller', () => {
     [
       [firstLi, { top: 8, bottom: 147 }],
       [secondLi, { top: 148, bottom: 248 }],
-      [thirdLi, { top: 249, bottom: 300 }]
+      [thirdLi, { top: 249, bottom: 300 }],
     ].forEach(([_li, bounds]) => {
       const li = _li;
       li.getBoundingClientRect = () => bounds;
@@ -90,7 +93,7 @@ describe('scroller', () => {
   });
 
   describe('to()', () => {
-    it('should scroll the parent to make the element visible', (done) => {
+    it('should scroll the parent to make the element visible', done => {
       jest.spyOn(scroller, 'isVisible').mockReturnValue(false);
       scroller.to('li:nth-child(2)', 'ul', { duration: 0 });
       window.setTimeout(() => {

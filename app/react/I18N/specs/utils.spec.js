@@ -7,11 +7,7 @@ describe('I18NUtils', () => {
   let languages;
 
   beforeEach(() => {
-    languages = [
-      { key: 'en' },
-      { key: 'es', default: true },
-      { key: 'pt' },
-    ];
+    languages = [{ key: 'en' }, { key: 'es', default: true }, { key: 'pt' }];
   });
 
   describe('getLocale', () => {

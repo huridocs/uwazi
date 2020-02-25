@@ -1,8 +1,11 @@
+/** @format */
+
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faAngleLeft } from '@fortawesome/free-solid-svg-icons/faAngleLeft';
 import { faAngleRight } from '@fortawesome/free-solid-svg-icons/faAngleRight';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons/faArrowLeft';
 import { faArrowRight } from '@fortawesome/free-solid-svg-icons/faArrowRight';
+import { faArrowUp } from '@fortawesome/free-solid-svg-icons/faArrowUp';
 import { faBars } from '@fortawesome/free-solid-svg-icons/faBars';
 import { faBook } from '@fortawesome/free-solid-svg-icons/faBook';
 import { faBullhorn } from '@fortawesome/free-solid-svg-icons/faBullhorn';
@@ -19,10 +22,12 @@ import { faCircle } from '@fortawesome/free-solid-svg-icons/faCircle';
 import { faClock } from '@fortawesome/free-solid-svg-icons/faClock';
 import { faClone } from '@fortawesome/free-solid-svg-icons/faClone';
 import { faCloudUploadAlt } from '@fortawesome/free-solid-svg-icons/faCloudUploadAlt';
+import { faCode } from '@fortawesome/free-solid-svg-icons/faCode';
 import { faCoffee } from '@fortawesome/free-solid-svg-icons/faCoffee';
 import { faCog } from '@fortawesome/free-solid-svg-icons/faCog';
 import { faComment } from '@fortawesome/free-solid-svg-icons/faComment';
 import { faCubes } from '@fortawesome/free-solid-svg-icons/faCubes';
+import { faCircle as faEmptyCircle } from '@fortawesome/free-regular-svg-icons/faCircle';
 import { faEnvelope } from '@fortawesome/free-solid-svg-icons/faEnvelope';
 import { faExchangeAlt } from '@fortawesome/free-solid-svg-icons/faExchangeAlt';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons/faExclamationTriangle';
@@ -70,6 +75,8 @@ import { faTerminal } from '@fortawesome/free-solid-svg-icons/faTerminal';
 import { faTh } from '@fortawesome/free-solid-svg-icons/faTh';
 import { faTimes } from '@fortawesome/free-solid-svg-icons/faTimes';
 import { faTimesCircle } from '@fortawesome/free-solid-svg-icons/faTimesCircle';
+import { faToggleOff } from '@fortawesome/free-solid-svg-icons/faToggleOff';
+import { faToggleOn } from '@fortawesome/free-solid-svg-icons/faToggleOn';
 import { faTrashAlt } from '@fortawesome/free-solid-svg-icons/faTrashAlt';
 import { faUndo } from '@fortawesome/free-solid-svg-icons/faUndo';
 import { faUpload } from '@fortawesome/free-solid-svg-icons/faUpload';
@@ -80,12 +87,14 @@ import { faEyeSlash } from '@fortawesome/free-solid-svg-icons/faEyeSlash';
 import { faUsers } from '@fortawesome/free-solid-svg-icons/faUsers';
 import { faUserTimes } from '@fortawesome/free-solid-svg-icons/faUserTimes';
 import { faHandPaper } from '@fortawesome/free-solid-svg-icons/faHandPaper';
+import { saveAndNext } from './save-and-next';
 
 const icons = {
   faAngleLeft,
   faAngleRight,
   faArrowLeft,
   faArrowsAlt,
+  faArrowUp,
   faArrowRight,
   faBars,
   faBook,
@@ -103,10 +112,12 @@ const icons = {
   faClock,
   faClone,
   faCloudUploadAlt,
+  faCode,
   faCoffee,
   faCog,
   faComment,
   faCubes,
+  faEmptyCircle,
   faEnvelope,
   faExchangeAlt,
   faExclamationTriangle,
@@ -154,6 +165,8 @@ const icons = {
   faTh,
   faTimes,
   faTimesCircle,
+  faToggleOff,
+  faToggleOn,
   faTrashAlt,
   faUndo,
   faUpload,
@@ -163,6 +176,7 @@ const icons = {
   faUsers,
   faUserTimes,
   faHandPaper,
+  saveAndNext,
 };
 
 export const loadIcons = () => {

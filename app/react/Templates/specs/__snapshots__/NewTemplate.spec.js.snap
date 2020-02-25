@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`NewTemplate static requestState() should request the thesauris and templates to fit in the state 1`] = `
+exports[`NewTemplate static requestState() should request the thesauri and templates to fit in the state 1`] = `
 Array [
   Object {
     "model": "template.data",

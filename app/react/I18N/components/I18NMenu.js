@@ -31,15 +31,18 @@ class I18NMenu extends Component {
             <Icon icon="language" size="lg" />
           </button>
         </NeedAuthorization>
-        {languages.count() > 1 && languages.map((lang) => {
-          const key = lang.get('key');
-          const url = `/${key}${path}${path.match('document') ? '' : location.search}`;
-          return (
-            <li className={`menuNav-item${locale === key ? ' is-active' : ''}`} key={key}>
-              <a className="menuNav-btn btn btn-default" href={url}>{key}</a>
-            </li>
-          );
-        })}
+        {languages.count() > 1 &&
+          languages.map(lang => {
+            const key = lang.get('key');
+            const url = `/${key}${path}${path.match('document') ? '' : location.search}`;
+            return (
+              <li className={`menuNav-item${locale === key ? ' is-active' : ''}`} key={key}>
+                <a className="menuNav-btn btn btn-default" href={url}>
+                  {key}
+                </a>
+              </li>
+            );
+          })}
       </ul>
     );
   }

@@ -14,7 +14,7 @@ describe('GeolocationViewer', () => {
         { lat: 5, lon: 10, label: 'work' },
         null,
         { lat: 23, lon: 8, label: '' },
-      ]
+      ],
     };
   });
 

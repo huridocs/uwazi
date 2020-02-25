@@ -4,10 +4,10 @@ const wrapAction = (action, reducerKey) => {
 };
 
 export default function wrapDispatch(dispatch, reducerKey) {
-  const wrappedDispatch = (action) => {
+  const wrappedDispatch = action => {
     let wrappedAction = wrapAction(action, reducerKey);
     if (typeof action === 'function') {
-      wrappedAction = (globalDispatch, getState) => action(wrappedDispatch, getState);
+      wrappedAction = (_globalDispatch, getState) => action(wrappedDispatch, getState);
     }
 
     return dispatch(wrappedAction);

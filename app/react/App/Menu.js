@@ -1,3 +1,5 @@
+/** @format */
+
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
@@ -27,19 +29,23 @@ export class Menu extends Component {
     const { links } = this.props;
     const user = this.props.user.toJS();
 
-    const navLinks = links.map((link) => {
+    const navLinks = links.map(link => {
       const url = link.get('url') || '/';
 
       if (url.startsWith('http')) {
         return (
           <li key={link.get('_id')} className="menuNav-item">
-            <a href={url} className="btn menuNav-btn" target="_blank">{t('Menu', link.get('title'))}</a>
+            <a href={url} className="btn menuNav-btn" target="_blank">
+              {t('Menu', link.get('title'))}
+            </a>
           </li>
         );
       }
       return (
         <li key={link.get('_id')} className="menuNav-item">
-          <I18NLink to={url} className="btn menuNav-btn">{t('Menu', link.get('title'))}</I18NLink>
+          <I18NLink to={url} className="btn menuNav-btn">
+            {t('Menu', link.get('title'))}
+          </I18NLink>
         </li>
       );
     });
@@ -53,7 +59,11 @@ export class Menu extends Component {
           <ul className="menuNav-list">
             <FeatureToggleSemanticSearch>
               <li className="menuNav-item semantic-search">
-                <button type="button" onClick={this.props.showSemanticSearch} className="menuNav-btn btn btn-default">
+                <button
+                  type="button"
+                  onClick={this.props.showSemanticSearch}
+                  className="menuNav-btn btn btn-default"
+                >
                   <Icon icon="flask" />
                   <span className="tab-link-tooltip">{t('System', 'Semantic search')}</span>
                 </button>
@@ -106,7 +116,7 @@ export class Menu extends Component {
 }
 
 Menu.defaultProps = {
-  showSemanticSearch: () => {}
+  showSemanticSearch: () => {},
 };
 
 Menu.propTypes = {
@@ -119,7 +129,7 @@ Menu.propTypes = {
   className: PropTypes.string,
   onClick: PropTypes.func,
   showSemanticSearch: PropTypes.func,
-  links: PropTypes.object
+  links: PropTypes.object,
 };
 
 export function mapStateToProps({ user, settings, library, uploads }) {
@@ -135,10 +145,12 @@ export function mapStateToProps({ user, settings, library, uploads }) {
 }
 
 export function mapDispatchToProps(dispatch) {
-  return bindActionCreators({
-    showSemanticSearch
-  }, wrapDispatch(dispatch, 'library'));
+  return bindActionCreators(
+    {
+      showSemanticSearch,
+    },
+    wrapDispatch(dispatch, 'library')
+  );
 }
-
 
 export default connect(mapStateToProps, mapDispatchToProps)(Menu);

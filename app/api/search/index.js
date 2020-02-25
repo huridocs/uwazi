@@ -5,9 +5,4 @@ import search from './search';
 
 export default routes;
 
-export {
-  routes,
-  elastic,
-  search,
-  documentQueryBuilder
-};
+export { routes, elastic, search, documentQueryBuilder };

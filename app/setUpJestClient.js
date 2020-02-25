@@ -1,30 +1,18 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import * as matchers from 'jest-immutable-matchers';
-import { loadIcons } from 'UI/Icon/library';
-
-loadIcons();
-
 const { configure } = require('enzyme');
 const Adapter = require('enzyme-adapter-react-16');
 
-jest.addMatchers(matchers);
-
-//Setup enzyme's react adapter
 configure({ adapter: new Adapter() });
 
 const error = console.error.bind(console);
-console.error = function (message) {
+console.error = function(message) {
   if (message.match('/api/i18n/systemKeys')) {
     return;
   }
   error(message);
 };
 
-//Mock mapbox arabic support plugin setup
-window.URL.createObjectURL = () => {};
-const mapbox = require('mapbox-gl');//eslint-disable-line
-mapbox.setRTLTextPlugin = () => {};
-//
+process.env.__testingEnvironment = true;
 
 jasmine.createSpyObj = (name, methodNames) => {
   let names = methodNames;
@@ -44,6 +32,6 @@ jasmine.createSpyObj = (name, methodNames) => {
 const clock = {
   install: jest.useFakeTimers,
   uninstall: jest.clearAllTimers,
-  tick: jest.advanceTimersByTime
+  tick: jest.advanceTimersByTime,
 };
 jasmine.clock = () => clock;

@@ -8,17 +8,17 @@ import UserForm from './UserForm';
 
 export class EditUser extends Component {
   render() {
-    return <UserForm submit={this.props.saveUser} user={this.props.user}/>;
+    return <UserForm submit={this.props.saveUser} user={this.props.user} />;
   }
 }
 
 EditUser.defaultProps = {
-  user: Immutable.fromJS({})
+  user: Immutable.fromJS({}),
 };
 
 EditUser.propTypes = {
   saveUser: PropTypes.func.isRequired,
-  user: PropTypes.instanceOf(Immutable.Map)
+  user: PropTypes.instanceOf(Immutable.Map),
 };
 
 export function mapStateToProps({ users }, props) {

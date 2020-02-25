@@ -5,10 +5,7 @@ import { bindActionCreators } from 'redux';
 
 import { t, actions } from 'app/I18N';
 import { Icon } from 'UI';
-import {
-  languages as elasticLanguages,
-  allLanguages as languagesList
-} from 'shared/languagesList';
+import { languages as elasticLanguages, allLanguages as languagesList } from 'shared/languagesList';
 import Warning from '../../Layout/Warning';
 import Tip from '../../Layout/Tip';
 
@@ -18,8 +15,8 @@ export class Languages extends Component {
       <span>
         {t('System', 'Default language')}
         <Tip>
-          This language will be used as default translation when adding new languages,
-          and the default language for the site when no other language has been selected.
+          This language will be used as default translation when adding new languages, and the
+          default language for the site when no other language has been selected.
         </Tip>
       </span>
     );
@@ -35,14 +32,19 @@ export class Languages extends Component {
     super(props);
     this.state = {
       languageToDelete: {},
-      languageToAdd: {}
+      languageToAdd: {},
     };
   }
 
   setAsDeafultButton(language) {
     return (
-      <button type="button" onClick={this.setDefault.bind(this, language)} className="btn btn-success btn-xs template-remove">
-        <Icon prefix="far" icon="star" />&nbsp;
+      <button
+        type="button"
+        onClick={this.setDefault.bind(this, language)}
+        className="btn btn-success btn-xs template-remove"
+      >
+        <Icon prefix="far" icon="star" />
+        &nbsp;
         <span>{t('System', 'Set as default')}</span>
       </button>
     );
@@ -56,7 +58,8 @@ export class Languages extends Component {
         onClick={this.deleteLanguage.bind(this, language)}
         type="button"
       >
-        <Icon icon="trash-alt" />&nbsp;
+        <Icon icon="trash-alt" />
+        &nbsp;
         <span>{t('System', 'Delete language')}</span>
       </button>
     );
@@ -72,7 +75,7 @@ export class Languages extends Component {
       title: `Confirm delete ${language.label}`,
       message: `Are you sure you want to delete ${language.label} language?
       This action may take some time, can not be undone and will delete all the information in that language.`,
-      extraConfirm: true
+      extraConfirm: true,
     });
   }
 
@@ -80,16 +83,19 @@ export class Languages extends Component {
     this.context.confirm({
       accept: () => this.props.addLanguage(language),
       title: `Confirm add ${language.label}`,
-      message: 'This action may take some time while we add the extra language to the entire collection.',
+      message:
+        'This action may take some time while we add the extra language to the entire collection.',
       extraConfirm: true,
-      type: 'success'
+      type: 'success',
     });
   }
 
   render() {
     const currentLanguages = this.props.languages.toJS();
     const currentLanguagesIsos = currentLanguages.map(l => l.key);
-    const elasticSupportedIsos = Object.keys(elasticLanguages).map(k => elasticLanguages[k].ISO639_1);
+    const elasticSupportedIsos = Object.keys(elasticLanguages).map(
+      k => elasticLanguages[k].ISO639_1
+    );
     const filteredLanguagesList = languagesList.filter(l => !currentLanguagesIsos.includes(l.key));
     return (
       <div className="panel panel-default">
@@ -97,16 +103,14 @@ export class Languages extends Component {
         <ul className="list-group document-types">
           {currentLanguages.map((language, index) => (
             <li key={index} className="list-group-item">
-              <span className="force-ltr">
-                {`${language.label} (${language.key})`}
-              </span>
+              <span className="force-ltr">{`${language.label} (${language.key})`}</span>
               {language.default ? Languages.defaultLanguage() : ''}
               <div className="list-group-item-actions">
                 {!language.default ? this.setAsDeafultButton(language) : ''}
                 {!language.default ? this.deleteButton(language) : ''}
               </div>
             </li>
-))}
+          ))}
         </ul>
         <div className="panel-heading">{t('System', 'Available Languages')}</div>
         <ul className="list-group document-types">
@@ -119,13 +123,19 @@ export class Languages extends Component {
                   {notSupported ? Languages.notSupportedLanguage() : ''}
                 </span>
                 <div className="list-group-item-actions">
-                  &nbsp;<button type="button" onClick={this.addLanguage.bind(this, language)} className="btn btn-success btn-xs template-remove">
-                    <Icon icon="plus" />&nbsp;
+                  &nbsp;
+                  <button
+                    type="button"
+                    onClick={this.addLanguage.bind(this, language)}
+                    className="btn btn-success btn-xs template-remove"
+                  >
+                    <Icon icon="plus" />
+                    &nbsp;
                     <span>{t('System', 'Add language')}</span>
                   </button>
                 </div>
               </li>
-          );
+            );
           })}
         </ul>
       </div>
@@ -134,7 +144,7 @@ export class Languages extends Component {
 }
 
 Languages.contextTypes = {
-  confirm: PropTypes.func
+  confirm: PropTypes.func,
 };
 
 Languages.propTypes = {
@@ -151,11 +161,14 @@ export function mapStateToProps(state) {
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({
-    addLanguage: actions.addLanguage,
-    deleteLanguage: actions.deleteLanguage,
-    setDefaultLanguage: actions.setDefaultLanguage
-  }, dispatch);
+  return bindActionCreators(
+    {
+      addLanguage: actions.addLanguage,
+      deleteLanguage: actions.deleteLanguage,
+      setDefaultLanguage: actions.setDefaultLanguage,
+    },
+    dispatch
+  );
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Languages);

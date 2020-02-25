@@ -9,21 +9,15 @@ describe('Options utils', () => {
         { label: 'Orange' },
         {
           label: 'Group',
-          options: [
-            { label: 'Pineapple' },
-            { label: 'Lemon' }
-          ]
+          options: [{ label: 'Pineapple' }, { label: 'Lemon' }],
         },
-        { label: 'Range Rover' }
+        { label: 'Range Rover' },
       ];
     });
 
     it('should return only items matching the filter', () => {
       const filtered = filterOptions('range', options, 'label');
-      expect(filtered).toEqual([
-        { label: 'Orange' },
-        { label: 'Range Rover' }
-      ]);
+      expect(filtered).toEqual([{ label: 'Orange' }, { label: 'Range Rover' }]);
     });
 
     it('should include group if its children match the filter', () => {
@@ -32,10 +26,7 @@ describe('Options utils', () => {
         { label: 'Apple' },
         {
           label: 'Group',
-          options: [
-            { label: 'Pineapple' },
-            { label: 'Lemon' }
-          ]
+          options: [{ label: 'Pineapple' }, { label: 'Lemon' }],
         },
       ]);
     });

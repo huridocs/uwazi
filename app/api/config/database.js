@@ -6,5 +6,5 @@ export default {
   demo: 'mongodb://localhost/uwazi_demo',
   development: `mongodb://${DBHOST}/${DATABASE_NAME || 'uwazi_development'}`,
   testing: `mongodb://${DBHOST}/${DATABASE_NAME || 'uwazi_testing'}`,
-  production: `mongodb://${DBHOST}/${DATABASE_NAME || 'uwazi_development'}`
+  production: `mongodb://${DBHOST}/${DATABASE_NAME || 'uwazi_development'}`,
 };

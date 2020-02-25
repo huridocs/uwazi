@@ -1,0 +1,132 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`EntityViewer should render 1 1`] = `
+<div
+  className="content-header-title"
+>
+  <Connect(I18NLink)
+    className="btn btn-default"
+    confirmMessage=""
+    confirmTitle=""
+    to="/settings/dictionaries/cockpit/id-thes"
+  >
+    <Connect(Icon)
+      icon="arrow-left"
+    />
+    <span
+      className="btn-label"
+    >
+      Back to
+       
+      <span>
+        'Thes'
+      </span>
+    </span>
+  </Connect(I18NLink)>
+  <span
+    className="large"
+  >
+    <span
+      className="space8"
+    />
+    Documents including suggestion:
+     
+    <b>
+      'Topic1'
+    </b>
+    <span
+      className="separator"
+    />
+  </span>
+  <div>
+    Document
+     
+    <span>
+      4
+    </span>
+     
+    of
+     
+    <span>
+      &gt;39
+    </span>
+    <span
+      className="space8"
+    />
+  </div>
+  <span>
+    <button
+      className="btn btn-default"
+      onClick={[Function]}
+      type="button"
+    >
+      <Connect(Icon)
+        icon="arrow-left"
+      />
+    </button>
+    <button
+      className="btn btn-default"
+      onClick={[Function]}
+      type="button"
+    >
+      <Connect(Icon)
+        icon="arrow-right"
+      />
+    </button>
+  </span>
+</div>
+`;
+
+exports[`EntityViewer should render 2 1`] = `
+<div
+  className="content-header-title"
+>
+  <span
+    className="large"
+  >
+    <span
+      className="space8"
+    />
+    Documents for custom filter
+    <span
+      className="separator"
+    />
+  </span>
+  <div>
+    Document
+     
+    <span>
+      1
+    </span>
+     
+    of
+     
+    <span>
+      10
+    </span>
+    <span
+      className="space8"
+    />
+  </div>
+  <span>
+    <button
+      className="btn btn-default btn-disabled"
+      onClick={[Function]}
+      type="button"
+    >
+      <Connect(Icon)
+        icon="arrow-left"
+      />
+    </button>
+    <button
+      className="btn btn-default"
+      onClick={[Function]}
+      type="button"
+    >
+      <Connect(Icon)
+        icon="arrow-right"
+      />
+    </button>
+  </span>
+</div>
+`;

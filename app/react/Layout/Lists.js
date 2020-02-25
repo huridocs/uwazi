@@ -5,9 +5,17 @@ import { Icon } from 'UI';
 
 const List = ({ children }) => <div className="item-group">{children}</div>;
 
-const ItemName = ({ children }) => <div className="item-name"><span>{children}</span></div>;
+const ItemName = ({ children }) => (
+  <div className="item-name">
+    <span>{children}</span>
+  </div>
+);
 
-const ItemFooter = ({ children, onClick }) => <div className="item-actions" onClick={onClick}>{children}</div>;
+const ItemFooter = ({ children, onClick }) => (
+  <div className="item-actions" onClick={onClick}>
+    {children}
+  </div>
+);
 
 const ProgressBar = ({ progress }) => {
   let message = `${progress} % Completed`;
@@ -22,7 +30,10 @@ const ProgressBar = ({ progress }) => {
         <Icon icon={icon} /> <span>{message}</span>
       </span>
       <div className="progress">
-        <div className="progress-bar progress-bar-striped active" style={{ width: `${progress}%` }} />
+        <div
+          className="progress-bar progress-bar-striped active"
+          style={{ width: `${progress}%` }}
+        />
       </div>
     </div>
   );
@@ -49,9 +60,19 @@ const ItemLabel = ({ children, status }) => {
 ItemFooter.Label = ItemLabel;
 ItemFooter.ProgressBar = ProgressBar;
 
-const RowList = ({ children, zoomLevel }) => <div className={`item-group item-group-zoom-${zoomLevel}`}>{children}</div>;
+const RowList = ({ children, zoomLevel }) => (
+  <div className={`item-group item-group-zoom-${zoomLevel}`}>{children}</div>
+);
 
-const RowListItem = ({ children, status, onClick, onMouseEnter, onMouseLeave, active, className }) => {
+const RowListItem = ({
+  children,
+  status,
+  onClick,
+  onMouseEnter,
+  onMouseLeave,
+  active,
+  className,
+}) => {
   let activeClass = '';
   if (active === true) {
     activeClass = 'is-active';
@@ -74,11 +95,7 @@ const RowListItem = ({ children, status, onClick, onMouseEnter, onMouseLeave, ac
 
 RowList.Item = RowListItem;
 
-const childrenType = PropTypes.oneOfType([
-  PropTypes.object,
-  PropTypes.array,
-  PropTypes.string
-]);
+const childrenType = PropTypes.oneOfType([PropTypes.object, PropTypes.array, PropTypes.string]);
 
 List.propTypes = { children: childrenType };
 
@@ -99,7 +116,7 @@ RowListItem.propTypes = {
   onMouseEnter: PropTypes.func,
   onMouseLeave: PropTypes.func,
   active: PropTypes.bool,
-  className: PropTypes.string
+  className: PropTypes.string,
 };
 ItemFooter.propTypes = { children: childrenType, onClick: PropTypes.func };
 ItemLabel.propTypes = { children: childrenType, status: PropTypes.string };

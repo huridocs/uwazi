@@ -1,19 +1,17 @@
 /** @format */
 
-import { actions as formActions } from 'react-redux-form';
-import { RequestParams } from 'app/utils/RequestParams';
-
 import { actions } from 'app/BasicReducer';
-import { notificationActions } from 'app/Notifications';
+import api from 'app/Entities/EntitiesAPI';
 import {
   removeDocument,
   removeDocuments,
-  unselectDocument,
   unselectAllDocuments,
+  unselectDocument,
 } from 'app/Library/actions/libraryActions';
+import { notificationActions } from 'app/Notifications';
 import { actions as relationshipActions } from 'app/Relationships';
-
-import api from '../EntitiesAPI';
+import { RequestParams } from 'app/utils/RequestParams';
+import { actions as formActions } from 'react-redux-form';
 
 export function saveEntity(entity) {
   return dispatch =>

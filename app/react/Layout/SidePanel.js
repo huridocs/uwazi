@@ -13,12 +13,9 @@ export class SidePanel extends Component {
 }
 
 SidePanel.propTypes = {
-  children: PropTypes.oneOfType([
-    PropTypes.object,
-    PropTypes.array
-  ]),
+  children: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
   className: PropTypes.string,
-  open: PropTypes.bool
+  open: PropTypes.bool,
 };
 
 export default SidePanel;

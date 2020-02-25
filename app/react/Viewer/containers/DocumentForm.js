@@ -10,18 +10,21 @@ function mapStateToProps({ documentViewer, templates, thesauris }) {
     isEntity: !documentViewer.sidepanel.file,
     templateId: documentViewer.sidepanel.metadata.template,
     templates,
-    thesauris
+    thesauris,
   };
 }
 
 export function mapDispatchToProps(dispatch) {
-  return bindActionCreators({
-    changeTemplate: actions.changeTemplate,
-    onSubmit: doc => disp => saveDocument(doc)(disp)
-    .then(() => {
-      disp(relationshipActions.reloadRelationships(doc.sharedId));
-    })
-  }, dispatch);
+  return bindActionCreators(
+    {
+      changeTemplate: actions.changeTemplate,
+      onSubmit: doc => disp =>
+        saveDocument(doc)(disp).then(() => {
+          disp(relationshipActions.reloadRelationships(doc.sharedId));
+        }),
+    },
+    dispatch
+  );
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(MetadataForm);

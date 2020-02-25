@@ -11,7 +11,7 @@ describe('ColorPicker', () => {
   beforeEach(() => {
     props = {
       defaultValue: '#112233',
-      onChange: jest.fn()
+      onChange: jest.fn(),
     };
   });
 
@@ -39,13 +39,19 @@ describe('ColorPicker', () => {
   describe('when button is clicked', () => {
     it('should display color picker if hidden', () => {
       render();
-      component.find('.ColorPicker__button').first().simulate('click');
+      component
+        .find('.ColorPicker__button')
+        .first()
+        .simulate('click');
       component.update();
       expect(component).toMatchSnapshot();
     });
     it('should hide color picker if displayed', () => {
       renderAndActivate();
-      component.find('.ColorPicker__button').first().simulate('click');
+      component
+        .find('.ColorPicker__button')
+        .first()
+        .simulate('click');
       expect(component).toMatchSnapshot();
     });
   });
@@ -53,7 +59,10 @@ describe('ColorPicker', () => {
   describe('when color picker is displayed', () => {
     it('should close when clicking outside', () => {
       renderAndActivate();
-      component.find('.ColorPicker__cover').first().simulate('click');
+      component
+        .find('.ColorPicker__cover')
+        .first()
+        .simulate('click');
       expect(component).toMatchSnapshot();
     });
   });

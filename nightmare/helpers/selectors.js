@@ -4,6 +4,7 @@ export default {
   homeLink: 'header .logotype a',
   settingsView: {
     liElementsOfSection: '#app > div.content > div > div > div.settings-content > div > ul > li',
+    tableElementsOfSection: '#app > div.content > div > div > div.settings-content > div > div.thesauri-list > table > tbody > tr',
     firstEditButton: '#app > div.content > div > div > div.settings-content > div > ul > li:nth-child(1) > div > a > i',
     collectionNameForm: '#app > div.content > div > div > div.settings-content > div > div.panel-body > form > div:nth-child(1) > input',
     settingsHeader: '#app > div.content > header > ul > li.menuActions > ul.menuNav-list > li:nth-child(3) > a',
@@ -11,6 +12,8 @@ export default {
     accountButton: '#app > div.content > div > div > div.settings-navigation > div > div:nth-child(1) > div.list-group > a:nth-child(1)',
     collectionButton: '#app > div.content > div > div > div.settings-navigation > div > div:nth-child(1) > div.list-group > a:nth-child(3)',
     dictionariesButton: '#app > div.content > div > div > div.settings-navigation > div > div:nth-child(2) > div.list-group > a:nth-child(2)',
+    dictionariesViewSuggestionsButton: '#app > div.content > div > div > div.settings-content > div > div.thesauri-list > table > tbody > tr:nth-child(2) > td:nth-child(2) > div > a',
+    dictionariesReviewSuggestionsButton: '#app > div.content > div > div > div.settings-content > div > div.cockpit > table > tbody > tr:nth-child(2) > td:nth-child(3) > a',
     entitiesButton: '#app > div.content > div > div > div.settings-navigation > div > div:nth-child(2) > div.list-group > a:nth-child(1)',
     connectionsButton: '#app > div.content > div > div > div.settings-navigation > div > div:nth-child(2) > div.list-group > a:nth-child(3)',
     filtersButton: '#app > div.content > div > div > div.settings-navigation > div > div:nth-child(1) > div.list-group > a:nth-child(8)',
@@ -205,5 +208,25 @@ export default {
       firstSight: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div.view > dl:nth-child(7) > dd',
       whoIsHe: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div > dl:nth-child(8) > dd > div > p'
     }
+  },
+  review: {
+    toggleFullEditButton: '#app > div.content > div > div > div > main > div.content-header.content-header-entity > button',
+    documentCount: '#app > div.content > div > div > div > main > div.content-header.content-header-entity > div > div',
+    previousDocumentButton: '#app > div.content > div > div > div > main > div.content-header.content-header-entity > div > span:nth-child(4) > button:nth-child(1)',
+    nextDocumentButton: '#app > div.content > div > div > div > main > div.content-header.content-header-entity > div > span:nth-child(4) > button:nth-child(2)',
+    topFirstSuggestion: '#sidePanelMetadataForm > div > div:nth-child(1) > ul > li:nth-child(2) > div > div:nth-child(2) > label > span.multiselectItem-icon',
+    topFirstSuggestReject: '#sidePanelMetadataForm > div > div:nth-child(1) > ul > li:nth-child(2) > div > div:nth-child(2) > label > div',
+    bottomFirstSuggestion: '#sidePanelMetadataForm > div > div:nth-child(2) > ul > li:nth-child(2) > div > div:nth-child(2) > label > span.multiselectItem-icon',
+    bottomFirstSuggestReject: '#sidePanelMetadataForm > div > div:nth-child(2) > ul > li:nth-child(2) > div > div:nth-child(2) > label > div',
+    firstMultiSelectItemSelected: '#sidePanelMetadataForm > div > div:nth-child(2) > ul > li:nth-child(3) > ul > li:nth-child(2) > label > span.multiselectItem-icon > svg.checkbox-checked',
+    secondMultiSelectItem: '#sidePanelMetadataForm > div > div > ul > li:nth-child(3) > ul > li:nth-child(3) > label',
+    secondMultiSelectItemSelected: '#sidePanelMetadataForm > div > div > ul > li:nth-child(3) > ul > li:nth-child(3) > label > span.multiselectItem-icon > svg.checkbox-checked',
+    titleLabel: '#app > div.content > div > div > div > main > div.entity-viewer > div > div.tab-content.tab-content-visible > div > div > div.content-header-title > h1',
+    titleEditBox: '#fullEditMetadataForm > div.form-group > ul > li.wide > div > textarea',
+    discardButtonDisabled: '#app > div.content > div > div > div > main > div.content-footer > button.cancel-edit-metadata.btn-disabled',
+    discardButtonEnabled: '#app > div.content > div > div > div > main > div.content-footer > button.cancel-edit-metadata.btn-danger',
+    saveAndGoToNextEnabled: '#app > div.content > div > div > div > main > div.content-footer > button.save-and-next.btn-success',
+    acceptConfirmDialog: 'body > div:nth-child(7) > div > div > div > div.modal-footer > button.btn.confirm-button.btn-danger',
+    cancelConfirmDialog: 'body > div:nth-child(7) > div > div > div > div.modal-footer > button.btn.btn-default.cancel-button'
   }
 };

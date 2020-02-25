@@ -10,15 +10,21 @@ import supercluster from 'supercluster'; //eslint-disable-line
 import _style from './style.json';
 import { getMarkersBoudingBox, markersToStyleFormat, TRANSITION_PROPS } from './helper';
 
-if (isClient) {
+if (isClient && !(process && process.env.__testingEnvironment)) {
   require('mapbox-gl').setRTLTextPlugin('/public/mapbox-gl-rtl-text.js.min'); //eslint-disable-line
 }
 
 const getStateDefaults = ({ latitude, longitude, width, height, zoom }) => ({
-  viewport: { latitude: latitude || 46, longitude: longitude || 6, width: width || 250, height: height || 200, zoom },
+  viewport: {
+    latitude: latitude || 46,
+    longitude: longitude || 6,
+    width: width || 250,
+    height: height || 200,
+    zoom,
+  },
   selectedMarker: null,
   settings: { scrollZoom: true, touchZoom: true },
-  showControls: false
+  showControls: false,
 });
 
 export default class Map extends Component {
@@ -31,8 +37,8 @@ export default class Map extends Component {
 
     this.mapStyle = Immutable.fromJS(_style);
     this.supercluster = supercluster({
-        radius: _style.sources.markers.clusterRadius,
-        maxZoom: _style.sources.markers.clusterMaxZoom
+      radius: _style.sources.markers.clusterRadius,
+      maxZoom: _style.sources.markers.clusterMaxZoom,
     });
     this.updateMapStyle(props);
     this.bindActions();
@@ -44,7 +50,7 @@ export default class Map extends Component {
     this.setSize();
     const map = this.map.getMap();
     map.on('load', () => this.centerOnMarkers(markers));
-    map.on('moveend', (e) => {
+    map.on('moveend', e => {
       if (e.autoCentered) {
         this.setViweport(map);
       }
@@ -76,17 +82,19 @@ export default class Map extends Component {
     const cluster = e.features.find(f => f.layer.id === 'clusters');
 
     switch (true) {
-    case (unclusteredPoints.length === 1):
-      this.clickOnMarker(markers[unclusteredPoints[0].properties.index]);
-      break;
-    case (unclusteredPoints.length > 1):
-      this.clickOnCluster(unclusteredPoints.map(marker => markers[marker.properties.index]));
-      break;
-    default:
-      break;
+      case unclusteredPoints.length === 1:
+        this.clickOnMarker(markers[unclusteredPoints[0].properties.index]);
+        break;
+      case unclusteredPoints.length > 1:
+        this.clickOnCluster(unclusteredPoints.map(marker => markers[marker.properties.index]));
+        break;
+      default:
+        break;
     }
 
-    if (cluster) { this.processClusterOnClick(cluster); }
+    if (cluster) {
+      this.processClusterOnClick(cluster);
+    }
 
     onClick(e);
   }
@@ -119,7 +127,7 @@ export default class Map extends Component {
       longitude: map.getCenter().lng,
       zoom: map.getZoom(),
       pitch: map.getPitch(),
-      bearing: map.getBearing()
+      bearing: map.getBearing(),
     });
     this.setState({ viewport: newViewport });
   }
@@ -132,8 +140,12 @@ export default class Map extends Component {
   }
 
   assignDefaults() {
-    this._onViewportChange = (viewport) => { this.setState({ viewport }); };
-    this._onViewStateChange = (viewport) => { this.setState({ viewport }); };
+    this._onViewportChange = viewport => {
+      this.setState({ viewport });
+    };
+    this._onViewStateChange = viewport => {
+      this.setState({ viewport });
+    };
 
     this.zoomIn = () => this.zoom(+1);
     this.zoomOut = () => this.zoom(-1);
@@ -143,7 +155,11 @@ export default class Map extends Component {
     const map = this.map.getMap();
     const currentData = this.mapStyle.getIn(['sources', 'markers', 'data', 'features']).toJS();
     this.supercluster.load(currentData);
-    const markersOnCluster = this.supercluster.getLeaves(cluster.properties.cluster_id, Math.floor(map.getZoom()), Infinity);
+    const markersOnCluster = this.supercluster.getLeaves(
+      cluster.properties.cluster_id,
+      Math.floor(map.getZoom()),
+      Infinity
+    );
     this.clickOnCluster(markersOnCluster);
   }
 
@@ -160,14 +176,26 @@ export default class Map extends Component {
     }
     const map = this.map.getMap();
     const boundaries = getMarkersBoudingBox(markers);
-    map.stop().fitBounds(boundaries, { padding: { top: 70, left: 20, right: 20, bottom: 20 }, maxZoom: 5, duration: 0 }, { autoCentered: true });
+    map
+      .stop()
+      .fitBounds(
+        boundaries,
+        { padding: { top: 70, left: 20, right: 20, bottom: 20 }, maxZoom: 5, duration: 0 },
+        { autoCentered: true }
+      );
   }
 
   zoom(amount) {
     const { viewport } = this.state;
-    if (!this.map) { return; }
+    if (!this.map) {
+      return;
+    }
     const map = this.map.getMap();
-    this._onViewStateChange(Object.assign({}, viewport, { zoom: map.getZoom() + amount }, TRANSITION_PROPS, { transitionDuration: 500 }));
+    this._onViewStateChange(
+      Object.assign({}, viewport, { zoom: map.getZoom() + amount }, TRANSITION_PROPS, {
+        transitionDuration: 500,
+      })
+    );
   }
 
   updateMapStyle({ cluster, markers }) {
@@ -178,7 +206,10 @@ export default class Map extends Component {
     const markersData = markersToStyleFormat(markers);
     const currentData = this.mapStyle.getIn(['sources', 'markers', 'data', 'features']);
     if (!currentData.equals(Immutable.fromJS(markersData))) {
-      const style = this.mapStyle.setIn(['sources', 'markers', 'data', 'features'], Immutable.fromJS(markersData));
+      const style = this.mapStyle.setIn(
+        ['sources', 'markers', 'data', 'features'],
+        Immutable.fromJS(markersData)
+      );
       this.mapStyle = style;
       this.supercluster.load(markersData);
     }
@@ -226,10 +257,21 @@ export default class Map extends Component {
   renderPopup() {
     const { selectedMarker } = this.state;
     const { renderPopupInfo } = this.props;
-    if (selectedMarker && (renderPopupInfo || (selectedMarker && selectedMarker.properties && selectedMarker.properties.info))) {
+    if (
+      selectedMarker &&
+      (renderPopupInfo ||
+        (selectedMarker && selectedMarker.properties && selectedMarker.properties.info))
+    ) {
       const { longitude, latitude } = selectedMarker;
       return (
-        <Popup tipSize={6} anchor="bottom" longitude={longitude} latitude={latitude} offsetTop={-20} closeButton={false}>
+        <Popup
+          tipSize={6}
+          anchor="bottom"
+          longitude={longitude}
+          latitude={latitude}
+          offsetTop={-20}
+          closeButton={false}
+        >
           <div>
             {renderPopupInfo ? renderPopupInfo(selectedMarker) : selectedMarker.properties.info}
           </div>
@@ -274,9 +316,17 @@ export default class Map extends Component {
     const { viewport, settings } = this.state;
 
     return (
-      <div className="map-container" ref={(container) => { this.container = container; }} style={{ width: '100%', height: '100%' }}>
+      <div
+        className="map-container"
+        ref={container => {
+          this.container = container;
+        }}
+        style={{ width: '100%', height: '100%' }}
+      >
         <ReactMapGL
-          ref={(ref) => { this.map = ref; }}
+          ref={ref => {
+            this.map = ref;
+          }}
           {...viewport}
           {...settings}
           dragRotate
@@ -315,7 +365,7 @@ Map.defaultProps = {
   cluster: false,
   autoCenter: true,
   scrollZoom: true,
-  showControls: false
+  showControls: false,
 };
 
 Map.propTypes = {
@@ -334,5 +384,5 @@ Map.propTypes = {
   cluster: PropTypes.bool,
   autoCenter: PropTypes.bool,
   scrollZoom: PropTypes.bool,
-  showControls: PropTypes.bool
+  showControls: PropTypes.bool,
 };

@@ -6,6 +6,6 @@ export default combineReducers({
   progress,
   edit: combineReducers({
     attachment: modelReducer('attachments.edit.attachment'),
-    form: formReducer('attachments.edit.attachment')
-  })
+    form: formReducer('attachments.edit.attachment'),
+  }),
 });

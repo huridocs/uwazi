@@ -1,11 +1,10 @@
-
 import validator, { notEmpty } from '../validator';
 
 describe('metadata validator', () => {
   const fieldsTemplate = [
     { name: 'field1', label: 'label1', required: true },
     { name: 'field2', label: 'label2', type: 'select', content: 'thesauriId' },
-    { name: 'field3', label: 'label3', required: true }
+    { name: 'field3', label: 'label3', required: true },
   ];
 
   const template = { name: 'template1', _id: 'templateId', properties: fieldsTemplate };

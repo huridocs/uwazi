@@ -9,14 +9,13 @@ import { iconNames } from 'UI/Icon/library';
 import IconSelector, { ListItem } from '../IconSelector';
 import DropdownList from '../DropdownList';
 
-
 describe('ListItem', () => {
   let component;
   let instance;
   let props;
 
   const render = () => {
-    component = shallow(<ListItem {...props}/>);
+    component = shallow(<ListItem {...props} />);
     instance = component.instance();
   };
 
@@ -50,7 +49,7 @@ describe('IconSelector', () => {
 
   const render = () => {
     props = { onChange: 'Function' };
-    component = shallow(<IconSelector {...props}/>);
+    component = shallow(<IconSelector {...props} />);
   };
 
   it('should have an empty option', () => {
@@ -62,7 +61,9 @@ describe('IconSelector', () => {
   it('should render a DropdownList with icons and flags, extending passed props', () => {
     render();
     const firstFlagIndex = component.find(DropdownList).props().data.length - countries.length;
-    expect(component.find(DropdownList).props().data.length).toBe(iconNames.length + countries.length + 1);
+    expect(component.find(DropdownList).props().data.length).toBe(
+      iconNames.length + countries.length + 1
+    );
 
     expect(component.find(DropdownList).props().data[1].type).toBe('Icons');
     expect(component.find(DropdownList).props().data[1]._id).toBe(iconNames[0]);
@@ -70,11 +71,15 @@ describe('IconSelector', () => {
 
     expect(component.find(DropdownList).props().data[firstFlagIndex].type).toBe('Flags');
     expect(component.find(DropdownList).props().data[firstFlagIndex]._id).toBe(countries[0].cca3);
-    expect(component.find(DropdownList).props().data[firstFlagIndex].label).toBe(countries[0].name.common);
+    expect(component.find(DropdownList).props().data[firstFlagIndex].label).toBe(
+      countries[0].name.common
+    );
 
     expect(component.find(DropdownList).props().valueComponent).toBe(ListItem);
     expect(component.find(DropdownList).props().itemComponent).toBe(ListItem);
-    expect(component.find(DropdownList).props().defaultValue).toBe(component.find(DropdownList).props().data[0]);
+    expect(component.find(DropdownList).props().defaultValue).toBe(
+      component.find(DropdownList).props().data[0]
+    );
     expect(component.find(DropdownList).props().onChange).toBe('Function');
   });
 });

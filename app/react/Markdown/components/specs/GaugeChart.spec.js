@@ -1,3 +1,6 @@
+/**
+ * @jest-environment jsdom
+ */
 import React from 'react';
 
 import { shallow } from 'enzyme';
@@ -8,14 +11,16 @@ import markdownDatasets from '../../markdownDatasets';
 
 describe('GaugeChart Markdown component', () => {
   const state = {
-    thesauris: Immutable.fromJS([{
-      _id: 'tContext',
-      values: [
-        { id: 'id1', label: 'label1' },
-        { id: 'id2', label: 'label2' },
-        { id: 'id3', label: 'label3' },
-      ]
-    }]),
+    thesauris: Immutable.fromJS([
+      {
+        _id: 'tContext',
+        values: [
+          { id: 'id1', label: 'label1' },
+          { id: 'id2', label: 'label2' },
+          { id: 'id3', label: 'label3' },
+        ],
+      },
+    ]),
   };
 
   it('should render the data passed by mapStateToProps', () => {
@@ -36,11 +41,15 @@ describe('GaugeChart Markdown component', () => {
       max: '12',
       height: '300',
       classname: 'custom-class',
-      colors: '#f00,#0f0'
+      colors: '#f00,#0f0',
     };
 
     const props = mapStateToProps(state, ownProps);
-    const component = shallow(<GaugeChartComponent {...Object.assign({}, ownProps, props)}>Pre <div /> Suf</GaugeChartComponent>);
+    const component = shallow(
+      <GaugeChartComponent {...Object.assign({}, ownProps, props)}>
+        Pre <div /> Suf
+      </GaugeChartComponent>
+    );
 
     expect(markdownDatasets.getMetadataValue).toHaveBeenCalledWith(state, ownProps);
     expect(component).toMatchSnapshot();
@@ -51,7 +60,7 @@ describe('GaugeChart Markdown component', () => {
     spyOn(markdownDatasets, 'getMetadataValue').and.returnValue(undefinedValue);
 
     const props = mapStateToProps(state, { prop2: 'propValue' });
-    const component = shallow(<GaugeChartComponent {...props} property="prop2"/>);
+    const component = shallow(<GaugeChartComponent {...props} property="prop2" />);
 
     expect(markdownDatasets.getMetadataValue).toHaveBeenCalledWith(state, { prop2: 'propValue' });
     expect(component).toMatchSnapshot();

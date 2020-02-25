@@ -15,20 +15,14 @@ describe('ActivitylogForm', () => {
     spyOn(actions, 'activitylogSearch');
     spyOn(actions, 'activitylogSearchMore');
     spyOn(redux, 'bindActionCreators').and.callFake(propsToBind => propsToBind);
-    const rows = [
-      { time: 8235 },
-      { time: 7614 },
-      { time: 6613 },
-      { time: 6187 },
-      { time: 6013 }
-    ];
+    const rows = [{ time: 8235 }, { time: 7614 }, { time: 6613 }, { time: 6187 }, { time: 6013 }];
     state = { activitylog: { search: Immutable.fromJS({ limit: 5, remainingRows: 7, rows }) } };
   });
 
   const render = () => {
-    props = { };
+    props = {};
     const fullProps = Object.assign({}, props, mapStateToProps(state), mapDispatchToProps());
-    component = shallow(<ActivitylogForm.WrappedComponent {...fullProps}/>);
+    component = shallow(<ActivitylogForm.WrappedComponent {...fullProps} />);
   };
 
   it('should render a form', () => {

@@ -2,7 +2,6 @@ import { fromJS as Immutable } from 'immutable';
 import RelationshipsGraph from 'app/Relationships/components/RelationshipsGraphEdit';
 import { mapStateToProps } from '../ConnectionsList';
 
-
 describe('ConnectionsList', () => {
   describe('mapStateToProps', () => {
     let state;
@@ -13,14 +12,16 @@ describe('ConnectionsList', () => {
         relationships: {
           list: {
             sharedId: 'id1',
-            searchResults: Immutable({ rows: [
-              { sharedId: 'id2', connections: ['a', 'b'] },
-              { sharedId: 'id1', connections: ['c'] },
-              { sharedId: 'id2', connections: ['d'] }
-            ] }),
-            sort: 'sort'
-          }
-        }
+            searchResults: Immutable({
+              rows: [
+                { sharedId: 'id2', connections: ['a', 'b'] },
+                { sharedId: 'id1', connections: ['c'] },
+                { sharedId: 'id2', connections: ['d'] },
+              ],
+            }),
+            sort: 'sort',
+          },
+        },
       };
 
       props = mapStateToProps(state);

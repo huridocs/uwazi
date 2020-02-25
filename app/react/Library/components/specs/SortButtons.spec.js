@@ -10,7 +10,7 @@ describe('SortButtons', () => {
   let props;
 
   const render = () => {
-    component = shallow(<SortButtons {...props}/>);
+    component = shallow(<SortButtons {...props} />);
     instance = component.instance();
   };
 
@@ -20,17 +20,18 @@ describe('SortButtons', () => {
       merge: jasmine.createSpy('merge'),
       search: { order: 'desc', sort: 'title' },
       templates: immutable([
-        { properties: [
-          {},
-          { filter: true, name: 'date', label: 'date', type: 'date' },
-          { filter: true, name: 'number', label: 'number', type: 'numeric' },
-          { filter: true, name: 'my_select', label: 'my select', type: 'select' },
-          { filter: true, name: 'sortable_name', label: 'sortableProperty', type: 'text' }
-        ]
-        }
+        {
+          properties: [
+            {},
+            { filter: true, name: 'date', label: 'date', type: 'date' },
+            { filter: true, name: 'number', label: 'number', type: 'numeric' },
+            { filter: true, name: 'my_select', label: 'my select', type: 'select' },
+            { filter: true, name: 'sortable_name', label: 'sortableProperty', type: 'text' },
+          ],
+        },
       ]),
       stateProperty: 'search',
-      storeKey: 'library'
+      storeKey: 'library',
     };
   });
 
@@ -43,15 +44,42 @@ describe('SortButtons', () => {
     describe('when multiple options have the same name', () => {
       it('should not duplicate the entry', () => {
         props.templates = immutable([
-          { properties: [{}, { filter: true, name: 'sortable_name', label: 'sortableProperty', type: 'text' }] },
-          { properties: [{ filter: true, name: 'sortable_name', label: 'anotherLabel', type: 'text' }] }
+          {
+            properties: [
+              {},
+              { filter: true, name: 'sortable_name', label: 'sortableProperty', type: 'text' },
+            ],
+          },
+          {
+            properties: [
+              { filter: true, name: 'sortable_name', label: 'anotherLabel', type: 'text' },
+            ],
+          },
         ]);
         render();
 
         expect(component.find('li').length).toBe(3);
 
-        expect(component.find('li').last().children().at(0).find('span').last().text()).toBe('sortableProperty (A-Z)');
-        expect(component.find('li').last().children().at(1).find('span').last().text()).toBe('sortableProperty (Z-A)');
+        expect(
+          component
+            .find('li')
+            .last()
+            .children()
+            .at(0)
+            .find('span')
+            .last()
+            .text()
+        ).toBe('sortableProperty (A-Z)');
+        expect(
+          component
+            .find('li')
+            .last()
+            .children()
+            .at(1)
+            .find('span')
+            .last()
+            .text()
+        ).toBe('sortableProperty (Z-A)');
       });
     });
 
@@ -59,7 +87,16 @@ describe('SortButtons', () => {
       it('should display sort by search relevance option', () => {
         props.search.searchTerm = 'keyword';
         render();
-        expect(component.find('li').at(2).children().at(0).find('span').last().text()).toBe('Search relevance');
+        expect(
+          component
+            .find('li')
+            .at(2)
+            .children()
+            .at(0)
+            .find('span')
+            .last()
+            .text()
+        ).toBe('Search relevance');
       });
     });
 
@@ -75,7 +112,12 @@ describe('SortButtons', () => {
       it('should set the option active', () => {
         props.search.sort = 'metadata.sortable_name';
         render();
-        expect(component.find('li').last().hasClass('is-active')).toBe(true);
+        expect(
+          component
+            .find('li')
+            .last()
+            .hasClass('is-active')
+        ).toBe(true);
       });
     });
 
@@ -83,9 +125,15 @@ describe('SortButtons', () => {
       it('should sort by that property with default order (asc for text and desc for date)', () => {
         render();
         component.setState({ active: true });
-        component.find('li').last().children().at(0).simulate('click');
+        component
+          .find('li')
+          .last()
+          .children()
+          .at(0)
+          .simulate('click');
         expect(props.sortCallback).toHaveBeenCalledWith(
-          { search: { sort: 'metadata.sortable_name', order: 'asc', userSelectedSorting: true } }, 'library'
+          { search: { sort: 'metadata.sortable_name', order: 'asc', userSelectedSorting: true } },
+          'library'
         );
 
         const templates = props.templates.toJS();
@@ -97,9 +145,15 @@ describe('SortButtons', () => {
         render();
         component.setState({ active: true });
 
-        component.find('li').last().children().at(0).simulate('click');
+        component
+          .find('li')
+          .last()
+          .children()
+          .at(0)
+          .simulate('click');
         expect(props.sortCallback).toHaveBeenCalledWith(
-          { search: { sort: 'metadata.different_name', order: 'desc', userSelectedSorting: true } }, 'library'
+          { search: { sort: 'metadata.different_name', order: 'desc', userSelectedSorting: true } },
+          'library'
         );
       });
     });
@@ -109,14 +163,24 @@ describe('SortButtons', () => {
     it('should merge with searchTerm and filtersForm and NOT toggle between asc/desc', () => {
       render();
       instance.sort('title', 'asc', 'number');
-      expect(props.sortCallback).toHaveBeenCalledWith({ search: { sort: 'title', order: 'asc', userSelectedSorting: true } }, 'library');
+      expect(props.sortCallback).toHaveBeenCalledWith(
+        { search: { sort: 'title', order: 'asc', userSelectedSorting: true } },
+        'library'
+      );
 
       props.search.order = 'asc';
       props.search.treatAs = 'number';
       render();
       instance.sort('title', 'asc', 'string');
-      expect(props.merge).toHaveBeenCalledWith('search', { sort: 'title', order: 'asc', treatAs: 'number' });
-      expect(props.sortCallback).toHaveBeenCalledWith({ search: { sort: 'title', order: 'asc', userSelectedSorting: true } }, 'library');
+      expect(props.merge).toHaveBeenCalledWith('search', {
+        sort: 'title',
+        order: 'asc',
+        treatAs: 'number',
+      });
+      expect(props.sortCallback).toHaveBeenCalledWith(
+        { search: { sort: 'title', order: 'asc', userSelectedSorting: true } },
+        'library'
+      );
     });
 
     it('should not fail if no sortCallback', () => {
@@ -136,19 +200,28 @@ describe('SortButtons', () => {
         props.search = { order: 'desc', sort: 'title' };
         render();
         instance.sort('title');
-        expect(props.sortCallback).toHaveBeenCalledWith({ search: { sort: 'title', order: 'asc', userSelectedSorting: true } }, 'library');
+        expect(props.sortCallback).toHaveBeenCalledWith(
+          { search: { sort: 'title', order: 'asc', userSelectedSorting: true } },
+          'library'
+        );
 
         props.sortCallback.calls.reset();
         props.search = { order: 'desc', sort: 'title' };
         render();
         instance.sort('creationDate', 'desc');
-        expect(props.sortCallback).toHaveBeenCalledWith({ search: { sort: 'creationDate', order: 'desc', userSelectedSorting: true } }, 'library');
+        expect(props.sortCallback).toHaveBeenCalledWith(
+          { search: { sort: 'creationDate', order: 'desc', userSelectedSorting: true } },
+          'library'
+        );
 
         props.sortCallback.calls.reset();
         props.search = { order: 'desc', sort: 'title' };
         render();
         instance.sort('creationDate', 'asc');
-        expect(props.sortCallback).toHaveBeenCalledWith({ search: { sort: 'creationDate', order: 'asc', userSelectedSorting: true } }, 'library');
+        expect(props.sortCallback).toHaveBeenCalledWith(
+          { search: { sort: 'creationDate', order: 'asc', userSelectedSorting: true } },
+          'library'
+        );
       });
     });
 
@@ -158,7 +231,11 @@ describe('SortButtons', () => {
         render();
         instance.sort('title');
         instance.changeOrder();
-        expect(props.merge).toHaveBeenCalledWith('search', { sort: 'title', order: 'asc', treatAs: 'number' });
+        expect(props.merge).toHaveBeenCalledWith('search', {
+          sort: 'title',
+          order: 'asc',
+          treatAs: 'number',
+        });
       });
     });
   });
@@ -215,7 +292,14 @@ describe('SortButtons', () => {
         let _props = { storeKey: 'library', stateProperty: 'library.sort' };
         expect(mapStateToProps(state, _props).search).toBe('correct search');
 
-        state = { templates, library: { search: 'incorrect search', sort: 'incorrect search', nested: { dashed: 'correct search' } } };
+        state = {
+          templates,
+          library: {
+            search: 'incorrect search',
+            sort: 'incorrect search',
+            nested: { dashed: 'correct search' },
+          },
+        };
         _props = { storeKey: 'library', stateProperty: 'library/nested.dashed' };
         expect(mapStateToProps(state, _props).search).toBe('correct search');
       });

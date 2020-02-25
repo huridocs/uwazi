@@ -22,7 +22,10 @@ describe('Metadata', () => {
     {
       name: 'label_array',
       label: 'label array',
-      value: [{ value: 'first_value', url: 'url1' }, { value: 'second_value', url: 'url2' }],
+      value: [
+        { value: 'first_value', url: 'url1' },
+        { value: 'second_value', url: 'url2' },
+      ],
     },
   ];
 

@@ -15,7 +15,9 @@ export class UploadAttachment extends Component {
 
   onChangeAll(e) {
     const file = e.target.files[0];
-    this.props.uploadAttachment(this.props.entity, file, this.props.storeKey, { allLanguages: true });
+    this.props.uploadAttachment(this.props.entity, file, this.props.storeKey, {
+      allLanguages: true,
+    });
   }
 
   renderUploadButton() {
@@ -27,7 +29,12 @@ export class UploadAttachment extends Component {
           <span className="btn-label">
             <Icon icon="link" /> {t('System', 'Add to all languages')}
           </span>
-          <input onChange={this.onChangeAll.bind(this)} type="file" id="upload-attachment-all-input" style={{ display: 'none' }} />
+          <input
+            onChange={this.onChangeAll.bind(this)}
+            type="file"
+            id="upload-attachment-all-input"
+            style={{ display: 'none' }}
+          />
         </label>
       );
     }
@@ -38,7 +45,12 @@ export class UploadAttachment extends Component {
           <span className="btn-label">
             <Icon icon="paperclip" /> {t('System', 'Add file')}
           </span>
-          <input onChange={this.onChangeSingle.bind(this)} type="file" id="upload-attachment-input" style={{ display: 'none' }} />
+          <input
+            onChange={this.onChangeSingle.bind(this)}
+            type="file"
+            id="upload-attachment-input"
+            style={{ display: 'none' }}
+          />
         </label>
         {uploadToAll}
       </div>
@@ -65,13 +77,13 @@ UploadAttachment.propTypes = {
   entity: PropTypes.string,
   progress: PropTypes.object,
   languages: PropTypes.object,
-  storeKey: PropTypes.string
+  storeKey: PropTypes.string,
 };
 
 export function mapStateToProps({ attachments, settings }) {
   return {
     progress: attachments.progress,
-    languages: settings.collection.get('languages')
+    languages: settings.collection.get('languages'),
   };
 }
 

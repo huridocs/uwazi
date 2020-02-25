@@ -21,7 +21,10 @@ import { RequestParams } from 'app/utils/RequestParams';
 
 import { PaginatorWithPage } from './Paginator';
 import { addReference as addReferenceAction } from '../actions/referencesActions';
-import { loadDefaultViewerMenu, loadTargetDocument as loadTargetDocumentAction } from '../actions/documentActions';
+import {
+  loadDefaultViewerMenu,
+  loadTargetDocument as loadTargetDocumentAction,
+} from '../actions/documentActions';
 import { openPanel } from '../actions/uiActions';
 import { selectDoc } from '../selectors';
 import ConfirmCloseForm from './ConfirmCloseForm';
@@ -33,7 +36,6 @@ import ViewerTextSelectedMenu from './ViewerTextSelectedMenu';
 
 import determineDirection from '../utils/determineDirection';
 import { requestViewerState } from '../actions/routeActions';
-
 
 export class Viewer extends Component {
   constructor(props) {
@@ -62,9 +64,10 @@ export class Viewer extends Component {
     const { templates, doc } = this.props;
 
     if (doc.size && !doc.get('pdfInfo')) {
-      requestViewerState(new RequestParams({ sharedId: doc.get('sharedId') }), { templates: templates.toJS() })
-      .then((viewerActions) => {
-        viewerActions.forEach((action) => {
+      requestViewerState(new RequestParams({ sharedId: doc.get('sharedId') }), {
+        templates: templates.toJS(),
+      }).then(viewerActions => {
+        viewerActions.forEach(action => {
           store.dispatch(action);
         });
       });
@@ -105,17 +108,28 @@ export class Viewer extends Component {
               This entity has no document, you probably want to see the metadata
             </Translate>
             &nbsp;
-            <I18NLink to={`/entity/${doc.get('sharedId')}`}><Translate>view</Translate></I18NLink>
+            <I18NLink to={`/entity/${doc.get('sharedId')}`}>
+              <Translate>view</Translate>
+            </I18NLink>
           </div>
         </div>
       </div>
     );
   }
 
-
   render() {
-    const { doc, sidepanelTab, targetDoc, changePage, onPageChange, onDocumentReady,
-            addReference, loadTargetDocument, panelIsOpen, showTextSelectMenu } = this.props;
+    const {
+      doc,
+      sidepanelTab,
+      targetDoc,
+      changePage,
+      onPageChange,
+      onDocumentReady,
+      addReference,
+      loadTargetDocument,
+      panelIsOpen,
+      showTextSelectMenu,
+    } = this.props;
     const { firstRender } = this.state;
     if (doc.get('_id') && !doc.get('file')) {
       return this.renderNoDoc();
@@ -135,16 +149,17 @@ export class Viewer extends Component {
             <div className="content-header-title">
               {sidepanelTab !== 'connections' && (
                 <React.Fragment>
-                  <PaginatorWithPage
-                    totalPages={doc.get('totalPages')}
-                    onPageChange={changePage}
-                  />
+                  <PaginatorWithPage totalPages={doc.get('totalPages')} onPageChange={changePage} />
                   <CurrentLocationLink
                     onClick={!raw ? this.handlePlainTextClick : () => {}}
                     className="btn btn-default"
                     queryParams={{ raw: raw || firstRender ? '' : 'true' }}
                   >
-                    { raw || firstRender ? <Translate>Normal view</Translate> : <Translate>Plain text</Translate> }
+                    {raw || firstRender ? (
+                      <Translate>Normal view</Translate>
+                    ) : (
+                      <Translate>Plain text</Translate>
+                    )}
                   </CurrentLocationLink>
                 </React.Fragment>
               )}
@@ -154,21 +169,30 @@ export class Viewer extends Component {
         <main className={className}>
           <div className="main-wrapper">
             <ShowIf if={sidepanelTab !== 'connections' && !targetDoc}>
-              {raw || firstRender ?
-                <pre className={determineDirection(documentFile)}>{pageText}</pre> :
-                <SourceDocument searchTerm={searchTerm} onPageChange={onPageChange} onDocumentReady={onDocumentReady}/>
-              }
+              {raw || firstRender ? (
+                <pre className={determineDirection(documentFile)}>{pageText}</pre>
+              ) : (
+                <SourceDocument
+                  searchTerm={searchTerm}
+                  onPageChange={onPageChange}
+                  onDocumentReady={onDocumentReady}
+                />
+              )}
             </ShowIf>
             <ShowIf if={sidepanelTab === 'connections'}>
               <ConnectionsList hideFooter searchCentered />
             </ShowIf>
             <TargetDocument />
-            <Footer/>
+            <Footer />
           </div>
         </main>
 
         <ConfirmCloseForm />
-        <ViewMetadataPanel raw={raw || firstRender} storeKey="documentViewer" searchTerm={searchTerm}/>
+        <ViewMetadataPanel
+          raw={raw || firstRender}
+          storeKey="documentViewer"
+          searchTerm={searchTerm}
+        />
         <CreateConnectionPanel
           containerId={targetDoc ? 'target' : doc.get('sharedId')}
           onCreate={addReference}
@@ -190,10 +214,10 @@ export class Viewer extends Component {
         </ShowIf>
 
         <ContextMenu align="bottom" overrideShow show={!panelIsOpen}>
-          <ViewerDefaultMenu/>
+          <ViewerDefaultMenu />
         </ContextMenu>
         <ContextMenu align="center" overrideShow show={showTextSelectMenu}>
-          <ViewerTextSelectedMenu/>
+          <ViewerTextSelectedMenu />
         </ContextMenu>
       </div>
     );
@@ -208,7 +232,7 @@ Viewer.defaultProps = {
   onDocumentReady: () => {},
   page: 1,
   templates: List(),
-  doc: Map()
+  doc: Map(),
 };
 
 Viewer.propTypes = {
@@ -235,11 +259,10 @@ Viewer.propTypes = {
 };
 
 Viewer.contextTypes = {
-  store: PropTypes.object
+  store: PropTypes.object,
 };
 
-
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
   const { documentViewer } = state;
   const uiState = documentViewer.uiState.toJS();
   return {
@@ -251,14 +274,20 @@ const mapStateToProps = (state) => {
     // TEST!!!!
     sidepanelTab: documentViewer.sidepanel.tab,
     showConnections: documentViewer.sidepanel.tab === 'references',
-    showTextSelectMenu: Boolean(!documentViewer.targetDoc.get('_id') && uiState.reference && uiState.reference.sourceRange),
+    showTextSelectMenu: Boolean(
+      !documentViewer.targetDoc.get('_id') && uiState.reference && uiState.reference.sourceRange
+    ),
   };
 };
 
-const mapDispatchToProps = dispatch => bindActionCreators({
-  addReference: addReferenceAction,
-  loadTargetDocument: loadTargetDocumentAction,
-  showTab: tab => actions.set('viewer.sidepanel.tab', tab),
-}, dispatch);
+const mapDispatchToProps = dispatch =>
+  bindActionCreators(
+    {
+      addReference: addReferenceAction,
+      loadTargetDocument: loadTargetDocumentAction,
+      showTab: tab => actions.set('viewer.sidepanel.tab', tab),
+    },
+    dispatch
+  );
 
 export default connect(mapStateToProps, mapDispatchToProps)(Viewer);

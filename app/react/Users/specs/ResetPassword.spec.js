@@ -1,3 +1,6 @@
+/**
+ * @jest-environment jsdom
+ */
 import React from 'react';
 import { shallow } from 'enzyme';
 import { browserHistory } from 'react-router';
@@ -13,7 +16,7 @@ describe('ResetPassword', () => {
     spyOn(browserHistory, 'push');
     props = {
       resetPassword: jasmine.createSpy('resetPassword').and.returnValue({ then: cb => cb() }),
-      params: { key: 'asd' }
+      params: { key: 'asd' },
     };
 
     context = { store: { getState: () => ({}) }, router: { location: '' } };
@@ -65,8 +68,18 @@ describe('ResetPassword', () => {
       it('should display an error', () => {
         component.setState({ password: 'ultraSecret', repeatPassword: 'IDontKnowWhatIAmDoing' });
         component.find('form').simulate('submit', { preventDefault: () => {} });
-        expect(component.find('form').childAt(0).hasClass('has-error')).toBe(true);
-        expect(component.find('form').childAt(1).hasClass('has-error')).toBe(true);
+        expect(
+          component
+            .find('form')
+            .childAt(0)
+            .hasClass('has-error')
+        ).toBe(true);
+        expect(
+          component
+            .find('form')
+            .childAt(1)
+            .hasClass('has-error')
+        ).toBe(true);
       });
     });
   });
