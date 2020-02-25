@@ -155,28 +155,6 @@ describe('Attachment', () => {
     expect(replaceButton.parent().props().if).toBe(false);
   });
 
-  describe('When is sourceDocument', () => {
-    beforeEach(() => {
-      props.isSourceDocument = true;
-    });
-
-    it('should include an authorized replace button on the first item', () => {
-      render();
-      const replaceButton = component.find('.attachment-buttons').find(UploadButton);
-
-      expect(replaceButton.props().documentId).toBe(props.parentId);
-      expect(replaceButton.props().storeKey).toBe('storeKey');
-      expect(replaceButton.props().documentSharedId).toBe(props.parentSharedId);
-      expect(
-        replaceButton
-          .parents()
-          .at(2)
-          .is(NeedAuthorization)
-      ).toBe(true);
-      expect(replaceButton.parent().props().if).toBe(true);
-    });
-  });
-
   it('should allow downloading the attachment', () => {
     render();
     expect(component.find('.attachment-link').props().href).toBe(

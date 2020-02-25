@@ -8,8 +8,15 @@ import { addReference, saveTargetRangedReference } from '../actions/referencesAc
 import { cancelTargetDocument } from '../actions/documentActions';
 
 export class TargetDocumentHeader extends Component {
-  save(connection, targetRange) {
-    return this.props.saveTargetRangedReference(connection.toJS(), targetRange, ref => {
+  constructor(props) {
+    super(props);
+    this.save = this.save.bind(this);
+  }
+
+  save() {
+    const { reference, connection } = this.props;
+    const { targetRange, targetFile } = reference;
+    return this.props.saveTargetRangedReference(connection.toJS(), targetRange, targetFile, ref => {
       this.props.addReference(ref, this.props.pdfInfo.toJS(), true);
     });
   }
@@ -36,7 +43,7 @@ export class TargetDocumentHeader extends Component {
           </h2>
         </div>
         <div className="ContextMenu ContextMenu-center">
-          <button onClick={this.save.bind(this, connection, targetRange)} className={className}>
+          <button onClick={this.save} className={className}>
             <Icon icon="save" />
             <span className="ContextMenu-tooltip">Save</span>
           </button>

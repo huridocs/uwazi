@@ -46,7 +46,7 @@ export class Document extends Component {
   }
 
   onTextSelected() {
-    this.props.setSelection(this.text.getSelection());
+    this.props.setSelection(this.text.getSelection(), this.props.file._id);
   }
 
   onDocumentReady() {

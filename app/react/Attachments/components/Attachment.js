@@ -21,14 +21,14 @@ import {
 
 const getExtension = filename => filename.substr(filename.lastIndexOf('.') + 1);
 
-const getItemOptions = (isSourceDocument, parentId, filename) => {
+const getItemOptions = (parentId, filename) => {
   const options = {};
-  options.itemClassName = isSourceDocument ? 'item-source-document' : '';
-  options.typeClassName = isSourceDocument ? 'primary' : 'empty';
-  options.icon = isSourceDocument ? 'file-pdf-o' : 'paperclip';
+  options.itemClassName = '';
+  options.typeClassName = 'empty';
+  options.icon = 'paperclip';
   options.deletable = true;
-  options.replaceable = isSourceDocument;
-  options.downloadHref = isSourceDocument
+  options.replaceable = false;
+  options.downloadHref = false
     ? `/api/documents/download?_id=${parentId}`
     : `/api/attachments/download?_id=${parentId}&file=${filename}`;
 
@@ -66,9 +66,9 @@ export class Attachment extends Component {
   }
 
   render() {
-    const { file, parentId, model, isSourceDocument, storeKey } = this.props;
+    const { file, parentId, model, storeKey } = this.props;
     const sizeString = file.size ? filesize(file.size) : '';
-    const item = getItemOptions(isSourceDocument, parentId, file.filename);
+    const item = getItemOptions(parentId, file.filename);
 
     let name = (
       <a className="attachment-link" href={item.downloadHref}>
@@ -88,6 +88,7 @@ export class Attachment extends Component {
           <div className="attachment-buttons">
             <ShowIf if={!this.props.readOnly}>
               <button
+                type="button"
                 className="item-shortcut btn btn-default"
                 onClick={this.props.loadForm.bind(this, model, file)}
               >
@@ -96,6 +97,7 @@ export class Attachment extends Component {
             </ShowIf>
             <ShowIf if={item.deletable && !this.props.readOnly}>
               <button
+                type="button"
                 className="item-shortcut btn btn-default btn-hover-danger"
                 onClick={this.deleteAttachment.bind(this, file)}
               >
@@ -114,7 +116,6 @@ export class Attachment extends Component {
           <span className="attachment-name">
             <AttachmentForm
               model={this.props.model}
-              isSourceDocument={isSourceDocument}
               onSubmit={this.props.renameAttachment.bind(this, parentId, model, storeKey)}
             />
           </span>
@@ -126,6 +127,7 @@ export class Attachment extends Component {
           <div className="item-shortcut-group">
             <NeedAuthorization roles={['admin', 'editor']}>
               <button
+                type="button"
                 className="item-shortcut btn btn-primary"
                 onClick={this.props.resetForm.bind(this, model)}
               >
@@ -134,6 +136,7 @@ export class Attachment extends Component {
             </NeedAuthorization>
             <NeedAuthorization roles={['admin', 'editor']}>
               <button
+                type="button"
                 className="item-shortcut btn btn-success"
                 onClick={this.props.submitForm.bind(this, model, storeKey)}
               >
@@ -166,7 +169,6 @@ Attachment.propTypes = {
   model: PropTypes.string,
   parentSharedId: PropTypes.string,
   readOnly: PropTypes.bool,
-  isSourceDocument: PropTypes.bool,
   beingEdited: PropTypes.bool,
   deleteAttachment: PropTypes.func,
   renameAttachment: PropTypes.func,
