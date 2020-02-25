@@ -5,6 +5,7 @@ import { MetadataObject } from 'api/entities/entitiesModel';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { actions as formActions, getModel } from 'react-redux-form';
+import { notify } from 'app/Notifications/actions/notificationsActions';
 import { Icon } from 'UI';
 import { propertyTypes } from 'shared/propertyTypes';
 import { t } from 'app/I18N';
@@ -21,6 +22,7 @@ const defaultProps = {
     _selectValue: string[]
   ) => {},
   onChange: (_event: any) => {},
+  notify: (_msg: string, _type: string, _delay?: number) => {},
 };
 
 export type MultiSuggestProps = typeof defaultProps & {
@@ -89,6 +91,7 @@ export class MultiSuggestBase extends Component<MultiSuggestProps> {
     }
     suggestedValues.splice(index, 1);
     this.props.onChange(suggestedValues);
+    this.props.notify('The suggestion has been rejected', 'success', 1000);
   }
 
   render() {
@@ -119,7 +122,13 @@ export class MultiSuggestBase extends Component<MultiSuggestProps> {
                 className="multiselectItem-button"
                 onClick={this.rejectSuggestion.bind(this, value.value!)}
               >
-                Reject
+                <div className="property-help no-margin">
+                  Reject
+                  <div className="property-description-top-left">
+                    Is the suggestion incorrect? Click on 'Reject' and Uwazi will improve on the
+                    suggestions it makes
+                  </div>
+                </div>
               </div>
             </label>
           </div>
@@ -139,4 +148,6 @@ export function mapStateToProps(state: any, props: Pick<MultiSuggestProps, 'sele
   return { selectModel, selectValue: Array.isArray(rawValue) ? rawValue : [rawValue] };
 }
 
-export const MultiSuggest = connect(mapStateToProps, { acceptSuggestion })(MultiSuggestBase);
+export const MultiSuggest = connect(mapStateToProps, { acceptSuggestion, notify })(
+  MultiSuggestBase
+);

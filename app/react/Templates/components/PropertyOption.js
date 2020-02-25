@@ -18,17 +18,19 @@ export class PropertyOption extends Component {
   }
 
   addProperty() {
-    this.props.addProperty({ label: this.props.label, type: this.props.type });
+    const { disabled, label, type, addProperty: addPropertyAction } = this.props;
+    if (!disabled) {
+      addPropertyAction({ label, type });
+    }
   }
 
   render() {
-    const { connectDragSource } = this.props;
-    const { label } = this.props;
-    const iconClass = Icons[this.props.type] || 'font';
-    const liClass = `list-group-item${this.props.disabled ? ' disabled' : ''}`;
+    const { connectDragSource, label, disabled, type } = this.props;
+    const iconClass = Icons[type] || 'font';
+    const liClass = `list-group-item${disabled ? ' disabled' : ''}`;
     return connectDragSource(
       <li className={liClass}>
-        <button onClick={this.addProperty}>
+        <button type="button" onClick={this.addProperty}>
           <Icon icon="plus" />
         </button>
         <span>
