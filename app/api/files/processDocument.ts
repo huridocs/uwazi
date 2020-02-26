@@ -1,5 +1,4 @@
 import { FileType } from 'shared/types/fileType';
-import { search } from 'api/search';
 
 import { files } from './files';
 import { PDF } from './PDF.js';
@@ -9,12 +8,20 @@ export const processDocument = async (entitySharedId: string, file: FileType) =>
   const upload = await files.save({
     entity: entitySharedId,
     type: 'document',
-    processed: false,
+    status: 'processing',
   });
 
-  // await search.indexEntities({ sharedId: entitySharedId });
+  let conversion;
+  try {
+    conversion = await pdf.convert();
+  } catch (e) {
+    await files.save({
+      ...upload,
+      status: 'failed',
+    });
+    throw e;
+  }
 
-  const conversion = await pdf.convert();
   const thumbnail = await pdf.createThumbnail(upload._id.toString());
 
   await files.save({
@@ -27,9 +34,8 @@ export const processDocument = async (entitySharedId: string, file: FileType) =>
   const saved = await files.save({
     ...upload,
     ...conversion,
+    status: 'ready',
   });
-
-  await search.indexEntities({ sharedId: entitySharedId }, '+fullText');
 
   return saved;
 };

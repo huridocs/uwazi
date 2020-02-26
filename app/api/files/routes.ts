@@ -1,5 +1,3 @@
-/** @format */
-
 import multer from 'multer';
 import { Application, Request, Response, NextFunction } from 'express';
 //@ts-ignore
@@ -24,13 +22,14 @@ export default (app: Application) => {
     async (req: Request, res: Response, _next: NextFunction) => {
       try {
         req.getCurrentSessionSockets().emit('conversionStart', req.body.entity);
-        res.json(req.file);
         await processDocument(req.body.entity, req.file);
+        res.json({ ...req.file, status: 'ready' });
         req.getCurrentSessionSockets().emit('documentProcessed', req.body.entity);
       } catch (err) {
         errorLog.error(err);
         debugLog.debug(err);
-        req.getCurrentSessionSockets().emit('conversionFailed', req.body.document);
+        res.json({ ...req.file, status: 'failed' });
+        req.getCurrentSessionSockets().emit('conversionFailed', req.body.entity);
       }
     }
   );

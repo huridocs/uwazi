@@ -34,7 +34,6 @@ export default function documents(state = initialState, action = {}) {
       .get('rows')
       .get(docIndex)
       .toJS();
-    doc.uploaded = true;
     doc.documents.push(action.file);
     return state.setIn(['rows', docIndex], Immutable.fromJS(doc));
   }
@@ -46,7 +45,7 @@ export default function documents(state = initialState, action = {}) {
       .get('rows')
       .get(docIndex)
       .toJS();
-    doc.processed = true;
+    doc.documents[0].status = 'ready';
     return state.setIn(['rows', docIndex], Immutable.fromJS(doc));
   }
 
@@ -57,7 +56,7 @@ export default function documents(state = initialState, action = {}) {
       .get('rows')
       .get(docIndex)
       .toJS();
-    doc.processed = false;
+    doc.documents[0].status = 'failed';
     return state.setIn(['rows', docIndex], Immutable.fromJS(doc));
   }
 

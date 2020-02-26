@@ -57,17 +57,8 @@ describe('UploadEntityStatus', () => {
       doc = Immutable({
         _id: '123',
         sharedId: 'docId',
-        uploaded: false,
         file: {},
-      });
-    });
-
-    describe('when is a document and not uploaded', () => {
-      it('should return uploading props', () => {
-        const props = mapStateToProps(store, { doc });
-        expect(props.status).toBe('processing');
-        expect(props.message).toBe('Uploading...');
-        expect(props.progress).toBe(30);
+        documents: [{}],
       });
     });
 
@@ -81,9 +72,10 @@ describe('UploadEntityStatus', () => {
       });
     });
 
-    describe('when is a document, uploaded but not processed', () => {
+    describe('when status is processing', () => {
       it('should return processing props', () => {
-        doc = doc.set('uploaded', true);
+        doc = doc.set('documents', Immutable([{ status: 'processing' }]));
+        store.progress = Immutable({});
         const props = mapStateToProps(store, { doc });
         expect(props.status).toBe('processing');
         expect(props.message).toBe('Processing...');
@@ -91,41 +83,30 @@ describe('UploadEntityStatus', () => {
       });
     });
 
-    describe('when is a document, uploaded but the conversion failed', () => {
+    describe('when is a document, with failed status', () => {
       it('should return error props', () => {
-        doc = doc.set('uploaded', true);
-        doc = doc.set('processed', false);
+        doc = doc.set('documents', Immutable([{ status: 'failed' }]));
+        store.progress = Immutable({});
         const props = mapStateToProps(store, { doc });
         expect(props.status).toBe('danger');
         expect(props.message).toBe('Conversion failed');
       });
     });
 
-    describe('when is a document, uploaded, processed but without template', () => {
+    describe('when ready document with out template', () => {
       it('should return No type selected props', () => {
-        doc = doc.set('uploaded', true);
-        doc = doc.set('processed', true);
+        doc = doc.set('documents', Immutable([{ status: 'ready' }]));
         const props = mapStateToProps(store, { doc });
         expect(props.status).toBe('warning');
         expect(props.message).toBe('No type selected');
       });
     });
 
-    describe('when is a document, not uploaded, not processed and without progress', () => {
-      it('should return No type selected props', () => {
-        doc = doc.set('uploaded', false);
-        store.progress = Immutable({});
-        const props = mapStateToProps(store, { doc });
-        expect(props.status).toBe('danger');
-        expect(props.message).toBe('Upload failed');
-      });
-    });
-
     describe('when is uploaded, processed and with template', () => {
       it('should return empty props', () => {
-        doc = doc.set('uploaded', true);
-        doc = doc.set('processed', true);
         doc = doc.set('template', '1');
+        doc = doc.set('documents', Immutable([{ status: 'ready' }]));
+        store.progress = Immutable({});
         const props = mapStateToProps(store, { doc });
         expect(props).toEqual({});
       });

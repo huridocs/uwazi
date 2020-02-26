@@ -70,7 +70,7 @@ describe('upload routes', () => {
         expect.objectContaining({
           entity: 'sharedId1',
           type: 'document',
-          processed: true,
+          status: 'ready',
           fullText: { 1: 'Test[[1]] file[[1]]\n\n' },
           totalPages: 1,
           language: 'other',
@@ -79,8 +79,6 @@ describe('upload routes', () => {
           creationDate: 1000,
         })
       );
-
-      expect(search.indexEntities).toHaveBeenCalledWith({ sharedId: 'sharedId1' }, '+fullText');
     });
 
     it('should generate a thumbnail for the document', async () => {
@@ -112,7 +110,7 @@ describe('upload routes', () => {
     });
 
     describe('when conversion fails', () => {
-      it('should set document processed to false and emit a socket conversionFailed event with the id of the document', async () => {
+      it('should set document status to failed and emit a socket conversionFailed event with the id of the document', async () => {
         await socketEmit('conversionFailed', async () =>
           request(app)
             .post('/api/files/upload/document')
@@ -121,7 +119,7 @@ describe('upload routes', () => {
         );
 
         const [upload] = await files.get({ entity: 'sharedId1' }, '+fullText');
-        expect(upload.processed).toBe(false);
+        expect(upload.status).toBe('failed');
       });
     });
   });

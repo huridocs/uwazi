@@ -23,8 +23,10 @@ export const fileSchema = {
     creationDate: { type: 'number' },
     language: { type: 'string', minLength: 1 },
     type: { type: 'string', enum: ['custom', 'document', 'thumbnail'] },
+    status: { type: 'string', enum: ['processing', 'failed', 'ready'] },
     totalPages: { type: 'number' },
-    processed: { type: 'boolean' },
+    // processed: { type: 'boolean' },
+    // uploaded: { type: 'boolean' },
     fullText: {
       type: 'object',
       additionalProperties: false,

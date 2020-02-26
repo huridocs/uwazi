@@ -41,12 +41,14 @@ const customUploadsPath = (fileName: FilePath): FilePath =>
 
 const deleteUploadedFiles = async (files: FileType[]) =>
   deleteFiles(
-    files.map(({ filename = '', type }) => {
-      if (type === 'custom') {
-        return customUploadsPath(filename);
-      }
-      return uploadsPath(filename);
-    })
+    files
+      .filter(f => f.filename)
+      .map(({ filename = '', type }) => {
+        if (type === 'custom') {
+          return customUploadsPath(filename);
+        }
+        return uploadsPath(filename);
+      })
   );
 
 const fileExists = async (filePath: FilePath): Promise<boolean> =>

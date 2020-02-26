@@ -17,8 +17,8 @@ export interface FileType {
   creationDate?: number;
   language?: string;
   type?: 'custom' | 'document' | 'thumbnail';
+  status?: 'processing' | 'failed' | 'ready';
   totalPages?: number;
-  processed?: boolean;
   fullText?: {
     /**
      * This interface was referenced by `undefined`'s JSON-Schema definition
