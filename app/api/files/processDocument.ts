@@ -1,5 +1,3 @@
-/** @format */
-
 import { FileType } from 'shared/types/fileType';
 import { search } from 'api/search';
 
@@ -13,6 +11,8 @@ export const processDocument = async (entitySharedId: string, file: FileType) =>
     type: 'document',
     processed: false,
   });
+
+  // await search.indexEntities({ sharedId: entitySharedId });
 
   const conversion = await pdf.convert();
   const thumbnail = await pdf.createThumbnail(upload._id.toString());

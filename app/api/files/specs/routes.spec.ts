@@ -2,6 +2,7 @@ import path from 'path';
 import request, { Response as SuperTestResponse } from 'supertest';
 import { Application, Request, Response, NextFunction } from 'express';
 
+import { search } from 'api/search';
 import { fileExists } from 'api/csv/specs/helpers';
 import { setupTestUploadedPaths, customUploadsPath } from 'api/files/filesystem';
 import db from 'api/utils/testing_db';
@@ -24,6 +25,7 @@ describe('files routes', () => {
   const app: Application = setUpApp(uploadRoutes);
 
   beforeEach(async () => {
+    spyOn(search, 'indexEntities').and.returnValue(Promise.resolve());
     setupTestUploadedPaths();
     await db.clearAllAndLoad(fixtures);
   });
@@ -71,6 +73,17 @@ describe('files routes', () => {
         .query({ _id: file._id?.toString() });
 
       expect(await fileExists(customUploadsPath(file.filename || ''))).toBe(false);
+    });
+
+    it('should reindex all entities that are related to the files deleted', async () => {
+      await request(app)
+        .delete('/api/files')
+        .query({ _id: uploadId.toString() });
+
+      expect(search.indexEntities).toHaveBeenCalledWith(
+        { sharedId: { $in: ['entity'] } },
+        '+fullText'
+      );
     });
 
     it('should delete all connections related to the file', async () => {

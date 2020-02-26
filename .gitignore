@@ -23,6 +23,7 @@ app/api/csv/specs/*.jpg
 !app/api/files/specs/uploads/eng.pdf
 !app/api/files/specs/uploads/spn.pdf
 !app/api/files/specs/uploads/import.zip
+!app/api/files/specs/uploads/importcsv.csv
 !app/api/files/specs/uploads/invalid_document.txt
 app/api/attachments/specs/uploads/toDelete.txt
 uploaded_documents/*

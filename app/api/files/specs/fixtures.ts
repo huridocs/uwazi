@@ -21,6 +21,7 @@ const fixtures: DBFixture = {
   files: [
     {
       _id: uploadId,
+      entity: 'entity',
       originalname: 'upload1',
       filename: fileName1,
       type: 'custom',
