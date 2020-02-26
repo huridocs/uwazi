@@ -135,36 +135,6 @@ export function loadTemplate(form, template) {
   };
 }
 
-export function uploadDocument(file, sharedId, __reducerKey) {
-  return (dispatch, getState) => {
-    dispatch({ type: types.START_REUPLOAD_DOCUMENT, doc: sharedId });
-    superagent
-      .post(`${APIURL}files/upload/document`)
-      .set('Accept', 'application/json')
-      .set('X-Requested-With', 'XMLHttpRequest')
-      .set('Content-Language', getState().locale)
-      .field('entity', sharedId)
-      .attach('file', file, file.name)
-      .on('progress', data => {
-        dispatch({
-          type: types.REUPLOAD_PROGRESS,
-          doc: sharedId,
-          progress: Math.floor(data.percent),
-        });
-      })
-      .on('response', ({ body }) => {
-        const _file = { filename: body.filename, size: body.size, originalname: body.originalname };
-        dispatch({ type: types.REUPLOAD_COMPLETE, doc: sharedId, file: _file, __reducerKey });
-        api.get(new RequestParams({ sharedId })).then(([doc]) => {
-          dispatch({ type: libraryTypes.UPDATE_DOCUMENT, doc, __reducerKey });
-          dispatch({ type: libraryTypes.UNSELECT_ALL_DOCUMENTS, __reducerKey });
-          dispatch({ type: libraryTypes.SELECT_DOCUMENT, doc, __reducerKey });
-        });
-      })
-      .end();
-  };
-}
-
 export function removeIcon(model) {
   return formActions.change(model, { _id: null, type: 'Empty' });
 }

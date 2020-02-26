@@ -2,8 +2,9 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { uploadDocument } from 'app/Metadata/actions/actions';
+import { uploadDocument } from 'app/Uploads/actions/uploadsActions';
 import { documentProcessed } from 'app/Uploads/actions/uploadsActions';
+import { wrapDispatch } from 'app/Multireducer';
 import socket from 'app/socket';
 import { Icon } from 'UI';
 import { Translate } from 'app/I18N';
@@ -50,7 +51,7 @@ export class UploadButton extends Component {
 
   onChange(e) {
     const file = e.target.files[0];
-    this.props.uploadDocument(file, this.props.entitySharedId, this.props.storeKey);
+    this.props.uploadDocument(this.props.entitySharedId, file);
   }
 
   documentProcessed(docId) {
@@ -137,8 +138,11 @@ UploadButton.contextTypes = {
 
 const mapStateToProps = ({ metadata }) => ({ progress: metadata.progress });
 
-function mapDispatchToProps(dispatch) {
-  return bindActionCreators({ uploadDocument, documentProcessed }, dispatch);
+function mapDispatchToProps(dispatch, props) {
+  return bindActionCreators(
+    { uploadDocument, documentProcessed },
+    wrapDispatch(dispatch, props.storeKey)
+  );
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(UploadButton);

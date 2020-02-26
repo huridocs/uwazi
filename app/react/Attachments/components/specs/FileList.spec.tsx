@@ -4,12 +4,14 @@ import { FileList, FileListProps } from '../FileList';
 import { ConnectedFile as File } from '../File';
 import { FileType } from 'shared/types/fileType';
 import UploadButton from 'app/Metadata/components/UploadButton';
+import { EntityType } from 'shared/types/commonTypes';
 
 describe('FileList', () => {
   let component: ShallowWrapper<FileList>;
   let props: FileListProps;
   let file: FileType;
   let file2: FileType;
+  let entity: EntityType;
 
   beforeEach(() => {
     file = {
@@ -25,11 +27,13 @@ describe('FileList', () => {
       language: 'esp',
     };
 
+    entity = { title: 'The humans', _id: '123', language: 'en', sharedId: '98sdff8' };
+
     props = {
       files: [file, file2],
       readOnly: false,
       storeKey: 'library',
-      entitySharedId: 'ab12j923md',
+      entity,
     };
   });
 
@@ -48,6 +52,6 @@ describe('FileList', () => {
   it('should render an upload button', () => {
     render();
     const button = component.find(UploadButton);
-    expect(button.props().entitySharedId).toBe(props.entitySharedId);
+    expect(button.props().entitySharedId).toBe(props.entity.sharedId);
   });
 });

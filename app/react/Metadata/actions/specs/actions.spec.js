@@ -256,32 +256,5 @@ describe('Metadata Actions', () => {
         .mockImplementation(() => ({ type: 'setViewerState' }));
       store = mockStore({ locale: 'es', templates: 'immutableTemplates' });
     });
-
-    it('should upload the file while dispatching the upload progress (including the language and storeKey to update the results)', () => {
-      api.get = () => Promise.resolve([doc]);
-      store.dispatch(actions.uploadDocument(file, 'sharedId', 'storeKey'));
-      const expectedActions = [
-        { type: types.START_REUPLOAD_DOCUMENT, doc: 'sharedId' },
-        { type: types.REUPLOAD_PROGRESS, doc: 'sharedId', progress: 55 },
-        { type: types.REUPLOAD_PROGRESS, doc: 'sharedId', progress: 65 },
-        {
-          type: types.REUPLOAD_COMPLETE,
-          doc: 'sharedId',
-          file: { filename: 'filename', size: 34, originalname: 'name' },
-          __reducerKey: 'storeKey',
-        },
-      ];
-
-      expect(mockUpload.set).toHaveBeenCalledWith('Content-Language', 'es');
-      expect(mockUpload.field).toHaveBeenCalledWith('entity', 'sharedId');
-      expect(mockUpload.attach).toHaveBeenCalledWith('file', file, 'filename');
-
-      mockUpload.emit('progress', { percent: 55.1 });
-      mockUpload.emit('progress', { percent: 65 });
-      mockUpload.emit('response', {
-        body: { filename: 'filename', size: 34, originalname: 'name' },
-      });
-      expect(store.getActions()).toEqual(expectedActions);
-    });
   });
 });

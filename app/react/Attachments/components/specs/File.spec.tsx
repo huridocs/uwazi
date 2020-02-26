@@ -10,9 +10,11 @@ describe('file', () => {
 
   beforeEach(() => {
     const file = { originalname: 'Human_name_1.pdf', filename: 'random.ext', language: 'eng' };
+    const entity = { title: 'The humans', _id: '123', language: 'en' };
 
     props = {
       file,
+      entity,
       readOnly: false,
       storeKey: 'library',
       updateFile: jasmine.createSpy('updateFile'),
@@ -49,7 +51,7 @@ describe('file', () => {
       editButton.simulate('click');
       const form = component.find(LocalForm);
       form.simulate('submit', props.file);
-      expect(props.updateFile).toHaveBeenCalledWith(props.file, 'library');
+      expect(props.updateFile).toHaveBeenCalledWith(props.file, props.entity);
     });
 
     it('should confirm the delete', () => {
@@ -58,7 +60,7 @@ describe('file', () => {
       component.find('.btn-outline-danger').simulate('click');
       expect(context.confirm).toHaveBeenCalled();
       context.confirm.calls.argsFor(0)[0].accept();
-      expect(props.deleteFile).toHaveBeenCalledWith(props.file, 'library');
+      expect(props.deleteFile).toHaveBeenCalledWith(props.file, props.entity);
     });
   });
 });

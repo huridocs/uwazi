@@ -45,7 +45,7 @@ export class FileList extends Component<FileListProps> {
           <Translate>Documents</Translate>
         </h2>
         <ul>{files.map(file => this.renderFile(file))}</ul>
-        <UploadButton entitySharedId={this.props.entity.sharedId} />
+        <UploadButton entitySharedId={this.props.entity.sharedId} storeKey={this.props.storeKey} />
       </div>
     );
   }

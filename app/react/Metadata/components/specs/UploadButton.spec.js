@@ -96,7 +96,7 @@ describe('UploadButton', () => {
     it('should upload the document', () => {
       const input = component.find('input');
       input.simulate('change', { target: { files: [file] } });
-      expect(props.uploadDocument).toHaveBeenCalledWith(file, 'sharedabc1', 'storeKey');
+      expect(props.uploadDocument).toHaveBeenCalledWith('sharedabc1', file);
     });
   });
 });

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
-import { Translate } from 'app/I18N';
+import { Translate, t } from 'app/I18N';
 import transformLanguage, { languages } from 'shared/languagesList.ts';
 import { Icon } from 'UI';
 import { FileType } from 'shared/types/fileType';
@@ -126,9 +126,7 @@ export class File extends Component<FileProps, FileState> {
                   {transformLanguage(language)}
                 </option>
               ))}
-              <option value="other">
-                <Translate>other</Translate>
-              </option>
+              <option value="other">{t('System', 'other', 'other', false)}</option>
             </Control.select>
           </div>
           <div className="col-sm-4">
