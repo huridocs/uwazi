@@ -15,7 +15,7 @@ import dictionariesModel from 'api/thesauri/dictionariesModel';
 import translate, { getContext } from 'shared/translate';
 import { deleteFiles } from '../files/filesystem';
 import model from './entitiesModel';
-import { validateEntity } from './entitySchema';
+import { validateEntity } from '../../shared/types/entitySchema';
 import settings from '../settings';
 
 /** Repopulate metadata object .label from thesauri and relationships. */

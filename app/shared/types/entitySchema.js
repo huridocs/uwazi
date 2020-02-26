@@ -5,7 +5,7 @@ import templatesModel from 'api/templates/templatesModel';
 import { isUndefined, isNull } from 'util';
 import { objectIdSchema, metadataSchema } from 'shared/types/commonSchemas';
 import { wrapValidator } from 'shared/tsUtils';
-import { validators, customErrorMessages } from './metadataValidators.js';
+import { validators, customErrorMessages } from 'api/entities/metadataValidators.js';
 
 export const emitSchemaTypes = true;
 

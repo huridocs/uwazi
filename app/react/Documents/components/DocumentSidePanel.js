@@ -283,7 +283,7 @@ export class DocumentSidePanel extends Component {
                     <FileList
                       files={documents}
                       storeKey={this.props.storeKey}
-                      entitySharedId={doc.get('sharedId')}
+                      entity={doc.toJS()}
                     />
                     <AttachmentsList
                       attachments={attachments}

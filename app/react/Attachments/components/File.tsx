@@ -15,8 +15,9 @@ export type FileProps = {
   file: FileType;
   storeKey: string;
   readOnly: boolean;
-  updateFile: (file: FileType, storeKey: string) => any | void;
-  deleteFile: (file: FileType, storeKey: string) => any | void;
+  entity: Object;
+  updateFile: (file: FileType, entity: Object) => any | void;
+  deleteFile: (file: FileType, entity: Object) => any | void;
 };
 
 type FileState = {
@@ -52,7 +53,7 @@ export class File extends Component<FileProps, FileState> {
   delete() {
     this.context.confirm({
       accept: () => {
-        this.props.deleteFile(this.props.file, this.props.storeKey);
+        this.props.deleteFile(this.props.file, this.props.entity);
         this.setState({ editing: false });
       },
       title: 'Confirm delete file',
@@ -61,7 +62,7 @@ export class File extends Component<FileProps, FileState> {
   }
 
   handleSubmit(file: FileType) {
-    this.props.updateFile(file, this.props.storeKey);
+    this.props.updateFile(file, this.props.entity);
     this.setState({ editing: false });
   }
 

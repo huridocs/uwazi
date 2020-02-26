@@ -6,39 +6,37 @@ import { notify } from 'app/Notifications/actions/notificationsActions';
 import { updateEntity, selectSingleDocument } from 'app/Library/actions/libraryActions';
 import api from 'app/utils/api';
 import { RequestParams } from 'app/utils/RequestParams';
+import { actions as basicReducerActions } from 'app/BasicReducer';
 
 import * as types from './actionTypes';
 
-export function updateFile(file, __reducerKey) {
-  return (dispatch, getState) => {
-    api.post('files', new RequestParams(file)).then(({ json: updatedFile }) => {
-      const entities = getState()[__reducerKey].documents.get('rows');
-      const entity = entities.find(d => d.get('sharedId') === file.entity).toJS();
-
-      entity.documents = entity.documents.map(f => {
-        if (f._id === updatedFile._id) {
-          return updatedFile;
+export function updateFile(file, entity) {
+  return dispatch => {
+    api.post('files', new RequestParams(file)).then(() => {
+      const documents = entity.documents.map(f => {
+        if (f._id === file._id) {
+          return file;
         }
         return f;
       });
-
-      dispatch(updateEntity(entity));
-      dispatch(selectSingleDocument(entity));
+      const updatedEntity = Object.assign(entity, { documents });
+      dispatch(basicReducerActions.set('viewer/doc', updatedEntity));
+      dispatch(updateEntity(updatedEntity));
+      dispatch(selectSingleDocument(updatedEntity));
       dispatch(notify('File updated', 'success'));
     });
   };
 }
 
-export function deleteFile(file, __reducerKey) {
-  return (dispatch, getState) => {
+export function deleteFile(file, entity) {
+  return dispatch => {
     api.delete('files', new RequestParams({ _id: file._id })).then(() => {
-      const entities = getState()[__reducerKey].documents.get('rows');
-      const entity = entities.find(d => d.get('sharedId') === file.entity).toJS();
+      const documents = entity.documents.filter(f => f._id !== file._id);
 
-      entity.documents = entity.documents.filter(f => f._id !== file._id);
-
-      dispatch(updateEntity(entity));
-      dispatch(selectSingleDocument(entity));
+      const updatedEntity = Object.assign(entity, { documents });
+      dispatch(basicReducerActions.set('viewer/doc', updatedEntity));
+      dispatch(updateEntity(updatedEntity));
+      dispatch(selectSingleDocument(updatedEntity));
       dispatch(notify('File deleted', 'success'));
     });
   };

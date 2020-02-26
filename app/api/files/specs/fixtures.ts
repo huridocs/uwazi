@@ -1,6 +1,6 @@
 import db from 'api/utils/testing_db';
 
-import { EntitySchema } from 'api/entities/entityType';
+import { EntitySchema } from 'shared/types/entityType';
 import { FileType } from 'shared/types/fileType';
 
 const entityId = db.id();
