@@ -48,7 +48,7 @@ describe('upload routes', () => {
 
       const [upload] = await files.get({ entity: 'sharedId1' }, '+fullText');
       expect(fs.readFileSync(uploadsPath(upload.filename || ''))).toBeDefined();
-    });
+    }, 10000);
 
     it('should process and reindex the document after upload', async () => {
       const res: SuperTestResponse = await uploadDocument(
@@ -80,7 +80,7 @@ describe('upload routes', () => {
           creationDate: 1000,
         })
       );
-    });
+    }, 10000);
 
     it('should generate a thumbnail for the document', async () => {
       await uploadDocument('uploads/f2082bf51b6ef839690485d7153e847a.pdf');
@@ -161,6 +161,23 @@ describe('upload routes', () => {
       const [file]: FileType[] = await files.get({ originalname: 'test.txt' });
 
       expect(fs.readFileSync(customUploadsPath(file.filename || ''))).toBeDefined();
+    });
+  });
+
+  describe('DELETE/files', () => {
+    it('should delete thumbnails asociated with documents deleted', async () => {
+      await uploadDocument('uploads/f2082bf51b6ef839690485d7153e847a.pdf');
+
+      const [file]: FileType[] = await files.get({
+        originalname: 'f2082bf51b6ef839690485d7153e847a.pdf',
+      });
+
+      await request(app)
+        .delete('/api/files')
+        .query({ _id: file._id?.toString() });
+
+      const [thumbnail]: FileType[] = await files.get({ filename: `${file._id}.jpg` });
+      expect(thumbnail).not.toBeDefined();
     });
   });
 });

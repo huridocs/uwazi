@@ -103,13 +103,15 @@ export default (app: Application) => {
       },
     }),
 
-    (req: Request, res: Response, next: NextFunction) => {
-      files
-        .delete(req.query)
-        .then(result => {
-          res.json(result);
-        })
-        .catch(next);
+    async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        const [deletedFile] = await files.delete(req.query);
+        const thumbnailFileName = `${deletedFile._id}.jpg`;
+        await files.delete({ filename: thumbnailFileName });
+        res.json([deletedFile]);
+      } catch (e) {
+        next(e);
+      }
     }
   );
 
