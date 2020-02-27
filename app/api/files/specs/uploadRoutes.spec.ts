@@ -58,6 +58,7 @@ describe('upload routes', () => {
       expect(res.body).toEqual(
         expect.objectContaining({
           originalname: 'f2082bf51b6ef839690485d7153e847a.pdf',
+          status: 'ready',
         })
       );
 
@@ -99,7 +100,7 @@ describe('upload routes', () => {
 
         const [upload] = await files.get({ entity: 'sharedId1' });
         expect(upload.language).toBe('eng');
-      });
+      }, 10000);
 
       it('should detect Spanish documents and store the result', async () => {
         await uploadDocument('uploads/spn.pdf');

@@ -73,7 +73,7 @@ describe('csvLoader zip file', () => {
 
     expect(imported[0]).toEqual(
       expect.objectContaining({
-        processed: true,
+        status: 'ready',
         fullText: { 1: '1[[1]]\n\n' },
         filename: 'generated1.pdf',
         originalname: '1.pdf',
@@ -81,7 +81,7 @@ describe('csvLoader zip file', () => {
     );
     expect(imported[1]).toEqual(
       expect.objectContaining({
-        processed: true,
+        status: 'ready',
         fullText: { 1: '2[[1]]\n\n' },
         filename: 'generated2.pdf',
         originalname: '2.pdf',

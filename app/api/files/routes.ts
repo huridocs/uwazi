@@ -22,8 +22,8 @@ export default (app: Application) => {
     async (req: Request, res: Response, _next: NextFunction) => {
       try {
         req.getCurrentSessionSockets().emit('conversionStart', req.body.entity);
-        await processDocument(req.body.entity, req.file);
-        res.json({ ...req.file, status: 'ready' });
+        const savedFile = await processDocument(req.body.entity, req.file);
+        res.json(savedFile);
         req.getCurrentSessionSockets().emit('documentProcessed', req.body.entity);
       } catch (err) {
         errorLog.error(err);

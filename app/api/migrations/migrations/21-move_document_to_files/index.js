@@ -66,7 +66,7 @@ export default {
           type: 'document',
           toc,
           fullText,
-          processed,
+          status: processed ? 'ready' : 'failed',
           uploaded,
           totalPages,
           pdfInfo,

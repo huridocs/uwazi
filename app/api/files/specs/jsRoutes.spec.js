@@ -194,7 +194,7 @@ describe('upload routes', () => {
 
       const [uploadedFile] = await files.get({ entity: newEntity.sharedId });
       expect(uploadedFile.originalname).toBe('gadgets-01.pdf');
-      expect(uploadedFile.processed).toBe(true);
+      expect(uploadedFile.status).toBe('ready');
       expect(fs.existsSync(path.resolve(`${__dirname}/uploads/${file.filename}`))).toBe(true);
       expect(
         fs.existsSync(path.resolve(`${__dirname}/uploads/${newEntity.attachments[0].filename}`))
