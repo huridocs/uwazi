@@ -13,7 +13,6 @@ import {
   documentProcessError,
 } from 'app/Uploads/actions/uploadsActions';
 import { wrapDispatch } from 'app/Multireducer';
-import socket from 'app/socket';
 
 const extractTitle = file => {
   const title = file.name
@@ -29,13 +28,6 @@ export class UploadBox extends Component {
   constructor(props) {
     super(props);
     this.onDrop = this.onDrop.bind(this);
-    socket.on('documentProcessed', sharedId => {
-      this.props.documentProcessed(sharedId, 'uploads');
-    });
-
-    // socket.on('conversionFailed', sharedId => {
-    //   this.props.documentProcessError(sharedId);
-    // });
   }
 
   onDrop(files) {
