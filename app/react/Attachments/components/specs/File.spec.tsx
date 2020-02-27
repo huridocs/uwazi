@@ -9,7 +9,12 @@ describe('file', () => {
   let context: any;
 
   beforeEach(() => {
-    const file = { originalname: 'Human_name_1.pdf', filename: 'random.ext', language: 'eng' };
+    const file = {
+      originalname: 'Human_name_1.pdf',
+      filename: 'random.ext',
+      language: 'eng',
+      status: 'ready',
+    };
     const entity = { title: 'The humans', _id: '123', language: 'en' };
 
     props = {

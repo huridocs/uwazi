@@ -10,6 +10,7 @@ import { APIURL } from 'app/config.js';
 import { LocalForm, Control } from 'react-redux-form';
 import { updateFile, deleteFile } from 'app/Attachments/actions/actions';
 import { wrapDispatch } from 'app/Multireducer';
+import { NeedAuthorization } from 'app/Auth';
 
 export type FileProps = {
   file: FileType;
@@ -66,30 +67,64 @@ export class File extends Component<FileProps, FileState> {
     this.setState({ editing: false });
   }
 
-  renderView() {
-    const { originalname, language, filename } = this.props.file;
-
+  renderDeleteButton() {
     return (
-      <div className="file">
-        <div className="file-originalname">{originalname}</div>
-        <div>
-          <div className="file-language">{language ? transformLanguage(language) : ''}</div>
-          <a
-            href={`${APIURL}files/${filename}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="file-download btn btn-outline-secondary"
-          >
-            <Icon icon="cloud-download-alt" />
-            &nbsp;
-            <Translate>Download</Translate>
-          </a>
+      <button type="button" className="btn btn-outline-danger" value="Delete" onClick={this.delete}>
+        <Icon icon="trash-alt" />
+        &nbsp;
+        <Translate>Delete</Translate>
+      </button>
+    );
+  }
+
+  renderFailed() {
+    return (
+      <div>
+        <div className="file-failed">
+          <Icon icon="times" />
+          &nbsp;
+          <Translate>Conversion failed</Translate>
+        </div>
+        <NeedAuthorization roles={['admin', 'editor']}>
+          {this.renderDeleteButton()}
+        </NeedAuthorization>
+      </div>
+    );
+  }
+
+  renderReady() {
+    const { language, filename } = this.props.file;
+    return (
+      <div>
+        <div className="file-language">{language ? transformLanguage(language) : ''}</div>{' '}
+        <a
+          href={`${APIURL}files/${filename}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="file-download btn btn-outline-secondary"
+        >
+          <Icon icon="cloud-download-alt" />
+          &nbsp;
+          <Translate>Download</Translate>
+        </a>
+        <NeedAuthorization roles={['admin', 'editor']}>
           <button type="button" className="file-edit btn btn-outline-success" onClick={this.edit}>
             <Icon icon="pencil-alt" />
             &nbsp;
             <Translate>Edit</Translate>
           </button>
-        </div>
+        </NeedAuthorization>
+      </div>
+    );
+  }
+
+  renderView() {
+    const { originalname, status } = this.props.file;
+
+    return (
+      <div className="file">
+        <div className="file-originalname">{originalname}</div>
+        {status === 'ready' ? this.renderReady() : this.renderFailed()}
       </div>
     );
   }
@@ -148,18 +183,7 @@ export class File extends Component<FileProps, FileState> {
               <Translate>Cancel</Translate>
             </button>
           </div>
-          <div className="col-sm-4">
-            <button
-              type="button"
-              className="btn btn-outline-danger"
-              value="Delete"
-              onClick={this.delete}
-            >
-              <Icon icon="trash-alt" />
-              &nbsp;
-              <Translate>Delete</Translate>
-            </button>
-          </div>
+          <div className="col-sm-4">{this.renderDeleteButton()}</div>
         </div>
       </LocalForm>
     );

@@ -287,7 +287,6 @@ export class DocumentSidePanel extends Component {
                     />
                     <AttachmentsList
                       attachments={attachments}
-                      readOnly={false}
                       isTargetDoc={isTargetDoc}
                       isDocumentAttachments={Boolean(doc.get('file'))}
                       parentId={doc.get('_id')}

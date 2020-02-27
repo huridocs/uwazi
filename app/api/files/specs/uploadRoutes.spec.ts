@@ -122,6 +122,17 @@ describe('upload routes', () => {
         const [upload] = await files.get({ entity: 'sharedId1' }, '+fullText');
         expect(upload.status).toBe('failed');
       });
+
+      it('should return the file object', async () => {
+        const response: SuperTestResponse = await request(app)
+          .post('/api/files/upload/document')
+          .field('entity', 'sharedId1')
+          .attach('file', path.join(__dirname, 'uploads/invalid_document.txt'));
+
+        expect(response.body.status).toBe('failed');
+        expect(response.body._id).toBeDefined();
+        expect(response.body.originalname).toBe('invalid_document.txt');
+      });
     });
   });
 

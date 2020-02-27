@@ -6,6 +6,7 @@ import { PDF } from './PDF.js';
 export const processDocument = async (entitySharedId: string, file: FileType) => {
   const pdf = new PDF(file);
   const upload = await files.save({
+    ...file,
     entity: entitySharedId,
     type: 'document',
     status: 'processing',

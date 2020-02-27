@@ -6,6 +6,7 @@ import { FileType } from 'shared/types/fileType';
 import { EntityType } from 'shared/types/commonTypes';
 import UploadButton from 'app/Metadata/components/UploadButton';
 import { ConnectedFile as File } from './File';
+import { NeedAuthorization } from 'app/Auth';
 
 const defaultProps = {
   files: [],
@@ -30,6 +31,7 @@ export class FileList extends Component<FileListProps> {
 
   renderFile(file: FileType) {
     const { readOnly, storeKey, entity } = this.props;
+
     return (
       <li key={file._id}>
         <File file={file} storeKey={storeKey} readOnly={readOnly} entity={entity} />
@@ -46,7 +48,12 @@ export class FileList extends Component<FileListProps> {
           <Translate>Documents</Translate>
         </h2>
         <ul>{files.map(file => this.renderFile(file))}</ul>
-        <UploadButton entitySharedId={this.props.entity.sharedId} storeKey={this.props.storeKey} />
+        <NeedAuthorization roles={['admin', 'editor']}>
+          <UploadButton
+            entitySharedId={this.props.entity.sharedId}
+            storeKey={this.props.storeKey}
+          />
+        </NeedAuthorization>
       </div>
     );
   }

@@ -80,14 +80,6 @@ export function renameAttachment(entityId, form, __reducerKey, file) {
         })
       )
       .then(renamedFile => {
-        if (entityId === file._id) {
-          dispatch({
-            type: types.UPDATE_DOCUMENT_FILE,
-            entity: entityId,
-            file: renamedFile.json,
-            __reducerKey,
-          });
-        }
         dispatch({
           type: types.ATTACHMENT_RENAMED,
           entity: entityId,

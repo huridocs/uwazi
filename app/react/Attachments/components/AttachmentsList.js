@@ -53,7 +53,7 @@ export default class AttachmentsList extends Component {
 
 AttachmentsList.defaultProps = {
   attachments: [],
-  readOnly: true,
+  readOnly: false,
   isTargetDoc: false,
   parentId: null,
   parentSharedId: null,

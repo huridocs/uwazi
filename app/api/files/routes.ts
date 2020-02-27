@@ -28,7 +28,8 @@ export default (app: Application) => {
       } catch (err) {
         errorLog.error(err);
         debugLog.debug(err);
-        res.json({ ...req.file, status: 'failed' });
+        const [file] = await files.get({ filename: req.file.filename });
+        res.json(file);
         req.getCurrentSessionSockets().emit('conversionFailed', req.body.entity);
       }
     }
