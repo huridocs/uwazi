@@ -84,6 +84,11 @@ export default {
             ops: [created],
           } = await db.collection('files').insert(fileToCreate);
 
+          db.collection('connections').updateMany(
+            { filename: created.filename },
+            { $set: { file: created._id.toString() }, $unset: { filename: '' } }
+          );
+
           if (await oldThumbnailExists(entity)) {
             const thumbnailToCreate = {
               filename: `${created._id}.jpg`,

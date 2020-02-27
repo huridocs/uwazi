@@ -120,4 +120,21 @@ describe('migration move_document_to_files', () => {
     expect(await fileExists(path.join(paths.uploadedDocuments, thumbnails[0].filename))).toBe(true);
     expect(await fileExists(path.join(paths.uploadedDocuments, thumbnails[1].filename))).toBe(true);
   });
+
+  it('should change filename of connections to file: file_id', async () => {
+    await migration.up(testingDB.mongodb);
+
+    const [doc1] = await query('files', { filename: 'filename_spanish' });
+    const [doc2] = await query('files', { filename: 'sharedId2.pdf' });
+
+    const doc1Connections = await query('connections', { file: doc1._id.toString() });
+    const doc2Connections = await query('connections', { file: doc2._id.toString() });
+
+    expect(doc1Connections.length).toBe(2);
+    expect(doc1Connections[0].filename).toBeUndefined();
+    expect(doc1Connections[1].filename).toBeUndefined();
+
+    expect(doc2Connections.length).toBe(1);
+    expect(doc2Connections[0].filename).toBeUndefined();
+  });
 });

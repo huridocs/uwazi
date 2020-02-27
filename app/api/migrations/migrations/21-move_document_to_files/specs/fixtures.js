@@ -1,9 +1,12 @@
 import db from 'api/utils/testing_db';
 
+const entity1 = db.id();
+const entity2 = db.id();
+
 export default {
   entities: [
     {
-      _id: db.id(),
+      _id: entity1,
       sharedId: 'sharedId',
       title: 'test_doc1',
       fullText: { 1: 'page1 spanish' },
@@ -27,7 +30,7 @@ export default {
       pdfInfo: { 1: 10 },
     },
     {
-      _id: db.id(),
+      _id: entity2,
       sharedId: 'sharedId2',
       language: 'es',
       file: { language: 'en', filename: 'sharedId2.pdf' },
@@ -42,6 +45,20 @@ export default {
       _id: db.id(),
       sharedId: 'withoutFile',
       language: 'en',
+    },
+  ],
+  connections: [
+    {
+      entity: entity1,
+      filename: 'filename_spanish',
+    },
+    {
+      entity: entity1,
+      filename: 'filename_spanish',
+    },
+    {
+      entity: entity2,
+      filename: 'sharedId2.pdf',
     },
   ],
 };
