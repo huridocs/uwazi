@@ -2,16 +2,12 @@
 
 import * as reactReduxForm from 'react-redux-form';
 import Immutable from 'immutable';
-import superagent from 'superagent';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
-import { APIURL } from 'app/config.js';
-import * as routeActions from 'app/Viewer/actions/routeActions';
 import { mockID } from 'shared/uniqueID.js';
 import { api } from 'app/Entities';
 import { RequestParams } from 'app/utils/RequestParams';
 
-import * as types from '../actionTypes';
 import * as actions from '../actions';
 
 const middlewares = [thunk];
@@ -227,34 +223,6 @@ describe('Metadata Actions', () => {
           metadata: expect.objectContaining(responseMetadata),
         })
       );
-    });
-  });
-
-  describe('uploadDocument', () => {
-    let mockUpload;
-    let store;
-    let file;
-    let doc;
-
-    beforeEach(() => {
-      mockUpload = superagent.post(`${APIURL}reupload`);
-      spyOn(mockUpload, 'field').and.returnValue(mockUpload);
-      spyOn(mockUpload, 'attach').and.returnValue(mockUpload);
-      spyOn(mockUpload, 'set').and.returnValue(mockUpload);
-      spyOn(superagent, 'post').and.returnValue(mockUpload);
-
-      // needed to work with firefox/chrome and phantomjs
-      const isChrome = typeof File === 'function';
-      file = isChrome ? new File([], 'filename') : { name: 'filename' };
-      // ------------------------------------------------
-
-      jest
-        .spyOn(routeActions, 'requestViewerState')
-        .mockImplementation(() => Promise.resolve({ documentViewer: { doc: 'doc' } }));
-      jest
-        .spyOn(routeActions, 'setViewerState')
-        .mockImplementation(() => ({ type: 'setViewerState' }));
-      store = mockStore({ locale: 'es', templates: 'immutableTemplates' });
     });
   });
 });

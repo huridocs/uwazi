@@ -1,16 +1,11 @@
 import { actions as formActions, getModel } from 'react-redux-form';
-import superagent from 'superagent';
 
-import { APIURL } from 'app/config.js';
 import { advancedSort } from 'app/utils/advancedSort';
 import { api } from 'app/Entities';
 import { notificationActions } from 'app/Notifications';
-import * as libraryTypes from 'app/Library/actions/actionTypes';
 import { removeDocuments, unselectAllDocuments } from 'app/Library/actions/libraryActions';
 import { RequestParams } from 'app/utils/RequestParams';
 import emptyTemplate from '../helpers/defaultTemplate';
-
-import * as types from './actionTypes';
 
 export function resetReduxForm(form) {
   return formActions.reset(form);

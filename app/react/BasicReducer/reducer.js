@@ -1,7 +1,6 @@
 /** @format */
 
 import Immutable from 'immutable';
-import { instanceOf } from 'prop-types';
 
 const SET = 'SET';
 const SET_IN = 'SET_IN';
