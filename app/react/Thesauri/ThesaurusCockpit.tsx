@@ -1,5 +1,4 @@
 /** @format */
-
 import Footer from 'app/App/Footer';
 import RouteHandler from 'app/App/RouteHandler';
 import { actions } from 'app/BasicReducer';
@@ -162,6 +161,7 @@ export class ThesaurusCockpitBase extends RouteHandler {
 
     return (
       <I18NLink
+        title="publish-button"
         to={
           `/uploads/?q=(filters:(_${thesaurusPropertyRefName}:(values:!(any)),${thesaurusPropertyRefName}:(values:!(any))),` +
           'limit:100,order:desc,sort:creationDate)&view=nosearch'
