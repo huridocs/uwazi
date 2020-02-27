@@ -39,6 +39,7 @@ export class FileList extends Component<FileListProps> {
 
   render() {
     const { files } = this.props;
+
     return (
       <div className="filelist">
         <h2>

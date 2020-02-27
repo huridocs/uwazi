@@ -100,11 +100,6 @@ export function upload(docId, file, endpoint = 'files/upload/document') {
           });
         })
         .on('response', response => {
-          // const _file = {
-          //   filename: response.body.filename,
-          //   originalname: response.body.originalname,
-          //   size: response.body.size,
-          // };
           dispatch({ type: types.UPLOAD_COMPLETE, doc: docId, file: response.body });
           resolve(JSON.parse(response.text));
         })
