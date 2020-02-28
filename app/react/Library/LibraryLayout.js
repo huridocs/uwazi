@@ -1,34 +1,34 @@
 /** @format */
 
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import Welcome from 'app/Library/components/Welcome';
-import LibraryFilters from 'app/Library/components/LibraryFilters';
-import Helmet from 'react-helmet';
-import ViewMetadataPanel from 'app/Library/components/ViewMetadataPanel';
-import SelectMultiplePanelContainer from 'app/Library/containers/SelectMultiplePanelContainer';
-import SemanticSearchPanel from 'app/SemanticSearch/components/SemanticSearchPanel';
-import { FeatureToggleSemanticSearch } from 'app/SemanticSearch/components/FeatureToggleSemanticSearch';
 import { t } from 'app/I18N';
+import LibraryFilters from 'app/Library/components/LibraryFilters';
+import MultiEditLabelsPanel from 'app/Library/components/MultiEditLabelsPanel';
+import ViewMetadataPanel from 'app/Library/components/ViewMetadataPanel';
+import Welcome from 'app/Library/components/Welcome';
+import SelectMultiplePanelContainer from 'app/Library/containers/SelectMultiplePanelContainer';
+import { FeatureToggleSemanticSearch } from 'app/SemanticSearch/components/FeatureToggleSemanticSearch';
+import SemanticSearchPanel from 'app/SemanticSearch/components/SemanticSearchPanel';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
+import Helmet from 'react-helmet';
+import { connect } from 'react-redux';
 import blankState from './helpers/blankState';
-import { withRouter } from 'react-router';
 
 export class LibraryLayoutBase extends Component {
   render() {
     if (blankState()) {
       return <Welcome />;
     }
-    const { className, children, location } = this.props;
-    const thesaurusFocus = location.query.thesaurus;
+    const { className, children, multiEditThesaurus } = this.props;
 
     return (
       <div className="row panels-layout">
         <Helmet title={t('System', 'Library', null, false)} />
         <main className={`library-viewer document-viewer with-panel ${className}`}>{children}</main>
         <LibraryFilters storeKey="library" />
-        {!thesaurusFocus && <ViewMetadataPanel storeKey="library" />}
-        {!thesaurusFocus && <SelectMultiplePanelContainer storeKey="library" />}
-        {thesaurusFocus && <MultiEditLabels storeKey="library" thesaurus={thesaurusFocus} />}
+        {!multiEditThesaurus && <ViewMetadataPanel storeKey="library" />}
+        {!multiEditThesaurus && <SelectMultiplePanelContainer storeKey="library" />}
+        {multiEditThesaurus && <MultiEditLabelsPanel storeKey="library" />}
         <FeatureToggleSemanticSearch>
           <SemanticSearchPanel storeKey="library" />
         </FeatureToggleSemanticSearch>
@@ -39,15 +39,15 @@ export class LibraryLayoutBase extends Component {
 
 LibraryLayoutBase.defaultProps = {
   className: '',
+  multiEditThesaurus: '',
 };
 
 LibraryLayoutBase.propTypes = {
   children: PropTypes.instanceOf(Object).isRequired,
   className: PropTypes.string,
-  location: PropTypes.shape({
-    pathname: PropTypes.string,
-    query: PropTypes.object,
-  }),
+  multiEditThesaurus: PropTypes.string,
 };
 
-export default withRouter(LibraryLayoutBase);
+export default connect(state => ({
+  multiEditThesaurus: state.library.sidepanel.multiEditOpts.get('thesaurus'),
+}))(LibraryLayoutBase);

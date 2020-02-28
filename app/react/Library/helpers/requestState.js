@@ -1,7 +1,8 @@
+import { actions } from 'app/BasicReducer';
+import libraryHelpers from 'app/Library/helpers/libraryFilters';
+import api from 'app/Search/SearchAPI';
 import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
 import rison from 'rison';
-import api from 'app/Search/SearchAPI';
-import libraryHelpers from 'app/Library/helpers/libraryFilters';
 import setReduxState from './setReduxState.js';
 
 export function processQuery(_query, globalResources, key) {
@@ -58,7 +59,12 @@ export default function requestState(request, globalResources) {
         },
       };
 
-      return [setReduxState(state)];
+      return [
+        setReduxState(state),
+        actions.set('library.sidepanel.multiEditOpts', {
+          thesaurus: request.data.multiEditThesaurus,
+        }),
+      ];
     }
   );
 }

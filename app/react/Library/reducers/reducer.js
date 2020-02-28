@@ -46,6 +46,7 @@ export default storeKey =>
       metadataForm: formReducer(`${storeKey}.sidepanel.metadata`, {}),
       multipleEdit: modelReducer(`${storeKey}.sidepanel.multipleEdit`, {}),
       multipleEditForm: formReducer(`${storeKey}.sidepanel.multipleEdit`, {}),
+      multiEditOpts: createReducer(`${storeKey}.sidepanel.multiEditOpts`, {}),
       references: createReducer(`${storeKey}.sidepanel.references`, []),
       snippets: createReducer(`${storeKey}.sidepanel.snippets`, {
         count: 0,
