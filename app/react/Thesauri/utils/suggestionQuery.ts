@@ -40,7 +40,6 @@ export function buildSuggestionResult(
     raw.aggregations.all.hasOwnProperty(suggestionFieldName)
   ) {
     const { buckets: rawValues } = raw.aggregations.all[suggestionFieldName];
-    console.dir(rawValues);
     const totalValues: { [key: string]: number } = {};
     rawValues.forEach((rawResult: any) => {
       totalValues[rawResult.key] = rawResult.filtered.doc_count;

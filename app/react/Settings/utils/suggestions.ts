@@ -1,6 +1,9 @@
 /** @format */
 
-export function getSuggestionsQuery(matchingTemplateProperty: any, templateID: string) {
+export function getReadyToReviewSuggestionsQuery(
+  matchingTemplateProperty: any,
+  templateID: string
+) {
   if (!matchingTemplateProperty) {
     return {};
   }
@@ -12,12 +15,13 @@ export function getSuggestionsQuery(matchingTemplateProperty: any, templateID: s
     types: [templateID],
   };
   const { name } = matchingTemplateProperty;
-  const filters: any = {};
-  filters[name] = {
-    values: ['missing'],
-  };
-  filters[`_${name}`] = {
-    values: ['any'],
+  const filters: any = {
+    [name]: {
+      values: ['missing'],
+    },
+    [`_${name}`]: {
+      values: ['any'],
+    },
   };
   query.filters = filters;
   return query;

@@ -153,7 +153,12 @@ describe('ThesaurusCockpit', () => {
         label: 'ThesaurusName',
         name: 'thesaurus_name',
       };
-      props = { models, thesaurus: thesauri[0], suggestions: flattenedSuggestions };
+      props = {
+        models,
+        thesaurus: thesauri[0],
+        suggestionsTBPublished: flattenedSuggestions,
+        suggestionsTBReviewed: flattenedSuggestions,
+      };
       RouteHandler.renderedFromServer = true;
       dispatchCallsOrder = [];
       context = {
@@ -189,7 +194,7 @@ describe('ThesaurusCockpit', () => {
     });
 
     it('should not render the publish button when there are < 1 suggestions', () => {
-      props.suggestions = {
+      props.suggestionsTBReviewed = {
         totalRows: 0,
         totalSuggestions: 0,
         thesaurus: {
@@ -208,7 +213,7 @@ describe('ThesaurusCockpit', () => {
     });
 
     it('should not render the publish button when there are < 1 suggestions', () => {
-      props.suggestions = {
+      props.suggestionsTBReviewed = {
         totalRows: 0,
         totalSuggestions: 0,
         thesaurus: {

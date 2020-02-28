@@ -7,7 +7,7 @@ import { I18NLink, t } from 'app/I18N';
 import api from 'app/Search/SearchAPI';
 import { resolveTemplateProp } from 'app/Settings/utils/resolveProperty';
 import {
-  getSuggestionsQuery,
+  getReadyToReviewSuggestionsQuery,
   getReadyToPublishSuggestionsQuery,
 } from 'app/Settings/utils/suggestions';
 import TemplatesAPI from 'app/Templates/TemplatesAPI';
@@ -19,6 +19,7 @@ import { createSelector } from 'reselect';
 import { IImmutable } from 'shared/types/Immutable';
 import { ThesaurusSchema, ThesaurusValueSchema } from 'shared/types/thesaurusType';
 import { Icon } from 'UI';
+import { PropertySchema } from 'shared/types/commonTypes';
 import { ClassifierModelSchema } from './types/classifierModelType';
 import { SuggestionResultSchema } from './types/suggestionResultType';
 import { buildSuggestionResult, flattenSuggestionResults } from './utils/suggestionQuery';
@@ -109,6 +110,24 @@ export class ThesaurusCockpitBase extends RouteHandler {
     );
   }
 
+  static async getAndPopulateSuggestionResults(
+    templates: { _id: string }[],
+    requestParams: RequestParams,
+    queryBuilderFunc: (prop: any, id: string) => any,
+    assocProp?: PropertySchema
+  ): Promise<SuggestionResultSchema> {
+    const docsWithSuggestions = await Promise.all(
+      templates.map((template: { _id: string }) => {
+        const reqParams = requestParams.set(queryBuilderFunc(assocProp, template._id));
+        return api.search(reqParams);
+      })
+    );
+    const sanitizedSuggestionsTBPublished = docsWithSuggestions.map((s: any) =>
+      buildSuggestionResult(s, assocProp?.name ?? '')
+    );
+    return flattenSuggestionResults(sanitizedSuggestionsTBPublished, assocProp?.name ?? '');
+  }
+
   static async requestState(requestParams: RequestParams) {
     // Thesauri should always have a length of 1, because a specific thesaurus ID is passed in the requestParams.
     const [thesauri, templates] = await Promise.all([
@@ -124,43 +143,30 @@ export class ThesaurusCockpitBase extends RouteHandler {
     const assocProp = resolveTemplateProp(thesaurus, templates);
     thesaurus.property = assocProp;
 
-    const unpublishedDocsWithAcceptedSuggestions = await Promise.all(
-      templates.map((template: { _id: string }) => {
-        const reqParams = requestParams.set(
-          getReadyToPublishSuggestionsQuery(assocProp, template._id)
-        );
-        return api.search(reqParams);
-      })
+    // Query for documents with pending suggestions (published or not)
+    const docsWithSuggestionsForPublish = await ThesaurusCockpitBase.getAndPopulateSuggestionResults(
+      templates,
+      requestParams,
+      getReadyToPublishSuggestionsQuery,
+      assocProp
     );
-    const sanitizedSuggestionsTBPublished = unpublishedDocsWithAcceptedSuggestions.map((s: any) =>
-      buildSuggestionResult(s, assocProp?.name ?? '')
-    );
-    const flattenedSuggestionsTBPublished = flattenSuggestionResults(
-      sanitizedSuggestionsTBPublished,
-      assocProp?.name ?? ''
-    );
-    // Get aggregate document count of documents with suggestions on this thesaurus
-    const allDocsWithSuggestions = await Promise.all(
-      templates.map((template: { _id: string }) => {
-        const reqParams = requestParams.set(getSuggestionsQuery(assocProp, template._id));
-        return api.search(reqParams);
-      })
-    );
-    const sanitizedSuggestions = allDocsWithSuggestions.map((s: any) =>
-      buildSuggestionResult(s, assocProp?.name ?? '')
-    );
-    const flattenedSuggestions = flattenSuggestionResults(
-      sanitizedSuggestions,
-      assocProp?.name ?? ''
+    const docsWithSuggestionsForReview = await ThesaurusCockpitBase.getAndPopulateSuggestionResults(
+      templates,
+      requestParams,
+      getReadyToReviewSuggestionsQuery,
+      assocProp
     );
     return [
       actions.set('thesauri/thesaurus', thesaurus as ThesaurusSchema),
       actions.set('thesauri/models', [model as ClassifierModelSchema]),
       actions.set(
         'thesauri/suggestionsTBPublished',
-        flattenedSuggestionsTBPublished as SuggestionResultSchema
+        docsWithSuggestionsForPublish as SuggestionResultSchema
       ),
-      actions.set('thesauri/suggestionsTBReviewed', flattenedSuggestions as SuggestionResultSchema),
+      actions.set(
+        'thesauri/suggestionsTBReviewed',
+        docsWithSuggestionsForReview as SuggestionResultSchema
+      ),
     ];
   }
 
@@ -178,6 +184,7 @@ export class ThesaurusCockpitBase extends RouteHandler {
   publishButton() {
     const { thesaurus, suggestionsTBPublished: suggestions } = this.props as ThesaurusCockpitProps;
 
+    // Don't show the 'publish' button when there's nothing to be published
     if (!thesaurus || !thesaurus.property || suggestions.totalSuggestions === 0) {
       return null;
     }
@@ -270,8 +277,4 @@ function mapStateToProps(state: ThesaurusCockpitStore) {
   };
 }
 
-export default connect(
-  mapStateToProps,
-  null
-  //{ withRef: true }
-)(ThesaurusCockpitBase);
+export default connect(mapStateToProps, null)(ThesaurusCockpitBase);

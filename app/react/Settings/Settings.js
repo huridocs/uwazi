@@ -10,7 +10,7 @@ import UsersAPI from 'app/Users/UsersAPI';
 import React from 'react';
 import Helmet from 'react-helmet';
 import { resolveTemplateProp } from 'app/Settings/utils/resolveProperty';
-import { getSuggestionsQuery } from 'app/Settings/utils/suggestions';
+import { getReadyToReviewSuggestionsQuery } from 'app/Settings/utils/suggestions';
 
 import SettingsNav from './components/SettingsNavigation';
 import SettingsAPI from './SettingsAPI';
@@ -56,7 +56,7 @@ export class Settings extends RouteHandler {
       [].concat(
         ...props.map(p =>
           templates.map(t => {
-            const reqParams = requestParams.set(getSuggestionsQuery(p, t._id));
+            const reqParams = requestParams.set(getReadyToReviewSuggestionsQuery(p, t._id));
             return api.search(reqParams);
           })
         )
