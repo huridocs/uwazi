@@ -189,23 +189,26 @@ class SyncTask extends Task {
       (res, t) => ({ ...res, [t._id.toString()]: t }),
       {}
     );
-    let seen = 0;
-    let index = 0;
+    const res = this.status.result;
+    res.seen = 0;
+    res.index = 0;
     await QueryForEach(
       entities.get({ language: 'en' }).sort('_id'),
       50,
       async (e: WithId<EntitySchema>) => {
-        if (index > (args.limit ?? 1000000)) {
+        if (res.index > (args.limit ?? 1000000)) {
           return;
         }
-        seen += 1;
+        res.seen += 1;
         if (await syncEntity(e, args, templatesDict, thesaurusDict)) {
-          index += 1;
+          res.index += 1;
           if (args.noDryRun) {
             await entities.save(e, { user: 'sync-topic-classification', language: e.language });
           }
         }
-        this.status.message = `Running with ${util.inspect(args)}: ${seen} seen, ${index} changed`;
+        this.status.message = `Running with ${util.inspect(args)}: ${res.seen} seen, ${
+          res.index
+        } changed`;
       }
     );
   }

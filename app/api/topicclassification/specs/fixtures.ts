@@ -66,6 +66,7 @@ export default {
       template: template1,
       sharedId: 'e1',
       title: 'title1',
+      language: 'en',
     },
   ],
   settings: [
@@ -75,4 +76,5 @@ export default {
       languages: [{ key: 'en', label: 'English', default: true }],
     },
   ],
+  translations: [{ locale: 'en', contexts: [] }],
 };
