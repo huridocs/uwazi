@@ -1,5 +1,4 @@
-/**@format */
-/* eslint-disable camelcase */
+/* eslint-disable camelcase, max-lines */
 
 import filterToMatch, { multiselectFilter } from './metadataMatchers';
 import propertyToAggregation from './metadataAggregations';

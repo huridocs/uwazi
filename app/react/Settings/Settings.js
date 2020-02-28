@@ -1,4 +1,3 @@
-/** @format */
 import RouteHandler from 'app/App/RouteHandler';
 import { actions } from 'app/BasicReducer';
 import { I18NApi } from 'app/I18N';

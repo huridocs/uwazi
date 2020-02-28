@@ -1,4 +1,4 @@
-/** @format */
+/* eslint-disable max-lines */
 import RouteHandler from 'app/App/RouteHandler';
 import api from 'app/Search/SearchAPI';
 import TemplatesAPI from 'app/Templates/TemplatesAPI';

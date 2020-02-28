@@ -1,5 +1,3 @@
-/** @format */
-
 export const emitSchemaTypes = true;
 
 export const suggestionResultSchema = {

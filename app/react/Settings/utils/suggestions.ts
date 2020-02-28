@@ -1,5 +1,4 @@
 import { PropertySchema } from 'shared/types/commonTypes';
-/** @format */
 
 function getSuggestionsQuery(
   templateProperty: PropertySchema,

@@ -1,4 +1,4 @@
-/** @format */
+/* eslint-disable max-lines */
 import Footer from 'app/App/Footer';
 import RouteHandler from 'app/App/RouteHandler';
 import { actions } from 'app/BasicReducer';

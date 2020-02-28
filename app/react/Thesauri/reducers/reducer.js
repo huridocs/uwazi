@@ -1,4 +1,3 @@
-/** @format */
 import createReducer from 'app/BasicReducer';
 import { formReducer, modelReducer } from 'react-redux-form';
 import { combineReducers } from 'redux';

@@ -1,4 +1,3 @@
-/** @format */
 import { SuggestionResultSchema } from '../types/suggestionResultType';
 
 /* An Un-sanitized Elastic Search Result
