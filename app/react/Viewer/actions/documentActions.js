@@ -110,6 +110,7 @@ export async function getDocument(requestParams, defaultLanguage) {
 
   return {
     ...entity,
+    defaultDoc: processedDoc,
     documents: entity.documents.map(d => {
       if (d._id === processedDoc._id) {
         return processedDoc;
