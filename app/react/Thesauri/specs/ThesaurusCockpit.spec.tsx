@@ -88,7 +88,7 @@ const thesauri: ThesaurusSchema[] = [
   {
     _id: 'thesaurusUnderscoreId1',
     name: 'ThesaurusName',
-    totalValues: [
+    values: [
       { _id: 'underscoreId1', label: 'Topic 1', id: 'id1' },
       { _id: 'underscoreId2', label: 'Topic 2', id: 'id2' },
       { _id: 'underscoreId3', label: 'Topic 3', id: 'id3' },
@@ -98,7 +98,7 @@ const thesauri: ThesaurusSchema[] = [
   {
     _id: 'thesaurusUnderscoreId2',
     name: 'ThesaurusWithoutSuggestions',
-    totalValues: [{ _id: 'underscoreId1', label: 'Topic 1', id: 'id1' }],
+    values: [{ _id: 'underscoreId1', label: 'Topic 1', id: 'id1' }],
     enableClassification: false,
   },
 ];
@@ -180,7 +180,7 @@ describe('ThesaurusCockpit', () => {
       render();
     });
 
-    it('should find the cockpit table and verify names, values and quality icons', () => {
+    it('should find the cockpit table and verify names and counts', () => {
       render();
       expect(component.find('.cockpit').length).toBe(1);
       expect(component.find({ scope: 'row' }).length).toBe(3);
@@ -193,7 +193,7 @@ describe('ThesaurusCockpit', () => {
       );
     });
 
-    it('should not render the publish button when there are < 1 suggestions', () => {
+    it('should not render the Review Documents buttons when there are < 1 suggestions to be reviewed', () => {
       props.suggestionsTBReviewed = {
         totalRows: 0,
         totalSuggestions: 0,
@@ -206,14 +206,13 @@ describe('ThesaurusCockpit', () => {
         },
       };
       component = shallow(<ThesaurusCockpitBase {...props} />, { context });
-      expect(component.find({ title: 'publish-button' }).length).toBe(0);
       expect(component.find({ scope: 'row' }).length).toBe(3);
       // We don't expect a 'to be reviewed' count, nor a 'suggestions button'
       expect(component.find('td').children().length).toBe(0);
     });
 
     it('should not render the publish button when there are < 1 suggestions', () => {
-      props.suggestionsTBReviewed = {
+      props.suggestionsTBPublished = {
         totalRows: 0,
         totalSuggestions: 0,
         thesaurus: {
@@ -243,15 +242,18 @@ describe('ThesaurusCockpit', () => {
       expect(ThesauriAPI.getThesauri).toHaveBeenCalled();
       expect(TemplatesAPI.get).toHaveBeenCalled();
       expect(ThesauriAPI.getModelStatus).toHaveBeenCalled();
-      expect(api.search).toHaveBeenCalledTimes(2);
+      expect(api.search).toHaveBeenCalledTimes(4);
 
-      expect(actions.length).toBe(3);
+      expect(actions.length).toBe(4);
       actions.forEach(action => {
         switch (action.type) {
           case 'thesauri/thesaurus/SET':
             expect(action.value).toEqual(thesauri[0]);
             break;
-          case 'thesauri/suggestions/SET':
+          case 'thesauri/suggestionsTBPublished/SET':
+            expect(action.value).toEqual(flattenedSuggestions);
+            break;
+          case 'thesauri/suggestionsTBReviewed/SET':
             expect(action.value).toEqual(flattenedSuggestions);
             break;
           case 'thesauri/model/SET':
