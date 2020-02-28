@@ -55,7 +55,7 @@ export class Settings extends RouteHandler {
       [].concat(
         ...props.map(p =>
           templates.map(t => {
-            const reqParams = requestParams.set(getReadyToReviewSuggestionsQuery(p, t._id));
+            const reqParams = requestParams.set(getReadyToReviewSuggestionsQuery(t._id, p));
             return api.search(reqParams);
           })
         )
