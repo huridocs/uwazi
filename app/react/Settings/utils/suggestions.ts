@@ -31,8 +31,8 @@ function getSuggestionsQuery(
 }
 
 export function getReadyToReviewSuggestionsQuery(
-  matchingTemplateProperty: any,
-  templateID: string
+  templateID: string,
+  matchingTemplateProperty?: PropertySchema
 ) {
   if (!matchingTemplateProperty) {
     return {};
@@ -41,8 +41,8 @@ export function getReadyToReviewSuggestionsQuery(
 }
 
 export function getReadyToPublishSuggestionsQuery(
-  matchingTemplateProperty: any,
-  templateID: string
+  templateID: string,
+  matchingTemplateProperty?: PropertySchema
 ) {
   if (!matchingTemplateProperty) {
     return {};

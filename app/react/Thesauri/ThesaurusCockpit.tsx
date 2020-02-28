@@ -113,12 +113,12 @@ export class ThesaurusCockpitBase extends RouteHandler {
   static async getAndPopulateSuggestionResults(
     templates: { _id: string }[],
     requestParams: RequestParams,
-    queryBuilderFunc: (prop: any, id: string) => any,
+    queryBuilderFunc: (id: string, prop?: PropertySchema) => any,
     assocProp?: PropertySchema
   ): Promise<SuggestionResultSchema> {
     const docsWithSuggestions = await Promise.all(
       templates.map((template: { _id: string }) => {
-        const reqParams = requestParams.set(queryBuilderFunc(assocProp, template._id));
+        const reqParams = requestParams.set(queryBuilderFunc(template._id, assocProp));
         return api.search(reqParams);
       })
     );
@@ -143,7 +143,6 @@ export class ThesaurusCockpitBase extends RouteHandler {
     const assocProp = resolveTemplateProp(thesaurus, templates);
     thesaurus.property = assocProp;
 
-    // Query for documents with pending suggestions (published or not)
     const docsWithSuggestionsForPublish = await ThesaurusCockpitBase.getAndPopulateSuggestionResults(
       templates,
       requestParams,
