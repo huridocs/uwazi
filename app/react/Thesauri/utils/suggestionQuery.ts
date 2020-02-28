@@ -40,14 +40,15 @@ export function buildSuggestionResult(
     raw.aggregations.all.hasOwnProperty(suggestionFieldName)
   ) {
     const { buckets: rawValues } = raw.aggregations.all[suggestionFieldName];
-    const values: { [key: string]: number } = {};
+    console.dir(rawValues);
+    const totalValues: { [key: string]: number } = {};
     rawValues.forEach((rawResult: any) => {
-      values[rawResult.key] = rawResult.filtered.doc_count;
+      totalValues[rawResult.key] = rawResult.filtered.doc_count;
       result.totalSuggestions += rawResult.filtered.doc_count;
     });
     result.thesaurus = {
       propertyName: thesaurusPropertyName,
-      values,
+      totalValues,
     };
   }
   return result as SuggestionResultSchema;
@@ -61,20 +62,20 @@ export function flattenSuggestionResults(
   const result: SuggestionResultSchema = {
     totalRows: 0,
     totalSuggestions: 0,
-    thesaurus: { propertyName: thesaurusPropertyName, values: {} },
+    thesaurus: { propertyName: thesaurusPropertyName, totalValues: {} },
   };
   perTemplate.forEach((templateResult: SuggestionResultSchema) => {
     result.totalRows += templateResult.totalRows;
     result.totalSuggestions += templateResult.totalSuggestions;
     if (
       templateResult.hasOwnProperty('thesaurus') &&
-      templateResult.thesaurus.hasOwnProperty('values')
+      templateResult.thesaurus.hasOwnProperty('totalValues')
     ) {
-      Object.entries(templateResult.thesaurus.values).forEach(([key, value]) => {
-        if (!result.thesaurus.values.hasOwnProperty(key)) {
-          result.thesaurus.values[key] = 0;
+      Object.entries(templateResult.thesaurus.totalValues).forEach(([key, value]) => {
+        if (!result.thesaurus.totalValues.hasOwnProperty(key)) {
+          result.thesaurus.totalValues[key] = 0;
         }
-        result.thesaurus.values[key]! += value || 0;
+        result.thesaurus.totalValues[key]! += value || 0;
       });
     }
   });

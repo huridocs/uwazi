@@ -6,7 +6,10 @@ import Loader from 'app/components/Elements/Loader';
 import { I18NLink, t } from 'app/I18N';
 import api from 'app/Search/SearchAPI';
 import { resolveTemplateProp } from 'app/Settings/utils/resolveProperty';
-import { getSuggestionsQuery } from 'app/Settings/utils/suggestions';
+import {
+  getSuggestionsQuery,
+  getReadyToPublishSuggestionsQuery,
+} from 'app/Settings/utils/suggestions';
 import TemplatesAPI from 'app/Templates/TemplatesAPI';
 import ThesauriAPI from 'app/Thesauri/ThesauriAPI';
 import { RequestParams } from 'app/utils/RequestParams';
@@ -24,7 +27,8 @@ import { getValuesSortedByName } from './utils/valuesSort';
 export type ThesaurusCockpitProps = {
   thesaurus: ThesaurusSchema;
   models: ClassifierModelSchema[];
-  suggestions: SuggestionResultSchema;
+  suggestionsTBPublished: SuggestionResultSchema;
+  suggestionsTBReviewed: SuggestionResultSchema;
 };
 
 export class ThesaurusCockpitBase extends RouteHandler {
@@ -69,7 +73,7 @@ export class ThesaurusCockpitBase extends RouteHandler {
     propName: string | undefined
   ) {
     const { label, id } = topic;
-    const suggestionCount = suggestionResult.thesaurus?.values[`${id}`] ?? 0;
+    const suggestionCount = suggestionResult.thesaurus?.totalValues[`${id}`] ?? 0;
 
     return (
       <tr key={label}>
@@ -92,7 +96,7 @@ export class ThesaurusCockpitBase extends RouteHandler {
   }
 
   topicNodes() {
-    const { suggestions, thesaurus } = this.props as ThesaurusCockpitProps;
+    const { suggestionsTBReviewed: suggestions, thesaurus } = this.props as ThesaurusCockpitProps;
     const { property } = thesaurus;
     const values = getValuesSortedByName(thesaurus);
 
@@ -120,6 +124,21 @@ export class ThesaurusCockpitBase extends RouteHandler {
     const assocProp = resolveTemplateProp(thesaurus, templates);
     thesaurus.property = assocProp;
 
+    const unpublishedDocsWithAcceptedSuggestions = await Promise.all(
+      templates.map((template: { _id: string }) => {
+        const reqParams = requestParams.set(
+          getReadyToPublishSuggestionsQuery(assocProp, template._id)
+        );
+        return api.search(reqParams);
+      })
+    );
+    const sanitizedSuggestionsTBPublished = unpublishedDocsWithAcceptedSuggestions.map((s: any) =>
+      buildSuggestionResult(s, assocProp?.name ?? '')
+    );
+    const flattenedSuggestionsTBPublished = flattenSuggestionResults(
+      sanitizedSuggestionsTBPublished,
+      assocProp?.name ?? ''
+    );
     // Get aggregate document count of documents with suggestions on this thesaurus
     const allDocsWithSuggestions = await Promise.all(
       templates.map((template: { _id: string }) => {
@@ -137,7 +156,11 @@ export class ThesaurusCockpitBase extends RouteHandler {
     return [
       actions.set('thesauri/thesaurus', thesaurus as ThesaurusSchema),
       actions.set('thesauri/models', [model as ClassifierModelSchema]),
-      actions.set('thesauri/suggestions', flattenedSuggestions as SuggestionResultSchema),
+      actions.set(
+        'thesauri/suggestionsTBPublished',
+        flattenedSuggestionsTBPublished as SuggestionResultSchema
+      ),
+      actions.set('thesauri/suggestionsTBReviewed', flattenedSuggestions as SuggestionResultSchema),
     ];
   }
 
@@ -148,11 +171,12 @@ export class ThesaurusCockpitBase extends RouteHandler {
   emptyState() {
     this.context.store.dispatch(actions.unset('thesauri/models'));
     this.context.store.dispatch(actions.unset('thesauri/thesaurus'));
-    this.context.store.dispatch(actions.unset('thesauri/suggestions'));
+    this.context.store.dispatch(actions.unset('thesauri/suggestionsTBPublished'));
+    this.context.store.dispatch(actions.unset('thesauri/suggestionsTBReviewed'));
   }
 
-  suggestionsButton() {
-    const { thesaurus, suggestions } = this.props as ThesaurusCockpitProps;
+  publishButton() {
+    const { thesaurus, suggestionsTBPublished: suggestions } = this.props as ThesaurusCockpitProps;
 
     if (!thesaurus || !thesaurus.property || suggestions.totalSuggestions === 0) {
       return null;
@@ -183,7 +207,7 @@ export class ThesaurusCockpitBase extends RouteHandler {
       <div className="flex panel panel-default">
         <div className="panel-heading">
           {t('System', `Thesauri > ${name}`)}
-          {this.suggestionsButton()}
+          {this.publishButton()}
         </div>
         <div className="cockpit">
           <table>
@@ -213,7 +237,8 @@ interface ThesaurusCockpitStore {
   thesauri: {
     thesaurus: IImmutable<ThesaurusSchema>;
     models: IImmutable<ClassifierModelSchema>[];
-    suggestions: IImmutable<SuggestionResultSchema>;
+    suggestionsTBPublished: IImmutable<SuggestionResultSchema>;
+    suggestionsTBReviewed: IImmutable<SuggestionResultSchema>;
   };
 }
 
@@ -227,16 +252,21 @@ const selectThesaurus = createSelector(
   thesaurus => thesaurus.toJS()
 );
 
-const selectSuggestions = createSelector(
-  (state: ThesaurusCockpitStore) => state.thesauri.suggestions,
-  suggestions => suggestions.toJS()
+const selectSuggestionsTBPublished = createSelector(
+  (state: ThesaurusCockpitStore) => state.thesauri.suggestionsTBPublished,
+  suggestionsTBPublished => suggestionsTBPublished.toJS()
+);
+const selectSuggestionsTBReviewed = createSelector(
+  (state: ThesaurusCockpitStore) => state.thesauri.suggestionsTBReviewed,
+  suggestionsTBReviewed => suggestionsTBReviewed.toJS()
 );
 
 function mapStateToProps(state: ThesaurusCockpitStore) {
   return {
     models: selectModels(state),
     thesaurus: selectThesaurus(state),
-    suggestions: selectSuggestions(state),
+    suggestionsTBPublished: selectSuggestionsTBPublished(state),
+    suggestionsTBReviewed: selectSuggestionsTBReviewed(state),
   };
 }
 

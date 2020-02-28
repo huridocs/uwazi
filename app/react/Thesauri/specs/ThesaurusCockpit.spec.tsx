@@ -88,7 +88,7 @@ const thesauri: ThesaurusSchema[] = [
   {
     _id: 'thesaurusUnderscoreId1',
     name: 'ThesaurusName',
-    values: [
+    totalValues: [
       { _id: 'underscoreId1', label: 'Topic 1', id: 'id1' },
       { _id: 'underscoreId2', label: 'Topic 2', id: 'id2' },
       { _id: 'underscoreId3', label: 'Topic 3', id: 'id3' },
@@ -98,7 +98,7 @@ const thesauri: ThesaurusSchema[] = [
   {
     _id: 'thesaurusUnderscoreId2',
     name: 'ThesaurusWithoutSuggestions',
-    values: [{ _id: 'underscoreId1', label: 'Topic 1', id: 'id1' }],
+    totalValues: [{ _id: 'underscoreId1', label: 'Topic 1', id: 'id1' }],
     enableClassification: false,
   },
 ];
@@ -130,7 +130,7 @@ const flattenedSuggestions: SuggestionResultSchema = {
   totalSuggestions: 4,
   thesaurus: {
     propertyName: 'thesaurus_name',
-    values: {
+    totalValues: {
       id1: 4,
       id2: 0,
     },
@@ -194,7 +194,7 @@ describe('ThesaurusCockpit', () => {
         totalSuggestions: 0,
         thesaurus: {
           propertyName: 'thesaurus_name',
-          values: {
+          totalValues: {
             id1: 0,
             id2: 0,
           },
@@ -213,7 +213,7 @@ describe('ThesaurusCockpit', () => {
         totalSuggestions: 0,
         thesaurus: {
           propertyName: 'thesaurus_name',
-          values: {
+          totalValues: {
             id1: 1,
             id2: 0,
           },

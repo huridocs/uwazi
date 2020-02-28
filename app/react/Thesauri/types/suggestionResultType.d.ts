@@ -6,7 +6,7 @@ export interface SuggestionResultSchema {
   totalSuggestions: number;
   thesaurus: {
     propertyName: string;
-    values: {
+    totalValues: {
       [k: string]: number | undefined;
     };
     [k: string]: any | undefined;

@@ -1,8 +1,5 @@
-/**
- * /* eslint-disable camelcase
- *
- * @format
- */
+/**@format */
+/* eslint-disable camelcase */
 
 import filterToMatch, { multiselectFilter } from './metadataMatchers';
 import propertyToAggregation from './metadataAggregations';
@@ -86,14 +83,14 @@ export default function() {
     },
 
     includeUnpublished() {
-      const matchPulished = baseQuery.query.bool.filter.find(i => i.term && i.term.published);
-      if (matchPulished) {
-        baseQuery.query.bool.filter.splice(baseQuery.query.bool.filter.indexOf(matchPulished), 1);
+      const matchPublished = baseQuery.query.bool.filter.find(i => i.term && i.term.published);
+      if (matchPublished) {
+        baseQuery.query.bool.filter.splice(baseQuery.query.bool.filter.indexOf(matchPublished), 1);
       }
       return this;
     },
 
-    fullTextSearch(
+    fullTextSearch( // eslint-disable-line max-params
       term,
       fieldsToSearch = ['title', 'fullText'],
       number_of_fragments = 1,

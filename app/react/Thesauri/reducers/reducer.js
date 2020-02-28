@@ -6,7 +6,8 @@ import ID from 'shared/uniqueID';
 
 export default combineReducers({
   models: createReducer('thesauri/models', []),
-  suggestions: createReducer('thesauri/suggestions', []),
+  suggestionsTBPublished: createReducer('thesauri/suggestionsTBPublished', []),
+  suggestionsTBReviewed: createReducer('thesauri/suggestionsTBReviewed', []),
   thesaurus: createReducer('thesauri/thesaurus', {}),
   data: modelReducer('thesauri.data', { name: '', values: [{ label: '', id: ID() }] }),
   formState: formReducer('thesauri.data', { name: '', values: [{ label: '', id: ID() }] }),
