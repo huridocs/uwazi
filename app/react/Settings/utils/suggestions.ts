@@ -1,23 +1,27 @@
+import { PropertySchema } from 'shared/types/commonTypes';
 /** @format */
 
-export function getReadyToReviewSuggestionsQuery(
-  matchingTemplateProperty: any,
-  templateID: string
+function getSuggestionsQuery(
+  templateProperty: PropertySchema,
+  templateID: string,
+  includeUnpublished: boolean,
+  unpublishedOnly: boolean
 ) {
-  if (!matchingTemplateProperty) {
-    return {};
-  }
   const query = {
     select: ['sharedId'],
     limit: 1,
     filters: {},
-    includeUnpublished: true,
+    includeUnpublished,
+    unpublished: unpublishedOnly,
     types: [templateID],
   };
-  const { name } = matchingTemplateProperty;
+  const { name } = templateProperty;
+  if (name === undefined) {
+    return null;
+  }
   const filters: any = {
     [name]: {
-      values: ['missing'],
+      values: unpublishedOnly ? ['any'] : ['missing'],
     },
     [`_${name}`]: {
       values: ['any'],
@@ -27,6 +31,16 @@ export function getReadyToReviewSuggestionsQuery(
   return query;
 }
 
+export function getReadyToReviewSuggestionsQuery(
+  matchingTemplateProperty: any,
+  templateID: string
+) {
+  if (!matchingTemplateProperty) {
+    return {};
+  }
+  return getSuggestionsQuery(matchingTemplateProperty, templateID, true, false);
+}
+
 export function getReadyToPublishSuggestionsQuery(
   matchingTemplateProperty: any,
   templateID: string
@@ -34,21 +48,5 @@ export function getReadyToPublishSuggestionsQuery(
   if (!matchingTemplateProperty) {
     return {};
   }
-  const query = {
-    select: ['sharedId'],
-    limit: 1,
-    filters: {},
-    unpublished: true,
-    types: [templateID],
-  };
-  const { name } = matchingTemplateProperty;
-  const filters: any = {};
-  filters[name] = {
-    values: ['any'],
-  };
-  filters[`_${name}`] = {
-    values: ['any'],
-  };
-  query.filters = filters;
-  return query;
+  return getSuggestionsQuery(matchingTemplateProperty, templateID, false, true);
 }
