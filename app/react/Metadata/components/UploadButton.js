@@ -122,14 +122,15 @@ UploadButton.defaultProps = {
   progress: Immutable.fromJS({}),
   storeKey: '',
   entitySharedId: '',
+  uploadDocument: () => {},
 };
 
 UploadButton.propTypes = {
-  uploadDocument: PropTypes.func.isRequired,
+  uploadDocument: PropTypes.func,
   documentProcessed: PropTypes.func,
   entitySharedId: PropTypes.string,
   progress: PropTypes.instanceOf(Immutable.Map),
-  storeKey: PropTypes.string,
+  storeKey: PropTypes.string, // eslint-disable-line
 };
 
 UploadButton.contextTypes = {

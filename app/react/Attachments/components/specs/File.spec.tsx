@@ -1,7 +1,8 @@
 import React from 'react';
 import { shallow, ShallowWrapper } from 'enzyme';
-import { File, FileProps } from '../File';
 import { LocalForm } from 'react-redux-form';
+import { FileType } from 'shared/types/fileType';
+import { File, FileProps } from '../File';
 
 describe('file', () => {
   let component: ShallowWrapper<File>;
@@ -9,7 +10,7 @@ describe('file', () => {
   let context: any;
 
   beforeEach(() => {
-    const file = {
+    const file: FileType = {
       originalname: 'Human_name_1.pdf',
       filename: 'random.ext',
       language: 'eng',

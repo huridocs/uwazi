@@ -26,6 +26,7 @@ type FileState = {
 };
 
 export class File extends Component<FileProps, FileState> {
+  static defaultProps = { updateFile: () => {}, deleteFile: () => {} };
   static contextTypes = {
     confirm: PropTypes.func,
   };
@@ -142,7 +143,7 @@ export class File extends Component<FileProps, FileState> {
               <Translate>Document Title</Translate>&nbsp;*
             </label>
             <Control.text
-              validators={{ required: (val: string) => val && val.length }}
+              validators={{ required: (val: string) => Boolean(val && val.length) }}
               className="form-control"
               model=".originalname"
               id="originalname"

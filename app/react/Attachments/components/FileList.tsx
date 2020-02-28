@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import { advancedSort } from 'app/utils/advancedSort';
 import { Translate } from 'app/I18N';
 import { FileType } from 'shared/types/fileType';
-import { EntityType } from 'shared/types/commonTypes';
+import { EntitySchema } from 'shared/types/entityType';
 import UploadButton from 'app/Metadata/components/UploadButton';
 import { ConnectedFile as File } from './File';
 import { NeedAuthorization } from 'app/Auth';
@@ -17,7 +17,7 @@ const defaultProps = {
 
 export type FileListProps = {
   files: Array<FileType>;
-  entity: EntityType;
+  entity: EntitySchema;
   readOnly: boolean;
   storeKey: string;
 };
@@ -29,11 +29,10 @@ export class FileList extends Component<FileListProps> {
 
   static defaultProps = defaultProps;
 
-  renderFile(file: FileType) {
+  renderFile(file: FileType, index: number) {
     const { readOnly, storeKey, entity } = this.props;
-
     return (
-      <li key={file._id}>
+      <li key={index}>
         <File file={file} storeKey={storeKey} readOnly={readOnly} entity={entity} />
       </li>
     );
@@ -47,7 +46,7 @@ export class FileList extends Component<FileListProps> {
         <h2>
           <Translate>Documents</Translate>
         </h2>
-        <ul>{files.map(file => this.renderFile(file))}</ul>
+        <ul>{files.map((file, index) => this.renderFile(file, index))}</ul>
         <NeedAuthorization roles={['admin', 'editor']}>
           <UploadButton
             entitySharedId={this.props.entity.sharedId}

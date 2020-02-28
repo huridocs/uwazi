@@ -4,14 +4,14 @@ import { FileList, FileListProps } from '../FileList';
 import { ConnectedFile as File } from '../File';
 import { FileType } from 'shared/types/fileType';
 import UploadButton from 'app/Metadata/components/UploadButton';
-import { EntityType } from 'shared/types/commonTypes';
+import { EntitySchema } from 'shared/types/entityType';
 
 describe('FileList', () => {
   let component: ShallowWrapper<FileList>;
   let props: FileListProps;
   let file: FileType;
   let file2: FileType;
-  let entity: EntityType;
+  let entity: EntitySchema;
 
   beforeEach(() => {
     file = {
