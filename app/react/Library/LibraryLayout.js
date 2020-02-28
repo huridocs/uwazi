@@ -11,21 +11,24 @@ import SemanticSearchPanel from 'app/SemanticSearch/components/SemanticSearchPan
 import { FeatureToggleSemanticSearch } from 'app/SemanticSearch/components/FeatureToggleSemanticSearch';
 import { t } from 'app/I18N';
 import blankState from './helpers/blankState';
+import { withRouter } from 'react-router';
 
-export default class LibraryLayout extends Component {
+export class LibraryLayoutBase extends Component {
   render() {
     if (blankState()) {
       return <Welcome />;
     }
-    const { className, children } = this.props;
+    const { className, children, location } = this.props;
+    const thesaurusFocus = location.query.thesaurus;
 
     return (
       <div className="row panels-layout">
         <Helmet title={t('System', 'Library', null, false)} />
         <main className={`library-viewer document-viewer with-panel ${className}`}>{children}</main>
         <LibraryFilters storeKey="library" />
-        <ViewMetadataPanel storeKey="library" />
-        <SelectMultiplePanelContainer storeKey="library" />
+        {!thesaurusFocus && <ViewMetadataPanel storeKey="library" />}
+        {!thesaurusFocus && <SelectMultiplePanelContainer storeKey="library" />}
+        {thesaurusFocus && <MultiEditLabels storeKey="library" thesaurus={thesaurusFocus} />}
         <FeatureToggleSemanticSearch>
           <SemanticSearchPanel storeKey="library" />
         </FeatureToggleSemanticSearch>
@@ -34,11 +37,17 @@ export default class LibraryLayout extends Component {
   }
 }
 
-LibraryLayout.defaultProps = {
+LibraryLayoutBase.defaultProps = {
   className: '',
 };
 
-LibraryLayout.propTypes = {
+LibraryLayoutBase.propTypes = {
   children: PropTypes.instanceOf(Object).isRequired,
   className: PropTypes.string,
+  location: PropTypes.shape({
+    pathname: PropTypes.string,
+    query: PropTypes.object,
+  }),
 };
+
+export default withRouter(LibraryLayoutBase);

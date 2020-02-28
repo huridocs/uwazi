@@ -41,6 +41,7 @@ function URLQueryToState(query, templates, thesauris, relationTypes) {
     sort = prioritySortingCriteria.get().sort,
     order = prioritySortingCriteria.get().order,
     userSelectedSorting,
+    includeUnpublished = false,
   } = query;
   properties = populateOptions(properties, thesauris).map(property => {
     let defaultValue = {};
@@ -52,7 +53,10 @@ function URLQueryToState(query, templates, thesauris, relationTypes) {
     filters[property.name] = filters[property.name] ? filters[property.name] : defaultValue;
     return property;
   });
-  return { properties, search: { searchTerm, filters, order, sort, userSelectedSorting } };
+  return {
+    properties,
+    search: { searchTerm, filters, order, sort, userSelectedSorting, includeUnpublished },
+  };
 }
 
 const getOptionCount = (aggregations, optionId, name) => {
@@ -70,7 +74,8 @@ export function parseWithAggregations(filters, aggregations, showNoValue = true)
     const property = Object.assign({}, _property);
     if (property.options && property.options.length) {
       if (showNoValue) {
-        property.options.push({ id: 'missing', label: 'No Value', noValueKey: true });
+        property.options.push({ id: 'missing', label: 'No Value' });
+        property.options.push({ id: 'any', label: 'Any Value' });
       }
       property.options = property.options
         .map(_option => {

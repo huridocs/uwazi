@@ -191,6 +191,15 @@ const processResponse = response => {
       );
     }
     if (aggregation.buckets) {
+      const missingBucket = aggregation.buckets.find(b => b.key === 'missing');
+      if (aggregationKey !== '_types') {
+        const anyCount = response.hits.total.value - missingBucket.filtered.doc_count;
+        aggregation.buckets.push({
+          key: 'any',
+          doc_count: anyCount,
+          filtered: { doc_count: anyCount },
+        });
+      }
       response.aggregations.all[aggregationKey] = aggregation;
     }
     if (!aggregation.buckets) {

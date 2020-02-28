@@ -134,11 +134,13 @@ export default class MultiSelect extends Component {
 
   moveNoValueOptionToBottom(options) {
     let _options = [...options];
-    const noValueOption = _options.find(opt => opt.noValueKey);
-    if (noValueOption && !this.checked(noValueOption)) {
-      _options = _options.filter(opt => !opt.noValueKey);
-      _options.push(noValueOption);
-    }
+    ['any', 'missing'].forEach(bottomId => {
+      const bottomOption = _options.find(opt => opt.id === bottomId);
+      if (bottomOption && !this.checked(bottomOption)) {
+        _options = _options.filter(opt => opt.id !== bottomId);
+        _options.push(bottomOption);
+      }
+    });
     return _options;
   }
 
@@ -152,13 +154,8 @@ export default class MultiSelect extends Component {
       },
       [[], []]
     );
-    let partitionedOptions = checkedOptions.concat(otherOptions);
-    const noValueOption = partitionedOptions.find(opt => opt.noValueKey);
-    if (noValueOption && !this.checked(noValueOption)) {
-      partitionedOptions = partitionedOptions.filter(opt => !opt.noValueKey);
-      partitionedOptions.push(noValueOption);
-    }
-    return partitionedOptions;
+    const partitionedOptions = checkedOptions.concat(otherOptions);
+    return this.moveNoValueOptionToBottom(partitionedOptions);
   }
 
   moreLessLabel(totalOptions) {

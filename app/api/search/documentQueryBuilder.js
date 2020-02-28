@@ -85,14 +85,6 @@ export default function() {
       return baseQuery;
     },
 
-    includeUnpublished() {
-      const matchPulished = baseQuery.query.bool.filter.find(i => i.term && i.term.published);
-      if (matchPulished) {
-        baseQuery.query.bool.filter.splice(baseQuery.query.bool.filter.indexOf(matchPulished), 1);
-      }
-      return this;
-    },
-
     fullTextSearch(
       term,
       fieldsToSearch = ['title', 'fullText'],
@@ -177,6 +169,20 @@ export default function() {
     unpublished() {
       baseQuery.query.bool.filter[0].term.published = false;
       aggregations._types.aggregations.filtered.filter.bool.filter[0].match.published = false;
+      return this;
+    },
+
+    includeUnpublished() {
+      const matchPulished = baseQuery.query.bool.filter.findIndex(i => i.term && i.term.published);
+      if (matchPulished >= 0) {
+        baseQuery.query.bool.filter.splice(matchPulished, 1);
+      }
+      const aggPulished = aggregations._types.aggregations.filtered.filter.bool.filter.findIndex(
+        i => i.match && i.match.published
+      );
+      if (aggPulished >= 0) {
+        aggregations._types.aggregations.filtered.filter.bool.filter.splice(aggPulished, 1);
+      }
       return this;
     },
 

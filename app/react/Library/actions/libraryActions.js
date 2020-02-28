@@ -195,13 +195,14 @@ function setSearchInUrl(searchParams) {
   browserHistory.push(path + toUrlParams(query));
 }
 
-export function searchDocuments({ search, filters }, storeKey, limit = 30) {
+export function searchDocuments({ search = undefined, filters = undefined }, storeKey, limit = 30) {
   return (dispatch, getState) => {
     const state = getState()[storeKey];
+    const currentSearch = search || state.search;
     let currentFilters = filters || state.filters;
     currentFilters = currentFilters.toJS ? currentFilters.toJS() : currentFilters;
 
-    const finalSearchParams = processFilters(search, currentFilters, limit);
+    const finalSearchParams = processFilters(currentSearch, currentFilters, limit);
     finalSearchParams.searchTerm = state.search.searchTerm;
 
     const currentSearchParams = rison.decode(
@@ -214,7 +215,9 @@ export function searchDocuments({ search, filters }, storeKey, limit = 30) {
       finalSearchParams.sort = '_score';
     }
 
-    if (search.userSelectedSorting) dispatch(actions.set(`${storeKey}.selectedSorting`, search));
+    if (currentSearch.userSelectedSorting) {
+      dispatch(actions.set(`${storeKey}.selectedSorting`, currentSearch));
+    }
 
     setSearchInUrl(finalSearchParams);
   };
