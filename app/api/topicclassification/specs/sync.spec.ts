@@ -1,10 +1,11 @@
 import { tcServer } from 'api/config/topicClassification';
-import entities, { model } from 'api/entities';
+import entities from 'api/entities';
+import { search } from 'api/search';
 import db from 'api/utils/testing_db';
 import JSONRequest from 'shared/JSONRequest';
-import { syncEntity, SyncArgs } from '../sync';
-import fixtures, { e1 } from './fixtures';
 import { TaskProvider } from '../../tasks/tasks';
+import { SyncArgs, syncEntity } from '../sync';
+import fixtures, { e1 } from './fixtures';
 
 function fakeTopicClassification(url: string, data: any, _headers: any) {
   if (url === `${tcServer}/classification_sample?model=undefined-topmovies`) {
@@ -34,7 +35,7 @@ function fakeTopicClassification(url: string, data: any, _headers: any) {
 describe('templates utils', () => {
   beforeEach(async () => {
     await db.clearAllAndLoad(fixtures);
-    await model.db.ensureIndexes();
+    spyOn(search, 'indexEntities').and.returnValue(Promise.resolve());
     spyOn(JSONRequest, 'put').and.callFake(fakeTopicClassification);
   });
   afterAll(async () => {
