@@ -57,6 +57,7 @@ describe('UploadEntityStatus', () => {
       doc = Immutable({
         _id: '123',
         sharedId: 'docId',
+        template: 'template',
         file: {},
         documents: [{}],
       });
@@ -65,6 +66,7 @@ describe('UploadEntityStatus', () => {
     describe('when progress is 0', () => {
       it('should return uploading props', () => {
         store.progress = Immutable({ docId: 0 });
+        doc = doc.set('documents', Immutable([]));
         const props = mapStateToProps(store, { doc });
         expect(props.status).toBe('processing');
         expect(props.message).toBe('Uploading...');
@@ -96,6 +98,7 @@ describe('UploadEntityStatus', () => {
     describe('when ready document with out template', () => {
       it('should return No type selected props', () => {
         doc = doc.set('documents', Immutable([{ status: 'ready' }]));
+        doc = doc.set('template', null);
         const props = mapStateToProps(store, { doc });
         expect(props.status).toBe('warning');
         expect(props.message).toBe('No type selected');
