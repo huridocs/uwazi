@@ -1349,9 +1349,9 @@
   resolved "https://registry.yarnpkg.com/@mapbox/mapbox-gl-rtl-text/-/mapbox-gl-rtl-text-0.1.2.tgz#c6bdcc05ac71c1caa4dfa09022466d1e278083bc"
 
 "@mapbox/mapbox-gl-supported@^1.4.0":
-  version "1.4.1"
-  resolved "https://registry.yarnpkg.com/@mapbox/mapbox-gl-supported/-/mapbox-gl-supported-1.4.1.tgz#c0a03cf75f8b0ad7b57849d6c7e91b0aec4b640f"
-  integrity sha512-yyKza9S6z3ELKuf6w5n6VNUB0Osu6Z93RXPfMHLIlNWohu3KqxewLOq4lMXseYJ92GwkRAxd207Pr/Z98cwmvw==
+  version "1.5.0"
+  resolved "https://registry.yarnpkg.com/@mapbox/mapbox-gl-supported/-/mapbox-gl-supported-1.5.0.tgz#f60b6a55a5d8e5ee908347d2ce4250b15103dc8e"
+  integrity sha512-/PT1P6DNf7vjEEiPkVIRJkvibbqWtqnyGaBz3nfRdcxclNSnSdaLU5tfAgcD7I8Yt5i+L19s406YLl1koLnLbg==
 
 "@mapbox/point-geometry@0.1.0", "@mapbox/point-geometry@^0.1.0", "@mapbox/point-geometry@~0.1.0":
   version "0.1.0"
@@ -1376,6 +1376,14 @@
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/@mapbox/whoots-js/-/whoots-js-3.1.0.tgz#497c67a1cef50d1a2459ba60f315e448d2ad87fe"
   integrity sha512-Es6WcD0nO5l+2BOQS4uLfNPYQaNDfbot3X1XUoloz+x0mPDS3eeORZJl06HXjwBG1fOGwCRnzK88LMdxKRrd6Q==
+
+"@math.gl/web-mercator@^3.1.3":
+  version "3.1.3"
+  resolved "https://registry.yarnpkg.com/@math.gl/web-mercator/-/web-mercator-3.1.3.tgz#3a6b2aeb6c68b331f26269c2fa1905cacc40e84b"
+  integrity sha512-aU+3upxkdA9yObA7EudfEKfN/QH4o5impyc7s/a34J2hZKPsihgREphxnKzl2RknXD/KoL7MnQv589LToAJGMQ==
+  dependencies:
+    "@babel/runtime" "^7.0.0"
+    gl-matrix "^3.0.0"
 
 "@react-dnd/asap@^4.0.0":
   version "4.0.0"
@@ -4945,10 +4953,10 @@ each-async@^1.0.0, each-async@^1.1.1:
     onetime "^1.0.0"
     set-immediate-shim "^1.0.0"
 
-earcut@^2.2.0:
-  version "2.2.1"
-  resolved "https://registry.yarnpkg.com/earcut/-/earcut-2.2.1.tgz#3bae0b1b6fec41853b56b126f03a42a34b28f1d5"
-  integrity sha512-5jIMi2RB3HtGPHcYd9Yyl0cczo84y+48lgKPxMijliNQaKAHEZJbdzLmKmdxG/mCdS/YD9DQ1gihL8mxzR0F9w==
+earcut@^2.2.2:
+  version "2.2.2"
+  resolved "https://registry.yarnpkg.com/earcut/-/earcut-2.2.2.tgz#41b0bc35f63e0fe80da7cddff28511e7e2e80d11"
+  integrity sha512-eZoZPPJcUHnfRZ0PjLvx2qBordSiO8ofC3vt+qACLM95u+4DovnbYNpQtJh0DNsWj8RnxrQytD4WA8gj5cRIaQ==
 
 ecc-jsbn@~0.1.1:
   version "0.1.1"
@@ -7265,6 +7273,11 @@ identity-obj-proxy@^3.0.0:
   dependencies:
     harmony-reflect "^1.4.6"
 
+ieee754@^1.1.12:
+  version "1.1.13"
+  resolved "https://registry.yarnpkg.com/ieee754/-/ieee754-1.1.13.tgz#ec168558e95aa181fd87d37f55c32bbcb6708b84"
+  integrity sha512-4vf7I2LYV/HaWerSo3XmlMkp5eZ83i+/CDluXi/IGTs/O1sejBNhTtnxzmRZfvOUqj7lZjqHkeTvpgSFDlWZTg==
+
 ieee754@^1.1.4:
   version "1.1.12"
   resolved "https://registry.yarnpkg.com/ieee754/-/ieee754-1.1.12.tgz#50bf24e5b9c8bb98af4964c941cdb0918da7b60b"
@@ -9309,9 +9322,9 @@ map-visit@^1.0.0:
     object-visit "^1.0.0"
 
 mapbox-gl@^1.0.0:
-  version "1.4.1"
-  resolved "https://registry.yarnpkg.com/mapbox-gl/-/mapbox-gl-1.4.1.tgz#e08c816f406017ebe22c56fbd92e8fcb56af5592"
-  integrity sha512-4Jkf1JjsBFKlZA3BHHghgIogbbOuodjVjsdOR/j4AtfLx0G4jXrPcGvwSEVcwyQ27kVECBCn6EyRb6eUNUQujw==
+  version "1.8.1"
+  resolved "https://registry.yarnpkg.com/mapbox-gl/-/mapbox-gl-1.8.1.tgz#83fd2e99274a226adbf1c01012c37d17fccdd4bc"
+  integrity sha512-Q6c8XAFxHxMPnZIfiRsExk5dNN+dCgvbRNHPfX7hHV5LDcX5Ptc1MEVpOJEDyojuriZssAeWMTJob0hir9mpUw==
   dependencies:
     "@mapbox/geojson-rewind" "^0.4.0"
     "@mapbox/geojson-types" "^1.0.2"
@@ -9323,17 +9336,17 @@ mapbox-gl@^1.0.0:
     "@mapbox/vector-tile" "^1.3.1"
     "@mapbox/whoots-js" "^3.1.0"
     csscolorparser "~1.0.2"
-    earcut "^2.2.0"
+    earcut "^2.2.2"
     geojson-vt "^3.2.1"
     gl-matrix "^3.0.0"
     grid-index "^1.1.0"
     minimist "0.0.8"
     murmurhash-js "^1.0.0"
-    pbf "^3.0.5"
+    pbf "^3.2.1"
     potpack "^1.0.1"
     quickselect "^2.0.0"
     rw "^1.3.3"
-    supercluster "^6.0.1"
+    supercluster "^7.0.0"
     tinyqueue "^2.0.0"
     vt-pbf "^3.1.1"
 
@@ -9670,10 +9683,10 @@ mixin-object@^2.0.1:
     for-in "^0.1.3"
     is-extendable "^0.1.1"
 
-mjolnir.js@^2.2.0:
-  version "2.2.1"
-  resolved "https://registry.yarnpkg.com/mjolnir.js/-/mjolnir.js-2.2.1.tgz#84fc2352ff2ec58b061b0dab1a5ec67f3d2ad966"
-  integrity sha512-bUTP/NbwOfdrN4TKMjUcarfGmWU5yN6aHFR1ek7BNuFOwHk4PslUZjKzdOp1jwx2m0uCoRa5lG+x82l8Vii7Ng==
+mjolnir.js@^2.4.0:
+  version "2.4.0"
+  resolved "https://registry.yarnpkg.com/mjolnir.js/-/mjolnir.js-2.4.0.tgz#247f1640d8382c07c3030595f7957e1a5383b6e4"
+  integrity sha512-0WyWlc5EzdZ7eD0Fjy1DarzJpknesJaMJ6P0c6gDlbotfj3GRzv0odTXfTVVMm9WxEQSUzxosdnPqnd0SDxIyA==
   dependencies:
     "@babel/runtime" "^7.0.0"
     hammerjs "^2.0.8"
@@ -11135,6 +11148,14 @@ pbf@^3.0.5:
     ieee754 "^1.1.6"
     resolve-protobuf-schema "^2.0.0"
 
+pbf@^3.2.1:
+  version "3.2.1"
+  resolved "https://registry.yarnpkg.com/pbf/-/pbf-3.2.1.tgz#b4c1b9e72af966cd82c6531691115cc0409ffe2a"
+  integrity sha512-ClrV7pNOn7rtmoQVF4TS1vyU0WhYRnP92fzbfF75jAIwpnzdJXf8iTd4CMEqO4yUenH6NDqLiwjqlh6QgZzgLQ==
+  dependencies:
+    ieee754 "^1.1.12"
+    resolve-protobuf-schema "^2.1.0"
+
 pbkdf2@^3.0.3:
   version "3.0.16"
   resolved "https://registry.yarnpkg.com/pbkdf2/-/pbkdf2-3.0.16.tgz#7404208ec6b01b62d85bf83853a8064f8d9c2a5c"
@@ -11686,6 +11707,11 @@ protocol-buffers-schema@^2.0.2:
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/protocol-buffers-schema/-/protocol-buffers-schema-2.2.0.tgz#d29c6cd73fb655978fb6989691180db844119f61"
 
+protocol-buffers-schema@^3.3.1:
+  version "3.4.0"
+  resolved "https://registry.yarnpkg.com/protocol-buffers-schema/-/protocol-buffers-schema-3.4.0.tgz#2f0ea31ca96627d680bf2fefae7ebfa2b6453eae"
+  integrity sha512-G/2kcamPF2S49W5yaMGdIpkG6+5wZF0fzBteLKgEHjbNzqjZQ85aAs1iJGto31EJaSTkNvHs5IXuHSaTLWBAiA==
+
 proxy-addr@~2.0.3:
   version "2.0.3"
   resolved "https://registry.yarnpkg.com/proxy-addr/-/proxy-addr-2.0.3.tgz#355f262505a621646b3130a728eb647e22055341"
@@ -12039,16 +12065,16 @@ react-lifecycles-compat@^3.0.4:
   resolved "https://registry.yarnpkg.com/react-lifecycles-compat/-/react-lifecycles-compat-3.0.4.tgz#4f1a273afdfc8f3488a8c516bfda78f872352362"
 
 react-map-gl@^5.0.10:
-  version "5.0.12"
-  resolved "https://registry.yarnpkg.com/react-map-gl/-/react-map-gl-5.0.12.tgz#6f94d4570fab339a936262c51c43c2493004b014"
-  integrity sha512-b2+OU/U8T8kAGoSP3GXBkSWQKkBHq8IyZYMUCBEFZ9gH7dyRtCwjy9Vanzek7PmZs668q2+896fYQ3Z9eO6X0A==
+  version "5.2.3"
+  resolved "https://registry.yarnpkg.com/react-map-gl/-/react-map-gl-5.2.3.tgz#612d8112fc2dffbbbd03650e7a68ee8c2ac3d6b3"
+  integrity sha512-3oANqJVTMER1Xl6Xx20sZk+Dh8gnQ5YKjK0grBKXLQnDUKI4WxtGJb7zNMuutW8lL9w6qxyZRtLqoZJy74pMxA==
   dependencies:
     "@babel/runtime" "^7.0.0"
     mapbox-gl "^1.0.0"
-    mjolnir.js "^2.2.0"
+    mjolnir.js "^2.4.0"
     prop-types "^15.7.2"
     react-virtualized-auto-sizer "^1.0.2"
-    viewport-mercator-project "^6.1.0"
+    viewport-mercator-project "^6.2.3 || ^7.0.1"
 
 react-modal@3.3.1:
   version "3.3.1"
@@ -12556,12 +12582,6 @@ regexp-clone@1.0.0, regexp-clone@^1.0.0:
   resolved "https://registry.yarnpkg.com/regexp-clone/-/regexp-clone-1.0.0.tgz#222db967623277056260b992626354a04ce9bf63"
   integrity sha512-TuAasHQNamyyJ2hb97IuBEif4qBHGjPHBS64sZwytpLEqtBQ1gPJTnOaQ6qmpET16cK14kkjbazl6+p0RRv0yw==
 
-regexp.prototype.flags@^1.2.0:
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/regexp.prototype.flags/-/regexp.prototype.flags-1.2.0.tgz#6b30724e306a27833eeb171b66ac8890ba37e41c"
-  integrity sha512-ztaw4M1VqgMwl9HlPpOuiYgItcHlunW0He2fE6eNfT6E/CF2FtYi9ofOYe4mKntstYk0Fyh/rDRBdS3AnxjlrA==
-  dependencies:
-    define-properties "^1.1.2"
 regexpp@^2.0.1:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/regexpp/-/regexpp-2.0.1.tgz#8d19d31cf632482b589049f8281f93dbcba4d07f"
@@ -12778,6 +12798,13 @@ resolve-protobuf-schema@^2.0.0:
   resolved "https://registry.yarnpkg.com/resolve-protobuf-schema/-/resolve-protobuf-schema-2.0.0.tgz#e67b062a67f02d11bd6886e70efda788407e0fb4"
   dependencies:
     protocol-buffers-schema "^2.0.2"
+
+resolve-protobuf-schema@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/resolve-protobuf-schema/-/resolve-protobuf-schema-2.1.0.tgz#9ca9a9e69cf192bbdaf1006ec1973948aa4a3758"
+  integrity sha512-kI5ffTiZWmJaS/huM8wZfEMer1eRd7oJQhDuxeCLe3t7N7mX3z94CN0xPxBQxFYQTSNz9T0i+v6inKqSdK8xrQ==
+  dependencies:
+    protocol-buffers-schema "^3.3.1"
 
 resolve-url@^0.2.1:
   version "0.2.1"
@@ -13249,17 +13276,12 @@ shebang-regex@^3.0.0:
 shellwords@^0.1.1:
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/shellwords/-/shellwords-0.1.1.tgz#d6b9181c1a48d397324c84871efbcfc73fc0654b"
-shuffle-seed@^1.1.6:
-  version "1.1.6"
-  resolved "https://registry.yarnpkg.com/shuffle-seed/-/shuffle-seed-1.1.6.tgz#533c12683bab3b4fa3e8751fc4e562146744260b"
-  integrity sha1-UzwSaDurO0+j6HUfxOViFGdEJgs=
-  dependencies:
-    seedrandom "^2.4.2"
 
 sift@7.0.1:
   version "7.0.1"
   resolved "https://registry.yarnpkg.com/sift/-/sift-7.0.1.tgz#47d62c50b159d316f1372f8b53f9c10cd21a4b08"
   integrity sha512-oqD7PMJ+uO6jV9EQCl0LrRw1OwsiPsiFQR5AR30heR+4Dl7jBBbDLnNvWiak20tzZlSE1H7RB30SX/1j/YYT7g==
+
 signal-exit@^3.0.0, signal-exit@^3.0.2:
   version "3.0.2"
   resolved "https://registry.yarnpkg.com/signal-exit/-/signal-exit-3.0.2.tgz#b5fdc08f1287ea1178628e415e25132b73646c6d"
@@ -13905,10 +13927,10 @@ superagent@^5.0.6:
     readable-stream "^3.4.0"
     semver "^6.1.1"
 
-supercluster@^6.0.1:
-  version "6.0.2"
-  resolved "https://registry.yarnpkg.com/supercluster/-/supercluster-6.0.2.tgz#aa2eaae185ef97872f388c683ec29f6991721ee3"
-  integrity sha512-aa0v2HURjBTOpbcknilcfxGDuArM8khklKSmZ/T8ZXL0BuRwb5aRw95lz+2bmWpFvCXDX/+FzqHxmg0TIaJErw==
+supercluster@^7.0.0:
+  version "7.0.0"
+  resolved "https://registry.yarnpkg.com/supercluster/-/supercluster-7.0.0.tgz#75d474fafb0a055db552ed7bd7bbda583f6ab321"
+  integrity sha512-8VuHI8ynylYQj7Qf6PBMWy1PdgsnBiIxujOgc9Z83QvJ8ualIYWNx2iMKyKeC4DZI5ntD9tz/CIwwZvIelixsA==
   dependencies:
     kdbush "^3.0.0"
 
@@ -14932,13 +14954,12 @@ verror@1.10.0:
     core-util-is "1.0.2"
     extsprintf "^1.2.0"
 
-viewport-mercator-project@^6.1.0:
-  version "6.2.2"
-  resolved "https://registry.yarnpkg.com/viewport-mercator-project/-/viewport-mercator-project-6.2.2.tgz#f524819ad53fcc009b46136a59f73461bfcf1604"
-  integrity sha512-vs9pjDZxDwoiEqr+GgdpRAUogEQRoZ9D9COVLSr4+h/WdcUWhYN36SQr3n5jaTKrl/wlfdRj+TYU8wTk05grbg==
+"viewport-mercator-project@^6.2.3 || ^7.0.1":
+  version "7.0.1"
+  resolved "https://registry.yarnpkg.com/viewport-mercator-project/-/viewport-mercator-project-7.0.1.tgz#9d7248072f2cbb122f93b63d2b346a5763b8d79a"
+  integrity sha512-WKTuTL7o6WKdPQ+gmZhlXL7UpSdCdPUjxkDTBd/3AayBdAFSQGHxsqdbmPBvmoGwvo9KWo/30HTkNo/Z7ORJpw==
   dependencies:
-    "@babel/runtime" "^7.0.0"
-    gl-matrix "^3.0.0"
+    "@math.gl/web-mercator" "^3.1.3"
 
 vinyl-assign@^1.0.1:
   version "1.2.1"
