@@ -13,7 +13,10 @@ describe('EntityViewer', () => {
     context = { confirm: jasmine.createSpy('confirm') };
     props = {
       isPristine: true,
+      isLast: false,
+      thesaurusName: 'name',
       switchOneUpEntity: jasmine.createSpy('switchOneUpEntity'),
+      reviewAndPublish: jasmine.createSpy('reviewAndPublish'),
     };
   });
 

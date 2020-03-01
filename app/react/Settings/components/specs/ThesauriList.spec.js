@@ -110,13 +110,12 @@ describe('ThesaurisList', () => {
       const renderedContexts = component.find('table');
       expect(renderedContexts.length).toBe(1);
       expect(renderedContexts.find({ scope: 'row' }).length).toBe(2);
-      expect(renderedContexts.find('.thesauri-list').find('.vertical-line').length).toBe(1);
+      expect(renderedContexts.find('td').find('.vertical-line').length).toBe(1);
       expect(
         renderedContexts
           .find('td')
-          .find('.thesauri-list')
           .find('.vertical-line')
-          .containsMatchingElement(<span>View Suggestions</span>)
+          .containsMatchingElement(<span>View suggestions</span>)
       ).toBeTruthy();
       expect(
         renderedContexts

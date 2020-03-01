@@ -17,9 +17,13 @@ const initMongoServer = () => {
   mongod = new MongodbMemoryServer();
   return mongod.getConnectionString().then(uri => {
     connected = true;
-    db = pow.connect(uri);
+    db = pow.connect(uri.substring(0, uri.length - 1));
     testingDB.clear = db.clear.bind(db);
-    return mongoose.connect(uri, {});
+    return mongoose.connect(uri, {
+      useUnifiedTopology: true,
+      useNewUrlParser: true,
+      useCreateIndex: true,
+    });
   });
 };
 

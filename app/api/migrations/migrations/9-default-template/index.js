@@ -23,9 +23,10 @@ export default {
         defaultTemplate = template;
       }
       delete template.isEntity;
+
       await db
         .collection('templates')
-        .findOneAndUpdate({ _id: template._id }, template, { new: true, lean: true });
+        .replaceOne({ _id: template._id }, { ...template }, { new: true, lean: true });
     }
 
     process.stdout.write('Added default template\r');
