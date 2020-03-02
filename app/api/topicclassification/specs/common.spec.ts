@@ -1,9 +1,8 @@
-/** @format */
-
 import { EntitySchema } from 'api/entities/entityType';
-import db from 'api/utils/testing_db';
-import { buildFullModelName } from 'shared/commonTopicClassification';
 import { extractSequence } from 'api/topicclassification/common';
+import db from 'api/utils/testing_db';
+import { buildFullModelName, getThesaurusPropertyNames } from 'shared/commonTopicClassification';
+import { TemplateSchema } from '../../../shared/types/templateType';
 import fixtures, { template1 } from './fixtures';
 
 describe('templates utils', () => {
@@ -18,6 +17,25 @@ describe('templates utils', () => {
   describe('buildModelName', () => {
     process.env.DATABASE_NAME = 'test-db';
     expect(buildFullModelName('Abc-D e(F)g')).toBe('test-db-abcdefg');
+  });
+
+  describe('getThesaurusPropertyNames', () => {
+    const tmpl1: TemplateSchema = {
+      name: 'tmpl1',
+      commonProperties: [{ label: 'Title', name: 'title', type: 'text' }],
+      properties: [{ label: 'A', name: 'a', type: 'select', content: 'abc' }],
+    };
+    const tmpl2: TemplateSchema = {
+      name: 'tmpl2',
+      commonProperties: [{ label: 'Title', name: 'title', type: 'text' }],
+      properties: [
+        { label: 'A', name: 'a', type: 'select', content: 'abc' },
+        { label: 'B', name: 'b', type: 'multiselect', content: 'def' },
+        { label: 'C', name: 'c', type: 'multiselect', content: 'abc' },
+      ],
+    };
+    expect(getThesaurusPropertyNames('abc', [tmpl1])).toEqual(['a']);
+    expect(getThesaurusPropertyNames('abc', [tmpl1, tmpl2])).toEqual(['a', 'c']);
   });
 
   describe('extractSequence', () => {

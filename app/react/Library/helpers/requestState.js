@@ -63,6 +63,7 @@ export default function requestState(request, globalResources) {
         setReduxState(state),
         actions.set('library.sidepanel.multiEditOpts', {
           thesaurus: request.data.multiEditThesaurus,
+          autoSave: true,
         }),
       ];
     }

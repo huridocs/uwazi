@@ -12,6 +12,7 @@ import referencesAPI from 'app/Viewer/referencesAPI';
 import { api as entitiesAPI } from 'app/Entities';
 import { toUrlParams } from 'shared/JSONRequest';
 import { RequestParams } from 'app/utils/RequestParams';
+import { selectedDocumentsChanged } from './multiEditActions';
 
 export function enterLibrary() {
   return { type: types.ENTER_LIBRARY };
@@ -28,7 +29,7 @@ export function selectDocument(_doc) {
     if (showingSemanticSearch && !doc.semanticSearch) {
       dispatch(actions.set('library.sidepanel.tab', ''));
     }
-
+    dispatch(selectedDocumentsChanged([doc], []));
     dispatch({ type: types.SELECT_DOCUMENT, doc });
   };
 }
@@ -42,11 +43,17 @@ export function getAndSelectDocument(sharedId) {
 }
 
 export function selectDocuments(docs) {
-  return { type: types.SELECT_DOCUMENTS, docs };
+  return dispatch => {
+    dispatch(selectedDocumentsChanged(docs, []));
+    dispatch({ type: types.SELECT_DOCUMENTS, docs });
+  };
 }
 
 export function unselectDocument(docId) {
-  return { type: types.UNSELECT_DOCUMENT, docId };
+  return dispatch => {
+    dispatch(selectedDocumentsChanged([], [docId]));
+    dispatch({ type: types.UNSELECT_DOCUMENT, docId });
+  };
 }
 
 export function selectSingleDocument(doc) {
@@ -54,7 +61,10 @@ export function selectSingleDocument(doc) {
 }
 
 export function unselectAllDocuments() {
-  return { type: types.UNSELECT_ALL_DOCUMENTS };
+  return dispatch => {
+    dispatch(selectedDocumentsChanged(null));
+    dispatch({ type: types.UNSELECT_ALL_DOCUMENTS });
+  };
 }
 
 export function updateSelectedEntities(entities) {

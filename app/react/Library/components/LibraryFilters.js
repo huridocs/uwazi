@@ -44,7 +44,7 @@ export class LibraryFilters extends Component {
         <div className="sidepanel-body">
           <p className="sidepanel-title">{t('System', 'Filters configuration')}</p>
           <NeedAuthorization>
-            {this.props.storeKey === 'library' && (
+            {!this.props.unpublished && (
               <Field
                 model={`${this.props.storeKey}.search.includeUnpublished`}
                 className="nested-selector multiselectItem"
@@ -59,6 +59,13 @@ export class LibraryFilters extends Component {
                   <span className="multiselectItem-name">Include unpublished documents</span>
                 </label>
               </Field>
+            )}
+            {this.props.unpublished && (
+              <div className="nested-selector multiselectItem">
+                <label className="multiselectItem-label">
+                  <span>Showing only unpublished documents.</span>
+                </label>
+              </div>
             )}
           </NeedAuthorization>
 
@@ -76,6 +83,7 @@ LibraryFilters.propTypes = {
   resetFilters: PropTypes.func,
   toggleIncludeUnpublished: PropTypes.func,
   open: PropTypes.bool,
+  unpublished: PropTypes.bool,
   storeKey: PropTypes.string,
 };
 
@@ -84,6 +92,7 @@ export function mapStateToProps(state, props) {
     open:
       state[props.storeKey].ui.get('filtersPanel') !== false &&
       !state[props.storeKey].ui.get('selectedDocuments').size > 0,
+    unpublished: state[props.storeKey].search.unpublished,
   };
 }
 

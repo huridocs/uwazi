@@ -19,6 +19,7 @@ export type IImmutable<T> = T extends string
       find(fn: (e: IImmutable<Elem>) => boolean): IImmutable<Elem> | undefined;
       map<T2>(fn: (e: IImmutable<Elem>) => T2): IImmutable<T2[]>;
       reduce<R>(fn: (r: R, e: IImmutable<Elem>) => R, s: R): R;
+      concat(other: IImmutable<Elem[]>): IImmutable<Elem[]>;
       size: number;
     }
   : {

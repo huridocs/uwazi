@@ -42,6 +42,7 @@ function URLQueryToState(query, templates, thesauris, relationTypes) {
     order = prioritySortingCriteria.get().order,
     userSelectedSorting,
     includeUnpublished = false,
+    unpublished = false,
   } = query;
   properties = populateOptions(properties, thesauris).map(property => {
     let defaultValue = {};
@@ -55,7 +56,15 @@ function URLQueryToState(query, templates, thesauris, relationTypes) {
   });
   return {
     properties,
-    search: { searchTerm, filters, order, sort, userSelectedSorting, includeUnpublished },
+    search: {
+      searchTerm,
+      filters,
+      sort,
+      order,
+      userSelectedSorting,
+      includeUnpublished,
+      unpublished,
+    },
   };
 }
 

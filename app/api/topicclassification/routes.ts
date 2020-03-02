@@ -6,7 +6,7 @@ import { validation } from 'api/utils';
 import { Application, Request, Response } from 'express';
 import Joi from 'joi';
 
-import topicClassification from './topicClassification';
+import { getModelForThesaurus } from './topicClassification';
 
 export const CLASSIFIER_MODELS_ENDPOINT = 'models';
 const tcModelPrefix = `/api/${CLASSIFIER_MODELS_ENDPOINT}`;
@@ -18,7 +18,7 @@ export default (app: Application) => {
     validation.validateRequest(Joi.object().keys({ model: Joi.string() })),
 
     async (req: Request, res: Response) => {
-      const model = await topicClassification.getModelForThesaurus(req.query?.model);
+      const model = await getModelForThesaurus(req.query?.model);
       return res.json(model);
     }
   );

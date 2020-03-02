@@ -193,7 +193,8 @@ const processResponse = response => {
     if (aggregation.buckets) {
       const missingBucket = aggregation.buckets.find(b => b.key === 'missing');
       if (aggregationKey !== '_types') {
-        const anyCount = response.hits.total.value - missingBucket.filtered.doc_count;
+        const anyCount =
+          response.hits.total.value - (missingBucket ? missingBucket.filtered.doc_count : 0);
         aggregation.buckets.push({
           key: 'any',
           doc_count: anyCount,
@@ -441,7 +442,7 @@ const instanceSearch = elasticIndex => ({
         documentsQuery.limit(query.limit);
       }
 
-      if (query.includeUnpublished && user) {
+      if (query.includeUnpublished && user && !query.unpublished) {
         documentsQuery.includeUnpublished();
       }
 
