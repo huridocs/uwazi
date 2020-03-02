@@ -1,19 +1,43 @@
-/** @format */
-
-import PropTypes from 'prop-types';
-import React, { Component } from 'react';
-
-import { Icon as CustomIcon } from 'app/Layout/Icon';
-import { Icon } from 'UI';
-import { t } from 'app/I18N';
 import ShowIf from 'app/App/ShowIf';
-
+import { t } from 'app/I18N';
+import { Icon as CustomIcon } from 'app/Layout/Icon';
+import React, { Component } from 'react';
+import { Icon } from 'UI';
 import { filterOptions } from '../utils/optionsUtils';
 
-const isNotAnEmptyGroup = option => !option.options || option.options.length;
+type Option = { options?: Option[]; results?: number } & { [k: string]: string };
 
-export default class MultiSelect extends Component {
-  constructor(props) {
+const defaultProps = {
+  optionsLabel: 'label',
+  optionsValue: 'value',
+  value: [] as string[],
+  prefix: '',
+  options: [] as Option[],
+  filter: '',
+  optionsToShow: 5,
+  showAll: false,
+  hideSearch: false,
+  sort: false,
+  sortbyLabel: false,
+  forceHoist: false,
+  placeholder: '',
+  onChange: (_v: string[]) => {},
+};
+
+export type MultiSelectProps = typeof defaultProps;
+
+interface MultiSelectState {
+  filter: string;
+  showAll: boolean;
+  ui: { [k: string]: boolean };
+}
+
+const isNotAnEmptyGroup = (option: Option) => !option.options || option.options.length;
+
+export default class MultiSelect extends Component<MultiSelectProps, MultiSelectState> {
+  static defaultProps = defaultProps;
+
+  constructor(props: MultiSelectProps) {
     super(props);
     this.state = { filter: props.filter, showAll: props.showAll, ui: {} };
     this.filter = this.filter.bind(this);
@@ -21,16 +45,16 @@ export default class MultiSelect extends Component {
     this.showAll = this.showAll.bind(this);
   }
 
-  componentWillReceiveProps(props) {
+  componentWillReceiveProps(props: MultiSelectProps) {
     if (props.filter) {
       this.setState({ filter: props.filter });
     }
   }
 
-  changeGroup(group, e) {
+  changeGroup(group: Option, e: React.ChangeEvent<HTMLInputElement>) {
     const selectedItems = this.props.value.slice(0);
     if (e.target.checked) {
-      group.options.forEach(_item => {
+      group.options!.forEach(_item => {
         if (!this.checked(_item)) {
           selectedItems.push(_item[this.props.optionsValue]);
         }
@@ -38,7 +62,7 @@ export default class MultiSelect extends Component {
     }
 
     if (!e.target.checked) {
-      group.options.forEach(_item => {
+      group.options!.forEach(_item => {
         if (this.checked(_item)) {
           const index = selectedItems.indexOf(_item[this.props.optionsValue]);
           selectedItems.splice(index, 1);
@@ -48,7 +72,7 @@ export default class MultiSelect extends Component {
     this.props.onChange(selectedItems);
   }
 
-  checked(option) {
+  checked(option: Option) {
     if (!this.props.value) {
       return false;
     }
@@ -63,11 +87,11 @@ export default class MultiSelect extends Component {
     return this.props.value.includes(option[this.props.optionsValue]);
   }
 
-  anyChildChecked(parent) {
+  anyChildChecked(parent: Option) {
     return Boolean(parent.options && !!parent.options.find(itm => this.checked(itm)));
   }
 
-  change(value) {
+  change(value: string) {
     let newValues = this.props.value ? this.props.value.slice(0) : [];
     if (newValues.includes(value)) {
       newValues = newValues.filter(val => val !== value);
@@ -79,7 +103,7 @@ export default class MultiSelect extends Component {
     this.props.onChange(newValues);
   }
 
-  filter(e) {
+  filter(e: React.ChangeEvent<HTMLInputElement>) {
     this.setState({ filter: e.target.value });
   }
 
@@ -87,22 +111,22 @@ export default class MultiSelect extends Component {
     this.setState({ filter: '' });
   }
 
-  showAll(e) {
+  showAll(e: React.MouseEvent) {
     e.preventDefault();
     this.setState(prevState => ({ showAll: !prevState.showAll }));
   }
 
-  sort(options, _optionsValue, optionsLabel, isSubGroup = false) {
+  sort(options: Option[], _optionsValue: string, optionsLabel: string, isSubGroup = false) {
     const sortedOptions = options.sort((a, b) => {
       let sorting = 0;
       if (!this.state.showAll) {
         sorting =
-          (this.checked(b) || this.anyChildChecked(b)) -
-          (this.checked(a) || this.anyChildChecked(a));
+          (this.checked(b) || this.anyChildChecked(b) ? 1 : 0) -
+          (this.checked(a) || this.anyChildChecked(a) ? 1 : 0);
       }
 
       if (sorting === 0 && typeof options[0].results !== 'undefined' && a.results !== b.results) {
-        sorting = a.results > b.results ? -1 : 1;
+        sorting = (a.results || 0) > (b.results || 0) ? -1 : 1;
       }
 
       const showingAll = this.state.showAll || options.length < this.props.optionsToShow;
@@ -116,12 +140,12 @@ export default class MultiSelect extends Component {
     return this.moveNoValueOptionToBottom(sortedOptions);
   }
 
-  sortOnlyAggregates(options, _optionsvalue, optionsLabel) {
+  sortOnlyAggregates(options: Option[], _optionsvalue: string, optionsLabel: string) {
     if (!options.length || typeof options[0].results === 'undefined') {
       return options;
     }
     const sortedOptions = options.sort((a, b) => {
-      let sorting = b.results - a.results;
+      let sorting = (b.results || 0) - (a.results || 0);
 
       if (sorting === 0) {
         sorting = a[optionsLabel] < b[optionsLabel] ? -1 : 1;
@@ -132,7 +156,7 @@ export default class MultiSelect extends Component {
     return this.moveNoValueOptionToBottom(sortedOptions);
   }
 
-  moveNoValueOptionToBottom(options) {
+  moveNoValueOptionToBottom(options: Option[]) {
     let _options = [...options];
     ['any', 'missing'].forEach(bottomId => {
       const bottomOption = _options.find(opt => opt.id === bottomId);
@@ -144,7 +168,7 @@ export default class MultiSelect extends Component {
     return _options;
   }
 
-  hoistCheckedOptions(options) {
+  hoistCheckedOptions(options: Option[]) {
     const [checkedOptions, otherOptions] = options.reduce(
       ([checked, others], option) => {
         if (this.checked(option) || this.anyChildChecked(option)) {
@@ -152,13 +176,13 @@ export default class MultiSelect extends Component {
         }
         return [checked, others.concat([option])];
       },
-      [[], []]
+      [[] as Option[], [] as Option[]]
     );
     const partitionedOptions = checkedOptions.concat(otherOptions);
     return this.moveNoValueOptionToBottom(partitionedOptions);
   }
 
-  moreLessLabel(totalOptions) {
+  moreLessLabel(totalOptions: Option[]) {
     if (this.state.showAll) {
       return t('System', 'x less');
     }
@@ -169,7 +193,7 @@ export default class MultiSelect extends Component {
     );
   }
 
-  toggleOptions(group, e) {
+  toggleOptions(group: Option, e: React.MouseEvent) {
     e.preventDefault();
     const groupKey = group[this.props.optionsValue];
     const { ui } = this.state;
@@ -177,14 +201,14 @@ export default class MultiSelect extends Component {
     this.setState({ ui });
   }
 
-  showSubOptions(parent) {
+  showSubOptions(parent: Option) {
     const toggled = this.state.ui[parent.id];
     const parentChecked = this.checked(parent);
-    const childChecked = !!parent.options.find(itm => this.checked(itm));
+    const childChecked = !!parent.options!.find(itm => this.checked(itm));
     return toggled || (!parentChecked && childChecked);
   }
 
-  label(option) {
+  label(option: Option) {
     const { optionsValue, optionsLabel, prefix } = this.props;
     return (
       <label className="multiselectItem-label" htmlFor={prefix + option[optionsValue]}>
@@ -211,7 +235,7 @@ export default class MultiSelect extends Component {
     );
   }
 
-  renderGroup(group, index) {
+  renderGroup(group: Option, index: number) {
     const { prefix } = this.props;
     const _group = Object.assign({}, group, { results: group.results });
     return (
@@ -228,14 +252,14 @@ export default class MultiSelect extends Component {
         </div>
         <ShowIf if={this.showSubOptions(group)}>
           <ul className="multiselectChild is-active">
-            {group.options.map((_item, i) => this.renderOption(_item, i, index))}
+            {group.options!.map((_item, i) => this.renderOption(_item, i, index.toString()))}
           </ul>
         </ShowIf>
       </li>
     );
   }
 
-  renderOption(option, index, groupIndex = '') {
+  renderOption(option: Option, index: number, groupIndex = '') {
     const { optionsValue, optionsLabel, prefix } = this.props;
     const key = `${groupIndex}${index}`;
     return (
@@ -280,7 +304,7 @@ export default class MultiSelect extends Component {
           return _opt.results === notDefined || _opt.results > 0 || this.checked(_opt);
         }),
       };
-    });
+    }) as Option[];
 
     if (this.state.filter) {
       options = filterOptions(this.state.filter, options, optionsLabel);
@@ -312,7 +336,7 @@ export default class MultiSelect extends Component {
         return option;
       }
       return { ...option, options: this.sort(option.options, optionsValue, optionsLabel, true) };
-    });
+    }) as Option[];
 
     return (
       <ul className="multiselect is-active">
@@ -357,36 +381,3 @@ export default class MultiSelect extends Component {
     );
   }
 }
-
-MultiSelect.defaultProps = {
-  optionsLabel: 'label',
-  optionsValue: 'value',
-  value: [],
-  prefix: '',
-  options: [],
-  filter: '',
-  optionsToShow: 5,
-  showAll: false,
-  hideSearch: false,
-  sort: false,
-  sortbyLabel: false,
-  forceHoist: false,
-  placeholder: '',
-};
-
-MultiSelect.propTypes = {
-  onChange: PropTypes.func.isRequired,
-  options: PropTypes.array,
-  value: PropTypes.array,
-  optionsValue: PropTypes.string,
-  optionsLabel: PropTypes.string,
-  filter: PropTypes.string,
-  prefix: PropTypes.string,
-  optionsToShow: PropTypes.number,
-  showAll: PropTypes.bool,
-  hideSearch: PropTypes.bool,
-  sort: PropTypes.bool,
-  sortbyLabel: PropTypes.bool,
-  forceHoist: PropTypes.bool,
-  placeholder: PropTypes.string,
-};
