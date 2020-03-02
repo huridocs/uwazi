@@ -1,5 +1,3 @@
-/** @format */
-
 export const emitSchemaTypes = true;
 
 export const suggestionResultSchema = {
@@ -12,10 +10,10 @@ export const suggestionResultSchema = {
     // suggestion queries are issued per thesaurus
     thesaurus: {
       type: 'object',
-      required: ['propertyName', 'values'],
+      required: ['propertyName', 'totalValues'],
       properties: {
         propertyName: { type: 'string' },
-        values: {
+        totalValues: {
           type: 'object',
           additionalProperties: {
             type: 'number',

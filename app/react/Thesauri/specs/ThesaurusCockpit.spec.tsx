@@ -1,4 +1,4 @@
-/** @format */
+/* eslint-disable max-lines */
 import RouteHandler from 'app/App/RouteHandler';
 import api from 'app/Search/SearchAPI';
 import TemplatesAPI from 'app/Templates/TemplatesAPI';
@@ -130,7 +130,7 @@ const flattenedSuggestions: SuggestionResultSchema = {
   totalSuggestions: 4,
   thesaurus: {
     propertyName: 'thesaurus_name',
-    values: {
+    totalValues: {
       id1: 4,
       id2: 0,
     },
@@ -153,7 +153,12 @@ describe('ThesaurusCockpit', () => {
         label: 'ThesaurusName',
         name: 'thesaurus_name',
       };
-      props = { models, thesaurus: thesauri[0], suggestions: flattenedSuggestions };
+      props = {
+        models,
+        thesaurus: thesauri[0],
+        suggestionsTBPublished: flattenedSuggestions,
+        suggestionsTBReviewed: flattenedSuggestions,
+      };
       RouteHandler.renderedFromServer = true;
       dispatchCallsOrder = [];
       context = {
@@ -175,7 +180,7 @@ describe('ThesaurusCockpit', () => {
       render();
     });
 
-    it('should find the cockpit table and verify names, values and quality icons', () => {
+    it('should find the cockpit table and verify names and counts', () => {
       render();
       expect(component.find('.cockpit').length).toBe(1);
       expect(component.find({ scope: 'row' }).length).toBe(3);
@@ -188,32 +193,31 @@ describe('ThesaurusCockpit', () => {
       );
     });
 
-    it('should not render the publish button when there are < 1 suggestions', () => {
-      props.suggestions = {
+    it('should not render the Review Documents buttons when there are < 1 suggestions to be reviewed', () => {
+      props.suggestionsTBReviewed = {
         totalRows: 0,
         totalSuggestions: 0,
         thesaurus: {
           propertyName: 'thesaurus_name',
-          values: {
+          totalValues: {
             id1: 0,
             id2: 0,
           },
         },
       };
       component = shallow(<ThesaurusCockpitBase {...props} />, { context });
-      expect(component.find({ title: 'publish-button' }).length).toBe(0);
       expect(component.find({ scope: 'row' }).length).toBe(3);
       // We don't expect a 'to be reviewed' count, nor a 'suggestions button'
       expect(component.find('td').children().length).toBe(0);
     });
 
     it('should not render the publish button when there are < 1 suggestions', () => {
-      props.suggestions = {
+      props.suggestionsTBPublished = {
         totalRows: 0,
         totalSuggestions: 0,
         thesaurus: {
           propertyName: 'thesaurus_name',
-          values: {
+          totalValues: {
             id1: 1,
             id2: 0,
           },
@@ -238,15 +242,18 @@ describe('ThesaurusCockpit', () => {
       expect(ThesauriAPI.getThesauri).toHaveBeenCalled();
       expect(TemplatesAPI.get).toHaveBeenCalled();
       expect(ThesauriAPI.getModelStatus).toHaveBeenCalled();
-      expect(api.search).toHaveBeenCalledTimes(2);
+      expect(api.search).toHaveBeenCalledTimes(4);
 
-      expect(actions.length).toBe(3);
+      expect(actions.length).toBe(4);
       actions.forEach(action => {
         switch (action.type) {
           case 'thesauri/thesaurus/SET':
             expect(action.value).toEqual(thesauri[0]);
             break;
-          case 'thesauri/suggestions/SET':
+          case 'thesauri/suggestionsTBPublished/SET':
+            expect(action.value).toEqual(flattenedSuggestions);
+            break;
+          case 'thesauri/suggestionsTBReviewed/SET':
             expect(action.value).toEqual(flattenedSuggestions);
             break;
           case 'thesauri/model/SET':
