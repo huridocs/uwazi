@@ -36,6 +36,13 @@ class ViewerRoute extends RouteHandler {
     this.context.store.dispatch(relationships.emptyState());
   }
 
+  urlHasChanged(nextProps) {
+    const { query } = this.props.location;
+    const { query: nextQuery } = nextProps.location;
+    const sameQueryFile = query.file === nextQuery.file;
+    return super.urlHasChanged(nextProps) || !sameQueryFile;
+  }
+
   render() {
     return <ViewerComponent {...this.props} />;
   }

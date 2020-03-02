@@ -21,6 +21,10 @@ export function setViewerState(state) {
 
 export async function requestViewerState(requestParams, globalResources) {
   const { sharedId, raw, page } = requestParams.data;
+  const defaultLanguage = globalResources.settings.collection
+    .get('languages')
+    .find(l => l.get('default'))
+    .get('key');
 
   const [
     doc,
@@ -28,7 +32,7 @@ export async function requestViewerState(requestParams, globalResources) {
     relationTypes,
     [connectionsGroups, searchResults, sort],
   ] = await Promise.all([
-    getDocument(requestParams.set({ sharedId })),
+    getDocument(requestParams.set({ sharedId }), defaultLanguage, requestParams.data.file),
     referencesAPI.get(requestParams.set({ sharedId })),
     relationTypesAPI.get(requestParams.onlyHeaders()),
     relationships.requestState(requestParams.set({ sharedId }), globalResources.templates),

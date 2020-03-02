@@ -11,6 +11,7 @@ import { LocalForm, Control } from 'react-redux-form';
 import { updateFile, deleteFile } from 'app/Attachments/actions/actions';
 import { wrapDispatch } from 'app/Multireducer';
 import { NeedAuthorization } from 'app/Auth';
+import { ViewDocumentLink } from './ViewDocumentLink';
 
 export type FileProps = {
   file: FileType;
@@ -94,7 +95,7 @@ export class File extends Component<FileProps, FileState> {
   }
 
   renderReady() {
-    const { language, filename } = this.props.file;
+    const { language, filename = '' } = this.props.file;
     return (
       <div>
         <div className="file-language">{language ? transformLanguage(language) : ''}</div>{' '}
@@ -115,6 +116,9 @@ export class File extends Component<FileProps, FileState> {
             <Translate>Edit</Translate>
           </button>
         </NeedAuthorization>
+        <ViewDocumentLink filename={filename} entity={this.props.entity}>
+          <Translate>View</Translate>
+        </ViewDocumentLink>
       </div>
     );
   }

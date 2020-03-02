@@ -91,10 +91,13 @@ export function deleteDocument(doc) {
     });
 }
 
-export async function getDocument(requestParams, defaultLanguage) {
+export async function getDocument(requestParams, defaultLanguage, filename) {
   const [entity] = (await api.get('entities', requestParams)).json.rows;
 
-  const defaultDoc = entityDefaultDocument(entity.documents, entity.language, defaultLanguage);
+  const defaultDoc = filename
+    ? entity.documents.find(d => d.filename === filename)
+    : entityDefaultDocument(entity.documents, entity.language, defaultLanguage);
+
   entity.defaultDoc = defaultDoc;
   if (!isClient) {
     return entity;
