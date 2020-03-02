@@ -26,14 +26,8 @@ export async function requestViewerState(requestParams, globalResources) {
     .find(l => l.get('default'))
     .get('key');
 
-  const [
-    doc,
-    references,
-    relationTypes,
-    [connectionsGroups, searchResults, sort],
-  ] = await Promise.all([
+  const [doc, relationTypes, [connectionsGroups, searchResults, sort]] = await Promise.all([
     getDocument(requestParams.set({ sharedId }), defaultLanguage, requestParams.data.file),
-    referencesAPI.get(requestParams.set({ sharedId })),
     relationTypesAPI.get(requestParams.onlyHeaders()),
     relationships.requestState(requestParams.set({ sharedId }), globalResources.templates),
   ]);
@@ -42,6 +36,10 @@ export async function requestViewerState(requestParams, globalResources) {
   const rawText = raw
     ? await entitiesAPI.getRawPage(requestParams.set({ _id: defaultDoc._id, page }))
     : '';
+
+  const references = await referencesAPI.get(
+    requestParams.set({ sharedId, file: doc.defaultDoc._id })
+  );
 
   return [
     setViewerState({

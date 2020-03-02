@@ -75,6 +75,11 @@ describe('relationships', () => {
       expect(entity3Connection.entityData.file).toBeUndefined();
     });
 
+    it('should return all the relationships of an entity for a specific file', async () => {
+      const result = await relationships.getByDocument('entity2', 'en', false, 'file1');
+      expect(result.length).toBe(3);
+    });
+
     it('should exclude ghost / delted entities with error reporting', async () => {
       await relationships.getByDocument('entity2', 'en');
       expect(errorLog.error.calls.argsFor(0)[0]).toContain('missingEntity');

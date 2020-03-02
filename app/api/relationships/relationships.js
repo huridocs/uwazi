@@ -161,14 +161,20 @@ export default {
     return model.getById(id);
   },
 
-  async getDocumentHubs(entity) {
-    const ownRelations = await model.get({ entity });
+  async getDocumentHubs(entity, file) {
+    const ownRelations = await model.get({
+      entity,
+      $or: [
+        { $and: [{ file: { $exists: false } }] },
+        file ? { $and: [{ file: { $exists: true } }, { file }] } : {},
+      ],
+    });
     const hubsIds = ownRelations.map(relationship => relationship.hub);
     return model.get({ hub: { $in: hubsIds } });
   },
 
-  getByDocument(sharedId, language, unpublished = true) {
-    return this.getDocumentHubs(sharedId).then(_relationships => {
+  getByDocument(sharedId, language, unpublished = true, file) {
+    return this.getDocumentHubs(sharedId, file).then(_relationships => {
       const connectedEntitiesSharedId = _relationships.map(relationship => relationship.entity);
       return entities
         .get({ sharedId: { $in: connectedEntitiesSharedId }, language }, [
