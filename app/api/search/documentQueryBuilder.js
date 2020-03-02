@@ -1,8 +1,4 @@
-/**
- * /* eslint-disable camelcase
- *
- * @format
- */
+/* eslint-disable camelcase, max-lines */
 
 import filterToMatch, { multiselectFilter } from './metadataMatchers';
 import propertyToAggregation from './metadataAggregations';
@@ -85,7 +81,7 @@ export default function() {
       return baseQuery;
     },
 
-    fullTextSearch(
+    fullTextSearch( // eslint-disable-line max-params
       term,
       fieldsToSearch = ['title', 'fullText'],
       number_of_fragments = 1,

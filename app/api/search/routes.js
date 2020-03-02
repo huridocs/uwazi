@@ -1,5 +1,3 @@
-/** @format */
-
 import Joi from 'joi';
 import entities from 'api/entities';
 import search from './search';
