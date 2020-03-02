@@ -1,16 +1,17 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import ReactMapGL, { Marker, Popup, NavigationControl } from 'react-map-gl';
+import ReactMapGL, { Marker, Popup, NavigationControl, setRTLTextPlugin } from 'react-map-gl';
 import Immutable from 'immutable';
 import { Icon } from 'UI';
-import { isClient } from 'app/utils';
 import Supercluster from 'supercluster'; //eslint-disable-line
 import _style from './style.json';
 import { getMarkersBoudingBox, markersToStyleFormat, TRANSITION_PROPS } from './helper';
 
-if (isClient && !(process && process.env.__testingEnvironment)) {
-  require('mapbox-gl').setRTLTextPlugin('/public/mapbox-gl-rtl-text.js.min'); //eslint-disable-line
-}
+setRTLTextPlugin(
+  'https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-rtl-text/v0.2.3/mapbox-gl-rtl-text.js',
+  null, //callback
+  true //lazy load
+);
 
 const getStateDefaults = ({ latitude, longitude, width, height, zoom }) => ({
   viewport: {
