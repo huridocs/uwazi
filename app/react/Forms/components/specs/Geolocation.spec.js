@@ -40,7 +40,7 @@ describe('Geolocation', () => {
     it('with invalid coordinated should call onChange with empty value', () => {
       const latInput = component.find('input').at(0);
       latInput.simulate('change', { target: { value: '' } });
-      expect(props.onChange).toHaveBeenCalledWith();
+      expect(props.onChange).toHaveBeenCalledWith([]);
     });
 
     function expectOnChangeCallWhenInputSimulation(simulatedInput, expectedValue) {
@@ -88,7 +88,7 @@ describe('Geolocation', () => {
 
     it('should call onChange with empty value when invalid longitude', () => {
       lonInput.simulate('change', { target: { value: '' } });
-      expect(props.onChange).toHaveBeenCalledWith();
+      expect(props.onChange).toHaveBeenCalledWith([]);
     });
   });
 
@@ -127,7 +127,7 @@ describe('Geolocation', () => {
       const inputs = component.find('input');
       const input = getInput(inputs);
       input.simulate('change', { target: { value: '' } });
-      expect(props.onChange).toHaveBeenCalledWith();
+      expect(props.onChange).toHaveBeenCalledWith([]);
     }
 
     describe('if lon is empty and lat is set to empty', () => {
@@ -213,7 +213,7 @@ describe('Geolocation', () => {
     });
 
     it('should call onChange without a value and remove the inputs values', () => {
-      expect(props.onChange).toHaveBeenCalledWith();
+      expect(props.onChange).toHaveBeenCalledWith([]);
     });
 
     it('should remove the inputs values', () => {
