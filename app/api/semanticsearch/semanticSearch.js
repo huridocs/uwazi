@@ -23,7 +23,7 @@ const eachLimitAsync = promisify(async.eachLimit);
 
 const processDocument = async (searchId, searchTerm, sharedId, language) => {
   const [doc] = await documentsModel.get({ sharedId, language });
-  const defaultLanguage = (await settings.get()).find(l => l.default);
+  const defaultLanguage = (await settings.get()).languages.find(l => l.default);
 
   await updateSearchDocumentStatus(searchId, sharedId, PROCESSING);
   const contents = await extractDocumentContent(doc, defaultLanguage);
