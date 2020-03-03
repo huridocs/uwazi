@@ -13,7 +13,7 @@ describe('metadata path', () => {
   beforeAll(async () => insertFixtures());
   afterAll(async () => nightmare.end());
 
-  describe('login', () => {
+  fdescribe('login', () => {
     it('should log in as admin then click the settings nav button', done => {
       loginAsAdminAndGoToSettings(nightmare, catchErrors, done);
     });
@@ -237,7 +237,7 @@ describe('metadata path', () => {
     });
   });
 
-  describe('Properties', () => {
+  fdescribe('Properties', () => {
     const localSelectors = {
       propertiesButtons: index =>
         `#app > div.content > div > div > div.settings-content > div > div > div.panel-body > div > aside > div > ul > li:nth-child(${index}) > button`,
@@ -380,7 +380,7 @@ describe('metadata path', () => {
         .wait(localSelectors.form.text)
         .clearInput(localSelectors.form.text)
         .clearInput(localSelectors.form.numeric)
-        .selectByLabel(localSelectors.form.select, 'Select...')
+        .selectByLabel(localSelectors.form.select, 'Select other "Testing dictionary"')
         .click(localSelectors.form.multiselectOptionOne)
         .click(localSelectors.form.relationshipOptionOne)
         .click(localSelectors.form.emptyDate)

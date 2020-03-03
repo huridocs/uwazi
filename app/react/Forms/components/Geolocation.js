@@ -6,7 +6,7 @@ import { Translate } from 'app/I18N';
 const defaultValue = { lat: '', lon: '', label: '' };
 
 function isCoordinateValid(coord) {
-  return coord && typeof coord === 'number' && !Number.isNaN(coord);
+  return typeof coord === 'number' && !Number.isNaN(coord);
 }
 
 export default class Geolocation extends Component {
@@ -28,6 +28,7 @@ export default class Geolocation extends Component {
   onChange(newValue) {
     this.setState({ currentLatitude: newValue.lat, currentLongitude: newValue.lon });
     const { onChange, value } = this.props;
+
     if (!isCoordinateValid(newValue.lat) || !isCoordinateValid(newValue.lon)) {
       onChange(this.emptyValue);
       return;
