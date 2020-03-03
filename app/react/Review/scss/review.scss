@@ -13,8 +13,20 @@ $header-height: 44px;
   position: relative;
 }
 
+.panel.flex {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.panel-default > .panel-heading {
+  border: none;
+  padding: 7px 10px;
+}
+
 .flex {
   @import '../../App/scss/layout/_sidepanel.scss';
+
   .content-holder {
     display: flex;
     flex-direction: row;
@@ -75,13 +87,21 @@ $header-height: 44px;
     }
 
     .btn-toggle-on {
-      border-color: white;
+      background-color: #ccc;
+      &:focus {
+        background-color: #ccc;
+      }
       &:hover {
         border-color: #ccc;
       }
+      svg {
+        color: darkgreen;
+      }
     }
     .btn-toggle-off {
-      @extend .btn-toggle-on;
+      svg {
+        color: grey;
+      }
     }
   }
 
@@ -161,6 +181,53 @@ $header-height: 44px;
     position: unset;
     border-top: 1px solid #d7d7dc;
     margin-top: 0;
+  }
+
+  .thesauri-list,
+  .cockpit {
+    height: 0;
+    flex-grow: 1;
+
+    table {
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    th {
+      font-weight: normal;
+      color: #555555;
+    }
+
+    tbody tr {
+      border-top: 1px solid #d7d7dc;
+    }
+
+    tr:not(:last-of-type) {
+      border-bottom: none;
+    }
+  }
+
+  .cockpit {
+    overflow-y: scroll;
+
+    thead th:nth-child(2) {
+      width: 15%;
+      text-align: right;
+    }
+
+    thead th {
+      font-weight: bold;
+      text-align: left;
+    }
+
+    td {
+      text-align: right;
+    }
+  }
+
+  .settings-footer {
+    @extend .sidepanel-footer;
+    border: none;
   }
 
   .entity-viewer {
@@ -313,5 +380,9 @@ $header-height: 44px;
   }
   .ContextMenu {
     z-index: 100;
+  }
+
+  .fa-save-and-next {
+    fill-rule: evenodd;
   }
 }

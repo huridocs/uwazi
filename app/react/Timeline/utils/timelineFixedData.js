@@ -15,7 +15,7 @@ const renderableTemplates = {
 };
 
 const datePropertyOverrides = {
-  hearing: 'fecha_de_la_audiencia',
+  // hearing: 'fecha_de_la_audiencia',
 };
 
 export { caseTemplate, matterTemplate, renderableTemplates, datePropertyOverrides };

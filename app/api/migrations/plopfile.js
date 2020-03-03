@@ -1,4 +1,5 @@
 /* eslint-disable import/no-dynamic-require, global-require */
+
 require('@babel/register')({ extensions: ['.js', '.jsx', '.ts', '.tsx'] });
 
 module.exports = plop => {
@@ -10,14 +11,14 @@ module.exports = plop => {
 
     const fs = require('fs');
     const path = require('path');
-    const migrator = require('./migrator');
+    const migrator = require('./migrator').default;
 
     const { migrationsDir } = migrator;
     let migrations = fs.readdirSync(migrationsDir);
     migrations = migrations
       .map(migration => {
         try {
-          return require(path.join(migrationsDir, migration)).delta;
+          return require(path.join(migrationsDir, migration)).default.delta;
         } catch (e) {
           return null;
         }

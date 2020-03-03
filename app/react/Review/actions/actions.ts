@@ -8,9 +8,10 @@ import { loadFetchedInReduxForm } from 'app/Metadata/actions/actions';
 import * as relationships from 'app/Relationships/utils/routeUtils';
 import { RequestParams } from 'app/utils/RequestParams';
 import Immutable from 'immutable';
+import { browserHistory } from 'react-router';
 import { Action, Dispatch } from 'redux';
 import { TemplateSchema } from 'shared/types/templateType';
-import { StoreState, OneUpState } from '../common';
+import { OneUpState, StoreState } from '../common';
 
 export async function getAndLoadEntity(
   requestParams: RequestParams,
@@ -95,6 +96,13 @@ async function switchToEntity(
   ].forEach(action => {
     dispatch(action as Action);
   });
+}
+
+export function reviewAndPublish(refName: string) {
+  browserHistory.push(
+    `/uploads/?q=(filters:(_${refName}:(values:!(any)),${refName}:(values:!(any))),` +
+      'limit:100,order:desc,sort:creationDate)&view=nosearch'
+  );
 }
 
 export function switchOneUpEntity(delta: number, save: boolean) {
