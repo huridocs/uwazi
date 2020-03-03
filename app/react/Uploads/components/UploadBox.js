@@ -6,10 +6,7 @@ import React, { Component } from 'react';
 
 import { Icon } from 'UI';
 import { unselectAllDocuments } from 'app/Library/actions/libraryActions';
-import {
-  uploadDocument,
-  createDocument,
-} from 'app/Uploads/actions/uploadsActions';
+import { uploadDocument, createDocument } from 'app/Uploads/actions/uploadsActions';
 import { wrapDispatch } from 'app/Multireducer';
 
 const extractTitle = file => {

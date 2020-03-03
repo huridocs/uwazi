@@ -63,7 +63,6 @@ export class CreateConnectionPanel extends Component {
           </button>
           <ShowIf if={connection.type !== 'targetRanged'}>
             <ActionButton
-              file={this.props.file}
               action="save"
               onCreate={reference => {
                 this.props.onCreate(reference, pdfInfo);
@@ -71,11 +70,7 @@ export class CreateConnectionPanel extends Component {
             />
           </ShowIf>
           <ShowIf if={connection.type === 'targetRanged'}>
-            <ActionButton
-              file={this.props.file}
-              action="connect"
-              onRangedConnect={this.props.onRangedConnect}
-            />
+            <ActionButton action="connect" onRangedConnect={this.props.onRangedConnect} />
           </ShowIf>
         </div>
 
@@ -96,7 +91,6 @@ export class CreateConnectionPanel extends Component {
 }
 
 CreateConnectionPanel.propTypes = {
-  file: PropTypes.object.isRequired,
   uiState: PropTypes.object,
   containerId: PropTypes.string,
   className: PropTypes.string,
