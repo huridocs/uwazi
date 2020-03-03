@@ -158,4 +158,82 @@ describe('BarChart Markdown component', () => {
       expect(component).toMatchSnapshot();
     });
   });
+
+  describe('when passing colors', () => {
+    it('should render with a single color', () => {
+      spyOn(markdownDatasets, 'getAggregations').and.returnValue(
+        Immutable.fromJS([
+          { key: 'id1', filtered: { doc_count: 25 } },
+          { key: 'id2', filtered: { doc_count: 33 } },
+          { key: 'missing', filtered: { doc_count: 45 } },
+          { key: 'id3', filtered: { doc_count: 13 } },
+          { key: 'id4', filtered: { doc_count: 0 } },
+        ])
+      );
+
+      const props = mapStateToProps(state, { prop1: 'propValue' });
+      props.colors = '#ccc';
+      const component = shallow(
+        <BarChartComponent
+          {...props}
+          property="prop1"
+          classname="custom-class"
+          context="tContext"
+        />
+      );
+
+      expect(markdownDatasets.getAggregations).toHaveBeenCalledWith(state, { prop1: 'propValue' });
+      expect(component).toMatchSnapshot();
+    });
+    it('should render with several colors', () => {
+      spyOn(markdownDatasets, 'getAggregations').and.returnValue(
+        Immutable.fromJS([
+          { key: 'id1', filtered: { doc_count: 25 } },
+          { key: 'id2', filtered: { doc_count: 33 } },
+          { key: 'missing', filtered: { doc_count: 45 } },
+          { key: 'id3', filtered: { doc_count: 13 } },
+          { key: 'id4', filtered: { doc_count: 0 } },
+        ])
+      );
+
+      const props = mapStateToProps(state, { prop1: 'propValue' });
+      props.colors = '#aaa,#bbb,#ccc,#ddd,#eee,#000';
+      const component = shallow(
+        <BarChartComponent
+          {...props}
+          property="prop1"
+          classname="custom-class"
+          context="tContext"
+        />
+      );
+
+      expect(markdownDatasets.getAggregations).toHaveBeenCalledWith(state, { prop1: 'propValue' });
+      expect(component).toMatchSnapshot();
+    });
+    it('should cycle the colors', () => {
+      spyOn(markdownDatasets, 'getAggregations').and.returnValue(
+        Immutable.fromJS([
+          { key: 'id1', filtered: { doc_count: 25 } },
+          { key: 'id2', filtered: { doc_count: 33 } },
+          { key: 'missing', filtered: { doc_count: 45 } },
+          { key: 'id3', filtered: { doc_count: 13 } },
+          { key: 'id4', filtered: { doc_count: 0 } },
+        ])
+      );
+
+      const props = mapStateToProps(state, { prop1: 'propValue' });
+      props.colors = '#ccc,#000';
+      const component = shallow(
+        <BarChartComponent
+          {...props}
+          property="prop1"
+          classname="custom-class"
+          context="tContext"
+        />
+      );
+
+      expect(markdownDatasets.getAggregations).toHaveBeenCalledWith(state, { prop1: 'propValue' });
+      expect(component).toMatchSnapshot();
+    });
+  });
 });
