@@ -36,4 +36,5 @@ export default (app, server) => {
   require('./attachments/routes').default(app);
   require('./sync/routes').default(app);
   require('./swagger/swaggerconfig').default(app);
+  require('./tasks/routes').default(app);
 };

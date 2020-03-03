@@ -8,6 +8,9 @@ import Joi from 'joi';
 
 import { getModelForThesaurus } from './topicClassification';
 
+// Register tasks.
+require('./sync');
+
 export const CLASSIFIER_MODELS_ENDPOINT = 'models';
 const tcModelPrefix = `/api/${CLASSIFIER_MODELS_ENDPOINT}`;
 

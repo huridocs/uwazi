@@ -3,9 +3,13 @@
 import db from 'api/utils/testing_db';
 import { propertyTypes } from 'shared/propertyTypes';
 import { TemplateSchema } from 'shared/types/templateType';
+import { ThesaurusSchema } from 'shared/types/thesaurusType';
+import { EntitySchema } from 'api/entities/entityType';
 
 export const template1 = db.id();
-export const dictionaryId = '589af97080fc0b23471d67f4';
+export const e1 = db.id();
+export const dictionaryId = db.id();
+export const moviesId = db.id();
 
 export default {
   templates: <TemplateSchema[]>[
@@ -17,13 +21,14 @@ export default {
       properties: [
         { name: 'date', label: 'Date', type: propertyTypes.date },
         { name: 'text', label: 'Recommendation', type: propertyTypes.markdown },
+        { name: 'movies', label: 'Movies', type: propertyTypes.multiselect, content: moviesId },
       ],
     },
   ],
-  dictionaries: [
+  dictionaries: <ThesaurusSchema[]>[
     { _id: db.id(), name: 'dictionary' },
     {
-      _id: db.id(dictionaryId),
+      _id: dictionaryId,
       name: 'dictionary 2',
       values: [
         { id: '1', label: 'value 1' },
@@ -31,8 +36,9 @@ export default {
       ],
     },
     {
-      _id: db.id(),
+      _id: moviesId,
       name: 'Top movies',
+      enable_classification: true,
       values: [
         {
           id: '1',
@@ -54,6 +60,15 @@ export default {
       ],
     },
   ],
+  entities: <EntitySchema[]>[
+    {
+      _id: e1,
+      template: template1,
+      sharedId: 'e1',
+      title: 'title1',
+      language: 'en',
+    },
+  ],
   settings: [
     {
       _id: db.id(),
@@ -61,4 +76,5 @@ export default {
       languages: [{ key: 'en', label: 'English', default: true }],
     },
   ],
+  translations: [{ locale: 'en', contexts: [] }],
 };
