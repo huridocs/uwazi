@@ -187,6 +187,7 @@ function handleRoute(res, renderProps, req) {
           templates: Immutable(globalResources.templates),
           thesauris: Immutable(globalResources.thesauris),
           relationTypes: Immutable(globalResources.relationTypes),
+          settings: { collection: Immutable(globalResources.settings.collection) },
         }),
         globalResources,
       ]);

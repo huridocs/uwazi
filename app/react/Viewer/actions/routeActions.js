@@ -21,13 +21,17 @@ export function setViewerState(state) {
 
 export async function requestViewerState(requestParams, globalResources) {
   const { sharedId, raw, page } = requestParams.data;
+  // console.log(globalResources.settings.collection.get('languages').toJS());
   const defaultLanguage = globalResources.settings.collection
     .get('languages')
-    .find(l => l.get('default'))
-    .get('key');
+    .find(l => l.get('default'));
 
   const [doc, relationTypes, [connectionsGroups, searchResults, sort]] = await Promise.all([
-    getDocument(requestParams.set({ sharedId }), defaultLanguage, requestParams.data.file),
+    getDocument(
+      requestParams.set({ sharedId }),
+      defaultLanguage ? defaultLanguage.get('key') : 'en',
+      requestParams.data.file
+    ),
     relationTypesAPI.get(requestParams.onlyHeaders()),
     relationships.requestState(requestParams.set({ sharedId }), globalResources.templates),
   ]);
