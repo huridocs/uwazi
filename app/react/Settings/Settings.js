@@ -1,4 +1,3 @@
-/** @format */
 import RouteHandler from 'app/App/RouteHandler';
 import { actions } from 'app/BasicReducer';
 import { I18NApi } from 'app/I18N';
@@ -10,7 +9,7 @@ import UsersAPI from 'app/Users/UsersAPI';
 import React from 'react';
 import Helmet from 'react-helmet';
 import { resolveTemplateProp } from 'app/Settings/utils/resolveProperty';
-import { getSuggestionsQuery } from 'app/Settings/utils/suggestions';
+import { getReadyToReviewSuggestionsQuery } from 'app/Settings/utils/suggestions';
 
 import SettingsNav from './components/SettingsNavigation';
 import SettingsAPI from './SettingsAPI';
@@ -56,7 +55,7 @@ export class Settings extends RouteHandler {
       [].concat(
         ...props.map(p =>
           templates.map(t => {
-            const reqParams = requestParams.set(getSuggestionsQuery(p, t._id));
+            const reqParams = requestParams.set(getReadyToReviewSuggestionsQuery(t._id, p));
             return api.search(reqParams);
           })
         )
@@ -69,22 +68,13 @@ export class Settings extends RouteHandler {
       tup.forEach(perm => {
         const prop = perm[0];
         const results = perm[1][1];
-        if (results.aggregations.all.hasOwnProperty(`_${prop.name}`)) {
-          const { buckets } = results.aggregations.all[`_${prop.name}`];
-          let soFar = 0;
-          buckets.forEach(bucket => {
-            soFar += bucket.filtered.doc_count;
-          });
-          const thesaurus = modeledThesauri.find(t => t._id === prop.content);
-          // NOTE: These suggestions are totaling per-value suggestions per
-          // document, so certain documents with more than one suggested value
-          // may be counted more than once.
-          // TODO(sam): Make document counts unique.
-          if (!thesaurus.hasOwnProperty('suggestions')) {
-            thesaurus.suggestions = 0;
-          }
-          thesaurus.suggestions += soFar;
+        const uniqueDocs = results.totalRows;
+
+        const thesaurus = modeledThesauri.find(t => t._id === prop.content);
+        if (!thesaurus.hasOwnProperty('suggestions')) {
+          thesaurus.suggestions = 0;
         }
+        thesaurus.suggestions += uniqueDocs;
       });
     });
 
