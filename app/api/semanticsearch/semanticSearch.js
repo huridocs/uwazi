@@ -1,12 +1,12 @@
 import { promisify } from 'util';
 import async from 'async';
 import { Types } from 'mongoose';
+import settings from 'api/settings';
 import date from 'api/utils/date.js';
 import model from './model';
 import resultsModel from './resultsModel';
 import api from './api';
 import documentsModel from '../documents';
-import settings from 'api/settings';
 import workers from './workerManager';
 import { createError } from '../utils';
 import { PENDING, COMPLETED, PROCESSING, IN_PROGRESS, STOPPED } from './statuses';
