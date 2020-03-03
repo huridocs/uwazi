@@ -24,7 +24,7 @@ import {
 } from '../../ReactReduxForms';
 import MultipleEditionFieldWarning from './MultipleEditionFieldWarning';
 
-const translateOptions = thesauri =>
+export const translateOptions = thesauri =>
   thesauri
     .get('values')
     .map(optionIm => {

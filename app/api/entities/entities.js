@@ -1,4 +1,3 @@
-/** @format */
 /* eslint-disable no-param-reassign,max-statements */
 
 import { generateNamesAndIds } from 'api/templates/utils';
@@ -283,7 +282,7 @@ function applyDiffMetadata(metadata, diffMetadata) {
     }
     newMetadata[p] = [
       ...newMetadata[p].filter(v => !toRemove.map(vr => vr.value).includes(v.value)),
-      ...toAdd.filter(va => !newMetadata[p].map(v => v.value).inclues(va.value)),
+      ...toAdd.filter(va => !newMetadata[p].map(v => v.value).includes(va.value)),
     ];
   });
   return newMetadata;

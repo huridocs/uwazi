@@ -46,6 +46,8 @@ import { faLink } from '@fortawesome/free-solid-svg-icons/faLink';
 import { faList } from '@fortawesome/free-solid-svg-icons/faList';
 import { faLock } from '@fortawesome/free-solid-svg-icons/faLock';
 import { faMapMarker } from '@fortawesome/free-solid-svg-icons/faMapMarker';
+import { faMinus } from '@fortawesome/free-solid-svg-icons/faMinus';
+import { faMinusSquare } from '@fortawesome/free-solid-svg-icons/faMinusSquare';
 import { faPaperPlane } from '@fortawesome/free-solid-svg-icons/faPaperPlane';
 import { faPaperclip } from '@fortawesome/free-solid-svg-icons/faPaperclip';
 import { faParagraph } from '@fortawesome/free-solid-svg-icons/faParagraph';
@@ -136,6 +138,8 @@ const icons = {
   faList,
   faLock,
   faMapMarker,
+  faMinus,
+  faMinusSquare,
   faPaperPlane,
   faPaperclip,
   faParagraph,

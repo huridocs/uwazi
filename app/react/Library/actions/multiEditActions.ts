@@ -7,6 +7,7 @@ import { getThesaurusPropertyNames } from 'shared/commonTopicClassification';
 import { MetadataObjectSchema } from 'shared/types/commonTypes';
 import { IImmutable } from 'shared/types/Immutable';
 import { TemplateSchema } from 'shared/types/templateType';
+import { ThesaurusSchema } from 'shared/types/thesaurusType';
 import { RequestParams } from '../../utils/RequestParams';
 import { updateEntities } from './libraryActions';
 
@@ -15,17 +16,19 @@ export interface MultiEditOpts {
   autoSave?: boolean;
 }
 
+export interface TriStateSelectValue {
+  // Thesaurus value ids that should be added to all entities.
+  added: string[];
+  // Thesaurus value ids that should be removed from all entities.
+  removed: string[];
+  // Thesaurus value ids that all entities originally had.
+  originalFull: string[];
+  // Thesaurus value ids that some, but not all, entities originally had.
+  originalPartial: string[];
+}
+
 export interface MultiEditState {
-  [k: string]: {
-    // Thesaurus value ids that should be added to all entities.
-    added: string[];
-    // Thesaurus value ids that should be removed from all entities.
-    removed: string[];
-    // Thesaurus value ids that all entities originally had.
-    originalFull?: string[];
-    // Thesaurus value ids that some, but not all, entities originally had.
-    originalPartial?: string[];
-  };
+  [k: string]: TriStateSelectValue;
 }
 
 export interface StoreState {
@@ -39,6 +42,7 @@ export interface StoreState {
     };
   };
   templates: IImmutable<TemplateSchema[]>;
+  thesauris: IImmutable<ThesaurusSchema[]>;
 }
 
 function mergedSelectedDocuments(
@@ -96,9 +100,9 @@ function buildMultipleEditState(docs: EntitySchema[], propNames: string[]): Mult
   );
 }
 
-async function maybeSaveMultipleEdit(dispatch: Dispatch<StoreState>, state: StoreState) {
+function buildApplyParams(dispatch: Dispatch<StoreState>, state: StoreState) {
   if (!state.library.sidepanel.multiEditOpts.get('autoSave')) {
-    return;
+    return null;
   }
   const current = state.library.sidepanel.multipleEdit;
   const diffs: {
@@ -112,16 +116,18 @@ async function maybeSaveMultipleEdit(dispatch: Dispatch<StoreState>, state: Stor
       };
     }
   });
-  if (!diffs || !diffs.length) {
-    return;
+  if (!diffs || !Object.keys(diffs).length) {
+    return null;
   }
   const ids = state.library.ui
     .get('selectedDocuments')
     .map(entity => entity.get('sharedId'))
     .toJS();
-  const updatedDocs = await EntitiesAPI.multipleUpdate(
-    new RequestParams({ ids, values: { diffMetadata: diffs } })
-  );
+  return new RequestParams({ ids, values: { diffMetadata: diffs } });
+}
+
+async function saveMultiEdit(dispatch: Dispatch<StoreState>, params: RequestParams) {
+  const updatedDocs = await EntitiesAPI.multipleUpdate(params);
   dispatch(notificationActions.notify('Update success', 'success'));
   dispatch(updateEntities(updatedDocs));
 }
@@ -129,7 +135,8 @@ async function maybeSaveMultipleEdit(dispatch: Dispatch<StoreState>, state: Stor
 // addedDocs === null indicates that all documents are about to be unselected.
 export function selectedDocumentsChanged(
   addedDocs?: EntitySchema[] | IImmutable<EntitySchema[]> | null,
-  removedDocIds?: string[]
+  removedDocIds?: string[],
+  allowSave?: boolean
 ) {
   return async (dispatch: Dispatch<StoreState>, getState: () => StoreState) => {
     const model = 'library.sidepanel.multipleEdit';
@@ -137,24 +144,28 @@ export function selectedDocumentsChanged(
     if (!state.library.sidepanel.multiEditOpts.get('thesaurus')) {
       return;
     }
-    await maybeSaveMultipleEdit(dispatch, state);
+    // We extract the apply params, but we CAN NOT await here, or a subsequent
+    // selectedDocumentsChanged call might 'overtake' this one and bad things happen.
+    const applyParams = !allowSave ? null : buildApplyParams(dispatch, state);
     dispatch(formActions.reset(model));
     const docs = mergedSelectedDocuments(
       state,
       addedDocs && 'toJS' in addedDocs ? addedDocs.toJS() : addedDocs,
       removedDocIds
     );
-    if (!docs.length) {
-      return;
+    if (docs.length) {
+      const templateIds = docs.map(d => d.template).filter(v => v);
+      const templates = state.templates.filter(t => templateIds.includes(t.get('_id'))).toJS();
+      const propNames = getThesaurusPropertyNames(
+        state.library.sidepanel.multiEditOpts.get('thesaurus')!,
+        templates
+      );
+      const newState = buildMultipleEditState(docs, propNames);
+      dispatch(formActions.load(model, newState));
+      dispatch(formActions.setPristine(model));
     }
-    const templateIds = docs.map(d => d.template).filter(v => v);
-    const templates = state.templates.filter(t => templateIds.includes(t.get('_id'))).toJS();
-    const propNames = getThesaurusPropertyNames(
-      state.library.sidepanel.multiEditOpts.get('thesaurus')!,
-      templates
-    );
-    const newState = buildMultipleEditState(docs, propNames);
-    dispatch(formActions.load(model, newState));
-    dispatch(formActions.setPristine(model));
+    if (applyParams) {
+      await saveMultiEdit(dispatch, applyParams);
+    }
   };
 }

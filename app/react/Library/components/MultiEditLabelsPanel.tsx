@@ -1,6 +1,8 @@
 import { EntitySchema } from 'api/entities/entityType';
+import { MultiSelectTristate } from 'app/ReactReduxForms';
 import { t } from 'app/I18N';
 import SidePanel from 'app/Layout/SidePanel';
+import { unselectAllDocuments } from 'app/Library/actions/libraryActions';
 import * as metadataActions from 'app/Metadata/actions/actions';
 import { wrapDispatch } from 'app/Multireducer';
 import Immutable from 'immutable';
@@ -8,13 +10,18 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import { createSelector } from 'reselect';
 import { IImmutable } from 'shared/types/Immutable';
+import { ThesaurusSchema } from 'shared/types/thesaurusType';
 import { Icon } from 'UI';
-import { unselectAllDocuments } from 'app/Library/actions/libraryActions';
+import { MultiEditOpts, MultiEditState, StoreState } from '../actions/multiEditActions';
+import { translateOptions } from 'app/Metadata/components/MetadataFormFields';
 
 const defaultProps = {
-  storeKey: 'library',
-  formKey: 'library.sidepanel.multiEditLabel',
+  formKey: 'library.sidepanel.multipleEdit',
+  multipleEdit: {} as MultiEditState,
+  multiEditThesaurus: undefined as IImmutable<ThesaurusSchema> | undefined,
+  opts: {} as MultiEditOpts,
   unselectAllDocuments: () => {},
   resetForm: (_s: string) => {},
   revertMultiEditLabels: () => {},
@@ -93,7 +100,7 @@ export class MultiEditLabelsPanel extends Component<MultiEditLabelsPanelProps> {
   }
 
   render() {
-    const { selectedDocuments } = this.props;
+    const { multiEditThesaurus, multipleEdit, selectedDocuments } = this.props;
     const canBePublished = this.props.selectedDocuments.reduce((previousCan, entity) => {
       const isEntity = !entity.get('file');
       return (
@@ -115,25 +122,57 @@ export class MultiEditLabelsPanel extends Component<MultiEditLabelsPanelProps> {
             <Icon icon="times" />
           </button>
         </div>
-        <div className="sidepanel-body"></div>
+        <div className="sidepanel-body">
+          {!multiEditThesaurus && <label>Wrong thesaurus!</label>}
+          {multiEditThesaurus && !Object.keys(multipleEdit).length && (
+            <label>No fields of thesaurus!</label>
+          )}
+          {multiEditThesaurus &&
+            Object.keys(multipleEdit).length &&
+            Object.keys(multipleEdit).map(p => (
+              <div className="form-group" key={p}>
+                <MultiSelectTristate
+                  model={`library.sidepanel.multipleEdit.${p}`}
+                  optionsValue="id"
+                  options={translateOptions(multiEditThesaurus)}
+                  prefix={`library.sidepanel.multipleEdit.${p}`}
+                  sort
+                  placeholder={`${t('System', 'Search', null, false)} '${multiEditThesaurus.get(
+                    'name'
+                  )}'`}
+                />
+              </div>
+            ))}
+        </div>
         <div className="sidepanel-footer">{this.renderListButtons(canBePublished)}</div>
       </SidePanel>
     );
   }
 }
 
-export const mapStateToProps = (state: any, props: MultiEditLabelsPanelProps) => ({
-  selectedDocuments: state[props.storeKey].ui.get('selectedDocuments'),
+export const selectMultiEditThesaurus = createSelector(
+  (state: StoreState) =>
+    state.thesauris.find(
+      thes => thes.get('_id') === state.library.sidepanel.multiEditOpts.get('thesaurus')
+    ),
+  thes => thes
+);
+
+export const mapStateToProps = (state: StoreState) => ({
+  selectedDocuments: state.library.ui.get('selectedDocuments'),
+  multipleEdit: state.library.sidepanel.multipleEdit,
+  multiEditThesaurus: selectMultiEditThesaurus(state),
+  opts: state.library.sidepanel.multiEditOpts.toJS(),
 });
 
-function mapDispatchToProps(dispatch: any, props: MultiEditLabelsPanelProps) {
+function mapDispatchToProps(dispatch: any) {
   return bindActionCreators(
     {
       resetForm: metadataActions.resetReduxForm,
       multipleUpdate: metadataActions.multipleUpdate,
       unselectAllDocuments,
     },
-    wrapDispatch(dispatch, props.storeKey)
+    wrapDispatch(dispatch, 'library')
   );
 }
 
