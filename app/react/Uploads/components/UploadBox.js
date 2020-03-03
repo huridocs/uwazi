@@ -9,8 +9,6 @@ import { unselectAllDocuments } from 'app/Library/actions/libraryActions';
 import {
   uploadDocument,
   createDocument,
-  documentProcessed,
-  documentProcessError,
 } from 'app/Uploads/actions/uploadsActions';
 import { wrapDispatch } from 'app/Multireducer';
 
@@ -64,8 +62,6 @@ export class UploadBox extends Component {
 }
 
 UploadBox.propTypes = {
-  documentProcessed: PropTypes.func.isRequired,
-  documentProcessError: PropTypes.func.isRequired,
   uploadDocument: PropTypes.func.isRequired,
   createDocument: PropTypes.func.isRequired,
   unselectAllDocuments: PropTypes.func.isRequired,
@@ -81,8 +77,6 @@ function mapDispatchToProps(dispatch) {
       uploadDocument,
       unselectAllDocuments,
       createDocument,
-      documentProcessed,
-      documentProcessError,
     },
     wrapDispatch(dispatch, 'uploads')
   );

@@ -6,9 +6,7 @@ const docState = createSelector(
     if (!props.doc.get('documents').size) {
       return null;
     }
-    return props.doc.get('documents').reduce((_processed, d) => {
-      return d.get('status');
-    }, 'ready');
+    return props.doc.get('documents').reduce((_processed, d) => d.get('status'), 'ready');
   },
   (_state, props) => !props.doc.get('documents').size,
   (_state, props) => props.doc.get('template'),

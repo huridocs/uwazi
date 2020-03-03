@@ -1,3 +1,5 @@
+/*eslint-disable max-statements*/
+
 import Joi from 'joi';
 import multer from 'multer';
 import fs from 'fs';
@@ -33,7 +35,6 @@ const storeFile = file =>
     });
   });
 
-/*eslint-disable max-statements*/
 export default app => {
   const upload = multer({ storage });
 

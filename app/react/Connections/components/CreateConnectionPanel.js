@@ -96,7 +96,7 @@ export class CreateConnectionPanel extends Component {
 }
 
 CreateConnectionPanel.propTypes = {
-  file: PropTypes.object,
+  file: PropTypes.object.isRequired,
   uiState: PropTypes.object,
   containerId: PropTypes.string,
   className: PropTypes.string,

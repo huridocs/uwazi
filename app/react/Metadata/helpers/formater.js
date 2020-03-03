@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import moment from 'moment';
 import Immutable from 'immutable';
 import { advancedSort } from 'app/utils/advancedSort';

@@ -129,7 +129,7 @@ class PDF extends Component {
     }, null);
 
     if (allConsecutives) {
-      const pdfInfo = this.props.pdfInfo;
+      const { pdfInfo } = this.props;
       const start = pdfInfo[
         Math.min.apply(
           null,

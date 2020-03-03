@@ -64,16 +64,15 @@ export const extractDocumentContent = async (
   }
 
   if (metadata) {
-    const metadataFields = (await templates.getById(template)).properties.filter(
-      prop => prop.type === 'markdown'
-    );
-
-    metadataFields.forEach(field => {
-      if (metadata[field.name]) {
-        contents[field.name] = metadata[field.name];
-      }
-    });
+    (await templates.getById(template)).properties
+      .filter(prop => prop.type === 'markdown')
+      .forEach(field => {
+        if (metadata[field.name]) {
+          contents[field.name] = metadata[field.name];
+        }
+      });
   }
+
   if (fullText) {
     Object.keys(fullText).forEach(page => {
       contents[page] = removePageAnnotations(fullText[page]);

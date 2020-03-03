@@ -120,11 +120,6 @@ PDFView.contextTypes = {
 PDFView.propTypes = {
   location: PropTypes.instanceOf(Object).isRequired,
   entity: PropTypes.instanceOf(Object).isRequired,
-  params: PropTypes.instanceOf(Object),
-};
-
-PDFView.defaultProps = {
-  params: {},
 };
 
 export default PDFView;

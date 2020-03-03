@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import date from 'api/utils/date';
 
 import propertiesHelper from 'shared/comonProperties';

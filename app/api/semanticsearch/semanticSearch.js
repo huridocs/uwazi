@@ -6,8 +6,8 @@ import model from './model';
 import resultsModel from './resultsModel';
 import api from './api';
 import documentsModel from '../documents';
-import workers from './workerManager';
 import settings from 'api/settings';
+import workers from './workerManager';
 import { createError } from '../utils';
 import { PENDING, COMPLETED, PROCESSING, IN_PROGRESS, STOPPED } from './statuses';
 import {
@@ -23,8 +23,7 @@ const eachLimitAsync = promisify(async.eachLimit);
 
 const processDocument = async (searchId, searchTerm, sharedId, language) => {
   const [doc] = await documentsModel.get({ sharedId, language });
-  const { languages } = await settings.get();
-  const defaultLanguage = languages.find(l => l.default);
+  const defaultLanguage = (await settings.get()).find(l => l.default);
 
   await updateSearchDocumentStatus(searchId, sharedId, PROCESSING);
   const contents = await extractDocumentContent(doc, defaultLanguage);

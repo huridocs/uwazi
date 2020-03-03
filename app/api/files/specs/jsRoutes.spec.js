@@ -1,3 +1,4 @@
+/*eslint-disable max-lines*/
 import fs from 'fs';
 import path from 'path';
 import { catchErrors } from 'api/utils/jasmineHelpers';

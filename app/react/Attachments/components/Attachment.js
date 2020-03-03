@@ -28,9 +28,7 @@ const getItemOptions = (parentId, filename) => {
   options.icon = 'paperclip';
   options.deletable = true;
   options.replaceable = false;
-  options.downloadHref = false
-    ? `/api/documents/download?_id=${parentId}`
-    : `/api/attachments/download?_id=${parentId}&file=${filename}`;
+  options.downloadHref = `/api/attachments/download?_id=${parentId}&file=${filename}`;
 
   return options;
 };
@@ -167,7 +165,6 @@ Attachment.propTypes = {
   parentId: PropTypes.string,
   storeKey: PropTypes.string,
   model: PropTypes.string,
-  parentSharedId: PropTypes.string,
   readOnly: PropTypes.bool,
   beingEdited: PropTypes.bool,
   deleteAttachment: PropTypes.func,

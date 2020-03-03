@@ -1,3 +1,4 @@
+/*eslint-disable max-lines */
 /*eslint max-len: ["error", 500], */
 /*eslint key-spacing: "error" */
 export default {

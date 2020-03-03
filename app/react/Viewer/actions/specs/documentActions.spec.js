@@ -275,7 +275,6 @@ describe('documentActions', () => {
 
     describe('saveToc', () => {
       it('should save the document with the new toc and dispatch a notification on success', done => {
-        backend.restore();
         const toc = [
           { range: { start: 12, end: 23 }, label: 'Chapter 1', indentation: 0 },
           { range: { start: 22, end: 44 }, label: 'Chapter 1.1', indentation: 1 },
@@ -332,7 +331,6 @@ describe('documentActions', () => {
           },
           { type: 'rrf/reset', model: 'documentViewer.sidepanel.metadata' },
           { type: 'viewer/doc/SET', value: updatedEntity },
-          // { type: 'reloadRelationships' },
         ];
         const store = mockStore({
           documentViewer: {

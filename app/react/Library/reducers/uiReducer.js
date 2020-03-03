@@ -50,7 +50,6 @@ export default function ui(state = initialState, action = {}) {
         .get(docIndex)
         .toJS();
       doc.documents.push(action.file);
-      console.log(doc, docIndex);
 
       return state.setIn(['selectedDocuments', docIndex], Immutable.fromJS(doc));
     }
