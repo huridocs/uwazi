@@ -44,7 +44,7 @@ export class ViewerTextSelectedMenu extends Component {
 
 ViewerTextSelectedMenu.propTypes = {
   doc: PropTypes.object,
-  file: PropTypes.object,
+  file: PropTypes.object.isRequired,
   reference: PropTypes.object,
   startNewConnection: PropTypes.func,
   openPanel: PropTypes.func,

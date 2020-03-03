@@ -4,6 +4,11 @@ import { Form, Field } from 'react-redux-form';
 import { Icon } from 'UI';
 
 export class TocForm extends Component {
+  constructor(props) {
+    super(props);
+    this.submit = this.submit.bind(this);
+  }
+
   indentButton(direction, tocElement) {
     const { indent } = this.props;
     const onClick = indent.bind(
@@ -25,7 +30,7 @@ export class TocForm extends Component {
   render() {
     const { toc, model, removeEntry } = this.props;
     return (
-      <Form className="toc" id="tocForm" model={model} onSubmit={this.submit.bind(this)}>
+      <Form className="toc" id="tocForm" model={model} onSubmit={this.submit}>
         {toc.map((tocElement, index) => (
           <div className={`toc-indent-${tocElement.indentation}`} key={index}>
             <div className="toc-edit">
@@ -58,7 +63,7 @@ TocForm.defaultProps = {
 
 TocForm.propTypes = {
   toc: PropTypes.array,
-  file: PropTypes.object,
+  file: PropTypes.object.isRequired,
   model: PropTypes.string.isRequired,
   removeEntry: PropTypes.func,
   indent: PropTypes.func,
