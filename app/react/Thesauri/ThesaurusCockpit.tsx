@@ -216,6 +216,13 @@ export class ThesaurusCockpitBase extends RouteHandler {
           {this.publishButton()}
         </div>
         <div className="cockpit">
+          <I18NLink
+            title="label-docs"
+            to={`/library/?multiEditThesaurus=${thesaurus._id}`}
+            className="btn btn-primary"
+          >
+            <span>{t('System', 'Label more documents')}</span>
+          </I18NLink>
           <table>
             <thead>
               <tr>

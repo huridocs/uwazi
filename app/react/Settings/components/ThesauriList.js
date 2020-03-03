@@ -31,24 +31,22 @@ export class ThesauriList extends Component {
         </button>
       );
     }
-    if (thesaurus.enable_classification) {
-      const view = (
-        <div className="vertical-line">
+    return (
+      <div className="vertical-line">
+        {thesaurus.enable_classification && (
           <span className="thesaurus-suggestion-count">
             {thesaurus.suggestions ? thesaurus.suggestions.toLocaleString() : 'No'}&nbsp;
             {t('System', 'documents to be reviewed')}
           </span>
-          <I18NLink
-            to={`/settings/dictionaries/cockpit/${thesaurus._id}`}
-            className="btn btn-primary btn-xs"
-          >
-            <span>{t('System', 'View suggestions')}</span>
-          </I18NLink>
-        </div>
-      );
-      return view;
-    }
-    return null;
+        )}
+        <I18NLink
+          to={`/settings/dictionaries/cockpit/${thesaurus._id}`}
+          className="btn btn-primary btn-xs"
+        >
+          <span>{t('System', 'Manage suggestions')}</span>
+        </I18NLink>
+      </div>
+    );
   }
 
   getThesaurusModifyActions(thesaurus) {
