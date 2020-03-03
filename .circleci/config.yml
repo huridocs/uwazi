@@ -16,7 +16,7 @@ jobs:
           - transport.host=127.0.0.1
           - xpack.security.enabled=false
           - ES_JAVA_OPTS=-Xms750m -Xmx750m
-
+    resource_class: medium
     steps:
       - checkout
 
@@ -76,7 +76,7 @@ jobs:
           - transport.host=127.0.0.1
           - xpack.security.enabled=false
           - ES_JAVA_OPTS=-Xms750m -Xmx750m
-
+    resource_class: medium
     steps:
       - checkout
       # Download and cache dependencies

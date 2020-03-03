@@ -68,6 +68,7 @@ export const UnwrapMetadataObject = (MetadataObject, Template) =>
       'nested',
       'relationship',
       'multidate',
+      'geolocation',
     ].includes(property.type);
 
     return {
