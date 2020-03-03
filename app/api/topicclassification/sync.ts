@@ -68,14 +68,14 @@ async function sendSample(
     } catch (err) {
       lastErr = err;
     }
-    console.error(`Attempt ${i} failed: ${response.status} ${lastErr}`);
+    // console.error(`Attempt ${i} failed: ${response.status} ${lastErr}`);
     await sleep(523);
   }
   if (lastErr) {
     throw lastErr;
   }
   if (response.status !== 200) {
-    console.error(response);
+    // console.error(response);
     return null;
   }
   return response;
