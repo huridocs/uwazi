@@ -12,6 +12,8 @@ import entitiesAPI from 'app/Entities/EntitiesAPI';
 import { scrollToPage, activateReference } from './actions/uiActions';
 import { requestViewerState } from './actions/routeActions';
 
+const defaultDoc = entity => (entity.get('defaultDoc') ? entity.get('defaultDoc').toJS() : {});
+
 class PDFView extends Component {
   static async requestState(requestParams, globalResources) {
     return requestViewerState(
@@ -43,12 +45,8 @@ class PDFView extends Component {
         query.raw !== this.props.location.query.raw) &&
       query.raw === 'true'
     ) {
-      const defaultDoc = props.entity.get('defaultDoc')
-        ? this.props.entity.get('defaultDoc').toJS()
-        : {};
-
       entitiesAPI
-        .getRawPage(new RequestParams({ _id: defaultDoc._id, page: query.page }))
+        .getRawPage(new RequestParams({ _id: defaultDoc(props.entity)._id, page: query.page }))
         .then(pageText => {
           this.context.store.dispatch(actions.set('viewer/rawText', pageText));
         });
@@ -92,9 +90,6 @@ class PDFView extends Component {
     const { query = {}, pathname } = this.props.location;
     const raw = query.raw === 'true' || !isClient;
     const page = Number(query.page || 1);
-    const defaultDoc = this.props.entity.get('defaultDoc')
-      ? this.props.entity.get('defaultDoc').toJS()
-      : {};
 
     return (
       <React.Fragment>
@@ -106,7 +101,7 @@ class PDFView extends Component {
           onDocumentReady={this.onDocumentReady}
           changePage={this.changePage}
           page={page}
-          file={defaultDoc}
+          file={defaultDoc(this.props.entity)}
         />
       </React.Fragment>
     );
