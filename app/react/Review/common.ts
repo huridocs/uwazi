@@ -51,9 +51,9 @@ export const selectMlThesauri = createSelector(
   (state: StoreState) => state.thesauris,
   thesauri =>
     thesauri
-      .filter(thes => !!thes.get('enable_classification'))
-      .map(thes => thes.get('_id')?.toString() ?? '')
-      .toJS()
+      .filter(thes => !!thes!.get('enable_classification'))
+      .map(thes => thes!.get('_id')?.toString() ?? '')
+      .toJS() as string[]
 );
 
 export const selectIsPristine = createSelector(

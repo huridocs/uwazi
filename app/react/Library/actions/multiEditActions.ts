@@ -10,6 +10,7 @@ import { TemplateSchema } from 'shared/types/templateType';
 import { ThesaurusSchema } from 'shared/types/thesaurusType';
 import { RequestParams } from '../../utils/RequestParams';
 import { updateEntities } from './libraryActions';
+import { actions } from 'app/BasicReducer';
 
 export interface MultiEditOpts {
   thesaurus?: string;
@@ -33,39 +34,37 @@ export interface MultiEditState {
 
 export interface StoreState {
   library: {
+    documents: IImmutable<{ rows: EntitySchema[] }>;
     ui: IImmutable<{
       selectedDocuments: EntitySchema[];
     }>;
     sidepanel: {
       multiEditOpts: IImmutable<MultiEditOpts>;
       multipleEdit: MultiEditState;
+      multipleEditForm: any;
     };
   };
   templates: IImmutable<TemplateSchema[]>;
   thesauris: IImmutable<ThesaurusSchema[]>;
 }
 
-function mergedSelectedDocuments(
-  state: StoreState,
-  addedDocs?: EntitySchema[] | null,
-  removedDocIds?: string[]
-) {
-  if (addedDocs === null) {
-    return [];
-  }
-  const afterRemove = state.library.ui
-    .get('selectedDocuments')
-    .filter(d => !(removedDocIds || []).includes(d.get('_id') as string))
-    .toJS();
-  if (!addedDocs || !addedDocs.length) {
-    return afterRemove;
-  }
-  const selectedIds = afterRemove.map(d => d._id);
-  return afterRemove.concat(addedDocs.filter(d => !selectedIds.includes(d._id?.toString())));
+export function toggleAutoSaveMode() {
+  return (dispatch: Dispatch<StoreState>, getState: () => StoreState) => {
+    const opts = getState().library.sidepanel.multiEditOpts.toJS();
+    dispatch(
+      actions.set('library.sidepanel.multiEditOpts', {
+        ...opts,
+        autoSave: !opts.autoSave,
+      } as MultiEditOpts)
+    );
+  };
 }
 
 function buildMultipleEditState(docs: EntitySchema[], propNames: string[]): MultiEditState {
-  const counts: { [k: string]: { [k: string]: number } } = {};
+  const counts: { [k: string]: { [k: string]: number } } = propNames.reduce(
+    (res, p) => ({ ...res, [p]: {} }),
+    {}
+  );
   docs.forEach(d =>
     propNames.forEach(p => {
       if (!d.metadata || !d.metadata[p]) {
@@ -100,72 +99,67 @@ function buildMultipleEditState(docs: EntitySchema[], propNames: string[]): Mult
   );
 }
 
-function buildApplyParams(dispatch: Dispatch<StoreState>, state: StoreState) {
-  if (!state.library.sidepanel.multiEditOpts.get('autoSave')) {
-    return null;
-  }
-  const current = state.library.sidepanel.multipleEdit;
-  const diffs: {
-    [k: string]: { added: MetadataObjectSchema[]; removed: MetadataObjectSchema[] };
-  } = {};
-  Object.keys(current).forEach(p => {
-    if (current[p] && current[p].added.length + current[p].removed.length > 0) {
-      diffs[p] = {
-        added: current[p].added.map(v => ({ value: v })),
-        removed: current[p].removed.map(v => ({ value: v })),
-      };
-    }
-  });
-  if (!diffs || !Object.keys(diffs).length) {
-    return null;
-  }
-  const ids = state.library.ui
-    .get('selectedDocuments')
-    .map(entity => entity.get('sharedId'))
-    .toJS();
-  return new RequestParams({ ids, values: { diffMetadata: diffs } });
-}
-
-async function saveMultiEdit(dispatch: Dispatch<StoreState>, params: RequestParams) {
-  const updatedDocs = await EntitiesAPI.multipleUpdate(params);
-  dispatch(notificationActions.notify('Update success', 'success'));
-  dispatch(updateEntities(updatedDocs));
-}
-
-// addedDocs === null indicates that all documents are about to be unselected.
-export function selectedDocumentsChanged(
-  addedDocs?: EntitySchema[] | IImmutable<EntitySchema[]> | null,
-  removedDocIds?: string[],
-  allowSave?: boolean
-) {
+export function selectedDocumentsChanged() {
   return async (dispatch: Dispatch<StoreState>, getState: () => StoreState) => {
     const model = 'library.sidepanel.multipleEdit';
     const state = getState();
     if (!state.library.sidepanel.multiEditOpts.get('thesaurus')) {
       return;
     }
-    // We extract the apply params, but we CAN NOT await here, or a subsequent
-    // selectedDocumentsChanged call might 'overtake' this one and bad things happen.
-    const applyParams = !allowSave ? null : buildApplyParams(dispatch, state);
     dispatch(formActions.reset(model));
-    const docs = mergedSelectedDocuments(
-      state,
-      addedDocs && 'toJS' in addedDocs ? addedDocs.toJS() : addedDocs,
-      removedDocIds
+    const sharedIds = state.library.ui
+      .get('selectedDocuments')
+      .map(d => d!.get('sharedId'))
+      .toJS();
+    const docs: EntitySchema[] = state.library.documents
+      .get('rows')
+      .filter(d => sharedIds.includes(d!.get('sharedId')))
+      .toJS();
+    if (!docs.length) {
+      return;
+    }
+    const templateIds = docs.map(d => d.template).filter(v => v);
+    const templates = state.templates.filter(t => templateIds.includes(t!.get('_id'))).toJS();
+    const propNames = getThesaurusPropertyNames(
+      state.library.sidepanel.multiEditOpts.get('thesaurus')!,
+      templates
     );
-    if (docs.length) {
-      const templateIds = docs.map(d => d.template).filter(v => v);
-      const templates = state.templates.filter(t => templateIds.includes(t.get('_id'))).toJS();
-      const propNames = getThesaurusPropertyNames(
-        state.library.sidepanel.multiEditOpts.get('thesaurus')!,
-        templates
-      );
-      const newState = buildMultipleEditState(docs, propNames);
-      dispatch(formActions.load(model, newState));
-      dispatch(formActions.setPristine(model));
+    const newState = buildMultipleEditState(docs, propNames);
+    dispatch(formActions.load(model, newState));
+    dispatch(formActions.setPristine(model));
+  };
+}
+
+export function maybeSaveMultiEdit() {
+  return async (dispatch: Dispatch<StoreState>, getState: () => StoreState) => {
+    const state = getState();
+    if (!state.library.sidepanel.multiEditOpts.get('autoSave')) {
+      return;
     }
-    if (applyParams) {
-      await saveMultiEdit(dispatch, applyParams);
+    const current = state.library.sidepanel.multipleEdit;
+    const diffs: {
+      [k: string]: { added: MetadataObjectSchema[]; removed: MetadataObjectSchema[] };
+    } = {};
+    Object.keys(current).forEach(p => {
+      if (current[p] && current[p].added.length + current[p].removed.length > 0) {
+        diffs[p] = {
+          added: current[p].added.map(v => ({ value: v })),
+          removed: current[p].removed.map(v => ({ value: v })),
+        };
+      }
+    });
+    if (!diffs || !Object.keys(diffs).length) {
+      return;
     }
+    const ids = state.library.ui
+      .get('selectedDocuments')
+      .map(entity => entity!.get('sharedId'))
+      .toJS();
+    const updatedDocs = await EntitiesAPI.multipleUpdate(
+      new RequestParams({ ids, values: { diffMetadata: diffs } })
+    );
+    dispatch(notificationActions.notify('Update success', 'success'));
+    dispatch(updateEntities(updatedDocs));
+    await dispatch(selectedDocumentsChanged());
   };
 }

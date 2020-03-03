@@ -24,6 +24,24 @@ $header-height: 44px;
   padding: 7px 10px;
 }
 
+.btn-toggle-on {
+  background-color: #ccc;
+  &:focus {
+    background-color: #ccc;
+  }
+  &:hover {
+    border-color: #ccc;
+  }
+  svg {
+    color: darkgreen;
+  }
+}
+.btn-toggle-off {
+  svg {
+    color: grey;
+  }
+}
+
 .flex {
   @import '../../App/scss/layout/_sidepanel.scss';
 
@@ -83,24 +101,6 @@ $header-height: 44px;
         color: #333;
         background-color: #fff;
         border-color: #ccc;
-      }
-    }
-
-    .btn-toggle-on {
-      background-color: #ccc;
-      &:focus {
-        background-color: #ccc;
-      }
-      &:hover {
-        border-color: #ccc;
-      }
-      svg {
-        color: darkgreen;
-      }
-    }
-    .btn-toggle-off {
-      svg {
-        color: grey;
       }
     }
   }

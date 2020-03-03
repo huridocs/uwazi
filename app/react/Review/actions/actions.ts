@@ -122,7 +122,7 @@ export function switchOneUpEntity(delta: number, save: boolean) {
     const index = Math.max(
       0,
       Math.min(
-        state.library.documents.get('rows').findIndex(e => e.get('sharedId') === current) + delta,
+        state.library.documents.get('rows').findIndex(e => e!.get('sharedId') === current) + delta,
         oneUpState.totalDocs - 1
       )
     );

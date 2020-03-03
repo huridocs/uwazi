@@ -1,10 +1,12 @@
 import { EntitySchema } from 'api/entities/entityType';
-import { MultiSelectTristate } from 'app/ReactReduxForms';
 import { t } from 'app/I18N';
 import SidePanel from 'app/Layout/SidePanel';
 import { unselectAllDocuments } from 'app/Library/actions/libraryActions';
 import * as metadataActions from 'app/Metadata/actions/actions';
+import { translateOptions } from 'app/Metadata/components/MetadataFormFields';
 import { wrapDispatch } from 'app/Multireducer';
+import { MultiSelectTristate } from 'app/ReactReduxForms';
+import { StateSelector } from 'app/Review/components/StateSelector';
 import Immutable from 'immutable';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
@@ -12,25 +14,38 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { createSelector } from 'reselect';
 import { IImmutable } from 'shared/types/Immutable';
+import { TemplateSchema } from 'shared/types/templateType';
 import { ThesaurusSchema } from 'shared/types/thesaurusType';
 import { Icon } from 'UI';
-import { MultiEditOpts, MultiEditState, StoreState } from '../actions/multiEditActions';
-import { translateOptions } from 'app/Metadata/components/MetadataFormFields';
+import {
+  maybeSaveMultiEdit,
+  MultiEditOpts,
+  MultiEditState,
+  selectedDocumentsChanged,
+  StoreState,
+  toggleAutoSaveMode,
+} from '../actions/multiEditActions';
 
 const defaultProps = {
   formKey: 'library.sidepanel.multipleEdit',
   multipleEdit: {} as MultiEditState,
   multiEditThesaurus: undefined as IImmutable<ThesaurusSchema> | undefined,
   opts: {} as MultiEditOpts,
-  unselectAllDocuments: () => {},
-  resetForm: (_s: string) => {},
-  revertMultiEditLabels: () => {},
-  applyMultiEditLabels: () => {},
   selectedDocuments: Immutable.fromJS([]) as IImmutable<EntitySchema[]>,
+  templates: Immutable.fromJS([]) as IImmutable<TemplateSchema[]>,
+  unselectAllDocuments: () => {},
+  toggleAutoSaveMode: () => {},
+  selectedDocumentsChanged: () => {},
+  maybeSaveMultiEdit: () => {},
   multipleUpdate: (_o: IImmutable<EntitySchema[]>, _diff: EntitySchema) => {},
 };
 
 export type MultiEditLabelsPanelProps = typeof defaultProps;
+
+export const selectIsPristine = createSelector(
+  (state: StoreState) => state.library.sidepanel.multipleEditForm.$form.pristine,
+  value => value
+);
 
 export class MultiEditLabelsPanel extends Component<MultiEditLabelsPanelProps> {
   static defaultProps = defaultProps;
@@ -41,13 +56,7 @@ export class MultiEditLabelsPanel extends Component<MultiEditLabelsPanelProps> {
 
   constructor(props: MultiEditLabelsPanelProps) {
     super(props);
-    this.close = this.close.bind(this);
     this.publish = this.publish.bind(this);
-  }
-
-  close() {
-    this.props.unselectAllDocuments();
-    this.props.resetForm(this.props.formKey);
   }
 
   publish() {
@@ -61,14 +70,18 @@ export class MultiEditLabelsPanel extends Component<MultiEditLabelsPanelProps> {
     });
   }
 
-  cancel() {
-    this.context.confirm({
-      accept: () => {
-        this.props.resetForm(this.props.formKey);
-      },
-      title: t('System', 'Confirm', null, false),
-      message: t('System', 'Discard changes', null, false),
-    });
+  renderAutoSaveToggle() {
+    const { opts } = this.props;
+    return (
+      <button
+        type="button"
+        onClick={() => this.props.toggleAutoSaveMode()}
+        className={`btn btn-default btn-header btn-toggle-${opts.autoSave ? 'on' : 'off'}`}
+      >
+        <Icon icon={opts.autoSave ? 'toggle-on' : 'toggle-off'} />
+        <span className="btn-label">{t('System', 'Auto-save')}</span>
+      </button>
+    );
   }
 
   renderEditingButtons() {
@@ -76,7 +89,7 @@ export class MultiEditLabelsPanel extends Component<MultiEditLabelsPanelProps> {
       <React.Fragment>
         <button
           type="button"
-          onClick={this.cancel}
+          onClick={() => this.props.selectedDocumentsChanged()}
           className="cancel-edit-metadata btn btn-primary"
         >
           <Icon icon="times" />
@@ -86,28 +99,78 @@ export class MultiEditLabelsPanel extends Component<MultiEditLabelsPanelProps> {
     );
   }
 
-  renderListButtons(canBePublished: boolean) {
+  renderButtons(canBePublished: boolean) {
     return (
-      <React.Fragment>
-        {canBePublished && (
-          <button type="button" className="publish btn btn-success" onClick={this.publish}>
-            <Icon icon="paper-plane" />
-            <span className="btn-label">{t('System', 'Publish')}</span>
-          </button>
-        )}
-      </React.Fragment>
+      <StateSelector isPristine={selectIsPristine}>
+        {({ isPristine }: { isPristine: boolean }) => {
+          const btnClass = isPristine ? 'btn btn-default btn-disabled' : 'btn btn-default';
+          return (
+            <React.Fragment>
+              {canBePublished && isPristine && (
+                <button type="button" className="publish btn btn-success" onClick={this.publish}>
+                  <Icon icon="paper-plane" />
+                  <span className="btn-label">{t('System', 'Publish')}</span>
+                </button>
+              )}
+              <button
+                type="button"
+                onClick={() => this.props.selectedDocumentsChanged()}
+                className={`cancel-edit-metadata ${!isPristine ? 'btn-danger' : ''} ${btnClass}`}
+              >
+                <Icon icon="undo" />
+                <span className="btn-label">{t('System', 'Discard changes')}</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => this.props.maybeSaveMultiEdit()}
+                className={`save-metadata ${btnClass}`}
+              >
+                <Icon icon="save" />
+                <span className="btn-label">{t('System', 'Save document(s)')}</span>
+              </button>
+            </React.Fragment>
+          );
+        }}
+      </StateSelector>
+    );
+  }
+
+  renderProp(propName: string) {
+    const { multiEditThesaurus, templates } = this.props;
+    const prop = templates
+      .map(tmpl => tmpl?.get('properties')?.find(p => p?.get('name') === propName))
+      .filter(p => !!p);
+    return (
+      <div className="form-group" key={propName}>
+        <ul className="search__filter is-active">
+          <li className="title">
+            <label>{t('System', prop.size ? prop.get(0)?.get('label') : propName)}</label>
+          </li>
+          <li className="wide" />
+          <MultiSelectTristate
+            model={`library.sidepanel.multipleEdit.${propName}`}
+            optionsValue="id"
+            options={translateOptions(multiEditThesaurus)}
+            prefix={`library.sidepanel.multipleEdit.${propName}`}
+            sort
+            placeholder={`${t('System', 'Search', null, false)} '${multiEditThesaurus!.get(
+              'name'
+            )}'`}
+          />
+        </ul>
+      </div>
     );
   }
 
   render() {
     const { multiEditThesaurus, multipleEdit, selectedDocuments } = this.props;
     const canBePublished = this.props.selectedDocuments.reduce((previousCan, entity) => {
-      const isEntity = !entity.get('file');
+      const isEntity = !entity!.get('file');
       return (
-        previousCan &&
-        (entity.get('processed') || isEntity) &&
-        !entity.get('published') &&
-        !!entity.get('template')
+        !!previousCan &&
+        (entity!.get('processed') || isEntity) &&
+        !entity!.get('published') &&
+        !!entity!.get('template')
       );
     }, true);
 
@@ -118,33 +181,36 @@ export class MultiEditLabelsPanel extends Component<MultiEditLabelsPanelProps> {
           <span>
             {selectedDocuments.size} {t('System', 'selected')}
           </span>
-          <button type="button" className="closeSidepanel close-modal" onClick={this.close}>
+          {this.renderAutoSaveToggle()}
+          <button
+            type="button"
+            className="closeSidepanel close-modal"
+            onClick={() => this.props.unselectAllDocuments()}
+          >
             <Icon icon="times" />
           </button>
         </div>
         <div className="sidepanel-body">
-          {!multiEditThesaurus && <label>Wrong thesaurus!</label>}
+          {!multiEditThesaurus && (
+            <label className="errormsg">
+              {
+                "Oops! We couldn't find the thesaurus you're trying to edit. Try navigating back to this page through Settings."
+              }
+            </label>
+          )}
           {multiEditThesaurus && !Object.keys(multipleEdit).length && (
-            <label>No fields of thesaurus!</label>
+            <label className="errormsg">
+              Nothing to see here! The selected documents are not using the selected thesaurus&nbsp;
+              <b>{multiEditThesaurus.get('name')}</b>. Try selecting other documents.
+            </label>
           )}
           {multiEditThesaurus &&
-            Object.keys(multipleEdit).length &&
-            Object.keys(multipleEdit).map(p => (
-              <div className="form-group" key={p}>
-                <MultiSelectTristate
-                  model={`library.sidepanel.multipleEdit.${p}`}
-                  optionsValue="id"
-                  options={translateOptions(multiEditThesaurus)}
-                  prefix={`library.sidepanel.multipleEdit.${p}`}
-                  sort
-                  placeholder={`${t('System', 'Search', null, false)} '${multiEditThesaurus.get(
-                    'name'
-                  )}'`}
-                />
-              </div>
-            ))}
+            Object.keys(multipleEdit).length > 0 &&
+            Object.keys(multipleEdit)
+              .sort()
+              .map(p => this.renderProp(p))}
         </div>
-        <div className="sidepanel-footer">{this.renderListButtons(canBePublished)}</div>
+        <div className="sidepanel-footer">{this.renderButtons(canBePublished)}</div>
       </SidePanel>
     );
   }
@@ -153,7 +219,7 @@ export class MultiEditLabelsPanel extends Component<MultiEditLabelsPanelProps> {
 export const selectMultiEditThesaurus = createSelector(
   (state: StoreState) =>
     state.thesauris.find(
-      thes => thes.get('_id') === state.library.sidepanel.multiEditOpts.get('thesaurus')
+      thes => thes!.get('_id') === state.library.sidepanel.multiEditOpts.get('thesaurus')
     ),
   thes => thes
 );
@@ -163,14 +229,20 @@ export const mapStateToProps = (state: StoreState) => ({
   multipleEdit: state.library.sidepanel.multipleEdit,
   multiEditThesaurus: selectMultiEditThesaurus(state),
   opts: state.library.sidepanel.multiEditOpts.toJS(),
+  templates: createSelector(
+    (s: StoreState) => s.templates,
+    tmpls => tmpls
+  )(state),
 });
 
 function mapDispatchToProps(dispatch: any) {
   return bindActionCreators(
     {
-      resetForm: metadataActions.resetReduxForm,
-      multipleUpdate: metadataActions.multipleUpdate,
       unselectAllDocuments,
+      toggleAutoSaveMode,
+      selectedDocumentsChanged,
+      maybeSaveMultiEdit,
+      multipleUpdate: metadataActions.multipleUpdate,
     },
     wrapDispatch(dispatch, 'library')
   );

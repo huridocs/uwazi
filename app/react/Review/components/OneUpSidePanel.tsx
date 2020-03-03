@@ -54,13 +54,13 @@ export class OneUpSidePanelBase extends Component<OneUpSidePanelProps> {
   mlProps() {
     const { entity, mlThesauri, templates } = this.props;
     const template: IImmutable<TemplateSchema> =
-      templates.find(tmpl => tmpl.get('_id') === entity.template) ?? Immutable.fromJS({});
+      templates.find(tmpl => tmpl!.get('_id') === entity.template) ?? Immutable.fromJS({});
     const properties: IImmutable<PropertySchema[]> =
       template.get('properties') ?? Immutable.fromJS([]);
     return properties
-      .filter(p => mlThesauri.includes(p.get('content') ?? ''))
-      .map(p => p.get('name'))
-      .toJS();
+      .filter(p => mlThesauri.includes(p!.get('content') ?? ''))
+      .map(p => p!.get('name'))
+      .toJS() as string[];
   }
 
   render() {
@@ -77,9 +77,9 @@ export class OneUpSidePanelBase extends Component<OneUpSidePanelProps> {
     const summary = connectionsGroups.reduce(
       (summaryData, g: any) => {
         g.get('templates').forEach((tmpl: any) => {
-          summaryData.totalConnections += tmpl.get('count'); // eslint-disable-line no-param-reassign
+          summaryData!.totalConnections += tmpl.get('count'); // eslint-disable-line no-param-reassign
         });
-        return summaryData;
+        return summaryData!;
       },
       { totalConnections: 0 }
     );

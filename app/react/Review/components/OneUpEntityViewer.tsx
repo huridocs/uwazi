@@ -101,12 +101,12 @@ export class OneUpEntityViewerBase extends Component<
   nonMlProps() {
     const { entity, mlThesauri, templates } = this.props;
     const template: IImmutable<TemplateSchema> =
-      templates.find(tmpl => tmpl.get('_id') === entity.template) ?? Immutable.fromJS({});
+      templates.find(tmpl => tmpl!.get('_id') === entity.template) ?? Immutable.fromJS({});
     const properties: IImmutable<PropertySchema[]> =
       template.get('properties') ?? Immutable.fromJS([]);
     return properties
-      .filter(p => !mlThesauri.includes(p.get('content') ?? ''))
-      .map(p => p.get('name'))
+      .filter(p => !mlThesauri.includes(p!.get('content') ?? ''))
+      .map(p => p!.get('name'))
       .toJS();
   }
 

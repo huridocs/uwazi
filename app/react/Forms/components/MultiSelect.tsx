@@ -174,7 +174,7 @@ abstract class MultiSelectBase<ValueType> extends Component<
   }
 
   sortOnlyAggregates(options: Option[]) {
-    const { optionsValue, optionsLabel } = this.props;
+    const { optionsLabel } = this.props;
     if (!options.length || typeof options[0].results === 'undefined') {
       return options;
     }

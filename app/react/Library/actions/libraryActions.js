@@ -1,5 +1,3 @@
-/** @format */
-
 import * as types from 'app/Library/actions/actionTypes';
 import api from 'app/Search/SearchAPI';
 import { notificationActions } from 'app/Notifications';
@@ -12,7 +10,7 @@ import referencesAPI from 'app/Viewer/referencesAPI';
 import { api as entitiesAPI } from 'app/Entities';
 import { toUrlParams } from 'shared/JSONRequest';
 import { RequestParams } from 'app/utils/RequestParams';
-import { selectedDocumentsChanged } from './multiEditActions';
+import { selectedDocumentsChanged, maybeSaveMultiEdit } from './multiEditActions';
 
 export function enterLibrary() {
   return { type: types.ENTER_LIBRARY };
@@ -29,8 +27,9 @@ export function selectDocument(_doc) {
     if (showingSemanticSearch && !doc.semanticSearch) {
       dispatch(actions.set('library.sidepanel.tab', ''));
     }
-    dispatch(selectedDocumentsChanged([doc], []));
+    dispatch(maybeSaveMultiEdit());
     dispatch({ type: types.SELECT_DOCUMENT, doc });
+    dispatch(selectedDocumentsChanged());
   };
 }
 
@@ -44,26 +43,33 @@ export function getAndSelectDocument(sharedId) {
 
 export function selectDocuments(docs) {
   return dispatch => {
-    dispatch(selectedDocumentsChanged(docs, []));
+    dispatch(maybeSaveMultiEdit());
     dispatch({ type: types.SELECT_DOCUMENTS, docs });
+    dispatch(selectedDocumentsChanged());
   };
 }
 
 export function unselectDocument(docId) {
   return dispatch => {
-    dispatch(selectedDocumentsChanged([], [docId]));
+    dispatch(maybeSaveMultiEdit());
     dispatch({ type: types.UNSELECT_DOCUMENT, docId });
+    dispatch(selectedDocumentsChanged());
   };
 }
 
 export function selectSingleDocument(doc) {
-  return { type: types.SELECT_SINGLE_DOCUMENT, doc };
+  return dispatch => {
+    dispatch(maybeSaveMultiEdit());
+    dispatch({ type: types.SELECT_SINGLE_DOCUMENT, doc });
+    dispatch(selectedDocumentsChanged());
+  };
 }
 
 export function unselectAllDocuments() {
   return dispatch => {
-    dispatch(selectedDocumentsChanged(null));
+    dispatch(maybeSaveMultiEdit());
     dispatch({ type: types.UNSELECT_ALL_DOCUMENTS });
+    dispatch(selectedDocumentsChanged());
   };
 }
 
