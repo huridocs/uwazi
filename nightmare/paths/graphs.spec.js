@@ -66,11 +66,10 @@ describe('pages path', () => {
 
     it('should display Bar chart graph in page', (done) => {
       nightmare
-      .evaluate(() => document.querySelector('div.panel-body.page-viewer.document-viewer > div.alert.alert-info a').href)
+      .evaluate(() => document.querySelector('.page-viewer.document-viewer > div.alert.alert-info a').href)
       .then(link => nightmare.goto(link))
       .then((page) => {
         expect(page.code).toBe(200);
-
         return nightmare
         .wait('#app > div.content > div > div > main div.markdown-viewer')
         .getInnerHtml('#app > div.content > div > div > main div.markdown-viewer')
@@ -105,15 +104,21 @@ describe('pages path', () => {
 
     it('should insert Pie chart graph in page', (done) => {
       nightmare
-      .evaluate(() => document.querySelector('div.panel-body.page-viewer.document-viewer > div > div.tab-content.tab-content-visible > textarea').value = '')
-      .write(localSelectors.pageContentsInput, '</p><Dataset />')
-      .write(localSelectors.pageContentsInput, graphs.pieChart)
-      .waitToClick(localSelectors.savePageButton)
-      .wait('div.panel-body.page-viewer.document-viewer > div.alert.alert-info:first-of-type')
-      .getInnerText('div.panel-body.page-viewer.document-viewer > div.alert.alert-info:first-of-type')
-      .then((text) => {
-        expect(text).toContain('/page');
-        expect(text).toContain('(view page)');
+      .evaluate(() => document.querySelector('div.panel-body.page-viewer.document-viewer > div > div.tab-content.tab-content-visible > textarea').value)
+      .then((input) => {
+        expect(input).toContain('<Dataset />');
+
+        return nightmare
+        .write(localSelectors.pageContentsInput, graphs.pieChart)
+        .waitToClick(localSelectors.savePageButton)
+        .wait('div.panel-body.page-viewer.document-viewer > div.alert.alert-info:first-of-type')
+        .getInnerText('div.panel-body.page-viewer.document-viewer > div.alert.alert-info:first-of-type')
+        .then((text) => {
+          expect(text).toContain('/page');
+          expect(text).toContain('(view page)');
+        })
+        .then(() => { done(); })
+        .catch(catchErrors(done));
       })
       .then(() => { done(); })
       .catch(catchErrors(done));
