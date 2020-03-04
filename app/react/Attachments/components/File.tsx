@@ -11,13 +11,14 @@ import { LocalForm, Control } from 'react-redux-form';
 import { updateFile, deleteFile } from 'app/Attachments/actions/actions';
 import { wrapDispatch } from 'app/Multireducer';
 import { NeedAuthorization } from 'app/Auth';
+import { EntitySchema } from 'shared/types/entityType';
 import { ViewDocumentLink } from './ViewDocumentLink';
 
 export type FileProps = {
   file: FileType;
   storeKey: string;
   readOnly: boolean;
-  entity: Object;
+  entity: EntitySchema;
   updateFile: (file: FileType, entity: Object) => any | void;
   deleteFile: (file: FileType, entity: Object) => any | void;
 };
@@ -28,6 +29,7 @@ type FileState = {
 
 export class File extends Component<FileProps, FileState> {
   static defaultProps = { updateFile: () => {}, deleteFile: () => {} };
+
   static contextTypes = {
     confirm: PropTypes.func,
   };

@@ -117,7 +117,7 @@ export class EntityViewer extends Component {
                         showTitle={false}
                         showType={false}
                       />
-                      <FileList files={entity.documentsdocuments} entity={entity} />
+                      <FileList files={entity.documents} entity={entity} />
                       <AttachmentsList
                         attachments={entity.attachments}
                         parentId={entity._id}
