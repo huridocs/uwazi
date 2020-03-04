@@ -31,17 +31,14 @@ jobs:
       with:
         path: ~/.mongodb-binaries
         key: '6.2.4' #mongo in memory version
-    - name: Verify Elasticsearch connection from host
-      run: |
-        echo $ELASTICSEARCH_URL
-        curl -fsSL "$ELASTICSEARCH_URL/_cat/health?h=status"
     - name: install dependencies  
       run: yarn install
     - run: curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
     - run: chmod +x ./cc-test-reporter
     - run: ./cc-test-reporter before-build #prepare codeclimate code coverage reporter
     - run: ./node_modules/.bin/jest --coverage --maxWorkers=2 #run tests
+      env:
+        ELASTIC_SEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
     - run: ./cc-test-reporter after-build --exit-code $? #send codecoverage
     env:
       CC_TEST_REPORTER_ID: 61434ccfc3eeb2ed7b9cfec1d61c4e0ca115a32c1eebfefe404d1ecb77d73358 #codelimate api key 
-      ELASTICSEARCH_URL: http://localhost:${{ services.elasticsearch.ports[9200] }}
