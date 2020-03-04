@@ -29,7 +29,7 @@ jobs:
     - name: Cache mongo in memory
       uses: actions/cache@v1.1.2
       with:
-        path: ~/.mongodb-binaries
+        path: ${{HOME}}/.mongodb-binaries
         key: '6.2.4' #mongo in memory version
     - name: install dependencies  
       run: yarn install
@@ -44,6 +44,46 @@ jobs:
     - run: ./cc-test-reporter after-build --exit-code $? #send codecoverage
     env:
       CC_TEST_REPORTER_ID: 61434ccfc3eeb2ed7b9cfec1d61c4e0ca115a32c1eebfefe404d1ecb77d73358 #codelimate api key 
+  
+  e2e_test:
+    runs-on: ubuntu-latest
+    services:
+      elasticsearch:
+        image: elasticsearch:7.4.1
+        ports:
+        - 9200/tcp
+        options: -e="discovery.type=single-node" --health-cmd="curl http://localhost:9200/_cluster/health" --health-interval=10s --health-timeout=5s --health-retries=10
+      mongodb:
+        image: mongo:4.0.3 
+        ports:
+        - 27017/tcp
+    strategy:
+      matrix:
+        node-version: [10.17.x]
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+    - name: Cache node modules
+      uses: actions/cache@v1.1.2
+      with:
+        path: ./node_modules
+        key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+    - name: Cache mongo in memory
+      uses: actions/cache@v1.1.2
+      with:
+        path: ${{HOME}}/.mongodb-binaries
+        key: '6.2.4' #mongo in memory version
+    - name: install dependencies  
+      run: yarn install
+    - run: sudo apt-get install poppler-utils  
+    - name: Run tests
+      env:
+        ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
+        DBHOST: http://localhost:${{ job.services.mongodb.ports[27017] }}
+      run: yarn e2e
   
   eslint:
     runs-on: ubuntu-latest
@@ -64,7 +104,7 @@ jobs:
     - name: Cache mongo in memory
       uses: actions/cache@v1.1.2
       with:
-        path: ~/.mongodb-binaries
+        path: ${{HOME}}/.mongodb-binaries
         key: '6.2.4' #mongo in memory version
     - name: install dependencies  
       run: yarn install
