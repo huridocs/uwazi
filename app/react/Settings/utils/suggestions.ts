@@ -1,24 +1,51 @@
-/** @format */
+import { PropertySchema } from 'shared/types/commonTypes';
 
-export function getSuggestionsQuery(matchingTemplateProperty: any, templateID: string) {
-  if (!matchingTemplateProperty) {
-    return {};
-  }
+function getSuggestionsQuery(
+  templateProperty: PropertySchema,
+  templateID: string,
+  includeUnpublished: boolean,
+  unpublishedOnly: boolean
+) {
   const query = {
     select: ['sharedId'],
     limit: 1,
     filters: {},
-    includeUnpublished: true,
+    includeUnpublished,
+    unpublished: unpublishedOnly,
     types: [templateID],
   };
-  const { name } = matchingTemplateProperty;
-  const filters: any = {};
-  filters[name] = {
-    values: ['missing'],
-  };
-  filters[`_${name}`] = {
-    values: ['any'],
+  const { name } = templateProperty;
+  if (name === undefined) {
+    return null;
+  }
+  const filters: any = {
+    [name]: {
+      values: unpublishedOnly ? ['any'] : ['missing'],
+    },
+    [`_${name}`]: {
+      values: ['any'],
+    },
   };
   query.filters = filters;
   return query;
+}
+
+export function getReadyToReviewSuggestionsQuery(
+  templateID: string,
+  matchingTemplateProperty?: PropertySchema
+) {
+  if (!matchingTemplateProperty) {
+    return {};
+  }
+  return getSuggestionsQuery(matchingTemplateProperty, templateID, true, false);
+}
+
+export function getReadyToPublishSuggestionsQuery(
+  templateID: string,
+  matchingTemplateProperty?: PropertySchema
+) {
+  if (!matchingTemplateProperty) {
+    return {};
+  }
+  return getSuggestionsQuery(matchingTemplateProperty, templateID, false, true);
 }

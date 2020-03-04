@@ -1,5 +1,4 @@
-/** @format */
-/* eslint-disable max-nested-callbacks*/
+/* eslint-disable max-nested-callbacks, max-lines */
 import { elastic } from 'api/search';
 import { instanceSearch } from 'api/search/search';
 import { catchErrors } from 'api/utils/jasmineHelpers';

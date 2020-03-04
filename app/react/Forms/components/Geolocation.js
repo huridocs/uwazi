@@ -18,7 +18,7 @@ export default class Geolocation extends Component {
     this.lonChange = this.lonChange.bind(this);
     this.mapClick = this.mapClick.bind(this);
     this.clearCoordinates = this.clearCoordinates.bind(this);
-
+    this.emptyValue = [];
     const { lat, lon } = this.getInputValues();
 
     this.state = {
@@ -31,12 +31,11 @@ export default class Geolocation extends Component {
     this.setState({ currentLatitude: newValue.lat, currentLongitude: newValue.lon });
     const { onChange, value } = this.props;
     if (!isCoordinateValid(newValue.lat) || !isCoordinateValid(newValue.lon)) {
-      onChange();
+      onChange(this.emptyValue);
       return;
     }
     const valueToSend = value.slice(1);
     valueToSend.unshift(newValue);
-
     onChange(valueToSend);
   }
 
@@ -72,7 +71,7 @@ export default class Geolocation extends Component {
   clearCoordinates() {
     this.setState({ currentLatitude: '', currentLongitude: '' });
     const { onChange } = this.props;
-    onChange();
+    onChange(this.emptyValue);
   }
 
   render() {
