@@ -136,8 +136,6 @@ export default {
   },
 
   preview(property, _value, _thesauris, { doc }) {
-    // the fuck ?
-    // const reloadHack = doc.file && doc.file.filename ? doc.file.filename : '';
     const defaultDoc = doc.defaultDoc || {};
     return this.multimedia(property, [{ value: `/api/files/${defaultDoc._id}.jpg` }], 'image');
   },

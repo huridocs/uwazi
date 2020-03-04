@@ -62,10 +62,6 @@ ShowToc.propTypes = {
   scrollTo: PropTypes.func,
 };
 
-// export const mapStateToProps = ({ documentViewer }) => ({
-//   pdfInfo: documentViewer.doc.get('pdfInfo'),
-// });
-
 function mapDispatchToProps() {
   return { scrollTo };
 }

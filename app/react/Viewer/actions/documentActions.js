@@ -77,7 +77,6 @@ export function saveToc(toc, fileId) {
     dispatch({ type: types.VIEWER_UPDATE_DOCUMENT, doc });
     dispatch(formActions.reset('documentViewer.sidepanel.metadata'));
     dispatch(actions.set('viewer/doc', doc));
-    // dispatch(relationshipActions.reloadRelationships(updatedDoc.sharedId));
   };
 }
 

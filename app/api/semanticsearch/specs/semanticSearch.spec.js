@@ -57,14 +57,7 @@ describe('semanticSearch', () => {
         { page: 2, text: 'page 2', score: 0.6 },
       ];
       jest.spyOn(api, 'processDocument').mockResolvedValue(expectedResults);
-      // jest.spyOn(helpers, 'extractDocumentContent').mockResolvedValue({
-      //   1: 'page 1',
-      //   2: 'page 2',
-      // });
       api.processDocument.mockClear();
-    });
-    afterEach(() => {
-      // helpers.extractDocumentContent.mockRestore();
     });
 
     it('should send document to semantic search api for processing', async () => {
