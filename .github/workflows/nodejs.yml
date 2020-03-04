@@ -12,15 +12,12 @@ jobs:
         ports:
         - 9200/tcp
         options: -e="discovery.type=single-node" --health-cmd="curl http://localhost:9200/_cluster/health" --health-interval=10s --health-timeout=5s --health-retries=10
-    strategy:
-      matrix:
-        node-version: [10.17.x]
     steps:
-    - uses: actions/checkout@v2
-    - name: Use Node.js ${{ matrix.node-version }}
+    - name: Use Node.js 10.17.x
       uses: actions/setup-node@v1
       with:
-        node-version: ${{ matrix.node-version }}
+        node-version: '10.17.x'
+    - uses: actions/checkout@v2
     - name: Cache node modules
       uses: actions/cache@v1.1.2
       with:
@@ -57,15 +54,13 @@ jobs:
         image: mongo:4.0.3 
         ports:
         - 27017/tcp
-    strategy:
-      matrix:
-        node-version: [10.17.x]
     steps:
     - uses: actions/checkout@v2
-    - name: Use Node.js ${{ matrix.node-version }}
+    - name: Use Node.js 10.17.x
       uses: actions/setup-node@v1
       with:
-        node-version: ${{ matrix.node-version }}
+        node-version: '10.17.x'
+    - uses: actions/checkout@v2
     - name: Cache node modules
       uses: actions/cache@v1.1.2
       with:
@@ -97,15 +92,12 @@ jobs:
   
   eslint:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [10.17.x]
     steps:
     - uses: actions/checkout@v2
-    - name: Use Node.js ${{ matrix.node-version }}
+    - name: Use Node.js 10.17.x
       uses: actions/setup-node@v1
       with:
-        node-version: ${{ matrix.node-version }}
+        node-version: '10.17.x'
     - name: Cache node modules
       uses: actions/cache@v1.1.2
       with:
