@@ -74,7 +74,7 @@ describe('relationships', () => {
     });
 
     it('should return all the relationships of an entity for a specific file', async () => {
-      let result = await relationships.getByDocument('entity2', 'en', true, 'file2');
+      const result = await relationships.getByDocument('entity2', 'en', true, 'file2');
 
       expect(result.map(e => e.file).includes('file2')).toBe(true);
       expect(result.map(e => e.file).includes('file1')).toBe(false);
