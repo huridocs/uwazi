@@ -1,5 +1,3 @@
-/** @format */
-
 /* eslint-disable max-nested-callbacks */
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import db from 'api/utils/testing_db';
@@ -76,8 +74,10 @@ describe('relationships', () => {
     });
 
     it('should return all the relationships of an entity for a specific file', async () => {
-      const result = await relationships.getByDocument('entity2', 'en', false, 'file1');
-      expect(result.length).toBe(3);
+      let result = await relationships.getByDocument('entity2', 'en', true, 'file2');
+
+      expect(result.map(e => e.file).includes('file2')).toBe(true);
+      expect(result.map(e => e.file).includes('file1')).toBe(false);
     });
 
     it('should exclude ghost / delted entities with error reporting', async () => {
