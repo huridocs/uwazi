@@ -37,12 +37,11 @@ jobs:
         path: ~/.mongodb-binaries
         key: '6.2.4' #mongo in memory version  
     - run: yarn install
-      - run: curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
-      - run: chmod +x ./cc-test-reporter
-      # run tests!
-      - run: wget --waitretry=5 --retry-connrefused -v http://127.0.0.1:9200/ #check if elastic is up
-      - run: ./cc-test-reporter before-build #prepare codeclimate code coverage reporter
-      - run: ./node_modules/.bin/jest --coverage --maxWorkers=2 #run tests
-      - run: ./cc-test-reporter after-build --exit-code $? #send codecoverage
-      env:
-        CC_TEST_REPORTER_ID: 61434ccfc3eeb2ed7b9cfec1d61c4e0ca115a32c1eebfefe404d1ecb77d73358 #codelimate api key  
+    - run: curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+    - run: chmod +x ./cc-test-reporter
+    - run: wget --waitretry=5 --retry-connrefused -v http://127.0.0.1:9200/ #check if elastic is up
+    - run: ./cc-test-reporter before-build #prepare codeclimate code coverage reporter
+    - run: ./node_modules/.bin/jest --coverage --maxWorkers=2 #run tests
+    - run: ./cc-test-reporter after-build --exit-code $? #send codecoverage
+    env:
+      CC_TEST_REPORTER_ID: 61434ccfc3eeb2ed7b9cfec1d61c4e0ca115a32c1eebfefe404d1ecb77d73358 #codelimate api key  
