@@ -197,7 +197,7 @@
     "wrap-range-text": "^1.0.1",
     "yauzl": "^2.10.0",
     "yazl": "^2.5.1",
-    "snyk": "^1.292.0"
+    "snyk": "^1.298.0"
   },
   "devDependencies": {
     "@babel/cli": "7.4.4",
