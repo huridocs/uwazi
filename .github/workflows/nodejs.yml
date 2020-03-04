@@ -31,6 +31,12 @@ jobs:
       with:
         path: ~/.mongodb-binaries
         key: '6.2.4' #mongo in memory version
+    - name: Verify Elasticsearch connection from host
+      env:
+        ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
+      run: |
+        echo $ELASTICSEARCH_URL
+        curl -fsSL "$ELASTICSEARCH_URL/_cat/health?h=status"
     - name: install dependencies  
       run: yarn install
     - run: curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
