@@ -3,12 +3,15 @@ import { createSelector } from 'reselect';
 const docState = createSelector(
   (state, props) => state.progress.get(props.doc.get('sharedId')),
   (_state, props) => {
+    if (!props.doc.get('documents')) {
+      return null;
+    }
     if (!props.doc.get('documents').size) {
       return null;
     }
     return props.doc.get('documents').reduce((_processed, d) => d.get('status'), 'ready');
   },
-  (_state, props) => !props.doc.get('documents').size,
+  (_state, props) => props.doc.get('documents') && !props.doc.get('documents').size,
   (_state, props) => props.doc.get('template'),
   (progress, docsStatus, isEntity, template) => {
     if (!template && (docsStatus === 'ready' || isEntity)) {

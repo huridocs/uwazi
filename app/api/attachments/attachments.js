@@ -51,6 +51,7 @@ export default {
       await deleteFile(attachmentToDelete.filename);
     }
 
-    return savedEntity;
+    const [result] = await entities.get({ _id: savedEntity._id });
+    return result;
   },
 };

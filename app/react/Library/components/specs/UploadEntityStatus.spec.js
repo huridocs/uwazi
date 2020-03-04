@@ -105,6 +105,15 @@ describe('UploadEntityStatus', () => {
       });
     });
 
+    describe('when documents is not set', () => {
+      it('should return empty props', () => {
+        doc = doc.set('documents', null);
+        store.progress = Immutable({});
+        const props = mapStateToProps(store, { doc });
+        expect(props).toEqual({});
+      });
+    });
+
     describe('when is uploaded, processed and with template', () => {
       it('should return empty props', () => {
         doc = doc.set('template', '1');
