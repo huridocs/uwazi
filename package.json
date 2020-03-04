@@ -54,7 +54,8 @@
     "e2e-restore-fixtures": "cd nightmare/fixtures;./restore.sh",
     "eslint": "./node_modules/.bin/eslint app --quiet --ext js,ts,tsx",
     "eslint-fulldiff": "git diff-index --name-only origin/development | grep ^app/ | grep -v snap | xargs ls -d 2>/dev/null | xargs ./node_modules/.bin/eslint ",
-    "prettier": "./node_modules/.bin/prettier --write 'app/**/*.{js,ts,tsx}'"
+    "prettier": "./node_modules/.bin/prettier --write 'app/**/*.{js,ts,tsx}'",
+    "snyk-protect": "snyk protect"
   },
   "dependencies": {
     "@babel/core": "7.4.4",
@@ -195,7 +196,8 @@
     "world-countries": "2.0.0",
     "wrap-range-text": "^1.0.1",
     "yauzl": "^2.10.0",
-    "yazl": "^2.5.1"
+    "yazl": "^2.5.1",
+    "snyk": "^1.292.0"
   },
   "devDependencies": {
     "@babel/cli": "7.4.4",
@@ -263,5 +265,6 @@
     "webpack-dev-middleware": "3.6.0",
     "webpack-hot-middleware": "^2.21.0",
     "yargs": "^13.2.2"
-  }
+  },
+  "snyk": true
 }
