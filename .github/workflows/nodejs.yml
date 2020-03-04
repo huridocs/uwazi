@@ -44,4 +44,4 @@ jobs:
     - run: ./cc-test-reporter after-build --exit-code $? #send codecoverage
     env:
       CC_TEST_REPORTER_ID: 61434ccfc3eeb2ed7b9cfec1d61c4e0ca115a32c1eebfefe404d1ecb77d73358 #codelimate api key 
-      ELASTICSEARCH_URL: http://localhost:${{ jobs.unit_test.services.elasticsearch.ports[9200] }}
+      ELASTICSEARCH_URL: http://localhost:${{ services.elasticsearch.ports[9200] }}
