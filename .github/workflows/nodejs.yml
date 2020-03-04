@@ -82,14 +82,17 @@ jobs:
         ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
     - name: start Uwazi
       env:
-        ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
         DBHOST: localhost:${{ job.services.mongodb.ports[27017] }}
+        ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
       run: yarn run-production &
     - name: wait for uwazi to be ready
       run: sleep 10 && wget --waitretry=5 --retry-connrefused -v http://localhost:3000/ #check if server is up
       timeout-minutes: 2
     - run: yarn e2e  
       timeout-minutes: 20
+      env:
+        DBHOST: localhost:${{ job.services.mongodb.ports[27017] }}
+        ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
       
   
   eslint:
