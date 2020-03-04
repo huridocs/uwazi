@@ -80,14 +80,16 @@ jobs:
       run: yarn install
     - run: sudo apt-get install poppler-utils  
     - run: yarn production-build
-    - name: Run tests
+    - run: yarn blank-state
+      env:
+        DBHOST: http://localhost:${{ job.services.mongodb.ports[27017] }}
+    - name: start Uwazi
       env:
         ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
-        DBHOST: http://localhost:${{ job.services.mongodb.ports[27017] }}
-      run: yarn e2e
-    - run: yarn blank-state
-    - run: nohup yarn run-production
-    - run: sleep 15 && wget --waitretry=5 --retry-connrefused -v http://127.0.0.1:3000/ #check if server is up
+        DBHOST: http://localhost:${{ job.services.mongodb.ports[27017] }}:  
+      run: nohup yarn run-production
+    - name: wait for uwazi to be ready
+      run: sleep 15 && wget --waitretry=5 --retry-connrefused -v http://127.0.0.1:3000/ #check if server is up
     - run: yarn e2e  
   
   eslint:
