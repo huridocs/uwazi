@@ -95,6 +95,7 @@ Nightmare.action('goToUploads', function goToUploads(done) {
 });
 
 Nightmare.action('login', function login(name, password, done) {
+  console.log(config.url)
   this.goto(config.url)
     .wait(selectors.navigation.loginNavButton)
     .click(selectors.navigation.loginNavButton)

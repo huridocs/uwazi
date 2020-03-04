@@ -11,7 +11,7 @@ describe('Connections', () => {
   beforeAll(async () => insertFixtures());
   afterAll(async () => nightmare.end());
 
-  describe('login', () => {
+  fdescribe('login', () => {
     it('should log in as admin', done => {
       nightmare
         .login('admin', 'admin')
