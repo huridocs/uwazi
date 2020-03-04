@@ -3,6 +3,7 @@ name: Uwazi CI
 on: [push]
 
 jobs:
+  
   uinit_test:
     runs-on: ubuntu-latest
     services:
@@ -14,7 +15,6 @@ jobs:
     strategy:
       matrix:
         node-version: [10.17.x]
-
     steps:
     - uses: actions/checkout@v2
     - name: Use Node.js ${{ matrix.node-version }}
@@ -33,6 +33,7 @@ jobs:
         key: '6.2.4' #mongo in memory version
     - name: install dependencies  
       run: yarn install
+    - run: sudo apt-get install poppler-utils
     - run: curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
     - run: chmod +x ./cc-test-reporter
     - run: ./cc-test-reporter before-build #prepare codeclimate code coverage reporter
@@ -43,3 +44,28 @@ jobs:
     - run: ./cc-test-reporter after-build --exit-code $? #send codecoverage
     env:
       CC_TEST_REPORTER_ID: 61434ccfc3eeb2ed7b9cfec1d61c4e0ca115a32c1eebfefe404d1ecb77d73358 #codelimate api key 
+  
+  eslint:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [10.17.x]
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+    - name: Cache node modules
+      uses: actions/cache@v1.1.2
+      with:
+        path: ./node_modules
+        key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+    - name: Cache mongo in memory
+      uses: actions/cache@v1.1.2
+      with:
+        path: ~/.mongodb-binaries
+        key: '6.2.4' #mongo in memory version
+    - name: install dependencies  
+      run: yarn install
+    - run: yarn eslint
