@@ -1,9 +1,9 @@
-name: Node.js CI
+name: Uwazi CI
 
 on: [push]
 
 jobs:
-  build:
+  uinit_test:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -18,14 +18,7 @@ jobs:
     - name: Setup ElasticSearch
       uses: getong/elasticsearch-action@v1
       with:
-        # Version of elasticsearch to use
         elasticsearch version: 7.4.1
-        # The port of host
-        host port: 9200
-        # The port of container
-        container port: 9200
-        # the discovery.type envionment
-        discovery type: single-node
     - name: Cache node modules
       uses: actions/cache@v1.1.2
       with:
@@ -35,11 +28,12 @@ jobs:
       uses: actions/cache@v1.1.2
       with:
         path: ~/.mongodb-binaries
-        key: '6.2.4' #mongo in memory version  
-    - run: yarn install
+        key: '6.2.4' #mongo in memory version
+    - name: install dependencies  
+      run: yarn install
     - run: curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
     - run: chmod +x ./cc-test-reporter
-    - run: wget --waitretry=5 --retry-connrefused -v http://127.0.0.1:9200/ #check if elastic is up
+    - run: wget --waitretry=5 --retry-connrefused -v http://0.0.0.0:9200/ #check if elastic is up
     - run: ./cc-test-reporter before-build #prepare codeclimate code coverage reporter
     - run: ./node_modules/.bin/jest --coverage --maxWorkers=2 #run tests
     - run: ./cc-test-reporter after-build --exit-code $? #send codecoverage
