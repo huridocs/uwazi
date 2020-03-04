@@ -29,7 +29,7 @@ jobs:
     - name: Cache mongo in memory
       uses: actions/cache@v1.1.2
       with:
-        path: ${{HOME}}/.mongodb-binaries
+        path: ${{ HOME }}/.mongodb-binaries
         key: '6.2.4' #mongo in memory version
     - name: install dependencies  
       run: yarn install
@@ -74,7 +74,7 @@ jobs:
     - name: Cache mongo in memory
       uses: actions/cache@v1.1.2
       with:
-        path: ${{HOME}}/.mongodb-binaries
+        path: ${{ HOME }}/.mongodb-binaries
         key: '6.2.4' #mongo in memory version
     - name: install dependencies  
       run: yarn install
@@ -104,7 +104,7 @@ jobs:
     - name: Cache mongo in memory
       uses: actions/cache@v1.1.2
       with:
-        path: ${{HOME}}/.mongodb-binaries
+        path: ${{ HOME }}/.mongodb-binaries
         key: '6.2.4' #mongo in memory version
     - name: install dependencies  
       run: yarn install
