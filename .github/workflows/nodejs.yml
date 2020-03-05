@@ -4,7 +4,7 @@ on: [push]
 
 jobs:
   
-  uinit_test:
+  uinit:
     runs-on: ubuntu-latest
     services:
       elasticsearch:
@@ -42,7 +42,7 @@ jobs:
     env:
       CC_TEST_REPORTER_ID: 61434ccfc3eeb2ed7b9cfec1d61c4e0ca115a32c1eebfefe404d1ecb77d73358 #codelimate api key 
   
-  e2e_test:
+  e2e:
     runs-on: ubuntu-latest
     services:
       elasticsearch:
@@ -62,7 +62,7 @@ jobs:
         node-version: '10.17.x'
     - uses: actions/checkout@v2
     - name: Install Xvfb
-      run: apt-get install -y libgtk2.0-0 libgconf-2-4 \ libasound2 libxtst6 libxss1 libnss3 xvfb
+      run: sudo apt-get install -y libgtk2.0-0 libgconf-2-4 libasound2 libxtst6 libxss1 libnss3 xvfb
     - name: Setup display
       run: Xvfb -ac -screen scrn 1280x2000x24 :9.0 &
     - name: Cache node modules
