@@ -12,7 +12,7 @@ class TestTask extends Task {
 describe('templates utils', () => {
   afterEach(async () => {
     TaskProvider.taskClasses = {};
-    TaskProvider.runningTasks = {};
+    TaskProvider.taskInstances = {};
   });
 
   describe('run task', () => {

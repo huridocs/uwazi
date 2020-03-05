@@ -1,0 +1,32 @@
+/tasks:
+  get:
+    tags:
+      - tasks
+    description: Lists the state of a task
+    parameters:
+      - name: name
+        description: Task name
+        in:  query
+        required: false
+        type: string
+        examples:
+          sync:
+            value: TopicClassificationSync
+    responses:
+      200:
+        description: Returns an object with the result
+        schema:
+          type: object
+          properties:
+            state:
+              type: string
+            message:
+              type: string
+            startTime:
+              type: number
+            endTime:
+              type: number
+            result:
+              type: object
+            topics:
+              type: object

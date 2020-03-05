@@ -1,0 +1,23 @@
+/models:
+  get:
+    tags:
+      - topic classification
+    description: Returns the topic classification models
+    parameters:
+      - name: model
+        description: Model matching pattern
+        in:  query
+        required: false
+        type: string
+    responses:
+      200:
+        description: Returns an object with the result
+        schema:
+          type: object
+          properties:
+            name:
+              type: string
+            topics:
+              type: array
+              items:
+                type: object

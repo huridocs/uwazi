@@ -27,7 +27,7 @@ export default app => {
 
   const options = {
     swaggerDefinition,
-    apis: [`${__dirname}/../**/*.js`],
+    apis: [`${__dirname}/../**/*.js`, `${__dirname}/../**/*.yaml`],
   };
 
   const swaggerSpec = swaggerJSDoc(options);
