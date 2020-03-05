@@ -4,7 +4,7 @@ import { Application, Request, Response, NextFunction } from 'express';
 import debugLog from 'api/log/debugLog';
 import errorLog from 'api/log/errorLog';
 import { processDocument } from 'api/files/processDocument';
-import { uploadsPath } from 'api/files/filesystem';
+import { uploadsPath, fileExists } from 'api/files/filesystem';
 
 import needsAuthorization from 'api/auth/authMiddleware';
 import storageConfig from 'api/files/storageConfig';
@@ -76,12 +76,14 @@ export default (app: Application) => {
 
     async (req: Request, res: Response, next: NextFunction) => {
       try {
-        const [file] = await files.get({ filename: req.params.filename });
-        if (!file) {
+        const [file = { filename: '' }] = await files.get({ filename: req.params.filename });
+
+        const filename = file.filename || '';
+
+        if (!filename || !(await fileExists(uploadsPath(filename)))) {
           throw createError('file not found', 404);
         }
 
-        const filename = file.filename || '';
         res.sendFile(uploadsPath(filename));
       } catch (e) {
         next(e);

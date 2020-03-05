@@ -26,6 +26,7 @@ const fixtures: DBFixture = {
       filename: fileName1,
       type: 'custom',
     },
+    { _id: db.id(), filename: 'fileNotOnDisk' },
     { _id: db.id(), originalname: 'upload2', type: 'custom' },
     { _id: db.id(), originalname: 'upload3', type: 'document' },
   ],

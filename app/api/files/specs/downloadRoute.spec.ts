@@ -33,10 +33,20 @@ describe('files routes download', () => {
       expect(response.body instanceof Buffer).toBe(true);
     });
 
-    describe('when file does not exist', () => {
+    describe('when file entry does not exist', () => {
       it('should respond with 404', async () => {
         const response = await request(app)
           .get('/api/files/unexistent.pdf')
+          .query({ _id: db.id().toString() });
+
+        expect(response.status).toBe(404);
+      });
+    });
+
+    describe('when disk file does not exist', () => {
+      it('should respond with 404', async () => {
+        const response = await request(app)
+          .get('/api/files/fileNotOnDisk')
           .query({ _id: db.id().toString() });
 
         expect(response.status).toBe(404);
