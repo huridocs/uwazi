@@ -3,8 +3,6 @@
  */
 import React from 'react';
 import { shallow } from 'enzyme';
-import Immutable from 'immutable';
-// import { PDFJS } from '../../../../../node_modules/pdfjs-dist/web/pdf_viewer.js';
 import PDFJS from '../../PDFJS';
 
 import PDF from '../PDF';
@@ -23,13 +21,13 @@ describe('PDF', () => {
       file: 'file_url',
       filename: 'original.pdf',
       onLoad: jasmine.createSpy('onLoad'),
-      pdfInfo: Immutable.fromJS({
+      pdfInfo: {
         1: { chars: 10 },
         2: { chars: 20 },
         3: { chars: 30 },
         4: { chars: 40 },
         5: { chars: 50 },
-      }),
+      },
     };
   });
 

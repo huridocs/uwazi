@@ -3,7 +3,7 @@
 import entities from 'api/entities';
 import { search } from 'api/search';
 import entitiesModel from 'api/entities/entitiesModel';
-import uploadFile from 'api/upload/uploadProcess';
+import { processDocument } from 'api/files/processDocument';
 import typeParsers from './typeParsers';
 
 const toMetadata = async (template, entityToImport) =>
@@ -35,8 +35,7 @@ const importEntity = async (rawEntity, template, importFile, { user = {}, langua
 
   if (rawEntity.file) {
     const file = await importFile.extractFile(rawEntity.file);
-    const docs = await entities.get({ sharedId: entity.sharedId });
-    await uploadFile(docs, file).start();
+    await processDocument(entity.sharedId, file);
   }
 
   await search.indexEntities({ sharedId: entity.sharedId }, '+fullText');
@@ -58,11 +57,7 @@ const translateEntity = async (entity, translations, template, importFile) => {
     translations.map(async translatedEntity => {
       if (translatedEntity.file) {
         const file = await importFile.extractFile(translatedEntity.file);
-        const docs = await entities.get({
-          sharedId: entity.sharedId,
-          language: translatedEntity.language,
-        });
-        await uploadFile(docs, file).start();
+        await processDocument(entity.sharedId, file);
       }
     })
   );

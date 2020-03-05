@@ -6,14 +6,8 @@ import React, { Component } from 'react';
 
 import { Icon } from 'UI';
 import { unselectAllDocuments } from 'app/Library/actions/libraryActions';
-import {
-  uploadDocument,
-  createDocument,
-  documentProcessed,
-  documentProcessError,
-} from 'app/Uploads/actions/uploadsActions';
+import { uploadDocument, createDocument } from 'app/Uploads/actions/uploadsActions';
 import { wrapDispatch } from 'app/Multireducer';
-import socket from 'app/socket';
 
 const extractTitle = file => {
   const title = file.name
@@ -29,13 +23,6 @@ export class UploadBox extends Component {
   constructor(props) {
     super(props);
     this.onDrop = this.onDrop.bind(this);
-    socket.on('documentProcessed', sharedId => {
-      this.props.documentProcessed(sharedId, 'uploads');
-    });
-
-    socket.on('conversionFailed', sharedId => {
-      this.props.documentProcessError(sharedId);
-    });
   }
 
   onDrop(files) {
@@ -72,8 +59,6 @@ export class UploadBox extends Component {
 }
 
 UploadBox.propTypes = {
-  documentProcessed: PropTypes.func.isRequired,
-  documentProcessError: PropTypes.func.isRequired,
   uploadDocument: PropTypes.func.isRequired,
   createDocument: PropTypes.func.isRequired,
   unselectAllDocuments: PropTypes.func.isRequired,
@@ -89,8 +74,6 @@ function mapDispatchToProps(dispatch) {
       uploadDocument,
       unselectAllDocuments,
       createDocument,
-      documentProcessed,
-      documentProcessError,
     },
     wrapDispatch(dispatch, 'uploads')
   );

@@ -67,6 +67,7 @@ export default app => {
       Joi.object()
         .keys({
           sharedId: Joi.string().required(),
+          file: Joi.string(),
         })
         .required(),
       'query'
@@ -74,7 +75,7 @@ export default app => {
     (req, res, next) => {
       const unpublished = Boolean(req.user && ['admin', 'editor'].includes(req.user.role));
       relationships
-        .getByDocument(req.query.sharedId, req.language, unpublished)
+        .getByDocument(req.query.sharedId, req.language, unpublished, req.query.file)
         .then(response => res.json(response))
         .catch(next);
     }

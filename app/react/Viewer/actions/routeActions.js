@@ -19,15 +19,33 @@ export function setViewerState(state) {
   };
 }
 
-export function requestViewerState(requestParams, globalResources) {
+export async function requestViewerState(requestParams, globalResources) {
   const { sharedId, raw, page } = requestParams.data;
-  return Promise.all([
-    getDocument(requestParams.set({ sharedId })),
-    referencesAPI.get(requestParams.set({ sharedId })),
+  // console.log(globalResources.settings.collection.get('languages').toJS());
+  const defaultLanguage = globalResources.settings.collection
+    .get('languages')
+    .find(l => l.get('default'));
+
+  const [doc, relationTypes, [connectionsGroups, searchResults, sort]] = await Promise.all([
+    getDocument(
+      requestParams.set({ sharedId }),
+      defaultLanguage ? defaultLanguage.get('key') : 'en',
+      requestParams.data.file
+    ),
     relationTypesAPI.get(requestParams.onlyHeaders()),
     relationships.requestState(requestParams.set({ sharedId }), globalResources.templates),
-    raw ? entitiesAPI.getRawPage(requestParams.set({ sharedId, pageNumber: page })) : '',
-  ]).then(([doc, references, relationTypes, [connectionsGroups, searchResults, sort], rawText]) => [
+  ]);
+
+  const { defaultDoc } = doc;
+  const rawText = raw
+    ? await entitiesAPI.getRawPage(requestParams.set({ _id: defaultDoc._id, page }))
+    : '';
+
+  const references = await referencesAPI.get(
+    requestParams.set({ sharedId, file: doc.defaultDoc._id })
+  );
+
+  return [
     setViewerState({
       documentViewer: {
         doc,
@@ -48,5 +66,5 @@ export function requestViewerState(requestParams, globalResources) {
       },
       relationTypes,
     }),
-  ]);
+  ];
 }

@@ -20,9 +20,8 @@ describe('UploadButton', () => {
     context = { confirm: jasmine.createSpy('confirm') };
     props = {
       progress: Immutable.fromJS({}),
-      documentId: 'abc1',
-      documentSharedId: 'sharedabc1',
-      reuploadDocument: jasmine.createSpy('reuploadDocument'),
+      entitySharedId: 'sharedabc1',
+      uploadDocument: jasmine.createSpy('uploadDocument'),
       storeKey: 'storeKey',
     };
   });
@@ -34,7 +33,7 @@ describe('UploadButton', () => {
   describe('render', () => {
     describe('while upload progress', () => {
       beforeEach(() => {
-        props.progress = Immutable.fromJS({ abc1: 50 });
+        props.progress = Immutable.fromJS({ sharedabc1: 50 });
         render();
       });
 
@@ -94,17 +93,10 @@ describe('UploadButton', () => {
       render();
     });
 
-    it('should confirm the upload action', () => {
-      const input = component.find('input');
-      input.simulate('change', { target: { files: [file] } });
-      expect(context.confirm).toHaveBeenCalled();
-    });
-
     it('should upload the document', () => {
       const input = component.find('input');
       input.simulate('change', { target: { files: [file] } });
-      context.confirm.calls.mostRecent().args[0].accept();
-      expect(props.reuploadDocument).toHaveBeenCalledWith('abc1', file, 'sharedabc1', 'storeKey');
+      expect(props.uploadDocument).toHaveBeenCalledWith('sharedabc1', file);
     });
   });
 });

@@ -28,7 +28,7 @@ export class Translate extends Component {
         onClick={this.onClick}
         className={this.props.i18nmode ? 'translation active' : 'translation'}
       >
-        {this.props.text}
+        {this.props.children}
       </span>
     );
   }
@@ -37,14 +37,16 @@ export class Translate extends Component {
 Translate.defaultProps = {
   i18nmode: false,
   context: 'System',
+  edit: false,
+  translationKey: '',
 };
 
 Translate.propTypes = {
-  text: PropTypes.string.isRequired,
-  translationKey: PropTypes.string.isRequired,
+  translationKey: PropTypes.string,
   context: PropTypes.string,
-  edit: PropTypes.func.isRequired,
+  edit: PropTypes.func,
   i18nmode: PropTypes.bool,
+  children: PropTypes.string.isRequired,
 };
 
 export const mapStateToProps = (state, props) => {
@@ -58,7 +60,7 @@ export const mapStateToProps = (state, props) => {
   const canEditThisValue = _ctx === 'System' || !!context.values[props.children];
   return {
     translationKey: key,
-    text: context.values[key] || props.children,
+    children: context.values[key] || props.children,
     i18nmode: state.inlineEdit.get('inlineEdit') && canEditThisValue,
   };
 };

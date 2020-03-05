@@ -1,5 +1,3 @@
-/** @format */
-
 /* eslint-disable max-nested-callbacks */
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import db from 'api/utils/testing_db';
@@ -73,6 +71,13 @@ describe('relationships', () => {
         template,
       });
       expect(entity3Connection.entityData.file).toBeUndefined();
+    });
+
+    it('should return all the relationships of an entity for a specific file', async () => {
+      const result = await relationships.getByDocument('entity2', 'en', true, 'file2');
+
+      expect(result.map(e => e.file).includes('file2')).toBe(true);
+      expect(result.map(e => e.file).includes('file1')).toBe(false);
     });
 
     it('should exclude ghost / delted entities with error reporting', async () => {
@@ -323,22 +328,6 @@ describe('relationships', () => {
         expect(doc4Connection._id).toBeDefined();
         expect(doc4Connection.hub).toBeDefined();
         expect(doc4Connection.hub.toString()).toBe(entity3Connection.hub.toString());
-      });
-
-      describe('when creating text references', () => {
-        it('should assign them the file they belong to', async () => {
-          const saveResult = await relationships.save(
-            [
-              { entity: 'doc5', range: { text: 'one thing' } },
-              { entity: 'doc4', range: { text: 'something' } },
-            ],
-            'es'
-          );
-
-          expect(saveResult.length).toBe(2);
-          expect(saveResult[0].filename).toBe('doc5enFile');
-          expect(saveResult[1].filename).toBe('doc4enFile');
-        });
       });
     });
 

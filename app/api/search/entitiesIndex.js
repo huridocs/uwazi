@@ -1,17 +1,16 @@
-/** @format */
-
 import languagesUtil from 'shared/languages';
 import languages from 'shared/languagesList';
 import errorLog from 'api/log/errorLog';
 import entities from 'api/entities';
 import relationships from 'api/relationships/relationships';
+import { entityDefaultDocument } from 'shared/entityDefaultDocument';
 
 import elastic from './elastic';
 
 const bulkIndex = (docs, _action = 'index', elasticIndex) => {
   const body = [];
   docs.forEach(doc => {
-    let docBody = Object.assign({}, doc);
+    let docBody = Object.assign({ documents: [] }, doc);
     docBody.fullText = 'entity';
     const id = doc._id.toString();
     delete docBody._id;
@@ -23,11 +22,17 @@ const bulkIndex = (docs, _action = 'index', elasticIndex) => {
       docBody = { doc: docBody };
     }
 
+    const defaultDocument = { ...(entityDefaultDocument(doc.documents, doc.language, 'en') || {}) };
+
+    docBody.documents.forEach(document => {
+      delete document.fullText;
+    });
+
     body.push(action);
     body.push(docBody);
 
-    if (doc.fullText) {
-      const fullText = Object.values(doc.fullText).join('\f');
+    if (defaultDocument.fullText) {
+      const fullText = Object.values(defaultDocument.fullText).join('\f');
 
       action = {};
       action[_action] = {
@@ -38,11 +43,11 @@ const bulkIndex = (docs, _action = 'index', elasticIndex) => {
       body.push(action);
 
       let language;
-      if (!doc.file || (doc.file && !doc.file.language)) {
+      if (!defaultDocument.language) {
         language = languagesUtil.detect(fullText);
       }
-      if (doc.file && doc.file.language) {
-        language = languages(doc.file.language);
+      if (defaultDocument.language) {
+        language = languages(defaultDocument.language);
       }
       const fullTextObject = {
         [`fullText_${language}`]: fullText,
@@ -73,7 +78,7 @@ const bulkIndex = (docs, _action = 'index', elasticIndex) => {
 
 const indexEntities = (
   query,
-  select,
+  select = '',
   limit = 50,
   { batchCallback = () => {}, elasticIndex, searchInstance }
 ) => {
@@ -83,7 +88,11 @@ const indexEntities = (
     }
 
     return entities
-      .get(query, select, { skip: offset, limit })
+      .get(query, '', {
+        skip: offset,
+        limit,
+        documentsFullText: select && select.includes('+fullText'),
+      })
       .then(entitiesToIndex =>
         Promise.all(
           entitiesToIndex.map(entity =>

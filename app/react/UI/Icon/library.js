@@ -22,6 +22,7 @@ import { faCircle } from '@fortawesome/free-solid-svg-icons/faCircle';
 import { faClock } from '@fortawesome/free-solid-svg-icons/faClock';
 import { faClone } from '@fortawesome/free-solid-svg-icons/faClone';
 import { faCloudUploadAlt } from '@fortawesome/free-solid-svg-icons/faCloudUploadAlt';
+import { faCloudDownloadAlt } from '@fortawesome/free-solid-svg-icons/faCloudDownloadAlt';
 import { faCode } from '@fortawesome/free-solid-svg-icons/faCode';
 import { faCoffee } from '@fortawesome/free-solid-svg-icons/faCoffee';
 import { faCog } from '@fortawesome/free-solid-svg-icons/faCog';
@@ -112,6 +113,7 @@ const icons = {
   faClock,
   faClone,
   faCloudUploadAlt,
+  faCloudDownloadAlt,
   faCode,
   faCoffee,
   faCog,

@@ -32,10 +32,14 @@ export class Connection extends Component {
       return;
     }
     if (!this.props.targetDoc) {
-      this.props.activateReference(reference, this.props.doc.pdfInfo, this.props.referencesSection);
+      this.props.activateReference(
+        reference,
+        this.props.doc.defaultDoc.pdfInfo,
+        this.props.referencesSection
+      );
     }
     if (this.props.targetDoc && typeof reference.range.start !== 'undefined') {
-      this.props.selectReference(reference, this.props.doc.pdfInfo);
+      this.props.selectReference(reference, this.props.doc.defaultDoc.pdfInfo);
     }
   }
 
@@ -113,7 +117,7 @@ export class Connection extends Component {
 
             <ShowIf if={!this.props.targetDoc}>
               <I18NLink
-                to={`/${doc.get('file') ? 'document' : 'entity'}/${doc.get('sharedId')}`}
+                to={`/entity/${doc.get('sharedId')}`}
                 onClick={e => e.stopPropagation()}
                 className="item-shortcut btn btn-default"
               >

@@ -49,10 +49,10 @@ const sharedId7 = db.id();
 export default {
   connections: [
     { entity: 'entity1', hub: hub1 },
-    { entity: 'entity2', hub: hub1, template: relation1 },
+    { entity: 'entity2', hub: hub1, template: relation1, file: 'file1' },
 
     { _id: connectionID5, entity: 'entity3', hub: hub2, template: relation2 },
-    { _id: connectionID8, entity: 'entity2', hub: hub2, template: relation2 },
+    { _id: connectionID8, entity: 'entity2', hub: hub2, template: relation2, file: 'file2' },
     { _id: connectionID9, entity: 'entity3', hub: hub2 },
 
     { entity: 'entity2', hub: hub3, template: relation2 },

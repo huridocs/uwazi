@@ -3,11 +3,44 @@ import superagent from 'superagent';
 
 import { APIURL } from 'app/config.js';
 import { notify } from 'app/Notifications/actions/notificationsActions';
-import * as libraryTypes from 'app/Library/actions/actionTypes';
+import { updateEntity, selectSingleDocument } from 'app/Library/actions/libraryActions';
 import api from 'app/utils/api';
 import { RequestParams } from 'app/utils/RequestParams';
+import { actions as basicReducerActions } from 'app/BasicReducer';
 
 import * as types from './actionTypes';
+
+export function updateFile(file, entity) {
+  return dispatch => {
+    api.post('files', new RequestParams(file)).then(() => {
+      const documents = entity.documents.map(f => {
+        if (f._id === file._id) {
+          return file;
+        }
+        return f;
+      });
+      const updatedEntity = Object.assign(entity, { documents });
+      dispatch(basicReducerActions.set('viewer/doc', updatedEntity));
+      dispatch(updateEntity(updatedEntity));
+      dispatch(selectSingleDocument(updatedEntity));
+      dispatch(notify('File updated', 'success'));
+    });
+  };
+}
+
+export function deleteFile(file, entity) {
+  return dispatch => {
+    api.delete('files', new RequestParams({ _id: file._id })).then(() => {
+      const documents = entity.documents.filter(f => f._id !== file._id);
+
+      const updatedEntity = Object.assign(entity, { documents });
+      dispatch(basicReducerActions.set('viewer/doc', updatedEntity));
+      dispatch(updateEntity(updatedEntity));
+      dispatch(selectSingleDocument(updatedEntity));
+      dispatch(notify('File deleted', 'success'));
+    });
+  };
+}
 
 export function uploadAttachment(entity, file, __reducerKey, options = {}) {
   return dispatch => {
@@ -47,14 +80,6 @@ export function renameAttachment(entityId, form, __reducerKey, file) {
         })
       )
       .then(renamedFile => {
-        if (entityId === file._id) {
-          dispatch({
-            type: types.UPDATE_DOCUMENT_FILE,
-            entity: entityId,
-            file: renamedFile.json,
-            __reducerKey,
-          });
-        }
         dispatch({
           type: types.ATTACHMENT_RENAMED,
           entity: entityId,
@@ -75,16 +100,16 @@ export function deleteAttachment(entityId, attachment, __reducerKey) {
           attachmentId: attachment._id,
         })
       )
-      .then(response => {
+      .then(({ json: updatedEntity }) => {
         dispatch({
           type: types.ATTACHMENT_DELETED,
           entity: entityId,
           file: attachment,
           __reducerKey,
         });
-        dispatch({ type: libraryTypes.UPDATE_DOCUMENT, doc: response.json, __reducerKey });
-        dispatch({ type: libraryTypes.UNSELECT_ALL_DOCUMENTS, __reducerKey });
-        dispatch({ type: libraryTypes.SELECT_DOCUMENT, doc: response.json, __reducerKey });
+
+        dispatch(updateEntity(updatedEntity));
+        dispatch(selectSingleDocument(updatedEntity));
         dispatch(notify('Attachment deleted', 'success'));
       });
 }

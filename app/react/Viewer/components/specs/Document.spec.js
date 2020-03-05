@@ -21,7 +21,8 @@ describe('Document', () => {
       PDFReady: jasmine.createSpy('PDFReady'),
       unsetSelection: jasmine.createSpy('unsetSelection'),
       onClick: jasmine.createSpy('onClick'),
-      doc: Immutable.fromJS({ _id: 'documentId', pdfInfo: { test: 'pdfInfo' } }),
+      doc: Immutable.fromJS({ _id: 'documentId', documents: [{ pdfInfo: { test: 'pdfInfo' } }] }),
+      file: { language: 'eng', _id: 'fileId', pdfInfo: { test: 'pdfInfo' } },
       onDocumentReady: jasmine.createSpy('onDocumentReady'),
       selectedSnippet: Immutable.fromJS({}),
       docHTML: Immutable.fromJS({
@@ -60,11 +61,10 @@ describe('Document', () => {
   });
 
   it('should add the correct LTR or RTL direction according to file franc language', () => {
-    props.doc = props.doc.set('file', Immutable.fromJS({ language: 'eng' }));
     render();
     expect(component.find('.document').hasClass('force-ltr')).toBe(true);
 
-    props.doc = props.doc.set('file', Immutable.fromJS({ language: 'arb' }));
+    props.file.language = 'arb';
     render();
     expect(component.find('.document').hasClass('force-rtl')).toBe(true);
   });
@@ -106,7 +106,7 @@ describe('Document', () => {
         });
         expect(props.activateReference).toHaveBeenCalledWith(
           props.references.get(0).toJS(),
-          props.doc.toJS().pdfInfo,
+          props.file.pdfInfo,
           props.references.toJS()
         );
         expect(props.onClick).not.toHaveBeenCalled();
@@ -250,7 +250,7 @@ describe('Document', () => {
 
     it('should setSelection with the range serialized', () => {
       instance.onTextSelected();
-      expect(props.setSelection).toHaveBeenCalledWith('serializedRange');
+      expect(props.setSelection).toHaveBeenCalledWith('serializedRange', 'fileId');
     });
 
     describe('componentDidUpdate', () => {

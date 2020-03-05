@@ -5,6 +5,8 @@ import Immutable from 'immutable';
 import { metadataSelectors } from '../selectors';
 import Metadata from '../components/Metadata';
 
+const removeUneededProps = ({ templates, thesauris, settings, ...rest }) => rest;
+
 const FormatMetadata = ({
   additionalMetadata,
   sortedProperty,
@@ -17,7 +19,7 @@ const FormatMetadata = ({
       metadataSelectors.formatMetadata(props, entity, sortedProperty, relationships)
     )}
     compact={!!sortedProperty}
-    {...props}
+    {...removeUneededProps(props)}
   />
 );
 
@@ -54,6 +56,7 @@ export function mapStateToProps(state, { entity, sortedProperty }) {
   return {
     templates: state.templates,
     thesauris: state.thesauris,
+    settings: state.settings.collection,
     entity,
     sortedProperty,
   };

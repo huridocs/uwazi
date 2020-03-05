@@ -61,9 +61,9 @@ export class Viewer extends Component {
     Marker.init('div.main-wrapper');
     this.setState({ firstRender: false }); // eslint-disable-line react/no-did-mount-set-state
 
-    const { templates, doc } = this.props;
+    const { templates, doc, file } = this.props;
 
-    if (doc.size && !doc.get('pdfInfo')) {
+    if (file && !file.pdfInfo) {
       requestViewerState(new RequestParams({ sharedId: doc.get('sharedId') }), {
         templates: templates.toJS(),
       }).then(viewerActions => {
@@ -129,9 +129,10 @@ export class Viewer extends Component {
       loadTargetDocument,
       panelIsOpen,
       showTextSelectMenu,
+      file,
     } = this.props;
     const { firstRender } = this.state;
-    if (doc.get('_id') && !doc.get('file')) {
+    if (doc.get('_id') && !doc.get('documents').size) {
       return this.renderNoDoc();
     }
 
@@ -139,7 +140,6 @@ export class Viewer extends Component {
 
     const { raw, searchTerm, pageText, page } = this.props;
     const documentTitle = doc.get('title') ? doc.get('title') : '';
-    const documentFile = doc.get('file') ? doc.get('file').toJS() : {};
 
     return (
       <div className="row">
@@ -149,7 +149,7 @@ export class Viewer extends Component {
             <div className="content-header-title">
               {sidepanelTab !== 'connections' && (
                 <React.Fragment>
-                  <PaginatorWithPage totalPages={doc.get('totalPages')} onPageChange={changePage} />
+                  <PaginatorWithPage totalPages={file.totalPages} onPageChange={changePage} />
                   <CurrentLocationLink
                     onClick={!raw ? this.handlePlainTextClick : () => {}}
                     className="btn btn-default"
@@ -170,12 +170,13 @@ export class Viewer extends Component {
           <div className="main-wrapper">
             <ShowIf if={sidepanelTab !== 'connections' && !targetDoc}>
               {raw || firstRender ? (
-                <pre className={determineDirection(documentFile)}>{pageText}</pre>
+                <pre className={determineDirection(file)}>{pageText}</pre>
               ) : (
                 <SourceDocument
                   searchTerm={searchTerm}
                   onPageChange={onPageChange}
                   onDocumentReady={onDocumentReady}
+                  file={file}
                 />
               )}
             </ShowIf>
@@ -192,11 +193,13 @@ export class Viewer extends Component {
           raw={raw || firstRender}
           storeKey="documentViewer"
           searchTerm={searchTerm}
+          file={file}
         />
         <CreateConnectionPanel
           containerId={targetDoc ? 'target' : doc.get('sharedId')}
           onCreate={addReference}
           onRangedConnect={loadTargetDocument}
+          file={file}
         />
 
         <ShowIf if={sidepanelTab === 'connections'}>
@@ -217,7 +220,7 @@ export class Viewer extends Component {
           <ViewerDefaultMenu />
         </ContextMenu>
         <ContextMenu align="center" overrideShow show={showTextSelectMenu}>
-          <ViewerTextSelectedMenu />
+          <ViewerTextSelectedMenu file={file} />
         </ContextMenu>
       </div>
     );
@@ -233,6 +236,7 @@ Viewer.defaultProps = {
   page: 1,
   templates: List(),
   doc: Map(),
+  file: {},
 };
 
 Viewer.propTypes = {
@@ -246,7 +250,7 @@ Viewer.propTypes = {
   panelIsOpen: PropTypes.bool,
   addReference: PropTypes.func,
   targetDoc: PropTypes.bool,
-  // TEST!!!!!!
+  // TEST!!!!!!!
   sidepanelTab: PropTypes.string,
   loadTargetDocument: PropTypes.func,
   showConnections: PropTypes.bool,
@@ -256,6 +260,8 @@ Viewer.propTypes = {
   showTab: PropTypes.func,
   page: PropTypes.number,
   templates: PropTypes.instanceOf(List),
+  locale: PropTypes.string.isRequired,
+  file: PropTypes.object,
 };
 
 Viewer.contextTypes = {
@@ -265,13 +271,15 @@ Viewer.contextTypes = {
 const mapStateToProps = state => {
   const { documentViewer } = state;
   const uiState = documentViewer.uiState.toJS();
+
   return {
     pageText: documentViewer.rawText,
     doc: selectDoc(state),
     panelIsOpen: !!uiState.panel,
     targetDoc: !!documentViewer.targetDoc.get('_id'),
     templates: state.templates,
-    // TEST!!!!
+    locale: state.locale,
+    // TEST!!!!!
     sidepanelTab: documentViewer.sidepanel.tab,
     showConnections: documentViewer.sidepanel.tab === 'references',
     showTextSelectMenu: Boolean(

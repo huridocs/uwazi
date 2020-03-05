@@ -1,6 +1,6 @@
 // eslint-disable-line max-lines
 
-import { EntitySchema } from 'api/entities/entityType';
+import { EntitySchema } from 'shared/types/entityType';
 import Footer from 'app/App/Footer';
 import ShowIf from 'app/App/ShowIf';
 import { AttachmentsList } from 'app/Attachments';
@@ -32,6 +32,7 @@ import { PropertySchema } from 'shared/types/commonTypes';
 import { IImmutable } from 'shared/types/Immutable';
 import { TemplateSchema } from 'shared/types/templateType';
 import { Icon } from 'UI';
+import { FileList } from 'app/Attachments/components/FileList';
 import {
   OneUpState,
   selectEntity,
@@ -141,9 +142,6 @@ export class OneUpEntityViewerBase extends Component<
     const { panelOpen } = this.state;
     const selectedTab = tab ?? 'info';
 
-    const docAttachments = entity.attachments ? entity.attachments : [];
-    const attachments = entity.file ? [entity.file].concat(docAttachments) : docAttachments;
-
     return (
       <div className="row flex">
         <Helmet title={entity.title ? entity.title : 'Entity'} />
@@ -193,8 +191,9 @@ export class OneUpEntityViewerBase extends Component<
                           showType={false}
                           showSubset={this.nonMlProps()}
                         />
+                        <FileList files={entity.documentsdocuments} entity={entity} />
                         <AttachmentsList
-                          files={Immutable.fromJS(attachments)}
+                          attachments={entity.attachments}
                           parentId={entity._id}
                           parentSharedId={entity.sharedId}
                           isDocumentAttachments={Boolean(entity.file)}

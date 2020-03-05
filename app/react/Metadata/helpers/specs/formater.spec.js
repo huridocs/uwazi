@@ -1,5 +1,3 @@
-/** @format */
-
 /* eslint-disable max-statements */
 
 import Immutable from 'immutable';
@@ -210,7 +208,7 @@ describe('metadata formater', () => {
       expect(image.showInCard).toBe(true);
 
       expect(preview.type).toBe('image');
-      expect(preview.value).toBe('/api/attachment/languageSpecificId.jpg?r=filename.pdf');
+      expect(preview.value).toBe('/api/files/doc2.jpg');
       expect(preview.style).toBe('contain');
       expect(preview.noLabel).toBe(false);
       expect(preview.showInCard).toBe(true);
@@ -279,7 +277,7 @@ describe('metadata formater', () => {
         'PDFPreview',
         'preview',
         'templateID',
-        '/api/attachment/languageSpecificId.jpg?r=filename.pdf',
+        '/api/files/doc2.jpg',
       ]);
       assessBasicProperties(media, ['Media', 'media', 'templateID', 'mediaURL']);
     });
@@ -383,7 +381,11 @@ describe('metadata formater', () => {
   describe('formatMetadata selector', () => {
     it('should use formater.prepareMetadata', () => {
       spyOn(formater, 'prepareMetadata').and.returnValue({ metadata: 'metadataFormated' });
-      const state = { templates, thesauris };
+      const state = {
+        templates,
+        thesauris,
+        settings: Immutable.fromJS({ languages: [{ key: 'es', default: true }] }),
+      };
       const metadata = metadataSelectors.formatMetadata(state, doc, null, relationships);
       expect(metadata).toBe('metadataFormated');
       expect(formater.prepareMetadata).toHaveBeenCalledWith(
@@ -397,7 +399,11 @@ describe('metadata formater', () => {
     describe('when passing sortProperty', () => {
       it('should use formater.prepareMetadataForCard', () => {
         spyOn(formater, 'prepareMetadataForCard').and.returnValue({ metadata: 'metadataFormated' });
-        const state = { templates, thesauris };
+        const state = {
+          templates,
+          thesauris,
+          settings: Immutable.fromJS({ languages: [{ key: 'es', default: true }] }),
+        };
         const metadata = metadataSelectors.formatMetadata(
           state,
           doc,

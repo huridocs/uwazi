@@ -1,7 +1,7 @@
 .library-filters {
   z-index: 6;
   top: 0;
-  @media(min-width: 1024px) {
+  @media (min-width: 1024px) {
     z-index: 4;
     top: $header-height;
     &.is-hidden {
@@ -16,7 +16,7 @@
   max-width: calc(100% - 110px);
   width: 632px;
 
-  @media(min-width: 600px) {
+  @media (min-width: 600px) {
     max-width: calc(100% - 210px);
   }
 
@@ -49,7 +49,8 @@
     transform: translateY(-50%);
     z-index: 4;
   }
-  .input-group .fa-search, .input-group .fa-flask {
+  .input-group .fa-search,
+  .input-group .fa-flask {
     right: 20px;
     font-size: $f-size-lg;
     cursor: pointer;
@@ -93,7 +94,7 @@
   line-height: $header-height + 2px;
   padding: 0;
   z-index: 3;
-  @media(min-width: 1024px) {
+  @media (min-width: 1024px) {
     display: none;
   }
 
@@ -121,10 +122,10 @@
       background-color: $c-primary;
       border-color: $c-primary;
     }
-    @media(min-width: 454px) {
+    @media (min-width: 454px) {
       right: 400px;
     }
-    @media(min-width: 1024px) {
+    @media (min-width: 1024px) {
       position: relative;
       right: 0;
     }
@@ -145,18 +146,26 @@
   }
 }
 
-@media(max-width: 1023px) {
+@media (max-width: 1023px) {
   .searchButton-open span {
     display: none;
   }
 }
 
-.searchButton-open { display: inline-block; }
-.searchButton-close { display: none; }
+.searchButton-open {
+  display: inline-block;
+}
+.searchButton-close {
+  display: none;
+}
 
 .search-button.is-active {
-  .searchButton-open { display: none; }
-  .searchButton-close { display: inline-block; }
+  .searchButton-open {
+    display: none;
+  }
+  .searchButton-close {
+    display: inline-block;
+  }
 }
 
 .search-suggestions {
@@ -330,7 +339,6 @@
   }
 }
 
-
 .search__filter--radiobutton,
 .search__filter--single__selection,
 .search__filter--multiple__selection {
@@ -371,7 +379,6 @@
   }
 }
 
-
 .search__filter--date {
   .fa {
     float: left;
@@ -387,7 +394,7 @@
 }
 
 .switcher-wrapper {
-  float:right;
+  float: right;
   span {
     font-family: $f-regular;
     font-size: $f-size-sm;
@@ -663,15 +670,23 @@
 }
 
 .multiselectItem-icon {
-  .checkbox-empty { display: block; color: $c-grey; }
-  .checkbox-checked { display: none; color: $c-success; }
+  .checkbox-empty {
+    display: block;
+    color: $c-grey;
+  }
+  .checkbox-checked {
+    display: none;
+    color: $c-success;
+  }
 }
 .multiselectItem-input:checked {
-
   & + label {
-    .checkbox-empty { display: none; }
-    .checkbox-checked { display: block; }
-
+    .checkbox-empty {
+      display: none;
+    }
+    .checkbox-checked {
+      display: block;
+    }
   }
 
   & ~ .multiselectItem-label .multiselectItem-name,
@@ -741,7 +756,6 @@
 }
 
 .multidate {
-
   .add {
     margin-bottom: 5px;
   }
@@ -772,7 +786,8 @@
     font-size: $f-size;
     line-height: 1.6em;
     width: 100%;
-    a, span {
+    a,
+    span {
       padding: 5px 5px 5px 10px;
       outline: none;
     }
@@ -820,7 +835,7 @@
 
   a .page-number {
     font-size: $f-size-lg;
-    font-weight:bold;
+    font-weight: bold;
     padding-right: 5px;
   }
 

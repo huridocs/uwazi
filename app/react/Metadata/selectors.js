@@ -1,4 +1,5 @@
 import { createSelector } from 'reselect';
+import { entityDefaultDocument } from 'shared/entityDefaultDocument';
 
 import Immutable from 'immutable';
 import formater from './helpers/formater';
@@ -22,12 +23,33 @@ const indexedThesaurus = createSelector(
 const formatMetadata = createSelector(
   s => s.templates,
   indexedThesaurus,
+  s => s.settings,
   (_s, doc, sortProperty, references) => ({ doc, sortProperty, references }),
-  (templates, thesauris, { doc, sortProperty, references }) => {
+  (templates, thesauris, settings, { doc, sortProperty, references }) => {
+    const defaultDoc = entityDefaultDocument(
+      doc.documents,
+      doc.language,
+      settings
+        .get('languages')
+        .find(l => l.get('default'))
+        .get('key')
+    );
+
     if (sortProperty) {
-      return formater.prepareMetadataForCard(doc, templates, thesauris, sortProperty).metadata;
+      return formater.prepareMetadataForCard(
+        Object.assign(doc, { defaultDoc }),
+        templates,
+        thesauris,
+        sortProperty
+      ).metadata;
     }
-    return formater.prepareMetadata(doc, templates, thesauris, references).metadata;
+
+    return formater.prepareMetadata(
+      Object.assign(doc, { defaultDoc }),
+      templates,
+      thesauris,
+      references
+    ).metadata;
   }
 );
 

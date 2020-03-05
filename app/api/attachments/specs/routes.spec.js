@@ -231,21 +231,6 @@ describe('Attachments Routes', () => {
       expect(entity.attachments[0].originalname).toBe('o1');
       expect(entity.attachments[1].originalname).toBe('edited name');
     });
-
-    it('should rename the base file if id matches entity', async () => {
-      req.body._id = entityId.toString();
-      req.body.originalname = 'edited source name';
-
-      const response = await routes.post('/api/attachments/rename', req);
-      expect(response._id.toString()).toBe(entityId.toString());
-      expect(response.filename).toBe('filename');
-      expect(response.originalname).toBe('edited source name');
-
-      const entity = await entities.getById(req.body.entityId);
-      expect(entity.file.originalname).toBe('edited source name');
-      expect(entity.attachments[0].originalname).toBe('o1');
-      expect(entity.attachments[1].originalname).toBe('common name 2.not');
-    });
   });
 
   describe('/delete', () => {

@@ -13,17 +13,16 @@ import fixtures, {
   search3Id,
   searchIdForFilters,
   doc1Id,
-  doc1ObjectId,
   docWithoutTextId,
 } from './fixtures';
 import { createError } from '../../utils';
 
 describe('semanticSearch', () => {
-  beforeEach(done => {
-    db.clearAllAndLoad(fixtures).then(done);
+  beforeEach(async () => {
+    await db.clearAllAndLoad(fixtures);
   });
-  afterAll(done => {
-    db.disconnect().then(done);
+  afterAll(async () => {
+    await db.disconnect();
   });
 
   describe('create', () => {
@@ -58,23 +57,11 @@ describe('semanticSearch', () => {
         { page: 2, text: 'page 2', score: 0.6 },
       ];
       jest.spyOn(api, 'processDocument').mockResolvedValue(expectedResults);
-      jest.spyOn(helpers, 'extractDocumentContent').mockResolvedValue({
-        1: 'page 1',
-        2: 'page 2',
-      });
       api.processDocument.mockClear();
     });
-    afterEach(() => {
-      helpers.extractDocumentContent.mockRestore();
-    });
+
     it('should send document to semantic search api for processing', async () => {
       await semanticSearch.processDocument(search1Id, 'legal', doc1Id, 'en');
-      expect(helpers.extractDocumentContent).toHaveBeenCalledWith({
-        _id: doc1ObjectId,
-        sharedId: doc1Id,
-        fullText: { 1: 'page 1', 2: 'page 2' },
-        language: 'en',
-      });
       expect(api.processDocument).toHaveBeenCalledWith({
         searchTerm: 'legal',
         contents: {
@@ -83,12 +70,14 @@ describe('semanticSearch', () => {
         },
       });
     });
+
     it('should update the status of the document to be completed', async () => {
       await semanticSearch.processDocument(search1Id, 'legal', doc1Id, 'en');
       const theSearch = await model.getById(search1Id);
       const docInSearch = theSearch.documents.find(doc => doc.sharedId === doc1Id);
       expect(docInSearch.status).toBe('completed');
     });
+
     it('should save the results of the document sorted by score in descending order, and compute average score', async () => {
       await semanticSearch.processDocument(search1Id, 'legal', doc1Id, 'en');
       const [docResults] = await resultsModel.get({ searchId: search1Id, sharedId: doc1Id });
@@ -98,6 +87,7 @@ describe('semanticSearch', () => {
         docResults.results.map(({ page, text, score }) => ({ page, text, score }))
       ).toMatchSnapshot();
     });
+
     describe('if document has no fullText or rich text fields', () => {
       it('should mark as completed without processing', async () => {
         jest.spyOn(helpers, 'extractDocumentContent').mockResolvedValue({});
@@ -121,7 +111,9 @@ describe('semanticSearch', () => {
       jest.spyOn(api, 'processDocument').mockResolvedValue(expectedResults);
       api.processDocument.mockClear();
     });
+
     it('should process only up to specified number of unprocessed docs in the search', async () => {
+      helpers.extractDocumentContent.mockRestore();
       await semanticSearch.processSearchLimit(search2Id, 2);
       expect(api.processDocument).toHaveBeenCalledTimes(2);
       expect(api.processDocument).toHaveBeenCalledWith({
@@ -229,6 +221,8 @@ describe('semanticSearch', () => {
         delete doc.semanticSearch._id;
         //eslint-disable-next-line no-param-reassign
         delete doc.semanticSearch.searchId;
+        //eslint-disable-next-line no-param-reassign
+        delete doc.documents[0]._id;
       });
       delete res._id;
       expect(res.results.length).toBe(2);

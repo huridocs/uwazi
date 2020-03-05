@@ -1,5 +1,4 @@
 /**
- * @format
  * @jest-environment jsdom
  */
 
@@ -39,7 +38,12 @@ describe('PDFView', () => {
         ),
       },
     };
-    props = { location: { query: {} }, routes: [] };
+
+    props = {
+      entity: fromJS({ defaultDoc: { _id: 'documentId' } }),
+      location: { query: {} },
+      routes: [],
+    };
 
     render();
 
@@ -200,7 +204,7 @@ describe('PDFView', () => {
         query: { raw: 'true', anotherProp: 'test', page: 15 },
         pathname: 'pathname',
       };
-      props.params = { sharedId: 'documentId' };
+      props.params = { sharedId: 'entityId' };
       spyOn(entitiesAPI, 'getRawPage').and.returnValue(Promise.resolve('raw text'));
       render();
     });
@@ -214,14 +218,15 @@ describe('PDFView', () => {
 
       entitiesAPI.getRawPage.calls.reset();
       await instance.componentWillReceiveProps({
-        params: { sharedId: 'documentId' },
+        params: { sharedId: 'entityId' },
         location: { query: { page: 17, raw: 'true' } },
+        entity: fromJS({ defaultDoc: { _id: 'documentId' } }),
       });
       expect(context.store.dispatch).toHaveBeenCalledWith(
         actions.set('viewer/rawText', 'raw text')
       );
       expect(entitiesAPI.getRawPage).toHaveBeenCalledWith(
-        new RequestParams({ sharedId: 'documentId', pageNumber: 17 })
+        new RequestParams({ _id: 'documentId', page: 17 })
       );
     });
   });

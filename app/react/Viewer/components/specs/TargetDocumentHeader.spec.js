@@ -11,7 +11,7 @@ describe('TargetDocumentHeader', () => {
   beforeEach(() => {
     props = {
       connection: Immutable({ _id: 'connection' }),
-      reference: { targetRange: { text: 'text' }, targetDocument: 'abc2' },
+      reference: { targetRange: { text: 'text' }, targetDocument: 'abc2', targetFile: 'fileId' },
       targetDocument: 'abc2',
       saveTargetRangedReference: jasmine.createSpy('saveTargetRangedReference'),
       cancelTargetDocument: jasmine.createSpy('cancelTargetDocument'),
@@ -44,6 +44,7 @@ describe('TargetDocumentHeader', () => {
       expect(props.saveTargetRangedReference).toHaveBeenCalledWith(
         { _id: 'connection' },
         { text: 'text' },
+        'fileId',
         jasmine.any(Function)
       );
     });
