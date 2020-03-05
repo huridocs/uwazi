@@ -49,7 +49,7 @@
     "migrate": "node run.js ./app/api/migrations/migrate.js",
     "test-debug": "node --inspect ./node_modules/.bin/jest --watch --no-cache -i",
     "test": "node ./node_modules/.bin/jest",
-    "e2e": "jest --projects nightmare/jest.e2e.config.js -i --verbose false",
+    "e2e": "jest --projects nightmare/jest.e2e.config.js -i --verbose true",
     "e2e-show": "export SHOW_E2E=1; yarn e2e",
     "e2e-restore-fixtures": "cd nightmare/fixtures;./restore.sh",
     "eslint": "./node_modules/.bin/eslint app --quiet --ext js,ts,tsx",
