@@ -1,4 +1,4 @@
-import { tcServer } from 'api/config/topicClassification';
+import * as topicClassification from 'api/config/topicClassification';
 import entities from 'api/entities';
 import { search } from 'api/search';
 import db from 'api/utils/testing_db';
@@ -8,7 +8,16 @@ import { SyncArgs, syncEntity } from '../sync';
 import fixtures, { e1 } from './fixtures';
 
 function fakeTopicClassification(url: string, data: any, _headers: any) {
-  if (url === `${tcServer}/classification_sample?model=undefined-topmovies`) {
+  if (url === `${topicClassification.tcServer}/models/list?filter=%5Eundefined`) {
+    return {
+      status: 200,
+      json: {
+        models: ['topmovies'],
+        error: '',
+      },
+    };
+  }
+  if (url === `${topicClassification.tcServer}/classify?model=undefined-topmovies`) {
     expect(data).toEqual({
       refresh_predictions: true,
       samples: [{ seq: 'title1', sharedId: 'e1' }],
@@ -23,7 +32,7 @@ function fakeTopicClassification(url: string, data: any, _headers: any) {
               { topic: '1.1', quality: 0.4 },
               { topic: '2.2', quality: 0.7 },
             ],
-            model_version: 123,
+            model_version: '123',
           },
         ],
       },
@@ -37,6 +46,8 @@ describe('templates utils', () => {
     await db.clearAllAndLoad(fixtures);
     spyOn(search, 'indexEntities').and.returnValue(Promise.resolve());
     spyOn(JSONRequest, 'put').and.callFake(fakeTopicClassification);
+    spyOn(JSONRequest, 'get').and.callFake(fakeTopicClassification);
+    spyOn(topicClassification, 'IsTopicClassificationReachable').and.returnValue(true);
   });
   afterAll(async () => {
     await db.disconnect();
@@ -50,13 +61,13 @@ describe('templates utils', () => {
         {
           label: 'spiderman',
           suggestion_confidence: 0.7,
-          suggestion_model: 123,
+          suggestion_model: '123',
           value: '2.2',
         },
         {
           label: 'groundhog day',
           suggestion_confidence: 0.4,
-          suggestion_model: 123,
+          suggestion_model: '123',
           value: '1.1',
         },
       ]);
@@ -78,13 +89,13 @@ describe('templates utils', () => {
         {
           label: 'spiderman',
           suggestion_confidence: 0.7,
-          suggestion_model: 123,
+          suggestion_model: '123',
           value: '2.2',
         },
         {
           label: 'groundhog day',
           suggestion_confidence: 0.4,
-          suggestion_model: 123,
+          suggestion_model: '123',
           value: '1.1',
         },
       ]);

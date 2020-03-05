@@ -69,7 +69,7 @@ export const metadataObjectSchema = {
     value: propertyValueSchema,
     label: { type: 'string' },
     suggestion_confidence: { type: 'number' },
-    suggestion_model: { type: 'number' },
+    suggestion_model: { type: 'string' },
     provenance: { type: 'string', enum: Object.values(provenanceTypes) },
   },
 };

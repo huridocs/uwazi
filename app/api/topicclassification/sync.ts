@@ -1,6 +1,4 @@
-// eslint-disable-line max-lines
-/* eslint-disable no-await-in-loop, no-console, camelcase */
-import * as util from 'util';
+/* eslint-disable no-await-in-loop,camelcase,max-lines */
 import { tcServer } from 'api/config/topicClassification';
 import entities from 'api/entities';
 import { MetadataObject } from 'api/entities/entitiesModel';
@@ -9,13 +7,15 @@ import { QueryForEach, WithId } from 'api/odm';
 import { Task, TaskProvider } from 'api/tasks/tasks';
 import templates from 'api/templates';
 import thesauri from 'api/thesauri';
-import { extractSequence } from 'api/topicclassification/common';
+import { extractSequence } from 'api/topicclassification';
+import { listModels } from 'api/topicclassification/api';
 import { buildFullModelName } from 'shared/commonTopicClassification';
 import JSONRequest from 'shared/JSONRequest';
 import { propertyTypes } from 'shared/propertyTypes';
 import { sleep } from 'shared/tsUtils';
 import { PropertySchema } from 'shared/types/commonTypes';
 import { ThesaurusSchema } from 'shared/types/thesaurusType';
+import * as util from 'util';
 import { TemplateSchema } from '../../shared/types/templateType';
 import { ThesaurusValueSchema } from '../../shared/types/thesaurusType';
 
@@ -31,22 +31,18 @@ export interface SyncArgs {
 type ClassificationSample = {
   seq: string;
   sharedId: string | undefined;
-  training_labels?: {
-    topic: string;
-  }[];
 };
 
-type ClassificationSampleRequest = {
-  refresh_predictions: boolean;
+type ClassifyRequest = {
   samples: ClassificationSample[];
 };
 
-type ClassificationSampleResponse = {
+type ClassifyResponse = {
   json: {
     samples: {
       sharedId: string;
       predicted_labels: { topic: string; quality: number }[];
-      model_version?: number;
+      model_version?: string;
     }[];
   };
   status: any;
@@ -54,9 +50,9 @@ type ClassificationSampleResponse = {
 
 async function sendSample(
   path: string,
-  request: ClassificationSampleRequest
-): Promise<ClassificationSampleResponse | null> {
-  let response: ClassificationSampleResponse = { json: { samples: [] }, status: 0 };
+  request: ClassifyRequest
+): Promise<ClassifyResponse | null> {
+  let response: ClassifyResponse = { json: { samples: [] }, status: 0 };
   let lastErr;
   for (let i = 0; i < 10; i += 1) {
     lastErr = undefined;
@@ -89,7 +85,7 @@ async function fetchSuggestions(
 ) {
   const model = buildFullModelName(thes.name);
   const request = { refresh_predictions: true, samples: [{ seq, sharedId: e.sharedId }] };
-  const response = await sendSample(`${tcServer}/classification_sample?model=${model}`, request);
+  const response = await sendSample(`${tcServer}/classify?model=${model}`, request);
   const sample = response?.json?.samples?.find(s => s.sharedId === e.sharedId);
   if (!sample) {
     return null;
@@ -152,7 +148,8 @@ export async function syncEntity(
   e: EntitySchema,
   args: SyncArgs,
   templateDictP?: { [k: string]: TemplateSchema },
-  thesaurusDictP?: { [k: string]: ThesaurusSchema }
+  thesaurusDictP?: { [k: string]: ThesaurusSchema },
+  availableModels?: string[]
 ): Promise<boolean> {
   if (!e.metadata) {
     e.metadata = {};
@@ -169,7 +166,13 @@ export async function syncEntity(
   await Promise.all(
     (template.properties ?? []).map(async prop => {
       const thesaurus = thesaurusDict[prop?.content ?? ''];
-      if (!prop || !thesaurus || !thesaurus.enable_classification) {
+      if (!prop || !thesaurus) {
+        return;
+      }
+      if (
+        availableModels !== undefined &&
+        !availableModels.includes(buildFullModelName(thesaurus.name))
+      ) {
         return;
       }
       didSth = didSth || (await handleProp(e, args, prop, thesaurus));
@@ -181,6 +184,15 @@ export async function syncEntity(
 class SyncTask extends Task {
   protected async run(args: SyncArgs) {
     this.status.message = `Started with ${util.inspect(args)}`;
+    const models = (await listModels()) ?? { error: 'Internal error in calling backend.' };
+    if (models.error) {
+      this.status.message = `Aborted: ${models.error}`;
+      return;
+    }
+    if (!models.models.length) {
+      this.status.message = 'Aborted: Topic Classification server does not have any models!';
+      return;
+    }
     const templatesDict = (await templates.get(null)).reduce(
       (res, t) => ({ ...res, [t._id.toString()]: t }),
       {}
@@ -200,7 +212,7 @@ class SyncTask extends Task {
           return;
         }
         res.seen += 1;
-        if (await syncEntity(e, args, templatesDict, thesaurusDict)) {
+        if (await syncEntity(e, args, templatesDict, thesaurusDict, models.models)) {
           res.index += 1;
           if (args.noDryRun) {
             await entities.save(e, { user: 'sync-topic-classification', language: e.language });
