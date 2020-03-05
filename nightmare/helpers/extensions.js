@@ -95,17 +95,8 @@ Nightmare.action('goToUploads', function goToUploads(done) {
 });
 
 Nightmare.action('login', function login(name, password, done) {
-  console.log(config.url);
   this.goto(config.url)
-    .wait(() => {
-      console.log('1');
-      return true;
-    })
     .wait(selectors.navigation.loginNavButton)
-    .wait(() => {
-      console.log('2');
-      return true;
-    })
     .click(selectors.navigation.loginNavButton)
     .wait('#username')
     .write('input[name="username"]', name)
