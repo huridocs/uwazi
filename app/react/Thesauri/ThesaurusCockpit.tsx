@@ -39,7 +39,7 @@ interface ThesaurusCockpitBaseState {
 }
 
 export class ThesaurusCockpitBase extends RouteHandler {
-  constructor(props: ThesaurusCockpitProps, context: any) {
+  constructor(props: any, context: any) {
     super(props, context);
     this.state = {
       isLearning: false,
