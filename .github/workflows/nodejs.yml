@@ -61,6 +61,10 @@ jobs:
       with:
         node-version: '10.17.x'
     - uses: actions/checkout@v2
+    - name: Install Xvfb
+      run: apt-get install -y libgtk2.0-0 libgconf-2-4 \ libasound2 libxtst6 libxss1 libnss3 xvfb
+    - name: Setup display
+      run: Xvfb -ac -screen scrn 1280x2000x24 :9.0 &
     - name: Cache node modules
       uses: actions/cache@v1.1.2
       with:
@@ -93,6 +97,7 @@ jobs:
       env:
         DBHOST: localhost:${{ job.services.mongodb.ports[27017] }}
         ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
+        DISPLAY: 9.0  
       
   
   eslint:
