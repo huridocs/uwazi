@@ -17,14 +17,17 @@ export default (app: Application) => {
     // needsAuthorization(),
     validation.validateRequest(
       Joi.object()
-        .keys({ name: Joi.string().required() })
+        .keys({ name: Joi.string() })
         .required(),
       'query'
     ),
 
     async (req: Request, res: Response) => {
-      const task = TaskProvider.getByName(req.query?.name);
-      return res.json(task?.status ?? { state: 'undefined' });
+      if (req.query?.name) {
+        const task = TaskProvider.getByName(req.query?.name);
+        return res.json(task?.status ?? { state: 'undefined' });
+      }
+      return res.json(TaskProvider.taskInstances);
     }
   );
 

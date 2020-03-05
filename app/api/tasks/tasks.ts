@@ -58,14 +58,14 @@ export class TaskProvider {
     TaskProvider.taskClasses[type] = c;
   }
 
-  static runningTasks: { [k: string]: Task } = {};
+  static taskInstances: { [k: string]: Task } = {};
 
   static getByName(name: string) {
-    return this.runningTasks[name];
+    return this.taskInstances[name];
   }
 
   static getOrCreate(name: string, type: string) {
-    let task = this.runningTasks[name];
+    let task = this.taskInstances[name];
     if (!task || ['done', 'failed'].includes(task.status.state)) {
       const TaskClass = this.taskClasses[type];
       if (!TaskClass) {
@@ -80,7 +80,7 @@ export class TaskProvider {
         throw Error(`Could not create instance of task class ${type}!`);
       }
       task.status.previousTaskStatus = previousStatus;
-      this.runningTasks[name] = task;
+      this.taskInstances[name] = task;
     }
     return task;
   }
