@@ -4,7 +4,7 @@ on: [push]
 
 jobs:
   
-  uinit:
+  unit_test:
     runs-on: ubuntu-latest
     services:
       elasticsearch:
@@ -42,7 +42,7 @@ jobs:
     env:
       CC_TEST_REPORTER_ID: 61434ccfc3eeb2ed7b9cfec1d61c4e0ca115a32c1eebfefe404d1ecb77d73358 #codelimate api key 
   
-  e2e:
+  e2e_test:
     runs-on: ubuntu-latest
     services:
       elasticsearch:
@@ -78,6 +78,8 @@ jobs:
     - name: install dependencies  
       run: yarn install
     - run: ./node_modules/nightmare/node_modules/.bin/electron --help
+      env:
+        DISPLAY: 9.0
     - run: sudo apt-get install mongodb-clients
     - run: sudo apt-get install poppler-utils  
     - run: yarn production-build
