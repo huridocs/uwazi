@@ -6,7 +6,7 @@ interface NoticeState {
 }
 
 type NoticeProps = {
-  title: String | Element;
+  title: String | JSX.Element;
 };
 
 export class Notice extends Component<NoticeProps, NoticeState> {

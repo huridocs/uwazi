@@ -9,6 +9,11 @@ import { TriStateSelectValue } from '../../Library/actions/multiEditActions';
 import { filterOptions } from '../utils/optionsUtils';
 
 type Option = { options?: Option[]; results?: number } & { [k: string]: string };
+enum SelectStates {
+  OFF,
+  PARTIAL,
+  ON,
+}
 
 const defaultProps = {
   optionsLabel: 'label',
@@ -74,7 +79,7 @@ abstract class MultiSelectBase<ValueType> extends Component<
     let { value } = this.props;
     if (e.target.checked) {
       group.options!.forEach(_item => {
-        if (this.checked(_item) !== 'on') {
+        if (this.checked(_item) !== SelectStates.ON) {
           value = this.markChecked(value, _item);
         }
       });
@@ -82,7 +87,7 @@ abstract class MultiSelectBase<ValueType> extends Component<
 
     if (!e.target.checked) {
       group.options!.forEach(_item => {
-        if (this.checked(_item) !== 'off') {
+        if (this.checked(_item) !== SelectStates.OFF) {
           value = this.markUnchecked(value, _item);
         }
       });
@@ -90,9 +95,9 @@ abstract class MultiSelectBase<ValueType> extends Component<
     this.props.onChange(value);
   }
 
-  checked(option: Option): 'on' | 'off' | 'partial' {
+  checked(option: Option): SelectStates {
     if (!this.props.value) {
-      return 'off';
+      return SelectStates.OFF;
     }
 
     const checkedList = this.getCheckedList();
@@ -108,25 +113,25 @@ abstract class MultiSelectBase<ValueType> extends Component<
         0
       );
       if (numChecked === option.options.length) {
-        return 'on';
+        return SelectStates.ON;
       }
       if (numChecked + numPartial > 0) {
-        return 'partial';
+        return SelectStates.PARTIAL;
       }
-      return 'off';
+      return SelectStates.OFF;
     }
     if (checkedList.includes(option[this.props.optionsValue])) {
-      return 'on';
+      return SelectStates.ON;
     }
     if (partialList.includes(option[this.props.optionsValue])) {
-      return 'partial';
+      return SelectStates.PARTIAL;
     }
-    return 'off';
+    return SelectStates.OFF;
   }
 
   change(option: Option) {
     let { value } = this.props;
-    if (this.checked(option) === 'on') {
+    if (this.checked(option) === SelectStates.ON) {
       value = this.markUnchecked(value, option);
     } else {
       value = this.markChecked(value, option);
@@ -151,8 +156,8 @@ abstract class MultiSelectBase<ValueType> extends Component<
     const { optionsValue, optionsLabel } = this.props;
     const pinnedList = this.getPinnedList();
     const sortedOptions = options.sort((a, b) => {
-      const aPinned = this.checked(a) !== 'off' || pinnedList.includes(a[optionsValue]);
-      const bPinned = this.checked(b) !== 'off' || pinnedList.includes(b[optionsValue]);
+      const aPinned = this.checked(a) !== SelectStates.OFF || pinnedList.includes(a[optionsValue]);
+      const bPinned = this.checked(b) !== SelectStates.OFF || pinnedList.includes(b[optionsValue]);
       let sorting = 0;
       if (!this.state.showAll) {
         sorting = (bPinned ? 1 : 0) - (aPinned ? 1 : 0);
@@ -194,7 +199,7 @@ abstract class MultiSelectBase<ValueType> extends Component<
     let _options = [...options];
     ['any', 'missing'].forEach(bottomId => {
       const bottomOption = _options.find(opt => opt.id === bottomId);
-      if (bottomOption && this.checked(bottomOption) === 'off') {
+      if (bottomOption && this.checked(bottomOption) === SelectStates.OFF) {
         _options = _options.filter(opt => opt.id !== bottomId);
         _options.push(bottomOption);
       }
@@ -205,7 +210,7 @@ abstract class MultiSelectBase<ValueType> extends Component<
   hoistCheckedOptions(options: Option[]) {
     const [checkedOptions, otherOptions] = options.reduce(
       ([checked, others], option) => {
-        if (this.checked(option) !== 'off') {
+        if (this.checked(option) !== SelectStates.OFF) {
           return [checked.concat([option]), others];
         }
         return [checked, others.concat([option])];
@@ -237,7 +242,7 @@ abstract class MultiSelectBase<ValueType> extends Component<
 
   showSubOptions(parent: Option) {
     const toggled = this.state.ui[parent.id];
-    return toggled || this.checked(parent) !== 'off';
+    return toggled || this.checked(parent) !== SelectStates.OFF;
   }
 
   label(option: Option) {
@@ -279,7 +284,7 @@ abstract class MultiSelectBase<ValueType> extends Component<
             className="group-checkbox multiselectItem-input"
             id={prefix + group.id}
             onChange={this.changeGroup.bind(this, group)}
-            checked={this.checked(group) !== 'off'}
+            checked={this.checked(group) !== SelectStates.OFF}
           />
           {this.label(_group)}
         </div>
@@ -299,11 +304,13 @@ abstract class MultiSelectBase<ValueType> extends Component<
       <li className="multiselectItem" key={key} title={option[optionsLabel]}>
         <input
           type="checkbox"
-          className={`multiselectItem-input${this.checked(option) === 'partial' ? ' partial' : ''}`}
+          className={`multiselectItem-input${
+            this.checked(option) === SelectStates.PARTIAL ? ' partial' : ''
+          }`}
           value={option[optionsValue]}
           id={prefix + option[optionsValue]}
           onChange={this.change.bind(this, option)}
-          checked={this.checked(option) !== 'off'}
+          checked={this.checked(option) !== SelectStates.OFF}
         />
         {this.label(option)}
       </li>
