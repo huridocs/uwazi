@@ -61,10 +61,6 @@ jobs:
       with:
         node-version: '10.17.x'
     - uses: actions/checkout@v2
-    - name: Install Xvfb
-      run: sudo apt-get install -y libgtk2.0-0 libgconf-2-4 libasound2 libxtst6 libxss1 libnss3 xvfb
-    - name: Setup display
-      run: Xvfb -ac -screen scrn 1280x2000x24 :9.0 &
     - name: Cache node modules
       uses: actions/cache@v1.1.2
       with:
@@ -77,9 +73,10 @@ jobs:
         key: '6.2.4' #mongo in memory version
     - name: install dependencies  
       run: yarn install
-    - run: ./node_modules/nightmare/node_modules/.bin/electron --help
-      env:
-        DISPLAY: 9.0
+    - name: gabrielbb/xvfb-action
+      uses: GabrielBB/xvfb-action@v1.0
+      with:
+        run: ./node_modules/nightmare/node_modules/.bin/electron --help
     - run: sudo apt-get install mongodb-clients
     - run: sudo apt-get install poppler-utils  
     - run: yarn production-build
@@ -100,7 +97,6 @@ jobs:
       env:
         DBHOST: localhost:${{ job.services.mongodb.ports[27017] }}
         ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
-        DISPLAY: 9.0  
       
   
   eslint:
