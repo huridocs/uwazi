@@ -33,7 +33,20 @@ export type ThesaurusCockpitProps = {
   suggestionsTBReviewed: SuggestionResultSchema;
 };
 
+interface ThesaurusCockpitBaseState {
+  isLearning: boolean;
+  isReadyForReview: boolean;
+}
+
 export class ThesaurusCockpitBase extends RouteHandler {
+  constructor(props: ThesaurusCockpitProps, context: any) {
+    super(props, context);
+    this.state = {
+      isLearning: false,
+      isReadyForReview: false,
+    };
+  }
+
   static genIcons(label: string, actual: number, possible: number) {
     const icons = [];
     for (let i = 0; i < possible; i += 1) {
@@ -96,6 +109,51 @@ export class ThesaurusCockpitBase extends RouteHandler {
         </td>
       </tr>
     );
+  }
+
+  learningNotice() {
+    const { thesaurus } = this.props as ThesaurusCockpitProps;
+    const { isLearning, isReadyForReview } = this.state;
+    let notice;
+
+    if (isReadyForReview) {
+      notice = (
+        <Notice title="Ready for review (Last update 2 hours ago)">
+          <div>
+            Uwazi has suggested labels for your collection. Review them using the &#34;View
+            suggestions&#34; button next to each topic. Disable suggestions with the &#34;Show
+            suggestions&#34; toggle.
+          </div>
+        </Notice>
+      );
+    } else if (isLearning) {
+      notice = (
+        <Notice title="Learning...">
+          <div>
+            Uwazi is learning using the labelled documents. This may take up to 2 hours, and once
+            completed you can review suggestions made by Uwazi for your collection.
+          </div>
+        </Notice>
+      );
+    } else {
+      notice = (
+        <Notice title="Configure suggestions">
+          <div>
+            The first step is to label a sample of your documents, so Uwazi can learn which topics
+            to suggest when helping you label your collection.
+          </div>
+          <I18NLink
+            title="label-docs"
+            to={`/library/?multiEditThesaurus=${thesaurus._id}`}
+            className="btn btn-primary get-started"
+          >
+            <span>{t('System', 'Get started')}</span>
+          </I18NLink>
+        </Notice>
+      );
+    }
+
+    return notice;
   }
 
   topicNodes() {
@@ -214,19 +272,7 @@ export class ThesaurusCockpitBase extends RouteHandler {
           {this.publishButton()}
         </div>
         <div className="cockpit">
-          <Notice title="Configure suggestions">
-            <div>
-              The first step is to label a sample of your documents, so Uwazi can learn which topics
-              to suggest when helping you label your collection.
-            </div>
-            <I18NLink
-              title="label-docs"
-              to={`/library/?multiEditThesaurus=${thesaurus._id}`}
-              className="btn btn-primary get-started"
-            >
-              <span>{t('System', 'Get started')}</span>
-            </I18NLink>
-          </Notice>
+          {this.learningNotice()}
           <table>
             <thead>
               <tr>
