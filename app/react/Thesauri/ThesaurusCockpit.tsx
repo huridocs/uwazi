@@ -20,11 +20,11 @@ import { IImmutable } from 'shared/types/Immutable';
 import { ThesaurusSchema, ThesaurusValueSchema } from 'shared/types/thesaurusType';
 import { Icon } from 'UI';
 import { PropertySchema } from 'shared/types/commonTypes';
+import { Notice } from 'app/Thesauri/Notice';
 import { ClassifierModelSchema } from './types/classifierModelType';
 import { SuggestionResultSchema } from './types/suggestionResultType';
 import { buildSuggestionResult, flattenSuggestionResults } from './utils/suggestionQuery';
 import { getValuesSortedByName } from './utils/valuesSort';
-import { Notice } from 'app/Thesauri/Notice';
 
 export type ThesaurusCockpitProps = {
   thesaurus: ThesaurusSchema;
@@ -128,7 +128,13 @@ export class ThesaurusCockpitBase extends RouteHandler {
       );
     } else if (isLearning) {
       notice = (
-        <Notice title="Learning...">
+        <Notice
+          title={
+            <span>
+              Learning... <Icon icon="spinner" spin />
+            </span>
+          }
+        >
           <div>
             Uwazi is learning using the labelled documents. This may take up to 2 hours, and once
             completed you can review suggestions made by Uwazi for your collection.
