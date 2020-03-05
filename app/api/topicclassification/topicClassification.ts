@@ -16,16 +16,14 @@ export async function getModelForThesaurus(
   // we only expect one result, since we've filtered by model already
   switch (resultModelNames.models.length) {
     case 0:
-      return Promise.resolve({ name: '', topics: {} });
+      return { name: '', topics: {} };
     case 1:
       model = await getModel({ model: resultModelNames.models[0] });
       model.name = thesaurusName;
       return model;
     default:
-      return Promise.reject(
-        new Error(
-          `Expected one model to exist on the topic classification server but instead there were ${resultModelNames.models.length}.`
-        )
+      throw new Error(
+        `Expected one model to exist on the topic classification server but instead there were ${resultModelNames.models.length}.`
       );
   }
 }

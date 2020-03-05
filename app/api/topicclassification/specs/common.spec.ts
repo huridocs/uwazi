@@ -1,5 +1,5 @@
 import { EntitySchema } from 'api/entities/entityType';
-import { extractSequence } from 'api/topicclassification/common';
+import { extractSequence } from 'api/topicclassification';
 import db from 'api/utils/testing_db';
 import { buildFullModelName, getThesaurusPropertyNames } from 'shared/commonTopicClassification';
 import { TemplateSchema } from '../../../shared/types/templateType';

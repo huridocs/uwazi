@@ -8,7 +8,7 @@ import { EntitySchema } from 'api/entities/entityType';
 import { QueryForEach, WithId } from 'api/odm';
 import templates from 'api/templates';
 import thesauri from 'api/thesauri';
-import { extractSequence } from 'api/topicclassification/common';
+import { extractSequence } from 'api/topicclassification';
 import connect, { disconnect } from 'api/utils/connect_to_mongo';
 import { buildFullModelName } from 'shared/commonTopicClassification';
 import JSONRequest from 'shared/JSONRequest';
