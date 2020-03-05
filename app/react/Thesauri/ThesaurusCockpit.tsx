@@ -24,6 +24,7 @@ import { ClassifierModelSchema } from './types/classifierModelType';
 import { SuggestionResultSchema } from './types/suggestionResultType';
 import { buildSuggestionResult, flattenSuggestionResults } from './utils/suggestionQuery';
 import { getValuesSortedByName } from './utils/valuesSort';
+import { Notice } from 'app/Thesauri/Notice';
 
 export type ThesaurusCockpitProps = {
   thesaurus: ThesaurusSchema;
@@ -79,8 +80,9 @@ export class ThesaurusCockpitBase extends RouteHandler {
     return (
       <tr key={label}>
         <th scope="row">{label}</th>
+        <td title="sample-count">{suggestionCount ? suggestionCount.toLocaleString() : '-'}</td>
         <td title="suggestions-count">
-          {suggestionCount ? suggestionCount.toLocaleString() : null}
+          {suggestionCount ? suggestionCount.toLocaleString() : '-'}
         </td>
         <td title="review-button">
           {suggestionCount > 0 && propName ? (
@@ -100,10 +102,6 @@ export class ThesaurusCockpitBase extends RouteHandler {
     const { suggestionsTBReviewed: suggestions, thesaurus } = this.props as ThesaurusCockpitProps;
     const { property } = thesaurus;
     const values = getValuesSortedByName(thesaurus);
-
-    if (!property) {
-      return null;
-    }
 
     return values.map((topic: ThesaurusValueSchema) =>
       ThesaurusCockpitBase.topicNode(topic, suggestions, property.name)
@@ -216,17 +214,24 @@ export class ThesaurusCockpitBase extends RouteHandler {
           {this.publishButton()}
         </div>
         <div className="cockpit">
-          <I18NLink
-            title="label-docs"
-            to={`/library/?multiEditThesaurus=${thesaurus._id}`}
-            className="btn btn-primary"
-          >
-            <span>{t('System', 'Label more documents')}</span>
-          </I18NLink>
+          <Notice title="Configure suggestions">
+            <div>
+              The first step is to label a sample of your documents, so Uwazi can learn which topics
+              to suggest when helping you label your collection.
+            </div>
+            <I18NLink
+              title="label-docs"
+              to={`/library/?multiEditThesaurus=${thesaurus._id}`}
+              className="btn btn-primary get-started"
+            >
+              <span>{t('System', 'Get started')}</span>
+            </I18NLink>
+          </Notice>
           <table>
             <thead>
               <tr>
                 <th scope="col">{name}</th>
+                <th scope="col">{t('System', 'Sample')}</th>
                 <th scope="col">{t('System', 'Documents to be reviewed')}</th>
                 <th scope="col" />
               </tr>

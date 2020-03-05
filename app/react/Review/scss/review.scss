@@ -24,6 +24,15 @@ $header-height: 44px;
   padding: 7px 10px;
 }
 
+.get-started {
+  height: 25px;
+  width: 85px;
+  margin-top: 15px;
+  padding: 2px;
+  font: Roboto;
+  border-radius: 2px;
+}
+
 .btn-toggle-on {
   background-color: #ccc;
   &:focus {
@@ -211,6 +220,11 @@ $header-height: 44px;
     overflow-y: scroll;
 
     thead th:nth-child(2) {
+      width: 10%;
+      text-align: right;
+    }
+
+    thead th:nth-child(3) {
       width: 15%;
       text-align: right;
     }
@@ -385,4 +399,39 @@ $header-height: 44px;
   .fa-save-and-next {
     fill-rule: evenodd;
   }
+}
+
+.notice {
+  background-color: #FAFBFF;
+  border-radius: 8px;
+  border: 1px solid #6584EB;
+  max-width: 650px;
+  padding: 10px;
+
+  .close-notice {
+    float: right;
+    border: none;
+    background: inherit;
+    font: inherit;
+  }
+
+  .header {
+    font: bold 14px Roboto;
+    height: 30px;
+    margin-bottom: 5px;
+  }
+
+  .icon {
+    margin-right: 5px;
+  }
+
+  .title {
+    display: inline-block;
+    vertical-align: 10px;
+    height: 100%;
+  }
+}
+
+.notice.is-hidden {
+  display: none;
 }
