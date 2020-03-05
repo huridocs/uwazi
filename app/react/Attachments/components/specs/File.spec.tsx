@@ -3,6 +3,7 @@ import { shallow, ShallowWrapper } from 'enzyme';
 import { LocalForm } from 'react-redux-form';
 import { FileType } from 'shared/types/fileType';
 import { File, FileProps } from '../File';
+import { Translate } from 'app/I18N';
 
 describe('file', () => {
   let component: ShallowWrapper<File>;
@@ -39,7 +40,10 @@ describe('file', () => {
     const title = component.find('.file-originalname').text();
     expect(title).toBe('Human_name_1.pdf');
 
-    const language = component.find('.file-language').text();
+    const language = component
+      .find('.file-language')
+      .find(Translate)
+      .props().children;
     expect(language).toBe('english');
   });
 

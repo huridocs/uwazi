@@ -100,7 +100,9 @@ export class File extends Component<FileProps, FileState> {
     const { language, filename = '' } = this.props.file;
     return (
       <div>
-        <div className="file-language">{language ? transformLanguage(language) : ''}</div>{' '}
+        <div className="file-language">
+          <Translate>{language ? transformLanguage(language) || '' : ''}</Translate>
+        </div>{' '}
         <a
           href={`${APIURL}files/${filename}`}
           target="_blank"
