@@ -22,11 +22,6 @@ jobs:
         with:
           path: ./node_modules
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-      - name: Cache mongo in memory
-        uses: actions/cache@v1.1.2
-        with:
-          path: ./.mongodb-binaries
-          key: '6.2.4'
       - name: install dependencies
         run: yarn install
       - run: sudo apt-get install poppler-utils
@@ -65,11 +60,6 @@ jobs:
         with:
           path: ./node_modules
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-      - name: Cache mongo in memory
-        uses: actions/cache@v1.1.2
-        with:
-          path: ./.mongodb-binaries
-          key: '6.2.4'
       - name: install dependencies
         run: yarn install
       - run: sudo apt-get install mongodb-clients
@@ -106,11 +96,6 @@ jobs:
         with:
           path: ./node_modules
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-      - name: Cache mongo in memory
-        uses: actions/cache@v1.1.2
-        with:
-          path: ./.mongodb-binaries
-          key: '6.2.4'
       - name: install dependencies
         run: yarn install
       - run: yarn eslint
