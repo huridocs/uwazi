@@ -1,5 +1,3 @@
-/** @format */
-
 import { Helmet } from 'react-helmet';
 import { browserHistory } from 'react-router';
 import React, { Component } from 'react';
@@ -13,6 +11,8 @@ import Viewer from 'app/Viewer/components/Viewer';
 import entitiesAPI from 'app/Entities/EntitiesAPI';
 import { scrollToPage, activateReference } from './actions/uiActions';
 import { requestViewerState } from './actions/routeActions';
+
+const defaultDoc = entity => (entity.get('defaultDoc') ? entity.get('defaultDoc').toJS() : {});
 
 class PDFView extends Component {
   static async requestState(requestParams, globalResources) {
@@ -45,9 +45,8 @@ class PDFView extends Component {
         query.raw !== this.props.location.query.raw) &&
       query.raw === 'true'
     ) {
-      const { sharedId } = props.params;
       entitiesAPI
-        .getRawPage(new RequestParams({ sharedId, pageNumber: query.page }))
+        .getRawPage(new RequestParams({ _id: defaultDoc(props.entity)._id, page: query.page }))
         .then(pageText => {
           this.context.store.dispatch(actions.set('viewer/rawText', pageText));
         });
@@ -91,6 +90,7 @@ class PDFView extends Component {
     const { query = {}, pathname } = this.props.location;
     const raw = query.raw === 'true' || !isClient;
     const page = Number(query.page || 1);
+
     return (
       <React.Fragment>
         <Helmet>{raw && <link rel="canonical" href={`${pathname}?page=${page}`} />}</Helmet>
@@ -101,6 +101,7 @@ class PDFView extends Component {
           onDocumentReady={this.onDocumentReady}
           changePage={this.changePage}
           page={page}
+          file={defaultDoc(this.props.entity)}
         />
       </React.Fragment>
     );
@@ -113,11 +114,7 @@ PDFView.contextTypes = {
 
 PDFView.propTypes = {
   location: PropTypes.instanceOf(Object).isRequired,
-  params: PropTypes.instanceOf(Object),
-};
-
-PDFView.defaultProps = {
-  params: {},
+  entity: PropTypes.instanceOf(Object).isRequired,
 };
 
 export default PDFView;

@@ -11,14 +11,12 @@ exports[`FormatMetadata should render Metadata component passing the formatted m
     ]
   }
   renderLabel={[Function]}
-  templates={Array []}
-  thesauris={Array []}
 />
 `;
 
 exports[`FormatMetadata should unshift additional metadata if passed 1`] = `
 <Metadata
-  compact={true}
+  compact={false}
   metadata={
     Array [
       Object {
@@ -28,12 +26,16 @@ exports[`FormatMetadata should unshift additional metadata if passed 1`] = `
         "and": "more",
       },
       Object {
-        "formated": "metadata",
+        "label": undefined,
+        "name": "preview",
+        "noLabel": false,
+        "style": "contain",
+        "translateContext": "template",
+        "type": "image",
+        "value": "/api/files/docId.jpg",
       },
     ]
   }
   renderLabel={[Function]}
-  templates={Array []}
-  thesauris={Array []}
 />
 `;

@@ -146,7 +146,7 @@ export const templateSchema = {
   type: 'object',
   uniqueName: true,
   cantDeleteInheritedProperties: true,
-  required: ['name', 'commonProperties'],
+  required: ['name'],
   uniquePropertyFields: ['id', 'name', 'label'],
   definitions: { objectIdSchema, propertySchema },
   properties: {

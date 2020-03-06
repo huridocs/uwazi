@@ -1,5 +1,3 @@
-/** @format */
-
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import createNightmare from '../helpers/nightmare';
 import selectors from '../helpers/selectors.js';
@@ -42,8 +40,8 @@ describe('attachments path', () => {
     it('should show the source document as file in the Downloads section', done => {
       nightmare
         .waitToClick(selectors.documentView.sidePanelInfoTab)
-        .wait(selectors.documentView.sidePanelFirstAttachmentTitle)
-        .evaluate(getInnerText, selectors.documentView.sidePanelFirstAttachmentTitle)
+        .wait(selectors.documentView.sidePanelFirstDocumentTitle)
+        .evaluate(getInnerText, selectors.documentView.sidePanelFirstDocumentTitle)
         .then(attachmentName => {
           expect(attachmentName).toBe('Batman - Wikipedia.pdf');
           done();
@@ -53,9 +51,9 @@ describe('attachments path', () => {
 
     it('should allow entering edit mode for the title, keeping the original text as first value', done => {
       nightmare
-        .waitToClick(selectors.documentView.sidePanelFirstAttachmentEditTitleButton)
-        .wait(selectors.documentView.attachmentFormInput)
-        .evaluate(getValue, selectors.documentView.attachmentFormInput)
+        .waitToClick(selectors.documentView.sidePanelFirstDocumentEditButton)
+        .wait(selectors.documentView.fileFormInput)
+        .evaluate(getValue, selectors.documentView.fileFormInput)
         .then(inputValue => {
           expect(inputValue).toBe('Batman - Wikipedia.pdf');
           done();
@@ -65,11 +63,12 @@ describe('attachments path', () => {
 
     it('should allow changing the name of the title', done => {
       nightmare
-        .clearInput(selectors.documentView.attachmentFormInput)
-        .insert(selectors.documentView.attachmentFormInput, 'Batman - the whole story.pdf')
-        .waitToClick(selectors.documentView.attachmentFormSubmit)
-        .wait(selectors.documentView.sidePanelFirstAttachmentTitle)
-        .evaluate(getInnerText, selectors.documentView.sidePanelFirstAttachmentTitle)
+        .clearInput(selectors.documentView.fileFormInput)
+        .insert(selectors.documentView.fileFormInput, 'Batman - the whole story.pdf')
+        .waitToClick(selectors.documentView.fileFormSubmit)
+        .wait(500) //wait to save
+        .wait(selectors.documentView.sidePanelFirstDocumentTitle)
+        .evaluate(getInnerText, selectors.documentView.sidePanelFirstDocumentTitle)
         .then(attachmentName => {
           expect(attachmentName).toBe('Batman - the whole story.pdf');
           done();
@@ -79,18 +78,18 @@ describe('attachments path', () => {
 
     it('should allow canceling a name edit of the title', done => {
       nightmare
-        .waitToClick(selectors.documentView.sidePanelFirstAttachmentEditTitleButton)
-        .wait(selectors.documentView.attachmentFormInput)
-        .type(selectors.documentView.attachmentFormInput, '\u0008\u0008\u0008')
-        .insert(selectors.documentView.attachmentFormInput, 'jpg')
-        .evaluate(getValue, selectors.documentView.attachmentFormInput)
+        .waitToClick(selectors.documentView.sidePanelFirstDocumentEditButton)
+        .wait(selectors.documentView.fileFormInput)
+        .type(selectors.documentView.fileFormInput, '\u0008\u0008\u0008')
+        .insert(selectors.documentView.fileFormInput, 'jpg')
+        .evaluate(getValue, selectors.documentView.fileFormInput)
         .then(inputValue => {
           expect(inputValue).toEqual('Batman - the whole story.jpg');
 
           return nightmare
-            .waitToClick(selectors.documentView.attachmentFormCancel)
-            .wait(selectors.documentView.sidePanelFirstAttachmentTitle)
-            .evaluate(getInnerText, selectors.documentView.sidePanelFirstAttachmentTitle)
+            .waitToClick(selectors.documentView.fileFormCancel)
+            .wait(selectors.documentView.sidePanelFirstDocument)
+            .evaluate(getInnerText, selectors.documentView.sidePanelFirstDocumentTitle)
             .then(attachmentName => {
               expect(attachmentName).toBe('Batman - the whole story.pdf');
               done();

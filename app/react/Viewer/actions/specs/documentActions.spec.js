@@ -68,13 +68,11 @@ describe('documentActions', () => {
       const store = mockStore({
         documentViewer: {
           tocForm: [],
-          doc: Immutable.fromJS({
-            toc: [chapter2],
-          }),
         },
       });
 
-      store.dispatch(actions.addToToc(reference));
+      const currentToc = [chapter2];
+      store.dispatch(actions.addToToc(reference, currentToc));
 
       expect(store.getActions()).toEqual(expectedActions);
       expect(formActions.load).toHaveBeenCalledWith('documentViewer.tocForm', [chapter1, chapter2]);
@@ -187,14 +185,24 @@ describe('documentActions', () => {
           body: JSON.stringify('documents'),
         })
         .get(`${APIURL}entities?sharedId=targetId`, {
-          body: JSON.stringify({ rows: [{ target: 'document', pdfInfo: 'test' }] }),
+          body: JSON.stringify({
+            rows: [{ documents: [{ pdfInfo: 'test' }] }],
+          }),
         })
         .get(`${APIURL}entities?sharedId=docWithPDFRdy`, {
-          body: JSON.stringify({ rows: [{ pdfInfo: 'processed pdf', _id: 'pdfReady' }] }),
+          body: JSON.stringify({
+            rows: [{ documents: [{ pdfInfo: 'processed pdf', _id: 'pdfReady' }] }],
+          }),
         })
         .get(`${APIURL}entities?sharedId=docWithPDFNotRdy`, {
           body: JSON.stringify({
-            rows: [{ _id: 'pdfNotReady', sharedId: 'shared', unwantedProp: 'unwanted', file: {} }],
+            rows: [
+              {
+                _id: 'pdfNotReady',
+                sharedId: 'shared',
+                documents: [{ _id: 'pdfNotReady', filename: 'filename' }],
+              },
+            ],
           }),
         })
         .get(`${APIURL}references/by_document?sharedId=targetId`, {
@@ -219,7 +227,7 @@ describe('documentActions', () => {
           },
           { type: types.VIEWER_UPDATE_DOCUMENT, doc: { name: 'doc', fullText: 'fullText' } },
           { type: 'rrf/reset', model: 'documentViewer.sidepanel.metadata' },
-          { type: 'viewer/doc/SET', value: { sharedId: 'responseId' } },
+          { type: 'viewer/doc/UPDATE', value: { sharedId: 'responseId' } },
           { type: 'reloadRelationships' },
         ];
         const store = mockStore({});
@@ -239,46 +247,76 @@ describe('documentActions', () => {
       it('should return the document requested', async () => {
         const requestParams = new RequestParams({ sharedId: 'docWithPDFRdy' });
         const doc = await actions.getDocument(requestParams);
-        expect(doc.pdfInfo).toBe('processed pdf');
+        expect(doc.documents[0].pdfInfo).toBe('processed pdf');
       });
 
       describe('when the doc does not have the pdf processed', () => {
         it('should process it and save it before it gets returned', async () => {
           spyOn(PDFUtils, 'extractPDFInfo').and.returnValue(Promise.resolve('test'));
-          const expected = { sharedId: 'shared', _id: 'pdfNotReady', pdfInfo: 'test' };
-          spyOn(api, 'post').and.returnValue(Promise.resolve({ json: expected }));
+          const expected = {
+            sharedId: 'shared',
+            _id: 'pdfNotReady',
+            defaultDoc: expect.objectContaining({ _id: 'pdfNotReady' }),
+            documents: [{ _id: 'pdfNotReady', pdfInfo: 'test' }],
+          };
+          spyOn(api, 'post').and.returnValue(Promise.resolve({ json: expected.documents[0] }));
           const requestParams = new RequestParams({ sharedId: 'docWithPDFNotRdy' });
 
           const doc = await actions.getDocument(requestParams);
-          expect(PDFUtils.extractPDFInfo).toHaveBeenCalledWith(
-            `${APIURL}documents/download?_id=${expected._id}`
-          );
+          expect(PDFUtils.extractPDFInfo).toHaveBeenCalledWith(`${APIURL}files/filename`);
           expect(api.post).toHaveBeenCalledWith('documents/pdfInfo', {
-            data: expected,
+            data: { _id: 'pdfNotReady', pdfInfo: 'test' },
             headers: {},
           });
-          expect(expected).toBe(doc);
+          expect(expected).toEqual(doc);
         });
       });
     });
 
     describe('saveToc', () => {
       it('should save the document with the new toc and dispatch a notification on success', done => {
-        spyOn(documentsApi, 'save').and.returnValue(Promise.resolve('response'));
-        spyOn(relationshipActions, 'reloadRelationships').and.returnValue({
-          type: 'reloadRelationships',
-        });
-        const doc = {
-          name: 'doc',
-          _id: 'id',
-          _rev: 'rev',
-          sharedId: 'sharedId',
-          file: { fileName: '123.pdf' },
-        };
         const toc = [
           { range: { start: 12, end: 23 }, label: 'Chapter 1', indentation: 0 },
           { range: { start: 22, end: 44 }, label: 'Chapter 1.1', indentation: 1 },
         ];
+
+        const fileId = 'fileId';
+
+        backend.post(`${APIURL}files`, {
+          body: JSON.stringify({ _id: fileId, toc }),
+        });
+
+        spyOn(relationshipActions, 'reloadRelationships').and.returnValue({
+          type: 'reloadRelationships',
+        });
+
+        const doc = {
+          name: 'doc',
+          _id: 'id',
+          sharedId: 'sharedId',
+          documents: [
+            {
+              _id: fileId,
+              toc: [{ _id: fileId }],
+            },
+          ],
+        };
+
+        const updatedEntity = {
+          name: 'doc',
+          _id: 'id',
+          sharedId: 'sharedId',
+          defaultDoc: {
+            _id: fileId,
+            toc,
+          },
+          documents: [
+            {
+              _id: fileId,
+              toc,
+            },
+          ],
+        };
 
         const expectedActions = [
           { type: 'rrf/reset', model: 'documentViewer.sidepanel.metadata' },
@@ -289,17 +327,10 @@ describe('documentActions', () => {
           },
           {
             type: types.VIEWER_UPDATE_DOCUMENT,
-            doc: {
-              _id: 'id',
-              _rev: 'rev',
-              sharedId: 'sharedId',
-              toc,
-              file: { fileName: '123.pdf' },
-            },
+            doc: updatedEntity,
           },
           { type: 'rrf/reset', model: 'documentViewer.sidepanel.metadata' },
-          { type: 'viewer/doc/SET', value: 'response' },
-          { type: 'reloadRelationships' },
+          { type: 'viewer/doc/SET', value: updatedEntity },
         ];
         const store = mockStore({
           documentViewer: {
@@ -307,16 +338,14 @@ describe('documentActions', () => {
           },
         });
 
+        spyOn(api, 'post').and.callThrough();
         store
-          .dispatch(actions.saveToc(toc))
+          .dispatch(actions.saveToc(toc, fileId))
           .then(() => {
-            expect(documentsApi.save).toHaveBeenCalledWith({
+            expect(api.post).toHaveBeenCalledWith('files', {
               data: {
-                _id: 'id',
-                _rev: 'rev',
-                sharedId: 'sharedId',
+                _id: 'fileId',
                 toc,
-                file: { fileName: '123.pdf' },
               },
               headers: {},
             });
@@ -361,7 +390,10 @@ describe('documentActions', () => {
         const targetId = 'targetId';
 
         const expectedActions = [
-          { type: 'viewer/targetDoc/SET', value: { target: 'document', pdfInfo: 'test' } },
+          {
+            type: 'viewer/targetDoc/SET',
+            value: { defaultDoc: { pdfInfo: 'test' }, documents: [{ pdfInfo: 'test' }] },
+          },
           { type: 'viewer/targetDocReferences/SET', value: [{ connectedDocument: '1' }] },
         ];
         const store = mockStore({ locale: 'es' });

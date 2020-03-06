@@ -1,5 +1,4 @@
-/** @format */
-/* eslint-disable max-nested-callbacks*/
+/* eslint-disable max-nested-callbacks, max-lines */
 import { elastic } from 'api/search';
 import { instanceSearch } from 'api/search/search';
 import { catchErrors } from 'api/utils/jasmineHelpers';
@@ -55,17 +54,13 @@ describe('search', () => {
   });
 
   describe('searchSnippets', () => {
-    it('perform a search on fullText of the document passed and return the snippets', done => {
-      search
-        .searchSnippets('spanish', ids.batmanFinishes, 'es')
-        .then(snippets => {
-          expect(snippets.fullText.length).toBe(1);
-          expect(snippets.fullText[0].page).toBe(34);
-          expect(snippets.fullText[0].text).toMatch('spanish');
-          expect(snippets.fullText[0].text).not.toMatch('[[34]]');
-          done();
-        })
-        .catch(catchErrors(done));
+    it('perform a search on fullText of the document passed and return the snippets', async () => {
+      const snippets = await search.searchSnippets('spanish', ids.batmanFinishes, 'es');
+
+      expect(snippets.fullText.length).toBe(1);
+      expect(snippets.fullText[0].page).toBe(34);
+      expect(snippets.fullText[0].text).toMatch('spanish');
+      expect(snippets.fullText[0].text).not.toMatch('[[34]]');
     });
 
     it('perform a search on metadata and fullText and return the snippets', done => {

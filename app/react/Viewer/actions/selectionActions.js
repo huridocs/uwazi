@@ -1,16 +1,18 @@
 import * as types from 'app/Viewer/actions/actionTypes';
 
-export function setSelection(sourceRange) {
+export function setSelection(sourceRange, sourceFile) {
   return {
     type: types.SET_SELECTION,
     sourceRange,
+    sourceFile,
   };
 }
 
-export function setTargetSelection(targetRange) {
+export function setTargetSelection(targetRange, targetFile) {
   return {
     type: types.SET_TARGET_SELECTION,
     targetRange,
+    targetFile,
   };
 }
 

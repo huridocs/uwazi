@@ -2,8 +2,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { fromJS as Immutable } from 'immutable';
 
-import { AttachmentsList } from '../AttachmentsList';
-import Attachment from '../Attachment';
+import AttachmentsList from '../AttachmentsList';
 
 describe('AttachmentsList', () => {
   let component;
@@ -23,7 +22,6 @@ describe('AttachmentsList', () => {
       isDocumentAttachments: false,
       readOnly: false,
       storeKey: 'storeKey',
-      user: Immutable({}),
     };
   });
 
@@ -59,34 +57,6 @@ describe('AttachmentsList', () => {
       props.user = Immutable({ _id: 'user' });
       render();
       expect(component).toMatchSnapshot();
-    });
-  });
-
-  describe('When isDocumentAttachments', () => {
-    beforeEach(() => {
-      props.isDocumentAttachments = true;
-      render();
-    });
-
-    it('should pass isSourceDocument true to the first attachment and the entity id', () => {
-      expect(
-        component
-          .find(Attachment)
-          .at(0)
-          .props().isSourceDocument
-      ).toBe(true);
-      expect(
-        component
-          .find(Attachment)
-          .at(0)
-          .props().file._id
-      ).toBe('parentId');
-      expect(
-        component
-          .find(Attachment)
-          .at(1)
-          .props().isSourceDocument
-      ).toBe(false);
     });
   });
 });

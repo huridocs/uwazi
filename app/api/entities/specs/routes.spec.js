@@ -113,28 +113,6 @@ describe('entities', () => {
       routes.post('/api/entities', req).catch(catchErrors(done));
     });
 
-    describe('get_raw_page', () => {
-      it('should have a validation schema', () => {
-        expect(routes.get.validation('/api/entities/get_raw_page')).toMatchSnapshot();
-      });
-
-      it('should return getRawPage', async () => {
-        spyOn(entities, 'getRawPage').and.returnValue(Promise.resolve('page text'));
-
-        const request = {
-          query: {
-            sharedId: 'sharedId',
-            pageNumber: 2,
-          },
-          language: 'lang',
-        };
-
-        const response = await routes.get('/api/entities/get_raw_page', request);
-        expect(entities.getRawPage).toHaveBeenCalledWith('sharedId', 'lang', 2);
-        expect(response.data).toBe('page text');
-      });
-    });
-
     describe('/entities/multipleupdate', () => {
       beforeEach(() => {
         req = {
@@ -204,7 +182,7 @@ describe('entities', () => {
               published: true,
             },
             {},
-            1
+            { limit: 1 }
           );
           expect(response).toEqual({ rows: expectedEntity });
           done();
@@ -221,7 +199,7 @@ describe('entities', () => {
       });
 
       expect(response.rows.length).toEqual(1);
-      expect(response.rows[0]).toEqual(expectedEntity);
+      expect(response.rows[0]).toEqual(expect.objectContaining(expectedEntity));
     });
 
     it('should not return unpublished documents when user not logged in', async () => {
@@ -262,7 +240,7 @@ describe('entities', () => {
           published: true,
         },
         {},
-        1
+        { limit: 1 }
       );
     });
 

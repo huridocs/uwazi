@@ -1,6 +1,37 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`validateRequest should call next with the error 1`] = `
+exports[`validateRequest using AJV schema should call next with the error 1`] = `
+Array [
+  Object {
+    "ajv": true,
+    "code": 400,
+    "errors": Array [
+      Object {
+        "dataPath": ".body.prop1",
+        "keyword": "type",
+        "message": "should be string",
+        "params": Object {
+          "type": "string",
+        },
+        "schemaPath": "#/properties/body/properties/prop1/type",
+      },
+      Object {
+        "dataPath": ".body.prop2",
+        "keyword": "type",
+        "message": "should be number",
+        "params": Object {
+          "type": "number",
+        },
+        "schemaPath": "#/properties/body/properties/prop2/type",
+      },
+    ],
+    "message": "validation failed",
+    "validation": true,
+  },
+]
+`;
+
+exports[`validateRequest using JOI schema should call next with the error 1`] = `
 Array [
   Object {
     "code": 400,

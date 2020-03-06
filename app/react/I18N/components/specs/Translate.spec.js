@@ -10,7 +10,6 @@ describe('Translate', () => {
   beforeEach(() => {
     props = {
       translationKey: 'Search',
-      text: 'Buscar',
       edit: jasmine.createSpy('edit'),
     };
   });
@@ -21,8 +20,8 @@ describe('Translate', () => {
 
   describe('render', () => {
     beforeEach(render);
-    it('should render the property text inside of a span', () => {
-      expect(component.find('span').text()).toBe('Buscar');
+    it('should render the property children inside of a span', () => {
+      expect(component.find('span').text()).toBe('Search');
     });
 
     describe('when i18nmode is true', () => {
@@ -72,14 +71,14 @@ describe('Translate', () => {
       ];
     });
 
-    it('should try to translate the children and pass it on text', () => {
+    it('should try to translate the children and pass it on children', () => {
       props = { children: 'Search', context: 'System' };
       const state = {
         locale: 'es',
         inlineEdit: Immutable.fromJS({ inlineEdit: true }),
         translations: Immutable.fromJS(translations),
       };
-      expect(mapStateToProps(state, props).text).toBe('Buscar');
+      expect(mapStateToProps(state, props).children).toBe('Buscar');
       expect(mapStateToProps(state, props).i18nmode).toBe(true);
     });
 
@@ -90,7 +89,7 @@ describe('Translate', () => {
         inlineEdit: Immutable.fromJS({ inlineEdit: true }),
         translations: Immutable.fromJS(translations),
       };
-      expect(mapStateToProps(state, props).text).toBe('Buscar');
+      expect(mapStateToProps(state, props).children).toBe('Buscar');
       expect(mapStateToProps(state, props).i18nmode).toBe(true);
     });
 

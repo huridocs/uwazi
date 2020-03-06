@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-
+import { Map } from 'immutable';
 import validate from 'validate.js';
 import { Icon } from 'UI';
 import { saveConnection, selectRangedTarget } from '../actions/actions';
@@ -17,6 +17,17 @@ export class ActionButton extends Component {
         this.props.selectRangedTarget(connection, this.props.onRangedConnect);
       }
     }
+  }
+
+  renderIcon() {
+    let buttonIcon = 'arrow-right';
+    if (this.props.busy) {
+      buttonIcon = 'spinner';
+    }
+    if (this.props.action === 'save') {
+      buttonIcon = 'save';
+    }
+    return <Icon icon={buttonIcon} spin={!!this.props.busy} />;
   }
 
   render() {
@@ -39,34 +50,35 @@ export class ActionButton extends Component {
     const enabled = connectionValid && !this.props.busy;
     const buttonClass =
       this.props.action === 'save' ? 'btn btn-success' : 'edit-metadata btn btn-success';
-    let buttonIcon = 'arrow-right';
-    if (this.props.busy) {
-      buttonIcon = 'spinner';
-    }
-    if (this.props.action === 'save') {
-      buttonIcon = 'save';
-    }
 
     return (
       <button
         className={buttonClass}
         disabled={!enabled}
+        type="button"
         onClick={this.onClick.bind(this, enabled, connection)}
       >
-        <Icon icon={buttonIcon} spin={!!this.props.busy} />
+        {this.renderIcon()}
       </button>
     );
   }
 }
 
+ActionButton.defaultProps = {
+  onCreate: () => {},
+  onRangedConnect: () => {},
+  type: '',
+  busy: false,
+};
+
 ActionButton.propTypes = {
   type: PropTypes.string,
-  connection: PropTypes.object,
-  saveConnection: PropTypes.func,
-  selectRangedTarget: PropTypes.func,
+  connection: PropTypes.instanceOf(Map).isRequired,
+  saveConnection: PropTypes.func.isRequired,
+  selectRangedTarget: PropTypes.func.isRequired,
   onCreate: PropTypes.func,
   onRangedConnect: PropTypes.func,
-  action: PropTypes.string,
+  action: PropTypes.string.isRequired,
   busy: PropTypes.bool,
 };
 

@@ -28,6 +28,7 @@ describe('MultiSelect', () => {
       selectValue: ['A', 'B'],
       acceptSuggestion: jasmine.createSpy('acceptSuggestion'),
       onChange: jasmine.createSpy('onChange'),
+      notify: jasmine.createSpy('notify'),
     };
   });
 
@@ -99,6 +100,7 @@ describe('MultiSelect', () => {
       .at(0)
       .simulate('click', { preventDefault: () => {}, stopPropagation: () => {} });
     expect(props.onChange).toHaveBeenCalledWith([{ value: 'B', label: 'Bl' }, { value: '' }]);
+    expect(props.notify).toHaveBeenCalled();
   });
 
   it('should accept clicked values', () => {

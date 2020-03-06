@@ -1,7 +1,7 @@
 import 'isomorphic-fetch';
 import { URLSearchParams } from 'url';
 import request from 'shared/JSONRequest';
-import { fileFromReadStream } from 'api/utils/files';
+import { fileFromReadStream } from 'api/files/filesystem';
 import evidencePackage from './evidencePackage';
 
 import vaultEvidencesModel from './vaultEvidencesModel';

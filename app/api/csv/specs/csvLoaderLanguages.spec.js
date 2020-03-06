@@ -1,10 +1,13 @@
+/** @format */
+
 import path from 'path';
 import fs from 'fs';
 import db from 'api/utils/testing_db';
 import entities from 'api/entities';
+import { files } from 'api/files/files';
 import { search } from 'api/search';
 import settings from 'api/settings';
-import * as fileUtils from 'api/utils/files';
+import * as fileUtils from 'api/files/filesystem';
 
 import CSVLoader from '../csvLoader';
 import fixtures, { template1Id } from './fixtures';
@@ -47,15 +50,16 @@ describe('csvLoader languages', () => {
   });
 
   afterAll(async () => {
+    const generatedImages = (await files.get({})).map(u => u._id.toString());
     await fileUtils.deleteFiles([
       path.join(configPaths.uploadedDocuments, 'generated1.pdf'),
       path.join(configPaths.uploadedDocuments, 'generated2.pdf'),
-      path.join(configPaths.uploadedDocuments, `${imported[0]._id.toString()}.jpg`),
-      path.join(configPaths.uploadedDocuments, `${imported[1]._id.toString()}.jpg`),
-      path.join(configPaths.uploadedDocuments, `${imported[2]._id.toString()}.jpg`),
-      path.join(configPaths.uploadedDocuments, `${imported[3]._id.toString()}.jpg`),
-      path.join(configPaths.uploadedDocuments, `${imported[4]._id.toString()}.jpg`),
-      path.join(configPaths.uploadedDocuments, `${imported[5]._id.toString()}.jpg`),
+      path.join(configPaths.uploadedDocuments, `${generatedImages[0]}.jpg`),
+      path.join(configPaths.uploadedDocuments, `${generatedImages[1]}.jpg`),
+      path.join(configPaths.uploadedDocuments, `${generatedImages[2]}.jpg`),
+      path.join(configPaths.uploadedDocuments, `${generatedImages[3]}.jpg`),
+      path.join(configPaths.uploadedDocuments, `${generatedImages[4]}.jpg`),
+      path.join(configPaths.uploadedDocuments, `${generatedImages[5]}.jpg`),
     ]);
 
     await removeTestingZip();
@@ -80,10 +84,8 @@ describe('csvLoader languages', () => {
     expect(esText).toEqual(['text_es1', 'text_es2', 'text_es3']);
   });
 
-  it('should translated files', () => {
-    const enText = imported.filter(e => e.language === 'en');
-    const esText = imported.filter(e => e.language === 'es');
-    expect(enText[0].file.filename).toBe('generated2.pdf');
-    expect(esText[0].file.filename).toBe('generated1.pdf');
+  it('should import translated files', async () => {
+    const importedFiles = await files.get({ type: 'document' });
+    expect(importedFiles.map(f => f.filename)).toEqual(['generated2.pdf', 'generated1.pdf']);
   });
 });

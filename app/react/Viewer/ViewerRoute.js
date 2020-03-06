@@ -1,5 +1,3 @@
-/** @format */
-
 import RouteHandler from 'app/App/RouteHandler';
 import EntitiesAPI from 'app/Entities/EntitiesAPI';
 import React from 'react';
@@ -16,7 +14,7 @@ class ViewerRoute extends RouteHandler {
     const { sharedId } = requestParams.data;
     const [entity] = await EntitiesAPI.get(requestParams.set({ sharedId }));
 
-    return entity.file
+    return entity.documents.length
       ? PDFView.requestState(requestParams, globalResources)
       : EntityView.requestState(requestParams, globalResources);
   }
@@ -36,6 +34,13 @@ class ViewerRoute extends RouteHandler {
     this.context.store.dispatch(setReferences([]));
     this.context.store.dispatch(actions.unset('entityView/entity'));
     this.context.store.dispatch(relationships.emptyState());
+  }
+
+  urlHasChanged(nextProps) {
+    const { query } = this.props.location;
+    const { query: nextQuery } = nextProps.location;
+    const sameQueryFile = query.file === nextQuery.file;
+    return super.urlHasChanged(nextProps) || !sameQueryFile;
   }
 
   render() {

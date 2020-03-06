@@ -1,4 +1,3 @@
-/** @format */
 /* eslint-disable no-param-reassign,max-statements */
 
 import { generateNamesAndIds } from 'api/templates/utils';
@@ -6,18 +5,17 @@ import ID from 'shared/uniqueID';
 import { propertyTypes } from 'shared/propertyTypes';
 import date from 'api/utils/date';
 import relationships from 'api/relationships/relationships';
-import createError from 'api/utils/Error';
 import search from 'api/search/search';
 import templates from 'api/templates/templates';
 import translationsModel from 'api/i18n/translations';
 import path from 'path';
-import PDF from 'api/upload/PDF';
+import { PDF, files } from 'api/files';
 import paths from 'api/config/paths';
 import dictionariesModel from 'api/thesauri/dictionariesModel';
 import translate, { getContext } from 'shared/translate';
-import { deleteFiles } from '../utils/files.js';
+import { deleteFiles } from '../files/filesystem';
 import model from './entitiesModel';
-import { validateEntity } from './entitySchema';
+import { validateEntity } from '../../shared/types/entitySchema';
 import settings from '../settings';
 
 /** Repopulate metadata object .label from thesauri and relationships. */
@@ -160,10 +158,6 @@ async function updateEntity(entity, _template) {
 
       if (typeof entity.published !== 'undefined') {
         d.published = entity.published;
-      }
-
-      if (entity.toc && currentDoc.file && d.file.filename === currentDoc.file.filename) {
-        d.toc = entity.toc;
       }
 
       if (typeof entity.template !== 'undefined') {
@@ -356,12 +350,24 @@ export default {
     await process(0, totalRows);
   },
 
-  get(query, select, pagination) {
-    return model.get(query, select, pagination);
+  async get(query, select, options = {}) {
+    const { documentsFullText, ...restOfOptions } = options;
+    const entities = await model.get(query, select, restOfOptions);
+    return Promise.all(
+      entities.map(async entity => {
+        const documents = await files.get(
+          { entity: entity.sharedId, type: 'document' },
+          documentsFullText ? '+fullText' : ''
+        );
+
+        entity.documents = documents;
+        return entity;
+      })
+    );
   },
 
   async getWithRelationships(query, select, pagination) {
-    const entities = await model.get(query, select, pagination);
+    const entities = await this.get(query, select, pagination);
     return Promise.all(
       entities.map(async entity => {
         entity.relations = await relationships.getByDocument(entity.sharedId, entity.language);
@@ -563,24 +569,11 @@ export default {
     }
     await Promise.all([
       relationships.delete({ entity: sharedId }, null, false),
+      files.delete({ entity: sharedId }),
       this.deleteFiles(docs),
       this.deleteRelatedEntityFromMetadata(docs[0]),
     ]);
     return docs;
-  },
-
-  async getRawPage(sharedId, language, pageNumber) {
-    const [entity] = await model.get({ sharedId, language }, { [`fullText.${pageNumber}`]: true });
-    if (!entity || !entity.fullText) {
-      throw createError('entity does not exists', 404);
-    }
-
-    if (typeof entity.fullText[pageNumber] === 'undefined') {
-      throw createError('page does not exist', 404);
-    }
-
-    const pageNumberMatch = /\[\[(\d+)\]\]/g;
-    return entity.fullText[pageNumber].replace(pageNumberMatch, '');
   },
 
   async removeValuesFromEntities(properties, template) {
@@ -758,7 +751,7 @@ export default {
         return;
       }
 
-      const entities = await this.get({ language: defaultLanguage }, '+fullText', {
+      const entities = await this.get({ language: defaultLanguage }, '', {
         skip: offset,
         limit,
       });

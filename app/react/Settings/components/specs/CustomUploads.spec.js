@@ -4,6 +4,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import api from 'app/utils/api';
 import { ConfirmButton } from 'app/Layout';
+import { RequestParams } from 'app/utils/RequestParams';
 
 import { CustomUploads, mapStateToProps } from '../CustomUploads';
 
@@ -80,10 +81,11 @@ describe('CustomUploads', () => {
 
   describe('requestState', () => {
     it('should get the uploads', async () => {
-      const request = {};
+      const request = new RequestParams();
       const actions = await CustomUploads.requestState(request);
 
-      expect(api.get).toHaveBeenCalledWith('customisation/upload', request);
+      const expectedParams = new RequestParams({ type: 'custom' });
+      expect(api.get).toHaveBeenCalledWith('files', expectedParams);
       expect(actions).toMatchSnapshot();
     });
   });

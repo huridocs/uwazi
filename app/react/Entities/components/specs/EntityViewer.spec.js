@@ -3,7 +3,7 @@ import React from 'react';
 
 import { ConnectionsGroups, ConnectionsList } from 'app/ConnectionsList';
 import { shallow } from 'enzyme';
-
+import { FileList } from 'app/Attachments/components/FileList';
 import { EntityViewer } from '../EntityViewer';
 
 describe('EntityViewer', () => {
@@ -15,7 +15,7 @@ describe('EntityViewer', () => {
   beforeEach(() => {
     context = { confirm: jasmine.createSpy('confirm') };
     props = {
-      entity: { title: 'Title' },
+      entity: { title: 'Title', documents: [{ _id: '123', title: 'Test doc' }] },
       templates: [
         {
           _id: 'template1',
@@ -63,6 +63,12 @@ describe('EntityViewer', () => {
       .props()
       .deleteConnection({ sourceType: 'not metadata' });
     expect(context.confirm).toHaveBeenCalled();
+  });
+
+  it('should render a FileList with the entity documents', () => {
+    render();
+    expect(component.find(FileList).props().files).toEqual(props.entity.documents);
+    expect(component.find(FileList).props().entity).toEqual(props.entity);
   });
 
   describe('deleteConnection', () => {

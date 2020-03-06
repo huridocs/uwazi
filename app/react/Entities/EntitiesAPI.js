@@ -14,8 +14,8 @@ export default {
 
   async getRawPage(requestParams) {
     const response = await api.get(
-      'entities/get_raw_page',
-      requestParams.add({ pageNumber: requestParams.data.pageNumber || 1 })
+      'documents/page',
+      requestParams.add({ page: requestParams.data.page || 1 })
     );
     return response.json.data;
   },

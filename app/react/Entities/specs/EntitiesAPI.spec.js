@@ -19,10 +19,10 @@ describe('EntitiesAPI', () => {
     backend
       .get(`${APIURL}entities?param=1`, { body: JSON.stringify({ rows: arrayResponse }) })
       .get(`${APIURL}entities/search`, { body: JSON.stringify(searchResponse) })
-      .get(`${APIURL}entities/get_raw_page?sharedId=sharedId&pageNumber=2`, {
+      .get(`${APIURL}documents/page?sharedId=sharedId&page=2`, {
         body: JSON.stringify(page2Text),
       })
-      .get(`${APIURL}entities/get_raw_page?sharedId=sharedId&pageNumber=1`, {
+      .get(`${APIURL}documents/page?sharedId=sharedId&page=1`, {
         body: JSON.stringify(page1Text),
       })
       .get(`${APIURL}entities/uploads`, { body: JSON.stringify({ rows: 'uploads' }) })
@@ -60,7 +60,7 @@ describe('EntitiesAPI', () => {
 
   describe('pageRawText', () => {
     it('should get page_raw_page and return the text', async () => {
-      const request = new RequestParams({ sharedId: 'sharedId', pageNumber: 2 });
+      const request = new RequestParams({ sharedId: 'sharedId', page: 2 });
       const text = await entitiesAPI.getRawPage(request);
       expect(text).toBe(page2Text.data);
     });

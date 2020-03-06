@@ -5,6 +5,7 @@ import pow from 'mongodb_fixtures';
 import MongodbMemoryServer from 'mongodb-memory-server';
 
 mongoose.Promise = Promise;
+mongoose.set('useFindAndModify', false);
 const testingDB = {};
 
 testingDB.id = id => pow.createObjectId(id);

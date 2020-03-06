@@ -32,7 +32,7 @@ export class ViewerTextSelectedMenu extends Component {
         </ShowIf>
         <div
           className="btn btn-primary"
-          onClick={this.props.addToToc.bind(null, this.props.reference.toJS())}
+          onClick={this.props.addToToc.bind(null, this.props.reference.toJS(), this.props.file.toc)}
         >
           <span className="ContextMenu-tooltip">Add to table of contents</span>
           <Icon icon="font" />
@@ -44,6 +44,7 @@ export class ViewerTextSelectedMenu extends Component {
 
 ViewerTextSelectedMenu.propTypes = {
   doc: PropTypes.object,
+  file: PropTypes.object.isRequired,
   reference: PropTypes.object,
   startNewConnection: PropTypes.func,
   openPanel: PropTypes.func,

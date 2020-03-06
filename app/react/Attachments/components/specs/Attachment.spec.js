@@ -2,7 +2,6 @@ import React from 'react';
 import { shallow } from 'enzyme';
 
 import { NeedAuthorization } from 'app/Auth';
-import UploadButton from 'app/Metadata/components/UploadButton';
 import AttachmentForm from 'app/Attachments/components/AttachmentForm';
 
 import { Icon } from 'UI';
@@ -146,35 +145,6 @@ describe('Attachment', () => {
     props.file.filename = 'image.doc';
     render();
     expect(component.find('.attachment-thumbnail').children().length).toBe(0);
-  });
-
-  it('should not render the replace button', () => {
-    render();
-
-    const replaceButton = component.find('.attachment').find(UploadButton);
-    expect(replaceButton.parent().props().if).toBe(false);
-  });
-
-  describe('When is sourceDocument', () => {
-    beforeEach(() => {
-      props.isSourceDocument = true;
-    });
-
-    it('should include an authorized replace button on the first item', () => {
-      render();
-      const replaceButton = component.find('.attachment-buttons').find(UploadButton);
-
-      expect(replaceButton.props().documentId).toBe(props.parentId);
-      expect(replaceButton.props().storeKey).toBe('storeKey');
-      expect(replaceButton.props().documentSharedId).toBe(props.parentSharedId);
-      expect(
-        replaceButton
-          .parents()
-          .at(2)
-          .is(NeedAuthorization)
-      ).toBe(true);
-      expect(replaceButton.parent().props().if).toBe(true);
-    });
   });
 
   it('should allow downloading the attachment', () => {

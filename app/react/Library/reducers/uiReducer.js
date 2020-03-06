@@ -1,6 +1,7 @@
 import Immutable from 'immutable';
 
 import * as types from 'app/Library/actions/actionTypes';
+import * as uploadTypes from 'app/Uploads/actions/actionTypes';
 
 const initialState = Immutable.fromJS({
   searchTerm: '',
@@ -36,6 +37,22 @@ export default function ui(state = initialState, action = {}) {
   if (action.type === types.SELECT_SINGLE_DOCUMENT) {
     const doc = Immutable.fromJS(action.doc);
     return state.update('selectedDocuments', () => Immutable.fromJS([doc]));
+  }
+
+  if (action.type === uploadTypes.UPLOAD_COMPLETE) {
+    const docIndex = state
+      .get('selectedDocuments')
+      .findIndex(doc => doc.get('sharedId') === action.doc);
+
+    if (docIndex >= 0) {
+      const doc = state
+        .get('selectedDocuments')
+        .get(docIndex)
+        .toJS();
+      doc.documents.push(action.file);
+
+      return state.setIn(['selectedDocuments', docIndex], Immutable.fromJS(doc));
+    }
   }
 
   if (action.type === types.SELECT_DOCUMENTS) {

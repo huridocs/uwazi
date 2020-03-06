@@ -7,8 +7,18 @@ const batmanFinishesId = db.id();
 const syncPropertiesEntityId = db.id();
 const templateId = db.id();
 const referenceId = db.id();
+const document1 = db.id();
 
 export default {
+  files: [
+    {
+      _id: document1,
+      fullText: {
+        1: 'page[[1]] 1[[1]]',
+        2: 'page[[2]] 2[[2]]',
+      }
+    }
+  ],
   entities: [
     {
       _id: batmanFinishesId,
@@ -112,4 +122,4 @@ export default {
   ],
 };
 
-export { batmanFinishesId, syncPropertiesEntityId, templateId };
+export { batmanFinishesId, syncPropertiesEntityId, templateId, document1 };

@@ -29,7 +29,7 @@ describe('Connection', () => {
       deleteReference: jasmine.createSpy('deleteReference'),
       active: true,
       highlighted: false,
-      doc: { pdfInfo: '' },
+      doc: { defaultDoc: { pdfInfo: '' } },
     };
   });
 
@@ -88,7 +88,7 @@ describe('Connection', () => {
         component.find(Item).simulate('click');
         expect(props.activateReference).toHaveBeenCalledWith(
           props.reference,
-          props.doc.pdfInfo,
+          props.doc.defaultDoc.pdfInfo,
           'tabName'
         );
         expect(component.find(Item).props().className).toContain('relationship-active');

@@ -35,6 +35,13 @@ Object {
   "language": "en",
   "results": Array [
     Object {
+      "documents": Array [
+        Object {
+          "entity": "doc2",
+          "language": "en",
+          "type": "document",
+        },
+      ],
       "language": "en",
       "semanticSearch": Object {
         "numRelevant": 2,
@@ -62,6 +69,13 @@ Object {
       "sharedId": "doc2",
     },
     Object {
+      "documents": Array [
+        Object {
+          "entity": "doc1",
+          "language": "en",
+          "type": "document",
+        },
+      ],
       "language": "en",
       "semanticSearch": Object {
         "numRelevant": 1,

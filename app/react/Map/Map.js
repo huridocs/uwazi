@@ -1,18 +1,17 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import ReactMapGL, { Marker, Popup, NavigationControl } from 'react-map-gl';
+import ReactMapGL, { Marker, Popup, NavigationControl, setRTLTextPlugin } from 'react-map-gl';
 import Immutable from 'immutable';
-
 import { Icon } from 'UI';
-
-import { isClient } from 'app/utils';
-import supercluster from 'supercluster'; //eslint-disable-line
+import Supercluster from 'supercluster'; //eslint-disable-line
 import _style from './style.json';
 import { getMarkersBoudingBox, markersToStyleFormat, TRANSITION_PROPS } from './helper';
 
-if (isClient && !(process && process.env.__testingEnvironment)) {
-  require('mapbox-gl').setRTLTextPlugin('/public/mapbox-gl-rtl-text.js.min'); //eslint-disable-line
-}
+setRTLTextPlugin(
+  'https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-rtl-text/v0.2.3/mapbox-gl-rtl-text.js',
+  null, //callback
+  true //lazy load
+);
 
 const getStateDefaults = ({ latitude, longitude, width, height, zoom }) => ({
   viewport: {
@@ -36,10 +35,11 @@ export default class Map extends Component {
     this.state.showControls = props.showControls;
 
     this.mapStyle = Immutable.fromJS(_style);
-    this.supercluster = supercluster({
+    this.supercluster = new Supercluster({
       radius: _style.sources.markers.clusterRadius,
       maxZoom: _style.sources.markers.clusterMaxZoom,
     });
+
     this.updateMapStyle(props);
     this.bindActions();
     this.assignDefaults();
@@ -102,10 +102,13 @@ export default class Map extends Component {
   onHover(e) {
     const { markers, cluster } = this.props;
     const { selectedMarker } = this.state;
+    let feature = null;
 
-    const feature = e.features.find(f => f.layer.id === 'unclustered-point');
-    if (feature) {
-      this.hoverOnMarker(markers[feature.properties.index]);
+    if (e.features) {
+      feature = e.features.find(f => f.layer.id === 'unclustered-point');
+      if (feature) {
+        this.hoverOnMarker(markers[feature.properties.index]);
+      }
     }
     if (!feature && selectedMarker && cluster) {
       this.setState({ selectedMarker: null });
@@ -149,17 +152,21 @@ export default class Map extends Component {
 
     this.zoomIn = () => this.zoom(+1);
     this.zoomOut = () => this.zoom(-1);
+
+    this.interactiveLayerIds = [];
+    if (this.mapStyle.has('layers')) {
+      this.interactiveLayerIds = this.mapStyle
+        .get('layers')
+        .filter(l => l.get('interactive'))
+        .map(l => l.get('id'))
+        .toJS();
+    }
   }
 
   processClusterOnClick(cluster) {
-    const map = this.map.getMap();
     const currentData = this.mapStyle.getIn(['sources', 'markers', 'data', 'features']).toJS();
     this.supercluster.load(currentData);
-    const markersOnCluster = this.supercluster.getLeaves(
-      cluster.properties.cluster_id,
-      Math.floor(map.getZoom()),
-      Infinity
-    );
+    const markersOnCluster = this.supercluster.getLeaves(cluster.properties.cluster_id, Infinity);
     this.clickOnCluster(markersOnCluster);
   }
 
@@ -335,6 +342,7 @@ export default class Map extends Component {
           onViewStateChange={this._onViewStateChange}
           onClick={this.onClick}
           onHover={this.onHover}
+          interactiveLayerIds={this.interactiveLayerIds}
         >
           {this.renderMarkers()}
           {this.renderPopup()}
@@ -366,6 +374,7 @@ Map.defaultProps = {
   autoCenter: true,
   scrollZoom: true,
   showControls: false,
+  interactiveLayerIds: [],
 };
 
 Map.propTypes = {
@@ -385,4 +394,5 @@ Map.propTypes = {
   autoCenter: PropTypes.bool,
   scrollZoom: PropTypes.bool,
   showControls: PropTypes.bool,
+  interactiveLayerIds: PropTypes.arrayOf(PropTypes.string),
 };

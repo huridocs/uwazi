@@ -1,10 +1,15 @@
 import { fromJS as Immutable } from 'immutable';
 import * as attachmentsTypes from 'app/Attachments/actions/actionTypes';
+import * as uploadTypes from 'app/Uploads/actions/actionTypes';
 
 const getId = (state, setInArray) => state.getIn(setInArray.concat(['_id']));
+const getSharedId = (state, setInArray) => state.getIn(setInArray.concat(['sharedId']));
 
 const getAttachments = (state, setInArray) =>
   state.getIn(setInArray.concat(['attachments'])) || Immutable([]);
+
+const getDocuments = (state, setInArray) =>
+  state.getIn(setInArray.concat(['documents'])) || Immutable([]);
 
 export default function manageAttachmentsReducer(
   originalReducer,
@@ -16,6 +21,14 @@ export default function manageAttachmentsReducer(
 
     if (useDefaults) {
       state = orignialState || {};
+    }
+
+    if (
+      action.type === uploadTypes.UPLOAD_COMPLETE &&
+      getSharedId(state, setInArray) === action.doc
+    ) {
+      const documents = getDocuments(state, setInArray);
+      return state.setIn(setInArray.concat(['documents']), documents.push(Immutable(action.file)));
     }
 
     if (
@@ -34,10 +47,7 @@ export default function manageAttachmentsReducer(
       getId(state, setInArray) === action.entity
     ) {
       const attachments = getAttachments(state, setInArray);
-      const mainFile = state.getIn(setInArray.concat(['file'])) || Immutable({});
-      const deleteMainFile = mainFile.get('filename') === action.file.filename;
-      const newState = deleteMainFile ? state.setIn(setInArray.concat(['file']), null) : state;
-      return newState.setIn(
+      return state.setIn(
         setInArray.concat(['attachments']),
         attachments.filterNot(a => a.get('filename') === action.file.filename)
       );

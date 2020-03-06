@@ -140,19 +140,22 @@ describe('Viewer uiReducer', () => {
       const newState = uiReducer(Immutable.fromJS({}), {
         type: types.SET_SELECTION,
         sourceRange: 'sourceRange',
+        sourceFile: '123',
       });
-      const expected = Immutable.fromJS({ reference: { sourceRange: 'sourceRange' } });
+      const expected = Immutable.fromJS({
+        reference: { sourceRange: 'sourceRange', sourceFile: '123' },
+      });
 
       expect(newState).toEqualImmutable(expected);
     });
   });
 
   describe('UNSET_SELECTION', () => {
-    it('should set sourceRange to null', () => {
+    it('should set sourceRange and sourceFile to null', () => {
       const newState = uiReducer(Immutable.fromJS({ reference: { sourceRange: 'sourceRange' } }), {
         type: types.UNSET_SELECTION,
       });
-      const expected = Immutable.fromJS({ reference: { sourceRange: null } });
+      const expected = Immutable.fromJS({ reference: { sourceRange: null, sourceFile: null } });
 
       expect(newState).toEqualImmutable(expected);
     });
@@ -178,23 +181,26 @@ describe('Viewer uiReducer', () => {
   });
 
   describe('SET_TARGET_SELECTION', () => {
-    it('should set targetRange passed', () => {
+    it('should set targetRange and targetFile passed', () => {
       const newState = uiReducer(Immutable.fromJS({}), {
         type: types.SET_TARGET_SELECTION,
         targetRange: 'targetRange',
+        targetFile: '123',
       });
-      const expected = Immutable.fromJS({ reference: { targetRange: 'targetRange' } });
+      const expected = Immutable.fromJS({
+        reference: { targetRange: 'targetRange', targetFile: '123' },
+      });
 
       expect(newState).toEqualImmutable(expected);
     });
   });
 
   describe('unsetTargetSelection', () => {
-    it('should set targetRange to null', () => {
+    it('should set targetRange and targetFile to null', () => {
       const newState = uiReducer(Immutable.fromJS({ reference: { targetRange: 'targetRange' } }), {
         type: types.UNSET_TARGET_SELECTION,
       });
-      const expected = Immutable.fromJS({ reference: { targetRange: null } });
+      const expected = Immutable.fromJS({ reference: { targetRange: null, targetFile: null } });
 
       expect(newState).toEqualImmutable(expected);
     });

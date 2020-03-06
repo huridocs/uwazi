@@ -9,36 +9,7 @@ exports[`AttachmentsList When parent is Target Document should treat all Attachm
   </h2>
   <div
     className="attachments-list"
-  >
-    <Connect(Attachment)
-      file={
-        Object {
-          "filename": "filename2.ext",
-          "originalname": "A Human name 2",
-        }
-      }
-      isSourceDocument={false}
-      key="0"
-      parentId="parentId"
-      parentSharedId="parentSharedId"
-      readOnly={true}
-      storeKey="storeKey"
-    />
-    <Connect(Attachment)
-      file={
-        Object {
-          "filename": "filename1.ext",
-          "originalname": "Human name 1",
-        }
-      }
-      isSourceDocument={false}
-      key="1"
-      parentId="parentId"
-      parentSharedId="parentSharedId"
-      readOnly={true}
-      storeKey="storeKey"
-    />
-  </div>
+  />
 </div>
 `;
 
@@ -46,60 +17,12 @@ exports[`AttachmentsList should render a sorted list of attachments (files) 1`] 
 <div
   className="attachments-list-parent"
 >
-  <Connect(NeedAuthorization)>
-    <div
-      className="attachment-buttons main-file"
-    >
-      <h2>
-        Document
-        <Tip
-          icon="question-circle"
-        >
-          Main file: add a file as the main content
-        </Tip>
-      </h2>
-      <Connect(UploadButton)
-        documentId="parentId"
-        documentSharedId="parentSharedId"
-        storeKey="storeKey"
-      />
-    </div>
-  </Connect(NeedAuthorization)>
   <h2>
     Attachments
   </h2>
   <div
     className="attachments-list"
-  >
-    <Connect(Attachment)
-      file={
-        Object {
-          "filename": "filename2.ext",
-          "originalname": "A Human name 2",
-        }
-      }
-      isSourceDocument={false}
-      key="0"
-      parentId="parentId"
-      parentSharedId="parentSharedId"
-      readOnly={false}
-      storeKey="storeKey"
-    />
-    <Connect(Attachment)
-      file={
-        Object {
-          "filename": "filename1.ext",
-          "originalname": "Human name 1",
-        }
-      }
-      isSourceDocument={false}
-      key="1"
-      parentId="parentId"
-      parentSharedId="parentSharedId"
-      readOnly={false}
-      storeKey="storeKey"
-    />
-  </div>
+  />
   <Connect(NeedAuthorization)
     roles={
       Array [
@@ -124,25 +47,6 @@ exports[`AttachmentsList when files is empty should add button in Downloads sect
 <div
   className="attachments-list-parent"
 >
-  <Connect(NeedAuthorization)>
-    <div
-      className="attachment-buttons main-file"
-    >
-      <h2>
-        Document
-        <Tip
-          icon="question-circle"
-        >
-          Main file: add a file as the main content
-        </Tip>
-      </h2>
-      <Connect(UploadButton)
-        documentId="parentId"
-        documentSharedId="parentSharedId"
-        storeKey="storeKey"
-      />
-    </div>
-  </Connect(NeedAuthorization)>
   <h2>
     Attachments
   </h2>
@@ -173,25 +77,6 @@ exports[`AttachmentsList when files is empty should render nothing if user not l
 <div
   className="attachments-list-parent"
 >
-  <Connect(NeedAuthorization)>
-    <div
-      className="attachment-buttons main-file"
-    >
-      <h2>
-        Document
-        <Tip
-          icon="question-circle"
-        >
-          Main file: add a file as the main content
-        </Tip>
-      </h2>
-      <Connect(UploadButton)
-        documentId="parentId"
-        documentSharedId="parentSharedId"
-        storeKey="storeKey"
-      />
-    </div>
-  </Connect(NeedAuthorization)>
   <h2>
     Attachments
   </h2>

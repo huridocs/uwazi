@@ -27,10 +27,16 @@ describe('review path', () => {
     it('should allow switching on and off full edit', async () => {
       await nightmare
         .waitToClick(selectors.review.toggleFullEditButton)
+        .waitToClick(selectors.review.cancelConfirmDialog)
         .waitToClick(selectors.review.toggleFullEditButton)
+        .waitToClick(selectors.review.acceptConfirmDialog)
+        .wait(selectors.review.titleEditBox);
+      await nightmare
         .waitToClick(selectors.review.toggleFullEditButton)
+        .wait(selectors.review.titleLabel);
+      await nightmare
         .waitToClick(selectors.review.toggleFullEditButton)
-        .waitToClick(selectors.review.toggleFullEditButton);
+        .waitToClick(selectors.review.acceptConfirmDialog);
       expect(await nightmare.isVisible(selectors.review.titleEditBox)).toBe(true);
       expect(
         await nightmare
@@ -66,13 +72,13 @@ describe('review path', () => {
         await nightmare
           .waitToClick(selectors.review.topFirstSuggestion)
           .waitToClick(selectors.review.previousDocumentButton)
-          .waitToClick(selectors.review.cancelDiscardChanges)
+          .waitToClick(selectors.review.cancelConfirmDialog)
           .waitForTextMatch(selectors.review.titleLabel, 'Batman')
       ).toEqual('Batman');
       expect(
         await nightmare
           .waitToClick(selectors.review.previousDocumentButton)
-          .waitToClick(selectors.review.confirmDiscardChanges)
+          .waitToClick(selectors.review.acceptConfirmDialog)
           .waitForTextMatch(selectors.review.titleLabel, 'The Spider')
       ).toEqual('The Spider');
       expect(

@@ -1,5 +1,4 @@
 import { catchErrors } from 'api/utils/jasmineHelpers';
-import date from 'api/utils/date.js';
 import fs from 'fs';
 import { mockID } from 'shared/uniqueID';
 import relationships from 'api/relationships';
@@ -8,7 +7,7 @@ import search from 'api/search/search';
 import db from 'api/utils/testing_db';
 import path from 'path';
 import documents from '../documents.js';
-import fixtures, { templateId } from './fixtures.js';
+import fixtures from './fixtures.js';
 import paths from '../../config/paths';
 
 describe('documents', () => {
@@ -79,17 +78,6 @@ describe('documents', () => {
           done();
         })
         .catch(catchErrors(done));
-    });
-
-    it('should assign unique ids to toc entries', async () => {
-      spyOn(date, 'currentUTC').and.returnValue(1);
-      const doc = { title: 'Batman begins', toc: [{}, {}], template: templateId };
-      const user = { _id: db.id() };
-
-      await documents.save(doc, { user, language: 'es' });
-      const result = await documents.getById('unique_id', 'es');
-      expect(result.toc[0]._id.toString()).toBeDefined();
-      expect(result.toc[1]._id).toBeDefined();
     });
   });
 
