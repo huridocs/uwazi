@@ -5,7 +5,7 @@ import React from 'react';
 
 import { shallow } from 'enzyme';
 import Immutable from 'immutable';
-import { XAxis, YAxis } from 'recharts';
+import { XAxis, YAxis, Cell } from 'recharts';
 
 import { mapStateToProps, BarChartComponent } from '../BarChart.js';
 import markdownDatasets from '../../markdownDatasets';
@@ -156,6 +156,96 @@ describe('BarChart Markdown component', () => {
 
       expect(markdownDatasets.getAggregations).toHaveBeenCalledWith(state, { prop1: 'propValue' });
       expect(component).toMatchSnapshot();
+    });
+  });
+
+  describe('when passing colors', () => {
+    it('should render with a single color', () => {
+      spyOn(markdownDatasets, 'getAggregations').and.returnValue(
+        Immutable.fromJS([
+          { key: 'id1', filtered: { doc_count: 25 } },
+          { key: 'id2', filtered: { doc_count: 33 } },
+          { key: 'missing', filtered: { doc_count: 45 } },
+          { key: 'id3', filtered: { doc_count: 13 } },
+          { key: 'id4', filtered: { doc_count: 0 } },
+        ])
+      );
+
+      const props = mapStateToProps(state, { prop1: 'propValue' });
+      props.colors = '#ccc';
+      const component = shallow(
+        <BarChartComponent
+          {...props}
+          property="prop1"
+          classname="custom-class"
+          context="tContext"
+        />
+      );
+
+      expect(markdownDatasets.getAggregations).toHaveBeenCalledWith(state, { prop1: 'propValue' });
+      component.find(Cell).forEach(cell => {
+        expect(cell.prop('fill')).toBe('#ccc');
+      });
+    });
+    it('should render with several colors', () => {
+      spyOn(markdownDatasets, 'getAggregations').and.returnValue(
+        Immutable.fromJS([
+          { key: 'id1', filtered: { doc_count: 25 } },
+          { key: 'id2', filtered: { doc_count: 33 } },
+          { key: 'missing', filtered: { doc_count: 45 } },
+          { key: 'id3', filtered: { doc_count: 13 } },
+          { key: 'id4', filtered: { doc_count: 0 } },
+        ])
+      );
+
+      const colors = ['#aaa', '#bbb', '#ccc', '#ddd', '#eee', '#000'];
+
+      const props = mapStateToProps(state, { prop1: 'propValue' });
+      props.colors = colors.join(',');
+
+      const component = shallow(
+        <BarChartComponent
+          {...props}
+          property="prop1"
+          classname="custom-class"
+          context="tContext"
+        />
+      );
+
+      expect(markdownDatasets.getAggregations).toHaveBeenCalledWith(state, { prop1: 'propValue' });
+      component.find(Cell).forEach((cell, index) => {
+        expect(cell.prop('fill')).toBe(colors[index]);
+      });
+    });
+    it('should cycle the colors', () => {
+      spyOn(markdownDatasets, 'getAggregations').and.returnValue(
+        Immutable.fromJS([
+          { key: 'id1', filtered: { doc_count: 25 } },
+          { key: 'id2', filtered: { doc_count: 33 } },
+          { key: 'missing', filtered: { doc_count: 45 } },
+          { key: 'id3', filtered: { doc_count: 13 } },
+          { key: 'id4', filtered: { doc_count: 0 } },
+        ])
+      );
+
+      const colors = ['#aaa', '#bbb'];
+
+      const props = mapStateToProps(state, { prop1: 'propValue' });
+      props.colors = colors.join(',');
+
+      const component = shallow(
+        <BarChartComponent
+          {...props}
+          property="prop1"
+          classname="custom-class"
+          context="tContext"
+        />
+      );
+
+      expect(markdownDatasets.getAggregations).toHaveBeenCalledWith(state, { prop1: 'propValue' });
+      component.find(Cell).forEach((cell, index) => {
+        expect(cell.prop('fill')).toBe(colors[index % 2]);
+      });
     });
   });
 });

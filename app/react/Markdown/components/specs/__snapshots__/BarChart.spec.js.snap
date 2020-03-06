@@ -172,7 +172,28 @@ exports[`BarChart Markdown component should render the data passed by mapStateTo
         stackId="unique"
         xAxisId={0}
         yAxisId={0}
-      />
+      >
+        <Cell
+          cursor="pointer"
+          fill="#1e1c8a"
+          key="cell-0"
+        />
+        <Cell
+          cursor="pointer"
+          fill="#1e1c8a"
+          key="cell-1"
+        />
+        <Cell
+          cursor="pointer"
+          fill="#1e1c8a"
+          key="cell-2"
+        />
+        <Cell
+          cursor="pointer"
+          fill="#1e1c8a"
+          key="cell-3"
+        />
+      </Bar>
     </BarChart>
   </ResponsiveContainer>
 </div>
@@ -337,7 +358,23 @@ exports[`BarChart Markdown component when excludeZero should render without zero
         stackId="unique"
         xAxisId={0}
         yAxisId={0}
-      />
+      >
+        <Cell
+          cursor="pointer"
+          fill="#1e1c8a"
+          key="cell-0"
+        />
+        <Cell
+          cursor="pointer"
+          fill="#1e1c8a"
+          key="cell-1"
+        />
+        <Cell
+          cursor="pointer"
+          fill="#1e1c8a"
+          key="cell-2"
+        />
+      </Bar>
     </BarChart>
   </ResponsiveContainer>
 </div>
@@ -559,7 +596,18 @@ exports[`BarChart Markdown component when passing maxCategories should only rend
         stackId="unique"
         xAxisId={0}
         yAxisId={0}
-      />
+      >
+        <Cell
+          cursor="pointer"
+          fill="#1e1c8a"
+          key="cell-0"
+        />
+        <Cell
+          cursor="pointer"
+          fill="#1e1c8a"
+          key="cell-1"
+        />
+      </Bar>
     </BarChart>
   </ResponsiveContainer>
 </div>
@@ -720,7 +768,18 @@ exports[`BarChart Markdown component when passing maxCategories should render ot
         stackId="unique"
         xAxisId={0}
         yAxisId={0}
-      />
+      >
+        <Cell
+          cursor="pointer"
+          fill="#1e1c8a"
+          key="cell-0"
+        />
+        <Cell
+          cursor="pointer"
+          fill="#1e1c8a"
+          key="cell-1"
+        />
+      </Bar>
     </BarChart>
   </ResponsiveContainer>
 </div>
