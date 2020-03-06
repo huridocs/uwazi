@@ -55,7 +55,7 @@ async function sendSample(
   for (let i = 0; i < 10; i += 1) {
     lastErr = undefined;
     try {
-      response = await JSONRequest.put(path, request);
+      response = await JSONRequest.post(path, request);
       if (response.status === 200) {
         break;
       }
