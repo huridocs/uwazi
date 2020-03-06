@@ -91,7 +91,9 @@ type ClassificationSampleRequest = {
 };
 
 type ClassificationSampleResponse = {
-  json: { samples: { sharedId: string; predicted_labels: { topic: string; quality: number }[] }[] };
+  json: {
+    samples?: { sharedId: string; predicted_labels: { topic: string; quality: number }[] }[];
+  };
   status: any;
 };
 
@@ -135,7 +137,7 @@ async function handleResponse(
     console.error(`Missing prop for ${e.sharedId}`);
     return false;
   }
-  const sample = response.json.samples.find(s => s.sharedId === e.sharedId);
+  const sample = response.json.samples!.find(s => s.sharedId === e.sharedId);
   if (!sample) {
     return false;
   }

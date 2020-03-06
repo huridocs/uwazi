@@ -4,20 +4,18 @@ import entities from 'api/entities';
 import { MetadataObject } from 'api/entities/entitiesModel';
 import { EntitySchema } from 'api/entities/entityType';
 import { QueryForEach, WithId } from 'api/odm';
-import { Task, TaskProvider } from 'api/tasks/tasks';
 import templates from 'api/templates';
 import thesauri from 'api/thesauri';
-import { extractSequence } from 'api/topicclassification';
-import { listModels } from 'api/topicclassification/api';
+import { extractSequence, listModels } from 'api/topicclassification';
 import { buildFullModelName } from 'shared/commonTopicClassification';
 import JSONRequest from 'shared/JSONRequest';
 import { propertyTypes } from 'shared/propertyTypes';
+import { Task, TaskProvider } from 'shared/tasks/tasks';
 import { sleep } from 'shared/tsUtils';
 import { PropertySchema } from 'shared/types/commonTypes';
-import { ThesaurusSchema } from 'shared/types/thesaurusType';
+import { TemplateSchema } from 'shared/types/templateType';
+import { ThesaurusSchema, ThesaurusValueSchema } from 'shared/types/thesaurusType';
 import * as util from 'util';
-import { TemplateSchema } from '../../shared/types/templateType';
-import { ThesaurusValueSchema } from '../../shared/types/thesaurusType';
 
 export interface SyncArgs {
   limit?: number;
@@ -39,7 +37,7 @@ type ClassifyRequest = {
 
 type ClassifyResponse = {
   json: {
-    samples: {
+    samples?: {
       sharedId: string;
       predicted_labels: { topic: string; quality: number }[];
       model_version?: string;
@@ -189,18 +187,18 @@ class SyncTask extends Task {
       this.status.message = `Aborted: ${models.error}`;
       return;
     }
-    if (!models.models.length) {
-      this.status.message = 'Aborted: Topic Classification server does not have any models!';
-      return;
-    }
     const templatesDict = (await templates.get(null)).reduce(
       (res, t) => ({ ...res, [t._id.toString()]: t }),
       {}
     );
     const thesaurusDict = (await thesauri.get(null)).reduce(
       (res, t) => ({ ...res, [t._id.toString()]: t }),
-      {}
+      {} as { [k: string]: ThesaurusSchema }
     );
+    if (!models.models.length) {
+      this.status.message = 'Aborted: Topic Classification server does not have any models!';
+      return;
+    }
     const res = this.status.result;
     res.seen = 0;
     res.index = 0;

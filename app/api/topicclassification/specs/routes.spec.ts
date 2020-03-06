@@ -4,7 +4,7 @@ import { catchErrors } from 'api/utils/jasmineHelpers';
 import db from 'api/utils/testing_db';
 
 import topicClassificationRoute from '../routes';
-import * as topicClassification from '../topicClassification';
+import * as topicClassification from '../api';
 import fixtures from './fixtures';
 
 describe('topic classification routes', () => {

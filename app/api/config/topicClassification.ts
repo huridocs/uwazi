@@ -4,7 +4,7 @@ const { TOPIC_CLASSIFICATION_URL } = process.env;
 export const tcServer = TOPIC_CLASSIFICATION_URL || 'http://localhost:5005';
 export const useThesaurusNames = true;
 
-const RPC_DEADLINE_MS = 1000;
+export const RPC_DEADLINE_MS = 1000;
 
 export async function IsTopicClassificationReachable() {
   if (!tcServer || tcServer === 'none') {

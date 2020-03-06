@@ -4,8 +4,12 @@
 export interface ClassifierModelSchema {
   name: string;
   preferred?: string;
-  bert?: string;
-  sample?: number;
+  config?: {
+    bert: string;
+    num_train?: number;
+    num_test?: number;
+    [k: string]: any | undefined;
+  };
   completeness?: number;
   extraneous?: number;
   instances?: string[];

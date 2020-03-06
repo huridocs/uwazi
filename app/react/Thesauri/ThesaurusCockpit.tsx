@@ -4,49 +4,79 @@ import RouteHandler from 'app/App/RouteHandler';
 import { actions } from 'app/BasicReducer';
 import Loader from 'app/components/Elements/Loader';
 import { I18NLink, t } from 'app/I18N';
-import api from 'app/Search/SearchAPI';
+import SearchAPI from 'app/Search/SearchAPI';
 import { resolveTemplateProp } from 'app/Settings/utils/resolveProperty';
 import {
-  getReadyToReviewSuggestionsQuery,
   getReadyToPublishSuggestionsQuery,
+  getReadyToReviewSuggestionsQuery,
 } from 'app/Settings/utils/suggestions';
 import TemplatesAPI from 'app/Templates/TemplatesAPI';
+import { Notice } from 'app/Thesauri/Notice';
 import ThesauriAPI from 'app/Thesauri/ThesauriAPI';
+import api from 'app/utils/api';
 import { RequestParams } from 'app/utils/RequestParams';
 import React from 'react';
 import { connect } from 'react-redux';
+import { Dispatch } from 'redux';
 import { createSelector } from 'reselect';
+import { TaskStatus } from 'shared/tasks/tasks';
+import { PropertySchema } from 'shared/types/commonTypes';
 import { IImmutable } from 'shared/types/Immutable';
 import { ThesaurusSchema, ThesaurusValueSchema } from 'shared/types/thesaurusType';
 import { Icon } from 'UI';
-import { PropertySchema } from 'shared/types/commonTypes';
-import { Notice } from 'app/Thesauri/Notice';
+import util from 'util';
 import { ClassifierModelSchema } from './types/classifierModelType';
 import { SuggestionResultSchema } from './types/suggestionResultType';
 import { buildSuggestionResult, flattenSuggestionResults } from './utils/suggestionQuery';
 import { getValuesSortedByName } from './utils/valuesSort';
+
+interface TaskState {
+  SyncState?: TaskStatus;
+  TrainState?: TaskStatus;
+}
+
+interface ThesaurusCockpitStore {
+  thesauri: {
+    thesaurus: IImmutable<ThesaurusSchema>;
+    models: IImmutable<ClassifierModelSchema>[];
+    suggestionsTBPublished: IImmutable<SuggestionResultSchema>;
+    suggestionsTBReviewed: IImmutable<SuggestionResultSchema>;
+    taskState: IImmutable<TaskState>;
+  };
+}
 
 export type ThesaurusCockpitProps = {
   thesaurus: ThesaurusSchema;
   models: ClassifierModelSchema[];
   suggestionsTBPublished: SuggestionResultSchema;
   suggestionsTBReviewed: SuggestionResultSchema;
+  taskState: TaskState;
+  updateTaskState: (thesaurusName: string) => {};
+  startTraining: (thesaurusId: string) => {};
 };
 
-interface ThesaurusCockpitBaseState {
-  isLearning: boolean;
-  isReadyForReview: boolean;
+function updateTaskState(thesaurusName: string) {
+  return async (dispatch: Dispatch<ThesaurusCockpitStore>) => {
+    const syncState = await api.get(
+      'tasks',
+      new RequestParams({ name: 'TopicClassificationSync' })
+    );
+    const trainState = await ThesauriAPI.getModelTrainStatus(
+      new RequestParams({ thesaurus: thesaurusName })
+    );
+    dispatch(
+      actions.set('thesauri.taskState', { SyncState: syncState.json, TrainState: trainState })
+    );
+  };
+}
+
+function startTraining(thesaurusId: string) {
+  return async (_dispatch: Dispatch<ThesaurusCockpitStore>) => {
+    console.log(await ThesauriAPI.trainModel(new RequestParams({ thesaurusId })));
+  };
 }
 
 export class ThesaurusCockpitBase extends RouteHandler {
-  constructor(props: any, context: any) {
-    super(props, context);
-    this.state = {
-      isLearning: false,
-      isReadyForReview: false,
-    };
-  }
-
   static genIcons(label: string, actual: number, possible: number) {
     const icons = [];
     for (let i = 0; i < possible; i += 1) {
@@ -113,7 +143,8 @@ export class ThesaurusCockpitBase extends RouteHandler {
 
   learningNotice() {
     const { thesaurus } = this.props as ThesaurusCockpitProps;
-    const { isLearning, isReadyForReview } = this.state;
+    const isLearning = false;
+    const isReadyForReview = false;
     let notice;
 
     if (isReadyForReview) {
@@ -155,6 +186,14 @@ export class ThesaurusCockpitBase extends RouteHandler {
           >
             <span>{t('System', 'Get started')}</span>
           </I18NLink>
+          <button
+            type="button"
+            className="btn btn-default"
+            onClick={() => this.props.startTraining(thesaurus._id)}
+          >
+            <Icon icon="times" />
+            <span className="btn-label">{t('System', 'Train model')}</span>
+          </button>
         </Notice>
       );
     }
@@ -181,7 +220,7 @@ export class ThesaurusCockpitBase extends RouteHandler {
     const docsWithSuggestions = await Promise.all(
       templates.map((template: { _id: string }) => {
         const reqParams = requestParams.set(queryBuilderFunc(template._id, assocProp));
-        return api.search(reqParams);
+        return SearchAPI.search(reqParams);
       })
     );
     const sanitizedSuggestionsTBPublished = docsWithSuggestions.map((s: any) =>
@@ -199,7 +238,7 @@ export class ThesaurusCockpitBase extends RouteHandler {
     const thesaurus = thesauri[0];
 
     // Fetch models associated with known thesauri.
-    const modelParams = requestParams.onlyHeaders().set({ model: thesaurus.name });
+    const modelParams = requestParams.onlyHeaders().set({ thesaurus: thesaurus.name });
     const model: ClassifierModelSchema = await ThesauriAPI.getModelStatus(modelParams);
 
     const assocProp = resolveTemplateProp(thesaurus, templates);
@@ -218,28 +257,37 @@ export class ThesaurusCockpitBase extends RouteHandler {
       assocProp
     );
     return [
-      actions.set('thesauri/thesaurus', thesaurus as ThesaurusSchema),
-      actions.set('thesauri/models', [model as ClassifierModelSchema]),
+      actions.set('thesauri.thesaurus', thesaurus as ThesaurusSchema),
+      actions.set('thesauri.models', [model as ClassifierModelSchema]),
       actions.set(
-        'thesauri/suggestionsTBPublished',
+        'thesauri.suggestionsTBPublished',
         docsWithSuggestionsForPublish as SuggestionResultSchema
       ),
       actions.set(
-        'thesauri/suggestionsTBReviewed',
+        'thesauri.suggestionsTBReviewed',
         docsWithSuggestionsForReview as SuggestionResultSchema
       ),
     ];
   }
 
+  interval?: NodeJS.Timeout = undefined;
+
+  componentDidMount() {
+    this.interval = setInterval(() => this.props.updateTaskState(this.props.thesaurus.name), 1000);
+  }
+
   componentWillUnmount() {
     this.emptyState();
+    if (this.interval) {
+      clearInterval(this.interval);
+    }
   }
 
   emptyState() {
-    this.context.store.dispatch(actions.unset('thesauri/models'));
-    this.context.store.dispatch(actions.unset('thesauri/thesaurus'));
-    this.context.store.dispatch(actions.unset('thesauri/suggestionsTBPublished'));
-    this.context.store.dispatch(actions.unset('thesauri/suggestionsTBReviewed'));
+    this.context.store.dispatch(actions.unset('thesauri.models'));
+    this.context.store.dispatch(actions.unset('thesauri.thesaurus'));
+    this.context.store.dispatch(actions.unset('thesauri.suggestionsTBPublished'));
+    this.context.store.dispatch(actions.unset('thesauri.suggestionsTBReviewed'));
   }
 
   publishButton() {
@@ -266,7 +314,7 @@ export class ThesaurusCockpitBase extends RouteHandler {
   }
 
   render() {
-    const { thesaurus } = this.props as ThesaurusCockpitProps;
+    const { thesaurus, taskState } = this.props as ThesaurusCockpitProps;
     const { name } = thesaurus;
     if (!name) {
       return <Loader />;
@@ -290,6 +338,7 @@ export class ThesaurusCockpitBase extends RouteHandler {
             </thead>
             <tbody>{this.topicNodes()}</tbody>
           </table>
+          <span>{taskState && util.inspect(taskState, false, null)}</span>
         </div>
         <div className="settings-footer">
           <I18NLink to="/settings/dictionaries" className="btn btn-default">
@@ -301,15 +350,6 @@ export class ThesaurusCockpitBase extends RouteHandler {
       </div>
     );
   }
-}
-
-interface ThesaurusCockpitStore {
-  thesauri: {
-    thesaurus: IImmutable<ThesaurusSchema>;
-    models: IImmutable<ClassifierModelSchema>[];
-    suggestionsTBPublished: IImmutable<SuggestionResultSchema>;
-    suggestionsTBReviewed: IImmutable<SuggestionResultSchema>;
-  };
 }
 
 const selectModels = createSelector(
@@ -331,13 +371,19 @@ const selectSuggestionsTBReviewed = createSelector(
   suggestionsTBReviewed => suggestionsTBReviewed.toJS()
 );
 
+const selectTaskState = createSelector(
+  (state: ThesaurusCockpitStore) => state.thesauri.taskState,
+  s => s.toJS()
+);
+
 function mapStateToProps(state: ThesaurusCockpitStore) {
   return {
     models: selectModels(state),
     thesaurus: selectThesaurus(state),
     suggestionsTBPublished: selectSuggestionsTBPublished(state),
     suggestionsTBReviewed: selectSuggestionsTBReviewed(state),
+    taskState: selectTaskState(state),
   };
 }
 
-export default connect(mapStateToProps, null)(ThesaurusCockpitBase);
+export default connect(mapStateToProps, { updateTaskState, startTraining })(ThesaurusCockpitBase);

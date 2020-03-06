@@ -41,7 +41,9 @@ export class Settings extends RouteHandler {
 
     // Fetch models associated with known thesauri.
     const allModels = await Promise.all(
-      thesauri.map(thesaurus => ThesauriAPI.getModelStatus(request.set({ model: thesaurus.name })))
+      thesauri.map(thesaurus =>
+        ThesauriAPI.getModelStatus(request.set({ thesaurus: thesaurus.name }))
+      )
     );
     const models = allModels.filter(model => !model.hasOwnProperty('error'));
 
@@ -81,7 +83,7 @@ export class Settings extends RouteHandler {
     return [
       actions.set('auth/user', user),
       actions.set('dictionaries', modeledThesauri),
-      actions.set('thesauri/models', models),
+      actions.set('thesauri.models', models),
       actions.set('relationTypes', relationTypes),
       actions.set('translations', translations),
       actions.set('settings/collection', collection),

@@ -106,7 +106,11 @@ const _fetch = (url, data, method, _headers) => {
       }
 
       return processedResponse;
-    });
+    })
+    .catch(() => ({
+      json: {},
+      status: response.status,
+    }));
 };
 
 export default {

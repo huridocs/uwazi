@@ -3,7 +3,7 @@ import entities from 'api/entities';
 import { search } from 'api/search';
 import db from 'api/utils/testing_db';
 import JSONRequest from 'shared/JSONRequest';
-import { TaskProvider } from '../../tasks/tasks';
+import { TaskProvider } from 'shared/tasks/tasks';
 import { SyncArgs, syncEntity } from '../sync';
 import fixtures, { e1 } from './fixtures';
 

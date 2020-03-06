@@ -6,7 +6,7 @@ import { needsAuthorization } from 'api/auth';
 import { validation } from 'api/utils';
 import { Application, Request, Response } from 'express';
 import Joi from 'joi';
-import { TaskProvider } from './tasks';
+import { TaskProvider } from 'shared/tasks/tasks';
 
 export const TASKS_ENDPOINT = 'tasks';
 const tasksPrefix = `/api/${TASKS_ENDPOINT}`;

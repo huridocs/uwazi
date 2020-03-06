@@ -1,6 +1,6 @@
 /** @format */
 import instrumentRoutes from 'api/utils/instrumentRoutes.js';
-import { TaskProvider, Task } from '../tasks';
+import { TaskProvider, Task } from 'shared/tasks/tasks';
 import testRoute from '../routes';
 
 require('api/utils/jasmineHelpers');

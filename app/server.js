@@ -1,8 +1,5 @@
-/** @format */
-
 /* eslint-disable no-console */
 
-import { TaskProvider } from 'api/tasks/tasks';
 import bodyParser from 'body-parser';
 import compression from 'compression';
 import express from 'express';
@@ -10,6 +7,7 @@ import helmet from 'helmet';
 import { Server } from 'http';
 import mongoose from 'mongoose';
 import path from 'path';
+import { TaskProvider } from 'shared/tasks/tasks';
 import uwaziMessage from '../message';
 import apiRoutes from './api/api';
 import privateInstanceMiddleware from './api/auth/privateInstanceMiddleware';
@@ -118,6 +116,7 @@ mongoose
         () =>
           TaskProvider.runAndWait('TopicClassificationSync', 'TopicClassificationSync', {
             mode: 'onlynew',
+            noDryRun: true,
           }),
         10000
       );

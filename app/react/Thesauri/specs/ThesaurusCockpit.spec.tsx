@@ -59,7 +59,7 @@ const templates: TemplateSchema[] = [
 ];
 const models: ClassifierModelSchema[] = [
   {
-    bert: 'testBert',
+    config: { bert: 'testBert' },
     completeness: 0,
     extraneous: 0,
     instances: ['timestamp'],
@@ -158,6 +158,9 @@ describe('ThesaurusCockpit', () => {
         thesaurus: thesauri[0],
         suggestionsTBPublished: flattenedSuggestions,
         suggestionsTBReviewed: flattenedSuggestions,
+        taskState: {},
+        updateTaskState: jasmine.createSpy('updateTaskState'),
+        startTraining: jasmine.createSpy('startTraining'),
       };
       RouteHandler.renderedFromServer = true;
       dispatchCallsOrder = [];
@@ -247,16 +250,16 @@ describe('ThesaurusCockpit', () => {
       expect(actions.length).toBe(4);
       actions.forEach(action => {
         switch (action.type) {
-          case 'thesauri/thesaurus/SET':
+          case 'thesauri.thesaurus/SET':
             expect(action.value).toEqual(thesauri[0]);
             break;
-          case 'thesauri/suggestionsTBPublished/SET':
+          case 'thesauri.suggestionsTBPublished/SET':
             expect(action.value).toEqual(flattenedSuggestions);
             break;
-          case 'thesauri/suggestionsTBReviewed/SET':
+          case 'thesauri.suggestionsTBReviewed/SET':
             expect(action.value).toEqual(flattenedSuggestions);
             break;
-          case 'thesauri/model/SET':
+          case 'thesauri.model/SET':
             expect(action.value).toEqual(models);
             break;
           default:
