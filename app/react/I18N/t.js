@@ -5,6 +5,10 @@ import { Translate } from '.';
 
 const testingEnvironment = process.env.NODE_ENV === 'test';
 const t = (contextId, key, _text, returnComponent = true) => {
+  if (!contextId) {
+    throw new Error(`You cannot translate "${key}", because context id is "${contextId}"`);
+  }
+
   if (returnComponent && !testingEnvironment) {
     return <Translate context={contextId}>{key}</Translate>;
   }

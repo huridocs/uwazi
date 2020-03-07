@@ -111,207 +111,215 @@ export class DocumentSidePanel extends Component {
 
     return (
       <SidePanel open={this.props.open} className="metadata-sidepanel">
-        <div className="sidepanel-header">
-          <button className="closeSidepanel close-modal" onClick={this.close.bind(this)}>
-            <Icon icon="times" />
-          </button>
-          <Tabs selectedTab={tab} renderActiveTabContentOnly handleSelect={this.selectTab}>
-            <ul className="nav nav-tabs">
-              {(() => {
-                if (!this.props.raw && doc.get('semanticSearch')) {
-                  return (
-                    <li>
-                      <TabLink to="semantic-search-results">
-                        <Icon icon="flask" />
-                        <span className="tab-link-tooltip">
-                          {t('System', 'Semantic search results')}
-                        </span>
-                      </TabLink>
-                    </li>
-                  );
-                }
-              })()}
-              {(() => {
-                if (!this.props.raw) {
-                  return (
-                    <li>
-                      <TabLink to="text-search">
-                        <SnippetsTab storeKey={this.props.storeKey} />
-                      </TabLink>
-                    </li>
-                  );
-                }
-              })()}
-              {(() => {
-                if (!isEntity && !this.props.raw) {
-                  return (
-                    <li>
-                      <TabLink to="toc">
-                        <Icon icon="font" />
-                        <span className="tab-link-tooltip">{t('System', 'Table of Content')}</span>
-                      </TabLink>
-                    </li>
-                  );
-                }
-                return <span />;
-              })()}
-              {(() => {
-                if (!isEntity && !this.props.raw) {
-                  return (
-                    <li>
-                      <TabLink to="references">
-                        <Icon icon="sitemap" />
-                        <span className="connectionsNumber">{references.size}</span>
-                        <span className="tab-link-tooltip">{t('System', 'References')}</span>
-                      </TabLink>
-                    </li>
-                  );
-                }
-                return <span />;
-              })()}
-              {(() => {
-                if (!this.props.raw) {
-                  return <li className="tab-separator" />;
-                }
-                return <span />;
-              })()}
-              <li>
-                <TabLink to="metadata" default>
-                  <Icon icon="info-circle" />
-                  <span className="tab-link-tooltip">{t('System', 'Info')}</span>
-                </TabLink>
-              </li>
-              {(() => {
-                if (!isTargetDoc && !excludeConnectionsTab) {
-                  return (
-                    <li>
-                      <TabLink to="connections">
-                        <Icon icon="exchange-alt" />
-                        <span className="connectionsNumber">{summary.totalConnections}</span>
-                        <span className="tab-link-tooltip">{t('System', 'Connections')}</span>
-                      </TabLink>
-                    </li>
-                  );
-                }
-              })()}
-            </ul>
-          </Tabs>
-        </div>
-        <ShowIf if={this.props.tab === 'metadata' || !this.props.tab}>
-          <div className="sidepanel-footer">
-            <MetadataFormButtons
-              delete={this.deleteDocument.bind(this)}
-              data={this.props.doc}
-              formStatePath={this.props.formPath}
-              entityBeingEdited={docBeingEdited}
-              includeViewButton={!docBeingEdited && readOnly}
-              storeKey={this.props.storeKey}
-            />
-          </div>
-        </ShowIf>
-
-        <NeedAuthorization roles={['admin', 'editor']}>
-          <ShowIf if={this.props.tab === 'toc' && this.props.tocBeingEdited}>
-            <div className="sidepanel-footer">
-              <button type="submit" form="tocForm" className="edit-toc btn btn-success">
-                <Icon icon="save" />
-                <span className="btn-label">Save</span>
+        {!this.props.open ? (
+          <div />
+        ) : (
+          <>
+            <div className="sidepanel-header">
+              <button className="closeSidepanel close-modal" onClick={this.close.bind(this)}>
+                <Icon icon="times" />
               </button>
+              <Tabs selectedTab={tab} renderActiveTabContentOnly handleSelect={this.selectTab}>
+                <ul className="nav nav-tabs">
+                  {(() => {
+                    if (!this.props.raw && doc.get('semanticSearch')) {
+                      return (
+                        <li>
+                          <TabLink to="semantic-search-results">
+                            <Icon icon="flask" />
+                            <span className="tab-link-tooltip">
+                              {t('System', 'Semantic search results')}
+                            </span>
+                          </TabLink>
+                        </li>
+                      );
+                    }
+                  })()}
+                  {(() => {
+                    if (!this.props.raw) {
+                      return (
+                        <li>
+                          <TabLink to="text-search">
+                            <SnippetsTab storeKey={this.props.storeKey} />
+                          </TabLink>
+                        </li>
+                      );
+                    }
+                  })()}
+                  {(() => {
+                    if (!isEntity && !this.props.raw) {
+                      return (
+                        <li>
+                          <TabLink to="toc">
+                            <Icon icon="font" />
+                            <span className="tab-link-tooltip">
+                              {t('System', 'Table of Content')}
+                            </span>
+                          </TabLink>
+                        </li>
+                      );
+                    }
+                    return <span />;
+                  })()}
+                  {(() => {
+                    if (!isEntity && !this.props.raw) {
+                      return (
+                        <li>
+                          <TabLink to="references">
+                            <Icon icon="sitemap" />
+                            <span className="connectionsNumber">{references.size}</span>
+                            <span className="tab-link-tooltip">{t('System', 'References')}</span>
+                          </TabLink>
+                        </li>
+                      );
+                    }
+                    return <span />;
+                  })()}
+                  {(() => {
+                    if (!this.props.raw) {
+                      return <li className="tab-separator" />;
+                    }
+                    return <span />;
+                  })()}
+                  <li>
+                    <TabLink to="metadata" default>
+                      <Icon icon="info-circle" />
+                      <span className="tab-link-tooltip">{t('System', 'Info')}</span>
+                    </TabLink>
+                  </li>
+                  {(() => {
+                    if (!isTargetDoc && !excludeConnectionsTab) {
+                      return (
+                        <li>
+                          <TabLink to="connections">
+                            <Icon icon="exchange-alt" />
+                            <span className="connectionsNumber">{summary.totalConnections}</span>
+                            <span className="tab-link-tooltip">{t('System', 'Connections')}</span>
+                          </TabLink>
+                        </li>
+                      );
+                    }
+                  })()}
+                </ul>
+              </Tabs>
             </div>
-          </ShowIf>
-        </NeedAuthorization>
+            <ShowIf if={this.props.tab === 'metadata' || !this.props.tab}>
+              <div className="sidepanel-footer">
+                <MetadataFormButtons
+                  delete={this.deleteDocument.bind(this)}
+                  data={this.props.doc}
+                  formStatePath={this.props.formPath}
+                  entityBeingEdited={docBeingEdited}
+                  includeViewButton={!docBeingEdited && readOnly}
+                  storeKey={this.props.storeKey}
+                />
+              </div>
+            </ShowIf>
 
-        <NeedAuthorization roles={['admin', 'editor']}>
-          <ShowIf if={this.props.tab === 'toc' && !this.props.tocBeingEdited && !readOnly}>
-            <div className="sidepanel-footer">
-              <button
-                onClick={() => this.props.editToc(this.props.file.toc || [])}
-                className="edit-toc btn btn-success"
-              >
-                <Icon icon="pencil-alt" />
-                <span className="btn-label">Edit</span>
-              </button>
+            <NeedAuthorization roles={['admin', 'editor']}>
+              <ShowIf if={this.props.tab === 'toc' && this.props.tocBeingEdited}>
+                <div className="sidepanel-footer">
+                  <button type="submit" form="tocForm" className="edit-toc btn btn-success">
+                    <Icon icon="save" />
+                    <span className="btn-label">Save</span>
+                  </button>
+                </div>
+              </ShowIf>
+            </NeedAuthorization>
+
+            <NeedAuthorization roles={['admin', 'editor']}>
+              <ShowIf if={this.props.tab === 'toc' && !this.props.tocBeingEdited && !readOnly}>
+                <div className="sidepanel-footer">
+                  <button
+                    onClick={() => this.props.editToc(this.props.file.toc || [])}
+                    className="edit-toc btn btn-success"
+                  >
+                    <Icon icon="pencil-alt" />
+                    <span className="btn-label">Edit</span>
+                  </button>
+                </div>
+              </ShowIf>
+            </NeedAuthorization>
+
+            <div className="sidepanel-body">
+              <Tabs selectedTab={this.props.tab || 'metadata'}>
+                <TabContent for="text-search">
+                  <SearchText
+                    doc={doc}
+                    storeKey={this.props.storeKey}
+                    searchTerm={this.props.searchTerm}
+                  />
+                </TabContent>
+                <TabContent for="toc">
+                  <ShowIf if={!this.props.tocBeingEdited}>
+                    <ShowToc
+                      toc={this.props.file.toc}
+                      pdfInfo={this.props.file.pdfInfo}
+                      readOnly={readOnly}
+                    />
+                  </ShowIf>
+                  <ShowIf if={this.props.tocBeingEdited}>
+                    <TocForm
+                      removeEntry={this.props.removeFromToc}
+                      indent={this.props.indentTocElement}
+                      onSubmit={this.props.saveToc}
+                      model="documentViewer.tocForm"
+                      state={this.props.tocFormState}
+                      toc={this.props.tocForm}
+                      file={this.props.file}
+                    />
+                  </ShowIf>
+                </TabContent>
+                <TabContent for="metadata">
+                  {(() => {
+                    if (docBeingEdited && !isEntity) {
+                      return <DocumentForm storeKey={this.props.storeKey} />;
+                    }
+                    if (docBeingEdited && isEntity) {
+                      return <EntityForm storeKey={this.props.storeKey} />;
+                    }
+                    return (
+                      <div>
+                        <ShowMetadata
+                          relationships={relationships}
+                          entity={this.props.doc.toJS()}
+                          showTitle
+                          showType
+                        />
+                        <FileList
+                          files={documents}
+                          storeKey={this.props.storeKey}
+                          entity={doc.toJS()}
+                        />
+                        <AttachmentsList
+                          attachments={attachments}
+                          isTargetDoc={isTargetDoc}
+                          isDocumentAttachments={Boolean(doc.get('file'))}
+                          parentId={doc.get('_id')}
+                          parentSharedId={doc.get('sharedId')}
+                          storeKey={this.props.storeKey}
+                        />
+                      </div>
+                    );
+                  })()}
+                </TabContent>
+                <TabContent for="references">
+                  <Connections
+                    referencesSection="references"
+                    references={references}
+                    readOnly={readOnly}
+                  />
+                </TabContent>
+                <TabContent for="connections">
+                  <ConnectionsGroups />
+                </TabContent>
+                <TabContent for="semantic-search-results">
+                  <DocumentSemanticSearchResults doc={this.props.doc.toJS()} />
+                </TabContent>
+              </Tabs>
             </div>
-          </ShowIf>
-        </NeedAuthorization>
-
-        <div className="sidepanel-body">
-          <Tabs selectedTab={this.props.tab || 'metadata'}>
-            <TabContent for="text-search">
-              <SearchText
-                doc={doc}
-                storeKey={this.props.storeKey}
-                searchTerm={this.props.searchTerm}
-              />
-            </TabContent>
-            <TabContent for="toc">
-              <ShowIf if={!this.props.tocBeingEdited}>
-                <ShowToc
-                  toc={this.props.file.toc}
-                  pdfInfo={this.props.file.pdfInfo}
-                  readOnly={readOnly}
-                />
-              </ShowIf>
-              <ShowIf if={this.props.tocBeingEdited}>
-                <TocForm
-                  removeEntry={this.props.removeFromToc}
-                  indent={this.props.indentTocElement}
-                  onSubmit={this.props.saveToc}
-                  model="documentViewer.tocForm"
-                  state={this.props.tocFormState}
-                  toc={this.props.tocForm}
-                  file={this.props.file}
-                />
-              </ShowIf>
-            </TabContent>
-            <TabContent for="metadata">
-              {(() => {
-                if (docBeingEdited && !isEntity) {
-                  return <DocumentForm storeKey={this.props.storeKey} />;
-                }
-                if (docBeingEdited && isEntity) {
-                  return <EntityForm storeKey={this.props.storeKey} />;
-                }
-                return (
-                  <div>
-                    <ShowMetadata
-                      relationships={relationships}
-                      entity={this.props.doc.toJS()}
-                      showTitle
-                      showType
-                    />
-                    <FileList
-                      files={documents}
-                      storeKey={this.props.storeKey}
-                      entity={doc.toJS()}
-                    />
-                    <AttachmentsList
-                      attachments={attachments}
-                      isTargetDoc={isTargetDoc}
-                      isDocumentAttachments={Boolean(doc.get('file'))}
-                      parentId={doc.get('_id')}
-                      parentSharedId={doc.get('sharedId')}
-                      storeKey={this.props.storeKey}
-                    />
-                  </div>
-                );
-              })()}
-            </TabContent>
-            <TabContent for="references">
-              <Connections
-                referencesSection="references"
-                references={references}
-                readOnly={readOnly}
-              />
-            </TabContent>
-            <TabContent for="connections">
-              <ConnectionsGroups />
-            </TabContent>
-            <TabContent for="semantic-search-results">
-              <DocumentSemanticSearchResults doc={this.props.doc.toJS()} />
-            </TabContent>
-          </Tabs>
-        </div>
+          </>
+        )}
       </SidePanel>
     );
   }
