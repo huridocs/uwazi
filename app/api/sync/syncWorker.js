@@ -68,7 +68,7 @@ export default {
   },
 
   async start(interval) {
-    const { sync } = await settings.get();
+    const { sync } = await settings.get({}, { sync: 1 });
     if (sync && sync.active) {
       const syncs = await syncsModel.find();
       if (syncs.length === 0) {

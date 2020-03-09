@@ -51,7 +51,7 @@ export default app => {
     validation.validateRequest(saveSchema),
     async (req, res, next) => {
       const entity = req.body;
-      const { allowedPublicTemplates } = await settings.get(true);
+      const { allowedPublicTemplates } = await settings.get();
       if (!allowedPublicTemplates || !allowedPublicTemplates.includes(entity.template)) {
         next(createError('Unauthorized public template', 403));
         return;
@@ -79,7 +79,7 @@ export default app => {
   );
 
   app.post('/api/remotepublic', async (req, res, next) => {
-    const { publicFormDestination } = await settings.get(true);
+    const { publicFormDestination } = await settings.get({}, { publicFormDestination: 1 });
     proxy(publicFormDestination, {
       limit: '20mb',
       proxyReqPathResolver() {
