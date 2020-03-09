@@ -8,10 +8,10 @@ import { shallow, ShallowWrapper } from 'enzyme';
 import React from 'react';
 import { TemplateSchema } from 'shared/types/templateType';
 import { ThesaurusSchema } from 'shared/types/thesaurusType';
-
+import { SuggestInfo } from '../actions/thesaurusCockpitActions';
 import { ThesaurusCockpitBase, ThesaurusCockpitProps } from '../ThesaurusCockpit';
 import { ClassifierModelSchema } from '../types/classifierModelType';
-import { SuggestionResultSchema } from '../types/suggestionResultType';
+import { LabelCountSchema } from '../types/labelCountType';
 
 const templates: TemplateSchema[] = [
   {
@@ -57,33 +57,31 @@ const templates: TemplateSchema[] = [
     ],
   },
 ];
-const models: ClassifierModelSchema[] = [
-  {
-    config: { bert: 'testBert' },
-    completeness: 0,
-    extraneous: 0,
-    instances: ['timestamp'],
-    name: 'ThesaurusName',
-    preferred: 'timestamp',
-    topics: {
-      'Topic 1': {
-        name: 'Topic 1',
-        quality: 0.8,
-        samples: 20,
-      },
-      'Topic 2': {
-        name: 'Topic 2',
-        quality: 0.92,
-        samples: 25,
-      },
-      'Topic 3': {
-        name: 'Topic 3',
-        quality: 0.62,
-        samples: 2,
-      },
+const model: ClassifierModelSchema = {
+  config: { bert: 'testBert' },
+  completeness: 0,
+  extraneous: 0,
+  instances: ['timestamp'],
+  name: 'ThesaurusName',
+  preferred: 'timestamp',
+  topics: {
+    'Topic 1': {
+      name: 'Topic 1',
+      quality: 0.8,
+      samples: 20,
+    },
+    'Topic 2': {
+      name: 'Topic 2',
+      quality: 0.92,
+      samples: 25,
+    },
+    'Topic 3': {
+      name: 'Topic 3',
+      quality: 0.62,
+      samples: 2,
     },
   },
-];
+};
 const thesauri: ThesaurusSchema[] = [
   {
     _id: 'thesaurusUnderscoreId1',
@@ -93,13 +91,13 @@ const thesauri: ThesaurusSchema[] = [
       { _id: 'underscoreId2', label: 'Topic 2', id: 'id2' },
       { _id: 'underscoreId3', label: 'Topic 3', id: 'id3' },
     ],
-    enableClassification: true,
+    enable_classification: true,
   },
   {
     _id: 'thesaurusUnderscoreId2',
     name: 'ThesaurusWithoutSuggestions',
     values: [{ _id: 'underscoreId1', label: 'Topic 1', id: 'id1' }],
-    enableClassification: false,
+    enable_classification: false,
   },
 ];
 const rawSuggestionResult: any = {
@@ -125,9 +123,9 @@ const rawSuggestionResult: any = {
     },
   },
 };
-const flattenedSuggestions: SuggestionResultSchema = {
+const flattenedSuggestions: LabelCountSchema = {
   totalRows: 2,
-  totalSuggestions: 4,
+  totalLabels: 4,
   thesaurus: {
     propertyName: 'thesaurus_name',
     totalValues: {
@@ -154,13 +152,17 @@ describe('ThesaurusCockpit', () => {
         name: 'thesaurus_name',
       };
       props = {
-        models,
+        suggestInfo: {
+          model,
+          docsWithLabels: flattenedSuggestions,
+          docsWithSuggestionsForPublish: flattenedSuggestions,
+          docsWithSuggestionsForReview: flattenedSuggestions,
+        },
         thesaurus: thesauri[0],
-        suggestionsTBPublished: flattenedSuggestions,
-        suggestionsTBReviewed: flattenedSuggestions,
         taskState: {},
         updateTaskState: jasmine.createSpy('updateTaskState'),
         startTraining: jasmine.createSpy('startTraining'),
+        toggleEnableClassification: jasmine.createSpy('toggleEnableClassification'),
       };
       RouteHandler.renderedFromServer = true;
       dispatchCallsOrder = [];
@@ -197,9 +199,9 @@ describe('ThesaurusCockpit', () => {
     });
 
     it('should not render the Review Documents buttons when there are < 1 suggestions to be reviewed', () => {
-      props.suggestionsTBReviewed = {
+      props.suggestInfo.docsWithSuggestionsForReview = {
         totalRows: 0,
-        totalSuggestions: 0,
+        totalLabels: 0,
         thesaurus: {
           propertyName: 'thesaurus_name',
           totalValues: {
@@ -215,9 +217,9 @@ describe('ThesaurusCockpit', () => {
     });
 
     it('should not render the publish button when there are < 1 suggestions', () => {
-      props.suggestionsTBPublished = {
+      props.suggestInfo.docsWithSuggestionsForPublish = {
         totalRows: 0,
-        totalSuggestions: 0,
+        totalLabels: 0,
         thesaurus: {
           propertyName: 'thesaurus_name',
           totalValues: {
@@ -235,7 +237,7 @@ describe('ThesaurusCockpit', () => {
   describe('requestState', () => {
     beforeEach(() => {
       spyOn(ThesauriAPI, 'getThesauri').and.returnValue(Promise.resolve(thesauri));
-      spyOn(ThesauriAPI, 'getModelStatus').and.returnValue(Promise.resolve(models));
+      spyOn(ThesauriAPI, 'getModelStatus').and.returnValue(Promise.resolve([model]));
       spyOn(TemplatesAPI, 'get').and.returnValue(Promise.resolve(templates));
       spyOn(api, 'search').and.returnValue(Promise.resolve(rawSuggestionResult));
     });
@@ -253,14 +255,13 @@ describe('ThesaurusCockpit', () => {
           case 'thesauri.thesaurus/SET':
             expect(action.value).toEqual(thesauri[0]);
             break;
-          case 'thesauri.suggestionsTBPublished/SET':
-            expect(action.value).toEqual(flattenedSuggestions);
-            break;
-          case 'thesauri.suggestionsTBReviewed/SET':
-            expect(action.value).toEqual(flattenedSuggestions);
-            break;
-          case 'thesauri.model/SET':
-            expect(action.value).toEqual(models);
+          case 'thesauri.suggestInfo/SET':
+            expect(action.value).toEqual({
+              model,
+              docsWithLabels: flattenedSuggestions,
+              docsWithSuggestionsForPublish: flattenedSuggestions,
+              docsWithSuggestionsForReview: flattenedSuggestions,
+            } as SuggestInfo);
             break;
           default:
         }

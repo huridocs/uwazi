@@ -4,9 +4,7 @@ import { combineReducers } from 'redux';
 import ID from 'shared/uniqueID';
 
 export default combineReducers({
-  models: createReducer('thesauri.models', []),
-  suggestionsTBPublished: createReducer('thesauri.suggestionsTBPublished', []),
-  suggestionsTBReviewed: createReducer('thesauri.suggestionsTBReviewed', []),
+  suggestInfo: createReducer('thesauri.suggestInfo', {}),
   taskState: createReducer('thesauri.taskState', {}),
   thesaurus: createReducer('thesauri.thesaurus', {}),
   data: modelReducer('thesauri.data', { name: '', values: [{ label: '', id: ID() }] }),

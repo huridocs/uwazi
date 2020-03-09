@@ -13,15 +13,6 @@ describe('ThesaurisList', () => {
   beforeEach(() => {
     props = {
       deleteThesaurus: jasmine.createSpy('deleteThesaurus').and.returnValue(Promise.resolve()),
-      disableClassification: jasmine
-        .createSpy('disableClassification')
-        .and.returnValue(Promise.resolve()),
-      enableClassification: jasmine
-        .createSpy('enableClassification')
-        .and.returnValue(Promise.resolve()),
-      checkThesaurusCanBeClassified: jasmine
-        .createSpy('checkThesaurusCanBeClassified')
-        .and.returnValue(Promise.resolve()),
       checkThesaurusCanBeDeleted: jasmine
         .createSpy('checkThesaurusCanBeDeleted')
         .and.returnValue(Promise.resolve()),
@@ -29,7 +20,6 @@ describe('ThesaurisList', () => {
         {
           _id: 'thesaurusUnderscoreId1',
           name: 'Continents',
-          model_available: false,
           values: [
             {
               _id: 'valueUnderscoreId1',
@@ -66,7 +56,6 @@ describe('ThesaurisList', () => {
         {
           _id: 'thesaurusUnderscoreId2',
           name: 'Issues',
-          model_available: true,
           enable_classification: true,
           suggestions: 3,
           values: [
@@ -128,18 +117,6 @@ describe('ThesaurisList', () => {
   });
 
   describe('classification', () => {
-    it('should validate the classifier model before enabling', done => {
-      render();
-      component
-        .instance()
-        .enableClassification({ _id: 'thesaurusUnderscoreId2', name: 'Issues' })
-        .then(() => {
-          expect(props.checkThesaurusCanBeClassified).toHaveBeenCalled();
-          done();
-        });
-      component.instance().enableClassification({});
-    });
-
     it('should confirm  before deleting the thesaurus', done => {
       render();
       component
@@ -150,7 +127,6 @@ describe('ThesaurisList', () => {
           expect(props.checkThesaurusCanBeDeleted).toHaveBeenCalled();
           done();
         });
-      component.instance().enableClassification({});
     });
   });
 });

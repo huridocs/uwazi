@@ -13,70 +13,106 @@ import {
 import TemplatesAPI from 'app/Templates/TemplatesAPI';
 import { Notice } from 'app/Thesauri/Notice';
 import ThesauriAPI from 'app/Thesauri/ThesauriAPI';
-import api from 'app/utils/api';
 import { RequestParams } from 'app/utils/RequestParams';
 import React from 'react';
 import { connect } from 'react-redux';
-import { Dispatch } from 'redux';
 import { createSelector } from 'reselect';
-import { TaskStatus } from 'shared/tasks/tasks';
 import { PropertySchema } from 'shared/types/commonTypes';
-import { IImmutable } from 'shared/types/Immutable';
 import { ThesaurusSchema, ThesaurusValueSchema } from 'shared/types/thesaurusType';
 import { Icon } from 'UI';
 import util from 'util';
 import { ClassifierModelSchema } from './types/classifierModelType';
-import { SuggestionResultSchema } from './types/suggestionResultType';
-import { buildSuggestionResult, flattenSuggestionResults } from './utils/suggestionQuery';
+import { LabelCountSchema } from './types/labelCountType';
+import { buildLabelCounts, flattenLabelCounts } from './utils/suggestionQuery';
 import { getValuesSortedByName } from './utils/valuesSort';
-
-interface TaskState {
-  SyncState?: TaskStatus;
-  TrainState?: TaskStatus;
-}
-
-interface ThesaurusCockpitStore {
-  thesauri: {
-    thesaurus: IImmutable<ThesaurusSchema>;
-    models: IImmutable<ClassifierModelSchema>[];
-    suggestionsTBPublished: IImmutable<SuggestionResultSchema>;
-    suggestionsTBReviewed: IImmutable<SuggestionResultSchema>;
-    taskState: IImmutable<TaskState>;
-  };
-}
+import { getLabelsQuery } from '../Settings/utils/suggestions';
+import {
+  TaskState,
+  SuggestInfo,
+  ThesaurusCockpitStore,
+  updateTaskState,
+  startTraining,
+  ThesaurusWithProperty,
+  toggleEnableClassification,
+} from './actions/thesaurusCockpitActions';
 
 export type ThesaurusCockpitProps = {
-  thesaurus: ThesaurusSchema;
-  models: ClassifierModelSchema[];
-  suggestionsTBPublished: SuggestionResultSchema;
-  suggestionsTBReviewed: SuggestionResultSchema;
+  thesaurus: ThesaurusWithProperty;
+  suggestInfo: SuggestInfo;
   taskState: TaskState;
   updateTaskState: (thesaurusName: string) => {};
   startTraining: (thesaurusId: string) => {};
+  toggleEnableClassification: (thesaurus: ThesaurusSchema) => {};
 };
 
-function updateTaskState(thesaurusName: string) {
-  return async (dispatch: Dispatch<ThesaurusCockpitStore>) => {
-    const syncState = await api.get(
-      'tasks',
-      new RequestParams({ name: 'TopicClassificationSync' })
-    );
-    const trainState = await ThesauriAPI.getModelTrainStatus(
-      new RequestParams({ thesaurus: thesaurusName })
-    );
-    dispatch(
-      actions.set('thesauri.taskState', { SyncState: syncState.json, TrainState: trainState })
-    );
-  };
-}
-
-function startTraining(thesaurusId: string) {
-  return async (_dispatch: Dispatch<ThesaurusCockpitStore>) => {
-    console.log(await ThesauriAPI.trainModel(new RequestParams({ thesaurusId })));
-  };
-}
-
 export class ThesaurusCockpitBase extends RouteHandler {
+  static async getAndPopulateLabelCounts(
+    templates: { _id: string }[],
+    requestParams: RequestParams,
+    queryBuilderFunc: (id: string, prop: PropertySchema) => any,
+    assocProp?: PropertySchema,
+    countSuggestions: boolean = true
+  ): Promise<LabelCountSchema> {
+    if (!assocProp) {
+      return { totalRows: 0, totalLabels: 0, thesaurus: { propertyName: '', totalValues: {} } };
+    }
+    const docsWithSuggestions = await Promise.all(
+      templates.map((template: { _id: string }) => {
+        const reqParams = requestParams.set(queryBuilderFunc(template._id, assocProp));
+        return SearchAPI.search(reqParams);
+      })
+    );
+    const sanitizedSuggestionsTBPublished = docsWithSuggestions.map((s: any) =>
+      buildLabelCounts(s, assocProp?.name ?? '', countSuggestions)
+    );
+    return flattenLabelCounts(sanitizedSuggestionsTBPublished, assocProp?.name ?? '');
+  }
+
+  static async requestState(requestParams: RequestParams) {
+    // Thesauri should always have a length of 1, because a specific thesaurus ID is passed in the requestParams.
+    const [thesauri, templates] = await Promise.all([
+      ThesauriAPI.getThesauri(requestParams),
+      TemplatesAPI.get(requestParams.onlyHeaders()),
+    ]);
+    const thesaurus = thesauri[0];
+
+    // Fetch models associated with known thesauri.
+    const modelParams = requestParams.onlyHeaders().set({ thesaurus: thesaurus.name });
+    const model: ClassifierModelSchema = await ThesauriAPI.getModelStatus(modelParams);
+
+    const assocProp = resolveTemplateProp(thesaurus, templates);
+    thesaurus.property = assocProp;
+
+    const docsWithSuggestionsForPublish = await ThesaurusCockpitBase.getAndPopulateLabelCounts(
+      templates,
+      requestParams,
+      getReadyToPublishSuggestionsQuery,
+      assocProp
+    );
+    const docsWithSuggestionsForReview = await ThesaurusCockpitBase.getAndPopulateLabelCounts(
+      templates,
+      requestParams,
+      getReadyToReviewSuggestionsQuery,
+      assocProp
+    );
+    const docsWithLabels = await ThesaurusCockpitBase.getAndPopulateLabelCounts(
+      templates,
+      requestParams,
+      getLabelsQuery,
+      assocProp,
+      false
+    );
+    return [
+      actions.set('thesauri.thesaurus', thesaurus as ThesaurusSchema),
+      actions.set('thesauri.suggestInfo', {
+        model,
+        docsWithSuggestionsForPublish,
+        docsWithSuggestionsForReview,
+        docsWithLabels,
+      }),
+    ];
+  }
+
   static genIcons(label: string, actual: number, possible: number) {
     const icons = [];
     for (let i = 0; i < possible; i += 1) {
@@ -113,24 +149,29 @@ export class ThesaurusCockpitBase extends RouteHandler {
   }
 
   static topicNode(
+    thesaurus: ThesaurusWithProperty,
     topic: ThesaurusValueSchema,
-    suggestionResult: SuggestionResultSchema,
-    propName: string | undefined
+    labelsResult: LabelCountSchema,
+    suggestionResult: LabelCountSchema
   ) {
     const { label, id } = topic;
     const suggestionCount = suggestionResult.thesaurus?.totalValues[`${id}`] ?? 0;
+    const labelCount = labelsResult.thesaurus?.totalValues[`${id}`] ?? 0;
 
     return (
       <tr key={label}>
         <th scope="row">{label}</th>
-        <td title="sample-count">{suggestionCount ? suggestionCount.toLocaleString() : '-'}</td>
+        <td title="sample-count">{labelCount ? labelCount.toLocaleString() : '-'}</td>
         <td title="suggestions-count">
           {suggestionCount ? suggestionCount.toLocaleString() : '-'}
         </td>
         <td title="review-button">
-          {suggestionCount > 0 && propName ? (
+          {suggestionCount > 0 && thesaurus.enable_classification && thesaurus.property?.name ? (
             <I18NLink
-              to={`/review?q=(filters:(_${propName}:(values:!('${id}')),${propName}:(values:!(missing))))&includeUnpublished=1`}
+              to={
+                `/review?q=(filters:(_${thesaurus.property?.name}:(values:!('${id}')),` +
+                `${thesaurus.property?.name}:(values:!(missing))))&includeUnpublished=1`
+              }
               className="btn btn-default btn-xs"
             >
               <span title="review-button-title">{t('system', 'View suggestions')}</span>
@@ -191,7 +232,6 @@ export class ThesaurusCockpitBase extends RouteHandler {
             className="btn btn-default"
             onClick={() => this.props.startTraining(thesaurus._id)}
           >
-            <Icon icon="times" />
             <span className="btn-label">{t('System', 'Train model')}</span>
           </button>
         </Notice>
@@ -202,78 +242,23 @@ export class ThesaurusCockpitBase extends RouteHandler {
   }
 
   topicNodes() {
-    const { suggestionsTBReviewed: suggestions, thesaurus } = this.props as ThesaurusCockpitProps;
-    const { property } = thesaurus;
+    const { suggestInfo, thesaurus } = this.props as ThesaurusCockpitProps;
     const values = getValuesSortedByName(thesaurus);
 
     return values.map((topic: ThesaurusValueSchema) =>
-      ThesaurusCockpitBase.topicNode(topic, suggestions, property.name)
+      ThesaurusCockpitBase.topicNode(
+        thesaurus,
+        topic,
+        suggestInfo.docsWithLabels,
+        suggestInfo.docsWithSuggestionsForReview
+      )
     );
-  }
-
-  static async getAndPopulateSuggestionResults(
-    templates: { _id: string }[],
-    requestParams: RequestParams,
-    queryBuilderFunc: (id: string, prop?: PropertySchema) => any,
-    assocProp?: PropertySchema
-  ): Promise<SuggestionResultSchema> {
-    const docsWithSuggestions = await Promise.all(
-      templates.map((template: { _id: string }) => {
-        const reqParams = requestParams.set(queryBuilderFunc(template._id, assocProp));
-        return SearchAPI.search(reqParams);
-      })
-    );
-    const sanitizedSuggestionsTBPublished = docsWithSuggestions.map((s: any) =>
-      buildSuggestionResult(s, assocProp?.name ?? '')
-    );
-    return flattenSuggestionResults(sanitizedSuggestionsTBPublished, assocProp?.name ?? '');
-  }
-
-  static async requestState(requestParams: RequestParams) {
-    // Thesauri should always have a length of 1, because a specific thesaurus ID is passed in the requestParams.
-    const [thesauri, templates] = await Promise.all([
-      ThesauriAPI.getThesauri(requestParams),
-      TemplatesAPI.get(requestParams.onlyHeaders()),
-    ]);
-    const thesaurus = thesauri[0];
-
-    // Fetch models associated with known thesauri.
-    const modelParams = requestParams.onlyHeaders().set({ thesaurus: thesaurus.name });
-    const model: ClassifierModelSchema = await ThesauriAPI.getModelStatus(modelParams);
-
-    const assocProp = resolveTemplateProp(thesaurus, templates);
-    thesaurus.property = assocProp;
-
-    const docsWithSuggestionsForPublish = await ThesaurusCockpitBase.getAndPopulateSuggestionResults(
-      templates,
-      requestParams,
-      getReadyToPublishSuggestionsQuery,
-      assocProp
-    );
-    const docsWithSuggestionsForReview = await ThesaurusCockpitBase.getAndPopulateSuggestionResults(
-      templates,
-      requestParams,
-      getReadyToReviewSuggestionsQuery,
-      assocProp
-    );
-    return [
-      actions.set('thesauri.thesaurus', thesaurus as ThesaurusSchema),
-      actions.set('thesauri.models', [model as ClassifierModelSchema]),
-      actions.set(
-        'thesauri.suggestionsTBPublished',
-        docsWithSuggestionsForPublish as SuggestionResultSchema
-      ),
-      actions.set(
-        'thesauri.suggestionsTBReviewed',
-        docsWithSuggestionsForReview as SuggestionResultSchema
-      ),
-    ];
   }
 
   interval?: NodeJS.Timeout = undefined;
 
   componentDidMount() {
-    this.interval = setInterval(() => this.props.updateTaskState(this.props.thesaurus.name), 1000);
+    this.interval = setInterval(() => this.props.updateTaskState(this.props.thesaurus.name), 10000);
   }
 
   componentWillUnmount() {
@@ -284,17 +269,41 @@ export class ThesaurusCockpitBase extends RouteHandler {
   }
 
   emptyState() {
-    this.context.store.dispatch(actions.unset('thesauri.models'));
+    this.context.store.dispatch(actions.unset('thesauri.suggestInfo'));
     this.context.store.dispatch(actions.unset('thesauri.thesaurus'));
-    this.context.store.dispatch(actions.unset('thesauri.suggestionsTBPublished'));
-    this.context.store.dispatch(actions.unset('thesauri.suggestionsTBReviewed'));
+  }
+
+  renderEnableSuggestionsToggle() {
+    const { thesaurus, suggestInfo } = this.props as ThesaurusCockpitProps;
+    const modelAvailable = suggestInfo.model && suggestInfo.model.preferred;
+    return (
+      (modelAvailable || thesaurus.enable_classification) && (
+        <button
+          onClick={this.props.toggleEnableClassification.bind(this, thesaurus)}
+          className={
+            thesaurus.enable_classification
+              ? 'btn btn-default btn-xs btn-toggle-on'
+              : 'btn btn-default btn-xs btn-toggle-off'
+          }
+          type="button"
+        >
+          <Icon icon={thesaurus.enable_classification ? 'toggle-on' : 'toggle-off'} />
+          &nbsp;
+          <span>{t('System', 'Show Suggestions')}</span>
+        </button>
+      )
+    );
   }
 
   publishButton() {
-    const { thesaurus, suggestionsTBPublished: suggestions } = this.props as ThesaurusCockpitProps;
+    const { thesaurus, suggestInfo } = this.props as ThesaurusCockpitProps;
 
     // Don't show the 'publish' button when there's nothing to be published
-    if (!thesaurus || !thesaurus.property || suggestions.totalSuggestions === 0) {
+    if (
+      !thesaurus ||
+      !thesaurus.property ||
+      !suggestInfo.docsWithSuggestionsForPublish?.totalLabels
+    ) {
       return null;
     }
     const thesaurusPropertyRefName = thesaurus.property.name;
@@ -303,8 +312,9 @@ export class ThesaurusCockpitBase extends RouteHandler {
       <I18NLink
         title="publish-button"
         to={
-          `/uploads/?q=(filters:(_${thesaurusPropertyRefName}:(values:!(any)),${thesaurusPropertyRefName}:(values:!(any))),` +
-          'limit:100,order:desc,sort:creationDate)&view=nosearch'
+          `/library/?multiEditThesaurus=${thesaurus._id}&` +
+          `q=(filters:(_${thesaurusPropertyRefName}:(values:!(any)),${thesaurusPropertyRefName}:(values:!(any))),` +
+          'limit:100,order:desc,sort:creationDate,unpublished:!t)&view=nosearch'
         }
         className="btn btn-primary btn-xs"
       >
@@ -323,6 +333,7 @@ export class ThesaurusCockpitBase extends RouteHandler {
       <div className="flex panel panel-default">
         <div className="panel-heading">
           {t('System', `Thesauri > ${name}`)}
+          {this.renderEnableSuggestionsToggle()}
           {this.publishButton()}
         </div>
         <div className="cockpit">
@@ -352,23 +363,14 @@ export class ThesaurusCockpitBase extends RouteHandler {
   }
 }
 
-const selectModels = createSelector(
-  (state: ThesaurusCockpitStore) => state.thesauri.models,
-  models => models.map(m => m.toJS())
+const selectSuggestInfo = createSelector(
+  (state: ThesaurusCockpitStore) => state.thesauri.suggestInfo,
+  info => info.toJS()
 );
 
 const selectThesaurus = createSelector(
   (state: ThesaurusCockpitStore) => state.thesauri.thesaurus,
   thesaurus => thesaurus.toJS()
-);
-
-const selectSuggestionsTBPublished = createSelector(
-  (state: ThesaurusCockpitStore) => state.thesauri.suggestionsTBPublished,
-  suggestionsTBPublished => suggestionsTBPublished.toJS()
-);
-const selectSuggestionsTBReviewed = createSelector(
-  (state: ThesaurusCockpitStore) => state.thesauri.suggestionsTBReviewed,
-  suggestionsTBReviewed => suggestionsTBReviewed.toJS()
 );
 
 const selectTaskState = createSelector(
@@ -378,12 +380,14 @@ const selectTaskState = createSelector(
 
 function mapStateToProps(state: ThesaurusCockpitStore) {
   return {
-    models: selectModels(state),
+    suggestInfo: selectSuggestInfo(state),
     thesaurus: selectThesaurus(state),
-    suggestionsTBPublished: selectSuggestionsTBPublished(state),
-    suggestionsTBReviewed: selectSuggestionsTBReviewed(state),
     taskState: selectTaskState(state),
   };
 }
 
-export default connect(mapStateToProps, { updateTaskState, startTraining })(ThesaurusCockpitBase);
+export default connect(mapStateToProps, {
+  updateTaskState,
+  startTraining,
+  toggleEnableClassification,
+})(ThesaurusCockpitBase);

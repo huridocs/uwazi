@@ -16,10 +16,9 @@ export interface ClassifierModelSchema {
   topics: {
     [k: string]:
       | {
-          name?: any;
-          quality?: any;
-          samples?: any;
-          [k: string]: any | undefined;
+          name?: string;
+          quality?: number;
+          samples?: number;
         }
       | undefined;
   };

@@ -1,9 +1,9 @@
 /* eslint-disable */
 /**AUTO-GENERATED. RUN yarn emit-types to update.*/
 
-export interface SuggestionResultSchema {
+export interface LabelCountSchema {
   totalRows: number;
-  totalSuggestions: number;
+  totalLabels: number;
   thesaurus: {
     propertyName: string;
     totalValues: {

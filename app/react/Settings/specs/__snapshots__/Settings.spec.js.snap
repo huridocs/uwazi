@@ -13,7 +13,6 @@ Array [
     "value": Array [
       Object {
         "_id": 1,
-        "model_available": false,
         "name": "Countries",
       },
     ],

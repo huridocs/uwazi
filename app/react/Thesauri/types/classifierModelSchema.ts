@@ -31,10 +31,11 @@ export const classifierModelSchema = {
       additionalProperties: {
         type: 'object',
         properties: {
-          name: 'string',
-          quality: 'number',
-          samples: 'number',
+          name: { type: 'string' },
+          quality: { type: 'number' },
+          samples: { type: 'number' },
         },
+        additionalProperties: false,
       },
     },
   },

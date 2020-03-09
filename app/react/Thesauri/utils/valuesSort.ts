@@ -3,7 +3,7 @@
 import { ThesaurusSchema, ThesaurusValueSchema } from 'shared/types/thesaurusType';
 
 import { ClassifierModelSchema } from '../types/classifierModelType';
-import { SuggestionResultSchema } from '../types/suggestionResultType';
+import { LabelCountSchema } from '../types/labelCountType';
 
 /* Get thesaurus values sorted by name. */
 export function getValuesSortedByName(thesaurus: ThesaurusSchema): ThesaurusValueSchema[] {
@@ -28,7 +28,7 @@ export function getValuesSortedByConfidence(
 /* Get thesaurus values sorted by number of documents with outstanding suggestions of that value. */
 export function getValuesSortedByToBeReviewed(
   thesaurus: ThesaurusSchema,
-  suggestionResult: SuggestionResultSchema
+  suggestionResult: LabelCountSchema
 ): ThesaurusValueSchema[] {
   const { values: thesaurusValues = [] } = thesaurus;
   const { values: suggestionValues = {} } = suggestionResult.thesaurus;

@@ -1,4 +1,4 @@
-import { SuggestionResultSchema } from '../types/suggestionResultType';
+import { LabelCountSchema } from '../types/labelCountType';
 
 /* An Un-sanitized Elastic Search Result
 .
@@ -25,14 +25,15 @@ import { SuggestionResultSchema } from '../types/suggestionResultType';
                                     */
 
 /* Takes an elastic query response and transforms it into a SuggestionResult.*/
-export function buildSuggestionResult(
+export function buildLabelCounts(
   raw: any,
-  thesaurusPropertyName: string
-): SuggestionResultSchema {
-  const suggestionFieldName = `_${thesaurusPropertyName}`;
-  const result: Partial<SuggestionResultSchema> = {};
+  thesaurusPropertyName: string,
+  countSuggestions: boolean = true
+): LabelCountSchema {
+  const suggestionFieldName = `${countSuggestions ? '_' : ''}${thesaurusPropertyName}`;
+  const result: Partial<LabelCountSchema> = {};
   result.totalRows = raw.totalRows || 0;
-  result.totalSuggestions = 0;
+  result.totalLabels = 0;
   if (
     raw.aggregations !== undefined &&
     raw.aggregations.all !== undefined &&
@@ -42,29 +43,29 @@ export function buildSuggestionResult(
     const totalValues: { [key: string]: number } = {};
     rawValues.forEach((rawResult: any) => {
       totalValues[rawResult.key] = rawResult.filtered.doc_count;
-      result.totalSuggestions += rawResult.filtered.doc_count;
+      result.totalLabels += rawResult.filtered.doc_count;
     });
     result.thesaurus = {
       propertyName: thesaurusPropertyName,
       totalValues,
     };
   }
-  return result as SuggestionResultSchema;
+  return result as LabelCountSchema;
 }
 
 /* Flattens SuggestionResult[] into a single SuggestionResult. */
-export function flattenSuggestionResults(
-  perTemplate: SuggestionResultSchema[],
+export function flattenLabelCounts(
+  perTemplate: LabelCountSchema[],
   thesaurusPropertyName: string
-): SuggestionResultSchema {
-  const result: SuggestionResultSchema = {
+): LabelCountSchema {
+  const result: LabelCountSchema = {
     totalRows: 0,
-    totalSuggestions: 0,
+    totalLabels: 0,
     thesaurus: { propertyName: thesaurusPropertyName, totalValues: {} },
   };
-  perTemplate.forEach((templateResult: SuggestionResultSchema) => {
+  perTemplate.forEach((templateResult: LabelCountSchema) => {
     result.totalRows += templateResult.totalRows;
-    result.totalSuggestions += templateResult.totalSuggestions;
+    result.totalLabels += templateResult.totalLabels;
     if (
       templateResult.hasOwnProperty('thesaurus') &&
       templateResult.thesaurus.hasOwnProperty('totalValues')

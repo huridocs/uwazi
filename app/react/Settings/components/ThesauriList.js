@@ -6,8 +6,6 @@ import {
   checkThesaurusCanBeClassified,
   checkThesaurusCanBeDeleted,
   deleteThesaurus,
-  disableClassification,
-  enableClassification,
 } from 'app/Thesauri/actions/thesaurisActions';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
@@ -17,20 +15,7 @@ import { Icon } from 'UI';
 import sortThesauri from '../utils/sortThesauri';
 
 export class ThesauriList extends Component {
-  getThesaurusSuggestionActions(thesaurus) {
-    if (!thesaurus.enable_classification && thesaurus.model_available) {
-      return (
-        <button
-          onClick={this.enableClassification.bind(this, thesaurus)}
-          className="btn btn-success btn-xs"
-          type="button"
-        >
-          <Icon icon="toggle-on" />
-          &nbsp;
-          <span>{t('System', 'Enable')}</span>
-        </button>
-      );
-    }
+  static getThesaurusSuggestionActions(thesaurus) {
     return (
       <div className="vertical-line">
         {thesaurus.enable_classification && (
@@ -41,9 +26,9 @@ export class ThesauriList extends Component {
         )}
         <I18NLink
           to={`/settings/dictionaries/cockpit/${thesaurus._id}`}
-          className="btn btn-primary btn-xs"
+          className="btn btn-default btn-xs"
         >
-          <span>{t('System', 'Manage suggestions')}</span>
+          <span>{t('System', 'Configure suggestions')}</span>
         </I18NLink>
       </div>
     );
@@ -105,38 +90,11 @@ export class ThesauriList extends Component {
       });
   }
 
-  async disableClassification(thesaurus) {
-    this.props.disableClassification(thesaurus).catch(() => {
-      this.context.confirm({
-        accept: () => {},
-        noCancel: true,
-        title: `Cannot disable classification for thesaurus: ${thesaurus.name}`,
-        message: 'Unable to disable classification.',
-      });
-    });
-  }
-
-  async enableClassification(thesaurus) {
-    try {
-      const canBeEnabled = await this.props.checkThesaurusCanBeClassified(thesaurus);
-      if (canBeEnabled) {
-        this.props.enableClassification(thesaurus);
-      }
-    } catch (error) {
-      this.context.confirm({
-        accept: () => {},
-        noCancel: true,
-        title: `Cannot enable classification for thesaurus: ${thesaurus.name}`,
-        message: 'This thesaurus does not have its topic classification models in a good state.',
-      });
-    }
-  }
-
   thesaurusNode(thesaurus) {
     return (
       <tr key={thesaurus.name}>
         <th scope="row">{thesaurus.name}</th>
-        <td>{this.getThesaurusSuggestionActions(thesaurus)}</td>
+        <td>{ThesauriList.getThesaurusSuggestionActions(thesaurus)}</td>
         <td>{this.getThesaurusModifyActions(thesaurus)}</td>
       </tr>
     );
@@ -177,9 +135,6 @@ export class ThesauriList extends Component {
 ThesauriList.propTypes = {
   dictionaries: PropTypes.object,
   deleteThesaurus: PropTypes.func.isRequired,
-  disableClassification: PropTypes.func.isRequired,
-  enableClassification: PropTypes.func.isRequired,
-  checkThesaurusCanBeClassified: PropTypes.func.isRequired,
   checkThesaurusCanBeDeleted: PropTypes.func.isRequired,
 };
 
@@ -196,9 +151,6 @@ function mapDispatchToProps(dispatch) {
     {
       deleteThesaurus,
       checkThesaurusCanBeDeleted,
-      disableClassification,
-      enableClassification,
-      checkThesaurusCanBeClassified,
     },
     dispatch
   );
