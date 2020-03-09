@@ -46,18 +46,21 @@ describe('FiltersFromProperties', () => {
     it('should render a select filter', () => {
       props.properties = [
         {
+          content: 'aContent',
           name: 'selectFilter',
           label: 'selectLabel',
           type: 'select',
           options: [{ label: 'option1' }],
         },
         {
+          content: 'aContent',
           name: 'multiselectFilter',
           label: 'multiselectLabel',
           type: 'multiselect',
           options: [{ label: 'option3' }],
         },
         {
+          content: 'aContent',
           name: 'relationshipFilter',
           label: 'relationshipLabel',
           type: 'relationship',
@@ -88,7 +91,7 @@ describe('FiltersFromProperties', () => {
 
   describe('when type is numeric', () => {
     it('should render a number range filter', () => {
-      props.properties = [{ content: 'oneContent', name: 'numericFilter', label: 'numericLabel', type: 'numeric' }];
+      props.properties = [{ name: 'numericFilter', label: 'numericLabel', type: 'numeric' }];
       props.translationContext = 'oneContext';
 
       const component = shallow(<FiltersFromProperties {...props} />).find(NumberRangeFilter);
@@ -98,7 +101,7 @@ describe('FiltersFromProperties', () => {
 
   describe('when type is nested', () => {
     it('should render a number range filter', () => {
-      props.properties = [{ content: 'oneContent', name: 'nestedFilter', label: 'nestedLabel', type: 'nested' }];
+      props.properties = [{ name: 'nestedFilter', label: 'nestedLabel', type: 'nested' }];
       props.translationContext = 'oneContext';
 
       const component = shallow(<FiltersFromProperties {...props} />).find(NestedFilter);
