@@ -37,13 +37,25 @@ describe('Metadata', () => {
 
   it('should not render metadata without value', () => {
     testMetadata([
-      { translateContext: 'oneTranslateContext', label: 'Label', value: 'string value', name: 'label' },
+      {
+        translateContext: 'oneTranslateContext',
+        label: 'Label',
+        value: 'string value',
+        name: 'label',
+      },
       { translateContext: 'oneTranslateContext', label: 'Label2', name: 'label2' },
     ]);
   });
 
   it('should render string values', () => {
-    testMetadata([{translateContext: 'oneTranslateContext', label: 'Label', value: 'string value', name: 'label' }]);
+    testMetadata([
+      {
+        translateContext: 'oneTranslateContext',
+        label: 'Label',
+        value: 'string value',
+        name: 'label',
+      },
+    ]);
   });
 
   it('should render array values separated by ", "', () => {
@@ -96,7 +108,13 @@ describe('Metadata', () => {
 
   it('should render a Markdown when the metadata is type mardown', () => {
     testMetadata([
-      { translateContext: 'oneTranslateContext', name: 'label_array', label: 'label array', value: 'some markdown text', type: 'markdown' },
+      {
+        translateContext: 'oneTranslateContext',
+        name: 'label_array',
+        label: 'label array',
+        value: 'some markdown text',
+        type: 'markdown',
+      },
     ]);
   });
 
@@ -125,11 +143,27 @@ describe('Metadata', () => {
   });
 
   it('should render sorted property with sorted styles', () => {
-    testMetadata([{ translateContext: 'oneTranslateContext', name: 'sortedby', label: 'sortedBy', value: 'string value', sortedBy: true }]);
+    testMetadata([
+      {
+        translateContext: 'oneTranslateContext',
+        name: 'sortedby',
+        label: 'sortedBy',
+        value: 'string value',
+        sortedBy: true,
+      },
+    ]);
   });
 
   it('should render links when the property has url', () => {
-    testMetadata([{ translateContext: 'oneTranslateContext', name: 'withurl', label: 'withUrl', value: 'string value', url: 'url' }]);
+    testMetadata([
+      {
+        translateContext: 'oneTranslateContext',
+        name: 'withurl',
+        label: 'withUrl',
+        value: 'string value',
+        url: 'url',
+      },
+    ]);
   });
 
   it('should render links with icons if propery has url and icon', () => {
@@ -150,7 +184,14 @@ describe('Metadata', () => {
   });
 
   it('should not render an empty list', () => {
-    testMetadata([{ translateContext: 'oneTranslateContext', name: 'label_array', label: 'label array', value: [] }]);
+    testMetadata([
+      {
+        translateContext: 'oneTranslateContext',
+        name: 'label_array',
+        label: 'label array',
+        value: [],
+      },
+    ]);
   });
 
   describe('when passing compact prop', () => {

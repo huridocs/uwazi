@@ -24,7 +24,12 @@ describe('FiltersFromProperties', () => {
   });
 
   it('should concat the modelPrefix with the model', () => {
-    props.properties = [{ name: 'textFilter', label: 'textLabel' }];
+    props.properties = [
+      {
+        name: 'textFilter',
+        label: 'textLabel',
+      },
+    ];
     props.translationContext = 'oneContext';
     props.modelPrefix = '.prefix';
 
@@ -34,7 +39,12 @@ describe('FiltersFromProperties', () => {
 
   describe('when type is text', () => {
     it('should render a text filter', () => {
-      props.properties = [{ name: 'textFilter', label: 'textLabel' }];
+      props.properties = [
+        {
+          name: 'textFilter',
+          label: 'textLabel',
+        },
+      ];
       props.translationContext = 'oneContext';
 
       const component = shallow(<FiltersFromProperties {...props} />).find(TextFilter);
@@ -77,10 +87,30 @@ describe('FiltersFromProperties', () => {
   describe('when type is date, multidate, multidaterange or daterange', () => {
     it('should render a date filter', () => {
       props.properties = [
-        { content: 'oneContent', name: 'dateFilter', label: 'dateLabel', type: 'date' },
-        { content: 'oneContent', name: 'daterange', label: 'daterangeLabel', type: 'daterange' },
-        { content: 'oneContent', name: 'multidate', label: 'multidateLabel', type: 'multidate' },
-        { content: 'oneContent', name: 'multidaterange', label: 'multidaterangeLabel', type: 'multidaterange' },
+        {
+          content: 'oneContent',
+          name: 'dateFilter',
+          label: 'dateLabel',
+          type: 'date',
+        },
+        {
+          content: 'oneContent',
+          name: 'daterange',
+          label: 'daterangeLabel',
+          type: 'daterange',
+        },
+        {
+          content: 'oneContent',
+          name: 'multidate',
+          label: 'multidateLabel',
+          type: 'multidate',
+        },
+        {
+          content: 'oneContent',
+          name: 'multidaterange',
+          label: 'multidaterangeLabel',
+          type: 'multidaterange',
+        },
       ];
       props.translationContext = 'oneContext';
 
@@ -91,7 +121,13 @@ describe('FiltersFromProperties', () => {
 
   describe('when type is numeric', () => {
     it('should render a number range filter', () => {
-      props.properties = [{ name: 'numericFilter', label: 'numericLabel', type: 'numeric' }];
+      props.properties = [
+        {
+          name: 'numericFilter',
+          label: 'numericLabel',
+          type: 'numeric',
+        },
+      ];
       props.translationContext = 'oneContext';
 
       const component = shallow(<FiltersFromProperties {...props} />).find(NumberRangeFilter);
@@ -101,7 +137,13 @@ describe('FiltersFromProperties', () => {
 
   describe('when type is nested', () => {
     it('should render a number range filter', () => {
-      props.properties = [{ name: 'nestedFilter', label: 'nestedLabel', type: 'nested' }];
+      props.properties = [
+        {
+          name: 'nestedFilter',
+          label: 'nestedLabel',
+          type: 'nested',
+        },
+      ];
       props.translationContext = 'oneContext';
 
       const component = shallow(<FiltersFromProperties {...props} />).find(NestedFilter);
