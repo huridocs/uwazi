@@ -12,8 +12,16 @@ function fakeTopicClassification(url: string, data: any, _headers: any) {
     return {
       status: 200,
       json: {
-        models: ['topmovies'],
+        models: ['undefined-topmovies'],
         error: '',
+      },
+    };
+  }
+  if (url === `${topicClassification.tcServer}/models?model=undefined-topmovies`) {
+    return {
+      status: 200,
+      json: {
+        preferred: '123',
       },
     };
   }
@@ -45,7 +53,7 @@ describe('templates utils', () => {
   beforeEach(async () => {
     await db.clearAllAndLoad(fixtures);
     spyOn(search, 'indexEntities').and.returnValue(Promise.resolve());
-    spyOn(JSONRequest, 'put').and.callFake(fakeTopicClassification);
+    spyOn(JSONRequest, 'post').and.callFake(fakeTopicClassification);
     spyOn(JSONRequest, 'get').and.callFake(fakeTopicClassification);
     spyOn(topicClassification, 'IsTopicClassificationReachable').and.returnValue(true);
   });
@@ -56,7 +64,7 @@ describe('templates utils', () => {
   describe('sync one', () => {
     it('add suggestions to single entity', async () => {
       const e = await entities.getById(e1);
-      expect(await syncEntity(e!, { mode: 'onlynew' })).toBe(true);
+      expect(await syncEntity(e!, { mode: 'onlynew', overwrite: true })).toBe(true);
       expect(e!.suggestedMetadata!.movies).toEqual([
         {
           label: 'spiderman',
@@ -71,12 +79,27 @@ describe('templates utils', () => {
           value: '1.1',
         },
       ]);
+      // Reject one, test that override keeps it.
+      e!.suggestedMetadata!.movies = [e!.suggestedMetadata!.movies![0]];
+      expect(
+        await syncEntity(e!, { mode: 'onlynew', overwrite: true }, undefined, undefined, {
+          'undefined-topmovies': '123',
+        })
+      ).toBe(false);
+      expect(e!.suggestedMetadata!.movies).toEqual([
+        {
+          label: 'spiderman',
+          suggestion_confidence: 0.7,
+          suggestion_model: '123',
+          value: '2.2',
+        },
+      ]);
     });
   });
   describe('sync all', () => {
     it('run sync task', async () => {
       const t = TaskProvider.getOrCreate('test', 'TopicClassificationSync');
-      t.start({ noDryRun: true, mode: 'onlynew' } as SyncArgs);
+      t.start({ noDryRun: true, mode: 'onlynew', overwrite: true } as SyncArgs);
       await t.wait();
       expect(t.status).toEqual(
         expect.objectContaining({

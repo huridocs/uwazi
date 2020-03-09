@@ -109,7 +109,7 @@ const _fetch = (url, data, method, _headers) => {
     })
     .catch(() => ({
       json: {},
-      status: response.status,
+      status: (response || {}).status || 500,
     }));
 };
 

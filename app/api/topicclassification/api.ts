@@ -145,7 +145,7 @@ export async function startTraining(thesaurus: ThesaurusSchema) {
     provider: 'TrainModel',
     name: `train-${buildFullModelName(thesaurus.name)}`,
     model: buildFullModelName(thesaurus.name),
-    vocab: flattenValues.map(v => v.label),
+    labels: flattenValues.map(v => v.label),
     num_train_steps: 10,
     train_ratio: 0.5,
     samples: await trainingData.rows.reduce(

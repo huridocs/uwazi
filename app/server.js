@@ -117,6 +117,7 @@ mongoose
           TaskProvider.runAndWait('TopicClassificationSync', 'TopicClassificationSync', {
             mode: 'onlynew',
             noDryRun: true,
+            overwrite: true,
           }),
         10000
       );

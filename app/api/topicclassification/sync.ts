@@ -16,6 +16,7 @@ import { PropertySchema } from 'shared/types/commonTypes';
 import { TemplateSchema } from 'shared/types/templateType';
 import { ThesaurusSchema, ThesaurusValueSchema } from 'shared/types/thesaurusType';
 import * as util from 'util';
+import { getModel } from 'api/topicclassification/api';
 
 export interface SyncArgs {
   limit?: number;
@@ -119,7 +120,8 @@ async function handleProp(
   e: EntitySchema,
   args: SyncArgs,
   prop: PropertySchema,
-  thes: ThesaurusSchema
+  thes: ThesaurusSchema,
+  latestModelVersion?: string
 ): Promise<boolean> {
   const seq = await extractSequence(e);
   if (args.mode === 'onlynew') {
@@ -128,6 +130,14 @@ async function handleProp(
     }
     if (!args.overwrite && e.suggestedMetadata![prop.name!]) {
       return false;
+    }
+    if (latestModelVersion) {
+      const currentModel = e
+        .suggestedMetadata![prop.name!]?.map(v => v.suggestion_model)
+        .reduce((max, s) => ((s || '') > max! ? s : max), '');
+      if (currentModel && currentModel >= latestModelVersion) {
+        return false;
+      }
     }
     const suggestions = await fetchSuggestions(e, prop, seq, thes);
     if (
@@ -147,7 +157,7 @@ export async function syncEntity(
   args: SyncArgs,
   templateDictP?: { [k: string]: TemplateSchema },
   thesaurusDictP?: { [k: string]: ThesaurusSchema },
-  availableModels?: string[]
+  availableModels?: { [k: string]: string | undefined }
 ): Promise<boolean> {
   if (!e.metadata) {
     e.metadata = {};
@@ -167,24 +177,40 @@ export async function syncEntity(
       if (!prop || !thesaurus) {
         return;
       }
-      if (
-        availableModels !== undefined &&
-        !availableModels.includes(buildFullModelName(thesaurus.name))
-      ) {
+      const modelName = buildFullModelName(thesaurus.name);
+      if (availableModels !== undefined && !availableModels[modelName]) {
         return;
       }
-      didSth = didSth || (await handleProp(e, args, prop, thesaurus));
+      didSth =
+        didSth || (await handleProp(e, args, prop, thesaurus, (availableModels ?? {})[modelName]));
     })
   );
   return didSth;
 }
 
+async function getAvailableModels(fixedModel?: string) {
+  const models = (await listModels()) ?? { error: 'Internal error in calling backend.' };
+  if (models.error) {
+    return { error: `Aborted: ${models.error}` };
+  }
+  return models.models.reduce(async (res, m) => {
+    if (fixedModel && m !== fixedModel) {
+      return res;
+    }
+    const model = await getModel(m);
+    if (model && model.preferred) {
+      return { ...(await res), [m]: model.preferred };
+    }
+    return res;
+  }, Promise.resolve({} as { [k: string]: string | undefined; error?: string }));
+}
+
 class SyncTask extends Task {
   protected async run(args: SyncArgs) {
     this.status.message = `Started with ${util.inspect(args)}`;
-    const models = (await listModels()) ?? { error: 'Internal error in calling backend.' };
+    const models = await getAvailableModels(args.model);
     if (models.error) {
-      this.status.message = `Aborted: ${models.error}`;
+      this.status.message = models.error;
       return;
     }
     const templatesDict = (await templates.get(null)).reduce(
@@ -195,7 +221,7 @@ class SyncTask extends Task {
       (res, t) => ({ ...res, [t._id.toString()]: t }),
       {} as { [k: string]: ThesaurusSchema }
     );
-    if (!models.models.length) {
+    if (!Object.keys(models).length) {
       this.status.message = 'Aborted: Topic Classification server does not have any models!';
       return;
     }
@@ -210,7 +236,7 @@ class SyncTask extends Task {
           return;
         }
         res.seen += 1;
-        if (await syncEntity(e, args, templatesDict, thesaurusDict, models.models)) {
+        if (await syncEntity(e, args, templatesDict, thesaurusDict, models)) {
           res.index += 1;
           if (args.noDryRun) {
             await entities.save(e, { user: 'sync-topic-classification', language: e.language });
