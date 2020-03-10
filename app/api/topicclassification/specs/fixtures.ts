@@ -1,10 +1,8 @@
-/** @format */
-
 import db from 'api/utils/testing_db';
 import { propertyTypes } from 'shared/propertyTypes';
+import { EntitySchema } from 'shared/types/entityType';
 import { TemplateSchema } from 'shared/types/templateType';
 import { ThesaurusSchema } from 'shared/types/thesaurusType';
-import { EntitySchema } from 'api/entities/entityType';
 
 export const template1 = db.id();
 export const e1 = db.id();

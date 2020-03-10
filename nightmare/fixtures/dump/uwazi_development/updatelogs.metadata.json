@@ -1,1 +1,1 @@
-{"options":{},"indexes":[{"v":2,"key":{"_id":1},"name":"_id_","ns":"uwazi_development.updatelogs"},{"v":2,"key":{"mongoId":1},"name":"mongoId_1","ns":"uwazi_development.updatelogs","background":true}],"uuid":"4c983518c53141a9bbf27c85356f7973"}
+{"options":{},"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_","ns":"uwazi_development.updatelogs"},{"v":{"$numberInt":"2"},"key":{"mongoId":{"$numberInt":"1"}},"name":"mongoId_1","ns":"uwazi_development.updatelogs","background":true}],"uuid":"4b29ad23d75d47f29c8d06c394afc042"}

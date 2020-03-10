@@ -10,16 +10,16 @@ import {
 } from 'api/config/topicClassification';
 import search from 'api/search/search';
 import templates from 'api/templates';
+import { extractSequence } from 'api/topicclassification/common';
 import { ClassifierModelSchema } from 'app/Thesauri/types/classifierModelType';
 import 'isomorphic-fetch';
 import { buildFullModelName } from 'shared/commonTopicClassification';
 import request from 'shared/JSONRequest';
 import { TaskStatus } from 'shared/tasks/tasks';
+import { EntitySchema } from 'shared/types/entityType';
 import { URL } from 'url';
 import { getThesaurusPropertyNames } from '../../shared/commonTopicClassification';
 import { ThesaurusSchema, ThesaurusValueSchema } from '../../shared/types/thesaurusType';
-import { EntitySchema } from '../entities/entityType';
-import { extractSequence } from 'api/topicclassification/common';
 
 const MODELS_LIST_ENDPOINT = 'models/list';
 const MODEL_GET_ENDPOINT = 'models';

@@ -1,3 +1,6 @@
+import { entityDefaultDocument } from 'shared/entityDefaultDocument';
+import { files } from 'api/files';
+
 import { search } from '../search';
 import model from './model';
 import resultsModel from './resultsModel';
@@ -49,19 +52,25 @@ export const setSearchDocumentResults = async (searchId, sharedId, results) => {
   return docResults;
 };
 
-export const extractDocumentContent = async doc => {
-  const { fullText, metadata } = doc;
+export const extractDocumentContent = async (
+  { documents, language, template, metadata },
+  defaultLanguage
+) => {
   const contents = {};
+  let fullText;
+  const defaultDocument = entityDefaultDocument(documents, language, defaultLanguage);
+  if (defaultDocument && defaultDocument._id) {
+    [{ fullText }] = await files.get(defaultDocument, '+fullText');
+  }
 
   if (metadata) {
-    const template = await templates.getById(doc.template);
-    const metadataFields = template.properties.filter(prop => prop.type === 'markdown');
-
-    metadataFields.forEach(field => {
-      if (metadata[field.name]) {
-        contents[field.name] = metadata[field.name];
-      }
-    });
+    (await templates.getById(template)).properties
+      .filter(prop => prop.type === 'markdown')
+      .forEach(field => {
+        if (metadata[field.name]) {
+          contents[field.name] = metadata[field.name];
+        }
+      });
   }
 
   if (fullText) {

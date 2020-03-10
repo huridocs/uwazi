@@ -1,4 +1,3 @@
-import { EntitySchema } from 'api/entities/entityType';
 import RouteHandler from 'app/App/RouteHandler';
 import { actions } from 'app/BasicReducer';
 import Loader from 'app/components/Elements/Loader';
@@ -20,6 +19,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { actions as formActions } from 'react-redux-form';
 import { propertyTypes } from 'shared/propertyTypes';
+import { EntitySchema } from 'shared/types/entityType';
 import { IImmutable } from 'shared/types/Immutable';
 import { TemplateSchema } from 'shared/types/templateType';
 import { ThesaurusSchema } from 'shared/types/thesaurusType';

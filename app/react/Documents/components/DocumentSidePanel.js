@@ -1,14 +1,15 @@
 import { Tabs, TabLink, TabContent } from 'react-tabs-redux';
 import { browserHistory } from 'react-router';
 import { connect } from 'react-redux';
-import Immutable, { fromJS } from 'immutable';
+import Immutable from 'immutable';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 
 import { MetadataFormButtons, ShowMetadata } from 'app/Metadata';
 import { NeedAuthorization } from 'app/Auth';
 import { t } from 'app/I18N';
-import AttachmentsList from 'app/Attachments/components/AttachmentsList';
+import { AttachmentsList } from 'app/Attachments';
+import { FileList } from 'app/Attachments/components/FileList';
 import Connections from 'app/Viewer/components/ConnectionsList';
 import { ConnectionsGroups } from 'app/ConnectionsList';
 import ShowIf from 'app/App/ShowIf';
@@ -89,11 +90,9 @@ export class DocumentSidePanel extends Component {
     } = this.props;
     const TocForm = this.props.tocFormComponent;
 
-    const docAttachments = doc.get('attachments') ? doc.get('attachments').toJS() : [];
-    const docFile = Object.assign({}, doc.get('file') ? doc.get('file').toJS() : {});
-    const attachments = doc.get('file') ? [docFile].concat(docAttachments) : docAttachments;
+    const { attachments, documents } = doc.toJS();
 
-    const isEntity = !this.props.doc.get('file');
+    const isEntity = !documents || !documents.length;
 
     let { tab } = this.props;
     if (isEntity && (tab === 'references' || tab === 'toc')) {
@@ -226,7 +225,7 @@ export class DocumentSidePanel extends Component {
           <ShowIf if={this.props.tab === 'toc' && !this.props.tocBeingEdited && !readOnly}>
             <div className="sidepanel-footer">
               <button
-                onClick={() => this.props.editToc(this.props.doc.get('toc').toJS() || [])}
+                onClick={() => this.props.editToc(this.props.file.toc || [])}
                 className="edit-toc btn btn-success"
               >
                 <Icon icon="pencil-alt" />
@@ -247,7 +246,11 @@ export class DocumentSidePanel extends Component {
             </TabContent>
             <TabContent for="toc">
               <ShowIf if={!this.props.tocBeingEdited}>
-                <ShowToc toc={doc.get('toc')} readOnly={readOnly} />
+                <ShowToc
+                  toc={this.props.file.toc}
+                  pdfInfo={this.props.file.pdfInfo}
+                  readOnly={readOnly}
+                />
               </ShowIf>
               <ShowIf if={this.props.tocBeingEdited}>
                 <TocForm
@@ -257,6 +260,7 @@ export class DocumentSidePanel extends Component {
                   model="documentViewer.tocForm"
                   state={this.props.tocFormState}
                   toc={this.props.tocForm}
+                  file={this.props.file}
                 />
               </ShowIf>
             </TabContent>
@@ -276,9 +280,13 @@ export class DocumentSidePanel extends Component {
                       showTitle
                       showType
                     />
+                    <FileList
+                      files={documents}
+                      storeKey={this.props.storeKey}
+                      entity={doc.toJS()}
+                    />
                     <AttachmentsList
-                      files={fromJS(attachments)}
-                      readOnly={false}
+                      attachments={attachments}
                       isTargetDoc={isTargetDoc}
                       isDocumentAttachments={Boolean(doc.get('file'))}
                       parentId={doc.get('_id')}
@@ -356,6 +364,7 @@ DocumentSidePanel.propTypes = {
   excludeConnectionsTab: PropTypes.bool.isRequired,
   storeKey: PropTypes.string.isRequired,
   raw: PropTypes.bool,
+  file: PropTypes.object,
 };
 
 DocumentSidePanel.contextTypes = {
@@ -367,6 +376,7 @@ DocumentSidePanel.defaultProps = {
   DocumentForm: () => false,
   EntityForm: () => false,
   raw: false,
+  file: {},
 };
 
 export const mapStateToProps = (state, ownProps) => {

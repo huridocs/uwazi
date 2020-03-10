@@ -1,0 +1,12 @@
+# Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
+version: v1.14.1
+ignore: {}
+# patches apply the minimum changes required to fix a vulnerability
+patch:
+  SNYK-JS-LODASH-450202:
+    - mongoose > async > lodash:
+        patched: '2020-02-17T23:25:22.107Z'
+    - snyk > inquirer > lodash:
+        patched: '2020-03-04T23:24:54.998Z'
+    - snyk > snyk-nuget-plugin > dotnet-deps-parser > lodash:
+        patched: '2020-03-04T23:24:54.998Z'

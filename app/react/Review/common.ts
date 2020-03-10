@@ -3,7 +3,7 @@ import { IStore } from 'app/istore';
 
 export const selectEntity = createSelector(
   (state: IStore) => state.entityView.entity,
-  entity => entity.toJS()
+  entity => entity?.toJS()
 );
 
 export const selectOneUpState = createSelector(

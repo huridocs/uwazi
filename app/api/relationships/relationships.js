@@ -29,16 +29,7 @@ function getPropertiesToBeConnections(template) {
   return template.properties.filter(prop => prop.type === 'relationship');
 }
 
-const createRelationship = async (relationship, language) => {
-  const isATextReference = relationship.range;
-  let filename;
-  if (isATextReference) {
-    const [entity] = await entities.get({ sharedId: relationship.entity, language });
-    ({ filename } = entity.file);
-  }
-
-  return model.save({ ...relationship, filename });
-};
+const createRelationship = async relationship => model.save(relationship);
 
 const updateRelationship = async relationship =>
   model.save({
@@ -170,14 +161,20 @@ export default {
     return model.getById(id);
   },
 
-  async getDocumentHubs(entity) {
-    const ownRelations = await model.get({ entity });
+  async getDocumentHubs(entity, file) {
+    const ownRelations = await model.get({
+      entity,
+      $or: [
+        { $and: [{ file: { $exists: false } }] },
+        file ? { $and: [{ file: { $exists: true } }, { file }] } : {},
+      ],
+    });
     const hubsIds = ownRelations.map(relationship => relationship.hub);
     return model.get({ hub: { $in: hubsIds } });
   },
 
-  getByDocument(sharedId, language, unpublished = true) {
-    return this.getDocumentHubs(sharedId).then(_relationships => {
+  getByDocument(sharedId, language, unpublished = true, file) {
+    return this.getDocumentHubs(sharedId, file).then(_relationships => {
       const connectedEntitiesSharedId = _relationships.map(relationship => relationship.entity);
       return entities
         .get({ sharedId: { $in: connectedEntitiesSharedId }, language }, [

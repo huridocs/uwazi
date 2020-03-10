@@ -2,28 +2,19 @@ import { createSelector } from 'reselect';
 
 const docState = createSelector(
   (state, props) => state.progress.get(props.doc.get('sharedId')),
-  (_state, props) => props.doc.get('uploaded'),
-  (_state, props) => props.doc.get('processed'),
-  (_state, props) => !props.doc.get('file'),
+  (_state, props) => {
+    if (!props.doc.get('documents')) {
+      return null;
+    }
+    if (!props.doc.get('documents').size) {
+      return null;
+    }
+    return props.doc.get('documents').reduce((_processed, d) => d.get('status'), 'ready');
+  },
+  (_state, props) => props.doc.get('documents') && !props.doc.get('documents').size,
   (_state, props) => props.doc.get('template'),
-  (progress, uploaded, processed, isEntity, template) => {
-    if (!uploaded && !isEntity && (progress || progress === 0)) {
-      return {
-        progress,
-        status: 'processing',
-        message: 'Uploading...',
-      };
-    }
-
-    if (typeof processed === 'undefined' && !isEntity && uploaded) {
-      return {
-        progress: 100,
-        status: 'processing',
-        message: 'Processing...',
-      };
-    }
-
-    if (!template && (processed || isEntity)) {
+  (progress, docsStatus, isEntity, template) => {
+    if (!template && (docsStatus === 'ready' || isEntity)) {
       return {
         progress,
         status: 'warning',
@@ -31,18 +22,26 @@ const docState = createSelector(
       };
     }
 
-    if (!uploaded && !isEntity && typeof progress === 'undefined') {
+    if (docsStatus === null && (progress || progress === 0)) {
       return {
         progress,
-        status: 'danger',
-        message: 'Upload failed',
+        status: 'processing',
+        message: 'Uploading...',
       };
     }
 
-    if (processed === false && !isEntity) {
+    if (docsStatus === 'failed' && !isEntity) {
       return {
         status: 'danger',
         message: 'Conversion failed',
+      };
+    }
+
+    if (docsStatus === 'processing' && !isEntity) {
+      return {
+        progress: 100,
+        status: 'processing',
+        message: 'Processing...',
       };
     }
 

@@ -19,7 +19,7 @@ export default function() {
         'toc',
         'attachments',
         'language',
-        'file',
+        'documents',
         'uploaded',
         'published',
         'relationships',

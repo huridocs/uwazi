@@ -2,7 +2,6 @@ import Immutable from 'immutable';
 
 import * as types from 'app/Library/actions/actionTypes';
 import * as uploadTypes from 'app/Uploads/actions/actionTypes';
-import * as attachmentsTypes from 'app/Attachments/actions/actionTypes';
 
 const initialState = { rows: [] };
 
@@ -14,16 +13,6 @@ export default function documents(state = initialState, action = {}) {
   if (action.type === types.UPDATE_DOCUMENT) {
     const docIndex = state.get('rows').findIndex(doc => doc.get('_id') === action.doc._id);
     return state.setIn(['rows', docIndex], Immutable.fromJS(action.doc));
-  }
-
-  if (action.type === types.UPDATE_DOCUMENT) {
-    const docIndex = state.get('rows').findIndex(doc => doc.get('_id') === action.doc._id);
-    return state.setIn(['rows', docIndex], Immutable.fromJS(action.doc));
-  }
-
-  if (action.type === attachmentsTypes.UPDATE_DOCUMENT_FILE) {
-    const docIndex = state.get('rows').findIndex(doc => doc.get('_id') === action.entity);
-    return state.setIn(['rows', docIndex, 'file'], Immutable.fromJS(action.file));
   }
 
   if (action.type === types.UPDATE_DOCUMENTS) {
@@ -45,8 +34,7 @@ export default function documents(state = initialState, action = {}) {
       .get('rows')
       .get(docIndex)
       .toJS();
-    doc.uploaded = true;
-    doc.file = action.file;
+    doc.documents.push(action.file);
     return state.setIn(['rows', docIndex], Immutable.fromJS(doc));
   }
 
@@ -57,7 +45,7 @@ export default function documents(state = initialState, action = {}) {
       .get('rows')
       .get(docIndex)
       .toJS();
-    doc.processed = true;
+    doc.documents[0].status = 'ready';
     return state.setIn(['rows', docIndex], Immutable.fromJS(doc));
   }
 
@@ -68,7 +56,7 @@ export default function documents(state = initialState, action = {}) {
       .get('rows')
       .get(docIndex)
       .toJS();
-    doc.processed = false;
+    doc.documents[0].status = 'failed';
     return state.setIn(['rows', docIndex], Immutable.fromJS(doc));
   }
 

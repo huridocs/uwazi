@@ -38,14 +38,14 @@ export function addReference(references, docInfo, delayActivation) {
   };
 }
 
-export function saveTargetRangedReference(connection, targetRange, onCreate) {
+export function saveTargetRangedReference(connection, targetRange, targetFile, onCreate) {
   return (dispatch, getState) => {
     if (targetRange.text) {
       dispatch(actions.unset('viewer/targetDocReferences'));
-      return connectionsActions.saveConnection({ ...connection, targetRange }, onCreate)(
-        dispatch,
-        getState
-      );
+      return connectionsActions.saveConnection(
+        { ...connection, targetRange, targetFile },
+        onCreate
+      )(dispatch, getState);
     }
     return undefined;
   };

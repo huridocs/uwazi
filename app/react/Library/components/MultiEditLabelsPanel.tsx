@@ -1,4 +1,3 @@
-import { EntitySchema } from 'api/entities/entityType';
 import { t } from 'app/I18N';
 import { IStore, MultiEditOpts, MultiEditState } from 'app/istore';
 import SidePanel from 'app/Layout/SidePanel';
@@ -14,6 +13,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { createSelector } from 'reselect';
+import { EntitySchema } from 'shared/types/entityType';
 import { IImmutable } from 'shared/types/Immutable';
 import { TemplateSchema } from 'shared/types/templateType';
 import { ThesaurusSchema } from 'shared/types/thesaurusType';
@@ -166,7 +166,7 @@ export class MultiEditLabelsPanel extends Component<MultiEditLabelsPanelProps> {
       const isEntity = !entity!.get('file');
       return (
         !!previousCan &&
-        (entity!.get('processed') || isEntity) &&
+        (!!entity!.get('processed') || isEntity) &&
         !entity!.get('published') &&
         !!entity!.get('template')
       );

@@ -5,7 +5,7 @@ import { IImmutable } from 'shared/types/Immutable';
 import { ThesaurusSchema } from 'shared/types/thesaurusType';
 import { PropertySchema } from 'shared/types/commonTypes';
 import { TemplateSchema } from 'shared/types/templateType';
-import { EntitySchema } from 'api/entities/entityType';
+import { EntitySchema } from 'shared/types/entityType';
 
 export interface TaskState {
   SyncState?: TaskStatus;

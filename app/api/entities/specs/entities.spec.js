@@ -1,4 +1,3 @@
-/** @format */
 /* eslint-disable max-nested-callbacks,max-statements */
 
 import Ajv from 'ajv';
@@ -9,8 +8,8 @@ import entitiesModel from 'api/entities/entitiesModel';
 import fs from 'fs';
 import relationships from 'api/relationships';
 import search from 'api/search/search';
-import paths from 'api/config/paths';
-import path from 'path';
+import { uploadsPath } from 'api/files/filesystem';
+
 import entities from '../entities.js';
 import fixtures, {
   batmanFinishesId,
@@ -20,7 +19,8 @@ import fixtures, {
   syncPropertiesEntityId,
   templateWithEntityAsThesauri,
   docId1,
-  docId2,
+  uploadId1,
+  uploadId2,
 } from './fixtures.js';
 
 describe('entities', () => {
@@ -233,41 +233,6 @@ describe('entities', () => {
             expect(docEN.metadata.text).toEqual([{ value: 'newMetadata' }]);
             expect(docES.metadata.text).toEqual([{ value: 'newMetadata' }]);
             expect(docPT.metadata.text).toEqual([{ value: 'test' }]);
-            done();
-          })
-          .catch(catchErrors(done));
-      });
-    });
-
-    describe('when other languages have the same file', () => {
-      it('should replicate the toc being saved', done => {
-        const doc = {
-          _id: batmanFinishesId,
-          sharedId: 'shared',
-          metadata: { text: [{ value: 'newMetadata' }] },
-          template: templateId,
-          toc: [{ label: 'entry1' }],
-          file: { filename: '8202c463d6158af8065022d9b5014cc1.pdf' },
-        };
-
-        entities
-          .save(doc, { language: 'en' })
-          .then(updatedDoc => {
-            expect(updatedDoc.language).toBe('en');
-            return Promise.all([
-              entities.getById('shared', 'es'),
-              entities.getById('shared', 'en'),
-              entities.getById('shared', 'pt'),
-            ]);
-          })
-          .then(([docES, docEN, docPT]) => {
-            expect(docEN.published).toBe(true);
-            expect(docES.published).toBe(true);
-            expect(docPT.published).toBe(true);
-
-            expect(docEN.toc[0].label).toBe(doc.toc[0].label);
-            expect(docES.toc).toBeUndefined();
-            expect(docPT.toc[0].label).toBe(doc.toc[0].label);
             done();
           })
           .catch(catchErrors(done));
@@ -973,15 +938,10 @@ describe('entities', () => {
 
   describe('delete', () => {
     describe('when the original file does not exist', () => {
-      it('should delete the entity and not throw an error', done => {
-        entities
-          .delete('shared1')
-          .then(() => entities.get({ sharedId: 'shared1' }))
-          .then(response => {
-            expect(response.length).toBe(0);
-            done();
-          })
-          .catch(catchErrors(done));
+      it('should delete the entity and not throw an error', async () => {
+        await entities.delete('shared1');
+        const response = await entities.get({ sharedId: 'shared1' });
+        expect(response.length).toBe(0);
       });
     });
 
@@ -996,45 +956,6 @@ describe('entities', () => {
           expect(search.indexEntities).toHaveBeenCalledWith({ sharedId: 'shared' }, '+fullText');
         }
         expect(error).toBeDefined();
-      });
-    });
-
-    describe('getRawePage', () => {
-      it('should return the page text', async () => {
-        const pageNumber = 2;
-        const page = await entities.getRawPage('shared', 'en', pageNumber);
-
-        expect(page).toBe('page 2');
-      });
-
-      describe('when entity do not exists', () => {
-        it('should throw 404 error', async () => {
-          const pageNumber = 2;
-          try {
-            await entities.getRawPage('nonexistent', 'en', pageNumber);
-          } catch (e) {
-            expect(e.code).toBe(404);
-          }
-        });
-      });
-
-      describe('when page is blank', () => {
-        it('should not throw a 404', async () => {
-          const pageNumber = 3;
-          const page = await entities.getRawPage('shared', 'en', pageNumber);
-
-          expect(page).toBe('');
-        });
-      });
-      describe('when page do not exists', () => {
-        it('should throw 404 error', async () => {
-          const pageNumber = 200;
-          try {
-            await entities.getRawPage('shared', 'en', pageNumber);
-          } catch (e) {
-            expect(e.code).toBe(404);
-          }
-        });
       });
     });
 
@@ -1071,36 +992,26 @@ describe('entities', () => {
         .catch(catchErrors(done)));
 
     it('should delete the original file', async () => {
-      fs.writeFileSync(path.join(paths.uploadedDocuments, '8202c463d6158af8065022d9b5014ccb.pdf'));
-      fs.writeFileSync(path.join(paths.uploadedDocuments, '8202c463d6158af8065022d9b5014cc1.pdf'));
-      fs.writeFileSync(path.join(paths.uploadedDocuments, '8202c463d6158af8065022d9b5014ccc.pdf'));
-      fs.writeFileSync(path.join(paths.uploadedDocuments, `${docId1}.jpg`));
-      fs.writeFileSync(path.join(paths.uploadedDocuments, `${docId2}.jpg`));
+      fs.writeFileSync(uploadsPath('8202c463d6158af8065022d9b5014cc1.pdf'));
+      fs.writeFileSync(uploadsPath('8202c463d6158af8065022d9b5014ccb.pdf'));
+      fs.writeFileSync(uploadsPath('8202c463d6158af8065022d9b5014ccc.pdf'));
+      fs.writeFileSync(uploadsPath(`${uploadId1}.jpg`));
+      fs.writeFileSync(uploadsPath(`${uploadId2}.jpg`));
 
-      expect(
-        fs.existsSync(path.join(paths.uploadedDocuments, '8202c463d6158af8065022d9b5014ccb.pdf'))
-      ).toBe(true);
-      expect(
-        fs.existsSync(path.join(paths.uploadedDocuments, '8202c463d6158af8065022d9b5014cc1.pdf'))
-      ).toBe(true);
-      expect(
-        fs.existsSync(path.join(paths.uploadedDocuments, '8202c463d6158af8065022d9b5014ccc.pdf'))
-      ).toBe(true);
-      expect(fs.existsSync(path.join(paths.uploadedDocuments, `${docId1}.jpg`))).toBe(true);
-      expect(fs.existsSync(path.join(paths.uploadedDocuments, `${docId2}.jpg`))).toBe(true);
+      expect(fs.existsSync(uploadsPath('8202c463d6158af8065022d9b5014ccb.pdf'))).toBe(true);
+      expect(fs.existsSync(uploadsPath('8202c463d6158af8065022d9b5014cc1.pdf'))).toBe(true);
+      expect(fs.existsSync(uploadsPath('8202c463d6158af8065022d9b5014ccc.pdf'))).toBe(true);
+      expect(fs.existsSync(uploadsPath(`${uploadId1}.jpg`))).toBe(true);
+      expect(fs.existsSync(uploadsPath(`${uploadId2}.jpg`))).toBe(true);
 
       await entities.delete('shared');
-      expect(
-        fs.existsSync(path.join(paths.uploadedDocuments, '8202c463d6158af8065022d9b5014ccb.pdf'))
-      ).toBe(false);
-      expect(
-        fs.existsSync(path.join(paths.uploadedDocuments, '8202c463d6158af8065022d9b5014cc1.pdf'))
-      ).toBe(false);
-      expect(
-        fs.existsSync(path.join(paths.uploadedDocuments, '8202c463d6158af8065022d9b5014ccc.pdf'))
-      ).toBe(false);
-      expect(fs.existsSync(path.join(paths.uploadedDocuments, `${docId1}.jpg`))).toBe(false);
-      expect(fs.existsSync(path.join(paths.uploadedDocuments, `${docId2}.jpg`))).toBe(false);
+
+      expect(fs.existsSync(uploadsPath('8202c463d6158af8065022d9b5014ccb.pdf'))).toBe(false);
+      expect(fs.existsSync(uploadsPath('8202c463d6158af8065022d9b5014cc1.pdf'))).toBe(false);
+      expect(fs.existsSync(uploadsPath('8202c463d6158af8065022d9b5014ccc.pdf'))).toBe(false);
+
+      expect(fs.existsSync(uploadsPath(`${uploadId1}.jpg`))).toBe(false);
+      expect(fs.existsSync(uploadsPath(`${uploadId2}.jpg`))).toBe(false);
     });
 
     describe('when entity is being used as thesauri', () => {
@@ -1161,9 +1072,8 @@ describe('entities', () => {
 
       await entities.saveMultiple([{ _id: docId1, file: {} }]);
       await entities.addLanguage('ab', 2);
-      const newEntities = await entities.get({ language: 'ab' }, '+fullText');
+      const newEntities = await entities.get({ language: 'ab' });
 
-      expect(newEntities.find(e => e.sharedId === 'shared1').fullText).toEqual({ 1: 'text' });
       expect(newEntities.length).toBe(11);
     });
   });

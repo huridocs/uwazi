@@ -1,5 +1,4 @@
-/** @format */
-
+/* eslint-disable max-lines */
 import moment from 'moment';
 import Immutable from 'immutable';
 import { advancedSort } from 'app/utils/advancedSort';
@@ -137,12 +136,8 @@ export default {
   },
 
   preview(property, _value, _thesauris, { doc }) {
-    const reloadHack = doc.file && doc.file.filename ? doc.file.filename : '';
-    return this.multimedia(
-      property,
-      [{ value: `/api/attachment/${doc._id}.jpg${reloadHack ? `?r=${reloadHack}` : ''}` }],
-      'image'
-    );
+    const defaultDoc = doc.defaultDoc || {};
+    return this.multimedia(property, [{ value: `/api/files/${defaultDoc._id}.jpg` }], 'image');
   },
 
   media(property, value) {

@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { Readable } from 'stream';
 
-import { generateFileName, fileFromReadStream } from 'api/utils/files';
+import { generateFileName, fileFromReadStream } from 'api/files/filesystem';
 import { createError } from 'api/utils';
 import zipFile from 'api/utils/zipFile';
 

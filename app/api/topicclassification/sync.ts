@@ -2,21 +2,21 @@
 import { tcServer } from 'api/config/topicClassification';
 import entities from 'api/entities';
 import { MetadataObject } from 'api/entities/entitiesModel';
-import { EntitySchema } from 'api/entities/entityType';
 import { QueryForEach, WithId } from 'api/odm';
 import templates from 'api/templates';
 import thesauri from 'api/thesauri';
 import { extractSequence, listModels } from 'api/topicclassification';
+import { getModel } from 'api/topicclassification/api';
 import { buildFullModelName } from 'shared/commonTopicClassification';
 import JSONRequest from 'shared/JSONRequest';
 import { propertyTypes } from 'shared/propertyTypes';
 import { Task, TaskProvider } from 'shared/tasks/tasks';
 import { sleep } from 'shared/tsUtils';
 import { PropertySchema } from 'shared/types/commonTypes';
+import { EntitySchema } from 'shared/types/entityType';
 import { TemplateSchema } from 'shared/types/templateType';
 import { ThesaurusSchema, ThesaurusValueSchema } from 'shared/types/thesaurusType';
 import * as util from 'util';
-import { getModel } from 'api/topicclassification/api';
 
 export interface SyncArgs {
   limit?: number;
@@ -233,7 +233,7 @@ class SyncTask extends Task {
     res.seen = 0;
     res.index = 0;
     await QueryForEach(
-      entities.get({ language: 'en' }).sort('_id'),
+      entities.getWithoutDocuments({ language: 'en' }).sort('_id'),
       50,
       async (e: WithId<EntitySchema>) => {
         if (res.index > (args.limit ?? 1000000)) {

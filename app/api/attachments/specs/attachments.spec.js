@@ -5,13 +5,7 @@ import fs from 'api/utils/async-fs';
 import { search } from 'api/search';
 
 import entities from '../../entities';
-import fixtures, {
-  sharedId,
-  entityId,
-  entityIdEn,
-  attachmentToDelete,
-  toDeleteId,
-} from './fixtures';
+import fixtures, { entityId, entityIdEn, attachmentToDelete, toDeleteId } from './fixtures';
 import paths from '../../config/paths';
 import attachments from '../attachments';
 
@@ -45,43 +39,6 @@ describe('attachments', () => {
         'dummy file'
       );
       spyOn(relationships, 'deleteTextReferences').and.returnValue(Promise.resolve());
-    });
-
-    it('should remove main file and thumbnail if id matches entity', async () => {
-      expect(await fs.exists(`${paths.attachments}attachment.txt`)).toBe(true);
-
-      const response = await attachments.delete(toDeleteId);
-      const dbEntity = await entities.getById(toDeleteId);
-      expect(response._id.toString()).toBe(toDeleteId.toString());
-      expect(response.attachments.length).toBe(2);
-      expect(dbEntity.attachments.length).toBe(2);
-      expect(response.file).toBe(null);
-      expect(dbEntity.file).toBe(null);
-      expect(await fs.exists(path.join(paths.attachments, 'mainFile.txt'))).toBe(false);
-      expect(await fs.exists(path.join(paths.attachments, `${toDeleteId.toString()}.jpg`))).toBe(
-        false
-      );
-    });
-
-    it('should remove main file on sibling entities', async () => {
-      expect(await fs.exists(`${paths.attachments}attachment.txt`)).toBe(true);
-      const response = await attachments.delete(entityId);
-
-      expect(response._id.toString()).toBe(entityId.toString());
-      expect(response.file).toBe(null);
-      expect(response.toc).toBe(null);
-
-      const changedEntities = await entities.get({ sharedId });
-      await Promise.all(
-        changedEntities.map(async e => {
-          expect(e.file).toBe(null);
-          expect(e.file).toBe(null);
-          expect(relationships.deleteTextReferences).toHaveBeenCalledWith(sharedId, e.language);
-          expect(await fs.exists(path.join(paths.attachments, `${e._id.toString()}.jpg`))).toBe(
-            false
-          );
-        })
-      );
     });
 
     it('should remove the passed file from attachments and delte the local file', async () => {

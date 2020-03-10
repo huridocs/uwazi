@@ -1,18 +1,11 @@
-/** @format */
-
 import { actions as formActions, getModel } from 'react-redux-form';
-import superagent from 'superagent';
 
-import { APIURL } from 'app/config.js';
 import { advancedSort } from 'app/utils/advancedSort';
 import { api } from 'app/Entities';
 import { notificationActions } from 'app/Notifications';
-import * as libraryTypes from 'app/Library/actions/actionTypes';
 import { removeDocuments, unselectAllDocuments } from 'app/Library/actions/libraryActions';
 import { RequestParams } from 'app/utils/RequestParams';
 import emptyTemplate from '../helpers/defaultTemplate';
-
-import * as types from './actionTypes';
 
 export function resetReduxForm(form) {
   return formActions.reset(form);
@@ -134,32 +127,6 @@ export function loadTemplate(form, template) {
     entity.metadata = resetMetadata(entity.metadata, template, { resetExisting: true });
     dispatch(formActions.load(form, entity));
     dispatch(formActions.setPristine(form));
-  };
-}
-
-export function reuploadDocument(docId, file, docSharedId, __reducerKey) {
-  return (dispatch, getState) => {
-    dispatch({ type: types.START_REUPLOAD_DOCUMENT, doc: docId });
-    superagent
-      .post(`${APIURL}reupload`)
-      .set('Accept', 'application/json')
-      .set('X-Requested-With', 'XMLHttpRequest')
-      .set('Content-Language', getState().locale)
-      .field('document', docSharedId)
-      .attach('file', file, file.name)
-      .on('progress', data => {
-        dispatch({ type: types.REUPLOAD_PROGRESS, doc: docId, progress: Math.floor(data.percent) });
-      })
-      .on('response', ({ body }) => {
-        const _file = { filename: body.filename, size: body.size, originalname: body.originalname };
-        dispatch({ type: types.REUPLOAD_COMPLETE, doc: docId, file: _file, __reducerKey });
-        api.get(new RequestParams({ sharedId: docSharedId })).then(([doc]) => {
-          dispatch({ type: libraryTypes.UPDATE_DOCUMENT, doc, __reducerKey });
-          dispatch({ type: libraryTypes.UNSELECT_ALL_DOCUMENTS, __reducerKey });
-          dispatch({ type: libraryTypes.SELECT_DOCUMENT, doc, __reducerKey });
-        });
-      })
-      .end();
   };
 }
 

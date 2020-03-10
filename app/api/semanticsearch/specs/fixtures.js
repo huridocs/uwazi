@@ -8,6 +8,7 @@ const doc1ObjectId = db.id();
 const doc1Id = 'doc1';
 const docWithoutTextId = 'docWithoutText';
 const template1Id = db.id();
+const fileId = db.id();
 
 export default {
   semanticsearches: [
@@ -49,12 +50,44 @@ export default {
       language: 'en',
     },
   ],
+  files: [
+    {
+      _id: fileId,
+      entity: doc1Id,
+      language: 'en',
+      type: 'document',
+      fullText: { 1: 'page 1', 2: 'page 2' },
+    },
+    {
+      entity: 'doc2',
+      language: 'en',
+      fullText: { 1: 'text2' },
+      type: 'document',
+    },
+    {
+      entity: 'doc3',
+      language: 'en',
+      fullText: { 1: 'text3' },
+      type: 'document',
+    },
+    {
+      entity: 'doc4',
+      language: 'en',
+      fullText: { 1: 'text4' },
+      type: 'document',
+    },
+    {
+      entity: 'doc5',
+      language: 'en',
+      fullText: { 1: 'text5' },
+      type: 'document',
+    },
+  ],
   entities: [
     {
       _id: doc1ObjectId,
       sharedId: doc1Id,
       language: 'en',
-      fullText: { 1: 'page 1', 2: 'page 2' },
     },
     {
       _id: db.id(),
@@ -65,25 +98,21 @@ export default {
       _id: db.id(),
       sharedId: 'doc2',
       language: 'en',
-      fullText: { 1: 'text2' },
     },
     {
       _id: db.id(),
       sharedId: 'doc3',
       language: 'en',
-      fullText: { 1: 'text3' },
     },
     {
       _id: db.id(),
       sharedId: 'doc4',
       language: 'en',
-      fullText: { 1: 'text4' },
     },
     {
       _id: db.id(),
       sharedId: 'doc5',
       language: 'en',
-      fullText: { 1: 'text5' },
     },
     {
       sharedId: '1',
@@ -203,9 +232,13 @@ export default {
       results: [{ score: 0.9 }, { score: 0.2 }, { score: 0.3 }],
     },
   ],
+  settings: [
+    { _id: db.id(), languages: [{ key: 'es', default: true }, { key: 'pt' }, { key: 'en' }] },
+  ],
 };
 
 export {
+  fileId,
   search1Id,
   search2Id,
   search3Id,

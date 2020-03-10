@@ -1,10 +1,9 @@
-/** @format */ // eslint-disable-line max-lines
+// eslint-disable-line max-lines
 /* eslint-disable no-await-in-loop, no-console, camelcase */
 
 import { tcServer, useThesaurusNames } from 'api/config/topicClassification';
 import entities from 'api/entities';
 import { MetadataObject } from 'api/entities/entitiesModel';
-import { EntitySchema } from 'api/entities/entityType';
 import { QueryForEach, WithId } from 'api/odm';
 import templates from 'api/templates';
 import thesauri from 'api/thesauri';
@@ -15,6 +14,7 @@ import JSONRequest from 'shared/JSONRequest';
 import { propertyTypes } from 'shared/propertyTypes';
 import { ensure, sleep } from 'shared/tsUtils';
 import { PropertySchema } from 'shared/types/commonTypes';
+import { EntitySchema } from 'shared/types/entityType';
 import { ThesaurusSchema } from 'shared/types/thesaurusType';
 import yargs from 'yargs';
 
@@ -333,7 +333,7 @@ connect().then(
           let index = 0;
           let batch = [] as WithId<EntitySchema>[];
           await QueryForEach(
-            entities.get({ language: 'en' }).sort('_id'),
+            entities.getWithoutDocuments({ language: 'en' }).sort('_id'),
             batchSize + 1,
             async (e: WithId<EntitySchema>) => {
               if (index > limit) {

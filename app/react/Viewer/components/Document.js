@@ -6,7 +6,6 @@ import React, { Component } from 'react';
 
 import Loader from 'app/components/Elements/Loader';
 import PDF from 'app/PDF';
-import ShowIf from 'app/App/ShowIf';
 import Text from 'app/Viewer/utils/Text';
 import Immutable from 'immutable';
 import { highlightSnippet } from 'app/Viewer/actions/uiActions';
@@ -47,7 +46,7 @@ export class Document extends Component {
   }
 
   onTextSelected() {
-    this.props.setSelection(this.text.getSelection());
+    this.props.setSelection(this.text.getSelection(), this.props.file._id);
   }
 
   onDocumentReady() {
@@ -65,7 +64,7 @@ export class Document extends Component {
       const references = this.props.references.toJS();
       return this.props.activateReference(
         references.find(r => r._id === e.target.getAttribute('data-id')),
-        this.props.doc.get('pdfInfo').toJS(),
+        this.props.file.pdfInfo,
         references
       );
     }
@@ -91,7 +90,7 @@ export class Document extends Component {
       const references = this.props.references.toJS();
       this.props.scrollToActive(
         references.find(r => r._id === this.props.activeReference),
-        this.props.doc.get('pdfInfo').toJS(),
+        this.props.file.pdfInfo,
         references,
         this.props.doScrollToActive
       );
@@ -103,22 +102,31 @@ export class Document extends Component {
     this.componentDidUpdate();
   }
 
-  render() {
-    const doc = this.props.doc.toJS();
-
-    const Header =
-      this.props.header ||
-      function() {
-        return false;
-      };
+  renderPDF(file) {
+    if (!(file._id && file.pdfInfo)) {
+      return <Loader />;
+    }
 
     return (
+      <PDF
+        onPageChange={this.props.onPageChange}
+        onPDFReady={this.onDocumentReady}
+        pdfInfo={file.pdfInfo}
+        onLoad={this.pdfLoaded}
+        file={`${APIURL}files/${file.filename}`}
+        filename={file.filename}
+      />
+    );
+  }
+
+  render() {
+    const doc = this.props.doc.toJS();
+    const { file } = this.props;
+
+    const Header = this.props.header ? this.props.header : () => false;
+    return (
       <div>
-        <div
-          className={`_${doc._id} document ${this.props.className} ${determineDirection(
-            doc.file || {}
-          )}`}
-        >
+        <div className={`_${doc._id} document ${this.props.className} ${determineDirection(file)}`}>
           <Header />
           <div
             className="pages"
@@ -128,19 +136,7 @@ export class Document extends Component {
             onClick={this.handleClick.bind(this)}
             onMouseOver={this.handleOver.bind(this)}
           >
-            <ShowIf if={!doc._id || !doc.pdfInfo}>
-              <Loader />
-            </ShowIf>
-            <ShowIf if={!!doc._id && !!doc.pdfInfo}>
-              <PDF
-                onPageChange={this.props.onPageChange}
-                onPDFReady={this.onDocumentReady}
-                pdfInfo={this.props.doc.get('pdfInfo')}
-                onLoad={this.pdfLoaded}
-                file={`${APIURL}documents/download?_id=${doc._id}`}
-                filename={doc.file ? doc.file.filename : null}
-              />
-            </ShowIf>
+            {this.renderPDF(file)}
           </div>
         </div>
       </div>
@@ -151,6 +147,10 @@ export class Document extends Component {
 Document.defaultProps = {
   onDocumentReady: () => {},
   onPageChange: () => {},
+  onClick: () => {},
+  file: {},
+  searchTerm: '',
+  page: 1,
   selectedSnippet: Immutable.fromJS({}),
 };
 
@@ -158,12 +158,12 @@ Document.propTypes = {
   onPageChange: PropTypes.func,
   onDocumentReady: PropTypes.func,
   doc: PropTypes.object,
-  docHTML: PropTypes.object,
+  file: PropTypes.object,
+  selectedSnippet: PropTypes.instanceOf(Immutable.Map),
   setSelection: PropTypes.func,
   unsetSelection: PropTypes.func,
   header: PropTypes.func,
   searchTerm: PropTypes.string,
-  selectedSnippet: PropTypes.object,
   page: PropTypes.number,
   activateReference: PropTypes.func,
   doScrollToActive: PropTypes.bool,

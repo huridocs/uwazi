@@ -65,11 +65,15 @@ export function saveConnection(connection, callback = () => {}) {
       entity: connection.sourceDocument,
       template: null,
       range: connection.sourceRange,
+      file: connection.sourceFile,
     };
 
     const targetRelationship = { entity: connection.targetDocument, template: connection.template };
     if (connection.targetRange && typeof connection.targetRange.start !== 'undefined') {
-      targetRelationship.range = connection.targetRange;
+      Object.assign(targetRelationship, {
+        range: connection.targetRange,
+        file: connection.targetFile,
+      });
     }
 
     const apiCall = {

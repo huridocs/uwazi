@@ -1,6 +1,6 @@
-/** @format */
-
 import Immutable from 'immutable';
+
+const entityDocs = [{ _id: 'doc1' }, { _id: 'doc2' }];
 
 export const doc = {
   _id: 'languageSpecificId',
@@ -10,6 +10,8 @@ export const doc = {
   file: {
     filename: 'filename.pdf',
   },
+  defaultDoc: entityDocs[1],
+  documents: entityDocs,
   metadata: {
     text: [{ value: 'text content' }],
     date: [{ value: 10 }],

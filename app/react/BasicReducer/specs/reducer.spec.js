@@ -62,6 +62,20 @@ describe('BasicReducer', () => {
         expect(newState2.toJS()).toEqual([{ _id: 2, title: 'test2' }]);
       });
     });
+
+    describe('when the state is a Map', () => {
+      it('should merge the value in to the state', () => {
+        const reducer1 = createReducer('1', {});
+        const state = reducer1({}, actions.set('1', { title: 'test', prop: 'prop' }));
+
+        const newState = reducer1(
+          state,
+          actions.update('1', { title: 'test', newProp: 'new prop' })
+        );
+
+        expect(newState.toJS()).toEqual({ title: 'test', prop: 'prop', newProp: 'new prop' });
+      });
+    });
   });
 
   describe('Update In', () => {

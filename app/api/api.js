@@ -26,11 +26,13 @@ export default (app, server) => {
   require('./topicclassification/routes').default(app);
   require('./thesauri/routes').default(app);
   require('./relationtypes/routes').default(app);
-  require('./documents/routes').default(app);
+  require('./documents/deprecatedRoutes').default(app);
+  require('./documents/routes').documentRoutes(app);
   require('./contact/routes').default(app);
   require('./entities/routes').default(app);
   require('./pages/routes').default(app);
-  require('./upload/routes').default(app);
+  require('./files/jsRoutes.js').default(app);
+  require('./files/routes').default(app);
   require('./settings/routes').default(app);
   require('./i18n/routes').default(app);
   require('./attachments/routes').default(app);

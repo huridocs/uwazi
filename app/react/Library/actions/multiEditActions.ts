@@ -1,4 +1,3 @@
-import { EntitySchema } from 'api/entities/entityType';
 import { actions } from 'app/BasicReducer';
 import EntitiesAPI from 'app/Entities/EntitiesAPI';
 import { IStore, MultiEditOpts, MultiEditState } from 'app/istore';
@@ -8,6 +7,7 @@ import { actions as formActions } from 'react-redux-form';
 import { Dispatch } from 'redux';
 import { getThesaurusPropertyNames } from 'shared/commonTopicClassification';
 import { MetadataObjectSchema } from 'shared/types/commonTypes';
+import { EntitySchema } from 'shared/types/entityType';
 import { updateEntities } from './libraryActions';
 
 export function toggleAutoSaveMode() {

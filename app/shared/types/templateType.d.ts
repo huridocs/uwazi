@@ -8,7 +8,7 @@ export interface TemplateSchema {
   name: string;
   color?: string;
   default?: boolean;
-  commonProperties: [PropertySchema, ...(PropertySchema)[]];
+  commonProperties?: [PropertySchema, ...(PropertySchema)[]];
   properties?: PropertySchema[];
   [k: string]: any | undefined;
 }

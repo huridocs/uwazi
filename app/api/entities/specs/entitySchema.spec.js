@@ -4,7 +4,7 @@
 
 import db from 'api/utils/testing_db';
 import { propertyTypes } from 'shared/propertyTypes';
-import { validateEntity } from '../entitySchema';
+import { validateEntity } from '../../../shared/types/entitySchema';
 import { customErrorMessages } from '../metadataValidators.js';
 import fixtures, { templateId, simpleTemplateId, nonExistentId } from './validatorFixtures';
 

@@ -1,7 +1,7 @@
 /** @format */
 // eslint-disable-line max-lines
 
-import { EntitySchema } from 'api/entities/entityType';
+import { EntitySchema } from 'shared/types/entityType';
 import ShowIf from 'app/App/ShowIf';
 import { ConnectionsGroups } from 'app/ConnectionsList';
 import { connectionsChanged, deleteConnection } from 'app/ConnectionsList/actions/actions';

@@ -22,6 +22,7 @@ import ShowIf from 'app/App/ShowIf';
 import SidePanel from 'app/Layout/SidePanel';
 import ContextMenu from 'app/ContextMenu';
 import { Icon } from 'UI';
+import { FileList } from 'app/Attachments/components/FileList';
 
 import { ShowSidepanelMenu } from './ShowSidepanelMenu';
 import { deleteEntity } from '../actions/actions';
@@ -76,9 +77,6 @@ export class EntityViewer extends Component {
     const { panelOpen } = this.state;
     const selectedTab = tab || 'info';
 
-    const docAttachments = entity.attachments ? entity.attachments : [];
-    const attachments = entity.file ? [entity.file].concat(docAttachments) : docAttachments;
-
     const summary = connectionsGroups.reduce(
       (summaryData, g) => {
         g.get('templates').forEach(template => {
@@ -119,11 +117,11 @@ export class EntityViewer extends Component {
                         showTitle={false}
                         showType={false}
                       />
+                      <FileList files={entity.documents} entity={entity} />
                       <AttachmentsList
-                        files={Immutable(attachments)}
+                        attachments={entity.attachments}
                         parentId={entity._id}
                         parentSharedId={entity.sharedId}
-                        isDocumentAttachments={Boolean(entity.file)}
                         entityView
                         processed={entity.processed}
                       />

@@ -16,7 +16,7 @@ import { uploadCustom, deleteCustomUpload } from '../../Uploads/actions/uploadsA
 
 export class CustomUploads extends RouteHandler {
   static async requestState(requestParams) {
-    const customUploads = await api.get('customisation/upload', requestParams);
+    const customUploads = await api.get('files', requestParams.add({ type: 'custom' }));
     return [actions.set('customUploads', customUploads.json)];
   }
 
