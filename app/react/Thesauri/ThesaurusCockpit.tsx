@@ -15,7 +15,6 @@ import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
 import { ThesaurusSchema, ThesaurusValueSchema } from 'shared/types/thesaurusType';
 import { Icon } from 'UI';
-import util from 'util';
 import {
   startTraining,
   toggleEnableClassification,
@@ -181,12 +180,12 @@ export class ThesaurusCockpitBase extends RouteHandler {
         </div>
         <div className="footer">
           {isLearning && (
-            <span className="btn-label property-help">
+            <div className="btn-label property-help">
               <span>
                 Learning... <Icon icon="spinner" spin />
               </span>
               <div className="property-description">{taskState.TrainState?.message}</div>
-            </span>
+            </div>
           )}
           {!isLearning && numLabeled && numLabeled > numTrained && numLabeled > numTopics * 20 && (
             <button

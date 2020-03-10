@@ -57,7 +57,7 @@ export class Notice extends Component<NoticeProps, NoticeState> {
           <span className="icon">{Notice.learnIcon()}</span>
           <span className="title">{title}</span>
           {allowClose && (
-            <button className="close-notice" onClick={this.close}>
+            <button className="close-notice" onClick={this.close} type="button">
               X
             </button>
           )}

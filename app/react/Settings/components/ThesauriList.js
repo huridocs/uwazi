@@ -2,11 +2,7 @@
 
 import Footer from 'app/App/Footer';
 import { I18NLink, t } from 'app/I18N';
-import {
-  checkThesaurusCanBeClassified,
-  checkThesaurusCanBeDeleted,
-  deleteThesaurus,
-} from 'app/Thesauri/actions/thesaurisActions';
+import { checkThesaurusCanBeDeleted, deleteThesaurus } from 'app/Thesauri/actions/thesaurisActions';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';

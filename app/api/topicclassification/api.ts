@@ -18,6 +18,7 @@ import request from 'shared/JSONRequest';
 import { TaskStatus } from 'shared/tasks/tasks';
 import { EntitySchema } from 'shared/types/entityType';
 import { URL } from 'url';
+import util from 'util';
 import { getThesaurusPropertyNames } from '../../shared/commonTopicClassification';
 import { ThesaurusSchema, ThesaurusValueSchema } from '../../shared/types/thesaurusType';
 
@@ -46,7 +47,7 @@ export async function listModels(
   } catch (err) {
     return {
       models: [],
-      error: `Error from topic-classification server: ${err.toString()}`,
+      error: `Error from topic-classification server: ${util.inspect(err, false, null)}`,
     };
   }
 }

@@ -64,7 +64,7 @@ export function getLabelsQuery(templateID: string, templateProperty: PropertySch
     filters: {
       [name]: {
         values: ['any'],
-      }
+      },
     },
   };
 }
