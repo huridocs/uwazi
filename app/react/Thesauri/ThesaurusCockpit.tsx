@@ -4,6 +4,7 @@ import RouteHandler from 'app/App/RouteHandler';
 import { actions } from 'app/BasicReducer';
 import Loader from 'app/components/Elements/Loader';
 import { I18NLink, t } from 'app/I18N';
+import { IStore, SuggestInfo, TaskState } from 'app/istore';
 import SearchAPI from 'app/Search/SearchAPI';
 import { resolveTemplateProp } from 'app/Settings/utils/resolveProperty';
 import {
@@ -21,28 +22,24 @@ import { PropertySchema } from 'shared/types/commonTypes';
 import { ThesaurusSchema, ThesaurusValueSchema } from 'shared/types/thesaurusType';
 import { Icon } from 'UI';
 import util from 'util';
+import { getLabelsQuery } from '../Settings/utils/suggestions';
+import {
+  startTraining,
+  toggleEnableClassification,
+  updateTaskState,
+} from './actions/cockpitActions';
 import { ClassifierModelSchema } from './types/classifierModelType';
 import { LabelCountSchema } from './types/labelCountType';
 import { buildLabelCounts, flattenLabelCounts } from './utils/suggestionQuery';
 import { getValuesSortedByName } from './utils/valuesSort';
-import { getLabelsQuery } from '../Settings/utils/suggestions';
-import {
-  TaskState,
-  SuggestInfo,
-  ThesaurusCockpitStore,
-  updateTaskState,
-  startTraining,
-  ThesaurusWithProperty,
-  toggleEnableClassification,
-} from './actions/thesaurusCockpitActions';
 
 export type ThesaurusCockpitProps = {
-  thesaurus: ThesaurusWithProperty;
+  thesaurus: ThesaurusSchema;
   suggestInfo: SuggestInfo;
   taskState: TaskState;
-  updateTaskState: (thesaurusName: string) => {};
-  startTraining: (thesaurusId: string) => {};
-  toggleEnableClassification: (thesaurus: ThesaurusSchema) => {};
+  updateTaskState: () => {};
+  startTraining: () => {};
+  toggleEnableClassification: () => {};
 };
 
 export class ThesaurusCockpitBase extends RouteHandler {
@@ -110,6 +107,7 @@ export class ThesaurusCockpitBase extends RouteHandler {
         docsWithSuggestionsForReview,
         docsWithLabels,
       }),
+      updateTaskState(),
     ];
   }
 
@@ -148,15 +146,12 @@ export class ThesaurusCockpitBase extends RouteHandler {
     }
   }
 
-  static topicNode(
-    thesaurus: ThesaurusWithProperty,
-    topic: ThesaurusValueSchema,
-    labelsResult: LabelCountSchema,
-    suggestionResult: LabelCountSchema
-  ) {
+  topicNode(topic: ThesaurusValueSchema) {
+    const { thesaurus, suggestInfo } = this.props as ThesaurusCockpitProps;
     const { label, id } = topic;
-    const suggestionCount = suggestionResult.thesaurus?.totalValues[`${id}`] ?? 0;
-    const labelCount = labelsResult.thesaurus?.totalValues[`${id}`] ?? 0;
+    const suggestionCount =
+      suggestInfo.docsWithSuggestionsForReview.thesaurus?.totalValues[`${id}`] ?? 0;
+    const labelCount = suggestInfo.docsWithLabels.thesaurus?.totalValues[`${id}`] ?? 0;
 
     return (
       <tr key={label}>
@@ -230,7 +225,7 @@ export class ThesaurusCockpitBase extends RouteHandler {
           <button
             type="button"
             className="btn btn-default"
-            onClick={() => this.props.startTraining(thesaurus._id)}
+            onClick={() => this.props.startTraining()}
           >
             <span className="btn-label">{t('System', 'Train model')}</span>
           </button>
@@ -242,23 +237,16 @@ export class ThesaurusCockpitBase extends RouteHandler {
   }
 
   topicNodes() {
-    const { suggestInfo, thesaurus } = this.props as ThesaurusCockpitProps;
+    const { thesaurus } = this.props as ThesaurusCockpitProps;
     const values = getValuesSortedByName(thesaurus);
 
-    return values.map((topic: ThesaurusValueSchema) =>
-      ThesaurusCockpitBase.topicNode(
-        thesaurus,
-        topic,
-        suggestInfo.docsWithLabels,
-        suggestInfo.docsWithSuggestionsForReview
-      )
-    );
+    return values.map((topic: ThesaurusValueSchema) => this.topicNode(topic));
   }
 
   interval?: NodeJS.Timeout = undefined;
 
   componentDidMount() {
-    this.interval = setInterval(() => this.props.updateTaskState(this.props.thesaurus.name), 10000);
+    this.interval = setInterval(() => this.props.updateTaskState(), 10000);
   }
 
   componentWillUnmount() {
@@ -279,7 +267,7 @@ export class ThesaurusCockpitBase extends RouteHandler {
     return (
       (modelAvailable || thesaurus.enable_classification) && (
         <button
-          onClick={this.props.toggleEnableClassification.bind(this, thesaurus)}
+          onClick={() => this.props.toggleEnableClassification()}
           className={
             thesaurus.enable_classification
               ? 'btn btn-default btn-xs btn-toggle-on'
@@ -364,21 +352,21 @@ export class ThesaurusCockpitBase extends RouteHandler {
 }
 
 const selectSuggestInfo = createSelector(
-  (state: ThesaurusCockpitStore) => state.thesauri.suggestInfo,
+  (state: IStore) => state.thesauri.suggestInfo,
   info => info.toJS()
 );
 
 const selectThesaurus = createSelector(
-  (state: ThesaurusCockpitStore) => state.thesauri.thesaurus,
+  (state: IStore) => state.thesauri.thesaurus,
   thesaurus => thesaurus.toJS()
 );
 
 const selectTaskState = createSelector(
-  (state: ThesaurusCockpitStore) => state.thesauri.taskState,
+  (state: IStore) => state.thesauri.taskState,
   s => s.toJS()
 );
 
-function mapStateToProps(state: ThesaurusCockpitStore) {
+function mapStateToProps(state: IStore) {
   return {
     suggestInfo: selectSuggestInfo(state),
     thesaurus: selectThesaurus(state),

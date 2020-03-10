@@ -1,5 +1,6 @@
 /* eslint-disable max-lines */
 import RouteHandler from 'app/App/RouteHandler';
+import { SuggestInfo } from 'app/istore';
 import api from 'app/Search/SearchAPI';
 import TemplatesAPI from 'app/Templates/TemplatesAPI';
 import ThesauriAPI from 'app/Thesauri/ThesauriAPI';
@@ -8,7 +9,6 @@ import { shallow, ShallowWrapper } from 'enzyme';
 import React from 'react';
 import { TemplateSchema } from 'shared/types/templateType';
 import { ThesaurusSchema } from 'shared/types/thesaurusType';
-import { SuggestInfo } from '../actions/thesaurusCockpitActions';
 import { ThesaurusCockpitBase, ThesaurusCockpitProps } from '../ThesaurusCockpit';
 import { ClassifierModelSchema } from '../types/classifierModelType';
 import { LabelCountSchema } from '../types/labelCountType';
@@ -143,16 +143,16 @@ describe('ThesaurusCockpit', () => {
     let dispatchCallsOrder: any[];
 
     beforeEach(() => {
-      const thesaurus = thesauri[0];
-      thesaurus.property = {
-        id: 'ID1',
-        _id: '_ID1',
-        content: 'content1',
-        label: 'ThesaurusName',
-        name: 'thesaurus_name',
-      };
       props = {
         suggestInfo: {
+          property: {
+            id: 'ID1',
+            _id: '_ID1',
+            content: 'content1',
+            label: 'ThesaurusName',
+            name: 'thesaurus_name',
+            type: 'multiselect',
+          },
           model,
           docsWithLabels: flattenedSuggestions,
           docsWithSuggestionsForPublish: flattenedSuggestions,
@@ -251,19 +251,21 @@ describe('ThesaurusCockpit', () => {
 
       expect(actions.length).toBe(4);
       actions.forEach(action => {
-        switch (action.type) {
-          case 'thesauri.thesaurus/SET':
-            expect(action.value).toEqual(thesauri[0]);
-            break;
-          case 'thesauri.suggestInfo/SET':
-            expect(action.value).toEqual({
-              model,
-              docsWithLabels: flattenedSuggestions,
-              docsWithSuggestionsForPublish: flattenedSuggestions,
-              docsWithSuggestionsForReview: flattenedSuggestions,
-            } as SuggestInfo);
-            break;
-          default:
+        if ('type' in action) {
+          switch (action.type) {
+            case 'thesauri.thesaurus/SET':
+              expect(action.value).toEqual(thesauri[0]);
+              break;
+            case 'thesauri.suggestInfo/SET':
+              expect(action.value).toEqual({
+                model,
+                docsWithLabels: flattenedSuggestions,
+                docsWithSuggestionsForPublish: flattenedSuggestions,
+                docsWithSuggestionsForReview: flattenedSuggestions,
+              } as SuggestInfo);
+              break;
+            default:
+          }
         }
       });
     });

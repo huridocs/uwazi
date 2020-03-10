@@ -5,7 +5,8 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
 import { Icon } from 'UI';
-import { StoreState, selectIsPristine } from '../common';
+import { IStore } from 'app/istore';
+import { selectIsPristine } from '../common';
 
 const defaultProps = {
   isPristine: true,
@@ -72,11 +73,11 @@ export class OneUpEntityButtonsBase extends Component<OneUpEntityButtonsProps> {
   }
 }
 
-const mapStateToProps = (state: StoreState) => ({
+const mapStateToProps = (state: IStore) => ({
   isPristine: selectIsPristine(state),
 });
 
-function mapDispatchToProps(dispatch: Dispatch<StoreState>) {
+function mapDispatchToProps(dispatch: Dispatch<IStore>) {
   return bindActionCreators(
     {
       switchOneUpEntity,

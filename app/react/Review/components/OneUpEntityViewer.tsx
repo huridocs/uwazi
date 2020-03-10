@@ -10,6 +10,7 @@ import { connectionsChanged, deleteConnection } from 'app/ConnectionsList/action
 import ContextMenu from 'app/ContextMenu';
 import { ShowSidepanelMenu } from 'app/Entities/components/ShowSidepanelMenu';
 import { t } from 'app/I18N';
+import { IStore, OneUpState } from 'app/istore';
 import { Icon as PropertyIcon, TemplateLabel } from 'app/Layout';
 import Tip from 'app/Layout/Tip';
 import { MetadataForm, ShowMetadata } from 'app/Metadata';
@@ -32,13 +33,7 @@ import { PropertySchema } from 'shared/types/commonTypes';
 import { IImmutable } from 'shared/types/Immutable';
 import { TemplateSchema } from 'shared/types/templateType';
 import { Icon } from 'UI';
-import {
-  OneUpState,
-  selectEntity,
-  selectMlThesauri,
-  selectOneUpState,
-  StoreState,
-} from '../common';
+import { selectEntity, selectMlThesauri, selectOneUpState } from '../common';
 
 const defaultProps = {
   entity: {} as EntitySchema,
@@ -253,7 +248,7 @@ export class OneUpEntityViewerBase extends Component<
   }
 }
 
-const mapStateToProps = (state: StoreState) => ({
+const mapStateToProps = (state: IStore) => ({
   entity: selectEntity(state),
   relationships: state.entityView.entity.get('relationships'),
   tab: state.entityView.uiState.get('tab'),
@@ -262,7 +257,7 @@ const mapStateToProps = (state: StoreState) => ({
   mlThesauri: selectMlThesauri(state),
 });
 
-function mapDispatchToProps(dispatch: Dispatch<StoreState>) {
+function mapDispatchToProps(dispatch: Dispatch<IStore>) {
   return bindActionCreators(
     {
       connectionsChanged,

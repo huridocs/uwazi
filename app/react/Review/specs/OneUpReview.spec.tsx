@@ -1,14 +1,12 @@
-/** @format */
-
-import React from 'react';
-import { shallow, ShallowWrapper } from 'enzyme';
-import { OneUpReviewBase, OneUpReviewProps } from 'app/Review/OneUpReview';
 import RouteHandler from 'app/App/RouteHandler';
-import { OneUpEntityViewer } from 'app/Review/components/OneUpEntityViewer';
 import Loader from 'app/components/Elements/Loader';
+import { OneUpState } from 'app/istore';
+import { OneUpEntityViewer } from 'app/Review/components/OneUpEntityViewer';
+import { OneUpReviewBase, OneUpReviewProps } from 'app/Review/OneUpReview';
 import createStore from 'app/store';
+import { shallow, ShallowWrapper } from 'enzyme';
 import Immutable from 'immutable';
-import { OneUpState } from '../common';
+import React from 'react';
 
 describe('Library', () => {
   const templates = Immutable.fromJS([

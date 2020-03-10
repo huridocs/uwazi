@@ -1,55 +1,17 @@
 import { EntitySchema } from 'api/entities/entityType';
+import { actions } from 'app/BasicReducer';
 import EntitiesAPI from 'app/Entities/EntitiesAPI';
+import { IStore, MultiEditOpts, MultiEditState } from 'app/istore';
 import { notificationActions } from 'app/Notifications';
+import { RequestParams } from 'app/utils/RequestParams';
 import { actions as formActions } from 'react-redux-form';
 import { Dispatch } from 'redux';
 import { getThesaurusPropertyNames } from 'shared/commonTopicClassification';
 import { MetadataObjectSchema } from 'shared/types/commonTypes';
-import { IImmutable } from 'shared/types/Immutable';
-import { TemplateSchema } from 'shared/types/templateType';
-import { ThesaurusSchema } from 'shared/types/thesaurusType';
-import { RequestParams } from '../../utils/RequestParams';
 import { updateEntities } from './libraryActions';
-import { actions } from 'app/BasicReducer';
-
-export interface MultiEditOpts {
-  thesaurus?: string;
-  autoSave?: boolean;
-}
-
-export interface TriStateSelectValue {
-  // Thesaurus value ids that should be added to all entities.
-  added: string[];
-  // Thesaurus value ids that should be removed from all entities.
-  removed: string[];
-  // Thesaurus value ids that all entities originally had.
-  originalFull: string[];
-  // Thesaurus value ids that some, but not all, entities originally had.
-  originalPartial: string[];
-}
-
-export interface MultiEditState {
-  [k: string]: TriStateSelectValue;
-}
-
-export interface StoreState {
-  library: {
-    documents: IImmutable<{ rows: EntitySchema[] }>;
-    ui: IImmutable<{
-      selectedDocuments: EntitySchema[];
-    }>;
-    sidepanel: {
-      multiEditOpts: IImmutable<MultiEditOpts>;
-      multipleEdit: MultiEditState;
-      multipleEditForm: any;
-    };
-  };
-  templates: IImmutable<TemplateSchema[]>;
-  thesauris: IImmutable<ThesaurusSchema[]>;
-}
 
 export function toggleAutoSaveMode() {
-  return (dispatch: Dispatch<StoreState>, getState: () => StoreState) => {
+  return (dispatch: Dispatch<IStore>, getState: () => IStore) => {
     const opts = getState().library.sidepanel.multiEditOpts.toJS();
     dispatch(
       actions.set('library.sidepanel.multiEditOpts', {
@@ -100,7 +62,7 @@ function buildMultipleEditState(docs: EntitySchema[], propNames: string[]): Mult
 }
 
 export function selectedDocumentsChanged() {
-  return async (dispatch: Dispatch<StoreState>, getState: () => StoreState) => {
+  return async (dispatch: Dispatch<IStore>, getState: () => IStore) => {
     const model = 'library.sidepanel.multipleEdit';
     const state = getState();
     if (!state.library.sidepanel.multiEditOpts.get('thesaurus')) {
@@ -131,7 +93,7 @@ export function selectedDocumentsChanged() {
 }
 
 export function maybeSaveMultiEdit() {
-  return async (dispatch: Dispatch<StoreState>, getState: () => StoreState) => {
+  return async (dispatch: Dispatch<IStore>, getState: () => IStore) => {
     const state = getState();
     if (!state.library.sidepanel.multiEditOpts.get('autoSave')) {
       return;

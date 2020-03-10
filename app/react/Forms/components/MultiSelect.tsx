@@ -1,12 +1,12 @@
 /* eslint-disable class-methods-use-this,max-lines */
 
 import ShowIf from 'app/App/ShowIf';
+import { filterOptions } from 'app/Forms/utils/optionsUtils';
 import { t } from 'app/I18N';
+import { TriStateSelectValue } from 'app/istore';
 import { Icon as CustomIcon } from 'app/Layout/Icon';
 import React, { Component } from 'react';
 import { Icon } from 'UI';
-import { TriStateSelectValue } from '../../Library/actions/multiEditActions';
-import { filterOptions } from '../utils/optionsUtils';
 
 type Option = { options?: Option[]; results?: number } & { [k: string]: string };
 enum SelectStates {

@@ -1,5 +1,6 @@
 import { EntitySchema } from 'api/entities/entityType';
 import { t } from 'app/I18N';
+import { IStore, MultiEditOpts, MultiEditState } from 'app/istore';
 import SidePanel from 'app/Layout/SidePanel';
 import { unselectAllDocuments } from 'app/Library/actions/libraryActions';
 import * as metadataActions from 'app/Metadata/actions/actions';
@@ -19,10 +20,7 @@ import { ThesaurusSchema } from 'shared/types/thesaurusType';
 import { Icon } from 'UI';
 import {
   maybeSaveMultiEdit,
-  MultiEditOpts,
-  MultiEditState,
   selectedDocumentsChanged,
-  StoreState,
   toggleAutoSaveMode,
 } from '../actions/multiEditActions';
 
@@ -43,7 +41,7 @@ const defaultProps = {
 export type MultiEditLabelsPanelProps = typeof defaultProps;
 
 export const selectIsPristine = createSelector(
-  (state: StoreState) => state.library.sidepanel.multipleEditForm.$form.pristine,
+  (state: IStore) => state.library.sidepanel.multipleEditForm.$form.pristine,
   value => value
 );
 
@@ -217,20 +215,20 @@ export class MultiEditLabelsPanel extends Component<MultiEditLabelsPanelProps> {
 }
 
 export const selectMultiEditThesaurus = createSelector(
-  (state: StoreState) =>
+  (state: IStore) =>
     state.thesauris.find(
       thes => thes!.get('_id') === state.library.sidepanel.multiEditOpts.get('thesaurus')
     ),
   thes => thes
 );
 
-export const mapStateToProps = (state: StoreState) => ({
+export const mapStateToProps = (state: IStore) => ({
   selectedDocuments: state.library.ui.get('selectedDocuments'),
   multipleEdit: state.library.sidepanel.multipleEdit,
   multiEditThesaurus: selectMultiEditThesaurus(state),
   opts: state.library.sidepanel.multiEditOpts.toJS(),
   templates: createSelector(
-    (s: StoreState) => s.templates,
+    (s: IStore) => s.templates,
     tmpls => tmpls
   )(state),
 });

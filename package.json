@@ -88,6 +88,7 @@
     "@types/react-router-dom": "^5.1.0",
     "@types/react-tabs-redux": "^4.0.0",
     "@types/yargs-parser": "^13.0.0",
+    "@types/webpack-env": "^1.15.1",
     "ajv": "^6.10.2",
     "ajv-keywords": "^3.4.1",
     "async": "^2.6.1",

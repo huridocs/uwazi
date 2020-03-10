@@ -1,8 +1,6 @@
-/** @format */
-
 import { shallow, ShallowWrapper } from 'enzyme';
 import React from 'react';
-import { OneUpState } from '../../common';
+import { OneUpState } from 'app/istore';
 import { OneUpTitleBarBase, OneUpTitleBarProps } from '../OneUpTitleBar';
 
 describe('EntityViewer', () => {

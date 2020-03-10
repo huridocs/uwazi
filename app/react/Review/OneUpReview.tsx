@@ -1,10 +1,9 @@
-/** @format */
 import { EntitySchema } from 'api/entities/entityType';
-import { TemplateSchema } from 'shared/types/templateType';
 import RouteHandler from 'app/App/RouteHandler';
 import { actions } from 'app/BasicReducer';
 import Loader from 'app/components/Elements/Loader';
 import * as uiActions from 'app/Entities/actions/uiActions';
+import { OneUpState } from 'app/istore';
 import { setDocuments, unsetDocuments } from 'app/Library/actions/libraryActions';
 import { processQuery } from 'app/Library/helpers/requestState';
 import { wrapDispatch } from 'app/Multireducer';
@@ -22,9 +21,8 @@ import { connect } from 'react-redux';
 import { actions as formActions } from 'react-redux-form';
 import { propertyTypes } from 'shared/propertyTypes';
 import { IImmutable } from 'shared/types/Immutable';
+import { TemplateSchema } from 'shared/types/templateType';
 import { ThesaurusSchema } from 'shared/types/thesaurusType';
-
-import { OneUpState } from './common';
 
 export type OneUpReviewProps = {
   entity?: IImmutable<EntitySchema>;

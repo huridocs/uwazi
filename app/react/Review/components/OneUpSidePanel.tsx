@@ -7,6 +7,7 @@ import { ConnectionsGroups } from 'app/ConnectionsList';
 import { connectionsChanged, deleteConnection } from 'app/ConnectionsList/actions/actions';
 import { showTab } from 'app/Entities/actions/uiActions';
 import { t } from 'app/I18N';
+import { IStore, OneUpState } from 'app/istore';
 import SidePanel from 'app/Layout/SidePanel';
 import { MetadataForm } from 'app/Metadata';
 import { toggleOneUpLoadConnections } from 'app/Review/actions/actions';
@@ -21,14 +22,7 @@ import { PropertySchema } from 'shared/types/commonTypes';
 import { IImmutable } from 'shared/types/Immutable';
 import { TemplateSchema } from 'shared/types/templateType';
 import { Icon } from 'UI';
-import {
-  OneUpState,
-  selectEntity,
-  selectIsPristine,
-  selectMlThesauri,
-  selectOneUpState,
-  StoreState,
-} from '../common';
+import { selectEntity, selectIsPristine, selectMlThesauri, selectOneUpState } from '../common';
 
 const defaultProps = {
   entity: {} as EntitySchema,
@@ -163,7 +157,7 @@ export class OneUpSidePanelBase extends Component<OneUpSidePanelProps> {
   }
 }
 
-const mapStateToProps = (state: StoreState) => ({
+const mapStateToProps = (state: IStore) => ({
   entity: selectEntity(state),
   connectionsGroups: state.relationships.list.connectionsGroups,
   selectedConnection: Boolean(
@@ -175,7 +169,7 @@ const mapStateToProps = (state: StoreState) => ({
   mlThesauri: selectMlThesauri(state),
 });
 
-function mapDispatchToProps(dispatch: Dispatch<StoreState>) {
+function mapDispatchToProps(dispatch: Dispatch<IStore>) {
   return bindActionCreators(
     {
       connectionsChanged,
