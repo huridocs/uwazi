@@ -310,9 +310,7 @@ export class ThesaurusCockpitBase extends RouteHandler {
             </thead>
             <tbody>{this.topicNodes()}</tbody>
           </table>
-          <div className="sync-state">
-            {taskState.SyncState.message && `Uwazi is updating suggestions in the background: ${taskState.SyncState.message}`}
-          </div>
+          <div className="sync-state">{taskState.SyncState.message}</div>
         </div>
         <div className="settings-footer">
           <I18NLink to="/settings/dictionaries" className="btn btn-default">

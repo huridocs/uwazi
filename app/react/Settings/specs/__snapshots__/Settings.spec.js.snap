@@ -18,12 +18,6 @@ Array [
     ],
   },
   Object {
-    "type": "thesauri/models/SET",
-    "value": Array [
-      Array [],
-    ],
-  },
-  Object {
     "type": "relationTypes/SET",
     "value": Array [
       Object {

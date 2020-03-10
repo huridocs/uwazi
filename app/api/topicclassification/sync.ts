@@ -225,7 +225,8 @@ class SyncTask extends Task {
       {} as { [k: string]: ThesaurusSchema }
     );
     if (!Object.keys(models).length) {
-      this.status.message = 'Aborted: Topic Classification server does not have any models!';
+      this.status.message =
+        'Nothing to do: Topic Classification server does not have any models (yet).';
       return;
     }
     const res = this.status.result;
@@ -247,7 +248,7 @@ class SyncTask extends Task {
           }
         }
         this.status.message =
-          `${res.seen} of ${res.total} documents processed, ` +
+          `Updating suggestions in the background: ${res.seen} of ${res.total} documents processed, ` +
           `${res.index} changed. Sync arguments are ${util.inspect(args)}.`;
       }
     );

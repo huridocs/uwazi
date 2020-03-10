@@ -130,6 +130,10 @@ exports[`MultiSelect should not render an empty group 1`] = `
           className="checkbox-checked"
           icon="check"
         />
+        <Connect(Icon)
+          className="checkbox-partial"
+          icon="minus"
+        />
       </span>
       <span
         className="multiselectItem-name"
@@ -180,6 +184,10 @@ exports[`MultiSelect should not render an empty group 1`] = `
         <Connect(Icon)
           className="checkbox-checked"
           icon="check"
+        />
+        <Connect(Icon)
+          className="checkbox-partial"
+          icon="minus"
         />
       </span>
       <span
@@ -232,6 +240,10 @@ exports[`MultiSelect should not render an empty group 1`] = `
           <Connect(Icon)
             className="checkbox-checked"
             icon="check"
+          />
+          <Connect(Icon)
+            className="checkbox-partial"
+            icon="minus"
           />
         </span>
         <span
@@ -298,6 +310,10 @@ exports[`MultiSelect should not render an empty group 1`] = `
                 className="checkbox-checked"
                 icon="check"
               />
+              <Connect(Icon)
+                className="checkbox-partial"
+                icon="minus"
+              />
             </span>
             <span
               className="multiselectItem-name"
@@ -348,6 +364,10 @@ exports[`MultiSelect should not render an empty group 1`] = `
               <Connect(Icon)
                 className="checkbox-checked"
                 icon="check"
+              />
+              <Connect(Icon)
+                className="checkbox-partial"
+                icon="minus"
               />
             </span>
             <span
