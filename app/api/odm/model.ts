@@ -82,7 +82,7 @@ class OdmModelImpl<T> implements OdmModel<T> {
     return Promise.all(data.map(async d => this.save(d)));
   }
 
-  get(query: any, select = '', pagination = {}) {
+  get(query: any = {}, select = '', pagination = {}) {
     return this.db.find(query, select, Object.assign({ lean: true }, pagination));
   }
 

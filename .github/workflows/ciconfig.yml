@@ -1,0 +1,101 @@
+name: Uwazi CI
+
+on: [push]
+
+jobs:
+  unit_test:
+    runs-on: ubuntu-latest
+    services:
+      elasticsearch:
+        image: elasticsearch:7.4.1
+        ports:
+          - 9200/tcp
+        options: -e="discovery.type=single-node" --health-cmd="curl http://localhost:9200/_cluster/health" --health-interval=10s --health-timeout=5s --health-retries=10
+    steps:
+      - name: Use Node.js 10.17.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: '10.17.x'
+      - uses: actions/checkout@v2
+      - name: Cache node modules
+        uses: actions/cache@v1.1.2
+        with:
+          path: ./node_modules
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+      - name: install dependencies
+        run: yarn install
+      - run: sudo apt-get install poppler-utils
+      - run: curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+      - run: chmod +x ./cc-test-reporter
+      - run: ./cc-test-reporter before-build
+      - name: Run tests
+        env:
+          ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
+        run: ./node_modules/.bin/jest --coverage --maxWorkers=2
+      - run: ./cc-test-reporter after-build --exit-code $? #send codecoverage
+    env:
+      CC_TEST_REPORTER_ID: 61434ccfc3eeb2ed7b9cfec1d61c4e0ca115a32c1eebfefe404d1ecb77d73358 #codelimate api key
+
+  e2e_test:
+    runs-on: ubuntu-latest
+    services:
+      elasticsearch:
+        image: elasticsearch:7.4.1
+        ports:
+          - 9200/tcp
+        options: -e="discovery.type=single-node" --health-cmd="curl http://localhost:9200/_cluster/health" --health-interval=10s --health-timeout=5s --health-retries=10
+      mongodb:
+        image: mongo:4.0.3
+        ports:
+          - 27017/tcp
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js 10.17.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: '10.17.x'
+      - uses: actions/checkout@v2
+      - name: Cache node modules
+        uses: actions/cache@v1.1.2
+        with:
+          path: ./node_modules
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+      - name: install dependencies
+        run: yarn install
+      - run: sudo apt-get install mongodb-clients
+      - run: sudo apt-get install poppler-utils
+      - run: yarn production-build
+      - run: yarn blank-state
+        env:
+          DBHOST: localhost:${{ job.services.mongodb.ports[27017] }}
+          ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
+      - name: start Uwazi
+        env:
+          DBHOST: localhost:${{ job.services.mongodb.ports[27017] }}
+          ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
+        run: yarn run-production &
+      - name: wait for uwazi to be ready
+        run: sleep 5 && wget --waitretry=5 --retry-connrefused -v http://localhost:3000/
+        timeout-minutes: 2
+      - run: xvfb-run -a yarn e2e
+        timeout-minutes: 25
+        env:
+          DBHOST: localhost:${{ job.services.mongodb.ports[27017] }}
+          ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
+
+  eslint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js 10.17.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: '10.17.x'
+      - name: Cache node modules
+        uses: actions/cache@v1.1.2
+        with:
+          path: ./node_modules
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+      - name: install dependencies
+        run: yarn install
+      - run: yarn eslint

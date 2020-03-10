@@ -35,19 +35,25 @@ export default function(state = initialState, action = {}) {
   }
 
   if (action.type === types.SET_SELECTION) {
-    return state.setIn(['reference', 'sourceRange'], action.sourceRange);
+    return state
+      .setIn(['reference', 'sourceRange'], action.sourceRange)
+      .setIn(['reference', 'sourceFile'], action.sourceFile);
   }
 
   if (action.type === types.SET_TARGET_SELECTION) {
-    return state.setIn(['reference', 'targetRange'], action.targetRange);
+    return state
+      .setIn(['reference', 'targetRange'], action.targetRange)
+      .setIn(['reference', 'targetFile'], action.targetFile);
   }
 
   if (action.type === types.UNSET_TARGET_SELECTION) {
-    return state.setIn(['reference', 'targetRange'], null);
+    return state.setIn(['reference', 'targetRange'], null).setIn(['reference', 'targetFile'], null);
   }
 
   if (action.type === types.UNSET_SELECTION) {
-    const newState = state.setIn(['reference', 'sourceRange'], null);
+    const newState = state
+      .setIn(['reference', 'sourceRange'], null)
+      .setIn(['reference', 'sourceFile'], null);
     if (unsetPanelsWhenUnsetSelections.indexOf(state.get('panel')) !== -1) {
       return newState.set('panel', false);
     }

@@ -2,16 +2,12 @@
 
 import * as reactReduxForm from 'react-redux-form';
 import Immutable from 'immutable';
-import superagent from 'superagent';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
-import { APIURL } from 'app/config.js';
-import * as routeActions from 'app/Viewer/actions/routeActions';
 import { mockID } from 'shared/uniqueID.js';
 import { api } from 'app/Entities';
 import { RequestParams } from 'app/utils/RequestParams';
 
-import * as types from '../actionTypes';
 import * as actions from '../actions';
 
 const middlewares = [thunk];
@@ -227,61 +223,6 @@ describe('Metadata Actions', () => {
           metadata: expect.objectContaining(responseMetadata),
         })
       );
-    });
-  });
-
-  describe('reuploadDocument', () => {
-    let mockUpload;
-    let store;
-    let file;
-    let doc;
-
-    beforeEach(() => {
-      mockUpload = superagent.post(`${APIURL}reupload`);
-      spyOn(mockUpload, 'field').and.returnValue(mockUpload);
-      spyOn(mockUpload, 'attach').and.returnValue(mockUpload);
-      spyOn(mockUpload, 'set').and.returnValue(mockUpload);
-      spyOn(superagent, 'post').and.returnValue(mockUpload);
-
-      // needed to work with firefox/chrome and phantomjs
-      const isChrome = typeof File === 'function';
-      file = isChrome ? new File([], 'filename') : { name: 'filename' };
-      // ------------------------------------------------
-
-      jest
-        .spyOn(routeActions, 'requestViewerState')
-        .mockImplementation(() => Promise.resolve({ documentViewer: { doc: 'doc' } }));
-      jest
-        .spyOn(routeActions, 'setViewerState')
-        .mockImplementation(() => ({ type: 'setViewerState' }));
-      store = mockStore({ locale: 'es', templates: 'immutableTemplates' });
-    });
-
-    it('should upload the file while dispatching the upload progress (including the language and storeKey to update the results)', () => {
-      api.get = () => Promise.resolve([doc]);
-      store.dispatch(actions.reuploadDocument('abc1', file, 'sharedId', 'storeKey'));
-      const expectedActions = [
-        { type: types.START_REUPLOAD_DOCUMENT, doc: 'abc1' },
-        { type: types.REUPLOAD_PROGRESS, doc: 'abc1', progress: 55 },
-        { type: types.REUPLOAD_PROGRESS, doc: 'abc1', progress: 65 },
-        {
-          type: types.REUPLOAD_COMPLETE,
-          doc: 'abc1',
-          file: { filename: 'filename', size: 34, originalname: 'name' },
-          __reducerKey: 'storeKey',
-        },
-      ];
-
-      expect(mockUpload.set).toHaveBeenCalledWith('Content-Language', 'es');
-      expect(mockUpload.field).toHaveBeenCalledWith('document', 'sharedId');
-      expect(mockUpload.attach).toHaveBeenCalledWith('file', file, 'filename');
-
-      mockUpload.emit('progress', { percent: 55.1 });
-      mockUpload.emit('progress', { percent: 65 });
-      mockUpload.emit('response', {
-        body: { filename: 'filename', size: 34, originalname: 'name' },
-      });
-      expect(store.getActions()).toEqual(expectedActions);
     });
   });
 });

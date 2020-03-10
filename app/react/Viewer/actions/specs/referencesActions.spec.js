@@ -141,11 +141,17 @@ describe('Viewer referencesActions', () => {
         const returnValue = actions.saveTargetRangedReference(
           connection,
           targetRange,
+          'fileId',
           onCreate
         )(store.dispatch, getState);
+
         expect(store.getActions()).toContainEqual({ type: 'viewer/targetDocReferences/UNSET' });
         expect(connectionsActions.saveConnection).toHaveBeenCalledWith(
-          { sourceDocument: 'sourceId', targetRange: { text: 'target text' } },
+          {
+            sourceDocument: 'sourceId',
+            targetRange: { text: 'target text' },
+            targetFile: 'fileId',
+          },
           onCreate
         );
         expect(saveConnectionDispatch).toHaveBeenCalledWith(store.dispatch, getState);

@@ -4,7 +4,7 @@
   transition: all 100ms;
 }
 
-@mixin btn ($color, $colorHover) {
+@mixin btn($color, $colorHover) {
   background: $color;
   border-color: $color;
 
@@ -19,13 +19,36 @@
 }
 
 .btn-default.btn-disabled {
-  &, &:hover, &:focus, &:active {
+  &,
+  &:hover,
+  &:focus,
+  &:active {
     pointer-events: none;
     cursor: default;
     background: $c-white;
     border-color: $c-grey;
     color: $c-grey-dark;
   }
+}
+
+.btn-outline-success {
+  color: $c-success;
+  border-color: $c-success;
+}
+
+.btn-outline-danger {
+  color: $c-danger;
+  border-color: $c-danger;
+}
+
+.btn-outline-primary {
+  color: $c-primary;
+  border-color: $c-primary;
+}
+
+.btn-outline-secondary {
+  color: $c-black;
+  border-color: $c-black;
 }
 
 .btn-hover-success:hover {
@@ -46,49 +69,125 @@
   padding: 1px 5px;
   line-height: 1.5;
   border-radius: 3px;
-  border: 1px solid rgba(0,0,0,.2);
+  border: 1px solid rgba(0, 0, 0, 0.2);
   //cursor: pointer;
 }
 
-.btn-color-0  { background-color: $c-type-0; }
-.btn-color-1  { background-color: $c-type-1; }
-.btn-color-2  { background-color: $c-type-2; }
-.btn-color-3  { background-color: $c-type-3; }
-.btn-color-4  { background-color: $c-type-4; }
-.btn-color-5  { background-color: $c-type-5; }
-.btn-color-6  { background-color: $c-type-6; }
-.btn-color-7  { background-color: $c-type-7; }
-.btn-color-8  { background-color: $c-type-8; }
-.btn-color-9  { background-color: $c-type-9; }
-.btn-color-10 { background-color: $c-type-10; }
-.btn-color-11 { background-color: $c-type-11; }
-.btn-color-12 { background-color: $c-type-12; }
-.btn-color-13 { background-color: $c-type-13; }
-.btn-color-14 { background-color: $c-type-14; }
-.btn-color-15 { background-color: $c-type-15; }
-.btn-color-16 { background-color: $c-type-16; }
-.btn-color-17 { background-color: $c-type-17; }
-.btn-color-18 { background-color: $c-type-18; }
+.btn-color-0 {
+  background-color: $c-type-0;
+}
+.btn-color-1 {
+  background-color: $c-type-1;
+}
+.btn-color-2 {
+  background-color: $c-type-2;
+}
+.btn-color-3 {
+  background-color: $c-type-3;
+}
+.btn-color-4 {
+  background-color: $c-type-4;
+}
+.btn-color-5 {
+  background-color: $c-type-5;
+}
+.btn-color-6 {
+  background-color: $c-type-6;
+}
+.btn-color-7 {
+  background-color: $c-type-7;
+}
+.btn-color-8 {
+  background-color: $c-type-8;
+}
+.btn-color-9 {
+  background-color: $c-type-9;
+}
+.btn-color-10 {
+  background-color: $c-type-10;
+}
+.btn-color-11 {
+  background-color: $c-type-11;
+}
+.btn-color-12 {
+  background-color: $c-type-12;
+}
+.btn-color-13 {
+  background-color: $c-type-13;
+}
+.btn-color-14 {
+  background-color: $c-type-14;
+}
+.btn-color-15 {
+  background-color: $c-type-15;
+}
+.btn-color-16 {
+  background-color: $c-type-16;
+}
+.btn-color-17 {
+  background-color: $c-type-17;
+}
+.btn-color-18 {
+  background-color: $c-type-18;
+}
 
-.color-0  { color: $c-type-0; }
-.color-1  { color: $c-type-1; }
-.color-2  { color: $c-type-2; }
-.color-3  { color: $c-type-3; }
-.color-4  { color: $c-type-4; }
-.color-5  { color: $c-type-5; }
-.color-6  { color: $c-type-6; }
-.color-7  { color: $c-type-7; }
-.color-8  { color: $c-type-8; }
-.color-9  { color: $c-type-9; }
-.color-10 { color: $c-type-10; }
-.color-11 { color: $c-type-11; }
-.color-12 { color: $c-type-12; }
-.color-13 { color: $c-type-13; }
-.color-14 { color: $c-type-14; }
-.color-15 { color: $c-type-15; }
-.color-16 { color: $c-type-16; }
-.color-17 { color: $c-type-17; }
-.color-18 { color: $c-type-18; }
+.color-0 {
+  color: $c-type-0;
+}
+.color-1 {
+  color: $c-type-1;
+}
+.color-2 {
+  color: $c-type-2;
+}
+.color-3 {
+  color: $c-type-3;
+}
+.color-4 {
+  color: $c-type-4;
+}
+.color-5 {
+  color: $c-type-5;
+}
+.color-6 {
+  color: $c-type-6;
+}
+.color-7 {
+  color: $c-type-7;
+}
+.color-8 {
+  color: $c-type-8;
+}
+.color-9 {
+  color: $c-type-9;
+}
+.color-10 {
+  color: $c-type-10;
+}
+.color-11 {
+  color: $c-type-11;
+}
+.color-12 {
+  color: $c-type-12;
+}
+.color-13 {
+  color: $c-type-13;
+}
+.color-14 {
+  color: $c-type-14;
+}
+.color-15 {
+  color: $c-type-15;
+}
+.color-16 {
+  color: $c-type-16;
+}
+.color-17 {
+  color: $c-type-17;
+}
+.color-18 {
+  color: $c-type-18;
+}
 
 //.btn-color-0:hover,  .btn-color-0:focus,  .btn-color-0:active  { background-color: darken($c-type-0, 10%); }
 //.btn-color-1:hover,  .btn-color-1:focus,  .btn-color-1:active  { background-color: darken($c-type-1, 10%); }
@@ -129,7 +228,7 @@
 .form-group-label {
   font-size: $f-size-sm;
   text-transform: uppercase;
-  letter-spacing: .1em;
+  letter-spacing: 0.1em;
   color: $c-grey-dark;
   margin-bottom: 5px;
 }
@@ -208,7 +307,7 @@
     text-decoration: none;
   }
 
-  &:hover .tab-link-tooltip{
+  &:hover .tab-link-tooltip {
     display: block;
   }
 }
@@ -223,20 +322,21 @@ fieldset[disabled] .form-control {
 .form-control[readonly],
 fieldset[disabled] .form-control,
 .input-group-addon[disabled],
-input[type="radio"][disabled] ~ label,
-input[type="checkbox"][disabled] ~ label {
-    opacity: 0.3;
-    cursor: not-allowed;
+input[type='radio'][disabled] ~ label,
+input[type='checkbox'][disabled] ~ label {
+  opacity: 0.3;
+  cursor: not-allowed;
 }
 
-.icon-selector, .clear-field-button {
+.icon-selector,
+.clear-field-button {
   button {
     background: none;
     border: none;
     font-size: $f-size-xs;
     color: $c-primary;
     display: block;
-    margin: .2em 0 0 auto;
+    margin: 0.2em 0 0 auto;
   }
 
   svg {
@@ -245,6 +345,7 @@ input[type="checkbox"][disabled] ~ label {
 }
 
 .form-group .icon-selector ul.search__filter {
+  list-style: none;
   border: none;
-  padding:0;
+  padding: 0;
 }

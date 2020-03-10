@@ -2,20 +2,27 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { reuploadDocument } from 'app/Metadata/actions/actions';
+import { uploadDocument } from 'app/Uploads/actions/uploadsActions';
 import { documentProcessed } from 'app/Uploads/actions/uploadsActions';
+import { wrapDispatch } from 'app/Multireducer';
 import socket from 'app/socket';
 import { Icon } from 'UI';
+import { Translate } from 'app/I18N';
+import Immutable from 'immutable';
 
 const renderProgress = progress => (
-  <div className="item-shortcut btn btn-default btn-disabled">
+  <div className="upload-button btn btn-default btn-disabled">
     <span>{progress}%</span>
+    &nbsp;
+    <Translate>Uploading</Translate>
   </div>
 );
 
 const renderProcessing = () => (
-  <div className="item-shortcut btn btn-default">
+  <div className="upload-button btn btn-default">
     <Icon icon="cog" spin />
+    &nbsp;
+    <Translate>Processing</Translate>
   </div>
 );
 
@@ -44,24 +51,11 @@ export class UploadButton extends Component {
 
   onChange(e) {
     const file = e.target.files[0];
-    this.context.confirm({
-      accept: () => {
-        this.props.reuploadDocument(
-          this.props.documentId,
-          file,
-          this.props.documentSharedId,
-          this.props.storeKey
-        );
-      },
-      title: 'Confirm upload',
-      message:
-        'Are you sure you want to upload a new document?\n\n' +
-        'All Table of Contents (TOC) and all text-based references linked to the previous document will be lost.',
-    });
+    this.props.uploadDocument(this.props.entitySharedId, file);
   }
 
   documentProcessed(docId) {
-    if (docId === this.props.documentSharedId) {
+    if (docId === this.props.entitySharedId) {
       this.props.documentProcessed(docId);
       this.setState({ processing: false, failed: false, completed: true }, () => {
         this.timeout = setTimeout(() => {
@@ -72,21 +66,21 @@ export class UploadButton extends Component {
   }
 
   conversionStart(docId) {
-    if (docId === this.props.documentId) {
+    if (docId === this.props.entitySharedId) {
       this.setState({ processing: true, failed: false, completed: false });
     }
   }
 
   conversionFailed(docId) {
-    if (docId === this.props.documentId) {
+    if (docId === this.props.entitySharedId) {
       this.setState({ processing: false, failed: true, completed: false });
     }
   }
 
-  renderUploadButton() {
+  renderButton(status = 'success', icon = 'paperclip', message = 'Upload new file') {
     return (
-      <label htmlFor="upload-button-input" className="item-shortcut btn btn-default">
-        <Icon icon="upload" />
+      <label htmlFor="upload-button-input" className={`upload-button btn btn-${status}`}>
+        <Icon icon={icon} />
         <input
           onChange={this.onChange}
           type="file"
@@ -94,36 +88,8 @@ export class UploadButton extends Component {
           id="upload-button-input"
           style={{ display: 'none' }}
         />
-      </label>
-    );
-  }
-
-  renderCompleted() {
-    return (
-      <label htmlFor="upload-button-input" className="item-shortcut btn btn-success">
-        <Icon icon="check" />
-        <input
-          onChange={this.onChange}
-          type="file"
-          accept="application/pdf"
-          id="upload-button-input"
-          style={{ display: 'none' }}
-        />
-      </label>
-    );
-  }
-
-  renderFailed() {
-    return (
-      <label htmlFor="upload-button-input" className="item-shortcut btn btn-danger">
-        <Icon icon="exclamation-triangle" />
-        <input
-          onChange={this.onChange}
-          type="file"
-          accept="application/pdf"
-          id="upload-button-input"
-          style={{ display: 'none' }}
-        />
+        &nbsp;
+        <Translate>{message}</Translate>
       </label>
     );
   }
@@ -134,29 +100,37 @@ export class UploadButton extends Component {
     }
 
     if (this.state.failed) {
-      return this.renderFailed();
+      return this.renderButton('danger', 'exclamation-triangle', 'An error occured');
     }
 
     if (this.state.completed) {
-      return this.renderCompleted();
+      return this.renderButton('success', 'check', 'Success, Upload another?');
     }
 
-    const progress = this.props.progress.get(this.props.documentId);
+    const progress = this.props.progress.get(this.props.entitySharedId);
+
     if (progress) {
       return renderProgress(progress);
     }
 
-    return this.renderUploadButton();
+    return this.renderButton();
   }
 }
 
+UploadButton.defaultProps = {
+  documentProcessed: () => {},
+  progress: Immutable.fromJS({}),
+  storeKey: '',
+  entitySharedId: '',
+  uploadDocument: () => {},
+};
+
 UploadButton.propTypes = {
-  reuploadDocument: PropTypes.func,
+  uploadDocument: PropTypes.func,
   documentProcessed: PropTypes.func,
-  documentId: PropTypes.string,
-  documentSharedId: PropTypes.string,
-  progress: PropTypes.object,
-  storeKey: PropTypes.string,
+  entitySharedId: PropTypes.string,
+  progress: PropTypes.instanceOf(Immutable.Map),
+  storeKey: PropTypes.string, // eslint-disable-line
 };
 
 UploadButton.contextTypes = {
@@ -165,8 +139,11 @@ UploadButton.contextTypes = {
 
 const mapStateToProps = ({ metadata }) => ({ progress: metadata.progress });
 
-function mapDispatchToProps(dispatch) {
-  return bindActionCreators({ reuploadDocument, documentProcessed }, dispatch);
+function mapDispatchToProps(dispatch, props) {
+  return bindActionCreators(
+    { uploadDocument, documentProcessed },
+    wrapDispatch(dispatch, props.storeKey)
+  );
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(UploadButton);

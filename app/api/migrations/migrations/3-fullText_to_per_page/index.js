@@ -1,7 +1,7 @@
 /* eslint-disable */
 
 import paths from 'api/config/paths';
-import PDF from 'api/upload/PDF';
+import { PDF } from 'api/files/PDF';
 import fs from 'fs';
 import path from 'path';
 

@@ -83,25 +83,24 @@ export function importData([file], template) {
     });
 }
 
-export function upload(docId, file, endpoint = 'upload') {
+export function upload(docId, file, endpoint = 'files/upload/document') {
   return dispatch =>
     new Promise(resolve => {
       superagent
         .post(APIURL + endpoint)
         .set('Accept', 'application/json')
         .set('X-Requested-With', 'XMLHttpRequest')
-        .field('document', docId)
+        .field('entity', docId)
         .attach('file', file, file.name)
         .on('progress', data => {
-          dispatch({ type: types.UPLOAD_PROGRESS, doc: docId, progress: Math.floor(data.percent) });
+          dispatch({
+            type: types.UPLOAD_PROGRESS,
+            doc: docId,
+            progress: Math.floor(data.percent),
+          });
         })
         .on('response', response => {
-          const _file = {
-            filename: response.body.filename,
-            originalname: response.body.originalname,
-            size: response.body.size,
-          };
-          dispatch({ type: types.UPLOAD_COMPLETE, doc: docId, file: _file });
+          dispatch({ type: types.UPLOAD_COMPLETE, doc: docId, file: response.body });
           resolve(JSON.parse(response.text));
         })
         .end();
@@ -166,7 +165,7 @@ export function uploadCustom(file) {
     return upload(
       id,
       file,
-      'customisation/upload'
+      'files/upload/custom'
     )(dispatch).then(response => {
       dispatch(basicActions.push('customUploads', response));
     });
@@ -175,8 +174,8 @@ export function uploadCustom(file) {
 
 export function deleteCustomUpload(_id) {
   return dispatch =>
-    api.delete('customisation/upload', new RequestParams({ _id })).then(response => {
-      dispatch(basicActions.remove('customUploads', response.json));
+    api.delete('files', new RequestParams({ _id })).then(response => {
+      dispatch(basicActions.remove('customUploads', response.json[0]));
     });
 }
 
@@ -192,8 +191,8 @@ export function documentProcessed(sharedId, __reducerKey) {
       dispatch({ type: libraryTypes.UPDATE_DOCUMENT, doc, __reducerKey });
       dispatch({ type: libraryTypes.UNSELECT_ALL_DOCUMENTS, __reducerKey });
       dispatch({ type: libraryTypes.SELECT_DOCUMENT, doc, __reducerKey });
-      dispatch(basicActions.set('entityView/entity', doc));
-      dispatch(basicActions.set('viewer/doc', doc));
+      dispatch(basicActions.update('entityView/entity', doc));
+      dispatch(basicActions.update('viewer/doc', doc));
     });
   };
 }

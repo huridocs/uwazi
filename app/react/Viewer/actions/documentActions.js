@@ -2,6 +2,7 @@ import api from 'app/utils/api';
 import referencesAPI from 'app/Viewer/referencesAPI';
 import * as types from 'app/Viewer/actions/actionTypes';
 import * as connectionsTypes from 'app/Connections/actions/actionTypes';
+import { entityDefaultDocument } from 'shared/entityDefaultDocument';
 
 import { APIURL } from 'app/config.js';
 import { actions } from 'app/BasicReducer';
@@ -49,17 +50,33 @@ export function saveDocument(doc) {
       dispatch(notificationActions.notify('Document updated', 'success'));
       dispatch({ type: types.VIEWER_UPDATE_DOCUMENT, doc });
       dispatch(formActions.reset('documentViewer.sidepanel.metadata'));
-      dispatch(actions.set('viewer/doc', updatedDoc));
+      dispatch(actions.update('viewer/doc', updatedDoc));
       dispatch(relationshipActions.reloadRelationships(updatedDoc.sharedId));
     });
 }
 
-export function saveToc(toc) {
-  return (dispatch, getState) => {
-    const { _id, _rev, sharedId, file } = getState().documentViewer.doc.toJS();
+export function saveToc(toc, fileId) {
+  return async (dispatch, getState) => {
+    const currentDoc = getState().documentViewer.doc.toJS();
     dispatch(formActions.reset('documentViewer.sidepanel.metadata'));
     dispatch(actions.set('documentViewer/tocBeingEdited', false));
-    return dispatch(saveDocument({ _id, _rev, sharedId, toc, file }));
+
+    const updatedFile = (await api.post('files', new RequestParams({ toc, _id: fileId }))).json;
+    const doc = {
+      ...currentDoc,
+      defaultDoc: updatedFile,
+      documents: currentDoc.documents.map(d => {
+        if (d._id === updatedFile._id) {
+          return updatedFile;
+        }
+        return d;
+      }),
+    };
+
+    dispatch(notificationActions.notify('Document updated', 'success'));
+    dispatch({ type: types.VIEWER_UPDATE_DOCUMENT, doc });
+    dispatch(formActions.reset('documentViewer.sidepanel.metadata'));
+    dispatch(actions.set('viewer/doc', doc));
   };
 }
 
@@ -73,28 +90,42 @@ export function deleteDocument(doc) {
     });
 }
 
-export function getDocument(requestParams) {
-  return api.get('entities', requestParams).then(response => {
-    const doc = response.json.rows[0];
-    if (!isClient) {
-      return doc;
-    }
-    if (doc.pdfInfo || !doc.file) {
-      return doc;
-    }
-    return PDFUtils.extractPDFInfo(`${APIURL}documents/download?_id=${doc._id}`).then(pdfInfo => {
-      const { _id, sharedId } = doc;
-      return api
-        .post('documents/pdfInfo', new RequestParams({ _id, sharedId, pdfInfo }))
-        .then(res => res.json);
-    });
-  });
+export async function getDocument(requestParams, defaultLanguage, filename) {
+  const [entity] = (await api.get('entities', requestParams)).json.rows;
+
+  const defaultDoc = filename
+    ? entity.documents.find(d => d.filename === filename)
+    : entityDefaultDocument(entity.documents, entity.language, defaultLanguage);
+
+  entity.defaultDoc = defaultDoc;
+  if (!isClient) {
+    return entity;
+  }
+  if (defaultDoc.pdfInfo) {
+    return entity;
+  }
+
+  const pdfInfo = await PDFUtils.extractPDFInfo(`${APIURL}files/${defaultDoc.filename}`);
+  const processedDoc = await api
+    .post('documents/pdfInfo', new RequestParams({ _id: defaultDoc._id, pdfInfo }))
+    .then(res => res.json);
+
+  return {
+    ...entity,
+    defaultDoc: processedDoc,
+    documents: entity.documents.map(d => {
+      if (d._id === processedDoc._id) {
+        return processedDoc;
+      }
+      return d;
+    }),
+  };
 }
 
 export function loadTargetDocument(sharedId) {
-  return dispatch =>
+  return (dispatch, getState) =>
     Promise.all([
-      getDocument(new RequestParams({ sharedId })),
+      getDocument(new RequestParams({ sharedId }), getState().locale),
       referencesAPI.get(new RequestParams({ sharedId })),
     ]).then(([targetDoc, references]) => {
       dispatch(actions.set('viewer/targetDoc', targetDoc));
@@ -147,12 +178,12 @@ export function indentTocElement(tocElement, indentation) {
   };
 }
 
-export function addToToc(textSelectedObject) {
+export function addToToc(textSelectedObject, currentToc) {
   return (dispatch, getState) => {
     const state = getState();
     let toc = state.documentViewer.tocForm.concat();
     if (!toc.length) {
-      toc = state.documentViewer.doc.toJS().toc || [];
+      toc = currentToc;
     }
     const tocElement = {
       range: {

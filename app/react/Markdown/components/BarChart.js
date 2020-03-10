@@ -3,7 +3,16 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import Immutable from 'immutable';
 
-import { ResponsiveContainer, BarChart, XAxis, YAxis, CartesianGrid, Bar, Tooltip } from 'recharts';
+import {
+  ResponsiveContainer,
+  BarChart,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Bar,
+  Tooltip,
+  Cell,
+} from 'recharts';
 
 import Loader from 'app/components/Elements/Loader';
 import { arrayUtils } from 'app/Charts';
@@ -35,10 +44,12 @@ export const BarChartComponent = props => {
     classname,
     context,
     thesauris,
+    colors,
   } = props;
   let output = <Loader />;
 
   if (data) {
+    const sliceColors = colors.split(',');
     const aggregateOthers = props.aggregateOthers === 'true';
     const formattedData = arrayUtils.sortValues(
       arrayUtils.formatDataForChart(data, property, thesauris, {
@@ -57,7 +68,16 @@ export const BarChartComponent = props => {
 
           <CartesianGrid strokeDasharray="2 4" />
           <Tooltip />
-          <Bar dataKey="results" fill="rgb(30, 28, 138)" stackId="unique" />
+          <Bar dataKey="results" fill="rgb(30, 28, 138)" stackId="unique">
+            {formattedData.map((_entry, index) => (
+              <Cell
+                // eslint-disable-next-line react/no-array-index-key
+                key={`cell-${index}`}
+                cursor="pointer"
+                fill={sliceColors[index % sliceColors.length]}
+              />
+            ))}
+          </Bar>
         </BarChart>
       </ResponsiveContainer>
     );
@@ -74,6 +94,7 @@ BarChartComponent.defaultProps = {
   aggregateOthers: 'false',
   classname: '',
   data: null,
+  colors: '#1e1c8a',
 };
 
 BarChartComponent.propTypes = {
@@ -86,6 +107,7 @@ BarChartComponent.propTypes = {
   maxCategories: PropTypes.string,
   aggregateOthers: PropTypes.string,
   data: PropTypes.instanceOf(Immutable.List),
+  colors: PropTypes.string,
 };
 
 export const mapStateToProps = (state, props) => ({

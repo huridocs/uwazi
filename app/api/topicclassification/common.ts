@@ -1,5 +1,5 @@
 /** @format */
-import { EntitySchema } from 'api/entities/entityType';
+import { EntitySchema } from 'shared/types/entityType';
 import templates from 'api/templates';
 import { propertyTypes } from 'shared/propertyTypes';
 import { PropertySchema } from 'shared/types/commonTypes.d';

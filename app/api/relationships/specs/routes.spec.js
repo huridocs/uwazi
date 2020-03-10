@@ -69,12 +69,16 @@ describe('relationships routes', () => {
 
   describe('GET by_document', () => {
     it('should return relationships.getByDocument', async () => {
-      const req = { query: { sharedId: 'documentId' }, language: 'es', user: { role: 'admin' } };
+      const req = {
+        query: { sharedId: 'documentId', file: 'fileid' },
+        language: 'es',
+        user: { role: 'admin' },
+      };
 
       spyOn(relationships, 'getByDocument').and.returnValue(Promise.resolve('byDocument'));
 
       const response = await routes.get('/api/references/by_document/', req);
-      expect(relationships.getByDocument).toHaveBeenCalledWith('documentId', 'es', true);
+      expect(relationships.getByDocument).toHaveBeenCalledWith('documentId', 'es', true, 'fileid');
       expect(response).toBe('byDocument');
     });
   });

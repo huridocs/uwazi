@@ -1,6 +1,6 @@
 /** @format */
 
-import { EntitySchema } from 'api/entities/entityType';
+import { EntitySchema } from 'shared/types/entityType';
 import db from 'api/utils/testing_db';
 import { buildFullModelName } from 'shared/commonTopicClassification';
 import { extractSequence } from 'api/topicclassification/common';

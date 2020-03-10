@@ -1,0 +1,66 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`documents /api/documents should have a validation schema 1`] = `
+Object {
+  "children": Object {
+    "_id": Object {
+      "flags": Object {
+        "presence": "required",
+      },
+      "invalids": Array [
+        "",
+      ],
+      "type": "string",
+    },
+  },
+  "type": "object",
+}
+`;
+
+exports[`documents /api/documents/count_by_template should have a validation schema 1`] = `
+Object {
+  "children": Object {
+    "templateId": Object {
+      "flags": Object {
+        "presence": "required",
+      },
+      "invalids": Array [
+        "",
+      ],
+      "rules": Array [
+        Object {
+          "arg": Object {
+            "pattern": /\\^\\[0-9a-fA-F\\]\\{24\\}\\$/,
+          },
+          "name": "regex",
+        },
+      ],
+      "type": "string",
+    },
+  },
+  "flags": Object {
+    "presence": "required",
+  },
+  "type": "object",
+}
+`;
+
+exports[`documents DELETE should have a validation schema 1`] = `
+Object {
+  "children": Object {
+    "sharedId": Object {
+      "flags": Object {
+        "presence": "required",
+      },
+      "invalids": Array [
+        "",
+      ],
+      "type": "string",
+    },
+  },
+  "flags": Object {
+    "presence": "required",
+  },
+  "type": "object",
+}
+`;

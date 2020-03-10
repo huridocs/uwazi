@@ -1,6 +1,4 @@
-/**
- * eslint-disable max-nested-callbacks
- */
+// eslint-disable max-nested-callbacks
 
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import errorLog from 'api/log/errorLog';
@@ -30,10 +28,14 @@ describe('search', () => {
         _id: db.id(),
         sharedId: 'sharedIdOtherLanguage',
         title: 'Batman indexes',
-        fullText: {
-          1: '조',
-          2: '선말',
-        },
+        documents: [
+          {
+            fullText: {
+              1: '조',
+              2: '선말',
+            },
+          },
+        ],
         language: 'en',
       };
 
@@ -62,9 +64,9 @@ describe('search', () => {
           expect(elastic.bulk).toHaveBeenCalledWith({
             body: [
               { index: { _index: elasticIndex, _id: 'id1' } },
-              { title: 'test1', fullText: 'entity' },
+              { title: 'test1', fullText: 'entity', documents: [] },
               { index: { _index: elasticIndex, _id: 'id2' } },
-              { title: 'test2', fullText: 'entity' },
+              { title: 'test2', fullText: 'entity', documents: [] },
             ],
             requestTimeout: 40000,
           });
@@ -80,9 +82,18 @@ describe('search', () => {
           {
             _id: 'id1',
             title: 'test1',
-            fullText: { 1: 'this is an english test', 2: 'this is page2' },
+            documents: [
+              {
+                filename: 'file1',
+                fullText: { 1: 'this is an english test', 2: 'this is page2' },
+              },
+            ],
           },
-          { _id: 'id2', title: 'test2', fullText: { 1: 'text3[[1]]', 2: 'text4[[2]]' } },
+          {
+            _id: 'id2',
+            title: 'test2',
+            documents: [{ filename: 'file2', fullText: { 1: 'text3[[1]]', 2: 'text4[[2]]' } }],
+          },
         ];
 
         search
@@ -92,7 +103,7 @@ describe('search', () => {
             expect(bulkIndexArguments).toEqual({
               body: [
                 { index: { _index: elasticIndex, _id: 'id1' } },
-                { title: 'test1', fullText: 'entity' },
+                { title: 'test1', fullText: 'entity', documents: [{ filename: 'file1' }] },
                 {
                   index: {
                     _index: elasticIndex,
@@ -105,7 +116,7 @@ describe('search', () => {
                   fullText: { name: 'fullText', parent: 'id1' },
                 },
                 { index: { _index: elasticIndex, _id: 'id2' } },
-                { title: 'test2', fullText: 'entity' },
+                { title: 'test2', fullText: 'entity', documents: [{ filename: 'file2' }] },
                 {
                   index: {
                     _index: elasticIndex,

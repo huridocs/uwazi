@@ -3,6 +3,7 @@
 import superagent from 'superagent';
 import thunk from 'redux-thunk';
 
+import { RequestParams } from 'app/utils/RequestParams';
 import { APIURL } from 'app/config.js';
 import { actions as basicActions } from 'app/BasicReducer';
 import { mockID } from 'shared/uniqueID.js';
@@ -259,7 +260,7 @@ describe('uploadsActions', () => {
         const file = getMockFile();
 
         store.dispatch(actions.uploadDocument('abc1', file));
-        expect(mockUpload.field).toHaveBeenCalledWith('document', 'abc1');
+        expect(mockUpload.field).toHaveBeenCalledWith('entity', 'abc1');
         expect(mockUpload.attach).toHaveBeenCalledWith('file', file, file.name);
 
         emitProgressAndResponse(mockUpload, {
@@ -290,6 +291,7 @@ describe('uploadsActions', () => {
         store.dispatch(actions.uploadCustom(file)).then(() => {
           expect(mockUpload.attach).toHaveBeenCalledWith('file', file, file.name);
           expect(store.getActions()).toEqual(expectedActions);
+          expect(superagent.post).toHaveBeenCalledWith(`${APIURL}files/upload/custom`);
           done();
         });
 
@@ -302,7 +304,7 @@ describe('uploadsActions', () => {
 
     describe('deleteCustomUpload', () => {
       it('should delete the upload and remove it locally on success', done => {
-        spyOn(api, 'delete').and.returnValue(Promise.resolve({ json: { _id: 'deleted' } }));
+        spyOn(api, 'delete').and.returnValue(Promise.resolve({ json: [{ _id: 'deleted' }] }));
 
         const expectedActions = [basicActions.remove('customUploads', { _id: 'deleted' })];
 
@@ -310,6 +312,7 @@ describe('uploadsActions', () => {
 
         store.dispatch(actions.deleteCustomUpload('id')).then(() => {
           expect(store.getActions()).toEqual(expectedActions);
+          expect(api.delete).toHaveBeenCalledWith('files', new RequestParams({ _id: 'id' }));
           done();
         });
       });

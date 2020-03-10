@@ -10,11 +10,11 @@ import { Icon } from 'UI';
 export class ShowToc extends Component {
   scrollTo(tocElement, e) {
     e.preventDefault();
-    this.props.scrollTo(tocElement.toJS(), this.props.pdfInfo.toJS(), 'span');
+    this.props.scrollTo(tocElement.toJS(), this.props.pdfInfo, 'span');
   }
 
   render() {
-    const toc = this.props.toc || Immutable.fromJS([]);
+    const toc = Immutable.fromJS(this.props.toc);
 
     if (!toc.size) {
       return (
@@ -51,19 +51,19 @@ export class ShowToc extends Component {
   }
 }
 
+ShowToc.defaultProps = {
+  toc: [],
+};
+
 ShowToc.propTypes = {
-  toc: PropTypes.object,
+  toc: PropTypes.array,
   readOnly: PropTypes.bool,
   pdfInfo: PropTypes.object,
   scrollTo: PropTypes.func,
 };
 
-export const mapStateToProps = ({ documentViewer }) => ({
-  pdfInfo: documentViewer.doc.get('pdfInfo'),
-});
-
 function mapDispatchToProps() {
   return { scrollTo };
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(ShowToc);
+export default connect(null, mapDispatchToProps)(ShowToc);

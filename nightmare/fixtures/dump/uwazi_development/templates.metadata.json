@@ -1,1 +1,1 @@
-{"options":{},"indexes":[{"v":2,"key":{"_id":1},"name":"_id_","ns":"uwazi_development.templates"}],"uuid":"ab5f87e692c542738ed527834e9e19c4"}
+{"options":{},"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_","ns":"uwazi_development.templates"}],"uuid":"1540a9a5d6834bcbb852d2d09a496d8c"}
