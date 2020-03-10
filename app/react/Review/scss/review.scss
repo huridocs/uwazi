@@ -37,6 +37,27 @@ $header-height: 44px;
   }
 }
 
+.confidence-bubble {
+  font-size: 12px;
+  height: 16px;
+  border-radius: 5px;
+  padding: 0px 3px;
+  margin-left: 4px;
+}
+
+.confidence-bubble.low {
+  color: #541a1a;
+  background-color: #e9afaf;
+}
+.confidence-bubble.medium {
+  color: #574e1f;
+  background-color: #e9dcaf;
+}
+.confidence-bubble.high {
+  color: #1f572b;
+  background-color: #afe9bb;
+}
+
 .flex {
   @import '../../App/scss/layout/_sidepanel.scss';
 
@@ -331,27 +352,6 @@ $header-height: 44px;
 
       .multiselectItem-name {
         max-width: calc(100% - 110px);
-      }
-
-      .multiselectItem-confidence {
-        font-size: 12px;
-        height: 16px;
-        border-radius: 5px;
-        padding: 0px 3px;
-        margin-left: 4px;
-      }
-
-      .multiselectItem-confidence.low {
-        color: #541a1a;
-        background-color: #e9afaf;
-      }
-      .multiselectItem-confidence.medium {
-        color: #574e1f;
-        background-color: #e9dcaf;
-      }
-      .multiselectItem-confidence.high {
-        color: #1f572b;
-        background-color: #afe9bb;
       }
     }
     .multiselectActions {

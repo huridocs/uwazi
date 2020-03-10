@@ -6,6 +6,8 @@
   border: 1px solid #6584EB;
   max-width: 650px;
   padding: 10px;
+  display: flex;
+  flex-direction: column;
   
   .close-notice {
     float: right;
@@ -19,7 +21,29 @@
     height: 30px;
     margin-bottom: 5px;
   }
-  
+
+  .main {
+    display: flex;
+    flex-direction: row;
+  }
+
+  .block {
+    display: flex;
+    flex-direction: column;
+    margin: 0px 5px;
+    min-width: 300px;
+
+    .stretch {
+      flex-grow: 1;
+    }
+    .footer {
+      height: 50px;
+      .label {
+        margin-top: 15px;
+      }
+    }
+  }
+
   .icon {
     margin-right: 5px;
   }
@@ -31,9 +55,8 @@
   }
   .btn {
     height: 25px;
-    width: 85px;
+    min-width: 85px;
     margin-top: 15px;
-    margin-left: 15px;
     padding: 2px;
     font: Roboto;
     border-radius: 2px;

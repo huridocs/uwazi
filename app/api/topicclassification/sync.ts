@@ -97,6 +97,9 @@ async function fetchSuggestions(
       );
       const thesValue = flattenValues.find(v => v.label === pred.topic || v.id === pred.topic);
       if (!thesValue || !thesValue.id) {
+        if (pred.topic === 'nan') {
+          return res;
+        }
         throw Error(`Model suggestion "${pred.topic}" not found in thesaurus ${thes.name}`);
       }
       return [

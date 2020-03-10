@@ -7,6 +7,7 @@ interface NoticeState {
 
 type NoticeProps = {
   title: String | JSX.Element;
+  allowClose?: boolean;
 };
 
 export class Notice extends Component<NoticeProps, NoticeState> {
@@ -47,7 +48,7 @@ export class Notice extends Component<NoticeProps, NoticeState> {
   }
 
   render() {
-    const { children, title } = this.props;
+    const { children, title, allowClose } = this.props;
     const { isHidden } = this.state;
 
     return (
@@ -55,11 +56,13 @@ export class Notice extends Component<NoticeProps, NoticeState> {
         <div className="header">
           <span className="icon">{Notice.learnIcon()}</span>
           <span className="title">{title}</span>
-          <button className="close-notice" onClick={this.close}>
-            X
-          </button>
+          {allowClose && (
+            <button className="close-notice" onClick={this.close}>
+              X
+            </button>
+          )}
         </div>
-        {children}
+        <div className="main">{children}</div>
       </div>
     );
   }

@@ -1,4 +1,4 @@
-/* eslint-disable max-lines */
+/* eslint-disable max-lines,camelcase */
 import Footer from 'app/App/Footer';
 import RouteHandler from 'app/App/RouteHandler';
 import { actions } from 'app/BasicReducer';
@@ -78,7 +78,6 @@ export class ThesaurusCockpitBase extends RouteHandler {
     const model: ClassifierModelSchema = await ThesauriAPI.getModelStatus(modelParams);
 
     const assocProp = resolveTemplateProp(thesaurus, templates);
-    thesaurus.property = assocProp;
 
     const docsWithSuggestionsForPublish = await ThesaurusCockpitBase.getAndPopulateLabelCounts(
       templates,
@@ -103,47 +102,13 @@ export class ThesaurusCockpitBase extends RouteHandler {
       actions.set('thesauri.thesaurus', thesaurus as ThesaurusSchema),
       actions.set('thesauri.suggestInfo', {
         model,
+        property: assocProp,
         docsWithSuggestionsForPublish,
         docsWithSuggestionsForReview,
         docsWithLabels,
-      }),
+      } as SuggestInfo),
       updateTaskState(),
     ];
-  }
-
-  static genIcons(label: string, actual: number, possible: number) {
-    const icons = [];
-    for (let i = 0; i < possible; i += 1) {
-      let iconClass: any = 'circle';
-      if (i >= actual) {
-        iconClass = ['far', 'circle'];
-      }
-      icons.push(<Icon key={`${label}_${i}`} icon={iconClass} />);
-    }
-    return icons;
-  }
-
-  static qualityIcon(label: string, val: number) {
-    switch (true) {
-      case val > 0.85:
-        return (
-          <div key={label} className="quality-icon quality-high">
-            {ThesaurusCockpitBase.genIcons(label, 3, 3)}
-          </div>
-        );
-      case val > 0.7:
-        return (
-          <div key={label} className="quality-icon quality-med">
-            {ThesaurusCockpitBase.genIcons(label, 2, 3)}
-          </div>
-        );
-      default:
-        return (
-          <div key={label} className="quality-icon quality-low">
-            {ThesaurusCockpitBase.genIcons(label, 1, 3)}
-          </div>
-        );
-    }
   }
 
   topicNode(topic: ThesaurusValueSchema) {
@@ -153,19 +118,26 @@ export class ThesaurusCockpitBase extends RouteHandler {
       suggestInfo.docsWithSuggestionsForReview.thesaurus?.totalValues[`${id}`] ?? 0;
     const labelCount = suggestInfo.docsWithLabels.thesaurus?.totalValues[`${id}`] ?? 0;
 
+    const topicQuality =
+      (suggestInfo.model.topics ?? {})[label] ?? (suggestInfo.model.topics ?? {})[id!];
     return (
       <tr key={label}>
-        <th scope="row">{label}</th>
+        <th scope="row">
+          {label}
+          {topicQuality && !!topicQuality.quality && topicQuality.quality < 0.5 && (
+            <span className="confidence-bubble low">low</span>
+          )}
+        </th>
         <td title="sample-count">{labelCount ? labelCount.toLocaleString() : '-'}</td>
         <td title="suggestions-count">
           {suggestionCount ? suggestionCount.toLocaleString() : '-'}
         </td>
         <td title="review-button">
-          {suggestionCount > 0 && thesaurus.enable_classification && thesaurus.property?.name ? (
+          {suggestionCount > 0 && thesaurus.enable_classification && suggestInfo.property?.name ? (
             <I18NLink
               to={
-                `/review?q=(filters:(_${thesaurus.property?.name}:(values:!('${id}')),` +
-                `${thesaurus.property?.name}:(values:!(missing))))&includeUnpublished=1`
+                `/review?q=(filters:(_${suggestInfo.property?.name}:(values:!('${id}')),` +
+                `${suggestInfo.property?.name}:(values:!(missing))))&includeUnpublished=1`
               }
               className="btn btn-default btn-xs"
             >
@@ -178,62 +150,112 @@ export class ThesaurusCockpitBase extends RouteHandler {
   }
 
   learningNotice() {
-    const { thesaurus } = this.props as ThesaurusCockpitProps;
-    const isLearning = false;
-    const isReadyForReview = false;
-    let notice;
+    const { thesaurus, taskState, suggestInfo } = this.props as ThesaurusCockpitProps;
+    const numTopics = getValuesSortedByName(thesaurus).length;
+    const numTrained =
+      (suggestInfo.model.config?.num_test ?? 0) + (suggestInfo.model.config?.num_train ?? 0);
+    const numLabeled = suggestInfo.docsWithLabels.totalRows;
+    const modelTime = suggestInfo.model.preferred;
+    const isLearning = taskState.TrainState?.state === 'running';
+    const modelDate =
+      modelTime && +modelTime > 1000000000 && +modelTime < 2000000000
+        ? new Date(+modelTime * 1000)
+        : null;
+    let status;
 
-    if (isReadyForReview) {
-      notice = (
-        <Notice title="Ready for review (Last update 2 hours ago)">
-          <div>
+    if (modelTime) {
+      status = (
+        <div className="block">
+          <div className="stretch">
             Uwazi has suggested labels for your collection. Review them using the &#34;View
             suggestions&#34; button next to each topic. Disable suggestions with the &#34;Show
             suggestions&#34; toggle.
+            <br />
+            <br />
+            You can also improve the model by providing more labeled documents.
           </div>
-        </Notice>
-      );
-    } else if (isLearning) {
-      notice = (
-        <Notice
-          title={
-            <span>
-              Learning... <Icon icon="spinner" spin />
-            </span>
-          }
-        >
-          <div>
-            Uwazi is learning using the labelled documents. This may take up to 2 hours, and once
-            completed you can review suggestions made by Uwazi for your collection.
+          <div className="footer">
+            <I18NLink
+              title="label-docs"
+              to={`/library/?multiEditThesaurus=${thesaurus._id}`}
+              className="btn btn-primary get-started"
+            >
+              <span>{t('System', 'Label more documents')}</span>
+            </I18NLink>
           </div>
-        </Notice>
+        </div>
       );
     } else {
-      notice = (
-        <Notice title="Configure suggestions">
-          <div>
+      status = (
+        <div className="block">
+          <div className="stretch">
             The first step is to label a sample of your documents, so Uwazi can learn which topics
             to suggest when helping you label your collection.
           </div>
-          <I18NLink
-            title="label-docs"
-            to={`/library/?multiEditThesaurus=${thesaurus._id}`}
-            className="btn btn-primary get-started"
-          >
-            <span>{t('System', 'Get started')}</span>
-          </I18NLink>
-          <button
-            type="button"
-            className="btn btn-default"
-            onClick={() => this.props.startTraining()}
-          >
-            <span className="btn-label">{t('System', 'Train model')}</span>
-          </button>
-        </Notice>
+          <div className="footer">
+            <I18NLink
+              title="label-docs"
+              to={`/library/?multiEditThesaurus=${thesaurus._id}`}
+              className="btn btn-primary get-started"
+            >
+              <span>{t('System', numLabeled === 0 ? 'Get started' : 'Label more documents')}</span>
+            </I18NLink>
+          </div>
+        </div>
       );
     }
-
-    return notice;
+    const learning = (
+      <div className="block">
+        <div className="stretch">
+          {modelDate && (
+            <React.Fragment>
+              The current model was trained at {modelDate.toLocaleString()} with {numTrained}&nbsp;
+              documents.
+              <br />
+              <br />
+            </React.Fragment>
+          )}
+          {numLabeled < numTopics * 30 && (
+            <React.Fragment>
+              We recommend labeling {numTopics * 30} documents before training (30 per topic).
+              <br />
+              <br />
+            </React.Fragment>
+          )}
+          You have labeled {numLabeled} documents so far.
+          {isLearning && (
+            <React.Fragment>
+              <br />
+              <br />
+              Uwazi is learning using the labelled documents. This may take up to 2 hours, and once
+              completed you can review suggestions made by Uwazi for your collection.
+            </React.Fragment>
+          )}
+        </div>
+        <div className="footer">
+          {isLearning && (
+            <span className="label">
+              Learning... <Icon icon="spinner" spin />
+            </span>
+          )}
+          {!isLearning && numLabeled > numTrained && numLabeled > numTopics * 20 && (
+            <button
+              type="button"
+              className="btn btn-default"
+              onClick={() => this.props.startTraining()}
+            >
+              <span className="btn-label">{t('System', 'Train model')}</span>
+            </button>
+          )}
+        </div>
+      </div>
+    );
+    return (
+      <Notice title="Suggestion Status">
+        {status}
+        {learning}
+      </Notice>
+    );
   }
 
   topicNodes() {
@@ -289,12 +311,12 @@ export class ThesaurusCockpitBase extends RouteHandler {
     // Don't show the 'publish' button when there's nothing to be published
     if (
       !thesaurus ||
-      !thesaurus.property ||
+      !suggestInfo.property ||
       !suggestInfo.docsWithSuggestionsForPublish?.totalLabels
     ) {
       return null;
     }
-    const thesaurusPropertyRefName = thesaurus.property.name;
+    const thesaurusPropertyRefName = suggestInfo.property.name;
 
     return (
       <I18NLink
