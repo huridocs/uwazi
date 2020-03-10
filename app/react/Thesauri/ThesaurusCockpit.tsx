@@ -5,12 +5,7 @@ import { actions } from 'app/BasicReducer';
 import Loader from 'app/components/Elements/Loader';
 import { I18NLink, t } from 'app/I18N';
 import { IStore, SuggestInfo, TaskState } from 'app/istore';
-import SearchAPI from 'app/Search/SearchAPI';
 import { resolveTemplateProp } from 'app/Settings/utils/resolveProperty';
-import {
-  getReadyToPublishSuggestionsQuery,
-  getReadyToReviewSuggestionsQuery,
-} from 'app/Settings/utils/suggestions';
 import TemplatesAPI from 'app/Templates/TemplatesAPI';
 import { Notice } from 'app/Thesauri/Notice';
 import ThesauriAPI from 'app/Thesauri/ThesauriAPI';
@@ -18,19 +13,14 @@ import { RequestParams } from 'app/utils/RequestParams';
 import React from 'react';
 import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
-import { PropertySchema } from 'shared/types/commonTypes';
 import { ThesaurusSchema, ThesaurusValueSchema } from 'shared/types/thesaurusType';
 import { Icon } from 'UI';
 import util from 'util';
-import { getLabelsQuery } from '../Settings/utils/suggestions';
 import {
   startTraining,
   toggleEnableClassification,
   updateTaskState,
 } from './actions/cockpitActions';
-import { ClassifierModelSchema } from './types/classifierModelType';
-import { LabelCountSchema } from './types/labelCountType';
-import { buildLabelCounts, flattenLabelCounts } from './utils/suggestionQuery';
 import { getValuesSortedByName } from './utils/valuesSort';
 
 export type ThesaurusCockpitProps = {
@@ -43,28 +33,6 @@ export type ThesaurusCockpitProps = {
 };
 
 export class ThesaurusCockpitBase extends RouteHandler {
-  static async getAndPopulateLabelCounts(
-    templates: { _id: string }[],
-    requestParams: RequestParams,
-    queryBuilderFunc: (id: string, prop: PropertySchema) => any,
-    assocProp?: PropertySchema,
-    countSuggestions: boolean = true
-  ): Promise<LabelCountSchema> {
-    if (!assocProp) {
-      return { totalRows: 0, totalLabels: 0, thesaurus: { propertyName: '', totalValues: {} } };
-    }
-    const docsWithSuggestions = await Promise.all(
-      templates.map((template: { _id: string }) => {
-        const reqParams = requestParams.set(queryBuilderFunc(template._id, assocProp));
-        return SearchAPI.search(reqParams);
-      })
-    );
-    const sanitizedSuggestionsTBPublished = docsWithSuggestions.map((s: any) =>
-      buildLabelCounts(s, assocProp?.name ?? '', countSuggestions)
-    );
-    return flattenLabelCounts(sanitizedSuggestionsTBPublished, assocProp?.name ?? '');
-  }
-
   static async requestState(requestParams: RequestParams) {
     // Thesauri should always have a length of 1, because a specific thesaurus ID is passed in the requestParams.
     const [thesauri, templates] = await Promise.all([
@@ -73,39 +41,12 @@ export class ThesaurusCockpitBase extends RouteHandler {
     ]);
     const thesaurus = thesauri[0];
 
-    // Fetch models associated with known thesauri.
-    const modelParams = requestParams.onlyHeaders().set({ thesaurus: thesaurus.name });
-    const model: ClassifierModelSchema = await ThesauriAPI.getModelStatus(modelParams);
-
     const assocProp = resolveTemplateProp(thesaurus, templates);
-
-    const docsWithSuggestionsForPublish = await ThesaurusCockpitBase.getAndPopulateLabelCounts(
-      templates,
-      requestParams,
-      getReadyToPublishSuggestionsQuery,
-      assocProp
-    );
-    const docsWithSuggestionsForReview = await ThesaurusCockpitBase.getAndPopulateLabelCounts(
-      templates,
-      requestParams,
-      getReadyToReviewSuggestionsQuery,
-      assocProp
-    );
-    const docsWithLabels = await ThesaurusCockpitBase.getAndPopulateLabelCounts(
-      templates,
-      requestParams,
-      getLabelsQuery,
-      assocProp,
-      false
-    );
     return [
+      actions.set('templates', templates),
       actions.set('thesauri.thesaurus', thesaurus as ThesaurusSchema),
       actions.set('thesauri.suggestInfo', {
-        model,
         property: assocProp,
-        docsWithSuggestionsForPublish,
-        docsWithSuggestionsForReview,
-        docsWithLabels,
       } as SuggestInfo),
       updateTaskState(),
     ];
@@ -115,17 +56,23 @@ export class ThesaurusCockpitBase extends RouteHandler {
     const { thesaurus, suggestInfo } = this.props as ThesaurusCockpitProps;
     const { label, id } = topic;
     const suggestionCount =
-      suggestInfo.docsWithSuggestionsForReview.thesaurus?.totalValues[`${id}`] ?? 0;
-    const labelCount = suggestInfo.docsWithLabels.thesaurus?.totalValues[`${id}`] ?? 0;
+      suggestInfo.docsWithSuggestionsForReview?.thesaurus?.totalValues[`${id}`] ?? 0;
+    const labelCount = suggestInfo.docsWithLabels?.thesaurus?.totalValues[`${id}`] ?? 0;
 
     const topicQuality =
-      (suggestInfo.model.topics ?? {})[label] ?? (suggestInfo.model.topics ?? {})[id!];
+      (suggestInfo.model?.topics ?? {})[label] ?? (suggestInfo.model?.topics ?? {})[id!];
     return (
       <tr key={label}>
         <th scope="row">
           {label}
           {topicQuality && !!topicQuality.quality && topicQuality.quality < 0.5 && (
-            <span className="confidence-bubble low">low</span>
+            <span className="property-help confidence-bubble low">
+              low
+              <div className="property-description">
+                Improve the quality of this topic's suggestions by finding more sample documents
+                with this label.
+              </div>
+            </span>
           )}
         </th>
         <td title="sample-count">{labelCount ? labelCount.toLocaleString() : '-'}</td>
@@ -153,9 +100,9 @@ export class ThesaurusCockpitBase extends RouteHandler {
     const { thesaurus, taskState, suggestInfo } = this.props as ThesaurusCockpitProps;
     const numTopics = getValuesSortedByName(thesaurus).length;
     const numTrained =
-      (suggestInfo.model.config?.num_test ?? 0) + (suggestInfo.model.config?.num_train ?? 0);
-    const numLabeled = suggestInfo.docsWithLabels.totalRows;
-    const modelTime = suggestInfo.model.preferred;
+      (suggestInfo.model?.config?.num_test ?? 0) + (suggestInfo.model?.config?.num_train ?? 0);
+    const numLabeled = suggestInfo.docsWithLabels?.totalRows;
+    const modelTime = suggestInfo.model?.preferred;
     const isLearning = taskState.TrainState?.state === 'running';
     const modelDate =
       modelTime && +modelTime > 1000000000 && +modelTime < 2000000000
@@ -215,7 +162,7 @@ export class ThesaurusCockpitBase extends RouteHandler {
               <br />
             </React.Fragment>
           )}
-          {numLabeled < numTopics * 30 && (
+          {(numLabeled ?? 0) < numTopics * 30 && (
             <React.Fragment>
               We recommend labeling {numTopics * 30} documents before training (30 per topic).
               <br />
@@ -234,11 +181,14 @@ export class ThesaurusCockpitBase extends RouteHandler {
         </div>
         <div className="footer">
           {isLearning && (
-            <span className="label">
-              Learning... <Icon icon="spinner" spin />
+            <span className="btn-label property-help">
+              <span>
+                Learning... <Icon icon="spinner" spin />
+              </span>
+              <div className="property-description">{taskState.TrainState?.message}</div>
             </span>
           )}
-          {!isLearning && numLabeled > numTrained && numLabeled > numTopics * 20 && (
+          {!isLearning && numLabeled && numLabeled > numTrained && numLabeled > numTopics * 20 && (
             <button
               type="button"
               className="btn btn-default"
@@ -281,6 +231,7 @@ export class ThesaurusCockpitBase extends RouteHandler {
   emptyState() {
     this.context.store.dispatch(actions.unset('thesauri.suggestInfo'));
     this.context.store.dispatch(actions.unset('thesauri.thesaurus'));
+    this.context.store.dispatch(actions.unset('thesauri.taskState'));
   }
 
   renderEnableSuggestionsToggle() {
@@ -336,7 +287,7 @@ export class ThesaurusCockpitBase extends RouteHandler {
   render() {
     const { thesaurus, taskState } = this.props as ThesaurusCockpitProps;
     const { name } = thesaurus;
-    if (!name) {
+    if (!name || !taskState.SyncState?.state) {
       return <Loader />;
     }
     return (
@@ -359,7 +310,9 @@ export class ThesaurusCockpitBase extends RouteHandler {
             </thead>
             <tbody>{this.topicNodes()}</tbody>
           </table>
-          <span>{taskState && util.inspect(taskState, false, null)}</span>
+          <div className="sync-state">
+            {taskState.SyncState.message && `Uwazi is updating suggestions in the background: ${taskState.SyncState.message}`}
+          </div>
         </div>
         <div className="settings-footer">
           <I18NLink to="/settings/dictionaries" className="btn btn-default">

@@ -229,6 +229,7 @@ class SyncTask extends Task {
       return;
     }
     const res = this.status.result;
+    res.total = await entities.count({ language: 'en' });
     res.seen = 0;
     res.index = 0;
     await QueryForEach(
@@ -245,9 +246,9 @@ class SyncTask extends Task {
             await entities.save(e, { user: 'sync-topic-classification', language: e.language });
           }
         }
-        this.status.message = `Running with ${util.inspect(args)}: ${res.seen} seen, ${
-          res.index
-        } changed`;
+        this.status.message =
+          `${res.seen} of ${res.total} documents processed, ` +
+          `${res.index} changed. Sync arguments are ${util.inspect(args)}.`;
       }
     );
   }

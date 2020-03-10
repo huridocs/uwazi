@@ -30,7 +30,6 @@ export async function listModels(
 ): Promise<{ models: string[]; error: string }> {
   const tcUrl = new URL(MODELS_LIST_ENDPOINT, tcServer);
   if (!(await IsTopicClassificationReachable())) {
-    // TODO: move this backend check to server start-up time, maybe
     return {
       models: [],
       error: `Topic Classification server is unreachable (waited ${RPC_DEADLINE_MS} ms)`,
@@ -54,7 +53,6 @@ export async function listModels(
 
 export async function getModel(model: string): Promise<ClassifierModelSchema> {
   if (!(await IsTopicClassificationReachable())) {
-    // TODO: move this backend check to server start-up time, maybe
     throw new Error(`Topic Classification server is unreachable (waited ${RPC_DEADLINE_MS} ms)`);
   }
   const tcUrl = new URL(MODEL_GET_ENDPOINT, tcServer);
@@ -122,7 +120,6 @@ export async function getTrainStateForThesaurus(thesaurusName: string = '') {
 
 export async function startTraining(thesaurus: ThesaurusSchema) {
   if (!(await IsTopicClassificationReachable())) {
-    // TODO: move this backend check to server start-up time, maybe
     throw new Error(`Topic Classification server is unreachable (waited ${RPC_DEADLINE_MS} ms)`);
   }
   const flattenValues = thesaurus.values!.reduce(
@@ -141,13 +138,17 @@ export async function startTraining(thesaurus: ThesaurusSchema) {
     limit: 2000,
   };
   const trainingData = await search.search(searchQuery, 'en', 'internal');
+  const testSamples = Math.min(
+    trainingData.rows.length / 2,
+    flattenValues.length * 20 + trainingData.rows.length * 0.05
+  );
   const reqData = {
     provider: 'TrainModel',
     name: `train-${buildFullModelName(thesaurus.name)}`,
     model: buildFullModelName(thesaurus.name),
     labels: flattenValues.map(v => v.label),
-    num_train_steps: 10,
-    train_ratio: 0.5,
+    num_train_steps: 1000,
+    train_ratio: 1.0 - testSamples / trainingData.rows.length,
     samples: await trainingData.rows.reduce(
       async (res: Promise<{ seq: string; training_labels: string[] }[]>, e: EntitySchema) => {
         if (!e.metadata || !e.metadata[propNames[0]]?.length) {

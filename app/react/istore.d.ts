@@ -33,11 +33,11 @@ export interface MultiEditState {
 }
 
 export interface SuggestInfo {
-  property: PropertySchema;
-  model: ClassifierModelSchema;
-  docsWithLabels: LabelCountSchema;
-  docsWithSuggestionsForPublish: LabelCountSchema;
-  docsWithSuggestionsForReview: LabelCountSchema;
+  property?: PropertySchema;
+  model?: ClassifierModelSchema;
+  docsWithLabels?: LabelCountSchema;
+  docsWithSuggestionsForPublish?: LabelCountSchema;
+  docsWithSuggestionsForReview?: LabelCountSchema;
 }
 
 export interface OneUpState {

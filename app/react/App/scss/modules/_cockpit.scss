@@ -38,7 +38,7 @@
     }
     .footer {
       height: 50px;
-      .label {
+      .btn-label {
         margin-top: 15px;
       }
     }
@@ -65,6 +65,10 @@
 
 .notice.is-hidden {
   display: none;
+}
+
+.sync-state {
+  margin: 10px 10px;
 }
 
 .cockpit {
