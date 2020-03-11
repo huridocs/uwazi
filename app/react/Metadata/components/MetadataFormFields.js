@@ -144,7 +144,7 @@ export class MetadataFormFields extends Component {
       .map(thes => thes.get('_id'))
       .toJS();
     const fields = template.get('properties').toJS();
-    const templateID = template.get('_id');
+    const templateID = template.get('_id') ? template.get('_id') : fields[0].templateId;
 
     return (
       <div>
