@@ -55,10 +55,10 @@ describe('comonProperties', () => {
         const documentTypes = ['1'];
         const filters = propertiesHelper.comonProperties(templates, documentTypes, thesauris);
         expect(filters).toEqual([
-          { name: 'author', filter: false, type: 'text', defaultfilter: true },
-          { name: 'country', filter: true, type: 'select', content: 'abc1', defaultfilter: true },
-          { name: 'date', filter: true, type: 'text', defaultfilter: true },
-          { name: 'language', filter: true, type: 'text' },
+          { name: 'author', filter: false, type: 'text', defaultfilter: true, templateId: '1' },
+          { name: 'country', filter: true, type: 'select', content: 'abc1', defaultfilter: true, templateId: '1' },
+          { name: 'date', filter: true, type: 'text', defaultfilter: true, templateId: '1' },
+          { name: 'language', filter: true, type: 'text', templateId: '1' },
         ]);
       });
     });
@@ -68,9 +68,9 @@ describe('comonProperties', () => {
         const documentTypes = ['1', '2'];
         const filters = propertiesHelper.comonProperties(templates, documentTypes);
         expect(filters).toEqual([
-          { name: 'author', filter: false, type: 'text', defaultfilter: true },
-          { name: 'country', filter: true, type: 'select', content: 'abc1', defaultfilter: true },
-          { name: 'language', filter: false, type: 'text', required: true },
+          { name: 'author', filter: false, type: 'text', defaultfilter: true, templateId: '1' },
+          { name: 'country', filter: true, type: 'select', content: 'abc1', defaultfilter: true, templateId: '1' },
+          { name: 'language', filter: false, type: 'text', required: true, templateId: '1' },
         ]);
       });
 
@@ -99,11 +99,12 @@ describe('comonProperties', () => {
       const documentTypes = ['3'];
       const filters = propertiesHelper.comonFilters(templates, relationTypes, documentTypes);
       expect(filters).toEqual([
-        { name: 'country', filter: true, type: 'text' },
+        { name: 'country', filter: true, type: 'text', templateId: '3' },
         {
           name: 'friend',
           relationType: '4',
           type: 'relationshipfilter',
+          templateId: '3',
           filters: [{ name: 'city', filter: true, type: 'text' }],
         },
       ]);

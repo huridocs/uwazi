@@ -188,8 +188,8 @@ describe('SelectMultiplePanel', () => {
         const expectedTemplate = {
           _id: '',
           properties: [
-            { name: 'powers', content: '1', type: 'multiselect' },
-            { name: 'color', type: 'text', required: true },
+            { name: 'powers', content: '1', type: 'multiselect', templateId: '1' },
+            { name: 'color', type: 'text', required: true, templateId: '1' },
           ],
         };
         expect(mapStateToProps(state, ownProps).template.toJS()).toEqual(expectedTemplate);
@@ -205,10 +205,10 @@ describe('SelectMultiplePanel', () => {
         const expectedTemplate = {
           _id: '1',
           properties: [
-            { name: 'year', type: 'numeric' },
-            { name: 'powers', content: '1', type: 'multiselect' },
-            { name: 'enemies', content: '2', type: 'multiselect' },
-            { name: 'color', type: 'text', required: true },
+            { name: 'year', type: 'numeric', templateId: '1' },
+            { name: 'powers', content: '1', type: 'multiselect', templateId: '1' },
+            { name: 'enemies', content: '2', type: 'multiselect', templateId: '1' },
+            { name: 'color', type: 'text', required: true, templateId: '1' },
           ],
         };
         expect(mapStateToProps(state, ownProps).template.toJS()).toEqual(expectedTemplate);
