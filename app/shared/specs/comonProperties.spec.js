@@ -56,7 +56,14 @@ describe('comonProperties', () => {
         const filters = propertiesHelper.comonProperties(templates, documentTypes, thesauris);
         expect(filters).toEqual([
           { name: 'author', filter: false, type: 'text', defaultfilter: true, templateId: '1' },
-          { name: 'country', filter: true, type: 'select', content: 'abc1', defaultfilter: true, templateId: '1' },
+          {
+            name: 'country',
+            filter: true,
+            type: 'select',
+            content: 'abc1',
+            defaultfilter: true,
+            templateId: '1',
+          },
           { name: 'date', filter: true, type: 'text', defaultfilter: true, templateId: '1' },
           { name: 'language', filter: true, type: 'text', templateId: '1' },
         ]);
@@ -69,7 +76,14 @@ describe('comonProperties', () => {
         const filters = propertiesHelper.comonProperties(templates, documentTypes);
         expect(filters).toEqual([
           { name: 'author', filter: false, type: 'text', defaultfilter: true, templateId: '1' },
-          { name: 'country', filter: true, type: 'select', content: 'abc1', defaultfilter: true, templateId: '1' },
+          {
+            name: 'country',
+            filter: true,
+            type: 'select',
+            content: 'abc1',
+            defaultfilter: true,
+            templateId: '1',
+          },
           { name: 'language', filter: false, type: 'text', required: true, templateId: '1' },
         ]);
       });
