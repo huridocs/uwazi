@@ -148,39 +148,38 @@ export class MetadataFormFields extends Component {
 
     return (
       <div>
-        {templateID &&
-          fields
-            .filter(p => !showSubset || showSubset.includes(p.name))
-            .map(property => (
-              <FormGroup key={property.name} model={`.metadata.${property.name}`}>
-                <ul className="search__filter is-active">
-                  <li className="title">
-                    <label>
-                      <MultipleEditionFieldWarning
-                        multipleEdition={multipleEdition}
-                        model={model}
-                        field={`metadata.${property.name}`}
-                      />
-                      {t(templateID, property.label)}
-                      {property.required ? <span className="required">*</span> : ''}
-                    </label>
-                  </li>
-                  {mlThesauri.includes(property.content) &&
-                  [propertyTypes.multiselect, propertyTypes.select].includes(property.type) ? (
-                    <li className="wide">
-                      <MultiSuggest
-                        model={`.suggestedMetadata.${property.name}`}
-                        selectModel={`.metadata.${property.name}`}
-                        propertyType={property.type}
-                      />
-                    </li>
-                  ) : null}
+        {fields
+          .filter(p => !showSubset || showSubset.includes(p.name))
+          .map(property => (
+            <FormGroup key={property.name} model={`.metadata.${property.name}`}>
+              <ul className="search__filter is-active">
+                <li className="title">
+                  <label>
+                    <MultipleEditionFieldWarning
+                      multipleEdition={multipleEdition}
+                      model={model}
+                      field={`metadata.${property.name}`}
+                    />
+                    {t(templateID, property.label)}
+                    {property.required ? <span className="required">*</span> : ''}
+                  </label>
+                </li>
+                {mlThesauri.includes(property.content) &&
+                [propertyTypes.multiselect, propertyTypes.select].includes(property.type) ? (
                   <li className="wide">
-                    {this.getField(property, `.metadata.${property.name}`, thesauris)}
+                    <MultiSuggest
+                      model={`.suggestedMetadata.${property.name}`}
+                      selectModel={`.metadata.${property.name}`}
+                      propertyType={property.type}
+                    />
                   </li>
-                </ul>
-              </FormGroup>
-            ))}
+                ) : null}
+                <li className="wide">
+                  {this.getField(property, `.metadata.${property.name}`, thesauris)}
+                </li>
+              </ul>
+            </FormGroup>
+          ))}
       </div>
     );
   }
