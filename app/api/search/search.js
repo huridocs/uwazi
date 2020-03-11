@@ -15,6 +15,7 @@ import elastic from './elastic';
 import entities from '../entities';
 import templatesModel from '../templates';
 import { bulkIndex, indexEntities } from './entitiesIndex';
+import thesauri from '../thesauri';
 
 function processFilters(filters, properties) {
   return Object.keys(filters || {}).reduce((res, filterName) => {
@@ -173,7 +174,61 @@ function searchGeolocation(documentsQuery, templates) {
   documentsQuery.select(selectProps);
 }
 
-const processResponse = response => {
+const sanitizeAgregationNames = aggregations => {
+  return Object.keys(aggregations).reduce((allAgregations, key) => {
+    const sanitizedKey = key.replace('.value', '');
+    return Object.assign(allAgregations, { [sanitizedKey]: aggregations[key] });
+  }, {});
+};
+
+const _getAggregationDictionary = async (aggregation, language, property, dictionaries) => {
+  if (property.type === 'relationship') {
+    const entitiesSharedId = aggregation.buckets.map(bucket => bucket.key);
+    const bucketEntities = await entities.get({ sharedId: { $in: entitiesSharedId }, language });
+
+    return thesauri.entitiesToThesauri(bucketEntities);
+  }
+
+  return dictionaries.find(dictionary => dictionary._id.toString() === property.content.toString());
+};
+
+const denormalizeAggregations = async (aggregations, templates, dictionaries, language) => {
+  const properties = propertiesHelper.allUniqueProperties(templates);
+
+  return Object.keys(aggregations).reduce(async (denormaLizedAgregationsPromise, key) => {
+    const denormaLizedAgregations = await denormaLizedAgregationsPromise;
+    if (!aggregations[key].buckets || key === '_types' || aggregations[key].type === 'nested') {
+      return Object.assign(denormaLizedAgregations, { [key]: aggregations[key] });
+    }
+
+    const property = properties.find(prop => prop.name === key);
+
+    const dictionary = await _getAggregationDictionary(
+      aggregations[key],
+      language,
+      property,
+      dictionaries
+    );
+
+    const buckets = aggregations[key].buckets.map(bucket => {
+      const label =
+        bucket.key === 'missing'
+          ? 'No label'
+          : dictionary.values
+              .reduce(
+                (values, v) => (v.values ? values.concat(v.values, [v]) : values.concat(v)),
+                []
+              )
+              .find(value => value.id === bucket.key, {}).label;
+      return Object.assign(bucket, { label });
+    });
+
+    const denormalizedAggregation = Object.assign(aggregations[key], { buckets });
+    return Object.assign(denormaLizedAgregations, { [key]: denormalizedAggregation });
+  }, {});
+};
+
+const processResponse = async (response, templates, dictionaries, language) => {
   const rows = response.hits.hits.map(hit => {
     const result = hit._source;
     result._explanation = hit._explanation;
@@ -184,21 +239,27 @@ const processResponse = response => {
 
   Object.keys(response.aggregations.all).forEach(aggregationKey => {
     const aggregation = response.aggregations.all[aggregationKey];
-    if (aggregation.buckets && !Array.isArray(aggregation.buckets)) {
+
+    const isAGroupOfOptionsAggregation = aggregation.buckets && !Array.isArray(aggregation.buckets);
+    if (isAGroupOfOptionsAggregation) {
       aggregation.buckets = Object.keys(aggregation.buckets).map(key =>
         Object.assign({ key }, aggregation.buckets[key])
       );
     }
+
     if (aggregation.buckets) {
       response.aggregations.all[aggregationKey] = aggregation;
     }
-    if (!aggregation.buckets) {
+
+    const isNestedAggregation = !aggregation.buckets;
+    if (isNestedAggregation) {
       Object.keys(aggregation).forEach(key => {
         if (aggregation[key].buckets) {
           const buckets = aggregation[key].buckets.map(option =>
             Object.assign({ key: option.key }, option.filtered.total)
           );
           response.aggregations.all[key] = {
+            type: 'nested',
             doc_count: aggregation[key].doc_count,
             buckets,
           };
@@ -206,15 +267,19 @@ const processResponse = response => {
       });
     }
   });
-
-  response.aggregations.all = Object.keys(response.aggregations.all).reduce(
-    (allAgregations, key) => {
-      allAgregations[key.replace('.value', '')] = response.aggregations.all[key];
-      return allAgregations;
-    },
-    {}
+  const sanitizedAggregations = sanitizeAgregationNames(response.aggregations.all);
+  const denormalizedAggregations = await denormalizeAggregations(
+    sanitizedAggregations,
+    templates,
+    dictionaries,
+    language
   );
-  return { rows, totalRows: response.hits.total.value, aggregations: response.aggregations };
+
+  return {
+    rows,
+    totalRows: response.hits.total.value,
+    aggregations: { all: denormalizedAggregations },
+  };
 };
 
 const determineInheritedProperties = templates =>
@@ -397,6 +462,20 @@ const escapeElasticSearchQueryString = query => {
   }, query);
 };
 
+const _getTextFields = (query, templates) => {
+  return (
+    query.fields ||
+    propertiesHelper
+      .allUniqueProperties(templates)
+      .map(prop =>
+        ['text', 'markdown'].includes(prop.type)
+          ? `metadata.${prop.name}.value`
+          : `metadata.${prop.name}.label`
+      )
+      .concat(['title', 'fullText'])
+  );
+};
+
 const instanceSearch = elasticIndex => ({
   search(query, language, user) {
     return Promise.all([
@@ -405,16 +484,7 @@ const instanceSearch = elasticIndex => ({
       relationtypes.get(),
       translations.get(),
     ]).then(([templates, dictionaries, relationTypes, _translations]) => {
-      const textFieldsToSearch =
-        query.fields ||
-        propertiesHelper
-          .allUniqueProperties(templates)
-          .map(prop =>
-            ['text', 'markdown'].includes(prop.type)
-              ? `metadata.${prop.name}.value`
-              : `metadata.${prop.name}.label`
-          )
-          .concat(['title', 'fullText']);
+      const textFieldsToSearch = _getTextFields(query, templates);
       const elasticSearchTerm =
         query.searchTerm && escapeElasticSearchQueryString(query.searchTerm);
       const documentsQuery = documentQueryBuilder()
@@ -442,11 +512,11 @@ const instanceSearch = elasticIndex => ({
       const allTemplates = templates.map(t => t._id);
       const allUniqueProps = propertiesHelper.allUniqueProperties(templates);
       const filteringTypes = query.types && query.types.length ? query.types : allTemplates;
-      let properties = propertiesHelper.comonFilters(templates, relationTypes, filteringTypes);
-      properties =
+
+      let properties =
         !query.types || !query.types.length
           ? propertiesHelper.defaultFilters(templates)
-          : properties;
+          : propertiesHelper.comonFilters(templates, relationTypes, filteringTypes);
 
       if (query.sort) {
         const sortingProp = allUniqueProps.find(p => `metadata.${p.name}` === query.sort);
@@ -470,6 +540,7 @@ const instanceSearch = elasticIndex => ({
 
       // this is where we decide which aggregations to send to elastic
       const aggregations = agregationProperties(properties);
+
       const filters = processFilters(query.filters, [...allUniqueProps, ...properties]);
       // this is where the query filters are built
       documentsQuery.filterMetadata(filters);
@@ -486,7 +557,7 @@ const instanceSearch = elasticIndex => ({
       // documentsQuery.query() is the actual call
       return elastic
         .search({ index: elasticIndex || elasticIndexes.index, body: documentsQuery.query() })
-        .then(processResponse)
+        .then(response => processResponse(response, templates, dictionaries, language))
         .catch(e => {
           throw createError(e.message, 400);
         });

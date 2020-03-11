@@ -37,7 +37,6 @@ describe('thesauri', () => {
           id: 'sharedId',
           label: 'spanish entity',
           icon: 'Icon',
-          type: 'entity',
         },
       ]);
       expect(dictionaries[4].type).toBe('template');
@@ -47,9 +46,9 @@ describe('thesauri', () => {
       const dictionaries = await thesauri.get(null, 'es', 'user');
       expect(dictionaries.length).toBe(6);
       expect(dictionaries[4].values).toEqual([
-        { id: 'sharedId2', type: 'entity' },
-        { id: 'sharedId', label: 'spanish entity', icon: 'Icon', type: 'entity' },
-        { id: 'other', label: 'unpublished entity', type: 'entity' },
+        { id: 'sharedId2' },
+        { id: 'sharedId', label: 'spanish entity', icon: 'Icon' },
+        { id: 'other', label: 'unpublished entity' },
       ]);
     });
 

@@ -151,9 +151,12 @@ export default {
       metadata: {
         field1: [{ value: 'joker' }],
         field2: [{ value: 'bane' }],
-        select1: [{ value: 'selectValue1' }],
+        select1: [{ value: '35ae6c24-9f4c-4017-9f01-2bc42ff7ad83' }],
         rich_text: [{ value: 'rich' }],
-        multiselect1: [{ value: 'multiValue1' }, { value: 'multiValue2' }],
+        multiselect1: [
+          { value: '35ae6c24-9f4c-4017-9f01-2bc42ff7ad83' },
+          { value: 'bce629bf-efc1-40dd-9af0-0542422dcbc3' },
+        ],
         groupedDictionary: [{ value: 'spainID' }],
         nestedField_nested: [{ value: { nested1: ['1', '2', '3'] } }],
         city_geolocation: [{ value: { lat: 1, lon: 2 } }],
@@ -188,8 +191,8 @@ export default {
       metadata: {
         field1: [{ value: 'joker' }],
         field2: [{ value: 'penguin' }],
-        select1: [{ value: 'selectValue1' }],
-        multiselect1: [{ value: 'multiValue1' }],
+        select1: [{ value: '35ae6c24-9f4c-4017-9f01-2bc42ff7ad83' }],
+        multiselect1: [{ value: '35ae6c24-9f4c-4017-9f01-2bc42ff7ad83' }],
         groupedDictionary: [{ value: 'spainID' }],
         daterange: [{ value: { from: 1579620135, to: 1611242535 } }],
         date: [{ value: 20000 }],
@@ -204,8 +207,8 @@ export default {
       published: true,
       user: userId,
       metadata: {
-        select1: [{ value: 'selectValue2' }],
-        multiselect1: [{ value: 'multiValue2' }],
+        select1: [{ value: 'bce629bf-efc1-40dd-9af0-0542422dcbc3' }],
+        multiselect1: [{ value: 'bce629bf-efc1-40dd-9af0-0542422dcbc3' }],
         date: [{ value: 30000 }],
       },
     },
@@ -220,8 +223,8 @@ export default {
       metadata: {
         field1: [{ value: 'bane' }],
         field3: [{ value: 'penguin' }],
-        select1: [{ value: 'selectValue2' }],
-        multiselect1: [{ value: 'multiValue2' }],
+        select1: [{ value: 'bce629bf-efc1-40dd-9af0-0542422dcbc3' }],
+        multiselect1: [{ value: 'bce629bf-efc1-40dd-9af0-0542422dcbc3' }],
         nestedField_nested: [{ value: { nested1: ['3', '4', '5'] } }],
         country_geolocation: [{ value: { lat: 1, lon: 2 } }],
       },
@@ -326,8 +329,18 @@ export default {
       properties: [
         { name: 'field1', type: 'text', filter: true },
         { name: 'field2', type: 'text', filter: true },
-        { name: 'select1', type: 'select', filter: true },
-        { name: 'multiselect1', type: 'multiselect', filter: true },
+        {
+          name: 'select1',
+          type: 'select',
+          filter: true,
+          content: countriesDictionaryID.toString(),
+        },
+        {
+          name: 'multiselect1',
+          type: 'multiselect',
+          filter: true,
+          content: countriesDictionaryID.toString(),
+        },
         { name: 'daterange', type: 'daterange', filter: true },
         { name: 'date', type: 'date', filter: true },
         {
@@ -351,8 +364,18 @@ export default {
       properties: [
         { name: 'field1', type: 'text', filter: true },
         { name: 'field3', type: 'text', filter: true },
-        { name: 'select1', type: 'select', filter: true },
-        { name: 'multiselect1', type: 'multiselect', filter: true },
+        {
+          name: 'select1',
+          type: 'select',
+          filter: true,
+          content: countriesDictionaryID.toString(),
+        },
+        {
+          name: 'multiselect1',
+          type: 'multiselect',
+          filter: true,
+          content: countriesDictionaryID.toString(),
+        },
         {
           name: 'nestedField_nested',
           type: 'nested',

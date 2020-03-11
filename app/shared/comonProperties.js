@@ -30,11 +30,13 @@ const comonProperties = (templates, documentTypes = []) => {
       }
     });
   }
+
   return properties;
 };
 
 const comonFilters = (templates, relationTypes, documentTypes = []) => {
   const result = [];
+
   comonProperties(templates, documentTypes)
     .filter(prop => prop.filter || prop.type === 'relationshipfilter')
     .forEach(property => {

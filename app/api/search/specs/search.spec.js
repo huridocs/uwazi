@@ -197,26 +197,6 @@ describe('search', () => {
       .catch(catchErrors(done));
   });
 
-  it('should convert aggregation buckets that are objects to arrays', done => {
-    result.aggregations.all = {
-      dictionaryWithGroups: {
-        buckets: {
-          a: { doc_count: 2, filtered: { doc_count: 1 } },
-          b: { doc_count: 2, filtered: { doc_count: 1 } },
-        },
-      },
-    };
-    spyOn(elastic, 'search').and.returnValue(Promise.resolve(result));
-    search.search({ searchTerm: '', geolocation: true }, 'en').then(response => {
-      const expectedBuckets = [
-        { key: 'a', doc_count: 2, filtered: { doc_count: 1 } },
-        { key: 'b', doc_count: 2, filtered: { doc_count: 1 } },
-      ];
-      expect(response.aggregations.all.dictionaryWithGroups.buckets).toEqual(expectedBuckets);
-      done();
-    });
-  });
-
   it('should match entities related somehow with other entities with a title that is the search term', async () => {
     const { rows } = await search.search({ searchTerm: 'egypt' }, 'en');
 
@@ -294,6 +274,19 @@ describe('search', () => {
         done();
       })
       .catch(catchErrors(done));
+  });
+
+  it('should return the label with the aggregations', async () => {
+    const response = await search.search(
+      { types: [ids.templateMetadata1, ids.templateMetadata2], allAggregations: true },
+      'en'
+    );
+    expect(response.aggregations.all.groupedDictionary.buckets[0].label).toBe('Egypt');
+    expect(response.aggregations.all.groupedDictionary.buckets[1].label).toBe('Egypto');
+    expect(response.aggregations.all.groupedDictionary.buckets[3].label).toBe('Europe');
+    expect(response.aggregations.all.groupedDictionary.buckets[4].label).toBe('France');
+    expect(response.aggregations.all.multiselect1.buckets[0].label).toBe('Egypt');
+    expect(response.aggregations.all.multiselect1.buckets[1].label).toBe('Egypto');
   });
 
   it('should filter by metadata, and return template aggregations based on the filter the language and the published status', done => {
@@ -446,26 +439,45 @@ describe('search', () => {
       ])
         .then(([template1, template2, both, template1Unpublished]) => {
           const template1Aggs = template1.aggregations.all.select1.buckets;
-          expect(template1Aggs.find(a => a.key === 'selectValue1').filtered.doc_count).toBe(2);
-          expect(template1Aggs.find(a => a.key === 'selectValue2').filtered.doc_count).toBe(1);
+          expect(
+            template1Aggs.find(a => a.key === '35ae6c24-9f4c-4017-9f01-2bc42ff7ad83').filtered
+              .doc_count
+          ).toBe(2);
+
+          expect(
+            template1Aggs.find(a => a.key === 'bce629bf-efc1-40dd-9af0-0542422dcbc3').filtered
+              .doc_count
+          ).toBe(1);
           expect(template1Aggs.find(a => a.key === 'missing').filtered.doc_count).toBe(0);
 
           const template2Aggs = template2.aggregations.all.select1.buckets;
-          expect(template2Aggs.find(a => a.key === 'selectValue1').filtered.doc_count).toBe(0);
-          expect(template2Aggs.find(a => a.key === 'selectValue2').filtered.doc_count).toBe(1);
+          expect(
+            template2Aggs.find(a => a.key === '35ae6c24-9f4c-4017-9f01-2bc42ff7ad83').filtered
+              .doc_count
+          ).toBe(0);
+          expect(
+            template2Aggs.find(a => a.key === 'bce629bf-efc1-40dd-9af0-0542422dcbc3').filtered
+              .doc_count
+          ).toBe(1);
           expect(template2Aggs.find(a => a.key === 'missing').filtered.doc_count).toBe(1);
 
           const bothAggs = both.aggregations.all.select1.buckets;
-          expect(bothAggs.find(a => a.key === 'selectValue1').filtered.doc_count).toBe(2);
-          expect(bothAggs.find(a => a.key === 'selectValue2').filtered.doc_count).toBe(2);
+          expect(
+            bothAggs.find(a => a.key === '35ae6c24-9f4c-4017-9f01-2bc42ff7ad83').filtered.doc_count
+          ).toBe(2);
+          expect(
+            bothAggs.find(a => a.key === 'bce629bf-efc1-40dd-9af0-0542422dcbc3').filtered.doc_count
+          ).toBe(2);
           expect(bothAggs.find(a => a.key === 'missing').filtered.doc_count).toBe(1);
 
           const template1UnpubishedAggs = template1Unpublished.aggregations.all.select1.buckets;
           expect(
-            template1UnpubishedAggs.find(a => a.key === 'selectValue1').filtered.doc_count
+            template1UnpubishedAggs.find(a => a.key === '35ae6c24-9f4c-4017-9f01-2bc42ff7ad83')
+              .filtered.doc_count
           ).toBe(0);
           expect(
-            template1UnpubishedAggs.find(a => a.key === 'selectValue2').filtered.doc_count
+            template1UnpubishedAggs.find(a => a.key === 'bce629bf-efc1-40dd-9af0-0542422dcbc3')
+              .filtered.doc_count
           ).toBe(0);
           done();
         })
@@ -489,25 +501,47 @@ describe('search', () => {
       ])
         .then(([template1, template2, both, filtered]) => {
           const template1Aggs = template1.aggregations.all.multiselect1.buckets;
-          expect(template1Aggs.find(a => a.key === 'multiValue1').filtered.doc_count).toBe(2);
-          expect(template1Aggs.find(a => a.key === 'multiValue2').filtered.doc_count).toBe(2);
+          expect(
+            template1Aggs.find(a => a.key === '35ae6c24-9f4c-4017-9f01-2bc42ff7ad83').filtered
+              .doc_count
+          ).toBe(2);
+          expect(
+            template1Aggs.find(a => a.key === 'bce629bf-efc1-40dd-9af0-0542422dcbc3').filtered
+              .doc_count
+          ).toBe(2);
 
           const template1groupedAggs = template1.aggregations.all.groupedDictionary.buckets;
           expect(template1groupedAggs.find(a => a.key === 'spainID').filtered.doc_count).toBe(2);
           expect(template1groupedAggs.find(a => a.key === 'franceID').filtered.doc_count).toBe(0);
 
           const template2Aggs = template2.aggregations.all.multiselect1.buckets;
-          expect(template2Aggs.find(a => a.key === 'multiValue1').filtered.doc_count).toBe(0);
-          expect(template2Aggs.find(a => a.key === 'multiValue2').filtered.doc_count).toBe(1);
+          expect(
+            template2Aggs.find(a => a.key === '35ae6c24-9f4c-4017-9f01-2bc42ff7ad83').filtered
+              .doc_count
+          ).toBe(0);
+          expect(
+            template2Aggs.find(a => a.key === 'bce629bf-efc1-40dd-9af0-0542422dcbc3').filtered
+              .doc_count
+          ).toBe(1);
 
           const bothAggs = both.aggregations.all.multiselect1.buckets;
-          expect(bothAggs.find(a => a.key === 'multiValue1').filtered.doc_count).toBe(2);
-          expect(bothAggs.find(a => a.key === 'multiValue2').filtered.doc_count).toBe(3);
+          expect(
+            bothAggs.find(a => a.key === '35ae6c24-9f4c-4017-9f01-2bc42ff7ad83').filtered.doc_count
+          ).toBe(2);
+          expect(
+            bothAggs.find(a => a.key === 'bce629bf-efc1-40dd-9af0-0542422dcbc3').filtered.doc_count
+          ).toBe(3);
 
           const filteredAggs = filtered.aggregations.all.multiselect1.buckets;
           const templateAggs = filtered.aggregations.all._types.buckets;
-          expect(filteredAggs.find(a => a.key === 'multiValue1').filtered.doc_count).toBe(2);
-          expect(filteredAggs.find(a => a.key === 'multiValue2').filtered.doc_count).toBe(3);
+          expect(
+            filteredAggs.find(a => a.key === '35ae6c24-9f4c-4017-9f01-2bc42ff7ad83').filtered
+              .doc_count
+          ).toBe(2);
+          expect(
+            filteredAggs.find(a => a.key === 'bce629bf-efc1-40dd-9af0-0542422dcbc3').filtered
+              .doc_count
+          ).toBe(3);
           expect(templateAggs.find(a => a.key === ids.template1).filtered.doc_count).toBe(0);
           expect(templateAggs.find(a => a.key === ids.template2).filtered.doc_count).toBe(0);
 
@@ -541,7 +575,15 @@ describe('search', () => {
         search
           .search(
             {
-              filters: { multiselect1: { values: ['multiValue1', 'multiValue2'], and: true } },
+              filters: {
+                multiselect1: {
+                  values: [
+                    '35ae6c24-9f4c-4017-9f01-2bc42ff7ad83',
+                    'bce629bf-efc1-40dd-9af0-0542422dcbc3',
+                  ],
+                  and: true,
+                },
+              },
               types: [ids.templateMetadata1, ids.templateMetadata2],
             },
             'en'
@@ -549,8 +591,14 @@ describe('search', () => {
           .then(filtered => {
             const filteredAggs = filtered.aggregations.all.multiselect1.buckets;
             const templateAggs = filtered.aggregations.all._types.buckets;
-            expect(filteredAggs.find(a => a.key === 'multiValue1').filtered.doc_count).toBe(1);
-            expect(filteredAggs.find(a => a.key === 'multiValue2').filtered.doc_count).toBe(1);
+            expect(
+              filteredAggs.find(a => a.key === '35ae6c24-9f4c-4017-9f01-2bc42ff7ad83').filtered
+                .doc_count
+            ).toBe(1);
+            expect(
+              filteredAggs.find(a => a.key === 'bce629bf-efc1-40dd-9af0-0542422dcbc3').filtered
+                .doc_count
+            ).toBe(1);
             expect(templateAggs.find(a => a.key === ids.templateMetadata1).filtered.doc_count).toBe(
               1
             );
