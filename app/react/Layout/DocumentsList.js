@@ -135,13 +135,15 @@ class DocumentsList extends Component {
                 {t('System', 'Select all documents')}
               </button>
             </div>
-            <I18NLink to={`/settings/dictionaries/cockpit/${id}`} className="btn btn-default">
-              <Icon icon="arrow-left" />
-              &nbsp;
-              <span className="btn-label">
-                {t('System', 'Back to')} <span>{`'${name}'`}</span>
-              </span>
-            </I18NLink>
+            {name && id && (
+              <I18NLink to={`/settings/dictionaries/cockpit/${id}`} className="btn btn-default">
+                <Icon icon="arrow-left" />
+                &nbsp;
+                <span className="btn-label">
+                  {t('System', 'Back to')} <span>{`'${name}'`}</span>
+                </span>
+              </I18NLink>
+            )}
           </div>
           {(() => {
             if (view !== 'graph') {
