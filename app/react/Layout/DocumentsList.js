@@ -131,7 +131,9 @@ class DocumentsList extends Component {
               storeKey={this.props.storeKey}
             />
             <div className="select-all-documents">
-              <button className="btn btn-default" onClick={this.selectAllDocuments}>{t('System', 'Select all documents')}</button>
+              <button className="btn btn-default" onClick={this.selectAllDocuments}>
+                {t('System', 'Select all documents')}
+              </button>
             </div>
             <I18NLink to={`/settings/dictionaries/cockpit/${id}`} className="btn btn-default">
               <Icon icon="arrow-left" />
