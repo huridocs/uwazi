@@ -12,7 +12,7 @@ import { RowList } from 'app/Layout/Lists';
 import Loader from 'app/components/Elements/Loader';
 import Footer from 'app/App/Footer';
 import { NeedAuthorization } from 'app/Auth';
-import { t, Translate } from 'app/I18N';
+import { I18NLink, t, Translate } from 'app/I18N';
 import { Icon } from 'UI';
 
 class DocumentsList extends Component {
@@ -77,6 +77,9 @@ class DocumentsList extends Component {
       connectionsGroups,
       LoadMoreButton,
       rowListZoomLevel,
+      location: {
+        query: { multiEditThesaurus: id, thesaurusName: name },
+      },
     } = this.props;
     let counter = (
       <span>
@@ -130,6 +133,13 @@ class DocumentsList extends Component {
             <div className="select-all-documents">
               <button className="btn btn-default" onClick={this.selectAllDocuments}>{t('System', 'Select all documents')}</button>
             </div>
+            <I18NLink to={`/settings/dictionaries/cockpit/${id}`} className="btn btn-default">
+              <Icon icon="arrow-left" />
+              &nbsp;
+              <span className="btn-label">
+                {t('System', 'Back to')} <span>{`'${name}'`}</span>
+              </span>
+            </I18NLink>
           </div>
           {(() => {
             if (view !== 'graph') {
