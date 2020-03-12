@@ -1,17 +1,17 @@
-/** @format
+/**
  * Uwazi routes that fetch Topic Classification information.
  */
 import { needsAuthorization } from 'api/auth';
-import { validation } from 'api/utils';
-import { Application, Request, Response, NextFunction } from 'express';
-import Joi from 'joi';
-
+import thesauri from 'api/thesauri';
 import {
-  getTrainStateForThesaurus,
   getModelForThesaurus,
+  getTrainStateForThesaurus,
   startTraining,
 } from 'api/topicclassification/api';
-import thesauri from 'api/thesauri';
+import { validation } from 'api/utils';
+import { Application, Request, Response } from 'express';
+import Joi from 'joi';
+import { TaskStatus } from '../../shared/tasks/tasks';
 
 // Register tasks.
 require('./sync');
@@ -25,26 +25,25 @@ export default (app: Application) => {
     needsAuthorization(),
     validation.validateRequest(Joi.object().keys({ thesaurus: Joi.string().required() }), 'query'),
 
-    async (req: Request, res: Response, next: NextFunction) => {
+    async (req: Request, res: Response) => {
       try {
         const model = await getModelForThesaurus(req.query!.thesaurus);
         return res.json(model);
       } catch (e) {
-        return next(e);
+        return res.json({});
       }
     }
   );
   app.get(
     `${tcModelPrefix}/train`,
-    needsAuthorization(),
     validation.validateRequest(Joi.object().keys({ thesaurus: Joi.string().required() }), 'query'),
 
-    async (req: Request, res: Response, next: NextFunction) => {
+    async (req: Request, res: Response) => {
       try {
         const status = await getTrainStateForThesaurus(req.query!.thesaurus);
         return res.json(status);
       } catch (e) {
-        return next(e);
+        return res.json({ state: 'undefined', result: {} } as TaskStatus);
       }
     }
   );
@@ -54,16 +53,16 @@ export default (app: Application) => {
     needsAuthorization(),
     validation.validateRequest(Joi.object().keys({ thesaurusId: Joi.string().required() })),
 
-    async (req: Request, res: Response, next: NextFunction) => {
+    async (req: Request, res: Response) => {
       try {
         const thes = await thesauri.getById(req.body!.thesaurusId);
         if (!thes) {
-          return res.sendStatus(404);
+          return res.json({ state: 'undefined', result: {} } as TaskStatus);
         }
         const status = await startTraining(thes);
         return res.json(status);
       } catch (e) {
-        return next(e);
+        return res.json({ state: 'undefined', result: {} } as TaskStatus);
       }
     }
   );

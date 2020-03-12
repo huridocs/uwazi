@@ -10,7 +10,11 @@ describe('LibraryFilters', () => {
   let props;
 
   beforeEach(() => {
-    props = { open: true };
+    props = {
+      open: true,
+      resetFilters: _storeKey => {},
+      toggleIncludeUnpublished: _storeKey => {},
+    };
   });
 
   const render = () => {

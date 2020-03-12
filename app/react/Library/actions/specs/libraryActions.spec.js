@@ -425,11 +425,11 @@ describe('libraryActions', () => {
 
     describe('selectDocument', () => {
       describe('when the doc has not semantic search but the active sidepanel tab is semantic search', () => {
-        it('should reset the active sidepanel tab', () => {
+        it('should reset the active sidepanel tab', async () => {
           const doc = { sharedId: 'doc' };
 
           const store = mockStore({ library: { sidepanel: { tab: 'semantic-search-results' } } });
-          store.dispatch(actions.selectDocument(doc));
+          await store.dispatch(actions.selectDocument(doc));
           expect(store.getActions()).toMatchSnapshot();
         });
       });

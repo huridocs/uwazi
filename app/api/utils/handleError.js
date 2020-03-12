@@ -68,9 +68,7 @@ export default (_error, { req = {}, uncaught = false } = {}) => {
 
   if (result.code === 500) {
     errorLog.error(result.prettyMessage);
-  }
-
-  if (result.code === 400) {
+  } else if (result.code === 400) {
     debugLog.debug(result.prettyMessage);
   }
 

@@ -59,8 +59,9 @@ async function getAndPopulateLabelCounts(
   return flattenLabelCounts(sanitizedSuggestionsTBPublished, assocProp?.name ?? '');
 }
 
-export function updateTaskState() {
+export function updateTaskState(_serverRequestParams?: RequestParams) {
   return async (dispatch: Dispatch<IStore>, getState: () => IStore) => {
+    const requestParams = _serverRequestParams ?? new RequestParams();
     const state = getState();
     const thesaurus = state.thesauri.thesaurus.toJS();
     const templates = state.templates.toJS();
@@ -73,9 +74,9 @@ export function updateTaskState() {
       docsWithSuggestionsForReview,
       docsWithLabels,
     ] = await Promise.all([
-      api.get('tasks', new RequestParams({ name: 'TopicClassificationSync' })),
-      ThesauriAPI.getModelTrainStatus(new RequestParams({ thesaurus: thesaurus.name })),
-      ThesauriAPI.getModelStatus(new RequestParams({ thesaurus: thesaurus.name })),
+      api.get('tasks', requestParams.set({ name: 'TopicClassificationSync' })),
+      ThesauriAPI.getModelTrainStatus(requestParams.set({ thesaurus: thesaurus.name })),
+      ThesauriAPI.getModelStatus(requestParams.set({ thesaurus: thesaurus.name })),
       getAndPopulateLabelCounts(templates, getReadyToPublishSuggestionsQuery, assocProp),
       getAndPopulateLabelCounts(templates, getReadyToReviewSuggestionsQuery, assocProp),
       getAndPopulateLabelCounts(templates, getLabelsQuery, assocProp, false),

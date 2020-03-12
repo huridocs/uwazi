@@ -79,9 +79,15 @@ export class LibraryFilters extends Component {
   }
 }
 
+LibraryFilters.defaultProps = {
+  open: false,
+  unpublished: false,
+  storeKey: 'library',
+};
+
 LibraryFilters.propTypes = {
-  resetFilters: PropTypes.func,
-  toggleIncludeUnpublished: PropTypes.func,
+  resetFilters: PropTypes.func.isRequired,
+  toggleIncludeUnpublished: PropTypes.func.isRequired,
   open: PropTypes.bool,
   unpublished: PropTypes.bool,
   storeKey: PropTypes.string,
@@ -92,7 +98,7 @@ export function mapStateToProps(state, props) {
     open:
       state[props.storeKey].ui.get('filtersPanel') !== false &&
       !state[props.storeKey].ui.get('selectedDocuments').size > 0,
-    unpublished: state[props.storeKey].search.unpublished,
+    unpublished: (state[props.storeKey].search || {}).unpublished,
   };
 }
 

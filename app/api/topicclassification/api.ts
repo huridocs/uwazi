@@ -58,12 +58,8 @@ export async function getModel(model: string): Promise<ClassifierModelSchema> {
   }
   const tcUrl = new URL(MODEL_GET_ENDPOINT, tcServer);
   tcUrl.searchParams.set('model', model);
-  try {
-    const response = await request.get(tcUrl.href);
-    return response.json as ClassifierModelSchema;
-  } catch (err) {
-    throw new Error(`Error from topic-classification server: ${err.toString()}`);
-  }
+  const response = await request.get(tcUrl.href);
+  return response.json as ClassifierModelSchema;
 }
 
 export async function getModelForThesaurus(
@@ -94,25 +90,21 @@ export async function getTaskState(task: string): Promise<TaskStatus> {
   if (!(await IsTopicClassificationReachable())) {
     return { state: 'undefined', result: {} };
   }
-  try {
-    const response = await request.get(tcUrl.href);
-    if (response.status === 404) {
-      return { state: 'undefined', result: {} };
-    }
-    if (response.status !== 200) {
-      throw new Error(response.toString());
-    }
-    const pyTask = response.json;
-    return {
-      state: pyTask.state,
-      startTime: pyTask.start_time,
-      endTime: pyTask.end_time,
-      message: pyTask.status,
-      result: {},
-    };
-  } catch (err) {
-    throw new Error(`Error from topic-classification server: ${err.toString()}`);
+  const response = await request.get(tcUrl.href);
+  if (response.status === 404) {
+    return { state: 'undefined', result: {} };
   }
+  if (response.status !== 200) {
+    throw new Error(response.toString());
+  }
+  const pyTask = response.json;
+  return {
+    state: pyTask.state,
+    startTime: pyTask.start_time,
+    endTime: pyTask.end_time,
+    message: pyTask.status,
+    result: {},
+  };
 }
 
 export async function getTrainStateForThesaurus(thesaurusName: string = '') {
@@ -141,14 +133,14 @@ export async function startTraining(thesaurus: ThesaurusSchema) {
   const trainingData = await search.search(searchQuery, 'en', 'internal');
   const testSamples = Math.min(
     trainingData.rows.length / 2,
-    flattenValues.length * 20 + trainingData.rows.length * 0.05
+    flattenValues.length * 15 + trainingData.rows.length * 0.05
   );
   const reqData = {
     provider: 'TrainModel',
     name: `train-${buildFullModelName(thesaurus.name)}`,
     model: buildFullModelName(thesaurus.name),
     labels: flattenValues.map(v => v.label),
-    num_train_steps: 1000,
+    num_train_steps: 3000,
     train_ratio: 1.0 - testSamples / trainingData.rows.length,
     samples: await trainingData.rows.reduce(
       async (res: Promise<{ seq: string; training_labels: string[] }[]>, e: EntitySchema) => {

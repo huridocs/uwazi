@@ -65,7 +65,7 @@ export function selectedDocumentsChanged() {
   return async (dispatch: Dispatch<IStore>, getState: () => IStore) => {
     const model = 'library.sidepanel.multipleEdit';
     const state = getState();
-    if (!state.library.sidepanel.multiEditOpts.get('thesaurus')) {
+    if (!state.library?.sidepanel?.multiEditOpts?.get('thesaurus')) {
       return;
     }
     dispatch(formActions.reset(model));
@@ -95,7 +95,7 @@ export function selectedDocumentsChanged() {
 export function maybeSaveMultiEdit() {
   return async (dispatch: Dispatch<IStore>, getState: () => IStore) => {
     const state = getState();
-    if (!state.library.sidepanel.multiEditOpts.get('autoSave')) {
+    if (!state.library?.sidepanel?.multiEditOpts?.get('autoSave')) {
       return;
     }
     const current = state.library.sidepanel.multipleEdit;

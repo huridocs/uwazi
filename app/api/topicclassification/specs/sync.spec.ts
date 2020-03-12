@@ -103,7 +103,7 @@ describe('templates utils', () => {
       await t.wait();
       expect(t.status).toEqual(
         expect.objectContaining({
-          result: { index: 1, seen: 1 },
+          result: { index: 1, seen: 1, total: 1 },
           state: 'done',
         })
       );

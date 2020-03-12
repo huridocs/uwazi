@@ -99,12 +99,14 @@ describe('ThesaurisList', () => {
       const renderedContexts = component.find('table');
       expect(renderedContexts.length).toBe(1);
       expect(renderedContexts.find({ scope: 'row' }).length).toBe(2);
-      expect(renderedContexts.find('td').find('.vertical-line').length).toBe(1);
+      expect(renderedContexts.find('td').find('.thesaurus-suggestion-count').length).toBe(1);
+      expect(renderedContexts.find('td').find('.vertical-line').length).toBe(2);
       expect(
         renderedContexts
           .find('td')
           .find('.vertical-line')
-          .containsMatchingElement(<span>View suggestions</span>)
+          .at(0)
+          .containsMatchingElement(<span>Configure suggestions</span>)
       ).toBeTruthy();
       expect(
         renderedContexts
