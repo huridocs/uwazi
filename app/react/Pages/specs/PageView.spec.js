@@ -1,6 +1,5 @@
 import RouteHandler from 'app/App/RouteHandler';
 import { actions } from 'app/BasicReducer';
-import { unselectAllDocuments } from 'app/Library/actions/libraryActions';
 import ViewMetadataPanel from 'app/Library/components/ViewMetadataPanel';
 import SelectMultiplePanelContainer from 'app/Library/containers/SelectMultiplePanelContainer';
 import { markdownDatasets } from 'app/Markdown';
