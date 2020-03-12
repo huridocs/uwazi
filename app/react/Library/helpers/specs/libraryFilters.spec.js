@@ -60,7 +60,7 @@ describe('library helper', () => {
     it('should set default searchTerm to blank', () => {
       const query = {};
 
-      const state = libraryHelper.URLQueryToState(query, templates, thesauris);
+      const state = libraryHelper.URLQueryToState(query, templates);
       expect(state.search.searchTerm).toBe('');
     });
 
@@ -70,7 +70,7 @@ describe('library helper', () => {
         types: [],
       };
 
-      const state = libraryHelper.URLQueryToState(query, templates, thesauris);
+      const state = libraryHelper.URLQueryToState(query, templates);
       expect(state.search.filters).toEqual({});
       expect(state.search.order).toEqual(prioritySortingCriteria.get().order);
       expect(state.search.sort).toEqual(prioritySortingCriteria.get().sort);
@@ -85,7 +85,7 @@ describe('library helper', () => {
         filters: { country: 'countryValue', rich: 'search' },
       };
 
-      const state = libraryHelper.URLQueryToState(query, templates, thesauris);
+      const state = libraryHelper.URLQueryToState(query, templates);
       expect(state.properties.length).toBe(1);
       expect(state.search.filters.country).toBe('countryValue');
       expect(state.search.filters.rich).toBe('search');
@@ -101,7 +101,7 @@ describe('library helper', () => {
         filters: {},
       };
 
-      const state = libraryHelper.URLQueryToState(query, templates, thesauris);
+      const state = libraryHelper.URLQueryToState(query, templates);
       expect(state.search.filters.country).toEqual({});
       expect(state.search.filters.language).toBe('');
       expect(state.search.filters.rich).toBe('');

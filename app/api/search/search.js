@@ -516,7 +516,7 @@ const instanceSearch = elasticIndex => ({
       let properties =
         !query.types || !query.types.length
           ? propertiesHelper.defaultFilters(templates)
-          : propertiesHelper.comonFilters(templates, relationTypes, filteringTypes);
+          : propertiesHelper.comonFilters(templates, filteringTypes);
 
       if (query.sort) {
         const sortingProp = allUniqueProps.find(p => `metadata.${p.name}` === query.sort);

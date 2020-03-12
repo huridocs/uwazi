@@ -42,7 +42,6 @@ export default function requestState(request, globalResources) {
       const filterState = libraryHelpers.URLQueryToState(
         documentsRequest.data,
         globalResources.templates.toJS(),
-        globalResources.thesauris.toJS(),
         globalResources.relationTypes.toJS()
       );
       const state = {

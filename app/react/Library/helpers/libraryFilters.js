@@ -20,16 +20,12 @@ export function populateOptions(filters, thesauris) {
       });
     }
 
-    if (!property.content && property.type === 'relationshipfilter') {
-      property.filters = populateOptions(property.filters, thesauris);
-    }
-
     return property;
   });
 }
 
-function URLQueryToState(query, templates, thesauris, relationTypes) {
-  let properties = comonProperties.comonFilters(templates, relationTypes, query.types);
+function URLQueryToState(query, templates) {
+  let properties = comonProperties.comonFilters(templates, query.types);
 
   if (!query.types || !query.types.length) {
     properties = comonProperties.defaultFilters(templates);
@@ -42,7 +38,7 @@ function URLQueryToState(query, templates, thesauris, relationTypes) {
     order = prioritySortingCriteria.get().order,
     userSelectedSorting,
   } = query;
-  properties = populateOptions(properties, thesauris).map(property => {
+  properties = properties.map(property => {
     let defaultValue = {};
 
     if (property.type === 'text' || property.type === 'markdown') {
@@ -55,41 +51,18 @@ function URLQueryToState(query, templates, thesauris, relationTypes) {
   return { properties, search: { searchTerm, filters, order, sort, userSelectedSorting } };
 }
 
-const getOptionCount = (aggregations, optionId, name) => {
-  let aggregation;
-  if (aggregations.all && aggregations.all[name]) {
-    aggregation = aggregations.all[name].buckets.find(
-      bucket => bucket.key.toString() === optionId.toString()
-    );
-  }
-  return aggregation ? aggregation.filtered.doc_count : 0;
-};
-
 export function parseWithAggregations(filters, aggregations, showNoValue = true) {
   return filters.map(_property => {
     const property = Object.assign({}, _property);
-    if (property.options && property.options.length) {
-      if (showNoValue) {
-        property.options.push({ id: 'missing', label: 'No Value', noValueKey: true });
-      }
-      property.options = property.options
-        .map(_option => {
-          const option = Object.assign(_option, {
-            results: getOptionCount(aggregations, _option.id, property.name),
-          });
-          if (option.values) {
-            option.values = option.values.map(_opt => {
-              _opt.results = getOptionCount(aggregations, _opt.id, property.name);
-              return _opt;
-            });
-          }
-          return option;
+    const propertyAggregations = aggregations.all[property.name];
+    if (propertyAggregations && propertyAggregations.buckets) {
+      property.options = propertyAggregations.buckets
+        .map(bucket => {
+          return { value: bucket.key, label: bucket.label, results: bucket.filtered.doc_count };
         })
-        .filter(opt => opt.results);
+        .filter(opt => opt.results || (!showNoValue && opt.value === 'missing'));
     }
-    if (property.filters) {
-      property.filters = parseWithAggregations(property.filters, aggregations, showNoValue);
-    }
+
     return property;
   });
 }

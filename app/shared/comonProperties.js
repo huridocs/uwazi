@@ -34,22 +34,8 @@ const comonProperties = (templates, documentTypes = []) => {
   return properties;
 };
 
-const comonFilters = (templates, relationTypes, documentTypes = []) => {
-  const result = [];
-
-  comonProperties(templates, documentTypes)
-    .filter(prop => prop.filter || prop.type === 'relationshipfilter')
-    .forEach(property => {
-      if (property.type === 'relationshipfilter') {
-        const relationType = relationTypes.find(
-          template => template._id.toString() === property.relationType.toString()
-        );
-        property.filters = relationType.properties.filter(prop => prop.filter);
-      }
-      result.push(property);
-    });
-
-  return result;
+const comonFilters = (templates, documentTypes = []) => {
+  return comonProperties(templates, documentTypes).filter(prop => prop.filter);
 };
 
 const defaultFilters = templates =>
@@ -63,16 +49,14 @@ const defaultFilters = templates =>
   }, []);
 
 const allUniqueProperties = templates =>
-  templates
-    .reduce((filters, template) => {
-      template.properties.forEach(prop => {
-        if (!filters.find(_prop => sameProperty(prop, _prop))) {
-          filters.push(prop);
-        }
-      });
-      return filters;
-    }, [])
-    .filter(p => p.type !== 'relationshipfilter');
+  templates.reduce((filters, template) => {
+    template.properties.forEach(prop => {
+      if (!filters.find(_prop => sameProperty(prop, _prop))) {
+        filters.push(prop);
+      }
+    });
+    return filters;
+  }, []);
 
 const textFields = templates =>
   allUniqueProperties(templates).filter(

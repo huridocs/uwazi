@@ -65,7 +65,7 @@ export const FiltersFromProperties = ({
         filter = (
           <SelectFilter
             {...commonProps}
-            options={translatedOptions(property)}
+            options={property.options}
             prefix={property.name}
             showBoolSwitch={property.type === 'multiselect' || property.type === 'relationship'}
             sort={property.type === 'relationship'}
