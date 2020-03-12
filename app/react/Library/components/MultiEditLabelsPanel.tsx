@@ -27,7 +27,7 @@ import {
 
 const defaultProps = {
   formKey: 'library.sidepanel.multipleEdit',
-  labelledDocs: 240,
+  labelledDocs: 0,
   requiredLabels: 240,
   multipleEdit: {} as MultiEditState,
   multiEditThesaurus: undefined as IImmutable<ThesaurusSchema> | undefined,
@@ -180,22 +180,11 @@ export class MultiEditLabelsPanel extends Component<MultiEditLabelsPanelProps> {
               Labelled documents: {labelledDocs} / {requiredLabels}
             </b>
           </div>
-          <div>{this.renderNoticeButton()}</div>
+          {labelledDocs >= requiredLabels && (
+            <div>Return to the thesaurus page to start learning.</div>
+          )}
         </div>
       </Notice>
-    );
-  }
-
-  renderNoticeButton() {
-    const { labelledDocs, requiredLabels } = this.props;
-    const showLabelled = true;
-    return labelledDocs >= requiredLabels ? (
-      <button className="btn btn-primary">{t('System', 'Start learning')}</button>
-    ) : (
-      <button type="button" className={`btn btn-default btn-toggle-${showLabelled ? 'on' : 'off'}`}>
-        <Icon icon={showLabelled ? 'toggle-on' : 'toggle-off'} />
-        <span className="btn-label">{t('System', 'Show only unlabelled documents')}</span>
-      </button>
     );
   }
 
