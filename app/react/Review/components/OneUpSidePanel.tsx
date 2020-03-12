@@ -6,6 +6,7 @@ import ShowIf from 'app/App/ShowIf';
 import { ConnectionsGroups } from 'app/ConnectionsList';
 import { connectionsChanged, deleteConnection } from 'app/ConnectionsList/actions/actions';
 import { showTab } from 'app/Entities/actions/uiActions';
+import { Notice } from 'app/Thesauri/Notice';
 import { t } from 'app/I18N';
 import { IStore, OneUpState } from 'app/istore';
 import SidePanel from 'app/Layout/SidePanel';

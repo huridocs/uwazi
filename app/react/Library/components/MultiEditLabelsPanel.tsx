@@ -1,4 +1,5 @@
 import { t } from 'app/I18N';
+import { Notice } from 'app/Thesauri/Notice';
 import { IStore, MultiEditOpts, MultiEditState } from 'app/istore';
 import SidePanel from 'app/Layout/SidePanel';
 import { unselectAllDocuments } from 'app/Library/actions/libraryActions';
@@ -26,6 +27,8 @@ import {
 
 const defaultProps = {
   formKey: 'library.sidepanel.multipleEdit',
+  labelledDocs: 240,
+  requiredLabels: 240,
   multipleEdit: {} as MultiEditState,
   multiEditThesaurus: undefined as IImmutable<ThesaurusSchema> | undefined,
   opts: {} as MultiEditOpts,
@@ -160,8 +163,76 @@ export class MultiEditLabelsPanel extends Component<MultiEditLabelsPanelProps> {
     );
   }
 
+  renderNotice() {
+    const { labelledDocs, requiredLabels } = this.props;
+    const bodyText =
+      labelledDocs >= requiredLabels
+        ? 'You have labelled enough documents, Uwazi is ready to learn and label documents faster.'
+        : `Make the sample set of documents for each topic diverse and representative. For example, use
+        various methods to find sample documents and don't just search for the term
+        "education" to find documents for the topic "Education"`;
+    return (
+      <Notice title="Label your collection">
+        <div>
+          <div>{bodyText}</div>
+          <div>
+            <b>
+              Labelled documents: {labelledDocs} / {requiredLabels}
+            </b>
+          </div>
+          <div>{this.renderNoticeButton()}</div>
+        </div>
+      </Notice>
+    );
+  }
+
+  renderNoticeButton() {
+    const { labelledDocs, requiredLabels } = this.props;
+    const showLabelled = true;
+    return labelledDocs >= requiredLabels ? (
+      <button className="btn btn-primary">{t('System', 'Start learning')}</button>
+    ) : (
+      <button type="button" className={`btn btn-default btn-toggle-${showLabelled ? 'on' : 'off'}`}>
+        <Icon icon={showLabelled ? 'toggle-on' : 'toggle-off'} />
+        <span className="btn-label">{t('System', 'Show only unlabelled documents')}</span>
+      </button>
+    );
+  }
+
+  renderSidePanelBody() {
+    const { multiEditThesaurus, multipleEdit } = this.props;
+    let content;
+    if (!multiEditThesaurus) {
+      content = (
+        <label className="errormsg">
+          {
+            "Oops! We couldn't find the thesaurus you're trying to edit. Try navigating back to this page through Settings."
+          }
+        </label>
+      );
+    } else if (!Object.keys(multipleEdit).length) {
+      content = (
+        <label className="errormsg">
+          Nothing to see here! The selected documents are not using the selected thesaurus&nbsp;
+          <b>{multiEditThesaurus.get('name')}</b>. Try selecting other documents.
+        </label>
+      );
+    } else {
+      content = (
+        <div>
+          {this.renderNotice()}
+          {Object.keys(multipleEdit)
+            .sort()
+            .map(p => this.renderProp(p))}
+        </div>
+      );
+    }
+
+    return content;
+  }
+
   render() {
-    const { multiEditThesaurus, multipleEdit, selectedDocuments } = this.props;
+    const { selectedDocuments } = this.props;
     const canBePublished = this.props.selectedDocuments.reduce((previousCan, entity) => {
       const isEntity = !entity!.get('file');
       return (
@@ -188,26 +259,7 @@ export class MultiEditLabelsPanel extends Component<MultiEditLabelsPanelProps> {
             <Icon icon="times" />
           </button>
         </div>
-        <div className="sidepanel-body">
-          {!multiEditThesaurus && (
-            <label className="errormsg">
-              {
-                "Oops! We couldn't find the thesaurus you're trying to edit. Try navigating back to this page through Settings."
-              }
-            </label>
-          )}
-          {multiEditThesaurus && !Object.keys(multipleEdit).length && (
-            <label className="errormsg">
-              Nothing to see here! The selected documents are not using the selected thesaurus&nbsp;
-              <b>{multiEditThesaurus.get('name')}</b>. Try selecting other documents.
-            </label>
-          )}
-          {multiEditThesaurus &&
-            Object.keys(multipleEdit).length > 0 &&
-            Object.keys(multipleEdit)
-              .sort()
-              .map(p => this.renderProp(p))}
-        </div>
+        <div className="sidepanel-body">{this.renderSidePanelBody()}</div>
         <div className="sidepanel-footer">{this.renderButtons(canBePublished)}</div>
       </SidePanel>
     );
