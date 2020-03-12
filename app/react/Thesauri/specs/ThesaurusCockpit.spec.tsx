@@ -1,9 +1,10 @@
 /* eslint-disable max-lines */
 import RouteHandler from 'app/App/RouteHandler';
 import { SuggestInfo } from 'app/istore';
-import api from 'app/Search/SearchAPI';
+// import SearchAPI from 'app/Search/SearchAPI';
 import TemplatesAPI from 'app/Templates/TemplatesAPI';
 import ThesauriAPI from 'app/Thesauri/ThesauriAPI';
+// import api from 'app/utils/api';
 import { RequestParams } from 'app/utils/RequestParams';
 import { shallow, ShallowWrapper } from 'enzyme';
 import React from 'react';
@@ -134,6 +135,7 @@ const flattenedSuggestions: LabelCountSchema = {
     },
   },
 };
+const assocProperty = templates[0].properties![0];
 
 describe('ThesaurusCockpit', () => {
   describe('render', () => {
@@ -145,21 +147,14 @@ describe('ThesaurusCockpit', () => {
     beforeEach(() => {
       props = {
         suggestInfo: {
-          property: {
-            id: 'ID1',
-            _id: '_ID1',
-            content: 'content1',
-            label: 'ThesaurusName',
-            name: 'thesaurus_name',
-            type: 'multiselect',
-          },
+          property: assocProperty,
           model,
           docsWithLabels: flattenedSuggestions,
           docsWithSuggestionsForPublish: flattenedSuggestions,
           docsWithSuggestionsForReview: flattenedSuggestions,
         },
         thesaurus: thesauri[0],
-        taskState: {},
+        taskState: { SyncState: { state: 'running', result: {}, message: 'Updating suggestions' } },
         updateTaskState: jasmine.createSpy('updateTaskState'),
         startTraining: jasmine.createSpy('startTraining'),
         toggleEnableClassification: jasmine.createSpy('toggleEnableClassification'),
@@ -189,8 +184,8 @@ describe('ThesaurusCockpit', () => {
       render();
       expect(component.find('.cockpit').length).toBe(1);
       expect(component.find({ scope: 'row' }).length).toBe(3);
-      /* We expect 2 data cells -- suggestion counts and a review button */
-      expect(component.find('td').children().length).toBe(2);
+      expect(component.find({ title: 'sample-count' }).length).toBe(3);
+      expect(component.find({ title: 'suggestions-count' }).length).toBe(3);
       expect(component.find({ title: 'publish-button' }).length).toBe(1);
       expect(component.find({ title: 'review-button-title' }).length).toBe(1);
       expect(component.find({ title: 'suggestions-count' }).someWhere(n => n.text() === '4')).toBe(
@@ -212,8 +207,7 @@ describe('ThesaurusCockpit', () => {
       };
       component = shallow(<ThesaurusCockpitBase {...props} />, { context });
       expect(component.find({ scope: 'row' }).length).toBe(3);
-      // We don't expect a 'to be reviewed' count, nor a 'suggestions button'
-      expect(component.find('td').children().length).toBe(0);
+      expect(component.find({ title: 'review-button' }).children().length).toBe(0);
     });
 
     it('should not render the publish button when there are < 1 suggestions', () => {
@@ -230,24 +224,24 @@ describe('ThesaurusCockpit', () => {
       };
       component = shallow(<ThesaurusCockpitBase {...props} />, { context });
       expect(component.find({ title: 'publish-button' }).length).toBe(0);
-      expect(component.find('td').children().length).toBe(2);
     });
   });
 
   describe('requestState', () => {
     beforeEach(() => {
       spyOn(ThesauriAPI, 'getThesauri').and.returnValue(Promise.resolve(thesauri));
-      spyOn(ThesauriAPI, 'getModelStatus').and.returnValue(Promise.resolve([model]));
       spyOn(TemplatesAPI, 'get').and.returnValue(Promise.resolve(templates));
-      spyOn(api, 'search').and.returnValue(Promise.resolve(rawSuggestionResult));
+      // spyOn(SearchAPI, 'search').and.returnValue(Promise.resolve(rawSuggestionResult));
     });
 
     it('should get the thesaurus, classification model and suggestion counts as react actions', async () => {
       const actions = await ThesaurusCockpitBase.requestState(new RequestParams());
       expect(ThesauriAPI.getThesauri).toHaveBeenCalled();
       expect(TemplatesAPI.get).toHaveBeenCalled();
-      expect(ThesauriAPI.getModelStatus).toHaveBeenCalled();
-      expect(api.search).toHaveBeenCalledTimes(4);
+      // expect(api.get).toHaveBeenCalled();
+      // expect(ThesauriAPI.getModelTrainStatus).toHaveBeenCalled();
+      // expect(ThesauriAPI.getModelStatus).toHaveBeenCalled();
+      // expect(SearchAPI.search).toHaveBeenCalledTimes(4);
 
       expect(actions.length).toBe(4);
       actions.forEach(action => {
@@ -258,10 +252,11 @@ describe('ThesaurusCockpit', () => {
               break;
             case 'thesauri.suggestInfo/SET':
               expect(action.value).toEqual({
-                model,
-                docsWithLabels: flattenedSuggestions,
-                docsWithSuggestionsForPublish: flattenedSuggestions,
-                docsWithSuggestionsForReview: flattenedSuggestions,
+                property: assocProperty,
+                // model,
+                // docsWithLabels: flattenedSuggestions,
+                // docsWithSuggestionsForPublish: flattenedSuggestions,
+                // docsWithSuggestionsForReview: flattenedSuggestions,
               } as SuggestInfo);
               break;
             default:

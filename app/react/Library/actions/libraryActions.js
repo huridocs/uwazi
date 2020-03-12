@@ -21,15 +21,15 @@ export function initializeFiltersForm(values = {}) {
 }
 
 export function selectDocument(_doc) {
-  return (dispatch, getState) => {
+  return async (dispatch, getState) => {
     const doc = _doc.toJS ? _doc.toJS() : _doc;
     const showingSemanticSearch = getState().library.sidepanel.tab === 'semantic-search-results';
     if (showingSemanticSearch && !doc.semanticSearch) {
       dispatch(actions.set('library.sidepanel.tab', ''));
     }
-    dispatch(maybeSaveMultiEdit());
+    await dispatch(maybeSaveMultiEdit());
     dispatch({ type: types.SELECT_DOCUMENT, doc });
-    dispatch(selectedDocumentsChanged());
+    await dispatch(selectedDocumentsChanged());
   };
 }
 
@@ -42,34 +42,34 @@ export function getAndSelectDocument(sharedId) {
 }
 
 export function selectDocuments(docs) {
-  return dispatch => {
-    dispatch(maybeSaveMultiEdit());
+  return async dispatch => {
+    await dispatch(maybeSaveMultiEdit());
     dispatch({ type: types.SELECT_DOCUMENTS, docs });
-    dispatch(selectedDocumentsChanged());
+    await dispatch(selectedDocumentsChanged());
   };
 }
 
 export function unselectDocument(docId) {
-  return dispatch => {
-    dispatch(maybeSaveMultiEdit());
+  return async dispatch => {
+    await dispatch(maybeSaveMultiEdit());
     dispatch({ type: types.UNSELECT_DOCUMENT, docId });
-    dispatch(selectedDocumentsChanged());
+    await dispatch(selectedDocumentsChanged());
   };
 }
 
 export function selectSingleDocument(doc) {
-  return dispatch => {
-    dispatch(maybeSaveMultiEdit());
+  return async dispatch => {
+    await dispatch(maybeSaveMultiEdit());
     dispatch({ type: types.SELECT_SINGLE_DOCUMENT, doc });
-    dispatch(selectedDocumentsChanged());
+    await dispatch(selectedDocumentsChanged());
   };
 }
 
 export function unselectAllDocuments() {
-  return dispatch => {
-    dispatch(maybeSaveMultiEdit());
+  return async dispatch => {
+    await dispatch(maybeSaveMultiEdit());
     dispatch({ type: types.UNSELECT_ALL_DOCUMENTS });
-    dispatch(selectedDocumentsChanged());
+    await dispatch(selectedDocumentsChanged());
   };
 }
 
@@ -260,14 +260,14 @@ export function searchSnippets(searchTerm, sharedId, storeKey) {
 }
 
 export function saveDocument(doc, formKey) {
-  return dispatch =>
-    documentsApi.save(new RequestParams(doc)).then(updatedDoc => {
-      dispatch(notificationActions.notify('Document updated', 'success'));
-      dispatch(formActions.reset(formKey));
-      dispatch(updateEntity(updatedDoc));
-      dispatch(actions.updateIn('library.markers', ['rows'], updatedDoc));
-      dispatch(selectSingleDocument(updatedDoc));
-    });
+  return async dispatch => {
+    const updatedDoc = await documentsApi.save(new RequestParams(doc));
+    dispatch(notificationActions.notify('Document updated', 'success'));
+    dispatch(formActions.reset(formKey));
+    dispatch(updateEntity(updatedDoc));
+    dispatch(actions.updateIn('library.markers', ['rows'], updatedDoc));
+    await dispatch(selectSingleDocument(updatedDoc));
+  };
 }
 
 export function multipleUpdate(entities, values) {
@@ -280,21 +280,21 @@ export function multipleUpdate(entities, values) {
 }
 
 export function saveEntity(entity, formModel) {
-  return dispatch =>
-    entitiesAPI.save(new RequestParams(entity)).then(updatedDoc => {
-      dispatch(formActions.reset(formModel));
-      dispatch(unselectAllDocuments());
-      if (entity._id) {
-        dispatch(notificationActions.notify('Entity updated', 'success'));
-        dispatch(updateEntity(updatedDoc));
-        dispatch(actions.updateIn('library.markers', ['rows'], updatedDoc));
-      } else {
-        dispatch(notificationActions.notify('Entity created', 'success'));
-        dispatch(elementCreated(updatedDoc));
-      }
+  return async dispatch => {
+    const updatedDoc = await entitiesAPI.save(new RequestParams(entity));
+    dispatch(formActions.reset(formModel));
+    await dispatch(unselectAllDocuments());
+    if (entity._id) {
+      dispatch(notificationActions.notify('Entity updated', 'success'));
+      dispatch(updateEntity(updatedDoc));
+      dispatch(actions.updateIn('library.markers', ['rows'], updatedDoc));
+    } else {
+      dispatch(notificationActions.notify('Entity created', 'success'));
+      dispatch(elementCreated(updatedDoc));
+    }
 
-      dispatch(selectSingleDocument(updatedDoc));
-    });
+    await dispatch(selectSingleDocument(updatedDoc));
+  };
 }
 
 export function removeDocument(doc) {
@@ -306,21 +306,21 @@ export function removeDocuments(docs) {
 }
 
 export function deleteDocument(doc) {
-  return dispatch =>
-    documentsApi.delete(new RequestParams({ sharedId: doc.sharedId })).then(() => {
-      dispatch(notificationActions.notify('Document deleted', 'success'));
-      dispatch(unselectAllDocuments());
-      dispatch(removeDocument(doc));
-    });
+  return async dispatch => {
+    await documentsApi.delete(new RequestParams({ sharedId: doc.sharedId }));
+    dispatch(notificationActions.notify('Document deleted', 'success'));
+    await dispatch(unselectAllDocuments());
+    dispatch(removeDocument(doc));
+  };
 }
 
 export function deleteEntity(entity) {
-  return dispatch =>
-    entitiesAPI.delete(entity).then(() => {
-      dispatch(notificationActions.notify('Entity deleted', 'success'));
-      dispatch(unselectDocument(entity._id));
-      dispatch(removeDocument(entity));
-    });
+  return async dispatch => {
+    await entitiesAPI.delete(entity);
+    dispatch(notificationActions.notify('Entity deleted', 'success'));
+    await dispatch(unselectDocument(entity._id));
+    dispatch(removeDocument(entity));
+  };
 }
 
 export function loadMoreDocuments(storeKey, amount) {

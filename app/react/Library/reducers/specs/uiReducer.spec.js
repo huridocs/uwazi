@@ -117,20 +117,19 @@ describe('uiReducer', () => {
 
   describe('unselectDocument', () => {
     it('should set selected document', () => {
-      const newState = uiReducer(
-        Immutable.fromJS({ selectedDocuments: [{ _id: 'document' }] }),
-        actions.unselectDocument('document')
-      );
+      const newState = uiReducer(Immutable.fromJS({ selectedDocuments: [{ _id: 'document' }] }), {
+        type: types.UNSELECT_DOCUMENT,
+        docId: 'document',
+      });
       expect(newState.toJS().selectedDocuments.length).toBe(0);
     });
   });
 
   describe('unselectAllDocuments', () => {
     it('should set selected document', () => {
-      const newState = uiReducer(
-        Immutable.fromJS({ selectedDocuments: [{ _id: 'document' }] }),
-        actions.unselectAllDocuments()
-      );
+      const newState = uiReducer(Immutable.fromJS({ selectedDocuments: [{ _id: 'document' }] }), {
+        type: types.UNSELECT_ALL_DOCUMENTS,
+      });
       expect(newState.toJS().selectedDocuments.length).toBe(0);
     });
   });

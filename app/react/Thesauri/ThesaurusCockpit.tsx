@@ -47,7 +47,7 @@ export class ThesaurusCockpitBase extends RouteHandler {
       actions.set('thesauri.suggestInfo', {
         property: assocProp,
       } as SuggestInfo),
-      updateTaskState(),
+      updateTaskState(requestParams),
     ];
   }
 

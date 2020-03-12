@@ -11,34 +11,32 @@ import { actions as basicReducerActions } from 'app/BasicReducer';
 import * as types from './actionTypes';
 
 export function updateFile(file, entity) {
-  return dispatch => {
-    api.post('files', new RequestParams(file)).then(() => {
-      const documents = entity.documents.map(f => {
-        if (f._id === file._id) {
-          return file;
-        }
-        return f;
-      });
-      const updatedEntity = Object.assign(entity, { documents });
-      dispatch(basicReducerActions.set('viewer/doc', updatedEntity));
-      dispatch(updateEntity(updatedEntity));
-      dispatch(selectSingleDocument(updatedEntity));
-      dispatch(notify('File updated', 'success'));
+  return async dispatch => {
+    await api.post('files', new RequestParams(file));
+    const documents = entity.documents.map(f => {
+      if (f._id === file._id) {
+        return file;
+      }
+      return f;
     });
+    const updatedEntity = Object.assign(entity, { documents });
+    dispatch(basicReducerActions.set('viewer/doc', updatedEntity));
+    dispatch(updateEntity(updatedEntity));
+    await dispatch(selectSingleDocument(updatedEntity));
+    dispatch(notify('File updated', 'success'));
   };
 }
 
 export function deleteFile(file, entity) {
-  return dispatch => {
-    api.delete('files', new RequestParams({ _id: file._id })).then(() => {
-      const documents = entity.documents.filter(f => f._id !== file._id);
+  return async dispatch => {
+    await api.delete('files', new RequestParams({ _id: file._id }));
+    const documents = entity.documents.filter(f => f._id !== file._id);
 
-      const updatedEntity = Object.assign(entity, { documents });
-      dispatch(basicReducerActions.set('viewer/doc', updatedEntity));
-      dispatch(updateEntity(updatedEntity));
-      dispatch(selectSingleDocument(updatedEntity));
-      dispatch(notify('File deleted', 'success'));
-    });
+    const updatedEntity = Object.assign(entity, { documents });
+    dispatch(basicReducerActions.set('viewer/doc', updatedEntity));
+    dispatch(updateEntity(updatedEntity));
+    await dispatch(selectSingleDocument(updatedEntity));
+    dispatch(notify('File deleted', 'success'));
   };
 }
 
@@ -92,26 +90,24 @@ export function renameAttachment(entityId, form, __reducerKey, file) {
 }
 
 export function deleteAttachment(entityId, attachment, __reducerKey) {
-  return dispatch =>
-    api
-      .delete(
-        'attachments/delete',
-        new RequestParams({
-          attachmentId: attachment._id,
-        })
-      )
-      .then(({ json: updatedEntity }) => {
-        dispatch({
-          type: types.ATTACHMENT_DELETED,
-          entity: entityId,
-          file: attachment,
-          __reducerKey,
-        });
+  return async dispatch => {
+    const { json: updatedEntity } = await api.delete(
+      'attachments/delete',
+      new RequestParams({
+        attachmentId: attachment._id,
+      })
+    );
+    dispatch({
+      type: types.ATTACHMENT_DELETED,
+      entity: entityId,
+      file: attachment,
+      __reducerKey,
+    });
 
-        dispatch(updateEntity(updatedEntity));
-        dispatch(selectSingleDocument(updatedEntity));
-        dispatch(notify('Attachment deleted', 'success'));
-      });
+    dispatch(updateEntity(updatedEntity));
+    await dispatch(selectSingleDocument(updatedEntity));
+    dispatch(notify('Attachment deleted', 'success'));
+  };
 }
 
 export function loadForm(form, attachment) {

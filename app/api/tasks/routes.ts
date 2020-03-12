@@ -14,7 +14,6 @@ const tasksPrefix = `/api/${TASKS_ENDPOINT}`;
 export default (app: Application) => {
   app.get(
     tasksPrefix,
-    // needsAuthorization(),
     validation.validateRequest(
       Joi.object()
         .keys({ name: Joi.string() })

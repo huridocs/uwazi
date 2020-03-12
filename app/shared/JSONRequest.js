@@ -92,7 +92,10 @@ const _fetch = (url, data, method, _headers) => {
         setCookie = res.headers.get('set-cookie');
       }
       response = res;
-      return Promise.all([res.json(), setCookie]);
+      // Failed .json() parsing usually indicates a non-success http status,
+      // so we rather return that failure status than throw our own parsin
+      // error.
+      return Promise.all([res.json().catch(() => ({})), setCookie]);
     })
     .then(([json, setCookie]) => {
       const processedResponse = {
@@ -106,11 +109,7 @@ const _fetch = (url, data, method, _headers) => {
       }
 
       return processedResponse;
-    })
-    .catch(() => ({
-      json: {},
-      status: (response || {}).status || 500,
-    }));
+    });
 };
 
 export default {

@@ -211,6 +211,7 @@ describe('search', () => {
       const expectedBuckets = [
         { key: 'a', doc_count: 2, filtered: { doc_count: 1 } },
         { key: 'b', doc_count: 2, filtered: { doc_count: 1 } },
+        { key: 'any', doc_count: 10, filtered: { doc_count: 10 } },
       ];
       expect(response.aggregations.all.dictionaryWithGroups.buckets).toEqual(expectedBuckets);
       done();
