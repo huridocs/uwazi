@@ -101,29 +101,30 @@ const thesauri: ThesaurusSchema[] = [
     enable_classification: false,
   },
 ];
-const rawSuggestionResult: any = {
-  totalRows: 1,
-  aggregations: {
-    all: {
-      _thesaurus_name: {
-        buckets: [
-          {
-            key: 'id1',
-            filtered: {
-              doc_count: 2,
-            },
-          },
-          {
-            key: 'id2',
-            filtered: {
-              doc_count: 0,
-            },
-          },
-        ],
-      },
-    },
-  },
-};
+// const rawSuggestionResult: any = {
+//   totalRows: 1,
+//   aggregations: {
+//     all: {
+//       _thesaurus_name: {
+//         buckets: [
+//           {
+//             key: 'id1',
+//             filtered: {
+//               doc_count: 2,
+//             },
+//           },
+//           {
+//             key: 'id2',
+//             filtered: {
+//               doc_count: 0,
+//             },
+//           },
+//         ],
+//       },
+//     },
+//   },
+// };
+
 const flattenedSuggestions: LabelCountSchema = {
   totalRows: 2,
   totalLabels: 4,
