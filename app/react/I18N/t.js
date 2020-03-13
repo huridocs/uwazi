@@ -4,7 +4,8 @@ import translate, { getLocaleTranslation, getContext } from '../../shared/transl
 import { Translate } from '.';
 
 const testingEnvironment = process.env.NODE_ENV === 'test';
-const t = (contextId, key, _text, returnComponent = true) => {
+
+function t(contextId, key, _text, returnComponent = true) {
   if (!contextId) {
     throw new Error(`You cannot translate "${key}", because context id is "${contextId}"`);
   }
@@ -23,7 +24,7 @@ const t = (contextId, key, _text, returnComponent = true) => {
   const context = getContext(t.translation, contextId);
 
   return translate(context, key, text);
-};
+}
 
 t.resetCachedTranslation = () => {
   t.translation = null;
