@@ -7,6 +7,7 @@ export default (templates, entities) => {
     .filter((type, index, _types) => _types.indexOf(type) === index);
   const properties = comonProperties.comonProperties(templates, selectedTemplates);
   const _id = selectedTemplates.size === 1 ? selectedTemplates.first() : '';
+
   const withoutTemplate = entities.reduce((memo, entity) => memo && !entity.get('template'), true);
 
   if (withoutTemplate) {
