@@ -34,10 +34,9 @@ class DocumentsList extends Component {
   }
 
   selectAllDocuments() {
-    this.props.documents.get('rows').forEach(doc => {
-      this.ctrlKey = true;
-      this.clickOnDocument(this, doc);
-    });
+    if (this.props.selectAllDocuments) {
+      this.props.selectAllDocuments.apply(this);
+    }
   }
 
   loadMoreDocuments(amount) {
@@ -70,6 +69,7 @@ class DocumentsList extends Component {
     const {
       documents,
       connections,
+      thesauri,
       GraphView,
       view,
       searchCentered,
@@ -78,9 +78,12 @@ class DocumentsList extends Component {
       LoadMoreButton,
       rowListZoomLevel,
       location: {
-        query: { multiEditThesaurus: id, thesaurusName: name },
+        query: { multiEditThesaurus: thesaurusId },
       },
     } = this.props;
+    const thesaurus =
+      thesaurusId && thesauri ? thesauri.find(thes => thes.get('_id') === thesaurusId) : undefined;
+    const thesaurusName = thesaurus ? thesaurus.get('name') : '';
     let counter = (
       <span>
         <b>{documents.get('totalRows')}</b> <Translate>documents</Translate>
@@ -135,12 +138,15 @@ class DocumentsList extends Component {
                 {t('System', 'Select all documents')}
               </button>
             </div>
-            {name && id && (
-              <I18NLink to={`/settings/dictionaries/cockpit/${id}`} className="btn btn-default">
+            {thesaurusName && (
+              <I18NLink
+                to={`/settings/dictionaries/cockpit/${thesaurusId}`}
+                className="btn btn-default"
+              >
                 <Icon icon="arrow-left" />
                 &nbsp;
                 <span className="btn-label">
-                  {t('System', 'Back to')} <span>{`'${name}'`}</span>
+                  {t('System', 'Back to')} <span>{`'${thesaurusName}'`}</span>
                 </span>
               </I18NLink>
             )}
@@ -229,6 +235,7 @@ DocumentsList.propTypes = {
   documents: PropTypes.object.isRequired,
   connections: PropTypes.object,
   filters: PropTypes.object,
+  thesauri: PropTypes.object,
   selectedDocument: PropTypes.object,
   SearchBar: PropTypes.func,
   ActionButtons: PropTypes.func,

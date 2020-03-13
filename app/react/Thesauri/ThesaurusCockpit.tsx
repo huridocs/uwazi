@@ -108,7 +108,6 @@ export class ThesaurusCockpitBase extends RouteHandler {
         ? new Date(+modelTime * 1000)
         : null;
     let status;
-    const multiEditUrl = `/library/?multiEditThesaurus=${thesaurus._id}&thesaurusName=${thesaurus.name}`;
 
     if (modelTime) {
       status = (
@@ -122,7 +121,11 @@ export class ThesaurusCockpitBase extends RouteHandler {
             You can also improve the model by providing more labeled documents.
           </div>
           <div className="footer">
-            <I18NLink title="label-docs" to={multiEditUrl} className="btn btn-primary get-started">
+            <I18NLink
+              title="label-docs"
+              to={`/library/?multiEditThesaurus=${thesaurus._id}`}
+              className="btn btn-primary get-started"
+            >
               <span>{t('System', 'Label more documents')}</span>
             </I18NLink>
           </div>
@@ -136,7 +139,11 @@ export class ThesaurusCockpitBase extends RouteHandler {
             to suggest when helping you label your collection.
           </div>
           <div className="footer">
-            <I18NLink title="label-docs" to={multiEditUrl} className="btn btn-primary get-started">
+            <I18NLink
+              title="label-docs"
+              to={`/library/?multiEditThesaurus=${thesaurus._id}`}
+              className="btn btn-primary get-started"
+            >
               <span>{t('System', numLabeled === 0 ? 'Get started' : 'Label more documents')}</span>
             </I18NLink>
           </div>
