@@ -25,6 +25,8 @@ export default {
       '#app > div.content > div > div > div.settings-content > div > div.thesauri-list > table > tbody > tr:nth-child(2) > td:nth-child(2) > div > a',
     dictionariesReviewSuggestionsButton:
       '#app > div.content > div > div > div.settings-content > div > div.cockpit > table > tbody > tr:nth-child(2) > td:nth-child(4) > a',
+    dictionariesLabelDocumentsButton:
+      '#app > div.content > div > div > div.settings-content > div > div.cockpit > div.notice > div.main > div:nth-child(1) > div.footer > a',
     entitiesButton:
       '#app > div.content > div > div > div.settings-navigation > div > div:nth-child(2) > div.list-group > a:nth-child(1)',
     connectionsButton:
@@ -400,5 +402,23 @@ export default {
       'body > div:nth-child(7) > div > div > div > div.modal-footer > button.btn.confirm-button.btn-danger',
     cancelConfirmDialog:
       'body > div:nth-child(7) > div > div > div > div.modal-footer > button.btn.btn-default.cancel-button',
+  },
+  multiEditLabel: {
+    notice:
+      '#app > div.content > div > div > aside.side-panel.multi-edit.is-active > div.sidepanel-body > div > div.notice',
+    autoSaveToggleOn:
+      '#app > div.content > div > div > aside.side-panel.multi-edit.is-active > div.sidepanel-header > button.btn.btn-default.btn-header.btn-toggle-on',
+    autoSaveToggleOff:
+      '#app > div.content > div > div > aside.side-panel.multi-edit.is-active > div.sidepanel-header > button.btn.btn-default.btn-header.btn-toggle-off',
+    discardButton:
+      '#app > div.content > div > div > aside.side-panel.multi-edit.is-active > div.sidepanel-footer > button.cancel-edit-metadata.btn-danger.btn.btn-default',
+    saveButton:
+      '#app > div.content > div > div > aside.side-panel.multi-edit.is-active > div.sidepanel-footer > button.save-metadata.btn.btn-default',
+    firstCheckboxOff:
+      '#app > div.content > div > div > aside.side-panel.multi-edit.is-active > div.sidepanel-body > div > div.form-group > ul > ul > li:nth-child(2) > label > span.multiselectItem-icon > svg.svg-inline--fa.fa-square.fa-w-14.checkbox-empty',
+    firstCheckboxOn:
+      '#app > div.content > div > div > aside.side-panel.multi-edit.is-active > div.sidepanel-body > div > div.form-group > ul > ul > li:nth-child(2) > label > span.multiselectItem-icon > svg.svg-inline--fa.fa-check.fa-w-16.checkbox-checked',
+    firstCheckboxPartial:
+      '#app > div.content > div > div > aside.side-panel.multi-edit.is-active > div.sidepanel-body > div > div.form-group > ul > ul > li:nth-child(2) > label > span.multiselectItem-icon > svg.svg-inline--fa.fa-minus.fa-w-14.checkbox-partial',
   },
 };

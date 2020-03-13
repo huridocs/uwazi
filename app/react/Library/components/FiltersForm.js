@@ -54,7 +54,7 @@ export class FiltersForm extends Component {
     const aggregations = this.props.aggregations.toJS();
     const translationContext = documentTypes.get(0);
     const allFields = this.props.fields.toJS();
-    const showNoValueOnFilters = documentTypes.size;
+    const showNoValueOnFilters = allFields.size;
     const fields = libraryHelper
       .parseWithAggregations(allFields.slice(0), aggregations, showNoValueOnFilters)
       .filter(field => !field.options || field.options.length);

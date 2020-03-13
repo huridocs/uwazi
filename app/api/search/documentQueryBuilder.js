@@ -261,9 +261,9 @@ export default function() {
           baseQuery
         );
       });
-      // suggested has an implied '_' as a prefix
+      // suggested has an implied '__' as a prefix
       properties.forEach(property => {
-        baseQuery.aggregations.all.aggregations[`_${property.name}`] = propertyToAggregation(
+        baseQuery.aggregations.all.aggregations[`__${property.name}`] = propertyToAggregation(
           property,
           dictionaries,
           baseQuery,

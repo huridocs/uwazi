@@ -82,7 +82,7 @@ export class ThesaurusCockpitBase extends RouteHandler {
           {suggestionCount > 0 && thesaurus.enable_classification && suggestInfo.property?.name ? (
             <I18NLink
               to={
-                `/review?q=(filters:(_${suggestInfo.property?.name}:(values:!('${id}')),` +
+                `/review?q=(filters:(__${suggestInfo.property?.name}:(values:!('${id}')),` +
                 `${suggestInfo.property?.name}:(values:!(missing))))&includeUnpublished=1`
               }
               className="btn btn-default btn-xs"
@@ -123,7 +123,7 @@ export class ThesaurusCockpitBase extends RouteHandler {
           <div className="footer">
             <I18NLink
               title="label-docs"
-              to={`/library/?multiEditThesaurus=${thesaurus._id}`}
+              to={`/library/?multiEditThesaurus=${thesaurus._id}&q=(allAggregations:!t,includeUnpublished:!t)`}
               className="btn btn-primary get-started"
             >
               <span>{t('System', 'Label more documents')}</span>
@@ -141,7 +141,7 @@ export class ThesaurusCockpitBase extends RouteHandler {
           <div className="footer">
             <I18NLink
               title="label-docs"
-              to={`/library/?multiEditThesaurus=${thesaurus._id}`}
+              to={`/library/?multiEditThesaurus=${thesaurus._id}&q=(allAggregations:!t,includeUnpublished:!t)`}
               className="btn btn-primary get-started"
             >
               <span>{t('System', numLabeled === 0 ? 'Get started' : 'Label more documents')}</span>
@@ -273,7 +273,7 @@ export class ThesaurusCockpitBase extends RouteHandler {
         title="publish-button"
         to={
           `/library/?multiEditThesaurus=${thesaurus._id}&` +
-          `q=(filters:(_${thesaurusPropertyRefName}:(values:!(any)),${thesaurusPropertyRefName}:(values:!(any))),` +
+          `q=(filters:(__${thesaurusPropertyRefName}:(values:!(any)),${thesaurusPropertyRefName}:(values:!(any))),` +
           'limit:100,order:desc,sort:creationDate,unpublished:!t)&view=nosearch'
         }
         className="btn btn-primary btn-xs"

@@ -1,5 +1,3 @@
-/** @format */
-
 /* eslint max-nested-callbacks: ["error", 10] */
 
 import selectors from '../helpers/selectors.js';

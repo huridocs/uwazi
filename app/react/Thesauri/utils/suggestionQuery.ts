@@ -30,7 +30,7 @@ export function buildLabelCounts(
   thesaurusPropertyName: string,
   countSuggestions: boolean = true
 ): LabelCountSchema {
-  const suggestionFieldName = `${countSuggestions ? '_' : ''}${thesaurusPropertyName}`;
+  const suggestionFieldName = `${countSuggestions ? '__' : ''}${thesaurusPropertyName}`;
   const result: Partial<LabelCountSchema> = {};
   result.totalRows = raw.totalRows || 0;
   result.totalLabels = 0;

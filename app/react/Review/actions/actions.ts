@@ -100,7 +100,7 @@ async function switchToEntity(
 
 export function reviewAndPublish(refName: string) {
   browserHistory.push(
-    `/uploads/?q=(filters:(_${refName}:(values:!(any)),${refName}:(values:!(any))),` +
+    `/uploads/?q=(filters:(__${refName}:(values:!(any)),${refName}:(values:!(any))),` +
       'limit:100,order:desc,sort:creationDate)&view=nosearch'
   );
 }

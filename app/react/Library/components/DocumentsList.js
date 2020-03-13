@@ -56,7 +56,7 @@ export function clickOnDocument(e, doc, active) {
   return this.props.selectDocument(doc);
 }
 
-function selectAllDocuments() {
+export function selectAllDocuments() {
   const docs = this.props.documents.get('rows');
   return this.props.selectDocuments(docs.toJS());
 }

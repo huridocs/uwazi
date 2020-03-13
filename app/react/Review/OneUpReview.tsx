@@ -38,8 +38,8 @@ function buildInitialOneUpState(
 ): OneUpState {
   const thesaurusValues = [] as string[];
   const thesauriKeys = Object.keys(documentsRequest.data?.filters ?? {}).reduce((res, k) => {
-    const propName = k[0] === '_' ? k.substring(1) : k;
-    if (k[0] === '_') {
+    const propName = k.startsWith('__') ? k.substring(2) : k;
+    if (k.startsWith('__')) {
       thesaurusValues.push(
         ...documentsRequest.data!.filters[k].values.filter(
           (v: string) => v && !['any', 'missing'].includes(v)

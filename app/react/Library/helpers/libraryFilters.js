@@ -28,11 +28,11 @@ export function populateOptions(filters, thesauris) {
   });
 }
 
-function URLQueryToState(query, templates, thesauris, relationTypes) {
-  let properties = comonProperties.comonFilters(templates, relationTypes, query.types);
+function URLQueryToState(query, templates, thesauris, relationTypes, forcedProps = []) {
+  let properties = comonProperties.comonFilters(templates, relationTypes, query.types, forcedProps);
 
   if (!query.types || !query.types.length) {
-    properties = comonProperties.defaultFilters(templates);
+    properties = comonProperties.defaultFilters(templates, forcedProps);
   }
 
   const {
@@ -43,6 +43,7 @@ function URLQueryToState(query, templates, thesauris, relationTypes) {
     userSelectedSorting,
     includeUnpublished = false,
     unpublished = false,
+    allAggregations = false,
   } = query;
   properties = populateOptions(properties, thesauris).map(property => {
     let defaultValue = {};
@@ -64,6 +65,7 @@ function URLQueryToState(query, templates, thesauris, relationTypes) {
       userSelectedSorting,
       includeUnpublished,
       unpublished,
+      allAggregations,
     },
   };
 }

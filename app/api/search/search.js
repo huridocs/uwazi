@@ -18,8 +18,8 @@ import { bulkIndex, indexEntities } from './entitiesIndex';
 
 function processFilters(filters, properties) {
   return Object.keys(filters || {}).reduce((res, filterName) => {
-    const suggested = filterName[0] === '_';
-    const propertyName = suggested ? filterName.substring(1) : filterName;
+    const suggested = filterName.startsWith('__');
+    const propertyName = suggested ? filterName.substring(2) : filterName;
     const property = properties.find(p => p.name === propertyName);
     if (!property) {
       return res;

@@ -7,6 +7,7 @@ function baseQuery(templateID: string, includeUnpublished: boolean, unpublishedO
     filters: {},
     includeUnpublished,
     unpublished: unpublishedOnly,
+    allAggregations: true,
     types: [templateID],
   };
   return query;
@@ -26,7 +27,7 @@ export function getReadyToReviewSuggestionsQuery(
       [name]: {
         values: ['missing'],
       },
-      [`_${name}`]: {
+      [`__${name}`]: {
         values: ['any'],
       },
     },
@@ -47,7 +48,7 @@ export function getReadyToPublishSuggestionsQuery(
       [name]: {
         values: ['any'],
       },
-      [`_${name}`]: {
+      [`__${name}`]: {
         values: ['any'],
       },
     },
