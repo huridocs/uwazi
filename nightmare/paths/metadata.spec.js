@@ -13,7 +13,7 @@ describe('metadata path', () => {
   beforeAll(async () => insertFixtures());
   afterAll(async () => nightmare.end());
 
-  fdescribe('login', () => {
+  describe('login', () => {
     it('should log in as admin then click the settings nav button', done => {
       loginAsAdminAndGoToSettings(nightmare, catchErrors, done);
     });
@@ -237,7 +237,7 @@ describe('metadata path', () => {
     });
   });
 
-  fdescribe('Properties', () => {
+  describe('Properties', () => {
     const localSelectors = {
       propertiesButtons: index =>
         `#app > div.content > div > div > div.settings-content > div > div > div.panel-body > div > aside > div > ul > li:nth-child(${index}) > button`,
