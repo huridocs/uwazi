@@ -56,17 +56,24 @@ export function clickOnDocument(e, doc, active) {
   return this.props.selectDocument(doc);
 }
 
+function selectAllDocuments() {
+  const docs = this.props.documents.get('rows');
+  return this.props.selectDocuments(docs.toJS());
+}
+
 export function mapStateToProps(state, props) {
   return {
     documents: state[props.storeKey].documents,
     filters: state[props.storeKey].filters,
     filtersPanel: state[props.storeKey].ui.get('filtersPanel'),
     search: state[props.storeKey].search,
+    thesauri: state.thesauris,
     authorized: !!state.user.get('_id'),
     selectedDocuments: state[props.storeKey].ui.get('selectedDocuments'),
     multipleSelected: state[props.storeKey].ui.get('selectedDocuments').size > 1,
     rowListZoomLevel: state[props.storeKey].ui.get('zoomLevel'),
     clickOnDocument,
+    selectAllDocuments,
   };
 }
 

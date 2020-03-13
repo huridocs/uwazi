@@ -193,7 +193,9 @@ const processResponse = response => {
       const missingBucket = aggregation.buckets.find(b => b.key === 'missing');
       if (aggregationKey !== '_types') {
         const anyCount =
-          response.hits.total.value - (missingBucket ? missingBucket.filtered.doc_count : 0);
+          (typeof response.hits.total === 'object'
+            ? response.hits.total.value
+            : response.hits.total) - (missingBucket ? missingBucket.filtered.doc_count : 0);
         aggregation.buckets.push({
           key: 'any',
           doc_count: anyCount,

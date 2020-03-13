@@ -7,7 +7,7 @@ import Routes from './Routes';
 import { store } from './store';
 
 const App = () => (
-  <Provider store={store as any}>
+  <Provider store={store}>
     <CustomProvider>
       <Router history={browserHistory}>{Routes}</Router>
     </CustomProvider>

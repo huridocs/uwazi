@@ -26,7 +26,7 @@ describe('task routes', () => {
   describe('GET', () => {
     it('should need authorization', () => {
       const req = {};
-      expect(routes.get('/api/tasks', req)).toNeedAuthorization();
+      expect(routes.post('/api/tasks', req)).toNeedAuthorization();
     });
 
     it('should return empty for undefined task', async () => {

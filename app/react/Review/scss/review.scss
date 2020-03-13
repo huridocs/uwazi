@@ -386,3 +386,10 @@ $header-height: 44px;
     fill-rule: evenodd;
   }
 }
+
+.select-all-documents,
+.back {
+  flex: 1;
+  border-left: 1px solid #D7D7DC;
+  padding-left: 16px;
+}

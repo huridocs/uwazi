@@ -12,7 +12,7 @@ import { RowList } from 'app/Layout/Lists';
 import Loader from 'app/components/Elements/Loader';
 import Footer from 'app/App/Footer';
 import { NeedAuthorization } from 'app/Auth';
-import { t, Translate } from 'app/I18N';
+import { I18NLink, t, Translate } from 'app/I18N';
 import { Icon } from 'UI';
 
 class DocumentsList extends Component {
@@ -20,6 +20,7 @@ class DocumentsList extends Component {
     super(props, context);
     this.state = { loading: false };
     this.clickOnDocument = this.clickOnDocument.bind(this);
+    this.selectAllDocuments = this.selectAllDocuments.bind(this);
   }
 
   componentWillReceiveProps() {
@@ -29,6 +30,12 @@ class DocumentsList extends Component {
   clickOnDocument() {
     if (this.props.clickOnDocument) {
       this.props.clickOnDocument.apply(this, arguments);
+    }
+  }
+
+  selectAllDocuments() {
+    if (this.props.selectAllDocuments) {
+      this.props.selectAllDocuments.apply(this);
     }
   }
 
@@ -62,6 +69,7 @@ class DocumentsList extends Component {
     const {
       documents,
       connections,
+      thesauri,
       GraphView,
       view,
       searchCentered,
@@ -69,7 +77,13 @@ class DocumentsList extends Component {
       connectionsGroups,
       LoadMoreButton,
       rowListZoomLevel,
+      location: {
+        query: { multiEditThesaurus: thesaurusId },
+      },
     } = this.props;
+    const thesaurus =
+      thesaurusId && thesauri ? thesauri.find(thes => thes.get('_id') === thesaurusId) : undefined;
+    const thesaurusName = thesaurus ? thesaurus.get('name') : '';
     let counter = (
       <span>
         <b>{documents.get('totalRows')}</b> <Translate>documents</Translate>
@@ -119,6 +133,23 @@ class DocumentsList extends Component {
               stateProperty={this.props.sortButtonsStateProperty}
               storeKey={this.props.storeKey}
             />
+            <div className="select-all-documents">
+              <button className="btn btn-default" onClick={this.selectAllDocuments}>
+                {t('System', 'Select all documents')}
+              </button>
+            </div>
+            {thesaurusName && (
+              <I18NLink
+                to={`/settings/dictionaries/cockpit/${thesaurusId}`}
+                className="btn btn-default"
+              >
+                <Icon icon="arrow-left" />
+                &nbsp;
+                <span className="btn-label">
+                  {t('System', 'Back to')} <span>{`'${thesaurusName}'`}</span>
+                </span>
+              </I18NLink>
+            )}
           </div>
           {(() => {
             if (view !== 'graph') {
@@ -204,6 +235,7 @@ DocumentsList.propTypes = {
   documents: PropTypes.object.isRequired,
   connections: PropTypes.object,
   filters: PropTypes.object,
+  thesauri: PropTypes.object,
   selectedDocument: PropTypes.object,
   SearchBar: PropTypes.func,
   ActionButtons: PropTypes.func,
@@ -217,6 +249,7 @@ DocumentsList.propTypes = {
   LoadMoreButton: PropTypes.func,
   onSnippetClick: PropTypes.func,
   clickOnDocument: PropTypes.oneOfType([PropTypes.func, PropTypes.object]),
+  selectAllDocuments: PropTypes.oneOfType([PropTypes.func, PropTypes.object]),
   rowListZoomLevel: PropTypes.number,
   connectionsGroups: PropTypes.object,
   searchCentered: PropTypes.bool,
