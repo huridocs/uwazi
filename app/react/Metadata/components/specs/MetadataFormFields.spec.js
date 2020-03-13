@@ -8,7 +8,7 @@ import { MetadataFormFields } from '../MetadataFormFields';
 import MultipleEditionFieldWarning from '../MultipleEditionFieldWarning';
 import { MultiSelect, DatePicker } from '../../../ReactReduxForms';
 
-describe('MetadataFormFields', () => {
+describe('MetadataFormFields with one entity to edit ', () => {
   let component;
   let fieldsTemplate;
   let props;
@@ -66,5 +66,31 @@ describe('MetadataFormFields', () => {
 
     const datepicker = component.find(DatePicker);
     expect(datepicker.length).toBe(1);
+  });
+});
+
+describe('MetadataFormFields with multiple entities to edit', () => {
+  it('should render no fields when multiple templates and no common properties', () => {
+    const fieldsTemplate = [];
+
+    const props = {
+      metadata: {
+        _id: [{ value: 'docId' }],
+        template: [{ value: 'templateId' }],
+        title: [{ value: 'testTitle' }],
+        metadata: [{ value: { field1: 'field1value', field2: 'field2value' } }],
+      },
+      template: fromJS({ name: 'template1', _id: '', properties: fieldsTemplate }),
+      fields: fromJS(fieldsTemplate),
+      thesauris: fromJS([]),
+      dateFormat: '',
+      model: 'metadata',
+      multipleEdition: true,
+    };
+
+    const component = shallow(<MetadataFormFields {...props} />);
+
+    const formGroups = component.find(FormGroup);
+    expect(formGroups.length).toBe(0);
   });
 });
