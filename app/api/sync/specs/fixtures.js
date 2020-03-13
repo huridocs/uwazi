@@ -1,8 +1,4 @@
-/**
- * /* eslint-disable max-len
- *
- * @format
- */
+// eslint-disable max-lines
 
 import db from 'api/utils/testing_db';
 
@@ -80,6 +76,12 @@ const translation1 = db.id();
 
 const settingsId = db.id();
 const sessionsId = db.id();
+
+const file1 = db.id();
+const file2 = db.id();
+const file3 = db.id();
+const file4 = db.id();
+const file5 = db.id();
 
 export default {
   syncs: [
@@ -311,6 +313,70 @@ export default {
       mongoId: translation1,
       deleted: false,
     },
+    {
+      timestamp: 9000,
+      namespace: 'files',
+      mongoId: db.id(),
+      deleted: true,
+    },
+    {
+      timestamp: 9000,
+      namespace: 'files',
+      mongoId: file1,
+      deleted: false,
+    },
+    {
+      timestamp: 9000,
+      namespace: 'files',
+      mongoId: file2,
+      deleted: false,
+    },
+    {
+      timestamp: 9000,
+      namespace: 'files',
+      mongoId: file3,
+      deleted: false,
+    },
+    {
+      timestamp: 9000,
+      namespace: 'files',
+      mongoId: file4,
+      deleted: false,
+    },
+    {
+      timestamp: 9000,
+      namespace: 'files',
+      mongoId: file5,
+      deleted: false,
+    },
+  ],
+
+  files: [
+    {
+      _id: file1,
+      entity: 'newDoc1SharedId',
+      filename: 'test2.txt',
+    },
+    {
+      _id: file2,
+      entity: 'entitytest.txt',
+      filename: 'test.txt',
+    },
+    {
+      _id: file3,
+      entity: 'newDoc6SharedId',
+      filename: 'test.txt',
+    },
+    {
+      _id: file4,
+      entity: 'newDoc1SharedId',
+      filename: `${newDoc1.toString()}.jpg`,
+    },
+    {
+      _id: file5,
+      entity: 'newDoc3SharedId',
+      filename: `${newDoc1.toString()}.jpg`,
+    },
   ],
 
   entities: [
@@ -319,10 +385,6 @@ export default {
       sharedId: 'newDoc1SharedId',
       title: 'a new entity',
       template: template1,
-      file: {
-        filename: 'test.txt',
-        timestamp: 9500,
-      },
       attachments: [
         {
           filename: 'test_attachment.txt',
@@ -350,10 +412,7 @@ export default {
       _id: newDoc2,
       title: 'another new entity',
       template: template1,
-      file: {
-        filename: 'test.txt',
-        timestamp: 7000,
-      },
+      sharedId: 'entitytest.txt',
       metadata: {
         t1Property1: [{ value: 'another doc property 1' }],
         t1Property2: [{ value: 'another doc property 2' }],
@@ -377,9 +436,6 @@ export default {
       sharedId: 'newDoc6SharedId',
       title: 'new doc 6',
       template: template3,
-      file: {
-        filename: 'test.txt',
-      },
     },
     {
       _id: newDoc7,
