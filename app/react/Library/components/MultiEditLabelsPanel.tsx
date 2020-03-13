@@ -27,8 +27,6 @@ import {
 
 const defaultProps = {
   formKey: 'library.sidepanel.multipleEdit',
-  labelledDocs: 0,
-  requiredLabels: 240,
   multipleEdit: {} as MultiEditState,
   multiEditThesaurus: undefined as IImmutable<ThesaurusSchema> | undefined,
   opts: {} as MultiEditOpts,
@@ -163,26 +161,18 @@ export class MultiEditLabelsPanel extends Component<MultiEditLabelsPanelProps> {
     );
   }
 
-  renderNotice() {
-    const { labelledDocs, requiredLabels } = this.props;
-    const bodyText =
-      labelledDocs >= requiredLabels
-        ? 'You have labelled enough documents, Uwazi is ready to learn and label documents faster.'
-        : `Make the sample set of documents for each topic diverse and representative. For example, use
-        various methods to find sample documents and don't just search for the term
-        "education" to find documents for the topic "Education"`;
+  static renderNotice() {
     return (
       <Notice title="Label your collection">
         <div>
-          <div>{bodyText}</div>
           <div>
-            <b>
-              Labelled documents: {labelledDocs} / {requiredLabels}
-            </b>
+            Note: Make the sample set of documents for each topic diverse and representative. For
+            example, use various methods to find sample documents and don't just search for the term
+            "education" to find documents for the topic "Education".
+            <br />
+            <br />
+            Return to the thesaurus page when you finished labeling to start learning.
           </div>
-          {labelledDocs >= requiredLabels && (
-            <div>Return to the thesaurus page to start learning.</div>
-          )}
         </div>
       </Notice>
     );
@@ -193,23 +183,29 @@ export class MultiEditLabelsPanel extends Component<MultiEditLabelsPanelProps> {
     let content;
     if (!multiEditThesaurus) {
       content = (
-        <label className="errormsg">
-          {
-            "Oops! We couldn't find the thesaurus you're trying to edit. Try navigating back to this page through Settings."
-          }
-        </label>
+        <div>
+          {MultiEditLabelsPanel.renderNotice()}
+          <label className="errormsg">
+            {
+              "Oops! We couldn't find the thesaurus you're trying to edit. Try navigating back to this page through Settings."
+            }
+          </label>
+        </div>
       );
     } else if (!Object.keys(multipleEdit).length) {
       content = (
-        <label className="errormsg">
-          Nothing to see here! The selected documents are not using the selected thesaurus&nbsp;
-          <b>{multiEditThesaurus.get('name')}</b>. Try selecting other documents.
-        </label>
+        <div>
+          {MultiEditLabelsPanel.renderNotice()}
+          <label className="errormsg">
+            Nothing to see here! The selected documents are not using the selected thesaurus&nbsp;
+            <b>{multiEditThesaurus.get('name')}</b>. Try selecting other documents.
+          </label>
+        </div>
       );
     } else {
       content = (
         <div>
-          {this.renderNotice()}
+          {MultiEditLabelsPanel.renderNotice()}
           {Object.keys(multipleEdit)
             .sort()
             .map(p => this.renderProp(p))}
