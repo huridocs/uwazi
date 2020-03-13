@@ -135,7 +135,7 @@ Nightmare.action('waitForTheEntityToBeIndexed', function waitForTheEntityToBeInd
 });
 
 Nightmare.action('waitToClick', function waitToClicked(selector, done) {
-  this.wait(selector, 1000)
+  this.wait(selector, 2000)
     .wait(300)
     .wait(selector, 1000)
     .click(selector)
