@@ -63,6 +63,7 @@ describe('csvLoader', () => {
         'numeric_label',
         'select_label',
         'not_defined_type',
+        'geolocation_geolocation',
       ]);
     });
 
