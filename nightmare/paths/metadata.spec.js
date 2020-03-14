@@ -367,8 +367,8 @@ describe('metadata path', () => {
         .type(localSelectors.form.linkUrl, 'https://www.huridocs.org/')
         .type(localSelectors.form.image, 'test')
         .type(localSelectors.form.media, 'test')
-        .type(localSelectors.form.geolocationLat, '46,220768752727636')
-        .type(localSelectors.form.geolocationLon, '6,139087708189891')
+        .insert(localSelectors.form.geolocationLat, '46,220768752727636')
+        .insert(localSelectors.form.geolocationLon, '6,139087708189891')
         .click(localSelectors.form.save)
         .waitToClick('.alert.alert-success');
     });
