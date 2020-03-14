@@ -1,4 +1,3 @@
-/** @format */
 /* eslint max-len: ["error", 500] */
 /* eslint max-nested-callbacks: ["error", 10] */
 import { catchErrors } from 'api/utils/jasmineHelpers';
@@ -13,7 +12,7 @@ describe('metadata path', () => {
   beforeAll(async () => insertFixtures());
   afterAll(async () => nightmare.end());
 
-  fdescribe('login', () => {
+  describe('login', () => {
     it('should log in as admin then click the settings nav button', done => {
       loginAsAdminAndGoToSettings(nightmare, catchErrors, done);
     });
@@ -323,7 +322,7 @@ describe('metadata path', () => {
       }
     });
 
-    fit('should create a template with all the properties', async () => {
+    it('should create a template with all the properties', async () => {
       await nightmare
         .waitToClick(selectors.settingsView.templatesButton)
         .waitToClick(selectors.settingsView.addNewTemplate)
@@ -340,36 +339,36 @@ describe('metadata path', () => {
         .waitToClick('.alert.alert-success');
     });
 
-    fit('should create an entity filling all the props', async () => {
+    it('should create an entity filling all the props', async () => {
       await nightmare
         .waitToClick(selectors.navigation.uploadsNavButton)
         .waitToClick(selectors.uploadsView.newEntityButtom)
         .type(selectors.newEntity.form.title, 'Entity with all props')
         .selectByLabel(selectors.newEntity.form.type, 'All props')
         .wait(localSelectors.form.text)
-        // .type(localSelectors.form.text, 'demo text')
-        // .type(localSelectors.form.numeric, '42')
-        // .selectByLabel(localSelectors.form.select, 'This')
-        // .click(localSelectors.form.multiselectOptionOne)
-        // .click(localSelectors.form.relationshipOptionOne)
-        // .selectDate(localSelectors.form.date, '08/09/1966')
-        // .selectDate(localSelectors.form.dateRangeFrom, '23/11/1963')
-        // .selectDate(localSelectors.form.dateRangeTo, '12/09/1964')
-        // .click(localSelectors.form.multidateAddDateButton)
-        // .selectDate(localSelectors.form.multidateInputOne, '23/11/1963')
-        // .selectDate(localSelectors.form.multidateInputTwo, '12/09/1964')
-        // .click(localSelectors.form.multidaterangeAddButton)
-        // .selectDate(localSelectors.form.multidaterangeFromInputOne, '23/11/1963')
-        // .selectDate(localSelectors.form.multidaterangeToInputOne, '12/09/1964')
-        // .selectDate(localSelectors.form.multidaterangeFromInputTwo, '23/11/1963')
-        // .selectDate(localSelectors.form.multidaterangeToInputTwo, '12/09/1964')
-        // .type(localSelectors.form.richText, '*** smile ***')
-        // .type(localSelectors.form.linkLabel, 'Huridocs')
-        // .type(localSelectors.form.linkUrl, 'https://www.huridocs.org/')
-        // .type(localSelectors.form.image, 'test')
-        // .type(localSelectors.form.media, 'test')
-        // .type(localSelectors.form.geolocationLat, '46,220768752727636')
-        // .type(localSelectors.form.geolocationLon, '6,139087708189891')
+        .type(localSelectors.form.text, 'demo text')
+        .type(localSelectors.form.numeric, '42')
+        .selectByLabel(localSelectors.form.select, 'This')
+        .click(localSelectors.form.multiselectOptionOne)
+        .click(localSelectors.form.relationshipOptionOne)
+        .selectDate(localSelectors.form.date, '08/09/1966')
+        .selectDate(localSelectors.form.dateRangeFrom, '23/11/1963')
+        .selectDate(localSelectors.form.dateRangeTo, '12/09/1964')
+        .click(localSelectors.form.multidateAddDateButton)
+        .selectDate(localSelectors.form.multidateInputOne, '23/11/1963')
+        .selectDate(localSelectors.form.multidateInputTwo, '12/09/1964')
+        .click(localSelectors.form.multidaterangeAddButton)
+        .selectDate(localSelectors.form.multidaterangeFromInputOne, '23/11/1963')
+        .selectDate(localSelectors.form.multidaterangeToInputOne, '12/09/1964')
+        .selectDate(localSelectors.form.multidaterangeFromInputTwo, '23/11/1963')
+        .selectDate(localSelectors.form.multidaterangeToInputTwo, '12/09/1964')
+        .type(localSelectors.form.richText, '*** smile ***')
+        .type(localSelectors.form.linkLabel, 'Huridocs')
+        .type(localSelectors.form.linkUrl, 'https://www.huridocs.org/')
+        .type(localSelectors.form.image, 'test')
+        .type(localSelectors.form.media, 'test')
+        .type(localSelectors.form.geolocationLat, '46,220768752727636')
+        .type(localSelectors.form.geolocationLon, '6,139087708189891')
         .click(localSelectors.form.save)
         .waitToClick('.alert.alert-success');
     });
