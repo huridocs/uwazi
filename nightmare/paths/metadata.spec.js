@@ -370,7 +370,8 @@ describe('metadata path', () => {
         .insert(localSelectors.form.geolocationLat, '46')
         .insert(localSelectors.form.geolocationLon, '6')
         .click(localSelectors.form.save)
-        .waitToClick('.alert.alert-success');
+        .getInnerText('.alert.alert-danger')
+        .then(text => expect(text).toBe(''));
     });
 
     it('should be able to remove all the values from properties', async () => {
