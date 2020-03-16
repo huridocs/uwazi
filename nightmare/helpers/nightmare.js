@@ -20,8 +20,8 @@ export default function createNightmare(width = 1200, height = 600) {
     x: 0,
     y: 0,
     webPreferences: {
-      preload: `${__dirname}/custom-preload.js`
-    }
+      preload: `${__dirname}/custom-preload.js`,
+    },
   }).viewport(width, height);
 
   nightmare.on('page', (_type, _message, error) => {
@@ -37,7 +37,16 @@ export default function createNightmare(width = 1200, height = 600) {
     //return;
     //}
     if (type === 'error') {
-      fail(message);
+      if (
+        message &&
+        (typeof message !== 'object' ||
+          Object.keys(message).length ||
+          message.toString() !== '[object Object]')
+      ) {
+        fail(message);
+      } else {
+        console.warn(message);
+      }
     }
     if (type === 'log') {
       console.log(message);

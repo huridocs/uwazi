@@ -1,8 +1,4 @@
-/**
- * /* eslint import/no-extraneous-dependencies: ["error", {"peerDependencies": true}]
- *
- * @format
- */
+/* eslint import/no-extraneous-dependencies: ["error", {"peerDependencies": true}] */
 
 import Nightmare from 'nightmare';
 import selectors from './selectors.js';
