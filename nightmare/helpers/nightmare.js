@@ -20,7 +20,6 @@ export default function createNightmare(width = 1200, height = 600) {
     y: 0,
     webPreferences: {
       preload: `${__dirname}/custom-preload.js`,
-      webSecurity: false,
     },
     switches: {
       'ignore-certificate-errors': true,
