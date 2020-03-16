@@ -8,6 +8,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field } from 'react-redux-form';
 import { propertyTypes } from 'shared/propertyTypes';
+import { Translate } from 'app/I18N';
 import {
   DatePicker,
   DateRange,
@@ -144,8 +145,7 @@ export class MetadataFormFields extends Component {
       .map(thes => thes.get('_id'))
       .toJS();
     const fields = template.get('properties').toJS();
-    const templateID =
-      fields.length && fields[0].templateId ? fields[0].templateId : template.get('_id');
+    const templateID = template.get('_id');
 
     return (
       <div>
@@ -161,7 +161,11 @@ export class MetadataFormFields extends Component {
                       model={model}
                       field={`metadata.${property.name}`}
                     />
-                    {t(templateID, property.label)}
+                    {templateID ? (
+                      <Translate context={templateID}>{property.label}</Translate>
+                    ) : (
+                      property.label
+                    )}
                     {property.required ? <span className="required">*</span> : ''}
                   </label>
                 </li>

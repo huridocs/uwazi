@@ -165,7 +165,6 @@ exports[`SemanticSearchMultieditPanel should render multi edit form for semantic
           "_id": "",
           "properties": Immutable.List [
             Immutable.Map {
-              "templateId": "tpl1",
               "name": "p1",
               "type": "select",
               "content": "t1",

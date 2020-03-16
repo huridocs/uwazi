@@ -15,9 +15,21 @@ describe('MetadataFormFields with one entity to edit ', () => {
 
   beforeEach(() => {
     fieldsTemplate = [
-      { name: 'field1', label: 'label1' },
-      { name: 'field2', label: 'label2', type: 'relationship', content: '2' },
-      { name: 'field3', label: 'label3', type: 'date' },
+      {
+        name: 'field1',
+        label: 'label1'
+      },
+      {
+        name: 'field2',
+        label: 'label2',
+        type: 'relationship',
+        content: '2'
+      },
+      {
+        name: 'field3',
+        label: 'label3',
+        type: 'date'
+      },
     ];
 
     props = {
@@ -25,11 +37,27 @@ describe('MetadataFormFields with one entity to edit ', () => {
         _id: [{ value: 'docId' }],
         template: [{ value: 'templateId' }],
         title: [{ value: 'testTitle' }],
-        metadata: [{ value: { field1: 'field1value', field2: 'field2value' } }],
+        metadata: [{
+          value: {
+            field1: 'field1value',
+            field2: 'field2value'
+          }
+        }],
       },
-      template: fromJS({ name: 'template1', _id: 'templateId', properties: fieldsTemplate }),
+      template: fromJS({
+        name: 'template1',
+        _id: 'templateId',
+        properties: fieldsTemplate
+      }),
       fields: fromJS(fieldsTemplate),
-      thesauris: fromJS([{ _id: 2, name: 'thesauri', values: [{ label: 'option1', id: '1' }] }]),
+      thesauris: fromJS([{
+        _id: 2,
+        name: 'thesauri',
+        values: [{
+          label: 'option1',
+          id: '1'
+        }]
+      }]),
       dateFormat: '',
       model: 'metadata',
     };
@@ -66,31 +94,5 @@ describe('MetadataFormFields with one entity to edit ', () => {
 
     const datepicker = component.find(DatePicker);
     expect(datepicker.length).toBe(1);
-  });
-});
-
-describe('MetadataFormFields with multiple entities to edit', () => {
-  it('should render no fields when multiple templates and no common properties', () => {
-    const fieldsTemplate = [];
-
-    const props = {
-      metadata: {
-        _id: [{ value: 'docId' }],
-        template: [{ value: 'templateId' }],
-        title: [{ value: 'testTitle' }],
-        metadata: [{ value: { field1: 'field1value', field2: 'field2value' } }],
-      },
-      template: fromJS({ name: 'template1', _id: '', properties: fieldsTemplate }),
-      fields: fromJS(fieldsTemplate),
-      thesauris: fromJS([]),
-      dateFormat: '',
-      model: 'metadata',
-      multipleEdition: true,
-    };
-
-    const component = shallow(<MetadataFormFields {...props} />);
-
-    const formGroups = component.find(FormGroup);
-    expect(formGroups.length).toBe(0);
   });
 });
