@@ -216,6 +216,15 @@ export default {
       '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div > div.item-actions > div.item-shortcut-group > a.item-shortcut.btn.btn-default.btn-hover-danger',
     sidePanelInfoTab:
       '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-header > div > ul > li:nth-child(5) > div',
+    sidePanelFirstDocumentTitle:
+      '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div.filelist > ul > li > div > div.file-originalname',
+    sidePanelFirstDocumentEditButton:
+      '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div.filelist > ul > li > div > div:nth-child(2) > button',
+    fileFormInput: '#originalname',
+    fileFormSubmit:
+      '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div.filelist > ul > li > form > div > div:nth-child(4) > button',
+    fileFormCancel:
+      '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div.filelist > ul > li > form > div > div:nth-child(5) > button',
     sidePanelFirstAttachmentTitle:
       '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div:nth-child(2) > div:nth-child(1) > div > div > a > span > span',
     sidePanelFirstAttachmentEditTitleButton:
@@ -241,12 +250,12 @@ export default {
     metadataFormTitle: '#metadataForm > div:nth-child(1) > ul > li.wide > div > textarea',
     metadataFormType: '#metadataForm > div:nth-child(2) > ul > li.wide > select',
     firstAttachmentTitle:
-      '#app > div.content > div > div > main > div > div.tab-content.tab-content-visible > div > div > div:nth-child(2) > div.attachments-list > div > a > span > span:nth-child(1)',
+      '#app > div.content > div > div > main > div > div.tab-content.tab-content-visible > div > div > div.attachments-list-parent > div.attachments-list > div > a > span > span:nth-child(1)',
     firstAttachmentEditTitleButton:
-      '#app > div.content > div > div > main > div > div.tab-content.tab-content-visible > div > div > div:nth-child(2) > div.attachments-list > div > div > div > button:nth-child(1)',
+      '#app > div.content > div > div > main > div > div.tab-content.tab-content-visible > div > div > div.attachments-list-parent > div.attachments-list > div > div > div > button:nth-child(1)',
     attachmentFormInput: '#attachmentForm > div > div > input',
     attachmentFormSubmit:
-      '#app > div.content > div > div > main > div > div.tab-content.tab-content-visible > div > div > div:nth-child(2) > div.attachments-list > div > div.attachment-buttons > div > button.item-shortcut.btn.btn-success',
+      '#app > div.content > div > div > main > div > div.tab-content.tab-content-visible > div > div > div.attachments-list-parent > div.attachments-list > div > div.attachment-buttons > div > button.item-shortcut.btn.btn-success',
     conectionsTabLink:
       '#app > div.content > div > div > div > div.content-header-tabs > ul > li:nth-child(2) > div',
     connectionsListView:
