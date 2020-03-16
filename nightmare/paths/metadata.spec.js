@@ -236,7 +236,7 @@ describe('metadata path', () => {
     });
   });
 
-  describe('Properties', () => {
+  fdescribe('Properties', () => {
     const localSelectors = {
       propertiesButtons: index =>
         `#app > div.content > div > div > div.settings-content > div > div > div.panel-body > div > aside > div > ul > li:nth-child(${index}) > button`,
@@ -322,7 +322,7 @@ describe('metadata path', () => {
       }
     });
 
-    fit('should create a template with all the properties', async () => {
+    it('should create a template with all the properties', async () => {
       await nightmare
         .waitToClick(selectors.settingsView.templatesButton)
         .waitToClick(selectors.settingsView.addNewTemplate)
@@ -339,7 +339,7 @@ describe('metadata path', () => {
         .waitToClick('.alert.alert-success');
     });
 
-    fit('should create an entity filling all the props', async () => {
+    it('should create an entity filling all the props', async () => {
       await nightmare
         .waitToClick(selectors.navigation.uploadsNavButton)
         .waitToClick(selectors.uploadsView.newEntityButtom)
@@ -370,8 +370,7 @@ describe('metadata path', () => {
         .insert(localSelectors.form.geolocationLat, '46')
         .insert(localSelectors.form.geolocationLon, '6')
         .click(localSelectors.form.save)
-        .getInnerText('.alert.alert-danger')
-        .then(text => expect(text).toBe(''));
+        .waitToClick('.alert.alert-success');
     });
 
     it('should be able to remove all the values from properties', async () => {
@@ -383,13 +382,13 @@ describe('metadata path', () => {
         .selectByLabel(localSelectors.form.select, 'Select other "Testing dictionary"')
         .click(localSelectors.form.multiselectOptionOne)
         .click(localSelectors.form.relationshipOptionOne)
-        // .click(localSelectors.form.emptyDate)
-        // .click(localSelectors.form.emptyDaterangeFrom)
-        // .click(localSelectors.form.emptyDaterangeTo)
-        // .click(localSelectors.form.multiDateRemoveDateTwo)
-        // .click(localSelectors.form.multiDateRemoveDateOne)
-        // .click(localSelectors.form.multidaterangeRemoveDateTwo)
-        // .click(localSelectors.form.multidaterangeRemoveDateOne)
+        .click(localSelectors.form.emptyDate)
+        .click(localSelectors.form.emptyDaterangeFrom)
+        .click(localSelectors.form.emptyDaterangeTo)
+        .click(localSelectors.form.multiDateRemoveDateTwo)
+        .click(localSelectors.form.multiDateRemoveDateOne)
+        .click(localSelectors.form.multidaterangeRemoveDateTwo)
+        .click(localSelectors.form.multidaterangeRemoveDateOne)
         .clearInput(localSelectors.form.richText)
         .clearInput(localSelectors.form.linkLabel)
         .clearInput(localSelectors.form.linkUrl)
