@@ -17,18 +17,18 @@ describe('MetadataFormFields with one entity to edit ', () => {
     fieldsTemplate = [
       {
         name: 'field1',
-        label: 'label1'
+        label: 'label1',
       },
       {
         name: 'field2',
         label: 'label2',
         type: 'relationship',
-        content: '2'
+        content: '2',
       },
       {
         name: 'field3',
         label: 'label3',
-        type: 'date'
+        type: 'date',
       },
     ];
 
@@ -37,27 +37,33 @@ describe('MetadataFormFields with one entity to edit ', () => {
         _id: [{ value: 'docId' }],
         template: [{ value: 'templateId' }],
         title: [{ value: 'testTitle' }],
-        metadata: [{
-          value: {
-            field1: 'field1value',
-            field2: 'field2value'
-          }
-        }],
+        metadata: [
+          {
+            value: {
+              field1: 'field1value',
+              field2: 'field2value',
+            },
+          },
+        ],
       },
       template: fromJS({
         name: 'template1',
         _id: 'templateId',
-        properties: fieldsTemplate
+        properties: fieldsTemplate,
       }),
       fields: fromJS(fieldsTemplate),
-      thesauris: fromJS([{
-        _id: 2,
-        name: 'thesauri',
-        values: [{
-          label: 'option1',
-          id: '1'
-        }]
-      }]),
+      thesauris: fromJS([
+        {
+          _id: 2,
+          name: 'thesauri',
+          values: [
+            {
+              label: 'option1',
+              id: '1',
+            },
+          ],
+        },
+      ]),
       dateFormat: '',
       model: 'metadata',
     };
