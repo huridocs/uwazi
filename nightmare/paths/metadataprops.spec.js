@@ -1,5 +1,6 @@
 /* eslint max-len: ["error", 500] */
 /* eslint max-nested-callbacks: ["error", 10] */
+/* eslint-disable no-await-in-loop */
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import selectors from '../helpers/selectors.js';
 import createNightmare from '../helpers/nightmare';
