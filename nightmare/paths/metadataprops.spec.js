@@ -12,12 +12,6 @@ describe('metadata properties', () => {
   beforeAll(async () => insertFixtures());
   afterAll(async () => nightmare.end());
 
-  describe('login', () => {
-    it('should log in as admin then click the settings nav button', done => {
-      loginAsAdminAndGoToSettings(nightmare, catchErrors, done);
-    });
-  });
-
   const localSelectors = {
     propertiesButtons: index =>
       `#app > div.content > div > div > div.settings-content > div > div > div.panel-body > div > aside > div > ul > li:nth-child(${index}) > button`,
@@ -87,6 +81,10 @@ describe('metadata properties', () => {
         '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-footer > span > button.btn.btn-success',
     },
   };
+
+  it('should log in as admin then click the settings nav button', done => {
+    loginAsAdminAndGoToSettings(nightmare, catchErrors, done);
+  });
 
   it('should test all the properties', async () => {
     await nightmare
