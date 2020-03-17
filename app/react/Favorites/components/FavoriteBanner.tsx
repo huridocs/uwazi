@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
+import { isClient } from 'app/utils';
 
 export type FavoriteBannerProps = {
   sharedId: string;
 };
 
-const getUwaziFavorites = () => (localStorage.getItem('uwaziFavorites') || '').split(',');
+const getUwaziFavorites = () =>
+  localStorage.getItem('uwaziFavorites') ? localStorage.getItem('uwaziFavorites')?.split(',') : [];
 
 class FavoriteBanner extends Component<FavoriteBannerProps> {
   constructor(props: FavoriteBannerProps) {
@@ -12,30 +14,39 @@ class FavoriteBanner extends Component<FavoriteBannerProps> {
     this.toggleClick = this.toggleClick.bind(this);
   }
 
-  toggleClick() {
+  toggleClick(e: any) {
     const { sharedId } = this.props;
     const uwaziFavorites = getUwaziFavorites();
+
+    e.stopPropagation();
+    e.preventDefault();
 
     if (uwaziFavorites.includes(sharedId)) {
       const itemIndex = uwaziFavorites.indexOf(sharedId);
       uwaziFavorites.splice(itemIndex, 1);
-      localStorage.setItem('uwaziFavorites', uwaziFavorites.join(','));
-      this.forceUpdate();
     } else {
-      localStorage.setItem('uwaziFavorites', `${uwaziFavorites.join(',')},${sharedId}`);
-      this.forceUpdate();
+      uwaziFavorites.push(sharedId);
     }
+
+    localStorage.setItem('uwaziFavorites', uwaziFavorites.join(','));
+    this.forceUpdate();
   }
 
   render() {
-    const { sharedId } = this.props;
-    const selected = getUwaziFavorites().includes(sharedId);
+    if (isClient) {
+      const { sharedId } = this.props;
+      const selected = getUwaziFavorites().includes(sharedId);
 
-    return (
-      <div className={`favoriteBanner ${selected ? 'selected' : ''}`} onClick={this.toggleClick}>
-        Component
-      </div>
-    );
+      return (
+        <button
+          className={`favoriteBanner ${selected ? 'selected' : ''}`}
+          onClick={this.toggleClick}
+          type="button"
+        />
+      );
+    }
+
+    return null;
   }
 }
 

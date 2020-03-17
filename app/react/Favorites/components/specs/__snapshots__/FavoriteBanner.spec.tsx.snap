@@ -1,10 +1,9 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Favorite Banner should present a clickable banner 1`] = `
-<div
+<button
   className="favoriteBanner "
   onClick={[Function]}
->
-  Component
-</div>
+  type="button"
+/>
 `;
