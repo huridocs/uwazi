@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 /* eslint max-len: ["error", 500] */
 /* eslint max-nested-callbacks: ["error", 10] */
 /* eslint-disable no-await-in-loop */
