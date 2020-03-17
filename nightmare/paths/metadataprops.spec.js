@@ -14,6 +14,8 @@ describe('metadata properties', () => {
   afterAll(async () => nightmare.end());
 
   const localSelectors = {
+    viewer:
+      '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div.view',
     propertiesButtons: index =>
       `#app > div.content > div > div > div.settings-content > div > div > div.panel-body > div > aside > div > ul > li:nth-child(${index}) > button`,
     templateProperties:
@@ -81,6 +83,23 @@ describe('metadata properties', () => {
       save:
         '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-footer > span > button.btn.btn-success',
     },
+    properties: {
+      text: '.metadata-type-text dd',
+      numeric: '.metadata-type-numeric dd',
+      select: '.metadata-type-select dd',
+      multiselect: '.metadata-type-multiselect dd',
+      relationship: '.metadata-type-relationship dd',
+      date: '.metadata-type-date dd',
+      daterange: '.metadata-type-daterange dd',
+      multidate: '.metadata-type-multidate dd',
+      multidaterange: '.metadata-type-multidaterange dd',
+      markdown: '.metadata-type-markdown dd',
+      link: '.metadata-type-link dd',
+      image: '.metadata-type-multimedia img',
+      preview: '.metadata-type-multimedia:nth-child(14) img',
+      media: '.metadata-type-multimedia:nth-child(15) .react-player',
+      geolocation: '.metadata-type-geolocation .map-container',
+    },
   };
 
   it('should log in as admin then click the settings nav button', done => {
@@ -98,7 +117,7 @@ describe('metadata properties', () => {
     );
 
     if (numberOfProps !== 15) {
-      fail('amount of props have change, update this test');
+      fail('amount of props have change, update this path');
     }
   });
 
@@ -142,15 +161,68 @@ describe('metadata properties', () => {
       .selectDate(localSelectors.form.multidaterangeToInputOne, '12/09/1964')
       .selectDate(localSelectors.form.multidaterangeFromInputTwo, '23/11/1963')
       .selectDate(localSelectors.form.multidaterangeToInputTwo, '12/09/1964')
-      .type(localSelectors.form.richText, '*** smile ***')
+      .type(localSelectors.form.richText, '***smile***')
       .type(localSelectors.form.linkLabel, 'Huridocs')
       .type(localSelectors.form.linkUrl, 'https://www.huridocs.org/')
-      .type(localSelectors.form.image, 'test')
+      .type(localSelectors.form.image, '/public/logo.svg')
       .type(localSelectors.form.media, 'test')
       .insert(localSelectors.form.geolocationLat, '46')
       .insert(localSelectors.form.geolocationLon, '6')
       .click(localSelectors.form.save)
       .waitToClick('.alert.alert-success');
+  });
+
+  it('should have all the values corretly saved', async () => {
+    await nightmare
+      .getInnerText(localSelectors.properties.text)
+      .then(text => {
+        expect(text).toBe('demo text');
+        return nightmare.getInnerText(localSelectors.properties.numeric);
+      })
+      .then(numeric => {
+        expect(numeric).toBe('42');
+        return nightmare.getInnerText(localSelectors.properties.select);
+      })
+      .then(select => {
+        expect(select).toBe('This');
+        return nightmare.getInnerText(localSelectors.properties.multiselect);
+      })
+      .then(multiselect => {
+        expect(multiselect).toBe('This\n');
+        return nightmare.getInnerText(localSelectors.properties.relationship);
+      })
+      .then(relationship => {
+        expect(relationship).toBe('Ace the Bat Hound Wikipedia\n');
+        return nightmare.getInnerText(localSelectors.properties.date);
+      })
+      .then(date => {
+        expect(date).toBe('Sep 8, 1966');
+        return nightmare.getInnerText(localSelectors.properties.daterange);
+      })
+      .then(daterange => {
+        expect(daterange).toBe('Nov 23, 1963 ~ Sep 12, 1964');
+        return nightmare.getInnerText(localSelectors.properties.multidate);
+      })
+      .then(multidate => {
+        expect(multidate).toBe('Nov 23, 1963\nSep 12, 1964\n');
+        return nightmare.getInnerText(localSelectors.properties.multidaterange);
+      })
+      .then(multidaterange => {
+        expect(multidaterange).toBe('Nov 23, 1963 ~ Sep 12, 1964\nNov 23, 1963 ~ Sep 12, 1964\n');
+        return nightmare.getInnerText(localSelectors.properties.markdown);
+      })
+      .then(markdown => {
+        expect(markdown).toBe('smile\n\n');
+        return nightmare.getInnerText(localSelectors.properties.link);
+      })
+      .then(text => {
+        expect(text).toBe('Huridocs');
+        return nightmare
+          .wait(localSelectors.properties.image)
+          .wait(localSelectors.properties.preview)
+          .wait(localSelectors.properties.media)
+          .wait(localSelectors.properties.geolocation);
+      });
   });
 
   it('should be able to remove all the values from properties', async () => {
@@ -178,5 +250,11 @@ describe('metadata properties', () => {
       .clearInput(localSelectors.form.geolocationLon)
       .click(localSelectors.form.save)
       .waitToClick('.alert.alert-success');
+  });
+
+  it('should have not metadata', async () => {
+    await nightmare.getInnerText(localSelectors.viewer).then(metadata => {
+      expect(metadata).toBe('Entity with all props\nAll props\nPreview\n\n');
+    });
   });
 });

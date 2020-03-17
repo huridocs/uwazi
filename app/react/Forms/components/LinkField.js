@@ -13,6 +13,10 @@ export default class LinkField extends Component {
   onChange(diffValue) {
     const { value, onChange } = this.props;
     const newValue = Object.assign({}, value, diffValue);
+    if (!newValue.label && !newValue.url) {
+      onChange(null);
+      return;
+    }
     onChange(newValue);
   }
 
@@ -28,7 +32,7 @@ export default class LinkField extends Component {
 
   render() {
     const { value } = this.props;
-    const { label, url } = value;
+    const { label, url } = value || {};
 
     return (
       <div className="link form-inline">
