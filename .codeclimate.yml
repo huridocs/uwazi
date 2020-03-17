@@ -22,6 +22,15 @@ checks:
   similar-code:
     config:
       threshold: 70
+  plugins:
+  eslint:	  eslint:
+    enabled: true
+    channel: "eslint-5"
+    config:
+      config: .eslintrc	
+    checks:
+      prettier/prettier:
+        enabled: false
 ratings:
   paths:
     - app/**
