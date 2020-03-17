@@ -5,7 +5,7 @@ import ID from 'shared/uniqueID';
 
 export default combineReducers({
   suggestInfo: createReducer('thesauri.suggestInfo', {}),
-  taskState: createReducer('thesauri.taskState', {}),
+  tasksState: createReducer('thesauri.tasksState', {}),
   thesaurus: createReducer('thesauri.thesaurus', {}),
   data: modelReducer('thesauri.data', { name: '', values: [{ label: '', id: ID() }] }),
   formState: formReducer('thesauri.data', { name: '', values: [{ label: '', id: ID() }] }),

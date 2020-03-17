@@ -59,7 +59,7 @@ async function getAndPopulateLabelCounts(
   return flattenLabelCounts(sanitizedSuggestionsTBPublished, assocProp?.name ?? '');
 }
 
-export function updateTaskState(_serverRequestParams?: RequestParams) {
+export function updateCockpitData(_serverRequestParams?: RequestParams) {
   return async (dispatch: Dispatch<IStore>, getState: () => IStore) => {
     const requestParams = _serverRequestParams ?? new RequestParams();
     const state = getState();
@@ -91,7 +91,7 @@ export function updateTaskState(_serverRequestParams?: RequestParams) {
       } as SuggestInfo)
     );
     dispatch(
-      actions.set('thesauri.taskState', { SyncState: syncState.json, TrainState: trainState })
+      actions.set('thesauri.tasksState', { SyncState: syncState.json, TrainState: trainState })
     );
   };
 }
@@ -100,6 +100,6 @@ export function startTraining() {
   return async (dispatch: Dispatch<IStore>, getState: () => IStore) => {
     const thesaurus = getState().thesauri.thesaurus.toJS();
     await ThesauriAPI.trainModel(new RequestParams({ thesaurusId: thesaurus._id!.toString() }));
-    await dispatch(updateTaskState());
+    await dispatch(updateCockpitData());
   };
 }

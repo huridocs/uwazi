@@ -4,7 +4,7 @@ import RouteHandler from 'app/App/RouteHandler';
 import { actions } from 'app/BasicReducer';
 import Loader from 'app/components/Elements/Loader';
 import { I18NLink, t } from 'app/I18N';
-import { IStore, SuggestInfo, TaskState } from 'app/istore';
+import { IStore, SuggestInfo, TasksState } from 'app/istore';
 import { resolveTemplateProp } from 'app/Settings/utils/resolveProperty';
 import TemplatesAPI from 'app/Templates/TemplatesAPI';
 import { Notice } from 'app/Thesauri/Notice';
@@ -18,15 +18,15 @@ import { Icon } from 'UI';
 import {
   startTraining,
   toggleEnableClassification,
-  updateTaskState,
+  updateCockpitData,
 } from './actions/cockpitActions';
 import { getValuesSortedByName } from './utils/valuesSort';
 
 export type ThesaurusCockpitProps = {
   thesaurus: ThesaurusSchema;
   suggestInfo: SuggestInfo;
-  taskState: TaskState;
-  updateTaskState: () => {};
+  tasksState: TasksState;
+  updateCockpitData: () => {};
   startTraining: () => {};
   toggleEnableClassification: () => {};
 };
@@ -47,7 +47,7 @@ export class ThesaurusCockpitBase extends RouteHandler {
       actions.set('thesauri.suggestInfo', {
         property: assocProp,
       } as SuggestInfo),
-      updateTaskState(requestParams),
+      updateCockpitData(requestParams),
     ];
   }
 
@@ -96,13 +96,13 @@ export class ThesaurusCockpitBase extends RouteHandler {
   }
 
   learningNotice() {
-    const { thesaurus, taskState, suggestInfo } = this.props as ThesaurusCockpitProps;
+    const { thesaurus, tasksState, suggestInfo } = this.props as ThesaurusCockpitProps;
     const numTopics = getValuesSortedByName(thesaurus).length;
     const numTrained =
       (suggestInfo.model?.config?.num_test ?? 0) + (suggestInfo.model?.config?.num_train ?? 0);
     const numLabeled = suggestInfo.docsWithLabels?.totalRows;
     const modelTime = suggestInfo.model?.preferred;
-    const isLearning = taskState.TrainState?.state === 'running';
+    const isLearning = tasksState.TrainState?.state === 'running';
     const modelDate =
       modelTime && +modelTime > 1000000000 && +modelTime < 2000000000
         ? new Date(+modelTime * 1000)
@@ -184,7 +184,7 @@ export class ThesaurusCockpitBase extends RouteHandler {
               <span>
                 Learning... <Icon icon="spinner" spin />
               </span>
-              <div className="property-description">{taskState.TrainState?.message}</div>
+              <div className="property-description">{tasksState.TrainState?.message}</div>
             </div>
           )}
           {!isLearning && numLabeled && numLabeled > numTrained && numLabeled > numTopics * 20 && (
@@ -217,7 +217,7 @@ export class ThesaurusCockpitBase extends RouteHandler {
   interval?: NodeJS.Timeout = undefined;
 
   componentDidMount() {
-    this.interval = setInterval(() => this.props.updateTaskState(), 10000);
+    this.interval = setInterval(() => this.props.updateCockpitData(), 10000);
   }
 
   componentWillUnmount() {
@@ -230,7 +230,7 @@ export class ThesaurusCockpitBase extends RouteHandler {
   emptyState() {
     this.context.store.dispatch(actions.unset('thesauri.suggestInfo'));
     this.context.store.dispatch(actions.unset('thesauri.thesaurus'));
-    this.context.store.dispatch(actions.unset('thesauri.taskState'));
+    this.context.store.dispatch(actions.unset('thesauri.tasksState'));
   }
 
   renderEnableSuggestionsToggle() {
@@ -284,9 +284,9 @@ export class ThesaurusCockpitBase extends RouteHandler {
   }
 
   render() {
-    const { thesaurus, taskState } = this.props as ThesaurusCockpitProps;
+    const { thesaurus, tasksState } = this.props as ThesaurusCockpitProps;
     const { name } = thesaurus;
-    if (!name || !taskState.SyncState?.state) {
+    if (!name || !tasksState.SyncState?.state) {
       return <Loader />;
     }
     return (
@@ -309,7 +309,7 @@ export class ThesaurusCockpitBase extends RouteHandler {
             </thead>
             <tbody>{this.topicNodes()}</tbody>
           </table>
-          <div className="sync-state">{taskState.SyncState.message}</div>
+          <div className="sync-state">{tasksState.SyncState.message}</div>
         </div>
         <div className="settings-footer">
           <I18NLink to="/settings/dictionaries" className="btn btn-default">
@@ -333,8 +333,8 @@ const selectThesaurus = createSelector(
   thesaurus => thesaurus.toJS()
 );
 
-const selectTaskState = createSelector(
-  (state: IStore) => state.thesauri.taskState,
+const selectTasksState = createSelector(
+  (state: IStore) => state.thesauri.tasksState,
   s => s.toJS()
 );
 
@@ -342,12 +342,12 @@ function mapStateToProps(state: IStore) {
   return {
     suggestInfo: selectSuggestInfo(state),
     thesaurus: selectThesaurus(state),
-    taskState: selectTaskState(state),
+    tasksState: selectTasksState(state),
   };
 }
 
 export default connect(mapStateToProps, {
-  updateTaskState,
+  updateCockpitData,
   startTraining,
   toggleEnableClassification,
 })(ThesaurusCockpitBase);

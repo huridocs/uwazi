@@ -7,7 +7,7 @@ import { PropertySchema } from 'shared/types/commonTypes';
 import { TemplateSchema } from 'shared/types/templateType';
 import { EntitySchema } from 'shared/types/entityType';
 
-export interface TaskState {
+export interface TasksState {
   SyncState?: TaskStatus;
   TrainState?: TaskStatus;
 }
@@ -70,7 +70,7 @@ export interface IStore {
   thesauri: {
     thesaurus: IImmutable<ThesaurusSchema>;
     suggestInfo: IImmutable<SuggestInfo>;
-    taskState: IImmutable<TaskState>;
+    tasksState: IImmutable<TasksState>;
   };
   relationships: any;
   entityView: {

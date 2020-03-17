@@ -86,7 +86,7 @@ export async function getModelForThesaurus(
   }
 }
 
-export async function getTaskState(task: string): Promise<TaskStatus> {
+export async function getTaskStatus(task: string): Promise<TaskStatus> {
   const tcUrl = new URL(TASKS_ENDPOINT, tcServer);
   tcUrl.searchParams.set('name', task);
   if (!(await IsTopicClassificationReachable())) {
@@ -205,7 +205,7 @@ export async function fetchSuggestions(
 }
 
 export async function getTrainStateForThesaurus(thesaurusName: string = '') {
-  return getTaskState(`train-${buildFullModelName(thesaurusName)}`);
+  return getTaskStatus(`train-${buildFullModelName(thesaurusName)}`);
 }
 
 export async function startTraining(thesaurus: ThesaurusSchema) {

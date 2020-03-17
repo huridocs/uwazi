@@ -155,8 +155,10 @@ describe('ThesaurusCockpit', () => {
           docsWithSuggestionsForReview: flattenedSuggestions,
         },
         thesaurus: thesauri[0],
-        taskState: { SyncState: { state: 'running', result: {}, message: 'Updating suggestions' } },
-        updateTaskState: jasmine.createSpy('updateTaskState'),
+        tasksState: {
+          SyncState: { state: 'running', result: {}, message: 'Updating suggestions' },
+        },
+        updateCockpitData: jasmine.createSpy('updateCockpitData'),
         startTraining: jasmine.createSpy('startTraining'),
         toggleEnableClassification: jasmine.createSpy('toggleEnableClassification'),
       };
