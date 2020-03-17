@@ -5,6 +5,9 @@ import React, { Component } from 'react';
 import { FormatMetadata } from 'app/Metadata';
 import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
 
+import { FavoriteBanner } from 'app/Favorites';
+import { FeatureToggle } from 'app/components/Elements/FeatureToggle';
+
 import { RowList, ItemFooter } from './Lists';
 import DocumentLanguage from './DocumentLanguage';
 import Icon from './Icon';
@@ -76,6 +79,9 @@ export class Item extends Component {
           {this.props.labels}
           {buttons}
         </ItemFooter>
+        <div className="item-favorite">
+          <FavoriteBanner sharedId={doc.sharedId} />
+        </div>
       </RowList.Item>
     );
   }
