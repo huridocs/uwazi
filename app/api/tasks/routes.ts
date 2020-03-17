@@ -1,4 +1,4 @@
-/** @format
+/**
  * Uwazi routes that start and inspect tasks.
  */
 
@@ -38,7 +38,6 @@ export default (app: Application) => {
         .keys({
           name: Joi.string().required(),
           type: Joi.string().required(),
-          args: Joi.any(),
         })
         .required(),
       'query'
@@ -47,7 +46,7 @@ export default (app: Application) => {
     async (req: Request, res: Response) => {
       const task = TaskProvider.getOrCreate(req.query?.name, req.query?.type);
       if (task.status.state === 'created') {
-        task.start(req.query?.args);
+        task.start(req.body ?? {});
       }
       return res.json(task?.status ?? { state: 'undefined' });
     }

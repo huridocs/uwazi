@@ -1,6 +1,6 @@
 const provenanceTypes = {
-  empty: '',
-  bulk: 'BULK_ACCEPT',
+  empty: '' as '',
+  bulk: 'BULK_ACCEPT' as 'BULK_ACCEPT',
 };
 
 export { provenanceTypes };

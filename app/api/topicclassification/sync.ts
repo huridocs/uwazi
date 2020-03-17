@@ -10,6 +10,7 @@ import { getModel } from 'api/topicclassification/api';
 import { buildFullModelName } from 'shared/commonTopicClassification';
 import JSONRequest from 'shared/JSONRequest';
 import { propertyTypes } from 'shared/propertyTypes';
+import { provenanceTypes } from 'shared/provenanceTypes';
 import { Task, TaskProvider } from 'shared/tasks/tasks';
 import { sleep } from 'shared/tsUtils';
 import { PropertySchema } from 'shared/types/commonTypes';
@@ -119,7 +120,7 @@ async function fetchSuggestions(
   return newPropMetadata;
 }
 
-async function handleProp(
+async function handlePropOnlynew(
   e: EntitySchema,
   args: SyncArgs,
   prop: PropertySchema,
@@ -127,32 +128,67 @@ async function handleProp(
   latestModelVersion?: string
 ): Promise<boolean> {
   const seq = await extractSequence(e);
-  if (args.mode === 'onlynew') {
-    if (e.metadata![prop.name!] && (e.metadata![prop.name!] ?? []).length) {
+  if (e.metadata![prop.name!] && (e.metadata![prop.name!] ?? []).length) {
+    return false;
+  }
+  if (!args.overwrite && e.suggestedMetadata![prop.name!]) {
+    return false;
+  }
+  if (latestModelVersion) {
+    const currentModel = e
+      .suggestedMetadata![prop.name!]?.map(v => v.suggestion_model)
+      .reduce((max, s) => ((s || '') > max! ? s : max), '');
+    if (currentModel && currentModel >= latestModelVersion) {
       return false;
     }
-    if (!args.overwrite && e.suggestedMetadata![prop.name!]) {
+  }
+  const suggestions = await fetchSuggestions(e, prop, seq, thes);
+  if (
+    !suggestions ||
+    JSON.stringify(suggestions) === JSON.stringify(e.suggestedMetadata![prop.name!])
+  ) {
+    return false;
+  }
+  e.suggestedMetadata![prop.name!] = suggestions;
+  return true;
+}
+
+async function handlePropAutoaccept(
+  e: EntitySchema,
+  args: SyncArgs,
+  prop: PropertySchema,
+  thes: ThesaurusSchema,
+  latestModelVersion?: string
+): Promise<boolean> {
+  const seq = await extractSequence(e);
+  if (e.metadata![prop.name!] && (e.metadata![prop.name!] ?? []).length) {
+    if (!e.metadata![prop.name!]!.every(v => v.provenance === provenanceTypes.bulk)) {
+      return false;
+    }
+    if (!args.overwrite) {
       return false;
     }
     if (latestModelVersion) {
       const currentModel = e
-        .suggestedMetadata![prop.name!]?.map(v => v.suggestion_model)
+        .metadata![prop.name!]?.map(v => v.suggestion_model)
         .reduce((max, s) => ((s || '') > max! ? s : max), '');
       if (currentModel && currentModel >= latestModelVersion) {
         return false;
       }
     }
-    const suggestions = await fetchSuggestions(e, prop, seq, thes);
-    if (
-      !suggestions ||
-      JSON.stringify(suggestions) === JSON.stringify(e.suggestedMetadata![prop.name!])
-    ) {
-      return false;
-    }
-    e.suggestedMetadata![prop.name!] = suggestions;
-    return true;
   }
-  return false;
+  const suggestions = await fetchSuggestions(e, prop, seq, thes);
+  if (!suggestions) {
+    return false;
+  }
+  const toApply = suggestions
+    .filter(s => (s.suggestion_confidence ?? 0) >= (args.autoAcceptConfidence ?? 0))
+    .map(s => ({ ...s, provenance: provenanceTypes.bulk }));
+  if (JSON.stringify(toApply) === JSON.stringify(e.metadata![prop.name!])) {
+    return false;
+  }
+  e.metadata![prop.name!] = toApply;
+  return true;
 }
 
 export async function syncEntity(
@@ -184,8 +220,21 @@ export async function syncEntity(
       if (availableModels !== undefined && !availableModels[modelName]) {
         return;
       }
-      didSth =
-        didSth || (await handleProp(e, args, prop, thesaurus, (availableModels ?? {})[modelName]));
+      if (args.mode === 'onlynew') {
+        didSth =
+          didSth ||
+          (await handlePropOnlynew(e, args, prop, thesaurus, (availableModels ?? {})[modelName]));
+      } else if (args.mode === 'autoaccept') {
+        didSth =
+          didSth ||
+          (await handlePropAutoaccept(
+            e,
+            args,
+            prop,
+            thesaurus,
+            (availableModels ?? {})[modelName]
+          ));
+      }
     })
   );
   return didSth;
@@ -225,6 +274,9 @@ class SyncTask extends Task {
       {} as { [k: string]: ThesaurusSchema }
     );
     if (!Object.keys(models).length) {
+      if (args.model) {
+        throw new Error(`The selected model ${args.model} was not found!`);
+      }
       this.status.message =
         'Nothing to do: Topic Classification server does not have any models (yet).';
       return;

@@ -15,6 +15,7 @@ import { ClassifierModelSchema } from 'app/Thesauri/types/classifierModelType';
 import 'isomorphic-fetch';
 import { buildFullModelName } from 'shared/commonTopicClassification';
 import request from 'shared/JSONRequest';
+import { provenanceTypes } from 'shared/provenanceTypes';
 import { TaskStatus } from 'shared/tasks/tasks';
 import { EntitySchema } from 'shared/types/entityType';
 import { URL } from 'url';
@@ -144,7 +145,11 @@ export async function startTraining(thesaurus: ThesaurusSchema) {
     train_ratio: 1.0 - testSamples / trainingData.rows.length,
     samples: await trainingData.rows.reduce(
       async (res: Promise<{ seq: string; training_labels: string[] }[]>, e: EntitySchema) => {
-        if (!e.metadata || !e.metadata[propNames[0]]?.length) {
+        if (
+          !e.metadata ||
+          !e.metadata[propNames[0]]?.length ||
+          e.metadata[propNames[0]]?.some(v => v.provenance === provenanceTypes.bulk)
+        ) {
           return res;
         }
         return [

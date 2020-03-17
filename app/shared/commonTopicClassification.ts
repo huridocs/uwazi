@@ -20,7 +20,7 @@ export function getThesaurusPropertyNames(
     t.properties?.forEach(p => {
       if (
         p.name &&
-        [propertyTypes.select, propertyTypes.multiselect].includes(p.type) &&
+        (p.type === propertyTypes.select || p.type === propertyTypes.multiselect) &&
         p.content === thesaurusId
       ) {
         propNames[p.name] = true;
