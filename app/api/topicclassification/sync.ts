@@ -1,22 +1,16 @@
-/* eslint-disable no-await-in-loop,camelcase,max-lines */
-import { tcServer } from 'api/config/topicClassification';
 import entities from 'api/entities';
-import { MetadataObject } from 'api/entities/entitiesModel';
 import { QueryForEach, WithId } from 'api/odm';
 import templates from 'api/templates';
 import thesauri from 'api/thesauri';
 import { extractSequence, listModels } from 'api/topicclassification';
-import { getModel } from 'api/topicclassification/api';
+import { getModel, fetchSuggestions } from 'api/topicclassification/api';
 import { buildFullModelName } from 'shared/commonTopicClassification';
-import JSONRequest from 'shared/JSONRequest';
-import { propertyTypes } from 'shared/propertyTypes';
 import { provenanceTypes } from 'shared/provenanceTypes';
 import { Task, TaskProvider } from 'shared/tasks/tasks';
-import { sleep } from 'shared/tsUtils';
 import { PropertySchema } from 'shared/types/commonTypes';
 import { EntitySchema } from 'shared/types/entityType';
 import { TemplateSchema } from 'shared/types/templateType';
-import { ThesaurusSchema, ThesaurusValueSchema } from 'shared/types/thesaurusType';
+import { ThesaurusSchema } from 'shared/types/thesaurusType';
 import * as util from 'util';
 
 export interface SyncArgs {
@@ -26,98 +20,6 @@ export interface SyncArgs {
   noDryRun?: boolean;
   overwrite?: boolean;
   autoAcceptConfidence?: number;
-}
-
-type ClassificationSample = {
-  seq: string;
-  sharedId: string | undefined;
-};
-
-type ClassifyRequest = {
-  samples: ClassificationSample[];
-};
-
-type ClassifyResponse = {
-  json: {
-    samples?: {
-      sharedId: string;
-      predicted_labels: { topic: string; quality: number }[];
-      model_version?: string;
-    }[];
-  };
-  status: any;
-};
-
-async function sendSample(
-  path: string,
-  request: ClassifyRequest
-): Promise<ClassifyResponse | null> {
-  let response: ClassifyResponse = { json: { samples: [] }, status: 0 };
-  let lastErr;
-  for (let i = 0; i < 10; i += 1) {
-    lastErr = undefined;
-    try {
-      response = await JSONRequest.post(path, request);
-      if (response.status === 200) {
-        break;
-      }
-    } catch (err) {
-      lastErr = err;
-    }
-    // console.error(`Attempt ${i} failed: ${response.status} ${lastErr}`);
-    await sleep(523);
-  }
-  if (lastErr) {
-    throw lastErr;
-  }
-  if (response.status !== 200) {
-    // console.error(response);
-    return null;
-  }
-  return response;
-}
-
-async function fetchSuggestions(
-  e: EntitySchema,
-  prop: PropertySchema,
-  seq: string,
-  thes: ThesaurusSchema
-) {
-  const model = buildFullModelName(thes.name);
-  const request = { refresh_predictions: true, samples: [{ seq, sharedId: e.sharedId }] };
-  const response = await sendSample(`${tcServer}/classify?model=${model}`, request);
-  const sample = response?.json?.samples?.find(s => s.sharedId === e.sharedId);
-  if (!sample) {
-    return null;
-  }
-  let newPropMetadata = sample.predicted_labels
-    .reduce((res: MetadataObject<string>[], pred) => {
-      const flattenValues = (thes.values ?? []).reduce(
-        (result, dv) => (dv.values ? result.concat(dv.values) : result.concat([dv])),
-        [] as ThesaurusValueSchema[]
-      );
-      const thesValue = flattenValues.find(v => v.label === pred.topic || v.id === pred.topic);
-      if (!thesValue || !thesValue.id) {
-        if (pred.topic === 'nan') {
-          return res;
-        }
-        throw Error(`Model suggestion "${pred.topic}" not found in thesaurus ${thes.name}`);
-      }
-      return [
-        ...res,
-        {
-          value: thesValue.id,
-          label: thesValue.label,
-          suggestion_confidence: pred.quality,
-          suggestion_model: sample.model_version,
-        },
-      ];
-    }, [])
-    .sort((v1, v2) => (v2.suggestion_confidence || 0) - (v1.suggestion_confidence || 0));
-  if (prop.type === propertyTypes.select && newPropMetadata.length) {
-    newPropMetadata = [newPropMetadata[0]];
-  }
-  return newPropMetadata;
 }
 
 async function handlePropOnlynew(

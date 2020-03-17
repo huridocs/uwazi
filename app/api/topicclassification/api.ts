@@ -1,7 +1,4 @@
-/**
- * Topic Classification client.
- */
-/* eslint-disable camelcase */
+/* eslint-disable no-await-in-loop,camelcase,max-lines */
 
 import {
   IsTopicClassificationReachable,
@@ -13,18 +10,22 @@ import templates from 'api/templates';
 import { extractSequence } from 'api/topicclassification/common';
 import { ClassifierModelSchema } from 'app/Thesauri/types/classifierModelType';
 import 'isomorphic-fetch';
-import { buildFullModelName } from 'shared/commonTopicClassification';
-import request from 'shared/JSONRequest';
+import { buildFullModelName, getThesaurusPropertyNames } from 'shared/commonTopicClassification';
+import JSONRequest from 'shared/JSONRequest';
+import { propertyTypes } from 'shared/propertyTypes';
 import { provenanceTypes } from 'shared/provenanceTypes';
 import { TaskStatus } from 'shared/tasks/tasks';
+import { sleep } from 'shared/tsUtils';
+import { PropertySchema } from 'shared/types/commonTypes';
 import { EntitySchema } from 'shared/types/entityType';
+import { ThesaurusSchema, ThesaurusValueSchema } from 'shared/types/thesaurusType';
 import { URL } from 'url';
 import util from 'util';
-import { getThesaurusPropertyNames } from '../../shared/commonTopicClassification';
-import { ThesaurusSchema, ThesaurusValueSchema } from '../../shared/types/thesaurusType';
+import { MetadataObject } from '../entities/entitiesModel';
 
 const MODELS_LIST_ENDPOINT = 'models/list';
 const MODEL_GET_ENDPOINT = 'models';
+const CLASSIFY_ENDPOINT = 'classify';
 const TASKS_ENDPOINT = 'task';
 
 export async function listModels(
@@ -40,7 +41,7 @@ export async function listModels(
 
   try {
     tcUrl.searchParams.set('filter', filter);
-    const response = await request.get(tcUrl.href);
+    const response = await JSONRequest.get(tcUrl.href);
     if (response.status !== 200) {
       throw new Error(`Backend returned ${response.status}.`);
     }
@@ -59,7 +60,7 @@ export async function getModel(model: string): Promise<ClassifierModelSchema> {
   }
   const tcUrl = new URL(MODEL_GET_ENDPOINT, tcServer);
   tcUrl.searchParams.set('model', model);
-  const response = await request.get(tcUrl.href);
+  const response = await JSONRequest.get(tcUrl.href);
   return response.json as ClassifierModelSchema;
 }
 
@@ -91,7 +92,7 @@ export async function getTaskState(task: string): Promise<TaskStatus> {
   if (!(await IsTopicClassificationReachable())) {
     return { state: 'undefined', result: {} };
   }
-  const response = await request.get(tcUrl.href);
+  const response = await JSONRequest.get(tcUrl.href);
   if (response.status === 404) {
     return { state: 'undefined', result: {} };
   }
@@ -106,6 +107,101 @@ export async function getTaskState(task: string): Promise<TaskStatus> {
     message: pyTask.status,
     result: {},
   };
+}
+
+type ClassificationSample = {
+  seq: string;
+  sharedId: string | undefined;
+};
+
+type ClassifyRequest = {
+  samples: ClassificationSample[];
+};
+
+type ClassifyResponse = {
+  json: {
+    samples?: {
+      sharedId: string;
+      predicted_labels: { topic: string; quality: number }[];
+      model_version?: string;
+    }[];
+  };
+  status: any;
+};
+
+async function sendSample(
+  model: string,
+  request: ClassifyRequest
+): Promise<ClassifyResponse | null> {
+  if (!(await IsTopicClassificationReachable())) {
+    return null;
+  }
+  const tcUrl = new URL(CLASSIFY_ENDPOINT, tcServer);
+  tcUrl.searchParams.set('model', model);
+  let response: ClassifyResponse = { json: { samples: [] }, status: 0 };
+  let lastErr;
+  for (let i = 0; i < 10; i += 1) {
+    lastErr = undefined;
+    try {
+      response = await JSONRequest.post(tcUrl.href, request);
+      if (response.status === 200) {
+        break;
+      }
+    } catch (err) {
+      lastErr = err;
+    }
+    await sleep(523);
+  }
+  if (lastErr) {
+    throw lastErr;
+  }
+  if (response.status !== 200) {
+    return null;
+  }
+  return response;
+}
+
+export async function fetchSuggestions(
+  e: EntitySchema,
+  prop: PropertySchema,
+  seq: string,
+  thes: ThesaurusSchema
+) {
+  const model = buildFullModelName(thes.name);
+  const request = { refresh_predictions: true, samples: [{ seq, sharedId: e.sharedId }] };
+  const response = await sendSample(model, request);
+  const sample = response?.json?.samples?.find(s => s.sharedId === e.sharedId);
+  if (!sample) {
+    return null;
+  }
+  let newPropMetadata = sample.predicted_labels
+    .reduce((res: MetadataObject<string>[], pred) => {
+      const flattenValues = (thes.values ?? []).reduce(
+        (result, dv) => (dv.values ? result.concat(dv.values) : result.concat([dv])),
+        [] as ThesaurusValueSchema[]
+      );
+      const thesValue = flattenValues.find(v => v.label === pred.topic || v.id === pred.topic);
+      if (!thesValue || !thesValue.id) {
+        if (pred.topic === 'nan') {
+          return res;
+        }
+        throw Error(`Model suggestion "${pred.topic}" not found in thesaurus ${thes.name}`);
+      }
+      return [
+        ...res,
+        {
+          value: thesValue.id,
+          label: thesValue.label,
+          suggestion_confidence: pred.quality,
+          suggestion_model: sample.model_version,
+        },
+      ];
+    }, [])
+    .sort((v1, v2) => (v2.suggestion_confidence || 0) - (v1.suggestion_confidence || 0));
+  if (prop.type === propertyTypes.select && newPropMetadata.length) {
+    newPropMetadata = [newPropMetadata[0]];
+  }
+  return newPropMetadata;
 }
 
 export async function getTrainStateForThesaurus(thesaurusName: string = '') {
@@ -164,7 +260,7 @@ export async function startTraining(thesaurus: ThesaurusSchema) {
     ),
   };
   const tcUrl = new URL(TASKS_ENDPOINT, tcServer);
-  const response = await request.post(tcUrl.href, reqData);
+  const response = await JSONRequest.post(tcUrl.href, reqData);
   if (response.status !== 200) {
     return { state: 'undefined', result: {} };
   }
