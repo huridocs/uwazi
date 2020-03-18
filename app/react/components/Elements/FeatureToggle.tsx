@@ -1,23 +1,28 @@
-import * as React from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
 
-export type PropTypes = {
-  feature: string;
+export type ComponentPropTypes = {
   featureActivated: boolean;
   children: React.ReactNode;
 };
 
-const FeatureToggle: React.FC<PropTypes> = ({ featureActivated, children }: PropTypes) =>
-  featureActivated ? <React.Fragment>{children}</React.Fragment> : null;
+export type OwnPropTypes = {
+  feature: string;
+};
+
+const FeatureToggle: React.FC<ComponentPropTypes> = ({
+  featureActivated,
+  children,
+}: ComponentPropTypes) => (featureActivated ? <React.Fragment>{children}</React.Fragment> : null);
 
 FeatureToggle.defaultProps = {
   featureActivated: false,
 };
 
-export function mapStateToProps({ settings }: any, ownProps: Partial<PropTypes>) {
-  const features = settings.collection.toJS().features || {};
+function mapStateToProps({ settings }: any, ownProps: OwnPropTypes) {
+  const features = settings.collection.get('features') || {};
   return {
-    featureActivated: features[ownProps.feature || 'void'],
+    featureActivated: features.get(ownProps.feature),
   };
 }
 

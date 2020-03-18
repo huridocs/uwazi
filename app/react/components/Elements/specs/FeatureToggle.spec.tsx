@@ -4,21 +4,16 @@ import Immutable from 'immutable';
 import { shallow } from 'enzyme';
 import configureStore, { MockStore, MockStoreCreator } from 'redux-mock-store';
 
-import { FeatureToggle, mapStateToProps, PropTypes } from '../FeatureToggle';
+import { FeatureToggle, OwnPropTypes } from '../FeatureToggle';
 
 const mockStoreCreator: MockStoreCreator<object> = configureStore<object>([]);
 
 const renderComponent = (store: MockStore<object>, feature: string = 'testFeature') => {
-  const initialProps: Partial<PropTypes> = { feature };
-  const finalProps: Partial<PropTypes> = Object.assign(
-    {},
-    initialProps,
-    mapStateToProps(store.getState(), initialProps)
-  );
+  const ownProps: OwnPropTypes = { feature };
 
   return shallow(
     <Provider store={store}>
-      <FeatureToggle {...finalProps}>
+      <FeatureToggle {...ownProps}>
         <span>test</span>
       </FeatureToggle>
     </Provider>
