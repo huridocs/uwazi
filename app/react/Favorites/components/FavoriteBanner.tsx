@@ -6,7 +6,7 @@ export type FavoriteBannerProps = {
 };
 
 const getUwaziFavorites = () =>
-  localStorage.getItem('uwaziFavorites') ? localStorage.getItem('uwaziFavorites')?.split(',') : [];
+  localStorage.getItem('uwaziFavorites') ? localStorage.getItem('uwaziFavorites')!.split(',') : [];
 
 class FavoriteBanner extends Component<FavoriteBannerProps> {
   constructor(props: FavoriteBannerProps) {
@@ -50,4 +50,4 @@ class FavoriteBanner extends Component<FavoriteBannerProps> {
   }
 }
 
-export default FavoriteBanner;
+export { FavoriteBanner };

@@ -3,22 +3,23 @@
  */
 
 import React from 'react';
-import { shallow } from 'enzyme';
+import { shallow, ShallowWrapper } from 'enzyme';
 
-import FavoriteBanner, { FavoriteBannerProps } from '../FavoriteBanner';
+import { FavoriteBanner, FavoriteBannerProps } from '../FavoriteBanner';
 
 const localStorageMock = (() => {
   let store: any = {};
   return {
-    getItem: (key: string) => {
-      return store[key];
-    },
-    setItem: (key: string, value: any) => {
+    getItem: (key: string) => store[key],
+
+    setItem: (key: string, value: string) => {
       store[key] = value.toString();
     },
+
     clear: () => {
       store = {};
     },
+
     removeItem: (key: string) => {
       delete store[key];
     },
@@ -28,16 +29,10 @@ const localStorageMock = (() => {
 Object.defineProperty(window, 'localStorage', { value: localStorageMock });
 
 describe('Favorite Banner', () => {
-  let component: Partial<React.Component>;
-  let props: Partial<FavoriteBannerProps>;
+  let component: ShallowWrapper;
   let mockEvent: any;
 
-  const render = (passedProps: Partial<FavoriteBannerProps> = {}) => {
-    const startingProps = {
-      sharedId: 'sharedId2',
-    };
-
-    props = { ...startingProps, ...passedProps };
+  const render = (props: FavoriteBannerProps = { sharedId: 'sharedId2' }) => {
     component = shallow(<FavoriteBanner {...props} />);
   };
 
