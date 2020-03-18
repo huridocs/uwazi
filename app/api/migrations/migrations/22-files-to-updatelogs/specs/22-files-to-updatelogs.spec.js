@@ -1,0 +1,68 @@
+import testingDB from 'api/utils/testing_db';
+import migration from '../index.js';
+import fixtures, { file1, file2 } from './fixtures.js';
+
+const query = (collectionName, queryObject = {}, select = {}) =>
+  testingDB.mongodb
+    .collection(collectionName)
+    .find(queryObject, select)
+    .toArray();
+
+describe('migration files-to-updatelogs', () => {
+  beforeEach(async () => {
+    spyOn(process.stdout, 'write');
+    await testingDB.clearAllAndLoad(fixtures);
+  });
+
+  afterAll(async () => {
+    await testingDB.disconnect();
+  });
+
+  it('should have a delta number', () => {
+    expect(migration.delta).toBe(22);
+  });
+
+  it('should create entries on updatelogs for all files', async () => {
+    await migration.up(testingDB.mongodb);
+    const [file1log, file2log] = await query('updatelogs');
+
+    expect(file1log).toEqual(
+      expect.objectContaining({
+        timestamp: 0,
+        namespace: 'files',
+        mongoId: file1,
+        deleted: false,
+      })
+    );
+    expect(file2log).toEqual(
+      expect.objectContaining({
+        timestamp: 0,
+        namespace: 'files',
+        mongoId: file2,
+        deleted: false,
+      })
+    );
+  });
+
+  describe('when it has lastSync', () => {
+    it('should use lastSync as timestamp', async () => {
+      await testingDB.mongodb.collection('syncs').insertOne({
+        lastSync: 20,
+      });
+
+      await migration.up(testingDB.mongodb);
+      const [file1log, file2log] = await query('updatelogs');
+
+      expect(file1log).toEqual(
+        expect.objectContaining({
+          timestamp: 20,
+        })
+      );
+      expect(file2log).toEqual(
+        expect.objectContaining({
+          timestamp: 20,
+        })
+      );
+    });
+  });
+});
