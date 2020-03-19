@@ -144,6 +144,7 @@ describe('LibraryCharts', () => {
           { _id: 't2', name: 't2name' },
           { _id: 't3', name: 't3name' },
         ]),
+        translationContext: 'tcontext',
       };
     });
 
@@ -211,6 +212,7 @@ describe('LibraryCharts', () => {
           { type: 'multiselect', options: [] },
         ]),
         collection: fromJS({ filters: [] }),
+        translationContext: 'tcontext',
       };
     });
 

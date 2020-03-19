@@ -21,6 +21,7 @@ describe('SortButtons', () => {
       search: { order: 'desc', sort: 'title' },
       templates: immutable([
         {
+          _id: 'id',
           properties: [
             {},
             { filter: true, name: 'date', label: 'date', type: 'date' },
@@ -45,14 +46,27 @@ describe('SortButtons', () => {
       it('should not duplicate the entry', () => {
         props.templates = immutable([
           {
+            _id: 'id',
             properties: [
               {},
-              { filter: true, name: 'sortable_name', label: 'sortableProperty', type: 'text' },
+              {
+                filter: true,
+                name: 'sortable_name',
+                label: 'sortableProperty',
+                type: 'text',
+                _id: '_id',
+              },
             ],
           },
           {
             properties: [
-              { filter: true, name: 'sortable_name', label: 'anotherLabel', type: 'text' },
+              {
+                filter: true,
+                name: 'sortable_name',
+                label: 'anotherLabel',
+                type: 'text',
+                _id: '_id',
+              },
             ],
           },
         ]);

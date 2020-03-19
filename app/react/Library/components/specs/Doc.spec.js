@@ -20,8 +20,8 @@ describe('Doc', () => {
       sharedId: 'id',
       processed: true,
       connections: [
-        { sourceType: 'metadata' },
-        { _id: 'c1', sourceType: 'other', nonRelevant: true },
+        { context: 'context', sourceType: 'metadata' },
+        { context: 'context', _id: 'c1', sourceType: 'other', nonRelevant: true },
       ],
     };
 
