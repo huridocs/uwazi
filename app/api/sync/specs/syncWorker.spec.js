@@ -1,4 +1,4 @@
-/** @format */
+/* eslint-disable max-statements, max-lines */
 
 import 'api/entities';
 import 'api/thesauri/dictionariesModel';
@@ -331,6 +331,47 @@ describe('syncWorker', () => {
       });
     });
 
+    describe('uploadFile', () => {
+      it('should upload attachments, documents and thumbnails belonging to entities that are allowed to sync', async () => {
+        await syncWorkerWithConfig({
+          templates: {
+            [template1.toString()]: [],
+          },
+        });
+
+        expect(request.uploadFile.calls.count()).toBe(5);
+
+        expect(request.uploadFile).toHaveBeenCalledWith(
+          'url/api/sync/upload',
+          'test2.txt',
+          fs.readFileSync(path.join(__dirname, 'test2.txt'))
+        );
+
+        expect(request.uploadFile).toHaveBeenCalledWith(
+          'url/api/sync/upload',
+          'test.txt',
+          fs.readFileSync(path.join(__dirname, 'test.txt'))
+        );
+
+        expect(request.uploadFile).toHaveBeenCalledWith(
+          'url/api/sync/upload',
+          `${newDoc1.toString()}.jpg`,
+          fs.readFileSync(path.join(__dirname, `${newDoc1.toString()}.jpg`))
+        );
+
+        expect(request.uploadFile).toHaveBeenCalledWith(
+          'url/api/sync/upload',
+          'test_attachment.txt',
+          fs.readFileSync(path.join(__dirname, 'test_attachment.txt'))
+        );
+        expect(request.uploadFile).toHaveBeenCalledWith(
+          'url/api/sync/upload',
+          'test_attachment2.txt',
+          fs.readFileSync(path.join(__dirname, 'test_attachment2.txt'))
+        );
+      });
+    });
+
     describe('entities', () => {
       it('should only sync entities belonging to a whitelisted template and properties and exclude non-templated entities', async () => {
         await syncWorkerWithConfig({
@@ -375,37 +416,6 @@ describe('syncWorker', () => {
           namespace: 'entities',
           data: expect.objectContaining({ title: 'not to sync' }),
         });
-      });
-
-      it('should upload main file, and thumbnail when file timestamp is newer than lastSync', async () => {
-        await syncWorkerWithConfig({
-          templates: {
-            [template1.toString()]: [],
-            [template3.toString()]: [],
-          },
-        });
-
-        expect(request.uploadFile.calls.count()).toBe(4);
-        expect(request.uploadFile).toHaveBeenCalledWith(
-          'url/api/sync/upload',
-          'test.txt',
-          fs.readFileSync(path.join(__dirname, 'test.txt'))
-        );
-        expect(request.uploadFile).toHaveBeenCalledWith(
-          'url/api/sync/upload',
-          'test_attachment.txt',
-          fs.readFileSync(path.join(__dirname, 'test_attachment.txt'))
-        );
-        expect(request.uploadFile).toHaveBeenCalledWith(
-          'url/api/sync/upload',
-          'test_attachment2.txt',
-          fs.readFileSync(path.join(__dirname, 'test_attachment2.txt'))
-        );
-        expect(request.uploadFile).toHaveBeenCalledWith(
-          'url/api/sync/upload',
-          `${newDoc1.toString()}.jpg`,
-          fs.readFileSync(path.join(__dirname, `${newDoc1.toString()}.jpg`))
-        );
       });
     });
 
@@ -483,8 +493,8 @@ describe('syncWorker', () => {
     it('should process the log records newer than the current sync time (minus 1 sec)', async () => {
       await syncAllTemplates();
 
-      expect(request.post.calls.count()).toBe(8);
-      expect(request.delete.calls.count()).toBe(2);
+      expect(request.post.calls.count()).toBe(13);
+      expect(request.delete.calls.count()).toBe(3);
     });
 
     it('should update lastSync timestamp with the last change', async () => {

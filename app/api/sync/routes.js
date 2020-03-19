@@ -1,5 +1,3 @@
-/** @format */
-
 import multer from 'multer';
 
 import { models } from 'api/odm';
@@ -18,6 +16,38 @@ const storage = multer.diskStorage({
   },
 });
 
+const indexEntities = async req => {
+  if (req.body.namespace === 'entities') {
+    await search.indexEntities({ _id: req.body.data._id }, '+fullText');
+  }
+
+  if (req.body.namespace === 'files') {
+    await search.indexEntities({ sharedId: req.body.data.entity }, '+fullText');
+  }
+};
+
+const deleteFileFromIndex = file => search.indexEntities({ sharedId: file.entity });
+
+const deleteEntityFromIndex = async entity => {
+  try {
+    await search.delete(entity);
+  } catch (err) {
+    if (err.statusCode !== 404) {
+      throw err;
+    }
+  }
+};
+
+const deleteFromIndex = async (req, file) => {
+  if (req.query.namespace === 'entities') {
+    await deleteEntityFromIndex({ _id: JSON.parse(req.query.data)._id });
+  }
+
+  if (file) {
+    await deleteFileFromIndex(file);
+  }
+};
+
 export default app => {
   const upload = multer({ storage });
 
@@ -27,14 +57,13 @@ export default app => {
         const [settings] = await models.settings.get({});
         req.body.data._id = settings._id;
       }
-      const saver = Array.isArray(req.body.data)
-        ? models[req.body.namespace].saveMultiple(req.body.data)
-        : models[req.body.namespace].save(req.body.data);
-      await saver;
 
-      if (req.body.namespace === 'entities') {
-        await search.indexEntities({ _id: req.body.data._id }, '+fullText');
-      }
+      await (Array.isArray(req.body.data)
+        ? models[req.body.namespace].saveMultiple(req.body.data)
+        : models[req.body.namespace].save(req.body.data));
+
+      await indexEntities(req);
+
       res.json('ok');
     } catch (e) {
       next(e);
@@ -47,16 +76,17 @@ export default app => {
 
   app.delete('/api/sync', needsAuthorization(['admin']), async (req, res, next) => {
     try {
-      await models[req.query.namespace].delete(JSON.parse(req.query.data));
-      if (req.query.namespace === 'entities') {
-        try {
-          await search.delete({ _id: JSON.parse(req.query.data)._id });
-        } catch (err) {
-          if (err.statusCode !== 404) {
-            throw err;
-          }
-        }
+      let file;
+      if (req.query.namespace === 'files') {
+        file = await models[req.query.namespace].getById(JSON.parse(req.query.data)._id);
       }
+
+      await models[req.query.namespace].delete(JSON.parse(req.query.data));
+
+      if (req.query.namespace === 'entities' || file) {
+        await deleteFromIndex(req, file);
+      }
+
       res.json('ok');
     } catch (e) {
       next(e);

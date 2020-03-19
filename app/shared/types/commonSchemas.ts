@@ -12,11 +12,10 @@ export const objectIdSchema = {
 
 export const linkSchema = {
   type: 'object',
-  required: ['label', 'url'],
   additionalProperties: false,
   properties: {
-    label: { type: 'string', minLength: 1 },
-    url: { type: 'string', minLength: 1 },
+    label: { oneOf: [{ type: 'string' }, { type: 'null' }] },
+    url: { oneOf: [{ type: 'string' }, { type: 'null' }] },
   },
 };
 
@@ -24,12 +23,8 @@ export const dateRangeSchema = {
   type: 'object',
   additionalProperties: false,
   properties: {
-    from: {
-      oneOf: [{ type: 'number' }, { type: 'null' }],
-    },
-    to: {
-      oneOf: [{ type: 'number' }, { type: 'null' }],
-    },
+    from: { oneOf: [{ type: 'number' }, { type: 'null' }] },
+    to: { oneOf: [{ type: 'number' }, { type: 'null' }] },
   },
 };
 

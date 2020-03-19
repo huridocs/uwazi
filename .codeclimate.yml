@@ -1,4 +1,4 @@
-version: "2"         # required to adjust maintainability checks
+version: '2' # required to adjust maintainability checks
 checks:
   argument-count:
     enabled: false
@@ -21,11 +21,11 @@ checks:
       threshold: 4
   similar-code:
     config:
-      threshold: 70 
+      threshold: 70
 plugins:
   eslint:
     enabled: true
-    channel: "eslint-5"
+    channel: 'eslint-5'
     config:
       config: .eslintrc
     checks:
@@ -33,7 +33,7 @@ plugins:
         enabled: false
 ratings:
   paths:
-  - app/**
+    - app/**
 exclude_patterns:
-  - "**/index.js"
-  - "**/fixtures.js"
+  - '**/index.js'
+  - '**/fixtures.js'

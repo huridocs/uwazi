@@ -1,5 +1,3 @@
-/** @format */
-
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import Map from 'app/Map/Map';
@@ -30,6 +28,7 @@ export default class Geolocation extends Component {
   onChange(newValue) {
     this.setState({ currentLatitude: newValue.lat, currentLongitude: newValue.lon });
     const { onChange, value } = this.props;
+
     if (!isCoordinateValid(newValue.lat) || !isCoordinateValid(newValue.lon)) {
       onChange(this.emptyValue);
       return;
