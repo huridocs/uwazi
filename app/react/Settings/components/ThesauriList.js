@@ -1,6 +1,5 @@
 /** @format */
 
-import Footer from 'app/App/Footer';
 import { I18NLink, t } from 'app/I18N';
 import {
   checkThesaurusCanBeClassified,
@@ -170,7 +169,6 @@ export class ThesauriList extends Component {
             <span className="btn-label">{t('System', 'Add thesaurus')}</span>
           </I18NLink>
         </div>
-        <Footer />
       </div>
     );
   }
