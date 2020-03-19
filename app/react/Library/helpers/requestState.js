@@ -61,7 +61,7 @@ export default function requestState(request, globalResources) {
         setReduxState(state),
         actions.set('library.sidepanel.quickLabelState', {
           thesaurus: request.data.quickLabelThesaurus,
-          autoSave: true,
+          autoSave: false,
         }),
       ];
     }
