@@ -2,7 +2,7 @@
 
 import { t } from 'app/I18N';
 import LibraryFilters from 'app/Library/components/LibraryFilters';
-import MultiEditLabelsPanel from 'app/Library/components/MultiEditLabelsPanel';
+import QuickLabelPanel from 'app/Library/components/QuickLabelPanel';
 import ViewMetadataPanel from 'app/Library/components/ViewMetadataPanel';
 import Welcome from 'app/Library/components/Welcome';
 import SelectMultiplePanelContainer from 'app/Library/containers/SelectMultiplePanelContainer';
@@ -19,16 +19,16 @@ export class LibraryLayoutBase extends Component {
     if (blankState()) {
       return <Welcome />;
     }
-    const { className, children, multiEditThesaurus } = this.props;
+    const { className, children, quickLabelThesaurus } = this.props;
 
     return (
       <div className="row panels-layout">
         <Helmet title={t('System', 'Library', null, false)} />
         <main className={`library-viewer document-viewer with-panel ${className}`}>{children}</main>
         <LibraryFilters storeKey="library" />
-        {!multiEditThesaurus && <ViewMetadataPanel storeKey="library" />}
-        {!multiEditThesaurus && <SelectMultiplePanelContainer storeKey="library" />}
-        {multiEditThesaurus && <MultiEditLabelsPanel storeKey="library" />}
+        {!quickLabelThesaurus && <ViewMetadataPanel storeKey="library" />}
+        {!quickLabelThesaurus && <SelectMultiplePanelContainer storeKey="library" />}
+        {quickLabelThesaurus && <QuickLabelPanel storeKey="library" />}
         <FeatureToggleSemanticSearch>
           <SemanticSearchPanel storeKey="library" />
         </FeatureToggleSemanticSearch>
@@ -39,15 +39,15 @@ export class LibraryLayoutBase extends Component {
 
 LibraryLayoutBase.defaultProps = {
   className: '',
-  multiEditThesaurus: '',
+  quickLabelThesaurus: '',
 };
 
 LibraryLayoutBase.propTypes = {
   children: PropTypes.instanceOf(Object).isRequired,
   className: PropTypes.string,
-  multiEditThesaurus: PropTypes.string,
+  quickLabelThesaurus: PropTypes.string,
 };
 
 export default connect(state => ({
-  multiEditThesaurus: state.library.sidepanel.multiEditOpts.get('thesaurus'),
+  quickLabelThesaurus: state.library.sidepanel.quickLabelState.get('thesaurus'),
 }))(LibraryLayoutBase);

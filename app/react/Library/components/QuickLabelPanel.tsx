@@ -1,6 +1,6 @@
 import { t } from 'app/I18N';
 import { Notice } from 'app/Thesauri/Notice';
-import { IStore, MultiEditOpts, MultiEditState } from 'app/istore';
+import { IStore, QuickLabelState, QuickLabelMetadata } from 'app/istore';
 import SidePanel from 'app/Layout/SidePanel';
 import { unselectAllDocuments } from 'app/Library/actions/libraryActions';
 import * as metadataActions from 'app/Metadata/actions/actions';
@@ -20,40 +20,40 @@ import { TemplateSchema } from 'shared/types/templateType';
 import { ThesaurusSchema } from 'shared/types/thesaurusType';
 import { Icon } from 'UI';
 import {
-  maybeSaveMultiEdit,
+  maybeSaveQuickLabels,
   selectedDocumentsChanged,
-  toggleAutoSaveMode,
-} from '../actions/multiEditActions';
+  toggleQuickLabelAutoSave,
+} from '../actions/quickLabelActions';
 
 const defaultProps = {
-  formKey: 'library.sidepanel.multipleEdit',
-  multipleEdit: {} as MultiEditState,
-  multiEditThesaurus: undefined as IImmutable<ThesaurusSchema> | undefined,
-  opts: {} as MultiEditOpts,
+  formKey: 'library.sidepanel.quickLabelMetadata',
+  quickLabelMetadata: {} as QuickLabelMetadata,
+  quickLabelThesaurus: undefined as IImmutable<ThesaurusSchema> | undefined,
+  opts: {} as QuickLabelState,
   selectedDocuments: Immutable.fromJS([]) as IImmutable<EntitySchema[]>,
   templates: Immutable.fromJS([]) as IImmutable<TemplateSchema[]>,
   unselectAllDocuments: () => {},
-  toggleAutoSaveMode: () => {},
+  toggleQuickLabelAutoSave: () => {},
   selectedDocumentsChanged: () => {},
-  maybeSaveMultiEdit: () => {},
+  maybeSaveQuickLabels: () => {},
   multipleUpdate: (_o: IImmutable<EntitySchema[]>, _diff: EntitySchema) => {},
 };
 
-export type MultiEditLabelsPanelProps = typeof defaultProps;
+export type QuickLabelPanelProps = typeof defaultProps;
 
 export const selectIsPristine = createSelector(
-  (state: IStore) => state.library.sidepanel.multipleEditForm.$form.pristine,
+  (state: IStore) => state.library.sidepanel.quickLabelMetadataForm.$form.pristine,
   value => value
 );
 
-export class MultiEditLabelsPanel extends Component<MultiEditLabelsPanelProps> {
+export class QuickLabelPanel extends Component<QuickLabelPanelProps> {
   static defaultProps = defaultProps;
 
   static contextTypes = {
     confirm: PropTypes.func,
   };
 
-  constructor(props: MultiEditLabelsPanelProps) {
+  constructor(props: QuickLabelPanelProps) {
     super(props);
     this.publish = this.publish.bind(this);
   }
@@ -74,7 +74,7 @@ export class MultiEditLabelsPanel extends Component<MultiEditLabelsPanelProps> {
     return (
       <button
         type="button"
-        onClick={() => this.props.toggleAutoSaveMode()}
+        onClick={() => this.props.toggleQuickLabelAutoSave()}
         className={`btn btn-default btn-header btn-toggle-${opts.autoSave ? 'on' : 'off'}`}
       >
         <Icon icon={opts.autoSave ? 'toggle-on' : 'toggle-off'} />
@@ -121,7 +121,7 @@ export class MultiEditLabelsPanel extends Component<MultiEditLabelsPanelProps> {
               </button>
               <button
                 type="button"
-                onClick={() => this.props.maybeSaveMultiEdit()}
+                onClick={() => this.props.maybeSaveQuickLabels()}
                 className={`save-metadata ${btnClass}`}
               >
                 <Icon icon="save" />
@@ -135,7 +135,7 @@ export class MultiEditLabelsPanel extends Component<MultiEditLabelsPanelProps> {
   }
 
   renderProp(propName: string) {
-    const { multiEditThesaurus, templates } = this.props;
+    const { quickLabelThesaurus, templates } = this.props;
     const prop = templates
       .map(tmpl => tmpl?.get('properties')?.find(p => p?.get('name') === propName))
       .filter(p => !!p);
@@ -147,12 +147,12 @@ export class MultiEditLabelsPanel extends Component<MultiEditLabelsPanelProps> {
           </li>
           <li className="wide" />
           <MultiSelectTristate
-            model={`library.sidepanel.multipleEdit.${propName}`}
+            model={`library.sidepanel.quickLabelMetadata.${propName}`}
             optionsValue="id"
-            options={translateOptions(multiEditThesaurus)}
-            prefix={`library.sidepanel.multipleEdit.${propName}`}
+            options={translateOptions(quickLabelThesaurus)}
+            prefix={`library.sidepanel.quickLabelMetadata.${propName}`}
             sort
-            placeholder={`${t('System', 'Search', null, false)} '${multiEditThesaurus!.get(
+            placeholder={`${t('System', 'Search', null, false)} '${quickLabelThesaurus!.get(
               'name'
             )}'`}
           />
@@ -179,12 +179,12 @@ export class MultiEditLabelsPanel extends Component<MultiEditLabelsPanelProps> {
   }
 
   renderSidePanelBody() {
-    const { multiEditThesaurus, multipleEdit } = this.props;
+    const { quickLabelThesaurus, quickLabelMetadata } = this.props;
     let content;
-    if (!multiEditThesaurus) {
+    if (!quickLabelThesaurus) {
       content = (
         <div>
-          {MultiEditLabelsPanel.renderNotice()}
+          {QuickLabelPanel.renderNotice()}
           <label className="errormsg">
             {
               "Oops! We couldn't find the thesaurus you're trying to edit. Try navigating back to this page through Settings."
@@ -192,21 +192,21 @@ export class MultiEditLabelsPanel extends Component<MultiEditLabelsPanelProps> {
           </label>
         </div>
       );
-    } else if (!Object.keys(multipleEdit).length) {
+    } else if (!Object.keys(quickLabelMetadata).length) {
       content = (
         <div>
-          {MultiEditLabelsPanel.renderNotice()}
+          {QuickLabelPanel.renderNotice()}
           <label className="errormsg">
             Nothing to see here! The selected documents are not using the selected thesaurus&nbsp;
-            <b>{multiEditThesaurus.get('name')}</b>. Try selecting other documents.
+            <b>{quickLabelThesaurus.get('name')}</b>. Try selecting other documents.
           </label>
         </div>
       );
     } else {
       content = (
         <div>
-          {MultiEditLabelsPanel.renderNotice()}
-          {Object.keys(multipleEdit)
+          {QuickLabelPanel.renderNotice()}
+          {Object.keys(quickLabelMetadata)
             .sort()
             .map(p => this.renderProp(p))}
         </div>
@@ -251,19 +251,19 @@ export class MultiEditLabelsPanel extends Component<MultiEditLabelsPanelProps> {
   }
 }
 
-export const selectMultiEditThesaurus = createSelector(
+export const selectquickLabelThesaurus = createSelector(
   (state: IStore) =>
     state.thesauris.find(
-      thes => thes!.get('_id') === state.library.sidepanel.multiEditOpts.get('thesaurus')
+      thes => thes!.get('_id') === state.library.sidepanel.quickLabelState.get('thesaurus')
     ),
   thes => thes
 );
 
 export const mapStateToProps = (state: IStore) => ({
   selectedDocuments: state.library.ui.get('selectedDocuments'),
-  multipleEdit: state.library.sidepanel.multipleEdit,
-  multiEditThesaurus: selectMultiEditThesaurus(state),
-  opts: state.library.sidepanel.multiEditOpts.toJS(),
+  quickLabelMetadata: state.library.sidepanel.quickLabelMetadata,
+  quickLabelThesaurus: selectquickLabelThesaurus(state),
+  opts: state.library.sidepanel.quickLabelState.toJS(),
   templates: createSelector(
     (s: IStore) => s.templates,
     tmpls => tmpls
@@ -274,13 +274,13 @@ function mapDispatchToProps(dispatch: any) {
   return bindActionCreators(
     {
       unselectAllDocuments,
-      toggleAutoSaveMode,
+      toggleQuickLabelAutoSave,
       selectedDocumentsChanged,
-      maybeSaveMultiEdit,
+      maybeSaveQuickLabels,
       multipleUpdate: metadataActions.multipleUpdate,
     },
     wrapDispatch(dispatch, 'library')
   );
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(MultiEditLabelsPanel);
+export default connect(mapStateToProps, mapDispatchToProps)(QuickLabelPanel);

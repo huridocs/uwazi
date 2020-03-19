@@ -1,6 +1,6 @@
 import { actions } from 'app/BasicReducer';
 import EntitiesAPI from 'app/Entities/EntitiesAPI';
-import { IStore, MultiEditOpts, MultiEditState } from 'app/istore';
+import { IStore, QuickLabelState, QuickLabelMetadata } from 'app/istore';
 import { notificationActions } from 'app/Notifications';
 import { RequestParams } from 'app/utils/RequestParams';
 import { actions as formActions } from 'react-redux-form';
@@ -10,19 +10,19 @@ import { MetadataObjectSchema } from 'shared/types/commonTypes';
 import { EntitySchema } from 'shared/types/entityType';
 import { updateEntities } from './libraryActions';
 
-export function toggleAutoSaveMode() {
+export function toggleQuickLabelAutoSave() {
   return (dispatch: Dispatch<IStore>, getState: () => IStore) => {
-    const opts = getState().library.sidepanel.multiEditOpts.toJS();
+    const opts = getState().library.sidepanel.quickLabelState.toJS();
     dispatch(
-      actions.set('library.sidepanel.multiEditOpts', {
+      actions.set('library.sidepanel.quickLabelState', {
         ...opts,
         autoSave: !opts.autoSave,
-      } as MultiEditOpts)
+      } as QuickLabelState)
     );
   };
 }
 
-function buildMultipleEditState(docs: EntitySchema[], propNames: string[]): MultiEditState {
+function buildQuickLabelMetadata(docs: EntitySchema[], propNames: string[]): QuickLabelMetadata {
   const counts: { [k: string]: { [k: string]: number } } = propNames.reduce(
     (res, p) => ({ ...res, [p]: {} }),
     {}
@@ -63,9 +63,9 @@ function buildMultipleEditState(docs: EntitySchema[], propNames: string[]): Mult
 
 export function selectedDocumentsChanged() {
   return async (dispatch: Dispatch<IStore>, getState: () => IStore) => {
-    const model = 'library.sidepanel.multipleEdit';
+    const model = 'library.sidepanel.quickLabelMetadata';
     const state = getState();
-    if (!state.library?.sidepanel?.multiEditOpts?.get('thesaurus')) {
+    if (!state.library?.sidepanel?.quickLabelState?.get('thesaurus')) {
       return;
     }
     dispatch(formActions.reset(model));
@@ -83,22 +83,22 @@ export function selectedDocumentsChanged() {
     const templateIds = docs.map(d => d.template).filter(v => v);
     const templates = state.templates.filter(t => templateIds.includes(t!.get('_id'))).toJS();
     const propNames = getThesaurusPropertyNames(
-      state.library.sidepanel.multiEditOpts.get('thesaurus')!,
+      state.library.sidepanel.quickLabelState.get('thesaurus')!,
       templates
     );
-    const newState = buildMultipleEditState(docs, propNames);
+    const newState = buildQuickLabelMetadata(docs, propNames);
     dispatch(formActions.load(model, newState));
     dispatch(formActions.setPristine(model));
   };
 }
 
-export function maybeSaveMultiEdit() {
+export function maybeSaveQuickLabels() {
   return async (dispatch: Dispatch<IStore>, getState: () => IStore) => {
     const state = getState();
-    if (!state.library?.sidepanel?.multiEditOpts?.get('autoSave')) {
+    if (!state.library?.sidepanel?.quickLabelState?.get('autoSave')) {
       return;
     }
-    const current = state.library.sidepanel.multipleEdit;
+    const current = state.library.sidepanel.quickLabelMetadata;
     const diffs: {
       [k: string]: { added: MetadataObjectSchema[]; removed: MetadataObjectSchema[] };
     } = {};

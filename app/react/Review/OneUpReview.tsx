@@ -53,8 +53,7 @@ function buildInitialOneUpState(
         if (
           !prop ||
           !prop.content ||
-          prop.type === propertyTypes.select ||
-          prop.type === propertyTypes.multiselect
+          (prop.type !== propertyTypes.select && prop.type !== propertyTypes.multiselect)
         ) {
           return res2;
         }

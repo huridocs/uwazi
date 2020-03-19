@@ -39,8 +39,8 @@ describe('task routes', () => {
         query: {
           name: 'a',
           type: 'TestTask',
-          args: { a: 1 },
         },
+        body: { a: 1 },
       });
       expect(response.startTime).not.toBe(undefined);
       response = await routes.get('/api/tasks', { query: { name: 'a' } });

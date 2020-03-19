@@ -12,7 +12,7 @@ export interface TasksState {
   TrainState?: TaskStatus;
 }
 
-export interface MultiEditOpts {
+export interface QuickLabelState {
   thesaurus?: string;
   autoSave?: boolean;
 }
@@ -28,11 +28,11 @@ export interface TriStateSelectValue {
   originalPartial: string[];
 }
 
-export interface MultiEditState {
+export interface QuickLabelMetadata {
   [k: string]: TriStateSelectValue;
 }
 
-export interface SuggestInfo {
+export interface ThesaurusSuggestions {
   property?: PropertySchema;
   model?: ClassifierModelSchema;
   docsWithLabels?: LabelCountSchema;
@@ -60,16 +60,16 @@ export interface IStore {
       selectedDocuments: EntitySchema[];
     }>;
     sidepanel: {
-      multiEditOpts: IImmutable<MultiEditOpts>;
-      multipleEdit: MultiEditState;
-      multipleEditForm: any;
+      quickLabelState: IImmutable<QuickLabelState>;
+      quickLabelMetadata: QuickLabelMetadata;
+      quickLabelMetadataForm: any;
     };
   };
   templates: IImmutable<TemplateSchema[]>;
   thesauris: IImmutable<ThesaurusSchema[]>;
   thesauri: {
     thesaurus: IImmutable<ThesaurusSchema>;
-    suggestInfo: IImmutable<SuggestInfo>;
+    suggestInfo: IImmutable<ThesaurusSuggestions>;
     tasksState: IImmutable<TasksState>;
   };
   relationships: any;

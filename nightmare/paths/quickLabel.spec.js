@@ -21,7 +21,7 @@ describe('review path', () => {
         .wait(selectors.libraryView.libraryFirstDocument);
       expect(await nightmare.isVisible(selectors.libraryView.libraryFirstDocument)).toBe(true);
     });
-    // http://localhost:3000/en/library/?multiEditThesaurus=58ad7d240d44252fee4e6208&q=(allAggregations:!t,filters:(),includeUnpublished:!t,limit:30,order:desc,sort:creationDate,types:!(%2758ad7d240d44252fee4e61fb%27),unpublished:!f)
+
     it('should not save without autosave', async () => {
       await nightmare
         .waitToClick(selectors.libraryView.superVillianType)

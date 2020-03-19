@@ -1,6 +1,6 @@
 import { actions } from 'app/BasicReducer';
 import { t } from 'app/I18N';
-import { IStore, SuggestInfo } from 'app/istore';
+import { IStore, ThesaurusSuggestions } from 'app/istore';
 import * as notifications from 'app/Notifications/actions/notificationsActions';
 import SearchAPI from 'app/Search/SearchAPI';
 import {
@@ -88,7 +88,7 @@ export function updateCockpitData(_serverRequestParams?: RequestParams) {
         docsWithSuggestionsForPublish,
         docsWithSuggestionsForReview,
         docsWithLabels,
-      } as SuggestInfo)
+      } as ThesaurusSuggestions)
     );
     dispatch(
       actions.set('thesauri.tasksState', { SyncState: syncState.json, TrainState: trainState })

@@ -4,7 +4,7 @@ import RouteHandler from 'app/App/RouteHandler';
 import { actions } from 'app/BasicReducer';
 import Loader from 'app/components/Elements/Loader';
 import { I18NLink, t } from 'app/I18N';
-import { IStore, SuggestInfo, TasksState } from 'app/istore';
+import { IStore, ThesaurusSuggestions, TasksState } from 'app/istore';
 import { resolveTemplateProp } from 'app/Settings/utils/resolveProperty';
 import TemplatesAPI from 'app/Templates/TemplatesAPI';
 import { Notice } from 'app/Thesauri/Notice';
@@ -24,7 +24,7 @@ import { getValuesSortedByName } from './utils/valuesSort';
 
 export type ThesaurusCockpitProps = {
   thesaurus: ThesaurusSchema;
-  suggestInfo: SuggestInfo;
+  suggestInfo: ThesaurusSuggestions;
   tasksState: TasksState;
   updateCockpitData: () => {};
   startTraining: () => {};
@@ -46,7 +46,7 @@ export class ThesaurusCockpitBase extends RouteHandler {
       actions.set('thesauri.thesaurus', thesaurus as ThesaurusSchema),
       actions.set('thesauri.suggestInfo', {
         property: assocProp,
-      } as SuggestInfo),
+      } as ThesaurusSuggestions),
       updateCockpitData(requestParams),
     ];
   }
@@ -123,7 +123,7 @@ export class ThesaurusCockpitBase extends RouteHandler {
           <div className="footer">
             <I18NLink
               title="label-docs"
-              to={`/library/?multiEditThesaurus=${thesaurus._id}&q=(allAggregations:!t,includeUnpublished:!t)`}
+              to={`/library/?quickLabelThesaurus=${thesaurus._id}&q=(allAggregations:!t,includeUnpublished:!t)`}
               className="btn btn-primary get-started"
             >
               <span>{t('System', 'Label more documents')}</span>
@@ -141,7 +141,7 @@ export class ThesaurusCockpitBase extends RouteHandler {
           <div className="footer">
             <I18NLink
               title="label-docs"
-              to={`/library/?multiEditThesaurus=${thesaurus._id}&q=(allAggregations:!t,includeUnpublished:!t)`}
+              to={`/library/?quickLabelThesaurus=${thesaurus._id}&q=(allAggregations:!t,includeUnpublished:!t)`}
               className="btn btn-primary get-started"
             >
               <span>{t('System', numLabeled === 0 ? 'Get started' : 'Label more documents')}</span>
@@ -272,7 +272,7 @@ export class ThesaurusCockpitBase extends RouteHandler {
       <I18NLink
         title="publish-button"
         to={
-          `/library/?multiEditThesaurus=${thesaurus._id}&` +
+          `/library/?quickLabelThesaurus=${thesaurus._id}&` +
           `q=(filters:(__${thesaurusPropertyRefName}:(values:!(any)),${thesaurusPropertyRefName}:(values:!(any))),` +
           'limit:100,order:desc,sort:creationDate,unpublished:!t)&view=nosearch'
         }

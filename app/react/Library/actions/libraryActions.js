@@ -10,7 +10,7 @@ import referencesAPI from 'app/Viewer/referencesAPI';
 import { api as entitiesAPI } from 'app/Entities';
 import { toUrlParams } from 'shared/JSONRequest';
 import { RequestParams } from 'app/utils/RequestParams';
-import { selectedDocumentsChanged, maybeSaveMultiEdit } from './multiEditActions';
+import { selectedDocumentsChanged, maybeSaveQuickLabels } from './quickLabelActions';
 
 export function enterLibrary() {
   return { type: types.ENTER_LIBRARY };
@@ -27,7 +27,7 @@ export function selectDocument(_doc) {
     if (showingSemanticSearch && !doc.semanticSearch) {
       dispatch(actions.set('library.sidepanel.tab', ''));
     }
-    await dispatch(maybeSaveMultiEdit());
+    await dispatch(maybeSaveQuickLabels());
     dispatch({ type: types.SELECT_DOCUMENT, doc });
     await dispatch(selectedDocumentsChanged());
   };
@@ -43,7 +43,7 @@ export function getAndSelectDocument(sharedId) {
 
 export function selectDocuments(docs) {
   return async dispatch => {
-    await dispatch(maybeSaveMultiEdit());
+    await dispatch(maybeSaveQuickLabels());
     dispatch({ type: types.SELECT_DOCUMENTS, docs });
     await dispatch(selectedDocumentsChanged());
   };
@@ -51,7 +51,7 @@ export function selectDocuments(docs) {
 
 export function unselectDocument(docId) {
   return async dispatch => {
-    await dispatch(maybeSaveMultiEdit());
+    await dispatch(maybeSaveQuickLabels());
     dispatch({ type: types.UNSELECT_DOCUMENT, docId });
     await dispatch(selectedDocumentsChanged());
   };
@@ -59,7 +59,7 @@ export function unselectDocument(docId) {
 
 export function selectSingleDocument(doc) {
   return async dispatch => {
-    await dispatch(maybeSaveMultiEdit());
+    await dispatch(maybeSaveQuickLabels());
     dispatch({ type: types.SELECT_SINGLE_DOCUMENT, doc });
     await dispatch(selectedDocumentsChanged());
   };
@@ -67,7 +67,7 @@ export function selectSingleDocument(doc) {
 
 export function unselectAllDocuments() {
   return async dispatch => {
-    await dispatch(maybeSaveMultiEdit());
+    await dispatch(maybeSaveQuickLabels());
     dispatch({ type: types.UNSELECT_ALL_DOCUMENTS });
     await dispatch(selectedDocumentsChanged());
   };

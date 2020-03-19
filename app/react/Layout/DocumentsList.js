@@ -78,7 +78,7 @@ class DocumentsList extends Component {
       LoadMoreButton,
       rowListZoomLevel,
       location: {
-        query: { multiEditThesaurus: thesaurusId },
+        query: { quickLabelThesaurus: thesaurusId },
       },
     } = this.props;
     const thesaurus =

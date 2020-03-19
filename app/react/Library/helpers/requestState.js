@@ -40,8 +40,8 @@ export default function requestState(request, globalResources) {
         templates,
         globalResources.thesauris.toJS(),
         globalResources.relationTypes.toJS(),
-        request.data.multiEditThesaurus
-          ? getThesaurusPropertyNames(request.data.multiEditThesaurus, templates)
+        request.data.quickLabelThesaurus
+          ? getThesaurusPropertyNames(request.data.quickLabelThesaurus, templates)
           : []
       );
       const state = {
@@ -59,8 +59,8 @@ export default function requestState(request, globalResources) {
 
       return [
         setReduxState(state),
-        actions.set('library.sidepanel.multiEditOpts', {
-          thesaurus: request.data.multiEditThesaurus,
+        actions.set('library.sidepanel.quickLabelState', {
+          thesaurus: request.data.quickLabelThesaurus,
           autoSave: true,
         }),
       ];

@@ -14,8 +14,7 @@ export async function extractSequence(e: EntitySchema) {
           !prop ||
           !prop.name ||
           !e.metadata ||
-          prop.type === propertyTypes.markdown ||
-          prop.type === propertyTypes.text
+          (prop.type !== propertyTypes.markdown && prop.type !== propertyTypes.text)
         ) {
           return prev;
         }

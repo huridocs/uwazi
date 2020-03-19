@@ -65,7 +65,7 @@ describe('static requestState()', () => {
       search: 'search',
     });
     const q = { filters: {}, types: ['type1'], order: 'desc', sort: 'creationDate' };
-    const query = { q: rison.encode(q), multiEditThesaurus: 'countries' };
+    const query = { q: rison.encode(q), quickLabelThesaurus: 'countries' };
     const request = new RequestParams(query);
     await requestState(request, globalResources);
 

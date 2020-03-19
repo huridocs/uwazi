@@ -52,7 +52,7 @@ export default class Library extends RouteHandler {
 
   emptyState() {
     wrapDispatch(this.context.store.dispatch, 'library')(unsetDocuments());
-    actions.set('library.sidepanel.multiEditOpts', {});
+    actions.set('library.sidepanel.quickLabelState', {});
   }
 
   render() {

@@ -4,7 +4,7 @@ exports[`static requestState() should request the documents passing search objec
 Array [
   [Function],
   Object {
-    "type": "library.sidepanel.multiEditOpts/SET",
+    "type": "library.sidepanel.quickLabelState/SET",
     "value": Object {
       "autoSave": true,
       "thesaurus": undefined,
@@ -17,7 +17,7 @@ exports[`static requestState() when is for geolocation should query with geoloca
 Array [
   [Function],
   Object {
-    "type": "library.sidepanel.multiEditOpts/SET",
+    "type": "library.sidepanel.quickLabelState/SET",
     "value": Object {
       "autoSave": true,
       "thesaurus": undefined,

@@ -1,6 +1,6 @@
 /* eslint-disable max-lines */
 import RouteHandler from 'app/App/RouteHandler';
-import { SuggestInfo } from 'app/istore';
+import { ThesaurusSuggestions } from 'app/istore';
 // import SearchAPI from 'app/Search/SearchAPI';
 import TemplatesAPI from 'app/Templates/TemplatesAPI';
 import ThesauriAPI from 'app/Thesauri/ThesauriAPI';
@@ -260,7 +260,7 @@ describe('ThesaurusCockpit', () => {
                 // docsWithLabels: flattenedSuggestions,
                 // docsWithSuggestionsForPublish: flattenedSuggestions,
                 // docsWithSuggestionsForReview: flattenedSuggestions,
-              } as SuggestInfo);
+              } as ThesaurusSuggestions);
               break;
             default:
           }
