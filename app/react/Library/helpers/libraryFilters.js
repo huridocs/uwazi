@@ -58,7 +58,12 @@ export function parseWithAggregations(filters, aggregations, showNoValue = true)
     if (propertyAggregations && propertyAggregations.buckets) {
       property.options = propertyAggregations.buckets
         .map(bucket => {
-          return { value: bucket.key, label: bucket.label, results: bucket.filtered.doc_count };
+          return {
+            value: bucket.key,
+            label: bucket.label,
+            results: bucket.filtered.doc_count,
+            noValueKey: bucket.key === 'missing',
+          };
         })
         .filter(opt => opt.results || (!showNoValue && opt.value === 'missing'));
     }

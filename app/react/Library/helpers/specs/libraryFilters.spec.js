@@ -114,12 +114,6 @@ describe('library helper', () => {
         { name: 'country', filter: true, type: 'select', content: 'abc1' },
         { name: 'date', filter: true, type: 'text' },
         { name: 'country', filter: true, type: 'relationship' },
-        {
-          name: 'friend',
-          filter: true,
-          type: 'relationshipfilter',
-          filters: [{ name: 'pepinillos', filter: true, type: 'select', content: 'abc1' }],
-        },
       ];
 
       const populatedFilters = libraryHelper.populateOptions(filters, thesauris);
@@ -133,10 +127,6 @@ describe('library helper', () => {
         { id: 4, value: 'value4' },
         { id: 5, value: 'value5' },
         { id: 6, value: 'value6' },
-      ]);
-      expect(populatedFilters[3].filters[0].options).toEqual([
-        { id: 1, value: 'value1' },
-        { id: 2, value: 'value2' },
       ]);
     });
     describe('when property unknown content id is provided', () => {
@@ -171,11 +161,13 @@ describe('library helper', () => {
               {
                 key: 1,
                 doc_count: 4,
+                label: 'value1',
                 filtered: { doc_count: 2 },
               },
               {
                 key: 'missing',
                 doc_count: 3,
+                label: 'No value',
                 filtered: { doc_count: 2 },
               },
             ],
@@ -185,8 +177,8 @@ describe('library helper', () => {
 
       const populatedFilters = libraryHelper.parseWithAggregations(filters, aggregations);
       expect(populatedFilters[0].options).toEqual([
-        { id: 1, value: 'value1', results: 2 },
-        { id: 'missing', label: 'No Value', results: 2, noValueKey: true },
+        { value: 1, label: 'value1', results: 2, noValueKey: false },
+        { value: 'missing', label: 'No value', results: 2, noValueKey: true },
       ]);
     });
   });
