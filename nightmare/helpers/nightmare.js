@@ -1,5 +1,4 @@
-/*eslint no-console: 0*/
-
+/*eslint no-console: 0 */
 /* eslint import/no-extraneous-dependencies: ["error", {"peerDependencies": true}] */
 import Nightmare from 'nightmare';
 import nightmareUpload from 'nightmare-upload';
@@ -20,8 +19,12 @@ export default function createNightmare(width = 1200, height = 600) {
     x: 0,
     y: 0,
     webPreferences: {
-      preload: `${__dirname}/custom-preload.js`
-    }
+      preload: `${__dirname}/custom-preload.js`,
+      webSecurity: false,
+    },
+    switches: {
+      'ignore-certificate-errors': true,
+    },
   }).viewport(width, height);
 
   nightmare.on('page', (_type, _message, error) => {
@@ -33,9 +36,6 @@ export default function createNightmare(width = 1200, height = 600) {
   });
 
   nightmare.on('console', (type, message) => {
-    //if (message.match(/Unknown prop `storeSubscription`/)) {
-    //return;
-    //}
     if (type === 'error') {
       fail(message);
     }
