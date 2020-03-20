@@ -8,7 +8,7 @@ import JSONRequest from 'shared/JSONRequest';
 import topicClassificationRoute from '../routes';
 import fixtures, { moviesId } from './fixtures';
 
-function fakeGet(url: string, data: any, _headers: any) {
+function fakeGet(url: string, _data: any, _headers: any) {
   if (url === `${topicClassification.tcServer}/models/list?filter=undefined-topmovies`) {
     return {
       status: 200,

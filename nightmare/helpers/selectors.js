@@ -403,7 +403,7 @@ export default {
     cancelConfirmDialog:
       'body > div:nth-child(7) > div > div > div > div.modal-footer > button.btn.btn-default.cancel-button',
   },
-  multiEditLabel: {
+  quickLabel: {
     notice:
       '#app > div.content > div > div > aside.side-panel.multi-edit.is-active > div.sidepanel-body > div > div.notice',
     autoSaveToggleOn:

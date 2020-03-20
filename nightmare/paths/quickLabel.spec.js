@@ -10,8 +10,8 @@ describe('review path', () => {
   beforeAll(async () => insertFixtures());
   afterAll(async () => nightmare.end());
 
-  describe('MultiEditLabel tests', () => {
-    it('should navigate to multiedit', async () => {
+  describe('QuickLabel tests', () => {
+    it('should navigate to quicklabel', async () => {
       await nightmare
         .login('admin', 'admin')
         .waitToClick(selectors.navigation.settingsNavButton)
@@ -26,39 +26,38 @@ describe('review path', () => {
       await nightmare
         .waitToClick(selectors.libraryView.superVillianType)
         .waitToClick(selectors.libraryView.libraryFirstDocument)
-        .shiftClick(selectors.libraryView.librarySecondDocument)
-        .waitToClick(selectors.multiEditLabel.autoSaveToggleOn);
-      expect(await nightmare.isVisible(selectors.multiEditLabel.autoSaveToggleOff)).toBe(true);
-      expect(await nightmare.isVisible(selectors.multiEditLabel.firstCheckboxPartial)).toBe(true);
+        .shiftClick(selectors.libraryView.librarySecondDocument);
+      expect(await nightmare.isVisible(selectors.quickLabel.autoSaveToggleOff)).toBe(true);
+      expect(await nightmare.isVisible(selectors.quickLabel.firstCheckboxPartial)).toBe(true);
       expect(
         await nightmare
-          .waitToClick(selectors.multiEditLabel.firstCheckboxPartial)
-          .waitToClick(selectors.multiEditLabel.firstCheckboxOn)
-          .waitToClick(selectors.multiEditLabel.firstCheckboxOff)
-          .isVisible(selectors.multiEditLabel.firstCheckboxPartial)
+          .waitToClick(selectors.quickLabel.firstCheckboxPartial)
+          .waitToClick(selectors.quickLabel.firstCheckboxOn)
+          .waitToClick(selectors.quickLabel.firstCheckboxOff)
+          .isVisible(selectors.quickLabel.firstCheckboxPartial)
       ).toBe(true);
-      expect(await nightmare.isVisible(selectors.multiEditLabel.firstCheckboxPartial)).toBe(true);
+      expect(await nightmare.isVisible(selectors.quickLabel.firstCheckboxPartial)).toBe(true);
       await nightmare
-        .waitToClick(selectors.multiEditLabel.firstCheckboxPartial)
-        .waitToClick(selectors.multiEditLabel.discardButton);
-      expect(await nightmare.isVisible(selectors.multiEditLabel.firstCheckboxPartial)).toBe(true);
+        .waitToClick(selectors.quickLabel.firstCheckboxPartial)
+        .waitToClick(selectors.quickLabel.discardButton);
+      expect(await nightmare.isVisible(selectors.quickLabel.firstCheckboxPartial)).toBe(true);
       await nightmare
-        .waitToClick(selectors.multiEditLabel.firstCheckboxPartial)
+        .waitToClick(selectors.quickLabel.firstCheckboxPartial)
         .waitToClick(selectors.libraryView.libraryFirstDocument)
-        .wait(selectors.multiEditLabel.firstCheckboxOff);
-      expect(await nightmare.isVisible(selectors.multiEditLabel.firstCheckboxOff)).toBe(true);
+        .wait(selectors.quickLabel.firstCheckboxOff);
+      expect(await nightmare.isVisible(selectors.quickLabel.firstCheckboxOff)).toBe(true);
     });
     it('should save with autosave', async () => {
       await nightmare
         .waitToClick(selectors.libraryView.libraryFirstDocument)
         .shiftClick(selectors.libraryView.librarySecondDocument)
-        .waitToClick(selectors.multiEditLabel.autoSaveToggleOff);
-      expect(await nightmare.isVisible(selectors.multiEditLabel.autoSaveToggleOn)).toBe(true);
-      expect(await nightmare.isVisible(selectors.multiEditLabel.firstCheckboxPartial)).toBe(true);
+        .waitToClick(selectors.quickLabel.autoSaveToggleOff);
+      expect(await nightmare.isVisible(selectors.quickLabel.autoSaveToggleOn)).toBe(true);
+      expect(await nightmare.isVisible(selectors.quickLabel.firstCheckboxPartial)).toBe(true);
       await nightmare
-        .waitToClick(selectors.multiEditLabel.firstCheckboxPartial)
+        .waitToClick(selectors.quickLabel.firstCheckboxPartial)
         .waitToClick(selectors.libraryView.libraryFirstDocument);
-      expect(await nightmare.isVisible(selectors.multiEditLabel.firstCheckboxOn)).toBe(true);
+      expect(await nightmare.isVisible(selectors.quickLabel.firstCheckboxOn)).toBe(true);
     });
   });
 });
