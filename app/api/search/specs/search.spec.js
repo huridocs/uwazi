@@ -450,16 +450,19 @@ describe('search', () => {
           expect(template1Aggs.find(a => a.key === 'selectValue1').filtered.doc_count).toBe(2);
           expect(template1Aggs.find(a => a.key === 'selectValue2').filtered.doc_count).toBe(1);
           expect(template1Aggs.find(a => a.key === 'missing').filtered.doc_count).toBe(0);
+          expect(template1Aggs.find(a => a.key === 'any').filtered.doc_count).toBe(3);
 
           const template2Aggs = template2.aggregations.all.select1.buckets;
           expect(template2Aggs.find(a => a.key === 'selectValue1').filtered.doc_count).toBe(0);
           expect(template2Aggs.find(a => a.key === 'selectValue2').filtered.doc_count).toBe(1);
           expect(template2Aggs.find(a => a.key === 'missing').filtered.doc_count).toBe(1);
+          expect(template2Aggs.find(a => a.key === 'any').filtered.doc_count).toBe(1);
 
           const bothAggs = both.aggregations.all.select1.buckets;
           expect(bothAggs.find(a => a.key === 'selectValue1').filtered.doc_count).toBe(2);
           expect(bothAggs.find(a => a.key === 'selectValue2').filtered.doc_count).toBe(2);
           expect(bothAggs.find(a => a.key === 'missing').filtered.doc_count).toBe(1);
+          expect(bothAggs.find(a => a.key === 'any').filtered.doc_count).toBe(4);
 
           const template1UnpubishedAggs = template1Unpublished.aggregations.all.select1.buckets;
           expect(

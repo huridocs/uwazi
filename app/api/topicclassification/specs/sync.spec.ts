@@ -29,7 +29,7 @@ function fakeTopicClassification(url: string, data: any, _headers: any) {
   if (url === `${topicClassification.tcServer}/classify?model=undefined-topmovies`) {
     expect(data).toEqual({
       refresh_predictions: true,
-      samples: [{ seq: 'title1', sharedId: 'e1' }],
+      samples: [{ seq: 'title1 who am I? I am Batman.', sharedId: 'e1' }],
     });
     return {
       status: 200,
@@ -104,7 +104,7 @@ describe('templates utils', () => {
       await t.wait();
       expect(t.status).toEqual(
         expect.objectContaining({
-          result: { index: 1, seen: 1, total: 1 },
+          result: { index: 1, seen: 2, total: 2 },
           state: 'done',
         })
       );
@@ -189,7 +189,7 @@ describe('templates utils', () => {
       await t.wait();
       expect(t.status).toEqual(
         expect.objectContaining({
-          result: { index: 1, seen: 1, total: 1 },
+          result: { index: 1, seen: 2, total: 2 },
           state: 'done',
         })
       );

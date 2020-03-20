@@ -6,7 +6,7 @@ Array [
   Object {
     "type": "library.sidepanel.quickLabelState/SET",
     "value": Object {
-      "autoSave": true,
+      "autoSave": false,
       "thesaurus": undefined,
     },
   },
@@ -19,7 +19,7 @@ Array [
   Object {
     "type": "library.sidepanel.quickLabelState/SET",
     "value": Object {
-      "autoSave": true,
+      "autoSave": false,
       "thesaurus": undefined,
     },
   },

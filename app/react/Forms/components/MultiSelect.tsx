@@ -8,7 +8,7 @@ import { Icon as CustomIcon } from 'app/Layout/Icon';
 import React, { Component } from 'react';
 import { Icon } from 'UI';
 
-type Option = { options?: Option[]; results?: number } & { [k: string]: string };
+export type Option = { options?: Option[]; results?: number } & { [k: string]: any };
 enum SelectStates {
   OFF,
   PARTIAL,
@@ -31,9 +31,11 @@ const defaultProps = {
   onChange: (_v: any) => {},
 };
 
-export type MultiSelectProps = typeof defaultProps;
+export type MultiSelectProps<ValueType> = typeof defaultProps & {
+  value: ValueType;
+};
 
-interface MultiSelectState {
+export interface MultiSelectState {
   filter: string;
   showAll: boolean;
   ui: { [k: string]: boolean };
@@ -42,12 +44,12 @@ interface MultiSelectState {
 const isNotAnEmptyGroup = (option: Option) => !option.options || option.options.length;
 
 abstract class MultiSelectBase<ValueType> extends Component<
-  MultiSelectProps & { value: ValueType },
+  MultiSelectProps<ValueType>,
   MultiSelectState
 > {
   static defaultProps = defaultProps;
 
-  constructor(props: MultiSelectProps & { value: ValueType }) {
+  constructor(props: MultiSelectProps<ValueType>) {
     super(props);
     this.state = { filter: props.filter, showAll: props.showAll, ui: {} };
     this.filter = this.filter.bind(this);
@@ -55,7 +57,7 @@ abstract class MultiSelectBase<ValueType> extends Component<
     this.showAll = this.showAll.bind(this);
   }
 
-  componentWillReceiveProps(props: MultiSelectProps) {
+  componentWillReceiveProps(props: MultiSelectProps<ValueType>) {
     if (props.filter) {
       this.setState({ filter: props.filter });
     }
@@ -281,7 +283,9 @@ abstract class MultiSelectBase<ValueType> extends Component<
         <div className="multiselectItem">
           <input
             type="checkbox"
-            className="group-checkbox multiselectItem-input"
+            className={`group-checkbox multiselectItem-input${
+              this.checked(group) === SelectStates.PARTIAL ? ' partial' : ''
+            }`}
             id={prefix + group.id}
             onChange={this.changeGroup.bind(this, group)}
             checked={this.checked(group) !== SelectStates.OFF}

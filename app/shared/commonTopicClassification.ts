@@ -21,7 +21,7 @@ export function getThesaurusPropertyNames(
       if (
         p.name &&
         (p.type === propertyTypes.select || p.type === propertyTypes.multiselect) &&
-        p.content === thesaurusId
+        p.content?.toString() === thesaurusId.toString()
       ) {
         propNames[p.name] = true;
       }

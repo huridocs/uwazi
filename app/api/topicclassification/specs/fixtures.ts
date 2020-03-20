@@ -6,6 +6,7 @@ import { ThesaurusSchema } from 'shared/types/thesaurusType';
 
 export const template1 = db.id();
 export const e1 = db.id();
+export const e2 = db.id();
 export const dictionaryId = db.id();
 export const moviesId = db.id();
 
@@ -65,6 +66,20 @@ export default {
       sharedId: 'e1',
       title: 'title1',
       language: 'en',
+      metadata: {
+        text: [{ value: 'who am I? I am Batman.' }],
+      },
+    },
+    {
+      _id: e2,
+      template: template1,
+      sharedId: 'e2',
+      title: 'title2',
+      language: 'en',
+      metadata: {
+        movies: [{ value: '2.1', label: 'batman' }],
+        text: [{ value: 'why? because I am Batman.' }],
+      },
     },
   ],
   settings: [
