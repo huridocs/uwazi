@@ -35,7 +35,7 @@ export const resetMetadata = (metadata, template, options, previousTemplate) => 
       resetedMetadata[name] = '';
     }
     if (resetValue && type === 'daterange') {
-      resetedMetadata[name] = {};
+      resetedMetadata[name] = { from: null, to: null };
     }
     if (
       resetValue &&

@@ -1,5 +1,3 @@
-/** @format */
-
 import React from 'react';
 import { shallow } from 'enzyme';
 
@@ -133,6 +131,7 @@ describe('Geolocation', () => {
     describe('if lon is empty and lat is set to empty', () => {
       it('should call onChange without a value', () => {
         props.value[0].lon = '';
+        render();
         testInputWillTriggerOnChangeWithoutValue(inputs => inputs.at(0));
       });
     });
@@ -140,6 +139,7 @@ describe('Geolocation', () => {
     describe('if lat is empty and lon is set to empty', () => {
       it('should call onChange without a value', () => {
         props.value[0].lat = '';
+        render();
         testInputWillTriggerOnChangeWithoutValue(inputs => inputs.at(1));
       });
     });

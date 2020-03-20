@@ -53,7 +53,7 @@ describe('multi edit path', () => {
   });
 
   describe('editing different types', () => {
-    it('should render a form with comon properties', done => {
+    it('should render a form with common properties', done => {
       nightmare
         .click(selectors.libraryView.libraryFirstDocument)
         .shiftClick(selectors.libraryView.libraryThirdDocument)
@@ -138,7 +138,7 @@ describe('multi edit path', () => {
   });
 
   describe('editing same types', () => {
-    it('should render a form with comon properties and only update modified values', done => {
+    it('should render a form with common properties and only update modified values', done => {
       nightmare
         .click(selectors.libraryView.librarySecondDocument)
         .ctrlClick(selectors.libraryView.libraryThirdDocument)

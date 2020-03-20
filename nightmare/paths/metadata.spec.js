@@ -1,4 +1,5 @@
-/*eslint max-nested-callbacks: ["error", 10]*/
+/* eslint max-len: ["error", 500] */
+/* eslint max-nested-callbacks: ["error", 10] */
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import selectors from '../helpers/selectors.js';
 import createNightmare from '../helpers/nightmare';
@@ -84,10 +85,10 @@ describe('metadata path', () => {
   describe('Templates tests', () => {
     it('should click Documents button and then click on add new document button', done => {
       nightmare
-        .waitToClick(selectors.settingsView.entitiesButton)
+        .waitToClick(selectors.settingsView.templatesButton)
         .waitToClick(selectors.settingsView.addNewDocument)
-        .wait(selectors.settingsView.saveDocumentButton)
-        .isVisible(selectors.settingsView.saveDocumentButton)
+        .wait(selectors.settingsView.saveTemplateButton)
+        .isVisible(selectors.settingsView.saveTemplateButton)
         .then(result => {
           expect(result).toBe(true);
           done();
@@ -98,7 +99,7 @@ describe('metadata path', () => {
     it('should create a new template with no properties added', done => {
       nightmare
         .write(selectors.settingsView.documentTemplateNameForm, 'new document')
-        .waitToClick(selectors.settingsView.saveDocumentButton)
+        .waitToClick(selectors.settingsView.saveTemplateButton)
         .waitToClick('.alert.alert-success')
         .then(() => {
           done();
@@ -190,8 +191,8 @@ describe('metadata path', () => {
   describe('Entities tests', () => {
     it('should click Entities button and then click on add new Entity button', done => {
       nightmare
-        .waitToClick(selectors.settingsView.entitiesButton)
-        .waitToClick(selectors.settingsView.addNewEntity)
+        .waitToClick(selectors.settingsView.templatesButton)
+        .waitToClick(selectors.settingsView.addNewTemplate)
         .wait(selectors.settingsView.saveEntityButton)
         .isVisible(selectors.settingsView.saveEntityButton)
         .then(result => {

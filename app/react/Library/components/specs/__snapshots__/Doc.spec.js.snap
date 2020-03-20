@@ -32,9 +32,11 @@ exports[`Doc when target reference is specified should pass the target reference
       "processed": true,
       "connections": Immutable.List [
         Immutable.Map {
+          "context": "context",
           "sourceType": "metadata",
         },
         Immutable.Map {
+          "context": "context",
           "_id": "c1",
           "sourceType": "other",
           "nonRelevant": true,
@@ -124,9 +126,11 @@ exports[`Doc when target reference is specified should pass the target reference
           "processed": true,
           "connections": Immutable.List [
             Immutable.Map {
+              "context": "context",
               "sourceType": "metadata",
             },
             Immutable.Map {
+              "context": "context",
               "_id": "c1",
               "sourceType": "other",
               "nonRelevant": true,

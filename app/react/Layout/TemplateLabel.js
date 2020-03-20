@@ -29,7 +29,7 @@ export class TemplateLabel extends Component {
     const { name, template, className, style } = this.props;
     return (
       <span className={className} style={style}>
-        {t(template, name)}
+        {template && t(template, name)}
       </span>
     );
   }
