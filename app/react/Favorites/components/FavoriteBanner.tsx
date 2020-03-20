@@ -39,10 +39,12 @@ class FavoriteBanner extends Component<FavoriteBannerProps> {
 
       return (
         <button
-          className={`favoriteBanner ${selected ? 'selected' : ''}`}
+          className={`btn favoriteBanner ${selected ? 'selected' : ''}`}
           onClick={this.toggleClick}
           type="button"
-        />
+        >
+          <span className="tab-link-tooltip">Add / remove favorite</span>
+        </button>
       );
     }
 

@@ -763,11 +763,17 @@ $item-padding: 15px;
   right: 5px;
   top: -2px;
 
+  .btn:hover .tab-link-tooltip {
+    z-index: 999;
+    top: calc(100% + 7px);
+  }
+
   .favoriteBanner {
     display: block;
     width: 16px;
     height: 14px;
     position: relative;
+    padding: 6px;
     background-color: #dceff5;
     border: 1px solid #c6d8dd;
     border-radius: 2px 2px 0px 0px;

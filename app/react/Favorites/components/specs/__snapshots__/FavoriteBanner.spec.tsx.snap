@@ -2,8 +2,14 @@
 
 exports[`Favorite Banner should present a clickable banner 1`] = `
 <button
-  className="favoriteBanner "
+  className="btn favoriteBanner "
   onClick={[Function]}
   type="button"
-/>
+>
+  <span
+    className="tab-link-tooltip"
+  >
+    Add / remove favorite
+  </span>
+</button>
 `;
