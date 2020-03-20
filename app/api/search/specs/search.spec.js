@@ -281,12 +281,13 @@ describe('search', () => {
       { types: [ids.templateMetadata1, ids.templateMetadata2], allAggregations: true },
       'en'
     );
+
     expect(response.aggregations.all.groupedDictionary.buckets[0].label).toBe('Egypt');
-    expect(response.aggregations.all.groupedDictionary.buckets[1].label).toBe('Egypto');
+    expect(response.aggregations.all.groupedDictionary.buckets[1].label).toBe('Chile');
+    expect(response.aggregations.all.groupedDictionary.buckets[2].label).toBe('Egypto');
     expect(response.aggregations.all.groupedDictionary.buckets[3].label).toBe('Europe');
-    expect(response.aggregations.all.groupedDictionary.buckets[4].label).toBe('France');
-    expect(response.aggregations.all.multiselect1.buckets[0].label).toBe('Egypt');
-    expect(response.aggregations.all.multiselect1.buckets[1].label).toBe('Egypto');
+    expect(response.aggregations.all.groupedDictionary.buckets[3].values[0].label).toBe('Spain');
+    expect(response.aggregations.all.groupedDictionary.buckets[3].values[1].label).toBe('France');
   });
 
   it('should filter by metadata, and return template aggregations based on the filter the language and the published status', done => {
@@ -344,45 +345,6 @@ describe('search', () => {
 
     expect(entities.rows.length).toBe(2);
     expect(entities.rows[0].title).toBe('metadata1');
-  });
-
-  it('should filter by relationships metadata selects', async () => {
-    const response = await search.search(
-      {
-        types: [ids.template1],
-        filters: { status_relationship_filter: { status: { values: ['open'] } } },
-      },
-      'en'
-    );
-    expect(response.rows.length).toBe(2);
-    const matchesAggs = response.aggregations.all.status;
-
-    const openValueAggregation = matchesAggs.buckets[0].filtered.doc_count;
-    const closedValueAggregation = matchesAggs.buckets[1].filtered.doc_count;
-    expect(openValueAggregation).toBe(2);
-    expect(closedValueAggregation).toBe(1);
-  });
-
-  it('should filter by relationships metadata text', async () => {
-    const response = await search.search(
-      {
-        types: [ids.template1],
-        filters: { status_relationship_filter: { description: 'red' } },
-      },
-      'en'
-    );
-    expect(response.rows.length).toBe(2);
-  });
-
-  it('should filter by relationships metadata markdown', async () => {
-    const response = await search.search(
-      {
-        types: [ids.templateMetadata1],
-        filters: { rich_text: 'rich' },
-      },
-      'en'
-    );
-    expect(response.rows.length).toBe(1);
   });
 
   it('should filter by fullText, and return template aggregations based on the filter the language and the published status', done => {
@@ -511,8 +473,11 @@ describe('search', () => {
           ).toBe(2);
 
           const template1groupedAggs = template1.aggregations.all.groupedDictionary.buckets;
-          expect(template1groupedAggs.find(a => a.key === 'spainID').filtered.doc_count).toBe(2);
-          expect(template1groupedAggs.find(a => a.key === 'franceID').filtered.doc_count).toBe(0);
+          const europeBucket = template1groupedAggs.find(
+            a => a.key === 'bce629bf-efc1-40dd-9af0-0542422dcbc5'
+          );
+          expect(europeBucket.values.find(a => a.key === 'spainID').filtered.doc_count).toBe(2);
+          expect(europeBucket.values.find(a => a.key === 'franceID').filtered.doc_count).toBe(0);
 
           const template2Aggs = template2.aggregations.all.multiselect1.buckets;
           expect(

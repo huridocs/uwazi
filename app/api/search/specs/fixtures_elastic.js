@@ -316,7 +316,6 @@ export default {
     {
       _id: template1,
       properties: [
-        { name: 'status_relationship_filter', type: 'relationshipfilter', relationType },
         { name: 'date', type: 'date', filter: true },
         { name: 'multidate', type: 'multidate', filter: true },
         { name: 'daterange', type: 'daterange', filter: true },

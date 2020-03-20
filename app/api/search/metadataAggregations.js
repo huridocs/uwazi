@@ -42,6 +42,7 @@ const aggregationWithGroupsOfOptions = (key, should, filters, dictionary) => {
 
   const missingMatch = { bool: { must_not: { exists: { field: key } } } };
   agg.filters.filters.missing = missingMatch;
+
   return agg;
 };
 

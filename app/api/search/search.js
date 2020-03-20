@@ -79,16 +79,9 @@ function agregationProperties(properties) {
         property.type === 'select' ||
         property.type === 'multiselect' ||
         property.type === 'relationship' ||
-        property.type === 'relationshipfilter' ||
         property.type === 'nested'
     )
     .map(property => {
-      if (property.type === 'relationshipfilter') {
-        return {
-          ...property,
-          filters: property.filters.map(f => ({ ...f, name: `${f.name}.value` })),
-        };
-      }
       return { ...property, name: `${property.name}.value` };
     });
 }
@@ -192,6 +185,20 @@ const _getAggregationDictionary = async (aggregation, language, property, dictio
   return dictionaries.find(dictionary => dictionary._id.toString() === property.content.toString());
 };
 
+const formatDictionaryWithGroupsAggregation = (aggregation, dictionary) => {
+  const buckets = dictionary.values.map(dictionaryValue => {
+    const bucket = aggregation.buckets.find(b => b.key === dictionaryValue.id);
+    if (dictionaryValue.values) {
+      bucket.values = dictionaryValue.values.map(v =>
+        aggregation.buckets.find(b => b.key === v.id)
+      );
+    }
+    return bucket;
+  });
+  buckets.push(aggregation.buckets.find(b => b.key === 'missing'));
+  return Object.assign(aggregation, { buckets });
+};
+
 const denormalizeAggregations = async (aggregations, templates, dictionaries, language) => {
   const properties = propertiesHelper.allUniqueProperties(templates);
 
@@ -223,7 +230,13 @@ const denormalizeAggregations = async (aggregations, templates, dictionaries, la
       return Object.assign(bucket, { label });
     });
 
-    const denormalizedAggregation = Object.assign(aggregations[key], { buckets });
+    let denormalizedAggregation = Object.assign(aggregations[key], { buckets });
+    if (dictionary.values.find(v => v.values)) {
+      denormalizedAggregation = formatDictionaryWithGroupsAggregation(
+        denormalizedAggregation,
+        dictionary
+      );
+    }
     return Object.assign(denormaLizedAgregations, { [key]: denormalizedAggregation });
   }, {});
 };
@@ -239,7 +252,6 @@ const processResponse = async (response, templates, dictionaries, language) => {
 
   Object.keys(response.aggregations.all).forEach(aggregationKey => {
     const aggregation = response.aggregations.all[aggregationKey];
-
     const isAGroupOfOptionsAggregation = aggregation.buckets && !Array.isArray(aggregation.buckets);
     if (isAGroupOfOptionsAggregation) {
       aggregation.buckets = Object.keys(aggregation.buckets).map(key =>
