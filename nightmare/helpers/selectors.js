@@ -27,8 +27,6 @@ export default {
       '#app > div.content > div > div > div.settings-content > div > div.cockpit > table > tbody > tr:nth-child(2) > td:nth-child(4) > a',
     dictionariesLabelDocumentsButton:
       '#app > div.content > div > div > div.settings-content > div > div.cockpit > div.notice > div.main > div:nth-child(1) > div.footer > a',
-    entitiesButton:
-      '#app > div.content > div > div > div.settings-content > div > div.cockpit > table > tbody > tr:nth-child(2) > td:nth-child(3) > a',
     templatesButton:
       '#app > div.content > div > div > div.settings-navigation > div > div:nth-child(2) > div.list-group > a:nth-child(1)',
     connectionsButton:

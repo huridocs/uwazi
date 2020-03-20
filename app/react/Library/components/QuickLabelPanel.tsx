@@ -35,7 +35,7 @@ const defaultProps = {
   unselectAllDocuments: () => {},
   toggleQuickLabelAutoSave: () => {},
   selectedDocumentsChanged: () => {},
-  maybeSaveQuickLabels: () => {},
+  maybeSaveQuickLabels: (_force: boolean) => {},
   multipleUpdate: (_o: IImmutable<EntitySchema[]>, _diff: EntitySchema) => {},
 };
 
@@ -121,7 +121,7 @@ export class QuickLabelPanel extends Component<QuickLabelPanelProps> {
               </button>
               <button
                 type="button"
-                onClick={() => this.props.maybeSaveQuickLabels()}
+                onClick={() => this.props.maybeSaveQuickLabels(true)}
                 className={`save-metadata ${btnClass}`}
               >
                 <Icon icon="save" />

@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { fromJS as Immutable } from 'immutable';
+import { fromJS as Immutable, fromJS } from 'immutable';
 
 import SearchBar from 'app/ConnectionsList/components/SearchBar';
 import RelationshipsGraph from 'app/Relationships/components/RelationshipsGraphEdit';
@@ -14,8 +14,7 @@ export function mapStateToProps({ relationships }) {
   return {
     documents,
     connections: {
-      totalRows: documents
-        .get('rows')
+      totalRows: (documents.get('rows') || fromJS([]))
         .filter(r => r.get('sharedId') !== relationships.list.sharedId)
         .reduce((total, r) => total + r.get('connections').size, 0),
     },

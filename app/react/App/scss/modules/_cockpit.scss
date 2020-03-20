@@ -101,19 +101,19 @@
   }
 
   thead th:nth-child(1) {
-    width: 70%;
+    width: unset;
   }
 
   thead th:nth-child(2) {
-    width: 10%;
+    width: unset;
   }
 
   thead th:nth-child(3) {
-    width: 10%;
+    width: unset;
   }
 
   thead th:nth-child(4) {
-    width: 10%;
+    width: 120px;
   }
 
   .quality-icon {

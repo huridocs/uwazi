@@ -92,10 +92,10 @@ export function selectedDocumentsChanged() {
   };
 }
 
-export function maybeSaveQuickLabels() {
+export function maybeSaveQuickLabels(force?: boolean) {
   return async (dispatch: Dispatch<IStore>, getState: () => IStore) => {
     const state = getState();
-    if (!state.library?.sidepanel?.quickLabelState?.get('autoSave')) {
+    if (!force && !state.library?.sidepanel?.quickLabelState?.get('autoSave')) {
       return;
     }
     const current = state.library.sidepanel.quickLabelMetadata;

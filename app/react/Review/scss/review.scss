@@ -201,8 +201,10 @@ $header-height: 44px;
 
   .thesauri-list,
   .cockpit {
-    height: 0;
-    flex-grow: 1;
+    @media (min-width: 1024px) {
+      height: 0;
+      flex-grow: 1;
+    }
 
     table {
       border-collapse: collapse;
@@ -224,7 +226,7 @@ $header-height: 44px;
   }
 
   .cockpit {
-    overflow-y: scroll;
+    overflow-y: auto;
 
     thead th:nth-child(2) {
       width: 10%;

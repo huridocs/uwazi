@@ -1,7 +1,7 @@
 import { Form } from 'react-redux-form';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import Immutable, { is } from 'immutable';
+import Immutable, { is, fromJS } from 'immutable';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Icon } from 'UI';
@@ -52,7 +52,8 @@ export class FiltersForm extends Component {
     const { templates, documentTypes } = this.props;
 
     const aggregations = this.props.aggregations.toJS();
-    const translationContext = documentTypes.get(0);
+    const translationContext =
+      documentTypes.get(0) || (templates.get(0) || fromJS({})).get('_id') || 'System';
     const allFields = this.props.fields.toJS();
     const showNoValueOnFilters = allFields.size;
     const fields = libraryHelper
