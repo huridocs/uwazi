@@ -2,8 +2,7 @@
 UWAZI=http://localhost:3000
 # The TC server model name, composed of <databasename>-<thesaurusname>,
 # e.g. planinternational-affectedpersons.
-#MODEL=dbname-modelname
-MODEL=planinternational-themes
+MODEL=dbname-modelname
 USER=admin
 PASSWORD=admin
 
