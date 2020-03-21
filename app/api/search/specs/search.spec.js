@@ -332,7 +332,8 @@ describe('search', () => {
       {
         types: [ids.templateMetadata1],
         filters: { daterange: { from: 1547997735, to: 1579533735 } },
-        order: 'desc', sort: 'title',
+        order: 'desc',
+        sort: 'title',
       },
       'en',
       { _id: 'user' }
@@ -345,7 +346,8 @@ describe('search', () => {
       {
         types: [ids.templateMetadata1],
         filters: { daterange: { from: 1547997735, to: null } },
-        order: 'asc', sort: 'title',
+        order: 'asc',
+        sort: 'title',
       },
       'en',
       { _id: 'user' }
