@@ -16,7 +16,6 @@ describe('EntityViewer', () => {
       isLast: false,
       thesaurusName: 'name',
       switchOneUpEntity: jasmine.createSpy('switchOneUpEntity'),
-      reviewAndPublish: jasmine.createSpy('reviewAndPublish'),
     };
   });
 

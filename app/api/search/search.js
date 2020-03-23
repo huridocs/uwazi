@@ -173,7 +173,7 @@ function searchGeolocation(documentsQuery, templates) {
   documentsQuery.select(selectProps);
 }
 
-const processResponse = response => {
+function processResponse(filters, response) {
   const rows = response.hits.hits.map(hit => {
     const result = hit._source;
     result._explanation = hit._explanation;
@@ -191,11 +191,14 @@ const processResponse = response => {
     }
     if (aggregation.buckets) {
       const missingBucket = aggregation.buckets.find(b => b.key === 'missing');
+      const keyFilters = ((filters || {})[aggregationKey.replace('.value', '')] || {}).values || [];
+      const hasFilter = !!keyFilters.filter(v => v !== 'any').length;
       if (aggregationKey !== '_types') {
         const anyCount =
           (typeof response.hits.total === 'object'
             ? response.hits.total.value
-            : response.hits.total) - (missingBucket ? missingBucket.filtered.doc_count : 0);
+            : response.hits.total) -
+          (missingBucket && !hasFilter ? missingBucket.filtered.doc_count : 0);
         aggregation.buckets.push({
           key: 'any',
           doc_count: anyCount,
@@ -227,7 +230,7 @@ const processResponse = response => {
     {}
   );
   return { rows, totalRows: response.hits.total.value, aggregations: response.aggregations };
-};
+}
 
 const determineInheritedProperties = templates =>
   templates.reduce((memo, template) => {
@@ -498,7 +501,7 @@ const instanceSearch = elasticIndex => ({
       // documentsQuery.query() is the actual call
       return elastic
         .search({ index: elasticIndex || elasticIndexes.index, body: documentsQuery.query() })
-        .then(processResponse)
+        .then(response => processResponse(query.filters, response))
         .catch(e => {
           throw createError(e.message, 400);
         });
