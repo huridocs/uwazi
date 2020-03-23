@@ -102,6 +102,9 @@
 
   thead th:nth-child(1) {
     width: unset;
+    max-width: calc(100% - 300px);
+    white-space: normal;
+    overflow-wrap: break-word;
   }
 
   thead th:nth-child(2) {

@@ -134,8 +134,8 @@ class DocumentsList extends Component {
               storeKey={this.props.storeKey}
             />
             <div className="select-all-documents">
-              <button className="btn btn-default" onClick={this.selectAllDocuments}>
-                {t('System', 'Select all documents')}
+              <button className="btn btn-default btn-xs" onClick={this.selectAllDocuments}>
+                {t('System', 'Select all')}
               </button>
             </div>
             {thesaurusName && (

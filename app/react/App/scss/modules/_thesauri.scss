@@ -136,9 +136,12 @@
     border-bottom: 1px solid $c-grey-light;
   }
 
-  /*thead th:nth-child(2) {
-    width: 40%;
-  }*/
+  th[scope='row'] {
+    max-width: calc(100% - 330px);
+    white-space: normal;
+    overflow-wrap: break-word;
+  }
+
   td:nth-child(2) {
     border-right: 1px solid $c-grey-light;
   }
@@ -149,5 +152,8 @@
 
   .thesaurus-suggestion-count {
     padding-right: 5px;
+    @media (max-width: 1024px) {
+      display: none;
+    }
   }
 }

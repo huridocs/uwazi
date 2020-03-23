@@ -503,8 +503,10 @@ dd {
   padding: 0 0 0 15px;
   font-size: $f-size-sm;
   .sort-buttons {
-    flex: 1;
-    max-width: 200px;
+    flex: unset;
+    .Dropdown {
+      position: unset;
+    }
   }
 }
 

@@ -391,7 +391,8 @@ $header-height: 44px;
 
 .select-all-documents,
 .back {
-  flex: 1;
+  flex-grow: 1;
+  width: 0;
   border-left: 1px solid #D7D7DC;
-  padding-left: 16px;
+  padding-left: 8px;
 }
