@@ -48,4 +48,13 @@ describe('FeatureToggle', () => {
       expect(component.text()).toBe('');
     });
   });
+
+  it('should not fail if features not present', () => {
+    store = mockStoreCreator({
+      settings: { collection: Immutable.fromJS({}) },
+    });
+
+    const component = renderComponent(store, 'activatedFeature');
+    expect(component).toMatchSnapshot();
+  });
 });
