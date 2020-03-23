@@ -48,10 +48,10 @@ LibraryFilters.propTypes = {
 };
 
 export function mapStateToProps(state, props) {
-  const noDocumentSelected = state[props.storeKey].ui.get('selectedDocuments').size === 0;
-  const isFilterShown = state[props.storeKey].ui.get('filtersPanel') !== false;
   return {
-    open: noDocumentSelected && isFilterShown,
+    open:
+      state[props.storeKey].ui.get('filtersPanel') !== false &&
+      !state[props.storeKey].ui.get('selectedDocuments').size > 0,
   };
 }
 

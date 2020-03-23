@@ -1,3 +1,5 @@
+/** @format */
+
 import typeParsers from '../../typeParsers';
 
 describe('geolocation parser', () => {
@@ -6,7 +8,7 @@ describe('geolocation parser', () => {
     const rawEntity = { geolocation_prop: '1.5|45.65' };
 
     expect(await typeParsers.geolocation(rawEntity, templateProp)).toEqual([
-      { value: { lat: 1.5, lon: 45.65, label: '' } },
+      { value: { lat: '1.5', lon: '45.65' } },
     ]);
   });
 
@@ -15,16 +17,16 @@ describe('geolocation parser', () => {
     const rawEntity = { geolocation_prop: '0|0' };
 
     expect(await typeParsers.geolocation(rawEntity, templateProp)).toEqual([
-      { value: { lat: 0, lon: 0, label: '' } },
+      { value: { lat: '0', lon: '0' } },
     ]);
   });
 
   describe('when there is only one value', () => {
-    it('should return empty array', async () => {
+    it('should return null', async () => {
       const templateProp = { name: 'geolocation_prop' };
       const rawEntity = { geolocation_prop: 'oneValue' };
 
-      expect(await typeParsers.geolocation(rawEntity, templateProp)).toEqual([]);
+      expect(await typeParsers.geolocation(rawEntity, templateProp)).toEqual(null);
     });
   });
 });

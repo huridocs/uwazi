@@ -67,12 +67,4 @@ describe('t', () => {
       expect(t('System', 'not translated', 'not translated'));
     });
   });
-
-  describe('when no context', () => {
-    it('should throw an error', () => {
-      expect(() =>
-        t(undefined, 'confirmDeleteEntity', 'Are you sure you want to delete this entity?')
-      ).toThrow();
-    });
-  });
 });

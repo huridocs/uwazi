@@ -37,7 +37,7 @@ export class RelationTypesList extends Component {
   render() {
     return (
       <div className="panel panel-default">
-        <div className="panel-heading">{t('System', 'Relationship types')}</div>
+        <div className="panel-heading">{t('System', 'Connections')}</div>
         <ul className="list-group relation-types">
           {this.props.relationTypes.toJS().map((relationType, index) => (
             <li key={index} className="list-group-item">

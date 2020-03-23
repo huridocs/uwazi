@@ -1,10 +1,12 @@
+/** @format */
+
 const geolocation = async (entityToImport, templateProperty) => {
   const [lat, lon] = entityToImport[templateProperty.name].split('|');
   if (lat && lon) {
-    return [{ value: { lat: Number(lat), lon: Number(lon), label: '' } }];
+    return [{ value: { lat, lon } }];
   }
 
-  return [];
+  return null;
 };
 
 export default geolocation;

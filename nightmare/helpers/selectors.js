@@ -25,7 +25,7 @@ export default {
       '#app > div.content > div > div > div.settings-content > div > div.thesauri-list > table > tbody > tr:nth-child(2) > td:nth-child(2) > div > a',
     dictionariesReviewSuggestionsButton:
       '#app > div.content > div > div > div.settings-content > div > div.cockpit > table > tbody > tr:nth-child(2) > td:nth-child(3) > a',
-    templatesButton:
+    entitiesButton:
       '#app > div.content > div > div > div.settings-navigation > div > div:nth-child(2) > div.list-group > a:nth-child(1)',
     connectionsButton:
       '#app > div.content > div > div > div.settings-navigation > div > div:nth-child(2) > div.list-group > a:nth-child(3)',
@@ -51,7 +51,7 @@ export default {
       '#app > div.content > div > div > div.settings-content > div > div.settings-footer > a',
     addNewDocument:
       '#app > div.content > div > div > div.settings-content > div > div.settings-footer > a',
-    addNewTemplate:
+    addNewEntity:
       '#app > div.content > div > div > div.settings-content > div > div.settings-footer > a',
     addNewConnection:
       '#app > div.content > div > div > div.settings-content > div > div.settings-footer > a',
@@ -63,7 +63,7 @@ export default {
       '#app > div.content > div > div > div.settings-content > div > form > div > div.thesauri-values > div:nth-child(2) > ul > div:nth-child(2) > div > div > input',
     saveDictionaryButton:
       '#app > div.content > div > div > div.settings-content > div > form > div > div.settings-footer > .save-template',
-    saveTemplateButton:
+    saveDocumentButton:
       '#app > div.content > div > div > div.settings-content > div > div > div.panel-body > div > main > div > form > div.settings-footer > button',
     saveEntityButton:
       '#app > div.content > div > div > div.settings-content > div > div > div.panel-body > div > main > div > form > div.settings-footer > button',
@@ -92,8 +92,6 @@ export default {
       '#app > div.content > div > div > div.settings-content > div > form > div.settings-footer > button',
     privateInstance:
       '#app > div.content > div > div > div.settings-content > div > div.panel-body > form > div:nth-child(2) > div > label',
-    templatePropertiesList:
-      '#app > div.content > div > div > div.settings-content > div > div > div.panel-body > div > main > div > form > ul',
   },
   libraryView: {
     libraryFirstDocument:

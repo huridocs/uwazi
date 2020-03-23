@@ -84,23 +84,6 @@ describe('sync', () => {
       });
     });
 
-    describe('when namespace is files', () => {
-      it('should index on elastic', async () => {
-        models.files = {
-          save: jasmine.createSpy('files.save'),
-          delete: jasmine.createSpy('files.delete'),
-        };
-
-        req.body = {
-          namespace: 'files',
-          data: { entity: 'shared' },
-        };
-
-        await routes.post('/api/sync', req);
-        expect(search.indexEntities).toHaveBeenCalledWith({ sharedId: 'shared' }, '+fullText');
-      });
-    });
-
     describe('when namespace is settings', () => {
       it('should replace the incomming id with the local id', async () => {
         models.settings = {
@@ -153,26 +136,6 @@ describe('sync', () => {
         } catch (error) {
           expect(error).toEqual(new Error('error'));
         }
-      });
-    });
-
-    describe('when namespace is files', () => {
-      beforeEach(() => {
-        models.files = {
-          save: jasmine.createSpy('files.save'),
-          delete: jasmine.createSpy('files.delete'),
-          getById: () => Promise.resolve({ entity: 'entityId' }),
-        };
-
-        req.query = {
-          namespace: 'files',
-          data: JSON.stringify({ _id: 'file_id' }),
-        };
-      });
-
-      it('should delete it from elastic', async () => {
-        await routes.delete('/api/sync', req);
-        expect(search.indexEntities).toHaveBeenCalledWith({ sharedId: 'entityId' });
       });
     });
 

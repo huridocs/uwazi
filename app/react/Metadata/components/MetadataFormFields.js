@@ -8,7 +8,6 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field } from 'react-redux-form';
 import { propertyTypes } from 'shared/propertyTypes';
-import { Translate } from 'app/I18N';
 import {
   DatePicker,
   DateRange,
@@ -30,11 +29,11 @@ const translateOptions = thesauri =>
     .get('values')
     .map(optionIm => {
       const option = optionIm.toJS();
-      option.label = t(thesauri.get('_id'), option.label, null, false);
+      option.label = t(thesauri._id, option.label, null, false);
       if (option.values) {
         option.options = option.values.map(val => ({
           ...val,
-          label: t(thesauri.get('_id'), val.label, null, false),
+          label: t(thesauri._id, val.label, null, false),
         }));
       }
       return option;
@@ -161,11 +160,7 @@ export class MetadataFormFields extends Component {
                       model={model}
                       field={`metadata.${property.name}`}
                     />
-                    {templateID ? (
-                      <Translate context={templateID}>{property.label}</Translate>
-                    ) : (
-                      property.label
-                    )}
+                    {t(templateID, property.label)}
                     {property.required ? <span className="required">*</span> : ''}
                   </label>
                 </li>

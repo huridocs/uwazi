@@ -19,7 +19,6 @@ describe('ConnectionsGroup', () => {
         { _id: 't1', label: 'template 1', count: 1 },
         { _id: 't2', label: 'template 2', count: 2 },
       ],
-      context: 'oneContext',
     };
 
     props = {

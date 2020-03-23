@@ -281,6 +281,11 @@ describe('entity schema', () => {
           await testValid();
         });
 
+        it('should allow value to be an empty object', async () => {
+          entity.metadata.daterange = [{ value: {} }];
+          await testValid();
+        });
+
         it('should fail if from and to are not numbers', async () => {
           entity.metadata.daterange = [{ value: { from: 'test', to: 'test' } }];
           await expectError(customErrorMessages[propertyTypes.daterange], ".metadata['daterange']");
@@ -368,22 +373,21 @@ describe('entity schema', () => {
         });
 
         it('should fail if label or url are not provided', async () => {
-          entity.metadata.link = [{ value: { label: 'label', url: '' } }];
+          entity.metadata.link = { label: 'label', url: '' };
           await expectError(customErrorMessages[propertyTypes.link], ".metadata['link']");
-          entity.metadata.link = [{ value: { label: '', url: 'url' } }];
+          entity.metadata.link = { label: 'label' };
+          await expectError(customErrorMessages[propertyTypes.link], ".metadata['link']");
+          entity.metadata.link = { label: '', url: 'url' };
+          await expectError(customErrorMessages[propertyTypes.link], ".metadata['link']");
+          entity.metadata.link = { url: 'url' };
           await expectError(customErrorMessages[propertyTypes.link], ".metadata['link']");
         });
 
         it('should fail if label or url is not a string', async () => {
-          entity.metadata.link = [{ value: { label: 'label', url: 10 } }];
+          entity.metadata.link = { label: 'label', url: 10 };
           await expectError(customErrorMessages[propertyTypes.link], ".metadata['link']");
-          entity.metadata.link = [{ value: { label: true, url: 'url' } }];
+          entity.metadata.link = { label: true, url: 'url' };
           await expectError(customErrorMessages[propertyTypes.link], ".metadata['link']");
-        });
-
-        it('should be ok if both are empty', async () => {
-          entity.metadata.link = [{ value: { label: '', url: '' } }];
-          await testValid();
         });
       });
 

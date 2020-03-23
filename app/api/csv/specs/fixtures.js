@@ -1,3 +1,5 @@
+/** @format */
+
 import db from 'api/utils/testing_db';
 import { propertyTypes } from 'shared/propertyTypes';
 import { templateUtils } from 'api/templates';
@@ -43,11 +45,6 @@ export default {
           type: propertyTypes.text,
           label: 'not configured on csv',
           name: templateUtils.safeName('not configured on csv'),
-        },
-        {
-          type: propertyTypes.geolocation,
-          label: 'geolocation',
-          name: templateUtils.safeName('geolocation_geolocation'),
         },
       ],
     },

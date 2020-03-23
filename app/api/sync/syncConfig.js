@@ -39,18 +39,15 @@ const getValuesFromTemplateProperties = async (config, validTypes, valueProperty
 };
 
 const getApprovedCollections = config => {
-  const collections = Object.keys(config);
-  const whitelistedCollections = collections.includes('templates')
-    ? collections.concat([
-        'settings',
-        'entities',
-        'files',
-        'connections',
-        'dictionaries',
-        'translations',
-        'relationtypes',
-      ])
-    : collections;
+  const whitelistedCollections = Object.keys(config);
+  if (whitelistedCollections.includes('templates')) {
+    whitelistedCollections.push('settings');
+    whitelistedCollections.push('entities');
+    whitelistedCollections.push('connections');
+    whitelistedCollections.push('dictionaries');
+    whitelistedCollections.push('translations');
+    whitelistedCollections.push('relationtypes');
+  }
 
   const blacklistedCollections = ['migrations', 'sessions'];
 
@@ -253,14 +250,6 @@ export default async config => {
         data.properties = data.properties.filter(property =>
           templatesConfig[data._id.toString()].includes(property._id.toString())
         );
-      }
-
-      if (change.namespace === 'files' && data.entity) {
-        const [entity] = await models.entities.get({ sharedId: data.entity });
-
-        if (!Object.keys(templatesConfig).includes(entity.template.toString())) {
-          return Promise.resolve();
-        }
       }
 
       if (change.namespace === 'entities' && data.metadata) {

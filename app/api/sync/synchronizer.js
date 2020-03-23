@@ -17,7 +17,14 @@ const uploadFile = async (url, filename) => {
   return request.uploadFile(urljoin(url, 'api/sync/upload'), filename, file);
 };
 
-const syncAttachments = async (url, data, lastSync) => {
+const syncFiles = async (url, data, lastSync) => {
+  if (data.file && data.file.timestamp >= lastSync - oneSecond) {
+    await uploadFile(url, data.file.filename);
+
+    const thumbnailFilename = `${data._id.toString()}.jpg`;
+    await uploadFile(url, thumbnailFilename);
+  }
+
   if (data.attachments && data.attachments.length) {
     await data.attachments.reduce(async (prev, attachment) => {
       await prev;
@@ -32,10 +39,7 @@ const syncAttachments = async (url, data, lastSync) => {
 const syncronizer = {
   async syncData(url, action, change, data, lastSync) {
     await request[action](urljoin(url, 'api/sync'), { namespace: change.namespace, data });
-    await syncAttachments(url, data, lastSync);
-    if (change.namespace === 'files' && data.filename) {
-      await uploadFile(url, data.filename);
-    }
+    await syncFiles(url, data, lastSync);
     return syncsModel.updateMany({}, { $set: { lastSync: change.timestamp } });
   },
 };

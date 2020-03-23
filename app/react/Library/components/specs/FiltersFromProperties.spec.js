@@ -24,13 +24,8 @@ describe('FiltersFromProperties', () => {
   });
 
   it('should concat the modelPrefix with the model', () => {
-    props.properties = [
-      {
-        name: 'textFilter',
-        label: 'textLabel',
-      },
-    ];
-    props.translationContext = 'oneContext';
+    props.properties = [{ name: 'textFilter', label: 'textLabel' }];
+
     props.modelPrefix = '.prefix';
 
     const component = shallow(<FiltersFromProperties {...props} />).find(TextFilter);
@@ -39,13 +34,7 @@ describe('FiltersFromProperties', () => {
 
   describe('when type is text', () => {
     it('should render a text filter', () => {
-      props.properties = [
-        {
-          name: 'textFilter',
-          label: 'textLabel',
-        },
-      ];
-      props.translationContext = 'oneContext';
+      props.properties = [{ name: 'textFilter', label: 'textLabel' }];
 
       const component = shallow(<FiltersFromProperties {...props} />).find(TextFilter);
       expect(component).toMatchSnapshot();
@@ -56,28 +45,24 @@ describe('FiltersFromProperties', () => {
     it('should render a select filter', () => {
       props.properties = [
         {
-          content: 'aContent',
           name: 'selectFilter',
           label: 'selectLabel',
           type: 'select',
           options: [{ label: 'option1' }],
         },
         {
-          content: 'aContent',
           name: 'multiselectFilter',
           label: 'multiselectLabel',
           type: 'multiselect',
           options: [{ label: 'option3' }],
         },
         {
-          content: 'aContent',
           name: 'relationshipFilter',
           label: 'relationshipLabel',
           type: 'relationship',
           options: [{ label: 'option2' }],
         },
       ];
-      props.translationContext = 'oneContext';
 
       const component = shallow(<FiltersFromProperties {...props} />).find(SelectFilter);
       expect(component).toMatchSnapshot();
@@ -87,32 +72,11 @@ describe('FiltersFromProperties', () => {
   describe('when type is date, multidate, multidaterange or daterange', () => {
     it('should render a date filter', () => {
       props.properties = [
-        {
-          content: 'oneContent',
-          name: 'dateFilter',
-          label: 'dateLabel',
-          type: 'date',
-        },
-        {
-          content: 'oneContent',
-          name: 'daterange',
-          label: 'daterangeLabel',
-          type: 'daterange',
-        },
-        {
-          content: 'oneContent',
-          name: 'multidate',
-          label: 'multidateLabel',
-          type: 'multidate',
-        },
-        {
-          content: 'oneContent',
-          name: 'multidaterange',
-          label: 'multidaterangeLabel',
-          type: 'multidaterange',
-        },
+        { name: 'dateFilter', label: 'dateLabel', type: 'date' },
+        { name: 'daterange', label: 'daterangeLabel', type: 'daterange' },
+        { name: 'multidate', label: 'multidateLabel', type: 'multidate' },
+        { name: 'multidaterange', label: 'multidaterangeLabel', type: 'multidaterange' },
       ];
-      props.translationContext = 'oneContext';
 
       const component = shallow(<FiltersFromProperties {...props} />).find(DateFilter);
       expect(component).toMatchSnapshot();
@@ -121,14 +85,7 @@ describe('FiltersFromProperties', () => {
 
   describe('when type is numeric', () => {
     it('should render a number range filter', () => {
-      props.properties = [
-        {
-          name: 'numericFilter',
-          label: 'numericLabel',
-          type: 'numeric',
-        },
-      ];
-      props.translationContext = 'oneContext';
+      props.properties = [{ name: 'numericFilter', label: 'numericLabel', type: 'numeric' }];
 
       const component = shallow(<FiltersFromProperties {...props} />).find(NumberRangeFilter);
       expect(component).toMatchSnapshot();
@@ -137,14 +94,7 @@ describe('FiltersFromProperties', () => {
 
   describe('when type is nested', () => {
     it('should render a number range filter', () => {
-      props.properties = [
-        {
-          name: 'nestedFilter',
-          label: 'nestedLabel',
-          type: 'nested',
-        },
-      ];
-      props.translationContext = 'oneContext';
+      props.properties = [{ name: 'nestedFilter', label: 'nestedLabel', type: 'nested' }];
 
       const component = shallow(<FiltersFromProperties {...props} />).find(NestedFilter);
       expect(component).toMatchSnapshot();
@@ -160,7 +110,6 @@ describe('FiltersFromProperties', () => {
           filters: [{ name: 'filter' }],
         },
       ];
-      props.translationContext = 'oneContext';
 
       const component = shallow(<FiltersFromProperties {...props} />).find(RelationshipFilter);
       expect(component).toMatchSnapshot();

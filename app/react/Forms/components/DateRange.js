@@ -1,3 +1,5 @@
+/** @format */
+
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { t } from 'app/I18N';
@@ -7,7 +9,6 @@ class DateRange extends Component {
   onChange(prop, propValue) {
     const { value, onChange } = this.props;
     const state = Object.assign({}, value, { [prop]: propValue });
-
     onChange(state);
   }
 
@@ -48,7 +49,7 @@ class DateRange extends Component {
 }
 
 DateRange.defaultProps = {
-  value: { from: null, to: null },
+  value: {},
   onChange: () => {},
   locale: undefined,
   format: undefined,

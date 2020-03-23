@@ -9,7 +9,6 @@ exports[`Login on instance should render the component with the login form 1`] =
   >
     <div
       className="col-xs-12 col-sm-4 col-sm-offset-4"
-      suppressHydrationWarning={true}
     >
       <h1
         className="login-title"
@@ -100,7 +99,6 @@ exports[`Login submit() on response failure when authorization conflict (2fa req
   >
     <div
       className="col-xs-12 col-sm-4 col-sm-offset-4"
-      suppressHydrationWarning={true}
     >
       <h1
         className="login-title"
@@ -181,7 +179,6 @@ exports[`Login submit() on response failure when authorization failure should se
   >
     <div
       className="col-xs-12 col-sm-4 col-sm-offset-4"
-      suppressHydrationWarning={true}
     >
       <h1
         className="login-title"

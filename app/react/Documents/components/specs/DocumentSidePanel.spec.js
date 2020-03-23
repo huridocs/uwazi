@@ -37,7 +37,6 @@ describe('DocumentSidePanel', () => {
         { templates: [{ count: 1 }, { count: 2 }] },
         { templates: [{ count: 3 }, { count: 4 }] },
       ]),
-      open: true,
     };
   });
 
@@ -49,6 +48,13 @@ describe('DocumentSidePanel', () => {
     render();
     expect(component.instance().props.tocFormComponent()).toBe(false);
     expect(component.instance().props.EntityForm()).toBe(false);
+  });
+
+  it('should render a SidePanel', () => {
+    render();
+
+    expect(component.find(SidePanel).length).toBe(1);
+    expect(component.find(SidePanel).props().open).toBeUndefined();
   });
 
   describe('when props.open', () => {

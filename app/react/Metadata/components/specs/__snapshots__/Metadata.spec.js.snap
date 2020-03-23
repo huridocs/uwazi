@@ -159,7 +159,6 @@ exports[`Metadata should render array values separated by ", " 1`] = `
           Object {
             "label": "label array",
             "name": "label_array",
-            "translateContext": "oneTranslateContext",
             "value": Array [
               Object {
                 "value": "first_value",
@@ -194,7 +193,6 @@ exports[`Metadata should render links when multiple properties have url 1`] = `
           Object {
             "label": "label array",
             "name": "label_array",
-            "translateContext": "oneTranslateContext",
             "value": Array [
               Object {
                 "value": <Connect(I18NLink)
@@ -346,7 +344,6 @@ exports[`Metadata when passing compact prop should pass it to ValueList 1`] = `
           Object {
             "label": "label array",
             "name": "label_array",
-            "translateContext": "oneTranslateContext",
             "value": Array [
               Object {
                 "value": <Connect(I18NLink)

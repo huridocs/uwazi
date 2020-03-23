@@ -55,9 +55,7 @@ const validateRequiredProperty = (property, value) => {
 };
 
 const isValidLinkField = value =>
-  isString(value.label) &&
-  isString(value.url) &&
-  ((value.label && value.url) || (!value.label && !value.url));
+  isString(value.label) && value.label && isString(value.url) && value.url;
 
 const validateNumericProperty = value =>
   isNumber(value) || value === '' || (isString(value) && `${parseInt(value, 10)}` === value);

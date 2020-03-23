@@ -135,7 +135,7 @@ Nightmare.action('waitForTheEntityToBeIndexed', function waitForTheEntityToBeInd
 });
 
 Nightmare.action('waitToClick', function waitToClicked(selector, done) {
-  this.wait(selector, 2000)
+  this.wait(selector, 1000)
     .wait(300)
     .wait(selector, 1000)
     .click(selector)
@@ -351,29 +351,6 @@ Nightmare.action('editItemFromList', function editItemFromList(liElement, target
     });
 });
 
-Nightmare.action('selectDate', function selectDate(dateField, date, done) {
-  this.wait(dateField)
-    .insert(dateField, date)
-    .wait(50)
-    .waitToClick('.react-datepicker__day--selected')
-    .then(done);
-});
-
-Nightmare.action('selectByLabel', function selectByLabel(elementSelector, targetText, done) {
-  this.waitToClick(elementSelector)
-    .evaluate(
-      (selector, text) => {
-        const select = document.querySelector(selector);
-        const options = Array.from(select.querySelectorAll('option'));
-
-        return options.find(option => option.innerText === text).value;
-      },
-      elementSelector,
-      targetText
-    )
-    .then(value => this.select(elementSelector, value).then(done));
-});
-
 Nightmare.action('clickMultiselectOption', function clickMultiselectOption(
   liElement,
   targetText,
@@ -476,6 +453,9 @@ Nightmare.action('selectText', function selectText(selector, done) {
     .catch(done);
 });
 
+//this.write(selectors.libraryView.searchInput, itemName)
+//.type(selectors.libraryView.searchInput, '\u000d')
+//.wait(selectors.libraryView.anyItemSnippet)
 Nightmare.action('clickCardOnLibrary', function clickCardOnLibrary(itemName, done) {
   this.evaluate(nameToFind => {
     const cards = document.querySelectorAll(
