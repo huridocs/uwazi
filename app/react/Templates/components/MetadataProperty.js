@@ -90,7 +90,7 @@ export class MetadataProperty extends Component {
       propertyClass += ' dragging';
     }
 
-    const hasErrors = Object.keys(formState.$form.errors).reduce(
+    const hasErrors = Object.keys(formState.$form.errors || {}).reduce(
       (result, error) =>
         result || (this.isErrorOnThisField(error) && formState.$form.errors[error]),
       false

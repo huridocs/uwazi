@@ -7,7 +7,7 @@ const emptyRigthRelationship = () => ({ relationships: [] });
 
 const conformRelationships = action => {
   let order = -1;
-  const hubsObject = action.results.get('rows').reduce((hubs, row) => {
+  const hubsObject = (action.results.get('rows') || fromJS([])).reduce((hubs, row) => {
     let hubsImmutable = hubs;
     row.get('connections').forEach(connection => {
       const hubId = connection.get('hub').toString();
