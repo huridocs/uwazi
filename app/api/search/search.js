@@ -192,13 +192,14 @@ function processResponse(filters, response) {
     if (aggregation.buckets) {
       const missingBucket = aggregation.buckets.find(b => b.key === 'missing');
       const keyFilters = ((filters || {})[aggregationKey.replace('.value', '')] || {}).values || [];
-      const hasFilter = !!keyFilters.filter(v => v !== 'any').length;
+      const filterNoneOrMissing =
+        !keyFilters.filter(v => v !== 'any').length || keyFilters.find(v => v === 'missing');
       if (aggregationKey !== '_types') {
         const anyCount =
           (typeof response.hits.total === 'object'
             ? response.hits.total.value
             : response.hits.total) -
-          (missingBucket && !hasFilter ? missingBucket.filtered.doc_count : 0);
+          (missingBucket && filterNoneOrMissing ? missingBucket.filtered.doc_count : 0);
         aggregation.buckets.push({
           key: 'any',
           doc_count: anyCount,
