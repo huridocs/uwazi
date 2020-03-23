@@ -12,7 +12,7 @@ import { RowList } from 'app/Layout/Lists';
 import Loader from 'app/components/Elements/Loader';
 import Footer from 'app/App/Footer';
 import { NeedAuthorization } from 'app/Auth';
-import { I18NLink, t, Translate } from 'app/I18N';
+import { t, Translate } from 'app/I18N';
 import { Icon } from 'UI';
 
 class DocumentsList extends Component {
@@ -69,7 +69,6 @@ class DocumentsList extends Component {
     const {
       documents,
       connections,
-      thesauri,
       GraphView,
       view,
       searchCentered,
@@ -77,13 +76,7 @@ class DocumentsList extends Component {
       connectionsGroups,
       LoadMoreButton,
       rowListZoomLevel,
-      location: {
-        query: { quickLabelThesaurus: thesaurusId },
-      },
     } = this.props;
-    const thesaurus =
-      thesaurusId && thesauri ? thesauri.find(thes => thes.get('_id') === thesaurusId) : undefined;
-    const thesaurusName = thesaurus ? thesaurus.get('name') : '';
     let counter = (
       <span>
         <b>{documents.get('totalRows')}</b> <Translate>documents</Translate>
@@ -138,18 +131,6 @@ class DocumentsList extends Component {
                 {t('System', 'Select all')}
               </button>
             </div>
-            {thesaurusName && (
-              <I18NLink
-                to={`/settings/dictionaries/cockpit/${thesaurusId}`}
-                className="btn btn-default"
-              >
-                <Icon icon="arrow-left" />
-                &nbsp;
-                <span className="btn-label">
-                  {t('System', 'Back to')} <span>{`'${thesaurusName}'`}</span>
-                </span>
-              </I18NLink>
-            )}
           </div>
           {(() => {
             if (view !== 'graph') {

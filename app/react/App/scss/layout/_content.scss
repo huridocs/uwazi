@@ -38,6 +38,7 @@
   h1 {
     margin: 0;
     font-size: $f-size;
+    flex-grow: 1;
     @media(min-width: 1024px) {
       display: inline-block;
       line-height: $header-height;
@@ -45,6 +46,13 @@
       overflow: hidden;
       text-overflow: ellipsis;
     }
+  }
+  h1.first {
+    margin-left: 8px;
+  }
+
+  .large {
+    font-size: $f-size-xl;
   }
   .btn-color {
     margin-left: 5px;

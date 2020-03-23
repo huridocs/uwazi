@@ -104,10 +104,9 @@ export default class Uploads extends RouteHandler {
 
   render() {
     const query = rison.decode(this.props.location.query.q || '()');
-    const viewOnly = this.props.location.query.view === 'nosearch';
     const chartView = this.props.location.query.view === 'chart';
     const mainView = !chartView ? (
-      <DocumentsList storeKey="uploads" SearchBar={viewOnly ? null : SearchBar} />
+      <DocumentsList storeKey="uploads" SearchBar={SearchBar} />
     ) : (
       <LibraryCharts storeKey="uploads" />
     );
@@ -115,16 +114,16 @@ export default class Uploads extends RouteHandler {
     return (
       <div className="row panels-layout">
         <Helmet title={t('System', 'Uploads', null, false)} />
-        {!viewOnly && <UploadsHeader />}
+        <UploadsHeader />
         <main className="uploads-viewer document-viewer with-panel">
-          {!viewOnly && <UploadBox />}
+          <UploadBox />
           {/*<ListChartToggleButtons active={chartView ? 'chart' : 'list'} />*/}
           {mainView}
         </main>
-        {!viewOnly && <LibraryFilters uploadsSection storeKey="uploads" />}
+        <LibraryFilters uploadsSection storeKey="uploads" />
         <ViewMetadataPanel storeKey="uploads" searchTerm={query.searchTerm} />
         <SelectMultiplePanelContainer storeKey="uploads" />
-        {!viewOnly && <ImportPanel />}
+        <ImportPanel />
       </div>
     );
   }

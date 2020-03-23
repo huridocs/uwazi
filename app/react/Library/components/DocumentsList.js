@@ -67,7 +67,6 @@ export function mapStateToProps(state, props) {
     filters: state[props.storeKey].filters,
     filtersPanel: state[props.storeKey].ui.get('filtersPanel'),
     search: state[props.storeKey].search,
-    thesauri: state.thesauris,
     authorized: !!state.user.get('_id'),
     selectedDocuments: state[props.storeKey].ui.get('selectedDocuments'),
     multipleSelected: state[props.storeKey].ui.get('selectedDocuments').size > 1,

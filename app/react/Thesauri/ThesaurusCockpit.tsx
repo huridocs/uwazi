@@ -275,7 +275,7 @@ export class ThesaurusCockpitBase extends RouteHandler {
         to={
           `/library/?quickLabelThesaurus=${thesaurus._id}&` +
           `q=(filters:(__${thesaurusPropertyRefName}:(values:!(any)),${thesaurusPropertyRefName}:(values:!(any))),` +
-          'limit:100,order:desc,sort:creationDate,unpublished:!t)&view=nosearch'
+          'limit:100,order:desc,sort:creationDate,unpublished:!t)'
         }
         className="btn btn-primary btn-xs"
       >

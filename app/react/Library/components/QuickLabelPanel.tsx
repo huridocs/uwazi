@@ -229,7 +229,7 @@ export class QuickLabelPanel extends Component<QuickLabelPanelProps> {
     }, true);
 
     return (
-      <SidePanel open={selectedDocuments.size > 0} className="multi-edit">
+      <SidePanel open={selectedDocuments.size > 0} className="quick-label">
         <div className="sidepanel-header">
           <Icon icon="check" />{' '}
           <span>

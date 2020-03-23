@@ -1,5 +1,3 @@
-/** @format */
-
 import { t } from 'app/I18N';
 import LibraryFilters from 'app/Library/components/LibraryFilters';
 import QuickLabelPanel from 'app/Library/components/QuickLabelPanel';
@@ -13,6 +11,7 @@ import React, { Component } from 'react';
 import Helmet from 'react-helmet';
 import { connect } from 'react-redux';
 import blankState from './helpers/blankState';
+import { QuickLabelHeader } from './components/QuickLabelHeader';
 
 export class LibraryLayoutBase extends Component {
   render() {
@@ -24,14 +23,17 @@ export class LibraryLayoutBase extends Component {
     return (
       <div className="row panels-layout">
         <Helmet title={t('System', 'Library', null, false)} />
-        <main className={`library-viewer document-viewer with-panel ${className}`}>{children}</main>
-        <LibraryFilters storeKey="library" />
-        {!quickLabelThesaurus && <ViewMetadataPanel storeKey="library" />}
-        {!quickLabelThesaurus && <SelectMultiplePanelContainer storeKey="library" />}
-        {quickLabelThesaurus && <QuickLabelPanel storeKey="library" />}
-        <FeatureToggleSemanticSearch>
-          <SemanticSearchPanel storeKey="library" />
-        </FeatureToggleSemanticSearch>
+        {quickLabelThesaurus && <QuickLabelHeader />}
+        <div className="content-holder library-viewer document-viewer with-panel">
+          <main className={`${className}`}>{children}</main>
+          <LibraryFilters storeKey="library" />
+          {!quickLabelThesaurus && <ViewMetadataPanel storeKey="library" />}
+          {!quickLabelThesaurus && <SelectMultiplePanelContainer storeKey="library" />}
+          {quickLabelThesaurus && <QuickLabelPanel storeKey="library" />}
+          <FeatureToggleSemanticSearch>
+            <SemanticSearchPanel storeKey="library" />
+          </FeatureToggleSemanticSearch>
+        </div>
       </div>
     );
   }

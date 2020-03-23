@@ -89,14 +89,12 @@ describe('Library DocumentsList container', () => {
           search: { sort: 'sortProperty' },
         },
         user: fromJS({ _id: 'uid' }),
-        thesauris: fromJS([]),
       };
 
       const state = mapStateToProps(store, { storeKey: 'library' });
       expect(state).toEqual({
         documents,
         filters,
-        thesauri: fromJS([]),
         filtersPanel: 'panel',
         search: { sort: 'sortProperty' },
         selectedDocuments: store.library.ui.get('selectedDocuments'),

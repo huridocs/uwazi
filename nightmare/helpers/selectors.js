@@ -407,20 +407,20 @@ export default {
   },
   quickLabel: {
     notice:
-      '#app > div.content > div > div > aside.side-panel.multi-edit.is-active > div.sidepanel-body > div > div.notice',
+      '#app > div.content > div > div > aside.side-panel.quick-label.is-active > div.sidepanel-body > div > div.notice',
     autoSaveToggleOn:
-      '#app > div.content > div > div > aside.side-panel.multi-edit.is-active > div.sidepanel-header > button.btn.btn-default.btn-header.btn-toggle-on',
+      '#app > div.content > div > div > aside.side-panel.quick-label.is-active > div.sidepanel-header > button.btn.btn-default.btn-header.btn-toggle-on',
     autoSaveToggleOff:
-      '#app > div.content > div > div > aside.side-panel.multi-edit.is-active > div.sidepanel-header > button.btn.btn-default.btn-header.btn-toggle-off',
+      '#app > div.content > div > div > aside.side-panel.quick-label.is-active > div.sidepanel-header > button.btn.btn-default.btn-header.btn-toggle-off',
     discardButton:
-      '#app > div.content > div > div > aside.side-panel.multi-edit.is-active > div.sidepanel-footer > button.cancel-edit-metadata.btn-danger.btn.btn-default',
+      '#app > div.content > div > div > aside.side-panel.quick-label.is-active > div.sidepanel-footer > button.cancel-edit-metadata.btn-danger.btn.btn-default',
     saveButton:
-      '#app > div.content > div > div > aside.side-panel.multi-edit.is-active > div.sidepanel-footer > button.save-metadata.btn.btn-default',
+      '#app > div.content > div > div > aside.side-panel.quick-label.is-active > div.sidepanel-footer > button.save-metadata.btn.btn-default',
     firstCheckboxOff:
-      '#app > div.content > div > div > aside.side-panel.multi-edit.is-active > div.sidepanel-body > div > div.form-group > ul > ul > li:nth-child(2) > label > span.multiselectItem-icon > svg.svg-inline--fa.fa-square.fa-w-14.checkbox-empty',
+      '#app > div.content > div > div > aside.side-panel.quick-label.is-active > div.sidepanel-body > div > div.form-group > ul > ul > li:nth-child(2) > label > span.multiselectItem-icon > svg.svg-inline--fa.fa-square.fa-w-14.checkbox-empty',
     firstCheckboxOn:
-      '#app > div.content > div > div > aside.side-panel.multi-edit.is-active > div.sidepanel-body > div > div.form-group > ul > ul > li:nth-child(2) > label > span.multiselectItem-icon > svg.svg-inline--fa.fa-check.fa-w-16.checkbox-checked',
+      '#app > div.content > div > div > aside.side-panel.quick-label.is-active > div.sidepanel-body > div > div.form-group > ul > ul > li:nth-child(2) > label > span.multiselectItem-icon > svg.svg-inline--fa.fa-check.fa-w-16.checkbox-checked',
     firstCheckboxPartial:
-      '#app > div.content > div > div > aside.side-panel.multi-edit.is-active > div.sidepanel-body > div > div.form-group > ul > ul > li:nth-child(2) > label > span.multiselectItem-icon > svg.svg-inline--fa.fa-minus.fa-w-14.checkbox-partial',
+      '#app > div.content > div > div > aside.side-panel.quick-label.is-active > div.sidepanel-body > div > div.form-group > ul > ul > li:nth-child(2) > label > span.multiselectItem-icon > svg.svg-inline--fa.fa-minus.fa-w-14.checkbox-partial',
   },
 };

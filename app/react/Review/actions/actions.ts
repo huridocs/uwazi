@@ -98,13 +98,6 @@ async function switchToEntity(
   });
 }
 
-export function reviewAndPublish(refName: string) {
-  browserHistory.push(
-    `/uploads/?q=(filters:(__${refName}:(values:!(any)),${refName}:(values:!(any))),` +
-      'limit:100,order:desc,sort:creationDate)&view=nosearch'
-  );
-}
-
 export function switchOneUpEntity(delta: number, save: boolean) {
   return async (dispatch: Dispatch<IStore>, getState: () => IStore) => {
     const state = getState();
