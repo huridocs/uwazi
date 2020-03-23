@@ -1,9 +1,8 @@
 /** @format */
 import { t } from 'app/I18N';
-import { switchOneUpEntity, reviewAndPublish } from 'app/Review/actions/actions';
+import { switchOneUpEntity } from 'app/Review/actions/actions';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { bindActionCreators, Dispatch } from 'redux';
 import { Icon } from 'UI';
 import { IStore } from 'app/istore';
 import { selectIsPristine } from '../common';
@@ -13,7 +12,6 @@ const defaultProps = {
   isLast: false,
   thesaurusName: '',
   switchOneUpEntity: (_delta: number, _save: boolean) => {},
-  reviewAndPublish: (_refName: string) => {},
 };
 
 export type OneUpEntityButtonsProps = typeof defaultProps;
@@ -22,18 +20,6 @@ export class OneUpEntityButtonsBase extends Component<OneUpEntityButtonsProps> {
   static defaultProps = defaultProps;
 
   renderNextButton(isPristine: boolean, btnClass: string) {
-    if (this.props.isLast) {
-      return (
-        <button
-          type="button"
-          onClick={() => this.props.reviewAndPublish(this.props.thesaurusName)}
-          className={`save-and-next ${!isPristine ? 'btn-success' : ''} ${btnClass}`}
-        >
-          <Icon icon="save-and-next" />
-          <span className="btn-label">{t('System', 'Review & Publish')}</span>
-        </button>
-      );
-    }
     return (
       <button
         type="button"
@@ -77,17 +63,6 @@ const mapStateToProps = (state: IStore) => ({
   isPristine: selectIsPristine(state),
 });
 
-function mapDispatchToProps(dispatch: Dispatch<IStore>) {
-  return bindActionCreators(
-    {
-      switchOneUpEntity,
-      reviewAndPublish,
-    },
-    dispatch
-  );
-}
-
-export const OneUpEntityButtons = connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(OneUpEntityButtonsBase);
+export const OneUpEntityButtons = connect(mapStateToProps, { switchOneUpEntity })(
+  OneUpEntityButtonsBase
+);
