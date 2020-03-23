@@ -7,6 +7,7 @@ import React, { Component } from 'react';
 export default class Select extends Component {
   render() {
     const { options, optionsValue, optionsLabel, required, placeholder, sort } = this.props;
+
     let _options = options;
     if (sort) {
       const sortRoot = options.reduce((memo, option) => memo && !option.options, true);
