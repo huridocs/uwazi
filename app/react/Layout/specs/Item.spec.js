@@ -99,14 +99,12 @@ describe('Item', () => {
   it('should include feature-toggled FavoriteBanner passed the sharedId', () => {
     render();
     const FeatureToggleSection = component.find({ feature: 'favorites' });
+    const FavoriteBannerSection = FeatureToggleSection.childAt(0).childAt(0);
 
     expect(FeatureToggleSection.type()).toBe(FeatureToggle);
     expect(FeatureToggleSection.childAt(0).props().className).toContain('item-favorite');
-    expect(
-      FeatureToggleSection.childAt(0)
-        .childAt(0)
-        .props().sharedId
-    ).toBe('sharedId');
+    expect(FavoriteBannerSection.type()).toBe(FavoriteBanner);
+    expect(FavoriteBannerSection.props().sharedId).toBe('sharedId');
   });
 
   it('should accept a different property name for the title', () => {
