@@ -66,12 +66,7 @@ describe('static requestState()', () => {
     const request = { data: query };
     await requestState(request, globalResources);
 
-    expect(libraryHelpers.URLQueryToState).toHaveBeenCalledWith(
-      q,
-      templates,
-      thesauris,
-      relationTypes
-    );
+    expect(libraryHelpers.URLQueryToState).toHaveBeenCalledWith(q, templates, relationTypes);
   });
 
   describe('when is for geolocation', () => {

@@ -177,8 +177,8 @@ describe('library helper', () => {
 
       const populatedFilters = libraryHelper.parseWithAggregations(filters, aggregations);
       expect(populatedFilters[0].options).toEqual([
-        { value: 1, label: 'value1', results: 2, noValueKey: false },
-        { value: 'missing', label: 'No value', results: 2, noValueKey: true },
+        { id: 1, value: 1, label: 'value1', results: 2 },
+        { id: 'missing', value: 'missing', label: 'No value', results: 2, noValueKey: true },
       ]);
     });
   });

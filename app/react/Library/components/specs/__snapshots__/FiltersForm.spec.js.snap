@@ -44,9 +44,7 @@ exports[`FiltersForm render() should render diferent type fileds 1`] = `
           Object {
             "id": "c",
             "label": "c",
-            "results": 1,
-            "value": "c",
-            "values": Array [
+            "options": Array [
               Object {
                 "id": "d",
                 "label": "d",
@@ -54,6 +52,8 @@ exports[`FiltersForm render() should render diferent type fileds 1`] = `
                 "value": "d",
               },
             ],
+            "results": 1,
+            "value": "c",
           },
         ],
         "type": "select",
@@ -78,9 +78,7 @@ exports[`FiltersForm render() should render diferent type fileds 1`] = `
           Object {
             "id": "c",
             "label": "c",
-            "results": 1,
-            "value": "c",
-            "values": Array [
+            "options": Array [
               Object {
                 "id": "d",
                 "label": "d",
@@ -88,6 +86,8 @@ exports[`FiltersForm render() should render diferent type fileds 1`] = `
                 "value": "d",
               },
             ],
+            "results": 1,
+            "value": "c",
           },
         ],
         "type": "multiselect",

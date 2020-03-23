@@ -76,7 +76,9 @@ export class LibraryCharts extends Component {
         fields = parseWithAggregations(this.props.fields.toJS(), this.aggregations)
           .filter(
             field =>
-              (field.type === 'select' || field.type === 'multiselect') && field.options.length
+              (field.type === 'select' || field.type === 'multiselect') &&
+              field.options &&
+              field.options.length
           )
           .map(translateOptions)
           .map(sortFields);

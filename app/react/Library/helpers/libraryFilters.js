@@ -1,5 +1,6 @@
 import comonProperties from 'shared/comonProperties';
 import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
+import { normalize } from 'path';
 
 function getOptions(property, thesauris) {
   const matchingTHesauri = thesauris.find(thesauri => thesauri._id === property.content);
@@ -51,20 +52,32 @@ function URLQueryToState(query, templates) {
   return { properties, search: { searchTerm, filters, order, sort, userSelectedSorting } };
 }
 
+const normalizeBucket = bucket => {
+  const normalizedBucket = {
+    id: bucket.key,
+    value: bucket.key,
+    label: bucket.label,
+    results: bucket.filtered.doc_count,
+  };
+
+  if (bucket.values) {
+    normalizedBucket.options = bucket.values.map(normalizeBucket);
+  }
+
+  if (bucket.key === 'missing') {
+    normalizedBucket.noValueKey = true;
+  }
+
+  return normalizedBucket;
+};
+
 export function parseWithAggregations(filters, aggregations, showNoValue = true) {
   return filters.map(_property => {
     const property = Object.assign({}, _property);
     const propertyAggregations = aggregations.all[property.name];
     if (propertyAggregations && propertyAggregations.buckets) {
       property.options = propertyAggregations.buckets
-        .map(bucket => {
-          return {
-            value: bucket.key,
-            label: bucket.label,
-            results: bucket.filtered.doc_count,
-            noValueKey: bucket.key === 'missing',
-          };
-        })
+        .map(normalizeBucket)
         .filter(opt => opt.results || (!showNoValue && opt.value === 'missing'));
     }
 
