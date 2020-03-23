@@ -113,7 +113,7 @@ $header-height: 44px;
         margin-left: 5px;
         margin-right: 0;
       }
-      &:focus {
+      &:focus:not(.btn-disabled) {
         color: #333;
         background-color: #fff;
         border-color: #ccc;
