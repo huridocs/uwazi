@@ -11,22 +11,26 @@ import { Icon } from 'UI';
 import sortThesauri from '../utils/sortThesauri';
 
 export class ThesauriList extends Component {
-  static getThesaurusSuggestionActions(thesaurus) {
+  getThesaurusSuggestionActions(thesaurus) {
+    const showSuggestions =
+      this.props.topicClassificationEnabled || thesaurus.enable_classification;
     return (
-      <div className="vertical-line">
-        {thesaurus.enable_classification && (
-          <span className="thesaurus-suggestion-count">
-            {thesaurus.suggestions ? thesaurus.suggestions.toLocaleString() : 'No'}&nbsp;
-            {t('System', 'documents to be reviewed')}
-          </span>
-        )}
-        <I18NLink
-          to={`/settings/dictionaries/cockpit/${thesaurus._id}`}
-          className="btn btn-default btn-xs"
-        >
-          <span>{t('System', 'Configure suggestions')}</span>
-        </I18NLink>
-      </div>
+      showSuggestions && (
+        <div className="vertical-line">
+          {thesaurus.enable_classification && (
+            <span className="thesaurus-suggestion-count">
+              {thesaurus.suggestions ? thesaurus.suggestions.toLocaleString() : 'No'}&nbsp;
+              {t('System', 'documents to be reviewed')}
+            </span>
+          )}
+          <I18NLink
+            to={`/settings/dictionaries/cockpit/${thesaurus._id}`}
+            className="btn btn-default btn-xs"
+          >
+            <span>{t('System', 'Configure suggestions')}</span>
+          </I18NLink>
+        </div>
+      )
     );
   }
 
@@ -90,7 +94,7 @@ export class ThesauriList extends Component {
     return (
       <tr key={thesaurus.name}>
         <th scope="row">{thesaurus.name}</th>
-        <td>{ThesauriList.getThesaurusSuggestionActions(thesaurus)}</td>
+        <td>{this.getThesaurusSuggestionActions(thesaurus)}</td>
         <td>{this.getThesaurusModifyActions(thesaurus)}</td>
       </tr>
     );
@@ -130,6 +134,7 @@ export class ThesauriList extends Component {
 
 ThesauriList.propTypes = {
   dictionaries: PropTypes.object,
+  topicClassificationEnabled: PropTypes.bool,
   deleteThesaurus: PropTypes.func.isRequired,
   checkThesaurusCanBeDeleted: PropTypes.func.isRequired,
 };
@@ -139,7 +144,11 @@ ThesauriList.contextTypes = {
 };
 
 export function mapStateToProps(state) {
-  return { dictionaries: state.dictionaries };
+  return {
+    dictionaries: state.dictionaries,
+    topicClassificationEnabled: (state.settings.collection.toJS().features || {})
+      .topicClassification,
+  };
 }
 
 function mapDispatchToProps(dispatch) {

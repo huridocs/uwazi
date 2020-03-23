@@ -53,6 +53,10 @@ export interface OneUpState {
   reviewThesaurusValues: string[];
 }
 
+export interface SettingsState {
+  features?: { topicClassification: boolean };
+}
+
 export interface IStore {
   library: {
     documents: IImmutable<{ rows: EntitySchema[] }>;
@@ -81,5 +85,8 @@ export interface IStore {
   };
   oneUpReview: {
     state?: IImmutable<OneUpState>;
+  };
+  settings: {
+    collection: IImmutable<SettingsState>;
   };
 }

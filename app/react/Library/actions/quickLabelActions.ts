@@ -62,7 +62,7 @@ function buildQuickLabelMetadata(docs: EntitySchema[], propNames: string[]): Qui
 }
 
 export function selectedDocumentsChanged() {
-  return async (dispatch: Dispatch<IStore>, getState: () => IStore) => {
+  return (dispatch: Dispatch<IStore>, getState: () => IStore) => {
     const model = 'library.sidepanel.quickLabelMetadata';
     const state = getState();
     if (!state.library?.sidepanel?.quickLabelState?.get('thesaurus')) {
@@ -122,6 +122,6 @@ export function maybeSaveQuickLabels(force?: boolean) {
     );
     dispatch(notificationActions.notify('Update success', 'success'));
     dispatch(updateEntities(updatedDocs));
-    await dispatch(selectedDocumentsChanged());
+    dispatch(selectedDocumentsChanged());
   };
 }

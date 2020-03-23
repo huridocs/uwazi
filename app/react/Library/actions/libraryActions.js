@@ -29,7 +29,7 @@ export function selectDocument(_doc) {
     }
     await dispatch(maybeSaveQuickLabels());
     dispatch({ type: types.SELECT_DOCUMENT, doc });
-    await dispatch(selectedDocumentsChanged());
+    dispatch(selectedDocumentsChanged());
   };
 }
 
@@ -45,7 +45,7 @@ export function selectDocuments(docs) {
   return async dispatch => {
     await dispatch(maybeSaveQuickLabels());
     dispatch({ type: types.SELECT_DOCUMENTS, docs });
-    await dispatch(selectedDocumentsChanged());
+    dispatch(selectedDocumentsChanged());
   };
 }
 
@@ -53,7 +53,7 @@ export function unselectDocument(docId) {
   return async dispatch => {
     await dispatch(maybeSaveQuickLabels());
     dispatch({ type: types.UNSELECT_DOCUMENT, docId });
-    await dispatch(selectedDocumentsChanged());
+    dispatch(selectedDocumentsChanged());
   };
 }
 
@@ -61,7 +61,7 @@ export function selectSingleDocument(doc) {
   return async dispatch => {
     await dispatch(maybeSaveQuickLabels());
     dispatch({ type: types.SELECT_SINGLE_DOCUMENT, doc });
-    await dispatch(selectedDocumentsChanged());
+    dispatch(selectedDocumentsChanged());
   };
 }
 
@@ -69,7 +69,7 @@ export function unselectAllDocuments() {
   return async dispatch => {
     await dispatch(maybeSaveQuickLabels());
     dispatch({ type: types.UNSELECT_ALL_DOCUMENTS });
-    await dispatch(selectedDocumentsChanged());
+    dispatch(selectedDocumentsChanged());
   };
 }
 

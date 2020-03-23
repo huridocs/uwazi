@@ -192,6 +192,7 @@ const nestedFilter = filter => {
 
 const relationshipfilter = filter => {
   const filters = filter.filters
+    .filter(m => m)
     .map(fil => {
       fil.value = filter.value[fil.name];
       if (fil.value) {

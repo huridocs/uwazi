@@ -16,6 +16,7 @@ describe('ThesaurisList', () => {
       checkThesaurusCanBeDeleted: jasmine
         .createSpy('checkThesaurusCanBeDeleted')
         .and.returnValue(Promise.resolve()),
+      topicClassificationEnabled: true,
       dictionaries: Immutable.fromJS([
         {
           _id: 'thesaurusUnderscoreId1',
@@ -92,6 +93,13 @@ describe('ThesaurisList', () => {
     it('should match the snapshot', () => {
       render();
       expect(component).toMatchSnapshot();
+    });
+
+    it('should omit non-enable_classification thesauris if toggle if off', () => {
+      props.topicClassificationEnabled = false;
+      render();
+      const renderedContexts = component.find('table');
+      expect(renderedContexts.find('td').find('.vertical-line').length).toBe(1);
     });
 
     it('should render suggestions nodes when suggestions exist', () => {

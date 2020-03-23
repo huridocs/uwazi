@@ -26,6 +26,7 @@ export type ThesaurusCockpitProps = {
   thesaurus: ThesaurusSchema;
   suggestInfo: ThesaurusSuggestions;
   tasksState: TasksState;
+  topicClassificationEnabled: boolean;
   updateCockpitData: () => {};
   startTraining: () => {};
   toggleEnableClassification: () => {};
@@ -284,7 +285,8 @@ export class ThesaurusCockpitBase extends RouteHandler {
   }
 
   render() {
-    const { thesaurus, tasksState } = this.props as ThesaurusCockpitProps;
+    const { thesaurus, tasksState, topicClassificationEnabled } = this
+      .props as ThesaurusCockpitProps;
     const { name } = thesaurus;
     if (!name || !tasksState.SyncState?.state) {
       return <Loader />;
@@ -297,7 +299,7 @@ export class ThesaurusCockpitBase extends RouteHandler {
           {this.publishButton()}
         </div>
         <div className="cockpit">
-          {this.learningNotice()}
+          {topicClassificationEnabled && this.learningNotice()}
           <table>
             <thead>
               <tr>
@@ -343,6 +345,8 @@ function mapStateToProps(state: IStore) {
     suggestInfo: selectSuggestInfo(state),
     thesaurus: selectThesaurus(state),
     tasksState: selectTasksState(state),
+    topicClassificationEnabled: (state.settings.collection.toJS().features || {})
+      .topicClassification,
   };
 }
 

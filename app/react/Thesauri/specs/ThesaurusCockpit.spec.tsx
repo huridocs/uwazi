@@ -155,6 +155,7 @@ describe('ThesaurusCockpit', () => {
           docsWithSuggestionsForReview: flattenedSuggestions,
         },
         thesaurus: thesauri[0],
+        topicClassificationEnabled: true,
         tasksState: {
           SyncState: { state: 'running', result: {}, message: 'Updating suggestions' },
         },
@@ -183,9 +184,17 @@ describe('ThesaurusCockpit', () => {
       render();
     });
 
+    it('should hide notice if feature toggle is off', () => {
+      props.topicClassificationEnabled = false;
+      render();
+      expect(component.find('.cockpit').length).toBe(1);
+      expect(component.find('Notice').length).toBe(0);
+    });
+
     it('should find the cockpit table and verify names and counts', () => {
       render();
       expect(component.find('.cockpit').length).toBe(1);
+      expect(component.find('Notice').length).toBe(1);
       expect(component.find({ scope: 'row' }).length).toBe(3);
       expect(component.find({ title: 'sample-count' }).length).toBe(3);
       expect(component.find({ title: 'suggestions-count' }).length).toBe(3);

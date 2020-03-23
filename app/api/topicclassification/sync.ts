@@ -145,7 +145,7 @@ export async function syncEntity(
 async function getAvailableModels(fixedModel?: string) {
   const models = (await listModels()) ?? { error: 'Internal error in calling backend.' };
   if (models.error) {
-    return { error: `Aborted: ${models.error}` };
+    return { error: `Suggestion sync aborted: ${models.error}` };
   }
   return models.models.reduce(async (res, m) => {
     if (fixedModel && m !== fixedModel) {
@@ -180,7 +180,7 @@ class SyncTask extends Task {
         throw new Error(`The selected model ${args.model} was not found!`);
       }
       this.status.message =
-        'Nothing to do: Topic Classification server does not have any models (yet).';
+        'No suggestions to sync: Topic Classification server does not have any models (yet).';
       return;
     }
     const res = this.status.result;
