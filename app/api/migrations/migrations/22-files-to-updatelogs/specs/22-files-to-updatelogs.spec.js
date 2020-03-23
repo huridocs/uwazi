@@ -1,6 +1,6 @@
 import testingDB from 'api/utils/testing_db';
 import migration from '../index.js';
-import fixtures, { file1, file2 } from './fixtures.js';
+import fixtures, { file1, file2, file3 } from './fixtures.js';
 
 const query = (collectionName, queryObject = {}, select = {}) =>
   testingDB.mongodb
@@ -24,24 +24,29 @@ describe('migration files-to-updatelogs', () => {
 
   it('should create entries on updatelogs for all files', async () => {
     await migration.up(testingDB.mongodb);
-    const [file1log, file2log] = await query('updatelogs');
+    const fileLogs = await query('updatelogs');
 
-    expect(file1log).toEqual(
+    expect(fileLogs.length).toBe(3);
+    expect(fileLogs).toEqual([
+      expect.objectContaining({
+        timestamp: 50,
+        namespace: 'files',
+        mongoId: file3,
+        deleted: false,
+      }),
       expect.objectContaining({
         timestamp: 0,
         namespace: 'files',
         mongoId: file1,
         deleted: false,
-      })
-    );
-    expect(file2log).toEqual(
+      }),
       expect.objectContaining({
         timestamp: 0,
         namespace: 'files',
         mongoId: file2,
         deleted: false,
-      })
-    );
+      }),
+    ]);
   });
 
   describe('when it has lastSync', () => {
@@ -51,8 +56,13 @@ describe('migration files-to-updatelogs', () => {
       });
 
       await migration.up(testingDB.mongodb);
-      const [file1log, file2log] = await query('updatelogs');
+      const [file3log, file1log, file2log] = await query('updatelogs');
 
+      expect(file3log).toEqual(
+        expect.objectContaining({
+          timestamp: 50,
+        })
+      );
       expect(file1log).toEqual(
         expect.objectContaining({
           timestamp: 20,

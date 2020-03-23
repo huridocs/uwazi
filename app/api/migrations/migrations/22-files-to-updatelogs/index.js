@@ -19,12 +19,21 @@ export default {
 
     while (await cursor.hasNext()) {
       const file = await cursor.next();
-      await db.collection('updatelogs').insertOne({
-        timestamp: sync ? sync.lastSync : 0,
-        namespace: 'files',
-        mongoId: file._id,
-        deleted: false,
-      });
+      const logExists = (
+        await db
+          .collection('updatelogs')
+          .find({ mongoId: file._id })
+          .toArray()
+      ).length;
+
+      if (!logExists) {
+        await db.collection('updatelogs').insertOne({
+          timestamp: sync ? sync.lastSync : 0,
+          namespace: 'files',
+          mongoId: file._id,
+          deleted: false,
+        });
+      }
       process.stdout.write(` -> processed: ${index} \r`);
       index += 1;
     }
