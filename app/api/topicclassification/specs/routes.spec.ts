@@ -62,7 +62,7 @@ function fakePost(url: string, data: any, _headers: any) {
 
 describe('topic classification routes', () => {
   let routes: { get: any; post: any };
-  const elasticIndex = 'search_index_test';
+  const elasticIndex = 'tc_routes_test';
   const search = instanceSearch(elasticIndex);
   const elasticTesting = instanceElasticTesting(elasticIndex, search);
 
