@@ -31,7 +31,11 @@ describe('pages path', () => {
   });
 
   describe('Graphs in Page', () => {
+<<<<<<< HEAD
     it('should create a blank page', (done) => {
+=======
+    it('should create a basic page', (done) => {
+>>>>>>> 61ef70b7388da8adc799012f99d04fea4327dd21
       nightmare
       .waitToClick(localSelectors.pagesButton)
       .waitToClick(localSelectors.createNewPageButton)
@@ -104,7 +108,11 @@ describe('pages path', () => {
 
     it('should insert Pie chart graph in page', (done) => {
       nightmare
+<<<<<<< HEAD
       .evaluate(() => document.querySelector('.page-viewer.document-viewer > div > div.tab-content.tab-content-visible > textarea').value)
+=======
+      .evaluate(() => document.querySelector('div.panel-body.page-viewer.document-viewer > div > div.tab-content.tab-content-visible > textarea').value)
+>>>>>>> 61ef70b7388da8adc799012f99d04fea4327dd21
       .then((input) => {
         expect(input).toContain('<Dataset />');
 
