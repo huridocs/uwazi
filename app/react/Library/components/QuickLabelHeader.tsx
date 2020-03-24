@@ -45,7 +45,7 @@ export class QuickLabelHeaderBase extends Component<QuickLabelHeaderProps> {
               &nbsp;
               <span className="btn-label">{t('System', 'Back to thesaurus')}</span>
             </I18NLink>
-            <h1 className="first">
+            <h1>
               <span className="large">
                 {t('System', 'Quick labeling for')}&nbsp;<b>{thesaurusName}</b>
               </span>

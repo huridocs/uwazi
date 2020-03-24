@@ -115,15 +115,17 @@ export default class Uploads extends RouteHandler {
       <div className="row panels-layout">
         <Helmet title={t('System', 'Uploads', null, false)} />
         <UploadsHeader />
-        <main className="uploads-viewer document-viewer with-panel">
-          <UploadBox />
-          {/*<ListChartToggleButtons active={chartView ? 'chart' : 'list'} />*/}
-          {mainView}
-        </main>
-        <LibraryFilters uploadsSection storeKey="uploads" />
-        <ViewMetadataPanel storeKey="uploads" searchTerm={query.searchTerm} />
-        <SelectMultiplePanelContainer storeKey="uploads" />
-        <ImportPanel />
+        <div className="content-holder uploads-viewer document-viewer with-panel">
+          <main>
+            <UploadBox />
+            {/*<ListChartToggleButtons active={chartView ? 'chart' : 'list'} />*/}
+            {mainView}
+          </main>
+          <LibraryFilters uploadsSection storeKey="uploads" />
+          <ViewMetadataPanel storeKey="uploads" searchTerm={query.searchTerm} />
+          <SelectMultiplePanelContainer storeKey="uploads" />
+          <ImportPanel />
+        </div>
       </div>
     );
   }

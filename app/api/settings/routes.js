@@ -53,6 +53,7 @@ export default app => {
           ),
           features: Joi.object().keys({
             semanticSearch: Joi.boolean(),
+            topicClassification: Joi.boolean(),
           }),
         })
         .required()

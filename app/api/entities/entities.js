@@ -259,7 +259,7 @@ function sanitize(doc, template) {
   return Object.assign(doc, { metadata });
 }
 
-function applyDiffMetadata(metadata, diffMetadata) {
+function updateMetadataWithDiff(metadata, diffMetadata) {
   if (!diffMetadata) {
     return metadata;
   }
@@ -430,7 +430,7 @@ export default {
             {
               ...entity,
               ...pureValues,
-              metadata: applyDiffMetadata(
+              metadata: updateMetadataWithDiff(
                 { ...entity.metadata, ...pureValues.metadata },
                 diffMetadata
               ),

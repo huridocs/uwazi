@@ -2,7 +2,10 @@
 
 .document-viewer {
   width: 100%;
-  height: calc(100% - 50px);
+  height: 100%;
+  &.with-header {
+    height: calc(100% - 50px);
+  }
   padding: 15px 15px 0;
   transition: all 500ms;
   overflow-y: auto;

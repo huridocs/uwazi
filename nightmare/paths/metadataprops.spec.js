@@ -16,7 +16,7 @@ describe('metadata properties', () => {
 
   const localSelectors = {
     viewer:
-      '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div.view',
+      '#app > div.content > div > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div.view',
     propertiesButtons: index =>
       `#app > div.content > div > div > div.settings-content > div > div > div.panel-body > div > aside > div > ul > li:nth-child(${index}) > button`,
     templateProperties:
@@ -82,7 +82,7 @@ describe('metadata properties', () => {
       geolocationLon:
         '#metadataForm > div:nth-child(3) > div:nth-child(15) > ul > li.wide > div > div.form-row > div:nth-child(2) > input',
       save:
-        '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-footer > span > button.btn.btn-success',
+        '#app > div.content > div > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-footer > span > button.btn.btn-success',
     },
     properties: {
       text: '.metadata-type-text dd',
@@ -228,7 +228,7 @@ describe('metadata properties', () => {
 
   it('should be able to remove all the values from properties', async () => {
     await nightmare
-      .waitToClick(selectors.documentView.editButton)
+      .waitToClick(selectors.libraryView.editEntityButton)
       .wait(localSelectors.form.text)
       .clearInput(localSelectors.form.text)
       .clearInput(localSelectors.form.numeric)

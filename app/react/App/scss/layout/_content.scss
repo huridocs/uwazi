@@ -47,12 +47,12 @@
       text-overflow: ellipsis;
     }
   }
-  h1.first {
-    margin-left: 8px;
-  }
 
   .large {
     font-size: $f-size-xl;
+  }
+  .btn:not(.btn-color) {
+    margin-right: 8px;
   }
   .btn-color {
     margin-left: 5px;

@@ -19,12 +19,15 @@ export class LibraryLayoutBase extends Component {
       return <Welcome />;
     }
     const { className, children, quickLabelThesaurus } = this.props;
+    const contentDivClass = `${
+      quickLabelThesaurus ? 'with-header ' : ''
+    } content-holder library-viewer document-viewer with-panel`;
 
     return (
       <div className="row panels-layout">
         <Helmet title={t('System', 'Library', null, false)} />
         {quickLabelThesaurus && <QuickLabelHeader />}
-        <div className="content-holder library-viewer document-viewer with-panel">
+        <div className={contentDivClass}>
           <main className={`${className}`}>{children}</main>
           <LibraryFilters storeKey="library" />
           {!quickLabelThesaurus && <ViewMetadataPanel storeKey="library" />}

@@ -8,7 +8,6 @@ import { loadFetchedInReduxForm } from 'app/Metadata/actions/actions';
 import * as relationships from 'app/Relationships/utils/routeUtils';
 import { RequestParams } from 'app/utils/RequestParams';
 import Immutable from 'immutable';
-import { browserHistory } from 'react-router';
 import { Action, Dispatch } from 'redux';
 import { TemplateSchema } from 'shared/types/templateType';
 import { OneUpState, IStore } from 'app/istore';
