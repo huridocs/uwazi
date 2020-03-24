@@ -165,6 +165,5 @@ exports[`ThesaurisList render should match the snapshot 1`] = `
       </span>
     </Connect(I18NLink)>
   </div>
-  <Connect(Footer) />
 </div>
 `;

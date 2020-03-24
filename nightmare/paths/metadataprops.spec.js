@@ -171,7 +171,7 @@ describe('metadata properties', () => {
       .insert(localSelectors.form.geolocationLon, '6')
       .click(localSelectors.form.save)
       .waitToClick('.alert.alert-success');
-  });
+  }, 60000);
 
   it('should have all the values corretly saved', async () => {
     await nightmare
@@ -224,7 +224,7 @@ describe('metadata properties', () => {
           .wait(localSelectors.properties.media)
           .wait(localSelectors.properties.geolocation);
       });
-  });
+  }, 60000);
 
   it('should be able to remove all the values from properties', async () => {
     await nightmare
@@ -251,7 +251,7 @@ describe('metadata properties', () => {
       .clearInput(localSelectors.form.geolocationLon)
       .click(localSelectors.form.save)
       .waitToClick('.alert.alert-success');
-  });
+  }, 60000);
 
   it('should have not metadata', async () => {
     await nightmare.getInnerText(localSelectors.viewer).then(metadata => {

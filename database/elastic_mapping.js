@@ -6,6 +6,8 @@ import languages from '../app/shared/languages';
 const config = {
   settings: {
     'index.mapping.total_fields.limit': 2000,
+    'index.number_of_replicas': 0,
+    'index.number_of_shards': 3,
     analysis: {
       char_filter: {
         remove_annotation: {

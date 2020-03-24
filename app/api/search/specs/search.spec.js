@@ -333,6 +333,8 @@ describe('search', () => {
       {
         types: [ids.templateMetadata1],
         filters: { daterange: { from: 1547997735, to: 1579533735 } },
+        order: 'desc',
+        sort: 'title',
       },
       'en',
       { _id: 'user' }
@@ -345,6 +347,8 @@ describe('search', () => {
       {
         types: [ids.templateMetadata1],
         filters: { daterange: { from: 1547997735, to: null } },
+        order: 'asc',
+        sort: 'title',
       },
       'en',
       { _id: 'user' }
@@ -352,6 +356,7 @@ describe('search', () => {
 
     expect(entities.rows.length).toBe(2);
     expect(entities.rows[0].title).toBe('metadata1');
+    expect(entities.rows[1].title).toBe('Metadata2');
   });
 
   it('should filter by relationships metadata selects', async () => {
