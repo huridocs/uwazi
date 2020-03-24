@@ -1,6 +1,6 @@
 import { t } from 'app/I18N';
 import LibraryFilters from 'app/Library/components/LibraryFilters';
-import QuickLabelPanel from 'app/Library/components/QuickLabelPanel';
+import { QuickLabelPanel } from 'app/Library/components/QuickLabelPanel';
 import ViewMetadataPanel from 'app/Library/components/ViewMetadataPanel';
 import Welcome from 'app/Library/components/Welcome';
 import SelectMultiplePanelContainer from 'app/Library/containers/SelectMultiplePanelContainer';

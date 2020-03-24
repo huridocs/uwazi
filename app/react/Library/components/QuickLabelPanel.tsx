@@ -46,7 +46,7 @@ export const selectIsPristine = createSelector(
   value => value
 );
 
-export class QuickLabelPanel extends Component<QuickLabelPanelProps> {
+export class QuickLabelPanelBase extends Component<QuickLabelPanelProps> {
   static defaultProps = defaultProps;
 
   static contextTypes = {
@@ -283,4 +283,4 @@ function mapDispatchToProps(dispatch: any) {
   );
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(QuickLabelPanel);
+export const QuickLabelPanel = connect(mapStateToProps, mapDispatchToProps)(QuickLabelPanelBase);

@@ -101,29 +101,6 @@ const thesauri: ThesaurusSchema[] = [
     enable_classification: false,
   },
 ];
-// const rawSuggestionResult: any = {
-//   totalRows: 1,
-//   aggregations: {
-//     all: {
-//       _thesaurus_name: {
-//         buckets: [
-//           {
-//             key: 'id1',
-//             filtered: {
-//               doc_count: 2,
-//             },
-//           },
-//           {
-//             key: 'id2',
-//             filtered: {
-//               doc_count: 0,
-//             },
-//           },
-//         ],
-//       },
-//     },
-//   },
-// };
 
 const flattenedSuggestions: LabelCountSchema = {
   totalRows: 2,
@@ -182,6 +159,14 @@ describe('ThesaurusCockpit', () => {
 
     it('should render a ThesaurusCockpit', () => {
       render();
+      expect(component).toMatchSnapshot();
+      expect(component.find('Notice').length).toBe(1);
+    });
+
+    it('should render smaller with feature toggled off', () => {
+      props.topicClassificationEnabled = false;
+      render();
+      expect(component.find('Notice').length).toBe(0);
     });
 
     it('should hide notice if feature toggle is off', () => {
@@ -236,45 +221,6 @@ describe('ThesaurusCockpit', () => {
       };
       component = shallow(<ThesaurusCockpitBase {...props} />, { context });
       expect(component.find({ title: 'publish-button' }).length).toBe(0);
-    });
-  });
-
-  describe('requestState', () => {
-    beforeEach(() => {
-      spyOn(ThesauriAPI, 'getThesauri').and.returnValue(Promise.resolve(thesauri));
-      spyOn(TemplatesAPI, 'get').and.returnValue(Promise.resolve(templates));
-      // spyOn(SearchAPI, 'search').and.returnValue(Promise.resolve(rawSuggestionResult));
-    });
-
-    it('should get the thesaurus, classification model and suggestion counts as react actions', async () => {
-      const actions = await ThesaurusCockpitBase.requestState(new RequestParams());
-      expect(ThesauriAPI.getThesauri).toHaveBeenCalled();
-      expect(TemplatesAPI.get).toHaveBeenCalled();
-      // expect(api.get).toHaveBeenCalled();
-      // expect(ThesauriAPI.getModelTrainStatus).toHaveBeenCalled();
-      // expect(ThesauriAPI.getModelStatus).toHaveBeenCalled();
-      // expect(SearchAPI.search).toHaveBeenCalledTimes(4);
-
-      expect(actions.length).toBe(4);
-      actions.forEach(action => {
-        if ('type' in action) {
-          switch (action.type) {
-            case 'thesauri.thesaurus/SET':
-              expect(action.value).toEqual(thesauri[0]);
-              break;
-            case 'thesauri.suggestInfo/SET':
-              expect(action.value).toEqual({
-                property: assocProperty,
-                // model,
-                // docsWithLabels: flattenedSuggestions,
-                // docsWithSuggestionsForPublish: flattenedSuggestions,
-                // docsWithSuggestionsForReview: flattenedSuggestions,
-              } as ThesaurusSuggestions);
-              break;
-            default:
-          }
-        }
-      });
     });
   });
 });
