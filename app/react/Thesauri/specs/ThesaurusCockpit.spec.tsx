@@ -1,11 +1,5 @@
 /* eslint-disable max-lines */
 import RouteHandler from 'app/App/RouteHandler';
-import { ThesaurusSuggestions } from 'app/istore';
-// import SearchAPI from 'app/Search/SearchAPI';
-import TemplatesAPI from 'app/Templates/TemplatesAPI';
-import ThesauriAPI from 'app/Thesauri/ThesauriAPI';
-// import api from 'app/utils/api';
-import { RequestParams } from 'app/utils/RequestParams';
 import { shallow, ShallowWrapper } from 'enzyme';
 import React from 'react';
 import { TemplateSchema } from 'shared/types/templateType';

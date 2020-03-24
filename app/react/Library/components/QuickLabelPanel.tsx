@@ -184,7 +184,7 @@ export class QuickLabelPanelBase extends Component<QuickLabelPanelProps> {
     if (!quickLabelThesaurus) {
       content = (
         <div>
-          {QuickLabelPanel.renderNotice()}
+          {QuickLabelPanelBase.renderNotice()}
           <label className="errormsg">
             {
               "Oops! We couldn't find the thesaurus you're trying to edit. Try navigating back to this page through Settings."
@@ -195,7 +195,7 @@ export class QuickLabelPanelBase extends Component<QuickLabelPanelProps> {
     } else if (!Object.keys(quickLabelMetadata).length) {
       content = (
         <div>
-          {QuickLabelPanel.renderNotice()}
+          {QuickLabelPanelBase.renderNotice()}
           <label className="errormsg">
             Nothing to see here! The selected documents are not using the selected thesaurus&nbsp;
             <b>{quickLabelThesaurus.get('name')}</b>. Try selecting other documents.
@@ -205,7 +205,7 @@ export class QuickLabelPanelBase extends Component<QuickLabelPanelProps> {
     } else {
       content = (
         <div>
-          {QuickLabelPanel.renderNotice()}
+          {QuickLabelPanelBase.renderNotice()}
           {Object.keys(quickLabelMetadata)
             .sort()
             .map(p => this.renderProp(p))}
