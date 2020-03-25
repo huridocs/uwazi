@@ -41,25 +41,20 @@ describe('Favorite Banner', () => {
     mockEvent = jasmine.createSpyObj('mockEvent', ['stopPropagation', 'preventDefault']);
   });
 
-  it('should present a clickable banner', () => {
-    render();
-    expect(component).toMatchSnapshot();
+  it('should allow toggle-clicking the banner to add / remove to local storage', () => {
+    render({ sharedId: 'newSharedId' });
+
+    component.find('button.btn.favoriteBanner').simulate('click', mockEvent);
+    expect(localStorageMock.getItem('uwaziFavorites').split(',')).toContain('newSharedId');
+    expect(component.find('button').props().className).toContain('selected');
+
+    component.find('button.btn.favoriteBanner').simulate('click', mockEvent);
+    expect(localStorageMock.getItem('uwaziFavorites')).toBe('sharedId1,sharedId4');
+    expect(component.find('button').props().className).not.toContain('selected');
   });
 
   it('should present a SELECTED banner if the current entity already in favorites', () => {
     render({ sharedId: 'sharedId4' });
     expect(component.find('button').props().className).toContain('selected');
-  });
-
-  it('should allow toggle-clicking the banner to add / remove to local storage', () => {
-    render({ sharedId: 'newSharedId' });
-
-    component.find('button').simulate('click', mockEvent);
-    expect(localStorageMock.getItem('uwaziFavorites').split(',')).toContain('newSharedId');
-    expect(component.find('button').props().className).toContain('selected');
-
-    component.find('button').simulate('click', mockEvent);
-    expect(localStorageMock.getItem('uwaziFavorites')).toBe('sharedId1,sharedId4');
-    expect(component.find('button').props().className).not.toContain('selected');
   });
 });
