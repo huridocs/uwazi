@@ -20,23 +20,23 @@ class FavoriteBanner extends Component<FavoriteBannerProps, FavoriteBannerState>
 
   componentDidMount() {
     const { sharedId } = this.props;
-    this.setState({ selected: getUwaziFavorites().includes(sharedId) });
+    const shouldBeSelected = getUwaziFavorites().includes(sharedId);
+    if (shouldBeSelected) {
+      this.setState({ selected: shouldBeSelected });
+    }
   }
 
   toggleClick(e: any) {
     const { sharedId } = this.props;
     const uwaziFavorites = getUwaziFavorites();
-
     e.stopPropagation();
     e.preventDefault();
-
     if (uwaziFavorites.includes(sharedId)) {
       const itemIndex = uwaziFavorites.indexOf(sharedId);
       uwaziFavorites.splice(itemIndex, 1);
     } else {
       uwaziFavorites.push(sharedId);
     }
-
     localStorage.setItem('uwaziFavorites', uwaziFavorites.join(','));
     this.setState({ selected: getUwaziFavorites().includes(sharedId) });
   }
