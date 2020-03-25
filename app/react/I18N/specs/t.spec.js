@@ -70,9 +70,10 @@ describe('t', () => {
 
   describe('when no context', () => {
     it('should throw an error', () => {
-      expect(() =>
-        t(undefined, 'confirmDeleteEntity', 'Are you sure you want to delete this entity?')
-      ).toThrow();
+      spyOn(console, 'warn');
+      t(undefined, 'confirmDeleteEntity', 'Are you sure you want to delete this entity?');
+      //eslint-disable-next-line no-console
+      expect(console.warn).toHaveBeenCalled();
     });
   });
 });

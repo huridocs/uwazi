@@ -7,7 +7,8 @@ const testingEnvironment = process.env.NODE_ENV === 'test';
 
 const t = (contextId, key, _text, returnComponent = true) => {
   if (!contextId) {
-    throw new Error(`You cannot translate "${key}", because context id is "${contextId}"`);
+    // eslint-disable-next-line no-console
+    console.warn(`You cannot translate "${key}", because context id is "${contextId}"`);
   }
 
   if (returnComponent && !testingEnvironment) {
