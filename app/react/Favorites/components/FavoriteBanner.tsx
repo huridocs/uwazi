@@ -1,17 +1,26 @@
 import React, { Component } from 'react';
-import { isClient } from 'app/utils';
 
 export type FavoriteBannerProps = {
   sharedId: string;
 };
 
+export type FavoriteBannerState = {
+  selected: boolean;
+};
+
 const getUwaziFavorites = () =>
   localStorage.getItem('uwaziFavorites') ? localStorage.getItem('uwaziFavorites')!.split(',') : [];
 
-class FavoriteBanner extends Component<FavoriteBannerProps> {
+class FavoriteBanner extends Component<FavoriteBannerProps, FavoriteBannerState> {
   constructor(props: FavoriteBannerProps) {
     super(props);
+    this.state = { selected: false };
     this.toggleClick = this.toggleClick.bind(this);
+  }
+
+  componentDidMount() {
+    const { sharedId } = this.props;
+    this.setState({ selected: getUwaziFavorites().includes(sharedId) });
   }
 
   toggleClick(e: any) {
@@ -29,26 +38,22 @@ class FavoriteBanner extends Component<FavoriteBannerProps> {
     }
 
     localStorage.setItem('uwaziFavorites', uwaziFavorites.join(','));
-    this.forceUpdate();
+    this.setState({ selected: getUwaziFavorites().includes(sharedId) });
   }
 
   render() {
-    if (isClient) {
-      const { sharedId } = this.props;
-      const selected = getUwaziFavorites().includes(sharedId);
+    const { selected } = this.state;
 
-      return (
-        <button
-          className={`btn favoriteBanner ${selected ? 'selected' : ''}`}
-          onClick={this.toggleClick}
-          type="button"
-        >
-          <span className="tab-link-tooltip">Add / remove favorite</span>
-        </button>
-      );
-    }
-
-    return null;
+    return (
+      <button
+        className={`btn favoriteBanner ${selected ? 'selected' : ''}`}
+        onClick={this.toggleClick}
+        type="button"
+        suppressHydrationWarning
+      >
+        <span className="tab-link-tooltip">Add / remove favorite</span>
+      </button>
+    );
   }
 }
 
