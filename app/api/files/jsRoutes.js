@@ -8,7 +8,7 @@ import proxy from 'express-http-proxy';
 
 import entities from 'api/entities';
 import { search } from 'api/search';
-import CSVLoader from 'api/csv';
+import CSVLoader, { csvExporter } from 'api/csv';
 import { saveSchema } from 'api/entities/endpointSchema';
 import { generateFileName } from 'api/files/filesystem';
 import settings from 'api/settings';
@@ -130,6 +130,79 @@ export default app => {
         });
 
       res.json('ok');
+    }
+  );
+
+  const parseQueryProperty = (query, property) =>
+    query[property] ? JSON.parse(query[property]) : query[property];
+
+  const generateExportFileName = () => {
+    const databaseName = '';
+    const date = '';
+    const timeUtc = '';
+
+    return `${databaseName}-${date}-${timeUtc}.csv`;
+  };
+
+  app.get(
+    '/api/export',
+
+    validation.validateRequest(
+      Joi.object().keys({
+        filters: Joi.string(),
+        types: Joi.string(),
+        _types: Joi.string(),
+        fields: Joi.string(),
+        allAggregations: Joi.string(),
+        userSelectedSorting: Joi.string(),
+        aggregations: Joi.string(),
+        order: Joi.string(),
+        sort: Joi.string(),
+        limit: Joi.string(),
+        searchTerm: Joi.string().allow(''),
+        includeUnpublished: Joi.any(),
+        treatAs: Joi.string(),
+        unpublished: Joi.any(),
+        select: Joi.array(),
+      }),
+      'query'
+    ),
+
+    (req, res) => {
+      req.query.filters = parseQueryProperty(req.query, 'filters');
+      req.query.types = parseQueryProperty(req.query, 'types');
+      req.query.fields = parseQueryProperty(req.query, 'fields');
+      req.query.aggregations = parseQueryProperty(req.query, 'aggregations');
+      req.query.select = parseQueryProperty(req.query, 'select');
+      req.query.unpublished = parseQueryProperty(req.query, 'unpublished');
+      req.query.includeUnpublished = parseQueryProperty(req.query, 'includeUnpublished');
+
+      search.search(req.query, req.language, req.user).then(results => {
+        const exporter = new csvExporter();
+        const fileName = generateFileName({ originalname: generateExportFileName() });
+
+        let entitiesProcessed = 0;
+        exporter.on('entityProcessed', () => {
+          entitiesProcessed += 1;
+          req
+            .getCurrentSessionSockets()
+            .emit('EXPORT_CSV_PROGRESS', { entitiesProcessed, fileName });
+        });
+
+        req.getCurrentSessionSockets().emit('EXPORT_CSV_START', { fileName });
+        exporter
+          .export(results, fileName)
+          .then(() => {
+            req.getCurrentSessionSockets().emit('EXPORT_CSV_END', { fileName });
+          })
+          .catch(e => {
+            req
+              .getCurrentSessionSockets()
+              .emit('IMPORT_CSV_ERROR', { error: handleError(e), fileName });
+          });
+
+        res.json({ fileName });
+      });
     }
   );
 };
