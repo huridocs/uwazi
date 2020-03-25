@@ -11,4 +11,7 @@ module.exports = {
     '\\.(css|scss)$': 'identity-obj-proxy',
   },
   snapshotSerializers: ['enzyme-to-json/serializer'],
+  collectCoverage: true,
+  collectCoverageFrom: ['app/**/*.{js,jsx}'],
+  coverageDirectory: 'coverage',
 };

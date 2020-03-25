@@ -1,8 +1,8 @@
 {
-  "eslint.validate": [
-    "javascript",
-    "javascriptreact",
-    "typescript",
-    "typescriptreact"
-  ]
+  "eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact"],
+  "editor.detectIndentation": false,
+  "editor.tabSize": 2,
+  "vscode-coverage-highlighter.files": ["coverage/coverage-final.json"],
+  "vscode-coverage-highlighter.defaultState": "disable",
+  "vscode-coverage-highlighter.showDiagnostic": false
 }

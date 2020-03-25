@@ -1,0 +1,24 @@
+{
+  "recommendations": [
+    "joeyyizhao.mongo-runner",
+    "mgmcdermott.vscode-language-babel",
+    "aaron-bond.better-comments",
+    "coenraads.bracket-pair-colorizer",
+    "brainfit.vscode-coverage-highlighter",
+    "dbaeumer.vscode-eslint",
+    "waderyan.gitblame",
+    "mhutchie.git-graph",
+    "eamodio.gitlens",
+    "shd101wyy.markdown-preview-enhanced",
+    "davidanson.vscode-markdownlint",
+    "leizongmin.node-module-intellisens",
+    "eg2.vscode-npm-script",
+    "christian-kohler.npm-intellisense",
+    "christian-kohler.path-intellisense",
+    "esbenp.prettier-vscode",
+    "shan.code-settings-sync",
+    "ms-vscode.vscode-typescript-tslint-plugin",
+    "pmneo.tsimporter",
+    "visualstudioexptteam.vscodeintellicode"
+  ]
+}
