@@ -88,7 +88,7 @@ export class ThesaurusCockpitBase extends RouteHandler {
               }
               className="btn btn-default btn-xs"
             >
-              <span title="review-button-title">{t('system', 'View suggestions')}</span>
+              <span title="review-button-title">{t('System', 'View suggestions')}</span>
             </I18NLink>
           ) : null}
         </td>
