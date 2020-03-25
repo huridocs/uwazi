@@ -48,7 +48,7 @@
     "add-migration": "./node_modules/.bin/plop --plopfile ./app/api/migrations/plopfile.js migration",
     "migrate": "node run.js ./app/api/migrations/migrate.js",
     "test-debug": "node --inspect ./node_modules/.bin/jest --watch --no-cache -i",
-    "test": "node ./node_modules/.bin/jest",
+    "test": "node ./node_modules/.bin/jest --coverage",
     "e2e": "jest --projects nightmare/jest.e2e.config.js -i --verbose true",
     "e2e-show": "export SHOW_E2E=1; yarn e2e",
     "e2e-restore-fixtures": "cd nightmare/fixtures;./restore.sh",
