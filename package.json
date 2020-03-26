@@ -78,7 +78,6 @@
     "@loadable/component": "^5.10.3",
     "@mapbox/mapbox-gl-rtl-text": "^0.1.2",
     "@types/helmet": "^0.0.45",
-    "@types/hoist-non-react-statics": "^3.3.0",
     "@types/loadable__component": "^5.10.0",
     "@types/mongodb": "3.3.2",
     "@types/mongoose": "5.7.1",

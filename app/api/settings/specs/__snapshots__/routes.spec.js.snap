@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`relationtypes routes POST should have a validation schema 1`] = `
+exports[`Settings routes POST should have a validation schema 1`] = `
 Object {
   "children": Object {
     "__v": Object {
@@ -79,6 +79,24 @@ Object {
     },
     "features": Object {
       "children": Object {
+        "_id": Object {
+          "invalids": Array [
+            "",
+          ],
+          "type": "string",
+        },
+        "favorites": Object {
+          "falsy": Array [
+            false,
+          ],
+          "flags": Object {
+            "insensitive": true,
+          },
+          "truthy": Array [
+            true,
+          ],
+          "type": "boolean",
+        },
         "semanticSearch": Object {
           "falsy": Array [
             false,

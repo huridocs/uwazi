@@ -47,6 +47,7 @@ export class Doc extends Component {
                 <button
                   className="btn btn-default btn-hover-danger btn-xs"
                   onClick={e => this.deleteConnection(e, connection)}
+                  type="button"
                 >
                   <Icon icon="trash-alt" />
                 </button>
