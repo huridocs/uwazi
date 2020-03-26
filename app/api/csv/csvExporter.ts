@@ -1,12 +1,12 @@
 import { EventEmitter } from 'events';
-import * as csv from 'fast-csv';
+import * as csv from '@fast-csv/format';
 import { FilePath } from 'api/files/filesystem';
 import * as fs from 'fs';
 import templates from 'api/templates';
-import thesauri from 'api/thesauri';
 import { PropertySchema } from 'shared/types/commonTypes';
 import { TemplateSchema } from 'shared/types/templateType';
-import formatters from './typeFormatters';
+import settings from 'api/settings';
+import formatters, { formatDate } from './typeFormatters';
 
 export type SearchResults = {
   rows: any[];
@@ -43,66 +43,101 @@ export const getTemplatesModels = async (templateIds: string[]) =>
     )
   );
 
-const isSelectOrMultiselect = (property: any) => ['select', 'multiselect'].includes(property.type);
-const notIncludedIn = (collection: any[]) => (item: any) => !collection.includes(item);
-
-export const extractThesaurus = (templatesToExtract: any) =>
-  Object.values(templatesToExtract).reduce(
-    (memo: string[], template: any) =>
-      memo.concat(
-        template.properties
-          ?.filter(isSelectOrMultiselect)
-          ?.map((item: any) => item.content)
-          .filter(notIncludedIn(memo))
-      ),
-    []
-  );
-
-export const getThesaurus = async (thesaurusIds: string[]) =>
-  Promise.all(thesaurusIds.map(async (id: string) => thesauri.getById(id))).then(results =>
-    results.reduce<any>(
-      (memo, current) => (current ? { ...memo, [current._id]: thesauri } : null),
-      {}
-    )
-  );
-
-//export const headerEquals = (header1: any, header2: any) =>
-//  header1.label === header2.label && header1.name === header2.name;
-
 export const notDuplicated = (collection: any) => (item: any) =>
   collection.findIndex((i: any) => Object.keys(i).every(key => i[key] === item[key])) < 0;
+
+export const excludedProperties = (property: PropertySchema) =>
+  !['geolocation', 'preview', 'markdown'].includes(property.type);
 
 export const processHeaders = (templatesCache: any): string[] =>
   Object.values(templatesCache).reduce(
     (memo: any[], template: any) =>
       memo.concat(
         template.properties
+          .filter(excludedProperties)
           .map((property: any) => ({ label: property.label, name: property.name }))
           .filter(notDuplicated(memo))
       ),
     []
   );
 
+export const prependCommonHeaders = (headers: any[]) =>
+  [
+    {
+      label: 'Title',
+      name: 'title',
+      common: true,
+    },
+    {
+      label: 'Creation date',
+      name: 'creationDate',
+      common: true,
+    },
+    {
+      label: 'Template',
+      name: 'template',
+      common: true,
+    },
+  ].concat(headers);
+
+export const concatCommonHeaders = (headers: any[]) =>
+  headers.concat([
+    { label: 'Geolocation', name: 'geolocation', common: true },
+    { label: 'Documents', name: 'documents', common: true },
+    { label: 'Attachments', name: 'attachments', common: true },
+  ]);
+
+export const processGeolocationField = (row: any, rowTemplate: TemplateSchema) => {
+  if (!rowTemplate.properties) return '';
+
+  const geolocationField: PropertySchema | undefined = rowTemplate.properties.find(
+    property => property.type === 'geolocation'
+  );
+
+  if (geolocationField && geolocationField.name) {
+    return formatters.geolocation(row.metadata[geolocationField.name]);
+  }
+
+  return '';
+};
+
 export const processEntity = (
   row: any,
   headers: any[],
   templatesCache: any,
-  thesaurusCache: any
+  dateFormat: string
 ) => {
   const rowTemplate: TemplateSchema = templatesCache[row.template];
+
   return headers.map((header: any) => {
+    if (header.common) {
+      switch (header.name) {
+        case 'title':
+          return row.title;
+        case 'template':
+          return rowTemplate.name;
+        case 'creationDate':
+          return formatDate(row.creationDate, dateFormat);
+        case 'geolocation':
+          return processGeolocationField(row, rowTemplate);
+        case 'documents':
+          return formatters.documents(row.documents);
+        case 'attachments':
+          return formatters.attachments({ attachments: row.attachments, entityId: row._id });
+        default:
+          return '';
+      }
+    }
+
     const templateProperty = rowTemplate?.properties?.find(
       (property: PropertySchema) => property.name === header.name
     );
+
     if (!templateProperty) {
       return '';
     }
 
-    return formatters[templateProperty.type](
-      row.metadata[header.name],
-      rowTemplate,
-      thesaurusCache
-    );
+    return formatters[templateProperty.type](row.metadata[header.name], rowTemplate, dateFormat);
   });
 };
 
@@ -114,12 +149,12 @@ export default class CSVExporter extends EventEmitter {
     csvStream.pipe(process.stdout);
 
     const templatesCache = await getTemplatesModels(getTypes(searchResults));
-    const thesaurusCache = await getThesaurus(extractThesaurus(templatesCache));
-    const headers = processHeaders(templatesCache);
+    const headers = prependCommonHeaders(concatCommonHeaders(processHeaders(templatesCache)));
+    const { dateFormat } = await settings.get();
 
     csvStream.write(headers.map((h: any) => h.label));
     searchResults.rows.forEach(row => {
-      csvStream.write(processEntity(row, headers, templatesCache, thesaurusCache));
+      csvStream.write(processEntity(row, headers, templatesCache, dateFormat));
       this.emit('EXPORT_CSV_PROGRESS');
     });
     csvStream.end();
