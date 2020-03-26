@@ -134,6 +134,7 @@ describe('metadata properties', () => {
 
     await nightmare
       .waitToClick(localSelectors.editRelationshipProperty)
+      .wait(localSelectors.relationshipPropertyType)
       .selectByLabel(localSelectors.relationshipPropertyType, 'Perpetrator')
       .waitToClick(selectors.settingsView.saveTemplateButton)
       .waitToClick('.alert.alert-success');
