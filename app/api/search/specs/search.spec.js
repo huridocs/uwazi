@@ -6,6 +6,7 @@ import db from 'api/utils/testing_db';
 import instanceElasticTesting from 'api/utils/elastic_testing';
 import elasticResult from './elasticResult';
 import elasticFixtures, { ids, fixturesTimeOut } from './fixtures_elastic';
+import templates from 'api/templates';
 
 describe('search', () => {
   let result;
@@ -782,5 +783,30 @@ describe('search', () => {
     expect(
       rows.reduce((allArePublished, entity) => allArePublished && entity.published, true)
     ).toBe(true);
+  });
+
+  describe('autocomplete()', () => {
+    it('should return a list of options matching by title', async () => {
+      const options = await search.autocomplete('bat', 'en');
+      expect(options.length).toBe(2);
+      expect(options[0]._id).toBeDefined();
+      expect(options[0].template).toBeDefined();
+      expect(options[0].title).toBe('Batman finishes en');
+      expect(options[1].title).toBe('Batman begins en');
+    });
+
+    it('should filter by template', async () => {
+      const options = await search.autocomplete('en', 'en');
+      expect(options.length).toBe(4);
+      const filteredByTemplateOptions = await search.autocomplete('en', 'en', [ids.template1]);
+      expect(filteredByTemplateOptions.length).toBe(3);
+    });
+
+    it('should filter by unpublished', async () => {
+      const options = await search.autocomplete('unpublished', 'es');
+      expect(options.length).toBe(0);
+      const optionsUnpublished = await search.autocomplete('unpublished', 'es', [], true);
+      expect(optionsUnpublished.length).toBe(1);
+    });
   });
 });

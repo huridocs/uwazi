@@ -167,7 +167,7 @@ function searchGeolocation(documentsQuery, templates) {
   documentsQuery.select(selectProps);
 }
 
-const sanitizeAgregationNames = aggregations => {
+const _sanitizeAgregationNames = aggregations => {
   return Object.keys(aggregations).reduce((allAgregations, key) => {
     const sanitizedKey = key.replace('.value', '');
     return Object.assign(allAgregations, { [sanitizedKey]: aggregations[key] });
@@ -185,7 +185,7 @@ const _getAggregationDictionary = async (aggregation, language, property, dictio
   return dictionaries.find(dictionary => dictionary._id.toString() === property.content.toString());
 };
 
-const formatDictionaryWithGroupsAggregation = (aggregation, dictionary) => {
+const _formatDictionaryWithGroupsAggregation = (aggregation, dictionary) => {
   const buckets = dictionary.values.map(dictionaryValue => {
     const bucket = aggregation.buckets.find(b => b.key === dictionaryValue.id);
     if (dictionaryValue.values) {
@@ -199,7 +199,7 @@ const formatDictionaryWithGroupsAggregation = (aggregation, dictionary) => {
   return Object.assign(aggregation, { buckets });
 };
 
-const denormalizeAggregations = async (aggregations, templates, dictionaries, language) => {
+const _denormalizeAggregations = async (aggregations, templates, dictionaries, language) => {
   const properties = propertiesHelper.allUniqueProperties(templates);
 
   return Object.keys(aggregations).reduce(async (denormaLizedAgregationsPromise, key) => {
@@ -232,7 +232,7 @@ const denormalizeAggregations = async (aggregations, templates, dictionaries, la
 
     let denormalizedAggregation = Object.assign(aggregations[key], { buckets });
     if (dictionary.values.find(v => v.values)) {
-      denormalizedAggregation = formatDictionaryWithGroupsAggregation(
+      denormalizedAggregation = _formatDictionaryWithGroupsAggregation(
         denormalizedAggregation,
         dictionary
       );
@@ -279,8 +279,8 @@ const processResponse = async (response, templates, dictionaries, language) => {
       });
     }
   });
-  const sanitizedAggregations = sanitizeAgregationNames(response.aggregations.all);
-  const denormalizedAggregations = await denormalizeAggregations(
+  const sanitizedAggregations = _sanitizeAgregationNames(response.aggregations.all);
+  const denormalizedAggregations = await _denormalizeAggregations(
     sanitizedAggregations,
     templates,
     dictionaries,
@@ -488,92 +488,87 @@ const _getTextFields = (query, templates) => {
   );
 };
 
+const buildQuery = async (query, language, user) => {
+  const [templates, dictionaries, _translations] = await Promise.all([
+    templatesModel.get(),
+    dictionariesModel.get(),
+    translations.get(),
+  ]);
+
+  const textFieldsToSearch = _getTextFields(query, templates);
+  const elasticSearchTerm = query.searchTerm && escapeElasticSearchQueryString(query.searchTerm);
+  const queryBuilder = documentQueryBuilder()
+    .fullTextSearch(elasticSearchTerm, textFieldsToSearch, 2)
+    .filterByTemplate(query.types)ç
+    .filterById(query.ids)
+    .language(language);
+
+  if (query.from) {
+    queryBuilder.from(query.from);
+  }
+
+  if (query.limit) {
+    queryBuilder.limit(query.limit);
+  }
+
+  if (query.includeUnpublished && user) {
+    queryBuilder.includeUnpublished();
+  }
+
+  if (query.unpublished && user) {
+    queryBuilder.unpublished();
+  }
+
+  const allUniqueProps = propertiesHelper.allUniqueProperties(templates);
+  if (query.sort) {
+    const sortingProp = allUniqueProps.find(p => `metadata.${p.name}` === query.sort);
+    if (sortingProp && sortingProp.type === 'select') {
+      const dictionary = dictionaries.find(d => d._id.toString() === sortingProp.content);
+      const translation = getLocaleTranslation(_translations, language);
+      const context = getContext(translation, dictionary._id.toString());
+      const keys = dictionary.values.reduce((result, value) => {
+        result[value.id] = translate(context, value.label, value.label);
+        return result;
+      }, {});
+      queryBuilder.sortByForeignKey(query.sort, keys, query.order);
+    } else {
+      queryBuilder.sort(query.sort, query.order);
+    }
+  }
+
+  const allTemplates = templates.map(t => t._id);
+  const filteringTypes = query.types && query.types.length ? query.types : allTemplates;
+  let properties =
+    !query.types || !query.types.length
+      ? propertiesHelper.defaultFilters(templates)
+      : propertiesHelper.comonFilters(templates, filteringTypes);
+
+  if (query.allAggregations) {
+    properties = allUniqueProps;
+  }
+
+  // this is where we decide which aggregations to send to elastic
+  const aggregations = agregationProperties(properties);
+
+  const filters = processFilters(query.filters, [...allUniqueProps, ...properties]);
+  // this is where the query filters are built
+  queryBuilder.filterMetadata(filters);
+  // this is where the query aggregations are built
+  queryBuilder.aggregations(aggregations, dictionaries);
+
+  return queryBuilder;
+};
+
 const instanceSearch = elasticIndex => ({
-  search(query, language, user) {
-    return Promise.all([
-      templatesModel.get(),
-      dictionariesModel.get(),
-      relationtypes.get(),
-      translations.get(),
-    ]).then(([templates, dictionaries, relationTypes, _translations]) => {
-      const textFieldsToSearch = _getTextFields(query, templates);
-      const elasticSearchTerm =
-        query.searchTerm && escapeElasticSearchQueryString(query.searchTerm);
-      const documentsQuery = documentQueryBuilder()
-        .fullTextSearch(elasticSearchTerm, textFieldsToSearch, 2)
-        .filterByTemplate(query.types)
-        .filterById(query.ids)
-        .language(language);
-
-      if (query.from) {
-        documentsQuery.from(query.from);
-      }
-
-      if (query.limit) {
-        documentsQuery.limit(query.limit);
-      }
-
-      if (query.includeUnpublished && user) {
-        documentsQuery.includeUnpublished();
-      }
-
-      if (query.unpublished && user) {
-        documentsQuery.unpublished();
-      }
-
-      const allTemplates = templates.map(t => t._id);
-      const allUniqueProps = propertiesHelper.allUniqueProperties(templates);
-      const filteringTypes = query.types && query.types.length ? query.types : allTemplates;
-
-      let properties =
-        !query.types || !query.types.length
-          ? propertiesHelper.defaultFilters(templates)
-          : propertiesHelper.comonFilters(templates, filteringTypes);
-
-      if (query.sort) {
-        const sortingProp = allUniqueProps.find(p => `metadata.${p.name}` === query.sort);
-        if (sortingProp && sortingProp.type === 'select') {
-          const dictionary = dictionaries.find(d => d._id.toString() === sortingProp.content);
-          const translation = getLocaleTranslation(_translations, language);
-          const context = getContext(translation, dictionary._id.toString());
-          const keys = dictionary.values.reduce((result, value) => {
-            result[value.id] = translate(context, value.label, value.label);
-            return result;
-          }, {});
-          documentsQuery.sortByForeignKey(query.sort, keys, query.order);
-        } else {
-          documentsQuery.sort(query.sort, query.order);
-        }
-      }
-
-      if (query.allAggregations) {
-        properties = allUniqueProps;
-      }
-
-      // this is where we decide which aggregations to send to elastic
-      const aggregations = agregationProperties(properties);
-
-      const filters = processFilters(query.filters, [...allUniqueProps, ...properties]);
-      // this is where the query filters are built
-      documentsQuery.filterMetadata(filters);
-      // this is where the query aggregations are built
-      documentsQuery.aggregations(aggregations, dictionaries);
-      if (query.select) {
-        documentsQuery.select(query.select);
-      }
-
-      if (query.geolocation) {
-        searchGeolocation(documentsQuery, templates);
-      }
-
-      // documentsQuery.query() is the actual call
-      return elastic
-        .search({ index: elasticIndex || elasticIndexes.index, body: documentsQuery.query() })
-        .then(response => processResponse(response, templates, dictionaries, language))
-        .catch(e => {
-          throw createError(e.message, 400);
-        });
-    });
+  async search(query, language, user) {
+    const queryBuilder = await buildQuery(query, language, user);
+    // queryBuilder.query() is the actual call
+    return elastic
+      .search({ index: elasticIndex || elasticIndexes.index, body: queryBuilder.query() })
+      .then(response => processResponse(response, templates, dictionaries, language))
+      .catch(e => {
+        throw createError(e.message, 400);
+      });
   },
 
   async searchGeolocations(query, language, user) {
@@ -652,6 +647,43 @@ const instanceSearch = elasticIndex => ({
   deleteLanguage(language) {
     const query = { query: { match: { language } } };
     return elastic.deleteByQuery({ index: elasticIndex || elasticIndexes.index, body: query });
+  },
+
+  async autocomplete(searchTerm, language, templates = [], includeUnpublished = false) {
+    const published = includeUnpublished ? undefined : { term: { published: true } };
+    const body = {
+      _source: {
+        include: ['title', 'template'],
+      },
+      from: 0,
+      size: 50,
+      query: {
+        bool: {
+          must: [
+            {
+              multi_match: {
+                query: searchTerm,
+                type: 'bool_prefix',
+                fields: ['title.sayt', 'title.sayt._2gram', 'title.sayt._3gram'],
+              },
+            },
+          ],
+          filter: [published, { term: { language } }],
+        },
+      },
+      sort: [],
+    };
+
+    if (templates.length) {
+      body.query.bool.must.push({
+        terms: {
+          template: templates,
+        },
+      });
+    }
+
+    const response = await elastic.search({ index: elasticIndex || elasticIndexes.index, body });
+    return response.hits.hits.map(hit => Object.assign({ _id: hit._id }, hit._source));
   },
 });
 

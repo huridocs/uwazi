@@ -89,4 +89,12 @@ export default app => {
       .then(response => res.json({ rows: response }))
       .catch(next);
   });
+
+  app.get('/api/suggestentities/', (req, res, next) => {
+    const { query } = req;
+    search
+      .autocomplete(query.searchTerm, query.templates, req.language)
+      .then(response => res.json({ rows: response }))
+      .catch(next);
+  });
 };

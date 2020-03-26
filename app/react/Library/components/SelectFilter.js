@@ -27,6 +27,7 @@ SelectFilter.defaultProps = {
   prefix: '',
   showBoolSwitch: false,
   sort: false,
+  options: [],
 };
 
 SelectFilter.propTypes = {
@@ -35,7 +36,7 @@ SelectFilter.propTypes = {
   prefix: PropTypes.string,
   showBoolSwitch: PropTypes.bool,
   sort: PropTypes.bool,
-  options: PropTypes.array.isRequired,
+  options: PropTypes.array,
   label: PropTypes.oneOfType([PropTypes.node, PropTypes.string]),
 };
 
