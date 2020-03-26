@@ -1,8 +1,10 @@
 import { fromJS as Immutable } from 'immutable';
 import React from 'react';
+import { shallow } from 'enzyme';
 
 import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
-import { shallow } from 'enzyme';
+import { FeatureToggle } from 'app/components/Elements/FeatureToggle';
+import { FavoriteBanner } from 'app/Favorites';
 
 import { FormatMetadata } from '../../Metadata';
 import { Item, mapStateToProps } from '../Item';
@@ -24,6 +26,7 @@ describe('Item', () => {
         icon: { _id: 'icon', type: 'Icons' },
         title: 'doc title',
         template: 'templateId',
+        sharedId: 'sharedId',
         creationDate: 123,
         snippets: [],
       }),
@@ -91,6 +94,17 @@ describe('Item', () => {
         .find(DocumentLanguage)
         .props().doc
     ).toBe(props.doc);
+  });
+
+  it('should include feature-toggled FavoriteBanner passed the sharedId', () => {
+    render();
+    const FeatureToggleSection = component.find({ feature: 'favorites' });
+    const FavoriteBannerSection = FeatureToggleSection.childAt(0).childAt(0);
+
+    expect(FeatureToggleSection.type()).toBe(FeatureToggle);
+    expect(FeatureToggleSection.childAt(0).props().className).toContain('item-favorite');
+    expect(FavoriteBannerSection.type()).toBe(FavoriteBanner);
+    expect(FavoriteBannerSection.props().sharedId).toBe('sharedId');
   });
 
   it('should accept a different property name for the title', () => {

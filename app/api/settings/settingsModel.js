@@ -21,6 +21,7 @@ const filtersSchema = new mongoose.Schema({
 
 const featuresSchema = new mongoose.Schema({
   semanticSearch: Boolean,
+  favorites: Boolean,
 });
 
 const settingsSchema = new mongoose.Schema({
