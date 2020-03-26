@@ -146,6 +146,9 @@ $ yarn test
 This will run the entire test suite, both on server and client apps, including coverage.
 You can see the coverage summary by opening `./coverage/lcov-report/index.html`.
 
+For development, `yarn test --changedSince=development` is a fast way to only run tests affected by your changes,
+which also updates the same coverage report.
+
 If the api tests timeout, the issue might be with mongodb-memory-server. See https://github.com/nodkz/mongodb-memory-server/issues/204. Memory server explicitly depends on a version of MongoDB that depends on libcurl3, but Debian 10 and other OS's come with libcurl4 installed instead.
 
 To fix this, update node_modules/mongodb-memory-server-core/lib/util/MongoBinary.js#70.
