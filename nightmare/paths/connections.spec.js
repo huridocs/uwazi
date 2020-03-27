@@ -124,9 +124,9 @@ describe('Connections', () => {
             Heros: ['Batman', 'Robin', 'Alfred Pennyworth'],
             Perpetrator: [
               'Scarecrow',
+              'Joker',
               'Talia al Ghul',
               "Ra's al Ghul",
-              'Joker',
               'Cluemaster Wikipedia',
             ],
           },
@@ -149,9 +149,9 @@ describe('Connections', () => {
             Heros: ['Batman', 'Robin', 'Alfred Pennyworth'],
             Perpetrator: [
               'Scarecrow',
+              'Joker',
               'Talia al Ghul',
               "Ra's al Ghul",
-              'Joker',
               'Cluemaster Wikipedia',
             ],
           },
@@ -175,7 +175,7 @@ describe('Connections', () => {
         expect(relations).toEqual({
           Event: {
             Heros: ['Batman', 'Robin', 'Alfred Pennyworth'],
-            Perpetrator: ['Scarecrow', 'Talia al Ghul', "Ra's al Ghul", 'Joker'],
+            Perpetrator: ['Scarecrow', 'Joker', 'Talia al Ghul', "Ra's al Ghul"],
           },
         });
       })
@@ -218,7 +218,7 @@ describe('Connections', () => {
         expect(relations).toEqual({
           Event: {
             Heros: ['Batman', 'Robin', 'Alfred Pennyworth'],
-            Perpetrator: ['Scarecrow', 'Talia al Ghul', "Ra's al Ghul", 'Joker'],
+            Perpetrator: ['Scarecrow', 'Joker', 'Talia al Ghul', "Ra's al Ghul"],
           },
           Event1: {
             Interpretation: ['Batman Eternal', 'Batman Arkham City', 'Batman Begins'],
@@ -280,7 +280,7 @@ describe('Connections', () => {
         expect(relations).toEqual({
           Event: {
             Heros: ['Batman', 'Robin', 'Alfred Pennyworth'],
-            Perpetrator: ['Scarecrow', 'Talia al Ghul', "Ra's al Ghul", 'Joker'],
+            Perpetrator: ['Scarecrow', 'Joker', 'Talia al Ghul', "Ra's al Ghul"],
           },
           Event1: {
             Interpretation: ['Batman Begins'],
@@ -305,7 +305,7 @@ describe('Connections', () => {
         expect(relations).toEqual({
           Event: {
             Heros: ['Batman', 'Robin', 'Alfred Pennyworth'],
-            Perpetrator: ['Scarecrow', 'Talia al Ghul', "Ra's al Ghul", 'Joker'],
+            Perpetrator: ['Scarecrow', 'Joker', 'Talia al Ghul', "Ra's al Ghul"],
           },
         });
       })

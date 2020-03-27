@@ -1,0 +1,11 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`FeatureToggle should not fail if features not present 1`] = `""`;
+
+exports[`FeatureToggle when feature activated should render children 1`] = `
+<Fragment>
+  <span>
+    test
+  </span>
+</Fragment>
+`;

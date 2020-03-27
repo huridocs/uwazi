@@ -3,7 +3,7 @@ import settings from 'api/settings/settings';
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import settingsRoutes from '../routes.js';
 
-describe('relationtypes routes', () => {
+describe('Settings routes', () => {
   let routes;
   const mockRequest = new Promise(resolve => resolve({ settings: 'response' }));
 

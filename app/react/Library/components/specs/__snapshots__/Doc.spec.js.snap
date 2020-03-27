@@ -69,6 +69,7 @@ exports[`Doc when target reference is specified should pass the target reference
             <button
               className="btn btn-default btn-hover-danger btn-xs"
               onClick={[Function]}
+              type="button"
             >
               <Connect(Icon)
                 icon="trash-alt"
@@ -102,6 +103,7 @@ exports[`Doc when target reference is specified should pass the target reference
             <button
               className="btn btn-default btn-hover-danger btn-xs"
               onClick={[Function]}
+              type="button"
             >
               <Connect(Icon)
                 icon="trash-alt"
