@@ -8,9 +8,9 @@ import proxy from 'express-http-proxy';
 
 import entities from 'api/entities';
 import { search } from 'api/search';
-import CSVLoader, { csvExporter } from 'api/csv';
+import CSVLoader, { CSVExporter } from 'api/csv';
 import { saveSchema } from 'api/entities/endpointSchema';
-import { generateFileName } from 'api/files/filesystem';
+import { generateFileName, temporalFilesPath } from 'api/files/filesystem';
 import settings from 'api/settings';
 import { processDocument } from 'api/files/processDocument';
 
@@ -136,13 +136,7 @@ export default app => {
   const parseQueryProperty = (query, property) =>
     query[property] ? JSON.parse(query[property]) : query[property];
 
-  const generateExportFileName = () => {
-    const databaseName = '';
-    const date = '';
-    const timeUtc = '';
-
-    return `${databaseName}-${date}-${timeUtc}.csv`;
-  };
+  const generateExportFileName = databaseName => `${databaseName}-${new Date().toISOString()}.csv`;
 
   app.get(
     '/api/export',
@@ -177,32 +171,45 @@ export default app => {
       req.query.unpublished = parseQueryProperty(req.query, 'unpublished');
       req.query.includeUnpublished = parseQueryProperty(req.query, 'includeUnpublished');
 
-      search.search(req.query, req.language, req.user).then(results => {
-        const exporter = new csvExporter();
-        const fileName = generateFileName({ originalname: generateExportFileName() });
+      Promise.all([search.search(req.query, req.language, req.user), settings.get()]).then(
+        ([results, { dateFormat, site_name }]) => {
+          const exporter = new CSVExporter();
+          const temporalFilePath = temporalFilesPath(
+            generateFileName({ originalname: 'export.csv' })
+          );
+          const fileStream = fs.createWriteStream(temporalFilePath, { emitClose: true });
 
-        let entitiesProcessed = 0;
-        exporter.on('entityProcessed', () => {
-          entitiesProcessed += 1;
-          req
-            .getCurrentSessionSockets()
-            .emit('EXPORT_CSV_PROGRESS', { entitiesProcessed, fileName });
-        });
+          const exporterOptions = {
+            dateFormat,
+          };
 
-        req.getCurrentSessionSockets().emit('EXPORT_CSV_START', { fileName });
-        exporter
-          .export(results, fileName)
-          .then(() => {
-            req.getCurrentSessionSockets().emit('EXPORT_CSV_END', { fileName });
-          })
-          .catch(e => {
-            req
-              .getCurrentSessionSockets()
-              .emit('IMPORT_CSV_ERROR', { error: handleError(e), fileName });
+          let entitiesProcessed = 0;
+          exporter.on('entityProcessed', () => {
+            entitiesProcessed += 1;
+            req.getCurrentSessionSockets().emit('EXPORT_CSV_PROGRESS', entitiesProcessed);
           });
 
-        res.json({ fileName });
-      });
+          req.getCurrentSessionSockets().emit('EXPORT_CSV_START');
+          exporter
+            .export(results, fileStream, exporterOptions)
+            .then(() => {
+              fileStream.end(() => {
+                req.getCurrentSessionSockets().emit('EXPORT_CSV_END');
+                res.download(temporalFilePath, generateExportFileName(site_name), err => {
+                  if (err) {
+                    return handleError(err);
+                  }
+
+                  fs.unlinkSync(temporalFilePath);
+                  return true;
+                });
+              });
+            })
+            .catch(e => {
+              req.getCurrentSessionSockets().emit('IMPORT_CSV_ERROR', handleError(e));
+            });
+        }
+      );
     }
   );
 };

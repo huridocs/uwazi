@@ -1,11 +1,8 @@
 import { EventEmitter } from 'events';
 import * as csv from '@fast-csv/format';
-import { FilePath } from 'api/files/filesystem';
-import * as fs from 'fs';
 import templates from 'api/templates';
 import { PropertySchema } from 'shared/types/commonTypes';
 import { TemplateSchema } from 'shared/types/templateType';
-import settings from 'api/settings';
 import formatters, { formatDate } from './typeFormatters';
 
 export type SearchResults = {
@@ -101,12 +98,7 @@ export const processGeolocationField = (row: any, rowTemplate: TemplateSchema) =
   return '';
 };
 
-export const processEntity = (
-  row: any,
-  headers: any[],
-  templatesCache: any,
-  dateFormat: string
-) => {
+export const processEntity = (row: any, headers: any[], templatesCache: any, options?: any) => {
   const rowTemplate: TemplateSchema = templatesCache[row.template];
 
   return headers.map((header: any) => {
@@ -117,7 +109,7 @@ export const processEntity = (
         case 'template':
           return rowTemplate.name;
         case 'creationDate':
-          return formatDate(row.creationDate, dateFormat);
+          return formatDate(row.creationDate, options.dateFormat);
         case 'geolocation':
           return processGeolocationField(row, rowTemplate);
         case 'documents':
@@ -137,27 +129,28 @@ export const processEntity = (
       return '';
     }
 
-    return formatters[templateProperty.type](row.metadata[header.name], rowTemplate, dateFormat);
+    return formatters[templateProperty.type](row.metadata[header.name], options);
   });
 };
 
 export default class CSVExporter extends EventEmitter {
-  async export(searchResults: SearchResults): Promise<any> {
+  async export(
+    searchResults: SearchResults,
+    writeStream: WritableStream,
+    options: any = {}
+  ): Promise<any> {
     const csvStream = csv.format({ headers: false });
-    //const writeStream = fs.createWriteStream(filePath);
 
-    csvStream.pipe(process.stdout);
+    csvStream.pipe<any>(writeStream);
 
     const templatesCache = await getTemplatesModels(getTypes(searchResults));
     const headers = prependCommonHeaders(concatCommonHeaders(processHeaders(templatesCache)));
-    const { dateFormat } = await settings.get();
 
     csvStream.write(headers.map((h: any) => h.label));
     searchResults.rows.forEach(row => {
-      csvStream.write(processEntity(row, headers, templatesCache, dateFormat));
+      csvStream.write(processEntity(row, headers, templatesCache, options));
       this.emit('EXPORT_CSV_PROGRESS');
     });
     csvStream.end();
-    return this;
   }
 }

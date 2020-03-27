@@ -39,6 +39,9 @@ const uploadsPath = (fileName: FilePath): FilePath =>
 const customUploadsPath = (fileName: FilePath): FilePath =>
   path.join(configPaths.customUploads, fileName);
 
+const temporalFilesPath = (fileName: FilePath): FilePath =>
+  path.join(configPaths.temporalFiles, fileName);
+
 const deleteUploadedFiles = async (files: FileType[]) =>
   deleteFiles(
     files
@@ -102,4 +105,5 @@ export {
   getFileContent,
   customUploadsPath,
   uploadsPath,
+  temporalFilesPath,
 };
