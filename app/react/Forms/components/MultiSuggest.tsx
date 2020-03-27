@@ -1,5 +1,3 @@
-/** @format */
-
 import { Dispatch } from 'redux';
 import { MetadataObject } from 'api/entities/entitiesModel';
 import React, { Component } from 'react';

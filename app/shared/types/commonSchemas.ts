@@ -1,5 +1,3 @@
-/** @format */
-
 import { propertyTypes } from 'shared/propertyTypes';
 import { provenanceTypes } from 'shared/provenanceTypes';
 

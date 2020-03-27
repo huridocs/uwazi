@@ -1,5 +1,3 @@
-/** @format */
-
 import { I18NLink, t } from 'app/I18N';
 import { IStore, OneUpState } from 'app/istore';
 import { switchOneUpEntity, toggleOneUpFullEdit } from 'app/Review/actions/actions';

@@ -1,9 +1,15 @@
-/** @format */
-import instrumentRoutes from 'api/utils/instrumentRoutes.js';
-import { TaskProvider, Task } from 'shared/tasks/tasks';
+import { setUpApp } from 'api/utils/testingRoutes';
+import { NextFunction } from 'express';
+import { Task, TaskProvider } from 'shared/tasks/tasks';
+import request from 'supertest';
 import testRoute from '../routes';
 
-require('api/utils/jasmineHelpers');
+jest.mock(
+  '../../auth/authMiddleware.js',
+  () => () => (_req: Request, _res: Response, next: NextFunction) => {
+    next();
+  }
+);
 
 class TestTask extends Task {
   protected async run(args: any) {
@@ -17,38 +23,36 @@ class TestTask extends Task {
 TaskProvider.registerClass('TestTask', TestTask);
 
 describe('task routes', () => {
-  let routes: { get: any; post: any };
-
-  beforeEach(() => {
-    routes = instrumentRoutes(testRoute);
-  });
+  const app = setUpApp(testRoute);
 
   describe('GET', () => {
-    it('should need authorization', () => {
-      const req = {};
-      expect(routes.post('/api/tasks', req)).toNeedAuthorization();
-    });
-
     it('should return empty for undefined task', async () => {
-      const response = await routes.get('/api/tasks', { query: { name: 'a' } });
-      expect(response).toEqual({ state: 'undefined' });
+      const response = await request(app)
+        .get('/api/tasks')
+        .query({ name: 'a' });
+      expect(response.body).toEqual({ state: 'undefined' });
     });
 
     it('should start and return task', async () => {
-      let response = await routes.post('/api/tasks', {
-        query: {
+      let response = await request(app)
+        .post('/api/tasks')
+        .query({
           name: 'a',
           type: 'TestTask',
-        },
-        body: { a: 1 },
-      });
-      expect(response.startTime).not.toBe(undefined);
-      response = await routes.get('/api/tasks', { query: { name: 'a' } });
-      while (response.status === 'running') {
-        response = await routes.get('/api/tasks', { query: { name: 'a' } }); // eslint-disable-line
+        })
+        .send({ a: 1 });
+      expect(response.body.startTime).not.toBe(undefined);
+      response = await request(app)
+        .get('/api/tasks')
+        .query({ name: 'a' });
+      while (response.body.status === 'running') {
+        /* eslint-disable no-await-in-loop */
+        response = await request(app)
+          .get('/api/tasks')
+          .query({ name: 'a' });
       }
-      expect(response.message).toBe('1');
-      expect(response.result).toEqual({ a: 1 });
+      expect(response.body.message).toBe('1');
+      expect(response.body.result).toEqual({ a: 1 });
     });
   });
 });

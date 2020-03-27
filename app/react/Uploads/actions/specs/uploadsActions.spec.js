@@ -1,5 +1,3 @@
-/** @format */
-
 import superagent from 'superagent';
 import thunk from 'redux-thunk';
 

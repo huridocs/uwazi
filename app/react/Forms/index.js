@@ -1,5 +1,3 @@
-/** @format */
-
 import Select from './components/Select';
 import DatePicker from './components/DatePicker';
 import Captcha from './components/Captcha';

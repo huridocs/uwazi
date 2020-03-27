@@ -1,5 +1,3 @@
-/** @format */
-
 function validateName(templates, id) {
   return {
     required: val => val && val.trim() !== '',

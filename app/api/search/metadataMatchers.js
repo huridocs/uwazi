@@ -1,5 +1,3 @@
-/** @format */
-
 const textFilter = (filter, path = 'metadata') => ({
   term: { [`${path}.${filter.name}.raw`]: filter.value },
 });

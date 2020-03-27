@@ -5,7 +5,6 @@
 import { needsAuthorization } from 'api/auth';
 import { validation } from 'api/utils';
 import { Application, Request, Response } from 'express';
-import Joi from 'joi';
 import { TaskProvider } from 'shared/tasks/tasks';
 
 export const TASKS_ENDPOINT = 'tasks';
@@ -14,12 +13,15 @@ const tasksPrefix = `/api/${TASKS_ENDPOINT}`;
 export default (app: Application) => {
   app.get(
     tasksPrefix,
-    validation.validateRequest(
-      Joi.object()
-        .keys({ name: Joi.string() })
-        .required(),
-      'query'
-    ),
+    validation.validateRequest({
+      properties: {
+        query: {
+          properties: {
+            name: { type: 'string' },
+          },
+        },
+      },
+    }),
 
     async (req: Request, res: Response) => {
       if (req.query?.name) {
@@ -33,15 +35,19 @@ export default (app: Application) => {
   app.post(
     tasksPrefix,
     needsAuthorization(),
-    validation.validateRequest(
-      Joi.object()
-        .keys({
-          name: Joi.string().required(),
-          type: Joi.string().required(),
-        })
-        .required(),
-      'query'
-    ),
+    validation.validateRequest({
+      required: ['query', 'body'],
+      properties: {
+        query: {
+          required: ['name', 'type'],
+          properties: {
+            name: { type: 'string' },
+            type: { type: 'string' },
+          },
+        },
+        body: {},
+      },
+    }),
 
     async (req: Request, res: Response) => {
       const task = TaskProvider.getOrCreate(req.query?.name, req.query?.type);

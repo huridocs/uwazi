@@ -1,4 +1,3 @@
-/** @format */
 import { EntitySchema } from 'shared/types/entityType';
 import templates from 'api/templates';
 import { propertyTypes } from 'shared/propertyTypes';

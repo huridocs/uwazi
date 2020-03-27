@@ -11,8 +11,7 @@ type NoticeProps = {
 };
 
 export class Notice extends Component<NoticeProps, NoticeState> {
-  // Returns the svg for the mortar board icon.
-  static learnIcon() {
+  static learnIconSvg() {
     return (
       <svg
         width="29"
@@ -54,7 +53,7 @@ export class Notice extends Component<NoticeProps, NoticeState> {
     return (
       <div className={`notice ${isHidden ? 'is-hidden' : ''}`}>
         <div className="header">
-          <span className="icon">{Notice.learnIcon()}</span>
+          <span className="icon">{Notice.learnIconSvg()}</span>
           <span className="title">{title}</span>
           {allowClose && (
             <button className="close-notice" onClick={this.close} type="button">

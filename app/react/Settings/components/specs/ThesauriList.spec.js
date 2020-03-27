@@ -1,4 +1,3 @@
-/** @format */
 import { shallow } from 'enzyme';
 import Immutable from 'immutable';
 import React from 'react';

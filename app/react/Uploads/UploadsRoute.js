@@ -1,5 +1,3 @@
-/** @format */
-
 import RouteHandler from 'app/App/RouteHandler';
 import { actions } from 'app/BasicReducer';
 import LibraryCharts from 'app/Charts/components/LibraryCharts';

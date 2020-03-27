@@ -1,5 +1,3 @@
-/** @format */
-
 import { I18NLink, t } from 'app/I18N';
 import { checkThesaurusCanBeDeleted, deleteThesaurus } from 'app/Thesauri/actions/thesaurisActions';
 import PropTypes from 'prop-types';

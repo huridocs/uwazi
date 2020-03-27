@@ -1,5 +1,3 @@
-/** @format */
-
 import React from 'react';
 import { Control } from 'react-redux-form';
 import * as forms from 'app/Forms';

@@ -1,5 +1,3 @@
-/** @format */
-
 import { ThesaurusSchema, ThesaurusValueSchema } from 'shared/types/thesaurusType';
 
 import { ClassifierModelSchema } from '../types/classifierModelType';

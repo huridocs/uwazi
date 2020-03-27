@@ -1,12 +1,21 @@
 import * as topicClassification from 'api/config/topicClassification';
 import searchLib, { instanceSearch } from 'api/search/search';
 import instanceElasticTesting from 'api/utils/elastic_testing';
-import instrumentRoutes from 'api/utils/instrumentRoutes.js';
 import 'api/utils/jasmineHelpers';
+import { setUpApp } from 'api/utils/testingRoutes';
 import db from 'api/utils/testing_db';
+import { NextFunction } from 'express';
 import JSONRequest from 'shared/JSONRequest';
-import topicClassificationRoute from '../routes';
+import request from 'supertest';
+import testRoute from '../routes';
 import fixtures, { moviesId } from './fixtures';
+
+jest.mock(
+  '../../auth/authMiddleware.js',
+  () => () => (_req: Request, _res: Response, next: NextFunction) => {
+    next();
+  }
+);
 
 function fakeGet(url: string, _data: any, _headers: any) {
   if (url === `${topicClassification.tcServer}/models/list?filter=undefined-topmovies`) {
@@ -61,13 +70,12 @@ function fakePost(url: string, data: any, _headers: any) {
 }
 
 describe('topic classification routes', () => {
-  let routes: { get: any; post: any };
+  const app = setUpApp(testRoute);
   const elasticIndex = 'tc_routes_test';
   const search = instanceSearch(elasticIndex);
   const elasticTesting = instanceElasticTesting(elasticIndex, search);
 
   beforeEach(async () => {
-    routes = instrumentRoutes(topicClassificationRoute);
     await db.clearAllAndLoad(fixtures);
     await elasticTesting.reindex();
     // spyOn(searchLib, 'indexEntities').and.callFake(search.indexEntities);
@@ -82,32 +90,27 @@ describe('topic classification routes', () => {
   });
 
   describe('GET', () => {
-    it('should need authorization', () => {
-      const req = { query: { thesaurus: 'Top movies' } };
-      expect(routes.get('/api/models', req)).toNeedAuthorization();
-    });
-
     describe('when passing a thesaurus name as a filter', () => {
       it('should get a single, relevant model', async () => {
-        const req = { query: { thesaurus: 'Top movies' } };
-
-        const response = await routes.get('/api/models', req);
-        expect(response).toEqual({ name: 'Top movies', preferred: '123' });
+        const response = await request(app)
+          .get('/api/models')
+          .query({ thesaurus: 'Top movies' });
+        expect(response.body).toEqual({ name: 'Top movies', preferred: '123' });
       });
     });
     describe('train', () => {
       it('should start training and get progress', async () => {
-        const req = { body: { thesaurusId: moviesId } };
-
-        const response = await routes.post('/api/models/train', req);
-        expect(response).toEqual(
+        const response = await request(app)
+          .post('/api/models/train')
+          .send({ thesaurusId: moviesId });
+        expect(response.body).toEqual(
           expect.objectContaining({ state: 'running', message: 'started training' })
         );
 
-        const status = await routes.get('/api/models/train', {
-          query: { thesaurus: 'Top movies' },
-        });
-        expect(status).toEqual(
+        const status = await request(app)
+          .get('/api/models/train')
+          .query({ thesaurus: 'Top movies' });
+        expect(status.body).toEqual(
           expect.objectContaining({ state: 'done', message: 'done training' })
         );
       });

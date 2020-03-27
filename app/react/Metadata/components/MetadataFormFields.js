@@ -1,5 +1,3 @@
-/** @format */
-
 import { FormGroup } from 'app/Forms';
 import t from 'app/I18N/t';
 import Immutable from 'immutable';

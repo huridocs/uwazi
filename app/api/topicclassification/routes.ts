@@ -10,7 +10,6 @@ import {
 } from 'api/topicclassification/api';
 import { validation } from 'api/utils';
 import { Application, Request, Response } from 'express';
-import Joi from 'joi';
 import { TaskStatus } from '../../shared/tasks/tasks';
 
 // Register tasks.
@@ -23,7 +22,17 @@ export default (app: Application) => {
   app.get(
     tcModelPrefix,
     needsAuthorization(),
-    validation.validateRequest(Joi.object().keys({ thesaurus: Joi.string().required() }), 'query'),
+    validation.validateRequest({
+      required: ['query'],
+      properties: {
+        query: {
+          required: ['thesaurus'],
+          properties: {
+            thesaurus: { type: 'string' },
+          },
+        },
+      },
+    }),
 
     async (req: Request, res: Response) => {
       try {
@@ -36,7 +45,17 @@ export default (app: Application) => {
   );
   app.get(
     `${tcModelPrefix}/train`,
-    validation.validateRequest(Joi.object().keys({ thesaurus: Joi.string().required() }), 'query'),
+    validation.validateRequest({
+      required: ['query'],
+      properties: {
+        query: {
+          required: ['thesaurus'],
+          properties: {
+            thesaurus: { type: 'string' },
+          },
+        },
+      },
+    }),
 
     async (req: Request, res: Response) => {
       try {
@@ -51,7 +70,17 @@ export default (app: Application) => {
   app.post(
     `${tcModelPrefix}/train`,
     needsAuthorization(),
-    validation.validateRequest(Joi.object().keys({ thesaurusId: Joi.string().required() })),
+    validation.validateRequest({
+      required: ['body'],
+      properties: {
+        body: {
+          required: ['thesaurusId'],
+          properties: {
+            thesaurusId: { type: 'string' },
+          },
+        },
+      },
+    }),
 
     async (req: Request, res: Response) => {
       try {

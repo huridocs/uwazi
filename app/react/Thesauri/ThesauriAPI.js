@@ -1,5 +1,3 @@
-/** @format */
-
 import api from 'app/utils/api';
 
 export default {

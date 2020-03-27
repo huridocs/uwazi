@@ -1,5 +1,3 @@
-/** @format */
-
 import { actions } from 'app/BasicReducer';
 import api from 'app/Entities/EntitiesAPI';
 import entitiesUtil from 'app/Entities/utils/filterBaseProperties';

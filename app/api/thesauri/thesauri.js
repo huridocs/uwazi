@@ -1,5 +1,3 @@
-/** @format */
-
 import { generateIds, getUpdatedNames, getDeletedProperties } from 'api/templates/utils';
 import entities from 'api/entities/entities';
 import templates from 'api/templates/templates';

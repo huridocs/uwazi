@@ -1,5 +1,3 @@
-/** @format */
-
 import 'isomorphic-fetch';
 import superagent from 'superagent';
 import { URLSearchParams } from 'url';

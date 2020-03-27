@@ -1,5 +1,3 @@
-/** @format */
-
 import Joi from 'joi';
 import multer from 'multer';
 import { validation } from '../utils';

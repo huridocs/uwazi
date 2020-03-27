@@ -1,4 +1,3 @@
-/** @format */
 import { t } from 'app/I18N';
 import { switchOneUpEntity } from 'app/Review/actions/actions';
 import React, { Component } from 'react';
