@@ -201,7 +201,6 @@ const _formatDictionaryWithGroupsAggregation = (aggregation, dictionary) => {
 
 const _denormalizeAggregations = async (aggregations, templates, dictionaries, language) => {
   const properties = propertiesHelper.allUniqueProperties(templates);
-
   return Object.keys(aggregations).reduce(async (denormaLizedAgregationsPromise, key) => {
     const denormaLizedAgregations = await denormaLizedAgregationsPromise;
     if (!aggregations[key].buckets || key === '_types' || aggregations[key].type === 'nested') {
@@ -488,18 +487,13 @@ const _getTextFields = (query, templates) => {
   );
 };
 
-const buildQuery = async (query, language, user) => {
-  const [templates, dictionaries, _translations] = await Promise.all([
-    templatesModel.get(),
-    dictionariesModel.get(),
-    translations.get(),
-  ]);
-
+const buildQuery = async (query, language, user, resources) => {
+  const [templates, dictionaries, _translations] = resources;
   const textFieldsToSearch = _getTextFields(query, templates);
   const elasticSearchTerm = query.searchTerm && escapeElasticSearchQueryString(query.searchTerm);
   const queryBuilder = documentQueryBuilder()
     .fullTextSearch(elasticSearchTerm, textFieldsToSearch, 2)
-    .filterByTemplate(query.types)ç
+    .filterByTemplate(query.types)
     .filterById(query.ids)
     .language(language);
 
@@ -561,7 +555,13 @@ const buildQuery = async (query, language, user) => {
 
 const instanceSearch = elasticIndex => ({
   async search(query, language, user) {
-    const queryBuilder = await buildQuery(query, language, user);
+    const resources = await Promise.all([
+      templatesModel.get(),
+      dictionariesModel.get(),
+      translations.get(),
+    ]);
+    const queryBuilder = await buildQuery(query, language, user, resources);
+    const [templates, dictionaries] = resources;
     // queryBuilder.query() is the actual call
     return elastic
       .search({ index: elasticIndex || elasticIndexes.index, body: queryBuilder.query() })
