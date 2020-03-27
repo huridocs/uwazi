@@ -37,16 +37,7 @@ export default function createNightmare(width = 1200, height = 600) {
 
   nightmare.on('console', (type, message) => {
     if (type === 'error') {
-      if (
-        message &&
-        (typeof message !== 'object' ||
-          Object.keys(message).length ||
-          message.toString() !== '[object Object]')
-      ) {
-        fail(message);
-      } else {
-        console.warn(message);
-      }
+      fail(message);
     }
     if (type === 'log') {
       console.log(message);

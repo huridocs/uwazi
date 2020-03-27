@@ -128,7 +128,8 @@ describe('metadata properties', () => {
       .waitToClick(selectors.settingsView.addNewTemplate)
       .write(selectors.settingsView.documentTemplateNameForm, 'All props');
 
-    for (let propIndex = 1; propIndex <= 15; propIndex += 1) {
+    //intentionaly leaving the geolocation field out of the test.
+    for (let propIndex = 1; propIndex <= 14; propIndex += 1) {
       await nightmare.waitToClick(localSelectors.propertiesButtons(propIndex));
     }
 
@@ -168,8 +169,6 @@ describe('metadata properties', () => {
       .type(localSelectors.form.linkUrl, 'https://www.huridocs.org/')
       .type(localSelectors.form.image, '/public/logo.svg')
       .type(localSelectors.form.media, 'test')
-      .insert(localSelectors.form.geolocationLat, '46')
-      .insert(localSelectors.form.geolocationLon, '6')
       .click(localSelectors.form.save)
       .waitToClick('.alert.alert-success');
   }, 60000);
@@ -222,8 +221,7 @@ describe('metadata properties', () => {
         return nightmare
           .wait(localSelectors.properties.image)
           .wait(localSelectors.properties.preview)
-          .wait(localSelectors.properties.media)
-          .wait(localSelectors.properties.geolocation);
+          .wait(localSelectors.properties.media);
       });
   }, 60000);
 
@@ -248,8 +246,6 @@ describe('metadata properties', () => {
       .clearInput(localSelectors.form.linkUrl)
       .clearInput(localSelectors.form.image)
       .clearInput(localSelectors.form.media)
-      .clearInput(localSelectors.form.geolocationLat)
-      .clearInput(localSelectors.form.geolocationLon)
       .click(localSelectors.form.save)
       .waitToClick('.alert.alert-success');
   }, 60000);
