@@ -106,14 +106,14 @@ export async function syncEntity(
   if (!e.suggestedMetadata) {
     e.suggestedMetadata = {};
   }
-  const template: TemplateSchema =
+  const template: TemplateSchema | undefined =
     (templateDictP ?? {})[e.template?.toString() ?? ''] ?? (await templates.getById(e.template));
   const thesaurusDict =
     thesaurusDictP ??
     (await thesauri.get(null)).reduce((res, t) => ({ ...res, [t._id.toString()]: t }), {});
   let didSth = false;
   await Promise.all(
-    (template.properties ?? []).map(async prop => {
+    (template?.properties ?? []).map(async prop => {
       const thesaurus = thesaurusDict[prop?.content ?? ''];
       if (!prop || !thesaurus) {
         return;
