@@ -33,7 +33,7 @@ const formatDataForChart = (
   data,
   _property,
   thesauris,
-  { context, excludeZero, maxCategories, aggregateOthers = false }
+  { context, excludeZero, maxCategories, aggregateOthers = false, labelsMap = {} }
 ) => {
   const res = populateOptions([{ content: context }], thesauris.toJS());
   const { options } = res[0];
@@ -64,14 +64,16 @@ const formatDataForChart = (
         return { others: true, id: item.key, label: 'others', results: item.filtered.doc_count };
       }
 
-      const label = options && options.find(o => o.id === item.key);
-      if (!label) {
+      const labelData = options && options.find(o => o.id === item.key);
+      if (!labelData) {
         return null;
       }
 
+      const label = t(context, labelData.label, null, false);
+
       return {
         id: item.key,
-        label: t(context, label.label, null, false),
+        label: labelsMap[label] || label,
         results: item.filtered.doc_count,
       };
     })

@@ -5,7 +5,7 @@ import React from 'react';
 
 import { shallow } from 'enzyme';
 import Immutable from 'immutable';
-import { XAxis, YAxis, Cell } from 'recharts';
+import { XAxis, YAxis, Cell, BarChart, Tooltip } from 'recharts';
 
 import { mapStateToProps, BarChartComponent } from '../BarChart.js';
 import markdownDatasets from '../../markdownDatasets';
@@ -25,16 +25,22 @@ describe('BarChart Markdown component', () => {
     ]),
   };
 
-  it('should render the data passed by mapStateToProps', () => {
+  const defaultAggregations = [
+    { key: 'id1', filtered: { doc_count: 25 } },
+    { key: 'id2', filtered: { doc_count: 33 } },
+    { key: 'missing', filtered: { doc_count: 45 } },
+    { key: 'id3', filtered: { doc_count: 13 } },
+    { key: 'id4', filtered: { doc_count: 0 } },
+  ];
+
+  const mockGetAggregations = values => {
     spyOn(markdownDatasets, 'getAggregations').and.returnValue(
-      Immutable.fromJS([
-        { key: 'id1', filtered: { doc_count: 25 } },
-        { key: 'id2', filtered: { doc_count: 33 } },
-        { key: 'missing', filtered: { doc_count: 45 } },
-        { key: 'id3', filtered: { doc_count: 13 } },
-        { key: 'id4', filtered: { doc_count: 0 } },
-      ])
+      Immutable.fromJS(values || defaultAggregations)
     );
+  };
+
+  it('should render the data passed by mapStateToProps', () => {
+    mockGetAggregations();
 
     const props = mapStateToProps(state, { prop1: 'propValue' });
     const component = shallow(
@@ -47,15 +53,7 @@ describe('BarChart Markdown component', () => {
 
   describe('when excludeZero', () => {
     it('should render without zero values', () => {
-      spyOn(markdownDatasets, 'getAggregations').and.returnValue(
-        Immutable.fromJS([
-          { key: 'id1', filtered: { doc_count: 25 } },
-          { key: 'id2', filtered: { doc_count: 33 } },
-          { key: 'missing', filtered: { doc_count: 45 } },
-          { key: 'id3', filtered: { doc_count: 13 } },
-          { key: 'id4', filtered: { doc_count: 0 } },
-        ])
-      );
+      mockGetAggregations();
 
       const props = mapStateToProps(state, { prop1: 'propValue' });
       props.excludeZero = 'true';
@@ -75,9 +73,7 @@ describe('BarChart Markdown component', () => {
 
   describe('when layout is vertical', () => {
     it('should render axis properly', () => {
-      spyOn(markdownDatasets, 'getAggregations').and.returnValue(
-        Immutable.fromJS([{ key: 'id1', filtered: { doc_count: 25 } }])
-      );
+      mockGetAggregations([{ key: 'id1', filtered: { doc_count: 25 } }]);
 
       const props = mapStateToProps(state, { prop1: 'propValue' });
       props.layout = 'vertical';
@@ -107,14 +103,12 @@ describe('BarChart Markdown component', () => {
 
   describe('when passing maxCategories', () => {
     it('should only render the number of categories passed', () => {
-      spyOn(markdownDatasets, 'getAggregations').and.returnValue(
-        Immutable.fromJS([
-          { key: 'id1', filtered: { doc_count: 25 } },
-          { key: 'id2', filtered: { doc_count: 33 } },
-          { key: 'id3', filtered: { doc_count: 13 } },
-          { key: 'id4', filtered: { doc_count: 0 } },
-        ])
-      );
+      mockGetAggregations([
+        { key: 'id1', filtered: { doc_count: 25 } },
+        { key: 'id2', filtered: { doc_count: 33 } },
+        { key: 'id3', filtered: { doc_count: 13 } },
+        { key: 'id4', filtered: { doc_count: 0 } },
+      ]);
 
       const props = mapStateToProps(state, { prop1: 'propValue' });
       props.maxCategories = '2';
@@ -132,15 +126,13 @@ describe('BarChart Markdown component', () => {
     });
 
     it('should render others when passing aggregateOthers', () => {
-      spyOn(markdownDatasets, 'getAggregations').and.returnValue(
-        Immutable.fromJS([
-          { key: 'id6', filtered: { doc_count: 57 } },
-          { key: 'id2', filtered: { doc_count: 33 } },
-          { key: 'id1', filtered: { doc_count: 25 } },
-          { key: 'id3', filtered: { doc_count: 13 } },
-          { key: 'id8', filtered: { doc_count: 2 } },
-        ])
-      );
+      mockGetAggregations([
+        { key: 'id6', filtered: { doc_count: 57 } },
+        { key: 'id2', filtered: { doc_count: 33 } },
+        { key: 'id1', filtered: { doc_count: 25 } },
+        { key: 'id3', filtered: { doc_count: 13 } },
+        { key: 'id8', filtered: { doc_count: 2 } },
+      ]);
 
       const props = mapStateToProps(state, { prop1: 'propValue' });
       props.maxCategories = '2';
@@ -156,6 +148,33 @@ describe('BarChart Markdown component', () => {
 
       expect(markdownDatasets.getAggregations).toHaveBeenCalledWith(state, { prop1: 'propValue' });
       expect(component).toMatchSnapshot();
+    });
+  });
+
+  describe('when passing a labels map', () => {
+    it('should pass the map data to layout formatter and format the tooltip', () => {
+      mockGetAggregations();
+
+      const props = mapStateToProps(state, { prop1: 'propValue' });
+      const component = shallow(
+        <BarChartComponent
+          {...props}
+          property="prop1"
+          context="tContext"
+          labelsMap='{"label1": "L1", "label4": "L4"}'
+        />
+      );
+      expect(component.find(BarChart).props().data).toEqual([
+        expect.objectContaining({ label: 'label2' }),
+        expect.objectContaining({ label: 'L1' }),
+        expect.objectContaining({ label: 'label3' }),
+        expect.objectContaining({ label: 'L4' }),
+      ]);
+
+      const labelFormatter = component.find(Tooltip).props().labelFormatter;
+
+      expect(labelFormatter('L1')).toBe('label1');
+      expect(labelFormatter('non existing label')).toBe('non existing label');
     });
   });
 
@@ -187,6 +206,7 @@ describe('BarChart Markdown component', () => {
         expect(cell.prop('fill')).toBe('#ccc');
       });
     });
+
     it('should render with several colors', () => {
       spyOn(markdownDatasets, 'getAggregations').and.returnValue(
         Immutable.fromJS([
@@ -217,6 +237,7 @@ describe('BarChart Markdown component', () => {
         expect(cell.prop('fill')).toBe(colors[index]);
       });
     });
+
     it('should cycle the colors', () => {
       spyOn(markdownDatasets, 'getAggregations').and.returnValue(
         Immutable.fromJS([

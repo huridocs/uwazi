@@ -18,6 +18,14 @@ import Loader from 'app/components/Elements/Loader';
 import { arrayUtils } from 'app/Charts';
 import markdownDatasets from '../markdownDatasets';
 
+const objectFlip = obj => {
+  const flip = {};
+  Object.keys(obj).forEach(key => {
+    flip[obj[key]] = key;
+  });
+  return flip;
+};
+
 //eslint-disable-next-line
 const X = ({ layout }) => {
   if (layout === 'vertical') {
@@ -45,18 +53,23 @@ export const BarChartComponent = props => {
     context,
     thesauris,
     colors,
+    labelsMap: rawLabelsMap,
   } = props;
   let output = <Loader />;
 
   if (data) {
     const sliceColors = colors.split(',');
     const aggregateOthers = props.aggregateOthers === 'true';
+    const labelsMap = JSON.parse(rawLabelsMap);
+    const labelsMapFlipped = objectFlip(labelsMap);
+
     const formattedData = arrayUtils.sortValues(
       arrayUtils.formatDataForChart(data, property, thesauris, {
         excludeZero: Boolean(excludeZero),
         context,
         maxCategories,
         aggregateOthers,
+        labelsMap,
       })
     );
 
@@ -67,7 +80,11 @@ export const BarChartComponent = props => {
           {Y({ layout })}
 
           <CartesianGrid strokeDasharray="2 4" />
-          <Tooltip />
+          <Tooltip
+            labelFormatter={value => {
+              return labelsMapFlipped[value] || value;
+            }}
+          />
           <Bar dataKey="results" fill="rgb(30, 28, 138)" stackId="unique">
             {formattedData.map((_entry, index) => (
               <Cell
@@ -95,6 +112,7 @@ BarChartComponent.defaultProps = {
   classname: '',
   data: null,
   colors: '#1e1c8a',
+  labelsMap: '{}',
 };
 
 BarChartComponent.propTypes = {
@@ -108,6 +126,7 @@ BarChartComponent.propTypes = {
   aggregateOthers: PropTypes.string,
   data: PropTypes.instanceOf(Immutable.List),
   colors: PropTypes.string,
+  labelsMap: PropTypes.string,
 };
 
 export const mapStateToProps = (state, props) => ({

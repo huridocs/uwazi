@@ -108,6 +108,16 @@ describe('Array Utils', () => {
       ]);
     });
 
+    it('should allow mapping the labels to other values', () => {
+      options.labelsMap = { 'Val 2': 'V2', 'Val 3': 'V3' };
+      const results = formatDataForChart(data, property, thesauri, options);
+      expect(results).toEqual([
+        { label: 'V2', id: 'id2', results: 5 },
+        { label: 'V3', id: 'id3', results: 4 },
+        { label: 'Val 1', id: 'id1', results: 3 },
+      ]);
+    });
+
     it('should return an empty array if no labels are found for the given context', () => {
       jest
         .spyOn(libraryFilters, 'populateOptions')
