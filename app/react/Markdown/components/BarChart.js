@@ -53,15 +53,15 @@ export const BarChartComponent = props => {
     context,
     thesauris,
     colors,
-    labelsMap: rawLabelsMap,
+    shortLabels: rawShortLabels,
   } = props;
   let output = <Loader />;
 
   if (data) {
     const sliceColors = colors.split(',');
     const aggregateOthers = props.aggregateOthers === 'true';
-    const labelsMap = JSON.parse(rawLabelsMap);
-    const labelsMapFlipped = objectFlip(labelsMap);
+    const shortLabels = JSON.parse(rawShortLabels);
+    const shortLabelsFlipped = objectFlip(shortLabels);
 
     const formattedData = arrayUtils.sortValues(
       arrayUtils.formatDataForChart(data, property, thesauris, {
@@ -69,7 +69,7 @@ export const BarChartComponent = props => {
         context,
         maxCategories,
         aggregateOthers,
-        labelsMap,
+        labelsMap: shortLabels,
       })
     );
 
@@ -82,7 +82,7 @@ export const BarChartComponent = props => {
           <CartesianGrid strokeDasharray="2 4" />
           <Tooltip
             labelFormatter={value => {
-              return labelsMapFlipped[value] || value;
+              return shortLabelsFlipped[value] || value;
             }}
           />
           <Bar dataKey="results" fill="rgb(30, 28, 138)" stackId="unique">
@@ -112,7 +112,7 @@ BarChartComponent.defaultProps = {
   classname: '',
   data: null,
   colors: '#1e1c8a',
-  labelsMap: '{}',
+  shortLabels: '{}',
 };
 
 BarChartComponent.propTypes = {
@@ -126,7 +126,7 @@ BarChartComponent.propTypes = {
   aggregateOthers: PropTypes.string,
   data: PropTypes.instanceOf(Immutable.List),
   colors: PropTypes.string,
-  labelsMap: PropTypes.string,
+  shortLabels: PropTypes.string,
 };
 
 export const mapStateToProps = (state, props) => ({

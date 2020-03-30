@@ -161,7 +161,7 @@ describe('BarChart Markdown component', () => {
           {...props}
           property="prop1"
           context="tContext"
-          labelsMap='{"label1": "L1", "label4": "L4"}'
+          shortLabels='{"label1": "L1", "label4": "L4"}'
         />
       );
       expect(component.find(BarChart).props().data).toEqual([
@@ -171,7 +171,7 @@ describe('BarChart Markdown component', () => {
         expect.objectContaining({ label: 'L4' }),
       ]);
 
-      const labelFormatter = component.find(Tooltip).props().labelFormatter;
+      const { labelFormatter } = component.find(Tooltip).props();
 
       expect(labelFormatter('L1')).toBe('label1');
       expect(labelFormatter('non existing label')).toBe('non existing label');
