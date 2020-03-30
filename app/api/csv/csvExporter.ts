@@ -23,10 +23,12 @@ export type SearchResults = {
   };
 };
 
-export const getTypes = (searchResults: SearchResults) =>
-  searchResults.aggregations.all._types.buckets
-    .filter(bucket => bucket.filtered.doc_count > 0)
-    .map(bucket => bucket.key);
+export const getTypes = (searchResults: SearchResults, typesWhitelist: string[]) =>
+  typesWhitelist.length > 0
+    ? typesWhitelist
+    : searchResults.aggregations.all._types.buckets
+        .filter(bucket => bucket.filtered.doc_count > 0)
+        .map(bucket => bucket.key);
 
 const hasValue = (value: string) => value !== 'missing';
 
@@ -136,6 +138,7 @@ export const processEntity = (row: any, headers: any[], templatesCache: any, opt
 export default class CSVExporter extends EventEmitter {
   async export(
     searchResults: SearchResults,
+    types: string[],
     writeStream: WritableStream,
     options: any = {}
   ): Promise<any> {
@@ -143,7 +146,7 @@ export default class CSVExporter extends EventEmitter {
 
     csvStream.pipe<any>(writeStream);
 
-    const templatesCache = await getTemplatesModels(getTypes(searchResults));
+    const templatesCache = await getTemplatesModels(getTypes(searchResults, types));
     const headers = prependCommonHeaders(concatCommonHeaders(processHeaders(templatesCache)));
 
     csvStream.write(headers.map((h: any) => h.label));

@@ -172,6 +172,7 @@ export default app => {
       req.query.includeUnpublished = parseQueryProperty(req.query, 'includeUnpublished');
 
       Promise.all([search.search(req.query, req.language, req.user), settings.get()]).then(
+        // eslint-disable-next-line camelcase
         ([results, { dateFormat, site_name }]) => {
           const exporter = new CSVExporter();
           const temporalFilePath = temporalFilesPath(
@@ -191,7 +192,7 @@ export default app => {
 
           req.getCurrentSessionSockets().emit('EXPORT_CSV_START');
           exporter
-            .export(results, fileStream, exporterOptions)
+            .export(results, req.query.types, fileStream, exporterOptions)
             .then(() => {
               fileStream.end(() => {
                 req.getCurrentSessionSockets().emit('EXPORT_CSV_END');
