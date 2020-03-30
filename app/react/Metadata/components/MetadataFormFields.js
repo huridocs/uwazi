@@ -42,19 +42,17 @@ export const translateOptions = thesauri =>
 export class MetadataFormFields extends Component {
   getField(property, _model, thesauris) {
     let thesauri;
-    let placeholderName;
     const { dateFormat, version } = this.props;
     const propertyType = property.type;
     switch (propertyType) {
       case 'select':
         thesauri = thesauris.find(opt => opt.get('_id').toString() === property.content.toString());
-        [, placeholderName] = Array.from(thesauri).find(entry => entry[0] === 'name');
         return (
           <Select
             model={_model}
             optionsValue="id"
             options={translateOptions(thesauri)}
-            placeholder={`Select other "${placeholderName}"`}
+            placeholder={`${t('System', 'Select', null, false)} '${thesauri.get('name')}'`}
           />
         );
       case 'multiselect':
