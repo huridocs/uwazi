@@ -88,6 +88,7 @@ import { faUsers } from '@fortawesome/free-solid-svg-icons/faUsers';
 import { faUserTimes } from '@fortawesome/free-solid-svg-icons/faUserTimes';
 import { faHandPaper } from '@fortawesome/free-solid-svg-icons/faHandPaper';
 import { saveAndNext } from './save-and-next';
+import { exportCsv } from './export-csv';
 
 const icons = {
   faAngleLeft,
@@ -179,6 +180,7 @@ const icons = {
   faUserTimes,
   faHandPaper,
   saveAndNext,
+  exportCsv,
 };
 
 export const loadIcons = () => {

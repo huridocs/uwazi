@@ -1,3 +1,4 @@
+import superagent from 'superagent';
 import * as types from 'app/Library/actions/actionTypes';
 import api from 'app/Search/SearchAPI';
 import { notificationActions } from 'app/Notifications';
@@ -236,6 +237,36 @@ export function searchDocuments({ search = undefined, filters = undefined }, sto
     }
 
     setSearchInUrl(finalSearchParams);
+  };
+}
+
+export function exportDocuments(storeKey) {
+  return (_dispatch, getState) => {
+    const state = getState()[storeKey];
+    let currentFilters = state.filters;
+    const { search } = state;
+    currentFilters = currentFilters.toJS ? currentFilters.toJS() : currentFilters;
+
+    const finalSearchParams = processFilters(search, currentFilters, 10000);
+    finalSearchParams.searchTerm = state.search.searchTerm;
+
+    return new Promise(resolve => {
+      superagent
+        .get(`/api/export/${toUrlParams(finalSearchParams)}`)
+        .set('Accept', 'application/json')
+        .set('X-Requested-With', 'XMLHttpRequest')
+        .on('response', response => {
+          const url = window.URL.createObjectURL(new Blob([response.text]));
+          const link = document.createElement('a');
+          link.href = url;
+          link.setAttribute('download', 'test.csv');
+          document.body.appendChild(link);
+          link.click();
+          link.parentNode.removeChild(link);
+          resolve();
+        })
+        .end();
+    });
   };
 }
 
