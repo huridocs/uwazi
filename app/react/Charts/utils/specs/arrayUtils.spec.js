@@ -53,8 +53,8 @@ describe('Array Utils', () => {
     beforeEach(() => {
       data = Immutable.fromJS([
         { key: 'id1', doc_count: 10, filtered: { doc_count: 3 } },
-        { key: 'id2', doc_count: 20, filtered: { doc_count: 5 } },
         { key: 'id3', doc_count: 5, filtered: { doc_count: 4 } },
+        { key: 'id2', doc_count: 20, filtered: { doc_count: 5 } },
       ]);
       property = 'prop';
       thesauri = Immutable.fromJS([
@@ -85,7 +85,7 @@ describe('Array Utils', () => {
       ]);
     });
 
-    it('should aggregate filtered results for each category sorted in descending order', () => {
+    it('should aggregate filtered results for each category sorted in descending order (default)', () => {
       const results = formatDataForChart(data, property, thesauri, options);
       expect(results).toEqual([
         { label: 'Val 2', id: 'id2', results: 5 },
@@ -105,6 +105,16 @@ describe('Array Utils', () => {
         { label: 'Val 2', id: 'id2', results: 5 },
         { label: 'Val 3', id: 'id3', results: 4 },
         { label: 'Val 1', id: 'id1', results: 3 },
+      ]);
+    });
+
+    it('should allow sorting by labels alphabetically', () => {
+      options.sort = { by: 'label' };
+      const results = formatDataForChart(data, property, thesauri, options);
+      expect(results).toEqual([
+        { label: 'Val 1', id: 'id1', results: 3 },
+        { label: 'Val 2', id: 'id2', results: 5 },
+        { label: 'Val 3', id: 'id3', results: 4 },
       ]);
     });
 
