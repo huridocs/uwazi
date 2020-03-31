@@ -29,17 +29,19 @@ function populateLabels(data, context, options) {
   });
 }
 
-function sortData(relevant, { by: sortBy = 'result', order: sortOrder = 'desc' } = {}) {
+function sortData(relevant, { by: sortBy = 'result', order: sortOrder } = {}) {
   let categories = relevant;
 
   if (sortBy === 'result') {
     categories = relevant.sort((a, b) => b.filtered.doc_count - a.filtered.doc_count);
+    categories = sortOrder === 'asc' ? categories.reverse() : categories;
   }
 
   if (sortBy === 'label') {
     categories = relevant.sort((a, b) =>
       a.label.toLowerCase().localeCompare(b.label.toLowerCase())
     );
+    categories = sortOrder === 'desc' ? categories.reverse() : categories;
   }
 
   return categories;

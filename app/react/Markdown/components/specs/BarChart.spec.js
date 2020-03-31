@@ -133,10 +133,10 @@ describe('BarChart Markdown component', () => {
   });
 
   describe('when passing sort configuration', () => {
-    it('should allow sorting by label', () => {
+    it('should allow sorting results', () => {
       mockGetAggregations();
-      const component = renderComponent({ sort: '{"by": "label"}' });
-      expectLabels(component, ['label1', 'label2', 'label3', 'label4']);
+      const component = renderComponent({ sort: '{"by": "label", "order": "desc"}' });
+      expectLabels(component, ['label4', 'label3', 'label2', 'label1']);
     });
   });
 

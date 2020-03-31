@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 import React from 'react';
 import Immutable from 'immutable';
 import * as libraryFilters from 'app/Library/helpers/libraryFilters';
@@ -98,6 +99,16 @@ describe('Array Utils', () => {
       );
     });
 
+    it('should aggregate filtered results for each category sorted in ascending order', () => {
+      options.sort = { order: 'asc' };
+      const results = formatDataForChart(data, property, thesauri, options);
+      expect(results).toEqual([
+        { label: 'Val 1', id: 'id1', results: 3 },
+        { label: 'Val 3', id: 'id3', results: 4 },
+        { label: 'Val 2', id: 'id2', results: 5 },
+      ]);
+    });
+
     it('should omit results without labels', () => {
       data = data.push(Immutable.fromJS({ key: 'id4', doc_count: 5, filtered: { doc_count: 1 } }));
       const results = formatDataForChart(data, property, thesauri, options);
@@ -108,13 +119,21 @@ describe('Array Utils', () => {
       ]);
     });
 
-    it('should allow sorting by labels alphabetically', () => {
+    it('should allow sorting by labels alphabetically, ascending by default', () => {
       options.sort = { by: 'label' };
-      const results = formatDataForChart(data, property, thesauri, options);
+      let results = formatDataForChart(data, property, thesauri, options);
       expect(results).toEqual([
         { label: 'Val 1', id: 'id1', results: 3 },
         { label: 'Val 2', id: 'id2', results: 5 },
         { label: 'Val 3', id: 'id3', results: 4 },
+      ]);
+
+      options.sort = { by: 'label', order: 'desc' };
+      results = formatDataForChart(data, property, thesauri, options);
+      expect(results).toEqual([
+        { label: 'Val 3', id: 'id3', results: 4 },
+        { label: 'Val 2', id: 'id2', results: 5 },
+        { label: 'Val 1', id: 'id1', results: 3 },
       ]);
     });
 
