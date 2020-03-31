@@ -21,17 +21,12 @@ function sortValues(values) {
 }
 
 function populateLabels(data, context, options) {
-  return data
-    .map(item => {
-      const labelData = options && options.find(o => o.id === item.key);
-      if (!labelData) {
-        return null;
-      }
+  return data.map(item => {
+    const labelData = options && options.find(o => o.id === item.key);
+    const label = labelData ? t(context, labelData.label, null, false) : null;
 
-      const label = t(context, labelData.label, null, false);
-      return { ...item, label };
-    })
-    .filter(i => !!i);
+    return { ...item, label };
+  });
 }
 
 function sortData(relevant, sort = { by: 'result', order: 'desc' }) {
@@ -44,6 +39,23 @@ function sortData(relevant, sort = { by: 'result', order: 'desc' }) {
   if (sort.by === 'label') {
     categories = relevant.sort((a, b) =>
       a.label.toLowerCase().localeCompare(b.label.toLowerCase())
+    );
+  }
+
+  return categories;
+}
+
+function limitMaxCategories(sortedCategories, maxCategories, aggregateOthers) {
+  const categories = sortedCategories.slice(0, Number(maxCategories));
+
+  if (aggregateOthers) {
+    categories[categories.length] = sortedCategories.slice(Number(maxCategories)).reduce(
+      (memo, category) => {
+        // eslint-disable-next-line
+        memo.filtered.doc_count += category.filtered.doc_count;
+        return memo;
+      },
+      { others: true, key: 'others', filtered: { doc_count: 0 } }
     );
   }
 
@@ -74,31 +86,30 @@ const formatDataForChart = (
     relevant = relevant.filter(i => i.filtered.doc_count !== 0);
   }
 
-  let categories = sortData(populateLabels(relevant, context, options), sort);
+  const sortedCategories = sortData(populateLabels(relevant, context, options), sort);
+  let categories = sortedCategories;
 
   if (Number(maxCategories)) {
-    categories = relevant.slice(0, Number(maxCategories));
-    categories[categories.length] = relevant.slice(Number(maxCategories)).reduce(
-      (memo, category) => {
-        // eslint-disable-next-line
-        memo.filtered.doc_count += category.filtered.doc_count;
-        return memo;
-      },
-      { others: aggregateOthers, key: 'others', filtered: { doc_count: 0 } }
-    );
+    categories = limitMaxCategories(sortedCategories, maxCategories, aggregateOthers);
   }
 
-  return categories.map(item => {
-    if (item.others && item.filtered.doc_count) {
-      return { others: true, id: item.key, label: 'others', results: item.filtered.doc_count };
-    }
+  return categories
+    .map(item => {
+      if (item.others && item.filtered.doc_count) {
+        return { others: true, id: item.key, label: 'others', results: item.filtered.doc_count };
+      }
 
-    return {
-      id: item.key,
-      label: labelsMap[item.label] || item.label,
-      results: item.filtered.doc_count,
-    };
-  });
+      if (item.label === null) {
+        return null;
+      }
+
+      return {
+        id: item.key,
+        label: labelsMap[item.label] || item.label,
+        results: item.filtered.doc_count,
+      };
+    })
+    .filter(i => !!i);
 };
 
 export default {
