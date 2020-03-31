@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import Immutable from 'immutable';
@@ -42,64 +42,72 @@ const Y = ({ layout }) => {
   return <YAxis />;
 };
 
-export const BarChartComponent = props => {
-  const {
-    excludeZero,
-    maxCategories,
-    layout,
-    property,
-    data,
-    classname,
-    context,
-    thesauris,
-    colors,
-    shortLabels: rawShortLabels,
-  } = props;
-  let output = <Loader />;
-
-  if (data) {
-    const sliceColors = colors.split(',');
-    const aggregateOthers = props.aggregateOthers === 'true';
-    const shortLabels = JSON.parse(rawShortLabels);
-    const shortLabelsFlipped = objectFlip(shortLabels);
-
-    const formattedData = arrayUtils.formatDataForChart(data, property, thesauris, {
-      excludeZero: Boolean(excludeZero),
-      context,
-      maxCategories,
-      aggregateOthers,
-      labelsMap: shortLabels,
-    });
-
-    output = (
-      <ResponsiveContainer height={320}>
-        <BarChart height={300} data={formattedData} layout={layout}>
-          {X({ layout })}
-          {Y({ layout })}
-
-          <CartesianGrid strokeDasharray="2 4" />
-          <Tooltip
-            labelFormatter={value => {
-              return shortLabelsFlipped[value] || value;
-            }}
-          />
-          <Bar dataKey="results" fill="rgb(30, 28, 138)" stackId="unique">
-            {formattedData.map((_entry, index) => (
-              <Cell
-                // eslint-disable-next-line react/no-array-index-key
-                key={`cell-${index}`}
-                cursor="pointer"
-                fill={sliceColors[index % sliceColors.length]}
-              />
-            ))}
-          </Bar>
-        </BarChart>
-      </ResponsiveContainer>
-    );
+class BarChartComponent extends Component {
+  parseAttributes() {
+    const shortLabels = JSON.parse(this.props.shortLabels);
+    const sort = JSON.parse(this.props.sort);
+    return { sort, shortLabels };
   }
 
-  return <div className={`BarChart ${classname}`}>{output}</div>;
-};
+  render() {
+    const {
+      excludeZero,
+      maxCategories,
+      layout,
+      property,
+      data,
+      classname,
+      context,
+      thesauris,
+      colors,
+    } = this.props;
+    let output = <Loader />;
+
+    if (data) {
+      const sliceColors = colors.split(',');
+      const aggregateOthers = this.props.aggregateOthers === 'true';
+      const { sort, shortLabels } = this.parseAttributes();
+      const shortLabelsFlipped = objectFlip(shortLabels);
+
+      const formattedData = arrayUtils.formatDataForChart(data, property, thesauris, {
+        excludeZero: Boolean(excludeZero),
+        context,
+        maxCategories,
+        aggregateOthers,
+        sort,
+        labelsMap: shortLabels,
+      });
+
+      output = (
+        <ResponsiveContainer height={320}>
+          <BarChart height={300} data={formattedData} layout={layout}>
+            {X({ layout })}
+            {Y({ layout })}
+
+            <CartesianGrid strokeDasharray="2 4" />
+            <Tooltip
+              labelFormatter={value => {
+                return shortLabelsFlipped[value] || value;
+              }}
+            />
+            <Bar dataKey="results" fill="rgb(30, 28, 138)" stackId="unique">
+              {formattedData.map((_entry, index) => (
+                <Cell
+                  // eslint-disable-next-line react/no-array-index-key
+                  key={`cell-${index}`}
+                  cursor="pointer"
+                  fill={sliceColors[index % sliceColors.length]}
+                />
+              ))}
+            </Bar>
+          </BarChart>
+        </ResponsiveContainer>
+      );
+    }
+
+    return <div className={`BarChart ${classname}`}>{output}</div>;
+  }
+}
 
 BarChartComponent.defaultProps = {
   context: 'System',
@@ -111,6 +119,7 @@ BarChartComponent.defaultProps = {
   data: null,
   colors: '#1e1c8a',
   shortLabels: '{}',
+  sort: '{}',
 };
 
 BarChartComponent.propTypes = {
@@ -125,6 +134,7 @@ BarChartComponent.propTypes = {
   data: PropTypes.instanceOf(Immutable.List),
   colors: PropTypes.string,
   shortLabels: PropTypes.string,
+  sort: PropTypes.string,
 };
 
 export const mapStateToProps = (state, props) => ({

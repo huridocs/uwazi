@@ -29,14 +29,14 @@ function populateLabels(data, context, options) {
   });
 }
 
-function sortData(relevant, sort = { by: 'result', order: 'desc' }) {
+function sortData(relevant, { by: sortBy = 'result', order: sortOrder = 'desc' } = {}) {
   let categories = relevant;
 
-  if (sort.by === 'result') {
+  if (sortBy === 'result') {
     categories = relevant.sort((a, b) => b.filtered.doc_count - a.filtered.doc_count);
   }
 
-  if (sort.by === 'label') {
+  if (sortBy === 'label') {
     categories = relevant.sort((a, b) =>
       a.label.toLowerCase().localeCompare(b.label.toLowerCase())
     );
