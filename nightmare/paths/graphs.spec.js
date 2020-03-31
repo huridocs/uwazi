@@ -31,17 +31,13 @@ describe('pages path', () => {
   });
 
   describe('Graphs in Page', () => {
-<<<<<<< HEAD
-    it('should create a blank page', (done) => {
-=======
     it('should create a basic page', (done) => {
->>>>>>> 61ef70b7388da8adc799012f99d04fea4327dd21
       nightmare
-      .waitToClick(localSelectors.pagesButton)
-      .waitToClick(localSelectors.createNewPageButton)
+      .click(localSelectors.pagesButton)
+      .click(localSelectors.createNewPageButton)
       .write(localSelectors.pageTitleInput, 'Page data viz')
       .write(localSelectors.pageContentsInput, '</p><Dataset />')
-      .waitToClick('form > div.settings-footer > button.save-template')
+      .click('form > div.settings-footer > button.save-template')
       .wait('div.panel-body.page-viewer.document-viewer > div.alert.alert-info:first-of-type')
       .getInnerText('div.panel-body.page-viewer.document-viewer > div.alert.alert-info:first-of-type')
       .then((text) => {
@@ -60,7 +56,7 @@ describe('pages path', () => {
 
         return nightmare
         .write(localSelectors.pageContentsInput, graphs.barChart)
-        .waitToClick(localSelectors.savePageButton)
+        .click(localSelectors.savePageButton)
         .then(() => { done(); })
         .catch(catchErrors(done));
       })
@@ -88,9 +84,9 @@ describe('pages path', () => {
 
     it('should navigate back to edit page', (done) => {
       nightmare
-      .waitToClick(selectors.navigation.settingsNavButton)
+      .click(selectors.navigation.settingsNavButton)
       .wait(selectors.settingsView.settingsHeader)
-      .waitToClick(localSelectors.pagesButton)
+      .click(localSelectors.pagesButton)
       .wait('#app > div.content > div > div > div.settings-content > div.panel-default > ul.pages')
       .wait(500)
       .evaluate(() => document.querySelector('div.settings-content > div.panel-default > ul.pages > li:nth-child(1) > a').text)
@@ -108,17 +104,13 @@ describe('pages path', () => {
 
     it('should insert Pie chart graph in page', (done) => {
       nightmare
-<<<<<<< HEAD
-      .evaluate(() => document.querySelector('.page-viewer.document-viewer > div > div.tab-content.tab-content-visible > textarea').value)
-=======
       .evaluate(() => document.querySelector('div.panel-body.page-viewer.document-viewer > div > div.tab-content.tab-content-visible > textarea').value)
->>>>>>> 61ef70b7388da8adc799012f99d04fea4327dd21
       .then((input) => {
         expect(input).toContain('<Dataset />');
 
         return nightmare
         .write(localSelectors.pageContentsInput, graphs.pieChart)
-        .waitToClick(localSelectors.savePageButton)
+        .click(localSelectors.savePageButton)
         .wait('div.panel-body.page-viewer.document-viewer > div.alert.alert-info:first-of-type')
         .getInnerText('div.panel-body.page-viewer.document-viewer > div.alert.alert-info:first-of-type')
         .then((text) => {
