@@ -63,15 +63,13 @@ export const BarChartComponent = props => {
     const shortLabels = JSON.parse(rawShortLabels);
     const shortLabelsFlipped = objectFlip(shortLabels);
 
-    const formattedData = arrayUtils.sortValues(
-      arrayUtils.formatDataForChart(data, property, thesauris, {
-        excludeZero: Boolean(excludeZero),
-        context,
-        maxCategories,
-        aggregateOthers,
-        labelsMap: shortLabels,
-      })
-    );
+    const formattedData = arrayUtils.formatDataForChart(data, property, thesauris, {
+      excludeZero: Boolean(excludeZero),
+      context,
+      maxCategories,
+      aggregateOthers,
+      labelsMap: shortLabels,
+    });
 
     output = (
       <ResponsiveContainer height={320}>
