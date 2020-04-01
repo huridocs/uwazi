@@ -101,7 +101,7 @@ const formatDataForChart = (
         return { others: true, id: item.key, label: 'others', results: item.filtered.doc_count };
       }
 
-      if (item.label === null) {
+      if (!item.label) {
         return null;
       }
 
