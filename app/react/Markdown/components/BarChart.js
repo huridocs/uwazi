@@ -26,27 +26,25 @@ const objectFlip = obj => {
   return flip;
 };
 
-//eslint-disable-next-line
-const X = ({ layout }) => {
-  if (layout === 'vertical') {
-    return <XAxis type="number" dataKey="results" />;
-  }
-  return <XAxis dataKey="label" label="" />;
-};
-
-//eslint-disable-next-line
-const Y = ({ layout }) => {
-  if (layout === 'vertical') {
-    return <YAxis width={200} type="category" dataKey="label" />;
-  }
-  return <YAxis />;
-};
-
 class BarChartComponent extends Component {
   parseAttributes() {
     const shortLabels = JSON.parse(this.props.shortLabels);
     const sort = JSON.parse(this.props.sort);
     return { sort, shortLabels };
+  }
+
+  X() {
+    if (this.props.layout === 'vertical') {
+      return <XAxis type="number" dataKey="results" />;
+    }
+    return <XAxis dataKey="label" label="" />;
+  }
+
+  Y() {
+    if (this.props.layout === 'vertical') {
+      return <YAxis width={200} type="category" dataKey="label" />;
+    }
+    return <YAxis />;
   }
 
   render() {
@@ -81,8 +79,8 @@ class BarChartComponent extends Component {
       output = (
         <ResponsiveContainer height={320}>
           <BarChart height={300} data={formattedData} layout={layout}>
-            {X({ layout })}
-            {Y({ layout })}
+            {this.X()}
+            {this.Y()}
 
             <CartesianGrid strokeDasharray="2 4" />
             <Tooltip labelFormatter={value => shortLabelsFlipped[value] || value} />
