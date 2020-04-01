@@ -4,6 +4,9 @@ import { populateOptions } from 'app/Library/helpers/libraryFilters';
 
 import colorScheme from './colorScheme';
 
+const compareStrings = (a, b) => a.label.toLowerCase().localeCompare(b.label.toLowerCase());
+const compareDocCount = (a, b) => b.filtered.doc_count - a.filtered.doc_count;
+
 function sortValues(values) {
   values.sort((a, b) => {
     if (a.others || b.others) {
@@ -11,7 +14,7 @@ function sortValues(values) {
     }
 
     if (a.results === b.results) {
-      return a.label.toLowerCase().localeCompare(b.label.toLowerCase());
+      return compareStrings(a, b);
     }
 
     return b.results - a.results;
@@ -33,14 +36,12 @@ function sortData(relevant, { by: sortBy = 'result', order: sortOrder } = {}) {
   let categories = relevant;
 
   if (sortBy === 'result') {
-    categories = relevant.sort((a, b) => b.filtered.doc_count - a.filtered.doc_count);
+    categories = relevant.sort(compareDocCount);
     categories = sortOrder === 'asc' ? categories.reverse() : categories;
   }
 
   if (sortBy === 'label') {
-    categories = relevant.sort((a, b) =>
-      a.label.toLowerCase().localeCompare(b.label.toLowerCase())
-    );
+    categories = relevant.sort(compareStrings);
     categories = sortOrder === 'desc' ? categories.reverse() : categories;
   }
 
