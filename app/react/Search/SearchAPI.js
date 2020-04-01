@@ -20,13 +20,18 @@ export default {
     return api.get('search', requestParams).then(response => response.json);
   },
 
-  getSuggestions(requestParams) {
-    const url = 'search/match_title';
-    return api.get(url, requestParams).then(response => response.json);
-  },
-
   list(requestParams) {
     const url = 'search/list';
     return api.get(url, requestParams).then(response => response.json.rows);
+  },
+
+  getSuggestions(requestParams) {
+    const url = 'search/lookup';
+    return api.get(url, requestParams).then(response => response.json);
+  },
+
+  getAggregationSuggestions(requestParams) {
+    const url = 'search/lookupaggregation';
+    return api.get(url, requestParams).then(response => response.json);
   },
 };

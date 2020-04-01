@@ -11,6 +11,7 @@ exports[`SelectFilter should render a text filter field with a label and passing
     className="wide"
   >
     <MultiSelect
+      lookup={null}
       model="model.values"
       onChange={[Function]}
       options={
@@ -41,6 +42,7 @@ exports[`SelectFilter when showBoolSwitch should render the and/or bool switch 1
     className="wide"
   >
     <MultiSelect
+      lookup={null}
       model="model.values"
       onChange={[Function]}
       options={
@@ -66,6 +68,7 @@ exports[`SelectFilter when sort prop is set to true should activate sorting in t
     className="wide"
   >
     <MultiSelect
+      lookup={null}
       model="model.values"
       onChange={[Function]}
       options={

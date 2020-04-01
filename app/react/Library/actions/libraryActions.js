@@ -1,5 +1,3 @@
-/** @format */
-
 import * as types from 'app/Library/actions/actionTypes';
 import api from 'app/Search/SearchAPI';
 import { notificationActions } from 'app/Notifications';
@@ -12,6 +10,8 @@ import referencesAPI from 'app/Viewer/referencesAPI';
 import { api as entitiesAPI } from 'app/Entities';
 import { toUrlParams } from 'shared/JSONRequest';
 import { RequestParams } from 'app/utils/RequestParams';
+import { store } from 'app/store';
+import searchAPI from 'app/Search/SearchAPI';
 
 export function enterLibrary() {
   return { type: types.ENTER_LIBRARY };
@@ -319,4 +319,16 @@ export function getDocumentReferences(sharedId, storeKey) {
     referencesAPI.get(new RequestParams({ sharedId })).then(references => {
       dispatch(actions.set(`${storeKey}.sidepanel.references`, references));
     });
+}
+
+export function getAggregationSuggestions(storeKey, property, searchTerm) {
+  const state = store.getState()[storeKey];
+  const { search, filters } = state;
+
+  const query = processFilters(search, filters.toJS(), 0);
+  query.searchTerm = search.searchTerm;
+  if (storeKey === 'uploads') {
+    query.unpublished = true;
+  }
+  return searchAPI.getAggregationSuggestions(new RequestParams({ query, property, searchTerm }));
 }

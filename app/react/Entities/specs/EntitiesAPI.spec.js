@@ -27,9 +27,6 @@ describe('EntitiesAPI', () => {
       })
       .get(`${APIURL}entities/uploads`, { body: JSON.stringify({ rows: 'uploads' }) })
       .get(`${APIURL}entities/count_by_template?templateId=templateId`, { body: JSON.stringify(1) })
-      .get(`${APIURL}entities/match_title?searchTerm=term`, {
-        body: JSON.stringify(searchResponse),
-      })
       .get(`${APIURL}entities/search?searchTerm=Batman&joker=true`, {
         body: JSON.stringify(filteredSearchResult),
       })
@@ -93,14 +90,6 @@ describe('EntitiesAPI', () => {
         const response = await entitiesAPI.get(request);
         expect(response).toEqual(paramedResponse);
       });
-    });
-  });
-
-  describe('getSuggestions()', () => {
-    it('should match_title ', async () => {
-      const request = new RequestParams({ searchTerm: 'term' });
-      const response = await entitiesAPI.getSuggestions(request);
-      expect(response).toEqual(searchResponse);
     });
   });
 

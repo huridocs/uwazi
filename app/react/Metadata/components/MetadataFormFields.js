@@ -1,5 +1,3 @@
-/** @format */
-
 import { FormGroup } from 'app/Forms';
 import t from 'app/I18N/t';
 import Immutable from 'immutable';
@@ -8,6 +6,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field } from 'react-redux-form';
 import { propertyTypes } from 'shared/propertyTypes';
+import { getSuggestions } from 'app/Metadata/actions/actions';
 import {
   DatePicker,
   DateRange,
@@ -44,7 +43,7 @@ export class MetadataFormFields extends Component {
   getField(property, _model, thesauris) {
     let thesauri;
     let placeholderName;
-    const { dateFormat, version } = this.props;
+    const { dateFormat, version, entityThesauris } = this.props;
     const propertyType = property.type;
     switch (propertyType) {
       case 'select':
@@ -89,8 +88,24 @@ export class MetadataFormFields extends Component {
               .map(translateOptions)
           );
         }
+
+        if (entityThesauris.get(property.name)) {
+          entityThesauris
+            .get(property.name)
+            .toJS()
+            .forEach(o => {
+              thesauri.push({ id: o.value, label: o.label });
+            });
+        }
         return (
-          <MultiSelect model={_model} optionsValue="id" options={thesauri} prefix={_model} sort />
+          <MultiSelect
+            lookup={getSuggestions.bind(null, [property.content])}
+            model={_model}
+            optionsValue="id"
+            options={thesauri}
+            prefix={_model}
+            sort
+          />
         );
       case 'date':
         return <DatePicker model={_model} format={dateFormat} />;
@@ -139,6 +154,7 @@ export class MetadataFormFields extends Component {
 
   render() {
     const { thesauris, template, multipleEdition, model, showSubset } = this.props;
+
     const mlThesauri = thesauris
       .filter(thes => !!thes.get('enable_classification'))
       .map(thes => thes.get('_id'))
@@ -190,6 +206,7 @@ MetadataFormFields.defaultProps = {
   dateFormat: null,
   version: undefined,
   showSubset: undefined,
+  entityThesauris: Immutable.fromJS({}),
 };
 
 MetadataFormFields.propTypes = {
@@ -200,10 +217,12 @@ MetadataFormFields.propTypes = {
   dateFormat: PropTypes.string,
   showSubset: PropTypes.arrayOf(PropTypes.string),
   version: PropTypes.string,
+  entityThesauris: PropTypes.instanceOf(Immutable.Map),
 };
 
 export const mapStateToProps = state => ({
   dateFormat: state.settings.collection.get('dateFormat'),
+  entityThesauris: state.entityThesauris,
 });
 
 export default connect(mapStateToProps)(MetadataFormFields);

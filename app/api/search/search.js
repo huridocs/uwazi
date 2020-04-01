@@ -501,7 +501,7 @@ const buildQuery = async (query, language, user, resources) => {
     queryBuilder.from(query.from);
   }
 
-  if (query.limit) {
+  if (Number.isInteger(query.limit)) {
     queryBuilder.limit(query.limit);
   }
 
@@ -649,11 +649,59 @@ const instanceSearch = elasticIndex => ({
     return elastic.deleteByQuery({ index: elasticIndex || elasticIndexes.index, body: query });
   },
 
+  async autocompleteAggregations(query, language, propertyName, searchTerm, user) {
+    const [templates, dictionaries, _translations] = await Promise.all([
+      templatesModel.get(),
+      dictionariesModel.get(),
+      translations.get(),
+    ]);
+
+    const queryBuilder = await buildQuery({ ...query, limit: 0 }, language, user, [
+      templates,
+      dictionaries,
+      _translations,
+    ]);
+    const property = propertiesHelper
+      .allUniqueProperties(templates)
+      .find(p => p.name === propertyName);
+
+    queryBuilder.aggregations([property], dictionaries);
+
+    const body = queryBuilder.query();
+    delete body.aggregations.all.aggregations._types;
+
+    body.aggregations.all.aggregations[
+      `${propertyName}.value`
+    ].aggregations.filtered.filter.bool.filter.push({
+      match: {
+        [`metadata.${propertyName}.label`]: `*${searchTerm}*`,
+      },
+    });
+
+    const response = await elastic.search({
+      index: elasticIndex || elasticIndexes.index,
+      body,
+    });
+
+    const denormalizedAggregations = await _denormalizeAggregations(
+      { [propertyName]: response.aggregations.all[`${propertyName}.value`] },
+      templates,
+      dictionaries,
+      language
+    );
+
+    return denormalizedAggregations[propertyName].buckets.map(bucket => ({
+      label: bucket.label,
+      value: bucket.key,
+      results: bucket.filtered.doc_count,
+    }));
+  },
+
   async autocomplete(searchTerm, language, templates = [], includeUnpublished = false) {
     const published = includeUnpublished ? undefined : { term: { published: true } };
     const body = {
       _source: {
-        include: ['title', 'template'],
+        include: ['title', 'template', 'sharedId'],
       },
       from: 0,
       size: 50,
@@ -683,7 +731,10 @@ const instanceSearch = elasticIndex => ({
     }
 
     const response = await elastic.search({ index: elasticIndex || elasticIndexes.index, body });
-    return response.hits.hits.map(hit => Object.assign({ _id: hit._id }, hit._source));
+    return response.hits.hits.map(hit => ({
+      value: hit._source.sharedId,
+      label: hit._source.title,
+    }));
   },
 });
 

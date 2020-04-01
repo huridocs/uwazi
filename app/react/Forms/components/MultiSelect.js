@@ -15,7 +15,13 @@ const isNotAnEmptyGroup = option => !option.options || option.options.length;
 export default class MultiSelect extends Component {
   constructor(props) {
     super(props);
-    this.state = { filter: props.filter, showAll: props.showAll, ui: {} };
+    this.state = {
+      filter: props.filter,
+      showAll: props.showAll,
+      ui: {},
+      lookupOptions: [],
+      selectedOptions: [],
+    };
     this.filter = this.filter.bind(this);
     this.resetFilter = this.resetFilter.bind(this);
     this.showAll = this.showAll.bind(this);
@@ -25,6 +31,27 @@ export default class MultiSelect extends Component {
     if (props.filter) {
       this.setState({ filter: props.filter });
     }
+  }
+
+  setValues(values) {
+    this.props.onChange(values);
+    const options = this.combineOptions();
+    const selectedOptions = values.map(v => options.find(o => o[this.props.optionsValue] === v));
+    this.setState({ selectedOptions });
+  }
+
+  combineOptions() {
+    const combinedOptions = [
+      ...this.props.options,
+      ...this.state.lookupOptions,
+      ...this.state.selectedOptions,
+    ];
+
+    return Array.from(
+      new Set(combinedOptions.filter(o => o).map(o => o[this.props.optionsValue]))
+    ).map(value => {
+      return combinedOptions.find(o => o[this.props.optionsValue] === value);
+    });
   }
 
   changeGroup(group, e) {
@@ -45,7 +72,7 @@ export default class MultiSelect extends Component {
         }
       });
     }
-    this.props.onChange(selectedItems);
+    this.setValues(selectedItems);
   }
 
   checked(option) {
@@ -71,20 +98,35 @@ export default class MultiSelect extends Component {
     let newValues = this.props.value ? this.props.value.slice(0) : [];
     if (newValues.includes(value)) {
       newValues = newValues.filter(val => val !== value);
-      this.props.onChange(newValues);
+      this.setValues(newValues);
       return;
     }
 
     newValues.push(value);
-    this.props.onChange(newValues);
+    this.setValues(newValues);
   }
 
-  filter(e) {
-    this.setState({ filter: e.target.value });
+  async filter(e) {
+    const searchTerm = e.target.value;
+    this.setState({ filter: searchTerm });
+    if (this.props.lookup && searchTerm.length > 3) {
+      const response = await this.props.lookup(searchTerm);
+      const lookupOptions = response.map(o => ({
+        [this.props.optionsValue]: o.value,
+        [this.props.optionsLabel]: o.label,
+        results: o.results,
+      }));
+
+      this.setState({ lookupOptions });
+    }
+
+    if (searchTerm.length <= 3) {
+      this.setState({ lookupOptions: [] });
+    }
   }
 
   resetFilter() {
-    this.setState({ filter: '' });
+    this.setState({ filter: '', lookupOptions: [] });
   }
 
   showAll(e) {
@@ -259,7 +301,8 @@ export default class MultiSelect extends Component {
   render() {
     const { optionsValue, optionsLabel, placeholder } = this.props;
 
-    let options = this.props.options.slice();
+    let options = this.combineOptions();
+
     const totalOptions = options.filter(option => {
       let notDefined;
       return (
@@ -314,14 +357,20 @@ export default class MultiSelect extends Component {
       if (!option.options) {
         return option;
       }
-      return { ...option, options: this.sort(option.options, optionsValue, optionsLabel, true) };
+      return {
+        ...option,
+        options: this.sort(option.options, optionsValue, optionsLabel, true),
+      };
     });
 
     return (
       <ul className="multiselect is-active">
         <li className="multiselectActions">
           <ShowIf
-            if={this.props.options.length > this.props.optionsToShow && !this.props.hideSearch}
+            if={
+              (this.props.options.length > this.props.optionsToShow && !this.props.hideSearch) ||
+              Boolean(this.props.lookup)
+            }
           >
             <div className="form-group">
               <Icon
@@ -375,6 +424,7 @@ MultiSelect.defaultProps = {
   sortbyLabel: false,
   forceHoist: false,
   placeholder: '',
+  lookup: null,
 };
 
 MultiSelect.propTypes = {
@@ -392,4 +442,5 @@ MultiSelect.propTypes = {
   sortbyLabel: PropTypes.bool,
   forceHoist: PropTypes.bool,
   placeholder: PropTypes.string,
+  lookup: PropTypes.func,
 };

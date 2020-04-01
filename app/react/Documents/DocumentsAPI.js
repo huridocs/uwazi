@@ -21,11 +21,6 @@ export default {
     return api.get(url, requestParams).then(response => response.json);
   },
 
-  getSuggestions(requestParams) {
-    const url = 'documents/match_title';
-    return api.get(url, requestParams).then(response => response.json);
-  },
-
   list(requestParams) {
     const url = 'documents/list';
     return api.get(url, requestParams).then(response => response.json.rows);

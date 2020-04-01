@@ -5,7 +5,7 @@ import propertyToAggregation from './metadataAggregations';
 
 export default function() {
   const baseQuery = {
-    explain: true,
+    explain: false,
     _source: {
       include: [
         'title',
@@ -43,7 +43,7 @@ export default function() {
             terms: {
               field: 'template.raw',
               missing: 'missing',
-              size: 9999,
+              size: 200,
             },
             aggregations: {
               filtered: {

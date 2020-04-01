@@ -23,9 +23,6 @@ describe('DocumentsAPI', () => {
       .get(`${APIURL}documents/count_by_template?templateId=templateId`, {
         body: JSON.stringify(1),
       })
-      .get(`${APIURL}documents/match_title?searchTerm=term`, {
-        body: JSON.stringify(searchResponse),
-      })
       .get(`${APIURL}documents/search?searchTerm=Batman&joker=true`, {
         body: JSON.stringify(filteredSearchResult),
       })
@@ -81,19 +78,6 @@ describe('DocumentsAPI', () => {
         .list(requestParams)
         .then(response => {
           expect(response).toEqual(listResponse);
-          done();
-        })
-        .catch(done.fail);
-    });
-  });
-
-  describe('getSuggestions()', () => {
-    it('should match_title ', done => {
-      const requestParams = new RequestParams({ searchTerm: 'term' });
-      documentsAPI
-        .getSuggestions(requestParams)
-        .then(response => {
-          expect(response).toEqual(searchResponse);
           done();
         })
         .catch(done.fail);

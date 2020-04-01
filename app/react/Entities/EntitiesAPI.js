@@ -30,11 +30,6 @@ export default {
     return api.get(url, requestParams).then(response => response.json);
   },
 
-  getSuggestions(requestParams) {
-    const url = 'entities/match_title';
-    return api.get(url, requestParams).then(response => response.json);
-  },
-
   save(requestParams) {
     return api.post('entities', requestParams).then(response => response.json);
   },

@@ -9,7 +9,6 @@ import { actions, MetadataForm } from 'app/Metadata';
 function mapStateToProps(state) {
   return {
     model: 'entityView.entityForm',
-    isEntity: state.entityView.entity.get('type') === 'entity',
     templateId: state.entityView.entityForm.template,
     templates: state.templates,
     thesauris: state.thesauris,

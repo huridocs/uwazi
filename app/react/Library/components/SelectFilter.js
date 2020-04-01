@@ -3,7 +3,16 @@ import React from 'react';
 
 import { MultiSelect, Switcher } from 'app/ReactReduxForms';
 
-const SelectFilter = ({ onChange, model, label, options, prefix, showBoolSwitch, sort }) => (
+const SelectFilter = ({
+  onChange,
+  model,
+  label,
+  options,
+  prefix,
+  showBoolSwitch,
+  sort,
+  lookup,
+}) => (
   <ul className="search__filter is-active">
     <li>
       {label}
@@ -16,6 +25,7 @@ const SelectFilter = ({ onChange, model, label, options, prefix, showBoolSwitch,
         options={options}
         onChange={onChange}
         sort={sort}
+        lookup={lookup}
       />
     </li>
   </ul>
@@ -28,6 +38,7 @@ SelectFilter.defaultProps = {
   showBoolSwitch: false,
   sort: false,
   options: [],
+  lookup: null,
 };
 
 SelectFilter.propTypes = {
@@ -37,6 +48,7 @@ SelectFilter.propTypes = {
   showBoolSwitch: PropTypes.bool,
   sort: PropTypes.bool,
   options: PropTypes.array,
+  lookup: PropTypes.func,
   label: PropTypes.oneOfType([PropTypes.node, PropTypes.string]),
 };
 
