@@ -1,11 +1,10 @@
 /* eslint-disable import/no-extraneous-dependencies */
 
 const webpack = require('webpack');
-
 const express = require('express');
-const app = express();
-
 var cors = require('cors');
+
+const app = express();
 app.use(cors());
 
 const http = require('http').Server(app);
