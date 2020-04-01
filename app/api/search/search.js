@@ -507,7 +507,7 @@ const buildQuery = async (query, language, user, resources) => {
     queryBuilder.from(query.from);
   }
 
-  if (Number.isInteger(query.limit)) {
+  if (Number.isInteger(parseInt(query.limit, 10))) {
     queryBuilder.limit(query.limit);
   }
 
