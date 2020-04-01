@@ -32,15 +32,15 @@ function populateLabels(data, context, options) {
   });
 }
 
-function sortData(relevant, { by: sortBy = 'result', order: sortOrder } = {}) {
-  if (sortBy === 'result') {
+function sortData(relevant, { by = 'result', order } = {}) {
+  if (by === 'result') {
     relevant.sort(compareDocCount);
-    return sortOrder === 'asc' ? relevant.reverse() : relevant;
+    return order === 'asc' ? relevant.reverse() : relevant;
   }
 
-  if (sortBy === 'label') {
+  if (by === 'label') {
     relevant.sort(compareStrings);
-    return sortOrder === 'desc' ? relevant.reverse() : relevant;
+    return order === 'desc' ? relevant.reverse() : relevant;
   }
 
   return relevant;
