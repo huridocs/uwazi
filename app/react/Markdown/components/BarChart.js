@@ -85,11 +85,7 @@ class BarChartComponent extends Component {
             {Y({ layout })}
 
             <CartesianGrid strokeDasharray="2 4" />
-            <Tooltip
-              labelFormatter={value => {
-                return shortLabelsFlipped[value] || value;
-              }}
-            />
+            <Tooltip labelFormatter={value => shortLabelsFlipped[value] || value} />
             <Bar dataKey="results" fill="rgb(30, 28, 138)" stackId="unique">
               {formattedData.map((_entry, index) => (
                 <Cell
