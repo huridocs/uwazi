@@ -1,6 +1,5 @@
 import comonProperties from 'shared/comonProperties';
 import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
-import { normalize } from 'path';
 
 function getOptions(property, thesauris) {
   const matchingTHesauri = thesauris.find(thesauri => thesauri._id === property.content);

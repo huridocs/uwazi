@@ -6,7 +6,6 @@ import db from 'api/utils/testing_db';
 import instanceElasticTesting from 'api/utils/elastic_testing';
 import elasticResult from './elasticResult';
 import elasticFixtures, { ids, fixturesTimeOut } from './fixtures_elastic';
-import templates from 'api/templates';
 
 describe('search', () => {
   let result;

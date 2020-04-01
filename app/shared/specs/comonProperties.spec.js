@@ -29,16 +29,6 @@ describe('comonProperties', () => {
     },
   ];
 
-  const relationTypes = [
-    {
-      _id: '4',
-      properties: [
-        { name: 'author', filter: false, type: 'markdown' },
-        { name: 'city', filter: true, type: 'text' },
-      ],
-    },
-  ];
-
   const thesauris = [
     {
       _id: 'abc1',

@@ -9,7 +9,6 @@ import elasticIndexes from 'api/config/elasticIndexes';
 
 import dictionariesModel from 'api/thesauri/dictionariesModel';
 import { createError } from 'api/utils';
-import relationtypes from 'api/relationtypes';
 import documentQueryBuilder from './documentQueryBuilder';
 import elastic from './elastic';
 import entities from '../entities';
