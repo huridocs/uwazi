@@ -25,18 +25,14 @@ describe('BarChart Markdown component', () => {
     ]),
   };
 
-  const defaultAggregations = [
-    { key: 'id1', filtered: { doc_count: 25 } },
-    { key: 'id2', filtered: { doc_count: 33 } },
-    { key: 'missing', filtered: { doc_count: 45 } },
-    { key: 'id3', filtered: { doc_count: 13 } },
-    { key: 'id4', filtered: { doc_count: 0 } },
-  ];
+  const defaultAggregations = [{ id1: 25 }, { id2: 33 }, { missing: 45 }, { id3: 13 }, { id4: 0 }];
 
   const mockGetAggregations = values => {
-    spyOn(markdownDatasets, 'getAggregations').and.returnValue(
-      Immutable.fromJS(values || defaultAggregations)
-    );
+    const aggregations = (values || defaultAggregations).map(item => {
+      const key = Object.keys(item)[0];
+      return { key, filtered: { doc_count: item[key] } };
+    });
+    spyOn(markdownDatasets, 'getAggregations').and.returnValue(Immutable.fromJS(aggregations));
   };
 
   const renderComponent = overridenProps => {
@@ -103,12 +99,7 @@ describe('BarChart Markdown component', () => {
 
   describe('when passing maxCategories', () => {
     it('should only render the number of categories passed', () => {
-      mockGetAggregations([
-        { key: 'id1', filtered: { doc_count: 25 } },
-        { key: 'id2', filtered: { doc_count: 33 } },
-        { key: 'id3', filtered: { doc_count: 13 } },
-        { key: 'id4', filtered: { doc_count: 0 } },
-      ]);
+      mockGetAggregations([{ id1: 25 }, { id2: 33 }, { id3: 13 }, { id4: 0 }]);
 
       const component = renderComponent({ maxCategories: '2' });
 
@@ -117,13 +108,7 @@ describe('BarChart Markdown component', () => {
     });
 
     it('should render others when passing aggregateOthers', () => {
-      mockGetAggregations([
-        { key: 'id6', filtered: { doc_count: 57 } },
-        { key: 'id2', filtered: { doc_count: 33 } },
-        { key: 'id1', filtered: { doc_count: 25 } },
-        { key: 'id3', filtered: { doc_count: 13 } },
-        { key: 'id8', filtered: { doc_count: 2 } },
-      ]);
+      mockGetAggregations([{ id6: 57 }, { id2: 33 }, { id1: 25 }, { id3: 13 }, { id8: 2 }]);
 
       const component = renderComponent({ maxCategories: '2', aggregateOthers: 'true' });
 
@@ -156,13 +141,7 @@ describe('BarChart Markdown component', () => {
 
   describe('when passing colors', () => {
     it('should render with a single color', () => {
-      mockGetAggregations([
-        { key: 'id1', filtered: { doc_count: 25 } },
-        { key: 'id2', filtered: { doc_count: 33 } },
-        { key: 'missing', filtered: { doc_count: 45 } },
-        { key: 'id3', filtered: { doc_count: 13 } },
-        { key: 'id4', filtered: { doc_count: 0 } },
-      ]);
+      mockGetAggregations();
 
       const component = renderComponent({ colors: '#ccc' });
 
@@ -173,13 +152,7 @@ describe('BarChart Markdown component', () => {
     });
 
     it('should render with several colors', () => {
-      mockGetAggregations([
-        { key: 'id1', filtered: { doc_count: 25 } },
-        { key: 'id2', filtered: { doc_count: 33 } },
-        { key: 'missing', filtered: { doc_count: 45 } },
-        { key: 'id3', filtered: { doc_count: 13 } },
-        { key: 'id4', filtered: { doc_count: 0 } },
-      ]);
+      mockGetAggregations();
 
       const colors = ['#aaa', '#bbb', '#ccc', '#ddd', '#eee', '#000'];
       const component = renderComponent({ colors: colors.join(',') });
@@ -191,13 +164,7 @@ describe('BarChart Markdown component', () => {
     });
 
     it('should cycle the colors', () => {
-      mockGetAggregations([
-        { key: 'id1', filtered: { doc_count: 25 } },
-        { key: 'id2', filtered: { doc_count: 33 } },
-        { key: 'missing', filtered: { doc_count: 45 } },
-        { key: 'id3', filtered: { doc_count: 13 } },
-        { key: 'id4', filtered: { doc_count: 0 } },
-      ]);
+      mockGetAggregations();
 
       const colors = ['#aaa', '#bbb'];
       const component = renderComponent({ colors: colors.join(',') });
