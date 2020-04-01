@@ -58,30 +58,31 @@ describe('Array Utils', () => {
         { key: 'id2', doc_count: 20, filtered: { doc_count: 5 } },
       ]);
       property = 'prop';
+
+      const values = [
+        { label: 'Val 1', id: 'id1' },
+        { label: 'Val 2', id: 'id2' },
+        { label: 'Val 3', id: 'id3' },
+      ];
+
       thesauri = Immutable.fromJS([
         {
           name: 'Thes',
-          values: [
-            { label: 'Val 1', id: 'id1' },
-            { label: 'Val 2', id: 'id2' },
-            { label: 'Val 3', id: 'id3' },
-          ],
+          values,
         },
       ]);
+
       options = {
         context: 'contextId',
         excludeZero: false,
         maxCategories: 0,
         aggregateOthers: 'false',
       };
+
       jest.spyOn(libraryFilters, 'populateOptions').mockReturnValue([
         {
           content: 'contextId',
-          options: [
-            { label: 'Val 1', id: 'id1' },
-            { label: 'Val 2', id: 'id2' },
-            { label: 'Val 3', id: 'id3' },
-          ],
+          options: values,
         },
       ]);
     });
@@ -104,14 +105,19 @@ describe('Array Utils', () => {
       );
     });
 
-    it('should aggregate filtered results for each category sorted in ascending order', () => {
-      options.sort = { order: 'asc' };
-      expectResults([{ id1: ['Val 1', 3] }, { id3: ['Val 3', 4] }, { id2: ['Val 2', 5] }]);
-    });
-
     it('should omit results without labels', () => {
       data = data.push(Immutable.fromJS({ key: 'id4', doc_count: 5, filtered: { doc_count: 1 } }));
       expectResults([{ id2: ['Val 2', 5] }, { id3: ['Val 3', 4] }, { id1: ['Val 1', 3] }]);
+    });
+
+    it('should allow plucking specific categories from the results, not failing if label not found', () => {
+      options.pluckCategories = ['Val 1', 'missing', 'Val 3'];
+      expectResults([{ id3: ['Val 3', 4] }, { id1: ['Val 1', 3] }]);
+    });
+
+    it('should allow sorting results in ascending order', () => {
+      options.sort = { order: 'asc' };
+      expectResults([{ id1: ['Val 1', 3] }, { id3: ['Val 3', 4] }, { id2: ['Val 2', 5] }]);
     });
 
     it('should allow sorting by labels alphabetically, ascending by default', () => {

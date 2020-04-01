@@ -30,7 +30,8 @@ class BarChartComponent extends Component {
   parseAttributes() {
     const shortLabels = JSON.parse(this.props.shortLabels);
     const sort = JSON.parse(this.props.sort);
-    return { sort, shortLabels };
+    const pluckCategories = JSON.parse(this.props.pluckCategories);
+    return { sort, shortLabels, pluckCategories };
   }
 
   X() {
@@ -64,7 +65,7 @@ class BarChartComponent extends Component {
     if (data) {
       const sliceColors = colors.split(',');
       const aggregateOthers = this.props.aggregateOthers === 'true';
-      const { sort, shortLabels } = this.parseAttributes();
+      const { sort, shortLabels, pluckCategories } = this.parseAttributes();
       const shortLabelsFlipped = objectFlip(shortLabels);
 
       const formattedData = arrayUtils.formatDataForChart(data, property, thesauris, {
@@ -72,6 +73,7 @@ class BarChartComponent extends Component {
         context,
         maxCategories,
         aggregateOthers,
+        pluckCategories,
         sort,
         labelsMap: shortLabels,
       });
@@ -114,6 +116,7 @@ BarChartComponent.defaultProps = {
   colors: '#1e1c8a',
   shortLabels: '{}',
   sort: '{}',
+  pluckCategories: '[]',
 };
 
 BarChartComponent.propTypes = {
@@ -129,6 +132,7 @@ BarChartComponent.propTypes = {
   colors: PropTypes.string,
   shortLabels: PropTypes.string,
   sort: PropTypes.string,
+  pluckCategories: PropTypes.string,
 };
 
 export const mapStateToProps = (state, props) => ({

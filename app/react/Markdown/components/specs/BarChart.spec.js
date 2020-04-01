@@ -48,12 +48,8 @@ describe('BarChart Markdown component', () => {
   };
 
   const expectLabels = (component, labels) => {
-    expect(component.find(BarChart).props().data).toEqual([
-      expect.objectContaining({ label: labels[0] }),
-      expect.objectContaining({ label: labels[1] }),
-      expect.objectContaining({ label: labels[2] }),
-      expect.objectContaining({ label: labels[3] }),
-    ]);
+    const expectedLabels = labels.map(label => expect.objectContaining({ label }));
+    expect(component.find(BarChart).props().data).toEqual(expectedLabels);
   };
 
   it('should render the data passed by mapStateToProps', () => {
@@ -114,6 +110,14 @@ describe('BarChart Markdown component', () => {
 
       expect(markdownDatasets.getAggregations).toHaveBeenCalledWith(state, { prop1: 'propValue' });
       expect(component).toMatchSnapshot();
+    });
+  });
+
+  describe('when passing pluckCategories configuration', () => {
+    it('should allow selecting individual categories', () => {
+      mockGetAggregations();
+      const component = renderComponent({ pluckCategories: '["label3", "label1"]' });
+      expectLabels(component, ['label1', 'label3']);
     });
   });
 

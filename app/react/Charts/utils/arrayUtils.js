@@ -65,6 +65,28 @@ const limitMaxCategories = (sortedCategories, maxCategories, aggregateOthers) =>
   return categories;
 };
 
+const determineRelevantCategories = (data, formatOptions) => {
+  const { excludeZero, pluckCategories = [] } = formatOptions;
+
+  let relevantCategories = data.filter(i => i.key !== 'missing');
+
+  if (excludeZero) {
+    relevantCategories = relevantCategories.filter(i => i.filtered.doc_count !== 0);
+  }
+
+  if (pluckCategories.length) {
+    relevantCategories = pluckCategories.reduce((results, category) => {
+      const matchingCategory = relevantCategories.find(c => c.label === category);
+      if (matchingCategory) {
+        results.push(matchingCategory);
+      }
+      return results;
+    }, []);
+  }
+
+  return relevantCategories;
+};
+
 const formatPayload = data =>
   data.map((item, index) => ({
     value: item.name,
@@ -73,22 +95,16 @@ const formatPayload = data =>
     formatter: () => <span style={{ color: '#333' }}>{item.name}</span>,
   }));
 
-const formatDataForChart = (
-  data,
-  _property,
-  thesauris,
-  { context, excludeZero, maxCategories, aggregateOthers = false, labelsMap = {}, sort }
-) => {
+const formatDataForChart = (data, _property, thesauris, formatOptions) => {
+  const { context, maxCategories, aggregateOthers = false, labelsMap = {}, sort } = formatOptions;
+
   const res = populateOptions([{ content: context }], thesauris.toJS());
   const { options } = res[0];
 
-  let relevant = data.toJS().filter(i => i.key !== 'missing');
+  const populatedData = populateLabels(data.toJS(), context, options);
+  const relevantCategories = determineRelevantCategories(populatedData, formatOptions);
+  const sortedCategories = sortData(relevantCategories, sort);
 
-  if (excludeZero) {
-    relevant = relevant.filter(i => i.filtered.doc_count !== 0);
-  }
-
-  const sortedCategories = sortData(populateLabels(relevant, context, options), sort);
   let categories = sortedCategories;
 
   if (Number(maxCategories)) {
