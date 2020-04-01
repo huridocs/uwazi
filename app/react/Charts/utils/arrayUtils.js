@@ -7,7 +7,7 @@ import colorScheme from './colorScheme';
 const compareStrings = (a, b) => a.label.toLowerCase().localeCompare(b.label.toLowerCase());
 const compareDocCount = (a, b) => b.filtered.doc_count - a.filtered.doc_count;
 
-function sortValues(values) {
+const sortValues = values => {
   values.sort((a, b) => {
     if (a.others || b.others) {
       return false;
@@ -21,32 +21,34 @@ function sortValues(values) {
   });
 
   return values;
-}
+};
 
-function populateLabels(data, context, options) {
-  return data.map(item => {
+const populateLabels = (data, context, options) =>
+  data.map(item => {
     const labelData = options && options.find(o => o.id === item.key);
     const label = labelData ? t(context, labelData.label, null, false) : null;
 
     return { ...item, label };
   });
-}
 
-function sortData(relevant, { by = 'result', order } = {}) {
+const sortAndOrder = (data, method, order, reverseCondition) => {
+  data.sort(method);
+  return order === reverseCondition ? data.reverse() : data;
+};
+
+const sortData = (data, { by = 'result', order } = {}) => {
   if (by === 'result') {
-    relevant.sort(compareDocCount);
-    return order === 'asc' ? relevant.reverse() : relevant;
+    return sortAndOrder(data, compareDocCount, order, 'asc');
   }
 
   if (by === 'label') {
-    relevant.sort(compareStrings);
-    return order === 'desc' ? relevant.reverse() : relevant;
+    return sortAndOrder(data, compareStrings, order, 'desc');
   }
 
-  return relevant;
-}
+  return data;
+};
 
-function limitMaxCategories(sortedCategories, maxCategories, aggregateOthers) {
+const limitMaxCategories = (sortedCategories, maxCategories, aggregateOthers) => {
   const categories = sortedCategories.slice(0, Number(maxCategories));
 
   if (aggregateOthers) {
@@ -61,16 +63,15 @@ function limitMaxCategories(sortedCategories, maxCategories, aggregateOthers) {
   }
 
   return categories;
-}
+};
 
-function formatPayload(data) {
-  return data.map((item, index) => ({
+const formatPayload = data =>
+  data.map((item, index) => ({
     value: item.name,
     type: 'rect',
     color: colorScheme[index % colorScheme.length],
     formatter: () => <span style={{ color: '#333' }}>{item.name}</span>,
   }));
-}
 
 const formatDataForChart = (
   data,
