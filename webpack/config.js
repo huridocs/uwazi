@@ -82,9 +82,9 @@ module.exports = function(production) {
           use: [
             MiniCssExtractPlugin.loader,
             { loader: "css-loader", options: { url: false, sourceMap: true } },
-            { loader: "sass-loader", options: { sourceMap: true } }
+            { loader: "sass-loader", options: { sourceMap: true } },
           ]
-        }
+        },
       ]
     },
     plugins: [
@@ -99,7 +99,11 @@ module.exports = function(production) {
       }),
       new AssetsPlugin({
         path: outputPath
-      })
+      }),
+      new CopyWebpackPlugin([
+        // {from: 'node_modules/react-flags/vendor/flags', to: 'flag-images'},
+        {from: 'node_modules/react-widgets/lib/fonts', to: 'fonts'},
+      ]),
     ]
   };
 };
