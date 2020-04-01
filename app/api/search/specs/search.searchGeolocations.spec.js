@@ -1,5 +1,3 @@
-/** @format */
-
 import db from 'api/utils/testing_db';
 import { instanceSearch } from 'api/search/search';
 import instanceElasticTesting from 'api/utils/elastic_testing';

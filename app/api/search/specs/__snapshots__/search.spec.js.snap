@@ -5,11 +5,11 @@ Array [
   "meta",
   "doc_count",
   "groupedDictionary",
+  "nested2",
+  "nested1",
   "nestedField_nested",
   "select1",
   "_types",
   "multiselect1",
-  "nested2",
-  "nested1",
 ]
 `;

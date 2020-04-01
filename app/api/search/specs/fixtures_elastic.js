@@ -151,11 +151,11 @@ export default {
       metadata: {
         field1: [{ value: 'joker' }],
         field2: [{ value: 'bane' }],
-        select1: [{ value: '35ae6c24-9f4c-4017-9f01-2bc42ff7ad83' }],
+        select1: [{ value: '35ae6c24-9f4c-4017-9f01-2bc42ff7ad83', label: 'Egypt' }],
         rich_text: [{ value: 'rich' }],
         multiselect1: [
-          { value: '35ae6c24-9f4c-4017-9f01-2bc42ff7ad83' },
-          { value: 'bce629bf-efc1-40dd-9af0-0542422dcbc3' },
+          { value: '35ae6c24-9f4c-4017-9f01-2bc42ff7ad83', label: 'Egypt' },
+          { value: 'bce629bf-efc1-40dd-9af0-0542422dcbc3', label: 'Spain' },
         ],
         groupedDictionary: [{ value: 'spainID' }],
         nestedField_nested: [{ value: { nested1: ['1', '2', '3'] } }],
@@ -191,8 +191,8 @@ export default {
       metadata: {
         field1: [{ value: 'joker' }],
         field2: [{ value: 'penguin' }],
-        select1: [{ value: '35ae6c24-9f4c-4017-9f01-2bc42ff7ad83' }],
-        multiselect1: [{ value: '35ae6c24-9f4c-4017-9f01-2bc42ff7ad83' }],
+        select1: [{ value: '35ae6c24-9f4c-4017-9f01-2bc42ff7ad83', label: 'Egypt' }],
+        multiselect1: [{ value: '35ae6c24-9f4c-4017-9f01-2bc42ff7ad83', label: 'Egypt' }],
         groupedDictionary: [{ value: 'spainID' }],
         daterange: [{ value: { from: 1579620135, to: 1611242535 } }],
         date: [{ value: 20000 }],
@@ -207,8 +207,8 @@ export default {
       published: true,
       user: userId,
       metadata: {
-        select1: [{ value: 'bce629bf-efc1-40dd-9af0-0542422dcbc3' }],
-        multiselect1: [{ value: 'bce629bf-efc1-40dd-9af0-0542422dcbc3' }],
+        select1: [{ value: 'bce629bf-efc1-40dd-9af0-0542422dcbc3', label: 'Spain' }],
+        multiselect1: [{ value: 'bce629bf-efc1-40dd-9af0-0542422dcbc3', label: 'Spain' }],
         date: [{ value: 30000 }],
       },
     },
@@ -223,8 +223,8 @@ export default {
       metadata: {
         field1: [{ value: 'bane' }],
         field3: [{ value: 'penguin' }],
-        select1: [{ value: 'bce629bf-efc1-40dd-9af0-0542422dcbc3' }],
-        multiselect1: [{ value: 'bce629bf-efc1-40dd-9af0-0542422dcbc3' }],
+        select1: [{ value: 'bce629bf-efc1-40dd-9af0-0542422dcbc3', label: 'Spain' }],
+        multiselect1: [{ value: 'bce629bf-efc1-40dd-9af0-0542422dcbc3', label: 'Spain' }],
         nestedField_nested: [{ value: { nested1: ['3', '4', '5'] } }],
         country_geolocation: [{ value: { lat: 1, lon: 2 } }],
       },
@@ -300,7 +300,9 @@ export default {
       title: 'Something',
       published: true,
       user: userId,
-      metadata: { multiselect1: [{ value: 'bce629bf-efc1-40dd-9af0-0542422dcbc3' }] },
+      metadata: {
+        multiselect1: [{ value: 'bce629bf-efc1-40dd-9af0-0542422dcbc3', label: 'Spain' }],
+      },
     },
     // snippets in metadata
     {
@@ -399,7 +401,7 @@ export default {
           id: 'bce629bf-efc1-40dd-9af0-0542422dcbc4',
         },
         {
-          label: 'Egypto',
+          label: 'Spain',
           id: 'bce629bf-efc1-40dd-9af0-0542422dcbc3',
         },
         {

@@ -240,17 +240,10 @@ const _denormalizeAggregations = async (aggregations, templates, dictionaries, l
   }, {});
 };
 
-const processResponse = async (response, templates, dictionaries, language) => {
-  const rows = response.hits.hits.map(hit => {
-    const result = hit._source;
-    result._explanation = hit._explanation;
-    result.snippets = snippetsFromSearchHit(hit);
-    result._id = hit._id;
-    return result;
-  });
-
-  Object.keys(response.aggregations.all).forEach(aggregationKey => {
-    const aggregation = response.aggregations.all[aggregationKey];
+const _sanitizeAggregationsStructure = aggregations => {
+  const result = {};
+  Object.keys(aggregations).forEach(aggregationKey => {
+    const aggregation = aggregations[aggregationKey];
     const isAGroupOfOptionsAggregation = aggregation.buckets && !Array.isArray(aggregation.buckets);
     if (isAGroupOfOptionsAggregation) {
       aggregation.buckets = Object.keys(aggregation.buckets).map(key =>
@@ -259,7 +252,7 @@ const processResponse = async (response, templates, dictionaries, language) => {
     }
 
     if (aggregation.buckets) {
-      response.aggregations.all[aggregationKey] = aggregation;
+      result[aggregationKey] = aggregation;
     }
 
     const isNestedAggregation = !aggregation.buckets;
@@ -269,7 +262,7 @@ const processResponse = async (response, templates, dictionaries, language) => {
           const buckets = aggregation[key].buckets.map(option =>
             Object.assign({ key: option.key }, option.filtered.total)
           );
-          response.aggregations.all[key] = {
+          result[key] = {
             type: 'nested',
             doc_count: aggregation[key].doc_count,
             buckets,
@@ -277,10 +270,24 @@ const processResponse = async (response, templates, dictionaries, language) => {
         }
       });
     }
+    result[aggregationKey] = aggregation;
   });
-  const sanitizedAggregations = _sanitizeAgregationNames(response.aggregations.all);
+  return result;
+};
+
+const processResponse = async (response, templates, dictionaries, language) => {
+  const rows = response.hits.hits.map(hit => {
+    const result = hit._source;
+    result._explanation = hit._explanation;
+    result.snippets = snippetsFromSearchHit(hit);
+    result._id = hit._id;
+    return result;
+  });
+
+  const sanitizedAggregations = _sanitizeAggregationsStructure(response.aggregations.all);
+  const sanitizedAggregationNames = _sanitizeAgregationNames(sanitizedAggregations);
   const denormalizedAggregations = await _denormalizeAggregations(
-    sanitizedAggregations,
+    sanitizedAggregationNames,
     templates,
     dictionaries,
     language
@@ -560,8 +567,12 @@ const instanceSearch = elasticIndex => ({
       dictionariesModel.get(),
       translations.get(),
     ]);
-    const queryBuilder = await buildQuery(query, language, user, resources);
     const [templates, dictionaries] = resources;
+    const queryBuilder = await buildQuery(query, language, user, resources);
+    if (query.geolocation) {
+      searchGeolocation(queryBuilder, templates);
+    }
+
     // queryBuilder.query() is the actual call
     return elastic
       .search({ index: elasticIndex || elasticIndexes.index, body: queryBuilder.query() })
@@ -664,11 +675,10 @@ const instanceSearch = elasticIndex => ({
     const property = propertiesHelper
       .allUniqueProperties(templates)
       .find(p => p.name === propertyName);
-
-    queryBuilder.aggregations([property], dictionaries);
+    property.name = `${propertyName}.value`;
+    queryBuilder.resetAggregations().aggregations([property], dictionaries);
 
     const body = queryBuilder.query();
-    delete body.aggregations.all.aggregations._types;
 
     body.aggregations.all.aggregations[
       `${propertyName}.value`
@@ -683,18 +693,22 @@ const instanceSearch = elasticIndex => ({
       body,
     });
 
+    const sanitizedAggregations = _sanitizeAggregationsStructure(response.aggregations.all);
+    const sanitizedAggregationNames = _sanitizeAgregationNames(sanitizedAggregations);
     const denormalizedAggregations = await _denormalizeAggregations(
-      { [propertyName]: response.aggregations.all[`${propertyName}.value`] },
+      sanitizedAggregationNames,
       templates,
       dictionaries,
       language
     );
 
-    return denormalizedAggregations[propertyName].buckets.map(bucket => ({
-      label: bucket.label,
-      value: bucket.key,
-      results: bucket.filtered.doc_count,
-    }));
+    return denormalizedAggregations[propertyName].buckets
+      .map(bucket => ({
+        label: bucket.label,
+        value: bucket.key,
+        results: bucket.filtered.doc_count,
+      }))
+      .filter(o => o.results);
   },
 
   async autocomplete(searchTerm, language, templates = [], includeUnpublished = false) {
@@ -734,6 +748,7 @@ const instanceSearch = elasticIndex => ({
     return response.hits.hits.map(hit => ({
       value: hit._source.sharedId,
       label: hit._source.title,
+      template: hit._source.template,
     }));
   },
 });

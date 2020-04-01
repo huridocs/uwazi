@@ -343,5 +343,10 @@ export default function() {
       baseQuery.size = size;
       return this;
     },
+
+    resetAggregations() {
+      baseQuery.aggregations.all.aggregations = {};
+      return this;
+    },
   };
 }

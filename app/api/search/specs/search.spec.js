@@ -201,7 +201,7 @@ describe('search', () => {
   it('should match entities related somehow with other entities with a title that is the search term', async () => {
     const { rows } = await search.search({ searchTerm: 'egypt' }, 'en');
 
-    expect(rows.length).toBe(3);
+    expect(rows.length).toBe(5);
     const country = rows.find(_result => _result.sharedId === 'abc123');
     const entityWithEgypt = rows.find(_result => _result.sharedId === 'entityWithEgypt');
     const entityWithEgyptDictionary = rows.find(
@@ -285,7 +285,7 @@ describe('search', () => {
 
     expect(response.aggregations.all.groupedDictionary.buckets[0].label).toBe('Egypt');
     expect(response.aggregations.all.groupedDictionary.buckets[1].label).toBe('Chile');
-    expect(response.aggregations.all.groupedDictionary.buckets[2].label).toBe('Egypto');
+    expect(response.aggregations.all.groupedDictionary.buckets[2].label).toBe('Spain');
     expect(response.aggregations.all.groupedDictionary.buckets[3].label).toBe('Europe');
     expect(response.aggregations.all.groupedDictionary.buckets[3].values[0].label).toBe('Spain');
     expect(response.aggregations.all.groupedDictionary.buckets[3].values[1].label).toBe('France');
@@ -789,10 +789,10 @@ describe('search', () => {
     it('should return a list of options matching by title', async () => {
       const options = await search.autocomplete('bat', 'en');
       expect(options.length).toBe(2);
-      expect(options[0]._id).toBeDefined();
+      expect(options[0].value).toBeDefined();
       expect(options[0].template).toBeDefined();
-      expect(options[0].title).toBe('Batman finishes en');
-      expect(options[1].title).toBe('Batman begins en');
+      expect(options[0].label).toBe('Batman finishes en');
+      expect(options[1].label).toBe('Batman begins en');
     });
 
     it('should filter by template', async () => {
@@ -807,6 +807,30 @@ describe('search', () => {
       expect(options.length).toBe(0);
       const optionsUnpublished = await search.autocomplete('unpublished', 'es', [], true);
       expect(optionsUnpublished.length).toBe(1);
+    });
+  });
+
+  describe('autocompleteAggregations()', () => {
+    it('should return a list of options matching by label and options related to the matching one', async () => {
+      const query = {
+        types: [ids.templateMetadata1, ids.templateMetadata2],
+        filters: {},
+      };
+
+      const user = { _id: ids.userId };
+
+      const options = await search.autocompleteAggregations(
+        query,
+        'en',
+        'multiselect1',
+        'Egypt',
+        user
+      );
+
+      expect(options.length).toBe(2);
+      expect(options[0].value).toBeDefined();
+      expect(options[0].label).toBeDefined();
+      expect(options[0].results).toBeDefined();
     });
   });
 });
