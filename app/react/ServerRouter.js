@@ -86,7 +86,13 @@ function handle404(res) {
 
 function respondError(res, error) {
   handleError(error);
-  res.status(error.status || 500).send(error.message);
+  res.status(error.status || 500);
+  if (error.json) {
+    res.send("<pre>" + error.json.prettyMessage + "</pre>");
+  }
+  else {
+    res.send(error.message);
+  }
 }
 
 function handleRedirect(res, redirectLocation) {
@@ -225,7 +231,7 @@ function handleRoute(res, renderProps, req) {
         true
       );
     })
-    .catch(e => handleError(e, { req }));
+    .catch(e => { respondError(res, e); });
 }
 
 const allowedRoute = (user = {}, url) => {
