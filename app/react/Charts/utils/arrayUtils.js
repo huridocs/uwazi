@@ -33,19 +33,17 @@ function populateLabels(data, context, options) {
 }
 
 function sortData(relevant, { by: sortBy = 'result', order: sortOrder } = {}) {
-  let categories = relevant;
-
   if (sortBy === 'result') {
-    categories = relevant.sort(compareDocCount);
-    categories = sortOrder === 'asc' ? categories.reverse() : categories;
+    relevant.sort(compareDocCount);
+    return sortOrder === 'asc' ? relevant.reverse() : relevant;
   }
 
   if (sortBy === 'label') {
-    categories = relevant.sort(compareStrings);
-    categories = sortOrder === 'desc' ? categories.reverse() : categories;
+    relevant.sort(compareStrings);
+    return sortOrder === 'desc' ? relevant.reverse() : relevant;
   }
 
-  return categories;
+  return relevant;
 }
 
 function limitMaxCategories(sortedCategories, maxCategories, aggregateOthers) {
