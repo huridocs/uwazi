@@ -65,27 +65,6 @@ exports[`FiltersFromProperties when type is numeric should render a number range
 />
 `;
 
-exports[`FiltersFromProperties when type is relationshipFilter should render a relationshipFilter 1`] = `
-<RelationshipFilter
-  label="relationshipfilterLabel"
-  model=".filters.relationshipfilter"
-  onChange={[Function]}
-  property={
-    Object {
-      "filters": Array [
-        Object {
-          "name": "filter",
-        },
-      ],
-      "label": "relationshipfilterLabel",
-      "name": "relationshipfilter",
-      "type": "relationshipfilter",
-    }
-  }
-  translationContext=""
-/>
-`;
-
 exports[`FiltersFromProperties when type is select, multiselect or relationship should render a select filter 1`] = `
 Array [
   <SelectFilter
