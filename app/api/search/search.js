@@ -206,7 +206,7 @@ const _denormalizeAggregations = async (aggregations, templates, dictionaries, l
       return Object.assign(denormaLizedAgregations, { [key]: aggregations[key] });
     }
 
-    const property = properties.find(prop => prop.name === key);
+    const property = properties.find(prop => prop.name === key || `_${prop.name}` === key);
 
     const dictionary = await _getAggregationDictionary(
       aggregations[key],
