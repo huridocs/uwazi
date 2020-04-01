@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`BarChart Markdown component should render a placeholder when data is undefined 1`] = `
+exports[`PieChart Markdown component should render a placeholder when data is undefined 1`] = `
 <div
   className="PieChart "
 >
@@ -8,7 +8,7 @@ exports[`BarChart Markdown component should render a placeholder when data is un
 </div>
 `;
 
-exports[`BarChart Markdown component should render the data passed by mapStateToProps and ignore "0" values 1`] = `
+exports[`PieChart Markdown component should render the data passed by mapStateToProps and ignore "0" values 1`] = `
 <div
   className="PieChart custom-class"
 >
@@ -130,7 +130,7 @@ exports[`BarChart Markdown component should render the data passed by mapStateTo
 </div>
 `;
 
-exports[`BarChart Markdown component when passing maxCategories should not render others when sum is 0 1`] = `
+exports[`PieChart Markdown component when passing maxCategories should not render others when sum is 0 1`] = `
 <div
   className="PieChart custom-class"
 >
@@ -243,7 +243,7 @@ exports[`BarChart Markdown component when passing maxCategories should not rende
 </div>
 `;
 
-exports[`BarChart Markdown component when passing maxCategories should only render the number of categories passed 1`] = `
+exports[`PieChart Markdown component when passing maxCategories should only render the number of categories passed 1`] = `
 <div
   className="PieChart custom-class"
 >
@@ -356,7 +356,7 @@ exports[`BarChart Markdown component when passing maxCategories should only rend
 </div>
 `;
 
-exports[`BarChart Markdown component when passing maxCategories should render others when passing aggregateOthers 1`] = `
+exports[`PieChart Markdown component when passing maxCategories should render others when passing aggregateOthers 1`] = `
 <div
   className="PieChart custom-class"
 >
@@ -479,7 +479,7 @@ exports[`BarChart Markdown component when passing maxCategories should render ot
 </div>
 `;
 
-exports[`BarChart Markdown component when prop show label should use pieChartLabel 1`] = `
+exports[`PieChart Markdown component when prop show label should use pieChartLabel 1`] = `
 <PieChartLabel
   cx={0}
   cy={0}

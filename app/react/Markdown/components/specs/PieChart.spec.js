@@ -11,7 +11,7 @@ import { Pie, Tooltip } from 'recharts';
 import { mapStateToProps, PieChartComponent } from '../PieChart.js';
 import markdownDatasets from '../../markdownDatasets';
 
-describe('BarChart Markdown component', () => {
+describe('PieChart Markdown component', () => {
   const state = {
     thesauris: Immutable.fromJS([
       {
