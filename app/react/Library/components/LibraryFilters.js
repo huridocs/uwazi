@@ -2,7 +2,7 @@ import { NeedAuthorization } from 'app/Auth';
 import { t } from 'app/I18N';
 import SidePanel from 'app/Layout/SidePanel';
 import { resetFilters } from 'app/Library/actions/filterActions';
-import { searchDocuments, exportDocuments } from 'app/Library/actions/libraryActions';
+import { searchDocuments } from 'app/Library/actions/libraryActions';
 import DocumentTypesList from 'app/Library/components/DocumentTypesList';
 import FiltersForm from 'app/Library/components/FiltersForm';
 import { wrapDispatch } from 'app/Multireducer';
@@ -12,6 +12,7 @@ import { connect } from 'react-redux';
 import { actions as formActions, Field } from 'react-redux-form';
 import { bindActionCreators } from 'redux';
 import { Icon } from 'UI';
+import Export from './ExportButton';
 
 function toggleIncludeUnpublished(storeKey) {
   return (dispatch, getState) => {
@@ -28,10 +29,6 @@ export class LibraryFilters extends Component {
     this.props.resetFilters(this.props.storeKey);
   }
 
-  export() {
-    this.props.exportDocuments(this.props.storeKey);
-  }
-
   render() {
     return (
       <SidePanel className="library-filters" open={this.props.open}>
@@ -44,10 +41,7 @@ export class LibraryFilters extends Component {
             <Icon icon="search" />
             <span className="btn-label">{t('System', 'Search')}</span>
           </button>
-          <span onClick={this.export.bind(this)} className="btn btn-primary">
-            <Icon icon="export-csv" />
-            <span className="btn-label">{t('System', 'Export CSV')}</span>
-          </span>
+          <Export storeKey={this.props.storeKey} />
         </div>
         <div className="sidepanel-body">
           <p className="sidepanel-title">{t('System', 'Filters configuration')}</p>
@@ -96,7 +90,6 @@ LibraryFilters.defaultProps = {
 LibraryFilters.propTypes = {
   resetFilters: PropTypes.func.isRequired,
   toggleIncludeUnpublished: PropTypes.func.isRequired,
-  exportDocuments: PropTypes.func.isRequired,
   open: PropTypes.bool,
   unpublished: PropTypes.bool,
   storeKey: PropTypes.string,
@@ -113,7 +106,7 @@ export function mapStateToProps(state, props) {
 
 function mapDispatchToProps(dispatch, props) {
   return bindActionCreators(
-    { resetFilters, toggleIncludeUnpublished, exportDocuments },
+    { resetFilters, toggleIncludeUnpublished },
     wrapDispatch(dispatch, props.storeKey)
   );
 }

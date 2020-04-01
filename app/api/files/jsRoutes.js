@@ -158,11 +158,12 @@ export default app => {
         treatAs: Joi.string(),
         unpublished: Joi.any(),
         select: Joi.array(),
+        ids: Joi.array().items(Joi.string()),
       }),
       'query'
     ),
 
-    (req, res) => {
+    (req, res, next) => {
       req.query.filters = parseQueryProperty(req.query, 'filters');
       req.query.types = parseQueryProperty(req.query, 'types');
       req.query.fields = parseQueryProperty(req.query, 'fields');
@@ -170,6 +171,7 @@ export default app => {
       req.query.select = parseQueryProperty(req.query, 'select');
       req.query.unpublished = parseQueryProperty(req.query, 'unpublished');
       req.query.includeUnpublished = parseQueryProperty(req.query, 'includeUnpublished');
+      req.query.ids = parseQueryProperty(req.query, 'ids');
 
       Promise.all([search.search(req.query, req.language, req.user), settings.get()]).then(
         // eslint-disable-next-line camelcase
@@ -207,7 +209,8 @@ export default app => {
               });
             })
             .catch(e => {
-              req.getCurrentSessionSockets().emit('IMPORT_CSV_ERROR', handleError(e));
+              req.getCurrentSessionSockets().emit('EXPORT_CSV_ERROR', handleError(e));
+              next(e);
             });
         }
       );

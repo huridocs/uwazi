@@ -250,21 +250,27 @@ export function exportDocuments(storeKey) {
     const finalSearchParams = processFilters(search, currentFilters, 10000);
     finalSearchParams.searchTerm = state.search.searchTerm;
 
-    return new Promise(resolve => {
+    if (state.ui.get('selectedDocuments').size) {
+      finalSearchParams.ids = state.ui
+        .get('selectedDocuments')
+        .map(document => document.get('sharedId'));
+    }
+
+    if (storeKey === 'uploads') finalSearchParams.unpublished = true;
+
+    return new Promise((resolve, reject) => {
       superagent
-        .get(`/api/export/${toUrlParams(finalSearchParams)}`)
-        .set('Accept', 'application/json')
+        .get(`/api/export${toUrlParams(finalSearchParams)}`)
+        .set('Accept', 'text/csv')
         .set('X-Requested-With', 'XMLHttpRequest')
         .on('response', response => {
-          const url = window.URL.createObjectURL(new Blob([response.text]));
-          const link = document.createElement('a');
-          link.href = url;
-          link.setAttribute('download', 'test.csv');
-          document.body.appendChild(link);
-          link.click();
-          link.parentNode.removeChild(link);
-          resolve();
+          const contentDisposition = response.header['content-disposition'];
+          const startIndex = contentDisposition.indexOf('attachment; filename="filename="') + 22;
+          const endIndex = contentDisposition.length - 1;
+          const fileName = contentDisposition.substring(startIndex, endIndex);
+          resolve({ content: response.text, fileName });
         })
+        .on('error', err => reject(err))
         .end();
     });
   };

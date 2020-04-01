@@ -37,6 +37,7 @@ const formatters: {
   documents: (field: any) => field?.map((item: any) => formatFile(item.filename)).join('|') || '',
   attachments: (field: any) =>
     field.attachments.map((item: any) => formatAttachment(item.filename, field.entityId)).join('|'),
+  published: (field: any) => (field?.published ? 'Published' : 'Unpublished'),
 };
 
 export default formatters;

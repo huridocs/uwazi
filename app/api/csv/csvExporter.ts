@@ -84,6 +84,7 @@ export const concatCommonHeaders = (headers: any[]) =>
     { label: 'Geolocation', name: 'geolocation', common: true },
     { label: 'Documents', name: 'documents', common: true },
     { label: 'Attachments', name: 'attachments', common: true },
+    { label: 'Published', name: 'published', common: true },
   ]);
 
 export const processGeolocationField = (row: any, rowTemplate: TemplateSchema) => {
@@ -103,6 +104,10 @@ export const processGeolocationField = (row: any, rowTemplate: TemplateSchema) =
 export const processEntity = (row: any, headers: any[], templatesCache: any, options?: any) => {
   const rowTemplate: TemplateSchema = templatesCache[row.template];
 
+  if (!rowTemplate) {
+    throw new Error('Entity missing template');
+  }
+
   return headers.map((header: any) => {
     if (header.common) {
       switch (header.name) {
@@ -118,6 +123,8 @@ export const processEntity = (row: any, headers: any[], templatesCache: any, opt
           return formatters.documents(row.documents);
         case 'attachments':
           return formatters.attachments({ attachments: row.attachments, entityId: row._id });
+        case 'published':
+          return formatters.published(row);
         default:
           return '';
       }
@@ -138,7 +145,7 @@ export const processEntity = (row: any, headers: any[], templatesCache: any, opt
 export default class CSVExporter extends EventEmitter {
   async export(
     searchResults: SearchResults,
-    types: string[],
+    types: string[] = [],
     writeStream: WritableStream,
     options: any = {}
   ): Promise<any> {
@@ -152,7 +159,7 @@ export default class CSVExporter extends EventEmitter {
     csvStream.write(headers.map((h: any) => h.label));
     searchResults.rows.forEach(row => {
       csvStream.write(processEntity(row, headers, templatesCache, options));
-      this.emit('EXPORT_CSV_PROGRESS');
+      this.emit('entityProcessed');
     });
     csvStream.end();
   }
