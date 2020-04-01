@@ -86,13 +86,18 @@ describe('Array Utils', () => {
       ]);
     });
 
-    it('should aggregate filtered results for each category sorted in descending order (default)', () => {
+    const expectResults = expected => {
       const results = formatDataForChart(data, property, thesauri, options);
-      expect(results).toEqual([
-        { label: 'Val 2', id: 'id2', results: 5 },
-        { label: 'Val 3', id: 'id3', results: 4 },
-        { label: 'Val 1', id: 'id1', results: 3 },
-      ]);
+      expect(results).toEqual(
+        expected.map(item => {
+          const id = Object.keys(item)[0];
+          return { id, label: item[id][0], results: item[id][1] };
+        })
+      );
+    };
+
+    it('should aggregate filtered results for each category sorted in descending order (default)', () => {
+      expectResults([{ id2: ['Val 2', 5] }, { id3: ['Val 3', 4] }, { id1: ['Val 1', 3] }]);
       expect(libraryFilters.populateOptions).toHaveBeenCalledWith(
         [{ content: options.context }],
         thesauri.toJS()
@@ -101,60 +106,30 @@ describe('Array Utils', () => {
 
     it('should aggregate filtered results for each category sorted in ascending order', () => {
       options.sort = { order: 'asc' };
-      const results = formatDataForChart(data, property, thesauri, options);
-      expect(results).toEqual([
-        { label: 'Val 1', id: 'id1', results: 3 },
-        { label: 'Val 3', id: 'id3', results: 4 },
-        { label: 'Val 2', id: 'id2', results: 5 },
-      ]);
+      expectResults([{ id1: ['Val 1', 3] }, { id3: ['Val 3', 4] }, { id2: ['Val 2', 5] }]);
     });
 
     it('should omit results without labels', () => {
       data = data.push(Immutable.fromJS({ key: 'id4', doc_count: 5, filtered: { doc_count: 1 } }));
-      const results = formatDataForChart(data, property, thesauri, options);
-      expect(results).toEqual([
-        { label: 'Val 2', id: 'id2', results: 5 },
-        { label: 'Val 3', id: 'id3', results: 4 },
-        { label: 'Val 1', id: 'id1', results: 3 },
-      ]);
+      expectResults([{ id2: ['Val 2', 5] }, { id3: ['Val 3', 4] }, { id1: ['Val 1', 3] }]);
     });
 
     it('should allow sorting by labels alphabetically, ascending by default', () => {
       options.sort = { by: 'label' };
-      let results = formatDataForChart(data, property, thesauri, options);
-      expect(results).toEqual([
-        { label: 'Val 1', id: 'id1', results: 3 },
-        { label: 'Val 2', id: 'id2', results: 5 },
-        { label: 'Val 3', id: 'id3', results: 4 },
-      ]);
+      expectResults([{ id1: ['Val 1', 3] }, { id2: ['Val 2', 5] }, { id3: ['Val 3', 4] }]);
 
       options.sort = { by: 'label', order: 'desc' };
-      results = formatDataForChart(data, property, thesauri, options);
-      expect(results).toEqual([
-        { label: 'Val 3', id: 'id3', results: 4 },
-        { label: 'Val 2', id: 'id2', results: 5 },
-        { label: 'Val 1', id: 'id1', results: 3 },
-      ]);
+      expectResults([{ id3: ['Val 3', 4] }, { id2: ['Val 2', 5] }, { id1: ['Val 1', 3] }]);
     });
 
     it('should allow avoiding sorting completely', () => {
       options.sort = { by: 'none' };
-      const results = formatDataForChart(data, property, thesauri, options);
-      expect(results).toEqual([
-        { label: 'Val 1', id: 'id1', results: 3 },
-        { label: 'Val 3', id: 'id3', results: 4 },
-        { label: 'Val 2', id: 'id2', results: 5 },
-      ]);
+      expectResults([{ id1: ['Val 1', 3] }, { id3: ['Val 3', 4] }, { id2: ['Val 2', 5] }]);
     });
 
     it('should allow mapping the labels to other values', () => {
       options.labelsMap = { 'Val 2': 'V2', 'Val 3': 'V3' };
-      const results = formatDataForChart(data, property, thesauri, options);
-      expect(results).toEqual([
-        { label: 'V2', id: 'id2', results: 5 },
-        { label: 'V3', id: 'id3', results: 4 },
-        { label: 'Val 1', id: 'id1', results: 3 },
-      ]);
+      expectResults([{ id2: ['V2', 5] }, { id3: ['V3', 4] }, { id1: ['Val 1', 3] }]);
     });
 
     it('should return an empty array if no labels are found for the given context', () => {
