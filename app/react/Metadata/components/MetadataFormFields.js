@@ -56,7 +56,7 @@ export class MetadataFormFields extends Component {
             model={_model}
             optionsValue="id"
             options={translateOptions(thesauri)}
-            placeholder={`Select other "${placeholderName}"`}
+            placeholder={'Select...'}
           />
         );
       case 'multiselect':
