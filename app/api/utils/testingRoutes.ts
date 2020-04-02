@@ -4,14 +4,6 @@ import { Response as SuperTestResponse } from 'supertest';
 
 import errorHandlingMiddleware from 'api/utils/error_handling_middleware';
 
-declare global {
-  namespace Express {
-    export interface Request {
-      getCurrentSessionSockets: Function;
-    }
-  }
-}
-
 const iosocket = jasmine.createSpyObj('socket', ['emit']);
 
 const setUpApp = (route: Function): Application => {

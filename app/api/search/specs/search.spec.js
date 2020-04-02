@@ -822,7 +822,7 @@ describe('search', () => {
         query,
         'en',
         'multiselect1',
-        'Egypt',
+        'Egyp',
         user
       );
 

@@ -1,5 +1,3 @@
-/** @format */
-
 /* eslint-disable no-console */
 
 import bodyParser from 'body-parser';

@@ -1,5 +1,3 @@
-/** @format */
-
 import mongoose from 'mongoose';
 
 import { instanceModel } from 'api/odm';

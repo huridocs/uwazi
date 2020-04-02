@@ -1,4 +1,3 @@
-/** @format */
 /* eslint-disable global-require */
 import activitylogMiddleware from './activitylog/activitylogMiddleware';
 import elasticConfig from './config/elasticIndexes';

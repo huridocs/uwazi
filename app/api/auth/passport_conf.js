@@ -1,5 +1,3 @@
-/** @format */
-
 import passport from 'passport';
 import LocalStrategy from 'passport-local';
 import users from 'api/users/users';

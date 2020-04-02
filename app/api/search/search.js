@@ -274,6 +274,12 @@ const _sanitizeAggregationsStructure = aggregations => {
   return result;
 };
 
+const _sanitizeAggregations = async (aggregations, templates, dictionaries, language) => {
+  const sanitizedAggregations = _sanitizeAggregationsStructure(aggregations);
+  const sanitizedAggregationNames = _sanitizeAgregationNames(sanitizedAggregations);
+  return _denormalizeAggregations(sanitizedAggregationNames, templates, dictionaries, language);
+};
+
 const processResponse = async (response, templates, dictionaries, language) => {
   const rows = response.hits.hits.map(hit => {
     const result = hit._source;
@@ -283,10 +289,8 @@ const processResponse = async (response, templates, dictionaries, language) => {
     return result;
   });
 
-  const sanitizedAggregations = _sanitizeAggregationsStructure(response.aggregations.all);
-  const sanitizedAggregationNames = _sanitizeAgregationNames(sanitizedAggregations);
-  const denormalizedAggregations = await _denormalizeAggregations(
-    sanitizedAggregationNames,
+  const sanitizedAggregations = await _sanitizeAggregations(
+    response.aggregations.all,
     templates,
     dictionaries,
     language
@@ -295,7 +299,7 @@ const processResponse = async (response, templates, dictionaries, language) => {
   return {
     rows,
     totalRows: response.hits.total.value,
-    aggregations: { all: denormalizedAggregations },
+    aggregations: { all: sanitizedAggregations },
   };
 };
 
@@ -671,6 +675,7 @@ const instanceSearch = elasticIndex => ({
       dictionaries,
       _translations,
     ]);
+
     const property = propertiesHelper
       .allUniqueProperties(templates)
       .find(p => p.name === propertyName);
@@ -682,9 +687,7 @@ const instanceSearch = elasticIndex => ({
     body.aggregations.all.aggregations[
       `${propertyName}.value`
     ].aggregations.filtered.filter.bool.filter.push({
-      match: {
-        [`metadata.${propertyName}.label`]: `*${searchTerm}*`,
-      },
+      wildcard: { [`metadata.${propertyName}.label.raw`]: { value: `*${searchTerm}*` } },
     });
 
     const response = await elastic.search({
@@ -692,16 +695,14 @@ const instanceSearch = elasticIndex => ({
       body,
     });
 
-    const sanitizedAggregations = _sanitizeAggregationsStructure(response.aggregations.all);
-    const sanitizedAggregationNames = _sanitizeAgregationNames(sanitizedAggregations);
-    const denormalizedAggregations = await _denormalizeAggregations(
-      sanitizedAggregationNames,
+    const sanitizedAggregations = await _sanitizeAggregations(
+      response.aggregations.all,
       templates,
       dictionaries,
       language
     );
 
-    return denormalizedAggregations[propertyName].buckets
+    return sanitizedAggregations[propertyName].buckets
       .map(bucket => ({
         label: bucket.label,
         value: bucket.key,

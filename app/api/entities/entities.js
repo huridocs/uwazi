@@ -422,7 +422,7 @@ export default {
     return model.count({ template });
   },
 
-  getByTemplate(template, language, onlyPublished = true, limit = 10) {
+  getByTemplate(template, language, onlyPublished = true, limit = 200) {
     const query = Object.assign({ template, language }, onlyPublished ? { published: true } : {});
     return model.get(query, ['title', 'icon', 'file', 'sharedId'], { limit });
   },
