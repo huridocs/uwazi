@@ -186,30 +186,21 @@ export default app => {
             dateFormat,
           };
 
-          let entitiesProcessed = 0;
-          exporter.on('entityProcessed', () => {
-            entitiesProcessed += 1;
-            req.getCurrentSessionSockets().emit('EXPORT_CSV_PROGRESS', entitiesProcessed);
-          });
-
-          req.getCurrentSessionSockets().emit('EXPORT_CSV_START');
           exporter
             .export(results, req.query.types, fileStream, exporterOptions)
             .then(() => {
               fileStream.end(() => {
-                req.getCurrentSessionSockets().emit('EXPORT_CSV_END');
                 res.download(temporalFilePath, generateExportFileName(site_name), err => {
                   if (err) {
                     return handleError(err);
                   }
 
-                  fs.unlinkSync(temporalFilePath);
-                  return true;
+                  return fs.unlinkSync(temporalFilePath);
                 });
               });
             })
             .catch(e => {
-              req.getCurrentSessionSockets().emit('EXPORT_CSV_ERROR', handleError(e));
+              fs.unlinkSync(temporalFilePath);
               next(e);
             });
         }

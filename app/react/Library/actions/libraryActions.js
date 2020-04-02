@@ -1,4 +1,3 @@
-import superagent from 'superagent';
 import * as types from 'app/Library/actions/actionTypes';
 import api from 'app/Search/SearchAPI';
 import { notificationActions } from 'app/Notifications';
@@ -237,42 +236,6 @@ export function searchDocuments({ search = undefined, filters = undefined }, sto
     }
 
     setSearchInUrl(finalSearchParams);
-  };
-}
-
-export function exportDocuments(storeKey) {
-  return (_dispatch, getState) => {
-    const state = getState()[storeKey];
-    let currentFilters = state.filters;
-    const { search } = state;
-    currentFilters = currentFilters.toJS ? currentFilters.toJS() : currentFilters;
-
-    const finalSearchParams = processFilters(search, currentFilters, 10000);
-    finalSearchParams.searchTerm = state.search.searchTerm;
-
-    if (state.ui.get('selectedDocuments').size) {
-      finalSearchParams.ids = state.ui
-        .get('selectedDocuments')
-        .map(document => document.get('sharedId'));
-    }
-
-    if (storeKey === 'uploads') finalSearchParams.unpublished = true;
-
-    return new Promise((resolve, reject) => {
-      superagent
-        .get(`/api/export${toUrlParams(finalSearchParams)}`)
-        .set('Accept', 'text/csv')
-        .set('X-Requested-With', 'XMLHttpRequest')
-        .on('response', response => {
-          const contentDisposition = response.header['content-disposition'];
-          const startIndex = contentDisposition.indexOf('attachment; filename="filename="') + 22;
-          const endIndex = contentDisposition.length - 1;
-          const fileName = contentDisposition.substring(startIndex, endIndex);
-          resolve({ content: response.text, fileName });
-        })
-        .on('error', err => reject(err))
-        .end();
-    });
   };
 }
 
