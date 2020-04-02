@@ -101,7 +101,6 @@ module.exports = function(production) {
         path: outputPath
       }),
       new CopyWebpackPlugin([
-        // {from: 'node_modules/react-flags/vendor/flags', to: 'flag-images'},
         {from: 'node_modules/react-widgets/lib/fonts', to: 'fonts'},
       ]),
     ]
