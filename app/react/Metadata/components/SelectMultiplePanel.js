@@ -284,6 +284,7 @@ SelectMultiplePanel.propTypes = {
   formState: PropTypes.instanceOf(Object).isRequired,
   state: PropTypes.instanceOf(Object).isRequired,
   formKey: PropTypes.string.isRequired,
+  storeKey: PropTypes.string.isRequired,
 };
 
 SelectMultiplePanel.contextTypes = {

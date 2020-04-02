@@ -5,13 +5,6 @@ import { notify } from 'app/Notifications/actions/notificationsActions';
 import { t } from 'app/I18N';
 import { processFilters } from './libraryActions';
 
-export function exportStart(totalEntities) {
-  return dispatch => {
-    dispatch(actions.set('exportTotalToProcess', totalEntities));
-    dispatch(actions.set('exportProcessing', true));
-  };
-}
-
 export function triggerLocalDownload(content, fileName) {
   const url = window.URL.createObjectURL(new Blob([content]));
   const link = document.createElement('a');
