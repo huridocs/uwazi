@@ -141,6 +141,7 @@ exports[`BarChart Markdown component should render the data passed by mapStateTo
         isAnimationActive={true}
         itemSorter={[Function]}
         itemStyle={Object {}}
+        labelFormatter={[Function]}
         labelStyle={Object {}}
         offset={10}
         separator=" : "
@@ -327,6 +328,7 @@ exports[`BarChart Markdown component when excludeZero should render without zero
         isAnimationActive={true}
         itemSorter={[Function]}
         itemStyle={Object {}}
+        labelFormatter={[Function]}
         labelStyle={Object {}}
         offset={10}
         separator=" : "
@@ -565,6 +567,7 @@ exports[`BarChart Markdown component when passing maxCategories should only rend
         isAnimationActive={true}
         itemSorter={[Function]}
         itemStyle={Object {}}
+        labelFormatter={[Function]}
         labelStyle={Object {}}
         offset={10}
         separator=" : "
@@ -737,6 +740,7 @@ exports[`BarChart Markdown component when passing maxCategories should render ot
         isAnimationActive={true}
         itemSorter={[Function]}
         itemStyle={Object {}}
+        labelFormatter={[Function]}
         labelStyle={Object {}}
         offset={10}
         separator=" : "
