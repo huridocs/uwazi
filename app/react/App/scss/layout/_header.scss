@@ -61,6 +61,11 @@ header {
       display: none;
     }
   }
+  .searchBox {
+    position: absolute;
+    top: 0;
+    right: 0;
+  }
 }
 
 @media(min-width: 1024px) {
