@@ -1,11 +1,9 @@
-/** @format */
-
+import { OneUpState } from 'app/istore';
 import { shallow, ShallowWrapper } from 'enzyme';
 import Immutable from 'immutable';
 import React from 'react';
-import { OneUpState } from '../../common';
-import { OneUpSidePanelBase, OneUpSidePanelProps } from '../OneUpSidePanel';
 import { Tabs } from 'react-tabs-redux';
+import { OneUpSidePanelBase, OneUpSidePanelProps } from '../OneUpSidePanel';
 
 describe('EntityViewer', () => {
   let component: ShallowWrapper<OneUpSidePanelProps, {}, OneUpSidePanelBase>;

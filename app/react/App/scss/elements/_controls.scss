@@ -209,6 +209,13 @@
 //.btn-color-17:hover, .btn-color-17:focus, .btn-color-17:active { background-color: darken($c-type-17, 10%); }
 //.btn-color-18:hover, .btn-color-18:focus, .btn-color-18:active { background-color: darken($c-type-18, 10%); }
 
+.btn-header {
+  position: absolute;
+  right: 40px;
+  top: 9px;
+  height: 30px;
+}
+
 .form-control {
   height: 32px;
   border-color: $c-grey;

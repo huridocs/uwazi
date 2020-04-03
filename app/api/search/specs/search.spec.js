@@ -211,6 +211,7 @@ describe('search', () => {
       const expectedBuckets = [
         { key: 'a', doc_count: 2, filtered: { doc_count: 1 } },
         { key: 'b', doc_count: 2, filtered: { doc_count: 1 } },
+        { key: 'any', doc_count: 10, filtered: { doc_count: 10 } },
       ];
       expect(response.aggregations.all.dictionaryWithGroups.buckets).toEqual(expectedBuckets);
       done();
@@ -454,16 +455,19 @@ describe('search', () => {
           expect(template1Aggs.find(a => a.key === 'selectValue1').filtered.doc_count).toBe(2);
           expect(template1Aggs.find(a => a.key === 'selectValue2').filtered.doc_count).toBe(1);
           expect(template1Aggs.find(a => a.key === 'missing').filtered.doc_count).toBe(0);
+          expect(template1Aggs.find(a => a.key === 'any').filtered.doc_count).toBe(3);
 
           const template2Aggs = template2.aggregations.all.select1.buckets;
           expect(template2Aggs.find(a => a.key === 'selectValue1').filtered.doc_count).toBe(0);
           expect(template2Aggs.find(a => a.key === 'selectValue2').filtered.doc_count).toBe(1);
           expect(template2Aggs.find(a => a.key === 'missing').filtered.doc_count).toBe(1);
+          expect(template2Aggs.find(a => a.key === 'any').filtered.doc_count).toBe(1);
 
           const bothAggs = both.aggregations.all.select1.buckets;
           expect(bothAggs.find(a => a.key === 'selectValue1').filtered.doc_count).toBe(2);
           expect(bothAggs.find(a => a.key === 'selectValue2').filtered.doc_count).toBe(2);
           expect(bothAggs.find(a => a.key === 'missing').filtered.doc_count).toBe(1);
+          expect(bothAggs.find(a => a.key === 'any').filtered.doc_count).toBe(4);
 
           const template1UnpubishedAggs = template1Unpublished.aggregations.all.select1.buckets;
           expect(
@@ -496,6 +500,8 @@ describe('search', () => {
           const template1Aggs = template1.aggregations.all.multiselect1.buckets;
           expect(template1Aggs.find(a => a.key === 'multiValue1').filtered.doc_count).toBe(2);
           expect(template1Aggs.find(a => a.key === 'multiValue2').filtered.doc_count).toBe(2);
+          expect(template1Aggs.find(a => a.key === 'missing').filtered.doc_count).toBe(0);
+          expect(template1Aggs.find(a => a.key === 'any').filtered.doc_count).toBe(3);
 
           const template1groupedAggs = template1.aggregations.all.groupedDictionary.buckets;
           expect(template1groupedAggs.find(a => a.key === 'spainID').filtered.doc_count).toBe(2);
@@ -513,6 +519,9 @@ describe('search', () => {
           const templateAggs = filtered.aggregations.all._types.buckets;
           expect(filteredAggs.find(a => a.key === 'multiValue1').filtered.doc_count).toBe(2);
           expect(filteredAggs.find(a => a.key === 'multiValue2').filtered.doc_count).toBe(3);
+          expect(filteredAggs.find(a => a.key === 'missing').filtered.doc_count).toBe(1);
+          // In the presence of value filters, don't provide the any bucket.
+          expect(filteredAggs.find(a => a.key === 'any').filtered.doc_count).toBe(3);
           expect(templateAggs.find(a => a.key === ids.template1).filtered.doc_count).toBe(0);
           expect(templateAggs.find(a => a.key === ids.template2).filtered.doc_count).toBe(0);
 

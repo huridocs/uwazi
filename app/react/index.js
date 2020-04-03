@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 
 import { AppContainer } from 'react-hot-loader';
 
-import App from './App.js';
+import App from './App';
 
 import './App/sockets';
 
@@ -20,7 +20,7 @@ render(App);
 
 if (module.hot) {
   module.hot.accept('./App', () => {
-    const nextApp = require('./App.js');
+    const nextApp = require('./App');
     render(nextApp);
   });
 }

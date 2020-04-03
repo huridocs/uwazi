@@ -782,6 +782,68 @@ describe('entities', () => {
         })
       );
     });
+
+    it('should save() all the entities with the diffMetadata', async () => {
+      const updatedEntities1 = await entities.multipleUpdate(
+        ['shared', 'other', 'non_existent'],
+        {
+          icon: { label: 'test' },
+          published: false,
+          diffMetadata: {
+            multiselect: { added: [{ value: 'country_one' }], removed: [{ value: 'country_two' }] },
+          },
+        },
+        { language: 'en' }
+      );
+      const updatedEntities2 = await entities.multipleUpdate(
+        ['shared'],
+        {
+          diffMetadata: {
+            multiselect: { added: [{ value: 'country_two' }], removed: [{ value: 'country_one' }] },
+          },
+        },
+        { language: 'en' }
+      );
+
+      expect(updatedEntities1.length).toBe(2);
+      expect(updatedEntities2.length).toBe(1);
+
+      const sharedEntity = updatedEntities2.find(e => e.sharedId === 'shared');
+      expect(sharedEntity).toEqual(
+        expect.objectContaining({
+          sharedId: 'shared',
+          language: 'en',
+          icon: { label: 'test' },
+          published: false,
+          metadata: expect.objectContaining({
+            multiselect: [
+              {
+                label: 'Country2',
+                value: 'country_two',
+              },
+            ],
+          }),
+        })
+      );
+
+      const shared1Entity = updatedEntities1.find(e => e.sharedId === 'other');
+      expect(shared1Entity).toEqual(
+        expect.objectContaining({
+          sharedId: 'other',
+          language: 'en',
+          icon: { label: 'test' },
+          published: false,
+          metadata: expect.objectContaining({
+            multiselect: [
+              {
+                label: 'Country1',
+                value: 'country_one',
+              },
+            ],
+          }),
+        })
+      );
+    });
   });
 
   describe('saveMultiple()', () => {

@@ -1,18 +1,14 @@
-/** @format */
-
-import React from 'react';
-
-import { actions } from 'app/BasicReducer';
-import { markdownDatasets } from 'app/Markdown';
-import { shallow } from 'enzyme';
-import PageViewer from 'app/Pages/components/PageViewer';
-import PagesAPI from 'app/Pages/PagesAPI';
 import RouteHandler from 'app/App/RouteHandler';
+import { actions } from 'app/BasicReducer';
 import ViewMetadataPanel from 'app/Library/components/ViewMetadataPanel';
 import SelectMultiplePanelContainer from 'app/Library/containers/SelectMultiplePanelContainer';
+import { markdownDatasets } from 'app/Markdown';
+import PageViewer from 'app/Pages/components/PageViewer';
+import PagesAPI from 'app/Pages/PagesAPI';
 import api from 'app/Search/SearchAPI';
 import { RequestParams } from 'app/utils/RequestParams';
-
+import { shallow } from 'enzyme';
+import React from 'react';
 import PageView from '../PageView';
 import pageItemLists from '../utils/pageItemLists';
 
@@ -67,10 +63,7 @@ describe('PageView', () => {
   describe('closeSidePanel', () => {
     it('should unselectAllDocuments', () => {
       instance.closeSidePanel();
-      expect(context.store.dispatch).toHaveBeenCalledWith({
-        __reducerKey: 'library',
-        type: 'UNSELECT_ALL_DOCUMENTS',
-      });
+      expect(context.store.dispatch).toHaveBeenCalled();
     });
   });
 

@@ -1,8 +1,4 @@
-/**
- * /* eslint import/no-extraneous-dependencies: ["error", {"peerDependencies": true}]
- *
- * @format
- */
+/* eslint import/no-extraneous-dependencies: ["error", {"peerDependencies": true}] */
 
 import Nightmare from 'nightmare';
 import selectors from './selectors.js';
@@ -88,7 +84,7 @@ Nightmare.action('countFiltersResults', function countFiltersResults(done) {
 Nightmare.action('goToUploads', function goToUploads(done) {
   this.goto(config.url)
     .waitToClick(selectors.navigation.uploadsNavButton)
-    .wait(selectors.libraryView.libraryFirstDocument)
+    .wait(selectors.uploadsView.firstDocument)
     .then(() => {
       done();
     });

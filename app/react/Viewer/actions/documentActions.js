@@ -81,13 +81,13 @@ export function saveToc(toc, fileId) {
 }
 
 export function deleteDocument(doc) {
-  return dispatch =>
-    documentsApi.delete(new RequestParams({ sharedId: doc.sharedId })).then(() => {
-      dispatch(notificationActions.notify('Document deleted', 'success'));
-      dispatch(resetDocumentViewer());
-      dispatch(removeDocument(doc));
-      dispatch(unselectAllDocuments());
-    });
+  return async dispatch => {
+    await documentsApi.delete(new RequestParams({ sharedId: doc.sharedId }));
+    dispatch(notificationActions.notify('Document deleted', 'success'));
+    dispatch(resetDocumentViewer());
+    dispatch(removeDocument(doc));
+    await dispatch(unselectAllDocuments());
+  };
 }
 
 export async function getDocument(requestParams, defaultLanguage, filename) {

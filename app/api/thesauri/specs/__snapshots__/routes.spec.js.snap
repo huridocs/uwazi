@@ -81,18 +81,6 @@ Object {
           ],
           "type": "boolean",
         },
-        "model_available": Object {
-          "falsy": Array [
-            false,
-          ],
-          "flags": Object {
-            "insensitive": true,
-          },
-          "truthy": Array [
-            true,
-          ],
-          "type": "boolean",
-        },
         "name": Object {
           "flags": Object {
             "presence": "required",

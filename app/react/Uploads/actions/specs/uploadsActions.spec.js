@@ -1,5 +1,3 @@
-/** @format */
-
 import superagent from 'superagent';
 import thunk from 'redux-thunk';
 
@@ -244,7 +242,7 @@ describe('uploadsActions', () => {
     });
 
     describe('uploadDocument', () => {
-      it('should create a document and upload file while dispatching the upload progress', () => {
+      it('should create a document and upload file while dispatching the upload progress', async () => {
         const mockUpload = mockSuperAgent();
 
         const expectedActions = [

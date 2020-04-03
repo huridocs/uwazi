@@ -54,6 +54,7 @@ export default app => {
           features: Joi.object().keys({
             _id: Joi.string(),
             semanticSearch: Joi.boolean(),
+            topicClassification: Joi.boolean(),
             favorites: Joi.boolean(),
           }),
         })

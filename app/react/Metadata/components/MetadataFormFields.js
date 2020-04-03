@@ -1,5 +1,3 @@
-/** @format */
-
 import { FormGroup } from 'app/Forms';
 import t from 'app/I18N/t';
 import Immutable from 'immutable';
@@ -25,7 +23,7 @@ import {
 } from '../../ReactReduxForms';
 import MultipleEditionFieldWarning from './MultipleEditionFieldWarning';
 
-const translateOptions = thesauri =>
+export const translateOptions = thesauri =>
   thesauri
     .get('values')
     .map(optionIm => {

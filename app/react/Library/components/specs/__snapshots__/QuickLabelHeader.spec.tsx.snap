@@ -1,0 +1,66 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`QuickLabelPanel should render with thesaurus 1`] = `
+<div
+  className="content-header"
+>
+  <div
+    className="content-header-title"
+  >
+    <Connect(I18NLink)
+      className="btn btn-default"
+      to="/settings/dictionaries/cockpit/abc"
+    >
+      <Connect(Icon)
+        icon="arrow-left"
+      />
+       
+      <span
+        className="btn-label"
+      >
+        Back to thesaurus
+      </span>
+    </Connect(I18NLink)>
+    <h1>
+      <span
+        className="large"
+      >
+        Quick labeling for
+         
+        <b>
+          thesaurus1
+        </b>
+      </span>
+    </h1>
+  </div>
+</div>
+`;
+
+exports[`QuickLabelPanel should render without thesaurus 1`] = `
+<div
+  className="content-header"
+>
+  <div
+    className="content-header-title"
+  >
+    <h1>
+      Ooops... please go
+       
+      <Connect(I18NLink)
+        className="btn btn-default"
+        to="/settings/dictionaries"
+      >
+        <Connect(Icon)
+          icon="arrow-left"
+        />
+         
+        <span
+          className="btn-label"
+        >
+          Back to thesauri
+        </span>
+      </Connect(I18NLink)>
+    </h1>
+  </div>
+</div>
+`;

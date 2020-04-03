@@ -1,5 +1,3 @@
-/** @format */
-
 import { fromJS } from 'immutable';
 import templatesAPI from 'api/templates';
 import settings from 'api/settings';
@@ -56,7 +54,7 @@ function findPropertyHub(propertyRelationType, hubs, entitySharedId) {
 // Code mostly copied from react/Relationships/reducer/hubsReducer.js, abstract this QUICKLY!!!
 const conformRelationships = (rows, parentEntitySharedId) => {
   let order = -1;
-  const hubsObject = fromJS(rows).reduce((hubs, row) => {
+  const hubsObject = fromJS(rows || []).reduce((hubs, row) => {
     let hubsImmutable = hubs;
     row.get('connections').forEach(connection => {
       const hubId = connection.get('hub').toString();

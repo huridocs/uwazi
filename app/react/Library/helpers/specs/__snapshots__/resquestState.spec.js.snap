@@ -3,11 +3,25 @@
 exports[`static requestState() should request the documents passing search object on the store 1`] = `
 Array [
   [Function],
+  Object {
+    "type": "library.sidepanel.quickLabelState/SET",
+    "value": Object {
+      "autoSave": false,
+      "thesaurus": undefined,
+    },
+  },
 ]
 `;
 
 exports[`static requestState() when is for geolocation should query with geolocation flag 1`] = `
 Array [
   [Function],
+  Object {
+    "type": "library.sidepanel.quickLabelState/SET",
+    "value": Object {
+      "autoSave": false,
+      "thesaurus": undefined,
+    },
+  },
 ]
 `;

@@ -1,7 +1,9 @@
+import { actions } from 'app/BasicReducer';
+import libraryHelpers from 'app/Library/helpers/libraryFilters';
+import api from 'app/Search/SearchAPI';
 import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
 import rison from 'rison';
-import api from 'app/Search/SearchAPI';
-import libraryHelpers from 'app/Library/helpers/libraryFilters';
+import { getThesaurusPropertyNames } from 'shared/commonTopicClassification';
 import setReduxState from './setReduxState.js';
 
 export function processQuery(_query, globalResources, key) {
@@ -27,23 +29,20 @@ export function processQuery(_query, globalResources, key) {
 }
 
 export default function requestState(request, globalResources) {
-  const documentsRequest = {
-    ...request,
-    data: processQuery(request.data, globalResources),
-  };
-
-  const markersRequest = {
-    ...request,
-    data: processQuery(request.data, globalResources, 'markers'),
-  };
+  const documentsRequest = request.set(processQuery(request.data, globalResources));
+  const markersRequest = request.set(processQuery(request.data, globalResources, 'markers'));
 
   return Promise.all([api.search(documentsRequest), api.search(markersRequest)]).then(
     ([documents, markers]) => {
+      const templates = globalResources.templates.toJS();
       const filterState = libraryHelpers.URLQueryToState(
         documentsRequest.data,
-        globalResources.templates.toJS(),
+        templates,
         globalResources.thesauris.toJS(),
-        globalResources.relationTypes.toJS()
+        globalResources.relationTypes.toJS(),
+        request.data.quickLabelThesaurus
+          ? getThesaurusPropertyNames(request.data.quickLabelThesaurus, templates)
+          : []
       );
       const state = {
         library: {
@@ -58,7 +57,13 @@ export default function requestState(request, globalResources) {
         },
       };
 
-      return [setReduxState(state)];
+      return [
+        setReduxState(state),
+        actions.set('library.sidepanel.quickLabelState', {
+          thesaurus: request.data.quickLabelThesaurus,
+          autoSave: false,
+        }),
+      ];
     }
   );
 }

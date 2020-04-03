@@ -1,5 +1,3 @@
-/** @format */
-
 import { generateIds, getUpdatedNames, getDeletedProperties } from 'api/templates/utils';
 import entities from 'api/entities/entities';
 import templates from 'api/templates/templates';
@@ -87,8 +85,10 @@ async function updateOptionsInEntities(current, thesauri) {
 
 const update = async thesauri => {
   const currentThesauri = await model.getById(thesauri._id);
-  await updateTranslation(currentThesauri, thesauri);
-  await updateOptionsInEntities(currentThesauri, thesauri);
+  if (JSON.stringify(thesauri.values) !== JSON.stringify(currentThesauri.values)) {
+    await updateTranslation(currentThesauri, thesauri);
+    await updateOptionsInEntities(currentThesauri, thesauri);
+  }
   return model.save(thesauri);
 };
 

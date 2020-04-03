@@ -154,6 +154,7 @@ export default [
   { key: 'No options found', label: 'No options found' },
   { key: 'No property', label: 'Item does not have this property' },
   { key: 'No value', label: 'No value' },
+  { key: 'Any value', label: 'Any value' },
   { key: 'No', label: 'No' },
   { key: 'Order', label: 'Order' },
   { key: 'Other', label: 'Other' },

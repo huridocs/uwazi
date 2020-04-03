@@ -1,133 +1,38 @@
-/* eslint-disable max-lines */
+/* eslint-disable max-lines,camelcase */
 import Footer from 'app/App/Footer';
 import RouteHandler from 'app/App/RouteHandler';
 import { actions } from 'app/BasicReducer';
 import Loader from 'app/components/Elements/Loader';
 import { I18NLink, t } from 'app/I18N';
-import api from 'app/Search/SearchAPI';
+import { IStore, ThesaurusSuggestions, TasksState } from 'app/istore';
 import { resolveTemplateProp } from 'app/Settings/utils/resolveProperty';
-import {
-  getReadyToReviewSuggestionsQuery,
-  getReadyToPublishSuggestionsQuery,
-} from 'app/Settings/utils/suggestions';
 import TemplatesAPI from 'app/Templates/TemplatesAPI';
+import { Notice } from 'app/Thesauri/Notice';
 import ThesauriAPI from 'app/Thesauri/ThesauriAPI';
 import { RequestParams } from 'app/utils/RequestParams';
 import React from 'react';
 import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
-import { IImmutable } from 'shared/types/Immutable';
 import { ThesaurusSchema, ThesaurusValueSchema } from 'shared/types/thesaurusType';
 import { Icon } from 'UI';
-import { PropertySchema } from 'shared/types/commonTypes';
-import { ClassifierModelSchema } from './types/classifierModelType';
-import { SuggestionResultSchema } from './types/suggestionResultType';
-import { buildSuggestionResult, flattenSuggestionResults } from './utils/suggestionQuery';
+import {
+  startTraining,
+  toggleEnableClassification,
+  updateCockpitData,
+} from './actions/cockpitActions';
 import { getValuesSortedByName } from './utils/valuesSort';
 
 export type ThesaurusCockpitProps = {
   thesaurus: ThesaurusSchema;
-  models: ClassifierModelSchema[];
-  suggestionsTBPublished: SuggestionResultSchema;
-  suggestionsTBReviewed: SuggestionResultSchema;
+  suggestInfo: ThesaurusSuggestions;
+  tasksState: TasksState;
+  topicClassificationEnabled: boolean;
+  updateCockpitData: () => {};
+  startTraining: () => {};
+  toggleEnableClassification: () => {};
 };
 
 export class ThesaurusCockpitBase extends RouteHandler {
-  static genIcons(label: string, actual: number, possible: number) {
-    const icons = [];
-    for (let i = 0; i < possible; i += 1) {
-      let iconClass: any = 'circle';
-      if (i >= actual) {
-        iconClass = ['far', 'circle'];
-      }
-      icons.push(<Icon key={`${label}_${i}`} icon={iconClass} />);
-    }
-    return icons;
-  }
-
-  static qualityIcon(label: string, val: number) {
-    switch (true) {
-      case val > 0.85:
-        return (
-          <div key={label} className="quality-icon quality-high">
-            {ThesaurusCockpitBase.genIcons(label, 3, 3)}
-          </div>
-        );
-      case val > 0.7:
-        return (
-          <div key={label} className="quality-icon quality-med">
-            {ThesaurusCockpitBase.genIcons(label, 2, 3)}
-          </div>
-        );
-      default:
-        return (
-          <div key={label} className="quality-icon quality-low">
-            {ThesaurusCockpitBase.genIcons(label, 1, 3)}
-          </div>
-        );
-    }
-  }
-
-  static topicNode(
-    topic: ThesaurusValueSchema,
-    suggestionResult: SuggestionResultSchema,
-    propName: string | undefined
-  ) {
-    const { label, id } = topic;
-    const suggestionCount = suggestionResult.thesaurus?.totalValues[`${id}`] ?? 0;
-
-    return (
-      <tr key={label}>
-        <th scope="row">{label}</th>
-        <td title="suggestions-count">
-          {suggestionCount ? suggestionCount.toLocaleString() : null}
-        </td>
-        <td title="review-button">
-          {suggestionCount > 0 && propName ? (
-            <I18NLink
-              to={`/review?q=(filters:(_${propName}:(values:!('${id}')),${propName}:(values:!(missing))))&includeUnpublished=1`}
-              className="btn btn-default btn-xs"
-            >
-              <span title="review-button-title">{t('system', 'View suggestions')}</span>
-            </I18NLink>
-          ) : null}
-        </td>
-      </tr>
-    );
-  }
-
-  topicNodes() {
-    const { suggestionsTBReviewed: suggestions, thesaurus } = this.props as ThesaurusCockpitProps;
-    const { property } = thesaurus;
-    const values = getValuesSortedByName(thesaurus);
-
-    if (!property) {
-      return null;
-    }
-
-    return values.map((topic: ThesaurusValueSchema) =>
-      ThesaurusCockpitBase.topicNode(topic, suggestions, property.name)
-    );
-  }
-
-  static async getAndPopulateSuggestionResults(
-    templates: { _id: string }[],
-    requestParams: RequestParams,
-    queryBuilderFunc: (id: string, prop?: PropertySchema) => any,
-    assocProp?: PropertySchema
-  ): Promise<SuggestionResultSchema> {
-    const docsWithSuggestions = await Promise.all(
-      templates.map((template: { _id: string }) => {
-        const reqParams = requestParams.set(queryBuilderFunc(template._id, assocProp));
-        return api.search(reqParams);
-      })
-    );
-    const sanitizedSuggestionsTBPublished = docsWithSuggestions.map((s: any) =>
-      buildSuggestionResult(s, assocProp?.name ?? '')
-    );
-    return flattenSuggestionResults(sanitizedSuggestionsTBPublished, assocProp?.name ?? '');
-  }
-
   static async requestState(requestParams: RequestParams) {
     // Thesauri should always have a length of 1, because a specific thesaurus ID is passed in the requestParams.
     const [thesauri, templates] = await Promise.all([
@@ -136,65 +41,241 @@ export class ThesaurusCockpitBase extends RouteHandler {
     ]);
     const thesaurus = thesauri[0];
 
-    // Fetch models associated with known thesauri.
-    const modelParams = requestParams.onlyHeaders().set({ model: thesaurus.name });
-    const model: ClassifierModelSchema = await ThesauriAPI.getModelStatus(modelParams);
-
     const assocProp = resolveTemplateProp(thesaurus, templates);
-    thesaurus.property = assocProp;
-
-    const docsWithSuggestionsForPublish = await ThesaurusCockpitBase.getAndPopulateSuggestionResults(
-      templates,
-      requestParams,
-      getReadyToPublishSuggestionsQuery,
-      assocProp
-    );
-    const docsWithSuggestionsForReview = await ThesaurusCockpitBase.getAndPopulateSuggestionResults(
-      templates,
-      requestParams,
-      getReadyToReviewSuggestionsQuery,
-      assocProp
-    );
     return [
-      actions.set('thesauri/thesaurus', thesaurus as ThesaurusSchema),
-      actions.set('thesauri/models', [model as ClassifierModelSchema]),
-      actions.set(
-        'thesauri/suggestionsTBPublished',
-        docsWithSuggestionsForPublish as SuggestionResultSchema
-      ),
-      actions.set(
-        'thesauri/suggestionsTBReviewed',
-        docsWithSuggestionsForReview as SuggestionResultSchema
-      ),
+      actions.set('templates', templates),
+      actions.set('thesauri.thesaurus', thesaurus as ThesaurusSchema),
+      actions.set('thesauri.suggestInfo', {
+        property: assocProp,
+      } as ThesaurusSuggestions),
+      updateCockpitData(requestParams),
     ];
+  }
+
+  topicNode(topic: ThesaurusValueSchema) {
+    const { thesaurus, suggestInfo } = this.props as ThesaurusCockpitProps;
+    const { label, id } = topic;
+    const suggestionCount =
+      suggestInfo.docsWithSuggestionsForReview?.thesaurus?.totalValues[`${id}`] ?? 0;
+    const labelCount = suggestInfo.docsWithLabels?.thesaurus?.totalValues[`${id}`] ?? 0;
+
+    const topicQuality =
+      (suggestInfo.model?.topics ?? {})[label] ?? (suggestInfo.model?.topics ?? {})[id!];
+    return (
+      <tr key={label}>
+        <th scope="row">
+          {label}
+          {topicQuality && !!topicQuality.quality && topicQuality.quality < 0.5 && (
+            <span className="property-help confidence-bubble low">
+              low
+              <div className="property-description">
+                Improve the quality of this topic's suggestions by finding more sample documents
+                with this label.
+              </div>
+            </span>
+          )}
+        </th>
+        <td title="sample-count">{labelCount ? labelCount.toLocaleString() : '-'}</td>
+        <td title="suggestions-count">
+          {suggestionCount ? suggestionCount.toLocaleString() : '-'}
+        </td>
+        <td title="review-button">
+          {suggestionCount > 0 && thesaurus.enable_classification && suggestInfo.property?.name ? (
+            <I18NLink
+              to={
+                `/review?q=(filters:(__${suggestInfo.property?.name}:(values:!('${id}')),` +
+                `${suggestInfo.property?.name}:(values:!(missing))))&includeUnpublished=1`
+              }
+              className="btn btn-default btn-xs"
+            >
+              <span title="review-button-title">{t('System', 'View suggestions')}</span>
+            </I18NLink>
+          ) : null}
+        </td>
+      </tr>
+    );
+  }
+
+  learningNotice() {
+    const { thesaurus, tasksState, suggestInfo } = this.props as ThesaurusCockpitProps;
+    const numTopics = getValuesSortedByName(thesaurus).length;
+    const numTrained =
+      (suggestInfo.model?.config?.num_test ?? 0) + (suggestInfo.model?.config?.num_train ?? 0);
+    const numLabeled = suggestInfo.docsWithLabels?.totalRows;
+    const modelTime = suggestInfo.model?.preferred;
+    const isLearning = tasksState.TrainState?.state === 'running';
+    const modelDate =
+      modelTime && +modelTime > 1000000000 && +modelTime < 2000000000
+        ? new Date(+modelTime * 1000)
+        : null;
+    let status;
+
+    if (modelTime) {
+      status = (
+        <div className="block">
+          <div className="stretch">
+            Uwazi has suggested labels for your collection. Review them using the &#34;View
+            suggestions&#34; button next to each topic. Disable suggestions with the &#34;Show
+            suggestions&#34; toggle.
+            <br />
+            <br />
+            You can also improve the model by providing more labeled documents.
+          </div>
+          <div className="footer">
+            <I18NLink
+              title="label-docs"
+              to={`/library/?quickLabelThesaurus=${thesaurus._id}&q=(allAggregations:!t,includeUnpublished:!t)`}
+              className="btn btn-primary get-started"
+            >
+              <span>{t('System', 'Label more documents')}</span>
+            </I18NLink>
+          </div>
+        </div>
+      );
+    } else {
+      status = (
+        <div className="block">
+          <div className="stretch">
+            The first step is to label a sample of your documents, so Uwazi can learn which topics
+            to suggest when helping you label your collection.
+          </div>
+          <div className="footer">
+            <I18NLink
+              title="label-docs"
+              to={`/library/?quickLabelThesaurus=${thesaurus._id}&q=(allAggregations:!t,includeUnpublished:!t)`}
+              className="btn btn-primary get-started"
+            >
+              <span>{t('System', numLabeled === 0 ? 'Get started' : 'Label more documents')}</span>
+            </I18NLink>
+          </div>
+        </div>
+      );
+    }
+    const learning = (
+      <div className="block">
+        <div className="stretch">
+          {modelDate && (
+            <React.Fragment>
+              The current model was trained at {modelDate.toLocaleString()} with {numTrained}&nbsp;
+              documents.
+              <br />
+              <br />
+            </React.Fragment>
+          )}
+          {(numLabeled ?? 0) < numTopics * 30 && (
+            <React.Fragment>
+              We recommend labeling {numTopics * 30} documents before training (30 per topic).
+              <br />
+              <br />
+            </React.Fragment>
+          )}
+          You have labeled {numLabeled} documents so far.
+          {isLearning && (
+            <React.Fragment>
+              <br />
+              <br />
+              Uwazi is learning using the labelled documents. This may take up to 2 hours, and once
+              completed you can review suggestions made by Uwazi for your collection.
+            </React.Fragment>
+          )}
+        </div>
+        <div className="footer">
+          {isLearning && (
+            <div className="btn-label property-help">
+              <span>
+                Learning... <Icon icon="spinner" spin />
+              </span>
+              <div className="property-description">{tasksState.TrainState?.message}</div>
+            </div>
+          )}
+          {!isLearning && numLabeled && numLabeled > numTrained && numLabeled > numTopics * 20 && (
+            <button
+              type="button"
+              className="btn btn-default"
+              onClick={() => this.props.startTraining()}
+            >
+              <span className="btn-label">{t('System', 'Train model')}</span>
+            </button>
+          )}
+        </div>
+      </div>
+    );
+    return (
+      <Notice title="Suggestion Status">
+        {status}
+        {learning}
+      </Notice>
+    );
+  }
+
+  topicNodes() {
+    const { thesaurus } = this.props as ThesaurusCockpitProps;
+    const values = getValuesSortedByName(thesaurus);
+
+    return values.map((topic: ThesaurusValueSchema) => this.topicNode(topic));
+  }
+
+  interval?: NodeJS.Timeout = undefined;
+
+  componentDidMount() {
+    this.interval = setInterval(() => this.props.updateCockpitData(), 10000);
   }
 
   componentWillUnmount() {
     this.emptyState();
+    if (this.interval) {
+      clearInterval(this.interval);
+    }
   }
 
   emptyState() {
-    this.context.store.dispatch(actions.unset('thesauri/models'));
-    this.context.store.dispatch(actions.unset('thesauri/thesaurus'));
-    this.context.store.dispatch(actions.unset('thesauri/suggestionsTBPublished'));
-    this.context.store.dispatch(actions.unset('thesauri/suggestionsTBReviewed'));
+    this.context.store.dispatch(actions.unset('thesauri.suggestInfo'));
+    this.context.store.dispatch(actions.unset('thesauri.thesaurus'));
+    this.context.store.dispatch(actions.unset('thesauri.tasksState'));
+  }
+
+  renderEnableSuggestionsToggle() {
+    const { thesaurus, suggestInfo } = this.props as ThesaurusCockpitProps;
+    const modelAvailable = suggestInfo.model && suggestInfo.model.preferred;
+    return (
+      (modelAvailable || thesaurus.enable_classification) && (
+        <button
+          onClick={() => this.props.toggleEnableClassification()}
+          className={
+            thesaurus.enable_classification
+              ? 'btn btn-default btn-xs btn-toggle-on'
+              : 'btn btn-default btn-xs btn-toggle-off'
+          }
+          type="button"
+        >
+          <Icon icon={thesaurus.enable_classification ? 'toggle-on' : 'toggle-off'} />
+          &nbsp;
+          <span>{t('System', 'Show Suggestions')}</span>
+        </button>
+      )
+    );
   }
 
   publishButton() {
-    const { thesaurus, suggestionsTBPublished: suggestions } = this.props as ThesaurusCockpitProps;
+    const { thesaurus, suggestInfo } = this.props as ThesaurusCockpitProps;
 
     // Don't show the 'publish' button when there's nothing to be published
-    if (!thesaurus || !thesaurus.property || suggestions.totalSuggestions === 0) {
+    if (
+      !thesaurus ||
+      !suggestInfo.property ||
+      !suggestInfo.docsWithSuggestionsForPublish?.totalLabels
+    ) {
       return null;
     }
-    const thesaurusPropertyRefName = thesaurus.property.name;
+    const thesaurusPropertyRefName = suggestInfo.property.name;
 
     return (
       <I18NLink
         title="publish-button"
         to={
-          `/uploads/?q=(filters:(_${thesaurusPropertyRefName}:(values:!(any)),${thesaurusPropertyRefName}:(values:!(any))),` +
-          'limit:100,order:desc,sort:creationDate)&view=nosearch'
+          `/library/?quickLabelThesaurus=${thesaurus._id}&` +
+          `q=(filters:(__${thesaurusPropertyRefName}:(values:!(any)),${thesaurusPropertyRefName}:(values:!(any))),` +
+          'limit:100,order:desc,sort:creationDate,unpublished:!t)'
         }
         className="btn btn-primary btn-xs"
       >
@@ -204,28 +285,33 @@ export class ThesaurusCockpitBase extends RouteHandler {
   }
 
   render() {
-    const { thesaurus } = this.props as ThesaurusCockpitProps;
+    const { thesaurus, tasksState, topicClassificationEnabled } = this
+      .props as ThesaurusCockpitProps;
     const { name } = thesaurus;
-    if (!name) {
+    if (!name || !tasksState.SyncState?.state) {
       return <Loader />;
     }
     return (
       <div className="flex panel panel-default">
         <div className="panel-heading">
           {t('System', `Thesauri > ${name}`)}
+          {this.renderEnableSuggestionsToggle()}
           {this.publishButton()}
         </div>
         <div className="cockpit">
+          {topicClassificationEnabled && this.learningNotice()}
           <table>
             <thead>
               <tr>
                 <th scope="col">{name}</th>
+                <th scope="col">{t('System', 'Sample')}</th>
                 <th scope="col">{t('System', 'Documents to be reviewed')}</th>
                 <th scope="col" />
               </tr>
             </thead>
             <tbody>{this.topicNodes()}</tbody>
           </table>
+          <div className="sync-state">{tasksState.SyncState.message}</div>
         </div>
         <div className="settings-footer">
           <I18NLink to="/settings/dictionaries" className="btn btn-default">
@@ -239,41 +325,33 @@ export class ThesaurusCockpitBase extends RouteHandler {
   }
 }
 
-interface ThesaurusCockpitStore {
-  thesauri: {
-    thesaurus: IImmutable<ThesaurusSchema>;
-    models: IImmutable<ClassifierModelSchema>[];
-    suggestionsTBPublished: IImmutable<SuggestionResultSchema>;
-    suggestionsTBReviewed: IImmutable<SuggestionResultSchema>;
-  };
-}
-
-const selectModels = createSelector(
-  (state: ThesaurusCockpitStore) => state.thesauri.models,
-  models => models.map(m => m.toJS())
+const selectSuggestInfo = createSelector(
+  (state: IStore) => state.thesauri.suggestInfo,
+  info => info.toJS()
 );
 
 const selectThesaurus = createSelector(
-  (state: ThesaurusCockpitStore) => state.thesauri.thesaurus,
+  (state: IStore) => state.thesauri.thesaurus,
   thesaurus => thesaurus.toJS()
 );
 
-const selectSuggestionsTBPublished = createSelector(
-  (state: ThesaurusCockpitStore) => state.thesauri.suggestionsTBPublished,
-  suggestionsTBPublished => suggestionsTBPublished.toJS()
-);
-const selectSuggestionsTBReviewed = createSelector(
-  (state: ThesaurusCockpitStore) => state.thesauri.suggestionsTBReviewed,
-  suggestionsTBReviewed => suggestionsTBReviewed.toJS()
+const selectTasksState = createSelector(
+  (state: IStore) => state.thesauri.tasksState,
+  s => s.toJS()
 );
 
-function mapStateToProps(state: ThesaurusCockpitStore) {
+function mapStateToProps(state: IStore) {
   return {
-    models: selectModels(state),
+    suggestInfo: selectSuggestInfo(state),
     thesaurus: selectThesaurus(state),
-    suggestionsTBPublished: selectSuggestionsTBPublished(state),
-    suggestionsTBReviewed: selectSuggestionsTBReviewed(state),
+    tasksState: selectTasksState(state),
+    topicClassificationEnabled: (state.settings.collection.toJS().features || {})
+      .topicClassification,
   };
 }
 
-export default connect(mapStateToProps, null)(ThesaurusCockpitBase);
+export default connect(mapStateToProps, {
+  updateCockpitData,
+  startTraining,
+  toggleEnableClassification,
+})(ThesaurusCockpitBase);

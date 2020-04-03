@@ -1,5 +1,3 @@
-/** @format */
-
 import { actions } from 'app/BasicReducer';
 import api from 'app/Entities/EntitiesAPI';
 import entitiesUtil from 'app/Entities/utils/filterBaseProperties';
@@ -8,15 +6,14 @@ import { loadFetchedInReduxForm } from 'app/Metadata/actions/actions';
 import * as relationships from 'app/Relationships/utils/routeUtils';
 import { RequestParams } from 'app/utils/RequestParams';
 import Immutable from 'immutable';
-import { browserHistory } from 'react-router';
 import { Action, Dispatch } from 'redux';
 import { TemplateSchema } from 'shared/types/templateType';
-import { OneUpState, StoreState } from '../common';
+import { OneUpState, IStore } from 'app/istore';
 
 export async function getAndLoadEntity(
   requestParams: RequestParams,
   templates: TemplateSchema[],
-  state: StoreState,
+  state: IStore,
   loadConnections: boolean
 ) {
   const [[entity], [connectionsGroups, searchResults, sort, filters]] = await Promise.all([
@@ -46,7 +43,7 @@ export async function getAndLoadEntity(
 }
 
 export function toggleOneUpFullEdit() {
-  return async (dispatch: Dispatch<StoreState>, getState: () => StoreState) => {
+  return async (dispatch: Dispatch<IStore>, getState: () => IStore) => {
     const state = getState();
     const oneUpState = state.oneUpReview.state?.toJS();
     if (oneUpState && oneUpState.fullEdit && !state.entityView.entityFormState.$form.pristine) {
@@ -67,9 +64,9 @@ export function toggleOneUpFullEdit() {
 }
 
 async function switchToEntity(
-  dispatch: Dispatch<StoreState>,
+  dispatch: Dispatch<IStore>,
   index: number,
-  state: StoreState,
+  state: IStore,
   oneUpState: OneUpState
 ) {
   const sharedId =
@@ -98,15 +95,8 @@ async function switchToEntity(
   });
 }
 
-export function reviewAndPublish(refName: string) {
-  browserHistory.push(
-    `/uploads/?q=(filters:(_${refName}:(values:!(any)),${refName}:(values:!(any))),` +
-      'limit:100,order:desc,sort:creationDate)&view=nosearch'
-  );
-}
-
 export function switchOneUpEntity(delta: number, save: boolean) {
-  return async (dispatch: Dispatch<StoreState>, getState: () => StoreState) => {
+  return async (dispatch: Dispatch<IStore>, getState: () => IStore) => {
     const state = getState();
     const oneUpState = state.oneUpReview.state?.toJS();
     if (!oneUpState) {
@@ -122,7 +112,7 @@ export function switchOneUpEntity(delta: number, save: boolean) {
     const index = Math.max(
       0,
       Math.min(
-        state.library.documents.get('rows').findIndex(e => e.get('sharedId') === current) + delta,
+        state.library.documents.get('rows').findIndex(e => e!.get('sharedId') === current) + delta,
         oneUpState.totalDocs - 1
       )
     );
@@ -131,7 +121,7 @@ export function switchOneUpEntity(delta: number, save: boolean) {
 }
 
 export function toggleOneUpLoadConnections() {
-  return async (dispatch: Dispatch<StoreState>, getState: () => StoreState) => {
+  return async (dispatch: Dispatch<IStore>, getState: () => IStore) => {
     const state = getState();
     const oneUpState = state.oneUpReview.state?.toJS();
     if (!oneUpState) {

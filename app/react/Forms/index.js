@@ -1,11 +1,9 @@
-/** @format */
-
 import Select from './components/Select';
 import DatePicker from './components/DatePicker';
 import Captcha from './components/Captcha';
 import DateRange from './components/DateRange';
 import FormGroup from './components/FormGroup';
-import MultiSelect from './components/MultiSelect';
+import MultiSelect, { MultiSelectTristate } from './components/MultiSelect';
 import MarkDown from './components/MarkDown';
 import Nested from './components/Nested';
 import NestedMultiselect from './components/NestedMultiselect';
@@ -31,6 +29,7 @@ export {
   Captcha,
   DateRange,
   MultiSelect,
+  MultiSelectTristate,
   MarkDown,
   Nested,
   NestedMultiselect,

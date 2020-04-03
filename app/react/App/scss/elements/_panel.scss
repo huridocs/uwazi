@@ -1,15 +1,15 @@
 .panel-default {
   border-color: $c-grey-light;
-}
 
-.panel-default > .panel-heading {
-	font-weight: bold;
-	border-bottom-color: $c-grey-light;
-  background-color: $c-grey-lighten;
-  padding: 16px;
-
-  .btn-primary {
-    margin-left: 25px;
+  .panel-heading {
+    font-weight: bold;
+    border: none;
+    background-color: $c-grey-lighten;
+    padding: 7px 10px;
+  
+    .btn {
+      margin-left: 25px;
+    }
   }
 }
 

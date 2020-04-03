@@ -1,5 +1,3 @@
-/** @format */
-
 import api from 'app/utils/api';
 
 export default {
@@ -15,6 +13,14 @@ export default {
 
   getModelStatus(requestParams) {
     return api.get('models', requestParams).then(response => response.json);
+  },
+
+  getModelTrainStatus(requestParams) {
+    return api.get('models/train', requestParams).then(response => response.json);
+  },
+
+  trainModel(requestParams) {
+    return api.post('models/train', requestParams).then(response => response.json);
   },
 
   save(requestParams) {

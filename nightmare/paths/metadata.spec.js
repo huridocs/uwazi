@@ -49,7 +49,12 @@ describe('metadata path', () => {
       nightmare
         .waitToClick(selectors.settingsView.dictionariesBackButton)
         .wait(selectors.settingsView.tableElementsOfSection)
-        .editItemFromList(selectors.settingsView.tableElementsOfSection, 'test')
+        .manageItemFromList(
+          selectors.settingsView.tableElementsOfSection,
+          'test',
+          'td:nth-child(3) > div > .btn-default'
+        )
+        .wait('.settings form')
         .write(selectors.settingsView.dictionaryNameForm, 'edited')
         .waitToClick(selectors.settingsView.saveDictionaryButton)
         .waitToClick('.alert.alert-success')

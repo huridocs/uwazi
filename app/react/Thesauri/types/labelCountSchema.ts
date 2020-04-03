@@ -1,12 +1,12 @@
 export const emitSchemaTypes = true;
 
-export const suggestionResultSchema = {
+export const labelCountSchema = {
   type: 'object',
-  required: ['totalRows', 'totalSuggestions', 'thesaurus'],
+  required: ['totalRows', 'totalLabels', 'thesaurus'],
   additionalProperties: false,
   properties: {
     totalRows: { type: 'number' },
-    totalSuggestions: { type: 'number' },
+    totalLabels: { type: 'number' },
     // suggestion queries are issued per thesaurus
     thesaurus: {
       type: 'object',

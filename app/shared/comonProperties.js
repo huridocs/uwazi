@@ -33,10 +33,12 @@ const comonProperties = (templates, documentTypes = []) => {
   return properties;
 };
 
-const comonFilters = (templates, relationTypes, documentTypes = []) => {
+function comonFilters(templates, relationTypes, documentTypes = [], forcedProps = []) {
   const result = [];
   comonProperties(templates, documentTypes)
-    .filter(prop => prop.filter || prop.type === 'relationshipfilter')
+    .filter(
+      prop => prop.filter || prop.type === 'relationshipfilter' || forcedProps.includes(prop.name)
+    )
     .forEach(property => {
       if (property.type === 'relationshipfilter') {
         const relationType = relationTypes.find(
@@ -48,17 +50,21 @@ const comonFilters = (templates, relationTypes, documentTypes = []) => {
     });
 
   return result;
-};
+}
 
-const defaultFilters = templates =>
-  templates.reduce((filters, template) => {
+function defaultFilters(templates, forcedProps = []) {
+  return templates.reduce((filters, template) => {
     template.properties.forEach(prop => {
-      if (prop.filter && prop.defaultfilter && !filters.find(_prop => sameProperty(prop, _prop))) {
+      if (
+        (forcedProps.includes(prop.name) || (prop.filter && prop.defaultfilter)) &&
+        !filters.find(_prop => sameProperty(prop, _prop))
+      ) {
         filters.push(prop);
       }
     });
     return filters;
   }, []);
+}
 
 const allUniqueProperties = templates =>
   templates

@@ -27,7 +27,8 @@ export default function createNightmare(width = 1200, height = 600) {
     },
   }).viewport(width, height);
 
-  nightmare.on('page', (_type, _message, error) => {
+  nightmare.on('page', (_type, message, error) => {
+    console.error(message);
     fail(error);
   });
 
@@ -37,7 +38,16 @@ export default function createNightmare(width = 1200, height = 600) {
 
   nightmare.on('console', (type, message) => {
     if (type === 'error') {
-      fail(message);
+      if (
+        message &&
+        (typeof message !== 'object' ||
+          Object.keys(message).length ||
+          message.toString() !== '[object Object]')
+      ) {
+        fail(message);
+      } else {
+        console.warn(message);
+      }
     }
     if (type === 'log') {
       console.log(message);

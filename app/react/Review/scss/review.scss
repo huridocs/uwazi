@@ -1,5 +1,3 @@
-/** @format */
-
 @import '../../App/scss/config/_colors.scss';
 @import '../../App/scss/config/_materials.scss';
 @import '../../App/scss/config/_typography.scss';
@@ -19,9 +17,43 @@ $header-height: 44px;
   flex-direction: column;
 }
 
-.panel-default > .panel-heading {
-  border: none;
-  padding: 7px 10px;
+.btn-toggle-on {
+  background-color: #ccc;
+  &:focus {
+    background-color: #ccc;
+  }
+  &:hover {
+    border-color: #ccc;
+  }
+  svg {
+    color: darkgreen;
+  }
+}
+.btn-toggle-off {
+  svg {
+    color: grey;
+  }
+}
+
+.confidence-bubble {
+  font-size: 12px;
+  height: 16px;
+  border-radius: 5px;
+  padding: 0px 3px;
+  margin-left: 4px;
+}
+
+.confidence-bubble.low {
+  color: #541a1a;
+  background-color: #e9afaf;
+}
+.confidence-bubble.medium {
+  color: #574e1f;
+  background-color: #e9dcaf;
+}
+.confidence-bubble.high {
+  color: #1f572b;
+  background-color: #afe9bb;
 }
 
 .flex {
@@ -79,28 +111,10 @@ $header-height: 44px;
         margin-left: 5px;
         margin-right: 0;
       }
-      &:focus {
+      &:focus:not(.btn-disabled) {
         color: #333;
         background-color: #fff;
         border-color: #ccc;
-      }
-    }
-
-    .btn-toggle-on {
-      background-color: #ccc;
-      &:focus {
-        background-color: #ccc;
-      }
-      &:hover {
-        border-color: #ccc;
-      }
-      svg {
-        color: darkgreen;
-      }
-    }
-    .btn-toggle-off {
-      svg {
-        color: grey;
       }
     }
   }
@@ -185,8 +199,10 @@ $header-height: 44px;
 
   .thesauri-list,
   .cockpit {
-    height: 0;
-    flex-grow: 1;
+    @media (min-width: 1024px) {
+      height: 0;
+      flex-grow: 1;
+    }
 
     table {
       border-collapse: collapse;
@@ -208,9 +224,14 @@ $header-height: 44px;
   }
 
   .cockpit {
-    overflow-y: scroll;
+    overflow-y: auto;
 
     thead th:nth-child(2) {
+      width: 10%;
+      text-align: right;
+    }
+
+    thead th:nth-child(3) {
       width: 15%;
       text-align: right;
     }
@@ -333,27 +354,6 @@ $header-height: 44px;
       .multiselectItem-name {
         max-width: calc(100% - 110px);
       }
-
-      .multiselectItem-confidence {
-        font-size: 12px;
-        height: 16px;
-        border-radius: 5px;
-        padding: 0px 3px;
-        margin-left: 4px;
-      }
-
-      .multiselectItem-confidence.low {
-        color: #541a1a;
-        background-color: #e9afaf;
-      }
-      .multiselectItem-confidence.medium {
-        color: #574e1f;
-        background-color: #e9dcaf;
-      }
-      .multiselectItem-confidence.high {
-        color: #1f572b;
-        background-color: #afe9bb;
-      }
     }
     .multiselectActions {
       .form-group {
@@ -386,4 +386,12 @@ $header-height: 44px;
   .fa-save-and-next {
     fill-rule: evenodd;
   }
+}
+
+.select-all-documents,
+.back {
+  flex-grow: 1;
+  width: 0;
+  border-left: 1px solid #D7D7DC;
+  padding-left: 8px;
 }

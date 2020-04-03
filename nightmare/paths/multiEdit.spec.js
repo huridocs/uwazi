@@ -108,7 +108,7 @@ describe('multi edit path', () => {
     describe('holding control', () => {
       it('should select individual items and display a list', done => {
         nightmare
-          .click(selectors.libraryView.librarySecondDocument)
+          .waitToClick(selectors.libraryView.librarySecondDocument)
           .ctrlClick(selectors.libraryView.libraryThirdDocument)
           .ctrlClick(selectors.libraryView.libraryFirstDocument)
           .wait(selectors.libraryView.libraryMultiEditListHeader)
@@ -124,7 +124,7 @@ describe('multi edit path', () => {
     describe('using shift', () => {
       it('should select all items between the 2 selected items and display a list', done => {
         nightmare
-          .click(selectors.libraryView.libraryFirstDocument)
+          .waitToClick(selectors.libraryView.libraryFirstDocument)
           .shiftClick(selectors.libraryView.libraryThirdDocument)
           .wait(selectors.libraryView.libraryMultiEditListHeader)
           .getInnerText(selectors.libraryView.libraryMultiEditListHeader)

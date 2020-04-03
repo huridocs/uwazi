@@ -1,9 +1,9 @@
-import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
-import rison from 'rison';
 import searchAPI from 'app/Search/SearchAPI';
+import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
+import { RequestParams } from 'app/utils/RequestParams';
 import Immutable from 'immutable';
+import rison from 'rison';
 import libraryHelpers from '../libraryFilters';
-
 import requestState from '../requestState';
 
 describe('static requestState()', () => {
@@ -12,7 +12,10 @@ describe('static requestState()', () => {
     {
       name: 'Decision',
       _id: 'abc1',
-      properties: [{ name: 'p', filter: true, type: 'text', prioritySorting: true }],
+      properties: [
+        { name: 'p', filter: true, type: 'text', prioritySorting: true },
+        { name: 'country', filter: false, type: 'select', content: 'countries' },
+      ],
     },
     { name: 'Ruling', _id: 'abc2', properties: [] },
   ];
@@ -38,7 +41,7 @@ describe('static requestState()', () => {
 
   it('should request the documents passing search object on the store', async () => {
     const data = { q: rison.encode({ filters: { something: 1 }, types: [] }) };
-    const request = { data, headers: 'headers' };
+    const request = new RequestParams(data, 'headers');
 
     const expectedSearch = {
       data: {
@@ -62,15 +65,16 @@ describe('static requestState()', () => {
       search: 'search',
     });
     const q = { filters: {}, types: ['type1'], order: 'desc', sort: 'creationDate' };
-    const query = { q: rison.encode(q) };
-    const request = { data: query };
+    const query = { q: rison.encode(q), quickLabelThesaurus: 'countries' };
+    const request = new RequestParams(query);
     await requestState(request, globalResources);
 
     expect(libraryHelpers.URLQueryToState).toHaveBeenCalledWith(
       q,
       templates,
       thesauris,
-      relationTypes
+      relationTypes,
+      ['country']
     );
   });
 
@@ -84,10 +88,12 @@ describe('static requestState()', () => {
           filters: { something: 1 },
           types: [],
           geolocation: true,
+          view: undefined,
         },
+        headers: {},
       };
 
-      const request = { data: query };
+      const request = new RequestParams(query);
       const actions = await requestState(request, globalResources, 'markers');
 
       expect(searchAPI.search).toHaveBeenCalledWith(expectedSearch);

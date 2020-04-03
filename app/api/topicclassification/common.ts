@@ -1,4 +1,3 @@
-/** @format */
 import { EntitySchema } from 'shared/types/entityType';
 import templates from 'api/templates';
 import { propertyTypes } from 'shared/propertyTypes';
@@ -14,7 +13,7 @@ export async function extractSequence(e: EntitySchema) {
           !prop ||
           !prop.name ||
           !e.metadata ||
-          ![propertyTypes.markdown, propertyTypes.text].includes(prop.type)
+          (prop.type !== propertyTypes.markdown && prop.type !== propertyTypes.text)
         ) {
           return prev;
         }

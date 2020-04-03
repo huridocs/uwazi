@@ -20,6 +20,7 @@ class DocumentsList extends Component {
     super(props, context);
     this.state = { loading: false };
     this.clickOnDocument = this.clickOnDocument.bind(this);
+    this.selectAllDocuments = this.selectAllDocuments.bind(this);
   }
 
   componentWillReceiveProps() {
@@ -29,6 +30,12 @@ class DocumentsList extends Component {
   clickOnDocument() {
     if (this.props.clickOnDocument) {
       this.props.clickOnDocument.apply(this, arguments);
+    }
+  }
+
+  selectAllDocuments() {
+    if (this.props.selectAllDocuments) {
+      this.props.selectAllDocuments.apply(this);
     }
   }
 
@@ -119,6 +126,11 @@ class DocumentsList extends Component {
               stateProperty={this.props.sortButtonsStateProperty}
               storeKey={this.props.storeKey}
             />
+            <div className="select-all-documents">
+              <button className="btn btn-default btn-xs" onClick={this.selectAllDocuments}>
+                {t('System', 'Select all')}
+              </button>
+            </div>
           </div>
           {(() => {
             if (view !== 'graph') {
@@ -204,6 +216,7 @@ DocumentsList.propTypes = {
   documents: PropTypes.object.isRequired,
   connections: PropTypes.object,
   filters: PropTypes.object,
+  thesauri: PropTypes.object,
   selectedDocument: PropTypes.object,
   SearchBar: PropTypes.func,
   ActionButtons: PropTypes.func,
@@ -217,6 +230,7 @@ DocumentsList.propTypes = {
   LoadMoreButton: PropTypes.func,
   onSnippetClick: PropTypes.func,
   clickOnDocument: PropTypes.oneOfType([PropTypes.func, PropTypes.object]),
+  selectAllDocuments: PropTypes.oneOfType([PropTypes.func, PropTypes.object]),
   rowListZoomLevel: PropTypes.number,
   connectionsGroups: PropTypes.object,
   searchCentered: PropTypes.bool,

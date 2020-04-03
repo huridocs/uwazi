@@ -51,7 +51,7 @@ describe('Entity zone', () => {
         .catch(catchErrors(done));
     });
 
-    it("should allow changing the different template's properties", done => {
+    it("should allow changing the different template's properties", async () => {
       selectors.manBatEntity = {
         form: {
           realName:
@@ -94,7 +94,7 @@ describe('Entity zone', () => {
         },
       };
 
-      nightmare
+      await nightmare
         .editEntityFromEntityViewer()
 
         .select(selectors.entityView.metadataFormType, '58f0aed2e147e720856a0741')
@@ -119,35 +119,22 @@ describe('Entity zone', () => {
             'that Man-Bat will rear his ugly head over and over.'
         )
         .saveEntityFromEntityViewer()
-        .refresh()
-        .getInnerText(selectors.manBatEntity.viewer.realName)
-        .then(text => {
-          expect(text).toBe('Dr. Kirk Langstrom');
-          return nightmare.getInnerText(selectors.manBatEntity.viewer.age);
-        })
-        .then(text => {
-          expect(text).toBe('39');
-          return nightmare.getInnerText(selectors.manBatEntity.viewer.knownAccomplices);
-        })
-        .then(text => {
-          expect(text).toBe('Joker');
-          return nightmare.getInnerText(selectors.manBatEntity.viewer.mainSuperpower);
-        })
-        .then(text => {
-          expect(text).toBe('fly');
-          return nightmare.getInnerText(selectors.manBatEntity.viewer.superpowers);
-        })
-        .then(text => {
-          expect(text).toBe('fly\nlaser beam\n');
-          return nightmare.getInnerText(selectors.manBatEntity.viewer.whoIsHe);
-        })
-        .then(text => {
-          expect(text.match('Jekyll and Hyde story')).not.toBe(null);
-        })
-        .then(() => {
-          done();
-        })
-        .catch(catchErrors(done));
+        .refresh();
+      expect(await nightmare.getInnerText(selectors.manBatEntity.viewer.realName)).toBe(
+        'Dr. Kirk Langstrom'
+      );
+      expect(await nightmare.getInnerText(selectors.manBatEntity.viewer.age)).toBe('39');
+      expect(await nightmare.getInnerText(selectors.manBatEntity.viewer.knownAccomplices)).toBe(
+        'Joker'
+      );
+      expect(await nightmare.getInnerText(selectors.manBatEntity.viewer.mainSuperpower)).toBe(
+        'fly'
+      );
+      expect(await nightmare.getInnerText(selectors.manBatEntity.viewer.superpowers)).toBe(
+        'fly\nlaser beam\n'
+      );
+      const whoIsHe = await nightmare.getInnerText(selectors.manBatEntity.viewer.whoIsHe);
+      expect(whoIsHe.match('Jekyll and Hyde story')).not.toBe(null);
     }, 20000);
   });
 });

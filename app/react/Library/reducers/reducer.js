@@ -46,6 +46,9 @@ export default storeKey =>
       metadataForm: formReducer(`${storeKey}.sidepanel.metadata`, {}),
       multipleEdit: modelReducer(`${storeKey}.sidepanel.multipleEdit`, {}),
       multipleEditForm: formReducer(`${storeKey}.sidepanel.multipleEdit`, {}),
+      quickLabelState: createReducer(`${storeKey}.sidepanel.quickLabelState`, {}),
+      quickLabelMetadata: modelReducer(`${storeKey}.sidepanel.quickLabelMetadata`, {}),
+      quickLabelMetadataForm: formReducer(`${storeKey}.sidepanel.quickLabelMetadata`, {}),
       references: createReducer(`${storeKey}.sidepanel.references`, []),
       snippets: createReducer(`${storeKey}.sidepanel.snippets`, {
         count: 0,

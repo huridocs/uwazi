@@ -1,15 +1,16 @@
 // eslint-disable-line max-lines
 
-import { EntitySchema } from 'shared/types/entityType';
 import Footer from 'app/App/Footer';
 import ShowIf from 'app/App/ShowIf';
 import { AttachmentsList } from 'app/Attachments';
+import { FileList } from 'app/Attachments/components/FileList';
 import { CreateConnectionPanel } from 'app/Connections';
 import { ConnectionsList } from 'app/ConnectionsList';
 import { connectionsChanged, deleteConnection } from 'app/ConnectionsList/actions/actions';
 import ContextMenu from 'app/ContextMenu';
 import { ShowSidepanelMenu } from 'app/Entities/components/ShowSidepanelMenu';
 import { t } from 'app/I18N';
+import { IStore, OneUpState } from 'app/istore';
 import { Icon as PropertyIcon, TemplateLabel } from 'app/Layout';
 import Tip from 'app/Layout/Tip';
 import { MetadataForm, ShowMetadata } from 'app/Metadata';
@@ -29,17 +30,11 @@ import { connect } from 'react-redux';
 import { TabContent, Tabs } from 'react-tabs-redux';
 import { bindActionCreators, Dispatch } from 'redux';
 import { PropertySchema } from 'shared/types/commonTypes';
+import { EntitySchema } from 'shared/types/entityType';
 import { IImmutable } from 'shared/types/Immutable';
 import { TemplateSchema } from 'shared/types/templateType';
 import { Icon } from 'UI';
-import { FileList } from 'app/Attachments/components/FileList';
-import {
-  OneUpState,
-  selectEntity,
-  selectMlThesauri,
-  selectOneUpState,
-  StoreState,
-} from '../common';
+import { selectEntity, selectMlThesauri, selectOneUpState } from '../common';
 
 const defaultProps = {
   entity: {} as EntitySchema,
@@ -102,12 +97,12 @@ export class OneUpEntityViewerBase extends Component<
   nonMlProps() {
     const { entity, mlThesauri, templates } = this.props;
     const template: IImmutable<TemplateSchema> =
-      templates.find(tmpl => tmpl.get('_id') === entity.template) ?? Immutable.fromJS({});
+      templates.find(tmpl => tmpl!.get('_id') === entity.template) ?? Immutable.fromJS({});
     const properties: IImmutable<PropertySchema[]> =
       template.get('properties') ?? Immutable.fromJS([]);
     return properties
-      .filter(p => !mlThesauri.includes(p.get('content') ?? ''))
-      .map(p => p.get('name'))
+      .filter(p => !mlThesauri.includes(p!.get('content') ?? ''))
+      .map(p => p!.get('name'))
       .toJS();
   }
 
@@ -252,7 +247,7 @@ export class OneUpEntityViewerBase extends Component<
   }
 }
 
-const mapStateToProps = (state: StoreState) => ({
+const mapStateToProps = (state: IStore) => ({
   entity: selectEntity(state),
   relationships: state.entityView.entity.get('relationships'),
   tab: state.entityView.uiState.get('tab'),
@@ -261,7 +256,7 @@ const mapStateToProps = (state: StoreState) => ({
   mlThesauri: selectMlThesauri(state),
 });
 
-function mapDispatchToProps(dispatch: Dispatch<StoreState>) {
+function mapDispatchToProps(dispatch: Dispatch<IStore>) {
   return bindActionCreators(
     {
       connectionsChanged,

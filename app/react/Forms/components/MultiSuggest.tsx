@@ -1,5 +1,3 @@
-/** @format */
-
 import { Dispatch } from 'redux';
 import { MetadataObject } from 'api/entities/entitiesModel';
 import React, { Component } from 'react';
@@ -72,7 +70,7 @@ export class MultiSuggestBase extends Component<MultiSuggestProps> {
     } else if ((suggestionConfidence ?? 0.0) >= 0.5) {
       label = 'medium';
     }
-    return <span className={`multiselectItem-confidence ${label}`}>{label}</span>;
+    return <span className={`confidence-bubble ${label}`}>{label}</span>;
   }
 
   acceptSuggestion(id: string) {

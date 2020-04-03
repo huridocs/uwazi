@@ -40,7 +40,7 @@ export function closeImportProgress() {
 }
 
 export function newEntity() {
-  return (dispatch, getState) => {
+  return async (dispatch, getState) => {
     const newEntityMetadata = { title: '', type: 'entity' };
     dispatch(
       metadata.actions.loadInReduxForm(
@@ -49,7 +49,7 @@ export function newEntity() {
         getState().templates.toJS()
       )
     );
-    dispatch(selectSingleDocument(newEntityMetadata));
+    await dispatch(selectSingleDocument(newEntityMetadata));
   };
 }
 
@@ -84,7 +84,7 @@ export function importData([file], template) {
 }
 
 export function upload(docId, file, endpoint = 'files/upload/document') {
-  return dispatch =>
+  return async dispatch =>
     new Promise(resolve => {
       superagent
         .post(APIURL + endpoint)
@@ -180,7 +180,7 @@ export function deleteCustomUpload(_id) {
 }
 
 export function uploadDocument(docId, file) {
-  return dispatch => upload(docId, file)(dispatch);
+  return async dispatch => upload(docId, file)(dispatch);
 }
 
 export function documentProcessed(sharedId, __reducerKey) {
@@ -202,53 +202,49 @@ export function documentProcessError(sharedId) {
 }
 
 export function publishEntity(entity) {
-  return dispatch =>
-    api.post('entities', new RequestParams({ ...entity, published: true })).then(response => {
-      dispatch(notificationActions.notify('Entity published', 'success'));
-      dispatch({ type: types.REMOVE_DOCUMENT, doc: entity });
-      dispatch(basicActions.set('entityView/entity', response.json));
-      dispatch(unselectAllDocuments());
-    });
+  return async dispatch => {
+    const response = await api.post('entities', new RequestParams({ ...entity, published: true }));
+    dispatch(notificationActions.notify('Entity published', 'success'));
+    dispatch({ type: types.REMOVE_DOCUMENT, doc: entity });
+    dispatch(basicActions.set('entityView/entity', response.json));
+    await dispatch(unselectAllDocuments());
+  };
 }
 
 export function publishDocument(doc) {
-  return dispatch =>
-    api.post('documents', new RequestParams({ ...doc, published: true })).then(response => {
-      dispatch(notificationActions.notify('Document published', 'success'));
-      dispatch({ type: types.REMOVE_DOCUMENT, doc });
-      dispatch(basicActions.set('viewer/doc', response.json));
-      dispatch(unselectAllDocuments());
-    });
+  return async dispatch => {
+    const response = await api.post('documents', new RequestParams({ ...doc, published: true }));
+    dispatch(notificationActions.notify('Document published', 'success'));
+    dispatch({ type: types.REMOVE_DOCUMENT, doc });
+    dispatch(basicActions.set('viewer/doc', response.json));
+    await dispatch(unselectAllDocuments());
+  };
 }
 
 export function unpublishEntity(entity) {
-  return dispatch =>
-    api
-      .post(
-        'entities',
-        new RequestParams({ _id: entity._id, sharedId: entity.sharedId, published: false })
-      )
-      .then(response => {
-        dispatch(notificationActions.notify('Entity unpublished', 'success'));
-        dispatch({ type: types.REMOVE_DOCUMENT, doc: entity });
-        dispatch(basicActions.set('entityView/entity', response.json));
-        dispatch(unselectAllDocuments());
-      });
+  return async dispatch => {
+    const response = await api.post(
+      'entities',
+      new RequestParams({ _id: entity._id, sharedId: entity.sharedId, published: false })
+    );
+    dispatch(notificationActions.notify('Entity unpublished', 'success'));
+    dispatch({ type: types.REMOVE_DOCUMENT, doc: entity });
+    dispatch(basicActions.set('entityView/entity', response.json));
+    await dispatch(unselectAllDocuments());
+  };
 }
 
 export function unpublishDocument(doc) {
-  return dispatch =>
-    api
-      .post(
-        'documents',
-        new RequestParams({ _id: doc._id, sharedId: doc.sharedId, published: false })
-      )
-      .then(response => {
-        dispatch(notificationActions.notify('Document unpublished', 'success'));
-        dispatch({ type: types.REMOVE_DOCUMENT, doc });
-        dispatch(basicActions.set('viewer/doc', response.json));
-        dispatch(unselectAllDocuments());
-      });
+  return async dispatch => {
+    const response = await api.post(
+      'documents',
+      new RequestParams({ _id: doc._id, sharedId: doc.sharedId, published: false })
+    );
+    dispatch(notificationActions.notify('Document unpublished', 'success'));
+    dispatch({ type: types.REMOVE_DOCUMENT, doc });
+    dispatch(basicActions.set('viewer/doc', response.json));
+    await dispatch(unselectAllDocuments());
+  };
 }
 
 export function publish(entity) {

@@ -1,4 +1,3 @@
-/** @format */
 /* eslint-disable max-statements */
 
 import { validation } from 'api/utils';

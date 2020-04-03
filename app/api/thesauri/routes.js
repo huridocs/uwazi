@@ -1,5 +1,3 @@
-/** @format */
-
 import Joi from 'joi';
 import multer from 'multer';
 import { validation } from '../utils';
@@ -27,7 +25,6 @@ export default app => {
             __v: Joi.number(),
             name: Joi.string().required(),
             enable_classification: Joi.boolean(),
-            model_available: Joi.boolean(),
             values: Joi.array()
               .items(
                 Joi.object().keys({

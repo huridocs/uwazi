@@ -1,14 +1,13 @@
-/** @format */
-
 import { I18NLink, t } from 'app/I18N';
-import { toggleOneUpFullEdit, switchOneUpEntity } from 'app/Review/actions/actions';
+import { IStore, OneUpState } from 'app/istore';
+import { switchOneUpEntity, toggleOneUpFullEdit } from 'app/Review/actions/actions';
 import 'app/Review/scss/review.scss';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
 import { Icon } from 'UI';
-import { OneUpState, StoreState, selectOneUpState, selectIsPristine } from '../common';
+import { selectIsPristine, selectOneUpState } from '../common';
 
 const defaultProps = {
   isPristine: true,
@@ -113,12 +112,12 @@ export class OneUpTitleBarBase extends Component<OneUpTitleBarProps> {
   }
 }
 
-const mapStateToProps = (state: StoreState) => ({
+const mapStateToProps = (state: IStore) => ({
   isPristine: selectIsPristine(state),
   oneUpState: selectOneUpState(state) ?? ({} as OneUpState),
 });
 
-function mapDispatchToProps(dispatch: Dispatch<StoreState>) {
+function mapDispatchToProps(dispatch: Dispatch<IStore>) {
   return bindActionCreators(
     {
       switchOneUpEntity,
