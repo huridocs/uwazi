@@ -11,7 +11,7 @@ import { Pie, Tooltip } from 'recharts';
 import { mapStateToProps, PieChartComponent } from '../PieChart.js';
 import markdownDatasets from '../../markdownDatasets';
 
-describe('BarChart Markdown component', () => {
+describe('PieChart Markdown component', () => {
   const state = {
     thesauris: Immutable.fromJS([
       {
@@ -50,16 +50,16 @@ describe('BarChart Markdown component', () => {
   });
 
   describe('when passing maxCategories', () => {
+    const mockedAggregations = Immutable.fromJS([
+      { key: 'id6', filtered: { doc_count: 57 } },
+      { key: 'id2', filtered: { doc_count: 33 } },
+      { key: 'id1', filtered: { doc_count: 25 } },
+      { key: 'id3', filtered: { doc_count: 13 } },
+      { key: 'id8', filtered: { doc_count: 2 } },
+    ]);
+
     it('should only render the number of categories passed', () => {
-      spyOn(markdownDatasets, 'getAggregations').and.returnValue(
-        Immutable.fromJS([
-          { key: 'id6', filtered: { doc_count: 57 } },
-          { key: 'id2', filtered: { doc_count: 33 } },
-          { key: 'id1', filtered: { doc_count: 25 } },
-          { key: 'id3', filtered: { doc_count: 13 } },
-          { key: 'id8', filtered: { doc_count: 2 } },
-        ])
-      );
+      spyOn(markdownDatasets, 'getAggregations').and.returnValue(mockedAggregations);
 
       const props = mapStateToProps(state, { prop1: 'propValue' });
       props.maxCategories = '2';
@@ -77,15 +77,7 @@ describe('BarChart Markdown component', () => {
     });
 
     it('should render others when passing aggregateOthers', () => {
-      spyOn(markdownDatasets, 'getAggregations').and.returnValue(
-        Immutable.fromJS([
-          { key: 'id6', filtered: { doc_count: 57 } },
-          { key: 'id2', filtered: { doc_count: 33 } },
-          { key: 'id1', filtered: { doc_count: 25 } },
-          { key: 'id3', filtered: { doc_count: 13 } },
-          { key: 'id8', filtered: { doc_count: 2 } },
-        ])
-      );
+      spyOn(markdownDatasets, 'getAggregations').and.returnValue(mockedAggregations);
 
       const props = mapStateToProps(state, { prop1: 'propValue' });
       props.maxCategories = '2';

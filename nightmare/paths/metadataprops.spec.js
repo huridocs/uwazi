@@ -126,14 +126,18 @@ describe('metadata properties', () => {
     await nightmare
       .waitToClick(selectors.settingsView.templatesButton)
       .waitToClick(selectors.settingsView.addNewTemplate)
+      .wait(1000) // this is a patch so that ci has no problem running this
+      //re-renders are the cause of this and its going to be fixed as a separate issue/PR
       .write(selectors.settingsView.documentTemplateNameForm, 'All props');
 
-    for (let propIndex = 1; propIndex <= 15; propIndex += 1) {
+    //intentionaly leaving the geolocation field out of the test.
+    for (let propIndex = 1; propIndex <= 14; propIndex += 1) {
       await nightmare.waitToClick(localSelectors.propertiesButtons(propIndex));
     }
 
     await nightmare
       .waitToClick(localSelectors.editRelationshipProperty)
+      .wait(localSelectors.relationshipPropertyType)
       .selectByLabel(localSelectors.relationshipPropertyType, 'Perpetrator')
       .waitToClick(selectors.settingsView.saveTemplateButton)
       .waitToClick('.alert.alert-success');
@@ -143,11 +147,11 @@ describe('metadata properties', () => {
     await nightmare
       .waitToClick(selectors.navigation.uploadsNavButton)
       .waitToClick(selectors.uploadsView.newEntityButtom)
-      .type(selectors.newEntity.form.title, 'Entity with all props')
+      .write(selectors.newEntity.form.title, 'Entity with all props')
       .selectByLabel(selectors.newEntity.form.type, 'All props')
       .wait(localSelectors.form.text)
-      .type(localSelectors.form.text, 'demo text')
-      .type(localSelectors.form.numeric, '42')
+      .write(localSelectors.form.text, 'demo text')
+      .write(localSelectors.form.numeric, '42')
       .selectByLabel(localSelectors.form.select, 'This')
       .click(localSelectors.form.multiselectOptionOne)
       .click(localSelectors.form.relationshipOptionOne)
@@ -162,13 +166,11 @@ describe('metadata properties', () => {
       .selectDate(localSelectors.form.multidaterangeToInputOne, '12/09/1964')
       .selectDate(localSelectors.form.multidaterangeFromInputTwo, '23/11/1963')
       .selectDate(localSelectors.form.multidaterangeToInputTwo, '12/09/1964')
-      .type(localSelectors.form.richText, '***smile***')
-      .type(localSelectors.form.linkLabel, 'Huridocs')
-      .type(localSelectors.form.linkUrl, 'https://www.huridocs.org/')
-      .type(localSelectors.form.image, '/public/logo.svg')
-      .type(localSelectors.form.media, 'test')
-      .insert(localSelectors.form.geolocationLat, '46')
-      .insert(localSelectors.form.geolocationLon, '6')
+      .write(localSelectors.form.richText, '***smile***')
+      .write(localSelectors.form.linkLabel, 'Huridocs')
+      .write(localSelectors.form.linkUrl, 'https://www.huridocs.org/')
+      .write(localSelectors.form.image, '/public/logo.svg')
+      .write(localSelectors.form.media, 'test')
       .click(localSelectors.form.save)
       .waitToClick('.alert.alert-success');
   }, 60000);
@@ -221,8 +223,7 @@ describe('metadata properties', () => {
         return nightmare
           .wait(localSelectors.properties.image)
           .wait(localSelectors.properties.preview)
-          .wait(localSelectors.properties.media)
-          .wait(localSelectors.properties.geolocation);
+          .wait(localSelectors.properties.media);
       });
   }, 60000);
 
@@ -232,7 +233,7 @@ describe('metadata properties', () => {
       .wait(localSelectors.form.text)
       .clearInput(localSelectors.form.text)
       .clearInput(localSelectors.form.numeric)
-      .selectByLabel(localSelectors.form.select, 'Select other "Testing dictionary"')
+      .selectByLabel(localSelectors.form.select, 'Select...')
       .click(localSelectors.form.multiselectOptionOne)
       .click(localSelectors.form.relationshipOptionOne)
       .click(localSelectors.form.emptyDate)
@@ -247,8 +248,6 @@ describe('metadata properties', () => {
       .clearInput(localSelectors.form.linkUrl)
       .clearInput(localSelectors.form.image)
       .clearInput(localSelectors.form.media)
-      .clearInput(localSelectors.form.geolocationLat)
-      .clearInput(localSelectors.form.geolocationLon)
       .click(localSelectors.form.save)
       .waitToClick('.alert.alert-success');
   }, 60000);
