@@ -15,10 +15,9 @@ export default class Select extends Component {
     }
     const { value } = this.props;
 
-    const disbaled = Boolean(required);
     return (
       <select className="form-control" onChange={this.props.onChange} value={value}>
-        <option disbaled={disbaled.toString()} value="">
+        <option value="">
           {placeholder}
         </option>
         ;
