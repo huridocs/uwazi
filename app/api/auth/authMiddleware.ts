@@ -1,7 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
 
-import { User } from 'api/users/usersModel';
-
 declare global {
   namespace Express {
     export interface Request {

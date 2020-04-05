@@ -1,5 +1,5 @@
 import { Application, Request, Response, NextFunction } from 'express';
-import search from './search';
+import search from 'api/search/search';
 
 export default (app: Application) => {
   app.get('/api/search/lookup', (req: Request, res: Response, next: NextFunction) => {
