@@ -712,7 +712,8 @@ const instanceSearch = elasticIndex => ({
   },
 
   async autocomplete(searchTerm, language, templates = [], includeUnpublished = false) {
-    const published = includeUnpublished ? undefined : { term: { published: true } };
+    const publishedFilter = includeUnpublished ? undefined : { term: { published: true } };
+
     const body = {
       _source: {
         include: ['title', 'template', 'sharedId'],
@@ -730,7 +731,7 @@ const instanceSearch = elasticIndex => ({
               },
             },
           ],
-          filter: [published, { term: { language } }],
+          filter: [publishedFilter, { term: { language } }],
         },
       },
       sort: [],
@@ -745,6 +746,7 @@ const instanceSearch = elasticIndex => ({
     }
 
     const response = await elastic.search({ index: elasticIndex || elasticIndexes.index, body });
+
     return response.hits.hits.map(hit => ({
       value: hit._source.sharedId,
       label: hit._source.title,

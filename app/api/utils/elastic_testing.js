@@ -1,5 +1,3 @@
-/** @format */
-
 import { elastic } from 'api/search';
 import elasticMapping from '../../../database/elastic_mapping';
 

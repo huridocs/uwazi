@@ -469,6 +469,7 @@ export default {
       language: 'es',
     },
   ],
+  settings: [{ languages: [{ key: 'en', default: true }, { key: 'es' }] }],
 };
 
 export const ids = {

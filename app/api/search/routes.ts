@@ -4,8 +4,9 @@ import search from './search';
 export default (app: Application) => {
   app.get('/api/search/lookup', (req: Request, res: Response, next: NextFunction) => {
     const { query } = req;
+    const templates: [] = query.templates ? JSON.parse(query.templates) : [];
     search
-      .autocomplete(query.searchTerm, req.language, JSON.parse(query.templates))
+      .autocomplete(query.searchTerm, req.language, templates, query.unpublished || false)
       .then(response => res.json(response))
       .catch(next);
   });

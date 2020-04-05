@@ -89,48 +89,4 @@ export default app => {
       .then(response => res.json({ rows: response }))
       .catch(next);
   });
-
-  app.get(
-    '/api/search/lookup',
-    validation.validateRequest(
-      Joi.object().keys({
-        searchTerm: Joi.string().allow(''),
-        templates: Joi.array().allow(null),
-      }),
-      'query'
-    ),
-    (req, res, next) => {
-      const { query } = req;
-      search
-        .autocomplete(query.searchTerm, req.language, JSON.parse(query.templates))
-        .then(response => res.json(response))
-        .catch(next);
-    }
-  );
-
-  app.get(
-    '/api/search/lookupaggregation',
-    validation.validateRequest(
-      Joi.object().keys({
-        searchTerm: Joi.string().allow(''),
-        property: Joi.string(),
-        query: Joi.object(),
-      }),
-      'query'
-    ),
-    (req, res, next) => {
-      const query = JSON.parse(req.query.query);
-
-      search
-        .autocompleteAggregations(
-          query,
-          req.language,
-          req.query.property,
-          req.query.searchTerm,
-          req.user
-        )
-        .then(response => res.json(response))
-        .catch(next);
-    }
-  );
 };

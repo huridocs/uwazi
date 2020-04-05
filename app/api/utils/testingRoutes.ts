@@ -3,6 +3,7 @@ import express, { Application, Request, Response, NextFunction } from 'express';
 import { Response as SuperTestResponse } from 'supertest';
 
 import errorHandlingMiddleware from 'api/utils/error_handling_middleware';
+import languageMiddleware from 'api/utils/languageMiddleware';
 
 const iosocket = jasmine.createSpyObj('socket', ['emit']);
 
@@ -13,6 +14,7 @@ const setUpApp = (route: Function): Application => {
     req.getCurrentSessionSockets = () => ({ sockets: [iosocket], emit: iosocket.emit });
     next();
   });
+  app.use(languageMiddleware);
   route(app);
   app.use(errorHandlingMiddleware);
   return app;
