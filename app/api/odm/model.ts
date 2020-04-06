@@ -1,5 +1,4 @@
 import mongoose from 'mongoose';
-import errorLog from 'api/log/errorLog';
 
 import { model as updatelogsModel } from 'api/updatelogs';
 
