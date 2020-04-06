@@ -67,8 +67,7 @@ const limitMaxCategories = (sortedCategories, maxCategories, aggregateOthers) =>
 
 const determineRelevantCategories = (data, formatOptions) => {
   const { excludeZero, pluckCategories = [] } = formatOptions;
-
-  let relevantCategories = data.filter(i => i.key !== 'missing');
+  let relevantCategories = data.filter(i => i.key !== 'missing' && i.key !== 'any');
 
   if (excludeZero) {
     relevantCategories = relevantCategories.filter(i => i.filtered.doc_count !== 0);
