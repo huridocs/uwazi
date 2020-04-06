@@ -84,7 +84,7 @@ jobs:
           ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
 
   eslint:
-    runs-on: ubuntu-latest
+    runs-on: [jau, ubuntu-latest]
     steps:
       - uses: actions/checkout@v2
       - name: Use Node.js 10.17.x
