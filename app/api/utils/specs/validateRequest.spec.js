@@ -42,6 +42,7 @@ describe('validateRequest', () => {
 
       req.body = { prop1: 55, prop2: 'must be number' };
       middleware(schema)(req, res, next);
+
       expect(next.calls.argsFor(0)).toMatchSnapshot();
     });
   });
@@ -89,7 +90,15 @@ describe('validateRequest', () => {
 
       req.body = { prop1: 55, prop2: 'must be number' };
       await middleware(schema)(req, res, next);
-      expect(next.calls.argsFor(0)).toMatchSnapshot();
+      const expected = expect.objectContaining({
+        message: 'validation failed',
+        errors: [
+          expect.objectContaining({ message: 'should be string' }),
+          expect.objectContaining({ message: 'should be number' }),
+        ],
+        code: 400,
+      });
+      expect(next.calls.argsFor(0)).toEqual([expected]);
     });
   });
 });

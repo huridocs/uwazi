@@ -197,27 +197,6 @@ describe('search', () => {
       .catch(catchErrors(done));
   });
 
-  it('should convert aggregation buckets that are objects to arrays', done => {
-    result.aggregations.all = {
-      dictionaryWithGroups: {
-        buckets: {
-          a: { doc_count: 2, filtered: { doc_count: 1 } },
-          b: { doc_count: 2, filtered: { doc_count: 1 } },
-        },
-      },
-    };
-    spyOn(elastic, 'search').and.returnValue(Promise.resolve(result));
-    search.search({ searchTerm: '', geolocation: true }, 'en').then(response => {
-      const expectedBuckets = [
-        { key: 'a', doc_count: 2, filtered: { doc_count: 1 } },
-        { key: 'b', doc_count: 2, filtered: { doc_count: 1 } },
-        { key: 'any', doc_count: 10, filtered: { doc_count: 10 } },
-      ];
-      expect(response.aggregations.all.dictionaryWithGroups.buckets).toEqual(expectedBuckets);
-      done();
-    });
-  });
-
   it('should match entities related somehow with other entities with a title that is the search term', async () => {
     const { rows } = await search.search({ searchTerm: 'egypt' }, 'en');
 
@@ -309,6 +288,8 @@ describe('search', () => {
     expect(response.aggregations.all.groupedDictionary.buckets[3].label).toBe('Europe');
     expect(response.aggregations.all.groupedDictionary.buckets[3].values[0].label).toBe('Spain');
     expect(response.aggregations.all.groupedDictionary.buckets[3].values[1].label).toBe('France');
+    expect(response.aggregations.all.groupedDictionary.buckets[4].label).toBe('No label');
+    expect(response.aggregations.all.groupedDictionary.buckets[5].label).toBe('Any');
   });
 
   it('should filter by metadata, and return template aggregations based on the filter the language and the published status', done => {
@@ -484,7 +465,9 @@ describe('search', () => {
         search.search({ types: [ids.templateMetadata1, ids.templateMetadata2] }, 'en'),
         search.search(
           {
-            filters: { multiselect1: { values: ['multiValue2'], and: false } },
+            filters: {
+              multiselect1: { values: ['bce629bf-efc1-40dd-9af0-0542422dcbc3'], and: false },
+            },
             types: [ids.templateMetadata1, ids.templateMetadata2],
           },
           'en'
@@ -540,7 +523,7 @@ describe('search', () => {
           ).toBe(3);
 
           expect(filteredAggs.find(a => a.key === 'missing').filtered.doc_count).toBe(1);
-          // In the presence of value filters, don't provide the any bucket.
+
           expect(filteredAggs.find(a => a.key === 'any').filtered.doc_count).toBe(3);
           expect(templateAggs.find(a => a.key === ids.template1).filtered.doc_count).toBe(0);
           expect(templateAggs.find(a => a.key === ids.template2).filtered.doc_count).toBe(0);
@@ -825,8 +808,8 @@ describe('search', () => {
       expect(options.length).toBe(2);
       expect(options[0].value).toBeDefined();
       expect(options[0].template).toBeDefined();
-      expect(options[0].label).toBe('Batman finishes en');
-      expect(options[1].label).toBe('Batman begins en');
+      expect(options.find(o => o.label.includes('begins')).label).toBe('Batman begins en');
+      expect(options.find(o => o.label.includes('finishes')).label).toBe('Batman finishes en');
     });
 
     it('should filter by template', async () => {

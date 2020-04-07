@@ -74,9 +74,11 @@ abstract class MultiSelectBase<ValueType> extends Component<
 
   setValues(value: ValueType) {
     this.props.onChange(value);
-    const options = this.combineOptions();
-    const selectedOptions = value.map(v => options.find(o => o[this.props.optionsValue] === v));
-    this.setState({ selectedOptions });
+    if (this.props.lookup) {
+      const options = this.combineOptions();
+      const selectedOptions = value.map(v => options.find(o => o[this.props.optionsValue] === v));
+      this.setState({ selectedOptions });
+    }
   }
 
   abstract markChecked(value: ValueType, option: Option): ValueType;

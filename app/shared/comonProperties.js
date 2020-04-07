@@ -35,12 +35,9 @@ const comonProperties = (templates, documentTypes = []) => {
 };
 
 function comonFilters(templates, documentTypes = [], forcedProps = []) {
-  const result = [];
-  comonProperties(templates, documentTypes).filter(
-    prop => prop.filter || prop.type === 'relationshipfilter' || forcedProps.includes(prop.name)
+  return comonProperties(templates, documentTypes).filter(
+    prop => prop.filter || forcedProps.includes(prop.name)
   );
-
-  return result;
 }
 
 function defaultFilters(templates, forcedProps = []) {

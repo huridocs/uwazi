@@ -36,8 +36,8 @@ describe('Search routes', () => {
       expect(res.body[0].label).toBeDefined();
       expect(res.body[0].template).toBeDefined();
       expect(res.body[0].value).toBeDefined();
-      expect(res.body[0].label).toBe('Batman finishes en');
-      expect(res.body[1].label).toBe('Batman begins en');
+      expect(res.body.find(o => o.label.includes('finishes')).label).toBe('Batman finishes en');
+      expect(res.body.find(o => o.label.includes('begins')).label).toBe('Batman begins en');
     });
 
     it('should filter by template', async () => {

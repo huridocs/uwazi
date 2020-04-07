@@ -1,5 +1,3 @@
-/** @format */
-
 import Ajv from 'ajv';
 import Joi from 'joi';
 import objectId from 'joi-objectid';

@@ -3,7 +3,7 @@ import { shallow, ShallowWrapper } from 'enzyme';
 import React from 'react';
 import { MultiSelectProps, MultiSelectState, MultiSelectTristate } from '../MultiSelect';
 
-describe('MultiSelect', () => {
+describe('MultiSelectTristate', () => {
   let component: ShallowWrapper<
     MultiSelectProps<TriStateSelectValue>,
     MultiSelectState,

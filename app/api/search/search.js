@@ -206,7 +206,7 @@ const _denormalizeAggregations = async (aggregations, templates, dictionaries, l
       return Object.assign(denormaLizedAgregations, { [key]: aggregations[key] });
     }
 
-    const property = properties.find(prop => prop.name === key || `_${prop.name}` === key);
+    const property = properties.find(prop => prop.name === key || `__${prop.name}` === key);
 
     const dictionary = await _getAggregationDictionary(
       aggregations[key],
@@ -274,13 +274,44 @@ const _sanitizeAggregationsStructure = aggregations => {
   return result;
 };
 
+const _addAnyAggregation = (aggregations, filters, response) => {
+  const result = {};
+  Object.keys(aggregations).map(aggregationKey => {
+    const aggregation = aggregations[aggregationKey];
+
+    if (aggregation.buckets && aggregationKey !== '_types') {
+      const missingBucket = aggregation.buckets.find(b => b.key === 'missing');
+      const keyFilters = ((filters || {})[aggregationKey.replace('.value', '')] || {}).values || [];
+      const filterNoneOrMissing =
+        !keyFilters.filter(v => v !== 'any').length || keyFilters.find(v => v === 'missing');
+
+      const anyCount =
+        (typeof response.hits.total === 'object'
+          ? response.hits.total.value
+          : response.hits.total) -
+        (missingBucket && filterNoneOrMissing ? missingBucket.filtered.doc_count : 0);
+
+      aggregation.buckets.push({
+        key: 'any',
+        doc_count: anyCount,
+        label: 'Any',
+        filtered: { doc_count: anyCount },
+      });
+    }
+
+    result[aggregationKey] = aggregation;
+  });
+
+  return result;
+};
+
 const _sanitizeAggregations = async (aggregations, templates, dictionaries, language) => {
   const sanitizedAggregations = _sanitizeAggregationsStructure(aggregations);
   const sanitizedAggregationNames = _sanitizeAgregationNames(sanitizedAggregations);
   return _denormalizeAggregations(sanitizedAggregationNames, templates, dictionaries, language);
 };
 
-const processResponse = async (response, templates, dictionaries, language) => {
+const processResponse = async (response, templates, dictionaries, language, filters) => {
   const rows = response.hits.hits.map(hit => {
     const result = hit._source;
     result._explanation = hit._explanation;
@@ -296,10 +327,12 @@ const processResponse = async (response, templates, dictionaries, language) => {
     language
   );
 
+  const aggregationsWithAny = _addAnyAggregation(sanitizedAggregations, filters, response);
+
   return {
     rows,
     totalRows: response.hits.total.value,
-    aggregations: { all: sanitizedAggregations },
+    aggregations: { all: aggregationsWithAny },
   };
 };
 
@@ -579,9 +612,9 @@ const instanceSearch = elasticIndex => ({
     // queryBuilder.query() is the actual call
     return elastic
       .search({ index: elasticIndex || elasticIndexes.index, body: queryBuilder.query() })
-      .then(response => processResponse(response, templates, dictionaries, language))
+      .then(response => processResponse(response, templates, dictionaries, language, query.filters))
       .catch(e => {
-        throw createError(e.message, 400);
+        throw createError(e, 400);
       });
   },
 
