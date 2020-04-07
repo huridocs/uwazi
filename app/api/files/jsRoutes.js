@@ -14,6 +14,7 @@ import { generateFileName, temporalFilesPath } from 'api/files/filesystem';
 import settings from 'api/settings';
 import { processDocument } from 'api/files/processDocument';
 
+import errorLog from 'api/log/errorLog';
 import configPaths from '../config/paths';
 import { validation, handleError, createError } from '../utils';
 import needsAuthorization from '../auth/authMiddleware';
@@ -181,26 +182,23 @@ export default app => {
             generateFileName({ originalname: 'export.csv' })
           );
           const fileStream = fs.createWriteStream(temporalFilePath, { emitClose: true });
-
-          const exporterOptions = {
-            dateFormat,
-          };
+          const exporterOptions = { dateFormat };
 
           exporter
             .export(results, req.query.types, fileStream, exporterOptions)
             .then(() => {
               fileStream.end(() => {
-                res.download(temporalFilePath, generateExportFileName(site_name), err => {
-                  if (err) {
-                    return handleError(err);
-                  }
-
-                  return fs.unlinkSync(temporalFilePath);
+                res.download(temporalFilePath, generateExportFileName(site_name), () => {
+                  fs.unlink(temporalFilePath, err => {
+                    if (err) errorLog.error(`Error unlinking exported file: ${temporalFilePath}`);
+                  });
                 });
               });
             })
             .catch(e => {
-              fs.unlinkSync(temporalFilePath);
+              fs.unlink(temporalFilePath, err => {
+                if (err) errorLog.error(`Error unlinking exported file: ${temporalFilePath}`);
+              });
               next(e);
             });
         }

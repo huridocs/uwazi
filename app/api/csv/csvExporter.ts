@@ -23,6 +23,20 @@ export type SearchResults = {
   };
 };
 
+export type ExporterOptions = {
+  dateFormat: string;
+};
+
+export type ExportHeader = {
+  label: string;
+  name: string;
+  common: boolean;
+};
+
+export type TemplatesCache = {
+  [id: string]: TemplateSchema;
+};
+
 export const getTypes = (searchResults: SearchResults, typesWhitelist: string[]) =>
   typesWhitelist.length > 0
     ? typesWhitelist
@@ -32,7 +46,7 @@ export const getTypes = (searchResults: SearchResults, typesWhitelist: string[])
 
 const hasValue = (value: string) => value !== 'missing';
 
-export const getTemplatesModels = async (templateIds: string[]) =>
+export const getTemplatesModels = async (templateIds: string[]): Promise<TemplatesCache> =>
   Promise.all(
     templateIds.filter(hasValue).map(async (id: string) => templates.getById(id))
   ).then(results =>
@@ -48,7 +62,7 @@ export const notDuplicated = (collection: any) => (item: any) =>
 export const excludedProperties = (property: PropertySchema) =>
   !['geolocation', 'preview', 'markdown'].includes(property.type);
 
-export const processHeaders = (templatesCache: any): string[] =>
+export const processHeaders = (templatesCache: TemplatesCache): ExportHeader[] =>
   Object.values(templatesCache).reduce(
     (memo: any[], template: any) =>
       memo.concat(
@@ -60,7 +74,7 @@ export const processHeaders = (templatesCache: any): string[] =>
     []
   );
 
-export const prependCommonHeaders = (headers: any[]) =>
+export const prependCommonHeaders = (headers: ExportHeader[]) =>
   [
     {
       label: 'Title',
@@ -79,7 +93,7 @@ export const prependCommonHeaders = (headers: any[]) =>
     },
   ].concat(headers);
 
-export const concatCommonHeaders = (headers: any[]) =>
+export const concatCommonHeaders = (headers: ExportHeader[]) =>
   headers.concat([
     { label: 'Geolocation', name: 'geolocation', common: true },
     { label: 'Documents', name: 'documents', common: true },
@@ -95,39 +109,60 @@ export const processGeolocationField = (row: any, rowTemplate: TemplateSchema) =
   );
 
   if (geolocationField && geolocationField.name) {
-    return formatters.geolocation(row.metadata[geolocationField.name]);
+    return formatters.geolocation(row.metadata[geolocationField.name], {});
   }
 
   return '';
 };
 
-export const processEntity = (row: any, headers: any[], templatesCache: any, options?: any) => {
+export const processCommonField = (
+  headerName: string,
+  row: any,
+  rowTemplate: TemplateSchema,
+  options: any
+) => {
+  switch (headerName) {
+    case 'title':
+      return row.title;
+    case 'template':
+      return rowTemplate.name;
+    case 'creationDate':
+      return formatDate(row.creationDate, options.dateFormat);
+    case 'geolocation':
+      return processGeolocationField(row, rowTemplate);
+    case 'documents':
+      return formatters.documents(row.documents, options);
+    case 'attachments':
+      return formatters.attachments(
+        row.attachments.map((attachment: any) => ({ ...attachment, entityId: row._id })),
+        options
+      );
+    case 'published':
+      return row.published ? 'Published' : 'Unpublished';
+    default:
+      return '';
+  }
+};
+
+export const processEntity = (
+  row: any,
+  headers: ExportHeader[],
+  templatesCache: TemplatesCache,
+  options: ExporterOptions
+) => {
   const rowTemplate: TemplateSchema = templatesCache[row.template];
 
   if (!rowTemplate) {
     throw new Error('Entity missing template');
   }
 
-  return headers.map((header: any) => {
+  return headers.map((header: ExportHeader) => {
     if (header.common) {
-      switch (header.name) {
-        case 'title':
-          return row.title;
-        case 'template':
-          return rowTemplate.name;
-        case 'creationDate':
-          return formatDate(row.creationDate, options.dateFormat);
-        case 'geolocation':
-          return processGeolocationField(row, rowTemplate);
-        case 'documents':
-          return formatters.documents(row.documents);
-        case 'attachments':
-          return formatters.attachments({ attachments: row.attachments, entityId: row._id });
-        case 'published':
-          return formatters.published(row);
-        default:
-          return '';
-      }
+      return processCommonField(header.name, row, rowTemplate, options);
+    }
+
+    if (!row.metadata[header.name]) {
+      return '';
     }
 
     const templateProperty = rowTemplate?.properties?.find(
@@ -147,8 +182,8 @@ export default class CSVExporter extends EventEmitter {
     searchResults: SearchResults,
     types: string[] = [],
     writeStream: WritableStream,
-    options: any = {}
-  ): Promise<any> {
+    options: ExporterOptions = { dateFormat: 'YYY-MM-DD' }
+  ): Promise<void> {
     const csvStream = csv.format({ headers: false });
 
     csvStream.pipe<any>(writeStream);

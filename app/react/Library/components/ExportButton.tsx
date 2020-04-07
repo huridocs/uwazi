@@ -1,14 +1,20 @@
-import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Icon } from 'app/UI';
 import { t } from 'app/I18N';
 import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
+import { bindActionCreators, Dispatch } from 'redux';
 import { wrapDispatch } from 'app/Multireducer';
 import { exportDocuments } from 'app/Library/actions/exportActions';
+import { ExportStore } from '../reducers/ExportStoreType';
 
-export class ExportButton extends Component {
-  constructor(props) {
+export type ExportButtonProps = {
+  processing: boolean;
+  storeKey: string;
+  exportDocuments: (keyStore: string) => any;
+}
+
+export class ExportButton extends Component<ExportButtonProps, {}> {
+  constructor(props: ExportButtonProps) {
     super(props);
     this.export = this.export.bind(this);
   }
@@ -21,7 +27,10 @@ export class ExportButton extends Component {
 
   render() {
     return (
-      <span onClick={this.export} className="btn btn-primary" disabled={this.props.processing}>
+      <span
+        onClick={this.export}
+        className={`btn btn-primary ${this.props.processing ? 'btn-disabled' : ''}`}
+      >
         {!this.props.processing ? (
           <Icon icon="export-csv" transform="right-0.5 up-1" />
         ) : (
@@ -33,19 +42,13 @@ export class ExportButton extends Component {
   }
 }
 
-ExportButton.propTypes = {
-  exportDocuments: PropTypes.func.isRequired,
-  storeKey: PropTypes.string.isRequired,
-  processing: PropTypes.bool.isRequired,
-};
-
-function mapDispatchToProps(dispatch, props) {
+function mapDispatchToProps(dispatch: Dispatch<any>, props: ExportButtonProps) {
   return bindActionCreators({ exportDocuments }, wrapDispatch(dispatch, props.storeKey));
 }
 
-function mapStateToProps(state) {
+function mapStateToProps(state: ExportStore) {
   return {
-    processing: state.entityExport.exportProcessing,
+    processing: state.exportSearchResults.exportSearchResultsProcessing,
   };
 }
 
