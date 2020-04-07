@@ -95,5 +95,6 @@ exports[`FiltersForm render() should render diferent type fileds 1`] = `
     ]
   }
   storeKey="library"
+  translationContext="System"
 />
 `;

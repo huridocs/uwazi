@@ -1,51 +1,71 @@
 import { PropertySchema } from 'shared/types/commonTypes';
 
-function getSuggestionsQuery(
-  templateProperty: PropertySchema,
-  templateID: string,
-  includeUnpublished: boolean,
-  unpublishedOnly: boolean
-) {
+function baseQuery(templateID: string, includeUnpublished: boolean, unpublishedOnly: boolean) {
   const query = {
     select: ['sharedId'],
     limit: 1,
     filters: {},
     includeUnpublished,
     unpublished: unpublishedOnly,
+    allAggregations: true,
     types: [templateID],
   };
-  const { name } = templateProperty;
-  if (name === undefined) {
-    return null;
-  }
-  const filters: any = {
-    [name]: {
-      values: unpublishedOnly ? ['any'] : ['missing'],
-    },
-    [`_${name}`]: {
-      values: ['any'],
-    },
-  };
-  query.filters = filters;
   return query;
 }
 
 export function getReadyToReviewSuggestionsQuery(
   templateID: string,
-  matchingTemplateProperty?: PropertySchema
+  templateProperty: PropertySchema
 ) {
-  if (!matchingTemplateProperty) {
-    return {};
+  if (!templateProperty || !templateProperty.name) {
+    return null;
   }
-  return getSuggestionsQuery(matchingTemplateProperty, templateID, true, false);
+  const { name } = templateProperty;
+  return {
+    ...baseQuery(templateID, true, false),
+    filters: {
+      [name]: {
+        values: ['missing'],
+      },
+      [`__${name}`]: {
+        values: ['any'],
+      },
+    },
+  };
 }
 
 export function getReadyToPublishSuggestionsQuery(
   templateID: string,
-  matchingTemplateProperty?: PropertySchema
+  templateProperty: PropertySchema
 ) {
-  if (!matchingTemplateProperty) {
-    return {};
+  if (!templateProperty || !templateProperty.name) {
+    return null;
   }
-  return getSuggestionsQuery(matchingTemplateProperty, templateID, false, true);
+  const { name } = templateProperty;
+  return {
+    ...baseQuery(templateID, false, true),
+    filters: {
+      [name]: {
+        values: ['any'],
+      },
+      [`__${name}`]: {
+        values: ['any'],
+      },
+    },
+  };
+}
+
+export function getLabelsQuery(templateID: string, templateProperty: PropertySchema) {
+  if (!templateProperty || !templateProperty.name) {
+    return null;
+  }
+  const { name } = templateProperty;
+  return {
+    ...baseQuery(templateID, true, false),
+    filters: {
+      [name]: {
+        values: ['any'],
+      },
+    },
+  };
 }

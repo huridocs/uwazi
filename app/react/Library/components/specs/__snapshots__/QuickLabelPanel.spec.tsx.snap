@@ -1,0 +1,110 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`QuickLabelPanel should render correctly 1`] = `
+<SidePanel
+  className="quick-label"
+  open={true}
+>
+  <div
+    className="sidepanel-header"
+  >
+    <Connect(Icon)
+      icon="check"
+    />
+     
+    <span>
+      2
+       
+      selected
+    </span>
+    <button
+      className="btn btn-default btn-header btn-toggle-on"
+      onClick={[Function]}
+      type="button"
+    >
+      <Connect(Icon)
+        icon="toggle-on"
+      />
+      <span
+        className="btn-label"
+      >
+        Auto-save
+      </span>
+    </button>
+    <button
+      className="closeSidepanel close-modal"
+      onClick={[Function]}
+      type="button"
+    >
+      <Connect(Icon)
+        icon="times"
+      />
+    </button>
+  </div>
+  <div
+    className="sidepanel-body"
+  >
+    <div>
+      <Notice
+        title="Label your collection"
+      >
+        <div>
+          <div>
+            Note: Make the sample set of documents for each topic diverse and representative. For example, use various methods to find sample documents and don't just search for the term "education" to find documents for the topic "Education".
+            <br />
+            <br />
+            Return to the thesaurus page when you finished labeling to start learning.
+          </div>
+        </div>
+      </Notice>
+      <div
+        className="form-group"
+        key="opts"
+      >
+        <ul
+          className="search__filter is-active"
+        >
+          <li
+            className="title"
+          >
+            <label>
+              Opts
+            </label>
+          </li>
+          <li
+            className="wide"
+          />
+          <MultiSelectTristate
+            model="library.sidepanel.quickLabelMetadata.opts"
+            options={
+              Array [
+                Object {
+                  "id": "v1",
+                  "label": "V1",
+                },
+                Object {
+                  "id": "v2",
+                  "label": "V2",
+                },
+              ]
+            }
+            optionsValue="id"
+            placeholder="Search 'thesaurus1'"
+            prefix="library.sidepanel.quickLabelMetadata.opts"
+            sort={true}
+          />
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div
+    className="sidepanel-footer"
+  >
+    <Connect(StateSelectorBase)
+      isPristine={[Function]}
+    >
+      <Component />
+    </Connect(StateSelectorBase)>
+  </div>
+</SidePanel>
+`;

@@ -49,12 +49,14 @@ export default class Map extends Component {
     const { markers } = this.props;
     this.setSize();
     const map = this.map.getMap();
-    map.on('load', () => this.centerOnMarkers(markers));
-    map.on('moveend', e => {
-      if (e.autoCentered) {
-        this.setViweport(map);
-      }
-    });
+    if (map) {
+      map.on('load', () => this.centerOnMarkers(markers));
+      map.on('moveend', e => {
+        if (e.autoCentered) {
+          this.setViweport(map);
+        }
+      });
+    }
     this.eventListener = window.addEventListener('resize', this.setSize);
   }
 

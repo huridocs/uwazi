@@ -34,14 +34,38 @@ describe('MultiSelect', () => {
     instance = component.instance();
   };
 
-  it('should render the checkboxes', () => {
+  it('should render the checkboxes empty', () => {
     render();
     const optionElements = component.find('input[type="checkbox"]');
     expect(optionElements.length).toBe(5);
     expect(optionElements.at(0).props().value).toBe('option1');
+    expect(optionElements.at(0).hasClass('partial')).toBe(false);
     expect(optionElements.at(1).props().value).toBe('option2');
+    expect(optionElements.at(1).hasClass('partial')).toBe(false);
+    expect(optionElements.at(2).props().value).toBe(undefined);
+    expect(optionElements.at(2).hasClass('partial')).toBe(false);
     expect(optionElements.at(3).props().value).toBe('group-option1');
+    expect(optionElements.at(3).hasClass('partial')).toBe(false);
     expect(optionElements.at(4).props().value).toBe('group-option2');
+    expect(optionElements.at(4).hasClass('partial')).toBe(false);
+  });
+
+  it('should render the checkboxes partial group', () => {
+    props.value = ['group-option2'];
+    render();
+    const optionElements = component.find('input[type="checkbox"]');
+    expect(optionElements.length).toBe(5);
+    // Group is hoisted.
+    expect(optionElements.at(0).props().value).toBe(undefined);
+    expect(optionElements.at(0).hasClass('partial')).toBe(true);
+    expect(optionElements.at(1).props().value).toBe('group-option1');
+    expect(optionElements.at(1).hasClass('partial')).toBe(false);
+    expect(optionElements.at(2).props().value).toBe('group-option2');
+    expect(optionElements.at(2).hasClass('partial')).toBe(false);
+    expect(optionElements.at(3).props().value).toBe('option1');
+    expect(optionElements.at(3).hasClass('partial')).toBe(false);
+    expect(optionElements.at(4).props().value).toBe('option2');
+    expect(optionElements.at(4).hasClass('partial')).toBe(false);
   });
 
   it('should not render aggregations on the groups when not defined', () => {

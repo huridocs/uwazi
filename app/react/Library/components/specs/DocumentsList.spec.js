@@ -2,7 +2,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import Immutable, { fromJS } from 'immutable';
 
-import { clickOnDocument, mapStateToProps } from '../DocumentsList';
+import { clickOnDocument, selectAllDocuments, mapStateToProps } from '../DocumentsList';
 import DocumentsList from '../../../Layout/DocumentsList';
 
 describe('Library DocumentsList container', () => {
@@ -102,6 +102,7 @@ describe('Library DocumentsList container', () => {
         authorized: true,
         rowListZoomLevel: 2,
         clickOnDocument,
+        selectAllDocuments,
       });
     });
   });

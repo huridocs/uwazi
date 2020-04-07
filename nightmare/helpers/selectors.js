@@ -24,8 +24,10 @@ export default {
     dictionariesViewSuggestionsButton:
       '#app > div.content > div > div > div.settings-content > div > div.thesauri-list > table > tbody > tr:nth-child(2) > td:nth-child(2) > div > a',
     dictionariesReviewSuggestionsButton:
-      '#app > div.content > div > div > div.settings-content > div > div.cockpit > table > tbody > tr:nth-child(2) > td:nth-child(3) > a',
-    entitiesButton:
+      '#app > div.content > div > div > div.settings-content > div > div.cockpit > table > tbody > tr:nth-child(2) > td:nth-child(4) > a',
+    dictionariesLabelDocumentsButton:
+      '#app > div.content > div > div > div.settings-content > div > div.cockpit > div.notice > div.main > div:nth-child(1) > div.footer > a',
+    templatesButton:
       '#app > div.content > div > div > div.settings-navigation > div > div:nth-child(2) > div.list-group > a:nth-child(1)',
     connectionsButton:
       '#app > div.content > div > div > div.settings-navigation > div > div:nth-child(2) > div.list-group > a:nth-child(3)',
@@ -51,7 +53,7 @@ export default {
       '#app > div.content > div > div > div.settings-content > div > div.settings-footer > a',
     addNewDocument:
       '#app > div.content > div > div > div.settings-content > div > div.settings-footer > a',
-    addNewEntity:
+    addNewTemplate:
       '#app > div.content > div > div > div.settings-content > div > div.settings-footer > a',
     addNewConnection:
       '#app > div.content > div > div > div.settings-content > div > div.settings-footer > a',
@@ -63,7 +65,7 @@ export default {
       '#app > div.content > div > div > div.settings-content > div > form > div > div.thesauri-values > div:nth-child(2) > ul > div:nth-child(2) > div > div > input',
     saveDictionaryButton:
       '#app > div.content > div > div > div.settings-content > div > form > div > div.settings-footer > .save-template',
-    saveDocumentButton:
+    saveTemplateButton:
       '#app > div.content > div > div > div.settings-content > div > div > div.panel-body > div > main > div > form > div.settings-footer > button',
     saveEntityButton:
       '#app > div.content > div > div > div.settings-content > div > div > div.panel-body > div > main > div > form > div.settings-footer > button',
@@ -92,39 +94,41 @@ export default {
       '#app > div.content > div > div > div.settings-content > div > form > div.settings-footer > button',
     privateInstance:
       '#app > div.content > div > div > div.settings-content > div > div.panel-body > form > div:nth-child(2) > div > label',
+    templatePropertiesList:
+      '#app > div.content > div > div > div.settings-content > div > div > div.panel-body > div > main > div > form > ul',
   },
   libraryView: {
     libraryFirstDocument:
-      '#app > div.content > div > div > main > div > div > div.item-group > div:nth-child(1)',
+      '#app > div.content > div > div > div > main > div > div > div.item-group > div:nth-child(1)',
     libraryFirstDocumentLink:
-      '#app > div.content > div > div > main > div > div > div.item-group > div:nth-child(1) > div.item-actions > div:nth-child(2) > a',
+      '#app > div.content > div > div > div > main > div > div > div.item-group > div:nth-child(1) > div.item-actions > div:nth-child(2) > a',
     libraryFirstDocumentSnippet:
-      '#app > div.content > div > div > main > div > div > div.item-group > div:nth-child(1) > div.item-info > div.item-snippet-wrapper > div.item-snippet',
+      '#app > div.content > div > div > div > main > div > div > div.item-group > div:nth-child(1) > div.item-info > div.item-snippet-wrapper > div.item-snippet',
     librarySidePanelSnippet:
-      '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > ul.snippet-list > li.snippet-list-item',
+      '#app > div.content > div > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > ul.snippet-list > li.snippet-list-item',
     librarySidePanelFirstSnippet:
-      '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > ul.snippet-list > li:nth-child(1)',
+      '#app > div.content > div > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > ul.snippet-list > li:nth-child(1)',
     librarySidePanelSecondSnippet:
-      '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > ul.snippet-list > li:nth-child(2)',
+      '#app > div.content > div > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > ul.snippet-list > li:nth-child(2)',
     libraryFirstDocumentTitle:
-      '#app > div.content > div > div > main > div > div > div.item-group > div:nth-child(1) > div.item-info > div',
+      '#app > div.content > div > div > div > main > div > div > div.item-group > div:nth-child(1) > div.item-info > div',
     librarySecondDocument:
-      '#app > div.content > div > div > main > div > div > div.item-group > div:nth-child(2)',
+      '#app > div.content > div > div > div > main > div > div > div.item-group > div:nth-child(2)',
     librarySecondDocumentTitle:
-      '#app > div.content > div > div > main > div > div > div.item-group > div:nth-child(2) > div.item-info > div > span',
+      '#app > div.content > div > div > div > main > div > div > div.item-group > div:nth-child(2) > div.item-info > div > span',
     librarySecondDocumentLink:
-      '#app > div.content > div > div > main > div > div > div.item-group > div:nth-child(2) > div.item-actions > div:nth-child(2) > a',
+      '#app > div.content > div > div > div > main > div > div > div.item-group > div:nth-child(2) > div.item-actions > div:nth-child(2) > a',
     anyItemSnippet: 'div.item-snippet-wrapper > div',
     libraryThirdDocument:
-      '#app > div.content > div > div > main > div > div > div.item-group > div:nth-child(3)',
+      '#app > div.content > div > div > div > main > div > div > div.item-group > div:nth-child(3)',
     libraryMultiEditListHeader:
-      '#app > div.content > div > div > aside.side-panel.multi-edit > div.sidepanel-header',
+      '#app > div.content > div > div > div > aside.side-panel.multi-edit > div.sidepanel-header',
     libraryMultiEditEditButton:
-      '#app > div.content > div > div > aside.side-panel.multi-edit.is-active > div.sidepanel-footer > button.edit.btn.btn-primary',
+      '#app > div.content > div > div > div > aside.side-panel.multi-edit.is-active > div.sidepanel-footer > button.edit.btn.btn-primary',
     libraryMultiEditDeleteButton:
-      '#app > div.content > div > div > aside.side-panel.multi-edit.is-active > div.sidepanel-footer > button.delete.btn.btn-danger',
+      '#app > div.content > div > div > div > aside.side-panel.multi-edit.is-active > div.sidepanel-footer > button.delete.btn.btn-danger',
     libraryMultiEditSaveButton:
-      '#app > div.content > div > div > aside.side-panel.multi-edit.is-active > div.sidepanel-footer > button.btn.btn-success',
+      '#app > div.content > div > div > div > aside.side-panel.multi-edit.is-active > div.sidepanel-footer > button.btn.btn-success',
     libraryMultiEditFormOption:
       '#multiEdit > div:nth-child(2) > div > ul > li.wide > ul > li:nth-child(2) > label > span',
     libraryMultiEditFirstInput:
@@ -132,39 +136,39 @@ export default {
     libraryMetadataPanel: '.side-panel.metadata-sidepanel',
     searchInLibrary: '#app > div.content > header > div > a',
     searchForm:
-      '#app > div.content > div > div > aside.side-panel.library-filters > div.sidepanel-body > div.search-box > form',
+      '#app > div.content > div > div > div > aside.side-panel.library-filters > div.sidepanel-body > div.search-box > form',
     searchInput:
-      '#app > div.content > div > div > main > div > div > div.search-list > div > form > div.input-group > div > input',
+      '#app > div.content > div > div > div > main > div > div > div.search-list > div > form > div.input-group > div > input',
     firstSearchSuggestion:
-      '#app > div.content > div > div > aside.side-panel.library-filters > div.sidepanel-body > div.search-box > form > div.search-suggestions > p:nth-child(1) > a',
+      '#app > div.content > div > div > div > aside.side-panel.library-filters > div.sidepanel-body > div.search-box > form > div.search-suggestions > p:nth-child(1) > a',
     firstDocumentViewButton:
-      '#app > div.content > div > div > main > div > div > div.item-group > div:nth-child(2) > div.item-actions > div:nth-child(2) > a',
+      '#app > div.content > div > div > div > main > div > div > div.item-group > div:nth-child(2) > div.item-actions > div:nth-child(2) > a',
     firstEntityViewButton:
-      '#app > div.content > div > div > main > div > div > div.item-group > div:nth-child(1) > div.item-actions > div:nth-child(2) > a',
+      '#app > div.content > div > div > div > main > div > div > div.item-group > div:nth-child(1) > div.item-actions > div:nth-child(2) > a',
     documentTypeFilter:
-      '#app > div.content > div > div > aside.side-panel.library-filters > div.sidepanel-body > div.documentTypes-selector > ul > li:nth-child(4) > label > span.multiselectItem-name',
+      '#app > div.content > div > div > div > aside.side-panel.library-filters > div.sidepanel-body > div.documentTypes-selector > ul > li:nth-child(4) > label > span.multiselectItem-name',
     editEntityButton:
-      '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-footer > span > button.edit-metadata.btn.btn-primary',
+      '#app > div.content > div > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-footer > span > button.edit-metadata.btn.btn-primary',
     saveButton:
-      '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-footer > span > button.btn.btn-success',
+      '#app > div.content > div > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-footer > span > button.btn.btn-success',
     deleteButton:
-      '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-footer > span > button.delete-metadata.btn.btn-danger',
+      '#app > div.content > div > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-footer > span > button.delete-metadata.btn.btn-danger',
     deleteButtonConfirmation:
       'body > div.ReactModalPortal > div > div > div > div.modal-footer > button.btn.confirm-button.btn-danger',
     loadMore:
-      '#app > div.content > div > div > main > div.documents-list > div > div.row > div:nth-child(2) > a:nth-child(1)',
+      '#app > div.content > div > div > div > main > div.documents-list > div > div.row > div:nth-child(2) > a:nth-child(1)',
     documentAfterLoadMore:
-      '#app > div.content > div > div > main > div > div > div.item-group > div:nth-child(31)',
+      '#app > div.content > div > div > div > main > div > div > div.item-group > div:nth-child(31)',
     superVillianType:
-      '#app > div.content > div > div > aside.side-panel.library-filters > div.sidepanel-body > div.documentTypes-selector.nested-selector > ul > li:nth-child(2) > label',
+      '#app > div.content > div > div > div > aside.side-panel.library-filters > div.sidepanel-body > div.documentTypes-selector.nested-selector > ul > li:nth-child(2) > label',
     minorVillianType:
-      '#app > div.content > div > div > aside.side-panel.library-filters > div.sidepanel-body > div.documentTypes-selector.nested-selector > ul > li:nth-child(5) > label',
+      '#app > div.content > div > div > div > aside.side-panel.library-filters > div.sidepanel-body > div.documentTypes-selector.nested-selector > ul > li:nth-child(5) > label',
     resetFilters:
-      '#app > div.content > div > div > aside.side-panel.library-filters > div.sidepanel-footer > span',
+      '#app > div.content > div > div > div > aside.side-panel.library-filters > div.sidepanel-footer > span',
     sidePanelCloseButton:
-      '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-header > button',
+      '#app > div.content > div > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-header > button',
     sidePanelDocumentType:
-      '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div.view > div > span',
+      '#app > div.content > div > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div.view > div > span',
   },
   documentView: {
     searchTextTab:
@@ -260,16 +264,17 @@ export default {
       '#app > div.content > div > div > .entity-connections ul > li:nth-child(2) > div',
   },
   uploadsView: {
-    uploadBox: '#app > div.content > div > div > main > div.upload-box',
+    uploadBox: '#app > div.content > div > div > div > main > div.upload-box',
     firstDocument:
-      '#app > div.content > div > div > main > div.documents-list > div > div.item-group > div:nth-child(1)',
-    newEntityButtom: '#app > div.content > div > div > div > div > button',
+      '#app > div.content > div > div > div > main > div.documents-list > div > div.item-group > div:nth-child(1)',
+    newEntityButtom:
+      '#app > div.content > div > div > div.content-header > div > button:nth-child(2)',
     saveButton:
-      '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-footer > span > button.btn.btn-success',
+      '#app > div.content > div > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-footer > span > button.btn.btn-success',
     publishButton:
-      '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-footer > span > button.publish.btn.btn-success',
+      '#app > div.content > div > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-footer > span > button.publish.btn.btn-success',
     multiPublishButton:
-      '#app > div.content > div > div > aside.side-panel.multi-edit.is-active > div.sidepanel-footer > button.publish.btn.btn-success',
+      '#app > div.content > div > div > div > aside.side-panel.multi-edit.is-active > div.sidepanel-footer > button.publish.btn.btn-success',
     acceptPublishModel:
       'body > div.ReactModalPortal > div > div > div > div.modal-footer > button.btn.confirm-button.btn-success',
     metadataPanel: '.side-panel.metadata-sidepanel',
@@ -347,21 +352,21 @@ export default {
     },
     viewer: {
       title:
-        '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div.view > div > div > h1',
+        '#app > div.content > div > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div.view > div > div > h1',
       realName:
-        '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div.view > dl:nth-child(2) > dd',
+        '#app > div.content > div > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div.view > dl:nth-child(2) > dd',
       age:
-        '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div.view > dl:nth-child(3) > dd',
+        '#app > div.content > div > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div.view > dl:nth-child(3) > dd',
       knownAccomplices:
-        '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div > dl:nth-child(4) > dd > ul > li > a',
+        '#app > div.content > div > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div > dl:nth-child(4) > dd > ul > li > a',
       mainSuperpower:
-        '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div.view > dl:nth-child(5) > dd',
+        '#app > div.content > div > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div.view > dl:nth-child(5) > dd',
       superpowers:
-        '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div.view > dl:nth-child(6) > dd > ul',
+        '#app > div.content > div > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div.view > dl:nth-child(6) > dd > ul',
       firstSight:
-        '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div.view > dl:nth-child(7) > dd',
+        '#app > div.content > div > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div.view > dl:nth-child(7) > dd',
       whoIsHe:
-        '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div > dl:nth-child(8) > dd > div > p',
+        '#app > div.content > div > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div > dl:nth-child(8) > dd > div > p',
     },
   },
   review: {
@@ -400,5 +405,23 @@ export default {
       'body > div:nth-child(7) > div > div > div > div.modal-footer > button.btn.confirm-button.btn-danger',
     cancelConfirmDialog:
       'body > div:nth-child(7) > div > div > div > div.modal-footer > button.btn.btn-default.cancel-button',
+  },
+  quickLabel: {
+    notice:
+      '#app > div.content > div > div > div > aside.side-panel.quick-label.is-active > div.sidepanel-body > div > div.notice',
+    autoSaveToggleOn:
+      '#app > div.content > div > div > div > aside.side-panel.quick-label.is-active > div.sidepanel-header > button.btn.btn-default.btn-header.btn-toggle-on',
+    autoSaveToggleOff:
+      '#app > div.content > div > div > div > aside.side-panel.quick-label.is-active > div.sidepanel-header > button.btn.btn-default.btn-header.btn-toggle-off',
+    discardButton:
+      '#app > div.content > div > div > div > aside.side-panel.quick-label.is-active > div.sidepanel-footer > button.cancel-edit-metadata.btn-danger.btn.btn-default',
+    saveButton:
+      '#app > div.content > div > div > div > aside.side-panel.quick-label.is-active > div.sidepanel-footer > button.save-metadata.btn.btn-default',
+    firstCheckboxOff:
+      '#app > div.content > div > div > div > aside.side-panel.quick-label.is-active > div.sidepanel-body > div > div.form-group > ul > ul > li:nth-child(2) > label > span.multiselectItem-icon > svg.svg-inline--fa.fa-square.fa-w-14.checkbox-empty',
+    firstCheckboxOn:
+      '#app > div.content > div > div > div > aside.side-panel.quick-label.is-active > div.sidepanel-body > div > div.form-group > ul > ul > li:nth-child(2) > label > span.multiselectItem-icon > svg.svg-inline--fa.fa-check.fa-w-16.checkbox-checked',
+    firstCheckboxPartial:
+      '#app > div.content > div > div > div > aside.side-panel.quick-label.is-active > div.sidepanel-body > div > div.form-group > ul > ul > li:nth-child(2) > label > span.multiselectItem-icon > svg.svg-inline--fa.fa-minus.fa-w-14.checkbox-partial',
   },
 };

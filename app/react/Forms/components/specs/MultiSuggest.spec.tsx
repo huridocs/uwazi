@@ -1,5 +1,3 @@
-/** @format */
-
 import React from 'react';
 import { shallow, ShallowWrapper } from 'enzyme';
 import { propertyTypes } from 'shared/propertyTypes';
@@ -59,7 +57,7 @@ describe('MultiSelect', () => {
     ).toEqual('Cl');
     expect(
       component
-        .find('span[className="multiselectItem-confidence medium"]')
+        .find('span[className="confidence-bubble medium"]')
         .at(0)
         .props().children
     ).toEqual('medium');
@@ -70,7 +68,7 @@ describe('MultiSelect', () => {
     render();
     expect(
       component
-        .find('span[className="multiselectItem-confidence low"]')
+        .find('span[className="confidence-bubble low"]')
         .at(0)
         .props().children
     ).toEqual('low');
@@ -81,7 +79,7 @@ describe('MultiSelect', () => {
     render();
     expect(
       component
-        .find('span[className="multiselectItem-confidence high"]')
+        .find('span[className="confidence-bubble high"]')
         .at(0)
         .props().children
     ).toEqual('high');

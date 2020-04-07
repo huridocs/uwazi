@@ -1,4 +1,3 @@
-/** @format */
 import { shallow } from 'enzyme';
 import Immutable from 'immutable';
 import React from 'react';
@@ -13,23 +12,14 @@ describe('ThesaurisList', () => {
   beforeEach(() => {
     props = {
       deleteThesaurus: jasmine.createSpy('deleteThesaurus').and.returnValue(Promise.resolve()),
-      disableClassification: jasmine
-        .createSpy('disableClassification')
-        .and.returnValue(Promise.resolve()),
-      enableClassification: jasmine
-        .createSpy('enableClassification')
-        .and.returnValue(Promise.resolve()),
-      checkThesaurusCanBeClassified: jasmine
-        .createSpy('checkThesaurusCanBeClassified')
-        .and.returnValue(Promise.resolve()),
       checkThesaurusCanBeDeleted: jasmine
         .createSpy('checkThesaurusCanBeDeleted')
         .and.returnValue(Promise.resolve()),
+      topicClassificationEnabled: true,
       dictionaries: Immutable.fromJS([
         {
           _id: 'thesaurusUnderscoreId1',
           name: 'Continents',
-          model_available: false,
           values: [
             {
               _id: 'valueUnderscoreId1',
@@ -66,7 +56,6 @@ describe('ThesaurisList', () => {
         {
           _id: 'thesaurusUnderscoreId2',
           name: 'Issues',
-          model_available: true,
           enable_classification: true,
           suggestions: 3,
           values: [
@@ -105,17 +94,26 @@ describe('ThesaurisList', () => {
       expect(component).toMatchSnapshot();
     });
 
+    it('should omit non-enable_classification thesauris if toggle if off', () => {
+      props.topicClassificationEnabled = false;
+      render();
+      const renderedContexts = component.find('table');
+      expect(renderedContexts.find('td').find('.vertical-line').length).toBe(1);
+    });
+
     it('should render suggestions nodes when suggestions exist', () => {
       render();
       const renderedContexts = component.find('table');
       expect(renderedContexts.length).toBe(1);
       expect(renderedContexts.find({ scope: 'row' }).length).toBe(2);
-      expect(renderedContexts.find('td').find('.vertical-line').length).toBe(1);
+      expect(renderedContexts.find('td').find('.thesaurus-suggestion-count').length).toBe(1);
+      expect(renderedContexts.find('td').find('.vertical-line').length).toBe(2);
       expect(
         renderedContexts
           .find('td')
           .find('.vertical-line')
-          .containsMatchingElement(<span>View suggestions</span>)
+          .at(0)
+          .containsMatchingElement(<span>Configure suggestions</span>)
       ).toBeTruthy();
       expect(
         renderedContexts
@@ -128,18 +126,6 @@ describe('ThesaurisList', () => {
   });
 
   describe('classification', () => {
-    it('should validate the classifier model before enabling', done => {
-      render();
-      component
-        .instance()
-        .enableClassification({ _id: 'thesaurusUnderscoreId2', name: 'Issues' })
-        .then(() => {
-          expect(props.checkThesaurusCanBeClassified).toHaveBeenCalled();
-          done();
-        });
-      component.instance().enableClassification({});
-    });
-
     it('should confirm  before deleting the thesaurus', done => {
       render();
       component
@@ -150,7 +136,6 @@ describe('ThesaurisList', () => {
           expect(props.checkThesaurusCanBeDeleted).toHaveBeenCalled();
           done();
         });
-      component.instance().enableClassification({});
     });
   });
 });

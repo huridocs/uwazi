@@ -20,6 +20,7 @@ describe('Metadata', () => {
 
   const prepareMultivalueMetadata = () => [
     {
+      translateContext: 'oneTranslateContext',
       name: 'label_array',
       label: 'label array',
       value: [
@@ -36,18 +37,31 @@ describe('Metadata', () => {
 
   it('should not render metadata without value', () => {
     testMetadata([
-      { label: 'Label', value: 'string value', name: 'label' },
-      { label: 'Label2', name: 'label2' },
+      {
+        translateContext: 'oneTranslateContext',
+        label: 'Label',
+        value: 'string value',
+        name: 'label',
+      },
+      { translateContext: 'oneTranslateContext', label: 'Label2', name: 'label2' },
     ]);
   });
 
   it('should render string values', () => {
-    testMetadata([{ label: 'Label', value: 'string value', name: 'label' }]);
+    testMetadata([
+      {
+        translateContext: 'oneTranslateContext',
+        label: 'Label',
+        value: 'string value',
+        name: 'label',
+      },
+    ]);
   });
 
   it('should render array values separated by ", "', () => {
     testMetadata([
       {
+        translateContext: 'oneTranslateContext',
         name: 'label_array',
         label: 'label array',
         value: [{ value: 'first_value' }, { value: 'second_value' }],
@@ -58,6 +72,7 @@ describe('Metadata', () => {
   it('should render an image field', () => {
     testMetadata([
       {
+        translateContext: 'oneTranslateContext',
         name: 'image_label',
         label: 'Image Label',
         value: 'http://some.url.com/image.jpg',
@@ -70,6 +85,7 @@ describe('Metadata', () => {
   it('should render a link', () => {
     testMetadata([
       {
+        translateContext: 'oneTranslateContext',
         name: 'link',
         label: 'Link',
         value: { url: 'url', label: 'label' },
@@ -81,6 +97,7 @@ describe('Metadata', () => {
   it('should render a media field', () => {
     testMetadata([
       {
+        translateContext: 'oneTranslateContext',
         name: 'media_label',
         label: 'Media Label',
         value: 'http://youtube.com/videoid',
@@ -91,13 +108,20 @@ describe('Metadata', () => {
 
   it('should render a Markdown when the metadata is type mardown', () => {
     testMetadata([
-      { name: 'label_array', label: 'label array', value: 'some markdown text', type: 'markdown' },
+      {
+        translateContext: 'oneTranslateContext',
+        name: 'label_array',
+        label: 'label array',
+        value: 'some markdown text',
+        type: 'markdown',
+      },
     ]);
   });
 
   it('should render a Geolocation viewer when the metadata is type geolocation', () => {
     testMetadata([
       {
+        translateContext: 'oneTranslateContext',
         name: 'geolocation_label',
         label: 'Geolocation Label',
         value: [{ lat: 13, lon: 7 }],
@@ -109,21 +133,43 @@ describe('Metadata', () => {
 
   it('should render property not have this item when type is null', () => {
     testMetadata([
-      { name: 'metadata_without_property', label: 'metadata without property', type: null },
+      {
+        translateContext: 'oneTranslateContext',
+        name: 'metadata_without_property',
+        label: 'metadata without property',
+        type: null,
+      },
     ]);
   });
 
   it('should render sorted property with sorted styles', () => {
-    testMetadata([{ name: 'sortedby', label: 'sortedBy', value: 'string value', sortedBy: true }]);
+    testMetadata([
+      {
+        translateContext: 'oneTranslateContext',
+        name: 'sortedby',
+        label: 'sortedBy',
+        value: 'string value',
+        sortedBy: true,
+      },
+    ]);
   });
 
   it('should render links when the property has url', () => {
-    testMetadata([{ name: 'withurl', label: 'withUrl', value: 'string value', url: 'url' }]);
+    testMetadata([
+      {
+        translateContext: 'oneTranslateContext',
+        name: 'withurl',
+        label: 'withUrl',
+        value: 'string value',
+        url: 'url',
+      },
+    ]);
   });
 
   it('should render links with icons if propery has url and icon', () => {
     testMetadata([
       {
+        translateContext: 'oneTranslateContext',
         name: 'withurl',
         label: 'withUrl',
         value: 'string value',
@@ -138,7 +184,14 @@ describe('Metadata', () => {
   });
 
   it('should not render an empty list', () => {
-    testMetadata([{ name: 'label_array', label: 'label array', value: [] }]);
+    testMetadata([
+      {
+        translateContext: 'oneTranslateContext',
+        name: 'label_array',
+        label: 'label array',
+        value: [],
+      },
+    ]);
   });
 
   describe('when passing compact prop', () => {

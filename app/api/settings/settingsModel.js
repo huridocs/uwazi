@@ -21,6 +21,7 @@ const filtersSchema = new mongoose.Schema({
 
 const featuresSchema = new mongoose.Schema({
   semanticSearch: Boolean,
+  favorites: Boolean,
 });
 
 const settingsSchema = new mongoose.Schema({
@@ -41,7 +42,7 @@ const settingsSchema = new mongoose.Schema({
   dateFormat: String,
   features: featuresSchema,
   custom: mongoose.Schema.Types.Mixed,
-  sync: mongoose.Schema.Types.Mixed,
+  sync: { type: mongoose.Schema.Types.Mixed, select: false },
   evidencesVault: mongoose.Schema.Types.Mixed,
   customCSS: String,
 });

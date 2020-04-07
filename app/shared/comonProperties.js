@@ -34,19 +34,28 @@ const comonProperties = (templates, documentTypes = []) => {
   return properties;
 };
 
-const comonFilters = (templates, documentTypes = []) => {
-  return comonProperties(templates, documentTypes).filter(prop => prop.filter);
-};
+function comonFilters(templates, documentTypes = [], forcedProps = []) {
+  const result = [];
+  comonProperties(templates, documentTypes).filter(
+    prop => prop.filter || prop.type === 'relationshipfilter' || forcedProps.includes(prop.name)
+  );
 
-const defaultFilters = templates =>
-  templates.reduce((filters, template) => {
+  return result;
+}
+
+function defaultFilters(templates, forcedProps = []) {
+  return templates.reduce((filters, template) => {
     template.properties.forEach(prop => {
-      if (prop.filter && prop.defaultfilter && !filters.find(_prop => sameProperty(prop, _prop))) {
+      if (
+        (forcedProps.includes(prop.name) || (prop.filter && prop.defaultfilter)) &&
+        !filters.find(_prop => sameProperty(prop, _prop))
+      ) {
         filters.push(prop);
       }
     });
     return filters;
   }, []);
+}
 
 const allUniqueProperties = templates =>
   templates.reduce((filters, template) => {

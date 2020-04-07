@@ -37,7 +37,7 @@ export const resetMetadata = (metadata, template, options, previousTemplate) => 
       resetedMetadata[name] = '';
     }
     if (resetValue && type === 'daterange') {
-      resetedMetadata[name] = {};
+      resetedMetadata[name] = { from: null, to: null };
     }
     if (
       resetValue &&
@@ -151,7 +151,7 @@ export function multipleUpdate(entities, values) {
     const updatedEntities = await api.multipleUpdate(new RequestParams({ ids, values }));
     dispatch(notificationActions.notify('Update success', 'success'));
     if (values.published !== undefined) {
-      dispatch(unselectAllDocuments());
+      await dispatch(unselectAllDocuments());
       dispatch(removeDocuments(updatedEntities));
     }
     return updatedEntities;

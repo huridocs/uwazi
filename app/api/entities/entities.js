@@ -259,6 +259,30 @@ function sanitize(doc, template) {
   return Object.assign(doc, { metadata });
 }
 
+function updateMetadataWithDiff(metadata, diffMetadata) {
+  if (!diffMetadata) {
+    return metadata;
+  }
+  const newMetadata = { ...metadata };
+  Object.keys(diffMetadata).forEach(p => {
+    const dm = diffMetadata[p];
+    const toAdd = dm.added || [];
+    const toRemove = dm.removed || [];
+    if (!dm || toAdd.length + toRemove.length === 0) {
+      return;
+    }
+    if (!newMetadata[p] || !newMetadata[p].length) {
+      newMetadata[p] = toAdd;
+      return;
+    }
+    newMetadata[p] = [
+      ...newMetadata[p].filter(v => !toRemove.map(vr => vr.value).includes(v.value)),
+      ...toAdd.filter(va => !newMetadata[p].map(v => v.value).includes(va.value)),
+    ];
+  });
+  return newMetadata;
+}
+
 export default {
   denormalizeMetadata,
   sanitize,
@@ -350,6 +374,10 @@ export default {
     await process(0, totalRows);
   },
 
+  getWithoutDocuments(query, select, options = {}) {
+    return model.get(query, select, options);
+  },
+
   async get(query, select, options = {}) {
     const { documentsFullText, ...restOfOptions } = options;
     const entities = await model.get(query, select, restOfOptions);
@@ -393,6 +421,7 @@ export default {
   },
 
   async multipleUpdate(ids, values, params) {
+    const { diffMetadata = {}, ...pureValues } = values;
     await Promise.all(
       ids.map(async id => {
         const entity = await this.getById(id, params.language);
@@ -400,8 +429,11 @@ export default {
           await this.save(
             {
               ...entity,
-              ...values,
-              metadata: { ...entity.metadata, ...values.metadata },
+              ...pureValues,
+              metadata: updateMetadataWithDiff(
+                { ...entity.metadata, ...pureValues.metadata },
+                diffMetadata
+              ),
             },
             params,
             true,

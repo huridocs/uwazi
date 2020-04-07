@@ -1,10 +1,8 @@
-/** @format */
-
 import { ConnectionsList } from 'app/ConnectionsList';
+import { OneUpState } from 'app/istore';
 import { shallow, ShallowWrapper } from 'enzyme';
 import Immutable from 'immutable';
 import React from 'react';
-import { OneUpState } from '../../common';
 import {
   OneUpEntityViewerBase,
   OneUpEntityViewerProps,

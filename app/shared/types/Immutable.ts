@@ -1,4 +1,4 @@
-/** @format */
+import Immutable from 'immutable';
 
 export type IImmutable<T> = T extends string
   ? string
@@ -11,15 +11,7 @@ export type IImmutable<T> = T extends string
   : T extends undefined
   ? undefined
   : T extends Array<infer Elem>
-  ? {
-      toJS(): Elem[];
-      get(i: number): IImmutable<Elem>;
-      findIndex(fn: (e: IImmutable<Elem>) => boolean): number;
-      filter(fn: (e: IImmutable<Elem>) => boolean): IImmutable<T>;
-      find(fn: (e: IImmutable<Elem>) => boolean): IImmutable<Elem> | undefined;
-      map<T2>(fn: (e: IImmutable<Elem>) => T2): IImmutable<T2[]>;
-      reduce<R>(fn: (r: R, e: IImmutable<Elem>) => R, s: R): R;
-    }
+  ? Immutable.List<IImmutable<Elem>>
   : {
       toJS(): T;
       get<Field extends keyof T>(_field: Field): IImmutable<T[Field]>;

@@ -1,5 +1,3 @@
-/** @format */
-
 const textFilter = (filter, path = 'metadata') => ({
   term: { [`${path}.${filter.name}.raw`]: filter.value },
 });
@@ -192,6 +190,7 @@ const nestedFilter = filter => {
 
 const relationshipfilter = filter => {
   const filters = filter.filters
+    .filter(m => m)
     .map(fil => {
       fil.value = filter.value[fil.name];
       if (fil.value) {

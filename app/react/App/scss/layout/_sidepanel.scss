@@ -27,6 +27,10 @@ $c-sidebar: $c-white;
     }
   }
 
+  .errormsg {
+    margin: 20px;
+    font-size: 15px;
+  }
 
   h1 {
     font-size: $f-size-lg;
@@ -263,12 +267,15 @@ $c-sidebar: $c-white;
 }
 
 .sidepanel-title {
-  padding: 15px 15px 0;
+  padding: 0 15px;
   margin: 0;
   font-weight: bold;
   text-transform: uppercase;
   letter-spacing: .1em;
   opacity: .6;
+  line-height: 50px;
+  height: 50px;
+  border-bottom: 1px solid #d7d7dc;
 }
 
 .item.readOnly {

@@ -1,44 +1,58 @@
-/** @format */
-
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import Welcome from 'app/Library/components/Welcome';
-import LibraryFilters from 'app/Library/components/LibraryFilters';
-import Helmet from 'react-helmet';
-import ViewMetadataPanel from 'app/Library/components/ViewMetadataPanel';
-import SelectMultiplePanelContainer from 'app/Library/containers/SelectMultiplePanelContainer';
-import SemanticSearchPanel from 'app/SemanticSearch/components/SemanticSearchPanel';
-import { FeatureToggleSemanticSearch } from 'app/SemanticSearch/components/FeatureToggleSemanticSearch';
 import { t } from 'app/I18N';
+import LibraryFilters from 'app/Library/components/LibraryFilters';
+import { QuickLabelPanel } from 'app/Library/components/QuickLabelPanel';
+import ViewMetadataPanel from 'app/Library/components/ViewMetadataPanel';
+import Welcome from 'app/Library/components/Welcome';
+import SelectMultiplePanelContainer from 'app/Library/containers/SelectMultiplePanelContainer';
+import { FeatureToggleSemanticSearch } from 'app/SemanticSearch/components/FeatureToggleSemanticSearch';
+import SemanticSearchPanel from 'app/SemanticSearch/components/SemanticSearchPanel';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
+import Helmet from 'react-helmet';
+import { connect } from 'react-redux';
 import blankState from './helpers/blankState';
+import { QuickLabelHeader } from './components/QuickLabelHeader';
 
-export default class LibraryLayout extends Component {
+export class LibraryLayoutBase extends Component {
   render() {
     if (blankState()) {
       return <Welcome />;
     }
-    const { className, children } = this.props;
+    const { className, children, quickLabelThesaurus } = this.props;
+    const contentDivClass = `${
+      quickLabelThesaurus ? 'with-header ' : ''
+    } content-holder library-viewer document-viewer with-panel`;
 
     return (
       <div className="row panels-layout">
         <Helmet title={t('System', 'Library', null, false)} />
-        <main className={`library-viewer document-viewer with-panel ${className}`}>{children}</main>
-        <LibraryFilters storeKey="library" />
-        <ViewMetadataPanel storeKey="library" />
-        <SelectMultiplePanelContainer storeKey="library" />
-        <FeatureToggleSemanticSearch>
-          <SemanticSearchPanel storeKey="library" />
-        </FeatureToggleSemanticSearch>
+        {quickLabelThesaurus && <QuickLabelHeader />}
+        <div className={contentDivClass}>
+          <main className={`${className}`}>{children}</main>
+          <LibraryFilters storeKey="library" />
+          {!quickLabelThesaurus && <ViewMetadataPanel storeKey="library" />}
+          {!quickLabelThesaurus && <SelectMultiplePanelContainer storeKey="library" />}
+          {quickLabelThesaurus && <QuickLabelPanel storeKey="library" />}
+          <FeatureToggleSemanticSearch>
+            <SemanticSearchPanel storeKey="library" />
+          </FeatureToggleSemanticSearch>
+        </div>
       </div>
     );
   }
 }
 
-LibraryLayout.defaultProps = {
+LibraryLayoutBase.defaultProps = {
   className: '',
+  quickLabelThesaurus: '',
 };
 
-LibraryLayout.propTypes = {
+LibraryLayoutBase.propTypes = {
   children: PropTypes.instanceOf(Object).isRequired,
   className: PropTypes.string,
+  quickLabelThesaurus: PropTypes.string,
 };
+
+export default connect(state => ({
+  quickLabelThesaurus: state.library.sidepanel.quickLabelState.get('thesaurus'),
+}))(LibraryLayoutBase);

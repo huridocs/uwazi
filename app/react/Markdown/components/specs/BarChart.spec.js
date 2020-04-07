@@ -5,9 +5,9 @@ import React from 'react';
 
 import { shallow } from 'enzyme';
 import Immutable from 'immutable';
-import { XAxis, YAxis, Cell } from 'recharts';
+import { XAxis, YAxis, Cell, BarChart, Tooltip } from 'recharts';
 
-import { mapStateToProps, BarChartComponent } from '../BarChart.js';
+import BarChartComponent, { mapStateToProps } from '../BarChart.js';
 import markdownDatasets from '../../markdownDatasets';
 
 describe('BarChart Markdown component', () => {
@@ -25,21 +25,37 @@ describe('BarChart Markdown component', () => {
     ]),
   };
 
-  it('should render the data passed by mapStateToProps', () => {
-    spyOn(markdownDatasets, 'getAggregations').and.returnValue(
-      Immutable.fromJS([
-        { key: 'id1', filtered: { doc_count: 25 } },
-        { key: 'id2', filtered: { doc_count: 33 } },
-        { key: 'missing', filtered: { doc_count: 45 } },
-        { key: 'id3', filtered: { doc_count: 13 } },
-        { key: 'id4', filtered: { doc_count: 0 } },
-      ])
-    );
+  const defaultAggregations = [{ id1: 25 }, { id2: 33 }, { missing: 45 }, { id3: 13 }, { id4: 0 }];
 
-    const props = mapStateToProps(state, { prop1: 'propValue' });
-    const component = shallow(
-      <BarChartComponent {...props} property="prop1" classname="custom-class" context="tContext" />
-    );
+  const mockGetAggregations = values => {
+    const aggregations = (values || defaultAggregations).map(item => {
+      const key = Object.keys(item)[0];
+      return { key, filtered: { doc_count: item[key] } };
+    });
+    spyOn(markdownDatasets, 'getAggregations').and.returnValue(Immutable.fromJS(aggregations));
+  };
+
+  const renderComponent = overridenProps => {
+    const props = {
+      ...mapStateToProps(state, { prop1: 'propValue' }),
+      property: 'prop1',
+      classname: 'custom-class',
+      context: 'tContext',
+      ...overridenProps,
+    };
+
+    return shallow(<BarChartComponent.WrappedComponent {...props} />);
+  };
+
+  const expectLabels = (component, labels) => {
+    const expectedLabels = labels.map(label => expect.objectContaining({ label }));
+    expect(component.find(BarChart).props().data).toEqual(expectedLabels);
+  };
+
+  it('should render the data passed by mapStateToProps', () => {
+    mockGetAggregations();
+
+    const component = renderComponent();
 
     expect(markdownDatasets.getAggregations).toHaveBeenCalledWith(state, { prop1: 'propValue' });
     expect(component).toMatchSnapshot();
@@ -47,26 +63,9 @@ describe('BarChart Markdown component', () => {
 
   describe('when excludeZero', () => {
     it('should render without zero values', () => {
-      spyOn(markdownDatasets, 'getAggregations').and.returnValue(
-        Immutable.fromJS([
-          { key: 'id1', filtered: { doc_count: 25 } },
-          { key: 'id2', filtered: { doc_count: 33 } },
-          { key: 'missing', filtered: { doc_count: 45 } },
-          { key: 'id3', filtered: { doc_count: 13 } },
-          { key: 'id4', filtered: { doc_count: 0 } },
-        ])
-      );
+      mockGetAggregations();
 
-      const props = mapStateToProps(state, { prop1: 'propValue' });
-      props.excludeZero = 'true';
-      const component = shallow(
-        <BarChartComponent
-          {...props}
-          property="prop1"
-          classname="custom-class"
-          context="tContext"
-        />
-      );
+      const component = renderComponent({ excludeZero: 'true' });
 
       expect(markdownDatasets.getAggregations).toHaveBeenCalledWith(state, { prop1: 'propValue' });
       expect(component).toMatchSnapshot();
@@ -75,20 +74,9 @@ describe('BarChart Markdown component', () => {
 
   describe('when layout is vertical', () => {
     it('should render axis properly', () => {
-      spyOn(markdownDatasets, 'getAggregations').and.returnValue(
-        Immutable.fromJS([{ key: 'id1', filtered: { doc_count: 25 } }])
-      );
+      mockGetAggregations([{ key: 'id1', filtered: { doc_count: 25 } }]);
 
-      const props = mapStateToProps(state, { prop1: 'propValue' });
-      props.layout = 'vertical';
-      const component = shallow(
-        <BarChartComponent
-          {...props}
-          property="prop1"
-          classname="custom-class"
-          context="tContext"
-        />
-      );
+      const component = renderComponent({ layout: 'vertical' });
 
       expect(component.find(YAxis)).toMatchSnapshot();
       expect(component.find(XAxis)).toMatchSnapshot();
@@ -99,7 +87,7 @@ describe('BarChart Markdown component', () => {
     let undefinedValue;
     spyOn(markdownDatasets, 'getAggregations').and.returnValue(undefinedValue);
     const props = mapStateToProps(state, { prop2: 'propValue' });
-    const component = shallow(<BarChartComponent {...props} property="prop2" />);
+    const component = shallow(<BarChartComponent.WrappedComponent {...props} property="prop2" />);
 
     expect(markdownDatasets.getAggregations).toHaveBeenCalledWith(state, { prop2: 'propValue' });
     expect(component).toMatchSnapshot();
@@ -107,140 +95,83 @@ describe('BarChart Markdown component', () => {
 
   describe('when passing maxCategories', () => {
     it('should only render the number of categories passed', () => {
-      spyOn(markdownDatasets, 'getAggregations').and.returnValue(
-        Immutable.fromJS([
-          { key: 'id1', filtered: { doc_count: 25 } },
-          { key: 'id2', filtered: { doc_count: 33 } },
-          { key: 'id3', filtered: { doc_count: 13 } },
-          { key: 'id4', filtered: { doc_count: 0 } },
-        ])
-      );
+      mockGetAggregations([{ id1: 25 }, { id2: 33 }, { id3: 13 }, { id4: 0 }]);
 
-      const props = mapStateToProps(state, { prop1: 'propValue' });
-      props.maxCategories = '2';
-      const component = shallow(
-        <BarChartComponent
-          {...props}
-          property="prop1"
-          classname="custom-class"
-          context="tContext"
-        />
-      );
+      const component = renderComponent({ maxCategories: '2' });
 
       expect(markdownDatasets.getAggregations).toHaveBeenCalledWith(state, { prop1: 'propValue' });
       expect(component).toMatchSnapshot();
     });
 
     it('should render others when passing aggregateOthers', () => {
-      spyOn(markdownDatasets, 'getAggregations').and.returnValue(
-        Immutable.fromJS([
-          { key: 'id6', filtered: { doc_count: 57 } },
-          { key: 'id2', filtered: { doc_count: 33 } },
-          { key: 'id1', filtered: { doc_count: 25 } },
-          { key: 'id3', filtered: { doc_count: 13 } },
-          { key: 'id8', filtered: { doc_count: 2 } },
-        ])
-      );
+      mockGetAggregations([{ id6: 57 }, { id2: 33 }, { id1: 25 }, { id3: 13 }, { id8: 2 }]);
 
-      const props = mapStateToProps(state, { prop1: 'propValue' });
-      props.maxCategories = '2';
-      props.aggregateOthers = 'true';
-      const component = shallow(
-        <BarChartComponent
-          {...props}
-          property="prop1"
-          classname="custom-class"
-          context="tContext"
-        />
-      );
+      const component = renderComponent({ maxCategories: '2', aggregateOthers: 'true' });
 
       expect(markdownDatasets.getAggregations).toHaveBeenCalledWith(state, { prop1: 'propValue' });
       expect(component).toMatchSnapshot();
     });
   });
 
+  describe('when passing pluckCategories configuration', () => {
+    it('should allow selecting individual categories', () => {
+      mockGetAggregations();
+      const component = renderComponent({ pluckCategories: '["label3", "label1"]' });
+      expectLabels(component, ['label1', 'label3']);
+    });
+  });
+
+  describe('when passing sort configuration', () => {
+    it('should allow sorting results', () => {
+      mockGetAggregations();
+      const component = renderComponent({ sort: '{"by": "label", "order": "desc"}' });
+      expectLabels(component, ['label4', 'label3', 'label2', 'label1']);
+    });
+  });
+
+  describe('when passing a labels map', () => {
+    it('should pass the map data to layout formatter and format the tooltip', () => {
+      mockGetAggregations();
+      const component = renderComponent({ shortLabels: '{"label1": "L1", "label4": "L4"}' });
+
+      expectLabels(component, ['label2', 'L1', 'label3', 'L4']);
+
+      const { labelFormatter } = component.find(Tooltip).props();
+
+      expect(labelFormatter('L1')).toBe('label1');
+      expect(labelFormatter('non existing label')).toBe('non existing label');
+    });
+  });
+
   describe('when passing colors', () => {
     it('should render with a single color', () => {
-      spyOn(markdownDatasets, 'getAggregations').and.returnValue(
-        Immutable.fromJS([
-          { key: 'id1', filtered: { doc_count: 25 } },
-          { key: 'id2', filtered: { doc_count: 33 } },
-          { key: 'missing', filtered: { doc_count: 45 } },
-          { key: 'id3', filtered: { doc_count: 13 } },
-          { key: 'id4', filtered: { doc_count: 0 } },
-        ])
-      );
+      mockGetAggregations();
 
-      const props = mapStateToProps(state, { prop1: 'propValue' });
-      props.colors = '#ccc';
-      const component = shallow(
-        <BarChartComponent
-          {...props}
-          property="prop1"
-          classname="custom-class"
-          context="tContext"
-        />
-      );
+      const component = renderComponent({ colors: '#ccc' });
 
       expect(markdownDatasets.getAggregations).toHaveBeenCalledWith(state, { prop1: 'propValue' });
       component.find(Cell).forEach(cell => {
         expect(cell.prop('fill')).toBe('#ccc');
       });
     });
+
     it('should render with several colors', () => {
-      spyOn(markdownDatasets, 'getAggregations').and.returnValue(
-        Immutable.fromJS([
-          { key: 'id1', filtered: { doc_count: 25 } },
-          { key: 'id2', filtered: { doc_count: 33 } },
-          { key: 'missing', filtered: { doc_count: 45 } },
-          { key: 'id3', filtered: { doc_count: 13 } },
-          { key: 'id4', filtered: { doc_count: 0 } },
-        ])
-      );
+      mockGetAggregations();
 
       const colors = ['#aaa', '#bbb', '#ccc', '#ddd', '#eee', '#000'];
-
-      const props = mapStateToProps(state, { prop1: 'propValue' });
-      props.colors = colors.join(',');
-
-      const component = shallow(
-        <BarChartComponent
-          {...props}
-          property="prop1"
-          classname="custom-class"
-          context="tContext"
-        />
-      );
+      const component = renderComponent({ colors: colors.join(',') });
 
       expect(markdownDatasets.getAggregations).toHaveBeenCalledWith(state, { prop1: 'propValue' });
       component.find(Cell).forEach((cell, index) => {
         expect(cell.prop('fill')).toBe(colors[index]);
       });
     });
+
     it('should cycle the colors', () => {
-      spyOn(markdownDatasets, 'getAggregations').and.returnValue(
-        Immutable.fromJS([
-          { key: 'id1', filtered: { doc_count: 25 } },
-          { key: 'id2', filtered: { doc_count: 33 } },
-          { key: 'missing', filtered: { doc_count: 45 } },
-          { key: 'id3', filtered: { doc_count: 13 } },
-          { key: 'id4', filtered: { doc_count: 0 } },
-        ])
-      );
+      mockGetAggregations();
 
       const colors = ['#aaa', '#bbb'];
-
-      const props = mapStateToProps(state, { prop1: 'propValue' });
-      props.colors = colors.join(',');
-
-      const component = shallow(
-        <BarChartComponent
-          {...props}
-          property="prop1"
-          classname="custom-class"
-          context="tContext"
-        />
-      );
+      const component = renderComponent({ colors: colors.join(',') });
 
       expect(markdownDatasets.getAggregations).toHaveBeenCalledWith(state, { prop1: 'propValue' });
       component.find(Cell).forEach((cell, index) => {

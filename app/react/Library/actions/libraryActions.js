@@ -12,6 +12,7 @@ import { toUrlParams } from 'shared/JSONRequest';
 import { RequestParams } from 'app/utils/RequestParams';
 import { store } from 'app/store';
 import searchAPI from 'app/Search/SearchAPI';
+import { selectedDocumentsChanged, maybeSaveQuickLabels } from './quickLabelActions';
 
 export function enterLibrary() {
   return { type: types.ENTER_LIBRARY };
@@ -22,14 +23,15 @@ export function initializeFiltersForm(values = {}) {
 }
 
 export function selectDocument(_doc) {
-  return (dispatch, getState) => {
+  return async (dispatch, getState) => {
     const doc = _doc.toJS ? _doc.toJS() : _doc;
     const showingSemanticSearch = getState().library.sidepanel.tab === 'semantic-search-results';
     if (showingSemanticSearch && !doc.semanticSearch) {
       dispatch(actions.set('library.sidepanel.tab', ''));
     }
-
+    await dispatch(maybeSaveQuickLabels());
     dispatch({ type: types.SELECT_DOCUMENT, doc });
+    dispatch(selectedDocumentsChanged());
   };
 }
 
@@ -42,19 +44,35 @@ export function getAndSelectDocument(sharedId) {
 }
 
 export function selectDocuments(docs) {
-  return { type: types.SELECT_DOCUMENTS, docs };
+  return async dispatch => {
+    await dispatch(maybeSaveQuickLabels());
+    dispatch({ type: types.SELECT_DOCUMENTS, docs });
+    dispatch(selectedDocumentsChanged());
+  };
 }
 
 export function unselectDocument(docId) {
-  return { type: types.UNSELECT_DOCUMENT, docId };
+  return async dispatch => {
+    await dispatch(maybeSaveQuickLabels());
+    dispatch({ type: types.UNSELECT_DOCUMENT, docId });
+    dispatch(selectedDocumentsChanged());
+  };
 }
 
 export function selectSingleDocument(doc) {
-  return { type: types.SELECT_SINGLE_DOCUMENT, doc };
+  return async dispatch => {
+    await dispatch(maybeSaveQuickLabels());
+    dispatch({ type: types.SELECT_SINGLE_DOCUMENT, doc });
+    dispatch(selectedDocumentsChanged());
+  };
 }
 
 export function unselectAllDocuments() {
-  return { type: types.UNSELECT_ALL_DOCUMENTS };
+  return async dispatch => {
+    await dispatch(maybeSaveQuickLabels());
+    dispatch({ type: types.UNSELECT_ALL_DOCUMENTS });
+    dispatch(selectedDocumentsChanged());
+  };
 }
 
 export function updateSelectedEntities(entities) {
@@ -195,13 +213,14 @@ function setSearchInUrl(searchParams) {
   browserHistory.push(path + toUrlParams(query));
 }
 
-export function searchDocuments({ search, filters }, storeKey, limit = 30) {
+export function searchDocuments({ search = undefined, filters = undefined }, storeKey, limit = 30) {
   return (dispatch, getState) => {
     const state = getState()[storeKey];
+    const currentSearch = search || state.search;
     let currentFilters = filters || state.filters;
     currentFilters = currentFilters.toJS ? currentFilters.toJS() : currentFilters;
 
-    const finalSearchParams = processFilters(search, currentFilters, limit);
+    const finalSearchParams = processFilters(currentSearch, currentFilters, limit);
     finalSearchParams.searchTerm = state.search.searchTerm;
 
     const currentSearchParams = rison.decode(
@@ -214,7 +233,9 @@ export function searchDocuments({ search, filters }, storeKey, limit = 30) {
       finalSearchParams.sort = '_score';
     }
 
-    if (search.userSelectedSorting) dispatch(actions.set(`${storeKey}.selectedSorting`, search));
+    if (currentSearch.userSelectedSorting) {
+      dispatch(actions.set(`${storeKey}.selectedSorting`, currentSearch));
+    }
 
     setSearchInUrl(finalSearchParams);
   };
@@ -241,14 +262,14 @@ export function searchSnippets(searchTerm, sharedId, storeKey) {
 }
 
 export function saveDocument(doc, formKey) {
-  return dispatch =>
-    documentsApi.save(new RequestParams(doc)).then(updatedDoc => {
-      dispatch(notificationActions.notify('Document updated', 'success'));
-      dispatch(formActions.reset(formKey));
-      dispatch(updateEntity(updatedDoc));
-      dispatch(actions.updateIn('library.markers', ['rows'], updatedDoc));
-      dispatch(selectSingleDocument(updatedDoc));
-    });
+  return async dispatch => {
+    const updatedDoc = await documentsApi.save(new RequestParams(doc));
+    dispatch(notificationActions.notify('Document updated', 'success'));
+    dispatch(formActions.reset(formKey));
+    dispatch(updateEntity(updatedDoc));
+    dispatch(actions.updateIn('library.markers', ['rows'], updatedDoc));
+    await dispatch(selectSingleDocument(updatedDoc));
+  };
 }
 
 export function multipleUpdate(entities, values) {
@@ -261,21 +282,21 @@ export function multipleUpdate(entities, values) {
 }
 
 export function saveEntity(entity, formModel) {
-  return dispatch =>
-    entitiesAPI.save(new RequestParams(entity)).then(updatedDoc => {
-      dispatch(formActions.reset(formModel));
-      dispatch(unselectAllDocuments());
-      if (entity._id) {
-        dispatch(notificationActions.notify('Entity updated', 'success'));
-        dispatch(updateEntity(updatedDoc));
-        dispatch(actions.updateIn('library.markers', ['rows'], updatedDoc));
-      } else {
-        dispatch(notificationActions.notify('Entity created', 'success'));
-        dispatch(elementCreated(updatedDoc));
-      }
+  return async dispatch => {
+    const updatedDoc = await entitiesAPI.save(new RequestParams(entity));
+    dispatch(formActions.reset(formModel));
+    await dispatch(unselectAllDocuments());
+    if (entity._id) {
+      dispatch(notificationActions.notify('Entity updated', 'success'));
+      dispatch(updateEntity(updatedDoc));
+      dispatch(actions.updateIn('library.markers', ['rows'], updatedDoc));
+    } else {
+      dispatch(notificationActions.notify('Entity created', 'success'));
+      dispatch(elementCreated(updatedDoc));
+    }
 
-      dispatch(selectSingleDocument(updatedDoc));
-    });
+    await dispatch(selectSingleDocument(updatedDoc));
+  };
 }
 
 export function removeDocument(doc) {
@@ -287,21 +308,21 @@ export function removeDocuments(docs) {
 }
 
 export function deleteDocument(doc) {
-  return dispatch =>
-    documentsApi.delete(new RequestParams({ sharedId: doc.sharedId })).then(() => {
-      dispatch(notificationActions.notify('Document deleted', 'success'));
-      dispatch(unselectAllDocuments());
-      dispatch(removeDocument(doc));
-    });
+  return async dispatch => {
+    await documentsApi.delete(new RequestParams({ sharedId: doc.sharedId }));
+    dispatch(notificationActions.notify('Document deleted', 'success'));
+    await dispatch(unselectAllDocuments());
+    dispatch(removeDocument(doc));
+  };
 }
 
 export function deleteEntity(entity) {
-  return dispatch =>
-    entitiesAPI.delete(entity).then(() => {
-      dispatch(notificationActions.notify('Entity deleted', 'success'));
-      dispatch(unselectDocument(entity._id));
-      dispatch(removeDocument(entity));
-    });
+  return async dispatch => {
+    await entitiesAPI.delete(entity);
+    dispatch(notificationActions.notify('Entity deleted', 'success'));
+    await dispatch(unselectDocument(entity._id));
+    dispatch(removeDocument(entity));
+  };
 }
 
 export function loadMoreDocuments(storeKey, amount) {

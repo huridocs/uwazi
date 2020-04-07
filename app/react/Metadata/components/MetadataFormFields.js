@@ -7,6 +7,7 @@ import { connect } from 'react-redux';
 import { Field } from 'react-redux-form';
 import { propertyTypes } from 'shared/propertyTypes';
 import { getSuggestions } from 'app/Metadata/actions/actions';
+import { Translate } from 'app/I18N';
 import {
   DatePicker,
   DateRange,
@@ -23,16 +24,16 @@ import {
 } from '../../ReactReduxForms';
 import MultipleEditionFieldWarning from './MultipleEditionFieldWarning';
 
-const translateOptions = thesauri =>
+export const translateOptions = thesauri =>
   thesauri
     .get('values')
     .map(optionIm => {
       const option = optionIm.toJS();
-      option.label = t(thesauri._id, option.label, null, false);
+      option.label = t(thesauri.get('_id'), option.label, null, false);
       if (option.values) {
         option.options = option.values.map(val => ({
           ...val,
-          label: t(thesauri._id, val.label, null, false),
+          label: t(thesauri.get('_id'), val.label, null, false),
         }));
       }
       return option;
@@ -48,13 +49,12 @@ export class MetadataFormFields extends Component {
     switch (propertyType) {
       case 'select':
         thesauri = thesauris.find(opt => opt.get('_id').toString() === property.content.toString());
-        [, placeholderName] = Array.from(thesauri).find(entry => entry[0] === 'name');
         return (
           <Select
             model={_model}
             optionsValue="id"
             options={translateOptions(thesauri)}
-            placeholder={`Select other "${placeholderName}"`}
+            placeholder="Select..."
           />
         );
       case 'multiselect':
@@ -176,7 +176,11 @@ export class MetadataFormFields extends Component {
                       model={model}
                       field={`metadata.${property.name}`}
                     />
-                    {t(templateID, property.label)}
+                    {templateID ? (
+                      <Translate context={templateID}>{property.label}</Translate>
+                    ) : (
+                      property.label
+                    )}
                     {property.required ? <span className="required">*</span> : ''}
                   </label>
                 </li>

@@ -1,10 +1,7 @@
-/** @format */
-
 import { propertyTypes } from 'shared/propertyTypes';
+import { provenanceTypes } from 'shared/provenanceTypes';
 
 export const emitSchemaTypes = true;
-
-const fieldTypes = Object.values(propertyTypes);
 
 export const objectIdSchema = {
   oneOf: [{ type: 'string' }, { type: 'object' }],
@@ -12,11 +9,10 @@ export const objectIdSchema = {
 
 export const linkSchema = {
   type: 'object',
-  required: ['label', 'url'],
   additionalProperties: false,
   properties: {
-    label: { type: 'string', minLength: 1 },
-    url: { type: 'string', minLength: 1 },
+    label: { oneOf: [{ type: 'string' }, { type: 'null' }] },
+    url: { oneOf: [{ type: 'string' }, { type: 'null' }] },
   },
 };
 
@@ -24,12 +20,8 @@ export const dateRangeSchema = {
   type: 'object',
   additionalProperties: false,
   properties: {
-    from: {
-      oneOf: [{ type: 'number' }, { type: 'null' }],
-    },
-    to: {
-      oneOf: [{ type: 'number' }, { type: 'null' }],
-    },
+    from: { oneOf: [{ type: 'number' }, { type: 'null' }] },
+    to: { oneOf: [{ type: 'number' }, { type: 'null' }] },
   },
 };
 
@@ -70,7 +62,8 @@ export const metadataObjectSchema = {
     value: propertyValueSchema,
     label: { type: 'string' },
     suggestion_confidence: { type: 'number' },
-    provenance: { type: 'string' },
+    suggestion_model: { type: 'string' },
+    provenance: { type: 'string', enum: Object.values(provenanceTypes) },
   },
 };
 
@@ -112,7 +105,7 @@ export const propertySchema = {
     label: { type: 'string', minLength: 1 },
     name: { type: 'string', minLength: 1 },
     isCommonProperty: { type: 'boolean' },
-    type: { type: 'string', enum: fieldTypes },
+    type: { type: 'string', enum: Object.values(propertyTypes) },
     prioritySorting: { type: 'boolean' },
     content: { type: 'string', minLength: 1 },
     inherit: { type: 'boolean' },

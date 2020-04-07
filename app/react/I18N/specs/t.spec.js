@@ -67,4 +67,13 @@ describe('t', () => {
       expect(t('System', 'not translated', 'not translated'));
     });
   });
+
+  describe('when no context', () => {
+    it('should throw an error', () => {
+      spyOn(console, 'warn');
+      t(undefined, 'confirmDeleteEntity', 'Are you sure you want to delete this entity?');
+      //eslint-disable-next-line no-console
+      expect(console.warn).toHaveBeenCalled();
+    });
+  });
 });

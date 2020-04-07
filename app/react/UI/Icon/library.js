@@ -1,5 +1,3 @@
-/** @format */
-
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faAngleLeft } from '@fortawesome/free-solid-svg-icons/faAngleLeft';
 import { faAngleRight } from '@fortawesome/free-solid-svg-icons/faAngleRight';
@@ -47,6 +45,7 @@ import { faLink } from '@fortawesome/free-solid-svg-icons/faLink';
 import { faList } from '@fortawesome/free-solid-svg-icons/faList';
 import { faLock } from '@fortawesome/free-solid-svg-icons/faLock';
 import { faMapMarker } from '@fortawesome/free-solid-svg-icons/faMapMarker';
+import { faMinus } from '@fortawesome/free-solid-svg-icons/faMinus';
 import { faPaperPlane } from '@fortawesome/free-solid-svg-icons/faPaperPlane';
 import { faPaperclip } from '@fortawesome/free-solid-svg-icons/faPaperclip';
 import { faParagraph } from '@fortawesome/free-solid-svg-icons/faParagraph';
@@ -138,6 +137,7 @@ const icons = {
   faList,
   faLock,
   faMapMarker,
+  faMinus,
   faPaperPlane,
   faPaperclip,
   faParagraph,

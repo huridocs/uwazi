@@ -670,29 +670,34 @@
 }
 
 .multiselectItem-icon {
-  .checkbox-empty {
-    display: block;
-    color: $c-grey;
-  }
-  .checkbox-checked {
-    display: none;
-    color: $c-success;
-  }
+  .checkbox-empty { display: block; color: $c-grey; }
+  .checkbox-checked { display: none; color: $c-success; }
+  .checkbox-partial { display: none; color: $c-success; }
 }
 .multiselectItem-input:checked {
   & + label {
-    .checkbox-empty {
-      display: none;
-    }
-    .checkbox-checked {
-      display: block;
-    }
+    .checkbox-empty { display: none; }
+    .checkbox-checked { display: block; }
   }
 
   & ~ .multiselectItem-label .multiselectItem-name,
   & ~ .multiselectItem-results {
     font-weight: bold;
     color: $c-black;
+  }
+}
+.multiselectItem-input.partial:checked {
+
+  & + label {
+    .checkbox-empty { display: none; }
+    .checkbox-checked { display: none; }
+    .checkbox-partial { display: block; }
+  }
+
+  & ~ .multiselectItem-label .multiselectItem-name,
+  & ~ .multiselectItem-results {
+    font-weight: 500;
+    color: $c-grey-dark;
   }
 }
 

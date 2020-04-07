@@ -1,13 +1,14 @@
-import React from 'react';
 import RouteHandler from 'app/App/RouteHandler';
+import { actions } from 'app/BasicReducer';
+import { enterLibrary, unsetDocuments, zoomIn, zoomOut } from 'app/Library/actions/libraryActions';
 import DocumentsList from 'app/Library/components/DocumentsList';
 import LibraryModeToggleButtons from 'app/Library/components/LibraryModeToggleButtons';
-import { enterLibrary, zoomIn, zoomOut } from 'app/Library/actions/libraryActions';
-import requestState from 'app/Library/helpers/requestState';
 import SearchButton from 'app/Library/components/SearchButton';
+import requestState from 'app/Library/helpers/requestState';
 import LibraryLayout from 'app/Library/LibraryLayout';
 import { wrapDispatch } from 'app/Multireducer';
 import ImportProgress from 'app/Uploads/components/ImportProgress';
+import React from 'react';
 
 export default class Library extends RouteHandler {
   constructor(props, context) {
@@ -39,6 +40,15 @@ export default class Library extends RouteHandler {
     wrapDispatch(dispatch, 'library')(enterLibrary());
     this.zoomIn = () => wrapDispatch(dispatch, 'library')(zoomIn());
     this.zoomOut = () => wrapDispatch(dispatch, 'library')(zoomOut());
+  }
+
+  componentWillUnmount() {
+    this.emptyState();
+  }
+
+  emptyState() {
+    wrapDispatch(this.context.store.dispatch, 'library')(unsetDocuments());
+    actions.set('library.sidepanel.quickLabelState', {});
   }
 
   render() {

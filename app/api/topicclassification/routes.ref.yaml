@@ -1,0 +1,64 @@
+/models:
+  get:
+    tags:
+      - topic classification
+    description: Returns the topic classification models
+    parameters:
+      - name: thesaurus
+        description: thesaurus name
+        in: query
+        required: false
+        type: string
+    responses:
+      200:
+        description: Returns an object with the result
+        schema:
+          type: object
+          properties:
+            name:
+              type: string
+            preferred:
+              type: string
+
+/models/train:
+  get:
+    tags:
+      - topic classification
+    description: Gets training status
+    parameters:
+      - name: thesaurus
+        description: thesaurus name
+        in: query
+        required: true
+        type: string
+    responses:
+      200:
+        description: Returns an object with the result
+        schema:
+          type: object
+          properties:
+            state:
+              type: string
+            message:
+              type: string
+
+  post:
+    tags:
+      - topic classification
+    description: Starts training status
+    parameters:
+      - name: thesaurusId
+        description: thesaurus id
+        in: body
+        required: true
+        type: string
+    responses:
+      200:
+        description: Returns an object with the result
+        schema:
+          type: object
+          properties:
+            state:
+              type: string
+            message:
+              type: string

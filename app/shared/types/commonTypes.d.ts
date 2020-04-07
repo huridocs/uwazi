@@ -29,13 +29,21 @@ export type GeolocationSchema = {
   lon: number;
 }[];
 
-export type PropertyValueSchema = null | string | number | LinkSchema | DateRangeSchema | LatLonSchema | LatLonSchema[];
+export type PropertyValueSchema =
+  | null
+  | string
+  | number
+  | LinkSchema
+  | DateRangeSchema
+  | LatLonSchema
+  | LatLonSchema[];
 
 export interface MetadataObjectSchema {
   value: PropertyValueSchema;
   label?: string;
   suggestion_confidence?: number;
-  provenance?: string;
+  suggestion_model?: string;
+  provenance?: '' | 'BULK_ACCEPT';
   [k: string]: any | undefined;
 }
 

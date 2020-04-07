@@ -4,12 +4,16 @@ exports[`search multiselect aggregations allAggregations should return all aggre
 Array [
   "meta",
   "doc_count",
+  "__groupedDictionary",
   "groupedDictionary",
   "nested2",
   "nested1",
   "nestedField_nested",
+  "__select1",
+  "__multiselect1",
   "select1",
   "_types",
+  "__nestedField_nested",
   "multiselect1",
 ]
 `;

@@ -1,5 +1,3 @@
-/** @format */
-
 import { shallow, ShallowWrapper } from 'enzyme';
 import React from 'react';
 import { OneUpEntityButtonsBase, OneUpEntityButtonsProps } from '../OneUpEntityButtons';
@@ -16,7 +14,6 @@ describe('EntityViewer', () => {
       isLast: false,
       thesaurusName: 'name',
       switchOneUpEntity: jasmine.createSpy('switchOneUpEntity'),
-      reviewAndPublish: jasmine.createSpy('reviewAndPublish'),
     };
   });
 

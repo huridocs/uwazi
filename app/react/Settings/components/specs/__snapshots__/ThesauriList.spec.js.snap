@@ -36,7 +36,20 @@ exports[`ThesaurisList render should match the snapshot 1`] = `
           >
             Continents
           </th>
-          <td />
+          <td>
+            <div
+              className="vertical-line"
+            >
+              <Connect(I18NLink)
+                className="btn btn-default btn-xs"
+                to="/settings/dictionaries/cockpit/thesaurusUnderscoreId1"
+              >
+                <span>
+                  Configure suggestions
+                </span>
+              </Connect(I18NLink)>
+            </div>
+          </td>
           <td>
             <div>
               <Connect(I18NLink)
@@ -90,11 +103,11 @@ exports[`ThesaurisList render should match the snapshot 1`] = `
                 documents to be reviewed
               </span>
               <Connect(I18NLink)
-                className="btn btn-primary btn-xs"
+                className="btn btn-default btn-xs"
                 to="/settings/dictionaries/cockpit/thesaurusUnderscoreId2"
               >
                 <span>
-                  View suggestions
+                  Configure suggestions
                 </span>
               </Connect(I18NLink)>
             </div>
@@ -152,6 +165,5 @@ exports[`ThesaurisList render should match the snapshot 1`] = `
       </span>
     </Connect(I18NLink)>
   </div>
-  <Connect(Footer) />
 </div>
 `;

@@ -24,11 +24,11 @@ export function populateOptions(filters, thesauris) {
   });
 }
 
-function URLQueryToState(query, templates) {
-  let properties = comonProperties.comonFilters(templates, query.types);
+function URLQueryToState(query, templates, _thesauris, _relationTypes, forcedProps = []) {
+  let properties = comonProperties.comonFilters(templates, query.types, forcedProps);
 
   if (!query.types || !query.types.length) {
-    properties = comonProperties.defaultFilters(templates);
+    properties = comonProperties.defaultFilters(templates, forcedProps);
   }
 
   const {
@@ -37,6 +37,9 @@ function URLQueryToState(query, templates) {
     sort = prioritySortingCriteria.get().sort,
     order = prioritySortingCriteria.get().order,
     userSelectedSorting,
+    includeUnpublished = false,
+    unpublished = false,
+    allAggregations = false,
   } = query;
   properties = properties.map(property => {
     let defaultValue = {};
@@ -48,7 +51,19 @@ function URLQueryToState(query, templates) {
     filters[property.name] = filters[property.name] ? filters[property.name] : defaultValue;
     return property;
   });
-  return { properties, search: { searchTerm, filters, order, sort, userSelectedSorting } };
+  return {
+    properties,
+    search: {
+      searchTerm,
+      filters,
+      sort,
+      order,
+      userSelectedSorting,
+      includeUnpublished,
+      unpublished,
+      allAggregations,
+    },
+  };
 }
 
 const normalizeBucket = bucket => {

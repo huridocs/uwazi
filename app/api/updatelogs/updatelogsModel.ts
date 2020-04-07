@@ -1,5 +1,3 @@
-/** @format */
-
 import mongoose from 'mongoose';
 
 const updateLogSchema = new mongoose.Schema({

@@ -56,6 +56,11 @@ export function clickOnDocument(e, doc, active) {
   return this.props.selectDocument(doc);
 }
 
+export function selectAllDocuments() {
+  const docs = this.props.documents.get('rows');
+  return this.props.selectDocuments(docs.toJS());
+}
+
 export function mapStateToProps(state, props) {
   return {
     documents: state[props.storeKey].documents,
@@ -67,6 +72,7 @@ export function mapStateToProps(state, props) {
     multipleSelected: state[props.storeKey].ui.get('selectedDocuments').size > 1,
     rowListZoomLevel: state[props.storeKey].ui.get('zoomLevel'),
     clickOnDocument,
+    selectAllDocuments,
   };
 }
 

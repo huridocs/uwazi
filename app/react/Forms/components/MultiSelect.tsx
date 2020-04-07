@@ -1,19 +1,58 @@
-/** @format */
+/* eslint-disable class-methods-use-this,max-lines */
 
-import PropTypes from 'prop-types';
-import React, { Component } from 'react';
-
-import { Icon as CustomIcon } from 'app/Layout/Icon';
-import { Icon } from 'UI';
-import { t } from 'app/I18N';
 import ShowIf from 'app/App/ShowIf';
+import { filterOptions } from 'app/Forms/utils/optionsUtils';
+import { t } from 'app/I18N';
+import { TriStateSelectValue } from 'app/istore';
+import { Icon as CustomIcon } from 'app/Layout/Icon';
+import React, { Component } from 'react';
+import { Icon } from 'UI';
 
-import { filterOptions } from '../utils/optionsUtils';
+export type Option = { options?: Option[]; results?: number } & { [k: string]: any };
+enum SelectStates {
+  OFF,
+  PARTIAL,
+  ON,
+}
 
-const isNotAnEmptyGroup = option => !option.options || option.options.length;
+const defaultProps = {
+  optionsLabel: 'label',
+  optionsValue: 'value',
+  prefix: '',
+  options: [] as Option[],
+  filter: '',
+  optionsToShow: 5,
+  showAll: false,
+  hideSearch: false,
+  sort: false,
+  sortbyLabel: false,
+  forceHoist: false,
+  placeholder: '',
+  lookup: null,
+  onChange: (_v: any) => {},
+};
 
-export default class MultiSelect extends Component {
-  constructor(props) {
+export type MultiSelectProps<ValueType> = typeof defaultProps & {
+  value: ValueType;
+};
+
+export interface MultiSelectState {
+  filter: string;
+  showAll: boolean;
+  ui: { [k: string]: boolean };
+  lookupOptions: [];
+  selectedOptions: [];
+}
+
+const isNotAnEmptyGroup = (option: Option) => !option.options || option.options.length;
+
+abstract class MultiSelectBase<ValueType> extends Component<
+  MultiSelectProps<ValueType>,
+  MultiSelectState
+> {
+  static defaultProps = defaultProps;
+
+  constructor(props: MultiSelectProps<ValueType>) {
     super(props);
     this.state = {
       filter: props.filter,
@@ -27,17 +66,31 @@ export default class MultiSelect extends Component {
     this.showAll = this.showAll.bind(this);
   }
 
-  componentWillReceiveProps(props) {
+  componentWillReceiveProps(props: MultiSelectProps<ValueType>) {
     if (props.filter) {
       this.setState({ filter: props.filter });
     }
   }
 
-  setValues(values) {
-    this.props.onChange(values);
+  setValues(value: ValueType) {
+    this.props.onChange(value);
     const options = this.combineOptions();
-    const selectedOptions = values.map(v => options.find(o => o[this.props.optionsValue] === v));
+    const selectedOptions = value.map(v => options.find(o => o[this.props.optionsValue] === v));
     this.setState({ selectedOptions });
+  }
+
+  abstract markChecked(value: ValueType, option: Option): ValueType;
+
+  abstract markUnchecked(value: ValueType, option: Option): ValueType;
+
+  abstract getCheckedList(): string[];
+
+  getPartialList(): string[] {
+    return [];
+  }
+
+  getPinnedList(): string[] {
+    return [];
   }
 
   combineOptions() {
@@ -54,59 +107,71 @@ export default class MultiSelect extends Component {
     });
   }
 
-  changeGroup(group, e) {
-    const selectedItems = this.props.value.slice(0);
+  changeGroup(group: Option, e: React.ChangeEvent<HTMLInputElement>) {
+    let { value } = this.props;
     if (e.target.checked) {
-      group.options.forEach(_item => {
-        if (!this.checked(_item)) {
-          selectedItems.push(_item[this.props.optionsValue]);
+      group.options!.forEach(_item => {
+        if (this.checked(_item) !== SelectStates.ON) {
+          value = this.markChecked(value, _item);
         }
       });
     }
 
     if (!e.target.checked) {
-      group.options.forEach(_item => {
-        if (this.checked(_item)) {
-          const index = selectedItems.indexOf(_item[this.props.optionsValue]);
-          selectedItems.splice(index, 1);
+      group.options!.forEach(_item => {
+        if (this.checked(_item) !== SelectStates.OFF) {
+          value = this.markUnchecked(value, _item);
         }
       });
     }
-    this.setValues(selectedItems);
+    this.setValues(value);
   }
 
-  checked(option) {
+  checked(option: Option): SelectStates {
     if (!this.props.value) {
-      return false;
+      return SelectStates.OFF;
     }
+
+    const checkedList = this.getCheckedList();
+    const partialList = this.getPartialList();
 
     if (option.options) {
-      return option.options.reduce(
-        (allIncluded, _option) =>
-          allIncluded && this.props.value.includes(_option[this.props.optionsValue]),
-        true
+      const numChecked = option.options.reduce(
+        (nc, _option) => nc + (checkedList.includes(_option[this.props.optionsValue]) ? 1 : 0),
+        0
       );
+      const numPartial = option.options.reduce(
+        (np, _option) => np + (partialList.includes(_option[this.props.optionsValue]) ? 1 : 0),
+        0
+      );
+      if (numChecked === option.options.length) {
+        return SelectStates.ON;
+      }
+      if (numChecked + numPartial > 0) {
+        return SelectStates.PARTIAL;
+      }
+      return SelectStates.OFF;
     }
-    return this.props.value.includes(option[this.props.optionsValue]);
-  }
-
-  anyChildChecked(parent) {
-    return Boolean(parent.options && !!parent.options.find(itm => this.checked(itm)));
-  }
-
-  change(value) {
-    let newValues = this.props.value ? this.props.value.slice(0) : [];
-    if (newValues.includes(value)) {
-      newValues = newValues.filter(val => val !== value);
-      this.setValues(newValues);
-      return;
+    if (checkedList.includes(option[this.props.optionsValue])) {
+      return SelectStates.ON;
     }
-
-    newValues.push(value);
-    this.setValues(newValues);
+    if (partialList.includes(option[this.props.optionsValue])) {
+      return SelectStates.PARTIAL;
+    }
+    return SelectStates.OFF;
   }
 
-  async filter(e) {
+  change(option: Option) {
+    let { value } = this.props;
+    if (this.checked(option) === SelectStates.ON) {
+      value = this.markUnchecked(value, option);
+    } else {
+      value = this.markChecked(value, option);
+    }
+    this.props.onChange(value);
+  }
+
+  async filter(e: React.ChangeEvent<HTMLInputElement>) {
     const searchTerm = e.target.value;
     this.setState({ filter: searchTerm });
     if (this.props.lookup && searchTerm.length > 3) {
@@ -129,22 +194,24 @@ export default class MultiSelect extends Component {
     this.setState({ filter: '', lookupOptions: [] });
   }
 
-  showAll(e) {
+  showAll(e: React.MouseEvent) {
     e.preventDefault();
     this.setState(prevState => ({ showAll: !prevState.showAll }));
   }
 
-  sort(options, _optionsValue, optionsLabel, isSubGroup = false) {
+  sort(options: Option[], isSubGroup = false) {
+    const { optionsValue, optionsLabel } = this.props;
+    const pinnedList = this.getPinnedList();
     const sortedOptions = options.sort((a, b) => {
+      const aPinned = this.checked(a) !== SelectStates.OFF || pinnedList.includes(a[optionsValue]);
+      const bPinned = this.checked(b) !== SelectStates.OFF || pinnedList.includes(b[optionsValue]);
       let sorting = 0;
       if (!this.state.showAll) {
-        sorting =
-          (this.checked(b) || this.anyChildChecked(b)) -
-          (this.checked(a) || this.anyChildChecked(a));
+        sorting = (bPinned ? 1 : 0) - (aPinned ? 1 : 0);
       }
 
       if (sorting === 0 && typeof options[0].results !== 'undefined' && a.results !== b.results) {
-        sorting = a.results > b.results ? -1 : 1;
+        sorting = (a.results || 0) > (b.results || 0) ? -1 : 1;
       }
 
       const showingAll = this.state.showAll || options.length < this.props.optionsToShow;
@@ -158,12 +225,13 @@ export default class MultiSelect extends Component {
     return this.moveNoValueOptionToBottom(sortedOptions);
   }
 
-  sortOnlyAggregates(options, _optionsvalue, optionsLabel) {
+  sortOnlyAggregates(options: Option[]) {
+    const { optionsLabel } = this.props;
     if (!options.length || typeof options[0].results === 'undefined') {
       return options;
     }
     const sortedOptions = options.sort((a, b) => {
-      let sorting = b.results - a.results;
+      let sorting = (b.results || 0) - (a.results || 0);
 
       if (sorting === 0) {
         sorting = a[optionsLabel] < b[optionsLabel] ? -1 : 1;
@@ -174,36 +242,33 @@ export default class MultiSelect extends Component {
     return this.moveNoValueOptionToBottom(sortedOptions);
   }
 
-  moveNoValueOptionToBottom(options) {
+  moveNoValueOptionToBottom(options: Option[]) {
     let _options = [...options];
-    const noValueOption = _options.find(opt => opt.noValueKey);
-    if (noValueOption && !this.checked(noValueOption)) {
-      _options = _options.filter(opt => !opt.noValueKey);
-      _options.push(noValueOption);
-    }
+    ['any', 'missing'].forEach(bottomId => {
+      const bottomOption = _options.find(opt => opt.id === bottomId);
+      if (bottomOption && this.checked(bottomOption) === SelectStates.OFF) {
+        _options = _options.filter(opt => opt.id !== bottomId);
+        _options.push(bottomOption);
+      }
+    });
     return _options;
   }
 
-  hoistCheckedOptions(options) {
+  hoistCheckedOptions(options: Option[]) {
     const [checkedOptions, otherOptions] = options.reduce(
       ([checked, others], option) => {
-        if (this.checked(option) || this.anyChildChecked(option)) {
+        if (this.checked(option) !== SelectStates.OFF) {
           return [checked.concat([option]), others];
         }
         return [checked, others.concat([option])];
       },
-      [[], []]
+      [[] as Option[], [] as Option[]]
     );
-    let partitionedOptions = checkedOptions.concat(otherOptions);
-    const noValueOption = partitionedOptions.find(opt => opt.noValueKey);
-    if (noValueOption && !this.checked(noValueOption)) {
-      partitionedOptions = partitionedOptions.filter(opt => !opt.noValueKey);
-      partitionedOptions.push(noValueOption);
-    }
-    return partitionedOptions;
+    const partitionedOptions = checkedOptions.concat(otherOptions);
+    return this.moveNoValueOptionToBottom(partitionedOptions);
   }
 
-  moreLessLabel(totalOptions) {
+  moreLessLabel(totalOptions: Option[]) {
     if (this.state.showAll) {
       return t('System', 'x less');
     }
@@ -214,7 +279,7 @@ export default class MultiSelect extends Component {
     );
   }
 
-  toggleOptions(group, e) {
+  toggleOptions(group: Option, e: React.MouseEvent) {
     e.preventDefault();
     const groupKey = group[this.props.optionsValue];
     const { ui } = this.state;
@@ -222,20 +287,19 @@ export default class MultiSelect extends Component {
     this.setState({ ui });
   }
 
-  showSubOptions(parent) {
+  showSubOptions(parent: Option) {
     const toggled = this.state.ui[parent.id];
-    const parentChecked = this.checked(parent);
-    const childChecked = !!parent.options.find(itm => this.checked(itm));
-    return toggled || (!parentChecked && childChecked);
+    return toggled || this.checked(parent) !== SelectStates.OFF;
   }
 
-  label(option) {
+  label(option: Option) {
     const { optionsValue, optionsLabel, prefix } = this.props;
     return (
       <label className="multiselectItem-label" htmlFor={prefix + option[optionsValue]}>
         <span className="multiselectItem-icon">
           <Icon icon={['far', 'square']} className="checkbox-empty" />
           <Icon icon="check" className="checkbox-checked" />
+          <Icon icon="minus" className="checkbox-partial" />
         </span>
         <span className="multiselectItem-name">
           <CustomIcon className="item-icon" data={option.icon} />
@@ -256,7 +320,7 @@ export default class MultiSelect extends Component {
     );
   }
 
-  renderGroup(group, index) {
+  renderGroup(group: Option, index: number) {
     const { prefix } = this.props;
     const _group = Object.assign({}, group, { results: group.results });
     return (
@@ -264,34 +328,38 @@ export default class MultiSelect extends Component {
         <div className="multiselectItem">
           <input
             type="checkbox"
-            className="group-checkbox multiselectItem-input"
+            className={`group-checkbox multiselectItem-input${
+              this.checked(group) === SelectStates.PARTIAL ? ' partial' : ''
+            }`}
             id={prefix + group.id}
             onChange={this.changeGroup.bind(this, group)}
-            checked={this.checked(group)}
+            checked={this.checked(group) !== SelectStates.OFF}
           />
           {this.label(_group)}
         </div>
         <ShowIf if={this.showSubOptions(group)}>
           <ul className="multiselectChild is-active">
-            {group.options.map((_item, i) => this.renderOption(_item, i, index))}
+            {group.options!.map((_item, i) => this.renderOption(_item, i, index.toString()))}
           </ul>
         </ShowIf>
       </li>
     );
   }
 
-  renderOption(option, index, groupIndex = '') {
+  renderOption(option: Option, index: number, groupIndex = '') {
     const { optionsValue, optionsLabel, prefix } = this.props;
     const key = `${groupIndex}${index}`;
     return (
       <li className="multiselectItem" key={key} title={option[optionsLabel]}>
         <input
           type="checkbox"
-          className="multiselectItem-input"
+          className={`multiselectItem-input${
+            this.checked(option) === SelectStates.PARTIAL ? ' partial' : ''
+          }`}
           value={option[optionsValue]}
           id={prefix + option[optionsValue]}
-          onChange={this.change.bind(this, option[optionsValue])}
-          checked={this.checked(option)}
+          onChange={this.change.bind(this, option)}
+          checked={this.checked(option) !== SelectStates.OFF}
         />
         {this.label(option)}
       </li>
@@ -299,7 +367,7 @@ export default class MultiSelect extends Component {
   }
 
   render() {
-    const { optionsValue, optionsLabel, placeholder } = this.props;
+    const { optionsLabel, placeholder } = this.props;
 
     let options = this.combineOptions();
 
@@ -326,7 +394,7 @@ export default class MultiSelect extends Component {
           return _opt.results === notDefined || _opt.results > 0 || this.checked(_opt);
         }),
       };
-    });
+    }) as Option[];
 
     if (this.state.filter) {
       options = filterOptions(this.state.filter, options, optionsLabel);
@@ -335,9 +403,9 @@ export default class MultiSelect extends Component {
     const tooManyOptions = !this.state.showAll && options.length > this.props.optionsToShow;
 
     if (this.props.sort) {
-      options = this.sort(options, optionsValue, optionsLabel);
+      options = this.sort(options);
     } else {
-      options = this.sortOnlyAggregates(options, optionsValue, optionsLabel);
+      options = this.sortOnlyAggregates(options);
     }
 
     if (this.props.forceHoist || (!this.props.sort && !this.state.showAll)) {
@@ -357,11 +425,8 @@ export default class MultiSelect extends Component {
       if (!option.options) {
         return option;
       }
-      return {
-        ...option,
-        options: this.sort(option.options, optionsValue, optionsLabel, true),
-      };
-    });
+      return { ...option, options: this.sort(option.options, true) };
+    }) as Option[];
 
     return (
       <ul className="multiselect is-active">
@@ -410,37 +475,69 @@ export default class MultiSelect extends Component {
   }
 }
 
-MultiSelect.defaultProps = {
-  optionsLabel: 'label',
-  optionsValue: 'value',
-  value: [],
-  prefix: '',
-  options: [],
-  filter: '',
-  optionsToShow: 5,
-  showAll: false,
-  hideSearch: false,
-  sort: false,
-  sortbyLabel: false,
-  forceHoist: false,
-  placeholder: '',
-  lookup: null,
-};
+export default class MultiSelect extends MultiSelectBase<string[]> {
+  static defaultProps = { ...defaultProps, value: [] as string[] };
 
-MultiSelect.propTypes = {
-  onChange: PropTypes.func.isRequired,
-  options: PropTypes.array,
-  value: PropTypes.array,
-  optionsValue: PropTypes.string,
-  optionsLabel: PropTypes.string,
-  filter: PropTypes.string,
-  prefix: PropTypes.string,
-  optionsToShow: PropTypes.number,
-  showAll: PropTypes.bool,
-  hideSearch: PropTypes.bool,
-  sort: PropTypes.bool,
-  sortbyLabel: PropTypes.bool,
-  forceHoist: PropTypes.bool,
-  placeholder: PropTypes.string,
-  lookup: PropTypes.func,
-};
+  markChecked(value: string[], option: Option): string[] {
+    const newValue = value.slice(0);
+    newValue.push(option[this.props.optionsValue]);
+    return newValue;
+  }
+
+  markUnchecked(value: string[], option: Option): string[] {
+    const opt = option[this.props.optionsValue];
+    if (!value.includes(opt)) {
+      return value;
+    }
+    const newValue = value.slice(0);
+    newValue.splice(value.indexOf(opt));
+    return newValue;
+  }
+
+  getCheckedList(): string[] {
+    return this.props.value || [];
+  }
+}
+
+export class MultiSelectTristate extends MultiSelectBase<TriStateSelectValue> {
+  static defaultProps = { ...defaultProps, value: {} as TriStateSelectValue };
+
+  markChecked(value: TriStateSelectValue, option: Option): TriStateSelectValue {
+    const opt = option[this.props.optionsValue];
+    const newValue = { ...value, added: value.added.slice(0), removed: value.removed.slice(0) };
+    newValue.removed = value.removed.filter(v => v !== opt);
+    if (value.originalFull.includes(opt)) {
+      return newValue;
+    }
+    // Flip originally partial options from off to partial, and then from partial to on.
+    if (!value.originalPartial.includes(opt) || !value.removed.includes(opt)) {
+      newValue.added.push(opt);
+    }
+    return newValue;
+  }
+
+  markUnchecked(value: TriStateSelectValue, option: Option): TriStateSelectValue {
+    const opt = option[this.props.optionsValue];
+    const newValue = { ...value, added: value.added.slice(0), removed: value.removed.slice(0) };
+    if (value.originalFull.includes(opt) || value.originalPartial.includes(opt)) {
+      newValue.removed.push(option[this.props.optionsValue]);
+    }
+    newValue.added = value.added.filter(v => v !== option[this.props.optionsValue]);
+    return newValue;
+  }
+
+  getCheckedList(): string[] {
+    const { value } = this.props;
+    return value.originalFull.filter(v => !value.removed.includes(v)).concat(value.added);
+  }
+
+  getPartialList(): string[] {
+    const { value } = this.props;
+    return value.originalPartial.filter(v => !value.removed.includes(v));
+  }
+
+  getPinnedList(): string[] {
+    const { value } = this.props;
+    return value.originalPartial.concat(value.originalFull);
+  }
+}

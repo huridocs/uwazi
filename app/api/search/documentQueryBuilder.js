@@ -81,14 +81,6 @@ export default function() {
       return baseQuery;
     },
 
-    includeUnpublished() {
-      const matchPublished = baseQuery.query.bool.filter.find(i => i.term && i.term.published);
-      if (matchPublished) {
-        baseQuery.query.bool.filter.splice(baseQuery.query.bool.filter.indexOf(matchPublished), 1);
-      }
-      return this;
-    },
-
     fullTextSearch( // eslint-disable-line max-params
       term,
       fieldsToSearch = ['title', 'fullText'],
@@ -176,6 +168,20 @@ export default function() {
       return this;
     },
 
+    includeUnpublished() {
+      const matchPulished = baseQuery.query.bool.filter.findIndex(i => i.term && i.term.published);
+      if (matchPulished >= 0) {
+        baseQuery.query.bool.filter.splice(matchPulished, 1);
+      }
+      const aggPulished = aggregations._types.aggregations.filtered.filter.bool.filter.findIndex(
+        i => i.match && i.match.published
+      );
+      if (aggPulished >= 0) {
+        aggregations._types.aggregations.filtered.filter.bool.filter.splice(aggPulished, 1);
+      }
+      return this;
+    },
+
     owner(user) {
       const match = { match: { user: user._id } };
       baseQuery.query.bool.must.push(match);
@@ -255,19 +261,15 @@ export default function() {
           baseQuery
         );
       });
-      // suggested has an implied '_' as a prefix
-      properties
-        .filter(
-          p => (dictionaries.find(d => p.content === d._id.toString()) || {}).enable_classification
-        )
-        .forEach(property => {
-          baseQuery.aggregations.all.aggregations[`_${property.name}`] = propertyToAggregation(
-            property,
-            dictionaries,
-            baseQuery,
-            true
-          );
-        });
+      // suggested has an implied '__' as a prefix
+      properties.forEach(property => {
+        baseQuery.aggregations.all.aggregations[`__${property.name}`] = propertyToAggregation(
+          property,
+          dictionaries,
+          baseQuery,
+          true
+        );
+      });
       return this;
     },
 

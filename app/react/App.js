@@ -4,7 +4,7 @@ import React from 'react';
 
 import CustomProvider from './App/Provider';
 import Routes from './Routes';
-import { store } from './store.js';
+import { store } from './store';
 
 const App = () => (
   <Provider store={store}>

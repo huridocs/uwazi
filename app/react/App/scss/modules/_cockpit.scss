@@ -1,4 +1,79 @@
-/** @format */
+.notice {
+  background-color: #FAFBFF;
+  border-radius: 8px;
+  border: 1px solid #6584EB;
+  max-width: 650px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  
+  .close-notice {
+    float: right;
+    border: none;
+    background: inherit;
+    font: inherit;
+  }
+  
+  .header {
+    font: bold 14px Roboto;
+    height: 30px;
+    margin-bottom: 5px;
+  }
+
+  .main {
+    display: flex;
+    flex-direction: row;
+  }
+
+  .block {
+    display: flex;
+    flex-direction: column;
+    margin: 0px 5px;
+    min-width: 300px;
+
+    .stretch {
+      flex-grow: 1;
+    }
+    .footer {
+      height: 50px;
+      .btn-label {
+        margin-top: 15px;
+      }
+    }
+  }
+
+  .icon {
+    margin-right: 5px;
+  }
+  
+  .title {
+    display: inline-block;
+    vertical-align: 10px;
+    height: 100%;
+  }
+  .btn {
+    height: 25px;
+    min-width: 85px;
+    margin-top: 15px;
+    padding: 2px;
+    font: Roboto;
+    border-radius: 2px;
+  }
+}
+
+.notice.is-hidden {
+  display: none;
+}
+
+.sidepanel-body {
+  .notice {
+    margin: 5px;
+  }
+}
+
+.sync-state {
+  margin: 10px 10px;
+}
 
 .cockpit {
   table {
@@ -24,19 +99,22 @@
   }
 
   thead th:nth-child(1) {
-    width: 70%;
+    width: unset;
+    max-width: calc(100% - 300px);
+    white-space: normal;
+    overflow-wrap: break-word;
   }
 
   thead th:nth-child(2) {
-    width: 10%;
+    width: unset;
   }
 
   thead th:nth-child(3) {
-    width: 10%;
+    width: unset;
   }
 
   thead th:nth-child(4) {
-    width: 10%;
+    width: 120px;
   }
 
   .quality-icon {
