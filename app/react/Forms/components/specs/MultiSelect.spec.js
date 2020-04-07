@@ -300,6 +300,21 @@ describe('MultiSelect', () => {
       instance.filter({ target: { value: 'something' } });
       expect(instance.state.filter).toBe('something');
     });
+
+    describe('when it has lookup', () => {
+      it('should use the lookup and set the options', async () => {
+        const options = [
+          { value: 1, label: 'one', results: 3 },
+          { value: 2, label: 'two', results: 12 },
+        ];
+        props.lookup = jest.fn().mockReturnValue(Promise.resolve(options));
+        render();
+        await instance.filter({ target: { value: 'something' } });
+
+        expect(props.lookup).toHaveBeenCalledWith('something');
+        expect(instance.state.lookupOptions).toEqual(options);
+      });
+    });
   });
 
   describe('resetFilter()', () => {

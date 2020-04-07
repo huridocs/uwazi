@@ -2,7 +2,7 @@ const aggregation = (key, should, filters) => ({
   terms: {
     field: key,
     missing: 'missing',
-    size: 200,
+    size: 2,
   },
   aggregations: {
     filtered: {
@@ -96,7 +96,7 @@ const nestedAggregation = (property, should, readOnlyFilters, path, missing = fa
       terms: {
         field: nestedPropPath,
         missing: missing ? 'missing' : undefined,
-        size: 9999,
+        size: 200,
       },
       aggregations: {
         filtered: {

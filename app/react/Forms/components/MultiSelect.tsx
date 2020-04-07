@@ -77,6 +77,7 @@ abstract class MultiSelectBase<ValueType> extends Component<
     if (this.props.lookup) {
       const options = this.combineOptions();
       const selectedOptions = value.map(v => options.find(o => o[this.props.optionsValue] === v));
+
       this.setState({ selectedOptions });
     }
   }
@@ -178,6 +179,7 @@ abstract class MultiSelectBase<ValueType> extends Component<
     this.setState({ filter: searchTerm });
     if (this.props.lookup && searchTerm.length > 3) {
       const response = await this.props.lookup(searchTerm);
+
       const lookupOptions = response.map(o => ({
         [this.props.optionsValue]: o.value,
         [this.props.optionsLabel]: o.label,
