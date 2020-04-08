@@ -15,6 +15,9 @@ enum SelectStates {
   ON,
 }
 
+const uniqueOptions = (optionsValue: string) => (option: Option, i: number, arr: Option[]) =>
+  arr.findIndex(o => o[optionsValue] === option[optionsValue]) === i;
+
 const defaultProps = {
   optionsLabel: 'label',
   optionsValue: 'value',
@@ -96,18 +99,12 @@ abstract class MultiSelectBase<ValueType> extends Component<
     return [];
   }
 
-  combineOptions() {
-    const combinedOptions = [
+  combineOptions(): Option[] {
+    return [
       ...this.props.options,
       ...this.state.lookupOptions,
       ...this.state.selectedOptions,
-    ];
-
-    return Array.from(
-      new Set(combinedOptions.filter(o => o).map(o => o[this.props.optionsValue]))
-    ).map(value => {
-      return combinedOptions.find(o => o[this.props.optionsValue] === value);
-    });
+    ].filter(uniqueOptions(this.props.optionsValue));
   }
 
   changeGroup(group: Option, e: React.ChangeEvent<HTMLInputElement>) {

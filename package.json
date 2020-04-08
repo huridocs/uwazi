@@ -90,8 +90,8 @@
     "@types/react-router-dom": "^5.1.0",
     "@types/react-tabs-redux": "^4.0.0",
     "@types/socket.io": "^2.1.4",
-    "@types/yargs-parser": "^13.0.0",
     "@types/webpack-env": "^1.15.1",
+    "@types/yargs-parser": "^13.0.0",
     "ajv": "^6.10.2",
     "ajv-keywords": "^3.4.1",
     "async": "^2.6.1",
@@ -205,6 +205,7 @@
   "devDependencies": {
     "@babel/cli": "7.4.4",
     "@babel/polyfill": "7.4.4",
+    "@types/cookie": "^0.3.3",
     "@types/enzyme": "3.10.0",
     "@types/enzyme-adapter-react-16": "1.0.2",
     "@types/express": "^4.17.2",
