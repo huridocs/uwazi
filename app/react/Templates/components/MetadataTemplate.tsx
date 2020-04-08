@@ -1,4 +1,3 @@
-/** @format */
 import { TemplateSchema } from 'shared/types/templateType';
 import ShowIf from 'app/App/ShowIf';
 import { FormGroup } from 'app/Forms';
@@ -35,6 +34,7 @@ interface MetadataTemplateProps {
   templates?: any;
   _id?: string;
 }
+
 const getTemplateDefaultColor = (allTemplates: List<TemplateSchema>, templateId: string) => {
   if (!templateId) {
     return COLORS[allTemplates.size % COLORS.length];
@@ -159,10 +159,10 @@ export class MetadataTemplate extends Component<MetadataTemplateProps> {
     );
   }
 }
+
 /* eslint-disable react/forbid-prop-types, react/require-default-props */
 MetadataTemplate.propTypes = {
   connectDropTarget: PropTypes.func.isRequired,
-  formState: PropTypes.object,
   backUrl: PropTypes.string,
   _id: PropTypes.string,
   saveTemplate: PropTypes.func.isRequired,
