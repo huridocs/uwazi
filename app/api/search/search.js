@@ -712,8 +712,10 @@ const instanceSearch = elasticIndex => ({
     const property = propertiesHelper
       .allUniqueProperties(templates)
       .find(p => p.name === propertyName);
-    property.name = `${propertyName}.value`;
-    queryBuilder.resetAggregations().aggregations([property], dictionaries);
+
+    queryBuilder
+      .resetAggregations()
+      .aggregations([{ ...property, name: `${propertyName}.value` }], dictionaries);
 
     const body = queryBuilder.query();
 

@@ -2,7 +2,7 @@ const aggregation = (key, should, filters) => ({
   terms: {
     field: key,
     missing: 'missing',
-    size: 2,
+    size: 200,
   },
   aggregations: {
     filtered: {

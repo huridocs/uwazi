@@ -72,17 +72,17 @@ describe('Search routes', () => {
   describe('GET /search/lookupaggregation', () => {
     it('should return a list of options matching by label and options related to the matching one', async () => {
       const query = {
-        types: [ids.templateMetadata1, ids.templateMetadata2],
+        types: [ids.template1],
         filters: {},
       };
 
       const res = await request(app)
         .get('/api/search/lookupaggregation')
-        .query({ query: JSON.stringify(query), searchTerm: 'Egyp', property: 'multiselect1' });
+        .query({ query: JSON.stringify(query), searchTerm: 'Bat', property: 'relationship' });
 
       const options = res.body;
 
-      expect(options.length).toBe(2);
+      expect(options.length).toBe(1);
       expect(options[0].value).toBeDefined();
       expect(options[0].label).toBeDefined();
       expect(options[0].results).toBeDefined();

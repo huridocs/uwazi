@@ -75,6 +75,9 @@ export default {
       title: 'Batman finishes en',
       published: true,
       user: userId,
+      metadata: {
+        relationship: [{ value: batmanBegins, label: 'Batman begins en' }],
+      },
     },
     {
       _id: db.id(),
@@ -84,6 +87,9 @@ export default {
       title: 'Batman finishes es',
       published: true,
       user: userId,
+      metadata: {
+        relationship: [{ value: batmanBegins, label: 'Batman begins es' }],
+      },
     },
     {
       _id: db.id(),
@@ -322,6 +328,13 @@ export default {
         { name: 'multidate', type: 'multidate', filter: true },
         { name: 'daterange', type: 'daterange', filter: true },
         { name: 'multidaterange', type: 'multidaterange', filter: true },
+        {
+          name: 'relationship',
+          type: 'relationship',
+          filter: true,
+          relationType,
+          content: template2,
+        },
       ],
     },
     { _id: template2, properties: [] },
