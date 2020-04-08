@@ -43,7 +43,6 @@ export const translateOptions = thesauri =>
 export class MetadataFormFields extends Component {
   getField(property, _model, thesauris) {
     let thesauri;
-    let placeholderName;
     const { dateFormat, version, entityThesauris } = this.props;
     const propertyType = property.type;
     switch (propertyType) {

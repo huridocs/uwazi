@@ -2,8 +2,6 @@ import React from 'react';
 import { shallow } from 'enzyme';
 
 import MultiSelect from '../MultiSelect';
-import { when } from 'joi';
-import { promises } from 'dns';
 
 describe('MultiSelect', () => {
   let component;
