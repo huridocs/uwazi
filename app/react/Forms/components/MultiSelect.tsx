@@ -96,7 +96,7 @@ abstract class MultiSelectBase<ValueType> extends Component<
     return [];
   }
 
-  combineOptions() {
+  combineOptions(): [] {
     const combinedOptions = [
       ...this.props.options,
       ...this.state.lookupOptions,

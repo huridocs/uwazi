@@ -302,8 +302,9 @@ describe('MultiSelect', () => {
     describe('when it has lookup', () => {
       it('should use the lookup and set the options', async () => {
         const options = [
-          { value: 1, label: 'one', results: 3 },
-          { value: 2, label: 'two', results: 12 },
+          { value: 1, label: 'something', results: 3 },
+          { value: 2, label: 'something too', results: 12 },
+          { value: 3, label: 'nothing too', results: 12 },
         ];
         props.lookup = jest.fn().mockReturnValue(Promise.resolve(options));
         render();
@@ -311,6 +312,28 @@ describe('MultiSelect', () => {
 
         expect(props.lookup).toHaveBeenCalledWith('something');
         expect(instance.state.lookupOptions).toEqual(options);
+        component.update();
+        const renderedOptions = component.find('input[type="checkbox"]');
+        expect(renderedOptions.length).toBe(2);
+      });
+    });
+  });
+
+  describe('setValues', () => {
+    it('should call on change with the value', () => {
+      render();
+      instance.setValues([{ value: '1', label: 'one' }]);
+      expect(props.onChange).toHaveBeenCalledWith([{ value: '1', label: 'one' }]);
+    });
+
+    describe('when the propertyhas lookup', () => {
+      it('should store the values in the selectedValues state', () => {
+        props.lookup = () => {};
+        render();
+        instance.setValues(['option1']);
+        expect(instance.state.selectedOptions).toEqual([
+          { label: 'Option1', results: 5, value: 'option1' },
+        ]);
       });
     });
   });

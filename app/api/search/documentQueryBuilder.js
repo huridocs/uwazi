@@ -260,6 +260,12 @@ export default function() {
           dictionaries,
           baseQuery
         );
+
+        baseQuery.aggregations.all.aggregations[`${property.name}__optionsCount`] = {
+          cardinality: {
+            field: `metadata.${property.name}.raw`,
+          },
+        };
       });
       // suggested has an implied '__' as a prefix
       properties.forEach(property => {

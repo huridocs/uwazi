@@ -69,7 +69,7 @@ exports[`FiltersFromProperties when type is select, multiselect or relationship 
 Array [
   <SelectFilter
     label="selectLabel"
-    lookup={null}
+    lookup={[Function]}
     model=".filters.selectFilter"
     onChange={[Function]}
     options={
@@ -85,7 +85,7 @@ Array [
   />,
   <SelectFilter
     label="multiselectLabel"
-    lookup={null}
+    lookup={[Function]}
     model=".filters.multiselectFilter"
     onChange={[Function]}
     options={

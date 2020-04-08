@@ -51,6 +51,7 @@ export const FiltersFromProperties = ({
         filter = (
           <SelectFilter
             {...commonProps}
+            lookup={getAggregationSuggestions.bind(null, storeKey, property.name)}
             options={property.options}
             prefix={property.name}
             showBoolSwitch={property.type === 'multiselect' || property.type === 'relationship'}
