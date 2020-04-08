@@ -6,4 +6,5 @@ export default {
   development: INDEX_NAME || DATABASE_NAME || 'uwazi_development',
   testing: INDEX_NAME || DATABASE_NAME || 'testing',
   production: INDEX_NAME || DATABASE_NAME || 'uwazi_development',
+  index: '',
 };
