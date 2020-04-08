@@ -56,6 +56,8 @@ describe('Array Utils', () => {
         { key: 'id1', doc_count: 10, filtered: { doc_count: 3 } },
         { key: 'id3', doc_count: 5, filtered: { doc_count: 4 } },
         { key: 'id2', doc_count: 20, filtered: { doc_count: 5 } },
+        { key: 'missing', label: null, filtered: { doc_count: 0 } },
+        { key: 'any', label: null, filtered: { doc_count: -672 } },
       ]);
       property = 'prop';
 

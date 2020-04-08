@@ -1,5 +1,4 @@
 import mongoose from 'mongoose';
-import errorLog from 'api/log/errorLog';
 
 import { model as updatelogsModel } from 'api/updatelogs';
 
@@ -31,14 +30,6 @@ class UpdateLogHelper {
   }
 
   upsertLogOne(doc: mongoose.Document, next: (err?: mongoose.NativeError) => void) {
-    // temporary prevent creating updateLogs without mongoid, log error
-    if (!doc._id) {
-      errorLog.error(
-        `ERROR, Update Log received a doc without _id:\n ${JSON.stringify(doc, null, ' ')}`
-      );
-      return next();
-    }
-    //
     const logData = { namespace: this.collectionName, mongoId: doc._id };
     return asyncPost(async () => {
       await updatelogsModel.findOneAndUpdate(
@@ -53,7 +44,7 @@ class UpdateLogHelper {
     await updatelogsModel.updateMany(
       { mongoId: { $in: affectedIds }, namespace: this.collectionName },
       { $set: { timestamp: Date.now(), deleted } },
-      { upsert: true, lean: true }
+      { lean: true }
     );
   }
 }
