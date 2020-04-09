@@ -76,7 +76,10 @@ export default {
       published: true,
       user: userId,
       metadata: {
-        relationship: [{ value: batmanBegins, label: 'Batman begins en' }],
+        relationship: [
+          { value: batmanBegins, label: 'Batman begins en' },
+          { value: 'unpublished', label: 'Do not show' },
+        ],
       },
     },
     {
@@ -88,7 +91,10 @@ export default {
       published: true,
       user: userId,
       metadata: {
-        relationship: [{ value: batmanBegins, label: 'Batman begins es' }],
+        relationship: [
+          { value: batmanBegins, label: 'Batman begins es' },
+          { value: 'unpublished', label: 'Do not show' },
+        ],
       },
     },
     {
@@ -114,6 +120,15 @@ export default {
       sharedId: 'unpublished',
       template,
       language: 'es',
+      title: 'unpublished',
+      published: false,
+      user: userId,
+    },
+    {
+      _id: db.id(),
+      sharedId: 'unpublished',
+      template,
+      language: 'en',
       title: 'unpublished',
       published: false,
       user: userId,

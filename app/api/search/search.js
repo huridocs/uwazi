@@ -176,6 +176,7 @@ const _sanitizeAgregationNames = aggregations => {
 const _getAggregationDictionary = async (aggregation, language, property, dictionaries) => {
   if (property.type === 'relationship') {
     const entitiesSharedId = aggregation.buckets.map(bucket => bucket.key);
+
     const bucketEntities = await entities.get({ sharedId: { $in: entitiesSharedId }, language });
 
     return thesauri.entitiesToThesauri(bucketEntities);
@@ -719,9 +720,10 @@ const instanceSearch = elasticIndex => ({
 
     const body = queryBuilder.query();
 
-    body.aggregations.all.aggregations[
-      `${propertyName}.value`
-    ].aggregations.filtered.filter.bool.filter.push({
+    const aggregation = body.aggregations.all.aggregations[`${propertyName}.value`];
+
+    aggregation.terms.size = 1000;
+    aggregation.aggregations.filtered.filter.bool.filter.push({
       wildcard: { [`metadata.${propertyName}.label.raw`]: { value: `*${searchTerm}*` } },
     });
 
@@ -743,7 +745,9 @@ const instanceSearch = elasticIndex => ({
         value: bucket.key,
         results: bucket.filtered.doc_count,
       }))
-      .filter(o => o.results);
+      .filter(o => {
+        return o.results && o.label.includes(searchTerm);
+      });
   },
 
   async autocomplete(searchTerm, language, templates = [], includeUnpublished = false) {
@@ -754,7 +758,7 @@ const instanceSearch = elasticIndex => ({
         include: ['title', 'template', 'sharedId'],
       },
       from: 0,
-      size: 50,
+      size: 200,
       query: {
         bool: {
           must: [
