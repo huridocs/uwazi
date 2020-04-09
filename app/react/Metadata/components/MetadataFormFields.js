@@ -21,6 +21,7 @@ import {
   Nested,
   Numeric,
   Select,
+  LookupMultiSelect,
 } from '../../ReactReduxForms';
 import MultipleEditionFieldWarning from './MultipleEditionFieldWarning';
 
@@ -97,7 +98,7 @@ export class MetadataFormFields extends Component {
             });
         }
         return (
-          <MultiSelect
+          <LookupMultiSelect
             lookup={getSuggestions.bind(null, [property.content])}
             model={_model}
             optionsValue="id"

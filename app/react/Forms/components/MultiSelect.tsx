@@ -15,10 +15,7 @@ enum SelectStates {
   ON,
 }
 
-const uniqueOptions = (optionsValue: string) => (option: Option, i: number, arr: Option[]) =>
-  arr.findIndex(o => o[optionsValue] === option[optionsValue]) === i;
-
-const defaultProps = {
+export const defaultProps = {
   optionsLabel: 'label',
   optionsValue: 'value',
   prefix: '',
@@ -31,8 +28,8 @@ const defaultProps = {
   sortbyLabel: false,
   forceHoist: false,
   placeholder: '',
-  lookup: null,
   onChange: (_v: any) => {},
+  onFilter: (searchTerm: string) => {},
 };
 
 export type MultiSelectProps<ValueType> = typeof defaultProps & {
@@ -43,8 +40,6 @@ export interface MultiSelectState {
   filter: string;
   showAll: boolean;
   ui: { [k: string]: boolean };
-  lookupOptions: [];
-  selectedOptions: [];
 }
 
 const isNotAnEmptyGroup = (option: Option) => !option.options || option.options.length;
@@ -57,33 +52,17 @@ abstract class MultiSelectBase<ValueType> extends Component<
 
   constructor(props: MultiSelectProps<ValueType>) {
     super(props);
-    this.state = {
-      filter: props.filter,
-      showAll: props.showAll,
-      ui: {},
-      lookupOptions: [],
-      selectedOptions: [],
-    };
+    this.state = { showAll: props.showAll, ui: {} };
     this.filter = this.filter.bind(this);
     this.resetFilter = this.resetFilter.bind(this);
     this.showAll = this.showAll.bind(this);
   }
 
-  componentWillReceiveProps(props: MultiSelectProps<ValueType>) {
-    if (props.filter) {
-      this.setState({ filter: props.filter });
-    }
-  }
-
-  setValues(value: ValueType) {
-    this.props.onChange(value);
-    if (this.props.lookup) {
-      const options = this.combineOptions();
-      const selectedOptions = value.map(v => options.find(o => o[this.props.optionsValue] === v));
-
-      this.setState({ selectedOptions });
-    }
-  }
+  // componentWillReceiveProps(props: MultiSelectProps<ValueType>) {
+  //   if (props.filter) {
+  //     this.setState({ filter: props.filter });
+  //   }
+  // }
 
   abstract markChecked(value: ValueType, option: Option): ValueType;
 
@@ -97,14 +76,6 @@ abstract class MultiSelectBase<ValueType> extends Component<
 
   getPinnedList(): string[] {
     return [];
-  }
-
-  combineOptions(): Option[] {
-    return [
-      ...this.props.options,
-      ...this.state.lookupOptions,
-      ...this.state.selectedOptions,
-    ].filter(uniqueOptions(this.props.optionsValue));
   }
 
   changeGroup(group: Option, e: React.ChangeEvent<HTMLInputElement>) {
@@ -124,7 +95,7 @@ abstract class MultiSelectBase<ValueType> extends Component<
         }
       });
     }
-    this.setValues(value);
+    this.props.onChange(value);
   }
 
   checked(option: Option): SelectStates {
@@ -171,28 +142,13 @@ abstract class MultiSelectBase<ValueType> extends Component<
     this.props.onChange(value);
   }
 
-  async filter(e: React.ChangeEvent<HTMLInputElement>) {
-    const searchTerm = e.target.value;
-    this.setState({ filter: searchTerm });
-    if (this.props.lookup && searchTerm.length > 3) {
-      const response = await this.props.lookup(searchTerm);
-
-      const lookupOptions = response.map(o => ({
-        [this.props.optionsValue]: o.value,
-        [this.props.optionsLabel]: o.label,
-        results: o.results,
-      }));
-
-      this.setState({ lookupOptions });
-    }
-
-    if (searchTerm.length <= 3) {
-      this.setState({ lookupOptions: [] });
-    }
+  filter(e: React.ChangeEvent<HTMLInputElement>) {
+    this.props.onFilter(e.target.value);
+    this.setState({ filter: e.target.value });
   }
 
   resetFilter() {
-    this.setState({ filter: '', lookupOptions: [] });
+    this.setState({ filter: '' });
   }
 
   showAll(e: React.MouseEvent) {
@@ -370,8 +326,7 @@ abstract class MultiSelectBase<ValueType> extends Component<
   render() {
     const { optionsLabel, placeholder } = this.props;
 
-    let options = this.combineOptions();
-
+    let options = this.props.options.slice();
     const totalOptions = options.filter(option => {
       let notDefined;
       return (
@@ -433,10 +388,7 @@ abstract class MultiSelectBase<ValueType> extends Component<
       <ul className="multiselect is-active">
         <li className="multiselectActions">
           <ShowIf
-            if={
-              (this.props.options.length > this.props.optionsToShow && !this.props.hideSearch) ||
-              Boolean(this.props.lookup)
-            }
+            if={this.props.options.length > this.props.optionsToShow && !this.props.hideSearch}
           >
             <div className="form-group">
               <Icon
