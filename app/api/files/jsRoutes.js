@@ -141,29 +141,30 @@ export default app => {
 
   app.get(
     '/api/export',
-
-    validation.validateRequest(
-      Joi.object().keys({
-        filters: Joi.string(),
-        types: Joi.string(),
-        _types: Joi.string(),
-        fields: Joi.string(),
-        allAggregations: Joi.string(),
-        userSelectedSorting: Joi.string(),
-        aggregations: Joi.string(),
-        order: Joi.string(),
-        sort: Joi.string(),
-        limit: Joi.string(),
-        searchTerm: Joi.string().allow(''),
-        includeUnpublished: Joi.any(),
-        treatAs: Joi.string(),
-        unpublished: Joi.any(),
-        select: Joi.array(),
-        ids: Joi.array().items(Joi.string()),
-      }),
-      'query'
-    ),
-
+    validation.validateRequest({
+      properties: {
+        query: {
+          properties: {
+            filters: { type: 'string' },
+            types: { type: 'string' },
+            _types: { type: 'string' },
+            fields: { type: 'string' },
+            allAggregations: { type: 'string' },
+            userSelectedSorting: { type: 'string' },
+            aggregations: { type: 'string' },
+            order: { type: 'string' },
+            sort: { type: 'string' },
+            limit: { type: 'string' },
+            searchTerm: { type: 'string' },
+            includeUnpublished: { type: 'boolean' },
+            treatAs: { type: 'string' },
+            unpublished: { type: 'boolean' },
+            select: { type: 'array', items: [{ type: 'string' }] },
+            ids: { type: 'array', items: [{ type: 'string' }] },
+          },
+        },
+      },
+    }),
     (req, res, next) => {
       req.query.filters = parseQueryProperty(req.query, 'filters');
       req.query.types = parseQueryProperty(req.query, 'types');

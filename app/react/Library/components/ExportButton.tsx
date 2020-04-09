@@ -11,7 +11,7 @@ export type ExportButtonProps = {
   processing: boolean;
   storeKey: string;
   exportDocuments: (keyStore: string) => any;
-}
+};
 
 export class ExportButton extends Component<ExportButtonProps, {}> {
   constructor(props: ExportButtonProps) {

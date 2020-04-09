@@ -19,24 +19,26 @@ export function triggerLocalDownload(content: string, fileName: string) {
   document.body.removeChild<HTMLAnchorElement>(link);
 }
 
-export function clearState(dispatch: Dispatch<any>) {
+function clearState(dispatch: Dispatch<any>) {
   dispatch(actions.set('exportSearchResultsProcessing', false));
   dispatch(actions.set('exportSearchResultsContent', ''));
-  dispatch(actions.set('exportSearchResultFileName', ''));
+  dispatch(actions.set('exportSearchResultsFileName', ''));
 }
 
 export function exportEnd() {
   return (dispatch: Dispatch<any>, getState: () => ExportStore) => {
-    triggerLocalDownload(
-      getState().exportSearchResults.exportSearchResultsContent,
-      getState().exportSearchResults.exportSearchResultFileName
-    );
+    const {
+      exportSearchResultsContent,
+      exportSearchResultsFileName,
+    } = getState().exportSearchResults;
+
+    triggerLocalDownload(exportSearchResultsContent, exportSearchResultsFileName);
 
     clearState(dispatch);
   };
 }
 
-export function extractFileName(contentDisposition: string) {
+function extractFileName(contentDisposition: string) {
   const startIndex = contentDisposition.indexOf('filename="') + 10;
   const endIndex = contentDisposition.length - 1;
   return contentDisposition.substring(startIndex, endIndex);
@@ -58,18 +60,16 @@ export function exportDocuments(storeKey: string) {
     }
 
     if (storeKey === 'uploads') finalSearchParams.unpublished = true;
-
-    dispatch(actions.set('exportProcessing', true));
-    return superagent
+    dispatch(actions.set('exportSearchResultsProcessing', true));
+    superagent
       .get(`/api/export${toUrlParams(finalSearchParams)}`)
       .set('Accept', 'text/csv')
       .set('X-Requested-With', 'XMLHttpRequest')
       .then(response => {
         const fileName = extractFileName(response.header['content-disposition']);
         dispatch(actions.set('exportSearchResultsContent', response.text));
-        dispatch(actions.set('exportSearchResultFileName', fileName));
+        dispatch(actions.set('exportSearchResultsFileName', fileName));
         dispatch(exportEnd());
-        return response;
       })
       .catch(err => {
         clearState(dispatch);
