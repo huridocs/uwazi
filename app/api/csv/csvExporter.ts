@@ -1,9 +1,10 @@
+import { WriteStream } from 'fs';
 import { EventEmitter } from 'events';
 import * as csv from '@fast-csv/format';
 import templates from 'api/templates';
 import { PropertySchema } from 'shared/types/commonTypes';
 import { TemplateSchema } from 'shared/types/templateType';
-import formatters, { formatDate } from './typeFormatters';
+import formatters from './typeFormatters';
 
 export type SearchResults = {
   rows: any[];
@@ -11,13 +12,13 @@ export type SearchResults = {
   aggregations: {
     all: {
       _types: {
-        buckets: [
-          {
-            key: string;
-            // eslint-disable-next-line camelcase
-            filtered: { doc_count: number };
-          }
-        ];
+        buckets: {
+          key: string;
+          // eslint-disable-next-line camelcase
+          doc_count: number;
+          // eslint-disable-next-line camelcase
+          filtered: { doc_count: number };
+        }[];
       };
     };
   };
@@ -37,7 +38,7 @@ export type TemplatesCache = {
   [id: string]: TemplateSchema;
 };
 
-export const getTypes = (searchResults: SearchResults, typesWhitelist: string[]) =>
+export const getTypes = (searchResults: SearchResults, typesWhitelist: string[] = []) =>
   typesWhitelist.length > 0
     ? typesWhitelist
     : searchResults.aggregations.all._types.buckets
@@ -51,7 +52,7 @@ export const getTemplatesModels = async (templateIds: string[]): Promise<Templat
     templateIds.filter(hasValue).map(async (id: string) => templates.getById(id))
   ).then(results =>
     results.reduce<any>(
-      (memo, template) => (template ? { ...memo, [template._id]: template } : null),
+      (memo, template) => (template ? { ...memo, [template._id]: template } : memo),
       {}
     )
   );
@@ -127,7 +128,7 @@ export const processCommonField = (
     case 'template':
       return rowTemplate.name;
     case 'creationDate':
-      return formatDate(row.creationDate, options.dateFormat);
+      return formatters.creationDate(row, options);
     case 'geolocation':
       return processGeolocationField(row, rowTemplate);
     case 'documents':
@@ -181,7 +182,7 @@ export default class CSVExporter extends EventEmitter {
   async export(
     searchResults: SearchResults,
     types: string[] = [],
-    writeStream: WritableStream,
+    writeStream: WriteStream,
     options: ExporterOptions = { dateFormat: 'YYY-MM-DD' }
   ): Promise<void> {
     const csvStream = csv.format({ headers: false });

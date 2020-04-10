@@ -43,6 +43,8 @@ const formatters: {
   documents: (field: any[]) => field.map((item: any) => formatFile(item.filename)).join('|'),
   attachments: (field: any) =>
     field.map((item: any) => formatAttachment(item.filename, item.entityId)).join('|'),
+  creationDate: (field: any, options) =>
+    moment.utc(field.creationDate).format(options.dateFormat || 'YYYY-MM-DD'),
 };
 
 export default formatters;

@@ -1,5 +1,6 @@
 /*eslint-disable max-statements*/
 
+import { isArray } from 'util';
 import Joi from 'joi';
 import multer from 'multer';
 import fs from 'fs';
@@ -160,7 +161,7 @@ export default app => {
             treatAs: { type: 'string' },
             unpublished: { type: 'boolean' },
             select: { type: 'array', items: [{ type: 'string' }] },
-            ids: { type: 'array', items: [{ type: 'string' }] },
+            ids: { type: 'string' },
           },
         },
       },
@@ -173,7 +174,9 @@ export default app => {
       req.query.select = parseQueryProperty(req.query, 'select');
       req.query.unpublished = parseQueryProperty(req.query, 'unpublished');
       req.query.includeUnpublished = parseQueryProperty(req.query, 'includeUnpublished');
+
       req.query.ids = parseQueryProperty(req.query, 'ids');
+      if (!isArray(req.query.ids)) delete req.query.ids;
 
       Promise.all([search.search(req.query, req.language, req.user), settings.get()]).then(
         // eslint-disable-next-line camelcase
