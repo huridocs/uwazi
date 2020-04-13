@@ -78,5 +78,5 @@ export const searchResults: SearchResults = {
 };
 
 export const csvExample = `Title,Creation date,Template,company,Nemesis,Costume,Super powers,Allies,Sidekick,Planets conquered,DOB,Geolocation,Documents,Attachments,Published
-Star Lord  Wikipedia,172017-01-05,Comic character,Marvel,Thanos,,"tricky weapons|fly",,,,,"45.974236866039696|2.154785156250431",/files/1483623310306rxeimbblc6u323xr.pdf,,Published
-Scarecrow,172017-01-05,Super Villian,,,Black,"create chaos|tricky weapons",,Man-bat,39,411941-09-22,,,/api/attachments/download?_id=58ad7d250d44252fee4e62f0&file=filename.pdf,Published`;
+Star Lord  Wikipedia,2017-01-05,Comic character,Marvel,Thanos,,"tricky weapons|fly",,,,,"45.974236866039696|2.154785156250431",/files/1483623310306rxeimbblc6u323xr.pdf,,Published
+Scarecrow,2017-01-05,Super Villian,,,Black,"create chaos|tricky weapons",,Man-bat,39,1941-09-23,,,/api/attachments/download?_id=58ad7d250d44252fee4e62f0&file=filename.pdf,Published`;

@@ -183,7 +183,7 @@ export default class CSVExporter extends EventEmitter {
     searchResults: SearchResults,
     types: string[] = [],
     writeStream: Writable,
-    options: ExporterOptions = { dateFormat: 'YYY-MM-DD' }
+    options: ExporterOptions = { dateFormat: 'YYYY-MM-DD' }
   ): Promise<void> {
     const csvStream = csv.format({ headers: false });
 

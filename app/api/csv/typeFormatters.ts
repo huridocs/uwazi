@@ -1,7 +1,10 @@
 import moment from 'moment';
 
 export const formatDate = (timestamp: number, format: string = 'YYYY-MM-DD') =>
-  moment.unix(timestamp).format(format);
+  moment
+    .unix(timestamp)
+    .utc()
+    .format(format);
 
 export const formatFile = (fileName: string) => `/files/${fileName}`;
 
@@ -43,8 +46,7 @@ const formatters: {
   documents: (field: any[]) => field.map((item: any) => formatFile(item.filename)).join('|'),
   attachments: (field: any) =>
     field.map((item: any) => formatAttachment(item.filename, item.entityId)).join('|'),
-  creationDate: (field: any, options) =>
-    moment.utc(field.creationDate).format(options.dateFormat || 'YYYY-MM-DD'),
+  creationDate: (field: any, options) => moment.utc(field.creationDate).format(options.dateFormat),
 };
 
 export default formatters;
