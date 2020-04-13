@@ -262,6 +262,7 @@
     "redux-mock-store": "^1.0.2",
     "rtlcss-webpack-plugin": "^4.0.0",
     "sass-loader": "6.0.7",
+    "stream-mock": "^2.0.5",
     "supertest": "^3.4.1",
     "uglifyjs-webpack-plugin": "^1.2.7",
     "webpack": "4.29.5",

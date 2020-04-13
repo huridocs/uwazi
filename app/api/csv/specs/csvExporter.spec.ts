@@ -1,5 +1,5 @@
+import { ObjectWritableMock } from 'stream-mock';
 import { isArray } from 'util';
-import fs from 'fs';
 import templates from 'api/templates';
 import CSVExporter, {
   getTypes,
@@ -263,6 +263,21 @@ describe('csvExporter', () => {
       expect(formatters.default.geolocation).not.toHaveBeenCalled();
       expect(formatted).toBe('');
     });
+
+    it('should return empty and not call the formatter if no geolocation on the entity', () => {
+      spyOn(formatters.default, 'geolocation').and.returnValue('geolocationValue');
+
+      const geolocationFieldBackup = searchResults.rows[0].metadata.geolocation_geolocation;
+      delete searchResults.rows[0].metadata.geolocation_geolocation;
+      const formatted = processGeolocationField(
+        searchResults.rows[0],
+        testTemplates['58ad7d240d44252fee4e61fd']
+      );
+      searchResults.rows[0].metadata.geolocation_geolocation = geolocationFieldBackup;
+
+      expect(formatters.default.geolocation).not.toHaveBeenCalled();
+      expect(formatted).toBe('');
+    });
   });
 
   describe('common fields', () => {
@@ -491,19 +506,15 @@ describe('csvExporter', () => {
     });
 
     it('should export a correct csv content', done => {
-      const testFileName = './test-export.csv';
-      const writeStream = fs.createWriteStream(testFileName);
+      const writeMock = new ObjectWritableMock();
       const exporter = new CSVExporter();
       exporter
-        .export(searchResults, [], writeStream)
+        .export(searchResults, [], writeMock)
         .then(() => {
-          writeStream.end(() => {
-            fs.readFile('./test-export.csv', 'utf-8', (err, data) => {
-              if (err) throw err;
-              expect(data).toBe(csvExample);
-              fs.unlinkSync(testFileName);
-              done();
-            });
+          writeMock.on('finish', () => {
+            const exported = writeMock.data.reduce((chunk, memo) => chunk.toString() + memo, '');
+            expect(exported).toEqual(csvExample);
+            done();
           });
         })
         .catch(err => {

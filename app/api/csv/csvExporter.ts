@@ -1,4 +1,4 @@
-import { WriteStream } from 'fs';
+import { Writable } from 'stream';
 import { EventEmitter } from 'events';
 import * as csv from '@fast-csv/format';
 import templates from 'api/templates';
@@ -109,7 +109,7 @@ export const processGeolocationField = (row: any, rowTemplate: TemplateSchema) =
     property => property.type === 'geolocation'
   );
 
-  if (geolocationField && geolocationField.name) {
+  if (geolocationField && geolocationField.name && row.metadata[geolocationField.name]) {
     return formatters.geolocation(row.metadata[geolocationField.name], {});
   }
 
@@ -182,7 +182,7 @@ export default class CSVExporter extends EventEmitter {
   async export(
     searchResults: SearchResults,
     types: string[] = [],
-    writeStream: WriteStream,
+    writeStream: Writable,
     options: ExporterOptions = { dateFormat: 'YYY-MM-DD' }
   ): Promise<void> {
     const csvStream = csv.format({ headers: false });
