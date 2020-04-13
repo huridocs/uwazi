@@ -30,6 +30,26 @@ const mockSuperAgent = (response?: any, err?: any) => {
   spyOn(superagent, 'get').and.returnValue(mockUpload);
 };
 
+const generateState = () => ({
+  ui: Immutable.fromJS({
+    selectedDocuments: [],
+  }),
+  filters: Immutable.fromJS({
+    properties: [{ name: 'multiselect', type: 'multiselect' }],
+    documentTypes: ['decision'],
+  }),
+  search: {
+    searchTerm: 'batman',
+    filters: {
+      multiselect: {
+        values: ['value'],
+      },
+    },
+    order: 'desc',
+    sort: 'creationDate',
+  },
+});
+
 describe('exportActions', () => {
   let store: any;
   let filters: any;
@@ -58,44 +78,9 @@ describe('exportActions', () => {
 
     const expectedTypes = ['decision'];
 
-    filters = {
-      properties: [{ name: 'multiselect', type: 'multiselect' }],
-      documentTypes: ['decision'],
-    };
-
     const state = {
-      library: {
-        ui: Immutable.fromJS({
-          selectedDocuments: [],
-        }),
-        filters: Immutable.fromJS(filters),
-        search: {
-          searchTerm: 'batman',
-          filters: {
-            multiselect: {
-              values: ['value'],
-            },
-          },
-          order: 'desc',
-          sort: 'creationDate',
-        },
-      },
-      uploads: {
-        ui: Immutable.fromJS({
-          selectedDocuments: [],
-        }),
-        filters: Immutable.fromJS(filters),
-        search: {
-          searchTerm: 'batman',
-          filters: {
-            multiselect: {
-              values: ['value'],
-            },
-          },
-          order: 'desc',
-          sort: 'creationDate',
-        },
-      },
+      library: generateState(),
+      uploads: generateState(),
       exportSearchResults: {},
     };
 

@@ -7,10 +7,8 @@ import typeFormatters, {
   FormatterFunction,
 } from '../typeFormatters';
 
-const originalMomentUnix = moment.unix;
-afterEach(() => {
-  moment.unix = originalMomentUnix;
-});
+let formatFn: any;
+let unixFn: any;
 
 const formatDateFn = () => {
   let sec = 0;
@@ -20,6 +18,29 @@ const formatDateFn = () => {
   };
   return next;
 };
+
+const mockMoment = () => {
+  formatFn = jest.fn(formatDateFn());
+  unixFn = jest.fn(() => ({
+    utc: () => ({
+      format: formatFn,
+    }),
+  }));
+  moment.unix = unixFn;
+};
+
+const originalMomentUnix = moment.unix;
+afterAll(() => {
+  moment.unix = originalMomentUnix;
+});
+
+beforeEach(() => {
+  mockMoment();
+});
+
+afterEach(() => {
+  jest.clearAllMocks();
+});
 
 const testEmptyField = (formatter: FormatterFunction) => {
   const field: any[] = [];
@@ -56,12 +77,8 @@ describe('csvExporter typeFormatters', () => {
     it('should return the correct DATE value', () => {
       const field = [{ value: 1585851003 }];
 
-      const formatFn = jest.fn(formatDateFn());
-      moment.unix = jest.fn(() => ({
-        format: formatFn,
-      }));
-
       const value = typeFormatters.date(field, {});
+
       expect(value).toBe('1');
       expect(moment.unix).toHaveBeenLastCalledWith(1585851003);
       expect(formatFn).toHaveBeenLastCalledWith('YYYY-MM-DD');
@@ -71,12 +88,6 @@ describe('csvExporter typeFormatters', () => {
 
     it('should return the correct MULTIDATE value', () => {
       const multipleField = [{ value: 1585851003 }, { value: 1585915200 }];
-
-      const formatFn = jest.fn(formatDateFn());
-      const unixFn = jest.fn(() => ({
-        format: formatFn,
-      }));
-      moment.unix = unixFn;
 
       const multipleValue = typeFormatters.multidate(multipleField, {});
 
@@ -90,12 +101,8 @@ describe('csvExporter typeFormatters', () => {
     it('should return the correct DATERANGE value', () => {
       const field = [{ value: { from: 1585851003, to: 1585915200 } }];
 
-      const formatFn = jest.fn(formatDateFn());
-      moment.unix = jest.fn(() => ({
-        format: formatFn,
-      }));
-
       const value = typeFormatters.daterange(field, {});
+
       expect(value).toBe('1~2');
       expect(moment.unix).toHaveBeenCalledTimes(2);
       expect(formatFn).toHaveBeenCalledTimes(2);
@@ -108,12 +115,6 @@ describe('csvExporter typeFormatters', () => {
         { value: { from: 1585851003, to: 1585915200 } },
         { value: { from: 1585851003, to: 1585915200 } },
       ];
-
-      const formatFn = jest.fn(formatDateFn());
-      const unixFn = jest.fn(() => ({
-        format: formatFn,
-      }));
-      moment.unix = unixFn;
 
       const multipleValue = typeFormatters.multidaterange(multipleField, {});
 
@@ -220,12 +221,6 @@ describe('csvExporter typeFormatters', () => {
     it('should format timestamps to the provided format', () => {
       const timestamp = 1585851003;
       const format1 = 'YYYY/MM/DD';
-
-      const formatFn = jest.fn(formatDateFn());
-      const unixFn = jest.fn(() => ({
-        format: formatFn,
-      }));
-      moment.unix = unixFn;
 
       const formatted1 = formatDate(timestamp, format1);
 
