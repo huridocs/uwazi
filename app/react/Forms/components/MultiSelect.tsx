@@ -29,7 +29,7 @@ export const defaultProps = {
   forceHoist: false,
   placeholder: '',
   onChange: (_v: any) => {},
-  onFilter: (_searchTerm: string) => {},
+  onFilter: async (_searchTerm: string) => {},
 };
 
 export type MultiSelectProps<ValueType> = typeof defaultProps & {
@@ -142,9 +142,9 @@ abstract class MultiSelectBase<ValueType> extends Component<
     this.props.onChange(value);
   }
 
-  filter(e: React.ChangeEvent<HTMLInputElement>) {
-    this.props.onFilter(e.target.value);
+  async filter(e: React.ChangeEvent<HTMLInputElement>) {
     this.setState({ filter: e.target.value });
+    await this.props.onFilter(e.target.value);
   }
 
   resetFilter() {

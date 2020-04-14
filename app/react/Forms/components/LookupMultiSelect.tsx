@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import MultiSelect, { MultiSelectProps, Option, defaultProps } from './MultiSelect';
 
-type LookupMultiSelectProps = MultiSelectProps<string[]> & {
+export type LookupMultiSelectProps = MultiSelectProps<string[]> & {
   lookup: Function;
 };
 
-interface LookupMultiSelectState {
+export interface LookupMultiSelectState {
   lookupOptions: Option[];
   selectedOptions: Option[];
 }
@@ -18,7 +18,7 @@ function notEmpty<TValue>(value: TValue | null | undefined): value is TValue {
 }
 
 export class LookupMultiSelect extends Component<LookupMultiSelectProps, LookupMultiSelectState> {
-  static defaultProps = defaultProps;
+  static defaultProps = { ...defaultProps, value: [] as string[] };
 
   constructor(props: LookupMultiSelectProps) {
     super(props);
@@ -42,7 +42,7 @@ export class LookupMultiSelect extends Component<LookupMultiSelectProps, LookupM
     if (searchTerm.length > 3) {
       const response = await this.props.lookup(searchTerm);
 
-      const lookupOptions = response.map(o => ({
+      const lookupOptions = response.map((o: Option) => ({
         [this.props.optionsValue]: o.value,
         [this.props.optionsLabel]: o.label,
         results: o.results,
