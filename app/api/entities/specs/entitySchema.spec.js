@@ -1,5 +1,3 @@
-/** @format */
-
 /* eslint-disable max-lines,max-statements */
 
 import db from 'api/utils/testing_db';
@@ -409,10 +407,11 @@ describe('entity schema', () => {
         });
         it('should fail if label is not a string', async () => {
           entity.metadata.geolocation[0].value.label = 10;
-          await expectError(
-            customErrorMessages[propertyTypes.geolocation],
-            ".metadata['geolocation']"
-          );
+          await expectError('should be string', ".metadata['geolocation'][0].value");
+        });
+        it('should not fail if label is not present', async () => {
+          entity.metadata.geolocation[0].value.label = undefined;
+          await testValid();
         });
         it('should fail if lat or lon is missing', async () => {
           entity.metadata.geolocation = [{ value: { lon: 80, label: '' } }];
