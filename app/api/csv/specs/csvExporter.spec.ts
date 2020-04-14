@@ -426,22 +426,6 @@ describe('csvExporter', () => {
       expect(formatted).toContain(searchResults.rows[0].title);
     });
 
-    it("it should return empty if the entity doesn't define the property", () => {
-      const headers: ExportHeader[] = [
-        {
-          common: false,
-          name: 'nonDefinedProperty',
-          label: 'Non-Defined property',
-        },
-      ];
-
-      const formatted = processEntity(searchResults.rows[0], headers, testTemplates, options);
-
-      expect(isArray(formatted)).toBe(true);
-      expect(formatted.length).toBe(1);
-      expect(formatted).toContain('');
-    });
-
     it("it should not fail and return empty if the entity doesn't define the property", () => {
       const headers: ExportHeader[] = [
         {

@@ -52,7 +52,6 @@ const generateState = () => ({
 
 describe('exportActions', () => {
   let store: any;
-  let filters: any;
 
   beforeAll(() => {
     window.URL.createObjectURL = (_o: any) => 'http://example_url/';
