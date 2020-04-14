@@ -6,7 +6,6 @@ type LookupMultiSelectProps = MultiSelectProps<string[]> & {
 };
 
 interface LookupMultiSelectState {
-  filter: string;
   lookupOptions: Option[];
   selectedOptions: Option[];
 }
@@ -23,7 +22,7 @@ export class LookupMultiSelect extends Component<LookupMultiSelectProps, LookupM
 
   constructor(props: LookupMultiSelectProps) {
     super(props);
-    this.state = { filter: '', lookupOptions: [], selectedOptions: [] };
+    this.state = { lookupOptions: [], selectedOptions: [] };
     this.onChange = this.onChange.bind(this);
     this.onFilter = this.onFilter.bind(this);
   }
