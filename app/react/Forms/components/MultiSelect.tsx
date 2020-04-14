@@ -29,7 +29,7 @@ export const defaultProps = {
   forceHoist: false,
   placeholder: '',
   onChange: (_v: any) => {},
-  onFilter: (searchTerm: string) => {},
+  onFilter: (_searchTerm: string) => {},
 };
 
 export type MultiSelectProps<ValueType> = typeof defaultProps & {
@@ -52,17 +52,17 @@ abstract class MultiSelectBase<ValueType> extends Component<
 
   constructor(props: MultiSelectProps<ValueType>) {
     super(props);
-    this.state = { showAll: props.showAll, ui: {} };
+    this.state = { showAll: props.showAll, ui: {}, filter: '' };
     this.filter = this.filter.bind(this);
     this.resetFilter = this.resetFilter.bind(this);
     this.showAll = this.showAll.bind(this);
   }
 
-  // componentWillReceiveProps(props: MultiSelectProps<ValueType>) {
-  //   if (props.filter) {
-  //     this.setState({ filter: props.filter });
-  //   }
-  // }
+  componentWillReceiveProps(props: MultiSelectProps<ValueType>) {
+    if (props.filter) {
+      this.setState({ filter: props.filter });
+    }
+  }
 
   abstract markChecked(value: ValueType, option: Option): ValueType;
 
