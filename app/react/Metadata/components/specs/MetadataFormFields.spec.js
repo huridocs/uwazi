@@ -6,7 +6,7 @@ import { fromJS } from 'immutable';
 import { FormGroup } from 'app/Forms';
 import { MetadataFormFields } from '../MetadataFormFields';
 import MultipleEditionFieldWarning from '../MultipleEditionFieldWarning';
-import { MultiSelect, DatePicker } from '../../../ReactReduxForms';
+import { LookupMultiSelect, DatePicker } from '../../../ReactReduxForms';
 
 describe('MetadataFormFields with one entity to edit ', () => {
   let component;
@@ -94,7 +94,7 @@ describe('MetadataFormFields with one entity to edit ', () => {
     const input = inputField.find('input');
     expect(input).toBeDefined();
 
-    const multiselect = component.find(MultiSelect);
+    const multiselect = component.find(LookupMultiSelect);
     expect(multiselect.props().options).toEqual(props.thesauris.toJS()[0].values);
     expect(multiselect.props().optionsValue).toEqual('id');
 
