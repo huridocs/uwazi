@@ -33,10 +33,10 @@ describe('ListChart Markdown component', () => {
   it('should render the data passed by mapStateToProps', () => {
     spyOn(markdownDatasets, 'getAggregations').and.returnValue(
       Immutable.fromJS([
-        { key: 'id1', filtered: { doc_count: 25 } },
-        { key: 'id2', filtered: { doc_count: 33 } },
-        { key: 'missing', filtered: { doc_count: 45 } },
-        { key: 'id3', filtered: { doc_count: 13 } },
+        { key: 'id1', label: 'label1', filtered: { doc_count: 25 } },
+        { key: 'id2', label: 'label2', filtered: { doc_count: 33 } },
+        { key: 'missing', label: 'No value', filtered: { doc_count: 45 } },
+        { key: 'id3', label: 'label3', filtered: { doc_count: 13 } },
       ])
     );
 
@@ -52,10 +52,10 @@ describe('ListChart Markdown component', () => {
     it('should render without zero values', () => {
       spyOn(markdownDatasets, 'getAggregations').and.returnValue(
         Immutable.fromJS([
-          { key: 'id1', filtered: { doc_count: 25 } },
-          { key: 'id2', filtered: { doc_count: 33 } },
-          { key: 'missing', filtered: { doc_count: 45 } },
-          { key: 'id3', filtered: { doc_count: 0 } },
+          { key: 'id1', label: 'label1', filtered: { doc_count: 25 } },
+          { key: 'id2', label: 'label2', filtered: { doc_count: 33 } },
+          { key: 'missing', label: 'No value', filtered: { doc_count: 45 } },
+          { key: 'id3', label: 'label3', filtered: { doc_count: 0 } },
         ])
       );
 

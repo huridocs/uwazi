@@ -11,14 +11,14 @@ import MarkdownLink from './MarkdownLink';
 import markdownDatasets from '../markdownDatasets';
 
 export const ListChartComponent = props => {
-  const { excludeZero, property, data, classname, context, colors, thesauris } = props;
+  const { excludeZero, property, data, classname, context, colors } = props;
   const sliceColors = colors.split(',');
 
   let output = <Loader />;
 
   if (data) {
     const formattedData = arrayUtils.sortValues(
-      arrayUtils.formatDataForChart(data, property, thesauris, {
+      arrayUtils.formatDataForChart(data, property, {
         excludeZero: Boolean(excludeZero),
         context,
       })
@@ -76,7 +76,6 @@ ListChartComponent.defaultProps = {
 };
 
 ListChartComponent.propTypes = {
-  thesauris: PropTypes.instanceOf(Immutable.List).isRequired,
   property: PropTypes.string.isRequired,
   context: PropTypes.string,
   classname: PropTypes.string,
