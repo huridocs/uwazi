@@ -243,20 +243,17 @@ const _denormalizeAggregations = async (aggregations, templates, dictionaries, l
 const _sanitizeAggregationsStructure = aggregations => {
   const result = {};
   Object.keys(aggregations).forEach(aggregationKey => {
-    const aggregation = aggregations[aggregationKey];
-    const isAGroupOfOptionsAggregation = aggregation.buckets && !Array.isArray(aggregation.buckets);
-    if (isAGroupOfOptionsAggregation) {
+    let aggregation = aggregations[aggregationKey];
+
+    //grouped dictionary
+    if (aggregation.buckets && !Array.isArray(aggregation.buckets)) {
       aggregation.buckets = Object.keys(aggregation.buckets).map(key =>
         Object.assign({ key }, aggregation.buckets[key])
       );
     }
 
-    if (aggregation.buckets) {
-      result[aggregationKey] = aggregation;
-    }
-
-    const isNestedAggregation = !aggregation.buckets;
-    if (isNestedAggregation) {
+    //nested
+    if (!aggregation.buckets) {
       Object.keys(aggregation).forEach(key => {
         if (aggregation[key].buckets) {
           const buckets = aggregation[key].buckets.map(option =>
@@ -270,6 +267,11 @@ const _sanitizeAggregationsStructure = aggregations => {
         }
       });
     }
+
+    if (aggregationKey.includes('optionsCount')) {
+      aggregation = aggregation.value;
+    }
+
     result[aggregationKey] = aggregation;
   });
   return result;

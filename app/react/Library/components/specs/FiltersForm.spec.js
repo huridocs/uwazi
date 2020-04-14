@@ -69,6 +69,7 @@ describe('FiltersForm', () => {
               },
             ],
           },
+          select__optionsCount: 10,
           multiselect: {
             buckets: [
               { key: 'a', label: 'a', filtered: { doc_count: 1 } },
@@ -81,6 +82,7 @@ describe('FiltersForm', () => {
               },
             ],
           },
+          multiselect__optionsCount: 11,
         },
       }),
       search: { searchTerm: 'Batman' },

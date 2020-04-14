@@ -30,6 +30,7 @@ export const defaultProps = {
   placeholder: '',
   onChange: (_v: any) => {},
   onFilter: (_searchTerm: string) => {},
+  totalPossibleOptions: 0,
 };
 
 export type MultiSelectProps<ValueType> = typeof defaultProps & {
@@ -323,8 +324,32 @@ abstract class MultiSelectBase<ValueType> extends Component<
     );
   }
 
+  renderSearch() {
+    const { totalPossibleOptions, placeholder, options, optionsToShow, hideSearch } = this.props;
+
+    return (
+      <li className="multiselectActions">
+        <ShowIf if={options.length > optionsToShow && !hideSearch}>
+          <div className="form-group">
+            <Icon icon={this.state.filter ? 'times-circle' : 'search'} onClick={this.resetFilter} />
+            <input
+              className="form-control"
+              type="text"
+              placeholder={placeholder || t('System', 'Search item', null, false)}
+              value={this.state.filter}
+              onChange={this.filter}
+            />
+          </div>
+        </ShowIf>
+        {totalPossibleOptions > options.length && (
+          <div>There are {totalPossibleOptions} total possible options</div>
+        )}
+      </li>
+    );
+  }
+
   render() {
-    const { optionsLabel, placeholder } = this.props;
+    const { optionsLabel } = this.props;
 
     let options = this.props.options.slice();
     const totalOptions = options.filter(option => {
@@ -386,25 +411,7 @@ abstract class MultiSelectBase<ValueType> extends Component<
 
     return (
       <ul className="multiselect is-active">
-        <li className="multiselectActions">
-          <ShowIf
-            if={this.props.options.length > this.props.optionsToShow && !this.props.hideSearch}
-          >
-            <div className="form-group">
-              <Icon
-                icon={this.state.filter ? 'times-circle' : 'search'}
-                onClick={this.resetFilter}
-              />
-              <input
-                className="form-control"
-                type="text"
-                placeholder={placeholder || t('System', 'Search item', null, false)}
-                value={this.state.filter}
-                onChange={this.filter}
-              />
-            </div>
-          </ShowIf>
-        </li>
+        {this.renderSearch()}
         {!options.length && <span>{t('System', 'No options found')}</span>}
         {options.map((option, index) => {
           if (option.options) {
@@ -415,7 +422,7 @@ abstract class MultiSelectBase<ValueType> extends Component<
         })}
 
         <li className="multiselectActions">
-          <ShowIf if={totalOptions.length > this.props.optionsToShow && !this.state.showAll}>
+          <ShowIf if={totalOptions.length > this.props.optionsToShow}>
             <button onClick={this.showAll} className="btn btn-xs btn-default">
               <Icon icon={this.state.showAll ? 'caret-up' : 'caret-down'} />
               &nbsp;

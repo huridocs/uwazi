@@ -10,7 +10,7 @@ exports[`SelectFilter should render a text filter field with a label and passing
   <li
     className="wide"
   >
-    <MultiSelect
+    <LookupMultiSelect
       lookup={null}
       model="model.values"
       onChange={[Function]}
@@ -21,6 +21,7 @@ exports[`SelectFilter should render a text filter field with a label and passing
       }
       prefix=""
       sort={false}
+      totalPossibleOptions={0}
     />
   </li>
 </ul>
@@ -41,7 +42,7 @@ exports[`SelectFilter when showBoolSwitch should render the and/or bool switch 1
   <li
     className="wide"
   >
-    <MultiSelect
+    <LookupMultiSelect
       lookup={null}
       model="model.values"
       onChange={[Function]}
@@ -52,6 +53,7 @@ exports[`SelectFilter when showBoolSwitch should render the and/or bool switch 1
       }
       prefix="prefix"
       sort={false}
+      totalPossibleOptions={0}
     />
   </li>
 </ul>
@@ -67,7 +69,7 @@ exports[`SelectFilter when sort prop is set to true should activate sorting in t
   <li
     className="wide"
   >
-    <MultiSelect
+    <LookupMultiSelect
       lookup={null}
       model="model.values"
       onChange={[Function]}
@@ -78,6 +80,7 @@ exports[`SelectFilter when sort prop is set to true should activate sorting in t
       }
       prefix=""
       sort={true}
+      totalPossibleOptions={0}
     />
   </li>
 </ul>

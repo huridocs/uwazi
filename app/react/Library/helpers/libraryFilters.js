@@ -93,6 +93,10 @@ export function parseWithAggregations(filters, aggregations, showNoValue = true)
       property.options = propertyAggregations.buckets
         .map(normalizeBucket)
         .filter(opt => opt.results || (!showNoValue && opt.value === 'missing'));
+
+      const totalPossibleOptions = aggregations.all[`${property.name}__optionsCount`];
+
+      property.totalPossibleOptions = totalPossibleOptions;
     }
 
     return property;

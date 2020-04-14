@@ -82,6 +82,7 @@ Array [
     prefix="selectFilter"
     showBoolSwitch={false}
     sort={false}
+    totalPossibleOptions={0}
   />,
   <SelectFilter
     label="multiselectLabel"
@@ -98,6 +99,7 @@ Array [
     prefix="multiselectFilter"
     showBoolSwitch={true}
     sort={false}
+    totalPossibleOptions={0}
   />,
   <SelectFilter
     label="relationshipLabel"
@@ -114,6 +116,7 @@ Array [
     prefix="relationshipFilter"
     showBoolSwitch={true}
     sort={true}
+    totalPossibleOptions={0}
   />,
 ]
 `;

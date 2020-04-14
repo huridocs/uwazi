@@ -56,6 +56,7 @@ exports[`FiltersForm render() should render diferent type fileds 1`] = `
             "value": "c",
           },
         ],
+        "totalPossibleOptions": 10,
         "type": "select",
       },
       Object {
@@ -90,6 +91,7 @@ exports[`FiltersForm render() should render diferent type fileds 1`] = `
             "value": "c",
           },
         ],
+        "totalPossibleOptions": 11,
         "type": "multiselect",
       },
     ]
