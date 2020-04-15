@@ -44,6 +44,7 @@ export const translateOptions = thesauri =>
 export class MetadataFormFields extends Component {
   getField(property, _model, thesauris) {
     let thesauri;
+    let totalPossibleOptions = 0;
     const { dateFormat, version, entityThesauris } = this.props;
     const propertyType = property.type;
     switch (propertyType) {
@@ -78,6 +79,8 @@ export class MetadataFormFields extends Component {
           const source = thesauris.find(
             opt => opt.get('_id').toString() === property.content.toString()
           );
+
+          totalPossibleOptions = source.get('optionsCount');
           thesauri = translateOptions(source);
         }
 
@@ -85,7 +88,10 @@ export class MetadataFormFields extends Component {
           thesauri = Array.prototype.concat(
             ...thesauris
               .filter(filterThesauri => filterThesauri.get('type') === 'template')
-              .map(translateOptions)
+              .map(source => {
+                totalPossibleOptions += source.get('optionsCount');
+                return translateOptions(source);
+              })
           );
         }
 
@@ -97,12 +103,14 @@ export class MetadataFormFields extends Component {
               thesauri.push({ id: o.value, label: o.label });
             });
         }
+
         return (
           <LookupMultiSelect
             lookup={getSuggestions.bind(null, [property.content])}
             model={_model}
             optionsValue="id"
             options={thesauri}
+            totalPossibleOptions={totalPossibleOptions}
             prefix={_model}
             sort
           />
