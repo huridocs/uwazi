@@ -4,9 +4,11 @@ import {
   LookupMultiSelect,
   LookupMultiSelectProps,
   LookupMultiSelectState,
+  debounceTime,
 } from '../LookupMultiSelect';
 
 import MultiSelect, { MultiSelectProps } from '../MultiSelect';
+import { sleep } from 'shared/tsUtils';
 
 describe('LookupMultiSelect', () => {
   let component: ShallowWrapper<LookupMultiSelectProps, LookupMultiSelectState, LookupMultiSelect>;
@@ -44,9 +46,10 @@ describe('LookupMultiSelect', () => {
   const getProps = () => component.find(MultiSelect).props() as MultiSelectProps<string[]>;
 
   describe('onFilter', () => {
-    it('should lookup and render multiselect with new found options when searchTerm size > 3', async () => {
+    it('should lookup and render multiselect with new found options when searchTerm is not empty', async () => {
       render();
       await getProps().onFilter('test');
+      await sleep(debounceTime + 1);
 
       component.update();
       expect(getProps().options).toEqual(
@@ -57,11 +60,13 @@ describe('LookupMultiSelect', () => {
       );
     });
 
-    it('should set lookupOptions to empty when searchTerm < 3', async () => {
+    it('should set lookupOptions to empty when searchTerm is empty', async () => {
       render();
 
       component.setState({ lookupOptions: [{ label: 'new', value: 'new', results: 1 }] });
-      await getProps().onFilter('te');
+      await getProps().onFilter('');
+      await sleep(debounceTime + 1);
+
       component.update();
 
       expect(getProps().options).toEqual(props.options);
