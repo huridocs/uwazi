@@ -718,14 +718,18 @@ const instanceSearch = elasticIndex => ({
       .allUniqueProperties(templates)
       .find(p => p.name === propertyName);
 
-    const body = queryBuilder
+    queryBuilder
       .resetAggregations()
-      .aggregations([{ ...property, name: `${propertyName}.value` }], dictionaries)
-      .query();
+      .aggregations([{ ...property, name: `${propertyName}.value` }], dictionaries);
+
+    const body = queryBuilder.query();
 
     const aggregation = body.aggregations.all.aggregations[`${propertyName}.value`];
 
-    aggregation.terms.size = 1000;
+    if (aggregation.terms) {
+      aggregation.terms.size = 1000;
+    }
+
     aggregation.aggregations.filtered.filter.bool.filter.push({
       wildcard: { [`metadata.${propertyName}.label.raw`]: { value: `*${searchTerm}*` } },
     });

@@ -115,12 +115,12 @@ export default {
     return { values };
   },
 
-  templateToThesauri(template, language, user) {
+  async templateToThesauri(template, language, user) {
     const onlyPublished = !user;
-    return entities.getByTemplate(template._id, language, onlyPublished).then(response => {
-      const values = this.entitiesToThesauri(response);
-      return Object.assign(template, values, { type: 'template' });
-    });
+    const _entities = await entities.getByTemplate(template._id, language, onlyPublished);
+    const optionsCount = await entities.countByTemplate(template._id);
+    const values = this.entitiesToThesauri(_entities);
+    return Object.assign(template, values, { type: 'template', optionsCount });
   },
 
   getById(id) {

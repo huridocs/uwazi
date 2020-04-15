@@ -48,8 +48,8 @@ describe('search', () => {
       const user = { _id: ids.userId };
       const response = await search.getUploadsByUser(user, 'en');
 
-      expect(response.length).toBe(1);
-      expect(response[0].title).toBe('metadata6');
+      expect(response.length).toBe(2);
+      expect(response[0].title).toBe('unpublished');
     });
   });
 
@@ -844,7 +844,7 @@ describe('search', () => {
         user
       );
 
-      expect(options.length).toBe(2);
+      expect(options.length).toBe(1);
       expect(options[0].value).toBeDefined();
       expect(options[0].label).toBeDefined();
       expect(options[0].results).toBeDefined();
