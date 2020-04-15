@@ -1,8 +1,10 @@
+import { preloadLimit } from 'shared/config';
+
 const aggregation = (key, should, filters) => ({
   terms: {
     field: key,
     missing: 'missing',
-    size: 50,
+    size: preloadLimit,
   },
   aggregations: {
     filtered: {

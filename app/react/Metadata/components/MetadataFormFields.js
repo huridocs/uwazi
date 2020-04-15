@@ -1,5 +1,6 @@
 import { FormGroup } from 'app/Forms';
 import t from 'app/I18N/t';
+import { preloadLimit } from 'shared/config';
 import Immutable from 'immutable';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
@@ -85,14 +86,16 @@ export class MetadataFormFields extends Component {
         }
 
         if (!property.content) {
-          thesauri = Array.prototype.concat(
-            ...thesauris
-              .filter(filterThesauri => filterThesauri.get('type') === 'template')
-              .map(source => {
-                totalPossibleOptions += source.get('optionsCount');
-                return translateOptions(source);
-              })
-          );
+          thesauri = Array.prototype
+            .concat(
+              ...thesauris
+                .filter(filterThesauri => filterThesauri.get('type') === 'template')
+                .map(source => {
+                  totalPossibleOptions += source.get('optionsCount');
+                  return translateOptions(source);
+                })
+            )
+            .slice(0, preloadLimit);
         }
 
         if (entityThesauris.get(property.name)) {

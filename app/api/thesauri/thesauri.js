@@ -1,5 +1,6 @@
 import { generateIds, getUpdatedNames, getDeletedProperties } from 'api/templates/utils';
 import entities from 'api/entities/entities';
+import { preloadLimit } from 'shared/config';
 import templates from 'api/templates/templates';
 import settings from 'api/settings/settings';
 import translations from 'api/i18n/translations';
@@ -117,7 +118,12 @@ export default {
 
   async templateToThesauri(template, language, user) {
     const onlyPublished = !user;
-    const _entities = await entities.getByTemplate(template._id, language, onlyPublished);
+    const _entities = await entities.getByTemplate(
+      template._id,
+      language,
+      onlyPublished,
+      preloadLimit
+    );
     const optionsCount = await entities.countByTemplate(template._id);
     const values = this.entitiesToThesauri(_entities);
     return Object.assign(template, values, { type: 'template', optionsCount });
