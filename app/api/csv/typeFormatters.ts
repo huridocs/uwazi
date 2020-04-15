@@ -1,6 +1,7 @@
 import moment from 'moment';
 
-export const formatDate = (timestamp: number, format: string = 'YYYY-MM-DD') =>
+const defaultDateFormat = 'YYYY-MM-DD';
+export const formatDate = (timestamp: number, format: string = defaultDateFormat) =>
   moment
     .unix(timestamp)
     .utc()
@@ -46,7 +47,8 @@ const formatters: {
   documents: (field: any[]) => field.map((item: any) => formatFile(item.filename)).join('|'),
   attachments: (field: any) =>
     field.map((item: any) => formatAttachment(item.filename, item.entityId)).join('|'),
-  creationDate: (field: any, options) => moment.utc(field.creationDate).format(options.dateFormat),
+  creationDate: (field: any, options) =>
+    moment.utc(field.creationDate).format(options.dateFormat || defaultDateFormat),
 };
 
 export default formatters;

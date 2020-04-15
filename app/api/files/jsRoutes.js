@@ -157,9 +157,9 @@ export default app => {
             sort: { type: 'string' },
             limit: { type: 'string' },
             searchTerm: { type: 'string' },
-            includeUnpublished: { type: 'boolean' },
+            includeUnpublished: { type: 'string' },
             treatAs: { type: 'string' },
-            unpublished: { type: 'boolean' },
+            unpublished: { type: 'string' },
             select: { type: 'array', items: [{ type: 'string' }] },
             ids: { type: 'string' },
           },
@@ -182,11 +182,13 @@ export default app => {
         // eslint-disable-next-line camelcase
         ([results, { dateFormat, site_name }]) => {
           const exporter = new CSVExporter();
+
           const temporalFilePath = temporalFilesPath(
             generateFileName({ originalname: 'export.csv' })
           );
           const fileStream = fs.createWriteStream(temporalFilePath, { emitClose: true });
-          const exporterOptions = { dateFormat };
+
+          const exporterOptions = { dateFormat, language: req.language };
 
           exporter
             .export(results, req.query.types, fileStream, exporterOptions)

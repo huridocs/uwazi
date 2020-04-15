@@ -1,6 +1,8 @@
 import { ObjectWritableMock } from 'stream-mock';
 import { isArray } from 'util';
 import templates from 'api/templates';
+import translations from 'api/i18n/translations';
+import * as translate from 'shared/translate';
 import CSVExporter, {
   getTypes,
   getTemplatesModels,
@@ -12,6 +14,7 @@ import CSVExporter, {
   processGeolocationField,
   processCommonField,
   processEntity,
+  translateCommonHeaders,
 } from '../csvExporter';
 import { searchResults, csvExample } from './exportCsvFixtures';
 import * as formatters from '../typeFormatters';
@@ -236,6 +239,35 @@ describe('csvExporter', () => {
         expect(header.common).toBe(true);
       });
     });
+
+    it('should translate only the common headers', async () => {
+      spyOn(translations, 'get').and.returnValue(Promise.resolve({}));
+      const localeTranslationsMock = spyOn(translate, 'getLocaleTranslation').and.returnValue({});
+      spyOn(translate, 'getContext').and.returnValue({});
+      const translateMock = jest
+        .spyOn(translate, 'default')
+        .mockImplementation((_context, _key, text) => `${text}T`);
+
+      const headers: ExportHeader[] = [
+        {
+          name: 'header1',
+          label: 'Header1',
+          common: false,
+        },
+        {
+          name: 'header2',
+          label: 'Header2',
+          common: true,
+        },
+      ];
+
+      const translatedHeaders = await translateCommonHeaders(headers, 'es');
+
+      expect(translatedHeaders[0].label).toBe(headers[0].label);
+      expect(translatedHeaders[1].label).toBe(`${headers[1].label}T`);
+      expect(localeTranslationsMock).toHaveBeenCalledWith({}, 'es');
+      expect(translateMock).toHaveBeenCalledWith({}, headers[1].label, headers[1].label);
+    });
   });
 
   describe('geolocation fields', () => {
@@ -399,6 +431,7 @@ describe('csvExporter', () => {
   describe('processEntity', () => {
     const options: ExporterOptions = {
       dateFormat: 'YYYY-MM-DD',
+      language: 'en',
     };
 
     it("should throw an error if could not find entity's template", () => {
@@ -481,15 +514,49 @@ describe('csvExporter', () => {
       expect(formatted[0]).toContain(searchResults.rows[0].metadata.company[0].value);
       expect(formatted[1]).toContain(searchResults.rows[0].metadata.nemesis[0].label);
     });
+
+    it('it should not format non supported property types', () => {
+      const headers: ExportHeader[] = [
+        {
+          common: false,
+          name: 'company',
+          label: 'Company',
+        },
+        {
+          common: false,
+          name: 'nemesis',
+          label: 'Nemesis',
+        },
+      ];
+
+      const typeBackup = testTemplates['58ad7d240d44252fee4e61fd'].properties[0].type;
+      testTemplates['58ad7d240d44252fee4e61fd'].properties[0].type = 'nested';
+
+      const formatted = processEntity(searchResults.rows[0], headers, testTemplates, options);
+
+      testTemplates['58ad7d240d44252fee4e61fd'].properties[0].type = typeBackup;
+
+      expect(isArray(formatted)).toBe(true);
+      expect(formatted.length).toBe(2);
+      expect(formatted[0]).toContain('');
+      expect(formatted[1]).toContain(searchResults.rows[0].metadata.nemesis[0].label);
+    });
   });
 
   describe('CSVExport class', () => {
+    beforeEach(() => {
+      spyOn(translations, 'get').and.returnValue(Promise.resolve());
+      spyOn(translate, 'getLocaleTranslation').and.returnValue({});
+      spyOn(translate, 'getContext').and.returnValue({});
+      jest.spyOn(translate, 'default').mockImplementation((_context, _key, text) => text);
+    });
+
     it('should be instantiable', () => {
       const instance = new CSVExporter();
       expect(instance).toBeInstanceOf(CSVExporter);
     });
 
-    it('should export a correct csv content', done => {
+    it('should export a correct csv content', async done => {
       const writeMock = new ObjectWritableMock();
       const exporter = new CSVExporter();
       exporter

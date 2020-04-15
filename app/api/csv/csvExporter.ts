@@ -4,6 +4,8 @@ import * as csv from '@fast-csv/format';
 import templates from 'api/templates';
 import { PropertySchema } from 'shared/types/commonTypes';
 import { TemplateSchema } from 'shared/types/templateType';
+import translate, { getLocaleTranslation, getContext } from 'shared/translate';
+import translations from 'api/i18n/translations';
 import formatters from './typeFormatters';
 
 export type SearchResults = {
@@ -26,6 +28,7 @@ export type SearchResults = {
 
 export type ExporterOptions = {
   dateFormat: string;
+  language: string;
 };
 
 export type ExportHeader = {
@@ -61,7 +64,7 @@ export const notDuplicated = (collection: any) => (item: any) =>
   collection.findIndex((i: any) => Object.keys(i).every(key => i[key] === item[key])) < 0;
 
 export const excludedProperties = (property: PropertySchema) =>
-  !['geolocation', 'preview', 'markdown'].includes(property.type);
+  !['geolocation', 'preview', 'markdown', 'nested'].includes(property.type);
 
 export const processHeaders = (templatesCache: TemplatesCache): ExportHeader[] =>
   Object.values(templatesCache).reduce(
@@ -83,7 +86,7 @@ export const prependCommonHeaders = (headers: ExportHeader[]) =>
       common: true,
     },
     {
-      label: 'Creation date',
+      label: 'Date added',
       name: 'creationDate',
       common: true,
     },
@@ -103,9 +106,7 @@ export const concatCommonHeaders = (headers: ExportHeader[]) =>
   ]);
 
 export const processGeolocationField = (row: any, rowTemplate: TemplateSchema) => {
-  if (!rowTemplate.properties) return '';
-
-  const geolocationField: PropertySchema | undefined = rowTemplate.properties.find(
+  const geolocationField: PropertySchema | undefined = rowTemplate.properties?.find(
     property => property.type === 'geolocation'
   );
 
@@ -145,6 +146,19 @@ export const processCommonField = (
   }
 };
 
+export const translateCommonHeaders = async (headers: ExportHeader[], language: string) => {
+  const _translations = await translations.get();
+  const locale = getLocaleTranslation(_translations, language);
+  const context = getContext(locale, 'System');
+  return headers.map(header => {
+    if (!header.common) {
+      return header;
+    }
+
+    return { ...header, label: translate(context, header.label, header.label) };
+  });
+};
+
 export const processEntity = (
   row: any,
   headers: ExportHeader[],
@@ -170,7 +184,7 @@ export const processEntity = (
       (property: PropertySchema) => property.name === header.name
     );
 
-    if (!templateProperty) {
+    if (!templateProperty || !excludedProperties(templateProperty)) {
       return '';
     }
 
@@ -183,14 +197,15 @@ export default class CSVExporter extends EventEmitter {
     searchResults: SearchResults,
     types: string[] = [],
     writeStream: Writable,
-    options: ExporterOptions = { dateFormat: 'YYYY-MM-DD' }
+    options: ExporterOptions = { dateFormat: 'YYYY-MM-DD', language: 'en' }
   ): Promise<void> {
     const csvStream = csv.format({ headers: false });
 
     csvStream.pipe<any>(writeStream);
 
     const templatesCache = await getTemplatesModels(getTypes(searchResults, types));
-    const headers = prependCommonHeaders(concatCommonHeaders(processHeaders(templatesCache)));
+    let headers = prependCommonHeaders(concatCommonHeaders(processHeaders(templatesCache)));
+    headers = await translateCommonHeaders(headers, options.language);
 
     csvStream.write(headers.map((h: any) => h.label));
     searchResults.rows.forEach(row => {
