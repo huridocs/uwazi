@@ -609,7 +609,7 @@
 .multiselectActions {
   padding-top: 8px;
   position: relative;
-  display: flex;
+  font-size: 12px;
   .form-group {
     position: relative;
     display: inline-block;
@@ -636,6 +636,17 @@
       box-shadow: none;
       border-color: $c-grey;
       @include placeholder(transparent);
+    }
+  }
+
+  .total-options {
+    button {
+      background: none;
+      border: none;
+      color: #2b56c1;
+      &:hover {
+        text-decoration: underline;
+      }
     }
   }
 
@@ -670,14 +681,27 @@
 }
 
 .multiselectItem-icon {
-  .checkbox-empty { display: block; color: $c-grey; }
-  .checkbox-checked { display: none; color: $c-success; }
-  .checkbox-partial { display: none; color: $c-success; }
+  .checkbox-empty {
+    display: block;
+    color: $c-grey;
+  }
+  .checkbox-checked {
+    display: none;
+    color: $c-success;
+  }
+  .checkbox-partial {
+    display: none;
+    color: $c-success;
+  }
 }
 .multiselectItem-input:checked {
   & + label {
-    .checkbox-empty { display: none; }
-    .checkbox-checked { display: block; }
+    .checkbox-empty {
+      display: none;
+    }
+    .checkbox-checked {
+      display: block;
+    }
   }
 
   & ~ .multiselectItem-label .multiselectItem-name,
@@ -687,11 +711,16 @@
   }
 }
 .multiselectItem-input.partial:checked {
-
   & + label {
-    .checkbox-empty { display: none; }
-    .checkbox-checked { display: none; }
-    .checkbox-partial { display: block; }
+    .checkbox-empty {
+      display: none;
+    }
+    .checkbox-checked {
+      display: none;
+    }
+    .checkbox-partial {
+      display: block;
+    }
   }
 
   & ~ .multiselectItem-label .multiselectItem-name,

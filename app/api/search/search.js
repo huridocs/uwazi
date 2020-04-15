@@ -15,6 +15,8 @@ import entities from '../entities';
 import templatesModel from '../templates';
 import { bulkIndex, indexEntities } from './entitiesIndex';
 import thesauri from '../thesauri';
+import { filterOptions } from 'shared/optionsUtils';
+import { search } from '.';
 
 function processFilters(filters, properties) {
   return Object.keys(filters || {}).reduce((res, filterName) => {
@@ -716,11 +718,10 @@ const instanceSearch = elasticIndex => ({
       .allUniqueProperties(templates)
       .find(p => p.name === propertyName);
 
-    queryBuilder
+    const body = queryBuilder
       .resetAggregations()
-      .aggregations([{ ...property, name: `${propertyName}.value` }], dictionaries);
-
-    const body = queryBuilder.query();
+      .aggregations([{ ...property, name: `${propertyName}.value` }], dictionaries)
+      .query();
 
     const aggregation = body.aggregations.all.aggregations[`${propertyName}.value`];
 
@@ -741,15 +742,13 @@ const instanceSearch = elasticIndex => ({
       language
     );
 
-    return sanitizedAggregations[propertyName].buckets
-      .map(bucket => ({
-        label: bucket.label,
-        value: bucket.key,
-        results: bucket.filtered.doc_count,
-      }))
-      .filter(o => {
-        return o.results && o.label.includes(searchTerm);
-      });
+    const options = sanitizedAggregations[propertyName].buckets.map(bucket => ({
+      label: bucket.label,
+      value: bucket.key,
+      results: bucket.filtered.doc_count,
+    }));
+
+    return filterOptions(searchTerm, options);
   },
 
   async autocomplete(searchTerm, language, templates = [], includeUnpublished = false) {

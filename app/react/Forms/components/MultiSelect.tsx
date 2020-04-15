@@ -1,11 +1,11 @@
 /* eslint-disable class-methods-use-this,max-lines */
 
 import ShowIf from 'app/App/ShowIf';
-import { filterOptions } from 'app/Forms/utils/optionsUtils';
+import { filterOptions } from 'shared/optionsUtils';
 import { t } from 'app/I18N';
 import { TriStateSelectValue } from 'app/istore';
 import { Icon as CustomIcon } from 'app/Layout/Icon';
-import React, { Component } from 'react';
+import React, { Component, createRef, RefObject } from 'react';
 import { Icon } from 'UI';
 
 export type Option = { options?: Option[]; results?: number } & { [k: string]: any };
@@ -57,6 +57,8 @@ abstract class MultiSelectBase<ValueType> extends Component<
     this.filter = this.filter.bind(this);
     this.resetFilter = this.resetFilter.bind(this);
     this.showAll = this.showAll.bind(this);
+    this.focusSearch = this.focusSearch.bind(this);
+    this.searchInputRef = createRef<HTMLInputElement>();
   }
 
   componentWillReceiveProps(props: MultiSelectProps<ValueType>) {
@@ -78,6 +80,8 @@ abstract class MultiSelectBase<ValueType> extends Component<
   getPinnedList(): string[] {
     return [];
   }
+
+  private searchInputRef: RefObject<HTMLInputElement>;
 
   changeGroup(group: Option, e: React.ChangeEvent<HTMLInputElement>) {
     let { value } = this.props;
@@ -324,8 +328,13 @@ abstract class MultiSelectBase<ValueType> extends Component<
     );
   }
 
+  focusSearch() {
+    const node = this.searchInputRef.current;
+    node!.focus();
+  }
+
   renderSearch() {
-    const { totalPossibleOptions, placeholder, options, optionsToShow, hideSearch } = this.props;
+    const { placeholder, options, optionsToShow, hideSearch } = this.props;
 
     return (
       <li className="multiselectActions">
@@ -333,6 +342,7 @@ abstract class MultiSelectBase<ValueType> extends Component<
           <div className="form-group">
             <Icon icon={this.state.filter ? 'times-circle' : 'search'} onClick={this.resetFilter} />
             <input
+              ref={this.searchInputRef}
               className="form-control"
               type="text"
               placeholder={placeholder || t('System', 'Search item', null, false)}
@@ -341,15 +351,12 @@ abstract class MultiSelectBase<ValueType> extends Component<
             />
           </div>
         </ShowIf>
-        {totalPossibleOptions > options.length && (
-          <div>There are {totalPossibleOptions} total possible options</div>
-        )}
       </li>
     );
   }
 
   render() {
-    const { optionsLabel } = this.props;
+    const { optionsLabel, totalPossibleOptions } = this.props;
 
     let options = this.props.options.slice();
     const totalOptions = options.filter(option => {
@@ -429,6 +436,14 @@ abstract class MultiSelectBase<ValueType> extends Component<
               {this.moreLessLabel(totalOptions)}
             </button>
           </ShowIf>
+          {totalPossibleOptions > options.length && this.state.showAll && (
+            <div className="total-options">
+              {totalPossibleOptions} total possible options.{' '}
+              <button onClick={this.focusSearch} type="button">
+                Try searching
+              </button>
+            </div>
+          )}
         </li>
       </ul>
     );
