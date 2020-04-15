@@ -1,7 +1,6 @@
 /* eslint-disable max-statements */
 import React from 'react';
 import Immutable from 'immutable';
-import * as libraryFilters from 'app/Library/helpers/libraryFilters';
 import colorScheme from '../colorScheme';
 import arrayUtils from '../arrayUtils';
 

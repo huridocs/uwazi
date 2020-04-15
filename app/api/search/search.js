@@ -16,7 +16,6 @@ import templatesModel from '../templates';
 import { bulkIndex, indexEntities } from './entitiesIndex';
 import thesauri from '../thesauri';
 import { filterOptions } from 'shared/optionsUtils';
-import { search } from '.';
 
 function processFilters(filters, properties) {
   return Object.keys(filters || {}).reduce((res, filterName) => {
