@@ -20,8 +20,8 @@ export default (app, server) => {
   require('./activitylog/routes').default(app);
   require('./users/routes').default(app);
   require('./templates/routes').default(app);
+  require('./search/deprecatedRoutes').default(app);
   require('./search/routes').default(app);
-  require('./search/routes.ts').default(app);
   require('./semanticsearch/routes').default(app);
   require('./topicclassification/routes').default(app);
   require('./thesauri/routes').default(app);
