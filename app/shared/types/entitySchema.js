@@ -1,5 +1,3 @@
-/** @format */
-
 import Ajv from 'ajv';
 import templatesModel from 'api/templates/templatesModel';
 import { isUndefined, isNull } from 'util';
