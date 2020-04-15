@@ -748,6 +748,7 @@ const instanceSearch = elasticIndex => ({
     const options = sanitizedAggregations[propertyName].buckets.map(bucket => ({
       label: bucket.label,
       value: bucket.key,
+      icon: bucket.icon,
       results: bucket.filtered.doc_count,
     }));
 

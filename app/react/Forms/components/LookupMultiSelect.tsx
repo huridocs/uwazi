@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import MultiSelect, { MultiSelectProps, Option, defaultProps } from './MultiSelect';
+import debounce from 'app/utils/debounce';
 
 export type LookupMultiSelectProps = MultiSelectProps<string[]> & {
   lookup: Function;
@@ -17,6 +18,8 @@ function notEmpty<TValue>(value: TValue | null | undefined): value is TValue {
   return value !== null && value !== undefined;
 }
 
+export const debounceTime = 200;
+
 export class LookupMultiSelect extends Component<LookupMultiSelectProps, LookupMultiSelectState> {
   static defaultProps = { ...defaultProps, value: [] as string[] };
 
@@ -24,7 +27,7 @@ export class LookupMultiSelect extends Component<LookupMultiSelectProps, LookupM
     super(props);
     this.state = { lookupOptions: [], selectedOptions: [] };
     this.onChange = this.onChange.bind(this);
-    this.onFilter = this.onFilter.bind(this);
+    this.onFilter = debounce(this.onFilter.bind(this), debounceTime);
   }
 
   onChange(value: string[]) {
@@ -39,7 +42,7 @@ export class LookupMultiSelect extends Component<LookupMultiSelectProps, LookupM
   }
 
   async onFilter(searchTerm: string) {
-    if (searchTerm.length > 3) {
+    if (searchTerm.length) {
       const response = await this.props.lookup(searchTerm);
 
       const lookupOptions = response.map((o: Option) => ({
@@ -51,7 +54,7 @@ export class LookupMultiSelect extends Component<LookupMultiSelectProps, LookupM
       this.setState({ lookupOptions });
     }
 
-    if (searchTerm.length <= 3) {
+    if (!searchTerm.length) {
       this.setState({ lookupOptions: [] });
     }
   }
