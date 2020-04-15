@@ -43,9 +43,9 @@ export class LookupMultiSelect extends Component<LookupMultiSelectProps, LookupM
       const response = await this.props.lookup(searchTerm);
 
       const lookupOptions = response.map((o: Option) => ({
+        ...o,
         [this.props.optionsValue]: o.value,
         [this.props.optionsLabel]: o.label,
-        results: o.results,
       }));
 
       this.setState({ lookupOptions });

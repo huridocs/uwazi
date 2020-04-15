@@ -756,7 +756,7 @@ const instanceSearch = elasticIndex => ({
 
     const body = {
       _source: {
-        include: ['title', 'template', 'sharedId'],
+        include: ['title', 'template', 'sharedId', 'icon'],
       },
       from: 0,
       size: 200,
@@ -791,6 +791,7 @@ const instanceSearch = elasticIndex => ({
       value: hit._source.sharedId,
       label: hit._source.title,
       template: hit._source.template,
+      icon: hit._source.icon,
     }));
   },
 });
