@@ -74,6 +74,10 @@ const normalizeBucket = bucket => {
     results: bucket.filtered.doc_count,
   };
 
+  if (bucket.icon) {
+    normalizedBucket.icon = bucket.icon;
+  }
+
   if (bucket.values) {
     normalizedBucket.options = bucket.values.map(normalizeBucket);
   }

@@ -218,16 +218,16 @@ const _denormalizeAggregations = async (aggregations, templates, dictionaries, l
     );
 
     const buckets = aggregations[key].buckets.map(bucket => {
-      const label =
+      const { label, icon } =
         bucket.key === 'missing'
-          ? 'No label'
+          ? { label: 'No label' }
           : dictionary.values
               .reduce(
                 (values, v) => (v.values ? values.concat(v.values, [v]) : values.concat(v)),
                 []
               )
-              .find(value => value.id === bucket.key, {}).label;
-      return Object.assign(bucket, { label });
+              .find(value => value.id === bucket.key, {});
+      return Object.assign(bucket, { label, icon });
     });
 
     let denormalizedAggregation = Object.assign(aggregations[key], { buckets });
