@@ -321,7 +321,7 @@ describe('export routes', () => {
       expect(searchMock).toHaveBeenCalledWith(req.query, 'es', 'user');
     });
 
-    it('should return an error on fail', async done => {
+    it('should return an error on fail', done => {
       const error = new Error();
       mockExport.mockImplementation(() => Promise.reject(error));
       spyOn(search, 'search').and.returnValue({});
@@ -336,14 +336,14 @@ describe('export routes', () => {
       });
     });
 
-    it('should log an error if could not delete the temp file', async done => {
+    it('should log an error if could not delete the temp file', done => {
       const error = new Error();
       mockExport.mockImplementation(() => Promise.reject(error));
       spyOn(search, 'search').and.returnValue({});
       const uniqueName = `${Date.now().toString()}-testExport.csv`;
       setSpys(uniqueName);
       const nextMock = jest.fn();
-      jest.spyOn(fs, 'unlink').mockImplementation((filePath, cb) => {
+      spyOn(fs, 'unlink').and.callFake((filePath, cb) => {
         cb(filePath);
       });
       jest.spyOn(errorLog, 'error');
