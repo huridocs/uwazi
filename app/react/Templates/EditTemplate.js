@@ -3,6 +3,9 @@
 import React from 'react';
 import { actions as formActions } from 'react-redux-form';
 
+import { StateSelector } from 'app/Review/components/StateSelector';
+import { createSelector } from 'reselect';
+
 import templatesAPI from 'app/Templates/TemplatesAPI';
 import thesauriAPI from 'app/Thesauri/ThesauriAPI';
 import relationTypesAPI from 'app/RelationTypes/RelationTypesAPI';
@@ -51,6 +54,15 @@ export default class EditTemplate extends RouteHandler {
   }
 
   render() {
-    return <TemplateCreator />;
+    return (
+      <StateSelector
+        templateLoaded={createSelector(
+          state => state.template.data._id,
+          value => value
+        )}
+      >
+        {({ templateLoaded }) => templateLoaded ? <TemplateCreator /> : false}
+      </StateSelector>
+    );
   }
 }
