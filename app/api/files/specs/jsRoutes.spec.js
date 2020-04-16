@@ -19,12 +19,11 @@ import errorLog from '../../log/errorLog';
 import paths from '../../config/paths';
 
 const mockExport = jest.fn();
-jest.mock('api/csv/csvExporter', () => {
-  return jest.fn().mockImplementation(() => {
-    return { export: mockExport };
-  });
-});
+jest.mock('api/csv/csvExporter', () =>
+  jest.fn().mockImplementation(() => ({ export: mockExport }))
+);
 
+// eslint-disable-next-line max-statements
 describe('upload routes', () => {
   let routes;
   let req;
