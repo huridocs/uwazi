@@ -1,6 +1,7 @@
 /*eslint-disable max-lines*/
 import fs from 'fs';
 import path from 'path';
+import settings from 'api/settings';
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import db from 'api/utils/testing_db';
 import entities from 'api/entities';
@@ -10,11 +11,19 @@ import request from 'supertest';
 import express from 'express';
 import { files } from 'api/files/files';
 
+import * as filesystem from 'api/files/filesystem';
 import { fixtures, templateId } from './fixtures';
 import instrumentRoutes from '../../utils/instrumentRoutes';
 import uploadRoutes from '../jsRoutes.js';
 import errorLog from '../../log/errorLog';
 import paths from '../../config/paths';
+
+const mockExport = jest.fn();
+jest.mock('api/csv/csvExporter', () => {
+  return jest.fn().mockImplementation(() => {
+    return { export: mockExport };
+  });
+});
 
 describe('upload routes', () => {
   let routes;
@@ -264,6 +273,87 @@ describe('upload routes', () => {
   afterAll(done => {
     deleteAllFiles(() => {
       db.disconnect().then(done);
+    });
+  });
+});
+
+describe('export routes', () => {
+  let req;
+  let routes;
+
+  const setSpys = filename => {
+    spyOn(settings, 'get').and.returnValue({ site_name: 'uwazi' });
+    spyOn(filesystem, 'temporalFilesPath').and.returnValue(filename);
+    spyOn(Date.prototype, 'toISOString').and.returnValue('ISOString');
+  };
+
+  beforeAll(() => {
+    routes = instrumentRoutes(uploadRoutes);
+  });
+
+  describe('/api/export', () => {
+    beforeEach(() => {
+      req = {
+        language: 'es',
+        user: 'user',
+        query: {
+          filters: '',
+          types: '',
+          fields: '',
+          aggregations: '',
+          select: '',
+          unpublished: '',
+          includeUnpublished: '',
+        },
+      };
+    });
+
+    it('should process the search and download a file', async () => {
+      mockExport.mockImplementation(() => Promise.resolve());
+      const searchMock = spyOn(search, 'search').and.returnValue({});
+      const uniqueName = `${Date.now().toString()}-testExport.csv`;
+      setSpys(uniqueName);
+
+      const res = await routes.get('/api/export', req);
+      fs.unlinkSync(uniqueName);
+
+      const regex = new RegExp(`^download:${uniqueName},uwazi-ISOString.csv`);
+      expect(res).toMatch(regex);
+      expect(searchMock).toHaveBeenCalledWith(req.query, 'es', 'user');
+    });
+
+    it('should return an error on fail', async done => {
+      const error = new Error();
+      mockExport.mockImplementation(() => Promise.reject(error));
+      spyOn(search, 'search').and.returnValue({});
+      const uniqueName = `${Date.now().toString()}-testExport.csv`;
+      setSpys(uniqueName);
+      const nextMock = jest.fn();
+
+      routes.get('/api/export', req, {}, nextMock).catch(_e => {
+        expect(nextMock).toHaveBeenCalledWith(error);
+        expect(fs.existsSync(uniqueName)).toBe(false);
+        done();
+      });
+    });
+
+    it('should log an error if could not delete the temp file', async done => {
+      const error = new Error();
+      mockExport.mockImplementation(() => Promise.reject(error));
+      spyOn(search, 'search').and.returnValue({});
+      const uniqueName = `${Date.now().toString()}-testExport.csv`;
+      setSpys(uniqueName);
+      const nextMock = jest.fn();
+      jest.spyOn(fs, 'unlink').mockImplementation((filePath, cb) => {
+        cb(filePath);
+      });
+      jest.spyOn(errorLog, 'error');
+
+      routes.get('/api/export', req, {}, nextMock).catch(_e => {
+        expect(errorLog.error.mock.calls[0][0]).toMatch(new RegExp(`${uniqueName}$`));
+        fs.unlinkSync(uniqueName);
+        done();
+      });
     });
   });
 });

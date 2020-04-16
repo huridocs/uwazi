@@ -140,6 +140,12 @@ export default app => {
 
   const generateExportFileName = databaseName => `${databaseName}-${new Date().toISOString()}.csv`;
 
+  const removeTempFile = filePath => () => {
+    fs.unlink(filePath, err => {
+      if (err) errorLog.error(`Error unlinking exported file: ${filePath}`);
+    });
+  };
+
   app.get(
     '/api/export',
     validation.validateRequest({
@@ -194,17 +200,15 @@ export default app => {
             .export(results, req.query.types, fileStream, exporterOptions)
             .then(() => {
               fileStream.end(() => {
-                res.download(temporalFilePath, generateExportFileName(site_name), () => {
-                  fs.unlink(temporalFilePath, err => {
-                    if (err) errorLog.error(`Error unlinking exported file: ${temporalFilePath}`);
-                  });
-                });
+                res.download(
+                  temporalFilePath,
+                  generateExportFileName(site_name),
+                  removeTempFile(temporalFilePath)
+                );
               });
             })
             .catch(e => {
-              fs.unlink(temporalFilePath, err => {
-                if (err) errorLog.error(`Error unlinking exported file: ${temporalFilePath}`);
-              });
+              removeTempFile(temporalFilePath)();
               next(e);
             });
         }
