@@ -44,8 +44,7 @@ const isValidDateRange = value => {
 
 const isValidSelect = value => isString(value);
 
-const isValidGeolocation = value =>
-  isString(value.label) && isNumber(value.lat) && isNumber(value.lon);
+const isValidGeolocation = value => isNumber(value.lat) && isNumber(value.lon);
 
 const validateRequiredProperty = (property, value) => {
   if (property.required) {
