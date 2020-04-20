@@ -126,11 +126,17 @@ class DocumentsList extends Component {
               stateProperty={this.props.sortButtonsStateProperty}
               storeKey={this.props.storeKey}
             />
-            <div className="select-all-documents">
-              <button className="btn btn-default btn-xs" onClick={this.selectAllDocuments}>
-                {t('System', 'Select all')}
-              </button>
-            </div>
+            <NeedAuthorization>
+              <div className="select-all-documents">
+                <button
+                  type="button"
+                  className="btn btn-default btn-xs"
+                  onClick={this.selectAllDocuments}
+                >
+                  {t('System', 'Select all')}
+                </button>
+              </div>
+            </NeedAuthorization>
           </div>
           {(() => {
             if (view !== 'graph') {
