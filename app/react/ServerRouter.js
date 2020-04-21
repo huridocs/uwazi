@@ -86,7 +86,12 @@ function handle404(res) {
 
 function respondError(res, error) {
   handleError(error);
-  res.status(error.status || 500).send(error.message);
+  res.status(error.status || 500);
+  if (error.json) {
+    res.send(`<pre>${error.json.prettyMessage}</pre>`);
+  } else {
+    res.send(error.message);
+  }
 }
 
 function handleRedirect(res, redirectLocation) {
@@ -192,24 +197,6 @@ function handleRoute(res, renderProps, req) {
         globalResources,
       ]);
     })
-    .catch(error => {
-      if (error.status === 401) {
-        res.redirect(302, '/login');
-        return Promise.reject(error);
-      }
-
-      if (error.status === 404) {
-        res.redirect(404, '/404');
-        return Promise.reject(error);
-      }
-
-      if (error.status === 500) {
-        respondError(res, error);
-        return Promise.reject(error);
-      }
-
-      return Promise.reject(error);
-    })
     .then(([initialData, globalResources]) => {
       renderPage(
         initialData,
@@ -225,7 +212,17 @@ function handleRoute(res, renderProps, req) {
         true
       );
     })
-    .catch(e => handleError(e, { req }));
+    .catch(error => {
+      if (error.status === 401) {
+        return res.redirect(302, '/login');
+      }
+
+      if (error.status === 404) {
+        return res.redirect(404, '/404');
+      }
+
+      return respondError(res, error);
+    });
 }
 
 const allowedRoute = (user = {}, url) => {
