@@ -68,9 +68,30 @@ describe('pages path', () => {
     });
 
     // it('should display Bar chart graph in page', async () => {
-    //   await nightmare
-    //     .clickLink('view page')
-    //     .wait('#app > div.content > div > div > main div.markdown-viewer');
+    //   nightmare
+    //     .evaluate(
+    //       () => document.querySelector('.page-viewer.document-viewer > div.alert.alert-info a').href
+    //     )
+    //     .then(link => nightmare.goto(link))
+    //     .then(page => {
+    //       expect(page.code).toBe(200);
+    //       return nightmare
+    //         .wait('#app > div.content > div > div > main div.markdown-viewer')
+    //         .getInnerHtml('#app > div.content > div > div > main div.markdown-viewer')
+    //         .then(html => {
+    //           expect(html).toContain('class="BarChart "');
+    //           expect(html).toContain('class="recharts-responsive-container"');
+    //         });
+    //     });
     // });
+    it('should display Bar chart graph in page with no more than a 1% difference', async () => {
+      const page = await browser.newPage();
+      await page.goto('https://localhost:3000');
+      const image = await page.screenshot();
+      expect(image).toMatchImageSnapshot({
+        failureThreshold: 0.01,
+        failureThresholdType: 'percent',
+      });
+    });
   });
 });
