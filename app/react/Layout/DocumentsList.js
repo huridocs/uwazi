@@ -27,9 +27,9 @@ class DocumentsList extends Component {
     this.setState({ loading: false });
   }
 
-  clickOnDocument() {
+  clickOnDocument(...args) {
     if (this.props.clickOnDocument) {
-      this.props.clickOnDocument.apply(this, arguments);
+      this.props.clickOnDocument.apply(this, args);
     }
   }
 
@@ -83,18 +83,14 @@ class DocumentsList extends Component {
       </span>
     );
     if (connections) {
-      const summary = connectionsGroups.reduce(
-        (summaryData, g) => {
-          g.get('templates').forEach(template => {
-            summaryData.totalConnections += template.get('count');
-          });
-          return summaryData;
-        },
-        { totalConnections: 0 }
+      const totalConnections = connectionsGroups.reduce(
+        (total, g) =>
+          total + g.get('templates').reduce((count, template) => count + template.get('count'), 0),
+        0
       );
       counter = (
         <span>
-          <b>{summary.totalConnections}</b> {t('System', 'connections')},{' '}
+          <b>{totalConnections}</b> {t('System', 'connections')},{' '}
           <b>{documents.get('totalRows')}</b> {t('System', 'documents')}
         </span>
       );
