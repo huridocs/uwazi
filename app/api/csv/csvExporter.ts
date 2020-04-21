@@ -64,7 +64,7 @@ const notDuplicated = (collection: any) => (item: any) =>
   collection.findIndex((i: any) => Object.keys(i).every(key => i[key] === item[key])) < 0;
 
 const excludedProperties = (property: PropertySchema) =>
-  !['geolocation', 'preview', 'markdown', 'nested'].includes(property.type);
+  !['geolocation', 'preview', 'nested'].includes(property.type);
 
 export const processHeaders = (templatesCache: TemplatesCache): ExportHeader[] =>
   Object.values(templatesCache).reduce(

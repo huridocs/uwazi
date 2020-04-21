@@ -49,6 +49,7 @@ const formatters: {
     field.map((item: any) => formatAttachment(item.filename, item.entityId)).join('|'),
   creationDate: (field: any, options) =>
     moment.utc(field.creationDate).format(options.dateFormat || defaultDateFormat),
+  markdown: (field: any) => (field[0] ? field[0].value : ''),
 };
 
 export default formatters;

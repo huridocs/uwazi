@@ -48,6 +48,13 @@ const testEmptyField = (formatter: FormatterFunction) => {
   expect(value).toBe('');
 };
 
+const testSimple = (value: any, formatter: FormatterFunction, expected: any) => {
+  const field = [{ value }];
+  const result = formatter(field, {});
+  expect(result).toBe(expected);
+  testEmptyField(formatter);
+};
+
 describe('csvExporter typeFormatters', () => {
   describe('SELECTS', () => {
     it('should return the correct SELECT value', () => {
@@ -128,49 +135,39 @@ describe('csvExporter typeFormatters', () => {
 
   describe('URLs', () => {
     it('should return the correct IMAGE url', () => {
-      const field = [{ value: 'image.jpg' }];
-      const value = typeFormatters.image(field, {});
-      expect(value).toBe('image.jpg');
-      testEmptyField(typeFormatters.image);
+      testSimple('image.jpg', typeFormatters.image, 'image.jpg');
     });
 
     it('should return the correct LINK value', () => {
-      const field = [{ value: { label: 'UWAZI', url: 'uwazi.io' } }];
-      const value = typeFormatters.link(field, {});
-      expect(value).toBe('UWAZI|uwazi.io');
-      testEmptyField(typeFormatters.link);
+      testSimple({ label: 'UWAZI', url: 'uwazi.io' }, typeFormatters.link, 'UWAZI|uwazi.io');
     });
 
     it('should return the correct MEDIA value', () => {
-      const field = [{ value: 'media_url' }];
-      const value = typeFormatters.media(field, {});
-      expect(value).toBe('media_url');
-      testEmptyField(typeFormatters.media);
+      testSimple('media_url', typeFormatters.media, 'media_url');
     });
   });
 
   describe('SIMPLE', () => {
     it('should return the correct NUMERIC value', () => {
-      const field = [{ value: 1234 }];
-      const value = typeFormatters.numeric(field, {});
-      expect(value).toBe(1234);
-      testEmptyField(typeFormatters.numeric);
+      testSimple(1234, typeFormatters.numeric, 1234);
     });
 
     it('should return the correct TEXT value', () => {
-      const field = [{ value: 'text' }];
-      const value = typeFormatters.text(field, {});
-      expect(value).toBe('text');
-      testEmptyField(typeFormatters.text);
+      testSimple('text', typeFormatters.text, 'text');
+    });
+
+    it('should return the correct MARKDOWN value', () => {
+      testSimple('markdown', typeFormatters.markdown, 'markdown');
     });
   });
 
   describe('GEOLOCATION', () => {
     it('should return the correct GEOLOCATION value', () => {
-      const field = [{ value: { lat: '46.2050242', lon: '6.1090692' } }];
-      const value = typeFormatters.geolocation(field, {});
-      expect(value).toBe('46.2050242|6.1090692');
-      testEmptyField(typeFormatters.geolocation);
+      testSimple(
+        { lat: '46.2050242', lon: '6.1090692' },
+        typeFormatters.geolocation,
+        '46.2050242|6.1090692'
+      );
     });
   });
 
