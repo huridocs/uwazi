@@ -1,9 +1,3 @@
-/**
- *
- *
- * @format
- */
-
 /* eslint-disable max-len */
 
 const exportCsvSvgPath =

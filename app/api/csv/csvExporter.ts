@@ -37,12 +37,12 @@ export type ExportHeader = {
   common: boolean;
 };
 
-export type TemplatesCache = {
+type TemplatesCache = {
   [id: string]: TemplateSchema;
 };
 
 export const getTypes = (searchResults: SearchResults, typesWhitelist: string[] = []) =>
-  typesWhitelist.length > 0
+  typesWhitelist.length
     ? typesWhitelist
     : searchResults.aggregations.all._types.buckets
         .filter(bucket => bucket.filtered.doc_count > 0)
@@ -60,10 +60,10 @@ export const getTemplatesModels = async (templateIds: string[]): Promise<Templat
     )
   );
 
-export const notDuplicated = (collection: any) => (item: any) =>
+const notDuplicated = (collection: any) => (item: any) =>
   collection.findIndex((i: any) => Object.keys(i).every(key => i[key] === item[key])) < 0;
 
-export const excludedProperties = (property: PropertySchema) =>
+const excludedProperties = (property: PropertySchema) =>
   !['geolocation', 'preview', 'markdown', 'nested'].includes(property.type);
 
 export const processHeaders = (templatesCache: TemplatesCache): ExportHeader[] =>

@@ -13,7 +13,7 @@ export type ExportButtonProps = {
   exportDocuments: (keyStore: string) => any;
 };
 
-export class ExportButton extends Component<ExportButtonProps, {}> {
+class ExportButton extends Component<ExportButtonProps, {}> {
   constructor(props: ExportButtonProps) {
     super(props);
     this.export = this.export.bind(this);

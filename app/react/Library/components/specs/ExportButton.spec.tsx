@@ -1,23 +1,37 @@
 import React from 'react';
 import { shallow } from 'enzyme';
+import thunk from 'redux-thunk';
 
-import { ExportButton, ExportButtonProps } from 'app/Library/components/ExportButton';
+import ExportButton, { ExportButtonProps } from 'app/Library/components/ExportButton';
+import { Provider } from 'react-redux';
+import configureMockStore from 'redux-mock-store';
+import Immutable from 'immutable';
+import * as actions from '../../actions/exportActions';
 
 describe('ExportButton', () => {
   let component: any;
-  let props: ExportButtonProps;
+  let props: Partial<ExportButtonProps>;
+  const mockStore = configureMockStore([thunk]);
+  let store: any;
 
   const render = () => {
-    component = shallow<ExportButton>(<ExportButton {...props} />);
+    component = shallow(
+      <Provider store={store}>
+        <ExportButton {...props} />
+      </Provider>
+    )
+      .dive()
+      .dive();
   };
 
   describe('when instantiated', () => {
     beforeEach(() => {
       props = {
-        processing: false,
         storeKey: 'library',
-        exportDocuments: jest.fn(),
       };
+      store = mockStore({
+        exportSearchResults: { exportSearchResultsProcessing: Immutable.fromJS(false) },
+      });
     });
 
     it('should not have the disabled class', () => {
@@ -26,19 +40,23 @@ describe('ExportButton', () => {
     });
 
     it('should dispatch exportDocuments on click', () => {
+      spyOn(actions, 'exportDocuments').and.returnValue(() => {});
       render();
+
       component.find('.btn').simulate('click');
-      expect(props.exportDocuments).toHaveBeenCalledWith('library');
+
+      expect(actions.exportDocuments).toHaveBeenCalledWith('library');
     });
   });
 
   describe('when processing', () => {
     beforeEach(() => {
       props = {
-        processing: true,
         storeKey: 'library',
-        exportDocuments: jest.fn(),
       };
+      store = mockStore({
+        exportSearchResults: { exportSearchResultsProcessing: Immutable.fromJS(true) },
+      });
     });
 
     it('should be disabled', () => {
@@ -47,8 +65,9 @@ describe('ExportButton', () => {
     });
 
     it('should not dispatch on click', () => {
+      spyOn(actions, 'exportDocuments').and.returnValue(() => {});
       render();
-      expect(props.exportDocuments).not.toHaveBeenCalled();
+      expect(actions.exportDocuments).not.toHaveBeenCalled();
     });
   });
 });
