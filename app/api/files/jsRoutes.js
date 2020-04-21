@@ -199,13 +199,11 @@ export default app => {
           exporter
             .export(results, req.query.types, fileStream, exporterOptions)
             .then(() => {
-              fileStream.end(() => {
-                res.download(
-                  temporalFilePath,
-                  generateExportFileName(site_name),
-                  removeTempFile(temporalFilePath)
-                );
-              });
+              res.download(
+                temporalFilePath,
+                generateExportFileName(site_name),
+                removeTempFile(temporalFilePath)
+              );
             })
             .catch(e => {
               removeTempFile(temporalFilePath)();

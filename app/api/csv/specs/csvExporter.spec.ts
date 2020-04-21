@@ -456,11 +456,9 @@ describe('csvExporter', () => {
       exporter
         .export(searchResults, [], writeMock)
         .then(() => {
-          writeMock.on('finish', () => {
-            const exported = writeMock.data.reduce((chunk, memo) => chunk.toString() + memo, '');
-            expect(exported).toEqual(csvExample);
-            done();
-          });
+          const exported = writeMock.data.reduce((chunk, memo) => chunk.toString() + memo, '');
+          expect(exported).toEqual(csvExample);
+          done();
         })
         .catch(err => {
           throw err;

@@ -201,17 +201,22 @@ export default class CSVExporter extends EventEmitter {
   ): Promise<void> {
     const csvStream = csv.format({ headers: false });
 
-    csvStream.pipe<any>(writeStream);
+    csvStream.pipe<any>(writeStream).on('finish', writeStream.end);
 
     const templatesCache = await getTemplatesModels(getTypes(searchResults, types));
     let headers = prependCommonHeaders(concatCommonHeaders(processHeaders(templatesCache)));
     headers = await translateCommonHeaders(headers, options.language);
 
-    csvStream.write(headers.map((h: any) => h.label));
-    searchResults.rows.forEach(row => {
-      csvStream.write(processEntity(row, headers, templatesCache, options));
-      this.emit('entityProcessed');
+    return new Promise(resolve => {
+      csvStream.write(headers.map((h: any) => h.label));
+
+      searchResults.rows.forEach(row => {
+        csvStream.write(processEntity(row, headers, templatesCache, options));
+        this.emit('entityProcessed');
+      });
+
+      csvStream.end();
+      writeStream.on('finish', resolve);
     });
-    csvStream.end();
   }
 }
