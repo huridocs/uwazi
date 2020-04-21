@@ -42,7 +42,7 @@ class ExportButton extends Component<ExportButtonProps, {}> {
   }
 }
 
-function mapDispatchToProps(dispatch: Dispatch<any>, props: ExportButtonProps) {
+function mapDispatchToProps(dispatch: Dispatch<any>, props: Pick<ExportButtonProps, 'storeKey'>) {
   return bindActionCreators({ exportDocuments }, wrapDispatch(dispatch, props.storeKey));
 }
 

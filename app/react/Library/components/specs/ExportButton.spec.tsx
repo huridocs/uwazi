@@ -10,7 +10,7 @@ import * as actions from '../../actions/exportActions';
 
 describe('ExportButton', () => {
   let component: any;
-  let props: Partial<ExportButtonProps>;
+  let props: Pick<ExportButtonProps, 'storeKey'>;
   const mockStore = configureMockStore([thunk]);
   let store: any;
 
