@@ -1,3 +1,4 @@
+/* eslint max-len: ["error", 500] */
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import createNightmare from '../helpers/nightmare';
 import insertFixtures from '../helpers/insertFixtures';
@@ -12,9 +13,9 @@ const localSelectors = {
   savePageButton:
     '#app > div.content > div > div > div.settings-content > div > form > div.settings-footer > button.save-template',
   pageTitleInput:
-    '#app div.settings-content div.panel.panel-default div.metadataTemplate-heading.panel-heading > div > div > input',
+    '#app > div.content > div > div > div.settings-content > div > form > div.panel.panel-default > div.metadataTemplate-heading.panel-heading > div > div > input',
   pageContentsInput:
-    '#app div.settings-content div.document-viewer div.tab-content.tab-content-visible > textarea',
+    '#app > div.content > div > div > div.settings-content > div > form > div.panel.panel-default > div.panel-body.page-viewer.document-viewer > div > div.tab-content.tab-content-visible > textarea',
 };
 
 const nightmare = createNightmare();
@@ -59,10 +60,11 @@ describe('pages path', () => {
         )
         .then(text => {
           expect(text).toContain('<Dataset />');
-          return nightmare
-            .write(localSelectors.pageContentsInput, graphs.barChart)
-            .click(localSelectors.savePageButton);
         });
+      await nightmare
+        .write(localSelectors.pageContentsInput, graphs.barChart)
+        .click(localSelectors.savePageButton)
+        .wait(5000);
     });
 
     // it('should display Bar chart graph in page', async () => {
