@@ -93,13 +93,13 @@ describe('DocumentsList', () => {
       props.view = 'graph';
       props.connections = { totalRows: 2 };
       props.connectionsGroups = Immutable.fromJS([
-        Immutable.fromJS({
-          templates: Immutable.fromJS([
+        {
+          templates: [
             {
-              count: Immutable.fromJS(2),
+              count: 2,
             },
-          ]),
-        }),
+          ],
+        },
       ]);
       props.GraphView = () => <div>GraphView</div>;
       render();
