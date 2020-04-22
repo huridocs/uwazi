@@ -48,40 +48,35 @@ describe('csvExporter', () => {
     beforeEach(() => {
       jest.clearAllMocks();
     });
+
+    const doTest = (types: string[], calledTimes: number, done: () => any) => {
+      getTemplatesModels(types)
+        .then(models => {
+          types.forEach(type => {
+            expect(templates.getById).toHaveBeenCalledWith(type);
+          });
+          expect(templates.getById).toHaveBeenCalledTimes(calledTimes);
+          expect(models).toEqual(testTemplates);
+          done();
+        })
+        .catch(e => {
+          throw e;
+        });
+    };
+
     it('should fetch all the templates and return a map', done => {
       jest
         .spyOn(templates, 'getById')
         .mockImplementation(async id => Promise.resolve(testTemplates[id]));
       const types = ['58ad7d240d44252fee4e61fd', '58ad7d240d44252fee4e61fb'];
 
-      getTemplatesModels(types)
-        .then(models => {
-          types.forEach(type => {
-            expect(templates.getById).toHaveBeenCalledWith(type);
-          });
-          expect(templates.getById).toHaveBeenCalledTimes(2);
-          expect(models).toEqual(testTemplates);
-          done();
-        })
-        .catch(e => {
-          throw e;
-        });
+      doTest(types, 2, done);
     });
 
     it('should not include a missing template', done => {
       const types = ['58ad7d240d44252fee4e61fd', '58ad7d240d44252fee4e61fb', 'notValid'];
-      getTemplatesModels(types)
-        .then(models => {
-          types.forEach(type => {
-            expect(templates.getById).toHaveBeenCalledWith(type);
-          });
-          expect(templates.getById).toHaveBeenCalledTimes(3);
-          expect(models).toEqual(testTemplates);
-          done();
-        })
-        .catch(e => {
-          throw e;
-        });
+
+      doTest(types, 3, done);
     });
   });
 

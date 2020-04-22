@@ -101,6 +101,20 @@ describe('exportActions', () => {
 
     afterEach(() => backend.restore());
 
+    const testURL = (storeKey: string, done: () => {}) => {
+      mockSuperAgent(apiResponse);
+      store.dispatch(actions.exportDocuments(storeKey)).then(() => {
+        expect(superagent.get).toHaveBeenCalledWith(
+          `/api/export?filters=${encodeURIComponent(
+            JSON.stringify(expectedFilters)
+          )}&searchTerm=batman&order=desc&sort=creationDate&types=${encodeURIComponent(
+            JSON.stringify(expectedTypes)
+          )}&limit=10000${storeKey === 'uploads' ? '&unpublished=true' : ''}`
+        );
+        done();
+      });
+    };
+
     it('should set the processing flag in the store', done => {
       mockSuperAgent(apiResponse);
       store.dispatch(actions.exportDocuments('library')).then(() => {
@@ -113,17 +127,11 @@ describe('exportActions', () => {
     });
 
     it('should process the current filters, order and searchTerm', done => {
-      mockSuperAgent(apiResponse);
-      store.dispatch(actions.exportDocuments('library')).then(() => {
-        expect(superagent.get).toHaveBeenCalledWith(
-          `/api/export?filters=${encodeURIComponent(
-            JSON.stringify(expectedFilters)
-          )}&searchTerm=batman&order=desc&sort=creationDate&types=${encodeURIComponent(
-            JSON.stringify(expectedTypes)
-          )}&limit=10000`
-        );
-        done();
-      });
+      testURL('library', done);
+    });
+
+    it('should add unpublished flag if using uploads store', done => {
+      testURL('uploads', done);
     });
 
     it('should append the entityids if the user selected any', done => {
@@ -148,20 +156,6 @@ describe('exportActions', () => {
           )}&searchTerm=batman&order=desc&sort=creationDate&types=${encodeURIComponent(
             JSON.stringify(expectedTypes)
           )}&limit=10000&ids=${encodeURIComponent(JSON.stringify(['1', '2']))}`
-        );
-        done();
-      });
-    });
-
-    it('should add unpublished flag if using uploads store', done => {
-      mockSuperAgent(apiResponse);
-      store.dispatch(actions.exportDocuments('uploads')).then(() => {
-        expect(superagent.get).toHaveBeenCalledWith(
-          `/api/export?filters=${encodeURIComponent(
-            JSON.stringify(expectedFilters)
-          )}&searchTerm=batman&order=desc&sort=creationDate&types=${encodeURIComponent(
-            JSON.stringify(expectedTypes)
-          )}&limit=10000&unpublished=true`
         );
         done();
       });
