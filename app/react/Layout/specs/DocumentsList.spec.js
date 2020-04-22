@@ -91,6 +91,16 @@ describe('DocumentsList', () => {
   describe('Graph view', () => {
     beforeEach(() => {
       props.view = 'graph';
+      props.connections = { totalRows: 2 };
+      props.connectionsGroups = Immutable.fromJS([
+        Immutable.fromJS({
+          templates: Immutable.fromJS([
+            {
+              count: Immutable.fromJS(2),
+            },
+          ]),
+        }),
+      ]);
       props.GraphView = () => <div>GraphView</div>;
       render();
     });
@@ -107,6 +117,10 @@ describe('DocumentsList', () => {
           .getElements()[0]
           .type().props.children
       ).toBe('GraphView');
+    });
+
+    it('should show the connections count', () => {
+      expect(component.text()).toContain('2 connections');
     });
   });
 
