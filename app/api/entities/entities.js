@@ -455,9 +455,10 @@ export default {
     return model.count(query);
   },
 
-  getByTemplate(template, language, onlyPublished = true, limit = 200) {
+  getByTemplate(template, language, onlyPublished = true, limit) {
     const query = Object.assign({ template, language }, onlyPublished ? { published: true } : {});
-    return model.get(query, ['title', 'icon', 'file', 'sharedId'], { limit });
+    const queryLimit = limit ? { limit } : {};
+    return model.get(query, ['title', 'icon', 'file', 'sharedId'], queryLimit);
   },
 
   /** Rebuild relationship-based metadata objects as {value = id, label: title}. */
