@@ -77,7 +77,6 @@ exports[`MetadataForm should display custom title label 1`] = `
           optionsLabel="label"
           optionsValue="value"
           placeholder="Select..."
-          required={false}
           sort={false}
           value="template4"
         />
