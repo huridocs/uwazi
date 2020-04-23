@@ -231,12 +231,14 @@ abstract class MultiSelectBase<ValueType> extends Component<
   }
 
   moreLessLabel(totalOptions: Option[]) {
+    const { totalPossibleOptions } = this.props;
+    const amount = totalPossibleOptions || totalOptions.length;
     if (this.state.showAll) {
       return t('System', 'x less');
     }
     return (
       <span>
-        {totalOptions.length - this.props.optionsToShow} {t('System', 'x more')}
+        {amount - this.props.optionsToShow} {t('System', 'x more')}
       </span>
     );
   }
@@ -355,8 +357,36 @@ abstract class MultiSelectBase<ValueType> extends Component<
     );
   }
 
+  renderOptionsCount(totalOptions: Option[], options: Option[]) {
+    const { totalPossibleOptions } = this.props;
+    let count = `${totalPossibleOptions - totalOptions.length}`;
+    if (totalPossibleOptions > 1000) {
+      count = `${count}+`;
+    }
+
+    return (
+      <li className="multiselectActions">
+        <ShowIf if={totalOptions.length > this.props.optionsToShow}>
+          <button onClick={this.showAll} className="btn btn-xs btn-default" type="button">
+            <Icon icon={this.state.showAll ? 'caret-up' : 'caret-down'} />
+            &nbsp;
+            {this.moreLessLabel(totalOptions)}
+          </button>
+        </ShowIf>
+        {totalPossibleOptions > options.length && this.state.showAll && (
+          <div className="total-options">
+            {count} more options.{' '}
+            <button onClick={this.focusSearch} type="button">
+              Narrow down results
+            </button>
+          </div>
+        )}
+      </li>
+    );
+  }
+
   render() {
-    const { optionsLabel, totalPossibleOptions } = this.props;
+    const { optionsLabel } = this.props;
 
     let options = this.props.options.slice();
     const totalOptions = options.filter(option => {
@@ -427,24 +457,7 @@ abstract class MultiSelectBase<ValueType> extends Component<
 
           return this.renderOption(option, index);
         })}
-
-        <li className="multiselectActions">
-          <ShowIf if={totalOptions.length > this.props.optionsToShow}>
-            <button onClick={this.showAll} className="btn btn-xs btn-default">
-              <Icon icon={this.state.showAll ? 'caret-up' : 'caret-down'} />
-              &nbsp;
-              {this.moreLessLabel(totalOptions)}
-            </button>
-          </ShowIf>
-          {totalPossibleOptions > options.length && this.state.showAll && (
-            <div className="total-options">
-              {totalPossibleOptions} total possible options.{' '}
-              <button onClick={this.focusSearch} type="button">
-                Try searching
-              </button>
-            </div>
-          )}
-        </li>
+        {this.renderOptionsCount(totalOptions, options)}
       </ul>
     );
   }

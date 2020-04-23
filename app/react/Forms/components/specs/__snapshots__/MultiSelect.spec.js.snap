@@ -39,6 +39,7 @@ exports[`MultiSelect should display a not found message when there are no option
       <button
         className="btn btn-xs btn-default"
         onClick={[Function]}
+        type="button"
       >
         <Connect(Icon)
           icon="caret-down"
@@ -399,6 +400,7 @@ exports[`MultiSelect should not render an empty group 1`] = `
       <button
         className="btn btn-xs btn-default"
         onClick={[Function]}
+        type="button"
       >
         <Connect(Icon)
           icon="caret-down"

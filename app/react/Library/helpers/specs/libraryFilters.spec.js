@@ -157,6 +157,7 @@ describe('library helper', () => {
       const aggregations = {
         all: {
           country: {
+            count: 27,
             buckets: [
               {
                 key: 1,
@@ -172,7 +173,6 @@ describe('library helper', () => {
               },
             ],
           },
-          country__optionsCount: 27,
         },
       };
 

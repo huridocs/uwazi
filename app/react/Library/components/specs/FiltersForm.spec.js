@@ -58,6 +58,7 @@ describe('FiltersForm', () => {
       aggregations: Immutable({
         all: {
           select: {
+            count: 10,
             buckets: [
               { key: 'a', label: 'a', filtered: { doc_count: 1 } },
               { key: 'b', label: 'b', filtered: { doc_count: 1 } },
@@ -69,8 +70,8 @@ describe('FiltersForm', () => {
               },
             ],
           },
-          select__optionsCount: 10,
           multiselect: {
+            count: 11,
             buckets: [
               { key: 'a', label: 'a', filtered: { doc_count: 1 } },
               { key: 'b', label: 'b', filtered: { doc_count: 1 } },
@@ -82,7 +83,6 @@ describe('FiltersForm', () => {
               },
             ],
           },
-          multiselect__optionsCount: 11,
         },
       }),
       search: { searchTerm: 'Batman' },

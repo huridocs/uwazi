@@ -9,13 +9,14 @@ import elasticIndexes from 'api/config/elasticIndexes';
 
 import dictionariesModel from 'api/thesauri/dictionariesModel';
 import { createError } from 'api/utils';
+import { filterOptions } from 'shared/optionsUtils';
+import { preloadLimit } from 'shared/config';
 import documentQueryBuilder from './documentQueryBuilder';
 import elastic from './elastic';
 import entities from '../entities';
 import templatesModel from '../templates';
 import { bulkIndex, indexEntities } from './entitiesIndex';
 import thesauri from '../thesauri';
-import { filterOptions } from 'shared/optionsUtils';
 
 function processFilters(filters, properties) {
   return Object.keys(filters || {}).reduce((res, filterName) => {
@@ -72,7 +73,7 @@ function processFilters(filters, properties) {
   }, []);
 }
 
-function agregationProperties(properties) {
+function aggregationProperties(properties) {
   return properties
     .filter(
       property =>
@@ -168,9 +169,9 @@ function searchGeolocation(documentsQuery, templates) {
 }
 
 const _sanitizeAgregationNames = aggregations => {
-  return Object.keys(aggregations).reduce((allAgregations, key) => {
+  return Object.keys(aggregations).reduce((allAggregations, key) => {
     const sanitizedKey = key.replace('.value', '');
-    return Object.assign(allAgregations, { [sanitizedKey]: aggregations[key] });
+    return Object.assign(allAggregations, { [sanitizedKey]: aggregations[key] });
   }, {});
 };
 
@@ -269,8 +270,10 @@ const _sanitizeAggregationsStructure = aggregations => {
       });
     }
 
-    if (aggregationKey.includes('optionsCount')) {
-      aggregation = aggregation.value;
+    if (aggregation.buckets) {
+      const bucketsWithResults = aggregation.buckets.filter(b => b.filtered.doc_count);
+      aggregation.count = bucketsWithResults.length;
+      aggregation.buckets = aggregation.buckets.slice(0, preloadLimit);
     }
 
     result[aggregationKey] = aggregation;
@@ -557,7 +560,7 @@ const buildQuery = async (query, language, user, resources) => {
   }
 
   if (query.unpublished && user) {
-    queryBuilder.unpublished();
+    queryBuilder.onlyUnpublished();
   }
 
   const allUniqueProps = propertiesHelper.allUniqueProperties(templates);
@@ -589,7 +592,7 @@ const buildQuery = async (query, language, user, resources) => {
   }
 
   // this is where we decide which aggregations to send to elastic
-  const aggregations = agregationProperties(properties);
+  const aggregations = aggregationProperties(properties);
 
   const filters = processFilters(query.filters, [...allUniqueProps, ...properties]);
   // this is where the query filters are built
@@ -725,10 +728,6 @@ const instanceSearch = elasticIndex => ({
 
     const aggregation = body.aggregations.all.aggregations[`${propertyName}.value`];
 
-    if (aggregation.terms) {
-      aggregation.terms.size = 1000;
-    }
-
     aggregation.aggregations.filtered.filter.bool.filter.push({
       wildcard: { [`metadata.${propertyName}.label.raw`]: { value: `*${searchTerm}*` } },
     });
@@ -763,7 +762,7 @@ const instanceSearch = elasticIndex => ({
         include: ['title', 'template', 'sharedId', 'icon'],
       },
       from: 0,
-      size: 200,
+      size: preloadLimit,
       query: {
         bool: {
           must: [

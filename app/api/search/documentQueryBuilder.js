@@ -1,7 +1,7 @@
 /* eslint-disable camelcase, max-lines */
 
 import filterToMatch, { multiselectFilter } from './metadataMatchers';
-import propertyToAggregation from './metadataAggregations';
+import { propertyToAggregation } from './metadataAggregations';
 
 export default function() {
   const baseQuery = {
@@ -162,7 +162,7 @@ export default function() {
       return this;
     },
 
-    unpublished() {
+    onlyUnpublished() {
       baseQuery.query.bool.filter[0].term.published = false;
       aggregations._types.aggregations.filtered.filter.bool.filter[0].match.published = false;
       return this;
@@ -260,12 +260,6 @@ export default function() {
           dictionaries,
           baseQuery
         );
-
-        baseQuery.aggregations.all.aggregations[`${property.name}__optionsCount`] = {
-          cardinality: {
-            field: `metadata.${property.name}.raw`,
-          },
-        };
       });
       // suggested has an implied '__' as a prefix
       properties.forEach(property => {
