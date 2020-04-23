@@ -450,8 +450,9 @@ export default {
     return model.get({ sharedId });
   },
 
-  countByTemplate(template) {
-    return model.count({ template });
+  countByTemplate(template, language) {
+    const query = language ? { template, language } : { template };
+    return model.count(query);
   },
 
   getByTemplate(template, language, onlyPublished = true, limit = 200) {

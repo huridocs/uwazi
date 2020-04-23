@@ -124,7 +124,7 @@ export default {
       onlyPublished,
       preloadLimit
     );
-    const optionsCount = await entities.countByTemplate(template._id);
+    const optionsCount = await entities.countByTemplate(template._id, language);
     const values = this.entitiesToThesauri(_entities);
     return Object.assign(template, values, { type: 'template', optionsCount });
   },
