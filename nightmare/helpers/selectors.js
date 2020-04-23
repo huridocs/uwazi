@@ -300,7 +300,7 @@ export default {
       '#app > div.content > div > div > main > div > div.tab-content.tab-content-visible > div > div > div.relationships-graph div.leftRelationshipType button.relationships-new',
 
     sortMenu:
-      '#app > div.content > div > div > main > div > div.tab-content.tab-content-visible > div > div > div.sort-by.centered > div.sort-buttons > div > ul > li.Dropdown-option.is-active > a:nth-child(1)',
+      '#app > div.content > div > div > main > div > div.tab-content.tab-content-visible > div > div > div.sort-by.centered > div.sort-buttons > div:nth-child(2) > ul > li.Dropdown-option.is-active > a:nth-child(1)',
     searchInput:
       '#app > div.content > div > div > main > div > div.tab-content.tab-content-visible > div > div > div.search-list.centered > div > form > div > div > input',
 
