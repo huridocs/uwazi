@@ -1,11 +1,10 @@
-import React from 'react';
-import { shallow } from 'enzyme';
-
 import PropertyConfigOptions from '../PropertyConfigOptions';
+import { renderConnected } from '../../specs/utils/renderConnected.tsx';
 
 describe('PropertyConfigOptions', () => {
   let component;
   let props;
+  let storeData;
 
   beforeEach(() => {
     props = {
@@ -13,10 +12,22 @@ describe('PropertyConfigOptions', () => {
       type: 'select',
       property: {},
     };
+
+    storeData = {
+      template: {
+        data: {
+          properties: [
+            { name: 'title', label: 'Title' },
+            { name: 'creationDate' },
+            { name: 'property2' },
+          ],
+        },
+      },
+    };
   });
 
   const expectMatch = () => {
-    component = shallow(<PropertyConfigOptions {...props} />);
+    component = renderConnected(PropertyConfigOptions, props, storeData);
     expect(component).toMatchSnapshot();
   };
 
@@ -26,7 +37,7 @@ describe('PropertyConfigOptions', () => {
 
   describe('Once the property is checked as filter', () => {
     it('should render the default filter option', () => {
-      props.property.filter = true;
+      storeData.template.data.properties[2].filter = true;
       expectMatch();
     });
   });
@@ -34,7 +45,7 @@ describe('PropertyConfigOptions', () => {
   describe('priority sorting option', () => {
     describe('when property filter is true', () => {
       it('should render for text, date, numeric and select if property filter is true', () => {
-        props.property.filter = true;
+        storeData.template.data.properties[2].filter = true;
         props.type = 'text';
         expectMatch();
         props.type = 'date';
@@ -47,7 +58,7 @@ describe('PropertyConfigOptions', () => {
     });
     describe('when property filter is not true', () => {
       it('should not render priority sorting option', () => {
-        props.property.filter = false;
+        storeData.template.data.properties[2].filter = false;
         props.type = 'text';
         expectMatch();
         props.type = 'date';

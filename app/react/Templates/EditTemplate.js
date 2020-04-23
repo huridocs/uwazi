@@ -1,10 +1,5 @@
-/** @format */
-
 import React from 'react';
 import { actions as formActions } from 'react-redux-form';
-
-import { StateSelector } from 'app/Review/components/StateSelector';
-import { createSelector } from 'reselect';
 
 import templatesAPI from 'app/Templates/TemplatesAPI';
 import thesauriAPI from 'app/Thesauri/ThesauriAPI';
@@ -14,6 +9,7 @@ import { actions } from 'app/BasicReducer';
 import RouteHandler from 'app/App/RouteHandler';
 import ID from 'shared/uniqueID';
 import templateCommonProperties from './utils/templateCommonProperties';
+import { OnTemplateLoaded } from './components/OnTemplateLoaded';
 
 const prepareTemplate = template => {
   const commonPropertiesExists = template.commonProperties && template.commonProperties.length;
@@ -55,14 +51,9 @@ export default class EditTemplate extends RouteHandler {
 
   render() {
     return (
-      <StateSelector
-        templateLoaded={createSelector(
-          state => state.template.data._id,
-          value => value
-        )}
-      >
-        {({ templateLoaded }) => templateLoaded ? <TemplateCreator /> : false}
-      </StateSelector>
+      <OnTemplateLoaded>
+        <TemplateCreator />
+      </OnTemplateLoaded>
     );
   }
 }

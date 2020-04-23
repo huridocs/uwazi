@@ -69,6 +69,9 @@ export interface IStore {
       quickLabelMetadataForm: any;
     };
   };
+  template: {
+    data: TemplateSchema;
+  };
   templates: IImmutable<TemplateSchema[]>;
   thesauris: IImmutable<ThesaurusSchema[]>;
   thesauri: {

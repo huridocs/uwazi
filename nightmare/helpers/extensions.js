@@ -530,6 +530,7 @@ Nightmare.action('openEntityFromLibrary', function openEntityFromLibrary(itemNam
       found.querySelector('a').click();
       return true;
     }
+    return false;
   }, itemName)
     .wait(selectors.entityView.contentHeaderTitle)
     .wait(

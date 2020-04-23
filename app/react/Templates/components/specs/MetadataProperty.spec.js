@@ -10,13 +10,16 @@ import { Provider } from 'react-redux';
 import { createStore } from 'redux';
 import Immutable from 'immutable';
 import { shallow } from 'enzyme';
+import configureStore from 'redux-mock-store';
 
-import { MetadataProperty, dragSource, dropTarget } from '../MetadataProperty';
+import Connected, { MetadataProperty, dragSource, dropTarget } from '../MetadataProperty';
 import FormConfigMultimedia from '../FormConfigMultimedia';
 import FormConfigInput from '../FormConfigInput';
 import FormConfigSelect from '../FormConfigSelect';
 import FormConfigNested from '../FormConfigNested';
 import FormConfigRelationship from '../FormConfigRelationship';
+
+const mockStoreCreator = configureStore([]);
 
 function wrapInTestContext(DecoratedComponent) {
   return DragDropContext(TestBackend)(
@@ -74,6 +77,20 @@ function sourceTargetTestContext(Target, Source, actions) {
 describe('MetadataProperty', () => {
   let component;
 
+  const render = (store, props) => {
+    const DNDComponent = DragDropContext(TestBackend)(Connected);
+    return shallow(
+      <Provider store={store}>
+        <DNDComponent {...props} />
+      </Provider>
+    )
+      .dive({ context: { store } })
+      .dive()
+      .dive()
+      .dive()
+      .dive();
+  };
+
   describe('commonProperty', () => {
     let editProperty;
     let props;
@@ -90,27 +107,36 @@ describe('MetadataProperty', () => {
         index: 1,
         localID: 'id',
         formState: { fields: [], $form: { errors: {} } },
-        template: {
-          commonProperties: [{ name: 'title', label: 'Title' }, { name: 'creationDate' }],
-        },
         editProperty,
         uiState: Immutable.fromJS({ editingProperty: '' }),
         templates: Immutable.fromJS([]),
       };
     });
 
-    const render = () => {
-      component = shallow(<MetadataProperty {...props} />);
-      return component;
-    };
-
     describe('title field error', () => {
       it('should render duplicated error on title field', () => {
         props.index = -2;
         props.label = 'Title';
-        props.formState.$form.errors['commonProperties.0.label.duplicated'] = true;
-        render();
-        expect(component).toMatchSnapshot();
+
+        const store = mockStoreCreator({
+          template: {
+            uiState: Immutable.fromJS({}),
+            formState: {
+              fields: [],
+              $form: {
+                errors: {
+                  'commonProperties.0.label.duplicated': true,
+                },
+              },
+            },
+            data: {
+              commonProperties: [{ name: 'title', label: 'Title' }, { name: 'creationDate' }],
+            },
+          },
+        });
+
+        const connectedComponent = render(store, props);
+        expect(connectedComponent.find('.validation-error').text()).toMatch('Duplicated label');
       });
     });
 
@@ -221,14 +247,47 @@ describe('MetadataProperty', () => {
       describe('errors', () => {
         it('should render duplicated relation error', () => {
           props.formState.$form.errors['properties.1.relationType.duplicated'] = true;
-          component = shallow(<MetadataProperty {...props} />);
-          expect(component).toMatchSnapshot();
+          const store = mockStoreCreator({
+            template: {
+              uiState: Immutable.fromJS({}),
+              formState: {
+                fields: [],
+                $form: {
+                  errors: {
+                    'properties.1.relationType.duplicated': true,
+                  },
+                },
+              },
+              data: {
+                commonProperties: [],
+              },
+            },
+          });
+
+          const connectedComponent = render(store, props);
+          expect(connectedComponent.find('.validation-error')).toMatchSnapshot();
         });
 
         it('should render duplicated label error', () => {
-          props.formState.$form.errors['properties.1.label.duplicated'] = true;
-          component = shallow(<MetadataProperty {...props} />);
-          expect(component).toMatchSnapshot();
+          const store = mockStoreCreator({
+            template: {
+              uiState: Immutable.fromJS({}),
+              formState: {
+                fields: [],
+                $form: {
+                  errors: {
+                    'properties.1.label.duplicated': true,
+                  },
+                },
+              },
+              data: {
+                commonProperties: [],
+              },
+            },
+          });
+
+          const connectedComponent = render(store, props);
+          expect(connectedComponent.find('.validation-error').text()).toMatch('Duplicated label');
         });
       });
     });

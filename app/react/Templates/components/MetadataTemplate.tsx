@@ -121,14 +121,21 @@ export class MetadataTemplate extends Component<MetadataTemplateProps> {
                       {...config}
                       key={localID}
                       localID={localID}
-                      index={index - this.props.commonProperties.length}
+                      index={index - commonProperties.length}
                     />
                   );
                 })}
-                {this.props.properties.map((config: any, index) => {
+                {this.props.properties.map((config: any, index: number) => {
                   const localID = config.localID || config._id;
                   return (
-                    <MetadataProperty {...config} key={localID} localID={localID} index={index} />
+                    <MetadataProperty
+                      _id={config._id}
+                      type={config.type}
+                      inserting={config.inserting}
+                      key={localID}
+                      localID={localID}
+                      index={index}
+                    />
                   );
                 })}
                 <div className="no-properties">
