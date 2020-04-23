@@ -514,7 +514,7 @@ Nightmare.action('getResultsAsJson', function getResultsAsJson(done) {
 });
 
 Nightmare.action('openEntityFromLibrary', function openEntityFromLibrary(itemName, done) {
-  this.evaluate(nameToFind => {
+  this.wait(nameToFind => {
     const cards = document.querySelectorAll('.main-wrapper div.item-document');
     let found = false;
     cards.forEach(card => {
@@ -528,6 +528,7 @@ Nightmare.action('openEntityFromLibrary', function openEntityFromLibrary(itemNam
 
     if (found) {
       found.querySelector('a').click();
+      return true;
     }
   }, itemName)
     .wait(selectors.entityView.contentHeaderTitle)
