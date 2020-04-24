@@ -68,7 +68,7 @@ export class LookupMultiSelect extends Component<LookupMultiSelectProps, LookupM
   }
 
   render() {
-    const { lookup, onChange, ...rest } = this.props;
+    const { lookup, onChange, totalPossibleOptions, ...rest } = this.props;
     return (
       <MultiSelect
         {...rest}

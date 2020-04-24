@@ -359,14 +359,17 @@ abstract class MultiSelectBase<ValueType> extends Component<
 
   renderOptionsCount(totalOptions: Option[], options: Option[]) {
     const { totalPossibleOptions } = this.props;
-    let count = `${totalPossibleOptions - totalOptions.length}`;
+    let count = this.state.showAll
+      ? `${totalPossibleOptions - options.length}`
+      : `${totalPossibleOptions - totalOptions.length}`;
+
     if (totalPossibleOptions > 1000) {
       count = `${count}+`;
     }
 
     return (
       <li className="multiselectActions">
-        <ShowIf if={totalOptions.length > this.props.optionsToShow}>
+        <ShowIf if={totalOptions.length > this.props.optionsToShow && !this.state.filter}>
           <button onClick={this.showAll} className="btn btn-xs btn-default" type="button">
             <Icon icon={this.state.showAll ? 'caret-up' : 'caret-down'} />
             &nbsp;
@@ -395,13 +398,12 @@ abstract class MultiSelectBase<ValueType> extends Component<
         isNotAnEmptyGroup(option) &&
         (option.results === notDefined ||
           option.results > 0 ||
-          !option.options ||
-          option.options.length ||
+          (option.options && option.options.length) ||
           this.checked(option))
       );
     });
-    options = totalOptions;
-    options = options.map(option => {
+
+    options = totalOptions.map(option => {
       if (!option.options) {
         return option;
       }
@@ -409,6 +411,7 @@ abstract class MultiSelectBase<ValueType> extends Component<
         ...option,
         options: option.options.filter(_opt => {
           let notDefined;
+
           return _opt.results === notDefined || _opt.results > 0 || this.checked(_opt);
         }),
       };
@@ -418,7 +421,8 @@ abstract class MultiSelectBase<ValueType> extends Component<
       options = filterOptions(this.state.filter, options, optionsLabel);
     }
 
-    const tooManyOptions = !this.state.showAll && options.length > this.props.optionsToShow;
+    const tooManyOptions =
+      !this.state.showAll && options.length > this.props.optionsToShow && !this.state.filter;
 
     if (this.props.sort) {
       options = this.sort(options);
