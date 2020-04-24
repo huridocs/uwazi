@@ -2,33 +2,23 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Field } from 'react-redux-form';
 import { connect } from 'react-redux';
+import { checkErrorsOnLabel } from '../utils/checkErrorsOnLabel';
+
 import PropertyConfigOptions from './PropertyConfigOptions';
 
 export class FormConfigInput extends Component {
   render() {
-    const { index, property, formState, type, canBeFilter } = this.props;
-    let labelClass = 'form-group';
-    const labelKey = `properties.${index}.label`;
-    const requiredLabel = formState.$form.errors[`${labelKey}.required`];
-    const duplicatedLabel = formState.$form.errors[`${labelKey}.duplicated`];
-    if (requiredLabel || duplicatedLabel) {
-      labelClass += ' has-error';
-    }
+    const { index, labelHasError, type, canBeFilter } = this.props;
 
     return (
       <div>
-        <div className={labelClass}>
+        <div className={`form-group${labelHasError ? ' has-error' : ''}`}>
           <label>Name</label>
           <Field model={`template.data.properties[${index}].label`}>
             <input className="form-control" />
           </Field>
         </div>
-        <PropertyConfigOptions
-          index={index}
-          property={property}
-          type={type}
-          canBeFilter={canBeFilter}
-        />
+        <PropertyConfigOptions index={index} type={type} canBeFilter={canBeFilter} />
       </div>
     );
   }
@@ -36,20 +26,19 @@ export class FormConfigInput extends Component {
 
 FormConfigInput.defaultProps = {
   canBeFilter: true,
+  labelHasError: false,
 };
 
 FormConfigInput.propTypes = {
   canBeFilter: PropTypes.bool,
-  property: PropTypes.instanceOf(Object).isRequired,
   index: PropTypes.number.isRequired,
-  formState: PropTypes.instanceOf(Object).isRequired,
   type: PropTypes.string.isRequired,
+  labelHasError: PropTypes.bool,
 };
 
-export function mapStateToProps({ template }, props) {
+export function mapStateToProps(state, props) {
   return {
-    property: template.data.properties[props.index],
-    formState: template.formState,
+    labelHasError: checkErrorsOnLabel(state, props),
   };
 }
 

@@ -8,6 +8,7 @@ import { t } from 'app/I18N';
 import { Warning } from 'app/Layout';
 import { Translate } from 'app/I18N';
 import PropertyConfigOptions from './PropertyConfigOptions';
+import { checkErrorsOnLabel } from '../utils/checkErrorsOnLabel';
 
 export class FormConfigSelect extends Component {
   static contentValidation() {
@@ -15,40 +16,27 @@ export class FormConfigSelect extends Component {
   }
 
   componentDidMount() {
-    this.initialContent = this.props.data.properties[this.props.index].content;
+    this.initialContent = this.props.content;
   }
 
   componentWillReceiveProps(newProps) {
-    const newContent = newProps.data.properties[newProps.index].content;
     this.warning = false;
-    if (this.initialContent !== newContent) {
+    if (this.initialContent !== newProps.content) {
       this.warning = true;
     }
   }
 
   render() {
-    const { index, data, formState, type } = this.props;
+    const { index, type, labelHasError, contentRequiredError, templateId } = this.props;
     const thesauris = this.props.thesauris.toJS();
-    const property = data.properties[index];
 
     const options = thesauris.filter(
-      thesauri => thesauri._id !== data._id && thesauri.type !== 'template'
+      thesauri => thesauri._id !== templateId && thesauri.type !== 'template'
     );
-
-    let labelClass = 'form-group';
-    const labelKey = `properties.${index}.label`;
-    const requiredLabel = formState.$form.errors[`${labelKey}.required`];
-    const duplicatedLabel = formState.$form.errors[`${labelKey}.duplicated`];
-    const contentRequiredError =
-      formState.$form.errors[`properties.${index}.content.required`] &&
-      formState.$form.submitFailed;
-    if (requiredLabel || duplicatedLabel) {
-      labelClass += ' has-error';
-    }
 
     return (
       <div>
-        <div className={labelClass}>
+        <div className={`form-group${labelHasError ? ' has-error' : ''}`}>
           <label>Label</label>
           <Field model={`template.data.properties[${index}].label`}>
             <input className="form-control" />
@@ -76,26 +64,40 @@ export class FormConfigSelect extends Component {
           />
         </div>
 
-        <PropertyConfigOptions index={index} property={property} type={type} />
+        <PropertyConfigOptions index={index} type={type} />
       </div>
     );
   }
 }
 
-FormConfigSelect.propTypes = {
-  thesauris: PropTypes.object,
-  data: PropTypes.object,
-  index: PropTypes.number,
-  formState: PropTypes.object,
-  formKey: PropTypes.string,
-  type: PropTypes.string.isRequired,
+FormConfigSelect.defaultProps = {
+  labelHasError: false,
+  contentRequiredError: false,
+  templateId: '',
+  content: '',
 };
 
-export function mapStateToProps(state) {
+FormConfigSelect.propTypes = {
+  thesauris: PropTypes.object,
+  index: PropTypes.number,
+  formKey: PropTypes.string,
+  type: PropTypes.string.isRequired,
+  labelHasError: PropTypes.bool,
+  contentRequiredError: PropTypes.bool,
+  templateId: PropTypes.string,
+  content: PropTypes.string,
+};
+
+export function mapStateToProps(state, props) {
+  const { template, thesauris } = state;
   return {
-    data: state.template.data,
-    thesauris: state.thesauris,
-    formState: state.template.formState,
+    labelHasError: checkErrorsOnLabel(state, props),
+    contentRequiredError:
+      template.formState.$form.errors[`properties.${props.index}.content.required`] &&
+      template.formState.$form.submitFailed,
+    templateId: template.data._id,
+    thesauris,
+    content: template.data.properties[props.index].content,
   };
 }
 

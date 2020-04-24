@@ -19,7 +19,7 @@ export class FilterSuggestions extends Component {
 
   findSameLabelProperties(label, templates) {
     return templates
-      .filter(template => template._id !== this.props.data._id)
+      .filter(template => template._id !== this.props.templateId)
       .map(template => {
         const property = template.properties.find(
           prop => prop.label.trim().toLowerCase() === label.trim().toLowerCase() && prop.filter
@@ -82,9 +82,7 @@ export class FilterSuggestions extends Component {
   }
 
   render() {
-    const { label } = this.props;
-    const { type } = this.props;
-    const { content } = this.props;
+    const { label, type, content } = this.props;
     const hasThesauri = typeof content !== 'undefined';
     const activeClass = this.props.filter ? 'property-atributes is-active' : 'property-atributes';
     const title = 'This is the current property and will be used together with equal properties.';
@@ -106,7 +104,7 @@ export class FilterSuggestions extends Component {
         <tbody>
           <tr className={activeClass} title={title}>
             <td>
-              <Icon icon="file" /> {this.props.data.name}
+              <Icon icon="file" /> {this.props.templateName}
             </td>
             <td>
               <Icon icon={icon} /> {type[0].toUpperCase() + type.slice(1)}
@@ -133,17 +131,22 @@ FilterSuggestions.propTypes = {
   label: PropTypes.string,
   type: PropTypes.string,
   filter: PropTypes.any,
-  data: PropTypes.object,
+  templateName: PropTypes.string,
+  templateId: PropTypes.string,
   templates: PropTypes.object,
   thesauris: PropTypes.object,
   content: PropTypes.string,
 };
 
-export function mapStateToProps(state) {
+export function mapStateToProps(state, props) {
   return {
     templates: state.templates,
     thesauris: state.thesauris,
-    data: state.template.data,
+    templateName: state.template.data.name,
+    templateId: state.template.data._id,
+    type: state.template.data.properties[props.index].type,
+    filter: state.template.data.properties[props.index].filter,
+    label: state.template.data.properties[props.index].label,
   };
 }
 

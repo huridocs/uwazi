@@ -82,14 +82,8 @@ exports[`FormConfigRelationship should render fields with the correct datas 1`] 
       placeholder="Any entity or document"
     />
   </div>
-  <PropertyConfigOptions
-    canBeFilter={true}
+  <Connect(PropertyConfigOptions)
     index={0}
-    property={
-      Object {
-        "filter": false,
-      }
-    }
     type="relationship"
   />
 </div>
@@ -177,14 +171,8 @@ exports[`FormConfigRelationship when the fields are invalid and dirty or the for
       placeholder="Any entity or document"
     />
   </div>
-  <PropertyConfigOptions
-    canBeFilter={true}
+  <Connect(PropertyConfigOptions)
     index={0}
-    property={
-      Object {
-        "filter": false,
-      }
-    }
     type="relationship"
   />
 </div>
@@ -272,14 +260,8 @@ exports[`FormConfigRelationship when the fields are invalid and dirty or the for
       placeholder="Any entity or document"
     />
   </div>
-  <PropertyConfigOptions
-    canBeFilter={true}
+  <Connect(PropertyConfigOptions)
     index={0}
-    property={
-      Object {
-        "filter": false,
-      }
-    }
     type="relationship"
   />
 </div>
@@ -367,14 +349,8 @@ exports[`FormConfigRelationship when use as filter is selected should show the d
       placeholder="Any entity or document"
     />
   </div>
-  <PropertyConfigOptions
-    canBeFilter={true}
+  <Connect(PropertyConfigOptions)
     index={0}
-    property={
-      Object {
-        "filter": true,
-      }
-    }
     type="relationship"
   />
 </div>

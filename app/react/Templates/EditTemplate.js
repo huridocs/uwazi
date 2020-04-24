@@ -1,5 +1,3 @@
-/** @format */
-
 import React from 'react';
 import { actions as formActions } from 'react-redux-form';
 
@@ -11,6 +9,7 @@ import { actions } from 'app/BasicReducer';
 import RouteHandler from 'app/App/RouteHandler';
 import ID from 'shared/uniqueID';
 import templateCommonProperties from './utils/templateCommonProperties';
+import { OnTemplateLoaded } from './components/OnTemplateLoaded';
 
 const prepareTemplate = template => {
   const commonPropertiesExists = template.commonProperties && template.commonProperties.length;
@@ -51,6 +50,10 @@ export default class EditTemplate extends RouteHandler {
   }
 
   render() {
-    return <TemplateCreator />;
+    return (
+      <OnTemplateLoaded>
+        <TemplateCreator />
+      </OnTemplateLoaded>
+    );
   }
 }
