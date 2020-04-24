@@ -87,12 +87,11 @@
 }
 
 .Dropdown-option__item {
-    padding: 3px 7px 2px;
+  padding: 3px 7px 2px;
 }
 
 .Dropdown:hover,
 .Dropdown.is-active {
-
   span {
     opacity: 1;
   }
@@ -109,4 +108,16 @@
     display: -webkit-flex;
     display: flex;
   }
+}
+
+.sort-by .sort-buttons .Dropdown {
+  top: 0px;
+}
+
+.sort-by .sort-buttons .Dropdown.width-placeholder.order-by {
+  position: unset;
+}
+
+.Dropdown.width-placeholder a.Dropdown-option__item.is-active {
+  color: rgba(0, 0, 0, 0) !important;
 }

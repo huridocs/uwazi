@@ -25,6 +25,7 @@ export class SortButtons extends Component {
   constructor(props) {
     super(props);
     this.state = { active: false };
+    this.toggle = this.toggle.bind(this);
   }
 
   getAdditionalSorts(templates, search) {
@@ -140,7 +141,7 @@ export class SortButtons extends Component {
   }
 
   toggle() {
-    this.setState({ active: !this.state.active });
+    this.setState(prevState => ({ active: !prevState.active }));
   }
 
   validateSearch() {
@@ -153,6 +154,44 @@ export class SortButtons extends Component {
     return _search;
   }
 
+  renderDropdown(search, additionalSorts, { includeEvents = true } = {}) {
+    const { active } = this.state;
+    return (
+      <div
+        className={`Dropdown ${!includeEvents ? 'width-placeholder' : ''} order-by ${
+          active && includeEvents ? 'is-active' : ''
+        }`}
+      >
+        <ul className="Dropdown-list" onClick={includeEvents ? this.toggle : () => {}}>
+          {this.createSortItem('title', 'title', 'System', 'Title', {
+            isActive: search.sort === 'title',
+            search,
+            type: 'string',
+          })}
+          {this.createSortItem('creationDate', 'creationDate', 'System', 'Date added', {
+            isActive: search.sort === 'creationDate',
+            search,
+            type: 'date',
+          })}
+          {search.searchTerm && (
+            <li
+              key="relevance"
+              className={`Dropdown-option ${search.sort === '_score' ? 'is-active' : ''}`}
+            >
+              <a
+                className={`Dropdown-option__item ${search.sort === '_score' ? 'is-active' : ''}`}
+                onClick={() => (includeEvents ? this.handleClick('_score') : null)}
+              >
+                <span>{t('System', 'Search relevance')}</span>
+              </a>
+            </li>
+          )}
+          {additionalSorts}
+        </ul>
+      </div>
+    );
+  }
+
   render() {
     const { templates } = this.props;
     const search = this.validateSearch();
@@ -160,34 +199,8 @@ export class SortButtons extends Component {
     const additionalSorts = this.getAdditionalSorts(templates, search, order);
     return (
       <div className="sort-buttons">
-        <div className={`Dropdown order-by ${this.state.active ? 'is-active' : ''}`}>
-          <ul className="Dropdown-list" onClick={this.toggle.bind(this)}>
-            {this.createSortItem('title', 'title', 'System', 'Title', {
-              isActive: search.sort === 'title',
-              search,
-              type: 'string',
-            })}
-            {this.createSortItem('creationDate', 'creationDate', 'System', 'Date added', {
-              isActive: search.sort === 'creationDate',
-              search,
-              type: 'date',
-            })}
-            {search.searchTerm && (
-              <li
-                key="relevance"
-                className={`Dropdown-option ${search.sort === '_score' ? 'is-active' : ''}`}
-              >
-                <a
-                  className={`Dropdown-option__item ${search.sort === '_score' ? 'is-active' : ''}`}
-                  onClick={() => this.handleClick('_score')}
-                >
-                  <span>{t('System', 'Search relevance')}</span>
-                </a>
-              </li>
-            )}
-            {additionalSorts}
-          </ul>
-        </div>
+        {this.renderDropdown(search, additionalSorts, { includeEvents: false })}
+        {this.renderDropdown(search, additionalSorts)}
       </div>
     );
   }
