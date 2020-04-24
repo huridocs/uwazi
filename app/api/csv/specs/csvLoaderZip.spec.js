@@ -1,5 +1,3 @@
-/** @format */
-
 import db from 'api/utils/testing_db';
 import { files } from 'api/files/files';
 import { search } from 'api/search';
@@ -7,7 +5,7 @@ import path from 'path';
 import fs from 'fs';
 import * as fileUtils from 'api/files/filesystem';
 
-import CSVLoader from '../csvLoader';
+import { CSVLoader } from '../csvLoader';
 import fixtures, { template1Id } from './fixtures';
 
 import configPaths from '../../config/paths';

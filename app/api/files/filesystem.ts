@@ -1,5 +1,3 @@
-/** @format */
-
 import fs from 'fs';
 import path from 'path';
 import { Readable } from 'stream';

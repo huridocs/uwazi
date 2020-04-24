@@ -8,8 +8,8 @@ import zipFile from 'api/utils/zipFile';
 
 import configPaths from '../config/paths';
 
-const extractFromZip = async (filePath, fileName) => {
-  const readStream = await zipFile(filePath).findReadStream(entry => entry.fileName === fileName);
+const extractFromZip = async (filePath: string, fileName: string) => {
+  const readStream = await zipFile(filePath).findReadStream(entry => entry === fileName);
 
   if (!readStream) {
     throw createError(`${fileName} file not found`);
@@ -18,18 +18,24 @@ const extractFromZip = async (filePath, fileName) => {
   return readStream;
 };
 
-const importFile = filePath => ({
-  async readStream(fileName = 'import.csv') {
-    if (filePath instanceof Readable) {
-      return filePath;
-    }
-    if (path.extname(filePath) === '.zip') {
-      return extractFromZip(filePath, fileName);
-    }
-    return fs.createReadStream(filePath);
-  },
+export class ImportFile {
+  filePath: string | Readable;
 
-  async extractFile(fileName) {
+  constructor(filePath: string | Readable) {
+    this.filePath = filePath;
+  }
+
+  async readStream(fileName = 'import.csv') {
+    if (this.filePath instanceof Readable) {
+      return this.filePath;
+    }
+    if (path.extname(this.filePath) === '.zip') {
+      return extractFromZip(this.filePath, fileName);
+    }
+    return fs.createReadStream(this.filePath);
+  }
+
+  async extractFile(fileName: string) {
     const generatedName = generateFileName({ originalname: fileName });
 
     await fileFromReadStream(generatedName, await this.readStream(fileName));
@@ -39,7 +45,9 @@ const importFile = filePath => ({
       originalname: fileName,
       filename: generatedName,
     };
-  },
-});
+  }
+}
+
+const importFile = (filePath: string | Readable) => new ImportFile(filePath);
 
 export default importFile;

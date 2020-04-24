@@ -26,7 +26,7 @@ describe('zipFile', () => {
       let fileContents;
       (
         await zipFile(path.join(__dirname, '/zipData/zipTest.zip')).findReadStream(
-          entry => entry.fileName === 'test.csv'
+          entry => entry === 'test.csv'
         )
       )
         .on('data', chunk => {
