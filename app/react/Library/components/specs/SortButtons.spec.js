@@ -2,7 +2,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { fromJS as immutable } from 'immutable';
 
-import { SortButtons, mapStateToProps } from 'app/Library/components/SortButtons';
+import { SortButtons, mapStateToProps } from '../SortButtons';
 
 describe('SortButtons', () => {
   let component;
@@ -72,7 +72,7 @@ describe('SortButtons', () => {
         ]);
         render();
 
-        expect(component.find('li').length).toBe(3);
+        expect(component.find('.Dropdown:not(.width-placeholder) li').length).toBe(3);
 
         expect(
           component

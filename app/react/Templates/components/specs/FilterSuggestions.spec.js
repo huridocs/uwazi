@@ -50,7 +50,8 @@ describe('FilterSuggestions', () => {
       type,
       filter: true,
       content,
-      data: { name: 'Current template', _id: 'template1' },
+      templateName: 'Current template',
+      templateId: 'template1',
       templates: Immutable.fromJS(templates),
       thesauris: Immutable.fromJS(thesauris),
     };

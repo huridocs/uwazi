@@ -1,5 +1,3 @@
-/** @format */
-
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Field } from 'react-redux-form';
@@ -11,6 +9,7 @@ import { Select } from 'app/ReactReduxForms';
 import Tip from 'app/Layout/Tip';
 
 import PropertyConfigOption from './PropertyConfigOption';
+import { checkErrorsOnLabel } from '../utils/checkErrorsOnLabel';
 
 const style = index => (
   <div>
@@ -39,19 +38,18 @@ const style = index => (
 
 class FormConfigMultimedia extends Component {
   render() {
-    const { index, formState, canShowInCard, helpText, canSetStyle, canBeRequired } = this.props;
-
-    let labelClass = 'form-group';
-    const labelKey = `properties.${index}.label`;
-    const requiredLabel = formState.$form.errors[`${labelKey}.required`];
-    const duplicatedLabel = formState.$form.errors[`${labelKey}.duplicated`];
-    if (requiredLabel || duplicatedLabel) {
-      labelClass += ' has-error';
-    }
+    const {
+      index,
+      canShowInCard,
+      helpText,
+      canSetStyle,
+      canBeRequired,
+      labelHasError,
+    } = this.props;
 
     return (
       <div>
-        <div className={labelClass}>
+        <div className={`form-group${labelHasError ? ' has-error' : ''}`}>
           <label>Name</label>
           <Field model={`template.data.properties[${index}].label`}>
             <input className="form-control" />
@@ -104,6 +102,7 @@ FormConfigMultimedia.defaultProps = {
   canShowInCard: true,
   canSetStyle: true,
   canBeRequired: true,
+  labelHasError: false,
   helpText: '',
 };
 
@@ -113,12 +112,12 @@ FormConfigMultimedia.propTypes = {
   canBeRequired: PropTypes.bool,
   helpText: PropTypes.string,
   index: PropTypes.number.isRequired,
-  formState: PropTypes.instanceOf(Object).isRequired,
+  labelHasError: PropTypes.bool,
 };
 
-export function mapStateToProps({ template }) {
+export function mapStateToProps(state, props) {
   return {
-    formState: template.formState,
+    labelHasError: checkErrorsOnLabel(state, props),
   };
 }
 

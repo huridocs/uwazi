@@ -6,10 +6,10 @@ let currentState;
 
 Nightmare.action('library', {
   openCardSidePanel(matchingText, done) {
-    this.evaluate((nameToFind) => {
+    this.evaluate(nameToFind => {
       const cards = document.querySelectorAll('.main-wrapper div.item');
       let found = false;
-      cards.forEach((card) => {
+      cards.forEach(card => {
         if (found) {
           return;
         }
@@ -23,48 +23,61 @@ Nightmare.action('library', {
       }
 
       throw new Error(`Card with text "${nameToFind}" not found !`);
-    }, matchingText)
-    .then(() => { done(); });
+    }, matchingText).then(() => {
+      done();
+    });
   },
 
   selectFilter(matchingText, done) {
-    this.library.setCurrentState()
-    .waitToClick(`li[title*="${matchingText}" i] label`)
-    .library.waitForSearchToFinish()
-    .then(() => { done(); });
+    this.library
+      .setCurrentState()
+      .waitToClick(`li[title*="${matchingText}" i] label`)
+      .library.waitForSearchToFinish()
+      .then(() => {
+        done();
+      });
   },
 
   editCard(matchingText, done) {
-    this.library.openCardSidePanel(matchingText)
-    .waitToClick(selectors.libraryView.editEntityButton)
-    .then(() => { done(); });
+    this.library
+      .openCardSidePanel(matchingText)
+      .waitToClick(selectors.libraryView.editEntityButton)
+      .then(() => {
+        done();
+      });
   },
 
   saveCard(done) {
-    this.click(selectors.libraryView.saveButton)
-    .waitForTheEntityToBeIndexed()
-    .then(() => done());
+    this.waitToClick(selectors.libraryView.saveButton)
+      .waitForTheEntityToBeIndexed()
+      .then(() => done());
   },
 
   clickFilter(selector, done) {
-    this.library.setCurrentState()
-    .waitToClick(selector)
-    .library.waitForSearchToFinish()
-    .then(() => { done(); });
+    this.library
+      .setCurrentState()
+      .waitToClick(selector)
+      .library.waitForSearchToFinish()
+      .then(() => {
+        done();
+      });
   },
 
   typeFilter(selector, text, done) {
     const enter = '\u000d';
-    this.library.setCurrentState()
-    .clearInput(selector)
-    .write(selector, text)
-    .type(selector, enter)
-    .library.waitForSearchToFinish()
-    .then(() => { done(); });
+    this.library
+      .setCurrentState()
+      .clearInput(selector)
+      .write(selector, text)
+      .type(selector, enter)
+      .library.waitForSearchToFinish()
+      .then(() => {
+        done();
+      });
   },
 
   waitForSearchToFinish(done) {
-    this.wait((previousState) => {
+    this.wait(previousState => {
       const cards = Array.prototype.slice.call(document.querySelectorAll('.item-group .item-info'));
       if (!cards.length) {
         return false;
@@ -73,8 +86,10 @@ Nightmare.action('library', {
 
       return state !== previousState;
     }, currentState)
-    .then(() => { done(); })
-    .catch(done);
+      .then(() => {
+        done();
+      })
+      .catch(done);
   },
 
   countFiltersResults(done) {
@@ -85,8 +100,7 @@ Nightmare.action('library', {
     this.evaluate(() => {
       const cards = Array.prototype.slice.call(document.querySelectorAll('.item-group .item-info'));
       return cards.map(div => div.innerText).join('');
-    })
-    .then((state) => {
+    }).then(state => {
       currentState = state;
       done();
     });

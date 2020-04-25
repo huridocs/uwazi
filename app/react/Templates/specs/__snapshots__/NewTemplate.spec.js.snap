@@ -3,10 +3,6 @@
 exports[`NewTemplate static requestState() should request the thesauri and templates to fit in the state 1`] = `
 Array [
   Object {
-    "model": "template.data",
-    "type": "rrf/reset",
-  },
-  Object {
     "type": "thesauris/SET",
     "value": Array [
       Object {
@@ -14,17 +10,6 @@ Array [
       },
       Object {
         "label": "2",
-      },
-    ],
-  },
-  Object {
-    "type": "templates/SET",
-    "value": Array [
-      Object {
-        "name": "Comic",
-      },
-      Object {
-        "name": "Newspaper",
       },
     ],
   },

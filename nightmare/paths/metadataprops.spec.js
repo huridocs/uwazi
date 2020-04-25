@@ -126,8 +126,6 @@ describe('metadata properties', () => {
     await nightmare
       .waitToClick(selectors.settingsView.templatesButton)
       .waitToClick(selectors.settingsView.addNewTemplate)
-      .wait(1000) // this is a patch so that ci has no problem running this
-      //re-renders are the cause of this and its going to be fixed as a separate issue/PR
       .write(selectors.settingsView.documentTemplateNameForm, 'All props');
 
     //intentionaly leaving the geolocation field out of the test.

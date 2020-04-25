@@ -267,7 +267,7 @@ export default {
       .map(row => `| ${keys.map(key => (row.value[key] || []).join(', ')).join(' | ')}`)
       .join('|\n')}|`;
 
-    return this.markdown(property, result, thesauris, { type: 'markdown' });
+    return this.markdown(property, [{ value: result }], thesauris, { type: 'markdown' });
   },
 
   getThesauriValues(thesauriValues, thesauri) {

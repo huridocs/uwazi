@@ -143,6 +143,7 @@ describe('metadata formater', () => {
     it('should process nested type', () => {
       assessBasicProperties(nested, ['Nested', 'nested', 'templateID']);
       expect(nested.type).toBe('markdown');
+      expect(nested.value).toContain('nestedKey');
     });
 
     it('should process select type', () => {

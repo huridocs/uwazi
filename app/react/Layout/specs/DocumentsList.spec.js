@@ -5,6 +5,7 @@ import Immutable from 'immutable';
 import Doc from 'app/Library/components/Doc';
 import SortButtons from 'app/Library/components/SortButtons';
 import Footer from 'app/App/Footer';
+import { NeedAuthorization } from 'app/Auth';
 
 import { DocumentsList } from '../DocumentsList';
 import { RowList } from '../Lists';
@@ -90,6 +91,16 @@ describe('DocumentsList', () => {
   describe('Graph view', () => {
     beforeEach(() => {
       props.view = 'graph';
+      props.connections = { totalRows: 2 };
+      props.connectionsGroups = Immutable.fromJS([
+        {
+          templates: [
+            {
+              count: 2,
+            },
+          ],
+        },
+      ]);
       props.GraphView = () => <div>GraphView</div>;
       render();
     });
@@ -106,6 +117,10 @@ describe('DocumentsList', () => {
           .getElements()[0]
           .type().props.children
       ).toBe('GraphView');
+    });
+
+    it('should show the connections count', () => {
+      expect(component.text()).toContain('2 connections');
     });
   });
 
@@ -133,6 +148,16 @@ describe('DocumentsList', () => {
     expect(component.find(SortButtons).props().selectedTemplates).toBe(
       props.filters.get('documentTypes')
     );
+  });
+
+  it('should render a Select All button only if authorized', () => {
+    render();
+    expect(
+      component
+        .find('.select-all-documents')
+        .parent()
+        .is(NeedAuthorization)
+    ).toBe(true);
   });
 
   describe('Load More button', () => {

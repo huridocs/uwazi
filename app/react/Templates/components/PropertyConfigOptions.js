@@ -1,13 +1,14 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import FilterSuggestions from 'app/Templates/components/FilterSuggestions';
+import { connect } from 'react-redux';
 
 import PropertyConfigOption from './PropertyConfigOption';
 import Tip from '../../Layout/Tip';
 
 class PropertyConfigOptions extends Component {
   render() {
-    const { index, property, type, canBeFilter } = this.props;
+    const { index, filter, type, canBeFilter } = this.props;
     return (
       <div>
         <PropertyConfigOption
@@ -41,7 +42,7 @@ class PropertyConfigOptions extends Component {
                 filtering.
               </Tip>
             </PropertyConfigOption>
-            {property.filter && (
+            {filter && (
               <React.Fragment>
                 <PropertyConfigOption
                   label="Default filter"
@@ -67,7 +68,7 @@ class PropertyConfigOptions extends Component {
                 )}
               </React.Fragment>
             )}
-            <FilterSuggestions {...property} />
+            <FilterSuggestions index={index} />
           </div>
         )}
       </div>
@@ -77,13 +78,20 @@ class PropertyConfigOptions extends Component {
 
 PropertyConfigOptions.defaultProps = {
   canBeFilter: true,
+  filter: false,
 };
 
 PropertyConfigOptions.propTypes = {
-  property: PropTypes.object.isRequired,
+  filter: PropTypes.bool,
   index: PropTypes.number.isRequired,
   type: PropTypes.string.isRequired,
   canBeFilter: PropTypes.bool,
 };
 
-export default PropertyConfigOptions;
+export function mapStateToProps({ template }, props) {
+  return {
+    filter: template.data.properties[props.index].filter,
+  };
+}
+
+export default connect(mapStateToProps)(PropertyConfigOptions);
