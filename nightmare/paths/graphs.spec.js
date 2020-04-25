@@ -1,9 +1,13 @@
 /* eslint max-len: ["error", 500] */
 import { catchErrors } from 'api/utils/jasmineHelpers';
+import puppeteer from 'puppeteer';
+import { toMatchImageSnapshot } from 'jest-image-snapshot';
 import createNightmare from '../helpers/nightmare';
 import insertFixtures from '../helpers/insertFixtures';
 import { loginAsAdminAndGoToSettings } from '../helpers/commonTests';
 import selectors from '../helpers/selectors';
+
+expect.extend({ toMatchImageSnapshot });
 
 const localSelectors = {
   pagesButton:
@@ -64,34 +68,25 @@ describe('pages path', () => {
       await nightmare
         .write(localSelectors.pageContentsInput, graphs.barChart)
         .click(localSelectors.savePageButton)
-        .wait(5000);
+        .wait(4000);
     });
 
-    // it('should display Bar chart graph in page', async () => {
-    //   nightmare
-    //     .evaluate(
-    //       () => document.querySelector('.page-viewer.document-viewer > div.alert.alert-info a').href
-    //     )
-    //     .then(link => nightmare.goto(link))
-    //     .then(page => {
-    //       expect(page.code).toBe(200);
-    //       return nightmare
-    //         .wait('#app > div.content > div > div > main div.markdown-viewer')
-    //         .getInnerHtml('#app > div.content > div > div > main div.markdown-viewer')
-    //         .then(html => {
-    //           expect(html).toContain('class="BarChart "');
-    //           expect(html).toContain('class="recharts-responsive-container"');
-    //         });
-    //     });
-    // });
     it('should display Bar chart graph in page with no more than a 1% difference', async () => {
+      const browser = await puppeteer.launch();
       const page = await browser.newPage();
-      await page.goto('https://localhost:3000');
+      const graphsPage = await nightmare
+        .evaluate(
+          () => document.querySelector('.page-viewer.document-viewer > div.alert.alert-info a').href
+        )
+        .then(link => link);
+      await page.goto(graphsPage, { waitUntil: 'load' });
       const image = await page.screenshot();
       expect(image).toMatchImageSnapshot({
         failureThreshold: 0.01,
         failureThresholdType: 'percent',
+        allowSizeMismatch: true,
       });
+      await browser.close();
     });
   });
 });
