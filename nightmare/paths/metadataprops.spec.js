@@ -97,8 +97,7 @@ describe('metadata properties', () => {
       markdown: '.metadata-type-markdown dd',
       link: '.metadata-type-link dd',
       image: '.metadata-type-multimedia img',
-      preview: '.metadata-type-multimedia:nth-child(14) img',
-      media: '.metadata-type-multimedia:nth-child(15) .react-player',
+      media: '.metadata-type-multimedia:nth-child(14) .react-player',
       geolocation: '.metadata-type-geolocation .map-container',
     },
   };
@@ -220,7 +219,6 @@ describe('metadata properties', () => {
         expect(text).toBe('Huridocs');
         return nightmare
           .wait(localSelectors.properties.image)
-          .wait(localSelectors.properties.preview)
           .wait(localSelectors.properties.media);
       });
   }, 60000);
@@ -252,7 +250,7 @@ describe('metadata properties', () => {
 
   it('should have not metadata', async () => {
     await nightmare.getInnerText(localSelectors.viewer).then(metadata => {
-      expect(metadata).toBe('Entity with all props\nAll props\nPreview\n\n');
+      expect(metadata).toBe('Entity with all props\nAll props\n');
     });
   });
 });

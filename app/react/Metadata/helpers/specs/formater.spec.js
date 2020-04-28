@@ -283,6 +283,20 @@ describe('metadata formater', () => {
       assessBasicProperties(media, ['Media', 'media', 'templateID', 'mediaURL']);
     });
 
+    it('should return empty value preview if no PDF associated to the entity', () => {
+      const adaptedEntity = { ...doc, defaultDoc: undefined, documents: [] };
+      const formatted = formater.prepareMetadata(
+        adaptedEntity,
+        templates,
+        thesauris,
+        relationships
+      );
+
+      const previewField = formatted.metadata.find(field => field.name === 'preview');
+
+      expect(previewField.value).toBeNull();
+    });
+
     it('should process geolocation type', () => {
       assessBasicProperties(geolocation, [
         'Geolocation',
