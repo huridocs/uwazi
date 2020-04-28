@@ -29,15 +29,17 @@ const assignAttachment = (entity, addedFile) => {
   return conformedEntity;
 };
 
-const processSingleLanguage = (entity, req) => {
-  const addedFile = req.files[0];
-  addedFile._id = mongoose.Types.ObjectId();
-  addedFile.timestamp = Date.now();
+const processAttachment = (entity, attachment) => {
+  const addedFile = {
+    ...attachment,
+    _id: mongoose.Types.ObjectId(),
+    timestamp: Date.now(),
+  };
   return Promise.all([addedFile, entities.saveMultiple([assignAttachment(entity, addedFile)])]);
 };
 
-const processAllLanguages = (entity, req) =>
-  processSingleLanguage(entity, req)
+export const processAttachmentAllLanguages = (entity, attachment) =>
+  processAttachment(entity, attachment)
     .then(([addedFile]) =>
       Promise.all([
         addedFile,
@@ -120,8 +122,8 @@ export default app => {
         .getById(req.body.entityId)
         .then(entity =>
           req.body.allLanguages === 'true'
-            ? processAllLanguages(entity, req)
-            : processSingleLanguage(entity, req)
+            ? processAttachmentAllLanguages(entity, req.files[0])
+            : processAttachment(entity, req.files[0])
         )
         .then(([addedFile]) => {
           res.json(addedFile);

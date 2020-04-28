@@ -1,5 +1,5 @@
-Title , file ,
+Title , file , attachments,
 
-file1, 1.pdf,
-file2, 2.pdf,
-file3, 3.pdf,
+file1, 1.pdf, att1.doc,
+file2, 2.pdf, att1.doc|att2.jpg,
+file3, 3.pdf,                  ,

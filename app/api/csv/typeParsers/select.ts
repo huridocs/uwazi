@@ -1,11 +1,11 @@
 import thesauri from 'api/thesauri';
-import { rawEntity } from 'api/csv/entityRow';
+import { RawEntity } from 'api/csv/entityRow';
 import { ThesaurusValueSchema, ThesaurusSchema } from 'shared/types/thesaurusType';
 import { MetadataObjectSchema, PropertySchema } from 'shared/types/commonTypes';
 import { ensure } from 'shared/tsUtils';
 
 const select = async (
-  entityToImport: rawEntity,
+  entityToImport: RawEntity,
   property: PropertySchema
 ): Promise<MetadataObjectSchema[] | null> => {
   const currentThesauri = (await thesauri.getById(property.content)) || ({} as ThesaurusSchema);

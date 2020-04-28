@@ -1,10 +1,10 @@
 import entities from 'api/entities';
 import { unique, emptyString } from 'api/utils/filters';
-import { rawEntity } from 'api/csv/entityRow';
+import { RawEntity } from 'api/csv/entityRow';
 import { ensure } from 'shared/tsUtils';
 import { PropertySchema } from 'shared/types/commonTypes';
 
-const relationship = async (entityToImport: rawEntity, property: PropertySchema) => {
+const relationship = async (entityToImport: RawEntity, property: PropertySchema) => {
   const values = entityToImport[ensure<string>(property.name)]
     .split('|')
     .filter(emptyString)

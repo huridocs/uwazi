@@ -1,10 +1,14 @@
 import { templateUtils } from 'api/templates';
-import { csvRow } from 'api/csv/csv';
+import { CSVRow } from 'api/csv/csv';
 
-type languages = string[];
-export type rawEntity = { [k: string]: string };
+type Languages = string[];
 
-const toSafeName = (row: csvRow): csvRow =>
+export type RawEntity = {
+  language: string;
+  [k: string]: string;
+};
+
+const toSafeName = (row: CSVRow): CSVRow =>
   Object.keys(row).reduce(
     (translatedObject, key) => ({
       ...translatedObject,
@@ -13,10 +17,10 @@ const toSafeName = (row: csvRow): csvRow =>
     {}
   );
 
-const notTranslated = (languages: languages) => (key: string) =>
+const notTranslated = (languages: Languages) => (key: string) =>
   !key.match(new RegExp(`__(${languages.join('|')})$`));
 
-const languagesTranslated = (row: csvRow, availableLanguages: languages, currentLanguage: string) =>
+const languagesTranslated = (row: CSVRow, availableLanguages: Languages, currentLanguage: string) =>
   availableLanguages
     .filter(languageCode =>
       Object.keys(row)
@@ -27,12 +31,12 @@ const languagesTranslated = (row: csvRow, availableLanguages: languages, current
     )
     .concat([currentLanguage]);
 
-const extractEntity = (row: csvRow, availableLanguages: languages, currentLanguage: string) => {
+const extractEntity = (row: CSVRow, availableLanguages: Languages, currentLanguage: string) => {
   const safeNamed = toSafeName(row);
 
   const baseEntity = Object.keys(safeNamed)
     .filter(notTranslated(availableLanguages))
-    .reduce<rawEntity>((entity, key) => {
+    .reduce<CSVRow>((entity, key) => {
       entity[key] = safeNamed[key]; //eslint-disable-line no-param-reassign
       return entity;
     }, {});
@@ -41,7 +45,7 @@ const extractEntity = (row: csvRow, availableLanguages: languages, currentLangua
     languageCode =>
       Object.keys(safeNamed)
         .filter(key => key.match(new RegExp(`__${languageCode}$`)))
-        .reduce<rawEntity>(
+        .reduce<RawEntity>(
           (entity, key) => {
             entity[key.split(`__${languageCode}`)[0]] = safeNamed[key]; //eslint-disable-line no-param-reassign
             return entity;
@@ -51,8 +55,8 @@ const extractEntity = (row: csvRow, availableLanguages: languages, currentLangua
   );
 
   return {
-    rawEntity: rawEntities.find((e: csvRow) => e.language === currentLanguage),
-    rawTranslations: rawEntities.filter((e: csvRow) => e.language !== currentLanguage),
+    rawEntity: rawEntities.find((e: CSVRow) => e.language === currentLanguage),
+    rawTranslations: rawEntities.filter((e: CSVRow) => e.language !== currentLanguage),
   };
 };
 

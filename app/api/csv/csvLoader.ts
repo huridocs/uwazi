@@ -8,7 +8,7 @@ import thesauri from 'api/thesauri';
 import { LanguageSchema } from 'shared/types/commonTypes';
 import { ThesaurusSchema } from 'shared/types/thesaurusType';
 
-import csv, { csvRow } from './csv';
+import csv, { CSVRow } from './csv';
 import importFile from './importFile';
 import { importEntity, translateEntity } from './importEntity';
 import { extractEntity, toSafeName } from './entityRow';
@@ -50,7 +50,7 @@ export class CSVLoader extends EventEmitter {
     );
 
     await csv(await file.readStream(), this.stopOnError)
-      .onRow(async (row: csvRow) => {
+      .onRow(async (row: CSVRow) => {
         const { rawEntity, rawTranslations } = extractEntity(
           row,
           availableLanguages,
@@ -63,7 +63,7 @@ export class CSVLoader extends EventEmitter {
           this.emit('entityLoaded', entity);
         }
       })
-      .onError(async (e: Error, row: csvRow, index: number) => {
+      .onError(async (e: Error, row: CSVRow, index: number) => {
         this._errors[index] = e;
         this.emit('loadError', e, toSafeName(row), index);
       })

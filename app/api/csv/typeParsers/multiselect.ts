@@ -1,12 +1,12 @@
 import thesauri from 'api/thesauri';
 import { unique, emptyString } from 'api/utils/filters';
-import { rawEntity } from 'api/csv/entityRow';
+import { RawEntity } from 'api/csv/entityRow';
 import { ThesaurusSchema } from 'shared/types/thesaurusType';
 import { MetadataObjectSchema, PropertySchema } from 'shared/types/commonTypes';
 import { ensure } from 'shared/tsUtils';
 
 const multiselect = async (
-  entityToImport: rawEntity,
+  entityToImport: RawEntity,
   property: PropertySchema
 ): Promise<MetadataObjectSchema[]> => {
   const currentThesauri = (await thesauri.getById(property.content)) || ({} as ThesaurusSchema);

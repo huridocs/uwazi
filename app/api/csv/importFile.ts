@@ -8,8 +8,8 @@ import zipFile from 'api/utils/zipFile';
 
 import configPaths from '../config/paths';
 
-const extractFromZip = async (filePath: string, fileName: string) => {
-  const readStream = await zipFile(filePath).findReadStream(entry => entry === fileName);
+const extractFromZip = async (zipPath: string, fileName: string) => {
+  const readStream = await zipFile(zipPath).findReadStream(entry => entry === fileName);
 
   if (!readStream) {
     throw createError(`${fileName} file not found`);
@@ -35,10 +35,10 @@ export class ImportFile {
     return fs.createReadStream(this.filePath);
   }
 
-  async extractFile(fileName: string) {
+  async extractFile(fileName: string, destination: string | undefined = undefined) {
     const generatedName = generateFileName({ originalname: fileName });
 
-    await fileFromReadStream(generatedName, await this.readStream(fileName));
+    await fileFromReadStream(generatedName, await this.readStream(fileName), destination);
 
     return {
       destination: configPaths.uploadedDocuments,

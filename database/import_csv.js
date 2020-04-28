@@ -1,4 +1,4 @@
-import CSVLoader from 'api/csv';
+import { CSVLoader } from 'api/csv';
 import connect, { disconnect } from 'api/utils/connect_to_mongo';
 import users from 'api/users/users';
 import { prettifyError } from 'api/utils/handleError';

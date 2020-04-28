@@ -1,9 +1,9 @@
-import { rawEntity } from 'api/csv/entityRow';
+import { RawEntity } from 'api/csv/entityRow';
 import { MetadataObjectSchema, PropertySchema } from 'shared/types/commonTypes';
 import { ensure } from 'shared/tsUtils';
 
 const geolocation = async (
-  entityToImport: rawEntity,
+  entityToImport: RawEntity,
   property: PropertySchema
 ): Promise<MetadataObjectSchema[]> => {
   const [lat, lon] = entityToImport[ensure<string>(property.name)].split('|');

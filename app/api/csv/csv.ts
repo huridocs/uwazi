@@ -5,19 +5,19 @@ import { Readable } from 'stream';
 import { ensure } from 'shared/tsUtils';
 import { LanguageSchema } from 'shared/types/commonTypes';
 
-export type csvRow = { [k: string]: string };
+export type CSVRow = { [k: string]: string };
 
 const csv = (readStream: Readable, stopOnError = false) => ({
   reading: false,
-  onRowCallback: async (_row: csvRow, _index: number) => {},
-  onErrorCallback: async (_error: Error, _row: csvRow, _index: number) => {},
+  onRowCallback: async (_row: CSVRow, _index: number) => {},
+  onErrorCallback: async (_error: Error, _row: CSVRow, _index: number) => {},
 
-  onRow(onRowCallback: (_row: csvRow, _index: number) => Promise<void>) {
+  onRow(onRowCallback: (_row: CSVRow, _index: number) => Promise<void>) {
     this.onRowCallback = onRowCallback;
     return this;
   },
 
-  onError(onErrorCallback: (_error: Error, _row: csvRow, _index: number) => Promise<void>) {
+  onError(onErrorCallback: (_error: Error, _row: CSVRow, _index: number) => Promise<void>) {
     this.onErrorCallback = onErrorCallback;
     return this;
   },
@@ -26,7 +26,7 @@ const csv = (readStream: Readable, stopOnError = false) => ({
     this.reading = true;
     return csvtojson({ delimiter: [',', ';'] })
       .fromStream(readStream)
-      .subscribe(async (row: csvRow, index) => {
+      .subscribe(async (row: CSVRow, index) => {
         if (!this.reading) {
           return;
         }
