@@ -7,6 +7,7 @@ import { connect } from 'react-redux';
 import { Icon } from 'UI';
 import ViolatedArticlesNestedProperties from './ViolatedArticlesNestedProperties';
 import PropertyConfigOptions from './PropertyConfigOptions';
+import { checkErrorsOnLabel } from '../utils/checkErrorsOnLabel';
 
 export class FormConfigNested extends Component {
   constructor(props) {
@@ -19,20 +20,11 @@ export class FormConfigNested extends Component {
   }
 
   render() {
-    const { index, data, formState, type } = this.props;
-    const property = data.properties[index];
-
-    let labelClass = 'form-group';
-    const labelKey = `properties.${index}.label`;
-    const requiredLabel = formState.$form.errors[`${labelKey}.required`];
-    const duplicatedLabel = formState.$form.errors[`${labelKey}.duplicated`];
-    if (requiredLabel || duplicatedLabel) {
-      labelClass += ' has-error';
-    }
+    const { index, type, labelHasError } = this.props;
 
     return (
       <div>
-        <div className={labelClass}>
+        <div className={`form-group${labelHasError ? ' has-error' : ''}`}>
           <label>Label</label>
           <Field model={`template.data.properties[${index}].label`}>
             <input className="form-control" />
@@ -52,26 +44,28 @@ export class FormConfigNested extends Component {
             </span>
           </label>
         </Field>
-        <PropertyConfigOptions index={index} property={property} type={type} />
+        <PropertyConfigOptions index={index} type={type} />
       </div>
     );
   }
 }
 
+FormConfigNested.defaultProps = {
+  labelHasError: false,
+};
+
 FormConfigNested.propTypes = {
   thesauris: PropTypes.object,
-  data: PropTypes.object,
   index: PropTypes.number,
-  formState: PropTypes.object,
   formKey: PropTypes.string,
   setNestedProperties: PropTypes.func,
   type: PropTypes.string.isRequired,
+  labelHasError: PropTypes.bool,
 };
 
-export function mapStateToProps(state) {
+export function mapStateToProps(state, props) {
   return {
-    data: state.template.data,
-    formState: state.template.formState,
+    labelHasError: checkErrorsOnLabel(state, props),
   };
 }
 

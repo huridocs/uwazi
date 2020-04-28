@@ -1,17 +1,11 @@
-import React from 'react';
-import { shallow } from 'enzyme';
-
-import { FormConfigNested } from 'app/Templates/components/FormConfigNested';
+import FormConfigNested from 'app/Templates/components/FormConfigNested';
 import { Field } from 'react-redux-form';
+import { renderConnected } from '../../specs/utils/renderConnected.tsx';
 
 describe('FormConfigNested', () => {
-  let component;
   let props;
-
-  beforeEach(() => {
-    props = {
-      index: 0,
-      type: 'nested',
+  const storeData = {
+    template: {
       data: {
         properties: [
           {
@@ -22,7 +16,6 @@ describe('FormConfigNested', () => {
           },
         ],
       },
-      setNestedProperties: jasmine.createSpy('setNestedProperties'),
       formState: {
         'properties.0.label': { valid: true, dirty: false, errors: {} },
         $form: {
@@ -32,34 +25,44 @@ describe('FormConfigNested', () => {
           },
         },
       },
+    },
+  };
+
+  const render = () => renderConnected(FormConfigNested, props, storeData);
+
+  beforeEach(() => {
+    props = {
+      index: 0,
+      type: 'nested',
+      setNestedProperties: jasmine.createSpy('setNestedProperties').and.returnValue({}),
     };
   });
 
   it('should render fields with the correct datas', () => {
-    component = shallow(<FormConfigNested {...props} />);
+    const component = render();
     const formFields = component.find(Field);
     expect(formFields.getElements()[0].props.model).toBe('template.data.properties[0].label');
   });
 
   describe('validation', () => {
     it('should render the label without errors', () => {
-      component = shallow(<FormConfigNested {...props} />);
+      const component = render();
       expect(component.find('.has-error').length).toBe(0);
     });
   });
 
   describe('when the fields are invalid and dirty or the form is submited', () => {
     it('should render the label with errors', () => {
-      props.formState.$form.errors['properties.0.label.required'] = true;
-      props.formState['properties.0.label'].dirty = true;
-      component = shallow(<FormConfigNested {...props} />);
+      storeData.template.formState.$form.errors['properties.0.label.required'] = true;
+      storeData.template.formState['properties.0.label'].dirty = true;
+      const component = render();
       expect(component.find('.has-error').length).toBe(1);
     });
 
     it('should render the label with errors', () => {
-      props.formState.$form.errors['properties.0.label.required'] = true;
-      props.formState.submitFailed = true;
-      component = shallow(<FormConfigNested {...props} />);
+      storeData.template.formState.$form.errors['properties.0.label.required'] = true;
+      storeData.template.formState.submitFailed = true;
+      const component = render();
       expect(component.find('.has-error').length).toBe(1);
     });
   });

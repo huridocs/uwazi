@@ -101,7 +101,7 @@ exports[`PropertyConfigOptions Once the property is checked as filter should ren
       </Tip>
     </PropertyConfigOption>
     <Connect(FilterSuggestions)
-      filter={true}
+      index={2}
     />
   </div>
 </div>
@@ -153,7 +153,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is n
       </Tip>
     </PropertyConfigOption>
     <Connect(FilterSuggestions)
-      filter={false}
+      index={2}
     />
   </div>
 </div>
@@ -205,7 +205,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is n
       </Tip>
     </PropertyConfigOption>
     <Connect(FilterSuggestions)
-      filter={false}
+      index={2}
     />
   </div>
 </div>
@@ -257,7 +257,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is n
       </Tip>
     </PropertyConfigOption>
     <Connect(FilterSuggestions)
-      filter={false}
+      index={2}
     />
   </div>
 </div>
@@ -309,7 +309,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is n
       </Tip>
     </PropertyConfigOption>
     <Connect(FilterSuggestions)
-      filter={false}
+      index={2}
     />
   </div>
 </div>
@@ -381,7 +381,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
       </Tip>
     </PropertyConfigOption>
     <Connect(FilterSuggestions)
-      filter={true}
+      index={2}
     />
   </div>
 </div>
@@ -453,7 +453,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
       </Tip>
     </PropertyConfigOption>
     <Connect(FilterSuggestions)
-      filter={true}
+      index={2}
     />
   </div>
 </div>
@@ -525,7 +525,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
       </Tip>
     </PropertyConfigOption>
     <Connect(FilterSuggestions)
-      filter={true}
+      index={2}
     />
   </div>
 </div>
@@ -597,7 +597,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
       </Tip>
     </PropertyConfigOption>
     <Connect(FilterSuggestions)
-      filter={true}
+      index={2}
     />
   </div>
 </div>
@@ -648,7 +648,9 @@ exports[`PropertyConfigOptions should render fields with the correct datas 1`] =
         This property will be used for filtering the library results. When properties match in equal name and field type with other document types, they will be combined for filtering.
       </Tip>
     </PropertyConfigOption>
-    <Connect(FilterSuggestions) />
+    <Connect(FilterSuggestions)
+      index={2}
+    />
   </div>
 </div>
 `;
