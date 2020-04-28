@@ -74,6 +74,7 @@ export class LookupMultiSelect extends Component<LookupMultiSelectProps, LookupM
         {...rest}
         onChange={this.onChange}
         onFilter={this.onFilter}
+        totalPossibleOptions={totalPossibleOptions}
         options={this.combineOptions()}
       />
     );

@@ -219,7 +219,7 @@ const _denormalizeAggregations = async (aggregations, templates, dictionaries, l
     );
 
     const buckets = aggregations[key].buckets.map(bucket => {
-      const { label, icon } =
+      const labelItem =
         bucket.key === 'missing'
           ? { label: 'No label' }
           : dictionary.values
@@ -228,6 +228,9 @@ const _denormalizeAggregations = async (aggregations, templates, dictionaries, l
                 []
               )
               .find(value => value.id === bucket.key, {});
+
+      const { label, icon } = labelItem;
+
       return Object.assign(bucket, { label, icon });
     });
 
