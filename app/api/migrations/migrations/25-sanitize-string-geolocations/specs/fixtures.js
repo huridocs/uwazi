@@ -64,6 +64,30 @@ export default {
       template: templateId,
       type: 'entity',
     },
+    {
+      metadata: {
+        geolocation_geolocation: [],
+        text: [
+          {
+            value: 'text',
+          },
+        ],
+      },
+      template: templateId,
+      type: 'entity',
+    },
+    {
+      metadata: {
+        geolocation_geolocation: null,
+        text: [
+          {
+            value: 'text',
+          },
+        ],
+      },
+      template: templateId,
+      type: 'entity',
+    },
   ],
   templates: [
     {

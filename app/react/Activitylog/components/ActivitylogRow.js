@@ -14,6 +14,8 @@ const label = method => {
       return <span className="badge btn-color-2">{method}</span>;
     case 'RAW':
       return <span className="badge btn-color-17">{method}</span>;
+    case 'MIGRATE':
+      return <span className="badge btn-color-12">{method}</span>;
     default:
       return <span className="badge btn-color-17">{method}</span>;
   }

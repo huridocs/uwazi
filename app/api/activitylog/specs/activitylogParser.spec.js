@@ -10,6 +10,15 @@ import fixtures, {
   nonExistentId,
 } from './fixturesParser';
 import { getSemanticData } from '../activitylogParser';
+import migrationsParser from '../migrationsParser';
+
+jest.mock('../migrationsParser', () => ({
+  stubLogTypeParser: jest.fn().mockReturnValue({
+    action: 'MIGRATE',
+    description: 'Dummy log',
+    beautified: true,
+  }),
+}));
 
 describe('Activitylog Parser', () => {
   beforeEach(async () => {
@@ -946,6 +955,43 @@ describe('Activitylog Parser', () => {
             }
           );
         });
+      });
+    });
+
+    describe('MIGRATIONS logs', () => {
+      afterEach(() => {
+        jest.resetAllMocks();
+      });
+
+      it('should delegate to migrationsParser if a parser exist for the log type', async () => {
+        await testBeautified(
+          {
+            method: 'MIGRATE',
+            url: '',
+            body: JSON.stringify({
+              type: 'stubLogTypeParser',
+            }),
+          },
+          {
+            action: 'MIGRATE',
+            description: 'Dummy log',
+          }
+        );
+
+        expect(migrationsParser.stubLogTypeParser).toHaveBeenCalledWith({
+          type: 'stubLogTypeParser',
+        });
+      });
+
+      it('should report as beautified: false if a parser does NOT exist for the log type', async () => {
+        const beautified = await getSemanticData({
+          method: 'MIGRATE',
+          url: '',
+          body: JSON.stringify({
+            type: 'nonExistentType',
+          }),
+        });
+        expect(beautified.beautified).toBe(false);
       });
     });
   });
