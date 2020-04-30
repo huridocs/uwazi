@@ -55,7 +55,8 @@
     "eslint": "./node_modules/.bin/eslint app --quiet --ext js,ts,tsx",
     "eslint-fulldiff": "git diff-index --name-only origin/development | grep ^app/ | grep -v snap | xargs ls -d 2>/dev/null | xargs ./node_modules/.bin/eslint ",
     "prettier": "./node_modules/.bin/prettier --write 'app/**/*.{js,ts,tsx}'",
-    "snyk-protect": "snyk protect"
+    "snyk-protect": "snyk protect",
+    "prepare": "yarn run snyk-protect"
   },
   "dependencies": {
     "@babel/core": "7.4.4",
@@ -184,7 +185,7 @@
     "rtlcss": "^2.4.0",
     "sanitize-filename": "^1.6.0",
     "serialize-javascript": "^2.1.1",
-    "snyk": "^1.298.0",
+    "snyk": "^1.316.1",
     "socket.io": "2.0.4",
     "socket.io-client": "2.0.4",
     "superagent": "^5.0.6",
