@@ -6,7 +6,7 @@ import React, { Component } from 'react';
 
 export default class Select extends Component {
   render() {
-    const { options, optionsValue, optionsLabel, required, placeholder, sort } = this.props;
+    const { options, optionsValue, optionsLabel, placeholder, sort } = this.props;
 
     let _options = options;
     if (sort) {
@@ -15,13 +15,9 @@ export default class Select extends Component {
     }
     const { value } = this.props;
 
-    const disbaled = Boolean(required);
     return (
       <select className="form-control" onChange={this.props.onChange} value={value}>
-        <option disbaled={disbaled.toString()} value="">
-          {placeholder}
-        </option>
-        ;
+        `<option value="">{placeholder}</option>`;
         {_options.map((option, index) => {
           const key = option._id || option.id || index;
           if (option.options) {
@@ -57,7 +53,6 @@ Select.defaultProps = {
   optionsValue: 'value',
   optionsLabel: 'label',
   placeholder: 'Select...',
-  required: false,
   sort: false,
 };
 
@@ -68,6 +63,5 @@ Select.propTypes = {
   placeholder: PropTypes.string,
   optionsValue: PropTypes.string,
   optionsLabel: PropTypes.string,
-  required: PropTypes.bool,
   sort: PropTypes.bool,
 };

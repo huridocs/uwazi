@@ -29,20 +29,20 @@ describe('multi edit path', () => {
 
     it('should create 3 new entities and publish them', done => {
       nightmare
-        .click(selectors.uploadsView.newEntityButtom)
+        .waitToClick(selectors.uploadsView.newEntityButtom)
         .write(selectors.newEntity.form.title, 'King Ping')
         .select(selectors.newEntity.form.type, '58f0aed2e147e720856a0741')
-        .click(selectors.uploadsView.saveButton)
+        .waitToClick(selectors.uploadsView.saveButton)
         .waitToClick('.alert.alert-success')
-        .click(selectors.uploadsView.newEntityButtom)
+        .waitToClick(selectors.uploadsView.newEntityButtom)
         .write(selectors.newEntity.form.title, 'Mysterio')
         .select(selectors.newEntity.form.type, '58f0aed2e147e720856a0741')
-        .click(selectors.uploadsView.saveButton)
+        .waitToClick(selectors.uploadsView.saveButton)
         .waitToClick('.alert.alert-success')
-        .click(selectors.uploadsView.newEntityButtom)
+        .waitToClick(selectors.uploadsView.newEntityButtom)
         .write(selectors.newEntity.form.title, 'Dormmamu')
         .select(selectors.newEntity.form.type, '58ad7d240d44252fee4e61fb')
-        .click(selectors.uploadsView.saveButton)
+        .waitToClick(selectors.uploadsView.saveButton)
         .wait('.alert.alert-success')
         .isVisible('.alert.alert-success')
         .then(result => {
@@ -55,26 +55,26 @@ describe('multi edit path', () => {
   describe('editing different types', () => {
     it('should render a form with common properties', done => {
       nightmare
-        .click(selectors.libraryView.libraryFirstDocument)
+        .waitToClick(selectors.libraryView.libraryFirstDocument)
         .shiftClick(selectors.libraryView.libraryThirdDocument)
-        .click(selectors.libraryView.libraryMultiEditEditButton)
+        .waitToClick(selectors.libraryView.libraryMultiEditEditButton)
         .wait(selectors.libraryView.libraryMultiEditFormOption)
-        .click(selectors.libraryView.libraryMultiEditFormOption)
-        .click(selectors.libraryView.libraryMultiEditSaveButton)
+        .waitToClick(selectors.libraryView.libraryMultiEditFormOption)
+        .waitToClick(selectors.libraryView.libraryMultiEditSaveButton)
         .waitToClick('.alert.alert-success')
         .waitForTheEntityToBeIndexed()
-        .click(selectors.libraryView.libraryFirstDocument)
+        .waitToClick(selectors.libraryView.libraryFirstDocument)
         .getInnerText(selectors.libraryView.libraryMetadataPanel)
         .then(text => {
           expect(text.match('hyper speed kick')).not.toBe(null);
           return nightmare
-            .click(selectors.libraryView.librarySecondDocument)
+            .waitToClick(selectors.libraryView.librarySecondDocument)
             .getInnerText(selectors.libraryView.libraryMetadataPanel);
         })
         .then(text => {
           expect(text.match('hyper speed kick')).not.toBe(null);
           return nightmare
-            .click(selectors.libraryView.libraryThirdDocument)
+            .waitToClick(selectors.libraryView.libraryThirdDocument)
             .wait(selectors.libraryView.libraryMetadataPanel)
             .getInnerText(selectors.libraryView.libraryMetadataPanel);
         })
@@ -88,7 +88,7 @@ describe('multi edit path', () => {
 
   it('should publish the entities', done => {
     nightmare
-      .click(selectors.libraryView.libraryFirstDocument)
+      .waitToClick(selectors.libraryView.libraryFirstDocument)
       .shiftClick(selectors.libraryView.libraryThirdDocument)
       .waitToClick(selectors.uploadsView.multiPublishButton)
       .waitToClick(selectors.uploadsView.acceptPublishModel)
@@ -140,20 +140,20 @@ describe('multi edit path', () => {
   describe('editing same types', () => {
     it('should render a form with common properties and only update modified values', done => {
       nightmare
-        .click(selectors.libraryView.librarySecondDocument)
+        .waitToClick(selectors.libraryView.librarySecondDocument)
         .ctrlClick(selectors.libraryView.libraryThirdDocument)
-        .click(selectors.libraryView.libraryMultiEditEditButton)
+        .waitToClick(selectors.libraryView.libraryMultiEditEditButton)
         .wait(selectors.libraryView.libraryMultiEditFirstInput)
         .write(selectors.libraryView.libraryMultiEditFirstInput, 'Secret Service')
-        .click(selectors.libraryView.libraryMultiEditSaveButton)
+        .waitToClick(selectors.libraryView.libraryMultiEditSaveButton)
         .waitForTheEntityToBeIndexed()
-        .click(selectors.libraryView.librarySecondDocument)
+        .waitToClick(selectors.libraryView.librarySecondDocument)
         .getInnerText(selectors.libraryView.libraryMetadataPanel)
         .then(text => {
           expect(text.match('hyper speed kick')).not.toBe(null);
           expect(text.match('Secret Service')).not.toBe(null);
           return nightmare
-            .click(selectors.libraryView.libraryThirdDocument)
+            .waitToClick(selectors.libraryView.libraryThirdDocument)
             .getInnerText(selectors.libraryView.libraryMetadataPanel);
         })
         .then(text => {
@@ -168,11 +168,11 @@ describe('multi edit path', () => {
   describe('deleting', () => {
     it('should delete multiple items at once after confirm', done => {
       nightmare
-        .click(selectors.libraryView.libraryFirstDocument)
+        .waitToClick(selectors.libraryView.libraryFirstDocument)
         .shiftClick(selectors.libraryView.libraryThirdDocument)
-        .click(selectors.libraryView.libraryMultiEditDeleteButton)
+        .waitToClick(selectors.libraryView.libraryMultiEditDeleteButton)
         .wait(selectors.libraryView.deleteButtonConfirmation)
-        .click(selectors.libraryView.deleteButtonConfirmation)
+        .waitToClick(selectors.libraryView.deleteButtonConfirmation)
         .waitForTheEntityToBeIndexed()
         .getInnerText(selectors.libraryView.libraryFirstDocumentTitle)
         .then(text => {

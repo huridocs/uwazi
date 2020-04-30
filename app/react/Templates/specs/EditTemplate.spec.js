@@ -1,6 +1,7 @@
 import React from 'react';
 import backend from 'fetch-mock';
 import { shallow } from 'enzyme';
+import configureStore from 'redux-mock-store';
 
 import { APIURL } from 'app/config.js';
 import EditTemplate from 'app/Templates/EditTemplate';
@@ -8,6 +9,8 @@ import TemplateCreator from 'app/Templates/components/TemplateCreator';
 import RouteHandler from 'app/App/RouteHandler';
 import { mockID } from 'shared/uniqueID';
 import { RequestParams } from 'app/utils/RequestParams';
+
+const mockStoreCreator = configureStore([]);
 
 describe('EditTemplate', () => {
   const templates = [
@@ -27,8 +30,15 @@ describe('EditTemplate', () => {
 
   beforeEach(() => {
     RouteHandler.renderedFromServer = true;
-    context = { store: { getState: () => ({}), dispatch: jasmine.createSpy('dispatch') } };
+    context = {
+      store: mockStoreCreator({
+        template: { data: { _id: 'id' } },
+      }),
+    };
+
+    spyOn(context.store, 'dispatch');
     component = shallow(<EditTemplate {...props} />, { context });
+
     mockID();
 
     backend.restore();

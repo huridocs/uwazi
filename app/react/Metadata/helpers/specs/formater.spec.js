@@ -143,6 +143,7 @@ describe('metadata formater', () => {
     it('should process nested type', () => {
       assessBasicProperties(nested, ['Nested', 'nested', 'templateID']);
       expect(nested.type).toBe('markdown');
+      expect(nested.value).toContain('nestedKey');
     });
 
     it('should process select type', () => {
@@ -280,6 +281,20 @@ describe('metadata formater', () => {
         '/api/files/doc2.jpg',
       ]);
       assessBasicProperties(media, ['Media', 'media', 'templateID', 'mediaURL']);
+    });
+
+    it('should return empty value preview if no PDF associated to the entity', () => {
+      const adaptedEntity = { ...doc, defaultDoc: undefined, documents: [] };
+      const formatted = formater.prepareMetadata(
+        adaptedEntity,
+        templates,
+        thesauris,
+        relationships
+      );
+
+      const previewField = formatted.metadata.find(field => field.name === 'preview');
+
+      expect(previewField.value).toBeNull();
     });
 
     it('should process geolocation type', () => {
