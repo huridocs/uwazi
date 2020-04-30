@@ -4,7 +4,6 @@ import { toMatchImageSnapshot } from 'jest-image-snapshot';
 import createNightmare from '../helpers/nightmare';
 import insertFixtures from '../helpers/insertFixtures';
 import { loginAsAdminAndGoToSettings } from '../helpers/commonTests';
-import selectors from '../helpers/selectors';
 
 expect.extend({ toMatchImageSnapshot });
 
@@ -19,6 +18,7 @@ const localSelectors = {
     '#app > div.content > div > div > div.settings-content > div > form > div.panel.panel-default > div.metadataTemplate-heading.panel-heading > div > div > input',
   pageContentsInput:
     '#app > div.content > div > div > div.settings-content > div > form > div.panel.panel-default > div.panel-body.page-viewer.document-viewer > div > div.tab-content.tab-content-visible > textarea',
+  createdPageLink: '.document-viewer > div.alert-info a',
 };
 
 const nightmare = createNightmare();
@@ -45,12 +45,12 @@ describe('pages path', () => {
         .clickLink('Pages')
         .clickLink('Add page')
         .wait('.page-creator')
-        .write(localSelectors.pageTitleInput, 'Page data viz2')
+        .write(localSelectors.pageTitleInput, 'Page data viz')
         .write(localSelectors.pageContentsInput, '</p><Dataset />')
         .clickLink('Save')
         .wait(1000);
 
-      await nightmare.getInnerText('.document-viewer > div.alert-info a').then(text => {
+      await nightmare.getInnerText(localSelectors.createdPageLink).then(text => {
         expect(text).toContain('(view page)');
       });
     });
@@ -72,9 +72,7 @@ describe('pages path', () => {
 
     it('should display Bar chart graph in page with no more than a 1% difference', async () => {
       nightmare
-        .evaluate(
-          () => document.querySelector('.page-viewer.document-viewer > div.alert.alert-info a').href
-        )
+        .evaluate(() => document.querySelector(localSelectors.createdPageLink).href)
         .then(link => nightmare.goto(link));
 
       await nightmare
