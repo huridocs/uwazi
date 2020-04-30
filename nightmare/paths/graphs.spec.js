@@ -72,7 +72,7 @@ describe('pages path', () => {
 
     it('should display Bar chart graph in page with no more than a 1% difference', async () => {
       nightmare
-        .evaluate(() => document.querySelector(localSelectors.createdPageLink).href)
+        .evaluate(selector => document.querySelector(selector).href, localSelectors.createdPageLink)
         .then(link => nightmare.goto(link));
 
       await nightmare
