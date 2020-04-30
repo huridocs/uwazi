@@ -61,8 +61,9 @@ describe('pages path', () => {
           selector => document.querySelector(selector).value,
           localSelectors.pageContentsInput
         )
-        .then(text => {
-          expect(text).toContain('<Dataset />');
+        .then(response => {
+          expect(response).toBeTruthy();
+          expect(response).toContain('<Dataset />');
         });
       await nightmare
         .write(localSelectors.pageContentsInput, graphs.barChart)
