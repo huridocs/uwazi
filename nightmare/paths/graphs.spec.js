@@ -1,6 +1,5 @@
 /* eslint max-len: ["error", 500] */
 import { catchErrors } from 'api/utils/jasmineHelpers';
-import puppeteer from 'puppeteer';
 import { toMatchImageSnapshot } from 'jest-image-snapshot';
 import createNightmare from '../helpers/nightmare';
 import insertFixtures from '../helpers/insertFixtures';
@@ -72,21 +71,22 @@ describe('pages path', () => {
     });
 
     it('should display Bar chart graph in page with no more than a 1% difference', async () => {
-      const browser = await puppeteer.launch();
-      const page = await browser.newPage();
-      const graphsPage = await nightmare
+      nightmare
         .evaluate(
           () => document.querySelector('.page-viewer.document-viewer > div.alert.alert-info a').href
         )
-        .then(link => link);
-      await page.goto(graphsPage, { waitUntil: 'load' });
-      const image = await page.screenshot();
-      expect(image).toMatchImageSnapshot({
-        failureThreshold: 0.01,
-        failureThresholdType: 'percent',
-        allowSizeMismatch: true,
-      });
-      await browser.close();
+        .then(link => nightmare.goto(link));
+
+      await nightmare
+        .wait(4000)
+        .screenshot()
+        .then(image => {
+          expect(image).toMatchImageSnapshot({
+            failureThreshold: 0.01,
+            failureThresholdType: 'percent',
+            allowSizeMismatch: true,
+          });
+        });
     });
   });
 });
