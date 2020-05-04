@@ -1,5 +1,3 @@
-/** @format */
-
 import Immutable from 'immutable';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
@@ -29,7 +27,7 @@ class CejilChart extends Component {
 
       let data = arrayUtils.sortValues(
         aggregations.all[countryKey].buckets
-          .filter(country => country.filtered.doc_count)
+          .filter(country => country.filtered.doc_count && country.key !== 'any')
           .map(_country => {
             const country = _country;
             const foundCountry = countriesData.get('values').find(v => v.get('id') === country.key);

@@ -89,7 +89,7 @@ describe('Auth Routes', () => {
 
   describe('/captcha', () => {
     it('should return the captcha and store its value in session', async () => {
-      spyOn(svgCaptcha, 'createMathExpr').and.returnValue({ data: 'captchaImage', text: 42 });
+      spyOn(svgCaptcha, 'create').and.returnValue({ data: 'captchaImage', text: 42 });
       const req = { session: {} };
       const response = await routes.get('/captcha', req);
       expect(req.session.captcha).toBe(42);
