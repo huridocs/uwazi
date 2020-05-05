@@ -72,7 +72,7 @@ describe('pages path', () => {
     });
 
     it('should display Bar chart graph in page with no more than a 1% difference', async () => {
-      nightmare
+      await nightmare
         .evaluate(selector => document.querySelector(selector).href, localSelectors.createdPageLink)
         .then(link => nightmare.goto(link));
 
@@ -100,8 +100,26 @@ describe('pages path', () => {
         .back()
         .wait('.page-creator')
         .clearInput(localSelectors.pageContentsInput)
+        .write(localSelectors.pageContentsInput, '</p><Dataset />')
+        .write(localSelectors.pageContentsInput, graphs.pieChart)
+        .click(localSelectors.savePageButton);
+    });
 
-        .wait(10000);
+    it('should display Pie chart graph in page with no more than a 1% difference', async () => {
+      await nightmare
+        .evaluate(selector => document.querySelector(selector).href, localSelectors.createdPageLink)
+        .then(link => nightmare.goto(link));
+
+      await nightmare
+        .wait(2000)
+        .screenshot()
+        .then(image => {
+          expect(image).toMatchImageSnapshot({
+            failureThreshold: 0.01,
+            failureThresholdType: 'percent',
+            allowSizeMismatch: true,
+          });
+        });
     });
   });
 });
