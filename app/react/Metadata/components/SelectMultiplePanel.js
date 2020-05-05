@@ -12,6 +12,7 @@ import TemplateLabel from 'app/Layout/TemplateLabel';
 import SidePanel from 'app/Layout/SidePanel';
 import Immutable from 'immutable';
 import { Icon } from 'UI';
+import Export from 'app/Library/components/ExportButton';
 import MetadataForm from './MetadataForm';
 import comonTemplate from '../helpers/comonTemplate';
 
@@ -195,6 +196,7 @@ export class SelectMultiplePanel extends Component {
             <span className="btn-label">{t('System', 'Unpublish')}</span>
           </button>
         )}
+        <Export storeKey={this.props.storeKey} />
       </React.Fragment>
     );
   }
@@ -282,6 +284,7 @@ SelectMultiplePanel.propTypes = {
   formState: PropTypes.instanceOf(Object).isRequired,
   state: PropTypes.instanceOf(Object).isRequired,
   formKey: PropTypes.string.isRequired,
+  storeKey: PropTypes.string.isRequired,
 };
 
 SelectMultiplePanel.contextTypes = {
