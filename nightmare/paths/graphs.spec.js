@@ -26,6 +26,8 @@ const nightmare = createNightmare();
 const graphs = {
   barChart: '<BarChart property="super_powers" context="58ad7d240d44252fee4e6208" />',
   pieChart: '<PieChart property="super_powers" context="58ad7d240d44252fee4e6208" />',
+  listChart:
+    '<ListChart property="super_powers" context="58ad7d240d44252fee4e6208" excludeZero="true" />',
 };
 
 describe('pages path', () => {
@@ -94,17 +96,18 @@ describe('pages path', () => {
         });
     });
 
-    it('should navigate back to the edit page and insert Pie chart graph', async () => {
+    it('should navigate back to the edit page and insert Pie+List chart graphs', async () => {
       await nightmare
         .back()
         .wait('.page-creator')
         .clearInput(localSelectors.pageContentsInput)
         .write(localSelectors.pageContentsInput, '</p><Dataset />')
         .write(localSelectors.pageContentsInput, graphs.pieChart)
+        .write(localSelectors.pageContentsInput, graphs.listChart)
         .click(localSelectors.savePageButton);
     });
 
-    it('should display Pie chart graph in page with no more than a 1% difference', async () => {
+    it('should display Pie-List chart graphs in page with no more than a 1% difference', async () => {
       await nightmare
         .evaluate(selector => document.querySelector(selector).href, localSelectors.createdPageLink)
         .then(link => nightmare.goto(link));
