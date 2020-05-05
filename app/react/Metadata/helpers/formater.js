@@ -137,7 +137,11 @@ export default {
 
   preview(property, _value, _thesauris, { doc }) {
     const defaultDoc = doc.defaultDoc || {};
-    return this.multimedia(property, [{ value: `/api/files/${defaultDoc._id}.jpg` }], 'image');
+    return this.multimedia(
+      property,
+      [{ value: defaultDoc._id ? `/api/files/${defaultDoc._id}.jpg` : null }],
+      'image'
+    );
   },
 
   media(property, value) {

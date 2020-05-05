@@ -12,6 +12,7 @@ import { connect } from 'react-redux';
 import { actions as formActions, Field } from 'react-redux-form';
 import { bindActionCreators } from 'redux';
 import { Icon } from 'UI';
+import Export from './ExportButton';
 
 function toggleIncludeUnpublished(storeKey) {
   return (dispatch, getState) => {
@@ -40,6 +41,7 @@ export class LibraryFilters extends Component {
             <Icon icon="search" />
             <span className="btn-label">{t('System', 'Search')}</span>
           </button>
+          <Export storeKey={this.props.storeKey} />
         </div>
         <div className="sidepanel-body">
           <p className="sidepanel-title">{t('System', 'Filters configuration')}</p>

@@ -28,6 +28,7 @@ import metadata from 'app/Metadata/reducer';
 import locale from 'app/I18N/reducer';
 import inlineEdit from 'app/I18N/inlineEditReducer';
 import oneUpReview from 'app/Review/reducers/reducer';
+import exportSearchResults from 'app/Library/reducers/exportReducer';
 
 import { modelReducer, formReducer } from 'react-redux-form';
 
@@ -71,4 +72,5 @@ export default combineReducers({
   settings,
   metadata,
   oneUpReview,
+  exportSearchResults,
 });
