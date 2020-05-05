@@ -172,13 +172,13 @@ export default {
       metadata: {
         field1: [{ value: 'joker' }],
         field2: [{ value: 'bane' }],
-        select1: [{ value: '35ae6c24-9f4c-4017-9f01-2bc42ff7ad83', label: 'Egypt' }],
+        select1: [{ value: 'EgyptID', label: 'Egypt' }],
         rich_text: [{ value: 'rich' }],
         multiselect1: [
-          { value: '35ae6c24-9f4c-4017-9f01-2bc42ff7ad83', label: 'Egypt' },
-          { value: 'bce629bf-efc1-40dd-9af0-0542422dcbc3', label: 'Spain' },
+          { value: 'EgyptID', label: 'Egypt' },
+          { value: 'SpainID', label: 'Spain' },
         ],
-        groupedDictionary: [{ value: 'spainID' }],
+        groupedDictionary: [{ value: 'GermanyID' }],
         nestedField_nested: [{ value: { nested1: ['1', '2', '3'] } }],
         city_geolocation: [{ value: { lat: 1, lon: 2 } }],
         daterange: [{ value: { from: 1547997735, to: 1579533735 } }],
@@ -212,9 +212,9 @@ export default {
       metadata: {
         field1: [{ value: 'joker' }],
         field2: [{ value: 'penguin' }],
-        select1: [{ value: '35ae6c24-9f4c-4017-9f01-2bc42ff7ad83', label: 'Egypt' }],
-        multiselect1: [{ value: '35ae6c24-9f4c-4017-9f01-2bc42ff7ad83', label: 'Egypt' }],
-        groupedDictionary: [{ value: 'spainID' }],
+        select1: [{ value: 'EgyptID', label: 'Egypt' }],
+        multiselect1: [{ value: 'EgyptID', label: 'Egypt' }],
+        groupedDictionary: [{ value: 'GermanyID' }],
         daterange: [{ value: { from: 1579620135, to: 1611242535 } }],
         date: [{ value: 20000 }],
       },
@@ -228,8 +228,8 @@ export default {
       published: true,
       user: userId,
       metadata: {
-        select1: [{ value: 'bce629bf-efc1-40dd-9af0-0542422dcbc3', label: 'Spain' }],
-        multiselect1: [{ value: 'bce629bf-efc1-40dd-9af0-0542422dcbc3', label: 'Spain' }],
+        select1: [{ value: 'SpainID', label: 'Spain' }],
+        multiselect1: [{ value: 'SpainID', label: 'Spain' }],
         date: [{ value: 30000 }],
       },
     },
@@ -244,8 +244,8 @@ export default {
       metadata: {
         field1: [{ value: 'bane' }],
         field3: [{ value: 'penguin' }],
-        select1: [{ value: 'bce629bf-efc1-40dd-9af0-0542422dcbc3', label: 'Spain' }],
-        multiselect1: [{ value: 'bce629bf-efc1-40dd-9af0-0542422dcbc3', label: 'Spain' }],
+        select1: [{ value: 'SpainID', label: 'Spain' }],
+        multiselect1: [{ value: 'SpainID', label: 'Spain' }],
         nestedField_nested: [{ value: { nested1: ['3', '4', '5'] } }],
         country_geolocation: [{ value: { lat: 1, lon: 2 } }],
       },
@@ -310,7 +310,7 @@ export default {
       published: true,
       user: userId,
       metadata: {
-        multiselect1: [{ value: '35ae6c24-9f4c-4017-9f01-2bc42ff7ad83', label: 'Egypt' }],
+        multiselect1: [{ value: 'EgyptID', label: 'Egypt' }],
       },
     },
     {
@@ -322,7 +322,7 @@ export default {
       published: true,
       user: userId,
       metadata: {
-        multiselect1: [{ value: 'bce629bf-efc1-40dd-9af0-0542422dcbc3', label: 'Spain' }],
+        multiselect1: [{ value: 'SpainID', label: 'Spain' }],
       },
     },
     // snippets in metadata
@@ -422,21 +422,21 @@ export default {
       values: [
         {
           label: 'Egypt',
-          id: '35ae6c24-9f4c-4017-9f01-2bc42ff7ad83',
+          id: 'EgyptID',
         },
         {
           label: 'Chile',
-          id: 'bce629bf-efc1-40dd-9af0-0542422dcbc4',
+          id: 'ChileID',
         },
         {
           label: 'Spain',
-          id: 'bce629bf-efc1-40dd-9af0-0542422dcbc3',
+          id: 'SpainID',
         },
         {
           label: 'Europe',
-          id: 'bce629bf-efc1-40dd-9af0-0542422dcbc5',
+          id: 'EuropeID',
           values: [
-            { label: 'Spain', id: 'spainID' },
+            { label: 'Germany', id: 'GermanyID' },
             { label: 'France', id: 'franceID' },
           ],
         },

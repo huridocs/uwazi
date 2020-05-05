@@ -1,6 +1,6 @@
 import { FormGroup } from 'app/Forms';
 import t from 'app/I18N/t';
-import { preloadLimit } from 'shared/config';
+import { preloadOptionsLimit } from 'shared/config';
 import Immutable from 'immutable';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
@@ -95,7 +95,7 @@ export class MetadataFormFields extends Component {
                   return translateOptions(source);
                 })
             )
-            .slice(0, preloadLimit);
+            .slice(0, preloadOptionsLimit);
         }
 
         if (entityThesauris.get(property.name)) {

@@ -9,6 +9,7 @@ export type LookupMultiSelectProps = MultiSelectProps<string[]> & {
 export interface LookupMultiSelectState {
   lookupOptions: Option[];
   selectedOptions: Option[];
+  totalPossibleOptions: number;
 }
 
 const uniqueOptions = (optionsValue: string) => (option: Option, i: number, arr: Option[]) =>
@@ -25,7 +26,7 @@ export class LookupMultiSelect extends Component<LookupMultiSelectProps, LookupM
 
   constructor(props: LookupMultiSelectProps) {
     super(props);
-    this.state = { lookupOptions: [], selectedOptions: [] };
+    this.state = { lookupOptions: [], selectedOptions: [], totalPossibleOptions: 0 };
     this.onChange = this.onChange.bind(this);
     this.onFilter = debounce(this.onFilter.bind(this), debounceTime);
   }
@@ -43,19 +44,19 @@ export class LookupMultiSelect extends Component<LookupMultiSelectProps, LookupM
 
   async onFilter(searchTerm: string) {
     if (searchTerm.length) {
-      const response = await this.props.lookup(searchTerm);
+      const { options, count } = await this.props.lookup(searchTerm);
 
-      const lookupOptions = response.map((o: Option) => ({
+      const lookupOptions = options.map((o: Option) => ({
         ...o,
         [this.props.optionsValue]: o.value,
         [this.props.optionsLabel]: o.label,
       }));
 
-      this.setState({ lookupOptions });
+      this.setState({ lookupOptions, totalPossibleOptions: count });
     }
 
     if (!searchTerm.length) {
-      this.setState({ lookupOptions: [] });
+      this.setState({ lookupOptions: [], totalPossibleOptions: 0 });
     }
   }
 
@@ -69,12 +70,13 @@ export class LookupMultiSelect extends Component<LookupMultiSelectProps, LookupM
 
   render() {
     const { lookup, onChange, totalPossibleOptions, ...rest } = this.props;
+    const filteredTotalPossibleOptions = this.state.totalPossibleOptions;
     return (
       <MultiSelect
         {...rest}
         onChange={this.onChange}
         onFilter={this.onFilter}
-        totalPossibleOptions={totalPossibleOptions}
+        totalPossibleOptions={filteredTotalPossibleOptions || totalPossibleOptions}
         options={this.combineOptions()}
       />
     );

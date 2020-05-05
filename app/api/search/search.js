@@ -10,7 +10,7 @@ import elasticIndexes from 'api/config/elasticIndexes';
 import dictionariesModel from 'api/thesauri/dictionariesModel';
 import { createError } from 'api/utils';
 import { filterOptions } from 'shared/optionsUtils';
-import { preloadLimit } from 'shared/config';
+import { preloadOptionsLimit, preloadOptionsSearch } from 'shared/config';
 import documentQueryBuilder from './documentQueryBuilder';
 import elastic from './elastic';
 import entities from '../entities';
@@ -245,7 +245,7 @@ const _denormalizeAggregations = async (aggregations, templates, dictionaries, l
   }, {});
 };
 
-const _sanitizeAggregationsStructure = aggregations => {
+const _sanitizeAggregationsStructure = (aggregations, limit) => {
   const result = {};
   Object.keys(aggregations).forEach(aggregationKey => {
     let aggregation = aggregations[aggregationKey];
@@ -276,7 +276,7 @@ const _sanitizeAggregationsStructure = aggregations => {
     if (aggregation.buckets) {
       const bucketsWithResults = aggregation.buckets.filter(b => b.filtered.doc_count);
       aggregation.count = bucketsWithResults.length;
-      aggregation.buckets = aggregation.buckets.slice(0, preloadLimit);
+      aggregation.buckets = aggregation.buckets.slice(0, limit);
     }
 
     result[aggregationKey] = aggregation;
@@ -307,6 +307,7 @@ const _addAnyAggregation = (aggregations, filters, response) => {
         label: 'Any',
         filtered: { doc_count: anyCount },
       });
+      aggregation.count += 1;
     }
 
     result[aggregationKey] = aggregation;
@@ -315,9 +316,16 @@ const _addAnyAggregation = (aggregations, filters, response) => {
   return result;
 };
 
-const _sanitizeAggregations = async (aggregations, templates, dictionaries, language) => {
-  const sanitizedAggregations = _sanitizeAggregationsStructure(aggregations);
+const _sanitizeAggregations = async (
+  aggregations,
+  templates,
+  dictionaries,
+  language,
+  limit = preloadOptionsLimit
+) => {
+  const sanitizedAggregations = _sanitizeAggregationsStructure(aggregations, limit);
   const sanitizedAggregationNames = _sanitizeAgregationNames(sanitizedAggregations);
+
   return _denormalizeAggregations(sanitizedAggregationNames, templates, dictionaries, language);
 };
 
@@ -744,7 +752,8 @@ const instanceSearch = elasticIndex => ({
       response.aggregations.all,
       templates,
       dictionaries,
-      language
+      language,
+      preloadOptionsSearch
     );
 
     const options = sanitizedAggregations[propertyName].buckets.map(bucket => ({
@@ -754,7 +763,11 @@ const instanceSearch = elasticIndex => ({
       results: bucket.filtered.doc_count,
     }));
 
-    return filterOptions(searchTerm, options);
+    const filteredOptions = filterOptions(searchTerm, options);
+    return {
+      options: filteredOptions.slice(0, preloadOptionsLimit),
+      count: filteredOptions.length,
+    };
   },
 
   async autocomplete(searchTerm, language, templates = [], includeUnpublished = false) {
@@ -765,7 +778,7 @@ const instanceSearch = elasticIndex => ({
         include: ['title', 'template', 'sharedId', 'icon'],
       },
       from: 0,
-      size: preloadLimit,
+      size: preloadOptionsSearch,
       query: {
         bool: {
           must: [
@@ -793,12 +806,14 @@ const instanceSearch = elasticIndex => ({
 
     const response = await elastic.search({ index: elasticIndex || elasticIndexes.index, body });
 
-    return response.hits.hits.map(hit => ({
+    const options = response.hits.hits.slice(0, preloadOptionsLimit).map(hit => ({
       value: hit._source.sharedId,
       label: hit._source.title,
       template: hit._source.template,
       icon: hit._source.icon,
     }));
+
+    return { count: response.hits.hits.length, options };
   },
 });
 

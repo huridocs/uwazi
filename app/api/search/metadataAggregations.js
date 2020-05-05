@@ -1,8 +1,9 @@
+import { preloadOptionsSearch } from 'shared/config';
 const aggregation = (key, should, filters) => ({
   terms: {
     field: key,
     missing: 'missing',
-    size: 1000,
+    size: preloadOptionsSearch,
   },
   aggregations: {
     filtered: {

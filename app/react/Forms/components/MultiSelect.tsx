@@ -233,6 +233,7 @@ abstract class MultiSelectBase<ValueType> extends Component<
   moreLessLabel(totalOptions: Option[]) {
     const { totalPossibleOptions } = this.props;
     const amount = totalPossibleOptions || totalOptions.length;
+
     if (this.state.showAll) {
       return t('System', 'x less');
     }
@@ -357,11 +358,9 @@ abstract class MultiSelectBase<ValueType> extends Component<
     );
   }
 
-  renderOptionsCount(totalOptions: Option[], options: Option[]) {
+  renderOptionsCount(totalOptions: Option[], renderedOptions: Option[]) {
     const { totalPossibleOptions } = this.props;
-    let count = this.state.showAll
-      ? `${totalPossibleOptions - options.length}`
-      : `${totalPossibleOptions - totalOptions.length}`;
+    let count = `${totalPossibleOptions - renderedOptions.length}`;
 
     if (totalPossibleOptions > 1000) {
       count = `${count}+`;
@@ -369,14 +368,14 @@ abstract class MultiSelectBase<ValueType> extends Component<
 
     return (
       <li className="multiselectActions">
-        <ShowIf if={totalOptions.length > this.props.optionsToShow && !this.state.filter}>
+        <ShowIf if={totalOptions.length > this.props.optionsToShow}>
           <button onClick={this.showAll} className="btn btn-xs btn-default" type="button">
             <Icon icon={this.state.showAll ? 'caret-up' : 'caret-down'} />
             &nbsp;
             {this.moreLessLabel(totalOptions)}
           </button>
         </ShowIf>
-        {totalPossibleOptions > options.length && this.state.showAll && (
+        {totalPossibleOptions > totalOptions.length && this.state.showAll && (
           <div className="total-options">
             {count} more options.{' '}
             <button onClick={this.focusSearch} type="button">
@@ -421,8 +420,7 @@ abstract class MultiSelectBase<ValueType> extends Component<
       options = filterOptions(this.state.filter, options, optionsLabel);
     }
 
-    const tooManyOptions =
-      !this.state.showAll && options.length > this.props.optionsToShow && !this.state.filter;
+    const tooManyOptions = !this.state.showAll && options.length > this.props.optionsToShow;
 
     if (this.props.sort) {
       options = this.sort(options);
@@ -434,16 +432,18 @@ abstract class MultiSelectBase<ValueType> extends Component<
       options = this.hoistCheckedOptions(options);
     }
 
+    let renderingOptions = options;
+
     if (tooManyOptions) {
       const numberOfActiveOptions = options.filter(opt => this.checked(opt)).length;
       const optionsToShow =
         this.props.optionsToShow > numberOfActiveOptions
           ? this.props.optionsToShow
           : numberOfActiveOptions;
-      options = options.slice(0, optionsToShow);
+      renderingOptions = options.slice(0, optionsToShow);
     }
 
-    options = options.map(option => {
+    renderingOptions = renderingOptions.map(option => {
       if (!option.options) {
         return option;
       }
@@ -453,15 +453,15 @@ abstract class MultiSelectBase<ValueType> extends Component<
     return (
       <ul className="multiselect is-active">
         {this.renderSearch()}
-        {!options.length && <span>{t('System', 'No options found')}</span>}
-        {options.map((option, index) => {
+        {!renderingOptions.length && <span>{t('System', 'No options found')}</span>}
+        {renderingOptions.map((option, index) => {
           if (option.options) {
             return this.renderGroup(option, index);
           }
 
           return this.renderOption(option, index);
         })}
-        {this.renderOptionsCount(totalOptions, options)}
+        {this.renderOptionsCount(options, renderingOptions)}
       </ul>
     );
   }

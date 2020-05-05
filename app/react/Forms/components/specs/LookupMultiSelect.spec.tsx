@@ -35,10 +35,13 @@ describe('LookupMultiSelect', () => {
   });
 
   const render = () => {
-    const lookup = async () => [
-      { label: 'new', value: 'new', results: 1 },
-      { label: 'new 2', value: 'new 2', results: 2 },
-    ];
+    const lookup = async () => ({
+      options: [
+        { label: 'new', value: 'new', results: 1 },
+        { label: 'new 2', value: 'new 2', results: 2 },
+      ],
+      count: 2,
+    });
 
     component = shallow(<LookupMultiSelect {...props} lookup={lookup} />);
   };
