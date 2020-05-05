@@ -4,6 +4,7 @@ import { toMatchImageSnapshot } from 'jest-image-snapshot';
 import createNightmare from '../helpers/nightmare';
 import insertFixtures from '../helpers/insertFixtures';
 import { loginAsAdminAndGoToSettings } from '../helpers/commonTests';
+import selectors from '../helpers/selectors';
 
 expect.extend({ toMatchImageSnapshot });
 
@@ -76,8 +77,8 @@ describe('pages path', () => {
         .then(link => nightmare.goto(link));
 
       await nightmare
-        .wait('#app > div.content > div > div > main div.markdown-viewer')
-        .getInnerHtml('#app > div.content > div > div > main div.markdown-viewer')
+        .wait('div.markdown-viewer')
+        .getInnerHtml('div.markdown-viewer')
         .then(html => {
           expect(html).toContain('class="recharts-responsive-container"');
 
@@ -90,8 +91,17 @@ describe('pages path', () => {
                 failureThresholdType: 'percent',
                 allowSizeMismatch: true,
               });
-          });
+            });
         });
+    });
+
+    it('should navigate back to the edit page and insert Pie chart graph', async () => {
+      await nightmare
+        .back()
+        .wait('.page-creator')
+        .clearInput(localSelectors.pageContentsInput)
+
+        .wait(10000);
     });
   });
 });

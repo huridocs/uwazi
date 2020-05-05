@@ -6,7 +6,7 @@ import config from './config.js';
 
 Nightmare.action('clearInput', function clearInput(selector, done) {
   const backSpaces = [];
-  for (let i = 0; i < 50; i += 1) {
+  for (let i = 0; i < 100; i += 1) {
     backSpaces.push('\u0008');
   }
   this.wait(selector)
