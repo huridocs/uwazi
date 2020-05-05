@@ -10,14 +10,16 @@ import fixtures, {
   nonExistentId,
 } from './fixturesParser';
 import { getSemanticData } from '../activitylogParser';
-import migrationsParser from '../migrationsParser';
+import { typeParsers } from '../migrationsParser';
 
 jest.mock('../migrationsParser', () => ({
-  stubLogTypeParser: jest.fn().mockReturnValue({
-    action: 'MIGRATE',
-    description: 'Dummy log',
-    beautified: true,
-  }),
+  typeParsers: {
+    stubLogTypeParser: jest.fn().mockReturnValue({
+      action: 'MIGRATE',
+      description: 'Dummy log',
+      beautified: true,
+    }),
+  },
 }));
 
 describe('Activitylog Parser', () => {
@@ -978,7 +980,7 @@ describe('Activitylog Parser', () => {
           }
         );
 
-        expect(migrationsParser.stubLogTypeParser).toHaveBeenCalledWith({
+        expect(typeParsers.stubLogTypeParser).toHaveBeenCalledWith({
           type: 'stubLogTypeParser',
         });
       });

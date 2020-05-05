@@ -1,8 +1,8 @@
-import migrationsParser from '../migrationsParser';
+import { typeParsers } from '../migrationsParser';
 
 describe('migrationsParser', () => {
   it('should beautify an fieldParseError log', () => {
-    const beautified = migrationsParser.fieldParseError({
+    const beautified = typeParsers.fieldParseError({
       title: 'title',
       propertyName: 'propertyName',
       sharedId: 'sharedId',

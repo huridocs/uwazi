@@ -11,10 +11,8 @@ function sanitizeGeolocation(property) {
 
   const value = { ...property[0].value };
 
-  // eslint-disable-next-line no-new-wrappers
-  const lat = new Number(value.lat).valueOf();
-  // eslint-disable-next-line no-new-wrappers
-  const lon = new Number(value.lon).valueOf();
+  const lat = Number(value.lat).valueOf();
+  const lon = Number(value.lon).valueOf();
 
   if (Number.isNaN(lat) || Number.isNaN(lon)) {
     throw new Error('Value is NaN');

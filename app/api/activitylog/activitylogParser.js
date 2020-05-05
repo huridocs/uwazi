@@ -9,7 +9,7 @@ import {
   generateSemanticSearchUpdateBeautifier,
   formatLanguage,
 } from './helpers';
-import migrationsParser from './migrationsParser';
+import { typeParsers } from './migrationsParser';
 
 const entitiesPOST = async log => {
   const data = JSON.parse(log.body);
@@ -164,7 +164,7 @@ const semanticSearchPOST = async log => {
 const migrationLog = log => {
   const data = JSON.parse(log.body);
 
-  return migrationsParser[data.type] ? migrationsParser[data.type](data) : { beautified: false };
+  return typeParsers[data.type] ? typeParsers[data.type](data) : { beautified: false };
 };
 
 const actions = {
