@@ -637,3 +637,9 @@ Nightmare.action('clickLink', function clickLink(label, done) {
     done();
   });
 });
+
+Nightmare.action('waitForGraphsAnimation', function waitForGraphsAnimation(done) {
+  this.wait(2000).then(() => {
+    done();
+  });
+});

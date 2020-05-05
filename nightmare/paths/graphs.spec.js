@@ -4,7 +4,6 @@ import { toMatchImageSnapshot } from 'jest-image-snapshot';
 import createNightmare from '../helpers/nightmare';
 import insertFixtures from '../helpers/insertFixtures';
 import { loginAsAdminAndGoToSettings } from '../helpers/commonTests';
-import selectors from '../helpers/selectors';
 
 expect.extend({ toMatchImageSnapshot });
 
@@ -83,7 +82,7 @@ describe('pages path', () => {
           expect(html).toContain('class="recharts-responsive-container"');
 
           return nightmare
-            .wait(2000)
+            .waitForGraphsAnimation()
             .screenshot()
             .then(image => {
               expect(image).toMatchImageSnapshot({
@@ -111,7 +110,7 @@ describe('pages path', () => {
         .then(link => nightmare.goto(link));
 
       await nightmare
-        .wait(2000)
+        .waitForGraphsAnimation()
         .screenshot()
         .then(image => {
           expect(image).toMatchImageSnapshot({
