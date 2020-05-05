@@ -600,12 +600,6 @@ $item-padding: 15px;
   margin: 0 auto 15px;
   padding: 0 0 0 15px;
   font-size: $f-size-sm;
-  .sort-buttons {
-    flex: unset;
-    .Dropdown {
-      position: unset;
-    }
-  }
 }
 
 .item-danger {

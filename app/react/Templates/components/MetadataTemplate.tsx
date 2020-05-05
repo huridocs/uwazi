@@ -1,4 +1,3 @@
-/** @format */
 import { TemplateSchema } from 'shared/types/templateType';
 import ShowIf from 'app/App/ShowIf';
 import { FormGroup } from 'app/Forms';
@@ -35,6 +34,7 @@ interface MetadataTemplateProps {
   templates?: any;
   _id?: string;
 }
+
 const getTemplateDefaultColor = (allTemplates: List<TemplateSchema>, templateId: string) => {
   if (!templateId) {
     return COLORS[allTemplates.size % COLORS.length];
@@ -121,14 +121,21 @@ export class MetadataTemplate extends Component<MetadataTemplateProps> {
                       {...config}
                       key={localID}
                       localID={localID}
-                      index={index - this.props.commonProperties.length}
+                      index={index - commonProperties.length}
                     />
                   );
                 })}
-                {this.props.properties.map((config: any, index) => {
+                {this.props.properties.map((config: any, index: number) => {
                   const localID = config.localID || config._id;
                   return (
-                    <MetadataProperty {...config} key={localID} localID={localID} index={index} />
+                    <MetadataProperty
+                      _id={config._id}
+                      type={config.type}
+                      inserting={config.inserting}
+                      key={localID}
+                      localID={localID}
+                      index={index}
+                    />
                   );
                 })}
                 <div className="no-properties">
@@ -159,10 +166,10 @@ export class MetadataTemplate extends Component<MetadataTemplateProps> {
     );
   }
 }
+
 /* eslint-disable react/forbid-prop-types, react/require-default-props */
 MetadataTemplate.propTypes = {
   connectDropTarget: PropTypes.func.isRequired,
-  formState: PropTypes.object,
   backUrl: PropTypes.string,
   _id: PropTypes.string,
   saveTemplate: PropTypes.func.isRequired,

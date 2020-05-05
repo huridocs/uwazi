@@ -1,5 +1,3 @@
-/** @format */
-
 import React from 'react';
 import { shallow } from 'enzyme';
 
@@ -8,19 +6,16 @@ import relationTypesAPI from 'app/RelationTypes/RelationTypesAPI';
 import { RequestParams } from 'app/utils/RequestParams';
 
 import NewTemplate from '../NewTemplate';
-import templatesAPI from '../TemplatesAPI';
 import TemplateCreator from '../components/TemplateCreator';
 
 describe('NewTemplate', () => {
   let component;
   let context;
   const thesauri = [{ label: '1' }, { label: '2' }];
-  const templates = [{ name: 'Comic' }, { name: 'Newspaper' }];
   const relationTypes = [{ name: 'Friend' }, { name: 'Family' }];
 
   beforeEach(() => {
     context = { store: { getState: () => ({}), dispatch: jasmine.createSpy('dispatch') } };
-    spyOn(templatesAPI, 'get').and.returnValue(templates);
     spyOn(thesauriAPI, 'get').and.returnValue(thesauri);
     spyOn(relationTypesAPI, 'get').and.returnValue(relationTypes);
     component = shallow(<NewTemplate />, { context });
@@ -35,7 +30,6 @@ describe('NewTemplate', () => {
       const request = new RequestParams({});
       const actions = await NewTemplate.requestState(request);
 
-      expect(templatesAPI.get).toHaveBeenCalledWith(request.onlyHeaders());
       expect(thesauriAPI.get).toHaveBeenCalledWith(request.onlyHeaders());
       expect(relationTypesAPI.get).toHaveBeenCalledWith(request.onlyHeaders());
 

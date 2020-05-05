@@ -98,6 +98,7 @@ export default (app: Application) => {
     validation.validateRequest({
       properties: {
         query: {
+          required: ['_id'],
           properties: {
             _id: { type: 'string' },
           },

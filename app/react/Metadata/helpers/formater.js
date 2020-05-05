@@ -137,7 +137,11 @@ export default {
 
   preview(property, _value, _thesauris, { doc }) {
     const defaultDoc = doc.defaultDoc || {};
-    return this.multimedia(property, [{ value: `/api/files/${defaultDoc._id}.jpg` }], 'image');
+    return this.multimedia(
+      property,
+      [{ value: defaultDoc._id ? `/api/files/${defaultDoc._id}.jpg` : null }],
+      'image'
+    );
   },
 
   media(property, value) {
@@ -267,7 +271,7 @@ export default {
       .map(row => `| ${keys.map(key => (row.value[key] || []).join(', ')).join(' | ')}`)
       .join('|\n')}|`;
 
-    return this.markdown(property, result, thesauris, { type: 'markdown' });
+    return this.markdown(property, [{ value: result }], thesauris, { type: 'markdown' });
   },
 
   getThesauriValues(thesauriValues, thesauri) {

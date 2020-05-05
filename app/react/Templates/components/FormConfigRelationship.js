@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import Immutable from 'immutable';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import { createSelector } from 'reselect';
 
 import { Select } from 'app/ReactReduxForms';
 import { Translate } from 'app/I18N';
@@ -16,27 +17,23 @@ export class FormConfigRelationship extends Component {
   }
 
   render() {
-    const { index, data, formState, type, templates, relationTypes } = this.props;
-    const property = data.properties[index];
+    const {
+      index,
+      type,
+      inheritPropertyError,
+      labelError,
+      relationTypeError,
+      templates,
+      relationTypes,
+      templateId,
+      showInheritOption,
+      showInheritSelect,
+      templateProperties,
+    } = this.props;
 
-    const options = templates.toJS().filter(template => template._id !== data._id);
-    const labelError =
-      formState.$form.errors[`properties.${index}.label.required`] ||
-      formState.$form.errors[`properties.${index}.label.duplicated`];
-    const relationTypeError =
-      formState.$form.errors[`properties.${index}.relationType.required`] &&
-      formState.$form.submitFailed;
-    const inheritPropertyError =
-      formState.$form.errors[`properties.${index}.inheritProperty.required`] &&
-      formState.$form.submitFailed;
+    const options = templates.toJS().filter(template => template._id !== templateId);
+
     const labelClass = labelError ? 'form-group has-error' : 'form-group';
-    const template = templates
-      .toJS()
-      .find(
-        t =>
-          formState.properties[index].content && t._id === formState.properties[index].content.value
-      );
-    const templateProperties = template ? template.properties : [];
 
     return (
       <div>
@@ -73,7 +70,7 @@ export class FormConfigRelationship extends Component {
             optionsValue="_id"
           />
         </div>
-        {Boolean(formState.properties[index].content && templateProperties.length) && (
+        {showInheritOption && (
           <PropertyConfigOption
             label="Inherit property"
             model={`template.data.properties[${index}].inherit`}
@@ -84,11 +81,7 @@ export class FormConfigRelationship extends Component {
             </Tip>
           </PropertyConfigOption>
         )}
-        {Boolean(
-          formState.properties[index].inherit &&
-            formState.properties[index].inherit.value &&
-            templateProperties.length
-        ) && (
+        {showInheritSelect && (
           <div className={inheritPropertyError ? 'form-group has-error' : 'form-group'}>
             <Select
               model={`template.data.properties[${index}].inheritProperty`}
@@ -98,27 +91,78 @@ export class FormConfigRelationship extends Component {
             />
           </div>
         )}
-        <PropertyConfigOptions index={index} property={property} type={type} />
+        <PropertyConfigOptions index={index} type={type} />
       </div>
     );
   }
 }
 
+FormConfigRelationship.defaultProps = {
+  labelError: false,
+  relationTypeError: false,
+  inheritPropertyError: false,
+  showInheritOption: false,
+  showInheritSelect: false,
+  templateId: null,
+};
+
 FormConfigRelationship.propTypes = {
   templates: PropTypes.instanceOf(Immutable.List).isRequired,
   relationTypes: PropTypes.instanceOf(Immutable.List).isRequired,
-  data: PropTypes.object.isRequired,
+  templateProperties: PropTypes.array.isRequired,
   index: PropTypes.number.isRequired,
-  formState: PropTypes.object.isRequired,
   type: PropTypes.string.isRequired,
+  labelError: PropTypes.bool,
+  relationTypeError: PropTypes.bool,
+  inheritPropertyError: PropTypes.bool,
+  showInheritOption: PropTypes.bool,
+  showInheritSelect: PropTypes.bool,
+  templateId: PropTypes.string,
 };
 
-export function mapStateToProps(state) {
+const getTemplateProperties = createSelector(
+  state => state.templates,
+  (state, props) =>
+    state.template.formState.properties[props.index].content
+      ? state.template.formState.properties[props.index].content.value
+      : null,
+  (templates, content) => {
+    const targetTemplate = templates.find(t => t.get('_id') === content);
+    return targetTemplate ? targetTemplate.get('properties').toJS() : [];
+  }
+);
+
+export function mapStateToProps(state, props) {
+  const { template, templates, relationTypes } = state;
+
+  const templateProperties = getTemplateProperties(state, props);
+
   return {
-    data: state.template.data,
-    templates: state.templates,
-    relationTypes: state.relationTypes,
-    formState: state.template.formState,
+    labelError:
+      template.formState.$form.errors[`properties.${props.index}.label.required`] ||
+      template.formState.$form.errors[`properties.${props.index}.label.duplicated`],
+
+    relationTypeError:
+      template.formState.$form.errors[`properties.${props.index}.relationType.required`] &&
+      template.formState.$form.submitFailed,
+
+    inheritPropertyError:
+      template.formState.$form.errors[`properties.${props.index}.inheritProperty.required`] &&
+      template.formState.$form.submitFailed,
+
+    showInheritOption: Boolean(
+      template.formState.properties[props.index].content && templateProperties.length
+    ),
+
+    showInheritSelect: Boolean(
+      template.formState.properties[props.index].inherit &&
+        template.formState.properties[props.index].inherit.value &&
+        templateProperties.length
+    ),
+    templateProperties,
+    templateId: template.data._id,
+    templates,
+    relationTypes,
   };
 }
 
