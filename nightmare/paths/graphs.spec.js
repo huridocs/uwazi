@@ -56,7 +56,7 @@ describe('pages path', () => {
     });
 
     it('should insert Bar chart graph in created page', async () => {
-      nightmare
+      await nightmare
         .evaluate(
           selector => document.querySelector(selector).value,
           localSelectors.pageContentsInput
@@ -67,8 +67,7 @@ describe('pages path', () => {
         });
       await nightmare
         .write(localSelectors.pageContentsInput, graphs.barChart)
-        .click(localSelectors.savePageButton)
-        .wait(4000);
+        .click(localSelectors.savePageButton);
     });
 
     it('should display Bar chart graph in page with no more than a 1% difference', async () => {
@@ -77,13 +76,20 @@ describe('pages path', () => {
         .then(link => nightmare.goto(link));
 
       await nightmare
-        .wait(4000)
-        .screenshot()
-        .then(image => {
-          expect(image).toMatchImageSnapshot({
-            failureThreshold: 0.01,
-            failureThresholdType: 'percent',
-            allowSizeMismatch: true,
+        .wait('#app > div.content > div > div > main div.markdown-viewer')
+        .getInnerHtml('#app > div.content > div > div > main div.markdown-viewer')
+        .then(html => {
+          expect(html).toContain('class="recharts-responsive-container"');
+
+          return nightmare
+            .wait(2000)
+            .screenshot()
+            .then(image => {
+              expect(image).toMatchImageSnapshot({
+                failureThreshold: 0.01,
+                failureThresholdType: 'percent',
+                allowSizeMismatch: true,
+              });
           });
         });
     });
