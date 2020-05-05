@@ -139,7 +139,7 @@
     "json-schema-to-mongoose": "^0.2.2",
     "json-schema-to-typescript": "^7.1.0",
     "jvent": "1.0.2",
-    "macaddress": "0.2.9",
+    "macaddress": "0.4.3",
     "mark.js": "^8.11.1",
     "markdown-it": "^8.4.1",
     "markdown-it-container": "^2.0.0",
