@@ -84,8 +84,8 @@ function handle404(res) {
   res.redirect(301, '/404');
 }
 
-function respondError(res, error) {
-  handleError(error);
+function respondError(res, error, req) {
+  handleError(error, { req });
   res.status(error.status || 500);
   if (error.json) {
     res.send(`<pre>${error.json.prettyMessage}</pre>`);
@@ -221,7 +221,7 @@ function handleRoute(res, renderProps, req) {
         return res.redirect(404, '/404');
       }
 
-      return respondError(res, error);
+      return respondError(res, error, req);
     });
 }
 
