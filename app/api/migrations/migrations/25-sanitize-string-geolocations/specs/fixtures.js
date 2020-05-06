@@ -1,4 +1,3 @@
-/** @format */
 import db from 'api/utils/testing_db';
 
 const templateId = db.id();
