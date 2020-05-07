@@ -8,6 +8,7 @@ import path from 'path';
 import proxy from 'express-http-proxy';
 
 import entities from 'api/entities';
+import mailer from 'api/utils/mailer';
 import { search } from 'api/search';
 import CSVLoader, { CSVExporter } from 'api/csv';
 import { saveSchema } from 'api/entities/endpointSchema';
@@ -46,13 +47,21 @@ export default app => {
     '/api/public',
     multer().any(),
     captchaAuthorization(),
-    (req, _res, next) => {
-      req.body = JSON.parse(req.body.entity);
-      return next();
-    },
-    validation.validateRequest(saveSchema),
+    validation.validateRequest(
+      Joi.object().keys({
+        entity: saveSchema,
+        email: Joi.object().keys({
+          to: Joi.string(),
+          sender: Joi.string(),
+          text: Joi.string(),
+          html: Joi.string(),
+          subject: Joi.string(),
+        }),
+      })
+    ),
     async (req, res, next) => {
-      const entity = req.body;
+      const entity = JSON.parse(req.body.entity);
+
       const { allowedPublicTemplates } = await settings.get();
       if (!allowedPublicTemplates || !allowedPublicTemplates.includes(entity.template)) {
         next(createError('Unauthorized public template', 403));
@@ -76,6 +85,11 @@ export default app => {
           socket(req).emit('documentProcessed', newEntity.sharedId);
         });
       }
+
+      if (req.body.mail) {
+        mailer.send({ from: `"${req.body.mail.sender}" <no-reply@uwazi.io>`, ...req.body.mail });
+      }
+
       res.json(newEntity);
     }
   );

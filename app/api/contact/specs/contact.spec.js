@@ -27,7 +27,7 @@ describe('contact', () => {
         })
         .then(() => {
           expect(mailer.send).toHaveBeenCalledWith({
-            from: '"Uwazi" <no-reply@uwazi.io',
+            from: '"Uwazi" <no-reply@uwazi.io>',
             subject: 'Contact mesage from Bruce Wayne bruce@wayne.com',
             text: 'I want to contact you.',
             to: 'contact@uwazi.com',

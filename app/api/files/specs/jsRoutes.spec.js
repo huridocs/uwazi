@@ -17,6 +17,7 @@ import instrumentRoutes from '../../utils/instrumentRoutes';
 import uploadRoutes from '../jsRoutes.js';
 import errorLog from '../../log/errorLog';
 import paths from '../../config/paths';
+import mailer from 'api/utils/mailer';
 
 const mockExport = jest.fn();
 jest.mock('api/csv/csvExporter', () =>
@@ -185,9 +186,18 @@ describe('upload routes', () => {
         req = {
           language: 'es',
           headers: {},
-          body: { title: 'public submit', template: templateId.toString() },
+          body: {
+            entity: JSON.stringify({ title: 'public submit', template: templateId.toString() }),
+            mail: {
+              from: 'test',
+              to: 'batman@gotham.com',
+              subject: 'help!',
+              text: 'The joker is back!',
+            },
+          },
           files: [file, attachment],
           io: {},
+
           getCurrentSessionSockets: () => ({ sockets: [iosocket], emit: iosocket.emit }),
         };
         done();
@@ -210,6 +220,17 @@ describe('upload routes', () => {
       ).toBe(true);
     });
 
+    it('should send an email', async () => {
+      spyOn(mailer, 'send');
+      await onSocketRespond('post', '/api/public', req);
+      expect(mailer.send).toHaveBeenCalledWith({
+        from: 'test',
+        subject: 'help!',
+        text: 'The joker is back!',
+        to: 'batman@gotham.com',
+      });
+    });
+
     it('should not create entity if settings has no allowedPublicTemplates option', async () => {
       const [settingsObject] = await settingsModel.get();
       delete settingsObject.allowedPublicTemplates;
@@ -226,7 +247,10 @@ describe('upload routes', () => {
     });
 
     it('should not create entity if template is not whitelisted in allowedPublicTemplates setting', async () => {
-      req.body.template = 'unknownTemplate';
+      req.body.entity = JSON.stringify({
+        title: 'public submit',
+        template: 'unauthorized_template_id',
+      });
       try {
         await routes.post('/api/public', req);
         fail('should return error');
