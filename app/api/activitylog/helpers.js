@@ -5,6 +5,7 @@ export const methods = {
   create: 'CREATE',
   update: 'UPDATE',
   delete: 'DELETE',
+  migrate: 'MIGRATE',
 };
 
 export const formatLanguage = langKey => {

@@ -80,6 +80,8 @@ describe('ActivitylogRow', () => {
       expect(component).toMatchSnapshot();
       prepareAction('DELETE');
       expect(component).toMatchSnapshot();
+      prepareAction('MIGRATE');
+      expect(component).toMatchSnapshot();
       prepareAction('CUSTOM');
       expect(component).toMatchSnapshot();
     });

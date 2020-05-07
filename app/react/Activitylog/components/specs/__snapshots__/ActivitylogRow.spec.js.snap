@@ -241,6 +241,69 @@ exports[`ActivitylogRow when beautified should render the componet for the diffe
 >
   <td>
     <span
+      className="badge btn-color-12"
+    >
+      MIGRATE
+    </span>
+  </td>
+  <td>
+    defined user
+  </td>
+  <td>
+    <DescriptionWrapper
+      entry={
+        Immutable.Map {
+          "semantic": Immutable.Map {
+            "beautified": true,
+            "description": "descrip",
+            "name": "name",
+            "extra": "extra",
+            "action": "MIGRATE",
+          },
+          "url": "/api/entities",
+          "method": "POST",
+          "time": "54321",
+          "username": "defined user",
+        }
+      }
+      expanded={false}
+      toggleExpand={[Function]}
+    >
+      <span>
+        <span
+          className="activitylog-prefix"
+        >
+          descrip
+        </span>
+        <span
+          className="activitylog-name"
+        >
+           
+          name
+        </span>
+        <span
+          className="activitylog-extra"
+        >
+           
+          extra
+        </span>
+      </span>
+    </DescriptionWrapper>
+  </td>
+  <td
+    className="activitylog-time"
+  >
+    formatted: 54321, with: L (locale: null); formatted: 54321, with: LTS (locale: en);
+  </td>
+</tr>
+`;
+
+exports[`ActivitylogRow when beautified should render the componet for the different actions 5`] = `
+<tr
+  className="activitylog-beautified"
+>
+  <td>
+    <span
       className="badge btn-color-17"
     >
       CUSTOM
