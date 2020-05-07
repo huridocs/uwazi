@@ -12,12 +12,12 @@ import express from 'express';
 import { files } from 'api/files/files';
 
 import * as filesystem from 'api/files/filesystem';
+import mailer from 'api/utils/mailer';
 import { fixtures, templateId } from './fixtures';
 import instrumentRoutes from '../../utils/instrumentRoutes';
 import uploadRoutes from '../jsRoutes.js';
 import errorLog from '../../log/errorLog';
 import paths from '../../config/paths';
-import mailer from 'api/utils/mailer';
 
 const mockExport = jest.fn();
 jest.mock('api/csv/csvExporter', () =>
