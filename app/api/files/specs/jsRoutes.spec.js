@@ -166,6 +166,7 @@ describe('upload routes', () => {
     beforeEach(done => {
       deleteAllFiles(() => {
         spyOn(Date, 'now').and.returnValue(1000);
+        spyOn(mailer, 'send');
         paths.uploadedDocuments = `${__dirname}/uploads/`;
         const buffer = fs.readFileSync(`${__dirname}/12345.test.pdf`);
         file = {
@@ -221,7 +222,6 @@ describe('upload routes', () => {
     });
 
     it('should send an email', async () => {
-      spyOn(mailer, 'send');
       await onSocketRespond('post', '/api/public', req);
       expect(mailer.send).toHaveBeenCalledWith({
         from: 'test',
