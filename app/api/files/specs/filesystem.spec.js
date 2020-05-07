@@ -3,8 +3,8 @@ import { deleteFiles } from '../filesystem';
 
 describe('files', () => {
   beforeEach(() => {
-    fs.writeFileSync(`${__dirname}/file1`);
-    fs.writeFileSync(`${__dirname}/file2`);
+    fs.writeFileSync(`${__dirname}/file1`, '');
+    fs.writeFileSync(`${__dirname}/file2`, '');
   });
 
   describe('deleteFiles', () => {

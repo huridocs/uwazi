@@ -19,15 +19,13 @@ import fixtures, {
 } from './fixtures.js';
 
 describe('templates', () => {
-  beforeEach(done => {
+  beforeEach(async () => {
     spyOn(translations, 'addContext').and.returnValue(Promise.resolve());
-    db.clearAllAndLoad(fixtures)
-      .then(done)
-      .catch(catchErrors(done));
+    await db.clearAllAndLoad(fixtures);
   });
 
-  afterAll(done => {
-    db.disconnect().then(done);
+  afterAll(async () => {
+    await db.disconnect();
   });
 
   describe('save', () => {

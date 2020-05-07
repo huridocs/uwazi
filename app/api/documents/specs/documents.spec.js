@@ -85,9 +85,18 @@ describe('documents', () => {
 
   describe('delete', () => {
     beforeEach(() => {
-      fs.writeFileSync(path.join(paths.uploadedDocuments, '8202c463d6158af8065022d9b5014ccb.pdf'));
-      fs.writeFileSync(path.join(paths.uploadedDocuments, '8202c463d6158af8065022d9b5014cc1.pdf'));
-      fs.writeFileSync(path.join(paths.uploadedDocuments, '8202c463d6158af8065022d9b5014ccc.pdf'));
+      fs.writeFileSync(
+        path.join(paths.uploadedDocuments, '8202c463d6158af8065022d9b5014ccb.pdf'),
+        ''
+      );
+      fs.writeFileSync(
+        path.join(paths.uploadedDocuments, '8202c463d6158af8065022d9b5014cc1.pdf'),
+        ''
+      );
+      fs.writeFileSync(
+        path.join(paths.uploadedDocuments, '8202c463d6158af8065022d9b5014ccc.pdf'),
+        ''
+      );
     });
 
     it('should delete the document in the database', done =>

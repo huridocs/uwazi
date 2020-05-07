@@ -1,21 +1,10 @@
-import db from 'api/utils/testing_db';
-
-import { EntitySchema } from 'shared/types/entityType';
-import { FileType } from 'shared/types/fileType';
+import db, { DBFixture } from 'api/utils/testing_db';
 
 const entityId = db.id();
 const entityEnId = db.id();
 const uploadId = db.id();
 const templateId = db.id();
 const fileName1 = 'f2082bf51b6ef839690485d7153e847a.pdf';
-
-interface DBFixture {
-  files?: FileType[];
-  entities?: EntitySchema[];
-  templates?: Object[];
-  settings?: Object[];
-  connections?: Object[];
-}
 
 const fixtures: DBFixture = {
   files: [

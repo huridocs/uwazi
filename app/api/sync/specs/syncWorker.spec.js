@@ -59,7 +59,7 @@ describe('syncWorker', () => {
     spyOn(request, 'uploadFile').and.returnValue(Promise.resolve());
     spyOn(errorLog, 'error');
     syncWorker.stopped = false;
-    fs.writeFileSync(path.join(__dirname, `${newDoc1.toString()}.jpg`));
+    fs.writeFileSync(path.join(__dirname, `${newDoc1.toString()}.jpg`), '');
     await db.clearAllAndLoad(fixtures);
   });
 
