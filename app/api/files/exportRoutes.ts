@@ -50,7 +50,7 @@ export default (app: App) => {
         },
       },
     }),
-    (req, res, next) => {
+    async (req, res, next) => {
       req.query.filters = parseQueryProperty(req.query, 'filters');
       req.query.types = parseQueryProperty(req.query, 'types');
       req.query.unpublished = parseQueryProperty(req.query, 'unpublished');
@@ -60,33 +60,26 @@ export default (app: App) => {
       req.query.ids = parseQueryProperty(req.query, 'ids');
       if (!isArray(req.query.ids)) delete req.query.ids;
 
-      Promise.all([search.search(req.query, req.language, req.user), settings.get()])
-        .then(
-          // eslint-disable-next-line camelcase
-          ([results, { dateFormat, site_name }]) => {
-            const exporter = new CSVExporter();
-            const temporalFilePath = temporalFilesPath(
-              generateFileName({ originalname: 'export.csv' })
-            );
-            const fileStream = createWriteStream(temporalFilePath);
-            const exporterOptions = { dateFormat, language: req.language };
+      const results = await search.search(req.query, req.language, req.user);
+      const { dateFormat, site_name } = await settings.get();
 
-            exporter
-              .export(results, req.query.types, fileStream, exporterOptions)
-              .then(() => {
-                res.download(
-                  temporalFilePath,
-                  generateExportFileName(site_name),
-                  removeTempFile(temporalFilePath)
-                );
-              })
-              .catch(e => {
-                removeTempFile(temporalFilePath)();
-                next(e);
-              });
-          }
-        )
-        .catch(next);
+      const exporter = new CSVExporter();
+      const temporalFilePath = temporalFilesPath(generateFileName({ originalname: 'export.csv' }));
+      const fileStream = createWriteStream(temporalFilePath);
+      const exporterOptions = { dateFormat, language: req.language };
+
+      try {
+        await exporter.export(results, req.query.types, fileStream, exporterOptions);
+
+        res.download(
+          temporalFilePath,
+          generateExportFileName(site_name),
+          removeTempFile(temporalFilePath)
+        );
+      } catch (e) {
+        removeTempFile(temporalFilePath)();
+        next(e);
+      }
     }
   );
 };
