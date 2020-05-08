@@ -1,5 +1,4 @@
 import { Writable } from 'stream';
-import fs from 'fs';
 import request from 'supertest';
 import { setUpApp } from 'api/utils/testingRoutes';
 import search from 'api/search/search';
@@ -8,7 +7,6 @@ import csvExporter from 'api/csv/csvExporter';
 import * as filesystem from 'api/files/filesystem';
 
 import routes from '../exportRoutes';
-import language from 'shared/languagesList';
 import { NextFunction, Request, Response } from 'express';
 import { User } from '../../users/usersModel';
 
@@ -27,7 +25,8 @@ function assertExport(mockCall: any, searchResults: any, types: any, options: an
 }
 
 describe('export routes', () => {
-  let exportMock: any;
+  describe('/api/export', () => {
+    let exportMock: any;
 
   beforeAll(() => {
     exportMock = jest.fn().mockImplementation(() => Promise.resolve());
@@ -58,7 +57,6 @@ describe('export routes', () => {
     next();
   };
 
-  describe('/api/export', () => {
     it('should fetch, process and download the search results', async () => {
       const app = setUpApp(routes, fakeRequestAugmenterMiddleware({username: 'someuser'}, 'somelanguage'));
       spyOn(search, 'search').and.returnValue({ rows: ['searchresults'] });
@@ -88,7 +86,6 @@ describe('export routes', () => {
         includeUnpublished: '',
       }, 'somelanguage', { username: 'someuser'});
       assertExport(exportMock.mock.calls[0], { rows: ['searchresults'] }, ['types'], { dateFormat: 'YYYY-MM-DD', language: 'somelanguage' });
-      expect(fs.existsSync('exportRutesTest-A.csv')).toBe(false);
     });
   });
 });
