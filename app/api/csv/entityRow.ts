@@ -1,17 +1,26 @@
 import { templateUtils } from 'api/templates';
+import { CSVRow } from 'api/csv/csv';
 
-const toSafeName = rawEntity =>
-  Object.keys(rawEntity).reduce(
+type Languages = string[];
+
+export type RawEntity = {
+  language: string;
+  [k: string]: string;
+};
+
+const toSafeName = (row: CSVRow): CSVRow =>
+  Object.keys(row).reduce(
     (translatedObject, key) => ({
       ...translatedObject,
-      [templateUtils.safeName(key)]: rawEntity[key],
+      [templateUtils.safeName(key)]: row[key],
     }),
     {}
   );
 
-const notTranslated = languages => key => !key.match(new RegExp(`__(${languages.join('|')})$`));
+const notTranslated = (languages: Languages) => (key: string) =>
+  !key.match(new RegExp(`__(${languages.join('|')})$`));
 
-const languagesTranslated = (row, availableLanguages, currentLanguage) =>
+const languagesTranslated = (row: CSVRow, availableLanguages: Languages, currentLanguage: string) =>
   availableLanguages
     .filter(languageCode =>
       Object.keys(row)
@@ -22,12 +31,12 @@ const languagesTranslated = (row, availableLanguages, currentLanguage) =>
     )
     .concat([currentLanguage]);
 
-const extractEntity = (row, availableLanguages, currentLanguage) => {
+const extractEntity = (row: CSVRow, availableLanguages: Languages, currentLanguage: string) => {
   const safeNamed = toSafeName(row);
 
   const baseEntity = Object.keys(safeNamed)
     .filter(notTranslated(availableLanguages))
-    .reduce((entity, key) => {
+    .reduce<CSVRow>((entity, key) => {
       entity[key] = safeNamed[key]; //eslint-disable-line no-param-reassign
       return entity;
     }, {});
@@ -36,7 +45,7 @@ const extractEntity = (row, availableLanguages, currentLanguage) => {
     languageCode =>
       Object.keys(safeNamed)
         .filter(key => key.match(new RegExp(`__${languageCode}$`)))
-        .reduce(
+        .reduce<RawEntity>(
           (entity, key) => {
             entity[key.split(`__${languageCode}`)[0]] = safeNamed[key]; //eslint-disable-line no-param-reassign
             return entity;
@@ -46,8 +55,8 @@ const extractEntity = (row, availableLanguages, currentLanguage) => {
   );
 
   return {
-    rawEntity: rawEntities.find(e => e.language === currentLanguage),
-    rawTranslations: rawEntities.filter(e => e.language !== currentLanguage),
+    rawEntity: rawEntities.find((e: CSVRow) => e.language === currentLanguage),
+    rawTranslations: rawEntities.filter((e: CSVRow) => e.language !== currentLanguage),
   };
 };
 

@@ -1,5 +1,3 @@
-/** @format */
-
 import util from 'util';
 import Ajv from 'ajv';
 

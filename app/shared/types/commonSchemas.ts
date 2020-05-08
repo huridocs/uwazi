@@ -25,6 +25,23 @@ export const dateRangeSchema = {
   },
 };
 
+export const languageSchema = {
+  type: 'object',
+  required: ['key', 'label'],
+  additionalProperties: false,
+  properties: {
+    label: { type: 'string' },
+    key: { type: 'string' },
+    rtl: { type: 'boolean' },
+    default: { type: 'boolean' },
+  },
+};
+
+export const languagesListSchema = {
+  type: 'array',
+  items: languageSchema,
+};
+
 export const latLonSchema = {
   type: 'object',
   required: ['lon', 'lat'],

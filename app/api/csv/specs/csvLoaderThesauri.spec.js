@@ -1,11 +1,9 @@
-/** @format */
-
 import db from 'api/utils/testing_db';
 import thesauri from 'api/thesauri';
 import translations from 'api/i18n';
 import settings from 'api/settings';
 
-import CSVLoader from '../csvLoader';
+import { CSVLoader } from '../csvLoader';
 import fixtures from './fixtures';
 import { stream } from './helpers';
 
