@@ -533,7 +533,7 @@ export default {
     }
 
     if (actions.$unset || actions.$rename) {
-      await model.db.updateMany({ template: template._id }, actions);
+      await model.updateMany({ template: template._id }, actions);
     }
 
     if (!template.properties.find(p => p.type === propertyTypes.relationship)) {
@@ -628,7 +628,7 @@ export default {
     });
 
     const entitiesToReindex = await this.get(query, { _id: 1 });
-    await model.db.updateMany(query, { $set: changes });
+    await model.updateMany(query, { $set: changes });
     return search.indexEntities({ _id: { $in: entitiesToReindex.map(e => e._id.toString()) } });
   },
 
@@ -653,7 +653,7 @@ export default {
       return;
     }
     const entities = await this.get(query, { _id: 1 });
-    await model.db.updateMany(query, { $pull: changes });
+    await model.updateMany(query, { $pull: changes });
     if (entities.length > 0) {
       await search.indexEntities({ _id: { $in: entities.map(e => e._id.toString()) } }, null, 1000);
     }
@@ -691,7 +691,7 @@ export default {
 
     await Promise.all(
       properties.map(property =>
-        model.db.update(
+        model.updateMany(
           { language: restrictLanguage, [`metadata.${property.name}.value`]: valueId },
           {
             $set: Object.keys(changes).reduce(
@@ -702,7 +702,7 @@ export default {
               {}
             ),
           },
-          { arrayFilters: [{ 'valueObject.value': valueId }], multi: true }
+          { arrayFilters: [{ 'valueObject.value': valueId }] }
         )
       )
     );

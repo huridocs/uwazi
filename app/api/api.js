@@ -1,12 +1,8 @@
 /* eslint-disable global-require */
 import activitylogMiddleware from './activitylog/activitylogMiddleware';
-import elasticConfig from './config/elasticIndexes';
 import languageMiddleware from './utils/languageMiddleware';
 
 export default (app, server) => {
-  //set db to use
-  elasticConfig.index = elasticConfig[app.get('env')];
-
   //common middlewares
   app.use(languageMiddleware);
   app.use(activitylogMiddleware);

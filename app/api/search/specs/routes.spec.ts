@@ -9,7 +9,7 @@ import { instanceSearch } from 'api/search/search';
 import elasticIndexes from 'api/config/elasticIndexes';
 import searchRoutes from 'api/search/routes.ts';
 
-import fixtures, { ids } from './fixtures_elastic';
+import { fixtures, ids, fixturesTimeOut } from './fixtures_elastic';
 
 const elasticIndex = 'search_lookup_index_test';
 const search = instanceSearch(elasticIndex);
@@ -19,10 +19,11 @@ elasticIndexes.index = elasticIndex;
 describe('Search routes', () => {
   const app: Application = setUpApp(searchRoutes);
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     await db.clearAllAndLoad(fixtures);
     await elasticTesting.reindex();
-  });
+    testingTenants.changeCurrentTenant({ indexName: elasticIndex });
+  }, fixturesTimeOut);
 
   afterAll(async () => db.disconnect());
 

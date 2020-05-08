@@ -36,7 +36,7 @@ const syncronizer = {
     if (change.namespace === 'files' && data.filename) {
       await uploadFile(url, data.filename);
     }
-    return syncsModel.updateMany({}, { $set: { lastSync: change.timestamp } });
+    return syncsModel._updateMany({}, { $set: { lastSync: change.timestamp } });
   },
 };
 

@@ -900,12 +900,12 @@ describe('entities', () => {
     });
 
     it('should do nothing when there is no changed or deleted properties', done => {
-      spyOn(entitiesModel.db, 'updateMany');
+      spyOn(entitiesModel, 'updateMany');
 
       entities
         .updateMetadataProperties(currentTemplate, currentTemplate)
         .then(() => {
-          expect(entitiesModel.db.updateMany).not.toHaveBeenCalled();
+          expect(entitiesModel.updateMany).not.toHaveBeenCalled();
           done();
         })
         .catch(catchErrors(done));

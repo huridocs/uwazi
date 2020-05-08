@@ -55,12 +55,12 @@ import syncsModel from '../syncsModel';
 
 describe('syncWorker', () => {
   beforeEach(async () => {
+    await db.clearAllAndLoad(fixtures);
     paths.uploadedDocuments = __dirname;
     spyOn(request, 'uploadFile').and.returnValue(Promise.resolve());
     spyOn(errorLog, 'error');
     syncWorker.stopped = false;
     fs.writeFileSync(path.join(__dirname, `${newDoc1.toString()}.jpg`), '');
-    await db.clearAllAndLoad(fixtures);
   });
 
   afterAll(async () => {
@@ -606,7 +606,7 @@ describe('syncWorker', () => {
 
   describe('start', () => {
     it('should not fail on sync not in settings', async () => {
-      await settingsModel.db.update({}, { $unset: { sync: '' } });
+      await settingsModel.updateMany({}, { $unset: { sync: '' } });
       spyOn(syncWorker, 'intervalSync');
       const interval = 2000;
 
@@ -620,7 +620,7 @@ describe('syncWorker', () => {
     });
 
     it('should lazy create lastSync entry if not exists', async () => {
-      await syncsModel.remove({});
+      await syncsModel.deleteMany({});
 
       await syncWorker.start();
       const [{ lastSync }] = await syncsModel.find();

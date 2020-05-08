@@ -1,7 +1,8 @@
 import { CSVLoader } from 'api/csv';
-import connect, { disconnect } from 'api/utils/connect_to_mongo';
+import { DB } from 'api/odm';
 import users from 'api/users/users';
 import { prettifyError } from 'api/utils/handleError';
+import { tenants } from 'api/odm/tenantContext';
 
 const { template, importThesauri, username, language, file, stop } = require('yargs') // eslint-disable-line
   .option('template', {
@@ -39,12 +40,12 @@ const { template, importThesauri, username, language, file, stop } = require('ya
 const loader = new CSVLoader({ stopOnError: stop });
 
 if (importThesauri) {
-  connect()
-    .then(() => loader.loadThesauri(file, template, { language }))
+  DB.connect()
+    .then(() => tenants.run(async () => loader.loadThesauri(file, template, { language })))
     .then(() => {
       process.stdout.write(' 🎉 imported thesauri succesfully\n');
       process.stdout.write('\n\n');
-      disconnect();
+      DB.disconnect();
     })
     .catch(e => {
       const error = prettifyError(e);
@@ -56,7 +57,7 @@ if (importThesauri) {
         process.stdout.write(JSON.stringify(error.validations, null, ' '));
       }
       process.stdout.write('\n\n');
-      disconnect();
+      DB.disconnect();
     });
 } else {
   let loaded = 0;
@@ -75,27 +76,31 @@ if (importThesauri) {
 
   process.stdout.write('\n');
 
-  connect()
-    .then(() => users.get({ username }))
-    .then(([user]) => loader.load(file, template, { language, user }))
-    .then(() => {
-      process.stdout.write(` 🎉 imported ${loaded} entities succesfully\n`);
-      process.stdout.write('\n\n');
-      disconnect();
-    })
-    .catch(e => {
-      disconnect();
-      process.stdout.write('\n\n');
-      if (stop) {
-        process.stdout.write('There was an error and importation stoped !!\n');
-        process.stdout.write(e.message);
-        process.stdout.write(e.stack);
-      }
-
-      if (!stop) {
+  DB.connect().then(() =>
+    tenants
+      .run(async () => {
+        const [user] = await users.get({ username });
+        await loader.load(file, template, { language, user });
+      })
+      .then(() => {
         process.stdout.write(` 🎉 imported ${loaded} entities succesfully\n`);
-        process.stdout.write(` ‼ ${errors} entities had errors and were not imported\n`);
-      }
-      process.stdout.write('\n\n');
-    });
+        process.stdout.write('\n\n');
+        DB.disconnect();
+      })
+      .catch(e => {
+        DB.disconnect();
+        process.stdout.write('\n\n');
+        if (stop) {
+          process.stdout.write('There was an error and importation stoped !!\n');
+          process.stdout.write(e.message);
+          process.stdout.write(e.stack || '');
+        }
+
+        if (!stop) {
+          process.stdout.write(` 🎉 imported ${loaded} entities succesfully\n`);
+          process.stdout.write(` ‼ ${errors} entities had errors and were not imported\n`);
+        }
+        process.stdout.write('\n\n');
+      })
+  );
 }

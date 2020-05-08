@@ -1,14 +1,13 @@
-/** @format */
-
-import mongoose from 'mongoose';
+import mongoose, { Schema } from 'mongoose';
 import { ensure } from 'shared/tsUtils';
 import { model as updatelogsModel } from 'api/updatelogs';
 import { UpdateLog } from 'api/updatelogs/updatelogsModel';
 import testingDB from 'api/utils/testing_db';
 import { instanceModel } from '../model';
 import { OdmModel, WithId, models } from '../models';
+import { tenants } from '../tenantContext';
 
-const testSchema = new mongoose.Schema({
+const testSchema = new Schema({
   name: String,
   value: String,
 });
@@ -29,10 +28,16 @@ describe('ODM Model', () => {
     await testingDB.disconnect();
   });
 
+  const instanceTestingModel = (collectionName: string, schema: Schema) => {
+    const model = instanceModel<TestDoc>(collectionName, schema);
+    tenants.add({ name: testingDB.dbName, dbName: testingDB.dbName, indexName: 'index' });
+    return model;
+  };
+
   it('should register all the models to the requirable models hashmap', () => {
     expect(models).toEqual({});
-    const model1 = instanceModel<TestDoc>('tempSchema', testSchema);
-    const model2 = instanceModel('anotherSchema', new mongoose.Schema({ name: String }));
+    const model1 = instanceTestingModel('tempSchema', testSchema);
+    const model2 = instanceTestingModel('anotherSchema', new mongoose.Schema({ name: String }));
 
     expect(models.tempSchema.db).toBe(model1.db);
     expect(models.anotherSchema.db).toBe(model2.db);
@@ -40,8 +45,9 @@ describe('ODM Model', () => {
 
   describe('Save', () => {
     it('should be able to create when passing an _id and it does not exists', async () => {
-      const extendedModel = instanceModel<TestDoc>('tempSchema', testSchema);
-      const id: mongoose.Schema.Types.ObjectId = testingDB.id();
+      const extendedModel = instanceTestingModel('tempSchema', testSchema);
+
+      const id = testingDB.id();
       const savedDoc = await extendedModel.save({
         _id: id,
         name: 'document 1',
@@ -66,7 +72,7 @@ describe('ODM Model', () => {
 
     beforeEach(async () => {
       Date.now = () => 1;
-      extendedModel = instanceModel<TestDoc>('tempSchema', testSchema);
+      extendedModel = instanceTestingModel('tempSchema', testSchema);
       newDocument1 = await extendedModel.save({ name: 'document 1' });
       newDocument2 = await extendedModel.save({ name: 'document 2' });
     });
@@ -102,7 +108,7 @@ describe('ODM Model', () => {
     it('should intercept updateMany', async () => {
       const newDocument3 = await extendedModel.save({ name: 'document 3' });
       Date.now = () => 3;
-      await extendedModel.db.updateMany(
+      await extendedModel.updateMany(
         { _id: { $in: [newDocument1._id, newDocument2._id] } },
         { $set: { name: 'same name' } }
       );
@@ -158,7 +164,7 @@ describe('ODM Model', () => {
       });
 
       it('should intercept model delete with id as string', async () => {
-        await extendedModel.delete(newDocument2._id.toString());
+        await extendedModel.delete(newDocument2._id);
         const logEntries = await updatelogsModel.find({});
 
         expect(logEntries.length).toBe(2);

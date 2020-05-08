@@ -5,7 +5,7 @@ import propertiesHelper from 'shared/comonProperties';
 
 import translate, { getLocaleTranslation, getContext } from 'shared/translate';
 import translations from 'api/i18n/translations';
-import elasticIndexes from 'api/config/elasticIndexes';
+import { tenants } from 'api/odm/tenantContext';
 
 import dictionariesModel from 'api/thesauri/dictionariesModel';
 import { createError } from 'api/utils';
@@ -17,6 +17,8 @@ import entities from '../entities';
 import templatesModel from '../templates';
 import { bulkIndex, indexEntities } from './entitiesIndex';
 import thesauri from '../thesauri';
+
+const getCurrentTenantIndex = () => tenants.current().indexName;
 
 function processFilters(filters, properties) {
   return Object.keys(filters || {}).reduce((res, filterName) => {
@@ -647,7 +649,7 @@ const instanceSearch = elasticIndex => ({
 
     // queryBuilder.query() is the actual call
     return elastic
-      .search({ index: elasticIndex || elasticIndexes.index, body: queryBuilder.query() })
+      .search({ index: elasticIndex || getCurrentTenantIndex(), body: queryBuilder.query() })
       .then(response => processResponse(response, templates, dictionaries, language, query.filters))
       .catch(e => {
         throw createError(e, 400);
@@ -690,7 +692,7 @@ const instanceSearch = elasticIndex => ({
       .query();
 
     const response = await elastic.search({
-      index: elasticIndex || elasticIndexes.index,
+      index: elasticIndex || getCurrentTenantIndex(),
       body: query,
     });
     if (response.hits.hits.length === 0) {
@@ -709,7 +711,7 @@ const instanceSearch = elasticIndex => ({
       select,
       limit,
       batchCallback,
-      elasticIndex: elasticIndex || elasticIndexes.index,
+      elasticIndex: elasticIndex || getCurrentTenantIndex(),
       searchInstance: this,
     });
   },
@@ -720,19 +722,19 @@ const instanceSearch = elasticIndex => ({
 
   bulkDelete(docs) {
     const body = docs.map(doc => ({
-      delete: { _index: elasticIndex || elasticIndexes.index, _id: doc._id },
+      delete: { _index: elasticIndex || getCurrentTenantIndex(), _id: doc._id },
     }));
     return elastic.bulk({ body });
   },
 
   delete(entity) {
     const id = entity._id.toString();
-    return elastic.delete({ index: elasticIndex || elasticIndexes.index, id });
+    return elastic.delete({ index: elasticIndex || getCurrentTenantIndex(), id });
   },
 
   deleteLanguage(language) {
     const query = { query: { match: { language } } };
-    return elastic.deleteByQuery({ index: elasticIndex || elasticIndexes.index, body: query });
+    return elastic.deleteByQuery({ index: elasticIndex || getCurrentTenantIndex(), body: query });
   },
 
   async autocompleteAggregations(query, language, propertyName, searchTerm, user) {
@@ -765,7 +767,7 @@ const instanceSearch = elasticIndex => ({
     });
 
     const response = await elastic.search({
-      index: elasticIndex || elasticIndexes.index,
+      index: elasticIndex || getCurrentTenantIndex(),
       body,
     });
     const sanitizedAggregations = await _sanitizeAggregations(
@@ -826,7 +828,7 @@ const instanceSearch = elasticIndex => ({
       });
     }
 
-    const response = await elastic.search({ index: elasticIndex || elasticIndexes.index, body });
+    const response = await elastic.search({ index: elasticIndex || getCurrentTenantIndex(), body });
 
     const options = response.hits.hits.slice(0, preloadOptionsLimit).map(hit => ({
       value: hit._source.sharedId,

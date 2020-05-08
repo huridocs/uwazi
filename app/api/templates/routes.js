@@ -1,6 +1,7 @@
 import Joi from 'joi';
 
 import settings from 'api/settings';
+
 import { validation } from '../utils';
 import needsAuthorization from '../auth/authMiddleware';
 import templates from './templates';

@@ -220,7 +220,7 @@ describe('WorkerManager', () => {
     });
     describe('if there are no inProgress or pending searches', () => {
       it('should not start any search worker', async () => {
-        await model.db.updateMany({}, { status: 'completed' });
+        await model.updateMany({}, { status: 'completed' });
         await manager.start();
         expect(manager.notifyNewSearch).not.toHaveBeenCalled();
       });
