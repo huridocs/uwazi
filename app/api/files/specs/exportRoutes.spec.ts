@@ -15,7 +15,7 @@ jest.mock('api/csv/csvExporter');
 function assertDownloaded(res: any) {
   expect(res.header['content-type']).toMatch('text/csv');
   expect(res.header['content-disposition']).toMatch(/^attachment; filename=(.*)/);
-};
+}
 
 function assertExport(mockCall: any, searchResults: any, types: any, options: any) {
   expect(mockCall[0]).toEqual(searchResults);
@@ -28,37 +28,44 @@ describe('export routes', () => {
   describe('/api/export', () => {
     let exportMock: any;
 
-  beforeAll(() => {
-    exportMock = jest.fn().mockImplementation(() => Promise.resolve());
-    (csvExporter as any).mockImplementation(() => ({
-      export: exportMock,
-    }));
-  });
+    beforeAll(() => {
+      exportMock = jest.fn().mockImplementation(async () => Promise.resolve());
+      (csvExporter as any).mockImplementation(() => ({
+        export: exportMock,
+      }));
+    });
 
-  beforeEach(async () => {
-    const fixtures = {
-      settings: [
-        {
-          dateFormat: 'YYYY-MM-DD',
-          site_name: 'uwazi',
-          languages: [{ key: 'es', default: true }, { key: 'pt' }, { key: 'en' }],
-        },
-      ],
+    beforeEach(async () => {
+      const fixtures = {
+        settings: [
+          {
+            dateFormat: 'YYYY-MM-DD',
+            site_name: 'uwazi',
+            languages: [{ key: 'es', default: true }, { key: 'pt' }, { key: 'en' }],
+          },
+        ],
+      };
+      await db.clearAllAndLoad(fixtures);
+    });
+
+    afterAll(async () => db.disconnect());
+
+    const fakeRequestAugmenterMiddleware = (user: User, language: string) => (
+      req: Request,
+      _res: Response,
+      next: NextFunction
+    ) => {
+      (req as any).user = user;
+      (req as any).language = language;
+
+      next();
     };
-    await db.clearAllAndLoad(fixtures);
-  });
-
-  afterAll(async () => db.disconnect());
-
-  const fakeRequestAugmenterMiddleware = (user: User, language: string) => (req: Request, res: Response, next: NextFunction) => {
-    (req as any).user = user;
-    (req as any).language = language;
-  
-    next();
-  };
 
     it('should fetch, process and download the search results', async () => {
-      const app = setUpApp(routes, fakeRequestAugmenterMiddleware({username: 'someuser'}, 'somelanguage'));
+      const app = setUpApp(
+        routes,
+        fakeRequestAugmenterMiddleware({ username: 'someuser' }, 'somelanguage')
+      );
       spyOn(search, 'search').and.returnValue({ rows: ['searchresults'] });
       spyOn(filesystem, 'temporalFilesPath').and.returnValue('exportRutesTest-A.csv');
 
@@ -76,16 +83,23 @@ describe('export routes', () => {
         });
 
       assertDownloaded(res);
-      expect(search.search).toHaveBeenCalledWith({
-        filters: '',
-        types: ['types'],
-        fields: '',
-        aggregations: '',
-        select: '',
-        unpublished: '',
-        includeUnpublished: '',
-      }, 'somelanguage', { username: 'someuser'});
-      assertExport(exportMock.mock.calls[0], { rows: ['searchresults'] }, ['types'], { dateFormat: 'YYYY-MM-DD', language: 'somelanguage' });
+      expect(search.search).toHaveBeenCalledWith(
+        {
+          filters: '',
+          types: ['types'],
+          fields: '',
+          aggregations: '',
+          select: '',
+          unpublished: '',
+          includeUnpublished: '',
+        },
+        'somelanguage',
+        { username: 'someuser' }
+      );
+      assertExport(exportMock.mock.calls[0], { rows: ['searchresults'] }, ['types'], {
+        dateFormat: 'YYYY-MM-DD',
+        language: 'somelanguage',
+      });
     });
   });
 });

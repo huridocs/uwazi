@@ -1,4 +1,3 @@
-import { Application } from 'express';
 import { createWriteStream, unlink } from 'fs';
 import errorLog from 'api/log/errorLog';
 import { search } from 'api/search';
@@ -21,7 +20,8 @@ export default (app: App) => {
   const parseQueryProperty = (query: any, property: string) =>
     query[property] ? JSON.parse(query[property]) : query[property];
 
-  const generateExportFileName = (databaseName: string) => `${databaseName}-${new Date().toISOString()}.csv`;
+  const generateExportFileName = (databaseName: string) =>
+    `${databaseName}-${new Date().toISOString()}.csv`;
 
   const removeTempFile = (filePath: string) => () => {
     unlink(filePath, err => {
@@ -60,31 +60,33 @@ export default (app: App) => {
       req.query.ids = parseQueryProperty(req.query, 'ids');
       if (!isArray(req.query.ids)) delete req.query.ids;
 
-      Promise.all([search.search(req.query, req.language, req.user), settings.get()]).then(
-        // eslint-disable-next-line camelcase
-        ([results, { dateFormat, site_name }]) => {
-          const exporter = new CSVExporter();
-          const temporalFilePath = temporalFilesPath(
-            generateFileName({ originalname: 'export.csv' })
-          );
-          const fileStream = createWriteStream(temporalFilePath);
-          const exporterOptions = { dateFormat, language: req.language };
+      Promise.all([search.search(req.query, req.language, req.user), settings.get()])
+        .then(
+          // eslint-disable-next-line camelcase
+          ([results, { dateFormat, site_name }]) => {
+            const exporter = new CSVExporter();
+            const temporalFilePath = temporalFilesPath(
+              generateFileName({ originalname: 'export.csv' })
+            );
+            const fileStream = createWriteStream(temporalFilePath);
+            const exporterOptions = { dateFormat, language: req.language };
 
-          exporter
-            .export(results, req.query.types, fileStream, exporterOptions)
-            .then(() => {
-              res.download(
-                temporalFilePath,
-                generateExportFileName(site_name),
-                removeTempFile(temporalFilePath)
-              );
-            })
-            .catch(e => {
-              removeTempFile(temporalFilePath)();
-              next(e);
-            });
-        }
-      );
+            exporter
+              .export(results, req.query.types, fileStream, exporterOptions)
+              .then(() => {
+                res.download(
+                  temporalFilePath,
+                  generateExportFileName(site_name),
+                  removeTempFile(temporalFilePath)
+                );
+              })
+              .catch(e => {
+                removeTempFile(temporalFilePath)();
+                next(e);
+              });
+          }
+        )
+        .catch(next);
     }
   );
-}
+};
