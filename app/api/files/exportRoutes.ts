@@ -37,19 +37,14 @@ export default (app: App) => {
           properties: {
             filters: { type: 'string' },
             types: { type: 'string' },
-            _types: { type: 'string' },
-            fields: { type: 'string' },
             allAggregations: { type: 'string' },
             userSelectedSorting: { type: 'string' },
-            aggregations: { type: 'string' },
             order: { type: 'string' },
             sort: { type: 'string' },
             limit: { type: 'string' },
             searchTerm: { type: 'string' },
             includeUnpublished: { type: 'string' },
-            treatAs: { type: 'string' },
             unpublished: { type: 'string' },
-            select: { type: 'string' },
             ids: { type: 'string' },
           },
         },
@@ -58,11 +53,9 @@ export default (app: App) => {
     (req, res, next) => {
       req.query.filters = parseQueryProperty(req.query, 'filters');
       req.query.types = parseQueryProperty(req.query, 'types');
-      req.query.fields = parseQueryProperty(req.query, 'fields');
-      req.query.aggregations = parseQueryProperty(req.query, 'aggregations');
-      req.query.select = parseQueryProperty(req.query, 'select');
       req.query.unpublished = parseQueryProperty(req.query, 'unpublished');
       req.query.includeUnpublished = parseQueryProperty(req.query, 'includeUnpublished');
+      req.query.allAggregations = parseQueryProperty(req.query, 'allAggregations');
 
       req.query.ids = parseQueryProperty(req.query, 'ids');
       if (!isArray(req.query.ids)) delete req.query.ids;
