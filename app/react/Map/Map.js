@@ -34,7 +34,9 @@ export default class Map extends Component {
     this.state.settings.touchZoom = props.scrollZoom;
     this.state.showControls = props.showControls;
 
-    this.mapStyle = Immutable.fromJS(_style);
+    const searchRegExp = /{{MAP_TILER_KEY}}/g;
+    const stringifyStyle = JSON.stringify(_style).replace(searchRegExp, 'QiI1BlAJNMmZagsX5qp7');
+    this.mapStyle = Immutable.fromJS(JSON.parse(stringifyStyle));
     this.supercluster = new Supercluster({
       radius: _style.sources.markers.clusterRadius,
       maxZoom: _style.sources.markers.clusterMaxZoom,

@@ -74,6 +74,7 @@ export class CollectionSettings extends Component {
       props.settings.dateFormat && props.settings.dateFormat.includes('/') ? '/' : '-';
     const dateFormat = CollectionSettings.getDateFormatValue(settings.dateFormat, dateSeparator);
     const customLandingpage = Boolean(props.settings.home_page);
+    const mapTilerKey = '';
     const allowedPublicTemplatesString = settings.allowedPublicTemplates
       ? settings.allowedPublicTemplates.join(',')
       : '';
@@ -82,6 +83,7 @@ export class CollectionSettings extends Component {
       customLandingpage,
       dateFormat,
       allowedPublicTemplatesString,
+      mapTilerKey,
     });
     this.updateSettings = this.updateSettings.bind(this);
   }
@@ -266,6 +268,12 @@ export class CollectionSettings extends Component {
                 <br />
                 5d5b0698e28d130bc98efc8b,5d5d876aa77a121bf9cdd1ff
               </div>
+            </div>
+            <div className="form-group">
+              <label className="form-group-label" htmlFor="mapTilerKey">
+                {t('System', 'MapTiler key')}
+              </label>
+              <Control.text model=".mapTilerKey" className="form-control" />
             </div>
             <span className="form-group-label">{t('System', 'Show Cookie policy')}</span>
             <div className="checkbox">
