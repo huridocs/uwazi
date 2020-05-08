@@ -61,6 +61,7 @@ export default (app: App) => {
       if (!isArray(req.query.ids)) delete req.query.ids;
 
       const results = await search.search(req.query, req.language, req.user);
+      // eslint-disable-next-line camelcase
       const { dateFormat, site_name } = await settings.get();
 
       const exporter = new CSVExporter();
