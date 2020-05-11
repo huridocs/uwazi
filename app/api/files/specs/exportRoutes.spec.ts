@@ -28,13 +28,6 @@ describe('export routes', () => {
   describe('/api/export', () => {
     let exportMock: any;
 
-    beforeAll(() => {
-      exportMock = jest.fn().mockImplementation(async () => Promise.resolve());
-      (csvExporter as any).mockImplementation(() => ({
-        export: exportMock,
-      }));
-    });
-
     beforeEach(async () => {
       const fixtures = {
         settings: [
@@ -46,6 +39,11 @@ describe('export routes', () => {
         ],
       };
       await db.clearAllAndLoad(fixtures);
+
+      exportMock = jest.fn().mockImplementation(async () => Promise.resolve());
+      (csvExporter as any).mockImplementation(() => ({
+        export: exportMock,
+      }));
     });
 
     afterAll(async () => db.disconnect());
