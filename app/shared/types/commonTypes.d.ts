@@ -8,14 +8,28 @@ export type ObjectIdSchema =
     };
 
 export interface LinkSchema {
-  label: string;
-  url: string;
+  label?: string | null;
+  url?: string | null;
 }
 
 export interface DateRangeSchema {
   from?: number | null;
   to?: number | null;
 }
+
+export interface LanguageSchema {
+  label: string;
+  key: string;
+  rtl?: boolean;
+  default?: boolean;
+}
+
+export type LanguagesListSchema = {
+  label: string;
+  key: string;
+  rtl?: boolean;
+  default?: boolean;
+}[];
 
 export interface LatLonSchema {
   label?: string;
@@ -29,14 +43,7 @@ export type GeolocationSchema = {
   lon: number;
 }[];
 
-export type PropertyValueSchema =
-  | null
-  | string
-  | number
-  | LinkSchema
-  | DateRangeSchema
-  | LatLonSchema
-  | LatLonSchema[];
+export type PropertyValueSchema = null | string | number | LinkSchema | DateRangeSchema | LatLonSchema | LatLonSchema[];
 
 export interface MetadataObjectSchema {
   value: PropertyValueSchema;
