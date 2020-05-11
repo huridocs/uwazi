@@ -48,7 +48,9 @@ exports[`MultiSelect should display a not found message when there are no option
         <span>
           -5
            
-          x more
+          <Connect(Translate)>
+            x more
+          </Connect(Translate)>
         </span>
       </button>
     </ShowIf>
@@ -409,7 +411,9 @@ exports[`MultiSelect should not render an empty group 1`] = `
         <span>
           -2
            
-          x more
+          <Connect(Translate)>
+            x more
+          </Connect(Translate)>
         </span>
       </button>
     </ShowIf>
