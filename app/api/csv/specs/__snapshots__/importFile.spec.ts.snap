@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`importFile readStream should return a readable stream for the csv file 1`] = `
-"undefinedTitle , text label  , numeric label, non configured, select label, not defined type, geolocation_geolocation
+"Title , text label  , numeric label, non configured, select label, not defined type, geolocation_geolocation
 
 title1, text value 1, 1977, ______________, thesauri1   , notType1                 , 1|1,
 title2, text value 2, 2019, ______________, thesauri2   , notType2                 ,    ,
@@ -9,16 +9,16 @@ title3, text value 3, 2020, ______________, thesauri2   , notType3              
 "
 `;
 
-exports[`importFile readStream when file is a a zip should return a stream for the first csv file it encounters 1`] = `
-"undefinedTitle , file ,
+exports[`importFile readStream when file is a a zip should return a stream for a file that should be called import.csv by default 1`] = `
+"Title , file , attachments,
 
-file1, 1.pdf,
-file2, 2.pdf,
-file3, 3.pdf,
+file1, 1.pdf, att1.doc,
+file2, 2.pdf, att1.doc|att2.jpg,
+file3, 3.pdf,                  ,
 "
 `;
 
 exports[`importFile readStream when file is a a zip when passing a filename should return a read stream for that file 1`] = `
-"undefinedfile1.txt
+"file1.txt
 "
 `;

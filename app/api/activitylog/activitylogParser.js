@@ -9,6 +9,7 @@ import {
   generateSemanticSearchUpdateBeautifier,
   formatLanguage,
 } from './helpers';
+import { typeParsers } from './migrationsParser';
 
 const entitiesPOST = async log => {
   const data = JSON.parse(log.body);
@@ -160,6 +161,12 @@ const semanticSearchPOST = async log => {
   };
 };
 
+const migrationLog = log => {
+  const data = JSON.parse(log.body);
+
+  return typeParsers[data.type] ? typeParsers[data.type](data) : { beautified: false };
+};
+
 const actions = {
   'POST/api/entities': entitiesPOST,
   'POST/api/documents': entitiesPOST,
@@ -224,6 +231,7 @@ const actions = {
   'POST/api/semantic-search/resume': generateSemanticSearchUpdateBeautifier(
     'Resumed semantic search'
   ),
+  MIGRATE: migrationLog,
 };
 
 const getSemanticData = async data => {

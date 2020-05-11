@@ -2,9 +2,9 @@ import path from 'path';
 import zipFile from 'api/utils/zipFile';
 import { fileFromReadStream } from 'api/files/filesystem';
 
-const matchJson = entry => path.extname(entry.fileName) === '.json';
-const matchVideo = entry => path.extname(entry.fileName) === '.mp4';
-const matchScreenshot = entry => path.extname(entry.fileName) === '.png';
+const matchJson = entry => path.extname(entry) === '.json';
+const matchVideo = entry => path.extname(entry) === '.mp4';
+const matchScreenshot = entry => path.extname(entry) === '.png';
 
 const parseJson = (json, evidence) => {
   if (json) {

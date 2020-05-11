@@ -1,5 +1,3 @@
-/** @format */
-
 import fs from 'fs';
 import path from 'path';
 import { Readable } from 'stream';
@@ -33,8 +31,10 @@ const setupTestUploadedPaths = () => {
   paths.customUploads = `${__dirname}/specs/customUploads/`;
 };
 
-const uploadsPath = (fileName: FilePath): FilePath =>
-  path.join(configPaths.uploadedDocuments, fileName);
+const uploadsPath = (
+  fileName: string,
+  destination: FilePath = configPaths.uploadedDocuments
+): FilePath => path.join(destination, fileName);
 
 const customUploadsPath = (fileName: FilePath): FilePath =>
   path.join(configPaths.customUploads, fileName);
@@ -72,9 +72,13 @@ const fileExists = async (filePath: FilePath): Promise<boolean> =>
 const generateFileName = ({ originalname = '' }: FileType) =>
   Date.now() + ID() + path.extname(originalname);
 
-const fileFromReadStream = async (fileName: FilePath, readStream: Readable): Promise<FilePath> =>
+const fileFromReadStream = async (
+  fileName: FilePath,
+  readStream: Readable,
+  destination: string | undefined = undefined
+): Promise<FilePath> =>
   new Promise((resolve, reject) => {
-    const filePath = uploadsPath(fileName);
+    const filePath = uploadsPath(fileName, destination);
     const writeStream = fs.createWriteStream(filePath);
     readStream
       .pipe(writeStream)

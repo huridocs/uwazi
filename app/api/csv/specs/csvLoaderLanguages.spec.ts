@@ -1,5 +1,3 @@
-/** @format */
-
 import path from 'path';
 import fs from 'fs';
 import db from 'api/utils/testing_db';
@@ -8,14 +6,17 @@ import { files } from 'api/files/files';
 import { search } from 'api/search';
 import settings from 'api/settings';
 import * as fileUtils from 'api/files/filesystem';
+import { EntitySchema } from 'shared/types/entityType';
+import { ensure } from 'shared/tsUtils';
+import { MetadataObjectSchema } from 'shared/types/commonTypes';
 
-import CSVLoader from '../csvLoader';
+import { CSVLoader } from '../csvLoader';
 import fixtures, { template1Id } from './fixtures';
 import { createTestingZip } from './helpers';
 
 import configPaths from '../../config/paths';
 
-const removeTestingZip = () =>
+const removeTestingZip = async () =>
   new Promise(resolve => {
     fs.unlink(path.join(__dirname, 'zipData/testLanguages.zip'), () => {
       resolve();
@@ -23,7 +24,7 @@ const removeTestingZip = () =>
   });
 
 describe('csvLoader languages', () => {
-  let imported;
+  let imported: EntitySchema[];
   const loader = new CSVLoader();
 
   beforeAll(async () => {
@@ -76,10 +77,12 @@ describe('csvLoader languages', () => {
   it('should import translated metadata properties', async () => {
     const enText = imported
       .filter(e => e.language === 'en')
-      .map(i => i.metadata.text_label[0].value);
+      // eslint-disable-next-line camelcase
+      .map(i => ensure<MetadataObjectSchema>(i?.metadata?.text_label)[0].value);
     const esText = imported
       .filter(e => e.language === 'es')
-      .map(i => i.metadata.text_label[0].value);
+      // eslint-disable-next-line camelcase
+      .map(i => ensure<MetadataObjectSchema>(i?.metadata?.text_label)[0].value);
     expect(enText).toEqual(['text_en1', 'text_en2', 'text_en3']);
     expect(esText).toEqual(['text_es1', 'text_es2', 'text_es3']);
   });
@@ -87,5 +90,35 @@ describe('csvLoader languages', () => {
   it('should import translated files', async () => {
     const importedFiles = await files.get({ type: 'document' });
     expect(importedFiles.map(f => f.filename)).toEqual(['generated2.pdf', 'generated1.pdf']);
+  });
+
+  it('should import attachment files', async () => {
+    const [{ attachments: enAttachments }] = await entities.get({
+      attachments: { $exists: true },
+      language: 'en',
+    });
+
+    const [{ attachments: esAttachments }] = await entities.get({
+      attachments: { $exists: true },
+      language: 'es',
+    });
+
+    expect(enAttachments).toEqual([
+      expect.objectContaining({
+        filename: 'generated1.pdf',
+      }),
+      expect.objectContaining({
+        filename: 'generated2.pdf',
+      }),
+    ]);
+
+    expect(esAttachments).toEqual([
+      expect.objectContaining({
+        filename: 'generated1.pdf',
+      }),
+      expect.objectContaining({
+        filename: 'generated2.pdf',
+      }),
+    ]);
   });
 });

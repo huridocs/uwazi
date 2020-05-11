@@ -9,7 +9,7 @@ import proxy from 'express-http-proxy';
 
 import entities from 'api/entities';
 import { search } from 'api/search';
-import CSVLoader, { CSVExporter } from 'api/csv';
+import { CSVLoader, CSVExporter } from 'api/csv';
 import { saveSchema } from 'api/entities/endpointSchema';
 import { generateFileName, temporalFilesPath } from 'api/files/filesystem';
 import settings from 'api/settings';

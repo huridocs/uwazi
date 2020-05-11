@@ -1,18 +1,7 @@
-/** @format */
-
 import moment from 'moment';
 import typeParsers from '../typeParsers';
 
 describe('csvLoader typeParsers', () => {
-  describe('default', () => {
-    it('should use text parser', async () => {
-      const templateProp = { name: 'text_prop' };
-      const rawEntity = { text_prop: 'text' };
-
-      expect(await typeParsers.default(rawEntity, templateProp)).toEqual([{ value: 'text' }]);
-    });
-  });
-
   describe('text', () => {
     it('should return the value', async () => {
       const templateProp = { name: 'text_prop' };

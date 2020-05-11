@@ -1,4 +1,4 @@
-Title__es,  Title__en,  text_label__es,  text_label__en,  select_label,  file__es,  file__en,
-title_es1,  title_en1,  text_es1,        text_en1,        thesauri1,     1.pdf,     2.pdf,
+Title__es,  Title__en,  text_label__es,  text_label__en,  select_label,  file__es,  file__en, attachments,
+title_es1,  title_en1,  text_es1,        text_en1,        thesauri1,     1.pdf   ,  2.pdf   , 1.pdf|2.pdf,
 title_es2,  title_en2,  text_es2,        text_en2,        thesauri2,
 title_es3,  title_en3,  text_es3,        text_en3,        thesauri2,
