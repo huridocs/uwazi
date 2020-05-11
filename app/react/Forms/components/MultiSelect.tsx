@@ -379,7 +379,7 @@ abstract class MultiSelectBase<ValueType> extends Component<
           <div className="total-options">
             {count} <Translate>more options.</Translate>{' '}
             <button onClick={this.focusSearch} type="button">
-              <Translate>Narrow down results</Translate>
+              <Translate>Narrow your search</Translate>
             </button>
           </div>
         )}
