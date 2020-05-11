@@ -34,6 +34,7 @@ describe('SelectMultiplePanel', () => {
       formKey: 'library.sidepanel.multipleEdit',
       thesauris: Immutable.fromJS([]),
       template: Immutable.fromJS({ properties: [] }),
+      storeKey: 'library',
     };
     context = { confirm: jasmine.createSpy('confirm') };
   });
