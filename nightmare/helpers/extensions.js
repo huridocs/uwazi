@@ -623,7 +623,11 @@ Nightmare.action('clickLink', function clickLink(label, done) {
       if (found) {
         return;
       }
-      if (link.innerText.match(nameToFind)) {
+
+      if (link.innerText.match(nameToFind) && link.getAttribute('target')) {
+        found = link.setAttribute('target', '');
+        found = link;
+      } else if (link.innerText.match(nameToFind)) {
         found = link;
       }
     });

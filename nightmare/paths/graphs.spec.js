@@ -50,57 +50,58 @@ describe('pages path', () => {
         .write(localSelectors.pageTitleInput, 'Page data viz')
         .write(localSelectors.pageContentsInput, '</p><Dataset />')
         .clickLink('Save')
-        .wait(1000);
+        .waitToClick('.alert.alert-success');
 
-      await nightmare.getInnerText(localSelectors.createdPageLink).then(text => {
-        expect(text).toContain('(view page)');
-      });
+      const text = await nightmare.getInnerText(localSelectors.createdPageLink);
+      expect(text).toContain('(view page)');
     });
 
     it('should insert Bar chart graph in created page', async () => {
-      await nightmare
-        .evaluate(
-          selector => document.querySelector(selector).value,
-          localSelectors.pageContentsInput
-        )
-        .then(response => {
-          expect(response).toBeTruthy();
-          expect(response).toContain('<Dataset />');
-        });
+      const pageContentsInput = await nightmare.evaluate(
+        selector => document.querySelector(selector).value,
+        localSelectors.pageContentsInput
+      );
+
+      expect(pageContentsInput).toContain('<Dataset />');
+
       await nightmare
         .write(localSelectors.pageContentsInput, graphs.barChart)
-        .click(localSelectors.savePageButton);
+        .click(localSelectors.savePageButton)
+        .waitToClick('.alert.alert-success');
     });
 
     it('should display Bar chart graph in page with no more than a 1% difference', async () => {
-      await nightmare
-        .evaluate(selector => document.querySelector(selector).href, localSelectors.createdPageLink)
-        .then(link => nightmare.goto(link));
-
-      await nightmare
+      const chartsContainerHTML = await nightmare
+        .clickLink('(view page)')
         .wait('div.markdown-viewer')
-        .getInnerHtml('div.markdown-viewer')
-        .then(html => {
-          expect(html).toContain('class="recharts-responsive-container"');
+        .waitForGraphsAnimation()
+        .getInnerHtml('div.markdown-viewer');
 
-          return nightmare
-            .waitForGraphsAnimation()
-            .screenshot()
-            .then(image => {
-              expect(image).toMatchImageSnapshot({
-                failureThreshold: 0.01,
-                failureThresholdType: 'percent',
-                allowSizeMismatch: true,
-              });
-            });
-        });
+      expect(chartsContainerHTML).toContain('class="recharts-responsive-container"');
+
+      const pageScreenshot = await nightmare.screenshot();
+      expect(pageScreenshot).toMatchImageSnapshot({
+        failureThreshold: 0.01,
+        failureThresholdType: 'percent',
+        allowSizeMismatch: true,
+      });
     });
 
     it('should navigate back to the edit page and insert Pie+List chart graphs', async () => {
       await nightmare
         .back()
         .wait('.page-creator')
-        .clearInput(localSelectors.pageContentsInput)
+        .clearInput(localSelectors.pageContentsInput);
+
+      const pageContentsInput = await nightmare.evaluate(
+        selector => document.querySelector(selector).value,
+        localSelectors.pageContentsInput
+      );
+
+      expect(pageContentsInput).toBe('');
+      expect(pageContentsInput.length).toEqual(0);
+
+      await nightmare
         .write(localSelectors.pageContentsInput, '</p><Dataset />')
         .write(localSelectors.pageContentsInput, graphs.pieChart)
         .write(localSelectors.pageContentsInput, graphs.listChart)
@@ -108,20 +109,20 @@ describe('pages path', () => {
     });
 
     it('should display Pie-List chart graphs in page with no more than a 1% difference', async () => {
-      await nightmare
-        .evaluate(selector => document.querySelector(selector).href, localSelectors.createdPageLink)
-        .then(link => nightmare.goto(link));
-
-      await nightmare
+      const chartsContainerHTML = await nightmare
+        .clickLink('(view page)')
+        .wait('div.markdown-viewer')
         .waitForGraphsAnimation()
-        .screenshot()
-        .then(image => {
-          expect(image).toMatchImageSnapshot({
-            failureThreshold: 0.01,
-            failureThresholdType: 'percent',
-            allowSizeMismatch: true,
-          });
-        });
+        .getInnerHtml('div.markdown-viewer');
+
+      expect(chartsContainerHTML).toContain('class="recharts-responsive-container"');
+
+      const pageScreenshot = await nightmare.screenshot();
+      expect(pageScreenshot).toMatchImageSnapshot({
+        failureThreshold: 0.01,
+        failureThresholdType: 'percent',
+        allowSizeMismatch: true,
+      });
     });
   });
 });
