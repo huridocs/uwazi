@@ -8,8 +8,8 @@ export type ObjectIdSchema =
     };
 
 export interface LinkSchema {
-  label: string;
-  url: string;
+  label?: string | null;
+  url?: string | null;
 }
 
 export interface DateRangeSchema {
@@ -29,14 +29,7 @@ export type GeolocationSchema = {
   lon: number;
 }[];
 
-export type PropertyValueSchema =
-  | null
-  | string
-  | number
-  | LinkSchema
-  | DateRangeSchema
-  | LatLonSchema
-  | LatLonSchema[];
+export type PropertyValueSchema = null | string | number | LinkSchema | DateRangeSchema | LatLonSchema | LatLonSchema[];
 
 export interface MetadataObjectSchema {
   value: PropertyValueSchema;

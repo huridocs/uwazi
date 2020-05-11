@@ -189,12 +189,12 @@ describe('upload routes', () => {
           headers: {},
           body: {
             entity: JSON.stringify({ title: 'public submit', template: templateId.toString() }),
-            mail: {
+            email: JSON.stringify({
               from: 'test',
               to: 'batman@gotham.com',
               subject: 'help!',
               text: 'The joker is back!',
-            },
+            }),
           },
           files: [file, attachment],
           io: {},

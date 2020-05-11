@@ -47,18 +47,20 @@ export default app => {
     '/api/public',
     multer().any(),
     captchaAuthorization(),
-    validation.validateRequest(
-      Joi.object().keys({
-        entity: saveSchema,
-        email: Joi.object().keys({
-          to: Joi.string(),
-          sender: Joi.string(),
-          text: Joi.string(),
-          html: Joi.string(),
-          subject: Joi.string(),
-        }),
-      })
-    ),
+    validation.validateRequest({
+      entity: {
+        title: { type: 'string' },
+        metadata: { type: 'object' },
+        template: { type: 'string' },
+      },
+      email: {
+        to: { type: 'string' },
+        from: { type: 'string' },
+        text: { type: 'string' },
+        html: { type: 'string' },
+        subject: { type: 'string' },
+      },
+    }),
     async (req, res, next) => {
       const entity = JSON.parse(req.body.entity);
 
@@ -86,8 +88,8 @@ export default app => {
         });
       }
 
-      if (req.body.mail) {
-        mailer.send({ from: `"${req.body.mail.sender}" <no-reply@uwazi.io>`, ...req.body.mail });
+      if (req.body.email) {
+        mailer.send(JSON.parse(req.body.email));
       }
 
       res.json(newEntity);
