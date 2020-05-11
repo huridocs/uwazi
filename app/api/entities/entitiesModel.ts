@@ -1,5 +1,3 @@
-/** @format */
-
 import { instanceModel } from 'api/odm';
 import mongoose from 'mongoose';
 import { MetadataObjectSchema, PropertyValueSchema } from 'shared/types/commonTypes';

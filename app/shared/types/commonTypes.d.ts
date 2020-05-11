@@ -17,6 +17,20 @@ export interface DateRangeSchema {
   to?: number | null;
 }
 
+export interface LanguageSchema {
+  label: string;
+  key: string;
+  rtl?: boolean;
+  default?: boolean;
+}
+
+export type LanguagesListSchema = {
+  label: string;
+  key: string;
+  rtl?: boolean;
+  default?: boolean;
+}[];
+
 export interface LatLonSchema {
   label?: string;
   lat: number;

@@ -1,3 +1,5 @@
+import { LanguageSchema } from 'shared/types/commonTypes';
+
 const elasticLanguages: { [index: string]: { [index: string]: string | null } } = {
   arb: { franc: 'arb', elastic: 'arabic', ISO639_1: 'ar' },
   bul: { franc: 'bul', elastic: 'bulgarian', ISO639_1: 'bg' },
@@ -34,7 +36,7 @@ const elasticLanguages: { [index: string]: { [index: string]: string | null } } 
   tur: { franc: 'tur', elastic: 'turkish', ISO639_1: 'tr' },
 };
 
-const allLanguages = [
+const allLanguages: LanguageSchema[] = [
   { label: 'Abkhazian', key: 'ab' },
   { label: 'Afar', key: 'aa' },
   { label: 'Afrikaans', key: 'af' },

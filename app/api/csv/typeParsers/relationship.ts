@@ -1,10 +1,11 @@
-/** @format */
-
 import entities from 'api/entities';
 import { unique, emptyString } from 'api/utils/filters';
+import { RawEntity } from 'api/csv/entityRow';
+import { ensure } from 'shared/tsUtils';
+import { PropertySchema } from 'shared/types/commonTypes';
 
-const relationship = async (entityToImport, templateProperty) => {
-  const values = entityToImport[templateProperty.name]
+const relationship = async (entityToImport: RawEntity, property: PropertySchema) => {
+  const values = entityToImport[ensure<string>(property.name)]
     .split('|')
     .filter(emptyString)
     .filter(unique);
@@ -12,12 +13,12 @@ const relationship = async (entityToImport, templateProperty) => {
   const current = await entities.get({ title: { $in: values } });
   const newValues = values.filter(v => !current.map(c => c.title).includes(v));
 
-  await newValues.reduce(async (promise, title) => {
+  await newValues.reduce(async (promise: Promise<any>, title) => {
     await promise;
     return entities.save(
       {
         title,
-        template: templateProperty.content,
+        template: property.content,
       },
       {
         language: 'en',

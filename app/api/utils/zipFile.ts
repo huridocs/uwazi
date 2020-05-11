@@ -1,9 +1,12 @@
 import yauzl from 'yauzl';
+import { Readable } from 'stream';
 import { streamToString } from '../files/filesystem';
 
-export default function(zipFile) {
+export type matchCB = (entry: string) => boolean;
+
+export default function(zipFile: string) {
   return {
-    async getFileContent(matchFile) {
+    async getFileContent(matchFile: matchCB) {
       const stream = await this.findReadStream(matchFile);
       if (stream) {
         return streamToString(stream);
@@ -11,7 +14,7 @@ export default function(zipFile) {
       return null;
     },
 
-    findReadStream(matchFile) {
+    async findReadStream(matchFile: matchCB): Promise<Readable | null> {
       let found = false;
       return new Promise((resolve, reject) => {
         yauzl.open(zipFile, { lazyEntries: true }, (err, zipfile) => {
@@ -22,12 +25,11 @@ export default function(zipFile) {
             zipfile.readEntry();
             zipfile.on('end', () => {
               if (!found) {
-                // reject(new Error('file not found in zip'));
                 resolve(null);
               }
             });
             zipfile.on('entry', entry => {
-              if (matchFile(entry)) {
+              if (matchFile(entry.fileName)) {
                 found = true;
                 zipfile.openReadStream(entry, (error, readStream) => {
                   if (error) reject(error);
