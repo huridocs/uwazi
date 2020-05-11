@@ -11,7 +11,6 @@ import entities from 'api/entities';
 import mailer from 'api/utils/mailer';
 import { search } from 'api/search';
 import { CSVLoader, CSVExporter } from 'api/csv';
-import { saveSchema } from 'api/entities/endpointSchema';
 import { generateFileName, temporalFilesPath } from 'api/files/filesystem';
 import settings from 'api/settings';
 import { processDocument } from 'api/files/processDocument';
