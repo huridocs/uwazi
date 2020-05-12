@@ -188,13 +188,7 @@ describe('upload routes', () => {
           language: 'es',
           headers: {},
           body: {
-            entity: JSON.stringify({ title: 'public submit', template: templateId.toString() }),
-            email: JSON.stringify({
-              from: 'test',
-              to: 'batman@gotham.com',
-              subject: 'help!',
-              text: 'The joker is back!',
-            }),
+            entity: { title: 'public submit', template: templateId.toString() },
           },
           files: [file, attachment],
           io: {},
@@ -222,6 +216,13 @@ describe('upload routes', () => {
     });
 
     it('should send an email', async () => {
+      req.body.email = {
+        from: 'test',
+        to: 'batman@gotham.com',
+        subject: 'help!',
+        text: 'The joker is back!',
+      };
+
       await onSocketRespond('post', '/api/public', req);
       expect(mailer.send).toHaveBeenCalledWith({
         from: 'test',
