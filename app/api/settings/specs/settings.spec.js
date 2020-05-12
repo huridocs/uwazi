@@ -45,6 +45,17 @@ describe('settings', () => {
         .catch(catchErrors(done));
     });
 
+    it('should have map tiler key default value', done => {
+      const config = { site_name: 'New settings' };
+      settings
+        .save(config)
+        .then(createdDocument => {
+          expect(createdDocument.mapTilerKey).toBe('QiI1BlAJNMmZagsX5qp7');
+          done();
+        })
+        .catch(catchErrors(done));
+    });
+
     describe('when there are Links', () => {
       let config;
 
