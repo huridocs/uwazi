@@ -152,4 +152,31 @@ describe('PieChart Markdown component', () => {
       expect(component.find(Tooltip).length).toBe(0);
     });
   });
+  describe('when passing pluckCategories configuration', () => {
+    it('should allow selecting individual categories', () => {
+      spyOn(markdownDatasets, 'getAggregations').and.returnValue(
+        Immutable.fromJS([
+          { key: 'id1', filtered: { doc_count: 25 } },
+          { key: 'id2', filtered: { doc_count: 33 } },
+          { key: 'id3', filtered: { doc_count: 13 } },
+          { key: 'id6', filtered: { doc_count: 12 } },
+          { key: 'id7', filtered: { doc_count: 12 } },
+          { key: 'id8', filtered: { doc_count: 20 } },
+        ])
+      );
+      const props = mapStateToProps(state, { prop1: 'propValue' });
+      const component = shallow(
+        <PieChartComponent
+          {...props}
+          property="prop1"
+          classname="custom-class"
+          context="tContext"
+          pluckCategories='["label3","label1"]'
+        />
+      );
+      const labels = ['label1', 'label3'];
+      const expectedLabels = labels.map(label => expect.objectContaining({ label }));
+      expect(component.find(Pie).props().data).toEqual(expectedLabels);
+    });
+  });
 });

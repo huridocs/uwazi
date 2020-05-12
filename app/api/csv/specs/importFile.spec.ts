@@ -1,5 +1,7 @@
 import path from 'path';
 import fs from 'fs';
+import { streamToString } from 'api/files/filesystem';
+
 import importFile from '../importFile';
 import { createTestingZip } from './helpers';
 
@@ -19,45 +21,24 @@ describe('importFile', () => {
   });
 
   describe('readStream', () => {
-    it('should return a readable stream for the csv file', async done => {
+    it('should return a readable stream for the csv file', async () => {
       const file = importFile(path.join(__dirname, '/test.csv'));
-      let fileContents;
-      (await file.readStream())
-        .on('data', chunk => {
-          fileContents += chunk;
-        })
-        .on('end', () => {
-          expect(fileContents).toMatchSnapshot();
-          done();
-        });
+      const fileContents = await streamToString(await file.readStream());
+      expect(fileContents).toMatchSnapshot();
     });
 
     describe('when file is a a zip', () => {
-      it('should return a stream for the first csv file it encounters', async done => {
+      it('should return a stream for a file that should be called import.csv by default', async () => {
         const file = importFile(path.join(__dirname, '/zipData/ImportFile.zip'));
-        let fileContents;
-        (await file.readStream())
-          .on('data', chunk => {
-            fileContents += chunk;
-          })
-          .on('end', () => {
-            expect(fileContents).toMatchSnapshot();
-            done();
-          });
+        const fileContents = await streamToString(await file.readStream());
+        expect(fileContents).toMatchSnapshot();
       });
 
       describe('when passing a filename', () => {
-        it('should return a read stream for that file', async done => {
+        it('should return a read stream for that file', async () => {
           const file = importFile(path.join(__dirname, '/zipData/ImportFile.zip'));
-          let fileContents;
-          (await file.readStream('file1.txt'))
-            .on('data', chunk => {
-              fileContents += chunk;
-            })
-            .on('end', () => {
-              expect(fileContents).toMatchSnapshot();
-              done();
-            });
+          const fileContents = await streamToString(await file.readStream('file1.txt'));
+          expect(fileContents).toMatchSnapshot();
         });
       });
     });

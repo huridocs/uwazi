@@ -21,6 +21,7 @@ export const PieChartComponent = props => {
     context,
     colors,
     maxCategories,
+    pluckCategories,
   } = props;
 
   let output = <Loader />;
@@ -33,6 +34,7 @@ export const PieChartComponent = props => {
         excludeZero: true,
         maxCategories,
         aggregateOthers,
+        pluckCategories: JSON.parse(pluckCategories),
       })
     );
     const sliceColors = colors.split(',');
@@ -73,6 +75,7 @@ PieChartComponent.defaultProps = {
   showLabel: 'false',
   aggregateOthers: 'false',
   maxCategories: '0',
+  pluckCategories: '[]',
 };
 
 PieChartComponent.propTypes = {
@@ -85,6 +88,7 @@ PieChartComponent.propTypes = {
   classname: PropTypes.string,
   colors: PropTypes.string,
   showLabel: PropTypes.string,
+  pluckCategories: PropTypes.string,
   data: PropTypes.instanceOf(Immutable.List),
 };
 

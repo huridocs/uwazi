@@ -1,10 +1,11 @@
 import Joi from 'joi';
 import multer from 'multer';
+import { CSVLoader } from 'api/csv';
+
 import { validation } from '../utils';
 import needsAuthorization from '../auth/authMiddleware';
 import thesauri from './thesauri';
 import storageConfig from '../files/storageConfig';
-import CSVLoader from '../csv';
 
 const storage = multer.diskStorage(storageConfig);
 

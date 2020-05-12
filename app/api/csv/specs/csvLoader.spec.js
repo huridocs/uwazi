@@ -4,7 +4,7 @@ import path from 'path';
 import translations from 'api/i18n';
 import { search } from 'api/search';
 
-import CSVLoader from '../csvLoader';
+import { CSVLoader } from '../csvLoader';
 import fixtures, { template1Id } from './fixtures';
 import { stream } from './helpers';
 import typeParsers from '../typeParsers';
