@@ -97,7 +97,7 @@ const nestedAggregation = (property, should, readOnlyFilters, path, missing = fa
       terms: {
         field: nestedPropPath,
         missing: missing ? 'missing' : undefined,
-        size: 200,
+        size: preloadOptionsSearch,
       },
       aggregations: {
         filtered: {

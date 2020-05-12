@@ -2,6 +2,7 @@
 
 import filterToMatch, { multiselectFilter } from './metadataMatchers';
 import { propertyToAggregation } from './metadataAggregations';
+import { preloadOptionsSearch } from 'shared/config';
 
 export default function() {
   const baseQuery = {
@@ -43,7 +44,7 @@ export default function() {
             terms: {
               field: 'template.raw',
               missing: 'missing',
-              size: 200,
+              size: preloadOptionsSearch,
             },
             aggregations: {
               filtered: {
