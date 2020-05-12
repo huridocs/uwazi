@@ -4,6 +4,7 @@ import ReactMapGL, { Marker, Popup, NavigationControl, setRTLTextPlugin } from '
 import Immutable from 'immutable';
 import { Icon } from 'UI';
 import Supercluster from 'supercluster'; //eslint-disable-line
+import settingsAPI from 'app/Settings/SettingsAPI';
 import _style from './style.json';
 import { getMarkersBoudingBox, markersToStyleFormat, TRANSITION_PROPS } from './helper';
 
@@ -34,9 +35,7 @@ export default class Map extends Component {
     this.state.settings.touchZoom = props.scrollZoom;
     this.state.showControls = props.showControls;
 
-    const searchRegExp = /{{MAP_TILER_KEY}}/g;
-    const stringifyStyle = JSON.stringify(_style).replace(searchRegExp, 'QiI1BlAJNMmZagsX5qp7');
-    this.mapStyle = Immutable.fromJS(JSON.parse(stringifyStyle));
+    this.mapStyle = Immutable.fromJS(_style);
     this.supercluster = new Supercluster({
       radius: _style.sources.markers.clusterRadius,
       maxZoom: _style.sources.markers.clusterMaxZoom,
@@ -47,7 +46,8 @@ export default class Map extends Component {
     this.assignDefaults();
   }
 
-  componentDidMount() {
+  async componentDidMount() {
+    await this.prepareMapStyleJson();
     const { markers } = this.props;
     this.setSize();
     const map = this.map.getMap();
@@ -321,6 +321,13 @@ export default class Map extends Component {
     }
 
     return false;
+  }
+
+  async prepareMapStyleJson() {
+    const mapTemplateEntry = /{{MAP_TILER_KEY}}/g;
+    const { mapTilerKey } = await settingsAPI.get();
+    const stringifyStyle = JSON.stringify(this.mapStyle).replace(mapTemplateEntry, mapTilerKey);
+    this.mapStyle = Immutable.fromJS(JSON.parse(stringifyStyle));
   }
 
   render() {

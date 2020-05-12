@@ -57,7 +57,7 @@ export default app => {
             topicClassification: Joi.boolean(),
             favorites: Joi.boolean(),
           }),
-          mapTilerKey: Joi.string(),
+          mapTilerKey: Joi.string().allow(''),
         })
         .required()
     ),

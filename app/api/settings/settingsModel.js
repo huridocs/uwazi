@@ -47,7 +47,12 @@ const settingsSchema = new mongoose.Schema({
   sync: { type: mongoose.Schema.Types.Mixed, select: false },
   evidencesVault: mongoose.Schema.Types.Mixed,
   customCSS: String,
-  mapTilerKey: { type: String, default: DEFAULT_MAP_TILER_KEY },
+  mapTilerKey: {
+    type: String,
+    default() {
+      return 'QiI1BlAJNMmZagsX5qp7';
+    },
+  },
 });
 
 export default instanceModel('settings', settingsSchema);

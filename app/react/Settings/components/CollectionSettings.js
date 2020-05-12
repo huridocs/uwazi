@@ -74,7 +74,6 @@ export class CollectionSettings extends Component {
       props.settings.dateFormat && props.settings.dateFormat.includes('/') ? '/' : '-';
     const dateFormat = CollectionSettings.getDateFormatValue(settings.dateFormat, dateSeparator);
     const customLandingpage = Boolean(props.settings.home_page);
-    const mapTilerKey = '';
     const allowedPublicTemplatesString = settings.allowedPublicTemplates
       ? settings.allowedPublicTemplates.join(',')
       : '';
@@ -83,7 +82,6 @@ export class CollectionSettings extends Component {
       customLandingpage,
       dateFormat,
       allowedPublicTemplatesString,
-      mapTilerKey,
     });
     this.updateSettings = this.updateSettings.bind(this);
   }

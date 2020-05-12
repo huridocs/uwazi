@@ -6,9 +6,11 @@ import { shallow } from 'enzyme';
 import ReactMapGL, { Marker, Popup } from 'react-map-gl';
 
 import { Icon } from 'UI';
-
+import settingsAPI from 'app/Settings/SettingsAPI';
 import Map from '../Map';
 import { TRANSITION_PROPS } from '../helper';
+
+jest.mock('app/Settings/SettingsAPI');
 
 describe('Map', () => {
   let component;
@@ -16,6 +18,9 @@ describe('Map', () => {
   let props;
   let markers;
   let map;
+
+  settingsAPI.get.mockResolvedValue({ mapTilerKey: 'ABC' });
+
   beforeEach(() => {
     props = {
       onClick: jasmine.createSpy('onClick'),
@@ -218,6 +223,15 @@ describe('Map', () => {
       callback({ autoCentered: true });
       expect(instance.setViweport).toHaveBeenCalled();
     });
+
+    it('should read and set the map tiler key in the style', () => {
+      const expectedKey = 'abc';
+      settingsAPI.get.mockResolvedValue({ mapTilesKey: expectedKey });
+    });
+
+    it('prepare mapStyle from settings', () => {
+      expect(settingsAPI.get).toBeCalled();
+    });
   });
 
   describe('zoom behavior', () => {
@@ -366,6 +380,25 @@ describe('Map', () => {
       component.update();
       expect(instance.centerOnMarkers).toHaveBeenCalled();
       expect(instance.updateMapStyle).toHaveBeenCalled();
+    });
+  });
+
+  describe('prepareMapStyleJson', () => {
+    it('should set the map tiler key from the settings if it exists', async () => {
+      render();
+      const style = {
+        sources: { openmaptiles: { url: 'URL?key={{MAP_TILER_KEY}}' } },
+        glyphs: 'URL?key={{MAP_TILER_KEY}}',
+      };
+      const expectedKey = 'XYZ';
+      settingsAPI.get.mockResolvedValue({ mapTilerKey: expectedKey });
+      await instance.prepareMapStyleJson(style);
+      const stringifyStyle = JSON.stringify(instance.mapStyle);
+      expect(stringifyStyle).toEqual(expect.not.stringContaining('{{MAP_TILER_KEY}}'));
+      expect(instance.mapStyle.getIn(['sources', 'openmaptiles', 'url'])).toEqual(
+        expect.stringContaining(expectedKey)
+      );
+      expect(instance.mapStyle.getIn(['glyphs'])).toEqual(expect.stringContaining(expectedKey));
     });
   });
 });

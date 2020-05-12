@@ -30,7 +30,6 @@ describe('CollectionSettings', () => {
       expect(component.state().dateFormat).toBe(1);
       expect(component.state().customLandingpage).toBe(false);
       expect(component.state().allowedPublicTemplatesString).toBe('existingId1,existingId2');
-      expect(component.state().mapTilesKey).toBe('abcd');
     });
 
     it('should not fail on missing values', () => {
