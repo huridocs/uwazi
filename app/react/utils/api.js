@@ -32,7 +32,11 @@ const handleErrorStatus = error => {
   } else if (isNonUsualApiError(error)) {
     store.dispatch(notify(error.json.error, 'danger'));
   } else if (error instanceof TypeError) {
-    store.dispatch(notify('Could not reach server. Please try again later.', 'danger'));
+    if (error.toString().includes('NetworkError when attempting to fetch resource')) {
+      store.dispatch(notify('Loading... Please wait.', 'success'));
+    } else {
+      store.dispatch(notify('Could not reach server. Please try again later.', 'danger'));
+    }
   } else {
     store.dispatch(notify('An error has occurred', 'danger'));
   }
