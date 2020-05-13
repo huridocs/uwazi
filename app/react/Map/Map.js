@@ -47,7 +47,6 @@ export default class Map extends Component {
   }
 
   async componentDidMount() {
-    await this.prepareMapStyleJson();
     const { markers } = this.props;
     this.setSize();
     const map = this.map.getMap();
@@ -60,6 +59,7 @@ export default class Map extends Component {
       });
     }
     this.eventListener = window.addEventListener('resize', this.setSize);
+    await this.prepareMapStyleJson();
   }
 
   componentWillReceiveProps(props) {

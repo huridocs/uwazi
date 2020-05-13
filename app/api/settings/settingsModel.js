@@ -1,8 +1,6 @@
 import mongoose from 'mongoose';
 import { instanceModel } from 'api/odm';
 
-const DEFAULT_MAP_TILER_KEY = 'QiI1BlAJNMmZagsX5qp7';
-
 const languagesSchema = new mongoose.Schema({
   key: String,
   label: String,
@@ -47,12 +45,7 @@ const settingsSchema = new mongoose.Schema({
   sync: { type: mongoose.Schema.Types.Mixed, select: false },
   evidencesVault: mongoose.Schema.Types.Mixed,
   customCSS: String,
-  mapTilerKey: {
-    type: String,
-    default() {
-      return 'QiI1BlAJNMmZagsX5qp7';
-    },
-  },
+  mapTilerKey: String,
 });
 
 export default instanceModel('settings', settingsSchema);

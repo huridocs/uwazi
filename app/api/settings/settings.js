@@ -2,6 +2,8 @@ import translations from 'api/i18n/translations';
 
 import model from './settingsModel';
 
+const DEFAULT_MAP_TILER_KEY = 'QiI1BlAJNMmZagsX5qp7';
+
 const getUpdatesAndDeletes = (newValues, currentValues, matchProperty, propertyName) => {
   const updatedValues = {};
   const deletedValues = [];
@@ -82,9 +84,15 @@ function removeTemplate(filters, templateId) {
   });
 }
 
+function setDefaults(storedSettings) {
+  const [first] = storedSettings;
+  if (first) first.mapTilerKey = first.mapTilerKey || DEFAULT_MAP_TILER_KEY;
+  return first || {};
+}
+
 export default {
   get(query = {}, select) {
-    return model.get(query, select).then(settings => settings[0] || {});
+    return model.get(query, select).then(settings => setDefaults(settings));
   },
 
   async save(settings) {

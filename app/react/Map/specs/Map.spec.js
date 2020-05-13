@@ -384,7 +384,7 @@ describe('Map', () => {
   });
 
   describe('prepareMapStyleJson', () => {
-    it('should set the map tiler key from the settings if it exists', async () => {
+    it('should set the map tiler key from the settings', async () => {
       render();
       const style = {
         sources: { openmaptiles: { url: 'URL?key={{MAP_TILER_KEY}}' } },

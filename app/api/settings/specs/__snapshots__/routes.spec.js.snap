@@ -263,10 +263,10 @@ Object {
       ],
     },
     "mapTilerKey": Object {
-      "invalids": Array [
+      "type": "string",
+      "valids": Array [
         "",
       ],
-      "type": "string",
     },
     "matomoConfig": Object {
       "type": "string",

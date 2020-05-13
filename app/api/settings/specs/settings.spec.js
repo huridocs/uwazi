@@ -45,17 +45,6 @@ describe('settings', () => {
         .catch(catchErrors(done));
     });
 
-    it('should have map tiler key default value', done => {
-      const config = { site_name: 'New settings' };
-      settings
-        .save(config)
-        .then(createdDocument => {
-          expect(createdDocument.mapTilerKey).toBe('QiI1BlAJNMmZagsX5qp7');
-          done();
-        })
-        .catch(catchErrors(done));
-    });
-
     describe('when there are Links', () => {
       let config;
 
@@ -66,7 +55,7 @@ describe('settings', () => {
       it('should create a translation context for the passed links', done => {
         settings
           .save(config)
-          .then(() => {
+           .then(() => {
             expect(translations.updateContext).toHaveBeenCalledWith(
               'Menu',
               'Menu',
@@ -200,6 +189,11 @@ describe('settings', () => {
     it('should not return private values', async () => {
       const values = await settings.get();
       expect(values.publicFormDestination).not.toBeDefined();
+    });
+
+    it('should return default values', async () => {
+      const values = await settings.get();
+      expect(values.mapTilerKey).toEqual('QiI1BlAJNMmZagsX5qp7');
     });
   });
 
