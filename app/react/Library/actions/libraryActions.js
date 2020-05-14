@@ -153,7 +153,7 @@ export function filterIsEmpty(value) {
   return false;
 }
 
-export function processFilters(readOnlySearch, filters, limit) {
+export function processFilters(readOnlySearch, filters, limit, offset) {
   const search = Object.assign({ filters: {} }, readOnlySearch);
   search.filters = {};
 
@@ -178,6 +178,7 @@ export function processFilters(readOnlySearch, filters, limit) {
 
   search.types = filters.documentTypes;
   search.limit = limit;
+  search.offset = offset;
   return search;
 }
 
@@ -210,34 +211,39 @@ function setSearchInUrl(searchParams) {
   const query = browserHistory.getCurrentLocation().query || {};
 
   query.q = encodeSearch(searchParams, false);
+  console.log(path + toUrlParams(query));
+
   browserHistory.push(path + toUrlParams(query));
 }
 
-export function searchDocuments({ search = undefined, filters = undefined }, storeKey, limit = 30) {
+export function searchDocuments(
+  { search = undefined, filters = undefined },
+  storeKey,
+  limit = 30,
+  offset = 0
+) {
   return (dispatch, getState) => {
     const state = getState()[storeKey];
     const currentSearch = search || state.search;
     let currentFilters = filters || state.filters;
     currentFilters = currentFilters.toJS ? currentFilters.toJS() : currentFilters;
 
-    const finalSearchParams = processFilters(currentSearch, currentFilters, limit);
-    finalSearchParams.searchTerm = state.search.searchTerm;
+    const searchParams = processFilters(currentSearch, currentFilters, limit, offset);
+    searchParams.searchTerm = state.search.searchTerm;
 
     const currentSearchParams = rison.decode(
       decodeURIComponent(browserHistory.getCurrentLocation().q || '()')
     );
-    if (
-      finalSearchParams.searchTerm &&
-      finalSearchParams.searchTerm !== currentSearchParams.searchTerm
-    ) {
-      finalSearchParams.sort = '_score';
+
+    if (searchParams.searchTerm && searchParams.searchTerm !== currentSearchParams.searchTerm) {
+      searchParams.sort = '_score';
     }
 
     if (currentSearch.userSelectedSorting) {
       dispatch(actions.set(`${storeKey}.selectedSorting`, currentSearch));
     }
 
-    setSearchInUrl(finalSearchParams);
+    setSearchInUrl(searchParams);
   };
 }
 
@@ -327,7 +333,8 @@ export function deleteEntity(entity) {
 
 export function loadMoreDocuments(storeKey, amount) {
   return (dispatch, getState) => {
-    searchDocuments({ search: getState()[storeKey].search }, storeKey, amount)(dispatch, getState);
+    const { search, documents } = getState()[storeKey];
+    searchDocuments({ search }, storeKey, amount, documents.get('rows').size)(dispatch, getState);
   };
 }
 

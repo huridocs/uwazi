@@ -565,6 +565,10 @@ const buildQuery = async (query, language, user, resources) => {
     queryBuilder.limit(query.limit);
   }
 
+  if (query.offset) {
+    documentsQuery.offset(query.offset);
+  }
+
   if (query.includeUnpublished && user && !query.unpublished) {
     queryBuilder.includeUnpublished();
   }

@@ -51,6 +51,7 @@ class DocumentsList extends Component {
   loadMoreButton(amount) {
     const query = Object.assign({}, this.props.location.query);
     const q = query.q ? rison.decode(query.q) : {};
+    q.offset = q.limit;
     q.limit = (parseInt(q.limit, 10) || 30) + amount;
     query.q = rison.encode(q);
     const url = `${this.props.location.pathname}${toUrlParams(query)}`;

@@ -4,6 +4,7 @@ import api from 'app/Search/SearchAPI';
 import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
 import rison from 'rison';
 import { getThesaurusPropertyNames } from 'shared/commonTopicClassification';
+import { store } from 'app/store';
 import setReduxState from './setReduxState.js';
 
 export function processQuery(_query, globalResources, key) {
@@ -31,6 +32,8 @@ export function processQuery(_query, globalResources, key) {
 export default function requestState(request, globalResources) {
   const documentsRequest = request.set(processQuery(request.data, globalResources));
   const markersRequest = request.set(processQuery(request.data, globalResources, 'markers'));
+  const currentState = store.getState();
+  console.log(request, processQuery(request.data, globalResources));
 
   return Promise.all([api.search(documentsRequest), api.search(markersRequest)]).then(
     ([documents, markers]) => {
