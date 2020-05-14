@@ -19,8 +19,6 @@ describe('Map', () => {
   let markers;
   let map;
 
-  settingsAPI.get.mockResolvedValue({ mapTilerKey: 'ABC' });
-
   beforeEach(() => {
     props = {
       onClick: jasmine.createSpy('onClick'),
