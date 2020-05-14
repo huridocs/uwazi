@@ -6,11 +6,4 @@ declare global {
       toNeedAuthorization(): R;
     }
   }
-
-  namespace Express {
-    interface Request {
-      user: import('api/users/usersModel').User;
-      language: string;
-    }
-  }
 }
