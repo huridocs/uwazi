@@ -47,9 +47,14 @@ export default app => {
     multer().any(),
     captchaAuthorization(),
     (req, _res, next) => {
-      req.body.entity = JSON.parse(req.body.entity);
-      if (req.body.email) {
-        req.body.email = JSON.parse(req.body.email);
+      try {
+        req.body.entity = JSON.parse(req.body.entity);
+        if (req.body.email) {
+          req.body.email = JSON.parse(req.body.email);
+        }
+      } catch (err) {
+        next(err);
+        return;
       }
       next();
     },
