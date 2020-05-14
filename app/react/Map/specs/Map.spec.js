@@ -190,13 +190,14 @@ describe('Map', () => {
   });
 
   describe('componentDidMount', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       spyOn(window, 'addEventListener');
       spyOn(window, 'removeEventListener');
       render();
       spyOn(instance, 'centerOnMarkers');
       spyOn(instance, 'setViweport');
-      instance.componentDidMount();
+      settingsAPI.get.mockResolvedValue({ mapTilerKey: 'abc' });
+      await instance.componentDidMount();
     });
 
     it('should add and remove event listeners for resize', () => {
@@ -383,7 +384,7 @@ describe('Map', () => {
     });
   });
 
-  describe('prepareMapStyleJson', () => {
+  describe('replaceKeysMapStyleJson', () => {
     it('should set the map tiler key from the settings', async () => {
       render();
       const style = {
@@ -392,7 +393,7 @@ describe('Map', () => {
       };
       const expectedKey = 'XYZ';
       settingsAPI.get.mockResolvedValue({ mapTilerKey: expectedKey });
-      await instance.prepareMapStyleJson(style);
+      await instance.replaceKeysMapStyleJson(style);
       const stringifyStyle = JSON.stringify(instance.mapStyle);
       expect(stringifyStyle).toEqual(expect.not.stringContaining('{{MAP_TILER_KEY}}'));
       expect(instance.mapStyle.getIn(['sources', 'openmaptiles', 'url'])).toEqual(
