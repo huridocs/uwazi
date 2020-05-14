@@ -63,7 +63,7 @@ const sendAccountLockedEmail = (user, domain) => {
   const html = `<p>${text.replace(url, htmlLink)}</p>`;
 
   const mailOptions = {
-    from: '"Uwazi" <no-reply@uwazi.io',
+    from: '"Uwazi" <no-reply@uwazi.io>',
     to: user.email,
     subject: 'Account locked',
     text,

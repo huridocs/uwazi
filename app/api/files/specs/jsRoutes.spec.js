@@ -12,6 +12,7 @@ import express from 'express';
 import { files } from 'api/files/files';
 
 import * as filesystem from 'api/files/filesystem';
+import mailer from 'api/utils/mailer';
 import { fixtures, templateId } from './fixtures';
 import instrumentRoutes from '../../utils/instrumentRoutes';
 import uploadRoutes from '../jsRoutes.js';
@@ -165,6 +166,7 @@ describe('upload routes', () => {
     beforeEach(done => {
       deleteAllFiles(() => {
         spyOn(Date, 'now').and.returnValue(1000);
+        spyOn(mailer, 'send');
         paths.uploadedDocuments = `${__dirname}/uploads/`;
         const buffer = fs.readFileSync(`${__dirname}/12345.test.pdf`);
         file = {
@@ -185,9 +187,12 @@ describe('upload routes', () => {
         req = {
           language: 'es',
           headers: {},
-          body: { title: 'public submit', template: templateId.toString() },
+          body: {
+            entity: { title: 'public submit', template: templateId.toString() },
+          },
           files: [file, attachment],
           io: {},
+
           getCurrentSessionSockets: () => ({ sockets: [iosocket], emit: iosocket.emit }),
         };
         done();
@@ -210,6 +215,23 @@ describe('upload routes', () => {
       ).toBe(true);
     });
 
+    it('should send an email', async () => {
+      req.body.email = {
+        from: 'test',
+        to: 'batman@gotham.com',
+        subject: 'help!',
+        text: 'The joker is back!',
+      };
+
+      await onSocketRespond('post', '/api/public', req);
+      expect(mailer.send).toHaveBeenCalledWith({
+        from: 'test',
+        subject: 'help!',
+        text: 'The joker is back!',
+        to: 'batman@gotham.com',
+      });
+    });
+
     it('should not create entity if settings has no allowedPublicTemplates option', async () => {
       const [settingsObject] = await settingsModel.get();
       delete settingsObject.allowedPublicTemplates;
@@ -226,7 +248,10 @@ describe('upload routes', () => {
     });
 
     it('should not create entity if template is not whitelisted in allowedPublicTemplates setting', async () => {
-      req.body.template = 'unknownTemplate';
+      req.body.entity = JSON.stringify({
+        title: 'public submit',
+        template: 'unauthorized_template_id',
+      });
       try {
         await routes.post('/api/public', req);
         fail('should return error');

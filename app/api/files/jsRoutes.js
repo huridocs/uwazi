@@ -8,9 +8,9 @@ import path from 'path';
 import proxy from 'express-http-proxy';
 
 import entities from 'api/entities';
+import mailer from 'api/utils/mailer';
 import { search } from 'api/search';
 import { CSVLoader, CSVExporter } from 'api/csv';
-import { saveSchema } from 'api/entities/endpointSchema';
 import { generateFileName, temporalFilesPath } from 'api/files/filesystem';
 import settings from 'api/settings';
 import { processDocument } from 'api/files/processDocument';
@@ -47,36 +47,71 @@ export default app => {
     multer().any(),
     captchaAuthorization(),
     (req, _res, next) => {
-      req.body = JSON.parse(req.body.entity);
-      return next();
-    },
-    validation.validateRequest(saveSchema),
-    async (req, res, next) => {
-      const entity = req.body;
-      const { allowedPublicTemplates } = await settings.get();
-      if (!allowedPublicTemplates || !allowedPublicTemplates.includes(entity.template)) {
-        next(createError('Unauthorized public template', 403));
+      try {
+        req.body.entity = JSON.parse(req.body.entity);
+        if (req.body.email) {
+          req.body.email = JSON.parse(req.body.email);
+        }
+      } catch (err) {
+        next(err);
         return;
       }
+      next();
+    },
+    validation.validateRequest({
+      properties: {
+        body: {
+          properties: {
+            email: {
+              properties: {
+                to: { type: 'string' },
+                from: { type: 'string' },
+                text: { type: 'string' },
+                html: { type: 'string' },
+                subject: { type: 'string' },
+              },
+              required: ['to', 'from', 'text', 'subject'],
+            },
+          },
+        },
+      },
+    }),
+    async (req, res, next) => {
+      try {
+        const { allowedPublicTemplates } = await settings.get();
+        const { entity, email } = req.body;
 
-      entity.attachments = [];
-      if (req.files.length) {
-        await Promise.all(
-          req.files
-            .filter(file => file.fieldname.includes('attachment'))
-            .map(file => storeFile(file).then(_file => entity.attachments.push(_file)))
-        );
+        if (!allowedPublicTemplates || !allowedPublicTemplates.includes(entity.template)) {
+          next(createError('Unauthorized public template', 403));
+          return;
+        }
+
+        entity.attachments = [];
+        if (req.files.length) {
+          await Promise.all(
+            req.files
+              .filter(file => file.fieldname.includes('attachment'))
+              .map(file => storeFile(file).then(_file => entity.attachments.push(_file)))
+          );
+        }
+        const newEntity = await entities.save(entity, { user: {}, language: req.language });
+        const file = req.files.find(_file => _file.fieldname.includes('file'));
+        if (file) {
+          storeFile(file).then(async _file => {
+            await processDocument(newEntity.sharedId, _file);
+            await search.indexEntities({ sharedId: newEntity.sharedId }, '+fullText');
+            socket(req).emit('documentProcessed', newEntity.sharedId);
+          });
+        }
+
+        if (email) {
+          await mailer.send(email);
+        }
+
+        res.json(newEntity);
+      } catch (err) {
+        next(err);
       }
-      const newEntity = await entities.save(entity, { user: {}, language: req.language });
-      const file = req.files.find(_file => _file.fieldname.includes('file'));
-      if (file) {
-        storeFile(file).then(async _file => {
-          await processDocument(newEntity.sharedId, _file);
-          await search.indexEntities({ sharedId: newEntity.sharedId }, '+fullText');
-          socket(req).emit('documentProcessed', newEntity.sharedId);
-        });
-      }
-      res.json(newEntity);
     }
   );
 
