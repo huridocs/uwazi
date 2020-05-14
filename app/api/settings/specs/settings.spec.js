@@ -55,7 +55,7 @@ describe('settings', () => {
       it('should create a translation context for the passed links', done => {
         settings
           .save(config)
-           .then(() => {
+          .then(() => {
             expect(translations.updateContext).toHaveBeenCalledWith(
               'Menu',
               'Menu',
