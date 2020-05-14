@@ -11,7 +11,7 @@ import testRoute from '../routes';
 import fixtures, { moviesId } from './fixtures';
 
 jest.mock(
-  '../../auth/authMiddleware.js',
+  '../../auth/authMiddleware.ts',
   () => () => (_req: Request, _res: Response, next: NextFunction) => {
     next();
   }

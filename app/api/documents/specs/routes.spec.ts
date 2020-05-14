@@ -9,7 +9,7 @@ import { setUpApp } from 'api/utils/testingRoutes';
 import { documentRoutes } from '../routes';
 
 jest.mock(
-  '../../auth/authMiddleware.js',
+  '../../auth/authMiddleware.ts',
   () => () => (_req: Request, _res: Response, next: NextFunction) => {
     next();
   }
