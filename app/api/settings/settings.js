@@ -85,9 +85,9 @@ function removeTemplate(filters, templateId) {
 }
 
 function setDefaults(storedSettings) {
-  const [first] = storedSettings;
-  if (first) first.mapTilerKey = first.mapTilerKey || DEFAULT_MAP_TILER_KEY;
-  return first || {};
+  const [settings] = storedSettings;
+  if (settings) settings.mapTilerKey = settings.mapTilerKey || DEFAULT_MAP_TILER_KEY;
+  return settings || {};
 }
 
 export default {

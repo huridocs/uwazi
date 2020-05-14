@@ -195,6 +195,21 @@ describe('settings', () => {
       const values = await settings.get();
       expect(values.mapTilerKey).toEqual('QiI1BlAJNMmZagsX5qp7');
     });
+
+    describe('if there is settings with no default mapTilerKey on the DB', () => {
+      it('should return the stored mapTilerKey', done => {
+        const expectedKey = 'anotherKey';
+        const config = { mapTilerKey: expectedKey };
+        settings
+          .save(config)
+          .then(() => settings.get())
+          .then(result => {
+            expect(result.mapTilerKey).toBe(expectedKey);
+            done();
+          })
+          .catch(catchErrors(done));
+      });
+    });
   });
 
   describe('setDefaultLanguage()', () => {

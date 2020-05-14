@@ -188,13 +188,15 @@ describe('Map', () => {
   });
 
   describe('componentDidMount', () => {
+    const testMapTilerKey = 'TestMapTilerKey';
+
     beforeEach(async () => {
       spyOn(window, 'addEventListener');
       spyOn(window, 'removeEventListener');
       render();
       spyOn(instance, 'centerOnMarkers');
       spyOn(instance, 'setViweport');
-      settingsAPI.get.mockResolvedValue({ mapTilerKey: 'abc' });
+      settingsAPI.get.mockResolvedValue({ mapTilerKey: testMapTilerKey });
       await instance.componentDidMount();
     });
 
@@ -224,12 +226,7 @@ describe('Map', () => {
     });
 
     it('should read and set the map tiler key in the style', () => {
-      const expectedKey = 'abc';
-      settingsAPI.get.mockResolvedValue({ mapTilesKey: expectedKey });
-    });
-
-    it('prepare mapStyle from settings', () => {
-      expect(settingsAPI.get).toBeCalled();
+      expect(JSON.stringify(instance.mapStyle)).toContain(testMapTilerKey);
     });
   });
 
@@ -393,11 +390,9 @@ describe('Map', () => {
       settingsAPI.get.mockResolvedValue({ mapTilerKey: expectedKey });
       await instance.replaceKeysMapStyleJson(style);
       const stringifyStyle = JSON.stringify(instance.mapStyle);
-      expect(stringifyStyle).toEqual(expect.not.stringContaining('{{MAP_TILER_KEY}}'));
-      expect(instance.mapStyle.getIn(['sources', 'openmaptiles', 'url'])).toEqual(
-        expect.stringContaining(expectedKey)
-      );
-      expect(instance.mapStyle.getIn(['glyphs'])).toEqual(expect.stringContaining(expectedKey));
+      expect(stringifyStyle).not.toContain('{{MAP_TILER_KEY}}');
+      expect(instance.mapStyle.getIn(['sources', 'openmaptiles', 'url'])).toContain(expectedKey);
+      expect(instance.mapStyle.getIn(['glyphs'])).toContain(expectedKey);
     });
   });
 });

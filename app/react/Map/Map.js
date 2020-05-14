@@ -247,6 +247,16 @@ export default class Map extends Component {
     hoverOnMarker(marker);
   }
 
+  async replaceKeysMapStyleJson() {
+    const mapTilerKeyPlaceholder = /{{MAP_TILER_KEY}}/g;
+    const { mapTilerKey } = await settingsAPI.get();
+    const stringifyStyle = JSON.stringify(this.mapStyle).replace(
+      mapTilerKeyPlaceholder,
+      mapTilerKey
+    );
+    this.mapStyle = Immutable.fromJS(JSON.parse(stringifyStyle));
+  }
+
   renderMarker(marker, onClick, onMouseEnter, onMouseLeave) {
     const { renderMarker } = this.props;
     if (renderMarker) {
@@ -321,13 +331,6 @@ export default class Map extends Component {
     }
 
     return false;
-  }
-
-  async replaceKeysMapStyleJson() {
-    const mapTemplateEntry = /{{MAP_TILER_KEY}}/g;
-    const { mapTilerKey } = await settingsAPI.get();
-    const stringifyStyle = JSON.stringify(this.mapStyle).replace(mapTemplateEntry, mapTilerKey);
-    this.mapStyle = Immutable.fromJS(JSON.parse(stringifyStyle));
   }
 
   render() {
