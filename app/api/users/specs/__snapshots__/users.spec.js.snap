@@ -13,7 +13,7 @@ Object {
 exports[`Users login after locking account, it should send user and email with the unlock link 1`] = `
 Array [
   Object {
-    "from": "\\"Uwazi\\" <no-reply@uwazi.io",
+    "from": "\\"Uwazi\\" <no-reply@uwazi.io>",
     "html": "<p>Hello,
 
 Your account has been locked because of too many failed login attempts. To unlock your account open the following link:
