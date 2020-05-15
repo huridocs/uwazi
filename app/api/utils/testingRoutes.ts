@@ -7,14 +7,20 @@ import languageMiddleware from 'api/utils/languageMiddleware';
 
 const iosocket = jasmine.createSpyObj('socket', ['emit']);
 
-const setUpApp = (route: Function): Application => {
+const setUpApp = (
+  route: Function,
+  ...customMiddleware: ((req: Request, _es: Response, next: NextFunction) => void)[]
+): Application => {
   const app: Application = express();
   app.use(bodyParser.json());
   app.use((req: Request, _res: Response, next: NextFunction) => {
     req.getCurrentSessionSockets = () => ({ sockets: [iosocket], emit: iosocket.emit });
     next();
   });
+
   app.use(languageMiddleware);
+  customMiddleware.forEach(middlewareElement => app.use(middlewareElement));
+
   route(app);
   app.use(errorHandlingMiddleware);
   return app;

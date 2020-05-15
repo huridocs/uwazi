@@ -9,7 +9,7 @@ import fs from 'fs';
 import syncRoutes from '../routes.js';
 import paths from '../../config/paths';
 
-jest.mock('../../auth/authMiddleware', () => () => (_req, _res, next) => {
+jest.mock('../../auth/authMiddleware.ts', () => () => (_req, _res, next) => {
   next();
 });
 

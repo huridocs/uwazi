@@ -1,5 +1,3 @@
-/** @format */
-
 export {};
 
 declare global {
