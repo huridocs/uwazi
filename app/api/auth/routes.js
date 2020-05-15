@@ -72,7 +72,7 @@ export default app => {
   });
 
   app.get('/captcha', (req, res) => {
-    const captcha = svgCaptcha.create({ ignoreChars: '0o1i' });
+    const captcha = svgCaptcha.create({ ignoreChars: '0OoiILl' });
     req.session.captcha = captcha.text;
     res.type('svg');
     res.send(captcha.data);
