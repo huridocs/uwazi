@@ -16,7 +16,9 @@ import { reloadThesauri } from 'app/Thesauri/actions/thesaurisActions';
 import auth from 'app/Auth';
 
 const reloadHome = () => {
-  window.location.reload();
+  setTimeout(() => {
+    window.location.reload();
+  }, 50);
 };
 
 export class Login extends RouteHandler {
