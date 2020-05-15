@@ -1,4 +1,3 @@
-<
 import { Request, Response, NextFunction } from 'express';
 import settings from 'api/settings/settings';
 
@@ -22,7 +21,6 @@ export default async (req: Request, _res: Response, next: NextFunction) => {
   const { languages = [] } = await settings.get();
   //@ts-ignore
   req.language = languages.find(l => l.key === lang) ? lang : languages.find(l => l.default).key;
-
 
   next();
 };
