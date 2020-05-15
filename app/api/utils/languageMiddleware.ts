@@ -1,9 +1,10 @@
-import settings from 'api/settings/settings';
+<
 import { Request, Response, NextFunction } from 'express';
+import settings from 'api/settings/settings';
 
 declare global {
   namespace Express {
-    export interface Request {
+    interface Request {
       language: string;
     }
   }
@@ -21,6 +22,7 @@ export default async (req: Request, _res: Response, next: NextFunction) => {
   const { languages = [] } = await settings.get();
   //@ts-ignore
   req.language = languages.find(l => l.key === lang) ? lang : languages.find(l => l.default).key;
+
 
   next();
 };
