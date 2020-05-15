@@ -1,4 +1,5 @@
 import { preloadOptionsSearch } from 'shared/config';
+
 const aggregation = (key, should, filters) => ({
   terms: {
     field: key,
@@ -143,9 +144,8 @@ const extractFilters = (baseQuery, path) => {
   return filters;
 };
 
-const getpath = (property, suggested) => {
-  return suggested ? `suggestedMetadata.${property.name}.raw` : `metadata.${property.name}.raw`;
-};
+const getpath = (property, suggested) =>
+  suggested ? `suggestedMetadata.${property.name}.raw` : `metadata.${property.name}.raw`;
 
 export const propertyToAggregation = (property, dictionaries, baseQuery, suggested = false) => {
   const path = getpath(property, suggested);
