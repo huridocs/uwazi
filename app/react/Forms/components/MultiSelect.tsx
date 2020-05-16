@@ -361,7 +361,6 @@ abstract class MultiSelectBase<ValueType> extends Component<
   renderOptionsCount(totalOptions: Option[], renderedOptions: Option[]) {
     const { totalPossibleOptions } = this.props;
     let count = `${totalPossibleOptions - renderedOptions.length}`;
-
     if (totalPossibleOptions > 1000) {
       count = `${count}+`;
     }

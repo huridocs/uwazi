@@ -788,11 +788,11 @@ describe('search', () => {
 
       const user = { _id: ids.userId };
 
-      const { options } = await search.autocompleteAggregations(
+      const { options, count } = await search.autocompleteAggregations(
         query,
         'en',
         'multiselect1',
-        'Egyp',
+        'egyp',
         user
       );
 
@@ -800,6 +800,7 @@ describe('search', () => {
       expect(options[0].value).toBeDefined();
       expect(options[0].label).toBeDefined();
       expect(options[0].results).toBeDefined();
+      expect(count).toBe(1);
     });
   });
 });

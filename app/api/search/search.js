@@ -740,7 +740,7 @@ const instanceSearch = elasticIndex => ({
     const aggregation = body.aggregations.all.aggregations[`${propertyName}.value`];
 
     aggregation.aggregations.filtered.filter.bool.filter.push({
-      wildcard: { [`metadata.${propertyName}.label.raw`]: { value: `*${searchTerm}*` } },
+      match: { [`metadata.${propertyName}.label`]: { query: searchTerm, fuzziness: 3 } },
     });
 
     const response = await elastic.search({
@@ -756,12 +756,14 @@ const instanceSearch = elasticIndex => ({
       preloadOptionsSearch
     );
 
-    const options = sanitizedAggregations[propertyName].buckets.map(bucket => ({
-      label: bucket.label,
-      value: bucket.key,
-      icon: bucket.icon,
-      results: bucket.filtered.doc_count,
-    }));
+    const options = sanitizedAggregations[propertyName].buckets
+      .map(bucket => ({
+        label: bucket.label,
+        value: bucket.key,
+        icon: bucket.icon,
+        results: bucket.filtered.doc_count,
+      }))
+      .filter(o => o.results);
 
     const filteredOptions = filterOptions(searchTerm, options);
     return {
