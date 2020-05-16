@@ -202,14 +202,15 @@ describe('libraryActions', () => {
             relationshipfilter: { status: { values: ['open'] } },
             select: 'selectValue',
           },
-          limit: 'limit',
+          limit: 30,
+          offset: 0,
           searchTerm: 'batman',
           sort: '_score',
           types: ['decision'],
         };
 
         spyOn(browserHistory, 'push');
-        actions.searchDocuments({ search }, storeKey, 'limit')(dispatch, getState);
+        actions.searchDocuments({ search }, storeKey, 30)(dispatch, getState);
         let queryObject = rison.decode(
           browserHistory.push.calls.mostRecent().args[0].split('q=')[1]
         );

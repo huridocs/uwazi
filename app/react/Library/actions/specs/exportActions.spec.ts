@@ -155,7 +155,7 @@ describe('exportActions', () => {
             JSON.stringify(expectedFilters)
           )}&searchTerm=batman&order=desc&sort=creationDate&types=${encodeURIComponent(
             JSON.stringify(expectedTypes)
-          )}&limit=10000&offset=0&ids=${encodeURIComponent(JSON.stringify(['1', '2']))}`
+          )}&limit=10000&ids=${encodeURIComponent(JSON.stringify(['1', '2']))}`
         );
         done();
       });
