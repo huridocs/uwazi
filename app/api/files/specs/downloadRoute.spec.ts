@@ -9,7 +9,7 @@ import uploadRoutes from '../routes';
 import paths from '../../config/paths';
 
 jest.mock(
-  '../../auth/authMiddleware.js',
+  '../../auth/authMiddleware.ts',
   () => () => (_req: Request, _res: Response, next: NextFunction) => {
     next();
   }
