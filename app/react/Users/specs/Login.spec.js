@@ -97,12 +97,15 @@ describe('Login', () => {
 
           spyOn(browserHistory, 'push');
           spyOn(window.location, 'reload');
+          jasmine.clock().install();
 
           instance
             .submit('credentials')
             .then(() => {
+              jasmine.clock().tick(50);
               expect(browserHistory.push).toHaveBeenCalledWith('/');
               expect(window.location.reload).toHaveBeenCalled();
+              jasmine.clock().uninstall();
               done();
             })
             .catch(done.fail);
