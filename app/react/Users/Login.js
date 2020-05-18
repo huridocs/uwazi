@@ -18,7 +18,7 @@ import auth from 'app/Auth';
 const reloadHome = () => {
   setTimeout(() => {
     window.location.reload();
-  }, 50);
+  }, 100);
 };
 
 export class Login extends RouteHandler {

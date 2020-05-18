@@ -102,7 +102,7 @@ describe('Login', () => {
           instance
             .submit('credentials')
             .then(() => {
-              jasmine.clock().tick(50);
+              jasmine.clock().tick(100);
               expect(browserHistory.push).toHaveBeenCalledWith('/');
               expect(window.location.reload).toHaveBeenCalled();
               jasmine.clock().uninstall();
