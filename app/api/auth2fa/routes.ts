@@ -1,6 +1,7 @@
 import Joi from 'joi';
 import { Application } from 'express';
 
+import { Application } from 'express';
 import needsAuthorization from 'api/auth/authMiddleware';
 import * as usersUtils from 'api/auth2fa/usersUtils';
 import { validation } from 'api/utils';
