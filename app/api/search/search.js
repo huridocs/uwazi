@@ -139,6 +139,7 @@ function snippetsFromSearchHit(hit) {
 
 function searchGeolocation(documentsQuery, templates) {
   documentsQuery.limit(9999);
+  documentsQuery.offset(0);
   const geolocationProperties = [];
 
   templates.forEach(template => {

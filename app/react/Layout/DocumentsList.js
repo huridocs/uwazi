@@ -39,27 +39,28 @@ class DocumentsList extends Component {
     }
   }
 
-  loadMoreDocuments(amount) {
+  loadMoreDocuments(amount, offset) {
     this.setState({ loading: true });
     this.setState({ loading: true });
-    this.props.loadMoreDocuments(
-      this.props.storeKey,
-      this.props.documents.get('rows').size + amount
-    );
+    this.props.loadMoreDocuments(this.props.storeKey, amount, offset);
   }
 
   loadMoreButton(amount) {
     const query = Object.assign({}, this.props.location.query);
     const q = query.q ? rison.decode(query.q) : {};
-    q.offset = q.limit;
-    q.limit = (parseInt(q.limit, 10) || 30) + amount;
+    const offset = this.props.documents.get('rows').size;
+    q.offset = offset;
+    q.limit = amount;
     query.q = rison.encode(q);
     const url = `${this.props.location.pathname}${toUrlParams(query)}`;
     return (
       <Link
         to={url}
         className="btn btn-default btn-load-more"
-        onClick={this.loadMoreDocuments.bind(this, amount)}
+        onClick={e => {
+          e.preventDefault();
+          this.loadMoreDocuments(amount, offset);
+        }}
       >
         {amount} {t('System', 'x more')}
       </Link>

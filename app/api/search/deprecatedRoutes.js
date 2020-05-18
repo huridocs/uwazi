@@ -33,8 +33,6 @@ export default app => {
   app.get(
     '/api/search',
     (req, _res, next) => {
-      console.log(req.query);
-
       req.query = Object.keys(req.query).reduce((parsedQuery, key) => {
         parsedQuery[key] = parseQueryProperty(req.query, key);
         return parsedQuery;

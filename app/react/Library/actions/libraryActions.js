@@ -91,6 +91,10 @@ export function setDocuments(docs) {
   return { type: types.SET_DOCUMENTS, documents: docs };
 }
 
+export function addDocuments(docs) {
+  return { type: types.ADD_DOCUMENTS, documents: docs };
+}
+
 export function unsetDocuments() {
   return { type: types.UNSET_DOCUMENTS };
 }
@@ -211,7 +215,6 @@ function setSearchInUrl(searchParams) {
   const query = browserHistory.getCurrentLocation().query || {};
 
   query.q = encodeSearch(searchParams, false);
-  console.log(path + toUrlParams(query));
 
   browserHistory.push(path + toUrlParams(query));
 }
@@ -331,10 +334,10 @@ export function deleteEntity(entity) {
   };
 }
 
-export function loadMoreDocuments(storeKey, amount) {
+export function loadMoreDocuments(storeKey, amount, offset) {
   return (dispatch, getState) => {
-    const { search, documents } = getState()[storeKey];
-    searchDocuments({ search }, storeKey, amount, documents.get('rows').size)(dispatch, getState);
+    const { search } = getState()[storeKey];
+    searchDocuments({ search }, storeKey, amount, offset)(dispatch, getState);
   };
 }
 

@@ -6,7 +6,7 @@ import * as actions from 'app/Library/actions/libraryActions';
 import 'jasmine-immutablejs-matchers';
 
 describe('documentsReducer', () => {
-  const initialState = Immutable.fromJS({ rows: [] });
+  const initialState = Immutable.fromJS({ rows: [], totalRows: 0 });
 
   describe('when state is undefined', () => {
     it('returns initial', () => {
@@ -24,6 +24,24 @@ describe('documentsReducer', () => {
       const newState = documentsReducer(initialState, { type: types.SET_DOCUMENTS, documents });
 
       expect(newState).toEqualImmutable(Immutable.fromJS(documents));
+    });
+  });
+
+  describe('ADD_DOCUMENTS', () => {
+    it('should add the documents in the state', () => {
+      const documentOne = { title: 'Song of Ice and Fire: The Winds of Winter' };
+      const documentTwo = { title: 'Song of Ice and Fire: A Dream of Spring' };
+      let newState = documentsReducer(initialState, {
+        type: types.SET_DOCUMENTS,
+        documents: { rows: [documentOne], totalRows: 10 },
+      });
+
+      newState = documentsReducer(newState, {
+        type: types.ADD_DOCUMENTS,
+        documents: { rows: [documentTwo], totalRows: 10 },
+      });
+
+      expect(newState.toJS()).toEqual({ rows: [documentOne, documentTwo], totalRows: 10 });
     });
   });
 

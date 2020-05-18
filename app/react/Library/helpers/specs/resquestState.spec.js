@@ -40,7 +40,7 @@ describe('static requestState()', () => {
   });
 
   it('should request the documents passing search object on the store', async () => {
-    const data = { q: rison.encode({ filters: { something: 1 }, types: [] }) };
+    const data = { q: rison.encode({ filters: { something: 1 }, types: [] }), view: 'charts' };
     const request = new RequestParams(data, 'headers');
 
     const expectedSearch = {
@@ -49,6 +49,7 @@ describe('static requestState()', () => {
         order: prioritySortingCriteria.get({ templates: Immutable.fromJS(templates) }).order,
         filters: { something: 1 },
         types: [],
+        view: 'charts',
       },
       headers: 'headers',
     };
@@ -65,7 +66,7 @@ describe('static requestState()', () => {
       search: 'search',
     });
     const q = { filters: {}, types: ['type1'], order: 'desc', sort: 'creationDate' };
-    const query = { q: rison.encode(q), quickLabelThesaurus: 'countries' };
+    const query = { q: rison.encode(q), quickLabelThesaurus: 'countries', view: 'map' };
     const request = new RequestParams(query);
     await requestState(request, globalResources);
 

@@ -4,7 +4,6 @@ interface query {
   [key: string]: string;
 }
 const parseQueryProperty = (query: query, property: string) => {
-  const request = {} as Request;
   try {
     return JSON.parse(query[property]);
   } catch (e) {

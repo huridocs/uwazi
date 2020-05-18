@@ -4,27 +4,31 @@ import api from 'app/Search/SearchAPI';
 import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
 import rison from 'rison';
 import { getThesaurusPropertyNames } from 'shared/commonTopicClassification';
-import { store } from 'app/store';
 import setReduxState from './setReduxState.js';
 
-export function processQuery(_query, globalResources, key) {
-  const defaultSearch = prioritySortingCriteria.get({ templates: globalResources.templates });
-
-  let query;
+export function decodeQuery(params) {
   try {
-    query = rison.decode(_query.q || '()');
+    return rison.decode(params.q || '()');
   } catch (error) {
     error.status = 404;
     throw error;
   }
+}
 
+export function processQuery(params, globalResources, key) {
+  const defaultSearch = prioritySortingCriteria.get({ templates: globalResources.templates });
+
+  let query = decodeQuery(params);
   query.order = query.order || defaultSearch.order;
   query.sort = query.sort || defaultSearch.sort;
-  query.view = _query.view;
+  query.view = params.view;
 
-  if (key === 'markers') {
-    query.geolocation = true;
+  if (!globalResources.library && query.limit) {
+    query = Object.assign(query, { limit: query.limit + query.offset, offset: 0 });
   }
+
+  query.geolocation = key === 'markers';
+
   const { userSelectedSorting, ...sanitizedQuery } = query;
   return sanitizedQuery;
 }
@@ -32,8 +36,6 @@ export function processQuery(_query, globalResources, key) {
 export default function requestState(request, globalResources) {
   const documentsRequest = request.set(processQuery(request.data, globalResources));
   const markersRequest = request.set(processQuery(request.data, globalResources, 'markers'));
-  const currentState = store.getState();
-  console.log(request, processQuery(request.data, globalResources));
 
   return Promise.all([api.search(documentsRequest), api.search(markersRequest)]).then(
     ([documents, markers]) => {

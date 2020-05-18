@@ -64,4 +64,24 @@ describe('Library', () => {
       expect(instance.urlHasChanged(nextProps)).toBe(false);
     });
   });
+
+  describe('componentWillReceiveProps()', () => {
+    it('should empty the state when the offset is 0 or undefined', () => {
+      spyOn(instance, 'emptyState');
+      let nextProps = { location: { query: { q: '(offset:0)' } } };
+      instance.componentWillReceiveProps(nextProps);
+      expect(instance.emptyState).toHaveBeenCalled();
+
+      nextProps = { location: { query: {} } };
+      instance.componentWillReceiveProps(nextProps);
+      expect(instance.emptyState).toHaveBeenCalled();
+    });
+
+    it('should not empty the state when the offset is more than 0', () => {
+      spyOn(instance, 'emptyState');
+      const nextProps = { location: { query: { q: '(offset:30)' } } };
+      instance.componentWillReceiveProps(nextProps);
+      expect(instance.emptyState).not.toHaveBeenCalled();
+    });
+  });
 });
