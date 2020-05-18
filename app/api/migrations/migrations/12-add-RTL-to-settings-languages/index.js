@@ -26,6 +26,6 @@ export default {
       return migratedLanguage;
     });
 
-    return db.collection('settings').update({ _id: settings._id }, { $set: { languages } });
+    return db.collection('settings').updateOne({ _id: settings._id }, { $set: { languages } });
   },
 };

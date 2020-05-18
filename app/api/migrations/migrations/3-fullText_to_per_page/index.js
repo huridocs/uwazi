@@ -16,7 +16,7 @@ export default {
   async up(db) {
     process.stdout.write(`${this.name}...\r\n`);
     let index = 1;
-    const totalDocuments = await db.collection('entities').count({ type: 'document' });
+    const totalDocuments = await db.collection('entities').countDocuments({ type: 'document' });
     if (totalDocuments === 0) {
       return;
     }

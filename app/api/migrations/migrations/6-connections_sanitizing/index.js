@@ -23,7 +23,7 @@ export default {
       const connection = await firstCursor.next();
       const sharedConnections = await db
         .collection('connections')
-        .count({ sharedId: connection.sharedId });
+        .countDocuments({ sharedId: connection.sharedId });
 
       if (!(connection.range && connection.range.text) && sharedConnections < languages.length) {
         incomplete += 1;

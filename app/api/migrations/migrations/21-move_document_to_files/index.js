@@ -82,7 +82,7 @@ export default {
         if (!alreadyExists) {
           const {
             ops: [created],
-          } = await db.collection('files').insert(fileToCreate);
+          } = await db.collection('files').insertOne(fileToCreate);
 
           db.collection('connections').updateMany(
             { filename: created.filename },
@@ -94,7 +94,7 @@ export default {
               filename: `${created._id}.jpg`,
               type: 'thumbnail',
             };
-            await db.collection('files').save(thumbnailToCreate);
+            await db.collection('files').insertOne(thumbnailToCreate);
             await rename(
               path.join(paths.uploadedDocuments, `${entity._id}.jpg`),
               path.join(paths.uploadedDocuments, thumbnailToCreate.filename)
@@ -102,7 +102,7 @@ export default {
           }
         }
 
-        await db.collection('entities').update({ _id: entity._id }, newEntity);
+        await db.collection('entities').replaceOne({ _id: entity._id }, newEntity);
 
         process.stdout.write(` -> processed: ${index} \r`);
         index += 1;

@@ -23,7 +23,7 @@ export default {
         ).length === 0;
 
       if (nonExistent) {
-        await db.collection('connections').remove({ _id: connection._id });
+        await db.collection('connections').deleteOne({ _id: connection._id });
         index += 1;
       }
     }
