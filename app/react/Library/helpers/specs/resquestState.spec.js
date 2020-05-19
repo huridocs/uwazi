@@ -3,7 +3,6 @@ import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
 import { RequestParams } from 'app/utils/RequestParams';
 import Immutable from 'immutable';
 import rison from 'rison';
-import libraryHelpers from '../libraryFilters';
 import requestState from '../requestState';
 
 describe('static requestState()', () => {
