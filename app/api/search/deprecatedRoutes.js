@@ -32,7 +32,7 @@ export default app => {
             filters: { type: 'object' },
             types: { type: 'array', items: [{ type: 'string' }] },
             _types: { type: 'array', items: [{ type: 'string' }] },
-            fields: { type: 'string' },
+            fields: { type: 'array', items: [{ type: 'string' }] },
             allAggregations: { type: 'boolean' },
             userSelectedSorting: { type: 'string' },
             aggregations: { type: 'string' },
