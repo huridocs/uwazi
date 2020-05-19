@@ -26,7 +26,11 @@ export class LookupMultiSelect extends Component<LookupMultiSelectProps, LookupM
 
   constructor(props: LookupMultiSelectProps) {
     super(props);
-    this.state = { lookupOptions: [], selectedOptions: [], totalPossibleOptions: 0 };
+    this.state = {
+      lookupOptions: [],
+      selectedOptions: [],
+      totalPossibleOptions: props.totalPossibleOptions,
+    };
     this.onChange = this.onChange.bind(this);
     this.onFilter = debounce(this.onFilter.bind(this), debounceTime);
   }
@@ -56,7 +60,7 @@ export class LookupMultiSelect extends Component<LookupMultiSelectProps, LookupM
     }
 
     if (!searchTerm.length) {
-      this.setState({ lookupOptions: [], totalPossibleOptions: 0 });
+      this.setState({ lookupOptions: [], totalPossibleOptions: this.props.totalPossibleOptions });
     }
   }
 
@@ -76,7 +80,7 @@ export class LookupMultiSelect extends Component<LookupMultiSelectProps, LookupM
         {...rest}
         onChange={this.onChange}
         onFilter={this.onFilter}
-        totalPossibleOptions={filteredTotalPossibleOptions || totalPossibleOptions}
+        totalPossibleOptions={filteredTotalPossibleOptions}
         options={this.combineOptions()}
       />
     );

@@ -154,6 +154,7 @@ abstract class MultiSelectBase<ValueType> extends Component<
 
   resetFilter() {
     this.setState({ filter: '' });
+    this.props.onFilter('');
   }
 
   showAll(e: React.MouseEvent) {
@@ -237,6 +238,7 @@ abstract class MultiSelectBase<ValueType> extends Component<
     if (this.state.showAll) {
       return <Translate>x less</Translate>;
     }
+
     return (
       <span>
         {amount - this.props.optionsToShow} <Translate>x more</Translate>
@@ -389,8 +391,7 @@ abstract class MultiSelectBase<ValueType> extends Component<
   render() {
     const { optionsLabel } = this.props;
 
-    let options = this.props.options.slice();
-    const totalOptions = options.filter(option => {
+    let totalOptions = this.props.options.filter(option => {
       let notDefined;
       return (
         isNotAnEmptyGroup(option) &&
@@ -401,7 +402,7 @@ abstract class MultiSelectBase<ValueType> extends Component<
       );
     });
 
-    options = totalOptions.map(option => {
+    totalOptions = totalOptions.map(option => {
       if (!option.options) {
         return option;
       }
@@ -416,9 +417,10 @@ abstract class MultiSelectBase<ValueType> extends Component<
     }) as Option[];
 
     if (this.state.filter) {
-      options = filterOptions(this.state.filter, options, optionsLabel);
+      totalOptions = filterOptions(this.state.filter, totalOptions, optionsLabel);
     }
 
+    let options = totalOptions.slice();
     const tooManyOptions = !this.state.showAll && options.length > this.props.optionsToShow;
 
     if (this.props.sort) {
