@@ -1,9 +1,9 @@
 import Joi from 'joi';
+import { Application } from 'express';
 
 import needsAuthorization from 'api/auth/authMiddleware';
 import * as usersUtils from 'api/auth2fa/usersUtils';
 import { validation } from 'api/utils';
-import { Application } from 'express';
 
 export default (app: Application) => {
   app.post(

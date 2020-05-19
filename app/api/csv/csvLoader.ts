@@ -1,4 +1,4 @@
-import EventEmitter from 'events';
+import { EventEmitter } from 'events';
 
 import templates from 'api/templates';
 import settings from 'api/settings';
