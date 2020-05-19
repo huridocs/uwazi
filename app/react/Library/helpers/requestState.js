@@ -24,8 +24,6 @@ export function processQuery(params, globalResources, key) {
   query.view = params.view;
 
   if (!globalResources.library && query.limit) {
-    console.log(query.limit, query.offset || 0);
-
     query = Object.assign(query, { limit: query.limit + (query.offset || 0), offset: 0 });
   }
 

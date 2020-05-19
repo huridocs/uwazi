@@ -1,16 +1,8 @@
 import Joi from 'joi';
 import entities from 'api/entities';
 import search from './search';
-import { validation } from '../utils';
+import { validation, parseQuery } from '../utils';
 import needsAuthorization from '../auth/authMiddleware';
-
-const parseQueryProperty = (query, property) => {
-  try {
-    return JSON.parse(query[property]);
-  } catch (e) {
-    return query[property];
-  }
-};
 
 export default app => {
   app.get(
@@ -32,14 +24,7 @@ export default app => {
 
   app.get(
     '/api/search',
-    (req, _res, next) => {
-      req.query = Object.keys(req.query).reduce((parsedQuery, key) => {
-        parsedQuery[key] = parseQueryProperty(req.query, key);
-        return parsedQuery;
-      }, {});
-
-      next();
-    },
+    parseQuery,
     validation.validateRequest({
       properties: {
         query: {
