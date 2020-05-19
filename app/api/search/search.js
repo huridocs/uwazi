@@ -325,7 +325,6 @@ const _sanitizeAggregations = async (
 ) => {
   const sanitizedAggregations = _sanitizeAggregationsStructure(aggregations, limit);
   const sanitizedAggregationNames = _sanitizeAgregationNames(sanitizedAggregations);
-
   return _denormalizeAggregations(sanitizedAggregationNames, templates, dictionaries, language);
 };
 
@@ -740,14 +739,13 @@ const instanceSearch = elasticIndex => ({
     const aggregation = body.aggregations.all.aggregations[`${propertyName}.value`];
 
     aggregation.aggregations.filtered.filter.bool.filter.push({
-      match: { [`metadata.${propertyName}.label`]: { query: searchTerm, fuzziness: 3 } },
+      wildcard: { [`metadata.${propertyName}.label`]: { value: `*${searchTerm}*` } },
     });
 
     const response = await elastic.search({
       index: elasticIndex || elasticIndexes.index,
       body,
     });
-
     const sanitizedAggregations = await _sanitizeAggregations(
       response.aggregations.all,
       templates,
