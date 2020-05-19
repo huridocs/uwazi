@@ -152,9 +152,9 @@ abstract class MultiSelectBase<ValueType> extends Component<
     await this.props.onFilter(e.target.value);
   }
 
-  resetFilter() {
+  async resetFilter() {
     this.setState({ filter: '' });
-    this.props.onFilter('');
+    await this.props.onFilter('');
   }
 
   showAll(e: React.MouseEvent) {
