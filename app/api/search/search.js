@@ -739,7 +739,7 @@ const instanceSearch = elasticIndex => ({
     const aggregation = body.aggregations.all.aggregations[`${propertyName}.value`];
 
     aggregation.aggregations.filtered.filter.bool.filter.push({
-      wildcard: { [`metadata.${propertyName}.label`]: { value: `*${searchTerm}*` } },
+      wildcard: { [`metadata.${propertyName}.label`]: { value: `*${searchTerm.toLowerCase()}*` } },
     });
 
     const response = await elastic.search({
