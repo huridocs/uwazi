@@ -24,7 +24,9 @@ export function processQuery(params, globalResources, key) {
   query.view = params.view;
 
   if (!globalResources.library && query.limit) {
-    query = Object.assign(query, { limit: query.limit + query.offset, offset: 0 });
+    console.log(query.limit, query.offset || 0);
+
+    query = Object.assign(query, { limit: query.limit + (query.offset || 0), offset: 0 });
   }
 
   query.geolocation = key === 'markers';
@@ -34,7 +36,8 @@ export function processQuery(params, globalResources, key) {
 }
 
 export default function requestState(request, globalResources) {
-  const documentsRequest = request.set(processQuery(request.data, globalResources));
+  const docsQuery = processQuery(request.data, globalResources);
+  const documentsRequest = request.set(docsQuery);
   const markersRequest = request.set(processQuery(request.data, globalResources, 'markers'));
 
   return Promise.all([api.search(documentsRequest), api.search(markersRequest)]).then(
@@ -62,8 +65,9 @@ export default function requestState(request, globalResources) {
         },
       };
 
+      const replaceOrAddEntities = Boolean(docsQuery.offset);
       return [
-        setReduxState(state),
+        setReduxState(state, replaceOrAddEntities),
         actions.set('library.sidepanel.quickLabelState', {
           thesaurus: request.data.quickLabelThesaurus,
           autoSave: false,

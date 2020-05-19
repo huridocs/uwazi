@@ -50,31 +50,31 @@ describe('UploadsRoute', () => {
         filters: { something: 1 },
         types: ['types'],
         unpublished: true,
+        geolocation: false,
       };
 
       const requestParams = new RequestParams(query);
 
       await UploadsRoute.requestState(requestParams, globalResources);
       expect(searchAPI.search).toHaveBeenCalledWith(new RequestParams(expectedSearch));
-      // expect(state.uploads.documents).toEqual(documents);
     });
   });
 
   describe('componentWillReceiveProps()', () => {
     beforeEach(() => {
-      instance.superComponentWillReceiveProps = jasmine.createSpy('superComponentWillReceiveProps');
+      instance.getClientState = jasmine.createSpy('getClientState');
     });
 
     it('should update if "q" has changed', () => {
       const nextProps = { location: { query: { q: '(a:2)' } } };
       instance.componentWillReceiveProps(nextProps);
-      expect(instance.superComponentWillReceiveProps).toHaveBeenCalledWith(nextProps);
+      expect(instance.getClientState).toHaveBeenCalledWith(nextProps);
     });
 
     it('should not update if "q" is the same', () => {
       const nextProps = { location: { query: { q: '(a:1)' } } };
       instance.componentWillReceiveProps(nextProps);
-      expect(instance.superComponentWillReceiveProps).not.toHaveBeenCalled();
+      expect(instance.getClientState).not.toHaveBeenCalled();
     });
   });
 });

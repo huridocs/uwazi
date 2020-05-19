@@ -66,22 +66,18 @@ describe('Library', () => {
   });
 
   describe('componentWillReceiveProps()', () => {
-    it('should empty the state when the offset is 0 or undefined', () => {
-      spyOn(instance, 'emptyState');
-      let nextProps = { location: { query: { q: '(offset:0)' } } };
+    it('should request the new state when the url changes', () => {
+      spyOn(instance, 'getClientState');
+      const nextProps = { location: { query: { q: '(a:2)' } } };
       instance.componentWillReceiveProps(nextProps);
-      expect(instance.emptyState).toHaveBeenCalled();
-
-      nextProps = { location: { query: {} } };
-      instance.componentWillReceiveProps(nextProps);
-      expect(instance.emptyState).toHaveBeenCalled();
+      expect(instance.getClientState).toHaveBeenCalled();
     });
 
-    it('should not empty the state when the offset is more than 0', () => {
-      spyOn(instance, 'emptyState');
-      const nextProps = { location: { query: { q: '(offset:30)' } } };
+    it('should not request the new state when the url hasnt change', () => {
+      spyOn(instance, 'getClientState');
+      const nextProps = { location: { query: { q: '(a:1)' } } };
       instance.componentWillReceiveProps(nextProps);
-      expect(instance.emptyState).not.toHaveBeenCalled();
+      expect(instance.getClientState).not.toHaveBeenCalled();
     });
   });
 });

@@ -2,7 +2,7 @@ import RouteHandler from 'app/App/RouteHandler';
 import { actions } from 'app/BasicReducer';
 import LibraryCharts from 'app/Charts/components/LibraryCharts';
 import { t } from 'app/I18N';
-import { enterLibrary, setDocuments, unsetDocuments } from 'app/Library/actions/libraryActions';
+import { enterLibrary, addDocuments, unsetDocuments } from 'app/Library/actions/libraryActions';
 import { decodeQuery, processQuery } from 'app/Library/helpers/requestState';
 import DocumentsList from 'app/Library/components/DocumentsList';
 import LibraryFilters from 'app/Library/components/LibraryFilters';
@@ -24,7 +24,7 @@ import socket from '../socket';
 
 const setReduxState = state => _dispatch => {
   const dispatch = wrapDispatch(_dispatch, 'uploads');
-  dispatch(setDocuments(state.uploads.documents));
+  dispatch(addDocuments(state.uploads.documents));
   dispatch(actions.set('aggregations', state.uploads.aggregations));
   dispatch(formActions.load('uploads.search', state.uploads.search));
   dispatch({
@@ -37,7 +37,6 @@ const setReduxState = state => _dispatch => {
 export default class Uploads extends RouteHandler {
   constructor(props, context) {
     super(props, context);
-    this.superComponentWillReceiveProps = super.componentWillReceiveProps;
     this.refreshSearch = this.refreshSearch.bind(this);
   }
 
@@ -105,8 +104,8 @@ export default class Uploads extends RouteHandler {
       this.emptyState();
     }
 
-    if (nextProps.location.query.q !== this.props.location.query.q) {
-      return this.superComponentWillReceiveProps(nextProps);
+    if (this.urlHasChanged(nextProps)) {
+      this.getClientState(nextProps);
     }
   }
 

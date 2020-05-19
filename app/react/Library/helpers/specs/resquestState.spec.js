@@ -50,6 +50,7 @@ describe('static requestState()', () => {
         filters: { something: 1 },
         types: [],
         view: 'charts',
+        geolocation: false,
       },
       headers: 'headers',
     };
@@ -58,25 +59,6 @@ describe('static requestState()', () => {
 
     expect(searchAPI.search).toHaveBeenCalledWith(expectedSearch);
     expect(actions).toMatchSnapshot();
-  });
-
-  it('should process the query url params and transform it to state', async () => {
-    spyOn(libraryHelpers, 'URLQueryToState').and.returnValue({
-      properties: 'properties',
-      search: 'search',
-    });
-    const q = { filters: {}, types: ['type1'], order: 'desc', sort: 'creationDate' };
-    const query = { q: rison.encode(q), quickLabelThesaurus: 'countries', view: 'map' };
-    const request = new RequestParams(query);
-    await requestState(request, globalResources);
-
-    expect(libraryHelpers.URLQueryToState).toHaveBeenCalledWith(
-      q,
-      templates,
-      thesauris,
-      relationTypes,
-      ['country']
-    );
   });
 
   describe('when is for geolocation', () => {

@@ -11,6 +11,8 @@ describe('setReduxState()', () => {
   };
   const dispatchCallsOrder = [];
   let context;
+  let addDocumentsInsteadOfSet = true;
+  let state;
 
   beforeEach(() => {
     spyOn(libraryActions, 'setTemplates');
@@ -21,17 +23,17 @@ describe('setReduxState()', () => {
         }),
       },
     };
-    const state = {
+    state = {
       library: {
         documents,
         aggregations,
         filters: { documentTypes: 'types', properties: 'properties' },
       },
     };
-    setReduxState(state)(context.store.dispatch);
   });
 
-  it('should set the documents and aggregations and Unset the documents as first action', () => {
+  it('should ADD the documents and aggregations', () => {
+    setReduxState(state, addDocumentsInsteadOfSet)(context.store.dispatch);
     expect(context.store.dispatch).toHaveBeenCalledWith({
       type: actionTypes.ADD_DOCUMENTS,
       documents,
@@ -43,6 +45,19 @@ describe('setReduxState()', () => {
       libraryFilters: 'properties',
       aggregations,
       __reducerKey: 'library',
+    });
+  });
+
+  describe('when the flag to set or add is false', () => {
+    it('should SET the documents and aggregations', () => {
+      addDocumentsInsteadOfSet = false;
+      setReduxState(state, addDocumentsInsteadOfSet)(context.store.dispatch);
+
+      expect(context.store.dispatch).toHaveBeenCalledWith({
+        type: actionTypes.SET_DOCUMENTS,
+        documents,
+        __reducerKey: 'library',
+      });
     });
   });
 });

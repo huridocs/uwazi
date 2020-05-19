@@ -4,7 +4,7 @@ import { enterLibrary, unsetDocuments, zoomIn, zoomOut } from 'app/Library/actio
 import DocumentsList from 'app/Library/components/DocumentsList';
 import LibraryModeToggleButtons from 'app/Library/components/LibraryModeToggleButtons';
 import SearchButton from 'app/Library/components/SearchButton';
-import requestState, { decodeQuery } from 'app/Library/helpers/requestState';
+import requestState from 'app/Library/helpers/requestState';
 import LibraryLayout from 'app/Library/LibraryLayout';
 import { wrapDispatch } from 'app/Multireducer';
 import ImportProgress from 'app/Uploads/components/ImportProgress';
@@ -47,12 +47,6 @@ export default class Library extends RouteHandler {
   }
 
   componentWillReceiveProps(nextProps) {
-    const nextQuery = decodeQuery(nextProps.location.query);
-
-    if (!nextQuery.offset) {
-      this.emptyState();
-    }
-
     if (this.urlHasChanged(nextProps)) {
       this.getClientState(nextProps);
     }
