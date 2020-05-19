@@ -179,7 +179,6 @@ class DocumentsList extends Component {
               if (LoadMoreButton) {
                 return <LoadMoreButton />;
               }
-
               if (documents.get('rows').size < documents.get('totalRows') && !this.state.loading) {
                 return (
                   <div className="col-sm-12 text-center">
@@ -247,5 +246,4 @@ DocumentsList.propTypes = {
 };
 
 export { DocumentsList };
-
 export default withRouter(DocumentsList);
