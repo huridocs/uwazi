@@ -20,6 +20,12 @@ const doneLoading = data => {
 
 const isNonUsualApiError = error => error.status && ![401, 404, 409, 500].includes(error.status);
 
+function extractMessageFromError(error) {
+  return error.json.error.startsWith('PayloadTooLargeError: request entity too large')
+    ? 'The request has too large data. Please review any long value property.'
+    : 'An error has occurred';
+}
+
 const handleErrorStatus = error => {
   if (error.status === 401) {
     browserHistory.replace('/login');
@@ -28,7 +34,8 @@ const handleErrorStatus = error => {
   } else if (error.status === 409) {
     store.dispatch(notify(error.json.error, 'warning'));
   } else if (error.status === 500) {
-    store.dispatch(notify('An error has occurred', 'danger'));
+    const message = extractMessageFromError(error);
+    store.dispatch(notify(message, 'danger'));
   } else if (isNonUsualApiError(error)) {
     store.dispatch(notify(error.json.error, 'danger'));
   } else if (error instanceof TypeError) {

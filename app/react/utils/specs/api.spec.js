@@ -33,7 +33,11 @@ describe('api', () => {
       .get(`${APIURL}network_error`, {
         throws: new TypeError('Failed to fetch'),
       })
-      .get(`${APIURL}unknown_error`, { throws: new Error('some error') });
+      .get(`${APIURL}unknown_error`, { throws: new Error('some error') })
+      .post(`${APIURL}test_payload_too_large_error`, {
+        status: 500,
+        body: { error: 'PayloadTooLargeError: request entity too large at readStream' },
+      });
   });
 
   afterEach(() => backend.restore());
@@ -147,6 +151,21 @@ describe('api', () => {
         await testErrorHandling('conflict', () => {
           testNotificationDisplayed('conflict error', 'warning');
         });
+      });
+    });
+
+    describe('when request return a server error 500 with payloadtoolargeerror', () => {
+      it('should notify that the request is too large', async () => {
+        const requestParams = new RequestParams({ key: 'test' }, { header: 'value' });
+        try {
+          await api.post('test_payload_too_large_error', requestParams);
+          fail('should throw error');
+        } catch (e) {
+          testNotificationDisplayed(
+            'The request has too large data. Please review any long value property.',
+            'danger'
+          );
+        }
       });
     });
 
