@@ -197,17 +197,12 @@ describe('settings', () => {
     });
 
     describe('if there is settings with no default mapTilerKey on the DB', () => {
-      it('should return the stored mapTilerKey', done => {
+      it('should return the stored mapTilerKey', async () => {
         const expectedKey = 'anotherKey';
         const config = { mapTilerKey: expectedKey };
-        settings
-          .save(config)
-          .then(() => settings.get())
-          .then(result => {
-            expect(result.mapTilerKey).toBe(expectedKey);
-            done();
-          })
-          .catch(catchErrors(done));
+        await settings.save(config);
+        const savedSettings = await settings.get();
+        expect(savedSettings.mapTilerKey).toBe(expectedKey);
       });
     });
   });
