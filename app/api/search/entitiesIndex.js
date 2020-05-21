@@ -59,6 +59,7 @@ const bulkIndex = (docs, _action = 'index', elasticIndex) => {
   });
 
   return elastic.bulk({ body, requestTimeout: 40000 }).then(res => {
+    const largeFieldErrors = [];
     if (res.items) {
       res.items.forEach(f => {
         if (f.index.error) {
@@ -69,11 +70,17 @@ const bulkIndex = (docs, _action = 'index', elasticIndex) => {
               ' '
             )}`
           );
-          if (f.index.error.caused_by && f.index.error.caused_by.type === 'max_bytes_length_exceeded_exception') {
-            throw new Error('max_bytes_length_exceeded_exception');
+          if (
+            f.index.error.caused_by &&
+            f.index.error.caused_by.type === 'max_bytes_length_exceeded_exception'
+          ) {
+            largeFieldErrors.push(f.index.error);
           }
         }
       });
+      if (largeFieldErrors.length > 0) {
+        throw new Error('max_bytes_length_exceeded_exception');
+      }
     }
     return res;
   });

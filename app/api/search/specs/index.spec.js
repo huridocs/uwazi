@@ -159,7 +159,6 @@ describe('search', () => {
     });
 
     describe('when a field is longer than limit', () => {
-
       const largeField = `${Math.random()
         .toString(36)
         .repeat(20000)}_last`;
@@ -175,6 +174,19 @@ describe('search', () => {
           fail('should throw an indexing error');
         } catch (error) {
           expect(error.message).toMatch('max_bytes_length_exceeded_exception');
+        }
+      });
+      it('should logs all errors at indexation', async () => {
+        const toIndexDocs = [
+          { _id: 'id1', title: largeField },
+          { _id: 'id2', title: largeField },
+        ];
+        entities.get.mockResolvedValue(toIndexDocs);
+        spyOn(errorLog, 'error');
+        try {
+          await search.indexEntities(toIndexDocs, 'index');
+        } catch (error) {
+          expect(errorLog.error).toHaveBeenCalledTimes(2);
         }
       });
     });
