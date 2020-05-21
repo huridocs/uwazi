@@ -6,7 +6,11 @@ import { elastic } from 'api/search';
 import { instanceSearch } from 'api/search/search';
 import db from 'api/utils/testing_db';
 import instanceElasticTesting from 'api/utils/elastic_testing';
+import entities from 'api/entities';
+import relationships from 'api/relationships/relationships';
 import { fixturesTimeOut } from './fixtures_elastic';
+
+jest.mock('api/entities');
 
 describe('search', () => {
   const elasticIndex = 'index_for_index_testing';
@@ -151,6 +155,27 @@ describe('search', () => {
         expect(errorLog.error).toHaveBeenCalledWith(
           'ERROR Failed to index document _id1: "something terrible happened"'
         );
+      });
+    });
+
+    describe('when a field is longer than limit', () => {
+
+      const largeField = `${Math.random()
+        .toString(36)
+        .repeat(20000)}_last`;
+      beforeAll(() => {
+        entities.count.mockResolvedValue(1);
+        spyOn(relationships, 'get').and.returnValue(Promise.resolve());
+      });
+      it('should throw an error with message max_bytes_length_exceeded_exception', async () => {
+        const toIndexDocs = [{ _id: 'id1', title: largeField }];
+        entities.get.mockResolvedValue(toIndexDocs);
+        try {
+          await search.indexEntities(toIndexDocs, 'index');
+          fail('should throw an indexing error');
+        } catch (error) {
+          expect(error.message).toMatch('max_bytes_length_exceeded_exception');
+        }
       });
     });
   });

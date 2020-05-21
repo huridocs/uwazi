@@ -69,6 +69,9 @@ const bulkIndex = (docs, _action = 'index', elasticIndex) => {
               ' '
             )}`
           );
+          if (f.index.error.caused_by && f.index.error.caused_by.type === 'max_bytes_length_exceeded_exception') {
+            throw new Error('max_bytes_length_exceeded_exception');
+          }
         }
       });
     }
