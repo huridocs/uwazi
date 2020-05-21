@@ -74,20 +74,31 @@ describe('LookupMultiSelect', () => {
 
       expect(getProps().options).toEqual(props.options);
     });
+  });
 
-    describe('onChange', () => {
-      it('options should also include selectedOptions', () => {
-        render();
+  describe('onChange', () => {
+    it('options should also include selectedOptions', () => {
+      render();
 
-        component.setState({ lookupOptions: [{ label: 'new', value: 'new', results: 1 }] });
-        getProps().onChange(['option2']);
-        component.setProps({ options: [] });
+      component.setState({ lookupOptions: [{ label: 'new', value: 'new', results: 1 }] });
+      getProps().onChange(['option2']);
+      component.setProps({ options: [] });
 
-        expect(getProps().options).toEqual([
-          { label: 'new', value: 'new', results: 1 },
-          { label: 'Option2', value: 'option2', results: 4 },
-        ]);
-      });
+      expect(getProps().options).toEqual([
+        { label: 'new', value: 'new', results: 1 },
+        { label: 'Option2', value: 'option2', results: 4 },
+      ]);
+    });
+  });
+
+  describe('componentWillReceiveProps', () => {
+    it('should update the totalPossibleOptions in the state', () => {
+      render();
+
+      component.setState({ totalPossibleOptions: 10 });
+      component.setProps({ totalPossibleOptions: 42 });
+
+      expect(component.state().totalPossibleOptions).toBe(42);
     });
   });
 });
