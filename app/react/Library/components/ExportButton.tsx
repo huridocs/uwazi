@@ -32,7 +32,7 @@ class ExportButton extends Component<ExportButtonProps, {}> {
         className={`btn btn-primary ${this.props.processing ? 'btn-disabled' : ''}`}
       >
         {!this.props.processing ? (
-          <Icon icon="export-csv" transform="right-0.5 up-1" />
+          <Icon icon="export-csv" transform="right-0.075 up-0.1" />
         ) : (
           <Icon icon="spinner" spin />
         )}
