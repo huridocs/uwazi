@@ -7,8 +7,20 @@ import { entityDefaultDocument } from 'shared/entityDefaultDocument';
 
 import elastic from './elastic';
 
+function truncateLongFieldValue(fieldPath, docData) {
+  fieldPath.reduce((path, prop) => {
+    const currentPath = path;
+    if (currentPath[prop] !== undefined && currentPath[prop] !== Object(currentPath[prop])) {
+      currentPath[prop] = currentPath[prop].substring(0, 100);
+    } else if (Array.isArray(currentPath) && currentPath[0][prop] !== Object(currentPath[prop])) {
+      currentPath[0][prop] = currentPath[0][prop].substring(0, 100);
+    }
+    return currentPath[prop];
+  }, docData);
+}
+
 const handledFailedDocsByLargeFieldErrors = (body, errors) => {
-  const invalidFields = [];
+  const invalidFields = new Set();
   errors.forEach(error => {
     const docIndex = body.findIndex(
       doc => doc.index !== undefined && doc.index._id === error.index._id
@@ -16,22 +28,14 @@ const handledFailedDocsByLargeFieldErrors = (body, errors) => {
     const errorExpression = /Document contains at least one immense term in field="(\S+)".+/g;
     const matches = errorExpression.exec(error.index.error.reason);
     const docData = body[docIndex + 1];
-    const field = matches[1].split(/\.(?=[^\.]+$)/)[0];
+    const field = matches[1].split(/\.(?=[^.]+$)/)[0];
     const fieldPath = field.split('.');
-    fieldPath.reduce((path, prop) => {
-      const currentPath = path;
-      if (currentPath[prop] !== undefined && currentPath[prop] !== Object(currentPath[prop])) {
-        currentPath[prop] = currentPath[prop].substring(0, 100);
-      } else if (Array.isArray(currentPath) && currentPath[0][prop] !== Object(currentPath[prop])) {
-        currentPath[0][prop] = currentPath[0][prop].substring(0, 100);
-      }
-      return currentPath[prop];
-    }, docData);
-    invalidFields.push(field);
+    truncateLongFieldValue(fieldPath, docData);
+    invalidFields.add(field);
   });
   return elastic.bulk({ body, requestTimeout: 40000 }).then(() => {
     throw new Error(
-      `max_bytes_length_exceeded_exception. Invalid Fields: ${invalidFields.join(',')}`
+      `max_bytes_length_exceeded_exception. Invalid Fields: ${Array.from(invalidFields).join(', ')}`
     );
   });
 };
