@@ -48,18 +48,18 @@ describe('indexEntities', () => {
     it('should have to support nested long fields', () => {
       const inputBody = [
         { index: { _id: 'id1' } },
-        { title: 'long doc', metadata: { resumen: [{ value: longField }] } },
+        { title: 'long doc', metadata: { summary: [{ value: longField }] } },
       ];
       const body = [
         { index: { _id: 'id1' } },
-        { title: 'long doc', metadata: { resumen: [{ value: longFieldTruncated }] } },
+        { title: 'long doc', metadata: { summary: [{ value: longFieldTruncated }] } },
       ];
-      const reason = `${reasonPrefix}"metadata.resumen.value.raw" (whose `;
+      const reason = `${reasonPrefix}"metadata.summary.value.raw" (whose `;
       const errors = [{ index: { _id: 'id1', error: { reason } } }];
       try {
         handledFailedDocsByLargeFieldErrors(inputBody, errors);
       } catch (e) {
-        expect(e.message).toContain('metadata.resumen.value');
+        expect(e.message).toContain('metadata.summary.value');
         expect(elastic.bulk).toHaveBeenCalledWith({ body, requestTimeout: 40000 });
       }
     });

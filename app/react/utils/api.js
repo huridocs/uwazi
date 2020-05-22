@@ -20,33 +20,32 @@ const doneLoading = data => {
 
 const isNonUsualApiError = error => error.status && ![401, 404, 409, 500].includes(error.status);
 
-function extractMessageFromError(error) {
-  const errorMessages = [
-    {
-      key: /PayloadTooLargeError: request entity too large/g,
-      message: 'The request has too large data. Please review any long value property.',
-    },
-    {
-      key: /max_bytes_length_exceeded_exception. Invalid Fields: (.+)/g,
-      message: 'The request has too large data. Please review the follows fields: {0} ',
-    },
-  ];
+const errorMessages = [
+  {
+    key: /PayloadTooLargeError: request entity too large/g,
+    message: 'The request has too large data. Please review any long value property.',
+  },
+  {
+    key: /max_bytes_length_exceeded_exception. Invalid Fields: (.+)/g,
+    message: 'The request has too large data. Please review the follows fields: {0} ',
+  },
+];
 
-  const message = errorMessages.reduce((finalMessage, errorExpression) => {
-    const matches = errorExpression.key.exec(error.json.error);
-    if (matches) {
-      let messageTemplate = errorExpression.message;
-      if (matches.length > 1) {
-        for (let i = 0; i < matches.length - 1; i += 1) {
-          const placeholder = `{${i}}`;
-          messageTemplate = messageTemplate.replace(placeholder, matches[1]);
-        }
-      }
-      return messageTemplate;
+function extractMessageFromError(error) {
+  let finalMessage = 'An error has occurred';
+  if (!error.json.error) return finalMessage;
+
+  const errorMessage = errorMessages.find(errorExpression =>
+    error.json.error.match(errorExpression.key)
+  );
+  if (errorMessage) {
+    const matches = errorMessage.key.exec(error.json.error);
+    finalMessage = errorMessage.message;
+    for (let i = 0; i < matches.length - 1; i += 1) {
+      finalMessage = finalMessage.replace(`{${i}}`, matches[1]);
     }
-    return finalMessage;
-  }, 'An error has occurred');
-  return message;
+  }
+  return finalMessage;
 }
 
 const handleErrorStatus = error => {

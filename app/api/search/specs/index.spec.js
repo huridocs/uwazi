@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 // eslint-disable max-nested-callbacks
 
 import { catchErrors } from 'api/utils/jasmineHelpers';
@@ -6,7 +7,7 @@ import { elastic } from 'api/search';
 import { instanceSearch } from 'api/search/search';
 import db from 'api/utils/testing_db';
 import instanceElasticTesting from 'api/utils/elastic_testing';
-import entities from 'api/entities';
+import entitiesAPI from 'api/entities';
 import relationships from 'api/relationships/relationships';
 import { fixturesTimeOut } from './fixtures_elastic';
 
@@ -163,12 +164,12 @@ describe('search', () => {
         .toString(36)
         .repeat(20000)}_last`;
       beforeAll(() => {
-        entities.count.mockResolvedValue(1);
+        entitiesAPI.count.mockResolvedValue(1);
         spyOn(relationships, 'get').and.returnValue(Promise.resolve());
       });
       it('should throw an error with message max_bytes_length_exceeded_exception', async () => {
         const toIndexDocs = [{ _id: 'id1', title: largeField }];
-        entities.get.mockResolvedValue(toIndexDocs);
+        entitiesAPI.get.mockResolvedValue(toIndexDocs);
         try {
           await search.indexEntities(toIndexDocs, 'index');
           fail('should throw an indexing error');
@@ -181,7 +182,7 @@ describe('search', () => {
           { _id: 'id1', title: largeField },
           { _id: 'id2', title: largeField },
         ];
-        entities.get.mockResolvedValue(toIndexDocs);
+        entitiesAPI.get.mockResolvedValue(toIndexDocs);
         spyOn(errorLog, 'error');
         try {
           await search.indexEntities(toIndexDocs, 'index');
@@ -195,7 +196,7 @@ describe('search', () => {
           { _id: 'id1', sharedId: 'id1', title: largeField },
           { _id: 'id2', sharedId: 'id2', title: largeField },
         ];
-        entities.get.mockResolvedValue(toIndexDocs);
+        entitiesAPI.get.mockResolvedValue(toIndexDocs);
         try {
           await search.indexEntities(toIndexDocs, '+fullText');
         } catch (error) {
