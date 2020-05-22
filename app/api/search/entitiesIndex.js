@@ -7,6 +7,35 @@ import { entityDefaultDocument } from 'shared/entityDefaultDocument';
 
 import elastic from './elastic';
 
+const handledFailedDocsByLargeFieldErrors = (body, errors) => {
+  const invalidFields = [];
+  errors.forEach(error => {
+    const docIndex = body.findIndex(
+      doc => doc.index !== undefined && doc.index._id === error.index._id
+    );
+    const errorExpression = /Document contains at least one immense term in field="(\S+)".+/g;
+    const matches = errorExpression.exec(error.index.error.reason);
+    const docData = body[docIndex + 1];
+    const field = matches[1].split(/\.(?=[^\.]+$)/)[0];
+    const fieldPath = field.split('.');
+    fieldPath.reduce((path, prop) => {
+      const currentPath = path;
+      if (currentPath[prop] !== undefined && currentPath[prop] !== Object(currentPath[prop])) {
+        currentPath[prop] = currentPath[prop].substring(0, 100);
+      } else if (Array.isArray(currentPath) && currentPath[0][prop] !== Object(currentPath[prop])) {
+        currentPath[0][prop] = currentPath[0][prop].substring(0, 100);
+      }
+      return currentPath[prop];
+    }, docData);
+    invalidFields.push(field);
+  });
+  return elastic.bulk({ body, requestTimeout: 40000 }).then(() => {
+    throw new Error(
+      `max_bytes_length_exceeded_exception. Invalid Fields: ${invalidFields.join(',')}`
+    );
+  });
+};
+
 const bulkIndex = (docs, _action = 'index', elasticIndex) => {
   const body = [];
   docs.forEach(doc => {
@@ -59,7 +88,7 @@ const bulkIndex = (docs, _action = 'index', elasticIndex) => {
   });
 
   return elastic.bulk({ body, requestTimeout: 40000 }).then(res => {
-    const largeFieldErrors = [];
+    const failedDocsByLargeFieldErrors = [];
     if (res.items) {
       res.items.forEach(f => {
         if (f.index.error) {
@@ -74,12 +103,12 @@ const bulkIndex = (docs, _action = 'index', elasticIndex) => {
             f.index.error.caused_by &&
             f.index.error.caused_by.type === 'max_bytes_length_exceeded_exception'
           ) {
-            largeFieldErrors.push(f.index.error);
+            failedDocsByLargeFieldErrors.push(f);
           }
         }
       });
-      if (largeFieldErrors.length > 0) {
-        throw new Error('max_bytes_length_exceeded_exception');
+      if (failedDocsByLargeFieldErrors.length > 0) {
+        return handledFailedDocsByLargeFieldErrors(body, failedDocsByLargeFieldErrors);
       }
     }
     return res;
@@ -122,4 +151,4 @@ const indexEntities = (
   return entities.count(query).then(totalRows => index(0, totalRows));
 };
 
-export { bulkIndex, indexEntities };
+export { bulkIndex, indexEntities, handledFailedDocsByLargeFieldErrors };
