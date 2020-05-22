@@ -2,7 +2,6 @@
 
 @import 'config/typography';
 @import 'config/colors';
-@import 'custom/_colors';
 @import 'config/materials';
 @import 'config/breakpoints';
 
@@ -63,8 +62,6 @@
 @import 'layout/hero';
 @import 'modules/thesauri';
 
-@import 'custom/custom';
-
 @import '../../Timeline/scss/timeline';
 @import 'utilities/utilities';
 
@@ -74,3 +71,5 @@
 @import 'vendor/nprogress';
 @import 'vendor/fa-svg-with-js';
 @import 'vendor/react-widgets';
+
+@import 'modules/review';

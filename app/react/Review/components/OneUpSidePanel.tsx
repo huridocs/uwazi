@@ -11,7 +11,6 @@ import SidePanel from 'app/Layout/SidePanel';
 import { MetadataForm } from 'app/Metadata';
 import { toggleOneUpLoadConnections } from 'app/Review/actions/actions';
 import { StateSelector } from 'app/Review/components/StateSelector';
-import 'app/Review/scss/review.scss';
 import Immutable from 'immutable';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
