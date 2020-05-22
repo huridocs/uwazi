@@ -37,6 +37,12 @@ describe('api', () => {
       .post(`${APIURL}test_payload_too_large_error`, {
         status: 500,
         body: { error: 'PayloadTooLargeError: request entity too large at readStream' },
+      })
+      .post(`${APIURL}max_bytes_length_exceeded_exception`, {
+        status: 500,
+        body: {
+          error: 'max_bytes_length_exceeded_exception. Invalid Fields: metadata.resumen.value',
+        },
       });
   });
 
@@ -163,6 +169,21 @@ describe('api', () => {
         } catch (e) {
           testNotificationDisplayed(
             'The request has too large data. Please review any long value property.',
+            'danger'
+          );
+        }
+      });
+    });
+
+    describe('when request return a server error 500 with max_bytes_length_exceeded_exception', () => {
+      it('should notify that the request is too large', async () => {
+        const requestParams = new RequestParams({ key: 'test' }, { header: 'value' });
+        try {
+          await api.post('max_bytes_length_exceeded_exception', requestParams);
+          fail('should throw error');
+        } catch (e) {
+          testNotificationDisplayed(
+            'The request has too large data. Please review the follows fields: metadata.resumen.value ',
             'danger'
           );
         }
