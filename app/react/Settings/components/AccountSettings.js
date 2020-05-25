@@ -60,7 +60,7 @@ export class AccountSettings extends Component {
     const { password, repeatPassword } = this.state;
     const { notify, setUser } = this.props;
     const user = this.props.user.toJS();
-    
+
     const passwordsDontMatch = password !== repeatPassword;
     const emptyPassword = password.trim() === '';
     if (emptyPassword || passwordsDontMatch) {
