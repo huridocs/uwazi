@@ -61,18 +61,23 @@ export class AccountSettings extends Component {
     const { notify, setUser } = this.props;
     const user = this.props.user.toJS();
 
-    const passwordsDontMatch = password !== repeatPassword;
-    const emptyPassword = password.trim() === '';
-    if (emptyPassword || passwordsDontMatch) {
-      this.setState({ passwordError: true });
-      return;
-    }
+    this.validatePassword(password, repeatPassword);
 
     UsersAPI.save(new RequestParams(Object.assign({}, user, { password }))).then(result => {
       notify(t('System', 'Password updated', null, false), 'success');
       setUser(Object.assign(user, { _rev: result.rev }));
     });
     this.setState({ password: '', repeatPassword: '' });
+  }
+
+  validatePassword(password, repeatPassword) {
+    const passwordsDontMatch = password !== repeatPassword;
+    const emptyPassword = password.trim() === '';
+    if (emptyPassword || passwordsDontMatch) {
+      this.setState({ passwordError: true });
+      return false;
+    }
+    return true;
   }
 
   emailChange(e) {
