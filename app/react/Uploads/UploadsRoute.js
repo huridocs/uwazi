@@ -2,8 +2,13 @@ import RouteHandler from 'app/App/RouteHandler';
 import { actions } from 'app/BasicReducer';
 import LibraryCharts from 'app/Charts/components/LibraryCharts';
 import { t } from 'app/I18N';
-import { enterLibrary, addDocuments, unsetDocuments } from 'app/Library/actions/libraryActions';
-import { decodeQuery, processQuery } from 'app/Library/helpers/requestState';
+import {
+  enterLibrary,
+  addDocuments,
+  unsetDocuments,
+  setDocuments,
+} from 'app/Library/actions/libraryActions';
+import { processQuery } from 'app/Library/helpers/requestState';
 import DocumentsList from 'app/Library/components/DocumentsList';
 import LibraryFilters from 'app/Library/components/LibraryFilters';
 import SearchBar from 'app/Library/components/SearchBar';
@@ -18,21 +23,27 @@ import UploadBox from 'app/Uploads/components/UploadBox';
 import UploadsHeader from 'app/Uploads/components/UploadsHeader';
 import React from 'react';
 import Helmet from 'react-helmet';
-import { actions as formActions } from 'react-redux-form';
+
+import setReduxState from 'app/Library/helpers/setReduxState';
 import rison from 'rison';
 import socket from '../socket';
 
-const setReduxState = state => _dispatch => {
-  const dispatch = wrapDispatch(_dispatch, 'uploads');
-  dispatch(addDocuments(state.uploads.documents));
-  dispatch(actions.set('aggregations', state.uploads.aggregations));
-  dispatch(formActions.load('uploads.search', state.uploads.search));
-  dispatch({
-    type: 'SET_LIBRARY_FILTERS',
-    documentTypes: state.uploads.filters.documentTypes,
-    libraryFilters: state.uploads.filters.properties,
-  });
-};
+// const setReduxState = state => (_dispatch, addinsteadOfSet) => {
+//   const dispatch = wrapDispatch(_dispatch, 'uploads');
+
+//   dispatch(formActions.load('uploads.search', state.uploads.search));
+//   dispatch(actions.set('aggregations', state.uploads.aggregations));
+
+//   dispatch({
+//     type: 'SET_LIBRARY_FILTERS',
+//     documentTypes: state.uploads.filters.documentTypes,
+//     libraryFilters: state.uploads.filters.properties,
+//   });
+
+//   dispatch(
+//     addinsteadOfSet ? addDocuments(state.library.documents) : setDocuments(state.library.documents)
+//   );
+// };
 
 export default class Uploads extends RouteHandler {
   constructor(props, context) {
@@ -67,18 +78,25 @@ export default class Uploads extends RouteHandler {
       globalResources.relationTypes.toJS()
     );
 
+    const addinsteadOfSet = Boolean(query.offset);
+    console.log(addinsteadOfSet);
+
     return [
-      setReduxState({
-        uploads: {
-          documents,
-          filters: {
-            documentTypes: query.types || [],
-            properties: filterState.properties,
+      setReduxState(
+        {
+          uploads: {
+            documents,
+            filters: {
+              documentTypes: query.types || [],
+              properties: filterState.properties,
+            },
+            aggregations: documents.aggregations,
+            search: filterState.search,
           },
-          aggregations: documents.aggregations,
-          search: filterState.search,
         },
-      }),
+        'uploads',
+        addinsteadOfSet
+      ),
     ];
   }
 
@@ -98,12 +116,6 @@ export default class Uploads extends RouteHandler {
   }
 
   componentWillReceiveProps(nextProps) {
-    const nextQuery = decodeQuery(nextProps.location.query);
-
-    if (!nextQuery.offset) {
-      this.emptyState();
-    }
-
     if (this.urlHasChanged(nextProps)) {
       this.getClientState(nextProps);
     }

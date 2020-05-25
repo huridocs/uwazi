@@ -7,24 +7,25 @@ import {
 import { actions as formActions } from 'react-redux-form';
 import { actions } from 'app/BasicReducer';
 
-export default function setReduxState(state, addinsteadOfSet) {
+export default function setReduxState(state, key, addinsteadOfSet) {
   return _dispatch => {
-    const dispatch = wrapDispatch(_dispatch, 'library');
-    dispatch(formActions.load('library.search', state.library.search));
+    const dispatch = wrapDispatch(_dispatch, key);
+    dispatch(formActions.load(`${key}.search`, state[key].search));
 
     dispatch(
       initializeFiltersForm({
-        documentTypes: state.library.filters.documentTypes,
-        libraryFilters: state.library.filters.properties,
-        aggregations: state.library.aggregations,
+        documentTypes: state[key].filters.documentTypes,
+        libraryFilters: state[key].filters.properties,
+        aggregations: state[key].aggregations,
       })
     );
 
     dispatch(
-      addinsteadOfSet
-        ? addDocuments(state.library.documents)
-        : setDocuments(state.library.documents)
+      addinsteadOfSet ? addDocuments(state[key].documents) : setDocuments(state[key].documents)
     );
-    dispatch(actions.set('library.markers', state.library.markers));
+
+    if (key === 'library') {
+      dispatch(actions.set('library.markers', state[key].markers));
+    }
   };
 }

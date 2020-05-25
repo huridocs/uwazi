@@ -65,7 +65,7 @@ export default function requestState(request, globalResources) {
 
       const addinsteadOfSet = Boolean(docsQuery.offset);
       return [
-        setReduxState(state, addinsteadOfSet),
+        setReduxState(state, 'library', addinsteadOfSet),
         actions.set('library.sidepanel.quickLabelState', {
           thesaurus: request.data.quickLabelThesaurus,
           autoSave: false,
