@@ -7,7 +7,7 @@ import migration1 from './testMigrations/1-migrationTest';
 import migration10 from './testMigrations/10-migrationTest';
 import migration2 from './testMigrations/2-migrationTest';
 import migrationsModel from '../migrationsModel';
-import migrator from '../migrator';
+import { migrator } from '../migrator';
 import testingDB from '../../utils/testing_db';
 
 describe('migrator', () => {

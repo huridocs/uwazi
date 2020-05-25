@@ -1,7 +1,9 @@
 import 'api/utils/jasmineHelpers';
+import fs from 'fs';
 import db from 'api/utils/testing_db';
 import relationships from 'api/relationships';
 import { search } from 'api/search';
+import { attachmentsPath } from 'api/files/filesystem';
 
 import attachmentsRoutes from '../routes';
 import entities from '../../entities';
@@ -13,12 +15,10 @@ import fixtures, {
   attachmentToEdit,
 } from './fixtures';
 import instrumentRoutes from '../../utils/instrumentRoutes';
-import paths from '../../config/paths';
 import attachments from '../attachments';
 
 describe('Attachments Routes', () => {
   let routes;
-  let originalAttachmentsPath;
 
   const testRouteResponse = async (URL, req, expected) => {
     const response = await routes.get(URL, req);
@@ -27,22 +27,17 @@ describe('Attachments Routes', () => {
 
   beforeEach(async () => {
     spyOn(search, 'indexEntities').and.returnValue(Promise.resolve());
-    originalAttachmentsPath = paths.attachments;
     routes = instrumentRoutes(attachmentsRoutes);
 
     await db.clearAllAndLoad(fixtures);
-  });
-
-  afterEach(() => {
-    paths.attachments = originalAttachmentsPath;
   });
 
   afterAll(async () => db.disconnect());
 
   describe('/attachment/file', () => {
     it('should send the requested existing file', async () => {
-      paths.attachments = `${__dirname}/uploads/`;
-      const expected = `sendFile:${paths.attachments}mockfile.doc`;
+      fs.writeFileSync(attachmentsPath('mockfile.doc'), '');
+      const expected = `sendFile:${attachmentsPath('mockfile.doc')}`;
       await testRouteResponse(
         '/api/attachment/:file',
         { params: { file: 'mockfile.doc' } },
@@ -77,17 +72,16 @@ describe('Attachments Routes', () => {
     it('should download the document with the title as file name (replacing extension with file ext)', async () => {
       const req = { query: { _id: entityId, file: 'match.doc' } };
       const res = {};
-      paths.attachments = `${__dirname}/uploads`;
 
       await routes.get('/api/attachments/download', req, res);
       expect(res.download).toHaveBeenCalledWith(
-        `${__dirname}/uploads/${req.query.file}`,
+        attachmentsPath(req.query.file),
         'common name 2.doc'
       );
-      paths.attachments = `${__dirname}/uploads/`;
+
       await routes.get('/api/attachments/download', req, res);
       expect(res.download).toHaveBeenCalledWith(
-        `${__dirname}/uploads/${req.query.file}`,
+        attachmentsPath(req.query.file),
         'common name 2.doc'
       );
     });
@@ -96,7 +90,6 @@ describe('Attachments Routes', () => {
       const nonExistentId = db.id();
       const req = { query: { _id: nonExistentId, file: 'match.doc' } };
       const res = {};
-      paths.attachments = `${__dirname}/uploads`;
 
       await expect404Error(req, res);
     });
@@ -104,7 +97,6 @@ describe('Attachments Routes', () => {
     it('should fail when attachment does not exist', async () => {
       const req = { query: { _id: entityId, file: 'nonExisting.doc' } };
       const res = {};
-      paths.attachments = `${__dirname}/uploads`;
 
       await expect404Error(req, res);
     });

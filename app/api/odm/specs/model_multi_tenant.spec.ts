@@ -3,6 +3,7 @@ import testingDB from 'api/utils/testing_db';
 import { Db } from 'mongodb';
 import { tenants } from 'api/odm/tenantContext';
 import { config } from 'api/config';
+import { testingTenants } from 'api/utils/testingTenants';
 
 import { instanceModel } from '../model';
 import { DB } from '../DB';
@@ -40,8 +41,12 @@ describe('ODM Model multi-tenant', () => {
 
   const instanceTestingModel = () => {
     const testingModel = instanceModel<TestDoc>('docs', testSchema);
-    tenants.add({ name: 'tenant1', dbName: 'db1', indexName: 'index1' });
-    tenants.add({ name: 'tenant2', dbName: 'db2', indexName: 'index2' });
+    tenants.add(
+      testingTenants.createTenant({ name: 'tenant1', dbName: 'db1', indexName: 'index1' })
+    );
+    tenants.add(
+      testingTenants.createTenant({ name: 'tenant2', dbName: 'db2', indexName: 'index2' })
+    );
     return testingModel;
   };
 

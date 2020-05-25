@@ -4,19 +4,22 @@ import { models } from 'api/odm';
 import path from 'path';
 import search from 'api/search/search';
 
+import { Request, Application } from 'express';
+import { FileType } from 'shared/types/fileType';
+import { uploadsPath } from 'api/files';
+
 import { needsAuthorization } from '../auth';
-import paths from '../config/paths';
 
 const storage = multer.diskStorage({
   destination(_req, _file, cb) {
-    cb(null, path.normalize(`${paths.uploadedDocuments}/`));
+    cb(null, path.normalize(uploadsPath()));
   },
   filename(_req, file, cb) {
     cb(null, file.originalname);
   },
 });
 
-const indexEntities = async req => {
+const indexEntities = async (req: Request) => {
   if (req.body.namespace === 'entities') {
     await search.indexEntities({ _id: req.body.data._id }, '+fullText');
   }
@@ -26,11 +29,12 @@ const indexEntities = async req => {
   }
 };
 
-const deleteFileFromIndex = file => search.indexEntities({ sharedId: file.entity });
+const deleteFileFromIndex = async (file: FileType) =>
+  search.indexEntities({ sharedId: file.entity });
 
-const deleteEntityFromIndex = async entity => {
+const deleteEntityFromIndex = async (entityId: string) => {
   try {
-    await search.delete(entity);
+    await search.delete({ _id: entityId });
   } catch (err) {
     if (err.statusCode !== 404) {
       throw err;
@@ -38,9 +42,9 @@ const deleteEntityFromIndex = async entity => {
   }
 };
 
-const deleteFromIndex = async (req, file) => {
+const deleteFromIndex = async (req: Request, file: FileType) => {
   if (req.query.namespace === 'entities') {
-    await deleteEntityFromIndex({ _id: JSON.parse(req.query.data)._id });
+    await deleteEntityFromIndex(JSON.parse(req.query.data)._id);
   }
 
   if (file) {
@@ -48,7 +52,7 @@ const deleteFromIndex = async (req, file) => {
   }
 };
 
-export default app => {
+export default (app: Application) => {
   const upload = multer({ storage });
 
   app.post('/api/sync', needsAuthorization(['admin']), async (req, res, next) => {

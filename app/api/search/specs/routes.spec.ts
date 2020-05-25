@@ -6,15 +6,14 @@ import db from 'api/utils/testing_db';
 import { setUpApp } from 'api/utils/testingRoutes';
 import instanceElasticTesting from 'api/utils/elastic_testing';
 import { instanceSearch } from 'api/search/search';
-import elasticIndexes from 'api/config/elasticIndexes';
 import searchRoutes from 'api/search/routes.ts';
+import { testingTenants } from 'api/utils/testingTenants';
 
 import { fixtures, ids, fixturesTimeOut } from './fixtures_elastic';
 
 const elasticIndex = 'search_lookup_index_test';
 const search = instanceSearch(elasticIndex);
 const elasticTesting = instanceElasticTesting(elasticIndex, search);
-elasticIndexes.index = elasticIndex;
 
 describe('Search routes', () => {
   const app: Application = setUpApp(searchRoutes);

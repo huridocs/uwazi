@@ -5,6 +5,8 @@ import { FileType } from 'shared/types/fileType';
 import { EntitySchema } from 'shared/types/entityType';
 import { DB } from 'api/odm';
 import { tenants } from 'api/odm/tenantContext';
+import { testingTenants } from './testingTenants';
+import { setupTestUploadedPaths } from 'api/files/filesystem';
 
 mongoose.Promise = Promise;
 mongoose.set('useFindAndModify', false);
@@ -50,8 +52,6 @@ const initMongoServer = async () => {
   connected = true;
 };
 
-const originalTenansCurrentFN = tenants.current.bind(tenants);
-
 const testingDB: {
   mongodb: Db | null;
   connect: (options?: { defaultTenant: boolean } | undefined) => Promise<Connection>;
@@ -77,11 +77,13 @@ const testingDB: {
           testingTenants.createTenant({
             name: this.dbName,
             dbName: this.dbName,
+            indexName: 'index',
           })
         );
         testingTenants.mockCurrentTenant({
           name: this.dbName,
           dbName: this.dbName,
+          indexName: 'index',
         });
         setupTestUploadedPaths();
       }
@@ -95,7 +97,7 @@ const testingDB: {
     if (mongod) {
       await mongod.stop();
     }
-    tenants.current = originalTenansCurrentFN;
+    testingTenants.restoreCurrentFn();
   },
 
   id(id = undefined) {

@@ -1,7 +1,7 @@
 import { DB } from 'api/odm';
 import { tenants } from 'api/odm/tenantContext';
 
-import migrator from './migrator';
+import { migrator } from './migrator';
 
 const run = async () => {
   await DB.connect();

@@ -2,14 +2,27 @@ import fs from 'fs';
 import path from 'path';
 import { Readable } from 'stream';
 
-import paths from 'api/config/paths';
 import ID from 'shared/uniqueID';
 import asyncFS from 'api/utils/async-fs';
+import { tenants } from 'api/odm/tenantContext';
+import { testingTenants } from 'api/utils/testingTenants';
 
-import configPaths from '../config/paths';
 import { FileType } from '../../shared/types/fileType';
+import { promisify } from 'util';
 
 export type FilePath = string;
+
+const uploadsPath = (fileName: string = ''): FilePath =>
+  path.join(tenants.current().uploadedDocuments, fileName);
+
+const attachmentsPath = (fileName: string = ''): FilePath =>
+  path.join(tenants.current().attachments, fileName);
+
+const customUploadsPath = (fileName: string = ''): FilePath =>
+  path.join(tenants.current().customUploads, fileName);
+
+const temporalFilesPath = (fileName: string = ''): FilePath =>
+  path.join(tenants.current().temporalFiles, fileName);
 
 async function deleteFile(file: FilePath) {
   return new Promise((resolve, reject) => {
@@ -27,20 +40,13 @@ async function deleteFiles(files: FilePath[]) {
 }
 
 const setupTestUploadedPaths = () => {
-  paths.uploadedDocuments = `${__dirname}/specs/uploads/`;
-  paths.customUploads = `${__dirname}/specs/customUploads/`;
+  testingTenants.changeCurrentTenant({
+    uploadedDocuments: `${__dirname}/specs/uploads/`,
+    attachments: `${__dirname}/specs/uploads/`,
+    customUploads: `${__dirname}/specs/uploads/`,
+    temporalFiles: `${__dirname}/specs/uploads/`,
+  });
 };
-
-const uploadsPath = (
-  fileName: string,
-  destination: FilePath = configPaths.uploadedDocuments
-): FilePath => path.join(destination, fileName);
-
-const customUploadsPath = (fileName: FilePath): FilePath =>
-  path.join(configPaths.customUploads, fileName);
-
-const temporalFilesPath = (fileName: FilePath): FilePath =>
-  path.join(configPaths.temporalFiles, fileName);
 
 const deleteUploadedFiles = async (files: FileType[]) =>
   deleteFiles(
@@ -53,6 +59,8 @@ const deleteUploadedFiles = async (files: FileType[]) =>
         return uploadsPath(filename);
       })
   );
+
+const writeFile = promisify(fs.writeFile);
 
 const fileExists = async (filePath: FilePath): Promise<boolean> =>
   new Promise((resolve, reject) => {
@@ -72,13 +80,20 @@ const fileExists = async (filePath: FilePath): Promise<boolean> =>
 const generateFileName = ({ originalname = '' }: FileType) =>
   Date.now() + ID() + path.extname(originalname);
 
+/**
+ * Create a file from a read stream and save it to one of uwazi filesystem paths
+ * @param destination by default this will be uploadsPaths,
+ * if you want another one you can pass filesystem destinatations
+ * e.g. attachmentsPath()
+ *
+ */
 const fileFromReadStream = async (
   fileName: FilePath,
   readStream: Readable,
   destination: string | undefined = undefined
 ): Promise<FilePath> =>
   new Promise((resolve, reject) => {
-    const filePath = uploadsPath(fileName, destination);
+    const filePath = path.join(destination || uploadsPath(), fileName);
     const writeStream = fs.createWriteStream(filePath);
     readStream
       .pipe(writeStream)
@@ -110,4 +125,6 @@ export {
   customUploadsPath,
   uploadsPath,
   temporalFilesPath,
+  attachmentsPath,
+  writeFile,
 };

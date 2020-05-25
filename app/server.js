@@ -15,11 +15,10 @@ import apiRoutes from './api/api';
 import privateInstanceMiddleware from './api/auth/privateInstanceMiddleware';
 import authRoutes from './api/auth/routes';
 import { config } from './api/config';
-import paths from './api/config/paths';
 import vaultSync from './api/evidences_vault';
 import systemKeys from './api/i18n/systemKeys.js';
 import translations from './api/i18n/translations.js';
-import migrator from './api/migrations/migrator';
+import { migrator } from './api/migrations/migrator';
 import { workerManager as semanticSearchManager } from './api/semanticsearch';
 import settings from './api/settings';
 import syncWorker from './api/sync/syncWorker';
@@ -30,6 +29,8 @@ import serverRenderingRoutes from './react/server.js';
 import { DB } from './api/odm';
 // import { tenants } from './api/odm/tenantContext';
 import { multitenantMiddleware } from './api/utils/multitenantMiddleware';
+import { staticFilesMiddleware } from './api/utils/staticFilesMiddleware';
+import { customUploadsPath, uploadsPath } from './api/files/filesystem';
 
 mongoose.Promise = Promise;
 
@@ -56,7 +57,7 @@ if (app.get('env') === 'production') {
 
 app.use(compression());
 app.use(express.static(path.resolve(__dirname, '../dist'), { maxage }));
-app.use('/public', express.static(paths.publicAssets));
+app.use('/public', express.static(config.publicAssets));
 app.use(/\/((?!remotepublic).)*/, bodyParser.json({ limit: '1mb' }));
 
 //////
@@ -79,9 +80,9 @@ DB.connect(config.DBHOST, dbAuth).then(async () => {
   authRoutes(app);
   app.use(privateInstanceMiddleware);
   app.use('/flag-images', express.static(path.resolve(__dirname, '../dist/flags')));
-  app.use('/assets', express.static(paths.customUploads));
+  app.use('/assets/:fileName', staticFilesMiddleware(customUploadsPath));
   // retained for backwards compatibility
-  app.use('/uploaded_documents', express.static(paths.customUploads));
+  app.use('/uploaded_documents/:fileName', staticFilesMiddleware(uploadsPath));
   apiRoutes(app, http);
   serverRenderingRoutes(app);
   app.use(errorHandlingMiddleware);

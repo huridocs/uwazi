@@ -2,11 +2,9 @@ import fs from 'fs';
 import path from 'path';
 import { Readable } from 'stream';
 
-import { generateFileName, fileFromReadStream } from 'api/files/filesystem';
+import { generateFileName, fileFromReadStream, uploadsPath } from 'api/files/filesystem';
 import { createError } from 'api/utils';
 import zipFile from 'api/utils/zipFile';
-
-import configPaths from '../config/paths';
 
 const extractFromZip = async (zipPath: string, fileName: string) => {
   const readStream = await zipFile(zipPath).findReadStream(entry => entry === fileName);
@@ -41,7 +39,7 @@ export class ImportFile {
     await fileFromReadStream(generatedName, await this.readStream(fileName), destination);
 
     return {
-      destination: configPaths.uploadedDocuments,
+      destination: destination || uploadsPath(),
       originalname: fileName,
       filename: generatedName,
     };

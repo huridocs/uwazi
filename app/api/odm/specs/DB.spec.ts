@@ -1,8 +1,9 @@
+import { Db } from 'mongodb';
 import mongoose from 'mongoose';
 import waitForExpect from 'wait-for-expect';
 import { tenants } from 'api/odm/tenantContext';
 import { MongoMemoryServer } from 'mongodb-memory-server';
-import { Db } from 'mongodb';
+import { testingTenants } from 'api/utils/testingTenants';
 
 import { DB } from '../DB';
 import { instanceModel } from '../model';

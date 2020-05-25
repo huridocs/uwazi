@@ -8,15 +8,15 @@ import ID from 'shared/uniqueID';
 import entities from 'api/entities';
 import fs from 'fs';
 import path from 'path';
+import { attachmentsPath } from 'api/files/filesystem';
 
-import paths from '../config/paths';
 import attachments from './attachments';
 import { validation } from '../utils';
 import needsAuthorization from '../auth/authMiddleware';
 
 const storage = multer.diskStorage({
   destination(_req, _file, cb) {
-    cb(null, paths.attachments);
+    cb(null, attachmentsPath());
   },
   filename(_req, file, cb) {
     cb(null, Date.now() + ID() + path.extname(file.originalname));
@@ -65,7 +65,7 @@ export default app => {
   const upload = multer({ storage });
 
   app.get('/api/attachment/:file', (req, res) => {
-    const filePath = `${path.resolve(paths.attachments)}/${path.basename(req.params.file)}`;
+    const filePath = `${path.resolve(attachmentsPath(path.basename(req.params.file)))}`;
     fs.stat(filePath, err => {
       if (err) {
         return res.redirect('/public/no-preview.png');
@@ -99,7 +99,7 @@ export default app => {
           const newName =
             path.basename(file.originalname, path.extname(file.originalname)) +
             path.extname(file.filename);
-          res.download(path.join(paths.attachments, file.filename), sanitize(newName));
+          res.download(attachmentsPath(file.filename), sanitize(newName));
         })
         .catch(next);
     }

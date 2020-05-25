@@ -1,10 +1,11 @@
-import mongoose, { Schema } from 'mongoose';
-import { ensure } from 'shared/tsUtils';
 import { model as updatelogsModel } from 'api/updatelogs';
 import { UpdateLog } from 'api/updatelogs/updatelogsModel';
+import { testingTenants } from 'api/utils/testingTenants';
 import testingDB from 'api/utils/testing_db';
+import mongoose, { Schema } from 'mongoose';
+import { ensure } from 'shared/tsUtils';
 import { instanceModel } from '../model';
-import { OdmModel, WithId, models } from '../models';
+import { models, OdmModel, WithId } from '../models';
 import { tenants } from '../tenantContext';
 
 const testSchema = new Schema({
@@ -30,7 +31,13 @@ describe('ODM Model', () => {
 
   const instanceTestingModel = (collectionName: string, schema: Schema) => {
     const model = instanceModel<TestDoc>(collectionName, schema);
-    tenants.add({ name: testingDB.dbName, dbName: testingDB.dbName, indexName: 'index' });
+    tenants.add(
+      testingTenants.createTenant({
+        name: testingDB.dbName,
+        dbName: testingDB.dbName,
+        indexName: 'index',
+      })
+    );
     return model;
   };
 

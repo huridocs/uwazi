@@ -1,16 +1,16 @@
-import { catchErrors } from 'api/utils/jasmineHelpers';
 import fs from 'fs';
+
+import { catchErrors } from 'api/utils/jasmineHelpers';
 import { mockID } from 'shared/uniqueID';
 import relationships from 'api/relationships';
 import entities from 'api/entities';
 import search from 'api/search/search';
 import db from 'api/utils/testing_db';
-import path from 'path';
 import { files } from 'api/files';
-import documents from '../documents.js';
-import fixtures from './fixtures.js';
-import paths from '../../config/paths';
-import { document1 } from './fixtures.js';
+import { fileExists, uploadsPath } from 'api/files/filesystem';
+
+import { fixtures, document1 } from './fixtures';
+import { documents } from '../documents.js';
 
 describe('documents', () => {
   beforeEach(done => {
@@ -23,9 +23,7 @@ describe('documents', () => {
       .catch(catchErrors(done));
   });
 
-  afterAll(done => {
-    db.disconnect().then(done);
-  });
+  afterAll(async () => db.disconnect());
 
   describe('get', () => {
     describe('when passing query', () => {
@@ -85,52 +83,22 @@ describe('documents', () => {
 
   describe('delete', () => {
     beforeEach(() => {
-      fs.writeFileSync(
-        path.join(paths.uploadedDocuments, '8202c463d6158af8065022d9b5014ccb.pdf'),
-        ''
-      );
-      fs.writeFileSync(
-        path.join(paths.uploadedDocuments, '8202c463d6158af8065022d9b5014cc1.pdf'),
-        ''
-      );
-      fs.writeFileSync(
-        path.join(paths.uploadedDocuments, '8202c463d6158af8065022d9b5014ccc.pdf'),
-        ''
-      );
+      fs.writeFileSync(uploadsPath('8202c463d6158af8065022d9b5014ccb.pdf'), '');
+      fs.writeFileSync(uploadsPath('8202c463d6158af8065022d9b5014cc1.pdf'), '');
+      fs.writeFileSync(uploadsPath('8202c463d6158af8065022d9b5014ccc.pdf'), '');
     });
 
-    it('should delete the document in the database', done =>
-      documents
-        .delete('shared')
-        .then(() => documents.getById('shared', 'es'))
-        .then(result => {
-          expect(result).not.toBeDefined();
-          done();
-        })
-        .catch(catchErrors(done)));
+    it('should delete the document in the database', async () => {
+      await documents.delete('shared');
+      const result = await documents.getById('shared', 'es');
+      expect(result).not.toBeDefined();
+    });
 
-    it('should delete the original file', done => {
-      documents
-        .delete('shared')
-        .then(() => {
-          expect(
-            fs.existsSync(
-              path.join(paths.uploadedDocuments, '8202c463d6158af8065022d9b5014ccb.pdf')
-            )
-          ).toBe(false);
-          expect(
-            fs.existsSync(
-              path.join(paths.uploadedDocuments, '8202c463d6158af8065022d9b5014cc1.pdf')
-            )
-          ).toBe(false);
-          expect(
-            fs.existsSync(
-              path.join(paths.uploadedDocuments, '8202c463d6158af8065022d9b5014ccc.pdf')
-            )
-          ).toBe(false);
-          done();
-        })
-        .catch(catchErrors(done));
+    it('should delete the original file', async () => {
+      await documents.delete('shared');
+      expect(await fileExists(uploadsPath('8202c463d6158af8065022d9b5014ccb.pdf'))).toBe(false);
+      expect(await fileExists(uploadsPath('8202c463d6158af8065022d9b5014cc1.pdf'))).toBe(false);
+      expect(await fileExists(uploadsPath('8202c463d6158af8065022d9b5014ccc.pdf'))).toBe(false);
     });
   });
 

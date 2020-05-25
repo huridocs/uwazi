@@ -5,6 +5,10 @@ export type Tenant = {
   name: string;
   dbName: string;
   indexName: string;
+  uploadedDocuments: string;
+  attachments: string;
+  customUploads: string;
+  temporalFiles: string;
 };
 
 class Tenants {

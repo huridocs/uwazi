@@ -3,9 +3,10 @@ import { elastic } from 'api/search';
 import { instanceSearch } from 'api/search/search';
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import db from 'api/utils/testing_db';
+import { testingTenants } from 'api/utils/testingTenants';
 import instanceElasticTesting from 'api/utils/elastic_testing';
 import elasticResult from './elasticResult';
-import elasticFixtures, { ids, fixturesTimeOut } from './fixtures_elastic';
+import { fixtures as elasticFixtures, ids, fixturesTimeOut } from './fixtures_elastic';
 
 describe('search', () => {
   let result;
@@ -36,6 +37,7 @@ describe('search', () => {
       .toObject();
 
     await db.clearAllAndLoad(elasticFixtures);
+    testingTenants.changeCurrentTenant({ indexName: elasticIndex });
     await elasticTesting.reindex();
   }, fixturesTimeOut);
 

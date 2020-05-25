@@ -2,7 +2,7 @@
 import fs from 'fs';
 import path from 'path';
 
-import paths from 'api/config/paths';
+import { config } from 'api/config';
 
 const rename = async (current, newPath) =>
   new Promise((resolve, reject) => {
@@ -32,7 +32,7 @@ export const fileExists = async filePath =>
   });
 
 const oldThumbnailExists = async entity =>
-  fileExists(path.join(paths.uploadedDocuments, `${entity._id}.jpg`));
+  fileExists(path.join(config.defaultTenant.uploadedDocuments, `${entity._id}.jpg`));
 
 export default {
   delta: 21,
@@ -96,8 +96,8 @@ export default {
             };
             await db.collection('files').insertOne(thumbnailToCreate);
             await rename(
-              path.join(paths.uploadedDocuments, `${entity._id}.jpg`),
-              path.join(paths.uploadedDocuments, thumbnailToCreate.filename)
+              path.join(config.defaultTenant.uploadedDocuments, `${entity._id}.jpg`),
+              path.join(config.defaultTenant.uploadedDocuments, thumbnailToCreate.filename)
             );
           }
         }

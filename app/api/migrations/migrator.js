@@ -35,7 +35,7 @@ const getMigrations = migrationsDir =>
 
 const saveMigration = migration => migrationsModel.save(migration);
 
-export default {
+const migrator = {
   migrationsDir: `${__dirname}/migrations/`,
 
   migrate() {
@@ -51,3 +51,5 @@ export default {
     return getMigrations(this.migrationsDir).then(migrations => Boolean(migrations.length));
   },
 };
+
+export { migrator };

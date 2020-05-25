@@ -10,10 +10,10 @@ import templates from 'api/templates/templates';
 import translationsModel from 'api/i18n/translations';
 import path from 'path';
 import { PDF, files } from 'api/files';
-import paths from 'api/config/paths';
+import * as filesystem from 'api/files';
 import dictionariesModel from 'api/thesauri/dictionariesModel';
 import translate, { getContext } from 'shared/translate';
-import { deleteFiles } from '../files/filesystem';
+import { deleteFiles, deleteUploadedFiles } from '../files/filesystem';
 import model from './entitiesModel';
 import { validateEntity } from '../../shared/types/entitySchema';
 import settings from '../settings';
@@ -542,30 +542,17 @@ export default {
     return this.bulkUpdateMetadataFromRelationships({ template: template._id, language }, language);
   },
 
-  deleteFiles(deletedDocs) {
-    let filesToDelete = deletedDocs.reduce((filePaths, doc) => {
-      if (doc.file) {
-        filePaths.push(path.normalize(`${paths.uploadedDocuments}/${doc.file.filename}`));
-        filePaths.push(path.normalize(`${paths.uploadedDocuments}/${doc._id.toString()}.jpg`));
-      }
-
+  async deleteFiles(deletedDocs) {
+    await files.delete({ entity: { $in: deletedDocs.map(d => d.sharedId) } });
+    const attachmentsToDelete = deletedDocs.reduce((filePaths, doc) => {
       if (doc.attachments) {
         doc.attachments.forEach(file =>
-          filePaths.push(path.normalize(`${paths.uploadedDocuments}/${file.filename}`))
+          filePaths.push({ filename: path.normalize(`${file.filename}`) })
         );
       }
-
       return filePaths;
     }, []);
-    filesToDelete = filesToDelete.filter((doc, index) => filesToDelete.indexOf(doc) === index);
-    return deleteFiles(filesToDelete).catch(error => {
-      const fileNotExist = -2;
-      if (error.errno === fileNotExist) {
-        return Promise.resolve();
-      }
-
-      return Promise.reject(error);
-    });
+    return deleteUploadedFiles(attachmentsToDelete);
   },
 
   deleteIndexes(sharedIds) {
@@ -741,13 +728,13 @@ export default {
   },
 
   async createThumbnail(entity) {
-    const filePath = path.join(paths.uploadedDocuments, entity.file.filename);
+    const filePath = filesystem.uploadsPath(entity.file.filename);
     return new PDF({ filename: filePath }).createThumbnail(entity._id.toString());
   },
 
   async deleteLanguageFiles(entity) {
     const filesToDelete = [];
-    filesToDelete.push(path.normalize(`${paths.uploadedDocuments}/${entity._id.toString()}.jpg`));
+    filesToDelete.push(path.normalize(filesystem.uploadsPath(`${entity._id.toString()}.jpg`)));
     const sibilings = await this.get({ sharedId: entity.sharedId, _id: { $ne: entity._id } });
     if (entity.file) {
       const shouldUnlinkFile = sibilings.reduce(
@@ -755,7 +742,7 @@ export default {
         true
       );
       if (shouldUnlinkFile) {
-        filesToDelete.push(path.normalize(`${paths.uploadedDocuments}/${entity.file.filename}`));
+        filesToDelete.push(path.normalize(filesystem.uploadsPath(entity.file.filename)));
       }
     }
     if (entity.file) {
