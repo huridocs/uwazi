@@ -79,7 +79,6 @@ export default class Uploads extends RouteHandler {
     );
 
     const addinsteadOfSet = Boolean(query.offset);
-    console.log(addinsteadOfSet);
 
     return [
       setReduxState(
