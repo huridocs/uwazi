@@ -109,7 +109,7 @@ export class MetadataFormFields extends Component {
 
         return (
           <LookupMultiSelect
-            lookup={getSuggestions.bind(null, [property.content])}
+            lookup={getSuggestions.bind(null, property.content ? [property.content] : [])}
             model={_model}
             optionsValue="id"
             options={thesauri}
