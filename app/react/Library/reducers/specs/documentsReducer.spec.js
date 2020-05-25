@@ -38,10 +38,10 @@ describe('documentsReducer', () => {
 
       newState = documentsReducer(newState, {
         type: types.ADD_DOCUMENTS,
-        documents: { rows: [documentTwo], totalRows: 10 },
+        documents: { rows: [documentTwo], totalRows: 7 },
       });
 
-      expect(newState.toJS()).toEqual({ rows: [documentOne, documentTwo], totalRows: 10 });
+      expect(newState.toJS()).toEqual({ rows: [documentOne, documentTwo], totalRows: 7 });
     });
   });
 
