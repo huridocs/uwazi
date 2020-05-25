@@ -116,6 +116,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           repository: huridocs/uwazi-fixtures
+          path: uwazi-fixtures
       - run: yarn fixtures
         env:
           DBHOST: localhost:${{ job.services.mongodb.ports[27017] }}
