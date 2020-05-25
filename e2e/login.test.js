@@ -1,33 +1,15 @@
 /*global page*/
 
+import { adminLogin, logout } from './helpers/login';
+import proxyMock from './helpers/proxyMock';
+
 describe('Login', () => {
   beforeAll(async () => {
-    await page.setRequestInterception(true);
-    page.on('request', request => {
-      if (
-        request.url() ===
-        'https://fonts.googleapis.com/css?family=Roboto+Mono:100,300,400,500,700|Roboto+Slab:100,300,400,700|Roboto:100,300,400,500,700,900'
-      ) {
-        request.respond({
-          content: 'application/json',
-          headers: { 'Access-Control-Allow-Origin': '*' },
-          body: JSON.stringify(''),
-        });
-      } else {
-        request.continue();
-      }
-    });
-
-    await page.setViewport({ width: 1300, height: 800 });
+    await proxyMock();
   });
 
   it('Should login as admin', async () => {
-    await page.goto('http://localhost:3000');
-    await expect(page).toClick('a', { text: 'Sign in' });
-    await expect(page).toFill('input[name=username]', 'admin');
-    await expect(page).toFill('input[name=password]', 'admin');
-    await expect(page).toClick('button', { text: 'Login' });
-    await expect(page).toMatchElement('span', { class: 'translation', text: 'Account settings' });
+    await adminLogin();
   });
 
   it('Should not redirect to login when reloading an authorized route', async () => {
@@ -37,9 +19,7 @@ describe('Login', () => {
   });
 
   it('Should logout', async () => {
-    await page.goto('http://localhost:3000/settings/account');
-    await expect(page).toClick('a', { text: 'Logout' });
-    await page.waitForNavigation();
+    await logout();
   });
 
   it('Should unauthorize when trying to access a protected URL', async () => {
