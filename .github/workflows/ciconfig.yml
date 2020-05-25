@@ -112,7 +112,12 @@ jobs:
       - run: sudo apt-get install mongodb-clients
       - run: sudo apt-get install poppler-utils
       - run: yarn production-build
-      - run: yarn blank-state
+      - name: checkout fixtures
+        uses: actions/checkout@v2
+        with:
+          repository: huridocs/uwazi-fixtures
+          path: master
+      - run: yarn fixtures
         env:
           DBHOST: localhost:${{ job.services.mongodb.ports[27017] }}
           ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
