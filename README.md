@@ -33,10 +33,10 @@ Read the [user guide](https://github.com/huridocs/uwazi/wiki)
 # Dependencies
 
 - **NodeJs 10.17.x** For ease of update, use nvm: https://github.com/creationix/nvm
-- **ElasticSearch 7.4.1** https://www.elastic.co/guide/en/elasticsearch/reference/7.4/install-elasticsearch.html Please note that ElasticSearch requires java.
+- **ElasticSearch 7.6.2** https://www.elastic.co/guide/en/elasticsearch/reference/7.6/install-elasticsearch.html Please note that ElasticSearch requires java.  Follow the instructions to instal the package manually, and install v7.6.2.  v7.7.x and above are known to cause `HPE_HEADER_OVERFLOW` errors.  Please, ensure v7.6.2 only.
   Probably need to disable ml module in the elastic search config file:
   `xpack.ml.enabled: false`
-- **MongoDB 4.0.3** instructions on how to [upgrade here](https://docs.mongodb.com/manual/release-notes/4.0-upgrade-standalone/)
+- **MongoDB 4.0.14** https://docs.mongodb.com/v4.0/installation/ .  If you have a previous version installed, please follow instructions on how to [upgrade here](https://docs.mongodb.com/manual/release-notes/4.0-upgrade-standalone/)
 - **Yarn** https://yarnpkg.com/en/docs/install
 - **pdftotext (Poppler)** tested to work on version 0.26 but its recommended to use the latest available for your platform https://poppler.freedesktop.org/. Make sure to **install libjpeg-dev** if you build from source.
 
