@@ -112,6 +112,14 @@ jobs:
       - run: sudo apt-get install mongodb-clients
       - run: sudo apt-get install poppler-utils
       - run: yarn production-build
+      - name: start Uwazi
+        env:
+          DBHOST: localhost:${{ job.services.mongodb.ports[27017] }}
+          ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
+        run: yarn run-production &
+      - name: wait for uwazi to be ready
+        run: sleep 5 && wget --waitretry=5 --retry-connrefused -v http://localhost:3000/
+        timeout-minutes: 2
       - name: checkout fixtures
         uses: actions/checkout@v2
         with:
@@ -121,14 +129,6 @@ jobs:
         env:
           DBHOST: localhost:${{ job.services.mongodb.ports[27017] }}
           ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
-      - name: start Uwazi
-        env:
-          DBHOST: localhost:${{ job.services.mongodb.ports[27017] }}
-          ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
-        run: yarn run-production &
-      - name: wait for uwazi to be ready
-        run: sleep 5 && wget --waitretry=5 --retry-connrefused -v http://localhost:3000/
-        timeout-minutes: 2
       - run: xvfb-run -a yarn jest --projects e2e/jest.e2e.config.js -i --verbose true
         timeout-minutes: 25
         env:
