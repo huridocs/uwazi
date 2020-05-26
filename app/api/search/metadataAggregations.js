@@ -1,10 +1,10 @@
-/** @format */
+import { preloadOptionsSearch } from 'shared/config';
 
 const aggregation = (key, should, filters) => ({
   terms: {
     field: key,
     missing: 'missing',
-    size: 9999,
+    size: preloadOptionsSearch,
   },
   aggregations: {
     filtered: {
@@ -44,6 +44,7 @@ const aggregationWithGroupsOfOptions = (key, should, filters, dictionary) => {
 
   const missingMatch = { bool: { must_not: { exists: { field: key } } } };
   agg.filters.filters.missing = missingMatch;
+
   return agg;
 };
 
@@ -97,7 +98,7 @@ const nestedAggregation = (property, should, readOnlyFilters, path, missing = fa
       terms: {
         field: nestedPropPath,
         missing: missing ? 'missing' : undefined,
-        size: 9999,
+        size: preloadOptionsSearch,
       },
       aggregations: {
         filtered: {
@@ -129,15 +130,7 @@ const nestedAggregation = (property, should, readOnlyFilters, path, missing = fa
   return agg;
 };
 
-const relationshipAggregation = (property, should, readOnlyFilters) => {
-  property.nestedProperties = property.filters.map(f => f.name);
-  return nestedAggregation(property, should, readOnlyFilters, 'relationships', false);
-};
-
-const propertyToAggregation = (property, dictionaries, baseQuery, suggested = false) => {
-  const path = suggested
-    ? `suggestedMetadata.${property.name}.raw`
-    : `metadata.${property.name}.raw`;
+const extractFilters = (baseQuery, path) => {
   let filters = baseQuery.query.bool.filter.filter(
     match =>
       match &&
@@ -148,23 +141,29 @@ const propertyToAggregation = (property, dictionaries, baseQuery, suggested = fa
         !match.bool.should[1].terms[path])
   );
   filters = filters.concat(baseQuery.query.bool.must);
+  return filters;
+};
 
+const getpath = (property, suggested) =>
+  suggested ? `suggestedMetadata.${property.name}.raw` : `metadata.${property.name}.raw`;
+
+export const propertyToAggregation = (property, dictionaries, baseQuery, suggested = false) => {
+  const path = getpath(property, suggested);
+  const filters = extractFilters(baseQuery, path);
   const { should } = baseQuery.query.bool;
+
   if (property.type === 'nested') {
     return nestedAggregation(property, should, filters);
   }
-  let dictionary;
-  if (property.type === 'relationshipfilter') {
-    return relationshipAggregation(property, should, filters);
-  }
-  if (property.content) {
-    dictionary = dictionaries.find(d => property.content.toString() === d._id.toString());
-  }
+
+  const dictionary = property.content
+    ? dictionaries.find(d => property.content.toString() === d._id.toString())
+    : null;
+
   const isADictionaryWithGroups = dictionary && dictionary.values.find(v => v.values);
   if (isADictionaryWithGroups) {
     return aggregationWithGroupsOfOptions(path, should, filters, dictionary);
   }
+
   return aggregation(path, should, filters);
 };
-
-export default propertyToAggregation;

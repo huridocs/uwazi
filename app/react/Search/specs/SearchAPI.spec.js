@@ -20,7 +20,6 @@ describe('SearchAPI', () => {
       })
       .get(`${APIURL}search/unpublished`, { body: JSON.stringify({ rows: 'uploads' }) })
       .get(`${APIURL}search/count_by_template?templateId=templateId`, { body: JSON.stringify(1) })
-      .get(`${APIURL}search/match_title?searchTerm=term`, { body: JSON.stringify(searchResponse) })
       .get(`${APIURL}search?searchTerm=Batman&joker=true`, {
         body: JSON.stringify(filteredSearchResult),
       });
@@ -47,19 +46,6 @@ describe('SearchAPI', () => {
         .list(requestParams)
         .then(response => {
           expect(response).toEqual(listResponse);
-          done();
-        })
-        .catch(done.fail);
-    });
-  });
-
-  describe('getSuggestions()', () => {
-    it('should match_title ', done => {
-      const requestParams = new RequestParams({ searchTerm: 'term' });
-      searchAPI
-        .getSuggestions(requestParams)
-        .then(response => {
-          expect(response).toEqual(searchResponse);
           done();
         })
         .catch(done.fail);

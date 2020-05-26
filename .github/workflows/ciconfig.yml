@@ -75,8 +75,8 @@ jobs:
           ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
         run: yarn run-production &
       - name: wait for uwazi to be ready
-        run: sleep 5 && wget --waitretry=5 --retry-connrefused -v http://localhost:3000/
-        timeout-minutes: 2
+        run: sleep 20 && wget --waitretry=5 --retry-connrefused -v http://localhost:3000/
+        timeout-minutes: 5
       - run: xvfb-run -a yarn e2e
         timeout-minutes: 25
         env:

@@ -9,7 +9,6 @@ import NestedFilter from '../NestedFilter';
 import NumberRangeFilter from '../NumberRangeFilter';
 import SelectFilter from '../SelectFilter';
 import TextFilter from '../TextFilter';
-import RelationshipFilter from '../RelationshipFilter';
 
 describe('FiltersFromProperties', () => {
   let props = {};
@@ -147,22 +146,6 @@ describe('FiltersFromProperties', () => {
       props.translationContext = 'oneContext';
 
       const component = shallow(<FiltersFromProperties {...props} />).find(NestedFilter);
-      expect(component).toMatchSnapshot();
-    });
-  });
-  describe('when type is relationshipFilter', () => {
-    it('should render a relationshipFilter', () => {
-      props.properties = [
-        {
-          name: 'relationshipfilter',
-          label: 'relationshipfilterLabel',
-          type: 'relationshipfilter',
-          filters: [{ name: 'filter' }],
-        },
-      ];
-      props.translationContext = 'oneContext';
-
-      const component = shallow(<FiltersFromProperties {...props} />).find(RelationshipFilter);
       expect(component).toMatchSnapshot();
     });
   });

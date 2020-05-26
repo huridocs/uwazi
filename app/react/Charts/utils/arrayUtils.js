@@ -1,7 +1,4 @@
 import React from 'react';
-import { t } from 'app/I18N';
-import { populateOptions } from 'app/Library/helpers/libraryFilters';
-
 import colorScheme from './colorScheme';
 
 const compareStrings = (a, b) => a.label.toLowerCase().localeCompare(b.label.toLowerCase());
@@ -22,14 +19,6 @@ const sortValues = values => {
 
   return values;
 };
-
-const populateLabels = (data, context, options) =>
-  data.map(item => {
-    const labelData = options && options.find(o => o.id === item.key);
-    const label = labelData ? t(context, labelData.label, null, false) : null;
-
-    return { ...item, label };
-  });
 
 const sortAndOrder = (data, method, order, reverseCondition) => {
   data.sort(method);
@@ -94,14 +83,10 @@ const formatPayload = data =>
     formatter: () => <span style={{ color: '#333' }}>{item.name}</span>,
   }));
 
-const formatDataForChart = (data, _property, thesauris, formatOptions) => {
-  const { context, maxCategories, aggregateOthers = false, labelsMap = {}, sort } = formatOptions;
+const formatDataForChart = (data, _property, formatOptions) => {
+  const { maxCategories, aggregateOthers = false, labelsMap = {}, sort } = formatOptions;
 
-  const res = populateOptions([{ content: context }], thesauris.toJS());
-  const { options } = res[0];
-
-  const populatedData = populateLabels(data.toJS(), context, options);
-  const relevantCategories = determineRelevantCategories(populatedData, formatOptions);
+  const relevantCategories = determineRelevantCategories(data.toJS(), formatOptions);
   const sortedCategories = sortData(relevantCategories, sort);
 
   let categories = sortedCategories;

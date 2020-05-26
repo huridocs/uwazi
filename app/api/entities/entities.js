@@ -450,13 +450,15 @@ export default {
     return model.get({ sharedId });
   },
 
-  countByTemplate(template) {
-    return model.count({ template });
+  countByTemplate(template, language) {
+    const query = language ? { template, language } : { template };
+    return model.count(query);
   },
 
-  getByTemplate(template, language, onlyPublished = true) {
+  getByTemplate(template, language, onlyPublished = true, limit) {
     const query = Object.assign({ template, language }, onlyPublished ? { published: true } : {});
-    return model.get(query, ['title', 'icon', 'file', 'sharedId']);
+    const queryLimit = limit ? { limit } : {};
+    return model.get(query, ['title', 'icon', 'file', 'sharedId'], queryLimit);
   },
 
   /** Rebuild relationship-based metadata objects as {value = id, label: title}. */

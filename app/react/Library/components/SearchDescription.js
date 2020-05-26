@@ -46,15 +46,10 @@ SearchDescription.propTypes = {
   properties: PropTypes.arrayOf(PropTypes.object).isRequired,
 };
 
-export function mapStateToProps({ thesauris, templates, relationTypes }, { query }) {
+export function mapStateToProps({ templates, relationTypes }, { query }) {
   const properties =
     query && query.filters
-      ? libraryHelpers.URLQueryToState(
-          query,
-          templates.toJS(),
-          thesauris.toJS(),
-          relationTypes.toJS()
-        ).properties
+      ? libraryHelpers.URLQueryToState(query, templates.toJS(), relationTypes.toJS()).properties
       : [];
   return {
     properties,

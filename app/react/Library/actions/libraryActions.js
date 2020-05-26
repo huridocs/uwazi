@@ -10,6 +10,8 @@ import referencesAPI from 'app/Viewer/referencesAPI';
 import { api as entitiesAPI } from 'app/Entities';
 import { toUrlParams } from 'shared/JSONRequest';
 import { RequestParams } from 'app/utils/RequestParams';
+import { store } from 'app/store';
+import searchAPI from 'app/Search/SearchAPI';
 import { selectedDocumentsChanged, maybeSaveQuickLabels } from './quickLabelActions';
 
 export function enterLibrary() {
@@ -338,4 +340,16 @@ export function getDocumentReferences(sharedId, storeKey) {
     referencesAPI.get(new RequestParams({ sharedId })).then(references => {
       dispatch(actions.set(`${storeKey}.sidepanel.references`, references));
     });
+}
+
+export function getAggregationSuggestions(storeKey, property, searchTerm) {
+  const state = store.getState()[storeKey];
+  const { search, filters } = state;
+
+  const query = processFilters(search, filters.toJS(), 0);
+  query.searchTerm = search.searchTerm;
+  if (storeKey === 'uploads') {
+    query.unpublished = true;
+  }
+  return searchAPI.getAggregationSuggestions(new RequestParams({ query, property, searchTerm }));
 }
