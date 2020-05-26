@@ -16,10 +16,10 @@ export class AccountSettings extends Component {
   constructor(props, context) {
     super(props, context);
     this.state = {
-      email: props.user.get('email') || '',
+      email: props.user.email || '',
       password: '',
       repeatPassword: '',
-      using2fa: props.user.get('using2fa'),
+      using2fa: props.user.using2fa,
     };
     this.passwordChange = this.passwordChange.bind(this);
     this.repeatPasswordChange = this.repeatPasswordChange.bind(this);
@@ -29,7 +29,7 @@ export class AccountSettings extends Component {
   }
 
   componentWillReceiveProps(props) {
-    this.setState({ email: props.user.get('email') || '' });
+    this.setState({ email: props.user.email || '' });
   }
 
   passwordChange(e) {
@@ -58,26 +58,20 @@ export class AccountSettings extends Component {
     e.preventDefault();
 
     const { password, repeatPassword } = this.state;
-    const { notify, setUser } = this.props;
-    const user = this.props.user.toJS();
+    const { user, notify, setUser } = this.props;
 
-    this.validatePassword(password, repeatPassword);
+    const passwordsDontMatch = password !== repeatPassword;
+    const emptyPassword = password.trim() === '';
+    if (emptyPassword || passwordsDontMatch) {
+      this.setState({ passwordError: true });
+      return;
+    }
 
     UsersAPI.save(new RequestParams(Object.assign({}, user, { password }))).then(result => {
       notify(t('System', 'Password updated', null, false), 'success');
       setUser(Object.assign(user, { _rev: result.rev }));
     });
     this.setState({ password: '', repeatPassword: '' });
-  }
-
-  validatePassword(password, repeatPassword) {
-    const passwordsDontMatch = password !== repeatPassword;
-    const emptyPassword = password.trim() === '';
-    if (emptyPassword || passwordsDontMatch) {
-      this.setState({ passwordError: true });
-      return false;
-    }
-    return true;
   }
 
   emailChange(e) {
@@ -194,7 +188,7 @@ AccountSettings.propTypes = {
 };
 
 export function mapStateToProps(state) {
-  return { user: state.user };
+  return { user: state.user.toJS() };
 }
 
 function mapDispatchToProps(dispatch) {
