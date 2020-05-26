@@ -1,13 +1,7 @@
 import RouteHandler from 'app/App/RouteHandler';
-import { actions } from 'app/BasicReducer';
 import LibraryCharts from 'app/Charts/components/LibraryCharts';
 import { t } from 'app/I18N';
-import {
-  enterLibrary,
-  addDocuments,
-  unsetDocuments,
-  setDocuments,
-} from 'app/Library/actions/libraryActions';
+import { enterLibrary, unsetDocuments } from 'app/Library/actions/libraryActions';
 import { processQuery } from 'app/Library/helpers/requestState';
 import DocumentsList from 'app/Library/components/DocumentsList';
 import LibraryFilters from 'app/Library/components/LibraryFilters';
@@ -27,23 +21,6 @@ import Helmet from 'react-helmet';
 import setReduxState from 'app/Library/helpers/setReduxState';
 import rison from 'rison';
 import socket from '../socket';
-
-// const setReduxState = state => (_dispatch, addinsteadOfSet) => {
-//   const dispatch = wrapDispatch(_dispatch, 'uploads');
-
-//   dispatch(formActions.load('uploads.search', state.uploads.search));
-//   dispatch(actions.set('aggregations', state.uploads.aggregations));
-
-//   dispatch({
-//     type: 'SET_LIBRARY_FILTERS',
-//     documentTypes: state.uploads.filters.documentTypes,
-//     libraryFilters: state.uploads.filters.properties,
-//   });
-
-//   dispatch(
-//     addinsteadOfSet ? addDocuments(state.library.documents) : setDocuments(state.library.documents)
-//   );
-// };
 
 export default class Uploads extends RouteHandler {
   constructor(props, context) {
