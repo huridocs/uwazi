@@ -67,6 +67,23 @@
       }
     },
     {
+      "name": "firefox-debug",
+      "type": "firefox",
+      "request": "attach",
+      "reAttach": true,
+      "webRoot": "${workspaceRoot}",
+      "url": "http://localhost:3000",
+      "userDataDir": "${workspaceRoot}/../firefox",
+      "sourceMaps": true,
+      "preLaunchTask": "hot-inspect",
+      "smartStep": true,
+      "internalConsoleOptions": "openOnSessionStart",
+      "skipFiles": ["node_modules/**"],
+      "sourceMapPathOverrides": {
+        "webpack:///*": "${webRoot}/*"
+      }
+    },
+    {
       "type": "node",
       "request": "launch",
       "name": "debug-this-file",
