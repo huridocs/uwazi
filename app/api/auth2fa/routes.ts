@@ -1,24 +1,12 @@
 /** @format */
 import Joi from 'joi';
+import { Application } from 'express';
 
 import needsAuthorization from 'api/auth/authMiddleware';
 import * as usersUtils from 'api/auth2fa/usersUtils';
 import { validation } from 'api/utils';
-import { User } from 'api/users/usersModel';
 
-/**
- * This will probably not be required once express types
- * are passed down through a .ts APP or SERVER
- */
-type Middleware = (
-  req: { user: User; body: any },
-  res: { json: any },
-  next: any
-) => Promise<void> | void;
-type Post = { (arg0: string, arg1: Middleware, arg2: Middleware, arg3?: Middleware): void };
-type App = { post: Post };
-
-export default (app: App) => {
+export default (app: Application) => {
   app.post(
     '/api/auth2fa-secret',
     needsAuthorization(['admin', 'editor']),
