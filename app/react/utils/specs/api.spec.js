@@ -183,7 +183,7 @@ describe('api', () => {
           fail('should throw error');
         } catch (e) {
           testNotificationDisplayed(
-            'The request has too large data. Please review the follows fields: metadata.summary.value ',
+            'The request has too large data. Please review the follow fields: metadata.summary.value ',
             'danger'
           );
         }

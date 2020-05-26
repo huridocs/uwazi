@@ -143,22 +143,40 @@ describe('search', () => {
     });
 
     describe('when there is an indexation error', () => {
-      it('should log the error with the id of the document and the error message', async () => {
-        spyOn(elastic, 'bulk').and.returnValue(
-          Promise.resolve({
-            items: [{ index: { _id: '_id1', error: 'something terrible happened' } }],
-          })
-        );
-        spyOn(errorLog, 'error');
-        const toIndexDocs = [{ _id: 'id1', title: 'test1' }];
-        await search.bulkIndex(toIndexDocs, 'index', elasticIndex);
-
-        expect(errorLog.error).toHaveBeenCalledWith(
-          'ERROR Failed to index document _id1: "something terrible happened"'
-        );
+      const toIndexDocs = [{ _id: 'id1', title: 'test1' }];
+      describe('if elastic returns an error', () => {
+        it('should log and throw the error with the id of the document and the error message', async () => {
+          spyOn(errorLog, 'error');
+          spyOn(elastic, 'bulk').and.returnValue(
+            Promise.resolve({
+              items: [{ index: { _id: 'id1', error: 'something terrible happened' } }],
+            })
+          );
+          try {
+            await search.bulkIndex(toIndexDocs, 'index', elasticIndex);
+            fail('should throw an indexing error');
+          } catch (error) {
+            expect(errorLog.error).toHaveBeenCalledWith(
+              'ERROR Failed to index document id1: "something terrible happened"'
+            );
+            expect(error.message).toMatch('ERROR Failed to index documents: id1');
+          }
+        });
+      });
+      describe('if an unhandled exception occurs', () => {
+        it('should log and throw the error', async () => {
+          spyOn(errorLog, 'error');
+          spyOn(elastic, 'bulk').and.throwError('unhandled error');
+          try {
+            await search.bulkIndex(toIndexDocs, 'index', elasticIndex);
+            fail('should throw an indexing error');
+          } catch (error) {
+            expect(errorLog.error).toHaveBeenCalledWith('ERROR Failed to index document id1: {}');
+            expect(error.message).toMatch('ERROR Failed to index documents: id1');
+          }
+        });
       });
     });
-
     describe('when a field is longer than limit', () => {
       const largeField = `${Math.random()
         .toString(36)

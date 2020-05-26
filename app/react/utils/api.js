@@ -27,7 +27,11 @@ const errorMessages = [
   },
   {
     key: /max_bytes_length_exceeded_exception. Invalid Fields: (.+)/g,
-    message: 'The request has too large data. Please review the follows fields: {0} ',
+    message: 'The request has too large data. Please review the follow fields: {0} ',
+  },
+  {
+    key: /ERROR Failed to index documents: (.+)/g,
+    message: 'The data have not saved completely, it failed at indexing: {0} ',
   },
 ];
 

@@ -7,7 +7,7 @@ import { entityDefaultDocument } from 'shared/entityDefaultDocument';
 
 import elastic from './elastic';
 
-function truncateStringToLuceneLimit(str){
+function truncateStringToLuceneLimit(str) {
   const LUCENE_BYTES_LIMIT = 32000;
   const bytes = Buffer.from(str);
   return bytes.slice(0, Math.min(LUCENE_BYTES_LIMIT, bytes.length)).toString();
@@ -25,7 +25,8 @@ function truncateLongFieldValue(fieldPath, docData) {
   }, docData);
 }
 
-const handledFailedDocsByLargeFieldErrors = (body, errors) => {
+const handledFailedDocsByLargeFieldErrors = async (body, errors) => {
+  if (errors.length === 0) return '';
   const invalidFields = new Set();
   errors.forEach(error => {
     const docIndex = body.findIndex(
@@ -39,14 +40,37 @@ const handledFailedDocsByLargeFieldErrors = (body, errors) => {
     truncateLongFieldValue(fieldPath, docData);
     invalidFields.add(field);
   });
-  return elastic.bulk({ body, requestTimeout: 40000 }).then(() => {
-    throw new Error(
-      `max_bytes_length_exceeded_exception. Invalid Fields: ${Array.from(invalidFields).join(', ')}`
-    );
-  });
+  await elastic.bulk({ body, requestTimeout: 40000 });
+  return `max_bytes_length_exceeded_exception. Invalid Fields: ${Array.from(invalidFields).join(
+    ', '
+  )}`;
 };
 
-const bulkIndex = (docs, _action = 'index', elasticIndex) => {
+const handleErrors = async (body, errors) => {
+  errors.forEach(f =>
+    errorLog.error(
+      `ERROR Failed to index document ${f.index._id}: ${JSON.stringify(f.index.error)}`
+    )
+  );
+  const failedDocsByLargeFieldErrors = errors.filter(
+    f => (f.index.error.caused_by || {}).type === 'max_bytes_length_exceeded_exception'
+  );
+  const lengthMessage = await handledFailedDocsByLargeFieldErrors(
+    body,
+    failedDocsByLargeFieldErrors
+  );
+  let otherCausesFailedIndexes = errors
+    .filter(f => !failedDocsByLargeFieldErrors.includes(f))
+    .map(f => f.index._id);
+  otherCausesFailedIndexes =
+    otherCausesFailedIndexes.length > 0
+      ? `ERROR Failed to index documents: ${otherCausesFailedIndexes.join(', ')}`
+      : '';
+  throw new Error(lengthMessage + otherCausesFailedIndexes);
+};
+
+/* eslint-disable max-statements */
+const bulkIndex = async (docs, _action = 'index', elasticIndex) => {
   const body = [];
   docs.forEach(doc => {
     let docBody = Object.assign({ documents: [] }, doc);
@@ -96,33 +120,19 @@ const bulkIndex = (docs, _action = 'index', elasticIndex) => {
       delete doc.fullText;
     }
   });
-
-  return elastic.bulk({ body, requestTimeout: 40000 }).then(res => {
-    const failedDocsByLargeFieldErrors = [];
-    if (res.items) {
-      res.items.forEach(f => {
-        if (f.index.error) {
-          errorLog.error(
-            `ERROR Failed to index document ${f.index._id}: ${JSON.stringify(
-              f.index.error,
-              null,
-              ' '
-            )}`
-          );
-          if (
-            f.index.error.caused_by &&
-            f.index.error.caused_by.type === 'max_bytes_length_exceeded_exception'
-          ) {
-            failedDocsByLargeFieldErrors.push(f);
-          }
-        }
-      });
-      if (failedDocsByLargeFieldErrors.length > 0) {
-        return handledFailedDocsByLargeFieldErrors(body, failedDocsByLargeFieldErrors);
-      }
-    }
-    return res;
-  });
+  let failedIndexedErrors;
+  let res;
+  try {
+    res = await elastic.bulk({ body, requestTimeout: 40000 });
+    if (res.items)
+      failedIndexedErrors = res.items.filter(f => f.index.error);
+  } catch (error) {
+    await handleErrors(body, [{ index: { _id: body[0].index._id, error } }]);
+  }
+  if (failedIndexedErrors.length > 0) {
+    await handleErrors(body, failedIndexedErrors);
+  }
+  return res;
 };
 
 const indexEntities = (

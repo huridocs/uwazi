@@ -25,7 +25,7 @@ describe('indexEntities', () => {
       expect(elastic.bulk).toHaveBeenCalledWith({ body, requestTimeout: 40000 });
     });
 
-    it('should throw an exception with the names of the invalid fields', async () => {
+    it('should return a message with the names of the invalid fields', async () => {
       const inputBody = [
         { index: { _id: 'id1' } },
         { title2: longField },
@@ -38,13 +38,9 @@ describe('indexEntities', () => {
         { index: { _id: 'id1', error: { reason: reason1 } } },
         { index: { _id: 'id2', error: { reason: reason2 } } },
       ];
-      try {
-        await handledFailedDocsByLargeFieldErrors(inputBody, errors);
-        fail('should throw an exception');
-      } catch (e) {
-        expect(e.message).toContain('title2');
-        expect(e.message).toContain('title3');
-      }
+      const message = await handledFailedDocsByLargeFieldErrors(inputBody, errors);
+      expect(message).toContain('title2');
+      expect(message).toContain('title3');
     });
 
     it('should have to support nested long fields', () => {
