@@ -8,7 +8,9 @@ describe('indexEntities', () => {
     .toString(36)
     .repeat(20000)}_last`;
 
-  const longFieldTruncated = longField.substr(0, 100);
+  const bytes = Buffer.from(longField);
+  const truncatedBytes = bytes.slice(0, Math.min(32000, bytes.length));
+  const longFieldTruncated = truncatedBytes.toString();
   const reasonPrefix = 'Document contains at least one immense term in field=';
 
   elastic.bulk.mockResolvedValue(() => Promise.resolve(''));

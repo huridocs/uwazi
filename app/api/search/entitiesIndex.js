@@ -7,13 +7,19 @@ import { entityDefaultDocument } from 'shared/entityDefaultDocument';
 
 import elastic from './elastic';
 
+function truncateStringToLuceneLimit(str){
+  const LUCENE_BYTES_LIMIT = 32000;
+  const bytes = Buffer.from(str);
+  return bytes.slice(0, Math.min(LUCENE_BYTES_LIMIT, bytes.length)).toString();
+}
+
 function truncateLongFieldValue(fieldPath, docData) {
   fieldPath.reduce((path, prop) => {
     const currentPath = path;
     if (currentPath[prop] !== undefined && currentPath[prop] !== Object(currentPath[prop])) {
-      currentPath[prop] = currentPath[prop].substring(0, 100);
+      currentPath[prop] = truncateStringToLuceneLimit(currentPath[prop]);
     } else if (Array.isArray(currentPath) && currentPath[0][prop] !== Object(currentPath[prop])) {
-      currentPath[0][prop] = currentPath[0][prop].substring(0, 100);
+      currentPath[0][prop] = truncateStringToLuceneLimit(currentPath[0][prop]);
     }
     return currentPath[prop];
   }, docData);
