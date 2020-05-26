@@ -126,9 +126,6 @@ describe('libraryActions', () => {
     beforeEach(() => {
       backend.restore();
       backend
-        .get(`${APIURL}search/match_title?searchTerm=batman`, {
-          body: JSON.stringify(documentCollection),
-        })
         .get(`${APIURL}search?searchTerm=batman`, { body: JSON.stringify(documentCollection) })
         .get(
           `${APIURL}search?searchTerm=batman` +

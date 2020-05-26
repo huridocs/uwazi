@@ -25,12 +25,18 @@ describe('BarChart Markdown component', () => {
     ]),
   };
 
+  const aggregationsLabels = {
+    id1: 'label1',
+    id2: 'label2',
+    id3: 'label3',
+    id4: 'label4',
+  };
   const defaultAggregations = [{ id1: 25 }, { id2: 33 }, { missing: 45 }, { id3: 13 }, { id4: 0 }];
 
   const mockGetAggregations = values => {
     const aggregations = (values || defaultAggregations).map(item => {
       const key = Object.keys(item)[0];
-      return { key, filtered: { doc_count: item[key] } };
+      return { key, label: aggregationsLabels[key], filtered: { doc_count: item[key] } };
     });
     spyOn(markdownDatasets, 'getAggregations').and.returnValue(Immutable.fromJS(aggregations));
   };

@@ -1,11 +1,11 @@
 /* eslint-disable class-methods-use-this,max-lines */
 
 import ShowIf from 'app/App/ShowIf';
-import { filterOptions } from 'app/Forms/utils/optionsUtils';
-import { t } from 'app/I18N';
+import { filterOptions } from 'shared/optionsUtils';
+import { t, Translate } from 'app/I18N';
 import { TriStateSelectValue } from 'app/istore';
 import { Icon as CustomIcon } from 'app/Layout/Icon';
-import React, { Component } from 'react';
+import React, { Component, createRef, RefObject } from 'react';
 import { Icon } from 'UI';
 
 export type Option = { options?: Option[]; results?: number } & { [k: string]: any };
@@ -15,7 +15,7 @@ enum SelectStates {
   ON,
 }
 
-const defaultProps = {
+export const defaultProps = {
   optionsLabel: 'label',
   optionsValue: 'value',
   prefix: '',
@@ -29,6 +29,8 @@ const defaultProps = {
   forceHoist: false,
   placeholder: '',
   onChange: (_v: any) => {},
+  onFilter: async (_searchTerm: string) => {},
+  totalPossibleOptions: 0,
 };
 
 export type MultiSelectProps<ValueType> = typeof defaultProps & {
@@ -51,10 +53,12 @@ abstract class MultiSelectBase<ValueType> extends Component<
 
   constructor(props: MultiSelectProps<ValueType>) {
     super(props);
-    this.state = { filter: props.filter, showAll: props.showAll, ui: {} };
+    this.state = { showAll: props.showAll, ui: {}, filter: '' };
     this.filter = this.filter.bind(this);
     this.resetFilter = this.resetFilter.bind(this);
     this.showAll = this.showAll.bind(this);
+    this.focusSearch = this.focusSearch.bind(this);
+    this.searchInputRef = createRef<HTMLInputElement>();
   }
 
   componentWillReceiveProps(props: MultiSelectProps<ValueType>) {
@@ -76,6 +80,8 @@ abstract class MultiSelectBase<ValueType> extends Component<
   getPinnedList(): string[] {
     return [];
   }
+
+  private searchInputRef: RefObject<HTMLInputElement>;
 
   changeGroup(group: Option, e: React.ChangeEvent<HTMLInputElement>) {
     let { value } = this.props;
@@ -141,12 +147,14 @@ abstract class MultiSelectBase<ValueType> extends Component<
     this.props.onChange(value);
   }
 
-  filter(e: React.ChangeEvent<HTMLInputElement>) {
+  async filter(e: React.ChangeEvent<HTMLInputElement>) {
     this.setState({ filter: e.target.value });
+    await this.props.onFilter(e.target.value);
   }
 
-  resetFilter() {
+  async resetFilter() {
     this.setState({ filter: '' });
+    await this.props.onFilter('');
   }
 
   showAll(e: React.MouseEvent) {
@@ -224,12 +232,16 @@ abstract class MultiSelectBase<ValueType> extends Component<
   }
 
   moreLessLabel(totalOptions: Option[]) {
+    const { totalPossibleOptions } = this.props;
+    const amount = totalPossibleOptions || totalOptions.length;
+
     if (this.state.showAll) {
-      return t('System', 'x less');
+      return <Translate>x less</Translate>;
     }
+
     return (
       <span>
-        {totalOptions.length - this.props.optionsToShow} {t('System', 'x more')}
+        {amount - this.props.optionsToShow} <Translate>x more</Translate>
       </span>
     );
   }
@@ -321,23 +333,76 @@ abstract class MultiSelectBase<ValueType> extends Component<
     );
   }
 
-  render() {
-    const { optionsLabel, placeholder } = this.props;
+  focusSearch() {
+    const node = this.searchInputRef.current;
+    node!.focus();
+  }
 
-    let options = this.props.options.slice();
-    const totalOptions = options.filter(option => {
+  renderSearch() {
+    const { placeholder, options, optionsToShow, hideSearch } = this.props;
+
+    return (
+      <li className="multiselectActions">
+        <ShowIf if={options.length > optionsToShow && !hideSearch}>
+          <div className="form-group">
+            <Icon icon={this.state.filter ? 'times-circle' : 'search'} onClick={this.resetFilter} />
+            <input
+              ref={this.searchInputRef}
+              className="form-control"
+              type="text"
+              placeholder={placeholder || t('System', 'Search item', null, false)}
+              value={this.state.filter}
+              onChange={this.filter}
+            />
+          </div>
+        </ShowIf>
+      </li>
+    );
+  }
+
+  renderOptionsCount(totalOptions: Option[], renderedOptions: Option[]) {
+    const { totalPossibleOptions } = this.props;
+    let count = `${totalPossibleOptions - renderedOptions.length}`;
+    if (totalPossibleOptions > 1000) {
+      count = `${count}+`;
+    }
+
+    return (
+      <li className="multiselectActions">
+        <ShowIf if={totalOptions.length > this.props.optionsToShow}>
+          <button onClick={this.showAll} className="btn btn-xs btn-default" type="button">
+            <Icon icon={this.state.showAll ? 'caret-up' : 'caret-down'} />
+            &nbsp;
+            {this.moreLessLabel(totalOptions)}
+          </button>
+        </ShowIf>
+        {totalPossibleOptions > totalOptions.length && this.state.showAll && (
+          <div className="total-options">
+            {count} <Translate>more options.</Translate>{' '}
+            <button onClick={this.focusSearch} type="button">
+              <Translate>Narrow your search</Translate>
+            </button>
+          </div>
+        )}
+      </li>
+    );
+  }
+
+  render() {
+    const { optionsLabel } = this.props;
+
+    let totalOptions = this.props.options.filter(option => {
       let notDefined;
       return (
         isNotAnEmptyGroup(option) &&
         (option.results === notDefined ||
           option.results > 0 ||
-          !option.options ||
-          option.options.length ||
+          (option.options && option.options.length) ||
           this.checked(option))
       );
     });
-    options = totalOptions;
-    options = options.map(option => {
+
+    totalOptions = totalOptions.map(option => {
       if (!option.options) {
         return option;
       }
@@ -345,15 +410,17 @@ abstract class MultiSelectBase<ValueType> extends Component<
         ...option,
         options: option.options.filter(_opt => {
           let notDefined;
+
           return _opt.results === notDefined || _opt.results > 0 || this.checked(_opt);
         }),
       };
     }) as Option[];
 
     if (this.state.filter) {
-      options = filterOptions(this.state.filter, options, optionsLabel);
+      totalOptions = filterOptions(this.state.filter, totalOptions, optionsLabel);
     }
 
+    let options = totalOptions.slice();
     const tooManyOptions = !this.state.showAll && options.length > this.props.optionsToShow;
 
     if (this.props.sort) {
@@ -366,16 +433,18 @@ abstract class MultiSelectBase<ValueType> extends Component<
       options = this.hoistCheckedOptions(options);
     }
 
+    let renderingOptions = options;
+
     if (tooManyOptions) {
       const numberOfActiveOptions = options.filter(opt => this.checked(opt)).length;
       const optionsToShow =
         this.props.optionsToShow > numberOfActiveOptions
           ? this.props.optionsToShow
           : numberOfActiveOptions;
-      options = options.slice(0, optionsToShow);
+      renderingOptions = options.slice(0, optionsToShow);
     }
 
-    options = options.map(option => {
+    renderingOptions = renderingOptions.map(option => {
       if (!option.options) {
         return option;
       }
@@ -384,43 +453,16 @@ abstract class MultiSelectBase<ValueType> extends Component<
 
     return (
       <ul className="multiselect is-active">
-        <li className="multiselectActions">
-          <ShowIf
-            if={this.props.options.length > this.props.optionsToShow && !this.props.hideSearch}
-          >
-            <div className="form-group">
-              <Icon
-                icon={this.state.filter ? 'times-circle' : 'search'}
-                onClick={this.resetFilter}
-              />
-              <input
-                className="form-control"
-                type="text"
-                placeholder={placeholder || t('System', 'Search item', null, false)}
-                value={this.state.filter}
-                onChange={this.filter}
-              />
-            </div>
-          </ShowIf>
-        </li>
-        {!options.length && <span>{t('System', 'No options found')}</span>}
-        {options.map((option, index) => {
+        {this.renderSearch()}
+        {!renderingOptions.length && <span>{t('System', 'No options found')}</span>}
+        {renderingOptions.map((option, index) => {
           if (option.options) {
             return this.renderGroup(option, index);
           }
 
           return this.renderOption(option, index);
         })}
-
-        <li className="multiselectActions">
-          <ShowIf if={totalOptions.length > this.props.optionsToShow && !this.state.showAll}>
-            <button onClick={this.showAll} className="btn btn-xs btn-default">
-              <Icon icon={this.state.showAll ? 'caret-up' : 'caret-down'} />
-              &nbsp;
-              {this.moreLessLabel(totalOptions)}
-            </button>
-          </ShowIf>
-        </li>
+        {this.renderOptionsCount(options, renderingOptions)}
       </ul>
     );
   }

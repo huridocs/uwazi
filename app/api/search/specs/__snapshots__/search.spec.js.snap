@@ -6,14 +6,16 @@ Array [
   "doc_count",
   "__groupedDictionary",
   "groupedDictionary",
+  "nested2",
+  "nested1",
   "nestedField_nested",
   "__select1",
   "__multiselect1",
+  "relationship",
   "select1",
   "_types",
+  "__relationship",
   "__nestedField_nested",
   "multiselect1",
-  "nested2",
-  "nested1",
 ]
 `;

@@ -65,32 +65,11 @@ exports[`FiltersFromProperties when type is numeric should render a number range
 />
 `;
 
-exports[`FiltersFromProperties when type is relationshipFilter should render a relationshipFilter 1`] = `
-<RelationshipFilter
-  label="relationshipfilterLabel"
-  model=".filters.relationshipfilter"
-  onChange={[Function]}
-  property={
-    Object {
-      "filters": Array [
-        Object {
-          "name": "filter",
-        },
-      ],
-      "label": "relationshipfilterLabel",
-      "name": "relationshipfilter",
-      "type": "relationshipfilter",
-    }
-  }
-  storeKey="library"
-  translationContext="oneContext"
-/>
-`;
-
 exports[`FiltersFromProperties when type is select, multiselect or relationship should render a select filter 1`] = `
 Array [
   <SelectFilter
     label="selectLabel"
+    lookup={[Function]}
     model=".filters.selectFilter"
     onChange={[Function]}
     options={
@@ -103,9 +82,11 @@ Array [
     prefix="selectFilter"
     showBoolSwitch={false}
     sort={false}
+    totalPossibleOptions={0}
   />,
   <SelectFilter
     label="multiselectLabel"
+    lookup={[Function]}
     model=".filters.multiselectFilter"
     onChange={[Function]}
     options={
@@ -118,9 +99,11 @@ Array [
     prefix="multiselectFilter"
     showBoolSwitch={true}
     sort={false}
+    totalPossibleOptions={0}
   />,
   <SelectFilter
     label="relationshipLabel"
+    lookup={[Function]}
     model=".filters.relationshipFilter"
     onChange={[Function]}
     options={
@@ -133,6 +116,7 @@ Array [
     prefix="relationshipFilter"
     showBoolSwitch={true}
     sort={true}
+    totalPossibleOptions={0}
   />,
 ]
 `;

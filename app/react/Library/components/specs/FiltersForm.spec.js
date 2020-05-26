@@ -58,19 +58,29 @@ describe('FiltersForm', () => {
       aggregations: Immutable({
         all: {
           select: {
+            count: 10,
             buckets: [
-              { key: 'a', filtered: { doc_count: 1 } },
-              { key: 'b', filtered: { doc_count: 1 } },
-              { key: 'c', filtered: { doc_count: 1 } },
-              { key: 'd', filtered: { doc_count: 1 } },
+              { key: 'a', label: 'a', filtered: { doc_count: 1 } },
+              { key: 'b', label: 'b', filtered: { doc_count: 1 } },
+              {
+                key: 'c',
+                label: 'c',
+                filtered: { doc_count: 1 },
+                values: [{ key: 'd', label: 'd', filtered: { doc_count: 1 } }],
+              },
             ],
           },
           multiselect: {
+            count: 11,
             buckets: [
-              { key: 'a', filtered: { doc_count: 1 } },
-              { key: 'b', filtered: { doc_count: 1 } },
-              { key: 'c', filtered: { doc_count: 1 } },
-              { key: 'd', filtered: { doc_count: 1 } },
+              { key: 'a', label: 'a', filtered: { doc_count: 1 } },
+              { key: 'b', label: 'b', filtered: { doc_count: 1 } },
+              {
+                key: 'c',
+                label: 'c',
+                filtered: { doc_count: 1 },
+                values: [{ key: 'd', label: 'd', filtered: { doc_count: 1 } }],
+              },
             ],
           },
         },

@@ -77,7 +77,6 @@ describe('SearchDescription', () => {
       expect(libraryHelpers.URLQueryToState).toHaveBeenCalledWith(
         query,
         ['templates'],
-        ['thesauri'],
         ['relationTypes']
       );
       expect(props.properties).toEqual(properties);

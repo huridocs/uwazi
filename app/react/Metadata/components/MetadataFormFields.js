@@ -1,11 +1,13 @@
 import { FormGroup } from 'app/Forms';
 import t from 'app/I18N/t';
+import { preloadOptionsLimit } from 'shared/config';
 import Immutable from 'immutable';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field } from 'react-redux-form';
 import { propertyTypes } from 'shared/propertyTypes';
+import { getSuggestions } from 'app/Metadata/actions/actions';
 import { Translate } from 'app/I18N';
 import {
   DatePicker,
@@ -20,6 +22,7 @@ import {
   Nested,
   Numeric,
   Select,
+  LookupMultiSelect,
 } from '../../ReactReduxForms';
 import MultipleEditionFieldWarning from './MultipleEditionFieldWarning';
 
@@ -42,7 +45,8 @@ export const translateOptions = thesauri =>
 export class MetadataFormFields extends Component {
   getField(property, _model, thesauris) {
     let thesauri;
-    const { dateFormat, version } = this.props;
+    let totalPossibleOptions = 0;
+    const { dateFormat, version, entityThesauris } = this.props;
     const propertyType = property.type;
     switch (propertyType) {
       case 'select':
@@ -76,18 +80,43 @@ export class MetadataFormFields extends Component {
           const source = thesauris.find(
             opt => opt.get('_id').toString() === property.content.toString()
           );
+
+          totalPossibleOptions = source.get('optionsCount');
           thesauri = translateOptions(source);
         }
 
         if (!property.content) {
-          thesauri = Array.prototype.concat(
-            ...thesauris
-              .filter(filterThesauri => filterThesauri.get('type') === 'template')
-              .map(translateOptions)
-          );
+          thesauri = Array.prototype
+            .concat(
+              ...thesauris
+                .filter(filterThesauri => filterThesauri.get('type') === 'template')
+                .map(source => {
+                  totalPossibleOptions += source.get('optionsCount');
+                  return translateOptions(source);
+                })
+            )
+            .slice(0, preloadOptionsLimit);
         }
+
+        if (entityThesauris.get(property.name)) {
+          entityThesauris
+            .get(property.name)
+            .toJS()
+            .forEach(o => {
+              thesauri.push({ id: o.value, label: o.label });
+            });
+        }
+
         return (
-          <MultiSelect model={_model} optionsValue="id" options={thesauri} prefix={_model} sort />
+          <LookupMultiSelect
+            lookup={getSuggestions.bind(null, property.content ? [property.content] : [])}
+            model={_model}
+            optionsValue="id"
+            options={thesauri}
+            totalPossibleOptions={totalPossibleOptions}
+            prefix={_model}
+            sort
+          />
         );
       case 'date':
         return <DatePicker model={_model} format={dateFormat} />;
@@ -136,6 +165,7 @@ export class MetadataFormFields extends Component {
 
   render() {
     const { thesauris, template, multipleEdition, model, showSubset } = this.props;
+
     const mlThesauri = thesauris
       .filter(thes => !!thes.get('enable_classification'))
       .map(thes => thes.get('_id'))
@@ -191,6 +221,7 @@ MetadataFormFields.defaultProps = {
   dateFormat: null,
   version: undefined,
   showSubset: undefined,
+  entityThesauris: Immutable.fromJS({}),
 };
 
 MetadataFormFields.propTypes = {
@@ -201,10 +232,12 @@ MetadataFormFields.propTypes = {
   dateFormat: PropTypes.string,
   showSubset: PropTypes.arrayOf(PropTypes.string),
   version: PropTypes.string,
+  entityThesauris: PropTypes.instanceOf(Immutable.Map),
 };
 
 export const mapStateToProps = state => ({
   dateFormat: state.settings.collection.get('dateFormat'),
+  entityThesauris: state.entityThesauris,
 });
 
 export default connect(mapStateToProps)(MetadataFormFields);

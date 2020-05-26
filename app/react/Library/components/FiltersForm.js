@@ -60,6 +60,7 @@ export class FiltersForm extends Component {
       .parseWithAggregations(allFields.slice(0), aggregations, showNoValueOnFilters)
       .filter(field => !field.options || field.options.length);
     const model = `${this.props.storeKey}.search`;
+
     return (
       <div className="filters-box">
         {(() => {

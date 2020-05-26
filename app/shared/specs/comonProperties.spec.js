@@ -29,16 +29,6 @@ describe('comonProperties', () => {
     },
   ];
 
-  const relationTypes = [
-    {
-      _id: '4',
-      properties: [
-        { name: 'author', filter: false, type: 'markdown' },
-        { name: 'city', filter: true, type: 'text' },
-      ],
-    },
-  ];
-
   const thesauris = [
     {
       _id: 'abc1',
@@ -97,16 +87,8 @@ describe('comonProperties', () => {
   describe('comonFilters()', () => {
     it('should return all the comon filters of the selected templates', () => {
       const documentTypes = ['3'];
-      const filters = propertiesHelper.comonFilters(templates, relationTypes, documentTypes);
-      expect(filters).toEqual([
-        { name: 'country', filter: true, type: 'text' },
-        {
-          name: 'friend',
-          relationType: '4',
-          type: 'relationshipfilter',
-          filters: [{ name: 'city', filter: true, type: 'text' }],
-        },
-      ]);
+      const filters = propertiesHelper.comonFilters(templates, documentTypes);
+      expect(filters).toEqual([{ name: 'country', filter: true, type: 'text' }]);
     });
   });
 });

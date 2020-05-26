@@ -57,7 +57,6 @@ class BarChartComponent extends Component {
       data,
       classname,
       context,
-      thesauris,
       colors,
     } = this.props;
     let output = <Loader />;
@@ -68,7 +67,7 @@ class BarChartComponent extends Component {
       const { sort, shortLabels, pluckCategories } = this.parseAttributes();
       const shortLabelsFlipped = objectFlip(shortLabels);
 
-      const formattedData = arrayUtils.formatDataForChart(data, property, thesauris, {
+      const formattedData = arrayUtils.formatDataForChart(data, property, {
         excludeZero: Boolean(excludeZero),
         context,
         maxCategories,
@@ -120,7 +119,6 @@ BarChartComponent.defaultProps = {
 };
 
 BarChartComponent.propTypes = {
-  thesauris: PropTypes.instanceOf(Immutable.List).isRequired,
   property: PropTypes.string.isRequired,
   context: PropTypes.string,
   excludeZero: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),

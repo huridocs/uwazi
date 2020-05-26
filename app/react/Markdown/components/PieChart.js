@@ -20,7 +20,6 @@ export const PieChartComponent = props => {
     classname,
     context,
     colors,
-    thesauris,
     maxCategories,
     pluckCategories,
   } = props;
@@ -30,7 +29,7 @@ export const PieChartComponent = props => {
   if (data) {
     const aggregateOthers = props.aggregateOthers === 'true';
     const formattedData = arrayUtils.sortValues(
-      arrayUtils.formatDataForChart(data, property, thesauris, {
+      arrayUtils.formatDataForChart(data, property, {
         context,
         excludeZero: true,
         maxCategories,
@@ -80,7 +79,6 @@ PieChartComponent.defaultProps = {
 };
 
 PieChartComponent.propTypes = {
-  thesauris: PropTypes.instanceOf(Immutable.List).isRequired,
   innerRadius: PropTypes.string,
   outerRadius: PropTypes.string,
   maxCategories: PropTypes.string,

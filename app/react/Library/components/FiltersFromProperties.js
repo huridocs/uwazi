@@ -12,24 +12,14 @@ import NumberRangeFilter from './NumberRangeFilter';
 import SelectFilter from './SelectFilter';
 import TextFilter from './TextFilter';
 import RelationshipFilter from './RelationshipFilter';
-
-const translatedOptions = property =>
-  property.options.map(option => {
-    option.label = t(property.content, option.label, null, false);
-    if (option.values) {
-      option.options = option.values.map(val => {
-        val.label = t(property.content, val.label, null, false);
-        return val;
-      });
-    }
-    return option;
-  });
+import { getAggregationSuggestions } from 'app/Library/actions/libraryActions';
 
 export const FiltersFromProperties = ({
   onChange,
   properties,
   translationContext,
   modelPrefix = '',
+  storeKey,
   ...props
 }) => (
   <React.Fragment>
@@ -57,18 +47,30 @@ export const FiltersFromProperties = ({
         filter = <NumberRangeFilter {...commonProps} />;
       }
 
-      if (
-        property.type === 'select' ||
-        property.type === 'multiselect' ||
-        property.type === 'relationship'
-      ) {
+      if (property.type === 'select' || property.type === 'multiselect') {
         filter = (
           <SelectFilter
             {...commonProps}
-            options={translatedOptions(property)}
+            lookup={getAggregationSuggestions.bind(null, storeKey, property.name)}
+            options={property.options}
             prefix={property.name}
             showBoolSwitch={property.type === 'multiselect' || property.type === 'relationship'}
             sort={property.type === 'relationship'}
+            totalPossibleOptions={property.totalPossibleOptions}
+          />
+        );
+      }
+
+      if (property.type === 'relationship') {
+        filter = (
+          <SelectFilter
+            {...commonProps}
+            lookup={getAggregationSuggestions.bind(null, storeKey, property.name)}
+            options={property.options}
+            prefix={property.name}
+            showBoolSwitch={property.type === 'multiselect' || property.type === 'relationship'}
+            sort={property.type === 'relationship'}
+            totalPossibleOptions={property.totalPossibleOptions}
           />
         );
       }

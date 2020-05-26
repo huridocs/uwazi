@@ -64,7 +64,6 @@ export default class Uploads extends RouteHandler {
     const filterState = libraryHelpers.URLQueryToState(
       query,
       globalResources.templates.toJS(),
-      globalResources.thesauris.toJS(),
       globalResources.relationTypes.toJS()
     );
 
