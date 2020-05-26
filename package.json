@@ -42,7 +42,7 @@
     "admin-user": "./database/admin_user.sh",
     "dump-db": "./database/dump_db.sh",
     "restore-db": "./database/restore_db.sh",
-    "fixtures": "cd uwazi-fixtures; ./restore.sh; yarn reindex",
+    "fixtures": "cd uwazi-fixtures; ./restore.sh",
     "add-migration": "./node_modules/.bin/plop --plopfile ./app/api/migrations/plopfile.js migration",
     "migrate": "node run.js ./app/api/migrations/migrate.js",
     "test-debug": "node --inspect ./node_modules/.bin/jest --watch --no-cache -i",
