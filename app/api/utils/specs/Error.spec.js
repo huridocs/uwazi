@@ -37,22 +37,7 @@ describe('Error', () => {
 
       const error = createError(new ValidationError(validationErrors), 350);
       expect(error.message).toBe('validation failed');
-      expect(error.errors).toEqual([
-        {
-          dataPath: '.body.prop1',
-          keyword: 'type',
-          message: 'should be string',
-          params: [],
-          schemaPath: '#/properties/body/properties/prop1/type',
-        },
-        {
-          dataPath: '.body.prop2',
-          keyword: 'type',
-          message: 'should be number',
-          params: [],
-          schemaPath: '#/properties/body/properties/prop2/type',
-        },
-      ]);
+      expect(error.errors).toEqual(validationErrors);
       expect(error.code).toBe(350);
     });
   });
