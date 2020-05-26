@@ -16,7 +16,7 @@ import { reloadThesauri } from 'app/Thesauri/actions/thesaurisActions';
 import auth from 'app/Auth';
 
 const reloadHome = () => {
-  window.location.href = '/';
+  window.location.assign('/');
 };
 
 export class Login extends RouteHandler {

@@ -95,17 +95,12 @@ describe('Login', () => {
           props.private = true;
           render();
 
-          spyOn(browserHistory, 'push');
-          spyOn(window.location, 'reload');
-          jasmine.clock().install();
+          spyOn(window.location, 'assign');
 
           instance
             .submit('credentials')
             .then(() => {
-              jasmine.clock().tick(100);
-              expect(browserHistory.push).toHaveBeenCalledWith('/');
-              expect(window.location.reload).toHaveBeenCalled();
-              jasmine.clock().uninstall();
+              expect(window.location.assign).toHaveBeenCalledWith('/');
               done();
             })
             .catch(done.fail);
