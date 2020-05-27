@@ -4,7 +4,7 @@ import { isUndefined, isNull } from 'util';
 import { objectIdSchema, metadataSchema } from 'shared/types/commonSchemas';
 import { wrapValidator } from 'shared/tsUtils';
 import { validators, customErrorMessages } from 'api/entities/metadataValidators.js';
-import {propertyTypes} from "shared/propertyTypes";
+import { propertyTypes } from 'shared/propertyTypes';
 
 export const emitSchemaTypes = true;
 

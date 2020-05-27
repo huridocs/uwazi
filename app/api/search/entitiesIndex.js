@@ -9,7 +9,7 @@ import elastic from './elastic';
 
 function truncateStringToLuceneLimit(str) {
   const LUCENE_BYTES_LIMIT = 32766;
-  const bytes = Buffer.from(JSON.stringify(str));
+  const bytes = Buffer.from(str);
   return bytes.slice(0, Math.min(LUCENE_BYTES_LIMIT, bytes.length)).toString();
 }
 
@@ -124,8 +124,9 @@ const bulkIndex = async (docs, _action = 'index', elasticIndex) => {
   let res;
   try {
     res = await elastic.bulk({ body, requestTimeout: 40000 });
-    if (res.items)
+    if (res.items) {
       failedIndexedErrors = res.items.filter(f => f.index.error);
+    }
   } catch (error) {
     await handleErrors(body, [{ index: { _id: body[0].index._id, error } }]);
   }

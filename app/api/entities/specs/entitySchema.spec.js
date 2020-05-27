@@ -192,10 +192,10 @@ describe('entity schema', () => {
           await expectError(customErrorMessages[propertyTypes.text], ".metadata['name']");
         });
 
-        it('should fail value is a string that exceeds the lucene\'s term byte-length limit', async () => {
-          const largeField = `${Math.random()
-              .toString(36)
-              .repeat(20000)}`;
+        it('should fail value is a string that exceeds the lucene term byte-length limit', async () => {
+          const largeField = Math.random()
+            .toString(36)
+            .repeat(20000);
           entity.metadata.name = [{ value: largeField }];
           await expectError('field is longer than the max allowed', ".metadata['name']");
         });

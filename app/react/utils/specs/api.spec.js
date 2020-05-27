@@ -162,8 +162,15 @@ describe('api', () => {
 
     describe('when request return a server error of too large request', () => {
       const requestError = [
-          ['test_payload_too_large_error', 'The request has too large data. Please review any long value property.'],
-          ['max_bytes_length_exceeded_exception', 'The request has too large data. Please review the follow fields: metadata.summary.value ']];
+        [
+          'test_payload_too_large_error',
+          'The request has too large data. Please review any long value property.',
+        ],
+        [
+          'max_bytes_length_exceeded_exception',
+          'The request has too large data. Please review the follow fields: metadata.summary.value ',
+        ],
+      ];
 
       it.each(requestError)('should notify the error with this message', async (url, message) => {
         const requestParams = new RequestParams({ key: 'test payload' }, { header: 'value' });
@@ -171,7 +178,7 @@ describe('api', () => {
           await api.post(url, requestParams);
           fail('should throw error');
         } catch (e) {
-          testNotificationDisplayed(message,'danger');
+          testNotificationDisplayed(message, 'danger');
         }
       });
     });

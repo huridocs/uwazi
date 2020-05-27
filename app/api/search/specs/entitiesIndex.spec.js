@@ -4,12 +4,11 @@ import { handledFailedDocsByLargeFieldErrors } from '../entitiesIndex';
 jest.mock('../elastic');
 
 describe('indexEntities', () => {
-  const longField = `${Math.random()
+  const longField = Math.random()
     .toString(36)
-    .repeat(20000)}_last`;
-
+    .repeat(20000);
   const bytes = Buffer.from(longField);
-  const truncatedBytes = bytes.slice(0, Math.min(32000, bytes.length));
+  const truncatedBytes = bytes.slice(0, Math.min(32766, bytes.length));
   const longFieldTruncated = truncatedBytes.toString();
   const reasonPrefix = 'Document contains at least one immense term in field=';
 
