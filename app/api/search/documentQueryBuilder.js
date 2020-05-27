@@ -349,6 +349,7 @@ export default function() {
 
     resetAggregations() {
       baseQuery.aggregations.all.aggregations = {};
+      return this;
     },
   };
 }
