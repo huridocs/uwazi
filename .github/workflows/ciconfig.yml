@@ -45,7 +45,7 @@ jobs:
           - 9200/tcp
         options: -e="discovery.type=single-node" --health-cmd="curl http://localhost:9200/_cluster/health" --health-interval=10s --health-timeout=5s --health-retries=10
       mongodb:
-        image: mongo:4.0.3
+        image: mongo:4.2.6
         ports:
           - 27017/tcp
     steps:
@@ -61,7 +61,6 @@ jobs:
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
       - name: install dependencies
         run: yarn install
-      - run: sudo apt-get install mongodb-clients
       - run: sudo apt-get install poppler-utils
       - run: yarn production-build
       - run: yarn blank-state
@@ -107,7 +106,6 @@ jobs:
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
       - name: install dependencies
         run: yarn install
-      # - run: sudo apt-get install mongodb-clients
       - run: sudo apt-get install poppler-utils
       - run: yarn production-build
       - name: checkout fixtures
@@ -127,7 +125,7 @@ jobs:
       - name: wait for uwazi to be ready
         run: sleep 5 && wget --waitretry=5 --retry-connrefused -v http://localhost:3000/
         timeout-minutes: 2
-      - run: xvfb-run -a yarn jest --projects e2e/jest.e2e.config.js -i --verbose true
+      - run: xvfb-run -a yarn e2e-puppeteer
         timeout-minutes: 25
         env:
           DBHOST: localhost:${{ job.services.mongodb.ports[27017] }}

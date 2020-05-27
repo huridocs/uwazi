@@ -6,9 +6,6 @@ import proxyMock from './helpers/proxyMock';
 describe('Entities', () => {
   beforeAll(async () => {
     await proxyMock();
-  });
-
-  it('Should login as admin', async () => {
     await adminLogin();
   });
 
@@ -20,7 +17,7 @@ describe('Entities', () => {
     await expect(page).toClick('button', { text: 'Save' });
   });
 
-  it('Should logout', async () => {
+  afterAll(async () => {
     await logout();
   });
 });
