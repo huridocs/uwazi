@@ -60,7 +60,7 @@ describe('library helper', () => {
     it('should set default searchTerm to blank', () => {
       const query = {};
 
-      const state = libraryHelper.URLQueryToState(query, templates, thesauris);
+      const state = libraryHelper.URLQueryToState(query, templates);
       expect(state.search.searchTerm).toBe('');
     });
 
@@ -70,7 +70,7 @@ describe('library helper', () => {
         types: [],
       };
 
-      const state = libraryHelper.URLQueryToState(query, templates, thesauris);
+      const state = libraryHelper.URLQueryToState(query, templates);
       expect(state.search.filters).toEqual({});
       expect(state.search.order).toEqual(prioritySortingCriteria.get().order);
       expect(state.search.sort).toEqual(prioritySortingCriteria.get().sort);
@@ -85,7 +85,7 @@ describe('library helper', () => {
         filters: { country: 'countryValue', rich: 'search' },
       };
 
-      const state = libraryHelper.URLQueryToState(query, templates, thesauris);
+      const state = libraryHelper.URLQueryToState(query, templates);
       expect(state.properties.length).toBe(1);
       expect(state.search.filters.country).toBe('countryValue');
       expect(state.search.filters.rich).toBe('search');
@@ -101,7 +101,7 @@ describe('library helper', () => {
         filters: {},
       };
 
-      const state = libraryHelper.URLQueryToState(query, templates, thesauris);
+      const state = libraryHelper.URLQueryToState(query, templates);
       expect(state.search.filters.country).toEqual({});
       expect(state.search.filters.language).toBe('');
       expect(state.search.filters.rich).toBe('');
@@ -114,12 +114,6 @@ describe('library helper', () => {
         { name: 'country', filter: true, type: 'select', content: 'abc1' },
         { name: 'date', filter: true, type: 'text' },
         { name: 'country', filter: true, type: 'relationship' },
-        {
-          name: 'friend',
-          filter: true,
-          type: 'relationshipfilter',
-          filters: [{ name: 'pepinillos', filter: true, type: 'select', content: 'abc1' }],
-        },
       ];
 
       const populatedFilters = libraryHelper.populateOptions(filters, thesauris);
@@ -133,10 +127,6 @@ describe('library helper', () => {
         { id: 4, value: 'value4' },
         { id: 5, value: 'value5' },
         { id: 6, value: 'value6' },
-      ]);
-      expect(populatedFilters[3].filters[0].options).toEqual([
-        { id: 1, value: 'value1' },
-        { id: 2, value: 'value2' },
       ]);
     });
     describe('when property unknown content id is provided', () => {
@@ -167,15 +157,18 @@ describe('library helper', () => {
       const aggregations = {
         all: {
           country: {
+            count: 27,
             buckets: [
               {
                 key: 1,
                 doc_count: 4,
+                label: 'value1',
                 filtered: { doc_count: 2 },
               },
               {
                 key: 'missing',
                 doc_count: 3,
+                label: 'No value',
                 filtered: { doc_count: 2 },
               },
             ],
@@ -185,9 +178,11 @@ describe('library helper', () => {
 
       const populatedFilters = libraryHelper.parseWithAggregations(filters, aggregations);
       expect(populatedFilters[0].options).toEqual([
-        { id: 1, value: 'value1', results: 2 },
-        { id: 'missing', label: 'No Value', results: 2 },
+        { id: 1, value: 1, label: 'value1', results: 2 },
+        { id: 'missing', value: 'missing', label: 'No value', results: 2, noValueKey: true },
       ]);
+
+      expect(populatedFilters[0].totalPossibleOptions).toBe(27);
     });
   });
 });

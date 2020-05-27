@@ -88,7 +88,9 @@ export default {
       user: { username: 'username' },
     },
   ],
-  settings: [{ _id: db.id(), languages: [{ key: 'es' }, { key: 'pt' }, { key: 'en' }] }],
+  settings: [
+    { _id: db.id(), languages: [{ key: 'es' }, { key: 'pt' }, { key: 'en', default: true }] },
+  ],
   templates: [
     {
       _id: templateId,

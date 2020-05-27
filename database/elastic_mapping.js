@@ -5,7 +5,7 @@ import languages from '../app/shared/languages';
 
 const config = {
   settings: {
-    'index.mapping.total_fields.limit': 2000,
+    'index.mapping.total_fields.limit': 4000,
     'index.number_of_replicas': 0,
     'index.number_of_shards': 3,
     analysis: {
@@ -159,6 +159,16 @@ const config = {
       '@timestamp': { type: 'date', doc_values: true },
       '@version': { type: 'text', index: false },
       fullText: { type: 'join', relations: { entity: 'fullText' } },
+      title: {
+        type: 'text',
+        index: true,
+        fields: {
+          raw: { type: 'keyword' },
+          sort: { type: 'text', fielddata: true, analyzer: 'string_sorter' },
+          sayt: { type: 'search_as_you_type' },
+        },
+        term_vector: 'with_positions_offsets',
+      },
       creationDate: {
         type: 'long',
         doc_values: true,

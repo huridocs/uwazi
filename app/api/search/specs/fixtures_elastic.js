@@ -75,6 +75,12 @@ export default {
       title: 'Batman finishes en',
       published: true,
       user: userId,
+      metadata: {
+        relationship: [
+          { value: batmanBegins, label: 'Batman begins en' },
+          { value: 'unpublished', label: 'Do not show' },
+        ],
+      },
     },
     {
       _id: db.id(),
@@ -84,6 +90,12 @@ export default {
       title: 'Batman finishes es',
       published: true,
       user: userId,
+      metadata: {
+        relationship: [
+          { value: batmanBegins, label: 'Batman begins es' },
+          { value: 'unpublished', label: 'Do not show' },
+        ],
+      },
     },
     {
       _id: db.id(),
@@ -108,6 +120,15 @@ export default {
       sharedId: 'unpublished',
       template,
       language: 'es',
+      title: 'unpublished',
+      published: false,
+      user: userId,
+    },
+    {
+      _id: db.id(),
+      sharedId: 'unpublished',
+      template,
+      language: 'en',
       title: 'unpublished',
       published: false,
       user: userId,
@@ -151,10 +172,13 @@ export default {
       metadata: {
         field1: [{ value: 'joker' }],
         field2: [{ value: 'bane' }],
-        select1: [{ value: 'selectValue1' }],
+        select1: [{ value: 'EgyptID', label: 'Egypt' }],
         rich_text: [{ value: 'rich' }],
-        multiselect1: [{ value: 'multiValue1' }, { value: 'multiValue2' }],
-        groupedDictionary: [{ value: 'spainID' }],
+        multiselect1: [
+          { value: 'EgyptID', label: 'Egypt' },
+          { value: 'SpainID', label: 'Spain' },
+        ],
+        groupedDictionary: [{ value: 'GermanyID' }],
         nestedField_nested: [{ value: { nested1: ['1', '2', '3'] } }],
         city_geolocation: [{ value: { lat: 1, lon: 2 } }],
         daterange: [{ value: { from: 1547997735, to: 1579533735 } }],
@@ -188,9 +212,9 @@ export default {
       metadata: {
         field1: [{ value: 'joker' }],
         field2: [{ value: 'penguin' }],
-        select1: [{ value: 'selectValue1' }],
-        multiselect1: [{ value: 'multiValue1' }],
-        groupedDictionary: [{ value: 'spainID' }],
+        select1: [{ value: 'EgyptID', label: 'Egypt' }],
+        multiselect1: [{ value: 'EgyptID', label: 'Egypt' }],
+        groupedDictionary: [{ value: 'GermanyID' }],
         daterange: [{ value: { from: 1579620135, to: 1611242535 } }],
         date: [{ value: 20000 }],
       },
@@ -204,8 +228,8 @@ export default {
       published: true,
       user: userId,
       metadata: {
-        select1: [{ value: 'selectValue2' }],
-        multiselect1: [{ value: 'multiValue2' }],
+        select1: [{ value: 'SpainID', label: 'Spain' }],
+        multiselect1: [{ value: 'SpainID', label: 'Spain' }],
         date: [{ value: 30000 }],
       },
     },
@@ -220,8 +244,8 @@ export default {
       metadata: {
         field1: [{ value: 'bane' }],
         field3: [{ value: 'penguin' }],
-        select1: [{ value: 'selectValue2' }],
-        multiselect1: [{ value: 'multiValue2' }],
+        select1: [{ value: 'SpainID', label: 'Spain' }],
+        multiselect1: [{ value: 'SpainID', label: 'Spain' }],
         nestedField_nested: [{ value: { nested1: ['3', '4', '5'] } }],
         country_geolocation: [{ value: { lat: 1, lon: 2 } }],
       },
@@ -286,7 +310,7 @@ export default {
       published: true,
       user: userId,
       metadata: {
-        multiselect1: [{ value: '35ae6c24-9f4c-4017-9f01-2bc42ff7ad83', label: 'Egypt' }],
+        multiselect1: [{ value: 'EgyptID', label: 'Egypt' }],
       },
     },
     {
@@ -297,7 +321,9 @@ export default {
       title: 'Something',
       published: true,
       user: userId,
-      metadata: { multiselect1: [{ value: 'bce629bf-efc1-40dd-9af0-0542422dcbc3' }] },
+      metadata: {
+        multiselect1: [{ value: 'SpainID', label: 'Spain' }],
+      },
     },
     // snippets in metadata
     {
@@ -313,11 +339,17 @@ export default {
     {
       _id: template1,
       properties: [
-        { name: 'status_relationship_filter', type: 'relationshipfilter', relationType },
         { name: 'date', type: 'date', filter: true },
         { name: 'multidate', type: 'multidate', filter: true },
         { name: 'daterange', type: 'daterange', filter: true },
         { name: 'multidaterange', type: 'multidaterange', filter: true },
+        {
+          name: 'relationship',
+          type: 'relationship',
+          filter: true,
+          relationType,
+          content: template2,
+        },
       ],
     },
     { _id: template2, properties: [] },
@@ -326,8 +358,18 @@ export default {
       properties: [
         { name: 'field1', type: 'text', filter: true },
         { name: 'field2', type: 'text', filter: true },
-        { name: 'select1', type: 'select', filter: true },
-        { name: 'multiselect1', type: 'multiselect', filter: true },
+        {
+          name: 'select1',
+          type: 'select',
+          filter: true,
+          content: countriesDictionaryID.toString(),
+        },
+        {
+          name: 'multiselect1',
+          type: 'multiselect',
+          filter: true,
+          content: countriesDictionaryID.toString(),
+        },
         { name: 'daterange', type: 'daterange', filter: true },
         { name: 'date', type: 'date', filter: true },
         {
@@ -351,8 +393,18 @@ export default {
       properties: [
         { name: 'field1', type: 'text', filter: true },
         { name: 'field3', type: 'text', filter: true },
-        { name: 'select1', type: 'select', filter: true },
-        { name: 'multiselect1', type: 'multiselect', filter: true },
+        {
+          name: 'select1',
+          type: 'select',
+          filter: true,
+          content: countriesDictionaryID.toString(),
+        },
+        {
+          name: 'multiselect1',
+          type: 'multiselect',
+          filter: true,
+          content: countriesDictionaryID.toString(),
+        },
         {
           name: 'nestedField_nested',
           type: 'nested',
@@ -370,21 +422,21 @@ export default {
       values: [
         {
           label: 'Egypt',
-          id: '35ae6c24-9f4c-4017-9f01-2bc42ff7ad83',
+          id: 'EgyptID',
         },
         {
           label: 'Chile',
-          id: 'bce629bf-efc1-40dd-9af0-0542422dcbc4',
+          id: 'ChileID',
         },
         {
-          label: 'Egypto',
-          id: 'bce629bf-efc1-40dd-9af0-0542422dcbc3',
+          label: 'Spain',
+          id: 'SpainID',
         },
         {
           label: 'Europe',
-          id: 'bce629bf-efc1-40dd-9af0-0542422dcbc5',
+          id: 'EuropeID',
           values: [
-            { label: 'Spain', id: 'spainID' },
+            { label: 'Germany', id: 'GermanyID' },
             { label: 'France', id: 'franceID' },
           ],
         },
@@ -445,6 +497,7 @@ export default {
       language: 'es',
     },
   ],
+  settings: [{ languages: [{ key: 'en', default: true }, { key: 'es' }] }],
 };
 
 export const ids = {

@@ -1,20 +1,37 @@
 import cookie from 'cookie';
-import socketIo from 'socket.io';
+import socketIo, { Server as SocketIoServer, Socket } from 'socket.io';
 
-export default (server, app) => {
-  const io = socketIo(server);
+import { Application, Request, Response, NextFunction } from 'express';
+import { Server } from 'http';
+
+declare global {
+  namespace Express {
+    export interface Request {
+      getCurrentSessionSockets: Function;
+      io: SocketIoServer;
+    }
+  }
+}
+
+export default (server: Server, app: Application) => {
+  const io: SocketIoServer = socketIo(server);
   app.use((req, _res, next) => {
     req.io = io;
     next();
   });
 
-  app.use((req, _res, next) => {
+  type sessionSockets = {
+    sockets: Socket[];
+    emit: Function;
+  };
+
+  app.use((req: Request, _res: Response, next: NextFunction) => {
     req.getCurrentSessionSockets = () => {
-      const sessionSockets = {
+      const sessionSockets: sessionSockets = {
         sockets: [],
-        emit(...args) {
+        emit(event: string, ...args: any[]) {
           this.sockets.forEach(socket => {
-            socket.emit(...args);
+            socket.emit(event, ...args);
           });
         },
       };
@@ -32,6 +49,7 @@ export default (server, app) => {
           [, sessionId] = socketCookie['connect.sid'].split('.')[0].split(':');
         }
 
+        //@ts-ignore
         if (sessionId === req.session.id) {
           sockets.sockets.push(socket);
         }

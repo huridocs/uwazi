@@ -1,7 +1,6 @@
 /* eslint-disable max-statements */
 import React from 'react';
 import Immutable from 'immutable';
-import * as libraryFilters from 'app/Library/helpers/libraryFilters';
 import colorScheme from '../colorScheme';
 import arrayUtils from '../arrayUtils';
 
@@ -48,31 +47,17 @@ describe('Array Utils', () => {
   describe('formatDataForChart', () => {
     let data;
     let property;
-    let thesauri;
     let options;
 
     beforeEach(() => {
       data = Immutable.fromJS([
-        { key: 'id1', doc_count: 10, filtered: { doc_count: 3 } },
-        { key: 'id3', doc_count: 5, filtered: { doc_count: 4 } },
-        { key: 'id2', doc_count: 20, filtered: { doc_count: 5 } },
-        { key: 'missing', label: null, filtered: { doc_count: 0 } },
-        { key: 'any', label: null, filtered: { doc_count: -672 } },
+        { key: 'id1', label: 'Val 1', doc_count: 10, filtered: { doc_count: 3 } },
+        { key: 'id3', label: 'Val 3', doc_count: 5, filtered: { doc_count: 4 } },
+        { key: 'id2', label: 'Val 2', doc_count: 20, filtered: { doc_count: 5 } },
+        { key: 'missing', label: 'No value', filtered: { doc_count: 0 } },
+        { key: 'any', label: 'Any', filtered: { doc_count: -672 } },
       ]);
       property = 'prop';
-
-      const values = [
-        { label: 'Val 1', id: 'id1' },
-        { label: 'Val 2', id: 'id2' },
-        { label: 'Val 3', id: 'id3' },
-      ];
-
-      thesauri = Immutable.fromJS([
-        {
-          name: 'Thes',
-          values,
-        },
-      ]);
 
       options = {
         context: 'contextId',
@@ -80,17 +65,10 @@ describe('Array Utils', () => {
         maxCategories: 0,
         aggregateOthers: 'false',
       };
-
-      jest.spyOn(libraryFilters, 'populateOptions').mockReturnValue([
-        {
-          content: 'contextId',
-          options: values,
-        },
-      ]);
     });
 
     const expectResults = expected => {
-      const results = formatDataForChart(data, property, thesauri, options);
+      const results = formatDataForChart(data, property, options);
       expect(results).toEqual(
         expected.map(item => {
           const id = Object.keys(item)[0];
@@ -101,10 +79,6 @@ describe('Array Utils', () => {
 
     it('should aggregate filtered results for each category sorted in descending order (default)', () => {
       expectResults([{ id2: ['Val 2', 5] }, { id3: ['Val 3', 4] }, { id1: ['Val 1', 3] }]);
-      expect(libraryFilters.populateOptions).toHaveBeenCalledWith(
-        [{ content: options.context }],
-        thesauri.toJS()
-      );
     });
 
     it('should omit results without labels', () => {
@@ -138,14 +112,6 @@ describe('Array Utils', () => {
     it('should allow mapping the labels to other values', () => {
       options.labelsMap = { 'Val 2': 'V2', 'Val 3': 'V3' };
       expectResults([{ id2: ['V2', 5] }, { id3: ['V3', 4] }, { id1: ['Val 1', 3] }]);
-    });
-
-    it('should return an empty array if no labels are found for the given context', () => {
-      jest
-        .spyOn(libraryFilters, 'populateOptions')
-        .mockReturnValue([{ content: 'contextId', options: null }]);
-      const results = formatDataForChart(data, property, thesauri, options);
-      expect(results).toEqual([]);
     });
   });
 });

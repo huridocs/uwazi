@@ -31,12 +31,12 @@ describe('PieChart Markdown component', () => {
   it('should render the data passed by mapStateToProps and ignore "0" values', () => {
     spyOn(markdownDatasets, 'getAggregations').and.returnValue(
       Immutable.fromJS([
-        { key: 'id1', filtered: { doc_count: 25 } },
-        { key: 'id2', filtered: { doc_count: 33 } },
-        { key: 'missing', filtered: { doc_count: 45 } },
-        { key: 'id3', filtered: { doc_count: 13 } },
-        { key: 'id6', filtered: { doc_count: 0 } },
-        { key: 'id8', filtered: { doc_count: 0 } },
+        { key: 'id1', label: 'label1', filtered: { doc_count: 25 } },
+        { key: 'id2', label: 'label2', filtered: { doc_count: 33 } },
+        { key: 'missing', label: 'No value', filtered: { doc_count: 45 } },
+        { key: 'id3', label: 'label3', filtered: { doc_count: 13 } },
+        { key: 'id6', label: 'label6', filtered: { doc_count: 0 } },
+        { key: 'id8', label: 'label8', filtered: { doc_count: 0 } },
       ])
     );
 
@@ -51,11 +51,11 @@ describe('PieChart Markdown component', () => {
 
   describe('when passing maxCategories', () => {
     const mockedAggregations = Immutable.fromJS([
-      { key: 'id6', filtered: { doc_count: 57 } },
-      { key: 'id2', filtered: { doc_count: 33 } },
-      { key: 'id1', filtered: { doc_count: 25 } },
-      { key: 'id3', filtered: { doc_count: 13 } },
-      { key: 'id8', filtered: { doc_count: 2 } },
+      { key: 'id6', label: 'label6', filtered: { doc_count: 57 } },
+      { key: 'id2', label: 'label2', filtered: { doc_count: 33 } },
+      { key: 'id1', label: 'label1', filtered: { doc_count: 25 } },
+      { key: 'id3', label: 'label3', filtered: { doc_count: 13 } },
+      { key: 'id8', label: 'label8', filtered: { doc_count: 2 } },
     ]);
 
     it('should only render the number of categories passed', () => {
@@ -98,8 +98,8 @@ describe('PieChart Markdown component', () => {
     it('should not render others when sum is 0', () => {
       spyOn(markdownDatasets, 'getAggregations').and.returnValue(
         Immutable.fromJS([
-          { key: 'id6', filtered: { doc_count: 57 } },
-          { key: 'id2', filtered: { doc_count: 33 } },
+          { key: 'id6', label: 'label6', filtered: { doc_count: 57 } },
+          { key: 'id2', label: 'label2', filtered: { doc_count: 33 } },
         ])
       );
 
@@ -133,7 +133,7 @@ describe('PieChart Markdown component', () => {
   describe('when prop show label', () => {
     it('should use pieChartLabel', () => {
       spyOn(markdownDatasets, 'getAggregations').and.returnValue(
-        Immutable.fromJS([{ key: 'id1', filtered: { doc_count: 25 } }])
+        Immutable.fromJS([{ key: 'id1', label: 'label1', filtered: { doc_count: 25 } }])
       );
 
       const props = mapStateToProps(state, { prop1: 'propValue' });
@@ -156,12 +156,12 @@ describe('PieChart Markdown component', () => {
     it('should allow selecting individual categories', () => {
       spyOn(markdownDatasets, 'getAggregations').and.returnValue(
         Immutable.fromJS([
-          { key: 'id1', filtered: { doc_count: 25 } },
-          { key: 'id2', filtered: { doc_count: 33 } },
-          { key: 'id3', filtered: { doc_count: 13 } },
-          { key: 'id6', filtered: { doc_count: 12 } },
-          { key: 'id7', filtered: { doc_count: 12 } },
-          { key: 'id8', filtered: { doc_count: 20 } },
+          { key: 'id1', label: 'label1', filtered: { doc_count: 25 } },
+          { key: 'id2', label: 'label2', filtered: { doc_count: 33 } },
+          { key: 'id3', label: 'label3', filtered: { doc_count: 13 } },
+          { key: 'id6', label: 'label4', filtered: { doc_count: 12 } },
+          { key: 'id7', label: 'label5', filtered: { doc_count: 12 } },
+          { key: 'id8', label: 'label6', filtered: { doc_count: 20 } },
         ])
       );
       const props = mapStateToProps(state, { prop1: 'propValue' });

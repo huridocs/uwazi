@@ -1,5 +1,6 @@
 import { generateIds, getUpdatedNames, getDeletedProperties } from 'api/templates/utils';
 import entities from 'api/entities/entities';
+import { preloadOptionsLimit } from 'shared/config';
 import templates from 'api/templates/templates';
 import settings from 'api/settings/settings';
 import translations from 'api/i18n/translations';
@@ -106,18 +107,26 @@ export default {
     return create(thesauri);
   },
 
-  templateToThesauri(template, language, user) {
+  entitiesToThesauri(_entities) {
+    const values = _entities.map(entity => ({
+      id: entity.sharedId,
+      label: entity.title,
+      icon: entity.icon,
+    }));
+    return { values };
+  },
+
+  async templateToThesauri(template, language, user) {
     const onlyPublished = !user;
-    return entities.getByTemplate(template._id, language, onlyPublished).then(response => {
-      template.values = response.map(entity => ({
-        id: entity.sharedId,
-        label: entity.title,
-        icon: entity.icon,
-        type: entity.file ? 'document' : 'entity',
-      }));
-      template.type = 'template';
-      return template;
-    });
+    const _entities = await entities.getByTemplate(
+      template._id,
+      language,
+      onlyPublished,
+      preloadOptionsLimit
+    );
+    const optionsCount = await entities.countByTemplate(template._id, language);
+    const values = this.entitiesToThesauri(_entities);
+    return Object.assign(template, values, { type: 'template', optionsCount });
   },
 
   getById(id) {

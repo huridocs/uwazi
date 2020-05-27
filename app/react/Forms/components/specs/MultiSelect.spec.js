@@ -26,6 +26,7 @@ describe('MultiSelect', () => {
         },
       ],
       onChange: jasmine.createSpy('onChange'),
+      onFilter: jasmine.createSpy('onFilter').and.returnValue(Promise.resolve()),
     };
   });
 
@@ -302,8 +303,10 @@ describe('MultiSelect', () => {
 
   describe('resetFilter()', () => {
     it('should reset the filter', () => {
+      render();
       instance.resetFilter();
       expect(instance.state.filter).toBe('');
+      expect(props.onFilter).toHaveBeenCalledWith('');
     });
   });
 
