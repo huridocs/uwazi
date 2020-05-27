@@ -208,22 +208,6 @@ describe('search', () => {
           expect(errorLog.error).toHaveBeenCalledTimes(2);
         }
       });
-
-      it.skip('should retry the indexation truncating all larger fields', async () => {
-        const toIndexDocs = [
-          { _id: 'id1', sharedId: 'id1', title: largeField },
-          { _id: 'id2', sharedId: 'id2', title: largeField },
-        ];
-        entitiesAPI.get.mockResolvedValue(toIndexDocs);
-        try {
-          await search.indexEntities(toIndexDocs, '+fullText');
-        } catch (error) {
-          //const searchedText = largeField.substr(0, 10);
-          const indexed = await search.search({ ids: 'id1' }, 'en');
-          expect(indexed.rows.length).toBe(1);
-          expect(indexed.rows[0].title).not.toBeNull();
-        }
-      });
     });
   });
 
