@@ -4,7 +4,6 @@ import { isUndefined, isNull } from 'util';
 import { objectIdSchema, metadataSchema } from 'shared/types/commonSchemas';
 import { wrapValidator } from 'shared/tsUtils';
 import { validators, customErrorMessages } from 'api/entities/metadataValidators.js';
-import { propertyTypes } from 'shared/propertyTypes';
 
 export const emitSchemaTypes = true;
 
@@ -23,12 +22,8 @@ const validateMetadataField = (property, entity) => {
     throw new Error(customErrorMessages[property.type]);
   }
 
-  if (hasValue(value) && property.type === propertyTypes.text) {
-    const LUCENE_BYTES_LIMIT = 32766;
-    const bytes = Buffer.from(JSON.stringify(value));
-    if (bytes.length > LUCENE_BYTES_LIMIT) {
-      throw new Error('field is longer than the max allowed');
-    }
+  if (hasValue(value) && !validators.validateLuceneBytesLimit(property, value)) {
+    throw new Error(customErrorMessages.length_exceeded);
   }
 };
 

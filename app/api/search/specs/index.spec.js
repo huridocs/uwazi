@@ -143,37 +143,33 @@ describe('search', () => {
     });
 
     describe('when there is an indexation error', () => {
-      const toIndexDocs = [{ _id: 'id1', title: 'test1' }];
+      const expectError = async expectedMessage => {
+        const toIndexDocs = [{ _id: 'id1', title: 'test1' }];
+        spyOn(errorLog, 'error');
+        try {
+          await search.bulkIndex(toIndexDocs, 'index', elasticIndex);
+          fail('should throw an indexing error');
+        } catch (error) {
+          expect(errorLog.error).toHaveBeenCalledWith(expectedMessage);
+          expect(error.message).toMatch('ERROR Failed to index documents: id1');
+        }
+      };
+
       describe('if elastic returns an error', () => {
         it('should log and throw the error with the id of the document and the error message', async () => {
-          spyOn(errorLog, 'error');
           spyOn(elastic, 'bulk').and.returnValue(
             Promise.resolve({
               items: [{ index: { _id: 'id1', error: 'something terrible happened' } }],
             })
           );
-          try {
-            await search.bulkIndex(toIndexDocs, 'index', elasticIndex);
-            fail('should throw an indexing error');
-          } catch (error) {
-            expect(errorLog.error).toHaveBeenCalledWith(
-              'ERROR Failed to index document id1: "something terrible happened"'
-            );
-            expect(error.message).toMatch('ERROR Failed to index documents: id1');
-          }
+          await expectError('ERROR Failed to index document id1: "something terrible happened"');
         });
       });
+
       describe('if an unhandled exception occurs', () => {
         it('should log and throw the error', async () => {
-          spyOn(errorLog, 'error');
           spyOn(elastic, 'bulk').and.throwError('unhandled error');
-          try {
-            await search.bulkIndex(toIndexDocs, 'index', elasticIndex);
-            fail('should throw an indexing error');
-          } catch (error) {
-            expect(errorLog.error).toHaveBeenCalledWith('ERROR Failed to index document id1: {}');
-            expect(error.message).toMatch('ERROR Failed to index documents: id1');
-          }
+          await expectError('ERROR Failed to index document id1: {}');
         });
       });
     });
