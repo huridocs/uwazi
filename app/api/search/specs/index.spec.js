@@ -178,9 +178,9 @@ describe('search', () => {
       });
     });
     describe('when a field is longer than limit', () => {
-      const largeField = `${Math.random()
+      const largeField = Math.random()
         .toString(36)
-        .repeat(20000)}_last`;
+        .repeat(20000);
       beforeAll(() => {
         entitiesAPI.count.mockResolvedValue(1);
         spyOn(relationships, 'get').and.returnValue(Promise.resolve());

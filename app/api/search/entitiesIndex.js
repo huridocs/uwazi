@@ -8,8 +8,8 @@ import { entityDefaultDocument } from 'shared/entityDefaultDocument';
 import elastic from './elastic';
 
 function truncateStringToLuceneLimit(str) {
-  const LUCENE_BYTES_LIMIT = 32000;
-  const bytes = Buffer.from(str);
+  const LUCENE_BYTES_LIMIT = 32766;
+  const bytes = Buffer.from(JSON.stringify(str));
   return bytes.slice(0, Math.min(LUCENE_BYTES_LIMIT, bytes.length)).toString();
 }
 
