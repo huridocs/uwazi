@@ -203,7 +203,7 @@ describe('libraryActions', () => {
             select: 'selectValue',
           },
           limit: 30,
-          offset: 0,
+          from: 0,
           searchTerm: 'batman',
           sort: '_score',
           types: ['decision'],
@@ -242,7 +242,7 @@ describe('libraryActions', () => {
         actions.searchDocuments({ search, filters }, storeKey, limit)(dispatch, getState);
 
         expect(browserHistory.push).toHaveBeenCalledWith(
-          '/library/?view=chart&q=(filters:(author:batman,nested:nestedValue,select:selectValue),limit:60,offset:0,searchTerm:batman,sort:_score,types:!(decision))' //eslint-disable-line
+          '/library/?view=chart&q=(filters:(author:batman,nested:nestedValue,select:selectValue),from:0,limit:60,searchTerm:batman,sort:_score,types:!(decision))' //eslint-disable-line
         );
       });
 
@@ -277,7 +277,7 @@ describe('libraryActions', () => {
           storeKey
         )(dispatch, getState);
         expect(browserHistory.push).toHaveBeenCalledWith(
-          '/library/?view=chart&q=(limit:30,offset:0,searchTerm:batman,sort:_score)'
+          '/library/?view=chart&q=(from:0,limit:30,searchTerm:batman,sort:_score)'
         );
       });
     });

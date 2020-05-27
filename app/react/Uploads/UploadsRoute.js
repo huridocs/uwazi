@@ -55,7 +55,7 @@ export default class Uploads extends RouteHandler {
       globalResources.relationTypes.toJS()
     );
 
-    const addinsteadOfSet = Boolean(query.offset);
+    const addinsteadOfSet = Boolean(query.from);
 
     return [
       setReduxState(

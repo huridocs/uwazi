@@ -157,7 +157,7 @@ export function filterIsEmpty(value) {
   return false;
 }
 
-export function processFilters(readOnlySearch, filters, limit, offset) {
+export function processFilters(readOnlySearch, filters, limit, from) {
   const search = Object.assign({ filters: {} }, readOnlySearch);
   search.filters = {};
 
@@ -182,7 +182,7 @@ export function processFilters(readOnlySearch, filters, limit, offset) {
 
   search.types = filters.documentTypes;
   search.limit = limit;
-  search.offset = offset;
+  search.from = from;
   return search;
 }
 
@@ -223,7 +223,7 @@ export function searchDocuments(
   { search = undefined, filters = undefined },
   storeKey,
   limit = 30,
-  offset = 0
+  from = 0
 ) {
   return (dispatch, getState) => {
     const state = getState()[storeKey];
@@ -231,7 +231,7 @@ export function searchDocuments(
     let currentFilters = filters || state.filters;
     currentFilters = currentFilters.toJS ? currentFilters.toJS() : currentFilters;
 
-    const searchParams = processFilters(currentSearch, currentFilters, limit, offset);
+    const searchParams = processFilters(currentSearch, currentFilters, limit, from);
     searchParams.searchTerm = state.search.searchTerm;
 
     const currentSearchParams = rison.decode(
@@ -334,10 +334,10 @@ export function deleteEntity(entity) {
   };
 }
 
-export function loadMoreDocuments(storeKey, amount, offset) {
+export function loadMoreDocuments(storeKey, amount, from) {
   return (dispatch, getState) => {
     const { search } = getState()[storeKey];
-    searchDocuments({ search }, storeKey, amount, offset)(dispatch, getState);
+    searchDocuments({ search }, storeKey, amount, from)(dispatch, getState);
   };
 }
 

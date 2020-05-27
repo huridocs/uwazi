@@ -24,7 +24,7 @@ export function processQuery(params, globalResources, key) {
   query.view = params.view;
 
   if (!globalResources.library && query.limit) {
-    query = Object.assign(query, { limit: query.limit + (query.offset || 0), offset: 0 });
+    query = Object.assign(query, { limit: query.limit + (query.from || 0), from: 0 });
   }
 
   query.geolocation = key === 'markers';
@@ -63,7 +63,7 @@ export default function requestState(request, globalResources) {
         },
       };
 
-      const addinsteadOfSet = Boolean(docsQuery.offset);
+      const addinsteadOfSet = Boolean(docsQuery.from);
       return [
         setReduxState(state, 'library', addinsteadOfSet),
         actions.set('library.sidepanel.quickLabelState', {

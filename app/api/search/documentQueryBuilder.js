@@ -350,10 +350,5 @@ export default function() {
     resetAggregations() {
       baseQuery.aggregations.all.aggregations = {};
     },
-
-    offset(from) {
-      baseQuery.from = from;
-      return this;
-    },
   };
 }

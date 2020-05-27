@@ -39,7 +39,7 @@ export default app => {
             order: { type: 'string', enum: ['asc', 'desc'] },
             sort: { type: 'string' },
             limit: { type: 'number' },
-            offset: { type: 'number' },
+            from: { type: 'number' },
             searchTerm: { type: 'string' },
             includeUnpublished: { type: 'boolean' },
             treatAs: { type: 'string' },
