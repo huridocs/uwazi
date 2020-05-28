@@ -71,22 +71,14 @@ describe('ODM Model multi-tenant', () => {
     });
   });
 
-  describe('when db for tenant does not exists', () => {
+  describe('when tenant does not exists', () => {
     it('should throw an error', async () => {
       const testingModel = instanceTestingModel();
-      tenants.tenants.tenant_does_not_exist_on_model_yet = {
-        name: 'tenant_does_not_exist_on_model_yet',
-        dbName: 'db',
-        indexName: 'indexName',
-      };
-
-      await tenants.run(async () => {
-        await expect(testingModel.save({ name: 'doc' })).rejects.toEqual(
-          expect.objectContaining({
-            code: 503,
-          })
-        );
-      }, 'tenant_does_not_exist_on_model_yet');
+      await expect(
+        tenants.run(async () => {
+          await testingModel.save({ name: 'document 1' });
+        }, 'non-existent-tenant')
+      ).rejects.toEqual(new Error('tenant does not exists'));
     });
   });
 

@@ -53,11 +53,23 @@ describe('DB', () => {
 
   describe('instance', () => {
     it('should create indexes', async () => {
-      instanceModel<TestDoc>('docs', testSchema);
-      tenants.add({ name: 'tenant1', dbName: 'db1', indexName: 'index' });
-      tenants.add({ name: 'tenant2', dbName: 'db2', indexName: 'index' });
+      const model = instanceModel<TestDoc>('docs', testSchema);
+      tenants.add(
+        testingTenants.createTenant({ name: 'tenant1', dbName: 'db1', indexName: 'index' })
+      );
+      tenants.add(
+        testingTenants.createTenant({ name: 'tenant2', dbName: 'db2', indexName: 'index' })
+      );
 
       const expected = ['_id_', 'name_1'];
+
+      await tenants.run(async () => {
+        model.db.dbForCurrentTenant();
+      }, 'tenant1');
+
+      await tenants.run(async () => {
+        model.db.dbForCurrentTenant();
+      }, 'tenant2');
 
       await waitForExpect(async () => {
         expect(Object.keys(await db1.collection('docs').indexInformation())).toEqual(expected);
@@ -74,7 +86,15 @@ describe('DB', () => {
 
       updatedSchema.index('value');
       updatedSchema.index({ text: 'text' });
-      instanceModel<TestDoc>('docs', updatedSchema);
+      const model = instanceModel<TestDoc>('docs', updatedSchema);
+
+      await tenants.run(async () => {
+        model.db.dbForCurrentTenant();
+      }, 'tenant1');
+
+      await tenants.run(async () => {
+        model.db.dbForCurrentTenant();
+      }, 'tenant2');
 
       const expected = ['_id_', 'name_1', 'value_1', 'text_text'];
 

@@ -1,5 +1,4 @@
 import { AsyncLocalStorage } from 'async_hooks';
-import { EventEmitter } from 'events';
 import { config } from 'api/config';
 
 export type Tenant = {
@@ -8,7 +7,7 @@ export type Tenant = {
   indexName: string;
 };
 
-class Tenants extends EventEmitter {
+class Tenants {
   storage = new AsyncLocalStorage<string>();
 
   defaultTenantName = 'default';
@@ -16,7 +15,6 @@ class Tenants extends EventEmitter {
   tenants: { [k: string]: Tenant };
 
   constructor() {
-    super();
     this.tenants = {};
   }
 
@@ -35,6 +33,9 @@ class Tenants extends EventEmitter {
     if (!tenantName) {
       throw new Error('There is no tenant on the current async context');
     }
+    if (!this.tenants[tenantName]) {
+      throw new Error('tenant does not exists');
+    }
     return this.tenants[tenantName];
   }
 
@@ -44,10 +45,9 @@ class Tenants extends EventEmitter {
 
   add(tenant: Tenant) {
     this.tenants[tenant.name] = tenant;
-    this.emit('newTenant', tenant);
   }
 }
 
 const tenants = new Tenants();
-tenants.setMaxListeners(18);
+
 export { tenants };

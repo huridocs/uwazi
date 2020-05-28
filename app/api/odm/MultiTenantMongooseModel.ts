@@ -1,40 +1,31 @@
 import mongoose, { Schema, UpdateQuery, ModelUpdateOptions } from 'mongoose';
-import { createError } from 'api/utils';
-
 import { WithId, UwaziFilterQuery } from './models';
-import { tenants, Tenant } from './tenantContext';
+import { tenants } from './tenantContext';
 import { DB } from './DB';
 
 class MultiTenantMongooseModel<T> {
   dbs: { [k: string]: mongoose.Model<WithId<T> & mongoose.Document> };
 
+  collectionName: string;
+
+  schema: Schema;
+
   constructor(collectionName: string, schema: Schema) {
     this.dbs = {};
-
-    Object.keys(tenants.tenants).forEach(tenantName => {
-      if (!this.dbs[tenantName]) {
-        this.dbs[tenantName] = DB.connectionForDB(tenants.tenants[tenantName].dbName).model<
-          WithId<T> & mongoose.Document
-        >(collectionName, schema);
-      }
-    });
-
-    tenants.on('newTenant', (tenant: Tenant) => {
-      if (!this.dbs[tenant.name]) {
-        this.dbs[tenant.name] = DB.connectionForDB(tenant.dbName).model<
-          WithId<T> & mongoose.Document
-        >(collectionName, schema);
-      }
-    });
+    this.collectionName = collectionName;
+    this.schema = schema;
   }
 
   dbForCurrentTenant() {
-    const currentTenantName = tenants.current().name;
-    if (!this.dbs[currentTenantName]) {
-      throw createError(`tenant "${currentTenantName}" db connection is not available`, 503);
+    const currentTenant = tenants.current();
+
+    if (!this.dbs[currentTenant.name]) {
+      this.dbs[currentTenant.name] = DB.connectionForDB(currentTenant.dbName).model<
+        WithId<T> & mongoose.Document
+      >(this.collectionName, this.schema);
     }
 
-    return this.dbs[currentTenantName];
+    return this.dbs[currentTenant.name];
   }
 
   findById(id: any | string | number, select?: any) {
