@@ -14,6 +14,23 @@ import loadingBar from 'app/App/LoadingProgressBar';
 import * as notifyActions from 'app/Notifications/actions/notificationsActions';
 
 describe('api', () => {
+  const validationErrorResponse = {
+    status: 422,
+    body: {
+      error: 'validation failed',
+      validations: [
+        {
+          dataPath: ".metadata['prop1']",
+          message: 'should be string',
+        },
+        {
+          dataPath: ".metadata['prop2']",
+          message: 'is too longer',
+        },
+      ],
+    },
+  };
+
   beforeEach(() => {
     spyOn(loadingBar, 'start');
     spyOn(loadingBar, 'done');
@@ -43,7 +60,8 @@ describe('api', () => {
         body: {
           error: 'max_bytes_length_exceeded_exception. Invalid Fields: metadata.summary.value',
         },
-      });
+      })
+      .post(`${APIURL}validation_error`, validationErrorResponse);
   });
 
   afterEach(() => backend.restore());
@@ -170,10 +188,14 @@ describe('api', () => {
           'max_bytes_length_exceeded_exception',
           'The request has too large data. Please review the follow fields: metadata.summary.value ',
         ],
+        [
+          'validation_error',
+          "validation failed:  .metadata['prop1'] should be string, .metadata['prop2'] is too longer,",
+        ],
       ];
 
       it.each(requestError)('should notify the error with this message', async (url, message) => {
-        const requestParams = new RequestParams({ key: 'test payload' }, { header: 'value' });
+        const requestParams = new RequestParams({ key: 'test' }, { header: 'value' });
         try {
           await api.post(url, requestParams);
           fail('should throw error');

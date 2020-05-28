@@ -52,6 +52,15 @@ function extractMessageFromError(error) {
   return finalMessage;
 }
 
+function extractMessageFromValidation(error) {
+  if (!error.json.validations) return error.json.error;
+  return error.json.validations.reduce(
+    (message, validationError) =>
+      `${message} ${validationError.dataPath} ${validationError.message},`,
+    `${error.json.error}: `
+  );
+}
+
 const handleErrorStatus = error => {
   if (error.status === 401) {
     browserHistory.replace('/login');
@@ -59,6 +68,9 @@ const handleErrorStatus = error => {
     browserHistory.replace('/404');
   } else if (error.status === 409) {
     store.dispatch(notify(error.json.error, 'warning'));
+  } else if (error.status === 422) {
+    const message = extractMessageFromValidation(error);
+    store.dispatch(notify(message, 'danger'));
   } else if (error.status === 500) {
     const message = extractMessageFromError(error);
     store.dispatch(notify(message, 'danger'));
