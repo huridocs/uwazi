@@ -1,3 +1,4 @@
+//@ts-ignore
 module.exports = {
 	launch: {
 		dumpio: true,

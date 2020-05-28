@@ -2,6 +2,10 @@
 
 import { adminLogin, logout } from './helpers/login';
 import proxyMock from './helpers/proxyMock';
+import { setDefaultOptions } from 'expect-puppeteer';
+
+setDefaultOptions({ timeout: 2000 })
+jest.setTimeout(30000);
 
 describe('Entities', () => {
   beforeAll(async () => {
@@ -13,7 +17,7 @@ describe('Entities', () => {
     await expect(page).toClick('a', { text: 'Private documents' });
     await expect(page).toClick('button', { text: 'New entity' });
     await expect(page).toFill('textarea[name="uploads.sidepanel.metadata.title"]', 'Test title');
-    await expect(page).toMatchElement('button', { type: 'submit', text: 'Save' });
+    await expect(page).toMatchElement('button', { text: 'Save' });
     await expect(page).toClick('button', { text: 'Save' });
   });
 
