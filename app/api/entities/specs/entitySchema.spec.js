@@ -197,7 +197,7 @@ describe('entity schema', () => {
             .toString(36)
             .repeat(20000);
           entity.metadata.name = [{ value: largeField }];
-          await expectError('field is longer than the max allowed', ".metadata['name']");
+          await expectError('field is longer than the max supported', ".metadata['name']");
         });
       });
 

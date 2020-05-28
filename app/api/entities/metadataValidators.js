@@ -85,7 +85,7 @@ const validateLuceneBytesLimit = (property, value) => {
 
 export const customErrorMessages = {
   required: 'property is required',
-  length_exceeded: 'field is longer than the max allowed',
+  length_exceeded: 'field is longer than the max supported',
   [propertyTypes.date]: 'should be number',
   [propertyTypes.multidate]: 'should be an array of numbers',
   [propertyTypes.daterange]:
