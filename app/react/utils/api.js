@@ -69,11 +69,9 @@ const handleErrorStatus = error => {
   } else if (error.status === 409) {
     store.dispatch(notify(error.json.error, 'warning'));
   } else if (error.status === 422) {
-    const message = extractMessageFromValidation(error);
-    store.dispatch(notify(message, 'danger'));
+    store.dispatch(notify(extractMessageFromValidation(error), 'danger'));
   } else if (error.status === 500) {
-    const message = extractMessageFromError(error);
-    store.dispatch(notify(message, 'danger'));
+    store.dispatch(notify(extractMessageFromError(error), 'danger'));
   } else if (isNonUsualApiError(error)) {
     store.dispatch(notify(error.json.error, 'danger'));
   } else if (error instanceof TypeError) {
