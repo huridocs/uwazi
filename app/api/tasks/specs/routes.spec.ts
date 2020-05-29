@@ -11,6 +11,13 @@ jest.mock(
   }
 );
 
+jest.mock(
+  '../../utils/languageMiddleware.ts',
+  () => (_req: Request, _res: Response, next: NextFunction) => {
+    next();
+  }
+);
+
 class TestTask extends Task {
   protected async run(args: any) {
     if (args.a === 0) {

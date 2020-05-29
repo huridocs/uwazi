@@ -51,10 +51,10 @@ describe('LibraryCharts', () => {
           all: {
             types: {
               buckets: [
-                { key: 't1', filtered: { doc_count: 5 } }, // eslint-disable-line camelcase
-                { key: 't2', filtered: { doc_count: 1 } }, // eslint-disable-line camelcase
-                { key: 't3', filtered: { doc_count: 10 } }, // eslint-disable-line camelcase
-                { key: 'missing', filtered: { doc_count: 13 } }, // eslint-disable-line camelcase
+                { key: 't1', label: 't1', filtered: { doc_count: 5 } }, // eslint-disable-line camelcase
+                { key: 't2', label: 't2', filtered: { doc_count: 1 } }, // eslint-disable-line camelcase
+                { key: 't3', label: 't3', filtered: { doc_count: 10 } }, // eslint-disable-line camelcase
+                { key: 'missing', label: 'No value', filtered: { doc_count: 13 } }, // eslint-disable-line camelcase
               ],
             },
           },
@@ -169,18 +169,18 @@ describe('LibraryCharts', () => {
           all: {
             types: {
               buckets: [
-                { key: 'f1', filtered: { doc_count: 5 } }, // eslint-disable-line camelcase
-                { key: 'f2', filtered: { doc_count: 1 } }, // eslint-disable-line camelcase
-                { key: 'f3', filtered: { doc_count: 10 } }, // eslint-disable-line camelcase
+                { key: 'f1', label: 'f1', filtered: { doc_count: 5 } }, // eslint-disable-line camelcase
+                { key: 'f2', label: 'f2', filtered: { doc_count: 1 } }, // eslint-disable-line camelcase
+                { key: 'f3', label: 'f3', filtered: { doc_count: 10 } }, // eslint-disable-line camelcase
               ],
             },
             pname: {
               buckets: [
-                { key: 'o1', filtered: { doc_count: 10 } }, // eslint-disable-line camelcase
-                { key: 'o2', filtered: { doc_count: 8 } }, // eslint-disable-line camelcase
-                { key: 'o3', filtered: { doc_count: 8 } }, // eslint-disable-line camelcase
-                { key: 'o4', filtered: { doc_count: 8 } }, // eslint-disable-line camelcase
-                { key: 'o5', filtered: { doc_count: 2 } }, // eslint-disable-line camelcase
+                { key: 'o1', label: 'a', filtered: { doc_count: 10 } }, // eslint-disable-line camelcase
+                { key: 'o2', label: 'z', filtered: { doc_count: 8 } }, // eslint-disable-line camelcase
+                { key: 'o3', label: 'c', filtered: { doc_count: 8 } }, // eslint-disable-line camelcase
+                { key: 'o4', label: 'n', filtered: { doc_count: 8 } }, // eslint-disable-line camelcase
+                { key: 'o5', label: 'a', filtered: { doc_count: 2 } }, // eslint-disable-line camelcase
               ],
             },
           },
@@ -190,24 +190,10 @@ describe('LibraryCharts', () => {
             type: 'select',
             content: 'cid',
             name: 'pname',
-            options: [
-              { id: 'o1', label: 'a', results: 10 },
-              { id: 'o2', label: 'z', results: 8 },
-              { id: 'o3', label: 'a', results: 8 },
-              { id: 'o4', label: 'n', results: 8 },
-              { id: 'o5', label: 'a', results: 2 },
-            ],
           },
           { type: 'not-valid' },
           {
             type: 'multiselect',
-            options: [
-              { label: 'Z', results: 10 },
-              { label: 'A', results: 8 },
-              { label: 'Z', results: 8 },
-              { label: 'g', results: 8 },
-              { label: 'a', results: 2 },
-            ],
           },
           { type: 'multiselect', options: [] },
         ]),
@@ -224,17 +210,34 @@ describe('LibraryCharts', () => {
 
       expect(LibraryChartElement1.props().options[0]).toEqual({
         id: 'o1',
+        value: 'o1',
         label: 'a',
         results: 10,
       });
-      expect(LibraryChartElement1.props().options[1]).toEqual({ id: 'o3', label: 'a', results: 8 });
+      expect(LibraryChartElement1.props().options[1]).toEqual({
+        id: 'o3',
+        value: 'o3',
+        label: 'c',
+        results: 8,
+      });
       expect(LibraryChartElement1.props().options[2]).toEqual({
         id: 'o4',
+        value: 'o4',
         label: 'nTranslated',
         results: 8,
       });
-      expect(LibraryChartElement1.props().options[3]).toEqual({ id: 'o2', label: 'z', results: 8 });
-      expect(LibraryChartElement1.props().options[4]).toEqual({ id: 'o5', label: 'a', results: 2 });
+      expect(LibraryChartElement1.props().options[3]).toEqual({
+        id: 'o2',
+        value: 'o2',
+        label: 'z',
+        results: 8,
+      });
+      expect(LibraryChartElement1.props().options[4]).toEqual({
+        id: 'o5',
+        value: 'o5',
+        label: 'a',
+        results: 2,
+      });
     });
   });
 

@@ -4,6 +4,7 @@ import Captcha from './components/Captcha';
 import DateRange from './components/DateRange';
 import FormGroup from './components/FormGroup';
 import MultiSelect, { MultiSelectTristate } from './components/MultiSelect';
+import { LookupMultiSelect } from './components/LookupMultiSelect';
 import MarkDown from './components/MarkDown';
 import Nested from './components/Nested';
 import NestedMultiselect from './components/NestedMultiselect';
@@ -45,4 +46,5 @@ export {
   Geolocation,
   LinkField,
   FormValue,
+  LookupMultiSelect,
 };

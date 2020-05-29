@@ -48,8 +48,8 @@ describe('search', () => {
       const user = { _id: ids.userId };
       const response = await search.getUploadsByUser(user, 'en');
 
-      expect(response.length).toBe(1);
-      expect(response[0].title).toBe('metadata6');
+      expect(response.length).toBe(2);
+      expect(response[0].title).toBe('unpublished');
     });
   });
 
@@ -197,31 +197,10 @@ describe('search', () => {
       .catch(catchErrors(done));
   });
 
-  it('should convert aggregation buckets that are objects to arrays', done => {
-    result.aggregations.all = {
-      dictionaryWithGroups: {
-        buckets: {
-          a: { doc_count: 2, filtered: { doc_count: 1 } },
-          b: { doc_count: 2, filtered: { doc_count: 1 } },
-        },
-      },
-    };
-    spyOn(elastic, 'search').and.returnValue(Promise.resolve(result));
-    search.search({ searchTerm: '', geolocation: true }, 'en').then(response => {
-      const expectedBuckets = [
-        { key: 'a', doc_count: 2, filtered: { doc_count: 1 } },
-        { key: 'b', doc_count: 2, filtered: { doc_count: 1 } },
-        { key: 'any', doc_count: 10, filtered: { doc_count: 10 } },
-      ];
-      expect(response.aggregations.all.dictionaryWithGroups.buckets).toEqual(expectedBuckets);
-      done();
-    });
-  });
-
   it('should match entities related somehow with other entities with a title that is the search term', async () => {
     const { rows } = await search.search({ searchTerm: 'egypt' }, 'en');
 
-    expect(rows.length).toBe(3);
+    expect(rows.length).toBe(5);
     const country = rows.find(_result => _result.sharedId === 'abc123');
     const entityWithEgypt = rows.find(_result => _result.sharedId === 'entityWithEgypt');
     const entityWithEgyptDictionary = rows.find(
@@ -297,6 +276,22 @@ describe('search', () => {
       .catch(catchErrors(done));
   });
 
+  it('should return the label with the aggregations', async () => {
+    const response = await search.search(
+      { types: [ids.templateMetadata1, ids.templateMetadata2], allAggregations: true },
+      'en'
+    );
+
+    expect(response.aggregations.all.groupedDictionary.buckets[0].label).toBe('Egypt');
+    expect(response.aggregations.all.groupedDictionary.buckets[1].label).toBe('Chile');
+    expect(response.aggregations.all.groupedDictionary.buckets[2].label).toBe('Spain');
+    expect(response.aggregations.all.groupedDictionary.buckets[3].label).toBe('Europe');
+    expect(response.aggregations.all.groupedDictionary.buckets[3].values[0].label).toBe('Germany');
+    expect(response.aggregations.all.groupedDictionary.buckets[3].values[1].label).toBe('France');
+    expect(response.aggregations.all.groupedDictionary.buckets[4].label).toBe('No label');
+    expect(response.aggregations.all.groupedDictionary.buckets[5].label).toBe('Any');
+  });
+
   it('should filter by metadata, and return template aggregations based on the filter the language and the published status', done => {
     Promise.all([
       search.search(
@@ -359,45 +354,6 @@ describe('search', () => {
     expect(entities.rows[1].title).toBe('Metadata2');
   });
 
-  it('should filter by relationships metadata selects', async () => {
-    const response = await search.search(
-      {
-        types: [ids.template1],
-        filters: { status_relationship_filter: { status: { values: ['open'] } } },
-      },
-      'en'
-    );
-    expect(response.rows.length).toBe(2);
-    const matchesAggs = response.aggregations.all.status;
-
-    const openValueAggregation = matchesAggs.buckets[0].filtered.doc_count;
-    const closedValueAggregation = matchesAggs.buckets[1].filtered.doc_count;
-    expect(openValueAggregation).toBe(2);
-    expect(closedValueAggregation).toBe(1);
-  });
-
-  it('should filter by relationships metadata text', async () => {
-    const response = await search.search(
-      {
-        types: [ids.template1],
-        filters: { status_relationship_filter: { description: 'red' } },
-      },
-      'en'
-    );
-    expect(response.rows.length).toBe(2);
-  });
-
-  it('should filter by relationships metadata markdown', async () => {
-    const response = await search.search(
-      {
-        types: [ids.templateMetadata1],
-        filters: { rich_text: 'rich' },
-      },
-      'en'
-    );
-    expect(response.rows.length).toBe(1);
-  });
-
   it('should filter by fullText, and return template aggregations based on the filter the language and the published status', done => {
     Promise.all([search.search({ searchTerm: 'spanish' }, 'es')])
       .then(([matches]) => {
@@ -452,30 +408,27 @@ describe('search', () => {
       ])
         .then(([template1, template2, both, template1Unpublished]) => {
           const template1Aggs = template1.aggregations.all.select1.buckets;
-          expect(template1Aggs.find(a => a.key === 'selectValue1').filtered.doc_count).toBe(2);
-          expect(template1Aggs.find(a => a.key === 'selectValue2').filtered.doc_count).toBe(1);
+          expect(template1Aggs.find(a => a.key === 'EgyptID').filtered.doc_count).toBe(2);
+
+          expect(template1Aggs.find(a => a.key === 'SpainID').filtered.doc_count).toBe(1);
           expect(template1Aggs.find(a => a.key === 'missing').filtered.doc_count).toBe(0);
           expect(template1Aggs.find(a => a.key === 'any').filtered.doc_count).toBe(3);
 
           const template2Aggs = template2.aggregations.all.select1.buckets;
-          expect(template2Aggs.find(a => a.key === 'selectValue1').filtered.doc_count).toBe(0);
-          expect(template2Aggs.find(a => a.key === 'selectValue2').filtered.doc_count).toBe(1);
+          expect(template2Aggs.find(a => a.key === 'EgyptID').filtered.doc_count).toBe(0);
+          expect(template2Aggs.find(a => a.key === 'SpainID').filtered.doc_count).toBe(1);
           expect(template2Aggs.find(a => a.key === 'missing').filtered.doc_count).toBe(1);
           expect(template2Aggs.find(a => a.key === 'any').filtered.doc_count).toBe(1);
 
           const bothAggs = both.aggregations.all.select1.buckets;
-          expect(bothAggs.find(a => a.key === 'selectValue1').filtered.doc_count).toBe(2);
-          expect(bothAggs.find(a => a.key === 'selectValue2').filtered.doc_count).toBe(2);
+          expect(bothAggs.find(a => a.key === 'EgyptID').filtered.doc_count).toBe(2);
+          expect(bothAggs.find(a => a.key === 'SpainID').filtered.doc_count).toBe(2);
           expect(bothAggs.find(a => a.key === 'missing').filtered.doc_count).toBe(1);
           expect(bothAggs.find(a => a.key === 'any').filtered.doc_count).toBe(4);
 
           const template1UnpubishedAggs = template1Unpublished.aggregations.all.select1.buckets;
-          expect(
-            template1UnpubishedAggs.find(a => a.key === 'selectValue1').filtered.doc_count
-          ).toBe(0);
-          expect(
-            template1UnpubishedAggs.find(a => a.key === 'selectValue2').filtered.doc_count
-          ).toBe(0);
+          expect(template1UnpubishedAggs.find(a => a.key === 'EgyptID').filtered.doc_count).toBe(0);
+          expect(template1UnpubishedAggs.find(a => a.key === 'SpainID').filtered.doc_count).toBe(0);
           done();
         })
         .catch(catchErrors(done));
@@ -490,7 +443,9 @@ describe('search', () => {
         search.search({ types: [ids.templateMetadata1, ids.templateMetadata2] }, 'en'),
         search.search(
           {
-            filters: { multiselect1: { values: ['multiValue2'], and: false } },
+            filters: {
+              multiselect1: { values: ['SpainID'], and: false },
+            },
             types: [ids.templateMetadata1, ids.templateMetadata2],
           },
           'en'
@@ -498,29 +453,31 @@ describe('search', () => {
       ])
         .then(([template1, template2, both, filtered]) => {
           const template1Aggs = template1.aggregations.all.multiselect1.buckets;
-          expect(template1Aggs.find(a => a.key === 'multiValue1').filtered.doc_count).toBe(2);
-          expect(template1Aggs.find(a => a.key === 'multiValue2').filtered.doc_count).toBe(2);
+          expect(template1Aggs.find(a => a.key === 'EgyptID').filtered.doc_count).toBe(2);
+          expect(template1Aggs.find(a => a.key === 'SpainID').filtered.doc_count).toBe(2);
           expect(template1Aggs.find(a => a.key === 'missing').filtered.doc_count).toBe(0);
           expect(template1Aggs.find(a => a.key === 'any').filtered.doc_count).toBe(3);
 
           const template1groupedAggs = template1.aggregations.all.groupedDictionary.buckets;
-          expect(template1groupedAggs.find(a => a.key === 'spainID').filtered.doc_count).toBe(2);
-          expect(template1groupedAggs.find(a => a.key === 'franceID').filtered.doc_count).toBe(0);
+          const europeBucket = template1groupedAggs.find(a => a.key === 'EuropeID');
+          expect(europeBucket.values.find(a => a.key === 'GermanyID').filtered.doc_count).toBe(2);
+          expect(europeBucket.values.find(a => a.key === 'franceID').filtered.doc_count).toBe(0);
 
           const template2Aggs = template2.aggregations.all.multiselect1.buckets;
-          expect(template2Aggs.find(a => a.key === 'multiValue1').filtered.doc_count).toBe(0);
-          expect(template2Aggs.find(a => a.key === 'multiValue2').filtered.doc_count).toBe(1);
+          expect(template2Aggs.find(a => a.key === 'EgyptID').filtered.doc_count).toBe(0);
+          expect(template2Aggs.find(a => a.key === 'SpainID').filtered.doc_count).toBe(1);
 
           const bothAggs = both.aggregations.all.multiselect1.buckets;
-          expect(bothAggs.find(a => a.key === 'multiValue1').filtered.doc_count).toBe(2);
-          expect(bothAggs.find(a => a.key === 'multiValue2').filtered.doc_count).toBe(3);
+          expect(bothAggs.find(a => a.key === 'EgyptID').filtered.doc_count).toBe(2);
+          expect(bothAggs.find(a => a.key === 'SpainID').filtered.doc_count).toBe(3);
 
           const filteredAggs = filtered.aggregations.all.multiselect1.buckets;
           const templateAggs = filtered.aggregations.all._types.buckets;
-          expect(filteredAggs.find(a => a.key === 'multiValue1').filtered.doc_count).toBe(2);
-          expect(filteredAggs.find(a => a.key === 'multiValue2').filtered.doc_count).toBe(3);
+          expect(filteredAggs.find(a => a.key === 'EgyptID').filtered.doc_count).toBe(2);
+          expect(filteredAggs.find(a => a.key === 'SpainID').filtered.doc_count).toBe(3);
+
           expect(filteredAggs.find(a => a.key === 'missing').filtered.doc_count).toBe(1);
-          // In the presence of value filters, don't provide the any bucket.
+
           expect(filteredAggs.find(a => a.key === 'any').filtered.doc_count).toBe(3);
           expect(templateAggs.find(a => a.key === ids.template1).filtered.doc_count).toBe(0);
           expect(templateAggs.find(a => a.key === ids.template2).filtered.doc_count).toBe(0);
@@ -555,7 +512,12 @@ describe('search', () => {
         search
           .search(
             {
-              filters: { multiselect1: { values: ['multiValue1', 'multiValue2'], and: true } },
+              filters: {
+                multiselect1: {
+                  values: ['EgyptID', 'SpainID'],
+                  and: true,
+                },
+              },
               types: [ids.templateMetadata1, ids.templateMetadata2],
             },
             'en'
@@ -563,8 +525,8 @@ describe('search', () => {
           .then(filtered => {
             const filteredAggs = filtered.aggregations.all.multiselect1.buckets;
             const templateAggs = filtered.aggregations.all._types.buckets;
-            expect(filteredAggs.find(a => a.key === 'multiValue1').filtered.doc_count).toBe(1);
-            expect(filteredAggs.find(a => a.key === 'multiValue2').filtered.doc_count).toBe(1);
+            expect(filteredAggs.find(a => a.key === 'EgyptID').filtered.doc_count).toBe(1);
+            expect(filteredAggs.find(a => a.key === 'SpainID').filtered.doc_count).toBe(1);
             expect(templateAggs.find(a => a.key === ids.templateMetadata1).filtered.doc_count).toBe(
               1
             );
@@ -783,5 +745,62 @@ describe('search', () => {
     expect(
       rows.reduce((allArePublished, entity) => allArePublished && entity.published, true)
     ).toBe(true);
+  });
+
+  describe('autocomplete()', () => {
+    it('should return a list of options matching by title', async () => {
+      const { options } = await search.autocomplete('bat', 'en');
+      expect(options.length).toBe(2);
+      expect(options[0].value).toBeDefined();
+      expect(options[0].template).toBeDefined();
+      expect(options.find(o => o.label.includes('begins')).label).toBe('Batman begins en');
+      expect(options.find(o => o.label.includes('finishes')).label).toBe('Batman finishes en');
+    });
+
+    it('should filter by template', async () => {
+      const { options } = await search.autocomplete('en', 'en');
+      expect(options.length).toBe(4);
+      const { options: filteredByTemplateOptions } = await search.autocomplete('en', 'en', [
+        ids.template1,
+      ]);
+      expect(filteredByTemplateOptions.length).toBe(3);
+    });
+
+    it('should filter by unpublished', async () => {
+      const { options } = await search.autocomplete('unpublished', 'es');
+      expect(options.length).toBe(0);
+      const { options: optionsUnpublished } = await search.autocomplete(
+        'unpublished',
+        'es',
+        [],
+        true
+      );
+      expect(optionsUnpublished.length).toBe(1);
+    });
+  });
+
+  describe('autocompleteAggregations()', () => {
+    it('should return a list of options matching by label and options related to the matching one', async () => {
+      const query = {
+        types: [ids.templateMetadata1, ids.templateMetadata2],
+        filters: {},
+      };
+
+      const user = { _id: ids.userId };
+
+      const { options, count } = await search.autocompleteAggregations(
+        query,
+        'en',
+        'multiselect1',
+        'egyp',
+        user
+      );
+
+      expect(options.length).toBe(1);
+      expect(options[0].value).toBeDefined();
+      expect(options[0].label).toBeDefined();
+      expect(options[0].results).toBeDefined();
+      expect(count).toBe(1);
+    });
   });
 });

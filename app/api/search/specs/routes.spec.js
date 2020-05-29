@@ -1,6 +1,6 @@
 import entities from 'api/entities';
 import { catchErrors } from 'api/utils/jasmineHelpers';
-import documentRoutes from '../routes.js';
+import searchRoutes from '../deprecatedRoutes.js';
 import instrumentRoutes from '../../utils/instrumentRoutes';
 import search from '../search';
 
@@ -8,7 +8,7 @@ describe('search routes', () => {
   let routes;
 
   beforeEach(() => {
-    routes = instrumentRoutes(documentRoutes);
+    routes = instrumentRoutes(searchRoutes);
   });
 
   describe('/api/search/count_by_template', () => {

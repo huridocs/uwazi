@@ -6,6 +6,8 @@ import { notificationActions } from 'app/Notifications';
 import { removeDocuments, unselectAllDocuments } from 'app/Library/actions/libraryActions';
 import { RequestParams } from 'app/utils/RequestParams';
 import emptyTemplate from '../helpers/defaultTemplate';
+import searchAPI from 'app/Search/SearchAPI';
+import { actions } from 'app/BasicReducer';
 
 export function resetReduxForm(form) {
   return formActions.reset(form);
@@ -73,18 +75,27 @@ export const UnwrapMetadataObject = (MetadataObject, Template) =>
 export function loadFetchedInReduxForm(form, entity, templates) {
   const sortedTemplates = advancedSort(templates, { property: 'name' });
   const defaultTemplate = sortedTemplates.find(t => t.default);
-  const template = entity.template || defaultTemplate._id;
-  const templateconfig = sortedTemplates.find(t => t._id === template) || emptyTemplate;
+  const templateId = entity.template || defaultTemplate._id;
+  const template = sortedTemplates.find(t => t._id === templateId) || emptyTemplate;
+
+  const entitySelectedOptions = {};
+  template.properties.forEach(property => {
+    if (property.type === 'relationship') {
+      entitySelectedOptions[property.name] = entity.metadata ? entity.metadata[property.name] : [];
+    }
+  });
 
   const metadata = UnwrapMetadataObject(
-    resetMetadata(entity.metadata || {}, templateconfig, { resetExisting: false }, templateconfig),
-    templateconfig
+    resetMetadata(Object.assign({}, entity.metadata), template, { resetExisting: false }, template),
+    template
   );
+
   // suggestedMetadata remains in metadata-object form (all components consuming it are new).
   return [
     formActions.reset(form),
-    formActions.load(form, { ...entity, metadata, template }),
+    formActions.load(form, { ...entity, metadata, template: templateId }),
     formActions.setPristine(form),
+    actions.set('entityThesauris', entitySelectedOptions),
   ];
 }
 
@@ -145,4 +156,9 @@ export function multipleUpdate(entities, values) {
     }
     return updatedEntities;
   };
+}
+
+export async function getSuggestions(templates, searchTerm = '') {
+  const request = new RequestParams({ searchTerm, templates });
+  return searchAPI.getSuggestions(request);
 }

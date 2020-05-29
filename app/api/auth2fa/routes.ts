@@ -1,4 +1,3 @@
-/** @format */
 import Joi from 'joi';
 import { Application } from 'express';
 

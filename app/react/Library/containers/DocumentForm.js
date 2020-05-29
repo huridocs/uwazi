@@ -10,7 +10,6 @@ function mapStateToProps(state, props) {
   const { thesauris } = state;
   return {
     model: `${props.storeKey}.sidepanel.metadata`,
-    isEntity: !state[props.storeKey].sidepanel.file,
     templateId: state[props.storeKey].sidepanel.metadata.template,
     templates,
     thesauris,

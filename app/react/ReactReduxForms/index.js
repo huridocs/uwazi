@@ -7,6 +7,9 @@ export const DatePicker = props => <Control component={forms.DatePicker} {...pro
 export const Captcha = props => <Control component={forms.Captcha} {...props} />;
 export const DateRange = props => <Control.select component={forms.DateRange} {...props} />;
 export const MultiSelect = props => <Control.select component={forms.MultiSelect} {...props} />;
+export const LookupMultiSelect = props => (
+  <Control.select component={forms.LookupMultiSelect} {...props} />
+);
 export const MultiSelectTristate = props => (
   <Control.select component={forms.MultiSelectTristate} {...props} />
 );
