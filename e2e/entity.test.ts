@@ -2,10 +2,6 @@
 
 import { adminLogin, logout } from './helpers/login';
 import proxyMock from './helpers/proxyMock';
-import { setDefaultOptions } from 'expect-puppeteer';
-
-setDefaultOptions({ timeout: 2000 })
-jest.setTimeout(30000);
 
 describe('Entities', () => {
   beforeAll(async () => {
