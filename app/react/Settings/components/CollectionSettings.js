@@ -267,6 +267,12 @@ export class CollectionSettings extends Component {
                 5d5b0698e28d130bc98efc8b,5d5d876aa77a121bf9cdd1ff
               </div>
             </div>
+            <div className="form-group">
+              <label className="form-group-label" htmlFor="mapTilerKey">
+                {t('System', 'MapTiler key')}
+              </label>
+              <Control.text model=".mapTilerKey" className="form-control" />
+            </div>
             <span className="form-group-label">{t('System', 'Show Cookie policy')}</span>
             <div className="checkbox">
               <label>
