@@ -106,10 +106,7 @@ async function updateEntity(entity, _template) {
     entity.template &&
     docLanguages[0].template.toString() !== entity.template.toString()
   ) {
-    await Promise.all([
-      this.deleteRelatedEntityFromMetadata(docLanguages[0]),
-      relationships.delete({ entity: entity.sharedId }, null, false),
-    ]);
+    await this.deleteRelatedEntityFromMetadata(docLanguages[0]);
   }
   const template = _template || { properties: [] };
   const toSyncProperties = template.properties

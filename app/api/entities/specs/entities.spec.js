@@ -537,6 +537,26 @@ describe('entities', () => {
     });
   });
 
+  describe('when the template was changed', () => {
+    it('should keep the connections and remove non-matching metadata relationships', done => {
+      const user = { _id: db.id() };
+      const hubs = fixtures.connections.filter(c => c.entity === 'shared').map(c => c.hub.id);
+      const previousConnectionsCount = fixtures.connections.filter(c => hubs.includes(c.hub.id))
+        .length;
+
+      entities
+        .save(
+          { ...fixtures.entities[0], template: templateChangingNames },
+          { user, language: 'en' }
+        )
+        .then(updatedDocument => {
+          expect(updatedDocument.template).toEqual(templateChangingNames);
+          expect(updatedDocument.relations.length).toBe(previousConnectionsCount);
+        })
+        .then(done);
+    });
+  });
+
   describe('Sanitize', () => {
     it('should sanitize multidates, removing non valid dates', done => {
       const doc = {
