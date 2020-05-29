@@ -6,9 +6,11 @@ import { shallow } from 'enzyme';
 import ReactMapGL, { Marker, Popup } from 'react-map-gl';
 
 import { Icon } from 'UI';
-
+import settingsAPI from 'app/Settings/SettingsAPI';
 import Map from '../Map';
 import { TRANSITION_PROPS } from '../helper';
+
+jest.mock('app/Settings/SettingsAPI');
 
 describe('Map', () => {
   let component;
@@ -16,6 +18,7 @@ describe('Map', () => {
   let props;
   let markers;
   let map;
+
   beforeEach(() => {
     props = {
       onClick: jasmine.createSpy('onClick'),
@@ -185,13 +188,16 @@ describe('Map', () => {
   });
 
   describe('componentDidMount', () => {
-    beforeEach(() => {
+    const testMapTilerKey = 'TestMapTilerKey';
+
+    beforeEach(async () => {
       spyOn(window, 'addEventListener');
       spyOn(window, 'removeEventListener');
       render();
       spyOn(instance, 'centerOnMarkers');
       spyOn(instance, 'setViweport');
-      instance.componentDidMount();
+      settingsAPI.get.mockResolvedValue({ mapTilerKey: testMapTilerKey });
+      await instance.componentDidMount();
     });
 
     it('should add and remove event listeners for resize', () => {
@@ -217,6 +223,10 @@ describe('Map', () => {
       expect(instance.setViweport).not.toHaveBeenCalled();
       callback({ autoCentered: true });
       expect(instance.setViweport).toHaveBeenCalled();
+    });
+
+    it('should read and set the map tiler key in the style', () => {
+      expect(JSON.stringify(instance.mapStyle)).toContain(testMapTilerKey);
     });
   });
 
@@ -366,6 +376,23 @@ describe('Map', () => {
       component.update();
       expect(instance.centerOnMarkers).toHaveBeenCalled();
       expect(instance.updateMapStyle).toHaveBeenCalled();
+    });
+  });
+
+  describe('replaceKeysMapStyleJson', () => {
+    it('should set the map tiler key from the settings', async () => {
+      render();
+      const style = {
+        sources: { openmaptiles: { url: 'URL?key={{MAP_TILER_KEY}}' } },
+        glyphs: 'URL?key={{MAP_TILER_KEY}}',
+      };
+      const expectedKey = 'XYZ';
+      settingsAPI.get.mockResolvedValue({ mapTilerKey: expectedKey });
+      await instance.replaceKeysMapStyleJson(style);
+      const stringifyStyle = JSON.stringify(instance.mapStyle);
+      expect(stringifyStyle).not.toContain('{{MAP_TILER_KEY}}');
+      expect(instance.mapStyle.getIn(['sources', 'openmaptiles', 'url'])).toContain(expectedKey);
+      expect(instance.mapStyle.getIn(['glyphs'])).toContain(expectedKey);
     });
   });
 });

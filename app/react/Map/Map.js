@@ -4,6 +4,7 @@ import ReactMapGL, { Marker, Popup, NavigationControl, setRTLTextPlugin } from '
 import Immutable from 'immutable';
 import { Icon } from 'UI';
 import Supercluster from 'supercluster'; //eslint-disable-line
+import settingsAPI from 'app/Settings/SettingsAPI';
 import _style from './style.json';
 import { getMarkersBoudingBox, markersToStyleFormat, TRANSITION_PROPS } from './helper';
 
@@ -45,7 +46,8 @@ export default class Map extends Component {
     this.assignDefaults();
   }
 
-  componentDidMount() {
+  async componentDidMount() {
+    await this.replaceKeysMapStyleJson();
     const { markers } = this.props;
     this.setSize();
     const map = this.map.getMap();
@@ -243,6 +245,16 @@ export default class Map extends Component {
     }
 
     hoverOnMarker(marker);
+  }
+
+  async replaceKeysMapStyleJson() {
+    const mapTilerKeyPlaceholder = /{{MAP_TILER_KEY}}/g;
+    const { mapTilerKey } = await settingsAPI.get();
+    const stringifyStyle = JSON.stringify(this.mapStyle).replace(
+      mapTilerKeyPlaceholder,
+      mapTilerKey
+    );
+    this.mapStyle = Immutable.fromJS(JSON.parse(stringifyStyle));
   }
 
   renderMarker(marker, onClick, onMouseEnter, onMouseLeave) {

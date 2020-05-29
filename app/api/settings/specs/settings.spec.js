@@ -190,6 +190,21 @@ describe('settings', () => {
       const values = await settings.get();
       expect(values.publicFormDestination).not.toBeDefined();
     });
+
+    it('should return default values', async () => {
+      const values = await settings.get();
+      expect(values.mapTilerKey).toEqual('QiI1BlAJNMmZagsX5qp7');
+    });
+
+    describe('if there is settings with no default mapTilerKey on the DB', () => {
+      it('should return the stored mapTilerKey', async () => {
+        const expectedKey = 'anotherKey';
+        const config = { mapTilerKey: expectedKey };
+        await settings.save(config);
+        const savedSettings = await settings.get();
+        expect(savedSettings.mapTilerKey).toBe(expectedKey);
+      });
+    });
   });
 
   describe('setDefaultLanguage()', () => {

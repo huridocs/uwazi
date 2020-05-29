@@ -269,7 +269,7 @@
     "uglifyjs-webpack-plugin": "^1.2.7",
     "webpack": "4.29.5",
     "webpack-bundle-analyzer": "^2.11.1",
-    "webpack-cli": "^3.3.0",
+    "webpack-cli": "^3.3.11",
     "webpack-dev-middleware": "3.7.2",
     "webpack-hot-middleware": "^2.25.0",
     "yargs": "^13.2.2"
