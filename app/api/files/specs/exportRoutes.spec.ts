@@ -13,8 +13,8 @@ import { User } from '../../users/usersModel';
 jest.mock('api/csv/csvExporter');
 
 function assertDownloaded(res: any) {
-  expect(res.header['content-type']).toMatch(/text\/csv/);
-  expect(res.header['content-disposition']).toMatch(/^attachment; filename=(.*)/);
+  expect(res.header['content-type'].match(/text\/csv/)).not.toBe(null);
+  expect(res.header['content-disposition'].match(/^attachment; filename=(.*)/)).not.toBe(null);
 }
 
 function assertExport(mockCall: any, searchResults: any, types: any, options: any) {
