@@ -73,18 +73,10 @@ const validateGeolocationProperty = value =>
 const validateMultiSelectProperty = value =>
   Array.isArray(value) && value.every(item => isValidSelect(item.value) && item.value);
 
-const validateLuceneBytesLimit = (property, value) => {
-  let valid = true;
-  if (
-    !property ||
-    property.type === propertyTypes.text ||
-    property.type === propertyTypes.markdown
-  ) {
-    const LUCENE_BYTES_LIMIT = 32766;
-    const bytes = Buffer.from(JSON.stringify(value));
-    valid = bytes.length < LUCENE_BYTES_LIMIT;
-  }
-  return valid;
+const validateLuceneBytesLimit = value => {
+  const LUCENE_BYTES_LIMIT = 32766;
+  const bytes = Buffer.from(JSON.stringify(value));
+  return bytes.length < LUCENE_BYTES_LIMIT;
 };
 
 export const customErrorMessages = {

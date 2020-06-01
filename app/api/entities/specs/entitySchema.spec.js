@@ -220,6 +220,11 @@ describe('entity schema', () => {
         });
       });
 
+      it('should validate the length of value for text or markdown types', async () => {
+        entity.metadata.name = [{ value: largeField }];
+        await expectError('maximum field length exceeded', ".metadata['name']");
+      });
+
       describe('media property', () => {
         it('should fail if value is not a string', async () => {
           entity.metadata.media = [{ value: 10 }];

@@ -22,7 +22,7 @@ const validateMetadataField = (property, entity) => {
     throw new Error(customErrorMessages[property.type]);
   }
 
-  if (hasValue(value) && !validators.validateLuceneBytesLimit(property, value)) {
+  if (hasValue(value) && !validators.validateLuceneBytesLimit(value)) {
     throw new Error(customErrorMessages.length_exceeded);
   }
 };
@@ -63,7 +63,7 @@ ajv.addKeyword('stringMeetsLuceneMaxLimit', {
   errors: false,
   type: 'string',
   validate(_schema, data) {
-    return validators.validateLuceneBytesLimit(null, data);
+    return validators.validateLuceneBytesLimit(data);
   },
 });
 
