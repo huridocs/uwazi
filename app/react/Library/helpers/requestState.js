@@ -19,24 +19,27 @@ export function processQuery(params, globalResources, key) {
   const defaultSearch = prioritySortingCriteria.get({ templates: globalResources.templates });
 
   let query = decodeQuery(params);
-  query.order = query.order || defaultSearch.order;
-  query.sort = query.sort || defaultSearch.sort;
-  query.view = params.view;
 
-  if (!globalResources.library && query.limit) {
+  query = Object.assign(query, {
+    order: query.order || defaultSearch.order,
+    sort: query.sort || defaultSearch.sort,
+    view: params.view,
+  });
+
+  const noDocuments = !globalResources[key] || !globalResources[key].documents.get('rows').size;
+
+  if (noDocuments && query.limit) {
     query = Object.assign(query, { limit: query.limit + (query.from || 0), from: 0 });
   }
-
-  query.geolocation = key === 'markers';
 
   const { userSelectedSorting, ...sanitizedQuery } = query;
   return sanitizedQuery;
 }
 
 export default function requestState(request, globalResources) {
-  const docsQuery = processQuery(request.data, globalResources);
+  const docsQuery = processQuery(request.data, globalResources, 'library');
   const documentsRequest = request.set(docsQuery);
-  const markersRequest = request.set(processQuery(request.data, globalResources, 'markers'));
+  const markersRequest = request.set({ ...docsQuery, geolocation: true });
 
   return Promise.all([api.search(documentsRequest), api.search(markersRequest)]).then(
     ([documents, markers]) => {

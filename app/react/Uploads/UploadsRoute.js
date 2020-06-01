@@ -45,7 +45,7 @@ export default class Uploads extends RouteHandler {
   }
 
   static async requestState(requestParams, globalResources) {
-    const query = processQuery(requestParams.data, globalResources);
+    const query = processQuery(requestParams.data, globalResources, 'uploads');
     query.unpublished = true;
 
     const documents = await api.search(requestParams.set(query));

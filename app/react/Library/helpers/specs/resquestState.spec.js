@@ -3,7 +3,7 @@ import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
 import { RequestParams } from 'app/utils/RequestParams';
 import Immutable from 'immutable';
 import rison from 'rison';
-import requestState from '../requestState';
+import requestState, { processQuery } from '../requestState';
 
 describe('static requestState()', () => {
   const aggregations = { buckets: [] };
@@ -49,7 +49,6 @@ describe('static requestState()', () => {
         filters: { something: 1 },
         types: [],
         view: 'charts',
-        geolocation: false,
       },
       headers: 'headers',
     };
@@ -76,10 +75,46 @@ describe('static requestState()', () => {
       };
 
       const request = new RequestParams(query);
-      const actions = await requestState(request, globalResources, 'markers');
+      const actions = await requestState(request, globalResources);
 
       expect(searchAPI.search).toHaveBeenCalledWith(expectedSearch);
       expect(actions).toMatchSnapshot();
+    });
+  });
+
+  describe('processQuery()', () => {
+    it('should process the query params into a query object', () => {
+      const params = { q: '(from:5,limit:30,order:desc,sort:creationDate)' };
+      globalResources.library = {
+        documents: Immutable.fromJS({
+          rows: [{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }, { id: 5 }],
+        }),
+      };
+      const query = processQuery(params, globalResources, 'library');
+      expect(query).toEqual({
+        from: 5,
+        limit: 30,
+        order: 'desc',
+        sort: 'creationDate',
+        view: undefined,
+      });
+    });
+
+    it('should reset the from param when there are no documents', () => {
+      const params = { q: '(from:5,limit:30,order:desc,sort:creationDate)' };
+      globalResources.library = {
+        documents: Immutable.fromJS({
+          rows: [],
+        }),
+      };
+      const query = processQuery(params, globalResources, 'library');
+      expect(query).toEqual({
+        from: 0,
+        limit: 35,
+        order: 'desc',
+        sort: 'creationDate',
+        view: undefined,
+      });
     });
   });
 });
