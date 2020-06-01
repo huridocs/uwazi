@@ -27,7 +27,7 @@ const errorMessages = [
   },
   {
     key: /ERROR Failed to index documents: (.+)/g,
-    message: 'Failed to execute index item: {0} ',
+    message: 'Failed to index documents: {0} ',
   },
 ];
 

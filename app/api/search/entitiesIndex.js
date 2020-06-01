@@ -7,13 +7,13 @@ import { entityDefaultDocument } from 'shared/entityDefaultDocument';
 
 import elastic from './elastic';
 
-const handleErrors = async (body, errors) => {
+const handleErrors = async errors => {
   errors.forEach(f =>
     errorLog.error(
       `ERROR Failed to index document ${f.index._id}: ${JSON.stringify(f.index.error)}`
     )
   );
-  let errorIndexesIds = errors.map(f => f.index._id);
+  const errorIndexesIds = errors.map(f => f.index._id);
   throw new Error(`ERROR Failed to index documents: ${errorIndexesIds.join(', ')}`);
 };
 
@@ -76,10 +76,10 @@ const bulkIndex = async (docs, _action = 'index', elasticIndex) => {
       failedIndexedErrors = res.items.filter(f => f.index.error);
     }
   } catch (error) {
-    await handleErrors(body, [{ index: { _id: body[0].index._id, error } }]);
+    await handleErrors([{ index: { _id: body[0].index._id, error } }]);
   }
   if (failedIndexedErrors.length > 0) {
-    await handleErrors(body, failedIndexedErrors);
+    await handleErrors(failedIndexedErrors);
   }
   return res;
 };
