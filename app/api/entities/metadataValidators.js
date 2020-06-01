@@ -75,7 +75,7 @@ const validateMultiSelectProperty = value =>
 
 const validateLuceneBytesLimit = (property, value) => {
   let valid = true;
-  if (property.type === propertyTypes.text) {
+  if (!property || property.type === propertyTypes.text) {
     const LUCENE_BYTES_LIMIT = 32766;
     const bytes = Buffer.from(JSON.stringify(value));
     valid = bytes.length < LUCENE_BYTES_LIMIT;

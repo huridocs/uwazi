@@ -59,6 +59,14 @@ ajv.addKeyword('metadataMatchesTemplateProperties', {
   },
 });
 
+ajv.addKeyword('stringMeetsLuceneMaxLimit', {
+  errors: false,
+  type: 'string',
+  validate(_schema, data) {
+    return validators.validateLuceneBytesLimit(null, data);
+  },
+});
+
 export const entitySchema = {
   $schema: 'http://json-schema.org/schema#',
   $async: true,
@@ -73,7 +81,7 @@ export const entitySchema = {
     sharedId: { type: 'string', minLength: 1 },
     language: { type: 'string', minLength: 1 },
     mongoLanguage: { type: 'string' },
-    title: { type: 'string', minLength: 1 },
+    title: { type: 'string', minLength: 1, stringMeetsLuceneMaxLimit: true },
     template: objectIdSchema,
     published: { type: 'boolean' },
     icon: {

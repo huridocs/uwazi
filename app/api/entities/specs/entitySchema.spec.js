@@ -137,6 +137,13 @@ describe('entity schema', () => {
       await expectError(expect.any(String), '.title');
     });
 
+    it('should fail if title exceeds the lucene term byte-length limit', async () => {
+      entity.title = Math.random()
+        .toString(36)
+        .repeat(20000);
+      await expectError(expect.any(String), '.title');
+    });
+
     it('should allow title to be missing', async () => {
       delete entity.title;
       await testValid();
