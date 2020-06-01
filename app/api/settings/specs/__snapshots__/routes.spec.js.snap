@@ -262,6 +262,12 @@ Object {
         "",
       ],
     },
+    "mapTilerKey": Object {
+      "type": "string",
+      "valids": Array [
+        "",
+      ],
+    },
     "matomoConfig": Object {
       "type": "string",
       "valids": Array [

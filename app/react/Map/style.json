@@ -16,7 +16,7 @@
   "sources": {
     "openmaptiles": {
       "type": "vector",
-      "url": "https://api.maptiler.com/tiles/v3/tiles.json?key=QiI1BlAJNMmZagsX5qp7"
+      "url": "https://api.maptiler.com/tiles/v3/tiles.json?key={{MAP_TILER_KEY}}"
     },
     "markers": {
       "type": "geojson",
@@ -29,7 +29,7 @@
       }
     }
   },
-  "glyphs": "https://api.maptiler.com/fonts/{fontstack}/{range}.pbf?key=QiI1BlAJNMmZagsX5qp7",
+  "glyphs": "https://api.maptiler.com/fonts/{fontstack}/{range}.pbf?key={{MAP_TILER_KEY}}",
   "layers": [
     {
       "id": "background",

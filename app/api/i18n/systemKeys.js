@@ -111,6 +111,7 @@ export default [
     key: 'Manage site settings and configuration',
     label: 'Manage site settings and configuration',
   },
+  { key: 'MapTiler key', label: 'MapTiler key' },
   { key: 'Maximum', label: 'Maximum' },
   { key: 'Menu', label: 'Menu' },
   { key: 'Menu', label: 'Menu' },
