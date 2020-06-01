@@ -181,16 +181,6 @@ describe('search', () => {
         entitiesAPI.count.mockResolvedValue(1);
         spyOn(relationships, 'get').and.returnValue(Promise.resolve());
       });
-      it('should throw an error with message max_bytes_length_exceeded_exception', async () => {
-        const toIndexDocs = [{ _id: 'id1', title: largeField }];
-        entitiesAPI.get.mockResolvedValue(toIndexDocs);
-        try {
-          await search.indexEntities(toIndexDocs, 'index');
-          fail('should throw an indexing error');
-        } catch (error) {
-          expect(error.message).toMatch('max_bytes_length_exceeded_exception');
-        }
-      });
       it('should logs all errors at indexation', async () => {
         const toIndexDocs = [
           { _id: 'id1', title: largeField },

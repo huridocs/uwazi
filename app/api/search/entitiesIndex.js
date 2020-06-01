@@ -7,66 +7,14 @@ import { entityDefaultDocument } from 'shared/entityDefaultDocument';
 
 import elastic from './elastic';
 
-function truncateStringToLuceneLimit(str) {
-  const LUCENE_BYTES_LIMIT = 32766;
-  const bytes = Buffer.from(str);
-  return bytes.slice(0, Math.min(LUCENE_BYTES_LIMIT, bytes.length)).toString();
-}
-
-function truncateLongFieldValue(fieldPath, docData) {
-  fieldPath.reduce((path, prop) => {
-    const currentPath = path;
-    if (currentPath[prop] !== undefined && currentPath[prop] !== Object(currentPath[prop])) {
-      currentPath[prop] = truncateStringToLuceneLimit(currentPath[prop]);
-    } else if (Array.isArray(currentPath) && currentPath[0][prop] !== Object(currentPath[prop])) {
-      currentPath[0][prop] = truncateStringToLuceneLimit(currentPath[0][prop]);
-    }
-    return currentPath[prop];
-  }, docData);
-}
-
-const handledFailedDocsByLargeFieldErrors = async (body, errors) => {
-  if (errors.length === 0) return '';
-  const invalidFields = new Set();
-  errors.forEach(error => {
-    const docIndex = body.findIndex(
-      doc => doc.index !== undefined && doc.index._id === error.index._id
-    );
-    const errorExpression = /Document contains at least one immense term in field="(\S+)".+/g;
-    const matches = errorExpression.exec(error.index.error.reason);
-    const docData = body[docIndex + 1];
-    const field = matches[1].split(/\.(?=[^.]+$)/)[0];
-    const fieldPath = field.split('.');
-    truncateLongFieldValue(fieldPath, docData);
-    invalidFields.add(field);
-  });
-  await elastic.bulk({ body, requestTimeout: 40000 });
-  return `max_bytes_length_exceeded_exception. Invalid Fields: ${Array.from(invalidFields).join(
-    ', '
-  )}`;
-};
-
 const handleErrors = async (body, errors) => {
   errors.forEach(f =>
     errorLog.error(
       `ERROR Failed to index document ${f.index._id}: ${JSON.stringify(f.index.error)}`
     )
   );
-  const failedDocsByLargeFieldErrors = errors.filter(
-    f => (f.index.error.caused_by || {}).type === 'max_bytes_length_exceeded_exception'
-  );
-  const lengthMessage = await handledFailedDocsByLargeFieldErrors(
-    body,
-    failedDocsByLargeFieldErrors
-  );
-  let otherCausesFailedIndexes = errors
-    .filter(f => !failedDocsByLargeFieldErrors.includes(f))
-    .map(f => f.index._id);
-  otherCausesFailedIndexes =
-    otherCausesFailedIndexes.length > 0
-      ? `ERROR Failed to index documents: ${otherCausesFailedIndexes.join(', ')}`
-      : '';
-  throw new Error(lengthMessage + otherCausesFailedIndexes);
+  let errorIndexesIds = errors.map(f => f.index._id);
+  throw new Error(`ERROR Failed to index documents: ${errorIndexesIds.join(', ')}`);
 };
 
 /* eslint-disable max-statements */
@@ -172,4 +120,4 @@ const indexEntities = (
   return entities.count(query).then(totalRows => index(0, totalRows));
 };
 
-export { bulkIndex, indexEntities, handledFailedDocsByLargeFieldErrors };
+export { bulkIndex, indexEntities };

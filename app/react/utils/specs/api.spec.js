@@ -55,12 +55,6 @@ describe('api', () => {
         status: 500,
         body: { error: 'PayloadTooLargeError: request entity too large at readStream' },
       })
-      .post(`${APIURL}max_bytes_length_exceeded_exception`, {
-        status: 500,
-        body: {
-          error: 'max_bytes_length_exceeded_exception. Invalid Fields: metadata.summary.value',
-        },
-      })
       .post(`${APIURL}validation_error`, validationErrorResponse);
   });
 
@@ -179,28 +173,16 @@ describe('api', () => {
     });
 
     describe('when request return a server error of too large request', () => {
-      const requestError = [
-        [
-          'test_payload_too_large_error',
-          'The request has too large data. Please review any long value property.',
-        ],
-        [
-          'max_bytes_length_exceeded_exception',
-          'The request has too large data. Please review the follow fields: metadata.summary.value ',
-        ],
-        [
-          'validation_error',
-          "validation failed:  .metadata['prop1'] should be string, .metadata['prop2'] is too longer,",
-        ],
-      ];
-
-      it.each(requestError)('should notify the error with this message', async (url, message) => {
+      it('should notify the error with this message', async () => {
         const requestParams = new RequestParams({ key: 'test' }, { header: 'value' });
         try {
-          await api.post(url, requestParams);
+          await api.post('validation_error', requestParams);
           fail('should throw error');
         } catch (e) {
-          testNotificationDisplayed(message, 'danger');
+          testNotificationDisplayed(
+            "validation failed:  .metadata['prop1'] should be string, .metadata['prop2'] is too longer,",
+            'danger'
+          );
         }
       });
     });
