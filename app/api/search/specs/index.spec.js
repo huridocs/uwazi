@@ -7,8 +7,6 @@ import { elastic } from 'api/search';
 import { instanceSearch } from 'api/search/search';
 import db from 'api/utils/testing_db';
 import instanceElasticTesting from 'api/utils/elastic_testing';
-import entitiesAPI from 'api/entities';
-import relationships from 'api/relationships/relationships';
 import { fixturesTimeOut } from './fixtures_elastic';
 
 jest.mock('api/entities');
@@ -171,28 +169,6 @@ describe('search', () => {
           spyOn(elastic, 'bulk').and.throwError('unhandled error');
           await expectError('ERROR Failed to index document id1: {}');
         });
-      });
-    });
-    describe('when a field is longer than limit', () => {
-      const largeField = Math.random()
-        .toString(36)
-        .repeat(20000);
-      beforeAll(() => {
-        entitiesAPI.count.mockResolvedValue(1);
-        spyOn(relationships, 'get').and.returnValue(Promise.resolve());
-      });
-      it('should logs all errors at indexation', async () => {
-        const toIndexDocs = [
-          { _id: 'id1', title: largeField },
-          { _id: 'id2', title: largeField },
-        ];
-        entitiesAPI.get.mockResolvedValue(toIndexDocs);
-        spyOn(errorLog, 'error');
-        try {
-          await search.indexEntities(toIndexDocs, 'index');
-        } catch (error) {
-          expect(errorLog.error).toHaveBeenCalledTimes(2);
-        }
       });
     });
   });
