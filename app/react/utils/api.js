@@ -23,7 +23,7 @@ const isNonUsualApiError = error => error.status && ![401, 404, 409, 500].includ
 const errorMessages = [
   {
     key: /PayloadTooLargeError: request entity too large/g,
-    message: 'The request entity is too large.',
+    message: 'Request data too large. Please review text length in property values',
   },
   {
     key: /ERROR Failed to index documents: (.+)/g,
