@@ -1,5 +1,4 @@
 /**
- * @format
  * @jest-environment jsdom
  */
 
@@ -203,14 +202,15 @@ describe('libraryActions', () => {
             relationshipfilter: { status: { values: ['open'] } },
             select: 'selectValue',
           },
-          limit: 'limit',
+          limit: 30,
+          from: 0,
           searchTerm: 'batman',
           sort: '_score',
           types: ['decision'],
         };
 
         spyOn(browserHistory, 'push');
-        actions.searchDocuments({ search }, storeKey, 'limit')(dispatch, getState);
+        actions.searchDocuments({ search }, storeKey, 30)(dispatch, getState);
         let queryObject = rison.decode(
           browserHistory.push.calls.mostRecent().args[0].split('q=')[1]
         );
@@ -237,12 +237,12 @@ describe('libraryActions', () => {
 
         const { filters } = store.library;
 
-        const limit = 'limit';
+        const limit = 60;
         spyOn(browserHistory, 'push');
         actions.searchDocuments({ search, filters }, storeKey, limit)(dispatch, getState);
 
         expect(browserHistory.push).toHaveBeenCalledWith(
-          '/library/?view=chart&q=(filters:(author:batman,nested:nestedValue,select:selectValue),limit:limit,searchTerm:batman,sort:_score,types:!(decision))' //eslint-disable-line
+          '/library/?view=chart&q=(filters:(author:batman,nested:nestedValue,select:selectValue),from:0,limit:60,searchTerm:batman,sort:_score,types:!(decision))' //eslint-disable-line
         );
       });
 
@@ -277,7 +277,7 @@ describe('libraryActions', () => {
           storeKey
         )(dispatch, getState);
         expect(browserHistory.push).toHaveBeenCalledWith(
-          '/library/?view=chart&q=(limit:30,searchTerm:batman,sort:_score)'
+          '/library/?view=chart&q=(from:0,limit:30,searchTerm:batman,sort:_score)'
         );
       });
     });
