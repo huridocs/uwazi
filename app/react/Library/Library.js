@@ -46,6 +46,12 @@ export default class Library extends RouteHandler {
     this.emptyState();
   }
 
+  componentWillReceiveProps(nextProps) {
+    if (this.urlHasChanged(nextProps)) {
+      this.getClientState(nextProps);
+    }
+  }
+
   emptyState() {
     wrapDispatch(this.context.store.dispatch, 'library')(unsetDocuments());
     actions.set('library.sidepanel.quickLabelState', {});

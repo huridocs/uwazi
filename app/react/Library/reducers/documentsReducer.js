@@ -3,11 +3,17 @@ import Immutable from 'immutable';
 import * as types from 'app/Library/actions/actionTypes';
 import * as uploadTypes from 'app/Uploads/actions/actionTypes';
 
-const initialState = { rows: [] };
+const initialState = { rows: [], totalRows: 0 };
 
 export default function documents(state = initialState, action = {}) {
   if (action.type === types.SET_DOCUMENTS) {
     return Immutable.fromJS(action.documents);
+  }
+
+  if (action.type === types.ADD_DOCUMENTS) {
+    return state
+      .setIn(['rows'], state.get('rows').concat(Immutable.fromJS(action.documents.rows)))
+      .setIn(['totalRows'], action.documents.totalRows);
   }
 
   if (action.type === types.UPDATE_DOCUMENT) {

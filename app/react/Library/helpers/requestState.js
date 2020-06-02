@@ -6,31 +6,40 @@ import rison from 'rison';
 import { getThesaurusPropertyNames } from 'shared/commonTopicClassification';
 import setReduxState from './setReduxState.js';
 
-export function processQuery(_query, globalResources, key) {
-  const defaultSearch = prioritySortingCriteria.get({ templates: globalResources.templates });
-
-  let query;
+export function decodeQuery(params) {
   try {
-    query = rison.decode(_query.q || '()');
+    return rison.decode(params.q || '()');
   } catch (error) {
     error.status = 404;
     throw error;
   }
+}
 
-  query.order = query.order || defaultSearch.order;
-  query.sort = query.sort || defaultSearch.sort;
-  query.view = _query.view;
+export function processQuery(params, globalResources, key) {
+  const defaultSearch = prioritySortingCriteria.get({ templates: globalResources.templates });
 
-  if (key === 'markers') {
-    query.geolocation = true;
+  let query = decodeQuery(params);
+
+  query = Object.assign(query, {
+    order: query.order || defaultSearch.order,
+    sort: query.sort || defaultSearch.sort,
+    view: params.view,
+  });
+
+  const noDocuments = !globalResources[key] || !globalResources[key].documents.get('rows').size;
+
+  if (noDocuments && query.limit) {
+    query = Object.assign(query, { limit: query.limit + (query.from || 0), from: 0 });
   }
+
   const { userSelectedSorting, ...sanitizedQuery } = query;
   return sanitizedQuery;
 }
 
 export default function requestState(request, globalResources) {
-  const documentsRequest = request.set(processQuery(request.data, globalResources));
-  const markersRequest = request.set(processQuery(request.data, globalResources, 'markers'));
+  const docsQuery = processQuery(request.data, globalResources, 'library');
+  const documentsRequest = request.set(docsQuery);
+  const markersRequest = request.set({ ...docsQuery, geolocation: true });
 
   return Promise.all([api.search(documentsRequest), api.search(markersRequest)]).then(
     ([documents, markers]) => {
@@ -57,8 +66,9 @@ export default function requestState(request, globalResources) {
         },
       };
 
+      const addinsteadOfSet = Boolean(docsQuery.from);
       return [
-        setReduxState(state),
+        setReduxState(state, 'library', addinsteadOfSet),
         actions.set('library.sidepanel.quickLabelState', {
           thesaurus: request.data.quickLabelThesaurus,
           autoSave: false,

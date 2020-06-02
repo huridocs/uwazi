@@ -19,7 +19,7 @@ describe('DocumentsList', () => {
       { title: 'Document one', _id: '1' },
       { title: 'Document two', _id: '2' },
     ],
-    totalRows: 2,
+    totalRows: 10,
   });
 
   beforeEach(() => {
@@ -162,19 +162,17 @@ describe('DocumentsList', () => {
 
   describe('Load More button', () => {
     it('should render by default a load more button', () => {
-      props.documents = props.documents.set('totalRows', 3);
       render();
 
       expect(component.find('.btn-load-more').length).toBe(2);
       component
         .find('.btn-load-more')
         .at(0)
-        .simulate('click');
-      expect(props.loadMoreDocuments).toHaveBeenCalledWith('library', 32);
+        .simulate('click', { preventDefault: () => {} });
+      expect(props.loadMoreDocuments).toHaveBeenCalledWith('library', 30, 2);
     });
 
     it('should render a custom passed load more', () => {
-      props.documents = props.documents.set('totalRows', 3);
       props.LoadMoreButton = () => <div className="customLoadMoreButton" />;
       render();
 
