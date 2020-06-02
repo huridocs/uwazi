@@ -39,26 +39,28 @@ class DocumentsList extends Component {
     }
   }
 
-  loadMoreDocuments(amount) {
+  loadMoreDocuments(amount, from) {
     this.setState({ loading: true });
     this.setState({ loading: true });
-    this.props.loadMoreDocuments(
-      this.props.storeKey,
-      this.props.documents.get('rows').size + amount
-    );
+    this.props.loadMoreDocuments(this.props.storeKey, amount, from);
   }
 
   loadMoreButton(amount) {
     const query = Object.assign({}, this.props.location.query);
     const q = query.q ? rison.decode(query.q) : {};
-    q.limit = (parseInt(q.limit, 10) || 30) + amount;
+    const from = this.props.documents.get('rows').size;
+    q.from = from;
+    q.limit = amount;
     query.q = rison.encode(q);
     const url = `${this.props.location.pathname}${toUrlParams(query)}`;
     return (
       <Link
         to={url}
         className="btn btn-default btn-load-more"
-        onClick={this.loadMoreDocuments.bind(this, amount)}
+        onClick={e => {
+          e.preventDefault();
+          this.loadMoreDocuments(amount, from);
+        }}
       >
         {amount} {t('System', 'x more')}
       </Link>
@@ -177,7 +179,6 @@ class DocumentsList extends Component {
               if (LoadMoreButton) {
                 return <LoadMoreButton />;
               }
-
               if (documents.get('rows').size < documents.get('totalRows') && !this.state.loading) {
                 return (
                   <div className="col-sm-12 text-center">
@@ -245,5 +246,4 @@ DocumentsList.propTypes = {
 };
 
 export { DocumentsList };
-
 export default withRouter(DocumentsList);

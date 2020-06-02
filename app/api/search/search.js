@@ -139,6 +139,7 @@ function snippetsFromSearchHit(hit) {
 
 function searchGeolocation(documentsQuery, templates) {
   documentsQuery.limit(9999);
+  documentsQuery.from(0);
   const geolocationProperties = [];
 
   templates.forEach(template => {
@@ -557,7 +558,7 @@ const buildQuery = async (query, language, user, resources) => {
     .filterById(query.ids)
     .language(language);
 
-  if (query.from) {
+  if (Number.isInteger(parseInt(query.from, 10))) {
     queryBuilder.from(query.from);
   }
 
