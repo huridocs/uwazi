@@ -25,7 +25,7 @@ describe('api', () => {
         },
         {
           dataPath: ".metadata['prop2']",
-          message: 'is too longer',
+          message: 'is too long',
         },
       ],
     },
@@ -180,7 +180,7 @@ describe('api', () => {
           fail('should throw error');
         } catch (e) {
           testNotificationDisplayed(
-            "validation failed:  .metadata['prop1'] should be string, .metadata['prop2'] is too longer,",
+            "validation failed:  .metadata['prop1'] should be string, .metadata['prop2'] is too long,",
             'danger'
           );
         }
