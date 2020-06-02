@@ -1,4 +1,3 @@
-/* eslint-disable max-lines */
 // eslint-disable max-nested-callbacks
 
 import { catchErrors } from 'api/utils/jasmineHelpers';
