@@ -11,8 +11,11 @@ describe('setReduxState()', () => {
   };
   const dispatchCallsOrder = [];
   let context;
+  let addDocumentsInsteadOfSet;
+  let state;
 
   beforeEach(() => {
+    addDocumentsInsteadOfSet = true;
     spyOn(libraryActions, 'setTemplates');
     context = {
       store: {
@@ -21,24 +24,19 @@ describe('setReduxState()', () => {
         }),
       },
     };
-    const state = {
+    state = {
       library: {
         documents,
         aggregations,
         filters: { documentTypes: 'types', properties: 'properties' },
       },
     };
-    setReduxState(state)(context.store.dispatch);
   });
 
-  it('should set the documents and aggregations and Unset the documents as first action', () => {
-    expect(dispatchCallsOrder[1]).toBe(actionTypes.UNSET_DOCUMENTS);
+  it('should ADD the documents and aggregations', () => {
+    setReduxState(state, 'library', addDocumentsInsteadOfSet)(context.store.dispatch);
     expect(context.store.dispatch).toHaveBeenCalledWith({
-      type: actionTypes.UNSET_DOCUMENTS,
-      __reducerKey: 'library',
-    });
-    expect(context.store.dispatch).toHaveBeenCalledWith({
-      type: actionTypes.SET_DOCUMENTS,
+      type: actionTypes.ADD_DOCUMENTS,
       documents,
       __reducerKey: 'library',
     });
@@ -48,6 +46,43 @@ describe('setReduxState()', () => {
       libraryFilters: 'properties',
       aggregations,
       __reducerKey: 'library',
+    });
+  });
+
+  describe('when the flag to set or add is false', () => {
+    it('should SET the documents and aggregations', () => {
+      addDocumentsInsteadOfSet = false;
+      setReduxState(state, 'library', addDocumentsInsteadOfSet)(context.store.dispatch);
+
+      expect(context.store.dispatch).toHaveBeenCalledWith({
+        type: actionTypes.SET_DOCUMENTS,
+        documents,
+        __reducerKey: 'library',
+      });
+    });
+  });
+
+  describe('when the key is uploads', () => {
+    it('should dispatch uploads actions using uploads state key', () => {
+      const uploadsState = {
+        uploads: state.library,
+      };
+
+      setReduxState(uploadsState, 'uploads', addDocumentsInsteadOfSet)(context.store.dispatch);
+
+      expect(context.store.dispatch).toHaveBeenCalledWith({
+        type: actionTypes.ADD_DOCUMENTS,
+        documents,
+        __reducerKey: 'uploads',
+      });
+
+      expect(context.store.dispatch).toHaveBeenCalledWith({
+        type: actionTypes.INITIALIZE_FILTERS_FORM,
+        documentTypes: 'types',
+        libraryFilters: 'properties',
+        aggregations,
+        __reducerKey: 'uploads',
+      });
     });
   });
 });

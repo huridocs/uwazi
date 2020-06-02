@@ -44,14 +44,10 @@ describe('search routes', () => {
       expect(response).toEqual(expectedResults);
     };
 
-    it('should have a validation schema', () => {
-      expect(routes.get.validation('/api/search')).toMatchSnapshot();
-    });
-
     it('should search search and return the results', async () => {
-      const filtersValue = JSON.stringify({ property: 'property' });
-      const types = JSON.stringify(['ruling', 'judgement']);
-      const fields = JSON.stringify(['field1', 'field2']);
+      const filtersValue = { property: 'property' };
+      const types = ['ruling', 'judgement'];
+      const fields = ['field1', 'field2'];
       const req = {
         query: { searchTerm: 'test', filters: filtersValue, types, fields },
         language: 'es',
