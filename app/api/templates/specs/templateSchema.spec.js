@@ -51,7 +51,7 @@ describe('template schema', () => {
           makeProperty('nested', 'nested'),
           makeProperty('numeric', 'numeric', { showInCard: true, defaultfilter: true }),
           makeProperty('preview', 'preview'),
-          makeProperty('relationship', 'relationship', { relationType: 'rel' }),
+          makeProperty('relationship', 'relationship', { relationType: 'rel', content: '' }),
           makeProperty('inherited_rel', 'relationship', {
             relationType: 'otherRel',
             inherit: true,

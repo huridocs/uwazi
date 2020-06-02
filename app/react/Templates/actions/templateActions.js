@@ -27,6 +27,7 @@ export function addProperty(property = {}, _index) {
 
     if (property.type === 'relationship') {
       property.inherit = false;
+      property.content = '';
     }
 
     if (property.type === 'nested') {
