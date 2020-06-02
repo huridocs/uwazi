@@ -95,14 +95,12 @@ describe('Login', () => {
           props.private = true;
           render();
 
-          spyOn(browserHistory, 'push');
-          spyOn(window.location, 'reload');
+          spyOn(window.location, 'assign');
 
           instance
             .submit('credentials')
             .then(() => {
-              expect(browserHistory.push).toHaveBeenCalledWith('/');
-              expect(window.location.reload).toHaveBeenCalled();
+              expect(window.location.assign).toHaveBeenCalledWith('/');
               done();
             })
             .catch(done.fail);

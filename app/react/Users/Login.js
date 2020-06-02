@@ -16,7 +16,7 @@ import { reloadThesauri } from 'app/Thesauri/actions/thesaurisActions';
 import auth from 'app/Auth';
 
 const reloadHome = () => {
-  window.location.reload();
+  window.location.assign('/');
 };
 
 export class Login extends RouteHandler {
@@ -48,7 +48,6 @@ export class Login extends RouteHandler {
 
   resolveSuccessfulLogin() {
     if (this.props.private) {
-      browserHistory.push('/');
       reloadHome();
       return;
     }

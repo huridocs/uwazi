@@ -185,7 +185,7 @@
     "rison": "Nanonid/rison#e64af6c",
     "rtlcss": "^2.4.0",
     "sanitize-filename": "^1.6.0",
-    "serialize-javascript": "^2.1.1",
+    "serialize-javascript": "^3.1.0",
     "snyk": "^1.298.0",
     "socket.io": "2.0.4",
     "socket.io-client": "2.0.4",
@@ -269,7 +269,7 @@
     "uglifyjs-webpack-plugin": "^1.2.7",
     "webpack": "4.29.5",
     "webpack-bundle-analyzer": "^2.11.1",
-    "webpack-cli": "^3.3.0",
+    "webpack-cli": "^3.3.11",
     "webpack-dev-middleware": "3.7.2",
     "webpack-hot-middleware": "^2.25.0",
     "yargs": "^13.2.2"
