@@ -50,7 +50,6 @@ describe('UploadsRoute', () => {
         filters: { something: 1 },
         types: ['types'],
         unpublished: true,
-        geolocation: false,
       };
 
       const requestParams = new RequestParams(query);
