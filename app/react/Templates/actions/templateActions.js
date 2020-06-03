@@ -14,7 +14,7 @@ export function resetTemplate() {
   };
 }
 
-function setPropertyDefaults(getState, property) {
+export function setPropertyDefaults(getState, property) {
   const propertyWithDefaults = property;
   propertyWithDefaults.localID = ID();
   if (property.type === 'select' || property.type === 'multiselect') {

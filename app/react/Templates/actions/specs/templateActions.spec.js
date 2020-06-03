@@ -71,20 +71,15 @@ describe('templateActions', () => {
       });
     });
 
-    describe('when property is a relationship', () => {
-      it('should should add any entity or document (empty string) and inherit false as default values', () => {
-        actions.addProperty({ name: 'property3', type: 'relationship' }, 0)(dispatch, getState);
-        expect(formActions.change).toHaveBeenCalledWith('template.data.properties', [
-          {
-            name: 'property3',
-            type: 'relationship',
-            localID: 'unique_id',
+    describe('setPropertyDefaults for relationship type', () => {
+      it('should add any entity or document (empty string) and inherit false as default values', () => {
+        const properties = actions.setPropertyDefaults(getState, { type: 'relationship' });
+        expect(properties).toEqual(
+          expect.objectContaining({
             content: '',
             inherit: false,
-          },
-          { name: 'property1' },
-          { name: 'property2' },
-        ]);
+          })
+        );
       });
     });
   });
