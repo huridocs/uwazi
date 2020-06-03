@@ -55,7 +55,15 @@ describe('api', () => {
         status: 500,
         body: { error: 'PayloadTooLargeError: request entity too large at readStream' },
       })
-      .post(`${APIURL}validation_error`, validationErrorResponse);
+      .post(`${APIURL}elastic_index_error`, {
+        status: 500,
+        body: { error: 'ERROR Failed to index documents: id1' },
+      })
+      .post(`${APIURL}validation_error`, validationErrorResponse)
+      .post(`${APIURL}unprocessable_entity`, {
+        status: 422,
+        body: { error: 'unprocessable entity' },
+      });
   });
 
   afterEach(() => backend.restore());
@@ -172,17 +180,23 @@ describe('api', () => {
       });
     });
 
-    describe('when request return a server error of too large request', () => {
-      it('should notify the error with this message', async () => {
+    describe('when request return a server error', () => {
+      const requestError = [
+        ['elastic_index_error', 'Failed to index documents: id1 '],
+        [
+          'validation_error',
+          "validation failed:  .metadata['prop1'] should be string, .metadata['prop2'] is too long,",
+        ],
+        ['unprocessable_entity', 'unprocessable entity'],
+      ];
+
+      it.each(requestError)('should notify the error with this message', async (url, message) => {
         const requestParams = new RequestParams({ key: 'test' }, { header: 'value' });
         try {
-          await api.post('validation_error', requestParams);
+          await api.post(url, requestParams);
           fail('should throw error');
         } catch (e) {
-          testNotificationDisplayed(
-            "validation failed:  .metadata['prop1'] should be string, .metadata['prop2'] is too long,",
-            'danger'
-          );
+          testNotificationDisplayed(message, 'danger');
         }
       });
     });
