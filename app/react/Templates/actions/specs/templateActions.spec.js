@@ -70,6 +70,23 @@ describe('templateActions', () => {
         ]);
       });
     });
+
+    describe('when property is a relationship', () => {
+      it('should should add any entity or document (empty string) and inherit false as default values', () => {
+        actions.addProperty({ name: 'property3', type: 'relationship' }, 0)(dispatch, getState);
+        expect(formActions.change).toHaveBeenCalledWith('template.data.properties', [
+          {
+            name: 'property3',
+            type: 'relationship',
+            localID: 'unique_id',
+            content: '',
+            inherit: false,
+          },
+          { name: 'property1' },
+          { name: 'property2' },
+        ]);
+      });
+    });
   });
 
   describe('setNestedProperties()', () => {
