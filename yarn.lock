@@ -1747,6 +1747,13 @@
   dependencies:
     "@types/node" "*"
 
+"@types/child-process-promise@^2.2.1":
+  version "2.2.1"
+  resolved "https://registry.yarnpkg.com/@types/child-process-promise/-/child-process-promise-2.2.1.tgz#049033bef102f77a1719b38672cc86a2c4710ab1"
+  integrity sha512-xZ4kkF82YkmqPCERqV9Tj0bVQj3Tk36BqGlNgxv5XhifgDRhwAqp+of+sccksdpZRbbPsNwMOkmUqOnLgxKtGw==
+  dependencies:
+    "@types/node" "*"
+
 "@types/color-name@^1.1.1":
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/@types/color-name/-/color-name-1.1.1.tgz#1c1261bbeaa10a8055bbc5d8ab84b7b2afc846a0"

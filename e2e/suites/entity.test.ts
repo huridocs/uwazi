@@ -1,10 +1,12 @@
 /*global page*/
 
-import { adminLogin, logout } from './helpers/login';
-import proxyMock from './helpers/proxyMock';
+import { adminLogin, logout } from '../helpers/login';
+import proxyMock from '../helpers/proxyMock';
+import insertFixtures from '../helpers/insertFixtures';
 
 describe('Entities', () => {
   beforeAll(async () => {
+    await insertFixtures();
     await proxyMock();
     await adminLogin();
   });

@@ -1,11 +1,13 @@
 /*global page*/
 
-import { host } from './config';
-import { adminLogin, logout } from './helpers/login';
-import proxyMock from './helpers/proxyMock';
+import { host } from '../config';
+import { adminLogin, logout } from '../helpers/login';
+import proxyMock from '../helpers/proxyMock';
+import insertFixtures from '../helpers/insertFixtures';
 
 describe('Login', () => {
   beforeAll(async () => {
+    await insertFixtures();
     await proxyMock();
   });
 
