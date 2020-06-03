@@ -113,6 +113,12 @@ jobs:
         with:
           repository: huridocs/uwazi-fixtures
           path: uwazi-fixtures
+      - run: yarn e2e-puppeteer-fixtures
+        env:
+          DBHOST: localhost:${{ job.services.mongodb.ports[27017] }}
+          ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
+          DATABASE_NAME: uwazi_e2e
+          INDEX_NAME: uwazi_e2e
       - name: start Uwazi
         env:
           DBHOST: localhost:${{ job.services.mongodb.ports[27017] }}
