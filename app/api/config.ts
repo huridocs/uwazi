@@ -4,6 +4,10 @@ const { ROOT_PATH, UPLOADS_FOLDER, CUSTOM_UPLOADS_FOLDER, TEMPORAL_FILES_FOLDER 
 
 const rootPath = ROOT_PATH || `${__dirname}/../../`;
 
+// this needs to be true in order for uwazi to work properly
+// when using multiple node processes
+const CLUSTER_MODE = process.env.CLUSTER_MODE || false;
+
 export const config = {
   PORT: process.env.PORT || 3000,
 
@@ -23,5 +27,11 @@ export const config = {
     attachments: UPLOADS_FOLDER || `${rootPath}/uploaded_documents/`,
     customUploads: CUSTOM_UPLOADS_FOLDER || `${rootPath}/custom_uploads/`,
     temporalFiles: TEMPORAL_FILES_FOLDER || `${rootPath}/temporal_files/`,
+  },
+
+  redis: {
+    activated: CLUSTER_MODE,
+    host: process.env.REDIS_HOST || 'localhost',
+    port: process.env.REDIS_PORT || 6379,
   },
 };

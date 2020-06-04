@@ -5,8 +5,9 @@ import { FileType } from 'shared/types/fileType';
 import { EntitySchema } from 'shared/types/entityType';
 import { DB } from 'api/odm';
 import { tenants } from 'api/odm/tenantContext';
-import { testingTenants } from './testingTenants';
 import { setupTestUploadedPaths } from 'api/files/filesystem';
+
+import { testingTenants } from './testingTenants';
 
 mongoose.Promise = Promise;
 mongoose.set('useFindAndModify', false);
@@ -67,6 +68,8 @@ const testingDB: {
   async connect(options = { defaultTenant: true }) {
     if (!connected) {
       await initMongoServer();
+      // mongo/mongoose types collisions
+      //@ts-ignore
       mongodb = mongooseConnection.db;
       this.mongodb = mongodb;
 

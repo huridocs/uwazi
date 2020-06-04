@@ -33,7 +33,10 @@ describe('DB', () => {
 
   beforeEach(async () => {
     await DB.connect(mongoUri);
+    // mongo/mongoose types collisions
+    // @ts-ignore
     db1 = DB.getConnection().useDb('db1').db;
+    // @ts-ignore
     db2 = DB.getConnection().useDb('db2').db;
   });
 

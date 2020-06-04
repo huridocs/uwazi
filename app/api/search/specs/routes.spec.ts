@@ -19,6 +19,7 @@ describe('Search routes', () => {
   const app: Application = setUpApp(searchRoutes);
 
   beforeAll(async () => {
+    //@ts-ignore
     await db.clearAllAndLoad(fixtures);
     await elasticTesting.reindex();
     testingTenants.changeCurrentTenant({ indexName: elasticIndex });
