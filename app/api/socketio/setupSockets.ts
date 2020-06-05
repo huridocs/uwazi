@@ -7,6 +7,7 @@ import { Server } from 'http';
 import socketIo, { Server as SocketIoServer, Socket } from 'socket.io';
 import { Application, Request, Response, NextFunction } from 'express';
 import { config } from 'api/config';
+import { tenants } from 'api/tenants/tenantContext';
 
 declare global {
   namespace Express {
@@ -15,10 +16,23 @@ declare global {
       io: SocketIoServer;
     }
   }
+  namespace SocketIO {
+    export interface Server {
+      emitToCurrentTenant(event: string, ...args: any[]): void;
+    }
+  }
 }
 
 const setupSockets = (server: Server, app: Application) => {
   const io: SocketIoServer = socketIo(server);
+
+  io.on('connection', socket => {
+    socket.join(socket.request.headers.tenant || tenants.defaultTenantName);
+  });
+
+  io.emitToCurrentTenant = (event, ...args) => {
+    io.to(tenants.current().name).emit(event, ...args);
+  };
 
   if (config.redis.activated) {
     io.adapter(

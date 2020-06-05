@@ -7,83 +7,24 @@ import needsAuthorization from '../auth/authMiddleware';
 import templates from './templates';
 
 export default app => {
-  app.post(
-    '/api/templates',
-    needsAuthorization(),
-    validation.validateRequest(
-      Joi.object()
-        .keys({
-          _id: Joi.string(),
-          __v: Joi.number(),
-          name: Joi.string().required(),
-          color: Joi.string().allow(''),
-          default: Joi.boolean(),
-          properties: Joi.array()
-            .required()
-            .items(
-              Joi.object().keys({
-                _id: Joi.string(),
-                id: Joi.string(),
-                localID: Joi.string(),
-                label: Joi.string(),
-                name: Joi.string(),
-                nestedProperties: Joi.array(),
-                type: Joi.string(),
-                relationType: Joi.string(),
-                filter: Joi.boolean(),
-                noLabel: Joi.boolean(),
-                defaultfilter: Joi.boolean(),
-                required: Joi.boolean(),
-                inherit: Joi.boolean(),
-                inheritProperty: Joi.string()
-                  .allow(null)
-                  .allow(''),
-                sortable: Joi.boolean(),
-                showInCard: Joi.boolean(),
-                fullWidth: Joi.boolean(),
-                content: Joi.alternatives().when('type', {
-                  is: 'relationship',
-                  then: Joi.string().allow(['']),
-                  otherwise: Joi.string(),
-                }),
-                prioritySorting: Joi.boolean(),
-                style: Joi.string(),
-                inserting: Joi.any(),
-              })
-            ),
-          commonProperties: Joi.array().items(
-            Joi.object().keys({
-              _id: Joi.string(),
-              localID: Joi.string(),
-              isCommonProperty: Joi.boolean(),
-              label: Joi.string(),
-              name: Joi.string(),
-              prioritySorting: Joi.boolean(),
-              type: Joi.string(),
-            })
-          ),
-        })
-        .required()
-    ),
-    (req, res, next) => {
-      templates
-        .save(req.body, req.language)
-        .then(response => {
-          req.io.sockets.emit('templateChange', response);
-          return Promise.all([
-            response,
-            settings.updateFilterName(response._id.toString(), response.name),
-          ]);
-        })
-        .then(([response, updatedSettings]) => {
-          if (updatedSettings) {
-            req.io.sockets.emit('updateSettings', updatedSettings);
-          }
-          res.json(response);
-        })
-        .catch(next);
-    }
-  );
+  app.post('/api/templates', needsAuthorization(), (req, res, next) => {
+    templates
+      .save(req.body, req.language)
+      .then(response => {
+        req.io.emitToCurrentTenant('templateChange', response);
+        return Promise.all([
+          response,
+          settings.updateFilterName(response._id.toString(), response.name),
+        ]);
+      })
+      .then(([response, updatedSettings]) => {
+        if (updatedSettings) {
+          req.io.emitToCurrentTenant('updateSettings', updatedSettings);
+        }
+        res.json(response);
+      })
+      .catch(next);
+  });
 
   app.post(
     '/api/templates/setasdefault',
@@ -97,9 +38,9 @@ export default app => {
       templates
         .setAsDefault(req.body._id)
         .then(([newDefault, oldDefault]) => {
-          req.io.sockets.emit('templateChange', newDefault);
+          req.io.emitToCurrentTenant('templateChange', newDefault);
           if (oldDefault) {
-            req.io.sockets.emit('templateChange', oldDefault);
+            req.io.emitToCurrentTenant('templateChange', oldDefault);
           }
           res.json(newDefault);
         })
@@ -130,8 +71,8 @@ export default app => {
         .then(() => settings.removeTemplateFromFilters(template._id))
         .then(newSettings => {
           res.json(template);
-          req.io.sockets.emit('updateSettings', newSettings);
-          req.io.sockets.emit('templateDelete', template);
+          req.io.emitToCurrentTenant('updateSettings', newSettings);
+          req.io.emitToCurrentTenant('templateDelete', template);
         })
         .catch(next);
     }

@@ -49,7 +49,7 @@ export default app => {
         .save(req.body)
         .then(response => {
           response.contexts = translations.prepareContexts(response.contexts);
-          req.io.sockets.emit('translationsChange', response);
+          req.io.emitToCurrentTenant('translationsChange', response);
           res.json(response);
         })
         .catch(next);
@@ -71,7 +71,7 @@ export default app => {
       settings
         .setDefaultLanguage(req.body.key)
         .then(response => {
-          req.io.sockets.emit('updateSettings', response);
+          req.io.emitToCurrentTenant('updateSettings', response);
           res.json(response);
         })
         .catch(next);
@@ -98,8 +98,8 @@ export default app => {
         await entities.addLanguage(req.body.key);
         await pages.addLanguage(req.body.key);
 
-        req.io.sockets.emit('updateSettings', newSettings);
-        req.io.sockets.emit('translationsChange', newTranslations);
+        req.io.emitToCurrentTenant('updateSettings', newSettings);
+        req.io.emitToCurrentTenant('translationsChange', newTranslations);
         res.json(newSettings);
       } catch (e) {
         next(e);
@@ -126,8 +126,8 @@ export default app => {
         pages.removeLanguage(req.query.key),
       ])
         .then(([newSettings, newTranslations]) => {
-          req.io.sockets.emit('updateSettings', newSettings);
-          req.io.sockets.emit('translationsChange', newTranslations);
+          req.io.emitToCurrentTenant('updateSettings', newSettings);
+          req.io.emitToCurrentTenant('translationsChange', newTranslations);
           res.json(newSettings);
         })
         .catch(next);

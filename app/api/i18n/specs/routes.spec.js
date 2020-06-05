@@ -4,6 +4,10 @@ import i18nRoutes from 'api/i18n/routes.js';
 import instrumentRoutes from 'api/utils/instrumentRoutes';
 import translations from 'api/i18n/translations';
 
+const mocketSocketIo = () => ({
+  emitToCurrentTenant: jasmine.createSpy('emitToCurrentTenant'),
+});
+
 describe('i18n translations routes', () => {
   let routes;
   const mockRequest = new Promise(resolve => resolve({ translations: 'response' }));
@@ -35,13 +39,13 @@ describe('i18n translations routes', () => {
       spyOn(translations, 'save').and.returnValue(
         Promise.resolve({ contexts: [], id: 'saved_translations' })
       );
-      const emit = jasmine.createSpy('emit');
+      const io = mocketSocketIo();
       routes
-        .post('/api/translations', { body: { key: 'my new key' }, io: { sockets: { emit } } })
+        .post('/api/translations', { body: { key: 'my new key' }, io })
         .then(response => {
           expect(translations.save).toHaveBeenCalledWith({ key: 'my new key' });
           expect(response).toEqual({ contexts: [], id: 'saved_translations' });
-          expect(emit).toHaveBeenCalledWith('translationsChange', {
+          expect(io.emitToCurrentTenant).toHaveBeenCalledWith('translationsChange', {
             contexts: [],
             id: 'saved_translations',
           });
@@ -60,13 +64,15 @@ describe('i18n translations routes', () => {
       spyOn(settings, 'setDefaultLanguage').and.returnValue(
         Promise.resolve({ site_name: 'Uwazi' })
       );
-      const emit = jasmine.createSpy('emit');
+      const io = mocketSocketIo();
       routes
-        .post('/api/translations/setasdeafult', { body: { key: 'fr' }, io: { sockets: { emit } } })
+        .post('/api/translations/setasdeafult', { body: { key: 'fr' }, io })
         .then(response => {
           expect(settings.setDefaultLanguage).toHaveBeenCalledWith('fr');
           expect(response).toEqual({ site_name: 'Uwazi' });
-          expect(emit).toHaveBeenCalledWith('updateSettings', { site_name: 'Uwazi' });
+          expect(io.emitToCurrentTenant).toHaveBeenCalledWith('updateSettings', {
+            site_name: 'Uwazi',
+          });
           done();
         })
         .catch(catchErrors(done));
