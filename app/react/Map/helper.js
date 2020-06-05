@@ -106,7 +106,7 @@ const getInheritedMarkers = (template, entity, templates, color) => {
                   color,
                   info: point.label,
                   inherited: true,
-                  inheritedEntity: relatedProperty.value,
+                  label: relatedProperty.label,
                   context,
                 };
                 markers.push({ properties, latitude: lat, longitude: lon, label });
