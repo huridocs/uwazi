@@ -1,5 +1,5 @@
 import { DB } from 'api/odm';
-import { tenants } from 'api/odm/tenantContext';
+import { tenants } from 'api/tenants/tenantContext';
 import vaultSync from 'api/evidences_vault';
 
 const { template, auth_token } = require('yargs') // eslint-disable-line

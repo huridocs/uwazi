@@ -1,7 +1,7 @@
 import { DB } from 'api/odm';
 import templates, { templateUtils } from 'api/templates';
 import { propertyTypes } from 'shared/propertyTypes';
-import { tenants } from 'api/odm/tenantContext';
+import { tenants } from 'api/tenants/tenantContext';
 
 DB.connect()
   .then(() =>

@@ -1,4 +1,4 @@
-import { Tenant, tenants } from 'api/odm/tenantContext';
+import { Tenant, tenants } from 'api/tenants/tenantContext';
 
 const originalCurrentFN = tenants.current.bind(tenants);
 

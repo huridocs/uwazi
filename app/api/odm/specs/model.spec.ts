@@ -6,7 +6,7 @@ import mongoose, { Schema } from 'mongoose';
 import { ensure } from 'shared/tsUtils';
 import { instanceModel } from '../model';
 import { models, OdmModel, WithId } from '../models';
-import { tenants } from '../tenantContext';
+import { tenants } from '../../tenants/tenantContext';
 
 const testSchema = new Schema({
   name: String,

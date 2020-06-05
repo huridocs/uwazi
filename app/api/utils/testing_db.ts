@@ -4,7 +4,7 @@ import { Db, ObjectId } from 'mongodb';
 import { FileType } from 'shared/types/fileType';
 import { EntitySchema } from 'shared/types/entityType';
 import { DB } from 'api/odm';
-import { tenants } from 'api/odm/tenantContext';
+import { tenants } from 'api/tenants/tenantContext';
 import { setupTestUploadedPaths } from 'api/files/filesystem';
 
 import { testingTenants } from './testingTenants';

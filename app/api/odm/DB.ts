@@ -1,8 +1,6 @@
 import mongoose, { Connection } from 'mongoose';
 import { config } from 'api/config';
 
-import { tenants } from './tenantContext';
-
 type dbAuth = {
   user: string;
   pass: string;
@@ -20,8 +18,6 @@ const DB = {
       useUnifiedTopology: true,
       useNewUrlParser: true,
     });
-
-    tenants.addDefaultTenant();
 
     return this.getConnection();
   },

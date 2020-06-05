@@ -4,7 +4,7 @@ import { Readable } from 'stream';
 
 import ID from 'shared/uniqueID';
 import asyncFS from 'api/utils/async-fs';
-import { tenants } from 'api/odm/tenantContext';
+import { tenants } from 'api/tenants/tenantContext';
 import { testingTenants } from 'api/utils/testingTenants';
 
 import { FileType } from '../../shared/types/fileType';

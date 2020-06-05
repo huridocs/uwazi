@@ -1,5 +1,5 @@
 import { DB } from 'api/odm';
-import { tenants } from 'api/odm/tenantContext';
+import { tenants } from 'api/tenants/tenantContext';
 
 import { migrator } from './migrator';
 

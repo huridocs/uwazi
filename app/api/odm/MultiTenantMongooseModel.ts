@@ -1,6 +1,6 @@
 import mongoose, { Schema, UpdateQuery, ModelUpdateOptions } from 'mongoose';
 import { WithId, UwaziFilterQuery } from './models';
-import { tenants } from './tenantContext';
+import { tenants } from '../tenants/tenantContext';
 import { DB } from './DB';
 
 class MultiTenantMongooseModel<T> {

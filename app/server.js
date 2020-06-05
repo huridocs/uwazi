@@ -27,7 +27,7 @@ import handleError from './api/utils/handleError.js';
 import repeater from './api/utils/Repeater';
 import serverRenderingRoutes from './react/server.js';
 import { DB } from './api/odm';
-// import { tenants } from './api/odm/tenantContext';
+import { tenants } from './api/tenants/tenantContext';
 import { multitenantMiddleware } from './api/utils/multitenantMiddleware';
 import { staticFilesMiddleware } from './api/utils/staticFilesMiddleware';
 import { customUploadsPath, uploadsPath } from './api/files/filesystem';
@@ -77,6 +77,7 @@ if (process.env.DBUSER) {
 
 console.info('==> Connecting to', config.DBHOST);
 DB.connect(config.DBHOST, dbAuth).then(async () => {
+  await tenants.setupTenants();
   authRoutes(app);
   app.use(privateInstanceMiddleware);
   app.use('/flag-images', express.static(path.resolve(__dirname, '../dist/flags')));

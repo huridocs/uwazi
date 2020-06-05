@@ -2,7 +2,7 @@ import { CSVLoader } from 'api/csv';
 import { DB } from 'api/odm';
 import users from 'api/users/users';
 import { prettifyError } from 'api/utils/handleError';
-import { tenants } from 'api/odm/tenantContext';
+import { tenants } from 'api/tenants/tenantContext';
 
 const { template, importThesauri, username, language, file, stop } = require('yargs') // eslint-disable-line
   .option('template', {

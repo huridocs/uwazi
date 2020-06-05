@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import testingDB from 'api/utils/testing_db';
 import { Db } from 'mongodb';
-import { tenants } from 'api/odm/tenantContext';
+import { tenants } from 'api/tenants/tenantContext';
 import { config } from 'api/config';
 import { testingTenants } from 'api/utils/testingTenants';
 
@@ -23,7 +23,6 @@ describe('ODM Model multi-tenant', () => {
   let defaultDB: Db;
 
   beforeAll(async () => {
-    config.defaultTenant.dbName = 'defaultDBName';
     await testingDB.connect({ defaultTenant: false });
     defaultDB = DB.connectionForDB(config.defaultTenant.dbName).db;
     db1 = DB.connectionForDB('db1').db;

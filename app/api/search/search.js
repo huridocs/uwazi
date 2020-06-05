@@ -5,7 +5,7 @@ import propertiesHelper from 'shared/comonProperties';
 
 import translate, { getLocaleTranslation, getContext } from 'shared/translate';
 import translations from 'api/i18n/translations';
-import { tenants } from 'api/odm/tenantContext';
+import { tenants } from 'api/tenants/tenantContext';
 
 import dictionariesModel from 'api/thesauri/dictionariesModel';
 import { createError } from 'api/utils';

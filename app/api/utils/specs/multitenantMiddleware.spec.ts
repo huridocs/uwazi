@@ -1,6 +1,6 @@
 import request from 'supertest';
 import express, { Application } from 'express';
-import { tenants } from 'api/odm/tenantContext';
+import { tenants } from 'api/tenants/tenantContext';
 import { multitenantMiddleware } from '../multitenantMiddleware';
 
 const testingRoutes = (app: Application) => {

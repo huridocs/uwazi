@@ -1,4 +1,4 @@
-import { Tenant } from './odm/tenantContext';
+import { Tenant } from './tenants/tenantContext';
 
 const { ROOT_PATH, UPLOADS_FOLDER, CUSTOM_UPLOADS_FOLDER, TEMPORAL_FILES_FOLDER } = process.env;
 
