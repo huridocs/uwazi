@@ -350,7 +350,7 @@ Array [
       },
       "info": undefined,
       "inherited": true,
-      "inheritedEntity": undefined,
+      "inheritedEntity": "e5",
     },
   },
   Object {
@@ -440,7 +440,7 @@ Array [
       },
       "info": undefined,
       "inherited": true,
-      "inheritedEntity": undefined,
+      "inheritedEntity": "e4",
     },
   },
   Object {
@@ -530,7 +530,7 @@ Array [
       },
       "info": "inherited label",
       "inherited": true,
-      "inheritedEntity": undefined,
+      "inheritedEntity": "e4",
     },
   },
   Object {
@@ -620,7 +620,7 @@ Array [
       },
       "info": undefined,
       "inherited": true,
-      "inheritedEntity": undefined,
+      "inheritedEntity": "e5",
     },
   },
   Object {
@@ -725,7 +725,7 @@ Array [
       },
       "info": "home",
       "inherited": true,
-      "inheritedEntity": undefined,
+      "inheritedEntity": "e1",
     },
   },
 ]
