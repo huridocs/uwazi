@@ -416,10 +416,12 @@ const getInheritedEntitiesData = async (toFetchByTemplate, language, user) =>
       }
       return entities.get(query, {
         ...toFetchByTemplate[t].properties.reduce(
-          (memo, n) => Object.assign(memo, { [`metadata.${n}.value`]: 1 }),
+          (memo, n) =>
+            Object.assign(memo, { [`metadata.${n}.value`]: 1, [`metadata.${n}.label`]: 1 }),
           {}
         ),
         sharedId: 1,
+        title: 1,
       });
     })
   );
@@ -429,7 +431,6 @@ const getInheritedEntities = async (results, language, user) => {
   const templatesInheritedProperties = determineInheritedProperties(templates);
   const toFetchByTemplate = whatToFetchByTemplate(results, templatesInheritedProperties);
   const inheritedEntitiesData = await getInheritedEntitiesData(toFetchByTemplate, language, user);
-
   const inheritedEntities = inheritedEntitiesData.reduce((_memo, templateEntities) => {
     const memo = _memo;
     templateEntities.forEach(e => {
@@ -473,7 +474,9 @@ const processGeolocationResults = (_results, templatesInheritedProperties, inher
               ? inheritedEntities[entity]
               : { metadata: {} };
             inherited.metadata = inherited.metadata || {};
+            row.metadata[property][index] = row.metadata[property][index] || {};
             row.metadata[property][index] = {
+              ...row.metadata[property][index],
               value: entity,
               // geolocation may not be sanitized...
               inherit_geolocation: (inherited.metadata[targetProperty] || []).filter(p => p.value),
