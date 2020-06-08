@@ -7,6 +7,7 @@ import SidePanel from 'app/Layout/SidePanel';
 import Connections from 'app/Viewer/components/ConnectionsList';
 import { Tabs } from 'react-tabs-redux';
 import * as viewerModule from 'app/Viewer';
+import * as entityDefaultDocument from 'shared/entityDefaultDocument';
 
 import { DocumentSidePanel, mapStateToProps } from '../DocumentSidePanel';
 
@@ -108,6 +109,27 @@ describe('DocumentSidePanel', () => {
         ).toBe('metadata');
       });
     });
+
+    describe('when doc passed has toc', () => {
+      const toc = ['title1', 'title2', 'title3'];
+
+      it('if is a new entity should set toc of the loaded file', () => {
+        props.doc = Immutable.fromJS({ metadata: [], attachments: [], type: 'entity' });
+        props.file = { toc, pdfInfo: {} };
+        props.tab = 'toc';
+        render();
+        expect(component.find({ toc })).toHaveLength(1);
+      });
+
+      it('if is a loaded entity should set the toc of the default document', () => {
+        const documents = [{ toc }];
+        entityDefaultDocument.entityDefaultDocument = jest.fn().mockReturnValue(documents[0]);
+        props.doc = Immutable.fromJS({ documents, attachments: [], type: 'entity' });
+        props.tab = 'toc';
+        render();
+        expect(component.find({ toc })).toHaveLength(1);
+      });
+    });
   });
 
   describe('close', () => {
@@ -145,6 +167,7 @@ describe('DocumentSidePanel', () => {
         documentViewer: { targetDoc: Immutable.fromJS({ _id: null }) },
         relationships: { list: { connectionsGroups: 'connectionsGroups' } },
         relationTypes: Immutable.fromJS(['a', 'b']),
+        locale: 'es',
       };
       spyOn(viewerModule.selectors, 'parseReferences').and.callFake(
         (doc, refs) => `Parsed ${doc} refs: ${refs}`
@@ -184,6 +207,11 @@ describe('DocumentSidePanel', () => {
     it('should map connectionsGroups', () => {
       const ownProps = {};
       expect(mapStateToProps(state, ownProps).connectionsGroups).toBe('connectionsGroups');
+    });
+
+    it('should map default language', () => {
+      const ownProps = {};
+      expect(mapStateToProps(state, ownProps).defaultLanguage).toBe('es');
     });
   });
 });

@@ -18,6 +18,7 @@ import DocumentSemanticSearchResults from 'app/SemanticSearch/components/Documen
 import { Icon } from 'UI';
 
 import * as viewerModule from 'app/Viewer';
+import { entityDefaultDocument } from 'shared/entityDefaultDocument';
 import SearchText from './SearchText';
 import ShowToc from './ShowToc';
 import SnippetsTab from './SnippetsTab';
@@ -90,9 +91,17 @@ export class DocumentSidePanel extends Component {
     } = this.props;
     const TocForm = this.props.tocFormComponent;
 
-    const { attachments, documents } = doc.toJS();
+    const { attachments, documents, language } = doc.toJS();
 
     const isEntity = !documents || !documents.length;
+    let readOnlyToC = this.props.file.toc;
+
+    if (!isEntity) {
+      const defaultDocument = {
+        ...entityDefaultDocument(documents, language, 'en'),
+      };
+      readOnlyToC = defaultDocument ? defaultDocument.toc : [];
+    }
 
     let { tab } = this.props;
     if (isEntity && (tab === 'references' || tab === 'toc')) {
@@ -246,11 +255,7 @@ export class DocumentSidePanel extends Component {
             </TabContent>
             <TabContent for="toc">
               <ShowIf if={!this.props.tocBeingEdited}>
-                <ShowToc
-                  toc={this.props.file.toc}
-                  pdfInfo={this.props.file.pdfInfo}
-                  readOnly={readOnly}
-                />
+                <ShowToc toc={readOnlyToC} pdfInfo={this.props.file.pdfInfo} readOnly={readOnly} />
               </ShowIf>
               <ShowIf if={this.props.tocBeingEdited}>
                 <TocForm
@@ -387,11 +392,13 @@ export const mapStateToProps = (state, ownProps) => {
   const references = ownProps.references
     ? viewerModule.selectors.parseReferences(ownProps.doc, ownProps.references)
     : relevantReferences;
+  const defaultLanguage = state.locale;
   return {
     references,
     excludeConnectionsTab: Boolean(ownProps.references),
     connectionsGroups: state.relationships.list.connectionsGroups,
     relationships: ownProps.references,
+    defaultLanguage,
   };
 };
 
