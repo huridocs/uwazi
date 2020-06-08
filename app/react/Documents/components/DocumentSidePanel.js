@@ -321,7 +321,9 @@ export class DocumentSidePanel extends Component {
       const defaultDocument = {
         ...entityDefaultDocument(documents, language, 'en'),
       };
-      readOnlyToC = defaultDocument ? defaultDocument.toc : [];
+      if (defaultDocument) {
+        readOnlyToC = defaultDocument.toc;
+      }
     }
     return readOnlyToC;
   }
