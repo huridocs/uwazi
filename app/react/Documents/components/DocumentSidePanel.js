@@ -157,7 +157,7 @@ export class DocumentSidePanel extends Component {
                     <li>
                       <TabLink to="toc">
                         <Icon icon="font" />
-                        <span className="tab-link-tooltip">{t('System', 'Table of Content')}</span>
+                        <span className="tab-link-tooltip">{t('System', 'Table of Contents')}</span>
                       </TabLink>
                     </li>
                   );
