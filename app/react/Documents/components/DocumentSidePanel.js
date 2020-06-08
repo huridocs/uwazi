@@ -94,14 +94,7 @@ export class DocumentSidePanel extends Component {
     const { attachments, documents, language } = doc.toJS();
 
     const isEntity = !documents || !documents.length;
-    let readOnlyToC = this.props.file.toc;
-
-    if (!isEntity) {
-      const defaultDocument = {
-        ...entityDefaultDocument(documents, language, 'en'),
-      };
-      readOnlyToC = defaultDocument ? defaultDocument.toc : [];
-    }
+    const readOnlyToC = this.setDefaultDocumentToC(isEntity, documents, language);
 
     let { tab } = this.props;
     if (isEntity && (tab === 'references' || tab === 'toc')) {
@@ -319,6 +312,18 @@ export class DocumentSidePanel extends Component {
         </div>
       </SidePanel>
     );
+  }
+
+  setDefaultDocumentToC(isEntity, documents, language) {
+    let readOnlyToC = this.props.file.toc;
+
+    if (!isEntity) {
+      const defaultDocument = {
+        ...entityDefaultDocument(documents, language, 'en'),
+      };
+      readOnlyToC = defaultDocument ? defaultDocument.toc : [];
+    }
+    return readOnlyToC;
   }
 }
 
