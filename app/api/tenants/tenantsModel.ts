@@ -3,6 +3,7 @@ import mongoose, { Model, Document } from 'mongoose';
 import { config } from 'api/config';
 import { DB } from 'api/odm/DB';
 import handleError from 'api/utils/handleError.js';
+import { MongoError } from 'mongodb';
 
 import { Tenant } from './tenantContext';
 
@@ -24,13 +25,22 @@ export class TenantsModel extends EventEmitter {
     const tenantsDB = DB.connectionForDB(config.SHARED_DB);
     this.model = tenantsDB.model('tenants', mongoSchema);
 
-    const changeStrem = this.model.watch();
-    changeStrem.on('change', () => {
-      this.change().catch(console.log);
+    const changeStream = this.model.watch();
+    changeStream.on('change', () => {
+      this.change().catch(handleError);
     });
 
-    changeStrem.on('error', () => {
-      changeStrem.close().catch(handleError);
+    changeStream.on('error', (error: MongoError) => {
+      //The $changeStream stage is only supported on replica sets
+      if (error.code === 40573) {
+        // mongo documentation and ts types says changeStream.close returns a promise
+        // but actually it does not in the current version,
+        // catching the promise to prevent the eslint error results in a "catch of undefined" error
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        changeStream.close();
+      } else {
+        handleError(error);
+      }
     });
   }
 

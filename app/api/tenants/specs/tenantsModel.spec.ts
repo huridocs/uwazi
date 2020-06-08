@@ -4,11 +4,14 @@ import { DB } from 'api/odm/DB';
 import { Db, ObjectID } from 'mongodb';
 import testingDB from 'api/utils/testing_db';
 import { Model } from 'mongoose';
+import waitForExpect from 'wait-for-expect';
 
 describe('tenantsModel', () => {
   let db: Db;
   let model: TenantsModel;
   let changeEvent: Function;
+  let errorEvent: Function;
+  let mockChangeStream: { on: Function; close: Function };
 
   beforeAll(async () => {
     await testingDB.connect({ defaultTenant: false });
@@ -17,14 +20,19 @@ describe('tenantsModel', () => {
 
   beforeEach(async () => {
     // Model.watch is not supported by Mongo in-memory used by the tests
-    spyOn(Model, 'watch').and.returnValue({
+    mockChangeStream = {
       on: (event: string, fn: Function) => {
         if (event === 'change') {
           changeEvent = fn;
         }
+        if (event === 'error') {
+          errorEvent = fn;
+        }
       },
-      close: () => {},
-    });
+      close: jest.fn(),
+    };
+
+    spyOn(Model, 'watch').and.returnValue(mockChangeStream);
     model = new TenantsModel();
 
     await db.collection('tenants').deleteMany({});
@@ -76,8 +84,29 @@ describe('tenantsModel', () => {
         dbName: 'tenant_three',
       },
     ]);
-    await changeEvent();
 
-    expect(list.length).toBe(3);
+    changeEvent();
+
+    await waitForExpect(async () => {
+      expect(list.length).toEqual(3);
+    });
+  });
+
+  describe('on error', () => {
+    it('watch not supported should close the connection', () => {
+      errorEvent({
+        message: 'The $changeStream stage is only supported on replica sets',
+        code: 40573,
+      });
+
+      expect(mockChangeStream.close).toHaveBeenCalled();
+
+      try {
+        errorEvent({ message: 'something happened' });
+      } catch (error) {
+        expect(error.message).toBe('something happened');
+        expect(error.code).toBe(500);
+      }
+    });
   });
 });
