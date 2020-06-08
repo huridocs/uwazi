@@ -91,6 +91,10 @@ export function setDocuments(docs) {
   return { type: types.SET_DOCUMENTS, documents: docs };
 }
 
+export function addDocuments(docs) {
+  return { type: types.ADD_DOCUMENTS, documents: docs };
+}
+
 export function unsetDocuments() {
   return { type: types.UNSET_DOCUMENTS };
 }
@@ -153,7 +157,7 @@ export function filterIsEmpty(value) {
   return false;
 }
 
-export function processFilters(readOnlySearch, filters, limit) {
+export function processFilters(readOnlySearch, filters, limit, from) {
   const search = Object.assign({ filters: {} }, readOnlySearch);
   search.filters = {};
 
@@ -178,6 +182,7 @@ export function processFilters(readOnlySearch, filters, limit) {
 
   search.types = filters.documentTypes;
   search.limit = limit;
+  search.from = from;
   return search;
 }
 
@@ -210,34 +215,38 @@ function setSearchInUrl(searchParams) {
   const query = browserHistory.getCurrentLocation().query || {};
 
   query.q = encodeSearch(searchParams, false);
+
   browserHistory.push(path + toUrlParams(query));
 }
 
-export function searchDocuments({ search = undefined, filters = undefined }, storeKey, limit = 30) {
+export function searchDocuments(
+  { search = undefined, filters = undefined },
+  storeKey,
+  limit = 30,
+  from = 0
+) {
   return (dispatch, getState) => {
     const state = getState()[storeKey];
     const currentSearch = search || state.search;
     let currentFilters = filters || state.filters;
     currentFilters = currentFilters.toJS ? currentFilters.toJS() : currentFilters;
 
-    const finalSearchParams = processFilters(currentSearch, currentFilters, limit);
-    finalSearchParams.searchTerm = state.search.searchTerm;
+    const searchParams = processFilters(currentSearch, currentFilters, limit, from);
+    searchParams.searchTerm = state.search.searchTerm;
 
     const currentSearchParams = rison.decode(
       decodeURIComponent(browserHistory.getCurrentLocation().q || '()')
     );
-    if (
-      finalSearchParams.searchTerm &&
-      finalSearchParams.searchTerm !== currentSearchParams.searchTerm
-    ) {
-      finalSearchParams.sort = '_score';
+
+    if (searchParams.searchTerm && searchParams.searchTerm !== currentSearchParams.searchTerm) {
+      searchParams.sort = '_score';
     }
 
     if (currentSearch.userSelectedSorting) {
       dispatch(actions.set(`${storeKey}.selectedSorting`, currentSearch));
     }
 
-    setSearchInUrl(finalSearchParams);
+    setSearchInUrl(searchParams);
   };
 }
 
@@ -325,9 +334,10 @@ export function deleteEntity(entity) {
   };
 }
 
-export function loadMoreDocuments(storeKey, amount) {
+export function loadMoreDocuments(storeKey, amount, from) {
   return (dispatch, getState) => {
-    searchDocuments({ search: getState()[storeKey].search }, storeKey, amount)(dispatch, getState);
+    const { search } = getState()[storeKey];
+    searchDocuments({ search }, storeKey, amount, from)(dispatch, getState);
   };
 }
 

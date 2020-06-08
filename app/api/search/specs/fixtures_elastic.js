@@ -1,5 +1,3 @@
-/** @format */
-
 /* eslint-disable max-len */
 import db from 'api/utils/testing_db';
 
@@ -79,6 +77,10 @@ export default {
         relationship: [
           { value: batmanBegins, label: 'Batman begins en' },
           { value: 'unpublished', label: 'Do not show' },
+          {
+            value: 'this_entity_does_not_exist',
+            label: 'this is a relation that should not exist',
+          },
         ],
       },
     },
