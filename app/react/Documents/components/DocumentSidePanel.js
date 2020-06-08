@@ -60,6 +60,20 @@ export class DocumentSidePanel extends Component {
     this.props.showTab(tabSelected);
   }
 
+  setDefaultDocumentToC(isEntity, documents, language) {
+    let defaultDocumentToC = this.props.file.toc;
+
+    if (!isEntity) {
+      const defaultDocument = {
+        ...entityDefaultDocument(documents, language, 'en'),
+      };
+      if (defaultDocument) {
+        defaultDocumentToC = defaultDocument.toc;
+      }
+    }
+    return defaultDocumentToC;
+  }
+
   close() {
     if (this.props.formDirty) {
       this.context.confirm({
@@ -94,7 +108,7 @@ export class DocumentSidePanel extends Component {
     const { attachments, documents, language } = doc.toJS();
 
     const isEntity = !documents || !documents.length;
-    const readOnlyToC = this.setDefaultDocumentToC(isEntity, documents, language);
+    const defaultDocumentToC = this.setDefaultDocumentToC(isEntity, documents, language);
 
     let { tab } = this.props;
     if (isEntity && (tab === 'references' || tab === 'toc')) {
@@ -248,7 +262,11 @@ export class DocumentSidePanel extends Component {
             </TabContent>
             <TabContent for="toc">
               <ShowIf if={!this.props.tocBeingEdited}>
-                <ShowToc toc={readOnlyToC} pdfInfo={this.props.file.pdfInfo} readOnly={readOnly} />
+                <ShowToc
+                  toc={defaultDocumentToC}
+                  pdfInfo={this.props.file.pdfInfo}
+                  readOnly={readOnly}
+                />
               </ShowIf>
               <ShowIf if={this.props.tocBeingEdited}>
                 <TocForm
@@ -312,20 +330,6 @@ export class DocumentSidePanel extends Component {
         </div>
       </SidePanel>
     );
-  }
-
-  setDefaultDocumentToC(isEntity, documents, language) {
-    let readOnlyToC = this.props.file.toc;
-
-    if (!isEntity) {
-      const defaultDocument = {
-        ...entityDefaultDocument(documents, language, 'en'),
-      };
-      if (defaultDocument) {
-        readOnlyToC = defaultDocument.toc;
-      }
-    }
-    return readOnlyToC;
   }
 }
 
