@@ -40,6 +40,20 @@ export class DocumentSidePanel extends Component {
     }
   }
 
+  setDefaultDocumentToC(isEntity, documents, language) {
+    let defaultDocumentToC = this.props.file.toc;
+
+    if (!isEntity) {
+      const defaultDocument = {
+        ...entityDefaultDocument(documents, language, 'en'),
+      };
+      if (defaultDocument) {
+        defaultDocumentToC = defaultDocument.toc;
+      }
+    }
+    return defaultDocumentToC;
+  }
+
   deleteDocument() {
     this.context.confirm({
       accept: () => {
@@ -58,20 +72,6 @@ export class DocumentSidePanel extends Component {
 
   selectTab(tabSelected) {
     this.props.showTab(tabSelected);
-  }
-
-  setDefaultDocumentToC(isEntity, documents, language) {
-    let defaultDocumentToC = this.props.file.toc;
-
-    if (!isEntity) {
-      const defaultDocument = {
-        ...entityDefaultDocument(documents, language, 'en'),
-      };
-      if (defaultDocument) {
-        defaultDocumentToC = defaultDocument.toc;
-      }
-    }
-    return defaultDocumentToC;
   }
 
   close() {
