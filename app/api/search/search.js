@@ -417,11 +417,11 @@ const getInheritedEntitiesData = async (toFetchByTemplate, language, user) =>
       return entities.get(query, {
         ...toFetchByTemplate[t].properties.reduce(
           (memo, n) =>
-            Object.assign(memo, { [`metadata.${n}.value`]: 1, [`metadata.${n}.label`]: 1 }),
+            Object.assign(memo, { [`metadata.${n}.value`]: true, [`metadata.${n}.label`]: true }),
           {}
         ),
-        sharedId: 1,
-        title: 1,
+        sharedId: true,
+        title: true,
       });
     })
   );
