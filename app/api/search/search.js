@@ -139,6 +139,7 @@ function snippetsFromSearchHit(hit) {
 
 function searchGeolocation(documentsQuery, templates) {
   documentsQuery.limit(9999);
+  documentsQuery.from(0);
   const geolocationProperties = [];
 
   templates.forEach(template => {
@@ -218,21 +219,25 @@ const _denormalizeAggregations = async (aggregations, templates, dictionaries, l
       dictionaries
     );
 
-    const buckets = aggregations[key].buckets.map(bucket => {
-      const labelItem =
-        bucket.key === 'missing'
-          ? { label: 'No label' }
-          : dictionary.values
-              .reduce(
-                (values, v) => (v.values ? values.concat(v.values, [v]) : values.concat(v)),
-                []
-              )
-              .find(value => value.id === bucket.key, {});
+    const buckets = aggregations[key].buckets
+      .map(bucket => {
+        const labelItem =
+          bucket.key === 'missing'
+            ? { label: 'No label' }
+            : dictionary.values
+                .reduce(
+                  (values, v) => (v.values ? values.concat(v.values, [v]) : values.concat(v)),
+                  []
+                )
+                .find(value => value.id === bucket.key, {});
 
-      const { label, icon } = labelItem;
-
-      return Object.assign(bucket, { label, icon });
-    });
+        if (labelItem) {
+          const { label, icon } = labelItem;
+          return Object.assign(bucket, { label, icon });
+        }
+        return null;
+      })
+      .filter(item => item);
 
     let denormalizedAggregation = Object.assign(aggregations[key], { buckets });
     if (dictionary.values.find(v => v.values)) {
@@ -557,7 +562,7 @@ const buildQuery = async (query, language, user, resources) => {
     .filterById(query.ids)
     .language(language);
 
-  if (query.from) {
+  if (Number.isInteger(parseInt(query.from, 10))) {
     queryBuilder.from(query.from);
   }
 
