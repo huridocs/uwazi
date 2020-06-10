@@ -240,7 +240,7 @@ const _denormalizeAggregations = async (aggregations, templates, dictionaries, l
       .filter(item => item);
 
     let denormalizedAggregation = Object.assign(aggregations[key], { buckets });
-    if (dictionary.values.find(v => v.values)) {
+    if (dictionary && dictionary.values.find(v => v.values)) {
       denormalizedAggregation = _formatDictionaryWithGroupsAggregation(
         denormalizedAggregation,
         dictionary
