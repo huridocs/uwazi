@@ -119,6 +119,7 @@ jobs:
           ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
           DATABASE_NAME: uwazi_e2e
           INDEX_NAME: uwazi_e2e
+          TRANSPILED: true
       - name: start Uwazi
         env:
           DBHOST: localhost:${{ job.services.mongodb.ports[27017] }}
@@ -134,7 +135,7 @@ jobs:
         env:
           DBHOST: localhost:${{ job.services.mongodb.ports[27017] }}
           ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
-
+          TRANSPILED: true
   eslint:
     runs-on: ubuntu-latest
     steps:

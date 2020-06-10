@@ -49,7 +49,7 @@
     "test": "node ./node_modules/.bin/jest",
     "e2e": "jest --projects nightmare/jest.e2e.config.js -i --verbose true",
     "e2e-puppeteer": "DATABASE_NAME=uwazi_e2e INDEX_NAME=uwazi_e2e jest --projects e2e/jest.e2e.config.ts -i --verbose true",
-    "e2e-puppeteer-fixtures": "DATABASE_NAME=uwazi_e2e INDEX_NAME=uwazi_e2e ./uwazi-fixtures/restore_transpiled.sh",
+    "e2e-puppeteer-fixtures": "DATABASE_NAME=uwazi_e2e INDEX_NAME=uwazi_e2e ./uwazi-fixtures/restore.sh",
     "e2e-show": "export SHOW_E2E=1; yarn e2e",
     "e2e-restore-fixtures": "cd nightmare/fixtures; ./restore.sh",
     "eslint": "./node_modules/.bin/eslint app --quiet --ext js,ts,tsx",
