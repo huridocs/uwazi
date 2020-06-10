@@ -61,6 +61,7 @@
 @import 'modules/i18n';
 @import 'layout/hero';
 @import 'modules/thesauri';
+@import 'modules/review';
 
 @import '../../Timeline/scss/timeline';
 @import 'utilities/utilities';
@@ -71,5 +72,3 @@
 @import 'vendor/nprogress';
 @import 'vendor/fa-svg-with-js';
 @import 'vendor/react-widgets';
-
-@import 'modules/review';
