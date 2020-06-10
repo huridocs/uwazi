@@ -7,6 +7,7 @@ Array [
       "inherited_country": Array [
         Object {
           "inherit_geolocation": Array [],
+          "label": "Country A en",
           "value": "entity06",
         },
       ],
@@ -21,6 +22,7 @@ Array [
               },
             },
           ],
+          "label": "Entity with two geolocations en",
           "value": "entity01",
         },
         Object {
@@ -33,14 +35,17 @@ Array [
               },
             },
           ],
+          "label": "Entity with single geolocation en",
           "value": "entity03",
         },
         Object {
           "inherit_geolocation": Array [],
+          "label": "Entity without geolocation en",
           "value": "entity04",
         },
         Object {
           "inherit_geolocation": Array [],
+          "label": "entity without metadata",
           "value": "entity04.1",
         },
       ],
@@ -68,6 +73,7 @@ Array [
               },
             },
           ],
+          "label": "Entity not always inherited en",
           "value": "entity02",
         },
         Object {
@@ -91,6 +97,7 @@ Array [
               },
             },
           ],
+          "label": "Country A en",
           "value": "entityPrivate01",
         },
       ],
@@ -182,6 +189,7 @@ Array [
       "inherited_country": Array [
         Object {
           "inherit_geolocation": Array [],
+          "label": "Country A en",
           "value": "entity06",
         },
       ],
@@ -196,6 +204,7 @@ Array [
               },
             },
           ],
+          "label": "Entity with two geolocations en",
           "value": "entity01",
         },
         Object {
@@ -208,14 +217,17 @@ Array [
               },
             },
           ],
+          "label": "Entity with single geolocation en",
           "value": "entity03",
         },
         Object {
           "inherit_geolocation": Array [],
+          "label": "Entity without geolocation en",
           "value": "entity04",
         },
         Object {
           "inherit_geolocation": Array [],
+          "label": "entity without metadata",
           "value": "entity04.1",
         },
       ],
@@ -243,6 +255,7 @@ Array [
               },
             },
           ],
+          "label": "Entity not always inherited en",
           "value": "entity02",
         },
         Object {
@@ -266,6 +279,7 @@ Array [
               },
             },
           ],
+          "label": "Entity with two geolocations en",
           "value": "entity01",
         },
       ],
@@ -285,6 +299,7 @@ Array [
               },
             },
           ],
+          "label": "Country A en",
           "value": "entityPrivate01",
         },
       ],
