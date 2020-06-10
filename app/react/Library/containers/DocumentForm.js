@@ -11,6 +11,7 @@ function mapStateToProps(state, props) {
   return {
     model: `${props.storeKey}.sidepanel.metadata`,
     templateId: state[props.storeKey].sidepanel.metadata.template,
+    templateChanged: !state[props.storeKey].sidepanel.metadataForm.template.pristine,
     templates,
     thesauris,
   };

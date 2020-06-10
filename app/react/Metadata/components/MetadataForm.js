@@ -57,6 +57,9 @@ export class MetadataForm extends Component {
               <label>{t('System', 'Type')}</label>
             </li>
             <li className="wide">
+              {this.props.templateChanged ? (<span>Changing the template will erase all connections to this entity.</span>): null}
+            </li>
+            <li className="wide">
               <SimpleSelect
                 className="form-control"
                 value={template.get('_id')}
@@ -162,6 +165,7 @@ MetadataForm.propTypes = {
   model: PropTypes.string.isRequired,
   template: PropTypes.instanceOf(Immutable.Map).isRequired,
   templateId: PropTypes.string,
+  templateChanged: PropTypes.bool,
   multipleEdition: PropTypes.bool,
   templateOptions: PropTypes.instanceOf(Immutable.List).isRequired,
   thesauris: PropTypes.instanceOf(Immutable.List).isRequired,
