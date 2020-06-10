@@ -113,21 +113,25 @@ describe('DocumentSidePanel', () => {
     describe('when doc passed has toc', () => {
       const toc = ['title1', 'title2', 'title3'];
 
-      it('if is a new entity should set toc of the loaded file', () => {
-        props.doc = Immutable.fromJS({ metadata: [], attachments: [], type: 'entity' });
-        props.file = { toc, pdfInfo: {} };
-        props.tab = 'toc';
-        render();
-        expect(component.find({ toc })).toHaveLength(1);
+      describe('when doc is a new entity', () => {
+        it('should set toc of the loaded file', () => {
+          props.doc = Immutable.fromJS({ metadata: [], attachments: [], type: 'entity' });
+          props.file = { toc, pdfInfo: {} };
+          props.tab = 'toc';
+          render();
+          expect(component.find({ toc: ['a'] })).toHaveLength(1);
+        });
       });
 
-      it('if is a loaded entity should set the toc of the default document', () => {
-        const documents = [{ toc }];
-        entityDefaultDocument.entityDefaultDocument = jest.fn().mockReturnValue(documents[0]);
-        props.doc = Immutable.fromJS({ documents, attachments: [], type: 'entity' });
-        props.tab = 'toc';
-        render();
-        expect(component.find({ toc })).toHaveLength(1);
+      describe('when doc is a loaded entity', () => {
+        it('should set the toc of the default document', () => {
+          const documents = [{ toc }];
+          entityDefaultDocument.entityDefaultDocument = jest.fn().mockReturnValue(documents[0]);
+          props.doc = Immutable.fromJS({ documents, attachments: [], type: 'entity' });
+          props.tab = 'toc';
+          render();
+          expect(component.find({ toc })).toHaveLength(1);
+        });
       });
     });
   });

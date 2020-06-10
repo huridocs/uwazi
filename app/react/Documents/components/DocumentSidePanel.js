@@ -40,12 +40,12 @@ export class DocumentSidePanel extends Component {
     }
   }
 
-  setDefaultDocumentToC(isEntity, documents, language) {
+  setDefaultDocumentToC(isEntity, documents, language, currentLanguage) {
     let defaultDocumentToC = this.props.file.toc;
 
     if (!isEntity) {
       const defaultDocument = {
-        ...entityDefaultDocument(documents, language, 'en'),
+        ...entityDefaultDocument(documents, language, currentLanguage),
       };
       if (defaultDocument) {
         defaultDocumentToC = defaultDocument.toc;
@@ -102,13 +102,19 @@ export class DocumentSidePanel extends Component {
       isTargetDoc,
       excludeConnectionsTab,
       relationships,
+      currentLanguage,
     } = this.props;
     const TocForm = this.props.tocFormComponent;
 
     const { attachments, documents, language } = doc.toJS();
 
     const isEntity = !documents || !documents.length;
-    const defaultDocumentToC = this.setDefaultDocumentToC(isEntity, documents, language);
+    const defaultDocumentToC = this.setDefaultDocumentToC(
+      isEntity,
+      documents,
+      language,
+      currentLanguage
+    );
 
     let { tab } = this.props;
     if (isEntity && (tab === 'references' || tab === 'toc')) {
@@ -381,6 +387,7 @@ DocumentSidePanel.propTypes = {
   storeKey: PropTypes.string.isRequired,
   raw: PropTypes.bool,
   file: PropTypes.object,
+  currentLanguage: PropTypes.string,
 };
 
 DocumentSidePanel.contextTypes = {
@@ -403,13 +410,13 @@ export const mapStateToProps = (state, ownProps) => {
   const references = ownProps.references
     ? viewerModule.selectors.parseReferences(ownProps.doc, ownProps.references)
     : relevantReferences;
-  const defaultLanguage = state.locale;
+  const currentLanguage = state.locale;
   return {
     references,
     excludeConnectionsTab: Boolean(ownProps.references),
     connectionsGroups: state.relationships.list.connectionsGroups,
     relationships: ownProps.references,
-    defaultLanguage,
+    currentLanguage,
   };
 };
 
