@@ -11,7 +11,7 @@ import {
   unselectAllDocuments,
 } from 'app/Library/actions/libraryActions';
 import SearchBar from 'app/Library/components/SearchBar';
-import { TemplateLabel, EntityTitle } from 'app/Layout';
+import { TemplateLabel } from 'app/Layout';
 import { t } from 'app/I18N';
 import { Icon } from 'app/UI';
 
@@ -22,35 +22,26 @@ const markerInfo = info => (
   </div>
 );
 
-export class MapView extends Component {
-  static renderInfo(marker) {
-    return (
-      <div className="popup-container">
-        <div className="template-label">
-          <TemplateLabel template={marker.properties.entity.template} />
-        </div>
-        <div className="entity-data">
-          <div>
-            <span className="popup-name">{marker.properties.entity.title}</span>
-            <span className="popup-metadata-property">
-              ({t(marker.properties.entity.template, marker.label)})
-            </span>
-          </div>
-          {marker.properties.inherited &&
-            markerInfo(
-              <EntityTitle
-                context={marker.properties.context}
-                entity={marker.properties.inheritedEntity}
-              />
-            )}
-          {marker.properties.info &&
-            !marker.properties.inherited &&
-            markerInfo(marker.properties.info)}
-        </div>
+export const renderInfo = marker => (
+  <div className="popup-container">
+    <div className="template-label">
+      <TemplateLabel template={marker.properties.entity.template} />
+    </div>
+    <div className="entity-data">
+      <div>
+        <span className="popup-name">{marker.properties.entity.title}</span>
+        <span className="popup-metadata-property">
+          ({t(marker.properties.entity.template, marker.label)})
+        </span>
       </div>
-    );
-  }
+      {marker.properties.inherited &&
+        markerInfo(<span className="entity-title">{marker.properties.label}</span>)}
+      {marker.properties.info && !marker.properties.inherited && markerInfo(marker.properties.info)}
+    </div>
+  </div>
+);
 
+export class MapView extends Component {
   constructor(props) {
     super(props);
     this.clickOnMarker = this.clickOnMarker.bind(this);
@@ -88,7 +79,7 @@ export class MapView extends Component {
               zoom={1}
               clickOnMarker={this.clickOnMarker}
               clickOnCluster={this.clickOnCluster}
-              renderPopupInfo={MapView.renderInfo}
+              renderPopupInfo={renderInfo}
               cluster
             />
           )}
