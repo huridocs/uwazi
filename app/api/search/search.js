@@ -280,8 +280,14 @@ const _sanitizeAggregationsStructure = (aggregations, limit) => {
 
     if (aggregation.buckets) {
       const bucketsWithResults = aggregation.buckets.filter(b => b.filtered.doc_count);
+      const missingBucket = bucketsWithResults.find(b => b.key === 'missing');
       aggregation.count = bucketsWithResults.length;
       aggregation.buckets = aggregation.buckets.slice(0, limit);
+      const bucketsIncludeMissing = aggregation.buckets.find(b => b.key === 'missing');
+      if (!bucketsIncludeMissing && missingBucket) {
+        aggregation.buckets = aggregation.buckets.slice(0, limit - 1);
+        aggregation.buckets.push(missingBucket);
+      }
     }
 
     result[aggregationKey] = aggregation;
