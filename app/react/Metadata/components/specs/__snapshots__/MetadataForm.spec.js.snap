@@ -63,6 +63,18 @@ exports[`MetadataForm should display custom title label 1`] = `
       <li
         className="wide"
       >
+        <ShowIf>
+          <span>
+            <Connect(Icon)
+              icon="exclamation-triangle"
+            />
+            Changing the type will erase all connections to this entity.
+          </span>
+        </ShowIf>
+      </li>
+      <li
+        className="wide"
+      >
         <Select
           className="form-control"
           onChange={[Function]}

@@ -5,6 +5,7 @@ import { Select as SimpleSelect } from 'app/Forms';
 import { I18NLink, t, Translate } from 'app/I18N';
 import { notificationActions } from 'app/Notifications';
 import { FormGroup } from 'app/ReactReduxForms';
+import ShowIf from 'app/App/ShowIf';
 import Immutable from 'immutable';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
@@ -57,7 +58,12 @@ export class MetadataForm extends Component {
               <label>{t('System', 'Type')}</label>
             </li>
             <li className="wide">
-              {this.props.templateChanged ? (<span>Changing the template will erase all connections to this entity.</span>): null}
+              <ShowIf if={this.props.templateChanged}>
+                <span>
+                  <Icon icon="exclamation-triangle" />
+                  {t('System', 'Changing the type will erase all connections to this entity.')}
+                </span>
+              </ShowIf>
             </li>
             <li className="wide">
               <SimpleSelect
