@@ -11,15 +11,13 @@ import { migrator } from '../migrator';
 import testingDB from '../../utils/testing_db';
 
 describe('migrator', () => {
-  beforeEach(done => {
-    testingDB
-      .clearAllAndLoad({})
-      .then(done)
-      .catch(catchErrors(done));
+  let connection;
+  beforeAll(async () => {
+    connection = await testingDB.connect();
   });
 
-  afterAll(done => {
-    testingDB.disconnect().then(done);
+  afterAll(async () => {
+    await testingDB.disconnect();
   });
 
   it('should have migrations directory configured', () => {
@@ -27,7 +25,8 @@ describe('migrator', () => {
   });
 
   describe('migrate', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
+      await testingDB.clear();
       migrator.migrationsDir = path.join(__dirname, 'testMigrations');
       jest.spyOn(migration1, 'up');
       jest.spyOn(migration2, 'up');
@@ -36,11 +35,11 @@ describe('migrator', () => {
 
     it('should execute all migrations in order', done => {
       migrator
-        .migrate()
+        .migrate(connection.db)
         .then(() => {
-          expect(migration1.up).toHaveBeenCalled();
-          expect(migration2.up).toHaveBeenCalled();
-          expect(migration10.up).toHaveBeenCalled();
+          expect(migration1.up).toHaveBeenCalledWith(connection.db);
+          expect(migration2.up).toHaveBeenCalledWith(connection.db);
+          expect(migration10.up).toHaveBeenCalledWith(connection.db);
 
           expect(migration1.up).toHaveBeenCalledBefore(migration2.up);
           expect(migration2.up).toHaveBeenCalledBefore(migration10.up);
@@ -51,7 +50,7 @@ describe('migrator', () => {
 
     it('should save migrations run on the db', done => {
       migrator
-        .migrate()
+        .migrate(connection.db)
         .then(() => migrationsModel.get())
         .then(migrations => {
           expect(migrations.map(m => m.delta)).toEqual([1, 2, 10]);
@@ -66,11 +65,11 @@ describe('migrator', () => {
 
       migrationsModel
         .save({ delta: 1 })
-        .then(() => migrator.migrate())
+        .then(() => migrator.migrate(connection.db))
         .then(() => {
           expect(migration1.up).not.toHaveBeenCalled();
-          expect(migration2.up).toHaveBeenCalled();
-          expect(migration10.up).toHaveBeenCalled();
+          expect(migration2.up).toHaveBeenCalledWith(connection.db);
+          expect(migration10.up).toHaveBeenCalledWith(connection.db);
           expect(migration2.up).toHaveBeenCalledBefore(migration10.up);
           done();
         })
@@ -84,11 +83,11 @@ describe('migrator', () => {
 
       migrationsModel
         .saveMultiple([{ delta: 1 }, { delta: 2 }])
-        .then(() => migrator.migrate())
+        .then(() => migrator.migrate(connection.db))
         .then(() => {
           expect(migration1.up).not.toHaveBeenCalled();
           expect(migration2.up).not.toHaveBeenCalled();
-          expect(migration10.up).toHaveBeenCalled();
+          expect(migration10.up).toHaveBeenCalledWith(connection.db);
           done();
         })
         .catch(catchErrors(done));
@@ -101,7 +100,7 @@ describe('migrator', () => {
 
       migrationsModel
         .saveMultiple([{ delta: 10 }])
-        .then(() => migrator.migrate())
+        .then(() => migrator.migrate(connection.db))
         .then(() => {
           expect(migration1.up).not.toHaveBeenCalled();
           expect(migration2.up).not.toHaveBeenCalled();

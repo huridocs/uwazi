@@ -16,8 +16,7 @@ import privateInstanceMiddleware from './api/auth/privateInstanceMiddleware';
 import authRoutes from './api/auth/routes';
 import { config } from './api/config';
 import vaultSync from './api/evidences_vault';
-import systemKeys from './api/i18n/systemKeys.js';
-import translations from './api/i18n/translations.js';
+
 import { migrator } from './api/migrations/migrator';
 import { workerManager as semanticSearchManager } from './api/semanticsearch';
 import settings from './api/settings';
@@ -87,28 +86,25 @@ DB.connect(config.DBHOST, dbAuth).then(async () => {
   apiRoutes(app, http);
   serverRenderingRoutes(app);
   app.use(errorHandlingMiddleware);
-  // just for testing, manually added tenants, this needs to be added via some other process
-  //
-  // tenants.add({ name: 'uwazi_development' });
-  // tenants.add({ name: 'tenant2', dbName: 'tenant2', indexName: 'tenant2' });
-  //
 
-  if (!process.env.MULTI_TENANT_ACTIVE) {
-    console.info('==> Processing system keys...');
-    await translations.processSystemKeys(systemKeys);
+  await tenants.run(async () => {
     const shouldMigrate = await migrator.shouldMigrate();
     if (shouldMigrate) {
-      console.info('\x1b[33m%s\x1b[0m', '==> Your database needs to be migrated, please wait.');
-      await migrator.migrate();
+      console.error(
+        '\x1b[33m%s\x1b[0m',
+        '==> Your database needs to be migrated, please run:\n\n yarn migrate & yarn reindex\n\n'
+      );
+      process.exit();
     }
 
     semanticSearchManager.start();
-  }
+  });
 
   const bindAddress = { true: 'localhost' }[process.env.LOCALHOST_ONLY];
   const port = config.PORT;
+
   http.listen(port, bindAddress, async () => {
-    if (!process.env.MULTI_TENANT_ACTIVE) {
+    await tenants.run(async () => {
       syncWorker.start();
 
       const { evidencesVault } = await settings.get();
@@ -116,6 +112,7 @@ DB.connect(config.DBHOST, dbAuth).then(async () => {
         console.info('==> 📥 evidences vault config detected, started sync ....');
         repeater.start(() => vaultSync.sync(evidencesVault.token, evidencesVault.template), 10000);
       }
+
       repeater.start(
         () =>
           TaskProvider.runAndWait('TopicClassificationSync', 'TopicClassificationSync', {
@@ -125,7 +122,7 @@ DB.connect(config.DBHOST, dbAuth).then(async () => {
           }),
         10000
       );
-    }
+    });
 
     console.info(
       '==> 🌎 Listening on port %s. Open up http://localhost:%s/ in your browser.',
