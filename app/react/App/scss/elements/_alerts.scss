@@ -22,17 +22,25 @@
   border-radius: 0;
 
   & > svg:first-child {
-    margin-right: 15px;
+    left: 15px;
+    top: 18px;
+    position: absolute;
   }
   .fa-times {
     position: absolute;
-    right: 30px;
+    right: 10px;
     transform: translateY(3px);
     color: $c-grey;
+    top: 5px;
   }
 
   &.no-margin {
     margin: 0px;
+  }
+
+  .alert-text {
+    padding-left: 25px;
+    padding-right: 15px;
   }
 }
 
