@@ -64,7 +64,7 @@ export class Viewer extends Component {
     const { templates, doc, file } = this.props;
 
     if (file && !file.pdfInfo) {
-      const fileName = (doc.get('defaultDoc') || {}).get('filename');
+      const fileName = doc.get('defaultDoc') ? doc.get('defaultDoc').get('filename') : undefined;
       requestViewerState(new RequestParams({ sharedId: doc.get('sharedId'), file: fileName }), {
         ...store.getState(),
         templates: templates.toJS(),
