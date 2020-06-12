@@ -25,6 +25,7 @@ describe('Viewer', () => {
         _id: 'id',
         sharedId: 'sharedId',
         documents: [{ language: 'eng', pdfInfo: 'already parsed' }],
+        defaultDoc: { filename: 'filename.jpg' },
       }),
       file: { language: 'eng', pdfInfo: 'already parsed' },
       targetDoc: false,
@@ -197,7 +198,7 @@ describe('Viewer', () => {
       props.file = { language: 'eng' };
       render({ mount: true });
       expect(routeActions.requestViewerState).toHaveBeenCalledWith(
-        new RequestParams({ sharedId: 'sharedId' }),
+        new RequestParams({ sharedId: 'sharedId', file: 'filename.jpg' }),
         { ...context.store.getState(), templates: [] }
       );
       expect(context.store.dispatch).toHaveBeenCalledWith('requestViewerState:action1');
