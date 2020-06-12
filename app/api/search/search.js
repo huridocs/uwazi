@@ -192,7 +192,7 @@ const _formatDictionaryWithGroupsAggregation = (aggregation, dictionary) => {
   const buckets = dictionary.values
     .map(dictionaryValue => {
       const bucket = aggregation.buckets.find(b => b.key === dictionaryValue.id);
-      if (dictionaryValue.values) {
+      if (bucket && dictionaryValue.values) {
         bucket.values = dictionaryValue.values
           .map(v => aggregation.buckets.find(b => b.key === v.id))
           .filter(b => b);
