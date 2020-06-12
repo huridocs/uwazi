@@ -37,7 +37,9 @@ describe('Viewer', () => {
   });
 
   const render = ({ mount = false } = {}) => {
-    context = { store: { dispatch: jasmine.createSpy('dispatch') } };
+    context = {
+      store: { getState: () => ({ settings: {} }), dispatch: jasmine.createSpy('dispatch') },
+    };
     component = shallow(<Viewer {...props} />, { context, disableLifecycleMethods: true });
 
     if (mount) {
@@ -194,10 +196,9 @@ describe('Viewer', () => {
     it('should requestViewerState to populate pdfInfo when pdf not yet rendered for the first time', () => {
       props.file = { language: 'eng' };
       render({ mount: true });
-
       expect(routeActions.requestViewerState).toHaveBeenCalledWith(
         new RequestParams({ sharedId: 'sharedId' }),
-        { templates: [] }
+        { ...context.store.getState(), templates: [] }
       );
       expect(context.store.dispatch).toHaveBeenCalledWith('requestViewerState:action1');
       expect(context.store.dispatch).toHaveBeenCalledWith('requestViewerState:action2');

@@ -65,6 +65,7 @@ export class Viewer extends Component {
 
     if (file && !file.pdfInfo) {
       requestViewerState(new RequestParams({ sharedId: doc.get('sharedId') }), {
+        ...store.getState(),
         templates: templates.toJS(),
       }).then(viewerActions => {
         viewerActions.forEach(action => {
