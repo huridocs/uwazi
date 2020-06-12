@@ -189,15 +189,17 @@ const _getAggregationDictionary = async (aggregation, language, property, dictio
 };
 
 const _formatDictionaryWithGroupsAggregation = (aggregation, dictionary) => {
-  const buckets = dictionary.values.map(dictionaryValue => {
-    const bucket = aggregation.buckets.find(b => b.key === dictionaryValue.id);
-    if (dictionaryValue.values) {
-      bucket.values = dictionaryValue.values.map(v =>
-        aggregation.buckets.find(b => b.key === v.id)
-      );
-    }
-    return bucket;
-  });
+  const buckets = dictionary.values
+    .map(dictionaryValue => {
+      const bucket = aggregation.buckets.find(b => b.key === dictionaryValue.id);
+      if (dictionaryValue.values) {
+        bucket.values = dictionaryValue.values
+          .map(v => aggregation.buckets.find(b => b.key === v.id))
+          .filter(b => b);
+      }
+      return bucket;
+    })
+    .filter(b => b);
   buckets.push(aggregation.buckets.find(b => b.key === 'missing'));
   return Object.assign(aggregation, { buckets });
 };
