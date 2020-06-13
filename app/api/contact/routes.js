@@ -16,10 +16,13 @@ export default app => {
         },
       },
     }),
-    (req, res, next) =>
-      contact
-        .sendMessage(req.body)
-        .then(() => res.json('ok'))
-        .catch(next)
+    async (req, res, next) => {
+      try {
+        await contact.sendMessage(req.body);
+        res.json('ok');
+      } catch (err) {
+        next(err);
+      }
+    }
   );
 };
