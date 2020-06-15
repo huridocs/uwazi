@@ -123,7 +123,6 @@ describe('DocumentSidePanel', () => {
           props.file = { toc, pdfInfo: {} };
           props.tab = 'toc';
           render();
-          console.log(component.find(ShowToc));
           expect(component.find(ShowToc).props().toc).toBe(toc);
         });
       });
