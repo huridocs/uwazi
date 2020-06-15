@@ -34,7 +34,7 @@ export default app => {
             _types: { type: 'array', items: [{ type: 'string' }] },
             fields: { type: 'array', items: [{ type: 'string' }] },
             allAggregations: { type: 'boolean' },
-            userSelectedSorting: { type: 'string' },
+            userSelectedSorting: { type: 'boolean' },
             aggregations: { type: 'string' },
             order: { type: 'string', enum: ['asc', 'desc'] },
             sort: { type: 'string' },

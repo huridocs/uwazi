@@ -9,4 +9,3 @@ export { default as ConfirmButton } from './ConfirmButton';
 export { default as CurrentLocationLink } from './CurrentLocationLink';
 export { default as Warning } from './Warning';
 export { default as BackButton } from './BackButton';
-export { default as EntityTitle } from './EntityTitle';
