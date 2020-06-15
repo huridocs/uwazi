@@ -37,7 +37,9 @@ describe('Viewer', () => {
   });
 
   const render = ({ mount = false } = {}) => {
-    context = { store: { dispatch: jasmine.createSpy('dispatch') } };
+    context = {
+      store: { getState: () => ({ settings: {} }), dispatch: jasmine.createSpy('dispatch') },
+    };
     component = shallow(<Viewer {...props} />, { context, disableLifecycleMethods: true });
 
     if (mount) {
@@ -191,16 +193,32 @@ describe('Viewer', () => {
       expect(context.store.dispatch).toHaveBeenCalledWith({ type: 'LOAD_DEFAULT_VIEWER_MENU' });
     });
 
-    it('should requestViewerState to populate pdfInfo when pdf not yet rendered for the first time', () => {
-      props.file = { language: 'eng' };
-      render({ mount: true });
+    describe('when pdf not yet rendered for the first time', () => {
+      it('should requestViewerState to populate pdfInfo', () => {
+        props.file = { language: 'eng' };
+        render({ mount: true });
+        expect(routeActions.requestViewerState).toHaveBeenCalledWith(
+          new RequestParams({ sharedId: 'sharedId' }),
+          { ...context.store.getState(), templates: [] }
+        );
+        expect(context.store.dispatch).toHaveBeenCalledWith('requestViewerState:action1');
+        expect(context.store.dispatch).toHaveBeenCalledWith('requestViewerState:action2');
+      });
 
-      expect(routeActions.requestViewerState).toHaveBeenCalledWith(
-        new RequestParams({ sharedId: 'sharedId' }),
-        { templates: [] }
-      );
-      expect(context.store.dispatch).toHaveBeenCalledWith('requestViewerState:action1');
-      expect(context.store.dispatch).toHaveBeenCalledWith('requestViewerState:action2');
+      it('should pass the default document if document has one', () => {
+        props.file = { language: 'eng' };
+        props.doc = fromJS({
+          _id: 'id',
+          sharedId: 'sharedId',
+          documents: [{ language: 'eng', pdfInfo: 'already parsed' }],
+          defaultDoc: { filename: 'filename.jpg' },
+        });
+        render({ mount: true });
+        expect(routeActions.requestViewerState).toHaveBeenCalledWith(
+          new RequestParams({ sharedId: 'sharedId', file: 'filename.jpg' }),
+          { ...context.store.getState(), templates: [] }
+        );
+      });
     });
   });
 });
