@@ -20,6 +20,8 @@ export const config = {
   // db for tenants list and sessions
   SHARED_DB: 'uwazi_shared_db',
 
+  multiTenant: process.env.MULTI_TENANT || false,
+  clusterMode: CLUSTER_MODE,
   defaultTenant: <Tenant>{
     dbName: process.env.DATABASE_NAME || 'uwazi_development',
     indexName: process.env.INDEX_NAME || 'uwazi_development',

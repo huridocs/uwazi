@@ -87,41 +87,48 @@ DB.connect(config.DBHOST, dbAuth).then(async () => {
   serverRenderingRoutes(app);
   app.use(errorHandlingMiddleware);
 
-  await tenants.run(async () => {
-    const shouldMigrate = await migrator.shouldMigrate();
-    if (shouldMigrate) {
-      console.error(
-        '\x1b[33m%s\x1b[0m',
-        '==> Your database needs to be migrated, please run:\n\n yarn migrate & yarn reindex\n\n'
-      );
-      process.exit();
-    }
+  if (!config.multiTenant && !config.clusterMode) {
+    await tenants.run(async () => {
+      const shouldMigrate = await migrator.shouldMigrate();
+      if (shouldMigrate) {
+        console.error(
+          '\x1b[33m%s\x1b[0m',
+          '==> Your database needs to be migrated, please run:\n\n yarn migrate & yarn reindex\n\n'
+        );
+        process.exit();
+      }
 
-    semanticSearchManager.start();
-  });
+      semanticSearchManager.start();
+    });
+  }
 
   const bindAddress = { true: 'localhost' }[process.env.LOCALHOST_ONLY];
   const port = config.PORT;
 
   http.listen(port, bindAddress, async () => {
     await tenants.run(async () => {
-      syncWorker.start();
+      if (!config.multiTenant && !config.clusterMode) {
+        syncWorker.start();
 
-      const { evidencesVault } = await settings.get();
-      if (evidencesVault && evidencesVault.token && evidencesVault.template) {
-        console.info('==> 📥 evidences vault config detected, started sync ....');
-        repeater.start(() => vaultSync.sync(evidencesVault.token, evidencesVault.template), 10000);
+        const { evidencesVault } = await settings.get();
+        if (evidencesVault && evidencesVault.token && evidencesVault.template) {
+          console.info('==> 📥 evidences vault config detected, started sync ....');
+          repeater.start(
+            () => vaultSync.sync(evidencesVault.token, evidencesVault.template),
+            10000
+          );
+        }
+
+        repeater.start(
+          () =>
+            TaskProvider.runAndWait('TopicClassificationSync', 'TopicClassificationSync', {
+              mode: 'onlynew',
+              noDryRun: true,
+              overwrite: true,
+            }),
+          10000
+        );
       }
-
-      repeater.start(
-        () =>
-          TaskProvider.runAndWait('TopicClassificationSync', 'TopicClassificationSync', {
-            mode: 'onlynew',
-            noDryRun: true,
-            overwrite: true,
-          }),
-        10000
-      );
     });
 
     console.info(
