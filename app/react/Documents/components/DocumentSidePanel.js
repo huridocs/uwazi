@@ -102,7 +102,7 @@ export class DocumentSidePanel extends Component {
       isTargetDoc,
       excludeConnectionsTab,
       relationships,
-      currentLanguage,
+      defaultLanguage,
     } = this.props;
     const TocForm = this.props.tocFormComponent;
 
@@ -113,7 +113,7 @@ export class DocumentSidePanel extends Component {
       isEntity,
       documents,
       language,
-      currentLanguage
+      defaultLanguage
     );
 
     let { tab } = this.props;
@@ -387,7 +387,7 @@ DocumentSidePanel.propTypes = {
   storeKey: PropTypes.string.isRequired,
   raw: PropTypes.bool,
   file: PropTypes.object,
-  currentLanguage: PropTypes.string,
+  defaultLanguage: PropTypes.string.isRequired,
 };
 
 DocumentSidePanel.contextTypes = {
@@ -410,13 +410,16 @@ export const mapStateToProps = (state, ownProps) => {
   const references = ownProps.references
     ? viewerModule.selectors.parseReferences(ownProps.doc, ownProps.references)
     : relevantReferences;
-  const currentLanguage = state.locale;
+  const defaultLanguage = state.settings.collection
+    .get('languages')
+    .find(l => l.get('default'))
+    .get('key');
   return {
     references,
     excludeConnectionsTab: Boolean(ownProps.references),
     connectionsGroups: state.relationships.list.connectionsGroups,
     relationships: ownProps.references,
-    currentLanguage,
+    defaultLanguage,
   };
 };
 

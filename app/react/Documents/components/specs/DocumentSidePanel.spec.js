@@ -1,15 +1,18 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import Immutable, { fromJS } from 'immutable';
+import { Tabs } from 'react-tabs-redux';
 
 import { ConnectionsGroups } from 'app/ConnectionsList';
 import SidePanel from 'app/Layout/SidePanel';
 import Connections from 'app/Viewer/components/ConnectionsList';
-import { Tabs } from 'react-tabs-redux';
 import * as viewerModule from 'app/Viewer';
-import * as entityDefaultDocument from 'shared/entityDefaultDocument';
+import { entityDefaultDocument } from 'shared/entityDefaultDocument';
 
+import ShowToc from '../ShowToc';
 import { DocumentSidePanel, mapStateToProps } from '../DocumentSidePanel';
+
+jest.mock('shared/entityDefaultDocument');
 
 describe('DocumentSidePanel', () => {
   let component;
@@ -39,6 +42,7 @@ describe('DocumentSidePanel', () => {
         { templates: [{ count: 3 }, { count: 4 }] },
       ]),
       open: true,
+      defaultLanguage: 'es',
     };
   });
 
@@ -119,18 +123,19 @@ describe('DocumentSidePanel', () => {
           props.file = { toc, pdfInfo: {} };
           props.tab = 'toc';
           render();
-          expect(component.find({ toc: ['a'] })).toHaveLength(1);
+          console.log(component.find(ShowToc));
+          expect(component.find(ShowToc).props().toc).toBe(toc);
         });
       });
 
       describe('when doc is a loaded entity', () => {
         it('should set the toc of the default document', () => {
           const documents = [{ toc }];
-          entityDefaultDocument.entityDefaultDocument = jest.fn().mockReturnValue(documents[0]);
+          entityDefaultDocument.mockReturnValue(documents[0]);
           props.doc = Immutable.fromJS({ documents, attachments: [], type: 'entity' });
           props.tab = 'toc';
           render();
-          expect(component.find({ toc })).toHaveLength(1);
+          expect(component.find(ShowToc).props().toc).toBe(toc);
         });
       });
     });
@@ -165,13 +170,17 @@ describe('DocumentSidePanel', () => {
 
   describe('mapStateToProps', () => {
     let state;
+    const languages = [
+      { key: 'en', label: 'English' },
+      { key: 'pr', label: 'Português', default: true },
+    ];
 
     beforeEach(() => {
       state = {
         documentViewer: { targetDoc: Immutable.fromJS({ _id: null }) },
         relationships: { list: { connectionsGroups: 'connectionsGroups' } },
         relationTypes: Immutable.fromJS(['a', 'b']),
-        locale: 'es',
+        settings: { collection: Immutable.fromJS({ languages }) },
       };
       spyOn(viewerModule.selectors, 'parseReferences').and.callFake(
         (doc, refs) => `Parsed ${doc} refs: ${refs}`
@@ -215,7 +224,7 @@ describe('DocumentSidePanel', () => {
 
     it('should map default language', () => {
       const ownProps = {};
-      expect(mapStateToProps(state, ownProps).defaultLanguage).toBe('es');
+      expect(mapStateToProps(state, ownProps).defaultLanguage).toBe('pr');
     });
   });
 });
