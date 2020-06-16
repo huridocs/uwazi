@@ -61,7 +61,9 @@ export class MetadataForm extends Component {
               <ShowIf if={this.props.templateChanged}>
                 <span>
                   <Icon icon="exclamation-triangle" />
-                  {t('System', 'Changing the type will erase all connections to this entity.')}
+                  <Translate context="System">
+                    Changing the type will erase all connections to this entity.
+                  </Translate>
                 </span>
               </ShowIf>
             </li>

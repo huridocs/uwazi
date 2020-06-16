@@ -68,7 +68,11 @@ exports[`MetadataForm should display custom title label 1`] = `
             <Connect(Icon)
               icon="exclamation-triangle"
             />
-            Changing the type will erase all connections to this entity.
+            <Connect(Translate)
+              context="System"
+            >
+              Changing the type will erase all connections to this entity.
+            </Connect(Translate)>
           </span>
         </ShowIf>
       </li>

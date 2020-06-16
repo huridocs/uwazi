@@ -125,6 +125,7 @@ describe('Metadata Actions', () => {
 
       spyOn(reactReduxForm.actions, 'reset').and.returnValue('formReset');
       spyOn(reactReduxForm.actions, 'load').and.returnValue('formLoad');
+      spyOn(reactReduxForm.actions, 'setDirty');
 
       dispatch = jasmine.createSpy('dispatch');
 
@@ -162,6 +163,14 @@ describe('Metadata Actions', () => {
 
       expect(dispatch).toHaveBeenCalledWith('formLoad');
       expect(reactReduxForm.actions.load).toHaveBeenCalledWith('formNamespace', expectedDoc);
+    });
+
+    it('should set the template field dirty', () => {
+      const getState = () => state;
+
+      actions.changeTemplate('formNamespace', 'newTemplate')(dispatch, getState);
+      jasmine.clock().tick(0);
+      expect(reactReduxForm.actions.setDirty).toHaveBeenCalledWith('formNamespace.template');
     });
   });
 
