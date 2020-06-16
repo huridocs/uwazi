@@ -1,5 +1,3 @@
-/** @format */
-
 import entities, { model } from 'api/entities';
 import { search } from 'api/search';
 import db from 'api/utils/testing_db';
@@ -18,12 +16,11 @@ describe('relationship', () => {
     content: templateToRelateId,
   };
 
-  afterAll(async () => db.disconnect());
+  const noContentTemplateProp = {
+    name: 'relationship_no_content',
+  };
 
-  beforeAll(async () => {
-    await db.clearAllAndLoad(fixtures);
-
-    spyOn(search, 'indexEntities').and.returnValue(Promise.resolve());
+  const prepareExtraFixtures = async () => {
     await model.save({
       title: 'value1',
       template: templateToRelateId,
@@ -36,18 +33,36 @@ describe('relationship', () => {
       sharedId: '123',
       language: 'es',
     });
+    await model.save({
+      title: 'value1',
+      template: db.id(),
+      sharedId: 'not the same sharedID',
+      language: 'pt',
+    });
+  };
+
+  const runScenarios = async () => {
     value1 = await typeParsers.relationship(
       { relationship_prop: 'value1|value3|value3' },
       templateProp
     );
 
-    value2 = await typeParsers.relationship({ relationship_prop: 'value1|value2' }, templateProp);
+    afterAll(async () => db.disconnect());
 
+    value2 = await typeParsers.relationship({ relationship_prop: 'value1|value2' }, templateProp);
     value3 = await typeParsers.relationship({ relationship_prop: 'value1|value2' }, templateProp);
 
     await typeParsers.relationship({ relationship_prop: '' }, templateProp);
-
     await typeParsers.relationship({ relationship_prop: '|' }, templateProp);
+    await typeParsers.relationship({ relationship_no_content: 'newValue' }, noContentTemplateProp);
+  };
+
+  beforeAll(async () => {
+    await db.clearAllAndLoad(fixtures);
+
+    spyOn(search, 'indexEntities').and.returnValue(Promise.resolve());
+    await prepareExtraFixtures();
+    await runScenarios();
 
     entitiesRelated = await entities.get({ template: templateToRelateId, language: 'en' });
   });
@@ -71,7 +86,7 @@ describe('relationship', () => {
     ]);
   });
 
-  it('should not create blank values or duplicate values', async () => {
+  it('should not create blank values, duplicate values, or values without templates', async () => {
     expect(entitiesRelated.length).toBe(3);
   });
 });
