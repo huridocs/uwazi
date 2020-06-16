@@ -30,6 +30,7 @@ export class ContactForm extends Component {
     } catch (err) {
       return err;
     }
+    return true;
   }
 
   render() {
