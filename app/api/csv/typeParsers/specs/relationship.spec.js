@@ -36,21 +36,27 @@ describe('relationship', () => {
     await model.save({
       title: 'value1',
       template: db.id(),
-      sharedId: 'not the same sharedID',
+      sharedId: 'not the same sharedId',
       language: 'pt',
     });
   };
 
   const runScenarios = async () => {
     value1 = await typeParsers.relationship(
-      { relationship_prop: 'value1|value3|value3' },
+      { relationship_prop: 'value1|value3|value3', language: 'en' },
       templateProp
     );
 
     afterAll(async () => db.disconnect());
 
-    value2 = await typeParsers.relationship({ relationship_prop: 'value1|value2' }, templateProp);
-    value3 = await typeParsers.relationship({ relationship_prop: 'value1|value2' }, templateProp);
+    value2 = await typeParsers.relationship(
+      { relationship_prop: 'value1|value2', language: 'en' },
+      templateProp
+    );
+    value3 = await typeParsers.relationship(
+      { relationship_prop: 'value1|value2', language: 'en' },
+      templateProp
+    );
 
     await typeParsers.relationship({ relationship_prop: '' }, templateProp);
     await typeParsers.relationship({ relationship_prop: '|' }, templateProp);

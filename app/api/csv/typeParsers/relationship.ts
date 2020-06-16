@@ -33,7 +33,7 @@ const relationship = async (entityToImport: RawEntity, property: PropertySchema)
           template: property.content,
         },
         {
-          language: 'en',
+          language: entityToImport.language,
           user: {},
         }
       );
