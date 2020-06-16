@@ -111,3 +111,122 @@ exports[`MapView render() should render a map 1`] = `
   zoom={1}
 />
 `;
+
+exports[`MapView renderPopupInfo should render the popup for inherited geolocations 1`] = `
+<div
+  className="popup-container"
+>
+  <div
+    className="template-label"
+  >
+    <Connect(TemplateLabel)
+      template="5e0fde90d6ecbf60be14eca2"
+    />
+  </div>
+  <div
+    className="entity-data"
+  >
+    <div>
+      <span
+        className="popup-name"
+      >
+        Secure investigation and documentation
+      </span>
+      <span
+        className="popup-metadata-property"
+      >
+        (
+        Country
+        )
+      </span>
+    </div>
+    <div
+      className="marker-info"
+    >
+      <Connect(Icon)
+        className="tag-icon"
+        icon="tag"
+      />
+      <span
+        className="entity-title"
+      >
+        Bolivia
+      </span>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`MapView renderPopupInfo should render the popup for non inherited geolocations with info 1`] = `
+<div
+  className="popup-container"
+>
+  <div
+    className="template-label"
+  >
+    <Connect(TemplateLabel)
+      template="5e0fde90d6ecbf60be14eca2"
+    />
+  </div>
+  <div
+    className="entity-data"
+  >
+    <div>
+      <span
+        className="popup-name"
+      >
+        Entity with info
+      </span>
+      <span
+        className="popup-metadata-property"
+      >
+        (
+        Entity
+        )
+      </span>
+    </div>
+    <div
+      className="marker-info"
+    >
+      <Connect(Icon)
+        className="tag-icon"
+        icon="tag"
+      />
+      Info to Show
+    </div>
+  </div>
+</div>
+`;
+
+exports[`MapView renderPopupInfo should render the popup for simple geolocations 1`] = `
+<div
+  className="popup-container"
+>
+  <div
+    className="template-label"
+  >
+    <Connect(TemplateLabel)
+      template="5e0fdf2ad6ecbf60be14f094"
+    />
+  </div>
+  <div
+    className="entity-data"
+  >
+    <div>
+      <span
+        className="popup-name"
+      >
+        Uruguay
+      </span>
+      <span
+        className="popup-metadata-property"
+      >
+        (
+        Geolocation
+        )
+      </span>
+    </div>
+    
+  </div>
+</div>
+`;

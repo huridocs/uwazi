@@ -189,15 +189,17 @@ const _getAggregationDictionary = async (aggregation, language, property, dictio
 };
 
 const _formatDictionaryWithGroupsAggregation = (aggregation, dictionary) => {
-  const buckets = dictionary.values.map(dictionaryValue => {
-    const bucket = aggregation.buckets.find(b => b.key === dictionaryValue.id);
-    if (dictionaryValue.values) {
-      bucket.values = dictionaryValue.values.map(v =>
-        aggregation.buckets.find(b => b.key === v.id)
-      );
-    }
-    return bucket;
-  });
+  const buckets = dictionary.values
+    .map(dictionaryValue => {
+      const bucket = aggregation.buckets.find(b => b.key === dictionaryValue.id);
+      if (bucket && dictionaryValue.values) {
+        bucket.values = dictionaryValue.values
+          .map(v => aggregation.buckets.find(b => b.key === v.id))
+          .filter(b => b);
+      }
+      return bucket;
+    })
+    .filter(b => b);
   buckets.push(aggregation.buckets.find(b => b.key === 'missing'));
   return Object.assign(aggregation, { buckets });
 };
@@ -240,7 +242,7 @@ const _denormalizeAggregations = async (aggregations, templates, dictionaries, l
       .filter(item => item);
 
     let denormalizedAggregation = Object.assign(aggregations[key], { buckets });
-    if (dictionary.values.find(v => v.values)) {
+    if (dictionary && dictionary.values.find(v => v.values)) {
       denormalizedAggregation = _formatDictionaryWithGroupsAggregation(
         denormalizedAggregation,
         dictionary
@@ -280,8 +282,14 @@ const _sanitizeAggregationsStructure = (aggregations, limit) => {
 
     if (aggregation.buckets) {
       const bucketsWithResults = aggregation.buckets.filter(b => b.filtered.doc_count);
+      const missingBucket = bucketsWithResults.find(b => b.key === 'missing');
       aggregation.count = bucketsWithResults.length;
       aggregation.buckets = aggregation.buckets.slice(0, limit);
+      const bucketsIncludeMissing = aggregation.buckets.find(b => b.key === 'missing');
+      if (!bucketsIncludeMissing && missingBucket) {
+        aggregation.buckets = aggregation.buckets.slice(0, limit - 1);
+        aggregation.buckets.push(missingBucket);
+      }
     }
 
     result[aggregationKey] = aggregation;
@@ -416,10 +424,12 @@ const getInheritedEntitiesData = async (toFetchByTemplate, language, user) =>
       }
       return entities.get(query, {
         ...toFetchByTemplate[t].properties.reduce(
-          (memo, n) => Object.assign(memo, { [`metadata.${n}.value`]: 1 }),
+          (memo, n) =>
+            Object.assign(memo, { [`metadata.${n}.value`]: true, [`metadata.${n}.label`]: true }),
           {}
         ),
-        sharedId: 1,
+        sharedId: true,
+        title: true,
       });
     })
   );
@@ -429,7 +439,6 @@ const getInheritedEntities = async (results, language, user) => {
   const templatesInheritedProperties = determineInheritedProperties(templates);
   const toFetchByTemplate = whatToFetchByTemplate(results, templatesInheritedProperties);
   const inheritedEntitiesData = await getInheritedEntitiesData(toFetchByTemplate, language, user);
-
   const inheritedEntities = inheritedEntitiesData.reduce((_memo, templateEntities) => {
     const memo = _memo;
     templateEntities.forEach(e => {
@@ -473,7 +482,9 @@ const processGeolocationResults = (_results, templatesInheritedProperties, inher
               ? inheritedEntities[entity]
               : { metadata: {} };
             inherited.metadata = inherited.metadata || {};
+            row.metadata[property][index] = row.metadata[property][index] || {};
             row.metadata[property][index] = {
+              ...row.metadata[property][index],
               value: entity,
               // geolocation may not be sanitized...
               inherit_geolocation: (inherited.metadata[targetProperty] || []).filter(p => p.value),
