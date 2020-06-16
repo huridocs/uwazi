@@ -191,7 +191,9 @@ describe('documentActions', () => {
         })
         .get(`${APIURL}entities?sharedId=docWithPDFRdy`, {
           body: JSON.stringify({
-            rows: [{ documents: [{ pdfInfo: 'processed pdf', _id: 'pdfReady', filename: 'filename' }] }],
+            rows: [
+              { documents: [{ pdfInfo: 'processed pdf', _id: 'pdfReady', filename: 'filename' }] },
+            ],
           }),
         })
         .get(`${APIURL}entities?sharedId=docWithPDFNotRdy`, {
