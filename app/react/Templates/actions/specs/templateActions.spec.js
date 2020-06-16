@@ -70,6 +70,18 @@ describe('templateActions', () => {
         ]);
       });
     });
+
+    describe('setPropertyDefaults for relationship type', () => {
+      it('should add any entity or document (empty string) and inherit false as default values', () => {
+        const properties = actions.setPropertyDefaults(getState, { type: 'relationship' });
+        expect(properties).toEqual(
+          expect.objectContaining({
+            content: '',
+            inherit: false,
+          })
+        );
+      });
+    });
   });
 
   describe('setNestedProperties()', () => {

@@ -1,8 +1,12 @@
 import { APIURL } from 'app/config.js';
 import backend from 'fetch-mock';
 import * as relationships from 'app/Relationships/utils/routeUtils';
-
+import { fromJS } from 'immutable';
+import { getDocument } from 'app/Viewer/actions/documentActions';
 import * as routeActions from '../routeActions';
+
+jest.mock('app/Viewer/actions/documentActions');
+jest.mock('app/Viewer/referencesAPI');
 
 describe('Viewer routeActions', () => {
   const document = { _id: '1', sharedId: 'sid', title: 'title', pdfInfo: 'test' };
@@ -64,6 +68,35 @@ describe('Viewer routeActions', () => {
       });
       expect(dispatch).toHaveBeenCalledWith({ type: 'relationshipsSetReduxState', value: state });
       expect(dispatch).toHaveBeenCalledWith({ type: 'viewer/rawText/SET', value: 'rawText' });
+    });
+  });
+
+  describe('requestViewerState', () => {
+    it('should resolve default document with default language', async () => {
+      const requestParams = new Map();
+      requestParams.data = {
+        sharedId: 'sharedId',
+        file: { filename: 'abc.pdf' },
+      };
+      requestParams.onlyHeaders = () => {};
+      const globalResources = {
+        settings: {
+          collection: fromJS({
+            languages: [
+              {
+                key: 'es',
+                default: true,
+              },
+            ],
+            templates: [],
+          }),
+        },
+      };
+      getDocument.mockResolvedValue({ defaultDoc: { _id: 'id1' }, sharedId: 'sharedId' });
+      await routeActions.requestViewerState(requestParams, globalResources);
+      expect(getDocument).toHaveBeenCalledWith(requestParams, 'es', {
+        filename: 'abc.pdf',
+      });
     });
   });
 });
