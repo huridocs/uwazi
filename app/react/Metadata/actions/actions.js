@@ -128,7 +128,9 @@ export function changeTemplate(form, templateId) {
     dispatch(formActions.reset(form));
     setTimeout(() => {
       dispatch(formActions.load(form, entity));
-      dispatch(formActions.setDirty(`${form}.template`));
+      if (entity._id) {
+        dispatch(formActions.setDirty(`${form}.template`));
+      }
     });
   };
 }

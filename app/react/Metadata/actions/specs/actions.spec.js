@@ -115,12 +115,6 @@ describe('Metadata Actions', () => {
     let state;
 
     beforeEach(() => {
-      const doc = {
-        title: 'test',
-        template: 'templateId',
-        metadata: { test: [{ value: 'test' }], test2: [{ value: 'test2' }] },
-      };
-      spyOn(reactReduxForm, 'getModel').and.returnValue(doc);
       jasmine.clock().install();
 
       spyOn(reactReduxForm.actions, 'reset').and.returnValue('formReset');
@@ -141,36 +135,64 @@ describe('Metadata Actions', () => {
       };
     });
 
-    afterEach(() => {
-      jasmine.clock().uninstall();
+    describe('existing entity', () => {
+      beforeEach(() => {
+        const doc = {
+          _id: 'entityId',
+          title: 'test',
+          template: 'templateId',
+          metadata: { test: [{ value: 'test' }], test2: [{ value: 'test2' }] },
+        };
+        spyOn(reactReduxForm, 'getModel').and.returnValue(doc);
+      });
+
+      afterEach(() => {
+        jasmine.clock().uninstall();
+      });
+
+      it('should change the document template preserve matching values', () => {
+        const getState = () => state;
+
+        actions.changeTemplate('formNamespace', 'newTemplate')(dispatch, getState);
+        expect(reactReduxForm.getModel).toHaveBeenCalledWith(state, 'formNamespace');
+
+        const expectedDoc = {
+          _id: 'entityId',
+          title: 'test',
+          template: 'newTemplate',
+          metadata: { test: [{ value: 'test' }], newProp: [] },
+        };
+        expect(dispatch).toHaveBeenCalledWith('formReset');
+        expect(reactReduxForm.actions.reset).toHaveBeenCalledWith('formNamespace');
+
+        jasmine.clock().tick(0);
+
+        expect(dispatch).toHaveBeenCalledWith('formLoad');
+        expect(reactReduxForm.actions.load).toHaveBeenCalledWith('formNamespace', expectedDoc);
+      });
+
+      it('should set the template field dirty', () => {
+        const getState = () => state;
+
+        actions.changeTemplate('formNamespace', 'newTemplate')(dispatch, getState);
+        jasmine.clock().tick(0);
+        expect(reactReduxForm.actions.setDirty).toHaveBeenCalledWith('formNamespace.template');
+      });
     });
 
-    it('should change the document template preserve matching values', () => {
-      const getState = () => state;
-
-      actions.changeTemplate('formNamespace', 'newTemplate')(dispatch, getState);
-      expect(reactReduxForm.getModel).toHaveBeenCalledWith(state, 'formNamespace');
-
-      const expectedDoc = {
-        title: 'test',
-        template: 'newTemplate',
-        metadata: { test: [{ value: 'test' }], newProp: [] },
-      };
-      expect(dispatch).toHaveBeenCalledWith('formReset');
-      expect(reactReduxForm.actions.reset).toHaveBeenCalledWith('formNamespace');
-
-      jasmine.clock().tick(0);
-
-      expect(dispatch).toHaveBeenCalledWith('formLoad');
-      expect(reactReduxForm.actions.load).toHaveBeenCalledWith('formNamespace', expectedDoc);
-    });
-
-    it('should set the template field dirty', () => {
-      const getState = () => state;
-
-      actions.changeTemplate('formNamespace', 'newTemplate')(dispatch, getState);
-      jasmine.clock().tick(0);
-      expect(reactReduxForm.actions.setDirty).toHaveBeenCalledWith('formNamespace.template');
+    describe('new entity', () => {
+      it('should not set the template field dirty', () => {
+        const getState = () => state;
+        const doc = {
+          title: 'test',
+          template: 'templateId',
+          metadata: { test: [{ value: 'test' }], test2: [{ value: 'test2' }] },
+        };
+        spyOn(reactReduxForm, 'getModel').and.returnValue(doc);
+        actions.changeTemplate('formNamespace', 'newTemplate')(dispatch, getState);
+        jasmine.clock().tick(0);
+        expect(reactReduxForm.actions.setDirty).not.toHaveBeenCalledWith('formNamespace.template');
+      });
     });
   });
 
