@@ -176,7 +176,7 @@ export const processEntity = (
       return processCommonField(header.name, row, rowTemplate, options);
     }
 
-    if (!row.metadata[header.name]) {
+    if (!row.metadata || !row.metadata[header.name]) {
       return '';
     }
 
