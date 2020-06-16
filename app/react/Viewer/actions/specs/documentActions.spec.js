@@ -191,7 +191,7 @@ describe('documentActions', () => {
         })
         .get(`${APIURL}entities?sharedId=docWithPDFRdy`, {
           body: JSON.stringify({
-            rows: [{ documents: [{ pdfInfo: 'processed pdf', _id: 'pdfReady' }] }],
+            rows: [{ documents: [{ pdfInfo: 'processed pdf', _id: 'pdfReady', filename: 'filename' }] }],
           }),
         })
         .get(`${APIURL}entities?sharedId=docWithPDFNotRdy`, {
@@ -246,7 +246,8 @@ describe('documentActions', () => {
     describe('getDocument', () => {
       it('should return the document requested', async () => {
         const requestParams = new RequestParams({ sharedId: 'docWithPDFRdy' });
-        const doc = await actions.getDocument(requestParams);
+        const doc = await actions.getDocument(requestParams, 'en', 'filename');
+        expect(doc.documents[0]).toBeDefined();
         expect(doc.documents[0].pdfInfo).toBe('processed pdf');
       });
 
