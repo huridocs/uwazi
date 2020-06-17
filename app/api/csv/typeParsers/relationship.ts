@@ -4,18 +4,14 @@ import { RawEntity } from 'api/csv/entityRow';
 import { ensure } from 'shared/tsUtils';
 import { PropertySchema } from 'shared/types/commonTypes';
 
-interface Query {
-  title: { $in: string[] };
-  template?: string;
-}
-
 const relationship = async (entityToImport: RawEntity, property: PropertySchema) => {
   const values = entityToImport[ensure<string>(property.name)]
     .split('|')
     .filter(emptyString)
     .filter(unique);
 
-  const query: Query = { title: { $in: values } };
+  // On newer mongoose versions, replace "any" with "FilterQuery"
+  const query: any = { title: { $in: values } };
 
   if (property.content) {
     query.template = property.content;
