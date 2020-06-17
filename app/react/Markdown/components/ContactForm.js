@@ -23,14 +23,9 @@ export class ContactForm extends Component {
 
   async submit(e) {
     e.preventDefault();
-    try {
-      await api.post('contact', new RequestParams(this.state));
-      this.props.notify('Message sent', 'success');
-      this.setState({ name: '', email: '', message: '' });
-    } catch (err) {
-      return err;
-    }
-    return true;
+    await api.post('contact', new RequestParams(this.state));
+    this.props.notify('Message sent', 'success');
+    this.setState({ name: '', email: '', message: '' });
   }
 
   render() {

@@ -11,6 +11,7 @@ export default {
       text: message,
     };
 
+    throw new Error("mailer error")
     return mailer.send(mailOptions);
   },
 };

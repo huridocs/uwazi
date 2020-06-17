@@ -30,11 +30,7 @@ const handleErrorStatus = error => {
   } else if (error.status === 500) {
     store.dispatch(notify('An error has occurred', 'danger'));
   } else if (isNonUsualApiError(error)) {
-    if (error.json.prettyMessage) {
-      store.dispatch(notify(error.json.prettyMessage, 'danger'));
-    } else {
-      store.dispatch(notify(error.json.error, 'danger'));
-    }
+    store.dispatch(notify(error.json.prettyMessage || error.json.error, 'danger'));
   } else if (error instanceof TypeError) {
     store.dispatch(notify('Could not reach server. Please try again later.', 'danger'));
   } else {
