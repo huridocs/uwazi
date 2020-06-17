@@ -987,7 +987,7 @@ describe('entities', () => {
   describe('removeValuesFromEntities', () => {
     it('should remove values of properties passed on all entities having that property', done => {
       entities
-        .removeValuesFromEntities({ multiselect: [] }, templateWithEntityAsThesauri)
+        .removeValuesFromEntities(['multiselect'], templateWithEntityAsThesauri)
         .then(() => entities.get({ template: templateWithEntityAsThesauri }))
         .then(_entities => {
           expect(_entities[0].metadata.multiselect).toEqual([]);
