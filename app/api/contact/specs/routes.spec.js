@@ -42,7 +42,7 @@ describe('contact', () => {
         expect(response.text).toContain('validation failed');
       });
 
-      it('e-mail should be an e-mail', async () => {
+      it('should be an e-mail', async () => {
         body.email = 'wrong format';
         const response = await request(app)
           .post('/api/contact')

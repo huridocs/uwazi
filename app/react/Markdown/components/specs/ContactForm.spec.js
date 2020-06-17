@@ -17,7 +17,7 @@ describe('ContactForm', () => {
     expect(component).toMatchSnapshot();
   });
 
-  it('should submit the values', done => {
+  it('should submit the values', () => {
     const formData = {
       name: 'Peter Parker',
       email: 'peter@parker.com',
@@ -28,6 +28,5 @@ describe('ContactForm', () => {
     component.instance().setState(formData);
     component.find('form').simulate('submit', { preventDefault: () => {} });
     expect(api.post).toHaveBeenCalledWith('contact', { data: formData, headers: {} });
-    done();
   });
 });
