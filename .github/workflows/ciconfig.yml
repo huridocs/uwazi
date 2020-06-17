@@ -12,10 +12,10 @@ jobs:
           - 9200/tcp
         options: -e="discovery.type=single-node" --health-cmd="curl http://localhost:9200/_cluster/health" --health-interval=10s --health-timeout=5s --health-retries=10
     steps:
-      - name: Use Node.js 10.20.x
+      - name: Use Node.js 10.21.x
         uses: actions/setup-node@v1
         with:
-          node-version: '10.20.x'
+          node-version: '10.21.x'
       - uses: actions/checkout@v2
       - name: Cache node modules
         uses: actions/cache@v1.1.2
@@ -53,7 +53,7 @@ jobs:
       - name: Use Node.js 10.21.x
         uses: actions/setup-node@v1
         with:
-          node-version: '10.20.x'
+          node-version: '10.21.x'
       - name: Cache node modules
         uses: actions/cache@v1.1.2
         with:
@@ -95,10 +95,10 @@ jobs:
           - 27017/tcp
     steps:
       - uses: actions/checkout@v2
-      - name: Use Node.js 10.20.x
+      - name: Use Node.js 10.21.x
         uses: actions/setup-node@v1
         with:
-          node-version: '10.20.x'
+          node-version: '10.21.x'
       - name: Cache node modules
         uses: actions/cache@v1.1.2
         with:
