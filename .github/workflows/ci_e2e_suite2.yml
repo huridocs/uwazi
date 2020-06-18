@@ -1,4 +1,4 @@
-name: e2e
+name: e2e suite 2
 
 on: [push]
 
@@ -43,7 +43,7 @@ jobs:
       - name: wait for uwazi to be ready
         run: sleep 20 && wget --waitretry=5 --retry-connrefused -v http://localhost:3000/
         timeout-minutes: 5
-      - run: xvfb-run -a yarn e2e
+      - run: xvfb-run -a yarn e2e suite2
         timeout-minutes: 25
         env:
           DBHOST: localhost:${{ job.services.mongodb.ports[27017] }}
