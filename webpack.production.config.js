@@ -29,9 +29,14 @@ config.plugins = config.plugins.concat([
   new OptimizeCssAssetsPlugin(),
   new UglifyJSPlugin({
     parallel: true,
+    cache: true,
   }),
   new webpack.optimize.AggressiveMergingPlugin(),
   new webpack.DefinePlugin({ 'process.env': { NODE_ENV: JSON.stringify('production') } })
 ])
+
+config.performance = {
+  hints: "warning",
+}
 
 module.exports = config;
