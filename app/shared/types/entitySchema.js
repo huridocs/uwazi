@@ -21,6 +21,10 @@ const validateMetadataField = (property, entity) => {
   if (hasValue(value) && validators[property.type] && !validators[property.type](value)) {
     throw new Error(customErrorMessages[property.type]);
   }
+
+  if (hasValue(value) && !validators.validateLuceneBytesLimit(value)) {
+    throw new Error(customErrorMessages.length_exceeded);
+  }
 };
 
 ajv.addKeyword('metadataMatchesTemplateProperties', {
@@ -55,6 +59,14 @@ ajv.addKeyword('metadataMatchesTemplateProperties', {
   },
 });
 
+ajv.addKeyword('stringMeetsLuceneMaxLimit', {
+  errors: false,
+  type: 'string',
+  validate(_schema, data) {
+    return validators.validateLuceneBytesLimit(data);
+  },
+});
+
 export const entitySchema = {
   $schema: 'http://json-schema.org/schema#',
   $async: true,
@@ -69,7 +81,7 @@ export const entitySchema = {
     sharedId: { type: 'string', minLength: 1 },
     language: { type: 'string', minLength: 1 },
     mongoLanguage: { type: 'string' },
-    title: { type: 'string', minLength: 1 },
+    title: { type: 'string', minLength: 1, stringMeetsLuceneMaxLimit: true },
     template: objectIdSchema,
     published: { type: 'boolean' },
     icon: {

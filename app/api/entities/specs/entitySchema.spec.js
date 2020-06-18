@@ -137,12 +137,23 @@ describe('entity schema', () => {
       await expectError(expect.any(String), '.title');
     });
 
+    it('should fail if title exceeds the lucene term byte-length limit', async () => {
+      entity.title = Math.random()
+        .toString(36)
+        .repeat(20000);
+      await expectError(expect.any(String), '.title');
+    });
+
     it('should allow title to be missing', async () => {
       delete entity.title;
       await testValid();
     });
 
     describe('metadata', () => {
+      const largeField = Math.random()
+        .toString(36)
+        .repeat(20000);
+
       it('should allow non-required properties to be missing', async () => {
         delete entity.metadata.geolocation;
         await testValid();
@@ -191,12 +202,21 @@ describe('entity schema', () => {
           entity.metadata.name = [{ value: 10 }];
           await expectError(customErrorMessages[propertyTypes.text], ".metadata['name']");
         });
+
+        it('should fail if value is a string that exceeds the lucene term byte-length limit', async () => {
+          entity.metadata.name = [{ value: largeField }];
+          await expectError('maximum field length exceeded', ".metadata['name']");
+        });
       });
 
       describe('markdown property', () => {
         it('should fail if value is not a string', async () => {
           entity.metadata.markdown = [{ value: {} }];
           await expectError(customErrorMessages[propertyTypes.markdown], ".metadata['markdown']");
+        });
+        it('should fail if value is a string that exceeds the lucene term byte-length limit', async () => {
+          entity.metadata.markdown = [{ value: largeField }];
+          await expectError('maximum field length exceeded', ".metadata['markdown']");
         });
       });
 
