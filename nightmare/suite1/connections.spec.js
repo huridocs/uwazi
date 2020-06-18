@@ -1,5 +1,3 @@
-/** @format */
-
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import createNightmare from '../helpers/nightmare';
 import selectors from '../helpers/selectors.js';
