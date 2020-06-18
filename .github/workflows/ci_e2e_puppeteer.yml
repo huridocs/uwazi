@@ -1,0 +1,61 @@
+name: Uwazi CI
+
+on: [push]
+
+jobs:
+
+  e2e_test_puppeteer:
+    runs-on: ubuntu-latest
+    services:
+      elasticsearch:
+        image: elasticsearch:7.6.1
+        ports:
+          - 9200/tcp
+        options: -e="discovery.type=single-node" --health-cmd="curl http://localhost:9200/_cluster/health" --health-interval=10s --health-timeout=5s --health-retries=10
+      mongodb:
+        image: mongo:4.2.6
+        ports:
+          - 27017/tcp
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js 10.21.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: '10.21.x'
+      - name: Cache node modules
+        uses: actions/cache@v1.1.2
+        with:
+          path: ./node_modules
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+      - name: install dependencies
+        run: yarn install
+      - run: sudo apt-get install poppler-utils
+      - run: yarn production-build
+      - name: checkout fixtures
+        uses: actions/checkout@v2
+        with:
+          repository: huridocs/uwazi-fixtures
+          path: uwazi-fixtures
+      - run: yarn e2e-puppeteer-fixtures
+        env:
+          DBHOST: localhost:${{ job.services.mongodb.ports[27017] }}
+          ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
+          DATABASE_NAME: uwazi_e2e
+          INDEX_NAME: uwazi_e2e
+          TRANSPILED: true
+      - name: start Uwazi
+        env:
+          DBHOST: localhost:${{ job.services.mongodb.ports[27017] }}
+          ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
+          DATABASE_NAME: uwazi_e2e
+          INDEX_NAME: uwazi_e2e
+        run: yarn run-production &
+      - name: wait for uwazi to be ready
+        run: sleep 5 && wget --waitretry=5 --retry-connrefused -v http://localhost:3000/
+        timeout-minutes: 2
+      - run: xvfb-run -a yarn e2e-puppeteer
+        timeout-minutes: 25
+        env:
+          DBHOST: localhost:${{ job.services.mongodb.ports[27017] }}
+          ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
+          TRANSPILED: true
