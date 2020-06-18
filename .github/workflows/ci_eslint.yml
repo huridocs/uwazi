@@ -1,4 +1,4 @@
-name: Uwazi CI
+name: eslint
 
 on: [push]
 

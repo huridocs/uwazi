@@ -1,4 +1,4 @@
-name: Uwazi CI
+name: unit tests
 
 on: [push]
 

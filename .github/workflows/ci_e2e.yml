@@ -1,4 +1,4 @@
-name: Uwazi CI
+name: e2e
 
 on: [push]
 
