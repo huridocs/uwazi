@@ -21,7 +21,7 @@ checks:
       threshold: 4
   similar-code:
     config:
-      threshold: 70
+      threshold: 128
 plugins:
   eslint:
     enabled: true
