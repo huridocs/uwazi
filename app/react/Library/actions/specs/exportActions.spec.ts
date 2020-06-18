@@ -18,11 +18,13 @@ const mockSuperAgent = (response?: any, err?: any) => {
   const mockUpload = superagent.get(`${APIURL}export`);
   // eslint-disable-next-line @typescript-eslint/promise-function-async
   jest.spyOn(mockUpload, 'catch').mockImplementation(cb => {
+    if (!cb) throw new Error('mock upload catch cb is not a function');
     if (err) cb(err);
     return mockUpload;
   });
   // eslint-disable-next-line @typescript-eslint/promise-function-async
   jest.spyOn(mockUpload, 'then').mockImplementation(cb => {
+    if (!cb) throw new Error('mock upload then cb is not a function');
     cb(response);
     return mockUpload;
   });
@@ -217,13 +219,13 @@ describe('exportActions', () => {
 
   describe('endExport', () => {
     let appendedChild: HTMLAnchorElement;
-    let removedChild: HTMLAnchorElement;
+    let removedChild: Node;
 
     beforeAll(() => {
       const originalAppendChild = document.body.appendChild;
       const originalRemoveChild = document.body.removeChild;
       jest.spyOn(document.body, 'appendChild').mockImplementation(child => {
-        appendedChild = originalAppendChild.bind(document.body)(child);
+        appendedChild = originalAppendChild.bind(document.body)(child) as HTMLAnchorElement;
         spyOn(appendedChild, 'click');
         return appendedChild;
       });

@@ -7,16 +7,43 @@ import { entityDefaultDocument } from 'shared/entityDefaultDocument';
 
 import elastic from './elastic';
 
-const bulkIndex = (docs, _action = 'index', elasticIndex) => {
+const handleErrors = async errors => {
+  if (errors.length === 0) return;
+  errors.forEach(f =>
+    errorLog.error(
+      `ERROR Failed to index document ${f.index._id}: ${JSON.stringify(f.index.error)}`
+    )
+  );
+  const errorIndexesIds = errors.map(f => f.index._id);
+  throw new Error(`ERROR Failed to index documents: ${errorIndexesIds.join(', ')}`);
+};
+
+function setFullTextSettings(defaultDocument, id, body, doc) {
+  const fullText = Object.values(defaultDocument.fullText).join('\f');
+
+  let language;
+  if (!defaultDocument.language) {
+    language = languagesUtil.detect(fullText);
+  }
+  if (defaultDocument.language) {
+    language = languages(defaultDocument.language);
+  }
+  const fullTextObject = {
+    [`fullText_${language}`]: fullText,
+    fullText: { name: 'fullText', parent: id },
+  };
+  body.push(fullTextObject);
+  delete doc.fullText;
+}
+
+const bulkIndex = async (docs, _action = 'index', elasticIndex) => {
   const body = [];
   docs.forEach(doc => {
     let docBody = Object.assign({ documents: [] }, doc);
     docBody.fullText = 'entity';
     const id = doc._id.toString();
-    delete docBody._id;
-    delete docBody._rev;
-    delete docBody.pdfInfo;
-    let action = {};
+    ['_id', '_rev', 'pdfInfo'].forEach(e => delete docBody[e]);
+    const action = {};
     action[_action] = { _index: elasticIndex, _id: id };
     if (_action === 'update') {
       docBody = { doc: docBody };
@@ -32,48 +59,22 @@ const bulkIndex = (docs, _action = 'index', elasticIndex) => {
     body.push(docBody);
 
     if (defaultDocument.fullText) {
-      const fullText = Object.values(defaultDocument.fullText).join('\f');
-
-      action = {};
-      action[_action] = {
-        _index: elasticIndex,
-        _id: `${id}_fullText`,
-        routing: id,
-      };
-      body.push(action);
-
-      let language;
-      if (!defaultDocument.language) {
-        language = languagesUtil.detect(fullText);
-      }
-      if (defaultDocument.language) {
-        language = languages(defaultDocument.language);
-      }
-      const fullTextObject = {
-        [`fullText_${language}`]: fullText,
-        fullText: { name: 'fullText', parent: id },
-      };
-      body.push(fullTextObject);
-      delete doc.fullText;
-    }
-  });
-
-  return elastic.bulk({ body, requestTimeout: 40000 }).then(res => {
-    if (res.items) {
-      res.items.forEach(f => {
-        if (f.index.error) {
-          errorLog.error(
-            `ERROR Failed to index document ${f.index._id}: ${JSON.stringify(
-              f.index.error,
-              null,
-              ' '
-            )}`
-          );
-        }
+      body.push({
+        [_action]: { _index: elasticIndex, _id: `${id}_fullText`, routing: id },
       });
+      setFullTextSettings(defaultDocument, id, body, doc);
     }
-    return res;
   });
+  let res;
+  try {
+    res = await elastic.bulk({ body, requestTimeout: 40000 });
+    if (res.items) {
+      await handleErrors(res.items.filter(f => f.index.error));
+    }
+  } catch (error) {
+    await handleErrors([{ index: { _id: body[0].index._id, error } }]);
+  }
+  return res;
 };
 
 const indexEntities = (

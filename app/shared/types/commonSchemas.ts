@@ -124,7 +124,7 @@ export const propertySchema = {
     isCommonProperty: { type: 'boolean' },
     type: { type: 'string', enum: Object.values(propertyTypes) },
     prioritySorting: { type: 'boolean' },
-    content: { type: 'string', minLength: 1 },
+    content: { type: 'string' },
     inherit: { type: 'boolean' },
     inheritProperty: { type: 'string', minLength: 1 },
     filter: { type: 'boolean' },

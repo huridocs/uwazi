@@ -14,6 +14,23 @@ import loadingBar from 'app/App/LoadingProgressBar';
 import * as notifyActions from 'app/Notifications/actions/notificationsActions';
 
 describe('api', () => {
+  const validationErrorResponse = {
+    status: 422,
+    body: {
+      error: 'validation failed',
+      validations: [
+        {
+          dataPath: ".metadata['prop1']",
+          message: 'should be string',
+        },
+        {
+          dataPath: ".metadata['prop2']",
+          message: 'is too long',
+        },
+      ],
+    },
+  };
+
   beforeEach(() => {
     spyOn(loadingBar, 'start');
     spyOn(loadingBar, 'done');
@@ -33,7 +50,20 @@ describe('api', () => {
       .get(`${APIURL}network_error`, {
         throws: new TypeError('Failed to fetch'),
       })
-      .get(`${APIURL}unknown_error`, { throws: new Error('some error') });
+      .get(`${APIURL}unknown_error`, { throws: new Error('some error') })
+      .post(`${APIURL}test_payload_too_large_error`, {
+        status: 500,
+        body: { error: 'PayloadTooLargeError: request entity too large at readStream' },
+      })
+      .post(`${APIURL}elastic_index_error`, {
+        status: 500,
+        body: { error: 'ERROR Failed to index documents: id1' },
+      })
+      .post(`${APIURL}validation_error`, validationErrorResponse)
+      .post(`${APIURL}unprocessable_entity`, {
+        status: 422,
+        body: { error: 'unprocessable entity' },
+      });
   });
 
   afterEach(() => backend.restore());
@@ -111,21 +141,21 @@ describe('api', () => {
     });
   });
 
+  function testNotificationDisplayed(message, type = 'danger') {
+    expect(store.dispatch).toHaveBeenCalledWith('notify action');
+    expect(notifyActions.notify).toHaveBeenCalledWith(message, type);
+  }
+
+  async function testErrorHandling(endpoint, errorCallback) {
+    try {
+      await api.get(endpoint);
+      fail('should throw error');
+    } catch (e) {
+      errorCallback(e);
+    }
+  }
+
   describe('error handling', () => {
-    async function testErrorHandling(endpoint, errorCallback) {
-      try {
-        await api.get(endpoint);
-        fail('should throw error');
-      } catch (e) {
-        errorCallback(e);
-      }
-    }
-
-    function testNotificationDisplayed(message, type = 'danger') {
-      expect(store.dispatch).toHaveBeenCalledWith('notify action');
-      expect(notifyActions.notify).toHaveBeenCalledWith(message, type);
-    }
-
     describe('401', () => {
       it('should redirect to login', async () => {
         await testErrorHandling('unauthorised', () => {
@@ -147,6 +177,27 @@ describe('api', () => {
         await testErrorHandling('conflict', () => {
           testNotificationDisplayed('conflict error', 'warning');
         });
+      });
+    });
+
+    describe('when request return a server error', () => {
+      const requestError = [
+        ['elastic_index_error', 'Failed to index documents: id1 '],
+        [
+          'validation_error',
+          "validation failed:  .metadata['prop1'] should be string, .metadata['prop2'] is too long,",
+        ],
+        ['unprocessable_entity', 'unprocessable entity'],
+      ];
+
+      it.each(requestError)('should notify the error with this message', async (url, message) => {
+        const requestParams = new RequestParams({ key: 'test' }, { header: 'value' });
+        try {
+          await api.post(url, requestParams);
+          fail('should throw error');
+        } catch (e) {
+          testNotificationDisplayed(message, 'danger');
+        }
       });
     });
 

@@ -14,26 +14,32 @@ export function resetTemplate() {
   };
 }
 
+export function setPropertyDefaults(getState, property) {
+  const propertyWithDefaults = property;
+  propertyWithDefaults.localID = ID();
+  if (property.type === 'select' || property.type === 'multiselect') {
+    propertyWithDefaults.content = getState()
+      .thesauris.get(0)
+      .get('_id');
+  }
+
+  if (property.type === 'relationship') {
+    propertyWithDefaults.inherit = false;
+    propertyWithDefaults.content = '';
+  }
+
+  if (property.type === 'nested') {
+    propertyWithDefaults.nestedProperties = [{ key: '', label: '' }];
+  }
+  return propertyWithDefaults;
+}
+
 export function addProperty(property = {}, _index) {
-  property.localID = ID();
   return (dispatch, getState) => {
     const properties = getState().template.data.properties.slice(0);
     const index = _index !== undefined ? _index : properties.length;
-    if (property.type === 'select' || property.type === 'multiselect') {
-      property.content = getState()
-        .thesauris.get(0)
-        .get('_id');
-    }
-
-    if (property.type === 'relationship') {
-      property.inherit = false;
-    }
-
-    if (property.type === 'nested') {
-      property.nestedProperties = [{ key: '', label: '' }];
-    }
-
-    properties.splice(index, 0, property);
+    const propertyWithDefaults = setPropertyDefaults(getState, property);
+    properties.splice(index, 0, propertyWithDefaults);
     dispatch(formActions.change('template.data.properties', properties));
   };
 }

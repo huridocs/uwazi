@@ -8,6 +8,8 @@ import db from 'api/utils/testing_db';
 import instanceElasticTesting from 'api/utils/elastic_testing';
 import { fixturesTimeOut } from './fixtures_elastic';
 
+jest.mock('api/entities');
+
 describe('search', () => {
   const elasticIndex = 'index_for_index_testing';
   const search = instanceSearch(elasticIndex);
@@ -138,19 +140,34 @@ describe('search', () => {
     });
 
     describe('when there is an indexation error', () => {
-      it('should log the error with the id of the document and the error message', async () => {
-        spyOn(elastic, 'bulk').and.returnValue(
-          Promise.resolve({
-            items: [{ index: { _id: '_id1', error: 'something terrible happened' } }],
-          })
-        );
-        spyOn(errorLog, 'error');
+      const expectError = async expectedMessage => {
         const toIndexDocs = [{ _id: 'id1', title: 'test1' }];
-        await search.bulkIndex(toIndexDocs, 'index', elasticIndex);
+        spyOn(errorLog, 'error');
+        try {
+          await search.bulkIndex(toIndexDocs, 'index', elasticIndex);
+          fail('should throw an indexing error');
+        } catch (error) {
+          expect(errorLog.error).toHaveBeenCalledWith(expectedMessage);
+          expect(error.message).toMatch('ERROR Failed to index documents: id1');
+        }
+      };
 
-        expect(errorLog.error).toHaveBeenCalledWith(
-          'ERROR Failed to index document _id1: "something terrible happened"'
-        );
+      describe('if elastic returns an error', () => {
+        it('should log and throw the error with the id of the document and the error message', async () => {
+          spyOn(elastic, 'bulk').and.returnValue(
+            Promise.resolve({
+              items: [{ index: { _id: 'id1', error: 'something terrible happened' } }],
+            })
+          );
+          await expectError('ERROR Failed to index document id1: "something terrible happened"');
+        });
+      });
+
+      describe('if an unhandled exception occurs', () => {
+        it('should log and throw the error', async () => {
+          spyOn(elastic, 'bulk').and.throwError('unhandled error');
+          await expectError('ERROR Failed to index document id1: {}');
+        });
       });
     });
   });

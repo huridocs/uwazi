@@ -21,6 +21,6 @@
       "UI/*": ["./app/react/UI/*"]
     }
   },
-  "include": ["app", "external_modules", "database"],
+  "include": ["app", "external_modules", "database", "e2e"],
   "exclude": ["node_modules", "**/node_modules/*", "fixtures", "dist", "prod"]
 }
