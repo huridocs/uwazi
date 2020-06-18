@@ -48,7 +48,7 @@
     "test-debug": "node --inspect ./node_modules/.bin/jest --watch --no-cache -i",
     "test": "node ./node_modules/.bin/jest",
     "e2e": "jest --projects nightmare/jest.e2e.config.js -i --verbose true",
-    "e2e-puppeteer": "echo 'MAKE SURE UWAZI IS RUNING WITH uwazi_e2e DB AND INDEX';DATABASE_NAME=uwazi_e2e INDEX_NAME=uwazi_e2e jest --projects e2e/jest.e2e.config.ts -i --verbose true",
+    "e2e-puppeteer": "echo 'MAKE SURE UWAZI IS RUNNING WITH uwazi_e2e DATABASE AND INDEX';DATABASE_NAME=uwazi_e2e INDEX_NAME=uwazi_e2e jest --projects e2e/jest.e2e.config.ts -i --verbose true",
     "e2e-puppeteer-fixtures": "DATABASE_NAME=uwazi_e2e INDEX_NAME=uwazi_e2e ./uwazi-fixtures/restore.sh",
     "e2e-show": "export SHOW_E2E=1; yarn e2e",
     "e2e-restore-fixtures": "cd nightmare/fixtures; ./restore.sh",

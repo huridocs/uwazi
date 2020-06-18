@@ -156,6 +156,7 @@ For End-to-End testing, we have a full set of fixtures that test the overall fun
 
 Running end to end tests require a running Uwazi app.
 
+Running tests with Nightmare
 ```
 $ yarn hot
 ```
@@ -164,6 +165,18 @@ On a different console tab, run
 
 ```
 $ yarn e2e
+```
+
+Running tests with Puppeteer
+
+```
+$ DATABASE_NAME=uwazi_e2e INDEX_NAME=uwazi_e2e yarn hot
+```
+
+On a different console tab, run
+
+```
+$ yarn e2e-puppeteer
 ```
 
 Note that if you already have an instance running, this will likely throw an error of ports already been used. Only one instance of Uwazi may be run in a the same port at the same time.
