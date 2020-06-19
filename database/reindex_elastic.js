@@ -13,13 +13,19 @@ connect().then(() => {
   const spinner = ['|', '/', '-', '\\'];
 
   function indexEntities() {
-    return search.indexEntities({}, '+fullText', 50, indexed => {
-      process.stdout.write(
-        `Indexing documents and entities... ${spinner[pos]} - ${docsIndexed} indexed\r`
-      );
-      pos = (pos + 1) % 4;
-      docsIndexed += indexed;
-    });
+    return search.indexEntities(
+      {},
+      '+fullText',
+      50,
+      indexed => {
+        process.stdout.write(
+          `Indexing documents and entities... ${spinner[pos]} - ${docsIndexed} indexed\r`
+        );
+        pos = (pos + 1) % 4;
+        docsIndexed += indexed;
+      },
+      { continueOnIndexError: true }
+    );
   }
 
   const start = Date.now();
@@ -34,8 +40,12 @@ connect().then(() => {
       return request.put(indexUrl, elasticMapping).catch(console.log);
     })
     .then(() => indexEntities())
-    .then(() => {
+    .then(({ errors }) => {
       process.stdout.write(`Indexing documents and entities... - ${docsIndexed} indexed\r\n`);
+      if (errors.length) {
+        process.stdout.write('Warning! Errors found during reindex:\r\n');
+        process.stdout.write(`${JSON.stringify(errors, null, ' ')}\r\n`);
+      }
     })
     .then(() => {
       const end = Date.now();
