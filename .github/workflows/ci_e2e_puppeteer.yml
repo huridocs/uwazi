@@ -34,7 +34,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ./prod
-          key: ${{ runner.os }}-yarn-${{ hashFiles('app/**|database/**') }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('app/**/*.js') }}
       - run: yarn production-build
       - name: checkout fixtures
         uses: actions/checkout@v2
