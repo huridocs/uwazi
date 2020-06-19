@@ -15,6 +15,7 @@ import { ConnectionsGroups } from 'app/ConnectionsList';
 import ShowIf from 'app/App/ShowIf';
 import SidePanel from 'app/Layout/SidePanel';
 import DocumentSemanticSearchResults from 'app/SemanticSearch/components/DocumentResults';
+import { CopyFromEntity } from 'app/Metadata/components/CopyFromEntity';
 import { Icon } from 'UI';
 
 import * as viewerModule from 'app/Viewer';
@@ -28,6 +29,10 @@ export class DocumentSidePanel extends Component {
     super(props);
     this.selectTab = this.selectTab.bind(this);
     this.firstRender = true;
+    this.state = { copyFrom: false };
+
+    this.startCopyFrom = this.startCopyFrom.bind(this);
+    this.deleteDocument = this.deleteDocument.bind(this);
   }
 
   componentWillReceiveProps(newProps) {
@@ -74,27 +79,36 @@ export class DocumentSidePanel extends Component {
     this.props.showTab(tabSelected);
   }
 
+  _close() {
+    this.props.resetForm(this.props.formPath);
+    this.props.closePanel();
+    this.setState({ copyFrom: false });
+  }
+
   close() {
     if (this.props.formDirty) {
       this.context.confirm({
         accept: () => {
-          this.props.resetForm(this.props.formPath);
-          this.props.closePanel();
+          this._close();
         },
         title: 'Confirm',
         message: 'All changes will be lost, are you sure you want to proceed?',
       });
       return;
     }
-    this.props.resetForm(this.props.formPath);
-    this.props.closePanel();
+    this._close();
+  }
+
+  startCopyFrom() {
+    this.setState({
+      copyFrom: true,
+    });
   }
 
   render() {
     const {
       doc,
       docBeingEdited,
-      DocumentForm,
       readOnly,
       references,
       EntityForm,
@@ -116,7 +130,7 @@ export class DocumentSidePanel extends Component {
 
     this.initialTemplateId = doc.get('template');
     const tab =
-      isEntity && (this.props.tab === 'references' || this.props.tab === 'toc')
+      isEntity && (this.props.tab === 'references' || this.props.tab === 'toc' || !tab)
         ? 'metadata'
         : this.props.tab;
 
@@ -130,8 +144,12 @@ export class DocumentSidePanel extends Component {
       { totalConnections: 0 }
     );
 
+    const className =
+      this.state.copyFrom && docBeingEdited && tab === 'metadata'
+        ? 'metadata-sidepanel two-columns'
+        : 'metadata-sidepanel';
     return (
-      <SidePanel open={this.props.open} className="metadata-sidepanel">
+      <SidePanel open={this.props.open} className={className}>
         <div className="sidepanel-header">
           <button className="closeSidepanel close-modal" onClick={this.close.bind(this)}>
             <Icon icon="times" />
@@ -221,12 +239,13 @@ export class DocumentSidePanel extends Component {
         <ShowIf if={this.props.tab === 'metadata' || !this.props.tab}>
           <div className="sidepanel-footer">
             <MetadataFormButtons
-              delete={this.deleteDocument.bind(this)}
+              delete={this.deleteDocument}
               data={this.props.doc}
               formStatePath={this.props.formPath}
               entityBeingEdited={docBeingEdited}
               includeViewButton={!docBeingEdited && readOnly}
               storeKey={this.props.storeKey}
+              startCopyFrom={this.startCopyFrom}
             />
           </div>
         </ShowIf>
@@ -287,15 +306,21 @@ export class DocumentSidePanel extends Component {
             </TabContent>
             <TabContent for="metadata">
               {(() => {
-                if (docBeingEdited && !isEntity) {
+                if (docBeingEdited && this.state.copyFrom) {
                   return (
-                    <DocumentForm
-                      storeKey={this.props.storeKey}
-                      initialTemplateId={this.initialTemplateId}
-                    />
+                    <React.Fragment>
+                      <EntityForm
+                        storeKey={this.props.storeKey}
+                        initialTemplateId={this.initialTemplateId}
+                      />
+                      <CopyFromEntity
+                        originalTemplateId={this.props.doc.get('template')}
+                        templates={this.props.templates}
+                      />
+                    </React.Fragment>
                   );
                 }
-                if (docBeingEdited && isEntity) {
+                if (docBeingEdited) {
                   return (
                     <EntityForm
                       storeKey={this.props.storeKey}
@@ -361,6 +386,11 @@ DocumentSidePanel.defaultProps = {
   isTargetDoc: false,
   readOnly: false,
   getDocumentReferences: undefined,
+  tocFormComponent: () => false,
+  DocumentForm: () => false,
+  EntityForm: () => false,
+  raw: false,
+  file: {},
 };
 
 DocumentSidePanel.propTypes = {
@@ -397,18 +427,11 @@ DocumentSidePanel.propTypes = {
   raw: PropTypes.bool,
   file: PropTypes.object,
   defaultLanguage: PropTypes.string.isRequired,
+  templates: PropTypes.instanceOf(Immutable.List).isRequired,
 };
 
 DocumentSidePanel.contextTypes = {
   confirm: PropTypes.func,
-};
-
-DocumentSidePanel.defaultProps = {
-  tocFormComponent: () => false,
-  DocumentForm: () => false,
-  EntityForm: () => false,
-  raw: false,
-  file: {},
 };
 
 export const mapStateToProps = (state, ownProps) => {
@@ -429,6 +452,7 @@ export const mapStateToProps = (state, ownProps) => {
     connectionsGroups: state.relationships.list.connectionsGroups,
     relationships: ownProps.references,
     defaultLanguage,
+    templates: state.templates,
   };
 };
 

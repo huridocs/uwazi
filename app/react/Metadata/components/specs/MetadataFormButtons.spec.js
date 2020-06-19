@@ -28,6 +28,7 @@ describe('MetadataFormButtons', () => {
       formStatePath: 'form',
       includeViewButton: true,
       exclusivelyViewButton: false,
+      startCopyFrom: jasmine.createSpy('startCopyFrom'),
     };
   });
 
@@ -103,6 +104,17 @@ describe('MetadataFormButtons', () => {
     it('should reset the form', () => {
       component.find('.cancel-edit-metadata').simulate('click');
       expect(props.resetForm).toHaveBeenCalledWith(props.formStatePath);
+    });
+  });
+
+  describe('copy from', () => {
+    beforeEach(() => {
+      render();
+    });
+
+    it('should call the callback', () => {
+      component.find('.copy-from-btn').simulate('click');
+      expect(props.startCopyFrom).toHaveBeenCalled();
     });
   });
 

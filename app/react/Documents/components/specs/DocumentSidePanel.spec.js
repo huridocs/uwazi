@@ -25,6 +25,7 @@ describe('DocumentSidePanel', () => {
     props = {
       doc: Immutable.fromJS({ metadata: [], attachments: [], type: 'document', file: {} }),
       rawDoc: fromJS({}),
+      templates: Immutable.fromJS([]),
       showModal: jasmine.createSpy('showModal'),
       openPanel: jasmine.createSpy('openPanel'),
       startNewConnection: jasmine.createSpy('startNewConnection'),
