@@ -30,7 +30,15 @@ jobs:
       - name: install dependencies
         run: yarn install
       - run: sudo apt-get install poppler-utils
-      - run: yarn production-build
+      - name: Cache build
+        id: cache-build
+        uses: actions/cache@v2
+        with:
+          path: ./prod
+          key: ${{ runner.os }}-build-${{ hashFiles('app/**/*.*') }}-${{ hashFiles('database/**/*.*') }}-${{ hashFiles('**/yarn.lock') }}
+      - name: build production
+        if: steps.cache-build.outputs.cache-hit != 'true'
+        run: yarn production-build
       - run: yarn blank-state
         env:
           DBHOST: localhost:${{ job.services.mongodb.ports[27017] }}
