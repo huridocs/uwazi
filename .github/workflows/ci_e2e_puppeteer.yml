@@ -31,11 +31,14 @@ jobs:
         run: yarn install
       - run: sudo apt-get install poppler-utils
       - name: Cache build
+        id: cache-build
         uses: actions/cache@v2
         with:
           path: ./prod
           key: ${{ runner.os }}-yarn-${{ hashFiles('app/**/*.js') }}
-      - run: yarn production-build
+      - name: build production
+        if: steps.cache-build.outputs.cache-hit != 'true'
+        run: yarn production-build
       - name: checkout fixtures
         uses: actions/checkout@v2
         with:
