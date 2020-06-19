@@ -35,7 +35,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ./prod
-          key: ${{ runner.os }}-yarn-${{ hashFiles('app/**/*.js') }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('app/**/*.(js|ts|tsx|scss)') }}
       - name: build production
         if: steps.cache-build.outputs.cache-hit != 'true'
         run: yarn production-build
