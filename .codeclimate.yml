@@ -23,6 +23,8 @@ checks:
     enabled: false
   identical-code:
     enabled: true
+    config:
+      threshold: 128
 plugins:
   eslint:
     enabled: true
