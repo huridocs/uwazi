@@ -73,8 +73,15 @@ const validateGeolocationProperty = value =>
 const validateMultiSelectProperty = value =>
   Array.isArray(value) && value.every(item => isValidSelect(item.value) && item.value);
 
+const validateLuceneBytesLimit = value => {
+  const LUCENE_BYTES_LIMIT = 32766;
+  const bytes = Buffer.from(JSON.stringify(value));
+  return bytes.length < LUCENE_BYTES_LIMIT;
+};
+
 export const customErrorMessages = {
   required: 'property is required',
+  length_exceeded: 'maximum field length exceeded',
   [propertyTypes.date]: 'should be number',
   [propertyTypes.multidate]: 'should be an array of numbers',
   [propertyTypes.daterange]:
@@ -111,4 +118,5 @@ export const validators = {
   [propertyTypes.link]: validateSingleWrappedValue(isValidLinkField),
   [propertyTypes.geolocation]: validateGeolocationProperty,
   validateRequiredProperty,
+  validateLuceneBytesLimit,
 };

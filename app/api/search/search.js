@@ -200,7 +200,10 @@ const _formatDictionaryWithGroupsAggregation = (aggregation, dictionary) => {
       return bucket;
     })
     .filter(b => b);
-  buckets.push(aggregation.buckets.find(b => b.key === 'missing'));
+  const bucketsIncludeMissing = aggregation.buckets.find(b => b.key === 'missing');
+  if (bucketsIncludeMissing) {
+    buckets.push(bucketsIncludeMissing);
+  }
   return Object.assign(aggregation, { buckets });
 };
 
