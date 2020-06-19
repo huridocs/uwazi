@@ -20,8 +20,7 @@ const localSelectors = {
     '#app > div.content > div > div > div.settings-content > div > form > div.panel.panel-default > div.panel-body.page-viewer.document-viewer > div > div.tab-content.tab-content-visible > textarea',
   customHomePageRadio:
     '.settings-content #collectionSettingsForm .form-group:nth-child(5) .radio:nth-child(2) input[type=radio]',
-  customHomePageInput:
-    '.settings-content #collectionSettingsForm .form-group:,nth-child(5) .input-group input[name="local.home_page"]',
+  customHomePageInput: '.settings-content #collectionSettingsForm input[name="local.home_page"]',
   collectionSaveButton: '.settings-content .settings-footer .btn-success',
   customStylesButton: '.settings-content .panel-body div:nth-child(3) a:nth-child(1)',
   customStylesInput: '#custom_css',
@@ -118,7 +117,6 @@ describe('custom home page and styles path path', () => {
         .wait(1000)
         .write(localSelectors.customStylesInput, customStyles)
         .waitToClick(localSelectors.customStylesUpdateButton)
-        .wait(3000)
         .then(() => {
           done();
         })
