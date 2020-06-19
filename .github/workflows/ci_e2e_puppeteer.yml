@@ -35,7 +35,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ./prod
-          key: ${{ runner.os }}-build-${{ hashFiles('app/**/*.*') }}-${{ hashFiles('database/**/*.*') }}
+          key: ${{ runner.os }}-build-${{ hashFiles('app/**/*.*') }}-${{ hashFiles('database/**/*.*') }}-${{ hashFiles('**/yarn.lock') }}
       - name: build production
         if: steps.cache-build.outputs.cache-hit != 'true'
         run: yarn production-build
