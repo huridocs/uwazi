@@ -24,7 +24,7 @@ checks:
   identical-code:
     enabled: true
     config:
-      threshold: 128
+      threshold: 64
 plugins:
   eslint:
     enabled: true
