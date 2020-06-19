@@ -118,6 +118,7 @@ describe('custom home page and styles path path', () => {
         .wait(1000)
         .write(localSelectors.customStylesInput, customStyles)
         .waitToClick(localSelectors.customStylesUpdateButton)
+        .wait(3000)
         .then(() => {
           done();
         })
