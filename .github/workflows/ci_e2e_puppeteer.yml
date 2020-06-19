@@ -1,4 +1,4 @@
-name: e2e Pueppeteer
+name: e2e puppeteer
 
 on: [push]
 
@@ -30,6 +30,11 @@ jobs:
       - name: install dependencies
         run: yarn install
       - run: sudo apt-get install poppler-utils
+      - name: Cache build
+        uses: actions/cache@v2
+        with:
+          path: ./prod
+          key: ${{ runner.os }}-yarn-${{ hashFiles('./prod/**') }}
       - run: yarn production-build
       - name: checkout fixtures
         uses: actions/checkout@v2
