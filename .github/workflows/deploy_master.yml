@@ -21,4 +21,4 @@ jobs:
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
       - name: install dependencies
         run: yarn install
-      - run: yarn eslint
+      - run: yarn production-build
