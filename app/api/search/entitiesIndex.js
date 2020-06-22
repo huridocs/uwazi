@@ -85,6 +85,16 @@ const appendRelationships = async entity => {
   return { ...entity, relationships: relations || [] };
 };
 
+const getEntitiesToIndex = async (query, offset, limit, select) => {
+  const entitiesToIndex = await entities.get(query, '', {
+    skip: offset,
+    limit,
+    documentsFullText: select && select.includes('+fullText'),
+  });
+
+  return Promise.all(entitiesToIndex.map(appendRelationships));
+};
+
 const bulkIndexAndCallback = async assets => {
   const { searchInstance, entitiesToIndex, elasticIndex, batchCallback, totalRows } = assets;
   await searchInstance.bulkIndex(entitiesToIndex, 'index', elasticIndex);
@@ -97,20 +107,14 @@ const indexBatch = async (offset, totalRows, options, errors = []) => {
     return errors.length ? handleErrors(errors) : Promise.resolve();
   }
 
-  const entitiesToIndex = await entities.get(query, '', {
-    skip: offset,
-    limit,
-    documentsFullText: select && select.includes('+fullText'),
-  });
-
-  const entitiesToIndexWithRels = await Promise.all(entitiesToIndex.map(appendRelationships));
+  const entitiesToIndex = await getEntitiesToIndex(query, offset, limit, select);
 
   let newIndexErrors = [];
 
   try {
     await bulkIndexAndCallback({
       searchInstance,
-      entitiesToIndex: entitiesToIndexWithRels,
+      entitiesToIndex,
       elasticIndex,
       batchCallback,
       totalRows,
