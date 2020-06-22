@@ -703,13 +703,11 @@ const instanceSearch = elasticIndex => ({
     return snippetsFromSearchHit(response.hits.hits[0]);
   },
 
-  // eslint-disable-next-line max-params
-  async indexEntities(query, select = '', limit = 200, batchCallback = () => {}, options = {}) {
+  async indexEntities(query, select = '', limit = 200, batchCallback = () => {}) {
     return indexEntities(query, select, limit, {
       batchCallback,
       elasticIndex: elasticIndex || elasticIndexes.index,
       searchInstance: this,
-      ...options,
     });
   },
 
