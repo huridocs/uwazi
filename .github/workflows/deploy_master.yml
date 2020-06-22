@@ -21,7 +21,15 @@ jobs:
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
       - name: install dependencies
         run: yarn install
-      - run: yarn production-build
+      - name: Cache build
+        id: cache-build
+        uses: actions/cache@v2
+        with:
+          path: ./prod
+          key: ${{ runner.os }}-build-${{ hashFiles('app/**/*.*') }}-${{ hashFiles('database/**/*.*') }}-${{ hashFiles('**/yarn.lock') }}
+      - name: build production
+        if: steps.cache-build.outputs.cache-hit != 'true'
+        run: yarn production-build
       - name: Deploy to Server
         uses: easingthemes/ssh-deploy@v2.1.1
         env:
