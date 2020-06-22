@@ -6,11 +6,11 @@ import { entityDefaultDocument } from 'shared/entityDefaultDocument';
 
 import elastic from './elastic';
 
-class IndexError extends Error {}
+export class IndexError extends Error {}
 
 const handleErrors = async itemsWithErrors => {
   if (itemsWithErrors.length === 0) return;
-  const error = new IndexError('ERROR Failed to index documents');
+  const error = new IndexError('ERROR! Failed to index documents.');
   error.errors = itemsWithErrors;
   throw error;
 };
@@ -72,8 +72,8 @@ const bulkIndex = async (docs, _action = 'index', elasticIndex) => {
   return results;
 };
 
-const newErrorsOrThrow = (err, continueOnIndexError) => {
-  if (!continueOnIndexError || !(err instanceof IndexError)) {
+const newIndexErrorsOrThrow = err => {
+  if (!(err instanceof IndexError)) {
     throw err;
   } else {
     return err.errors;
@@ -84,11 +84,11 @@ const indexEntities = async (
   query,
   select = '',
   limit = 50,
-  { batchCallback = () => {}, elasticIndex, searchInstance, continueOnIndexError }
+  { batchCallback = () => {}, elasticIndex, searchInstance }
 ) => {
   const index = async (offset, totalRows, errors = []) => {
     if (offset >= totalRows) {
-      return Promise.resolve({ errors });
+      return errors.length ? handleErrors(errors) : Promise.resolve();
     }
 
     const entitiesToIndex = await entities.get(query, '', {
@@ -105,17 +105,17 @@ const indexEntities = async (
       )
     );
 
-    let newErrors = [];
+    let newIndexErrors = [];
 
     try {
       await searchInstance
         .bulkIndex(entitiesToIndexWithRels, 'index', elasticIndex)
         .then(() => batchCallback(entitiesToIndexWithRels.length, totalRows));
     } catch (err) {
-      newErrors = newErrorsOrThrow(err, continueOnIndexError);
+      newIndexErrors = newIndexErrorsOrThrow(err);
     }
 
-    return index(offset + limit, totalRows, errors.concat(newErrors));
+    return index(offset + limit, totalRows, errors.concat(newIndexErrors));
   };
 
   const totalRows = await entities.count(query);

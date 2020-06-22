@@ -9,7 +9,7 @@ import { fixturesTimeOut } from './fixtures_elastic';
 
 jest.mock('api/entities');
 
-describe('search', () => {
+describe('index (search)', () => {
   const elasticIndex = 'index_for_index_testing';
   const search = instanceSearch(elasticIndex);
   const elasticTesting = instanceElasticTesting(elasticIndex, search);
@@ -158,7 +158,7 @@ describe('search', () => {
             await search.bulkIndex(toIndexDocs, 'index', elasticIndex);
             fail('should throw an indexing error');
           } catch (error) {
-            expect(error.message).toMatch('ERROR Failed to index documents');
+            expect(error.message).toMatch('ERROR! Failed to index documents.');
             expect(error.errors).toEqual([
               { index: { _id: 'id1', error: { message: 'indexation error 1' } } },
               { index: { _id: 'id3', error: { message: 'indexation error 2' } } },
