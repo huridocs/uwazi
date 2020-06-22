@@ -20,8 +20,8 @@ checks:
     config:
       threshold: 4
   similar-code:
-    enabled: true
-    threshold: 90
+    config:
+      threshold: 90
 plugins:
   eslint:
     enabled: true
