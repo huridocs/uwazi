@@ -1,0 +1,21 @@
+name: eslint
+
+on: [push]
+
+jobs:
+  eslint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js 10.21.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: '10.21.x'
+      - name: Cache node modules
+        uses: actions/cache@v2
+        with:
+          path: ./node_modules
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+      - name: install dependencies
+        run: yarn install
+      - run: yarn eslint
