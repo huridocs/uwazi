@@ -22,3 +22,12 @@ jobs:
       - name: install dependencies
         run: yarn install
       - run: yarn production-build
+      - name: Deploy to Server
+        uses: easingthemes/ssh-deploy@v2.1.1
+        env:
+            SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_KEY }}
+            ARGS: "-rltgoDzvO --delete"
+            SOURCE: "prod/"
+            REMOTE_HOST: ${{ secrets.DEPLOY_SERVER }}
+            REMOTE_USER: ${{ secrets.DEPLOY_USER }}
+            TARGET: uwazi_deployment
