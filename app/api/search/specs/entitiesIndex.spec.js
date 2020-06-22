@@ -30,13 +30,12 @@ describe('entitiesIndex', () => {
       await elasticTesting.refresh();
     });
 
-    const expectParsingException = () => {
-      return expect.objectContaining({
+    const expectParsingException = () =>
+      expect.objectContaining({
         index: expect.objectContaining({
           error: expect.objectContaining({ type: 'mapper_parsing_exception' }),
         }),
       });
-    };
 
     it('should index all possible entities in bulk batches and throw errors', async () => {
       try {
