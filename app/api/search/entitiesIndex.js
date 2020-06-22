@@ -80,46 +80,65 @@ const newIndexErrorsOrThrow = err => {
   }
 };
 
-const indexEntities = async (
+const appendRelationships = async entity => {
+  const relations = await relationships.get({ entity: entity.sharedId });
+  return { ...entity, relationships: relations || [] };
+};
+
+const bulkIndexAndCallback = async assets => {
+  const { searchInstance, entitiesToIndex, elasticIndex, batchCallback, totalRows } = assets;
+  await searchInstance.bulkIndex(entitiesToIndex, 'index', elasticIndex);
+  return batchCallback(entitiesToIndex.length, totalRows);
+};
+
+const indexBatch = async (offset, totalRows, options, errors = []) => {
+  const { query, select, limit, batchCallback, elasticIndex, searchInstance } = options;
+  if (offset >= totalRows) {
+    return errors.length ? handleErrors(errors) : Promise.resolve();
+  }
+
+  const entitiesToIndex = await entities.get(query, '', {
+    skip: offset,
+    limit,
+    documentsFullText: select && select.includes('+fullText'),
+  });
+
+  const entitiesToIndexWithRels = await Promise.all(entitiesToIndex.map(appendRelationships));
+
+  let newIndexErrors = [];
+
+  try {
+    await bulkIndexAndCallback({
+      searchInstance,
+      entitiesToIndex: entitiesToIndexWithRels,
+      elasticIndex,
+      batchCallback,
+      totalRows,
+    });
+  } catch (err) {
+    newIndexErrors = newIndexErrorsOrThrow(err);
+  }
+
+  return indexBatch(offset + limit, totalRows, options, errors.concat(newIndexErrors));
+};
+
+const indexEntities = async ({
   query,
   select = '',
   limit = 50,
-  { batchCallback = () => {}, elasticIndex, searchInstance }
-) => {
-  const index = async (offset, totalRows, errors = []) => {
-    if (offset >= totalRows) {
-      return errors.length ? handleErrors(errors) : Promise.resolve();
-    }
-
-    const entitiesToIndex = await entities.get(query, '', {
-      skip: offset,
-      limit,
-      documentsFullText: select && select.includes('+fullText'),
-    });
-
-    const entitiesToIndexWithRels = await Promise.all(
-      entitiesToIndex.map(entity =>
-        relationships
-          .get({ entity: entity.sharedId })
-          .then(relations => ({ ...entity, relationships: relations || [] }))
-      )
-    );
-
-    let newIndexErrors = [];
-
-    try {
-      await searchInstance
-        .bulkIndex(entitiesToIndexWithRels, 'index', elasticIndex)
-        .then(() => batchCallback(entitiesToIndexWithRels.length, totalRows));
-    } catch (err) {
-      newIndexErrors = newIndexErrorsOrThrow(err);
-    }
-
-    return index(offset + limit, totalRows, errors.concat(newIndexErrors));
-  };
-
+  batchCallback = () => {},
+  elasticIndex,
+  searchInstance,
+}) => {
   const totalRows = await entities.count(query);
-  return index(0, totalRows);
+  return indexBatch(0, totalRows, {
+    query,
+    select,
+    limit,
+    batchCallback,
+    elasticIndex,
+    searchInstance,
+  });
 };
 
 export { bulkIndex, indexEntities };
