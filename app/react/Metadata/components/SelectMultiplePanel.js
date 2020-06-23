@@ -13,7 +13,7 @@ import SidePanel from 'app/Layout/SidePanel';
 import Immutable from 'immutable';
 import { Icon } from 'UI';
 import { NeedAuthorization } from 'app/Auth';
-import MetadataForm from './MetadataForm';
+import { MetadataForm } from './MetadataForm';
 import comonTemplate from '../helpers/comonTemplate';
 
 const sortedTemplates = createSelector(
@@ -284,12 +284,9 @@ SelectMultiplePanel.propTypes = {
   updateEntities: PropTypes.func.isRequired,
   updateSelectedEntities: PropTypes.func.isRequired,
   getAndSelectDocument: PropTypes.func.isRequired,
-  templates: PropTypes.instanceOf(Immutable.List).isRequired,
   thesauris: PropTypes.instanceOf(Immutable.List).isRequired,
   formState: PropTypes.instanceOf(Object).isRequired,
-  state: PropTypes.instanceOf(Object).isRequired,
   formKey: PropTypes.string.isRequired,
-  storeKey: PropTypes.string.isRequired,
 };
 
 SelectMultiplePanel.contextTypes = {
@@ -299,7 +296,7 @@ SelectMultiplePanel.contextTypes = {
 export const mapStateToProps = (_state, props) => ({
   template: commonTemplate(props),
   open: props.entitiesSelected.size > 1,
-  editing: Object.keys(props.state).length > 0,
+  editing: Object.keys(props.state || {}).length > 0,
 });
 
 function mapDispatchToProps(dispatch, props) {

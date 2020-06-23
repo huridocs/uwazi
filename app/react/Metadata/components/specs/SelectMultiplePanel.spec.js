@@ -58,13 +58,13 @@ describe('SelectMultiplePanel', () => {
         .find('.entities-list li span')
         .first()
         .text()
-    ).toBe('A rude awakening');
+    ).toContain('A rude awakening');
     expect(
       component
         .find('.entities-list li span')
         .last()
         .text()
-    ).toBe('A falling star');
+    ).toContain('A falling star');
   });
 
   describe('when props.open', () => {
