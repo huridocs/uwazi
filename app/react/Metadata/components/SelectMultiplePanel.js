@@ -12,7 +12,7 @@ import TemplateLabel from 'app/Layout/TemplateLabel';
 import SidePanel from 'app/Layout/SidePanel';
 import Immutable from 'immutable';
 import { Icon } from 'UI';
-import Export from 'app/Library/components/ExportButton';
+import { NeedAuthorization } from 'app/Auth';
 import MetadataForm from './MetadataForm';
 import comonTemplate from '../helpers/comonTemplate';
 
@@ -157,18 +157,20 @@ export class SelectMultiplePanel extends Component {
   renderEditingButtons() {
     return (
       <React.Fragment>
-        <button
-          type="button"
-          onClick={this.cancel}
-          className="cancel-edit-metadata btn btn-primary"
-        >
-          <Icon icon="times" />
-          <span className="btn-label">{t('System', 'Cancel')}</span>
-        </button>
-        <button type="submit" form="multiEdit" className="btn btn-success">
-          <Icon icon="save" />
-          <span className="btn-label">{t('System', 'Save')}</span>
-        </button>
+        <NeedAuthorization roles={['admin', 'editor']}>
+          <button
+            type="button"
+            onClick={this.cancel}
+            className="cancel-edit-metadata btn btn-primary"
+          >
+            <Icon icon="times" />
+            <span className="btn-label">{t('System', 'Cancel')}</span>
+          </button>
+          <button type="submit" form="multiEdit" className="btn btn-success">
+            <Icon icon="save" />
+            <span className="btn-label">{t('System', 'Save')}</span>
+          </button>
+        </NeedAuthorization>
       </React.Fragment>
     );
   }
@@ -176,27 +178,28 @@ export class SelectMultiplePanel extends Component {
   renderListButtons(canBePublished, canBeUnPublished) {
     return (
       <React.Fragment>
-        <button type="button" onClick={this.edit} className="edit btn btn-primary">
-          <Icon icon="pencil-alt" />
-          <span className="btn-label">{t('System', 'Edit')}</span>
-        </button>
-        <button type="button" className="delete btn btn-danger" onClick={this.delete}>
-          <Icon icon="trash-alt" />
-          <span className="btn-label">{t('System', 'Delete')}</span>
-        </button>
-        {canBePublished && (
-          <button type="button" className="publish btn btn-success" onClick={this.publish}>
-            <Icon icon="paper-plane" />
-            <span className="btn-label">{t('System', 'Publish')}</span>
+        <NeedAuthorization roles={['admin', 'editor']}>
+          <button type="button" onClick={this.edit} className="edit btn btn-primary">
+            <Icon icon="pencil-alt" />
+            <span className="btn-label">{t('System', 'Edit')}</span>
           </button>
-        )}
-        {canBeUnPublished && (
-          <button type="button" className="unpublish btn btn-warning" onClick={this.unpublish}>
-            <Icon icon="paper-plane" />
-            <span className="btn-label">{t('System', 'Unpublish')}</span>
+          <button type="button" className="delete btn btn-danger" onClick={this.delete}>
+            <Icon icon="trash-alt" />
+            <span className="btn-label">{t('System', 'Delete')}</span>
           </button>
-        )}
-        <Export storeKey={this.props.storeKey} />
+          {canBePublished && (
+            <button type="button" className="publish btn btn-success" onClick={this.publish}>
+              <Icon icon="paper-plane" />
+              <span className="btn-label">{t('System', 'Publish')}</span>
+            </button>
+          )}
+          {canBeUnPublished && (
+            <button type="button" className="unpublish btn btn-warning" onClick={this.unpublish}>
+              <Icon icon="paper-plane" />
+              <span className="btn-label">{t('System', 'Unpublish')}</span>
+            </button>
+          )}
+        </NeedAuthorization>
       </React.Fragment>
     );
   }
@@ -209,8 +212,10 @@ export class SelectMultiplePanel extends Component {
           const onClick = getAndSelectDocument.bind(this, entity.get('sharedId'));
           return (
             <li key={index} onClick={onClick}>
-              <span className="entity-title">{entity.get('title')}</span>
-              <TemplateLabel template={entity.get('template')} />
+              <span className="entity-title">
+                {entity.get('title')}
+                <TemplateLabel template={entity.get('template')} />
+              </span>
             </li>
           );
         })}
