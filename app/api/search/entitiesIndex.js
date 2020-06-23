@@ -2,6 +2,7 @@ import languagesUtil from 'shared/languages';
 import languages from 'shared/languagesList';
 import entities from 'api/entities';
 import relationships from 'api/relationships/relationships';
+import errorLog from 'api/log/errorLog';
 import { entityDefaultDocument } from 'shared/entityDefaultDocument';
 
 import elastic from './elastic';
@@ -12,6 +13,9 @@ const handleErrors = itemsWithErrors => {
   if (itemsWithErrors.length === 0) return;
   const error = new IndexError('ERROR! Failed to index documents.');
   error.errors = itemsWithErrors;
+  errorLog.error(
+    `ERROR! Failed to index documents.\r\n${JSON.stringify(itemsWithErrors, null, ' ')}`
+  );
   throw error;
 };
 
