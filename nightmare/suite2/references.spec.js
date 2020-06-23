@@ -27,16 +27,16 @@ describe('references path', () => {
       nightmare
         .wait(selectors.libraryView.librarySecondDocumentTitle)
         .evaluate(getInnerText, selectors.libraryView.librarySecondDocumentTitle)
-        .then(itemName => {
-          return nightmare
+        .then(itemName =>
+          nightmare
             .openDocumentFromLibrary(itemName)
             .wait(selectors.documentView.documentPage)
             .isVisible(selectors.documentView.documentPage)
             .then(result => {
               expect(result).toBe(true);
               done();
-            });
-        })
+            })
+        )
         .catch(catchErrors(done));
     });
 

@@ -1,37 +1,54 @@
-import { catchErrors } from 'api/utils/jasmineHelpers';
-import conctactRoutes from '../routes.js';
-import instrumentRoutes from '../../utils/instrumentRoutes';
+import request from 'supertest';
+import { setUpApp } from 'api/utils/testingRoutes';
+import contactRoutes from '../routes.js';
 import contact from '../contact';
 
-describe('entities', () => {
-  let routes;
+jest.mock('../../utils/languageMiddleware.ts', () => (_req, _res, next) => {
+  next();
+});
 
-  beforeEach(() => {
-    routes = instrumentRoutes(conctactRoutes);
-  });
+describe('contact', () => {
+  const app = setUpApp(contactRoutes);
 
   describe('POST', () => {
-    let req;
+    let body;
     beforeEach(() => {
-      req = {
-        body: { name: 'Bruce Wayne', email: 'notbatman@wayne.com', text: 'I want to donate!' },
-        language: 'lang',
-      };
+      body = { name: 'Bruce Wayne', email: 'notbatman@wayne.com', message: 'I want to donate!' };
     });
 
-    it('should have a validation schema', () => {
-      expect(routes.post.validation('/api/contact')).toMatchSnapshot();
-    });
-
-    it('should send an email', done => {
+    it('should send an email', async () => {
       spyOn(contact, 'sendMessage').and.returnValue(Promise.resolve());
-      routes
-        .post('/api/contact', req)
-        .then(() => {
-          expect(contact.sendMessage).toHaveBeenCalledWith(req.body);
-          done();
-        })
-        .catch(catchErrors(done));
+      const response = await request(app)
+        .post('/api/contact')
+        .send(body);
+      expect(response.text).toContain('ok');
+      expect(contact.sendMessage).toHaveBeenCalledWith(body);
+    });
+
+    it('should next with error if sending email failed', async () => {
+      spyOn(contact, 'sendMessage').and.callFake(() => Promise.reject());
+      const response = await request(app)
+        .post('/api/contact')
+        .send(body);
+      expect(response.status).not.toBe(200);
+    });
+
+    describe('validation', () => {
+      it('should not validate with missing requried properties properties', async () => {
+        body = {};
+        const response = await request(app)
+          .post('/api/contact')
+          .send(body);
+        expect(response.text).toContain('validation failed');
+      });
+
+      it('should be an e-mail', async () => {
+        body.email = 'wrong format';
+        const response = await request(app)
+          .post('/api/contact')
+          .send(body);
+        expect(response.text).toContain('validation failed');
+      });
     });
   });
 });

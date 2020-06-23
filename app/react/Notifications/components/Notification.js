@@ -21,7 +21,15 @@ export class Notification extends Component {
     return (
       <div className={cssClass} onClick={this.close.bind(this)}>
         <Icon icon={icon} />
-        <span>{message}</span>
+        <span className="alert-text">
+          {message.split('\n').map((item, i) => (
+            //eslint-disable-next-line react/no-array-index-key
+            <React.Fragment key={i}>
+              {item}
+              <br />
+            </React.Fragment>
+          ))}
+        </span>
         <Icon icon="times" />
       </div>
     );

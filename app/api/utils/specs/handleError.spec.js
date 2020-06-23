@@ -18,6 +18,7 @@ describe('handleError', () => {
       expect(error.code).toBe(500);
       expect(error.message).toEqual(errorInstance.stack);
     });
+
     it('should log the error', () => {
       const error = new Error('error');
       handleError(error);
@@ -31,6 +32,7 @@ describe('handleError', () => {
       const error = handleError(createError('test error', 400));
       expect(error).toMatchSnapshot();
     });
+
     it('should not log the error when code is not 500', () => {
       handleError(createError('test error', 400));
       expect(errorLog.error).not.toHaveBeenCalled();
@@ -39,6 +41,7 @@ describe('handleError', () => {
       expect(errorLog.error).toHaveBeenCalledWith('\ntest error');
     });
   });
+
   describe('when error is a MongoError', () => {
     it('should return the error with a 500 code', () => {
       const error = handleError({ name: 'MongoError', message: 'error', code: '345' });
@@ -46,6 +49,7 @@ describe('handleError', () => {
       expect(error.message).toBe('error');
     });
   });
+
   describe('when error is a mongoose ValidationError', () => {
     it('should return the error with a 422 error', () => {
       const error = handleError({ name: 'ValidationError', message: 'error', code: '1000' });
@@ -53,6 +57,7 @@ describe('handleError', () => {
       expect(error.message).toBe('error');
     });
   });
+
   describe('when error is undefined', () => {
     it('should return generate a new error with code 500', () => {
       const error = handleError();
@@ -60,6 +65,7 @@ describe('handleError', () => {
       expect(error.message).toMatch(/undefined error/i);
     });
   });
+
   describe('when error is uncaught', () => {
     it('should append the info into the message', () => {
       const uncaught = true;
@@ -106,6 +112,27 @@ describe('handleError', () => {
         req: { body: { username: 'admin', password: '1234' } },
       });
       expect(debugLog.debug.calls.allArgs()).toMatchSnapshot();
+    });
+  });
+
+  describe('when error has ajv validation errors', () => {
+    it('should prettify the message', () => {
+      const errorInstance = {
+        ajv: true,
+        code: 400,
+        message: 'hello',
+        errors: [
+          {
+            dataPath: 'a property',
+            message: 'an error',
+          },
+        ],
+      };
+      const error = handleError(errorInstance);
+
+      expect(error.code).toBe(400);
+      const expectedPrettymessage = 'hello\na property: an error';
+      expect(error.prettyMessage).toEqual(expectedPrettymessage);
     });
   });
 });

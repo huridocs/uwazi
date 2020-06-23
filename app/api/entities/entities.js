@@ -614,11 +614,11 @@ export default {
     const query = { template, $or: [] };
     const changes = {};
 
-    Object.keys(properties).forEach(prop => {
+    properties.forEach(prop => {
       const propQuery = {};
       propQuery[`metadata.${prop}`] = { $exists: true };
       query.$or.push(propQuery);
-      changes[`metadata.${prop}`] = properties[prop];
+      changes[`metadata.${prop}`] = [];
     });
 
     const entitiesToReindex = await this.get(query, { _id: 1 });
