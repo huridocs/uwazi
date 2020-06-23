@@ -85,7 +85,7 @@ class OdmModelImpl<T> implements OdmModel<T> {
   }
 
   async count(condition: any) {
-    return this.db.count(condition).exec();
+    return this.db.countDocuments(condition).exec();
   }
 
   async getById(id: any | string | number) {

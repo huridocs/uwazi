@@ -704,7 +704,10 @@ const instanceSearch = elasticIndex => ({
   },
 
   async indexEntities(query, select = '', limit = 200, batchCallback = () => {}) {
-    return indexEntities(query, select, limit, {
+    return indexEntities({
+      query,
+      select,
+      limit,
       batchCallback,
       elasticIndex: elasticIndex || elasticIndexes.index,
       searchInstance: this,
