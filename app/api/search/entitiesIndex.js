@@ -73,11 +73,10 @@ const bulkIndex = async (docs, _action = 'index', elasticIndex) => {
 };
 
 const newIndexErrorsOrThrow = err => {
-  if (!(err instanceof IndexError)) {
-    throw err;
-  } else {
+  if (err instanceof IndexError) {
     return err.errors;
   }
+  throw err;
 };
 
 const appendRelationships = async entity => {
