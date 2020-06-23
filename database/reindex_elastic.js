@@ -24,7 +24,18 @@ const indexEntities = async () => {
 
 const prepareIndex = async indexUrl => {
   process.stdout.write(`Deleting index... ${indexConfig.index}\n`);
-  await request.delete(indexUrl);
+  try {
+    await request.delete(indexUrl);
+  } catch (err) {
+    // Should not stop on index_not_found_exception
+    if (err.json.error.type === 'index_not_found_exception') {
+      process.stdout.write('\r\nThe index was not found:\r\n');
+      process.stdout.write(`${JSON.stringify(err, null, ' ')}\r\n`);
+      process.stdout.write('\r\nMoving on.\r\n');
+    } else {
+      throw err;
+    }
+  }
 
   process.stdout.write(`Creating index... ${indexConfig.index}\n`);
   await request.put(indexUrl, elasticMapping);
