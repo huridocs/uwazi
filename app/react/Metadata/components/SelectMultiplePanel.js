@@ -13,7 +13,7 @@ import SidePanel from 'app/Layout/SidePanel';
 import Immutable from 'immutable';
 import { Icon } from 'UI';
 import { NeedAuthorization } from 'app/Auth';
-import { MetadataForm } from './MetadataForm';
+import MetadataForm from './MetadataForm';
 import comonTemplate from '../helpers/comonTemplate';
 
 const sortedTemplates = createSelector(
