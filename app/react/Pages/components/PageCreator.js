@@ -49,14 +49,14 @@ export class PageCreator extends Component {
             <div className="panel-body page-viewer document-viewer">
               <ShowIf if={Boolean(page.data._id)}>
                 <div className="alert alert-info">
-                  <Icon icon="terminal" /> {pageUrl}
+                  <Icon icon="angle-right" /> {pageUrl}
                   <a
                     target="_blank"
                     rel="noopener noreferrer"
                     href={pageUrl}
                     className="pull-right"
                   >
-                    (view page)
+                    &nbsp;(view page)
                   </a>
                 </div>
               </ShowIf>

@@ -3,6 +3,43 @@ import debugLog from 'api/log/debugLog';
 import errorLog from 'api/log/errorLog';
 import Ajv from 'ajv';
 
+const ajvPrettifier = error => {
+  const errorMessage = [error.message];
+  if (error.errors && error.errors.length) {
+    error.errors.forEach(oneError => {
+      errorMessage.push(`${oneError.dataPath}: ${oneError.message}`);
+    });
+  }
+  return errorMessage.join('\n');
+};
+
+const joiPrettifier = (error, req) => {
+  const errorMessage =
+    (req.originalUrl ? `\nurl: ${req.originalUrl}` : '') +
+    (req.body && Object.keys(req.body).length
+      ? `\nbody: ${JSON.stringify(req.body, null, ' ')}`
+      : '') +
+    (req.query && Object.keys(req.query).length
+      ? `\nquery: ${JSON.stringify(req.query, null, ' ')}`
+      : '') +
+    `\n${error.message || JSON.stringify(error.json)}`;
+
+  return errorMessage;
+};
+
+const obfuscateCredentials = req => {
+  const obfuscated = req;
+  if (req.body && req.body.password) {
+    obfuscated.body.password = '########';
+  }
+
+  if (req.body && req.body.username) {
+    obfuscated.body.username = '########';
+  }
+
+  return obfuscated;
+};
+
 const prettifyError = (error, { req = {}, uncaught = false } = {}) => {
   let result = error;
 
@@ -34,25 +71,11 @@ const prettifyError = (error, { req = {}, uncaught = false } = {}) => {
     result.message = `uncaught exception or unhandled rejection, Node process finished !!\n ${result.message}`;
   }
 
-  if (req.body && req.body.password) {
-    req.body.password = '########';
-  }
+  const obfuscatedRequest = obfuscateCredentials(req);
+  result.prettyMessage = error.ajv
+    ? ajvPrettifier(result)
+    : joiPrettifier(result, obfuscatedRequest);
 
-  if (req.body && req.body.username) {
-    req.body.username = '########';
-  }
-
-  const errorMessage =
-    (req.originalUrl ? `\nurl: ${req.originalUrl}` : '') +
-    (req.body && Object.keys(req.body).length
-      ? `\nbody: ${JSON.stringify(req.body, null, ' ')}`
-      : '') +
-    (req.query && Object.keys(req.query).length
-      ? `\nquery: ${JSON.stringify(req.query, null, ' ')}`
-      : '') +
-    `\n${result.message || JSON.stringify(error.json)}`;
-
-  result.prettyMessage = errorMessage;
   return result;
 };
 

@@ -22,17 +22,25 @@
   border-radius: 0;
 
   & > svg:first-child {
-    margin-right: 15px;
+    display: block;
+    margin-right: 10px;
+    float: left;
   }
+
   .fa-times {
     position: absolute;
-    right: 30px;
+    right: 10px;
     transform: translateY(3px);
     color: $c-grey;
+    top: 5px;
   }
 
   &.no-margin {
     margin: 0px;
+  }
+
+  .alert-text {
+    float: left;
   }
 }
 
@@ -45,6 +53,7 @@
     margin-right: 5px;
   }
 }
+
 .alert-success {
   border-left: 5px solid $c-success;
   & > svg:first-child,
@@ -52,6 +61,7 @@
     color: $c-success;
   }
 }
+
 .alert-warning {
   border-left: 5px solid $c-warning;
   & > svg:first-child,
@@ -59,6 +69,7 @@
     color: $c-warning;
   }
 }
+
 .alert-danger {
   border-left: 5px solid $c-danger;
   & > svg:first-child,
@@ -116,7 +127,6 @@
 .modal-danger {
   border-left: 5px solid $c-danger;
 }
-
 
 .notification {
   margin-top: 15px;
