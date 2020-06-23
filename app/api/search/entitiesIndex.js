@@ -1,21 +1,18 @@
 import languagesUtil from 'shared/languages';
 import languages from 'shared/languagesList';
-import errorLog from 'api/log/errorLog';
 import entities from 'api/entities';
 import relationships from 'api/relationships/relationships';
 import { entityDefaultDocument } from 'shared/entityDefaultDocument';
 
 import elastic from './elastic';
 
-const handleErrors = async errors => {
-  if (errors.length === 0) return;
-  errors.forEach(f =>
-    errorLog.error(
-      `ERROR Failed to index document ${f.index._id}: ${JSON.stringify(f.index.error)}`
-    )
-  );
-  const errorIndexesIds = errors.map(f => f.index._id);
-  throw new Error(`ERROR Failed to index documents: ${errorIndexesIds.join(', ')}`);
+export class IndexError extends Error {}
+
+const handleErrors = itemsWithErrors => {
+  if (itemsWithErrors.length === 0) return;
+  const error = new IndexError('ERROR! Failed to index documents.');
+  error.errors = itemsWithErrors;
+  throw error;
 };
 
 function setFullTextSettings(defaultDocument, id, body, doc) {
@@ -38,6 +35,7 @@ function setFullTextSettings(defaultDocument, id, body, doc) {
 
 const bulkIndex = async (docs, _action = 'index', elasticIndex) => {
   const body = [];
+  // eslint-disable-next-line max-statements
   docs.forEach(doc => {
     let docBody = Object.assign({ documents: [] }, doc);
     docBody.fullText = 'entity';
@@ -65,52 +63,85 @@ const bulkIndex = async (docs, _action = 'index', elasticIndex) => {
       setFullTextSettings(defaultDocument, id, body, doc);
     }
   });
-  let res;
-  try {
-    res = await elastic.bulk({ body, requestTimeout: 40000 });
-    if (res.items) {
-      await handleErrors(res.items.filter(f => f.index.error));
-    }
-  } catch (error) {
-    await handleErrors([{ index: { _id: body[0].index._id, error } }]);
+
+  const results = await elastic.bulk({ body, requestTimeout: 40000 });
+  if (results.items) {
+    handleErrors(results.items.filter(f => f.index.error));
   }
-  return res;
+
+  return results;
 };
 
-const indexEntities = (
+const newIndexErrorsOrThrow = err => {
+  if (err instanceof IndexError) {
+    return err.errors;
+  }
+  throw err;
+};
+
+const appendRelationships = async entity => {
+  const relations = await relationships.get({ entity: entity.sharedId });
+  return { ...entity, relationships: relations || [] };
+};
+
+const getEntitiesToIndex = async (query, offset, limit, select) => {
+  const entitiesToIndex = await entities.get(query, '', {
+    skip: offset,
+    limit,
+    documentsFullText: select && select.includes('+fullText'),
+  });
+
+  return Promise.all(entitiesToIndex.map(appendRelationships));
+};
+
+const bulkIndexAndCallback = async assets => {
+  const { searchInstance, entitiesToIndex, elasticIndex, batchCallback, totalRows } = assets;
+  await searchInstance.bulkIndex(entitiesToIndex, 'index', elasticIndex);
+  return batchCallback(entitiesToIndex.length, totalRows);
+};
+
+const indexBatch = async (offset, totalRows, options, errors = []) => {
+  const { query, select, limit, batchCallback, elasticIndex, searchInstance } = options;
+  if (offset >= totalRows) {
+    return errors.length ? handleErrors(errors) : Promise.resolve();
+  }
+
+  const entitiesToIndex = await getEntitiesToIndex(query, offset, limit, select);
+
+  let newIndexErrors = [];
+
+  try {
+    await bulkIndexAndCallback({
+      searchInstance,
+      entitiesToIndex,
+      elasticIndex,
+      batchCallback,
+      totalRows,
+    });
+  } catch (err) {
+    newIndexErrors = newIndexErrorsOrThrow(err);
+  }
+
+  return indexBatch(offset + limit, totalRows, options, errors.concat(newIndexErrors));
+};
+
+const indexEntities = async ({
   query,
   select = '',
   limit = 50,
-  { batchCallback = () => {}, elasticIndex, searchInstance }
-) => {
-  const index = (offset, totalRows) => {
-    if (offset >= totalRows) {
-      return Promise.resolve();
-    }
-
-    return entities
-      .get(query, '', {
-        skip: offset,
-        limit,
-        documentsFullText: select && select.includes('+fullText'),
-      })
-      .then(entitiesToIndex =>
-        Promise.all(
-          entitiesToIndex.map(entity =>
-            relationships
-              .get({ entity: entity.sharedId })
-              .then(relations => ({ ...entity, relationships: relations || [] }))
-          )
-        )
-      )
-      .then(entitiesToIndex =>
-        searchInstance
-          .bulkIndex(entitiesToIndex, 'index', elasticIndex)
-          .then(() => batchCallback(entitiesToIndex.length, totalRows))
-      )
-      .then(() => index(offset + limit, totalRows));
-  };
-  return entities.count(query).then(totalRows => index(0, totalRows));
+  batchCallback = () => {},
+  elasticIndex,
+  searchInstance,
+}) => {
+  const totalRows = await entities.count(query);
+  return indexBatch(0, totalRows, {
+    query,
+    select,
+    limit,
+    batchCallback,
+    elasticIndex,
+    searchInstance,
+  });
 };
 
 export { bulkIndex, indexEntities };
