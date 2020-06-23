@@ -8,7 +8,7 @@ import elastic from './elastic';
 
 export class IndexError extends Error {}
 
-const handleErrors = async itemsWithErrors => {
+const handleErrors = itemsWithErrors => {
   if (itemsWithErrors.length === 0) return;
   const error = new IndexError('ERROR! Failed to index documents.');
   error.errors = itemsWithErrors;
@@ -66,7 +66,7 @@ const bulkIndex = async (docs, _action = 'index', elasticIndex) => {
 
   const results = await elastic.bulk({ body, requestTimeout: 40000 });
   if (results.items) {
-    await handleErrors(results.items.filter(f => f.index.error));
+    handleErrors(results.items.filter(f => f.index.error));
   }
 
   return results;
