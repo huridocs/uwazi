@@ -14,7 +14,7 @@ const handleErrors = itemsWithErrors => {
   const error = new IndexError('ERROR! Failed to index documents.');
   error.errors = itemsWithErrors;
   errorLog.error(
-    `ERROR! Failed to index documents.\r\n${JSON.stringify(itemsWithErrors, null, ' ')}`
+    `ERROR! Failed to index documents.\r\n${JSON.stringify(itemsWithErrors, null, ' ')}\r\n`
   );
   throw error;
 };
