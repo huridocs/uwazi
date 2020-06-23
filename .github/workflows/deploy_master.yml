@@ -1,4 +1,4 @@
-name: Uwazi CI
+name: Deploy master
 
 on:
   push:
@@ -20,7 +20,7 @@ jobs:
           path: ./node_modules
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
       - name: install dependencies
-        run: yarn install
+        run: yarn install --production
       - name: Cache build
         id: cache-build
         uses: actions/cache@v2
