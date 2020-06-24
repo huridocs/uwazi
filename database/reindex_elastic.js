@@ -60,15 +60,10 @@ const attemptStringify = err => {
 
 const logErrors = err => {
   if (err instanceof IndexError) {
-    process.stdout.write('\r\nWarning! The following errors found during reindex:\r\n');
-    process.stdout.write(`${JSON.stringify(err.errors, null, ' ')}\r\n`);
+    process.stdout.write('\r\nWarning! Errors found during reindex.\r\n');
   } else {
-    process.stdout.write('Reindex error:\r\n');
-    process.stdout.write(`${err}\r\n`);
-
     const errMessage = attemptStringify(err);
-
-    errorLog.error(`Uncaught Reindex error. Will exit with (1).\r\n${errMessage}\r\n`);
+    errorLog.error(`Uncaught Reindex error.\r\n${errMessage}\r\nWill exit with (1)\r\n`);
     process.exit(1);
   }
 };
