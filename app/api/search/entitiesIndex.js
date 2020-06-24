@@ -9,13 +9,17 @@ import elastic from './elastic';
 
 export class IndexError extends Error {}
 
-const handleErrors = itemsWithErrors => {
+const handleErrors = (itemsWithErrors, { logError = false } = {}) => {
   if (itemsWithErrors.length === 0) return;
   const error = new IndexError('ERROR! Failed to index documents.');
   error.errors = itemsWithErrors;
-  errorLog.error(
-    `ERROR! Failed to index documents.\r\n${JSON.stringify(itemsWithErrors, null, ' ')}\r\n`
-  );
+
+  if (logError) {
+    errorLog.error(
+      `ERROR! Failed to index documents.\r\n${JSON.stringify(itemsWithErrors, null, ' ')}\r\n`
+    );
+  }
+
   throw error;
 };
 
@@ -107,7 +111,7 @@ const bulkIndexAndCallback = async assets => {
 const indexBatch = async (offset, totalRows, options, errors = []) => {
   const { query, select, limit, batchCallback, elasticIndex, searchInstance } = options;
   if (offset >= totalRows) {
-    return errors.length ? handleErrors(errors) : Promise.resolve();
+    return errors.length ? handleErrors(errors, { logError: true }) : Promise.resolve();
   }
 
   const entitiesToIndex = await getEntitiesToIndex(query, offset, limit, select);
