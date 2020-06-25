@@ -29,14 +29,16 @@ export const createErrorLog = () => {
     transports: [createFileTransport(), consoleTransport],
   });
 
+  logger.closeGraylog = () => {};
+
   if (process.env.USE_GRAYLOG) {
-    logger.add(
-      new GrayLogTransport({
-        format: winston.format.combine(winston.format.timestamp(), formatter),
-        instance_name: DATABASE_NAME,
-        server: process.env.USE_GRAYLOG,
-      })
-    );
+    const graylogTransport = new GrayLogTransport({
+      format: winston.format.combine(winston.format.timestamp(), formatter),
+      instance_name: DATABASE_NAME,
+      server: process.env.USE_GRAYLOG,
+    });
+    logger.add(graylogTransport);
+    logger.closeGraylog = graylogTransport.graylog.close.bind(graylogTransport.graylog);
   }
 
   return logger;
