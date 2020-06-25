@@ -170,29 +170,6 @@ describe('Metadata Actions', () => {
         expect(dispatch).toHaveBeenCalledWith('formLoad');
         expect(reactReduxForm.actions.load).toHaveBeenCalledWith('formNamespace', expectedDoc);
       });
-
-      it('should set the template field dirty', () => {
-        const getState = () => state;
-
-        actions.changeTemplate('formNamespace', 'newTemplate')(dispatch, getState);
-        jasmine.clock().tick(0);
-        expect(reactReduxForm.actions.setDirty).toHaveBeenCalledWith('formNamespace.template');
-      });
-    });
-
-    describe('new entity', () => {
-      it('should not set the template field dirty', () => {
-        const getState = () => state;
-        const doc = {
-          title: 'test',
-          template: 'templateId',
-          metadata: { test: [{ value: 'test' }], test2: [{ value: 'test2' }] },
-        };
-        spyOn(reactReduxForm, 'getModel').and.returnValue(doc);
-        actions.changeTemplate('formNamespace', 'newTemplate')(dispatch, getState);
-        jasmine.clock().tick(0);
-        expect(reactReduxForm.actions.setDirty).not.toHaveBeenCalledWith('formNamespace.template');
-      });
     });
   });
 

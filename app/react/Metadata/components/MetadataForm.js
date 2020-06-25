@@ -58,7 +58,12 @@ export class MetadataForm extends Component {
               <label>{t('System', 'Type')}</label>
             </li>
             <li className="wide">
-              <ShowIf if={this.props.templateChanged}>
+              <ShowIf
+                if={
+                  this.props.initialTemplateId !== undefined &&
+                  this.props.initialTemplateId !== this.props.templateId
+                }
+              >
                 <span>
                   <Icon icon="exclamation-triangle" />
                   <Translate context="System">
@@ -163,6 +168,7 @@ MetadataForm.defaultProps = {
   multipleEdition: false,
   showSubset: undefined,
   version: undefined,
+  initialTemplateId: undefined,
   componentWillUnmount: () => {},
   notify: () => {},
   changeTemplate: () => {},
@@ -173,7 +179,7 @@ MetadataForm.propTypes = {
   model: PropTypes.string.isRequired,
   template: PropTypes.instanceOf(Immutable.Map).isRequired,
   templateId: PropTypes.string,
-  templateChanged: PropTypes.bool,
+  initialTemplateId: PropTypes.string,
   multipleEdition: PropTypes.bool,
   templateOptions: PropTypes.instanceOf(Immutable.List).isRequired,
   thesauris: PropTypes.instanceOf(Immutable.List).isRequired,

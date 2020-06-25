@@ -113,11 +113,39 @@ describe('MetadataForm', () => {
   });
 
   describe('on template change', () => {
+    function assessWarningVisibility(visible) {
+      const warning = component.find({
+        children: 'Changing the type will erase all connections to this entity.',
+      });
+      expect(warning.parents().get(1).props.if).toBe(visible);
+    }
+
     it('should call changeTemplate with the template', () => {
       render();
       const template = component.find(SimpleSelect).first();
       template.simulate('change', { target: { value: '2' } });
       expect(props.changeTemplate).toHaveBeenCalledWith(props.model, props.templates.toJS()[1]._id);
+    });
+
+    it('should warn about the loss of connections if the entity is already a saved one', () => {
+      props.templateId = '2';
+      props.initialTemplateId = 'templateId';
+      render();
+      assessWarningVisibility(true);
+    });
+
+    it('should not warn about the loss of connections if the entity is a new one', () => {
+      props.templateId = '2';
+      props.initialTemplateId = undefined;
+      render();
+      assessWarningVisibility(false);
+    });
+
+    it('should not warn about the loss of connections if the template is the same than the original one', () => {
+      props.templateId = 'templateId';
+      props.initialTemplateId = 'templateId';
+      render();
+      assessWarningVisibility(false);
     });
   });
 
