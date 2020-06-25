@@ -5,6 +5,7 @@ import elasticMapping from './elastic_mapping';
 import indexConfig from '../app/api/config/elasticIndexes';
 import { search } from '../app/api/search';
 import { IndexError } from '../app/api/search/entitiesIndex';
+import errorLog from '../app/api/log/errorLog';
 
 const indexEntities = async () => {
   const spinner = ['|', '/', '-', '\\'];
@@ -46,16 +47,25 @@ const reindex = async () => {
   process.stdout.write(`Indexing documents and entities... - ${docsIndexed} indexed\r\n`);
 };
 
+const attemptStringify = err => {
+  let errMessage = '';
+  try {
+    errMessage = JSON.stringify(err, null, ' ');
+  } catch (_err) {
+    errMessage = err;
+  }
+
+  return errMessage;
+};
+
 const logErrors = err => {
   if (err instanceof IndexError) {
-    process.stdout.write('\r\nWarning! The following errors found during reindex:\r\n');
-    process.stdout.write(`${JSON.stringify(err.errors, null, ' ')}\r\n`);
+    process.stdout.write('\r\nWarning! Errors found during reindex.\r\n');
   } else {
-    process.stdout.write('Reindex error:\r\n');
-    process.stdout.write(`${err}\r\n`);
+    const errMessage = attemptStringify(err);
+    errorLog.error(`Uncaught Reindex error.\r\n${errMessage}\r\nWill exit with (1)\r\n`);
     process.exit(1);
   }
-  return disconnect();
 };
 
 connect().then(async () => {
@@ -66,11 +76,11 @@ connect().then(async () => {
   try {
     await prepareIndex(indexUrl);
     await reindex();
-
-    const end = Date.now();
-    process.stdout.write(`Done, took ${(end - start) / 1000} seconds\n`);
-    return disconnect();
   } catch (err) {
-    return logErrors(err);
+    logErrors(err);
   }
+
+  const end = Date.now();
+  process.stdout.write(`Done, took ${(end - start) / 1000} seconds\n`);
+  return disconnect();
 });
