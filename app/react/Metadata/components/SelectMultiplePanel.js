@@ -157,22 +157,20 @@ export class SelectMultiplePanel extends Component {
 
   renderEditingButtons() {
     return (
-      <React.Fragment>
-        <NeedAuthorization roles={['admin', 'editor']}>
-          <button
-            type="button"
-            onClick={this.cancel}
-            className="cancel-edit-metadata btn btn-primary"
-          >
-            <Icon icon="times" />
-            <span className="btn-label">{t('System', 'Cancel')}</span>
-          </button>
-          <button type="submit" form="multiEdit" className="btn btn-success">
-            <Icon icon="save" />
-            <span className="btn-label">{t('System', 'Save')}</span>
-          </button>
-        </NeedAuthorization>
-      </React.Fragment>
+      <NeedAuthorization roles={['admin', 'editor']}>
+        <button
+          type="button"
+          onClick={this.cancel}
+          className="cancel-edit-metadata btn btn-primary"
+        >
+          <Icon icon="times" />
+          <span className="btn-label">{t('System', 'Cancel')}</span>
+        </button>
+        <button type="submit" form="multiEdit" className="btn btn-success">
+          <Icon icon="save" />
+          <span className="btn-label">{t('System', 'Save')}</span>
+        </button>
+      </NeedAuthorization>
     );
   }
 
