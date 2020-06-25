@@ -3,7 +3,7 @@ name: Deploy master
 on:
   push:
     branches:
-      - test_deploy
+      - master
 
 jobs:
   deploy:
@@ -30,7 +30,7 @@ jobs:
       - name: build production
         if: steps.cache-build.outputs.cache-hit != 'true'
         run: yarn production-build
-      - name: Run a multi-line script
+      - name: Tgz production build
         run: tar -czf uwazi_${GITHUB_SHA}.tgz ./prod
       - name: Deploy to Server
         uses: easingthemes/ssh-deploy@v2.1.1
