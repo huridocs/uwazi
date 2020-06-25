@@ -11,8 +11,6 @@ export class IndexError extends Error {}
 
 const handleErrors = (itemsWithErrors, { logError = false } = {}) => {
   if (itemsWithErrors.length === 0) return;
-  const error = new IndexError('ERROR! Failed to index documents.');
-  error.errors = itemsWithErrors;
 
   if (logError) {
     errorLog.error(
@@ -20,6 +18,8 @@ const handleErrors = (itemsWithErrors, { logError = false } = {}) => {
     );
   }
 
+  const error = new IndexError('ERROR! Failed to index documents.');
+  error.errors = itemsWithErrors;
   throw error;
 };
 

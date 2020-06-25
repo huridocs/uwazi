@@ -68,6 +68,12 @@ const logErrors = err => {
   }
 };
 
+const done = start => {
+  const end = Date.now();
+  process.stdout.write(`Done, took ${(end - start) / 1000} seconds\n`);
+  errorLog.closeGraylog();
+};
+
 connect().then(async () => {
   const start = Date.now();
   const elasticUrl = process.env.ELASTICSEARCH_URL || 'http://localhost:9200';
@@ -80,7 +86,6 @@ connect().then(async () => {
     logErrors(err);
   }
 
-  const end = Date.now();
-  process.stdout.write(`Done, took ${(end - start) / 1000} seconds\n`);
+  done(start);
   return disconnect();
 });
