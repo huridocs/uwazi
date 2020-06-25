@@ -5,7 +5,6 @@ import { Select as SimpleSelect } from 'app/Forms';
 import { I18NLink, t, Translate } from 'app/I18N';
 import { notificationActions } from 'app/Notifications';
 import { FormGroup } from 'app/ReactReduxForms';
-import ShowIf from 'app/App/ShowIf';
 import Immutable from 'immutable';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
