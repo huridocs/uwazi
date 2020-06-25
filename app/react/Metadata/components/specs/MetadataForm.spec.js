@@ -87,7 +87,11 @@ describe('MetadataForm', () => {
       properties: [],
     });
     render();
-    expect(component).toMatchSnapshot();
+    const title = component
+      .find('FormGroup')
+      .first()
+      .find({ children: 'Name' });
+    expect(title.length).toBe(1);
   });
 
   it('should render MetadataFormFields passing thesauris state and template', () => {
