@@ -63,7 +63,9 @@ exports[`MetadataForm should display custom title label 1`] = `
       <li
         className="wide"
       >
-        <ShowIf>
+        <ShowIf
+          if={false}
+        >
           <span>
             <Connect(Icon)
               icon="exclamation-triangle"
