@@ -62,22 +62,7 @@ exports[`MetadataForm should display custom title label 1`] = `
       </li>
       <li
         className="wide"
-      >
-        <ShowIf
-          if={false}
-        >
-          <span>
-            <Connect(Icon)
-              icon="exclamation-triangle"
-            />
-            <Connect(Translate)
-              context="System"
-            >
-              Changing the type will erase all connections to this entity.
-            </Connect(Translate)>
-          </span>
-        </ShowIf>
-      </li>
+      />
       <li
         className="wide"
       >

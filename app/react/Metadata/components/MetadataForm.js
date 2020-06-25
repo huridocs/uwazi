@@ -58,19 +58,15 @@ export class MetadataForm extends Component {
               <label>{t('System', 'Type')}</label>
             </li>
             <li className="wide">
-              <ShowIf
-                if={
-                  this.props.initialTemplateId !== undefined &&
-                  this.props.initialTemplateId !== this.props.templateId
-                }
-              >
-                <span>
-                  <Icon icon="exclamation-triangle" />
-                  <Translate context="System">
-                    Changing the type will erase all connections to this entity.
-                  </Translate>
-                </span>
-              </ShowIf>
+              {this.props.initialTemplateId !== undefined &&
+                this.props.initialTemplateId !== this.props.templateId && (
+                  <span>
+                    <Icon icon="exclamation-triangle" />
+                    <Translate context="System">
+                      Changing the type will erase all connections to this entity.
+                    </Translate>
+                  </span>
+                )}
             </li>
             <li className="wide">
               <SimpleSelect
