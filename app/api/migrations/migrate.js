@@ -7,4 +7,11 @@ connect()
   .then(() => {
     errorLog.closeGraylog();
     disconnect();
+  })
+  .catch(err => {
+    errorLog.error(`Uncaugh migration error:\r\n${err}\r\n`);
+    errorLog.closeGraylog(() => {
+      disconnect();
+      process.exit(1);
+    });
   });
