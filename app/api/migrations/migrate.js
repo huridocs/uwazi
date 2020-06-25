@@ -9,7 +9,7 @@ connect()
     disconnect();
   })
   .catch(err => {
-    errorLog.error(`Uncaugh migration error:\r\n${err}\r\n`);
+    errorLog.error(`Uncaught migration error:\r\n${err}\r\n`);
     errorLog.closeGraylog(() => {
       disconnect();
       process.exit(1);
