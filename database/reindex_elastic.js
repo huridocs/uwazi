@@ -61,13 +61,17 @@ const attemptStringify = err => {
 const logErrors = err => {
   if (err instanceof IndexError) {
     process.stdout.write('\r\nWarning! Errors found during reindex.\r\n');
-    errorLog.closeGraylog();
   } else {
     const errMessage = attemptStringify(err);
     errorLog.error(`Uncaught Reindex error.\r\n${errMessage}\r\nWill exit with (1)\r\n`);
-    errorLog.closeGraylog();
     process.exit(1);
   }
+};
+
+const done = start => {
+  const end = Date.now();
+  process.stdout.write(`Done, took ${(end - start) / 1000} seconds\n`);
+  errorLog.closeGraylog();
 };
 
 connect().then(async () => {
@@ -82,7 +86,6 @@ connect().then(async () => {
     logErrors(err);
   }
 
-  const end = Date.now();
-  process.stdout.write(`Done, took ${(end - start) / 1000} seconds\n`);
+  done(start);
   return disconnect();
 });
