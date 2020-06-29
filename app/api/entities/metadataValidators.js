@@ -1,5 +1,3 @@
-/** @format */
-
 import { isNumber, isUndefined, isString, isObject, isNull } from 'util';
 import { propertyTypes } from 'shared/propertyTypes';
 

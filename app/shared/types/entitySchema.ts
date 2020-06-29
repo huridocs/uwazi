@@ -2,23 +2,28 @@ import Ajv from 'ajv';
 import templatesModel from 'api/templates/templatesModel';
 import { isUndefined, isNull } from 'util';
 import { objectIdSchema, metadataSchema } from 'shared/types/commonSchemas';
-import { wrapValidator } from 'shared/tsUtils';
+import { wrapValidator, ensure } from 'shared/tsUtils';
 import { validators, customErrorMessages } from 'api/entities/metadataValidators.js';
+import { EntitySchema } from './entityType';
+import { PropertySchema } from './commonTypes';
+import { TemplateSchema } from './templateType';
 
 export const emitSchemaTypes = true;
 
 const ajv = Ajv({ allErrors: true });
 
-const hasValue = value => !isUndefined(value) && !isNull(value);
+const hasValue = (value: any) => !isUndefined(value) && !isNull(value);
 
-const validateMetadataField = (property, entity) => {
-  const value = entity.metadata && entity.metadata[property.name];
+const validateMetadataField = (property: PropertySchema, entity: EntitySchema) => {
+  const value = entity.metadata && entity.metadata[ensure<string>(property.name)];
 
   if (!validators.validateRequiredProperty(property, value)) {
     throw new Error(customErrorMessages.required);
   }
 
+  //@ts-ignore
   if (hasValue(value) && validators[property.type] && !validators[property.type](value)) {
+    //@ts-ignore
     throw new Error(customErrorMessages[property.type]);
   }
 
@@ -31,25 +36,29 @@ ajv.addKeyword('metadataMatchesTemplateProperties', {
   async: true,
   errors: true,
   type: 'object',
-  async validate(_schema, entity) {
+  async validate(fields: any, entity: EntitySchema) {
     if (!entity.template) {
       return true;
     }
-    const [template] = await templatesModel.get({ _id: entity.template });
-    if (!template) {
-      throw new Ajv.ValidationError([
-        { message: 'template does not exist', dataPath: '.template' },
-      ]);
-    }
-
-    const errors = template.properties.reduce((err, property) => {
-      try {
-        validateMetadataField(property, entity);
-        return err;
-      } catch (e) {
-        return [{ message: e.message, dataPath: `.metadata['${property.name}']` }];
-      }
-    }, []);
+    const [template = {} as TemplateSchema] = await templatesModel.get({ _id: entity.template });
+    const errors: Ajv.ErrorObject[] = (template.properties || []).reduce<Ajv.ErrorObject[]>(
+      (err: Ajv.ErrorObject[], property) => {
+        try {
+          validateMetadataField(property, entity);
+          return err;
+        } catch (e) {
+          err.push({
+            keyword: 'metadataMatchesTemplateProperties',
+            schemaPath: '',
+            params: { keyword: 'metadataMatchesTemplateProperties', fields },
+            message: e.message,
+            dataPath: `.metadata['${property.name}']`,
+          });
+          return err;
+        }
+      },
+      []
+    );
 
     if (errors.length) {
       throw new Ajv.ValidationError(errors);
@@ -59,10 +68,34 @@ ajv.addKeyword('metadataMatchesTemplateProperties', {
   },
 });
 
+ajv.addKeyword('validateTemplateExists', {
+  async: true,
+  errors: true,
+  type: 'object',
+  async validate(fields: any, entity: EntitySchema) {
+    if (!entity.template) {
+      return true;
+    }
+    const [template] = await templatesModel.get({ _id: entity.template });
+    if (!template) {
+      throw new Ajv.ValidationError([
+        {
+          keyword: 'metadataMatchesTemplateProperties',
+          schemaPath: '',
+          params: { keyword: 'metadataMatchesTemplateProperties', fields },
+          message: 'template does not exist',
+          dataPath: '.template',
+        },
+      ]);
+    }
+    return true;
+  },
+});
+
 ajv.addKeyword('stringMeetsLuceneMaxLimit', {
   errors: false,
   type: 'string',
-  validate(_schema, data) {
+  validate(_schema: any, data: EntitySchema) {
     return validators.validateLuceneBytesLimit(data);
   },
 });
@@ -72,6 +105,7 @@ export const entitySchema = {
   $async: true,
   type: 'object',
   metadataMatchesTemplateProperties: true,
+  validateTemplateExists: true,
   definitions: {
     objectIdSchema,
     metadataSchema,
