@@ -9,8 +9,8 @@ describe('Notification', () => {
   let props;
   const removeNotification = jasmine.createSpy('removeNotification');
 
-  const render = type => {
-    props = { message: 'message', id: 'id', removeNotification };
+  const render = (type, message = 'message') => {
+    props = { message, id: 'id', removeNotification };
     if (type) {
       props.type = type;
     }
@@ -58,6 +58,22 @@ describe('Notification', () => {
           .props().icon
       ).toBe('exclamation-triangle');
       expect(component.find('.alert-danger').length).toBe(1);
+    });
+  });
+
+  describe('when passing an escaped line message', () => {
+    it('should split the text', () => {
+      render('warning', 'Three\nLine\nText');
+      expect(component.find('br').length).toBe(3);
+    });
+  });
+
+  describe('when passing a node', () => {
+    it('should render that node', () => {
+      const message = <div className="passed-node">Some node</div>;
+      render('warning', message);
+
+      expect(component.find('div.passed-node').length).toBe(1);
     });
   });
 });
