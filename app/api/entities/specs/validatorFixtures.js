@@ -19,7 +19,7 @@ export default {
         { name: 'multidaterange', type: 'multidaterange' },
         { name: 'select', type: 'select' },
         { name: 'multiselect', type: 'multiselect' },
-        { name: 'relationship', type: 'relationship' },
+        { name: 'relationship', type: 'relationship', content: simpleTemplateId },
         { name: 'media', type: 'media' },
         { name: 'image', type: 'image' },
         { name: 'link', type: 'link' },
@@ -33,6 +33,11 @@ export default {
       _id: simpleTemplateId,
       properties: [{ name: 'markdown', type: 'markdown' }],
     },
+  ],
+  entities: [
+    { sharedId: 'entity1', language: 'en', template: simpleTemplateId },
+    { sharedId: 'entity2', language: 'en' },
+    { sharedId: 'entity3', language: 'en', template: simpleTemplateId },
   ],
 };
 

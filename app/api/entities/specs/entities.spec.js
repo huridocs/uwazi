@@ -790,11 +790,15 @@ describe('entities', () => {
           icon: { label: 'test' },
           published: false,
           diffMetadata: {
-            multiselect: { added: [{ value: 'country_one' }], removed: [{ value: 'country_two' }] },
+            multiselect: {
+              added: [{ value: 'country_one' }],
+              removed: [{ value: 'country_two' }],
+            },
           },
         },
         { language: 'en' }
       );
+
       const updatedEntities2 = await entities.multipleUpdate(
         ['shared'],
         {

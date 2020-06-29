@@ -341,6 +341,9 @@ export default {
       name: 'template_test',
       properties: [
         { type: 'text', name: 'text' },
+        { type: 'text', name: 'property1' },
+        { type: 'text', name: 'property2' },
+        { type: 'text', name: 'description' },
         { type: 'select', name: 'select', content: dictionary },
         { type: 'multiselect', name: 'multiselect', content: dictionary },
         { type: 'date', name: 'date' },

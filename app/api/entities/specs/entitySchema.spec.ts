@@ -43,10 +43,15 @@ describe('entity schema', () => {
       }
     };
 
-    const expectError = async (entity: EntitySchema, message: string, dataPath: string) => {
+    const expectError = async (
+      entity: EntitySchema,
+      message: string,
+      dataPath: string,
+      restOfError: Partial<Ajv.ErrorObject> = {}
+    ) => {
       await expect(validateEntity(entity)).rejects.toHaveProperty(
         'errors',
-        expect.arrayContaining([expect.objectContaining({ dataPath, message })])
+        expect.arrayContaining([expect.objectContaining({ dataPath, message, ...restOfError })])
       );
     };
 
@@ -101,6 +106,28 @@ describe('entity schema', () => {
       const largeField = Math.random()
         .toString(36)
         .repeat(20000);
+
+      it('should not allow metadata keys that are not defined on the template properties', async () => {
+        const entity = createEntity({
+          metadata: {
+            not_allowed_property: [],
+            not_allowed_property2: [],
+            name: [],
+          },
+        });
+
+        await expectError(
+          entity,
+          customErrorMessages.property_not_allowed,
+          ".metadata['not_allowed_property']"
+        );
+
+        await expectError(
+          entity,
+          customErrorMessages.property_not_allowed,
+          ".metadata['not_allowed_property2']"
+        );
+      });
 
       it('should allow non-required properties to be missing', async () => {
         const entity = createEntity({
@@ -418,6 +445,45 @@ describe('entity schema', () => {
             entity,
             customErrorMessages[propertyTypes.relationship],
             ".metadata['relationship']"
+          );
+        });
+
+        it('should not allow foreign ids that do not exists', async () => {
+          const entity = createEntity({
+            metadata: {
+              relationship: [
+                { value: 'entity1' },
+                { value: 'non_existent_entity' },
+                { value: 'non_existent_entity2' },
+              ],
+            },
+          });
+
+          await expectError(
+            entity,
+            customErrorMessages.relationship_nonexistent_ids,
+            ".metadata['relationship']",
+            {
+              data: [{ value: 'non_existent_entity' }, { value: 'non_existent_entity2' }],
+            }
+          );
+        });
+
+        it('should not allow foreign ids that do not belong to diferent template', async () => {
+          const entity = createEntity({
+            language: '',
+            metadata: {
+              relationship: [{ value: 'entity1' }, { value: 'entity2' }, { value: 'entity3' }],
+            },
+          });
+
+          await expectError(
+            entity,
+            customErrorMessages.relationship_nonexistent_ids,
+            ".metadata['relationship']",
+            {
+              data: [{ value: 'entity2' }],
+            }
           );
         });
       });
