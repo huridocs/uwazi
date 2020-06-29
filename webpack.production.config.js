@@ -9,9 +9,9 @@ const CopyWebpackPlugin = require("copy-webpack-plugin");
 var production = true;
 var config = require('./webpack/config')(production);
 
-config.devtool = 'cheap-module-source-map';
+config.devtool = '';
 config.context = __dirname;
-config.mode = 'development';
+config.mode = 'production';
 config.resolveLoader = {
   modules: ["node_modules", __dirname + "/webpack/webpackLoaders"],
   extensions: [".js", ".json", ".ts"],
