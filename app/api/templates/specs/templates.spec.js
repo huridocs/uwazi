@@ -291,7 +291,7 @@ describe('templates', () => {
       });
     });
 
-    describe('when there is another template with the same property', async () => {
+    describe('when there is another template with the same property', () => {
       const template2 = {
         name: 'template2',
         properties: [{ label: 'select1', type: 'select', content: 'thesauriId2' }],
@@ -303,7 +303,7 @@ describe('templates', () => {
         commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
       };
 
-      describe('when the property to save is of a different content', async () => {
+      describe('when the property to save is of a different content', () => {
         it('should not save the template', async () => {
           try {
             await templates.save(template2);
