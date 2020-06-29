@@ -60,11 +60,11 @@ const updateTranslation = (currentTemplate, template) => {
 export default {
   async save(template, language) {
     await validateTemplate(template);
-
-    await this._validatePropertyNames(template);
     /* eslint-disable no-param-reassign */
     template.properties = template.properties || [];
     template.properties = generateNamesAndIds(template.properties);
+
+    await this._validatePropertyNames(template);
     /* eslint-enable no-param-reassign */
 
     if (template._id) {
@@ -154,27 +154,30 @@ export default {
   },
 
   async _validatePropertyNames(template) {
-    const propertyName = template.properties[0].label;
-    const propertyContent = template.properties[0].content;
-    const templates = await this.get(
-      {
-        properties: { $elemMatch: { label: propertyName } },
-      },
-      'properties.$'
-    );
-    const sameProperties = [];
-    templates.reduce((properties, templateWithProp) => {
-      const differentProperties = templateWithProp.properties.filter(
-        property => property.label === propertyName && property.content !== propertyContent
-      );
-      properties.push(...differentProperties);
-      return properties;
-    }, sameProperties);
-    if (!sameProperties) {
+    if (!template.properties || template.properties.length === 0) {
       return;
     }
-    if (sameProperties.length > 0) {
-      throw createError("Different properties can't share names: fieldLabel", 429);
+
+    const condition = template.properties.map(property => ({
+      $and: [{ name: property.name, content: { $ne: property.content } }],
+    }));
+    const query = { properties: { $elemMatch: { $or: [...condition] } } };
+    const templates = await this.get(query, { _id: 0, 'properties.$': 1 });
+    const otherTemplates = templates.filter(t => !t._id.equals(template._id));
+    if (otherTemplates.length > 0) {
+      const sameProperties = template.properties.reduce((propertyNames, property) => {
+        otherTemplates.forEach(t => {
+          const matches = t.properties.find(
+            p => p.name === property.name && p.content !== property.content
+          );
+          if (matches && !propertyNames.includes(property.name)) {
+            propertyNames.push(property.label);
+          }
+        });
+        return propertyNames;
+      }, []);
+      const propertyNames = sameProperties.join(', ');
+      throw createError(`Different properties can't share names: ${propertyNames}`, 429);
     }
   },
 

@@ -39,7 +39,7 @@ export default {
       _id: db.id(),
       name: 'thesauri template',
       properties: [
-        { type: propertyTypes.select, content: 'thesauri1', label: 'select' },
+        { type: propertyTypes.select, content: 'thesauri1', label: 'select', name: 'select' },
         { type: propertyTypes.relationship, content: templateToBeDeleted, label: 'select2' },
       ],
       commonProperties: [{ name: 'title', label: 'Title' }],
@@ -48,7 +48,7 @@ export default {
       _id: db.id(),
       name: 'thesauri template 2',
       properties: [
-        { type: propertyTypes.select, content: 'thesauri1', label: 'select2' },
+        { type: propertyTypes.select, content: 'thesauri1', label: 'select2', name: 'select2' },
         { type: propertyTypes.select, content: templateToBeDeleted, label: 'selectToBeDeleted' },
       ],
       commonProperties: [{ name: 'title', label: 'Title' }],
@@ -59,7 +59,12 @@ export default {
       properties: [
         { type: propertyTypes.text, label: 'text' },
         { type: propertyTypes.text, label: 'text2' },
-        { type: propertyTypes.select, content: templateToBeDeleted, label: 'selectToBeDeleted' },
+        {
+          type: propertyTypes.select,
+          content: templateToBeDeleted,
+          label: 'selectToBeDeleted',
+          name: 'selecttobedeleted',
+        },
       ],
       commonProperties: [{ name: 'title', label: 'Title' }],
     },
@@ -68,8 +73,20 @@ export default {
       name: 'content template',
       commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
       properties: [
-        { id: '1', type: propertyTypes.select, content: 'thesauri1', label: 'select3' },
-        { id: '2', type: propertyTypes.multiselect, content: 'thesauri2', label: 'select4' },
+        {
+          id: '1',
+          type: propertyTypes.select,
+          content: 'thesauri1',
+          label: 'select3',
+          name: 'select3',
+        },
+        {
+          id: '2',
+          type: propertyTypes.multiselect,
+          content: 'thesauri2',
+          label: 'select4',
+          name: 'select4',
+        },
       ],
     },
     {
@@ -78,7 +95,7 @@ export default {
       commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
       properties: [
         { id: '1', type: propertyTypes.text, name: 'text', label: 'Text' },
-        { id: '2', type: propertyTypes.select, name: 'select', label: 'Select' },
+        { id: '2', type: propertyTypes.select, name: 'select5', label: 'Select5' },
       ],
     },
     {
@@ -108,8 +125,18 @@ export default {
       _id: db.id(),
       name: 'template with shared properties',
       properties: [
-        { type: propertyTypes.select, label: 'select1', content: 'thesauriId1' },
-        { type: propertyTypes.select, label: 'select2', content: 'thesauriId2' },
+        {
+          type: propertyTypes.select,
+          name: 'sharedproperty1',
+          label: 'sharedProperty1',
+          content: 'thesauriId1',
+        },
+        {
+          type: propertyTypes.select,
+          name: 'sharedproperty2',
+          label: 'sharedProperty2',
+          content: 'thesauriId2',
+        },
       ],
       commonProperties: [{ name: 'title', label: 'Title' }],
     },

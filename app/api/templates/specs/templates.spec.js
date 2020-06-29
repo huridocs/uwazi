@@ -22,6 +22,7 @@ import fixtures, {
   propertyToBeInherited,
 } from './fixtures.js';
 
+jest.setTimeout(50000);
 describe('templates', () => {
   beforeEach(done => {
     spyOn(translations, 'addContext').and.returnValue(Promise.resolve());
@@ -77,7 +78,7 @@ describe('templates', () => {
           name: 'changed',
           commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
           properties: [
-            { id: '1', type: 'select', content: 'new_thesauri', label: 'select' },
+            { id: '1', type: 'select', content: 'new_thesauri', label: 'select3' },
             { id: '2', type: 'multiselect', content: 'new_thesauri', label: 'multiselect' },
           ],
         };
@@ -86,7 +87,7 @@ describe('templates', () => {
           .save(changedTemplate)
           .then(() => {
             expect(entities.removeValuesFromEntities).toHaveBeenCalledWith(
-              ['select', 'multiselect'],
+              ['select3', 'multiselect'],
               templateWithContents
             );
             done();
@@ -101,8 +102,8 @@ describe('templates', () => {
         name: 'swap names template',
         commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
         properties: [
-          { id: '1', type: 'text', name: 'text', label: 'Select' },
-          { id: '2', type: 'select', name: 'select', label: 'Text', content: 'a' },
+          { id: '1', type: 'text', name: 'text', label: 'Select5' },
+          { id: '2', type: 'select', name: 'select5', label: 'Text', content: 'a' },
         ],
       };
 
@@ -294,15 +295,17 @@ describe('templates', () => {
     describe('when there is another template with the same property', () => {
       const template2 = {
         name: 'template2',
-        properties: [{ label: 'select1', type: 'select', content: 'thesauriId2' }],
+        properties: [{ label: 'sharedProperty1', type: 'select', content: 'thesauriId2' }],
         commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
       };
-      const template3 = {
-        name: 'template3',
-        properties: [{ label: 'select1', type: 'select', content: 'thesauriId1' }],
+      const template4 = {
+        name: 'template4',
+        properties: [
+          { label: 'sharedProperty1', type: 'select', content: 'thesauriId2' },
+          { label: 'sharedProperty2', type: 'select', content: 'thesauriId1' },
+        ],
         commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
       };
-
       describe('when the property to save is of a different content', () => {
         it('should not save the template', async () => {
           try {
@@ -315,20 +318,15 @@ describe('templates', () => {
           }
         });
 
-        it('should return the name of the duplicated property', async () => {
+        it('should return the name of the duplicated properties', async () => {
           try {
-            await templates.save(template2);
+            await templates.save(template4);
+            fail('should throw validation error');
           } catch (e) {
-            expect(e.message).toBe("Different properties can't share names: fieldLabel");
+            expect(e.message).toBe(
+              "Different properties can't share names: sharedProperty1, sharedProperty2"
+            );
           }
-        });
-      });
-      describe('when the property to save is of the same content', () => {
-        it('should save the template', async () => {
-          await templates.save(template3);
-          const allTemplates = await templates.get();
-          const newDoc = allTemplates.find(template => template.name === 'template3');
-          expect(newDoc.properties[0].label).toEqual('select1');
         });
       });
     });
