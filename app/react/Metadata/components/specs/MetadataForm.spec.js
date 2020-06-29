@@ -87,7 +87,11 @@ describe('MetadataForm', () => {
       properties: [],
     });
     render();
-    expect(component).toMatchSnapshot();
+    const title = component
+      .find('FormGroup')
+      .first()
+      .find({ children: 'Name' });
+    expect(title.length).toBe(1);
   });
 
   it('should render MetadataFormFields passing thesauris state and template', () => {
@@ -113,11 +117,37 @@ describe('MetadataForm', () => {
   });
 
   describe('on template change', () => {
+    const warningMessage = 'Changing the type will erase all connections to this entity.';
+
     it('should call changeTemplate with the template', () => {
       render();
       const template = component.find(SimpleSelect).first();
       template.simulate('change', { target: { value: '2' } });
       expect(props.changeTemplate).toHaveBeenCalledWith(props.model, props.templates.toJS()[1]._id);
+    });
+
+    it('should warn about the loss of connections if the entity is already a saved one', () => {
+      props.templateId = '2';
+      props.initialTemplateId = 'templateId';
+      render();
+      const warning = component.find({ children: warningMessage });
+      expect(warning.length).toBe(1);
+    });
+
+    it('should not warn about the loss of connections if the entity is a new one', () => {
+      props.templateId = '2';
+      props.initialTemplateId = undefined;
+      render();
+      const warning = component.find({ children: warningMessage });
+      expect(warning.length).toBe(0);
+    });
+
+    it('should not warn about the loss of connections if the template is the same than the original one', () => {
+      props.templateId = 'templateId';
+      props.initialTemplateId = 'templateId';
+      render();
+      const warning = component.find({ children: warningMessage });
+      expect(warning.length).toBe(0);
     });
   });
 
