@@ -104,6 +104,15 @@ export default {
         },
       ],
     },
+    {
+      _id: db.id(),
+      name: 'template with shared properties',
+      properties: [
+        { type: propertyTypes.select, label: 'select1', content: 'thesauriId1' },
+        { type: propertyTypes.select, label: 'select2', content: 'thesauriId2' },
+      ],
+      commonProperties: [{ name: 'title', label: 'Title' }],
+    },
   ],
   relationtypes: [{ _id: relatedTo, name: 'related to' }],
   settings: [

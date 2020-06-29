@@ -290,6 +290,48 @@ describe('templates', () => {
           .catch(done.fail);
       });
     });
+
+    describe('when there is another template with the same property', async () => {
+      const template2 = {
+        name: 'template2',
+        properties: [{ label: 'select1', type: 'select', content: 'thesauriId2' }],
+        commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
+      };
+      const template3 = {
+        name: 'template3',
+        properties: [{ label: 'select1', type: 'select', content: 'thesauriId1' }],
+        commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
+      };
+
+      describe('when the property to save is of a different content', async () => {
+        it('should not save the template', async () => {
+          try {
+            await templates.save(template2);
+            fail('should throw validation error');
+          } catch (e) {
+            const allTemplates = await templates.get();
+            const newDoc = allTemplates.find(template => template.name === 'template2');
+            expect(newDoc).toBe(undefined);
+          }
+        });
+
+        it('should return the name of the duplicated property', async () => {
+          try {
+            await templates.save(template2);
+          } catch (e) {
+            expect(e.message).toBe("Different properties can't share names: fieldLabel");
+          }
+        });
+      });
+      describe('when the property to save is of the same content', () => {
+        it('should save the template', async () => {
+          await templates.save(template3);
+          const allTemplates = await templates.get();
+          const newDoc = allTemplates.find(template => template.name === 'template3');
+          expect(newDoc.properties[0].label).toEqual('select1');
+        });
+      });
+    });
   });
 
   describe('delete', () => {

@@ -60,6 +60,8 @@ const updateTranslation = (currentTemplate, template) => {
 export default {
   async save(template, language) {
     await validateTemplate(template);
+
+    await this._validatePropertyNames(template);
     /* eslint-disable no-param-reassign */
     template.properties = template.properties || [];
     template.properties = generateNamesAndIds(template.properties);
@@ -149,6 +151,31 @@ export default {
 
   get(query) {
     return model.get(query);
+  },
+
+  async _validatePropertyNames(template) {
+    const propertyName = template.properties[0].label;
+    const propertyContent = template.properties[0].content;
+    const templates = await this.get(
+      {
+        properties: { $elemMatch: { label: propertyName } },
+      },
+      'properties.$'
+    );
+    const sameProperties = [];
+    templates.reduce((properties, templateWithProp) => {
+      const differentProperties = templateWithProp.properties.filter(
+        property => property.label === propertyName && property.content !== propertyContent
+      );
+      properties.push(...differentProperties);
+      return properties;
+    }, sameProperties);
+    if (!sameProperties) {
+      return;
+    }
+    if (sameProperties.length > 0) {
+      throw createError("Different properties can't share names: fieldLabel", 429);
+    }
   },
 
   setAsDefault(templateId) {
