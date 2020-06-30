@@ -59,11 +59,12 @@ const updateTranslation = (currentTemplate, template) => {
 
 export default {
   async save(template, language) {
-    await validateTemplate(template);
     /* eslint-disable no-param-reassign */
     template.properties = template.properties || [];
     template.properties = generateNamesAndIds(template.properties);
     /* eslint-enable no-param-reassign */
+
+    await validateTemplate(template);
 
     if (template._id) {
       return this._update(template, language);
@@ -96,14 +97,18 @@ export default {
         _currentTemplate = currentTemplate;
         const currentTemplateContentProperties = currentTemplate.properties.filter(p => p.content);
         const templateContentProperties = template.properties.filter(p => p.content);
-        const toRemoveValues = {};
-        currentTemplateContentProperties.forEach(prop => {
-          const sameProperty = templateContentProperties.find(p => p.id === prop.id);
-          if (sameProperty && sameProperty.content !== prop.content) {
-            toRemoveValues[sameProperty.name] = prop.type === 'multiselect' ? [] : '';
-          }
-        });
-        if (Object.keys(toRemoveValues).length === 0) {
+
+        const toRemoveValues = currentTemplateContentProperties
+          .map(prop => {
+            const sameProperty = templateContentProperties.find(p => p.id === prop.id);
+            if (sameProperty && sameProperty.content !== prop.content) {
+              return sameProperty.name;
+            }
+            return null;
+          })
+          .filter(v => v);
+
+        if (toRemoveValues.length === 0) {
           return;
         }
         return entities.removeValuesFromEntities(toRemoveValues, currentTemplate._id); // eslint-disable-line consistent-return
@@ -141,21 +146,6 @@ export default {
         throw createError(`Properties can't swap names: ${prop.name}`, 400);
       }
     });
-  },
-
-  async _removeValuesFromEntities(currentTemplate, template) {
-    const currentTemplateContentProperties = currentTemplate.properties.filter(p => p.content);
-    const templateContentProperties = template.properties.filter(p => p.content);
-    const toRemoveValues = {};
-    currentTemplateContentProperties.forEach(prop => {
-      const sameProperty = templateContentProperties.find(p => p.id === prop.id);
-      if (sameProperty && sameProperty.content !== prop.content) {
-        toRemoveValues[sameProperty.name] = prop.type === 'multiselect' ? [] : '';
-      }
-    });
-    if (Object.keys(toRemoveValues).length) {
-      await entities.removeValuesFromEntities(toRemoveValues, currentTemplate._id);
-    }
   },
 
   get(query) {

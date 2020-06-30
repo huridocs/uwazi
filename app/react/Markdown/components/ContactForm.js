@@ -1,5 +1,3 @@
-/** @format */
-
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Translate } from 'app/I18N';
@@ -8,6 +6,7 @@ import { Icon } from 'UI';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { notify } from 'app/Notifications/actions/notificationsActions';
+import { RequestParams } from 'app/utils/RequestParams';
 
 export class ContactForm extends Component {
   constructor(props, context) {
@@ -22,12 +21,11 @@ export class ContactForm extends Component {
     this.setState(changedData);
   }
 
-  submit(e) {
+  async submit(e) {
     e.preventDefault();
-    api.post('contact', this.state).then(() => {
-      this.props.notify('Message sent', 'success');
-      this.setState({ name: '', email: '', message: '' });
-    });
+    await api.post('contact', new RequestParams(this.state));
+    this.props.notify('Message sent', 'success');
+    this.setState({ name: '', email: '', message: '' });
   }
 
   render() {
@@ -82,7 +80,7 @@ export class ContactForm extends Component {
 }
 
 ContactForm.propTypes = {
-  notify: PropTypes.func,
+  notify: PropTypes.func.isRequired,
 };
 
 function mapDispatchToProps(dispatch) {

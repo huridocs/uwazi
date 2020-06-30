@@ -9,9 +9,9 @@ const CopyWebpackPlugin = require("copy-webpack-plugin");
 var production = true;
 var config = require('./webpack/config')(production);
 
-config.devtool = 'cheap-module-source-map';
+config.devtool = '';
 config.context = __dirname;
-config.mode = 'development';
+config.mode = 'production';
 config.resolveLoader = {
   modules: ["node_modules", __dirname + "/webpack/webpackLoaders"],
   extensions: [".js", ".json", ".ts"],
@@ -29,9 +29,14 @@ config.plugins = config.plugins.concat([
   new OptimizeCssAssetsPlugin(),
   new UglifyJSPlugin({
     parallel: true,
+    cache: true,
   }),
   new webpack.optimize.AggressiveMergingPlugin(),
   new webpack.DefinePlugin({ 'process.env': { NODE_ENV: JSON.stringify('production') } })
 ])
+
+config.performance = {
+  hints: "warning",
+}
 
 module.exports = config;

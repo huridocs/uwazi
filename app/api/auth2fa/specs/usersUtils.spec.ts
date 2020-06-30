@@ -32,7 +32,7 @@ describe('auth2fa userUtils', () => {
         fail('Should throw error');
       } catch (e) {
         expect(e.code).toBe(err.code);
-        expect(e.message).toMatch(new RegExp(err.message, 'i'));
+        expect(e.message.match(new RegExp(err.message, 'i'))).not.toBe(null);
       }
     } else {
       fail('No such method');

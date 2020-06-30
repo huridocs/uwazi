@@ -47,6 +47,21 @@ describe('templates', () => {
       expect(template.name).toBe('created_template');
     });
 
+    it('should validate after generating property names', async () => {
+      const newTemplate = {
+        name: 'newTemplate',
+        commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
+        properties: [
+          { label: 'field label', type: 'text' },
+          { label: 'field_label', type: 'text' },
+        ],
+      };
+
+      await expect(templates.save(newTemplate)).rejects.toHaveProperty('errors', [
+        expect.objectContaining({ keyword: 'uniquePropertyFields' }),
+      ]);
+    });
+
     it('should create a template', done => {
       const newTemplate = {
         name: 'created_template',
@@ -70,7 +85,7 @@ describe('templates', () => {
     describe('when property content changes', () => {
       it('should remove the values from the entities and update them', done => {
         spyOn(translations, 'updateContext');
-        spyOn(entities, 'removeValuesFromEntities');
+        spyOn(entities, 'removeValuesFromEntities').and.callThrough();
         spyOn(entities, 'updateMetadataProperties').and.returnValue(Promise.resolve());
         const changedTemplate = {
           _id: templateWithContents,
@@ -86,7 +101,7 @@ describe('templates', () => {
           .save(changedTemplate)
           .then(() => {
             expect(entities.removeValuesFromEntities).toHaveBeenCalledWith(
-              { select: '', multiselect: [] },
+              ['select', 'multiselect'],
               templateWithContents
             );
             done();

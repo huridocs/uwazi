@@ -1,14 +1,15 @@
 // eslint-disable max-nested-callbacks
-
 import { catchErrors } from 'api/utils/jasmineHelpers';
-import errorLog from 'api/log/errorLog';
-import { elastic } from 'api/search';
-import { instanceSearch } from 'api/search/search';
 import db from 'api/utils/testing_db';
 import instanceElasticTesting from 'api/utils/elastic_testing';
+
+import { instanceSearch } from '../search';
+import elastic from '../elastic';
 import { fixturesTimeOut } from './fixtures_elastic';
 
-describe('search', () => {
+jest.mock('api/entities');
+
+describe('index (search)', () => {
   const elasticIndex = 'index_for_index_testing';
   const search = instanceSearch(elasticIndex);
   const elasticTesting = instanceElasticTesting(elasticIndex, search);
@@ -138,19 +139,32 @@ describe('search', () => {
     });
 
     describe('when there is an indexation error', () => {
-      it('should log the error with the id of the document and the error message', async () => {
-        spyOn(elastic, 'bulk').and.returnValue(
-          Promise.resolve({
-            items: [{ index: { _id: '_id1', error: 'something terrible happened' } }],
-          })
-        );
-        spyOn(errorLog, 'error');
-        const toIndexDocs = [{ _id: 'id1', title: 'test1' }];
-        await search.bulkIndex(toIndexDocs, 'index', elasticIndex);
+      describe('if elastic fails indexing one or more items', () => {
+        beforeEach(() => {
+          spyOn(elastic, 'bulk').and.returnValue(
+            Promise.resolve({
+              items: [
+                { index: { _id: 'id1', error: { message: 'indexation error 1' } } },
+                { index: { _id: 'id2' } },
+                { index: { _id: 'id3', error: { message: 'indexation error 2' } } },
+              ],
+            })
+          );
+        });
 
-        expect(errorLog.error).toHaveBeenCalledWith(
-          'ERROR Failed to index document _id1: "something terrible happened"'
-        );
+        it('should throw the error with the relevant information', async () => {
+          const toIndexDocs = [{ _id: 'id1', title: 'test1' }];
+          try {
+            await search.bulkIndex(toIndexDocs, 'index', elasticIndex);
+            fail('should throw an indexing error');
+          } catch (error) {
+            expect(error.message).toMatch('ERROR! Failed to index documents.');
+            expect(error.errors).toEqual([
+              { index: { _id: 'id1', error: { message: 'indexation error 1' } } },
+              { index: { _id: 'id3', error: { message: 'indexation error 2' } } },
+            ]);
+          }
+        });
       });
     });
   });

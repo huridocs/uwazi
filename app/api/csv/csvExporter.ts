@@ -7,6 +7,7 @@ import { TemplateSchema } from 'shared/types/templateType';
 import translate, { getLocaleTranslation, getContext } from 'shared/translate';
 import translations from 'api/i18n/translations';
 import formatters from './typeFormatters';
+import { EntitySchema } from '../../shared/types/entityType';
 
 export type SearchResults = {
   rows: any[];
@@ -160,12 +161,16 @@ export const translateCommonHeaders = async (headers: ExportHeader[], language: 
 };
 
 export const processEntity = (
-  row: any,
+  row: EntitySchema,
   headers: ExportHeader[],
   templatesCache: TemplatesCache,
   options: ExporterOptions
 ) => {
-  const rowTemplate: TemplateSchema = templatesCache[row.template];
+  if (!row.template) {
+    throw new Error('Entity missing template');
+  }
+
+  const rowTemplate: TemplateSchema = templatesCache[row.template.toString()];
 
   if (!rowTemplate) {
     throw new Error('Entity missing template');
@@ -176,7 +181,7 @@ export const processEntity = (
       return processCommonField(header.name, row, rowTemplate, options);
     }
 
-    if (!row.metadata[header.name]) {
+    if (!row.metadata?.[header.name]) {
       return '';
     }
 
@@ -188,7 +193,7 @@ export const processEntity = (
       return '';
     }
 
-    return formatters[templateProperty.type](row.metadata[header.name], options);
+    return formatters[templateProperty.type](row.metadata[header.name] || [], options);
   });
 };
 
