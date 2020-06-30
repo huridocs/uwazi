@@ -137,6 +137,11 @@ export default {
           label: 'sharedProperty2',
           content: 'thesauriId2',
         },
+        {
+          type: propertyTypes.numeric,
+          name: 'sharedproperty3',
+          label: 'sharedProperty3',
+        },
       ],
       commonProperties: [{ name: 'title', label: 'Title' }],
     },

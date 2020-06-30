@@ -159,7 +159,12 @@ export default {
     }
 
     const condition = template.properties.map(property => ({
-      $and: [{ name: property.name, content: { $ne: property.content } }],
+      $and: [
+        {
+          name: property.name,
+          $or: [{ content: { $ne: property.content } }, { type: { $ne: property.type } }],
+        },
+      ],
     }));
     const query = { properties: { $elemMatch: { $or: [...condition] } } };
     const templates = await this.get(query, { _id: 0, 'properties.$': 1 });
@@ -168,7 +173,9 @@ export default {
       const sameProperties = template.properties.reduce((propertyNames, property) => {
         otherTemplates.forEach(t => {
           const matches = t.properties.find(
-            p => p.name === property.name && p.content !== property.content
+            p =>
+              p.name === property.name &&
+              (p.content !== property.content || p.type !== property.type)
           );
           if (matches && !propertyNames.includes(property.name)) {
             propertyNames.push(property.label);
