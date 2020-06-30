@@ -189,4 +189,68 @@ describe('template schema', () => {
       expect(template.properties.length).toBe(2);
     });
   });
+
+  describe('when there is another template with the same property', () => {
+    const errorMessage = 'Entered label is already in use on another property with a different type or thesaurus';
+    const template1 = {
+      name: 'template1',
+      properties: [{ name: 'sharedproperty1', label: 'sharedProperty1', type: 'select', content: 'thesauriId2' }],
+      commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
+    };
+    const template2 = {
+      name: 'template2',
+      properties: [
+        { name: 'sharedproperty1', label: 'sharedProperty1', type: 'select', content: 'thesauriId2' },
+        { name: 'sharedproperty2', label: 'sharedProperty2', type: 'select', content: 'thesauriId1' },
+      ],
+      commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
+    };
+    const template3 = {
+      name: 'template3',
+      properties: [{ name: 'sharedproperty3', label: 'sharedProperty3', type: 'text' }],
+      commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
+    };
+    describe('when the property to save is of a different content', () => {
+      fit('should throw a validation error', async () => {
+        try {
+          await validateTemplate(template1);
+          fail('should throw validation error');
+        } catch (e) {
+          expect(e).toBeInstanceOf(Ajv.ValidationError);
+        }
+      });
+
+      it('should return the name of the duplicated properties', async () => {
+        try {
+          await validateTemplate(template2);
+          fail('should throw validation error');
+        } catch (e) {
+          expect(e).toHaveProperty(
+            'errors',
+            expect.arrayContaining([
+              expect.objectContaining({ dataPath: '.properties.sharedproperty1', message: errorMessage }),
+              expect.objectContaining({ dataPath: '.properties.sharedproperty2', message: errorMessage })
+            ])
+          );
+        }
+      });
+    });
+
+    describe('when the property to save is of a different type', () => {
+      it('should not save the template', async () => {
+        try {
+          await validateTemplate(template3);
+          fail('should throw validation error');
+        } catch (e) {
+          expect(e).toBeInstanceOf(Ajv.ValidationError);
+          expect(e).toHaveProperty(
+            'errors',
+            expect.arrayContaining([
+              expect.objectContaining({ dataPath: '.properties.sharedproperty3', message: errorMessage }),
+            ])
+          );
+        }
+      });
+    });
+  });
 });

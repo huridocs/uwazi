@@ -121,30 +121,6 @@ export default {
         },
       ],
     },
-    {
-      _id: db.id(),
-      name: 'template with shared properties',
-      properties: [
-        {
-          type: propertyTypes.select,
-          name: 'sharedproperty1',
-          label: 'sharedProperty1',
-          content: 'thesauriId1',
-        },
-        {
-          type: propertyTypes.select,
-          name: 'sharedproperty2',
-          label: 'sharedProperty2',
-          content: 'thesauriId2',
-        },
-        {
-          type: propertyTypes.numeric,
-          name: 'sharedproperty3',
-          label: 'sharedProperty3',
-        },
-      ],
-      commonProperties: [{ name: 'title', label: 'Title' }],
-    },
   ],
   relationtypes: [{ _id: relatedTo, name: 'related to' }],
   settings: [

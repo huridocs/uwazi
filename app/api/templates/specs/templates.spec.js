@@ -306,64 +306,6 @@ describe('templates', () => {
           .catch(done.fail);
       });
     });
-
-    describe('when there is another template with the same property', () => {
-      const template1 = {
-        name: 'template1',
-        properties: [{ label: 'sharedProperty1', type: 'select', content: 'thesauriId2' }],
-        commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
-      };
-      const template2 = {
-        name: 'template2',
-        properties: [
-          { label: 'sharedProperty1', type: 'select', content: 'thesauriId2' },
-          { label: 'sharedProperty2', type: 'select', content: 'thesauriId1' },
-        ],
-        commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
-      };
-      const template3 = {
-        name: 'template2',
-        properties: [{ label: 'sharedProperty3', type: 'text' }],
-        commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
-      };
-      describe('when the property to save is of a different content', () => {
-        it('should not save the template', async () => {
-          try {
-            await templates.save(template1);
-            fail('should throw validation error');
-          } catch (e) {
-            const allTemplates = await templates.get();
-            const newDoc = allTemplates.find(template => template.name === 'template1');
-            expect(newDoc).toBe(undefined);
-          }
-        });
-
-        it('should return the name of the duplicated properties', async () => {
-          try {
-            await templates.save(template2);
-            fail('should throw validation error');
-          } catch (e) {
-            expect(e.message).toBe(
-              "Different properties can't share names: sharedProperty1, sharedProperty2"
-            );
-          }
-        });
-      });
-
-      describe('when the property to save is of a different type', () => {
-        it('should not save the template', async () => {
-          try {
-            await templates.save(template3);
-            fail('should throw validation error');
-          } catch (e) {
-            const allTemplates = await templates.get();
-            const newDoc = allTemplates.find(template => template.name === 'template3');
-            expect(newDoc).toBe(undefined);
-            expect(e.message).toBe("Different properties can't share names: sharedProperty3");
-          }
-        });
-      });
-    });
   });
 
   describe('delete', () => {

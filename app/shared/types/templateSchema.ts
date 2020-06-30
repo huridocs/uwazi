@@ -141,6 +141,7 @@ ajv.addKeyword('cantDeleteInheritedProperties', {
             schemaPath: '',
             params: { keyword: 'noDeleteInheritedProperty' },
             message: "Can't delete properties beign inherited",
+            //TODO: shouldnt this be .properties.propertyname?
             dataPath: `.metadata['${property.name}']`,
           });
         }
@@ -155,12 +156,64 @@ ajv.addKeyword('cantDeleteInheritedProperties', {
   },
 });
 
+ajv.addKeyword('cantReuseNameWithDifferentType', {
+  async: true,
+  errors: true,
+  type: 'object',
+  async validate(_schema: any, template: TemplateSchema) {
+    if (!template.properties || template.properties.length === 0) {
+      return true;
+    }
+
+    const condition = template.properties.map(property => ({
+      $and: [
+        {
+          name: property.name,
+          $or: [{ content: { $ne: property.content } }, { type: { $ne: property.type } }],
+        },
+      ],
+    }));
+    const query = { properties: { $elemMatch: { $or: [...condition] } } };
+    const templates = await model.get(query);
+    const otherTemplates = templates.filter(t => !t._id.equals(template._id));
+
+    console.log('TEMPLATES', otherTemplates);
+
+    if (otherTemplates.length > 0) {
+      const errorProperties = template.properties.reduce((propertyNames: string[], property) => {
+        otherTemplates.forEach((t:TemplateSchema) => {
+          const matches = t.properties?.find(
+            p =>
+              p.name === property.name &&
+              (p.content !== property.content || p.type !== property.type)
+          );
+          if (matches && !propertyNames.includes(property?.name || '')) {
+            propertyNames.push(property?.name || '');
+          }
+        });
+        return propertyNames;
+      }, []);
+      
+      return errorProperties.map(property => ({
+        keyword: 'cantReuseNameWithDifferentType',
+        schemaPath: '',
+        params: { keyword: 'cantReuseNameWithDifferentType' },
+        message: "Entered label is already in use on another property with a different type or thesaurus",
+        dataPath: `.properties.${property}']`,
+      }));
+    }
+
+    return true;
+  }
+});
+
 export const templateSchema = {
   $schema: 'http://json-schema.org/schema#',
   $async: true,
   type: 'object',
   uniqueName: true,
   cantDeleteInheritedProperties: true,
+  cantReuseNameWithDifferentType: true,
   required: ['name'],
   uniquePropertyFields: ['id', 'name'],
   definitions: { objectIdSchema, propertySchema },

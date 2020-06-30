@@ -61,10 +61,8 @@ export default {
   async save(template, language) {
     /* eslint-disable no-param-reassign */
     template.properties = template.properties || [];
+    /* eslint-disable no-param-reassign */
     template.properties = generateNamesAndIds(template.properties);
-
-    await this._validatePropertyNames(template);
-    /* eslint-enable no-param-reassign */
 
     await validateTemplate(template);
 
@@ -152,41 +150,6 @@ export default {
 
   get(query) {
     return model.get(query);
-  },
-
-  async _validatePropertyNames(template) {
-    if (!template.properties || template.properties.length === 0) {
-      return;
-    }
-
-    const condition = template.properties.map(property => ({
-      $and: [
-        {
-          name: property.name,
-          $or: [{ content: { $ne: property.content } }, { type: { $ne: property.type } }],
-        },
-      ],
-    }));
-    const query = { properties: { $elemMatch: { $or: [...condition] } } };
-    const templates = await this.get(query, { _id: 0, 'properties.$': 1 });
-    const otherTemplates = templates.filter(t => !t._id.equals(template._id));
-    if (otherTemplates.length > 0) {
-      const sameProperties = template.properties.reduce((propertyNames, property) => {
-        otherTemplates.forEach(t => {
-          const matches = t.properties.find(
-            p =>
-              p.name === property.name &&
-              (p.content !== property.content || p.type !== property.type)
-          );
-          if (matches && !propertyNames.includes(property.name)) {
-            propertyNames.push(property.label);
-          }
-        });
-        return propertyNames;
-      }, []);
-      const propertyNames = sameProperties.join(', ');
-      throw createError(`Different properties can't share names: ${propertyNames}`, 429);
-    }
   },
 
   setAsDefault(templateId) {
