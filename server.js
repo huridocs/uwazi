@@ -7,7 +7,11 @@ require.extensions['.scss'] = function scss() {};
 require.extensions['.css'] = function css() {};
 
 if (NODE_ENV === 'production') {
-  require('./prod/app/server.js');
+  try {
+    require('./prod/app/server.js');
+  } catch (err) {
+    require('./app/server.js');
+  }
 } else {
   require('@babel/register')({ extensions: ['.js', '.jsx', '.ts', '.tsx'] });
   require('./app/server.js');

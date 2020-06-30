@@ -117,6 +117,7 @@ export class DocumentSidePanel extends Component {
     );
 
     let { tab } = this.props;
+    this.initialTemplateId = doc.get('template');
     if (isEntity && (tab === 'references' || tab === 'toc')) {
       tab = 'metadata';
     }
@@ -289,10 +290,20 @@ export class DocumentSidePanel extends Component {
             <TabContent for="metadata">
               {(() => {
                 if (docBeingEdited && !isEntity) {
-                  return <DocumentForm storeKey={this.props.storeKey} />;
+                  return (
+                    <DocumentForm
+                      storeKey={this.props.storeKey}
+                      initialTemplateId={this.initialTemplateId}
+                    />
+                  );
                 }
                 if (docBeingEdited && isEntity) {
-                  return <EntityForm storeKey={this.props.storeKey} />;
+                  return (
+                    <EntityForm
+                      storeKey={this.props.storeKey}
+                      initialTemplateId={this.initialTemplateId}
+                    />
+                  );
                 }
                 return (
                   <div>
