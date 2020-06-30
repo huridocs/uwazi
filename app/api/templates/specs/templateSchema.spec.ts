@@ -191,17 +191,35 @@ describe('template schema', () => {
   });
 
   describe('when there is another template with the same property', () => {
-    const errorMessage = 'Entered label is already in use on another property with a different type or thesaurus';
+    const errorMessage =
+      'Entered label is already in use on another property with a different type or thesaurus';
     const template1 = {
       name: 'template1',
-      properties: [{ name: 'sharedproperty1', label: 'sharedProperty1', type: 'select', content: 'thesauriId2' }],
+      properties: [
+        {
+          name: 'sharedproperty1',
+          label: 'sharedProperty1',
+          type: 'select',
+          content: 'thesauriId2',
+        },
+      ],
       commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
     };
     const template2 = {
       name: 'template2',
       properties: [
-        { name: 'sharedproperty1', label: 'sharedProperty1', type: 'select', content: 'thesauriId2' },
-        { name: 'sharedproperty2', label: 'sharedProperty2', type: 'select', content: 'thesauriId1' },
+        {
+          name: 'sharedproperty1',
+          label: 'sharedProperty1',
+          type: 'select',
+          content: 'thesauriId2',
+        },
+        {
+          name: 'sharedproperty2',
+          label: 'sharedProperty2',
+          type: 'select',
+          content: 'thesauriId1',
+        },
       ],
       commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
     };
@@ -211,7 +229,7 @@ describe('template schema', () => {
       commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
     };
     describe('when the property to save is of a different content', () => {
-      fit('should throw a validation error', async () => {
+      it('should throw a validation error', async () => {
         try {
           await validateTemplate(template1);
           fail('should throw validation error');
@@ -228,8 +246,14 @@ describe('template schema', () => {
           expect(e).toHaveProperty(
             'errors',
             expect.arrayContaining([
-              expect.objectContaining({ dataPath: '.properties.sharedproperty1', message: errorMessage }),
-              expect.objectContaining({ dataPath: '.properties.sharedproperty2', message: errorMessage })
+              expect.objectContaining({
+                dataPath: '.properties.sharedproperty1',
+                message: errorMessage,
+              }),
+              expect.objectContaining({
+                dataPath: '.properties.sharedproperty2',
+                message: errorMessage,
+              }),
             ])
           );
         }
@@ -246,7 +270,10 @@ describe('template schema', () => {
           expect(e).toHaveProperty(
             'errors',
             expect.arrayContaining([
-              expect.objectContaining({ dataPath: '.properties.sharedproperty3', message: errorMessage }),
+              expect.objectContaining({
+                dataPath: '.properties.sharedproperty3',
+                message: errorMessage,
+              }),
             ])
           );
         }

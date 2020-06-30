@@ -22,7 +22,6 @@ import fixtures, {
   propertyToBeInherited,
 } from './fixtures.js';
 
-jest.setTimeout(50000);
 describe('templates', () => {
   beforeEach(done => {
     spyOn(translations, 'addContext').and.returnValue(Promise.resolve());

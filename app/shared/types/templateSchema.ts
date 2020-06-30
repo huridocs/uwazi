@@ -174,14 +174,14 @@ ajv.addKeyword('cantReuseNameWithDifferentType', {
       ],
     }));
     const query = { properties: { $elemMatch: { $or: [...condition] } } };
-    const templates = await model.get(query);
-    const otherTemplates = templates.filter(t => !t._id.equals(template._id));
+    const matchedTemplates = await model.get(query);
+    const otherTemplates = matchedTemplates.filter(t => !t._id.equals(template._id));
 
-    console.log('TEMPLATES', otherTemplates);
+    const errors: Ajv.ErrorObject[] = [];
 
     if (otherTemplates.length > 0) {
       const errorProperties = template.properties.reduce((propertyNames: string[], property) => {
-        otherTemplates.forEach((t:TemplateSchema) => {
+        otherTemplates.forEach((t: TemplateSchema) => {
           const matches = t.properties?.find(
             p =>
               p.name === property.name &&
@@ -193,18 +193,21 @@ ajv.addKeyword('cantReuseNameWithDifferentType', {
         });
         return propertyNames;
       }, []);
-      
-      return errorProperties.map(property => ({
-        keyword: 'cantReuseNameWithDifferentType',
-        schemaPath: '',
-        params: { keyword: 'cantReuseNameWithDifferentType' },
-        message: "Entered label is already in use on another property with a different type or thesaurus",
-        dataPath: `.properties.${property}']`,
-      }));
+
+      throw new Ajv.ValidationError(
+        errorProperties.map(property => ({
+          keyword: 'cantReuseNameWithDifferentType',
+          schemaPath: '',
+          params: { keyword: 'cantReuseNameWithDifferentType' },
+          message:
+            'Entered label is already in use on another property with a different type or thesaurus',
+          dataPath: `.properties.${property}`,
+        }))
+      );
     }
 
     return true;
-  }
+  },
 });
 
 export const templateSchema = {
