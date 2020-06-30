@@ -99,7 +99,8 @@ const getEntitiesToIndex = async (query, offset, limit, select) => {
     documentsFullText: select && select.includes('+fullText'),
   });
 
-  return Promise.all(entitiesToIndex.map(appendRelationships));
+  // return Promise.all(entitiesToIndex.map(appendRelationships));
+  return entitiesToIndex;
 };
 
 const bulkIndexAndCallback = async assets => {
@@ -115,20 +116,65 @@ const indexBatch = async (offset, totalRows, options, errors = []) => {
   }
 
   const entitiesToIndex = await getEntitiesToIndex(query, offset, limit, select);
+  const ents1 = entitiesToIndex.slice(0, limit / 2);
+  const ents2 = entitiesToIndex.slice(limit / 2, limit);
+
+  // console.log(entitiesToIndex[0])
+  // entitiesToIndex.forEach(e => {
+  //   console.log(e.title);
+  //   console.log(e.pdfInfo);
+  //   e.documents.forEach(doc => console.log)
+  // });
 
   let newIndexErrors = [];
 
-  try {
-    await bulkIndexAndCallback({
-      searchInstance,
-      entitiesToIndex,
-      elasticIndex,
-      batchCallback,
-      totalRows,
-    });
-  } catch (err) {
-    newIndexErrors = newIndexErrorsOrThrow(err);
+  if (entitiesToIndex.length === limit) {
+    Promise.all([
+      bulkIndexAndCallback({
+        searchInstance,
+        entitiesToIndex: ents1,
+        elasticIndex,
+        batchCallback,
+        totalRows,
+      }),
+      ents2.length > 0 ? bulkIndexAndCallback({
+        searchInstance,
+        entitiesToIndex: ents2,
+        elasticIndex,
+        batchCallback,
+        totalRows,
+      }) : false,
+    ]).catch(console.log);
+  } else {
+    await Promise.all([
+      bulkIndexAndCallback({
+        searchInstance,
+        entitiesToIndex: ents1,
+        elasticIndex,
+        batchCallback,
+        totalRows,
+      }),
+      ents2.length > 0 ? bulkIndexAndCallback({
+        searchInstance,
+        entitiesToIndex: ents2,
+        elasticIndex,
+        batchCallback,
+        totalRows,
+      }) : false,
+    ]).catch(console.log);
   }
+
+  // try {
+  //   await bulkIndexAndCallback({
+  //     searchInstance,
+  //     entitiesToIndex,
+  //     elasticIndex,
+  //     batchCallback,
+  //     totalRows,
+  //   });
+  // } catch (err) {
+  //   newIndexErrors = newIndexErrorsOrThrow(err);
+  // }
 
   return indexBatch(offset + limit, totalRows, options, errors.concat(newIndexErrors));
 };

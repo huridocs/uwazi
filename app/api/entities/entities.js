@@ -381,17 +381,34 @@ export default {
   async get(query, select, options = {}) {
     const { documentsFullText, ...restOfOptions } = options;
     const entities = await model.get(query, select, restOfOptions);
-    return Promise.all(
-      entities.map(async entity => {
-        const documents = await files.get(
-          { entity: entity.sharedId, type: 'document' },
-          documentsFullText ? '+fullText' : ''
-        );
+    let idList = [];
+    entities.map(async entity => {
+      idList.push(entity.sharedId);
+    });
 
-        entity.documents = documents;
-        return entity;
-      })
-    );
+    // console.time("get_docs");
+    const theFiles = await files.get(
+        { 'entity': {'sharedId': { $in: idList }, 'type':'document'}},
+        documentsFullText ? '+fullText' : ''
+      );
+    // console.timeEnd("get_docs");
+    // console.log(theFiles);
+
+    // console.time("getting_docs");
+    // const setDocs = Promise.all(
+    //   entities.map(async entity => {
+    //     const documents = await files.get(
+    //       { entity: entity.sharedId, type: 'document' },
+    //       documentsFullText ? '+fullText' : ''
+    //     );
+    //
+    //     entity.documents = documents;
+    //     return entity;
+    //   })
+    // );
+    // console.timeEnd("getting_docs");
+    // return setDocs;
+    return entities;
   },
 
   async getWithRelationships(query, select, pagination) {
