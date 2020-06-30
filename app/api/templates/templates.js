@@ -59,13 +59,14 @@ const updateTranslation = (currentTemplate, template) => {
 
 export default {
   async save(template, language) {
-    await validateTemplate(template);
     /* eslint-disable no-param-reassign */
     template.properties = template.properties || [];
     template.properties = generateNamesAndIds(template.properties);
 
     await this._validatePropertyNames(template);
     /* eslint-enable no-param-reassign */
+
+    await validateTemplate(template);
 
     if (template._id) {
       return this._update(template, language);

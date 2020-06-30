@@ -1,34 +1,34 @@
-/** @format */
-
 import Ajv from 'ajv';
 import db from 'api/utils/testing_db';
-import { catchErrors } from 'api/utils/jasmineHelpers';
-import { validateTemplate } from '../../../shared/types/templateSchema';
+import { TemplateSchema } from 'shared/types/templateType';
+import { PropertySchema } from 'shared/types/commonTypes';
+
 import fixtures, {
   templateId,
   templateToBeInherited,
   propertyToBeInherited,
 } from './validatorFixtures';
 
+import { safeName } from '../utils';
+import { validateTemplate } from '../../../shared/types/templateSchema';
+
 describe('template schema', () => {
-  beforeEach(done => {
-    db.clearAllAndLoad(fixtures)
-      .then(done)
-      .catch(catchErrors(done));
+  beforeEach(async () => {
+    await db.clearAllAndLoad(fixtures);
   });
 
-  afterAll(done => {
-    db.disconnect().then(done);
+  afterAll(async () => {
+    await db.disconnect();
   });
 
   describe('validateTemplate', () => {
-    let template;
+    let template: TemplateSchema;
 
-    const makeProperty = (name, type, args) => ({
-      name,
+    const makeProperty = (label: string, type: PropertySchema['type'], args: object = {}) => ({
+      label,
+      name: safeName(label),
       type,
-      id: name,
-      label: name,
+      id: label,
       isCommonProperty: false,
       prioritySorting: false,
       ...args,
@@ -38,32 +38,11 @@ describe('template schema', () => {
       template = {
         name: 'Test',
         commonProperties: [makeProperty('title', 'text'), makeProperty('creationDate', 'date')],
-        properties: [
-          makeProperty('daterange', 'daterange'),
-          makeProperty('geolocation', 'geolocation'),
-          makeProperty('image', 'image'),
-          makeProperty('link', 'link'),
-          makeProperty('markdown', 'markdown', { required: true }),
-          makeProperty('media', 'media', { fullWidth: true }),
-          makeProperty('multidate', 'multidate'),
-          makeProperty('multidaterange', 'multidaterange'),
-          makeProperty('multiselect', 'multiselect', { content: 'content', filter: true }),
-          makeProperty('nested', 'nested'),
-          makeProperty('numeric', 'numeric', { showInCard: true, defaultfilter: true }),
-          makeProperty('preview', 'preview'),
-          makeProperty('relationship', 'relationship', { relationType: 'rel', content: '' }),
-          makeProperty('inherited_rel', 'relationship', {
-            relationType: 'otherRel',
-            inherit: true,
-            inheritProperty: 'prop',
-          }),
-          makeProperty('select', 'select', { content: 'content' }),
-          makeProperty('text', 'text', { sortable: true }),
-        ],
+        properties: [],
       };
     });
 
-    const testValid = () => validateTemplate(template);
+    const testValid = async () => validateTemplate(template);
 
     const testInvalid = async () => {
       try {
@@ -82,12 +61,6 @@ describe('template schema', () => {
         template.properties = [];
         await testValid();
       });
-      it('should not require properties to have a name', async () => {
-        const prop = makeProperty('nameless', 'text');
-        delete prop.name;
-        template.properties.push(prop);
-        await testValid();
-      });
       it('should not throw error if updating same template with same name', async () => {
         template.name = 'DuplicateName';
         template._id = templateId.toString();
@@ -97,6 +70,7 @@ describe('template schema', () => {
 
     describe('invalid cases', () => {
       it('invalid if commonProperties is empty', async () => {
+        //@ts-ignore
         template.commonProperties = [];
         await testInvalid();
       });
@@ -107,37 +81,60 @@ describe('template schema', () => {
       });
 
       it('invalid when property has unknown data type', async () => {
-        template.properties[0].type = 'unknown';
+        //@ts-ignore
+        template.properties.push({ name: 'test', type: 'unknown' });
         await testInvalid();
       });
 
-      it('invalid if properties have similar labels', async () => {
-        template.properties.push(makeProperty('foo', 'numeric', { label: 'My Label' }));
-        template.properties.push(makeProperty('bar', 'text', { label: 'my label' }));
-        await testInvalid();
+      it('invalid if properties have the same generated name', async () => {
+        template.properties = [];
+        template.properties.push(makeProperty('my label', 'numeric'));
+        template.properties.push(makeProperty('my_label', 'text', { id: 'same' }));
+        template.properties.push(makeProperty('another label', 'text', { id: 'same' }));
+        try {
+          await validateTemplate(template);
+          fail('should throw error');
+        } catch (e) {
+          expect(e).toBeInstanceOf(Ajv.ValidationError);
+          expect(e.errors).toEqual([
+            expect.objectContaining({
+              message: 'duplicated property value { name: "my_label" }',
+              dataPath: '.properties.name',
+            }),
+            expect.objectContaining({
+              message: 'duplicated property value { id: "same" }',
+              dataPath: '.properties.id',
+            }),
+          ]);
+        }
       });
 
-      it('invalid if properties and common properties have similar labels', async () => {
-        template.properties.push(makeProperty('bar', 'text', { label: 'title' }));
+      it('invalid if properties and common properties have the same name', async () => {
+        template.properties = [];
+        template.properties.push(makeProperty('title', 'text'));
         await testInvalid();
       });
 
       it('invalid if select property does not have a content field', async () => {
+        template.properties = [];
         template.properties.push(makeProperty('foo', 'select'));
         await testInvalid();
       });
 
       it('invalid if multiselect property does not have a content field', async () => {
+        template.properties = [];
         template.properties.push(makeProperty('foo', 'multiselect'));
         await testInvalid();
       });
 
       it('invalid if relationship property does not have a relationtype field', async () => {
+        template.properties = [];
         template.properties.push(makeProperty('foo', 'relationship', { content: 'content' }));
         await testInvalid();
       });
 
       it('invalid if inherited relationship properties do not specify field to inherit', async () => {
+        template.properties = [];
         template.properties.push(
           makeProperty('foo', 'relationship', {
             content: 'content',

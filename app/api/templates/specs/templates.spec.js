@@ -48,6 +48,21 @@ describe('templates', () => {
       expect(template.name).toBe('created_template');
     });
 
+    it('should validate after generating property names', async () => {
+      const newTemplate = {
+        name: 'newTemplate',
+        commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
+        properties: [
+          { label: 'field label', type: 'text' },
+          { label: 'field_label', type: 'text' },
+        ],
+      };
+
+      await expect(templates.save(newTemplate)).rejects.toHaveProperty('errors', [
+        expect.objectContaining({ keyword: 'uniquePropertyFields' }),
+      ]);
+    });
+
     it('should create a template', done => {
       const newTemplate = {
         name: 'created_template',
