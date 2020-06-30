@@ -177,8 +177,6 @@ ajv.addKeyword('cantReuseNameWithDifferentType', {
     const matchedTemplates = await model.get(query);
     const otherTemplates = matchedTemplates.filter(t => !t._id.equals(template._id));
 
-    const errors: Ajv.ErrorObject[] = [];
-
     if (otherTemplates.length > 0) {
       const errorProperties = template.properties.reduce((propertyNames: string[], property) => {
         otherTemplates.forEach((t: TemplateSchema) => {
