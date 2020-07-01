@@ -116,11 +116,11 @@ export class DocumentSidePanel extends Component {
       defaultLanguage
     );
 
-    let { tab } = this.props;
     this.initialTemplateId = doc.get('template');
-    if (isEntity && (tab === 'references' || tab === 'toc')) {
-      tab = 'metadata';
-    }
+    const tab =
+      isEntity && (this.props.tab === 'references' || this.props.tab === 'toc')
+        ? 'metadata'
+        : this.props.tab;
 
     const summary = connectionsGroups.reduce(
       (summaryData, g) => {
