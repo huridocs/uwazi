@@ -8,6 +8,7 @@ const propsWithDBSpecifics = {
   creationDate: { type: Number, default: date.currentUTC },
   fullText: { type: mongoose.Schema.Types.Mixed, select: false },
   entity: { type: String, index: true },
+  type: { type: 'object', index: true },
 };
 
 const mongoSchema = new mongoose.Schema(propsWithDBSpecifics, {

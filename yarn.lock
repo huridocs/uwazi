@@ -1674,6 +1674,11 @@
     semver-diff "^2.0.0"
     xdg-basedir "^3.0.0"
 
+"@supercharge/promise-pool@^1.2.0":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@supercharge/promise-pool/-/promise-pool-1.2.0.tgz#4618a58dab15ec4c7431bf1d3f1b5b2e65e412c2"
+  integrity sha512-k6Se9Tv8ouVQXGzt1eJptK3sBSqA1vWs7ilFqfOdfeHBzMAuSTyW8E0KWs3yw0JPy1JLkOhwQ75c0kddetoroA==
+
 "@szmarczak/http-timer@^1.1.2":
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/@szmarczak/http-timer/-/http-timer-1.1.2.tgz#b1665e2c461a2cd92f4c1bbf50d5454de0d4b421"

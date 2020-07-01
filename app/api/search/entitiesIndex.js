@@ -4,7 +4,7 @@ import entities from 'api/entities';
 import relationships from 'api/relationships/relationships';
 import errorLog from 'api/log/errorLog';
 import { entityDefaultDocument } from 'shared/entityDefaultDocument';
-
+import PromisePool from '@supercharge/promise-pool';
 import elastic from './elastic';
 
 export class IndexError extends Error {}
@@ -73,23 +73,12 @@ const bulkIndex = async (docs, _action = 'index', elasticIndex) => {
   });
 
   const results = await elastic.bulk({ body, requestTimeout: 40000 });
+
   if (results.items) {
     handleErrors(results.items.filter(f => f.index.error));
   }
 
   return results;
-};
-
-const newIndexErrorsOrThrow = err => {
-  if (err instanceof IndexError) {
-    return err.errors;
-  }
-  throw err;
-};
-
-const appendRelationships = async entity => {
-  const relations = await relationships.get({ entity: entity.sharedId });
-  return { ...entity, relationships: relations || [] };
 };
 
 const getEntitiesToIndex = async (query, offset, limit, select) => {
@@ -99,7 +88,11 @@ const getEntitiesToIndex = async (query, offset, limit, select) => {
     documentsFullText: select && select.includes('+fullText'),
   });
 
-  // return Promise.all(entitiesToIndex.map(appendRelationships));
+  for (let i = 0; i < entitiesToIndex.length; i += 1) {
+    for (let j = 0; j < entitiesToIndex[i].documents.length; j += 1) {
+      delete entitiesToIndex[i].documents[j].pdfInfo;
+    }
+  }
   return entitiesToIndex;
 };
 
@@ -111,72 +104,31 @@ const bulkIndexAndCallback = async assets => {
 
 const indexBatch = async (offset, totalRows, options, errors = []) => {
   const { query, select, limit, batchCallback, elasticIndex, searchInstance } = options;
-  if (offset >= totalRows) {
-    return errors.length ? handleErrors(errors, { logError: true }) : Promise.resolve();
+
+  const chunks = [];
+  for (let cursor = 0; cursor <= totalRows; cursor += limit) {
+    chunks.push(chunks.length + 1);
   }
 
-  const entitiesToIndex = await getEntitiesToIndex(query, offset, limit, select);
-  const ents1 = entitiesToIndex.slice(0, limit / 2);
-  const ents2 = entitiesToIndex.slice(limit / 2, limit);
-
-  // console.log(entitiesToIndex[0])
-  // entitiesToIndex.forEach(e => {
-  //   console.log(e.title);
-  //   console.log(e.pdfInfo);
-  //   e.documents.forEach(doc => console.log)
-  // });
-
-  let newIndexErrors = [];
-
-  if (entitiesToIndex.length === limit) {
-    Promise.all([
-      bulkIndexAndCallback({
+  const promisePool = new PromisePool();
+  const { errors: indexingErrors } = await promisePool
+    .for(chunks)
+    .withConcurrency(20)
+    .process(async chunkIndex => {
+      const thisOffset = (chunkIndex - 1) * limit;
+      const entitiesToIndex = await getEntitiesToIndex(query, thisOffset, limit, select);
+      await bulkIndexAndCallback({
         searchInstance,
-        entitiesToIndex: ents1,
+        entitiesToIndex,
         elasticIndex,
         batchCallback,
         totalRows,
-      }),
-      ents2.length > 0 ? bulkIndexAndCallback({
-        searchInstance,
-        entitiesToIndex: ents2,
-        elasticIndex,
-        batchCallback,
-        totalRows,
-      }) : false,
-    ]).catch(console.log);
-  } else {
-    await Promise.all([
-      bulkIndexAndCallback({
-        searchInstance,
-        entitiesToIndex: ents1,
-        elasticIndex,
-        batchCallback,
-        totalRows,
-      }),
-      ents2.length > 0 ? bulkIndexAndCallback({
-        searchInstance,
-        entitiesToIndex: ents2,
-        elasticIndex,
-        batchCallback,
-        totalRows,
-      }) : false,
-    ]).catch(console.log);
-  }
+      });
+    });
 
-  // try {
-  //   await bulkIndexAndCallback({
-  //     searchInstance,
-  //     entitiesToIndex,
-  //     elasticIndex,
-  //     batchCallback,
-  //     totalRows,
-  //   });
-  // } catch (err) {
-  //   newIndexErrors = newIndexErrorsOrThrow(err);
-  // }
-
-  return indexBatch(offset + limit, totalRows, options, errors.concat(newIndexErrors));
+  return indexingErrors.length
+    ? handleErrors(indexingErrors, { logError: true })
+    : Promise.resolve();
 };
 
 const indexEntities = async ({
