@@ -140,9 +140,8 @@ ajv.addKeyword('cantDeleteInheritedProperties', {
             keyword: 'noDeleteInheritedProperty',
             schemaPath: '',
             params: { keyword: 'noDeleteInheritedProperty' },
-            message: "Can't delete properties beign inherited",
-            //TODO: shouldnt this be .properties.propertyname?
-            dataPath: `.metadata['${property.name}']`,
+            message: "Can't delete properties being inherited",
+            dataPath: `.properties.${property.name}`,
           });
         }
       })
