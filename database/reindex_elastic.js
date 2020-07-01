@@ -43,16 +43,6 @@ const endScriptProcedures = async () =>
     });
   });
 
-process.on('unhandledRejection', async error => {
-  try {
-    errorLog.error(error.message);
-    await endScriptProcedures();
-  } catch (err) {
-    process.stdout.write(`\r\n${err.message}\r\n`);
-  }
-  process.exit(1);
-});
-
 const indexEntities = async () => {
   const spinner = ['|', '/', '-', '\\'];
   let docsIndexed = 0;
@@ -103,19 +93,19 @@ const reindex = async () => {
   process.stdout.write(`Indexing documents and entities... - ${docsIndexed} indexed\r\n`);
 };
 
-const logErrors = err => {
+const processErrors = async err => {
   if (err instanceof IndexError) {
     process.stdout.write('\r\nWarning! Errors found during reindex.\r\n');
   } else {
     errorLog.error(`Uncaught Reindex error.\r\n${err.message}\r\nWill exit with (1)\r\n`);
+    await endScriptProcedures();
     throw err;
   }
 };
 
-const done = start => {
-  const end = Date.now();
-  process.stdout.write(`Done, took ${(end - start) / 1000} seconds\n`);
-};
+process.on('unhandledRejection', error => {
+  throw error;
+});
 
 connect().then(async () => {
   const start = Date.now();
@@ -125,9 +115,11 @@ connect().then(async () => {
     await tweakSettingsForPerformmance();
     await reindex();
   } catch (err) {
-    logErrors(err);
+    await processErrors(err);
   }
 
-  done(start);
-  return endScriptProcedures();
+  await endScriptProcedures();
+
+  const end = Date.now();
+  process.stdout.write(`Done, took ${(end - start) / 1000} seconds\n`);
 });
