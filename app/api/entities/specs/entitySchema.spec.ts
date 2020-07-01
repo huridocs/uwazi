@@ -1,4 +1,4 @@
-/* eslint-disable max-lines,max-statements, jasmine/no-focused-tests */
+/* eslint-disable max-lines,max-statements */
 
 import Ajv from 'ajv';
 import db from 'api/utils/testing_db';
@@ -461,7 +461,7 @@ describe('entity schema', () => {
 
           await expectError(
             entity,
-            customErrorMessages.relationship_nonexistent_ids,
+            customErrorMessages.relationship_wrong_foreign_id,
             ".metadata['relationship']",
             {
               data: [{ value: 'non_existent_entity' }, { value: 'non_existent_entity2' }],
@@ -479,7 +479,7 @@ describe('entity schema', () => {
 
           await expectError(
             entity,
-            customErrorMessages.relationship_nonexistent_ids,
+            customErrorMessages.relationship_wrong_foreign_id,
             ".metadata['relationship']",
             {
               data: [{ value: 'entity2' }],

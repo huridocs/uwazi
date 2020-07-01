@@ -72,7 +72,7 @@ const validateForeignIds = async (
     if (diff.length) {
       return [
         validationError(
-          { message: customErrorMessages.relationship_nonexistent_ids, data: diff },
+          { message: customErrorMessages.relationship_wrong_foreign_id, data: diff },
           property,
           entity
         ),
