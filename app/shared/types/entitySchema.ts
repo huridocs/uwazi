@@ -1,115 +1,72 @@
 /* eslint-disable max-statements */
 import Ajv from 'ajv';
 import templatesModel from 'api/templates/templatesModel';
-import { isUndefined, isNull } from 'util';
 import { objectIdSchema, metadataSchema } from 'shared/types/commonSchemas';
-import { wrapValidator, ensure } from 'shared/tsUtils';
+import { wrapValidator } from 'shared/tsUtils';
 import { validators, customErrorMessages } from 'api/entities/metadataValidators.js';
 import { EntitySchema } from './entityType';
-import { PropertySchema } from './commonTypes';
 import { TemplateSchema } from './templateType';
-
-import { propertyTypes } from 'shared/propertyTypes';
-import entities from 'api/entities';
+import { validateMetadataField } from './validateMetadataField';
+import { PropertySchema } from './commonTypes';
 
 export const emitSchemaTypes = true;
 
 const ajv = Ajv({ allErrors: true });
 
-const hasValue = (value: any) => !isUndefined(value) && !isNull(value);
-
-const validateMetadataField = async (property: PropertySchema, entity: EntitySchema) => {
-  const value = entity.metadata && entity.metadata[ensure<string>(property.name)];
-
-  if (!validators.validateRequiredProperty(property, value)) {
-    throw new Error(customErrorMessages.required);
-  }
-
-  //@ts-ignore
-  if (hasValue(value) && validators[property.type] && !validators[property.type](value)) {
-    //@ts-ignore
-    throw new Error(customErrorMessages[property.type]);
-  }
-
-  if (value && property.type === propertyTypes.relationship) {
-    const valueIds = value.map(v => v.value);
-
-    const entityIds = (
-      await entities.get(
-        {
-          sharedId: { $in: valueIds },
-          ...(property.content && { template: property.content }),
-        },
-        { sharedId: 1 }
-      )
-    ).map(v => v.sharedId);
-
-    const diff = value.filter(v => !entityIds.includes(String(v.value)));
-
-    //@ts-ignore
-    if (diff.length) {
-      throw new Ajv.ValidationError([
-        {
-          keyword: 'metadataMatchesTemplateProperties',
-          schemaPath: '',
-          params: {},
-          message: customErrorMessages.relationship_nonexistent_ids,
-          dataPath: `.metadata['${property.name}']`,
-          data: diff,
-        },
-      ]);
+const validateField = (entity: EntitySchema) => {
+  return async (err: Promise<Ajv.ErrorObject[]>, property: PropertySchema) => {
+    try {
+      await validateMetadataField(property, entity);
+      return err;
+    } catch (e) {
+      const currentErrors = await err;
+      if (e instanceof Ajv.ValidationError) {
+        return currentErrors.concat(e.errors);
+      }
+      throw e;
     }
-  }
+  };
+};
 
-  if (hasValue(value) && !validators.validateLuceneBytesLimit(value)) {
-    throw new Error(customErrorMessages.length_exceeded);
-  }
+const validateFields = async (template: TemplateSchema, entity: EntitySchema) => {
+  const errors: Ajv.ErrorObject[] = await (template.properties || []).reduce<
+    Promise<Ajv.ErrorObject[]>
+  >(validateField(entity), Promise.resolve([]));
+  return errors;
+};
+
+const validateAllowedProperties = async (template: TemplateSchema, entity: EntitySchema) => {
+  const errors: Ajv.ErrorObject[] = [];
+  const allowedProperties = (template.properties || []).map(p => p.name);
+  Object.keys(entity.metadata || {}).forEach((propName: string) => {
+    if (!allowedProperties.includes(propName)) {
+      errors.push({
+        keyword: 'metadataMatchesTemplateProperties',
+        schemaPath: '',
+        params: { keyword: 'metadataMatchesTemplateProperties', data: entity },
+        message: customErrorMessages.property_not_allowed,
+        dataPath: `.metadata['${propName}']`,
+      });
+    }
+  });
+  return errors;
 };
 
 ajv.addKeyword('metadataMatchesTemplateProperties', {
   async: true,
   errors: true,
   type: 'object',
-  async validate(fields: any, entity: EntitySchema) {
+  async validate(_fields: any, entity: EntitySchema) {
     if (!entity.template) {
       return true;
     }
 
     const [template = {} as TemplateSchema] = await templatesModel.get({ _id: entity.template });
-    const errors: Ajv.ErrorObject[] = await (template.properties || []).reduce<
-      Promise<Ajv.ErrorObject[]>
-    >(async (err: Promise<Ajv.ErrorObject[]>, property) => {
-      try {
-        await validateMetadataField(property, entity);
-        return err;
-      } catch (e) {
-        const currentErrors = await err;
-        if (e instanceof Ajv.ValidationError) {
-          return currentErrors.concat(e.errors);
-        }
-        currentErrors.push({
-          keyword: 'metadataMatchesTemplateProperties',
-          schemaPath: '',
-          params: { keyword: 'metadataMatchesTemplateProperties', fields },
-          message: e.message,
-          dataPath: `.metadata['${property.name}']`,
-        });
-        return currentErrors;
-      }
-    }, Promise.resolve([]));
 
-    const allowedProperties = (template.properties || []).map(p => p.name);
-    Object.keys(entity.metadata || {}).forEach((propName: string) => {
-      if (!allowedProperties.includes(propName)) {
-        errors.push({
-          keyword: 'metadataMatchesTemplateProperties',
-          schemaPath: '',
-          params: { keyword: 'metadataMatchesTemplateProperties', fields },
-          message: customErrorMessages.property_not_allowed,
-          dataPath: `.metadata['${propName}']`,
-        });
-      }
-    });
+    const errors: Ajv.ErrorObject[] = [
+      ...(await validateFields(template, entity)),
+      ...(await validateAllowedProperties(template, entity)),
+    ];
 
     if (errors.length) {
       throw new Ajv.ValidationError(errors);
