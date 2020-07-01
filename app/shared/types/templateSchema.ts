@@ -169,7 +169,11 @@ ajv.addKeyword('cantReuseNameWithDifferentType', {
       $and: [
         {
           name: property.name,
-          $or: [{ content: { $ne: property.content } }, { type: { $ne: property.type } }, { relationtype: { $ne: property.relationType } }],
+          $or: [
+            { content: { $ne: property.content } },
+            { type: { $ne: property.type } },
+            { relationtype: { $ne: property.relationType } },
+          ],
         },
       ],
     }));
@@ -182,7 +186,9 @@ ajv.addKeyword('cantReuseNameWithDifferentType', {
           const matches = t.properties?.find(
             p =>
               p.name === property.name &&
-              (p.content !== property.content || p.type !== property.type || p.relationtype !== property.relationType)
+              (p.content !== property.content ||
+                p.type !== property.type ||
+                p.relationtype !== property.relationType)
           );
           if (matches && !propertyNames.includes(property?.name || '')) {
             propertyNames.push(property?.name || '');

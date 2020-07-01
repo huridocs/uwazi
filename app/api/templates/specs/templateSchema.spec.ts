@@ -274,7 +274,7 @@ describe('template schema', () => {
     });
 
     describe('when the property is a relationship and the relation type is different', () => {
-      fit('should throw a validation error', async () => {
+      it('should throw a validation error', async () => {
         try {
           await validateTemplate(template4);
           fail('should throw validation error');
