@@ -278,7 +278,6 @@ export default {
     {
       title: 'title',
       _id: db.id(),
-      template: db.id(),
       sharedId: 'otherTemplateWithMultiselect',
       type: 'entity',
       language: 'es',

@@ -1137,9 +1137,9 @@ describe('entities', () => {
       });
 
       await entities.saveMultiple([{ _id: docId1, file: {} }]);
+
       await entities.addLanguage('ab', 2);
       const newEntities = await entities.get({ language: 'ab' });
-
       expect(newEntities.length).toBe(11);
     });
   });
