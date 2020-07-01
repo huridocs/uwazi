@@ -228,6 +228,19 @@ describe('template schema', () => {
       properties: [{ name: 'sharedproperty3', label: 'sharedProperty3', type: 'text' }],
       commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
     };
+    const template4 = {
+      name: 'template4',
+      properties: [
+        {
+          name: 'sharedrelationship1',
+          label: 'sharedRelationship1',
+          type: 'relationship',
+          content: 'template1',
+          relationType: 'relationType2',
+        },
+      ],
+      commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
+    };
     describe('when the property to save is of a different content', () => {
       it('should throw a validation error', async () => {
         try {
@@ -256,6 +269,17 @@ describe('template schema', () => {
               }),
             ])
           );
+        }
+      });
+    });
+
+    describe('when the property is a relationship and the relation type is different', () => {
+      fit('should throw a validation error', async () => {
+        try {
+          await validateTemplate(template4);
+          fail('should throw validation error');
+        } catch (e) {
+          expect(e).toBeInstanceOf(Ajv.ValidationError);
         }
       });
     });

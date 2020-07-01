@@ -169,21 +169,20 @@ ajv.addKeyword('cantReuseNameWithDifferentType', {
       $and: [
         {
           name: property.name,
-          $or: [{ content: { $ne: property.content } }, { type: { $ne: property.type } }],
+          $or: [{ content: { $ne: property.content } }, { type: { $ne: property.type } }, { relationtype: { $ne: property.relationType } }],
         },
       ],
     }));
     const query = { properties: { $elemMatch: { $or: [...condition] } } };
     const matchedTemplates = await model.get(query);
     const otherTemplates = matchedTemplates.filter(t => !t._id.equals(template._id));
-
     if (otherTemplates.length > 0) {
       const errorProperties = template.properties.reduce((propertyNames: string[], property) => {
         otherTemplates.forEach((t: TemplateSchema) => {
           const matches = t.properties?.find(
             p =>
               p.name === property.name &&
-              (p.content !== property.content || p.type !== property.type)
+              (p.content !== property.content || p.type !== property.type || p.relationtype !== property.relationType)
           );
           if (matches && !propertyNames.includes(property?.name || '')) {
             propertyNames.push(property?.name || '');

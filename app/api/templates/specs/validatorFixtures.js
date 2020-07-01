@@ -59,6 +59,13 @@ export default {
           name: 'sharedproperty3',
           label: 'sharedProperty3',
         },
+        {
+          type: propertyTypes.relationship,
+          content: 'template1',
+          relationtype: 'relationType1',
+          name: 'sharedrelationship1',
+          label: 'sharedRelationship1',
+        },
       ],
       commonProperties: [{ name: 'title', label: 'Title' }],
     },
