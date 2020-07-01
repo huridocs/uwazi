@@ -29,7 +29,7 @@ export const createErrorLog = () => {
     transports: [createFileTransport(), consoleTransport],
   });
 
-  logger.closeGraylog = cb => {
+  logger.closeGraylog = (cb = () => {}) => {
     cb();
   };
 
