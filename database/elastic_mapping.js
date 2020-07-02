@@ -187,29 +187,37 @@ const config = {
           longitude: { type: 'float', doc_values: true },
         },
       },
-      // attachments: {
-      //   type: 'object',
-      //   enabled: false,
-      // },
-      // icon: {
-      //   type: 'object',
-      //   enabled: false,
-      // },
-      // language: {
-      //   type: 'keyword',
-      // },
-      // sharedId: {
-      //   type: 'keyword',
-      // },
-      // template: {
-      //   type: 'keyword',
-      // },
-      // type: {
-      //   type: 'keyword',
-      // },
-      // user: {
-      //   type: 'keyword',
-      // },
+      attachments: {
+        type: 'object',
+        enabled: false,
+      },
+      icon: {
+        type: 'object',
+        enabled: false,
+      },
+      language: {
+        type: 'keyword',
+      },
+      sharedId: {
+        type: 'keyword',
+        fields: {
+          raw: { type: 'keyword' },
+          sort: { type: 'keyword' },
+        },
+      },
+      template: {
+        type: 'keyword',
+        fields: {
+          raw: { type: 'keyword' },
+          sort: { type: 'keyword' },
+        },
+      },
+      type: {
+        type: 'keyword',
+      },
+      user: {
+        type: 'keyword',
+      },
     },
   },
 };

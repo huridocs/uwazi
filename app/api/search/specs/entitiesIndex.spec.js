@@ -4,6 +4,7 @@ import errorLog from 'api/log/errorLog';
 
 import { instanceSearch } from '../search';
 import { fixtures as fixturesForIndexErrors } from './fixtures_elastic_errors';
+import elastic from '../elastic';
 
 const forceIndexingOfNumberBasedProperty = async search => {
   await search.indexEntities({ title: 'Entity with index Problems 1' }, '', 1);
@@ -24,13 +25,6 @@ describe('entitiesIndex', () => {
   });
 
   describe('indexEntities', () => {
-    // beforeEach(async () => {
-    //   await db.clearAllAndLoad(fixturesForIndexErrors);
-    //   await elasticTesting.resetIndex();
-    //   await forceIndexingOfNumberBasedProperty(search);
-    //   await elasticTesting.refresh();
-    // });
-
     const expectParsingException = () =>
       expect.objectContaining({
         index: expect.objectContaining({
@@ -38,50 +32,80 @@ describe('entitiesIndex', () => {
         }),
       });
 
-    it('should index all possible entities in bulk batches and throw errors at the end', async () => {
-      spyOn(errorLog, 'error').and.returnValue('Ok');
+    const loadFailingFixtures = async () => {
       await db.clearAllAndLoad(fixturesForIndexErrors);
       await elasticTesting.resetIndex();
       await forceIndexingOfNumberBasedProperty(search);
-      await elasticTesting.forcemerge();
       await elasticTesting.refresh();
+    };
+
+    it('indexing without errors', async () => {
+      spyOn(errorLog, 'error').and.returnValue('Ok');
+      await loadFailingFixtures();
+      await search.indexEntities({ title: 'Entity with index Problems 1' }, '', 1);
+      expect(errorLog.error).not.toHaveBeenCalled();
+      await elasticTesting.refresh();
+      const indexedEntities = await search.search({}, 'en');
+      expect(indexedEntities.rows.length).toBe(1);
+    });
+
+    it('should handle 1 error', async () => {
+      spyOn(errorLog, 'error').and.returnValue('Ok');
+      await loadFailingFixtures();
       try {
-        await elasticTesting.reindex();
+        await search.indexEntities({ title: 'Entity with index Problems 2' }, '', 1);
         fail('should have thown errors');
       } catch (err) {
         expect(err.toString()).toContain('Failed to index documents');
-        // console.log("indexed errors", err);
-        // console.log("len", err.errors.length);
-        // for(let i= 0; i < err.errors.length; i += 1) {
-        //   console.log(err.errors[i]);
-        // }
+        expect(err.errors).toEqual([expectParsingException()]);
       }
       expect(errorLog.error).toHaveBeenCalledTimes(1);
-      // await elasticTesting.refresh();
-      // const indexedEntities = await search.search({}, 'en');
-      // expect(indexedEntities.rows.length).toBe(4);
-
-      // spyOn(errorLog, 'error').and.returnValue('Ok');
-      // try {
-      //   await search.indexEntities({}, '', 3);
-      //   fail('should have thown an error');
-      // } catch (err) {
-      //   // expect(errorLog.error()).toHAveBeenCalled();
-      //   // console.log("the error is", err);
-      //   expect(true).toBe(true);
-      // }
-      // } catch (err) {
-      //   expect(err.toString()).toContain('Failed to index documents');
-      //   expect(err.errors).toEqual([
-      //     expectParsingException(),
-      //     expectParsingException(),
-      //     expectParsingException(),
-      //   ]);
-      //
-      //   await elasticTesting.refresh();
-      //   const indexedEntities = await search.search({}, 'en');
-      //   expect(indexedEntities.rows.length).toBe(4);
-      // }
+      await elasticTesting.refresh();
+      const indexedEntities = await search.search({}, 'en');
+      expect(indexedEntities.rows.length).toBe(1);
     });
+
+    /*eslint max-statements: ["error", 20]*/
+    it('should index all possible entities in bulk batches and throw errors at the end', async () => {
+      spyOn(errorLog, 'error').and.returnValue('Ok');
+      await loadFailingFixtures();
+      try {
+        await search.indexEntities({});
+        fail('should have thown errors');
+      } catch (err) {
+        expect(err.toString()).toContain('Failed to index documents');
+        expect(err.errors).toEqual([
+          expectParsingException(),
+          expectParsingException(),
+          expectParsingException(),
+        ]);
+      }
+      expect(errorLog.error).toHaveBeenCalledTimes(1);
+      await elasticTesting.refresh();
+      const indexedEntities = await search.search({}, 'en');
+      expect(indexedEntities.rows.length).toBe(4);
+    });
+
+    /*eslint max-statements: ["error", 20]*/
+    /*eslint-disable*/
+    // it('should stop if the error is not controlled (ie. if it is not an indexing error)', async () => {
+    //   await loadFailingFixtures();
+    //
+    //   spyOn(errorLog, 'error').and.returnValue('Ok');
+    //   const a_mock = jest.spyOn(elastic, 'bulk');
+    //   a_mock.mockImplementationOnce( () => {throw new Error('not a mapping exception')} );
+    //
+    //   try {
+    //     await search.indexEntities({}, '', 3);
+    //     fail('should have thown errors');
+    //   } catch (err) {
+    //     // console.log(err.errors.toString(), "err")
+    //     expect(err.errors.toString()).toContain('not a mapping exception');
+    //   }
+    //   expect(errorLog.error).toHaveBeenCalledTimes(1);
+    //   await elasticTesting.refresh();
+    //   const indexedEntities = await search.search({}, 'en');
+    //   expect(indexedEntities.rows.length).toBe(1);
+    // });
   });
 });

@@ -1,7 +1,7 @@
 import languagesUtil from 'shared/languages';
 import languages from 'shared/languagesList';
 import entities from 'api/entities';
-import relationships from 'api/relationships/relationships';
+// import relationships from 'api/relationships/relationships';
 import errorLog from 'api/log/errorLog';
 import { entityDefaultDocument } from 'shared/entityDefaultDocument';
 import PromisePool from '@supercharge/promise-pool';
@@ -81,10 +81,10 @@ const bulkIndex = async (docs, _action = 'index', elasticIndex) => {
   return results;
 };
 
-const appendRelationships = async entity => {
-  const relations = await relationships.get({ entity: entity.sharedId });
-  return { ...entity, relationships: relations || [] };
-};
+// const appendRelationships = async entity => {
+//   const relations = await relationships.get({ entity: entity.sharedId });
+//   return { ...entity, relationships: relations || [] };
+// };
 
 const getEntitiesToIndex = async (query, offset, limit, select) => {
   const entitiesToIndex = await entities.get(query, '', {
@@ -99,8 +99,8 @@ const getEntitiesToIndex = async (query, offset, limit, select) => {
     }
   }
 
-  return Promise.all(entitiesToIndex.map(appendRelationships));
-  // return entitiesToIndex;
+  // return Promise.all(entitiesToIndex.map(appendRelationships));
+  return entitiesToIndex;
 };
 
 const bulkIndexAndCallback = async assets => {
@@ -109,21 +109,21 @@ const bulkIndexAndCallback = async assets => {
   return batchCallback(entitiesToIndex.length, totalRows);
 };
 
+/*eslint max-statements: ["error", 20]*/
 const indexBatch = async (offset, totalRows, options, errors = []) => {
   const { query, select, limit, batchCallback, elasticIndex, searchInstance } = options;
 
-  const chunks = [];
+  const steps = [];
   for (let cursor = 0; cursor < totalRows; cursor += limit) {
-    chunks.push(chunks.length + 1);
+    steps.push(steps.length + 1);
   }
 
   const promisePool = new PromisePool();
   const { errors: indexingErrors } = await promisePool
-    .for(chunks)
+    .for(steps)
     .withConcurrency(20)
-    .process(async chunkIndex => {
-      const thisOffset = (chunkIndex - 1) * limit;
-      // throw new Error("blah")
+    .process(async stepIndex => {
+      const thisOffset = (stepIndex - 1) * limit;
       const entitiesToIndex = await getEntitiesToIndex(query, thisOffset, limit, select);
       await bulkIndexAndCallback({
         searchInstance,
@@ -134,19 +134,13 @@ const indexBatch = async (offset, totalRows, options, errors = []) => {
       });
     });
 
-    // console.log("len", indexingErrors[0].errors.length);
-    console.log("len errs", indexingErrors.length);
-    console.log("errs", indexingErrors);
-    if(indexingErrors[0] && indexingErrors[0].errors) {
-      console.log("errs in", indexingErrors[0].errors);
-      for(let i= 0; i < indexingErrors[0].errors.length; i += 1) {
-        console.log(indexingErrors[0].errors[i]);
-      }
-    }
-    //&& indexingErrors[0].errors.length
+  let returnErrors = indexingErrors;
+  if (indexingErrors.length > 0 && indexingErrors[0].errors) {
+    returnErrors = indexingErrors[0].errors;
+  }
 
-  return indexingErrors.length > 0
-    ? handleErrors(indexingErrors, { logError: true })
+  return returnErrors.length > 0
+    ? handleErrors(returnErrors, { logError: true })
     : Promise.resolve();
 };
 

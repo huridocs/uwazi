@@ -20,8 +20,4 @@ export default (elasticIndex, search) => ({
   async putMapping(body) {
     await elastic.indices.putMapping({ index: elasticIndex, body });
   },
-
-  async forcemerge() {
-    await elastic.indices.forcemerge({ index: elasticIndex });
-  },
 });
