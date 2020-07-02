@@ -207,10 +207,10 @@ describe('template schema', () => {
           type: 'select',
           content: 'thesauriId1',
         },
-        { 
-          name: 'sharedproperty3', 
-          label: 'sharedProperty3', 
-          type: 'text' 
+        {
+          name: 'sharedproperty3',
+          label: 'sharedProperty3',
+          type: 'text',
         },
         {
           name: 'sharedrelationship1',

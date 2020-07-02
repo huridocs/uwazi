@@ -176,16 +176,19 @@ ajv.addKeyword('cantReuseNameWithDifferentType', {
         },
       ],
     }));
-    const query = { $and: [
-      { _id: { $ne: template._id } },
-      { properties: { $elemMatch: { $or: [...condition] } } }
-    ]};
+    const query = {
+      $and: [
+        { _id: { $ne: template._id } },
+        { properties: { $elemMatch: { $or: [...condition] } } },
+      ],
+    };
     const matchedTemplates = await model.get(query);
     if (matchedTemplates.length > 0) {
-      const allProperties: PropertySchema[] = matchedTemplates.reduce((memo: PropertySchema[], template) => {
-        return template.properties ? memo.concat(template.properties) : memo;
-      }, []);
-      
+      const allProperties: PropertySchema[] = matchedTemplates.reduce(
+        (memo: PropertySchema[], t) => (t.properties ? memo.concat(t.properties) : memo),
+        []
+      );
+
       const errorProperties = template.properties.reduce((propertyNames: string[], property) => {
         const matches = allProperties.find(
           p =>
@@ -196,9 +199,9 @@ ajv.addKeyword('cantReuseNameWithDifferentType', {
         );
 
         if (matches && !propertyNames.includes(property?.name || '')) {
-           return propertyNames.concat([property?.name || '']);
+          return propertyNames.concat([property?.name || '']);
         }
-        
+
         return propertyNames;
       }, []);
 
