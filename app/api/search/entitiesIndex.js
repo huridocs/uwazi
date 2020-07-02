@@ -81,6 +81,11 @@ const bulkIndex = async (docs, _action = 'index', elasticIndex) => {
   return results;
 };
 
+const appendRelationships = async entity => {
+  const relations = await relationships.get({ entity: entity.sharedId });
+  return { ...entity, relationships: relations || [] };
+};
+
 const getEntitiesToIndex = async (query, offset, limit, select) => {
   const entitiesToIndex = await entities.get(query, '', {
     skip: offset,
@@ -93,7 +98,9 @@ const getEntitiesToIndex = async (query, offset, limit, select) => {
       delete entitiesToIndex[i].documents[j].pdfInfo;
     }
   }
-  return entitiesToIndex;
+
+  return Promise.all(entitiesToIndex.map(appendRelationships));
+  // return entitiesToIndex;
 };
 
 const bulkIndexAndCallback = async assets => {
@@ -106,7 +113,7 @@ const indexBatch = async (offset, totalRows, options, errors = []) => {
   const { query, select, limit, batchCallback, elasticIndex, searchInstance } = options;
 
   const chunks = [];
-  for (let cursor = 0; cursor <= totalRows; cursor += limit) {
+  for (let cursor = 0; cursor < totalRows; cursor += limit) {
     chunks.push(chunks.length + 1);
   }
 
@@ -116,6 +123,7 @@ const indexBatch = async (offset, totalRows, options, errors = []) => {
     .withConcurrency(20)
     .process(async chunkIndex => {
       const thisOffset = (chunkIndex - 1) * limit;
+      // throw new Error("blah")
       const entitiesToIndex = await getEntitiesToIndex(query, thisOffset, limit, select);
       await bulkIndexAndCallback({
         searchInstance,
@@ -126,7 +134,18 @@ const indexBatch = async (offset, totalRows, options, errors = []) => {
       });
     });
 
-  return indexingErrors.length
+    // console.log("len", indexingErrors[0].errors.length);
+    console.log("len errs", indexingErrors.length);
+    console.log("errs", indexingErrors);
+    if(indexingErrors[0] && indexingErrors[0].errors) {
+      console.log("errs in", indexingErrors[0].errors);
+      for(let i= 0; i < indexingErrors[0].errors.length; i += 1) {
+        console.log(indexingErrors[0].errors[i]);
+      }
+    }
+    //&& indexingErrors[0].errors.length
+
+  return indexingErrors.length > 0
     ? handleErrors(indexingErrors, { logError: true })
     : Promise.resolve();
 };

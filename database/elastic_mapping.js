@@ -187,29 +187,29 @@ const config = {
           longitude: { type: 'float', doc_values: true },
         },
       },
-      attachments: {
-        type: 'object',
-        enabled: false,
-      },
-      icon: {
-        type: 'object',
-        enabled: false,
-      },
-      language: {
-        type: 'keyword',
-      },
-      sharedId: {
-        type: 'keyword',
-      },
-      template: {
-        type: 'keyword',
-      },
-      type: {
-        type: 'keyword',
-      },
-      user: {
-        type: 'keyword',
-      },
+      // attachments: {
+      //   type: 'object',
+      //   enabled: false,
+      // },
+      // icon: {
+      //   type: 'object',
+      //   enabled: false,
+      // },
+      // language: {
+      //   type: 'keyword',
+      // },
+      // sharedId: {
+      //   type: 'keyword',
+      // },
+      // template: {
+      //   type: 'keyword',
+      // },
+      // type: {
+      //   type: 'keyword',
+      // },
+      // user: {
+      //   type: 'keyword',
+      // },
     },
   },
 };
@@ -257,7 +257,7 @@ languages.getAll().forEach(language => {
     mapping: {
       type: 'text',
       index: true,
-      omit_norms: false,
+      omit_norms: true,
       analyzer: `fulltext_${language}`,
       search_analyzer: `stop_${language}`,
       search_quote_analyzer: `fulltext_${language}`,

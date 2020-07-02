@@ -16,4 +16,12 @@ export default (elasticIndex, search) => ({
     await search.indexEntities({}, '+fullText');
     await this.refresh();
   },
+
+  async putMapping(body) {
+    await elastic.indices.putMapping({ index: elasticIndex, body });
+  },
+
+  async forcemerge() {
+    await elastic.indices.forcemerge({ index: elasticIndex });
+  },
 });
