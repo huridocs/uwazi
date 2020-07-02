@@ -191,22 +191,9 @@ describe('template schema', () => {
   });
 
   describe('when there is another template with the same property', () => {
-    const errorMessage =
-      'Entered label is already in use on another property with a different type or thesaurus';
-    const template1 = {
-      name: 'template1',
-      properties: [
-        {
-          name: 'sharedproperty1',
-          label: 'sharedProperty1',
-          type: 'select',
-          content: 'thesauriId2',
-        },
-      ],
-      commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
-    };
-    const template2 = {
-      name: 'template2',
+    const validatorKeyword = 'cantReuseNameWithDifferentType';
+    const template = {
+      name: 'template',
       properties: [
         {
           name: 'sharedproperty1',
@@ -220,17 +207,11 @@ describe('template schema', () => {
           type: 'select',
           content: 'thesauriId1',
         },
-      ],
-      commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
-    };
-    const template3 = {
-      name: 'template3',
-      properties: [{ name: 'sharedproperty3', label: 'sharedProperty3', type: 'text' }],
-      commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
-    };
-    const template4 = {
-      name: 'template4',
-      properties: [
+        { 
+          name: 'sharedproperty3', 
+          label: 'sharedProperty3', 
+          type: 'text' 
+        },
         {
           name: 'sharedrelationship1',
           label: 'sharedRelationship1',
@@ -238,65 +219,42 @@ describe('template schema', () => {
           content: 'template1',
           relationType: 'relationType2',
         },
+        {
+          name: 'validproperty',
+          label: 'validProperty',
+          type: 'select',
+          content: 'thesauriId3',
+        },
       ],
       commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
     };
+
     describe('when the property to save is of a different content', () => {
-      it('should throw a validation error', async () => {
+      it('should return the name of the duplicated properties', async () => {
         try {
-          await validateTemplate(template1);
+          await validateTemplate(template);
           fail('should throw validation error');
         } catch (e) {
           expect(e).toBeInstanceOf(Ajv.ValidationError);
-        }
-      });
-
-      it('should return the name of the duplicated properties', async () => {
-        try {
-          await validateTemplate(template2);
-          fail('should throw validation error');
-        } catch (e) {
+          expect(e.errors.length).toBe(4);
           expect(e).toHaveProperty(
             'errors',
             expect.arrayContaining([
               expect.objectContaining({
                 dataPath: '.properties.sharedproperty1',
-                message: errorMessage,
+                keyword: validatorKeyword,
               }),
               expect.objectContaining({
                 dataPath: '.properties.sharedproperty2',
-                message: errorMessage,
+                keyword: validatorKeyword,
               }),
-            ])
-          );
-        }
-      });
-    });
-
-    describe('when the property is a relationship and the relation type is different', () => {
-      it('should throw a validation error', async () => {
-        try {
-          await validateTemplate(template4);
-          fail('should throw validation error');
-        } catch (e) {
-          expect(e).toBeInstanceOf(Ajv.ValidationError);
-        }
-      });
-    });
-
-    describe('when the property to save is of a different type', () => {
-      it('should not save the template', async () => {
-        try {
-          await validateTemplate(template3);
-          fail('should throw validation error');
-        } catch (e) {
-          expect(e).toBeInstanceOf(Ajv.ValidationError);
-          expect(e).toHaveProperty(
-            'errors',
-            expect.arrayContaining([
               expect.objectContaining({
                 dataPath: '.properties.sharedproperty3',
-                message: errorMessage,
+                keyword: validatorKeyword,
+              }),
+              expect.objectContaining({
+                dataPath: '.properties.sharedrelationship1',
+                keyword: validatorKeyword,
               }),
             ])
           );
