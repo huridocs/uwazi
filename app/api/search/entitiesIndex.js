@@ -88,11 +88,11 @@ const getEntitiesToIndex = async (query, offset, limit, select) => {
     documentsFullText: select && select.includes('+fullText'),
   });
 
-  for (let i = 0; i < entitiesToIndex.length; i += 1) {
-    for (let j = 0; j < entitiesToIndex[i].documents.length; j += 1) {
-      delete entitiesToIndex[i].documents[j].pdfInfo;
-    }
-  }
+  // for (let i = 0; i < entitiesToIndex.length; i += 1) {
+  //   for (let j = 0; j < entitiesToIndex[i].documents.length; j += 1) {
+  //     delete entitiesToIndex[i].documents[j].pdfInfo;
+  //   }
+  // }
 
   return entitiesToIndex;
 };
