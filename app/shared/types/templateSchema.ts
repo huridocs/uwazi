@@ -185,7 +185,7 @@ ajv.addKeyword('cantReuseNameWithDifferentType', {
     const matchedTemplates = await model.get(query);
     if (matchedTemplates.length > 0) {
       const allProperties: PropertySchema[] = matchedTemplates.reduce(
-        (memo: PropertySchema[], t) => (t.properties ? memo.concat(t.properties) : memo),
+        (memo: PropertySchema[], t) => memo.concat(t.properties || []),
         []
       );
 
