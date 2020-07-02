@@ -182,19 +182,23 @@ ajv.addKeyword('cantReuseNameWithDifferentType', {
     ]};
     const matchedTemplates = await model.get(query);
     if (matchedTemplates.length > 0) {
+      const allProperties: PropertySchema[] = matchedTemplates.reduce((memo: PropertySchema[], template) => {
+        return template.properties ? memo.concat(template.properties) : memo;
+      }, []);
+      
       const errorProperties = template.properties.reduce((propertyNames: string[], property) => {
-        matchedTemplates.forEach((t: TemplateSchema) => {
-          const matches = t.properties?.find(
-            p =>
-              p.name === property.name &&
-              (p.content !== property.content ||
-                p.type !== property.type ||
-                p.relationtype !== property.relationType)
-          );
-          if (matches && !propertyNames.includes(property?.name || '')) {
-            propertyNames.push(property?.name || '');
-          }
-        });
+        const matches = allProperties.find(
+          p =>
+            p.name === property.name &&
+            (p.content !== property.content ||
+              p.type !== property.type ||
+              p.relationtype !== property.relationType)
+        );
+
+        if (matches && !propertyNames.includes(property?.name || '')) {
+           return propertyNames.concat([property?.name || '']);
+        }
+        
         return propertyNames;
       }, []);
 
