@@ -81,11 +81,6 @@ const bulkIndex = async (docs, _action = 'index', elasticIndex) => {
   return results;
 };
 
-// const appendRelationships = async entity => {
-//   const relations = await relationships.get({ entity: entity.sharedId });
-//   return { ...entity, relationships: relations || [] };
-// };
-
 const getEntitiesToIndex = async (query, offset, limit, select) => {
   const entitiesToIndex = await entities.get(query, '', {
     skip: offset,
@@ -99,7 +94,6 @@ const getEntitiesToIndex = async (query, offset, limit, select) => {
     }
   }
 
-  // return Promise.all(entitiesToIndex.map(appendRelationships));
   return entitiesToIndex;
 };
 
@@ -110,7 +104,7 @@ const bulkIndexAndCallback = async assets => {
 };
 
 /*eslint max-statements: ["error", 20]*/
-const indexBatch = async (offset, totalRows, options, errors = []) => {
+const indexBatch = async (totalRows, options) => {
   const { query, select, limit, batchCallback, elasticIndex, searchInstance } = options;
 
   const steps = [];
@@ -153,7 +147,7 @@ const indexEntities = async ({
   searchInstance,
 }) => {
   const totalRows = await entities.count(query);
-  return indexBatch(0, totalRows, {
+  return indexBatch(totalRows, {
     query,
     select,
     limit,

@@ -4,7 +4,6 @@ import errorLog from 'api/log/errorLog';
 
 import { instanceSearch } from '../search';
 import { fixtures as fixturesForIndexErrors } from './fixtures_elastic_errors';
-import elastic from '../elastic';
 
 const forceIndexingOfNumberBasedProperty = async search => {
   await search.indexEntities({ title: 'Entity with index Problems 1' }, '', 1);
