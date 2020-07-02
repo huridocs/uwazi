@@ -7,6 +7,10 @@
       width: 100%;
       padding: 15px;
       margin: 0;
+
+      &.highlight {
+        background-color: #dee7ff4d;
+      }
     }
 
     dt {
@@ -103,5 +107,4 @@ dl.metadata-type-multimedia {
       margin: 5px;
     }
   }
-
 }

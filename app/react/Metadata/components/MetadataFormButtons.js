@@ -93,7 +93,7 @@ export class MetadataFormButtons extends Component {
             <button
               type="button"
               className="btn btn-success copy-from-btn"
-              onClick={this.props.startCopyFrom}
+              onClick={this.props.copyFrom}
             >
               <Icon icon="clone" />
               <span className="btn-label">{t('System', 'Copy from')}</span>
@@ -152,7 +152,7 @@ MetadataFormButtons.propTypes = {
   formName: PropTypes.string,
   includeViewButton: PropTypes.bool,
   exclusivelyViewButton: PropTypes.bool,
-  startCopyFrom: PropTypes.func.isRequired,
+  copyFrom: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = ({ templates }) => ({ templates });

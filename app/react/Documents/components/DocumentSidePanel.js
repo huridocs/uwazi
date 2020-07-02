@@ -29,9 +29,10 @@ export class DocumentSidePanel extends Component {
     super(props);
     this.selectTab = this.selectTab.bind(this);
     this.firstRender = true;
-    this.state = { copyFrom: false };
+    this.state = { copyFrom: false, copyFromProps: [] };
 
-    this.startCopyFrom = this.startCopyFrom.bind(this);
+    this.toggleCopyFrom = this.toggleCopyFrom.bind(this);
+    this.onCopyFromSelect = this.onCopyFromSelect.bind(this);
     this.deleteDocument = this.deleteDocument.bind(this);
   }
 
@@ -43,6 +44,10 @@ export class DocumentSidePanel extends Component {
     ) {
       this.props.getDocumentReferences(newProps.doc.get('sharedId'), this.props.storeKey);
     }
+  }
+
+  onCopyFromSelect(copyFromProps) {
+    this.setState({ copyFromProps });
   }
 
   getDefaultDocumentToC(isEntity, documents, language, defaultLanguage) {
@@ -99,9 +104,9 @@ export class DocumentSidePanel extends Component {
     this._close();
   }
 
-  startCopyFrom() {
+  toggleCopyFrom() {
     this.setState({
-      copyFrom: true,
+      copyFrom: !this.state.copyFrom,
     });
   }
 
@@ -236,7 +241,7 @@ export class DocumentSidePanel extends Component {
             </ul>
           </Tabs>
         </div>
-        <ShowIf if={this.props.tab === 'metadata' || !this.props.tab}>
+        <ShowIf if={(this.props.tab === 'metadata' || !this.props.tab) && !this.state.copyFrom}>
           <div className="sidepanel-footer">
             <MetadataFormButtons
               delete={this.deleteDocument}
@@ -245,7 +250,7 @@ export class DocumentSidePanel extends Component {
               entityBeingEdited={docBeingEdited}
               includeViewButton={!docBeingEdited && readOnly}
               storeKey={this.props.storeKey}
-              startCopyFrom={this.startCopyFrom}
+              copyFrom={this.toggleCopyFrom}
             />
           </div>
         </ShowIf>
@@ -316,6 +321,9 @@ export class DocumentSidePanel extends Component {
                       <CopyFromEntity
                         originalTemplateId={this.props.doc.get('template')}
                         templates={this.props.templates}
+                        onSelect={this.onCopyFromSelect}
+                        formModel={this.props.formPath}
+                        onCancel={this.toggleCopyFrom}
                       />
                     </React.Fragment>
                   );
