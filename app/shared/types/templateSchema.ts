@@ -1,21 +1,21 @@
-/** @format */
-
 import Ajv from 'ajv';
-import ajvKeywords from 'ajv-keywords';
 import model from 'api/templates/templatesModel';
 import { wrapValidator } from 'shared/tsUtils';
 import { objectIdSchema, propertySchema } from 'shared/types/commonSchemas';
 import templates from 'api/templates';
 
+import { TemplateSchema } from './templateType';
+import { PropertySchema } from './commonTypes';
+
 export const emitSchemaTypes = true;
 
-const ajv = ajvKeywords(Ajv({ allErrors: true }), ['uniqueItemProperties']);
+const ajv = Ajv({ allErrors: true });
 
 ajv.addKeyword('uniqueName', {
   async: true,
   errors: false,
   type: 'object',
-  async validate(schema, data) {
+  async validate(schema: any, data: TemplateSchema) {
     if (!schema) {
       return true;
     }
@@ -31,7 +31,7 @@ ajv.addKeyword('uniqueName', {
 ajv.addKeyword('requireTitleProperty', {
   errors: false,
   type: 'array',
-  validate(_schema, properties) {
+  validate(_schema: any, properties: PropertySchema[]) {
     return properties.some(prop => prop.name === 'title');
   },
 });
@@ -39,25 +39,35 @@ ajv.addKeyword('requireTitleProperty', {
 ajv.addKeyword('uniquePropertyFields', {
   errors: false,
   type: 'object',
-  validate(fields, data) {
-    if (!fields.length) {
-      return true;
-    }
-    const uniqueValues = fields.reduce((memo, field) => ({ ...memo, [field]: new Set() }), {});
-    const properties = data.properties || [];
-    const commonProperties = data.commonProperties || [];
-    const allProperties = properties.concat(commonProperties);
-    for (let propIndex = 0; propIndex < allProperties.length; propIndex += 1) {
-      for (let fieldIndex = 0; fieldIndex < fields.length; fieldIndex += 1) {
-        const property = allProperties[propIndex];
-        const field = fields[fieldIndex];
+  validate(fields: string[], data: TemplateSchema) {
+    const uniqueValues: { [k: string]: Set<string> } = fields.reduce(
+      (memo, field) => ({ ...memo, [field]: new Set() }),
+      {}
+    );
+
+    const allProperties = (data.properties || []).concat(data.commonProperties || []);
+
+    const errors: Ajv.ErrorObject[] = [];
+    allProperties.forEach(property => {
+      fields.forEach(field => {
         const value = property[field] && property[field].toLowerCase().trim();
         if (value && uniqueValues[field].has(value)) {
-          return false;
+          errors.push({
+            keyword: 'uniquePropertyFields',
+            schemaPath: '',
+            params: { keyword: 'uniquePropertyFields', fields },
+            message: `duplicated property value { ${field}: "${value}" }`,
+            dataPath: `.properties.${field}`,
+          });
         }
         uniqueValues[field].add(value);
-      }
+      });
+    });
+
+    if (errors.length) {
+      throw new Ajv.ValidationError(errors);
     }
+
     return true;
   },
 });
@@ -65,7 +75,7 @@ ajv.addKeyword('uniquePropertyFields', {
 ajv.addKeyword('requireContentForSelectFields', {
   errors: false,
   type: 'object',
-  validate(schema, data) {
+  validate(schema: any, data: TemplateSchema) {
     if (!schema) {
       return true;
     }
@@ -80,7 +90,7 @@ ajv.addKeyword('requireContentForSelectFields', {
 ajv.addKeyword('requireRelationTypeForRelationship', {
   errors: false,
   type: 'object',
-  validate(schema, data) {
+  validate(schema: any, data: TemplateSchema) {
     if (!schema) {
       return true;
     }
@@ -94,7 +104,7 @@ ajv.addKeyword('requireRelationTypeForRelationship', {
 ajv.addKeyword('requireInheritPropertyForInheritingRelationship', {
   errors: false,
   type: 'object',
-  validate(schema, data) {
+  validate(schema: any, data: TemplateSchema) {
     if (!schema) {
       return true;
     }
@@ -109,22 +119,27 @@ ajv.addKeyword('cantDeleteInheritedProperties', {
   async: true,
   errors: true,
   type: 'object',
-  async validate(_schema, template) {
+  async validate(_schema: any, template: TemplateSchema) {
     const [currentTemplate] = await model.get({ _id: template._id });
     if (!currentTemplate) {
       return true;
     }
-    const toRemoveProperties = currentTemplate.properties.filter(
-      prop => !template.properties.find(p => p._id && p._id.toString() === prop._id.toString())
+
+    const toRemoveProperties = (currentTemplate.properties || []).filter(
+      prop =>
+        !(template.properties || []).find(p => p._id && p._id.toString() === prop._id.toString())
     );
 
-    const errors = [];
+    const errors: Ajv.ErrorObject[] = [];
     await Promise.all(
       toRemoveProperties.map(async property => {
         const canDelete = await templates.canDeleteProperty(template._id, property._id);
 
         if (!canDelete) {
           errors.push({
+            keyword: 'noDeleteInheritedProperty',
+            schemaPath: '',
+            params: { keyword: 'noDeleteInheritedProperty' },
             message: "Can't delete properties beign inherited",
             dataPath: `.metadata['${property.name}']`,
           });
@@ -147,7 +162,7 @@ export const templateSchema = {
   uniqueName: true,
   cantDeleteInheritedProperties: true,
   required: ['name'],
-  uniquePropertyFields: ['id', 'name', 'label'],
+  uniquePropertyFields: ['id', 'name'],
   definitions: { objectIdSchema, propertySchema },
   properties: {
     _id: objectIdSchema,

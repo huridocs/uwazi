@@ -57,6 +57,17 @@ export class MetadataForm extends Component {
               <label>{t('System', 'Type')}</label>
             </li>
             <li className="wide">
+              {this.props.initialTemplateId !== undefined &&
+                this.props.initialTemplateId !== this.props.templateId && (
+                  <span>
+                    <Icon icon="exclamation-triangle" />
+                    <Translate context="System">
+                      Changing the type will erase all connections to this entity.
+                    </Translate>
+                  </span>
+                )}
+            </li>
+            <li className="wide">
               <SimpleSelect
                 className="form-control"
                 value={template.get('_id')}
@@ -152,6 +163,7 @@ MetadataForm.defaultProps = {
   multipleEdition: false,
   showSubset: undefined,
   version: undefined,
+  initialTemplateId: undefined,
   componentWillUnmount: () => {},
   notify: () => {},
   changeTemplate: () => {},
@@ -162,6 +174,7 @@ MetadataForm.propTypes = {
   model: PropTypes.string.isRequired,
   template: PropTypes.instanceOf(Immutable.Map).isRequired,
   templateId: PropTypes.string,
+  initialTemplateId: PropTypes.string,
   multipleEdition: PropTypes.bool,
   templateOptions: PropTypes.instanceOf(Immutable.List).isRequired,
   thesauris: PropTypes.instanceOf(Immutable.List).isRequired,
