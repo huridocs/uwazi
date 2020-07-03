@@ -404,6 +404,30 @@ describe('entity schema', () => {
           const entity = createEntity({ metadata: { select: [{ value: '' }] } });
           await testValid(entity);
         });
+
+        it('should not allow foreign ids that do not exists', async () => {
+          let entity = createEntity({
+            metadata: {
+              select: [{ value: 'non_existent_thesauri1' }],
+            },
+          });
+
+          await expectError(
+            entity,
+            customErrorMessages.dictionary_wrong_foreing_id,
+            ".metadata['select']",
+            {
+              data: [{ value: 'non_existent_thesauri1' }],
+            }
+          );
+
+          entity = createEntity({
+            metadata: {
+              select: [{ value: 'dic1-value1' }],
+            },
+          });
+          await testValid(entity);
+        });
       });
 
       describe('multiselect property', () => {
@@ -425,6 +449,27 @@ describe('entity schema', () => {
         it('should allow value to be an empty array', async () => {
           const entity = createEntity({ metadata: { multiselect: [] } });
           await testValid(entity);
+        });
+
+        it('should not allow foreign ids that do not exists', async () => {
+          const entity = createEntity({
+            metadata: {
+              multiselect: [
+                { value: 'dic1-value1' },
+                { value: 'dic2-value2' },
+                { value: 'non_existent_thesauri' },
+              ],
+            },
+          });
+
+          await expectError(
+            entity,
+            customErrorMessages.dictionary_wrong_foreing_id,
+            ".metadata['multiselect']",
+            {
+              data: [{ value: 'dic1-value1' }, { value: 'non_existent_thesauri' }],
+            }
+          );
         });
       });
 

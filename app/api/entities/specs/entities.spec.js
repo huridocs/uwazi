@@ -707,7 +707,7 @@ describe('entities', () => {
   describe('countByTemplate', () => {
     it('should return how many entities using the template passed', async () => {
       const count = await entities.countByTemplate(templateId);
-      expect(count).toBe(7);
+      expect(count).toBe(9);
     });
 
     it('should return 0 when no count found', done => {
@@ -736,11 +736,13 @@ describe('entities', () => {
 
     it('should return all entities (including unpublished) if required', async () => {
       const docs = await entities.getByTemplate(templateId, 'en', false);
-      expect(docs.length).toBe(4);
+      expect(docs.length).toBe(6);
       expect(docs[0].title).toBe('Batman finishes');
       expect(docs[1].title).toBe('Unpublished entity');
       expect(docs[2].title).toBe('EN');
       expect(docs[3].title).toBe('shared2title');
+      expect(docs[4].title).toBe('value2');
+      expect(docs[5].title).toBe('value0');
     });
   });
 
@@ -1085,7 +1087,7 @@ describe('entities', () => {
         search.indexEntities.and.callThrough();
         await entities.delete('shared');
         const documentsToIndex = search.bulkIndex.calls.argsFor(0)[0];
-        expect(documentsToIndex[0].metadata.multiselect).toEqual([{ value: 'value1' }]);
+        expect(documentsToIndex[0].metadata.multiselect).toEqual([{ value: 'value0' }]);
         expect(documentsToIndex[1].metadata.multiselect2).toEqual([{ value: 'value2' }]);
         expect(documentsToIndex[2].metadata.select).toEqual([]);
         expect(documentsToIndex[3].metadata.select2).toEqual([]);

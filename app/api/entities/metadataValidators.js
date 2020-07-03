@@ -82,6 +82,7 @@ export const customErrorMessages = {
   length_exceeded: 'maximum field length exceeded',
   property_not_allowed: 'property is not configured on the template, it is not allowed',
   relationship_wrong_foreign_id: 'related entities do not exist or belong to another template',
+  dictionary_wrong_foreing_id: 'related dictionary value/s does not exists',
   [propertyTypes.date]: 'should be number',
   [propertyTypes.multidate]: 'should be an array of numbers',
   [propertyTypes.daterange]:
