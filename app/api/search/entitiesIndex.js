@@ -80,13 +80,12 @@ const bulkIndex = async (docs, _action = 'index', elasticIndex) => {
   return results;
 };
 
-const getEntitiesToIndex = async (query, offset, limit, select) => {
-  return entities.get(query, '', {
+const getEntitiesToIndex = async (query, offset, limit, select) =>
+  entities.get(query, '', {
     skip: offset,
     limit,
     documentsFullText: select && select.includes('+fullText'),
   });
-};
 
 const bulkIndexAndCallback = async assets => {
   const { searchInstance, entitiesToIndex, elasticIndex, batchCallback, totalRows } = assets;
