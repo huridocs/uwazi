@@ -89,16 +89,18 @@ export default app => {
           sharedId: Joi.string(),
           _id: Joi.string(),
           omitRelationships: Joi.any(),
+          withPdfInfo: Joi.string(),
         })
         .required(),
       'query'
     ),
     (req, res, next) => {
-      const { omitRelationships, ...query } = req.query;
+      const { omitRelationships, withPdfInfo, ...query } = req.query;
       const action = omitRelationships ? 'get' : 'getWithRelationships';
+      console.log('reqest', req.query);
       const published = req.user ? {} : { published: true };
       const language = req.language ? { language: req.language } : {};
-      entities[action]({ ...query, ...published, ...language }, {}, { limit: 1 })
+      entities[action]({ ...query, ...published, ...language }, {}, { limit: 1, withPdfInfo })
         .then(_entities => {
           if (!_entities.length) {
             res.status(404);
