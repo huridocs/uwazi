@@ -1,6 +1,6 @@
 import Ajv from 'ajv';
 import model from 'api/templates/templatesModel';
-import { wrapValidator } from 'shared/tsUtils';
+import { wrapValidator, ensure } from 'shared/tsUtils';
 import { objectIdSchema, propertySchema } from 'shared/types/commonSchemas';
 import templates from 'api/templates';
 
@@ -198,8 +198,8 @@ ajv.addKeyword('cantReuseNameWithDifferentType', {
               p.relationtype !== property.relationType)
         );
 
-        if (matches && !propertyNames.includes(property?.name || '')) {
-          return propertyNames.concat([property?.name || '']);
+        if (matches && !propertyNames.includes(ensure(property.name))) {
+          return propertyNames.concat([ensure(property.name)]);
         }
 
         return propertyNames;
