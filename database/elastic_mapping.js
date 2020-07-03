@@ -1,4 +1,4 @@
-/** @format */
+/* eslint-disable max-lines */
 /* eslint-disable camelcase */
 
 import languages from '../app/shared/languages';
