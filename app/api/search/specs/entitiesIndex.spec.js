@@ -9,6 +9,33 @@ const forceIndexingOfNumberBasedProperty = async search => {
   await search.indexEntities({ title: 'Entity with index Problems 1' }, '', 1);
 };
 
+const forceMappingToDouble = async elasticTesting => {
+  elasticTesting.putMapping({
+    properties: {
+      metadata: {
+        properties: {
+          text_field: {
+            properties: {
+              value: {
+                type: 'double',
+                fields: {
+                  raw: {
+                    type: 'double',
+                    index: false,
+                  },
+                  sort: {
+                    type: 'double',
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  });
+};
+
 describe('entitiesIndex', () => {
   const elasticIndex = 'index_for_entities_index_testing';
   const search = instanceSearch(elasticIndex);
@@ -34,6 +61,8 @@ describe('entitiesIndex', () => {
     const loadFailingFixtures = async () => {
       await db.clearAllAndLoad(fixturesForIndexErrors);
       await elasticTesting.resetIndex();
+      await forceMappingToDouble(elasticTesting);
+      // force indexing will ensure that all exceptions are mapper_parsing. Otherwise you get different kinds of exceptions
       await forceIndexingOfNumberBasedProperty(search);
       await elasticTesting.refresh();
     };
@@ -84,27 +113,5 @@ describe('entitiesIndex', () => {
       const indexedEntities = await search.search({}, 'en');
       expect(indexedEntities.rows.length).toBe(4);
     });
-
-    /*eslint max-statements: ["error", 20]*/
-    /*eslint-disable*/
-    // it('should stop if the error is not controlled (ie. if it is not an indexing error)', async () => {
-    //   await loadFailingFixtures();
-    //
-    //   spyOn(errorLog, 'error').and.returnValue('Ok');
-    //   const a_mock = jest.spyOn(elastic, 'bulk');
-    //   a_mock.mockImplementationOnce( () => {throw new Error('not a mapping exception')} );
-    //
-    //   try {
-    //     await search.indexEntities({}, '', 3);
-    //     fail('should have thown errors');
-    //   } catch (err) {
-    //     // console.log(err.errors.toString(), "err")
-    //     expect(err.errors.toString()).toContain('not a mapping exception');
-    //   }
-    //   expect(errorLog.error).toHaveBeenCalledTimes(1);
-    //   await elasticTesting.refresh();
-    //   const indexedEntities = await search.search({}, 'en');
-    //   expect(indexedEntities.rows.length).toBe(1);
-    // });
   });
 });
