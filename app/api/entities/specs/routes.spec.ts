@@ -5,7 +5,7 @@ import db from 'api/utils/testing_db';
 import { setUpApp } from 'api/utils/testingRoutes';
 
 import fixtures from './fixtures';
-import entitiesRoutes from '../routes';
+import routes from 'api/entities/routes';
 
 jest.mock(
   '../../auth/authMiddleware.ts',
@@ -14,8 +14,8 @@ jest.mock(
   }
 );
 
-describe('files routes', () => {
-  const app: Application = setUpApp(entitiesRoutes);
+describe('entities routes', () => {
+  const app: Application = setUpApp(routes);
 
   beforeEach(async () => {
     await db.clearAllAndLoad(fixtures);
