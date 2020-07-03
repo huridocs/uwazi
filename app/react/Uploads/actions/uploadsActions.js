@@ -185,7 +185,6 @@ export function uploadDocument(docId, file) {
 
 export function documentProcessed(sharedId, __reducerKey) {
   return dispatch => {
-    dispatch({ type: types.DOCUMENT_PROCESSED, sharedId });
     api.get('entities', new RequestParams({ sharedId })).then(response => {
       const doc = response.json.rows[0];
       dispatch({ type: libraryTypes.UPDATE_DOCUMENT, doc, __reducerKey });
