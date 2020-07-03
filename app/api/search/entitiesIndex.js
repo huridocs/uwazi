@@ -1,7 +1,6 @@
 import languagesUtil from 'shared/languages';
 import languages from 'shared/languagesList';
 import entities from 'api/entities';
-// import relationships from 'api/relationships/relationships';
 import errorLog from 'api/log/errorLog';
 import { entityDefaultDocument } from 'shared/entityDefaultDocument';
 import PromisePool from '@supercharge/promise-pool';
@@ -82,19 +81,11 @@ const bulkIndex = async (docs, _action = 'index', elasticIndex) => {
 };
 
 const getEntitiesToIndex = async (query, offset, limit, select) => {
-  const entitiesToIndex = await entities.get(query, '', {
+  return entities.get(query, '', {
     skip: offset,
     limit,
     documentsFullText: select && select.includes('+fullText'),
   });
-
-  // for (let i = 0; i < entitiesToIndex.length; i += 1) {
-  //   for (let j = 0; j < entitiesToIndex[i].documents.length; j += 1) {
-  //     delete entitiesToIndex[i].documents[j].pdfInfo;
-  //   }
-  // }
-
-  return entitiesToIndex;
 };
 
 const bulkIndexAndCallback = async assets => {
