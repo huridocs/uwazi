@@ -1,6 +1,6 @@
 import Ajv from 'ajv';
 import model from 'api/templates/templatesModel';
-import { wrapValidator, ensure } from 'shared/tsUtils';
+import { ensure, wrapValidator } from 'shared/tsUtils';
 import { objectIdSchema, propertySchema } from 'shared/types/commonSchemas';
 import templates from 'api/templates';
 
@@ -155,6 +155,46 @@ ajv.addKeyword('cantDeleteInheritedProperties', {
   },
 });
 
+async function getPropertiesWithSameNameAndDifferentKind(template: TemplateSchema) {
+  const condition = ensure<PropertySchema[]>(template.properties).map(property => ({
+    $and: [
+      {
+        name: property.name,
+        $or: [
+          { content: { $ne: property.content } },
+          { type: { $ne: property.type } },
+          { relationtype: { $ne: property.relationType } },
+        ],
+      },
+    ],
+  }));
+  const query = {
+    $and: [{ _id: { $ne: template._id } }, { properties: { $elemMatch: { $or: [...condition] } } }],
+  };
+  return model.get(query);
+}
+
+function filterInconsistentProperties(template: TemplateSchema, allProperties: PropertySchema[]) {
+  return ensure<PropertySchema[]>(template.properties).reduce(
+    (propertyNames: string[], property) => {
+      const matches = allProperties.find(
+        p =>
+          p.name === property.name &&
+          (p.content !== property.content ||
+            p.type !== property.type ||
+            p.relationtype !== property.relationType)
+      );
+
+      if (matches && !propertyNames.includes(ensure(property.name))) {
+        return propertyNames.concat([ensure(property.name)]);
+      }
+
+      return propertyNames;
+    },
+    []
+  );
+}
+
 ajv.addKeyword('cantReuseNameWithDifferentType', {
   async: true,
   errors: true,
@@ -163,47 +203,14 @@ ajv.addKeyword('cantReuseNameWithDifferentType', {
     if (!template.properties || template.properties.length === 0) {
       return true;
     }
-
-    const condition = template.properties.map(property => ({
-      $and: [
-        {
-          name: property.name,
-          $or: [
-            { content: { $ne: property.content } },
-            { type: { $ne: property.type } },
-            { relationtype: { $ne: property.relationType } },
-          ],
-        },
-      ],
-    }));
-    const query = {
-      $and: [
-        { _id: { $ne: template._id } },
-        { properties: { $elemMatch: { $or: [...condition] } } },
-      ],
-    };
-    const matchedTemplates = await model.get(query);
+    const matchedTemplates = await getPropertiesWithSameNameAndDifferentKind(template);
     if (matchedTemplates.length > 0) {
       const allProperties: PropertySchema[] = matchedTemplates.reduce(
         (memo: PropertySchema[], t) => memo.concat(t.properties || []),
         []
       );
 
-      const errorProperties = template.properties.reduce((propertyNames: string[], property) => {
-        const matches = allProperties.find(
-          p =>
-            p.name === property.name &&
-            (p.content !== property.content ||
-              p.type !== property.type ||
-              p.relationtype !== property.relationType)
-        );
-
-        if (matches && !propertyNames.includes(ensure(property.name))) {
-          return propertyNames.concat([ensure(property.name)]);
-        }
-
-        return propertyNames;
-      }, []);
+      const errorProperties = filterInconsistentProperties(template, allProperties);
 
       throw new Ajv.ValidationError(
         errorProperties.map(property => ({
