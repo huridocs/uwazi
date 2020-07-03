@@ -379,7 +379,6 @@ export default {
   },
 
   async get(query, select, options = {}) {
-    console.log(options);
     const { documentsFullText, withPdfInfo, ...restOfOptions } = options;
     const entities = await model.get(query, select, restOfOptions);
 
