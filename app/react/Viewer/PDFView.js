@@ -63,8 +63,16 @@ class PDFView extends Component {
     }
     const { ref } = this.props.location.query;
     if (ref) {
-      const reference = doc.get('relationships').find(r => r.get('_id') === ref);
-      this.context.store.dispatch(activateReference(reference.toJS(), doc.get('pdfInfo').toJS()));
+      const reference = doc.get('relations').find(r => r.get('_id') === ref);
+      this.context.store.dispatch(
+        activateReference(
+          reference.toJS(),
+          doc
+            .get('defaultDoc')
+            .get('pdfInfo')
+            .toJS()
+        )
+      );
     }
   }
 
