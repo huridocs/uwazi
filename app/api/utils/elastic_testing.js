@@ -1,5 +1,5 @@
 import { elastic } from 'api/search';
-import elasticMapping from '../../../database/elastic_mapping';
+import elasticMapping from '../../../database/elastic_mapping/elastic_mapping';
 
 export default (elasticIndex, search) => ({
   async resetIndex() {
