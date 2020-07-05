@@ -42,6 +42,32 @@ const prepareIndex = async indexUrl => {
   await request.put(indexUrl, elasticMapping);
 };
 
+const setReindexSettings = async (
+  indexUrl,
+  refreshInterval,
+  numberOfReplicas,
+  translogDurability
+) =>
+  request.put(`${indexUrl}/_settings`, {
+    index: {
+      refresh_interval: refreshInterval,
+      number_of_replicas: numberOfReplicas,
+      translog: {
+        durability: translogDurability,
+      },
+    },
+  });
+
+const tweakSettingsForPerformmance = async indexUrl => {
+  process.stdout.write('Tweaking index settings for reindex performance...\n');
+  return setReindexSettings(indexUrl, -1, 0, 'async');
+};
+
+const restoreSettings = async indexUrl => {
+  process.stdout.write('Restoring index settings...\n');
+  return setReindexSettings(indexUrl, '30s', 1, 'request');
+};
+
 const reindex = async () => {
   const docsIndexed = await indexEntities();
   process.stdout.write(`Indexing documents and entities... - ${docsIndexed} indexed\r\n`);
@@ -74,6 +100,7 @@ const done = start => {
   errorLog.closeGraylog();
 };
 
+/*eslint-disable max-statements*/
 connect().then(async () => {
   const start = Date.now();
   const elasticUrl = process.env.ELASTICSEARCH_URL || 'http://localhost:9200';
@@ -81,7 +108,9 @@ connect().then(async () => {
 
   try {
     await prepareIndex(indexUrl);
-    await reindex();
+    await tweakSettingsForPerformmance(indexUrl);
+    await reindex(indexUrl);
+    await restoreSettings(indexUrl);
   } catch (err) {
     logErrors(err);
   }
