@@ -65,7 +65,7 @@ const tweakSettingsForPerformmance = async indexUrl => {
 
 const restoreSettings = async indexUrl => {
   process.stdout.write('Restoring index settings...\n');
-  return setReindexSettings(indexUrl, '30s', 1, 'request');
+  return setReindexSettings(indexUrl, '1s', 1, 'request');
 };
 
 const reindex = async () => {
