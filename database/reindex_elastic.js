@@ -1,6 +1,6 @@
 import connect, { disconnect } from 'api/utils/connect_to_mongo';
 import request from '../app/shared/JSONRequest';
-import elasticMapping from './elastic_mapping';
+import elasticMapping from './elastic_mapping/elastic_mapping';
 
 import indexConfig from '../app/api/config/elasticIndexes';
 import { search } from '../app/api/search';
