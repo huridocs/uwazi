@@ -22,15 +22,15 @@ const documents = {
     return document.fullText[page].replace(pageNumberMatch, '');
   },
 
-  //test (this is a temporary fix to be able to save pdfInfo from client without being logged)
   async savePDFInfo(_id, pdfInfo) {
-    const [doc] = await files.get({ _id });
+    const [doc] = await files.get({ _id }, '+pdfInfo');
     if (doc.pdfInfo) {
       return doc;
     }
-    return files.save({ _id, pdfInfo });
+    const result = await files.save({ _id, pdfInfo });
+    result.pdfInfo = pdfInfo;
+    return result;
   },
-  //
 
   get(query, select) {
     return entities.get(query, select);

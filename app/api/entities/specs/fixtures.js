@@ -51,10 +51,15 @@ export default {
       entity: 'shared',
       filename: '8202c463d6158af8065022d9b5014cc1.pdf',
       language: 'en',
+      type: 'document',
       fullText: {
         1: 'page[[1]] 1[[1]]',
         2: 'page[[2]] 2[[2]]',
         3: '',
+      },
+      pdfInfo: {
+        1: { chars: 10 },
+        2: { chars: 20 },
       },
     },
     {

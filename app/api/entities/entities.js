@@ -379,19 +379,21 @@ export default {
   },
 
   async get(query, select, options = {}) {
-    const { documentsFullText, ...restOfOptions } = options;
+    const { documentsFullText, withPdfInfo, ...restOfOptions } = options;
     const entities = await model.get(query, select, restOfOptions);
-    return Promise.all(
+
+    const setDocs = Promise.all(
       entities.map(async entity => {
         const documents = await files.get(
           { entity: entity.sharedId, type: 'document' },
-          documentsFullText ? '+fullText' : ''
+          (documentsFullText ? '+fullText ' : ' ') + (withPdfInfo ? '+pdfInfo' : '')
         );
 
         entity.documents = documents;
         return entity;
       })
     );
+    return setDocs;
   },
 
   async getWithRelationships(query, select, pagination) {
