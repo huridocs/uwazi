@@ -123,6 +123,7 @@ export class DocumentSidePanel extends Component {
       relationships,
       defaultLanguage,
     } = this.props;
+
     const TocForm = this.props.tocFormComponent;
 
     const { attachments, documents, language, defaultDoc } = doc.toJS();
@@ -319,7 +320,7 @@ export class DocumentSidePanel extends Component {
                         initialTemplateId={this.initialTemplateId}
                       />
                       <CopyFromEntity
-                        originalTemplateId={this.props.doc.get('template')}
+                        originalEntity={this.props.doc.toJS()}
                         templates={this.props.templates}
                         onSelect={this.onCopyFromSelect}
                         formModel={this.props.formPath}
@@ -395,7 +396,6 @@ DocumentSidePanel.defaultProps = {
   readOnly: false,
   getDocumentReferences: undefined,
   tocFormComponent: () => false,
-  DocumentForm: () => false,
   EntityForm: () => false,
   raw: false,
   file: {},
@@ -405,7 +405,6 @@ DocumentSidePanel.propTypes = {
   doc: PropTypes.instanceOf(Object).isRequired,
   EntityForm: PropTypes.func,
   tocFormComponent: PropTypes.func,
-  DocumentForm: PropTypes.func,
   formDirty: PropTypes.bool,
   formPath: PropTypes.string.isRequired,
   searchTerm: PropTypes.string,

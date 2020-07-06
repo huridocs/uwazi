@@ -129,7 +129,7 @@ describe('DocumentSidePanel', () => {
         });
         props.docBeingEdited = true;
         render();
-        expect(component.find('DocumentForm').props().initialTemplateId).toBe('templateId');
+        expect(component.find('EntityForm').props().initialTemplateId).toBe('templateId');
       });
     });
 

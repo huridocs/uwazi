@@ -5,15 +5,18 @@ import { CopyFromEntity, CopyFromEntityProps, CopyFromEntityState } from '../Cop
 import Immutable from 'immutable';
 
 import { SearchEntities } from '../SearchEntities';
-import FormatMetadata from '../../containers/FormatMetadata';
+import { store } from 'app/store';
 
 describe('CopyFromEntity', () => {
   let component: ShallowWrapper<CopyFromEntityProps, CopyFromEntityState, CopyFromEntity>;
   let props: CopyFromEntityProps;
 
   beforeEach(() => {
+    spyOn(store, 'dispatch');
     props = {
       onSelect: jasmine.createSpy('onSelect'),
+      onCancel: jasmine.createSpy('onCancel'),
+      formModel: 'myForm',
       templates: Immutable.fromJS([
         {
           _id: 'template_1',
@@ -30,7 +33,11 @@ describe('CopyFromEntity', () => {
           ],
         },
       ]),
-      originalTemplateId: 'template_1',
+      originalEntity: {
+        title: 'I want to be like you',
+        template: 'template_1',
+        metadata: { one: [{ value: 'number one' }], two: [{ value: 'number wrong' }] },
+      },
     };
   });
 
@@ -49,12 +56,41 @@ describe('CopyFromEntity', () => {
   describe('when an entity is selected', () => {
     it('should render the entity an set the comon props in the satet', () => {
       render();
-      component.instance().onSelect({ title: 'Choose me!', template: 'template_2' });
-
-      expect(component.instance().state.propsToCopy).toEqual(['two']);
-      expect(component.instance().state.selectedEntity).toEqual({
+      const entityToBeSelected = {
         title: 'Choose me!',
         template: 'template_2',
+        metadata: { two: [{ value: 'number two' }], three: [{ value: 'number three' }] },
+      };
+      component.instance().onSelect(entityToBeSelected);
+
+      expect(component.instance().state.propsToCopy).toEqual(['two']);
+      expect(component.instance().state.selectedEntity).toEqual(entityToBeSelected);
+    });
+  });
+
+  describe('copy()', () => {
+    it('should load in the redux form the entity with matched values', () => {
+      render();
+      component.instance().onSelect({
+        title: 'Choose me!',
+        template: 'template_2',
+        metadata: { two: [{ value: 'number two' }], three: [{ value: 'number three' }] },
+      });
+      component.instance().copy();
+      expect(store?.dispatch).toHaveBeenCalledWith({ type: 'entityThesauris/SET', value: {} });
+      expect(store?.dispatch).toHaveBeenCalledWith({ model: 'myForm', type: 'rrf/setPristine' });
+      expect(store?.dispatch).toHaveBeenCalledWith({
+        external: true,
+        load: true,
+        model: 'myForm',
+        multi: false,
+        silent: true,
+        type: 'rrf/change',
+        value: {
+          metadata: { one: 'number one', two: 'number two' },
+          template: 'template_1',
+          title: 'I want to be like you',
+        },
       });
     });
   });

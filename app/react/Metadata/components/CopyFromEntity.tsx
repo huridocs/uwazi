@@ -6,15 +6,18 @@ import FormatMetadata from '../containers/FormatMetadata';
 import { TemplateSchema } from 'shared/types/templateType';
 import { IImmutable } from 'shared/types/Immutable';
 import comonProperties from 'shared/comonProperties';
-import { actions } from 'react-redux-form';
 import { Icon } from 'UI';
 import { Translate } from 'app/I18N';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import { actions } from 'app/Metadata';
+import { store } from 'app/store';
 
 export type CopyFromEntityProps = {
   onSelect: Function;
   onCancel: Function;
   templates: IImmutable<Array<TemplateSchema>>;
-  originalTemplateId: string;
+  originalEntity: EntitySchema;
   formModel: string;
 };
 
@@ -38,7 +41,7 @@ export class CopyFromEntity extends Component<CopyFromEntityProps, CopyFromEntit
 
     const propsToCopy = comonProperties
       .comonProperties(this.props.templates.toJS(), [
-        this.props.originalTemplateId,
+        this.props.originalEntity.template,
         copyFromTemplateId,
       ])
       .map(p => p.name);
@@ -48,15 +51,26 @@ export class CopyFromEntity extends Component<CopyFromEntityProps, CopyFromEntit
   }
 
   copy() {
-    const values = this.state.propsToCopy.reduce(
-      (values: { [key: string]: any }, propName: string) => {
-        values[propName] = this.state.selectedEntity[propName];
-        return values;
+    if (!this.state.selectedEntity.metadata) {
+      return;
+    }
+
+    const updatedEntity = this.state.propsToCopy.reduce(
+      (updatedEntity: EntitySchema, propName: string) => {
+        if (!updatedEntity.metadata) {
+          updatedEntity.metadata = {};
+        }
+
+        updatedEntity.metadata[propName] = this.state.selectedEntity.metadata![propName];
+        return updatedEntity;
       },
-      {}
+      { ...this.props.originalEntity }
     );
 
-    actions.merge(this.props.formModel, values);
+    actions
+      .loadFetchedInReduxForm(this.props.formModel, updatedEntity, this.props.templates.toJS())
+      .forEach(action => store.dispatch(action));
+    this.props.onCancel();
   }
 
   backToSearch() {

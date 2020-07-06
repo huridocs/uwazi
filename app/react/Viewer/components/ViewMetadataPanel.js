@@ -43,7 +43,7 @@ export const mapStateToProps = state => {
     tocFormState: documentViewer.tocFormState,
     isTargetDoc: !!documentViewer.targetDoc.get('_id'),
     formPath: 'documentViewer.sidepanel.metadata',
-    DocumentForm,
+    EntityForm: DocumentForm,
   };
 };
 
