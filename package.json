@@ -78,6 +78,7 @@
     "@fortawesome/react-fontawesome": "^0.1.9",
     "@loadable/component": "^5.10.3",
     "@mapbox/mapbox-gl-rtl-text": "^0.1.2",
+    "@supercharge/promise-pool": "^1.2.0",
     "@types/fetch-mock": "^7.3.2",
     "@types/helmet": "^0.0.45",
     "@types/hoist-non-react-statics": "3.3.1",
