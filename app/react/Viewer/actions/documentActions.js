@@ -95,22 +95,20 @@ function getEntityDoc(entity, filename, defaultLanguage) {
   docByFilename = docByFilename !== undefined ? docByFilename : {};
 
   const defaultDoc = entityDefaultDocument(entity.documents, entity.language, defaultLanguage);
+
   return filename ? docByFilename : defaultDoc;
 }
 
 export async function getDocument(requestParams, defaultLanguage, filename) {
   const [entity] = (await api.get('entities', requestParams)).json.rows;
 
-  const entityDoc = getEntityDoc(entity, filename, defaultLanguage);
-  const defaultDoc = entityDefaultDocument(entity.documents, entity.language, defaultLanguage);
-
-  entity.defaultDoc = entityDoc;
+  entity.defaultDoc = getEntityDoc(entity, filename, defaultLanguage);
   if (!isClient) return entity;
-  if (Object.keys(entity.defaultDoc).length === 0 || defaultDoc.pdfInfo) return entity;
+  if (Object.keys(entity.defaultDoc).length === 0 || entity.defaultDoc.pdfInfo) return entity;
 
-  const pdfInfo = await PDFUtils.extractPDFInfo(`${APIURL}files/${defaultDoc.filename}`);
+  const pdfInfo = await PDFUtils.extractPDFInfo(`${APIURL}files/${entity.defaultDoc.filename}`);
   const processedDoc = await api
-    .post('documents/pdfInfo', new RequestParams({ _id: defaultDoc._id, pdfInfo }))
+    .post('documents/pdfInfo', new RequestParams({ _id: entity.defaultDoc._id, pdfInfo }))
     .then(res => res.json);
 
   return {
