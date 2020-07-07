@@ -97,13 +97,9 @@ export async function getDocument(requestParams, defaultLanguage, filename) {
     ? entity.documents.find(d => d.filename === filename)
     : entityDefaultDocument(entity.documents, entity.language, defaultLanguage);
 
-  entity.defaultDoc = defaultDoc;
-  if (!isClient) {
-    return entity;
-  }
-  if (Object.keys(entity.defaultDoc).length === 0 || defaultDoc.pdfInfo) {
-    return entity;
-  }
+  entity.defaultDoc = defaultDoc !== undefined ? defaultDoc : {};
+  if (!isClient) return entity;
+  if (Object.keys(entity.defaultDoc).length === 0 || defaultDoc.pdfInfo) return entity;
 
   const pdfInfo = await PDFUtils.extractPDFInfo(`${APIURL}files/${defaultDoc.filename}`);
   const processedDoc = await api
