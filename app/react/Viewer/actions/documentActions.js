@@ -93,7 +93,7 @@ export function deleteDocument(doc) {
 export async function getDocument(requestParams, defaultLanguage, filename) {
   const [entity] = (await api.get('entities', requestParams)).json.rows;
 
-  let defaultDoc = filename
+  const defaultDoc = filename
     ? entity.documents.find(d => d.filename === filename)
     : entityDefaultDocument(entity.documents, entity.language, defaultLanguage);
 
