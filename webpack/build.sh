@@ -12,6 +12,8 @@ yarn babel -D -d prod/ message.js
 yarn babel -D -d prod/database --extensions .js,.ts,.tsx database
 
 cp ./server.js ./prod/server.js
+cp ./run.js ./prod/run.js
+cp ./package.json ./prod/package.json
 yarn install --production=true --modules-folder=./prod/node_modules
 mkdir ./prod/log
 mkdir ./prod/uploaded_documents
