@@ -90,14 +90,17 @@ export function deleteDocument(doc) {
   };
 }
 
+// eslint-disable-next-line max-statements
 export async function getDocument(requestParams, defaultLanguage, filename) {
   const [entity] = (await api.get('entities', requestParams)).json.rows;
 
-  const defaultDoc = filename
-    ? entity.documents.find(d => d.filename === filename)
-    : entityDefaultDocument(entity.documents, entity.language, defaultLanguage);
+  let docByFilename = entity.documents.find(d => d.filename === filename);
+  docByFilename = docByFilename !== undefined ? docByFilename : {};
+  let defaultDoc = entityDefaultDocument(entity.documents, entity.language, defaultLanguage);
 
-  entity.defaultDoc = defaultDoc !== undefined ? defaultDoc : {};
+  defaultDoc = filename ? docByFilename : defaultDoc;
+
+  entity.defaultDoc = defaultDoc;
   if (!isClient) return entity;
   if (Object.keys(entity.defaultDoc).length === 0 || defaultDoc.pdfInfo) return entity;
 
