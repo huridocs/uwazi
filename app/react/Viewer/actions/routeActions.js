@@ -21,14 +21,13 @@ export function setViewerState(state) {
 
 export async function requestViewerState(requestParams, globalResources) {
   const { sharedId, raw, page } = requestParams.data;
-  // console.log(globalResources.settings.collection.get('languages').toJS());
   const defaultLanguage = globalResources.settings.collection
     .get('languages')
     .find(l => l.get('default'));
 
   const [doc, relationTypes, [connectionsGroups, searchResults, sort]] = await Promise.all([
     getDocument(
-      requestParams.set({ sharedId }),
+      requestParams.set({ sharedId, withPdfInfo: true }),
       defaultLanguage ? defaultLanguage.get('key') : 'en',
       requestParams.data.file
     ),

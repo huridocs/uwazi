@@ -6,9 +6,11 @@ import entities from 'api/entities';
 import search from 'api/search/search';
 import db from 'api/utils/testing_db';
 import path from 'path';
+import { files } from 'api/files';
 import documents from '../documents.js';
 import fixtures from './fixtures.js';
 import paths from '../../config/paths';
+import { document1 } from './fixtures.js';
 
 describe('documents', () => {
   beforeEach(done => {
@@ -120,6 +122,24 @@ describe('documents', () => {
           done();
         })
         .catch(catchErrors(done));
+    });
+  });
+
+  describe('pdfInfo', () => {
+    it('should save pdfInfo and return it or just return it if already existed', async () => {
+      const testingPdfInfo = {
+        1: { chars: 10 },
+        2: { chars: 20 },
+      };
+      const pdfInfoNOTPresent = await documents.savePDFInfo(document1, testingPdfInfo);
+      expect(pdfInfoNOTPresent.pdfInfo).toBe(testingPdfInfo);
+      const pdfInfoStored = await files.get(document1, '+pdfInfo');
+      expect(pdfInfoStored[0].pdfInfo).toEqual(testingPdfInfo);
+
+      spyOn(files, 'save').and.callThrough();
+      const pdfInfoPresent = await documents.savePDFInfo(document1, testingPdfInfo);
+      expect(files.save).not.toHaveBeenCalled();
+      expect(pdfInfoPresent.pdfInfo).toEqual(testingPdfInfo);
     });
   });
 });

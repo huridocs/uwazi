@@ -1,0 +1,52 @@
+name: Deploy master
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js 10.21.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: '10.21.x'
+      - name: Cache node modules
+        uses: actions/cache@v1.1.2
+        with:
+          path: ./node_modules
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+      - name: install dependencies
+        run: yarn install
+      - name: Cache build
+        id: cache-build
+        uses: actions/cache@v2
+        with:
+          path: ./prod
+          key: ${{ runner.os }}-build-${{ hashFiles('app/**/*.*') }}-${{ hashFiles('database/**/*.*') }}-${{ hashFiles('**/yarn.lock') }}
+      - name: build production
+        if: steps.cache-build.outputs.cache-hit != 'true'
+        run: yarn production-build
+      - name: Tgz production build
+        run: tar -czf uwazi_${GITHUB_SHA}.tgz ./prod
+      - name: Copy to server
+        uses: easingthemes/ssh-deploy@v2.1.1
+        env:
+            SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_KEY }}
+            ARGS: "-rltgoDzvO --delete"
+            SOURCE: uwazi_${GITHUB_SHA}.tgz
+            REMOTE_HOST: ${{ secrets.DEPLOY_SERVER }}
+            REMOTE_USER: ${{ secrets.DEPLOY_USER }}
+            TARGET: uwazi_${GITHUB_SHA}.tgz
+      - name: Overwrite latest
+        uses: easingthemes/ssh-deploy@v2.1.1
+        env:
+            SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_KEY }}
+            ARGS: "-rltgoDzvO --delete"
+            SOURCE: uwazi_${GITHUB_SHA}.tgz
+            REMOTE_HOST: ${{ secrets.DEPLOY_SERVER }}
+            REMOTE_USER: ${{ secrets.DEPLOY_USER }}
+            TARGET: uwazi_latest.tgz

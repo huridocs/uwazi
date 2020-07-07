@@ -107,6 +107,26 @@ describe('DocumentSidePanel', () => {
             .props().selectedTab
         ).toBe('metadata');
       });
+
+      it('should pass to entityForm the initial templateId', () => {
+        props.doc = Immutable.fromJS({ type: 'entity', template: 'templateId' });
+        props.docBeingEdited = true;
+        render();
+        expect(component.find('EntityForm').props().initialTemplateId).toBe('templateId');
+      });
+    });
+
+    describe('when doc passed is a document', () => {
+      it('should pass to documentForm the initial templateId', () => {
+        props.doc = Immutable.fromJS({
+          type: 'document',
+          template: 'templateId',
+          documents: [{ filename: 'file1' }],
+        });
+        props.docBeingEdited = true;
+        render();
+        expect(component.find('DocumentForm').props().initialTemplateId).toBe('templateId');
+      });
     });
   });
 

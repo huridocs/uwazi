@@ -12,6 +12,7 @@ import TemplateLabel from 'app/Layout/TemplateLabel';
 import SidePanel from 'app/Layout/SidePanel';
 import Immutable from 'immutable';
 import { Icon } from 'UI';
+import { NeedAuthorization } from 'app/Auth';
 import Export from 'app/Library/components/ExportButton';
 import MetadataForm from './MetadataForm';
 import comonTemplate from '../helpers/comonTemplate';
@@ -156,7 +157,7 @@ export class SelectMultiplePanel extends Component {
 
   renderEditingButtons() {
     return (
-      <React.Fragment>
+      <NeedAuthorization roles={['admin', 'editor']}>
         <button
           type="button"
           onClick={this.cancel}
@@ -169,33 +170,35 @@ export class SelectMultiplePanel extends Component {
           <Icon icon="save" />
           <span className="btn-label">{t('System', 'Save')}</span>
         </button>
-      </React.Fragment>
+      </NeedAuthorization>
     );
   }
 
   renderListButtons(canBePublished, canBeUnPublished) {
     return (
       <React.Fragment>
-        <button type="button" onClick={this.edit} className="edit btn btn-primary">
-          <Icon icon="pencil-alt" />
-          <span className="btn-label">{t('System', 'Edit')}</span>
-        </button>
-        <button type="button" className="delete btn btn-danger" onClick={this.delete}>
-          <Icon icon="trash-alt" />
-          <span className="btn-label">{t('System', 'Delete')}</span>
-        </button>
-        {canBePublished && (
-          <button type="button" className="publish btn btn-success" onClick={this.publish}>
-            <Icon icon="paper-plane" />
-            <span className="btn-label">{t('System', 'Publish')}</span>
+        <NeedAuthorization roles={['admin', 'editor']}>
+          <button type="button" onClick={this.edit} className="edit btn btn-primary">
+            <Icon icon="pencil-alt" />
+            <span className="btn-label">{t('System', 'Edit')}</span>
           </button>
-        )}
-        {canBeUnPublished && (
-          <button type="button" className="unpublish btn btn-warning" onClick={this.unpublish}>
-            <Icon icon="paper-plane" />
-            <span className="btn-label">{t('System', 'Unpublish')}</span>
+          <button type="button" className="delete btn btn-danger" onClick={this.delete}>
+            <Icon icon="trash-alt" />
+            <span className="btn-label">{t('System', 'Delete')}</span>
           </button>
-        )}
+          {canBePublished && (
+            <button type="button" className="publish btn btn-success" onClick={this.publish}>
+              <Icon icon="paper-plane" />
+              <span className="btn-label">{t('System', 'Publish')}</span>
+            </button>
+          )}
+          {canBeUnPublished && (
+            <button type="button" className="unpublish btn btn-warning" onClick={this.unpublish}>
+              <Icon icon="paper-plane" />
+              <span className="btn-label">{t('System', 'Unpublish')}</span>
+            </button>
+          )}
+        </NeedAuthorization>
         <Export storeKey={this.props.storeKey} />
       </React.Fragment>
     );
@@ -209,8 +212,10 @@ export class SelectMultiplePanel extends Component {
           const onClick = getAndSelectDocument.bind(this, entity.get('sharedId'));
           return (
             <li key={index} onClick={onClick}>
-              <span className="entity-title">{entity.get('title')}</span>
-              <TemplateLabel template={entity.get('template')} />
+              <span className="entity-title">
+                {entity.get('title')}
+                <TemplateLabel template={entity.get('template')} />
+              </span>
             </li>
           );
         })}
@@ -279,10 +284,8 @@ SelectMultiplePanel.propTypes = {
   updateEntities: PropTypes.func.isRequired,
   updateSelectedEntities: PropTypes.func.isRequired,
   getAndSelectDocument: PropTypes.func.isRequired,
-  templates: PropTypes.instanceOf(Immutable.List).isRequired,
   thesauris: PropTypes.instanceOf(Immutable.List).isRequired,
   formState: PropTypes.instanceOf(Object).isRequired,
-  state: PropTypes.instanceOf(Object).isRequired,
   formKey: PropTypes.string.isRequired,
   storeKey: PropTypes.string.isRequired,
 };
@@ -294,7 +297,7 @@ SelectMultiplePanel.contextTypes = {
 export const mapStateToProps = (_state, props) => ({
   template: commonTemplate(props),
   open: props.entitiesSelected.size > 1,
-  editing: Object.keys(props.state).length > 0,
+  editing: Object.keys(props.state || {}).length > 0,
 });
 
 function mapDispatchToProps(dispatch, props) {

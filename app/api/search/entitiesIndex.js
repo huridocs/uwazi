@@ -1,10 +1,9 @@
 import languagesUtil from 'shared/languages';
 import languages from 'shared/languagesList';
 import entities from 'api/entities';
-import relationships from 'api/relationships/relationships';
 import errorLog from 'api/log/errorLog';
 import { entityDefaultDocument } from 'shared/entityDefaultDocument';
-
+import PromisePool from '@supercharge/promise-pool';
 import elastic from './elastic';
 
 export class IndexError extends Error {}
@@ -73,6 +72,7 @@ const bulkIndex = async (docs, _action = 'index', elasticIndex) => {
   });
 
   const results = await elastic.bulk({ body, requestTimeout: 40000 });
+
   if (results.items) {
     handleErrors(results.items.filter(f => f.index.error));
   }
@@ -80,27 +80,12 @@ const bulkIndex = async (docs, _action = 'index', elasticIndex) => {
   return results;
 };
 
-const newIndexErrorsOrThrow = err => {
-  if (err instanceof IndexError) {
-    return err.errors;
-  }
-  throw err;
-};
-
-const appendRelationships = async entity => {
-  const relations = await relationships.get({ entity: entity.sharedId });
-  return { ...entity, relationships: relations || [] };
-};
-
-const getEntitiesToIndex = async (query, offset, limit, select) => {
-  const entitiesToIndex = await entities.get(query, '', {
+const getEntitiesToIndex = async (query, offset, limit, select) =>
+  entities.get(query, '', {
     skip: offset,
     limit,
     documentsFullText: select && select.includes('+fullText'),
   });
-
-  return Promise.all(entitiesToIndex.map(appendRelationships));
-};
 
 const bulkIndexAndCallback = async assets => {
   const { searchInstance, entitiesToIndex, elasticIndex, batchCallback, totalRows } = assets;
@@ -108,29 +93,39 @@ const bulkIndexAndCallback = async assets => {
   return batchCallback(entitiesToIndex.length, totalRows);
 };
 
-const indexBatch = async (offset, totalRows, options, errors = []) => {
+/*eslint max-statements: ["error", 20]*/
+const indexBatch = async (totalRows, options) => {
   const { query, select, limit, batchCallback, elasticIndex, searchInstance } = options;
-  if (offset >= totalRows) {
-    return errors.length ? handleErrors(errors, { logError: true }) : Promise.resolve();
+
+  const steps = [];
+  for (let cursor = 0; cursor < totalRows; cursor += limit) {
+    steps.push(steps.length + 1);
   }
 
-  const entitiesToIndex = await getEntitiesToIndex(query, offset, limit, select);
-
-  let newIndexErrors = [];
-
-  try {
-    await bulkIndexAndCallback({
-      searchInstance,
-      entitiesToIndex,
-      elasticIndex,
-      batchCallback,
-      totalRows,
+  const promisePool = new PromisePool();
+  const { errors: indexingErrors } = await promisePool
+    .for(steps)
+    .withConcurrency(20)
+    .process(async stepIndex => {
+      const thisOffset = (stepIndex - 1) * limit;
+      const entitiesToIndex = await getEntitiesToIndex(query, thisOffset, limit, select);
+      await bulkIndexAndCallback({
+        searchInstance,
+        entitiesToIndex,
+        elasticIndex,
+        batchCallback,
+        totalRows,
+      });
     });
-  } catch (err) {
-    newIndexErrors = newIndexErrorsOrThrow(err);
+
+  let returnErrors = indexingErrors;
+  if (indexingErrors.length > 0 && indexingErrors[0].errors) {
+    returnErrors = indexingErrors[0].errors;
   }
 
-  return indexBatch(offset + limit, totalRows, options, errors.concat(newIndexErrors));
+  return returnErrors.length > 0
+    ? handleErrors(returnErrors, { logError: true })
+    : Promise.resolve();
 };
 
 const indexEntities = async ({
@@ -142,7 +137,7 @@ const indexEntities = async ({
   searchInstance,
 }) => {
   const totalRows = await entities.count(query);
-  return indexBatch(0, totalRows, {
+  return indexBatch(totalRows, {
     query,
     select,
     limit,
