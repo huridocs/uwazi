@@ -66,6 +66,12 @@ Object {
       ],
       "type": "string",
     },
+    "withPdfInfo": Object {
+      "invalids": Array [
+        "",
+      ],
+      "type": "string",
+    },
   },
   "flags": Object {
     "presence": "required",

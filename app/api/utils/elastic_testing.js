@@ -1,5 +1,5 @@
 import { elastic } from 'api/search';
-import elasticMapping from '../../../database/elastic_mapping';
+import elasticMapping from '../../../database/elastic_mapping/elastic_mapping';
 
 export default (elasticIndex, search) => ({
   async resetIndex() {
@@ -15,5 +15,9 @@ export default (elasticIndex, search) => ({
     await this.resetIndex();
     await search.indexEntities({}, '+fullText');
     await this.refresh();
+  },
+
+  async putMapping(body) {
+    await elastic.indices.putMapping({ index: elasticIndex, body });
   },
 });
