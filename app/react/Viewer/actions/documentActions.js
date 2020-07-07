@@ -90,22 +90,21 @@ export function deleteDocument(doc) {
   };
 }
 
-function getDocByFilename(entity, filename) {
+function getEntityDoc(entity, filename, defaultLanguage) {
   let docByFilename = entity.documents.find(d => d.filename === filename);
   docByFilename = docByFilename !== undefined ? docByFilename : {};
-  return docByFilename;
+
+  const defaultDoc = entityDefaultDocument(entity.documents, entity.language, defaultLanguage);
+  return filename ? docByFilename : defaultDoc;
 }
 
-// eslint-disable-next-line max-statements
 export async function getDocument(requestParams, defaultLanguage, filename) {
   const [entity] = (await api.get('entities', requestParams)).json.rows;
 
-  const docByFilename = getDocByFilename(entity, filename);
-  let defaultDoc = entityDefaultDocument(entity.documents, entity.language, defaultLanguage);
+  const entityDoc = getEntityDoc(entity, filename, defaultLanguage);
+  const defaultDoc = entityDefaultDocument(entity.documents, entity.language, defaultLanguage);
 
-  defaultDoc = filename ? docByFilename : defaultDoc;
-
-  entity.defaultDoc = defaultDoc;
+  entity.defaultDoc = entityDoc;
   if (!isClient) return entity;
   if (Object.keys(entity.defaultDoc).length === 0 || defaultDoc.pdfInfo) return entity;
 
