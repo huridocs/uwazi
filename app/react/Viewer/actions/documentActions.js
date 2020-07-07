@@ -90,12 +90,17 @@ export function deleteDocument(doc) {
   };
 }
 
+function getDocByFilename(entity, filename) {
+  let docByFilename = entity.documents.find(d => d.filename === filename);
+  docByFilename = docByFilename !== undefined ? docByFilename : {};
+  return docByFilename;
+}
+
 // eslint-disable-next-line max-statements
 export async function getDocument(requestParams, defaultLanguage, filename) {
   const [entity] = (await api.get('entities', requestParams)).json.rows;
 
-  let docByFilename = entity.documents.find(d => d.filename === filename);
-  docByFilename = docByFilename !== undefined ? docByFilename : {};
+  const docByFilename = getDocByFilename(entity, filename);
   let defaultDoc = entityDefaultDocument(entity.documents, entity.language, defaultLanguage);
 
   defaultDoc = filename ? docByFilename : defaultDoc;
