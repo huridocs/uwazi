@@ -92,12 +92,17 @@ export function deleteDocument(doc) {
 
 export async function getDocument(requestParams, defaultLanguage, filename) {
   const [entity] = (await api.get('entities', requestParams)).json.rows;
-  const defaultDoc = filename
+
+  let defaultDoc = filename
     ? entity.documents.find(d => d.filename === filename)
     : entityDefaultDocument(entity.documents, entity.language, defaultLanguage);
 
-  entity.defaultDoc = defaultDoc || {};
+  defaultDoc = defaultDoc !== undefined ? defaultDoc : {};
+  entity.defaultDoc = defaultDoc;
   if (!isClient) {
+    return entity;
+  }
+  if (Object.keys(defaultDoc).length === 0) {
     return entity;
   }
   if (defaultDoc.pdfInfo) {
