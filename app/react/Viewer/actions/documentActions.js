@@ -102,10 +102,7 @@ export async function getDocument(requestParams, defaultLanguage, filename) {
   if (!isClient) {
     return entity;
   }
-  if (Object.keys(defaultDoc).length === 0) {
-    return entity;
-  }
-  if (defaultDoc.pdfInfo) {
+  if (Object.keys(defaultDoc).length === 0 || defaultDoc.pdfInfo) {
     return entity;
   }
 
