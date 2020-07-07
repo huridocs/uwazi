@@ -140,8 +140,8 @@ describe('PDFView', () => {
       const pdfInfo = { 1: { chars: 100 } };
       const reference = { _id: 'refId', range: { start: 200, end: 300 }, text: 'test' };
       const doc = fromJS({
-        pdfInfo,
-        relationships: [{ _id: 'otherRef' }, reference],
+        defaultDoc: { pdfInfo },
+        relations: [{ _id: 'otherRef' }, reference],
       });
       render();
       instance.onDocumentReady(doc);
