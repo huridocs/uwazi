@@ -97,12 +97,11 @@ export async function getDocument(requestParams, defaultLanguage, filename) {
     ? entity.documents.find(d => d.filename === filename)
     : entityDefaultDocument(entity.documents, entity.language, defaultLanguage);
 
-  defaultDoc = defaultDoc !== undefined ? defaultDoc : {};
-  entity.defaultDoc = defaultDoc;
+  entity.defaultDoc = defaultDoc !== undefined ? defaultDoc : {};
   if (!isClient) {
     return entity;
   }
-  if (Object.keys(defaultDoc).length === 0 || defaultDoc.pdfInfo) {
+  if (Object.keys(entity.defaultDoc).length === 0 || defaultDoc.pdfInfo) {
     return entity;
   }
 
