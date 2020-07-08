@@ -62,7 +62,7 @@ export class FilterSuggestions extends Component {
           <Icon icon="file" /> {propertyMatch.template}
         </td>
         <td className={typeConflict ? 'conflict' : ''}>
-          <Icon icon="warning" />
+          <Icon icon="exclamation-triangle" />
           <Icon icon={icon} /> {type}
         </td>
         {(() => {
@@ -70,7 +70,7 @@ export class FilterSuggestions extends Component {
             const thesauri = this.getThesauriName(propertyMatch.property.content);
             return (
               <td className={contentConflict ? 'conflict' : ''}>
-                <Icon icon="warning" />
+                <Icon icon="exclamation-triangle" />
                 <Icon icon="book" /> {thesauri}
               </td>
             );
@@ -147,6 +147,7 @@ export function mapStateToProps(state, props) {
     type: state.template.data.properties[props.index].type,
     filter: state.template.data.properties[props.index].filter,
     label: state.template.data.properties[props.index].label,
+    content: state.template.data.properties[props.index].content,
   };
 }
 
