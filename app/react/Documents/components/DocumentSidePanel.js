@@ -40,12 +40,12 @@ export class DocumentSidePanel extends Component {
     }
   }
 
-  getDefaultDocumentToC(isEntity, documents, language, currentLanguage) {
+  getDefaultDocumentToC(isEntity, documents, language, defaultLanguage) {
     let defaultDocumentToC = this.props.file.toc;
 
     if (!isEntity) {
       const defaultDocument = {
-        ...entityDefaultDocument(documents, language, currentLanguage),
+        ...entityDefaultDocument(documents, language, defaultLanguage),
       };
       if (defaultDocument) {
         defaultDocumentToC = defaultDocument.toc;
