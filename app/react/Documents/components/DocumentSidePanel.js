@@ -318,6 +318,7 @@ export class DocumentSidePanel extends Component {
                       <EntityForm
                         storeKey={this.props.storeKey}
                         initialTemplateId={this.initialTemplateId}
+                        highlightedProps={this.state.copyFromProps}
                       />
                       <CopyFromEntity
                         originalEntity={this.props.doc.toJS()}

@@ -8,8 +8,11 @@
       padding: 15px;
       margin: 0;
 
-      &.highlight {
-        background-color: #dee7ff4d;
+      &.highlight dd {
+        background-color: $c-card-highlight;
+        border: 1px solid $c-shadow;
+        border-radius: 6px;
+        padding: 0 3px;
       }
     }
 
