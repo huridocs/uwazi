@@ -106,15 +106,13 @@ export class DocumentSidePanel extends Component {
     } = this.props;
     const TocForm = this.props.tocFormComponent;
 
-    const { attachments, documents, language } = doc.toJS();
+    const { attachments, documents, language, defaultDoc } = doc.toJS();
 
     const isEntity = !documents || !documents.length;
-    const defaultDocumentToC = this.getDefaultDocumentToC(
-      isEntity,
-      documents,
-      language,
-      defaultLanguage
-    );
+    const defaultDocumentToC =
+      isEntity || !defaultDoc
+        ? this.getDefaultDocumentToC(isEntity, documents, language, defaultLanguage)
+        : defaultDoc.toc;
 
     this.initialTemplateId = doc.get('template');
     const tab =

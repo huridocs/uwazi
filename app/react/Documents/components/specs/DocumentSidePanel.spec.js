@@ -157,6 +157,20 @@ describe('DocumentSidePanel', () => {
           expect(component.find(ShowToc).props().toc).toBe(toc);
         });
       });
+
+      describe('when doc is not an entity', () => {
+        it('should set the toc of the defaultDoc of document', () => {
+          props.doc = Immutable.fromJS({
+            type: 'document',
+            template: 'templateId',
+            defaultDoc: { toc },
+            documents: [{ filename: 'file1' }],
+          });
+          props.tab = 'toc';
+          render();
+          expect(component.find(ShowToc).props().toc).toEqual(toc);
+        });
+      });
     });
   });
 
