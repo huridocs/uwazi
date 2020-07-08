@@ -417,6 +417,11 @@ export default {
   },
 
   async saveMultiple(docs) {
+    await docs.reduce(async (prev, doc) => {
+      await prev;
+      await validateEntity(doc);
+    }, Promise.resolve());
+
     const response = await model.saveMultiple(docs);
     await search.indexEntities({ _id: { $in: response.map(d => d._id) } }, '+fullText');
     return response;
