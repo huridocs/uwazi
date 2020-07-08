@@ -26,7 +26,7 @@ exports[`FilterSuggestions when content does not match with a thesauri (happenin
 <tr
   className="property-atributes is-active"
   key="0"
-  title="This property has different Thesauri and wont't be used together."
+  title="Properties with the same label but different thesauri as content are not allowed."
 >
   <td>
     <Connect(Icon)
@@ -39,19 +39,15 @@ exports[`FilterSuggestions when content does not match with a thesauri (happenin
     className=""
   >
     <Connect(Icon)
-      icon="warning"
-    />
-    <Connect(Icon)
       icon="sort"
     />
-     
     Select
   </td>
   <td
     className="conflict"
   >
     <Connect(Icon)
-      icon="warning"
+      icon="exclamation-triangle"
     />
     <Connect(Icon)
       icon="book"
@@ -67,7 +63,7 @@ exports[`FilterSuggestions when label is the same but different content should m
   className="conflict"
 >
   <Connect(Icon)
-    icon="warning"
+    icon="exclamation-triangle"
   />
   <Connect(Icon)
     icon="book"
@@ -82,12 +78,11 @@ exports[`FilterSuggestions when label is the same but different type should mark
   className="conflict"
 >
   <Connect(Icon)
-    icon="warning"
+    icon="exclamation-triangle"
   />
   <Connect(Icon)
     icon="font"
   />
-   
   Text
 </td>
 `;
@@ -96,7 +91,7 @@ exports[`FilterSuggestions when matches type and label as other template propert
 <tr
   className="property-atributes is-active"
   key="0"
-  title="This property has the same configuration and will be used together."
+  title="This property has the same configuration as others with the same label and will be used together."
 >
   <td>
     <Connect(Icon)
@@ -109,12 +104,8 @@ exports[`FilterSuggestions when matches type and label as other template propert
     className=""
   >
     <Connect(Icon)
-      icon="warning"
-    />
-    <Connect(Icon)
       icon="font"
     />
-     
     Text
   </td>
 </tr>
@@ -124,7 +115,7 @@ exports[`FilterSuggestions when props.filter = flase should now show the preoper
 <tr
   className="property-atributes is-active"
   key="0"
-  title="This property has the same configuration and will be used together."
+  title="This property has the same configuration as others with the same label and will be used together."
 >
   <td>
     <Connect(Icon)
@@ -137,12 +128,8 @@ exports[`FilterSuggestions when props.filter = flase should now show the preoper
     className=""
   >
     <Connect(Icon)
-      icon="warning"
-    />
-    <Connect(Icon)
       icon="font"
     />
-     
     Text
   </td>
 </tr>
