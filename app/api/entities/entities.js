@@ -509,7 +509,7 @@ export default {
   /** Handle property deletion and renames. */
   async updateMetadataProperties(template, currentTemplate, language) {
     const actions = { $rename: {}, $unset: {} };
-    template.properties = generateNamesAndIds(template.properties);
+    template.properties = await generateNamesAndIds(template.properties);
     template.properties.forEach(property => {
       const currentProperty = currentTemplate.properties.find(p => p.id === property.id);
       if (currentProperty && currentProperty.name !== property.name) {
