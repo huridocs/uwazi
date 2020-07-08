@@ -36,7 +36,6 @@ describe('search schema', () => {
     });
   });
 
-
   describe('invalid cases', () => {
     function expectInvalidSchema(result: ValidationError) {
       expect(result.errors.length).toBeGreaterThan(0);
