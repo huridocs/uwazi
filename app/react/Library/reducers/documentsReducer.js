@@ -44,17 +44,6 @@ export default function documents(state = initialState, action = {}) {
     return state.setIn(['rows', docIndex], Immutable.fromJS(doc));
   }
 
-  if (action.type === uploadTypes.DOCUMENT_PROCESSED) {
-    const docIndex = state.get('rows').findIndex(doc => doc.get('sharedId') === action.sharedId);
-
-    const doc = state
-      .get('rows')
-      .get(docIndex)
-      .toJS();
-    doc.documents[0].status = 'ready';
-    return state.setIn(['rows', docIndex], Immutable.fromJS(doc));
-  }
-
   if (action.type === uploadTypes.DOCUMENT_PROCESS_ERROR) {
     const docIndex = state.get('rows').findIndex(doc => doc.get('sharedId') === action.sharedId);
 
