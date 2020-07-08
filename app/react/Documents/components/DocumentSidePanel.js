@@ -40,7 +40,7 @@ export class DocumentSidePanel extends Component {
     }
   }
 
-  setDefaultDocumentToC(isEntity, documents, language, currentLanguage) {
+  getDefaultDocumentToC(isEntity, documents, language, currentLanguage) {
     let defaultDocumentToC = this.props.file.toc;
 
     if (!isEntity) {
@@ -109,7 +109,7 @@ export class DocumentSidePanel extends Component {
     const { attachments, documents, language } = doc.toJS();
 
     const isEntity = !documents || !documents.length;
-    const defaultDocumentToC = this.setDefaultDocumentToC(
+    const defaultDocumentToC = this.getDefaultDocumentToC(
       isEntity,
       documents,
       language,
