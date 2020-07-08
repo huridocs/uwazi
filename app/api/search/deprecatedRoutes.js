@@ -1,5 +1,6 @@
 import Joi from 'joi';
 import entities from 'api/entities';
+import { searchSchema } from 'api/search/searchSchema';
 import search from './search';
 import { validation, parseQuery } from '../utils';
 import needsAuthorization from '../auth/authMiddleware';
@@ -25,31 +26,7 @@ export default app => {
   app.get(
     '/api/search',
     parseQuery,
-    validation.validateRequest({
-      properties: {
-        query: {
-          properties: {
-            filters: { type: 'object' },
-            types: { type: 'array', items: [{ type: 'string' }] },
-            _types: { type: 'array', items: [{ type: 'string' }] },
-            fields: { type: 'array', items: [{ type: 'string' }] },
-            allAggregations: { type: 'boolean' },
-            userSelectedSorting: { type: 'boolean' },
-            aggregations: { type: 'string' },
-            order: { type: 'string', enum: ['asc', 'desc'] },
-            sort: { type: 'string' },
-            limit: { type: 'number' },
-            from: { type: 'number' },
-            searchTerm: { type: 'string' },
-            includeUnpublished: { type: 'boolean' },
-            treatAs: { type: 'string' },
-            unpublished: { type: 'boolean' },
-            select: { type: 'array', items: [{ type: 'string' }] },
-            geolocation: { type: 'boolean' },
-          },
-        },
-      },
-    }),
+    validation.validateRequest(searchSchema),
 
     (req, res, next) => {
       const action = req.query.geolocation ? 'searchGeolocations' : 'search';
