@@ -3,7 +3,12 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Icon } from 'UI';
 
-import Icons from './Icons';
+import { TemplateSchema } from 'shared/types/templateType';
+import { IStore } from 'app/istore';
+import { ensure } from 'shared/tsUtils';
+import { PropertySchema } from 'shared/types/commonTypes';
+import { IImmutable } from 'shared/types/Immutable';
+// import Icons from './Icons';
 
 const titles = {
   defaultTitle:
@@ -15,7 +20,22 @@ const titles = {
   typeConflict: 'Properties with the same label but different types are not allowed.',
 };
 
-export const SimilarProperty = props => (
+interface TemplateProperty {
+  template: string;
+  relationTypeName: string;
+  thesaurusName: string;
+  typeConflict: boolean;
+  relationConflict: boolean;
+  contentConflict: boolean;
+  type: string;
+  property: PropertySchema;
+}
+
+interface MapStateProps {
+  templateProperty: TemplateProperty;
+}
+
+export const SimilarProperty = (props: MapStateProps) => (
   <tr className="property-atributes is-active">
     <td>
       <Icon icon="file" /> {props.templateProperty.template}
@@ -30,7 +50,7 @@ export const SimilarProperty = props => (
       {(props.templateProperty.typeConflict || props.templateProperty.relationConflict) && (
         <Icon icon="exclamation-triangle" />
       )}
-      <Icon icon={Icons[props.templateProperty.type.toLowerCase()] || 'fa fa-font'} />
+      {/*<Icon icon={Icons[props.templateProperty.type.toLowerCase()] || 'fa fa-font'} />*/}
       {` ${props.templateProperty.type}`}
       {props.templateProperty.relationTypeName && ` (${props.templateProperty.relationTypeName})`}
     </td>
@@ -49,50 +69,57 @@ SimilarProperty.propTypes = {
   templateProperty: PropTypes.object.isRequired,
 };
 
-export class FilterSuggestions extends Component {
-  getRelationTypeName(relationTypeId) {
+interface MatchedProperty {
+  template: string;
+  property: PropertySchema;
+}
+
+export class FilterSuggestions extends Component<FilterSuggestionsProps> {
+  getRelationTypeName(relationTypeId: string) {
     const relationType = relationTypeId
-      ? this.props.relationTypes.toJS().find(r => r._id === relationTypeId)
+      ? this.props.relationTypes.toJS().find((r: any) => r._id === relationTypeId)
       : undefined;
     return relationType ? relationType.name : undefined;
   }
 
-  getThesauriName(thesauriId) {
+  getThesauriName(thesauriId: string | undefined) {
     const thesaurus = thesauriId
-      ? this.props.thesauris.toJS().find(thesauri => thesauri._id === thesauriId)
+      ? this.props.thesauris.toJS().find((thesauri: any) => thesauri._id === thesauriId)
       : undefined;
     return thesaurus ? thesaurus.name : undefined;
   }
 
-  findSameLabelProperties(label, templates) {
+  findSameLabelProperties(label: string, templates: TemplateSchema[]): MatchedProperty[] {
     return templates
-      .filter(template => template._id !== this.props.templateId)
+      .filter(template => template._id !== this.props.templateId && template.properties)
       .map(template => {
-        const property = template.properties.find(
+        const property = ensure<PropertySchema[]>(template.properties).find(
           prop => prop.label.trim().toLowerCase() === label.trim().toLowerCase()
         );
-        if (property) {
-          return { template: template.name, property };
-        }
-        return null;
+        return (property
+          ? { template: template.name, property }
+          : { template: undefined }) as MatchedProperty;
       })
-      .filter(match => match);
+      .filter(prop => prop.template !== undefined);
   }
 
   render() {
     const { label, type, content, relationType } = this.props;
 
-    const similarProperties = this.findSameLabelProperties(label, this.props.templates.toJS()).map(
-      propertyMatch =>
-        Object.assign({}, propertyMatch, {
-          typeConflict: propertyMatch.property.type !== type,
-          relationConflict: relationType && propertyMatch.property.relationType !== relationType,
-          contentConflict: propertyMatch.property.content !== content,
-          type: propertyMatch.property.type[0].toUpperCase() + propertyMatch.property.type.slice(1),
-          relationTypeName: this.getRelationTypeName(propertyMatch.property.relationType),
-          thesaurusName: this.getThesauriName(propertyMatch.property.content),
-        })
-    );
+    const similarProperties: TemplateProperty[] = this.findSameLabelProperties(
+      this.props.label,
+      this.props.templates.toJS()
+    ).map((propertyMatch: MatchedProperty) => {
+      const { property } = ensure<MatchedProperty>(propertyMatch);
+      return Object.assign({}, propertyMatch, {
+        typeConflict: property.type !== type,
+        relationConflict: relationType && property.relationType !== relationType,
+        contentConflict: property.content !== content,
+        type: property.type[0].toUpperCase() + property.type.slice(1),
+        relationTypeName: this.getRelationTypeName(property.relationType),
+        thesaurusName: this.getThesauriName(property.content),
+      }) as TemplateProperty;
+    });
 
     const thisProperty = {
       template: `${this.props.templateName} (this template)`,
@@ -105,8 +132,11 @@ export class FilterSuggestions extends Component {
       relationTypeName: this.getRelationTypeName(relationType),
       thesaurusName: this.getThesauriName(content),
     };
-    const templatesWithSameLabelProperties = [thisProperty].concat(similarProperties);
 
+    const templatesWithSameLabelProperties = [
+      thisProperty as TemplateProperty,
+      ...similarProperties,
+    ];
     const hasContent = templatesWithSameLabelProperties.find(prop => prop.thesaurusName);
     return (
       <>
@@ -135,32 +165,37 @@ export class FilterSuggestions extends Component {
   }
 }
 
-FilterSuggestions.propTypes = {
-  label: PropTypes.string,
-  type: PropTypes.string,
-  filter: PropTypes.any,
-  templateName: PropTypes.string,
-  templateId: PropTypes.string,
-  templates: PropTypes.object,
-  thesauris: PropTypes.object,
-  relationTypes: PropTypes.object,
-  content: PropTypes.string,
-  relationType: PropTypes.string,
+export type FilterSuggestionsProps = {
+  index: number;
+  label: string;
+  type: string;
+  filter: any;
+  templateName: string;
+  templateId: string | { [k: string]: any } | undefined;
+  templates: IImmutable<TemplateSchema[]>;
+  thesauris: IImmutable<[]>;
+  relationTypes: IImmutable<[]>;
+  content: string;
+  relationType: string;
 };
 
-export function mapStateToProps(state, props) {
+export function mapStateToProps(state: IStore, props: FilterSuggestionsProps) {
+  const propertySchemaElement = ensure<PropertySchema>(state.template.data.properties)[props.index];
+  // @ts-ignore
+  const relationTypes = state.relationTypes;
   return {
     templates: state.templates,
     thesauris: state.thesauris,
-    relationTypes: state.relationTypes,
+    relationTypes: relationTypes,
     templateName: state.template.data.name,
     templateId: state.template.data._id,
-    type: state.template.data.properties[props.index].type,
-    filter: state.template.data.properties[props.index].filter,
-    label: state.template.data.properties[props.index].label,
-    content: state.template.data.properties[props.index].content,
-    relationType: state.template.data.properties[props.index].relationType,
+    type: propertySchemaElement.type,
+    filter: propertySchemaElement.filter,
+    label: propertySchemaElement.label,
+    content: propertySchemaElement.content,
+    relationType: propertySchemaElement.relationType,
   };
 }
 
+// @ts-ignore
 export default connect(mapStateToProps)(FilterSuggestions);
