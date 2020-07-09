@@ -61,15 +61,19 @@ describe('FilterSuggestions', () => {
 
   it('should always render the current property as a guide', () => {
     renderComponent('Year', 'date');
-    const suggestion = component.find('tbody > tr').at(0);
-    expect(suggestion).toMatchSnapshot();
+    const suggestion = component.find({
+      templateProperty: { template: 'Current template (this template)' },
+    });
+    expect(suggestion.props().templateProperty.type).toBe('Date');
   });
 
-  describe('when matches type and label as other template property', () => {
+  describe('when matches type+ and label as other template property', () => {
     it('should show a message', () => {
       renderComponent('author', 'text');
-      const suggestion = component.find('tbody > tr').at(1);
-      expect(suggestion).toMatchSnapshot();
+      const suggestion = component.find({
+        templateProperty: { template: 'Template 2' },
+      });
+      expect(suggestion.props().templateProperty.typeConflict).toBe(false);
     });
   });
 

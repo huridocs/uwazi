@@ -18,33 +18,34 @@ const titles = {
 const SimilarProperty = props => (
   <tr className="property-atributes is-active">
     <td>
-      <Icon icon="file" /> {props.property.template}
+      <Icon icon="file" /> {props.templateProperty.template}
     </td>
     <td
-      className={props.property.typeConflict || props.property.relationConflict ? 'conflict' : ''}
-      {...(props.property.typeConflict && { title: titles.typeConflict })}
-      {...(props.property.relationConflict && { title: titles.relationConflict })}
+      {...(props.templateProperty.typeConflict ||
+        (props.templateProperty.relationConflict && { className: 'conflict' }))}
+      {...(props.templateProperty.typeConflict && { title: titles.typeConflict })}
+      {...(props.templateProperty.relationConflict && { title: titles.relationConflict })}
     >
-      {(props.property.typeConflict || props.property.relationConflict) && (
+      {(props.templateProperty.typeConflict || props.templateProperty.relationConflict) && (
         <Icon icon="exclamation-triangle" />
       )}
-      <Icon icon={Icons[props.property.type.toLowerCase()] || 'fa fa-font'} />
-      {` ${props.property.type}`}
-      {props.property.relationTypeName && ` (${props.property.relationTypeName})`}
+      <Icon icon={Icons[props.templateProperty.type.toLowerCase()] || 'fa fa-font'} />
+      {` ${props.templateProperty.type}`}
+      {props.templateProperty.relationTypeName && ` (${props.templateProperty.relationTypeName})`}
     </td>
     <td
-      className={props.property.contentConflict ? 'conflict' : ''}
-      {...(props.property.contentConflict && { title: titles.contentConflict })}
+      className={props.templateProperty.contentConflict ? 'conflict' : ''}
+      {...(props.templateProperty.contentConflict && { title: titles.contentConflict })}
     >
-      {props.property.contentConflict && <Icon icon="exclamation-triangle" />}
+      {props.templateProperty.contentConflict && <Icon icon="exclamation-triangle" />}
       <Icon icon="book" />
-      {props.property.thesaurusName}
+      {props.templateProperty.thesaurusName}
     </td>
   </tr>
 );
 
 SimilarProperty.propTypes = {
-  property: PropTypes.object.isRequired,
+  templateProperty: PropTypes.object.isRequired,
 };
 
 export class FilterSuggestions extends Component {
@@ -82,25 +83,14 @@ export class FilterSuggestions extends Component {
 
     const similarProperties = this.findSameLabelProperties(label, this.props.templates.toJS()).map(
       propertyMatch =>
-        Object.assign(
-          {},
-          propertyMatch,
-          { typeConflict: propertyMatch.property.type !== type },
-          {
-            relationConflict: relationType && propertyMatch.property.relationType !== relationType,
-          },
-          { contentConflict: propertyMatch.property.content !== content },
-          {
-            type:
-              propertyMatch.property.type[0].toUpperCase() + propertyMatch.property.type.slice(1),
-          },
-          {
-            relationTypeName: this.getRelationTypeName(propertyMatch.property.relationType),
-          },
-          {
-            thesaurusName: this.getThesauriName(propertyMatch.property.content),
-          }
-        )
+        Object.assign({}, propertyMatch, {
+          typeConflict: propertyMatch.property.type !== type,
+          relationConflict: relationType && propertyMatch.property.relationType !== relationType,
+          contentConflict: propertyMatch.property.content !== content,
+          type: propertyMatch.property.type[0].toUpperCase() + propertyMatch.property.type.slice(1),
+          relationTypeName: this.getRelationTypeName(propertyMatch.property.relationType),
+          thesaurusName: this.getThesauriName(propertyMatch.property.content),
+        })
     );
 
     const thisProperty = {
@@ -125,16 +115,16 @@ export class FilterSuggestions extends Component {
         <table className="table">
           <thead>
             <tr>
-              <th>Document or entity</th>
+              <th>Template</th>
               <th>Type</th>
               {hasContent && <th>Thesauri/Document</th>}
             </tr>
           </thead>
           <tbody>
-            {templatesWithSameLabelProperties.map(property => (
+            {templatesWithSameLabelProperties.map(templateProperty => (
               <SimilarProperty
-                key={property.template + property.property.name}
-                property={property}
+                key={templateProperty.template + templateProperty.property.name}
+                templateProperty={templateProperty}
               />
             ))}
           </tbody>
