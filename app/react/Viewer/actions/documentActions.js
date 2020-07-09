@@ -90,33 +90,32 @@ export function deleteDocument(doc) {
   };
 }
 
+function getEntityDoc(entity, filename, defaultLanguage) {
+  let docByFilename = entity.documents.find(d => d.filename === filename);
+  docByFilename = docByFilename !== undefined ? docByFilename : {};
+
+  const defaultDoc = entityDefaultDocument(entity.documents, entity.language, defaultLanguage);
+
+  return filename ? docByFilename : defaultDoc;
+}
+
 export async function getDocument(requestParams, defaultLanguage, filename) {
   const [entity] = (await api.get('entities', requestParams)).json.rows;
 
-  const defaultDoc = filename
-    ? entity.documents.find(d => d.filename === filename)
-    : entityDefaultDocument(entity.documents, entity.language, defaultLanguage);
+  entity.defaultDoc = getEntityDoc(entity, filename, defaultLanguage);
+  if (!isClient) return entity;
+  if (Object.keys(entity.defaultDoc).length === 0 || entity.defaultDoc.pdfInfo) return entity;
 
-  entity.defaultDoc = defaultDoc;
-  if (!isClient) {
-    return entity;
-  }
-  if (defaultDoc.pdfInfo) {
-    return entity;
-  }
-
-  const pdfInfo = await PDFUtils.extractPDFInfo(`${APIURL}files/${defaultDoc.filename}`);
+  const pdfInfo = await PDFUtils.extractPDFInfo(`${APIURL}files/${entity.defaultDoc.filename}`);
   const processedDoc = await api
-    .post('documents/pdfInfo', new RequestParams({ _id: defaultDoc._id, pdfInfo }))
+    .post('documents/pdfInfo', new RequestParams({ _id: entity.defaultDoc._id, pdfInfo }))
     .then(res => res.json);
 
   return {
     ...entity,
     defaultDoc: processedDoc,
     documents: entity.documents.map(d => {
-      if (d._id === processedDoc._id) {
-        return processedDoc;
-      }
+      if (d._id === processedDoc._id) return processedDoc;
       return d;
     }),
   };

@@ -241,7 +241,7 @@
     "enzyme": "3.10.0",
     "enzyme-adapter-react-16": "1.15.1",
     "enzyme-to-json": "^3.3.3",
-    "eslint": "v5.14.1",
+    "eslint": "v5.15.3",
     "eslint-config-airbnb": "v17.1.0",
     "eslint-plugin-import": "^2.9.0",
     "eslint-plugin-jasmine": "2.9.2",
