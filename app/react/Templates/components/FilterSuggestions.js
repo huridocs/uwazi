@@ -23,6 +23,7 @@ const SimilarProperty = props => (
     <td
       className={props.property.typeConflict || props.property.relationConflict ? 'conflict' : ''}
       {...(props.property.typeConflict && { title: titles.typeConflict })}
+      {...(props.property.relationConflict && { title: titles.relationConflict })}
     >
       {(props.property.typeConflict || props.property.relationConflict) && (
         <Icon icon="exclamation-triangle" />
