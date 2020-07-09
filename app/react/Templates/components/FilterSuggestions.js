@@ -15,14 +15,15 @@ const titles = {
   typeConflict: 'Properties with the same label but different types are not allowed.',
 };
 
-const SimilarProperty = props => (
+export const SimilarProperty = props => (
   <tr className="property-atributes is-active">
     <td>
       <Icon icon="file" /> {props.templateProperty.template}
     </td>
     <td
-      {...(props.templateProperty.typeConflict ||
-        (props.templateProperty.relationConflict && { className: 'conflict' }))}
+      {...((props.templateProperty.typeConflict || props.templateProperty.relationConflict) && {
+        className: 'conflict',
+      })}
       {...(props.templateProperty.typeConflict && { title: titles.typeConflict })}
       {...(props.templateProperty.relationConflict && { title: titles.relationConflict })}
     >
@@ -115,7 +116,7 @@ export class FilterSuggestions extends Component {
         <table className="table">
           <thead>
             <tr>
-              <th>Template</th>
+              <th>Document or entity</th>
               <th>Type</th>
               {hasContent && <th>Thesauri/Document</th>}
             </tr>
