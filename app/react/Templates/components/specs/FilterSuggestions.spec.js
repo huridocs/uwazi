@@ -2,7 +2,6 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import Immutable from 'immutable';
 
-import { SimilarProperty } from 'app/Templates/components/FilterSuggestions';
 import { FilterSuggestions } from '../FilterSuggestions';
 
 describe('FilterSuggestions', () => {
@@ -55,7 +54,7 @@ describe('FilterSuggestions', () => {
       templateName: 'Current template',
       templateId: 'template1',
       templates: Immutable.fromJS(templates),
-      thesauri: Immutable.fromJS(thesauri),
+      thesauris: Immutable.fromJS(thesauri),
     };
 
     component = shallow(<FilterSuggestions {...props} />);
@@ -72,7 +71,7 @@ describe('FilterSuggestions', () => {
   describe('when there are other templates properties with the same label', () => {
     it('should render all the matched properties in other templates', () => {
       renderComponent('Date', 'text');
-      const suggestion = component.find(SimilarProperty);
+      const suggestion = component.find({ templateProperty: {} });
       expect(suggestion.length).toBe(3);
       expect(suggestion.get(0).props.templateProperty.template).toBe(
         'Current template (this template)'

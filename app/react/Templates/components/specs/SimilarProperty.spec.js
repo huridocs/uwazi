@@ -1,6 +1,6 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { SimilarProperty } from 'app/Templates/components/FilterSuggestions';
+import { SimilarProperty } from 'app/Templates/components/SimilarProperty';
 
 describe('SimilarProperty', () => {
   let component;

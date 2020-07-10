@@ -30,23 +30,25 @@ interface MapStateProps {
 
 export class SimilarProperty extends Component<MapStateProps> {
   render() {
-    const conflictAtType =
+    const typeIcon = this.props.templateProperty.type.toLowerCase() as keyof typeof Icons;
+    const invalidType =
       this.props.templateProperty.typeConflict || this.props.templateProperty.relationConflict;
+    const invalidThesauri =
+      this.props.templateProperty.contentConflict && this.props.templateProperty.thesaurusName;
     return (
       <tr className="property-atributes is-active">
         <td>
           <Icon icon="file" /> {this.props.templateProperty.template}
         </td>
         <td
-          {...(conflictAtType && {
+          {...(invalidType && {
             className: 'conflict',
           })}
           {...(this.props.templateProperty.typeConflict && { title: titles.typeConflict })}
           {...(this.props.templateProperty.relationConflict && { title: titles.relationConflict })}
         >
-          {conflictAtType && <Icon icon="exclamation-triangle" />}
-          {/*<Icon icon={Icons[this.props.templateProperty.type.toLowerCase()] || 'fa fa-font'} />*/}
-          <Icon icon={Icons.numeric || 'fa fa-font'} />
+          {invalidType && <Icon icon="exclamation-triangle" />}
+          <Icon icon={Icons[typeIcon] || 'fa fa-font'} />
           {` ${this.props.templateProperty.type}`}
           {this.props.templateProperty.relationTypeName &&
             ` (${this.props.templateProperty.relationTypeName})`}
@@ -55,7 +57,7 @@ export class SimilarProperty extends Component<MapStateProps> {
           className={this.props.templateProperty.contentConflict ? 'conflict' : ''}
           {...(this.props.templateProperty.contentConflict && { title: titles.contentConflict })}
         >
-          {this.props.templateProperty.contentConflict && <Icon icon="exclamation-triangle" />}
+          {invalidThesauri && <Icon icon="exclamation-triangle" />}
           {this.props.templateProperty.thesaurusName && <Icon icon="book" />}
           {this.props.templateProperty.thesaurusName}
         </td>
