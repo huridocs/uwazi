@@ -32,7 +32,7 @@ jobs:
         run: yarn production-build
       - name: Tgz production build
         run: tar -czf uwazi_${GITHUB_SHA}.tgz ./prod
-      - name: Deploy to Server
+      - name: Copy to server
         uses: easingthemes/ssh-deploy@v2.1.1
         env:
             SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_KEY }}
@@ -41,3 +41,12 @@ jobs:
             REMOTE_HOST: ${{ secrets.DEPLOY_SERVER }}
             REMOTE_USER: ${{ secrets.DEPLOY_USER }}
             TARGET: uwazi_${GITHUB_SHA}.tgz
+      - name: Overwrite latest
+        uses: easingthemes/ssh-deploy@v2.1.1
+        env:
+            SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_KEY }}
+            ARGS: "-rltgoDzvO --delete"
+            SOURCE: uwazi_${GITHUB_SHA}.tgz
+            REMOTE_HOST: ${{ secrets.DEPLOY_SERVER }}
+            REMOTE_USER: ${{ secrets.DEPLOY_USER }}
+            TARGET: uwazi_latest.tgz

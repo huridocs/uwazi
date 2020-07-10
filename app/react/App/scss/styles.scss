@@ -2,7 +2,6 @@
 
 @import 'config/typography';
 @import 'config/colors';
-@import 'custom/_colors';
 @import 'config/materials';
 @import 'config/breakpoints';
 
@@ -62,8 +61,7 @@
 @import 'modules/i18n';
 @import 'layout/hero';
 @import 'modules/thesauri';
-
-@import 'custom/custom';
+@import 'modules/review';
 
 @import '../../Timeline/scss/timeline';
 @import 'utilities/utilities';

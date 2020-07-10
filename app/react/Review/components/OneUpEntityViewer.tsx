@@ -21,7 +21,6 @@ import { toggleOneUpFullEdit } from 'app/Review/actions/actions';
 import { OneUpEntityButtons } from 'app/Review/components/OneUpEntityButtons';
 import { OneUpSidePanel } from 'app/Review/components/OneUpSidePanel';
 import { OneUpTitleBar } from 'app/Review/components/OneUpTitleBar';
-import 'app/Review/scss/review.scss';
 import Immutable from 'immutable';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
