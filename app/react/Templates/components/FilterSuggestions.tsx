@@ -1,24 +1,12 @@
 import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { Icon } from 'UI';
 
 import { TemplateSchema } from 'shared/types/templateType';
 import { IStore } from 'app/istore';
 import { ensure } from 'shared/tsUtils';
 import { PropertySchema } from 'shared/types/commonTypes';
 import { IImmutable } from 'shared/types/Immutable';
-import Icons from './Icons';
-
-const titles = {
-  defaultTitle:
-    'This property has the same configuration as others with the same label and will be used together.',
-  contentConflict:
-    'Properties with the same label but different thesauri as content are not allowed.',
-  relationConflict:
-    'Relationship properties with the same label but different relationship types are not allowed.',
-  typeConflict: 'Properties with the same label but different types are not allowed.',
-};
+import { SimilarProperty } from './SimilarProperty';
 
 interface TemplateProperty {
   template: string;
@@ -30,45 +18,6 @@ interface TemplateProperty {
   type: string;
   property: PropertySchema;
 }
-
-interface MapStateProps {
-  templateProperty: TemplateProperty;
-}
-
-export const SimilarProperty = (props: MapStateProps) => (
-  <tr className="property-atributes is-active">
-    <td>
-      <Icon icon="file" /> {props.templateProperty.template}
-    </td>
-    <td
-      {...((props.templateProperty.typeConflict || props.templateProperty.relationConflict) && {
-        className: 'conflict',
-      })}
-      {...(props.templateProperty.typeConflict && { title: titles.typeConflict })}
-      {...(props.templateProperty.relationConflict && { title: titles.relationConflict })}
-    >
-      {(props.templateProperty.typeConflict || props.templateProperty.relationConflict) && (
-        <Icon icon="exclamation-triangle" />
-      )}
-      {/*<Icon icon={Icons[props.templateProperty.type.toLowerCase()] || 'fa fa-font'} />*/}
-      <Icon icon={Icons.numeric || 'fa fa-font'} />
-      {` ${props.templateProperty.type}`}
-      {props.templateProperty.relationTypeName && ` (${props.templateProperty.relationTypeName})`}
-    </td>
-    <td
-      className={props.templateProperty.contentConflict ? 'conflict' : ''}
-      {...(props.templateProperty.contentConflict && { title: titles.contentConflict })}
-    >
-      {props.templateProperty.contentConflict && <Icon icon="exclamation-triangle" />}
-      {props.templateProperty.thesaurusName && <Icon icon="book" />}
-      {props.templateProperty.thesaurusName}
-    </td>
-  </tr>
-);
-
-SimilarProperty.propTypes = {
-  templateProperty: PropTypes.object.isRequired,
-};
 
 interface MatchedProperty {
   template: string;
