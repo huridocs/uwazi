@@ -8,7 +8,7 @@ import { IStore } from 'app/istore';
 import { ensure } from 'shared/tsUtils';
 import { PropertySchema } from 'shared/types/commonTypes';
 import { IImmutable } from 'shared/types/Immutable';
-// import Icons from './Icons';
+import Icons from './Icons';
 
 const titles = {
   defaultTitle:
@@ -51,6 +51,7 @@ export const SimilarProperty = (props: MapStateProps) => (
         <Icon icon="exclamation-triangle" />
       )}
       {/*<Icon icon={Icons[props.templateProperty.type.toLowerCase()] || 'fa fa-font'} />*/}
+      <Icon icon={Icons.numeric || 'fa fa-font'} />
       {` ${props.templateProperty.type}`}
       {props.templateProperty.relationTypeName && ` (${props.templateProperty.relationTypeName})`}
     </td>
@@ -59,7 +60,7 @@ export const SimilarProperty = (props: MapStateProps) => (
       {...(props.templateProperty.contentConflict && { title: titles.contentConflict })}
     >
       {props.templateProperty.contentConflict && <Icon icon="exclamation-triangle" />}
-      <Icon icon="book" />
+      {props.templateProperty.thesaurusName && <Icon icon="book" />}
       {props.templateProperty.thesaurusName}
     </td>
   </tr>
@@ -146,7 +147,7 @@ export class FilterSuggestions extends Component<FilterSuggestionsProps> {
         <table className="table">
           <thead>
             <tr>
-              <th>Document or entity</th>
+              <th>Template</th>
               <th>Type</th>
               {hasContent && <th>Thesauri/Document</th>}
             </tr>
