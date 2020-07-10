@@ -1,4 +1,4 @@
-import { fromJS as Immutable } from 'immutable';
+import Immutable from 'immutable';
 import { Tabs, TabLink, TabContent } from 'react-tabs-redux';
 import { bindActionCreators } from 'redux';
 import { browserHistory } from 'react-router';
@@ -28,28 +28,43 @@ import { ShowSidepanelMenu } from './ShowSidepanelMenu';
 import { deleteEntity } from '../actions/actions';
 import { showTab } from '../actions/uiActions';
 import EntityForm from '../containers/EntityForm';
+import { CopyFromEntity } from 'app/Metadata/components/CopyFromEntity';
 
 export class EntityViewer extends Component {
   constructor(props, context) {
     super(props, context);
     this.state = {
       panelOpen: true,
+      copyFrom: false,
+      copyFromProps: [],
     };
     this.deleteEntity = this.deleteEntity.bind(this);
     this.closePanel = this.closePanel.bind(this);
     this.openPanel = this.openPanel.bind(this);
+    this.toggleCopyFrom = this.toggleCopyFrom.bind(this);
+    this.onCopyFromSelect = this.onCopyFromSelect.bind(this);
   }
 
   deleteEntity() {
     this.context.confirm({
       accept: () => {
-        this.props.deleteEntity(this.props.rawEntity.toJS()).then(() => {
+        this.props.deleteEntity(this.props.entity.toJS()).then(() => {
           browserHistory.goBack();
         });
       },
       title: 'Confirm delete',
       message: 'Are you sure you want to delete this entity?',
     });
+  }
+
+  toggleCopyFrom() {
+    this.setState(currentState => ({
+      copyFrom: !currentState.copyFrom,
+    }));
+  }
+
+  onCopyFromSelect(copyFromProps) {
+    this.setState({ copyFromProps });
   }
 
   deleteConnection(reference) {
@@ -74,8 +89,8 @@ export class EntityViewer extends Component {
 
   render() {
     const { entity, entityBeingEdited, tab, connectionsGroups, relationships } = this.props;
-    const { panelOpen } = this.state;
-    const selectedTab = tab || 'info';
+    const { panelOpen, copyFrom, copyFromProps } = this.state;
+    const selectedTab = tab;
 
     const summary = connectionsGroups.reduce(
       (summaryData, g) => {
@@ -86,16 +101,15 @@ export class EntityViewer extends Component {
       },
       { totalConnections: 0 }
     );
-
     return (
       <div className="row">
-        <Helmet title={entity.title ? entity.title : 'Entity'} />
+        <Helmet title={entity.get('title') ? entity.get('title') : 'Entity'} />
 
         <div className="content-header content-header-entity">
           <div className="content-header-title">
             <PropertyIcon className="item-icon item-icon-center" data={entity.icon} size="sm" />
-            <h1 className="item-name">{entity.title}</h1>
-            <TemplateLabel template={entity.template} />
+            <h1 className="item-name">{entity.get('title')}</h1>
+            <TemplateLabel template={entity.get('template')} />
           </div>
         </div>
 
@@ -107,17 +121,17 @@ export class EntityViewer extends Component {
               <div className="entity-metadata">
                 {(() => {
                   if (entityBeingEdited) {
-                    return <EntityForm />;
+                    return <EntityForm highlightedProps={copyFromProps} />;
                   }
                   return (
                     <div>
                       <ShowMetadata
                         relationships={relationships}
-                        entity={entity}
+                        entity={entity.toJS()}
                         showTitle={false}
                         showType={false}
                       />
-                      <FileList files={entity.documents} entity={entity} />
+                      <FileList files={entity.toJS().documents} entity={entity.toJS()} />
                       <AttachmentsList
                         attachments={entity.attachments}
                         parentId={entity._id}
@@ -140,9 +154,10 @@ export class EntityViewer extends Component {
           <div className="sidepanel-footer">
             <MetadataFormButtons
               delete={this.deleteEntity.bind(this)}
-              data={this.props.rawEntity}
+              data={this.props.entity}
               formStatePath="entityView.entityForm"
               entityBeingEdited={entityBeingEdited}
+              copyFrom={this.toggleCopyFrom}
             />
           </div>
         </ShowIf>
@@ -202,6 +217,17 @@ export class EntityViewer extends Component {
             </Tabs>
           </div>
         </SidePanel>
+        <SidePanel className="copy-from-panel" open={copyFrom}>
+          <div className="sidepanel-body">
+            <CopyFromEntity
+              originalEntity={this.props.entity.toJS()}
+              templates={this.props.templates}
+              onSelect={this.onCopyFromSelect}
+              formModel="entityView.entityForm"
+              onCancel={this.toggleCopyFrom}
+            />
+          </div>
+        </SidePanel>
 
         <ContextMenu
           align="bottom"
@@ -229,34 +255,30 @@ export class EntityViewer extends Component {
 }
 
 EntityViewer.defaultProps = {
-  relationships: Immutable([]),
+  relationships: Immutable.fromJS([]),
+  entityBeingEdited: false,
+  tab: 'info',
 };
 
 EntityViewer.propTypes = {
-  entity: PropTypes.object,
-  relationships: PropTypes.object,
-  rawEntity: PropTypes.object,
+  templates: PropTypes.instanceOf(Immutable.List).isRequired,
+  relationships: PropTypes.instanceOf(Immutable.List),
+  entity: PropTypes.instanceOf(Immutable.Map).isRequired,
   entityBeingEdited: PropTypes.bool,
-  sidepanelOpen: PropTypes.bool,
   connectionsGroups: PropTypes.object,
   relationTypes: PropTypes.array,
-  deleteEntity: PropTypes.func,
+  deleteEntity: PropTypes.func.isRequired,
   connectionsChanged: PropTypes.func,
   deleteConnection: PropTypes.func,
   startNewConnection: PropTypes.func,
   tab: PropTypes.string,
   library: PropTypes.object,
-  showTab: PropTypes.func,
+  showTab: PropTypes.func.isRequired,
 };
 
 EntityViewer.contextTypes = {
   confirm: PropTypes.func,
 };
-
-const selectEntity = createSelector(
-  state => state.entityView.entity,
-  entity => entity.toJS()
-);
 
 const selectRelationTypes = createSelector(
   s => s.relationTypes,
@@ -264,9 +286,9 @@ const selectRelationTypes = createSelector(
 );
 
 const mapStateToProps = state => ({
-  rawEntity: state.entityView.entity,
+  entity: state.entityView.entity,
   relationTypes: selectRelationTypes(state),
-  entity: selectEntity(state),
+  templates: state.templates,
   relationships: state.entityView.entity.get('relationships'),
   connectionsGroups: state.relationships.list.connectionsGroups,
   entityBeingEdited: !!state.entityView.entityForm._id,

@@ -28,7 +28,7 @@ describe('MetadataFormButtons', () => {
       formStatePath: 'form',
       includeViewButton: true,
       exclusivelyViewButton: false,
-      startCopyFrom: jasmine.createSpy('startCopyFrom'),
+      copyFrom: jasmine.createSpy('copyFrom'),
     };
   });
 
@@ -114,7 +114,7 @@ describe('MetadataFormButtons', () => {
 
     it('should call the callback', () => {
       component.find('.copy-from-btn').simulate('click');
-      expect(props.startCopyFrom).toHaveBeenCalled();
+      expect(props.copyFrom).toHaveBeenCalled();
     });
   });
 

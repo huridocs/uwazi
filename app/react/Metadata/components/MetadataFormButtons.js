@@ -137,6 +137,7 @@ MetadataFormButtons.defaultProps = {
   entityBeingEdited: false,
   formName: 'metadataForm',
   delete: () => {},
+  copyFrom: () => {},
 };
 
 MetadataFormButtons.propTypes = {
@@ -152,7 +153,7 @@ MetadataFormButtons.propTypes = {
   formName: PropTypes.string,
   includeViewButton: PropTypes.bool,
   exclusivelyViewButton: PropTypes.bool,
-  copyFrom: PropTypes.func.isRequired,
+  copyFrom: PropTypes.func,
 };
 
 const mapStateToProps = ({ templates }) => ({ templates });
