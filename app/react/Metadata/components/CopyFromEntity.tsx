@@ -70,6 +70,8 @@ export class CopyFromEntity extends Component<CopyFromEntityProps, CopyFromEntit
     actions
       .loadFetchedInReduxForm(this.props.formModel, updatedEntity, this.props.templates.toJS())
       .forEach(action => store?.dispatch(action));
+
+    this.props.onSelect([]);
     this.props.onCancel();
   }
 
