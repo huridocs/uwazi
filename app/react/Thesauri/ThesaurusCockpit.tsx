@@ -292,7 +292,7 @@ export class ThesaurusCockpitBase extends RouteHandler {
       return <Loader />;
     }
     return (
-      <div className="flex panel panel-default">
+      <div className="flex thesaurus-cockpit panel panel-default">
         <div className="panel-heading">
           {t('System', `Thesauri > ${name}`)}
           {this.renderEnableSuggestionsToggle()}
