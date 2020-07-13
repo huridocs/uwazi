@@ -2,14 +2,12 @@ import React, { Component } from 'react';
 
 import { EntitySchema } from 'shared/types/entityType';
 import { SearchEntities } from './SearchEntities';
-import FormatMetadata from '../containers/FormatMetadata';
+import { FormatMetadata } from '../containers/FormatMetadata';
 import { TemplateSchema } from 'shared/types/templateType';
 import { IImmutable } from 'shared/types/Immutable';
 import comonProperties from 'shared/comonProperties';
 import { Icon } from 'UI';
 import { Translate } from 'app/I18N';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
 import { actions } from 'app/Metadata';
 import { store } from 'app/store';
 
@@ -56,13 +54,13 @@ export class CopyFromEntity extends Component<CopyFromEntityProps, CopyFromEntit
     }
 
     const updatedEntity = this.state.propsToCopy.reduce(
-      (updatedEntity: EntitySchema, propName: string) => {
-        if (!updatedEntity.metadata) {
-          updatedEntity.metadata = {};
+      (entity: EntitySchema, propName: string) => {
+        if (!entity.metadata) {
+          entity.metadata = {};
         }
 
-        updatedEntity.metadata[propName] = this.state.selectedEntity.metadata![propName];
-        return updatedEntity;
+        entity.metadata[propName] = this.state.selectedEntity.metadata![propName];
+        return entity;
       },
       { ...this.props.originalEntity }
     );

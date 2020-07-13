@@ -12,7 +12,9 @@ describe('CopyFromEntity', () => {
   let props: CopyFromEntityProps;
 
   beforeEach(() => {
-    spyOn(store, 'dispatch');
+    if (store) {
+      spyOn(store, 'dispatch');
+    }
     props = {
       onSelect: jasmine.createSpy('onSelect'),
       onCancel: jasmine.createSpy('onCancel'),

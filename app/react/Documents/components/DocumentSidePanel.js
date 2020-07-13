@@ -105,9 +105,9 @@ export class DocumentSidePanel extends Component {
   }
 
   toggleCopyFrom() {
-    this.setState({
-      copyFrom: !this.state.copyFrom,
-    });
+    this.setState(currentState => ({
+      copyFrom: !currentState.copyFrom,
+    }));
   }
 
   render() {

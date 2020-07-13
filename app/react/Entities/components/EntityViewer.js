@@ -23,12 +23,12 @@ import SidePanel from 'app/Layout/SidePanel';
 import ContextMenu from 'app/ContextMenu';
 import { Icon } from 'UI';
 import { FileList } from 'app/Attachments/components/FileList';
+import { CopyFromEntity } from 'app/Metadata/components/CopyFromEntity';
 
 import { ShowSidepanelMenu } from './ShowSidepanelMenu';
 import { deleteEntity } from '../actions/actions';
 import { showTab } from '../actions/uiActions';
 import EntityForm from '../containers/EntityForm';
-import { CopyFromEntity } from 'app/Metadata/components/CopyFromEntity';
 
 export class EntityViewer extends Component {
   constructor(props, context) {
