@@ -43,6 +43,7 @@ export class EntityViewer extends Component {
     this.openPanel = this.openPanel.bind(this);
     this.toggleCopyFrom = this.toggleCopyFrom.bind(this);
     this.onCopyFromSelect = this.onCopyFromSelect.bind(this);
+    this.deleteConnection = this.deleteConnection.bind(this);
   }
 
   deleteEntity() {
@@ -91,7 +92,7 @@ export class EntityViewer extends Component {
     const { entity, entityBeingEdited, tab, connectionsGroups, relationships } = this.props;
     const { panelOpen, copyFrom, copyFromProps } = this.state;
     const selectedTab = tab;
-
+    const rawEntity = entity.toJS();
     const summary = connectionsGroups.reduce(
       (summaryData, g) => {
         g.get('templates').forEach(template => {
@@ -107,7 +108,11 @@ export class EntityViewer extends Component {
 
         <div className="content-header content-header-entity">
           <div className="content-header-title">
-            <PropertyIcon className="item-icon item-icon-center" data={entity.icon} size="sm" />
+            <PropertyIcon
+              className="item-icon item-icon-center"
+              data={entity.get('icon')}
+              size="sm"
+            />
             <h1 className="item-name">{entity.get('title')}</h1>
             <TemplateLabel template={entity.get('template')} />
           </div>
@@ -127,17 +132,17 @@ export class EntityViewer extends Component {
                     <div>
                       <ShowMetadata
                         relationships={relationships}
-                        entity={entity.toJS()}
+                        entity={rawEntity}
                         showTitle={false}
                         showType={false}
                       />
-                      <FileList files={entity.toJS().documents} entity={entity.toJS()} />
+                      <FileList files={rawEntity.documents} entity={rawEntity} />
                       <AttachmentsList
-                        attachments={entity.attachments}
-                        parentId={entity._id}
-                        parentSharedId={entity.sharedId}
+                        attachments={rawEntity.attachments}
+                        parentId={entity.get('_id')}
+                        parentSharedId={entity.get('sharedId')}
                         entityView
-                        processed={entity.processed}
+                        processed={entity.get('processed')}
                       />
                     </div>
                   );
@@ -145,7 +150,7 @@ export class EntityViewer extends Component {
               </div>
             </TabContent>
             <TabContent for="connections">
-              <ConnectionsList deleteConnection={this.deleteConnection.bind(this)} searchCentered />
+              <ConnectionsList deleteConnection={this.deleteConnection} searchCentered />
             </TabContent>
           </Tabs>
         </main>
@@ -153,7 +158,7 @@ export class EntityViewer extends Component {
         <ShowIf if={selectedTab === 'info' || selectedTab === 'attachments'}>
           <div className="sidepanel-footer">
             <MetadataFormButtons
-              delete={this.deleteEntity.bind(this)}
+              delete={this.deleteEntity}
               data={this.props.entity}
               formStatePath="entityView.entityForm"
               entityBeingEdited={entityBeingEdited}
