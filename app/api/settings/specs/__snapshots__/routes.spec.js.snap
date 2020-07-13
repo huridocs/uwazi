@@ -262,6 +262,32 @@ Object {
         "",
       ],
     },
+    "mapStartingPoint": Object {
+      "children": Object {
+        "label": Object {
+          "type": "string",
+          "valids": Array [
+            null,
+            "",
+          ],
+        },
+        "lat": Object {
+          "invalids": Array [
+            Infinity,
+            -Infinity,
+          ],
+          "type": "number",
+        },
+        "lon": Object {
+          "invalids": Array [
+            Infinity,
+            -Infinity,
+          ],
+          "type": "number",
+        },
+      },
+      "type": "object",
+    },
     "mapTilerKey": Object {
       "type": "string",
       "valids": Array [

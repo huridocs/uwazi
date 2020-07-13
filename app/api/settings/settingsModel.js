@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import { instanceModel } from 'api/odm';
+import { latLonSchema } from 'shared/types/commonSchemas';
 
 const languagesSchema = new mongoose.Schema({
   key: String,
@@ -46,6 +47,7 @@ const settingsSchema = new mongoose.Schema({
   evidencesVault: mongoose.Schema.Types.Mixed,
   customCSS: String,
   mapTilerKey: String,
+  mapStartingPoint: latLonSchema,
 });
 
 export default instanceModel('settings', settingsSchema);

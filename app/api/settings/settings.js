@@ -3,6 +3,7 @@ import translations from 'api/i18n/translations';
 import model from './settingsModel';
 
 const DEFAULT_MAP_TILER_KEY = 'QiI1BlAJNMmZagsX5qp7';
+const DEFAULT_MAP_STARTING_POINT = [{ lon: 6, label: '', lat: 46 }];
 
 const getUpdatesAndDeletes = (newValues, currentValues, matchProperty, propertyName) => {
   const updatedValues = {};
@@ -87,6 +88,9 @@ function removeTemplate(filters, templateId) {
 function setDefaults(storedSettings) {
   const [settings] = storedSettings;
   if (settings) settings.mapTilerKey = settings.mapTilerKey || DEFAULT_MAP_TILER_KEY;
+  if (settings) {
+    settings.mapStartingPoint = settings.mapStartingPoint || DEFAULT_MAP_STARTING_POINT;
+  }
   return settings || {};
 }
 

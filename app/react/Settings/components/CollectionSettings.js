@@ -10,7 +10,7 @@ import { RequestParams } from 'app/utils/RequestParams';
 import { actions } from 'app/BasicReducer';
 import SettingsAPI from 'app/Settings/SettingsAPI';
 import { notificationActions } from 'app/Notifications';
-import { RadioButtons } from 'app/ReactReduxForms';
+import { Geolocation, RadioButtons } from 'app/ReactReduxForms';
 import { t, Translate } from 'app/I18N';
 import { Icon } from 'UI';
 import { LocalForm, Control } from 'react-redux-form';
@@ -272,6 +272,12 @@ export class CollectionSettings extends Component {
                 {t('System', 'MapTiler key')}
               </label>
               <Control.text model=".mapTilerKey" className="form-control" />
+            </div>
+            <div className="form-group">
+              <label className="form-group-label" htmlFor="defaultGeolocation">
+                {t('System', 'MAP STARTING POINT')}
+              </label>
+              <Geolocation model=".mapStartingPoint" />
             </div>
             <span className="form-group-label">{t('System', 'Show Cookie policy')}</span>
             <div className="checkbox">
