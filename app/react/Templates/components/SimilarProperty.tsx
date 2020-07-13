@@ -13,24 +13,25 @@ const titles = {
   typeConflict: 'Properties with the same label but different types are not allowed.',
 };
 
-interface TemplateProperty {
+export interface TemplateProperty {
   template: string;
-  relationTypeName: string;
-  thesaurusName: string;
+  relationTypeName?: string;
+  thesaurusName?: string;
   typeConflict: boolean;
   relationConflict: boolean;
   contentConflict: boolean;
-  type: string;
-  property: PropertySchema;
+  type: PropertySchema['type'];
 }
 
-interface MapStateProps {
+export interface SimilarPropertiesProps {
   templateProperty: TemplateProperty;
 }
 
-export class SimilarProperty extends Component<MapStateProps> {
+export class SimilarProperty extends Component<SimilarPropertiesProps> {
   render() {
-    const typeIcon = this.props.templateProperty.type.toLowerCase() as keyof typeof Icons;
+    const typeIcon = this.props.templateProperty.type as keyof typeof Icons;
+    const typeToShow =
+      this.props.templateProperty.type[0].toUpperCase() + this.props.templateProperty.type.slice(1);
     const invalidType =
       this.props.templateProperty.typeConflict || this.props.templateProperty.relationConflict;
     const invalidThesauri =
@@ -49,7 +50,7 @@ export class SimilarProperty extends Component<MapStateProps> {
         >
           {invalidType && <Icon icon="exclamation-triangle" />}
           <Icon icon={Icons[typeIcon] || 'fa fa-font'} />
-          {` ${this.props.templateProperty.type}`}
+          {typeToShow}
           {this.props.templateProperty.relationTypeName &&
             ` (${this.props.templateProperty.relationTypeName})`}
         </td>

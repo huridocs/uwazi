@@ -2,29 +2,17 @@ import { connect } from 'react-redux';
 import React, { Component } from 'react';
 
 import { TemplateSchema } from 'shared/types/templateType';
-import { ensure } from 'shared/tsUtils';
 import { PropertySchema } from 'shared/types/commonTypes';
 import { IImmutable } from 'shared/types/Immutable';
-import { SimilarProperty } from './SimilarProperty';
+import { SimilarProperty, TemplateProperty } from './SimilarProperty';
 import { Translate } from 'app/I18N';
-
-interface TemplateProperty {
-  template: string;
-  relationTypeName: string;
-  thesaurusName: string;
-  typeConflict: boolean;
-  relationConflict: boolean;
-  contentConflict: boolean;
-  type: string;
-  property: PropertySchema;
-}
 
 interface MatchedProperty {
   template: string;
   property: PropertySchema;
 }
 
-export class FilterSuggestions extends Component<FilterSuggestionsProps> {
+class FilterSuggestions extends Component<FilterSuggestionsProps> {
   getRelationTypeName(relationTypeId: string) {
     const relationType = relationTypeId
       ? this.props.relationTypes.toJS().find((r: any) => r._id === relationTypeId)
@@ -65,48 +53,50 @@ export class FilterSuggestions extends Component<FilterSuggestionsProps> {
         typeConflict: property.type !== type,
         relationConflict: relationType && property.relationType !== relationType,
         contentConflict: property.content !== content,
-        type: property.type[0].toUpperCase() + property.type.slice(1),
+        type: property.type,
         relationTypeName: this.getRelationTypeName(property.relationType),
         thesaurusName: this.getThesauriName(property.content),
       }) as TemplateProperty;
     });
 
-    const thisProperty = {
+    const thisProperty: TemplateProperty = {
       template: `${this.props.templateName} (this template)`,
-      property: {
-        content,
-        label,
-        type,
-      },
-      type: type[0].toUpperCase() + type.slice(1),
+      type,
       relationTypeName: this.getRelationTypeName(relationType),
       thesaurusName: this.getThesauriName(content),
+      typeConflict: false,
+      contentConflict: false,
+      relationConflict: false,
     };
 
-    const templatesWithSameLabelProperties = [
-      thisProperty as TemplateProperty,
-      ...similarProperties,
-    ];
+    const templatesWithSameLabelProperties = [thisProperty, ...similarProperties];
     const hasContent = templatesWithSameLabelProperties.find(prop => prop.thesaurusName);
     return (
       <React.Fragment>
         <label className="suggestions-label">
-          <Translate>Properties from other templates in the collection using the same label</Translate>
+          <Translate>
+            Properties from other templates in the collection using the same label
+          </Translate>
         </label>
         <table className="table">
           <thead>
             <tr>
-              <th><Translate>Template</Translate></th>
-              <th><Translate>Type</Translate></th>
-              {hasContent && <th><Translate>Thesauri</Translate>/<Translate>Entity</Translate></th>}
+              <th>
+                <Translate>Template</Translate>
+              </th>
+              <th>
+                <Translate>Type</Translate>
+              </th>
+              {hasContent && (
+                <th>
+                  <Translate>Thesauri</Translate>/<Translate>Entity</Translate>
+                </th>
+              )}
             </tr>
           </thead>
           <tbody>
-            {templatesWithSameLabelProperties.map(templateProperty => (
-              <SimilarProperty
-                key={templateProperty.template + templateProperty.property.name}
-                templateProperty={templateProperty}
-              />
+            {templatesWithSameLabelProperties.map((templateProperty, index) => (
+              <SimilarProperty key={index} templateProperty={templateProperty} />
             ))}
           </tbody>
         </table>
@@ -118,7 +108,7 @@ export class FilterSuggestions extends Component<FilterSuggestionsProps> {
 export type FilterSuggestionsProps = {
   index: number;
   label: string;
-  type: string;
+  type: PropertySchema['type'];
   filter: any;
   templateName: string;
   templateId: string | { [k: string]: any } | undefined;
@@ -130,7 +120,7 @@ export type FilterSuggestionsProps = {
 };
 
 export function mapStateToProps(state: any, props: FilterSuggestionsProps) {
-  const propertySchemaElement = ensure<PropertySchema>(state.template.data.properties)[props.index];
+  const propertySchemaElement = state.template.data.properties[props.index];
   const relationTypes = state.relationTypes;
   return {
     templates: state.templates,
