@@ -46,6 +46,10 @@ export class EntityViewer extends Component {
     this.deleteConnection = this.deleteConnection.bind(this);
   }
 
+  onCopyFromSelect(copyFromProps) {
+    this.setState({ copyFromProps });
+  }
+
   deleteEntity() {
     this.context.confirm({
       accept: () => {
@@ -62,10 +66,6 @@ export class EntityViewer extends Component {
     this.setState(currentState => ({
       copyFrom: !currentState.copyFrom,
     }));
-  }
-
-  onCopyFromSelect(copyFromProps) {
-    this.setState({ copyFromProps });
   }
 
   deleteConnection(reference) {
