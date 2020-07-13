@@ -2,11 +2,11 @@ import { connect } from 'react-redux';
 import React, { Component } from 'react';
 
 import { TemplateSchema } from 'shared/types/templateType';
-import { IStore } from 'app/istore';
 import { ensure } from 'shared/tsUtils';
 import { PropertySchema } from 'shared/types/commonTypes';
 import { IImmutable } from 'shared/types/Immutable';
 import { SimilarProperty } from './SimilarProperty';
+import { Translate } from 'app/I18N';
 
 interface TemplateProperty {
   template: string;
@@ -43,7 +43,7 @@ export class FilterSuggestions extends Component<FilterSuggestionsProps> {
     return templates
       .filter(template => template._id !== this.props.templateId && template.properties)
       .map(template => {
-        const property = ensure<PropertySchema[]>(template.properties).find(
+        const property = (template.properties || []).find(
           prop => prop.label.trim().toLowerCase() === label.trim().toLowerCase()
         );
         return (property
@@ -60,7 +60,7 @@ export class FilterSuggestions extends Component<FilterSuggestionsProps> {
       this.props.label,
       this.props.templates.toJS()
     ).map((propertyMatch: MatchedProperty) => {
-      const { property } = ensure<MatchedProperty>(propertyMatch);
+      const { property } = propertyMatch;
       return Object.assign({}, propertyMatch, {
         typeConflict: property.type !== type,
         relationConflict: relationType && property.relationType !== relationType,
@@ -89,16 +89,16 @@ export class FilterSuggestions extends Component<FilterSuggestionsProps> {
     ];
     const hasContent = templatesWithSameLabelProperties.find(prop => prop.thesaurusName);
     return (
-      <>
+      <React.Fragment>
         <label className="suggestions-label">
-          Properties from other templates in the collection using the same label
+          <Translate>Properties from other templates in the collection using the same label</Translate>
         </label>
         <table className="table">
           <thead>
             <tr>
-              <th>Template</th>
-              <th>Type</th>
-              {hasContent && <th>Thesauri/Document</th>}
+              <th><Translate>Template</Translate></th>
+              <th><Translate>Type</Translate></th>
+              {hasContent && <th><Translate>Thesauri</Translate>/<Translate>Entity</Translate></th>}
             </tr>
           </thead>
           <tbody>
@@ -110,7 +110,7 @@ export class FilterSuggestions extends Component<FilterSuggestionsProps> {
             ))}
           </tbody>
         </table>
-      </>
+      </React.Fragment>
     );
   }
 }
@@ -129,9 +129,8 @@ export type FilterSuggestionsProps = {
   relationType: string;
 };
 
-export function mapStateToProps(state: IStore, props: FilterSuggestionsProps) {
+export function mapStateToProps(state: any, props: FilterSuggestionsProps) {
   const propertySchemaElement = ensure<PropertySchema>(state.template.data.properties)[props.index];
-  // @ts-ignore
   const relationTypes = state.relationTypes;
   return {
     templates: state.templates,
@@ -147,5 +146,4 @@ export function mapStateToProps(state: IStore, props: FilterSuggestionsProps) {
   };
 }
 
-// @ts-ignore
 export default connect(mapStateToProps)(FilterSuggestions);
