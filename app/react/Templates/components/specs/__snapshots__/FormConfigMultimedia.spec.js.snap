@@ -87,6 +87,9 @@ exports[`FormConfigMultimedia should allow excluding "required" 1`] = `
       </p>
     </div>
   </div>
+  <Connect(FilterSuggestions)
+    index={0}
+  />
 </div>
 `;
 
@@ -177,6 +180,9 @@ exports[`FormConfigMultimedia should allow excluding "show in card" 1`] = `
       </p>
     </div>
   </div>
+  <Connect(FilterSuggestions)
+    index={0}
+  />
 </div>
 `;
 
@@ -236,6 +242,9 @@ exports[`FormConfigMultimedia should allow excluding "style" 1`] = `
       This property will appear in the library cards as part of the basic info.
     </Tip>
   </PropertyConfigOption>
+  <Connect(FilterSuggestions)
+    index={0}
+  />
 </div>
 `;
 
@@ -346,6 +355,9 @@ exports[`FormConfigMultimedia should allow setting a help text 1`] = `
       </p>
     </div>
   </div>
+  <Connect(FilterSuggestions)
+    index={0}
+  />
 </div>
 `;
 
