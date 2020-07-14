@@ -1,5 +1,3 @@
-/** @format */
-
 import React from 'react';
 import { shallow } from 'enzyme';
 import Immutable from 'immutable';
@@ -20,7 +18,16 @@ describe('PublicForm', () => {
 
   const render = customProps => {
     props = {
-      template: Immutable.fromJS({ _id: '123', properties: [{ type: 'text', name: 'text' }] }),
+      template: Immutable.fromJS({
+        _id: '123',
+        commonProperties: [
+          {
+            label: 'Title changed',
+            name: 'title',
+          },
+        ],
+        properties: [{ type: 'text', name: 'text' }],
+      }),
       thesauris: Immutable.fromJS([]),
       file: false,
       attachments: false,
