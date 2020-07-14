@@ -87,28 +87,42 @@ const getEntitiesToIndex = async (query, offset, limit, select) =>
     documentsFullText: select && select.includes('+fullText'),
   });
 
+const getEntitiesToIndex2 = async (query, stepIndex, limit, select) => {
+  const thisQuery = { ...query };
+  thisQuery._id = !thisQuery._id ? { $gte: stepIndex } : thisQuery._id;
+  return entities.get(thisQuery, '', {
+    limit,
+    documentsFullText: select && select.includes('+fullText'),
+  });
+};
+
 const bulkIndexAndCallback = async assets => {
   const { searchInstance, entitiesToIndex, elasticIndex, batchCallback, totalRows } = assets;
   await searchInstance.bulkIndex(entitiesToIndex, 'index', elasticIndex);
   return batchCallback(entitiesToIndex.length, totalRows);
 };
 
+const getSteps = async () => {
+  const theIds = await entities.getIds();
+  const milestoneIds = [];
+  for (let i = 0; i < theIds.length; i += 49) {
+    milestoneIds.push(theIds[i]);
+  }
+  return milestoneIds;
+};
+
 /*eslint max-statements: ["error", 20]*/
 const indexBatch = async (totalRows, options) => {
   const { query, select, limit, batchCallback, elasticIndex, searchInstance } = options;
-
-  const steps = [];
-  for (let cursor = 0; cursor < totalRows; cursor += limit) {
-    steps.push(steps.length + 1);
-  }
+  const steps = await getSteps();
 
   const promisePool = new PromisePool();
   const { errors: indexingErrors } = await promisePool
     .for(steps)
-    .withConcurrency(20)
+    .withConcurrency(10)
     .process(async stepIndex => {
-      const thisOffset = (stepIndex - 1) * limit;
-      const entitiesToIndex = await getEntitiesToIndex(query, thisOffset, limit, select);
+      const entitiesToIndex = await getEntitiesToIndex2(query, stepIndex, limit, select);
+
       await bulkIndexAndCallback({
         searchInstance,
         entitiesToIndex,

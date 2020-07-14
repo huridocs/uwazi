@@ -378,6 +378,12 @@ export default {
     return model.get(query, select, options);
   },
 
+  async getIds() {
+    return model.get({}, '_id', {
+      sort: { _id: 1 },
+    });
+  },
+
   async get(query, select, options = {}) {
     const { documentsFullText, withPdfInfo, ...restOfOptions } = options;
     const entities = await model.get(query, select, restOfOptions);

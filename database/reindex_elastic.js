@@ -24,8 +24,10 @@ const setReindexSettings = async (refreshInterval, numberOfReplicas, translogDur
   });
 
 const restoreSettings = async () => {
-  process.stdout.write('Restoring index settings...\n');
-  return setReindexSettings('1s', 1, 'request');
+  process.stdout.write('Restoring index settings...');
+  const result = setReindexSettings('1s', 1, 'request');
+  process.stdout.write(' [done]\n');
+  return result;
 };
 
 const endScriptProcedures = async () =>
@@ -67,31 +69,36 @@ const indexEntities = async () => {
   return docsIndexed;
 };
 
+/*eslint-disable max-statements*/
 const prepareIndex = async () => {
-  process.stdout.write(`Deleting index... ${indexConfig.index}\n`);
+  process.stdout.write(`Deleting index ${indexConfig.index}...`);
   try {
     await request.delete(getIndexUrl());
   } catch (err) {
     // Should not stop on index_not_found_exception
     if (err.json.error.type === 'index_not_found_exception') {
       process.stdout.write('\r\nThe index was not found:\r\n');
-      process.stdout.write(`${JSON.stringify(err, null, ' ')}\r\n`);
-      process.stdout.write('\r\nMoving on.\r\n');
+      process.stdout.write(`${JSON.stringify(err, null, ' ')}\r\nMoving on.\r\n`);
     } else {
       throw err;
     }
   }
+  process.stdout.write(' [done]\n');
 
-  process.stdout.write(`Creating index... ${indexConfig.index}\n`);
+  process.stdout.write(`Creating index ${indexConfig.index}...`);
   await request.put(getIndexUrl(), elasticMapping);
+  process.stdout.write(' [done]\n');
 };
 
 const tweakSettingsForPerformmance = async () => {
-  process.stdout.write('Tweaking index settings for reindex performance...\n');
-  return setReindexSettings(-1, 0, 'async');
+  process.stdout.write('Tweaking index settings for reindex performance...');
+  const result = setReindexSettings(-1, 0, 'async');
+  process.stdout.write(' [done]\n');
+  return result;
 };
 
 const reindex = async () => {
+  process.stdout.write('Starting reindex...\r\n');
   const docsIndexed = await indexEntities();
   process.stdout.write(`Indexing documents and entities... - ${docsIndexed} indexed\r\n`);
 };

@@ -309,3 +309,5 @@ Array [
   },
 ]
 `;
+
+exports[`search.searchGeolocations should not fetch unpublished inherited metadata if request is not authenticated 1`] = `Array []`;
