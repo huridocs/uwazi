@@ -80,14 +80,7 @@ const bulkIndex = async (docs, _action = 'index', elasticIndex) => {
   return results;
 };
 
-const getEntitiesToIndex = async (query, offset, limit, select) =>
-  entities.get(query, '', {
-    skip: offset,
-    limit,
-    documentsFullText: select && select.includes('+fullText'),
-  });
-
-const getEntitiesToIndex2 = async (query, stepIndex, limit, select) => {
+const getEntitiesToIndex = async (query, stepIndex, limit, select) => {
   const thisQuery = { ...query };
   thisQuery._id = !thisQuery._id ? { $gte: stepIndex } : thisQuery._id;
   return entities.get(thisQuery, '', {
@@ -121,7 +114,7 @@ const indexBatch = async (totalRows, options) => {
     .for(steps)
     .withConcurrency(10)
     .process(async stepIndex => {
-      const entitiesToIndex = await getEntitiesToIndex2(query, stepIndex, limit, select);
+      const entitiesToIndex = await getEntitiesToIndex(query, stepIndex, limit, select);
 
       await bulkIndexAndCallback({
         searchInstance,
