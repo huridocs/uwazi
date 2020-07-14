@@ -189,6 +189,23 @@ describe('documentActions', () => {
             rows: [{ documents: [{ pdfInfo: 'test' }] }],
           }),
         })
+        .get(`${APIURL}entities?sharedId=docCalledWithWrongPDFFilename`, {
+          body: JSON.stringify({
+            rows: [
+              {
+                _id: 'pdfCalledWithWrongFilename',
+                sharedId: 'shared',
+                documents: [
+                  {
+                    _id: 'pdfCalledWithWrongFilename',
+                    filename: 'filename',
+                    pdfInfo: 'processed pdf',
+                  },
+                ],
+              },
+            ],
+          }),
+        })
         .get(`${APIURL}entities?sharedId=docWithPDFRdy`, {
           body: JSON.stringify({
             rows: [{ documents: [{ pdfInfo: 'processed pdf', _id: 'pdfReady' }] }],
@@ -248,6 +265,12 @@ describe('documentActions', () => {
         const requestParams = new RequestParams({ sharedId: 'docWithPDFRdy' });
         const doc = await actions.getDocument(requestParams);
         expect(doc.documents[0].pdfInfo).toBe('processed pdf');
+      });
+      it('should return empty object if the document is requested with wrong file name', async () => {
+        const requestParams = new RequestParams({ sharedId: 'docCalledWithWrongPDFFilename' });
+        const doc = await actions.getDocument(requestParams, 'en', 'filenam');
+        expect(doc.documents[0].filename).not.toBe('filenam');
+        expect(doc.defaultDoc).toEqual({});
       });
 
       describe('when the doc does not have the pdf processed', () => {

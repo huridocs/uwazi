@@ -2,7 +2,7 @@
 
 exports[`ThesaurusCockpit render should render a ThesaurusCockpit 1`] = `
 <div
-  className="flex panel panel-default"
+  className="flex thesaurus-cockpit panel panel-default"
 >
   <div
     className="panel-heading"

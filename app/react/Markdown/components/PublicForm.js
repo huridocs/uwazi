@@ -14,13 +14,18 @@ import { FormGroup } from 'app/Forms';
 import Loader from 'app/components/Elements/Loader';
 
 class PublicForm extends Component {
-  static renderTitle() {
+  static renderTitle(template) {
+    const titleLabel = template
+      .get('commonProperties')
+      .find(p => p.get('name') === 'title')
+      .get('label');
+
     return (
       <FormGroup key="title" model=".title">
         <ul className="search__filter">
           <li>
             <label htmlFor="title">
-              <Translate>Title</Translate>
+              <Translate context={template.get('_id')}>{titleLabel}</Translate>
               <span className="required">*</span>
             </label>
           </li>
@@ -143,7 +148,7 @@ class PublicForm extends Component {
           PublicForm.renderSubmitState()
         ) : (
           <div className="public-form">
-            {PublicForm.renderTitle()}
+            {PublicForm.renderTitle(template)}
             <MetadataFormFields thesauris={thesauris} model="publicform" template={template} />
             {file ? PublicForm.renderFileField('file', { accept: '.pdf' }) : false}
             {attachments

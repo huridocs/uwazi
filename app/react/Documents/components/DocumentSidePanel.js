@@ -18,6 +18,7 @@ import DocumentSemanticSearchResults from 'app/SemanticSearch/components/Documen
 import { Icon } from 'UI';
 
 import * as viewerModule from 'app/Viewer';
+import { entityDefaultDocument } from 'shared/entityDefaultDocument';
 import SearchText from './SearchText';
 import ShowToc from './ShowToc';
 import SnippetsTab from './SnippetsTab';
@@ -37,6 +38,20 @@ export class DocumentSidePanel extends Component {
     ) {
       this.props.getDocumentReferences(newProps.doc.get('sharedId'), this.props.storeKey);
     }
+  }
+
+  getDefaultDocumentToC(isEntity, documents, language, defaultLanguage) {
+    let defaultDocumentToC = this.props.file.toc;
+
+    if (!isEntity) {
+      const defaultDocument = {
+        ...entityDefaultDocument(documents, language, defaultLanguage),
+      };
+      if (defaultDocument) {
+        defaultDocumentToC = defaultDocument.toc;
+      }
+    }
+    return defaultDocumentToC;
   }
 
   deleteDocument() {
@@ -87,18 +102,23 @@ export class DocumentSidePanel extends Component {
       isTargetDoc,
       excludeConnectionsTab,
       relationships,
+      defaultLanguage,
     } = this.props;
     const TocForm = this.props.tocFormComponent;
 
-    const { attachments, documents } = doc.toJS();
+    const { attachments, documents, language, defaultDoc } = doc.toJS();
 
     const isEntity = !documents || !documents.length;
+    const defaultDocumentToC =
+      isEntity || !defaultDoc
+        ? this.getDefaultDocumentToC(isEntity, documents, language, defaultLanguage)
+        : defaultDoc.toc;
 
-    let { tab } = this.props;
     this.initialTemplateId = doc.get('template');
-    if (isEntity && (tab === 'references' || tab === 'toc')) {
-      tab = 'metadata';
-    }
+    const tab =
+      isEntity && (this.props.tab === 'references' || this.props.tab === 'toc')
+        ? 'metadata'
+        : this.props.tab;
 
     const summary = connectionsGroups.reduce(
       (summaryData, g) => {
@@ -149,7 +169,7 @@ export class DocumentSidePanel extends Component {
                     <li>
                       <TabLink to="toc">
                         <Icon icon="font" />
-                        <span className="tab-link-tooltip">{t('System', 'Table of Content')}</span>
+                        <span className="tab-link-tooltip">{t('System', 'Table of Contents')}</span>
                       </TabLink>
                     </li>
                   );
@@ -248,7 +268,7 @@ export class DocumentSidePanel extends Component {
             <TabContent for="toc">
               <ShowIf if={!this.props.tocBeingEdited}>
                 <ShowToc
-                  toc={this.props.file.toc}
+                  toc={defaultDocumentToC}
                   pdfInfo={this.props.file.pdfInfo}
                   readOnly={readOnly}
                 />
@@ -376,6 +396,7 @@ DocumentSidePanel.propTypes = {
   storeKey: PropTypes.string.isRequired,
   raw: PropTypes.bool,
   file: PropTypes.object,
+  defaultLanguage: PropTypes.string.isRequired,
 };
 
 DocumentSidePanel.contextTypes = {
@@ -398,11 +419,16 @@ export const mapStateToProps = (state, ownProps) => {
   const references = ownProps.references
     ? viewerModule.selectors.parseReferences(ownProps.doc, ownProps.references)
     : relevantReferences;
+  const defaultLanguage = state.settings.collection
+    .get('languages')
+    .find(l => l.get('default'))
+    .get('key');
   return {
     references,
     excludeConnectionsTab: Boolean(ownProps.references),
     connectionsGroups: state.relationships.list.connectionsGroups,
     relationships: ownProps.references,
+    defaultLanguage,
   };
 };
 
