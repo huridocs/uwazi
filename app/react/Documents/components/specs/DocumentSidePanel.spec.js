@@ -1,14 +1,18 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import Immutable, { fromJS } from 'immutable';
+import { Tabs } from 'react-tabs-redux';
 
 import { ConnectionsGroups } from 'app/ConnectionsList';
 import SidePanel from 'app/Layout/SidePanel';
 import Connections from 'app/Viewer/components/ConnectionsList';
-import { Tabs } from 'react-tabs-redux';
 import * as viewerModule from 'app/Viewer';
+import { entityDefaultDocument } from 'shared/entityDefaultDocument';
 
+import ShowToc from '../ShowToc';
 import { DocumentSidePanel, mapStateToProps } from '../DocumentSidePanel';
+
+jest.mock('shared/entityDefaultDocument');
 
 describe('DocumentSidePanel', () => {
   let component;
@@ -38,6 +42,7 @@ describe('DocumentSidePanel', () => {
         { templates: [{ count: 3 }, { count: 4 }] },
       ]),
       open: true,
+      defaultLanguage: 'es',
     };
   });
 
@@ -55,7 +60,6 @@ describe('DocumentSidePanel', () => {
     it('should open SidePanel', () => {
       props.open = true;
       render();
-
       expect(component.find(SidePanel).props().open).toBe(true);
     });
   });
@@ -107,7 +111,6 @@ describe('DocumentSidePanel', () => {
             .props().selectedTab
         ).toBe('metadata');
       });
-
       it('should pass to entityForm the initial templateId', () => {
         props.doc = Immutable.fromJS({ type: 'entity', template: 'templateId' });
         props.docBeingEdited = true;
@@ -126,6 +129,34 @@ describe('DocumentSidePanel', () => {
         props.docBeingEdited = true;
         render();
         expect(component.find('DocumentForm').props().initialTemplateId).toBe('templateId');
+      });
+    });
+
+    describe('when doc passed has toc', () => {
+      const toc = ['title1', 'title2', 'title3'];
+      function expectToCValuesAreTheProvidedInProps() {
+        props.tab = 'toc';
+        render();
+        expect(component.find(ShowToc).props().toc).toEqual(toc);
+      }
+      it('should set toc of the loaded file if doc is a new entity', () => {
+        props.doc = Immutable.fromJS({ metadata: [], attachments: [], type: 'entity' });
+        props.file = { toc, pdfInfo: {} };
+        expectToCValuesAreTheProvidedInProps();
+      });
+      it('should set the toc of the default document if doc is a loaded entity', () => {
+        const documents = [{ toc }];
+        entityDefaultDocument.mockReturnValue(documents[0]);
+        props.doc = Immutable.fromJS({ documents, attachments: [], type: 'entity' });
+        expectToCValuesAreTheProvidedInProps();
+      });
+      it('should set the toc of the defaultDoc of document if doc is not an entity', () => {
+        props.doc = Immutable.fromJS({
+          type: 'document',
+          defaultDoc: { toc },
+          documents: [{ filename: 'file1' }],
+        });
+        expectToCValuesAreTheProvidedInProps();
       });
     });
   });
@@ -148,9 +179,7 @@ describe('DocumentSidePanel', () => {
         props.docBeingEdited = true;
         props.formPath = 'formPath';
         render();
-
         component.find('.close-modal').simulate('click');
-
         expect(props.closePanel).toHaveBeenCalled();
         expect(props.resetForm).toHaveBeenCalledWith('formPath');
       });
@@ -159,12 +188,17 @@ describe('DocumentSidePanel', () => {
 
   describe('mapStateToProps', () => {
     let state;
+    const languages = [
+      { key: 'en', label: 'English' },
+      { key: 'pr', label: 'Português', default: true },
+    ];
 
     beforeEach(() => {
       state = {
         documentViewer: { targetDoc: Immutable.fromJS({ _id: null }) },
         relationships: { list: { connectionsGroups: 'connectionsGroups' } },
         relationTypes: Immutable.fromJS(['a', 'b']),
+        settings: { collection: Immutable.fromJS({ languages }) },
       };
       spyOn(viewerModule.selectors, 'parseReferences').and.callFake(
         (doc, refs) => `Parsed ${doc} refs: ${refs}`
@@ -204,6 +238,11 @@ describe('DocumentSidePanel', () => {
     it('should map connectionsGroups', () => {
       const ownProps = {};
       expect(mapStateToProps(state, ownProps).connectionsGroups).toBe('connectionsGroups');
+    });
+
+    it('should map default language', () => {
+      const ownProps = {};
+      expect(mapStateToProps(state, ownProps).defaultLanguage).toBe('pr');
     });
   });
 });
