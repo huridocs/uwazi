@@ -182,7 +182,7 @@ function filterInconsistentProperties(template: TemplateSchema, allProperties: P
           p.name === property.name &&
           (p.content !== property.content ||
             p.type !== property.type ||
-            p.relationtype !== property.relationType)
+            p.relationType !== property.relationType)
       );
 
       if (matches && !propertyNames.includes(ensure(property.name))) {
