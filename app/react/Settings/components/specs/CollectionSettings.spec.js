@@ -59,7 +59,7 @@ describe('CollectionSettings', () => {
         private: false,
         allowedPublicTemplatesString: 'id1,id2',
         mapTilerKey: 'mapTilerKey1',
-        mapStartingPoint: { value: { lat: 80, lon: 80, label: '' } },
+        mapStartingPoint: [{ value: { lat: 80, lon: 80, label: '' } }],
       };
 
       expectedData = {
@@ -74,7 +74,7 @@ describe('CollectionSettings', () => {
         site_name: 'Uwazi',
         allowedPublicTemplates: ['id1', 'id2'],
         mapTilerKey: 'mapTilerKey1',
-        mapStartingPoint: { value: { lat: 80, lon: 80, label: '' } },
+        mapStartingPoint: [{ value: { lat: 80, lon: 80, label: '' } }],
       };
 
       component = shallow(<CollectionSettings {...props} />);

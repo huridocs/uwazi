@@ -87,8 +87,8 @@ function removeTemplate(filters, templateId) {
 
 function setDefaults(storedSettings) {
   const [settings] = storedSettings;
-  if (settings) settings.mapTilerKey = settings.mapTilerKey || DEFAULT_MAP_TILER_KEY;
   if (settings) {
+    settings.mapTilerKey = settings.mapTilerKey || DEFAULT_MAP_TILER_KEY;
     settings.mapStartingPoint = settings.mapStartingPoint || DEFAULT_MAP_STARTING_POINT;
   }
   return settings || {};
