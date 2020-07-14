@@ -1,7 +1,6 @@
 import { I18NLink, t } from 'app/I18N';
 import { IStore, OneUpState } from 'app/istore';
 import { switchOneUpEntity, toggleOneUpFullEdit } from 'app/Review/actions/actions';
-import 'app/Review/scss/review.scss';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
