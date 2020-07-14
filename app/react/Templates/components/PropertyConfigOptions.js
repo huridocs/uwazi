@@ -68,9 +68,9 @@ class PropertyConfigOptions extends Component {
                 )}
               </React.Fragment>
             )}
-            <FilterSuggestions index={index} />
           </div>
         )}
+        <FilterSuggestions index={index} />
       </div>
     );
   }
