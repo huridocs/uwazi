@@ -446,5 +446,8 @@ exports[`FormConfigMultimedia should hold show label, show in card and select ca
       </p>
     </div>
   </div>
+  <Connect(FilterSuggestions)
+    index={0}
+  />
 </div>
 `;
