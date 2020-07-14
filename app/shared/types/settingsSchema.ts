@@ -78,7 +78,7 @@ export const settingsSchema = {
     custom: {},
     customCSS: { type: 'string' },
     mapTilerKey: { type: 'string' },
-    newNameGeneration: { type: 'boolean' },
+    newNameGeneration: { type: 'boolean', enum: [true] },
 
     sync: settingsSyncSchema,
 

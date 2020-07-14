@@ -6,6 +6,8 @@ import { LanguageSchema, ObjectIdSchema } from 'shared/types/commonTypes';
 import { validateSettings } from 'shared/types/settingsSchema';
 
 import { settingsModel } from './settingsModel';
+import templates from 'api/templates';
+import { TemplateSchema } from 'shared/types/templateType';
 
 const DEFAULT_MAP_TILER_KEY = 'QiI1BlAJNMmZagsX5qp7';
 
@@ -121,7 +123,24 @@ export default {
     const currentSettings = await this.get();
     await saveLinksTranslations(settings.links, currentSettings.links);
     await saveFiltersTranslations(settings.filters, currentSettings.filters);
-    return settingsModel.save(Object.assign({}, settings, { _id: currentSettings._id }));
+
+    const result = await settingsModel.save(
+      Object.assign({}, settings, { _id: currentSettings._id })
+    );
+
+    if (!currentSettings.newNameGeneration && settings.newNameGeneration) {
+      await (await templates.get()).reduce<Promise<TemplateSchema>>(async (lastSave, template) => {
+        await lastSave;
+        return templates.save(
+          template,
+          ensure<LanguageSchema>(
+            ensure<LanguageSchema[]>(currentSettings.languages).find(l => l.default)
+          ).key
+        );
+      }, Promise.resolve({} as TemplateSchema));
+    }
+
+    return result;
   },
 
   async setDefaultLanguage(key: string) {
