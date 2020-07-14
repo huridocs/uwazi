@@ -14,10 +14,12 @@ setRTLTextPlugin(
   true //lazy load
 );
 
+const PRIME_MERIDIAN = 0;
+
 const getStateDefaults = ({ latitude, longitude, width, height, zoom }) => ({
   viewport: {
-    latitude: latitude || 46,
-    longitude: longitude || 6,
+    latitude: latitude || PRIME_MERIDIAN,
+    longitude: longitude || PRIME_MERIDIAN,
     width: width || 250,
     height: height || 200,
     zoom,
@@ -47,7 +49,10 @@ export default class Map extends Component {
   }
 
   async componentDidMount() {
-    await this.replaceKeysMapStyleJson();
+    this.collectionSettings = await settingsAPI.get();
+    this.setDefaultCoordinates();
+
+    this.replaceKeysMapStyleJson();
     const { markers } = this.props;
     this.setSize();
     const map = this.map.getMap();
@@ -55,7 +60,7 @@ export default class Map extends Component {
       map.on('load', () => this.centerOnMarkers(markers));
       map.on('moveend', e => {
         if (e.autoCentered) {
-          this.setViweport(map);
+          this.setViewport(map);
         }
       });
     }
@@ -119,6 +124,15 @@ export default class Map extends Component {
     }
   }
 
+  setDefaultCoordinates() {
+    const { viewport } = this.state;
+    if (viewport.latitude === PRIME_MERIDIAN && viewport.longitude === PRIME_MERIDIAN) {
+      viewport.latitude = this.collectionSettings.mapStartingPoint[0].lat;
+      viewport.longitude = this.collectionSettings.mapStartingPoint[0].lon;
+      this.setState({ viewport });
+    }
+  }
+
   setSize() {
     const { viewport } = this.state;
     const { width, height } = this.props;
@@ -127,7 +141,7 @@ export default class Map extends Component {
     this.setState({ viewport });
   }
 
-  setViweport(map) {
+  setViewport(map) {
     const { viewport } = this.state;
     const newViewport = Object.assign(viewport, {
       latitude: map.getCenter().lat,
@@ -247,9 +261,9 @@ export default class Map extends Component {
     hoverOnMarker(marker);
   }
 
-  async replaceKeysMapStyleJson() {
+  replaceKeysMapStyleJson() {
+    const { mapTilerKey } = this.collectionSettings;
     const mapTilerKeyPlaceholder = /{{MAP_TILER_KEY}}/g;
-    const { mapTilerKey } = await settingsAPI.get();
     const stringifyStyle = JSON.stringify(this.mapStyle).replace(
       mapTilerKeyPlaceholder,
       mapTilerKey

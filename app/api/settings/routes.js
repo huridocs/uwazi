@@ -58,13 +58,15 @@ export default app => {
             favorites: Joi.boolean(),
           }),
           mapTilerKey: Joi.string().allow(''),
-          mapStartingPoint: Joi.object().keys({
-            lat: Joi.number(),
-            lon: Joi.number(),
-            label: Joi.string()
-              .allow(null)
-              .allow(''),
-          }),
+          mapStartingPoint: Joi.array().items(
+            Joi.object().keys({
+              lat: Joi.number(),
+              lon: Joi.number(),
+              label: Joi.string()
+                .allow(null)
+                .allow(''),
+            })
+          ),
         })
         .required()
     ),
