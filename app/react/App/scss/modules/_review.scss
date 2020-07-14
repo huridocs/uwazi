@@ -1,7 +1,3 @@
-@import '../../App/scss/config/_colors.scss';
-@import '../../App/scss/config/_materials.scss';
-@import '../../App/scss/config/_typography.scss';
-
 $header-height: 44px;
 
 .row.flex {
@@ -57,8 +53,6 @@ $header-height: 44px;
 }
 
 .flex {
-  @import '../../App/scss/layout/_sidepanel.scss';
-
   .content-holder {
     display: flex;
     flex-direction: row;
@@ -182,7 +176,6 @@ $header-height: 44px;
   }
 
   .content-footer {
-    @extend .sidepanel-footer;
     position: unset;
     transform: unset;
     background-color: white;
@@ -247,7 +240,6 @@ $header-height: 44px;
   }
 
   .settings-footer {
-    @extend .sidepanel-footer;
     border: none;
     background: transparent;
   }
