@@ -32,18 +32,23 @@ describe('files routes', () => {
   afterAll(async () => db.disconnect());
 
   describe('POST/files', () => {
-    it('should save file on the body', async () => {
+    beforeEach(async () => {
       await request(app)
         .post('/api/files')
         .send({ _id: uploadId.toString(), originalname: 'newName' });
+    });
 
+    it('should save file on the body', async () => {
       const [upload] = await files.get({ _id: uploadId.toString() });
-
       expect(upload).toEqual(
         expect.objectContaining({
           originalname: 'newName',
         })
       );
+    });
+
+    it('should reindex all entities that are related to the saved file', async () => {
+      expect(search.indexEntities).toHaveBeenCalledWith({ sharedId: 'entity' }, '+fullText');
     });
   });
 

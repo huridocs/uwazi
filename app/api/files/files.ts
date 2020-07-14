@@ -9,7 +9,7 @@ import { FileType } from '../../shared/types/fileType';
 export const files = {
   async save(file: FileType) {
     const savedFile = await model.save(await validateFile(file));
-    await search.indexEntities({ sharedId: file.entity }, '+fullText');
+    await search.indexEntities({ sharedId: savedFile.entity }, '+fullText');
     return savedFile;
   },
 
