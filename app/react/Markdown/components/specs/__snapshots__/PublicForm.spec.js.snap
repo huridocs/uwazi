@@ -31,8 +31,10 @@ exports[`PublicForm should enable remote captcha 1`] = `
           <label
             htmlFor="title"
           >
-            <Connect(Translate)>
-              Title
+            <Connect(Translate)
+              context="123"
+            >
+              Title changed
             </Connect(Translate)>
             <span
               className="required"
@@ -57,6 +59,12 @@ exports[`PublicForm should enable remote captcha 1`] = `
       template={
         Immutable.Map {
           "_id": "123",
+          "commonProperties": Immutable.List [
+            Immutable.Map {
+              "label": "Title changed",
+              "name": "title",
+            },
+          ],
           "properties": Immutable.List [
             Immutable.Map {
               "type": "text",
@@ -137,8 +145,10 @@ exports[`PublicForm should render a form 1`] = `
           <label
             htmlFor="title"
           >
-            <Connect(Translate)>
-              Title
+            <Connect(Translate)
+              context="123"
+            >
+              Title changed
             </Connect(Translate)>
             <span
               className="required"
@@ -163,6 +173,12 @@ exports[`PublicForm should render a form 1`] = `
       template={
         Immutable.Map {
           "_id": "123",
+          "commonProperties": Immutable.List [
+            Immutable.Map {
+              "label": "Title changed",
+              "name": "title",
+            },
+          ],
           "properties": Immutable.List [
             Immutable.Map {
               "type": "text",
@@ -243,8 +259,10 @@ exports[`PublicForm should render a form with file and attachments 1`] = `
           <label
             htmlFor="title"
           >
-            <Connect(Translate)>
-              Title
+            <Connect(Translate)
+              context="123"
+            >
+              Title changed
             </Connect(Translate)>
             <span
               className="required"
@@ -269,6 +287,12 @@ exports[`PublicForm should render a form with file and attachments 1`] = `
       template={
         Immutable.Map {
           "_id": "123",
+          "commonProperties": Immutable.List [
+            Immutable.Map {
+              "label": "Title changed",
+              "name": "title",
+            },
+          ],
           "properties": Immutable.List [
             Immutable.Map {
               "type": "text",
