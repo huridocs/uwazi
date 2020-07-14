@@ -142,10 +142,10 @@ export default [
   { key: 'No Relationships description', label: 'Relationships are bonds between entities.' },
   { key: 'No type', label: 'No type' },
   { key: 'No type', label: 'No type' },
-  { key: 'No Table of Content', label: 'No Table of Content' },
+  { key: 'No Table of Contents', label: 'No Table of Contents' },
   {
-    key: 'No Table of Content description',
-    label: 'Table of Content allows users to navigate easier throught the document.',
+    key: 'No Table of Contents description',
+    label: 'Table of Contents allows users to navigate easier throught the document.',
   },
   { key: 'No text match', label: 'No text match' },
   {
@@ -194,7 +194,7 @@ export default [
   { key: 'Size', label: 'Size' },
   { key: 'Size', label: 'Size' },
   { key: 'Sort by', label: 'Sort by' },
-  { key: 'Table of Content', label: 'Table of Content' },
+  { key: 'Table of Contents', label: 'Table of Contents' },
   { key: 'Text', label: 'Text' },
   { key: 'Thesauri', label: 'Thesauri' },
   { key: 'Thesaurus saved', label: 'Thesaurus saved' },

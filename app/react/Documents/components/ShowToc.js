@@ -20,8 +20,8 @@ export class ShowToc extends Component {
       return (
         <div className="blank-state">
           <Icon icon="font" />
-          <h4>{t('System', 'No Table of Content')}</h4>
-          <p>{t('System', 'No Table of Content description')}</p>
+          <h4>{t('System', 'No Table of Contents')}</h4>
+          <p>{t('System', 'No Table of Contents description')}</p>
         </div>
       );
     }
