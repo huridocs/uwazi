@@ -41,6 +41,7 @@ $c-sidebar: $c-white;
 
     &.two-columns #metadataForm {
       display: block;
+      min-width: 350px;
     }
   }
 
