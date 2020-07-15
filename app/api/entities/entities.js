@@ -662,7 +662,7 @@ export default {
     }
     const entities = await this.get(query, { _id: 1 });
     await model.db.updateMany(query, { $pull: changes });
-    if(entities.length > 0) {
+    if (entities.length > 0) {
       await search.indexEntities({ _id: { $in: entities.map(e => e._id.toString()) } }, null, 1000);
     }
   },
