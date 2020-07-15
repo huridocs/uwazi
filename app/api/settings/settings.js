@@ -3,7 +3,7 @@ import translations from 'api/i18n/translations';
 import model from './settingsModel';
 
 const DEFAULT_MAP_TILER_KEY = 'QiI1BlAJNMmZagsX5qp7';
-const DEFAULT_MAP_STARTING_POINT = [{ lon: 6, label: '', lat: 46 }];
+const DEFAULT_MAP_STARTING_POINT = [{ lon: 6, lat: 46 }];
 
 const getUpdatesAndDeletes = (newValues, currentValues, matchProperty, propertyName) => {
   const updatedValues = {};
