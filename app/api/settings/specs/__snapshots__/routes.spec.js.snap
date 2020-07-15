@@ -269,13 +269,6 @@ Object {
       "items": Array [
         Object {
           "children": Object {
-            "label": Object {
-              "type": "string",
-              "valids": Array [
-                null,
-                "",
-              ],
-            },
             "lat": Object {
               "invalids": Array [
                 Infinity,
