@@ -115,14 +115,15 @@ const indexBatch = async (totalRows, options) => {
     .withConcurrency(10)
     .process(async stepIndex => {
       const entitiesToIndex = await getEntitiesToIndex(query, stepIndex, limit, select);
-
-      await bulkIndexAndCallback({
-        searchInstance,
-        entitiesToIndex,
-        elasticIndex,
-        batchCallback,
-        totalRows,
-      });
+      if (entitiesToIndex.length > 0) {
+        await bulkIndexAndCallback({
+          searchInstance,
+          entitiesToIndex,
+          elasticIndex,
+          batchCallback,
+          totalRows,
+        });
+      }
     });
 
   let returnErrors = indexingErrors;

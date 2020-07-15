@@ -19,12 +19,14 @@ export const files = {
     const toDeleteFiles: FileType[] = await model.get(query);
 
     await model.delete(query);
-    await connections.delete({ file: { $in: toDeleteFiles.map(f => f._id?.toString()) } });
-    await deleteUploadedFiles(toDeleteFiles);
-    await search.indexEntities(
-      { sharedId: { $in: toDeleteFiles.map(f => f.entity?.toString()) } },
-      '+fullText'
-    );
+    if(toDeleteFiles.length > 0) {
+      await connections.delete({ file: { $in: toDeleteFiles.map(f => f._id?.toString()) } });
+      await deleteUploadedFiles(toDeleteFiles);
+      await search.indexEntities(
+        { sharedId: { $in: toDeleteFiles.map(f => f.entity?.toString()) } },
+        '+fullText'
+      );
+    }
 
     return toDeleteFiles;
   },
