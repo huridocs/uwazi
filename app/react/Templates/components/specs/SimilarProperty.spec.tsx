@@ -1,6 +1,3 @@
-/**
- * @jest-environment jsdom
- */
 import React from 'react';
 import { shallow } from 'enzyme';
 import { SimilarProperty } from 'app/Templates/components/SimilarProperty';

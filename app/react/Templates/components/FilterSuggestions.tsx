@@ -1,18 +1,18 @@
 import { connect } from 'react-redux';
 import React, { Component } from 'react';
 
+import { Translate } from 'app/I18N';
 import { TemplateSchema } from 'shared/types/templateType';
 import { PropertySchema } from 'shared/types/commonTypes';
 import { IImmutable } from 'shared/types/Immutable';
 import { SimilarProperty, TemplateProperty } from './SimilarProperty';
-import { Translate } from 'app/I18N';
 
 interface MatchedProperty {
   template: string;
   property: PropertySchema;
 }
 
-class FilterSuggestions extends Component<FilterSuggestionsProps> {
+class SharedProperties extends Component<FilterSuggestionsProps> {
   getRelationTypeName(relationTypeId: string) {
     const relationType = relationTypeId
       ? this.props.relationTypes.toJS().find((r: any) => r._id === relationTypeId)
@@ -121,11 +121,11 @@ export type FilterSuggestionsProps = {
 
 export function mapStateToProps(state: any, props: FilterSuggestionsProps) {
   const propertySchemaElement = state.template.data.properties[props.index];
-  const relationTypes = state.relationTypes;
+  const { relationTypes } = state;
   return {
     templates: state.templates,
     thesauris: state.thesauris,
-    relationTypes: relationTypes,
+    relationTypes,
     templateName: state.template.data.name,
     templateId: state.template.data._id,
     type: propertySchemaElement.type,
@@ -136,4 +136,4 @@ export function mapStateToProps(state: any, props: FilterSuggestionsProps) {
   };
 }
 
-export default connect(mapStateToProps)(FilterSuggestions);
+export const FilterSuggestions = connect(mapStateToProps)(SharedProperties);

@@ -1,7 +1,7 @@
 import Immutable from 'immutable';
 
-import FilterSuggestions from '../FilterSuggestions';
 import { renderConnected } from 'app/Templates/specs/utils/renderConnected';
+import { FilterSuggestions } from '../FilterSuggestions';
 
 describe('FilterSuggestions', () => {
   let component: any;

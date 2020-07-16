@@ -8,7 +8,7 @@ import { t } from 'app/I18N';
 import { Select } from 'app/ReactReduxForms';
 import Tip from 'app/Layout/Tip';
 
-import FilterSuggestions from 'app/Templates/components/FilterSuggestions';
+import { FilterSuggestions } from 'app/Templates/components/FilterSuggestions';
 import PropertyConfigOption from './PropertyConfigOption';
 import { checkErrorsOnLabel } from '../utils/checkErrorsOnLabel';
 
