@@ -32,7 +32,7 @@ exports[`PropertyConfigOptions Additional options should allow to exclude the "u
       This property will appear in the library cards as part of the basic info.
     </Tip>
   </PropertyConfigOption>
-  <Connect(FilterSuggestions)
+  <Connect(SharedProperties)
     index={2}
   />
 </div>
@@ -104,7 +104,7 @@ exports[`PropertyConfigOptions Once the property is checked as filter should ren
       </Tip>
     </PropertyConfigOption>
   </div>
-  <Connect(FilterSuggestions)
+  <Connect(SharedProperties)
     index={2}
   />
 </div>
@@ -156,7 +156,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is n
       </Tip>
     </PropertyConfigOption>
   </div>
-  <Connect(FilterSuggestions)
+  <Connect(SharedProperties)
     index={2}
   />
 </div>
@@ -208,7 +208,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is n
       </Tip>
     </PropertyConfigOption>
   </div>
-  <Connect(FilterSuggestions)
+  <Connect(SharedProperties)
     index={2}
   />
 </div>
@@ -260,7 +260,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is n
       </Tip>
     </PropertyConfigOption>
   </div>
-  <Connect(FilterSuggestions)
+  <Connect(SharedProperties)
     index={2}
   />
 </div>
@@ -312,7 +312,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is n
       </Tip>
     </PropertyConfigOption>
   </div>
-  <Connect(FilterSuggestions)
+  <Connect(SharedProperties)
     index={2}
   />
 </div>
@@ -384,7 +384,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
       </Tip>
     </PropertyConfigOption>
   </div>
-  <Connect(FilterSuggestions)
+  <Connect(SharedProperties)
     index={2}
   />
 </div>
@@ -456,7 +456,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
       </Tip>
     </PropertyConfigOption>
   </div>
-  <Connect(FilterSuggestions)
+  <Connect(SharedProperties)
     index={2}
   />
 </div>
@@ -528,7 +528,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
       </Tip>
     </PropertyConfigOption>
   </div>
-  <Connect(FilterSuggestions)
+  <Connect(SharedProperties)
     index={2}
   />
 </div>
@@ -600,7 +600,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
       </Tip>
     </PropertyConfigOption>
   </div>
-  <Connect(FilterSuggestions)
+  <Connect(SharedProperties)
     index={2}
   />
 </div>
@@ -652,7 +652,7 @@ exports[`PropertyConfigOptions should render fields with the correct datas 1`] =
       </Tip>
     </PropertyConfigOption>
   </div>
-  <Connect(FilterSuggestions)
+  <Connect(SharedProperties)
     index={2}
   />
 </div>
