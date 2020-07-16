@@ -96,10 +96,10 @@ const bulkIndexAndCallback = async assets => {
 };
 
 const getSteps = async () => {
-  const theIds = await entities.getIds();
+  const allIds = await entities.getWithoutDocuments({}, '_id', { sort: { _id: 1 } });
   const milestoneIds = [];
-  for (let i = 0; i < theIds.length; i += 49) {
-    milestoneIds.push(theIds[i]);
+  for (let i = 0; i < allIds.length; i += 49) {
+    milestoneIds.push(allIds[i]);
   }
   return milestoneIds;
 };
