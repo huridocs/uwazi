@@ -269,6 +269,7 @@ export default class Map extends Component {
       mapTilerKey
     );
     this.mapStyle = Immutable.fromJS(JSON.parse(stringifyStyle));
+    this.setState({ mapStyleLoaded: true });
   }
 
   renderMarker(marker, onClick, onMouseEnter, onMouseLeave) {
@@ -358,28 +359,30 @@ export default class Map extends Component {
         }}
         style={{ width: '100%', height: '100%' }}
       >
-        <ReactMapGL
-          ref={ref => {
-            this.map = ref;
-          }}
-          {...viewport}
-          {...settings}
-          dragRotate
-          mapStyle={this.mapStyle}
-          onViewportChange={this._onViewportChange}
-          onViewStateChange={this._onViewStateChange}
-          onClick={this.onClick}
-          onHover={this.onHover}
-          interactiveLayerIds={this.interactiveLayerIds}
-        >
-          {this.renderMarkers()}
-          {this.renderPopup()}
-          {this.renderControls()}
-          <span className="mapbox-help">
-            <Icon icon="question-circle" />
-            <span className="mapbox-tooltip">Hold shift to rotate the map</span>
-          </span>
-        </ReactMapGL>
+        {this.state && this.state.mapStyleLoaded && (
+          <ReactMapGL
+            ref={ref => {
+              this.map = ref;
+            }}
+            {...viewport}
+            {...settings}
+            dragRotate
+            mapStyle={this.mapStyle}
+            onViewportChange={this._onViewportChange}
+            onViewStateChange={this._onViewStateChange}
+            onClick={this.onClick}
+            onHover={this.onHover}
+            interactiveLayerIds={this.interactiveLayerIds}
+          >
+            {this.renderMarkers()}
+            {this.renderPopup()}
+            {this.renderControls()}
+            <span className="mapbox-help">
+              <Icon icon="question-circle" />
+              <span className="mapbox-tooltip">Hold shift to rotate the map</span>
+            </span>
+          </ReactMapGL>
+        )}
       </div>
     );
   }
