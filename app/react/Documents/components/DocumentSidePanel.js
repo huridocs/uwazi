@@ -136,7 +136,7 @@ export class DocumentSidePanel extends Component {
 
     this.initialTemplateId = doc.get('template');
     const tab =
-      isEntity && (this.props.tab === 'references' || this.props.tab === 'toc' || !tab)
+      isEntity && (this.props.tab === 'references' || this.props.tab === 'toc' || !'tab')
         ? 'metadata'
         : this.props.tab;
 
