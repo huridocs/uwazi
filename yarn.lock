@@ -14587,6 +14587,11 @@ react-swipeable@^4.2.2:
     detect-passive-events "^1.0.4"
     prop-types "^15.5.8"
 
+react-table@^7.3.0:
+  version "7.3.0"
+  resolved "https://registry.yarnpkg.com/react-table/-/react-table-7.3.0.tgz#f9c78f3a6c7ba5efdea3414b8e5dc54a3cf69466"
+  integrity sha512-VQlVgvKItkpO+tAtWf/xdn9a8RU8gVqG25Ymrw9PczyBrM2Cr+HivHVQ2VsYWy8SieL0bcCNk3C++mbtWgXLfQ==
+
 react-tabs-redux@2.0.1:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/react-tabs-redux/-/react-tabs-redux-2.0.1.tgz#a02019e62c647d6c93e84da29a26c69c5c1b44e4"
