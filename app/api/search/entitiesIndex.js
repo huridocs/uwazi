@@ -80,12 +80,14 @@ const bulkIndex = async (docs, _action = 'index', elasticIndex) => {
   return results;
 };
 
-const getEntitiesToIndex = async (query, offset, limit, select) =>
-  entities.get(query, '', {
-    skip: offset,
+const getEntitiesToIndex = async (query, stepIndex, limit, select) => {
+  const thisQuery = { ...query };
+  thisQuery._id = !thisQuery._id ? { $gte: stepIndex } : thisQuery._id;
+  return entities.get(thisQuery, '', {
     limit,
     documentsFullText: select && select.includes('+fullText'),
   });
+};
 
 const bulkIndexAndCallback = async assets => {
   const { searchInstance, entitiesToIndex, elasticIndex, batchCallback, totalRows } = assets;
@@ -93,29 +95,35 @@ const bulkIndexAndCallback = async assets => {
   return batchCallback(entitiesToIndex.length, totalRows);
 };
 
+const getSteps = async () => {
+  const allIds = await entities.getWithoutDocuments({}, '_id', { sort: { _id: 1 } });
+  const milestoneIds = [];
+  for (let i = 0; i < allIds.length; i += 49) {
+    milestoneIds.push(allIds[i]);
+  }
+  return milestoneIds;
+};
+
 /*eslint max-statements: ["error", 20]*/
 const indexBatch = async (totalRows, options) => {
   const { query, select, limit, batchCallback, elasticIndex, searchInstance } = options;
-
-  const steps = [];
-  for (let cursor = 0; cursor < totalRows; cursor += limit) {
-    steps.push(steps.length + 1);
-  }
+  const steps = await getSteps();
 
   const promisePool = new PromisePool();
   const { errors: indexingErrors } = await promisePool
     .for(steps)
-    .withConcurrency(20)
+    .withConcurrency(10)
     .process(async stepIndex => {
-      const thisOffset = (stepIndex - 1) * limit;
-      const entitiesToIndex = await getEntitiesToIndex(query, thisOffset, limit, select);
-      await bulkIndexAndCallback({
-        searchInstance,
-        entitiesToIndex,
-        elasticIndex,
-        batchCallback,
-        totalRows,
-      });
+      const entitiesToIndex = await getEntitiesToIndex(query, stepIndex, limit, select);
+      if (entitiesToIndex.length > 0) {
+        await bulkIndexAndCallback({
+          searchInstance,
+          entitiesToIndex,
+          elasticIndex,
+          batchCallback,
+          totalRows,
+        });
+      }
     });
 
   let returnErrors = indexingErrors;

@@ -1,6 +1,6 @@
 import Ajv from 'ajv';
 import model from 'api/templates/templatesModel';
-import { wrapValidator } from 'shared/tsUtils';
+import { ensure, wrapValidator } from 'shared/tsUtils';
 import { objectIdSchema, propertySchema } from 'shared/types/commonSchemas';
 import templates from 'api/templates';
 
@@ -140,8 +140,8 @@ ajv.addKeyword('cantDeleteInheritedProperties', {
             keyword: 'noDeleteInheritedProperty',
             schemaPath: '',
             params: { keyword: 'noDeleteInheritedProperty' },
-            message: "Can't delete properties beign inherited",
-            dataPath: `.metadata['${property.name}']`,
+            message: "Can't delete properties being inherited",
+            dataPath: `.properties.${property.name}`,
           });
         }
       })
@@ -155,12 +155,86 @@ ajv.addKeyword('cantDeleteInheritedProperties', {
   },
 });
 
+async function getPropertiesWithSameNameAndDifferentKind(template: TemplateSchema) {
+  const condition = ensure<PropertySchema[]>(template.properties).map(property => ({
+    $and: [
+      {
+        name: property.name,
+        $or: [
+          { content: { $ne: property.content } },
+          { type: { $ne: property.type } },
+          { relationtype: { $ne: property.relationType } },
+        ],
+      },
+    ],
+  }));
+  const query = {
+    $and: [{ _id: { $ne: template._id } }, { properties: { $elemMatch: { $or: [...condition] } } }],
+  };
+  return model.get(query);
+}
+
+function filterInconsistentProperties(template: TemplateSchema, allProperties: PropertySchema[]) {
+  return ensure<PropertySchema[]>(template.properties).reduce(
+    (propertyNames: string[], property) => {
+      const matches = allProperties.find(
+        p =>
+          p.name === property.name &&
+          (p.content !== property.content ||
+            p.type !== property.type ||
+            p.relationType !== property.relationType)
+      );
+
+      if (matches && !propertyNames.includes(ensure(property.name))) {
+        return propertyNames.concat([ensure(property.name)]);
+      }
+
+      return propertyNames;
+    },
+    []
+  );
+}
+
+ajv.addKeyword('cantReuseNameWithDifferentType', {
+  async: true,
+  errors: true,
+  type: 'object',
+  async validate(_schema: any, template: TemplateSchema) {
+    if (!template.properties || template.properties.length === 0) {
+      return true;
+    }
+    const matchedTemplates = await getPropertiesWithSameNameAndDifferentKind(template);
+    if (matchedTemplates.length > 0) {
+      const allProperties: PropertySchema[] = matchedTemplates.reduce(
+        (memo: PropertySchema[], t) => memo.concat(t.properties || []),
+        []
+      );
+
+      const errorProperties = filterInconsistentProperties(template, allProperties);
+
+      throw new Ajv.ValidationError(
+        errorProperties.map(property => ({
+          keyword: 'cantReuseNameWithDifferentType',
+          schemaPath: '',
+          params: { keyword: 'cantReuseNameWithDifferentType' },
+          message:
+            'Entered label is already in use on another property with a different type or thesaurus',
+          dataPath: `.properties.${property}`,
+        }))
+      );
+    }
+
+    return true;
+  },
+});
+
 export const templateSchema = {
   $schema: 'http://json-schema.org/schema#',
   $async: true,
   type: 'object',
   uniqueName: true,
   cantDeleteInheritedProperties: true,
+  cantReuseNameWithDifferentType: true,
   required: ['name'],
   uniquePropertyFields: ['id', 'name'],
   definitions: { objectIdSchema, propertySchema },
