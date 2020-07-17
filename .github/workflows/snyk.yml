@@ -11,8 +11,10 @@ jobs:
       #   uses: actions/setup-node@v1
       #   with:
       #     node-version: '10.21.x'
-      - name: Run Snyk to check for vulnerabilities
-        uses: snyk/actions/node@master
+      # - name: Run Snyk to check for vulnerabilities
+      #   uses: snyk/actions/node@master
+      - name: Install snyk
+        run: yarn global install snyk
       # - name: Cache node modules
       #   uses: actions/cache@v1.1.2
       #   with:
