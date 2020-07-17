@@ -3,7 +3,7 @@ name: Snyk
 on: [push]
 
 jobs:
-  deploy:
+  snyk:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
