@@ -47,6 +47,7 @@ describe('Map', () => {
     map = jasmine.createSpyObj(['on', 'fitBounds', 'getZoom', 'stop']);
     map.getZoom.and.returnValue(5);
     instance.map = { getMap: () => map };
+    instance.setState({ mapStyleLoaded: true });
     markers = component.find(Marker);
   };
 
