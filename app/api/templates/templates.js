@@ -61,8 +61,8 @@ export default {
   async save(template, language) {
     /* eslint-disable no-param-reassign */
     template.properties = template.properties || [];
+    /* eslint-disable no-param-reassign */
     template.properties = generateNamesAndIds(template.properties);
-    /* eslint-enable no-param-reassign */
 
     await validateTemplate(template);
 
