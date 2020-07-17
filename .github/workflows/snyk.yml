@@ -6,55 +6,8 @@ jobs:
   snyk:
     runs-on: ubuntu-latest
     steps:
-      # - name: Use Node.js 10.21.x
-      #   uses: actions/setup-node@v1
-      #   with:
-      #     node-version: '10.21.x'
       - uses: actions/checkout@v2
-      - name: Get yarn global bin directory
-        id: yarn-bin
-        run: echo "::set-output name=dir::$(yarn global bin)"
-      - run: yarn global add snyk
-      - run: ${{ steps.yarn-bin.outputs.dir }}/snyk test
-      # - name: Cache node modules
-      #   uses: actions/cache@v2
-      #   with:
-      #     path: ./node_modules
-      #     key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-      # - name: install dependencies
-      #   run: yarn install
-      # - name: Install snyk
-      #   run: yarn add snyk
-      # - name: Snyk bin
-      #   run: yarn bin snyk
-      # - name: Run snyk
-      #   run: snyk test
-      # - name: Cache build
-      #   id: cache-build
-      #   uses: actions/cache@v2
-      #   with:
-      #     path: ./prod
-      #     key: ${{ runner.os }}-build-${{ hashFiles('app/**/*.*') }}-${{ hashFiles('database/**/*.*') }}-${{ hashFiles('**/yarn.lock') }}
-      # - name: build production
-      #   if: steps.cache-build.outputs.cache-hit != 'true'
-      #   run: yarn production-build
-      # - name: Tgz production build
-      #   run: tar -czf uwazi_${GITHUB_SHA}.tgz ./prod
-      # - name: Copy to server
-      #   uses: easingthemes/ssh-deploy@v2.1.1
-      #   env:
-      #       SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_KEY }}
-      #       ARGS: "-rltgoDzvO --delete"
-      #       SOURCE: uwazi_${GITHUB_SHA}.tgz
-      #       REMOTE_HOST: ${{ secrets.DEPLOY_SERVER }}
-      #       REMOTE_USER: ${{ secrets.DEPLOY_USER }}
-      #       TARGET: uwazi_${GITHUB_SHA}.tgz
-      # - name: Overwrite latest
-      #   uses: easingthemes/ssh-deploy@v2.1.1
-      #   env:
-      #       SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_KEY }}
-      #       ARGS: "-rltgoDzvO --delete"
-      #       SOURCE: uwazi_${GITHUB_SHA}.tgz
-      #       REMOTE_HOST: ${{ secrets.DEPLOY_SERVER }}
-      #       REMOTE_USER: ${{ secrets.DEPLOY_USER }}
-      #       TARGET: uwazi_latest.tgz
+      - name: Run Snyk to check for vulnerabilities
+        uses: snyk/actions/node@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
