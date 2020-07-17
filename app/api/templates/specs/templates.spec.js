@@ -92,7 +92,7 @@ describe('templates', () => {
           name: 'changed',
           commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
           properties: [
-            { id: '1', type: 'select', content: 'new_thesauri', label: 'select' },
+            { id: '1', type: 'select', content: 'new_thesauri', label: 'select3' },
             { id: '2', type: 'multiselect', content: 'new_thesauri', label: 'multiselect' },
           ],
         };
@@ -101,7 +101,7 @@ describe('templates', () => {
           .save(changedTemplate)
           .then(() => {
             expect(entities.removeValuesFromEntities).toHaveBeenCalledWith(
-              ['select', 'multiselect'],
+              ['select3', 'multiselect'],
               templateWithContents
             );
             done();
@@ -116,8 +116,8 @@ describe('templates', () => {
         name: 'swap names template',
         commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
         properties: [
-          { id: '1', type: 'text', name: 'text', label: 'Select' },
-          { id: '2', type: 'select', name: 'select', label: 'Text', content: 'a' },
+          { id: '1', type: 'text', name: 'text', label: 'Select5' },
+          { id: '2', type: 'select', name: 'select5', label: 'Text', content: 'a' },
         ],
       };
 

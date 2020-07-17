@@ -6,7 +6,7 @@ import React, { Component } from 'react';
 
 import { Select } from 'app/ReactReduxForms';
 import { t } from 'app/I18N';
-import FilterSuggestions from 'app/Templates/components/FilterSuggestions';
+import { FilterSuggestions } from 'app/Templates/components/FilterSuggestions';
 
 export class FormConfigRelationship extends Component {
   static contentValidation() {

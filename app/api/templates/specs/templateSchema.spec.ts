@@ -189,4 +189,77 @@ describe('template schema', () => {
       expect(template.properties.length).toBe(2);
     });
   });
+
+  describe('when there is another template with the same property', () => {
+    const validatorKeyword = 'cantReuseNameWithDifferentType';
+    const template = {
+      name: 'template',
+      properties: [
+        {
+          name: 'sharedproperty1',
+          label: 'sharedProperty1',
+          type: 'select',
+          content: 'thesauriId2',
+        },
+        {
+          name: 'sharedproperty2',
+          label: 'sharedProperty2',
+          type: 'select',
+          content: 'thesauriId1',
+        },
+        {
+          name: 'sharedproperty3',
+          label: 'sharedProperty3',
+          type: 'text',
+        },
+        {
+          name: 'sharedrelationship1',
+          label: 'sharedRelationship1',
+          type: 'relationship',
+          content: 'template1',
+          relationType: 'relationType2',
+        },
+        {
+          name: 'validproperty',
+          label: 'validProperty',
+          type: 'select',
+          content: 'thesauriId3',
+        },
+      ],
+      commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
+    };
+
+    describe('when the property to save is of a different content', () => {
+      it('should return the name of the duplicated properties', async () => {
+        try {
+          await validateTemplate(template);
+          fail('should throw validation error');
+        } catch (e) {
+          expect(e).toBeInstanceOf(Ajv.ValidationError);
+          expect(e.errors.length).toBe(4);
+          expect(e).toHaveProperty(
+            'errors',
+            expect.arrayContaining([
+              expect.objectContaining({
+                dataPath: '.properties.sharedproperty1',
+                keyword: validatorKeyword,
+              }),
+              expect.objectContaining({
+                dataPath: '.properties.sharedproperty2',
+                keyword: validatorKeyword,
+              }),
+              expect.objectContaining({
+                dataPath: '.properties.sharedproperty3',
+                keyword: validatorKeyword,
+              }),
+              expect.objectContaining({
+                dataPath: '.properties.sharedrelationship1',
+                keyword: validatorKeyword,
+              }),
+            ])
+          );
+        }
+      });
+    });
+  });
 });

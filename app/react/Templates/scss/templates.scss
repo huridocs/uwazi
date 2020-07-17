@@ -122,4 +122,14 @@
       margin-bottom: 15px;
     }
   }
+
+  .propery-form {
+    .conflict {
+      color: $c-danger-dark;
+    }
+
+    .suggestions-label {
+      margin-top: 30px;
+    }
+  }
 }
