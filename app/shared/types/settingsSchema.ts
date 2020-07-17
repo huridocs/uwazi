@@ -36,9 +36,6 @@ export const settingsLinkSchema = {
   definitions: { objectIdSchema },
   properties: {
     _id: objectIdSchema,
-    //WTF ?
-    localID: { type: 'string' },
-    //
     title: { type: 'string' },
     url: { type: 'string' },
   },
