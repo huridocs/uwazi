@@ -15,6 +15,7 @@ jobs:
       - name: Get yarn global bin directory
         id: yarn-bin
         run: echo "::set-output name=dir::$(yarn global bin)"
+      - run: yarn global add lodash
       - run: yarn global add snyk
       - run: ${{ steps.yarn-bin.outputs.dir }}/snyk auth ${{ secrets.SNYK_TOKEN }}
       - run: ${{ steps.yarn-bin.outputs.dir }}/snyk test
