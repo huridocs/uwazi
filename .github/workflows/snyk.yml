@@ -12,10 +12,11 @@ jobs:
       #   uses: snyk/actions/node@master
       #   env:
       #     SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-      - name: Get yarn global bin directory
-        id: yarn-bin
-        run: echo "::set-output name=dir::$(yarn global bin)"
-      - run: yarn global add lodash
-      - run: yarn global add snyk
-      - run: ${{ steps.yarn-bin.outputs.dir }}/snyk auth ${{ secrets.SNYK_TOKEN }}
-      - run: ${{ steps.yarn-bin.outputs.dir }}/snyk test
+      # - name: Get yarn global bin directory
+        # id: yarn-bin
+        # run: echo "::set-output name=dir::$(yarn global bin)"
+      - run: ls
+      - run: npm install -g lodash
+      - run: npm install -g snyk
+      - run: snyk auth ${{ secrets.SNYK_TOKEN }}
+      - run: snyk test
