@@ -21,6 +21,7 @@ import fixtures, {
   docId1,
   uploadId1,
   uploadId2,
+  unpublishedDocId,
 } from './fixtures.js';
 
 describe('entities', () => {
@@ -111,13 +112,13 @@ describe('entities', () => {
     it('should create a new entity for each language when passing an _id', async () => {
       const universalTime = 1;
       spyOn(date, 'currentUTC').and.returnValue(universalTime);
-      const doc = { _id: '123456789012345678901234', title: 'Batman begins', language: 'es' };
+      const doc = { _id: unpublishedDocId, title: 'Batman begins', language: 'es' };
       const user = { _id: db.id() };
 
       const { createdDocumentEs, createdDocumentEn } = await saveDoc(doc, user);
 
-      expect(createdDocumentEs._id.toString()).toBe('123456789012345678901234');
-      expect(createdDocumentEn._id.toString()).not.toBe('123456789012345678901234');
+      expect(createdDocumentEs._id.toString()).toBe(unpublishedDocId.toString());
+      expect(createdDocumentEn._id.toString()).not.toBe(unpublishedDocId.toString());
     });
 
     it('should create a new entity, preserving template if passed', async () => {
@@ -305,6 +306,7 @@ describe('entities', () => {
         expect(relatedEntity.metadata.enemies[1].label).toBe('translated2');
       });
 
+      /*eslint-disable */
       it('should index entities changed after propagating label change', async () => {
         const doc = {
           _id: shared2,
