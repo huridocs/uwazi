@@ -6,26 +6,29 @@ jobs:
   snyk:
     runs-on: ubuntu-latest
     steps:
+      # - name: Use Node.js 10.21.x
+      #   uses: actions/setup-node@v1
+      #   with:
+      #     node-version: '10.21.x'
       - uses: actions/checkout@v2
-      - name: Use Node.js 10.21.x
-        uses: actions/setup-node@v1
-        with:
-          node-version: '10.21.x'
-      # - name: Run Snyk to check for vulnerabilities
-      #   uses: snyk/actions/node@master
-      - name: Cache node modules
-        uses: actions/cache@v1.1.2
-        with:
-          path: ./node_modules
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-      - name: install dependencies
-        run: yarn install
-      - name: Install snyk
-        run: yarn add snyk
-      - name: Snyk bin
-        run: yarn bin snyk
-      - name: Run snyk
-        run: snyk test
+      - name: Get yarn global bin directory
+        id: yarn-bin
+        run: echo "::set-output name=dir::$(yarn global bin)"
+      - run: yarn global add snyk
+      - run: ${{ steps.yarn-bin.outputs.dir }}/snyk test
+      # - name: Cache node modules
+      #   uses: actions/cache@v2
+      #   with:
+      #     path: ./node_modules
+      #     key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+      # - name: install dependencies
+      #   run: yarn install
+      # - name: Install snyk
+      #   run: yarn add snyk
+      # - name: Snyk bin
+      #   run: yarn bin snyk
+      # - name: Run snyk
+      #   run: snyk test
       # - name: Cache build
       #   id: cache-build
       #   uses: actions/cache@v2
