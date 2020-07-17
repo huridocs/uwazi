@@ -347,6 +347,7 @@ export default {
                 });
               }
             });
+
             const referencesToBeDeleted = references.filter(
               reference =>
                 !(reference.entity === entity.sharedId) &&
