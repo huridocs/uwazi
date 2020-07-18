@@ -79,6 +79,7 @@ export class CopyFromEntity extends Component<CopyFromEntityProps, CopyFromEntit
   }
 
   cancel() {
+    this.props.onSelect([]);
     this.props.onCancel();
   }
 
