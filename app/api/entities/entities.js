@@ -449,6 +449,7 @@ export default {
         }
       })
     );
+
     await search.indexEntities({ sharedId: { $in: ids } });
     return this.get({ sharedId: { $in: ids }, language: params.language });
   },
@@ -655,7 +656,9 @@ export default {
     }
     const entities = await this.get(query, { _id: 1 });
     await model.db.updateMany(query, { $pull: changes });
-    await search.indexEntities({ _id: { $in: entities.map(e => e._id.toString()) } }, null, 1000);
+    if (entities.length > 0) {
+      await search.indexEntities({ _id: { $in: entities.map(e => e._id.toString()) } }, null, 1000);
+    }
   },
 
   /** Propagate the deletion of a thesaurus entry to all entity metadata. */
