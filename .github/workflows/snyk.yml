@@ -17,8 +17,8 @@ jobs:
           path: ./node_modules
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
       - name: install dependencies
-        run: yarn install
-      - run: yarn install snyk
+        run: yarn add
+      - run: yarn add snyk
       - run: snyk auth ${{ secrets.SNYK_TOKEN }}
       - run: snyk test
       # - run: yarn add lodash
