@@ -4,16 +4,15 @@ import { Link, withRouter } from 'react-router';
 import { toUrlParams } from 'shared/JSONRequest';
 import rison from 'rison';
 
-import Doc from 'app/Library/components/Doc';
 import SearchBar from 'app/Library/components/SearchBar';
 import SortButtons from 'app/Library/components/SortButtons';
 
-import { RowList } from 'app/Layout/Lists';
 import Loader from 'app/components/Elements/Loader';
 import Footer from 'app/App/Footer';
 import { NeedAuthorization } from 'app/Auth';
 import { t, Translate } from 'app/I18N';
 import { Icon } from 'UI';
+import { TilesViewer } from './TilesViewer';
 
 class DocumentsList extends Component {
   constructor(props, context) {
@@ -138,20 +137,19 @@ class DocumentsList extends Component {
           </div>
           {(() => {
             if (view !== 'graph') {
+              const { CollectionViewer } = this.props;
               return (
-                <RowList zoomLevel={rowListZoomLevel}>
-                  {documents.get('rows').map((doc, index) => (
-                    <Doc
-                      doc={doc}
-                      storeKey={this.props.storeKey}
-                      key={index}
-                      onClick={this.clickOnDocument}
-                      onSnippetClick={this.props.onSnippetClick}
-                      deleteConnection={this.props.deleteConnection}
-                      searchParams={this.props.search}
-                    />
-                  ))}
-                </RowList>
+                <CollectionViewer
+                  {...{
+                    rowListZoomLevel,
+                    documents,
+                    storeKey: this.props.storeKey,
+                    clickOnDocument: this.clickOnDocument,
+                    onSnippetClick: this.onSnippetClick,
+                    deleteConnection: this.deleteConnection,
+                    search: this.props.search,
+                  }}
+                />
               );
             }
 
@@ -213,6 +211,7 @@ class DocumentsList extends Component {
 DocumentsList.defaultProps = {
   SearchBar,
   rowListZoomLevel: 0,
+  CollectionViewer: TilesViewer,
 };
 
 DocumentsList.propTypes = {
@@ -243,6 +242,7 @@ DocumentsList.propTypes = {
     pathname: PropTypes.string,
     query: PropTypes.object,
   }),
+  CollectionViewer: PropTypes.func,
 };
 
 export { DocumentsList };

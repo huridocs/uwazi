@@ -93,6 +93,7 @@
     "@types/react-helmet": "^5.0.14",
     "@types/react-redux": "^7.1.5",
     "@types/react-router-dom": "^5.1.0",
+    "@types/react-table": "^7.0.19",
     "@types/react-tabs-redux": "^4.0.0",
     "@types/socket.io": "^2.1.4",
     "@types/webpack-env": "^1.15.1",
