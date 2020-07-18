@@ -35,7 +35,7 @@ export const mapStateToProps = state => {
     rawDoc: documentViewer.doc,
     docBeingEdited: !!documentViewer.sidepanel.metadata._id,
     formDirty: !documentViewer.sidepanel.metadataForm.$form.pristine,
-    tab: documentViewer.sidepanel.tab,
+    tab: documentViewer.sidepanel.tab || 'metadata',
     tocFormComponent,
     tocForm,
     tocFormLength: tocForm.length,
