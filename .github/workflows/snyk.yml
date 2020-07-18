@@ -6,7 +6,21 @@ jobs:
   snyk:
     runs-on: ubuntu-latest
     steps:
+      - name: Use Node.js 10.21.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: '10.21.x'
       - uses: actions/checkout@v2
+      - name: Cache node modules
+        uses: actions/cache@v2
+        with:
+          path: ./node_modules
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+      - name: install dependencies
+        run: yarn install
+      - run: yarn install snyk
+      - run: snyk auth ${{ secrets.SNYK_TOKEN }}
+      - run: snyk test
       # - run: yarn add lodash
       # - name: Run Snyk to check for vulnerabilities
       #   uses: snyk/actions/node@master
@@ -15,8 +29,8 @@ jobs:
       # - name: Get yarn global bin directory
         # id: yarn-bin
         # run: echo "::set-output name=dir::$(yarn global bin)"
-      - run: ls
-      - run: npm install -g lodash
-      - run: npm install -g snyk
-      - run: snyk auth ${{ secrets.SNYK_TOKEN }}
-      - run: snyk test
+      # - run: ls
+      # - run: npm install -g lodash
+      # - run: npm install -g snyk
+      # - run: snyk auth ${{ secrets.SNYK_TOKEN }}
+      # - run: snyk test
