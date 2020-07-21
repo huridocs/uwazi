@@ -6,32 +6,65 @@ import { fromJS as Immutable } from 'immutable';
 import { createSelector } from 'reselect';
 import { Icon } from 'UI';
 
-import { ShowMetadata, MetadataFormButtons } from 'app/Metadata';
+import { ShowMetadata, MetadataFormButtons, MetadataForm } from 'app/Metadata';
 import SidePanel from 'app/Layout/SidePanel';
 import { unselectConnection } from '../actions/actions';
+import { startNewConnection } from 'app/Connections/actions/actions';
 
 export class RelationshipMetadata extends Component {
+  constructor(props) {
+    super(props);
+    this.deleteDocument = this.deleteDocument.bind(this);
+  }
+
+  deleteDocument() {}
+
+  renderBody() {
+    return this.props.entityBeingEdited ? (
+      <MetadataForm
+        model="relationships.metadata"
+        initialTemplateId={this.props.entity.template}
+        templateId={this.props.entity.template}
+      />
+    ) : (
+      <ShowMetadata entity={this.props.entity} showTitle showType />
+    );
+  }
+
   render() {
     return (
       <SidePanel open={this.props.selectedConnection} className="connections-metadata">
-        <button className="closeSidepanel close-modal" onClick={this.props.unselectConnection}>
+        <button
+          type="button"
+          className="closeSidepanel close-modal"
+          onClick={this.props.unselectConnection}
+        >
           <Icon icon="times" />
         </button>
-        <div className="sidepanel-body">
-          <ShowMetadata entity={this.props.entity} showTitle showType />
-        </div>
+        <div className="sidepanel-body">{this.renderBody()}</div>
         <div className="sidepanel-footer">
-          <MetadataFormButtons exclusivelyViewButton data={Immutable(this.props.entity)} />
+          <MetadataFormButtons
+            data={Immutable(this.props.entity)}
+            delete={this.deleteDocument}
+            formStatePath="relationships.metadata"
+            entityBeingEdited={this.props.entityBeingEdited}
+          />
         </div>
       </SidePanel>
     );
   }
 }
 
+RelationshipMetadata.defaultProps = {
+  selectedConnection: false,
+  entityBeingEdited: false,
+};
+
 RelationshipMetadata.propTypes = {
   selectedConnection: PropTypes.bool,
-  entity: PropTypes.object,
-  unselectConnection: PropTypes.func,
+  entity: PropTypes.object.isRequired,
+  unselectConnection: PropTypes.func.isRequired,
+  entityBeingEdited: PropTypes.bool,
 };
 
 const connectionSelector = createSelector(
@@ -39,12 +72,17 @@ const connectionSelector = createSelector(
   entity => (entity && entity.toJS ? entity.toJS() : { metadata: {} })
 );
 
-const mapStateToProps = state => ({
-  selectedConnection: Boolean(
-    state.relationships.connection && state.relationships.connection.get('_id')
-  ),
-  entity: connectionSelector(state),
-});
+const mapStateToProps = state => {
+  console.log(state);
+
+  return {
+    selectedConnection: Boolean(
+      state.relationships.connection && state.relationships.connection.get('_id')
+    ),
+    entity: connectionSelector(state),
+    entityBeingEdited: Boolean(state.relationships.metadata._id),
+  };
+};
 
 function mapDispatchToProps(dispatch) {
   return bindActionCreators(

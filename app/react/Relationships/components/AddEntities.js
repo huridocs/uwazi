@@ -9,6 +9,7 @@ import { Icon } from 'UI';
 import { closePanel } from '../actions/uiActions';
 import SearchForm from './SearchEntitiesForm';
 import * as actions from '../actions/actions';
+import { Translate } from 'app/I18N';
 
 export class AddEntities extends Component {
   constructor(props) {
@@ -27,8 +28,14 @@ export class AddEntities extends Component {
     return (
       <SidePanel open={open} className="create-reference">
         <div className="sidepanel-header">
-          <h1>Add entities / documents</h1>
-          <button className="closeSidepanel close-modal" onClick={this.props.closePanel}>
+          <h1>
+            <Translate>Add entities / documents</Translate>
+          </h1>
+          <button
+            type="button"
+            className="closeSidepanel close-modal"
+            onClick={this.props.closePanel}
+          >
             <Icon icon="times" />
           </button>
         </div>
@@ -42,6 +49,14 @@ export class AddEntities extends Component {
             searching={uiState.get('searching')}
             onClick={this.addEntity}
           />
+        </div>
+        <div className="sidepanel-footer">
+          <button type="button" className="btn btn-success">
+            <Icon icon="plus" />
+            <span className="btn-label">
+              <Translate>Create Entity</Translate>
+            </span>
+          </button>
         </div>
       </SidePanel>
     );
