@@ -54,9 +54,7 @@
     "e2e-restore-fixtures": "cd nightmare/fixtures; ./restore.sh",
     "eslint": "./node_modules/.bin/eslint app --quiet --ext js,ts,tsx",
     "eslint-fulldiff": "git diff-index --name-only origin/development | grep ^app/ | grep -v snap | xargs ls -d 2>/dev/null | xargs ./node_modules/.bin/eslint ",
-    "prettier": "./node_modules/.bin/prettier --write 'app/**/*.{js,ts,tsx}'",
-    "snyk-protect": "snyk protect",
-    "prepare": "yarn run snyk-protect"
+    "prettier": "./node_modules/.bin/prettier --write 'app/**/*.{js,ts,tsx}'"
   },
   "dependencies": {
     "@babel/core": "7.4.4",
@@ -97,7 +95,7 @@
     "@types/socket.io": "^2.1.4",
     "@types/webpack-env": "^1.15.1",
     "@types/yargs-parser": "^13.0.0",
-    "ajv": "^6.10.2",
+    "ajv": "^6.12.3",
     "ajv-keywords": "^3.4.1",
     "async": "^2.6.1",
     "babel-loader": "8.0.6",
@@ -190,7 +188,6 @@
     "rtlcss": "^2.4.0",
     "sanitize-filename": "^1.6.0",
     "serialize-javascript": "^3.1.0",
-    "snyk": "^1.361.3",
     "socket.io": "2.0.4",
     "socket.io-client": "2.0.4",
     "superagent": "^5.0.6",
@@ -287,6 +284,5 @@
   },
   "resolutions": {
     "callsites": "3.1.0"
-  },
-  "snyk": true
+  }
 }

@@ -2,7 +2,6 @@
 
 exports[`DocumentResultsPanel should render DocumentSidePanel with the current semantic search document 1`] = `
 <Connect(DocumentSidePanel)
-  DocumentForm={[Function]}
   EntityForm={[Function]}
   closePanel={[Function]}
   deleteDocument={[Function]}
