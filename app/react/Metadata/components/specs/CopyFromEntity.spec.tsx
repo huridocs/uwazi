@@ -56,7 +56,7 @@ describe('CopyFromEntity', () => {
   });
 
   describe('when an entity is selected', () => {
-    it('should render the entity an set the comon props in the satet', () => {
+    it('should render the entity an set the common props in the state', () => {
       render();
       const entityToBeSelected = {
         title: 'Choose me!',

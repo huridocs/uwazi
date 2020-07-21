@@ -36,7 +36,7 @@ describe('SearchEntities', () => {
     it('should request for the entities matching by title', async () => {
       render();
       component.find(SearchInput).simulate('change', { target: { value: 'test' } });
-      await sleep(4001);
+      await sleep(401);
       expect(api.get).toHaveBeenLastCalledWith('search', {
         data: { fields: ['title'], includeUnpublished: true, searchTerm: 'test' },
         headers: {},
