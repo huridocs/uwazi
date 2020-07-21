@@ -34,8 +34,6 @@ $c-sidebar: $c-white;
   @media (min-width: 700px) {
     &.two-columns {
       width: 700px;
-      -webkit-box-shadow: -4px 0px 10px 0px rgba(0, 0, 0, 0.5);
-      -moz-box-shadow: -4px 0px 10px 0px rgba(0, 0, 0, 0.5);
       box-shadow: -4px 0px 10px 0px rgba(0, 0, 0, 0.5);
     }
 
