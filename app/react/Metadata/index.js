@@ -1,5 +1,5 @@
 import * as actions from './actions/actions';
-import FormatMetadata from './containers/FormatMetadata';
+import { FormatMetadata } from './containers/FormatMetadata';
 import ShowMetadata from './components/ShowMetadata';
 import formater from './helpers/formater';
 import validator from './helpers/validator';

@@ -1,5 +1,3 @@
-/** @format */
-
 import { browserHistory } from 'react-router';
 
 import { isClient } from 'app/utils';

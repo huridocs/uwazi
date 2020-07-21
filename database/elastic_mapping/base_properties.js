@@ -1,4 +1,5 @@
 import documentProperties from './document_properties';
+import textSorting from './text_sorting';
 
 const properties = {
   documents: documentProperties,
@@ -9,8 +10,7 @@ const properties = {
     type: 'text',
     index: true,
     fields: {
-      raw: { type: 'keyword' },
-      sort: { type: 'text', fielddata: true, analyzer: 'string_sorter' },
+      sort: textSorting,
       sayt: { type: 'search_as_you_type' },
     },
     term_vector: 'with_positions_offsets',

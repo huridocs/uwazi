@@ -10,7 +10,6 @@ import { deleteEntity } from 'app/Entities/actions/actions';
 import multiReducer from 'app/Multireducer';
 import modals from 'app/Modals';
 
-import DocumentForm from 'app/Library/containers/DocumentForm';
 import EntityForm from 'app/Library/containers/EntityForm';
 
 import { getDocumentReferences, saveDocument } from 'app/Library/actions/libraryActions';
@@ -27,7 +26,6 @@ export const mapStateToProps = ({ semanticSearch, library, templates }) => ({
   templates,
   formPath: 'library.sidepanel.metadata',
   readOnly: true,
-  DocumentForm,
   EntityForm,
   storeKey: 'library',
 });

@@ -85,10 +85,20 @@ export class MetadataFormButtons extends Component {
           </button>
         </ShowIf>
         <ShowIf if={entityBeingEdited}>
-          <button type="submit" form={formName} className="btn btn-success">
-            <Icon icon="save" />
-            <span className="btn-label">{t('System', 'Save')}</span>
-          </button>
+          <React.Fragment>
+            <button type="submit" form={formName} className="btn btn-success">
+              <Icon icon="save" />
+              <span className="btn-label">{t('System', 'Save')}</span>
+            </button>
+            <button
+              type="button"
+              className="btn btn-success copy-from-btn"
+              onClick={this.props.copyFrom}
+            >
+              <Icon icon="clone" />
+              <span className="btn-label">{t('System', 'Copy from')}</span>
+            </button>
+          </React.Fragment>
         </ShowIf>
         <NeedAuthorization roles={['admin', 'editor']}>
           <ShowIf if={!entityBeingEdited}>
@@ -127,6 +137,7 @@ MetadataFormButtons.defaultProps = {
   entityBeingEdited: false,
   formName: 'metadataForm',
   delete: () => {},
+  copyFrom: () => {},
 };
 
 MetadataFormButtons.propTypes = {
@@ -142,6 +153,7 @@ MetadataFormButtons.propTypes = {
   formName: PropTypes.string,
   includeViewButton: PropTypes.bool,
   exclusivelyViewButton: PropTypes.bool,
+  copyFrom: PropTypes.func,
 };
 
 const mapStateToProps = ({ templates }) => ({ templates });

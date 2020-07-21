@@ -1,4 +1,4 @@
-import { fromJS as Immutable } from 'immutable';
+import Immutable from 'immutable';
 import React from 'react';
 
 import { ConnectionsGroups, ConnectionsList } from 'app/ConnectionsList';
@@ -15,8 +15,8 @@ describe('EntityViewer', () => {
   beforeEach(() => {
     context = { confirm: jasmine.createSpy('confirm') };
     props = {
-      entity: { title: 'Title', documents: [{ _id: '123', title: 'Test doc' }] },
-      templates: [
+      entity: Immutable.fromJS({ title: 'Title', documents: [{ _id: '123', title: 'Test doc' }] }),
+      templates: Immutable.fromJS([
         {
           _id: 'template1',
           properties: [{ name: 'source_property', label: 'label1' }],
@@ -27,9 +27,9 @@ describe('EntityViewer', () => {
           properties: [{ name: 'source_property', label: 'label2' }],
           name: 'template2Name',
         },
-      ],
+      ]),
       relationTypes: [{ _id: 'abc', name: 'relationTypeName' }],
-      connectionsGroups: Immutable([
+      connectionsGroups: Immutable.fromJS([
         { key: 'g1', templates: [{ _id: 't1', count: 1 }] },
         {
           key: 'g2',
@@ -41,6 +41,8 @@ describe('EntityViewer', () => {
       ]),
       deleteConnection: jasmine.createSpy('deleteConnection'),
       startNewConnection: jasmine.createSpy('startNewConnection'),
+      deleteEntity: jasmine.createSpy('deleteEntity'),
+      showTab: jasmine.createSpy('showTab'),
     };
   });
 
@@ -67,8 +69,8 @@ describe('EntityViewer', () => {
 
   it('should render a FileList with the entity documents', () => {
     render();
-    expect(component.find(FileList).props().files).toEqual(props.entity.documents);
-    expect(component.find(FileList).props().entity).toEqual(props.entity);
+    expect(component.find(FileList).props().files).toEqual(props.entity.toJS().documents);
+    expect(component.find(FileList).props().entity).toEqual(props.entity.toJS());
   });
 
   describe('deleteConnection', () => {
