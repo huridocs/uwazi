@@ -10,6 +10,7 @@ import { Icon } from 'UI';
 import { Translate } from 'app/I18N';
 import { actions } from 'app/Metadata';
 import { store } from 'app/store';
+import { templateSchema } from 'shared/types/templateSchema';
 
 export type CopyFromEntityProps = {
   onSelect: Function;
@@ -27,6 +28,7 @@ export type CopyFromEntityState = {
 export class CopyFromEntity extends Component<CopyFromEntityProps, CopyFromEntityState> {
   constructor(props: CopyFromEntityProps) {
     super(props);
+
     this.state = { propsToCopy: [], selectedEntity: {} };
     this.onSelect = this.onSelect.bind(this);
     this.cancel = this.cancel.bind(this);
@@ -36,12 +38,11 @@ export class CopyFromEntity extends Component<CopyFromEntityProps, CopyFromEntit
 
   onSelect(selectedEntity: EntitySchema) {
     const copyFromTemplateId = selectedEntity.template;
+    const templates = this.props.templates.toJS();
+    const originalTemplate = this.props.originalEntity.template;
 
     const propsToCopy = comonProperties
-      .comonProperties(this.props.templates.toJS(), [
-        this.props.originalEntity.template,
-        copyFromTemplateId,
-      ])
+      .comonProperties(templates, [originalTemplate, copyFromTemplateId])
       .map(p => p.name);
 
     this.setState({ selectedEntity, propsToCopy });
@@ -62,7 +63,7 @@ export class CopyFromEntity extends Component<CopyFromEntityProps, CopyFromEntit
         entity.metadata[propName] = this.state.selectedEntity.metadata![propName];
         return entity;
       },
-      { ...this.props.originalEntity }
+      { ...this.props.originalEntity, metadata: { ...this.props.originalEntity.metadata } }
     );
 
     actions

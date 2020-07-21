@@ -334,7 +334,7 @@ export class DocumentSidePanel extends Component {
                         highlightedProps={this.state.copyFromProps}
                       />
                       <CopyFromEntity
-                        originalEntity={this.props.doc.toJS()}
+                        originalEntity={this.props.formData}
                         templates={this.props.templates}
                         onSelect={this.onCopyFromSelect}
                         formModel={this.props.formPath}
@@ -421,6 +421,7 @@ DocumentSidePanel.propTypes = {
   tocFormComponent: PropTypes.func,
   formDirty: PropTypes.bool,
   formPath: PropTypes.string.isRequired,
+  formData: PropTypes.instanceOf(Object),
   searchTerm: PropTypes.string,
   docBeingEdited: PropTypes.bool,
   open: PropTypes.bool,
@@ -467,6 +468,7 @@ export const mapStateToProps = (state, ownProps) => {
     .get('languages')
     .find(l => l.get('default'))
     .get('key');
+
   return {
     references,
     excludeConnectionsTab: Boolean(ownProps.references),
@@ -474,6 +476,7 @@ export const mapStateToProps = (state, ownProps) => {
     relationships: ownProps.references,
     defaultLanguage,
     templates: state.templates,
+    formData: state[ownProps.storeKey].sidepanel.metadata,
   };
 };
 
