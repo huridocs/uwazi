@@ -10,7 +10,6 @@ import { Icon } from 'UI';
 import { Translate } from 'app/I18N';
 import { actions } from 'app/Metadata';
 import { store } from 'app/store';
-import { templateSchema } from 'shared/types/templateSchema';
 
 export type CopyFromEntityProps = {
   onSelect: Function;
