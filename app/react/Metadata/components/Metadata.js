@@ -75,14 +75,16 @@ function filterProps(showSubset) {
   };
 }
 
-const Metadata = ({ metadata, compact, renderLabel, showSubset }) => (
+const Metadata = ({ metadata, compact, renderLabel, showSubset, highlight }) => (
   <React.Fragment>
     {metadata.filter(filterProps(showSubset)).map((prop, index) => {
       let type = prop.type ? prop.type : 'default';
       type = type === 'image' || type === 'media' ? 'multimedia' : type;
+      const highlightClass = highlight.includes(prop.name) ? 'highlight' : '';
+      const fullWidthClass = prop.fullWidth ? 'full-width' : '';
       return (
         <dl
-          className={`metadata-type-${type} ${prop.fullWidth ? 'full-width' : ''}`}
+          className={`metadata-type-${type} ${fullWidthClass} ${highlightClass}`}
           key={`${prop.name}_${index}`}
         >
           {renderLabel(prop, <dt>{t(prop.translateContext, prop.label)}</dt>)}
@@ -97,6 +99,7 @@ Metadata.defaultProps = {
   compact: false,
   showSubset: undefined,
   renderLabel: (_prop, label) => label,
+  highlight: [],
 };
 
 Metadata.propTypes = {
@@ -117,6 +120,7 @@ Metadata.propTypes = {
       ]),
     })
   ).isRequired,
+  highlight: PropTypes.arrayOf(PropTypes.string),
   compact: PropTypes.bool,
   renderLabel: PropTypes.func,
   showSubset: PropTypes.arrayOf(PropTypes.string),

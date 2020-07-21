@@ -7,7 +7,7 @@ import Metadata from '../components/Metadata';
 
 const removeUneededProps = ({ templates, thesauris, settings, ...rest }) => rest;
 
-const FormatMetadata = ({
+const BaseFormatMetadata = ({
   additionalMetadata,
   sortedProperty,
   entity,
@@ -23,13 +23,13 @@ const FormatMetadata = ({
   />
 );
 
-FormatMetadata.defaultProps = {
+BaseFormatMetadata.defaultProps = {
   sortedProperty: '',
   additionalMetadata: [],
   relationships: Immutable.fromJS([]),
 };
 
-FormatMetadata.propTypes = {
+BaseFormatMetadata.propTypes = {
   entity: PropTypes.shape({
     metadata: PropTypes.object,
   }).isRequired,
@@ -52,7 +52,7 @@ FormatMetadata.propTypes = {
   sortedProperty: PropTypes.string,
 };
 
-export function mapStateToProps(state, { entity, sortedProperty }) {
+export function mapStateToProps(state, { entity, sortedProperty = '' }) {
   return {
     templates: state.templates,
     thesauris: state.thesauris,
@@ -62,4 +62,4 @@ export function mapStateToProps(state, { entity, sortedProperty }) {
   };
 }
 
-export default connect(mapStateToProps)(FormatMetadata);
+export const FormatMetadata = connect(mapStateToProps)(BaseFormatMetadata);

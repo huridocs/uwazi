@@ -5,7 +5,7 @@ exports[`Metadata should not render an empty list 1`] = `<Fragment />`;
 exports[`Metadata should not render metadata without value 1`] = `
 <Fragment>
   <dl
-    className="metadata-type-default "
+    className="metadata-type-default  "
     key="label_0"
   >
     <dt>
@@ -23,7 +23,7 @@ exports[`Metadata should not render metadata without value 1`] = `
 exports[`Metadata should render a Geolocation viewer when the metadata is type geolocation 1`] = `
 <Fragment>
   <dl
-    className="metadata-type-geolocation "
+    className="metadata-type-geolocation  "
     key="geolocation_label_0"
   >
     <dt>
@@ -51,7 +51,7 @@ exports[`Metadata should render a Geolocation viewer when the metadata is type g
 exports[`Metadata should render a Markdown when the metadata is type mardown 1`] = `
 <Fragment>
   <dl
-    className="metadata-type-markdown "
+    className="metadata-type-markdown  "
     key="label_array_0"
   >
     <dt>
@@ -74,7 +74,7 @@ exports[`Metadata should render a Markdown when the metadata is type mardown 1`]
 exports[`Metadata should render a link 1`] = `
 <Fragment>
   <dl
-    className="metadata-type-link "
+    className="metadata-type-link  "
     key="link_0"
   >
     <dt>
@@ -98,7 +98,7 @@ exports[`Metadata should render a link 1`] = `
 exports[`Metadata should render a media field 1`] = `
 <Fragment>
   <dl
-    className="metadata-type-multimedia "
+    className="metadata-type-multimedia  "
     key="media_label_0"
   >
     <dt>
@@ -121,7 +121,7 @@ exports[`Metadata should render a media field 1`] = `
 exports[`Metadata should render an image field 1`] = `
 <Fragment>
   <dl
-    className="metadata-type-multimedia "
+    className="metadata-type-multimedia  "
     key="image_label_0"
   >
     <dt>
@@ -144,7 +144,7 @@ exports[`Metadata should render an image field 1`] = `
 exports[`Metadata should render array values separated by ", " 1`] = `
 <Fragment>
   <dl
-    className="metadata-type-default "
+    className="metadata-type-default  "
     key="label_array_0"
   >
     <dt>
@@ -179,7 +179,7 @@ exports[`Metadata should render array values separated by ", " 1`] = `
 exports[`Metadata should render links when multiple properties have url 1`] = `
 <Fragment>
   <dl
-    className="metadata-type-default "
+    className="metadata-type-default  "
     key="label_array_0"
   >
     <dt>
@@ -222,7 +222,7 @@ exports[`Metadata should render links when multiple properties have url 1`] = `
 exports[`Metadata should render links when the property has url 1`] = `
 <Fragment>
   <dl
-    className="metadata-type-default "
+    className="metadata-type-default  "
     key="withurl_0"
   >
     <dt>
@@ -245,7 +245,7 @@ exports[`Metadata should render links when the property has url 1`] = `
 exports[`Metadata should render links with icons if propery has url and icon 1`] = `
 <Fragment>
   <dl
-    className="metadata-type-default "
+    className="metadata-type-default  "
     key="withurl_0"
   >
     <dt>
@@ -277,7 +277,7 @@ exports[`Metadata should render links with icons if propery has url and icon 1`]
 exports[`Metadata should render property not have this item when type is null 1`] = `
 <Fragment>
   <dl
-    className="metadata-type-default "
+    className="metadata-type-default  "
     key="metadata_without_property_0"
   >
     <dt>
@@ -295,7 +295,7 @@ exports[`Metadata should render property not have this item when type is null 1`
 exports[`Metadata should render sorted property with sorted styles 1`] = `
 <Fragment>
   <dl
-    className="metadata-type-default "
+    className="metadata-type-default  "
     key="sortedby_0"
   >
     <dt>
@@ -313,7 +313,7 @@ exports[`Metadata should render sorted property with sorted styles 1`] = `
 exports[`Metadata should render string values 1`] = `
 <Fragment>
   <dl
-    className="metadata-type-default "
+    className="metadata-type-default  "
     key="label_0"
   >
     <dt>
@@ -331,7 +331,7 @@ exports[`Metadata should render string values 1`] = `
 exports[`Metadata when passing compact prop should pass it to ValueList 1`] = `
 <Fragment>
   <dl
-    className="metadata-type-default "
+    className="metadata-type-default  "
     key="label_array_0"
   >
     <dt>

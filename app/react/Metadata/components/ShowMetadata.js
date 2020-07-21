@@ -9,7 +9,7 @@ import Immutable from 'immutable';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import FormatMetadata from '../containers/FormatMetadata';
+import { FormatMetadata } from '../containers/FormatMetadata';
 
 export class ShowMetadata extends Component {
   render() {
