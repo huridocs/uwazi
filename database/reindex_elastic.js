@@ -97,9 +97,8 @@ const processErrors = async err => {
   if (err instanceof IndexError) {
     process.stdout.write('\r\nWarning! Errors found during reindex.\r\n');
   } else {
-    errorLog.error(
-      `Uncaught Reindex error.\r\n${JSON.stringify(err, '', '\r')}\r\nWill exit with (1)\r\n`
-    );
+    const errorMsg = err instanceof Error ? err.message : JSON.stringify(err, null, ' ');
+    errorLog.error(`Uncaught Reindex error.\r\n${errorMsg}\r\nWill exit with (1)\r\n`);
     await endScriptProcedures();
     throw err;
   }
