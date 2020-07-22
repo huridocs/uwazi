@@ -1,0 +1,23 @@
+name: Snyk
+
+on: [push]
+
+jobs:
+  snyk:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Use Node.js 10.21.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: '10.21.x'
+      - uses: actions/checkout@v2
+      - name: Cache node modules
+        uses: actions/cache@v2
+        with:
+          path: ./node_modules
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+      - name: install dependencies
+        run: yarn install
+      - run: yarn add snyk
+      - run: /home/runner/work/uwazi/uwazi/node_modules/.bin/snyk auth ${{ secrets.SNYK_TOKEN }}
+      - run: /home/runner/work/uwazi/uwazi/node_modules/.bin/snyk test
