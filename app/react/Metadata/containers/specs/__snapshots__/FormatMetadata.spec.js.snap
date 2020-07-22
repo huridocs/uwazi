@@ -3,6 +3,7 @@
 exports[`FormatMetadata should render Metadata component passing the formatted metadata 1`] = `
 <Metadata
   compact={true}
+  highlight={Array []}
   metadata={
     Array [
       Object {
@@ -17,6 +18,7 @@ exports[`FormatMetadata should render Metadata component passing the formatted m
 exports[`FormatMetadata should unshift additional metadata if passed 1`] = `
 <Metadata
   compact={false}
+  highlight={Array []}
   metadata={
     Array [
       Object {

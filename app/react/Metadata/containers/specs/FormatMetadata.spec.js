@@ -2,7 +2,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import Immutable from 'immutable';
 
-import FormatMetadata from '../FormatMetadata';
+import { FormatMetadata } from '../FormatMetadata';
 import { metadataSelectors } from '../../selectors';
 
 describe('FormatMetadata', () => {
