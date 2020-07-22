@@ -31,7 +31,7 @@ jobs:
       - name: Run tests
         env:
           ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
-        run: ./node_modules/.bin/jest --coverage --maxWorkers=2
+        run: ./node_modules/.bin/jest --coverage --maxWorkers=2 --coverageProvider=babel
       - run: ./cc-test-reporter after-build --exit-code $? #send codecoverage
     env:
       CC_TEST_REPORTER_ID: 61434ccfc3eeb2ed7b9cfec1d61c4e0ca115a32c1eebfefe404d1ecb77d73358 #codelimate api key
