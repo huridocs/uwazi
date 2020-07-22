@@ -9,7 +9,8 @@ const propsWithDBSpecifics = {
   fullText: { type: mongoose.Schema.Types.Mixed, select: false },
   pdfInfo: { type: mongoose.Schema.Types.Mixed, select: false },
   entity: { type: String, index: true },
-  type: { type: 'object', index: true },
+  type: { type: String, index: true },
+  filename: { type: String, index: true },
 };
 
 const mongoSchema = new mongoose.Schema(propsWithDBSpecifics, {

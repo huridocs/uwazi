@@ -25,6 +25,7 @@ describe('DocumentSidePanel', () => {
     props = {
       doc: Immutable.fromJS({ metadata: [], attachments: [], type: 'document', file: {} }),
       rawDoc: fromJS({}),
+      templates: Immutable.fromJS([]),
       showModal: jasmine.createSpy('showModal'),
       openPanel: jasmine.createSpy('openPanel'),
       startNewConnection: jasmine.createSpy('startNewConnection'),
@@ -128,7 +129,7 @@ describe('DocumentSidePanel', () => {
         });
         props.docBeingEdited = true;
         render();
-        expect(component.find('DocumentForm').props().initialTemplateId).toBe('templateId');
+        expect(component.find('EntityForm').props().initialTemplateId).toBe('templateId');
       });
     });
 
@@ -199,6 +200,7 @@ describe('DocumentSidePanel', () => {
         relationships: { list: { connectionsGroups: 'connectionsGroups' } },
         relationTypes: Immutable.fromJS(['a', 'b']),
         settings: { collection: Immutable.fromJS({ languages }) },
+        library: { sidepanel: { metadata: {} } },
       };
       spyOn(viewerModule.selectors, 'parseReferences').and.callFake(
         (doc, refs) => `Parsed ${doc} refs: ${refs}`
@@ -213,13 +215,13 @@ describe('DocumentSidePanel', () => {
     });
 
     it('should map parsed references from ownProps if present and set the excludeConnectionsTab to true', () => {
-      const ownProps = { doc: 'fullDocData', references: 'allRefs' };
+      const ownProps = { doc: 'fullDocData', references: 'allRefs', storeKey: 'library' };
       expect(mapStateToProps(state, ownProps).references).toBe('Parsed fullDocData refs: allRefs');
       expect(mapStateToProps(state, ownProps).excludeConnectionsTab).toBe(true);
     });
 
     it('should map selected references from viewer when no ownProps and not targetDoc', () => {
-      const ownProps = {};
+      const ownProps = { storeKey: 'library' };
       expect(mapStateToProps(state, ownProps).references).toBe(
         'References selector used correctly'
       );
@@ -227,7 +229,7 @@ describe('DocumentSidePanel', () => {
     });
 
     it('should map selected target references from viewer when no ownProps and targetDoc', () => {
-      const ownProps = {};
+      const ownProps = { storeKey: 'library' };
       state.documentViewer.targetDoc = Immutable.fromJS({ _id: 'targetDocId' });
       expect(mapStateToProps(state, ownProps).references).toBe(
         'Target references selector used correctly'
@@ -236,12 +238,12 @@ describe('DocumentSidePanel', () => {
     });
 
     it('should map connectionsGroups', () => {
-      const ownProps = {};
+      const ownProps = { storeKey: 'library' };
       expect(mapStateToProps(state, ownProps).connectionsGroups).toBe('connectionsGroups');
     });
 
     it('should map default language', () => {
-      const ownProps = {};
+      const ownProps = { storeKey: 'library' };
       expect(mapStateToProps(state, ownProps).defaultLanguage).toBe('pr');
     });
   });

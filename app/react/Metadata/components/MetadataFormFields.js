@@ -179,7 +179,11 @@ export class MetadataFormFields extends Component {
           .filter(p => !showSubset || showSubset.includes(p.name))
           .map(property => (
             <FormGroup key={property.name} model={`.metadata.${property.name}`}>
-              <ul className="search__filter is-active">
+              <ul
+                className={`search__filter is-active ${
+                  this.props.highlightedProps.includes(property.name) ? 'highlight' : ''
+                }`}
+              >
                 <li className="title">
                   <label>
                     <MultipleEditionFieldWarning
@@ -222,6 +226,7 @@ MetadataFormFields.defaultProps = {
   version: undefined,
   showSubset: undefined,
   entityThesauris: Immutable.fromJS({}),
+  highlightedProps: [],
 };
 
 MetadataFormFields.propTypes = {
@@ -233,6 +238,7 @@ MetadataFormFields.propTypes = {
   showSubset: PropTypes.arrayOf(PropTypes.string),
   version: PropTypes.string,
   entityThesauris: PropTypes.instanceOf(Immutable.Map),
+  highlightedProps: PropTypes.arrayOf(PropTypes.string),
 };
 
 export const mapStateToProps = state => ({

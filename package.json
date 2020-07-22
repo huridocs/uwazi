@@ -95,7 +95,7 @@
     "@types/socket.io": "^2.1.4",
     "@types/webpack-env": "^1.15.1",
     "@types/yargs-parser": "^13.0.0",
-    "ajv": "^6.10.2",
+    "ajv": "^6.12.3",
     "ajv-keywords": "^3.4.1",
     "async": "^2.6.1",
     "babel-loader": "8.0.6",

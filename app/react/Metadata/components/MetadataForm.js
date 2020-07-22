@@ -103,6 +103,7 @@ export class MetadataForm extends Component {
       multipleEdition,
       showSubset,
       version,
+      highlightedProps,
     } = this.props;
 
     if (!template) {
@@ -152,6 +153,7 @@ export class MetadataForm extends Component {
           template={template}
           showSubset={showSubset}
           version={version}
+          highlightedProps={highlightedProps}
         />
       </Form>
     );
@@ -168,6 +170,7 @@ MetadataForm.defaultProps = {
   notify: () => {},
   changeTemplate: () => {},
   onSubmit: () => {},
+  highlightedProps: [],
 };
 
 MetadataForm.propTypes = {
@@ -185,6 +188,7 @@ MetadataForm.propTypes = {
   showSubset: PropTypes.arrayOf(PropTypes.string),
   version: PropTypes.string,
   componentWillUnmount: PropTypes.func,
+  highlightedProps: PropTypes.arrayOf(PropTypes.string),
 };
 
 function mapDispatchToProps(dispatch) {
