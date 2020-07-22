@@ -1,5 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
+
 import { TemplateSchema } from 'shared/types/templateType';
 import { PropertySchema } from 'shared/types/commonTypes';
 
@@ -22,24 +23,26 @@ function TableView(props: DocumentViewerProps) {
     .map((t: any) => t.get('key'))
     .toJS();
 
-  const templates = props.templates.filter((t: TemplateSchema) =>
-    templateIds.includes(t.get('_id'))
-  );
+  const templates = props.templates
+    .filter((t: TemplateSchema) => templateIds.includes(t.get('_id')))
+    .toJS();
 
-  const columns = templates.reduce((properties: PropertySchema[], template: TemplateSchema) => {
-    const prs = properties.concat(template.get('properties')?.toJS() || []);
-    return prs;
-  }, []);
-  //show in cards de los templates
-  //all properties
+  let columns = templates[0].commonProperties;
+
+  columns = templates.reduce((properties: PropertySchema[], template: TemplateSchema) => {
+    const propsToAdd: PropertySchema[] = [];
+    (template.properties || []).forEach(templateProperty => {
+      if (!properties.find(columnProperty => templateProperty.name === columnProperty.name)) {
+        propsToAdd.push(templateProperty);
+      }
+    });
+    return properties.concat(propsToAdd);
+  }, columns);
 
   return (
     <table>
       <thead>
         <tr>
-          <th>Title</th>
-          <th>Date added</th>
-          <th>Type</th>
           {columns.map((column: any) => (
             <th>{column.label}</th>
           ))}
@@ -48,14 +51,11 @@ function TableView(props: DocumentViewerProps) {
       <tbody>
         {data.map((row: any) => (
           <tr>
-            <td>{row.title}</td>
-            <td>{row.createdAt}</td>
-            <td>{row.type}</td>
             {columns.map((column: any) => (
               <td>
                 {row.metadata && row.metadata[column.name] && row.metadata[column.name][0]
                   ? JSON.stringify(row.metadata[column.name][0].value)
-                  : ''}
+                  : row[column.name]}
               </td>
             ))}
           </tr>
