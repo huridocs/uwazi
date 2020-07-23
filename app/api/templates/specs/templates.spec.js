@@ -1,16 +1,12 @@
-/**
- * /* eslint-disable max-nested-callbacks
- *
- * @format
- */
-
+/* eslint-disable max-nested-callbacks
 /* eslint-disable max-statements */
+
 import Ajv from 'ajv';
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import db from 'api/utils/testing_db';
 import documents from 'api/documents/documents.js';
 import entities from 'api/entities/entities.js';
-import templates from 'api/templates/templates.js';
+import templates from 'api/templates/templates';
 import translations from 'api/i18n/translations';
 
 import fixtures, {

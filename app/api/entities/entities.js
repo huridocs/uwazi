@@ -509,7 +509,7 @@ export default {
   /** Handle property deletion and renames. */
   async updateMetadataProperties(template, currentTemplate, language) {
     const actions = { $rename: {}, $unset: {} };
-    template.properties = generateNamesAndIds(template.properties);
+    template.properties = await generateNamesAndIds(template.properties);
     template.properties.forEach(property => {
       const currentProperty = currentTemplate.properties.find(p => p.id === property.id);
       if (currentProperty && currentProperty.name !== property.name) {
@@ -532,12 +532,10 @@ export default {
       delete actions.$rename;
     }
 
-    let dbUpdate = Promise.resolve();
     if (actions.$unset || actions.$rename) {
-      dbUpdate = model.db.updateMany({ template: template._id }, actions);
+      await model.db.updateMany({ template: template._id }, actions);
     }
 
-    await dbUpdate;
     if (!template.properties.find(p => p.type === propertyTypes.relationship)) {
       return search.indexEntities({ template: template._id }, null, 1000);
     }

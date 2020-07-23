@@ -2,6 +2,7 @@ import SettingsAPI from 'app/Settings/SettingsAPI';
 import { APIURL } from 'app/config.js';
 import backend from 'fetch-mock';
 import { catchErrors } from 'api/utils/jasmineHelpers';
+import { RequestParams } from 'app/utils/RequestParams';
 
 describe('SettingsAPI', () => {
   beforeEach(() => {
@@ -14,13 +15,13 @@ describe('SettingsAPI', () => {
   afterEach(() => backend.restore());
 
   describe('save()', () => {
-    let settings;
+    let settings: RequestParams;
 
     beforeEach(() => {
-      settings = {
+      settings = new RequestParams({
         site_name: 'My name',
         _id: '123',
-      };
+      });
     });
 
     it('should post to users', done => {

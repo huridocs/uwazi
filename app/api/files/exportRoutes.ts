@@ -12,7 +12,7 @@ export default (app: Application) => {
   const parseQueryProperty = (query: any, property: string) =>
     query[property] ? JSON.parse(query[property]) : query[property];
 
-  const generateExportFileName = (databaseName: string) =>
+  const generateExportFileName = (databaseName: string = '') =>
     `${databaseName}-${new Date().toISOString()}.csv`;
 
   const removeTempFile = (filePath: string) => () => {
@@ -56,7 +56,7 @@ export default (app: Application) => {
 
         const results = await search.search(req.query, req.language, req.user);
         // eslint-disable-next-line camelcase
-        const { dateFormat, site_name } = await settings.get();
+        const { dateFormat = '', site_name } = await settings.get();
 
         const exporter = new CSVExporter();
 
