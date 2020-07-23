@@ -18,7 +18,10 @@ describe('TableViewer', () => {
     },
   ];
   function render() {
+    const dateText = '2019-03-25';
+    const dateTimestamp = new Date(dateText).getTime();
     const storeState = {
+      thesauris: Immutable.fromJS([{ _id: 'idThesauri1', name: 'thesauri1' }]),
       templates: Immutable.fromJS([
         {
           _id: 'idTemplate1',
@@ -54,12 +57,12 @@ describe('TableViewer', () => {
       rows: [
         {
           title: 'document1',
-          creationDate: 1595359919055,
+          creationDate: dateTimestamp,
           template: 'idTemplate1',
           metadata: {
             Date: [
               {
-                value: 1595359919055,
+                value: dateTimestamp,
               },
             ],
           },
@@ -101,22 +104,35 @@ describe('TableViewer', () => {
 
     component = renderConnected(TableViewer, props, storeState);
   }
-  it('should display a row of headers with the properties of all entities', () => {
+  describe('table header', () => {
     render();
-    const row = component.find('thead > tr').at(0);
-    const header = row.find('th');
-    expect(header.at(0).props().children).toBe(commonProperties[0].label);
-    expect(header.at(1).props().children).toBe(commonProperties[1].label);
-    //expect(header.at(2).props().children).toBe('Template');
-    expect(header.at(2).props().children).toBe('Date');
+    it('should display a row of headers with the properties of all entities', () => {
+      const row = component.find('thead > tr').at(0);
+      const header = row.find('th');
+      expect(header.at(0).props().children).toBe(commonProperties[0].label);
+      expect(header.at(1).props().children).toBe(commonProperties[1].label);
+      //expect(header.at(2).props().children).toBe('Template');
+      expect(header.at(2).props().children).toBe('Date');
+    });
+    it('should not have duplicated properties', () => {
+      const row = component.find('thead > tr').at(0);
+      const cellDate = row.find({ children: 'Date' });
+      const cellCountry = row.find({ children: 'Country' });
+      expect(cellDate.length).toBe(1);
+      expect(cellCountry.length).toBe(1);
+    });
   });
 
-  it('should not have duplicated properties', () => {
+  describe('table body', () => {
     render();
-    const row = component.find('thead > tr').at(0);
-    const cellDate = row.find({ children: 'Date' });
-    const cellCountry = row.find({ children: 'Country' });
-    expect(cellDate.length).toBe(1);
-    expect(cellCountry.length).toBe(1);
+    it('should display a row for each document listed', () => {
+      const row = component.find('tbody > tr');
+      expect(row.length).toBe(3);
+    });
+    it('should format property of date type with settings default format', () => {
+      const row = component.find('tbody > tr').at(0);
+      const cellDate = row.find('td').at(3);
+      expect(cellDate).toBe(3);
+    });
   });
 });

@@ -1,8 +1,10 @@
 import React from 'react';
-import { connect } from 'react-redux';
+import moment from 'moment';
 
+import { connect } from 'react-redux';
 import { TemplateSchema } from 'shared/types/templateType';
 import { PropertySchema } from 'shared/types/commonTypes';
+import formatter from '../Metadata/helpers/formater';
 
 export interface DocumentViewerProps {
   rowListZoomLevel: number;
@@ -13,19 +15,35 @@ export interface DocumentViewerProps {
   deleteConnection: (...args: any[]) => any;
   search: any;
   templates: any;
+  thesauris: any;
 }
 
+function formatByType(prop: PropertySchema, value: any) {
+  switch (prop.type) {
+    case 'date': {
+      const date = moment.unix(value);
+      return date.isValid() ? date.utc().format('MM-DD-YYYY') : '';
+    }
+    default: {
+      return value;
+    }
+  }
+}
 function TableView(props: DocumentViewerProps) {
   const data = props.documents.get('rows').toJS();
   const templateIds = props.documents
     .getIn(['aggregations', 'all', '_types', 'buckets'])
-    .filter((t: any) => t.getIn(['filtered', 'doc_count']) > 0)
-    .map((t: any) => t.get('key'))
+    .filter((template: any) => template.getIn(['filtered', 'doc_count']) > 0)
+    .map((template: any) => template.get('key'))
     .toJS();
 
   const templates = props.templates
     .filter((t: TemplateSchema) => templateIds.includes(t.get('_id')))
     .toJS();
+
+  const documents = data.map((doc: any) =>
+    formatter.prepareMetadata(doc, props.templates, props.thesauris)
+  );
 
   let columns = templates[0].commonProperties;
 
@@ -40,7 +58,7 @@ function TableView(props: DocumentViewerProps) {
   }, columns);
 
   return (
-    <table>
+    <table className="table-view">
       <thead>
         <tr>
           {columns.map((column: any) => (
@@ -49,13 +67,15 @@ function TableView(props: DocumentViewerProps) {
         </tr>
       </thead>
       <tbody>
-        {data.map((row: any) => (
+        {documents.map((document: any) => (
           <tr>
             {columns.map((column: any) => (
               <td>
-                {row.metadata && row.metadata[column.name] && row.metadata[column.name][0]
-                  ? JSON.stringify(row.metadata[column.name][0].value)
-                  : row[column.name]}
+                {document.metadata &&
+                document.metadata[column.name] &&
+                document.metadata[column.name][0]
+                  ? JSON.stringify(document.metadata[column.name][0].value)
+                  : document[column.name]}
               </td>
             ))}
           </tr>
@@ -67,6 +87,7 @@ function TableView(props: DocumentViewerProps) {
 
 const mapStateToProps = (state: any) => ({
   templates: state.templates,
+  thesauris: state.thesauris,
 });
 
 export const TableViewer = connect(mapStateToProps)(TableView);
