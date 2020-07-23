@@ -6,7 +6,7 @@ import { TemplateSchema } from 'shared/types/templateType';
 import { PropertySchema } from 'shared/types/commonTypes';
 import { IImmutable } from 'shared/types/Immutable';
 import { SimilarProperty, TemplateProperty } from './SimilarProperty';
-import { getCompatibleTypes } from 'shared/types/templateSchema';
+import { getCompatibleTypes } from 'shared/propertyTypes';
 
 interface MatchedProperty {
   template: string;
@@ -43,7 +43,7 @@ class SharedProperties extends Component<FilterSuggestionsProps> {
   }
 
   render() {
-    const { label, type, content, relationType } = this.props;
+    const { type, content, relationType } = this.props;
 
     const similarProperties: TemplateProperty[] = this.findSameLabelProperties(
       this.props.label,
@@ -51,7 +51,7 @@ class SharedProperties extends Component<FilterSuggestionsProps> {
     ).map((propertyMatch: MatchedProperty) => {
       const { property } = propertyMatch;
       return Object.assign({}, propertyMatch, {
-        typeConflict: !getCompatibleTypes(property.type).includes(type),
+        typeConflict: !getCompatibleTypes(type).includes(property.type),
         relationConflict: relationType && property.relationType !== relationType,
         contentConflict: property.content !== content,
         type: property.type,

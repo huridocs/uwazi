@@ -17,4 +17,28 @@ const propertyTypes = {
   text: 'text' as 'text',
 };
 
-export { propertyTypes };
+function getCompatibleTypes(type: keyof typeof propertyTypes): Array<keyof typeof propertyTypes> {
+  switch (type) {
+    case propertyTypes.date:
+      return [propertyTypes.date, propertyTypes.multidate];
+    case propertyTypes.multidate:
+      return [propertyTypes.date, propertyTypes.multidate];
+    case propertyTypes.daterange:
+      return [propertyTypes.daterange, propertyTypes.multidaterange];
+    case propertyTypes.multidaterange:
+      return [propertyTypes.daterange, propertyTypes.multidaterange];
+    case propertyTypes.select:
+      return [propertyTypes.select, propertyTypes.multiselect];
+    case propertyTypes.multiselect:
+      return [propertyTypes.select, propertyTypes.multiselect];
+    case propertyTypes.text:
+      return [propertyTypes.text, propertyTypes.markdown];
+    case propertyTypes.markdown:
+      return [propertyTypes.text, propertyTypes.markdown];
+  
+    default:
+      return [type];
+  }
+}
+
+export { propertyTypes, getCompatibleTypes };

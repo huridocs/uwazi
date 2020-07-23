@@ -7,6 +7,7 @@ import templates from 'api/templates';
 import { TemplateSchema } from './templateType';
 import { PropertySchema } from './commonTypes';
 import { ObjectId } from 'mongodb';
+import { getCompatibleTypes } from 'shared/propertyTypes';
 
 export const emitSchemaTypes = true;
 
@@ -178,41 +179,7 @@ async function getPropertiesWithSameNameAndDifferentKind(template: TemplateSchem
   return model.get(query);
 }
 
-function getCompatibleTypes(type: PropertySchema['type']): PropertySchema['type'][] {
-  let compatibleTypes: PropertySchema['type'][];
-  switch (type) {
-    case 'date':
-      compatibleTypes = ['date', 'multidate']
-      break;
-    case 'multidate':
-      compatibleTypes = ['date', 'multidate'];
-      break;
-    case 'daterange':
-      compatibleTypes = ['daterange', 'multidaterange'];
-      break;
-    case 'multidaterange':
-      compatibleTypes = ['daterange', 'multidaterange'];
-      break;
-    case 'select':
-      compatibleTypes = ['select', 'multiselect'];
-      break;
-    case 'multiselect':
-      compatibleTypes = ['select', 'multiselect'];
-      break;
-    case 'text':
-      compatibleTypes = ['text', 'markdown'];
-      break;
-    case 'markdown':
-      compatibleTypes = ['text', 'markdown'];
-      break;
-  
-    default:
-      compatibleTypes = [type];
-      break;
-  }
 
-  return compatibleTypes;
-}
 
 function filterInconsistentProperties(template: TemplateSchema, allProperties: PropertySchema[]) {
   return ensure<PropertySchema[]>(template.properties).reduce(
