@@ -1,5 +1,3 @@
-/** @format */
-
 import * as otplib from 'otplib';
 
 import settingsModel from 'api/settings';
@@ -19,7 +17,7 @@ const getUser = async (user: User, options?: string) => {
 };
 
 const conformSiteName = async (): Promise<string> => {
-  const { site_name: siteName } = await settingsModel.get();
+  const { site_name: siteName = '' } = await settingsModel.get();
   return siteName.length > 30 ? `${siteName.substring(0, 30)}...` : siteName;
 };
 

@@ -42,7 +42,7 @@ describe('csvExporter', () => {
       jest
         .spyOn(templates, 'getById')
         .mockImplementation(async id =>
-          Promise.resolve(id === 'notValid' ? null : testTemplates[id])
+          Promise.resolve(id === 'notValid' ? null : testTemplates[id.toString()])
         );
     });
     beforeEach(() => {
@@ -67,7 +67,7 @@ describe('csvExporter', () => {
     it('should fetch all the templates and return a map', done => {
       jest
         .spyOn(templates, 'getById')
-        .mockImplementation(async id => Promise.resolve(testTemplates[id]));
+        .mockImplementation(async id => Promise.resolve(testTemplates[id.toString()]));
       const types = ['58ad7d240d44252fee4e61fd', '58ad7d240d44252fee4e61fb'];
 
       doTest(types, 2, done);

@@ -2,9 +2,10 @@ import { EntitySchema } from 'shared/types/entityType';
 import templates from 'api/templates';
 import { propertyTypes } from 'shared/propertyTypes';
 import { PropertySchema } from 'shared/types/commonTypes.d';
+import { ensure } from 'shared/tsUtils';
 
 export async function extractSequence(e: EntitySchema) {
-  const template = await templates.getById(e.template);
+  const template = await templates.getById(ensure<string>(e.template));
   const parts = e.title ? [e.title] : [];
   if (template && template.properties) {
     parts.push(
