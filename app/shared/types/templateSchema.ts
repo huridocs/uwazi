@@ -179,8 +179,6 @@ async function getPropertiesWithSameNameAndDifferentKind(template: TemplateSchem
   return model.get(query);
 }
 
-
-
 function filterInconsistentProperties(template: TemplateSchema, allProperties: PropertySchema[]) {
   return ensure<PropertySchema[]>(template.properties).reduce(
     (propertyNames: string[], property) => {

@@ -35,7 +35,7 @@ function getCompatibleTypes(type: keyof typeof propertyTypes): Array<keyof typeo
       return [propertyTypes.text, propertyTypes.markdown];
     case propertyTypes.markdown:
       return [propertyTypes.text, propertyTypes.markdown];
-  
+
     default:
       return [type];
   }
