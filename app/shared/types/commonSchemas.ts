@@ -30,6 +30,7 @@ export const languageSchema = {
   required: ['key', 'label'],
   additionalProperties: false,
   properties: {
+    _id: objectIdSchema,
     label: { type: 'string' },
     key: { type: 'string' },
     rtl: { type: 'boolean' },

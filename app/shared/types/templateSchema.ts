@@ -6,6 +6,7 @@ import templates from 'api/templates';
 
 import { TemplateSchema } from './templateType';
 import { PropertySchema } from './commonTypes';
+import { ObjectId } from 'mongodb';
 
 export const emitSchemaTypes = true;
 
@@ -133,7 +134,10 @@ ajv.addKeyword('cantDeleteInheritedProperties', {
     const errors: Ajv.ErrorObject[] = [];
     await Promise.all(
       toRemoveProperties.map(async property => {
-        const canDelete = await templates.canDeleteProperty(template._id, property._id);
+        const canDelete = await templates.canDeleteProperty(
+          ensure<ObjectId>(template._id),
+          property._id
+        );
 
         if (!canDelete) {
           errors.push({
