@@ -220,10 +220,25 @@ describe('template schema', () => {
           relationType: 'relationType2',
         },
         {
-          name: 'validproperty',
-          label: 'validProperty',
+          name: 'validproperty4',
+          label: 'validProperty4',
           type: 'select',
-          content: 'thesauriId3',
+          content: 'thesauriId4',
+        },
+        {
+          name: 'validpropertydate',
+          label: 'validPropertyDate',
+          type: 'date',
+        },
+        {
+          name: 'validpropertydaterange',
+          label: 'validPropertyDateRange',
+          type: 'daterange',
+        },
+        {
+          name: 'validpropertyrichtext',
+          label: 'validPropertyRichText',
+          type: 'markdown',
         },
       ],
       commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],

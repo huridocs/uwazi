@@ -64,6 +64,27 @@ export default {
           name: 'sharedrelationship1',
           label: 'sharedRelationship1',
         },
+        {
+          name: 'validproperty4',
+          label: 'validProperty4',
+          type: 'multiselect',
+          content: 'thesauriId4',
+        },
+        {
+          name: 'validpropertydate',
+          label: 'validPropertyDate',
+          type: 'multidate',
+        },
+        {
+          name: 'validpropertydaterange',
+          label: 'validPropertyDateRange',
+          type: 'multidaterange',
+        },
+        {
+          name: 'validpropertyrichtext',
+          label: 'validPropertyRichText',
+          type: 'text',
+        },
       ],
       commonProperties: [{ name: 'title', label: 'Title' }],
     },
