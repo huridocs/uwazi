@@ -236,6 +236,22 @@ describe('template schema', () => {
           type: 'daterange',
         },
         {
+          name: 'validpropertymultiselect',
+          label: 'validPropertyMultiSelect',
+          type: 'multiselect',
+          content: 'thesauriId4',
+        },
+        {
+          name: 'validpropertymultidate',
+          label: 'validPropertyMultiDate',
+          type: 'multidate',
+        },
+        {
+          name: 'validpropertymultidaterange',
+          label: 'validPropertyMultiDateRange',
+          type: 'multidaterange',
+        },
+        {
           name: 'validpropertyrichtext',
           label: 'validPropertyRichText',
           type: 'markdown',

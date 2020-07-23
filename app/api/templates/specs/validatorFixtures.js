@@ -67,23 +67,39 @@ export default {
         {
           name: 'validproperty4',
           label: 'validProperty4',
-          type: 'multiselect',
+          type: propertyTypes.multiselect,
           content: 'thesauriId4',
         },
         {
           name: 'validpropertydate',
           label: 'validPropertyDate',
-          type: 'multidate',
+          type: propertyTypes.multidate,
         },
         {
           name: 'validpropertydaterange',
           label: 'validPropertyDateRange',
-          type: 'multidaterange',
+          type: propertyTypes.multidaterange,
         },
         {
           name: 'validpropertyrichtext',
           label: 'validPropertyRichText',
-          type: 'text',
+          type: propertyTypes.text,
+        },
+        {
+          name: 'validpropertymultiselect',
+          label: 'validPropertyMultiSelect',
+          type: propertyTypes.select,
+          content: 'thesauriId4',
+        },
+        {
+          name: 'validpropertymultidate',
+          label: 'validPropertyMultiDate',
+          type: propertyTypes.date,
+        },
+        {
+          name: 'validpropertymultidaterange',
+          label: 'validPropertyMultiDateRange',
+          type: propertyTypes.daterange,
         },
       ],
       commonProperties: [{ name: 'title', label: 'Title' }],

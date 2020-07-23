@@ -6,7 +6,7 @@ import { FilterSuggestions } from '../FilterSuggestions';
 describe('FilterSuggestions', () => {
   let component: any;
 
-  function renderComponent(label = 'test', type = 'text', content?: any) {
+  function renderComponent(label = 'test', type = 'text', content?: any, relationType?: any) {
     const storeState = {
       templates: Immutable.fromJS([
         {
@@ -34,12 +34,22 @@ describe('FilterSuggestions', () => {
             { label: 'date ', type: 'date', filter: true },
             { label: 'filterFalse', type: 'text', filter: true },
             { label: 'Keywords', type: 'text', filter: true },
+            {
+              label: 'Relation',
+              type: 'relationship',
+              content: 'template1',
+              relationType: 'relation1',
+            },
           ],
         },
       ]),
       thesauris: Immutable.fromJS([
         { _id: 'abc1', name: 'Best SCI FI Authors' },
         { _id: 'abc2', name: 'Favourite dessert recipes' },
+      ]),
+      relationTypes: Immutable.fromJS([
+        { _id: 'relation1', name: 'Relation 1' },
+        { _id: 'relation2', name: 'Relation 2' },
       ]),
       template: {
         data: {
@@ -49,6 +59,7 @@ describe('FilterSuggestions', () => {
               type,
               label,
               content,
+              relationType,
             },
           ],
           commonProperties: [],
@@ -111,6 +122,14 @@ describe('FilterSuggestions', () => {
         templateProperty: { template: 'Template 2' },
       });
       expect(suggestion.props().templateProperty.contentConflict).toBe(true);
+    });
+
+    it('should be a content conflict if relationType does not match ', () => {
+      renderComponent('Relation', 'relationship', 'template1', 'relation2');
+      const suggestion = component.find({
+        templateProperty: { template: 'Template 3' },
+      });
+      expect(suggestion.props().templateProperty.relationConflict).toBe(true);
     });
   });
 });
