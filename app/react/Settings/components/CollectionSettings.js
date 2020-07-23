@@ -282,6 +282,48 @@ export class CollectionSettings extends Component {
                 </Translate>
               </label>
             </div>
+
+            {!this.props.settings.newNameGeneration && (
+              <React.Fragment>
+                <span className="form-group-label">
+                  <Translate>Support non-latin characters in property names</Translate>
+                </span>
+                <div className="checkbox">
+                  <label>
+                    <Control.checkbox model=".newNameGeneration" type="checkbox" />
+                    <Translate>
+                      Checking this box enhances support for non-latin languages as default
+                      languages.
+                    </Translate>
+                  </label>
+                  <div className="alert alert-info">
+                    <div className="force-ltr">
+                      <ul>
+                        <li>
+                          Checking this box enhances support for non-latin languages as default
+                          languages.
+                        </li>
+                        <li>This will update all template properties automatically.</li>
+                        <li>This process could take several minutes.</li>
+                        <li>This process will likely change URLs to library filters.</li>
+                        <li>
+                          If you have menus or links using such URLs, they will probably stop
+                          working after the update. You will need to update them manually.
+                        </li>
+                        <li>
+                          After selecting this option, you will not be able to revert back to using
+                          legacy property naming.
+                        </li>
+                        <li>
+                          If you are not facing issues with your template property names, we
+                          recommend leaving this unchecked.
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </React.Fragment>
+            )}
           </LocalForm>
           <h2>{t('System', 'Advanced customizations')}</h2>
           <div>

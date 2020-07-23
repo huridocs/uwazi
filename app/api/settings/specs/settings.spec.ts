@@ -1,7 +1,9 @@
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import db from 'api/utils/testing_db';
 import translations from 'api/i18n/translations';
-import settings from '../settings.js';
+import { Settings } from 'shared/types/settingsType';
+
+import settings from '../settings';
 import fixtures from './fixtures.js';
 
 describe('settings', () => {
@@ -12,8 +14,8 @@ describe('settings', () => {
       .catch(catchErrors(done));
   });
 
-  afterAll(done => {
-    db.disconnect().then(done);
+  afterAll(async () => {
+    await db.disconnect();
   });
 
   describe('save()', () => {
@@ -21,8 +23,8 @@ describe('settings', () => {
       const config = { site_name: 'My collection' };
       settings
         .save(config)
-        .then(() => settings.save({ custom: { customNested: 'data' } }))
-        .then(() => settings.get())
+        .then(async () => settings.save({ custom: { customNested: 'data' } }))
+        .then(async () => settings.get())
         .then(result => {
           expect(result.site_name).toBe('My collection');
           expect(result.custom.customNested).toBe('data');
@@ -38,15 +40,15 @@ describe('settings', () => {
         .save(config)
         .then(createdDocument => {
           expect(createdDocument.site_name).toBe(config.site_name);
-          expect(createdDocument.allowedPublicTemplates[0]).toBe('id1');
-          expect(createdDocument.allowedPublicTemplates[1]).toBe('id2');
+          expect(createdDocument.allowedPublicTemplates?.[0]).toBe('id1');
+          expect(createdDocument.allowedPublicTemplates?.[1]).toBe('id2');
           done();
         })
         .catch(catchErrors(done));
     });
 
     describe('when there are Links', () => {
-      let config;
+      let config: Settings;
 
       beforeEach(() => {
         config = { site_name: 'My collection', links: [{ title: 'Page one' }] };
@@ -71,14 +73,15 @@ describe('settings', () => {
 
       describe('updating the links', () => {
         it('should update the translation context for the links', done => {
+          config.links = config.links || [];
           config.links.push({ title: 'Page two' });
           settings
             .save(config)
-            .then(savedConfig => {
+            .then(async savedConfig => {
               config = {
                 site_name: 'My collection',
                 links: [
-                  { title: 'Page 1', _id: savedConfig.links[0]._id },
+                  { title: 'Page 1', _id: savedConfig.links?.[0]._id },
                   { title: 'Page three' },
                 ],
               };
@@ -105,8 +108,8 @@ describe('settings', () => {
         const config = {
           site_name: 'My collection',
           filters: [
-            { id: 1, name: 'Judge' },
-            { id: 2, name: 'Documents', items: [{ id: 3, name: 'Cause' }] },
+            { id: '1', name: 'Judge' },
+            { id: '2', name: 'Documents', items: [{ id: 3, name: 'Cause' }] },
           ],
         };
         settings
@@ -136,7 +139,7 @@ describe('settings', () => {
         };
         settings
           .save(config)
-          .then(() => {
+          .then(async () => {
             config = {
               site_name: 'My collection',
               filters: [
@@ -144,6 +147,7 @@ describe('settings', () => {
                 { id: '2', name: 'Important Documents', items: [] },
               ],
             };
+            //@ts-ignore
             translations.updateContext.calls.reset();
             return settings.save(config);
           })
@@ -164,7 +168,7 @@ describe('settings', () => {
 
     describe('when no links or filters are present', () => {
       it('should not update contexts translations', async () => {
-        await settings.save({ css: 'something that does not have links' });
+        await settings.save({ custom: 'something that does not have links' });
         await translations.get();
         expect(translations.updateContext).not.toHaveBeenCalled();
       });
@@ -174,6 +178,7 @@ describe('settings', () => {
   describe('get()', () => {
     describe('if there is no settings on the DB', () => {
       it('should return an empty object', done => {
+        //@ts-ignore
         db.clear(['settings'], () => {
           settings
             .get()
@@ -211,10 +216,10 @@ describe('settings', () => {
     it('should save the settings with the new default language', done => {
       settings
         .setDefaultLanguage('en')
-        .then(() => settings.get())
+        .then(async () => settings.get())
         .then(result => {
-          expect(result.languages[1].key).toBe('en');
-          expect(result.languages[1].default).toBe(true);
+          expect(result.languages?.[1].key).toBe('en');
+          expect(result.languages?.[1].default).toBe(true);
           done();
         })
         .catch(catchErrors(done));
@@ -225,9 +230,9 @@ describe('settings', () => {
     it('should add a to settings list language', done => {
       settings
         .addLanguage({ key: 'fr', label: 'Frances' })
-        .then(() => settings.get())
+        .then(async () => settings.get())
         .then(result => {
-          expect(result.languages.length).toBe(3);
+          expect(result.languages?.length).toBe(3);
           done();
         })
         .catch(catchErrors(done));
@@ -238,9 +243,9 @@ describe('settings', () => {
     it('should add a to settings list language', done => {
       settings
         .deleteLanguage('en')
-        .then(() => settings.get())
+        .then(async () => settings.get())
         .then(result => {
-          expect(result.languages.length).toBe(1);
+          expect(result.languages?.length).toBe(1);
           done();
         })
         .catch(catchErrors(done));
@@ -248,7 +253,7 @@ describe('settings', () => {
   });
 
   describe('removeTemplateFromFilters', () => {
-    it('should remove the template from the filters', done => {
+    it('should remove the template from the filters', async () => {
       const _settings = {
         filters: [
           { id: '123' },
@@ -260,10 +265,8 @@ describe('settings', () => {
       };
       spyOn(settings, 'get').and.returnValue(Promise.resolve(_settings));
       spyOn(settings, 'save');
-      settings.removeTemplateFromFilters('123').then(() => {
-        expect(settings.save).toHaveBeenCalledWith({ filters: [{ id: 'axz', items: [] }] });
-        done();
-      });
+      await settings.removeTemplateFromFilters('123');
+      expect(settings.save).toHaveBeenCalledWith({ filters: [{ id: 'axz', items: [] }] });
     });
   });
 
