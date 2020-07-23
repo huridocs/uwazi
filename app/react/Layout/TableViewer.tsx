@@ -15,6 +15,17 @@ export interface DocumentViewerProps {
   templates: any;
 }
 
+function displayCell(row: any, column: any, index: number) {
+  return (
+    <td className={!index ? 'sticky-col' : ''}>
+      {!index ? (<input type="checkbox" />) : null }
+      {row.metadata && row.metadata[column.name] && row.metadata[column.name][0]
+        ? JSON.stringify(row.metadata[column.name][0].value)
+        : row[column.name]}
+    </td>
+  );
+}
+
 function TableView(props: DocumentViewerProps) {
   const data = props.documents.get('rows').toJS();
   const templateIds = props.documents
@@ -40,28 +51,22 @@ function TableView(props: DocumentViewerProps) {
   }, columns);
 
   return (
-    <table>
-      <thead>
-        <tr>
-          {columns.map((column: any) => (
-            <th>{column.label}</th>
-          ))}
-        </tr>
-      </thead>
-      <tbody>
-        {data.map((row: any) => (
+    <div className="tableview-wrapper">
+      <table>
+        <thead>
           <tr>
-            {columns.map((column: any) => (
-              <td>
-                {row.metadata && row.metadata[column.name] && row.metadata[column.name][0]
-                  ? JSON.stringify(row.metadata[column.name][0].value)
-                  : row[column.name]}
-              </td>
+            {columns.map((column: any, index: number) => (
+              <th className={!index ? 'sticky-col' : ''}>{column.label}</th>
             ))}
           </tr>
-        ))}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          {data.map((row: any) => (
+            <tr>{columns.map((column: any, index: number) => displayCell(row, column, index))}</tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 }
 
