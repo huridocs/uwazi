@@ -18,6 +18,17 @@ export interface DocumentViewerProps {
   thesauris: any;
 }
 
+function displayCell(row: any, column: any, index: number) {
+  return (
+    <td className={!index ? 'sticky-col' : ''}>
+      {!index ? (<input type="checkbox" />) : null }
+      {row.metadata && row.metadata[column.name] && row.metadata[column.name][0]
+        ? JSON.stringify(row.metadata[column.name][0].value)
+        : row[column.name]}
+    </td>
+  );
+}
+
 function formatByType(prop: PropertySchema, value: any) {
   switch (prop.type) {
     case 'date': {
@@ -58,30 +69,24 @@ function TableView(props: DocumentViewerProps) {
   }, columns);
 
   return (
-    <table className="table-view">
-      <thead>
-        <tr>
-          {columns.map((column: any) => (
-            <th>{column.label}</th>
-          ))}
-        </tr>
-      </thead>
-      <tbody>
-        {documents.map((document: any) => (
+    <div className="tableview-wrapper">
+      <table>
+        <thead>
           <tr>
-            {columns.map((column: any) => (
-              <td>
-                {document.metadata &&
-                document.metadata[column.name] &&
-                document.metadata[column.name][0]
-                  ? JSON.stringify(document.metadata[column.name][0].value)
-                  : document[column.name]}
-              </td>
+            {columns.map((column: any, index: number) => (
+              <th className={!index ? 'sticky-col' : ''}>{column.label}</th>
             ))}
           </tr>
-        ))}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          {data.map((row: any) => (
+            <tr>{columns.map((column: any, index: number) => displayCell(row, column, index))}</tr>
+                  ? JSON.stringify(document.metadata[column.name][0].value)
+                  : document[column.name]}
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 }
 
