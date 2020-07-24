@@ -12,6 +12,7 @@ import { EntitySchema } from 'shared/types/entityType';
 import { TemplateSchema } from 'shared/types/templateType';
 import { ThesaurusSchema } from 'shared/types/thesaurusType';
 import * as util from 'util';
+import { ensure } from 'shared/tsUtils';
 
 export interface SyncArgs {
   limit?: number;
@@ -107,7 +108,8 @@ export async function syncEntity(
     e.suggestedMetadata = {};
   }
   const template: TemplateSchema | undefined =
-    (templateDictP ?? {})[e.template?.toString() ?? ''] ?? (await templates.getById(e.template));
+    (templateDictP ?? {})[e.template?.toString() ?? ''] ??
+    (await templates.getById(ensure<string>(e.template)));
   const thesaurusDict =
     thesaurusDictP ??
     (await thesauri.get(null)).reduce((res, t) => ({ ...res, [t._id.toString()]: t }), {});
