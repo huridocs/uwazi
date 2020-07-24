@@ -12,6 +12,7 @@ import csv, { CSVRow } from './csv';
 import importFile from './importFile';
 import { importEntity, translateEntity } from './importEntity';
 import { extractEntity, toSafeName } from './entityRow';
+import { ensure } from 'shared/tsUtils';
 
 export class CSVLoader extends EventEmitter {
   stopOnError: boolean;
@@ -45,9 +46,9 @@ export class CSVLoader extends EventEmitter {
       throw new Error('template not found!');
     }
     const file = importFile(csvPath);
-    const availableLanguages: string[] = (await settings.get()).languages.map(
-      (l: LanguageSchema) => l.key
-    );
+    const availableLanguages: string[] = ensure<LanguageSchema[]>(
+      (await settings.get()).languages
+    ).map((l: LanguageSchema) => l.key);
 
     await csv(await file.readStream(), this.stopOnError)
       .onRow(async (row: CSVRow) => {
@@ -75,7 +76,7 @@ export class CSVLoader extends EventEmitter {
   /* eslint-disable class-methods-use-this */
   async loadThesauri(csvPath: string, thesaurusId: string, { language }: { language: string }) {
     const file = importFile(csvPath);
-    const availableLanguages: string[] = (await settings.get()).languages
+    const availableLanguages: string[] = ensure<LanguageSchema[]>((await settings.get()).languages)
       .map((l: LanguageSchema) => l.key)
       .filter((l: string) => l !== language);
 

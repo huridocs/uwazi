@@ -1,45 +1,53 @@
-/** @format */
-import { DBHOST as dbHost } from 'api/config/database.js';
 import entities from 'api/entities';
 import translations from 'api/i18n/translations';
 import createError from 'api/utils/Error';
-import request from 'shared/JSONRequest.js';
+import { TemplateSchema } from 'shared/types/templateType';
+import { PropertySchema } from 'shared/types/commonTypes';
+import { ensure } from 'shared/tsUtils';
+import { ObjectID } from 'mongodb';
 
 import { validateTemplate } from '../../shared/types/templateSchema';
 import model from './templatesModel';
 import { generateNamesAndIds, getDeletedProperties, getUpdatedNames } from './utils';
 
-const removePropsWithNonexistentId = async nonexistentId => {
+const removePropsWithNonexistentId = async (nonexistentId: string) => {
   const relatedTemplates = await model.get({ 'properties.content': nonexistentId });
   await Promise.all(
-    relatedTemplates.map(t =>
+    relatedTemplates.map(async t =>
       model.save({
         ...t,
-        properties: t.properties.filter(prop => prop.content !== nonexistentId),
+        properties: (t.properties || []).filter(prop => prop.content !== nonexistentId),
       })
     )
   );
 };
 
-const createTranslationContext = template => {
-  const titleProperty = template.commonProperties.find(p => p.name === 'title');
-  const context = template.properties.reduce((ctx, prop) => {
+const createTranslationContext = (template: TemplateSchema) => {
+  const titleProperty = ensure<PropertySchema>(
+    ensure<PropertySchema[]>(template.commonProperties).find(p => p.name === 'title')
+  );
+
+  const context = (template.properties || []).reduce<{ [k: string]: string }>((ctx, prop) => {
     ctx[prop.label] = prop.label;
     return ctx;
   }, {});
+
   context[template.name] = template.name;
   context[titleProperty.label] = titleProperty.label;
   return context;
 };
 
-const addTemplateTranslation = template => {
-  const context = createTranslationContext(template);
-  return translations.addContext(template._id, template.name, context, 'Entity');
-};
+const addTemplateTranslation = async (template: TemplateSchema) =>
+  translations.addContext(
+    template._id,
+    template.name,
+    createTranslationContext(template),
+    'Entity'
+  );
 
-const updateTranslation = (currentTemplate, template) => {
+const updateTranslation = async (currentTemplate: TemplateSchema, template: TemplateSchema) => {
   const currentProperties = currentTemplate.properties;
-  const newProperties = template.properties;
+  const newProperties = template.properties || [];
   const updatedLabels = getUpdatedNames(currentProperties, newProperties, 'label');
   if (currentTemplate.name !== template.name) {
     updatedLabels[currentTemplate.name] = template.name;
@@ -58,11 +66,11 @@ const updateTranslation = (currentTemplate, template) => {
 };
 
 export default {
-  async save(template, language) {
+  async save(template: TemplateSchema, language: string) {
     /* eslint-disable no-param-reassign */
     template.properties = template.properties || [];
-    /* eslint-disable no-param-reassign */
-    template.properties = generateNamesAndIds(template.properties);
+    template.properties = await generateNamesAndIds(template.properties);
+    /* eslint-enable no-param-reassign */
 
     await validateTemplate(template);
 
@@ -71,16 +79,17 @@ export default {
     }
     return model
       .save(template)
-      .then(newTemplate => addTemplateTranslation(newTemplate).then(() => newTemplate));
+      .then(async newTemplate => addTemplateTranslation(newTemplate).then(() => newTemplate));
   },
 
-  _update(template, language) {
-    let _currentTemplate;
-    return this.getById(template._id)
-      .then(currentTemplate => {
+  async _update(template: TemplateSchema, language: string) {
+    let _currentTemplate: TemplateSchema;
+    return this.getById(ensure(template._id))
+      .then(current => {
+        const currentTemplate = ensure<TemplateSchema>(current);
         currentTemplate.properties = currentTemplate.properties || []; // eslint-disable-line no-param-reassign
         currentTemplate.properties.forEach(prop => {
-          const swapingNameWithExistingProperty = template.properties.find(
+          const swapingNameWithExistingProperty = (template.properties || []).find(
             p => p.name === prop.name && p.id !== prop.id
           );
           if (swapingNameWithExistingProperty) {
@@ -90,13 +99,16 @@ export default {
 
         return currentTemplate;
       })
-      .then(currentTemplate =>
+      .then(async currentTemplate =>
         Promise.all([currentTemplate, updateTranslation(currentTemplate, template)])
       )
-      .then(([currentTemplate]) => {
+      .then(([current]) => {
+        const currentTemplate = ensure<TemplateSchema>(current);
         _currentTemplate = currentTemplate;
-        const currentTemplateContentProperties = currentTemplate.properties.filter(p => p.content);
-        const templateContentProperties = template.properties.filter(p => p.content);
+        const currentTemplateContentProperties = (currentTemplate.properties || []).filter(
+          p => p.content
+        );
+        const templateContentProperties = (template.properties || []).filter(p => p.content);
 
         const toRemoveValues = currentTemplateContentProperties
           .map(prop => {
@@ -113,19 +125,18 @@ export default {
         }
         return entities.removeValuesFromEntities(toRemoveValues, currentTemplate._id); // eslint-disable-line consistent-return
       })
-      .then(() => model.save(template))
-      .then(savedTemplate =>
+      .then(async () => model.save(template))
+      .then(async savedTemplate =>
         entities
           .updateMetadataProperties(template, _currentTemplate, language)
           .then(() => savedTemplate)
       );
   },
 
-  async canDeleteProperty(template, property) {
+  async canDeleteProperty(template: ObjectID, property: ObjectID) {
     const tmps = await model.get();
-
     return tmps.every(iteratedTemplate =>
-      iteratedTemplate.properties.every(
+      (iteratedTemplate.properties || []).every(
         iteratedProperty =>
           !iteratedProperty.content ||
           !iteratedProperty.inheritProperty ||
@@ -137,9 +148,9 @@ export default {
     );
   },
 
-  _validateSwapPropertyNames(currentTemplate, template) {
-    currentTemplate.properties.forEach(prop => {
-      const swapingNameWithExistingProperty = template.properties.find(
+  _validateSwapPropertyNames(currentTemplate: TemplateSchema, template: TemplateSchema) {
+    (currentTemplate.properties || []).forEach(prop => {
+      const swapingNameWithExistingProperty = (template.properties || []).find(
         p => p.name === prop.name && p.id !== prop.id
       );
       if (swapingNameWithExistingProperty) {
@@ -148,63 +159,51 @@ export default {
     });
   },
 
-  get(query) {
+  async get(query: any = {}) {
     return model.get(query);
   },
 
-  setAsDefault(templateId) {
-    return this.get().then(_templates => {
-      const templateToBeDefault = _templates.find(t => t._id.toString() === templateId);
+  async setAsDefault(templateId: string) {
+    return this.get().then(async _templates => {
+      const templateToBeDefault = ensure<TemplateSchema>(
+        _templates.find(t => t._id.toString() === templateId)
+      );
       const currentDefault = _templates.find(t => t.default);
-      templateToBeDefault.default = true;
-      let saveCurrentDefault = Promise.resolve();
+      ensure<TemplateSchema>(templateToBeDefault).default = true;
+      let saveCurrentDefault = Promise.resolve({});
       if (currentDefault) {
         currentDefault.default = false;
-        saveCurrentDefault = this.save(currentDefault);
+        saveCurrentDefault = this.save(currentDefault, currentDefault.language);
       }
-      return Promise.all([this.save(templateToBeDefault), saveCurrentDefault]);
+      return Promise.all([
+        this.save(templateToBeDefault, templateToBeDefault.language),
+        saveCurrentDefault,
+      ]);
     });
   },
 
-  getById(templateId) {
+  async getById(templateId: ObjectID | string) {
     return model.getById(templateId);
   },
 
-  async delete(template) {
-    const count = await this.countByTemplate(template._id);
+  async delete(template: TemplateSchema) {
+    const count = await this.countByTemplate(ensure(template._id));
     if (count > 0) {
       return Promise.reject({ key: 'documents_using_template', value: count }); // eslint-disable-line prefer-promise-reject-errors
     }
-    await translations.deleteContext(template._id);
-    await removePropsWithNonexistentId(template._id);
-    await model.delete(template._id);
+    const _id = ensure<string>(template._id);
+    await translations.deleteContext(_id);
+    await removePropsWithNonexistentId(_id);
+    await model.delete(_id);
 
     return template;
   },
 
-  countByTemplate(template) {
+  async countByTemplate(template: string) {
     return entities.countByTemplate(template);
   },
 
-  getEntitySelectNames(templateId) {
-    return this.getById(templateId).then(template => {
-      const selects = template.properties.filter(
-        prop => prop.type === 'select' || prop.type === 'multiselect'
-      );
-      const entitySelects = [];
-      return Promise.all(
-        selects.map(select =>
-          request.get(`${dbHost}/${select.content}`).then(result => {
-            if (result.json.type === 'template') {
-              entitySelects.push(select.name);
-            }
-          })
-        )
-      ).then(() => entitySelects);
-    });
-  },
-
-  countByThesauri(thesauriId) {
+  async countByThesauri(thesauriId: string) {
     return model.count({ 'properties.content': thesauriId });
   },
 };

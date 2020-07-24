@@ -75,8 +75,8 @@ export default {
     return model.getById(id);
   },
 
-  save(relationtype) {
-    relationtype.properties = generateNamesAndIds(relationtype.properties || []);
+  async save(relationtype) {
+    relationtype.properties = await generateNamesAndIds(relationtype.properties || []);
 
     return checkDuplicated(relationtype).then(() => {
       if (!relationtype._id) {

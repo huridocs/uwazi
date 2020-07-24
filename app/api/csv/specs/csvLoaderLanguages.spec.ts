@@ -31,8 +31,8 @@ describe('csvLoader languages', () => {
     await db.clearAllAndLoad(fixtures);
     spyOn(search, 'indexEntities').and.returnValue(Promise.resolve());
 
-    const { languages } = await settings.get();
-    await settings.save({ languages: [...languages, { key: 'es' }] });
+    const { languages = [] } = await settings.get();
+    await settings.save({ languages: [...languages, { key: 'es', label: 'es' }] });
 
     await createTestingZip(
       [
