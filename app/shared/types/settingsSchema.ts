@@ -1,6 +1,6 @@
 import Ajv from 'ajv';
 import { wrapValidator } from 'shared/tsUtils';
-import { objectIdSchema, languagesListSchema } from 'shared/types/commonSchemas';
+import { objectIdSchema, languagesListSchema, geolocationSchema } from 'shared/types/commonSchemas';
 
 export const emitSchemaTypes = true;
 
@@ -100,6 +100,7 @@ export const settingsSchema = {
         favorites: { type: 'boolean' },
       },
     },
+    mapStartingPoint: geolocationSchema,
   },
 };
 

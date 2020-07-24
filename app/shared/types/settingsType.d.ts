@@ -1,7 +1,7 @@
 /* eslint-disable */
 /**AUTO-GENERATED. RUN yarn emit-types to update.*/
 
-import { ObjectIdSchema, LanguagesListSchema } from 'shared/types/commonTypes';
+import {ObjectIdSchema, LanguagesListSchema, LatLonSchema} from 'shared/types/commonTypes';
 
 export interface SettingsFilterSchema {
   _id?: string;
@@ -54,5 +54,6 @@ export interface Settings {
     topicClassification?: boolean;
     favorites?: boolean;
     [k: string]: any | undefined;
-  };
+  },
+  mapStartingPoint?: LatLonSchema[];
 }

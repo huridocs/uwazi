@@ -210,6 +210,14 @@ describe('settings', () => {
         expect(savedSettings.mapTilerKey).toBe(expectedKey);
       });
     });
+
+    describe('if there is settings with no map starting point on the DB', () => {
+      it('should return the default starting point', async () => {
+        const settingsFromModel = await settings.get();
+        const SWITZERLAND_COORDINATES = [{ lat: 46, lon: 6 }];
+        expect(settingsFromModel.mapStartingPoint).toEqual(SWITZERLAND_COORDINATES);
+      });
+    });
   });
 
   describe('setDefaultLanguage()', () => {
