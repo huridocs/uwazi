@@ -2,14 +2,15 @@ import translations from 'api/i18n/translations';
 
 import { Settings, SettingsLinkSchema, SettingsFilterSchema } from 'shared/types/settingsType';
 import { ensure } from 'shared/tsUtils';
-import { LanguageSchema, ObjectIdSchema } from 'shared/types/commonTypes';
-import { validateSettings } from 'shared/types/settingsSchema';
-
-import { settingsModel } from './settingsModel';
 import templates from 'api/templates';
+import { LanguageSchema, LatLonSchema, ObjectIdSchema } from 'shared/types/commonTypes';
+
 import { TemplateSchema } from 'shared/types/templateType';
+import { validateSettings } from 'shared/types/settingsSchema';
+import { settingsModel } from './settingsModel';
 
 const DEFAULT_MAP_TILER_KEY = 'QiI1BlAJNMmZagsX5qp7';
+const DEFAULT_MAP_STARTING_POINT: LatLonSchema[] = [{ lon: 6, lat: 46 }];
 
 const getUpdatesAndDeletes = (
   newValues: (SettingsLinkSchema & SettingsFilterSchema)[] = [],
@@ -107,7 +108,10 @@ function removeTemplate(filters: SettingsFilterSchema[], templateId: ObjectIdSch
 
 function setDefaults(storedSettings: Settings[]) {
   const [settings] = storedSettings;
-  if (settings) settings.mapTilerKey = settings.mapTilerKey || DEFAULT_MAP_TILER_KEY;
+  if (settings) {
+    settings.mapTilerKey = settings.mapTilerKey || DEFAULT_MAP_TILER_KEY;
+    settings.mapStartingPoint = settings.mapStartingPoint || DEFAULT_MAP_STARTING_POINT;
+  }
   return settings || {};
 }
 
