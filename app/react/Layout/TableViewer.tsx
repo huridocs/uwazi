@@ -1,5 +1,4 @@
 import React from 'react';
-import moment from 'moment';
 
 import { connect } from 'react-redux';
 import { TemplateSchema } from 'shared/types/templateType';
@@ -18,28 +17,54 @@ export interface DocumentViewerProps {
   thesauris: any;
 }
 
-function displayCell(row: any, column: any, index: number) {
+function displayCell(document: any, column: any, index: number) {
+  const cellValue = document.metadata[column.name]
+    ? document.metadata[column.name].value
+    : document[column.name];
   return (
     <td className={!index ? 'sticky-col' : ''}>
-      {!index ? (<input type="checkbox" />) : null }
-      {row.metadata && row.metadata[column.name] && row.metadata[column.name][0]
-        ? JSON.stringify(row.metadata[column.name][0].value)
-        : row[column.name]}
+      {!index && <input type="checkbox" />}
+      {cellValue instanceof Object ? JSON.stringify(cellValue) : cellValue}
     </td>
   );
 }
 
-function formatByType(prop: PropertySchema, value: any) {
-  switch (prop.type) {
-    case 'date': {
-      const date = moment.unix(value);
-      return date.isValid() ? date.utc().format('MM-DD-YYYY') : '';
+function formatDocuments(data: any, templates: TemplateSchema[], props: DocumentViewerProps) {
+  return data.map((doc: any) => {
+    let formattedDoc = doc;
+    const template = templates.find((t: TemplateSchema) => t._id === doc.template);
+    if (template) {
+      formattedDoc.templateName = template.name;
+      const templateHasProperties =
+        template.properties !== undefined && template.properties.length > 0;
+      if (templateHasProperties) {
+        formattedDoc = formatter.prepareMetadata(doc, props.templates, props.thesauris, null, {
+          sortedProperty: 'creationDate',
+        });
+        const metadata: { [key: string]: any } = {};
+        formattedDoc.metadata.forEach((prop: any) => {
+          metadata[prop.name] = prop;
+        });
+        formattedDoc.metadata = metadata;
+      }
     }
-    default: {
-      return value;
-    }
-  }
+    formattedDoc.metadata = formattedDoc.metadata || {};
+    return formattedDoc;
+  });
 }
+
+function columnsFromTemplates(templates: TemplateSchema[]) {
+  return templates.reduce((properties: PropertySchema[], template: TemplateSchema) => {
+    const propsToAdd: PropertySchema[] = [];
+    (template.properties || []).forEach(templateProperty => {
+      if (!properties.find(columnProperty => templateProperty.name === columnProperty.name)) {
+        propsToAdd.push(templateProperty);
+      }
+    });
+    return properties.concat(propsToAdd);
+  }, []);
+}
+
 function TableView(props: DocumentViewerProps) {
   const data = props.documents.get('rows').toJS();
   const templateIds = props.documents
@@ -52,21 +77,12 @@ function TableView(props: DocumentViewerProps) {
     .filter((t: TemplateSchema) => templateIds.includes(t.get('_id')))
     .toJS();
 
-  const documents = data.map((doc: any) =>
-    formatter.prepareMetadata(doc, props.templates, props.thesauris)
-  );
-
-  let columns = templates[0].commonProperties;
-
-  columns = templates.reduce((properties: PropertySchema[], template: TemplateSchema) => {
-    const propsToAdd: PropertySchema[] = [];
-    (template.properties || []).forEach(templateProperty => {
-      if (!properties.find(columnProperty => templateProperty.name === columnProperty.name)) {
-        propsToAdd.push(templateProperty);
-      }
-    });
-    return properties.concat(propsToAdd);
-  }, columns);
+  const documents = formatDocuments(data, templates, props);
+  const commonColumns = [
+    ...templates[0].commonProperties,
+    { label: 'Template', name: 'templateName' },
+  ];
+  const columns = commonColumns.concat(columnsFromTemplates(templates));
 
   return (
     <div className="tableview-wrapper">
@@ -79,10 +95,10 @@ function TableView(props: DocumentViewerProps) {
           </tr>
         </thead>
         <tbody>
-          {data.map((row: any) => (
-            <tr>{columns.map((column: any, index: number) => displayCell(row, column, index))}</tr>
-                  ? JSON.stringify(document.metadata[column.name][0].value)
-                  : document[column.name]}
+          {documents.map((document: any) => (
+            <tr>
+              {columns.map((column: any, index: number) => displayCell(document, column, index))}
+            </tr>
           ))}
         </tbody>
       </table>

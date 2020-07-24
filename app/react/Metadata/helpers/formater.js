@@ -40,6 +40,7 @@ const addCreationDate = (result, doc) =>
   result.push({
     value: moment.utc(doc.creationDate).format('ll'),
     label: 'Date added',
+    name: 'creationDate',
     translateContext: 'System',
     sortedBy: true,
   });

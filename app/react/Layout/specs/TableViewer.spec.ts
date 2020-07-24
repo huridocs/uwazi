@@ -4,6 +4,8 @@ import { renderConnected } from 'app/Templates/specs/utils/renderConnected';
 import { TableViewer } from 'app/Layout/TableViewer';
 
 describe('TableViewer', () => {
+  const formattedCreationDate = 'Jul 23, 2020';
+  const formattedPropertyDate = 'May 20, 2019';
   let component: any;
   const commonProperties = [
     {
@@ -18,37 +20,55 @@ describe('TableViewer', () => {
     },
   ];
   function render() {
-    const dateText = '2019-03-25';
-    const dateTimestamp = new Date(dateText).getTime();
+    const timestampCreation = Date.parse(formattedCreationDate).valueOf();
+    const timestampProperty = Math.floor(Date.parse(formattedPropertyDate).valueOf() / 1000);
     const storeState = {
-      thesauris: Immutable.fromJS([{ _id: 'idThesauri1', name: 'thesauri1' }]),
+      thesauris: Immutable.fromJS([
+        { _id: 'idThesauri1', name: 'thesauri1', values: [{ _id: 'v1', id: 'v1', label: 'V1' }] },
+      ]),
       templates: Immutable.fromJS([
         {
           _id: 'idTemplate1',
+          name: 'Template1',
           properties: [
-            { label: 'Date', type: 'date', filter: true },
-            { label: 'Country', type: 'select', showInCard: false },
+            { label: 'Date', type: 'date', filter: true, name: 'date' },
+            {
+              label: 'Country',
+              type: 'select',
+              showInCard: false,
+              name: 'country',
+              content: 'idThesauri1',
+            },
           ],
           commonProperties,
         },
         {
           _id: 'idTemplate2',
+          name: 'Template2',
           properties: [
-            { label: 'Date', type: 'date', filter: true },
+            { label: 'Date', type: 'date', filter: true, name: 'date' },
             { label: 'Country', type: 'select', showInCard: false },
           ],
           commonProperties,
         },
         {
           _id: 'idTemplate3',
+          name: 'Template3',
           properties: [
-            { label: 'Country', type: 'select', showInCard: true },
-            { label: 'Date', type: 'date', filter: true },
+            {
+              label: 'Country',
+              type: 'select',
+              showInCard: true,
+              name: 'country',
+              content: 'idThesauri1',
+            },
+            { label: 'Date', type: 'date', filter: true, name: 'date' },
           ],
           commonProperties,
         },
         {
           _id: 'idTemplate4',
+          name: 'Template4',
           commonProperties,
         },
       ]),
@@ -57,31 +77,32 @@ describe('TableViewer', () => {
       rows: [
         {
           title: 'document1',
-          creationDate: dateTimestamp,
+          creationDate: timestampCreation,
           template: 'idTemplate1',
           metadata: {
-            Date: [
+            date: [
               {
-                value: dateTimestamp,
+                value: timestampProperty,
               },
             ],
+            country: [{ value: 'v1', label: 'V1' }],
           },
         },
         {
           title: 'document2',
-          creationDate: 1595359919055,
+          creationDate: timestampCreation,
           template: 'idTemplate3',
           metadata: {
-            Date: [
+            date: [
               {
-                value: 1595359919055,
+                value: timestampProperty,
               },
             ],
           },
         },
         {
           title: 'document3',
-          creationDate: 1595359919055,
+          creationDate: timestampCreation,
           template: 'idTemplate4',
         },
       ],
@@ -111,8 +132,8 @@ describe('TableViewer', () => {
       const header = row.find('th');
       expect(header.at(0).props().children).toBe(commonProperties[0].label);
       expect(header.at(1).props().children).toBe(commonProperties[1].label);
-      //expect(header.at(2).props().children).toBe('Template');
-      expect(header.at(2).props().children).toBe('Date');
+      expect(header.at(2).props().children).toBe('Template');
+      expect(header.at(3).props().children).toBe('Date');
     });
     it('should not have duplicated properties', () => {
       const row = component.find('thead > tr').at(0);
@@ -129,10 +150,25 @@ describe('TableViewer', () => {
       const row = component.find('tbody > tr');
       expect(row.length).toBe(3);
     });
-    it('should format property of date type with settings default format', () => {
+    it('should display the name of the template', () => {
+      const row = component.find('tbody > tr').at(0);
+      const cellDate = row.find('td').at(2);
+      expect(cellDate.props().children[1]).toBe('Template1');
+    });
+    it('should display the creation date with ll format', () => {
+      const row = component.find('tbody > tr').at(0);
+      const cellDate = row.find('td').at(1);
+      expect(cellDate.props().children[1]).toBe(formattedCreationDate);
+    });
+    it('should display a date property with ll format', () => {
       const row = component.find('tbody > tr').at(0);
       const cellDate = row.find('td').at(3);
-      expect(cellDate).toBe(3);
+      expect(cellDate.props().children[1]).toBe(formattedPropertyDate);
+    });
+    it('should display a select property with the label of the thesaurus', () => {
+      const row = component.find('tbody > tr').at(0);
+      const cellDate = row.find('td').at(4);
+      expect(cellDate.props().children[1]).toBe('V1');
     });
   });
 });
