@@ -5,6 +5,8 @@ import { TemplateSchema } from 'shared/types/templateType';
 import { PropertySchema } from 'shared/types/commonTypes';
 import formatter from '../Metadata/helpers/formater';
 import { TableRow } from 'app/Library/components/TableRow';
+import { thesauri } from '../Library/actions/specs/fixtures';
+import { clickOnDocument } from 'app/Library/components/DocumentsList';
 
 export interface DocumentViewerProps {
   rowListZoomLevel: number;
@@ -54,48 +56,63 @@ function columnsFromTemplates(templates: TemplateSchema[]) {
   }, []);
 }
 
-function TableView(props: DocumentViewerProps) {
-  const data = props.documents.get('rows').toJS();
-  const templateIds = props.documents
-    .getIn(['aggregations', 'all', '_types', 'buckets'])
-    .filter((template: any) => template.getIn(['filtered', 'doc_count']) > 0)
-    .map((template: any) => template.get('key'))
-    .toJS();
+class TableView extends React.Component<DocumentViewerProps> {
+  render() {
+    const data = this.props.documents.get('rows').toJS();
+    const templateIds = (this.props.documents || [])
+      .getIn(['aggregations', 'all', '_types', 'buckets'])
+      .filter((template: any) => template.getIn(['filtered', 'doc_count']) > 0)
+      .map((template: any) => template.get('key'))
+      .toJS();
 
-  const templates = props.templates
-    .filter((t: TemplateSchema) => templateIds.includes(t.get('_id')))
-    .toJS();
+    const templates = this.props.templates
+      .filter((t: TemplateSchema) => templateIds.includes(t.get('_id')))
+      .toJS();
 
-  const documents = formatDocuments(data, templates, props);
-  const commonColumns = [
-    ...templates[0].commonProperties,
-    { label: 'Template', name: 'templateName' },
-  ];
-  const columns = commonColumns.concat(columnsFromTemplates(templates));
+    const documents = formatDocuments(data, templates, this.props);
+    const commonColumns = [
+      ...templates[0].commonProperties,
+      { label: 'Template', name: 'templateName' },
+    ];
+    const columns = commonColumns.concat(columnsFromTemplates(templates));
 
-  return (
-    <div className="tableview-wrapper">
-      <table>
-        <thead>
-          <tr>
-            {columns.map((column: any, index: number) => (
-              <th className={!index ? 'sticky-col' : ''} key={index}>{column.label}</th>
+    return (
+      <div className="tableview-wrapper">
+        <table>
+          <thead>
+            <tr>
+              {columns.map((column: any, index: number) => (
+                <th className={!index ? 'sticky-col' : ''} key={index}>
+                  {!index && <input type="checkbox" />}
+                  {column.label}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {documents.map((document: any, index: number) => (
+              <TableRow
+                {...{
+                  document,
+                  columns,
+                  key: index,
+                  onClick: this.props.clickOnDocument,
+                  storeKey: this.props.storeKey,
+                }}
+              />
             ))}
-          </tr>
-        </thead>
-        <tbody>
-          {documents.map((document: any, index: number) => (
-            <TableRow {...{document, columns, key: index}} />
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
+          </tbody>
+        </table>
+      </div>
+    );
+  }
 }
 
-const mapStateToProps = (state: any) => ({
+const mapStateToProps = (state: any, props: DocumentViewerProps) => ({
   templates: state.templates,
   thesauris: state.thesauris,
+  authorized: !!state.user.get('_id'),
+  selectedDocuments: state[props.storeKey].ui.get('selectedDocuments'),
 });
 
 export const TableViewer = connect(mapStateToProps)(TableView);
