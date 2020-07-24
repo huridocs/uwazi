@@ -47,6 +47,7 @@ describe('Map', () => {
     map = jasmine.createSpyObj(['on', 'fitBounds', 'getZoom', 'stop']);
     map.getZoom.and.returnValue(5);
     instance.map = { getMap: () => map };
+    instance.setState({ mapStyleLoaded: true });
     markers = component.find(Marker);
   };
 
@@ -195,7 +196,7 @@ describe('Map', () => {
       spyOn(window, 'removeEventListener');
       render();
       spyOn(instance, 'centerOnMarkers');
-      spyOn(instance, 'setViweport');
+      spyOn(instance, 'setViewport');
       settingsAPI.get.mockResolvedValue({ mapTilerKey: testMapTilerKey });
       await instance.componentDidMount();
     });
@@ -220,13 +221,35 @@ describe('Map', () => {
       expect(map.on.calls.all()[1].args[0]).toBe('moveend');
       const callback = map.on.calls.all()[1].args[1];
       callback({});
-      expect(instance.setViweport).not.toHaveBeenCalled();
+      expect(instance.setViewport).not.toHaveBeenCalled();
       callback({ autoCentered: true });
-      expect(instance.setViweport).toHaveBeenCalled();
+      expect(instance.setViewport).toHaveBeenCalled();
     });
 
     it('should read and set the map tiler key in the style', () => {
       expect(JSON.stringify(instance.mapStyle)).toContain(testMapTilerKey);
+    });
+
+    it('should set the map tiler key from the settings', async () => {
+      render();
+      const expectedKey = 'XYZ';
+      settingsAPI.get.mockResolvedValue({ mapTilerKey: expectedKey });
+      await instance.componentDidMount();
+      const stringifyStyle = JSON.stringify(instance.mapStyle);
+      expect(stringifyStyle).not.toContain('{{MAP_TILER_KEY}}');
+      expect(instance.mapStyle.getIn(['sources', 'openmaptiles', 'url'])).toContain(expectedKey);
+      expect(instance.mapStyle.getIn(['glyphs'])).toContain(expectedKey);
+    });
+
+    it('should set the default map starting point from settings if the map does not have one', async () => {
+      delete props.latitude;
+      delete props.longitude;
+      render();
+      const mapStartingPoint = [{ lon: 7, lat: 45 }];
+      settingsAPI.get.mockResolvedValue({ mapStartingPoint });
+      await instance.componentDidMount();
+      expect(instance.state.viewport.latitude).toBe(mapStartingPoint[0].lat);
+      expect(instance.state.viewport.longitude).toBe(mapStartingPoint[0].lon);
     });
   });
 
@@ -376,23 +399,6 @@ describe('Map', () => {
       component.update();
       expect(instance.centerOnMarkers).toHaveBeenCalled();
       expect(instance.updateMapStyle).toHaveBeenCalled();
-    });
-  });
-
-  describe('replaceKeysMapStyleJson', () => {
-    it('should set the map tiler key from the settings', async () => {
-      render();
-      const style = {
-        sources: { openmaptiles: { url: 'URL?key={{MAP_TILER_KEY}}' } },
-        glyphs: 'URL?key={{MAP_TILER_KEY}}',
-      };
-      const expectedKey = 'XYZ';
-      settingsAPI.get.mockResolvedValue({ mapTilerKey: expectedKey });
-      await instance.replaceKeysMapStyleJson(style);
-      const stringifyStyle = JSON.stringify(instance.mapStyle);
-      expect(stringifyStyle).not.toContain('{{MAP_TILER_KEY}}');
-      expect(instance.mapStyle.getIn(['sources', 'openmaptiles', 'url'])).toContain(expectedKey);
-      expect(instance.mapStyle.getIn(['glyphs'])).toContain(expectedKey);
     });
   });
 });

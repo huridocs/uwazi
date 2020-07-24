@@ -16,7 +16,6 @@ import {
   unselectAllDocuments,
   saveDocument,
 } from '../actions/libraryActions';
-import DocumentForm from '../containers/DocumentForm';
 import EntityForm from '../containers/EntityForm';
 
 const getTemplates = state => state.templates;
@@ -34,7 +33,6 @@ const mapStateToProps = (state, props) => {
     templates: getTemplates(state),
     formPath: `${props.storeKey}.sidepanel.metadata`,
     readOnly: true,
-    DocumentForm,
     EntityForm,
   };
 };

@@ -15,6 +15,7 @@ import { ConnectionsGroups } from 'app/ConnectionsList';
 import ShowIf from 'app/App/ShowIf';
 import SidePanel from 'app/Layout/SidePanel';
 import DocumentSemanticSearchResults from 'app/SemanticSearch/components/DocumentResults';
+import { CopyFromEntity } from 'app/Metadata/components/CopyFromEntity';
 import { Icon } from 'UI';
 
 import * as viewerModule from 'app/Viewer';
@@ -28,6 +29,11 @@ export class DocumentSidePanel extends Component {
     super(props);
     this.selectTab = this.selectTab.bind(this);
     this.firstRender = true;
+    this.state = { copyFrom: false, copyFromProps: [] };
+
+    this.toggleCopyFrom = this.toggleCopyFrom.bind(this);
+    this.onCopyFromSelect = this.onCopyFromSelect.bind(this);
+    this.deleteDocument = this.deleteDocument.bind(this);
   }
 
   componentWillReceiveProps(newProps) {
@@ -38,6 +44,10 @@ export class DocumentSidePanel extends Component {
     ) {
       this.props.getDocumentReferences(newProps.doc.get('sharedId'), this.props.storeKey);
     }
+  }
+
+  onCopyFromSelect(copyFromProps) {
+    this.setState({ copyFromProps });
   }
 
   getDefaultDocumentToC(isEntity, documents, language, defaultLanguage) {
@@ -74,36 +84,153 @@ export class DocumentSidePanel extends Component {
     this.props.showTab(tabSelected);
   }
 
+  _close() {
+    this.props.resetForm(this.props.formPath);
+    this.props.closePanel();
+    this.setState({ copyFrom: false });
+  }
+
   close() {
     if (this.props.formDirty) {
       this.context.confirm({
         accept: () => {
-          this.props.resetForm(this.props.formPath);
-          this.props.closePanel();
+          this._close();
         },
         title: 'Confirm',
         message: 'All changes will be lost, are you sure you want to proceed?',
       });
       return;
     }
-    this.props.resetForm(this.props.formPath);
-    this.props.closePanel();
+    this._close();
+  }
+
+  toggleCopyFrom() {
+    this.setState(currentState => ({
+      copyFrom: !currentState.copyFrom,
+    }));
+  }
+
+  renderHeader(tab, doc, isEntity) {
+    if (this.state.copyFrom) {
+      return <div className="sidepanel-header" />;
+    }
+    const { excludeConnectionsTab, connectionsGroups, isTargetDoc, references } = this.props;
+
+    const summary = connectionsGroups.reduce(
+      (summaryData, g) => {
+        g.get('templates').forEach(template => {
+          summaryData.totalConnections += template.get('count');
+        });
+        return summaryData;
+      },
+      { totalConnections: 0 }
+    );
+    return (
+      <div className="sidepanel-header">
+        <button
+          type="button"
+          className="closeSidepanel close-modal"
+          onClick={this.close.bind(this)}
+        >
+          <Icon icon="times" />
+        </button>
+        <Tabs selectedTab={tab} renderActiveTabContentOnly handleSelect={this.selectTab}>
+          <ul className="nav nav-tabs">
+            {(() => {
+              if (!this.props.raw && doc.get('semanticSearch')) {
+                return (
+                  <li>
+                    <TabLink to="semantic-search-results">
+                      <Icon icon="flask" />
+                      <span className="tab-link-tooltip">
+                        {t('System', 'Semantic search results')}
+                      </span>
+                    </TabLink>
+                  </li>
+                );
+              }
+            })()}
+            {(() => {
+              if (!this.props.raw) {
+                return (
+                  <li>
+                    <TabLink to="text-search">
+                      <SnippetsTab storeKey={this.props.storeKey} />
+                    </TabLink>
+                  </li>
+                );
+              }
+            })()}
+            {(() => {
+              if (!isEntity && !this.props.raw) {
+                return (
+                  <li>
+                    <TabLink to="toc">
+                      <Icon icon="font" />
+                      <span className="tab-link-tooltip">{t('System', 'Table of Contents')}</span>
+                    </TabLink>
+                  </li>
+                );
+              }
+              return <span />;
+            })()}
+            {(() => {
+              if (!isEntity && !this.props.raw) {
+                return (
+                  <li>
+                    <TabLink to="references">
+                      <Icon icon="sitemap" />
+                      <span className="connectionsNumber">{references.size}</span>
+                      <span className="tab-link-tooltip">{t('System', 'References')}</span>
+                    </TabLink>
+                  </li>
+                );
+              }
+              return <span />;
+            })()}
+            {(() => {
+              if (!this.props.raw) {
+                return <li className="tab-separator" />;
+              }
+              return <span />;
+            })()}
+            <li>
+              <TabLink to="metadata" default>
+                <Icon icon="info-circle" />
+                <span className="tab-link-tooltip">{t('System', 'Info')}</span>
+              </TabLink>
+            </li>
+            {(() => {
+              if (!isTargetDoc && !excludeConnectionsTab) {
+                return (
+                  <li>
+                    <TabLink to="connections">
+                      <Icon icon="exchange-alt" />
+                      <span className="connectionsNumber">{summary.totalConnections}</span>
+                      <span className="tab-link-tooltip">{t('System', 'Connections')}</span>
+                    </TabLink>
+                  </li>
+                );
+              }
+            })()}
+          </ul>
+        </Tabs>
+      </div>
+    );
   }
 
   render() {
     const {
       doc,
       docBeingEdited,
-      DocumentForm,
       readOnly,
       references,
       EntityForm,
-      connectionsGroups,
       isTargetDoc,
-      excludeConnectionsTab,
       relationships,
       defaultLanguage,
     } = this.props;
+
     const TocForm = this.props.tocFormComponent;
 
     const { attachments, documents, language, defaultDoc } = doc.toJS();
@@ -116,117 +243,28 @@ export class DocumentSidePanel extends Component {
 
     this.initialTemplateId = doc.get('template');
     const tab =
-      isEntity && (this.props.tab === 'references' || this.props.tab === 'toc')
+      (isEntity && (this.props.tab === 'references' || this.props.tab === 'toc')) || !this.props.tab
         ? 'metadata'
         : this.props.tab;
 
-    const summary = connectionsGroups.reduce(
-      (summaryData, g) => {
-        g.get('templates').forEach(template => {
-          summaryData.totalConnections += template.get('count');
-        });
-        return summaryData;
-      },
-      { totalConnections: 0 }
-    );
+    const className =
+      this.state.copyFrom && docBeingEdited && tab === 'metadata'
+        ? 'metadata-sidepanel two-columns'
+        : 'metadata-sidepanel';
 
     return (
-      <SidePanel open={this.props.open} className="metadata-sidepanel">
-        <div className="sidepanel-header">
-          <button className="closeSidepanel close-modal" onClick={this.close.bind(this)}>
-            <Icon icon="times" />
-          </button>
-          <Tabs selectedTab={tab} renderActiveTabContentOnly handleSelect={this.selectTab}>
-            <ul className="nav nav-tabs">
-              {(() => {
-                if (!this.props.raw && doc.get('semanticSearch')) {
-                  return (
-                    <li>
-                      <TabLink to="semantic-search-results">
-                        <Icon icon="flask" />
-                        <span className="tab-link-tooltip">
-                          {t('System', 'Semantic search results')}
-                        </span>
-                      </TabLink>
-                    </li>
-                  );
-                }
-              })()}
-              {(() => {
-                if (!this.props.raw) {
-                  return (
-                    <li>
-                      <TabLink to="text-search">
-                        <SnippetsTab storeKey={this.props.storeKey} />
-                      </TabLink>
-                    </li>
-                  );
-                }
-              })()}
-              {(() => {
-                if (!isEntity && !this.props.raw) {
-                  return (
-                    <li>
-                      <TabLink to="toc">
-                        <Icon icon="font" />
-                        <span className="tab-link-tooltip">{t('System', 'Table of Contents')}</span>
-                      </TabLink>
-                    </li>
-                  );
-                }
-                return <span />;
-              })()}
-              {(() => {
-                if (!isEntity && !this.props.raw) {
-                  return (
-                    <li>
-                      <TabLink to="references">
-                        <Icon icon="sitemap" />
-                        <span className="connectionsNumber">{references.size}</span>
-                        <span className="tab-link-tooltip">{t('System', 'References')}</span>
-                      </TabLink>
-                    </li>
-                  );
-                }
-                return <span />;
-              })()}
-              {(() => {
-                if (!this.props.raw) {
-                  return <li className="tab-separator" />;
-                }
-                return <span />;
-              })()}
-              <li>
-                <TabLink to="metadata" default>
-                  <Icon icon="info-circle" />
-                  <span className="tab-link-tooltip">{t('System', 'Info')}</span>
-                </TabLink>
-              </li>
-              {(() => {
-                if (!isTargetDoc && !excludeConnectionsTab) {
-                  return (
-                    <li>
-                      <TabLink to="connections">
-                        <Icon icon="exchange-alt" />
-                        <span className="connectionsNumber">{summary.totalConnections}</span>
-                        <span className="tab-link-tooltip">{t('System', 'Connections')}</span>
-                      </TabLink>
-                    </li>
-                  );
-                }
-              })()}
-            </ul>
-          </Tabs>
-        </div>
-        <ShowIf if={this.props.tab === 'metadata' || !this.props.tab}>
+      <SidePanel open={this.props.open} className={className}>
+        {this.renderHeader(tab, doc, isEntity)}
+        <ShowIf if={(this.props.tab === 'metadata' || !this.props.tab) && !this.state.copyFrom}>
           <div className="sidepanel-footer">
             <MetadataFormButtons
-              delete={this.deleteDocument.bind(this)}
+              delete={this.deleteDocument}
               data={this.props.doc}
               formStatePath={this.props.formPath}
               entityBeingEdited={docBeingEdited}
               includeViewButton={!docBeingEdited && readOnly}
               storeKey={this.props.storeKey}
+              copyFrom={this.toggleCopyFrom}
             />
           </div>
         </ShowIf>
@@ -287,15 +325,25 @@ export class DocumentSidePanel extends Component {
             </TabContent>
             <TabContent for="metadata">
               {(() => {
-                if (docBeingEdited && !isEntity) {
+                if (docBeingEdited && this.state.copyFrom) {
                   return (
-                    <DocumentForm
-                      storeKey={this.props.storeKey}
-                      initialTemplateId={this.initialTemplateId}
-                    />
+                    <React.Fragment>
+                      <EntityForm
+                        storeKey={this.props.storeKey}
+                        initialTemplateId={this.initialTemplateId}
+                        highlightedProps={this.state.copyFromProps}
+                      />
+                      <CopyFromEntity
+                        originalEntity={this.props.formData}
+                        templates={this.props.templates}
+                        onSelect={this.onCopyFromSelect}
+                        formModel={this.props.formPath}
+                        onCancel={this.toggleCopyFrom}
+                      />
+                    </React.Fragment>
                   );
                 }
-                if (docBeingEdited && isEntity) {
+                if (docBeingEdited) {
                   return (
                     <EntityForm
                       storeKey={this.props.storeKey}
@@ -361,15 +409,19 @@ DocumentSidePanel.defaultProps = {
   isTargetDoc: false,
   readOnly: false,
   getDocumentReferences: undefined,
+  tocFormComponent: () => false,
+  EntityForm: () => false,
+  raw: false,
+  file: {},
 };
 
 DocumentSidePanel.propTypes = {
   doc: PropTypes.instanceOf(Object).isRequired,
   EntityForm: PropTypes.func,
   tocFormComponent: PropTypes.func,
-  DocumentForm: PropTypes.func,
   formDirty: PropTypes.bool,
   formPath: PropTypes.string.isRequired,
+  formData: PropTypes.instanceOf(Object),
   searchTerm: PropTypes.string,
   docBeingEdited: PropTypes.bool,
   open: PropTypes.bool,
@@ -397,18 +449,11 @@ DocumentSidePanel.propTypes = {
   raw: PropTypes.bool,
   file: PropTypes.object,
   defaultLanguage: PropTypes.string.isRequired,
+  templates: PropTypes.instanceOf(Immutable.List).isRequired,
 };
 
 DocumentSidePanel.contextTypes = {
   confirm: PropTypes.func,
-};
-
-DocumentSidePanel.defaultProps = {
-  tocFormComponent: () => false,
-  DocumentForm: () => false,
-  EntityForm: () => false,
-  raw: false,
-  file: {},
 };
 
 export const mapStateToProps = (state, ownProps) => {
@@ -423,12 +468,15 @@ export const mapStateToProps = (state, ownProps) => {
     .get('languages')
     .find(l => l.get('default'))
     .get('key');
+
   return {
     references,
     excludeConnectionsTab: Boolean(ownProps.references),
     connectionsGroups: state.relationships.list.connectionsGroups,
     relationships: ownProps.references,
     defaultLanguage,
+    templates: state.templates,
+    formData: state[ownProps.storeKey].sidepanel.metadata,
   };
 };
 

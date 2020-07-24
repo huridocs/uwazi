@@ -76,7 +76,7 @@ exports[`Metadata should render without timeline by default 1`] = `
       </dd>
     </dl>
   </ShowIf>
-  <Connect(FormatMetadata)
+  <Connect(BaseFormatMetadata)
     entity={Object {}}
   />
 </div>
