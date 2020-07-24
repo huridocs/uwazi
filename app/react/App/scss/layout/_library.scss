@@ -363,7 +363,7 @@ $c11: calc(9.09% - 15px);
 
 .tableview-wrapper {
   position: relative;
-  overflow-y: auto;
+  overflow: auto;
   margin: 0 -15px;
 
   .sticky-col {
@@ -382,7 +382,7 @@ $c11: calc(9.09% - 15px);
     white-space: nowrap; 
 
     background-color: white;
-    box-shadow: 2px 4px 4px rgba(0, 0, 0, 0.07), 0px 1px 0px rgba(0, 0, 0, 0.25);
+    box-shadow: 2px 4px 4px rgba(0, 0, 0, 0.07);
     height: 30px;
     padding: 8px;
 
@@ -422,6 +422,14 @@ $c11: calc(9.09% - 15px);
 
     &:nth-child(odd) > td {
       background-color: #F5F5F5;
+    }
+
+    &:hover > td {
+      background-color: #f2f6fb;
+    }
+
+    &.selected > td {
+      background-color: #bed1ec;
     }
   }
 }

@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { TemplateSchema } from 'shared/types/templateType';
 import { PropertySchema } from 'shared/types/commonTypes';
 import formatter from '../Metadata/helpers/formater';
+import { TableRow } from 'app/Library/components/TableRow';
 
 export interface DocumentViewerProps {
   rowListZoomLevel: number;
@@ -15,18 +16,6 @@ export interface DocumentViewerProps {
   search: any;
   templates: any;
   thesauris: any;
-}
-
-function displayCell(document: any, column: any, index: number) {
-  const cellValue = document.metadata[column.name]
-    ? document.metadata[column.name].value
-    : document[column.name];
-  return (
-    <td className={!index ? 'sticky-col' : ''}>
-      {!index && <input type="checkbox" />}
-      {cellValue instanceof Object ? JSON.stringify(cellValue) : cellValue}
-    </td>
-  );
 }
 
 function formatDocuments(data: any, templates: TemplateSchema[], props: DocumentViewerProps) {
@@ -90,15 +79,13 @@ function TableView(props: DocumentViewerProps) {
         <thead>
           <tr>
             {columns.map((column: any, index: number) => (
-              <th className={!index ? 'sticky-col' : ''}>{column.label}</th>
+              <th className={!index ? 'sticky-col' : ''} key={index}>{column.label}</th>
             ))}
           </tr>
         </thead>
         <tbody>
-          {documents.map((document: any) => (
-            <tr>
-              {columns.map((column: any, index: number) => displayCell(document, column, index))}
-            </tr>
+          {documents.map((document: any, index: number) => (
+            <TableRow {...{document, columns, key: index}} />
           ))}
         </tbody>
       </table>
