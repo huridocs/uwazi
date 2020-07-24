@@ -286,12 +286,20 @@ export class CollectionSettings extends Component {
                 <Translate>MapTiler key</Translate>
               </label>
               <Control.text model=".mapTilerKey" className="form-control" />
+              <div className="alert alert-info">
+                <div className="force-ltr">You can use your own MapTiler API key</div>
+              </div>
             </div>
             <div className="form-group">
               <label className="form-group-label" htmlFor="mapStartingPoint">
                 <Translate>Map starting point</Translate>
               </label>
               <Geolocation model=".mapStartingPoint" />
+              <div className="alert alert-info">
+                <div className="force-ltr">
+                  You can set the default starting point for your geolocation properties.
+                </div>
+              </div>
             </div>
             <span className="form-group-label">
               <Translate>Show Cookie policy</Translate>
