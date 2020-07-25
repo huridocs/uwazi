@@ -263,7 +263,7 @@
     "nightmare": "2.10.0",
     "nightmare-real-mouse": "^1.0.0",
     "nightmare-upload": "^0.1.1",
-    "node-sass": "4.7.2",
+    "node-sass": "4.12.0",
     "nodemon": "^1.17.2",
     "optimize-css-assets-webpack-plugin": "3.2.0",
     "plop": "1.9.1",
