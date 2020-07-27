@@ -11,7 +11,7 @@ import backend from 'fetch-mock';
 import db from 'api/utils/testing_db';
 import request from 'shared/JSONRequest';
 import settings from 'api/settings';
-import settingsModel from 'api/settings/settingsModel';
+import { settingsModel } from 'api/settings/settingsModel';
 import paths from 'api/config/paths';
 
 import fixtures, {

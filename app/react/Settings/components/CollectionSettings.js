@@ -10,7 +10,7 @@ import { RequestParams } from 'app/utils/RequestParams';
 import { actions } from 'app/BasicReducer';
 import SettingsAPI from 'app/Settings/SettingsAPI';
 import { notificationActions } from 'app/Notifications';
-import { RadioButtons } from 'app/ReactReduxForms';
+import { Geolocation, RadioButtons } from 'app/ReactReduxForms';
 import { t, Translate } from 'app/I18N';
 import { Icon } from 'UI';
 import { LocalForm, Control } from 'react-redux-form';
@@ -114,7 +114,9 @@ export class CollectionSettings extends Component {
     const { dateSeparator, customLandingpage } = this.state;
     return (
       <div className="panel panel-default">
-        <div className="panel-heading">{t('System', 'Collection')}</div>
+        <div className="panel-heading">
+          <Translate>Collection</Translate>
+        </div>
         <div className="panel-body">
           <LocalForm
             id="collectionSettingsForm"
@@ -124,36 +126,48 @@ export class CollectionSettings extends Component {
           >
             <div className="form-group">
               <label className="form-group-label" htmlFor="collection_name">
-                {t('System', 'Name')}
+                <Translate>Name</Translate>
               </label>
               <Control.text id="collection_name" model=".site_name" className="form-control" />
             </div>
             <div className="form-group">
-              <span className="form-group-label">{t('System', 'Private instance')}</span>
+              <span className="form-group-label">
+                <Translate>Private instance</Translate>
+              </span>
               <div className="checkbox">
                 <label>
                   <Control.checkbox id="collection_name" model=".private" />
-                  {t('System', 'check as private instance')}
+                  <Translate>check as private instance</Translate>
                 </label>
               </div>
             </div>
             <div className="form-group">
-              <span className="form-group-label">{t('System', 'Date format')}</span>
-              <div>{t('System', 'Separator')}</div>
+              <span className="form-group-label">
+                <Translate>Date format</Translate>
+              </span>
+              <div>
+                <Translate>Separator</Translate>
+              </div>
               <RadioButtons
                 options={CollectionSettings.dateFormatSeparatorOptions()}
                 model=".dateSeparator"
               />
-              <div>{t('System', 'Order')}</div>
+              <div>
+                <Translate>Order</Translate>
+              </div>
               <RadioButtons
                 options={CollectionSettings.dateFormatOptions(dateSeparator)}
                 model=".dateFormat"
                 renderLabel={CollectionSettings.renderDateFormatLabel}
               />
             </div>
-            <h2>{t('System', 'Advanced settings')}</h2>
+            <h2>
+              <Translate>Advanced settings</Translate>
+            </h2>
             <div className="form-group">
-              <span className="form-group-label">{t('System', 'Landing page')}</span>
+              <span className="form-group-label">
+                <Translate>Landing page</Translate>
+              </span>
               <RadioButtons
                 options={CollectionSettings.landingPageOptions()}
                 model=".customLandingpage"
@@ -188,13 +202,13 @@ export class CollectionSettings extends Component {
             </div>
             <div className="form-group">
               <label className="form-group-label" htmlFor="analyticsTrackingId">
-                {t('System', 'Google Analytics ID')}
+                <Translate>Google Analytics ID</Translate>
               </label>
               <Control.text model=".analyticsTrackingId" className="form-control" />
             </div>
             <div className="form-group">
               <label className="form-group-label" htmlFor="matomoConfig">
-                {t('System', 'Matomo configuration')}
+                <Translate>Matomo configuration</Translate>
               </label>
               <Control.textarea model=".matomoConfig" className="form-control" rows="5" />
             </div>
@@ -208,7 +222,7 @@ export class CollectionSettings extends Component {
             </div>
             <div className="form-group">
               <label className="form-group-label" htmlFor="collectionMailerConfig">
-                {t('System', 'Mailer configuration')}
+                <Translate>Mailer configuration</Translate>
               </label>
               <Control.textarea model=".mailerConfig" className="form-control" rows="5" />
             </div>
@@ -228,13 +242,13 @@ export class CollectionSettings extends Component {
             </div>
             <div className="form-group">
               <label className="form-group-label" htmlFor="collectionContactEmail">
-                {t('System', 'Contact email')}
+                <Translate>Contact email</Translate>
               </label>
               <Control.text model=".contactEmail" className="form-control" />
             </div>
             <div className="form-group">
               <label className="form-group-label" htmlFor="collectionPublicFormDestination">
-                {t('System', 'Public Form destination')}
+                <Translate>Public Form destination</Translate>
               </label>
               <Control.text
                 id="collectionPublicFormDestination"
@@ -250,7 +264,7 @@ export class CollectionSettings extends Component {
             </div>
             <div className="form-group">
               <label className="form-group-label" htmlFor="collectionAllowedPublicTemplates">
-                {t('System', 'Allowed Public Templates')}
+                <Translate>Allowed Public Templates</Translate>
               </label>
               <Control.text
                 id="collectionAllowedPublicTemplates"
@@ -269,11 +283,27 @@ export class CollectionSettings extends Component {
             </div>
             <div className="form-group">
               <label className="form-group-label" htmlFor="mapTilerKey">
-                {t('System', 'MapTiler key')}
+                <Translate>MapTiler key</Translate>
               </label>
               <Control.text model=".mapTilerKey" className="form-control" />
+              <div className="alert alert-info">
+                <div className="force-ltr">You can use your own MapTiler API key</div>
+              </div>
             </div>
-            <span className="form-group-label">{t('System', 'Show Cookie policy')}</span>
+            <div className="form-group">
+              <label className="form-group-label" htmlFor="mapStartingPoint">
+                <Translate>Map starting point</Translate>
+              </label>
+              <Geolocation model=".mapStartingPoint" />
+              <div className="alert alert-info">
+                <div className="force-ltr">
+                  You can set the default starting point for your geolocation properties.
+                </div>
+              </div>
+            </div>
+            <span className="form-group-label">
+              <Translate>Show Cookie policy</Translate>
+            </span>
             <div className="checkbox">
               <label>
                 <Control.checkbox model=".cookiepolicy" type="checkbox" />
@@ -282,15 +312,59 @@ export class CollectionSettings extends Component {
                 </Translate>
               </label>
             </div>
+
+            {!this.props.settings.newNameGeneration && (
+              <React.Fragment>
+                <span className="form-group-label">
+                  <Translate>Support non-latin characters in property names</Translate>
+                </span>
+                <div className="checkbox">
+                  <label>
+                    <Control.checkbox model=".newNameGeneration" type="checkbox" />
+                    <Translate>
+                      Checking this box enhances support for non-latin languages as default
+                      languages.
+                    </Translate>
+                  </label>
+                  <div className="alert alert-info">
+                    <div className="force-ltr">
+                      <ul>
+                        <li>
+                          Checking this box enhances support for non-latin languages as default
+                          languages.
+                        </li>
+                        <li>This will update all template properties automatically.</li>
+                        <li>This process could take several minutes.</li>
+                        <li>This process will likely change URLs to library filters.</li>
+                        <li>
+                          If you have menus or links using such URLs, they will probably stop
+                          working after the update. You will need to update them manually.
+                        </li>
+                        <li>
+                          After selecting this option, you will not be able to revert back to using
+                          legacy property naming.
+                        </li>
+                        <li>
+                          If you are not facing issues with your template property names, we
+                          recommend leaving this unchecked.
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </React.Fragment>
+            )}
           </LocalForm>
-          <h2>{t('System', 'Advanced customizations')}</h2>
+          <h2>
+            <Translate>Advanced customizations</Translate>
+          </h2>
           <div>
             <Link
               to="/settings/customisation"
               href="/settings/customisation"
               className="btn btn-default"
             >
-              {t('System', 'Custom Styles')}
+              <Translate>Custom Styles</Translate>
             </Link>
             &nbsp;
             <Link
@@ -298,13 +372,15 @@ export class CollectionSettings extends Component {
               href="/settings/custom-uploads"
               className="btn btn-default"
             >
-              {t('System', 'Custom Uploads')}
+              <Translate>Custom Uploads</Translate>
             </Link>
           </div>
           <div className="settings-footer">
             <button type="submit" form="collectionSettingsForm" className="btn btn-success">
               <Icon icon="save" />
-              <span className="btn-label">{t('System', 'Save')}</span>
+              <span className="btn-label">
+                <Translate>Save</Translate>
+              </span>
             </button>
           </div>
         </div>
