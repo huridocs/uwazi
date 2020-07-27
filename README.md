@@ -55,6 +55,20 @@ $ cd uwazi
 $ yarn install
 ```
 
+If you want to download the Uwazi repository and also download the included git submodules, such as the `uwazi-fixtures`, which is used for running the end-to-end testing:
+
+```
+$ git clone --recurse-submodules https://github.com/huridocs/uwazi.git
+$ cd uwazi
+$ yarn install
+```
+
+If the main Uwazi repository had already been cloned/downloaded and now you want to load its sub-modules, you can run
+
+```
+git submodule update --init
+```
+
 If you just want to only use the latest stable release (recommended for production):
 
 ```
