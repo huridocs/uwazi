@@ -24,16 +24,24 @@ export class LibraryModeToggleButtons extends Component {
           </button>
         </div>
 
-        {showGeolocation && (
-          <div className="list-view-mode-map buttons-group">
-            <I18NLink
-              to={`library${searchUrl}`}
-              className="btn btn-default"
-              activeClassName="is-active"
-            >
-              <Icon icon="th" />
-              <span className="tab-link-tooltip">{t('System', 'List view')}</span>
-            </I18NLink>
+        <div className="list-view-mode-map buttons-group">
+          <I18NLink
+            to={`library${searchUrl}`}
+            className="btn btn-default"
+            activeClassName="is-active"
+          >
+            <Icon icon="th" />
+            <span className="tab-link-tooltip">{t('System', 'List view')}</span>
+          </I18NLink>
+          <I18NLink
+            to={`library/table${searchUrl}`}
+            className="btn btn-default"
+            activeClassName="is-active"
+          >
+            <Icon icon="align-justify" />
+            <span className="tab-link-tooltip">{t('System', 'Table view')}</span>
+          </I18NLink>
+          {showGeolocation && (
             <I18NLink
               disabled={!numberOfMarkers}
               to={`library/map${searchUrl}`}
@@ -44,8 +52,8 @@ export class LibraryModeToggleButtons extends Component {
               <span className="number-of-markers">{numberOfMarkersText}</span>
               <span className="tab-link-tooltip">{t('System', 'Map view')}</span>
             </I18NLink>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     );
   }

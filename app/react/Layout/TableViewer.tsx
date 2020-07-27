@@ -56,13 +56,12 @@ class TableViewerComponent extends Component<DocumentViewerProps> {
 
   render() {
     return (
-      <div className="tableview-wrapper">
+      <div className='tableview-wrapper'>
         <table>
           <thead>
             <tr>
               {this.columns.map((column: any, index: number) => (
                 <th className={!index ? 'sticky-col' : ''} key={index}>
-                  {!index && <input type="checkbox" />}
                   {column.get('label')}
                 </th>
               ))}

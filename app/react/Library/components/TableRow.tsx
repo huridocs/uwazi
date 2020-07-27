@@ -86,7 +86,7 @@ function displayCell(document: any, column: any, index: number, selected: boolea
   }
   return (
     <td className={!index ? 'sticky-col' : ''} key={index}>
-      {!index && <input type="checkbox" checked={selected} onClick={onClick} />}
+      {!index && <input type='checkbox' checked={selected} onClick={onClick} />}
       {cellValue instanceof Object ? JSON.stringify(cellValue) : cellValue}
     </td>
   );
@@ -107,7 +107,7 @@ class TableRowComponent extends Component<TableRowProps> {
     );
 
     return (
-      <tr>
+      <tr className={this.props.selected ? 'selected' : ''}>
         {this.props.columns.map((column: any, index: number) =>
           displayCell(
             formattedDocument,
