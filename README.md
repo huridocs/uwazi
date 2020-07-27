@@ -66,7 +66,7 @@ $ yarn install
 If the main Uwazi repository had already been cloned/downloaded and now you want to load its sub-modules, you can run
 
 ```
-git submodule update --init
+$ git submodule update --init
 ```
 
 If you just want to only use the latest stable release (recommended for production):
