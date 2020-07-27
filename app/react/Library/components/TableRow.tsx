@@ -5,6 +5,10 @@ import { PropertySchema } from 'shared/types/commonTypes';
 import { TemplateSchema } from 'shared/types/templateType';
 import { ThesaurusSchema } from 'shared/types/thesaurusType';
 import formatter from 'app/Metadata/helpers/formater';
+import MarkdownViewer from 'app/Markdown';
+import { I18NLink } from 'app/I18N';
+import { Icon } from 'app/Layout';
+import GeolocationViewer from 'app/Metadata/components/GeolocationViewer';
 
 interface TableRowProps {
   columns: PropertySchema[];
@@ -14,6 +18,38 @@ interface TableRowProps {
   onClick: any;
   templates: any;
   thesauris: any;
+}
+
+function formatProperty(prop: PropertySchema) {
+  let result;
+  switch (prop.type) {
+    case 'multiselect':
+    case 'multidaterange':
+    case 'multidate':
+      result = prop.value.map((p: any) => p.value).join(', ');
+      break;
+    case 'markdown':
+    case 'media':
+      result = <MarkdownViewer markdown={prop.value} true />;
+      break;
+    case 'image':
+    case 'link':
+      result = (
+        <I18NLink key={prop.url} to={prop.url}>
+          {prop.icon && <Icon className="item-icon" data={prop.icon} />}
+          {prop.value}
+        </I18NLink>
+      );
+      break;
+    case 'geolocation':
+      result = <GeolocationViewer points={prop.value} onlyForCards={Boolean(prop.onlyForCards)} />;
+      break;
+    case 'relationship':
+    default:
+      result = prop.value;
+      break;
+  }
+  return result;
 }
 
 function formatDocument(document: any, templates: TemplateSchema[], thesauris: ThesaurusSchema[]) {
@@ -39,9 +75,15 @@ function formatDocument(document: any, templates: TemplateSchema[], thesauris: T
 }
 
 function displayCell(document: any, column: any, index: number, selected: boolean, onClick: any) {
-  const cellValue = document.metadata[column.get('name')]
-    ? document.metadata[column.get('name')].value
+  const property = document.metadata[column.get('name')]
+    ? document.metadata[column.get('name')]
     : document[column.get('name')];
+  let cellValue;
+  if (property && typeof property.value === 'object') {
+    cellValue = formatProperty(property);
+  } else {
+    cellValue = property && property.value ? property.value : property;
+  }
   return (
     <td className={!index ? 'sticky-col' : ''} key={index}>
       {!index && <input type="checkbox" checked={selected} onClick={onClick} />}
