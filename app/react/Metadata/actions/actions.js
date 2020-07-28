@@ -124,6 +124,7 @@ export function changeTemplate(form, templateId) {
       previousTemplate.toJS()
     );
     entity.template = template.get('_id');
+    console.log(entity);
 
     dispatch(formActions.reset(form));
     setTimeout(() => {

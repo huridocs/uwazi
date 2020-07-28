@@ -37,6 +37,10 @@ export function setAddToData(index, rightIndex) {
   return { type: types.SET_RELATIONSHIPS_ADD_TO_DATA, index, rightIndex };
 }
 
+export function updateRelationshipEntityData(entity) {
+  return { type: types.UPDATE_RELATIONSHIP_ENTITY_DATA, entity };
+}
+
 export function updateRightRelationshipType(index, rightIndex, _id) {
   return (dispatch, getState) => {
     const { hubs } = getState().relationships;

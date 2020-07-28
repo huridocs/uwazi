@@ -69,6 +69,7 @@ export default function(state = initialState, action = {}) {
   let relationshipsMoved;
   let _state;
   let targetTemplate;
+  let toUpdate = [];
 
   switch (action.type) {
     case types.PARSE_RELATIONSHIPS_RESULTS:
@@ -236,6 +237,32 @@ export default function(state = initialState, action = {}) {
         [action.index, 'rightRelationships', action.rightRelationshipIndex, 'relationships'],
         target.concat(relationshipsToMove)
       );
+
+    case types.UPDATE_RELATIONSHIP_ENTITY_DATA:
+      state.forEach((_hub, hubIndex) => {
+        if (state.getIn([hubIndex, 'leftRelationship', 'entity']) === action.entity.sharedId) {
+          toUpdate.push([hubIndex, 'leftRelationship', 'entityData']);
+        }
+
+        state.getIn([hubIndex, 'rightRelationships']).forEach((group, groupIndex) => {
+          group.get('relationships').forEach((relationship, relationshipIndex) => {
+            if (relationship.get('entity') === action.entity.sharedId) {
+              toUpdate.push([
+                hubIndex,
+                'rightRelationships',
+                groupIndex,
+                'relationships',
+                relationshipIndex,
+                'entityData',
+              ]);
+            }
+          });
+        });
+      });
+
+      return toUpdate.reduce((updatedState, path) => {
+        return updatedState.setIn(path, fromJS(action.entity));
+      }, state);
 
     default:
       return fromJS(state);
