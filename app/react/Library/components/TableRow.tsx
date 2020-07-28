@@ -22,6 +22,9 @@ interface TableRowProps {
 
 function formatProperty(prop: PropertySchema) {
   let result;
+  if (prop === undefined || prop.value === undefined || prop.value === null) {
+    return undefined;
+  }
   switch (prop.type) {
     case 'multiselect':
     case 'multidaterange':
@@ -29,24 +32,25 @@ function formatProperty(prop: PropertySchema) {
       result = prop.value.map((p: any) => p.value).join(', ');
       break;
     case 'markdown':
-    case 'media':
-      result = <MarkdownViewer markdown={prop.value} true />;
+      result = <MarkdownViewer markdown={prop.value} />;
       break;
+
     case 'image':
     case 'link':
       result = (
-        <I18NLink key={prop.url} to={prop.url}>
-          {prop.icon && <Icon className="item-icon" data={prop.icon} />}
-          {prop.value}
+        <I18NLink key={prop.value.url} to={prop.value.url}>
+          {prop.value.label}
         </I18NLink>
       );
       break;
+
     case 'geolocation':
-      result = <GeolocationViewer points={prop.value} onlyForCards={Boolean(prop.onlyForCards)} />;
+      result = <GeolocationViewer points={prop.value} onlyForCards />;
       break;
+
     case 'relationship':
     default:
-      result = prop.value;
+      result = JSON.stringify(prop.value);
       break;
   }
   return result;
@@ -78,16 +82,17 @@ function displayCell(document: any, column: any, index: number, selected: boolea
   const property = document.metadata[column.get('name')]
     ? document.metadata[column.get('name')]
     : document[column.get('name')];
-  let cellValue;
-  if (property && typeof property.value === 'object') {
+  let cellValue = property && property.value ? property.value : property;
+  if (
+    (column.get('type') === 'markdown' || typeof cellValue !== 'string') &&
+    cellValue !== undefined
+  ) {
     cellValue = formatProperty(property);
-  } else {
-    cellValue = property && property.value ? property.value : property;
   }
   return (
     <td className={!index ? 'sticky-col' : ''} key={index}>
-      {!index && <input type='checkbox' checked={selected} onClick={onClick} />}
-      {cellValue instanceof Object ? JSON.stringify(cellValue) : cellValue}
+      {!index && <input type="checkbox" checked={selected} onClick={onClick} />}
+      {cellValue}
     </td>
   );
 }

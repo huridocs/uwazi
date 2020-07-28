@@ -33,7 +33,6 @@ function columnsFromTemplates(templates: TemplateSchema[]) {
 class TableViewerComponent extends Component<DocumentViewerProps> {
   constructor(props: DocumentViewerProps) {
     super(props);
-    this.documents = this.props.documents.get('rows');
     const templateIds = (this.props.documents || [])
       .getIn(['aggregations', 'all', '_types', 'buckets'])
       .filter((template: any) => template.getIn(['filtered', 'doc_count']) > 0)
@@ -50,13 +49,13 @@ class TableViewerComponent extends Component<DocumentViewerProps> {
     this.columns = commonColumns.concat(columnsFromTemplates(templates));
   }
 
-  private readonly documents: any[];
-
   private readonly columns: any[];
 
   render() {
+    const documents = this.props.documents.get('rows');
+
     return (
-      <div className='tableview-wrapper'>
+      <div className="tableview-wrapper">
         <table>
           <thead>
             <tr>
@@ -68,7 +67,7 @@ class TableViewerComponent extends Component<DocumentViewerProps> {
             </tr>
           </thead>
           <tbody>
-            {this.documents.map((document: any, index: number) => (
+            {documents.map((document: any, index: number) => (
               <TableRow
                 {...{
                   document,
