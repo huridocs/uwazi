@@ -140,7 +140,7 @@ const routes = (
     </Route>
     <Route path="library" component={Library} onEnter={enterOnLibrary} />
     <Route path="library/map" component={LibraryMap} onEnter={onEnter} />
-    <Route path="library/table" component={LibraryTable} onEnter={onEnter} />
+    <Route path="library/table" component={LibraryTable} onEnter={enterOnLibrary} />
     <Route path="review" component={OneUpReview} onEnter={needsAuth} />
     <Route path="uploads" component={Uploads} />
     <Route path="login" component={Login} />

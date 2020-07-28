@@ -7,7 +7,6 @@ import { ThesaurusSchema } from 'shared/types/thesaurusType';
 import formatter from 'app/Metadata/helpers/formater';
 import MarkdownViewer from 'app/Markdown';
 import { I18NLink } from 'app/I18N';
-import { Icon } from 'app/Layout';
 import GeolocationViewer from 'app/Metadata/components/GeolocationViewer';
 
 interface TableRowProps {
@@ -34,8 +33,14 @@ function formatProperty(prop: PropertySchema) {
     case 'markdown':
       result = <MarkdownViewer markdown={prop.value} />;
       break;
-
     case 'image':
+    case 'media':
+      result = (
+        <I18NLink key={prop.value} to={prop.value}>
+          {prop.label}
+        </I18NLink>
+      );
+      break;
     case 'link':
       result = (
         <I18NLink key={prop.value.url} to={prop.value.url}>
@@ -43,12 +48,19 @@ function formatProperty(prop: PropertySchema) {
         </I18NLink>
       );
       break;
-
+    case 'relationship':
+      result = prop.value.map((p: any, index: number) => (
+        <span>
+          {index > 0 && ', '}
+          <I18NLink key={p.url} to={p.url}>
+            {p.value}
+          </I18NLink>
+        </span>
+      ));
+      break;
     case 'geolocation':
       result = <GeolocationViewer points={prop.value} onlyForCards />;
       break;
-
-    case 'relationship':
     default:
       result = JSON.stringify(prop.value);
       break;
@@ -84,7 +96,10 @@ function displayCell(document: any, column: any, index: number, selected: boolea
     : document[column.get('name')];
   let cellValue = property && property.value ? property.value : property;
   if (
-    (column.get('type') === 'markdown' || typeof cellValue !== 'string') &&
+    (column.get('type') === 'markdown' ||
+      column.get('type') === 'image' ||
+      column.get('type') === 'media' ||
+      typeof cellValue !== 'string') &&
     cellValue !== undefined
   ) {
     cellValue = formatProperty(property);

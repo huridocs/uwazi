@@ -22,7 +22,7 @@ function columnsFromTemplates(templates: TemplateSchema[]) {
   return templates.reduce((properties: PropertySchema[], template: TemplateSchema) => {
     const propsToAdd: PropertySchema[] = [];
     template.get('properties', Immutable.Map()).forEach((property: PropertySchema) => {
-      if (!properties.find(columnProperty => property.get('name') === columnProperty.name)) {
+      if (!properties.find(columnProperty => property.get('name') === columnProperty.get('name'))) {
         propsToAdd.push(property);
       }
     });
@@ -33,33 +33,43 @@ function columnsFromTemplates(templates: TemplateSchema[]) {
 class TableViewerComponent extends Component<DocumentViewerProps> {
   constructor(props: DocumentViewerProps) {
     super(props);
-    const templateIds = (this.props.documents || [])
-      .getIn(['aggregations', 'all', '_types', 'buckets'])
-      .filter((template: any) => template.getIn(['filtered', 'doc_count']) > 0)
-      .map((template: any) => template.get('key'));
-
-    const templates = this.props.templates.filter((t: TemplateSchema) =>
-      templateIds.find((id: any) => t.get('_id') === id)
-    );
-
-    const commonColumns = [
-      ...templates.get(0).get('commonProperties'),
-      Immutable.fromJS({ label: 'Template', name: 'templateName' }),
-    ];
-    this.columns = commonColumns.concat(columnsFromTemplates(templates));
+    this.getColumns();
   }
 
-  private readonly columns: any[];
+  private getColumns() {
+    let columns = [];
+    const queriedTemplates = (this.props.documents || []).getIn([
+      'aggregations',
+      'all',
+      '_types',
+      'buckets',
+    ]);
+    if (queriedTemplates) {
+      const templateIds = queriedTemplates
+        .filter((template: any) => template.getIn(['filtered', 'doc_count']) > 0)
+        .map((template: any) => template.get('key'));
+
+      const templates = this.props.templates.filter((t: TemplateSchema) =>
+        templateIds.find((id: any) => t.get('_id') === id)
+      );
+
+      const commonColumns = [
+        ...templates.get(0).get('commonProperties'),
+        Immutable.fromJS({ label: 'Template', name: 'templateName' }),
+      ];
+      columns = commonColumns.concat(columnsFromTemplates(templates));
+    }
+    return columns;
+  }
 
   render() {
-    const documents = this.props.documents.get('rows');
-
+    const columns = this.getColumns();
     return (
       <div className="tableview-wrapper">
         <table>
           <thead>
             <tr>
-              {this.columns.map((column: any, index: number) => (
+              {columns.map((column: any, index: number) => (
                 <th className={!index ? 'sticky-col' : ''} key={index}>
                   {column.get('label')}
                 </th>
@@ -67,11 +77,11 @@ class TableViewerComponent extends Component<DocumentViewerProps> {
             </tr>
           </thead>
           <tbody>
-            {documents.map((document: any, index: number) => (
+            {this.props.documents.get('rows').map((document: any, index: number) => (
               <TableRow
                 {...{
                   document,
-                  columns: this.columns,
+                  columns: columns,
                   key: index,
                   onClick: this.props.clickOnDocument,
                   storeKey: this.props.storeKey,
