@@ -164,8 +164,10 @@ class DocumentsList extends Component {
               if (view !== 'graph') {
                 return (
                   <p className="col-sm-12 text-center documents-counter">
+                    <b> {this.props.selectedDocuments.size} </b>
+                    {t('System', 'selected of')}
                     <b> {documents.get('rows').size} </b>
-                    {t('System', 'of')}
+                    {t('System', 'shown of')}
                     <b> {documents.get('totalRows')} </b>
                     {t('System', 'documents')}
                   </p>
@@ -219,7 +221,7 @@ DocumentsList.propTypes = {
   connections: PropTypes.object,
   filters: PropTypes.object,
   thesauri: PropTypes.object,
-  selectedDocument: PropTypes.object,
+  selectedDocuments: PropTypes.object,
   SearchBar: PropTypes.func,
   ActionButtons: PropTypes.func,
   GraphView: PropTypes.func,

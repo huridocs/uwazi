@@ -113,8 +113,12 @@ function displayCell(document: any, column: any, index: number, selected: boolea
 }
 
 class TableRowComponent extends Component<TableRowProps> {
-  onClick(e: any) {
-    if (this.props.onClick) {
+  constructor(props: TableRowProps) {
+    super(props);
+    this.onClick = this.onClick.bind(this);
+  }
+  onClick(e: Event) {
+    if (this.props.onClick && !window.getSelection()?.toString()) {
       this.props.onClick(e, this.props.document, this.props.selected);
     }
   }
@@ -127,14 +131,14 @@ class TableRowComponent extends Component<TableRowProps> {
     );
 
     return (
-      <tr className={this.props.selected ? 'selected' : ''}>
+      <tr className={this.props.selected ? 'selected' : ''} onClick={this.onClick}>
         {this.props.columns.map((column: any, index: number) =>
           displayCell(
             formattedDocument,
             column,
             index,
             this.props.selected || false,
-            this.onClick.bind(this)
+            this.onClick
           )
         )}
       </tr>
