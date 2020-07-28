@@ -81,6 +81,50 @@ describe('Graphs in Page', () => {
     await expect(page).toMatch('(view page)');
   });
 
+  it('should display Pie chart graph in page with no more than a 1% difference', async () => {
+    const createdPageLink = await page.$eval(localSelectors.createdPageLink, el => (<HTMLLinkElement>el).href);
+    await page.goto(createdPageLink);
+    await page.waitFor(2000);
+
+    const chartContainer = await page.$('.recharts-responsive-container');
+    // @ts-ignore
+    const chartScreenshot = await chartContainer.screenshot();
+
+    expect(chartScreenshot).toMatchImageSnapshot({
+      failureThreshold: 0.01,
+      failureThresholdType: 'percent',
+      allowSizeMismatch: true,
+    });
+  });
+
+  it('should navigate back to the edit page and insert a List chart graph', async () => {
+    await page.goBack();
+    await page.click(localSelectors.pageContentsInput, {clickCount: 3});
+    await page.keyboard.press('Backspace');
+    await expect(page).toFill(localSelectors.pageContentsInput, '</p><Dataset />');
+    await page.type(localSelectors.pageContentsInput, graphs.listChart);
+    await expect(page).toMatchElement('button', { text: 'Save' });
+    await expect(page).toClick('button', { text: 'Save' });
+    await expect(page).toMatch('Saved successfully.');
+    await expect(page).toMatch('(view page)');
+  });
+
+  it('should display List chart graph in page with no more than a 1% difference', async () => {
+    const createdPageLink = await page.$eval(localSelectors.createdPageLink, el => (<HTMLLinkElement>el).href);
+    await page.goto(createdPageLink);
+    await page.waitFor(2000);
+
+    const chartContainer = await page.$('.ListChart ');
+    // @ts-ignore
+    const chartScreenshot = await chartContainer.screenshot();
+
+    expect(chartScreenshot).toMatchImageSnapshot({
+      failureThreshold: 0.01,
+      failureThresholdType: 'percent',
+      allowSizeMismatch: true,
+    });
+  });
+
   afterAll(async () => {
     await logout();
   });
