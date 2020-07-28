@@ -56,19 +56,13 @@ describe('Graphs in Page', () => {
   it('should display Bar chart graph in page with no more than a 1% difference', async () => {
     const createdPageLink = await page.$eval(localSelectors.createdPageLink, el => (<HTMLLinkElement>el).href);
     await page.goto(createdPageLink);
-    const chartsContainerHTML= await page.$eval('div.markdown-viewer', e => (<HTMLElement>e).outerHTML);
-    expect(chartsContainerHTML).toContain('class="recharts-responsive-container"');
+    await page.waitFor(2000); // wait for the chart visualization animations to end
 
-    await page.evaluate(() => document.querySelector('header').remove());
-    await page.evaluate(() => document.querySelector('.footer-nav').remove());
-    await page.evaluate(() => document.querySelector('footer').remove());
-    // await page.evaluate(() => document.querySelector('#app').style.padding = '0');
-    // await page.evaluate(() => document.querySelector('.page-viewer').style.padding = '0');
-    // await page.evaluate(() => document.querySelector('.main-wrapper').style.padding = '0');
-
-    const pageScreenshot = await page.screenshot();
+    const chartContainer = await page.$('.recharts-responsive-container');
     // @ts-ignore
-    expect(pageScreenshot).toMatchImageSnapshot({
+    const chartScreenshot = await chartContainer.screenshot();
+
+    expect(chartScreenshot).toMatchImageSnapshot({
       failureThreshold: 0.01,
       failureThresholdType: 'percent',
       allowSizeMismatch: true,
