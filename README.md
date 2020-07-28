@@ -173,7 +173,7 @@ Running tests with Puppeteer
 $ DATABASE_NAME=uwazi_e2e INDEX_NAME=uwazi_e2e yarn hot
 ```
 
-On a different console tab, run
+Then on a different console tab/session, run
 
 ```
 $ yarn e2e-puppeteer
