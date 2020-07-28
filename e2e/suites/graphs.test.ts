@@ -69,6 +69,18 @@ describe('Graphs in Page', () => {
     });
   });
 
+  it('should navigate back to the edit page and insert a Pie chart graph', async () => {
+    await page.goBack();
+    await page.click(localSelectors.pageContentsInput, {clickCount: 3});
+    await page.keyboard.press('Backspace');
+    await expect(page).toFill(localSelectors.pageContentsInput, '</p><Dataset />');
+    await page.type(localSelectors.pageContentsInput, graphs.pieChart);
+    await expect(page).toMatchElement('button', { text: 'Save' });
+    await expect(page).toClick('button', { text: 'Save' });
+    await expect(page).toMatch('Saved successfully.');
+    await expect(page).toMatch('(view page)');
+  });
+
   afterAll(async () => {
     await logout();
   });
