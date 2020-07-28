@@ -34,7 +34,6 @@ describe('Graphs in Page', () => {
     await expect(page).toClick('a', { text: 'Account settings' });
     await expect(page).toClick('a', { text: 'Pages' });
     await expect(page).toClick('a', { text: 'Add page' });
-
     await expect(page).toFill('input[name="page.data.title"]', 'Page data viz');
     await expect(page).toFill(localSelectors.pageContentsInput, '</p><Dataset />');
     await expect(page).toMatchElement('button', { text: 'Save' });
