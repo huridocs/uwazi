@@ -22,7 +22,7 @@ function columnsFromTemplates(templates: TemplateSchema[]) {
   return templates.reduce((properties: PropertySchema[], template: TemplateSchema) => {
     const propsToAdd: PropertySchema[] = [];
     template.get('properties', Immutable.Map()).forEach((property: PropertySchema) => {
-      if (!properties.find(columnProperty => property.name === columnProperty.name)) {
+      if (!properties.find(columnProperty => property.get('name') === columnProperty.name)) {
         propsToAdd.push(property);
       }
     });
