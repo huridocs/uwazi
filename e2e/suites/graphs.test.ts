@@ -19,8 +19,7 @@ const localSelectors = {
 const graphs = {
   barChart: '<BarChart property="tipo" context="58ada34c299e8267485450fb" />',
   pieChart: '<PieChart property="tipo" context="58ada34c299e8267485450fb" />',
-  listChart:
-    '<ListChart property="tipo" context="58ada34c299e8267485450fb" excludeZero="true" />',
+  listChart:'<ListChart property="tipo" context="58ada34c299e8267485450fb" excludeZero="true" />',
 };
 
 describe('Graphs in Page', () => {
@@ -35,7 +34,7 @@ describe('Graphs in Page', () => {
     await expect(page).toClick('a', { text: 'Pages' });
     await expect(page).toClick('a', { text: 'Add page' });
     await expect(page).toFill('input[name="page.data.title"]', 'Page data viz');
-    await expect(page).toFill(localSelectors.pageContentsInput, '</p><Dataset />');
+    await expect(page).toFill(localSelectors.pageContentsInput, '<Dataset />');
     await expect(page).toMatchElement('button', { text: 'Save' });
     await expect(page).toClick('button', { text: 'Save' });
     await expect(page).toMatch('Saved successfully.');
@@ -53,7 +52,7 @@ describe('Graphs in Page', () => {
     await expect(page).toMatch('(view page)');
   });
 
-  it('should display Bar chart graph in page with no more than a 1% difference', async () => {
+  it('should display Bar chart graph in page with no more than a 3% difference', async () => {
     const createdPageLink = await page.$eval(localSelectors.createdPageLink, el => (<HTMLLinkElement>el).href);
     await page.goto(createdPageLink);
     await page.waitFor(2000); // wait for the chart visualization animations to end
@@ -63,7 +62,7 @@ describe('Graphs in Page', () => {
     const chartScreenshot = await chartContainer.screenshot();
 
     expect(chartScreenshot).toMatchImageSnapshot({
-      failureThreshold: 0.01,
+      failureThreshold: 0.03,
       failureThresholdType: 'percent',
       allowSizeMismatch: true,
     });
@@ -73,7 +72,7 @@ describe('Graphs in Page', () => {
     await page.goBack();
     await page.click(localSelectors.pageContentsInput, {clickCount: 3});
     await page.keyboard.press('Backspace');
-    await expect(page).toFill(localSelectors.pageContentsInput, '</p><Dataset />');
+    await expect(page).toFill(localSelectors.pageContentsInput, '<Dataset />');
     await page.type(localSelectors.pageContentsInput, graphs.pieChart);
     await expect(page).toMatchElement('button', { text: 'Save' });
     await expect(page).toClick('button', { text: 'Save' });
@@ -81,7 +80,7 @@ describe('Graphs in Page', () => {
     await expect(page).toMatch('(view page)');
   });
 
-  it('should display Pie chart graph in page with no more than a 1% difference', async () => {
+  it('should display Pie chart graph in page with no more than a 3% difference', async () => {
     const createdPageLink = await page.$eval(localSelectors.createdPageLink, el => (<HTMLLinkElement>el).href);
     await page.goto(createdPageLink);
     await page.waitFor(2000);
@@ -91,7 +90,7 @@ describe('Graphs in Page', () => {
     const chartScreenshot = await chartContainer.screenshot();
 
     expect(chartScreenshot).toMatchImageSnapshot({
-      failureThreshold: 0.01,
+      failureThreshold: 0.03,
       failureThresholdType: 'percent',
       allowSizeMismatch: true,
     });
@@ -101,7 +100,7 @@ describe('Graphs in Page', () => {
     await page.goBack();
     await page.click(localSelectors.pageContentsInput, {clickCount: 3});
     await page.keyboard.press('Backspace');
-    await expect(page).toFill(localSelectors.pageContentsInput, '</p><Dataset />');
+    await expect(page).toFill(localSelectors.pageContentsInput, '<Dataset />');
     await page.type(localSelectors.pageContentsInput, graphs.listChart);
     await expect(page).toMatchElement('button', { text: 'Save' });
     await expect(page).toClick('button', { text: 'Save' });
@@ -109,7 +108,7 @@ describe('Graphs in Page', () => {
     await expect(page).toMatch('(view page)');
   });
 
-  it('should display List chart graph in page with no more than a 1% difference', async () => {
+  it('should display List chart graph in page with no more than a 3% difference', async () => {
     const createdPageLink = await page.$eval(localSelectors.createdPageLink, el => (<HTMLLinkElement>el).href);
     await page.goto(createdPageLink);
     await page.waitFor(2000);
@@ -119,7 +118,7 @@ describe('Graphs in Page', () => {
     const chartScreenshot = await chartContainer.screenshot();
 
     expect(chartScreenshot).toMatchImageSnapshot({
-      failureThreshold: 0.01,
+      failureThreshold: 0.3,
       failureThresholdType: 'percent',
       allowSizeMismatch: true,
     });
