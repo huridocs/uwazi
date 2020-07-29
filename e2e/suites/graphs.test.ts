@@ -9,10 +9,7 @@ import { toMatchImageSnapshot } from 'jest-image-snapshot';
 expect.extend({ toMatchImageSnapshot });
 
 const localSelectors = {
-  pagesButton:
-    '#app > div.content > div > div > div.settings-navigation > div > div:nth-child(1) > div.list-group > a:nth-child(5)',
-  pageContentsInput:
-    '.page-viewer.document-viewer > div > div.tab-content.tab-content-visible > textarea',
+  pageContentsInput: '.page-viewer.document-viewer > div > div.tab-content.tab-content-visible > textarea',
   createdPageLink: '.document-viewer > div.alert-info a',
 };
 
