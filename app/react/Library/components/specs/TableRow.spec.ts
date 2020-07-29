@@ -7,7 +7,7 @@ describe('TableRow', () => {
   const formattedCreationDate = 'Jul 23, 2020';
   const formattedPropertyDate = 'May 20, 2019';
   let component: any;
-  const columns = [
+  const columns = Immutable.fromJS([
     {
       label: 'Titulo',
       type: 'text',
@@ -17,6 +17,11 @@ describe('TableRow', () => {
       label: 'Created at',
       type: 'date',
       name: 'creationDate',
+    },
+    {
+      label: 'Template',
+      type: 'text',
+      name: 'templateName',
     },
     { label: 'Date', type: 'date', filter: true, name: 'date' },
     {
@@ -33,7 +38,7 @@ describe('TableRow', () => {
       name: 'languages',
       content: 'idThesauri2',
     },
-  ];
+  ]);
   function render() {
     const timestampCreation = Date.parse(formattedCreationDate).valueOf();
     const timestampProperty = Math.floor(Date.parse(formattedPropertyDate).valueOf() / 1000);
@@ -71,33 +76,19 @@ describe('TableRow', () => {
               name: 'country',
               content: 'idThesauri1',
             },
+            {
+              label: 'Languages',
+              type: 'multiselect',
+              showInCard: false,
+              name: 'languages',
+              content: 'idThesauri2',
+            },
           ],
         },
         {
           _id: 'idTemplate2',
           name: 'Template2',
-          properties: [
-            { label: 'Date', type: 'date', filter: true, name: 'date' },
-            { label: 'Country', type: 'select', showInCard: false },
-          ],
-        },
-        {
-          _id: 'idTemplate3',
-          name: 'Template3',
-          properties: [
-            {
-              label: 'Languages',
-              type: 'multiselect',
-              showInCard: true,
-              name: 'languages',
-              content: 'idThesauri2',
-            },
-            { label: 'Date', type: 'date', filter: true, name: 'date' },
-          ],
-        },
-        {
-          _id: 'idTemplate4',
-          name: 'Template4',
+          properties: [{ label: 'Date', type: 'date', filter: true, name: 'date' }],
         },
       ]),
     };
@@ -127,25 +118,30 @@ describe('TableRow', () => {
   }
   describe('table header', () => {
     render();
-    it('should pass a document to tableRow with the name of the template', () => {
-      const row = component.find(TableRow).at(0);
-      expect(row.props().document.templateName).toBe('Template1');
+    it('should render a column with the name of document', () => {
+      const cellDate = component.find('td').at(0);
+      expect(cellDate.props().children[1]).toBe('document1');
     });
-    it('should pass a document to tableRow with the creation date with ll format', () => {
-      const row = component.find(TableRow).at(0);
-      expect(row.props().document.metadata.creationDate.value).toBe(formattedCreationDate);
+    it('should render a column with the creation date with ll format', () => {
+      const cellDate = component.find('td').at(1);
+      expect(cellDate.props().children[1]).toBe(formattedCreationDate);
     });
-    it('should pass a document to tableRow with the date property with ll format', () => {
-      const row = component.find(TableRow).at(0);
-      expect(row.props().document.metadata.date.value).toBe(formattedPropertyDate);
+
+    it('should render a column with the name of the template', () => {
+      const cellDate = component.find('td').at(2);
+      expect(cellDate.props().children[1]).toBe('Template1');
     });
-    it('should pass a document to tableRow with the select property with the label of the thesaurus', () => {
-      const row = component.find(TableRow).at(0);
-      expect(row.props().document.metadata.country.value).toBe('V1');
+    it('should render a column with a date property with ll format', () => {
+      const cellDate = component.find('td').at(3);
+      expect(cellDate.props().children[1]).toBe(formattedPropertyDate);
     });
-    it('should pass a document to tableRow with the multiselect property with the values as list of labels', () => {
-      const row = component.find(TableRow).at(1);
-      expect(row.props().document.metadata.country.value).toBe('V1, V2');
+    it('should render a column with the label of the thesaurus', () => {
+      const cellDate = component.find('td').at(4);
+      expect(cellDate.props().children[1]).toBe('Colombia');
+    });
+    it('should render a column with the values as list of labels', () => {
+      const cellDate = component.find('td').at(5);
+      expect(cellDate.props().children[1]).toBe('English, Español');
     });
   });
 });

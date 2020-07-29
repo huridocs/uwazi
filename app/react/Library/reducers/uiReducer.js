@@ -123,7 +123,6 @@ export default function ui(state = initialState, action = {}) {
   }
 
   if (action.type === types.SET_TABLE_VIEW_COLUMNS) {
-    debugger;
     return state.set('tableViewColumns', Immutable.fromJS(action.columns));
   }
 

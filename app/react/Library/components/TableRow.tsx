@@ -19,11 +19,23 @@ interface TableRowProps {
   thesauris: any;
 }
 
-function formatProperty(prop: PropertySchema) {
-  let result;
-  if (prop === undefined || prop.value === undefined || prop.value === null) {
-    return undefined;
+function getLink(url: string, label: string) {
+  return (
+    <I18NLink key={url} to={url}>
+      {label}
+    </I18NLink>
+  );
+}
+
+function formatProperty(prop: any) {
+  let result = prop?.value;
+  if (!result) {
+    return typeof prop === 'string' ? prop : undefined;
   }
+  if (['date', 'daterange', 'numeric', 'select', undefined].includes(prop.type)) {
+    return result;
+  }
+
   switch (prop.type) {
     case 'multiselect':
     case 'multidaterange':
@@ -33,28 +45,14 @@ function formatProperty(prop: PropertySchema) {
     case 'markdown':
       result = <MarkdownViewer markdown={prop.value} />;
       break;
-    case 'image':
-    case 'media':
-      result = (
-        <I18NLink key={prop.value} to={prop.value}>
-          {prop.label}
-        </I18NLink>
-      );
-      break;
     case 'link':
-      result = (
-        <I18NLink key={prop.value.url} to={prop.value.url}>
-          {prop.value.label}
-        </I18NLink>
-      );
+      result = getLink(prop.value.url, prop.value.label);
       break;
     case 'relationship':
       result = prop.value.map((p: any, index: number) => (
         <span>
           {index > 0 && ', '}
-          <I18NLink key={p.url} to={p.url}>
-            {p.value}
-          </I18NLink>
+          {getLink(p.url, p.value)}
         </span>
       ));
       break;
@@ -62,7 +60,7 @@ function formatProperty(prop: PropertySchema) {
       result = <GeolocationViewer points={prop.value} onlyForCards />;
       break;
     default:
-      result = JSON.stringify(prop.value);
+      result = prop.value === 'string' ? prop.value : undefined;
       break;
   }
   return result;
@@ -71,42 +69,22 @@ function formatProperty(prop: PropertySchema) {
 function formatDocument(document: any, templates: TemplateSchema[], thesauris: ThesaurusSchema[]) {
   let formattedDoc = document.toJS();
   const template = templates.find((t: TemplateSchema) => t.get('_id') === formattedDoc.template);
-  if (template) {
-    formattedDoc.templateName = template.get('name');
-    const templateHasProperties =
-      template.get('properties') !== undefined && template.get('properties').size > 0;
-    if (templateHasProperties) {
-      formattedDoc = formatter.prepareMetadata(formattedDoc, templates, thesauris, null, {
-        sortedProperty: 'creationDate',
-      });
-      const metadata: { [key: string]: any } = {};
-      formattedDoc.metadata.forEach((prop: any) => {
-        metadata[prop.name] = prop;
-      });
-      formattedDoc.metadata = metadata;
-    }
-  }
-  formattedDoc.metadata = formattedDoc.metadata || {};
+  formattedDoc.templateName = template?.get('name');
+  formattedDoc = formatter.prepareMetadata(formattedDoc, templates, thesauris, null, {
+    sortedProperty: 'creationDate',
+  });
+  formattedDoc.metadata.forEach((prop: any) => {
+    formattedDoc[prop.name] = prop;
+  });
   return formattedDoc;
 }
 
-function displayCell(document: any, column: any, index: number, selected: boolean, onClick: any) {
-  const property = document.metadata[column.get('name')]
-    ? document.metadata[column.get('name')]
-    : document[column.get('name')];
-  let cellValue = property && property.value ? property.value : property;
-  if (
-    (column.get('type') === 'markdown' ||
-      column.get('type') === 'image' ||
-      column.get('type') === 'media' ||
-      typeof cellValue !== 'string') &&
-    cellValue !== undefined
-  ) {
-    cellValue = formatProperty(property);
-  }
+function displayCell(document: any, column: any, index: number, firstColumnCheckbox: any) {
+  const property = document[column.get('name')];
+  const cellValue = formatProperty(property);
   return (
     <td className={!index ? 'sticky-col' : ''} key={index}>
-      {!index && <input type="checkbox" checked={selected} onClick={onClick} />}
+      {firstColumnCheckbox(index)}
       {cellValue}
     </td>
   );
@@ -117,7 +95,8 @@ class TableRowComponent extends Component<TableRowProps> {
     super(props);
     this.onClick = this.onClick.bind(this);
   }
-  onClick(e: Event) {
+
+  onClick(e: { preventDefault: () => void }) {
     if (this.props.onClick && !window.getSelection()?.toString()) {
       this.props.onClick(e, this.props.document, this.props.selected);
     }
@@ -130,16 +109,15 @@ class TableRowComponent extends Component<TableRowProps> {
       this.props.thesauris
     );
 
+    const firstColumnCheckbox = (index: number) =>
+      !index && (
+        <input type="checkbox" checked={this.props.selected} onClick={this.onClick.bind(this)} />
+      );
+
     return (
-      <tr className={this.props.selected ? 'selected' : ''} onClick={this.onClick}>
+      <tr className={this.props.selected ? 'selected' : ''}>
         {this.props.columns.map((column: any, index: number) =>
-          displayCell(
-            formattedDocument,
-            column,
-            index,
-            this.props.selected || false,
-            this.onClick
-          )
+          displayCell(formattedDocument, column, index, firstColumnCheckbox)
         )}
       </tr>
     );
@@ -156,6 +134,8 @@ function mapStateToProps(state: any, ownProps: TableRowProps) {
     selected,
     document: ownProps.document,
     columns: ownProps.columns,
+    templates: state.templates,
+    thesauris: state.thesauris,
   };
 }
 

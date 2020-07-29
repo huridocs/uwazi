@@ -64,15 +64,15 @@ describe('TableViewer', () => {
     it('should display a row of headers with the properties of all entities', () => {
       const row = component.find('thead > tr').at(0);
       const header = row.find('th');
-      expect(header.at(0).props().children[1]).toBe(commonProperties[0].label);
-      expect(header.at(1).props().children[1]).toBe(commonProperties[1].label);
-      expect(header.at(2).props().children[1]).toBe('Template');
-      expect(header.at(3).props().children[1]).toBe('Date');
+      expect(header.at(0).props().children).toBe(commonProperties[0].label);
+      expect(header.at(1).props().children).toBe(commonProperties[1].label);
+      expect(header.at(2).props().children).toBe('Template');
+      expect(header.at(3).props().children).toBe('Date');
     });
     it('should not have duplicated properties', () => {
       const row = component.find('thead > tr').at(0);
-      const cellDate = row.find({ children: [false, 'Date'] });
-      const cellCountry = row.find({ children: [false, 'Country'] });
+      const cellDate = row.find({ children: 'Date' });
+      const cellCountry = row.find({ children: 'Country' });
       expect(cellDate.length).toBe(1);
       expect(cellCountry.length).toBe(1);
     });
