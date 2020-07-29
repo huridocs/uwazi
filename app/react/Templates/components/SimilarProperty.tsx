@@ -10,7 +10,7 @@ const titles = {
     'Properties with the same label but different thesauri as content are not allowed.',
   relationConflict:
     'Relationship properties with the same label but different relationship types are not allowed.',
-  typeConflict: 'Properties with the same label but different types are not allowed.',
+  typeConflict: 'Properties with the same label but incompatible types are not allowed.',
 };
 
 export interface TemplateProperty {

@@ -7,6 +7,7 @@ import templates from 'api/templates';
 import { TemplateSchema } from './templateType';
 import { PropertySchema } from './commonTypes';
 import { ObjectId } from 'mongodb';
+import { getCompatibleTypes } from 'shared/propertyTypes';
 
 export const emitSchemaTypes = true;
 
@@ -185,7 +186,7 @@ function filterInconsistentProperties(template: TemplateSchema, allProperties: P
         p =>
           p.name === property.name &&
           (p.content !== property.content ||
-            p.type !== property.type ||
+            !getCompatibleTypes(property.type).includes(p.type) ||
             p.relationType !== property.relationType)
       );
 
@@ -261,4 +262,4 @@ export const templateSchema = {
 };
 
 const validateTemplate = wrapValidator(ajv.compile(templateSchema));
-export { validateTemplate };
+export { validateTemplate, getCompatibleTypes };
