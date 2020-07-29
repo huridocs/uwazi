@@ -5,6 +5,13 @@ import { I18NLink, t } from 'app/I18N';
 import { Icon } from 'UI';
 import { processFilters, encodeSearch } from 'app/Library/actions/libraryActions';
 import { helper as mapHelper } from 'app/Map';
+import { DropdownList } from 'app/Forms';
+
+class ColumnsDropdown extends Component {
+  render() {
+    return <DropdownList data={['uno', 'dos', 'tres']} filter="contains" />;
+  }
+}
 
 export class LibraryModeToggleButtons extends Component {
   render() {
@@ -13,6 +20,7 @@ export class LibraryModeToggleButtons extends Component {
 
     return (
       <div className="list-view-mode">
+        <ColumnsDropdown className="table-view-column-selector"/>
         <div className={`list-view-mode-zoom list-view-buttons-zoom-${zoomLevel} buttons-group`}>
           <button className="btn btn-default zoom-out" onClick={zoomOut} type="button">
             <Icon icon="search-minus" />

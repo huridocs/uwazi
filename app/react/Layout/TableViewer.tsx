@@ -16,7 +16,7 @@ export interface DocumentViewerProps {
   search: any;
   templates: any;
   thesauris: any;
-  columns: PropertySchema[];
+  columns: any[];
 }
 
 class TableViewerComponent extends Component<DocumentViewerProps> {
