@@ -109,7 +109,7 @@
     "big.js": "^5.2.2",
     "bluebird": "^3.4.6",
     "body-parser": "1.18.2",
-    "bootstrap": "3.4.0",
+    "bootstrap": "3.4.1",
     "child-process-promise": "^2.2.1",
     "compression": "^1.6.0",
     "connect-mongo": "3.0.0",
