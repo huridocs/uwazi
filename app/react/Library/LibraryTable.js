@@ -16,7 +16,7 @@ export class LibraryTable extends RouteHandler {
   }
 
   static async requestState(requestParams, globalResources) {
-    return requestState(requestParams, globalResources);
+    return requestState(requestParams, globalResources, true);
   }
 
   urlHasChanged(nextProps) {

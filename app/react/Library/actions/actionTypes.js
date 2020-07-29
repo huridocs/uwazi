@@ -30,3 +30,4 @@ export const HIDE_FILTERS = 'HIDE_FILTERS';
 export const ENTER_LIBRARY = 'ENTER_LIBRARY';
 export const ZOOM_IN = 'ZOOM_IN';
 export const ZOOM_OUT = 'ZOOM_OUT';
+export const SET_TABLE_VIEW_COLUMNS = 'SET_TABLE_VIEW_COLUMNS';

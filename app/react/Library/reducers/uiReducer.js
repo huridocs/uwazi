@@ -10,6 +10,7 @@ const initialState = Immutable.fromJS({
   selectedDocuments: [],
   filtersPanel: false,
   zoomLevel: 0,
+  tableViewColumns: [],
 });
 
 export default function ui(state = initialState, action = {}) {
@@ -119,6 +120,11 @@ export default function ui(state = initialState, action = {}) {
   if (action.type === types.ZOOM_OUT) {
     const minLevel = -3;
     return state.set('zoomLevel', Math.max(state.get('zoomLevel') - 1, minLevel));
+  }
+
+  if (action.type === types.SET_TABLE_VIEW_COLUMNS) {
+    debugger;
+    return state.set('tableViewColumns', Immutable.fromJS(action.columns));
   }
 
   return Immutable.fromJS(state);

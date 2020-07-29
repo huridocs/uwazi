@@ -16,54 +16,16 @@ export interface DocumentViewerProps {
   search: any;
   templates: any;
   thesauris: any;
-}
-
-function columnsFromTemplates(templates: TemplateSchema[]) {
-  return templates.reduce((properties: PropertySchema[], template: TemplateSchema) => {
-    const propsToAdd: PropertySchema[] = [];
-    template.get('properties', Immutable.Map()).forEach((property: PropertySchema) => {
-      if (!properties.find(columnProperty => property.get('name') === columnProperty.get('name'))) {
-        propsToAdd.push(property);
-      }
-    });
-    return properties.concat(propsToAdd);
-  }, []);
+  columns: PropertySchema[];
 }
 
 class TableViewerComponent extends Component<DocumentViewerProps> {
   constructor(props: DocumentViewerProps) {
     super(props);
-    this.getColumns();
-  }
-
-  private getColumns() {
-    let columns = [];
-    const queriedTemplates = (this.props.documents || []).getIn([
-      'aggregations',
-      'all',
-      '_types',
-      'buckets',
-    ]);
-    if (queriedTemplates) {
-      const templateIds = queriedTemplates
-        .filter((template: any) => template.getIn(['filtered', 'doc_count']) > 0)
-        .map((template: any) => template.get('key'));
-
-      const templates = this.props.templates.filter((t: TemplateSchema) =>
-        templateIds.find((id: any) => t.get('_id') === id)
-      );
-
-      const commonColumns = [
-        ...templates.get(0).get('commonProperties'),
-        Immutable.fromJS({ label: 'Template', name: 'templateName' }),
-      ];
-      columns = commonColumns.concat(columnsFromTemplates(templates));
-    }
-    return columns;
   }
 
   render() {
-    const columns = this.getColumns();
+    const columns = this.props.columns;
     return (
       <div className="tableview-wrapper">
         <table>
@@ -102,6 +64,7 @@ const mapStateToProps = (state: any, props: DocumentViewerProps) => ({
   thesauris: state.thesauris,
   authorized: !!state.user.get('_id'),
   selectedDocuments: state[props.storeKey].ui.get('selectedDocuments'),
+  columns: state[props.storeKey].ui.get('tableViewColumns')
 });
 
 export const TableViewer = connect(mapStateToProps)(TableViewerComponent);
