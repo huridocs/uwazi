@@ -7,11 +7,50 @@ import { processFilters, encodeSearch } from 'app/Library/actions/libraryActions
 import { helper as mapHelper } from 'app/Map';
 import { DropdownList } from 'app/Forms';
 
-class ColumnsDropdown extends Component {
-  render() {
-    return <DropdownList data={['uno', 'dos', 'tres']} filter="contains" />;
-  }
-}
+const ColumnItem = ({ item }) => {
+  const option = item;
+  const handleSelected = () => (option.showInCard = !option.showInCard);
+
+  return (
+    <span>
+      <input
+        type="checkbox"
+        checked={option.showInCard}
+        onChange={handleSelected(option.showInCard)}
+      />
+      {item.label}
+      <span className="draggable">
+        <Icon icon="bars" />
+      </span>
+    </span>
+  );
+};
+
+ColumnItem.propTypes = {
+  item: PropTypes.object.isRequired,
+};
+
+ColumnItem.propTypes = {
+  item: PropTypes.object.isRequired,
+};
+
+const ColumnsDropdown = props => {
+  const hiddenColumns = columns =>
+    `${columns.filter(column => !column.showInCard).length} columns hidden`;
+
+  return (
+    <DropdownList
+      data={props.tableViewColumns}
+      filter="contains"
+      itemComponent={ColumnItem}
+      placeholder={hiddenColumns(props.tableViewColumns)}
+    />
+  );
+};
+
+ColumnsDropdown.propTypes = {
+  tableViewColumns: PropTypes.array.isRequired,
+};
 
 export class LibraryModeToggleButtons extends Component {
   render() {
@@ -20,7 +59,10 @@ export class LibraryModeToggleButtons extends Component {
 
     return (
       <div className="list-view-mode">
-        <ColumnsDropdown className="table-view-column-selector"/>
+        <ColumnsDropdown
+          className="table-view-column-selector"
+          tableViewColumns={this.props.tableViewColumns}
+        />
         <div className={`list-view-mode-zoom list-view-buttons-zoom-${zoomLevel} buttons-group`}>
           <button className="btn btn-default zoom-out" onClick={zoomOut} type="button">
             <Icon icon="search-minus" />
@@ -74,10 +116,12 @@ LibraryModeToggleButtons.propTypes = {
   zoomOut: PropTypes.func.isRequired,
   zoomLevel: PropTypes.number.isRequired,
   numberOfMarkers: PropTypes.number.isRequired,
+  tableViewColumns: PropTypes.array.isRequired,
 };
 
 export function mapStateToProps(state, props) {
   const filters = state[props.storeKey].filters.toJS();
+  const tableViewColumns = state[props.storeKey].ui.get('tableViewColumns').toJS();
   const params = processFilters(state[props.storeKey].search, filters);
   const { templates } = state;
   const showGeolocation = Boolean(
@@ -95,6 +139,7 @@ export function mapStateToProps(state, props) {
       Object.keys(props).indexOf('zoomLevel') !== -1
         ? props.zoomLevel
         : state[props.storeKey].ui.get('zoomLevel'),
+    tableViewColumns,
   };
 }
 

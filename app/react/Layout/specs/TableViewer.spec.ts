@@ -10,7 +10,13 @@ describe('TableViewer', () => {
   function render() {
     const storeState = {
       user: Immutable.fromJS({ _id: 'batId' }),
-      library: { ui: Immutable.fromJS({}) },
+      library: {
+        ui: Immutable.fromJS({
+          tableViewColumns: Immutable.fromJS([
+            { properties: [{ label: 'Date' }, { label: 'Country' }] },
+          ]),
+        }),
+      },
       templates: Immutable.fromJS([
         {
           _id: 'idTemplate1',

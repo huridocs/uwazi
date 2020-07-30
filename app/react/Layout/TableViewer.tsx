@@ -1,9 +1,6 @@
 import React, { Component } from 'react';
 
-import Immutable from 'immutable';
 import { connect } from 'react-redux';
-import { TemplateSchema } from 'shared/types/templateType';
-import { PropertySchema } from 'shared/types/commonTypes';
 import { TableRow } from 'app/Library/components/TableRow';
 
 export interface DocumentViewerProps {
@@ -20,12 +17,8 @@ export interface DocumentViewerProps {
 }
 
 class TableViewerComponent extends Component<DocumentViewerProps> {
-  constructor(props: DocumentViewerProps) {
-    super(props);
-  }
-
   render() {
-    const columns = this.props.columns;
+    const { columns } = this.props;
     return (
       <div className="tableview-wrapper">
         <table>
@@ -43,7 +36,7 @@ class TableViewerComponent extends Component<DocumentViewerProps> {
               <TableRow
                 {...{
                   document,
-                  columns: columns,
+                  columns,
                   key: index,
                   onClick: this.props.clickOnDocument,
                   storeKey: this.props.storeKey,
@@ -64,7 +57,7 @@ const mapStateToProps = (state: any, props: DocumentViewerProps) => ({
   thesauris: state.thesauris,
   authorized: !!state.user.get('_id'),
   selectedDocuments: state[props.storeKey].ui.get('selectedDocuments'),
-  columns: state[props.storeKey].ui.get('tableViewColumns')
+  columns: state[props.storeKey].ui.get('tableViewColumns'),
 });
 
 export const TableViewer = connect(mapStateToProps)(TableViewerComponent);
