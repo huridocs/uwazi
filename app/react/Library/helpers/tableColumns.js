@@ -28,7 +28,9 @@ export function getTableColumns(documents, templates) {
       ...templatesToProcess[0].commonProperties,
       { label: 'Template', name: 'templateName' },
     ];
-    columns = commonColumns.concat(columnsFromTemplates(templatesToProcess));
+    columns = commonColumns
+      .map(c => Object.assign(c, { hidden: false }))
+      .concat(columnsFromTemplates(templatesToProcess));
   }
   return columns;
 }

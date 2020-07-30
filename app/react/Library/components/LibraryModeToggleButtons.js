@@ -5,64 +5,24 @@ import { I18NLink, t } from 'app/I18N';
 import { Icon } from 'UI';
 import { processFilters, encodeSearch } from 'app/Library/actions/libraryActions';
 import { helper as mapHelper } from 'app/Map';
-import { DropdownList } from 'app/Forms';
-
-const ColumnItem = ({ item }) => {
-  const option = item;
-  const handleSelected = () => (option.showInCard = !option.showInCard);
-
-  return (
-    <span>
-      <input
-        type="checkbox"
-        checked={option.showInCard}
-        onChange={handleSelected(option.showInCard)}
-      />
-      {item.label}
-      <span className="draggable">
-        <Icon icon="bars" />
-      </span>
-    </span>
-  );
-};
-
-ColumnItem.propTypes = {
-  item: PropTypes.object.isRequired,
-};
-
-ColumnItem.propTypes = {
-  item: PropTypes.object.isRequired,
-};
-
-const ColumnsDropdown = props => {
-  const hiddenColumns = columns =>
-    `${columns.filter(column => !column.showInCard).length} columns hidden`;
-
-  return (
-    <DropdownList
-      data={props.tableViewColumns}
-      filter="contains"
-      itemComponent={ColumnItem}
-      placeholder={hiddenColumns(props.tableViewColumns)}
-    />
-  );
-};
-
-ColumnsDropdown.propTypes = {
-  tableViewColumns: PropTypes.array.isRequired,
-};
+import { HideColumnsDropdown } from './HiddenColumnsDropdown';
 
 export class LibraryModeToggleButtons extends Component {
   render() {
-    const { numberOfMarkers, zoomLevel, zoomOut, zoomIn, showGeolocation, searchUrl } = this.props;
+    const {
+      numberOfMarkers,
+      zoomLevel,
+      zoomOut,
+      zoomIn,
+      showGeolocation,
+      searchUrl,
+      storeKey,
+    } = this.props;
     const numberOfMarkersText = numberOfMarkers.toString().length > 3 ? '99+' : numberOfMarkers;
 
     return (
       <div className="list-view-mode">
-        <ColumnsDropdown
-          className="table-view-column-selector"
-          tableViewColumns={this.props.tableViewColumns}
-        />
+        <HideColumnsDropdown className="table-view-column-selector" storeKey={storeKey} />
         <div className={`list-view-mode-zoom list-view-buttons-zoom-${zoomLevel} buttons-group`}>
           <button className="btn btn-default zoom-out" onClick={zoomOut} type="button">
             <Icon icon="search-minus" />
@@ -117,6 +77,7 @@ LibraryModeToggleButtons.propTypes = {
   zoomLevel: PropTypes.number.isRequired,
   numberOfMarkers: PropTypes.number.isRequired,
   tableViewColumns: PropTypes.array.isRequired,
+  storeKey: PropTypes.string,
 };
 
 export function mapStateToProps(state, props) {

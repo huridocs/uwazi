@@ -18,7 +18,8 @@ export interface DocumentViewerProps {
 
 class TableViewerComponent extends Component<DocumentViewerProps> {
   render() {
-    const { columns } = this.props;
+    debugger;
+    const columns = this.props.columns.filter(c => !c.get('hidden'));
     return (
       <div className="tableview-wrapper">
         <table>

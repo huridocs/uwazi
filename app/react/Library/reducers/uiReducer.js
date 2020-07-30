@@ -2,6 +2,7 @@ import Immutable from 'immutable';
 
 import * as types from 'app/Library/actions/actionTypes';
 import * as uploadTypes from 'app/Uploads/actions/actionTypes';
+import { isUndefined } from 'util';
 
 const initialState = Immutable.fromJS({
   searchTerm: '',
@@ -123,7 +124,30 @@ export default function ui(state = initialState, action = {}) {
   }
 
   if (action.type === types.SET_TABLE_VIEW_COLUMNS) {
-    return state.set('tableViewColumns', Immutable.fromJS(action.columns));
+    const columnsWithSelection = action.columns.map(column => {
+      const previousColumnStateIndex = state
+        .get('tableViewColumns')
+        .findIndex(c => c.get('name') === column.name);
+
+      if (isUndefined(column.hidden) || previousColumnStateIndex === -1) {
+        return Object.assign(column, { hidden: !(column.showInCard || false) });
+      }
+
+      return Object.assign(column, {
+        hidden: state
+          .get('tableViewColumns')
+          .get(previousColumnStateIndex)
+          .get('hidden'),
+      });
+    });
+
+    return state.set('tableViewColumns', Immutable.fromJS(columnsWithSelection));
+  }
+
+  if (action.type === types.SET_TABLE_VIEW_COLUMN_HIDDEN) {
+    const index = state.get('tableViewColumns').findIndex(c => c.get('name') === action.name);
+
+    return state.setIn(['tableViewColumns', index, 'hidden'], action.hidden);
   }
 
   return Immutable.fromJS(state);
