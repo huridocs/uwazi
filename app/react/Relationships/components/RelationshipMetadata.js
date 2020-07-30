@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import { actions as formActions } from 'react-redux-form';
 import Immutable from 'immutable';
 import { createSelector } from 'reselect';
 import { Icon } from 'UI';
@@ -9,11 +10,13 @@ import { Icon } from 'UI';
 import { ShowMetadata, MetadataFormButtons, MetadataForm, actions } from 'app/Metadata';
 import SidePanel from 'app/Layout/SidePanel';
 import { CopyFromEntity } from 'app/Metadata/components/CopyFromEntity';
-import { saveEntity } from 'app/Library/actions/libraryActions';
+import { api as entitiesAPI } from 'app/Entities';
+import { RequestParams } from 'app/utils/RequestParams';
 import {
   unselectConnection,
   updateRelationshipEntityData,
-  selectConnection,
+  addEntity,
+  setAddToData,
 } from '../actions/actions';
 
 export class RelationshipMetadata extends Component {
@@ -34,9 +37,15 @@ export class RelationshipMetadata extends Component {
   deleteDocument() {}
 
   async saveEntity(entity, formModel) {
-    await this.props.saveEntity(entity, formModel);
-    this.props.updateRelationshipEntityData(entity);
-    this.props.selectConnection(entity);
+    this.props.resetForm(formModel);
+    this.props.unselectConnection();
+    const savedEntity = await entitiesAPI.save(new RequestParams(entity));
+    this.props.updateRelationshipEntityData(savedEntity);
+
+    if (Number.isInteger(this.props.hubIndex)) {
+      this.props.addEntity(this.props.hubIndex, this.props.rightRelationshipIndex, savedEntity);
+      this.props.setAddToData(null, null);
+    }
   }
 
   toggleCopyFrom() {
@@ -117,6 +126,8 @@ export class RelationshipMetadata extends Component {
 RelationshipMetadata.defaultProps = {
   selectedConnection: false,
   entityBeingEdited: false,
+  hubIndex: null,
+  rightRelationshipIndex: null,
 };
 
 RelationshipMetadata.propTypes = {
@@ -126,10 +137,13 @@ RelationshipMetadata.propTypes = {
   unselectConnection: PropTypes.func.isRequired,
   entityBeingEdited: PropTypes.bool,
   templates: PropTypes.instanceOf(Immutable.List).isRequired,
-  saveEntity: PropTypes.func.isRequired,
   updateRelationshipEntityData: PropTypes.func.isRequired,
-  selectConnection: PropTypes.func.isRequired,
   changeTemplate: PropTypes.func.isRequired,
+  hubIndex: PropTypes.number,
+  rightRelationshipIndex: PropTypes.number,
+  addEntity: PropTypes.func.isRequired,
+  setAddToData: PropTypes.func.isRequired,
+  resetForm: PropTypes.func.isRequired,
 };
 
 const connectionSelector = createSelector(
@@ -148,6 +162,11 @@ const mapStateToProps = state => {
     entityBeingEdited,
     templates: state.templates,
     formState: state.relationships.metadata,
+    hubIndex: state.relationships.hubActions.getIn(['addTo', 'hubIndex']),
+    rightRelationshipIndex: state.relationships.hubActions.getIn([
+      'addTo',
+      'rightRelationshipIndex',
+    ]),
   };
 };
 
@@ -155,10 +174,11 @@ function mapDispatchToProps(dispatch) {
   return bindActionCreators(
     {
       unselectConnection,
-      saveEntity,
       updateRelationshipEntityData,
-      selectConnection,
       changeTemplate: actions.changeTemplate,
+      addEntity,
+      setAddToData,
+      resetForm: formActions.reset,
     },
     dispatch
   );
