@@ -69,7 +69,7 @@ export default function(state = initialState, action = {}) {
   let relationshipsMoved;
   let _state;
   let targetTemplate;
-  let toUpdate = [];
+  const toUpdate = [];
 
   switch (action.type) {
     case types.PARSE_RELATIONSHIPS_RESULTS:
@@ -127,8 +127,6 @@ export default function(state = initialState, action = {}) {
         [action.index, 'rightRelationships', action.rightIndex, 'deleted'],
         !value
       );
-
-    case types.REMOVE_RELATIONSHIPS_ENTITY:
 
     case types.ADD_RELATIONSHIPS_ENTITY:
       relationship = state.getIn([action.index, 'rightRelationships', action.rightIndex]);
@@ -247,8 +245,8 @@ export default function(state = initialState, action = {}) {
         }
 
         state.getIn([hubIndex, 'rightRelationships']).forEach((group, groupIndex) => {
-          group.get('relationships').forEach((relationship, relationshipIndex) => {
-            if (relationship.get('entity') === action.entity.sharedId) {
+          group.get('relationships').forEach((r, relationshipIndex) => {
+            if (r.get('entity') === action.entity.sharedId) {
               toUpdate.push([
                 hubIndex,
                 'rightRelationships',
