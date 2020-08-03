@@ -15,7 +15,7 @@ import * as actions from '../actions/actions';
 
 export class MetadataFormButtons extends Component {
   render() {
-    const { entityBeingEdited, exclusivelyViewButton, formName } = this.props;
+    const { entityBeingEdited, exclusivelyViewButton, formName, hideDelete } = this.props;
     const data = this.props.data.toJS();
 
     const ViewButton = (
@@ -113,7 +113,7 @@ export class MetadataFormButtons extends Component {
           </React.Fragment>
         </ShowIf>
         <NeedAuthorization roles={['admin', 'editor']}>
-          <ShowIf if={!entityBeingEdited}>
+          <ShowIf if={!entityBeingEdited && !hideDelete}>
             <button
               className="delete-metadata btn btn-danger"
               type="button"
@@ -158,6 +158,7 @@ MetadataFormButtons.contextTypes = {
 MetadataFormButtons.defaultProps = {
   entityBeingEdited: false,
   includeViewButton: true,
+  hideDelete: false,
   formName: 'metadataForm',
   delete: () => {},
   copyFrom: () => {},
@@ -177,6 +178,7 @@ MetadataFormButtons.propTypes = {
   formName: PropTypes.string,
   includeViewButton: PropTypes.bool,
   exclusivelyViewButton: PropTypes.bool,
+  hideDelete: PropTypes.bool,
   copyFrom: PropTypes.func,
   onCancel: PropTypes.func,
 };

@@ -75,6 +75,12 @@ export function addEntity(index, rightIndex, entity) {
   };
 }
 
+export function removeEntity(entity) {
+  return dispatch => {
+    dispatch({ type: types.REMOVE_RELATIONSHIPS_ENTITY, entity });
+  };
+}
+
 export function toggleRemoveEntity(index, rightIndex, relationshipIndex) {
   return { type: types.TOGGLE_REMOVE_RELATIONSHIPS_ENTITY, index, rightIndex, relationshipIndex };
 }

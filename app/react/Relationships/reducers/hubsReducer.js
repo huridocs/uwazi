@@ -128,6 +128,8 @@ export default function(state = initialState, action = {}) {
         !value
       );
 
+    case types.REMOVE_RELATIONSHIPS_ENTITY:
+
     case types.ADD_RELATIONSHIPS_ENTITY:
       relationship = state.getIn([action.index, 'rightRelationships', action.rightIndex]);
       relationships = relationship.get('relationships').push(

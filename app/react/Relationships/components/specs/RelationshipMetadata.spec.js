@@ -42,6 +42,7 @@ describe('RelationshipMetadata', () => {
         connection: Immutable.fromJS(testingEntity),
         hubActions: Immutable.fromJS({ addTo: { hubIndex: null, rightRelationshipIndex: null } }),
         formState: {},
+        list: { sharedId: '123' },
       },
     };
 

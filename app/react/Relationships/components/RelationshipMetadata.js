@@ -17,6 +17,7 @@ import {
   updateRelationshipEntityData,
   addEntity,
   setAddToData,
+  reloadRelationships,
 } from '../actions/actions';
 
 export class RelationshipMetadata extends Component {
@@ -34,7 +35,17 @@ export class RelationshipMetadata extends Component {
     this.setState({ copyFromProps });
   }
 
-  deleteDocument() {}
+  async deleteDocument() {
+    this.context.confirm({
+      accept: async () => {
+        this.props.unselectConnection();
+        await entitiesAPI.delete(new RequestParams({ sharedId: this.props.entity.sharedId }));
+        this.props.reloadRelationships(this.props.parentSharedId);
+      },
+      title: 'Confirm delete entity',
+      message: 'Are you sure you want to delete this entity?',
+    });
+  }
 
   async saveEntity(entity, formModel) {
     this.props.resetForm(formModel);
@@ -115,6 +126,7 @@ export class RelationshipMetadata extends Component {
               formStatePath="relationships.metadata"
               entityBeingEdited={this.props.entityBeingEdited}
               copyFrom={this.toggleCopyFrom}
+              hideDelete={this.props.hubsBeingEdited}
             />
           )}
         </div>
@@ -123,9 +135,14 @@ export class RelationshipMetadata extends Component {
   }
 }
 
+RelationshipMetadata.contextTypes = {
+  confirm: PropTypes.func,
+};
+
 RelationshipMetadata.defaultProps = {
   selectedConnection: false,
   entityBeingEdited: false,
+  hubsBeingEdited: false,
   hubIndex: null,
   rightRelationshipIndex: null,
 };
@@ -144,6 +161,9 @@ RelationshipMetadata.propTypes = {
   addEntity: PropTypes.func.isRequired,
   setAddToData: PropTypes.func.isRequired,
   resetForm: PropTypes.func.isRequired,
+  hubsBeingEdited: PropTypes.bool,
+  parentSharedId: PropTypes.string.isRequired,
+  reloadRelationships: PropTypes.func.isRequired,
 };
 
 const connectionSelector = createSelector(
@@ -153,6 +173,7 @@ const connectionSelector = createSelector(
 
 const mapStateToProps = state => {
   const entityBeingEdited = Boolean(state.relationships.metadata.metadata);
+
   return {
     selectedConnection: Boolean(
       (state.relationships.connection && state.relationships.connection.get('_id')) ||
@@ -160,6 +181,7 @@ const mapStateToProps = state => {
     ),
     entity: connectionSelector(state),
     entityBeingEdited,
+    hubsBeingEdited: Boolean(state.relationships.hubActions.get('editing')),
     templates: state.templates,
     formState: state.relationships.metadata,
     hubIndex: state.relationships.hubActions.getIn(['addTo', 'hubIndex']),
@@ -167,6 +189,7 @@ const mapStateToProps = state => {
       'addTo',
       'rightRelationshipIndex',
     ]),
+    parentSharedId: state.relationships.list.sharedId,
   };
 };
 
@@ -179,6 +202,7 @@ function mapDispatchToProps(dispatch) {
       addEntity,
       setAddToData,
       resetForm: formActions.reset,
+      reloadRelationships,
     },
     dispatch
   );
