@@ -162,7 +162,6 @@ MetadataFormButtons.defaultProps = {
   formName: 'metadataForm',
   delete: () => {},
   copyFrom: () => {},
-  onCancel: () => {},
 };
 
 MetadataFormButtons.propTypes = {
@@ -180,7 +179,6 @@ MetadataFormButtons.propTypes = {
   exclusivelyViewButton: PropTypes.bool,
   hideDelete: PropTypes.bool,
   copyFrom: PropTypes.func,
-  onCancel: PropTypes.func,
 };
 
 const mapStateToProps = ({ templates }) => ({ templates });

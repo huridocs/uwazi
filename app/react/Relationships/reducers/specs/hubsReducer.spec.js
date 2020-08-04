@@ -4,9 +4,9 @@ import hubsReducer from '../hubsReducer';
 
 describe('Hubs Reducer', () => {
   let state;
-  let entity1 = { title: 'Entity one', metadata: {}, sharedId: 'entityone' };
-  let entity2 = { title: 'Entity two', metadata: {}, sharedId: 'entitytwo' };
-  let entity3 = { title: 'Entity three', metadata: {}, sharedId: 'entitythree' };
+  const entity1 = { title: 'Entity one', metadata: {}, sharedId: 'entityone' };
+  const entity2 = { title: 'Entity two', metadata: {}, sharedId: 'entitytwo' };
+  const entity3 = { title: 'Entity three', metadata: {}, sharedId: 'entitythree' };
 
   beforeEach(() => {
     state = Immutable.fromJS([

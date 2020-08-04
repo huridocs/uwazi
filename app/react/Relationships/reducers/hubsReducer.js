@@ -260,9 +260,10 @@ export default function(state = initialState, action = {}) {
         });
       });
 
-      return toUpdate.reduce((updatedState, path) => {
-        return updatedState.setIn(path, fromJS(action.entity));
-      }, state);
+      return toUpdate.reduce(
+        (updatedState, path) => updatedState.setIn(path, fromJS(action.entity)),
+        state
+      );
 
     default:
       return fromJS(state);
