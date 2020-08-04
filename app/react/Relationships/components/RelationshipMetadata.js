@@ -40,10 +40,10 @@ export class RelationshipMetadata extends Component {
       accept: async () => {
         this.props.unselectConnection();
         await entitiesAPI.delete(new RequestParams({ sharedId: this.props.entity.sharedId }));
-        this.props.reloadRelationships(this.props.parentSharedId);
+        await this.props.reloadRelationships(this.props.parentSharedId);
       },
       title: 'Confirm delete entity',
-      message: 'Are you sure you want to delete this entity?',
+      message: 'Are you sure you want to delete this entity',
     });
   }
 
