@@ -43,7 +43,7 @@ export class RelationshipMetadata extends Component {
         await this.props.reloadRelationships(this.props.parentSharedId);
       },
       title: 'Confirm delete entity',
-      message: 'Are you sure you want to delete this entity',
+      message: 'Are you sure you want to delete this entity?',
     });
   }
 
@@ -171,7 +171,7 @@ const connectionSelector = createSelector(
   entity => (entity && entity.toJS ? entity.toJS() : { metadata: {} })
 );
 
-const mapStateToProps = state => {
+export const mapStateToProps = state => {
   const entityBeingEdited = Boolean(state.relationships.metadata.metadata);
 
   return {

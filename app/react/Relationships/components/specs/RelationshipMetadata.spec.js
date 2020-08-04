@@ -1,11 +1,13 @@
 import Immutable from 'immutable';
-
-import { renderConnected } from 'app/Templates/specs/utils/renderConnected';
+import React from 'react';
+import { shallow } from 'enzyme';
 import { ShowMetadata, MetadataForm } from 'app/Metadata';
 import { api as entitiesAPI } from 'app/Entities';
 import { RequestParams } from 'app/utils/RequestParams';
-import RelationshipMetadata from '../RelationshipMetadata';
+import { RelationshipMetadata, mapStateToProps } from '../RelationshipMetadata';
 import * as routeUtils from '../../utils/routeUtils';
+
+import * as actions from '../../actions/actions';
 
 describe('RelationshipMetadata', () => {
   let component;
@@ -14,18 +16,18 @@ describe('RelationshipMetadata', () => {
   let confirm;
   let storeState;
 
-  beforeEach(() => {
-    spyOn(entitiesAPI, 'save').and.returnValue(Promise.resolve());
-    spyOn(entitiesAPI, 'delete').and.returnValue(Promise.resolve());
-  });
-
   const testingEntity = {
     sharedId: 'ab146',
     title: 'A test to remember',
     metadata: {},
   };
 
-  function renderComponent(editing = false) {
+  beforeEach(() => {
+    spyOn(entitiesAPI, 'save').and.returnValue(Promise.resolve(testingEntity));
+    spyOn(entitiesAPI, 'delete').and.returnValue(Promise.resolve());
+  });
+
+  function renderComponent(editing = false, hubIndex = null, rightRelationshipIndex = null) {
     storeState = {
       templates: Immutable.fromJS([
         {
@@ -45,16 +47,29 @@ describe('RelationshipMetadata', () => {
       relationships: {
         metadata: editing ? testingEntity : {},
         connection: Immutable.fromJS(testingEntity),
-        hubActions: Immutable.fromJS({ addTo: { hubIndex: null, rightRelationshipIndex: null } }),
+        hubActions: Immutable.fromJS({ addTo: { hubIndex, rightRelationshipIndex } }),
         formState: {},
         list: { sharedId: '123' },
       },
     };
 
-    props = {};
+    const mappedProps = mapStateToProps(storeState);
+    props = {
+      unselectConnection: jasmine.createSpy('unselectConnection'),
+      changeTemplate: jasmine.createSpy('changeTemplate'),
+      updateRelationshipEntityData: jasmine.createSpy('updateRelationshipEntityData'),
+      addEntity: jasmine.createSpy('addEntity'),
+      setAddToData: jasmine.createSpy('setAddToData'),
+      resetForm: jasmine.createSpy('resetForm'),
+      reloadRelationships: jasmine.createSpy('reloadRelationships'),
+    };
+
     confirm = jasmine.createSpy('confirm');
-    component = renderConnected(RelationshipMetadata, props, storeState, confirm);
+    const context = { confirm };
+    component = shallow(<RelationshipMetadata {...mappedProps} {...props} />, { context });
+
     instance = component.instance();
+    spyOn(actions, 'addEntity');
   }
 
   it('should render the current connection metdata', () => {
@@ -77,11 +92,25 @@ describe('RelationshipMetadata', () => {
         await instance.saveEntity(testingEntity, 'relationships.metadata');
         expect(entitiesAPI.save).toHaveBeenCalledWith(new RequestParams(testingEntity));
       });
+
+      describe('when the values to add a new connection are set', () => {
+        it('should add the connection after save', async () => {
+          renderComponent(true, 0, 0);
+          await instance.saveEntity(testingEntity, 'relationships.metadata');
+          expect(props.addEntity).toHaveBeenLastCalledWith(0, 0, {
+            metadata: {},
+            sharedId: 'ab146',
+            title: 'A test to remember',
+          });
+          expect(props.setAddToData).toHaveBeenLastCalledWith(null, null);
+        });
+      });
     });
   });
 
   describe('deleting', () => {
     it('should request a delete and reload all the connections', async () => {
+      renderComponent();
       spyOn(routeUtils, 'requestState').and.returnValue(Promise.resolve([{}, {}]));
       instance.deleteDocument();
       await confirm.calls.allArgs()[0][0].accept();
@@ -90,13 +119,18 @@ describe('RelationshipMetadata', () => {
         headers: {},
       });
 
-      expect(routeUtils.requestState).toHaveBeenCalledWith(
-        {
-          data: { sharedId: '123' },
-          headers: {},
-        },
-        storeState
-      );
+      expect(props.reloadRelationships).toHaveBeenCalledWith('123');
+    });
+  });
+
+  describe('toggleCopyFrom', () => {
+    it('should toggle the show coppy form boolean', () => {
+      renderComponent();
+      expect(instance.state.copyFrom).toBe(false);
+      instance.toggleCopyFrom();
+      expect(instance.state.copyFrom).toBe(true);
+      instance.toggleCopyFrom();
+      expect(instance.state.copyFrom).toBe(false);
     });
   });
 });
