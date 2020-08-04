@@ -10,40 +10,51 @@ import moment from 'moment';
 class DatePicker extends Component {
   constructor(props) {
     super(props);
-    this.onChange = this.onChange.bind(this);
+    this.handleChange = this.handleChange.bind(this);
   }
 
-  onChange(value) {
-    const { endOfDay, useTimezone } = this.props;
-    const { onChange } = this.props;
+  handleChange(value) {
+    const { endOfDay, useTimezone, onChange } = this.props;
     if (!value) {
       onChange(null);
     } else {
+      const newValue = moment(value).utc();
       if (!useTimezone) {
-        value.add(value.utcOffset(), 'minute');
+        newValue.add(newValue.utcOffset(), 'minute');
       }
 
       if (endOfDay) {
-        const method = useTimezone ? value : value.utc();
+        const method = useTimezone ? newValue : newValue.utc();
         method.endOf('day');
       }
 
-      onChange(parseInt(value.utc().format('X'), 10));
+      onChange(parseInt(newValue.format('X'), 10));
     }
   }
 
+  componentWillReceiveProps(newProps) {
+    console.log("rerender", newProps)
+    console.log(newProps.value === this.props.value)
+    Object.keys(newProps).forEach((key) => {
+      if(newProps[key] !== this.props[key]) {
+        console.log(key);
+      }
+    });
+  }
+
   render() {
+    console.log("render")
     let { locale, format } = this.props;
     locale = locale || 'en';
-    format = format || 'DD/MM/YYYY';
-    let { value } = this.props;
-    value = value ? moment.utc(value, 'X') : null;
+    format = format || 'dd/MM/yyyy';
+
+    const value = this.props.value ? new Date().setTime(this.props.value * 1000) : null;
 
     return (
       <DatePickerComponent
         dateFormat={format}
         className="form-control"
-        onChange={this.onChange}
+        onChange={this.handleChange}
         selected={value}
         locale={locale}
         placeholderText={format}
