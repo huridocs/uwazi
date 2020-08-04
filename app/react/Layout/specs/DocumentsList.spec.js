@@ -7,8 +7,8 @@ import SortButtons from 'app/Library/components/SortButtons';
 import Footer from 'app/App/Footer';
 import { NeedAuthorization } from 'app/Auth';
 
+import { TilesViewer } from 'app/Layout/TilesViewer';
 import { DocumentsList } from '../DocumentsList';
-import { RowList } from '../Lists';
 
 describe('DocumentsList', () => {
   let component;
@@ -34,6 +34,7 @@ describe('DocumentsList', () => {
       searchDocuments: () => {},
       deleteConnection: () => {},
       location: { query: { q: '', pathname: 'library/' } },
+      selectedDocuments: {},
     };
   });
 
@@ -41,52 +42,6 @@ describe('DocumentsList', () => {
     component = shallow(<DocumentsList {...props} />);
     instance = component.instance();
   };
-
-  describe('List view', () => {
-    beforeEach(() => {
-      render();
-    });
-
-    it('should pass to RowList the zoom level passed to component', () => {
-      expect(component.find(RowList).props().zoomLevel).toBe(0);
-      props.rowListZoomLevel = 3;
-      render();
-      expect(component.find(RowList).props().zoomLevel).toBe(3);
-    });
-
-    it('should render a Doc element for each document, passing the search options', () => {
-      const docs = component.find(Doc);
-      expect(docs.length).toBe(2);
-      expect(
-        docs
-          .first()
-          .props()
-          .doc.get('title')
-      ).toBe('Document one');
-      expect(docs.first().props().searchParams).toEqual({ sort: 'sort' });
-      expect(docs.first().props().deleteConnection).toBe(props.deleteConnection);
-    });
-
-    it('should pass onClickSnippet to Doc', () => {
-      const docProps = component
-        .find(Doc)
-        .at(0)
-        .props();
-      expect(docProps.onSnippetClick).toBe(props.onSnippetClick);
-    });
-
-    describe('Clicking on a document', () => {
-      it('should call on props.clickOnDocument if present', () => {
-        component
-          .find(Doc)
-          .at(0)
-          .simulate('click', 'e', 'other args');
-        expect(props.clickOnDocument.apply.calls.mostRecent().args[0]).toBe(instance);
-        expect(props.clickOnDocument.apply.calls.mostRecent().args[1][0]).toBe('e');
-        expect(props.clickOnDocument.apply.calls.mostRecent().args[1][1]).toBe('other args');
-      });
-    });
-  });
 
   describe('Graph view', () => {
     beforeEach(() => {
@@ -158,6 +113,13 @@ describe('DocumentsList', () => {
         .parent()
         .is(NeedAuthorization)
     ).toBe(true);
+  });
+
+  it('should bind to the clickOnDocument', () => {
+    render();
+    const data = component.find(TilesViewer).props();
+    data.clickOnDocument();
+    expect(props.clickOnDocument.apply.calls.mostRecent().args[0]).toBe(instance);
   });
 
   describe('Load More button', () => {

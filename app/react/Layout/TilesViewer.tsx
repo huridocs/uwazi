@@ -2,7 +2,7 @@ import React from 'react';
 import Doc from 'app/Library/components/Doc';
 import { RowList } from './Lists';
 
-export interface DocumentViewerProps {
+export interface TilesViewerProps {
   rowListZoomLevel: number;
   documents: any;
   storeKey: 'library' | 'uploads';
@@ -12,7 +12,7 @@ export interface DocumentViewerProps {
   search: any;
 }
 
-export class TilesViewer extends React.Component<DocumentViewerProps> {
+export class TilesViewer extends React.Component<TilesViewerProps> {
   render() {
     return (
       <RowList zoomLevel={this.props.rowListZoomLevel}>
