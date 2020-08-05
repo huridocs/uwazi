@@ -12,6 +12,7 @@ describe('uiReducer', () => {
     selectedDocuments: [],
     filtersPanel: false,
     zoomLevel: 0,
+    tableViewColumns: Immutable.fromJS([]),
   });
 
   describe('when state is undefined', () => {

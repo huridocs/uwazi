@@ -27,8 +27,8 @@ describe('LibraryModeToggleButtons', () => {
       render();
     });
 
-    it('should render two links to the library and the map', () => {
-      expect(component.find(I18NLink).length).toBe(2);
+    it('should render three links to the library: list, table and map view', () => {
+      expect(component.find(I18NLink).length).toBe(3);
       expect(
         component
           .find(I18NLink)
@@ -39,6 +39,12 @@ describe('LibraryModeToggleButtons', () => {
         component
           .find(I18NLink)
           .at(1)
+          .props().to
+      ).toBe('library/table?q="asd"');
+      expect(
+        component
+          .find(I18NLink)
+          .at(2)
           .props().to
       ).toBe('library/map?q="asd"');
     });
@@ -63,10 +69,12 @@ describe('LibraryModeToggleButtons', () => {
     });
 
     describe('when showGeolocation is false', () => {
-      it('should not render buttons', () => {
+      it('should not render button map view button', () => {
         props.showGeolocation = false;
         render();
-        expect(component.find('div.list-view-mode-map').length).toBe(0);
+        const linksCount = component.find(I18NLink).length;
+        expect(linksCount).toBe(2);
+        expect(component.find({ to: 'library/map?q="asd"' }).length).toBe(0);
       });
     });
   });
@@ -78,7 +86,7 @@ describe('LibraryModeToggleButtons', () => {
         library: {
           search: {},
           filters: Immutable.fromJS({ properties: [] }),
-          ui: Immutable.fromJS({ zoomLevel: 1 }),
+          ui: Immutable.fromJS({ zoomLevel: 1, tableViewColumns: [] }),
           markers: Immutable.fromJS({ rows: [] }),
         },
         templates: Immutable.fromJS([{ properties: [{ type: 'geolocation' }] }]),
