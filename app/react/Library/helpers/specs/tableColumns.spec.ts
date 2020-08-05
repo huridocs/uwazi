@@ -74,4 +74,12 @@ describe('getTableColumns', () => {
     ).length;
     expect(countComplexTypes).toBe(0);
   });
+
+  it('should return the common properties with hidden false', () => {
+    const commonProperties = columns.filter(
+      (column: any) =>
+        ['title', 'creationDate', 'template'].includes(column.name) && column.hidden === false
+    ).length;
+    expect(commonProperties).toBe(3);
+  });
 });

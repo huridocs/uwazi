@@ -145,8 +145,8 @@ class DocumentsList extends Component {
                     documents,
                     storeKey: this.props.storeKey,
                     clickOnDocument: this.clickOnDocument,
-                    onSnippetClick: this.onSnippetClick,
-                    deleteConnection: this.deleteConnection,
+                    onSnippetClick: this.props.onSnippetClick,
+                    deleteConnection: this.props.deleteConnection,
                     search: this.props.search,
                   }}
                 />

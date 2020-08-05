@@ -353,7 +353,12 @@ describe('metadata formater', () => {
           [text, markdown, image, preview, media, geolocation, link, creationDate] = data.metadata;
           expect(text.sortedBy).toBe(false);
           expect(markdown.sortedBy).toBe(false);
-          assessBasicProperties(creationDate, ['Date added', 'creationDate', 'System', 'Jan 1, 1970']);
+          assessBasicProperties(creationDate, [
+            'Date added',
+            'creationDate',
+            'System',
+            'Jan 1, 1970',
+          ]);
           expect(creationDate.sortedBy).toBe(true);
         });
       });
