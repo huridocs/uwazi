@@ -113,7 +113,15 @@
     }
   }
 
-  .rw-dropdown-list {
-    width: 150px;
+  .hidden-columns-dropdown {
+    margin: 4px;
+
+    .rw-dropdown-list {
+      width: 177px;
+
+      .rw-input svg, li input {
+        margin-right: 7px;
+      }
+    }
   }
 }

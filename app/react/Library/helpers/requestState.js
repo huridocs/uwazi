@@ -7,7 +7,7 @@ import { getThesaurusPropertyNames } from 'shared/commonTopicClassification';
 import { wrapDispatch } from 'app/Multireducer';
 import { getTableColumns } from './tableColumns';
 import setReduxState from './setReduxState.js';
-import { SET_TABLE_VIEW_COLUMNS } from '../actions/actionTypes.js';
+import { setTableViewColumns } from '../actions/libraryActions';
 
 export function decodeQuery(params) {
   try {
@@ -82,10 +82,7 @@ export default function requestState(request, globalResources, calculateTableCol
       if (calculateTableColumns) {
         const tableViewColumns = getTableColumns(documents, templates);
         dispatchedActions.push(dispatch =>
-          wrapDispatch(
-            dispatch,
-            'library'
-          )({ type: SET_TABLE_VIEW_COLUMNS, columns: tableViewColumns })
+          wrapDispatch(dispatch, 'library')(setTableViewColumns(tableViewColumns))
         );
       }
       return dispatchedActions;

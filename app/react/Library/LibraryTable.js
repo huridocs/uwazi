@@ -48,7 +48,7 @@ export class LibraryTable extends RouteHandler {
   render() {
     return (
       <LibraryLayout>
-        <LibraryModeToggleButtons storeKey="library" zoomIn={this.zoomIn} zoomOut={this.zoomOut} />
+        <LibraryModeToggleButtons storeKey="library" showColumnSelector />
         <DocumentsList storeKey="library" CollectionViewer={TableViewer} />
       </LibraryLayout>
     );

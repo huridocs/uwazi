@@ -40,7 +40,7 @@ export function getTableColumns(documents: any, templates: TemplateSchema[]) {
     });
 
     columns = commonColumns
-      .map(c => Object.assign(c, { hidden: false }))
+      .map(c => Object.assign(c, { showInCard: true }))
       .concat(columnsFromTemplates(templatesToProcess));
   }
   return columns;
