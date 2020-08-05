@@ -125,20 +125,17 @@ export default function ui(state = initialState, action = {}) {
 
   if (action.type === types.SET_TABLE_VIEW_COLUMNS) {
     const columnsWithSelection = action.columns.map(column => {
-      const previousColumnStateIndex = state
+      const previousColumnState = state
         .get('tableViewColumns')
-        .findIndex(c => c.get('name') === column.name);
+        .find(c => c.get('name') === column.name);
 
-      if (isUndefined(column.hidden) || previousColumnStateIndex === -1) {
-        return Object.assign(column, { hidden: !(column.showInCard || false) });
-      }
+      const previousHidden =
+        previousColumnState && previousColumnState.has('hidden')
+          ? previousColumnState.get('hidden')
+          : column.hidden;
+      const hidden = previousHidden !== undefined ? previousHidden : !column.showInCard;
 
-      return Object.assign(column, {
-        hidden: state
-          .get('tableViewColumns')
-          .get(previousColumnStateIndex)
-          .get('hidden'),
-      });
+      return Object.assign(column, { hidden });
     });
 
     return state.set('tableViewColumns', Immutable.fromJS(columnsWithSelection));
@@ -146,7 +143,6 @@ export default function ui(state = initialState, action = {}) {
 
   if (action.type === types.SET_TABLE_VIEW_COLUMN_HIDDEN) {
     const index = state.get('tableViewColumns').findIndex(c => c.get('name') === action.name);
-
     return state.setIn(['tableViewColumns', index, 'hidden'], action.hidden);
   }
 
