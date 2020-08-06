@@ -80,13 +80,25 @@ function formatDocument(document: any, templates: TemplateSchema[], thesauris: T
   return formattedDoc;
 }
 
-function displayCell(document: any, column: any, index: number, firstColumnCheckbox: any, zoomLevel: number) {
+function displayCell(
+  document: any,
+  column: any,
+  index: number,
+  firstColumnCheckbox: any,
+  zoomLevel: number
+) {
   const property = document[column.get('name')];
   const cellValue = formatProperty(property);
 
-  
-  const otherColumn = (cellValue: any) => <div className={`table-view-cell table-view-row-zoom-${zoomLevel}`}>{cellValue}</div>;
-  const firstColumn = (cellValue: any) => <div>{firstColumnCheckbox(index)}{otherColumn(cellValue)}</div>;
+  const otherColumn = (value: any) => (
+    <div className={`table-view-cell table-view-row-zoom-${zoomLevel}`}>{value}</div>
+  );
+  const firstColumn = (value: any) => (
+    <div>
+      {firstColumnCheckbox(index)}
+      {otherColumn(value)}
+    </div>
+  );
 
   return (
     <td className={!index ? 'sticky-col' : ''} key={index}>
@@ -109,8 +121,10 @@ class TableRowComponent extends Component<TableRowProps> {
   }
 
   firstColumnCheckbox(index: number) {
-    return !index && (
-      <input type="checkbox" checked={this.props.selected} onClick={this.onClick.bind(this)} />
+    return (
+      !index && (
+        <input type="checkbox" checked={this.props.selected} onClick={this.onClick.bind(this)} />
+      )
     );
   }
 
@@ -124,7 +138,13 @@ class TableRowComponent extends Component<TableRowProps> {
     return (
       <tr className={this.props.selected ? 'selected' : ''}>
         {this.props.columns.map((column: any, index: number) =>
-          displayCell(formattedDocument, column, index, this.firstColumnCheckbox, this.props.zoomLevel)
+          displayCell(
+            formattedDocument,
+            column,
+            index,
+            this.firstColumnCheckbox,
+            this.props.zoomLevel
+          )
         )}
       </tr>
     );
