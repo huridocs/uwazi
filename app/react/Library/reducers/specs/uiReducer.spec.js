@@ -321,4 +321,28 @@ describe('uiReducer', () => {
       expect(selectableColumns.get(1).get('hidden')).toBe(false);
     });
   });
+
+  describe('SET_TABLE_VIEW_ALL_COLUMNS_HIDDEN', () => {
+    it('should update the hidden value of all columns', () => {
+      const initialColumnsState = Immutable.fromJS({
+        tableViewColumns: [
+          {
+            name: 'country',
+            showInCard: true,
+            hidden: false,
+          },
+          {
+            name: 'birth date',
+            hidden: true,
+          },
+        ],
+      });
+      const selectableColumns = uiReducer(initialColumnsState, {
+        type: types.SET_TABLE_VIEW_ALL_COLUMNS_HIDDEN,
+        hidden: false,
+      }).get('tableViewColumns');
+      expect(selectableColumns.get(0).get('hidden')).toBe(false);
+      expect(selectableColumns.get(1).get('hidden')).toBe(false);
+    });
+  });
 });

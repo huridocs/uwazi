@@ -1,7 +1,9 @@
 import Immutable from 'immutable';
 
+import { I18NLink } from 'app/I18N';
 import { renderConnected } from 'app/Templates/specs/utils/renderConnected';
 import { TableRow } from 'app/Library/components/TableRow';
+import MarkdownViewer from 'app/Markdown';
 
 describe('TableRow', () => {
   const formattedCreationDate = 'Jul 23, 2020';
@@ -27,16 +29,34 @@ describe('TableRow', () => {
     {
       label: 'Country',
       type: 'select',
-      showInCard: false,
       name: 'country',
       content: 'idThesauri1',
     },
     {
       label: 'Languages',
       type: 'multiselect',
-      showInCard: true,
       name: 'languages',
       content: 'idThesauri2',
+    },
+    {
+      label: 'Rich text',
+      type: 'markdown',
+      name: 'rich_text',
+    },
+    {
+      label: 'Relationship',
+      type: 'relationship',
+      name: 'relationship',
+    },
+    {
+      label: 'Link',
+      type: 'link',
+      name: 'link',
+    },
+    {
+      label: 'Geolocation',
+      type: 'geolocation',
+      name: 'geolocation_geolocation',
     },
   ]);
   function render() {
@@ -83,6 +103,26 @@ describe('TableRow', () => {
               name: 'languages',
               content: 'idThesauri2',
             },
+            {
+              label: 'Rich text',
+              type: 'markdown',
+              name: 'rich_text',
+            },
+            {
+              label: 'Relationship',
+              type: 'relationship',
+              name: 'relationship',
+            },
+            {
+              label: 'Link',
+              type: 'link',
+              name: 'link',
+            },
+            {
+              label: 'Geolocation',
+              type: 'geolocation',
+              name: 'geolocation_geolocation',
+            },
           ],
         },
         {
@@ -107,6 +147,31 @@ describe('TableRow', () => {
           { value: 'lv1', label: 'Español' },
           { value: 'lv2', label: 'English' },
         ],
+        rich_text: [{ value: '**bold**' }],
+        relationship: [
+          {
+            icon: null,
+            label: 'Entity1',
+            type: 'entity',
+            value: 'Entity1',
+          },
+        ],
+        link: [
+          {
+            value: {
+              label: 'google',
+              url: 'www.google.com',
+            },
+          },
+        ],
+        geolocation_geolocation: [
+          {
+            value: {
+              lon: 2,
+              lat: 46,
+            },
+          },
+        ],
       },
     });
     const props = {
@@ -116,32 +181,51 @@ describe('TableRow', () => {
 
     component = renderConnected(TableRow, props, storeState);
   }
-  describe('table header', () => {
+  describe('columns format', () => {
     render();
+    const renderedColumns = component.find('td');
     it('should render a column with the name of document', () => {
-      const cellDate = component.find('td').at(0);
-      expect(cellDate.props().children[1]).toBe('document1');
+      expect(renderedColumns.at(0).props().children[1]).toBe('document1');
     });
     it('should render a column with the creation date with ll format', () => {
-      const cellDate = component.find('td').at(1);
-      expect(cellDate.props().children[1]).toBe(formattedCreationDate);
+      expect(renderedColumns.at(1).props().children[1]).toBe(formattedCreationDate);
     });
-
     it('should render a column with the name of the template', () => {
-      const cellDate = component.find('td').at(2);
-      expect(cellDate.props().children[1]).toBe('Template1');
+      expect(renderedColumns.at(2).props().children[1]).toBe('Template1');
     });
     it('should render a column with a date property with ll format', () => {
-      const cellDate = component.find('td').at(3);
-      expect(cellDate.props().children[1]).toBe(formattedPropertyDate);
+      expect(renderedColumns.at(3).props().children[1]).toBe(formattedPropertyDate);
     });
     it('should render a column with the label of the thesaurus', () => {
-      const cellDate = component.find('td').at(4);
-      expect(cellDate.props().children[1]).toBe('Colombia');
+      expect(renderedColumns.at(4).props().children[1]).toBe('Colombia');
     });
     it('should render a column with the values as list of labels', () => {
-      const cellDate = component.find('td').at(5);
-      expect(cellDate.props().children[1]).toBe('English, Español');
+      expect(renderedColumns.at(5).props().children[1]).toBe('English, Español');
+    });
+    it('should render a column with rich text for markdown property', () => {
+      expect(
+        renderedColumns
+          .at(6)
+          .find(MarkdownViewer)
+          .props().markdown
+      ).toBe('**bold**');
+    });
+    it('should render a column with links to related entities', () => {
+      const links = renderedColumns.at(7).find(I18NLink);
+      expect(links.props().to).toBe('/entity/Entity1');
+    });
+    it('should render a column with a link', () => {
+      expect(
+        renderedColumns
+          .at(8)
+          .find(I18NLink)
+          .props().to
+      ).toBe('www.google.com');
+    });
+    it('should render a geolocation column', () => {
+      const geolocationProps = renderedColumns.at(9).props().children[1].props;
+      expect(geolocationProps.points).toEqual([{ lon: 2, lat: 46 }]);
+      expect(geolocationProps.onlyForCards).toBe(true);
     });
   });
 });

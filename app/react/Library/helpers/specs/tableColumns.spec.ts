@@ -75,10 +75,11 @@ describe('getTableColumns', () => {
     expect(countComplexTypes).toBe(0);
   });
 
-  it('should return the common properties with hidden false', () => {
+  it('should return the common properties with showInCard true', () => {
     const commonProperties = columns.filter(
       (column: any) =>
-        ['title', 'creationDate', 'template'].includes(column.name) && column.hidden === false
+        ['title', 'creationDate', 'templateName'].includes(column.name) &&
+        column.showInCard === true
     ).length;
     expect(commonProperties).toBe(3);
   });

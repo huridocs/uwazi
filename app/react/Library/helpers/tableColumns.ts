@@ -28,20 +28,14 @@ export function getTableColumns(documents: any, templates: TemplateSchema[]) {
       templateIds.find((id: ObjectIdSchema) => t._id === id)
     );
 
-    if (!templatesToProcess.length) {
-      return [];
+    if (templatesToProcess.length > 0) {
+      const commonColumns: any[] = templatesToProcess[0].commonProperties || [];
+      commonColumns.push({ label: 'Template', name: 'templateName', type: 'text' });
+
+      columns = commonColumns
+        .map(c => Object.assign(c, { showInCard: true }))
+        .concat(columnsFromTemplates(templatesToProcess));
     }
-
-    const commonColumns: any[] = templatesToProcess[0].commonProperties || [];
-    commonColumns.push({
-      label: 'Template',
-      name: 'templateName',
-      type: 'text',
-    });
-
-    columns = commonColumns
-      .map(c => Object.assign(c, { showInCard: true }))
-      .concat(columnsFromTemplates(templatesToProcess));
   }
   return columns;
 }
