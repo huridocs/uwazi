@@ -366,8 +366,8 @@ $c11: calc(9.09% - 15px);
   overflow: auto;
   margin: 0 -15px;
   margin-bottom: 15px;
-  height: 66vh;
-
+  max-height: 66vh;
+  
   .sticky-col {
     position: sticky;
     left: 0;
@@ -376,12 +376,8 @@ $c11: calc(9.09% - 15px);
   }
 
   th {
-    min-width: 50px;
-    width: 332px;
-    max-width: 332px;
     position: sticky;
     top: 0;
-    white-space: nowrap; 
 
     background-color: white;
     box-shadow: 2px 4px 4px rgba(0, 0, 0, 0.07);
@@ -396,13 +392,6 @@ $c11: calc(9.09% - 15px);
   }
 
   td {
-    min-width: 50px;
-    width: 332px;
-    max-width: 332px;
-
-    overflow: hidden; 
-    white-space: nowrap; 
-    text-overflow: ellipsis;
 
     padding: 8px 16px;
 
@@ -412,6 +401,42 @@ $c11: calc(9.09% - 15px);
       margin-right: 8px;
     }
   }
+
+  td:first-child > div {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+  }
+
+  td:first-child input {
+    margin-top: 0;
+    margin-right: 8px;
+  }
+
+  .table-view-cell {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    min-width: 50px;
+    width: max-content;
+    max-width: 332px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    -webkit-line-clamp: 1;
+    flex: 1;
+
+    &.table-view-row-zoom-0 {
+      -webkit-line-clamp: 1;
+    }
+
+    &.table-view-row-zoom-1 {
+      -webkit-line-clamp: 2;
+    }
+
+    &.table-view-row-zoom-2 {
+      -webkit-line-clamp: 3;
+    }
+  }
+
 
   th, td {
     border-right: 1px solid #e0e0e0;
