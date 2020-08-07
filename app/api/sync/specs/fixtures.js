@@ -86,7 +86,7 @@ const file5 = db.id();
 export default {
   syncs: [
     {
-      lastSync: 10000,
+      lastSync: 8999,
     },
   ],
 
