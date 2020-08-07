@@ -3,9 +3,11 @@ import { actions } from 'app/BasicReducer';
 import { enterLibrary, unsetDocuments, zoomIn, zoomOut } from 'app/Library/actions/libraryActions';
 import DocumentsList from 'app/Library/components/DocumentsList';
 import LibraryModeToggleButtons from 'app/Library/components/LibraryModeToggleButtons';
+import SearchButton from 'app/Library/components/SearchButton';
 import requestState from 'app/Library/helpers/requestState';
 import LibraryLayout from 'app/Library/LibraryLayout';
 import { wrapDispatch } from 'app/Multireducer';
+import ImportProgress from 'app/Uploads/components/ImportProgress';
 import React from 'react';
 import { TableViewer } from 'app/Layout/TableViewer';
 
@@ -13,6 +15,17 @@ export class LibraryTable extends RouteHandler {
   constructor(props, context) {
     super(props, context);
     this.superComponentWillReceiveProps = super.componentWillReceiveProps;
+  }
+
+  static renderTools() {
+    return (
+      <React.Fragment>
+        <div className="searchBox">
+          <SearchButton storeKey="library" />
+        </div>
+        <ImportProgress />
+      </React.Fragment>
+    );
   }
 
   static async requestState(requestParams, globalResources) {

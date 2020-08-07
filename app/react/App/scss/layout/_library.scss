@@ -359,6 +359,13 @@ $c11: calc(9.09% - 15px);
   &-5 .zoom-in {
     @include disableButton();
   }
+
+  &-0.table-view-mode .zoom-out {
+    @include disableButton();
+  }
+  &-2.table-view-mode .zoom-in {
+    @include disableButton();
+  }
 }
 
 .tableview-wrapper {
@@ -369,10 +376,13 @@ $c11: calc(9.09% - 15px);
   max-height: 66vh;
 
   .sticky-col {
-    position: sticky;
-    left: 0;
     z-index: 1;
     box-shadow: 2px 4px 4px rgba(0, 0, 0, 0.07);
+
+    @media (min-width: 871px) {
+      position: sticky;
+      left: 0;
+    }
   }
 
   th {

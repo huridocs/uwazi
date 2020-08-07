@@ -27,18 +27,20 @@ export class LibraryModeToggleButtons extends Component {
           <HideColumnsDropdown className="table-view-column-selector" storeKey={storeKey} />
         )}
 
-        {zoomIn && zoomOut && (
-          <div className={`list-view-mode-zoom list-view-buttons-zoom-${zoomLevel} buttons-group`}>
-            <button className="btn btn-default zoom-out" onClick={zoomOut} type="button">
-              <Icon icon="search-minus" />
-              <span className="tab-link-tooltip">{t('System', 'Zoom out')}</span>
-            </button>
-            <button className="btn btn-default zoom-in" onClick={zoomIn} type="button">
-              <Icon icon="search-plus" />
-              <span className="tab-link-tooltip">{t('System', 'Zoom in')}</span>
-            </button>
-          </div>
-        )}
+        <div
+          className={`list-view-mode-zoom list-view-buttons-zoom-${zoomLevel} buttons-group ${
+            showColumnSelector ? 'table-view-mode' : ''
+          }`}
+        >
+          <button className="btn btn-default zoom-out" onClick={zoomOut} type="button">
+            <Icon icon="search-minus" />
+            <span className="tab-link-tooltip">{t('System', 'Zoom out')}</span>
+          </button>
+          <button className="btn btn-default zoom-in" onClick={zoomIn} type="button">
+            <Icon icon="search-plus" />
+            <span className="tab-link-tooltip">{t('System', 'Zoom in')}</span>
+          </button>
+        </div>
 
         <div className="list-view-mode-map buttons-group">
           <I18NLink
