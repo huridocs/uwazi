@@ -5,7 +5,7 @@ import { I18NLink, t } from 'app/I18N';
 import { Icon } from 'UI';
 import { processFilters, encodeSearch } from 'app/Library/actions/libraryActions';
 import { helper as mapHelper } from 'app/Map';
-import { HideColumnsDropdown } from './HiddenColumnsDropdown';
+import { HiddenColumnsDropdown } from './HiddenColumnsDropdown';
 
 export class LibraryModeToggleButtons extends Component {
   render() {
@@ -24,7 +24,7 @@ export class LibraryModeToggleButtons extends Component {
     return (
       <div className="list-view-mode">
         {showColumnSelector && (
-          <HideColumnsDropdown className="table-view-column-selector" storeKey={storeKey} />
+          <HiddenColumnsDropdown className="table-view-column-selector" storeKey={storeKey} />
         )}
 
         {zoomIn && zoomOut && (

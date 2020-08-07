@@ -3,6 +3,7 @@ import { shallow } from 'enzyme';
 import Immutable from 'immutable';
 import { I18NLink } from 'app/I18N';
 
+import { HiddenColumnsDropdown } from 'app/Library/components/HiddenColumnsDropdown';
 import { LibraryModeToggleButtons, mapStateToProps } from '../LibraryModeToggleButtons';
 
 describe('LibraryModeToggleButtons', () => {
@@ -10,20 +11,22 @@ describe('LibraryModeToggleButtons', () => {
   let props;
   let state;
 
+  const defaultProps = {
+    searchUrl: '?q="asd"',
+    showGeolocation: true,
+    zoomIn: jasmine.createSpy('zoomIn'),
+    zoomOut: jasmine.createSpy('zoomOut'),
+    zoomLevel: 3,
+    numberOfMarkers: 23,
+  };
+
   const render = () => {
     component = shallow(<LibraryModeToggleButtons {...props} />);
   };
 
   describe('render()', () => {
     beforeEach(() => {
-      props = {
-        searchUrl: '?q="asd"',
-        showGeolocation: true,
-        zoomIn: jasmine.createSpy('zoomIn'),
-        zoomOut: jasmine.createSpy('zoomOut'),
-        zoomLevel: 3,
-        numberOfMarkers: 23,
-      };
+      props = defaultProps;
       render();
     });
 
@@ -79,6 +82,26 @@ describe('LibraryModeToggleButtons', () => {
     });
   });
 
+  describe('when showColumnSelector is true', () => {
+    it('should render HideColumnsDropdown dropdown list with the storeKey', () => {
+      props = defaultProps;
+      props.showColumnSelector = true;
+      props.storeKey = 'library';
+      render();
+      const hideColumnsDropdownCount = component.find(HiddenColumnsDropdown);
+      expect(hideColumnsDropdownCount.props().storeKey).toBe('library');
+    });
+  });
+  describe('when showColumnSelector is false', () => {
+    it('should not render HideColumnsDropdown', () => {
+      props = defaultProps;
+      props.showColumnSelector = false;
+      render();
+      const hideColumnsDropdownCount = component.find(HiddenColumnsDropdown).length;
+      expect(hideColumnsDropdownCount).toBe(0);
+    });
+  });
+
   describe('mapStateToProps()', () => {
     beforeEach(() => {
       props = { storeKey: 'library' };
@@ -88,6 +111,7 @@ describe('LibraryModeToggleButtons', () => {
           filters: Immutable.fromJS({ properties: [] }),
           ui: Immutable.fromJS({ zoomLevel: 1, tableViewColumns: [] }),
           markers: Immutable.fromJS({ rows: [] }),
+          storeKey: 'library',
         },
         templates: Immutable.fromJS([{ properties: [{ type: 'geolocation' }] }]),
       };
