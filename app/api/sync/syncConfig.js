@@ -70,8 +70,6 @@ const getApprovedRelationtypes = async config => {
   return relationtypesConfig.concat(validTemplateRelationtypes);
 };
 
-const oneSecond = 1000;
-
 export default async config => {
   const [{ lastSync }] = await syncsModel.find();
 
@@ -84,7 +82,7 @@ export default async config => {
       return updateLog.find(
         {
           timestamp: {
-            $gte: lastSync - oneSecond,
+            $gt: lastSync,
           },
           namespace: {
             $in: getApprovedCollections(this.config),
