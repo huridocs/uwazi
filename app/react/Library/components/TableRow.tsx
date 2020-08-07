@@ -17,6 +17,7 @@ interface TableRowProps {
   onClick: any;
   templates: any;
   thesauris: any;
+  zoomLevel: number;
 }
 
 function getLink(url: string, label: string) {
@@ -50,10 +51,10 @@ function formatProperty(prop: any) {
       break;
     case 'relationship':
       result = prop.value.map((p: any, index: number) => (
-        <span>
+        <React.Fragment>
           {index > 0 && ', '}
           {getLink(p.url, p.value)}
-        </span>
+        </React.Fragment>
       ));
       break;
     case 'geolocation':
@@ -79,13 +80,29 @@ function formatDocument(document: any, templates: TemplateSchema[], thesauris: T
   return formattedDoc;
 }
 
-function displayCell(document: any, column: any, index: number, firstColumnCheckbox: any) {
+function displayCell(
+  document: any,
+  column: any,
+  index: number,
+  firstColumnCheckbox: any,
+  zoomLevel: number
+) {
   const property = document[column.get('name')];
   const cellValue = formatProperty(property);
+
+  const otherColumn = (value: any) => (
+    <div className={`table-view-cell table-view-row-zoom-${zoomLevel}`}>{value}</div>
+  );
+  const firstColumn = (value: any) => (
+    <div>
+      {firstColumnCheckbox(index)}
+      {otherColumn(value)}
+    </div>
+  );
+
   return (
     <td className={!index ? 'sticky-col' : ''} key={index}>
-      {firstColumnCheckbox(index)}
-      {cellValue}
+      {!index ? firstColumn(cellValue) : otherColumn(cellValue)}
     </td>
   );
 }
@@ -94,12 +111,21 @@ class TableRowComponent extends Component<TableRowProps> {
   constructor(props: TableRowProps) {
     super(props);
     this.onClick = this.onClick.bind(this);
+    this.firstColumnCheckbox = this.firstColumnCheckbox.bind(this);
   }
 
   onClick(e: { preventDefault: () => void }) {
-    if (this.props.onClick && !window.getSelection()?.toString()) {
+    if (this.props.onClick) {
       this.props.onClick(e, this.props.document, this.props.selected);
     }
+  }
+
+  firstColumnCheckbox(index: number) {
+    return (
+      !index && (
+        <input type="checkbox" checked={this.props.selected} onClick={this.onClick.bind(this)} />
+      )
+    );
   }
 
   render() {
@@ -109,15 +135,16 @@ class TableRowComponent extends Component<TableRowProps> {
       this.props.thesauris
     );
 
-    const firstColumnCheckbox = (index: number) =>
-      !index && (
-        <input type="checkbox" checked={this.props.selected} onClick={this.onClick.bind(this)} />
-      );
-
     return (
       <tr className={this.props.selected ? 'selected' : ''}>
         {this.props.columns.map((column: any, index: number) =>
-          displayCell(formattedDocument, column, index, firstColumnCheckbox)
+          displayCell(
+            formattedDocument,
+            column,
+            index,
+            this.firstColumnCheckbox,
+            this.props.zoomLevel
+          )
         )}
       </tr>
     );

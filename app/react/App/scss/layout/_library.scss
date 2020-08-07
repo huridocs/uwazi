@@ -16,301 +16,301 @@ $c11: calc(9.09% - 15px);
 
 .item {
   .item-group-zoom--5 & {
-    @media(min-width: 600px) {
+    @media (min-width: 600px) {
       width: $c7;
     }
-    @media(min-width: 872px) {
+    @media (min-width: 872px) {
       width: $c8;
     }
-    @media(min-width: 1024px) {
+    @media (min-width: 1024px) {
       width: $c7;
     }
-    @media(min-width: 1280px) {
+    @media (min-width: 1280px) {
       width: $c8;
     }
-    @media(min-width: 1560px) {
+    @media (min-width: 1560px) {
       width: $c9;
     }
-    @media(min-width: 1850px) {
+    @media (min-width: 1850px) {
       width: $c10;
     }
-    @media(min-width: 2120px) {
+    @media (min-width: 2120px) {
       width: $c11;
     }
   }
 
   .item-group-zoom--4 & {
-    @media(min-width: 600px) {
+    @media (min-width: 600px) {
       width: $c6;
     }
-    @media(min-width: 872px) {
+    @media (min-width: 872px) {
       width: $c7;
     }
-    @media(min-width: 1024px) {
+    @media (min-width: 1024px) {
       width: $c6;
     }
-    @media(min-width: 1280px) {
+    @media (min-width: 1280px) {
       width: $c7;
     }
-    @media(min-width: 1560px) {
+    @media (min-width: 1560px) {
       width: $c8;
     }
-    @media(min-width: 1850px) {
+    @media (min-width: 1850px) {
       width: $c9;
     }
-    @media(min-width: 2120px) {
+    @media (min-width: 2120px) {
       width: $c10;
     }
   }
 
   .item-group-zoom--3 & {
-    @media(min-width: 600px) {
+    @media (min-width: 600px) {
       width: $c5;
     }
-    @media(min-width: 872px) {
+    @media (min-width: 872px) {
       width: $c6;
     }
-    @media(min-width: 1024px) {
+    @media (min-width: 1024px) {
       width: $c5;
     }
-    @media(min-width: 1280px) {
+    @media (min-width: 1280px) {
       width: $c6;
     }
-    @media(min-width: 1560px) {
+    @media (min-width: 1560px) {
       width: $c7;
     }
-    @media(min-width: 1850px) {
+    @media (min-width: 1850px) {
       width: $c8;
     }
-    @media(min-width: 2120px) {
+    @media (min-width: 2120px) {
       width: $c9;
     }
   }
 
   .item-group-zoom--2 & {
-    @media(min-width: 600px) {
+    @media (min-width: 600px) {
       width: $c4;
     }
-    @media(min-width: 872px) {
+    @media (min-width: 872px) {
       width: $c5;
     }
-    @media(min-width: 1024px) {
+    @media (min-width: 1024px) {
       width: $c4;
     }
-    @media(min-width: 1280px) {
+    @media (min-width: 1280px) {
       width: $c5;
     }
-    @media(min-width: 1560px) {
+    @media (min-width: 1560px) {
       width: $c6;
     }
-    @media(min-width: 1850px) {
+    @media (min-width: 1850px) {
       width: $c7;
     }
-    @media(min-width: 2120px) {
+    @media (min-width: 2120px) {
       width: $c8;
     }
   }
 
   .item-group-zoom--1 & {
-    @media(min-width: 600px) {
+    @media (min-width: 600px) {
       width: $c3;
       .item-metadata dl.metadata-type-multimedia dd img {
-        max-height: $c3ImgMaxHeight
+        max-height: $c3ImgMaxHeight;
       }
     }
-    @media(min-width: 872px) {
+    @media (min-width: 872px) {
       width: $c4;
       .item-metadata dl.metadata-type-multimedia dd img {
-        max-height: $ImgMaxHeight
+        max-height: $ImgMaxHeight;
       }
     }
-    @media(min-width: 1024px) {
+    @media (min-width: 1024px) {
       width: $c3;
       .item-metadata dl.metadata-type-multimedia dd img {
-        max-height: $c3ImgMaxHeight
+        max-height: $c3ImgMaxHeight;
       }
     }
-    @media(min-width: 1280px) {
+    @media (min-width: 1280px) {
       width: $c4;
       .item-metadata dl.metadata-type-multimedia dd img {
-        max-height: $ImgMaxHeight
+        max-height: $ImgMaxHeight;
       }
     }
-    @media(min-width: 1560px) {
+    @media (min-width: 1560px) {
       width: $c5;
       .item-metadata dl.metadata-type-multimedia dd img {
-        max-height: $ImgMaxHeight
+        max-height: $ImgMaxHeight;
       }
     }
-    @media(min-width: 1850px) {
+    @media (min-width: 1850px) {
       width: $c6;
       .item-metadata dl.metadata-type-multimedia dd img {
-        max-height: $ImgMaxHeight
+        max-height: $ImgMaxHeight;
       }
     }
-    @media(min-width: 2120px) {
+    @media (min-width: 2120px) {
       width: $c7;
       .item-metadata dl.metadata-type-multimedia dd img {
-        max-height: $ImgMaxHeight
+        max-height: $ImgMaxHeight;
       }
     }
   }
 
   .item-group-zoom-0 & {
-    @media(min-width: 600px) {
+    @media (min-width: 600px) {
       width: $c2;
       .item-metadata dl.metadata-type-multimedia dd img {
-        max-height: $c2ImgMaxHeight
+        max-height: $c2ImgMaxHeight;
       }
     }
-    @media(min-width: 872px) {
+    @media (min-width: 872px) {
       width: $c3;
       .item-metadata dl.metadata-type-multimedia dd img {
-        max-height: $c3ImgMaxHeight
+        max-height: $c3ImgMaxHeight;
       }
     }
-    @media(min-width: 1024px) {
+    @media (min-width: 1024px) {
       width: $c2;
       .item-metadata dl.metadata-type-multimedia dd img {
-        max-height: $c2ImgMaxHeight
+        max-height: $c2ImgMaxHeight;
       }
     }
-    @media(min-width: 1280px) {
+    @media (min-width: 1280px) {
       width: $c3;
       .item-metadata dl.metadata-type-multimedia dd img {
-        max-height: $c3ImgMaxHeight
+        max-height: $c3ImgMaxHeight;
       }
     }
-    @media(min-width: 1560px) {
+    @media (min-width: 1560px) {
       width: $c4;
       .item-metadata dl.metadata-type-multimedia dd img {
-        max-height: $ImgMaxHeight
+        max-height: $ImgMaxHeight;
       }
     }
-    @media(min-width: 1850px) {
+    @media (min-width: 1850px) {
       width: $c5;
       .item-metadata dl.metadata-type-multimedia dd img {
-        max-height: $ImgMaxHeight
+        max-height: $ImgMaxHeight;
       }
     }
-    @media(min-width: 2120px) {
+    @media (min-width: 2120px) {
       width: $c6;
       .item-metadata dl.metadata-type-multimedia dd img {
-        max-height: $ImgMaxHeight
+        max-height: $ImgMaxHeight;
       }
     }
   }
 
   .item-group-zoom-1 & {
-    @media(min-width: 600px) {
+    @media (min-width: 600px) {
       width: $c1;
       .item-metadata dl.metadata-type-multimedia dd img {
-        max-height: $c1ImgMaxHeight
+        max-height: $c1ImgMaxHeight;
       }
     }
-    @media(min-width: 872px) {
+    @media (min-width: 872px) {
       width: $c2;
       .item-metadata dl.metadata-type-multimedia dd img {
-        max-height: $c2ImgMaxHeight
+        max-height: $c2ImgMaxHeight;
       }
     }
-    @media(min-width: 1024px) {
+    @media (min-width: 1024px) {
       width: $c1;
       .item-metadata dl.metadata-type-multimedia dd img {
-        max-height: $c1ImgMaxHeight
+        max-height: $c1ImgMaxHeight;
       }
     }
-    @media(min-width: 1280px) {
+    @media (min-width: 1280px) {
       width: $c2;
       .item-metadata dl.metadata-type-multimedia dd img {
-        max-height: $c2ImgMaxHeight
+        max-height: $c2ImgMaxHeight;
       }
     }
-    @media(min-width: 1560px) {
+    @media (min-width: 1560px) {
       width: $c3;
       .item-metadata dl.metadata-type-multimedia dd img {
-        max-height: $c3ImgMaxHeight
+        max-height: $c3ImgMaxHeight;
       }
     }
-    @media(min-width: 1850px) {
+    @media (min-width: 1850px) {
       width: $c4;
       .item-metadata dl.metadata-type-multimedia dd img {
-        max-height: $ImgMaxHeight
+        max-height: $ImgMaxHeight;
       }
     }
-    @media(min-width: 2120px) {
+    @media (min-width: 2120px) {
       width: $c5;
       .item-metadata dl.metadata-type-multimedia dd img {
-        max-height: $ImgMaxHeight
+        max-height: $ImgMaxHeight;
       }
     }
   }
 
   .item-group-zoom-2 & {
-    @media(min-width: 600px) {
+    @media (min-width: 600px) {
       width: $c1;
       .item-metadata dl.metadata-type-multimedia dd img {
-        max-height: $c1ImgMaxHeight
+        max-height: $c1ImgMaxHeight;
       }
     }
-    @media(min-width: 1560px) {
+    @media (min-width: 1560px) {
       width: $c2;
       .item-metadata dl.metadata-type-multimedia dd img {
-        max-height: $c2ImgMaxHeight
+        max-height: $c2ImgMaxHeight;
       }
     }
-    @media(min-width: 1850px) {
+    @media (min-width: 1850px) {
       width: $c3;
       .item-metadata dl.metadata-type-multimedia dd img {
-        max-height: $c3ImgMaxHeight
+        max-height: $c3ImgMaxHeight;
       }
     }
-    @media(min-width: 2120px) {
+    @media (min-width: 2120px) {
       width: $c4;
       .item-metadata dl.metadata-type-multimedia dd img {
-        max-height: $ImgMaxHeight
+        max-height: $ImgMaxHeight;
       }
     }
   }
 
   .item-group-zoom-3 & {
-    @media(min-width: 600px) {
+    @media (min-width: 600px) {
       width: $c1;
       .item-metadata dl.metadata-type-multimedia dd img {
-        max-height: $c1ImgMaxHeight
+        max-height: $c1ImgMaxHeight;
       }
     }
-    @media(min-width: 1850px) {
+    @media (min-width: 1850px) {
       width: $c2;
       .item-metadata dl.metadata-type-multimedia dd img {
-        max-height: $c2ImgMaxHeight
+        max-height: $c2ImgMaxHeight;
       }
     }
-    @media(min-width: 2120px) {
+    @media (min-width: 2120px) {
       width: $c3;
       .item-metadata dl.metadata-type-multimedia dd img {
-        max-height: $c3ImgMaxHeight
+        max-height: $c3ImgMaxHeight;
       }
     }
   }
   .item-group-zoom-4 & {
-    @media(min-width: 600px) {
+    @media (min-width: 600px) {
       width: $c1;
       .item-metadata dl.metadata-type-multimedia dd img {
-        max-height: $c1ImgMaxHeight
+        max-height: $c1ImgMaxHeight;
       }
     }
-    @media(min-width: 2120px) {
+    @media (min-width: 2120px) {
       width: $c2;
       .item-metadata dl.metadata-type-multimedia dd img {
-        max-height: $c2ImgMaxHeight
+        max-height: $c2ImgMaxHeight;
       }
     }
   }
   .item-group-zoom-5 & {
     width: $c1;
     .item-metadata dl.metadata-type-multimedia dd img {
-      max-height: $c1ImgMaxHeight
+      max-height: $c1ImgMaxHeight;
     }
   }
 }
@@ -318,12 +318,12 @@ $c11: calc(9.09% - 15px);
 .page-viewer .item-group-zoom-0 .item {
   width: $c3;
   .item-metadata dl.metadata-type-multimedia dd img {
-    max-height: $ImgMaxHeight
+    max-height: $ImgMaxHeight;
   }
 }
 
 @mixin disableButton() {
-  opacity: .3;
+  opacity: 0.3;
   pointer-events: none;
 }
 
@@ -332,27 +332,27 @@ $c11: calc(9.09% - 15px);
     @include disableButton();
   }
   &-1 .zoom-in {
-    @media(max-width: 871px) {
+    @media (max-width: 871px) {
       @include disableButton();
     }
   }
   &-1 .zoom-in {
-    @media(min-width:1024px) and (max-width: 1279px) {
+    @media (min-width: 1024px) and (max-width: 1279px) {
       @include disableButton();
     }
   }
   &-2 .zoom-in {
-    @media(max-width: 1559px) {
+    @media (max-width: 1559px) {
       @include disableButton();
     }
   }
   &-3 .zoom-in {
-    @media(max-width: 1849px) {
+    @media (max-width: 1849px) {
       @include disableButton();
     }
   }
   &-4 .zoom-in {
-    @media(max-width: 2119px) {
+    @media (max-width: 2119px) {
       @include disableButton();
     }
   }
@@ -366,7 +366,7 @@ $c11: calc(9.09% - 15px);
   overflow: auto;
   margin: 0 -15px;
   margin-bottom: 15px;
-  height: 66vh;
+  max-height: 66vh;
 
   .sticky-col {
     position: sticky;
@@ -376,12 +376,8 @@ $c11: calc(9.09% - 15px);
   }
 
   th {
-    min-width: 50px;
-    width: 332px;
-    max-width: 332px;
     position: sticky;
     top: 0;
-    white-space: nowrap; 
 
     background-color: white;
     box-shadow: 2px 4px 4px rgba(0, 0, 0, 0.07);
@@ -396,14 +392,6 @@ $c11: calc(9.09% - 15px);
   }
 
   td {
-    min-width: 50px;
-    width: 332px;
-    max-width: 332px;
-
-    overflow: hidden; 
-    white-space: nowrap; 
-    text-overflow: ellipsis;
-
     padding: 8px 16px;
 
     border-bottom: 2px solid #e0e0e0;
@@ -413,7 +401,43 @@ $c11: calc(9.09% - 15px);
     }
   }
 
-  th, td {
+  td:first-child > div {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+  }
+
+  td:first-child input {
+    margin-top: 0;
+    margin-right: 8px;
+  }
+
+  .table-view-cell {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    min-width: 50px;
+    width: max-content;
+    max-width: 332px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    -webkit-line-clamp: 1;
+    flex: 1;
+
+    &.table-view-row-zoom-0 {
+      -webkit-line-clamp: 1;
+    }
+
+    &.table-view-row-zoom-1 {
+      -webkit-line-clamp: 2;
+    }
+
+    &.table-view-row-zoom-2 {
+      -webkit-line-clamp: 3;
+    }
+  }
+
+  th,
+  td {
     border-right: 1px solid #e0e0e0;
   }
 
@@ -427,7 +451,7 @@ $c11: calc(9.09% - 15px);
     }
 
     &:nth-child(odd) > td {
-      background-color: #F5F5F5;
+      background-color: #f5f5f5;
     }
 
     &:hover > td {
