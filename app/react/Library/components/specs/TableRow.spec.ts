@@ -1,3 +1,6 @@
+/**
+ * @jest-environment jsdom
+ */
 import Immutable from 'immutable';
 
 import { I18NLink } from 'app/I18N';
@@ -9,7 +12,9 @@ describe('TableRow', () => {
   const formattedCreationDate = 'Jul 23, 2020';
   const formattedPropertyDate = 'May 20, 2019';
   let component: any;
-  const columns = Immutable.fromJS([
+  let instance: any;
+  let document: any;
+  const commonColumns = [
     {
       label: 'Titulo',
       type: 'text',
@@ -25,6 +30,8 @@ describe('TableRow', () => {
       type: 'text',
       name: 'templateName',
     },
+  ];
+  const templateColumns = [
     { label: 'Date', type: 'date', filter: true, name: 'date' },
     {
       label: 'Country',
@@ -58,13 +65,26 @@ describe('TableRow', () => {
       type: 'geolocation',
       name: 'geolocation_geolocation',
     },
-  ]);
+    {
+      label: 'Text',
+      type: 'text',
+      name: 'text',
+    },
+    {
+      label: 'Image',
+      type: 'image',
+      name: 'image',
+    },
+  ];
+  const onClickSpy = jasmine.createSpy('onClick');
+
   function render() {
     const timestampCreation = Date.parse(formattedCreationDate).valueOf();
     const timestampProperty = Math.floor(Date.parse(formattedPropertyDate).valueOf() / 1000);
     const storeState = {
       user: Immutable.fromJS({ _id: 'batId' }),
-      library: { ui: {} },
+      library: { ui: Immutable.fromJS({ selectedDocuments: [{ _id: 'selectedDocument1' }] }) },
+      onClick: onClickSpy,
       thesauris: Immutable.fromJS([
         {
           _id: 'idThesauri1',
@@ -87,43 +107,7 @@ describe('TableRow', () => {
         {
           _id: 'idTemplate1',
           name: 'Template1',
-          properties: [
-            { label: 'Date', type: 'date', filter: true, name: 'date' },
-            {
-              label: 'Country',
-              type: 'select',
-              showInCard: false,
-              name: 'country',
-              content: 'idThesauri1',
-            },
-            {
-              label: 'Languages',
-              type: 'multiselect',
-              showInCard: false,
-              name: 'languages',
-              content: 'idThesauri2',
-            },
-            {
-              label: 'Rich text',
-              type: 'markdown',
-              name: 'rich_text',
-            },
-            {
-              label: 'Relationship',
-              type: 'relationship',
-              name: 'relationship',
-            },
-            {
-              label: 'Link',
-              type: 'link',
-              name: 'link',
-            },
-            {
-              label: 'Geolocation',
-              type: 'geolocation',
-              name: 'geolocation_geolocation',
-            },
-          ],
+          properties: templateColumns,
         },
         {
           _id: 'idTemplate2',
@@ -132,7 +116,8 @@ describe('TableRow', () => {
         },
       ]),
     };
-    const document = Immutable.fromJS({
+    document = Immutable.fromJS({
+      _id: 'selectedDocument1',
       title: 'document1',
       creationDate: timestampCreation,
       template: 'idTemplate1',
@@ -150,10 +135,14 @@ describe('TableRow', () => {
         rich_text: [{ value: '**bold**' }],
         relationship: [
           {
-            icon: null,
             label: 'Entity1',
             type: 'entity',
             value: 'Entity1',
+          },
+          {
+            label: 'Entity2',
+            type: 'entity',
+            value: 'Entity2',
           },
         ],
         link: [
@@ -172,14 +161,25 @@ describe('TableRow', () => {
             },
           },
         ],
+        text: [
+          {
+            value: 'plain text',
+          },
+        ],
+        image: [
+          {
+            value: 'url',
+          },
+        ],
       },
     });
     const props = {
       document,
-      columns,
+      columns: Immutable.fromJS(commonColumns.concat(templateColumns)),
+      storeKey: 'library',
     };
-
     component = renderConnected(TableRow, props, storeState);
+    instance = component.instance();
   }
   describe('columns format', () => {
     render();
@@ -210,9 +210,10 @@ describe('TableRow', () => {
           .props().markdown
       ).toBe('**bold**');
     });
-    it('should render a column with links to related entities', () => {
+    it('should render a column with links to related entities separated by comma', () => {
       const links = renderedColumns.at(7).find(I18NLink);
-      expect(links.props().to).toBe('/entity/Entity1');
+      expect(renderedColumns.at(7).text()).toBe('<Connect(I18NLink) />, <Connect(I18NLink) />');
+      expect(links.at(0).props().to).toBe('/entity/Entity1');
     });
     it('should render a column with a link', () => {
       expect(
@@ -226,6 +227,19 @@ describe('TableRow', () => {
       const geolocationProps = renderedColumns.at(9).props().children[1].props;
       expect(geolocationProps.points).toEqual([{ lon: 2, lat: 46 }]);
       expect(geolocationProps.onlyForCards).toBe(true);
+    });
+    it('should render a text column', () => {
+      expect(renderedColumns.at(10).props().children[1]).toEqual('plain text');
+    });
+    it('should not render if the type is not supported', () => {
+      expect(renderedColumns.at(11).props().children[1]).toEqual(undefined);
+    });
+  });
+  describe('onClick', () => {
+    it('should call props.onClick with the event', () => {
+      window.getSelection = jasmine.createSpy('getSelection');
+      instance.onClick({});
+      expect(onClickSpy).toHaveBeenCalledWith({}, document, true);
     });
   });
 });
