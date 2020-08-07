@@ -121,7 +121,7 @@ const mapDispatchToProps = (dispatch, props) =>
     wrapDispatch(dispatch, props.storeKey)
   );
 
-export const HideColumnsDropdown = connect(
+export const HiddenColumnsDropdown = connect(
   mapStateToProps,
   mapDispatchToProps
 )(HideColumnsComponent);

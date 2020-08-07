@@ -490,11 +490,19 @@ describe('syncWorker', () => {
       });
     });
 
-    it('should process the log records newer than the current sync time (minus 1 sec)', async () => {
+    it('should process the log records newer than the last synced entity', async () => {
       await syncAllTemplates();
 
       expect(request.post.calls.count()).toBe(13);
       expect(request.delete.calls.count()).toBe(3);
+
+      request.post.calls.reset();
+      request.delete.calls.reset();
+
+      await syncAllTemplates();
+
+      expect(request.post.calls.count()).toBe(0);
+      expect(request.delete.calls.count()).toBe(0);
     });
 
     it('should update lastSync timestamp with the last change', async () => {

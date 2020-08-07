@@ -33,7 +33,7 @@ function formatProperty(prop: any) {
   if (!result) {
     return typeof prop === 'string' ? prop : undefined;
   }
-  if (['date', 'daterange', 'numeric', 'select', undefined].includes(prop.type)) {
+  if (['date', 'daterange', 'numeric', 'select', 'text', undefined].includes(prop.type)) {
     return result;
   }
 
@@ -51,7 +51,7 @@ function formatProperty(prop: any) {
       break;
     case 'relationship':
       result = prop.value.map((p: any, index: number) => (
-        <React.Fragment>
+        <React.Fragment key={index}>
           {index > 0 && ', '}
           {getLink(p.url, p.value)}
         </React.Fragment>
@@ -61,7 +61,7 @@ function formatProperty(prop: any) {
       result = <GeolocationViewer points={prop.value} onlyForCards />;
       break;
     default:
-      result = prop.value === 'string' ? prop.value : undefined;
+      result = undefined;
       break;
   }
   return result;
@@ -163,6 +163,7 @@ function mapStateToProps(state: any, ownProps: TableRowProps) {
     columns: ownProps.columns,
     templates: state.templates,
     thesauris: state.thesauris,
+    onClick: ownProps.onClick,
   };
 }
 
