@@ -183,56 +183,56 @@ describe('TableRow', () => {
   }
   describe('columns format', () => {
     render();
-    const renderedColumns = component.find('td');
+    const renderedColumns = component.find('td div');
     it('should render a column with the name of document', () => {
-      expect(renderedColumns.at(0).props().children[1]).toBe('document1');
+      expect(renderedColumns.at(1).props().children).toBe('document1');
     });
     it('should render a column with the creation date with ll format', () => {
-      expect(renderedColumns.at(1).props().children[1]).toBe(formattedCreationDate);
+      expect(renderedColumns.at(2).props().children).toBe(formattedCreationDate);
     });
     it('should render a column with the name of the template', () => {
-      expect(renderedColumns.at(2).props().children[1]).toBe('Template1');
+      expect(renderedColumns.at(3).props().children).toBe('Template1');
     });
     it('should render a column with a date property with ll format', () => {
-      expect(renderedColumns.at(3).props().children[1]).toBe(formattedPropertyDate);
+      expect(renderedColumns.at(4).props().children).toBe(formattedPropertyDate);
     });
     it('should render a column with the label of the thesaurus', () => {
-      expect(renderedColumns.at(4).props().children[1]).toBe('Colombia');
+      expect(renderedColumns.at(5).props().children).toBe('Colombia');
     });
     it('should render a column with the values as list of labels', () => {
-      expect(renderedColumns.at(5).props().children[1]).toBe('English, Español');
+      expect(renderedColumns.at(6).props().children).toBe('English, Español');
     });
     it('should render a column with rich text for markdown property', () => {
       expect(
         renderedColumns
-          .at(6)
+          .at(7)
           .find(MarkdownViewer)
           .props().markdown
       ).toBe('**bold**');
     });
     it('should render a column with links to related entities separated by comma', () => {
-      const links = renderedColumns.at(7).find(I18NLink);
-      expect(renderedColumns.at(7).text()).toBe('<Connect(I18NLink) />, <Connect(I18NLink) />');
+      const links = renderedColumns.at(8).find(I18NLink);
+      expect(renderedColumns.at(8).text()).toBe('<Connect(I18NLink) />, <Connect(I18NLink) />');
       expect(links.at(0).props().to).toBe('/entity/Entity1');
     });
     it('should render a column with a link', () => {
       expect(
         renderedColumns
-          .at(8)
+          .at(9)
           .find(I18NLink)
           .props().to
       ).toBe('www.google.com');
     });
     it('should render a geolocation column', () => {
-      const geolocationProps = renderedColumns.at(9).props().children[1].props;
+      const geolocationProps = renderedColumns.at(10).props().children.props;
       expect(geolocationProps.points).toEqual([{ lon: 2, lat: 46 }]);
       expect(geolocationProps.onlyForCards).toBe(true);
     });
     it('should render a text column', () => {
-      expect(renderedColumns.at(10).props().children[1]).toEqual('plain text');
+      expect(renderedColumns.at(11).props().children).toEqual('plain text');
     });
     it('should not render if the type is not supported', () => {
-      expect(renderedColumns.at(11).props().children[1]).toEqual(undefined);
+      expect(renderedColumns.at(12).props().children).toEqual(undefined);
     });
   });
   describe('onClick', () => {

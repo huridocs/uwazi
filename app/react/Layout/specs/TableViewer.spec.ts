@@ -39,7 +39,7 @@ describe('TableViewer', () => {
     render();
     it('should display only not hidden columns', () => {
       const row = component.find('thead > tr').at(0);
-      const header = row.find('th');
+      const header = row.find('th div');
       expect(header.length).toBe(2);
       expect(header.at(0).props().children).toBe('Date');
       expect(header.at(1).props().children).toBe('Country');
