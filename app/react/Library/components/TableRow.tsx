@@ -51,7 +51,7 @@ function formatProperty(prop: any) {
       break;
     case 'relationship':
       result = prop.value.map((p: any, index: number) => (
-        <React.Fragment>
+        <React.Fragment key={index}>
           {index > 0 && ', '}
           {getLink(p.url, p.value)}
         </React.Fragment>
@@ -163,7 +163,7 @@ function mapStateToProps(state: any, ownProps: TableRowProps) {
     columns: ownProps.columns,
     templates: state.templates,
     thesauris: state.thesauris,
-    onClick: state.onClick,
+    onClick: ownProps.onClick,
   };
 }
 

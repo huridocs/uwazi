@@ -84,7 +84,6 @@ describe('TableRow', () => {
     const storeState = {
       user: Immutable.fromJS({ _id: 'batId' }),
       library: { ui: Immutable.fromJS({ selectedDocuments: [{ _id: 'selectedDocument1' }] }) },
-      onClick: onClickSpy,
       thesauris: Immutable.fromJS([
         {
           _id: 'idThesauri1',
@@ -177,6 +176,7 @@ describe('TableRow', () => {
       document,
       columns: Immutable.fromJS(commonColumns.concat(templateColumns)),
       storeKey: 'library',
+      onClick: onClickSpy,
     };
     component = renderConnected(TableRow, props, storeState);
     instance = component.instance();
