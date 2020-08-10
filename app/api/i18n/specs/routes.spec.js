@@ -4,7 +4,7 @@ import i18nRoutes from 'api/i18n/routes.js';
 import instrumentRoutes from 'api/utils/instrumentRoutes';
 import translations from 'api/i18n/translations';
 
-const mocketSocketIo = () => ({
+const mockSocketIo = () => ({
   emitToCurrentTenant: jasmine.createSpy('emitToCurrentTenant'),
 });
 
@@ -39,7 +39,7 @@ describe('i18n translations routes', () => {
       spyOn(translations, 'save').and.returnValue(
         Promise.resolve({ contexts: [], id: 'saved_translations' })
       );
-      const io = mocketSocketIo();
+      const io = mockSocketIo();
       routes
         .post('/api/translations', { body: { key: 'my new key' }, io })
         .then(response => {
@@ -64,7 +64,7 @@ describe('i18n translations routes', () => {
       spyOn(settings, 'setDefaultLanguage').and.returnValue(
         Promise.resolve({ site_name: 'Uwazi' })
       );
-      const io = mocketSocketIo();
+      const io = mockSocketIo();
       routes
         .post('/api/translations/setasdeafult', { body: { key: 'fr' }, io })
         .then(response => {

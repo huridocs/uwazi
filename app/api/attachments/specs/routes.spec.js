@@ -1,9 +1,8 @@
 import 'api/utils/jasmineHelpers';
-import fs from 'fs';
 import db from 'api/utils/testing_db';
 import relationships from 'api/relationships';
 import { search } from 'api/search';
-import { attachmentsPath } from 'api/files/filesystem';
+import { attachmentsPath, writeFile } from 'api/files/filesystem';
 
 import attachmentsRoutes from '../routes';
 import entities from '../../entities';
@@ -36,7 +35,7 @@ describe('Attachments Routes', () => {
 
   describe('/attachment/file', () => {
     it('should send the requested existing file', async () => {
-      fs.writeFileSync(attachmentsPath('mockfile.doc'), '');
+      await writeFile(attachmentsPath('mockfile.doc'), '');
       const expected = `sendFile:${attachmentsPath('mockfile.doc')}`;
       await testRouteResponse(
         '/api/attachment/:file',

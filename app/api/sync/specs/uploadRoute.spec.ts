@@ -4,9 +4,8 @@ import express, { Request, Response, NextFunction } from 'express';
 
 import requestAPI from 'supertest';
 import path from 'path';
-import fs from 'fs';
 
-import { setupTestUploadedPaths, uploadsPath, deleteFile } from 'api/files';
+import { setupTestUploadedPaths, uploadsPath, deleteFile, fileExists } from 'api/files';
 import { testingTenants } from 'api/utils/testingTenants';
 import { multitenantMiddleware } from 'api/utils/multitenantMiddleware';
 
@@ -42,7 +41,7 @@ describe('sync', () => {
         .set('X-Requested-With', 'XMLHttpRequest')
         .attach('file', path.join(__dirname, 'testUpload.txt'));
 
-      const properlyUploaded = fs.existsSync(uploadsPath('testUpload.txt'));
+      const properlyUploaded = await fileExists(uploadsPath('testUpload.txt'));
       expect(response.status).toBe(200);
       expect(properlyUploaded).toBeTruthy();
     });

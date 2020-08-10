@@ -4,13 +4,13 @@ import { setupTestUploadedPaths, uploadsPath, writeFile } from 'api/files';
 import { staticFilesMiddleware } from '../staticFilesMiddleware';
 import { testingTenants } from '../testingTenants';
 
-describe('multitenant middleware', () => {
+describe('static file middleware', () => {
   beforeEach(() => {
     testingTenants.mockCurrentTenant({ name: 'default' });
     setupTestUploadedPaths();
   });
 
-  it('should execute next middlewares inside a tenant async context', async () => {
+  it('should return file requested', async () => {
     const app: Application = express();
     app.get('/static-files/:fileName', staticFilesMiddleware(uploadsPath));
 
