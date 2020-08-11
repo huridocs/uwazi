@@ -15,7 +15,7 @@ export async function displayGraph(type: string) {
   //waits until the target is available [see browser.targets]
   const graphsPageTarget = await browser.waitForTarget(target => target.url() === pageUrl);
   const graphsPage = await graphsPageTarget.page();
-  await graphsPage.waitFor(4000); // wait for the chart visualization animations to end
+  await graphsPage.waitFor(2000); // wait for the chart visualization animations to end
   
   let chartContainer: HTMLElement | any;
   if(type === 'list'){
