@@ -52,7 +52,6 @@ describe('Graphs in Page', () => {
 
   it('should navigate back to the edit page and insert a Pie chart graph', async () => {
     await page.goBack();
-    // await page.waitForNavigation();
     await expect(page).toFill('input[name="page.data.title"]', 'Pie chart graph');
     // await page.click(localSelectors.pageContentsInput, {clickCount: 3});
     // await page.keyboard.press('Backspace');
@@ -70,7 +69,6 @@ describe('Graphs in Page', () => {
 
   it('should navigate back to the edit page and insert a List chart graph', async () => {
     await page.goBack();
-    // await page.waitForNavigation();
     await expect(page).toFill('input[name="page.data.title"]', 'List chart graph');
     await expect(page).toFill(localSelectors.pageContentsInput, '<Dataset />');
     await page.type(localSelectors.pageContentsInput, graphs.listChart);

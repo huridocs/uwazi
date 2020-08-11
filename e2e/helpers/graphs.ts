@@ -1,7 +1,7 @@
 /*global page*/
 
 import { host } from '../config';
-// @ts-ignore
+
 import { toMatchImageSnapshot } from 'jest-image-snapshot';
 
 expect.extend({ toMatchImageSnapshot });
@@ -17,16 +17,14 @@ export async function displayGraph(type: string) {
   const graphsPage = await graphsPageTarget.page();
   await graphsPage.waitFor(4000); // wait for the chart visualization animations to end
   
-  let chartContainer;
+  let chartContainer: HTMLElement | any;
   if(type === 'list'){
     chartContainer = await graphsPage.$('.ListChart ');
   } else {
     chartContainer = await graphsPage.$('.recharts-responsive-container');
   }
   
-  // @ts-ignore
   const chartScreenshot = await chartContainer.screenshot();
-
   expect(chartScreenshot).toMatchImageSnapshot({
     failureThreshold: 0.03,
     failureThresholdType: 'percent',
