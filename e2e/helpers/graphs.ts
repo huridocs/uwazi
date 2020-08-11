@@ -1,7 +1,6 @@
 /*global page*/
 
 import { host } from '../config';
-
 import { toMatchImageSnapshot } from 'jest-image-snapshot';
 
 expect.extend({ toMatchImageSnapshot });
@@ -33,4 +32,3 @@ export async function displayGraph(type: string) {
 
   await graphsPage.close();
 }
-
