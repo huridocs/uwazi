@@ -703,7 +703,7 @@ const instanceSearch = elasticIndex => ({
     return snippetsFromSearchHit(response.hits.hits[0]);
   },
 
-  async indexEntities(query, select = '', limit = 200, batchCallback = () => {}) {
+  async indexEntities(query, select = '', limit, batchCallback = () => {}) {
     return indexEntities({
       query,
       select,
