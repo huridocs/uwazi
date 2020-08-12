@@ -939,7 +939,7 @@ describe('entities', () => {
           expect(docs[1].metadata.property3).toEqual([{ value: 'value3' }]);
 
           expect(docDiferentTemplate.metadata.property1).toEqual([{ value: 'value1' }]);
-          expect(search.indexEntities).toHaveBeenCalledWith({ template: template._id }, null, 1000);
+          expect(search.indexEntities).toHaveBeenCalledWith({ template: template._id });
           done();
         })
         .catch(catchErrors(done));

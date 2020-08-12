@@ -537,7 +537,7 @@ export default {
     }
 
     if (!template.properties.find(p => p.type === propertyTypes.relationship)) {
-      return search.indexEntities({ template: template._id }, null, 1000);
+      return search.indexEntities({ template: template._id });
     }
     return this.bulkUpdateMetadataFromRelationships({ template: template._id, language }, language);
   },
