@@ -47,7 +47,17 @@ describe('Graphs in Page', () => {
   });
 
   it('should display Bar chart graph in page with no more than a 3% difference', async () => {
-    await displayGraph('bar');
+    const graphsPage = await displayGraph();
+    let chartContainer: HTMLElement | any;
+    chartContainer = await graphsPage.$('.recharts-responsive-container');
+    
+    const chartScreenshot = await chartContainer.screenshot();
+    expect(chartScreenshot).toMatchImageSnapshot({
+      failureThreshold: 0.03,
+      failureThresholdType: 'percent',
+      allowSizeMismatch: true,
+    });
+    await graphsPage.close();
   });
 
   it('should navigate back to the edit page and insert a Pie chart graph', async () => {
@@ -62,7 +72,17 @@ describe('Graphs in Page', () => {
   });
 
   it('should display Pie chart graph in page with no more than a 3% difference', async () => {
-    await displayGraph('pie');
+    const graphsPage = await displayGraph();
+    let chartContainer: HTMLElement | any;
+    chartContainer = await graphsPage.$('.recharts-responsive-container');
+    
+    const chartScreenshot = await chartContainer.screenshot();
+    expect(chartScreenshot).toMatchImageSnapshot({
+      failureThreshold: 0.03,
+      failureThresholdType: 'percent',
+      allowSizeMismatch: true,
+    });
+    await graphsPage.close();
   });
 
   it('should navigate back to the edit page and insert a List chart graph', async () => {
@@ -77,7 +97,17 @@ describe('Graphs in Page', () => {
   });
 
   it('should display List chart graph in page with no more than a 3% difference', async () => {
-    await displayGraph('list');
+    const graphsPage = await displayGraph();
+    let chartContainer: HTMLElement | any;
+    chartContainer = await graphsPage.$('.ListChart ');
+    
+    const chartScreenshot = await chartContainer.screenshot();
+    expect(chartScreenshot).toMatchImageSnapshot({
+      failureThreshold: 0.03,
+      failureThresholdType: 'percent',
+      allowSizeMismatch: true,
+    });
+    await graphsPage.close();
   });
 
   afterAll(async () => {

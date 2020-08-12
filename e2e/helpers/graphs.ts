@@ -5,7 +5,7 @@ import { toMatchImageSnapshot } from 'jest-image-snapshot';
 
 expect.extend({ toMatchImageSnapshot });
 
-export async function displayGraph(type: string) {
+export async function displayGraph() {
   const pageID = page.url().split("/").pop();
   const pageUrl = `${host}/page/` + pageID;
 
@@ -16,19 +16,5 @@ export async function displayGraph(type: string) {
   const graphsPage = await graphsPageTarget.page();
   await graphsPage.waitFor(2000); // wait for the chart visualization animations to end
   
-  let chartContainer: HTMLElement | any;
-  if(type === 'list'){
-    chartContainer = await graphsPage.$('.ListChart ');
-  } else {
-    chartContainer = await graphsPage.$('.recharts-responsive-container');
-  }
-  
-  const chartScreenshot = await chartContainer.screenshot();
-  expect(chartScreenshot).toMatchImageSnapshot({
-    failureThreshold: 0.03,
-    failureThresholdType: 'percent',
-    allowSizeMismatch: true,
-  });
-
-  await graphsPage.close();
+  return graphsPage;
 }
