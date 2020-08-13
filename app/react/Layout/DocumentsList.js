@@ -6,7 +6,6 @@ import rison from 'rison';
 
 import SearchBar from 'app/Library/components/SearchBar';
 import SortButtons from 'app/Library/components/SortButtons';
-
 import Loader from 'app/components/Elements/Loader';
 import Footer from 'app/App/Footer';
 import { NeedAuthorization } from 'app/Auth';
@@ -152,11 +151,9 @@ class DocumentsList extends Component {
                 />
               );
             }
-
             if (view === 'graph') {
               return <GraphView clickOnDocument={this.clickOnDocument} />;
             }
-
             return null;
           })()}
           <div className="row">
@@ -190,7 +187,6 @@ class DocumentsList extends Component {
               if (this.state.loading) {
                 return <Loader />;
               }
-
               return null;
             })()}
             <NeedAuthorization>

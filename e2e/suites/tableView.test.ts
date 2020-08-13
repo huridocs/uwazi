@@ -7,6 +7,7 @@ describe('Table view', () => {
 		await insertFixtures();
 		await proxyMock();
 		await page.goto(`${host}/library/table`);
+		await page.waitForNavigation();
 	});
 	
 	describe('Column selector', () => {

@@ -7,44 +7,28 @@ import { bindActionCreators } from 'redux';
 import { wrapDispatch } from 'app/Multireducer';
 import { setTableViewColumnHidden, setTableViewAllColumnsHidden } from '../actions/libraryActions';
 
-const ColumnItem = ({ item }) => {
-  if (item.selectAll) {
-    return (
-      <React.Fragment>
-        <input
-          ref={elem => {
-            // eslint-disable-next-line no-param-reassign
-            if (elem) elem.indeterminate = item.indeterminate;
-          }}
-          type="checkbox"
-          checked={!item.hidden}
-        />
-        {item.label}
-      </React.Fragment>
-    );
-  }
+function updateIndeterminate(item) {
+  return elem => {
+    // eslint-disable-next-line no-param-reassign
+    if (elem) elem.indeterminate = item.indeterminate;
+  };
+}
 
-  return (
-    <React.Fragment>
-      <input type="checkbox" checked={!item.hidden} />
-      {item.label}
-    </React.Fragment>
-  );
-};
+export const ColumnItem = ({ item }) => (
+  <React.Fragment>
+    <input
+      ref={item.selectAll && updateIndeterminate(item)}
+      type="checkbox"
+      checked={!item.hidden}
+    />
+    {item.label}
+  </React.Fragment>
+);
 
-const hiddenColumnsMessage = columns => {
-  const count = columns.filter(column => column.hidden).length;
-  if (count) {
-    return `${count} columns hidden`;
-  }
-
-  return 'Hide columns';
-};
-
-const ValueItem = columns => () => (
+export const ValueItem = hiddenColumns => () => (
   <span>
     <Icon icon="bars" rotation={90} />
-    {hiddenColumnsMessage(columns)}
+    {hiddenColumns.length ? `${hiddenColumns.length} columns hidden` : 'Hide columns'}
   </span>
 );
 
@@ -60,11 +44,7 @@ class HideColumnsComponent extends React.Component {
 
   onSelect(item) {
     if (item.selectAll) {
-      if (item.indeterminate) {
-        this.props.setTableViewAllColumnsHidden(false);
-      } else {
-        this.props.setTableViewAllColumnsHidden(!item.hidden);
-      }
+      this.props.setTableViewAllColumnsHidden(item.indeterminate ? false : !item.hidden);
     } else {
       this.props.setTableViewColumnHidden(item.name, !item.hidden);
     }
@@ -91,7 +71,7 @@ class HideColumnsComponent extends React.Component {
           data={sortedColumns}
           filter={(item, searchTerm) => item.label.toLowerCase().includes(searchTerm.toLowerCase())}
           itemComponent={ColumnItem}
-          valueComponent={ValueItem(sortedColumns)}
+          valueComponent={ValueItem(hiddenColumns)}
           onSelect={this.onSelect}
         />
       </div>
