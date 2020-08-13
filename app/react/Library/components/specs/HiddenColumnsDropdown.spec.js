@@ -2,7 +2,7 @@ import Immutable from 'immutable';
 import { DropdownList } from 'app/Forms';
 
 import { renderConnected } from 'app/Templates/specs/utils/renderConnected';
-import { HiddenColumnsDropdown, ColumnItem, ValueItem } from '../HiddenColumnsDropdown';
+import { HiddenColumnsDropdown } from '../HiddenColumnsDropdown';
 import * as actions from '../../actions/libraryActions';
 
 describe('HiddenColumnsDropdown', () => {
@@ -61,38 +61,6 @@ describe('HiddenColumnsDropdown', () => {
       it('should not show title as an option', () => {
         const titleOption = dropDown.props().data.find(option => option.label === 'title');
         expect(titleOption).toBe(undefined);
-      });
-
-      describe('ColumnItem', () => {
-        const item = {
-          label: 'Show all',
-          selectAll: true,
-          indeterminate: false,
-          hidden: false,
-        };
-        const columnItem = ColumnItem({ item });
-        it('should show a checkbox and label for the passed item', () => {
-          expect(columnItem.props.children[0].props.type).toEqual('checkbox');
-          expect(columnItem.props.children[1]).toEqual('Show all');
-        });
-        it('should update indeterminate for Show all option', () => {
-          const elem = { indeterminate: true };
-          columnItem.props.children[0].ref(elem);
-          expect(elem.indeterminate).toBe(false);
-        });
-      });
-
-      describe('ValueItem', () => {
-        it('should show the number of hidden columns', () => {
-          const hiddenColumns = [{ label: 'Created at' }, { label: 'Template' }];
-          const valueItem = ValueItem(hiddenColumns)();
-          expect(valueItem.props.children[1]).toEqual('2 columns hidden');
-        });
-        it('should show hide columns as label if there are no hidden columns', () => {
-          const hiddenColumns = [];
-          const valueItem = ValueItem(hiddenColumns)();
-          expect(valueItem.props.children[1]).toEqual('Hide columns');
-        });
       });
 
       describe('onSelect', () => {
