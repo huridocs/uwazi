@@ -52,7 +52,7 @@
     "e2e-puppeteer-fixtures": "DATABASE_NAME=uwazi_e2e INDEX_NAME=uwazi_e2e ./uwazi-fixtures/restore.sh",
     "e2e-show": "export SHOW_E2E=1; yarn e2e",
     "e2e-restore-fixtures": "cd nightmare/fixtures; ./restore.sh",
-    "eslint": "./node_modules/.bin/eslint app --quiet --ext js,ts,tsx",
+    "eslint": "./node_modules/.bin/eslint e2e app --quiet --ext js,ts,tsx",
     "eslint-fulldiff": "git diff-index --name-only origin/development | grep ^app/ | grep -v snap | xargs ls -d 2>/dev/null | xargs ./node_modules/.bin/eslint ",
     "prettier": "./node_modules/.bin/prettier --write 'app/**/*.{js,ts,tsx}'"
   },
