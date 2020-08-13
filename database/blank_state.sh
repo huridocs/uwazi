@@ -12,6 +12,5 @@ echo -e "\n\nDeleting $DB database on $HOST"
 mongo -host $HOST $DB --eval "db.dropDatabase()"
 mongorestore -h $HOST blank_state/uwazi_development/ --db=$DB
 
-export DATABASE_NAME=$DB
-yarn migrate
-yarn reindex
+INDEX_NAME=$DB DATABASE_NAME=$DB yarn migrate
+INDEX_NAME=$DB DATABASE_NAME=$DB yarn reindex

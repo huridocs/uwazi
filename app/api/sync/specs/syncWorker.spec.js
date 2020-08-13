@@ -3,7 +3,6 @@
 import 'api/entities';
 import 'api/thesauri/dictionariesModel';
 import fs from 'fs';
-import path from 'path';
 import errorLog from 'api/log/errorLog';
 import 'api/relationships';
 import backend from 'fetch-mock';
@@ -12,7 +11,7 @@ import db from 'api/utils/testing_db';
 import request from 'shared/JSONRequest';
 import settings from 'api/settings';
 import { settingsModel } from 'api/settings/settingsModel';
-import paths from 'api/config/paths';
+import { attachmentsPath } from 'api/files';
 
 import fixtures, {
   settingsId,
@@ -55,17 +54,24 @@ import syncsModel from '../syncsModel';
 
 describe('syncWorker', () => {
   beforeEach(async () => {
-    paths.uploadedDocuments = __dirname;
+    await db.clearAllAndLoad(fixtures);
     spyOn(request, 'uploadFile').and.returnValue(Promise.resolve());
     spyOn(errorLog, 'error');
     syncWorker.stopped = false;
-    fs.writeFileSync(path.join(__dirname, `${newDoc1.toString()}.jpg`));
-    await db.clearAllAndLoad(fixtures);
+    fs.writeFileSync(attachmentsPath(`${newDoc1.toString()}.jpg`), '');
+    fs.writeFileSync(attachmentsPath('test_attachment.txt'), '');
+    fs.writeFileSync(attachmentsPath('test_attachment2.txt'), '');
+    fs.writeFileSync(attachmentsPath('test.txt'), '');
+    fs.writeFileSync(attachmentsPath('test2.txt'), '');
   });
 
   afterAll(async () => {
-    fs.unlinkSync(path.join(__dirname, `${newDoc1.toString()}.jpg`));
     await db.disconnect();
+    fs.unlinkSync(attachmentsPath(`${newDoc1.toString()}.jpg`));
+    fs.unlinkSync(attachmentsPath('test_attachment.txt'));
+    fs.unlinkSync(attachmentsPath('test_attachment2.txt'));
+    fs.unlinkSync(attachmentsPath('test1.txt'));
+    fs.unlinkSync(attachmentsPath('test2.txt'));
   });
 
   const syncWorkerWithConfig = async config =>
@@ -344,30 +350,30 @@ describe('syncWorker', () => {
         expect(request.uploadFile).toHaveBeenCalledWith(
           'url/api/sync/upload',
           'test2.txt',
-          fs.readFileSync(path.join(__dirname, 'test2.txt'))
+          fs.readFileSync(attachmentsPath('test2.txt'))
         );
 
         expect(request.uploadFile).toHaveBeenCalledWith(
           'url/api/sync/upload',
           'test.txt',
-          fs.readFileSync(path.join(__dirname, 'test.txt'))
+          fs.readFileSync(attachmentsPath('test.txt'))
         );
 
         expect(request.uploadFile).toHaveBeenCalledWith(
           'url/api/sync/upload',
           `${newDoc1.toString()}.jpg`,
-          fs.readFileSync(path.join(__dirname, `${newDoc1.toString()}.jpg`))
+          fs.readFileSync(attachmentsPath(`${newDoc1.toString()}.jpg`))
         );
 
         expect(request.uploadFile).toHaveBeenCalledWith(
           'url/api/sync/upload',
           'test_attachment.txt',
-          fs.readFileSync(path.join(__dirname, 'test_attachment.txt'))
+          fs.readFileSync(attachmentsPath('test_attachment.txt'))
         );
         expect(request.uploadFile).toHaveBeenCalledWith(
           'url/api/sync/upload',
           'test_attachment2.txt',
-          fs.readFileSync(path.join(__dirname, 'test_attachment2.txt'))
+          fs.readFileSync(attachmentsPath('test_attachment2.txt'))
         );
       });
     });
@@ -606,7 +612,7 @@ describe('syncWorker', () => {
 
   describe('start', () => {
     it('should not fail on sync not in settings', async () => {
-      await settingsModel.db.update({}, { $unset: { sync: '' } });
+      await settingsModel.updateMany({}, { $unset: { sync: '' } });
       spyOn(syncWorker, 'intervalSync');
       const interval = 2000;
 
@@ -620,8 +626,9 @@ describe('syncWorker', () => {
     });
 
     it('should lazy create lastSync entry if not exists', async () => {
-      await syncsModel.remove({});
+      await syncsModel.deleteMany({});
 
+      syncWorker.stop();
       await syncWorker.start();
       const [{ lastSync }] = await syncsModel.find();
       expect(lastSync).toBe(0);

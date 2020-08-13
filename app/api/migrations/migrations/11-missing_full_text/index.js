@@ -26,7 +26,7 @@ export default {
         .toArray();
       const defaultLanguageEntity = sibilings.find(p => p.language === defaultLanguage);
       entity.fullText = defaultLanguageEntity.fullText;
-      await db.collection('entities').save(entity);
+      await db.collection('entities').replaceOne({ _id: entity._id }, entity);
       process.stdout.write(`processed -> ${index}\r`);
       index += 1;
     }

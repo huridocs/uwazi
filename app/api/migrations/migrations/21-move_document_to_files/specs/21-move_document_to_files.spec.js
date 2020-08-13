@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import paths from 'api/config/paths';
+import { config } from 'api/config';
 import testingDB from 'api/utils/testing_db';
 import migration, { fileExists } from '../index.js';
 import fixtures from './fixtures.js';
@@ -13,17 +13,21 @@ const query = (collectionName, queryObject = {}, select = {}) =>
     .toArray();
 
 const setupTestUploadedPaths = () => {
-  paths.uploadedDocuments = `${__dirname}/uploads/`;
+  config.defaultTenant.uploadedDocuments = `${__dirname}/uploads/`;
 };
 
 const createThumbnail = entity =>
   new Promise((resolve, reject) => {
-    fs.writeFile(`${paths.uploadedDocuments}${entity._id}.jpg`, 'image content', err => {
-      if (err) {
-        reject(err);
+    fs.writeFile(
+      `${config.defaultTenant.uploadedDocuments}${entity._id}.jpg`,
+      'image content',
+      err => {
+        if (err) {
+          reject(err);
+        }
+        resolve();
       }
-      resolve();
-    });
+    );
   });
 
 describe('migration move_document_to_files', () => {
@@ -117,8 +121,12 @@ describe('migration move_document_to_files', () => {
       ])
     );
 
-    expect(await fileExists(path.join(paths.uploadedDocuments, thumbnails[0].filename))).toBe(true);
-    expect(await fileExists(path.join(paths.uploadedDocuments, thumbnails[1].filename))).toBe(true);
+    expect(
+      await fileExists(path.join(config.defaultTenant.uploadedDocuments, thumbnails[0].filename))
+    ).toBe(true);
+    expect(
+      await fileExists(path.join(config.defaultTenant.uploadedDocuments, thumbnails[1].filename))
+    ).toBe(true);
   });
 
   it('should change filename of connections to file: file_id', async () => {

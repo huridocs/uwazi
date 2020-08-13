@@ -4,6 +4,10 @@ import settings from 'api/settings/settings';
 import templates from '../templates';
 import templateRoutes from '../routes.js';
 
+const mocketSocketIo = () => ({
+  emitToCurrentTenant: jasmine.createSpy('emitToCurrentTenant'),
+});
+
 describe('templates routes', () => {
   let routes;
 
@@ -68,23 +72,14 @@ describe('templates routes', () => {
 
   describe('POST', () => {
     const aTemplate = { _id: 'id', name: 'name' };
-    const req = {
-      body: { name: 'created_template', properties: [{ label: 'fieldLabel' }] },
-      language: 'en',
-      io: { sockets: {} },
-    };
-    let emitSpy;
-
-    beforeEach(() => {
-      emitSpy = jasmine.createSpy('emit');
-      req.io.sockets.emit = emitSpy;
-    });
-
-    it('should have a validation schema', () => {
-      expect(routes.post.validation('/api/templates')).toMatchSnapshot();
-    });
 
     it('should create a template', async () => {
+      const req = {
+        body: { name: 'created_template', properties: [{ label: 'fieldLabel' }] },
+        language: 'en',
+        io: mocketSocketIo(),
+      };
+
       spyOn(templates, 'save').and.returnValue(new Promise(resolve => resolve(aTemplate)));
       spyOn(settings, 'updateFilterName').and.returnValue(
         new Promise(resolve => resolve('updated settings'))
@@ -95,17 +90,26 @@ describe('templates routes', () => {
       expect(response).toBe(aTemplate);
       expect(templates.save).toHaveBeenCalledWith(req.body, req.language);
       expect(settings.updateFilterName).toHaveBeenCalledWith(aTemplate._id, aTemplate.name);
-      expect(emitSpy).toHaveBeenCalledWith('templateChange', aTemplate);
-      expect(emitSpy).toHaveBeenCalledWith('updateSettings', 'updated settings');
+      expect(req.io.emitToCurrentTenant).toHaveBeenCalledWith('templateChange', aTemplate);
+      expect(req.io.emitToCurrentTenant).toHaveBeenCalledWith('updateSettings', 'updated settings');
     });
 
     it('should not emit settings update when settings not modified', async () => {
+      const req = {
+        body: { name: 'created_template', properties: [{ label: 'fieldLabel' }] },
+        language: 'en',
+        io: mocketSocketIo(),
+      };
+
       spyOn(templates, 'save').and.returnValue(new Promise(resolve => resolve(aTemplate)));
       spyOn(settings, 'updateFilterName').and.returnValue(undefined);
 
       await routes.post('/api/templates', req);
 
-      expect(emitSpy).not.toHaveBeenCalledWith('updateSettings', 'updated settings');
+      expect(req.io.emitToCurrentTenant).not.toHaveBeenCalledWith(
+        'updateSettings',
+        'updated settings'
+      );
     });
 
     describe('when there is an error', () => {
@@ -148,15 +152,18 @@ describe('templates routes', () => {
       spyOn(templates, 'setAsDefault').and.returnValue(
         Promise.resolve([{ name: 'newDefault' }, { name: 'oldDefault' }])
       );
-      const emit = jasmine.createSpy('emit');
-      const req = { body: { _id: 'abc1' }, io: { sockets: { emit } } };
+      const req = { body: { _id: 'abc1' }, io: mocketSocketIo() };
       routes
         .post('/api/templates/setasdefault', req)
         .then(result => {
           expect(result).toEqual({ name: 'newDefault' });
           expect(templates.setAsDefault).toHaveBeenCalledWith('abc1');
-          expect(emit).toHaveBeenCalledWith('templateChange', { name: 'newDefault' });
-          expect(emit).toHaveBeenCalledWith('templateChange', { name: 'oldDefault' });
+          expect(req.io.emitToCurrentTenant).toHaveBeenCalledWith('templateChange', {
+            name: 'newDefault',
+          });
+          expect(req.io.emitToCurrentTenant).toHaveBeenCalledWith('templateChange', {
+            name: 'oldDefault',
+          });
           done();
         })
         .catch(catchErrors(done));

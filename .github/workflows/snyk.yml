@@ -6,10 +6,10 @@ jobs:
   snyk:
     runs-on: ubuntu-latest
     steps:
-      - name: Use Node.js 10.21.x
+      - name: Use Node.js 14.6.x
         uses: actions/setup-node@v1
         with:
-          node-version: '10.21.x'
+          node-version: '14.6.x'
       - uses: actions/checkout@v2
       - name: Cache node modules
         uses: actions/cache@v2
@@ -21,3 +21,5 @@ jobs:
       - run: yarn add snyk
       - run: /home/runner/work/uwazi/uwazi/node_modules/.bin/snyk auth ${{ secrets.SNYK_TOKEN }}
       - run: /home/runner/work/uwazi/uwazi/node_modules/.bin/snyk test
+
+      

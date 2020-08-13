@@ -25,7 +25,7 @@ export default {
           .deleteMany({ sharedId: relation.sharedId, language: { $in: languagesToRemove } });
         await db
           .collection('connections')
-          .update({ sharedId: relation.sharedId }, { $unset: { language: 1, sharedId: 1 } });
+          .updateMany({ sharedId: relation.sharedId }, { $unset: { language: 1, sharedId: 1 } });
       }
 
       if (isTextReference) {
@@ -38,7 +38,7 @@ export default {
           .collection('connections')
           .deleteMany({ sharedId: relation.sharedId, _id: { $ne: relation._id } });
 
-        await db.collection('connections').update(relation, {
+        await db.collection('connections').updateMany(relation, {
           $set: { filename: entityRelated.file.filename },
           $unset: { language: 1, sharedId: 1 },
         });

@@ -1,4 +1,3 @@
-/*eslint-disable max-lines*/
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import db from 'api/utils/testing_db';
 import documentRoutes from '../routes.js';
@@ -86,18 +85,16 @@ describe('entities', () => {
         user,
         language: 'lang',
         io: {
-          sockets: {
-            emit: jest.fn((event, thesaurus) => {
-              try {
-                expect(event).toBe('thesauriChange');
-                expect(thesaurus).toBe('templateTransformed');
-                expect(thesauri.templateToThesauri).toHaveBeenCalledWith('template', 'lang', user);
-                done();
-              } catch (err) {
-                done.fail(err);
-              }
-            }),
-          },
+          emitToCurrentTenant: jest.fn((event, thesaurus) => {
+            try {
+              expect(event).toBe('thesauriChange');
+              expect(thesaurus).toBe('templateTransformed');
+              expect(thesauri.templateToThesauri).toHaveBeenCalledWith('template', 'lang', user);
+              done();
+            } catch (err) {
+              done.fail(err);
+            }
+          }),
         },
       };
 

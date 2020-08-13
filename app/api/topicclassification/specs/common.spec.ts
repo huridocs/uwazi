@@ -22,8 +22,11 @@ describe('templates utils', () => {
 
   describe('getThesaurusPropertyNames', () => {
     it('should work with fixtues', async () => {
-      expect(getThesaurusPropertyNames(moviesId, await templates.get(null))).toEqual(['movies']);
+      expect(getThesaurusPropertyNames(moviesId.toString(), await templates.get(null))).toEqual([
+        'movies',
+      ]);
     });
+
     it('should work complex examples', () => {
       const tmpl1: TemplateSchema = {
         name: 'tmpl1',

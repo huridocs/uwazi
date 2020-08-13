@@ -3,7 +3,7 @@ import { files } from 'api/files/files';
 import { search } from 'api/search';
 import path from 'path';
 import fs from 'fs';
-import * as fileUtils from 'api/files/filesystem';
+import * as filesystem from 'api/files/filesystem';
 import { FileType } from 'shared/types/fileType';
 import entities from 'api/entities';
 import { EntitySchema } from 'shared/types/entityType';
@@ -11,8 +11,7 @@ import { EntitySchema } from 'shared/types/entityType';
 import { CSVLoader } from '../csvLoader';
 import fixtures, { template1Id } from './fixtures';
 
-import configPaths from '../../config/paths';
-import { createTestingZip, fileExists } from './helpers';
+import { createTestingZip } from './helpers';
 
 const removeTestingZip = async () =>
   new Promise(resolve => {
@@ -27,6 +26,7 @@ describe('csvLoader zip file', () => {
     const zip = path.join(__dirname, '/zipData/test.zip');
     const loader = new CSVLoader();
     await db.clearAllAndLoad(fixtures);
+    filesystem.setupTestUploadedPaths();
     await createTestingZip(
       [
         path.join(__dirname, '/zipData/test.csv'),
@@ -40,41 +40,45 @@ describe('csvLoader zip file', () => {
       'test.zip'
     );
     spyOn(search, 'indexEntities').and.returnValue(Promise.resolve());
-    spyOn(fileUtils, 'generateFileName').and.callFake(file => `generated${file.originalname}`);
-    configPaths.uploadedDocuments = path.join(__dirname, '/zipData/');
-    configPaths.attachments = path.join(__dirname, '/zipData/attachments');
+    spyOn(filesystem, 'generateFileName').and.callFake(file => `generated${file.originalname}`);
     await loader.load(zip, template1Id);
     imported = await files.get({ type: 'document' }, '+fullText');
   });
 
   afterAll(async () => {
-    await fileUtils.deleteFiles([
-      path.join(configPaths.uploadedDocuments, 'generated1.pdf'),
-      path.join(configPaths.uploadedDocuments, 'generated2.pdf'),
-      path.join(configPaths.uploadedDocuments, 'generated3.pdf'),
-      path.join(configPaths.attachments, 'generatedatt1.doc'),
-      path.join(configPaths.attachments, 'generatedatt2.jpg'),
-      path.join(configPaths.uploadedDocuments, `${imported[0]._id}.jpg`),
-      path.join(configPaths.uploadedDocuments, `${imported[1]._id}.jpg`),
-      path.join(configPaths.uploadedDocuments, `${imported[2]._id}.jpg`),
+    await filesystem.deleteFiles([
+      filesystem.uploadsPath('generated1.pdf'),
+      filesystem.uploadsPath('generated2.pdf'),
+      filesystem.uploadsPath('generated3.pdf'),
+      filesystem.uploadsPath(`${imported[0]._id}.jpg`),
+      filesystem.uploadsPath(`${imported[1]._id}.jpg`),
+      filesystem.uploadsPath(`${imported[2]._id}.jpg`),
+      filesystem.attachmentsPath('generatedatt1.doc'),
+      filesystem.attachmentsPath('generatedatt2.doc'),
     ]);
     await removeTestingZip();
     await db.disconnect();
   });
 
   it('should save files into uploaded_documents', async () => {
-    expect(await fileExists('generated1.pdf')).toBe(true);
-    expect(await fileExists('generated2.pdf')).toBe(true);
-    expect(await fileExists('generated3.pdf')).toBe(true);
+    expect(await filesystem.fileExists(filesystem.uploadsPath('generated1.pdf'))).toBe(true);
+    expect(await filesystem.fileExists(filesystem.uploadsPath('generated2.pdf'))).toBe(true);
+    expect(await filesystem.fileExists(filesystem.uploadsPath('generated3.pdf'))).toBe(true);
 
-    expect(await fileExists('generatedatt1.doc', configPaths.attachments)).toBe(true);
-    expect(await fileExists('generatedatt2.jpg', configPaths.attachments)).toBe(true);
+    expect(await filesystem.fileExists(filesystem.attachmentsPath('generatedatt1.doc'))).toBe(true);
+    expect(await filesystem.fileExists(filesystem.attachmentsPath('generatedatt2.jpg'))).toBe(true);
   });
 
   it('should create thumbnails of the pdf files', async () => {
-    expect(await fileExists(`${imported[0]._id}.jpg`)).toBe(true);
-    expect(await fileExists(`${imported[1]._id}.jpg`)).toBe(true);
-    expect(await fileExists(`${imported[2]._id}.jpg`)).toBe(true);
+    expect(await filesystem.fileExists(filesystem.uploadsPath(`${imported[0]._id}.jpg`))).toBe(
+      true
+    );
+    expect(await filesystem.fileExists(filesystem.uploadsPath(`${imported[1]._id}.jpg`))).toBe(
+      true
+    );
+    expect(await filesystem.fileExists(filesystem.uploadsPath(`${imported[2]._id}.jpg`))).toBe(
+      true
+    );
   });
 
   it('should import the file asociated with each entity', async () => {

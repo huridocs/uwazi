@@ -1,12 +1,8 @@
 /* eslint-disable global-require */
 import activitylogMiddleware from './activitylog/activitylogMiddleware';
-import elasticConfig from './config/elasticIndexes';
 import languageMiddleware from './utils/languageMiddleware';
 
 export default (app, server) => {
-  //set db to use
-  elasticConfig.index = elasticConfig[app.get('env')];
-
   //common middlewares
   app.use(languageMiddleware);
   app.use(activitylogMiddleware);
@@ -14,7 +10,7 @@ export default (app, server) => {
   //module routes
   //require('./auth/routes.js')(app);
 
-  require('./socketio/middleware').default(server, app);
+  require('./socketio/setupSockets').setupSockets(server, app);
   require('./auth2fa/routes').default(app);
   require('./relationships/routes').default(app);
   require('./activitylog/routes').default(app);

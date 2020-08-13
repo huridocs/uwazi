@@ -1,21 +1,11 @@
-import db from 'api/utils/testing_db';
-
-import { EntitySchema } from 'shared/types/entityType';
-import { FileType } from 'shared/types/fileType';
+import db, { DBFixture } from 'api/utils/testing_db';
 
 const entityId = db.id();
 const entityEnId = db.id();
 const uploadId = db.id();
+const uploadId2 = db.id();
 const templateId = db.id();
 const fileName1 = 'f2082bf51b6ef839690485d7153e847a.pdf';
-
-interface DBFixture {
-  files?: FileType[];
-  entities?: EntitySchema[];
-  templates?: Object[];
-  settings?: Object[];
-  connections?: Object[];
-}
 
 const fixtures: DBFixture = {
   files: [
@@ -26,13 +16,18 @@ const fixtures: DBFixture = {
       filename: fileName1,
       type: 'custom',
     },
+    {
+      _id: uploadId2,
+      entity: 'entity',
+      filename: 'fileNotInDisk',
+    },
     { _id: db.id(), filename: 'fileNotOnDisk' },
     { _id: db.id(), originalname: 'upload2', type: 'custom' },
     { _id: db.id(), originalname: 'upload3', type: 'document' },
   ],
   connections: [
-    { entity: 'entity1', file: uploadId.toString(), hub: '1' },
-    { entity: 'entity2', file: uploadId.toString(), hub: '2' },
+    { entity: 'entity1', file: uploadId2.toString(), hub: '1' },
+    { entity: 'entity2', file: uploadId2.toString(), hub: '2' },
     { entity: 'entity3', hub: '3' },
   ],
   entities: [
@@ -56,4 +51,4 @@ const fixtures: DBFixture = {
   ],
 };
 
-export { fixtures, entityId, entityEnId, fileName1, uploadId, templateId };
+export { fixtures, entityId, entityEnId, fileName1, uploadId, uploadId2, templateId };

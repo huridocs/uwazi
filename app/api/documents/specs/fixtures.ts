@@ -1,7 +1,5 @@
-/** @format */
-
 /* eslint-disable */
-import db from 'api/utils/testing_db';
+import { testingDB as db,  DBFixture } from 'api/utils/testing_db';
 
 const batmanFinishesId = db.id();
 const syncPropertiesEntityId = db.id();
@@ -9,7 +7,7 @@ const templateId = db.id();
 const referenceId = db.id();
 const document1 = db.id();
 
-export default {
+export const fixtures: DBFixture = {
   files: [
     {
       _id: document1,
@@ -18,6 +16,12 @@ export default {
         2: 'page[[2]] 2[[2]]',
       },
     },
+    {
+      entity: 'shared',
+      filename: '8202c463d6158af8065022d9b5014cc1.pdf',
+      originalname: 'Batman original.jpg',
+    },
+    { entity: 'shared', filename: '8202c463d6158af8065022d9b5014ccb.pdf' },
   ],
   entities: [
     {
@@ -28,10 +32,6 @@ export default {
       title: 'Batman finishes',
       published: true,
       user: { username: 'username' },
-      file: {
-        filename: '8202c463d6158af8065022d9b5014cc1.pdf',
-        originalname: 'Batman original.jpg',
-      },
     },
     {
       _id: db.id(),

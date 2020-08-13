@@ -31,7 +31,7 @@ export default {
             delete newPage._id;
             delete newPage.__v;
             newPage.language = language.key;
-            await db.collection('pages').save(newPage);
+            await db.collection('pages').insertOne(newPage);
           }
         })
       );
