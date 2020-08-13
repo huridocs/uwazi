@@ -2,7 +2,7 @@ import path from 'path';
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import testingDB from 'api/utils/testing_db';
 import fs from 'api/utils/async-fs';
-import paths from 'api/config/paths';
+import { config } from 'api/config';
 import migration from '../index.js';
 import fixtures from './fixtures.js';
 
@@ -12,8 +12,8 @@ describe('migration separate-custom-uploads-from-documents', () => {
 
   beforeEach(done => {
     spyOn(process.stdout, 'write');
-    originalDocumentsPath = paths.uploadedDocuments;
-    originalUploadsPath = paths.customUploads;
+    originalDocumentsPath = config.defaultTenant.uploadedDocuments;
+    originalUploadsPath = config.defaultTenant.customUploads;
     testingDB
       .clearAllAndLoad(fixtures)
       .then(done)
@@ -21,8 +21,8 @@ describe('migration separate-custom-uploads-from-documents', () => {
   });
 
   afterEach(done => {
-    paths.uploadedDocuments = originalDocumentsPath;
-    paths.customUploads = originalUploadsPath;
+    config.defaultTenant.uploadedDocuments = originalDocumentsPath;
+    config.defaultTenant.customUploads = originalUploadsPath;
     done();
   });
 
@@ -38,14 +38,14 @@ describe('migration separate-custom-uploads-from-documents', () => {
     let files;
     beforeEach(async () => {
       files = ['file1.txt', 'file2.txt', 'file3.txt'];
-      paths.uploadedDocuments = `${__dirname}/uploaded_documents/`;
-      paths.customUploads = `${__dirname}/custom_uploads/`;
+      config.defaultTenant.uploadedDocuments = `${__dirname}/uploaded_documents/`;
+      config.defaultTenant.customUploads = `${__dirname}/custom_uploads/`;
     });
     afterEach(async () => {
       await Promise.all(
         files.map(async f => {
           try {
-            await fs.unlink(path.join(paths.customUploads, f));
+            await fs.unlink(path.join(config.defaultTenant.customUploads, f));
             // eslint-disable-next-line
           } catch (e) {}
         })
@@ -54,17 +54,20 @@ describe('migration separate-custom-uploads-from-documents', () => {
     const initFiles = async () =>
       Promise.all(
         files.map(f =>
-          fs.writeFile(path.join(paths.uploadedDocuments, f), `contents for file ${f}`)
+          fs.writeFile(
+            path.join(config.defaultTenant.uploadedDocuments, f),
+            `contents for file ${f}`
+          )
         )
       );
     it('should move all uploads from uploaded documents folder to custom uploads folder', async () => {
       await initFiles();
       await migration.up(testingDB.mongodb);
       const filesExistInOldPath = await Promise.all(
-        files.map(f => fs.exists(path.join(paths.uploadedDocuments, f)))
+        files.map(f => fs.exists(path.join(config.defaultTenant.uploadedDocuments, f)))
       );
       const filesExistInNewPath = await Promise.all(
-        files.map(f => fs.exists(path.join(paths.customUploads, f)))
+        files.map(f => fs.exists(path.join(config.defaultTenant.customUploads, f)))
       );
       expect(filesExistInOldPath).toEqual([false, false, false]);
       expect(filesExistInNewPath).toEqual([true, true, true]);

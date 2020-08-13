@@ -1,10 +1,7 @@
 /* eslint-disable import/no-dynamic-require, global-require */
 
-import mongoose from 'mongoose';
-
 import fs from 'fs';
 import path from 'path';
-
 import migrationsModel from './migrationsModel';
 
 const promiseInSequence = funcs =>
@@ -35,12 +32,10 @@ const getMigrations = migrationsDir =>
 
 const saveMigration = migration => migrationsModel.save(migration);
 
-export default {
+const migrator = {
   migrationsDir: `${__dirname}/migrations/`,
 
-  migrate() {
-    const { db } = mongoose.connections[0];
-
+  async migrate(db) {
     return getMigrations(this.migrationsDir).then(migrations =>
       promiseInSequence(
         migrations.map(migration => () => migration.up(db).then(() => saveMigration(migration)))
@@ -51,3 +46,5 @@ export default {
     return getMigrations(this.migrationsDir).then(migrations => Boolean(migrations.length));
   },
 };
+
+export { migrator };

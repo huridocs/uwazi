@@ -1,22 +1,12 @@
-import mongoose from 'mongoose';
+import mongoose, { Schema, UpdateQuery, ModelUpdateOptions } from 'mongoose';
 
 import { model as updatelogsModel } from 'api/updatelogs';
 
-import { OdmModel, WithId, models } from './models';
+import { OdmModel, WithId, models, UwaziFilterQuery } from './models';
+import { MultiTenantMongooseModel } from './MultiTenantMongooseModel';
 
 const generateID = mongoose.Types.ObjectId;
 export { generateID };
-
-function asyncPost(fn: () => Promise<void>, next: (err?: mongoose.NativeError) => void) {
-  fn().then(
-    () => {
-      next();
-    },
-    err => {
-      next(err);
-    }
-  );
-}
 
 class UpdateLogHelper {
   collectionName: string;
@@ -26,22 +16,20 @@ class UpdateLogHelper {
   }
 
   async getAffectedIds(conditions: any) {
-    return mongoose.models[this.collectionName].distinct('_id', conditions);
+    return models[this.collectionName].db.distinct('_id', conditions);
   }
 
-  upsertLogOne(doc: mongoose.Document, next: (err?: mongoose.NativeError) => void) {
+  async upsertLogOne(doc: mongoose.Document) {
     const logData = { namespace: this.collectionName, mongoId: doc._id };
-    return asyncPost(async () => {
-      await updatelogsModel.findOneAndUpdate(
-        logData,
-        { ...logData, timestamp: Date.now(), deleted: false },
-        { upsert: true }
-      );
-    }, next);
+    await updatelogsModel.findOneAndUpdate(
+      logData,
+      { ...logData, timestamp: Date.now(), deleted: false },
+      { upsert: true }
+    );
   }
 
   async upsertLogMany(affectedIds: any[], deleted = false) {
-    await updatelogsModel.updateMany(
+    await updatelogsModel._updateMany(
       { mongoId: { $in: affectedIds }, namespace: this.collectionName },
       { $set: { timestamp: Date.now(), deleted } },
       { lean: true }
@@ -50,12 +38,12 @@ class UpdateLogHelper {
 }
 
 class OdmModelImpl<T> implements OdmModel<T> {
-  db: mongoose.Model<WithId<T> & mongoose.Document>;
+  db: MultiTenantMongooseModel<T>;
 
   logHelper: UpdateLogHelper;
 
-  constructor(logHelper: UpdateLogHelper, db: mongoose.Model<WithId<T> & mongoose.Document>) {
-    this.db = db;
+  constructor(logHelper: UpdateLogHelper, collectionName: string, schema: Schema) {
+    this.db = new MultiTenantMongooseModel(collectionName, schema);
     this.logHelper = logHelper;
   }
 
@@ -63,16 +51,21 @@ class OdmModelImpl<T> implements OdmModel<T> {
     if (Array.isArray(data)) {
       throw new TypeError('Model.save array input no longer supported - use .saveMultiple!');
     }
+
     const documentExists = await this.db.findById(data._id, '_id');
 
     if (documentExists) {
-      const saved = await this.db.findOneAndUpdate({ _id: data._id }, data, { new: true });
+      const saved = await this.db.findOneAndUpdate({ _id: data._id }, data, {
+        new: true,
+      });
       if (saved === null) {
         throw Error('mongoose findOneAndUpdate should never return null!');
       }
+      await this.logHelper.upsertLogOne(saved);
       return saved.toObject() as WithId<T>;
     }
     const saved = await this.db.create(data);
+    await this.logHelper.upsertLogOne(saved);
     return saved.toObject() as WithId<T>;
   }
 
@@ -80,16 +73,27 @@ class OdmModelImpl<T> implements OdmModel<T> {
     return Promise.all(data.map(async d => this.save(d)));
   }
 
+  async updateMany(
+    conditions: UwaziFilterQuery<T>,
+    doc: UpdateQuery<T>,
+    options: ModelUpdateOptions = {}
+  ) {
+    const result = await this.db._updateMany(conditions, doc, options);
+    const affectedIds = await this.logHelper.getAffectedIds(conditions);
+    await this.logHelper.upsertLogMany(affectedIds);
+    return result;
+  }
+
+  async count(condition: any = {}) {
+    return this.db.countDocuments(condition);
+  }
+
   get(query: any = {}, select = '', pagination = {}) {
     return this.db.find(query, select, Object.assign({ lean: true }, pagination));
   }
 
-  async count(condition: any) {
-    return this.db.countDocuments(condition).exec();
-  }
-
-  async getById(id: any | string | number) {
-    return this.db.findById(id, {}, { lean: true }).exec();
+  async getById(id: any | string | number, select?: any) {
+    return this.db.findById(id, select);
   }
 
   async delete(condition: any) {
@@ -111,18 +115,7 @@ class OdmModelImpl<T> implements OdmModel<T> {
 
 export function instanceModel<T = any>(collectionName: string, schema: mongoose.Schema) {
   const logHelper = new UpdateLogHelper(collectionName);
-  schema.post('save', logHelper.upsertLogOne.bind(logHelper));
-  schema.post('findOneAndUpdate', logHelper.upsertLogOne.bind(logHelper));
-  schema.post('updateMany', function updateMany(this: any, _doc: any, next: any) {
-    asyncPost(async () => {
-      const affectedIds = await logHelper.getAffectedIds(this._conditions);
-      await logHelper.upsertLogMany(affectedIds);
-    }, next);
-  });
-  const model = new OdmModelImpl<T>(
-    logHelper,
-    mongoose.model<WithId<T> & mongoose.Document>(collectionName, schema)
-  );
+  const model = new OdmModelImpl<T>(logHelper, collectionName, schema);
   models[collectionName] = model;
   return model;
 }

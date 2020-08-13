@@ -40,14 +40,6 @@ const mongoSchema = new mongoose.Schema(
 mongoSchema.index({ title: 'text' }, { language_override: 'mongoLanguage' });
 
 const Model = instanceModel<EntitySchema>('entities', mongoSchema);
-Model.db.collection.dropIndex('title_text', () => {
-  // We deliberately kick this promise into the void and ignore the result,
-  // because it's usually fast and we can't await here...
-  Model.db.ensureIndexes().then(
-    () => {},
-    () => {}
-  );
-});
 
 const supportedLanguages = [
   'da',

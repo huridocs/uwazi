@@ -134,6 +134,7 @@ describe('users routes', () => {
 
   describe('GET', () => {
     it('should need authorization', () => {
+      spyOn(users, 'get').and.returnValue(Promise.resolve(['users']));
       const req = {};
       expect(routes.get('/api/users', req)).toNeedAuthorization();
     });

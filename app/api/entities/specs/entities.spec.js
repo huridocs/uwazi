@@ -900,12 +900,12 @@ describe('entities', () => {
     });
 
     it('should do nothing when there is no changed or deleted properties', done => {
-      spyOn(entitiesModel.db, 'updateMany');
+      spyOn(entitiesModel, 'updateMany');
 
       entities
         .updateMetadataProperties(currentTemplate, currentTemplate)
         .then(() => {
-          expect(entitiesModel.db.updateMany).not.toHaveBeenCalled();
+          expect(entitiesModel.updateMany).not.toHaveBeenCalled();
           done();
         })
         .catch(catchErrors(done));
@@ -939,7 +939,7 @@ describe('entities', () => {
           expect(docs[1].metadata.property3).toEqual([{ value: 'value3' }]);
 
           expect(docDiferentTemplate.metadata.property1).toEqual([{ value: 'value1' }]);
-          expect(search.indexEntities).toHaveBeenCalledWith({ template: template._id }, null, 1000);
+          expect(search.indexEntities).toHaveBeenCalledWith({ template: template._id });
           done();
         })
         .catch(catchErrors(done));
@@ -1062,11 +1062,11 @@ describe('entities', () => {
         .catch(catchErrors(done)));
 
     it('should delete the original file', async () => {
-      fs.writeFileSync(uploadsPath('8202c463d6158af8065022d9b5014cc1.pdf'));
-      fs.writeFileSync(uploadsPath('8202c463d6158af8065022d9b5014ccb.pdf'));
-      fs.writeFileSync(uploadsPath('8202c463d6158af8065022d9b5014ccc.pdf'));
-      fs.writeFileSync(uploadsPath(`${uploadId1}.jpg`));
-      fs.writeFileSync(uploadsPath(`${uploadId2}.jpg`));
+      fs.writeFileSync(uploadsPath('8202c463d6158af8065022d9b5014cc1.pdf'), '');
+      fs.writeFileSync(uploadsPath('8202c463d6158af8065022d9b5014ccb.pdf'), '');
+      fs.writeFileSync(uploadsPath('8202c463d6158af8065022d9b5014ccc.pdf'), '');
+      fs.writeFileSync(uploadsPath(`${uploadId1}.jpg`), '');
+      fs.writeFileSync(uploadsPath(`${uploadId2}.jpg`), '');
 
       expect(fs.existsSync(uploadsPath('8202c463d6158af8065022d9b5014ccb.pdf'))).toBe(true);
       expect(fs.existsSync(uploadsPath('8202c463d6158af8065022d9b5014cc1.pdf'))).toBe(true);

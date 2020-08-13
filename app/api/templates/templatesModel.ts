@@ -1,5 +1,3 @@
-/** @format */
-
 import { instanceModel } from 'api/odm';
 import mongoose from 'mongoose';
 import { TemplateSchema } from '../../shared/types/templateType';

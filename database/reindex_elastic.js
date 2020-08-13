@@ -1,15 +1,16 @@
-import connect, { disconnect } from 'api/utils/connect_to_mongo';
+import { config } from 'api/config';
 import request from '../app/shared/JSONRequest';
 import elasticMapping from './elastic_mapping/elastic_mapping';
 
-import indexConfig from '../app/api/config/elasticIndexes';
 import { search } from '../app/api/search';
 import { IndexError } from '../app/api/search/entitiesIndex';
 import errorLog from '../app/api/log/errorLog';
+import { tenants } from 'api/tenants/tenantContext';
+import { DB } from 'api/odm';
 
 const getIndexUrl = () => {
   const elasticUrl = process.env.ELASTICSEARCH_URL || 'http://localhost:9200';
-  return `${elasticUrl}/${indexConfig.index}`;
+  return `${elasticUrl}/${config.defaultTenant.indexName}`;
 };
 
 const setReindexSettings = async (refreshInterval, numberOfReplicas, translogDurability) =>
@@ -35,7 +36,7 @@ const endScriptProcedures = async () =>
     errorLog.closeGraylog(async () => {
       try {
         await restoreSettings();
-        await disconnect();
+        await DB.disconnect();
         resolve();
       } catch (err) {
         reject(err);
@@ -61,7 +62,7 @@ const indexEntities = async () => {
 
 /*eslint-disable max-statements*/
 const prepareIndex = async () => {
-  process.stdout.write(`Deleting index ${indexConfig.index}...`);
+  process.stdout.write(`Deleting index ${config.defaultTenant.indexName}...`);
   try {
     await request.delete(getIndexUrl());
   } catch (err) {
@@ -75,7 +76,7 @@ const prepareIndex = async () => {
   }
   process.stdout.write(' [done]\n');
 
-  process.stdout.write(`Creating index ${indexConfig.index}...`);
+  process.stdout.write(`Creating index ${config.defaultTenant.indexName}...`);
   await request.put(getIndexUrl(), elasticMapping);
   process.stdout.write(' [done]\n');
 };
@@ -108,18 +109,19 @@ process.on('unhandledRejection', error => {
   throw error;
 });
 
-connect().then(async () => {
+DB.connect().then(async () => {
   const start = Date.now();
 
-  try {
-    await prepareIndex();
-    await tweakSettingsForPerformmance();
-    await reindex();
-  } catch (err) {
-    await processErrors(err);
-  }
-
-  await endScriptProcedures();
+  await tenants.run(async () => {
+    try {
+      await prepareIndex();
+      await tweakSettingsForPerformmance();
+      await reindex();
+    } catch (err) {
+      await processErrors(err);
+    }
+    await endScriptProcedures();
+  });
 
   const end = Date.now();
   process.stdout.write(`Done, took ${(end - start) / 1000} seconds\n`);

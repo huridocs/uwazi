@@ -1,15 +1,14 @@
-/** @format */
-
 import Joi from 'joi';
 import cookieParser from 'cookie-parser';
 import mongoConnect from 'connect-mongo';
-import mongoose from 'mongoose';
 import passport from 'passport';
 import session from 'express-session';
 import uniqueID from 'shared/uniqueID';
 import svgCaptcha from 'svg-captcha';
 import settings from 'api/settings';
 import urljoin from 'url-join';
+import { DB } from 'api/odm';
+import { config } from 'api/config';
 
 import { validation } from '../utils';
 
@@ -24,7 +23,7 @@ export default app => {
     session({
       secret: app.get('env') === 'production' ? uniqueID() : 'harvey&lola',
       store: new MongoStore({
-        mongooseConnection: mongoose.connection,
+        mongooseConnection: DB.connectionForDB(config.SHARED_DB),
       }),
       resave: false,
       saveUninitialized: false,

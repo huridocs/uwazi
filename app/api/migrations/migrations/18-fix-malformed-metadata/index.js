@@ -1,4 +1,3 @@
-/** @format */
 /* eslint-disable max-statements, no-await-in-loop */
 
 const stringifyId = data => ({ ...data, id: data.id.toString() });
@@ -106,7 +105,9 @@ export default {
 
     thesauri.forEach(async thesaurus => {
       const values = sanitizeThesaurus(thesaurus);
-      await db.collection('dictionaries').update({ _id: thesaurus._id }, { ...thesaurus, values });
+      await db
+        .collection('dictionaries')
+        .replaceOne({ _id: thesaurus._id }, { ...thesaurus, values });
     });
 
     const upadtedThesauri = await getDocumentsFrom('dictionaries');
@@ -145,7 +146,7 @@ export default {
         if (shouldProcess) {
           await db
             .collection('entities')
-            .update({ _id: entity._id }, { $set: { metadata: newMetadata } });
+            .updateOne({ _id: entity._id }, { $set: { metadata: newMetadata } });
         }
       }
 

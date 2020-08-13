@@ -3,7 +3,7 @@ import { Application, Request, Response, NextFunction } from 'express';
 
 import db from 'api/utils/testing_db';
 
-import fixtures, { document1 } from './fixtures';
+import { fixtures, document1 } from './fixtures';
 
 import { setUpApp } from 'api/utils/testingRoutes';
 import { documentRoutes } from '../routes';

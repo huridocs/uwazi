@@ -19,18 +19,23 @@ export default function(req, res, next) {
     return next();
   }
 
-  return settings.get().then(result => {
-    if (result.private && !req.url.match(allowedApiMatch)) {
-      if (req.url.match(forbiddenRoutesMatch)) {
-        res.status(401);
-        res.json({ error: 'Unauthorized' });
+  return settings
+    .get()
+    .then(result => {
+      if (result.private && !req.url.match(allowedApiMatch)) {
+        if (req.url.match(forbiddenRoutesMatch)) {
+          res.status(401);
+          res.json({ error: 'Unauthorized' });
+          return;
+        }
+
+        res.redirect('/login');
         return;
       }
 
-      res.redirect('/login');
-      return;
-    }
-
-    next();
-  });
+      next();
+    })
+    .catch(error => {
+      next(error);
+    });
 }

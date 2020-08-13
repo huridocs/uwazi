@@ -10,18 +10,22 @@ declare global {
 }
 
 export default async (req: Request, _res: Response, next: NextFunction) => {
-  let lang = req.get('content-language');
-  if (!lang && req.cookies) {
-    lang = req.cookies.locale;
+  try {
+    let lang = req.get('content-language');
+    if (!lang && req.cookies) {
+      lang = req.cookies.locale;
+    }
+    if (!lang && req.get('accept-language')) {
+      [lang] = req.get('accept-language')!.split('-');
+    }
+
+    const { languages = [] } = await settings.get();
+
+    //@ts-ignore
+    req.language = languages.find(l => l.key === lang) ? lang : languages.find(l => l.default).key;
+
+    next();
+  } catch (e) {
+    next(e);
   }
-  if (!lang && req.get('accept-language')) {
-    [lang] = req.get('accept-language')!.split('-');
-  }
-
-  const { languages = [] } = await settings.get();
-
-  //@ts-ignore
-  req.language = languages.find(l => l.key === lang) ? lang : languages.find(l => l.default).key;
-
-  next();
 };

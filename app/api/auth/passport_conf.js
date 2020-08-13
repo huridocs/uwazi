@@ -1,6 +1,7 @@
 import passport from 'passport';
 import LocalStrategy from 'passport-local';
 import users from 'api/users/users';
+import { tenants } from 'api/tenants/tenantContext';
 
 const getDomain = req => `${req.protocol}://${req.get('host')}`;
 
@@ -21,12 +22,17 @@ passport.use(
 );
 
 passport.serializeUser((user, done) => {
-  done(null, user._id);
+  done(null, `${user._id}///${tenants.current().name}`);
 });
 
-passport.deserializeUser((id, done) => {
-  users.getById(id).then(user => {
-    delete user.password;
+passport.deserializeUser((serializeUser, done) => {
+  const currentTenant = tenants.current().name;
+  const [id, serializedTenant] = serializeUser.split('///');
+  if (serializedTenant !== currentTenant) {
+    return done(null, false);
+  }
+
+  users.getById(id, '-password').then(user => {
     done(null, user);
   });
 });

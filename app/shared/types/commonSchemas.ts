@@ -7,6 +7,17 @@ export const objectIdSchema = {
   oneOf: [{ type: 'string' }, { type: 'object' }],
 };
 
+export const attachmentSchema = {
+  type: 'object',
+  properties: {
+    originalname: { type: 'string' },
+    filename: { type: 'string' },
+    mimetype: { type: 'string' },
+    timestamp: { type: 'number' },
+    size: { type: 'number' },
+  },
+};
+
 export const linkSchema = {
   type: 'object',
   additionalProperties: false,
