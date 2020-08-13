@@ -7,23 +7,18 @@ describe('Table view', () => {
 		await insertFixtures();
 		await proxyMock();
 		await page.goto(`${host}/library/table`);
-		await page.waitForNavigation();
+		await page.waitFor(2000);
 	});
 	
 	describe('Column selector', () => {
-		let columnsOptions: any[];
-		
-		beforeAll(async () => {
+		it('Should show only selected properties', async () => {
 			await page.click('.hidden-columns-dropdown');
-			columnsOptions = await page.$$eval('#rw_1_listbox > li', options =>
+			const columnsOptions = await page.$$eval('#rw_1_listbox > li', options =>
 				options.map(option => ({
 					checked: (<HTMLInputElement>option.children[0]).checked,
 					option: option.textContent,
 				}))
 			);
-		});
-		
-		it('Should show only selected properties', async () => {
 			const selectedColumns = columnsOptions
 				.filter(option => option.checked)
 				.map(option => option.option);
@@ -37,14 +32,16 @@ describe('Table view', () => {
 		});
 		
 		it('Should show new selected properties', async () => {
-			await page.click('.hidden-columns-dropdown');
-			await page.click('#rw_1_listbox > li:nth-child(9)');
+			const newColumn = await page.$$eval('#rw_1_listbox > li:nth-child(9)', option => {
+				(<HTMLInputElement>option[0]).click();
+				return option[0].textContent;
+			});
 			await page.waitFor(200);
 			const lastColumn = await page.$$eval(
 				'.tableview-wrapper > table > thead > tr > th:last-child',
 				columns => columns[0].textContent
 			);
-			expect(lastColumn).toEqual(columnsOptions[8].option);
+			expect(lastColumn).toEqual(newColumn);
 		});
 	});
 	
@@ -57,7 +54,7 @@ describe('Table view', () => {
 		});
 		await page.waitFor(2000);
 		const optionsSelector = '#rw_1_listbox > li';
-		const headerColumnSelector = '.tableview-wrapper > table > thead > tr > th';
+		const headerColumnSelector = '.tableview-wrapper th';
 		const optionsCount = await page.$$eval(optionsSelector, options => options.length);
 		const columnsCount = await page.$$eval(headerColumnSelector, columns => columns.length);
 		expect(optionsCount).toEqual(columnsCount);

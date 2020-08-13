@@ -60,8 +60,13 @@ export default class Library extends RouteHandler {
   render() {
     return (
       <LibraryLayout>
-        <LibraryModeToggleButtons storeKey="library" zoomIn={this.zoomIn} zoomOut={this.zoomOut} />
-        <DocumentsList storeKey="library" />
+        <LibraryModeToggleButtons
+          storeKey="library"
+          zoomIn={this.zoomIn}
+          zoomOut={this.zoomOut}
+          showColumnSelector={this.props.viewer !== undefined}
+        />
+        <DocumentsList storeKey="library" CollectionViewer={this.props.viewer} />
       </LibraryLayout>
     );
   }

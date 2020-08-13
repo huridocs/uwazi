@@ -53,7 +53,7 @@ describe('HiddenColumnsDropdown', () => {
         expect(dropDown.props().data[0]).toEqual({
           label: 'Show all',
           selectAll: true,
-          indeterminate: false,
+          indeterminate: true,
           hidden: false,
         });
       });
