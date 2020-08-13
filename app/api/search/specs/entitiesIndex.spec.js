@@ -138,9 +138,9 @@ describe('entitiesIndex', () => {
       spyOn(elastic, 'bulk').and.returnValue(Promise.resolve([]));
       await search.indexEntities({ language: 'es' }, '', 2);
 
-      const indexedEntities = flatten(
-        flatten(elastic.bulk.calls.allArgs()).map(arg => arg.body)
-      ).filter(bulkElement => !bulkElement.index);
+      const indexedEntities = flatten(flatten(elastic.bulk.calls.allArgs()).map(arg => arg.body))
+        .filter(bulkElement => !bulkElement.index)
+        .sort((a, b) => a.title.localeCompare(b.title));
 
       expect(indexedEntities).toEqual([
         expect.objectContaining({ title: 'titulo1' }),

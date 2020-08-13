@@ -32,7 +32,7 @@ Read the [user guide](https://github.com/huridocs/uwazi/wiki)
 
 # Dependencies
 
-- **NodeJs 10.21.x** For ease of update, use nvm: https://github.com/creationix/nvm
+- **NodeJs 14.6.x** For ease of update, use nvm: https://github.com/creationix/nvm
 - **ElasticSearch 7.6.2** https://www.elastic.co/guide/en/elasticsearch/reference/7.6/install-elasticsearch.html Please note that ElasticSearch requires java.  Follow the instructions to instal the package manually, and install v7.6.2.  v7.7.x and above are known to cause `HPE_HEADER_OVERFLOW` errors.  Please, ensure v7.6.2 only.
   Probably need to disable ml module in the elastic search config file:
   `xpack.ml.enabled: false`

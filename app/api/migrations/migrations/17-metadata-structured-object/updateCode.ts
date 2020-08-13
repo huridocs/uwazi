@@ -1,7 +1,7 @@
 /** @format */
 /* eslint-disable max-statements,no-eval */
 
-import paths from 'api/config/paths';
+import { config } from 'api/config';
 import fs from 'fs';
 import path from 'path';
 import index from 'api/migrations/migrations/17-metadata-structured-object';
@@ -75,4 +75,4 @@ function handleFile(file: string, _stats: fs.Stats): void {
   }
 }
 
-walk(path.join(paths.rootPath, '/app'), handleFile);
+walk(path.join(config.rootPath, '/app'), handleFile);

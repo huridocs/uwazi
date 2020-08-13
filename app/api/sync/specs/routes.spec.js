@@ -4,7 +4,7 @@ import { models } from 'api/odm';
 import search from 'api/search/search';
 
 import instrumentRoutes from '../../utils/instrumentRoutes';
-import syncRoutes from '../routes.js';
+import syncRoutes from '../routes';
 
 describe('sync', () => {
   let routes;

@@ -4,11 +4,8 @@ import elasticMapping from '../../../database/elastic_mapping/elastic_mapping';
 export default (elasticIndex, search) => ({
   async resetIndex() {
     await elastic.indices.delete({ index: elasticIndex, ignore_unavailable: true });
-    return elastic.indices.create({ index: elasticIndex, body: elasticMapping });
-  },
-
-  async refresh() {
-    await elastic.indices.refresh({ index: elasticIndex });
+    await elastic.indices.create({ index: elasticIndex, body: elasticMapping });
+    return this.refresh();
   },
 
   async reindex() {
@@ -19,5 +16,9 @@ export default (elasticIndex, search) => ({
 
   async putMapping(body) {
     await elastic.indices.putMapping({ index: elasticIndex, body });
+  },
+
+  async refresh() {
+    await elastic.indices.refresh({ index: elasticIndex });
   },
 });

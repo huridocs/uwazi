@@ -1,8 +1,13 @@
+//@ts-ignore
+import redis from 'redis';
+//@ts-ignore
+import redisAdapter from 'socket.io-redis';
 import cookie from 'cookie';
-import socketIo, { Server as SocketIoServer, Socket } from 'socket.io';
-
-import { Application, Request, Response, NextFunction } from 'express';
 import { Server } from 'http';
+import socketIo, { Server as SocketIoServer, Socket } from 'socket.io';
+import { Application, Request, Response, NextFunction } from 'express';
+import { config } from 'api/config';
+import { tenants } from 'api/tenants/tenantContext';
 
 declare global {
   namespace Express {
@@ -11,10 +16,37 @@ declare global {
       io: SocketIoServer;
     }
   }
+  namespace SocketIO {
+    export interface Server {
+      emitToCurrentTenant(event: string, ...args: any[]): void;
+    }
+  }
 }
 
-export default (server: Server, app: Application) => {
+const setupSockets = (server: Server, app: Application) => {
   const io: SocketIoServer = socketIo(server);
+
+  io.on('connection', socket => {
+    socket.join(socket.request.headers.tenant || tenants.defaultTenantName);
+  });
+
+  io.emitToCurrentTenant = (event, ...args) => {
+    io.to(tenants.current().name).emit(event, ...args);
+  };
+
+  if (config.redis.activated) {
+    io.adapter(
+      redisAdapter({
+        pubClient: redis.createClient(config.redis.port, config.redis.host, {
+          retry_strategy: () => 3000,
+        }),
+        subClient: redis.createClient(config.redis.port, config.redis.host, {
+          retry_strategy: () => 3000,
+        }),
+      })
+    );
+  }
+
   app.use((req, _res, next) => {
     req.io = io;
     next();
@@ -38,6 +70,7 @@ export default (server: Server, app: Application) => {
 
       Object.keys(req.io.sockets.connected).reduce((sockets, socketId) => {
         const socket = req.io.sockets.connected[socketId];
+
         if (typeof socket.request.headers.cookie !== 'string') {
           return sockets;
         }
@@ -63,3 +96,5 @@ export default (server: Server, app: Application) => {
     next();
   });
 };
+
+export { setupSockets };

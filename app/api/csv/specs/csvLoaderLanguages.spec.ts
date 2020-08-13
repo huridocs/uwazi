@@ -5,7 +5,7 @@ import entities from 'api/entities';
 import { files } from 'api/files/files';
 import { search } from 'api/search';
 import settings from 'api/settings';
-import * as fileUtils from 'api/files/filesystem';
+import * as filesystem from 'api/files/filesystem';
 import { EntitySchema } from 'shared/types/entityType';
 import { ensure } from 'shared/tsUtils';
 import { MetadataObjectSchema } from 'shared/types/commonTypes';
@@ -13,8 +13,6 @@ import { MetadataObjectSchema } from 'shared/types/commonTypes';
 import { CSVLoader } from '../csvLoader';
 import fixtures, { template1Id } from './fixtures';
 import { createTestingZip } from './helpers';
-
-import configPaths from '../../config/paths';
 
 const removeTestingZip = async () =>
   new Promise(resolve => {
@@ -29,6 +27,7 @@ describe('csvLoader languages', () => {
 
   beforeAll(async () => {
     await db.clearAllAndLoad(fixtures);
+    filesystem.setupTestUploadedPaths();
     spyOn(search, 'indexEntities').and.returnValue(Promise.resolve());
 
     const { languages = [] } = await settings.get();
@@ -43,8 +42,7 @@ describe('csvLoader languages', () => {
       'testLanguages.zip'
     );
     const csv = path.join(__dirname, 'zipData/testLanguages.zip');
-    spyOn(fileUtils, 'generateFileName').and.callFake(file => `generated${file.originalname}`);
-    configPaths.uploadedDocuments = path.join(__dirname, '/');
+    spyOn(filesystem, 'generateFileName').and.callFake(file => `generated${file.originalname}`);
     await loader.load(csv, template1Id, { language: 'en' });
 
     imported = await entities.get();
@@ -52,15 +50,16 @@ describe('csvLoader languages', () => {
 
   afterAll(async () => {
     const generatedImages = (await files.get({})).map(u => u._id.toString());
-    await fileUtils.deleteFiles([
-      path.join(configPaths.uploadedDocuments, 'generated1.pdf'),
-      path.join(configPaths.uploadedDocuments, 'generated2.pdf'),
-      path.join(configPaths.uploadedDocuments, `${generatedImages[0]}.jpg`),
-      path.join(configPaths.uploadedDocuments, `${generatedImages[1]}.jpg`),
-      path.join(configPaths.uploadedDocuments, `${generatedImages[2]}.jpg`),
-      path.join(configPaths.uploadedDocuments, `${generatedImages[3]}.jpg`),
-      path.join(configPaths.uploadedDocuments, `${generatedImages[4]}.jpg`),
-      path.join(configPaths.uploadedDocuments, `${generatedImages[5]}.jpg`),
+
+    await filesystem.deleteFiles([
+      filesystem.uploadsPath('generated1.pdf'),
+      filesystem.uploadsPath('generated2.pdf'),
+      filesystem.uploadsPath(`${generatedImages[0]}.jpg`),
+      filesystem.uploadsPath(`${generatedImages[1]}.jpg`),
+      filesystem.uploadsPath(`${generatedImages[2]}.jpg`),
+      filesystem.uploadsPath(`${generatedImages[3]}.jpg`),
+      filesystem.uploadsPath(`${generatedImages[4]}.jpg`),
+      filesystem.uploadsPath(`${generatedImages[5]}.jpg`),
     ]);
 
     await removeTestingZip();

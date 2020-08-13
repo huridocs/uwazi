@@ -7,6 +7,15 @@ export type ObjectIdSchema =
       [k: string]: any | undefined;
     };
 
+export interface AttachmentSchema {
+  originalname?: string;
+  filename?: string;
+  mimetype?: string;
+  timestamp?: number;
+  size?: number;
+  [k: string]: any | undefined;
+}
+
 export interface LinkSchema {
   label?: string | null;
   url?: string | null;

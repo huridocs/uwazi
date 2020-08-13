@@ -1,6 +1,6 @@
 /* eslint-disable */
 
-import paths from 'api/config/paths';
+import { config } from 'api/config';
 import { PDF } from 'api/files/PDF';
 import fs from 'fs';
 import path from 'path';
@@ -16,7 +16,7 @@ export default {
   async up(db) {
     process.stdout.write(`${this.name}...\r\n`);
     let index = 1;
-    const totalDocuments = await db.collection('entities').count({ type: 'document' });
+    const totalDocuments = await db.collection('entities').countDocuments({ type: 'document' });
     if (totalDocuments === 0) {
       return;
     }
@@ -25,12 +25,12 @@ export default {
       const entity = await cursor.next();
       if (!entity.file || (entity.file && !entity.file.filename)) {
         process.stdout.write(`processed (no filename) -> ${index}\r`);
-      } else if (!fs.existsSync(path.join(paths.uploadedDocuments, entity.file.filename))) {
+      } else if (!fs.existsSync(path.join(config.defaultTenant.uploadedDocuments, entity.file.filename))) {
         process.stdout.write(`processed (no file) -> ${index}\r`);
       } else {
         try {
           const conversion = await new PDF({
-            filename: path.join(paths.uploadedDocuments, entity.file.filename),
+            filename: path.join(config.defaultTenant.uploadedDocuments, entity.file.filename),
           }).extractText();
           await db.collection('entities').findOneAndUpdate(entity, { $set: { ...conversion } });
           process.stdout.write(`processed -> ${index}\r`);

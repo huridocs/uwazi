@@ -1,4 +1,4 @@
-import middleware from '../middleware';
+import { setupSockets } from '../setupSockets';
 
 describe('socketio middleware', () => {
   let executeMiddleware;
@@ -6,7 +6,7 @@ describe('socketio middleware', () => {
     const app = {
       use: jasmine.createSpy('use'),
     };
-    middleware({}, app);
+    setupSockets({}, app);
     [executeMiddleware] = app.use.calls.mostRecent().args;
   });
 
@@ -20,12 +20,12 @@ describe('socketio middleware', () => {
     expect(next).toHaveBeenCalled();
   });
 
-  describe('getCurrentSessionSockets', () => {
-    const createSocket = cookie => ({
-      request: { headers: { cookie } },
-      emit: jasmine.createSpy('emit'),
-    });
+  const createSocket = cookie => ({
+    request: { headers: { cookie } },
+    emit: jasmine.createSpy('emit'),
+  });
 
+  describe('getCurrentSessionSockets', () => {
     let socket1;
     let socket2;
     let socket3;

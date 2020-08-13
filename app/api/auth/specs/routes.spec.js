@@ -1,5 +1,3 @@
-/** @format */
-
 import express from 'express';
 import bodyParser from 'body-parser';
 import request from 'supertest';
@@ -20,12 +18,12 @@ describe('Auth Routes', () => {
   let app;
 
   beforeEach(async () => {
-    routes = instrumentRoutes(authRoutes);
     await db.clearAllAndLoad(fixtures);
+    routes = instrumentRoutes(authRoutes);
   });
 
-  afterAll(done => {
-    db.disconnect().then(done);
+  afterAll(async () => {
+    await db.disconnect();
   });
 
   describe('/login', () => {
