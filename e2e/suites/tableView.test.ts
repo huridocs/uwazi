@@ -6,12 +6,10 @@ import insertFixtures from '../helpers/insertFixtures';
 
 describe('Table view', () => {
   beforeAll(async () => {
-    console.log('before fixtures');
     await insertFixtures();
     await proxyMock();
-    console.log('after fixtures');
     await page.goto(`${host}/library/table`);
-    await page.waitFor(2000);
+    await page.waitFor(200);
   });
 
   describe('Column selector', () => {
@@ -56,7 +54,7 @@ describe('Table view', () => {
       (<HTMLInputElement>item[0]).checked = false;
       (<HTMLInputElement>item[0]).click();
     });
-    await page.waitFor(2000);
+    await page.waitFor(200);
     const optionsSelector = '#rw_1_listbox li';
     const headerColumnSelector = '.tableview-wrapper th';
     const optionsCount = await page.$$eval(optionsSelector, options => options.length);
@@ -79,7 +77,7 @@ describe('Table view', () => {
     const showMoreSelector = '.btn-load-more:nth-child(1)';
     const rowSelector = '.tableview-wrapper > table > tbody > tr';
     await page.click(showMoreSelector);
-    await page.waitFor(2000);
+    await page.waitFor(200);
     const rowsNumber = await page.$$eval(rowSelector, rows => rows.length);
     expect(rowsNumber).toBe(60);
   });

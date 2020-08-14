@@ -2,4 +2,4 @@
 const { setDefaultOptions } = require('expect-puppeteer');
 
 setDefaultOptions({ timeout: 2000 });
-jest.setTimeout(100000);
+jest.setTimeout(50000);
