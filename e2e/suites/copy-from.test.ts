@@ -4,7 +4,7 @@ import { adminLogin, logout } from '../helpers/login';
 import proxyMock from '../helpers/proxyMock';
 import insertFixtures from '../helpers/insertFixtures';
 
-function delay(time) {
+function delay(time: number) {
   return new Promise(function(resolve) {
     setTimeout(resolve, time);
   });
