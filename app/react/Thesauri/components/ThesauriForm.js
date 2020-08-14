@@ -68,29 +68,14 @@ export class ThesauriForm extends Component {
     this.firstLoad = true;
   }
 
-  componentWillReceiveProps(props) {
-    props.thesauri.values.forEach((value, index) => {
-      if (
-        value.values &&
-        (!value.values.length || value.values[value.values.length - 1].label !== '')
-      ) {
-        props.addValue(index);
-      }
-    });
-
-    if (
-      !props.thesauri.values.length ||
-      props.thesauri.values[props.thesauri.values.length - 1].label !== ''
-    ) {
-      props.addValue();
-    }
-  }
-
   componentDidUpdate(previousProps) {
     if (this.firstLoad) {
       this.firstLoad = false;
       return;
     }
+
+    this.addEmptyValueAtTheEnd();
+
     const { values } = this.props.thesauri;
     const previousValues = previousProps.thesauri.values;
     const addedValue = values.length > previousProps.thesauri.values.length;
@@ -113,6 +98,24 @@ export class ThesauriForm extends Component {
 
   onImportClicked() {
     this.fileInputRef.current.click();
+  }
+
+  addEmptyValueAtTheEnd() {
+    this.props.thesauri.values.forEach((value, index) => {
+      if (
+        value.values &&
+        (!value.values.length || value.values[value.values.length - 1].label !== '')
+      ) {
+        this.props.addValue(index);
+      }
+    });
+
+    if (
+      !this.props.thesauri.values.length ||
+      this.props.thesauri.values[this.props.thesauri.values.length - 1].label !== ''
+    ) {
+      this.props.addValue();
+    }
   }
 
   import() {
@@ -148,6 +151,7 @@ export class ThesauriForm extends Component {
     if (!isNew && !id) {
       return false;
     }
+
     this.groups = [];
     return (
       <div className="thesauri">
