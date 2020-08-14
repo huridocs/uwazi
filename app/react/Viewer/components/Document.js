@@ -28,13 +28,10 @@ export class Document extends Component {
     this.text = Text(this.pagesContainer);
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (this.props.doc.get('_id') !== nextProps.doc.get('_id')) {
+  componentDidUpdate(prevProps) {
+    if (this.props.doc.get('_id') !== prevProps.doc.get('_id')) {
       this.props.unsetSelection();
     }
-  }
-
-  componentDidUpdate() {
     this.text.renderReferences(this.props.references.toJS());
     this.text.renderReferences(this.props.doc.toJS().toc || [], 'toc-ref', 'span');
     this.text.simulateSelection(this.props.selection, this.props.forceSimulateSelection);
