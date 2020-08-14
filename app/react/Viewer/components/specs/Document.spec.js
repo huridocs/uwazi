@@ -158,11 +158,11 @@ describe('Document', () => {
     });
   });
 
-  describe('componentWillMount', () => {
+  describe('componentDidMount', () => {
     it('should unset selection', () => {
       render();
       expect(props.unsetSelection.calls.count()).toBe(1);
-      instance.componentWillMount();
+      instance.componentDidMount();
       expect(props.unsetSelection.calls.count()).toBe(2);
     });
   });

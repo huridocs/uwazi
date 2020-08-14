@@ -10,11 +10,11 @@ import LeftRelationship from './LeftRelationship';
 import RightRelationship from './RightRelationship';
 
 export class RelationshipsGraphEdit extends Component {
-  componentWillMount() {
+  componentDidMount() {
     this.props.parseResults(this.props.searchResults, this.props.parentEntity, this.props.editing);
   }
 
-  componentWillUpdate(nextProps) {
+  componentDidUpdate(nextProps) {
     if (this.props.searchResults !== nextProps.searchResults) {
       this.props.parseResults(nextProps.searchResults, nextProps.parentEntity, this.props.editing);
     }

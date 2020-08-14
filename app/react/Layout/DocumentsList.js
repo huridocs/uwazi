@@ -16,15 +16,19 @@ import { t, Translate } from 'app/I18N';
 import { Icon } from 'UI';
 
 class DocumentsList extends Component {
-  constructor(props, context) {
-    super(props, context);
-    this.state = { loading: false };
-    this.clickOnDocument = this.clickOnDocument.bind(this);
-    this.selectAllDocuments = this.selectAllDocuments.bind(this);
+  static getDerivedStateFromProps(props, state) {
+    if (props.documents !== state.documents) {
+      return { loading: false, documents: props.documents };
+    }
+
+    return null;
   }
 
-  componentWillReceiveProps() {
-    this.setState({ loading: false });
+  constructor(props, context) {
+    super(props, context);
+    this.state = { loading: false, documents: props.documents };
+    this.clickOnDocument = this.clickOnDocument.bind(this);
+    this.selectAllDocuments = this.selectAllDocuments.bind(this);
   }
 
   clickOnDocument(...args) {
@@ -40,7 +44,6 @@ class DocumentsList extends Component {
   }
 
   loadMoreDocuments(amount, from) {
-    this.setState({ loading: true });
     this.setState({ loading: true });
     this.props.loadMoreDocuments(this.props.storeKey, amount, from);
   }

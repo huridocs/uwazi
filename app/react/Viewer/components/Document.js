@@ -23,11 +23,8 @@ export class Document extends Component {
     this.onDocumentReady = this.onDocumentReady.bind(this);
   }
 
-  componentWillMount() {
-    this.props.unsetSelection();
-  }
-
   componentDidMount() {
+    this.props.unsetSelection();
     this.text = Text(this.pagesContainer);
   }
 
@@ -43,6 +40,10 @@ export class Document extends Component {
     this.text.simulateSelection(this.props.selection, this.props.forceSimulateSelection);
     this.text.activate(this.props.activeReference);
     highlightSnippet(this.props.selectedSnippet, this.props.searchTerm);
+  }
+
+  componentWillUnmount() {
+    this.props.unsetSelection();
   }
 
   onTextSelected() {

@@ -1,7 +1,7 @@
 /**
  * @jest-environment jsdom
  */
-import React from 'react';
+import React, { Component } from 'react';
 import { shallow } from 'enzyme';
 import PDFJS from '../../PDFJS';
 
@@ -52,8 +52,6 @@ describe('PDF', () => {
     it('should be called on the first render of the PDF pages (only once)', () => {
       props.onPDFReady = jasmine.createSpy('onPDFReady');
       render();
-      instance.componentDidUpdate();
-      expect(props.onPDFReady).not.toHaveBeenCalled();
 
       component.setState({ pdf: { numPages: 5 } });
       expect(props.onPDFReady).toHaveBeenCalled();
@@ -64,22 +62,21 @@ describe('PDF', () => {
     });
   });
 
-  describe('on componentWillReceiveProps', () => {
+  describe('on filename change', () => {
     it('should not attempt to get the PDF if filname remains unchanged', () => {
       render();
-      instance.componentWillReceiveProps({ filename: 'original.pdf' });
+      component.setProps({ filename: 'original.pdf' });
       expect(PDFJS.getDocument.calls.count()).toBe(1);
     });
 
     it('should get the new PDF if filename changed', done => {
       render();
-      instance.componentWillReceiveProps({ filename: 'newfile.pdf' });
+      component.setProps({ filename: 'newfile.pdf' });
       expect(Object.keys(instance.pagesLoaded).length).toBe(0);
-      expect(instance.setState.calls.argsFor(0)[0]).toEqual({ pdf: { numPages: 0 } });
+      expect(instance.state).toEqual({ pdf: { numPages: 0 }, filename: 'newfile.pdf' });
       expect(PDFJS.getDocument.calls.count()).toBe(2);
       setTimeout(() => {
-        expect(instance.setState.calls.count()).toBe(3);
-        expect(instance.setState).toHaveBeenCalledWith({ pdf: pdfObject });
+        expect(instance.state).toEqual({ pdf: pdfObject, filename: 'newfile.pdf' });
         done();
       });
     });

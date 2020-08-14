@@ -35,7 +35,7 @@ export default class Library extends RouteHandler {
     return nextProps.location.query.q !== this.props.location.query.q;
   }
 
-  componentWillMount() {
+  componentDidMount() {
     const { dispatch } = this.context.store;
     wrapDispatch(dispatch, 'library')(enterLibrary());
     this.zoomIn = () => wrapDispatch(dispatch, 'library')(zoomIn());

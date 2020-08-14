@@ -64,7 +64,7 @@ export class ThesauriForm extends Component {
     this.fileFormRef = React.createRef();
   }
 
-  componentWillMount() {
+  componentDidMount() {
     this.firstLoad = true;
   }
 
