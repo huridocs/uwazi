@@ -28,5 +28,5 @@ export const ValueItem = hiddenColumns => () => (
 );
 
 ColumnItem.propTypes = {
-  item: PropTypes.any.isRequired,
+  item: PropTypes.object.isRequired,
 };
