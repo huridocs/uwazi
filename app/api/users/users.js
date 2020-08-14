@@ -191,8 +191,8 @@ export default {
     return model.get(query, select);
   },
 
-  getById(id) {
-    return model.getById(id);
+  getById(id, select = '') {
+    return model.getById(id, select);
   },
 
   delete(_id, currentUser) {

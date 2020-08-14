@@ -4,6 +4,7 @@ import errorLog from 'api/log/errorLog';
 
 import { instanceSearch } from '../search';
 import { fixtures as fixturesForIndexErrors } from './fixtures_elastic_errors';
+import elastic from '../elastic';
 
 const forceIndexingOfNumberBasedProperty = async search => {
   await search.indexEntities({ title: 'Entity with index Problems 1' }, '', 1);
@@ -112,6 +113,42 @@ describe('entitiesIndex', () => {
       await elasticTesting.refresh();
       const indexedEntities = await search.search({}, 'en');
       expect(indexedEntities.rows.length).toBe(4);
+    });
+  });
+
+  describe('indexEntities by query', () => {
+    const flatten = array => [].concat(...array);
+
+    it('should only index the entities that match the query', async () => {
+      await db.clearAllAndLoad({
+        entities: [
+          { title: 'title1', language: 'en' },
+          { title: 'titulo1', language: 'es' },
+          { title: 'title2', language: 'en' },
+          { title: 'titulo2', language: 'es' },
+          { title: 'title3', language: 'en' },
+          { title: 'titulo3', language: 'es' },
+          { title: 'title4', language: 'en' },
+          { title: 'titulo4', language: 'es' },
+          { title: 'title5', language: 'en' },
+          { title: 'titulo5', language: 'es' },
+        ],
+      });
+      await elasticTesting.reindex();
+      spyOn(elastic, 'bulk').and.returnValue(Promise.resolve([]));
+      await search.indexEntities({ language: 'es' }, '', 2);
+
+      const indexedEntities = flatten(flatten(elastic.bulk.calls.allArgs()).map(arg => arg.body))
+        .filter(bulkElement => !bulkElement.index)
+        .sort((a, b) => a.title.localeCompare(b.title));
+
+      expect(indexedEntities).toEqual([
+        expect.objectContaining({ title: 'titulo1' }),
+        expect.objectContaining({ title: 'titulo2' }),
+        expect.objectContaining({ title: 'titulo3' }),
+        expect.objectContaining({ title: 'titulo4' }),
+        expect.objectContaining({ title: 'titulo5' }),
+      ]);
     });
   });
 });

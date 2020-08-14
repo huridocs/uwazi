@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { MultiTenantMongooseModel } from 'api/odm/MultiTenantMongooseModel';
 
 const updateLogSchema = new mongoose.Schema({
   timestamp: Number,
@@ -14,4 +15,4 @@ export interface UpdateLog extends mongoose.Document {
   deleted: Boolean;
 }
 
-export const model = mongoose.model<UpdateLog>('updatelogs', updateLogSchema);
+export const model = new MultiTenantMongooseModel<UpdateLog>('updatelogs', updateLogSchema);

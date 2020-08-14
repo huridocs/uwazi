@@ -1,12 +1,12 @@
 import request, { Response as SuperTestResponse } from 'supertest';
 import { Application, Request, Response, NextFunction } from 'express';
+
 import { setUpApp } from 'api/utils/testingRoutes';
 import db from 'api/utils/testing_db';
 
 import { fixtures, fileName1 } from './fixtures';
 
 import uploadRoutes from '../routes';
-import paths from '../../config/paths';
 
 jest.mock(
   '../../auth/authMiddleware.ts',
@@ -19,7 +19,6 @@ describe('files routes download', () => {
   const app: Application = setUpApp(uploadRoutes);
 
   beforeEach(async () => {
-    paths.uploadedDocuments = `${__dirname}/uploads/`;
     await db.clearAllAndLoad(fixtures);
   });
 
