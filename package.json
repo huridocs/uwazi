@@ -46,7 +46,7 @@
     "restore-db": "./database/restore_db.sh",
     "fixtures": "./uwazi-fixtures/restore.sh",
     "add-migration": "./node_modules/.bin/plop --plopfile ./app/api/migrations/plopfile.js migration",
-    "migrate": "node run.js ./app/api/migrations/migrate.ts",
+    "migrate": "node run.js ./app/api/migrations/migrate",
     "test-debug": "node --inspect ./node_modules/.bin/jest --watch --no-cache -i",
     "test": "node ./node_modules/.bin/jest",
     "e2e": "jest --projects nightmare/jest.e2e.config.js -i --verbose true",
