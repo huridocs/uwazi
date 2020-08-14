@@ -6,7 +6,7 @@ import insertFixtures from '../helpers/insertFixtures';
 
 describe('Table view', () => {
   beforeAll(async () => {
-    await insertFixtures();
+    //await insertFixtures();
     await proxyMock();
     await page.goto(`${host}/library/table`);
     await page.waitFor(200);
