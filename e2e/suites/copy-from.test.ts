@@ -4,7 +4,7 @@ import { adminLogin, logout } from '../helpers/login';
 import proxyMock from '../helpers/proxyMock';
 import insertFixtures from '../helpers/insertFixtures';
 
-function delay(time: number) {
+async function delay(time: number) {
   return new Promise(function(resolve) {
     setTimeout(resolve, time);
   });
@@ -19,7 +19,7 @@ describe('Copy from', () => {
 
   it('Should create new entity, copy its metadata from an existing one and save it as new relationship', async () => {
     await expect(page).toClick(
-      '#app > div.content > div > div > div > main > div.documents-list > div > div.item-group.item-group-zoom-0 > div:nth-child(1) > div.item-actions > div > a'
+      'div.documents-list > div > div.item-group.item-group-zoom-0 > div:nth-child(1) > div.item-actions > div > a'
     );
     await expect(page).toClick('.tab-link', { text: 'Connections' });
     await expect(page).toClick('button', { text: 'Edit' });
