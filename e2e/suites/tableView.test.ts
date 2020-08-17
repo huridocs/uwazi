@@ -3,29 +3,17 @@
 import { host } from '../config';
 import proxyMock from '../helpers/proxyMock';
 import insertFixtures from '../helpers/insertFixtures';
-let last = new Date().getTime();
-const mark = () => { 
-  const pre = last;
-  last = new Date().getTime();
-  return last - pre;
-}
 
 describe('Table view', () => {
   beforeAll(async () => {
-    console.log('pre before all', mark());
     await insertFixtures();
-    console.log('post init fixtures', mark());
     await proxyMock();
-    console.log('pre goto', mark());
     await page.goto(`${host}/library/table`);
-    console.log('pre wait for', mark());
     await page.waitFor(200);
-    console.log('post before all', mark());
   });
 
   describe('Column selector', () => {
     it('Should show only selected properties', async () => {
-      console.log('pre tests', mark());
       await page.click('.hidden-columns-dropdown');
       const columnsOptions = await page.$$eval('#rw_1_listbox li', options =>
         options.map(option => ({
@@ -92,6 +80,5 @@ describe('Table view', () => {
     await page.waitFor(200);
     const rowsNumber = await page.$$eval(rowSelector, rows => rows.length);
     expect(rowsNumber).toBe(60);
-    console.log('post tests', mark());
   });
 });
