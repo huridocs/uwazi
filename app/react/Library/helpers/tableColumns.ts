@@ -30,7 +30,12 @@ export function getTableColumns(documents: any, templates: TemplateSchema[]) {
 
     if (templatesToProcess.length > 0) {
       const commonColumns: any[] = templatesToProcess[0].commonProperties || [];
-      commonColumns.push({ label: 'Template', name: 'templateName', type: 'text' });
+      commonColumns.push({
+        label: 'Template',
+        name: 'templateName',
+        type: 'text',
+        isCommonProperty: true,
+      });
 
       columns = commonColumns
         .map(c => Object.assign(c, { showInCard: true }))

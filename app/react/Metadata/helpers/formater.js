@@ -320,7 +320,10 @@ export default {
 
     metadata = conformSortedProperty(metadata, templates, doc, options.sortedProperty);
 
-    return Object.assign({}, doc, { metadata: metadata.toJS(), documentType: template.name });
+    return Object.assign({}, doc, {
+      metadata: metadata.toJS(),
+      documentType: template.get('name'),
+    });
   },
 
   applyTransformation(property, { doc, thesauris, options, template, templates, relationships }) {

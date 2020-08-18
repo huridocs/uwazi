@@ -7,23 +7,27 @@ import { TableRow } from 'app/Library/components/TableRow';
 describe('TableViewer', () => {
   let component: any;
   const documents = Immutable.fromJS({
-    rows: [{ title: 'document1' }, { title: 'document2' }, { title: 'document3' }],
+    rows: [
+      { _id: 'entity1ID', title: 'entity1' },
+      { _id: 'entity2ID', title: 'entity2' },
+      { _id: 'entity3ID', title: 'entity3' },
+    ],
   });
   const columns = Immutable.fromJS([
-    { label: 'Date', hidden: false },
-    { label: 'City', hidden: true },
-    { label: 'Country', hidden: false },
+    { name: 'date', label: 'Date', hidden: false },
+    { name: 'city', label: 'City', hidden: true },
+    { name: 'country', label: 'Country', hidden: false },
   ]);
   const props = {
     documents,
     storeKey: 'library',
     clickOnDocument: jasmine.createSpy('clickOnDocumentApply'),
+    rowListZoomLevel: 2,
   };
   const templates = Immutable.fromJS([{ _id: 'idTemplate1' }]);
   const thesauris = Immutable.fromJS([{ _id: 'thesaurus1' }]);
   function render() {
     const storeState = {
-      user: Immutable.fromJS({ _id: 'batId' }),
       library: {
         ui: Immutable.fromJS({
           tableViewColumns: columns,
@@ -55,16 +59,15 @@ describe('TableViewer', () => {
     it('should pass to each row the columns and the document', () => {
       const row = component.find(TableRow);
       const columnsToShow = Immutable.fromJS([
-        { label: 'Date', hidden: false },
-        { label: 'Country', hidden: false },
+        { name: 'date', label: 'Date', hidden: false },
+        { name: 'country', label: 'Country', hidden: false },
       ]);
       expect(row.at(0).props()).toEqual({
-        document: documents.get('rows').get(0),
+        entity: documents.get('rows').get(0),
         columns: columnsToShow,
         storeKey: props.storeKey,
-        onClick: props.clickOnDocument,
-        templates: templates,
-        thesauris: thesauris,
+        clickOnDocument: props.clickOnDocument,
+        zoomLevel: 2,
       });
     });
   });
