@@ -113,6 +113,7 @@ export class RightRelationship extends Component {
                   if (rightRelationshipGroup.has('template')) {
                     return (
                       <button
+                        type="button"
                         onClick={this.toggleRemoveRightRelationshipGroup(
                           index,
                           rightRelationshipIndex
@@ -157,6 +158,7 @@ export class RightRelationship extends Component {
                   {editing && (
                     <div className="removeEntity">
                       <button
+                        type="button"
                         onClick={this.toggleRemoveEntity(
                           index,
                           rightRelationshipIndex,
@@ -171,6 +173,7 @@ export class RightRelationship extends Component {
                   {editing && (
                     <div className="moveEntity">
                       <button
+                        type="button"
                         onClick={this.props.toggleMoveEntity.bind(
                           this,
                           index,
@@ -194,6 +197,7 @@ export class RightRelationship extends Component {
                 return (
                   <div className="rightRelationshipAdd">
                     <button
+                      type="button"
                       className={`relationships-new ${isActive ? 'is-active' : ''}`}
                       onClick={this.setAddToData(index, rightRelationshipIndex)}
                     >
@@ -202,6 +206,7 @@ export class RightRelationship extends Component {
                     </button>
                     <div className="insertEntities">
                       <button
+                        type="button"
                         onClick={this.props.moveEntities.bind(this, index, rightRelationshipIndex)}
                         className="relationships-icon"
                       >
