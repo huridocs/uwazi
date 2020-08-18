@@ -245,6 +245,10 @@ describe('metadata formater', () => {
         formater.prepareMetadata(docCopy, templates, thesauris, relationships)
       ).not.toThrow();
     });
+
+    it('should include the name of template', () => {
+      expect(data.documentType).toBe('Mecanismo');
+    });
   });
 
   describe('prepareMetadataForCard', () => {

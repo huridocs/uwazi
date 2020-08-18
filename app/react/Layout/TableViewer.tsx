@@ -2,18 +2,14 @@ import React, { Component } from 'react';
 
 import { connect } from 'react-redux';
 import { TableRow } from 'app/Library/components/TableRow';
+import { PropertySchema } from 'shared/types/commonTypes';
 
 export interface DocumentViewerProps {
   rowListZoomLevel: number;
   documents: any;
   storeKey: 'library' | 'uploads';
   clickOnDocument: (...args: any[]) => any;
-  onSnippetClick: (...args: any[]) => any;
-  deleteConnection: (...args: any[]) => any;
-  search: any;
-  templates: any;
-  thesauris: any;
-  columns: any[];
+  columns: PropertySchema[];
 }
 
 class TableViewerComponent extends Component<DocumentViewerProps> {
@@ -24,24 +20,22 @@ class TableViewerComponent extends Component<DocumentViewerProps> {
         <table>
           <thead>
             <tr>
-              {columns.map((column: any, index: number) => (
-                <th className={!index ? 'sticky-col' : ''} key={index}>
+              {columns.map((column: any) => (
+                <th key={column.get('name')}>
                   <div className="table-view-cell">{column.get('label')}</div>
                 </th>
               ))}
             </tr>
           </thead>
           <tbody>
-            {this.props.documents.get('rows').map((document: any, index: number) => (
+            {this.props.documents.get('rows').map((entity: any) => (
               <TableRow
                 {...{
-                  document,
+                  entity,
                   columns,
-                  key: index,
-                  onClick: this.props.clickOnDocument,
+                  key: entity.get('_id'),
+                  clickOnDocument: this.props.clickOnDocument,
                   storeKey: this.props.storeKey,
-                  templates: this.props.templates,
-                  thesauris: this.props.thesauris,
                   zoomLevel: this.props.rowListZoomLevel,
                 }}
               />
@@ -54,9 +48,6 @@ class TableViewerComponent extends Component<DocumentViewerProps> {
 }
 
 const mapStateToProps = (state: any, props: DocumentViewerProps) => ({
-  templates: state.templates,
-  thesauris: state.thesauris,
-  authorized: !!state.user.get('_id'),
   selectedDocuments: state[props.storeKey].ui.get('selectedDocuments'),
   columns: state[props.storeKey].ui.get('tableViewColumns'),
 });
