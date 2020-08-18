@@ -12,14 +12,6 @@ export interface TableCellProps {
   zoomLevel: number;
 }
 
-function getLink(url: string, label: string) {
-  return (
-    <I18NLink key={url} to={url}>
-      {label}
-    </I18NLink>
-  );
-}
-
 function formatProperty(prop: any) {
   let result = prop?.value;
   if (!result) {
@@ -39,13 +31,17 @@ function formatProperty(prop: any) {
       result = <MarkdownViewer markdown={prop.value} />;
       break;
     case 'link':
-      result = getLink(prop.value.url, prop.value.label);
+      result = (
+        <a href={prop.value.url} target="_blank" rel="noopener noreferrer">
+          {prop.value.label}
+        </a>
+      );
       break;
     case 'relationship':
       result = prop.value.map((p: any, index: number) => (
-        <React.Fragment key={index}>
+        <React.Fragment key={p.value}>
           {index > 0 && ', '}
-          {getLink(p.url, p.value)}
+          <I18NLink to={p.url}>{p.value}</I18NLink>
         </React.Fragment>
       ));
       break;

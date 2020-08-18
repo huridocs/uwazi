@@ -65,15 +65,15 @@ describe('TableCell', () => {
     expect(cellContent.find(MarkdownViewer).props().markdown).toBe('**bold**');
   });
 
-  it('should render a link with a link component', () => {
+  it('should render an external link', () => {
     props.content = {
-      label: 'Link',
+      label: 'Google',
       type: 'link',
-      name: 'link',
+      name: 'google',
       value: { label: 'google', url: 'www.google.com' },
     };
     const cellContent = renderContent(props);
-    expect(cellContent.find(I18NLink).props().to).toBe('www.google.com');
+    expect(cellContent.find('a').props().href).toBe('www.google.com');
   });
 
   it('should render a relationship as a list of links', () => {
