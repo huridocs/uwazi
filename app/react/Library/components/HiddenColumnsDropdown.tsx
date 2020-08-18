@@ -1,19 +1,25 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { DropdownList } from 'app/Forms';
 import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
+import { bindActionCreators, Dispatch } from 'redux';
 import { wrapDispatch } from 'app/Multireducer';
 import { ColumnItem, ValueItem } from 'app/Library/components/HiddenColumnsDropdownItem';
 import { setTableViewColumnHidden, setTableViewAllColumnsHidden } from '../actions/libraryActions';
 
-class HideColumnsComponent extends React.Component {
-  constructor(props) {
+interface HideColumnsComponentProps {
+  columns: any[];
+  setTableViewColumnHidden: (name: string, hidden: boolean) => void;
+  setTableViewAllColumnsHidden: (hidden: boolean) => void;
+  storeKey: 'library' | 'uploads';
+}
+
+class HideColumnsComponent extends React.Component<HideColumnsComponentProps> {
+  constructor(props: HideColumnsComponentProps) {
     super(props);
     this.onSelect = this.onSelect.bind(this);
   }
 
-  onSelect(item) {
+  onSelect(item: any) {
     if (item.selectAll) {
       this.props.setTableViewAllColumnsHidden(item.indeterminate ? false : !item.hidden);
     } else {
@@ -38,9 +44,11 @@ class HideColumnsComponent extends React.Component {
 
     return (
       <div className="hidden-columns-dropdown">
-        <DropdownList
+        {/*
+        // @ts-ignore */}
+       <DropdownList
           data={sortedColumns}
-          filter={(item, searchTerm) => item.label.toLowerCase().includes(searchTerm.toLowerCase())}
+          filter={(item: any, searchTerm: string) => item.label.toLowerCase().includes(searchTerm.toLowerCase())}
           itemComponent={ColumnItem}
           valueComponent={ValueItem(hiddenColumns)}
           onSelect={this.onSelect}
@@ -50,20 +58,14 @@ class HideColumnsComponent extends React.Component {
   }
 }
 
-HideColumnsComponent.propTypes = {
-  columns: PropTypes.arrayOf(PropTypes.any).isRequired,
-  setTableViewColumnHidden: PropTypes.func.isRequired,
-  setTableViewAllColumnsHidden: PropTypes.func.isRequired,
-};
-
-const mapStateToProps = (state, props) => ({
+const mapStateToProps = (state: any, props: HideColumnsComponentProps) => ({
   columns: state[props.storeKey].ui
     .get('tableViewColumns')
     .toJS()
     .slice(1),
 });
 
-const mapDispatchToProps = (dispatch, props) =>
+const mapDispatchToProps = (dispatch: Dispatch<any>, props: HideColumnsComponentProps) =>
   bindActionCreators(
     {
       setTableViewColumnHidden,
