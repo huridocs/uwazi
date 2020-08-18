@@ -1,5 +1,3 @@
-/** @format */
-
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
@@ -43,7 +41,7 @@ export default class Entity extends Component {
     ];
   }
 
-  componentWillMount() {
+  componentWillUnmount() {
     this.context.store.dispatch(uiActions.showTab('info'));
   }
 

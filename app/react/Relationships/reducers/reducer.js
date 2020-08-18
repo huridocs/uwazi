@@ -1,7 +1,6 @@
 import { combineReducers } from 'redux';
 import { modelReducer, formReducer } from 'react-redux-form';
 import createReducer from 'app/BasicReducer';
-
 import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
 import hubs from './hubsReducer';
 import hubActions from './hubActionsReducer';
@@ -24,4 +23,6 @@ export default combineReducers({
   searchTerm: createReducer('relationships/searchTerm', ''),
   connection: createReducer('relationships/connection', {}),
   uiState,
+  metadata: modelReducer('relationships.metadata', {}),
+  formState: formReducer('relationships.metadata'),
 });
