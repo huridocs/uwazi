@@ -158,7 +158,7 @@ export function multipleUpdate(entities, values) {
   };
 }
 
-export async function getSuggestions(templates, searchTerm = '') {
-  const request = new RequestParams({ searchTerm, templates });
+export async function getSuggestions(templates, searchTerm = '', unpublished = false) {
+  const request = new RequestParams({ searchTerm, templates, unpublished });
   return searchAPI.getSuggestions(request);
 }
