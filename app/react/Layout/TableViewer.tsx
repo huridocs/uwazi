@@ -20,8 +20,8 @@ class TableViewerComponent extends Component<DocumentViewerProps> {
         <table>
           <thead>
             <tr>
-              {columns.map((column: any) => (
-                <th key={column.get('name')}>
+              {columns.map((column: PropertySchema, index: number) => (
+                <th className={!index ? 'sticky-col' : ''} key={column.get('name')}>
                   <div className="table-view-cell">{column.get('label')}</div>
                 </th>
               ))}

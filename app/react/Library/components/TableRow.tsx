@@ -27,6 +27,11 @@ const defaultProps = {
 class TableRowComponent extends Component<TableRowProps> {
   static defaultProps = defaultProps;
 
+  constructor(props: TableRowProps) {
+    super(props);
+    this.onRowClick = this.onRowClick.bind(this);
+  }
+
   onRowClick(e: { preventDefault: () => void }) {
     if (this.props.clickOnDocument) {
       this.props.clickOnDocument(e, this.props.entity, this.props.selected);
@@ -78,8 +83,6 @@ function mapStateToProps(state: any, ownProps: TableRowProps) {
     .find((doc: any) => doc.get('_id') === ownProps.entity.get('_id'));
   return {
     selected,
-    entity: ownProps.entity,
-    columns: ownProps.columns,
     templates: state.templates,
     thesauris: state.thesauris,
   };

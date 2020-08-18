@@ -3,12 +3,13 @@
 import { host } from '../config';
 import proxyMock from '../helpers/proxyMock';
 import insertFixtures from '../helpers/insertFixtures';
+
 let last = new Date().getTime();
-const mark = () => { 
+const mark = () => {
   const pre = last;
   last = new Date().getTime();
   return last - pre;
-}
+};
 
 describe('Table view', () => {
   beforeAll(async () => {
