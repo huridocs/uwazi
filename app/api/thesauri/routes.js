@@ -1,22 +1,17 @@
 import Joi from 'joi';
-import multer from 'multer';
 import { CSVLoader } from 'api/csv';
+import { uploadMiddleware } from 'api/files';
 
 import { validation } from '../utils';
 import needsAuthorization from '../auth/authMiddleware';
 import thesauri from './thesauri';
-import storageConfig from '../files/storageConfig';
 
-const storage = multer.diskStorage(storageConfig);
-
-export default app => {
-  const upload = multer({ storage });
-
+const routes = app => {
   app.post(
     '/api/thesauris',
     needsAuthorization(),
 
-    upload.any(),
+    uploadMiddleware(),
 
     validation.validateRequest(
       Joi.alternatives(
@@ -48,12 +43,13 @@ export default app => {
 
     async (req, res, next) => {
       try {
-        const data = req.files && req.files.length ? JSON.parse(req.body.thesauri) : req.body;
+        const data = req.file ? JSON.parse(req.body.thesauri) : req.body;
         let response = await thesauri.save(data);
-        if (req.files && req.files.length) {
-          const file = req.files[0];
+        if (req.file) {
           const loader = new CSVLoader();
-          response = await loader.loadThesauri(file.path, response._id, { language: req.language });
+          response = await loader.loadThesauri(req.file.path, response._id, {
+            language: req.language,
+          });
         }
         res.json(response);
         req.io.emitToCurrentTenant('thesauriChange', response);
@@ -126,3 +122,6 @@ export default app => {
     }
   );
 };
+
+export default routes;
+export { routes };
