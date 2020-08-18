@@ -11,7 +11,7 @@ module.exports = plop => {
 
     const fs = require('fs');
     const path = require('path');
-    const migrator = require('./migrator').default;
+    const { migrator } = require('./migrator');
 
     const { migrationsDir } = migrator;
     let migrations = fs.readdirSync(migrationsDir);

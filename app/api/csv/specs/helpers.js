@@ -3,10 +3,6 @@ import yazl from 'yazl';
 import fs from 'fs';
 import { Readable } from 'stream';
 
-import asyncFs from 'api/utils/async-fs';
-
-import configPaths from '../../config/paths';
-
 const createTestingZip = (filesToZip, fileName, directory = __dirname) =>
   new Promise((resolve, reject) => {
     const zipfile = new yazl.ZipFile();
@@ -22,9 +18,6 @@ const createTestingZip = (filesToZip, fileName, directory = __dirname) =>
       .on('error', reject);
   });
 
-const fileExists = async (fileName, destination = configPaths.uploadedDocuments) =>
-  asyncFs.exists(path.join(destination, fileName));
-
 const stream = string =>
   new Readable({
     read() {
@@ -33,4 +26,4 @@ const stream = string =>
     },
   });
 
-export { stream, createTestingZip, fileExists };
+export { stream, createTestingZip };

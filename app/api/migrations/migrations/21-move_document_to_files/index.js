@@ -2,7 +2,7 @@
 import fs from 'fs';
 import path from 'path';
 
-import paths from 'api/config/paths';
+import { config } from 'api/config';
 
 const rename = async (current, newPath) =>
   new Promise((resolve, reject) => {
@@ -32,7 +32,7 @@ export const fileExists = async filePath =>
   });
 
 const oldThumbnailExists = async entity =>
-  fileExists(path.join(paths.uploadedDocuments, `${entity._id}.jpg`));
+  fileExists(path.join(config.defaultTenant.uploadedDocuments, `${entity._id}.jpg`));
 
 export default {
   delta: 21,
@@ -82,7 +82,7 @@ export default {
         if (!alreadyExists) {
           const {
             ops: [created],
-          } = await db.collection('files').insert(fileToCreate);
+          } = await db.collection('files').insertOne(fileToCreate);
 
           db.collection('connections').updateMany(
             { filename: created.filename },
@@ -94,15 +94,15 @@ export default {
               filename: `${created._id}.jpg`,
               type: 'thumbnail',
             };
-            await db.collection('files').save(thumbnailToCreate);
+            await db.collection('files').insertOne(thumbnailToCreate);
             await rename(
-              path.join(paths.uploadedDocuments, `${entity._id}.jpg`),
-              path.join(paths.uploadedDocuments, thumbnailToCreate.filename)
+              path.join(config.defaultTenant.uploadedDocuments, `${entity._id}.jpg`),
+              path.join(config.defaultTenant.uploadedDocuments, thumbnailToCreate.filename)
             );
           }
         }
 
-        await db.collection('entities').update({ _id: entity._id }, newEntity);
+        await db.collection('entities').replaceOne({ _id: entity._id }, newEntity);
 
         process.stdout.write(` -> processed: ${index} \r`);
         index += 1;

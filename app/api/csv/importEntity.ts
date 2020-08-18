@@ -11,7 +11,7 @@ import { EntitySchema } from 'shared/types/entityType';
 import { ensure } from 'shared/tsUtils';
 
 import typeParsers from './typeParsers';
-import configPaths from '../config/paths';
+import { attachmentsPath } from 'api/files';
 
 const parse = async (toImportEntity: RawEntity, prop: PropertySchema) =>
   typeParsers[prop.type]
@@ -71,7 +71,7 @@ const importEntity = async (
       await promise;
       await processAttachmentAllLanguages(
         entity,
-        await importFile.extractFile(attachment, configPaths.attachments)
+        await importFile.extractFile(attachment, attachmentsPath())
       );
     }, Promise.resolve());
   }

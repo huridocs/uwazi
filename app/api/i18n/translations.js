@@ -1,5 +1,3 @@
-/** @format */
-
 import entities from 'api/entities/entities';
 import thesauri from 'api/thesauri/thesauri';
 import settings from 'api/settings/settings';

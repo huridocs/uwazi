@@ -22,6 +22,7 @@ describe('Pages Routes', () => {
     });
 
     it('should need authorization', () => {
+      spyOn(pages, 'save').and.returnValue(new Promise(resolve => resolve('pages')));
       expect(routes.post('/api/pages', req)).toNeedAuthorization();
     });
 

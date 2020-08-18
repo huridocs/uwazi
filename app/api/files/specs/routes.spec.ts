@@ -3,14 +3,13 @@ import request, { Response as SuperTestResponse } from 'supertest';
 import { Application, Request, Response, NextFunction } from 'express';
 
 import { search } from 'api/search';
-import { fileExists } from 'api/csv/specs/helpers';
-import { setupTestUploadedPaths, customUploadsPath } from 'api/files/filesystem';
+import { customUploadsPath, fileExists } from 'api/files/filesystem';
 import db from 'api/utils/testing_db';
 import { setUpApp } from 'api/utils/testingRoutes';
 import connections from 'api/relationships';
 
 import { FileType } from 'shared/types/fileType';
-import { fixtures, uploadId } from './fixtures';
+import { fixtures, uploadId, uploadId2 } from './fixtures';
 import { files } from '../files';
 import uploadRoutes from '../routes';
 
@@ -26,9 +25,9 @@ describe('files routes', () => {
 
   beforeEach(async () => {
     spyOn(search, 'indexEntities').and.returnValue(Promise.resolve());
-    setupTestUploadedPaths();
     await db.clearAllAndLoad(fixtures);
   });
+
   afterAll(async () => db.disconnect());
 
   describe('POST/files', () => {
@@ -83,7 +82,7 @@ describe('files routes', () => {
     it('should reindex all entities that are related to the files deleted', async () => {
       await request(app)
         .delete('/api/files')
-        .query({ _id: uploadId.toString() });
+        .query({ _id: uploadId2.toString() });
 
       expect(search.indexEntities).toHaveBeenCalledWith(
         { sharedId: { $in: ['entity'] } },
@@ -94,7 +93,7 @@ describe('files routes', () => {
     it('should delete all connections related to the file', async () => {
       await request(app)
         .delete('/api/files')
-        .query({ _id: uploadId.toString() });
+        .query({ _id: uploadId2.toString() });
 
       const allConnections = await connections.get();
       expect(allConnections.length).toBe(1);

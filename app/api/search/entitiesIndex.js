@@ -95,10 +95,10 @@ const bulkIndexAndCallback = async assets => {
   return batchCallback(entitiesToIndex.length, totalRows);
 };
 
-const getSteps = async () => {
-  const allIds = await entities.getWithoutDocuments({}, '_id', { sort: { _id: 1 } });
+const getSteps = async (query, limit) => {
+  const allIds = await entities.getWithoutDocuments(query, '_id', { sort: { _id: 1 } });
   const milestoneIds = [];
-  for (let i = 0; i < allIds.length; i += 49) {
+  for (let i = 0; i < allIds.length; i += limit) {
     milestoneIds.push(allIds[i]);
   }
   return milestoneIds;
@@ -107,7 +107,7 @@ const getSteps = async () => {
 /*eslint max-statements: ["error", 20]*/
 const indexBatch = async (totalRows, options) => {
   const { query, select, limit, batchCallback, elasticIndex, searchInstance } = options;
-  const steps = await getSteps();
+  const steps = await getSteps(query, limit);
 
   const promisePool = new PromisePool();
   const { errors: indexingErrors } = await promisePool

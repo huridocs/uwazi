@@ -18,8 +18,10 @@ describe('entities routes', () => {
   const app: Application = setUpApp(routes);
 
   beforeEach(async () => {
+    //@ts-ignore
     await db.clearAllAndLoad(fixtures);
   });
+
   afterAll(async () => db.disconnect());
 
   describe('GET', () => {

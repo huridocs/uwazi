@@ -3,7 +3,7 @@ import { promisify } from 'util';
 
 import errorLog from 'api/log/errorLog';
 import { catchErrors } from 'api/utils/jasmineHelpers';
-import paths from 'api/config/paths';
+import { config } from 'api/config';
 import testingDB from 'api/utils/testing_db';
 import migration from '../index.js';
 import fixtures, { docId1, docId4 } from './fixtures.js';
@@ -14,7 +14,7 @@ describe('migration pdf_thumbnails', () => {
   beforeEach(done => {
     spyOn(process.stdout, 'write');
     spyOn(errorLog, 'error');
-    paths.uploadedDocuments = __dirname;
+    config.defaultTenant.uploadedDocuments = __dirname;
     testingDB
       .clearAllAndLoad(fixtures)
       .then(done)

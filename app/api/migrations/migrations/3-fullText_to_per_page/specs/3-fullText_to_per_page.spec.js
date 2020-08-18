@@ -1,4 +1,4 @@
-import paths from 'api/config/paths';
+import { config } from 'api/config';
 import testingDB from 'api/utils/testing_db';
 
 import fixtures from './fixtures.js';
@@ -7,7 +7,7 @@ import migration from '../index.js';
 describe('migration fullText_to_per_page', () => {
   beforeEach(async () => {
     spyOn(process.stdout, 'write');
-    paths.uploadedDocuments = __dirname;
+    config.defaultTenant.uploadedDocuments = __dirname;
     await testingDB.clearAllAndLoad(fixtures);
   });
 
@@ -19,6 +19,7 @@ describe('migration fullText_to_per_page', () => {
     expect(migration.delta).toBe(3);
   });
 
+  // eslint-disable-next-line max-statements
   it('should migrate properly', async () => {
     await migration.up(testingDB.mongodb);
     const entities = await testingDB.mongodb

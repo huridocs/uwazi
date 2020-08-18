@@ -1,11 +1,10 @@
-/** @format */
-
 import testingDB from 'api/utils/testing_db';
 import migration from '../index';
 import fixtures, { i2 } from './fixtures';
 
 describe('migration metadata-structured-object', () => {
   beforeEach(async () => {
+    spyOn(process.stdout, 'write');
     await testingDB.clearAllAndLoad(fixtures);
   });
 

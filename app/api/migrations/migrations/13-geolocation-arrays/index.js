@@ -54,7 +54,7 @@ export default {
 
         await db
           .collection('entities')
-          .update({ _id: entity._id }, { $set: { metadata: newMetadata } });
+          .updateOne({ _id: entity._id }, { $set: { metadata: newMetadata } });
       }
 
       process.stdout.write(`processed -> ${index}\r`);

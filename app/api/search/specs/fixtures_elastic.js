@@ -15,7 +15,7 @@ const countriesDictionaryID = db.id();
 const relationType = db.id();
 const fixturesTimeOut = 20000;
 
-export default {
+export const fixtures = {
   files: [
     {
       entity: metadataSnippets,

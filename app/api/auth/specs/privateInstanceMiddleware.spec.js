@@ -39,6 +39,15 @@ describe('privateInstanceMiddleware', () => {
     next = jasmine.createSpy('next');
   });
 
+  describe('when there is an error', () => {
+    it('should call next with the error', async () => {
+      spyOn(settings, 'get').and.returnValue(Promise.reject(new Error('error')));
+      await middleWare(req, res, next);
+
+      expect(next).toHaveBeenCalledWith(new Error('error'));
+    });
+  });
+
   it('should redirect to "/login" when there is no user in the request and the instance is configured as private', done => {
     spyOn(settings, 'get').and.returnValue(Promise.resolve({ private: true }));
     middleWare(req, res, next).then(() => {

@@ -177,17 +177,11 @@ describe('settings', () => {
 
   describe('get()', () => {
     describe('if there is no settings on the DB', () => {
-      it('should return an empty object', done => {
-        //@ts-ignore
-        db.clear(['settings'], () => {
-          settings
-            .get()
-            .then(result => {
-              expect(result).toEqual({});
-              done();
-            })
-            .catch(catchErrors(done));
-        });
+      it('should return an empty object', async () => {
+        await db.clear(['settings']);
+
+        const result = await settings.get();
+        expect(result).toEqual({});
       });
     });
 

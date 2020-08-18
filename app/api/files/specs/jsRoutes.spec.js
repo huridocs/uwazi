@@ -15,7 +15,6 @@ import { fixtures, templateId } from './fixtures';
 import instrumentRoutes from '../../utils/instrumentRoutes';
 import uploadRoutes from '../jsRoutes.js';
 import errorLog from '../../log/errorLog';
-import paths from '../../config/paths';
 
 const mockExport = jest.fn();
 jest.mock('api/csv/csvExporter', () =>
@@ -165,7 +164,6 @@ describe('upload routes', () => {
       deleteAllFiles(() => {
         spyOn(Date, 'now').and.returnValue(1000);
         spyOn(mailer, 'send');
-        paths.uploadedDocuments = `${__dirname}/uploads/`;
         const buffer = fs.readFileSync(`${__dirname}/12345.test.pdf`);
         file = {
           fieldname: 'file',
