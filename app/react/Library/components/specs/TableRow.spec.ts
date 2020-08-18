@@ -42,6 +42,12 @@ describe('TableRow', () => {
       content: 'idThesauri1',
       isCommonProperty: false,
     },
+    {
+      label: 'Title',
+      type: 'text',
+      name: 'title',
+      isCommonProperty: false,
+    },
   ];
   const clickOnDocumentSpy = jasmine.createSpy('clickOnDocument');
 
@@ -93,6 +99,7 @@ describe('TableRow', () => {
           },
         ],
         country: [{ value: 'cv1', label: 'Colombia' }],
+        title: [{ value: 'Mrs' }],
       },
     });
     const props = {
@@ -121,6 +128,9 @@ describe('TableRow', () => {
     });
     it('should render a column with the label of the thesaurus', () => {
       expect(renderedColumns.at(4).props().content.value).toBe('Colombia');
+    });
+    it('should not replace common properties with metadata properties', () => {
+      expect(renderedColumns.at(5).props().content.value).toBe('Mrs');
     });
   });
 

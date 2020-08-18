@@ -38,6 +38,22 @@ class TableRowComponent extends Component<TableRowProps> {
     }
   }
 
+  getColumnValue(
+    formattedEntity: EntitySchema,
+    columnValues: Map<string, PropertySchema>,
+    column: PropertySchema
+  ) {
+    let columnValue = columnValues.get(column.get('name'));
+    if (column.get('isCommonProperty') && column.get('name') !== 'creationDate') {
+      const commonPropValue =
+        column.get('name') === 'templateName'
+          ? formattedEntity.documentType
+          : formattedEntity[column.get('name')];
+      columnValue = Object.assign({}, column.toJS(), { value: commonPropValue });
+    }
+    return columnValue || column;
+  }
+
   render() {
     const { entity, templates, thesauris, columns, selected, storeKey } = this.props;
     const formattedEntity = formatter.prepareMetadata(entity.toJS(), templates, thesauris, null, {
@@ -47,24 +63,14 @@ class TableRowComponent extends Component<TableRowProps> {
     formattedEntity.metadata.forEach((prop: PropertySchema) => {
       columnValues.set(prop.name, prop);
     });
-    function getColumnValue(column: any) {
-      let columnValue = columnValues.get(column.get('name'));
-      if (!columnValue && column.get('isCommonProperty')) {
-        const commonPropValue =
-          column.get('name') === 'templateName'
-            ? (columnValue = formattedEntity.documentType)
-            : (columnValue = formattedEntity[column.get('name')]);
-        columnValue = Object.assign({}, column.toJS(), { value: commonPropValue });
-      }
-      return columnValue;
-    }
 
     return (
       <tr className={selected ? 'selected' : ''}>
         {columns.map((column: any, index: number) => {
-          const columnValue = getColumnValue(column);
+          const columnValue = this.getColumnValue(formattedEntity, columnValues, column);
+          const columnKey = formattedEntity._id + column.get('name');
           return (
-            <React.Fragment key={formattedEntity._id + column.get('_id')}>
+            <React.Fragment key={`column_${columnKey}`}>
               <td className={!index ? 'sticky-col' : ''}>
                 {!index && <input type="checkbox" checked={selected} onClick={this.onRowClick} />}
                 <TableCell storeKey={storeKey} content={columnValue} />
