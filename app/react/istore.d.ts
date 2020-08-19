@@ -57,11 +57,17 @@ export interface SettingsState {
   features?: { topicClassification: boolean };
 }
 
+export interface TableViewColumn extends PropertySchema {
+  hidden: boolean;
+}
+
 export interface IStore {
   library: {
     documents: IImmutable<{ rows: EntitySchema[] }>;
     ui: IImmutable<{
       selectedDocuments: EntitySchema[];
+      tableViewColumns: TableViewColumn[];
+      zoomLevel: number;
     }>;
     sidepanel: {
       quickLabelState: IImmutable<QuickLabelState>;

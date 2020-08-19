@@ -1,9 +1,8 @@
-import { ColumnItem, ValueItem } from '../HiddenColumnsDropdownItem';
-import { PropertySchema } from '../../../../shared/types/commonTypes';
+import { ColumnItem, ValueItem, SelectableColumn } from '../HiddenColumnsDropdownItem';
 import { propertyTypes } from 'shared/propertyTypes';
 
 describe('ColumnItem', () => {
-  const item = {
+  const item: SelectableColumn = {
     label: 'Show all',
     selectAll: true,
     indeterminate: false,
@@ -32,7 +31,7 @@ describe('ValueItem', () => {
     expect(valueItem.props.children[1]).toEqual('2 columns hidden');
   });
   it('should show hide columns as label if there are no hidden columns', () => {
-    const hiddenColumns: PropertySchema[] = [];
+    const hiddenColumns: SelectableColumn[] = [];
     const valueItem = ValueItem(hiddenColumns)();
     expect(valueItem.props.children[1]).toEqual('Hide columns');
   });

@@ -1,19 +1,27 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Icon } from 'UI';
-import { PropertySchema } from '../../../shared/types/commonTypes';
+import { PropertySchema } from 'shared/types/commonTypes';
+import { TableViewColumn } from 'app/istore';
 
-function updateIndeterminate(item: PropertySchema) {
+export interface SelectableColumn extends TableViewColumn {
+  indeterminate?: boolean;
+  selectAll: boolean;
+}
+
+function updateIndeterminate(item: SelectableColumn) {
   return (elem: HTMLInputElement) => {
     // eslint-disable-next-line no-param-reassign
-    if (elem) elem.indeterminate = item.indeterminate;
+    if (item.selectAll && elem && item.indeterminate) {
+      elem.indeterminate = item.indeterminate;
+    }
   };
 }
 
-export const ColumnItem = ({ item }: { item: PropertySchema }) => (
+export const ColumnItem = ({ item }: { item: SelectableColumn }) => (
   <React.Fragment>
     <input
-      ref={item.selectAll && updateIndeterminate(item)}
+      ref={updateIndeterminate(item)}
       type="checkbox"
       checked={!item.hidden}
     />

@@ -5,6 +5,7 @@ import { renderConnected } from 'app/Templates/specs/utils/renderConnected';
 import { HiddenColumnsDropdown } from '../HiddenColumnsDropdown';
 import * as actions from '../../actions/libraryActions';
 import { ShallowWrapper } from 'enzyme';
+import { SelectableColumn } from '../HiddenColumnsDropdownItem';
 
 describe('HiddenColumnsDropdown', () => {
   let component: ShallowWrapper;
@@ -65,7 +66,7 @@ describe('HiddenColumnsDropdown', () => {
       });
 
       it('should not show title as an option', () => {
-        const titleOption = dropDown.props().data.find((option: any) => option.label === 'title');
+        const titleOption = dropDown.props().data.find((option: SelectableColumn) => option.label === 'title');
         expect(titleOption).toBe(undefined);
       });
 

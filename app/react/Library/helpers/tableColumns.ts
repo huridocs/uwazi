@@ -16,8 +16,8 @@ function columnsFromTemplates(templates: TemplateSchema[]): PropertySchema[] {
   }, []);
 }
 
-export function getTableColumns(documents: any, templates: TemplateSchema[]) {
-  let columns = [];
+export function getTableColumns(documents: any, templates: TemplateSchema[]): PropertySchema[] {
+  let columns: PropertySchema[] = [];
   const queriedTemplates = documents.aggregations.all._types.buckets;
   if (queriedTemplates) {
     const templateIds = queriedTemplates
@@ -29,7 +29,7 @@ export function getTableColumns(documents: any, templates: TemplateSchema[]) {
     );
 
     if (templatesToProcess.length > 0) {
-      const commonColumns: any[] = templatesToProcess[0].commonProperties || [];
+      const commonColumns: PropertySchema[] = templatesToProcess[0].commonProperties || [];
       commonColumns.push({
         label: 'Template',
         name: 'templateName',
@@ -38,7 +38,7 @@ export function getTableColumns(documents: any, templates: TemplateSchema[]) {
       });
 
       columns = commonColumns
-        .map(c => Object.assign(c, { showInCard: true }))
+        .map<PropertySchema>(c => ({ ...c, showInCards: true }))
         .concat(columnsFromTemplates(templatesToProcess));
     }
   }

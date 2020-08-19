@@ -5,6 +5,7 @@ import MarkdownViewer from 'app/Markdown';
 import { I18NLink } from 'app/I18N';
 import GeolocationViewer from 'app/Metadata/components/GeolocationViewer';
 import { MetadataObjectSchema, PropertySchema } from 'shared/types/commonTypes';
+import { IStore } from 'app/istore';
 
 export interface TableCellProps {
   storeKey: 'library' | 'uploads';
@@ -13,44 +14,52 @@ export interface TableCellProps {
 }
 
 export interface FormattedMetadataValue extends PropertySchema {
-  value?: string | null | MetadataObjectSchema | MetadataObjectSchema[];
+  value: string | MetadataObjectSchema | MetadataObjectSchema[];
 }
 
-function formatProperty(prop: any) {
-  let result = prop?.value;
-  if (!result) {
+function formatProperty(prop: FormattedMetadataValue) {
+  let result;
+  if (!prop.value) {
     return undefined;
   }
   if (['date', 'daterange', 'numeric', 'select', 'text', undefined].includes(prop.type)) {
-    return result;
+    return prop.value;
   }
 
   switch (prop.type) {
     case 'multiselect':
     case 'multidaterange':
     case 'multidate':
-      result = prop.value.map((p: any) => p.value).join(', ');
+      result = (prop.value as MetadataObjectSchema[])
+        .map((p: MetadataObjectSchema) => p.value)
+        .join(', ');
       break;
     case 'markdown':
       result = <MarkdownViewer markdown={prop.value} />;
       break;
     case 'link':
       result = (
-        <a href={prop.value.url} target="_blank" rel="noopener noreferrer">
-          {prop.value.label}
+        <a
+          href={(prop.value as MetadataObjectSchema).url}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {(prop.value as MetadataObjectSchema).label}
         </a>
       );
       break;
     case 'relationship':
-      result = prop.value.map((p: any, index: number) => (
-        <React.Fragment key={p.value}>
-          {index > 0 && ', '}
-          <I18NLink to={p.url}>{p.value}</I18NLink>
-        </React.Fragment>
-      ));
+      result = (prop.value as MetadataObjectSchema[]).map(
+        (p: MetadataObjectSchema, index: number) => (
+          <React.Fragment key={p.value as string}>
+            {index > 0 && ', '}
+            <I18NLink to={p.url}>{p.value}</I18NLink>
+          </React.Fragment>
+        )
+      );
       break;
     case 'geolocation':
-      result = <GeolocationViewer points={prop.value} onlyForCards />;
+      result = <GeolocationViewer points={prop.value as MetadataObjectSchema[]} onlyForCards />;
       break;
     default:
       result = undefined;
@@ -73,7 +82,7 @@ class TableCellComponent extends Component<TableCellProps> {
   }
 }
 
-function mapStateToProps(state: any, ownProps: TableCellProps) {
+function mapStateToProps(state: IStore & { uploads: IStore['library'] }, ownProps: TableCellProps) {
   return {
     zoomLevel: state[ownProps.storeKey].ui.get('zoomLevel'),
   };
