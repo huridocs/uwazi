@@ -3,13 +3,15 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { TableRow } from 'app/Library/components/TableRow';
 import { PropertySchema } from 'shared/types/commonTypes';
+import { IImmutable } from 'shared/types/Immutable';
+import { EntitySchema } from 'shared/types/entityType';
 
 export interface DocumentViewerProps {
   rowListZoomLevel: number;
-  documents: any;
+  documents: IImmutable<{ rows: EntitySchema[] }>;
   storeKey: 'library' | 'uploads';
-  clickOnDocument: (...args: any[]) => any;
-  columns: PropertySchema[];
+  clickOnDocument: (...args: any[]) => void;
+  columns: IImmutable<PropertySchema>[];
 }
 
 class TableViewerComponent extends Component<DocumentViewerProps> {
@@ -20,7 +22,7 @@ class TableViewerComponent extends Component<DocumentViewerProps> {
         <table>
           <thead>
             <tr>
-              {columns.map((column: PropertySchema, index: number) => (
+              {columns.map((column: IImmutable<PropertySchema>, index: number) => (
                 <th className={!index ? 'sticky-col' : ''} key={column.get('name')}>
                   <div className="table-view-cell">{column.get('label')}</div>
                 </th>

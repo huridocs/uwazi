@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
+import Immutable from 'immutable';
 
+import { connect } from 'react-redux';
 import { PropertySchema } from 'shared/types/commonTypes';
 import { TemplateSchema } from 'shared/types/templateType';
 import { ThesaurusSchema } from 'shared/types/thesaurusType';
@@ -10,19 +11,19 @@ import { EntitySchema } from 'shared/types/entityType';
 import { IImmutable } from 'shared/types/Immutable';
 
 interface TableRowProps {
-  columns: PropertySchema[];
-  entity: EntitySchema;
+  columns: IImmutable<PropertySchema>[];
+  entity: IImmutable<EntitySchema>;
   storeKey: 'library' | 'uploads';
   selected?: boolean;
-  clickOnDocument: (...args: any[]) => any;
-  templates: TemplateSchema[];
-  thesauris: ThesaurusSchema[];
+  clickOnDocument: (...args: any[]) => void;
+  templates: IImmutable<TemplateSchema[]>;
+  thesauris: IImmutable<ThesaurusSchema[]>;
   zoomLevel: number;
 }
 
 const defaultProps = {
-  templates: [],
-  thesauris: [],
+  templates: Immutable.fromJS([]) as IImmutable<TemplateSchema[]>,
+  thesauris: Immutable.fromJS([]) as IImmutable<ThesaurusSchema[]>,
 };
 
 function getColumnValue(
@@ -33,15 +34,14 @@ function getColumnValue(
   const columnName: string = column.get('name') as string;
   let columnValue: FormattedMetadataValue;
   if (!column.get('isCommonProperty') || column.get('name') === 'creationDate') {
-    columnValue = columnValues.get(columnName) as PropertySchema;
+    columnValue = columnValues.get(columnName) as FormattedMetadataValue;
   } else {
     const commonPropValue =
-      column.get('name') === 'templateName'
-        ? formattedEntity.documentType
-        : formattedEntity[columnName];
-    columnValue = Object.assign({}, column.toJS(), { value: commonPropValue });
+      columnName === 'templateName' ? formattedEntity.documentType : formattedEntity[columnName];
+    columnValue = column.toJS() as FormattedMetadataValue;
+    columnValue.value = commonPropValue;
   }
-  return columnValue || column;
+  return columnValue;
 }
 
 class TableRowComponent extends Component<TableRowProps> {
@@ -70,7 +70,7 @@ class TableRowComponent extends Component<TableRowProps> {
 
     return (
       <tr className={selected ? 'selected' : ''}>
-        {columns.map((column: any, index: number) => {
+        {columns.map((column: IImmutable<PropertySchema>, index: number) => {
           const columnValue = getColumnValue(formattedEntity, columnValues, column);
           const columnKey = formattedEntity._id + column.get('name');
           return (
@@ -88,9 +88,11 @@ class TableRowComponent extends Component<TableRowProps> {
 }
 
 function mapStateToProps(state: any, ownProps: TableRowProps) {
-  const selected = !!state[ownProps.storeKey].ui
-    .get('selectedDocuments')
-    .find((doc: any) => doc.get('_id') === ownProps.entity.get('_id'));
+  const selected: boolean =
+    state[ownProps.storeKey].ui
+      .get('selectedDocuments')
+      .find((doc: IImmutable<EntitySchema>) => doc?.get('_id') === ownProps.entity.get('_id')) !==
+    undefined;
   return {
     selected,
     templates: state.templates,
