@@ -1,5 +1,6 @@
 .react-datepicker {
-    font-size: $f-size-sm;
+    font-size: $f-size;
+    z-index: 1;
 }
 
 .react-datepicker__header {
@@ -50,7 +51,6 @@
   right: 0;
   border-left-color: $c-grey;
 }
-
 
 .react-datepicker__day-name,
 .react-datepicker__day {
@@ -142,7 +142,6 @@
 .multidate-range {
   .react-datepicker__delete-icon {
     top: 30px;
-    z-index: 1;
     &:after {
       box-shadow: 0 0 0 3px $c-white;
     }

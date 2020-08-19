@@ -207,10 +207,10 @@ $c-sidebar: $c-white;
   }
 }
 
-.sidepanel-header,
-.sidepanel-footer {
-  z-index: 4;
-}
+// .sidepanel-header,
+// .sidepanel-footer {
+//   z-index: 4;
+// }
 
 .sidepanel-header {
   background: $c-sidebar;
@@ -239,6 +239,7 @@ $c-sidebar: $c-white;
     font-size: $f-size-lg;
   }
 }
+
 .sidepanel-footer {
   position: absolute;
   bottom: 2em;

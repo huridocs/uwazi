@@ -379,19 +379,19 @@
   }
 }
 
-.search__filter--date {
-  .fa {
-    float: left;
-    width: 5%;
-    text-align: center;
-    line-height: 23px;
-  }
-  input {
-    float: left;
-    width: 46.5%;
-    margin-left: 1%;
-  }
-}
+// .search__filter--date {
+//   .fa {
+//     float: left;
+//     width: 5%;
+//     text-align: center;
+//     line-height: 23px;
+//   }
+//   input {
+//     float: left;
+//     width: 46.5%;
+//     margin-left: 1%;
+//   }
+// }
 
 .switcher-wrapper {
   float: right;
@@ -796,7 +796,7 @@
 
   &-item {
     margin-bottom: 15px;
-    overflow: hidden;
+    // overflow: hidden;
     position: relative;
   }
 

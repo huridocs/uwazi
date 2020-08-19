@@ -1,5 +1,4 @@
-/** @format */
-
+import { connect } from 'react-redux';
 import 'react-datepicker/dist/react-datepicker.css';
 
 import DatePickerComponent from 'react-datepicker';
@@ -7,55 +6,67 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import moment from 'moment';
 
+const removeOffset = (useTimezone, value) => {
+  let datePickerValue = null;
+  if (value) {
+    const newValue = moment.utc(value * 1000);
+
+    if (!useTimezone) {
+      newValue.subtract(moment().utcOffset(), 'minute');
+    }
+
+    datePickerValue = parseInt(newValue.format('x'), 10);
+  }
+
+  return datePickerValue;
+};
+
+const addOffset = (useTimezone, endOfDay, value) => {
+  const newValue = moment.utc(value);
+
+  if (!useTimezone) {
+    newValue.add(moment().utcOffset(), 'minute');
+  }
+
+  if (endOfDay) {
+    const method = useTimezone ? newValue.local() : newValue.utc();
+    method.endOf('day');
+  }
+
+  return newValue;
+};
+
 class DatePicker extends Component {
   constructor(props) {
     super(props);
     this.handleChange = this.handleChange.bind(this);
   }
 
-  handleChange(value) {
+  handleChange(datePickerValue) {
     const { endOfDay, useTimezone, onChange } = this.props;
-    if (!value) {
+
+    if (!datePickerValue) {
       onChange(null);
     } else {
-      const newValue = moment(value).utc();
-      if (!useTimezone) {
-        newValue.add(newValue.utcOffset(), 'minute');
-      }
-
-      if (endOfDay) {
-        const method = useTimezone ? newValue : newValue.utc();
-        method.endOf('day');
-      }
-
+      const newValue = addOffset(useTimezone, endOfDay, datePickerValue);
       onChange(parseInt(newValue.format('X'), 10));
     }
   }
 
-  componentWillReceiveProps(newProps) {
-    console.log("rerender", newProps)
-    console.log(newProps.value === this.props.value)
-    Object.keys(newProps).forEach((key) => {
-      if(newProps[key] !== this.props[key]) {
-        console.log(key);
-      }
-    });
-  }
-
   render() {
-    console.log("render")
     let { locale, format } = this.props;
+    const { useTimezone, value } = this.props;
     locale = locale || 'en';
     format = format || 'dd/MM/yyyy';
 
-    const value = this.props.value ? new Date().setTime(this.props.value * 1000) : null;
+    const datePickerValue = removeOffset(useTimezone, value);
 
     return (
       <DatePickerComponent
         dateFormat={format}
         className="form-control"
         onChange={this.handleChange}
-        selected={value}
+        selected={datePickerValue}
         locale={locale}
         placeholderText={format}
         isClearable
@@ -83,4 +94,4 @@ DatePicker.propTypes = {
   useTimezone: PropTypes.bool,
 };
 
-export default DatePicker;
+export default connect()(DatePicker);
