@@ -12,7 +12,7 @@ import { generateFileName } from 'api/files/filesystem';
 import settings from 'api/settings';
 import { processDocument } from 'api/files/processDocument';
 
-import configPaths from '../config/paths';
+import { uploadsPath } from 'api/files/filesystem';
 import { validation, handleError, createError } from '../utils';
 import needsAuthorization from '../auth/authMiddleware';
 import captchaAuthorization from '../auth/captchaMiddleware';
@@ -23,7 +23,7 @@ const storage = multer.diskStorage(storageConfig);
 const storeFile = file =>
   new Promise((resolve, reject) => {
     const filename = generateFileName(file);
-    const destination = configPaths.uploadedDocuments;
+    const destination = uploadsPath();
     const pathToFile = path.join(destination, filename);
     fs.appendFile(pathToFile, file.buffer, err => {
       if (err) {

@@ -1,7 +1,7 @@
 /* eslint-disable no-await-in-loop */
 import path from 'path';
-import paths from 'api/config/paths';
 import { PDF } from 'api/files/PDF';
+import { config } from 'api/config';
 
 export default {
   delta: 4,
@@ -18,7 +18,7 @@ export default {
       const doc = await cursor.next();
       if (doc.file && doc.file.filename) {
         await new PDF({
-          filename: path.join(paths.uploadedDocuments, doc.file.filename),
+          filename: path.join(config.defaultTenant.uploadedDocuments, doc.file.filename),
         }).createThumbnail(doc._id.toString());
         process.stdout.write(`processed -> ${index}\r`);
         index += 1;

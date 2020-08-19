@@ -1,4 +1,3 @@
-/** @format */
 /* eslint-disable no-await-in-loop */
 
 const sanitizeDate = (property, value) => {
@@ -69,7 +68,7 @@ export default {
 
         await db
           .collection('entities')
-          .update({ _id: entity._id }, { $set: { metadata: newMetadata } });
+          .updateOne({ _id: entity._id }, { $set: { metadata: newMetadata } });
       }
     }
 

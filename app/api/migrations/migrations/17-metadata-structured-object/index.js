@@ -1,9 +1,7 @@
-/** @format */
-
 /* eslint-disable no-await-in-loop, max-statements */
 
 async function collectionForEach(collection, batchSize, fn) {
-  const totalNumber = await collection.count({});
+  const totalNumber = await collection.countDocuments({});
   let offset = 0;
   while (offset < totalNumber) {
     const batch = await collection
@@ -154,7 +152,7 @@ export default {
 
     let index = 0;
 
-    const total = await db.collection('entities').count({});
+    const total = await db.collection('entities').countDocuments({});
     await collectionForEach(db.collection('entities'), 1000, async entity => {
       const template = templatesByKey[entity.template ? entity.template.toString() : null];
       index += 1;
@@ -163,7 +161,7 @@ export default {
         entity.metadata = await denormalizeMetadata(db, entity, template, dictionariesByKey);
         await db
           .collection('entities')
-          .update({ _id: entity._id }, { $set: { metadata: entity.metadata } });
+          .updateOne({ _id: entity._id }, { $set: { metadata: entity.metadata } });
       }
       if (index % 100 === 0) {
         process.stdout.write(`Converted entities.metadata -> ${index} / ${total}\r`);

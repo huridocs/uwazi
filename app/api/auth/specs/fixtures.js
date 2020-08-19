@@ -1,7 +1,7 @@
 /** @format */
 
 import SHA256 from 'crypto-js/sha256';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 
 const oldPassword = SHA256('oldPassword').toString();
 const newPassword = bcrypt.hashSync('newPassword', 10);

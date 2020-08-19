@@ -1,7 +1,7 @@
 /* eslint-disable no-await-in-loop */
 import path from 'path';
+import { config } from 'api/config';
 import fs from '../../../utils/async-fs';
-import paths from '../../../config/paths';
 
 export default {
   delta: 14,
@@ -18,8 +18,8 @@ export default {
     while (await uploads.hasNext()) {
       const { filename } = await uploads.next();
 
-      const oldPath = path.join(paths.uploadedDocuments, filename);
-      const newPath = path.join(paths.customUploads, filename);
+      const oldPath = path.join(config.defaultTenant.uploadedDocuments, filename);
+      const newPath = path.join(config.defaultTenant.customUploads, filename);
       try {
         await fs.rename(oldPath, newPath);
       } catch (e) {

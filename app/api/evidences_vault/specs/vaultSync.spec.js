@@ -1,25 +1,20 @@
-/** @format */
-
 import path from 'path';
 import moment from 'moment';
 import db from 'api/utils/testing_db';
 import entities from 'api/entities';
 import { search } from 'api/search';
-import { deleteFiles, deleteFile, getFileContent } from 'api/files/filesystem';
-import asyncFS from 'api/utils/async-fs';
+import { deleteFile, getFileContent } from 'api/files/filesystem';
 
 import fixtures, { templateId } from './fixtures';
 import { mockVault } from './helpers.js';
 import vaultSync from '../vaultSync';
 import vaultEvidencesModel from '../vaultEvidencesModel';
-import configPaths from '../../config/paths';
 
 describe('vaultSync', () => {
   const token = 'auth_token';
 
   beforeEach(async () => {
     await db.clearAllAndLoad(fixtures);
-    configPaths.uploadedDocuments = path.join(__dirname, 'uploads');
     spyOn(search, 'indexEntities').and.returnValue(Promise.resolve());
   });
 
@@ -27,16 +22,9 @@ describe('vaultSync', () => {
     await deleteFile(path.join(__dirname, '/zips/package1.zip'));
     await deleteFile(path.join(__dirname, '/zips/package2.zip'));
     await deleteFile(path.join(__dirname, '/zips/package3.zip'));
-    const files = (await asyncFS.readdir(configPaths.uploadedDocuments))
-      .filter(f => f !== 'index.html')
-      .map(f => path.join(configPaths.uploadedDocuments, f));
-
-    await deleteFiles(files);
   });
 
-  afterAll(async () => {
-    await db.disconnect();
-  });
+  afterAll(async () => db.disconnect());
 
   describe('sync', () => {
     beforeEach(async () => {
@@ -192,22 +180,12 @@ describe('vaultSync', () => {
     ]);
 
     expect(imported[0].attachments).toEqual([
-      expect.objectContaining({
-        filename: '1.mp4',
-      }),
-      expect.objectContaining({
-        filename: '1.png',
-      }),
-      expect.objectContaining({
-        filename: '1.zip',
-      }),
+      expect.objectContaining({ filename: '1.mp4' }),
+      expect.objectContaining({ filename: '1.png' }),
+      expect.objectContaining({ filename: '1.zip' }),
     ]);
 
-    expect(imported[1].attachments).toEqual([
-      expect.objectContaining({
-        filename: '2.zip',
-      }),
-    ]);
+    expect(imported[1].attachments).toEqual([expect.objectContaining({ filename: '2.zip' })]);
   });
 
   it('should not import already imported evidences', async () => {

@@ -32,7 +32,7 @@ Read the [user guide](https://github.com/huridocs/uwazi/wiki)
 
 # Dependencies
 
-- **NodeJs 10.21.x** For ease of update, use nvm: https://github.com/creationix/nvm
+- **NodeJs 14.6.x** For ease of update, use nvm: https://github.com/creationix/nvm
 - **ElasticSearch 7.8.0** https://www.elastic.co/guide/en/elasticsearch/reference/7.6/install-elasticsearch.html Please note that ElasticSearch requires java.
 - **ICU Analysis Plugin (recommended)** [installation](https://www.elastic.co/guide/en/elasticsearch/plugins/current/analysis-icu.html#analysis-icu) Adds support for number sorting in texts and solves other language sorting nuances. This option is activated by setting the env var USE_ELASTIC_ICU=true before running the server (defaults to false/unset).
 - **MongoDB 4.2** https://docs.mongodb.com/v4.2/installation/ .  If you have a previous version installed, please follow instructions on how to [upgrade here](https://docs.mongodb.com/manual/release-notes/4.2-upgrade-standalone/)
@@ -172,7 +172,7 @@ Running tests with Puppeteer
 $ DATABASE_NAME=uwazi_e2e INDEX_NAME=uwazi_e2e yarn hot
 ```
 
-On a different console tab, run
+Then on a different console tab/session, run
 
 ```
 $ yarn e2e-puppeteer
