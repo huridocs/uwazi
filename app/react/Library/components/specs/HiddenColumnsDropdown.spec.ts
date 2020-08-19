@@ -1,10 +1,10 @@
 import Immutable from 'immutable';
-import { DropdownList } from 'app/Forms';
-
-import { renderConnected } from 'app/Templates/specs/utils/renderConnected';
-import { HiddenColumnsDropdown } from '../HiddenColumnsDropdown';
-import * as actions from '../../actions/libraryActions';
 import { ShallowWrapper } from 'enzyme';
+
+import { DropdownList } from 'app/Forms';
+import { renderConnected } from 'app/Templates/specs/utils/renderConnected';
+import * as actions from 'app/Library/actions/libraryActions';
+import { HiddenColumnsDropdown } from '../HiddenColumnsDropdown';
 import { SelectableColumn } from '../HiddenColumnsDropdownItem';
 
 describe('HiddenColumnsDropdown', () => {
@@ -66,7 +66,9 @@ describe('HiddenColumnsDropdown', () => {
       });
 
       it('should not show title as an option', () => {
-        const titleOption = dropDown.props().data.find((option: SelectableColumn) => option.label === 'title');
+        const titleOption = dropDown
+          .props()
+          .data.find((option: SelectableColumn) => option.label === 'title');
         expect(titleOption).toBe(undefined);
       });
 

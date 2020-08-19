@@ -120,8 +120,13 @@ describe('TableCell', () => {
       label: 'Empty Select',
       type: 'select',
       name: 'empty_select',
-      value: null,
     };
+    const cellContent = renderContent(props);
+    expect(cellContent.props().children).toBe(undefined);
+  });
+
+  it('should not render entity has not value for column', () => {
+    delete props.content;
     const cellContent = renderContent(props);
     expect(cellContent.props().children).toBe(undefined);
   });

@@ -38,7 +38,7 @@ export function getTableColumns(documents: any, templates: TemplateSchema[]): Pr
       });
 
       columns = commonColumns
-        .map<PropertySchema>(c => ({ ...c, showInCards: true }))
+        .map<PropertySchema>(c => ({ ...c, showInCard: true }))
         .concat(columnsFromTemplates(templatesToProcess));
     }
   }

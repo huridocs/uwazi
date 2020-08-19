@@ -14,12 +14,12 @@ export interface TableCellProps {
 }
 
 export interface FormattedMetadataValue extends PropertySchema {
-  value: string | MetadataObjectSchema | MetadataObjectSchema[];
+  value?: string | MetadataObjectSchema | MetadataObjectSchema[];
 }
 
 function formatProperty(prop: FormattedMetadataValue) {
   let result;
-  if (!prop.value) {
+  if (!prop?.value) {
     return undefined;
   }
   if (['date', 'daterange', 'numeric', 'select', 'text', undefined].includes(prop.type)) {

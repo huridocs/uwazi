@@ -1,5 +1,5 @@
-import { ColumnItem, ValueItem, SelectableColumn } from '../HiddenColumnsDropdownItem';
 import { propertyTypes } from 'shared/propertyTypes';
+import { ColumnItem, ValueItem, SelectableColumn } from '../HiddenColumnsDropdownItem';
 
 describe('ColumnItem', () => {
   const item: SelectableColumn = {

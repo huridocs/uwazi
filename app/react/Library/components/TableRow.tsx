@@ -2,16 +2,16 @@ import React, { Component } from 'react';
 import Immutable from 'immutable';
 
 import { connect } from 'react-redux';
-import { PropertySchema } from 'shared/types/commonTypes';
 import { TemplateSchema } from 'shared/types/templateType';
 import { ThesaurusSchema } from 'shared/types/thesaurusType';
+import { IStore, TableViewColumn } from 'app/istore';
 import formatter from 'app/Metadata/helpers/formater';
 import { FormattedMetadataValue, TableCell } from 'app/Library/components/TableCell';
 import { EntitySchema } from 'shared/types/entityType';
 import { IImmutable } from 'shared/types/Immutable';
 
 interface TableRowProps {
-  columns: IImmutable<PropertySchema>[];
+  columns: IImmutable<TableViewColumn>[];
   entity: IImmutable<EntitySchema>;
   storeKey: 'library' | 'uploads';
   selected?: boolean;
@@ -29,7 +29,7 @@ const defaultProps = {
 function getColumnValue(
   formattedEntity: EntitySchema,
   columnValues: Map<string, FormattedMetadataValue>,
-  column: IImmutable<PropertySchema>
+  column: IImmutable<TableViewColumn>
 ) {
   const columnName: string = column.get('name') as string;
   let columnValue: FormattedMetadataValue;
@@ -70,7 +70,7 @@ class TableRowComponent extends Component<TableRowProps> {
 
     return (
       <tr className={selected ? 'selected' : ''}>
-        {columns.map((column: IImmutable<PropertySchema>, index: number) => {
+        {columns.map((column: IImmutable<TableViewColumn>, index: number) => {
           const columnValue = getColumnValue(formattedEntity, columnValues, column);
           const columnKey = formattedEntity._id + column.get('name');
           return (
@@ -87,12 +87,14 @@ class TableRowComponent extends Component<TableRowProps> {
   }
 }
 
-function mapStateToProps(state: any, ownProps: TableRowProps) {
+function mapStateToProps(state: IStore & { uploads: IStore['library'] }, ownProps: TableRowProps) {
   const selected: boolean =
     state[ownProps.storeKey].ui
       .get('selectedDocuments')
-      .find((doc: IImmutable<EntitySchema>) => doc?.get('_id') === ownProps.entity.get('_id')) !==
-    undefined;
+      .find(
+        (doc: IImmutable<EntitySchema> | undefined) =>
+          doc?.get('_id') === ownProps.entity.get('_id')
+      ) !== undefined;
   return {
     selected,
     templates: state.templates,
