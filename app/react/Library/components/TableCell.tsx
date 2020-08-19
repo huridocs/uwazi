@@ -4,12 +4,16 @@ import { connect } from 'react-redux';
 import MarkdownViewer from 'app/Markdown';
 import { I18NLink } from 'app/I18N';
 import GeolocationViewer from 'app/Metadata/components/GeolocationViewer';
-import { PropertySchema } from 'shared/types/commonTypes';
+import { MetadataObjectSchema, PropertySchema } from 'shared/types/commonTypes';
 
 export interface TableCellProps {
   storeKey: 'library' | 'uploads';
-  content: PropertySchema;
+  content: FormattedMetadataValue;
   zoomLevel: number;
+}
+
+export interface FormattedMetadataValue extends PropertySchema {
+  value?: string | null | MetadataObjectSchema | MetadataObjectSchema[];
 }
 
 function formatProperty(prop: any) {

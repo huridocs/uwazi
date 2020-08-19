@@ -70,7 +70,11 @@ describe('TableCell', () => {
       label: 'Google',
       type: 'link',
       name: 'google',
-      value: { label: 'google', url: 'www.google.com' },
+      value: {
+        label: 'google',
+        url: 'www.google.com',
+        value: null,
+      },
     };
     const cellContent = renderContent(props);
     expect(cellContent.find('a').props().href).toBe('www.google.com');
@@ -103,11 +107,11 @@ describe('TableCell', () => {
       label: 'Geolocation',
       type: 'geolocation',
       name: 'geolocation',
-      value: [{ lon: 2, lat: 46 }],
+      value: [{ lon: 2, lat: 46, value: null }],
     };
     const cellContent = renderContent(props);
     const geolocationProps = cellContent.props().children.props;
-    expect(geolocationProps.points).toEqual([{ lon: 2, lat: 46 }]);
+    expect(geolocationProps.points).toEqual([{ lon: 2, lat: 46, value: null }]);
     expect(geolocationProps.onlyForCards).toBe(true);
   });
 

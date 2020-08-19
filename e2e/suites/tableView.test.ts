@@ -6,10 +6,15 @@ import insertFixtures from '../helpers/insertFixtures';
 
 describe('Table view', () => {
   beforeAll(async () => {
+    jest.setTimeout(60000);
     await insertFixtures();
     await proxyMock();
     await page.goto(`${host}/library/table`);
     await page.waitFor(200);
+  });
+
+  afterAll(async () => {
+    jest.setTimeout(40000);
   });
 
   describe('Column selector', () => {
