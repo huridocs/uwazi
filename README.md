@@ -24,7 +24,7 @@ Read the [user guide](https://github.com/huridocs/uwazi/wiki)
 
 Before anything else you will need to install the application dependencies:
 
-- **NodeJs 10.21.x** For ease of update, use nvm: https://github.com/creationix/nvm.
+- **NodeJs 14.6.x** For ease of update, use nvm: https://github.com/creationix/nvm.
 - **ElasticSearch 7.6.2** https://www.elastic.co/guide/en/elasticsearch/reference/7.6/install-elasticsearch.html Please note that ElasticSearch requires java.  Follow the instructions to instal the package manually, and install v7.6.2.  v7.7.x and above are known to cause `HPE_HEADER_OVERFLOW` errors.  Please, ensure v7.6.2 only. You also probably need to disable ml module in the ElasticSearch config file:
   `xpack.ml.enabled: false`
 - **MongoDB 4.2** https://docs.mongodb.com/v4.2/installation/ .  If you have a previous version installed, please follow instructions on how to [upgrade here](https://docs.mongodb.com/manual/release-notes/4.2-upgrade-standalone/).
