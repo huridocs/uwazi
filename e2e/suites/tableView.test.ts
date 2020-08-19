@@ -10,7 +10,7 @@ describe('Table view', () => {
     await insertFixtures();
     await proxyMock();
     await page.goto(`${host}/library/table`);
-    await page.waitFor(200);
+    await page.waitFor(300);
   });
 
   afterAll(async () => {
@@ -43,7 +43,7 @@ describe('Table view', () => {
         (<HTMLInputElement>option[0]).click();
         return option[0].textContent;
       });
-      await page.waitFor(200);
+      await page.waitFor(300);
       const lastColumn = await page.$$eval(
         '.tableview-wrapper th:last-child',
         columns => columns[0].textContent
@@ -59,7 +59,7 @@ describe('Table view', () => {
       (<HTMLInputElement>item[0]).checked = false;
       (<HTMLInputElement>item[0]).click();
     });
-    await page.waitFor(200);
+    await page.waitFor(300);
     const optionsSelector = '#rw_1_listbox li';
     const headerColumnSelector = '.tableview-wrapper th';
     const optionsCount = await page.$$eval(optionsSelector, options => options.length);
@@ -82,7 +82,7 @@ describe('Table view', () => {
     const showMoreSelector = '.btn-load-more:nth-child(1)';
     const rowSelector = '.tableview-wrapper > table > tbody > tr';
     await page.click(showMoreSelector);
-    await page.waitFor(200);
+    await page.waitFor(300);
     const rowsNumber = await page.$$eval(rowSelector, rows => rows.length);
     expect(rowsNumber).toBe(60);
   });

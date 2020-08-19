@@ -32,7 +32,7 @@ function getColumnValue(
 ) {
   const columnName: string = column.get('name') as string;
   let columnValue: FormattedMetadataValue;
-  if (!column.get('isCommonProperty')) {
+  if (!column.get('isCommonProperty') || column.get('name') === 'creationDate') {
     columnValue = columnValues.get(columnName) as PropertySchema;
   } else {
     const commonPropValue =
