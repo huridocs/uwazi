@@ -24,7 +24,10 @@ describe('ColumnItem', () => {
 
 describe('ValueItem', () => {
   it('should show the number of hidden columns', () => {
-    const hiddenColumns = [{ label: 'Created at', type: propertyTypes.text }, { label: 'Template', type: propertyTypes.text }];
+    const hiddenColumns = [
+      { label: 'Created at', type: propertyTypes.text },
+      { label: 'Template', type: propertyTypes.text },
+    ];
     const valueItem = ValueItem(hiddenColumns)();
     expect(valueItem.props.children[1]).toEqual('2 columns hidden');
   });

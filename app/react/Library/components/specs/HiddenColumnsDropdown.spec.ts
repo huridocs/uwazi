@@ -43,7 +43,11 @@ describe('HiddenColumnsDropdown', () => {
 
     describe('default options', () => {
       const hiddenAllAction = (action: boolean) => ({ type: 'setTableAllHidden', hidden: action });
-      const hiddenAction = (name: string, action: boolean) => ({ type: 'setTableHidden', name, hidden: action });
+      const hiddenAction = (name: string, action: boolean) => ({
+        type: 'setTableHidden',
+        name,
+        hidden: action,
+      });
       jest.spyOn(actions, 'setTableViewAllColumnsHidden').mockImplementation(hiddenAllAction);
       jest.spyOn(actions, 'setTableViewColumnHidden').mockImplementation(hiddenAction);
 
