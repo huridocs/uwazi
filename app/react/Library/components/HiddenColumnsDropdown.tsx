@@ -46,9 +46,11 @@ class HideColumnsComponent extends React.Component<HideColumnsComponentProps> {
       <div className="hidden-columns-dropdown">
         {/*
         // @ts-ignore */}
-       <DropdownList
+        <DropdownList
           data={sortedColumns}
-          filter={(item: any, searchTerm: string) => item.label.toLowerCase().includes(searchTerm.toLowerCase())}
+          filter={(item: any, searchTerm: string) =>
+            item.label.toLowerCase().includes(searchTerm.toLowerCase())
+          }
           itemComponent={ColumnItem}
           valueComponent={ValueItem(hiddenColumns)}
           onSelect={this.onSelect}

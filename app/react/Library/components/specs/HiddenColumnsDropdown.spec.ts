@@ -4,9 +4,10 @@ import { DropdownList } from 'app/Forms';
 import { renderConnected } from 'app/Templates/specs/utils/renderConnected';
 import { HiddenColumnsDropdown } from '../HiddenColumnsDropdown';
 import * as actions from '../../actions/libraryActions';
+import { ShallowWrapper } from 'enzyme';
 
 describe('HiddenColumnsDropdown', () => {
-  let component;
+  let component: ShallowWrapper;
   jest.mock('../../actions/libraryActions');
 
   const props = {
@@ -41,8 +42,13 @@ describe('HiddenColumnsDropdown', () => {
     };
 
     describe('default options', () => {
-      const hiddenAction = action => ({ type: 'setTableHidden', hidden: action });
-      jest.spyOn(actions, 'setTableViewAllColumnsHidden').mockImplementation(hiddenAction);
+      const hiddenAllAction = (action: boolean) => ({ type: 'setTableAllHidden', hidden: action });
+      const hiddenAction = (name: string, action: boolean) => ({
+        type: 'setTableHidden',
+        name,
+        hidden: action,
+      });
+      jest.spyOn(actions, 'setTableViewAllColumnsHidden').mockImplementation(hiddenAllAction);
       jest.spyOn(actions, 'setTableViewColumnHidden').mockImplementation(hiddenAction);
 
       render();
@@ -59,7 +65,7 @@ describe('HiddenColumnsDropdown', () => {
       });
 
       it('should not show title as an option', () => {
-        const titleOption = dropDown.props().data.find(option => option.label === 'title');
+        const titleOption = dropDown.props().data.find((option: any) => option.label === 'title');
         expect(titleOption).toBe(undefined);
       });
 
