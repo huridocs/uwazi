@@ -6,7 +6,12 @@ import { PropertySchema } from 'shared/types/commonTypes';
 import { TemplateSchema } from 'shared/types/templateType';
 import translate, { getLocaleTranslation, getContext } from 'shared/translate';
 import translations from 'api/i18n/translations';
-import formatters from './typeFormatters';
+import {
+  formatters,
+  formatCreationDate,
+  formatDocuments,
+  formatAttachments,
+} from './typeFormatters';
 import { EntitySchema } from '../../shared/types/entityType';
 
 export type SearchResults = {
@@ -130,16 +135,13 @@ export const processCommonField = (
     case 'template':
       return rowTemplate.name;
     case 'creationDate':
-      return formatters.creationDate(row, options);
+      return formatCreationDate(row, options);
     case 'geolocation':
       return processGeolocationField(row, rowTemplate);
     case 'documents':
-      return formatters.documents(row.documents, options);
+      return formatDocuments(row);
     case 'attachments':
-      return formatters.attachments(
-        row.attachments.map((attachment: any) => ({ ...attachment, entityId: row._id })),
-        options
-      );
+      return formatAttachments(row);
     case 'published':
       return row.published ? 'Published' : 'Unpublished';
     default:
@@ -215,7 +217,7 @@ export default class CSVExporter extends EventEmitter {
     return new Promise(resolve => {
       csvStream.write(headers.map((h: any) => h.label));
 
-      searchResults.rows.forEach(row => {
+      searchResults.rows.forEach((row, i) => {
         csvStream.write(processEntity(row, headers, templatesCache, options));
         this.emit('entityProcessed');
       });
