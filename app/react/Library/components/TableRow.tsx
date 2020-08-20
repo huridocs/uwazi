@@ -87,7 +87,7 @@ class TableRowComponent extends Component<TableRowProps> {
   }
 }
 
-function mapStateToProps(state: IStore & { uploads: IStore['library'] }, ownProps: TableRowProps) {
+function mapStateToProps(state: IStore, ownProps: TableRowProps) {
   const selected: boolean =
     state[ownProps.storeKey].ui
       .get('selectedDocuments')

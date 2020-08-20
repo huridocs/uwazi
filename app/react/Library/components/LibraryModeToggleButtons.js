@@ -96,7 +96,6 @@ LibraryModeToggleButtons.defaultProps = {
 
 export function mapStateToProps(state, props) {
   const filters = state[props.storeKey].filters.toJS();
-  const tableViewColumns = state[props.storeKey].ui.get('tableViewColumns').toJS();
   const params = processFilters(state[props.storeKey].search, filters);
   const { templates } = state;
   const showGeolocation = Boolean(
@@ -114,7 +113,6 @@ export function mapStateToProps(state, props) {
       Object.keys(props).indexOf('zoomLevel') !== -1
         ? props.zoomLevel
         : state[props.storeKey].ui.get('zoomLevel'),
-    tableViewColumns,
   };
 }
 

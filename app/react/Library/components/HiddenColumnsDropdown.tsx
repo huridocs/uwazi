@@ -1,7 +1,8 @@
 import React from 'react';
-import { DropdownList } from 'app/Forms';
-import { connect } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
+import { connect } from 'react-redux';
+import { List } from 'immutable';
+import { DropdownList } from 'app/Forms';
 import { TableViewColumn, IStore } from 'app/istore';
 import { wrapDispatch } from 'app/Multireducer';
 import {
@@ -13,9 +14,10 @@ import {
   setTableViewColumnHidden,
   setTableViewAllColumnsHidden,
 } from 'app/Library/actions/libraryActions';
+import { IImmutable } from 'shared/types/Immutable';
 
 interface HideColumnsComponentProps {
-  columns: TableViewColumn[];
+  columns: List<IImmutable<TableViewColumn>>;
   setTableViewColumnHidden: (name: string, hidden: boolean) => void;
   setTableViewAllColumnsHidden: (hidden: boolean) => void;
   storeKey: 'library' | 'uploads';
@@ -36,8 +38,9 @@ class HideColumnsComponent extends React.Component<HideColumnsComponentProps> {
   }
 
   render() {
-    const hiddenColumns = this.props.columns.filter(c => c.hidden);
-    const shownColumns = this.props.columns.filter(c => !c.hidden);
+    const columns = this.props.columns.toJS().slice(1);
+    const hiddenColumns = columns.filter((c: TableViewColumn) => c.hidden);
+    const shownColumns = columns.filter((c: TableViewColumn) => !c.hidden);
 
     const selectAllColumn: SelectableColumn = {
       label: 'Show all',
@@ -48,7 +51,7 @@ class HideColumnsComponent extends React.Component<HideColumnsComponentProps> {
     };
 
     const sortedColumns = [selectAllColumn].concat(
-      shownColumns.concat(hiddenColumns).map(c => ({ ...c, selectAll: false }))
+      shownColumns.concat(hiddenColumns).map((c: TableViewColumn) => ({ ...c, selectAll: false }))
     );
 
     return (
@@ -70,14 +73,8 @@ class HideColumnsComponent extends React.Component<HideColumnsComponentProps> {
 }
 
 // TODO: define uploads as a property of IStore and remove the interfaces merge.
-const mapStateToProps = (
-  state: IStore & { uploads: IStore['library'] },
-  props: HideColumnsComponentProps
-) => ({
-  columns: state[props.storeKey].ui
-    .get('tableViewColumns')
-    .toJS()
-    .slice(1),
+const mapStateToProps = (state: IStore, props: HideColumnsComponentProps) => ({
+  columns: state[props.storeKey].ui.get('tableViewColumns'),
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<IStore>, props: HideColumnsComponentProps) =>

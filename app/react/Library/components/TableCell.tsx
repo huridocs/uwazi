@@ -82,7 +82,7 @@ class TableCellComponent extends Component<TableCellProps> {
   }
 }
 
-function mapStateToProps(state: IStore & { uploads: IStore['library'] }, ownProps: TableCellProps) {
+function mapStateToProps(state: IStore, ownProps: TableCellProps) {
   return {
     zoomLevel: state[ownProps.storeKey].ui.get('zoomLevel'),
   };

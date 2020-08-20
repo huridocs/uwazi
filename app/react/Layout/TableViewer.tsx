@@ -1,23 +1,23 @@
 import React, { Component } from 'react';
 
 import { connect } from 'react-redux';
-import { TableRow } from 'app/Library/components/TableRow';
+import { List } from 'immutable';
 import { IImmutable } from 'shared/types/Immutable';
 import { EntitySchema } from 'shared/types/entityType';
+import { TableRow } from 'app/Library/components/TableRow';
 import { IStore, TableViewColumn } from 'app/istore';
-import { List } from 'immutable';
 
 export interface DocumentViewerProps {
   rowListZoomLevel: number;
   documents: IImmutable<{ rows: EntitySchema[] }>;
   storeKey: 'library' | 'uploads';
   clickOnDocument: (...args: any[]) => void;
-  columns: TableViewColumn[];
+  columns: List<IImmutable<TableViewColumn>>;
 }
 
 class TableViewerComponent extends Component<DocumentViewerProps> {
   render() {
-    const columns = this.props.columns.filter(c => !c.hidden);
+    const columns = this.props.columns.toJS().filter((c: TableViewColumn) => !c.hidden);
     return (
       <div className="tableview-wrapper">
         <table>
@@ -50,15 +50,10 @@ class TableViewerComponent extends Component<DocumentViewerProps> {
   }
 }
 
-const mapStateToProps = (
-  state: IStore & { uploads: IStore['library'] },
-  props: DocumentViewerProps
-) => {
-  const tableViewColumns: List<IImmutable<TableViewColumn>> = state[props.storeKey].ui.get(
-    'tableViewColumns'
-  );
+const mapStateToProps = (state: IStore, props: DocumentViewerProps) => {
+  const tableViewColumns = state[props.storeKey].ui.get('tableViewColumns');
   return {
-    columns: tableViewColumns.toJS(),
+    columns: tableViewColumns,
   };
 };
 

@@ -9,7 +9,7 @@ import { SelectableColumn } from '../HiddenColumnsDropdownItem';
 
 describe('HiddenColumnsDropdown', () => {
   let component: ShallowWrapper;
-  jest.mock('../../actions/libraryActions');
+  jest.mock('app/Library/actions/libraryActions');
 
   const props = {
     storeKey: 'library',
