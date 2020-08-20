@@ -1,6 +1,5 @@
 import moment from 'moment';
 import { MetadataObjectSchema } from 'shared/types/commonTypes';
-import { EntitySchema } from '../../shared/types/entityType';
 
 const defaultDateFormat = 'YYYY-MM-DD';
 export const formatDate = (timestamp: number, format: string = defaultDateFormat) =>

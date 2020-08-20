@@ -217,7 +217,7 @@ export default class CSVExporter extends EventEmitter {
     return new Promise(resolve => {
       csvStream.write(headers.map((h: any) => h.label));
 
-      searchResults.rows.forEach((row, i) => {
+      searchResults.rows.forEach(row => {
         csvStream.write(processEntity(row, headers, templatesCache, options));
         this.emit('entityProcessed');
       });
