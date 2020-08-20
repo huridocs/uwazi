@@ -5,26 +5,27 @@ import { TableRow } from 'app/Library/components/TableRow';
 import { IImmutable } from 'shared/types/Immutable';
 import { EntitySchema } from 'shared/types/entityType';
 import { IStore, TableViewColumn } from 'app/istore';
+import { List } from 'immutable';
 
-export interface TableViewerProps {
+export interface DocumentViewerProps {
   rowListZoomLevel: number;
   documents: IImmutable<{ rows: EntitySchema[] }>;
   storeKey: 'library' | 'uploads';
   clickOnDocument: (...args: any[]) => void;
-  columns: any;
+  columns: TableViewColumn[];
 }
 
-class TableViewerComponent extends Component<TableViewerProps> {
+class TableViewerComponent extends Component<DocumentViewerProps> {
   render() {
-    const columns = this.props.columns.filter((c: any) => !c.get('hidden'));
+    const columns = this.props.columns.filter(c => !c.hidden);
     return (
       <div className="tableview-wrapper">
         <table>
           <thead>
             <tr>
-              {columns.map((column: IImmutable<TableViewColumn>, index: number) => (
-                <th className={!index ? 'sticky-col' : ''} key={column.get('name')}>
-                  <div className="table-view-cell">{column.get('label')}</div>
+              {columns.map((column: TableViewColumn, index: number) => (
+                <th className={!index ? 'sticky-col' : ''} key={column.name}>
+                  <div className="table-view-cell">{column.label}</div>
                 </th>
               ))}
             </tr>
@@ -51,11 +52,13 @@ class TableViewerComponent extends Component<TableViewerProps> {
 
 const mapStateToProps = (
   state: IStore & { uploads: IStore['library'] },
-  props: TableViewerProps
+  props: DocumentViewerProps
 ) => {
-  const tableViewColumns: any = state[props.storeKey].ui.get('tableViewColumns');
+  const tableViewColumns: List<IImmutable<TableViewColumn>> = state[props.storeKey].ui.get(
+    'tableViewColumns'
+  );
   return {
-    columns: tableViewColumns,
+    columns: tableViewColumns.toJS(),
   };
 };
 

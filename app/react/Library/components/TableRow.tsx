@@ -11,7 +11,7 @@ import { EntitySchema } from 'shared/types/entityType';
 import { IImmutable } from 'shared/types/Immutable';
 
 interface TableRowProps {
-  columns: IImmutable<TableViewColumn>[];
+  columns: TableViewColumn[];
   entity: IImmutable<EntitySchema>;
   storeKey: 'library' | 'uploads';
   selected?: boolean;
@@ -29,16 +29,16 @@ const defaultProps = {
 function getColumnValue(
   formattedEntity: EntitySchema,
   columnValues: Map<string, FormattedMetadataValue>,
-  column: IImmutable<TableViewColumn>
+  column: TableViewColumn
 ) {
-  const columnName: string = column.get('name') as string;
   let columnValue: FormattedMetadataValue;
-  if (!column.get('isCommonProperty') || column.get('name') === 'creationDate') {
+  const columnName = column.name!;
+  if (!column.isCommonProperty || columnName === 'creationDate') {
     columnValue = columnValues.get(columnName) as FormattedMetadataValue;
   } else {
     const commonPropValue =
       columnName === 'templateName' ? formattedEntity.documentType : formattedEntity[columnName];
-    columnValue = column.toJS() as FormattedMetadataValue;
+    columnValue = column as FormattedMetadataValue;
     columnValue.value = commonPropValue;
   }
   return columnValue;
@@ -70,9 +70,9 @@ class TableRowComponent extends Component<TableRowProps> {
 
     return (
       <tr className={selected ? 'selected' : ''}>
-        {columns.map((column: IImmutable<TableViewColumn>, index: number) => {
+        {columns.map((column: TableViewColumn, index: number) => {
           const columnValue = getColumnValue(formattedEntity, columnValues, column);
-          const columnKey = formattedEntity._id + column.get('name');
+          const columnKey = formattedEntity._id + column.name;
           return (
             <React.Fragment key={`column_${columnKey}`}>
               <td className={!index ? 'sticky-col' : ''}>

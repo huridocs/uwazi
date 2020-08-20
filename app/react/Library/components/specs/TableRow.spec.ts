@@ -6,13 +6,14 @@ import Immutable from 'immutable';
 import { renderConnected } from 'app/Templates/specs/utils/renderConnected';
 import { TableRow } from 'app/Library/components/TableRow';
 import { TableCell } from 'app/Library/components/TableCell';
+import { EntitySchema } from 'shared/types/entityType';
 
 describe('TableRow', () => {
   const formattedCreationDate = 'Jul 23, 2020';
   const formattedPropertyDate = 'May 20, 2019';
   let component: any;
   let instance: any;
-  let entity: any;
+  let entity: EntitySchema;
   const commonColumns = [
     {
       label: 'Title1',
@@ -104,7 +105,7 @@ describe('TableRow', () => {
     });
     const props = {
       entity,
-      columns: Immutable.fromJS(commonColumns.concat(templateColumns)),
+      columns: commonColumns.concat(templateColumns),
       storeKey: 'library',
       clickOnDocument: clickOnDocumentSpy,
     };

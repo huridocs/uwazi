@@ -62,6 +62,7 @@ describe('HiddenColumnsDropdown', () => {
           selectAll: true,
           indeterminate: true,
           hidden: false,
+          type: 'text',
         });
       });
 

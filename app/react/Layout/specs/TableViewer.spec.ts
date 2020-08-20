@@ -58,10 +58,10 @@ describe('TableViewer', () => {
     });
     it('should pass to each row the columns and the document', () => {
       const row = component.find(TableRow);
-      const columnsToShow = Immutable.fromJS([
+      const columnsToShow = [
         { name: 'date', label: 'Date', hidden: false },
         { name: 'country', label: 'Country', hidden: false },
-      ]);
+      ];
       expect(row.at(0).props()).toEqual({
         entity: documents.get('rows').get(0),
         columns: columnsToShow,

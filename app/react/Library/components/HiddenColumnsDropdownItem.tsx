@@ -10,7 +10,7 @@ export interface SelectableColumn extends TableViewColumn {
 
 function updateIndeterminate(item: SelectableColumn) {
   return (elem: HTMLInputElement) => {
-    if (item.selectAll && elem && item.indeterminate) {
+    if (item.selectAll && elem && item.indeterminate !== undefined) {
       // eslint-disable-next-line no-param-reassign
       elem.indeterminate = item.indeterminate;
     }
