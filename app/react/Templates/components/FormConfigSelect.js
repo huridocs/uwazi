@@ -12,10 +12,7 @@ import { checkErrorsOnLabel } from '../utils/checkErrorsOnLabel';
 
 export class FormConfigSelect extends Component {
   static getDerivedStateFromProps(props, state) {
-    if (state.initialContent !== props.content) {
-      return { warning: true };
-    }
-    return null;
+    return { warning: Boolean(state.initialContent !== props.content) };
   }
 
   static contentValidation() {

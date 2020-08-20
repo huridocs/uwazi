@@ -1,5 +1,4 @@
 /**
- * @format
  * @jest-environment jsdom
  */
 
@@ -34,6 +33,7 @@ describe('Login', () => {
       recoverPassword: jasmine.createSpy('recoverPassword').and.returnValue(Promise.resolve()),
       notify: jasmine.createSpy('notify'),
       reloadThesauris: jasmine.createSpy('reloadThesauris'),
+      routes: [],
     };
     spyOn(formActions, 'reset').and.callFake(formName => formName);
     render();

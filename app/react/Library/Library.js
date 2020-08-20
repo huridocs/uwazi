@@ -14,6 +14,11 @@ export default class Library extends RouteHandler {
   constructor(props, context) {
     super(props, context);
     this.superComponentWillReceiveProps = super.componentWillReceiveProps;
+
+    const { dispatch } = context.store;
+    wrapDispatch(dispatch, 'library')(enterLibrary());
+    this.zoomIn = () => wrapDispatch(dispatch, 'library')(zoomIn());
+    this.zoomOut = () => wrapDispatch(dispatch, 'library')(zoomOut());
   }
 
   static renderTools() {
@@ -33,13 +38,6 @@ export default class Library extends RouteHandler {
 
   urlHasChanged(nextProps) {
     return nextProps.location.query.q !== this.props.location.query.q;
-  }
-
-  componentDidMount() {
-    const { dispatch } = this.context.store;
-    wrapDispatch(dispatch, 'library')(enterLibrary());
-    this.zoomIn = () => wrapDispatch(dispatch, 'library')(zoomIn());
-    this.zoomOut = () => wrapDispatch(dispatch, 'library')(zoomOut());
   }
 
   componentWillUnmount() {
