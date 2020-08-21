@@ -7,6 +7,7 @@ coverage
 /dist
 /prod
 /build
+/uwazi-production
 *.log
 *.tar.gz
 npm-debug
