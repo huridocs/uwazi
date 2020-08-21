@@ -3,19 +3,15 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { List } from 'immutable';
 import { IImmutable } from 'shared/types/Immutable';
-import { EntitySchema } from 'shared/types/entityType';
 import { TableRow } from 'app/Library/components/TableRow';
 import { IStore, TableViewColumn } from 'app/istore';
+import { CollectionViewerProps } from './CollectionViewerProps';
 
-export interface DocumentViewerProps {
-  rowListZoomLevel: number;
-  documents: IImmutable<{ rows: EntitySchema[] }>;
-  storeKey: 'library' | 'uploads';
-  clickOnDocument: (...args: any[]) => void;
+export interface TableViewerProps extends CollectionViewerProps {
   columns: List<IImmutable<TableViewColumn>>;
 }
 
-class TableViewerComponent extends Component<DocumentViewerProps> {
+class TableViewerComponent extends Component<TableViewerProps> {
   render() {
     const columns = this.props.columns.toJS().filter((c: TableViewColumn) => !c.hidden);
     return (
@@ -50,7 +46,7 @@ class TableViewerComponent extends Component<DocumentViewerProps> {
   }
 }
 
-const mapStateToProps = (state: IStore, props: DocumentViewerProps) => {
+const mapStateToProps = (state: IStore, props: TableViewerProps) => {
   const tableViewColumns = state[props.storeKey].ui.get('tableViewColumns');
   return {
     columns: tableViewColumns,

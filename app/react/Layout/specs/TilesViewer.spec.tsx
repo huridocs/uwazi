@@ -4,11 +4,13 @@ import Immutable from 'immutable';
 
 import Doc from 'app/Library/components/Doc';
 
-import { TilesViewer, TilesViewerProps } from 'app/Layout/TilesViewer';
+import { TilesViewer } from 'app/Layout/TilesViewer';
+
 import { RowList } from '../Lists';
+import { CollectionViewerProps } from '../CollectionViewerProps';
 
 describe('TilesViewer', () => {
-  let component: ShallowWrapper<TilesViewerProps, {}, TilesViewer>;
+  let component: ShallowWrapper<CollectionViewerProps, {}, TilesViewer>;
   let props: any;
   const documents = Immutable.fromJS({
     rows: [

@@ -1,22 +1,13 @@
 import React from 'react';
 import Doc from 'app/Library/components/Doc';
 import { RowList } from './Lists';
+import { CollectionViewerProps } from './CollectionViewerProps';
 
-export interface TilesViewerProps {
-  rowListZoomLevel: number;
-  documents: any;
-  storeKey: 'library' | 'uploads';
-  clickOnDocument: (...args: any[]) => any;
-  onSnippetClick: (...args: any[]) => any;
-  deleteConnection: (...args: any[]) => any;
-  search: any;
-}
-
-export class TilesViewer extends React.Component<TilesViewerProps> {
+export class TilesViewer extends React.Component<CollectionViewerProps> {
   render() {
     return (
       <RowList zoomLevel={this.props.rowListZoomLevel}>
-        {this.props.documents.get('rows').map((doc: any, index: number) => (
+        {this.props.documents.get('rows').map((doc, index) => (
           <Doc
             doc={doc}
             storeKey={this.props.storeKey}
