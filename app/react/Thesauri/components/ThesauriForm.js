@@ -1,4 +1,3 @@
-/** @format */
 import ShowIf from 'app/App/ShowIf';
 import FormGroup from 'app/DocumentForm/components/FormGroup';
 import { BackButton } from 'app/Layout';
@@ -76,15 +75,7 @@ export class ThesauriForm extends Component {
 
     this.addEmptyValueAtTheEnd();
 
-    const { values } = this.props.thesauri;
-    const previousValues = previousProps.thesauri.values;
-    const addedValue = values.length > previousProps.thesauri.values.length;
-    const lasValueIsGroup = values.length && values[values.length - 1].values;
-    const previousLasValueWasGroup =
-      previousValues.length && previousValues[previousValues.length - 1].values;
-    if (lasValueIsGroup && (!previousLasValueWasGroup || addedValue)) {
-      this.groups[this.groups.length - 1].focus();
-    }
+    this.focusIfWasGroup(previousProps);
   }
 
   componentWillUnmount() {
@@ -98,6 +89,18 @@ export class ThesauriForm extends Component {
 
   onImportClicked() {
     this.fileInputRef.current.click();
+  }
+
+  focusIfWasGroup(previousProps) {
+    const { values } = this.props.thesauri;
+    const previousValues = previousProps.thesauri.values;
+    const addedValue = values.length > previousProps.thesauri.values.length;
+    const lastValueIsGroup = values.length && values[values.length - 1].values;
+    const previousLastValueWasGroup =
+      previousValues.length && previousValues[previousValues.length - 1].values;
+    if (lastValueIsGroup && (!previousLastValueWasGroup || addedValue)) {
+      this.groups[this.groups.length - 1].focus();
+    }
   }
 
   addEmptyValueAtTheEnd() {

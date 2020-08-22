@@ -8,7 +8,6 @@ import { ConnectionsGroup, mapStateToProps } from '../ConnectionsGroup';
 
 describe('ConnectionsGroup', () => {
   let component;
-  let instance;
   let props;
   let group;
 
@@ -31,7 +30,6 @@ describe('ConnectionsGroup', () => {
 
   const render = () => {
     component = shallow(<ConnectionsGroup {...props} />);
-    instance = component.instance();
   };
 
   it('should render the group multiselect item with checked state, types count and expanded', () => {

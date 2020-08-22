@@ -9,6 +9,7 @@ export default class NumericRangeSlide extends Component {
 
     return null;
   }
+
   constructor(props) {
     super(props);
     this.state = { value: props.value };
