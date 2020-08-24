@@ -241,6 +241,7 @@ $c-sidebar: $c-white;
 }
 
 .sidepanel-footer {
+  z-index:1;
   position: absolute;
   bottom: 2em;
   left: 50%;
