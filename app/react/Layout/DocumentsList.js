@@ -23,10 +23,13 @@ class DocumentsList extends Component {
     this.selectAllDocuments = this.selectAllDocuments.bind(this);
   }
 
-  clickOnDocument(...args) {
-    if (this.props.clickOnDocument) {
-      this.props.clickOnDocument.apply(this, args);
-    }
+  componentWillReceiveProps() {
+    this.setState({ loading: false });
+  }
+
+  loadMoreDocuments(amount, from) {
+    this.setState({ loading: true });
+    this.props.loadMoreDocuments(this.props.storeKey, amount, from);
   }
 
   selectAllDocuments() {
@@ -35,13 +38,10 @@ class DocumentsList extends Component {
     }
   }
 
-  loadMoreDocuments(amount, from) {
-    this.setState({ loading: true });
-    this.props.loadMoreDocuments(this.props.storeKey, amount, from);
-  }
-
-  UNSAFE_componentWillReceiveProps() {
-    this.setState({ loading: false });
+  clickOnDocument(...args) {
+    if (this.props.clickOnDocument) {
+      this.props.clickOnDocument.apply(this, args);
+    }
   }
 
   loadMoreButton(amount) {
