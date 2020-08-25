@@ -13,19 +13,19 @@ mkdir -p $install_path/log
 mkdir -p $install_path/temporal_files
 mkdir -p $install_path/uploaded_documents
 
-echo "Copy app files..."
+echo "Copying app files..."
 rm -fr $install_path/app
 cp -r ./prod/app $install_path/app
 
-echo "Copy database files..."
+echo "Copying database files..."
 rm -fr $install_path/database
 cp -r ./prod/database $install_path/database
 
-echo "Copy node modules..."
+echo "Copying node modules..."
 rm -fr $install_path/node_modules
 cp -fr ./prod/node_modules $install_path/node_modules
 
-echo "Copy dist files..."
+echo "Copying dist files..."
 rm -fr $install_path/dist
 cp -r ./prod/dist $install_path/dist
 
