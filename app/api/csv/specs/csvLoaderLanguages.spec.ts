@@ -43,7 +43,7 @@ describe('csvLoader languages', () => {
     );
     const csv = path.join(__dirname, 'zipData/testLanguages.zip');
     spyOn(filesystem, 'generateFileName').and.callFake(file => `generated${file.originalname}`);
-    await loader.load(csv, template1Id, { language: 'en' });
+    await loader.load(csv, template1Id, { language: 'en', user: {} });
 
     imported = await entities.get();
   });

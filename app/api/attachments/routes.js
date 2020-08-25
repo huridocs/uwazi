@@ -1,27 +1,17 @@
 import Joi from 'joi';
 import mongoose from 'mongoose';
 import createError from 'api/utils/Error';
-import multer from 'multer';
 import sanitize from 'sanitize-filename';
 
-import ID from 'shared/uniqueID';
 import entities from 'api/entities';
 import fs from 'fs';
 import path from 'path';
 import { attachmentsPath } from 'api/files/filesystem';
+import { uploadMiddleware } from 'api/files/uploadMiddleware';
 
 import attachments from './attachments';
 import { validation } from '../utils';
 import needsAuthorization from '../auth/authMiddleware';
-
-const storage = multer.diskStorage({
-  destination(_req, _file, cb) {
-    cb(null, attachmentsPath());
-  },
-  filename(_req, file, cb) {
-    cb(null, Date.now() + ID() + path.extname(file.originalname));
-  },
-});
 
 const assignAttachment = (entity, addedFile) => {
   const conformedEntity = { _id: entity._id, attachments: entity.attachments || [] };
@@ -62,8 +52,6 @@ export const processAttachmentAllLanguages = (entity, attachment) =>
     });
 
 export default app => {
-  const upload = multer({ storage });
-
   app.get('/api/attachment/:file', (req, res) => {
     const filePath = `${path.resolve(attachmentsPath(path.basename(req.params.file)))}`;
     fs.stat(filePath, err => {
@@ -108,7 +96,7 @@ export default app => {
   app.post(
     '/api/attachments/upload',
     needsAuthorization(['admin', 'editor']),
-    upload.any(),
+    uploadMiddleware(attachmentsPath),
     validation.validateRequest(
       Joi.object()
         .keys({
@@ -122,8 +110,8 @@ export default app => {
         .getById(req.body.entityId)
         .then(entity =>
           req.body.allLanguages === 'true'
-            ? processAttachmentAllLanguages(entity, req.files[0])
-            : processAttachment(entity, req.files[0])
+            ? processAttachmentAllLanguages(entity, req.file)
+            : processAttachment(entity, req.file)
         )
         .then(([addedFile]) => {
           res.json(addedFile);
