@@ -6,22 +6,23 @@ import ID from 'shared/uniqueID';
 import asyncFS from 'api/utils/async-fs';
 import { tenants } from 'api/tenants/tenantContext';
 import { testingTenants } from 'api/utils/testingTenants';
-
-import { FileType } from '../../shared/types/fileType';
 import { promisify } from 'util';
 
-export type FilePath = string;
+import { FileType } from '../../shared/types/fileType';
 
-const uploadsPath = (fileName: string = ''): FilePath =>
+export type FilePath = string;
+export type pathFunction = (fileName?: string) => FilePath;
+
+const uploadsPath: pathFunction = (fileName: string = ''): FilePath =>
   path.join(tenants.current().uploadedDocuments, fileName);
 
-const attachmentsPath = (fileName: string = ''): FilePath =>
+const attachmentsPath: pathFunction = (fileName: string = ''): FilePath =>
   path.join(tenants.current().attachments, fileName);
 
-const customUploadsPath = (fileName: string = ''): FilePath =>
+const customUploadsPath: pathFunction = (fileName: string = ''): FilePath =>
   path.join(tenants.current().customUploads, fileName);
 
-const temporalFilesPath = (fileName: string = ''): FilePath =>
+const temporalFilesPath: pathFunction = (fileName: string = ''): FilePath =>
   path.join(tenants.current().temporalFiles, fileName);
 
 async function deleteFile(file: FilePath) {
@@ -39,13 +40,15 @@ async function deleteFiles(files: FilePath[]) {
   return Promise.all(files.map(async file => deleteFile(file)));
 }
 
+const testingUploadPaths = {
+  uploadedDocuments: `${__dirname}/specs/uploads/`,
+  attachments: `${__dirname}/specs/uploads/`,
+  customUploads: `${__dirname}/specs/customUploads/`,
+  temporalFiles: `${__dirname}/specs/uploads/`,
+};
+
 const setupTestUploadedPaths = () => {
-  testingTenants.changeCurrentTenant({
-    uploadedDocuments: `${__dirname}/specs/uploads/`,
-    attachments: `${__dirname}/specs/uploads/`,
-    customUploads: `${__dirname}/specs/uploads/`,
-    temporalFiles: `${__dirname}/specs/uploads/`,
-  });
+  testingTenants.changeCurrentTenant(testingUploadPaths);
 };
 
 const deleteUploadedFiles = async (files: FileType[]) =>
@@ -114,6 +117,7 @@ const getFileContent = async (fileName: FilePath): Promise<string> =>
 
 export {
   setupTestUploadedPaths,
+  testingUploadPaths,
   deleteUploadedFiles,
   deleteFiles,
   deleteFile,

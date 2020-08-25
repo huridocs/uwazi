@@ -8,7 +8,6 @@ import { settingsModel } from 'api/settings/settingsModel';
 import search from 'api/search/search';
 import request from 'supertest';
 import express from 'express';
-import { files } from 'api/files/files';
 
 import mailer from 'api/utils/mailer';
 import { fixtures, templateId } from './fixtures';
@@ -27,17 +26,6 @@ describe('upload routes', () => {
   let req;
   let file;
   let iosocket;
-
-  const onSocketRespond = (method, url, reqObject, eventName = 'documentProcessed') => {
-    const promise = new Promise(resolve => {
-      iosocket.emit.and.callFake(event => {
-        if (event === eventName) {
-          resolve();
-        }
-      });
-    });
-    return Promise.all([promise, routes[method](url, reqObject)]);
-  };
 
   const deleteAllFiles = cb => {
     const directory = `${__dirname}/uploads/`;
@@ -97,68 +85,6 @@ describe('upload routes', () => {
     });
   });
 
-  describe('POST/import', () => {
-    beforeEach(() => {
-      file = {
-        fieldname: 'file',
-        originalname: 'importcsv.csv',
-        encoding: '7bit',
-        mimetype: 'application/octet-stream',
-        destination: `${__dirname}/uploads/`,
-        filename: 'importcsv.csv',
-        path: `${__dirname}/uploads/importcsv.csv`,
-        size: 112,
-      };
-      req = {
-        language: 'es',
-        user: 'admin',
-        headers: {},
-        body: { template: templateId },
-        files: [file],
-        io: {},
-        getCurrentSessionSockets: () => ({ sockets: [iosocket], emit: iosocket.emit }),
-      };
-    });
-
-    it('should import a csv', done => {
-      let start = false;
-      let progress = 0;
-      iosocket.emit.and.callFake((eventName, data) => {
-        if (eventName === 'IMPORT_CSV_PROGRESS') {
-          progress = data;
-        }
-        if (eventName === 'IMPORT_CSV_START') {
-          start = true;
-        }
-        if (eventName === 'IMPORT_CSV_END') {
-          expect(start).toBe(true);
-          expect(progress).toBe(2);
-          entities.get({ template: templateId }).then(entitiesCreated => {
-            expect(entitiesCreated.length).toBe(2);
-            expect(entitiesCreated[0].title).toBe('imported entity one');
-            expect(entitiesCreated[1].title).toBe('imported entity two');
-            done();
-          });
-        }
-      });
-
-      routes.post('/api/import', req);
-    });
-
-    describe('on error', () => {
-      it('should emit the error', done => {
-        file.path = `${__dirname}/uploads/import.zip`;
-        iosocket.emit.and.callFake((eventName, data) => {
-          if (eventName === 'IMPORT_CSV_ERROR') {
-            expect(data.code).toBe(500);
-            done();
-          }
-        });
-        routes.post('/api/import', req);
-      });
-    });
-  });
-
   describe('api/public', () => {
     beforeEach(done => {
       deleteAllFiles(() => {
@@ -192,39 +118,6 @@ describe('upload routes', () => {
           getCurrentSessionSockets: () => ({ sockets: [iosocket], emit: iosocket.emit }),
         };
         done();
-      });
-    });
-
-    it('should create the entity and store the files', async () => {
-      await onSocketRespond('post', '/api/public', req);
-      const [newEntity] = await entities.get({ title: 'public submit' });
-      expect(newEntity.title).toBe('public submit');
-      expect(newEntity.attachments.length).toBe(1);
-      expect(newEntity.attachments[0].originalname).toBe('attachment-01.pdf');
-
-      const [uploadedFile] = await files.get({ entity: newEntity.sharedId });
-      expect(uploadedFile.originalname).toBe('gadgets-01.pdf');
-      expect(uploadedFile.status).toBe('ready');
-      expect(fs.existsSync(path.resolve(`${__dirname}/uploads/${file.filename}`))).toBe(true);
-      expect(
-        fs.existsSync(path.resolve(`${__dirname}/uploads/${newEntity.attachments[0].filename}`))
-      ).toBe(true);
-    });
-
-    it('should send an email', async () => {
-      req.body.email = {
-        from: 'test',
-        to: 'batman@gotham.com',
-        subject: 'help!',
-        text: 'The joker is back!',
-      };
-
-      await onSocketRespond('post', '/api/public', req);
-      expect(mailer.send).toHaveBeenCalledWith({
-        from: 'test',
-        subject: 'help!',
-        text: 'The joker is back!',
-        to: 'batman@gotham.com',
       });
     });
 

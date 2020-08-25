@@ -41,7 +41,11 @@ export class CSVLoader extends EventEmitter {
     }
   }
 
-  async load(csvPath: string, templateId: ObjectId | string, options = { language: 'en' }) {
+  async load(
+    csvPath: string,
+    templateId: ObjectId | string,
+    options = { language: 'en', user: {} }
+  ) {
     const template = await templates.getById(templateId);
     if (!template) {
       throw new Error('template not found!');
