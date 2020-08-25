@@ -1,10 +1,8 @@
-/** @format */
-
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import db from 'api/utils/testing_db';
 import translations from 'api/i18n/translations';
 
-import fixtures from './fixtures.js';
+import { fixtures } from './fixtures';
 import instrumentRoutes from '../../utils/instrumentRoutes';
 import thesauri from '../thesauri';
 import thesauriRoute from '../routes.js';
@@ -123,45 +121,6 @@ describe('thesauri routes', () => {
           done();
         })
         .catch(catchErrors(done));
-    });
-
-    describe('when file is uploaded', () => {
-      let file;
-      let req;
-      let args;
-      beforeEach(() => {
-        args = {
-          name: 'Imported',
-          values: [{ label: 'one' }],
-        };
-        file = {
-          fieldname: 'file',
-          originalname: 'import_thesauri.csv',
-          encoding: 'utf8',
-          mimetype: 'text/csv',
-          destination: `${__dirname}/uploads/`,
-          filename: 'import_thesauri.csv',
-          path: `${__dirname}/uploads/import_thesauri.csv`,
-          size: 112,
-        };
-        req = {
-          language: 'es',
-          user: 'admin',
-          headers: {},
-          body: { thesauri: JSON.stringify(args) },
-          files: [file],
-        };
-      });
-      it('should import data into the thesauri', async () => {
-        jest.spyOn(thesauri, 'save');
-        const response = await routes.post('/api/thesauris', req);
-        const thes = await thesauri.getById(response._id);
-        expect(thes.values.length).toBe(3);
-        expect(thes.values.some(v => v.label === 'one')).toBe(true);
-        expect(thes.values.some(v => v.label === 'Value 1')).toBe(true);
-        expect(thes.values.some(v => v.label === 'Value 2')).toBe(true);
-        expect(thesauri.save).toHaveBeenCalledWith(args);
-      });
     });
   });
 });

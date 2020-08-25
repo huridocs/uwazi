@@ -6,11 +6,17 @@ import { Application, Request, Response, NextFunction } from 'express';
 import { search } from 'api/search';
 import db from 'api/utils/testing_db';
 import errorLog from 'api/log/errorLog';
-import { uploadsPath, customUploadsPath, setupTestUploadedPaths } from 'api/files/filesystem';
+import {
+  uploadsPath,
+  customUploadsPath,
+  setupTestUploadedPaths,
+  fileExists,
+} from 'api/files/filesystem';
 import { setUpApp, socketEmit, iosocket } from 'api/utils/testingRoutes';
 import { FileType } from 'shared/types/fileType';
+import entities from 'api/entities';
 
-import { fixtures } from './fixtures';
+import { fixtures, templateId } from './fixtures';
 import { files } from '../files';
 import uploadRoutes from '../routes';
 
@@ -29,6 +35,7 @@ describe('upload routes', () => {
     spyOn(Date, 'now').and.returnValue(1000);
     spyOn(errorLog, 'error'); //just to avoid annoying console output
     await db.clearAllAndLoad(fixtures);
+
     setupTestUploadedPaths();
   });
 
@@ -47,7 +54,7 @@ describe('upload routes', () => {
       await uploadDocument('uploads/f2082bf51b6ef839690485d7153e847a.pdf');
 
       const [upload] = await files.get({ entity: 'sharedId1' }, '+fullText');
-      expect(fs.readFileSync(uploadsPath(upload.filename || ''))).toBeDefined();
+      expect(await fileExists(uploadsPath(upload.filename))).toBe(true);
     }, 10000);
 
     it('should process and reindex the document after upload', async () => {
@@ -161,6 +168,43 @@ describe('upload routes', () => {
       const [file]: FileType[] = await files.get({ originalname: 'test.txt' });
 
       expect(fs.readFileSync(customUploadsPath(file.filename || ''))).toBeDefined();
+    });
+  });
+
+  describe('POST /api/import', () => {
+    it('should import the entried from the csv file', async () => {
+      await socketEmit('IMPORT_CSV_END', async () =>
+        request(app)
+          .post('/api/import')
+          .field('template', templateId.toString())
+          .attach('file', `${__dirname}/uploads/importcsv.csv`)
+      );
+
+      expect(iosocket.emit).toHaveBeenCalledWith('IMPORT_CSV_START');
+      expect(iosocket.emit).toHaveBeenCalledWith('IMPORT_CSV_PROGRESS', 1);
+      expect(iosocket.emit).toHaveBeenCalledWith('IMPORT_CSV_PROGRESS', 2);
+
+      const imported = await entities.get({ template: templateId });
+      expect(imported).toEqual([
+        expect.objectContaining({ title: 'imported entity one' }),
+        expect.objectContaining({ title: 'imported entity two' }),
+      ]);
+    });
+
+    describe('on error', () => {
+      it('should emit the error', async () => {
+        await socketEmit('IMPORT_CSV_ERROR', async () =>
+          request(app)
+            .post('/api/import')
+            .field('template', templateId.toString())
+            .attach('file', `${__dirname}/uploads/import.zip`)
+        );
+
+        expect(iosocket.emit).toHaveBeenCalledWith(
+          'IMPORT_CSV_ERROR',
+          expect.objectContaining({ code: 500 })
+        );
+      });
     });
   });
 
