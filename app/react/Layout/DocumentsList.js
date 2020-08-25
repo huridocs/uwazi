@@ -16,17 +16,9 @@ import { t, Translate } from 'app/I18N';
 import { Icon } from 'UI';
 
 class DocumentsList extends Component {
-  static getDerivedStateFromProps(props, state) {
-    if (props.documents !== state.documents) {
-      return { loading: false, documents: props.documents };
-    }
-
-    return null;
-  }
-
   constructor(props, context) {
     super(props, context);
-    this.state = { loading: false, documents: props.documents };
+    this.state = { loading: false };
     this.clickOnDocument = this.clickOnDocument.bind(this);
     this.selectAllDocuments = this.selectAllDocuments.bind(this);
   }
@@ -46,6 +38,10 @@ class DocumentsList extends Component {
   loadMoreDocuments(amount, from) {
     this.setState({ loading: true });
     this.props.loadMoreDocuments(this.props.storeKey, amount, from);
+  }
+
+  UNSAFE_componentWillReceiveProps() {
+    this.setState({ loading: false });
   }
 
   loadMoreButton(amount) {

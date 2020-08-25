@@ -14,14 +14,19 @@ export class RelationshipsGraphEdit extends Component {
     this.props.parseResults(this.props.searchResults, this.props.parentEntity, this.props.editing);
   }
 
-  componentDidUpdate(nextProps) {
-    if (this.props.searchResults !== nextProps.searchResults) {
-      this.props.parseResults(nextProps.searchResults, nextProps.parentEntity, this.props.editing);
+  componentDidUpdate(prevProps) {
+    if (this.props.searchResults !== prevProps.searchResults) {
+      this.props.parseResults(
+        this.props.searchResults,
+        this.props.parentEntity,
+        this.props.editing
+      );
     }
   }
 
   render() {
     const { hubs, addHub } = this.props;
+
     return (
       <div className="relationships-graph">
         <div>

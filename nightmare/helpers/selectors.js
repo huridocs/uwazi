@@ -346,7 +346,7 @@ export default {
           '#metadataForm > div:nth-child(3) > div:nth-child(5) > ul > li.wide > ul > li:nth-child(7) > button',
       },
       firstSighting:
-        '#metadataForm > div:nth-child(3) > div:nth-child(6) > ul > li.wide > div > input',
+        '#metadataForm > div:nth-child(3) > div:nth-child(6) > ul > li.wide > div > div > input',
       whoIsHe:
         '#metadataForm > div:nth-child(3) > div:nth-child(7) > ul > li.wide > div > div.tab-content.tab-content-visible > textarea',
     },

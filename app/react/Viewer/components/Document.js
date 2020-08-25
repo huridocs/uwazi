@@ -23,24 +23,26 @@ export class Document extends Component {
     this.onDocumentReady = this.onDocumentReady.bind(this);
   }
 
-  componentDidMount() {
+  componentWillMount() {
     this.props.unsetSelection();
+  }
+
+  componentDidMount() {
     this.text = Text(this.pagesContainer);
   }
 
-  componentDidUpdate(prevProps) {
-    if (this.props.doc.get('_id') !== prevProps.doc.get('_id')) {
+  componentWillReceiveProps(nextProps) {
+    if (this.props.doc.get('_id') !== nextProps.doc.get('_id')) {
       this.props.unsetSelection();
     }
+  }
+
+  componentDidUpdate() {
     this.text.renderReferences(this.props.references.toJS());
     this.text.renderReferences(this.props.doc.toJS().toc || [], 'toc-ref', 'span');
     this.text.simulateSelection(this.props.selection, this.props.forceSimulateSelection);
     this.text.activate(this.props.activeReference);
     highlightSnippet(this.props.selectedSnippet, this.props.searchTerm);
-  }
-
-  componentWillUnmount() {
-    this.props.unsetSelection();
   }
 
   onTextSelected() {
