@@ -161,13 +161,13 @@ describe('csvExporter', () => {
 
   describe('geolocation fields', () => {
     it('should locate the first geolocation field and call the formatter', () => {
-      spyOn(formatters.default, 'geolocation').and.returnValue('geolocationValue');
+      spyOn(formatters.formatters, 'geolocation').and.returnValue('geolocationValue');
       const formatted = processGeolocationField(
         searchResults.rows[0],
         testTemplates['58ad7d240d44252fee4e61fd']
       );
 
-      expect(formatters.default.geolocation).toHaveBeenCalledWith(
+      expect(formatters.formatters.geolocation).toHaveBeenCalledWith(
         searchResults.rows[0].metadata.geolocation_geolocation,
         {}
       );
@@ -175,18 +175,18 @@ describe('csvExporter', () => {
     });
 
     it('should return empty and not call the formatter if no geolocation field on the template', () => {
-      spyOn(formatters.default, 'geolocation').and.returnValue('geolocationValue');
+      spyOn(formatters.formatters, 'geolocation').and.returnValue('geolocationValue');
       const formatted = processGeolocationField(
         searchResults.rows[1],
         testTemplates['58ad7d240d44252fee4e61fb']
       );
 
-      expect(formatters.default.geolocation).not.toHaveBeenCalled();
+      expect(formatters.formatters.geolocation).not.toHaveBeenCalled();
       expect(formatted).toBe('');
     });
 
     it('should return empty and not call the formatter if no geolocation on the entity', () => {
-      spyOn(formatters.default, 'geolocation').and.returnValue('geolocationValue');
+      spyOn(formatters.formatters, 'geolocation').and.returnValue('geolocationValue');
 
       const geolocationFieldBackup = searchResults.rows[0].metadata.geolocation_geolocation;
       delete searchResults.rows[0].metadata.geolocation_geolocation;
@@ -196,7 +196,7 @@ describe('csvExporter', () => {
       );
       searchResults.rows[0].metadata.geolocation_geolocation = geolocationFieldBackup;
 
-      expect(formatters.default.geolocation).not.toHaveBeenCalled();
+      expect(formatters.formatters.geolocation).not.toHaveBeenCalled();
       expect(formatted).toBe('');
     });
   });
@@ -223,7 +223,7 @@ describe('csvExporter', () => {
     });
 
     it('should return the creation date', () => {
-      spyOn(formatters.default, 'creationDate').and.returnValue('creationDateValue');
+      spyOn(formatters, 'formatCreationDate').and.returnValue('creationDateValue');
       const options = {};
       const formatted = processCommonField(
         'creationDate',
@@ -232,11 +232,11 @@ describe('csvExporter', () => {
         options
       );
       expect(formatted).toBe('creationDateValue');
-      expect(formatters.default.creationDate).toHaveBeenCalledWith(searchResults.rows[0], options);
+      expect(formatters.formatCreationDate).toHaveBeenCalledWith(searchResults.rows[0], options);
     });
 
     it('should return the geolocation field processed', () => {
-      spyOn(formatters.default, 'geolocation').and.returnValue('geolocationValue');
+      spyOn(formatters.formatters, 'geolocation').and.returnValue('geolocationValue');
       const formatted = processCommonField(
         'geolocation',
         searchResults.rows[0],
@@ -244,14 +244,14 @@ describe('csvExporter', () => {
         {}
       );
       expect(formatted).toBe('geolocationValue');
-      expect(formatters.default.geolocation).toHaveBeenCalledWith(
+      expect(formatters.formatters.geolocation).toHaveBeenCalledWith(
         searchResults.rows[0].metadata.geolocation_geolocation,
         {}
       );
     });
 
     it('should return the documents field processed', () => {
-      spyOn(formatters.default, 'documents').and.returnValue('documentsValue');
+      spyOn(formatters, 'formatDocuments').and.returnValue('documentsValue');
       const formatted = processCommonField(
         'documents',
         searchResults.rows[0],
@@ -259,15 +259,12 @@ describe('csvExporter', () => {
         {}
       );
 
-      expect(formatters.default.documents).toHaveBeenCalledWith(
-        searchResults.rows[0].documents,
-        {}
-      );
+      expect(formatters.formatDocuments).toHaveBeenCalledWith(searchResults.rows[0]);
       expect(formatted).toBe('documentsValue');
     });
 
     it('should return the attachments field processed', () => {
-      spyOn(formatters.default, 'attachments').and.returnValue('attachmentsValue');
+      spyOn(formatters, 'formatAttachments').and.returnValue('attachmentsValue');
       const formatted = processCommonField(
         'attachments',
         searchResults.rows[0],
@@ -275,13 +272,7 @@ describe('csvExporter', () => {
         {}
       );
 
-      expect(formatters.default.attachments).toHaveBeenCalledWith(
-        searchResults.rows[0].attachments.map((att: any) => ({
-          ...att,
-          entityId: searchResults.rows[0].sharedId,
-        })),
-        {}
-      );
+      expect(formatters.formatAttachments).toHaveBeenCalledWith(searchResults.rows[0]);
       expect(formatted).toBe('attachmentsValue');
     });
 

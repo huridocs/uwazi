@@ -8,12 +8,13 @@ import { catchErrors } from 'api/utils/jasmineHelpers';
 
 import db from 'api/utils/testing_db';
 import thesauri from '../thesauri.js';
-import fixtures, {
+import {
+  fixtures,
   dictionaryId,
   dictionaryIdToTranslate,
   dictionaryValueId,
   dictionaryWithValueGroups,
-} from './fixtures.js';
+} from './fixtures';
 
 describe('thesauri', () => {
   beforeEach(async () => {
@@ -36,7 +37,7 @@ describe('thesauri', () => {
         {
           id: 'sharedId',
           label: 'spanish entity',
-          icon: 'Icon',
+          icon: { type: 'Icon' },
         },
       ]);
       expect(dictionaries[4].type).toBe('template');
@@ -47,7 +48,7 @@ describe('thesauri', () => {
       expect(dictionaries.length).toBe(6);
       expect(dictionaries[4].values).toEqual([
         { id: 'sharedId2' },
-        { id: 'sharedId', label: 'spanish entity', icon: 'Icon' },
+        { id: 'sharedId', label: 'spanish entity', icon: { type: 'Icon' } },
         { id: 'other', label: 'unpublished entity' },
       ]);
     });
