@@ -131,7 +131,7 @@ export class EntityViewer extends Component {
                   return (
                     <div>
                       <ShowMetadata
-                        relationships={relationships}
+                        relationships={entity.get('relations')}
                         entity={rawEntity}
                         showTitle={false}
                         showType={false}
