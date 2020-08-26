@@ -50,12 +50,31 @@ class TableRowComponent extends Component<TableRowProps> {
   constructor(props: TableRowProps) {
     super(props);
     this.onRowClick = this.onRowClick.bind(this);
+    this.renderCell = this.renderCell.bind(this);
   }
 
   onRowClick(e: { preventDefault: () => void }) {
     if (this.props.clickOnDocument) {
       this.props.clickOnDocument(e, this.props.entity, this.props.selected);
     }
+  }
+
+  renderCell(
+    index: number,
+    storeKey: 'library' | 'uploads',
+    selected: boolean | undefined,
+    columnValue: FormattedMetadataValue
+  ) {
+    if (!index) {
+      return (
+        <div>
+          {!index && <input type="checkbox" checked={selected} onClick={this.onRowClick} />}
+          <TableCell storeKey={storeKey} content={columnValue} />
+        </div>
+      );
+    }
+
+    return <TableCell storeKey={storeKey} content={columnValue} />;
   }
 
   render() {
@@ -73,24 +92,11 @@ class TableRowComponent extends Component<TableRowProps> {
         {columns.map((column: TableViewColumn, index: number) => {
           const columnValue = getColumnValue(formattedEntity, columnValues, column);
           const columnKey = formattedEntity._id + column.name;
-          {
-            if (!index) {
-              return (
-                <td className={!index ? 'sticky-col' : ''} key={`column_${columnKey}`}>
-                  <div>
-                    {!index && <input type="checkbox" checked={selected} onClick={this.onRowClick} />}
-                    <TableCell storeKey={storeKey} content={columnValue} />
-                  </div>
-                </td>
-              );
-            } else {
-              return (
-                <td className={!index ? 'sticky-col' : ''} key={`column_${columnKey}`}>
-                  <TableCell storeKey={storeKey} content={columnValue} />
-                </td>
-              );
-            }
-          }
+          return (
+            <td className={!index ? 'sticky-col' : ''} key={`column_${columnKey}`}>
+              {this.renderCell(index, storeKey, selected, columnValue)}
+            </td>
+          );
         })}
       </tr>
     );
