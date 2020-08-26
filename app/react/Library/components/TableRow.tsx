@@ -50,12 +50,31 @@ class TableRowComponent extends Component<TableRowProps> {
   constructor(props: TableRowProps) {
     super(props);
     this.onRowClick = this.onRowClick.bind(this);
+    this.renderCell = this.renderCell.bind(this);
   }
 
   onRowClick(e: { preventDefault: () => void }) {
     if (this.props.clickOnDocument) {
       this.props.clickOnDocument(e, this.props.entity, this.props.selected);
     }
+  }
+
+  renderCell(
+    index: number,
+    storeKey: 'library' | 'uploads',
+    selected: boolean | undefined,
+    columnValue: FormattedMetadataValue
+  ) {
+    if (!index) {
+      return (
+        <div>
+          {!index && <input type="checkbox" checked={selected} onClick={this.onRowClick} />}
+          <TableCell storeKey={storeKey} content={columnValue} />
+        </div>
+      );
+    }
+
+    return <TableCell storeKey={storeKey} content={columnValue} />;
   }
 
   render() {
@@ -74,12 +93,9 @@ class TableRowComponent extends Component<TableRowProps> {
           const columnValue = getColumnValue(formattedEntity, columnValues, column);
           const columnKey = formattedEntity._id + column.name;
           return (
-            <React.Fragment key={`column_${columnKey}`}>
-              <td className={!index ? 'sticky-col' : ''}>
-                {!index && <input type="checkbox" checked={selected} onClick={this.onRowClick} />}
-                <TableCell storeKey={storeKey} content={columnValue} />
-              </td>
-            </React.Fragment>
+            <td className={!index ? 'sticky-col' : ''} key={`column_${columnKey}`}>
+              {this.renderCell(index, storeKey, selected, columnValue)}
+            </td>
           );
         })}
       </tr>
