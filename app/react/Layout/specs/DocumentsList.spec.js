@@ -8,6 +8,7 @@ import Footer from 'app/App/Footer';
 import { NeedAuthorization } from 'app/Auth';
 
 import { TilesViewer } from 'app/Layout/TilesViewer';
+import { TableViewer } from 'app/Layout/TableViewer';
 import { DocumentsList } from '../DocumentsList';
 
 describe('DocumentsList', () => {
@@ -153,6 +154,28 @@ describe('DocumentsList', () => {
       props.hideFooter = true;
       render();
       expect(component.find(Footer).length).toBe(0);
+    });
+  });
+
+  describe('Table view', () => {
+    beforeEach(() => {
+      props.CollectionViewer = TableViewer;
+      render();
+    });
+
+    it('should not render Doc elements', () => {
+      expect(component.find(Doc).length).toBe(0);
+    });
+
+    it('should render TableView component', () => {
+      expect(component.find(TableViewer).length).toBe(1);
+    });
+
+    it('should bind to the loadMoreDocuments with onEndScroll', () => {
+      render();
+      const data = component.find(TableViewer).props();
+      data.onEndScroll(30, 10);
+      expect(props.loadMoreDocuments).toHaveBeenCalledWith('library', 30, 10);
     });
   });
 });

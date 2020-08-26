@@ -75,11 +75,10 @@ describe('Table view', () => {
     await expect(page).toMatchElement(sidePanelItemNameSelector, { text: entityTitle?.toString() });
   });
 
-  it('Should show more rows if asked for', async () => {
-    const showMoreSelector = '.btn-load-more:nth-child(1)';
+  it('Should load more rows if scrolling reach the end of content', async () => {
     const rowSelector = '.tableview-wrapper > table > tbody > tr';
-    await page.click(showMoreSelector);
-    await page.waitFor(300);
+    const lastRowSelector = '.tableview-wrapper > table > tbody > tr:last-child';
+    await page.$$eval(lastRowSelector, el => el[0].scrollIntoView());
     const rowsNumber = await page.$$eval(rowSelector, rows => rows.length);
     expect(rowsNumber).toBe(60);
   });

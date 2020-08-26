@@ -13,13 +13,11 @@ export interface TableViewerProps extends CollectionViewerProps {
 
 class TableViewerComponent extends Component<TableViewerProps> {
   handleScroll = (e: { target: any }) => {
+    const DEFAULT_PAGE_SIZE = 30;
     const element = e.target;
     if (element.scrollHeight - element.scrollTop === element.clientHeight) {
       const from: number = this.props.documents.get('rows').size;
-      this.props.onEndScroll(30, from);
-      console.log('fin' + from);
-    } else {
-      console.log('no fin');
+      this.props.onEndScroll(DEFAULT_PAGE_SIZE, from);
     }
   };
 
