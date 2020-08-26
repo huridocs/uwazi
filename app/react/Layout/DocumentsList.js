@@ -19,6 +19,7 @@ class DocumentsList extends Component {
     this.state = { loading: false };
     this.clickOnDocument = this.clickOnDocument.bind(this);
     this.selectAllDocuments = this.selectAllDocuments.bind(this);
+    this.loadMoreDocuments = this.loadMoreDocuments.bind(this);
   }
 
   componentWillReceiveProps() {
@@ -147,6 +148,7 @@ class DocumentsList extends Component {
                     onSnippetClick: this.props.onSnippetClick,
                     deleteConnection: this.props.deleteConnection,
                     search: this.props.search,
+                    onEndScroll: this.loadMoreDocuments,
                   }}
                 />
               );

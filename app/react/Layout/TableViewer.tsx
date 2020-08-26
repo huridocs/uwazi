@@ -12,10 +12,21 @@ export interface TableViewerProps extends CollectionViewerProps {
 }
 
 class TableViewerComponent extends Component<TableViewerProps> {
+  handleScroll = (e: { target: any }) => {
+    const element = e.target;
+    if (element.scrollHeight - element.scrollTop === element.clientHeight) {
+      const from: number = this.props.documents.get('rows').size;
+      this.props.onEndScroll(30, from);
+      console.log('fin' + from);
+    } else {
+      console.log('no fin');
+    }
+  };
+
   render() {
     const columns = this.props.columns.toJS().filter((c: TableViewColumn) => !c.hidden);
     return (
-      <div className="tableview-wrapper">
+      <div className="tableview-wrapper" onScroll={this.handleScroll}>
         <table>
           <thead>
             <tr>

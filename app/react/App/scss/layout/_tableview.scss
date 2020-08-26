@@ -1,9 +1,15 @@
+.tableview-wrapper::-webkit-scrollbar {
+  width: 0;
+  background: transparent;
+}
+
 .tableview-wrapper {
   position: relative;
   overflow: auto;
   margin: 0 -15px;
   margin-bottom: 15px;
-  max-height: 66vh;
+  max-height: 100vh;
+
 
   .sticky-col {
     z-index: 1;

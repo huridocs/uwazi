@@ -1,5 +1,5 @@
-import { IImmutable } from "shared/types/Immutable";
-import { EntitySchema } from "shared/types/entityType";
+import { IImmutable } from 'shared/types/Immutable';
+import { EntitySchema } from 'shared/types/entityType';
 
 export interface CollectionViewerProps {
   rowListZoomLevel: number;
@@ -9,4 +9,5 @@ export interface CollectionViewerProps {
   onSnippetClick: () => void;
   deleteConnection: (connection: any) => void;
   search: any;
+  onEndScroll: (amount: number, from: number) => void;
 }
