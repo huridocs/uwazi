@@ -73,14 +73,24 @@ class TableRowComponent extends Component<TableRowProps> {
         {columns.map((column: TableViewColumn, index: number) => {
           const columnValue = getColumnValue(formattedEntity, columnValues, column);
           const columnKey = formattedEntity._id + column.name;
-          return (
-            <React.Fragment key={`column_${columnKey}`}>
-              <td className={!index ? 'sticky-col' : ''}>
-                {!index && <input type="checkbox" checked={selected} onClick={this.onRowClick} />}
-                <TableCell storeKey={storeKey} content={columnValue} />
-              </td>
-            </React.Fragment>
-          );
+          {
+            if (!index) {
+              return (
+                <td className={!index ? 'sticky-col' : ''} key={`column_${columnKey}`}>
+                  <div>
+                    {!index && <input type="checkbox" checked={selected} onClick={this.onRowClick} />}
+                    <TableCell storeKey={storeKey} content={columnValue} />
+                  </div>
+                </td>
+              );
+            } else {
+              return (
+                <td className={!index ? 'sticky-col' : ''} key={`column_${columnKey}`}>
+                  <TableCell storeKey={storeKey} content={columnValue} />
+                </td>
+              );
+            }
+          }
         })}
       </tr>
     );

@@ -47,7 +47,7 @@
     }
   }
 
-  td:first-child {
+  td:first-child > div {
     display: flex;
     flex-direction: row;
     align-items: center;
