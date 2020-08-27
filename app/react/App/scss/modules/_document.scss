@@ -10,8 +10,8 @@
   -webkit-overflow-scrolling: touch;
 
   @media (min-width: 1024px) {
-    &.with-panel,
-    &.is-active {
+    &.with-panel:not(.table-view-mode),
+    &.is-active:not(.table-view-mode) {
       width: calc(100% - 400px);
     }
   }

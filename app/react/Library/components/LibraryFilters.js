@@ -13,6 +13,7 @@ import { actions as formActions, Field } from 'react-redux-form';
 import { bindActionCreators } from 'redux';
 import { Icon } from 'UI';
 import Export from './ExportButton';
+import { hideFilters } from 'app/Entities/actions/uiActions';
 
 function toggleIncludeUnpublished(storeKey) {
   return (dispatch, getState) => {
@@ -31,7 +32,7 @@ export class LibraryFilters extends Component {
 
   render() {
     return (
-      <SidePanel className="library-filters" open={this.props.open}>
+      <SidePanel className="library-filters" fixed={this.props.fixed} open={this.props.open}>
         <div className="sidepanel-footer">
           <span onClick={this.reset.bind(this)} className="btn btn-primary">
             <Icon icon="sync" />
@@ -45,6 +46,9 @@ export class LibraryFilters extends Component {
         </div>
         <div className="sidepanel-body">
           <p className="sidepanel-title">{t('System', 'Filters configuration')}</p>
+          <button type="button" onClick={this.props.hideFilters}>
+            X
+          </button>
           <NeedAuthorization>
             {!this.props.unpublished && (
               <Field
@@ -85,6 +89,7 @@ LibraryFilters.defaultProps = {
   open: false,
   unpublished: false,
   storeKey: 'library',
+  fixed: false,
 };
 
 LibraryFilters.propTypes = {
@@ -93,6 +98,8 @@ LibraryFilters.propTypes = {
   open: PropTypes.bool,
   unpublished: PropTypes.bool,
   storeKey: PropTypes.string,
+  fixed: PropTypes.bool,
+  hideFilters: PropTypes.func,
 };
 
 export function mapStateToProps(state, props) {
@@ -106,7 +113,7 @@ export function mapStateToProps(state, props) {
 
 function mapDispatchToProps(dispatch, props) {
   return bindActionCreators(
-    { resetFilters, toggleIncludeUnpublished },
+    { resetFilters, toggleIncludeUnpublished, hideFilters },
     wrapDispatch(dispatch, props.storeKey)
   );
 }

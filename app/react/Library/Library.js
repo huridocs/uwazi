@@ -59,7 +59,7 @@ export default class Library extends RouteHandler {
 
   render() {
     return (
-      <LibraryLayout>
+      <LibraryLayout fixedSidePanels={this.props.fixedSidePanels}>
         <LibraryModeToggleButtons
           storeKey="library"
           zoomIn={this.zoomIn}

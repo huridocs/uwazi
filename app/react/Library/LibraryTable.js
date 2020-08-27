@@ -10,6 +10,6 @@ export class LibraryTable extends RouteHandler {
   }
 
   render() {
-    return <Library viewer={TableViewer} location={this.props.location} />;
+    return <Library viewer={TableViewer} location={this.props.location} fixedSidePanels />;
   }
 }

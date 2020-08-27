@@ -6,6 +6,9 @@ import { Icon } from 'UI';
 import { processFilters, encodeSearch } from 'app/Library/actions/libraryActions';
 import { helper as mapHelper } from 'app/Map';
 import { HiddenColumnsDropdown } from './HiddenColumnsDropdown';
+import { showFilters } from 'app/Entities/actions/uiActions';
+import { bindActionCreators } from 'redux';
+import { wrapDispatch } from 'app/Multireducer';
 
 export class LibraryModeToggleButtons extends Component {
   render() {
@@ -72,6 +75,9 @@ export class LibraryModeToggleButtons extends Component {
             </I18NLink>
           )}
         </div>
+        <button type="button" onClick={this.props.showFilters}>
+          Show filters
+        </button>
       </div>
     );
   }
@@ -86,6 +92,7 @@ LibraryModeToggleButtons.propTypes = {
   numberOfMarkers: PropTypes.number.isRequired,
   storeKey: PropTypes.string.isRequired,
   showColumnSelector: PropTypes.bool,
+  showFilters: PropTypes.func,
 };
 
 LibraryModeToggleButtons.defaultProps = {
@@ -116,4 +123,13 @@ export function mapStateToProps(state, props) {
   };
 }
 
-export default connect(mapStateToProps)(LibraryModeToggleButtons);
+function mapDispatchToProps(dispatch, props) {
+  return bindActionCreators(
+    {
+      showFilters,
+    },
+    wrapDispatch(dispatch, props.storeKey)
+  );
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(LibraryModeToggleButtons);
