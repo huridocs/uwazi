@@ -15,7 +15,7 @@ Uwazi is an open-source document manager.
 
 Read the [user guide](https://github.com/huridocs/uwazi/wiki)
 
-# Intallation guide
+# Intallation guide TEST
 
 - [Dependencies](#dependencies)
 - [Production](#production)
