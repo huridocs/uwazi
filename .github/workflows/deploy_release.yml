@@ -3,7 +3,7 @@ name: Deploy master
 on:
   push:
     branches:
-      - master
+      - release
 
 jobs:
   deploy:
@@ -11,7 +11,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
-          ref: 'master'
+          ref: 'release'
       - name: Use Node.js 14.6.x
         uses: actions/setup-node@v1
         with:
@@ -33,22 +33,22 @@ jobs:
         if: steps.cache-build.outputs.cache-hit != 'true'
         run: yarn production-build
       - name: Tgz production build
-        run: tar -czf uwazi_${GITHUB_SHA}.tgz ./prod
+        run: tar -czf uwazi_release_${GITHUB_SHA}.tgz ./prod
       - name: Copy to server
         uses: easingthemes/ssh-deploy@v2.1.1
         env:
             SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_KEY }}
             ARGS: "-rltgoDzvO --delete"
-            SOURCE: uwazi_${GITHUB_SHA}.tgz
+            SOURCE: uwazi_release_${GITHUB_SHA}.tgz
             REMOTE_HOST: ${{ secrets.DEPLOY_SERVER }}
             REMOTE_USER: ${{ secrets.DEPLOY_USER }}
-            TARGET: uwazi_${GITHUB_SHA}.tgz
+            TARGET: uwazi_release_${GITHUB_SHA}.tgz
       - name: Overwrite latest
         uses: easingthemes/ssh-deploy@v2.1.1
         env:
             SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_KEY }}
             ARGS: "-rltgoDzvO --delete"
-            SOURCE: uwazi_${GITHUB_SHA}.tgz
+            SOURCE: uwazi_release_${GITHUB_SHA}.tgz
             REMOTE_HOST: ${{ secrets.DEPLOY_SERVER }}
             REMOTE_USER: ${{ secrets.DEPLOY_USER }}
-            TARGET: uwazi_latest.tgz
+            TARGET: uwazi_release_latest.tgz
