@@ -160,7 +160,21 @@ exports[`ImportPanel rendering states when the import starts should render an up
       />
     </button>
   </div>
-  <Connect(ImportProgress) />
+  <div
+    className="alert alert-info"
+  >
+    <Connect(Icon)
+      icon="info-circle"
+      size="2x"
+    />
+    <div
+      className="force-ltr"
+    >
+      Uploading file 
+      23
+      %
+    </div>
+  </div>
 </SidePanel>
 `;
 
