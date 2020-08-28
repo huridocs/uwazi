@@ -11,6 +11,7 @@ import Footer from 'app/App/Footer';
 import { NeedAuthorization } from 'app/Auth';
 import { t, Translate } from 'app/I18N';
 import { Icon } from 'UI';
+import { TableViewer } from 'app/Layout/TableViewer';
 import { TilesViewer } from './TilesViewer';
 
 class DocumentsList extends Component {
@@ -78,9 +79,21 @@ class DocumentsList extends Component {
       LoadMoreButton,
       rowListZoomLevel,
     } = this.props;
+    const tableCounter = (
+      <>
+        {this.props.selectedDocuments && this.props.selectedDocuments.size > 0 && (
+          <>
+            <b> {this.props.selectedDocuments.size} </b> <Translate>selected of</Translate>
+          </>
+        )}
+        <b> {this.props.documents.get('rows').size} </b>
+        <Translate>shown of</Translate>
+      </>
+    );
     let counter = (
       <span>
-        <b>{documents.get('totalRows')}</b> <Translate>documents</Translate>
+        {this.props.CollectionViewer === TableViewer && tableCounter}
+        <b> {documents.get('totalRows')} </b> <Translate>documents</Translate>
       </span>
     );
     if (connections) {
@@ -161,16 +174,7 @@ class DocumentsList extends Component {
           <div className="row">
             {(() => {
               if (view !== 'graph') {
-                return (
-                  <p className="col-sm-12 text-center documents-counter">
-                    <b> {this.props.selectedDocuments.size} </b>
-                    {t('System', 'selected of')}
-                    <b> {documents.get('rows').size} </b>
-                    {t('System', 'shown of')}
-                    <b> {documents.get('totalRows')} </b>
-                    {t('System', 'documents')}
-                  </p>
-                );
+                return <p className="col-sm-12 text-center documents-counter">{counter}</p>;
               }
               return null;
             })()}
@@ -242,7 +246,7 @@ DocumentsList.propTypes = {
     pathname: PropTypes.string,
     query: PropTypes.object,
   }),
-  CollectionViewer: PropTypes.func,
+  CollectionViewer: PropTypes.instanceOf(Object),
 };
 
 export { DocumentsList };

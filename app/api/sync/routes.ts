@@ -1,19 +1,15 @@
 import multer from 'multer';
 
 import { models } from 'api/odm';
-import path from 'path';
 import search from 'api/search/search';
 
 import { Request, Application } from 'express';
 import { FileType } from 'shared/types/fileType';
-import { uploadsPath } from 'api/files';
+import { uploadsPath, uploadMiddleware } from 'api/files';
 
 import { needsAuthorization } from '../auth';
 
 const storage = multer.diskStorage({
-  destination(_req, _file, cb) {
-    cb(null, path.normalize(uploadsPath()));
-  },
   filename(_req, file, cb) {
     cb(null, file.originalname);
   },
@@ -53,8 +49,6 @@ const deleteFromIndex = async (req: Request, file: FileType) => {
 };
 
 export default (app: Application) => {
-  const upload = multer({ storage });
-
   app.post('/api/sync', needsAuthorization(['admin']), async (req, res, next) => {
     try {
       if (req.body.namespace === 'settings') {
@@ -74,9 +68,14 @@ export default (app: Application) => {
     }
   });
 
-  app.post('/api/sync/upload', needsAuthorization(['admin']), upload.any(), (_req, res) => {
-    res.json('ok');
-  });
+  app.post(
+    '/api/sync/upload',
+    needsAuthorization(['admin']),
+    uploadMiddleware(uploadsPath, storage),
+    (_req, res) => {
+      res.json('ok');
+    }
+  );
 
   app.delete('/api/sync', needsAuthorization(['admin']), async (req, res, next) => {
     try {

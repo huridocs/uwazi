@@ -13,6 +13,7 @@ import { customErrorMessages } from '../metadataValidators.js';
 
 describe('entity schema', () => {
   beforeEach(async () => {
+    //@ts-ignore
     await db.clearAllAndLoad(fixtures);
   });
 

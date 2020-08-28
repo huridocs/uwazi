@@ -25,6 +25,6 @@ SidePanel.propTypes = {
 
 SidePanel.defaultProps = {
   fixed: false,
-}
+};
 
 export default SidePanel;
