@@ -1,14 +1,14 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { I18NLink, t } from 'app/I18N';
+import { I18NLink, t, Translate } from 'app/I18N';
 import { Icon } from 'UI';
 import { processFilters, encodeSearch } from 'app/Library/actions/libraryActions';
 import { helper as mapHelper } from 'app/Map';
-import { HiddenColumnsDropdown } from './HiddenColumnsDropdown';
 import { showFilters } from 'app/Entities/actions/uiActions';
 import { bindActionCreators } from 'redux';
 import { wrapDispatch } from 'app/Multireducer';
+import { HiddenColumnsDropdown } from './HiddenColumnsDropdown';
 
 export class LibraryModeToggleButtons extends Component {
   render() {
@@ -75,9 +75,18 @@ export class LibraryModeToggleButtons extends Component {
             </I18NLink>
           )}
         </div>
-        <button type="button" onClick={this.props.showFilters}>
-          Show filters
-        </button>
+        {this.props.showFiltersButton && (
+          <button
+            type="button"
+            className="btn btn-default toggle-button"
+            onClick={this.props.showFilters}
+          >
+            <Icon icon="filter" />
+            <span>
+              <Translate>Show filters</Translate>
+            </span>
+          </button>
+        )}
       </div>
     );
   }
@@ -93,12 +102,15 @@ LibraryModeToggleButtons.propTypes = {
   storeKey: PropTypes.string.isRequired,
   showColumnSelector: PropTypes.bool,
   showFilters: PropTypes.func,
+  showFiltersButton: PropTypes.bool,
 };
 
 LibraryModeToggleButtons.defaultProps = {
   showColumnSelector: false,
   zoomIn: null,
   zoomOut: null,
+  showFiltersButton: false,
+  showFilters: () => {},
 };
 
 export function mapStateToProps(state, props) {

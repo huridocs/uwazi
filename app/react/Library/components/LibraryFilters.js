@@ -12,8 +12,8 @@ import { connect } from 'react-redux';
 import { actions as formActions, Field } from 'react-redux-form';
 import { bindActionCreators } from 'redux';
 import { Icon } from 'UI';
-import Export from './ExportButton';
 import { hideFilters } from 'app/Entities/actions/uiActions';
+import Export from './ExportButton';
 
 function toggleIncludeUnpublished(storeKey) {
   return (dispatch, getState) => {
@@ -45,10 +45,14 @@ export class LibraryFilters extends Component {
           <Export storeKey={this.props.storeKey} />
         </div>
         <div className="sidepanel-body">
-          <p className="sidepanel-title">{t('System', 'Filters configuration')}</p>
-          <button type="button" onClick={this.props.hideFilters}>
-            X
-          </button>
+          <p className="sidepanel-title">
+            {t('System', 'Filters configuration')}
+            {this.props.fixed && (
+              <button type="button" className="closeSidepanel" onClick={this.props.hideFilters}>
+                <Icon icon="times" />
+              </button>
+            )}
+          </p>
           <NeedAuthorization>
             {!this.props.unpublished && (
               <Field

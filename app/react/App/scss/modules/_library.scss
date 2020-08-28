@@ -142,4 +142,28 @@
       }
     }
   }
+
+  .toggle-button {
+    padding: 8px;
+    left: 176.01px;
+    top: 0px;
+    height: 37px;
+
+    margin: 4px;
+    margin-left: 8px;
+
+    svg {
+      margin-right: 4px;
+    }
+
+    span {
+      display: none;
+    }
+
+    @media (min-width: 600px) {
+      span {
+        display: inline;
+      }
+    }
+  }
 }

@@ -65,6 +65,7 @@ export default class Library extends RouteHandler {
           zoomIn={this.zoomIn}
           zoomOut={this.zoomOut}
           showColumnSelector={this.props.viewer !== undefined}
+          showFiltersButton={this.props.showFiltersButton}
         />
         <DocumentsList storeKey="library" CollectionViewer={this.props.viewer} />
       </LibraryLayout>

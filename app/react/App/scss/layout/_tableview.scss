@@ -71,14 +71,18 @@
 
     &.table-view-row-zoom-0 {
       -webkit-line-clamp: 1;
+      height: 21px;
     }
 
     &.table-view-row-zoom-1 {
       -webkit-line-clamp: 2;
+      height: 42px;
+
     }
 
     &.table-view-row-zoom-2 {
       -webkit-line-clamp: 3;
+      height: 63px;
     }
   }
 
