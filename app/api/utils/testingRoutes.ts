@@ -40,7 +40,7 @@ const socketEmit = async (eventName: string, performRequest: requestCb) => {
 
   const res: SuperTestResponse = await performRequest();
   if (res.error) {
-    throw res.error;
+    throw new Error(res.error.text);
   }
 
   await eventEmited;

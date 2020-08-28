@@ -54,6 +54,7 @@ class Tenants {
 
   current() {
     const tenantName = this.storage.getStore();
+
     if (!tenantName) {
       throw new Error('There is no tenant on the current async context');
     }

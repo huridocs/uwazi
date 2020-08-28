@@ -5,9 +5,10 @@ import { FileType } from 'shared/types/fileType';
 import { EntitySchema } from 'shared/types/entityType';
 import { DB } from 'api/odm';
 import { tenants } from 'api/tenants/tenantContext';
-import { setupTestUploadedPaths } from 'api/files/filesystem';
+import { setupTestUploadedPaths, testingUploadPaths } from 'api/files/filesystem';
 
 import { testingTenants } from './testingTenants';
+import { ThesaurusSchema } from 'shared/types/thesaurusType';
 
 mongoose.Promise = Promise;
 mongoose.set('useFindAndModify', false);
@@ -19,6 +20,7 @@ let mongodb: Db;
 export type DBFixture = {
   files?: FileType[];
   entities?: EntitySchema[];
+  dictionaries?: ThesaurusSchema[];
   [k: string]: any;
 };
 
@@ -81,8 +83,10 @@ const testingDB: {
             name: this.dbName,
             dbName: this.dbName,
             indexName: 'index',
+            ...testingUploadPaths,
           })
         );
+
         testingTenants.mockCurrentTenant({
           name: this.dbName,
           dbName: this.dbName,
