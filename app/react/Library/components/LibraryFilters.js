@@ -94,7 +94,7 @@ LibraryFilters.defaultProps = {
   unpublished: false,
   storeKey: 'library',
   fixed: false,
-  hideFilters: false,
+  hideFilters: () => {},
 };
 
 LibraryFilters.propTypes = {
