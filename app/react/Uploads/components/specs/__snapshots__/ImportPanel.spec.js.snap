@@ -3,6 +3,7 @@
 exports[`ImportPanel rendering states should render a form 1`] = `
 <SidePanel
   className="metadata-sidepanel"
+  fixed={false}
   open={true}
 >
   <div
@@ -143,6 +144,7 @@ exports[`ImportPanel rendering states should render a form 1`] = `
 exports[`ImportPanel rendering states when the import starts should render an upload progress 1`] = `
 <SidePanel
   className="metadata-sidepanel"
+  fixed={false}
   open={true}
 >
   <div
@@ -158,27 +160,14 @@ exports[`ImportPanel rendering states when the import starts should render an up
       />
     </button>
   </div>
-  <div
-    className="alert alert-info"
-  >
-    <Connect(Icon)
-      icon="info-circle"
-      size="2x"
-    />
-    <div
-      className="force-ltr"
-    >
-      Uploading file 
-      23
-      %
-    </div>
-  </div>
+  <Connect(ImportProgress) />
 </SidePanel>
 `;
 
 exports[`ImportPanel rendering states when the upload starts should render an upload progress 1`] = `
 <SidePanel
   className="metadata-sidepanel"
+  fixed={false}
   open={true}
 >
   <div

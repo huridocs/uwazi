@@ -5,6 +5,7 @@ import { List } from 'immutable';
 import { IImmutable } from 'shared/types/Immutable';
 import { TableRow } from 'app/Library/components/TableRow';
 import { IStore, TableViewColumn } from 'app/istore';
+import { Translate } from 'app/I18N';
 import { CollectionViewerProps } from './CollectionViewerProps';
 
 export interface TableViewerProps extends CollectionViewerProps {
@@ -30,7 +31,9 @@ class TableViewerComponent extends Component<TableViewerProps> {
             <tr>
               {columns.map((column: TableViewColumn, index: number) => (
                 <th className={!index ? 'sticky-col' : ''} key={column.name}>
-                  <div className="table-view-cell">{column.label}</div>
+                  <div className="table-view-cell">
+                    <Translate>{column.label}</Translate>
+                  </div>
                 </th>
               ))}
             </tr>

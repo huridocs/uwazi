@@ -3,6 +3,7 @@ import Immutable from 'immutable';
 import { renderConnected } from 'app/Templates/specs/utils/renderConnected';
 import { TableViewer } from 'app/Layout/TableViewer';
 import { TableRow } from 'app/Library/components/TableRow';
+import { Translate } from 'app/I18N';
 
 describe('TableViewer', () => {
   let component: any;
@@ -50,8 +51,18 @@ describe('TableViewer', () => {
       const row = component.find('thead > tr').at(0);
       const header = row.find('th div');
       expect(header.length).toBe(2);
-      expect(header.at(0).props().children).toBe('Date');
-      expect(header.at(1).props().children).toBe('Country');
+      expect(
+        header
+          .at(0)
+          .find(Translate)
+          .props().children
+      ).toBe('Date');
+      expect(
+        header
+          .at(1)
+          .find(Translate)
+          .props().children
+      ).toBe('Country');
     });
   });
 

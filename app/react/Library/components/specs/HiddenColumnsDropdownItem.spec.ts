@@ -12,7 +12,7 @@ describe('ColumnItem', () => {
   const columnItem = ColumnItem({ item });
   it('should show a checkbox and label for the passed item', () => {
     expect(columnItem.props.children[0].props.type).toEqual('checkbox');
-    expect(columnItem.props.children[1]).toEqual('Show all');
+    expect(columnItem.props.children[1].props.children).toEqual('Show all');
   });
   it('should update indeterminate for Show all option', () => {
     const elem = { indeterminate: true };
@@ -28,11 +28,13 @@ describe('ValueItem', () => {
       { label: 'Template', type: propertyTypes.text },
     ];
     const valueItem = ValueItem(hiddenColumns)();
-    expect(valueItem.props.children[1]).toEqual('2 columns hidden');
+    expect(valueItem.props.children[1]).toEqual('2 ');
+    expect(valueItem.props.children[2].props.children).toEqual('columns hidden');
   });
   it('should show hide columns as label if there are no hidden columns', () => {
     const hiddenColumns: SelectableColumn[] = [];
     const valueItem = ValueItem(hiddenColumns)();
-    expect(valueItem.props.children[1]).toEqual('Hide columns');
+    expect(valueItem.props.children[1]).toEqual('');
+    expect(valueItem.props.children[2].props.children).toEqual('Hide columns');
   });
 });

@@ -12,8 +12,8 @@ import { connect } from 'react-redux';
 import { actions as formActions, Field } from 'react-redux-form';
 import { bindActionCreators } from 'redux';
 import { Icon } from 'UI';
-import Export from './ExportButton';
 import { hideFilters } from 'app/Entities/actions/uiActions';
+import Export from './ExportButton';
 
 function toggleIncludeUnpublished(storeKey) {
   return (dispatch, getState) => {
@@ -90,6 +90,7 @@ LibraryFilters.defaultProps = {
   unpublished: false,
   storeKey: 'library',
   fixed: false,
+  hideFilters: false,
 };
 
 LibraryFilters.propTypes = {

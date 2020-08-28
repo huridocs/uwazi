@@ -5,10 +5,10 @@ import { I18NLink, t } from 'app/I18N';
 import { Icon } from 'UI';
 import { processFilters, encodeSearch } from 'app/Library/actions/libraryActions';
 import { helper as mapHelper } from 'app/Map';
-import { HiddenColumnsDropdown } from './HiddenColumnsDropdown';
 import { showFilters } from 'app/Entities/actions/uiActions';
 import { bindActionCreators } from 'redux';
 import { wrapDispatch } from 'app/Multireducer';
+import { HiddenColumnsDropdown } from './HiddenColumnsDropdown';
 
 export class LibraryModeToggleButtons extends Component {
   render() {
@@ -99,6 +99,7 @@ LibraryModeToggleButtons.defaultProps = {
   showColumnSelector: false,
   zoomIn: null,
   zoomOut: null,
+  showFilters: true,
 };
 
 export function mapStateToProps(state, props) {
