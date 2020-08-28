@@ -81,7 +81,7 @@ class DocumentsList extends Component {
     } = this.props;
     const tableCounter = (
       <>
-        {this.props.selectedDocuments.size > 0 && (
+        {this.props.selectedDocuments && this.props.selectedDocuments.size > 0 && (
           <>
             <b> {this.props.selectedDocuments.size} </b> <Translate>selected of</Translate>
           </>
