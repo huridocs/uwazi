@@ -16,7 +16,7 @@ describe('Table view', () => {
 
   describe('Table actions', () => {
     beforeAll(async done => {
-      const timeWaitedForFixtures = 8000;
+      const timeWaitedForFixtures = 10000;
       await page.waitFor(timeWaitedForFixtures);
       done();
     });

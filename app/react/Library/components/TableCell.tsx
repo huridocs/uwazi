@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
-import MarkdownViewer from 'app/Markdown';
 import { I18NLink } from 'app/I18N';
 import GeolocationViewer from 'app/Metadata/components/GeolocationViewer';
 import { MetadataObjectSchema, PropertySchema } from 'shared/types/commonTypes';

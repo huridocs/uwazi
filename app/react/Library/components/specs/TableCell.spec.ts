@@ -3,7 +3,6 @@
  */
 import Immutable from 'immutable';
 
-import MarkdownViewer from 'app/Markdown';
 import { I18NLink } from 'app/I18N';
 import { renderConnected } from 'app/Templates/specs/utils/renderConnected';
 import { TableCell, TableCellProps } from 'app/Library/components/TableCell';
@@ -52,17 +51,6 @@ describe('TableCell', () => {
     };
     const cellContent = renderContent(props);
     expect(cellContent.props().children).toBe('Español, English');
-  });
-
-  it('should render a rich text as a markdown', () => {
-    props.content = {
-      label: 'Rich Text',
-      type: 'markdown',
-      name: 'rich_text',
-      value: '**bold**',
-    };
-    const cellContent = renderContent(props);
-    expect(cellContent.find(MarkdownViewer).props().markdown).toBe('**bold**');
   });
 
   it('should render an external link', () => {
