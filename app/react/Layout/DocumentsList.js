@@ -3,7 +3,6 @@ import React, { Component } from 'react';
 import { Link, withRouter } from 'react-router';
 import { toUrlParams } from 'shared/JSONRequest';
 import rison from 'rison';
-
 import SearchBar from 'app/Library/components/SearchBar';
 import SortButtons from 'app/Library/components/SortButtons';
 import Loader from 'app/components/Elements/Loader';
@@ -40,7 +39,6 @@ class DocumentsList extends Component {
   }
 
   loadMoreDocuments(amount, from) {
-    this.setState({ loading: true });
     this.setState({ loading: true });
     this.props.loadMoreDocuments(this.props.storeKey, amount, from);
   }
@@ -81,13 +79,12 @@ class DocumentsList extends Component {
     } = this.props;
     const tableCounter = (
       <>
-        {this.props.selectedDocuments && this.props.selectedDocuments.size > 0 && (
+        {this.props.selectedDocuments.size > 0 && (
           <>
             <b> {this.props.selectedDocuments.size} </b> <Translate>selected of</Translate>
           </>
         )}
-        <b> {this.props.documents.get('rows').size} </b>
-        <Translate>shown of</Translate>
+        <b> {this.props.documents.get('rows').size} </b> <Translate>shown of</Translate>
       </>
     );
     let counter = (
@@ -122,8 +119,7 @@ class DocumentsList extends Component {
       <div className="documents-list">
         <div className="main-wrapper">
           <div className={`search-list ${searchCentered ? 'centered' : ''}`}>
-            {ActionButtons}
-            {Search && <Search storeKey={this.props.storeKey} />}
+            {ActionButtons} {Search && <Search storeKey={this.props.storeKey} />}
           </div>
           <div className={`sort-by ${searchCentered ? 'centered' : ''}`}>
             <div className="documents-counter">
@@ -185,8 +181,7 @@ class DocumentsList extends Component {
               if (documents.get('rows').size < documents.get('totalRows') && !this.state.loading) {
                 return (
                   <div className="col-sm-12 text-center">
-                    {this.loadMoreButton(30)}
-                    {this.loadMoreButton(300)}
+                    {this.loadMoreButton(30)} {this.loadMoreButton(300)}
                   </div>
                 );
               }
@@ -216,6 +211,7 @@ DocumentsList.defaultProps = {
   SearchBar,
   rowListZoomLevel: 0,
   CollectionViewer: TilesViewer,
+  selectedDocuments: [],
 };
 
 DocumentsList.propTypes = {
@@ -223,7 +219,7 @@ DocumentsList.propTypes = {
   connections: PropTypes.object,
   filters: PropTypes.object,
   thesauri: PropTypes.object,
-  selectedDocuments: PropTypes.object,
+  selectedDocuments: PropTypes.arrayOf(Object),
   SearchBar: PropTypes.func,
   ActionButtons: PropTypes.func,
   GraphView: PropTypes.func,

@@ -34,9 +34,6 @@ function formatProperty(prop: FormattedMetadataValue) {
         .map((p: MetadataObjectSchema) => p.value)
         .join(', ');
       break;
-    case 'markdown':
-      result = <MarkdownViewer markdown={prop.value} />;
-      break;
     case 'link':
       result = (
         <a

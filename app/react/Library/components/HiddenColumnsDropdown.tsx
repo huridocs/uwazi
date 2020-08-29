@@ -72,7 +72,6 @@ class HideColumnsComponent extends React.Component<HideColumnsComponentProps> {
   }
 }
 
-// TODO: define uploads as a property of IStore and remove the interfaces merge.
 const mapStateToProps = (state: IStore, props: HideColumnsComponentProps) => ({
   columns: state[props.storeKey].ui.get('tableViewColumns'),
 });

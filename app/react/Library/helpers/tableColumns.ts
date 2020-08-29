@@ -6,7 +6,7 @@ function columnsFromTemplates(templates: TemplateSchema[]): PropertySchema[] {
     const propsToAdd: PropertySchema[] = [];
     (template.properties || []).forEach(property => {
       if (
-        !['image', 'preview', 'media'].includes(property.type) &&
+        !['image', 'preview', 'media', 'nested', 'markdown'].includes(property.type) &&
         !properties.find(columnProperty => property.name === columnProperty.name)
       ) {
         propsToAdd.push(property);

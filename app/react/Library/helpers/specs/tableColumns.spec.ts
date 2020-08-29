@@ -46,6 +46,8 @@ describe('getTableColumns', () => {
         { label: 'Date', name: 'date', type: 'date' },
         { label: 'Media', name: 'media', type: 'media' },
         { label: 'Preview', name: 'preview', type: 'preview' },
+        { label: 'Rich Text', name: 'rich_text', type: 'markdown' },
+        { label: 'Nested', name: 'nested', type: 'nested' },
       ],
     },
     {
@@ -68,9 +70,9 @@ describe('getTableColumns', () => {
     expect(columns[3].label).toBe('Date');
   });
 
-  it('should not contain properties of image, preview or media type', () => {
+  it('should not contain properties of image, preview, media, markdown or nested type', () => {
     const countComplexTypes = columns.filter((column: any) =>
-      ['image', 'preview', 'media'].includes(column.type)
+      ['image', 'preview', 'media', 'nested', 'markdown'].includes(column.type)
     ).length;
     expect(countComplexTypes).toBe(0);
   });
