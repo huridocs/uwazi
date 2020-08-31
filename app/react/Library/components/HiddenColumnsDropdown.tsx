@@ -24,18 +24,13 @@ interface HideColumnsComponentProps {
 }
 
 class HideColumnsComponent extends React.Component<HideColumnsComponentProps> {
-  constructor(props: HideColumnsComponentProps) {
-    super(props);
-    this.onSelect = this.onSelect.bind(this);
-  }
-
-  onSelect(item: any) {
+  onSelect = (item: any) => {
     if (item.selectAll) {
       this.props.setTableViewAllColumnsHidden(item.indeterminate ? false : !item.hidden);
     } else {
       this.props.setTableViewColumnHidden(item.name, !item.hidden);
     }
-  }
+  };
 
   render() {
     const columns = this.props.columns.toJS().slice(1);

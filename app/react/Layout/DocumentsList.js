@@ -10,7 +10,6 @@ import Footer from 'app/App/Footer';
 import { NeedAuthorization } from 'app/Auth';
 import { t, Translate } from 'app/I18N';
 import { Icon } from 'UI';
-import { TableViewer } from 'app/Layout/TableViewer';
 import { TilesViewer } from './TilesViewer';
 
 class DocumentsList extends Component {
@@ -77,19 +76,15 @@ class DocumentsList extends Component {
       LoadMoreButton,
       rowListZoomLevel,
     } = this.props;
-    const tableCounter = (
-      <>
+
+    let counter = (
+      <span>
         {this.props.selectedDocuments.size > 0 && (
           <>
             <b> {this.props.selectedDocuments.size} </b> <Translate>selected of</Translate>
           </>
         )}
         <b> {this.props.documents.get('rows').size} </b> <Translate>shown of</Translate>
-      </>
-    );
-    let counter = (
-      <span>
-        {this.props.CollectionViewer === TableViewer && tableCounter}
         <b> {documents.get('totalRows')} </b> <Translate>documents</Translate>
       </span>
     );

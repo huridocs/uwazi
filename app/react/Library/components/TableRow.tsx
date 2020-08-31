@@ -26,11 +26,11 @@ const defaultProps = {
   thesauris: Immutable.fromJS([]) as IImmutable<ThesaurusSchema[]>,
 };
 
-function getColumnValue(
+const getColumnValue = (
   formattedEntity: EntitySchema,
   columnValues: Map<string, FormattedMetadataValue>,
   column: TableViewColumn
-) {
+) => {
   let columnValue: FormattedMetadataValue;
   const columnName = column.name!;
   if (!column.isCommonProperty || columnName === 'creationDate') {
@@ -42,29 +42,23 @@ function getColumnValue(
     columnValue.value = commonPropValue;
   }
   return columnValue;
-}
+};
 
 class TableRowComponent extends Component<TableRowProps> {
   static defaultProps = defaultProps;
 
-  constructor(props: TableRowProps) {
-    super(props);
-    this.onRowClick = this.onRowClick.bind(this);
-    this.renderCell = this.renderCell.bind(this);
-  }
-
-  onRowClick(e: { preventDefault: () => void }) {
+  onRowClick = (e: { preventDefault: () => void }) => {
     if (this.props.clickOnDocument) {
       this.props.clickOnDocument(e, this.props.entity, this.props.selected);
     }
-  }
+  };
 
-  renderCell(
+  renderCell = (
     index: number,
     storeKey: 'library' | 'uploads',
     selected: boolean | undefined,
     columnValue: FormattedMetadataValue
-  ) {
+  ) => {
     if (!index) {
       return (
         <div>
@@ -75,7 +69,7 @@ class TableRowComponent extends Component<TableRowProps> {
     }
 
     return <TableCell storeKey={storeKey} content={columnValue} />;
-  }
+  };
 
   render() {
     const { entity, templates, thesauris, columns, selected, storeKey } = this.props;

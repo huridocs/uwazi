@@ -9,14 +9,12 @@ export interface SelectableColumn extends TableViewColumn {
   selectAll: boolean;
 }
 
-function updateIndeterminate(item: SelectableColumn) {
-  return (elem: HTMLInputElement) => {
-    if (item.selectAll && elem && item.indeterminate !== undefined) {
-      // eslint-disable-next-line no-param-reassign
-      elem.indeterminate = item.indeterminate;
-    }
-  };
-}
+const updateIndeterminate = (item: SelectableColumn) => (elem: HTMLInputElement) => {
+  if (item.selectAll && elem && item.indeterminate !== undefined) {
+    // eslint-disable-next-line no-param-reassign
+    elem.indeterminate = item.indeterminate;
+  }
+};
 
 export const ColumnItem = ({ item }: { item: SelectableColumn }) => (
   <React.Fragment>

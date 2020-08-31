@@ -16,7 +16,7 @@ export interface FormattedMetadataValue extends PropertySchema {
   value?: string | MetadataObjectSchema | MetadataObjectSchema[];
 }
 
-function formatProperty(prop: FormattedMetadataValue) {
+const formatProperty = (prop: FormattedMetadataValue) => {
   let result;
   if (!prop?.value) {
     return undefined;
@@ -62,7 +62,7 @@ function formatProperty(prop: FormattedMetadataValue) {
       break;
   }
   return result;
-}
+};
 
 class TableCellComponent extends Component<TableCellProps> {
   static defaultProps = { zoomLevel: 0 };
