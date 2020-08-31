@@ -23,6 +23,7 @@ describe('Table view', () => {
 
     it('Should show only selected properties', async done => {
       await page.click('.hidden-columns-dropdown');
+      await page.waitFor('#rw_1_listbox li');
       const columnsOptions = await page.$$eval('#rw_1_listbox li', options =>
         options.map(option => ({
           checked: (<HTMLInputElement>option.children[0]).checked,
