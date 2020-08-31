@@ -2,6 +2,7 @@ import Immutable from 'immutable';
 import React from 'react';
 
 import { ConnectionsGroups, ConnectionsList } from 'app/ConnectionsList';
+import { ShowMetadata } from 'app/Metadata';
 import { shallow } from 'enzyme';
 import { FileList } from 'app/Attachments/components/FileList';
 import { EntityViewer } from '../EntityViewer';
@@ -15,7 +16,11 @@ describe('EntityViewer', () => {
   beforeEach(() => {
     context = { confirm: jasmine.createSpy('confirm') };
     props = {
-      entity: Immutable.fromJS({ title: 'Title', documents: [{ _id: '123', title: 'Test doc' }] }),
+      entity: Immutable.fromJS({
+        title: 'Title',
+        documents: [{ _id: '123', title: 'Test doc' }],
+        relations: [{ template: null, entity: '123', hub: 'abc' }],
+      }),
       templates: Immutable.fromJS([
         {
           _id: 'template1',
@@ -28,6 +33,7 @@ describe('EntityViewer', () => {
           name: 'template2Name',
         },
       ]),
+      relationships: Immutable.fromJS([{ template: null, entity: '123', hub: 'abc' }]),
       relationTypes: [{ _id: 'abc', name: 'relationTypeName' }],
       connectionsGroups: Immutable.fromJS([
         { key: 'g1', templates: [{ _id: 't1', count: 1 }] },
@@ -71,6 +77,17 @@ describe('EntityViewer', () => {
     render();
     expect(component.find(FileList).props().files).toEqual(props.entity.toJS().documents);
     expect(component.find(FileList).props().entity).toEqual(props.entity.toJS());
+  });
+
+  it('should render the inherited properties of an entity', () => {
+    render();
+    expect(component.find(ShowMetadata).props().relationships.size).toBe(1);
+    expect(
+      component
+        .find(ShowMetadata)
+        .props()
+        .relationships.toJS()
+    ).toEqual(props.entity.toJS().relations);
   });
 
   describe('deleteConnection', () => {
