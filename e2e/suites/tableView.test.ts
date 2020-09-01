@@ -8,11 +8,11 @@ describe('Table view', () => {
   beforeAll(async done => {
     await insertFixtures();
     await proxyMock();
-    await page.goto(`${host}/library/table`);
+    await page.goto(`${host}/library/table`, { waitUntil: ['networkidle0', 'domcontentloaded'] });
     await page.waitFor('.documents-counter');
     await page.waitFor('.tableview-wrapper');
     done();
-  });
+  }, 50000);
 
   describe('Table actions', () => {
     beforeAll(async done => {
@@ -41,7 +41,7 @@ describe('Table view', () => {
       );
       expect(selectedColumns).toEqual(visibleColumns);
       done();
-    });
+    }, 50000);
 
     it('Should show new selected properties', async done => {
       const newColumn = await page.$$eval('#rw_1_listbox li:nth-child(9)', option => {
