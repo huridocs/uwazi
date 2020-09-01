@@ -8,7 +8,7 @@ describe('Table view', () => {
   beforeAll(async done => {
     await insertFixtures();
     await proxyMock();
-    await page.goto(`${host}/library/table`, { waitUntil: 'networkidle0' });
+    await page.goto(`${host}/library/table`, { waitUntil: ['networkidle0', 'domcontentloaded'] });
     await page.waitFor('.documents-counter');
     await page.waitFor('.tableview-wrapper');
     done();
