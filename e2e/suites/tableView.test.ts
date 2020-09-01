@@ -8,11 +8,11 @@ describe('Table view', () => {
   beforeAll(async done => {
     await insertFixtures();
     await proxyMock();
-    await page.goto(`${host}/library/table`);
+    await page.goto(`${host}/library/table`, { waitUntil: 'networkidle0' });
     await page.waitFor('.documents-counter');
     await page.waitFor('.tableview-wrapper');
     done();
-  });
+  }, 50000);
 
   describe('Table actions', () => {
     beforeAll(async done => {
