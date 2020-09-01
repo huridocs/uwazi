@@ -8,19 +8,16 @@ describe('Table view', () => {
   beforeAll(async done => {
     await insertFixtures();
     await proxyMock();
-    await page.goto(`${host}/library/table`, { waitUntil: ['networkidle0', 'domcontentloaded'] });
-    await page.waitFor('.documents-counter');
-    await page.waitFor('.tableview-wrapper');
     done();
   }, 50000);
 
-  describe('Table actions', () => {
-    beforeAll(async done => {
-      const timeWaitedForFixtures = 12000;
-      await page.waitFor(timeWaitedForFixtures);
-      done();
-    });
+  it('Should go to the table view', async () => {
+    await page.goto(`${host}/library/table`);
+    await page.waitFor('.documents-counter');
+    await page.waitFor('.tableview-wrapper');
+  });
 
+  describe('Table actions', () => {
     it('Should show only selected properties', async done => {
       await page.click('.hidden-columns-dropdown');
       await page.waitFor('#rw_1_listbox li');
