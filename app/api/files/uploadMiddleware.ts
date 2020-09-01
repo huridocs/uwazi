@@ -7,7 +7,9 @@ import { promisify } from 'util';
 
 type multerCallback = (error: Error | null, destination: string) => void;
 
-const rename = promisify(fs.rename);
+const copyFile = promisify(fs.copyFile);
+const removeFile = promisify(fs.unlink);
+
 const defaultStorage = multer.diskStorage({
   filename(_req: Request, file: Express.Multer.File, cb: multerCallback) {
     cb(null, generateFileName(file));
@@ -17,7 +19,8 @@ const defaultStorage = multer.diskStorage({
 const move = async (req: Request, filePath: pathFunction) => {
   const oldPath = path.join(req.file.destination, req.file.filename);
   const newPath = filePath(req.file.filename);
-  await rename(oldPath, newPath);
+  await copyFile(oldPath, newPath);
+  await removeFile(oldPath);
   req.file.destination = filePath();
   req.file.path = filePath(req.file.filename);
 };
