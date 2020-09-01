@@ -379,20 +379,6 @@
   }
 }
 
-// .search__filter--date {
-//   .fa {
-//     float: left;
-//     width: 5%;
-//     text-align: center;
-//     line-height: 23px;
-//   }
-//   input {
-//     float: left;
-//     width: 46.5%;
-//     margin-left: 1%;
-//   }
-// }
-
 .switcher-wrapper {
   float: right;
   span {
@@ -855,18 +841,6 @@
     padding: 0;
   }
 
-  // a .page-number {
-  //   padding: 5px;
-  //   margin-right: 5px;
-  //   margin-top: 5px;
-  //   background: $c-grey-lighten;
-  //   display:block;
-  //   width: 30px;
-  //   height: 30px;
-  //   float:left;
-  //   text-align: center;
-  // }
-
   a .page-number {
     font-size: $f-size-lg;
     font-weight: bold;
@@ -886,6 +860,5 @@
     font-weight: normal;
     color: #333300;
     background-color: transparentize(yellow, 0.8);
-    // box-shadow: -2px 0 0 0 transparentize(yellow, 0.4), 2px 0 0 0 transparentize(yellow, 0.4);
   }
 }
