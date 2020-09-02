@@ -11,12 +11,13 @@ import { Icon } from 'UI';
 import { searchReferences } from '../actions/actions';
 
 export class SearchBar extends Component {
-  componentWillMount() {
+  constructor(props) {
+    super(props);
     this.changeSearchTerm = debounce(this.props.searchReferences, 400);
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (this.props.entityId !== nextProps.entityId) {
+  componentDidUpdate(prevProps) {
+    if (this.props.entityId !== prevProps.entityId) {
       this.resetSearchTerm();
     }
   }

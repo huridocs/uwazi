@@ -51,7 +51,8 @@ export class ListItem extends Component {
 }
 
 export class IconSelector extends Component {
-  componentWillMount() {
+  constructor(props) {
+    super(props);
     const listOptions = [{ _id: null, type: 'Empty' }]
       .concat(
         iconNames.map(icon => ({
@@ -68,7 +69,7 @@ export class IconSelector extends Component {
         }))
       );
 
-    this.setState({ listOptions });
+    this.state = { listOptions };
   }
 
   render() {

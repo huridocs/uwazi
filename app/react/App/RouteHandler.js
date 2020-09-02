@@ -43,10 +43,10 @@ class RouteHandler extends Component {
     }
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (this.urlHasChanged(nextProps)) {
+  componentDidUpdate(prevProps) {
+    if (this.urlHasChanged(prevProps)) {
       this.emptyState();
-      this.getClientState(nextProps);
+      this.getClientState(this.props);
     }
   }
 
@@ -68,12 +68,12 @@ class RouteHandler extends Component {
     });
   }
 
-  urlHasChanged(nextProps) {
-    const { params: nextParams = {}, routes: nextRoutes = [] } = nextProps;
+  urlHasChanged(prevProps) {
+    const { params: nextParams = {}, routes: nextRoutes = [] } = prevProps;
     const { params, routes } = this.props;
 
     const sameParams = Object.keys(nextParams).reduce(
-      (memo, key) => memo && nextProps.params[key] === params[key],
+      (memo, key) => memo && prevProps.params[key] === params[key],
       true
     );
     const sameAmountOfparams = Object.keys(nextParams).length === Object.keys(params).length;

@@ -12,10 +12,7 @@ class DateRange extends Component {
   }
 
   render() {
-    const { useTimezone } = this.props;
-    let { locale, format } = this.props;
-    locale = locale || 'en';
-    format = format || 'DD/MM/YYYY';
+    const { useTimezone, locale, format } = this.props;
     const { value } = this.props;
     const { from: stateFrom, to: stateTo } = value || { from: null, to: null };
 
