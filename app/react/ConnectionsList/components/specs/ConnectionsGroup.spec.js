@@ -4,7 +4,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import ShowIf from 'app/App/ShowIf';
 
-import { ConnectionsGroup, mapStateToProps } from '../ConnectionsGroup';
+import { ConnectionsGroup } from '../ConnectionsGroup';
 
 describe('ConnectionsGroup', () => {
   let component;
