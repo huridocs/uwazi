@@ -37,7 +37,7 @@ export default class VictimSlider extends Component {
     };
   }
 
-  componentWillMount() {
+  componentDidMount() {
     const { initialIndex } = this.props;
     this.setState({
       currentIndex: initialIndex || 0,

@@ -1,14 +1,18 @@
 import { Request, Response } from 'express';
-import { attachmentsPath, uploadsPath, temporalFilesPath, customUploadsPath } from 'api/files';
+import { pathFunction, fileExists } from 'api/files';
 
-type pathFunctionType =
-  | typeof attachmentsPath
-  | typeof uploadsPath
-  | typeof temporalFilesPath
-  | typeof customUploadsPath;
+const staticFilesMiddleware = (pathFunctions: pathFunction[]) => async (
+  req: Request,
+  res: Response
+) => {
+  const pathToUse = await pathFunctions.reduce<Promise<pathFunction>>(async (current, path) => {
+    if (await fileExists(path(req.params.fileName))) {
+      return path;
+    }
+    return current;
+  }, Promise.resolve(pathFunctions[0]));
 
-const staticFilesMiddleware = (pathFunction: pathFunctionType) => (req: Request, res: Response) => {
-  res.sendFile(pathFunction(req.params.fileName));
+  res.sendFile(pathToUse(req.params.fileName));
 };
 
 export { staticFilesMiddleware };

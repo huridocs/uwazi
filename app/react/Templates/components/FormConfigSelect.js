@@ -11,19 +11,17 @@ import PropertyConfigOptions from './PropertyConfigOptions';
 import { checkErrorsOnLabel } from '../utils/checkErrorsOnLabel';
 
 export class FormConfigSelect extends Component {
+  static getDerivedStateFromProps(props, state) {
+    return { warning: Boolean(state.initialContent !== props.content) };
+  }
+
   static contentValidation() {
     return { required: val => val.trim() !== '' };
   }
 
-  componentDidMount() {
-    this.initialContent = this.props.content;
-  }
-
-  componentWillReceiveProps(newProps) {
-    this.warning = false;
-    if (this.initialContent !== newProps.content) {
-      this.warning = true;
-    }
+  constructor(props) {
+    super(props);
+    this.state = { warning: false, initialContent: props.content };
   }
 
   render() {
@@ -48,7 +46,7 @@ export class FormConfigSelect extends Component {
             {t('System', 'Select list')}
             <span className="required">*</span>
           </label>
-          {this.warning && (
+          {this.state.warning && (
             <Warning inline>
               <Translate>
                 All entities and documents that have already this property assigned will loose its

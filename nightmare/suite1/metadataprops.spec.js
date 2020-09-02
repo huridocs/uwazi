@@ -33,20 +33,23 @@ describe('metadata properties', () => {
         '#metadataForm > div:nth-child(3) > div:nth-child(4) > ul > li.wide > ul > li:nth-child(2) > label',
       relationshipOptionOne:
         '#metadataForm > div:nth-child(3) > div:nth-child(5) > ul > li.wide > ul > li:nth-child(2) > label',
-      date: '#metadataForm > div:nth-child(3) > div:nth-child(6) > ul > li.wide > div > input',
-      emptyDate: '#metadataForm > div:nth-child(3) > div:nth-child(6) > ul > li.wide > div > a',
+      date:
+        '#metadataForm > div:nth-child(3) > div:nth-child(6) > ul > li.wide > div.react-datepicker-wrapper > div > input',
+
+      emptyDate:
+        '#metadataForm > div:nth-child(3) > div:nth-child(6) > ul > li.wide > div > div > button',
       dateRangeFrom:
-        '#metadataForm > div:nth-child(3) > div:nth-child(7) > ul > li.wide > div > div.DatePicker__From > div > input',
+        '#metadataForm > div:nth-child(3) > div:nth-child(7) > ul > li.wide > div > div.DatePicker__From > div > div > input',
       dateRangeTo:
-        '#metadataForm > div:nth-child(3) > div:nth-child(7) > ul > li.wide > div > div.DatePicker__To > div > input',
+        '#metadataForm > div:nth-child(3) > div:nth-child(7) > ul > li.wide > div > div.DatePicker__To > div > div > input',
       emptyDaterangeFrom:
-        '#metadataForm > div:nth-child(3) > div:nth-child(7) > ul > li.wide > div > div.DatePicker__From > div > a',
+        '#metadataForm > div:nth-child(3) > div:nth-child(7) > ul > li.wide > div > div.DatePicker__From > div > div > button',
       emptyDaterangeTo:
-        '#metadataForm > div:nth-child(3) > div:nth-child(7) > ul > li.wide > div > div.DatePicker__To > div > a',
+        '#metadataForm > div:nth-child(3) > div:nth-child(7) > ul > li.wide > div > div.DatePicker__To > div > div > button',
       multidateInputOne:
-        '#metadataForm > div:nth-child(3) > div:nth-child(8) > ul > li.wide > div > div:nth-child(1) > div > input',
+        '#metadataForm > div:nth-child(3) > div:nth-child(8) > ul > li.wide > div > div:nth-child(1) > div.react-datepicker-wrapper > div > input',
       multidateInputTwo:
-        '#metadataForm > div:nth-child(3) > div:nth-child(8) > ul > li.wide > div > div:nth-child(2) > div > input',
+        '#metadataForm > div:nth-child(3) > div:nth-child(8) > ul > li.wide > div > div:nth-child(2) > div > div > input',
       multiDateRemoveDateOne:
         '#metadataForm > div:nth-child(3) > div:nth-child(8) > ul > li.wide > div > div:nth-child(1) > button',
       multiDateRemoveDateTwo:
@@ -56,13 +59,13 @@ describe('metadata properties', () => {
       multidaterangeAddButton:
         '#metadataForm > div:nth-child(3) > div:nth-child(9) > ul > li.wide > div > button',
       multidaterangeFromInputOne:
-        '#metadataForm > div:nth-child(3) > div:nth-child(9) > ul > li.wide > div > div:nth-child(1) > div > div.DatePicker__From > div > input',
+        '#metadataForm > div:nth-child(3) > div:nth-child(9) > ul > li.wide > div > div:nth-child(1) > div > div.DatePicker__From > div > div > input',
       multidaterangeToInputOne:
-        '#metadataForm > div:nth-child(3) > div:nth-child(9) > ul > li.wide > div > div:nth-child(1) > div > div.DatePicker__To > div > input',
+        '#metadataForm > div:nth-child(3) > div:nth-child(9) > ul > li.wide > div > div:nth-child(1) > div > div.DatePicker__To > div > div > input',
       multidaterangeFromInputTwo:
-        '#metadataForm > div:nth-child(3) > div:nth-child(9) > ul > li.wide > div > div:nth-child(2) > div > div.DatePicker__From > div > input',
+        '#metadataForm > div:nth-child(3) > div:nth-child(9) > ul > li.wide > div > div:nth-child(2) > div > div.DatePicker__From > div > div > input',
       multidaterangeToInputTwo:
-        '#metadataForm > div:nth-child(3) > div:nth-child(9) > ul > li.wide > div > div:nth-child(2) > div > div.DatePicker__To > div > input',
+        '#metadataForm > div:nth-child(3) > div:nth-child(9) > ul > li.wide > div > div:nth-child(2) > div > div.DatePicker__To > div > div > input',
       multidaterangeRemoveDateOne:
         '#metadataForm > div:nth-child(3) > div:nth-child(9) > ul > li.wide > div > div:nth-child(1) > div > button',
       multidaterangeRemoveDateTwo:

@@ -15,7 +15,7 @@ import validator from 'app/Settings/utils/ValidateNavlinks';
 import NavlinkForm from './NavlinkForm';
 
 export class NavlinksSettings extends Component {
-  componentWillMount() {
+  componentDidMount() {
     this.props.loadLinks(this.props.collection.get('links').toJS());
   }
 

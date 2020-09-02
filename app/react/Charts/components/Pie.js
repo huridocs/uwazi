@@ -1,5 +1,3 @@
-/** @format */
-
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -18,24 +16,18 @@ function ellipsisString(string, maxLength) {
 }
 
 export class RechartsPie extends Component {
-  mountData(props) {
+  static getDerivedStateFromProps(props) {
+    return RechartsPie.mountData(props);
+  }
+
+  static mountData(props) {
     let fullData = Immutable.fromJS([]);
     if (props.data) {
       fullData = Immutable.fromJS(
         props.data.map(item => ({ name: item.label, value: item.results, enabled: true }))
       );
     }
-    this.setState({ activeIndex: 0, fullData });
-  }
-
-  componentWillMount() {
-    this.mountData(this.props);
-  }
-
-  componentWillReceiveProps(nextProps) {
-    if (nextProps) {
-      this.mountData(nextProps);
-    }
+    return { activeIndex: 0, fullData };
   }
 
   renderActiveShape(props) {

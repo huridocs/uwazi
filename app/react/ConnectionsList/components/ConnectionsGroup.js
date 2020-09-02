@@ -11,18 +11,40 @@ import { Icon } from 'UI';
 import { setFilter } from '../actions/actions';
 
 export class ConnectionsGroup extends Component {
-  toggleExpandGroup() {
-    this.setState({ expanded: !this.state.expanded });
+  static getDerivedStateFromProps(props, state) {
+    if (props.group.get('templates').size > state.groupTemplates.size) {
+      return {
+        selected: false,
+        groupTemplates: props.group.get('templates'),
+      };
+    }
+
+    return { groupTemplates: props.group.get('templates') };
   }
 
-  toggleSelectGroup() {
-    const { group } = this.props;
-    const selectedItems = !this.state.selected
-      ? group.get('templates').map(i => group.get('key') + i.get('_id'))
-      : Immutable([]);
+  constructor(props) {
+    super(props);
+    this.state = {
+      expanded: true,
+      selected: false,
+      selectedItems: Immutable([]),
+      groupTemplates: Immutable([]),
+    };
+  }
 
-    this.setGroupFilter(selectedItems);
-    this.setState({ selected: !this.state.selected, selectedItems });
+  shouldComponentUpdate(nextProps, nextState) {
+    return (
+      !is(this.props.group, nextProps.group) ||
+      this.state.expanded !== nextState.expanded ||
+      this.state.selected !== nextState.selected ||
+      this.state.selectedItems.size !== nextState.selectedItems.size
+    );
+  }
+
+  setGroupFilter(selectedItems) {
+    const newFilter = {};
+    newFilter[this.props.group.get('key')] = selectedItems;
+    this.props.setFilter(newFilter);
   }
 
   toggleSelectItem(item) {
@@ -43,39 +65,23 @@ export class ConnectionsGroup extends Component {
     this.setState({ selectedItems, selected: groupSelected });
   }
 
-  setGroupFilter(selectedItems) {
-    const newFilter = {};
-    newFilter[this.props.group.get('key')] = selectedItems;
-    this.props.setFilter(newFilter);
+  toggleSelectGroup() {
+    const { group } = this.props;
+    const selectedItems = !this.state.selected
+      ? group.get('templates').map(i => group.get('key') + i.get('_id'))
+      : Immutable([]);
+
+    this.setGroupFilter(selectedItems);
+    this.setState(currentState => ({ selected: !currentState.selected, selectedItems }));
   }
 
-  componentWillMount() {
-    this.setState({ expanded: true, selected: false, selectedItems: Immutable([]) });
-  }
-
-  shouldComponentUpdate(nextProps, nextState) {
-    return (
-      !is(this.props.group, nextProps.group) ||
-      this.state.expanded !== nextState.expanded ||
-      this.state.selected !== nextState.selected ||
-      this.state.selectedItems.size !== nextState.selectedItems.size
-    );
-  }
-
-  componentWillReceiveProps(nextProps) {
-    if (!nextProps.filters.size) {
-      this.setState({ selected: false, selectedItems: Immutable([]) });
-    }
-
-    if (nextProps.group.get('templates').size > this.props.group.get('templates').size) {
-      this.setState({ selected: false });
-    }
+  toggleExpandGroup() {
+    this.setState(currentState => ({ expanded: !currentState.expanded }));
   }
 
   render() {
     const group = this.props.group.toJS();
     const { connectionLabel, templates } = group;
-
     return (
       <li>
         <div className="multiselectItem">
@@ -133,10 +139,7 @@ export class ConnectionsGroup extends Component {
 ConnectionsGroup.propTypes = {
   group: PropTypes.object,
   setFilter: PropTypes.func,
-  filters: PropTypes.object,
 };
-
-export const mapStateToProps = ({ relationships }) => ({ filters: relationships.list.filters });
 
 export const mapDispatchToProps = dispatch =>
   bindActionCreators(
@@ -146,4 +149,4 @@ export const mapDispatchToProps = dispatch =>
     dispatch
   );
 
-export default connect(mapStateToProps, mapDispatchToProps)(ConnectionsGroup);
+export default connect(null, mapDispatchToProps)(ConnectionsGroup);

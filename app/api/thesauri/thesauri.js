@@ -93,18 +93,18 @@ const update = async thesauri => {
   return model.save(thesauri);
 };
 
-export default {
+const thesauri = {
   async save(t) {
-    const thesauri = { values: [], type: 'thesauri', ...t };
+    const toSave = { values: [], type: 'thesauri', ...t };
 
-    autoincrementValuesId(thesauri);
+    autoincrementValuesId(toSave);
 
-    await validateThesauri(thesauri);
+    await validateThesauri(toSave);
 
-    if (thesauri._id) {
-      return update(thesauri);
+    if (toSave._id) {
+      return update(toSave);
     }
-    return create(thesauri);
+    return create(toSave);
   },
 
   entitiesToThesauri(_entities) {
@@ -170,3 +170,6 @@ export default {
       .then(() => ({ ok: true }));
   },
 };
+
+export default thesauri;
+export { thesauri };

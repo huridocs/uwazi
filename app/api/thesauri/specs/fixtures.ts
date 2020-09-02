@@ -1,22 +1,16 @@
-/**
- * /* eslint-disable max-len
- *
- * @format
- */
-
-import db from 'api/utils/testing_db';
+import { DBFixture, testingDB } from 'api/utils/testing_db';
 
 const entityTemplateId = '589af97080fc0b23471d67f3';
 const dictionaryId = '589af97080fc0b23471d67f4';
 const dictionaryIdToTranslate = '589af97080fc0b23471d67f5';
-const dictionaryWithValueGroups = db.id();
+const dictionaryWithValueGroups = testingDB.id();
 const dictionaryValueId = '1';
 
-export default {
+const fixtures: DBFixture = {
   dictionaries: [
-    { _id: db.id(), name: 'dictionary' },
+    { _id: testingDB.id(), name: 'dictionary' },
     {
-      _id: db.id(dictionaryId),
+      _id: testingDB.id(dictionaryId),
       name: 'dictionary 2',
       values: [
         { id: '1', label: 'value 1' },
@@ -24,7 +18,7 @@ export default {
       ],
     },
     {
-      _id: db.id(dictionaryIdToTranslate),
+      _id: testingDB.id(dictionaryIdToTranslate),
       name: 'Top 2 scify books',
       values: [
         { id: dictionaryValueId, label: 'Enders game' },
@@ -57,7 +51,7 @@ export default {
   ],
   templates: [
     {
-      _id: db.id(entityTemplateId),
+      _id: testingDB.id(entityTemplateId),
       name: 'entityTemplate',
       properties: [
         {
@@ -67,38 +61,36 @@ export default {
         },
       ],
     },
-    { _id: db.id(), name: 'documentTemplate', properties: [{}] },
+    { _id: testingDB.id(), name: 'documentTemplate', properties: [{}] },
   ],
   entities: [
     {
-      _id: db.id(),
+      _id: testingDB.id(),
       sharedId: 'sharedId2',
       language: 'es',
-      template: db.id(entityTemplateId),
+      template: testingDB.id(entityTemplateId),
       metadata: {
         multiselect: [{ value: '1', label: '1' }],
       },
     },
     {
-      _id: db.id(),
+      _id: testingDB.id(),
       sharedId: 'sharedId',
-      type: 'entity',
       title: 'english entity',
       language: 'en',
-      template: db.id(entityTemplateId),
-      icon: 'Icon',
+      template: testingDB.id(entityTemplateId),
+      icon: { type: 'Icon' },
       metadata: {
         multiselect: [{ value: '1', label: '1' }],
       },
     },
     {
-      _id: db.id(),
+      _id: testingDB.id(),
       sharedId: 'sharedId',
-      type: 'entity',
       title: 'spanish entity',
       language: 'es',
-      template: db.id(entityTemplateId),
-      icon: 'Icon',
+      template: testingDB.id(entityTemplateId),
+      icon: { type: 'Icon' },
       published: true,
       metadata: {
         multiselect: [
@@ -108,16 +100,22 @@ export default {
       },
     },
     {
-      _id: db.id(),
+      _id: testingDB.id(),
       sharedId: 'other',
       type: 'entity',
       title: 'unpublished entity',
       language: 'es',
-      template: db.id(entityTemplateId),
+      template: testingDB.id(entityTemplateId),
       published: false,
     },
   ],
-  settings: [{ _id: db.id(), languages: [{ key: 'es', default: true }] }],
+  settings: [{ _id: testingDB.id(), languages: [{ key: 'es', default: true }] }],
 };
 
-export { dictionaryId, dictionaryIdToTranslate, dictionaryValueId, dictionaryWithValueGroups };
+export {
+  fixtures,
+  dictionaryId,
+  dictionaryIdToTranslate,
+  dictionaryValueId,
+  dictionaryWithValueGroups,
+};

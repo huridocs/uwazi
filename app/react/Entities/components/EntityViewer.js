@@ -294,7 +294,7 @@ const mapStateToProps = state => ({
   entity: state.entityView.entity,
   relationTypes: selectRelationTypes(state),
   templates: state.templates,
-  relationships: state.entityView.entity.get('relationships'),
+  relationships: state.entityView.entity.get('relations'),
   connectionsGroups: state.relationships.list.connectionsGroups,
   entityBeingEdited: !!state.entityView.entityForm._id,
   tab: state.entityView.uiState.get('tab'),

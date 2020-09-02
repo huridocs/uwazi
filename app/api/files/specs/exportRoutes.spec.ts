@@ -32,7 +32,7 @@ describe('export routes', () => {
       const fixtures = {
         settings: [
           {
-            dateFormat: 'YYYY-MM-DD',
+            dateFormat: 'yyyy-MM-dd',
             site_name: 'uwazi',
             languages: [{ key: 'es', default: true }, { key: 'pt' }, { key: 'en' }],
           },
@@ -95,7 +95,7 @@ describe('export routes', () => {
         { username: 'someuser' }
       );
       assertExport(exportMock.mock.calls[0], { rows: ['searchresults'] }, ['types'], {
-        dateFormat: 'YYYY-MM-DD',
+        dateFormat: 'yyyy-MM-dd',
         language: 'somelanguage',
       });
     });

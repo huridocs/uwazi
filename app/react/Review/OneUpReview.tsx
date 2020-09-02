@@ -132,11 +132,9 @@ export class OneUpReviewBase extends RouteHandler {
     this.emptyState();
   }
 
-  componentWillMount() {
+  componentDidMount() {
     this.context.store.dispatch(uiActions.showTab('info'));
   }
-
-  componentDidMount() {}
 
   emptyState() {
     wrapDispatch(this.context.store.dispatch, 'library')(unsetDocuments());

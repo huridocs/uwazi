@@ -80,9 +80,16 @@ DB.connect(config.DBHOST, dbAuth).then(async () => {
   authRoutes(app);
   app.use(privateInstanceMiddleware);
   app.use('/flag-images', express.static(path.resolve(__dirname, '../dist/flags')));
-  app.use('/assets/:fileName', staticFilesMiddleware(customUploadsPath));
-  // retained for backwards compatibility
-  app.use('/uploaded_documents/:fileName', staticFilesMiddleware(uploadsPath));
+  app.use('/assets/:fileName', staticFilesMiddleware([customUploadsPath]));
+  app.use(
+    '/uploaded_documents/:fileName',
+    staticFilesMiddleware([
+      uploadsPath,
+      // retained for backwards compatibility
+      customUploadsPath,
+      //
+    ])
+  );
   apiRoutes(app, http);
   serverRenderingRoutes(app);
   app.use(errorHandlingMiddleware);

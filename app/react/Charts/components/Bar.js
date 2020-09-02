@@ -57,23 +57,22 @@ ColoredBar.propTypes = {
 };
 
 export class RechartsBar extends Component {
-  componentWillMount() {
-    this.mountData(this.props);
+  static getDerivedStateFromProps(props) {
+    return RechartsBar.mountData(props);
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (nextProps) {
-      this.mountData(nextProps);
-    }
-  }
-
-  mountData(props) {
+  static mountData(props) {
     let fullData = [];
 
     if (props.data) {
-      fullData = props.data.map(item => ({ name: item.label, value: item.results, xAxisName: '' }));
+      fullData = props.data.map(item => ({
+        name: item.label,
+        value: item.results,
+        xAxisName: '',
+      }));
     }
-    this.setState({ fullData });
+
+    return { fullData };
   }
 
   render() {

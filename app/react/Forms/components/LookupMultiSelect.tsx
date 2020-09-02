@@ -24,6 +24,10 @@ export const debounceTime = 200;
 export class LookupMultiSelect extends Component<LookupMultiSelectProps, LookupMultiSelectState> {
   static defaultProps = { ...defaultProps, value: [] as string[] };
 
+  static getDerivedStateFromProps(props: LookupMultiSelectProps) {
+    return { totalPossibleOptions: props.totalPossibleOptions };
+  }
+
   constructor(props: LookupMultiSelectProps) {
     super(props);
     this.state = {
@@ -73,10 +77,6 @@ export class LookupMultiSelect extends Component<LookupMultiSelectProps, LookupM
       ...this.state.lookupOptions,
       ...this.state.selectedOptions,
     ].filter(uniqueOptions(this.props.optionsValue));
-  }
-
-  componentWillReceiveProps(props: LookupMultiSelectProps) {
-    this.setState({ totalPossibleOptions: props.totalPossibleOptions });
   }
 
   render() {

@@ -76,14 +76,11 @@ describe('FormConfigSelect', () => {
 
       expect(component.find(Warning).length).toBe(0);
 
-      const newProps = { content: '2' };
-      component.setProps(newProps);
-      component.update();
+      component.setProps({ content: '2' });
 
       expect(component.find(Warning).length).toBe(1);
 
       component.setProps({ content: '1' });
-      component.update();
 
       expect(component.find(Warning).length).toBe(0);
     });

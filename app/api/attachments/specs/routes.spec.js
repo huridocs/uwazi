@@ -110,7 +110,7 @@ describe('Attachments Routes', () => {
         originalname: 'new original name.miss',
         filename: 'mockfile.doc',
       };
-      req = { user: 'admin', headers: {}, body: { entityId }, files: [file] };
+      req = { user: 'admin', headers: {}, body: { entityId }, file };
     });
 
     it('should need authorization', () => {
