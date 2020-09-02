@@ -132,19 +132,19 @@ describe('SearchText', () => {
     });
   });
 
-  describe('componentWillReceiveProps', () => {
+  describe('Component update', () => {
     it('should searchSnippets when searchTerm or doc changes', () => {
       props.doc = Immutable.fromJS({ _id: 'id', sharedId: 'sharedId' });
       props.searchTerm = 'term';
       render();
       spyOn(instance, 'searchSnippets');
-      instance.componentWillReceiveProps({ searchTerm: 'term', doc: props.doc });
+      component.setProps({ searchTerm: 'term', doc: props.doc });
       expect(instance.searchSnippets).not.toHaveBeenCalled();
 
-      instance.componentWillReceiveProps({ searchTerm: 'another term', doc: props.doc });
+      component.setProps({ searchTerm: 'another term', doc: props.doc });
       expect(instance.searchSnippets).toHaveBeenCalledWith('another term', 'sharedId');
 
-      instance.componentWillReceiveProps({
+      component.setProps({
         searchTerm: 'term',
         doc: props.doc.set('sharedId', 'another id'),
       });
@@ -184,7 +184,7 @@ describe('SearchText', () => {
 
       props.doc = Immutable.fromJS({ _id: 'another_id', sharedId: 'sharedId2' });
 
-      instance.componentWillReceiveProps(props);
+      component.setProps(props);
       expect(props.searchSnippets).toHaveBeenCalledWith('newSearchTerm', 'sharedId2', 'storeKey');
       expect(instance.formDispatch).toHaveBeenCalledWith(
         formActions.change('searchText.searchTerm', 'newSearchTerm')

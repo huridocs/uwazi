@@ -25,10 +25,9 @@ class DocumentsList extends Component {
     this.setState({ loading: false });
   }
 
-  clickOnDocument(...args) {
-    if (this.props.clickOnDocument) {
-      this.props.clickOnDocument.apply(this, args);
-    }
+  loadMoreDocuments(amount, from) {
+    this.setState({ loading: true });
+    this.props.loadMoreDocuments(this.props.storeKey, amount, from);
   }
 
   selectAllDocuments() {
@@ -37,9 +36,10 @@ class DocumentsList extends Component {
     }
   }
 
-  loadMoreDocuments(amount, from) {
-    this.setState({ loading: true });
-    this.props.loadMoreDocuments(this.props.storeKey, amount, from);
+  clickOnDocument(...args) {
+    if (this.props.clickOnDocument) {
+      this.props.clickOnDocument.apply(this, args);
+    }
   }
 
   loadMoreButton(amount) {

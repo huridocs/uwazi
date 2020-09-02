@@ -12,7 +12,6 @@ describe('CantDeleteTemplateAlert', () => {
 
   beforeEach(() => {
     props = {
-      accept: jasmine.createSpy('accept'),
       cancel: jasmine.createSpy('cancel'),
       isOpen: false,
     };
@@ -43,6 +42,7 @@ describe('CantDeleteTemplateAlert', () => {
   describe('when clicking ok button', () => {
     it('should call accept function', () => {
       props.isOpen = true;
+      props.accept = jasmine.createSpy('accept');
       render();
       component.find('.btn-danger').simulate('click');
       expect(props.accept).toHaveBeenCalled();
@@ -58,7 +58,8 @@ describe('CantDeleteTemplateAlert', () => {
         promise = new Promise((_resolve, _reject) => {
           resolve = _resolve;
           reject = _reject;
-        });
+        }).catch(() => {});
+        props.accept = jasmine.createSpy('accept');
         props.accept.and.returnValue(promise);
         props.isOpen = true;
         render();
@@ -80,8 +81,12 @@ describe('CantDeleteTemplateAlert', () => {
 
       it('should show a loading state until the promise rejects', done => {
         component.find('.btn-danger').simulate('click');
+        expect(props.accept).toHaveBeenCalled();
+        expect(instance.state.isOpen).toBe(true);
+        expect(instance.state.isLoading).toBe(true);
+        expect(component.find(Loader).length).toBe(1);
         reject();
-        promise.catch(() => {
+        promise.then(() => {
           expect(instance.state.isOpen).toBe(false);
           expect(instance.state.isLoading).toBe(false);
           done();

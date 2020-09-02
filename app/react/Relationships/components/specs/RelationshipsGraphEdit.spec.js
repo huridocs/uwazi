@@ -89,11 +89,11 @@ describe('RelationshipsGraphEdit', () => {
     });
   });
 
-  describe('componentWillMount', () => {
+  describe('componentDidMount', () => {
     it('should call parseResults', () => {
       render();
       const instance = component.instance();
-      instance.componentWillMount();
+      instance.componentDidMount();
       expect(props.parseResults).toHaveBeenCalledWith(
         props.searchResults,
         props.parentEntity,
@@ -102,15 +102,15 @@ describe('RelationshipsGraphEdit', () => {
     });
   });
 
-  describe('componentWillUpdate', () => {
+  describe('componentDidUpdate', () => {
     it('should call parseResults when searchResults changed', () => {
       render();
       const instance = component.instance();
       props.parseResults.calls.reset();
-      instance.componentWillUpdate(props);
+      instance.componentDidUpdate(props);
       expect(props.parseResults).not.toHaveBeenCalled();
       props.searchResults = fromJS({ rows: [] });
-      instance.componentWillUpdate(props);
+      instance.componentDidUpdate(props);
       expect(props.parseResults).toHaveBeenCalledWith(
         props.searchResults,
         props.parentEntity,

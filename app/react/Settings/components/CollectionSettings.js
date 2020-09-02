@@ -40,15 +40,15 @@ export class CollectionSettings extends Component {
 
   static getDateFormatValue(format, separator) {
     const formatOptions = [
-      `YYYY${separator}MM${separator}DD`,
-      `DD${separator}MM${separator}YYYY`,
-      `MM${separator}DD${separator}YYYY`,
+      `yyyy${separator}MM${separator}dd`,
+      `dd${separator}MM${separator}yyyy`,
+      `MM${separator}dd${separator}yyyy`,
     ];
 
     return formatOptions.indexOf(format);
   }
 
-  static getDateFormat(value, separator) {
+  static getDateFormatMoment(value, separator) {
     const formatOptions = [
       `YYYY${separator}MM${separator}DD`,
       `DD${separator}MM${separator}YYYY`,
@@ -58,11 +58,22 @@ export class CollectionSettings extends Component {
     return formatOptions[value];
   }
 
+  static getDateFormatDatePicker(value, separator) {
+    const formatOptions = [
+      `yyyy${separator}MM${separator}dd`,
+      `dd${separator}MM${separator}yyyy`,
+      `MM${separator}dd${separator}yyyy`,
+    ];
+
+    return formatOptions[value];
+  }
+
   static renderDateFormatLabel(option) {
     const { separator, label, value } = option;
     return (
       <span>
-        {label} <code>{moment().format(CollectionSettings.getDateFormat(value, separator))}</code>
+        {label}{' '}
+        <code>{moment().format(CollectionSettings.getDateFormatMoment(value, separator))}</code>
       </span>
     );
   }
@@ -92,7 +103,10 @@ export class CollectionSettings extends Component {
     delete settings.dateSeparator;
     delete settings.allowedPublicTemplatesString;
 
-    settings.dateFormat = CollectionSettings.getDateFormat(values.dateFormat, values.dateSeparator);
+    settings.dateFormat = CollectionSettings.getDateFormatDatePicker(
+      values.dateFormat,
+      values.dateSeparator
+    );
 
     if (!values.customLandingpage) {
       settings.home_page = '';
@@ -390,7 +404,7 @@ export class CollectionSettings extends Component {
 }
 
 CollectionSettings.propTypes = {
-  settings: PropTypes.object.isRequired,
+  settings: PropTypes.instanceOf(Object).isRequired,
   setSettings: PropTypes.func.isRequired,
   notify: PropTypes.func.isRequired,
 };

@@ -44,36 +44,36 @@ export class Viewer extends Component {
     this.handlePlainTextClick = this.handlePlainTextClick.bind(this);
   }
 
-  componentWillMount() {
+  componentDidMount() {
     const { store } = this.context;
-    const { sidepanelTab } = this.props;
+    const { sidepanelTab, file } = this.props;
 
     store.dispatch(openPanel('viewMetadataPanel'));
     if (sidepanelTab === 'connections') {
       store.dispatch(actions.set('viewer.sidepanel.tab', ''));
     }
-  }
-
-  componentDidMount() {
-    const { store } = this.context;
 
     store.dispatch(loadDefaultViewerMenu());
     Marker.init('div.main-wrapper');
     this.setState({ firstRender: false }); // eslint-disable-line react/no-did-mount-set-state
 
-    const { templates, doc, file } = this.props;
-
     if (file && !file.pdfInfo) {
-      const fileName = doc.get('defaultDoc') ? doc.get('defaultDoc').get('filename') : undefined;
-      requestViewerState(new RequestParams({ sharedId: doc.get('sharedId'), file: fileName }), {
-        ...store.getState(),
-        templates: templates.toJS(),
-      }).then(viewerActions => {
-        viewerActions.forEach(action => {
-          store.dispatch(action);
-        });
-      });
+      this.getPdfInfo();
     }
+  }
+
+  getPdfInfo() {
+    const { store } = this.context;
+    const { templates, doc } = this.props;
+    const fileName = doc.get('defaultDoc') ? doc.get('defaultDoc').get('filename') : undefined;
+    requestViewerState(new RequestParams({ sharedId: doc.get('sharedId'), file: fileName }), {
+      ...store.getState(),
+      templates: templates.toJS(),
+    }).then(viewerActions => {
+      viewerActions.forEach(action => {
+        store.dispatch(action);
+      });
+    });
   }
 
   handlePlainTextClick() {

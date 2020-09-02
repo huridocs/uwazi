@@ -207,11 +207,6 @@ $c-sidebar: $c-white;
   }
 }
 
-.sidepanel-header,
-.sidepanel-footer {
-  z-index: 4;
-}
-
 .sidepanel-header {
   background: $c-sidebar;
   position: relative;
@@ -239,7 +234,9 @@ $c-sidebar: $c-white;
     font-size: $f-size-lg;
   }
 }
+
 .sidepanel-footer {
+  z-index:1;
   position: absolute;
   bottom: 2em;
   left: 50%;

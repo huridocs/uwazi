@@ -4,11 +4,10 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import ShowIf from 'app/App/ShowIf';
 
-import { ConnectionsGroup, mapStateToProps } from '../ConnectionsGroup';
+import { ConnectionsGroup } from '../ConnectionsGroup';
 
 describe('ConnectionsGroup', () => {
   let component;
-  let instance;
   let props;
   let group;
 
@@ -25,22 +24,24 @@ describe('ConnectionsGroup', () => {
     props = {
       group: Immutable(group),
       setFilter: jasmine.createSpy('setFilter'),
+      filters: Immutable([]),
     };
   });
 
   const render = () => {
     component = shallow(<ConnectionsGroup {...props} />);
-    instance = component.instance();
   };
 
   it('should render the group multiselect item with checked state, types count and expanded', () => {
     render();
+
     expect(
       component
         .find('input')
         .at(0)
         .props().checked
     ).toBe(false);
+
     expect(
       component
         .find('.multiselectItem-results')
@@ -48,6 +49,7 @@ describe('ConnectionsGroup', () => {
         .at(0)
         .text()
     ).toContain('3');
+
     expect(component.find(ShowIf).props().if).toBe(true);
   });
 
@@ -89,17 +91,21 @@ describe('ConnectionsGroup', () => {
         .at(1)
         .find('input')
         .simulate('change');
+
       subItem1 = component
         .find('ul')
         .find('li')
-        .at(0);
+        .at(0)
+        .find('input');
+
       subItem2 = component
         .find('ul')
         .find('li')
-        .at(1);
+        .at(1)
+        .find('input');
 
-      expect(subItem1.find('input').props().checked).toBe(false);
-      expect(subItem2.find('input').props().checked).toBe(true);
+      expect(subItem1.props().checked).toBe(false);
+      expect(subItem2.props().checked).toBe(true);
       expect(props.setFilter.calls.argsFor(0)[0].g1.toJS()).toEqual(['g1t2']);
     });
 
@@ -194,34 +200,29 @@ describe('ConnectionsGroup', () => {
     });
   });
 
-  describe('componentWillReceiveProps', () => {
+  describe('component update props', () => {
     beforeEach(() => {
       render();
-      spyOn(instance, 'setState');
     });
 
     it('should unselect all options if filters is empty', () => {
-      instance.componentWillReceiveProps({
+      component.setProps({
         filters: Immutable({}),
-        group: Immutable({ templates: [] }),
+        group: Immutable({ templates: [], context: 'oneContext' }),
       });
-      expect(instance.setState.calls.mostRecent().args[0].selected).toBe(false);
-      expect(instance.setState.calls.mostRecent().args[0].selectedItems.toJS()).toEqual([]);
+      expect(component.state().selected).toBe(false);
+      expect(component.state().selectedItems.toJS()).toEqual([]);
     });
 
     it('should set selected False if there is more templates in new props', () => {
-      instance.componentWillReceiveProps({
+      component.setProps({
         filters: Immutable({ a: 3 }),
-        group: Immutable({ templates: [1, 2, 3] }),
+        group: Immutable({
+          templates: [{ _id: 1 }, { _id: 2 }, { _id: 3 }],
+          context: 'oneContext',
+        }),
       });
-      expect(instance.setState.calls.mostRecent().args[0].selected).toBe(false);
-    });
-  });
-
-  describe('mapStateToProps', () => {
-    it('should map relationships.list.filters', () => {
-      const state = { relationships: { list: { filters: { a: 'b' } } } };
-      expect(mapStateToProps(state).filters).toBe(state.relationships.list.filters);
+      expect(component.state().selected).toBe(false);
     });
   });
 });
