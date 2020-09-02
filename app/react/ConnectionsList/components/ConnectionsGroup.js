@@ -82,11 +82,11 @@ export class ConnectionsGroup extends Component {
       : Immutable([]);
 
     this.setGroupFilter(selectedItems);
-    this.setState({ selected: !this.state.selected, selectedItems });
+    this.setState(currentState => ({ selected: !currentState.selected, selectedItems }));
   }
 
   toggleExpandGroup() {
-    this.setState({ expanded: !this.state.expanded });
+    this.setState(currentState => ({ expanded: !currentState.expanded }));
   }
 
   render() {
