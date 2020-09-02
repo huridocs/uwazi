@@ -174,8 +174,8 @@ describe('DocumentsList', () => {
     it('should bind to the loadMoreDocuments with onEndScroll', () => {
       render();
       const data = component.find(TableViewer).props();
-      data.onEndScroll(30, 10);
-      expect(props.loadMoreDocuments).toHaveBeenCalledWith('library', 30, 10);
+      data.onEndScroll();
+      expect(props.loadMoreDocuments).toHaveBeenCalledWith('library', 30, 2);
     });
   });
 });

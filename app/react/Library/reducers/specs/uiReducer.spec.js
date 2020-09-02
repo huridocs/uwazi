@@ -230,6 +230,16 @@ describe('uiReducer', () => {
   });
 
   describe('SET_TABLE_VIEW_COLUMNS', () => {
+    describe('if new columns is an empty array', () => {
+      it('should not update state ', () => {
+        const previousState = Immutable.fromJS({ tableViewColumns: [{ name: 'column1' }] });
+        const newState = uiReducer(previousState, {
+          type: types.SET_TABLE_VIEW_COLUMNS,
+          columns: [],
+        });
+        expect(newState).toEqual(previousState);
+      });
+    });
     describe('when there are no columns in initial state', () => {
       const columns = [
         {

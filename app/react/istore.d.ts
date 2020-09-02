@@ -73,6 +73,7 @@ interface EntityDisplayState {
     quickLabelMetadata: QuickLabelMetadata;
     quickLabelMetadataForm: any;
   };
+  search: any;
 }
 
 export interface IStore {

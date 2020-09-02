@@ -1,16 +1,13 @@
-import React from 'react';
-import { shallow, ShallowWrapper } from 'enzyme';
 import Immutable from 'immutable';
 
 import Doc from 'app/Library/components/Doc';
-
 import { TilesViewer } from 'app/Layout/TilesViewer';
+import { renderConnected } from 'app/Templates/specs/utils/renderConnected';
 
 import { RowList } from '../Lists';
-import { CollectionViewerProps } from '../CollectionViewerProps';
 
 describe('TilesViewer', () => {
-  let component: ShallowWrapper<CollectionViewerProps, {}, TilesViewer>;
+  let component: any;
   let props: any;
   const documents = Immutable.fromJS({
     rows: [
@@ -20,20 +17,20 @@ describe('TilesViewer', () => {
     totalRows: 10,
   });
 
+  const storeState = { library: { documents, search: { sort: 'sort' } } };
+
   beforeEach(() => {
     props = {
       rowListZoomLevel: 0,
-      documents,
       storeKey: 'library',
       clickOnDocument: { apply: jasmine.createSpy('clickOnDocumentApply') },
       onSnippetClick: jasmine.createSpy('onSnippetClick'),
       deleteConnection: () => {},
-      search: { sort: 'sort' },
     };
   });
 
   const render = () => {
-    component = shallow(<TilesViewer {...props} />);
+    component = renderConnected(TilesViewer, props, storeState);
   };
 
   describe('Tiles viewer', () => {

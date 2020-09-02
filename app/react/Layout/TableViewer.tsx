@@ -2,9 +2,9 @@ import React, { Component } from 'react';
 import { createSelector } from 'reselect';
 
 import { connect } from 'react-redux';
-import { TableRow } from 'app/Library/components/TableRow';
 import { EntityDisplayState, IStore, TableViewColumn } from 'app/istore';
 import { Translate } from 'app/I18N';
+import { TableRows } from 'app/Layout/TableRows';
 import { CollectionViewerProps } from './CollectionViewerProps';
 
 export interface TableViewerProps extends CollectionViewerProps {
@@ -12,24 +12,10 @@ export interface TableViewerProps extends CollectionViewerProps {
 }
 
 class TableViewerComponent extends Component<TableViewerProps> {
-  shouldComponentUpdate(nextProps: TableViewerProps) {
-    const nextHiddenCount = nextProps.columns.filter((c: TableViewColumn) => !c.hidden).length;
-    const currentHiddenCount = this.props.columns.filter((c: TableViewColumn) => !c.hidden).length;
-    const nextEntityCount = nextProps.documents.get('rows').count();
-    const currentEntityCount = this.props.documents.get('rows').count();
-    const noColumns = nextProps.columns.length === 0;
-    return (
-      !noColumns &&
-      (nextHiddenCount !== currentHiddenCount || nextEntityCount !== currentEntityCount)
-    );
-  }
-
   handleScroll = (e: { target: any }) => {
-    const DEFAULT_PAGE_SIZE = 30;
     const element = e.target;
     if (element.scrollHeight - element.scrollTop === element.clientHeight) {
-      const from: number = this.props.documents.get('rows').size;
-      this.props.onEndScroll(DEFAULT_PAGE_SIZE, from);
+      this.props.onEndScroll();
     }
   };
 
@@ -50,18 +36,14 @@ class TableViewerComponent extends Component<TableViewerProps> {
             </tr>
           </thead>
           <tbody>
-            {this.props.documents.get('rows').map((entity: any) => (
-              <TableRow
-                {...{
-                  entity,
-                  columns,
-                  key: entity.get('_id'),
-                  clickOnDocument: this.props.clickOnDocument,
-                  storeKey: this.props.storeKey,
-                  zoomLevel: this.props.rowListZoomLevel,
-                }}
-              />
-            ))}
+            <TableRows
+              {...{
+                columns,
+                clickOnDocument: this.props.clickOnDocument,
+                storeKey: this.props.storeKey,
+                onEndScroll: this.props.onEndScroll,
+              }}
+            />
           </tbody>
         </table>
       </div>

@@ -2,12 +2,10 @@ import Immutable from 'immutable';
 
 import { renderConnected } from 'app/Templates/specs/utils/renderConnected';
 import { TableViewer } from 'app/Layout/TableViewer';
-import { TableRow } from 'app/Library/components/TableRow';
 import { Translate } from 'app/I18N';
 
 describe('TableViewer', () => {
   let component: any;
-  let instance: any;
   const rows = [
     { _id: 'entity1ID', title: 'entity1' },
     { _id: 'entity2ID', title: 'entity2' },
@@ -45,35 +43,7 @@ describe('TableViewer', () => {
 
   function render() {
     component = renderConnected(TableViewer, props, storeState);
-    instance = component.instance();
   }
-
-  describe('shouldComponentUpdate', () => {
-    it('should update only if there are columns available', () => {
-      storeState.library.ui.set('tableViewColumns', []);
-      render();
-      const nextPropsNewColumns = { ...props, columns: [columnList[0]] };
-      expect(instance.shouldComponentUpdate(nextPropsNewColumns)).toBe(true);
-      const nextPropsEmptyColumns = { ...props, columns: [] };
-      expect(instance.shouldComponentUpdate(nextPropsEmptyColumns)).toBe(false);
-    });
-
-    it('should update if the number of rows has changed', () => {
-      render();
-      const allColumnsHidden = columnList.map(c => ({ ...c, hidden: false }));
-      const nextProps = { ...props, columns: allColumnsHidden };
-      expect(instance.shouldComponentUpdate(nextProps)).toBe(true);
-    });
-
-    it('should update if the number of hidden columns has changed', () => {
-      render();
-      const nextPropsNewColumns = { ...props, columns: columnList };
-      expect(instance.shouldComponentUpdate(nextPropsNewColumns)).toBe(false);
-      const newRows = [...rows, { _id: 'entity4ID', title: 'entity4' }];
-      const nextProps = { ...nextPropsNewColumns, documents: Immutable.fromJS({ rows: newRows }) };
-      expect(instance.shouldComponentUpdate(nextProps)).toBe(true);
-    });
-  });
 
   describe('table header', () => {
     render();
@@ -96,28 +66,6 @@ describe('TableViewer', () => {
     });
   });
 
-  describe('table body', () => {
-    render();
-    it('should display a table row for each document listed', () => {
-      const row = component.find(TableRow);
-      expect(row.length).toBe(3);
-    });
-    it('should pass to each row the columns and the document', () => {
-      const row = component.find(TableRow);
-      const columnsToShow = [
-        { name: 'date', label: 'Date', hidden: false },
-        { name: 'country', label: 'Country', hidden: false },
-      ];
-      expect(row.at(0).props()).toEqual({
-        entity: documents.get('rows').get(0),
-        columns: columnsToShow,
-        storeKey: props.storeKey,
-        clickOnDocument: props.clickOnDocument,
-        zoomLevel: 2,
-      });
-    });
-  });
-
   describe('infinite scroll', () => {
     render();
 
@@ -126,7 +74,7 @@ describe('TableViewer', () => {
       tableWrapper
         .props()
         .onScroll({ target: { scrollHeight: 1204, scrollTop: 406, clientHeight: 798 } });
-      expect(onEndScroll).toHaveBeenCalledWith(30, rows.length);
+      expect(onEndScroll).toHaveBeenCalled();
     });
 
     it('should shoud not call onEndScroll if scrolling do not reach the end of content', () => {

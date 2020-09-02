@@ -123,6 +123,9 @@ export default function ui(state = initialState, action = {}) {
   }
 
   if (action.type === types.SET_TABLE_VIEW_COLUMNS) {
+    if (action.columns.length === 0) {
+      return state;
+    }
     const columnsWithSelection = action.columns.map(column => {
       const previousColumnState = state
         .get('tableViewColumns')

@@ -18,7 +18,7 @@ class DocumentsList extends Component {
     this.state = { loading: false };
     this.clickOnDocument = this.clickOnDocument.bind(this);
     this.selectAllDocuments = this.selectAllDocuments.bind(this);
-    this.loadMoreDocuments = this.loadMoreDocuments.bind(this);
+    this.onEndScroll = this.onEndScroll.bind(this);
   }
 
   componentWillReceiveProps() {
@@ -39,6 +39,14 @@ class DocumentsList extends Component {
   clickOnDocument(...args) {
     if (this.props.clickOnDocument) {
       this.props.clickOnDocument.apply(this, args);
+    }
+  }
+
+  onEndScroll() {
+    const from = this.props.documents.get('rows').size;
+    const DEFAULT_PAGE_SIZE = 30;
+    if (from) {
+      this.loadMoreDocuments(DEFAULT_PAGE_SIZE, from);
     }
   }
 
@@ -146,13 +154,11 @@ class DocumentsList extends Component {
                 <CollectionViewer
                   {...{
                     rowListZoomLevel,
-                    documents,
                     storeKey: this.props.storeKey,
                     clickOnDocument: this.clickOnDocument,
                     onSnippetClick: this.props.onSnippetClick,
                     deleteConnection: this.props.deleteConnection,
-                    search: this.props.search,
-                    onEndScroll: this.loadMoreDocuments,
+                    onEndScroll: this.onEndScroll,
                   }}
                 />
               );
