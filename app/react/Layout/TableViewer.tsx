@@ -69,8 +69,8 @@ class TableViewerComponent extends Component<TableViewerProps> {
   }
 }
 
-const getTableViewSelector = (state: EntityDisplayState) => state.ui.get('tableViewColumns');
-export const selectTableViewColumns = createSelector(getTableViewSelector, columns =>
+const getTableViewColumnsSelector = (state: EntityDisplayState) => state.ui.get('tableViewColumns');
+export const selectTableViewColumns = createSelector(getTableViewColumnsSelector, columns =>
   columns?.toJS()
 );
 
