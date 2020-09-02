@@ -7,6 +7,7 @@ import { Translate } from 'app/I18N';
 
 describe('TableViewer', () => {
   let component: any;
+  let instance: any;
   const rows = [
     { _id: 'entity1ID', title: 'entity1' },
     { _id: 'entity2ID', title: 'entity2' },
@@ -15,11 +16,13 @@ describe('TableViewer', () => {
   const documents = Immutable.fromJS({
     rows,
   });
-  const columns = Immutable.fromJS([
+
+  const columnList = [
     { name: 'date', label: 'Date', hidden: false },
     { name: 'city', label: 'City', hidden: true },
     { name: 'country', label: 'Country', hidden: false },
-  ]);
+  ];
+  const columns = Immutable.fromJS(columnList);
   const onEndScroll = jasmine.createSpy('onEndScroll');
   const props = {
     documents,
@@ -30,20 +33,47 @@ describe('TableViewer', () => {
   };
   const templates = Immutable.fromJS([{ _id: 'idTemplate1' }]);
   const thesauris = Immutable.fromJS([{ _id: 'thesaurus1' }]);
+  const storeState = {
+    library: {
+      ui: Immutable.fromJS({
+        tableViewColumns: columns,
+      }),
+    },
+    templates,
+    thesauris,
+  };
 
   function render() {
-    const storeState = {
-      library: {
-        ui: Immutable.fromJS({
-          tableViewColumns: columns,
-        }),
-      },
-      templates,
-      thesauris,
-    };
-
     component = renderConnected(TableViewer, props, storeState);
+    instance = component.instance();
   }
+
+  describe('shouldComponentUpdate', () => {
+    it('should update only if there are columns available', () => {
+      storeState.library.ui.set('tableViewColumns', []);
+      render();
+      const nextPropsNewColumns = { ...props, columns: [columnList[0]] };
+      expect(instance.shouldComponentUpdate(nextPropsNewColumns)).toBe(true);
+      const nextPropsEmptyColumns = { ...props, columns: [] };
+      expect(instance.shouldComponentUpdate(nextPropsEmptyColumns)).toBe(false);
+    });
+
+    it('should update if the number of rows has changed', () => {
+      render();
+      const allColumnsHidden = columnList.map(c => ({ ...c, hidden: false }));
+      const nextProps = { ...props, columns: allColumnsHidden };
+      expect(instance.shouldComponentUpdate(nextProps)).toBe(true);
+    });
+
+    it('should update if the number of hidden columns has changed', () => {
+      render();
+      const nextPropsNewColumns = { ...props, columns: columnList };
+      expect(instance.shouldComponentUpdate(nextPropsNewColumns)).toBe(false);
+      const newRows = [...rows, { _id: 'entity4ID', title: 'entity4' }];
+      const nextProps = { ...nextPropsNewColumns, documents: Immutable.fromJS({ rows: newRows }) };
+      expect(instance.shouldComponentUpdate(nextProps)).toBe(true);
+    });
+  });
 
   describe('table header', () => {
     render();

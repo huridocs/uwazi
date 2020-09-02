@@ -35,7 +35,7 @@ describe('DocumentsList', () => {
       searchDocuments: () => {},
       deleteConnection: () => {},
       location: { query: { q: '', pathname: 'library/' } },
-      selectedDocuments: [],
+      selectedDocuments: {},
     };
   });
 

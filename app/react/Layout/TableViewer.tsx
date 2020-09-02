@@ -1,18 +1,29 @@
 import React, { Component } from 'react';
+import { createSelector } from 'reselect';
 
 import { connect } from 'react-redux';
-import { List } from 'immutable';
-import { IImmutable } from 'shared/types/Immutable';
 import { TableRow } from 'app/Library/components/TableRow';
-import { IStore, TableViewColumn } from 'app/istore';
+import { EntityDisplayState, IStore, TableViewColumn } from 'app/istore';
 import { Translate } from 'app/I18N';
 import { CollectionViewerProps } from './CollectionViewerProps';
 
 export interface TableViewerProps extends CollectionViewerProps {
-  columns: List<IImmutable<TableViewColumn>>;
+  columns: TableViewColumn[];
 }
 
 class TableViewerComponent extends Component<TableViewerProps> {
+  shouldComponentUpdate(nextProps: TableViewerProps) {
+    const nextHiddenCount = nextProps.columns.filter((c: TableViewColumn) => !c.hidden).length;
+    const currentHiddenCount = this.props.columns.filter((c: TableViewColumn) => !c.hidden).length;
+    const nextEntityCount = nextProps.documents.get('rows').count();
+    const currentEntityCount = this.props.documents.get('rows').count();
+    const noColumns = nextProps.columns.length === 0;
+    return (
+      !noColumns &&
+      (nextHiddenCount !== currentHiddenCount || nextEntityCount !== currentEntityCount)
+    );
+  }
+
   handleScroll = (e: { target: any }) => {
     const DEFAULT_PAGE_SIZE = 30;
     const element = e.target;
@@ -23,7 +34,7 @@ class TableViewerComponent extends Component<TableViewerProps> {
   };
 
   render() {
-    const columns = this.props.columns.toJS().filter((c: TableViewColumn) => !c.hidden);
+    const columns = this.props.columns.filter((c: TableViewColumn) => !c.hidden);
     return (
       <div className="tableview-wrapper" onScroll={this.handleScroll}>
         <table>
@@ -58,11 +69,13 @@ class TableViewerComponent extends Component<TableViewerProps> {
   }
 }
 
-const mapStateToProps = (state: IStore, props: TableViewerProps) => {
-  const tableViewColumns = state[props.storeKey].ui.get('tableViewColumns');
-  return {
-    columns: tableViewColumns,
-  };
-};
+const getTableViewSelector = (state: EntityDisplayState) => state.ui.get('tableViewColumns');
+export const selectTableViewColumns = createSelector(getTableViewSelector, columns =>
+  columns?.toJS()
+);
+
+const mapStateToProps = (state: IStore, props: TableViewerProps) => ({
+  columns: selectTableViewColumns(state[props.storeKey]),
+});
 
 export const TableViewer = connect(mapStateToProps)(TableViewerComponent);

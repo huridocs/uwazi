@@ -206,7 +206,7 @@ DocumentsList.defaultProps = {
   SearchBar,
   rowListZoomLevel: 0,
   CollectionViewer: TilesViewer,
-  selectedDocuments: [],
+  selectedDocuments: {},
 };
 
 DocumentsList.propTypes = {
@@ -214,7 +214,7 @@ DocumentsList.propTypes = {
   connections: PropTypes.object,
   filters: PropTypes.object,
   thesauri: PropTypes.object,
-  selectedDocuments: PropTypes.arrayOf(Object),
+  selectedDocuments: PropTypes.instanceOf(Object),
   SearchBar: PropTypes.func,
   ActionButtons: PropTypes.func,
   GraphView: PropTypes.func,
