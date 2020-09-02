@@ -225,11 +225,4 @@ describe('ConnectionsGroup', () => {
       expect(component.state().selected).toBe(false);
     });
   });
-
-  describe('mapStateToProps', () => {
-    it('should map relationships.list.filters', () => {
-      const state = { relationships: { list: { filters: { a: 'b' } } } };
-      expect(mapStateToProps(state).filters).toBe(state.relationships.list.filters);
-    });
-  });
 });
