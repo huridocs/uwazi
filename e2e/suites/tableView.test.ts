@@ -3,7 +3,7 @@
 import { host } from '../config';
 import proxyMock from '../helpers/proxyMock';
 import insertFixtures from '../helpers/insertFixtures';
-import { adminLogin } from '../helpers/login';
+import { adminLogin, logout } from '../helpers/login';
 
 describe('Table view', () => {
   beforeAll(async () => {
@@ -88,5 +88,9 @@ describe('Table view', () => {
       const rowsNumber = await page.$$eval(rowSelector, rows => rows.length);
       expect(rowsNumber).toBe(60);
     });
+  });
+
+  afterAll(async () => {
+    await logout();
   });
 });
