@@ -91,7 +91,7 @@ describe('LookupMultiSelect', () => {
     });
   });
 
-  describe('componentWillReceiveProps', () => {
+  describe('component update props', () => {
     it('should update the totalPossibleOptions in the state', () => {
       render();
 

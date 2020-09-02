@@ -28,7 +28,7 @@ describe('NavlinksSettings', () => {
     component = shallow(<NavlinksSettings {...props} />);
   });
 
-  describe('componentWillMount', () => {
+  describe('componentDidMount', () => {
     it('should call on loadLinks with collection links', () => {
       expect(props.loadLinks).toHaveBeenCalledWith([{ localID: 'existingLink' }]);
     });

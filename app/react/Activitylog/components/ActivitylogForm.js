@@ -71,7 +71,7 @@ class ActivitylogForm extends Component {
                 className="form-control"
                 model=".time"
                 id="time"
-                format="YYYY-MM-DD"
+                format="yyyy-MM-dd"
                 useTimezone
               />
             </div>
