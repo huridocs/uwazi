@@ -139,7 +139,6 @@ export class ConnectionsGroup extends Component {
 ConnectionsGroup.propTypes = {
   group: PropTypes.object,
   setFilter: PropTypes.func,
-  filters: PropTypes.object,
 };
 
 export const mapDispatchToProps = dispatch =>
