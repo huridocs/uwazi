@@ -12,24 +12,14 @@ import { setFilter } from '../actions/actions';
 
 export class ConnectionsGroup extends Component {
   static getDerivedStateFromProps(props, state) {
-    if (props.filters !== state.filters && !props.filters.size) {
-      return {
-        selected: false,
-        selectedItems: state.selectedItems,
-        groupTemplates: props.group.get('templates'),
-        filters: props.filters,
-      };
-    }
-
     if (props.group.get('templates').size > state.groupTemplates.size) {
       return {
         selected: false,
         groupTemplates: props.group.get('templates'),
-        filters: props.filters,
       };
     }
 
-    return { groupTemplates: props.group.get('templates'), filters: props.filters };
+    return { groupTemplates: props.group.get('templates') };
   }
 
   constructor(props) {
@@ -152,8 +142,6 @@ ConnectionsGroup.propTypes = {
   filters: PropTypes.object,
 };
 
-export const mapStateToProps = ({ relationships }) => ({ filters: relationships.list.filters });
-
 export const mapDispatchToProps = dispatch =>
   bindActionCreators(
     {
@@ -162,4 +150,4 @@ export const mapDispatchToProps = dispatch =>
     dispatch
   );
 
-export default connect(mapStateToProps, mapDispatchToProps)(ConnectionsGroup);
+export default connect(null, mapDispatchToProps)(ConnectionsGroup);
