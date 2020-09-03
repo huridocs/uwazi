@@ -1,12 +1,14 @@
 import RouteHandler from 'app/App/RouteHandler';
 import React from 'react';
+import api from 'app/utils/api';
 
 export class Conversion extends RouteHandler {
   constructor(props, context) {
     super(props, context);
     this.state = {
-      value: '',
-      output: '',
+      // eslint-disable-next-line max-len
+      value: '{originalname:"1597396476373xejyuuzweie.pdf"}',
+      absolutePosition: '',
     };
 
     this.handleChange = this.handleChange.bind(this);
@@ -21,9 +23,12 @@ export class Conversion extends RouteHandler {
     event.preventDefault();
     try {
       const entityJson = JSON.parse(this.state.value);
-      this.setState({ output: entityJson.originalname });
+      this.setState({ absolutePosition: entityJson.originalname });
+      const url = 'pdf_character_count_to_absolute/pdf_character_count_to_absolute';
+      const absolutePosition = api.get(url, {}).then(response => response.json);
+      this.setState({ absolutePosition: absolutePosition });
     } catch (error) {
-      this.setState({ output: 'Invalid entity' });
+      this.setState({ absolutePosition: 'Invalid entity' });
     }
   }
 
@@ -42,7 +47,7 @@ export class Conversion extends RouteHandler {
           />
         </div>
         <input type="submit" value="Convert" />
-        <div>{this.state.output}</div>
+        <div>{this.state.absolutePosition}</div>
       </form>
     );
   }

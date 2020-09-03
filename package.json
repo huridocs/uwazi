@@ -204,6 +204,7 @@
     "winston": "3.0.0",
     "world-countries": "2.0.0",
     "wrap-range-text": "^1.0.1",
+    "xml-js": "^1.6.11",
     "yauzl": "^2.10.0",
     "yazl": "^2.5.1"
   },
