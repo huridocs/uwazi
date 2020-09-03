@@ -18,7 +18,7 @@ class DocumentsList extends Component {
     this.state = { loading: false };
     this.clickOnDocument = this.clickOnDocument.bind(this);
     this.selectAllDocuments = this.selectAllDocuments.bind(this);
-    this.onEndScroll = this.onEndScroll.bind(this);
+    this.loadNextGroupOfEntities = this.loadNextGroupOfEntities.bind(this);
   }
 
   componentWillReceiveProps() {
@@ -42,7 +42,7 @@ class DocumentsList extends Component {
     }
   }
 
-  onEndScroll() {
+  loadNextGroupOfEntities() {
     const from = this.props.documents.get('rows').size;
     const DEFAULT_PAGE_SIZE = 30;
     if (from) {
@@ -83,6 +83,7 @@ class DocumentsList extends Component {
       connectionsGroups,
       LoadMoreButton,
       rowListZoomLevel,
+      CollectionViewer,
     } = this.props;
 
     let counter = (
@@ -149,7 +150,6 @@ class DocumentsList extends Component {
           </div>
           {(() => {
             if (view !== 'graph') {
-              const { CollectionViewer } = this.props;
               return (
                 <CollectionViewer
                   {...{
@@ -158,7 +158,7 @@ class DocumentsList extends Component {
                     clickOnDocument: this.clickOnDocument,
                     onSnippetClick: this.props.onSnippetClick,
                     deleteConnection: this.props.deleteConnection,
-                    onEndScroll: this.onEndScroll,
+                    onEndScroll: this.loadNextGroupOfEntities,
                   }}
                 />
               );

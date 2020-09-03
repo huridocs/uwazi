@@ -11,7 +11,6 @@ interface TableRowsProps {
   columns: TableViewColumn[];
   storeKey: 'library' | 'uploads';
   clickOnDocument: (e: React.SyntheticEvent, doc: EntitySchema, active: boolean) => any;
-  onEndScroll: (amount: number, from: number) => void;
   documents: IImmutable<{ rows: EntitySchema[] }>;
   rowListZoomLevel: number;
 }
@@ -25,8 +24,6 @@ class TableRowsComponent extends Component<TableRowsProps> {
   static defaultProps = defaultProps;
 
   render() {
-    console.log('render rows');
-
     return (
       <>
         {this.props.documents.get('rows').map((entity: any) => (

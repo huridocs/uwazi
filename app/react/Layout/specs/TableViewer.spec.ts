@@ -6,15 +6,6 @@ import { Translate } from 'app/I18N';
 
 describe('TableViewer', () => {
   let component: any;
-  const rows = [
-    { _id: 'entity1ID', title: 'entity1' },
-    { _id: 'entity2ID', title: 'entity2' },
-    { _id: 'entity3ID', title: 'entity3' },
-  ];
-  const documents = Immutable.fromJS({
-    rows,
-  });
-
   const columnList = [
     { name: 'date', label: 'Date', hidden: false },
     { name: 'city', label: 'City', hidden: true },
@@ -23,22 +14,15 @@ describe('TableViewer', () => {
   const columns = Immutable.fromJS(columnList);
   const onEndScroll = jasmine.createSpy('onEndScroll');
   const props = {
-    documents,
     storeKey: 'library',
-    clickOnDocument: jasmine.createSpy('clickOnDocumentApply'),
     onEndScroll,
-    rowListZoomLevel: 2,
   };
-  const templates = Immutable.fromJS([{ _id: 'idTemplate1' }]);
-  const thesauris = Immutable.fromJS([{ _id: 'thesaurus1' }]);
   const storeState = {
     library: {
       ui: Immutable.fromJS({
         tableViewColumns: columns,
       }),
     },
-    templates,
-    thesauris,
   };
 
   function render() {

@@ -85,10 +85,8 @@ describe('Table view', () => {
       const lastRowSelector = '.tableview-wrapper > table > tbody > tr:last-child';
       await page.$$eval(lastRowSelector, el => el[0].scrollIntoView());
       await page.waitFor(300);
-      await page.$$eval(lastRowSelector, el => el[0].scrollIntoView());
-      await page.waitFor(300);
       const rowsNumber = await page.$$eval(rowSelector, rows => rows.length);
-      expect(rowsNumber).toBeGreaterThan(30);
+      expect(rowsNumber).toBe(60);
     });
   });
 
