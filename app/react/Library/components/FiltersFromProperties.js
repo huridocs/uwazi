@@ -32,7 +32,7 @@ export const FiltersFromProperties = ({
       const propertyOptions = property.options
         ? property.options.map(option => ({
             ...option,
-            label: t(property.content, option.label),
+            label: t(property.content, option.label, undefined, false),
           }))
         : [];
 

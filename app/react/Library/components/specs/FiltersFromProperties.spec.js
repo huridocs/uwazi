@@ -110,8 +110,10 @@ describe('FiltersFromProperties', () => {
       props.translationContext = 'oneContext';
       t.mockImplementation(() => 'translatedOption');
       const component = shallow(<FiltersFromProperties {...props} />).find(SelectFilter);
-      expect(t).toHaveBeenCalledWith('thesaurus1', 'option1');
-      expect(t).toHaveBeenCalledWith('thesaurus2', 'option2');
+      const _text = undefined;
+      const returnComponent = false;
+      expect(t).toHaveBeenCalledWith('thesaurus1', 'option1', _text, returnComponent);
+      expect(t).toHaveBeenCalledWith('thesaurus2', 'option2', _text, returnComponent);
       expect(component.get(0).props.options[0].label).toBe('translatedOption');
       expect(component.get(1).props.options[0].label).toBe('translatedOption');
     });
