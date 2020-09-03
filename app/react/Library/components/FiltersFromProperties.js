@@ -53,21 +53,7 @@ export const FiltersFromProperties = ({
         filter = <NumberRangeFilter {...commonProps} />;
       }
 
-      if (property.type === 'select' || property.type === 'multiselect') {
-        filter = (
-          <SelectFilter
-            {...commonProps}
-            lookup={getAggregationSuggestions.bind(null, storeKey, property.name)}
-            options={propertyOptions}
-            prefix={property.name}
-            showBoolSwitch={property.type === 'multiselect' || property.type === 'relationship'}
-            sort={property.type === 'relationship'}
-            totalPossibleOptions={property.totalPossibleOptions}
-          />
-        );
-      }
-
-      if (property.type === 'relationship') {
+      if (['select', 'multiselect', 'relationship'].includes(property.type)) {
         filter = (
           <SelectFilter
             {...commonProps}
