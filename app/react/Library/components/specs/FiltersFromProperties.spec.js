@@ -21,6 +21,7 @@ describe('FiltersFromProperties', () => {
   let props = {};
 
   beforeEach(() => {
+    t.mockImplementation((_context, label) => label);
     const state = {
       settings: { collection: Immutable.fromJS({ dateFormat: 'dateFormat' }) },
       library: { aggregations: Immutable.fromJS({ aggregations: 'aggregations' }) },
