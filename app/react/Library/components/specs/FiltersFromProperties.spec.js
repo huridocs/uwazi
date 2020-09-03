@@ -3,12 +3,19 @@ import React from 'react';
 
 import { shallow } from 'enzyme';
 
+import { t } from 'app/I18N';
 import { FiltersFromProperties, mapStateToProps } from '../FiltersFromProperties';
 import DateFilter from '../DateFilter';
 import NestedFilter from '../NestedFilter';
 import NumberRangeFilter from '../NumberRangeFilter';
 import SelectFilter from '../SelectFilter';
 import TextFilter from '../TextFilter';
+
+jest.mock('app/I18N', () => ({
+  __esModule: true,
+  t: jest.fn(),
+  default: jest.fn(),
+}));
 
 describe('FiltersFromProperties', () => {
   let props = {};
@@ -80,6 +87,32 @@ describe('FiltersFromProperties', () => {
 
       const component = shallow(<FiltersFromProperties {...props} />).find(SelectFilter);
       expect(component).toMatchSnapshot();
+    });
+
+    it('should translate the options of filter with thesaurus', () => {
+      props.properties = [
+        {
+          content: 'thesaurus1',
+          name: 'selectFilter',
+          label: 'selectLabel',
+          type: 'select',
+          options: [{ label: 'option1' }],
+        },
+        {
+          content: 'thesaurus2',
+          name: 'relationshipFilter',
+          label: 'relationshipLabel',
+          type: 'relationship',
+          options: [{ label: 'option2' }],
+        },
+      ];
+      props.translationContext = 'oneContext';
+      t.mockImplementation(() => 'translatedOption');
+      const component = shallow(<FiltersFromProperties {...props} />).find(SelectFilter);
+      expect(t).toHaveBeenCalledWith('thesaurus1', 'option1');
+      expect(t).toHaveBeenCalledWith('thesaurus2', 'option2');
+      expect(component.get(0).props.options[0].label).toBe('translatedOption');
+      expect(component.get(1).props.options[0].label).toBe('translatedOption');
     });
   });
 

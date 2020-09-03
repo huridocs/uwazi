@@ -5,14 +5,13 @@ import React from 'react';
 
 import { t } from 'app/I18N';
 import FormGroup from 'app/DocumentForm/components/FormGroup';
-
+import { getAggregationSuggestions } from 'app/Library/actions/libraryActions';
 import DateFilter from './DateFilter';
 import NestedFilter from './NestedFilter';
 import NumberRangeFilter from './NumberRangeFilter';
 import SelectFilter from './SelectFilter';
 import TextFilter from './TextFilter';
 import RelationshipFilter from './RelationshipFilter';
-import { getAggregationSuggestions } from 'app/Library/actions/libraryActions';
 
 export const FiltersFromProperties = ({
   onChange,
@@ -29,6 +28,13 @@ export const FiltersFromProperties = ({
         label: t(translationContext, property.label),
         onChange,
       };
+
+      const propertyOptions = property.options
+        ? property.options.map(option => ({
+            ...option,
+            label: t(property.content, option.label),
+          }))
+        : [];
 
       let filter = <TextFilter {...commonProps} />;
 
@@ -52,7 +58,7 @@ export const FiltersFromProperties = ({
           <SelectFilter
             {...commonProps}
             lookup={getAggregationSuggestions.bind(null, storeKey, property.name)}
-            options={property.options}
+            options={propertyOptions}
             prefix={property.name}
             showBoolSwitch={property.type === 'multiselect' || property.type === 'relationship'}
             sort={property.type === 'relationship'}
@@ -66,7 +72,7 @@ export const FiltersFromProperties = ({
           <SelectFilter
             {...commonProps}
             lookup={getAggregationSuggestions.bind(null, storeKey, property.name)}
-            options={property.options}
+            options={propertyOptions}
             prefix={property.name}
             showBoolSwitch={property.type === 'multiselect' || property.type === 'relationship'}
             sort={property.type === 'relationship'}
