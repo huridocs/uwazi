@@ -96,7 +96,7 @@
     "@types/react-tabs-redux": "^4.0.0",
     "@types/socket.io": "^2.1.4",
     "@types/webpack-env": "^1.15.1",
-    "@types/yargs-parser": "^13.0.0",
+    "@types/yargs-parser": "15.0.0",
     "ajv": "^6.12.3",
     "ajv-keywords": "^3.4.1",
     "async": "^2.6.1",
@@ -288,7 +288,7 @@
     "webpack-cli": "^3.3.11",
     "webpack-dev-middleware": "3.7.2",
     "webpack-hot-middleware": "^2.25.0",
-    "yargs": "^13.2.2"
+    "yargs": "15.4.1"
   },
   "resolutions": {
     "callsites": "3.1.0",
