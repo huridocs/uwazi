@@ -3,7 +3,7 @@
 process.env.NODE_ENV = 'production';
 var webpack = require('webpack');
 var OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
-const UglifyJSPlugin = require('uglifyjs-webpack-plugin')
+const TerserWebpackPlugin = require('terser-webpack-plugin')
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 
 var production = true;
@@ -22,18 +22,22 @@ config.module.rules.push({
   loader: "country-loader"
 })
 config.plugins = config.plugins.concat([
-  new CopyWebpackPlugin([
-    { from: "node_modules/react-flags/vendor/flags", to: "flags" }
-  ]),
+  new CopyWebpackPlugin({
+    patterns: [
+      { from: 'node_modules/react-flags/vendor/flags', to: 'flags' }
+    ]
+  }),
   new webpack.optimize.OccurrenceOrderPlugin(),
   new OptimizeCssAssetsPlugin(),
-  new UglifyJSPlugin({
-    parallel: true,
-    cache: true,
-  }),
   new webpack.optimize.AggressiveMergingPlugin(),
   new webpack.DefinePlugin({ 'process.env': { NODE_ENV: JSON.stringify('production') } })
 ])
+
+config.optimization.minimize = true;
+config.optimization.minimizer = [new TerserWebpackPlugin({
+  cache: true,
+  parallel: true,
+})];
 
 config.performance = {
   hints: "warning",
