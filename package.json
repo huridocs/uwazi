@@ -201,7 +201,6 @@
     "typescript": "^3.7.5",
     "underscore.string": "3.3.5",
     "url-join": "^4.0.0",
-    "validate.js": "0.9.0",
     "winston": "3.0.0",
     "world-countries": "2.0.0",
     "wrap-range-text": "^1.0.1",
