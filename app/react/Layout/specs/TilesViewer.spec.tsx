@@ -23,7 +23,7 @@ describe('TilesViewer', () => {
     props = {
       rowListZoomLevel: 0,
       storeKey: 'library',
-      clickOnDocument: { apply: jasmine.createSpy('clickOnDocumentApply') },
+      clickOnDocument: jasmine.createSpy('clickOnDocument'),
       onSnippetClick: jasmine.createSpy('onSnippetClick'),
       deleteConnection: () => {},
     };
@@ -68,8 +68,7 @@ describe('TilesViewer', () => {
           .find(Doc)
           .at(0)
           .simulate('click', 'e', 'other args');
-        expect(props.clickOnDocument.apply.calls.mostRecent().args[1][0]).toBe('e');
-        expect(props.clickOnDocument.apply.calls.mostRecent().args[1][1]).toBe('other args');
+        expect(props.clickOnDocument).toHaveBeenCalledWith('e', 'other args');
       });
     });
   });

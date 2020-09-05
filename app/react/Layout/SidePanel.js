@@ -7,7 +7,7 @@ export class SidePanel extends Component {
     return (
       <aside
         className={`side-panel ${propsClass} ${this.props.open ? 'is-active' : 'is-hidden'} ${
-          this.props.fixed ? 'table-view-mode' : ''
+          this.props.mode
         } `}
       >
         {this.props.children}
@@ -20,11 +20,11 @@ SidePanel.propTypes = {
   children: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
   className: PropTypes.string,
   open: PropTypes.bool,
-  fixed: PropTypes.bool,
+  mode: PropTypes.string,
 };
 
 SidePanel.defaultProps = {
-  fixed: false,
+  mode: '',
 };
 
 export default SidePanel;

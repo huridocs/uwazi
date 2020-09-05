@@ -8,5 +8,5 @@ export interface CollectionViewerProps {
   clickOnDocument: (e: React.SyntheticEvent, doc: EntitySchema, active: boolean) => any;
   onSnippetClick: () => void;
   deleteConnection: (connection: any) => void;
-  onEndScroll: () => void;
+  loadNextGroupOfEntities: () => void;
 }

@@ -3,7 +3,7 @@
 exports[`QuickLabelPanel should render correctly 1`] = `
 <SidePanel
   className="quick-label"
-  fixed={false}
+  mode=""
   open={true}
 >
   <div

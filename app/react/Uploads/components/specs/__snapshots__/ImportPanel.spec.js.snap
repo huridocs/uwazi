@@ -3,7 +3,7 @@
 exports[`ImportPanel rendering states should render a form 1`] = `
 <SidePanel
   className="metadata-sidepanel"
-  fixed={false}
+  mode=""
   open={true}
 >
   <div
@@ -144,7 +144,7 @@ exports[`ImportPanel rendering states should render a form 1`] = `
 exports[`ImportPanel rendering states when the import starts should render an upload progress 1`] = `
 <SidePanel
   className="metadata-sidepanel"
-  fixed={false}
+  mode=""
   open={true}
 >
   <div
@@ -181,7 +181,7 @@ exports[`ImportPanel rendering states when the import starts should render an up
 exports[`ImportPanel rendering states when the upload starts should render an upload progress 1`] = `
 <SidePanel
   className="metadata-sidepanel"
-  fixed={false}
+  mode=""
   open={true}
 >
   <div

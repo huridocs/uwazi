@@ -15,7 +15,7 @@ class TableViewerComponent extends Component<TableViewerProps> {
   handleScroll = (e: { target: any }) => {
     const element = e.target;
     if (element.scrollHeight - element.scrollTop === element.clientHeight) {
-      this.props.onEndScroll();
+      this.props.loadNextGroupOfEntities();
     }
   };
 
@@ -37,12 +37,9 @@ class TableViewerComponent extends Component<TableViewerProps> {
           </thead>
           <tbody>
             <TableRows
-              {...{
-                columns,
-                clickOnDocument: this.props.clickOnDocument,
-                storeKey: this.props.storeKey,
-                onEndScroll: this.props.onEndScroll,
-              }}
+              columns={columns}
+              clickOnDocument={this.props.clickOnDocument}
+              storeKey={this.props.storeKey}
             />
           </tbody>
         </table>

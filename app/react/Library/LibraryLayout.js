@@ -18,12 +18,10 @@ export class LibraryLayoutBase extends Component {
     if (blankState()) {
       return <Welcome />;
     }
-    const { className, children, quickLabelThesaurus, fixedSidePanels } = this.props;
+    const { className, children, quickLabelThesaurus, sidePanelMode } = this.props;
     const contentDivClass = `${
       quickLabelThesaurus ? 'with-header ' : ''
-    } content-holder library-viewer document-viewer with-panel ${
-      fixedSidePanels ? 'table-view-mode' : ''
-    } `;
+    } content-holder library-viewer document-viewer with-panel ${sidePanelMode} `;
 
     return (
       <div className="row panels-layout">
@@ -31,7 +29,7 @@ export class LibraryLayoutBase extends Component {
         {quickLabelThesaurus && <QuickLabelHeader />}
         <div className={contentDivClass}>
           <main className={`${className}`}>{children}</main>
-          <LibraryFilters storeKey="library" fixed={fixedSidePanels} />
+          <LibraryFilters storeKey="library" sidePanelMode={sidePanelMode} />
           {!quickLabelThesaurus && <ViewMetadataPanel storeKey="library" />}
           {!quickLabelThesaurus && <SelectMultiplePanelContainer storeKey="library" />}
           {quickLabelThesaurus && <QuickLabelPanel storeKey="library" />}
@@ -47,14 +45,14 @@ export class LibraryLayoutBase extends Component {
 LibraryLayoutBase.defaultProps = {
   className: '',
   quickLabelThesaurus: '',
-  fixedSidePanels: false,
+  sidePanelMode: '',
 };
 
 LibraryLayoutBase.propTypes = {
   children: PropTypes.instanceOf(Object).isRequired,
   className: PropTypes.string,
   quickLabelThesaurus: PropTypes.string,
-  fixedSidePanels: PropTypes.bool,
+  sidePanelMode: PropTypes.string,
 };
 
 export default connect(state => ({

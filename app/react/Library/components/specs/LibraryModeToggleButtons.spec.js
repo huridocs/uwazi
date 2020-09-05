@@ -18,6 +18,7 @@ describe('LibraryModeToggleButtons', () => {
     zoomOut: jasmine.createSpy('zoomOut'),
     zoomLevel: 3,
     numberOfMarkers: 23,
+    storeKey: 'library',
   };
 
   const render = () => {
@@ -85,17 +86,17 @@ describe('LibraryModeToggleButtons', () => {
   describe('when showColumnSelector is true', () => {
     it('should render HideColumnsDropdown dropdown list with the storeKey', () => {
       props = defaultProps;
-      props.showColumnSelector = true;
+      props.tableViewMode = true;
       props.storeKey = 'library';
       render();
       const hideColumnsDropdownCount = component.find(HiddenColumnsDropdown);
       expect(hideColumnsDropdownCount.props().storeKey).toBe('library');
     });
   });
-  describe('when showColumnSelector is false', () => {
+  describe('when tableViewMode is false', () => {
     it('should not render HideColumnsDropdown', () => {
       props = defaultProps;
-      props.showColumnSelector = false;
+      props.tableViewMode = false;
       render();
       const hideColumnsDropdownCount = component.find(HiddenColumnsDropdown).length;
       expect(hideColumnsDropdownCount).toBe(0);

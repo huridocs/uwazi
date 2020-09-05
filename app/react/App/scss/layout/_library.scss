@@ -360,10 +360,10 @@ $c11: calc(9.09% - 15px);
     @include disableButton();
   }
 
-  &-0.table-view-mode .zoom-out {
+  &-0.wide-mode .zoom-out {
     @include disableButton();
   }
-  &-2.table-view-mode .zoom-in {
+  &-2.wide-mode .zoom-in {
     @include disableButton();
   }
 }

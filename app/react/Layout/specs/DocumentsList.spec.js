@@ -74,10 +74,6 @@ describe('DocumentsList', () => {
           .type().props.children
       ).toBe('GraphView');
     });
-
-    it('should show the connections count', () => {
-      expect(component.text()).toContain('2 connections');
-    });
   });
 
   it('should render action buttons if passed as props', () => {
@@ -174,7 +170,7 @@ describe('DocumentsList', () => {
     it('should bind to the loadMoreDocuments with onEndScroll', () => {
       render();
       const data = component.find(TableViewer).props();
-      data.onEndScroll();
+      data.loadNextGroupOfEntities();
       expect(props.loadMoreDocuments).toHaveBeenCalledWith('library', 30, 2);
     });
   });

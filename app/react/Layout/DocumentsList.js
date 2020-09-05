@@ -8,8 +8,9 @@ import SortButtons from 'app/Library/components/SortButtons';
 import Loader from 'app/components/Elements/Loader';
 import Footer from 'app/App/Footer';
 import { NeedAuthorization } from 'app/Auth';
-import { t, Translate } from 'app/I18N';
+import { t } from 'app/I18N';
 import { Icon } from 'UI';
+import { DocumentCounter } from 'app/Layout/DocumentCounter';
 import { TilesViewer } from './TilesViewer';
 
 class DocumentsList extends Component {
@@ -86,30 +87,23 @@ class DocumentsList extends Component {
       CollectionViewer,
     } = this.props;
 
-    let counter = (
-      <span>
-        {this.props.selectedDocuments.size > 0 && (
-          <>
-            <b> {this.props.selectedDocuments.size} </b> <Translate>selected of</Translate>
-          </>
-        )}
-        <b> {this.props.documents.get('rows').size} </b> <Translate>shown of</Translate>
-        <b> {documents.get('totalRows')} </b> <Translate>documents</Translate>
-      </span>
+    const totalConnections = connections
+      ? connectionsGroups.reduce(
+          (total, g) =>
+            total +
+            g.get('templates').reduce((count, template) => count + template.get('count'), 0),
+          0
+        )
+      : undefined;
+
+    const counter = (
+      <DocumentCounter
+        selectedEntitiesCount={this.props.selectedDocuments.size}
+        entityListCount={this.props.documents.get('rows').size}
+        entityTotal={documents.get('totalRows')}
+        totalConnectionsCount={totalConnections}
+      />
     );
-    if (connections) {
-      const totalConnections = connectionsGroups.reduce(
-        (total, g) =>
-          total + g.get('templates').reduce((count, template) => count + template.get('count'), 0),
-        0
-      );
-      counter = (
-        <span>
-          <b>{totalConnections}</b> {t('System', 'connections')},{' '}
-          <b>{documents.get('totalRows')}</b> {t('System', 'documents')}
-        </span>
-      );
-    }
 
     const Search = this.props.SearchBar;
     const ActionButtons = this.props.ActionButtons ? (
@@ -158,7 +152,7 @@ class DocumentsList extends Component {
                     clickOnDocument: this.clickOnDocument,
                     onSnippetClick: this.props.onSnippetClick,
                     deleteConnection: this.props.deleteConnection,
-                    onEndScroll: this.loadNextGroupOfEntities,
+                    loadNextGroupOfEntities: this.loadNextGroupOfEntities,
                   }}
                 />
               );

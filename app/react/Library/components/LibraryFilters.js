@@ -32,7 +32,7 @@ export class LibraryFilters extends Component {
 
   render() {
     return (
-      <SidePanel className="library-filters" fixed={this.props.fixed} open={this.props.open}>
+      <SidePanel className="library-filters" mode={this.props.sidePanelMode} open={this.props.open}>
         <div className="sidepanel-footer">
           <span onClick={this.reset.bind(this)} className="btn btn-primary">
             <Icon icon="sync" />
@@ -47,7 +47,7 @@ export class LibraryFilters extends Component {
         <div className="sidepanel-body">
           <p className="sidepanel-title">
             {t('System', 'Filters configuration')}
-            {this.props.fixed && (
+            {this.props.sidePanelMode === 'wide-mode' && (
               <button type="button" className="closeSidepanel" onClick={this.props.hideFilters}>
                 <Icon icon="times" />
               </button>
@@ -93,7 +93,7 @@ LibraryFilters.defaultProps = {
   open: false,
   unpublished: false,
   storeKey: 'library',
-  fixed: false,
+  sidePanelMode: '',
   hideFilters: () => {},
 };
 
@@ -103,7 +103,7 @@ LibraryFilters.propTypes = {
   open: PropTypes.bool,
   unpublished: PropTypes.bool,
   storeKey: PropTypes.string,
-  fixed: PropTypes.bool,
+  sidePanelMode: PropTypes.string,
   hideFilters: PropTypes.func,
 };
 

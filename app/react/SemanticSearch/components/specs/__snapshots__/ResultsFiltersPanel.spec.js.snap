@@ -2,7 +2,7 @@
 
 exports[`ResultsFiltersPanel render should render search filters and instructions 1`] = `
 <SidePanel
-  fixed={false}
+  mode=""
   open={true}
 >
   <div

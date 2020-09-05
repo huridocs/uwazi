@@ -12,29 +12,28 @@ interface TableRowsProps {
   storeKey: 'library' | 'uploads';
   clickOnDocument: (e: React.SyntheticEvent, doc: EntitySchema, active: boolean) => any;
   documents: IImmutable<{ rows: EntitySchema[] }>;
-  rowListZoomLevel: number;
 }
 
 const defaultProps = {
   documents: Immutable.fromJS({ rows: [] }),
-  rowListZoomLevel: 2,
 };
 
 class TableRowsComponent extends Component<TableRowsProps> {
   static defaultProps = defaultProps;
 
   render() {
+    const { columns, clickOnDocument, storeKey } = this.props;
+
     return (
       <>
         {this.props.documents.get('rows').map((entity: any) => (
           <TableRow
             {...{
               entity,
-              columns: this.props.columns,
+              columns,
+              clickOnDocument,
+              storeKey,
               key: entity.get('_id'),
-              clickOnDocument: this.props.clickOnDocument,
-              storeKey: this.props.storeKey,
-              zoomLevel: this.props.rowListZoomLevel,
             }}
           />
         ))}
@@ -45,7 +44,6 @@ class TableRowsComponent extends Component<TableRowsProps> {
 
 const mapStateToProps = (state: IStore, props: TableRowsProps) => ({
   documents: state[props.storeKey].documents,
-  rowListZoomLevel: state[props.storeKey].ui.get('zoomLevel'),
 });
 
 export const TableRows = connect(mapStateToProps)(TableRowsComponent);

@@ -11,12 +11,7 @@ export class LibraryTable extends RouteHandler {
 
   render() {
     return (
-      <Library
-        viewer={TableViewer}
-        location={this.props.location}
-        fixedSidePanels
-        showFiltersButton
-      />
+      <Library viewer={TableViewer} location={this.props.location} sidePanelMode="wide-mode" />
     );
   }
 }

@@ -18,7 +18,6 @@ interface TableRowProps {
   clickOnDocument: (...args: any[]) => void;
   templates: IImmutable<TemplateSchema[]>;
   thesauris: IImmutable<ThesaurusSchema[]>;
-  zoomLevel: number;
 }
 
 const defaultProps = {

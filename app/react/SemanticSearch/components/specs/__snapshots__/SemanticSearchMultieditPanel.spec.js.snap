@@ -24,7 +24,7 @@ Array [
 exports[`SemanticSearchMultieditPanel open should not open side panel if there are no multi edit entities 1`] = `
 <SidePanel
   className="multi-edit"
-  fixed={false}
+  mode=""
   open={false}
 >
   <div
@@ -121,7 +121,7 @@ exports[`SemanticSearchMultieditPanel open should not open side panel if there a
 exports[`SemanticSearchMultieditPanel should render multi edit form for semantic search multi edit documents 1`] = `
 <SidePanel
   className="multi-edit"
-  fixed={false}
+  mode=""
   open={true}
 >
   <div

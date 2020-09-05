@@ -20,19 +20,19 @@ export class LibraryModeToggleButtons extends Component {
       showGeolocation,
       searchUrl,
       storeKey,
-      showColumnSelector,
+      tableViewMode,
     } = this.props;
     const numberOfMarkersText = numberOfMarkers.toString().length > 3 ? '99+' : numberOfMarkers;
 
     return (
       <div className="list-view-mode">
-        {showColumnSelector && (
+        {tableViewMode && (
           <HiddenColumnsDropdown className="table-view-column-selector" storeKey={storeKey} />
         )}
 
         <div
           className={`list-view-mode-zoom list-view-buttons-zoom-${zoomLevel} buttons-group ${
-            showColumnSelector ? 'table-view-mode' : ''
+            tableViewMode ? 'wide-mode' : ''
           }`}
         >
           <button className="btn btn-default zoom-out" onClick={zoomOut} type="button">
@@ -75,7 +75,7 @@ export class LibraryModeToggleButtons extends Component {
             </I18NLink>
           )}
         </div>
-        {this.props.showFiltersButton && (
+        {tableViewMode && (
           <button
             type="button"
             className="btn btn-default toggle-button"
@@ -100,16 +100,14 @@ LibraryModeToggleButtons.propTypes = {
   zoomLevel: PropTypes.number.isRequired,
   numberOfMarkers: PropTypes.number.isRequired,
   storeKey: PropTypes.string.isRequired,
-  showColumnSelector: PropTypes.bool,
+  tableViewMode: PropTypes.bool,
   showFilters: PropTypes.func,
-  showFiltersButton: PropTypes.bool,
 };
 
 LibraryModeToggleButtons.defaultProps = {
-  showColumnSelector: false,
+  tableViewMode: false,
   zoomIn: null,
   zoomOut: null,
-  showFiltersButton: false,
   showFilters: () => {},
 };
 

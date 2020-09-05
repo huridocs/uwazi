@@ -28,7 +28,7 @@ describe('TableRows', () => {
     onEndScroll,
   };
   const storeState = {
-    library: { documents, ui: Immutable.fromJS({ zoomLevel: 2 }) },
+    library: { documents },
   };
 
   function render() {
@@ -48,7 +48,6 @@ describe('TableRows', () => {
         columns: columnList,
         storeKey: props.storeKey,
         clickOnDocument: props.clickOnDocument,
-        zoomLevel: 2,
       });
     });
   });
