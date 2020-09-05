@@ -237,7 +237,7 @@ DocumentsList.propTypes = {
     pathname: PropTypes.string,
     query: PropTypes.object,
   }),
-  CollectionViewer: PropTypes.instanceOf(Object),
+  CollectionViewer: PropTypes.func,
 };
 
 export { DocumentsList };

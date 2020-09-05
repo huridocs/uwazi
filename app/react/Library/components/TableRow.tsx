@@ -61,7 +61,14 @@ class TableRowComponent extends Component<TableRowProps> {
     if (!index) {
       return (
         <div>
-          {!index && <input type="checkbox" checked={selected} onClick={this.onRowClick} />}
+          {!index && (
+            <input
+              type="checkbox"
+              onChange={() => {}}
+              checked={selected}
+              onClick={this.onRowClick}
+            />
+          )}
           <TableCell storeKey={storeKey} content={columnValue} />
         </div>
       );
