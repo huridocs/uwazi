@@ -12,10 +12,10 @@ describe('TableViewer', () => {
     { name: 'country', label: 'Country', hidden: false },
   ];
   const columns = Immutable.fromJS(columnList);
-  const onEndScroll = jasmine.createSpy('onEndScroll');
+  const loadNextGroupOfEntities = jasmine.createSpy('loadNextGroupOfEntities');
   const props = {
     storeKey: 'library',
-    onEndScroll,
+    loadNextGroupOfEntities,
   };
   const storeState = {
     library: {
@@ -58,16 +58,16 @@ describe('TableViewer', () => {
       tableWrapper
         .props()
         .onScroll({ target: { scrollHeight: 1204, scrollTop: 406, clientHeight: 798 } });
-      expect(onEndScroll).toHaveBeenCalled();
+      expect(loadNextGroupOfEntities).toHaveBeenCalled();
     });
 
     it('should shoud not call onEndScroll if scrolling do not reach the end of content', () => {
-      onEndScroll.calls.reset();
+      loadNextGroupOfEntities.calls.reset();
       const tableWrapper = component.find('.tableview-wrapper').at(0);
       tableWrapper
         .props()
         .onScroll({ target: { scrollHeight: 100, scrollTop: 50, clientHeight: 100 } });
-      expect(onEndScroll).not.toBeCalled();
+      expect(loadNextGroupOfEntities).not.toBeCalled();
     });
   });
 });
