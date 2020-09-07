@@ -2,7 +2,7 @@ import { Form, Field } from 'react-redux-form';
 import { browserHistory } from 'react-router';
 import React from 'react';
 import PropTypes from 'prop-types';
-import rison from 'rison';
+import rison from 'rison-node';
 import { Icon } from 'UI';
 import SearchTips from 'app/Library/components/SearchTips';
 

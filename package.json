@@ -187,7 +187,7 @@
     "redux-devtools-extension": "^2.13.2",
     "redux-thunk": "^2.0.1",
     "reselect": "3.0.1",
-    "rison": "Nanonid/rison#e64af6c",
+    "rison-node": "^2.1.1",
     "rtlcss": "2.6.0",
     "sanitize-filename": "^1.6.0",
     "serialize-javascript": "^3.1.0",
