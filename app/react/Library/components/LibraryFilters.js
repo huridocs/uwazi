@@ -47,7 +47,7 @@ export class LibraryFilters extends Component {
         <div className="sidepanel-body">
           <p className="sidepanel-title">
             {t('System', 'Filters configuration')}
-            {this.props.sidePanelMode === 'wide-mode' && (
+            {this.props.sidePanelMode === 'unpinned-mode' && (
               <button type="button" className="closeSidepanel" onClick={this.props.hideFilters}>
                 <Icon icon="times" />
               </button>

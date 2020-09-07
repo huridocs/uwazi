@@ -4,7 +4,7 @@
   @media (min-width: 1024px) {
     z-index: 4;
     top: $header-height;
-    &.is-hidden:not(.wide-mode) {
+    &.is-hidden:not(.unpinned-mode) {
       right: 0;
     }
   }

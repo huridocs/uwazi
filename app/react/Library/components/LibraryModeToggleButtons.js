@@ -32,7 +32,7 @@ export class LibraryModeToggleButtons extends Component {
 
         <div
           className={`list-view-mode-zoom list-view-buttons-zoom-${zoomLevel} buttons-group ${
-            tableViewMode ? 'wide-mode' : ''
+            tableViewMode ? 'unpinned-mode' : ''
           }`}
         >
           <button className="btn btn-default zoom-out" onClick={zoomOut} type="button">
