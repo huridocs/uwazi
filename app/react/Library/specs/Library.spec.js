@@ -65,18 +65,18 @@ describe('Library', () => {
     });
   });
 
-  describe('componentWillReceiveProps()', () => {
+  describe('component update', () => {
     it('should request the new state when the url changes', () => {
       spyOn(instance, 'getClientState');
       const nextProps = { location: { query: { q: '(a:2)' } } };
-      instance.componentWillReceiveProps(nextProps);
+      component.setProps(nextProps);
       expect(instance.getClientState).toHaveBeenCalled();
     });
 
     it('should not request the new state when the url hasnt change', () => {
       spyOn(instance, 'getClientState');
       const nextProps = { location: { query: { q: '(a:1)' } } };
-      instance.componentWillReceiveProps(nextProps);
+      component.setProps(nextProps);
       expect(instance.getClientState).not.toHaveBeenCalled();
     });
   });
