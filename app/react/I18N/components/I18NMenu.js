@@ -21,7 +21,7 @@ class I18NMenu extends Component {
     path = path.replace(regexp, '/');
 
     return (
-      <ul className="menuNav-I18NMenu">
+      <div className="btn-group">
         <NeedAuthorization roles={['admin', 'editor']}>
           <button
             className={`menuNav-btn btn btn-default${i18nmode ? ' inlineEdit active' : ''}`}
@@ -31,19 +31,30 @@ class I18NMenu extends Component {
             <Icon icon="language" size="lg" />
           </button>
         </NeedAuthorization>
-        {languages.count() > 1 &&
-          languages.map(lang => {
-            const key = lang.get('key');
-            const url = `/${key}${path}${path.match('document') ? '' : location.search}`;
-            return (
-              <li className={`menuNav-item${locale === key ? ' is-active' : ''}`} key={key}>
-                <a className="menuNav-btn btn btn-default" href={url}>
-                  {key}
-                </a>
-              </li>
-            );
-          })}
-      </ul>
+        <button
+          className="menuNav-btn btn btn-transparent"
+          type="button"
+          data-toggle="dropdown"
+          aria-haspopup="true"
+          aria-expanded="false"
+        >
+          Choose Language
+          <span className="caret"></span>
+        </button>
+        <ul className="dropdown-menu">
+          {languages.count() > 1 &&
+            languages.map(lang => {
+              const key = lang.get('key');
+              const label = lang.get('label');
+              const url = `/${key}${path}${path.match('document') ? '' : location.search}`;
+              return (
+                <li className={`${locale === key ? 'is-active' : ''}`} key={key}>
+                  <a href={url}>{label}</a>
+                </li>
+              );
+            })}
+        </ul>
+      </div>
     );
   }
 }
