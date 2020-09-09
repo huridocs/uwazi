@@ -34,8 +34,11 @@ export class PdfCharacterCountToAbsolute {
     this.pagesEndingCharacterCount = pagesEndingCharacterCount;
     const xmlRelativePath: string = this.getXmlRelativePath(pdfRelativePath);
 
-    await this.convertPdfToXML(pdfRelativePath, xmlRelativePath);
-
+    try {
+      await this.convertPdfToXML(pdfRelativePath, xmlRelativePath);
+    } catch (error) {
+      return false;
+    }
     const xmlContentString: string = fs.readFileSync(xmlRelativePath, 'utf8');
     const xmlContentObject = JSON.parse(convert.xml2json(xmlContentString));
     this.deleteXmlFile(xmlRelativePath);
@@ -46,6 +49,8 @@ export class PdfCharacterCountToAbsolute {
     await spawn('pdftohtml', ['-xml', '-i', pdfRelativePath, xmlRelativePath], {
       capture: ['stdout', 'stderr'],
     });
+
+    return true;
   }
 
   getXmlRelativePath(pdfRelativePath: string) {
@@ -137,12 +142,21 @@ export class PdfCharacterCountToAbsolute {
     return accumulator;
   };
 
-  convert(label: string, startRange: number, endRange: number): AbsolutePositionReference {
+  convert(label: string, startRange: number, endRange: number): AbsolutePositionReference | null {
     let stringMatches: AbsolutePositionReference[] = this.getStringMatches(label);
-    const characterCountMatch: AbsolutePositionTag[] = this.getCharacterCountMatch(
+    let characterCountMatch: AbsolutePositionTag[] = this.getCharacterCountMatch(
       startRange,
       endRange
     );
+
+    if (characterCountMatch.length === 0 && stringMatches.length === 0) {
+      return null;
+    }
+
+    if (characterCountMatch.length === 0) {
+      characterCountMatch = stringMatches[0].tags;
+    }
+
     const startingPageNumber = characterCountMatch[0].pageNumber;
     stringMatches = stringMatches.filter(x => x.tags[0].pageNumber === startingPageNumber);
 

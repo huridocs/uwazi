@@ -89,30 +89,30 @@ describe('PdfCharacterCountToAbsolute', () => {
 
     const characterCountToAbsoluteConversion = new PdfCharacterCountToAbsolute();
     await characterCountToAbsoluteConversion.loadPdf(pdfRelativePath, pdfInfo);
-    const absolutePositionNotFoundedLabel: AbsolutePositionReference = <AbsolutePositionReference>(
+    const absolutePosition: AbsolutePositionReference = <AbsolutePositionReference>(
       characterCountToAbsoluteConversion.convert(notFoundedLabel, 76656, 76844)
     );
 
-    expect(absolutePositionNotFoundedLabel.text).toBe(notFoundedLabel);
-    expect(absolutePositionNotFoundedLabel.tags.length).toBe(4);
+    expect(absolutePosition.text).toBe(notFoundedLabel);
+    expect(absolutePosition.tags.length).toBe(4);
 
-    expect(absolutePositionNotFoundedLabel.tags[0].pageNumber).toBe(24);
-    expect(absolutePositionNotFoundedLabel.tags[0].top).toBe(177);
-    expect(absolutePositionNotFoundedLabel.tags[0].left).toBe(149);
-    expect(absolutePositionNotFoundedLabel.tags[0].width).toBe(294);
-    expect(absolutePositionNotFoundedLabel.tags[0].height).toBe(19);
+    expect(absolutePosition.tags[0].pageNumber).toBe(24);
+    expect(absolutePosition.tags[0].top).toBe(177);
+    expect(absolutePosition.tags[0].left).toBe(149);
+    expect(absolutePosition.tags[0].width).toBe(294);
+    expect(absolutePosition.tags[0].height).toBe(19);
 
-    expect(absolutePositionNotFoundedLabel.tags[1].pageNumber).toBe(24);
-    expect(absolutePositionNotFoundedLabel.tags[1].top).toBe(218);
-    expect(absolutePositionNotFoundedLabel.tags[1].left).toBe(213);
-    expect(absolutePositionNotFoundedLabel.tags[1].width).toBe(514);
-    expect(absolutePositionNotFoundedLabel.tags[1].height).toBe(13);
+    expect(absolutePosition.tags[1].pageNumber).toBe(24);
+    expect(absolutePosition.tags[1].top).toBe(218);
+    expect(absolutePosition.tags[1].left).toBe(213);
+    expect(absolutePosition.tags[1].width).toBe(514);
+    expect(absolutePosition.tags[1].height).toBe(13);
 
-    expect(absolutePositionNotFoundedLabel.tags[2].pageNumber).toBe(24);
-    expect(absolutePositionNotFoundedLabel.tags[2].top).toBe(236);
-    expect(absolutePositionNotFoundedLabel.tags[2].left).toBe(170);
-    expect(absolutePositionNotFoundedLabel.tags[2].width).toBe(556);
-    expect(absolutePositionNotFoundedLabel.tags[2].height).toBe(13);
+    expect(absolutePosition.tags[2].pageNumber).toBe(24);
+    expect(absolutePosition.tags[2].top).toBe(236);
+    expect(absolutePosition.tags[2].left).toBe(170);
+    expect(absolutePosition.tags[2].width).toBe(556);
+    expect(absolutePosition.tags[2].height).toBe(13);
   });
 
   it('should match string and position when several matching strings occurs', async () => {
@@ -217,5 +217,45 @@ describe('PdfCharacterCountToAbsolute', () => {
     expect(absolutePosition.tags[3].left).toBe(213);
     expect(absolutePosition.tags[3].width).toBe(41);
     expect(absolutePosition.tags[3].height).toBe(13);
+  });
+
+  it('should return false when trying to process an nonexistent document', async () => {
+    const nonexistentPath = 'nonexistentPath';
+    const characterCountToAbsoluteConversion = new PdfCharacterCountToAbsolute();
+    const pdfLoaded = await characterCountToAbsoluteConversion.loadPdf(nonexistentPath, pdfInfo);
+    expect(pdfLoaded).toBe(false);
+  });
+
+  it('should not brake when range outside document and non existent string match', async () => {
+    const pdfRelativePath = 'app/api/pdf_character_count_to_absolute/specs/pdf_to_be_converted.pdf';
+    const outsideLabel = 'outside label';
+
+    const characterCountToAbsoluteConversion = new PdfCharacterCountToAbsolute();
+    await characterCountToAbsoluteConversion.loadPdf(pdfRelativePath, pdfInfo);
+    const absolutePosition = characterCountToAbsoluteConversion.convert(
+      outsideLabel,
+      999999,
+      1000000
+    );
+    expect(absolutePosition).toBeNull();
+  });
+
+  it('should return first string match when range outside document', async () => {
+    const pdfRelativePath = 'app/api/pdf_character_count_to_absolute/specs/pdf_to_be_converted.pdf';
+    const label = '26.80';
+
+    const characterCountToAbsoluteConversion = new PdfCharacterCountToAbsolute();
+    await characterCountToAbsoluteConversion.loadPdf(pdfRelativePath, pdfInfo);
+    const absolutePosition = <AbsolutePositionReference>(
+      characterCountToAbsoluteConversion.convert(label, 999999, 1000000)
+    );
+
+    expect(absolutePosition.text).toBe(label);
+    expect(absolutePosition.tags.length).toBe(1);
+    expect(absolutePosition.tags[0].pageNumber).toBe(10);
+    expect(absolutePosition.tags[0].top).toBe(506);
+    expect(absolutePosition.tags[0].left).toBe(213);
+    expect(absolutePosition.tags[0].height).toBe(13);
+    expect(absolutePosition.tags[0].width).toBe(34);
   });
 });
