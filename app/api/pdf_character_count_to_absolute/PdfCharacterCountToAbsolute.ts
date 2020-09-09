@@ -3,19 +3,24 @@ import { spawn } from 'child-process-promise';
 const fs = require('fs');
 const convert = require('xml-js');
 
-export interface AbsolutePosition {
+export interface AbsolutePositionTag {
   pageNumber: number;
   top: number;
   left: number;
-  bottom: number;
-  right: number;
+  height: number;
+  width: number;
   text: string;
 }
 
-export class PdfCharacterCountToAbsolute {
-  lettersTags: AbsolutePosition[];
+export interface AbsolutePositionReference {
+  text: string;
+  tags: AbsolutePositionTag[];
+}
 
-  lettersTagsNoSpaces: AbsolutePosition[];
+export class PdfCharacterCountToAbsolute {
+  lettersTags: AbsolutePositionTag[];
+
+  lettersTagsNoSpaces: AbsolutePositionTag[];
 
   pagesEndingCharacterCount: number[];
 
@@ -62,7 +67,7 @@ export class PdfCharacterCountToAbsolute {
 
   setLettersTags(xmlContentObject: any) {
     const pages = xmlContentObject.elements[1].elements;
-    let allTags: AbsolutePosition[] = [];
+    let allTags: AbsolutePositionTag[] = [];
     for (let pageIndex: number = 0; pageIndex < pages.length; pageIndex += 1) {
       let pageElements = pages[pageIndex].elements;
 
@@ -73,27 +78,39 @@ export class PdfCharacterCountToAbsolute {
         .reduce(this.removeXmlOneLevel(), []);
 
       pageElements = pageElements.filter((x: { text: any }) => x.text);
-      const pageTags: AbsolutePosition[] = pageElements.map(
+      const pageTags: AbsolutePositionTag[] = pageElements.map(
         (x: { text: string; attributes: { top: any; left: any; height: any; width: any } }) => ({
           pageNumber: Number(pages[pageIndex].attributes.number),
           top: Number(x.attributes.top),
           left: Number(x.attributes.left),
-          bottom: Number(x.attributes.top) + Number(x.attributes.height),
-          right: Number(x.attributes.left) + Number(x.attributes.width),
-          text: x.text,
+          height: Number(x.attributes.height),
+          width: Number(x.attributes.width),
+          text: x.text.replace(/^\s+/g, ''),
         })
       );
       allTags = allTags.concat(pageTags);
     }
+    allTags = allTags.filter(x => x.text !== ' ');
+    allTags.sort((a, b) => {
+      if (a.pageNumber !== b.pageNumber) {
+        return a.pageNumber > b.pageNumber ? 1 : -1;
+      }
+
+      if (a.top !== b.top) {
+        return a.top > b.top ? 1 : -1;
+      }
+
+      return a.left > b.left ? 1 : -1;
+    });
 
     this.lettersTags = allTags.reduce(
-      (accumulator: AbsolutePosition[], currentValue: AbsolutePosition) => {
-        const letters: AbsolutePosition[] = currentValue.text.split('').map((x: string) => ({
+      (accumulator: AbsolutePositionTag[], currentValue: AbsolutePositionTag) => {
+        const letters: AbsolutePositionTag[] = currentValue.text.split('').map((x: string) => ({
           pageNumber: currentValue.pageNumber,
           top: currentValue.top,
           left: currentValue.left,
-          bottom: currentValue.bottom,
-          right: currentValue.right,
+          height: currentValue.height,
+          width: currentValue.width,
           text: x,
         }));
         return accumulator.concat(letters);
@@ -101,7 +118,6 @@ export class PdfCharacterCountToAbsolute {
       []
     );
 
-    this.lettersTags = this.lettersTags.filter(x => x.text !== ' ');
     this.lettersTagsNoSpaces = this.lettersTags.filter(x => x.text !== ' ');
   }
 
@@ -121,94 +137,118 @@ export class PdfCharacterCountToAbsolute {
     return accumulator;
   };
 
-  convert(label: string, startRange: number, endRange: number): AbsolutePosition | undefined {
-    const targetLabelNoSpaces: string = label.replace(/ /g, '');
-    const stringMatches: AbsolutePosition[] = this.getStringMatches(targetLabelNoSpaces, label);
-    const characterCountMatch: AbsolutePosition = this.getCharacterCountMatch(
+  convert(label: string, startRange: number, endRange: number): AbsolutePositionReference {
+    let stringMatches: AbsolutePositionReference[] = this.getStringMatches(label);
+    const characterCountMatch: AbsolutePositionTag[] = this.getCharacterCountMatch(
       startRange,
-      endRange,
-      label
+      endRange
     );
+    const startingPageNumber = characterCountMatch[0].pageNumber;
+    stringMatches = stringMatches.filter(x => x.tags[0].pageNumber === startingPageNumber);
 
     if (stringMatches.length === 0) {
-      return characterCountMatch;
+      return {
+        tags: characterCountMatch,
+        text: label,
+      };
     }
 
-    return stringMatches[0];
+    const { top } = characterCountMatch[0];
+    return stringMatches.reduce(
+      (acc, val) => (Math.abs(top - val.tags[0].top) < Math.abs(top - acc.tags[0].top) ? val : acc),
+      stringMatches[0]
+    );
   }
 
-  private getStringMatches(targetLabelNoSpaces: string, label: string) {
-    const stringMatches: AbsolutePosition[] = [];
+  private getStringMatches(label: string) {
+    const targetLabelNoSpaces: string = label.replace(/ /g, '');
+
+    const absolutePositionReferences: AbsolutePositionReference[] = [];
     for (
       let lettersIndex = 0;
       lettersIndex < this.lettersTagsNoSpaces.length - targetLabelNoSpaces.length;
       lettersIndex += 1
     ) {
       let allWordsMatching = true;
-      let { top } = this.lettersTagsNoSpaces[lettersIndex];
-      let { left } = this.lettersTagsNoSpaces[lettersIndex];
-      let { bottom } = this.lettersTagsNoSpaces[lettersIndex];
-      let { right } = this.lettersTagsNoSpaces[lettersIndex];
-
+      const absolutePositionTags: AbsolutePositionTag[] = [];
       for (
         let targetLabelIndex = 0;
         targetLabelIndex < targetLabelNoSpaces.length;
         targetLabelIndex += 1
       ) {
-        if (
-          targetLabelNoSpaces.charAt(targetLabelIndex) !==
-          this.lettersTagsNoSpaces[lettersIndex + targetLabelIndex].text
-        ) {
+        const letterTag = this.lettersTagsNoSpaces[lettersIndex + targetLabelIndex];
+        if (targetLabelNoSpaces.charAt(targetLabelIndex) !== letterTag.text) {
           allWordsMatching = false;
           break;
         }
-
-        top = Math.min(top, this.lettersTagsNoSpaces[lettersIndex + targetLabelIndex].top);
-        left = Math.min(left, this.lettersTagsNoSpaces[lettersIndex + targetLabelIndex].left);
-        bottom = Math.max(bottom, this.lettersTagsNoSpaces[lettersIndex + targetLabelIndex].bottom);
-        right = Math.max(right, this.lettersTagsNoSpaces[lettersIndex + targetLabelIndex].right);
+        if (!this.isTagInList(absolutePositionTags, letterTag)) {
+          absolutePositionTags.push(this.lettersTagsNoSpaces[lettersIndex + targetLabelIndex]);
+        } else {
+          absolutePositionTags.slice(-1)[0].text += letterTag.text;
+        }
       }
 
       if (allWordsMatching) {
-        stringMatches.push({
-          pageNumber: this.lettersTagsNoSpaces[lettersIndex].pageNumber,
-          top,
-          left,
-          bottom,
-          right,
+        absolutePositionReferences.push({
           text: label,
+          tags: absolutePositionTags,
         });
       }
     }
-    return stringMatches;
+    return absolutePositionReferences;
   }
 
-  private getCharacterCountMatch(startRange: number, endRange: number, label: string) {
-    const endingCharactersBeforeRangeMatch = this.pagesEndingCharacterCount.filter(
+  private getCharacterCountMatch(startRange: number, endRange: number) {
+    const pagesCharacterCountBeforeMatchingPage = this.pagesEndingCharacterCount.filter(
       x => x < startRange
     );
-    const startingCharacterMatchingPage = Number(endingCharactersBeforeRangeMatch.slice(-1)) + 1;
+    const startingCharacterMatchingPage =
+      Number(pagesCharacterCountBeforeMatchingPage.slice(-1)) + 1;
 
     const startRangeMatchingPage = Math.max(startRange - startingCharacterMatchingPage);
     const endRangeMatchingPage = endRange - startingCharacterMatchingPage;
 
-    const pageNumber = endingCharactersBeforeRangeMatch.length + 1;
-    const lettersFromMatchingPage = this.lettersTags.filter(x => x.pageNumber === pageNumber);
+    const pageNumber = pagesCharacterCountBeforeMatchingPage.length + 1;
+    const lettersFromMatchingPage = this.lettersTags.filter(x => x.pageNumber >= pageNumber);
 
     const matchingLetters = lettersFromMatchingPage.slice(
       startRangeMatchingPage,
       endRangeMatchingPage
     );
 
-    const matchingAbsolutePosition: AbsolutePosition = {
-      pageNumber,
-      top: Math.min(...matchingLetters.map(x => x.top)),
-      left: Math.min(...matchingLetters.map(x => x.left)),
-      bottom: Math.max(...matchingLetters.map(x => x.bottom)),
-      right: Math.max(...matchingLetters.map(x => x.right)),
-      text: label,
-    };
+    const absolutePositionTags: AbsolutePositionTag[] = matchingLetters.reduce(
+      (accumulator: AbsolutePositionTag[], letterTag: AbsolutePositionTag) => {
+        if (this.isTagInList(accumulator, letterTag)) {
+          accumulator.slice(-1)[0].text += letterTag.text;
+        } else {
+          accumulator.push(letterTag);
+        }
 
-    return matchingAbsolutePosition;
+        return accumulator;
+      },
+      []
+    );
+
+    return absolutePositionTags;
+  }
+
+  private isTagInList(tags: AbsolutePositionTag[], tag: AbsolutePositionTag) {
+    if (tags.length === 0) {
+      return false;
+    }
+
+    const lastTagInserted: AbsolutePositionTag = tags.slice(-1)[0];
+
+    if (
+      lastTagInserted.pageNumber === tag.pageNumber &&
+      lastTagInserted.top === tag.top &&
+      lastTagInserted.left === tag.left &&
+      lastTagInserted.height === tag.height &&
+      lastTagInserted.width === tag.width
+    ) {
+      return true;
+    }
+
+    return false;
   }
 }
