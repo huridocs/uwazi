@@ -31,7 +31,7 @@ const pdfInfo = [
 ];
 
 describe('PdfCharacterCountToAbsolute', () => {
-  it('should convert short label strings character count to absolute position', async () => {
+  it('should convert short label to absolute position', async () => {
     const pdfRelativePath = 'app/api/pdf_character_count_to_absolute/specs/pdf_to_be_converted.pdf';
     const shortLabel = '26.80';
 
@@ -48,6 +48,25 @@ describe('PdfCharacterCountToAbsolute', () => {
     expect(absolutePosition.tags[0].left).toBe(213);
     expect(absolutePosition.tags[0].height).toBe(13);
     expect(absolutePosition.tags[0].width).toBe(34);
+  });
+
+  it('should convert special caracters string to absolute position', async () => {
+    const pdfRelativePath = 'app/api/pdf_character_count_to_absolute/specs/pdf_to_be_converted.pdf';
+    const specialCharactersString = '';
+
+    const characterCountToAbsoluteConversion = new PdfCharacterCountToAbsolute();
+    await characterCountToAbsoluteConversion.loadPdf(pdfRelativePath, pdfInfo);
+    const absolutePosition: AbsolutePositionReference = <AbsolutePositionReference>(
+      characterCountToAbsoluteConversion.convert(specialCharactersString, 16, 25)
+    );
+
+    expect(absolutePosition.text).toBe(specialCharactersString);
+    expect(absolutePosition.tags.length).toBe(1);
+    expect(absolutePosition.tags[0].pageNumber).toBe(1);
+    expect(absolutePosition.tags[0].top).toBe(1185);
+    expect(absolutePosition.tags[0].left).toBe(85);
+    expect(absolutePosition.tags[0].height).toBe(42);
+    expect(absolutePosition.tags[0].width).toBe(141);
   });
 
   it('should convert long label strings character count to absolute position', async () => {
@@ -68,6 +87,7 @@ describe('PdfCharacterCountToAbsolute', () => {
     expect(absolutePosition.tags[0].left).toBe(132);
     expect(absolutePosition.tags[0].height).toBe(16);
     expect(absolutePosition.tags[0].width).toBe(21);
+
     expect(absolutePosition.tags[1].top).toBe(668);
     expect(absolutePosition.tags[2].top).toBe(707);
     expect(absolutePosition.tags[3].top).toBe(707);
@@ -77,6 +97,7 @@ describe('PdfCharacterCountToAbsolute', () => {
     expect(absolutePosition.tags[7].top).toBe(707);
     expect(absolutePosition.tags[8].top).toBe(707);
     expect(absolutePosition.tags[9].top).toBe(707);
+
     expect(absolutePosition.tags[10].top).toBe(707);
     expect(absolutePosition.tags[10].left).toBe(655);
     expect(absolutePosition.tags[10].height).toBe(13);
@@ -135,55 +156,10 @@ describe('PdfCharacterCountToAbsolute', () => {
     expect(absolutePositionSeveralAppearances.tags[0].height).toBe(13);
   });
 
-  it('should return absolute position when character count across two pages', async () => {
-    const pdfRelativePath = 'app/api/pdf_character_count_to_absolute/specs/pdf_to_be_converted.pdf';
-    const stringSpreadTwoPages =
-      'International Covenant on Civil and Political Rights (Ireland); A/HRC/43/121526.164';
-
-    const characterCountToAbsoluteConversion = new PdfCharacterCountToAbsolute();
-    await characterCountToAbsoluteConversion.loadPdf(pdfRelativePath, pdfInfo);
-    const absolutePosition: AbsolutePositionReference = <AbsolutePositionReference>(
-      characterCountToAbsoluteConversion.convert(stringSpreadTwoPages, 48358, 48440)
-    );
-
-    expect(absolutePosition.text).toBe(stringSpreadTwoPages);
-    expect(absolutePosition.tags.length).toBe(5);
-
-    expect(absolutePosition.tags[0].pageNumber).toBe(14);
-    expect(absolutePosition.tags[0].top).toBe(1155);
-    expect(absolutePosition.tags[0].left).toBe(213);
-    expect(absolutePosition.tags[0].width).toBe(404);
-    expect(absolutePosition.tags[0].height).toBe(13);
-
-    expect(absolutePosition.tags[1].pageNumber).toBe(14);
-    expect(absolutePosition.tags[1].top).toBe(1208);
-    expect(absolutePosition.tags[1].left).toBe(85);
-    expect(absolutePosition.tags[1].width).toBe(14);
-    expect(absolutePosition.tags[1].height).toBe(12);
-
-    expect(absolutePosition.tags[2].pageNumber).toBe(15);
-    expect(absolutePosition.tags[2].top).toBe(67);
-    expect(absolutePosition.tags[2].left).toBe(730);
-    expect(absolutePosition.tags[2].width).toBe(81);
-    expect(absolutePosition.tags[2].height).toBe(12);
-
-    expect(absolutePosition.tags[3].pageNumber).toBe(15);
-    expect(absolutePosition.tags[3].top).toBe(110);
-    expect(absolutePosition.tags[3].left).toBe(213);
-    expect(absolutePosition.tags[3].width).toBe(41);
-    expect(absolutePosition.tags[3].height).toBe(13);
-
-    expect(absolutePosition.tags[4].pageNumber).toBe(15);
-    expect(absolutePosition.tags[4].top).toBe(110);
-    expect(absolutePosition.tags[4].left).toBe(276);
-    expect(absolutePosition.tags[4].width).toBe(450);
-    expect(absolutePosition.tags[4].height).toBe(13);
-  });
-
   it('should return absolute position when string matching across two pages', async () => {
     const pdfRelativePath = 'app/api/pdf_character_count_to_absolute/specs/pdf_to_be_converted.pdf';
     const stringSpreadTwoPages =
-      'International Covenant on Civil and Political Rights (Ireland); 14 A/HRC/43/12 26.164';
+      'International Covenant on Civil and Political Rights (Ireland); A/HRC/43/121526.164';
 
     const characterCountToAbsoluteConversion = new PdfCharacterCountToAbsolute();
     await characterCountToAbsoluteConversion.loadPdf(pdfRelativePath, pdfInfo);
@@ -200,16 +176,16 @@ describe('PdfCharacterCountToAbsolute', () => {
     expect(absolutePosition.tags[0].width).toBe(404);
     expect(absolutePosition.tags[0].height).toBe(13);
 
-    expect(absolutePosition.tags[1].pageNumber).toBe(14);
-    expect(absolutePosition.tags[1].top).toBe(1208);
-    expect(absolutePosition.tags[1].left).toBe(85);
-    expect(absolutePosition.tags[1].width).toBe(14);
+    expect(absolutePosition.tags[1].pageNumber).toBe(15);
+    expect(absolutePosition.tags[1].top).toBe(67);
+    expect(absolutePosition.tags[1].left).toBe(730);
+    expect(absolutePosition.tags[1].width).toBe(81);
     expect(absolutePosition.tags[1].height).toBe(12);
 
     expect(absolutePosition.tags[2].pageNumber).toBe(15);
-    expect(absolutePosition.tags[2].top).toBe(67);
-    expect(absolutePosition.tags[2].left).toBe(730);
-    expect(absolutePosition.tags[2].width).toBe(81);
+    expect(absolutePosition.tags[2].top).toBe(1208);
+    expect(absolutePosition.tags[2].left).toBe(794);
+    expect(absolutePosition.tags[2].width).toBe(14);
     expect(absolutePosition.tags[2].height).toBe(12);
 
     expect(absolutePosition.tags[3].pageNumber).toBe(15);
@@ -217,6 +193,50 @@ describe('PdfCharacterCountToAbsolute', () => {
     expect(absolutePosition.tags[3].left).toBe(213);
     expect(absolutePosition.tags[3].width).toBe(41);
     expect(absolutePosition.tags[3].height).toBe(13);
+  });
+
+  it('should return absolute position when character count across two pages', async () => {
+    const pdfRelativePath = 'app/api/pdf_character_count_to_absolute/specs/pdf_to_be_converted.pdf';
+    const nonExistentString = 'Non existent string';
+
+    const characterCountToAbsoluteConversion = new PdfCharacterCountToAbsolute();
+    await characterCountToAbsoluteConversion.loadPdf(pdfRelativePath, pdfInfo);
+    const absolutePosition: AbsolutePositionReference = <AbsolutePositionReference>(
+      characterCountToAbsoluteConversion.convert(nonExistentString, 48358, 48440)
+    );
+
+    expect(absolutePosition.text).toBe(nonExistentString);
+    expect(absolutePosition.tags.length).toBe(5);
+
+    expect(absolutePosition.tags[0].pageNumber).toBe(14);
+    expect(absolutePosition.tags[0].top).toBe(1155);
+    expect(absolutePosition.tags[0].left).toBe(213);
+    expect(absolutePosition.tags[0].width).toBe(404);
+    expect(absolutePosition.tags[0].height).toBe(13);
+
+    expect(absolutePosition.tags[1].pageNumber).toBe(15);
+    expect(absolutePosition.tags[1].top).toBe(67);
+    expect(absolutePosition.tags[1].left).toBe(730);
+    expect(absolutePosition.tags[1].width).toBe(81);
+    expect(absolutePosition.tags[1].height).toBe(12);
+
+    expect(absolutePosition.tags[2].pageNumber).toBe(15);
+    expect(absolutePosition.tags[2].top).toBe(1208);
+    expect(absolutePosition.tags[2].left).toBe(794);
+    expect(absolutePosition.tags[2].width).toBe(14);
+    expect(absolutePosition.tags[2].height).toBe(12);
+
+    expect(absolutePosition.tags[3].pageNumber).toBe(15);
+    expect(absolutePosition.tags[3].top).toBe(110);
+    expect(absolutePosition.tags[3].left).toBe(213);
+    expect(absolutePosition.tags[3].width).toBe(41);
+    expect(absolutePosition.tags[3].height).toBe(13);
+
+    expect(absolutePosition.tags[4].pageNumber).toBe(15);
+    expect(absolutePosition.tags[4].top).toBe(110);
+    expect(absolutePosition.tags[4].left).toBe(276);
+    expect(absolutePosition.tags[4].width).toBe(450);
+    expect(absolutePosition.tags[4].height).toBe(13);
   });
 
   it('should return false when trying to process an nonexistent document', async () => {
@@ -257,5 +277,39 @@ describe('PdfCharacterCountToAbsolute', () => {
     expect(absolutePosition.tags[0].left).toBe(213);
     expect(absolutePosition.tags[0].height).toBe(13);
     expect(absolutePosition.tags[0].width).toBe(34);
+  });
+
+  it('should convert to absolute position a different pdf', async () => {
+    const otherPdfInfo = [1813, 5329, 8911, 13428, 17878, 22296, 25112, 25537];
+    const pdfRelativePath =
+      'app/api/pdf_character_count_to_absolute/specs/other_pdf_to_be_converted.pdf';
+    const label = 'ISOLICITUD DE INTERPRETACIÓNY PROCEDIMIENTO ANTELA CORTE';
+
+    const characterCountToAbsoluteConversion = new PdfCharacterCountToAbsolute();
+    await characterCountToAbsoluteConversion.loadPdf(pdfRelativePath, otherPdfInfo);
+    const absolutePosition = <AbsolutePositionReference>(
+      characterCountToAbsoluteConversion.convert(label, 1213, 1269)
+    );
+
+    expect(absolutePosition.text).toBe(label);
+    expect(absolutePosition.tags.length).toBe(3);
+
+    expect(absolutePosition.tags[0].pageNumber).toBe(1);
+    expect(absolutePosition.tags[0].top).toBe(810);
+    expect(absolutePosition.tags[0].left).toBe(455);
+    expect(absolutePosition.tags[0].width).toBe(8);
+    expect(absolutePosition.tags[0].height).toBe(18);
+
+    expect(absolutePosition.tags[1].pageNumber).toBe(1);
+    expect(absolutePosition.tags[1].top).toBe(828);
+    expect(absolutePosition.tags[1].left).toBe(319);
+    expect(absolutePosition.tags[1].width).toBe(280);
+    expect(absolutePosition.tags[1].height).toBe(18);
+
+    expect(absolutePosition.tags[2].pageNumber).toBe(1);
+    expect(absolutePosition.tags[2].top).toBe(846);
+    expect(absolutePosition.tags[2].left).toBe(309);
+    expect(absolutePosition.tags[2].width).toBe(304);
+    expect(absolutePosition.tags[2].height).toBe(18);
   });
 });

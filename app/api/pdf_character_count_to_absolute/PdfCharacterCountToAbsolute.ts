@@ -96,17 +96,6 @@ export class PdfCharacterCountToAbsolute {
       allTags = allTags.concat(pageTags);
     }
     allTags = allTags.filter(x => x.text !== ' ');
-    allTags.sort((a, b) => {
-      if (a.pageNumber !== b.pageNumber) {
-        return a.pageNumber > b.pageNumber ? 1 : -1;
-      }
-
-      if (a.top !== b.top) {
-        return a.top > b.top ? 1 : -1;
-      }
-
-      return a.left > b.left ? 1 : -1;
-    });
 
     this.lettersTags = allTags.reduce(
       (accumulator: AbsolutePositionTag[], currentValue: AbsolutePositionTag) => {
@@ -195,10 +184,10 @@ export class PdfCharacterCountToAbsolute {
           allWordsMatching = false;
           break;
         }
-        if (!this.isTagInList(absolutePositionTags, letterTag)) {
-          absolutePositionTags.push(this.lettersTagsNoSpaces[lettersIndex + targetLabelIndex]);
-        } else {
+        if (this.isTagInList(absolutePositionTags, letterTag)) {
           absolutePositionTags.slice(-1)[0].text += letterTag.text;
+        } else {
+          absolutePositionTags.push(Object.assign({}, letterTag));
         }
       }
 
@@ -235,7 +224,7 @@ export class PdfCharacterCountToAbsolute {
         if (this.isTagInList(accumulator, letterTag)) {
           accumulator.slice(-1)[0].text += letterTag.text;
         } else {
-          accumulator.push(letterTag);
+          accumulator.push(Object.assign({}, letterTag));
         }
 
         return accumulator;
