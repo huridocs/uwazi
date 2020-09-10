@@ -8,7 +8,7 @@ import Immutable from 'immutable';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import { mockID } from 'shared/uniqueID.js';
-import rison from 'rison';
+import rison from 'rison-node';
 import { RequestParams } from 'app/utils/RequestParams';
 
 import * as actions from 'app/Library/actions/libraryActions';
