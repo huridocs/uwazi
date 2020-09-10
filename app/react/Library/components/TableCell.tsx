@@ -1,13 +1,10 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
+import React from 'react';
 
 import { I18NLink } from 'app/I18N';
 import GeolocationViewer from 'app/Metadata/components/GeolocationViewer';
 import { MetadataObjectSchema, PropertySchema } from 'shared/types/commonTypes';
-import { IStore } from 'app/istore';
 
 export interface TableCellProps {
-  storeKey: 'library' | 'uploads';
   content: FormattedMetadataValue;
   zoomLevel: number;
 }
@@ -64,24 +61,11 @@ const formatProperty = (prop: FormattedMetadataValue) => {
   return result;
 };
 
-class TableCellComponent extends Component<TableCellProps> {
-  static defaultProps = { zoomLevel: 0 };
+export const TableCellComponent = (props: TableCellProps) => {
+  const cellValue = formatProperty(props.content);
+  return (
+    <div className={`table-view-cell table-view-row-zoom-${props.zoomLevel}`}>{cellValue}</div>
+  );
+};
 
-  render() {
-    const cellValue = formatProperty(this.props.content);
-
-    return (
-      <div className={`table-view-cell table-view-row-zoom-${this.props.zoomLevel}`}>
-        {cellValue}
-      </div>
-    );
-  }
-}
-
-function mapStateToProps(state: IStore, ownProps: TableCellProps) {
-  return {
-    zoomLevel: state[ownProps.storeKey].ui.get('zoomLevel'),
-  };
-}
-
-export const TableCell = connect(mapStateToProps)(TableCellComponent);
+export const TableCell = React.memo(TableCellComponent);

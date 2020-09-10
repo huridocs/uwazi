@@ -1,29 +1,21 @@
 /**
  * @jest-environment jsdom
  */
-import Immutable from 'immutable';
 
 import { I18NLink } from 'app/I18N';
-import { renderConnected } from 'app/Templates/specs/utils/renderConnected';
 import { TableCell, TableCellProps } from 'app/Library/components/TableCell';
+import { shallow } from 'enzyme';
+import React from 'react';
 
 describe('TableCell', () => {
   let component: any;
   const props: TableCellProps = {
-    storeKey: 'library',
     content: { label: 'Title', type: 'text', name: 'title', value: 'Entity 1' },
     zoomLevel: 1,
   };
 
-  function render(mappedProps: TableCellProps) {
-    const storeState = {
-      library: { ui: Immutable.fromJS({ zoomLevel: 1 }) },
-    };
-    component = renderConnected(TableCell, mappedProps, storeState);
-  }
-
-  function renderContent(mappedProps: TableCellProps) {
-    render(mappedProps);
+  function renderContent() {
+    component = shallow(<TableCell {...props} />);
     const cells = component.find('.table-view-cell');
     return cells.at(0);
   }
@@ -31,14 +23,14 @@ describe('TableCell', () => {
   it('should render a text content as value passed', () => {
     const title = 'Title 1';
     props.content = { label: 'Title', type: 'text', name: 'title', value: title };
-    const cellContent = renderContent(props);
+    const cellContent = renderContent();
     expect(cellContent.props().children).toBe(title);
   });
 
   it('should render a date with as value passed', () => {
     const formattedPropertyDate = 'May 20, 2019';
     props.content = { label: 'Date', type: 'date', name: 'date', value: formattedPropertyDate };
-    const cellContent = renderContent(props);
+    const cellContent = renderContent();
     expect(cellContent.props().children).toBe(formattedPropertyDate);
   });
 
@@ -49,7 +41,7 @@ describe('TableCell', () => {
       name: 'languages',
       value: [{ value: 'Español' }, { value: 'English' }],
     };
-    const cellContent = renderContent(props);
+    const cellContent = renderContent();
     expect(cellContent.props().children).toBe('Español, English');
   });
 
@@ -64,7 +56,7 @@ describe('TableCell', () => {
         value: null,
       },
     };
-    const cellContent = renderContent(props);
+    const cellContent = renderContent();
     expect(cellContent.find('a').props().href).toBe('www.google.com');
   });
 
@@ -84,7 +76,7 @@ describe('TableCell', () => {
         },
       ],
     };
-    const cellContent = renderContent(props);
+    const cellContent = renderContent();
     const links = cellContent.find(I18NLink);
     expect(cellContent.text()).toBe('<Connect(I18NLink) />, <Connect(I18NLink) />');
     expect(links.at(0).props().to).toBe('/entity/Entity1');
@@ -97,7 +89,7 @@ describe('TableCell', () => {
       name: 'geolocation',
       value: [{ lon: 2, lat: 46, value: null }],
     };
-    const cellContent = renderContent(props);
+    const cellContent = renderContent();
     const geolocationProps = cellContent.props().children.props;
     expect(geolocationProps.points).toEqual([{ lon: 2, lat: 46, value: null }]);
     expect(geolocationProps.onlyForCards).toBe(true);
@@ -109,13 +101,13 @@ describe('TableCell', () => {
       type: 'select',
       name: 'empty_select',
     };
-    const cellContent = renderContent(props);
+    const cellContent = renderContent();
     expect(cellContent.props().children).toBe(undefined);
   });
 
   it('should not render entity has not value for column', () => {
     delete props.content;
-    const cellContent = renderContent(props);
+    const cellContent = renderContent();
     expect(cellContent.props().children).toBe(undefined);
   });
 
@@ -126,7 +118,7 @@ describe('TableCell', () => {
       name: 'non_supported_image',
       value: [{ value: 'url' }],
     };
-    const cellContent = renderContent(props);
+    const cellContent = renderContent();
     expect(cellContent.props().children).toEqual(undefined);
   });
 });

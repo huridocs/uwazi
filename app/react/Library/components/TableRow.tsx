@@ -18,11 +18,13 @@ interface TableRowProps {
   clickOnDocument: (...args: any[]) => void;
   templates: IImmutable<TemplateSchema[]>;
   thesauris: IImmutable<ThesaurusSchema[]>;
+  zoomLevel: number;
 }
 
 const defaultProps = {
   templates: Immutable.fromJS([]) as IImmutable<TemplateSchema[]>,
   thesauris: Immutable.fromJS([]) as IImmutable<ThesaurusSchema[]>,
+  zoomLevel: 2,
 };
 
 const getColumnValue = (
@@ -54,7 +56,6 @@ class TableRowComponent extends Component<TableRowProps> {
 
   renderCell = (
     index: number,
-    storeKey: 'library' | 'uploads',
     selected: boolean | undefined,
     columnValue: FormattedMetadataValue
   ) => {
@@ -69,16 +70,16 @@ class TableRowComponent extends Component<TableRowProps> {
               onClick={this.onRowClick}
             />
           )}
-          <TableCell storeKey={storeKey} content={columnValue} />
+          <TableCell content={columnValue} zoomLevel={this.props.zoomLevel} />
         </div>
       );
     }
 
-    return <TableCell storeKey={storeKey} content={columnValue} />;
+    return <TableCell content={columnValue} zoomLevel={this.props.zoomLevel} />;
   };
 
   render() {
-    const { entity, templates, thesauris, columns, selected, storeKey } = this.props;
+    const { entity, templates, thesauris, columns, selected } = this.props;
     const formattedEntity = formatter.prepareMetadata(entity.toJS(), templates, thesauris, null, {
       sortedProperty: 'creationDate',
     });
@@ -94,7 +95,7 @@ class TableRowComponent extends Component<TableRowProps> {
           const columnKey = formattedEntity._id + column.name;
           return (
             <td className={!index ? 'sticky-col' : ''} key={`column_${columnKey}`}>
-              {this.renderCell(index, storeKey, selected, columnValue)}
+              {this.renderCell(index, selected, columnValue)}
             </td>
           );
         })}
@@ -115,6 +116,7 @@ function mapStateToProps(state: IStore, ownProps: TableRowProps) {
     selected,
     templates: state.templates,
     thesauris: state.thesauris,
+    zoomLevel: state[ownProps.storeKey].ui.get('zoomLevel'),
   };
 }
 
