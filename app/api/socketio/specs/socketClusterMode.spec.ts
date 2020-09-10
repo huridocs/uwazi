@@ -3,9 +3,10 @@ import express, { Application } from 'express';
 import { Server } from 'http';
 import io from 'socket.io-client';
 import { multitenantMiddleware } from 'api/utils/multitenantMiddleware';
-import { tenants, Tenant } from 'api/tenants/tenantContext';
+import { tenants } from 'api/tenants/tenantContext';
 
 import { setupSockets } from '../setupSockets';
+import { testingTenants } from 'api/utils/testingTenants';
 
 const closeServer = async (httpServer: Server) =>
   new Promise(resolve => {
@@ -53,8 +54,8 @@ describe('socket middlewares setup', () => {
     app.use(multitenantMiddleware);
     setupSockets(server, app);
 
-    tenants.add(<Tenant>{ name: 'tenant1' });
-    tenants.add(<Tenant>{ name: 'tenant2' });
+    tenants.add(testingTenants.createTenant({ name: 'tenant1' }));
+    tenants.add(testingTenants.createTenant({ name: 'tenant2' }));
 
     app.get('/api/test', (req, res) => {
       req.io.emitToCurrentTenant('eventName', 'eventData');

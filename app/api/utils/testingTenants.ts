@@ -1,4 +1,5 @@
 import { Tenant, tenants } from 'api/tenants/tenantContext';
+import { config } from 'api/config';
 
 const originalCurrentFN = tenants.current.bind(tenants);
 
@@ -6,7 +7,7 @@ let mockedTenant: Partial<Tenant>;
 
 const testingTenants = {
   mockCurrentTenant(tenant: Partial<Tenant>) {
-    mockedTenant = tenant;
+    mockedTenant = this.createTenant(tenant);
     tenants.current = () => <Tenant>mockedTenant;
   },
 
@@ -30,6 +31,7 @@ const testingTenants = {
       attachments: '',
       customUploads: '',
       temporalFiles: '',
+      uwaziVersion: config.version,
       ...partial,
     };
   },

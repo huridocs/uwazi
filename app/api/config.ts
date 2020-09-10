@@ -1,4 +1,5 @@
 import { Tenant } from './tenants/tenantContext';
+import { version } from '../../package.json';
 
 const { ROOT_PATH, UPLOADS_FOLDER, CUSTOM_UPLOADS_FOLDER, TEMPORAL_FILES_FOLDER } = process.env;
 
@@ -15,6 +16,8 @@ export const config = {
 
   rootPath,
 
+  version,
+
   publicAssets: `${rootPath}/public/`,
 
   // db for tenants list and sessions
@@ -29,6 +32,7 @@ export const config = {
     attachments: UPLOADS_FOLDER || `${rootPath}/uploaded_documents/`,
     customUploads: CUSTOM_UPLOADS_FOLDER || `${rootPath}/custom_uploads/`,
     temporalFiles: TEMPORAL_FILES_FOLDER || `${rootPath}/temporal_files/`,
+    uwaziVersion: version,
   },
 
   redis: {

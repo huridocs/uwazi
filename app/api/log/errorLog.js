@@ -46,4 +46,9 @@ export const createErrorLog = () => {
   return logger;
 };
 
-export default createErrorLog();
+const errorLog = createErrorLog();
+
+//backwad compatibility, deprecated in favor of named export
+export default errorLog;
+
+export { errorLog };

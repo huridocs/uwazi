@@ -11,6 +11,8 @@ export type Tenant = {
   attachments: string;
   customUploads: string;
   temporalFiles: string;
+  uwaziVersion: string;
+  unavailable?: boolean;
 };
 
 class Tenants {
