@@ -2,8 +2,8 @@ import bodyParser from 'body-parser';
 import express, { Application, Request, Response, NextFunction } from 'express';
 import { Response as SuperTestResponse } from 'supertest';
 
-import errorHandlingMiddleware from 'api/utils/error_handling_middleware';
 import languageMiddleware from 'api/utils/languageMiddleware';
+import { errorHandlingMiddleware } from './errorHandlingMiddleware';
 
 const iosocket = jasmine.createSpyObj('socket', ['emit']);
 

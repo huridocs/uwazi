@@ -21,7 +21,7 @@ import { migrator } from './api/migrations/migrator';
 import { workerManager as semanticSearchManager } from './api/semanticsearch';
 import settings from './api/settings';
 import syncWorker from './api/sync/syncWorker';
-import errorHandlingMiddleware from './api/utils/error_handling_middleware';
+import { errorHandlingMiddleware } from './api/utils/errorHandlingMiddleware';
 import handleError from './api/utils/handleError.js';
 import repeater from './api/utils/Repeater';
 import serverRenderingRoutes from './react/server.js';

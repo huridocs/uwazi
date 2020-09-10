@@ -79,7 +79,7 @@ const prettifyError = (error, { req = {}, uncaught = false } = {}) => {
   return result;
 };
 
-export default (_error, { req = {}, uncaught = false } = {}) => {
+const handleError = (_error, { req = {}, uncaught = false } = {}) => {
   const error = _error || new Error('undefined error occurred');
   const responseToClientError = error.json;
 
@@ -98,4 +98,7 @@ export default (_error, { req = {}, uncaught = false } = {}) => {
   return result;
 };
 
-export { prettifyError };
+//backwad compatibility, deprecated in favor of named export
+export default handleError;
+
+export { prettifyError, handleError };
