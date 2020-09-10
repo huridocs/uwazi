@@ -50,6 +50,25 @@ describe('PdfCharacterCountToAbsolute', () => {
     expect(absolutePosition.tags[0].width).toBe(34);
   });
 
+  it('should convert last documents text to absolute position', async () => {
+    const pdfRelativePath = 'app/api/pdf_character_count_to_absolute/specs/pdf_to_be_converted.pdf';
+    const lastLabel = '•  Mr. Mostafa Nafari, member of delegation.';
+
+    const characterCountToAbsoluteConversion = new PdfCharacterCountToAbsolute();
+    await characterCountToAbsoluteConversion.loadPdf(pdfRelativePath, pdfInfo);
+    const absolutePosition: AbsolutePositionReference = <AbsolutePositionReference>(
+      characterCountToAbsoluteConversion.convert(lastLabel, 78397, 78441)
+    );
+
+    expect(absolutePosition.text).toBe(lastLabel);
+    expect(absolutePosition.tags.length).toBe(1);
+    expect(absolutePosition.tags[0].pageNumber).toBe(24);
+    expect(absolutePosition.tags[0].top).toBe(953);
+    expect(absolutePosition.tags[0].left).toBe(200);
+    expect(absolutePosition.tags[0].width).toBe(276);
+    expect(absolutePosition.tags[0].height).toBe(17);
+  });
+
   it('should convert special caracters string to absolute position', async () => {
     const pdfRelativePath = 'app/api/pdf_character_count_to_absolute/specs/pdf_to_be_converted.pdf';
     const specialCharactersString = '';

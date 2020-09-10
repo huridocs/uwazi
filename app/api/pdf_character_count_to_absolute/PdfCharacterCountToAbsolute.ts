@@ -59,12 +59,8 @@ export class PdfCharacterCountToAbsolute {
     }
   }
 
-  convert(
-    label: string,
-    startRange: number,
-    endRange: number
-  ): AbsolutePositionReference | null {
-    const stringMatches: AbsolutePositionReference[] = this.lettersTags.getStringMatches(label);
+  convert(label: string, startRange: number, endRange: number): AbsolutePositionReference | null {
+    const stringMatches: AbsolutePositionTag[][] = this.lettersTags.getStringMatches(label);
     const characterCountMatch: AbsolutePositionTag[] = this.getCharacterCountMatch(
       startRange,
       endRange
@@ -75,30 +71,28 @@ export class PdfCharacterCountToAbsolute {
     }
 
     if (characterCountMatch.length === 0) {
-      return stringMatches[0];
+      return {
+        tags: stringMatches[0],
+        text: label,
+      };
     }
 
-    const stringMatchMoreProbable = this.getCloserStringMatchToTag(
-      stringMatches,
-      characterCountMatch[0]
-    );
-
-    return (
-      stringMatchMoreProbable || {
-        tags: characterCountMatch,
-        text: label,
-      }
-    );
+    return {
+      tags:
+        this.getCloserStringMatchToTag(stringMatches, characterCountMatch[0]) ||
+        characterCountMatch,
+      text: label,
+    };
   }
 
   private getCloserStringMatchToTag(
-    stringMatches: AbsolutePositionReference[],
+    stringMatches: AbsolutePositionTag[][],
     tag: AbsolutePositionTag
-  ): AbsolutePositionReference | null {
-    stringMatches = stringMatches.filter(x => x.tags[0].pageNumber === tag.pageNumber);
+  ): AbsolutePositionTag[] {
+    stringMatches = stringMatches.filter(x => x[0].pageNumber === tag.pageNumber);
     const { top } = tag;
     return stringMatches.reduce(
-      (acc, val) => (Math.abs(top - val.tags[0].top) < Math.abs(top - acc.tags[0].top) ? val : acc),
+      (acc, val) => (Math.abs(top - val[0].top) < Math.abs(top - acc[0].top) ? val : acc),
       stringMatches[0]
     );
   }

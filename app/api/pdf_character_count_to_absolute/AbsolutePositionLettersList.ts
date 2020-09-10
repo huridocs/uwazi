@@ -1,5 +1,3 @@
-import { AbsolutePositionReference } from 'api/pdf_character_count_to_absolute/PdfCharacterCountToAbsolute';
-
 export interface AbsolutePositionTag {
   pageNumber: number;
   top: number;
@@ -82,42 +80,36 @@ export class AbsolutePositionLettersList {
     return accumulator;
   };
 
+  private lettersTagsToAbsolutePositionTags(lettersTags: AbsolutePositionTag[]) {
+    return lettersTags.reduce(
+      (accumulator: AbsolutePositionTag[], letterTag: AbsolutePositionTag) => {
+        if (this.isTagInList(accumulator, letterTag)) {
+          accumulator.slice(-1)[0].text += letterTag.text;
+        } else {
+          accumulator.push(Object.assign({}, letterTag));
+        }
+
+        return accumulator;
+      },
+      []
+    );
+  }
+
   getStringMatches(label: string) {
     const labelNoSpaces: string = label.replace(/ /g, '');
 
-    const absolutePositionReferences: AbsolutePositionReference[] = [];
-    for (
-      let lettersIndex = 0;
-      lettersIndex < this.letterListNoSpaces.length - labelNoSpaces.length;
-      lettersIndex += 1
-    ) {
-      let allWordsMatching = true;
-      const absolutePositionTags: AbsolutePositionTag[] = [];
-      for (
-        let targetLabelIndex = 0;
-        targetLabelIndex < labelNoSpaces.length;
-        targetLabelIndex += 1
-      ) {
-        const letterTag = this.letterListNoSpaces[lettersIndex + targetLabelIndex];
-        if (labelNoSpaces.charAt(targetLabelIndex) !== letterTag.text) {
-          allWordsMatching = false;
-          break;
-        }
-        if (!this.isTagInList(absolutePositionTags, letterTag)) {
-          absolutePositionTags.push(Object.assign({}, letterTag));
-        } else {
-          absolutePositionTags.slice(-1)[0].text += letterTag.text;
-        }
-      }
+    const absolutePositionsLists: AbsolutePositionTag[][] = [];
 
-      if (allWordsMatching) {
-        absolutePositionReferences.push({
-          text: label,
-          tags: absolutePositionTags,
-        });
+    for (let startRange = 0; startRange < this.letterListNoSpaces.length; startRange += 1) {
+      const endRange = startRange + labelNoSpaces.length;
+      const lettersToMatch = this.letterListNoSpaces.slice(startRange, endRange);
+
+      if (labelNoSpaces === lettersToMatch.map(x => x.text).join('')) {
+        absolutePositionsLists.push(this.lettersTagsToAbsolutePositionTags(lettersToMatch));
       }
     }
-    return absolutePositionReferences;
+
+    return absolutePositionsLists;
   }
 
   private isTagInList(tags: AbsolutePositionTag[], tag: AbsolutePositionTag) {
@@ -145,19 +137,6 @@ export class AbsolutePositionLettersList {
 
     const matchingLetters = lettersFromMatchingPage.slice(startRange, endRange);
 
-    const absolutePositionTags: AbsolutePositionTag[] = matchingLetters.reduce(
-      (accumulator: AbsolutePositionTag[], letterTag: AbsolutePositionTag) => {
-        if (this.isTagInList(accumulator, letterTag)) {
-          accumulator.slice(-1)[0].text += letterTag.text;
-        } else {
-          accumulator.push(Object.assign({}, letterTag));
-        }
-
-        return accumulator;
-      },
-      []
-    );
-
-    return absolutePositionTags;
+    return this.lettersTagsToAbsolutePositionTags(matchingLetters);
   }
 }
