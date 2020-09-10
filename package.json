@@ -55,11 +55,6 @@
       "app/jest.server.config.js"
     ]
   },
-  "resolutions": {
-    "callsites": "3.1.0",
-    "chokidar": "2.1.8",
-    "mongodb": "3.5.7"
-  },
   "dependencies": {
     "@babel/register": "7.11.5",
     "@fast-csv/format": "^4.1.2",
@@ -93,7 +88,7 @@
     "batarange": "0.2.0",
     "bcryptjs": "^2.4.3",
     "big.js": "^5.2.2",
-    "bluebird": "^3.4.6",
+    "bluebird": "^3.7.2",
     "body-parser": "1.18.2",
     "bootstrap": "3.4.1",
     "child-process-promise": "^2.2.1",
