@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Link, withRouter } from 'react-router';
 import { toUrlParams } from 'shared/JSONRequest';
-import rison from 'rison';
+import rison from 'rison-node';
 
 import Doc from 'app/Library/components/Doc';
 import SearchBar from 'app/Library/components/SearchBar';

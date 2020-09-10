@@ -1,4 +1,4 @@
-import rison from 'rison';
+import rison from 'rison-node';
 import markdownEscapedValues from 'app/utils/markdownEscapedValues';
 
 const listPlaceholder = '{---UWAZILIST---}';
