@@ -7,7 +7,6 @@ import Configure2fa from 'app/Auth2fa/Configure2fa';
 import EditTranslations from 'app/I18N/EditTranslations';
 import blankState from 'app/Library/helpers/blankState';
 import Library from 'app/Library/Library';
-import Conversion from 'app/Conversion/Conversion';
 import LibraryMap from 'app/Library/LibraryMap';
 import EditPage from 'app/Pages/EditPage';
 import NewPage from 'app/Pages/NewPage';
@@ -148,7 +147,6 @@ const routes = (
     <Route path="document/:sharedId*" component={ViewerRoute} onEnter={onEnter} />
     <Route path="entity/:sharedId" component={ViewerRoute} onEnter={onEnter} />
     <Route path="page/:sharedId" component={PageView} onEnter={onEnter} />
-    <Route path="conversion" component={Conversion} />
     <Route
       path="semanticsearch/:searchId"
       component={SemanticSearchResultsView}

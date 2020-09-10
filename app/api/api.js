@@ -36,5 +36,4 @@ export default (app, server) => {
   require('./sync/routes').default(app);
   require('./swagger/swaggerconfig').default(app);
   require('./tasks/routes').default(app);
-  require('./pdf_character_count_to_absolute/routes').default(app);
 };
