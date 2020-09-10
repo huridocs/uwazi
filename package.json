@@ -61,6 +61,7 @@
     "mongodb": "3.5.7"
   },
   "dependencies": {
+    "@babel/register": "7.11.5",
     "@fast-csv/format": "^4.1.2",
     "@fortawesome/fontawesome-svg-core": "^1.2.0",
     "@fortawesome/free-regular-svg-icons": "^5.13.0",
@@ -207,7 +208,6 @@
     "@babel/preset-env": "7.11.5",
     "@babel/preset-react": "7.10.4",
     "@babel/preset-typescript": "7.10.4",
-    "@babel/register": "7.11.5",
     "@types/child-process-promise": "^2.2.1",
     "@types/cookie": "^0.3.3",
     "@types/enzyme": "3.10.0",
