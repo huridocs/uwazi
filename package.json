@@ -66,7 +66,7 @@
     "@supercharge/promise-pool": "^1.2.0",
     "ajv": "^6.12.3",
     "ajv-keywords": "^3.4.1",
-    "async": "^2.6.1",
+    "async": "2.6.3",
     "batarange": "0.2.0",
     "bcryptjs": "^2.4.3",
     "big.js": "^5.2.2",
