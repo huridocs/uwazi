@@ -2,76 +2,65 @@
   "name": "uwazi",
   "version": "1.6.0",
   "description": "Uwazi is a free, open-source solution for organising, analysing and publishing your documents.",
-  "main": "server.js",
+  "keywords": [
+    "react"
+  ],
+  "homepage": "https://www.uwazi.io/",
+  "bugs": {
+    "url": "https://github.com/huridocs/uwazidocs/issues"
+  },
   "repository": {
     "type": "git",
     "url": "git@github.com:huridocs/uwazidocs.git"
   },
-  "engines": {
-    "node": ">=14.1.0"
-  },
-  "keywords": [
-    "react"
-  ],
-  "author": "huridocs",
   "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/huridocs/uwazidocs/issues"
+  "author": "huridocs.org",
+  "main": "server.js",
+  "scripts": {
+    "add-migration": "./node_modules/.bin/plop --plopfile ./app/api/migrations/plopfile.js migration",
+    "admin-user": "./database/admin_user.sh",
+    "blank-state": "./database/blank_state.sh",
+    "check-types": "tsc --noEmit --pretty",
+    "dev-server": "./node_modules/.bin/nodemon ./server.js --ignore 'app/dist/*' --watch 'app/api' --watch 'app/shared' --ext 'ts js tsx'",
+    "dump-db": "./database/dump_db.sh",
+    "e2e": "jest --projects nightmare/jest.e2e.config.js -i --verbose true",
+    "e2e-puppeteer": "echo 'MAKE SURE UWAZI IS RUNNING WITH uwazi_e2e DATABASE AND INDEX';DATABASE_NAME=uwazi_e2e INDEX_NAME=uwazi_e2e jest --projects e2e/jest.e2e.config.ts -i --verbose true",
+    "e2e-puppeteer-fixtures": "DATABASE_NAME=uwazi_e2e INDEX_NAME=uwazi_e2e ./uwazi-fixtures/restore.sh",
+    "e2e-restore-fixtures": "cd nightmare/fixtures; ./restore.sh",
+    "e2e-show": "export SHOW_E2E=1; yarn e2e",
+    "emit-types": "node emitSchemaTypes.js",
+    "eslint": "./node_modules/.bin/eslint e2e app --quiet --ext js,ts,tsx",
+    "eslint-fulldiff": "git diff-index --name-only origin/development | grep ^app/ | grep -v snap | xargs ls -d 2>/dev/null | xargs ./node_modules/.bin/eslint ",
+    "fixtures": "./uwazi-fixtures/restore.sh",
+    "hot": "export HOT=true; export BABEL_ENV=debug; yarn run watch-types & yarn run dev-server & yarn run webpack-server",
+    "hot-debug": "export HOT=true; export BABEL_ENV=debug; node --inspect-brk=9229 server.js",
+    "hot-inspect": "export HOT=true; export BABEL_ENV=debug; yarn run watch-types & yarn dev-server --inspect & yarn run webpack-server",
+    "import-csv": "node run.js ./database/import_csv.js",
+    "import-evidences": "node run.js ./database/import_evidences_vault.js",
+    "migrate": "node run.js ./app/api/migrations/migrate",
+    "prettier": "./node_modules/.bin/prettier --write 'app/**/*.{js,ts,tsx}'",
+    "production-build": "./webpack/build.sh",
+    "reindex": "node run.js ./database/reindex_elastic.js",
+    "restore-db": "./database/restore_db.sh",
+    "run-production": "export NODE_ENV=production; node server.js",
+    "test": "node ./node_modules/.bin/jest",
+    "test-debug": "node --inspect ./node_modules/.bin/jest --watch --no-cache -i",
+    "vault-evidences-template": "node run.js ./database/vault_evidences_template.js",
+    "watch-types": "tsc --noEmit --pretty --watch --preserveWatchOutput",
+    "webpack-server": "node ./webpack/webpack.server.js"
   },
-  "homepage": "https://www.uwazi.io/",
   "jest": {
     "projects": [
       "app/jest.client.config.js",
       "app/jest.server.config.js"
     ]
   },
-  "scripts": {
-    "check-types": "tsc --noEmit --pretty",
-    "watch-types": "tsc --noEmit --pretty --watch --preserveWatchOutput",
-    "emit-types": "node emitSchemaTypes.js",
-    "production-build": "./webpack/build.sh",
-    "run-production": "export NODE_ENV=production; node server.js",
-    "dev-server": "./node_modules/.bin/nodemon ./server.js --ignore 'app/dist/*' --watch 'app/api' --watch 'app/shared' --ext 'ts js tsx'",
-    "webpack-server": "node ./webpack/webpack.server.js",
-    "hot": "export HOT=true; export BABEL_ENV=debug; yarn run watch-types & yarn run dev-server & yarn run webpack-server",
-    "hot-inspect": "export HOT=true; export BABEL_ENV=debug; yarn run watch-types & yarn dev-server --inspect & yarn run webpack-server",
-    "hot-debug": "export HOT=true; export BABEL_ENV=debug; node --inspect-brk=9229 server.js",
-    "reindex": "node run.js ./database/reindex_elastic.js",
-    "import-csv": "node run.js ./database/import_csv.js",
-    "import-evidences": "node run.js ./database/import_evidences_vault.js",
-    "vault-evidences-template": "node run.js ./database/vault_evidences_template.js",
-    "blank-state": "./database/blank_state.sh",
-    "admin-user": "./database/admin_user.sh",
-    "dump-db": "./database/dump_db.sh",
-    "restore-db": "./database/restore_db.sh",
-    "fixtures": "./uwazi-fixtures/restore.sh",
-    "add-migration": "./node_modules/.bin/plop --plopfile ./app/api/migrations/plopfile.js migration",
-    "migrate": "node run.js ./app/api/migrations/migrate",
-    "test-debug": "node --inspect ./node_modules/.bin/jest --watch --no-cache -i",
-    "test": "node ./node_modules/.bin/jest",
-    "e2e": "jest --projects nightmare/jest.e2e.config.js -i --verbose true",
-    "e2e-puppeteer": "echo 'MAKE SURE UWAZI IS RUNNING WITH uwazi_e2e DATABASE AND INDEX';DATABASE_NAME=uwazi_e2e INDEX_NAME=uwazi_e2e jest --projects e2e/jest.e2e.config.ts -i --verbose true",
-    "e2e-puppeteer-fixtures": "DATABASE_NAME=uwazi_e2e INDEX_NAME=uwazi_e2e ./uwazi-fixtures/restore.sh",
-    "e2e-show": "export SHOW_E2E=1; yarn e2e",
-    "e2e-restore-fixtures": "cd nightmare/fixtures; ./restore.sh",
-    "eslint": "./node_modules/.bin/eslint e2e app --quiet --ext js,ts,tsx",
-    "eslint-fulldiff": "git diff-index --name-only origin/development | grep ^app/ | grep -v snap | xargs ls -d 2>/dev/null | xargs ./node_modules/.bin/eslint ",
-    "prettier": "./node_modules/.bin/prettier --write 'app/**/*.{js,ts,tsx}'"
+  "resolutions": {
+    "callsites": "3.1.0",
+    "chokidar": "2.1.8",
+    "mongodb": "3.5.7"
   },
   "dependencies": {
-    "@babel/core": "7.4.4",
-    "@babel/plugin-proposal-class-properties": "7.8.3",
-    "@babel/plugin-proposal-decorators": "7.6.0",
-    "@babel/plugin-proposal-object-rest-spread": "7.5.2",
-    "@babel/plugin-syntax-dynamic-import": "^7.2.0",
-    "@babel/plugin-transform-modules-commonjs": "7.5.0",
-    "@babel/plugin-transform-react-constant-elements": "7.5.0",
-    "@babel/plugin-transform-react-inline-elements": "7.2.0",
-    "@babel/plugin-transform-typeof-symbol": "7.2.0",
-    "@babel/preset-env": "^7.8.3",
-    "@babel/preset-react": "7.0.0",
-    "@babel/preset-typescript": "^7.6.0",
-    "@babel/register": "7.4.4",
     "@fast-csv/format": "^4.1.2",
     "@fortawesome/fontawesome-svg-core": "^1.2.0",
     "@fortawesome/free-regular-svg-icons": "^5.13.0",
@@ -100,12 +89,6 @@
     "ajv": "^6.12.3",
     "ajv-keywords": "^3.4.1",
     "async": "^2.6.1",
-    "babel-loader": "8.0.6",
-    "babel-plugin-add-module-exports": "1.0.0",
-    "babel-plugin-module-resolver": "3.2.0",
-    "babel-plugin-syntax-class-properties": "^6.13.0",
-    "babel-plugin-transform-class-properties": "^6.4.0",
-    "babel-plugin-transform-react-remove-prop-types": "0.4.24",
     "batarange": "0.2.0",
     "bcryptjs": "^2.4.3",
     "big.js": "^5.2.2",
@@ -198,7 +181,7 @@
     "svg-captcha": "^1.4.0",
     "swagger-jsdoc": "^3.5.0",
     "tiny-cookie": "2.1.1",
-    "typescript": "^3.7.5",
+    "typescript": "3.7.5",
     "underscore.string": "3.3.5",
     "url-join": "^4.0.0",
     "validate.js": "0.9.0",
@@ -209,8 +192,22 @@
     "yazl": "^2.5.1"
   },
   "devDependencies": {
-    "@babel/cli": "7.8.4",
-    "@babel/polyfill": "7.8.7",
+    "@babel/cli": "7.11.6",
+    "@babel/core": "7.11.6",
+    "@babel/helper-call-delegate": "^7.11.4",
+    "@babel/plugin-proposal-class-properties": "7.10.4",
+    "@babel/plugin-proposal-decorators": "7.10.5",
+    "@babel/plugin-proposal-nullish-coalescing-operator": "^7.10.4",
+    "@babel/plugin-proposal-object-rest-spread": "7.11.0",
+    "@babel/plugin-proposal-optional-chaining": "^7.11.0",
+    "@babel/plugin-syntax-dynamic-import": "^7.8.3",
+    "@babel/plugin-transform-modules-commonjs": "7.10.4",
+    "@babel/plugin-transform-react-constant-elements": "7.10.4",
+    "@babel/plugin-transform-react-inline-elements": "7.10.4",
+    "@babel/preset-env": "7.11.5",
+    "@babel/preset-react": "7.10.4",
+    "@babel/preset-typescript": "7.10.4",
+    "@babel/register": "7.11.5",
     "@types/child-process-promise": "^2.2.1",
     "@types/cookie": "^0.3.3",
     "@types/enzyme": "3.10.0",
@@ -238,6 +235,9 @@
     "@typescript-eslint/parser": "^2.4.0",
     "assets-webpack-plugin": "5.1.1",
     "babel-jest": "24.8.0",
+    "babel-loader": "8.1.0",
+    "babel-plugin-module-resolver": "4.0.0",
+    "babel-plugin-transform-react-remove-prop-types": "0.4.24",
     "clean-webpack-plugin": "3.0.0",
     "copy-webpack-plugin": "6.1.0",
     "cors": "^2.8.5",
@@ -290,9 +290,7 @@
     "webpack-hot-middleware": "^2.25.0",
     "yargs": "^13.2.2"
   },
-  "resolutions": {
-    "callsites": "3.1.0",
-    "chokidar": "2.1.8",
-    "mongodb": "3.5.7"
+  "engines": {
+    "node": ">=14.1.0"
   }
 }
