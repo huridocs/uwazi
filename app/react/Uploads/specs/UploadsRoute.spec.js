@@ -1,6 +1,6 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import rison from 'rison';
+import rison from 'rison-node';
 
 import UploadsRoute from 'app/Uploads/UploadsRoute';
 import RouteHandler from 'app/App/RouteHandler';

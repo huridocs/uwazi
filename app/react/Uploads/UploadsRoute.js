@@ -19,7 +19,7 @@ import React from 'react';
 import Helmet from 'react-helmet';
 
 import setReduxState from 'app/Library/helpers/setReduxState';
-import rison from 'rison';
+import rison from 'rison-node';
 import socket from '../socket';
 
 export default class Uploads extends RouteHandler {
