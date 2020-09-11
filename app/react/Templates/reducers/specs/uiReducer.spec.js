@@ -2,7 +2,6 @@ import Immutable from 'immutable';
 
 import reducer from 'app/Templates/reducers/uiReducer';
 import * as actions from 'app/Templates/actions/actionTypes';
-import 'jasmine-immutablejs-matchers';
 
 describe('uiReducer', () => {
   describe('when state is undefined', () => {
@@ -17,14 +16,14 @@ describe('uiReducer', () => {
   describe('SAVING_TEMPLATE', () => {
     it('should set savingTemplate true', () => {
       const newState = reducer(Immutable.fromJS({}), { type: actions.SAVING_TEMPLATE });
-      expect(newState).toEqualImmutable(Immutable.fromJS({ savingTemplate: true }));
+      expect(newState.toJS()).toEqual({ savingTemplate: true });
     });
   });
 
   describe('TEMPLATE_SAVED', () => {
     it('should set savingTemplate false', () => {
       const newState = reducer(Immutable.fromJS({}), { type: actions.TEMPLATE_SAVED });
-      expect(newState).toEqualImmutable(Immutable.fromJS({ savingTemplate: false }));
+      expect(newState.toJS()).toEqual({ savingTemplate: false });
     });
   });
 
@@ -34,7 +33,7 @@ describe('uiReducer', () => {
         type: actions.EDIT_PROPERTY,
         id: 'test id',
       });
-      expect(newState).toEqualImmutable(Immutable.fromJS({ editingProperty: 'test id' }));
+      expect(newState.toJS()).toEqual({ editingProperty: 'test id' });
     });
   });
 
@@ -44,7 +43,7 @@ describe('uiReducer', () => {
         type: actions.SET_THESAURIS,
         thesauris: 'thesauris',
       });
-      expect(newState).toEqualImmutable(Immutable.fromJS({ thesauris: 'thesauris' }));
+      expect(newState.toJS()).toEqual({ thesauris: 'thesauris' });
     });
   });
 
@@ -54,7 +53,7 @@ describe('uiReducer', () => {
         type: actions.SET_TEMPLATES,
         templates: 'templates',
       });
-      expect(newState).toEqualImmutable(Immutable.fromJS({ templates: 'templates' }));
+      expect(newState.toJS()).toEqual({ templates: 'templates' });
     });
   });
 });

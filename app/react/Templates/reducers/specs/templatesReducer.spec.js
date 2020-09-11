@@ -2,7 +2,6 @@ import Immutable from 'immutable';
 
 import reducer from 'app/Templates/reducers/templatesReducer';
 import * as types from 'app/Templates/actions/actionTypes';
-import 'jasmine-immutablejs-matchers';
 
 describe('templatesReducer', () => {
   describe('when state is undefined', () => {
@@ -18,8 +17,8 @@ describe('templatesReducer', () => {
 
       const newState = reducer(null, { type: types.SET_TEMPLATES, templates });
 
-      expect(newState).toBeImmutable();
-      expect(newState).toEqualImmutable(templates);
+      expect(newState instanceof Immutable.List).toBe(true);
+      expect(newState.toJS()).toEqual(templates.toJS());
     });
   });
 
@@ -31,8 +30,8 @@ describe('templatesReducer', () => {
       const newState = reducer(state, { type: types.DELETE_TEMPLATE, id: templateId });
 
       const expected = Immutable.fromJS([{ _id: '1' }, { _id: '3' }]);
-      expect(newState).toBeImmutable();
-      expect(newState).toEqualImmutable(expected);
+      expect(newState instanceof Immutable.List).toBe(true);
+      expect(newState.toJS()).toEqual(expected.toJS());
     });
   });
 });

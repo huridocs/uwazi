@@ -2,7 +2,6 @@ import Immutable from 'immutable';
 import * as actions from 'app/Library/actions/libraryActions';
 
 import aggregationsReducer from 'app/Library/reducers/aggregationsReducer';
-import 'jasmine-immutablejs-matchers';
 
 describe('aggregationsReducer', () => {
   const initialState = Immutable.fromJS({});
