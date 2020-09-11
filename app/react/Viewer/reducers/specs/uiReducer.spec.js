@@ -1,5 +1,4 @@
 import Immutable from 'immutable';
-import 'jasmine-immutablejs-matchers';
 
 import uiReducer from 'app/Viewer/reducers/uiReducer';
 import * as types from 'app/Viewer/actions/actionTypes';
@@ -10,7 +9,7 @@ describe('Viewer uiReducer', () => {
     it('return initial state', () => {
       const newState = uiReducer();
 
-      expect(newState).toBeImmutable();
+      expect(newState instanceof Immutable.Map).toBe(true);
       expect(newState.toJS()).toEqual({ reference: {}, snippet: {} });
     });
   });
@@ -20,14 +19,14 @@ describe('Viewer uiReducer', () => {
       const newState = uiReducer(Immutable.fromJS({}), actions.goToActive());
       const expected = Immutable.fromJS({ goToActive: true });
 
-      expect(newState).toEqualImmutable(expected);
+      expect(newState.toJS()).toEqual(expected.toJS());
     });
 
     it('should set goToActive to value passed', () => {
       const newState = uiReducer(Immutable.fromJS({}), actions.goToActive(false));
       const expected = Immutable.fromJS({ goToActive: false });
 
-      expect(newState).toEqualImmutable(expected);
+      expect(newState.toJS()).toEqual(expected.toJS());
     });
   });
 
@@ -38,7 +37,7 @@ describe('Viewer uiReducer', () => {
       });
       const expected = Immutable.fromJS({ panel: false });
 
-      expect(newState).toEqualImmutable(expected);
+      expect(newState.toJS()).toEqual(expected.toJS());
     });
   });
 
@@ -50,7 +49,7 @@ describe('Viewer uiReducer', () => {
       });
       const expected = Immutable.fromJS({ panel: 'a panel' });
 
-      expect(newState).toEqualImmutable(expected);
+      expect(newState.toJS()).toEqual(expected.toJS());
     });
   });
 
@@ -61,7 +60,7 @@ describe('Viewer uiReducer', () => {
       });
       const expected = Immutable.fromJS({ panel: false });
 
-      expect(newState).toEqualImmutable(expected);
+      expect(newState.toJS()).toEqual(expected.toJS());
     });
   });
 
@@ -72,7 +71,7 @@ describe('Viewer uiReducer', () => {
       });
       const expected = Immutable.fromJS({ reference: {} });
 
-      expect(newState).toEqualImmutable(expected);
+      expect(newState.toJS()).toEqual(expected.toJS());
     });
   });
 
@@ -84,7 +83,7 @@ describe('Viewer uiReducer', () => {
       });
       const expected = Immutable.fromJS({ viewerSearching: false });
 
-      expect(newState).toEqualImmutable(expected);
+      expect(newState.toJS()).toEqual(expected.toJS());
     });
 
     it('should mantain targetDocument if in results', () => {
@@ -97,7 +96,7 @@ describe('Viewer uiReducer', () => {
         viewerSearching: false,
       });
 
-      expect(newState).toEqualImmutable(expected);
+      expect(newState.toJS()).toEqual(expected.toJS());
     });
 
     it('should remove targetDocument if not in results', () => {
@@ -107,7 +106,7 @@ describe('Viewer uiReducer', () => {
       );
       const expected = Immutable.fromJS({ reference: {}, viewerSearching: false });
 
-      expect(newState).toEqualImmutable(expected);
+      expect(newState.toJS()).toEqual(expected.toJS());
     });
   });
 
@@ -119,7 +118,7 @@ describe('Viewer uiReducer', () => {
       });
       const expected = Immutable.fromJS({ reference: { targetDocument: 'id' } });
 
-      expect(newState).toEqualImmutable(expected);
+      expect(newState.toJS()).toEqual(expected.toJS());
     });
   });
 
@@ -146,7 +145,7 @@ describe('Viewer uiReducer', () => {
         reference: { sourceRange: 'sourceRange', sourceFile: '123' },
       });
 
-      expect(newState).toEqualImmutable(expected);
+      expect(newState.toJS()).toEqual(expected.toJS());
     });
   });
 
@@ -157,7 +156,7 @@ describe('Viewer uiReducer', () => {
       });
       const expected = Immutable.fromJS({ reference: { sourceRange: null, sourceFile: null } });
 
-      expect(newState).toEqualImmutable(expected);
+      expect(newState.toJS()).toEqual(expected.toJS());
     });
 
     describe('when panel is referencePanel or targetReferencePanel', () => {
@@ -191,7 +190,7 @@ describe('Viewer uiReducer', () => {
         reference: { targetRange: 'targetRange', targetFile: '123' },
       });
 
-      expect(newState).toEqualImmutable(expected);
+      expect(newState.toJS()).toEqual(expected.toJS());
     });
   });
 
@@ -202,7 +201,7 @@ describe('Viewer uiReducer', () => {
       });
       const expected = Immutable.fromJS({ reference: { targetRange: null, targetFile: null } });
 
-      expect(newState).toEqualImmutable(expected);
+      expect(newState.toJS()).toEqual(expected.toJS());
     });
   });
 
@@ -214,7 +213,7 @@ describe('Viewer uiReducer', () => {
       );
       const expected = Immutable.fromJS({ panel: false, reference: {} });
 
-      expect(newState).toEqualImmutable(expected);
+      expect(newState.toJS()).toEqual(expected.toJS());
     });
   });
 
@@ -226,7 +225,7 @@ describe('Viewer uiReducer', () => {
       });
       const expected = Immutable.fromJS({ highlightedReference: 'reference' });
 
-      expect(newState).toEqualImmutable(expected);
+      expect(newState.toJS()).toEqual(expected.toJS());
     });
   });
 
@@ -237,7 +236,7 @@ describe('Viewer uiReducer', () => {
       });
       const expected = Immutable.fromJS({});
 
-      expect(newState).toEqualImmutable(expected);
+      expect(newState.toJS()).toEqual(expected.toJS());
     });
   });
 
@@ -249,7 +248,7 @@ describe('Viewer uiReducer', () => {
       });
       const expected = Immutable.fromJS({ activeReference: 'reference' });
 
-      expect(newState).toEqualImmutable(expected);
+      expect(newState.toJS()).toEqual(expected.toJS());
     });
   });
 
@@ -260,7 +259,7 @@ describe('Viewer uiReducer', () => {
       });
       const expected = Immutable.fromJS({ reference: {}, snippet: {} });
 
-      expect(newState).toEqualImmutable(expected);
+      expect(newState.toJS()).toEqual(expected.toJS());
     });
   });
 });

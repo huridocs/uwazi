@@ -6,8 +6,6 @@ import * as ViewerTypes from 'app/Viewer/actions/actionTypes';
 import * as UploadActions from 'app/Uploads/actions/actionTypes';
 import * as LibraryActions from 'app/Library/actions/actionTypes';
 
-import 'jasmine-immutablejs-matchers';
-
 describe('contextMenuReducer', () => {
   describe('when state is undefined', () => {
     it('return initial state', () => {
@@ -22,8 +20,8 @@ describe('contextMenuReducer', () => {
       const newState = contextMenuReducer(currentState, { type: types.OPEN_MENU });
       const expected = Immutable.fromJS({ open: true });
 
-      expect(newState).toBeImmutable();
-      expect(newState).toEqualImmutable(expected);
+      expect(newState instanceof Immutable.Map).toBe(true);
+      expect(newState.toJS()).toEqual(expected.toJS());
     });
   });
 
@@ -33,8 +31,8 @@ describe('contextMenuReducer', () => {
       const newState = contextMenuReducer(currentState, { type: types.CLOSE_MENU });
       const expected = Immutable.fromJS({ open: false });
 
-      expect(newState).toBeImmutable();
-      expect(newState).toEqualImmutable(expected);
+      expect(newState instanceof Immutable.Map).toBe(true);
+      expect(newState.toJS()).toEqual(expected.toJS());
     });
   });
 
@@ -44,8 +42,8 @@ describe('contextMenuReducer', () => {
       const newState = contextMenuReducer(currentState, { type: ViewerTypes.SET_SELECTION });
       const expected = Immutable.fromJS({ type: 'ViewerTextSelectedMenu' });
 
-      expect(newState).toBeImmutable();
-      expect(newState).toEqualImmutable(expected);
+      expect(newState instanceof Immutable.Map).toBe(true);
+      expect(newState.toJS()).toEqual(expected.toJS());
     });
   });
 
@@ -55,8 +53,8 @@ describe('contextMenuReducer', () => {
       const newState = contextMenuReducer(currentState, { type: ViewerTypes.UNSET_SELECTION });
       const expected = Immutable.fromJS({ type: 'ViewerDefaultMenu' });
 
-      expect(newState).toBeImmutable();
-      expect(newState).toEqualImmutable(expected);
+      expect(newState instanceof Immutable.Map).toBe(true);
+      expect(newState.toJS()).toEqual(expected.toJS());
     });
   });
 
@@ -66,8 +64,8 @@ describe('contextMenuReducer', () => {
       const newState = contextMenuReducer(currentState, { type: ViewerTypes.ADD_REFERENCE });
       const expected = Immutable.fromJS({ type: 'ViewerDefaultMenu' });
 
-      expect(newState).toBeImmutable();
-      expect(newState).toEqualImmutable(expected);
+      expect(newState instanceof Immutable.Map).toBe(true);
+      expect(newState.toJS()).toEqual(expected.toJS());
     });
   });
 
@@ -79,8 +77,8 @@ describe('contextMenuReducer', () => {
       });
       const expected = Immutable.fromJS({ type: 'ViewerDefaultMenu' });
 
-      expect(newState).toBeImmutable();
-      expect(newState).toEqualImmutable(expected);
+      expect(newState instanceof Immutable.Map).toBe(true);
+      expect(newState.toJS()).toEqual(expected.toJS());
     });
   });
   describe('OPEN_PANEL with viewMetadataPanel', () => {
@@ -92,8 +90,8 @@ describe('contextMenuReducer', () => {
       });
       const expected = Immutable.fromJS({ type: 'MetadataPanelMenu' });
 
-      expect(newState).toBeImmutable();
-      expect(newState).toEqualImmutable(expected);
+      expect(newState instanceof Immutable.Map).toBe(true);
+      expect(newState.toJS()).toEqual(expected.toJS());
     });
   });
   describe('OPEN_PANEL with referencePanel', () => {
@@ -105,8 +103,8 @@ describe('contextMenuReducer', () => {
       });
       const expected = Immutable.fromJS({ type: 'ViewerSaveReferenceMenu' });
 
-      expect(newState).toBeImmutable();
-      expect(newState).toEqualImmutable(expected);
+      expect(newState instanceof Immutable.Map).toBe(true);
+      expect(newState.toJS()).toEqual(expected.toJS());
     });
   });
   describe('OPEN_PANEL with targetReferencePanel', () => {
@@ -118,8 +116,8 @@ describe('contextMenuReducer', () => {
       });
       const expected = Immutable.fromJS({ type: 'ViewerSaveTargetReferenceMenu' });
 
-      expect(newState).toBeImmutable();
-      expect(newState).toEqualImmutable(expected);
+      expect(newState instanceof Immutable.Map).toBe(true);
+      expect(newState.toJS()).toEqual(expected.toJS());
     });
   });
   describe('ENTER_UPLOADS_SECTION', () => {
@@ -130,8 +128,8 @@ describe('contextMenuReducer', () => {
       });
       const expected = Immutable.fromJS({ type: 'UploadsMenu' });
 
-      expect(newState).toBeImmutable();
-      expect(newState).toEqualImmutable(expected);
+      expect(newState instanceof Immutable.Map).toBe(true);
+      expect(newState.toJS()).toEqual(expected.toJS());
     });
   });
 
@@ -141,8 +139,8 @@ describe('contextMenuReducer', () => {
       const newState = contextMenuReducer(currentState, { type: LibraryActions.ENTER_LIBRARY });
       const expected = Immutable.fromJS({ type: 'LibraryMenu' });
 
-      expect(newState).toBeImmutable();
-      expect(newState).toEqualImmutable(expected);
+      expect(newState instanceof Immutable.Map).toBe(true);
+      expect(newState.toJS()).toEqual(expected.toJS());
     });
   });
 });

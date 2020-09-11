@@ -2,7 +2,6 @@ import Immutable from 'immutable';
 import * as types from 'app/Metadata/actions/actionTypes';
 
 import progressReducer from 'app/Metadata/reducers/progressReducer';
-import 'jasmine-immutablejs-matchers';
 
 describe('metadataReducer', () => {
   const initialState = Immutable.fromJS({});
@@ -21,7 +20,7 @@ describe('metadataReducer', () => {
         type: types.START_REUPLOAD_DOCUMENT,
         doc: 'doc2',
       });
-      expect(newState).toEqualImmutable(Immutable.fromJS({ doc1: 45, doc2: 0 }));
+      expect(newState.toJS()).toEqual({ doc1: 45, doc2: 0 });
     });
   });
 
@@ -33,7 +32,7 @@ describe('metadataReducer', () => {
         doc: 'doc2',
         progress: 36,
       });
-      expect(newState).toEqualImmutable(Immutable.fromJS({ doc1: 45, doc2: 36 }));
+      expect(newState.toJS()).toEqual({ doc1: 45, doc2: 36 });
     });
   });
 
@@ -44,7 +43,7 @@ describe('metadataReducer', () => {
         type: types.REUPLOAD_COMPLETE,
         doc: 'doc1',
       });
-      expect(newState).toEqualImmutable(Immutable.fromJS({ doc2: 55 }));
+      expect(newState.toJS()).toEqual({ doc2: 55 });
     });
   });
 });
