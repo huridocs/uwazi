@@ -2,7 +2,6 @@ import Immutable from 'immutable';
 import * as types from 'app/Uploads/actions/actionTypes';
 
 import progressReducer from 'app/Uploads/reducers/progressReducer';
-import 'jasmine-immutablejs-matchers';
 
 describe('uploadsReducer', () => {
   const initialState = Immutable.fromJS({});
@@ -21,7 +20,7 @@ describe('uploadsReducer', () => {
         type: types.NEW_UPLOAD_DOCUMENT,
         doc: 'doc2',
       });
-      expect(newState).toEqualImmutable(Immutable.fromJS({ doc1: 45, doc2: 0 }));
+      expect(newState.toJS()).toEqual({ doc1: 45, doc2: 0 });
     });
   });
 
@@ -33,7 +32,7 @@ describe('uploadsReducer', () => {
         doc: 'doc2',
         progress: 36,
       });
-      expect(newState).toEqualImmutable(Immutable.fromJS({ doc1: 45, doc2: 36 }));
+      expect(newState.toJS()).toEqual({ doc1: 45, doc2: 36 });
     });
   });
 
@@ -41,7 +40,7 @@ describe('uploadsReducer', () => {
     it('should unset upload progress for the document', () => {
       const currentState = Immutable.fromJS({ doc1: 45, doc2: 55 });
       const newState = progressReducer(currentState, { type: types.UPLOAD_COMPLETE, doc: 'doc1' });
-      expect(newState).toEqualImmutable(Immutable.fromJS({ doc2: 55 }));
+      expect(newState.toJS()).toEqual({ doc2: 55 });
     });
   });
 });
