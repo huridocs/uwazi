@@ -2,7 +2,6 @@ import Immutable from 'immutable';
 import * as types from 'app/Library/actions/actionTypes';
 
 import filtersReducer from 'app/Library/reducers/filtersReducer';
-import 'jasmine-immutablejs-matchers';
 
 describe('filtersReducer', () => {
   const initialState = Immutable.fromJS({ properties: [], documentTypes: [] });
