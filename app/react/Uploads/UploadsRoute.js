@@ -91,9 +91,9 @@ export default class Uploads extends RouteHandler {
     this.emptyState();
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (this.urlHasChanged(nextProps)) {
-      this.getClientState(nextProps);
+  componentDidUpdate(prevProps) {
+    if (this.urlHasChanged(prevProps)) {
+      this.getClientState(this.props);
     }
   }
 
