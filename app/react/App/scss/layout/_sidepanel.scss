@@ -1,7 +1,7 @@
-@import '../../App/scss/config/_colors.scss';
-@import '../../App/scss/config/_materials.scss';
-@import '../../App/scss/config/_typography.scss';
-@import '../../App/scss/elements/_tooltip.scss';
+@import '../../scss/config/_colors.scss';
+@import '../../scss/config/_materials.scss';
+@import '../../scss/config/_typography.scss';
+@import '../../scss/elements/_tooltip.scss';
 
 $c-sidebar: darken($c-background, 0%);
 $c-sidebar: $c-white;
@@ -207,11 +207,6 @@ $c-sidebar: $c-white;
   }
 }
 
-.sidepanel-header,
-.sidepanel-footer {
-  z-index: 4;
-}
-
 .sidepanel-header {
   background: $c-sidebar;
   position: relative;
@@ -239,7 +234,9 @@ $c-sidebar: $c-white;
     font-size: $f-size-lg;
   }
 }
+
 .sidepanel-footer {
+  z-index:1;
   position: absolute;
   bottom: 2em;
   left: 50%;

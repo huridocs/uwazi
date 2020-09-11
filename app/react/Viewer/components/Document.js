@@ -23,12 +23,9 @@ export class Document extends Component {
     this.onDocumentReady = this.onDocumentReady.bind(this);
   }
 
-  componentWillMount() {
-    this.props.unsetSelection();
-  }
-
   componentDidMount() {
     this.text = Text(this.pagesContainer);
+    this.props.unsetSelection();
   }
 
   componentWillReceiveProps(nextProps) {

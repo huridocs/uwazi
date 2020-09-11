@@ -4,7 +4,7 @@
 var path = require("path");
 var webpack = require("webpack");
 const AssetsPlugin = require("assets-webpack-plugin");
-const CleanWebpackPlugin = require("clean-webpack-plugin");
+const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const RtlCssPlugin = require("rtlcss-webpack-plugin");
 var CopyWebpackPlugin = require("copy-webpack-plugin");
@@ -88,9 +88,7 @@ module.exports = function(production) {
       ]
     },
     plugins: [
-      new CleanWebpackPlugin([path.join(outputPath, "/*")], {
-        root: rootPath
-      }),
+      new CleanWebpackPlugin(),
       new MiniCssExtractPlugin({
         filename: stylesName
       }),
@@ -100,9 +98,11 @@ module.exports = function(production) {
       new AssetsPlugin({
         path: outputPath
       }),
-      new CopyWebpackPlugin([
-        {from: 'node_modules/react-widgets/lib/fonts', to: 'fonts'},
-      ]),
+      new CopyWebpackPlugin({
+        patterns: [
+          { from: 'node_modules/react-widgets/lib/fonts', to: 'fonts' },
+        ]
+      }),
     ]
   };
 };

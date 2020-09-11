@@ -36,13 +36,13 @@ export class DocumentSidePanel extends Component {
     this.deleteDocument = this.deleteDocument.bind(this);
   }
 
-  componentWillReceiveProps(newProps) {
+  componentDidUpdate(prevProps) {
     if (
-      newProps.doc.get('_id') &&
-      newProps.doc.get('_id') !== this.props.doc.get('_id') &&
+      this.props.doc.get('_id') &&
+      prevProps.doc.get('_id') !== this.props.doc.get('_id') &&
       this.props.getDocumentReferences
     ) {
-      this.props.getDocumentReferences(newProps.doc.get('sharedId'), this.props.storeKey);
+      this.props.getDocumentReferences(this.props.doc.get('sharedId'), this.props.storeKey);
     }
   }
 

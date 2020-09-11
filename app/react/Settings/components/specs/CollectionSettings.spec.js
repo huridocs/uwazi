@@ -15,7 +15,7 @@ describe('CollectionSettings', () => {
     props = {
       settings: {
         _id: 'id',
-        dateFormat: 'DD-MM-YYYY',
+        dateFormat: 'dd-MM-yyyy',
         allowedPublicTemplates: ['existingId1', 'existingId2'],
       },
       notify: jasmine.createSpy('notify'),
@@ -66,7 +66,7 @@ describe('CollectionSettings', () => {
         _id: 'id',
         _rev: 'rev',
         analyticsTrackingId: 'X-123-Y',
-        dateFormat: 'MM/DD/YYYY',
+        dateFormat: 'MM/dd/yyyy',
         home_page: '',
         mailerConfig: 'config',
         matomoConfig: 'matomo',

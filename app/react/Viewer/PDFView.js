@@ -29,7 +29,7 @@ class PDFView extends Component {
     this.onDocumentReady = this.onDocumentReady.bind(this);
   }
 
-  componentWillMount() {
+  componentDidMount() {
     if (this.props.location.query.searchTerm) {
       this.context.store.dispatch(actions.set('viewer.sidepanel.tab', 'text-search'));
     }

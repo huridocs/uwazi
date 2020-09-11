@@ -8,10 +8,18 @@ import PDFJS from '../PDFJS';
 import PDFPage from './PDFPage.js';
 
 class PDF extends Component {
+  static getDerivedStateFromProps(props, state) {
+    if (state.filename !== null && state.filename !== props.filename) {
+      return { pdf: { numPages: 0 }, filename: props.filename };
+    }
+
+    return null;
+  }
+
   constructor(props) {
     super(props);
     this._isMounted = false;
-    this.state = { pdf: { numPages: 0 } };
+    this.state = { pdf: { numPages: 0 }, filename: props.filename };
     this.pagesLoaded = {};
     this.loadDocument(props.file);
     this.currentPage = '1';
@@ -33,15 +41,6 @@ class PDF extends Component {
     }
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (this.props.filename !== null && this.props.filename !== nextProps.filename) {
-      this.pagesLoaded = {};
-      this.setState({ pdf: { numPages: 0 } }, () => {
-        this.loadDocument(nextProps.file);
-      });
-    }
-  }
-
   shouldComponentUpdate(nextProps, nextState) {
     return (
       nextProps.file !== this.props.file ||
@@ -52,7 +51,12 @@ class PDF extends Component {
     );
   }
 
-  componentDidUpdate() {
+  componentDidUpdate(prevProps) {
+    if (prevProps.filename !== null && this.props.filename !== prevProps.filename) {
+      this.pagesLoaded = {};
+      this.loadDocument(prevProps.file);
+    }
+
     if (this.state.pdf.numPages && !this.pdfReady) {
       this.pdfReady = true;
       this.props.onPDFReady();

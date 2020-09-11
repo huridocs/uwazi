@@ -235,7 +235,7 @@ describe('csvExporter typeFormatters', () => {
   describe('HELPERS', () => {
     it('should format timestamps to the provided format', () => {
       const timestamp = 1585851003;
-      const format1 = 'YYYY/MM/DD';
+      const format1 = 'yyyy/MM/dd';
 
       const formatted1 = formatDate(timestamp, format1);
 

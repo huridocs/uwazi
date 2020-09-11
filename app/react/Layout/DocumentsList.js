@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Link, withRouter } from 'react-router';
 import { toUrlParams } from 'shared/JSONRequest';
-import rison from 'rison';
+import rison from 'rison-node';
 
 import Doc from 'app/Library/components/Doc';
 import SearchBar from 'app/Library/components/SearchBar';
@@ -27,10 +27,9 @@ class DocumentsList extends Component {
     this.setState({ loading: false });
   }
 
-  clickOnDocument(...args) {
-    if (this.props.clickOnDocument) {
-      this.props.clickOnDocument.apply(this, args);
-    }
+  loadMoreDocuments(amount, from) {
+    this.setState({ loading: true });
+    this.props.loadMoreDocuments(this.props.storeKey, amount, from);
   }
 
   selectAllDocuments() {
@@ -39,10 +38,10 @@ class DocumentsList extends Component {
     }
   }
 
-  loadMoreDocuments(amount, from) {
-    this.setState({ loading: true });
-    this.setState({ loading: true });
-    this.props.loadMoreDocuments(this.props.storeKey, amount, from);
+  clickOnDocument(...args) {
+    if (this.props.clickOnDocument) {
+      this.props.clickOnDocument.apply(this, args);
+    }
   }
 
   loadMoreButton(amount) {

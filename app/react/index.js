@@ -8,7 +8,7 @@ import App from './App';
 import './App/sockets';
 
 const render = Component => {
-  ReactDOM.render(
+  ReactDOM.hydrate(
     <AppContainer>
       <Component />
     </AppContainer>,
