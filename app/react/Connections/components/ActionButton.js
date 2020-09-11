@@ -3,7 +3,6 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { Map } from 'immutable';
-import validate from 'validate.js';
 import { Icon } from 'UI';
 import { saveConnection, selectRangedTarget } from '../actions/actions';
 
@@ -32,21 +31,18 @@ export class ActionButton extends Component {
 
   render() {
     const connection = this.props.connection.toJS();
-    const validator = {
-      sourceDocument: { presence: true },
-      targetDocument: { presence: true },
-      template: { presence: true },
-    };
+
+    let connectionValid =
+      connection.sourceDocument && connection.targetDocument && connection.template;
 
     if (this.props.type === 'basic') {
       delete connection.sourceRange;
     }
 
     if (this.props.type !== 'basic') {
-      validator.sourceRange = { presence: true };
+      connectionValid = connectionValid && connection.sourceRange;
     }
 
-    const connectionValid = !validate(connection, validator);
     const enabled = connectionValid && !this.props.busy;
     const buttonClass =
       this.props.action === 'save' ? 'btn btn-success' : 'edit-metadata btn btn-success';
