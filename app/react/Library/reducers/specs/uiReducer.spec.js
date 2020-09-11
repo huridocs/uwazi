@@ -2,7 +2,6 @@ import Immutable from 'immutable';
 import * as types from 'app/Library/actions/actionTypes';
 
 import uiReducer from 'app/Library/reducers/uiReducer';
-import 'jasmine-immutablejs-matchers';
 
 describe('uiReducer', () => {
   const initialState = Immutable.fromJS({

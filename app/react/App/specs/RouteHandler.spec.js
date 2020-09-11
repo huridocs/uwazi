@@ -4,7 +4,6 @@
 /* eslint-disable max-statements */
 import React from 'react';
 import backend from 'fetch-mock';
-import 'jasmine-immutablejs-matchers';
 import { shallow } from 'enzyme';
 import Immutable from 'immutable';
 import moment from 'moment';
