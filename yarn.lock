@@ -1137,10 +1137,10 @@
     exec-sh "^0.3.2"
     minimist "^1.2.0"
 
-"@fast-csv/format@^4.1.2":
-  version "4.1.2"
-  resolved "https://registry.yarnpkg.com/@fast-csv/format/-/format-4.1.2.tgz#68abbfa2f2a56055336de20f0f6dae6ca1fa4bd9"
-  integrity sha512-ERW7QuIEYa/eJArjzEKWe8Sdj9aNBLDjMfZw+EpcIb9CFOMz7SNZl8ElWOjcUU8Gj088TerBSGvUoCZN0SoXig==
+"@fast-csv/format@^4.3.1":
+  version "4.3.1"
+  resolved "https://registry.yarnpkg.com/@fast-csv/format/-/format-4.3.1.tgz#e550731487002e0d1bac13422dd8506cdfd60f50"
+  integrity sha512-Ap6KSt0iJlzrivZU4grQzDGGOQ+vN5kvUeOHLF1BE7nWri1auiodgS3SCffvLe1Zvu79tACe1tw3dyBADk1NsA==
   dependencies:
     lodash.escaperegexp "^4.1.2"
     lodash.isboolean "^3.0.3"
