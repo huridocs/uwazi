@@ -238,7 +238,7 @@
     "jest-image-snapshot": "^4.1.0",
     "jest-puppeteer": "4.4.0",
     "mini-css-extract-plugin": "^0.11.2",
-    "mongodb-memory-server": "^6.6.1",
+    "mongodb-memory-server": "^6.7.5",
     "nightmare": "2.10.0",
     "nightmare-real-mouse": "^1.0.0",
     "nightmare-upload": "^0.1.1",
