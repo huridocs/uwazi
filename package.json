@@ -61,7 +61,7 @@
     "@fortawesome/free-regular-svg-icons": "^5.13.0",
     "@fortawesome/free-solid-svg-icons": "^5.13.0",
     "@fortawesome/react-fontawesome": "^0.1.9",
-    "@loadable/component": "^5.10.3",
+    "@loadable/component": "^5.13.1",
     "@supercharge/promise-pool": "^1.2.0",
     "ajv": "^6.12.3",
     "ajv-keywords": "^3.4.1",
