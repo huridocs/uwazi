@@ -97,7 +97,7 @@
     "isomorphic-fetch": "2.2.1",
     "joi": "^13.6.0",
     "joi-objectid": "^2.0.0",
-    "json-schema-to-typescript": "^7.1.0",
+    "json-schema-to-typescript": "^9.1.1",
     "jvent": "1.0.2",
     "mark.js": "^8.11.1",
     "markdown-it": "11.0.0",
