@@ -245,7 +245,7 @@
     "node-sass": "4.14.1",
     "nodemon": "^2.0.4",
     "optimize-css-assets-webpack-plugin": "5.0.4",
-    "plop": "1.9.1",
+    "plop": "^2.7.4",
     "prettier": "1.19.1",
     "puppeteer": "3.1.0",
     "react-dnd-test-backend": "2.5.1",
