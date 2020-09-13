@@ -140,7 +140,7 @@
     "redux": "3.7.2",
     "redux-devtools-extension": "^2.13.2",
     "redux-thunk": "^2.0.1",
-    "reselect": "3.0.1",
+    "reselect": "^4.0.0",
     "rison-node": "^2.1.1",
     "rtlcss": "2.6.0",
     "sanitize-filename": "^1.6.3",
