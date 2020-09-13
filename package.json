@@ -223,7 +223,7 @@
     "cors": "^2.8.5",
     "css-loader": "^4.3.0",
     "enzyme": "3.11.0",
-    "enzyme-to-json": "^3.3.3",
+    "enzyme-to-json": "^3.5.0",
     "eslint": "v5.15.3",
     "eslint-config-airbnb": "v17.1.0",
     "eslint-plugin-import": "^2.9.0",
