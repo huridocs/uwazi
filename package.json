@@ -188,7 +188,7 @@
     "@types/jest-environment-puppeteer": "4.3.1",
     "@types/jest-image-snapshot": "^3.1.0",
     "@types/joi": "^14.3.4",
-    "@types/loadable__component": "^5.10.0",
+    "@types/loadable__component": "^5.13.0",
     "@types/mongodb": "3.5.16",
     "@types/mongoose": "5.7.16",
     "@types/multer": "^1.4.4",
