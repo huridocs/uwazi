@@ -66,7 +66,7 @@ export class Icon extends Component {
 Icon.defaultProps = {
   data: undefined,
   className: undefined,
-  size: 'md',
+  size: undefined,
 };
 
 Icon.propTypes = {
