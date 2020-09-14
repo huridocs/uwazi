@@ -1,5 +1,4 @@
 import Immutable from 'immutable';
-import 'jasmine-immutablejs-matchers';
 
 import referencesReducer from 'app/Viewer/reducers/referencesReducer';
 import * as types from 'app/Viewer/actions/actionTypes';
@@ -9,7 +8,7 @@ describe('Viewer referencesReducer', () => {
     it('return initial state', () => {
       const newState = referencesReducer();
 
-      expect(newState).toBeImmutable();
+      expect(newState instanceof Immutable.List).toBe(true);
       expect(newState.toJS()).toEqual([]);
     });
   });
@@ -22,8 +21,8 @@ describe('Viewer referencesReducer', () => {
       });
       const expected = Immutable.fromJS([{ title: 'test' }]);
 
-      expect(newState).toBeImmutable();
-      expect(newState).toEqualImmutable(expected);
+      expect(newState instanceof Immutable.List).toBe(true);
+      expect(newState.toJS()).toEqual(expected.toJS());
     });
   });
 
@@ -35,8 +34,8 @@ describe('Viewer referencesReducer', () => {
       });
       const expected = Immutable.fromJS([1, 2]);
 
-      expect(newState).toBeImmutable();
-      expect(newState).toEqualImmutable(expected);
+      expect(newState instanceof Immutable.List).toBe(true);
+      expect(newState.toJS()).toEqual(expected.toJS());
     });
   });
 
@@ -84,7 +83,7 @@ describe('Viewer referencesReducer', () => {
       const newState = referencesReducer(['reference'], { type: types.RESET_DOCUMENT_VIEWER });
       const expected = Immutable.fromJS([]);
 
-      expect(newState).toBeImmutable();
+      expect(newState instanceof Immutable.List).toBe(true);
       expect(newState.toJS()).toEqual(expected.toJS());
     });
   });

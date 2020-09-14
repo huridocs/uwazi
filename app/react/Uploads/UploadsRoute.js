@@ -19,7 +19,7 @@ import React from 'react';
 import Helmet from 'react-helmet';
 
 import setReduxState from 'app/Library/helpers/setReduxState';
-import rison from 'rison';
+import rison from 'rison-node';
 import socket from '../socket';
 
 export default class Uploads extends RouteHandler {
@@ -91,9 +91,9 @@ export default class Uploads extends RouteHandler {
     this.emptyState();
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (this.urlHasChanged(nextProps)) {
-      this.getClientState(nextProps);
+  componentDidUpdate(prevProps) {
+    if (this.urlHasChanged(prevProps)) {
+      this.getClientState(this.props);
     }
   }
 

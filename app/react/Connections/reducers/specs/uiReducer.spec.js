@@ -1,5 +1,4 @@
 import { fromJS as Immutable } from 'immutable';
-import 'jasmine-immutablejs-matchers';
 
 import uiReducer from '../uiReducer';
 
