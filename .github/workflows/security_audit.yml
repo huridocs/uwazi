@@ -3,7 +3,7 @@ name: Modules security check
 on: [push]
 
 jobs:
-  snyk:
+  yarn-audit:
     runs-on: ubuntu-latest
     steps:
       - name: Use Node.js 14.6.x
