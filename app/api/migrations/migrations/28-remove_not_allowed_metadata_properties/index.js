@@ -14,16 +14,20 @@ export default {
 
     while (await cursor.hasNext()) {
       const entity = await cursor.next();
+      const entityTemplate = entity.template ? entity.template.toString() : 'empty';
 
-      if (!templatesProperties[entity.template.toString()]) {
-        templatesProperties[entity.template.toString()] = (
-          await db.collection('templates').findOne({ _id: entity.template })
-        ).properties.map(p => p.name);
+      if (!templatesProperties[entityTemplate]) {
+        const template = await db.collection('templates').findOne({ _id: entity.template });
+        templatesProperties[entityTemplate] = [];
+
+        if (template) {
+          templatesProperties[entityTemplate] = template.properties.map(p => p.name);
+        }
       }
 
-      const propertiesOnTemplate = templatesProperties[entity.template.toString()];
+      const propertiesOnTemplate = templatesProperties[entityTemplate];
       const metadata = propertiesOnTemplate.reduce((newMetadata, prop) => {
-        if (entity.metadata[prop]) {
+        if (entity.metadata && entity.metadata[prop]) {
           //eslint-disable-next-line no-param-reassign
           newMetadata[prop] = entity.metadata[prop];
         }

@@ -29,6 +29,15 @@ export default {
       },
     },
     {
+      title: 'entity without template',
+      metadata: {
+        text: [{ value: 'value' }],
+        text_2: [{ value: 'value2' }],
+        text_3: [{ value: 'value3' }],
+        text_4: [{ value: 'value4' }],
+      },
+    },
+    {
       template: template1,
       metadata: {
         text: [{ value: 'value' }],
@@ -45,6 +54,10 @@ export default {
         text_3: [{ value: 'value3' }],
         text_4: [{ value: 'value4' }],
       },
+    },
+    {
+      title: 'entity without metadata',
+      template: template2,
     },
   ],
 };
