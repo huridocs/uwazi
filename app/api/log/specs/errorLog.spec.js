@@ -1,3 +1,4 @@
+import { tenants } from 'api/tenants';
 import { createErrorLog } from '../errorLog';
 
 describe('errorLog', () => {
@@ -9,28 +10,32 @@ describe('errorLog', () => {
     expect(anErrorLog.transports.length).toBe(2);
   });
 
-  it('should call 2 transports with instance name and message', () => {
+  it('should call 2 transports with tenant name and message', async () => {
     const anErrorLog = createErrorLog();
 
     spyOn(anErrorLog.transports[0], 'log');
     spyOn(anErrorLog.transports[1], 'log');
 
-    anErrorLog.error('a message');
+    tenants.add({ name: 'tenant' });
+
+    await tenants.run(async () => {
+      anErrorLog.error('a message');
+    }, 'tenant');
 
     let fileArgs = anErrorLog.transports[0].log.calls.mostRecent().args[0];
     fileArgs = Object.getOwnPropertySymbols(fileArgs).map(s => fileArgs[s]);
 
     expect(fileArgs[1]).toContain('a message');
-    expect(fileArgs[1]).toContain('[localhost]');
+    expect(fileArgs[1]).toContain('[tenant]');
 
     let consoleArgs = anErrorLog.transports[1].log.calls.mostRecent().args[0];
     consoleArgs = Object.getOwnPropertySymbols(consoleArgs).map(s => consoleArgs[s]);
 
     expect(consoleArgs[1]).toContain('a message');
-    expect(consoleArgs[1]).toContain('[localhost]');
+    expect(consoleArgs[1]).toContain('[tenant]');
   });
 
-  it('should overwritte logs path from env vars', () => {
+  it('should overwritte logs path from env vars', async () => {
     process.env.LOGS_DIR = './some_dir';
 
     const anErrorLog = createErrorLog();
@@ -38,10 +43,12 @@ describe('errorLog', () => {
     expect(anErrorLog.transports[0].dirname).toBe('./some_dir');
     expect(anErrorLog.transports[0].filename).toBe('error.log');
 
-    anErrorLog.error('a message');
+    await tenants.run(async () => {
+      anErrorLog.error('a message');
+    });
   });
 
-  it('should overwritte instance name from env vars', () => {
+  it('should overwritte instance name from env vars', async () => {
     process.env.DATABASE_NAME = 'my_instance';
 
     const anErrorLog = createErrorLog();
@@ -49,7 +56,9 @@ describe('errorLog', () => {
     spyOn(anErrorLog.transports[0], 'log');
     spyOn(anErrorLog.transports[1], 'log');
 
-    anErrorLog.error('a message');
+    await tenants.run(async () => {
+      anErrorLog.error('a message');
+    });
 
     let calledArgs = anErrorLog.transports[0].log.calls.mostRecent().args[0];
     calledArgs = Object.getOwnPropertySymbols(calledArgs).map(s => calledArgs[s]);

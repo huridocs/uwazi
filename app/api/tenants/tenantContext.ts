@@ -16,13 +16,11 @@ export type Tenant = {
 class Tenants {
   storage = new AsyncLocalStorage<string>();
 
-  defaultTenantName = 'default';
-
   tenants: { [k: string]: Tenant };
 
   constructor() {
     this.tenants = {
-      [this.defaultTenantName]: { name: this.defaultTenantName, ...config.defaultTenant },
+      [config.defaultTenant.name]: config.defaultTenant,
     };
   }
 
@@ -44,7 +42,7 @@ class Tenants {
 
   async run(cb: () => Promise<void>, tenantName?: string): Promise<void> {
     return new Promise((resolve, reject) => {
-      this.storage.run(tenantName || this.defaultTenantName, () => {
+      this.storage.run(tenantName || config.defaultTenant.name, () => {
         cb()
           .then(resolve)
           .catch(reject);
