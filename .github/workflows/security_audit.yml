@@ -1,4 +1,4 @@
-name: Snyk
+name: Modules security check
 
 on: [push]
 
