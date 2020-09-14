@@ -1,12 +1,12 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import Flag from 'react-flags';
 import countries from 'world-countries';
 
 import { Icon } from 'UI';
 import { iconNames } from 'UI/Icon/library';
 
-import IconSelector, { ListItem } from '../IconSelector';
+import IconSelector from '../IconSelector';
+import ListItem from '../ListItem';
 import DropdownList from '../DropdownList';
 
 describe('ListItem', () => {
@@ -31,7 +31,7 @@ describe('ListItem', () => {
     props = { item: { _id: 'COUNTRY_CODE', type: 'Flags', label: 'Flag Label' } };
     render();
 
-    expect(component.find(Flag).props().name).toBe('COUNTRY_CODE');
+    expect(component.find('span.flag-icon').props().className).toContain('flag-icon-country_code');
     expect(component.text()).toContain('Flag Label');
   });
 
@@ -70,16 +70,13 @@ describe('IconSelector', () => {
     expect(component.find(DropdownList).props().data[1].label).toBe(iconNames[0]);
 
     expect(component.find(DropdownList).props().data[firstFlagIndex].type).toBe('Flags');
-    expect(component.find(DropdownList).props().data[firstFlagIndex]._id).toBe(countries[0].cca3);
+    expect(component.find(DropdownList).props().data[firstFlagIndex]._id).toBe(countries[0].cca2);
     expect(component.find(DropdownList).props().data[firstFlagIndex].label).toBe(
       countries[0].name.common
     );
 
-    expect(component.find(DropdownList).props().valueComponent).toBe(ListItem);
-    expect(component.find(DropdownList).props().itemComponent).toBe(ListItem);
     expect(component.find(DropdownList).props().defaultValue).toBe(
       component.find(DropdownList).props().data[0]
     );
-    expect(component.find(DropdownList).props().onChange).toBe('Function');
   });
 });

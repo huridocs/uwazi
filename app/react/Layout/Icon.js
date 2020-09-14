@@ -1,25 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import Flag from 'react-flags';
 import { Icon as UIIcon } from 'UI';
-
-function getPngSize(size) {
-  switch (size) {
-    case 'xs':
-      return 16;
-    case 'sm':
-      return 24;
-    case 'md':
-      return 32;
-    case 'lg':
-      return 48;
-    case 'xlg':
-      return 64;
-    default:
-      return 16;
-  }
-}
 
 function getFaSize(size) {
   switch (size) {
@@ -39,35 +21,41 @@ function getFaSize(size) {
 }
 
 export class Icon extends Component {
-  render() {
-    const { data, className, size } = this.props;
-    let html = null;
+  getJSData() {
+    const { data } = this.props;
     let _data = data;
 
     if (data && _data.toJS) {
       _data = _data.toJS();
     }
 
+    return _data;
+  }
+
+  getIcon(_data) {
+    const { className, size } = this.props;
+    let icon;
+
+    if (_data.type === 'Icons') {
+      icon = <UIIcon icon={`${_data._id}`} size={`${getFaSize(size)}`} />;
+    }
+
+    if (_data.type === 'Flags') {
+      const flagClassName = `flag-icon flag-icon-${_data._id}`.toLowerCase();
+      const componentClassName = `${className} ${flagClassName}`;
+      icon = <span className={componentClassName} />;
+    }
+
+    return icon;
+  }
+
+  render() {
+    const { className } = this.props;
+    let html = null;
+    const _data = this.getJSData();
+
     if (_data && _data._id) {
-      let icon;
-
-      if (_data.type === 'Icons') {
-        icon = <UIIcon icon={`${_data._id}`} size={`${getFaSize(size)}`} />;
-      }
-
-      if (_data.type === 'Flags') {
-        icon = (
-          <Flag
-            name={_data._id}
-            format="png"
-            pngSize={getPngSize(size)}
-            shiny
-            alt={`${_data.label} flag`}
-            basePath="/flag-images"
-          />
-        );
-      }
-
+      const icon = this.getIcon(_data);
       html = <span className={className}>{icon}</span>;
     }
 
@@ -75,8 +63,14 @@ export class Icon extends Component {
   }
 }
 
+Icon.defaultProps = {
+  data: undefined,
+  className: undefined,
+  size: 'md',
+};
+
 Icon.propTypes = {
-  data: PropTypes.object,
+  data: PropTypes.instanceOf(Object),
   className: PropTypes.string,
   size: PropTypes.string,
 };
