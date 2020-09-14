@@ -55,6 +55,10 @@ export default {
         text_4: [{ value: 'value4' }],
       },
     },
+    {
+      title: 'entity without metadata',
+      template: template2,
+    },
   ],
 };
 

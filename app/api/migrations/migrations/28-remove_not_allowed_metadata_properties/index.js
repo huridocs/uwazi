@@ -27,7 +27,7 @@ export default {
 
       const propertiesOnTemplate = templatesProperties[entityTemplate];
       const metadata = propertiesOnTemplate.reduce((newMetadata, prop) => {
-        if (entity.metadata[prop]) {
+        if (entity.metadata && entity.metadata[prop]) {
           //eslint-disable-next-line no-param-reassign
           newMetadata[prop] = entity.metadata[prop];
         }

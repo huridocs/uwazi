@@ -57,6 +57,7 @@ describe('migration remove_not_allowed_metadata_properties', () => {
           text_3: [{ value: 'value3' }],
         },
       }),
+      expect.objectContaining({ title: 'entity without metadata' }),
     ]);
   });
 });
