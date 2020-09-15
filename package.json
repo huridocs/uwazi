@@ -131,7 +131,7 @@
     "react-modal": "3.3.1",
     "react-player": "^1.11.1",
     "react-redux": "5.0.6",
-    "react-redux-form": "daneryl/react-redux-form#builded",
+    "react-redux-form": "^1.16.14",
     "react-router": "3.0.5",
     "react-tabs-redux": "2.0.1",
     "react-widgets": "v4.5.0",
