@@ -38,7 +38,7 @@ CurrentLocationLink.propTypes = {
   children: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
   queryParams: PropTypes.object, // eslint-disable-line react/forbid-prop-types
   location: PropTypes.shape({
-    pathanem: PropTypes.string,
+    pathname: PropTypes.string,
     query: PropTypes.object,
   }).isRequired,
 };

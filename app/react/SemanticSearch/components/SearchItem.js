@@ -99,6 +99,7 @@ SearchItem.propTypes = {
     searchTerm: PropTypes.string,
     documents: PropTypes.array,
     status: PropTypes.string,
+    query: PropTypes.shape({ filters: PropTypes.object, types: PropTypes.array }),
   }).isRequired,
   onDeleteClicked: PropTypes.func.isRequired,
   onStopClicked: PropTypes.func.isRequired,

@@ -137,7 +137,17 @@ DocumentResults.defaultProps = {
 };
 
 DocumentResults.propTypes = {
-  doc: PropTypes.shape({ sharedId: PropTypes.string }).isRequired,
+  doc: PropTypes.shape({
+    title: PropTypes.string,
+    template: PropTypes.string,
+    sharedId: PropTypes.string,
+    file: PropTypes.object,
+    icon: PropTypes.object,
+    semanticSearch: PropTypes.shape({
+      totalResults: PropTypes.number,
+      results: PropTypes.array,
+    }),
+  }).isRequired,
   threshold: PropTypes.number.isRequired,
   selectSnippet: PropTypes.func.isRequired,
   template: PropTypes.instanceOf(Immutable.Map),

@@ -215,10 +215,10 @@ export class ThesaurusCockpitBase extends RouteHandler {
     return values.map((topic: ThesaurusValueSchema) => this.topicNode(topic));
   }
 
-  interval?: NodeJS.Timeout = undefined;
+  interval?: number = undefined;
 
   componentDidMount() {
-    this.interval = setInterval(() => this.props.updateCockpitData(), 10000);
+    this.interval = window.setInterval(() => this.props.updateCockpitData(), 10000);
   }
 
   componentWillUnmount() {

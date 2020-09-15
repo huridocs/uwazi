@@ -80,7 +80,7 @@
     "import/prefer-default-export": ["off"],
     "import/first": ["warn"],
     "import/newline-after-import": ["warn"],
-    "import/extensions": "never",
+    "import/extensions": "off",
     "import/no-unresolved": "off",
     "import/order": ["warn"],
     "import/named": ["warn"],
@@ -115,6 +115,7 @@
     "import/no-useless-path-segments": ["warn"],
     "react/button-has-type": ["warn"],
     "react/no-access-state-in-setstate": ["warn"],
+    "react/jsx-pascal-case": ["warn"],
 
     //jsx-a11y
     "jsx-a11y/anchor-is-valid": ["warn"],
@@ -151,7 +152,15 @@
             "avoidEscape": true
           }
         ],
+        "no-shadow": "off",
+        "@typescript-eslint/no-shadow": ["error"],
+        "no-use-before-define": "off",
+        "@typescript-eslint/no-use-before-define": ["error"],
         "no-unused-vars": "off",
+
+        //https://github.com/typescript-eslint/typescript-eslint/issues/662
+        "no-undef": "off",
+
         "@typescript-eslint/no-unused-vars": [
           "error",
           {
