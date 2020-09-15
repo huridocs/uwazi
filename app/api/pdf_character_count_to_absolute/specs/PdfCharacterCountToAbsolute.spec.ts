@@ -2,6 +2,7 @@ import {
   PdfCharacterCountToAbsolute,
   AbsolutePositionReference,
 } from 'api/pdf_character_count_to_absolute/PdfCharacterCountToAbsolute';
+import { AbsolutePositionTag } from 'api/pdf_character_count_to_absolute/AbsolutePositionLettersList';
 
 const pdfInfo = [
   390,
@@ -30,137 +31,101 @@ const pdfInfo = [
   78441,
 ];
 
+const checkAbsoluteTag = (tag: AbsolutePositionTag, values: number[]) => {
+  expect(tag.pageNumber).toBe(values[0]);
+  expect(tag.top).toBe(values[1]);
+  expect(tag.left).toBe(values[2]);
+  expect(tag.height).toBe(values[3]);
+  expect(tag.width).toBeGreaterThan(values[4]);
+  expect(tag.width).toBeLessThan(values[4] + 8);
+};
+
 describe('PdfCharacterCountToAbsolute', () => {
-  it('should convert short label to absolute position', async () => {
-    const pdfRelativePath = 'app/api/pdf_character_count_to_absolute/specs/pdf_to_be_converted.pdf';
-    const shortLabel = '26.80';
+  describe('should convert to absolute position', () => {
+    it('short label', async () => {
+      const pdfRelativePath =
+        'app/api/pdf_character_count_to_absolute/specs/pdf_to_be_converted.pdf';
+      const shortLabel = '26.80';
 
-    const characterCountToAbsoluteConversion = new PdfCharacterCountToAbsolute();
-    await characterCountToAbsoluteConversion.loadPdf(pdfRelativePath, pdfInfo);
-    const absolutePosition: AbsolutePositionReference = <AbsolutePositionReference>(
-      characterCountToAbsoluteConversion.convert(shortLabel, 32347, 32352)
-    );
+      const characterCountToAbsoluteConversion = new PdfCharacterCountToAbsolute();
+      await characterCountToAbsoluteConversion.loadPdf(pdfRelativePath, pdfInfo);
+      const absolutePosition: AbsolutePositionReference = <AbsolutePositionReference>(
+        characterCountToAbsoluteConversion.convert(shortLabel, 32347, 32352)
+      );
 
-    expect(absolutePosition.text).toBe(shortLabel);
-    expect(absolutePosition.tags.length).toBe(1);
-    expect(absolutePosition.tags[0].pageNumber).toBe(10);
-    expect(absolutePosition.tags[0].top).toBe(506);
-    expect(absolutePosition.tags[0].left).toBe(213);
-    expect(absolutePosition.tags[0].height).toBe(13);
-    expect(absolutePosition.tags[0].width).toBeGreaterThan(33);
-    expect(absolutePosition.tags[0].width).toBeLessThan(40);
-  });
+      expect(absolutePosition.text).toBe(shortLabel);
+      expect(absolutePosition.tags.length).toBe(1);
+      checkAbsoluteTag(absolutePosition.tags[0], [10, 506, 213, 13, 33]);
+    });
 
-  it('should convert last documents text to absolute position', async () => {
-    const pdfRelativePath = 'app/api/pdf_character_count_to_absolute/specs/pdf_to_be_converted.pdf';
-    const lastLabel = '•  Mr. Mostafa Nafari, member of delegation.';
+    it('last documents text', async () => {
+      const pdfRelativePath =
+        'app/api/pdf_character_count_to_absolute/specs/pdf_to_be_converted.pdf';
+      const lastLabel = '•  Mr. Mostafa Nafari, member of delegation.';
 
-    const characterCountToAbsoluteConversion = new PdfCharacterCountToAbsolute();
-    await characterCountToAbsoluteConversion.loadPdf(pdfRelativePath, pdfInfo);
-    const absolutePosition: AbsolutePositionReference = <AbsolutePositionReference>(
-      characterCountToAbsoluteConversion.convert(lastLabel, 78397, 78441)
-    );
+      const characterCountToAbsoluteConversion = new PdfCharacterCountToAbsolute();
+      await characterCountToAbsoluteConversion.loadPdf(pdfRelativePath, pdfInfo);
+      const absolutePosition: AbsolutePositionReference = <AbsolutePositionReference>(
+        characterCountToAbsoluteConversion.convert(lastLabel, 78397, 78441)
+      );
 
-    expect(absolutePosition.text).toBe(lastLabel);
-    expect(absolutePosition.tags.length).toBe(1);
-    expect(absolutePosition.tags[0].pageNumber).toBe(24);
-    expect(absolutePosition.tags[0].top).toBe(953);
-    expect(absolutePosition.tags[0].left).toBe(200);
-    expect(absolutePosition.tags[0].width).toBeGreaterThan(275);
-    expect(absolutePosition.tags[0].width).toBeLessThan(282);
-    expect(absolutePosition.tags[0].height).toBe(17);
-  });
+      expect(absolutePosition.text).toBe(lastLabel);
+      expect(absolutePosition.tags.length).toBe(1);
+      checkAbsoluteTag(absolutePosition.tags[0], [24, 953, 200, 17, 275]);
+    });
 
-  it('should convert special caracters string to absolute position', async () => {
-    const pdfRelativePath = 'app/api/pdf_character_count_to_absolute/specs/pdf_to_be_converted.pdf';
-    const specialCharactersString = '';
+    it('special caracters string', async () => {
+      const pdfRelativePath =
+        'app/api/pdf_character_count_to_absolute/specs/pdf_to_be_converted.pdf';
+      const specialCharactersString = '';
 
-    const characterCountToAbsoluteConversion = new PdfCharacterCountToAbsolute();
-    await characterCountToAbsoluteConversion.loadPdf(pdfRelativePath, pdfInfo);
-    const absolutePosition: AbsolutePositionReference = <AbsolutePositionReference>(
-      characterCountToAbsoluteConversion.convert(specialCharactersString, 16, 25)
-    );
+      const characterCountToAbsoluteConversion = new PdfCharacterCountToAbsolute();
+      await characterCountToAbsoluteConversion.loadPdf(pdfRelativePath, pdfInfo);
+      const absolutePosition: AbsolutePositionReference = <AbsolutePositionReference>(
+        characterCountToAbsoluteConversion.convert(specialCharactersString, 16, 25)
+      );
 
-    expect(absolutePosition.text).toBe(specialCharactersString);
-    expect(absolutePosition.tags.length).toBe(1);
-    expect(absolutePosition.tags[0].pageNumber).toBe(1);
-    expect(absolutePosition.tags[0].top).toBe(1185);
-    expect(absolutePosition.tags[0].left).toBe(85);
-    expect(absolutePosition.tags[0].width).toBeGreaterThan(140);
-    expect(absolutePosition.tags[0].width).toBeLessThan(147);
-    expect(absolutePosition.tags[0].height).toBe(42);
-  });
+      expect(absolutePosition.text).toBe(specialCharactersString);
+      expect(absolutePosition.tags.length).toBe(1);
+      checkAbsoluteTag(absolutePosition.tags[0], [1, 1185, 85, 42, 140]);
+    });
 
-  it('should convert long label strings character count to absolute position', async () => {
-    const pdfRelativePath = 'app/api/pdf_character_count_to_absolute/specs/pdf_to_be_converted.pdf';
-    const longLabel =
-      'B.Interactive dialogue and responses by the State under review13.During the interactive dialogue, 111 delegations made statements. ';
+    it('long label strings', async () => {
+      const pdfRelativePath =
+        'app/api/pdf_character_count_to_absolute/specs/pdf_to_be_converted.pdf';
+      const longLabel =
+        'B.Interactive dialogue and responses by the State under review13.During the interactive dialogue, 111 delegations made statements. ';
 
-    const characterCountToAbsoluteConversion = new PdfCharacterCountToAbsolute();
-    await characterCountToAbsoluteConversion.loadPdf(pdfRelativePath, pdfInfo);
-    const absolutePosition: AbsolutePositionReference = <AbsolutePositionReference>(
-      characterCountToAbsoluteConversion.convert(longLabel, 6445, 6576)
-    );
+      const characterCountToAbsoluteConversion = new PdfCharacterCountToAbsolute();
+      await characterCountToAbsoluteConversion.loadPdf(pdfRelativePath, pdfInfo);
+      const absolutePosition: AbsolutePositionReference = <AbsolutePositionReference>(
+        characterCountToAbsoluteConversion.convert(longLabel, 6445, 6576)
+      );
 
-    expect(absolutePosition.text).toBe(longLabel);
-    expect(absolutePosition.tags.length).toBe(11);
-    expect(absolutePosition.tags[0].pageNumber).toBe(3);
-    expect(absolutePosition.tags[0].top).toBe(668);
-    expect(absolutePosition.tags[0].left).toBe(132);
-    expect(absolutePosition.tags[0].width).toBeGreaterThan(20);
-    expect(absolutePosition.tags[0].width).toBeLessThan(27);
-    expect(absolutePosition.tags[0].height).toBe(16);
+      expect(absolutePosition.text).toBe(longLabel);
+      expect(absolutePosition.tags.length).toBe(11);
+      checkAbsoluteTag(absolutePosition.tags[0], [3, 668, 132, 16, 20]);
+      checkAbsoluteTag(absolutePosition.tags[10], [3, 707, 655, 13, 70]);
+    });
 
-    expect(absolutePosition.tags[1].top).toBe(668);
-    expect(absolutePosition.tags[2].top).toBe(707);
-    expect(absolutePosition.tags[3].top).toBe(707);
-    expect(absolutePosition.tags[4].top).toBe(707);
-    expect(absolutePosition.tags[5].top).toBe(707);
-    expect(absolutePosition.tags[6].top).toBe(707);
-    expect(absolutePosition.tags[7].top).toBe(707);
-    expect(absolutePosition.tags[8].top).toBe(707);
-    expect(absolutePosition.tags[9].top).toBe(707);
+    it('when not founded string', async () => {
+      const pdfRelativePath =
+        'app/api/pdf_character_count_to_absolute/specs/pdf_to_be_converted.pdf';
+      const notFoundedLabel = 'not founded label';
 
-    expect(absolutePosition.tags[10].top).toBe(707);
-    expect(absolutePosition.tags[10].left).toBe(655);
-    expect(absolutePosition.tags[10].width).toBeGreaterThan(70);
-    expect(absolutePosition.tags[10].width).toBeLessThan(77);
-    expect(absolutePosition.tags[10].height).toBe(13);
-  });
+      const characterCountToAbsoluteConversion = new PdfCharacterCountToAbsolute();
+      await characterCountToAbsoluteConversion.loadPdf(pdfRelativePath, pdfInfo);
+      const absolutePosition: AbsolutePositionReference = <AbsolutePositionReference>(
+        characterCountToAbsoluteConversion.convert(notFoundedLabel, 76656, 76844)
+      );
 
-  it('should convert not founded string in pdf character count to absolute position', async () => {
-    const pdfRelativePath = 'app/api/pdf_character_count_to_absolute/specs/pdf_to_be_converted.pdf';
-    const notFoundedLabel = 'not founded label';
+      expect(absolutePosition.text).toBe(notFoundedLabel);
+      expect(absolutePosition.tags.length).toBe(4);
 
-    const characterCountToAbsoluteConversion = new PdfCharacterCountToAbsolute();
-    await characterCountToAbsoluteConversion.loadPdf(pdfRelativePath, pdfInfo);
-    const absolutePosition: AbsolutePositionReference = <AbsolutePositionReference>(
-      characterCountToAbsoluteConversion.convert(notFoundedLabel, 76656, 76844)
-    );
-
-    expect(absolutePosition.text).toBe(notFoundedLabel);
-    expect(absolutePosition.tags.length).toBe(4);
-
-    expect(absolutePosition.tags[0].pageNumber).toBe(24);
-    expect(absolutePosition.tags[0].top).toBe(177);
-    expect(absolutePosition.tags[0].left).toBe(149);
-    expect(absolutePosition.tags[0].width).toBeGreaterThan(293);
-    expect(absolutePosition.tags[0].width).toBeLessThan(300);
-    expect(absolutePosition.tags[0].height).toBe(19);
-
-    expect(absolutePosition.tags[1].pageNumber).toBe(24);
-    expect(absolutePosition.tags[1].top).toBe(218);
-    expect(absolutePosition.tags[1].left).toBe(213);
-    expect(absolutePosition.tags[1].width).toBeGreaterThan(513);
-    expect(absolutePosition.tags[1].width).toBeLessThan(520);
-    expect(absolutePosition.tags[1].height).toBe(13);
-
-    expect(absolutePosition.tags[2].pageNumber).toBe(24);
-    expect(absolutePosition.tags[2].top).toBe(236);
-    expect(absolutePosition.tags[2].left).toBe(170);
-    expect(absolutePosition.tags[2].width).toBeGreaterThan(555);
-    expect(absolutePosition.tags[2].width).toBeLessThan(562);
-    expect(absolutePosition.tags[2].height).toBe(13);
+      checkAbsoluteTag(absolutePosition.tags[0], [24, 177, 149, 19, 293]);
+      checkAbsoluteTag(absolutePosition.tags[1], [24, 218, 213, 13, 513]);
+      checkAbsoluteTag(absolutePosition.tags[2], [24, 236, 170, 13, 555]);
+    });
   });
 
   it('should match string and position when several matching strings occurs', async () => {
@@ -176,12 +141,7 @@ describe('PdfCharacterCountToAbsolute', () => {
     expect(absolutePosition.text).toBe(severalAppearancesString);
     expect(absolutePosition.tags.length).toBe(1);
 
-    expect(absolutePosition.tags[0].pageNumber).toBe(16);
-    expect(absolutePosition.tags[0].top).toBe(308);
-    expect(absolutePosition.tags[0].left).toBe(276);
-    expect(absolutePosition.tags[0].width).toBeGreaterThan(449);
-    expect(absolutePosition.tags[0].width).toBeLessThan(456);
-    expect(absolutePosition.tags[0].height).toBe(13);
+    checkAbsoluteTag(absolutePosition.tags[0], [16, 308, 276, 13, 449]);
   });
 
   it('should return absolute position when string matching across two pages', async () => {
@@ -195,36 +155,12 @@ describe('PdfCharacterCountToAbsolute', () => {
       characterCountToAbsoluteConversion.convert(stringSpreadTwoPages, 48358, 48440)
     );
 
-    expect(absolutePosition.text).toBe(stringSpreadTwoPages);
     expect(absolutePosition.tags.length).toBe(4);
 
-    expect(absolutePosition.tags[0].pageNumber).toBe(14);
-    expect(absolutePosition.tags[0].top).toBe(1155);
-    expect(absolutePosition.tags[0].left).toBe(213);
-    expect(absolutePosition.tags[0].width).toBeGreaterThan(403);
-    expect(absolutePosition.tags[0].width).toBeLessThan(410);
-    expect(absolutePosition.tags[0].height).toBe(13);
-
-    expect(absolutePosition.tags[1].pageNumber).toBe(15);
-    expect(absolutePosition.tags[1].top).toBe(67);
-    expect(absolutePosition.tags[1].left).toBe(730);
-    expect(absolutePosition.tags[1].width).toBeGreaterThan(80);
-    expect(absolutePosition.tags[1].width).toBeLessThan(87);
-    expect(absolutePosition.tags[1].height).toBe(12);
-
-    expect(absolutePosition.tags[2].pageNumber).toBe(15);
-    expect(absolutePosition.tags[2].top).toBe(1208);
-    expect(absolutePosition.tags[2].left).toBe(794);
-    expect(absolutePosition.tags[2].width).toBeGreaterThan(13);
-    expect(absolutePosition.tags[2].width).toBeLessThan(20);
-    expect(absolutePosition.tags[2].height).toBe(12);
-
-    expect(absolutePosition.tags[3].pageNumber).toBe(15);
-    expect(absolutePosition.tags[3].top).toBe(110);
-    expect(absolutePosition.tags[3].left).toBe(213);
-    expect(absolutePosition.tags[3].width).toBeGreaterThan(40);
-    expect(absolutePosition.tags[3].width).toBeLessThan(47);
-    expect(absolutePosition.tags[3].height).toBe(13);
+    checkAbsoluteTag(absolutePosition.tags[0], [14, 1155, 213, 13, 403]);
+    checkAbsoluteTag(absolutePosition.tags[1], [15, 67, 730, 12, 80]);
+    checkAbsoluteTag(absolutePosition.tags[2], [15, 1208, 794, 12, 13]);
+    checkAbsoluteTag(absolutePosition.tags[3], [15, 110, 213, 13, 40]);
   });
 
   it('should return absolute position when character count across two pages', async () => {
@@ -237,43 +173,11 @@ describe('PdfCharacterCountToAbsolute', () => {
       characterCountToAbsoluteConversion.convert(nonExistentString, 48358, 48440)
     );
 
-    expect(absolutePosition.text).toBe(nonExistentString);
-    expect(absolutePosition.tags.length).toBe(5);
-
-    expect(absolutePosition.tags[0].pageNumber).toBe(14);
-    expect(absolutePosition.tags[0].top).toBe(1155);
-    expect(absolutePosition.tags[0].left).toBe(213);
-    expect(absolutePosition.tags[0].width).toBeGreaterThan(403);
-    expect(absolutePosition.tags[0].width).toBeLessThan(410);
-    expect(absolutePosition.tags[0].height).toBe(13);
-
-    expect(absolutePosition.tags[1].pageNumber).toBe(15);
-    expect(absolutePosition.tags[1].top).toBe(67);
-    expect(absolutePosition.tags[1].left).toBe(730);
-    expect(absolutePosition.tags[1].width).toBeGreaterThan(80);
-    expect(absolutePosition.tags[1].width).toBeLessThan(87);
-    expect(absolutePosition.tags[1].height).toBe(12);
-
-    expect(absolutePosition.tags[2].pageNumber).toBe(15);
-    expect(absolutePosition.tags[2].top).toBe(1208);
-    expect(absolutePosition.tags[2].left).toBe(794);
-    expect(absolutePosition.tags[2].width).toBeGreaterThan(13);
-    expect(absolutePosition.tags[2].width).toBeLessThan(20);
-    expect(absolutePosition.tags[2].height).toBe(12);
-
-    expect(absolutePosition.tags[3].pageNumber).toBe(15);
-    expect(absolutePosition.tags[3].top).toBe(110);
-    expect(absolutePosition.tags[3].left).toBe(213);
-    expect(absolutePosition.tags[3].width).toBeGreaterThan(40);
-    expect(absolutePosition.tags[3].width).toBeLessThan(47);
-    expect(absolutePosition.tags[3].height).toBe(13);
-
-    expect(absolutePosition.tags[4].pageNumber).toBe(15);
-    expect(absolutePosition.tags[4].top).toBe(110);
-    expect(absolutePosition.tags[4].left).toBe(276);
-    expect(absolutePosition.tags[4].width).toBeGreaterThan(449);
-    expect(absolutePosition.tags[4].width).toBeLessThan(456);
-    expect(absolutePosition.tags[4].height).toBe(13);
+    checkAbsoluteTag(absolutePosition.tags[0], [14, 1155, 213, 13, 403]);
+    checkAbsoluteTag(absolutePosition.tags[1], [15, 67, 730, 12, 80]);
+    checkAbsoluteTag(absolutePosition.tags[2], [15, 1208, 794, 12, 13]);
+    checkAbsoluteTag(absolutePosition.tags[3], [15, 110, 213, 13, 40]);
+    checkAbsoluteTag(absolutePosition.tags[4], [15, 110, 276, 13, 449]);
   });
 
   it('should return false when trying to process an nonexistent document', async () => {
@@ -309,12 +213,7 @@ describe('PdfCharacterCountToAbsolute', () => {
 
     expect(absolutePosition.text).toBe(label);
     expect(absolutePosition.tags.length).toBe(1);
-    expect(absolutePosition.tags[0].pageNumber).toBe(10);
-    expect(absolutePosition.tags[0].top).toBe(506);
-    expect(absolutePosition.tags[0].left).toBe(213);
-    expect(absolutePosition.tags[0].width).toBeGreaterThan(33);
-    expect(absolutePosition.tags[0].width).toBeLessThan(40);
-    expect(absolutePosition.tags[0].height).toBe(13);
+    checkAbsoluteTag(absolutePosition.tags[0], [10, 506, 213, 13, 33]);
   });
 
   it('should convert to absolute position a different pdf', async () => {
@@ -329,28 +228,10 @@ describe('PdfCharacterCountToAbsolute', () => {
       characterCountToAbsoluteConversion.convert(label, 1213, 1269)
     );
 
-    expect(absolutePosition.text).toBe(label);
     expect(absolutePosition.tags.length).toBe(3);
 
-    expect(absolutePosition.tags[0].pageNumber).toBe(1);
-    expect(absolutePosition.tags[0].top).toBe(810);
-    expect(absolutePosition.tags[0].left).toBe(455);
-    expect(absolutePosition.tags[0].width).toBeGreaterThan(7);
-    expect(absolutePosition.tags[0].width).toBeLessThan(14);
-    expect(absolutePosition.tags[0].height).toBe(18);
-
-    expect(absolutePosition.tags[1].pageNumber).toBe(1);
-    expect(absolutePosition.tags[1].top).toBe(828);
-    expect(absolutePosition.tags[1].left).toBe(319);
-    expect(absolutePosition.tags[1].width).toBeGreaterThan(279);
-    expect(absolutePosition.tags[1].width).toBeLessThan(287);
-    expect(absolutePosition.tags[1].height).toBe(18);
-
-    expect(absolutePosition.tags[2].pageNumber).toBe(1);
-    expect(absolutePosition.tags[2].top).toBe(846);
-    expect(absolutePosition.tags[2].left).toBe(309);
-    expect(absolutePosition.tags[2].width).toBeGreaterThan(303);
-    expect(absolutePosition.tags[2].width).toBeLessThan(310);
-    expect(absolutePosition.tags[2].height).toBe(18);
+    checkAbsoluteTag(absolutePosition.tags[0], [1, 810, 455, 18, 7]);
+    checkAbsoluteTag(absolutePosition.tags[1], [1, 828, 319, 18, 279]);
+    checkAbsoluteTag(absolutePosition.tags[2], [1, 846, 309, 18, 303]);
   });
 });

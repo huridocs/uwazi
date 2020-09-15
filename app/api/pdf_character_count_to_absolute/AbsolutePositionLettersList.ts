@@ -8,18 +8,17 @@ export interface AbsolutePositionTag {
 }
 
 export class AbsolutePositionLettersList {
-  letterList: AbsolutePositionTag[];
+  letterList: AbsolutePositionTag[] = [];
 
-  letterListNoSpaces: AbsolutePositionTag[];
+  letterListNoSpaces: AbsolutePositionTag[] = [];
 
   constructor(absolutePositionTagList: AbsolutePositionTag[]) {
-    absolutePositionTagList = absolutePositionTagList.filter(x => x.text !== ' ');
-    this.letterList = this.splitByLetters(absolutePositionTagList);
-    this.letterListNoSpaces = this.letterList.filter(x => x.text !== ' ');
+    const tagListNoEmpty = absolutePositionTagList.filter(x => x.text !== ' ');
+    this.splitByLetters(tagListNoEmpty);
   }
 
   private splitByLetters(absolutePositionTagList: AbsolutePositionTag[]) {
-    return absolutePositionTagList.reduce(
+    this.letterList = absolutePositionTagList.reduce(
       (accumulator: AbsolutePositionTag[], currentValue: AbsolutePositionTag) => {
         const letters: AbsolutePositionTag[] = currentValue.text.split('').map((x: string) => ({
           pageNumber: currentValue.pageNumber,
@@ -33,6 +32,35 @@ export class AbsolutePositionLettersList {
       },
       []
     );
+
+    this.letterListNoSpaces = this.letterList.filter(x => x.text !== ' ');
+  }
+
+  getStringMatches(label: string) {
+    const labelNoSpaces: string = label.replace(/ /g, '');
+
+    const absolutePositionsLists: AbsolutePositionTag[][] = [];
+
+    for (let startRange = 0; startRange < this.letterListNoSpaces.length; startRange += 1) {
+      const endRange = startRange + labelNoSpaces.length;
+      const lettersToMatch = this.letterListNoSpaces.slice(startRange, endRange);
+
+      if (labelNoSpaces === lettersToMatch.map(x => x.text).join('')) {
+        absolutePositionsLists.push(
+          AbsolutePositionLettersList.lettersTagsToAbsolutePositionTags(lettersToMatch)
+        );
+      }
+    }
+
+    return absolutePositionsLists;
+  }
+
+  getCharacterCountMatch(pageNumber: number, startRange: number, endRange: number) {
+    const lettersFromMatchingPage = this.letterList.filter(x => x.pageNumber >= pageNumber);
+
+    const matchingLetters = lettersFromMatchingPage.slice(startRange, endRange);
+
+    return AbsolutePositionLettersList.lettersTagsToAbsolutePositionTags(matchingLetters);
   }
 
   static fromXmlObject(xmlContentObject: any) {
@@ -71,8 +99,9 @@ export class AbsolutePositionLettersList {
     if (currentValue.elements && currentValue.elements.length > 0) {
       return accumulator.concat(
         currentValue.elements.map((x: { attributes: any }) => {
-          x.attributes = currentValue.attributes;
-          return x;
+          const flatOneLevel = x;
+          flatOneLevel.attributes = currentValue.attributes;
+          return flatOneLevel;
         })
       );
     }
@@ -80,39 +109,7 @@ export class AbsolutePositionLettersList {
     return accumulator;
   };
 
-  private lettersTagsToAbsolutePositionTags(lettersTags: AbsolutePositionTag[]) {
-    return lettersTags.reduce(
-      (accumulator: AbsolutePositionTag[], letterTag: AbsolutePositionTag) => {
-        if (this.isTagInList(accumulator, letterTag)) {
-          accumulator.slice(-1)[0].text += letterTag.text;
-        } else {
-          accumulator.push(Object.assign({}, letterTag));
-        }
-
-        return accumulator;
-      },
-      []
-    );
-  }
-
-  getStringMatches(label: string) {
-    const labelNoSpaces: string = label.replace(/ /g, '');
-
-    const absolutePositionsLists: AbsolutePositionTag[][] = [];
-
-    for (let startRange = 0; startRange < this.letterListNoSpaces.length; startRange += 1) {
-      const endRange = startRange + labelNoSpaces.length;
-      const lettersToMatch = this.letterListNoSpaces.slice(startRange, endRange);
-
-      if (labelNoSpaces === lettersToMatch.map(x => x.text).join('')) {
-        absolutePositionsLists.push(this.lettersTagsToAbsolutePositionTags(lettersToMatch));
-      }
-    }
-
-    return absolutePositionsLists;
-  }
-
-  private isTagInList(tags: AbsolutePositionTag[], tag: AbsolutePositionTag) {
+  static isTagInList(tags: AbsolutePositionTag[], tag: AbsolutePositionTag) {
     if (tags.length === 0) {
       return false;
     }
@@ -132,11 +129,18 @@ export class AbsolutePositionLettersList {
     return false;
   }
 
-  getCharacterCountMatch(pageNumber: number, startRange: number, endRange: number) {
-    const lettersFromMatchingPage = this.letterList.filter(x => x.pageNumber >= pageNumber);
+  static lettersTagsToAbsolutePositionTags(lettersTags: AbsolutePositionTag[]) {
+    return lettersTags.reduce(
+      (accumulator: AbsolutePositionTag[], letterTag: AbsolutePositionTag) => {
+        if (AbsolutePositionLettersList.isTagInList(accumulator, letterTag)) {
+          accumulator.slice(-1)[0].text += letterTag.text;
+        } else {
+          accumulator.push(Object.assign({}, letterTag));
+        }
 
-    const matchingLetters = lettersFromMatchingPage.slice(startRange, endRange);
-
-    return this.lettersTagsToAbsolutePositionTags(matchingLetters);
+        return accumulator;
+      },
+      []
+    );
   }
 }
