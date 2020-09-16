@@ -3,12 +3,12 @@
   "env": {
     "browser": true,
     "node": true,
-    "jasmine": true,
     "jest": true,
+    "jasmine": true,
     "es6": true
   },
 
-  "plugins": ["react", "jasmine", "@typescript-eslint", "prettier"],
+  "plugins": ["react", "jest", "@typescript-eslint", "prettier"],
 
   "rules": {
     "prettier/prettier": ["error", { "requirePragma": false }],
@@ -26,7 +26,7 @@
     "newline-per-chained-call": "off",
     "no-prototype-builtins": "off",
     "implicit-arrow-linebreak": "off",
-    "jasmine/no-focused-tests": "error",
+    "jest/no-focused-tests": "error",
     "object-curly-spacing": ["warn", "always"],
     "max-len": ["error", 150],
     "no-unused-vars": [
