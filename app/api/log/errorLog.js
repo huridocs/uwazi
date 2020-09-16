@@ -15,18 +15,19 @@ const createFileTransport = () =>
     format: winston.format.combine(winston.format.timestamp(), formatter),
   });
 
-const consoleTransport = new winston.transports.Console({
-  handleExceptions: true,
-  level: 'error',
-  format: winston.format.combine(winston.format.timestamp(), formatter),
-});
+const createConsoleTransport = () =>
+  new winston.transports.Console({
+    handleExceptions: true,
+    level: 'error',
+    format: winston.format.combine(winston.format.timestamp(), formatter),
+  });
 
 export const createErrorLog = () => {
   DATABASE_NAME = process.env.DATABASE_NAME ? process.env.DATABASE_NAME : 'localhost';
   LOGS_DIR = process.env.LOGS_DIR ? process.env.LOGS_DIR : './log';
 
   const logger = winston.createLogger({
-    transports: [createFileTransport(), consoleTransport],
+    transports: [createFileTransport(), createConsoleTransport()],
   });
 
   logger.closeGraylog = (cb = () => {}) => {

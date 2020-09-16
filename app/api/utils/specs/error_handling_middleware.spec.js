@@ -27,7 +27,9 @@ describe('Error handling middleware', () => {
     req.originalUrl = 'url';
     middleware(error, req, res, next);
 
-    expect(errorLog.error).toHaveBeenCalledWith('\nurl: url\nerror');
+    expect(errorLog.error).toHaveBeenCalledWith('\nurl: url\nerror', {
+      shouldBeMultiTenantContext: true,
+    });
   });
 
   it('should log the error body', () => {
@@ -35,12 +37,13 @@ describe('Error handling middleware', () => {
     req.body = { param: 'value', param2: 'value2' };
     middleware(error, req, res, next);
     expect(errorLog.error).toHaveBeenCalledWith(
-      `\nbody: ${JSON.stringify(req.body, null, ' ')}\nerror`
+      `\nbody: ${JSON.stringify(req.body, null, ' ')}\nerror`,
+      { shouldBeMultiTenantContext: true }
     );
 
     req.body = {};
     middleware(error, req, res, next);
-    expect(errorLog.error).toHaveBeenCalledWith('\nerror');
+    expect(errorLog.error).toHaveBeenCalledWith('\nerror', { shouldBeMultiTenantContext: true });
   });
 
   it('should log the error query', () => {
@@ -49,7 +52,8 @@ describe('Error handling middleware', () => {
     middleware(error, req, res, next);
 
     expect(errorLog.error).toHaveBeenCalledWith(
-      `\nquery: ${JSON.stringify(req.query, null, ' ')}\nerror`
+      `\nquery: ${JSON.stringify(req.query, null, ' ')}\nerror`,
+      { shouldBeMultiTenantContext: true }
     );
   });
 });
