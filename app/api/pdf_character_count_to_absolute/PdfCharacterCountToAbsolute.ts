@@ -1,8 +1,12 @@
 import { spawn } from 'child-process-promise';
-import { AbsolutePositionLettersList, AbsolutePositionTag } from './AbsolutePositionLettersList';
 
-const fs = require('fs');
-const convert = require('xml-js');
+import fs from 'fs';
+import convert from 'xml-js';
+import path from 'path';
+import { promisify } from 'util';
+import * as os from 'os';
+
+import { AbsolutePositionLettersList, AbsolutePositionTag } from './AbsolutePositionLettersList';
 
 export interface AbsolutePositionReference {
   text: string;
@@ -12,80 +16,71 @@ export interface AbsolutePositionReference {
 export class PdfCharacterCountToAbsolute {
   lettersTags: AbsolutePositionLettersList;
 
-  pagesEndingCharacterCount: number[];
+  pdfInfo: number[];
 
-  xmlRelativePath: string = '';
+  xmlRelativePath = '';
 
-  pdfRelativePath: string = '';
+  pdfRelativePath = '';
 
   constructor() {
     this.lettersTags = new AbsolutePositionLettersList([]);
-    this.pagesEndingCharacterCount = [];
+    this.pdfInfo = [];
   }
 
   async loadPdf(pdfRelativePath: string, pagesEndingCharacterCount: number[]) {
     this.pdfRelativePath = pdfRelativePath;
-    this.pagesEndingCharacterCount = pagesEndingCharacterCount;
+    this.pdfInfo = pagesEndingCharacterCount;
     this.setXmlRelativePath();
-
-    if (!(await this.convertPdfToXML())) {
-      return false;
-    }
-
-    const xmlContentString: string = fs.readFileSync(this.xmlRelativePath, 'utf8');
-    const xmlContentObject = JSON.parse(convert.xml2json(xmlContentString));
-    this.deleteXmlFile();
+    await this.convertPdfToXML();
+    const readFile = promisify(fs.readFile);
+    const xmlContentString: Buffer = await readFile(this.xmlRelativePath);
+    const xmlContentObject = JSON.parse(convert.xml2json(xmlContentString.toString()));
+    await this.deleteXmlFile();
     this.lettersTags = AbsolutePositionLettersList.fromXmlObject(xmlContentObject);
-    return true;
   }
 
   setXmlRelativePath() {
-    const pathParts: string[] = this.pdfRelativePath.split('/');
-
-    let fileName: string = <string>pathParts.slice(-1).pop();
-    fileName = fileName.replace('.pdf', '.xml');
-
-    this.xmlRelativePath = `temporal_files/${fileName}`;
+    const fileName = path.basename(this.pdfRelativePath).replace('.pdf', '.xml');
+    this.xmlRelativePath = `${os.tmpdir()}/${fileName}`;
   }
 
   async convertPdfToXML() {
-    try {
-      await spawn('pdftohtml', ['-xml', '-i', this.pdfRelativePath, this.xmlRelativePath]);
-    } catch (error) {
-      return false;
-    }
-
-    return true;
+    await spawn('pdftohtml', ['-xml', '-i', this.pdfRelativePath, this.xmlRelativePath]);
   }
 
-  deleteXmlFile() {
-    fs.unlinkSync(this.xmlRelativePath);
+  async deleteXmlFile() {
+    const unlink = promisify(fs.unlink);
+    await unlink(this.xmlRelativePath);
   }
 
-  convert(label: string, startRange: number, endRange: number): AbsolutePositionReference | null {
-    const stringMatches: AbsolutePositionTag[][] = this.lettersTags.getStringMatches(label);
-    const characterCountMatch: AbsolutePositionTag[] = this.getCharacterCountMatch(
+  convert(label: string, startRange: number, endRange: number): AbsolutePositionReference {
+    const absolutePositionByStringMatch = this.lettersTags.getAbsolutePositionByStringMatch(label);
+    const absolutePositionByCharacterCount = this.getAbsolutePositionByCharacterCount(
       startRange,
       endRange
     );
 
-    if (characterCountMatch.length === 0 && stringMatches.length === 0) {
-      return null;
+    const existMatchByCharacterCount = absolutePositionByCharacterCount.length > 0;
+    const existMatchByString = absolutePositionByStringMatch.length > 0;
+
+    if (!existMatchByCharacterCount && !existMatchByString) {
+      return { text: label, tags: [] };
     }
 
-    if (characterCountMatch.length === 0) {
-      return {
-        tags: stringMatches[0],
-        text: label,
-      };
+    if (!existMatchByCharacterCount) {
+      return { text: label, tags: absolutePositionByStringMatch[0] };
     }
+
+    const closerAbsolutePositionStringMatch = PdfCharacterCountToAbsolute.getCloserStringMatchToTag(
+      absolutePositionByStringMatch,
+      absolutePositionByCharacterCount[0]
+    );
 
     return {
       tags:
-        PdfCharacterCountToAbsolute.getCloserStringMatchToTag(
-          stringMatches,
-          characterCountMatch[0]
-        ) || characterCountMatch,
+        closerAbsolutePositionStringMatch ||
+        absolutePositionByCharacterCount ||
+        absolutePositionByStringMatch[0],
       text: label,
     };
   }
@@ -104,10 +99,8 @@ export class PdfCharacterCountToAbsolute {
     );
   }
 
-  private getCharacterCountMatch(startRange: number, endRange: number) {
-    const pagesCharacterCountBeforeMatchingPage = this.pagesEndingCharacterCount.filter(
-      x => x < startRange
-    );
+  private getAbsolutePositionByCharacterCount(startRange: number, endRange: number) {
+    const pagesCharacterCountBeforeMatchingPage = this.pdfInfo.filter(x => x < startRange);
     const startingCharacterMatchingPage =
       Number(pagesCharacterCountBeforeMatchingPage.slice(-1)) + 1;
 

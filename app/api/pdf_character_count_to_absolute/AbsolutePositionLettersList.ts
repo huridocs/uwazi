@@ -36,7 +36,7 @@ export class AbsolutePositionLettersList {
     this.letterListNoSpaces = this.letterList.filter(x => x.text !== ' ');
   }
 
-  getStringMatches(label: string) {
+  getAbsolutePositionByStringMatch(label: string) {
     const labelNoSpaces: string = label.replace(/ /g, '');
 
     const absolutePositionsLists: AbsolutePositionTag[][] = [];
