@@ -22,6 +22,7 @@
     "object-curly-newline": "off",
     "function-paren-newline": "off",
     "react/prefer-stateless-function": "off",
+    "prefer-object-spread": "warn",
     "no-confusing-arrow": "off",
     "newline-per-chained-call": "off",
     "no-prototype-builtins": "off",
@@ -42,6 +43,7 @@
 
     //all warns are activated by default if removed
     "prefer-promise-reject-errors": ["warn"],
+    "max-classes-per-file": ["warn"],
     "padded-blocks": ["warn"],
     "consistent-return": ["warn"],
     "prefer-const": ["warn"],
@@ -88,6 +90,8 @@
     "import/no-extraneous-dependencies": ["error", {"devDependencies": true}],
 
     //react
+    "react/static-property-placement": "off",
+    "react/no-deprecated": ["warn"],
     "react/self-closing-comp": ["warn"],
     "react/no-multi-comp": ["warn"],
     "react/jsx-closing-bracket-location": ["warn"],
@@ -95,10 +99,12 @@
     "react/jsx-indent": ["off"], // handled by prettier,
     "react/jsx-indent-props": ["warn"],
     "react/no-array-index-key": ["warn"],
+    "react/jsx-props-no-spreading": ["warn"],
     "react/jsx-first-prop-new-line": ["warn"],
     "react/no-unused-state": ["warn"],
     "react/jsx-wrap-multilines": ["off"], // handled by prettier,
     "react/jsx-curly-brace-presence": ["warn"],
+    "react/jsx-curly-newline": "off",
     "react/require-default-props": ["warn"],
     "react/forbid-prop-types": ["warn"],
     "react/jsx-no-bind": ["warn"],
@@ -124,6 +130,7 @@
     "jsx-a11y/iframe-has-title": ["warn"],
     "jsx-a11y/tabindex-no-positive": ["warn"],
     "jsx-a11y/no-noninteractive-element-interactions": ["warn"],
+    "jsx-a11y/control-has-associated-label": ["warn"],
     "jsx-a11y/alt-text": ["warn"],
     "jsx-a11y/no-static-element-interactions": "off",
     "jsx-a11y/click-events-have-key-events": "off",

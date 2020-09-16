@@ -73,7 +73,7 @@ class SharedProperties extends Component<FilterSuggestionsProps> {
     const templatesWithSameLabelProperties = [thisProperty, ...similarProperties];
     const hasContent = templatesWithSameLabelProperties.find(prop => prop.thesaurusName);
     return (
-      <React.Fragment>
+      <>
         <label className="suggestions-label">
           <Translate>
             Properties from other templates in the collection using the same label
@@ -101,7 +101,7 @@ class SharedProperties extends Component<FilterSuggestionsProps> {
             ))}
           </tbody>
         </table>
-      </React.Fragment>
+      </>
     );
   }
 }

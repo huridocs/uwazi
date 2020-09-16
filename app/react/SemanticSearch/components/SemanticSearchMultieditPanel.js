@@ -88,7 +88,7 @@ export class SemanticSearchMultieditPanel extends Component {
     const { formKey, thesauris } = this.props;
 
     return (
-      <React.Fragment>
+      <>
         <div className="alert alert-warning">
           <Icon icon="exclamation-triangle" size="2x" />
           <p>
@@ -105,13 +105,13 @@ export class SemanticSearchMultieditPanel extends Component {
           changeTemplate={this.changeTemplate}
           multipleEdition
         />
-      </React.Fragment>
+      </>
     );
   }
 
   renderEditingButtons() {
     return (
-      <React.Fragment>
+      <>
         <button
           type="button"
           onClick={this.cancel}
@@ -124,7 +124,7 @@ export class SemanticSearchMultieditPanel extends Component {
           <Icon icon="save" />
           <span className="btn-label">{t('System', 'Save')}</span>
         </button>
-      </React.Fragment>
+      </>
     );
   }
 

@@ -93,7 +93,7 @@ export class MetadataFormButtons extends Component {
           </button>
         </ShowIf>
         <ShowIf if={entityBeingEdited}>
-          <React.Fragment>
+          <>
             <button type="submit" form={formName} className="btn btn-success">
               <Icon icon="save" />
               <span className="btn-label">
@@ -110,7 +110,7 @@ export class MetadataFormButtons extends Component {
                 <Translate>Copy From</Translate>
               </span>
             </button>
-          </React.Fragment>
+          </>
         </ShowIf>
         <NeedAuthorization roles={['admin', 'editor']}>
           <ShowIf if={!entityBeingEdited && !hideDelete}>

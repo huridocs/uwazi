@@ -114,7 +114,7 @@ class FreeBarChart extends Component<FreeBarChartProps, FreeBarChartState> {
       const dataKeysArray = this.getDataKeys();
       const dataKey = Object.keys(dataKeysArray[activeDataIndex])[0];
       output = (
-        <React.Fragment>
+        <>
           {dataKeysArray.length > 1 && (
             <div className="toggle-group">
               {dataKeysArray.map((dataKeyValue: object, index: number) => (
@@ -149,7 +149,7 @@ class FreeBarChart extends Component<FreeBarChartProps, FreeBarChartState> {
               </Bar>
             </BarChart>
           </ResponsiveContainer>
-        </React.Fragment>
+        </>
       );
     }
 

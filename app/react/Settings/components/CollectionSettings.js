@@ -328,7 +328,7 @@ export class CollectionSettings extends Component {
             </div>
 
             {!this.props.settings.newNameGeneration && (
-              <React.Fragment>
+              <>
                 <span className="form-group-label">
                   <Translate>Support non-latin characters in property names</Translate>
                 </span>
@@ -366,7 +366,7 @@ export class CollectionSettings extends Component {
                     </div>
                   </div>
                 </div>
-              </React.Fragment>
+              </>
             )}
           </LocalForm>
           <h2>

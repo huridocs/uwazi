@@ -98,7 +98,7 @@ export class DocumentResults extends Component {
     const documentViewUrl = doc.file ? `/document/${doc.sharedId}` : `/entity/${doc.sharedId}`;
 
     return (
-      <React.Fragment>
+      <>
         <div className="view">
           <div className="item-info">
             <div>
@@ -127,7 +127,7 @@ export class DocumentResults extends Component {
           </dl>
         </div>
         {this.renderSnippetsList(doc, snippets, documentViewUrl)}
-      </React.Fragment>
+      </>
     );
   }
 }

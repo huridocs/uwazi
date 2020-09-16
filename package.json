@@ -229,7 +229,7 @@
     "enzyme": "3.11.0",
     "enzyme-to-json": "^3.5.0",
     "eslint": "v7.8.1",
-    "eslint-config-airbnb": "v17.1.0",
+    "eslint-config-airbnb": "18.2.0",
     "eslint-plugin-import": "v2.22.0",
     "eslint-plugin-jasmine": "2.9.2",
     "eslint-plugin-jest": "v24.0.1",

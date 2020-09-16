@@ -9,7 +9,7 @@ import getFieldLabel from 'app/Templates/utils/getFieldLabel';
 import Immutable from 'immutable';
 
 export const MetadataFieldSnippets = ({ fieldSnippets, documentViewUrl, template, searchTerm }) => (
-  <React.Fragment>
+  <>
     <li className="snippet-list-item-header metadata-snippet-header">
       <I18NLink to={`${documentViewUrl}?searchTerm=${searchTerm}`}>
         {getFieldLabel(fieldSnippets.get('field'), template)}
@@ -22,7 +22,7 @@ export const MetadataFieldSnippets = ({ fieldSnippets, documentViewUrl, template
         </span>
       </li>
     ))}
-  </React.Fragment>
+  </>
 );
 
 MetadataFieldSnippets.defaultProps = {
@@ -49,7 +49,7 @@ export const DocumentContentSnippets = ({
   searchTerm,
   selectedSnippet,
 }) => (
-  <React.Fragment>
+  <>
     <li className="snippet-list-item-header fulltext-snippet-header">
       {t('System', 'Document contents')}
     </li>
@@ -69,7 +69,7 @@ export const DocumentContentSnippets = ({
         </li>
       );
     })}
-  </React.Fragment>
+  </>
 );
 
 DocumentContentSnippets.propTypes = {
