@@ -232,7 +232,7 @@
     "eslint-config-airbnb": "v17.1.0",
     "eslint-plugin-import": "v2.22.0",
     "eslint-plugin-jasmine": "2.9.2",
-    "eslint-plugin-jsx-a11y": "^6.0.3",
+    "eslint-plugin-jsx-a11y": "6.3.1",
     "eslint-plugin-prettier": "^3.1.4",
     "eslint-plugin-react": "v7.20.0",
     "fetch-mock": "^9.10.7",
