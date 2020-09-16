@@ -27,7 +27,7 @@ const setupSockets = (server: Server, app: Application) => {
   const io: SocketIoServer = socketIo(server);
 
   io.on('connection', socket => {
-    socket.join(socket.request.headers.tenant || tenants.defaultTenantName);
+    socket.join(socket.request.headers.tenant || config.defaultTenant.name);
   });
 
   io.emitToCurrentTenant = (event, ...args) => {

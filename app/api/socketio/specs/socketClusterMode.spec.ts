@@ -92,15 +92,21 @@ describe('socket middlewares setup', () => {
     return events;
   };
 
-  const requestTestRoute = async (tenant: string = '') =>
-    request(server)
-      .get('/api/test')
-      .set('tenant', tenant)
-      .expect(response => {
-        if (response.status !== 200) {
-          throw new Error(response.text);
-        }
+  const requestTestRoute = async (tenant?: string) => {
+    const req = request(server).get('/api/test');
+
+    if (tenant) {
+      req.set('tenant', tenant).catch(e => {
+        throw e;
       });
+    }
+
+    return req.expect(response => {
+      if (response.status !== 200) {
+        throw new Error(response.text);
+      }
+    });
+  };
 
   describe('when performing a request to tenant1', () => {
     it('should only emit socket events to tenant1 sockets', async () => {
