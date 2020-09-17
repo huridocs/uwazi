@@ -85,6 +85,7 @@
     "import/order": ["warn"],
     "import/named": ["warn"],
     "import/no-cycle": ["warn"],
+    "import/no-extraneous-dependencies": ["error", {"devDependencies": true}],
 
     //react
     "react/self-closing-comp": ["warn"],
@@ -175,7 +176,6 @@
           }
         ],
         // This is broken for ts, but circleci protects us.
-        "import/no-extraneous-dependencies": "off",
         "@typescript-eslint/no-floating-promises": "error",
         "@typescript-eslint/no-misused-promises": "error",
         "@typescript-eslint/promise-function-async": "error"
