@@ -79,7 +79,7 @@ const prettifyError = (error, { req = {}, uncaught = false } = {}) => {
   return result;
 };
 
-export default (_error, { req = {}, uncaught = false } = {}) => {
+export default (_error, { req = undefined, uncaught = false } = {}) => {
   const error = _error || new Error('undefined error occurred');
   const responseToClientError = error.json;
 
@@ -89,8 +89,13 @@ export default (_error, { req = {}, uncaught = false } = {}) => {
 
   const result = prettifyError(error, { req, uncaught });
 
+  let errorOptions = {};
+  if (req) {
+    errorOptions.shouldBeMultiTenantContext = true;
+  }
+
   if (result.code === 500) {
-    errorLog.error(result.prettyMessage);
+    errorLog.error(result.prettyMessage, errorOptions);
   } else if (result.code === 400) {
     debugLog.debug(result.prettyMessage);
   }
