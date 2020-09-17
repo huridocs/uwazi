@@ -130,7 +130,7 @@ $item-padding: 15px;
 
 .item-icon {
   position: relative;
-  margin-right: 6px;
+  margin-right: 3px;
 }
 
 .item-private-icon {
@@ -429,9 +429,6 @@ $item-padding: 15px;
       padding: 3px 3px 1px;
       margin-left: -3px;
     }
-  }
-  .item-icon {
-    top: -1px;
   }
 
   .markdown-viewer p,
