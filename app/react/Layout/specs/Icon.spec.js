@@ -39,7 +39,7 @@ describe('Icon', () => {
   describe('Flags', () => {
     beforeEach(() => {
       props = {
-        data: { _id: 'flagid', type: 'Flags', label: 'flaglabel' },
+        data: { _id: 'JPN', type: 'Flags', label: 'flaglabel' },
         className: 'passed-flag-classname',
         size: 'md',
       };
@@ -52,7 +52,7 @@ describe('Icon', () => {
     it('should render a Flag icon', () => {
       render();
       expect(component.find('span.flag-icon').props().className).toContain('passed-flag-classname');
-      expect(component.find('span.flag-icon').props().className).toContain('flag-icon-flagid');
+      expect(component.find('span.flag-icon').props().className).toContain('flag-icon-jp');
     });
   });
 });

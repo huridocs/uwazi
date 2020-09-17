@@ -1,11 +1,10 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-
-import { Icon } from 'UI';
+import { Icon, CountryList } from 'UI';
 
 const style = { display: 'inline-block', width: '25px' };
 
-export default class ListItem extends Component {
+export default class IconSelectorItem extends Component {
   shouldComponentUpdate(nextProps) {
     return this.props.item._id !== nextProps.item._id;
   }
@@ -23,7 +22,7 @@ export default class ListItem extends Component {
     }
 
     if (item.type === 'Flags') {
-      const className = `flag-icon flag-icon-${item._id}`.toLowerCase();
+      const className = `flag-icon flag-icon-${CountryList.get(item._id).cca2}`.toLowerCase();
       icon = (
         <span style={style}>
           <span className={className} />
@@ -40,10 +39,10 @@ export default class ListItem extends Component {
   }
 }
 
-ListItem.defaultProps = {
+IconSelectorItem.defaultProps = {
   item: undefined,
 };
 
-ListItem.propTypes = {
+IconSelectorItem.propTypes = {
   item: PropTypes.instanceOf(Object),
 };

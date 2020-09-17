@@ -1,7 +1,8 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Icon as UIIcon } from 'UI';
+
+import { Icon as UIIcon, CountryList } from 'UI';
 
 function getFaSize(size) {
   switch (size) {
@@ -41,7 +42,7 @@ export class Icon extends Component {
     }
 
     if (_data.type === 'Flags') {
-      const flagClassName = `flag-icon flag-icon-${_data._id}`.toLowerCase();
+      const flagClassName = `flag-icon flag-icon-${CountryList.get(_data._id).cca2}`.toLowerCase();
       const componentClassName = `${className} ${flagClassName}`;
       icon = <span className={componentClassName} />;
     }

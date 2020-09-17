@@ -1,10 +1,8 @@
 import React, { Component } from 'react';
-
 import { iconNames } from 'UI/Icon/library';
-import countries from 'world-countries';
-
+import { CountryList } from 'UI';
 import DropdownList from './DropdownList';
-import ListItem from './ListItem';
+import IconSelectorItem from './IconSelectorItem';
 
 export default class IconSelector extends Component {
   constructor(props) {
@@ -18,10 +16,10 @@ export default class IconSelector extends Component {
         }))
       )
       .concat(
-        countries.map(country => ({
-          _id: country.cca2,
+        Array.from(CountryList).map(country => ({
+          _id: country[1].cca3,
           type: 'Flags',
-          label: country.name.common,
+          label: country[1].label,
         }))
       );
 
@@ -34,8 +32,8 @@ export default class IconSelector extends Component {
         valueField="_id"
         textField="label"
         data={this.state.listOptions}
-        valueComponent={ListItem}
-        itemComponent={ListItem}
+        valueComponent={IconSelectorItem}
+        itemComponent={IconSelectorItem}
         defaultValue={this.state.listOptions[0]}
         filter="contains"
         groupBy="type"

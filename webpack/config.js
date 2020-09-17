@@ -37,6 +37,11 @@ module.exports = production => {
     resolve: {
       extensions: ['*', '.webpack.js', '.web.js', '.js', '.tsx', '.ts'],
     },
+    resolveLoader: {
+      modules: ['node_modules', path.join(__dirname, '/webpackLoaders')],
+      extensions: ['.js', '.json', '.ts'],
+      mainFields: ['loader', 'main'],
+    },
     optimization: {
       splitChunks: {
         cacheGroups: {
@@ -80,6 +85,10 @@ module.exports = production => {
             { loader: 'css-loader', options: { url: false, sourceMap: true } },
             { loader: 'sass-loader', options: { sourceMap: true } },
           ],
+        },
+        {
+          test: /world-countries/,
+          loader: 'country-loader',
         },
       ],
     },

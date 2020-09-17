@@ -9,11 +9,6 @@ const config = require('./webpack/config')(production);
 config.devtool = '';
 config.context = __dirname;
 config.mode = 'production';
-config.resolveLoader = {
-  modules: ['node_modules'],
-  extensions: ['.js', '.json', '.ts'],
-  mainFields: ['loader', 'main'],
-};
 
 config.plugins = config.plugins.concat([
   new webpack.optimize.OccurrenceOrderPlugin(),
