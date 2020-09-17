@@ -18,4 +18,4 @@ jobs:
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
       - name: install dependencies
         run: yarn install
-      - run: yarn audit --level moderate --groups dependencies
+      - run: yarn audit --level high --groups dependencies
