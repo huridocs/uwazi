@@ -1,7 +1,5 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import Flag from 'react-flags';
-import Immutable from 'immutable';
 import { Icon as UIIcon } from 'UI';
 import { Icon } from '../Icon';
 
@@ -41,7 +39,7 @@ describe('Icon', () => {
   describe('Flags', () => {
     beforeEach(() => {
       props = {
-        data: { _id: 'flagid', type: 'Flags', label: 'flaglabel' },
+        data: { _id: 'JPN', type: 'Flags', label: 'flaglabel' },
         className: 'passed-flag-classname',
         size: 'md',
       };
@@ -53,28 +51,8 @@ describe('Icon', () => {
 
     it('should render a Flag icon', () => {
       render();
-      expect(component.find('span').props().className).toBe('passed-flag-classname');
-      expect(component.find(Flag).props().name).toBe('flagid');
-      expect(component.find(Flag).props().basePath).toBe('/flag-images');
-    });
-
-    it('should render different size icons', () => {
-      render();
-      expect(component.find(Flag).props().pngSize).toBe(32);
-
-      props.size = 'sm';
-      render();
-      expect(component.find(Flag).props().pngSize).toBe(24);
-    });
-
-    describe('when data is immutable', () => {
-      it('should render a Flag icon', () => {
-        props.data = Immutable.fromJS({ _id: 'flagid', type: 'Flags', label: 'flaglabel' });
-        render();
-        expect(component.find('span').props().className).toBe('passed-flag-classname');
-        expect(component.find(Flag).props().name).toBe('flagid');
-        expect(component.find(Flag).props().basePath).toBe('/flag-images');
-      });
+      expect(component.find('span.flag-icon').props().className).toContain('passed-flag-classname');
+      expect(component.find('span.flag-icon').props().className).toContain('flag-icon-jp');
     });
   });
 });
