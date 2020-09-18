@@ -18,4 +18,4 @@ jobs:
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
       - name: install dependencies
         run: yarn install
-      - run: yarn audit --level high --groups dependencies; if [ $? -gt 8 ]; then exit 1; else exit 0; fi
+      - run: yarn audit --level high --groups dependencies 2>/dev/null; if [ $? -gt 8 ]; then exit 1; else exit 0; fi
