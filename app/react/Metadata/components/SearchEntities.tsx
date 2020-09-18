@@ -60,12 +60,12 @@ export class SearchEntities extends Component<SearchEntitiesProps, SearchEntitie
   render() {
     const { searchResults, searching } = this.state;
     return (
-      <div className="search-entities">
+      <>
         <div className="search-box">
           <SearchInput onChange={this.onChange} />
         </div>
         <SearchResults results={searchResults} searching={searching} onClick={this.onSelect} />
-      </div>
+      </>
     );
   }
 }
