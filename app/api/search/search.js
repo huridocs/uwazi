@@ -347,6 +347,7 @@ const _sanitizeAggregations = async (
 };
 
 const processResponse = async (response, templates, dictionaries, language, filters) => {
+  console.log(response);
   const rows = response.hits.hits.map(hit => {
     const result = hit._source;
     result._explanation = hit._explanation;
@@ -650,7 +651,9 @@ const instanceSearch = elasticIndex => ({
     // queryBuilder.query() is the actual call
     return elastic
       .search({ index: elasticIndex || getCurrentTenantIndex(), body: queryBuilder.query() })
-      .then(response => processResponse(response, templates, dictionaries, language, query.filters))
+      .then(response => {
+        return processResponse(response.body, templates, dictionaries, language, query.filters);
+      })
       .catch(e => {
         throw createError(e, 400);
       });

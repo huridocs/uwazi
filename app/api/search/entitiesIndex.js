@@ -71,7 +71,7 @@ const bulkIndex = async (docs, _action = 'index', elasticIndex) => {
     }
   });
 
-  const results = await elastic.bulk({ body, requestTimeout: 40000 });
+  const results = await elastic.bulk({ body });
 
   if (results.items) {
     handleErrors(results.items.filter(f => f.index.error));

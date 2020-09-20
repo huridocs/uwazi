@@ -69,7 +69,6 @@ describe('index (search)', () => {
               { index: { _index: elasticIndex, _id: 'id2' } },
               { title: 'test2', fullText: 'entity', documents: [] },
             ],
-            requestTimeout: 40000,
           });
           done();
         })
@@ -130,7 +129,6 @@ describe('index (search)', () => {
                   fullText: { name: 'fullText', parent: 'id2' },
                 },
               ],
-              requestTimeout: 40000,
             });
             done();
           })
