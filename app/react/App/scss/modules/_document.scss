@@ -340,5 +340,11 @@ mark.searchTerm {
     width: 100%;
     background: white;
     border-bottom: solid 1px lightgrey;
+
+    .input-group {
+      svg {
+        top: 23px;
+      }
+    }
   }
 }

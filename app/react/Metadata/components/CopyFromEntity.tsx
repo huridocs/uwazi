@@ -87,7 +87,7 @@ export class CopyFromEntity extends Component<CopyFromEntityProps, CopyFromEntit
     return this.state.selectedEntity._id ? (
       <>
         <div className="view">
-          <FormatMetadata entity={this.state.selectedEntity} highlight={this.state.propsToCopy} />
+          <FormatMetadata entity={this.state.selectedEntity} highlight={this.state.propsToCopy} excludePreview />
         </div>
         <div className="copy-from-buttons">
           <button className="back-copy-from btn btn-light" onClick={this.backToSearch}>
