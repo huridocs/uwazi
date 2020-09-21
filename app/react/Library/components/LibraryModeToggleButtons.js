@@ -29,7 +29,6 @@ export class LibraryModeToggleButtons extends Component {
         {tableViewMode && (
           <HiddenColumnsDropdown className="table-view-column-selector" storeKey={storeKey} />
         )}
-
         <div
           className={`list-view-mode-zoom list-view-buttons-zoom-${zoomLevel} buttons-group ${
             tableViewMode ? 'unpinned-mode' : ''

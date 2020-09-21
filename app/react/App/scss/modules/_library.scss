@@ -79,7 +79,7 @@
   position: absolute;
   z-index: 4;
   right: 16px;
-  top: 16px;
+  top: 80px;
   display: flex;
 
   .buttons-group {
@@ -115,18 +115,17 @@
 
   .hidden-columns-dropdown {
     margin: 4px;
+    width: 50px;
 
     .rw-dropdown-list {
       width: 177px;
 
       .rw-widget-picker {
         width: 50px;
-        left: calc(100% - 50px);
         height: 37px;
 
         @media (min-width: 600px) {
           width: 100%;
-          left: 0;
         }
 
         .rw-input svg, li input {
@@ -140,6 +139,11 @@
           left: 0;
         }
       }
+    }
+
+    @media (min-width: 600px) {
+      overflow: visible;
+      width: 177px;
     }
   }
 
@@ -165,5 +169,9 @@
         display: inline;
       }
     }
+  }
+
+  @media (min-width: 768px) {
+    top: 16px;
   }
 }

@@ -3,8 +3,11 @@
   overflow: auto;
   margin: 0 -15px;
   margin-bottom: 15px;
-  height: calc(100vh - 166px);
+  height: calc(100vh - 225px);
 
+  @media (min-width: 768px) {
+    height: calc(100vh - 166px);
+  }
 
   .sticky-col {
     z-index: 1;
