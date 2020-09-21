@@ -5,7 +5,7 @@ import { actions as formActions } from 'react-redux-form';
 import { actions } from 'app/BasicReducer';
 import { documentsApi } from 'app/Documents';
 import { browserHistory } from 'react-router';
-import rison from 'rison';
+import rison from 'rison-node';
 import referencesAPI from 'app/Viewer/referencesAPI';
 import { api as entitiesAPI } from 'app/Entities';
 import { toUrlParams } from 'shared/JSONRequest';

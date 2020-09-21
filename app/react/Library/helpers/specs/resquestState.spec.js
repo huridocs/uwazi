@@ -2,7 +2,7 @@ import searchAPI from 'app/Search/SearchAPI';
 import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
 import { RequestParams } from 'app/utils/RequestParams';
 import Immutable from 'immutable';
-import rison from 'rison';
+import rison from 'rison-node';
 import requestState, { processQuery } from '../requestState';
 
 describe('static requestState()', () => {

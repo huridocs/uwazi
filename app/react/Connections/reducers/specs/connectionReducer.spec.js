@@ -1,5 +1,3 @@
-import 'jasmine-immutablejs-matchers';
-
 import { fromJS as Immutable } from 'immutable';
 
 import reducer from '../connectionReducer';

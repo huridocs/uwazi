@@ -2,7 +2,6 @@ import Immutable from 'immutable';
 
 import notificationsReducer from 'app/Notifications/reducers/notificationsReducer';
 import * as types from 'app/Notifications/actions/actionTypes';
-import 'jasmine-immutablejs-matchers';
 
 describe('templateReducer', () => {
   describe('when state is undefined', () => {
@@ -21,8 +20,8 @@ describe('templateReducer', () => {
       });
       const expected = Immutable.fromJS([{ message: 'message' }, { message: 'another message' }]);
 
-      expect(newState).toBeImmutable();
-      expect(newState).toEqualImmutable(expected);
+      expect(newState instanceof Immutable.List).toBe(true);
+      expect(newState.toJS()).toEqual(expected.toJS());
     });
   });
 
@@ -35,8 +34,8 @@ describe('templateReducer', () => {
       });
       const expected = Immutable.fromJS([{ id: 1 }]);
 
-      expect(newState).toBeImmutable();
-      expect(newState).toEqualImmutable(expected);
+      expect(newState instanceof Immutable.List).toBe(true);
+      expect(newState.toJS()).toEqual(expected.toJS());
     });
   });
 });

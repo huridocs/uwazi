@@ -2,7 +2,7 @@
 
 import HtmlParser from 'htmlparser2/lib/Parser';
 import queryString from 'query-string';
-import rison from 'rison';
+import rison from 'rison-node';
 import Big from 'big.js';
 
 import searchApi from 'app/Search/SearchAPI';
