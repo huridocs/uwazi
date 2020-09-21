@@ -62,6 +62,7 @@ export function saveToc(toc, fileId) {
     dispatch(actions.set('documentViewer/tocBeingEdited', false));
 
     const updatedFile = (await api.post('files', new RequestParams({ toc, _id: fileId }))).json;
+    updatedFile.pdfInfo = currentDoc.defaultDoc.pdfInfo;
     const doc = {
       ...currentDoc,
       defaultDoc: updatedFile,
