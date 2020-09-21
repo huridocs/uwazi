@@ -11,7 +11,12 @@ export class LibraryTable extends RouteHandler {
 
   render() {
     return (
-      <Library viewer={TableViewer} location={this.props.location} sidePanelMode="unpinned-mode" />
+      <Library
+        viewer={TableViewer}
+        location={this.props.location}
+        sidePanelMode="unpinned-mode"
+        noScrollable
+      />
     );
   }
 }

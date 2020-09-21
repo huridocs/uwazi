@@ -59,7 +59,10 @@ export default class Library extends RouteHandler {
   render() {
     const tableViewMode = this.props.viewer === TableViewer;
     return (
-      <LibraryLayout sidePanelMode={this.props.sidePanelMode}>
+      <LibraryLayout
+        sidePanelMode={this.props.sidePanelMode}
+        noScrollable={this.props.noScrollable}
+      >
         <LibraryModeToggleButtons
           storeKey="library"
           zoomIn={this.zoomIn}

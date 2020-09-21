@@ -18,10 +18,12 @@ export class LibraryLayoutBase extends Component {
     if (blankState()) {
       return <Welcome />;
     }
-    const { className, children, quickLabelThesaurus, sidePanelMode } = this.props;
+    const { className, children, quickLabelThesaurus, sidePanelMode, noScrollable } = this.props;
     const contentDivClass = `${
       quickLabelThesaurus ? 'with-header ' : ''
-    } content-holder library-viewer document-viewer with-panel ${sidePanelMode} `;
+    } content-holder library-viewer document-viewer with-panel ${sidePanelMode} ${
+      noScrollable ? 'no-scroll-layout' : ''
+    }`;
 
     return (
       <div className="row panels-layout">
@@ -46,6 +48,7 @@ LibraryLayoutBase.defaultProps = {
   className: '',
   quickLabelThesaurus: '',
   sidePanelMode: '',
+  noScrollable: false,
 };
 
 LibraryLayoutBase.propTypes = {
@@ -53,6 +56,7 @@ LibraryLayoutBase.propTypes = {
   className: PropTypes.string,
   quickLabelThesaurus: PropTypes.string,
   sidePanelMode: PropTypes.string,
+  noScrollable: PropTypes.bool,
 };
 
 export default connect(state => ({

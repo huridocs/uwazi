@@ -1,14 +1,9 @@
-.tableview-wrapper::-webkit-scrollbar {
-  width: 0;
-  background: transparent;
-}
-
 .tableview-wrapper {
   position: relative;
   overflow: auto;
   margin: 0 -15px;
   margin-bottom: 15px;
-  max-height: 100vh;
+  height: calc(100vh - 166px);
 
 
   .sticky-col {
@@ -112,4 +107,8 @@
       background-color: #bed1ec;
     }
   }
+}
+
+.library-viewer.no-scroll-layout {
+  overflow: hidden;
 }
