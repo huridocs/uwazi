@@ -10,7 +10,6 @@ export class IndexError extends Error {}
 
 const handleErrors = (itemsWithErrors, { logError = false } = {}) => {
   if (itemsWithErrors.length === 0) return;
-
   if (logError) {
     errorLog.error(
       `ERROR! Failed to index documents.\r\n${JSON.stringify(itemsWithErrors, null, ' ')}\r\n`
@@ -73,8 +72,8 @@ const bulkIndex = async (docs, _action = 'index', elasticIndex) => {
 
   const results = await elastic.bulk({ body });
 
-  if (results.items) {
-    handleErrors(results.items.filter(f => f.index.error));
+  if (results.body.items) {
+    handleErrors(results.body.items.filter(f => f.index.error));
   }
 
   return results;
