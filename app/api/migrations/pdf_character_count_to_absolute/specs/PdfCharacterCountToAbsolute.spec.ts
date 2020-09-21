@@ -1,8 +1,8 @@
 import {
   PdfCharacterCountToAbsolute,
   AbsolutePositionReference,
-} from 'api/pdf_character_count_to_absolute/PdfCharacterCountToAbsolute';
-import { AbsolutePositionTag } from 'api/pdf_character_count_to_absolute/AbsolutePositionLettersList';
+} from 'api/migrations/pdf_character_count_to_absolute/PdfCharacterCountToAbsolute';
+import { AbsolutePositionTag } from 'api/migrations/pdf_character_count_to_absolute/AbsolutePositionLettersList';
 
 const pdfInfo = [
   390,
@@ -42,7 +42,8 @@ const checkAbsoluteTag = (tag: AbsolutePositionTag, tagExpected: AbsolutePositio
 
 describe('PdfCharacterCountToAbsolute', () => {
   it('should convert short label to absolute position', async () => {
-    const pdfRelativePath = 'app/api/pdf_character_count_to_absolute/specs/pdf_to_be_converted.pdf';
+    const pdfRelativePath =
+      'app/api/migrations/pdf_character_count_to_absolute/specs/pdf_to_be_converted.pdf';
     const shortLabel = '26.80';
 
     const characterCountToAbsoluteConversion = new PdfCharacterCountToAbsolute();
@@ -62,7 +63,8 @@ describe('PdfCharacterCountToAbsolute', () => {
   });
 
   it('should convert the last text in a page to absolute position', async () => {
-    const pdfRelativePath = 'app/api/pdf_character_count_to_absolute/specs/pdf_to_be_converted.pdf';
+    const pdfRelativePath =
+      'app/api/migrations/pdf_character_count_to_absolute/specs/pdf_to_be_converted.pdf';
     const lastLabel = '•  Mr. Mostafa Nafari, member of delegation.';
 
     const characterCountToAbsoluteConversion = new PdfCharacterCountToAbsolute();
@@ -86,7 +88,8 @@ describe('PdfCharacterCountToAbsolute', () => {
   });
 
   it('should convert special character string to absolute position', async () => {
-    const pdfRelativePath = 'app/api/pdf_character_count_to_absolute/specs/pdf_to_be_converted.pdf';
+    const pdfRelativePath =
+      'app/api/migrations/pdf_character_count_to_absolute/specs/pdf_to_be_converted.pdf';
     const specialCharactersString = '';
 
     const characterCountToAbsoluteConversion = new PdfCharacterCountToAbsolute();
@@ -110,7 +113,8 @@ describe('PdfCharacterCountToAbsolute', () => {
   });
 
   it('should convert long label strings to absolute position', async () => {
-    const pdfRelativePath = 'app/api/pdf_character_count_to_absolute/specs/pdf_to_be_converted.pdf';
+    const pdfRelativePath =
+      'app/api/migrations/pdf_character_count_to_absolute/specs/pdf_to_be_converted.pdf';
     const longLabel =
       'B.Interactive dialogue and responses by the State under review13.During the interactive dialogue, 111 delegations made statements. ';
 
@@ -143,7 +147,8 @@ describe('PdfCharacterCountToAbsolute', () => {
   });
 
   it('should convert to absolute when not founded string', async () => {
-    const pdfRelativePath = 'app/api/pdf_character_count_to_absolute/specs/pdf_to_be_converted.pdf';
+    const pdfRelativePath =
+      'app/api/migrations/pdf_character_count_to_absolute/specs/pdf_to_be_converted.pdf';
     const notFoundedLabel = 'not founded label';
 
     const characterCountToAbsoluteConversion = new PdfCharacterCountToAbsolute();
@@ -184,7 +189,8 @@ describe('PdfCharacterCountToAbsolute', () => {
   });
 
   it('should match string and position when several matching strings occurs', async () => {
-    const pdfRelativePath = 'app/api/pdf_character_count_to_absolute/specs/pdf_to_be_converted.pdf';
+    const pdfRelativePath =
+      'app/api/migrations/pdf_character_count_to_absolute/specs/pdf_to_be_converted.pdf';
     const severalAppearancesString = 'Continue';
 
     const characterCountToAbsoluteConversion = new PdfCharacterCountToAbsolute();
@@ -209,7 +215,8 @@ describe('PdfCharacterCountToAbsolute', () => {
   });
 
   it('should return absolute position when string matching across two pages', async () => {
-    const pdfRelativePath = 'app/api/pdf_character_count_to_absolute/specs/pdf_to_be_converted.pdf';
+    const pdfRelativePath =
+      'app/api/migrations/pdf_character_count_to_absolute/specs/pdf_to_be_converted.pdf';
     const stringSpreadTwoPages =
       'International Covenant on Civil and Political Rights (Ireland); A/HRC/43/121526.164';
 
@@ -258,7 +265,8 @@ describe('PdfCharacterCountToAbsolute', () => {
   });
 
   it('should return absolute position when character count across two pages', async () => {
-    const pdfRelativePath = 'app/api/pdf_character_count_to_absolute/specs/pdf_to_be_converted.pdf';
+    const pdfRelativePath =
+      'app/api/migrations/pdf_character_count_to_absolute/specs/pdf_to_be_converted.pdf';
     const nonExistentString = 'Non existent string';
 
     const characterCountToAbsoluteConversion = new PdfCharacterCountToAbsolute();
@@ -312,7 +320,8 @@ describe('PdfCharacterCountToAbsolute', () => {
   });
 
   it('should not brake when range outside document and non existent string match', async () => {
-    const pdfRelativePath = 'app/api/pdf_character_count_to_absolute/specs/pdf_to_be_converted.pdf';
+    const pdfRelativePath =
+      'app/api/migrations/pdf_character_count_to_absolute/specs/pdf_to_be_converted.pdf';
     const outsideLabel = 'outside label';
 
     const characterCountToAbsoluteConversion = new PdfCharacterCountToAbsolute();
@@ -326,7 +335,8 @@ describe('PdfCharacterCountToAbsolute', () => {
   });
 
   it('should return first string match when range outside document', async () => {
-    const pdfRelativePath = 'app/api/pdf_character_count_to_absolute/specs/pdf_to_be_converted.pdf';
+    const pdfRelativePath =
+      'app/api/migrations/pdf_character_count_to_absolute/specs/pdf_to_be_converted.pdf';
     const label = '26.80';
 
     const characterCountToAbsoluteConversion = new PdfCharacterCountToAbsolute();
@@ -348,7 +358,7 @@ describe('PdfCharacterCountToAbsolute', () => {
   it('should convert to absolute position a different pdf', async () => {
     const otherPdfInfo = [1813, 5329, 8911, 13428, 17878, 22296, 25112, 25537];
     const pdfRelativePath =
-      'app/api/pdf_character_count_to_absolute/specs/other_pdf_to_be_converted.pdf';
+      'app/api/migrations/pdf_character_count_to_absolute/specs/other_pdf_to_be_converted.pdf';
     const label = 'ISOLICITUD DE INTERPRETACIÓNY PROCEDIMIENTO ANTELA CORTE';
 
     const characterCountToAbsoluteConversion = new PdfCharacterCountToAbsolute();
