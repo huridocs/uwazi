@@ -57,18 +57,28 @@ export interface SettingsState {
   features?: { topicClassification: boolean };
 }
 
-export interface IStore {
-  library: {
-    documents: IImmutable<{ rows: EntitySchema[] }>;
-    ui: IImmutable<{
-      selectedDocuments: EntitySchema[];
-    }>;
-    sidepanel: {
-      quickLabelState: IImmutable<QuickLabelState>;
-      quickLabelMetadata: QuickLabelMetadata;
-      quickLabelMetadataForm: any;
-    };
+export interface TableViewColumn extends PropertySchema {
+  hidden: boolean;
+}
+
+interface EntityDisplayState {
+  documents: IImmutable<{ rows: EntitySchema[] }>;
+  ui: IImmutable<{
+    selectedDocuments: EntitySchema[];
+    tableViewColumns: TableViewColumn[];
+    zoomLevel: number;
+  }>;
+  sidepanel: {
+    quickLabelState: IImmutable<QuickLabelState>;
+    quickLabelMetadata: QuickLabelMetadata;
+    quickLabelMetadataForm: any;
   };
+  search: any;
+}
+
+export interface IStore {
+  library: EntityDisplayState;
+  uploads: EntityDisplayState;
   template: {
     data: TemplateSchema;
   };
