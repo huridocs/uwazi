@@ -2,7 +2,9 @@
 
 exports[`I18NMenu when there is only one language should only render the inline translation button 1`] = `
 <ul
+  aria-label="Languages"
   className="menuNav-I18NMenu"
+  role="navigation"
 >
   <Connect(NeedAuthorization)
     roles={
@@ -13,11 +15,13 @@ exports[`I18NMenu when there is only one language should only render the inline 
     }
   >
     <button
+      aria-label="Add/edit translations"
       className="menuNav-btn btn btn-default"
       onClick={[Function]}
       type="button"
     >
       <Connect(Icon)
+        aria-label="Add/edit translations"
         icon="language"
         size="lg"
       />
