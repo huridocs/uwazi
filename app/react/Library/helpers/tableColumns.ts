@@ -40,13 +40,15 @@ export function getTableColumns(
     );
 
     if (templatesToProcess.length > 0) {
-      const commonColumns: PropertySchema[] = templatesToProcess[0].commonProperties || [];
-      commonColumns.push({
-        label: 'Template',
-        name: 'templateName',
-        type: 'text',
-        isCommonProperty: true,
-      });
+      const commonColumns: PropertySchema[] = [
+        ...(templatesToProcess[0].commonProperties || []),
+        {
+          label: 'Template',
+          name: 'templateName',
+          type: 'text',
+          isCommonProperty: true,
+        },
+      ];
 
       columns = commonColumns
         .map<TranslatableColumn>(c => ({ ...c, showInCard: true }))
