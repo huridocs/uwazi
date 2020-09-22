@@ -36,10 +36,11 @@ interface MetadataTemplateProps {
 }
 
 const getTemplateDefaultColor = (allTemplates: List<TemplateSchema>, template: any) => {
-  if (!template.data._id) {
-    return COLORS[allTemplates.size % COLORS.length];
+  let color = COLORS[allTemplates.size % COLORS.length];
+  if(template.data.color) {
+    color = template.data.color;
   }
-  return template.data.color;
+  return color;
 };
 
 export class MetadataTemplate extends Component<MetadataTemplateProps> {
