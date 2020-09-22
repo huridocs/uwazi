@@ -19,7 +19,7 @@ const updateIndeterminate = (item: SelectableColumn) => (elem: HTMLInputElement)
 export const ColumnItem = ({ item }: { item: SelectableColumn }) => (
   <React.Fragment>
     <input ref={updateIndeterminate(item)} type="checkbox" checked={!item.hidden} />
-    <Translate>{item.label}</Translate>
+    <Translate context={item.translationContext}>{item.label}</Translate>
   </React.Fragment>
 );
 
