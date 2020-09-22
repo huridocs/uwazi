@@ -29,6 +29,13 @@ describe('migration remove_not_allowed_metadata_properties', () => {
       .find({ template: template2 })
       .toArray();
 
+    const entitiesNoTemplate = await testingDB.mongodb
+      .collection('entities')
+      .find({ template: { $exists: false } })
+      .toArray();
+
+    expect(entitiesNoTemplate).toEqual([expect.objectContaining({ metadata: {} })]);
+
     expect(template1Entities).toEqual([
       expect.objectContaining({
         metadata: {
@@ -50,6 +57,7 @@ describe('migration remove_not_allowed_metadata_properties', () => {
           text_3: [{ value: 'value3' }],
         },
       }),
+      expect.objectContaining({ title: 'entity without metadata' }),
     ]);
   });
 });

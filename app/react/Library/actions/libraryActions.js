@@ -5,7 +5,7 @@ import { actions as formActions } from 'react-redux-form';
 import { actions } from 'app/BasicReducer';
 import { documentsApi } from 'app/Documents';
 import { browserHistory } from 'react-router';
-import rison from 'rison';
+import rison from 'rison-node';
 import referencesAPI from 'app/Viewer/referencesAPI';
 import { api as entitiesAPI } from 'app/Entities';
 import { toUrlParams } from 'shared/JSONRequest';
@@ -234,9 +234,8 @@ export function searchDocuments(
     const searchParams = processFilters(currentSearch, currentFilters, limit, from);
     searchParams.searchTerm = state.search.searchTerm;
 
-    const currentSearchParams = rison.decode(
-      decodeURIComponent(browserHistory.getCurrentLocation().q || '()')
-    );
+    const { query } = browserHistory.getCurrentLocation();
+    const currentSearchParams = rison.decode(decodeURIComponent(query.q || '()'));
 
     if (searchParams.searchTerm && searchParams.searchTerm !== currentSearchParams.searchTerm) {
       searchParams.sort = '_score';

@@ -317,10 +317,16 @@ describe('documentActions', () => {
           name: 'doc',
           _id: 'id',
           sharedId: 'sharedId',
+          defaultDoc: {
+            _id: fileId,
+            toc: [{ _id: fileId }],
+            pdfInfo: 'PDFINFO',
+          },
           documents: [
             {
               _id: fileId,
               toc: [{ _id: fileId }],
+              pdfInfo: 'PDFINFO',
             },
           ],
         };
@@ -332,11 +338,13 @@ describe('documentActions', () => {
           defaultDoc: {
             _id: fileId,
             toc,
+            pdfInfo: 'PDFINFO',
           },
           documents: [
             {
               _id: fileId,
               toc,
+              pdfInfo: 'PDFINFO',
             },
           ],
         };

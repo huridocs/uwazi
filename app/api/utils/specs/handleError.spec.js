@@ -23,7 +23,7 @@ describe('handleError', () => {
       const error = new Error('error');
       handleError(error);
 
-      expect(errorLog.error).toHaveBeenCalledWith(`\n${error.stack}`);
+      expect(errorLog.error).toHaveBeenCalledWith(`\n${error.stack}`, {});
     });
   });
 
@@ -38,7 +38,7 @@ describe('handleError', () => {
       expect(errorLog.error).not.toHaveBeenCalled();
 
       handleError(createError('test error'));
-      expect(errorLog.error).toHaveBeenCalledWith('\ntest error');
+      expect(errorLog.error).toHaveBeenCalledWith('\ntest error', {});
     });
   });
 

@@ -1,12 +1,11 @@
-module.exports = function (source) {
-  const countries = require(__dirname + '/../../node_modules/world-countries/countries.json');
-  const processed = countries.map((country) => {
-    return {
-      cca3: country.cca3,
-      name: {common: country.name.common}
-    };
-  });
+const countries = require('../../node_modules/world-countries/countries.json');
 
-  return 'export default ' + JSON.stringify(processed);
+module.exports = () => {
+  const processed = countries.map(country => ({
+    cca3: country.cca3,
+    name: { common: country.name.common },
+    cca2: country.cca2,
+  }));
+
+  return `export default ${JSON.stringify(processed)}`;
 };
-

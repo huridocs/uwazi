@@ -5,6 +5,7 @@ import React, { Component } from 'react';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'react-widgets/lib/scss/react-widgets.scss';
 import 'nprogress/nprogress.css';
+import 'flag-icon-css/sass/flag-icon.scss';
 import Notifications from 'app/Notifications';
 import Cookiepopup from 'app/App/Cookiepopup';
 import { TranslateForm, t } from 'app/I18N';
