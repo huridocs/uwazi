@@ -16,11 +16,11 @@ function columnsFromTemplates(templates: TemplateSchema[]): PropertySchema[] {
   }, []);
 }
 
-export function getTableColumns(documents: any, templates: TemplateSchema[]): PropertySchema[] {
+export function getTableColumns(documents: any, templates: TemplateSchema[], useTemplates: string[]): PropertySchema[] {
   let columns: PropertySchema[] = [];
   const queriedTemplates = documents.aggregations.all._types.buckets;
-  if (queriedTemplates) {
-    const templateIds = queriedTemplates
+  if (useTemplates.length || queriedTemplates) {
+    const templateIds = useTemplates.length ? useTemplates : queriedTemplates
       .filter((template: any) => template.filtered.doc_count > 0)
       .map((template: any) => template.key);
 
