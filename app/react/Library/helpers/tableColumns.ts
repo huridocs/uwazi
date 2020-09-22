@@ -21,12 +21,11 @@ function columnsFromTemplates(templates: TemplateSchema[]): TranslatableColumn[]
   }, []);
 }
 
-export function getTableColumns(
+const getTemplatesToProcess = (
   documents: any,
   templates: TemplateSchema[],
   useTemplates: string[]
-): TranslatableColumn[] {
-  let columns: TranslatableColumn[] = [];
+) => {
   const queriedTemplates = documents.aggregations.all._types.buckets;
   if (useTemplates.length || queriedTemplates) {
     const templateIds = useTemplates.length
@@ -35,25 +34,38 @@ export function getTableColumns(
           .filter((template: any) => template.filtered.doc_count > 0)
           .map((template: any) => template.key);
 
-    const templatesToProcess: TemplateSchema[] = templates.filter((t: TemplateSchema) =>
+    return templates.filter((t: TemplateSchema) =>
       templateIds.find((id: ObjectIdSchema) => t._id === id)
     );
+  }
+  return [];
+};
 
-    if (templatesToProcess.length > 0) {
-      const commonColumns: PropertySchema[] = [
-        ...(templatesToProcess[0].commonProperties || []),
-        {
-          label: 'Template',
-          name: 'templateName',
-          type: 'text',
-          isCommonProperty: true,
-        },
-      ];
+export function getTableColumns(
+  documents: any,
+  templates: TemplateSchema[],
+  useTemplates: string[]
+): TranslatableColumn[] {
+  let columns: TranslatableColumn[] = [];
+  const templatesToProcess: TemplateSchema[] = getTemplatesToProcess(
+    documents,
+    templates,
+    useTemplates
+  );
+  if (templatesToProcess.length > 0) {
+    const commonColumns: PropertySchema[] = [
+      ...(templatesToProcess[0].commonProperties || []),
+      {
+        label: 'Template',
+        name: 'templateName',
+        type: 'text',
+        isCommonProperty: true,
+      },
+    ];
 
-      columns = commonColumns
-        .map<TranslatableColumn>(c => ({ ...c, showInCard: true }))
-        .concat(columnsFromTemplates(templatesToProcess));
-    }
+    columns = commonColumns
+      .map<TranslatableColumn>(c => ({ ...c, showInCard: true }))
+      .concat(columnsFromTemplates(templatesToProcess));
   }
   return columns;
 }

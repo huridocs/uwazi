@@ -34,8 +34,8 @@ describe('getTableColumns', () => {
       _id: 'idTemplate2',
       name: 'Template2',
       properties: [
-        { label: 'Date', name: 'date', type: 'date' },
         { label: 'Country', name: 'country', type: 'select' },
+        { label: 'Date', name: 'date', type: 'date' },
       ],
       commonProperties: [
         { label: 'Titulo', name: 'title', type: 'text' },
@@ -110,10 +110,7 @@ describe('getTableColumns', () => {
     });
 
     it('should contain the properties of searched templates', () => {
-      expect(columns[0].label).toBe('Titulo');
-      expect(columns[1].label).toBe('Created at');
-      expect(columns[2].label).toBe('Template');
-      expect(columns[4].label).toBe('Country');
+      expect(columns[3].label).toBe('Country');
     });
   });
 });

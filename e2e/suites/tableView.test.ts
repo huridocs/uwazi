@@ -20,6 +20,7 @@ describe('Table view', () => {
   describe('Table actions', () => {
     it('Should show only selected properties', async () => {
       await page.click('.hidden-columns-dropdown');
+      await page.click('.hidden-columns-dropdown');
       await page.waitFor('#rw_1_listbox li');
       const columnsOptions = await page.$$eval('#rw_1_listbox li', options =>
         options.map(option => ({
@@ -40,6 +41,7 @@ describe('Table view', () => {
     });
 
     it('Should show new selected properties', async () => {
+      await page.click('.hidden-columns-dropdown');
       const newColumn = await page.$$eval('#rw_1_listbox li:nth-child(9)', option => {
         (<HTMLInputElement>option[0]).click();
         return option[0].textContent;
