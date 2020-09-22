@@ -83,9 +83,10 @@ export class SearchText extends Component {
                   <Icon icon="search" />
                   <input
                     type="text"
-                    placeholder={t('System', 'Search', null, false)}
+                    placeholder={t('System', 'Search related entities or documents', null, false)}
                     className="form-control"
                     autoComplete="off"
+                    aria-label={t('System', 'Search text description', null, false)}
                   />
                   <Icon icon="times" onClick={this.resetSearch} />
                 </Field>

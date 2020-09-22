@@ -6,7 +6,7 @@ import React, { Component } from 'react';
 
 import { Icon } from 'UI';
 import { NeedAuthorization } from 'app/Auth';
-import { actions } from 'app/I18N';
+import { actions, t } from 'app/I18N';
 
 class I18NMenu extends Component {
   static reload(url) {
@@ -19,25 +19,32 @@ class I18NMenu extends Component {
     let path = location.pathname;
     const regexp = new RegExp(`^/?${locale}/|^/?${locale}$`);
     path = path.replace(regexp, '/');
+    // console.log(t('System', 'Add/edit translations').props.children);
 
     return (
-      <ul className="menuNav-I18NMenu">
+      <ul className="menuNav-I18NMenu" role="navigation" aria-label="Languages">
         <NeedAuthorization roles={['admin', 'editor']}>
           <button
             className={`menuNav-btn btn btn-default${i18nmode ? ' inlineEdit active' : ''}`}
             type="button"
             onClick={toggleInlineEdit}
+            aria-label={t('System', 'Add/edit translations', null, false)}
           >
-            <Icon icon="language" size="lg" />
+            <Icon
+              icon="language"
+              size="lg"
+              aria-label={t('System', 'Add/edit translations', null, false)}
+            />
           </button>
         </NeedAuthorization>
         {languages.count() > 1 &&
           languages.map(lang => {
             const key = lang.get('key');
+            const label = lang.get('label');
             const url = `/${key}${path}${path.match('document') ? '' : location.search}`;
             return (
               <li className={`menuNav-item${locale === key ? ' is-active' : ''}`} key={key}>
-                <a className="menuNav-btn btn btn-default" href={url}>
+                <a className="menuNav-btn btn btn-default" href={url} aria-label={label}>
                   {key}
                 </a>
               </li>
