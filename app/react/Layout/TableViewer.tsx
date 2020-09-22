@@ -29,7 +29,7 @@ class TableViewerComponent extends Component<TableViewerProps> {
               {columns.map((column: TableViewColumn, index: number) => (
                 <th className={!index ? 'sticky-col' : ''} key={column.name}>
                   <div className="table-view-cell">
-                    <Translate>{column.label}</Translate>
+                    <Translate context={column.translationContext}>{column.label}</Translate>
                   </div>
                 </th>
               ))}

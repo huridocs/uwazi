@@ -43,6 +43,7 @@ class HideColumnsComponent extends React.Component<HideColumnsComponentProps> {
       indeterminate: hiddenColumns.length !== 0 && shownColumns.length !== 0,
       hidden: shownColumns.length === 0,
       type: 'text',
+      translationContext: '',
     };
 
     const sortedColumns = [selectAllColumn].concat(

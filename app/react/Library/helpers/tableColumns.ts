@@ -1,23 +1,28 @@
 import { TemplateSchema } from 'shared/types/templateType';
 import { ObjectIdSchema, PropertySchema } from 'shared/types/commonTypes';
+import { ensure } from '../../../shared/tsUtils';
 
-function columnsFromTemplates(templates: TemplateSchema[]): PropertySchema[] {
-  return templates.reduce((properties: PropertySchema[], template) => {
-    const propsToAdd: PropertySchema[] = [];
+interface TranslatableColumn extends PropertySchema {
+  translationContext?: string;
+}
+
+function columnsFromTemplates(templates: TemplateSchema[]): TranslatableColumn[] {
+  return templates.reduce((properties: TranslatableColumn[], template) => {
+    const propsToAdd: TranslatableColumn[] = [];
     (template.properties || []).forEach(property => {
       if (
         !['image', 'preview', 'media', 'nested', 'markdown'].includes(property.type) &&
         !properties.find(columnProperty => property.name === columnProperty.name)
       ) {
-        propsToAdd.push(property);
+        propsToAdd.push({ ...property, translationContext: ensure<string>(template._id) });
       }
     });
     return properties.concat(propsToAdd);
   }, []);
 }
 
-export function getTableColumns(documents: any, templates: TemplateSchema[], useTemplates: string[]): PropertySchema[] {
-  let columns: PropertySchema[] = [];
+export function getTableColumns(documents: any, templates: TemplateSchema[], useTemplates: string[]): TranslatableColumn[] {
+  let columns: TranslatableColumn[] = [];
   const queriedTemplates = documents.aggregations.all._types.buckets;
   if (useTemplates.length || queriedTemplates) {
     const templateIds = useTemplates.length ? useTemplates : queriedTemplates
@@ -38,7 +43,7 @@ export function getTableColumns(documents: any, templates: TemplateSchema[], use
       });
 
       columns = commonColumns
-        .map<PropertySchema>(c => ({ ...c, showInCard: true }))
+        .map<TranslatableColumn>(c => ({ ...c, showInCard: true }))
         .concat(columnsFromTemplates(templatesToProcess));
     }
   }
