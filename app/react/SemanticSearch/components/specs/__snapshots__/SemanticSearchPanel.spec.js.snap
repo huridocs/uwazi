@@ -3,6 +3,7 @@
 exports[`SemanticSearchPanel should render SearchList with searches from the state 1`] = `
 <SidePanel
   className="metadata-sidepanel semantic-search"
+  mode=""
   open={true}
 >
   <div
