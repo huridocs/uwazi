@@ -96,6 +96,8 @@ export class Viewer extends Component {
       className += ' connections';
     }
 
+    className += ' with-header';
+
     return className;
   }
 
