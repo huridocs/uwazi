@@ -31,10 +31,14 @@ describe('DatePicker', () => {
     input = component.find(DatePickerComponent);
   };
 
-  it('should render a DatePickerComponent with the correct transformed to local value', () => {
+  const expectCorrectSelectedValue = () => {
     render();
     const expectedSelectedValue = date.clone().subtract(moment().utcOffset(), 'minute');
     expect(input.props().selected).toBe(parseInt(expectedSelectedValue.format('x'), 10));
+  };
+
+  it('should render a DatePickerComponent with the correct transformed to local value', () => {
+    expectCorrectSelectedValue();
   });
 
   describe('when useTimezone is true', () => {
@@ -71,9 +75,7 @@ describe('DatePicker', () => {
       });
 
       it('should render a latin-based value (until correct locales are implemented)', () => {
-        render();
-        const expectedSelectedValue = date.clone().subtract(moment().utcOffset(), 'minute');
-        expect(input.props().selected).toBe(parseInt(expectedSelectedValue.format('x'), 10));
+        expectCorrectSelectedValue();
       });
 
       it('should not fail on change', () => {
