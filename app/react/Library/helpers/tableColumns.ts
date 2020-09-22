@@ -11,7 +11,7 @@ function columnsFromTemplates(templates: TemplateSchema[]): TranslatableColumn[]
     const propsToAdd: TranslatableColumn[] = [];
     (template.properties || []).forEach(property => {
       if (
-        !['image', 'preview', 'media', 'nested', 'markdown'].includes(property.type) &&
+        !['image', 'preview', 'media', 'nested'].includes(property.type) &&
         !properties.find(columnProperty => property.name === columnProperty.name)
       ) {
         propsToAdd.push({ ...property, translationContext: ensure<string>(template._id) });
@@ -21,13 +21,19 @@ function columnsFromTemplates(templates: TemplateSchema[]): TranslatableColumn[]
   }, []);
 }
 
-export function getTableColumns(documents: any, templates: TemplateSchema[], useTemplates: string[]): TranslatableColumn[] {
+export function getTableColumns(
+  documents: any,
+  templates: TemplateSchema[],
+  useTemplates: string[]
+): TranslatableColumn[] {
   let columns: TranslatableColumn[] = [];
   const queriedTemplates = documents.aggregations.all._types.buckets;
   if (useTemplates.length || queriedTemplates) {
-    const templateIds = useTemplates.length ? useTemplates : queriedTemplates
-      .filter((template: any) => template.filtered.doc_count > 0)
-      .map((template: any) => template.key);
+    const templateIds = useTemplates.length
+      ? useTemplates
+      : queriedTemplates
+          .filter((template: any) => template.filtered.doc_count > 0)
+          .map((template: any) => template.key);
 
     const templatesToProcess: TemplateSchema[] = templates.filter((t: TemplateSchema) =>
       templateIds.find((id: ObjectIdSchema) => t._id === id)

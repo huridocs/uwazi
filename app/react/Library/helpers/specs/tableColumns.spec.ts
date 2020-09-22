@@ -55,7 +55,7 @@ describe('getTableColumns', () => {
       name: 'Template4',
     },
   ];
-  const columns = getTableColumns(documents, templates);
+  const columns = getTableColumns(documents, templates, []);
   it('should not have duplicated properties', () => {
     const countDate = columns.filter((column: any) => column.label === 'Date').length;
     const countCountry = columns.filter((column: any) => column.label === 'Country').length;
@@ -70,9 +70,9 @@ describe('getTableColumns', () => {
     expect(columns[3].label).toBe('Date');
   });
 
-  it('should not contain properties of image, preview, media, markdown or nested type', () => {
+  it('should not contain properties of image, preview, media or nested type', () => {
     const countComplexTypes = columns.filter((column: any) =>
-      ['image', 'preview', 'media', 'nested', 'markdown'].includes(column.type)
+      ['image', 'preview', 'media', 'nested'].includes(column.type)
     ).length;
     expect(countComplexTypes).toBe(0);
   });
