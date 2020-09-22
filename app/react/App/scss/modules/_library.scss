@@ -77,9 +77,9 @@
 
 .list-view-mode {
   position: absolute;
-  z-index: 1;
+  z-index: 4;
   right: 16px;
-  top: 16px;
+  top: 80px;
   display: flex;
 
   .buttons-group {
@@ -111,5 +111,67 @@
     @media (min-width: 600px) {
       display: block;
     }
+  }
+
+  .hidden-columns-dropdown {
+    margin: 4px;
+    width: 50px;
+
+    .rw-dropdown-list {
+      width: 177px;
+
+      .rw-widget-picker {
+        width: 50px;
+        height: 37px;
+
+        @media (min-width: 600px) {
+          width: 100%;
+        }
+
+        .rw-input svg, li input {
+          margin-right: 7px;
+        }
+      }
+
+      .rw-popup-container {
+        .rw-filter-input {
+          width: calc(100% - 8px);
+          left: 0;
+        }
+      }
+    }
+
+    @media (min-width: 600px) {
+      overflow: visible;
+      width: 177px;
+    }
+  }
+
+  .toggle-button {
+    padding: 8px;
+    left: 176.01px;
+    top: 0px;
+    height: 37px;
+
+    margin: 4px;
+    margin-left: 8px;
+
+    svg {
+      margin-right: 4px;
+    }
+
+    span {
+      display: none;
+    }
+
+    @media (min-width: 600px) {
+      span {
+        display: inline;
+      }
+    }
+  }
+
+  @media (min-width: 768px) {
+    top: 16px;
   }
 }
