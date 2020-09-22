@@ -51,9 +51,7 @@ describe('DatePicker', () => {
       render();
       input.simulate('change', newDate);
       const expectedOnChangeValue = moment.utc(newDate).add(moment().utcOffset(), 'minute');
-      expect(props.onChange).toHaveBeenCalledWith(
-        Number(expectedOnChangeValue.locale('en').format('X'))
-      );
+      expect(props.onChange).toHaveBeenCalledWith(Number(expectedOnChangeValue.format('X')));
     };
 
     it('should set the value to timestamp offsetting to UTC', () => {
