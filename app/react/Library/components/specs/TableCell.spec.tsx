@@ -6,6 +6,7 @@ import { I18NLink } from 'app/I18N';
 import { TableCell, TableCellProps } from 'app/Library/components/TableCell';
 import { shallow } from 'enzyme';
 import React from 'react';
+import MarkdownViewer from 'app/Markdown';
 
 describe('TableCell', () => {
   let component: any;
@@ -93,6 +94,17 @@ describe('TableCell', () => {
     const geolocationProps = cellContent.props().children.props;
     expect(geolocationProps.points).toEqual([{ lon: 2, lat: 46, value: null }]);
     expect(geolocationProps.onlyForCards).toBe(true);
+  });
+
+  it('should render a rich text as a markdown', () => {
+    props.content = {
+      label: 'Rich Text',
+      type: 'markdown',
+      name: 'rich_text',
+      value: '**bold**',
+    };
+    const cellContent = renderContent();
+    expect(cellContent.find(MarkdownViewer).props().markdown).toBe('**bold**');
   });
 
   it('should not render if value is empty', () => {

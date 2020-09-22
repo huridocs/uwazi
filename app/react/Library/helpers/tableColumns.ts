@@ -6,7 +6,7 @@ function columnsFromTemplates(templates: TemplateSchema[]): PropertySchema[] {
     const propsToAdd: PropertySchema[] = [];
     (template.properties || []).forEach(property => {
       if (
-        !['image', 'preview', 'media', 'nested', 'markdown'].includes(property.type) &&
+        !['image', 'preview', 'media', 'nested'].includes(property.type) &&
         !properties.find(columnProperty => property.name === columnProperty.name)
       ) {
         propsToAdd.push(property);
@@ -16,13 +16,19 @@ function columnsFromTemplates(templates: TemplateSchema[]): PropertySchema[] {
   }, []);
 }
 
-export function getTableColumns(documents: any, templates: TemplateSchema[], useTemplates: string[]): PropertySchema[] {
+export function getTableColumns(
+  documents: any,
+  templates: TemplateSchema[],
+  useTemplates: string[]
+): PropertySchema[] {
   let columns: PropertySchema[] = [];
   const queriedTemplates = documents.aggregations.all._types.buckets;
   if (useTemplates.length || queriedTemplates) {
-    const templateIds = useTemplates.length ? useTemplates : queriedTemplates
-      .filter((template: any) => template.filtered.doc_count > 0)
-      .map((template: any) => template.key);
+    const templateIds = useTemplates.length
+      ? useTemplates
+      : queriedTemplates
+          .filter((template: any) => template.filtered.doc_count > 0)
+          .map((template: any) => template.key);
 
     const templatesToProcess: TemplateSchema[] = templates.filter((t: TemplateSchema) =>
       templateIds.find((id: ObjectIdSchema) => t._id === id)
