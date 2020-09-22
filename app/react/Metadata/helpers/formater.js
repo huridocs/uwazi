@@ -40,6 +40,7 @@ const addCreationDate = (result, doc) =>
   result.push({
     value: moment.utc(doc.creationDate).format('ll'),
     label: 'Date added',
+    name: 'creationDate',
     translateContext: 'System',
     sortedBy: true,
   });
@@ -319,7 +320,10 @@ export default {
 
     metadata = conformSortedProperty(metadata, templates, doc, options.sortedProperty);
 
-    return Object.assign({}, doc, { metadata: metadata.toJS(), documentType: template.name });
+    return Object.assign({}, doc, {
+      metadata: metadata.toJS(),
+      documentType: template.get('name'),
+    });
   },
 
   applyTransformation(property, { doc, thesauris, options, template, templates, relationships }) {

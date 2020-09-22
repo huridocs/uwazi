@@ -362,3 +362,22 @@ export function getAggregationSuggestions(storeKey, property, searchTerm) {
   }
   return searchAPI.getAggregationSuggestions(new RequestParams({ query, property, searchTerm }));
 }
+
+export function setTableViewColumns(columns) {
+  return { type: types.SET_TABLE_VIEW_COLUMNS, columns };
+}
+
+export function setTableViewColumnHidden(name, hidden) {
+  return {
+    type: types.SET_TABLE_VIEW_COLUMN_HIDDEN,
+    name,
+    hidden,
+  };
+}
+
+export function setTableViewAllColumnsHidden(hidden) {
+  return {
+    type: types.SET_TABLE_VIEW_ALL_COLUMNS_HIDDEN,
+    hidden,
+  };
+}
