@@ -44,7 +44,7 @@ const getTemplatesToProcess = (
 export function getTableColumns(
   documents: any,
   templates: TemplateSchema[],
-  useTemplates: string[]
+  useTemplates: string[] = []
 ): TranslatableColumn[] {
   let columns: TranslatableColumn[] = [];
   const templatesToProcess: TemplateSchema[] = getTemplatesToProcess(
