@@ -25,24 +25,24 @@ describe('Copy from', () => {
       text: 'Add entities / documents',
     });
 
-    await page.waitFor(100); // wait for slide animation to end
+    await page.waitForTimeout(100); // wait for slide animation to end
     await expect(page).toClick('button', {
       text: 'Create Entity',
     });
-    await page.waitFor('textarea[name="relationships.metadata.title"]');
+    await page.waitForSelector('textarea[name="relationships.metadata.title"]');
     await expect(page).toFill('textarea[name="relationships.metadata.title"]', 'Test title');
     await page.select('select', '58ada34c299e826748545061');
-    await page.waitFor(20); // re-render of the form
+    await page.waitForTimeout(20); // re-render of the form
     await expect(page).toClick('button', {
       text: 'Copy From',
     });
-    await page.waitFor(50); // wait for animation
+    await page.waitForTimeout(50); // wait for animation
     await expect(page).toFill('aside.connections-metadata div.search-box > div > input', 'artavia');
-    await page.waitFor(50); // search delay
+    await page.waitForTimeout(50); // search delay
     await expect(page).toClick('div.copy-from .item-info', { text: 'Artavia Murillo et al' });
     await expect(page).toClick('button', { text: 'Copy Highlighted' });
     await expect(page).toClick('.side-panel button', { text: 'Save' });
-    await page.waitFor(50); // save delay
+    await page.waitForTimeout(50); // save delay
     await expect(page).toClick('button', { text: 'Save' });
     await expect(page).toClick('.item-info', { text: 'Test title' });
     await expect(page).toMatchElement(

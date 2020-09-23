@@ -14,13 +14,13 @@ describe('Table view', () => {
 
   it('Should go to the table view', async () => {
     await page.goto(`${host}/library/table`);
-    await page.waitFor('.tableview-wrapper');
+    await page.waitForSelector('.tableview-wrapper');
   });
 
   describe('Table actions', () => {
     it('Should show only selected properties', async () => {
       await page.click('.hidden-columns-dropdown');
-      await page.waitFor('#rw_1_listbox li');
+      await page.waitForSelector('#rw_1_listbox li');
       const columnsOptions = await page.$$eval('#rw_1_listbox li', options =>
         options.map(option => ({
           checked: (<HTMLInputElement>option.children[0]).checked,
@@ -31,7 +31,7 @@ describe('Table view', () => {
         .filter(option => option.checked)
         .map(option => option.option);
       selectedColumns[0] = 'Title';
-      await page.waitFor('.tableview-wrapper');
+      await page.waitForSelector('.tableview-wrapper');
       const optionSelector = '.tableview-wrapper th';
       const visibleColumns = await page.$$eval(optionSelector, columns =>
         columns.map(column => column.textContent)
@@ -44,7 +44,7 @@ describe('Table view', () => {
         (<HTMLInputElement>option[0]).click();
         return option[0].textContent;
       });
-      await page.waitFor(200);
+      await page.waitForTimeout(200);
       const lastColumn = await page.$$eval(
         '.tableview-wrapper th:last-child',
         columns => columns[0].textContent
@@ -59,7 +59,7 @@ describe('Table view', () => {
         (<HTMLInputElement>item[0]).checked = false;
         (<HTMLInputElement>item[0]).click();
       });
-      await page.waitFor(200);
+      await page.waitForTimeout(200);
       const optionsSelector = '#rw_1_listbox li';
       const headerColumnSelector = '.tableview-wrapper th';
       const optionsCount = await page.$$eval(optionsSelector, options => options.length);
@@ -74,7 +74,7 @@ describe('Table view', () => {
         (<HTMLInputElement>columns[4]).click();
         return columns[4].textContent;
       });
-      await page.waitFor(sidePanelItemNameSelector);
+      await page.waitForSelector(sidePanelItemNameSelector);
       await expect(page).toMatchElement(sidePanelItemNameSelector, {
         text: entityTitle?.toString(),
       });
@@ -84,7 +84,7 @@ describe('Table view', () => {
       const rowSelector = '.tableview-wrapper > table > tbody > tr';
       const lastRowSelector = '.tableview-wrapper > table > tbody > tr:last-child';
       await page.$$eval(lastRowSelector, el => el[0].scrollIntoView());
-      await page.waitFor(300);
+      await page.waitForTimeout(300);
       const rowsNumber = await page.$$eval(rowSelector, rows => rows.length);
       expect(rowsNumber).toBe(60);
     });
