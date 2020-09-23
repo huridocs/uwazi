@@ -15,7 +15,7 @@ const removeOffset = (useTimezone, value) => {
       newValue.subtract(moment().utcOffset(), 'minute');
     }
 
-    datePickerValue = parseInt(newValue.format('x'), 10);
+    datePickerValue = parseInt(newValue.locale('en').format('x'), 10);
   }
 
   return datePickerValue;
@@ -49,7 +49,7 @@ class DatePicker extends Component {
       onChange(null);
     } else {
       const newValue = addOffset(useTimezone, endOfDay, datePickerValue);
-      onChange(parseInt(newValue.format('X'), 10));
+      onChange(parseInt(newValue.locale('en').format('X'), 10));
     }
   }
 
