@@ -14,13 +14,12 @@ describe('Table view', () => {
 
   it('Should go to the table view', async () => {
     await page.goto(`${host}/library/table`);
-    await page.waitFor('.tableview-wrapper');
+    await page.waitFor('.tableview-wrapper > table > tbody > tr');
   });
 
   describe('Table actions', () => {
     it('Should show only selected properties', async () => {
       await page.click('.hidden-columns-dropdown');
-      await page.waitFor(200);
       await page.waitFor('#rw_1_listbox li');
       const columnsOptions = await page.$$eval('#rw_1_listbox li', options =>
         options.map(option => ({
