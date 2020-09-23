@@ -20,6 +20,7 @@ describe('Table view', () => {
   describe('Table actions', () => {
     it('Should show only selected properties', async () => {
       await page.click('.hidden-columns-dropdown');
+      await page.waitFor(200);
       await page.waitFor('#rw_1_listbox li');
       const columnsOptions = await page.$$eval('#rw_1_listbox li', options =>
         options.map(option => ({
@@ -27,11 +28,11 @@ describe('Table view', () => {
           option: option.textContent,
         }))
       );
-      await page.click('.hidden-columns-dropdown');
       const selectedColumns = columnsOptions
         .filter(option => option.checked)
         .map(option => option.option);
       selectedColumns[0] = 'Title';
+      await page.click('.hidden-columns-dropdown');
       await page.waitFor('.tableview-wrapper');
       const optionSelector = '.tableview-wrapper th';
       const visibleColumns = await page.$$eval(optionSelector, columns =>
