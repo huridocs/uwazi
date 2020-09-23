@@ -20,6 +20,6 @@ export async function displayGraph() {
   const graphsPageTarget = await browser.waitForTarget(target => target.url() === pageUrl);
   const graphsPage = await graphsPageTarget.page();
   // wait for the chart visualization animations to end
-  await graphsPage.waitForTimeout(4000);
+  await graphsPage.waitFor(4000);
   return graphsPage;
 }
