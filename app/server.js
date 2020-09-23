@@ -45,7 +45,6 @@ const uncaughtError = error => {
 
 process.on('unhandledRejection', uncaughtError);
 process.on('uncaughtException', uncaughtError);
-http.on('error', handleError);
 
 const oneYear = 31557600;
 

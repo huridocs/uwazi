@@ -9,6 +9,7 @@ import LibraryLayout from 'app/Library/LibraryLayout';
 import { wrapDispatch } from 'app/Multireducer';
 import ImportProgress from 'app/Uploads/components/ImportProgress';
 import React from 'react';
+import { TableViewer } from 'app/Layout/TableViewer';
 
 export default class Library extends RouteHandler {
   constructor(props, context) {
@@ -44,9 +45,9 @@ export default class Library extends RouteHandler {
     this.emptyState();
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (this.urlHasChanged(nextProps)) {
-      this.getClientState(nextProps);
+  componentDidUpdate(prevProps) {
+    if (this.urlHasChanged(prevProps)) {
+      this.getClientState(this.props);
     }
   }
 
@@ -56,10 +57,19 @@ export default class Library extends RouteHandler {
   }
 
   render() {
+    const tableViewMode = this.props.viewer === TableViewer;
     return (
-      <LibraryLayout>
-        <LibraryModeToggleButtons storeKey="library" zoomIn={this.zoomIn} zoomOut={this.zoomOut} />
-        <DocumentsList storeKey="library" />
+      <LibraryLayout
+        sidePanelMode={this.props.sidePanelMode}
+        noScrollable={this.props.noScrollable}
+      >
+        <LibraryModeToggleButtons
+          storeKey="library"
+          zoomIn={this.zoomIn}
+          zoomOut={this.zoomOut}
+          tableViewMode={tableViewMode}
+        />
+        <DocumentsList storeKey="library" CollectionViewer={this.props.viewer} />
       </LibraryLayout>
     );
   }

@@ -23,6 +23,7 @@ export const config = {
   multiTenant: process.env.MULTI_TENANT || false,
   clusterMode: CLUSTER_MODE,
   defaultTenant: <Tenant>{
+    name: 'default',
     dbName: process.env.DATABASE_NAME || 'uwazi_development',
     indexName: process.env.INDEX_NAME || 'uwazi_development',
     uploadedDocuments: UPLOADS_FOLDER || `${rootPath}/uploaded_documents/`,

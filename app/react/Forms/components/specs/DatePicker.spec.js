@@ -3,6 +3,7 @@ import { shallow } from 'enzyme';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 
+import baseMoment from 'moment';
 import moment from 'moment-timezone';
 import DatePickerComponent from 'react-datepicker';
 import DatePicker from '../DatePicker';
@@ -30,10 +31,14 @@ describe('DatePicker', () => {
     input = component.find(DatePickerComponent);
   };
 
-  it('should render a DatePickerComponent with the correct transformed to local value', () => {
+  const expectCorrectSelectedValue = () => {
     render();
     const expectedSelectedValue = date.clone().subtract(moment().utcOffset(), 'minute');
     expect(input.props().selected).toBe(parseInt(expectedSelectedValue.format('x'), 10));
+  };
+
+  it('should render a DatePickerComponent with the correct transformed to local value', () => {
+    expectCorrectSelectedValue();
   });
 
   describe('when useTimezone is true', () => {
@@ -45,12 +50,37 @@ describe('DatePicker', () => {
   });
 
   describe('onChange', () => {
-    it('should set the value to timestamp offsetting to UTC', () => {
+    const expectCorrectOnChange = () => {
       const newDate = new Date('2020-08-18');
       render();
       input.simulate('change', newDate);
       const expectedOnChangeValue = moment.utc(newDate).add(moment().utcOffset(), 'minute');
       expect(props.onChange).toHaveBeenCalledWith(Number(expectedOnChangeValue.format('X')));
+    };
+
+    it('should set the value to timestamp offsetting to UTC', () => {
+      expectCorrectOnChange();
+    });
+
+    describe('When locale is a non-latin locale', () => {
+      let originalLocale;
+
+      beforeEach(() => {
+        originalLocale = baseMoment.locale();
+        baseMoment.locale('ar');
+      });
+
+      afterEach(() => {
+        baseMoment.locale(originalLocale);
+      });
+
+      it('should render a latin-based value (until correct locales are implemented)', () => {
+        expectCorrectSelectedValue();
+      });
+
+      it('should not fail on change', () => {
+        expectCorrectOnChange();
+      });
     });
 
     describe('when clearing the input', () => {

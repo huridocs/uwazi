@@ -1,9 +1,9 @@
-name: Snyk
+name: Modules security check
 
 on: [push]
 
 jobs:
-  snyk:
+  yarn-audit:
     runs-on: ubuntu-latest
     steps:
       - name: Use Node.js 14.6.x
@@ -18,8 +18,4 @@ jobs:
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
       - name: install dependencies
         run: yarn install
-      - run: yarn add snyk
-      - run: /home/runner/work/uwazi/uwazi/node_modules/.bin/snyk auth ${{ secrets.SNYK_TOKEN }}
-      - run: /home/runner/work/uwazi/uwazi/node_modules/.bin/snyk test
-
-      
+      - run: yarn audit --level high --groups dependencies || if [ $? -gt 8 ]; then exit 1; else exit 0; fi

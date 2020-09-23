@@ -1,19 +1,39 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { I18NLink, t } from 'app/I18N';
+import { I18NLink, t, Translate } from 'app/I18N';
 import { Icon } from 'UI';
 import { processFilters, encodeSearch } from 'app/Library/actions/libraryActions';
 import { helper as mapHelper } from 'app/Map';
+import { showFilters } from 'app/Entities/actions/uiActions';
+import { bindActionCreators } from 'redux';
+import { wrapDispatch } from 'app/Multireducer';
+import { HiddenColumnsDropdown } from './HiddenColumnsDropdown';
 
 export class LibraryModeToggleButtons extends Component {
   render() {
-    const { numberOfMarkers, zoomLevel, zoomOut, zoomIn, showGeolocation, searchUrl } = this.props;
+    const {
+      numberOfMarkers,
+      zoomLevel,
+      zoomOut,
+      zoomIn,
+      showGeolocation,
+      searchUrl,
+      storeKey,
+      tableViewMode,
+    } = this.props;
     const numberOfMarkersText = numberOfMarkers.toString().length > 3 ? '99+' : numberOfMarkers;
 
     return (
       <div className="list-view-mode">
-        <div className={`list-view-mode-zoom list-view-buttons-zoom-${zoomLevel} buttons-group`}>
+        {tableViewMode && (
+          <HiddenColumnsDropdown className="table-view-column-selector" storeKey={storeKey} />
+        )}
+        <div
+          className={`list-view-mode-zoom list-view-buttons-zoom-${zoomLevel} buttons-group ${
+            tableViewMode ? 'unpinned-mode' : ''
+          }`}
+        >
           <button className="btn btn-default zoom-out" onClick={zoomOut} type="button">
             <Icon icon="search-minus" />
             <span className="tab-link-tooltip">{t('System', 'Zoom out')}</span>
@@ -24,16 +44,24 @@ export class LibraryModeToggleButtons extends Component {
           </button>
         </div>
 
-        {showGeolocation && (
-          <div className="list-view-mode-map buttons-group">
-            <I18NLink
-              to={`library${searchUrl}`}
-              className="btn btn-default"
-              activeClassName="is-active"
-            >
-              <Icon icon="th" />
-              <span className="tab-link-tooltip">{t('System', 'List view')}</span>
-            </I18NLink>
+        <div className="list-view-mode-map buttons-group">
+          <I18NLink
+            to={`library${searchUrl}`}
+            className="btn btn-default"
+            activeClassName="is-active"
+          >
+            <Icon icon="th" />
+            <span className="tab-link-tooltip">{t('System', 'List view')}</span>
+          </I18NLink>
+          <I18NLink
+            to={`library/table${searchUrl}`}
+            className="btn btn-default"
+            activeClassName="is-active"
+          >
+            <Icon icon="align-justify" />
+            <span className="tab-link-tooltip">{t('System', 'Table view')}</span>
+          </I18NLink>
+          {showGeolocation && (
             <I18NLink
               disabled={!numberOfMarkers}
               to={`library/map${searchUrl}`}
@@ -44,7 +72,19 @@ export class LibraryModeToggleButtons extends Component {
               <span className="number-of-markers">{numberOfMarkersText}</span>
               <span className="tab-link-tooltip">{t('System', 'Map view')}</span>
             </I18NLink>
-          </div>
+          )}
+        </div>
+        {tableViewMode && (
+          <button
+            type="button"
+            className="btn btn-default toggle-button"
+            onClick={this.props.showFilters}
+          >
+            <Icon icon="filter" />
+            <span>
+              <Translate>Show filters</Translate>
+            </span>
+          </button>
         )}
       </div>
     );
@@ -54,10 +94,20 @@ export class LibraryModeToggleButtons extends Component {
 LibraryModeToggleButtons.propTypes = {
   searchUrl: PropTypes.string.isRequired,
   showGeolocation: PropTypes.bool.isRequired,
-  zoomIn: PropTypes.func.isRequired,
-  zoomOut: PropTypes.func.isRequired,
+  zoomIn: PropTypes.func,
+  zoomOut: PropTypes.func,
   zoomLevel: PropTypes.number.isRequired,
   numberOfMarkers: PropTypes.number.isRequired,
+  storeKey: PropTypes.string.isRequired,
+  tableViewMode: PropTypes.bool,
+  showFilters: PropTypes.func,
+};
+
+LibraryModeToggleButtons.defaultProps = {
+  tableViewMode: false,
+  zoomIn: null,
+  zoomOut: null,
+  showFilters: () => {},
 };
 
 export function mapStateToProps(state, props) {
@@ -82,4 +132,13 @@ export function mapStateToProps(state, props) {
   };
 }
 
-export default connect(mapStateToProps)(LibraryModeToggleButtons);
+function mapDispatchToProps(dispatch, props) {
+  return bindActionCreators(
+    {
+      showFilters,
+    },
+    wrapDispatch(dispatch, props.storeKey)
+  );
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(LibraryModeToggleButtons);

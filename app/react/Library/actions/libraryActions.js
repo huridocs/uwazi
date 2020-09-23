@@ -234,9 +234,8 @@ export function searchDocuments(
     const searchParams = processFilters(currentSearch, currentFilters, limit, from);
     searchParams.searchTerm = state.search.searchTerm;
 
-    const currentSearchParams = rison.decode(
-      decodeURIComponent(browserHistory.getCurrentLocation().q || '()')
-    );
+    const { query } = browserHistory.getCurrentLocation();
+    const currentSearchParams = rison.decode(decodeURIComponent(query.q || '()'));
 
     if (searchParams.searchTerm && searchParams.searchTerm !== currentSearchParams.searchTerm) {
       searchParams.sort = '_score';
@@ -362,4 +361,23 @@ export function getAggregationSuggestions(storeKey, property, searchTerm) {
     query.unpublished = true;
   }
   return searchAPI.getAggregationSuggestions(new RequestParams({ query, property, searchTerm }));
+}
+
+export function setTableViewColumns(columns) {
+  return { type: types.SET_TABLE_VIEW_COLUMNS, columns };
+}
+
+export function setTableViewColumnHidden(name, hidden) {
+  return {
+    type: types.SET_TABLE_VIEW_COLUMN_HIDDEN,
+    name,
+    hidden,
+  };
+}
+
+export function setTableViewAllColumnsHidden(hidden) {
+  return {
+    type: types.SET_TABLE_VIEW_ALL_COLUMNS_HIDDEN,
+    hidden,
+  };
 }

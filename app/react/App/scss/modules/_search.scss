@@ -4,7 +4,7 @@
   @media (min-width: 1024px) {
     z-index: 4;
     top: $header-height;
-    &.is-hidden {
+    &.is-hidden:not(.unpinned-mode) {
       right: 0;
     }
   }
@@ -13,11 +13,11 @@
 .search-box {
   position: relative;
   display: block;
-  max-width: calc(100% - 110px);
-  width: 632px;
-
-  @media (min-width: 600px) {
-    max-width: calc(100% - 210px);
+  max-width: 100%;
+  
+  @media (min-width: 768px) {
+    max-width: calc(100% - 550px);
+    width: 632px;
   }
 
   .input-group {
