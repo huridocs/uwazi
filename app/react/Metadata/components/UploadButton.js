@@ -79,7 +79,12 @@ export class UploadButton extends Component {
 
   renderButton(status = 'success', icon = 'paperclip', message = 'Upload new file') {
     return (
-      <label htmlFor="upload-button-input" className={`upload-button btn btn-${status}`}>
+      <label
+        htmlFor="upload-button-input"
+        className={`upload-button btn btn-${status}`}
+        tabIndex="0"
+        role="button"
+      >
         <Icon icon={icon} />
         <input
           onChange={this.onChange}

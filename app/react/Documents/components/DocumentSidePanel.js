@@ -131,6 +131,7 @@ export class DocumentSidePanel extends Component {
           type="button"
           className="closeSidepanel close-modal"
           onClick={this.close.bind(this)}
+          aria-label="Close side panel"
         >
           <Icon icon="times" />
         </button>
@@ -196,7 +197,7 @@ export class DocumentSidePanel extends Component {
             })()}
             <li>
               <TabLink to="metadata" default>
-                <Icon icon="info-circle" />
+                <Icon icon="info-circle" aria-label={t('System', 'Info')} />
                 <span className="tab-link-tooltip">{t('System', 'Info')}</span>
               </TabLink>
             </li>
@@ -205,7 +206,7 @@ export class DocumentSidePanel extends Component {
                 return (
                   <li>
                     <TabLink to="connections">
-                      <Icon icon="exchange-alt" />
+                      <Icon icon="exchange-alt" aria-label={t('System', 'Connections')} />
                       <span className="connectionsNumber">{summary.totalConnections}</span>
                       <span className="tab-link-tooltip">{t('System', 'Connections')}</span>
                     </TabLink>

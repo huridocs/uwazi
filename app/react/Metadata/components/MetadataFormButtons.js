@@ -6,7 +6,7 @@ import { wrapDispatch } from 'app/Multireducer';
 
 import ShowIf from 'app/App/ShowIf';
 import { NeedAuthorization } from 'app/Auth';
-import { Translate, I18NLink } from 'app/I18N';
+import { Translate, I18NLink, t } from 'app/I18N';
 import { Icon } from 'UI';
 import { publish, unpublish } from 'app/Uploads/actions/uploadsActions';
 import entitiesUtils from 'app/Entities/utils/filterBaseProperties';
@@ -19,13 +19,15 @@ export class MetadataFormButtons extends Component {
     const data = this.props.data.toJS();
 
     const ViewButton = (
-      <I18NLink to={`entity/${data.sharedId}`}>
-        <button type="button" className="edit-metadata btn btn-primary">
-          <Icon icon="file" />
-          <span className="btn-label">
-            <Translate>View</Translate>
-          </span>
-        </button>
+      <I18NLink
+        to={`entity/${data.sharedId}`}
+        className="edit-metadata btn btn-primary"
+        tabIndex="0"
+      >
+        <Icon icon="file" />
+        <span className="btn-label">
+          <Translate>View</Translate>
+        </span>
       </I18NLink>
     );
 

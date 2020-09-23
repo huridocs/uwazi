@@ -25,7 +25,12 @@ export class UploadAttachment extends Component {
 
     if (this.props.languages.size > 1) {
       uploadToAll = (
-        <label htmlFor="upload-attachment-all-input" className="btn btn-success btn-xs add">
+        <label
+          htmlFor="upload-attachment-all-input"
+          className="btn btn-success btn-xs add"
+          tabIndex="0"
+          role="button"
+        >
           <span className="btn-label">
             <Icon icon="link" /> {t('System', 'Add to all languages')}
           </span>
@@ -41,7 +46,12 @@ export class UploadAttachment extends Component {
 
     return (
       <div>
-        <label htmlFor="upload-attachment-input" className="btn btn-success btn-xs add">
+        <label
+          htmlFor="upload-attachment-input"
+          className="btn btn-success btn-xs add"
+          tabIndex="0"
+          role="button"
+        >
           <span className="btn-label">
             <Icon icon="paperclip" /> {t('System', 'Add file')}
           </span>

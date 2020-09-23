@@ -37,7 +37,11 @@ export class CreateConnectionPanel extends Component {
       <SidePanel open={open} className={className}>
         <div className="sidepanel-header">
           <h1>Create {typeLabel}</h1>
-          <button className="closeSidepanel close-modal" onClick={this.props.closePanel}>
+          <button
+            className="closeSidepanel close-modal"
+            onClick={this.props.closePanel}
+            aria-label="Close side panel"
+          >
             <Icon icon="times" />
           </button>
           <div className="connections-list-title">{t('System', 'Select relationship type')}</div>
@@ -58,7 +62,11 @@ export class CreateConnectionPanel extends Component {
         </div>
 
         <div className="sidepanel-footer">
-          <button className="btn btn-primary" onClick={this.props.closePanel}>
+          <button
+            className="btn btn-primary"
+            onClick={this.props.closePanel}
+            aria-label="Close side panel"
+          >
             <Icon icon="times" />
           </button>
           <ShowIf if={connection.type !== 'targetRanged'}>
