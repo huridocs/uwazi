@@ -63,12 +63,8 @@ const showByType = (prop, compact) => {
   return result;
 };
 
-function filterProps(showSubset, excludePreview) {
+function filterProps(showSubset) {
   return p => {
-    debugger;
-    if (excludePreview && p.type === 'preview') {
-      return false;
-    }
     if (showSubset && !showSubset.includes(p.name)) {
       return false;
     }
@@ -79,9 +75,9 @@ function filterProps(showSubset, excludePreview) {
   };
 }
 
-const Metadata = ({ metadata, compact, renderLabel, showSubset, highlight, excludePreview }) => (
+const Metadata = ({ metadata, compact, renderLabel, showSubset, highlight }) => (
   <>
-    {metadata.filter(filterProps(showSubset, excludePreview)).map((prop, index) => {
+    {metadata.filter(filterProps(showSubset)).map((prop, index) => {
       let type = prop.type ? prop.type : 'default';
       type = type === 'image' || type === 'media' ? 'multimedia' : type;
       const highlightClass = highlight.includes(prop.name) ? 'highlight' : '';
@@ -104,7 +100,6 @@ Metadata.defaultProps = {
   showSubset: undefined,
   renderLabel: (_prop, label) => label,
   highlight: [],
-  excludePreview: false,
 };
 
 Metadata.propTypes = {
@@ -129,7 +124,6 @@ Metadata.propTypes = {
   compact: PropTypes.bool,
   renderLabel: PropTypes.func,
   showSubset: PropTypes.arrayOf(PropTypes.string),
-  excludePreview: PropTypes.bool,
 };
 
 export default Metadata;
