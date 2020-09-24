@@ -58,11 +58,11 @@ describe('SearchEntities', () => {
 
   describe('when initial search provided', () => {
     it('should should request for the entities after mounting', async () => {
-      component = shallow(<SearchEntities {...{...props, initialSearchTerm: 'test' }} />);
+      component = shallow(<SearchEntities {...{ ...props, initialSearchTerm: 'test' }} />);
       expect(api.get).toHaveBeenLastCalledWith('search', {
         data: { fields: ['title'], includeUnpublished: true, searchTerm: 'test' },
         headers: {},
       });
     });
-  })
+  });
 });

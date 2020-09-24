@@ -114,7 +114,7 @@ export class DocumentSidePanel extends Component {
     if (this.state.copyFrom) {
       return (
         <div className="sidepanel-header">
-          <Translate>Copy properties to this entity from:</Translate>
+          <Translate>Copy properties to this entity from</Translate>:
         </div>
       );
     }

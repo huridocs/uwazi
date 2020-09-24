@@ -46,7 +46,7 @@ export class CopyFromEntity extends Component<CopyFromEntityProps, CopyFromEntit
       .comonProperties(templates, [originalTemplate, copyFromTemplateId])
       .map(p => p.name);
 
-    this.setState(state => ({ selectedEntity, propsToCopy }));
+    this.setState({ selectedEntity, propsToCopy });
     this.props.onSelect(propsToCopy, selectedEntity);
   }
 
@@ -93,7 +93,11 @@ export class CopyFromEntity extends Component<CopyFromEntityProps, CopyFromEntit
     return this.state.selectedEntity._id ? (
       <>
         <div className="view">
-          <FormatMetadata entity={this.state.selectedEntity} highlight={this.state.propsToCopy} excludePreview />
+          <FormatMetadata
+            entity={this.state.selectedEntity}
+            highlight={this.state.propsToCopy}
+            excludePreview
+          />
         </div>
         <div className="copy-from-buttons">
           <button className="back-copy-from btn btn-light" onClick={this.backToSearch}>
@@ -118,7 +122,11 @@ export class CopyFromEntity extends Component<CopyFromEntityProps, CopyFromEntit
       </>
     ) : (
       <>
-        <SearchEntities onSelect={this.onSelect} onFinishSearch={this.onFinishedSearch} initialSearchTerm={this.state.lastSearch} />
+        <SearchEntities
+          onSelect={this.onSelect}
+          onFinishSearch={this.onFinishedSearch}
+          initialSearchTerm={this.state.lastSearch}
+        />
         <div className="copy-from-buttons">
           <button className="cancel-copy-from btn btn-primary" onClick={this.cancel}>
             <Icon icon="times" />

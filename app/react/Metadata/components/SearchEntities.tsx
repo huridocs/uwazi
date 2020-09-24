@@ -73,7 +73,10 @@ export class SearchEntities extends Component<SearchEntitiesProps, SearchEntitie
     return (
       <>
         <div className="search-box">
-          <SearchInput onChange={this.onChange} value={!this.state.touched ? this.props.initialSearchTerm : undefined}/>
+          <SearchInput
+            onChange={this.onChange}
+            value={!this.state.touched ? this.props.initialSearchTerm : undefined}
+          />
         </div>
         <SearchResults results={searchResults} searching={searching} onClick={this.onSelect} />
       </>
