@@ -14,13 +14,13 @@ describe('Table view', () => {
 
   it('Should go to the table view', async () => {
     await page.goto(`${host}/library/table`);
-    await page.waitFor('.tableview-wrapper');
+    await page.waitForSelector('.tableview-wrapper');
   });
 
   describe('Table actions', () => {
     it('Should show only selected properties', async () => {
       await page.click('.hidden-columns-dropdown');
-      await page.waitFor('#rw_1_listbox li');
+      await page.waitForSelector('#rw_1_listbox li');
       const columnsOptions = await page.$$eval('#rw_1_listbox li', options =>
         options.map(option => ({
           checked: (<HTMLInputElement>option.children[0]).checked,
@@ -31,7 +31,7 @@ describe('Table view', () => {
         .filter(option => option.checked)
         .map(option => option.option);
       selectedColumns[0] = 'Title';
-      await page.waitFor('.tableview-wrapper');
+      await page.waitForSelector('.tableview-wrapper');
       const optionSelector = '.tableview-wrapper th';
       const visibleColumns = await page.$$eval(optionSelector, columns =>
         columns.map(column => column.textContent)
@@ -74,7 +74,7 @@ describe('Table view', () => {
         (<HTMLInputElement>columns[4]).click();
         return columns[4].textContent;
       });
-      await page.waitFor(sidePanelItemNameSelector);
+      await page.waitForSelector(sidePanelItemNameSelector);
       await expect(page).toMatchElement(sidePanelItemNameSelector, {
         text: entityTitle?.toString(),
       });
