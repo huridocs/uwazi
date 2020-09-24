@@ -127,10 +127,6 @@
         @media (min-width: 600px) {
           width: 100%;
         }
-
-        .rw-input svg, li input {
-          margin-right: 7px;
-        }
       }
 
       .rw-popup-container {
@@ -138,6 +134,10 @@
           width: calc(100% - 8px);
           left: 0;
         }
+      }
+
+      .rw-input svg, li input {
+        margin-right: 7px;
       }
     }
 

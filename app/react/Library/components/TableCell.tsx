@@ -3,6 +3,7 @@ import React from 'react';
 import { I18NLink } from 'app/I18N';
 import GeolocationViewer from 'app/Metadata/components/GeolocationViewer';
 import { MetadataObjectSchema, PropertySchema } from 'shared/types/commonTypes';
+import MarkdownViewer from 'app/Markdown';
 
 export interface TableCellProps {
   content: FormattedMetadataValue;
@@ -53,6 +54,9 @@ const formatProperty = (prop: FormattedMetadataValue) => {
       break;
     case 'geolocation':
       result = <GeolocationViewer points={prop.value as MetadataObjectSchema[]} onlyForCards />;
+      break;
+    case 'markdown':
+      result = <MarkdownViewer markdown={prop.value} />;
       break;
     default:
       result = undefined;

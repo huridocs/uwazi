@@ -14,7 +14,7 @@ describe('Table view', () => {
 
   it('Should go to the table view', async () => {
     await page.goto(`${host}/library/table`);
-    await page.waitFor('.tableview-wrapper');
+    await page.waitFor('.tableview-wrapper > table > tbody > tr');
   });
 
   describe('Table actions', () => {
@@ -31,6 +31,7 @@ describe('Table view', () => {
         .filter(option => option.checked)
         .map(option => option.option);
       selectedColumns[0] = 'Title';
+      await page.click('.hidden-columns-dropdown');
       await page.waitFor('.tableview-wrapper');
       const optionSelector = '.tableview-wrapper th';
       const visibleColumns = await page.$$eval(optionSelector, columns =>
@@ -40,11 +41,12 @@ describe('Table view', () => {
     });
 
     it('Should show new selected properties', async () => {
+      await page.click('.hidden-columns-dropdown');
       const newColumn = await page.$$eval('#rw_1_listbox li:nth-child(9)', option => {
         (<HTMLInputElement>option[0]).click();
         return option[0].textContent;
       });
-      await page.waitFor(200);
+      await page.waitFor('.tableview-wrapper th:nth-child(5)');
       const lastColumn = await page.$$eval(
         '.tableview-wrapper th:last-child',
         columns => columns[0].textContent
@@ -59,7 +61,7 @@ describe('Table view', () => {
         (<HTMLInputElement>item[0]).checked = false;
         (<HTMLInputElement>item[0]).click();
       });
-      await page.waitFor(200);
+      await page.waitFor('.tableview-wrapper th:nth-child(6)');
       const optionsSelector = '#rw_1_listbox li';
       const headerColumnSelector = '.tableview-wrapper th';
       const optionsCount = await page.$$eval(optionsSelector, options => options.length);
@@ -84,7 +86,7 @@ describe('Table view', () => {
       const rowSelector = '.tableview-wrapper > table > tbody > tr';
       const lastRowSelector = '.tableview-wrapper > table > tbody > tr:last-child';
       await page.$$eval(lastRowSelector, el => el[0].scrollIntoView());
-      await page.waitFor(300);
+      await page.waitFor('.tableview-wrapper > table > tbody > tr:nth-child(32)');
       const rowsNumber = await page.$$eval(rowSelector, rows => rows.length);
       expect(rowsNumber).toBe(60);
     });
