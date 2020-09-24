@@ -84,7 +84,7 @@ export class Viewer extends Component {
   prepareClassName() {
     const { panelIsOpen, targetDoc, showConnections } = this.props;
 
-    let className = 'document-viewer';
+    let className = 'document-viewer with-header';
 
     if (panelIsOpen) {
       className += ' with-panel is-active';
@@ -95,8 +95,6 @@ export class Viewer extends Component {
     if (showConnections) {
       className += ' connections';
     }
-
-    className += ' with-header';
 
     return className;
   }
