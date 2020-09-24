@@ -166,13 +166,10 @@ export function removeFromToc(tocElement) {
 export function indentTocElement(tocElement, indentation) {
   return (dispatch, getState) => {
     const state = getState();
-    const toc = state.documentViewer.tocForm.map(_entry => {
-      const entry = Object.assign({}, _entry);
-      if (_entry === tocElement) {
-        entry.indentation = indentation;
-      }
-      return entry;
-    });
+    const toc = state.documentViewer.tocForm.map(entry => ({
+      ...entry,
+      ...(entry === tocElement ? { indentation } : {}),
+    }));
 
     dispatch(formActions.load('documentViewer.tocForm', toc));
   };

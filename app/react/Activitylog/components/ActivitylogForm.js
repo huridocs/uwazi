@@ -41,7 +41,7 @@ class ActivitylogForm extends Component {
     if (searchResults.get('remainingRows')) {
       const { query } = this.state;
       const lastResultTime = searchResults.getIn(['rows', -1, 'time']);
-      searchMore(Object.assign({}, query, { before: lastResultTime }));
+      searchMore({ ...query, before: lastResultTime });
     }
   }
 

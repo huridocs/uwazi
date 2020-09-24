@@ -119,8 +119,8 @@ export class OdmModel<T> {
     return this.db.countDocuments(query);
   }
 
-  get(query: UwaziFilterQuery<T> = {}, select: any = '', pagination = {}) {
-    return this.db.find(query, select, Object.assign({ lean: true }, pagination));
+  get(query: UwaziFilterQuery<T> = {}, select: any = '', options = {}) {
+    return this.db.find(query, select, { lean: true, ...options });
   }
 
   async getById(id: any | string | number, select?: any) {

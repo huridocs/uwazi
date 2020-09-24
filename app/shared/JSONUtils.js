@@ -3,7 +3,7 @@ export default {
     if (typeof object !== 'object') {
       return object;
     }
-    const result = Object.assign({}, object);
+    const result = { ...object };
     Object.keys(object).forEach(index => {
       try {
         result[index] = JSON.parse(object[index]);

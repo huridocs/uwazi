@@ -16,9 +16,7 @@ class Connect extends Component {
   }
 
   render() {
-    const { children } = this.props;
-    const props = Object.assign({}, this.props);
-    delete props.children;
+    const { children, ...props } = this.props;
     return (
       <PagesContext.Provider value={props}>
         {Connect.renderChildren(children, props)}

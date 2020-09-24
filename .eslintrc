@@ -22,7 +22,6 @@
     "object-curly-newline": "off",
     "function-paren-newline": "off",
     "react/prefer-stateless-function": "off",
-    "prefer-object-spread": "warn",
     "no-confusing-arrow": "off",
     "newline-per-chained-call": "off",
     "no-prototype-builtins": "off",

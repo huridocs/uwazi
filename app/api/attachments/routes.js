@@ -37,8 +37,7 @@ export const processAttachmentAllLanguages = (entity, attachment) =>
       ])
     )
     .then(([addedFile, siblings]) => {
-      const genericAddedFile = Object.assign({}, addedFile);
-      delete genericAddedFile._id;
+      const { _id, ...genericAddedFile } = addedFile;
 
       const additionalLanguageUpdates = [];
 

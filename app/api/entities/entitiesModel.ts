@@ -69,7 +69,7 @@ const setMongoLanguage = (doc: EntitySchema) => {
     mongoLanguage = 'none';
   }
 
-  return Object.assign({}, doc, { mongoLanguage });
+  return { ...doc, mongoLanguage };
 };
 
 const modelSaveRaw = Model.save.bind(Model);

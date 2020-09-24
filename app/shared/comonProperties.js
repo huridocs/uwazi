@@ -26,7 +26,7 @@ const comonProperties = (templates, documentTypes = []) => {
           const prop = tmpl.properties.find(_prop => sameProperty(_prop, _property), {});
           return prop.required ? prop : result;
         }, _property);
-        properties.push(Object.assign({}, property));
+        properties.push({ ...property });
       }
     });
   }

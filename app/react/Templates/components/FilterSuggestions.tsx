@@ -50,14 +50,15 @@ class SharedProperties extends Component<FilterSuggestionsProps> {
       this.props.templates.toJS()
     ).map((propertyMatch: MatchedProperty) => {
       const { property } = propertyMatch;
-      return Object.assign({}, propertyMatch, {
+      return {
+        ...propertyMatch,
         typeConflict: !getCompatibleTypes(type).includes(property.type),
         relationConflict: relationType && property.relationType !== relationType,
         contentConflict: property.content !== content,
         type: property.type,
         relationTypeName: this.getRelationTypeName(property.relationType),
         thesaurusName: this.getThesauriName(property.content),
-      }) as TemplateProperty;
+      } as TemplateProperty;
     });
 
     const thisProperty: TemplateProperty = {

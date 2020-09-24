@@ -27,7 +27,7 @@ describe('GaugeChart Markdown component', () => {
     spyOn(markdownDatasets, 'getMetadataValue').and.returnValue(4);
     const ownProps = { property: 'progress' };
     const props = mapStateToProps(state, ownProps);
-    const component = shallow(<GaugeChartComponent {...Object.assign({}, ownProps, props)} />);
+    const component = shallow(<GaugeChartComponent {...{ ...ownProps, ...props }} />);
 
     expect(markdownDatasets.getMetadataValue).toHaveBeenCalledWith(state, ownProps);
     expect(component).toMatchSnapshot();
@@ -46,7 +46,7 @@ describe('GaugeChart Markdown component', () => {
 
     const props = mapStateToProps(state, ownProps);
     const component = shallow(
-      <GaugeChartComponent {...Object.assign({}, ownProps, props)}>
+      <GaugeChartComponent {...{ ...ownProps, ...props }}>
         Pre <div /> Suf
       </GaugeChartComponent>
     );

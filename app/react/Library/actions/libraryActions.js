@@ -158,7 +158,10 @@ export function filterIsEmpty(value) {
 }
 
 export function processFilters(readOnlySearch, filters, limit, from) {
-  const search = Object.assign({ filters: {} }, readOnlySearch);
+  const search = {
+    filters: {},
+    ...readOnlySearch,
+  };
   search.filters = {};
 
   filters.properties.forEach(property => {
@@ -167,7 +170,7 @@ export function processFilters(readOnlySearch, filters, limit, from) {
     }
 
     if (property.filters) {
-      const searchFilter = Object.assign({}, readOnlySearch.filters[property.name]);
+      const searchFilter = { ...readOnlySearch.filters[property.name] };
       property.filters.forEach(filter => {
         if (filterIsEmpty(searchFilter[filter.name])) {
           delete searchFilter[filter.name];

@@ -88,17 +88,18 @@ export class CollectionSettings extends Component {
     const allowedPublicTemplatesString = settings.allowedPublicTemplates
       ? settings.allowedPublicTemplates.join(',')
       : '';
-    this.state = Object.assign({}, settings, {
+    this.state = {
+      ...settings,
       dateSeparator,
       customLandingpage,
       dateFormat,
       allowedPublicTemplatesString,
-    });
+    };
     this.updateSettings = this.updateSettings.bind(this);
   }
 
   updateSettings(values) {
-    const settings = Object.assign({}, values);
+    const settings = { ...values };
     delete settings.customLandingpage;
     delete settings.dateSeparator;
     delete settings.allowedPublicTemplatesString;

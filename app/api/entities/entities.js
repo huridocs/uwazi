@@ -172,7 +172,7 @@ async function createEntity(doc, languages, sharedId) {
   const template = await templates.getById(doc.template);
   return Promise.all(
     languages.map(async lang => {
-      const langDoc = Object.assign({}, doc);
+      const langDoc = { ...doc };
       const avoidIdDuplication = doc._id && !lang.default;
       if (avoidIdDuplication) {
         delete langDoc._id;
@@ -464,7 +464,11 @@ export default {
   },
 
   getByTemplate(template, language, onlyPublished = true, limit) {
-    const query = Object.assign({ template, language }, onlyPublished ? { published: true } : {});
+    const query = {
+      template,
+      language,
+      ...(onlyPublished ? { published: true } : {}),
+    };
     const queryLimit = limit ? { limit } : {};
     return model.get(query, ['title', 'icon', 'file', 'sharedId'], queryLimit);
   },
@@ -753,9 +757,7 @@ export default {
   async generateNewEntitiesForLanguage(entities, language) {
     return Promise.all(
       entities.map(async _entity => {
-        const entity = Object.assign({}, _entity);
-        delete entity._id;
-        delete entity.__v;
+        const { __v, _id, ...entity } = _entity;
         entity.language = language;
         entity.metadata = await this.denormalizeMetadata(entity.metadata, entity);
         entity.suggestedMetadata = await this.denormalizeMetadata(entity.suggestedMetadata, entity);

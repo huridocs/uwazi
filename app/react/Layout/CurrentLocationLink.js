@@ -5,7 +5,7 @@ import React from 'react';
 import { toUrlParams } from 'shared/JSONRequest';
 
 const newParams = (oldQuery, newQuery) => {
-  const params = Object.assign({}, oldQuery, newQuery);
+  const params = { ...oldQuery, ...newQuery };
   return Object.keys(params).reduce((memo, key) => {
     if (params[key] !== '') {
       return Object.assign(memo, { [key]: params[key] });
