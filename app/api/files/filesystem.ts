@@ -25,6 +25,9 @@ const customUploadsPath: pathFunction = (fileName: string = ''): FilePath =>
 const temporalFilesPath: pathFunction = (fileName: string = ''): FilePath =>
   path.join(tenants.current().temporalFiles, fileName);
 
+const activityLogPath: pathFunction = (): FilePath =>
+  path.join(tenants.current().activityLog, `${tenants.current().name}_activity.log`);
+
 async function deleteFile(file: FilePath) {
   return new Promise((resolve, reject) => {
     fs.unlink(file, err => {
@@ -64,6 +67,7 @@ const deleteUploadedFiles = async (files: FileType[]) =>
   );
 
 const writeFile = promisify(fs.writeFile);
+const appendFile = promisify(fs.appendFile);
 
 const fileExists = async (filePath: FilePath): Promise<boolean> =>
   new Promise((resolve, reject) => {
@@ -130,5 +134,7 @@ export {
   uploadsPath,
   temporalFilesPath,
   attachmentsPath,
+  activityLogPath,
   writeFile,
+  appendFile,
 };

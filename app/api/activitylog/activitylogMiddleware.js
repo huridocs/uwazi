@@ -1,3 +1,4 @@
+import { appendFile, activityLogPath } from 'api/files';
 import activitylog from './activitylog';
 
 const ignorelist = [
@@ -26,6 +27,7 @@ export default (req, _res, next) => {
       time,
     };
     activitylog.save(entry);
+    appendFile(activityLogPath(), JSON.stringify(entry));
   }
   next();
 };

@@ -1,5 +1,11 @@
+import { appendFile } from 'api/files';
 import activitylogMiddleware from '../activitylogMiddleware';
 import activitylog from '../activitylog';
+
+jest.mock('api/files', () => ({
+  appendFile: jest.fn(),
+  activityLogPath: jest.fn().mockImplementation(() => './activity_log/default_activity.log'),
+}));
 
 describe('activitylogMiddleware', () => {
   let req;
@@ -43,6 +49,23 @@ describe('activitylogMiddleware', () => {
       user: 123,
       username: 'admin',
     });
+  });
+
+  it('should save the log entry on filesystem', () => {
+    activitylogMiddleware(req, res, next);
+    expect(appendFile).toHaveBeenCalledWith(
+      './activity_log/default_activity.log',
+      JSON.stringify({
+        url: '/api/entities',
+        method: 'POST',
+        params: '{"some":"params"}',
+        query: '{"a":"query"}',
+        body: '{"title":"Hi"}',
+        user: 123,
+        username: 'admin',
+        time: 1,
+      })
+    );
   });
 
   it('should ignore NOT api calls', () => {

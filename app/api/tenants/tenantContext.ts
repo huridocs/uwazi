@@ -11,6 +11,7 @@ export type Tenant = {
   attachments: string;
   customUploads: string;
   temporalFiles: string;
+  activityLog: string;
 };
 
 class Tenants {
