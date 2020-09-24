@@ -1,73 +1,84 @@
-import semanticSearchModel from 'api/semanticsearch/model';
-import { allLanguages } from 'shared/languagesList';
-
 export const methods = {
   create: 'CREATE',
   update: 'UPDATE',
   delete: 'DELETE',
   migrate: 'MIGRATE',
+  post: 'CREATE',
 };
 
-export const formatLanguage = langKey => {
-  const lang = allLanguages.find(({ key }) => key === langKey);
-  return lang ? `${lang.label} (${lang.key})` : langKey;
-};
+class ActivityLogEntry {
+  constructor(builder) {
+    this.description = builder.description;
+    if (builder.name) this.name = builder.name;
+    if (builder.extra) this.extra = builder.extra;
+    this.action = builder.action || methods.update;
+    this.beautified = builder.beautified;
+  }
+}
 
-export const generateCreateUpdateBeautifier = (resourceName, idField, nameField) => async log => {
-  const data = JSON.parse(log.body);
-  const name = data[nameField];
-
-  const semantic = {
-    beautified: true,
-    name,
-  };
-
-  if (data[idField]) {
-    semantic.name = name ? `${name} (${data[idField]})` : `${data[idField]}`;
-    semantic.action = methods.update;
-    semantic.description = `Updated ${resourceName}`;
-  } else {
-    semantic.action = methods.create;
-    semantic.description = `Created ${resourceName}`;
+export class ActivityLogBuilder {
+  constructor(data, entryValue) {
+    this.description = entryValue.desc;
+    this.data = data;
+    this.action = entryValue.method ? entryValue.method : methods.update;
+    this.beautified = true;
+    this.entryValue = entryValue;
   }
 
-  return semantic;
-};
-
-export const generateDeleteBeautifier = (resourceName, idField) => async log => {
-  const data = JSON.parse(log.query);
-
-  return {
-    beautified: true,
-    action: methods.delete,
-    description: `Deleted ${resourceName}`,
-    name: data[idField],
-  };
-};
-
-export const generatePlainDescriptionBeautifier = (
-  description,
-  action = methods.update
-) => async () => ({
-  beautified: true,
-  action,
-  description,
-});
-
-export const generateSemanticSearchUpdateBeautifier = description => async log => {
-  const data = JSON.parse(log.body);
-  const search = await semanticSearchModel.getById(data.searchId);
-
-  const semantic = {
-    beautified: true,
-    action: methods.update,
-    description,
-    name: data.searchId,
-  };
-
-  if (search) {
-    semantic.name = `${search.searchTerm} (${data.searchId})`;
+  async loadRelated() {
+    if (this.entryValue.related) {
+      this.data = await this.entryValue.related(this.data);
+    }
   }
 
-  return semantic;
+  makeExtra() {
+    if (this.entryValue.extra) {
+      this.extra = this.entryValue.extra(this.data);
+    }
+  }
+
+  makeName() {
+    if (this.entryValue.nameFunc) {
+      this.name = this.entryValue.nameFunc(this.data);
+    } else if (this.entryValue.id) {
+      const nameField = this.entryValue.nameField || 'name';
+      const name = this.data[nameField];
+      this.name = name ? `${name} (${this.entryValue.id})` : `${this.entryValue.id}`;
+    } else if (this.entryValue.nameField) {
+      this.name = this.data[this.entryValue.nameField] || this.data.name;
+    }
+  }
+
+  build() {
+    return new ActivityLogEntry(this);
+  }
+}
+
+const changeToUpdate = entryValue => {
+  const updatedEntry = { ...entryValue, method: methods.update };
+  updatedEntry.desc = updatedEntry.desc.replace('Created', 'Updated');
+  return updatedEntry;
+};
+
+const getActivityInput = (entryValue, body) => {
+  let activityInput = { ...entryValue };
+  if (entryValue.idField && body) {
+    const content = JSON.parse(body);
+    const id = entryValue.idField ? content[entryValue.idField] : null;
+    if (id && entryValue.method !== methods.delete) {
+      activityInput = changeToUpdate(entryValue);
+      activityInput.id = id;
+    }
+  }
+  return activityInput;
+};
+
+export const buildActivityEntry = async (entryValue, data) => {
+  const body = data.body || data.query;
+  const activityInput = getActivityInput(entryValue, body);
+  const activityEntryBuilder = new ActivityLogBuilder(JSON.parse(body), activityInput);
+  await activityEntryBuilder.loadRelated();
+  activityEntryBuilder.makeName();
+  activityEntryBuilder.makeExtra();
+  return activityEntryBuilder.build();
 };

@@ -1,244 +1,236 @@
 import templates from 'api/templates';
 import entities from 'api/entities';
-
-import {
-  methods,
-  generateCreateUpdateBeautifier,
-  generateDeleteBeautifier,
-  generatePlainDescriptionBeautifier,
-  generateSemanticSearchUpdateBeautifier,
-  formatLanguage,
-} from './helpers';
+import { buildActivityEntry } from 'api/activitylog/helpers';
+import semanticSearchModel from 'api/semanticsearch/model';
+import { allLanguages } from 'shared/languagesList';
+import { methods } from './helpers';
 import { typeParsers } from './migrationsParser';
 
-const entitiesPOST = async log => {
-  const data = JSON.parse(log.body);
-  const template = await templates.getById(data.template);
-
-  const semantic = {
-    beautified: true,
-    name: data.title,
-    extra: `of type ${
-      template ? template.name : `(${data.template ? data.template.toString() : 'unassigned'})`
-    }`,
-  };
-
-  if (data.sharedId) {
-    semantic.name = `${data.title} (${data.sharedId})`;
-    semantic.action = methods.update;
-    semantic.description = 'Updated entity / document';
-  } else {
-    semantic.action = methods.create;
-    semantic.description = 'Created entity / document';
-  }
-
-  return semantic;
+const formatLanguage = langKey => {
+  const lang = allLanguages.find(({ key }) => key === langKey);
+  return lang ? `${lang.label} (${lang.key})` : langKey;
 };
 
-const documentsPdfInfoPOST = async log => {
-  const data = JSON.parse(log.body);
-  const [entity] = await entities.get({ _id: data._id, sharedId: data.sharedId });
+const formatDataLanguage = data => formatLanguage(data.key);
 
-  const semantic = {
-    beautified: true,
-    action: methods.update,
-    description: 'Processed document pdf',
-  };
-
-  if (entity) {
-    semantic.name = `${entity.title} (${entity.sharedId})`;
-    semantic.extra = `${formatLanguage(entity.language)} version`;
-  } else {
-    semantic.name = data.sharedId;
-  }
-
-  return semantic;
-};
-
-const entitiesDELETE = generateDeleteBeautifier('entity / document', 'sharedId');
-
-const attachmentsRenamePOST = async log => {
-  const data = JSON.parse(log.body);
-  const [entity] = await entities.get({ _id: data.entityId });
-
-  const semantic = {
-    beautified: true,
-    action: methods.update,
-    description: 'Renamed attachment',
-    name: `${data.originalname} (${data._id})`,
-  };
-
-  if (entity) {
-    semantic.extra = `of entity '${entity.title}' (${entity.sharedId}) ${formatLanguage(
-      entity.language
-    )} version`;
-  }
-  return semantic;
-};
-
-const templatesAsDefaultPOST = async log => {
-  const data = JSON.parse(log.body);
-  const template = await templates.getById(data._id);
-
-  return {
-    beautified: true,
-    action: methods.update,
-    description: 'Set default template',
-    name: template ? `${template.name} (${data._id})` : data._id,
-  };
-};
-
-const translationsPOST = async log => {
-  const data = JSON.parse(log.body);
+const translationsName = data => {
   const [context] = data.contexts;
-  let name = 'in multiple contexts';
-  if (data.contexts.length === 1) {
-    name = `in ${context.label} (${context.id})`;
-  }
-
-  return {
-    beautified: true,
-    action: methods.update,
-    description: 'Updated translations',
-    name,
-    extra: `in ${formatLanguage(data.locale)}`,
-  };
+  return data.contexts.length === 1
+    ? `in ${context.label} (${context.id})`
+    : 'in multiple contexts';
 };
 
-const translationsLanguagesPOST = async log => {
-  const data = JSON.parse(log.body);
-
-  return {
-    beautified: true,
-    action: methods.create,
-    description: 'Added language',
-    name: `${data.label} (${data.key})`,
-  };
-};
-
-const translationsLanguagesDELETE = async log => {
-  const data = JSON.parse(log.query);
-
-  return {
-    beautified: true,
-    action: methods.delete,
-    description: 'Removed language',
-    name: formatLanguage(data.key),
-  };
-};
-
-const translationsAsDefaultPOST = async log => {
-  const data = JSON.parse(log.body);
-
-  return {
-    beautified: true,
-    action: methods.update,
-    description: 'Set default language',
-    name: formatLanguage(data.key),
-  };
-};
-
-const usersNewPOST = async log => {
-  const data = JSON.parse(log.body);
-
-  return {
-    beautified: true,
-    action: methods.create,
-    description: 'Added new user',
-    name: data.username,
-    extra: `with ${data.role} role`,
-  };
-};
-
-const semanticSearchPOST = async log => {
-  const data = JSON.parse(log.body);
-
-  return {
-    beautified: true,
-    action: methods.create,
-    description: 'Started semantic search',
-    name: data.searchTerm,
-  };
-};
+const nameFunc = data => `${data.label} (${data.key})`;
 
 const migrationLog = log => {
   const data = JSON.parse(log.body);
-
   return typeParsers[data.type] ? typeParsers[data.type](data) : { beautified: false };
 };
 
-const actions = {
-  'POST/api/entities': entitiesPOST,
-  'POST/api/documents': entitiesPOST,
-  'POST/api/documents/pdfInfo': documentsPdfInfoPOST,
-  'DELETE/api/entities': entitiesDELETE,
-  'POST/api/entities/multipleupdate': generatePlainDescriptionBeautifier(
-    'Updated multiple entities'
-  ),
-  'POST/api/entities/bulkdelete': generatePlainDescriptionBeautifier(
-    'Deleted multiple entities',
-    methods.delete
-  ),
-  'DELETE/api/documents': entitiesDELETE,
-  'POST/api/attachments/upload': generatePlainDescriptionBeautifier(
-    'Uploaded attachment',
-    methods.create
-  ),
-  'POST/api/attachments/rename': attachmentsRenamePOST,
-  'DELETE/api/attachments/delete': generateDeleteBeautifier('attachment', 'attachmentId'),
-  'POST/api/templates': generateCreateUpdateBeautifier('template', '_id', 'name'),
-  'POST/api/templates/setasdefault': templatesAsDefaultPOST,
-  'DELETE/api/templates': generateDeleteBeautifier('template', '_id'),
-  'POST/api/thesauris': generateCreateUpdateBeautifier('thesaurus', '_id', 'name'),
-  'DELETE/api/thesauris': generateDeleteBeautifier('thesaurus', '_id'),
-  'POST/api/relationtypes': generateCreateUpdateBeautifier('relation type', '_id', 'name'),
-  'DELETE/api/relationtypes': generateDeleteBeautifier('relation type', '_id'),
-  'POST/api/translations': translationsPOST,
-  'POST/api/translations/languages': translationsLanguagesPOST,
-  'DELETE/api/translations/languages': translationsLanguagesDELETE,
-  'POST/api/translations/setasdeafult': translationsAsDefaultPOST,
-  'POST/api/pages': generateCreateUpdateBeautifier('page', 'sharedId', 'title'),
-  'DELETE/api/pages': generateDeleteBeautifier('page', 'sharedId'),
-  'POST/api/settings': generatePlainDescriptionBeautifier('Updated settings'),
-  'POST/api/relationships/bulk': generatePlainDescriptionBeautifier('Updated relationships'),
-  'POST/api/references': generateCreateUpdateBeautifier('relationship', '_id'),
-  'DELETE/api/references': generateDeleteBeautifier('relationship', '_id'),
-  'POST/api/upload': generatePlainDescriptionBeautifier('Uploaded document', methods.create),
-  'POST/api/reupload': generatePlainDescriptionBeautifier('Re-uploaded document', methods.update),
-  'POST/api/customisation/upload': generatePlainDescriptionBeautifier(
-    'Uploaded custom file',
-    methods.create
-  ),
-  'DELETE/api/customisation/upload': generateDeleteBeautifier('custom file', '_id'),
-  'POST/api/import': generatePlainDescriptionBeautifier(
-    'Imported entities from file',
-    methods.create
-  ),
-  'POST/api/public': generatePlainDescriptionBeautifier(
-    'Created entity coming from a public form',
-    methods.create
-  ),
-  'POST/api/remotepublic': generatePlainDescriptionBeautifier(
-    'Submitted entity to a remote instance',
-    methods.create
-  ),
-  'POST/api/users/new': usersNewPOST,
-  'POST/api/semantic-search': semanticSearchPOST,
-  'DELETE/api/semantic-search': generateDeleteBeautifier('semantic search', 'searchId'),
-  'POST/api/semantic-search/stop': generateSemanticSearchUpdateBeautifier(
-    'Stopped semantic search'
-  ),
-  'POST/api/semantic-search/resume': generateSemanticSearchUpdateBeautifier(
-    'Resumed semantic search'
-  ),
-  MIGRATE: migrationLog,
+const templateName = data =>
+  data.templateData ? `${data.templateData.name} (${data._id})` : data._id;
+
+const loadTemplate = async data => {
+  const templateData = await templates.getById(data.template || data._id);
+  return { ...data, templateData };
+};
+
+const loadEntity = async data => {
+  const query = data.entityId ? { _id: data.entityId } : { _id: data._id, sharedId: data.sharedId };
+  const [entity] = await entities.get(query);
+  return { ...data, entity, title: entity ? entity.title : undefined };
+};
+
+const extraTemplate = data =>
+  `of type ${
+    data.templateData
+      ? data.templateData.name
+      : `(${data.template ? data.template.toString() : 'unassigned'})`
+  }`;
+
+const extraLanguage = data =>
+  data.entity ? `${formatLanguage(data.entity.language)} version` : null;
+
+const extraAttachmentLanguage = data =>
+  data.entity
+    ? `of entity '${data.entity.title}' (${data.entity.sharedId}) ${formatLanguage(
+        data.entity.language
+      )} version`
+    : null;
+
+const searchName = data =>
+  data.search ? `${data.search.searchTerm} (${data.searchId})` : data.searchId;
+
+const loadSearch = async data => {
+  const search = await semanticSearchModel.getById(data.searchId);
+  return { ...data, search };
+};
+
+const entryValues = {
+  'POST/api/entities/multipleupdate': { desc: 'Updated multiple entities' },
+  'POST/api/entities/bulkdelete': { desc: 'Deleted multiple entities', method: methods.delete },
+  'POST/api/attachments/upload': { desc: 'Uploaded attachment', method: methods.create },
+  'POST/api/settings': { desc: 'Updated settings' },
+  'POST/api/relationships/bulk': { desc: 'Updated relationships' },
+  'POST/api/upload': { desc: 'Uploaded document', method: methods.create },
+  'POST/api/reupload': { desc: 'Re-uploaded document' },
+  'POST/api/customisation/upload': { desc: 'Uploaded custom file', method: methods.create },
+  'POST/api/import': { desc: 'Imported entities from file', method: methods.create },
+  'POST/api/public': { desc: 'Created entity coming from a public form', method: methods.create },
+  'POST/api/remotepublic': {
+    desc: 'Submitted entity to a remote instance',
+    method: methods.create,
+  },
+  'POST/api/references': { desc: 'Created relationship', method: methods.create, idField: '_id' },
+  'POST/api/pages': {
+    desc: 'Created page',
+    method: methods.create,
+    idField: 'sharedId',
+    nameField: 'title',
+  },
+  'POST/api/templates': {
+    desc: 'Created template',
+    method: methods.create,
+    idField: '_id',
+    nameField: 'name',
+  },
+  'POST/api/thesauris': {
+    desc: 'Created thesaurus',
+    method: methods.create,
+    idField: '_id',
+    nameField: 'name',
+  },
+  'POST/api/relationtypes': {
+    desc: 'Created relation type',
+    method: methods.create,
+    idField: '_id',
+    nameField: 'name',
+  },
+  'POST/api/entities': {
+    desc: 'Created entity / document',
+    method: methods.create,
+    idField: 'sharedId',
+    nameField: 'title',
+    related: loadTemplate,
+    extra: extraTemplate,
+  },
+  'POST/api/documents': {
+    desc: 'Created entity / document',
+    method: methods.create,
+    idField: 'sharedId',
+    nameField: 'title',
+    related: loadTemplate,
+    extra: extraTemplate,
+  },
+  'POST/api/documents/pdfInfo': {
+    desc: 'Processed document pdf',
+    idField: 'sharedId',
+    nameField: 'title',
+    related: loadEntity,
+    extra: extraLanguage,
+  },
+  'DELETE/api/entities': {
+    desc: 'Deleted entity / document',
+    method: methods.delete,
+    nameField: 'sharedId',
+  },
+  'DELETE/api/documents': {
+    desc: 'Deleted entity / document',
+    method: methods.delete,
+    nameField: 'sharedId',
+  },
+  'POST/api/attachments/rename': {
+    desc: 'Renamed attachment',
+    idField: '_id',
+    nameFunc: data => `${data.originalname} (${data._id})`,
+    related: loadEntity,
+    extra: extraAttachmentLanguage,
+  },
+  'DELETE/api/attachments/delete': {
+    desc: 'Deleted attachment',
+    method: methods.delete,
+    nameField: 'attachmentId',
+  },
+  'POST/api/templates/setasdefault': {
+    desc: 'Set default template',
+    related: loadTemplate,
+    nameFunc: templateName,
+  },
+  'DELETE/api/templates': { desc: 'Deleted template', method: methods.delete, nameField: '_id' },
+  'DELETE/api/thesauris': { desc: 'Deleted thesaurus', method: methods.delete, nameField: '_id' },
+  'DELETE/api/relationtypes': {
+    desc: 'Deleted relation type',
+    method: methods.delete,
+    nameField: '_id',
+  },
+  'POST/api/translations': {
+    desc: 'Updated translations',
+    nameFunc: translationsName,
+    extra: data => `in ${formatLanguage(data.locale)}`,
+  },
+  'POST/api/translations/languages': { desc: 'Added language', method: methods.create, nameFunc },
+  'DELETE/api/translations/languages': {
+    desc: 'Removed language',
+    method: methods.delete,
+    nameFunc: formatDataLanguage,
+  },
+  'POST/api/translations/setasdeafult': {
+    desc: 'Set default language',
+    nameFunc: formatDataLanguage,
+  },
+  'DELETE/api/pages': {
+    desc: 'Deleted page',
+    method: methods.delete,
+    nameField: 'sharedId',
+  },
+  'DELETE/api/references': {
+    desc: 'Deleted relationship',
+    method: methods.delete,
+    nameField: '_id',
+  },
+  'DELETE/api/customisation/upload': {
+    desc: 'Deleted custom file',
+    method: methods.delete,
+    nameField: '_id',
+  },
+  'POST/api/users/new': {
+    desc: 'Added new user',
+    method: methods.create,
+    nameField: 'username',
+    extra: data => `with ${data.role} role`,
+  },
+  'POST/api/semantic-search': {
+    desc: 'Started semantic search',
+    method: methods.create,
+    nameField: 'searchTerm',
+  },
+  'POST/api/semantic-search/stop': {
+    desc: 'Stopped semantic search',
+    nameFunc: searchName,
+    related: loadSearch,
+  },
+  'POST/api/semantic-search/resume': {
+    desc: 'Resumed semantic search',
+    nameFunc: searchName,
+    related: loadSearch,
+  },
+  'DELETE/api/semantic-search': {
+    desc: 'Deleted semantic search',
+    method: methods.delete,
+    nameField: 'searchId',
+  },
 };
 
 const getSemanticData = async data => {
-  if (actions[`${data.method}${data.url}`]) {
-    return actions[`${data.method}${data.url}`](data);
+  const action = `${data.method}${data.url}`;
+  const entryValue = entryValues[action];
+  if (entryValue) {
+    const activityEntry = await buildActivityEntry(entryValue, data);
+    return { ...activityEntry };
   }
-
+  if (action === 'MIGRATE') {
+    return migrationLog(data);
+  }
   return { beautified: false };
 };
 
