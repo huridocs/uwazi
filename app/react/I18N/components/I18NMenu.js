@@ -19,7 +19,6 @@ class I18NMenu extends Component {
     let path = location.pathname;
     const regexp = new RegExp(`^/?${locale}/|^/?${locale}$`);
     path = path.replace(regexp, '/');
-    // console.log(t('System', 'Add/edit translations').props.children);
 
     return (
       <ul className="menuNav-I18NMenu" role="navigation" aria-label="Languages">
