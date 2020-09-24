@@ -11,20 +11,29 @@ import api from 'app/utils/api';
 
 export type SearchEntitiesProps = {
   onSelect: Function;
+  onFinishSearch: Function;
+  initialSearchTerm?: string;
 };
 
 export type SearchEntitiesState = {
   searchResults: IImmutable<Array<EntitySchema>>;
   searching: boolean;
+  touched: boolean;
 };
 
 export class SearchEntities extends Component<SearchEntitiesProps, SearchEntitiesState> {
   constructor(props: SearchEntitiesProps) {
     super(props);
-    this.state = { searchResults: Immutable.fromJS([]), searching: false };
+    this.state = { searchResults: Immutable.fromJS([]), searching: false, touched: false };
     this.onSelect = this.onSelect.bind(this);
     this.onChange = this.onChange.bind(this);
     this.search = this.search.bind(this);
+  }
+
+  componentDidMount() {
+    if (this.props.initialSearchTerm) {
+      this.search(this.props.initialSearchTerm);
+    }
   }
 
   onSelect(_sharedId: string, entity: EntitySchema) {
@@ -49,10 +58,12 @@ export class SearchEntities extends Component<SearchEntitiesProps, SearchEntitie
         searchResults: Immutable.fromJS(searchResults),
         searching: false,
       });
+      this.props.onFinishSearch(searchTerm);
     });
   }
 
   onChange(e: React.ChangeEvent<HTMLInputElement>) {
+    this.setState({ touched: true });
     const searchTerm = e.target.value;
     return debounce(this.search, 400)(searchTerm);
   }
@@ -62,7 +73,7 @@ export class SearchEntities extends Component<SearchEntitiesProps, SearchEntitie
     return (
       <>
         <div className="search-box">
-          <SearchInput onChange={this.onChange} />
+          <SearchInput onChange={this.onChange} value={!this.state.touched ? this.props.initialSearchTerm : undefined}/>
         </div>
         <SearchResults results={searchResults} searching={searching} onClick={this.onSelect} />
       </>

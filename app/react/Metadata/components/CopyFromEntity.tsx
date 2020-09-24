@@ -22,17 +22,19 @@ export type CopyFromEntityProps = {
 export type CopyFromEntityState = {
   selectedEntity: EntitySchema;
   propsToCopy: Array<string>;
+  lastSearch?: string;
 };
 
 export class CopyFromEntity extends Component<CopyFromEntityProps, CopyFromEntityState> {
   constructor(props: CopyFromEntityProps) {
     super(props);
 
-    this.state = { propsToCopy: [], selectedEntity: {} };
+    this.state = { propsToCopy: [], selectedEntity: {}, lastSearch: undefined };
     this.onSelect = this.onSelect.bind(this);
     this.cancel = this.cancel.bind(this);
     this.copy = this.copy.bind(this);
     this.backToSearch = this.backToSearch.bind(this);
+    this.onFinishedSearch = this.onFinishedSearch.bind(this);
   }
 
   onSelect(selectedEntity: EntitySchema) {
@@ -44,7 +46,7 @@ export class CopyFromEntity extends Component<CopyFromEntityProps, CopyFromEntit
       .comonProperties(templates, [originalTemplate, copyFromTemplateId])
       .map(p => p.name);
 
-    this.setState({ selectedEntity, propsToCopy });
+    this.setState(state => ({ selectedEntity, propsToCopy }));
     this.props.onSelect(propsToCopy, selectedEntity);
   }
 
@@ -83,6 +85,10 @@ export class CopyFromEntity extends Component<CopyFromEntityProps, CopyFromEntit
     this.props.onCancel();
   }
 
+  onFinishedSearch(searchTerm: string) {
+    this.setState({ lastSearch: searchTerm });
+  }
+
   renderPanel() {
     return this.state.selectedEntity._id ? (
       <>
@@ -103,7 +109,7 @@ export class CopyFromEntity extends Component<CopyFromEntityProps, CopyFromEntit
             </span>
           </button>
           <button className="copy-copy-from btn btn-success" onClick={this.copy}>
-            <Icon icon="clone" />
+            <Icon icon="copy-from" transform="left-0.075 up-0.1" />
             <span className="btn-label">
               <Translate>Copy Highlighted</Translate>
             </span>
@@ -112,7 +118,7 @@ export class CopyFromEntity extends Component<CopyFromEntityProps, CopyFromEntit
       </>
     ) : (
       <>
-        <SearchEntities onSelect={this.onSelect} />
+        <SearchEntities onSelect={this.onSelect} onFinishSearch={this.onFinishedSearch} initialSearchTerm={this.state.lastSearch} />
         <div className="copy-from-buttons">
           <button className="cancel-copy-from btn btn-primary" onClick={this.cancel}>
             <Icon icon="times" />
