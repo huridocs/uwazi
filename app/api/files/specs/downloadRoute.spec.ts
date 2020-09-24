@@ -25,10 +25,10 @@ describe('files routes download', () => {
   afterAll(async () => db.disconnect());
 
   describe('GET/', () => {
-    it('should send the file the file', async () => {
+    it('should send the file', async () => {
       const response: SuperTestResponse = await request(app).get(`/api/files/${fileName1}`);
 
-      expect(response.header['content-disposition']).not.toBeDefined();
+      expect(response.header['content-disposition']).toBe('filename=upload1');
       expect(response.body instanceof Buffer).toBe(true);
     });
 
