@@ -6,7 +6,7 @@ import { wrapDispatch } from 'app/Multireducer';
 
 import ShowIf from 'app/App/ShowIf';
 import { NeedAuthorization } from 'app/Auth';
-import { Translate, I18NLink, t } from 'app/I18N';
+import { Translate, I18NLink } from 'app/I18N';
 import { Icon } from 'UI';
 import { publish, unpublish } from 'app/Uploads/actions/uploadsActions';
 import entitiesUtils from 'app/Entities/utils/filterBaseProperties';
