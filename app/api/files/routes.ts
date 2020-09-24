@@ -68,12 +68,18 @@ export default (app: Application) => {
 
     async (req, res, next) => {
       try {
-        const [file = { filename: '' }] = await files.get({ filename: req.params.filename });
+        const [file = { filename: '', originalname: undefined }] = await files.get({
+          filename: req.params.filename,
+        });
 
         const filename = file.filename || '';
 
         if (!filename || !(await fileExists(uploadsPath(filename)))) {
           throw createError('file not found', 404);
+        }
+
+        if (file.originalname) {
+          res.setHeader('Content-Disposition', `filename=${file.originalname}`);
         }
 
         res.sendFile(uploadsPath(filename));
