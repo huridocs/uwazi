@@ -110,7 +110,7 @@ export default class Uploads extends RouteHandler {
       <div className="row panels-layout">
         <Helmet title={t('System', 'Uploads', null, false)} />
         <UploadsHeader />
-        <div className="content-holder uploads-viewer document-viewer with-panel">
+        <div className="content-holder uploads-viewer document-viewer with-panel with-header">
           <main>
             <UploadBox />
             {/*<ListChartToggleButtons active={chartView ? 'chart' : 'list'} />*/}
