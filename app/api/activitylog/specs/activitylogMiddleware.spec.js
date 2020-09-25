@@ -1,4 +1,5 @@
 import { appendFile } from 'api/files';
+import { IGNORED_ENDPOINTS } from 'api/activitylog/activitylogMiddleware';
 import activitylogMiddleware from '../activitylogMiddleware';
 import activitylog from '../activitylog';
 
@@ -73,24 +74,13 @@ describe('activitylogMiddleware', () => {
     testActivityLogNotSaved();
   });
 
-  it('should ignore all GET requests', () => {
-    req.method = 'GET';
+  it.each(['GET', 'OPTIONS', 'HEAD'])('should ignore not desired method %s', method => {
+    req.method = method;
     testActivityLogNotSaved();
   });
 
-  it('should ignore specific api calls', () => {
-    const urls = [
-      '/api/login',
-      '/api/users',
-      '/api/contact',
-      '/api/unlockaccount',
-      '/api/recoverpassword',
-      '/api/resetpassword',
-    ];
-
-    urls.forEach(url => {
-      req.url = url;
-      testActivityLogNotSaved();
-    });
+  it.each(IGNORED_ENDPOINTS)('should ignore calls to %s', endpoint => {
+    req.url = endpoint;
+    testActivityLogNotSaved();
   });
 });

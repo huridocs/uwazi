@@ -1,20 +1,25 @@
-import { appendFile, activityLogPath } from 'api/files';
+import { activityLogPath, appendFile } from 'api/files';
 import activitylog from './activitylog';
 
-const ignorelist = [
-  'POST/api/users',
-  'POST/api/login',
-  'POST/api/contact',
-  'POST/api/unlockaccount',
-  'POST/api/resetpassword',
-  'POST/api/recoverpassword',
+const ignoredMethods = ['GET', 'OPTIONS', 'HEAD'];
+export const IGNORED_ENDPOINTS = [
+  '/api/users',
+  '/api/login',
+  '/api/contact',
+  '/api/unlockaccount',
+  '/api/resetpassword',
+  '/api/recoverpassword',
+  '/api/documents/pdfInfo',
 ];
 
 export default (req, _res, next) => {
   const { url, method, params, query, body, user = {} } = req;
   const baseurl = url.split('?').shift();
-
-  if (method !== 'GET' && !ignorelist.includes(method + baseurl) && baseurl.includes('/api/')) {
+  if (
+    baseurl.includes('/api/') &&
+    !ignoredMethods.includes(method) &&
+    !IGNORED_ENDPOINTS.includes(baseurl)
+  ) {
     const time = Date.now();
     const entry = {
       url: baseurl,
