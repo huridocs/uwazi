@@ -27,7 +27,11 @@ class ExportButton extends Component<ExportButtonProps, {}> {
 
   render() {
     return (
-      <button type="button" onClick={this.export} className={`btn btn-primary ${this.props.processing ? 'btn-disabled' : ''}`}>
+      <button 
+        type="button" 
+        onClick={this.export} 
+        className={`btn btn-primary ${this.props.processing ? 'btn-disabled' : ''}`}
+      >
         {!this.props.processing ? (
           <Icon icon="export-csv" transform="right-0.075 up-0.1" />
         ) : (
