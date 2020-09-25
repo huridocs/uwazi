@@ -27,9 +27,9 @@ class ExportButton extends Component<ExportButtonProps, {}> {
 
   render() {
     return (
-      <button 
-        type="button" 
-        onClick={this.export} 
+      <button
+        type="button"
+        onClick={this.export}
         className={`btn btn-primary ${this.props.processing ? 'btn-disabled' : ''}`}
       >
         {!this.props.processing ? (
