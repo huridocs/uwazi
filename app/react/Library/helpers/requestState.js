@@ -80,7 +80,7 @@ export default function requestState(request, globalResources, calculateTableCol
         }),
       ];
       if (calculateTableColumns) {
-        const tableViewColumns = getTableColumns(documents, templates);
+        const tableViewColumns = getTableColumns(documents, templates, documentsRequest.data.types);
         dispatchedActions.push(dispatch =>
           wrapDispatch(dispatch, 'library')(setTableViewColumns(tableViewColumns))
         );

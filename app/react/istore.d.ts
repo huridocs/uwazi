@@ -59,6 +59,7 @@ export interface SettingsState {
 
 export interface TableViewColumn extends PropertySchema {
   hidden: boolean;
+  translationContext?: string;
 }
 
 interface EntityDisplayState {
