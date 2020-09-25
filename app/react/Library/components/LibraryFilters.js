@@ -34,10 +34,10 @@ export class LibraryFilters extends Component {
     return (
       <SidePanel className="library-filters" mode={this.props.sidePanelMode} open={this.props.open}>
         <div className="sidepanel-footer">
-          <span onClick={this.reset.bind(this)} className="btn btn-primary">
+          <button type="button" onClick={this.reset.bind(this)} className="btn btn-primary">
             <Icon icon="sync" />
             <span className="btn-label">{t('System', 'Reset')}</span>
-          </span>
+          </button>
           <button type="submit" form="filtersForm" className="btn btn-success">
             <Icon icon="search" />
             <span className="btn-label">{t('System', 'Search')}</span>
@@ -48,7 +48,12 @@ export class LibraryFilters extends Component {
           <p className="sidepanel-title">
             {t('System', 'Filters configuration')}
             {this.props.sidePanelMode === 'unpinned-mode' && (
-              <button type="button" className="closeSidepanel" onClick={this.props.hideFilters}>
+              <button
+                type="button"
+                className="closeSidepanel"
+                onClick={this.props.hideFilters}
+                aria-label="Close side panel"
+              >
                 <Icon icon="times" />
               </button>
             )}
