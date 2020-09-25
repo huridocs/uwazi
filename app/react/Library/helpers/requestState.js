@@ -4,6 +4,9 @@ import api from 'app/Search/SearchAPI';
 import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
 import rison from 'rison-node';
 import { getThesaurusPropertyNames } from 'shared/commonTopicClassification';
+import { setTableViewColumns } from 'app/Library/actions/libraryActions';
+import { wrapDispatch } from 'app/Multireducer';
+import { getTableColumns } from './tableColumns';
 import setReduxState from './setReduxState.js';
 
 export function decodeQuery(params) {
@@ -36,7 +39,7 @@ export function processQuery(params, globalResources, key) {
   return sanitizedQuery;
 }
 
-export default function requestState(request, globalResources) {
+export default function requestState(request, globalResources, calculateTableColumns = false) {
   const docsQuery = processQuery(request.data, globalResources, 'library');
   const documentsRequest = request.set(docsQuery);
   const markersRequest = request.set({ ...docsQuery, geolocation: true });
@@ -53,6 +56,7 @@ export default function requestState(request, globalResources) {
           ? getThesaurusPropertyNames(request.data.quickLabelThesaurus, templates)
           : []
       );
+
       const state = {
         library: {
           filters: {
@@ -67,13 +71,21 @@ export default function requestState(request, globalResources) {
       };
 
       const addinsteadOfSet = Boolean(docsQuery.from);
-      return [
+
+      const dispatchedActions = [
         setReduxState(state, 'library', addinsteadOfSet),
         actions.set('library.sidepanel.quickLabelState', {
           thesaurus: request.data.quickLabelThesaurus,
           autoSave: false,
         }),
       ];
+      if (calculateTableColumns) {
+        const tableViewColumns = getTableColumns(documents, templates, documentsRequest.data.types);
+        dispatchedActions.push(dispatch =>
+          wrapDispatch(dispatch, 'library')(setTableViewColumns(tableViewColumns))
+        );
+      }
+      return dispatchedActions;
     }
   );
 }

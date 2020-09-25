@@ -594,9 +594,13 @@ $item-padding: 15px;
   position: relative;
   display: flex;
   width: 100%;
-  margin: 0 auto 15px;
+  margin: 80px auto 15px;
   padding: 0 0 0 15px;
   font-size: $f-size-sm;
+
+  @media (min-width: 768px) {
+    margin-top: 0;
+  }
 }
 
 .item-danger {

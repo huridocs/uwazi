@@ -18,10 +18,12 @@ export class LibraryLayoutBase extends Component {
     if (blankState()) {
       return <Welcome />;
     }
-    const { className, children, quickLabelThesaurus } = this.props;
+    const { className, children, quickLabelThesaurus, sidePanelMode, noScrollable } = this.props;
     const contentDivClass = `${
       quickLabelThesaurus ? 'with-header ' : ''
-    } content-holder library-viewer document-viewer with-panel`;
+    } content-holder library-viewer document-viewer with-panel ${sidePanelMode} ${
+      noScrollable ? 'no-scroll-layout' : ''
+    }`;
 
     return (
       <div className="row panels-layout">
@@ -29,7 +31,7 @@ export class LibraryLayoutBase extends Component {
         {quickLabelThesaurus && <QuickLabelHeader />}
         <div className={contentDivClass}>
           <main className={`${className}`}>{children}</main>
-          <LibraryFilters storeKey="library" />
+          <LibraryFilters storeKey="library" sidePanelMode={sidePanelMode} />
           {!quickLabelThesaurus && <ViewMetadataPanel storeKey="library" />}
           {!quickLabelThesaurus && <SelectMultiplePanelContainer storeKey="library" />}
           {quickLabelThesaurus && <QuickLabelPanel storeKey="library" />}
@@ -45,12 +47,16 @@ export class LibraryLayoutBase extends Component {
 LibraryLayoutBase.defaultProps = {
   className: '',
   quickLabelThesaurus: '',
+  sidePanelMode: '',
+  noScrollable: false,
 };
 
 LibraryLayoutBase.propTypes = {
   children: PropTypes.instanceOf(Object).isRequired,
   className: PropTypes.string,
   quickLabelThesaurus: PropTypes.string,
+  sidePanelMode: PropTypes.string,
+  noScrollable: PropTypes.bool,
 };
 
 export default connect(state => ({
