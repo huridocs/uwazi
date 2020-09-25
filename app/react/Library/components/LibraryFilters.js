@@ -34,7 +34,11 @@ export class LibraryFilters extends Component {
     return (
       <SidePanel className="library-filters" mode={this.props.sidePanelMode} open={this.props.open}>
         <div className="sidepanel-footer">
-          <button type="button" onClick={this.reset.bind(this)} className="btn btn-primary">
+          <button
+            type="button"
+            onClick={this.reset.bind(this)}
+            className="btn btn-primary resetFilters"
+          >
             <Icon icon="sync" />
             <span className="btn-label">{t('System', 'Reset')}</span>
           </button>

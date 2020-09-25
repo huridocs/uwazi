@@ -164,7 +164,7 @@ export default {
     minorVillianType:
       '#app > div.content > div > div > div > aside.side-panel.library-filters > div.sidepanel-body > div.documentTypes-selector.nested-selector > ul > li:nth-child(5) > label',
     resetFilters:
-      '#app > div.content > div > div > div > aside.side-panel.library-filters > div.sidepanel-footer > span',
+      '#app > div.content > div > div > div > aside.side-panel.library-filters > div.sidepanel-footer > .resetFilters',
     sidePanelCloseButton:
       '#app > div.content > div > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-header > button',
     sidePanelDocumentType:
