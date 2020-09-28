@@ -650,9 +650,7 @@ const instanceSearch = elasticIndex => ({
     // queryBuilder.query() is the actual call
     return elastic
       .search({ index: elasticIndex || getCurrentTenantIndex(), body: queryBuilder.query() })
-      .then(response => {
-        return processResponse(response, templates, dictionaries, language, query.filters);
-      })
+      .then(response => processResponse(response, templates, dictionaries, language, query.filters))
       .catch(e => {
         throw createError(e, 400);
       });
