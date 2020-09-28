@@ -70,7 +70,7 @@ const bulkIndex = async (docs, _action = 'index', elasticIndex) => {
     }
   });
 
-  const results = await elastic.bulk({ body });
+  const results = await elastic.bulk({ body, pipeline: 'rename-pipeline' });
 
   if (results.body.items) {
     handleErrors(results.body.items.filter(f => f.index.error));
