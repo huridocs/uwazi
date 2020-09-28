@@ -19,7 +19,7 @@ export type SearchResults = {
   totalRows: number;
   aggregations: {
     all: {
-      _types: {
+      _types?: {
         buckets: {
           key: string;
           // eslint-disable-next-line camelcase
@@ -50,8 +50,8 @@ type TemplatesCache = {
 export const getTypes = (searchResults: SearchResults, typesWhitelist: string[] = []) =>
   typesWhitelist.length
     ? typesWhitelist
-    : searchResults.aggregations.all._types.buckets
-        .filter(bucket => bucket.filtered.doc_count > 0)
+    : searchResults.aggregations.all
+        ._types!.buckets.filter(bucket => bucket.filtered.doc_count > 0)
         .map(bucket => bucket.key);
 
 const hasValue = (value: string) => value !== 'missing';
