@@ -4,8 +4,8 @@ import { testingTenants } from 'api/utils/testingTenants';
 import testingDB from 'api/utils/testing_db';
 import mongoose, { Schema } from 'mongoose';
 import { ensure } from 'shared/tsUtils';
-import { instanceModel } from '../model';
-import { models, OdmModel, WithId } from '../models';
+import { instanceModel, UpdateLogHelper, OdmModel } from '../model';
+import { models, WithId } from '../models';
 import { tenants } from '../../tenants/tenantContext';
 
 const testSchema = new Schema({
@@ -112,30 +112,47 @@ describe('ODM Model', () => {
       ).toBe(2);
     });
 
-    it('should intercept updateMany', async () => {
+    describe('on updateMany', () => {
+      it('should update the entries on updatelog based on query', async () => {
+        const newDocument3 = await extendedModel.save({ name: 'document 3' });
+        const newDocument4 = await extendedModel.save({ name: 'document 4' });
+        UpdateLogHelper.batchSizeUpsertMany = 2;
+        Date.now = () => 3;
+
+        await extendedModel.updateMany(
+          { name: { $in: ['document 1', 'document 2', 'document 4'] } },
+          { $set: { name: 'same name' } }
+        );
+        const logEntries = await updatelogsModel.find({}, '', { sort: { _id: 1 } });
+
+        expect(
+          logEntries.map(({ mongoId, timestamp }) => ({ mongoId: mongoId.toString(), timestamp }))
+        ).toEqual([
+          { mongoId: newDocument1._id.toString(), timestamp: 3 },
+          { mongoId: newDocument2._id.toString(), timestamp: 3 },
+          { mongoId: newDocument3._id.toString(), timestamp: 1 },
+          { mongoId: newDocument4._id.toString(), timestamp: 3 },
+        ]);
+      });
+    });
+
+    it('should update properly when query includes _id', async () => {
       const newDocument3 = await extendedModel.save({ name: 'document 3' });
+
       Date.now = () => 3;
       await extendedModel.updateMany(
         { _id: { $in: [newDocument1._id, newDocument2._id] } },
         { $set: { name: 'same name' } }
       );
-      const logEntries = await updatelogsModel.find({});
-      expect(logEntries.length).toBe(3);
+      const logEntries = await updatelogsModel.find({}, '', { sort: { _id: 1 } });
+
       expect(
-        ensure<UpdateLog>(
-          logEntries.find(e => e.mongoId.toString() === newDocument1._id.toString())
-        ).timestamp
-      ).toBe(3);
-      expect(
-        ensure<UpdateLog>(
-          logEntries.find(e => e.mongoId.toString() === newDocument2._id.toString())
-        ).timestamp
-      ).toBe(3);
-      expect(
-        ensure<UpdateLog>(
-          logEntries.find(e => e.mongoId.toString() === newDocument3._id.toString())
-        ).timestamp
-      ).toBe(1);
+        logEntries.map(({ mongoId, timestamp }) => ({ mongoId: mongoId.toString(), timestamp }))
+      ).toEqual([
+        { mongoId: newDocument1._id.toString(), timestamp: 3 },
+        { mongoId: newDocument2._id.toString(), timestamp: 3 },
+        { mongoId: newDocument3._id.toString(), timestamp: 1 },
+      ]);
     });
 
     describe('delete', () => {

@@ -29,7 +29,7 @@ describe('Copy from', () => {
     await expect(page).toClick('button', {
       text: 'Create Entity',
     });
-    await page.waitFor('textarea[name="relationships.metadata.title"]');
+    await page.waitForSelector('textarea[name="relationships.metadata.title"]');
     await expect(page).toFill('textarea[name="relationships.metadata.title"]', 'Test title');
     await page.select('select', '58ada34c299e826748545061');
     await page.waitFor(20); // re-render of the form

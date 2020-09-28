@@ -245,6 +245,10 @@ describe('metadata formater', () => {
         formater.prepareMetadata(docCopy, templates, thesauris, relationships)
       ).not.toThrow();
     });
+
+    it('should include the name of template', () => {
+      expect(data.documentType).toBe('Mecanismo');
+    });
   });
 
   describe('prepareMetadataForCard', () => {
@@ -353,7 +357,12 @@ describe('metadata formater', () => {
           [text, markdown, image, preview, media, geolocation, link, creationDate] = data.metadata;
           expect(text.sortedBy).toBe(false);
           expect(markdown.sortedBy).toBe(false);
-          assessBasicProperties(creationDate, ['Date added', undefined, 'System', 'Jan 1, 1970']);
+          assessBasicProperties(creationDate, [
+            'Date added',
+            'creationDate',
+            'System',
+            'Jan 1, 1970',
+          ]);
           expect(creationDate.sortedBy).toBe(true);
         });
       });

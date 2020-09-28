@@ -3,17 +3,15 @@ import React, { Component } from 'react';
 import { Link, withRouter } from 'react-router';
 import { toUrlParams } from 'shared/JSONRequest';
 import rison from 'rison-node';
-
-import Doc from 'app/Library/components/Doc';
 import SearchBar from 'app/Library/components/SearchBar';
 import SortButtons from 'app/Library/components/SortButtons';
-
-import { RowList } from 'app/Layout/Lists';
 import Loader from 'app/components/Elements/Loader';
 import Footer from 'app/App/Footer';
 import { NeedAuthorization } from 'app/Auth';
-import { t, Translate } from 'app/I18N';
+import { t } from 'app/I18N';
 import { Icon } from 'UI';
+import { DocumentCounter } from 'app/Layout/DocumentCounter';
+import { TilesViewer } from './TilesViewer';
 
 class DocumentsList extends Component {
   constructor(props, context) {
@@ -21,6 +19,7 @@ class DocumentsList extends Component {
     this.state = { loading: false };
     this.clickOnDocument = this.clickOnDocument.bind(this);
     this.selectAllDocuments = this.selectAllDocuments.bind(this);
+    this.loadNextGroupOfEntities = this.loadNextGroupOfEntities.bind(this);
   }
 
   componentWillReceiveProps() {
@@ -41,6 +40,14 @@ class DocumentsList extends Component {
   clickOnDocument(...args) {
     if (this.props.clickOnDocument) {
       this.props.clickOnDocument.apply(this, args);
+    }
+  }
+
+  loadNextGroupOfEntities() {
+    const from = this.props.documents.get('rows').size;
+    const DEFAULT_PAGE_SIZE = 30;
+    if (from) {
+      this.loadMoreDocuments(DEFAULT_PAGE_SIZE, from);
     }
   }
 
@@ -77,25 +84,26 @@ class DocumentsList extends Component {
       connectionsGroups,
       LoadMoreButton,
       rowListZoomLevel,
+      CollectionViewer,
     } = this.props;
-    let counter = (
-      <span>
-        <b>{documents.get('totalRows')}</b> <Translate>documents</Translate>
-      </span>
+
+    const totalConnections = connections
+      ? connectionsGroups.reduce(
+          (total, g) =>
+            total +
+            g.get('templates').reduce((count, template) => count + template.get('count'), 0),
+          0
+        )
+      : undefined;
+
+    const counter = (
+      <DocumentCounter
+        selectedEntitiesCount={this.props.selectedDocuments.size}
+        entityListCount={this.props.documents.get('rows').size}
+        entityTotal={documents.get('totalRows')}
+        totalConnectionsCount={totalConnections}
+      />
     );
-    if (connections) {
-      const totalConnections = connectionsGroups.reduce(
-        (total, g) =>
-          total + g.get('templates').reduce((count, template) => count + template.get('count'), 0),
-        0
-      );
-      counter = (
-        <span>
-          <b>{totalConnections}</b> {t('System', 'connections')},{' '}
-          <b>{documents.get('totalRows')}</b> {t('System', 'documents')}
-        </span>
-      );
-    }
 
     const Search = this.props.SearchBar;
     const ActionButtons = this.props.ActionButtons ? (
@@ -109,8 +117,7 @@ class DocumentsList extends Component {
       <div className="documents-list">
         <div className="main-wrapper">
           <div className={`search-list ${searchCentered ? 'centered' : ''}`}>
-            {ActionButtons}
-            {Search && <Search storeKey={this.props.storeKey} />}
+            {ActionButtons} {Search && <Search storeKey={this.props.storeKey} />}
           </div>
           <div className={`sort-by ${searchCentered ? 'centered' : ''}`}>
             <div className="documents-counter">
@@ -138,39 +145,27 @@ class DocumentsList extends Component {
           {(() => {
             if (view !== 'graph') {
               return (
-                <RowList zoomLevel={rowListZoomLevel}>
-                  {documents.get('rows').map((doc, index) => (
-                    <Doc
-                      doc={doc}
-                      storeKey={this.props.storeKey}
-                      key={index}
-                      onClick={this.clickOnDocument}
-                      onSnippetClick={this.props.onSnippetClick}
-                      deleteConnection={this.props.deleteConnection}
-                      searchParams={this.props.search}
-                    />
-                  ))}
-                </RowList>
+                <CollectionViewer
+                  {...{
+                    rowListZoomLevel,
+                    storeKey: this.props.storeKey,
+                    clickOnDocument: this.clickOnDocument,
+                    onSnippetClick: this.props.onSnippetClick,
+                    deleteConnection: this.props.deleteConnection,
+                    loadNextGroupOfEntities: this.loadNextGroupOfEntities,
+                  }}
+                />
               );
             }
-
             if (view === 'graph') {
               return <GraphView clickOnDocument={this.clickOnDocument} />;
             }
-
             return null;
           })()}
           <div className="row">
             {(() => {
               if (view !== 'graph') {
-                return (
-                  <p className="col-sm-12 text-center documents-counter">
-                    <b> {documents.get('rows').size} </b>
-                    {t('System', 'of')}
-                    <b> {documents.get('totalRows')} </b>
-                    {t('System', 'documents')}
-                  </p>
-                );
+                return <p className="col-sm-12 text-center documents-counter">{counter}</p>;
               }
               return null;
             })()}
@@ -181,15 +176,13 @@ class DocumentsList extends Component {
               if (documents.get('rows').size < documents.get('totalRows') && !this.state.loading) {
                 return (
                   <div className="col-sm-12 text-center">
-                    {this.loadMoreButton(30)}
-                    {this.loadMoreButton(300)}
+                    {this.loadMoreButton(30)} {this.loadMoreButton(300)}
                   </div>
                 );
               }
               if (this.state.loading) {
                 return <Loader />;
               }
-
               return null;
             })()}
             <NeedAuthorization>
@@ -212,6 +205,8 @@ class DocumentsList extends Component {
 DocumentsList.defaultProps = {
   SearchBar,
   rowListZoomLevel: 0,
+  CollectionViewer: TilesViewer,
+  selectedDocuments: {},
 };
 
 DocumentsList.propTypes = {
@@ -219,7 +214,7 @@ DocumentsList.propTypes = {
   connections: PropTypes.object,
   filters: PropTypes.object,
   thesauri: PropTypes.object,
-  selectedDocument: PropTypes.object,
+  selectedDocuments: PropTypes.instanceOf(Object),
   SearchBar: PropTypes.func,
   ActionButtons: PropTypes.func,
   GraphView: PropTypes.func,
@@ -242,6 +237,7 @@ DocumentsList.propTypes = {
     pathname: PropTypes.string,
     query: PropTypes.object,
   }),
+  CollectionViewer: PropTypes.func,
 };
 
 export { DocumentsList };

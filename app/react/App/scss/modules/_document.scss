@@ -10,8 +10,8 @@
   -webkit-overflow-scrolling: touch;
 
   @media (min-width: 1024px) {
-    &.with-panel,
-    &.is-active {
+    &.with-panel:not(.unpinned-mode),
+    &.is-active:not(.unpinned-mode) {
       width: calc(100% - 400px);
     }
   }
@@ -295,6 +295,7 @@ mark.searchTerm {
 
 .copy-from {
   flex: 1;
+  min-width: 50%;
 
   .copy-from-buttons {
     position: absolute;
