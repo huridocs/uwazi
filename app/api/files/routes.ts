@@ -79,7 +79,10 @@ export default (app: Application) => {
         }
 
         if (file.originalname) {
-          res.setHeader('Content-Disposition', `filename=${file.originalname}`);
+          res.setHeader(
+            'Content-Disposition',
+            `filename*=UTF-8''${encodeURIComponent(file.originalname)}`
+          );
         }
 
         res.sendFile(uploadsPath(filename));
