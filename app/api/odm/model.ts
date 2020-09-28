@@ -1,15 +1,33 @@
+//@ts-ignore
+import PromisePool from '@supercharge/promise-pool';
 import mongoose, { Schema, UpdateQuery, ModelUpdateOptions } from 'mongoose';
-
 import { model as updatelogsModel } from 'api/updatelogs';
 
-import { OdmModel, WithId, models, UwaziFilterQuery } from './models';
+import { WithId, models, UwaziFilterQuery } from './models';
 import { MultiTenantMongooseModel } from './MultiTenantMongooseModel';
 
 const generateID = mongoose.Types.ObjectId;
 export { generateID };
 
-class UpdateLogHelper {
+const getBatchSteps = async <T>(
+  model: OdmModel<T>,
+  query: UwaziFilterQuery<T>,
+  batchSize: number
+): Promise<T[]> => {
+  const allIds = await model.get(query, '_id', { sort: { _id: 1 } });
+
+  const steps = [];
+  for (let i = 0; i < allIds.length; i += batchSize) {
+    steps.push(allIds[i]);
+  }
+
+  return steps;
+};
+
+export class UpdateLogHelper<T> {
   collectionName: string;
+
+  static batchSizeUpsertMany = 50000;
 
   constructor(collectionName: string) {
     this.collectionName = collectionName;
@@ -28,33 +46,48 @@ class UpdateLogHelper {
     );
   }
 
-  async upsertLogMany(affectedIds: any[], deleted = false) {
-    await updatelogsModel._updateMany(
-      { mongoId: { $in: affectedIds }, namespace: this.collectionName },
-      { $set: { timestamp: Date.now(), deleted } },
-      { lean: true }
-    );
+  async upsertLogMany(
+    query: UwaziFilterQuery<T>,
+    deleted = false,
+    batchSize = UpdateLogHelper.batchSizeUpsertMany
+  ) {
+    await new PromisePool()
+      .for(await getBatchSteps(models[this.collectionName], query, batchSize))
+      .withConcurrency(5)
+      .process(async (stepIndex: T) => {
+        const batch = await models[this.collectionName].get(
+          { ...query, $and: [{ _id: { $gte: stepIndex } }] },
+          { _id: 1 },
+          { limit: batchSize }
+        );
+
+        await updatelogsModel._updateMany(
+          { mongoId: { $in: batch }, namespace: this.collectionName },
+          { $set: { timestamp: Date.now(), deleted } },
+          { lean: true }
+        );
+      });
   }
 }
 
-class OdmModelImpl<T> implements OdmModel<T> {
+type DataType<T> = Readonly<Partial<T>> & { _id?: any };
+
+export class OdmModel<T> {
   db: MultiTenantMongooseModel<T>;
 
-  logHelper: UpdateLogHelper;
+  logHelper: UpdateLogHelper<T>;
 
-  constructor(logHelper: UpdateLogHelper, collectionName: string, schema: Schema) {
+  private documentExists(data: DataType<T>) {
+    return this.db.findById(data._id, '_id');
+  }
+
+  constructor(logHelper: UpdateLogHelper<T>, collectionName: string, schema: Schema) {
     this.db = new MultiTenantMongooseModel(collectionName, schema);
     this.logHelper = logHelper;
   }
 
-  async save(data: Readonly<Partial<T>> & { _id?: any }) {
-    if (Array.isArray(data)) {
-      throw new TypeError('Model.save array input no longer supported - use .saveMultiple!');
-    }
-
-    const documentExists = await this.db.findById(data._id, '_id');
-
-    if (documentExists) {
+  async save(data: DataType<T>) {
+    if (await this.documentExists(data)) {
       const saved = await this.db.findOneAndUpdate({ _id: data._id }, data, {
         new: true,
       });
@@ -78,17 +111,15 @@ class OdmModelImpl<T> implements OdmModel<T> {
     doc: UpdateQuery<T>,
     options: ModelUpdateOptions = {}
   ) {
-    const result = await this.db._updateMany(conditions, doc, options);
-    const affectedIds = await this.logHelper.getAffectedIds(conditions);
-    await this.logHelper.upsertLogMany(affectedIds);
-    return result;
+    await this.logHelper.upsertLogMany(conditions);
+    return this.db._updateMany(conditions, doc, options);
   }
 
-  async count(condition: any = {}) {
-    return this.db.countDocuments(condition);
+  async count(query: UwaziFilterQuery<T> = {}) {
+    return this.db.countDocuments(query);
   }
 
-  get(query: any = {}, select = '', pagination = {}) {
+  get(query: UwaziFilterQuery<T> = {}, select: any = '', pagination = {}) {
     return this.db.find(query, select, Object.assign({ lean: true }, pagination));
   }
 
@@ -101,21 +132,14 @@ class OdmModelImpl<T> implements OdmModel<T> {
     if (mongoose.Types.ObjectId.isValid(condition)) {
       cond = { _id: condition };
     }
-
-    const affectedIds = await this.db.distinct('_id', cond);
-    const result = await this.db.deleteMany(cond);
-
-    if (affectedIds.length) {
-      await this.logHelper.upsertLogMany(affectedIds, true);
-    }
-
-    return result;
+    await this.logHelper.upsertLogMany(cond, true);
+    return this.db.deleteMany(cond);
   }
 }
 
 export function instanceModel<T = any>(collectionName: string, schema: mongoose.Schema) {
-  const logHelper = new UpdateLogHelper(collectionName);
-  const model = new OdmModelImpl<T>(logHelper, collectionName, schema);
+  const logHelper = new UpdateLogHelper<T>(collectionName);
+  const model = new OdmModel<T>(logHelper, collectionName, schema);
   models[collectionName] = model;
   return model;
 }
