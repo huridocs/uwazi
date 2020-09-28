@@ -9,7 +9,7 @@ import { setUpApp } from 'api/utils/testingRoutes';
 import connections from 'api/relationships';
 
 import { FileType } from 'shared/types/fileType';
-import { fileName1, fixtures, uploadId, uploadId2 } from './fixtures';
+import { fixtures, uploadId, uploadId2 } from './fixtures';
 import { files } from '../files';
 import uploadRoutes from '../routes';
 
@@ -61,16 +61,6 @@ describe('files routes', () => {
         'upload1',
         'upload2',
       ]);
-    });
-
-    it('should set the original filename as content-disposition header', async () => {
-      const response: SuperTestResponse = await request(app).get(`/api/files/${fileName1}`);
-      expect(response.get('Content-Disposition')).toBe('filename=upload1');
-    });
-
-    it('should not set content-disposition header when the file does not have an original name', async () => {
-      const response: SuperTestResponse = await request(app).get('/api/files/fileNotInDisk');
-      expect(response.get('Content-Disposition')).toBeUndefined();
     });
   });
 
