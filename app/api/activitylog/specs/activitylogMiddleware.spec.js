@@ -83,4 +83,10 @@ describe('activitylogMiddleware', () => {
     req.url = endpoint;
     testActivityLogNotSaved();
   });
+
+  it('should not log multipart post with no body', () => {
+    req.url = '/api/files/upload/document';
+    req.body = {};
+    testActivityLogNotSaved();
+  });
 });

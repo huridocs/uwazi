@@ -57,5 +57,17 @@ export default {
       url: '/api/documents/pdfInfo',
       method: 'POST',
     },
+    {
+      _id: testingDB.id(),
+      url: '/api/files/upload/document',
+      body: '{}',
+      method: 'POST',
+    },
+    {
+      _id: testingDB.id(),
+      url: '/api/files/upload/document',
+      body: "{ entityId: 'entity1' }",
+      method: 'POST',
+    },
   ],
 };

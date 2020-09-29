@@ -105,44 +105,21 @@ describe('Activitylog Parser', () => {
         });
       });
 
-      describe('method: POST /pdfInfo', () => {
-        it('should beautify as UPDATE and include document title', async () => {
+      describe('method: POST /api/files/upload/document', () => {
+        it('should beautify as CREATE and include entity title', async () => {
           const body = {
-            _id: firstDoc,
-            sharedId: firstDocSharedId,
-            pdfInfo: {},
+            entity: firstDocSharedId,
           };
           await testBeautified(
             {
               method: 'POST',
-              url: '/api/documents/pdfInfo',
+              url: '/api/files/upload/document',
               body: JSON.stringify(body),
             },
             {
-              action: 'UPDATE',
-              description: 'Processed document pdf',
-              name: `My Doc (${firstDocSharedId})`,
-              extra: 'Spanish (es) version',
-            }
-          );
-        });
-
-        it('should only include ids if document does not exist', async () => {
-          const body = {
-            _id: nonExistentId,
-            sharedId: 'deleted doc',
-            pdfInfo: {},
-          };
-          await testBeautified(
-            {
-              method: 'POST',
-              url: '/api/documents/pdfInfo',
-              body: JSON.stringify(body),
-            },
-            {
-              action: 'UPDATE',
-              description: 'Processed document pdf',
-              name: 'deleted doc',
+              action: 'CREATE',
+              description: 'Uploaded file',
+              name: 'My Doc',
             }
           );
         });
@@ -205,12 +182,15 @@ describe('Activitylog Parser', () => {
             {
               method: 'POST',
               url: '/api/attachments/upload',
-              body: '{}',
+              body: JSON.stringify({
+                entity: firstDocSharedId,
+              }),
               query: '{}',
             },
             {
               action: 'CREATE',
               description: 'Uploaded attachment',
+              name: 'My Doc',
             }
           );
         });

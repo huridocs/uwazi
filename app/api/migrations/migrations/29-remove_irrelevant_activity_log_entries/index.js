@@ -1,4 +1,4 @@
-import { IGNORED_ENDPOINTS } from 'api/activitylog/activitylogMiddleware';
+import { BODY_REQUIRED_ENDPOINTS, IGNORED_ENDPOINTS } from 'api/activitylog/activitylogMiddleware';
 
 export default {
   delta: 29,
@@ -21,6 +21,13 @@ export default {
       .deleteMany({ url: { $in: IGNORED_ENDPOINTS } });
     process.stdout.write(
       `${deletedEntriesByEndpoint.result.n} activity log entries deleted with unneeded endpoints`
+    );
+
+    const deletedUploadEntriesWithoutBody = await db
+      .collection('activitylogs')
+      .deleteMany({ url: { $in: BODY_REQUIRED_ENDPOINTS }, body: '{}' });
+    process.stdout.write(
+      `${deletedUploadEntriesWithoutBody.result.n} activity log entries deleted with unneeded endpoints`
     );
 
     process.stdout.write('\r\n');

@@ -1,5 +1,5 @@
 import { testingDB } from 'api/utils/testing_db';
-import { IGNORED_ENDPOINTS } from 'api/activitylog/activitylogMiddleware';
+import { BODY_REQUIRED_ENDPOINTS, IGNORED_ENDPOINTS } from 'api/activitylog/activitylogMiddleware';
 import migration from '../index.js';
 import fixtures from './fixtures.js';
 
@@ -34,13 +34,31 @@ describe('migration remove irrelevant activity log entries', () => {
         .count();
 
       expect(deletedMethods).toBe(0);
-      expect(remainingEntries).toBe(2);
+      expect(remainingEntries).toBe(3);
     });
 
     it('should remove activity entries with unwanted urls', async () => {
       const ignoredEntries = await testingDB.mongodb
         .collection('activitylogs')
         .find({ url: { $in: IGNORED_ENDPOINTS } })
+        .count();
+
+      expect(ignoredEntries).toBe(0);
+    });
+
+    it('should remove upload activity entries without body', async () => {
+      const ignoredEntries = await testingDB.mongodb
+        .collection('activitylogs')
+        .find({ url: { $in: BODY_REQUIRED_ENDPOINTS }, body: {} })
+        .count();
+
+      expect(ignoredEntries).toBe(0);
+    });
+
+    it('should keep upload activity entries with body', async () => {
+      const ignoredEntries = await testingDB.mongodb
+        .collection('activitylogs')
+        .find({ url: { $in: BODY_REQUIRED_ENDPOINTS }, body: { entityId: 'entity1' } })
         .count();
 
       expect(ignoredEntries).toBe(0);

@@ -11,17 +11,28 @@ export const IGNORED_ENDPOINTS = [
   '/api/recoverpassword',
   '/api/documents/pdfInfo',
   '/api/documents/download',
-  'api/attachments/download',
+  '/api/attachments/download',
+  '/api/semantic-search/notify-updates',
 ];
+export const BODY_REQUIRED_ENDPOINTS = [
+  '/api/files/upload/document',
+  '/api/files/upload/custom',
+  '/api/attachments/upload',
+];
+
+function mustBeLogged(baseurl, method, body) {
+  const isLoggedRequest =
+    baseurl.includes('/api/') &&
+    !ignoredMethods.includes(method) &&
+    !IGNORED_ENDPOINTS.includes(baseurl);
+  const validBody = !BODY_REQUIRED_ENDPOINTS.includes(baseurl) || JSON.stringify(body) !== '{}';
+  return isLoggedRequest && validBody;
+}
 
 export default (req, _res, next) => {
   const { url, method, params, query, body, user = {} } = req;
   const baseurl = url.split('?').shift();
-  if (
-    baseurl.includes('/api/') &&
-    !ignoredMethods.includes(method) &&
-    !IGNORED_ENDPOINTS.includes(baseurl)
-  ) {
+  if (mustBeLogged(baseurl, method, body)) {
     const time = Date.now();
     const entry = {
       url: baseurl,

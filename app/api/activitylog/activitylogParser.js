@@ -36,7 +36,9 @@ const loadTemplate = async data => {
 };
 
 const loadEntity = async data => {
-  const query = data.entityId ? { _id: data.entityId } : { _id: data._id, sharedId: data.sharedId };
+  const _id = data.entityId || data._id;
+  const sharedId = data.sharedId || data.entity;
+  const query = { ...(_id && { _id }), ...(sharedId && { sharedId }) };
   const [entity] = await entities.get(query);
   return { ...data, entity, title: entity ? entity.title : undefined };
 };
@@ -47,9 +49,6 @@ const extraTemplate = data =>
       ? data.templateData.name
       : `(${data.template ? data.template.toString() : 'unassigned'})`
   }`;
-
-const extraLanguage = data =>
-  data.entity ? `${formatLanguage(data.entity.language)} version` : null;
 
 const extraAttachmentLanguage = data =>
   data.entity
@@ -69,7 +68,12 @@ const loadSearch = async data => {
 const entryValues = {
   'POST/api/entities/multipleupdate': { desc: 'Updated multiple entities' },
   'POST/api/entities/bulkdelete': { desc: 'Deleted multiple entities', method: methods.delete },
-  'POST/api/attachments/upload': { desc: 'Uploaded attachment', method: methods.create },
+  'POST/api/attachments/upload': {
+    desc: 'Uploaded attachment',
+    method: methods.create,
+    related: loadEntity,
+    nameField: 'title',
+  },
   'POST/api/settings': { desc: 'Updated settings' },
   'POST/api/relationships/bulk': { desc: 'Updated relationships' },
   'POST/api/upload': { desc: 'Uploaded document', method: methods.create },
@@ -121,13 +125,6 @@ const entryValues = {
     nameField: 'title',
     related: loadTemplate,
     extra: extraTemplate,
-  },
-  'POST/api/documents/pdfInfo': {
-    desc: 'Processed document pdf',
-    idField: 'sharedId',
-    nameField: 'title',
-    related: loadEntity,
-    extra: extraLanguage,
   },
   'DELETE/api/entities': {
     desc: 'Deleted entity / document',
@@ -218,6 +215,12 @@ const entryValues = {
     desc: 'Deleted semantic search',
     method: methods.delete,
     nameField: 'searchId',
+  },
+  'POST/api/files/upload/document': {
+    desc: 'Uploaded file',
+    method: methods.create,
+    related: loadEntity,
+    nameField: 'title',
   },
 };
 
