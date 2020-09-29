@@ -1,6 +1,7 @@
 import { I18NLink, t } from 'app/I18N';
 import { Icon } from 'app/Layout';
 import MarkdownViewer from 'app/Markdown';
+import { GroupedGeolocationViewer } from 'app/Metadata/components/GroupedGeolocationViewer';
 import PropTypes from 'prop-types';
 import React from 'react';
 import GeolocationViewer from './GeolocationViewer';
@@ -37,6 +38,9 @@ const showByType = (prop, compact) => {
       break;
     case 'geolocation':
       result = <GeolocationViewer points={prop.value} onlyForCards={Boolean(prop.onlyForCards)} />;
+      break;
+    case 'geolocation_group':
+      result = <GroupedGeolocationViewer members={prop.members} />;
       break;
     default:
       if (prop.url) {
