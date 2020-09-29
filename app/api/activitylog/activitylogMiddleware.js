@@ -10,6 +10,8 @@ export const IGNORED_ENDPOINTS = [
   '/api/resetpassword',
   '/api/recoverpassword',
   '/api/documents/pdfInfo',
+  '/api/documents/download',
+  'api/attachments/download',
 ];
 
 export default (req, _res, next) => {

@@ -1,87 +1,23 @@
-//@ts-ignore
-import PromisePool from '@supercharge/promise-pool';
 import mongoose, { Schema, UpdateQuery, ModelUpdateOptions } from 'mongoose';
-import { model as updatelogsModel } from 'api/updatelogs';
-
 import { WithId, models, UwaziFilterQuery } from './models';
 import { MultiTenantMongooseModel } from './MultiTenantMongooseModel';
+import { createUpdateLogHelper, UpdateLogger } from './logHelper';
 
 const generateID = mongoose.Types.ObjectId;
 export { generateID };
-
-const getBatchSteps = async <T>(
-  model: OdmModel<T>,
-  query: UwaziFilterQuery<T>,
-  batchSize: number
-): Promise<T[]> => {
-  const allIds = await model.get(query, '_id', { sort: { _id: 1 } });
-
-  const steps = [];
-  for (let i = 0; i < allIds.length; i += batchSize) {
-    steps.push(allIds[i]);
-  }
-
-  return steps;
-};
-
-export class UpdateLogHelper<T> {
-  collectionName: string;
-
-  static batchSizeUpsertMany = 50000;
-
-  constructor(collectionName: string) {
-    this.collectionName = collectionName;
-  }
-
-  async getAffectedIds(conditions: any) {
-    return models[this.collectionName].db.distinct('_id', conditions);
-  }
-
-  async upsertLogOne(doc: mongoose.Document) {
-    const logData = { namespace: this.collectionName, mongoId: doc._id };
-    await updatelogsModel.findOneAndUpdate(
-      logData,
-      { ...logData, timestamp: Date.now(), deleted: false },
-      { upsert: true }
-    );
-  }
-
-  async upsertLogMany(
-    query: UwaziFilterQuery<T>,
-    deleted = false,
-    batchSize = UpdateLogHelper.batchSizeUpsertMany
-  ) {
-    await new PromisePool()
-      .for(await getBatchSteps(models[this.collectionName], query, batchSize))
-      .withConcurrency(5)
-      .process(async (stepIndex: T) => {
-        const batch = await models[this.collectionName].get(
-          { ...query, $and: [{ _id: { $gte: stepIndex } }] },
-          { _id: 1 },
-          { limit: batchSize }
-        );
-
-        await updatelogsModel._updateMany(
-          { mongoId: { $in: batch }, namespace: this.collectionName },
-          { $set: { timestamp: Date.now(), deleted } },
-          { lean: true }
-        );
-      });
-  }
-}
 
 type DataType<T> = Readonly<Partial<T>> & { _id?: any };
 
 export class OdmModel<T> {
   db: MultiTenantMongooseModel<T>;
 
-  logHelper: UpdateLogHelper<T>;
+  logHelper: UpdateLogger<T>;
 
   private documentExists(data: DataType<T>) {
     return this.db.findById(data._id, '_id');
   }
 
-  constructor(logHelper: UpdateLogHelper<T>, collectionName: string, schema: Schema) {
+  constructor(logHelper: UpdateLogger<T>, collectionName: string, schema: Schema) {
     this.db = new MultiTenantMongooseModel(collectionName, schema);
     this.logHelper = logHelper;
   }
@@ -138,7 +74,7 @@ export class OdmModel<T> {
 }
 
 export function instanceModel<T = any>(collectionName: string, schema: mongoose.Schema) {
-  const logHelper = new UpdateLogHelper<T>(collectionName);
+  const logHelper = createUpdateLogHelper(collectionName);
   const model = new OdmModel<T>(logHelper, collectionName, schema);
   models[collectionName] = model;
   return model;

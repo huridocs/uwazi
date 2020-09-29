@@ -1,12 +1,13 @@
+import { UpdateLogHelper } from 'api/odm/logHelper';
 import { model as updatelogsModel } from 'api/updatelogs';
 import { UpdateLog } from 'api/updatelogs/updatelogsModel';
 import { testingTenants } from 'api/utils/testingTenants';
 import testingDB from 'api/utils/testing_db';
 import mongoose, { Schema } from 'mongoose';
 import { ensure } from 'shared/tsUtils';
-import { instanceModel, UpdateLogHelper, OdmModel } from '../model';
+import { instanceModel, OdmModel } from '../model';
 import { models, WithId } from '../models';
-import { tenants } from '../../tenants/tenantContext';
+import { tenants } from 'api/tenants';
 
 const testSchema = new Schema({
   name: String,
