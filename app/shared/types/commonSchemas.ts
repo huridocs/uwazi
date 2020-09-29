@@ -125,7 +125,7 @@ export const tocSchema = {
 
 export const propertySchema = {
   type: 'object',
-  required: ['label', 'type'],
+  required: ['label', 'type', 'name'],
   requireContentForSelectFields: true,
   requireRelationTypeForRelationship: true,
   requireInheritPropertyForInheritingRelationship: true,

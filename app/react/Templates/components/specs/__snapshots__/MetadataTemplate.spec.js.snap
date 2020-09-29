@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`MetadataTemplate mapStateToProps should select defaultColor based on template index if template already exists 1`] = `"#D9534F"`;
+exports[`MetadataTemplate mapStateToProps should select defaultColor based on template index if template already exists 1`] = `"#A03AB1"`;
 
 exports[`MetadataTemplate mapStateToProps should select next available template color as defaultColor for new template 1`] = `"#A03AB1"`;
 
