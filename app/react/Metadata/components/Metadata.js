@@ -1,5 +1,3 @@
-/** @format */
-
 import { I18NLink, t } from 'app/I18N';
 import { Icon } from 'app/Layout';
 import MarkdownViewer from 'app/Markdown';
@@ -63,6 +61,32 @@ const showByType = (prop, compact) => {
   return result;
 };
 
+// eslint-disable-next-line max-statements
+const groupAdjacentGeolocations = metadata => {
+  const groupedMetadata = [];
+  let index = 0;
+
+  while (index < metadata.length) {
+    if (metadata[index].type !== 'geolocation') {
+      groupedMetadata.push(metadata[index]);
+      index += 1;
+    } else {
+      const members = [];
+      while (index < metadata.length && metadata[index].type === 'geolocation') {
+        members.push(metadata[index]);
+        index += 1;
+      }
+
+      groupedMetadata.push({
+        type: 'geolocation_group',
+        members,
+      });
+    }
+  }
+
+  return groupedMetadata;
+};
+
 function filterProps(showSubset) {
   return p => {
     if (showSubset && !showSubset.includes(p.name)) {
@@ -75,31 +99,42 @@ function filterProps(showSubset) {
   };
 }
 
-const Metadata = ({ metadata, compact, renderLabel, showSubset, highlight }) => (
-  <>
-    {metadata.filter(filterProps(showSubset)).map((prop, index) => {
-      let type = prop.type ? prop.type : 'default';
-      type = type === 'image' || type === 'media' ? 'multimedia' : type;
-      const highlightClass = highlight.includes(prop.name) ? 'highlight' : '';
-      const fullWidthClass = prop.fullWidth ? 'full-width' : '';
-      return (
-        <dl
-          className={`metadata-type-${type} metadata-name-${prop.name} ${fullWidthClass} ${highlightClass}`}
-          key={`${prop.name}_${index}`}
-        >
-          {renderLabel(prop, <dt>{t(prop.translateContext, prop.label)}</dt>)}
-          <dd className={prop.sortedBy ? 'item-current-sort' : ''}>{showByType(prop, compact)}</dd>
-        </dl>
-      );
-    })}
-  </>
-);
+
+const Metadata = ({ metadata, compact, renderLabel, showSubset, highlight, groupGeolocations }) => {
+  const filteredMetadata = metadata.filter(filterProps(showSubset));
+  const groupedMetadata = groupGeolocations
+    ? groupAdjacentGeolocations(filteredMetadata)
+    : filteredMetadata;
+
+  return (
+    <>
+      {groupedMetadata.map((prop, index) => {
+        let type = prop.type ? prop.type : 'default';
+        type = type === 'image' || type === 'media' ? 'multimedia' : type;
+        const highlightClass = highlight.includes(prop.name) ? 'highlight' : '';
+        const fullWidthClass = prop.fullWidth ? 'full-width' : '';
+        return (
+          <dl
+            className={`metadata-type-${type} metadata-name-${prop.name} ${fullWidthClass} ${highlightClass}`}
+            key={`${prop.name}_${index}`}
+          >
+            {renderLabel(prop, <dt>{t(prop.translateContext, prop.label)}</dt>)}
+            <dd className={prop.sortedBy ? 'item-current-sort' : ''}>
+              {showByType(prop, compact)}
+            </dd>
+          </dl>
+        );
+      })}
+    </>
+  );
+};
 
 Metadata.defaultProps = {
   compact: false,
   showSubset: undefined,
   renderLabel: (_prop, label) => label,
   highlight: [],
+  groupGeolocations: false,
 };
 
 Metadata.propTypes = {
@@ -124,6 +159,7 @@ Metadata.propTypes = {
   compact: PropTypes.bool,
   renderLabel: PropTypes.func,
   showSubset: PropTypes.arrayOf(PropTypes.string),
+  groupGeolocations: PropTypes.bool,
 };
 
 export default Metadata;

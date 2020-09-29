@@ -394,6 +394,7 @@ export class DocumentSidePanel extends Component {
                       entity={this.props.doc.toJS()}
                       showTitle
                       showType
+                      groupGeolocations
                     />
                     <FileList
                       files={documents}
