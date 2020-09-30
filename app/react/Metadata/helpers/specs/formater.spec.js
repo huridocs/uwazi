@@ -230,11 +230,11 @@ describe('metadata formater', () => {
 
     it('should not fail when field do not exists on the document', () => {
       const clonedMetadata = Object.keys(doc.metadata).reduce(
-        (memo, property) => Object.assign({}, memo, { [property]: doc.metadata[property] }),
+        (memo, property) => ({ ...memo, [property]: doc.metadata[property] }),
         {}
       );
 
-      const docCopy = Object.assign({}, doc, { metadata: clonedMetadata });
+      const docCopy = { ...doc, metadata: clonedMetadata };
 
       docCopy.metadata.relationship1 = null;
       docCopy.metadata.multiselect = null;

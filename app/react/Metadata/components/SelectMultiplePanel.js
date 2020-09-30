@@ -134,7 +134,7 @@ export class SelectMultiplePanel extends Component {
     const { formKey, thesauris } = this.props;
 
     return (
-      <React.Fragment>
+      <>
         <div className="alert alert-warning">
           <Icon icon="exclamation-triangle" size="2x" />
           <p>
@@ -151,7 +151,7 @@ export class SelectMultiplePanel extends Component {
           changeTemplate={this.changeTemplate}
           multipleEdition
         />
-      </React.Fragment>
+      </>
     );
   }
 
@@ -176,7 +176,7 @@ export class SelectMultiplePanel extends Component {
 
   renderListButtons(canBePublished, canBeUnPublished) {
     return (
-      <React.Fragment>
+      <>
         <NeedAuthorization roles={['admin', 'editor']}>
           <button type="button" onClick={this.edit} className="edit btn btn-primary">
             <Icon icon="pencil-alt" />
@@ -200,7 +200,7 @@ export class SelectMultiplePanel extends Component {
           )}
         </NeedAuthorization>
         <Export storeKey={this.props.storeKey} />
-      </React.Fragment>
+      </>
     );
   }
 

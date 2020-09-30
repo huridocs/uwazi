@@ -47,7 +47,7 @@ export class AccountSettings extends Component {
     const { user, notify, setUser } = this.props;
 
     e.preventDefault();
-    const userData = Object.assign({}, user, { email });
+    const userData = { ...user, email };
     UsersAPI.save(new RequestParams(userData)).then(result => {
       notify(t('System', 'Email updated', null, false), 'success');
       setUser(Object.assign(userData, { _rev: result.rev }));
@@ -67,7 +67,7 @@ export class AccountSettings extends Component {
       return;
     }
 
-    UsersAPI.save(new RequestParams(Object.assign({}, user, { password }))).then(result => {
+    UsersAPI.save(new RequestParams({ ...user, password })).then(result => {
       notify(t('System', 'Password updated', null, false), 'success');
       setUser(Object.assign(user, { _rev: result.rev }));
     });

@@ -72,7 +72,7 @@ export default class Map extends Component {
     const { markers } = props;
     const latitude = props.latitude || viewport.latitude;
     const longitude = props.longitude || viewport.longitude;
-    const newViewport = Object.assign(viewport, { latitude, longitude, markers });
+    const newViewport = { ...viewport, latitude, longitude, markers };
 
     if (!Immutable.fromJS(this.props.markers).equals(Immutable.fromJS(markers))) {
       this.autoCenter(markers);
@@ -216,11 +216,12 @@ export default class Map extends Component {
       return;
     }
     const map = this.map.getMap();
-    this._onViewStateChange(
-      Object.assign({}, viewport, { zoom: map.getZoom() + amount }, TRANSITION_PROPS, {
-        transitionDuration: 500,
-      })
-    );
+    this._onViewStateChange({
+      ...viewport,
+      zoom: map.getZoom() + amount,
+      ...TRANSITION_PROPS,
+      transitionDuration: 500,
+    });
   }
 
   updateMapStyle({ cluster, markers }) {

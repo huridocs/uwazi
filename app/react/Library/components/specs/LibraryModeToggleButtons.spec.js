@@ -125,10 +125,9 @@ describe('LibraryModeToggleButtons', () => {
 
     it('should map the zoom level', () => {
       expect(mapStateToProps(state, props).zoomLevel).toBe(1);
-      expect(
-        mapStateToProps(state, Object.assign({}, props, { zoomLevel: 'externallyPassed' }))
-          .zoomLevel
-      ).toBe('externallyPassed');
+      expect(mapStateToProps(state, { ...props, zoomLevel: 'externallyPassed' }).zoomLevel).toBe(
+        'externallyPassed'
+      );
     });
   });
 });

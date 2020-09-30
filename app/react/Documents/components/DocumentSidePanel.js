@@ -327,7 +327,7 @@ export class DocumentSidePanel extends Component {
               {(() => {
                 if (docBeingEdited && this.state.copyFrom) {
                   return (
-                    <React.Fragment>
+                    <>
                       <EntityForm
                         storeKey={this.props.storeKey}
                         initialTemplateId={this.initialTemplateId}
@@ -340,7 +340,7 @@ export class DocumentSidePanel extends Component {
                         formModel={this.props.formPath}
                         onCancel={this.toggleCopyFrom}
                       />
-                    </React.Fragment>
+                    </>
                   );
                 }
                 if (docBeingEdited) {

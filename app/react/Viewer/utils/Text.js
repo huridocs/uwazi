@@ -83,9 +83,11 @@ export default function(container) {
     },
 
     wrapFakeSelection(range) {
-      const offsetRange = Object.assign({}, range);
-      offsetRange.start -= this.charRange.start;
-      offsetRange.end -= this.charRange.start;
+      const offsetRange = {
+        ...range,
+        start: range.start - this.charRange.start,
+        end: range.end - this.charRange.start,
+      };
 
       const restoredRange = TextRange.restore(offsetRange, container);
       const elementWrapper = document.createElement('span');
@@ -193,10 +195,12 @@ export default function(container) {
         let ref = reference[rangeProperty];
         if (this.charRange.start) {
           // test the ref modifications are immutable !!!
-          ref = Object.assign({}, reference[rangeProperty]);
+          ref = {
+            ...reference[rangeProperty],
+            start: ref.start - this.charRange.start,
+            end: ref.end - this.charRange.start,
+          };
           //
-          ref.start -= this.charRange.start;
-          ref.end -= this.charRange.start;
         }
         if (ref.start < 0) {
           ref.start = 0;

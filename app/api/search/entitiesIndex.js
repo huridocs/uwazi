@@ -43,7 +43,7 @@ const bulkIndex = async (docs, _action = 'index', elasticIndex) => {
   const body = [];
   // eslint-disable-next-line max-statements
   docs.forEach(doc => {
-    let docBody = Object.assign({ documents: [] }, doc);
+    let docBody = { documents: [], ...doc };
     docBody.fullText = 'entity';
     const id = doc._id.toString();
     ['_id', '_rev', 'pdfInfo'].forEach(e => delete docBody[e]);

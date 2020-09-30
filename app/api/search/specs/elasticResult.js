@@ -1,16 +1,12 @@
 export default function() {
-  const hit = () =>
-    Object.assign(
-      {},
-      {
-        _index: 'uwazi',
-        _type: 'logs',
-        _id: 'id1',
-        _score: 0.05050901,
-        _source: {},
-        highlight: {},
-      }
-    );
+  const hit = () => ({
+    _index: 'uwazi',
+    _type: 'logs',
+    _id: 'id1',
+    _score: 0.05050901,
+    _source: {},
+    highlight: {},
+  });
 
   const result = {
     took: 7,

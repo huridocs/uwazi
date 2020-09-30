@@ -14,7 +14,7 @@ export const female = 'f2457229-e142-4b74-b595-2ac2f9b5f64e';
 export const sexTranslationsContext = '58b2f3a35d59f31e1345b52d';
 
 function assignFilter(filters, sex) {
-  return Object.assign({}, filters, { sexo: { values: [sex] } });
+  return { ...filters, sexo: { values: [sex] } };
 }
 
 function conformSearchQuery(filters) {

@@ -127,9 +127,7 @@ export function publicSubmit(data, remote = false) {
       }
       request.field(
         'entity',
-        JSON.stringify(
-          Object.assign({}, { title: data.title, template: data.template, metadata: data.metadata })
-        )
+        JSON.stringify({ title: data.title, template: data.template, metadata: data.metadata })
       );
       let completionResolve;
       let completionReject;

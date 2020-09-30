@@ -85,7 +85,7 @@ export class CopyFromEntity extends Component<CopyFromEntityProps, CopyFromEntit
 
   renderPanel() {
     return this.state.selectedEntity._id ? (
-      <React.Fragment>
+      <>
         <div className="view">
           <FormatMetadata entity={this.state.selectedEntity} highlight={this.state.propsToCopy} />
         </div>
@@ -109,9 +109,9 @@ export class CopyFromEntity extends Component<CopyFromEntityProps, CopyFromEntit
             </span>
           </button>
         </div>
-      </React.Fragment>
+      </>
     ) : (
-      <React.Fragment>
+      <>
         <SearchEntities onSelect={this.onSelect} />
         <div className="copy-from-buttons">
           <button className="cancel-copy-from btn btn-primary" onClick={this.cancel}>
@@ -121,7 +121,7 @@ export class CopyFromEntity extends Component<CopyFromEntityProps, CopyFromEntit
             </span>
           </button>
         </div>
-      </React.Fragment>
+      </>
     );
   }
 

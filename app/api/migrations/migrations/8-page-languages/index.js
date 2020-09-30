@@ -27,7 +27,7 @@ export default {
         languages.map(async language => {
           const pageInTheLanguage = pages.find(p => p.language === language.key);
           if (!pageInTheLanguage) {
-            const newPage = Object.assign({}, defaultLanguagePage);
+            const newPage = { ...defaultLanguagePage };
             delete newPage._id;
             delete newPage.__v;
             newPage.language = language.key;

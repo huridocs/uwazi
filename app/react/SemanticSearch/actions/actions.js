@@ -51,15 +51,10 @@ function sanitizeSearchFilters(filters) {
 
 export function submitNewSearch(args) {
   const { searchTerm } = args;
-  const query = Object.assign(
-    {},
-    args,
-    { searchTerm: '' },
-    { filters: sanitizeSearchFilters(args.filters) }
-  );
-  const search = Object.assign({ searchTerm, query });
+  const query = { ...args, searchTerm: '', filters: sanitizeSearchFilters(args.filters) };
 
-  return dispatch => api.search(new RequestParams(search)).then(() => dispatch(fetchSearches()));
+  return dispatch =>
+    api.search(new RequestParams({ searchTerm, query })).then(() => dispatch(fetchSearches()));
 }
 
 export function showSemanticSearch() {

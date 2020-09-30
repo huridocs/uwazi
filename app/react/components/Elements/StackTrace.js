@@ -12,7 +12,7 @@ const conformValidations = (expand, validations) => {
   }
 
   return (
-    <React.Fragment>
+    <>
       {validations.reduce(
         (memo, v, i) =>
           memo.concat(
@@ -23,7 +23,7 @@ const conformValidations = (expand, validations) => {
           ),
         []
       )}
-    </React.Fragment>
+    </>
   );
 };
 

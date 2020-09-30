@@ -12,7 +12,7 @@ export default class LinkField extends Component {
 
   onChange(diffValue) {
     const { value, onChange } = this.props;
-    const newValue = Object.assign({}, value, diffValue);
+    const newValue = { ...value, ...diffValue };
     if (!newValue.label && !newValue.url) {
       onChange(null);
       return;

@@ -135,7 +135,7 @@ export class AbsolutePositionLettersList {
         if (AbsolutePositionLettersList.isTagInList(accumulator, letterTag)) {
           accumulator.slice(-1)[0].text += letterTag.text;
         } else {
-          accumulator.push(Object.assign({}, letterTag));
+          accumulator.push({ ...letterTag });
         }
 
         return accumulator;

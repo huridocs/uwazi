@@ -90,8 +90,7 @@ const normalizeBucket = bucket => {
 };
 
 export function parseWithAggregations(filters, aggregations, showNoValue = true) {
-  return filters.map(_property => {
-    const property = Object.assign({}, _property);
+  return filters.map(({ ...property }) => {
     const propertyAggregations = aggregations.all[property.name];
     if (propertyAggregations && propertyAggregations.buckets) {
       property.options = propertyAggregations.buckets

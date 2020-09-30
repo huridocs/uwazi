@@ -6,7 +6,7 @@ import DatePicker from './DatePicker';
 class DateRange extends Component {
   onChange(prop, propValue) {
     const { value, onChange } = this.props;
-    const state = Object.assign({}, value, { [prop]: propValue });
+    const state = { ...value, [prop]: propValue };
 
     onChange(state);
   }

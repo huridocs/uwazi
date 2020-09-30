@@ -53,12 +53,10 @@ function sanitizeMetadataCallback(entity, templates) {
         }
       }
 
-      return Object.assign({}, memo, {
-        [propertyName]: sanitized,
-      });
+      return { ...memo, [propertyName]: sanitized };
     }
 
-    return Object.assign({}, memo, { [propertyName]: entity.metadata[propertyName] });
+    return { ...memo, [propertyName]: entity.metadata[propertyName] };
   };
 }
 
@@ -76,10 +74,7 @@ export default {
       .collection('templates')
       .find()
       .toArray();
-    const templatesByKey = templates.reduce(
-      (memo, t) => Object.assign({}, memo, { [t._id.toString()]: t }),
-      {}
-    );
+    const templatesByKey = templates.reduce((memo, t) => ({ ...memo, [t._id.toString()]: t }), {});
 
     const cursor = db.collection('entities').find();
 
