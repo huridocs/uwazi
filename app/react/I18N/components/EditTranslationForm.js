@@ -43,8 +43,11 @@ export class EditTranslationForm extends Component {
             translationsForm,
             languages
           );
-          const translation = { locale: lang.key };
-          translation.values = Object.assign({}, defaultTranslation.values);
+          const translation = {
+            locale: lang.key,
+            values: { ...defaultTranslation.values },
+          };
+
           translationsForm.push(translation);
         }
       });
@@ -54,13 +57,10 @@ export class EditTranslationForm extends Component {
   }
 
   save(_translations) {
-    const translations = _translations.map(_translationLanguage => {
-      const translationLanguage = Object.assign({}, _translationLanguage);
-      translationLanguage.contexts = translationLanguage.contexts.filter(
-        ctx => ctx.id === this.props.context
-      );
-      return translationLanguage;
-    });
+    const translations = _translations.map(translationLanguage => ({
+      ...translationLanguage,
+      contexts: translationLanguage.contexts.filter(ctx => ctx.id === this.props.context),
+    }));
     this.props.saveTranslations(translations);
   }
 

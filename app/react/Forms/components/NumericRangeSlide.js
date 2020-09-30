@@ -53,7 +53,7 @@ export default class NumericRangeSlide extends Component {
     const { min, max, step, prefix, minLabel, maxLabel } = this.props;
     const { value } = this.state;
     return (
-      <React.Fragment>
+      <>
         <div className="NumericRangeSlide">
           <input
             type="range"
@@ -70,7 +70,7 @@ export default class NumericRangeSlide extends Component {
           </div>
         </div>
         {this.renderTickMarksDatalist()}
-      </React.Fragment>
+      </>
     );
   }
 }

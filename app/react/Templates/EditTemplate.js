@@ -32,10 +32,7 @@ export default class EditTemplate extends RouteHandler {
       relationTypesAPI.get(requestParams.onlyHeaders()),
     ]);
 
-    const template = Object.assign(
-      {},
-      templates.find(tmpl => tmpl._id === templateId)
-    );
+    const template = templates.find(tmpl => tmpl._id === templateId);
 
     return [
       formActions.load('template.data', prepareTemplate(template)),

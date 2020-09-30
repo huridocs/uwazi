@@ -38,10 +38,8 @@ export default {
       .collection('templates')
       .find()
       .toArray();
-    const templatesByKey = templates.reduce(
-      (memo, t) => Object.assign({}, memo, { [t._id.toString()]: t }),
-      {}
-    );
+
+    const templatesByKey = templates.reduce((memo, t) => ({ ...memo, [t._id.toString()]: t }), {});
 
     const cursor = db.collection('entities').find();
 
@@ -58,12 +56,16 @@ export default {
             property &&
             ['date', 'daterange', 'multidate', 'multidaterange'].includes(property.type)
           ) {
-            return Object.assign({}, metadata, {
+            return {
+              ...metadata,
               [propertyName]: sanitizeDate(property, entity.metadata[propertyName]),
-            });
+            };
           }
 
-          return Object.assign({}, metadata, { [propertyName]: entity.metadata[propertyName] });
+          return {
+            ...metadata,
+            [propertyName]: entity.metadata[propertyName],
+          };
         }, {});
 
         await db

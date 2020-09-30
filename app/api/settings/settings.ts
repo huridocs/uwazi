@@ -35,8 +35,7 @@ const getUpdatesAndDeletes = (
   });
 
   const values = newValues.reduce(
-    (result, value) =>
-      Object.assign({}, result, { [ensure<string>(value[propertyName])]: value[propertyName] }),
+    (result, value) => ({ ...result, [ensure<string>(value[propertyName])]: value[propertyName] }),
     {}
   );
 
@@ -128,9 +127,7 @@ export default {
     await saveLinksTranslations(settings.links, currentSettings.links);
     await saveFiltersTranslations(settings.filters, currentSettings.filters);
 
-    const result = await settingsModel.save(
-      Object.assign({}, settings, { _id: currentSettings._id })
-    );
+    const result = await settingsModel.save({ ...settings, _id: currentSettings._id });
 
     if (!currentSettings.newNameGeneration && settings.newNameGeneration) {
       await (await templates.get()).reduce<Promise<TemplateSchema>>(async (lastSave, template) => {
@@ -149,11 +146,10 @@ export default {
 
   async setDefaultLanguage(key: string) {
     return this.get().then(async currentSettings => {
-      const languages = ensure<LanguageSchema[]>(currentSettings.languages).map(_language => {
-        const language = Object.assign({}, _language);
-        language.default = language.key === key;
-        return language;
-      });
+      const languages = ensure<LanguageSchema[]>(currentSettings.languages).map(language => ({
+        ...language,
+        default: language.key === key,
+      }));
 
       return settingsModel.save(Object.assign(currentSettings, { languages }));
     });

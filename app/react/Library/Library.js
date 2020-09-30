@@ -24,12 +24,12 @@ export default class Library extends RouteHandler {
 
   static renderTools() {
     return (
-      <React.Fragment>
+      <>
         <div className="searchBox">
           <SearchButton storeKey="library" />
         </div>
         <ImportProgress />
-      </React.Fragment>
+      </>
     );
   }
 

@@ -52,7 +52,7 @@ class DocumentsList extends Component {
   }
 
   loadMoreButton(amount) {
-    const query = Object.assign({}, this.props.location.query);
+    const query = { ...this.props.location.query };
     const q = query.q ? rison.decode(query.q) : {};
     const from = this.props.documents.get('rows').size;
     q.from = from;

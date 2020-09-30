@@ -20,7 +20,7 @@ const attemptRisonDecode = string => {
 };
 
 export function toUrlParams(_data) {
-  const data = Object.assign({}, _data);
+  const data = { ..._data };
   if (!data || Object.keys(data).length === 0) {
     return '';
   }
@@ -56,15 +56,13 @@ const _fetch = (url, data, method, _headers) => {
   let params = '';
   let body;
 
-  const headers = Object.assign(
-    {
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
-      'X-Requested-With': 'XMLHttpRequest',
-      Cookie: cookie,
-    },
-    _headers
-  );
+  const headers = {
+    Accept: 'application/json',
+    'Content-Type': 'application/json',
+    'X-Requested-With': 'XMLHttpRequest',
+    Cookie: cookie,
+    ..._headers,
+  };
 
   if (method === 'GET' || method === 'DELETE') {
     params = toUrlParams(data);

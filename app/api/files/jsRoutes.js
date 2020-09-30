@@ -109,9 +109,10 @@ const routes = app => {
         return '/api/public';
       },
       proxyReqOptDecorator(proxyReqOpts, srcReq) {
-        const options = Object.assign({}, proxyReqOpts);
-        options.headers.Cookie = srcReq.session.remotecookie;
-        return options;
+        return {
+          ...proxyReqOpts,
+          headers: { ...proxyReqOpts.headers, Cookie: srcReq.session.remotecookie },
+        };
       },
     })(req, res, next);
   });

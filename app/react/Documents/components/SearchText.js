@@ -126,6 +126,7 @@ export class SearchText extends Component {
 SearchText.propTypes = {
   snippets: PropTypes.shape({
     toJS: PropTypes.func,
+    get: PropTypes.func,
   }),
   storeKey: PropTypes.string,
   searchTerm: PropTypes.string,

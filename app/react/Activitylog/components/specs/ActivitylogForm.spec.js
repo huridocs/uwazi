@@ -21,7 +21,7 @@ describe('ActivitylogForm', () => {
 
   const render = () => {
     props = {};
-    const fullProps = Object.assign({}, props, mapStateToProps(state), mapDispatchToProps());
+    const fullProps = { ...props, ...mapStateToProps(state), ...mapDispatchToProps() };
     component = shallow(<ActivitylogForm.WrappedComponent {...fullProps} />);
   };
 

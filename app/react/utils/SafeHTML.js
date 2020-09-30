@@ -5,7 +5,7 @@ import React from 'react';
 const myParser = new Parser();
 const stringToReact = string => myParser.parse(string);
 
-const SafeHTML = ({ children }) => <React.Fragment>{stringToReact(children)}</React.Fragment>;
+const SafeHTML = ({ children }) => <>{stringToReact(children)}</>;
 
 SafeHTML.propTypes = {
   children: PropTypes.string.isRequired,

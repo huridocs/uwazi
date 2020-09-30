@@ -82,7 +82,7 @@ class Configure2fa extends Component<Configure2faProps, State> {
           <div className="panel-heading">{t('System', 'Two-step verification')}</div>
           <div className="panel-body">
             {userUsing2fa && (
-              <React.Fragment>
+              <>
                 <div className="alert alert-success">
                   <Icon icon="check" />
                   <div className="force-ltr">
@@ -92,7 +92,7 @@ class Configure2fa extends Component<Configure2faProps, State> {
                   </div>
                 </div>
                 {goToAccount('success', 'OK')}
-              </React.Fragment>
+              </>
             )}
             {!userUsing2fa && (
               <div>

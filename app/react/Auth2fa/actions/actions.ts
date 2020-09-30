@@ -14,8 +14,6 @@ export interface enable2faType {
   value: any;
 }
 
-interface reset2faType {}
-
 export function enable2fa(): enable2faType {
   return actions.setIn('auth/user', 'using2fa', true);
 }

@@ -1,3 +1,6 @@
+/**
+ * @jest-environment jsdom
+ */
 /* eslint-disable max-lines */
 import RouteHandler from 'app/App/RouteHandler';
 import { shallow, ShallowWrapper } from 'enzyme';

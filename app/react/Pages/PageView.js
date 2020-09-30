@@ -93,11 +93,11 @@ class PageView extends RouteHandler {
 
   render() {
     return (
-      <React.Fragment>
+      <>
         <PageViewer />
         <ViewMetadataPanel storeKey="library" />
         <SelectMultiplePanelContainer storeKey="library" />
-      </React.Fragment>
+      </>
     );
   }
 }

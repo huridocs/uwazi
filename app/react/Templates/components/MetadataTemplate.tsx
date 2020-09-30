@@ -57,9 +57,9 @@ export class MetadataTemplate extends Component<MetadataTemplateProps> {
   }
 
   onSubmit = (_template: TemplateSchema) => {
-    const template = Object.assign({}, _template);
+    const template = { ..._template };
     template.properties = template.properties?.map(_prop => {
-      const prop = Object.assign({}, _prop);
+      const prop = { ..._prop };
       prop.label = _prop.label.trim();
       return prop;
     });

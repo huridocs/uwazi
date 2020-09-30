@@ -155,28 +155,28 @@ export class ThesaurusCockpitBase extends RouteHandler {
       <div className="block">
         <div className="stretch">
           {modelDate && (
-            <React.Fragment>
+            <>
               The current model was trained at {modelDate.toLocaleString()} with {numTrained}&nbsp;
               documents.
               <br />
               <br />
-            </React.Fragment>
+            </>
           )}
           {(numLabeled ?? 0) < numTopics * 30 && (
-            <React.Fragment>
+            <>
               We recommend labeling {numTopics * 30} documents before training (30 per topic).
               <br />
               <br />
-            </React.Fragment>
+            </>
           )}
           You have labeled {numLabeled} documents so far.
           {isLearning && (
-            <React.Fragment>
+            <>
               <br />
               <br />
               Uwazi is learning using the labelled documents. This may take up to 2 hours, and once
               completed you can review suggestions made by Uwazi for your collection.
-            </React.Fragment>
+            </>
           )}
         </div>
         <div className="footer">
@@ -215,10 +215,10 @@ export class ThesaurusCockpitBase extends RouteHandler {
     return values.map((topic: ThesaurusValueSchema) => this.topicNode(topic));
   }
 
-  interval?: NodeJS.Timeout = undefined;
+  interval?: number = undefined;
 
   componentDidMount() {
-    this.interval = setInterval(() => this.props.updateCockpitData(), 10000);
+    this.interval = window.setInterval(() => this.props.updateCockpitData(), 10000);
   }
 
   componentWillUnmount() {

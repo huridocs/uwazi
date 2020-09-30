@@ -123,7 +123,7 @@ export class SortButtons extends Component {
     this.props.merge(this.props.stateProperty, sort);
 
     // TEST!!!
-    const filters = Object.assign({}, this.props.search, sort, { userSelectedSorting: true });
+    const filters = { ...this.props.search, ...sort, userSelectedSorting: true };
     // -------
     delete filters.treatAs;
 

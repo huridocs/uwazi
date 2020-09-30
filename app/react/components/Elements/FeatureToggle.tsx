@@ -14,7 +14,7 @@ export type OwnPropTypes = {
 const FeatureToggle: React.FC<ComponentPropTypes> = ({
   featureActivated,
   children,
-}: ComponentPropTypes) => (featureActivated ? <React.Fragment>{children}</React.Fragment> : null);
+}: ComponentPropTypes) => (featureActivated ? <>{children}</> : null);
 
 FeatureToggle.defaultProps = {
   featureActivated: false,
