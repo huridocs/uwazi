@@ -41,12 +41,16 @@ export class ActivityLogBuilder {
     if (this.entryValue.nameFunc) {
       this.name = this.entryValue.nameFunc(this.data);
     } else if (this.entryValue.id) {
-      const nameField = this.entryValue.nameField || 'name';
-      const name = this.data[nameField];
-      this.name = name ? `${name} (${this.entryValue.id})` : `${this.entryValue.id}`;
+      this.name = this.getNameWithId();
     } else if (this.entryValue.nameField) {
       this.name = this.data[this.entryValue.nameField] || this.data.name;
     }
+  }
+
+  getNameWithId() {
+    const nameField = this.entryValue.nameField || 'name';
+    const name = this.data[nameField];
+    return name ? `${name} (${this.entryValue.id})` : `${this.entryValue.id}`;
   }
 
   build() {
@@ -60,17 +64,20 @@ const changeToUpdate = entryValue => {
   return updatedEntry;
 };
 
-const getActivityInput = (entryValue, body) => {
+function checkForUpdate(body, entryValue) {
+  const content = JSON.parse(body);
+  const id = entryValue.idField ? content[entryValue.idField] : null;
   let activityInput = { ...entryValue };
-  if (entryValue.idField && body) {
-    const content = JSON.parse(body);
-    const id = entryValue.idField ? content[entryValue.idField] : null;
-    if (id && entryValue.method !== methods.delete) {
-      activityInput = changeToUpdate(entryValue);
-      activityInput.id = id;
-    }
+  if (id && entryValue.method !== methods.delete) {
+    activityInput = changeToUpdate(entryValue);
+    activityInput.id = id;
   }
   return activityInput;
+}
+
+const getActivityInput = (entryValue, body) => {
+  const idPost = entryValue.idField && body;
+  return idPost ? checkForUpdate(body, entryValue) : entryValue;
 };
 
 export const buildActivityEntry = async (entryValue, data) => {
