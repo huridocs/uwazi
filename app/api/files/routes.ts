@@ -16,7 +16,6 @@ export default (app: Application) => {
     '/api/files/upload/document',
     needsAuthorization(['admin', 'editor']),
     uploadMiddleware(uploadsPath),
-    activitylogMiddleware,
     async (req, res) => {
       try {
         req.getCurrentSessionSockets().emit('conversionStart', req.body.entity);
@@ -30,7 +29,8 @@ export default (app: Application) => {
         res.json(file);
         req.getCurrentSessionSockets().emit('conversionFailed', req.body.entity);
       }
-    }
+    },
+    activitylogMiddleware
   );
 
   app.post(

@@ -6,15 +6,13 @@ export const methods = {
   post: 'CREATE',
 };
 
-class ActivityLogEntry {
-  constructor(builder) {
-    this.description = builder.description;
-    if (builder.name) this.name = builder.name;
-    if (builder.extra) this.extra = builder.extra;
-    this.action = builder.action || methods.update;
-    this.beautified = builder.beautified;
-  }
-}
+const buildActivityLogEntry = builder => ({
+  description: builder.description,
+  action: builder.action || methods.update,
+  beautified: builder.beautified,
+  ...(builder.name && { name: builder.name }),
+  ...(builder.extra && { extra: builder.extra }),
+});
 
 export class ActivityLogBuilder {
   constructor(data, entryValue) {
@@ -54,7 +52,7 @@ export class ActivityLogBuilder {
   }
 
   build() {
-    return new ActivityLogEntry(this);
+    return buildActivityLogEntry(this);
   }
 }
 

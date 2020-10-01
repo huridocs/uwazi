@@ -69,24 +69,26 @@ describe('activitylogMiddleware', () => {
     );
   });
 
-  it('should ignore NOT api calls', () => {
-    req.url = '/entities';
-    testActivityLogNotSaved();
-  });
+  describe('non registered entries', () => {
+    it('should ignore NOT api calls', () => {
+      req.url = '/entities';
+      testActivityLogNotSaved();
+    });
 
-  it.each(['GET', 'OPTIONS', 'HEAD'])('should ignore not desired method %s', method => {
-    req.method = method;
-    testActivityLogNotSaved();
-  });
+    it.each(['GET', 'OPTIONS', 'HEAD'])('should ignore not desired method %s', method => {
+      req.method = method;
+      testActivityLogNotSaved();
+    });
 
-  it.each(IGNORED_ENDPOINTS)('should ignore calls to %s', endpoint => {
-    req.url = endpoint;
-    testActivityLogNotSaved();
-  });
+    it.each(IGNORED_ENDPOINTS)('should ignore calls to %s', endpoint => {
+      req.url = endpoint;
+      testActivityLogNotSaved();
+    });
 
-  it('should not log multipart post with no body', () => {
-    req.url = '/api/files/upload/document';
-    req.body = {};
-    testActivityLogNotSaved();
+    it('should not log multipart post with no body', () => {
+      req.url = '/api/files/upload/document';
+      req.body = {};
+      testActivityLogNotSaved();
+    });
   });
 });
