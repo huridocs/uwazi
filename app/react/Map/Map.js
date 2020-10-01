@@ -280,7 +280,12 @@ export default class Map extends Component {
     }
     return (
       <Icon
-        style={{ position: 'relative', top: '-25px', right: '15px', color: '#d9534e' }}
+        style={{
+          position: 'relative',
+          top: '-25px',
+          right: '15px',
+          color: (marker.properties && marker.properties.color) || '#d9534e',
+        }}
         icon="map-marker"
         size="2x"
         fixedWidth
