@@ -3,7 +3,6 @@ export const methods = {
   update: 'UPDATE',
   delete: 'DELETE',
   migrate: 'MIGRATE',
-  post: 'CREATE',
 };
 
 const buildActivityLogEntry = builder => ({

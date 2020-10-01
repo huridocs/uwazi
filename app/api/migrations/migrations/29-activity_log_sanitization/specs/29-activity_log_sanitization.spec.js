@@ -3,7 +3,7 @@ import { BODY_REQUIRED_ENDPOINTS, IGNORED_ENDPOINTS } from 'api/activitylog/acti
 import migration from '../index.js';
 import fixtures from './fixtures.js';
 
-describe('migration remove irrelevant activity log entries', () => {
+describe('migration activity log sanitization', () => {
   beforeAll(async () => {
     spyOn(process.stdout, 'write');
     await testingDB.clearAllAndLoad(fixtures);
