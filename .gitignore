@@ -29,6 +29,7 @@ app/api/csv/specs/*.jpg
 app/api/attachments/specs/uploads/toDelete.txt
 uploaded_documents/*
 custom_uploads/*
+activity_log/*
 !uploads/index.html
 !attachments/index.html
 !custom_uploads/index.html
