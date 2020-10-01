@@ -1,69 +1,5 @@
-import templates from 'api/templates';
-import entities from 'api/entities';
-import { buildActivityEntry } from 'api/activitylog/helpers';
-import semanticSearchModel from 'api/semanticsearch/model';
-import { allLanguages } from 'shared/languagesList';
-import { methods } from './helpers';
-import { typeParsers } from './migrationsParser';
-
-const formatLanguage = langKey => {
-  const lang = allLanguages.find(({ key }) => key === langKey);
-  return lang ? `${lang.label} (${lang.key})` : langKey;
-};
-
-const formatDataLanguage = data => formatLanguage(data.key);
-
-const translationsName = data => {
-  const [context] = data.contexts;
-  return data.contexts.length === 1
-    ? `in ${context.label} (${context.id})`
-    : 'in multiple contexts';
-};
-
-const nameFunc = data => `${data.label} (${data.key})`;
-
-const migrationLog = log => {
-  const data = JSON.parse(log.body);
-  return typeParsers[data.type] ? typeParsers[data.type](data) : { beautified: false };
-};
-
-const templateName = data =>
-  data.templateData ? `${data.templateData.name} (${data._id})` : data._id;
-
-const loadTemplate = async data => {
-  const templateData = await templates.getById(data.template || data._id);
-  return { ...data, templateData };
-};
-
-const loadEntity = async data => {
-  const _id = data.entityId || data._id;
-  const sharedId = data.sharedId || data.entity;
-  const query = { ...(_id && { _id }), ...(sharedId && { sharedId }) };
-  const [entity] = await entities.get(query);
-  return { ...data, entity, title: entity ? entity.title : undefined };
-};
-
-const extraTemplate = data =>
-  `of type ${
-    data.templateData
-      ? data.templateData.name
-      : `(${data.template ? data.template.toString() : 'unassigned'})`
-  }`;
-
-const extraAttachmentLanguage = data =>
-  data.entity
-    ? `of entity '${data.entity.title}' (${data.entity.sharedId}) ${formatLanguage(
-        data.entity.language
-      )} version`
-    : null;
-
-const searchName = data =>
-  data.search ? `${data.search.searchTerm} (${data.searchId})` : data.searchId;
-
-const loadSearch = async data => {
-  const search = await semanticSearchModel.getById(data.searchId);
-  return { ...data, search };
-};
+import * as helpers from 'api/activitylog/helpers';
+import { methods, nameFunc } from 'api/activitylog/helpers';
 
 const entryValues = {
   'POST/api/entities/multipleupdate': { desc: 'Updated multiple entities' },
@@ -71,7 +7,7 @@ const entryValues = {
   'POST/api/attachments/upload': {
     desc: 'Uploaded attachment',
     method: methods.create,
-    related: loadEntity,
+    related: helpers.loadEntity,
     nameField: 'title',
   },
   'POST/api/settings': { desc: 'Updated settings' },
@@ -115,16 +51,16 @@ const entryValues = {
     method: methods.create,
     idField: 'sharedId',
     nameField: 'title',
-    related: loadTemplate,
-    extra: extraTemplate,
+    related: helpers.loadTemplate,
+    extra: helpers.extraTemplate,
   },
   'POST/api/documents': {
     desc: 'Created entity / document',
     method: methods.create,
     idField: 'sharedId',
     nameField: 'title',
-    related: loadTemplate,
-    extra: extraTemplate,
+    related: helpers.loadTemplate,
+    extra: helpers.extraTemplate,
   },
   'DELETE/api/entities': {
     desc: 'Deleted entity / document',
@@ -140,8 +76,8 @@ const entryValues = {
     desc: 'Renamed attachment',
     idField: '_id',
     nameFunc: data => `${data.originalname} (${data._id})`,
-    related: loadEntity,
-    extra: extraAttachmentLanguage,
+    related: helpers.loadEntity,
+    extra: helpers.extraAttachmentLanguage,
   },
   'DELETE/api/attachments/delete': {
     desc: 'Deleted attachment',
@@ -150,8 +86,8 @@ const entryValues = {
   },
   'POST/api/templates/setasdefault': {
     desc: 'Set default template',
-    related: loadTemplate,
-    nameFunc: templateName,
+    related: helpers.loadTemplate,
+    nameFunc: helpers.templateName,
   },
   'DELETE/api/templates': { desc: 'Deleted template', method: methods.delete, nameField: '_id' },
   'DELETE/api/thesauris': { desc: 'Deleted thesaurus', method: methods.delete, nameField: '_id' },
@@ -162,24 +98,20 @@ const entryValues = {
   },
   'POST/api/translations': {
     desc: 'Updated translations',
-    nameFunc: translationsName,
-    extra: data => `in ${formatLanguage(data.locale)}`,
+    nameFunc: helpers.translationsName,
+    extra: data => `in ${helpers.formatLanguage(data.locale)}`,
   },
   'POST/api/translations/languages': { desc: 'Added language', method: methods.create, nameFunc },
   'DELETE/api/translations/languages': {
     desc: 'Removed language',
     method: methods.delete,
-    nameFunc: formatDataLanguage,
+    nameFunc: helpers.formatDataLanguage,
   },
   'POST/api/translations/setasdeafult': {
     desc: 'Set default language',
-    nameFunc: formatDataLanguage,
+    nameFunc: helpers.formatDataLanguage,
   },
-  'DELETE/api/pages': {
-    desc: 'Deleted page',
-    method: methods.delete,
-    nameField: 'sharedId',
-  },
+  'DELETE/api/pages': { desc: 'Deleted page', method: methods.delete, nameField: 'sharedId' },
   'DELETE/api/references': {
     desc: 'Deleted relationship',
     method: methods.delete,
@@ -203,13 +135,13 @@ const entryValues = {
   },
   'POST/api/semantic-search/stop': {
     desc: 'Stopped semantic search',
-    nameFunc: searchName,
-    related: loadSearch,
+    nameFunc: helpers.searchName,
+    related: helpers.loadSearch,
   },
   'POST/api/semantic-search/resume': {
     desc: 'Resumed semantic search',
-    nameFunc: searchName,
-    related: loadSearch,
+    nameFunc: helpers.searchName,
+    related: helpers.loadSearch,
   },
   'DELETE/api/semantic-search': {
     desc: 'Deleted semantic search',
@@ -219,20 +151,27 @@ const entryValues = {
   'POST/api/files/upload/document': {
     desc: 'Uploaded file',
     method: methods.create,
-    related: loadEntity,
+    related: helpers.loadEntity,
     nameField: 'title',
   },
+  'DELETE/api/files': { desc: 'Delete file', method: methods.delete, nameField: '_id' },
+  'POST/api/files': {
+    desc: 'Updated file',
+    related: helpers.loadFile,
+    nameFunc: helpers.updatedFile,
+  },
+  'DELETE/api/users': { desc: 'Delete user', method: methods.delete, nameField: '_id' },
 };
 
 const getSemanticData = async data => {
   const action = `${data.method}${data.url}`;
   const entryValue = entryValues[action];
   if (entryValue) {
-    const activityEntry = await buildActivityEntry(entryValue, data);
+    const activityEntry = await helpers.buildActivityEntry(entryValue, data);
     return { ...activityEntry };
   }
   if (action === 'MIGRATE') {
-    return migrationLog(data);
+    return helpers.migrationLog(data);
   }
   return { beautified: false };
 };

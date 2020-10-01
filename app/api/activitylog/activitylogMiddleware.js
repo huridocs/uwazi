@@ -13,6 +13,8 @@ export const IGNORED_ENDPOINTS = [
   '/api/documents/download',
   '/api/attachments/download',
   '/api/semantic-search/notify-updates',
+  '/api/sync',
+  '/api/sync/upload',
 ];
 export const BODY_REQUIRED_ENDPOINTS = [
   '/api/files/upload/document',

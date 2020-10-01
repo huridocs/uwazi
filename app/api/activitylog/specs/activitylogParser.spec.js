@@ -2,6 +2,7 @@
 /* eslint-disable max-statements */
 
 import db from 'api/utils/testing_db';
+import { fileId } from 'api/activitylog/specs/fixturesParser';
 import fixtures, {
   firstTemplate,
   firstDoc,
@@ -102,26 +103,6 @@ describe('Activitylog Parser', () => {
             body: '{"title":"New Document"}',
           });
           expect(semanticData).toEqual(expect.objectContaining({ extra: 'of type (unassigned)' }));
-        });
-      });
-
-      describe('method: POST /api/files/upload/document', () => {
-        it('should beautify as CREATE and include entity title', async () => {
-          const body = {
-            entity: firstDocSharedId,
-          };
-          await testBeautified(
-            {
-              method: 'POST',
-              url: '/api/files/upload/document',
-              body: JSON.stringify(body),
-            },
-            {
-              action: 'CREATE',
-              description: 'Uploaded file',
-              name: 'My Doc',
-            }
-          );
         });
       });
 
@@ -650,7 +631,7 @@ describe('Activitylog Parser', () => {
       });
     });
 
-    describe('routes: /api/users/new', () => {
+    describe('routes: /api/users', () => {
       it('should beautify as CREATE', async () => {
         await testBeautified(
           {
@@ -663,6 +644,22 @@ describe('Activitylog Parser', () => {
             description: 'Added new user',
             name: 'myuser',
             extra: 'with editor role',
+          }
+        );
+      });
+
+      it('should beautify as DELETE', async () => {
+        await testBeautified(
+          {
+            method: 'DELETE',
+            url: '/api/users',
+            body: '{"_id":"userId"}',
+            idField: '_id',
+          },
+          {
+            action: 'DELETE',
+            description: 'Delete user',
+            name: 'userId',
           }
         );
       });
@@ -934,6 +931,87 @@ describe('Activitylog Parser', () => {
             {
               action: 'CREATE',
               description: 'Submitted entity to a remote instance',
+            }
+          );
+        });
+      });
+    });
+
+    describe('routes: /api/files', () => {
+      describe('method: POST /api/files/upload/document', () => {
+        it('should beautify as CREATE and include entity title', async () => {
+          const body = {
+            entity: firstDocSharedId,
+          };
+          await testBeautified(
+            {
+              method: 'POST',
+              url: '/api/files/upload/document',
+              body: JSON.stringify(body),
+            },
+            {
+              action: 'CREATE',
+              description: 'Uploaded file',
+              name: 'My Doc',
+            }
+          );
+        });
+      });
+
+      describe('method: DELETE /api/files', () => {
+        it('should beautify as DELETE', async () => {
+          const body = {
+            _id: 'attach1',
+          };
+          await testBeautified(
+            {
+              method: 'DELETE',
+              url: '/api/files',
+              body: JSON.stringify(body),
+            },
+            {
+              action: 'DELETE',
+              description: 'Delete file',
+              name: 'attach1',
+            }
+          );
+        });
+      });
+
+      describe('method: POST /api/files', () => {
+        it('should beautify as UPDATE with file name for toc changes', async () => {
+          const body = {
+            _id: fileId,
+            toc: [{ range: { start: 9, end: 35 }, label: 'Content1' }],
+          };
+          await testBeautified(
+            {
+              method: 'POST',
+              url: '/api/files',
+              body: JSON.stringify(body),
+            },
+            {
+              action: 'UPDATE',
+              description: 'Updated file',
+              name: 'ToC, My File',
+            }
+          );
+        });
+        it('should beautify as UPDATE with file name for pdfinfo changes', async () => {
+          const body = {
+            _id: fileId,
+            pdfinfo: { 1: { chars: 0 } },
+          };
+          await testBeautified(
+            {
+              method: 'POST',
+              url: '/api/files',
+              body: JSON.stringify(body),
+            },
+            {
+              action: 'UPDATE',
+              description: 'Updated file',
+              name: 'Pdf info, My File',
             }
           );
         });
