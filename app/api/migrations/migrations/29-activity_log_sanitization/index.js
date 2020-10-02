@@ -30,6 +30,8 @@ export default {
       `${deletedUploadEntriesWithoutBody.result.n} activity log POST entries deleted with empty bodies\r\n`
     );
 
+    await db.collection('activitylogs').createIndex({ expireAt: 1 }, { expireAfterSeconds: 0 });
+
     process.stdout.write('\r\n');
   },
 };

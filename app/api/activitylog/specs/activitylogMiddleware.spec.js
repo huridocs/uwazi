@@ -54,6 +54,8 @@ describe('activitylogMiddleware', () => {
 
   it('should save the log entry on filesystem', () => {
     activitylogMiddleware(req, res, next);
+    const today = new Date();
+    const expirationDate = new Date(today.getFullYear() + 1, today.getMonth(), today.getDate());
     expect(appendFile).toHaveBeenCalledWith(
       './activity_log/default_activity.log',
       JSON.stringify({
@@ -65,6 +67,7 @@ describe('activitylogMiddleware', () => {
         user: 123,
         username: 'admin',
         time: 1,
+        expireAt: expirationDate,
       })
     );
   });
