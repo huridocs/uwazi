@@ -46,6 +46,7 @@ exports[`GeolocationViewer should render a map with markers when onlyForCards is
         "latitude": 5,
         "longitude": 10,
         "properties": Object {
+          "color": "red",
           "info": "work",
         },
       },

@@ -1,5 +1,3 @@
-/** @format */
-
 import React from 'react';
 
 import { shallow } from 'enzyme';
@@ -129,6 +127,49 @@ describe('Metadata', () => {
         onlyForCards: true,
       },
     ]);
+  });
+
+  describe('when groupGeolocations flag is true', () => {
+    it('should group adjacent geolocation fields', () => {
+      const metadata = [
+        {
+          translateContext: 'oneTranslateContext',
+          name: 'geolocation_label',
+          label: 'Geolocation Label',
+          value: [{ lat: 13, lon: 7 }],
+          type: 'geolocation',
+        },
+        {
+          translateContext: 'otherTranslateContext',
+          name: 'inherited_geolocation',
+          label: 'Inherited Geolocation',
+          value: [
+            { lat: 15, lon: 9, label: 'One' },
+            { lat: 17, lon: 11, label: 'Two' },
+          ],
+          type: 'geolocation',
+        },
+        {
+          translateContext: 'oneTranslateContext',
+          label: 'Label',
+          value: 'string value',
+          name: 'label',
+        },
+        {
+          translateContext: 'oneTranslateContext',
+          name: 'geolocation_label2',
+          label: 'Geolocation Label2',
+          value: [{ lat: 19, lon: 13 }],
+          type: 'geolocation',
+        },
+      ];
+
+      const component = shallow(<Metadata metadata={metadata} groupGeolocations />);
+      const geoGroups = component.find('.metadata-type-geolocation_group');
+      expect(geoGroups.length).toBe(2);
+      expect(geoGroups.find({ members: [metadata[0], metadata[1]] }).length).toBe(1);
+      expect(geoGroups.find({ members: [metadata[3]] }).length).toBe(1);
+    });
   });
 
   it('should render property not have this item when type is null', () => {
