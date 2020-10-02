@@ -90,6 +90,7 @@ import { faUserTimes } from '@fortawesome/free-solid-svg-icons/faUserTimes';
 import { faHandPaper } from '@fortawesome/free-solid-svg-icons/faHandPaper';
 import { saveAndNext } from './save-and-next';
 import { exportCsv } from './export-csv';
+import { copyFrom } from './copy-from';
 
 const icons = {
   faAlignJustify,
@@ -183,6 +184,7 @@ const icons = {
   faHandPaper,
   saveAndNext,
   exportCsv,
+  copyFrom,
 };
 
 export const loadIcons = () => {

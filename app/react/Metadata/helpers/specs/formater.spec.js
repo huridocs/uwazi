@@ -301,6 +301,20 @@ describe('metadata formater', () => {
       expect(previewField.value).toBeNull();
     });
 
+    it('should not include the preview field if excludePreview passed', () => {
+      const formatted = formater.prepareMetadata(
+        doc,
+        templates,
+        metadataSelectors.indexedThesaurus({ thesauris }),
+        relationships,
+        { excludePreview: true }
+      );
+
+      const previewField = formatted.metadata.find(field => field.name === 'preview');
+
+      expect(previewField).toBeUndefined();
+    });
+
     it('should process geolocation type', () => {
       assessBasicProperties(geolocation, [
         'Geolocation',
@@ -416,7 +430,28 @@ describe('metadata formater', () => {
         doc,
         templates,
         metadataSelectors.indexedThesaurus(state),
-        relationships
+        relationships,
+        undefined
+      );
+    });
+
+    it('should exclude preview if option passed', () => {
+      spyOn(formater, 'prepareMetadata').and.returnValue({ metadata: 'metadataFormated' });
+      const state = {
+        templates,
+        thesauris,
+        settings: Immutable.fromJS({ languages: [{ key: 'es', default: true }] }),
+      };
+      const metadata = metadataSelectors.formatMetadata(state, doc, null, relationships, {
+        excludePreview: true,
+      });
+      expect(metadata).toBe('metadataFormated');
+      expect(formater.prepareMetadata).toHaveBeenCalledWith(
+        doc,
+        templates,
+        metadataSelectors.indexedThesaurus(state),
+        relationships,
+        { excludePreview: true }
       );
     });
 
