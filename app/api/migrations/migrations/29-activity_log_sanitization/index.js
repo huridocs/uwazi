@@ -3,7 +3,7 @@ import { BODY_REQUIRED_ENDPOINTS, IGNORED_ENDPOINTS } from 'api/activitylog/acti
 export default {
   delta: 29,
 
-  name: 'remove_unwanted_activity_log_entries',
+  name: 'activity_log_sanitization',
 
   description: 'remove activity log entries that do not contain relevant content',
 
@@ -13,21 +13,21 @@ export default {
       .collection('activitylogs')
       .deleteMany({ method: { $in: ['GET', 'OPTIONS', 'HEAD'] } });
     process.stdout.write(
-      `${deletedEntriesByMethod.result.n} activity log entries deleted with unneeded methods`
+      `${deletedEntriesByMethod.result.n} activity log entries deleted with unneeded methods\r\n`
     );
 
     const deletedEntriesByEndpoint = await db
       .collection('activitylogs')
       .deleteMany({ url: { $in: IGNORED_ENDPOINTS } });
     process.stdout.write(
-      `${deletedEntriesByEndpoint.result.n} activity log entries deleted with unneeded endpoints`
+      `${deletedEntriesByEndpoint.result.n} activity log entries deleted with unneeded endpoints\r\n`
     );
 
     const deletedUploadEntriesWithoutBody = await db
       .collection('activitylogs')
       .deleteMany({ url: { $in: BODY_REQUIRED_ENDPOINTS }, body: '{}' });
     process.stdout.write(
-      `${deletedUploadEntriesWithoutBody.result.n} activity log entries deleted with unneeded endpoints`
+      `${deletedUploadEntriesWithoutBody.result.n} activity log POST entries deleted with empty bodies\r\n`
     );
 
     process.stdout.write('\r\n');

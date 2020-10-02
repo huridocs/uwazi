@@ -113,6 +113,7 @@ describe('Activitylog Parser', () => {
               method: 'DELETE',
               url: '/api/documents',
               query: '{"sharedId":"o9e07m5ni3h"}',
+              body: '{}',
             },
             {
               action: 'DELETE',
@@ -130,6 +131,7 @@ describe('Activitylog Parser', () => {
               method: 'POST',
               url: '/api/entities/multipleupdate',
               body: '{"ids":["id1","id2"],"values":{}}',
+              query: '{}',
             },
             {
               action: 'UPDATE',

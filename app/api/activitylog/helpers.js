@@ -85,7 +85,7 @@ const getActivityInput = (entryValue, body) => {
 };
 
 export const buildActivityEntry = async (entryValue, data) => {
-  const body = data.body || data.query;
+  const body = data.body && data.body !== '{}' ? data.body : data.query || '{}';
   const activityInput = getActivityInput(entryValue, body);
   const activityEntryBuilder = new ActivityLogBuilder(JSON.parse(body), activityInput);
   await activityEntryBuilder.loadRelated();
