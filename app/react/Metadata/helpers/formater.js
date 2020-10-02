@@ -300,11 +300,9 @@ export default {
       doc.metadata = {};
     }
 
-    let metadata = this.filterProperties(
-      template,
-      options.onlyForCards,
-      options.sortedProperty
-    ).map(property =>
+    let metadata = this.filterProperties(template, options.onlyForCards, options.sortedProperty, {
+      excludePreview: options.excludePreview,
+    }).map(property =>
       this.applyTransformation(property, {
         doc,
         thesauris,
@@ -354,8 +352,12 @@ export default {
     };
   },
 
-  filterProperties(template, onlyForCards, sortedProperty) {
+  filterProperties(template, onlyForCards, sortedProperty, options = {}) {
     return template.get('properties').filter(p => {
+      if (options.excludePreview && p.get('type') === 'preview') {
+        return false;
+      }
+
       if (!onlyForCards) {
         return true;
       }
@@ -363,6 +365,7 @@ export default {
       if (p.get('showInCard') || sortedProperty === `metadata.${p.get('name')}`) {
         return true;
       }
+
       return false;
     });
   },

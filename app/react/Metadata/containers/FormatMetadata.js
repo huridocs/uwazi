@@ -5,7 +5,7 @@ import Immutable from 'immutable';
 import { metadataSelectors } from '../selectors';
 import Metadata from '../components/Metadata';
 
-const removeUneededProps = ({ templates, thesauris, settings, ...rest }) => rest;
+const removeUneededProps = ({ templates, thesauris, settings, excludePreview, ...rest }) => rest;
 
 const BaseFormatMetadata = ({
   additionalMetadata,
@@ -16,7 +16,9 @@ const BaseFormatMetadata = ({
 }) => (
   <Metadata
     metadata={additionalMetadata.concat(
-      metadataSelectors.formatMetadata(props, entity, sortedProperty, relationships)
+      metadataSelectors.formatMetadata(props, entity, sortedProperty, relationships, {
+        excludePreview: props.excludePreview,
+      })
     )}
     compact={!!sortedProperty}
     {...removeUneededProps(props)}
@@ -27,6 +29,7 @@ BaseFormatMetadata.defaultProps = {
   sortedProperty: '',
   additionalMetadata: [],
   relationships: Immutable.fromJS([]),
+  excludePreview: false,
 };
 
 BaseFormatMetadata.propTypes = {
@@ -50,6 +53,7 @@ BaseFormatMetadata.propTypes = {
     })
   ),
   sortedProperty: PropTypes.string,
+  excludePreview: PropTypes.bool,
 };
 
 export function mapStateToProps(state, { entity, sortedProperty = '' }) {
