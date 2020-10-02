@@ -65,7 +65,18 @@ const showByType = (prop, compact) => {
   return result;
 };
 
-// eslint-disable-next-line max-statements
+const computeGroup = (metadata, startIndex) => {
+  const members = [];
+  let index = startIndex;
+
+  while (index < metadata.length && metadata[index].type === 'geolocation') {
+    members.push(metadata[index]);
+    index += 1;
+  }
+
+  return [members, index];
+};
+
 const groupAdjacentGeolocations = metadata => {
   const groupedMetadata = [];
   let index = 0;
@@ -75,12 +86,9 @@ const groupAdjacentGeolocations = metadata => {
       groupedMetadata.push(metadata[index]);
       index += 1;
     } else {
-      const members = [];
-      while (index < metadata.length && metadata[index].type === 'geolocation') {
-        members.push(metadata[index]);
-        index += 1;
-      }
+      const [members, i] = computeGroup(metadata, index);
 
+      index = i;
       groupedMetadata.push({
         type: 'geolocation_group',
         members,

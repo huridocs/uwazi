@@ -1,91 +1,102 @@
 import React from 'react';
 import GeolocationViewer from 'app/Metadata/components/GeolocationViewer';
 import { connect } from 'react-redux';
-import { IStore } from '../../istore';
 import { createSelector } from 'reselect';
+import { IStore } from '../../istore';
 import { ensure } from '../../../shared/tsUtils';
+import { Pill } from './Pill';
 
 interface GeolocationMarker {
   lat: string;
   lon: string;
-  label: string;
-  color: string;
+  label?: string;
+  color?: string;
 }
 
 interface GroupMember {
   label: string;
+  name: string;
   translateContext: string;
   value: GeolocationMarker[];
 }
 
-interface GroupedGeolocationViewerProps {
+export interface GroupedGeolocationViewerProps {
   members: GroupMember[];
   colors: {
-    [template:string]: string;
+    [template: string]: string;
   };
 }
 
-const notInherited = (member: GroupMember) => member.value.length === 1 && !member.value[0].label;
+const notLabeledOrMultiple = (member: GroupMember) =>
+  member.value.length === 1 && !member.value[0].label;
 
-const Pill = (props: {children: string, color: string}) => (<span className="pill" style={{backgroundColor: props.color}}>{props.children}</span>);
-
-const renderGroupInfo = (colors: {
-  [template:string]: string;
-}) => (member: GroupMember) => {
-  return notInherited(member) ? (
-    <dl>
-      <dt></dt>
+const renderMemberInfo = (colors: { [template: string]: string }) => (member: GroupMember) =>
+  notLabeledOrMultiple(member) ? (
+    <dl key={`${member.translateContext}_${member.name}`}>
+      <dt />
       <dd>
-          <Pill color={colors[member.translateContext]}>{member.label}</Pill>
+        <Pill
+          key={`${member.value[0].lat}_${member.value[0].lon}`}
+          color={colors[member.translateContext]}
+        >
+          {member.label}
+        </Pill>
       </dd>
     </dl>
   ) : (
-    <dl>
-      <dt><span>{`${member.label}`}</span></dt>
+    <dl key={`${member.translateContext}_${member.name}`}>
+      <dt>
+        <span>{`${member.label}`}</span>
+      </dt>
       <dd>
-        {member.value.map(value => <Pill color={colors[member.translateContext]}>{value.label}</Pill>)}
+        {member.value.map(value => (
+          <Pill key={`${value.lat}_${value.lon}`} color={colors[member.translateContext]}>
+            {value.label}
+          </Pill>
+        ))}
       </dd>
     </dl>
   );
-};
 
 const GroupedGeolocationViewerComponent = (props: GroupedGeolocationViewerProps) => {
-  const markers = props.members.reduce(
-    (flat: GeolocationMarker[], member) => {
-      if (notInherited(member)) {
-        return flat.concat([{
+  const markers = props.members.reduce<GeolocationMarker[]>((flat: GeolocationMarker[], member) => {
+    if (notLabeledOrMultiple(member)) {
+      return flat.concat([
+        {
           ...member.value[0],
           label: member.label,
           color: props.colors[member.translateContext],
-        }]);
-      }
+        },
+      ]);
+    }
 
-      return flat.concat(member.value.map(v => ({ ...v, color: props.colors[member.translateContext] })))
-    },
-    []
-  );
-  debugger;
+    return flat.concat(
+      member.value.map(v => ({ ...v, color: props.colors[member.translateContext] }))
+    );
+  }, []);
+
   return (
     <>
       <GeolocationViewer points={markers} onlyForCards={false} />
-      {props.members.map(renderGroupInfo(props.colors))}
+      {props.members.map(renderMemberInfo(props.colors))}
     </>
   );
 };
 
-const colorsMap = createSelector((s: IStore) => s.templates, templates => {
-  return templates.reduce((map, template) => {
-    return {
-      ...map,
-      [ensure<string>(template?.get('_id'))]: template?.get('color'),
-    }
-  }, {});
-})
+const colorsMap = createSelector(
+  (s: IStore) => s.templates,
+  templates =>
+    templates.reduce(
+      (map, template) => ({
+        ...map,
+        [ensure<string>(template?.get('_id'))]: template?.get('color'),
+      }),
+      {}
+    )
+);
 
-const mapStateToProps = (state: IStore) => {
-  return {
-    colors: colorsMap(state),
-  }
-};
+const mapStateToProps = (state: IStore) => ({
+  colors: colorsMap(state),
+});
 
 export const GroupedGeolocationViewer = connect(mapStateToProps)(GroupedGeolocationViewerComponent);
