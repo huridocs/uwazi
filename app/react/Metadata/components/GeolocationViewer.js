@@ -27,7 +27,11 @@ const GeolocationViewer = ({ points, onlyForCards }) => {
   points
     .filter(p => Boolean(p))
     .forEach(({ lat, lon, label, color }) => {
-      markers.push({ latitude: lat, longitude: lon, properties: { info: label, color } });
+      markers.push({
+        latitude: lat,
+        longitude: lon,
+        properties: { info: label, ...(color ? { color } : {}) },
+      });
     });
 
   const componentProps = markers.length

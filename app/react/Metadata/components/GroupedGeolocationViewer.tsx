@@ -27,7 +27,7 @@ interface GroupedGeolocationViewerProps {
 
 const notInherited = (member: GroupMember) => member.value.length === 1 && !member.value[0].label;
 
-const Pill = (props: {label: string, color: string}) => (<span className="pill" style={{backgroundColor: props.color}}>{props.label}</span>);
+const Pill = (props: {children: string, color: string}) => (<span className="pill" style={{backgroundColor: props.color}}>{props.children}</span>);
 
 const renderGroupInfo = (colors: {
   [template:string]: string;
@@ -36,14 +36,14 @@ const renderGroupInfo = (colors: {
     <dl>
       <dt></dt>
       <dd>
-          <Pill label={member.label} color={colors[member.translateContext]}/>
+          <Pill color={colors[member.translateContext]}>{member.label}</Pill>
       </dd>
     </dl>
   ) : (
     <dl>
       <dt><span>{`${member.label}`}</span></dt>
       <dd>
-        {member.value.map(value => <Pill label={value.label} color={colors[member.translateContext]} />)}
+        {member.value.map(value => <Pill color={colors[member.translateContext]}>{value.label}</Pill>)}
       </dd>
     </dl>
   );
