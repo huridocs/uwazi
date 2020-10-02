@@ -15,6 +15,7 @@ const mongoSchema = new mongoose.Schema({
   attachments: String,
   customUploads: String,
   temporalFiles: String,
+  activityLog: String,
 });
 
 export class TenantsModel extends EventEmitter {
