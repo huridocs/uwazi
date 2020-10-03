@@ -88,6 +88,12 @@ describe('activitylog', () => {
       expect(entries.length).toBe(2);
     });
 
+    it('should filter by anonymous username', async () => {
+      const { rows: entries } = await activitylog.get({ username: 'anonymous' });
+      expect(entries.length).toBe(2);
+      expect(entries[0].username).toBeUndefined();
+    });
+
     it('should allow a general find query of terms', async () => {
       const { rows: entries } = await activitylog.get({ find: 'Hello' });
       expect(entries.length).toBe(3);

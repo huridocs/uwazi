@@ -80,7 +80,8 @@ export default {
     }
 
     if (query.username) {
-      mongoQuery.username = query.username;
+      mongoQuery.username =
+        query.username !== 'anonymous' ? query.username : { $in: [null, query.username] };
     }
 
     const limitQuery = getLimit(query);

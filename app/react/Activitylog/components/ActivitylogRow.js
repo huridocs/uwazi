@@ -68,7 +68,9 @@ class ActivitylogRow extends Component {
         key={entry.get('_id')}
       >
         <td>{semanticData.beautified ? label(semanticData.action) : label('RAW')}</td>
-        <td>{entry.get('username') || '-'}</td>
+        <td className={!entry.get('username') ? 'color-0' : ''}>
+          {entry.get('username') || 'anonymous'}
+        </td>
         <td>{description}</td>
         <td className="activitylog-time">{time}</td>
       </tr>

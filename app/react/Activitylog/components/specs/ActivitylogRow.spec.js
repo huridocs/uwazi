@@ -66,10 +66,8 @@ describe('ActivitylogRow', () => {
         .set('time', '54321');
     });
 
-    const prepareAction = action => {
-      props.entry = props.entry
-        .setIn(['semantic', 'action'], action)
-        .set('username', 'defined user');
+    const prepareAction = (action, username = 'defined user') => {
+      props.entry = props.entry.setIn(['semantic', 'action'], action).set('username', username);
       render();
     };
 
@@ -84,6 +82,13 @@ describe('ActivitylogRow', () => {
       expect(component).toMatchSnapshot();
       prepareAction('CUSTOM');
       expect(component).toMatchSnapshot();
+    });
+
+    it('should render as anonymous when username is empty', () => {
+      prepareAction('CREATE', null);
+      const userNameColumn = component.find('tr > td');
+      expect(userNameColumn.get(1).props.children).toBe('anonymous');
+      expect(userNameColumn.get(1).props.className).toBe('color-0');
     });
   });
 

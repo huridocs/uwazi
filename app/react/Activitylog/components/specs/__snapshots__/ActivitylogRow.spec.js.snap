@@ -11,8 +11,10 @@ exports[`ActivitylogRow should render the component when not beautified 1`] = `
       RAW
     </span>
   </td>
-  <td>
-    -
+  <td
+    className="color-0"
+  >
+    anonymous
   </td>
   <td>
     <DescriptionWrapper
@@ -57,7 +59,9 @@ exports[`ActivitylogRow when beautified should render the componet for the diffe
       CREATE
     </span>
   </td>
-  <td>
+  <td
+    className=""
+  >
     defined user
   </td>
   <td>
@@ -120,7 +124,9 @@ exports[`ActivitylogRow when beautified should render the componet for the diffe
       UPDATE
     </span>
   </td>
-  <td>
+  <td
+    className=""
+  >
     defined user
   </td>
   <td>
@@ -183,7 +189,9 @@ exports[`ActivitylogRow when beautified should render the componet for the diffe
       DELETE
     </span>
   </td>
-  <td>
+  <td
+    className=""
+  >
     defined user
   </td>
   <td>
@@ -246,7 +254,9 @@ exports[`ActivitylogRow when beautified should render the componet for the diffe
       MIGRATE
     </span>
   </td>
-  <td>
+  <td
+    className=""
+  >
     defined user
   </td>
   <td>
@@ -309,7 +319,9 @@ exports[`ActivitylogRow when beautified should render the componet for the diffe
       CUSTOM
     </span>
   </td>
-  <td>
+  <td
+    className=""
+  >
     defined user
   </td>
   <td>
