@@ -1,4 +1,5 @@
 import { BODY_REQUIRED_ENDPOINTS, IGNORED_ENDPOINTS } from 'api/activitylog/activitylogMiddleware';
+import date from 'api/utils/date';
 
 export default {
   delta: 29,
@@ -31,6 +32,9 @@ export default {
     );
 
     await db.collection('activitylogs').createIndex({ expireAt: 1 }, { expireAfterSeconds: 0 });
+
+    const nextYear = date.addYearsToCurrentDate(1);
+    await db.collection('activitylogs').updateMany({}, { $set: { expireAt: nextYear } });
 
     process.stdout.write('\r\n');
   },

@@ -1,5 +1,6 @@
 import { testingDB } from 'api/utils/testing_db';
 import { BODY_REQUIRED_ENDPOINTS, IGNORED_ENDPOINTS } from 'api/activitylog/activitylogMiddleware';
+import date from 'api/utils/date';
 import migration from '../index.js';
 import fixtures from './fixtures.js';
 
@@ -62,6 +63,16 @@ describe('migration activity log sanitization', () => {
         .count();
 
       expect(ignoredEntries).toBe(0);
+    });
+
+    it('should set expireAt with a year upfront into remaining entries', async () => {
+      const expireAt = date.addYearsToCurrentDate(1);
+      const ignoredEntries = await testingDB.mongodb
+        .collection('activitylogs')
+        .find({ expireAt })
+        .count();
+
+      expect(ignoredEntries).toBe(3);
     });
   });
 });

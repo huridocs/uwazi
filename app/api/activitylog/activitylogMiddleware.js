@@ -1,4 +1,5 @@
 import { activityLogPath, appendFile } from 'api/files';
+import date from 'api/utils/date';
 import activitylog from './activitylog';
 
 const ignoredMethods = ['GET', 'OPTIONS', 'HEAD'];
@@ -31,19 +32,12 @@ function mustBeLogged(baseurl, method, body) {
   return isLoggedRequest && validBody;
 }
 
-function getExpirationDate() {
-  const expireAt = new Date();
-  expireAt.setHours(0, 0, 0, 0);
-  expireAt.setFullYear(expireAt.getFullYear() + 1);
-  return expireAt;
-}
-
 export default (req, _res, next) => {
   const { url, method, params, query, body, user = {} } = req;
   const baseurl = url.split('?').shift();
   if (mustBeLogged(baseurl, method, body)) {
     const time = Date.now();
-    const expireAt = getExpirationDate();
+    const expireAt = date.addYearsToCurrentDate(1);
     const entry = {
       url: baseurl,
       method,

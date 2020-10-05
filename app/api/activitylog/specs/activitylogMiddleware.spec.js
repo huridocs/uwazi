@@ -1,5 +1,6 @@
 import { appendFile } from 'api/files';
 import { IGNORED_ENDPOINTS } from 'api/activitylog/activitylogMiddleware';
+import date from 'api/utils/date';
 import activitylogMiddleware from '../activitylogMiddleware';
 import activitylog from '../activitylog';
 
@@ -38,16 +39,11 @@ describe('activitylogMiddleware', () => {
     expect(activitylog.save).not.toHaveBeenCalled();
   }
 
-  const getOneYearAfterCurrentDate = () => {
-    const today = new Date();
-    return new Date(today.getFullYear() + 1, today.getMonth(), today.getDate());
-  };
-
   it('should log api calls', () => {
     activitylogMiddleware(req, res, next);
     expect(activitylog.save).toHaveBeenCalledWith({
       body: '{"title":"Hi"}',
-      expireAt: getOneYearAfterCurrentDate(),
+      expireAt: date.addYearsToCurrentDate(1),
       method: 'POST',
       params: '{"some":"params"}',
       query: '{"a":"query"}',
@@ -71,7 +67,7 @@ describe('activitylogMiddleware', () => {
         user: 123,
         username: 'admin',
         time: 1,
-        expireAt: getOneYearAfterCurrentDate(),
+        expireAt: date.addYearsToCurrentDate(1),
       })
     );
   });
