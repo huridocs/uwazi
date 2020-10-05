@@ -328,20 +328,18 @@ describe('Activitylog Parser', () => {
     });
 
     describe('routes: /api/thesauris', () => {
-      describe('method:POST', () => {
+      describe('when POST a thesaurus', () => {
         it('should beautify as CREATE if no thesaurus id is found', async () => {
-          await testBeautified(
-            {
-              method: 'POST',
-              url: '/api/thesauris',
-              body: '{"name":"Things","values":[]}',
-            },
-            {
-              action: 'CREATE',
-              description: 'Created thesaurus',
-              name: 'Things',
-            }
-          );
+          const semanticData = await getSemanticData({
+            method: 'POST',
+            url: '/api/thesauris',
+            body: '{"name":"Things","values":[]}',
+          });
+          expect(semanticData).toEqual({
+            action: 'CREATE',
+            description: 'Created thesaurus',
+            name: 'Things',
+          });
         });
 
         it('should beautify as UPDATE if not thesauris id is found', async () => {
@@ -379,7 +377,7 @@ describe('Activitylog Parser', () => {
     });
 
     describe('routes: /api/relationtypes', () => {
-      describe('method:POST', () => {
+      describe('when POST a relationtype', () => {
         it('should beautify as CREATE if no id is found', async () => {
           await testBeautified(
             {
@@ -563,20 +561,18 @@ describe('Activitylog Parser', () => {
     });
 
     describe('routes: /api/pages', () => {
-      describe('method:POST', () => {
+      describe('when POST a page', () => {
         it('should beautify as CREATE when id is not provided', async () => {
-          await testBeautified(
-            {
-              method: 'POST',
-              url: '/api/pages',
-              body: '{"title":"Home","metadata":{"content":"foo"}}',
-            },
-            {
-              action: 'CREATE',
-              description: 'Created page',
-              name: 'Home',
-            }
-          );
+          const semanticData = await getSemanticData({
+            method: 'POST',
+            url: '/api/pages',
+            body: '{"title":"Home","metadata":{"content":"foo"}}',
+          });
+          expect(semanticData).toEqual({
+            action: 'CREATE',
+            description: 'Created page',
+            name: 'Home',
+          });
         });
         it('should beautify as UPDATE when id is provided', async () => {
           await testBeautified(
