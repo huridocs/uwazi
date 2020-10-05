@@ -328,8 +328,8 @@ describe('Activitylog Parser', () => {
     });
 
     describe('routes: /api/thesauris', () => {
-      describe('when POST a thesaurus', () => {
-        it('should beautify as CREATE if no thesaurus id is found', async () => {
+      describe('when POST a thesaurus data', () => {
+        it('should beautify as CREATE if no thesaurus id is present in the body', async () => {
           const semanticData = await getSemanticData({
             method: 'POST',
             url: '/api/thesauris',
@@ -562,7 +562,7 @@ describe('Activitylog Parser', () => {
 
     describe('routes: /api/pages', () => {
       describe('when POST a page', () => {
-        it('should beautify as CREATE when id is not provided', async () => {
+        it('should parse as CREATE if body does not have an id', async () => {
           const semanticData = await getSemanticData({
             method: 'POST',
             url: '/api/pages',
