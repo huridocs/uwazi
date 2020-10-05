@@ -578,18 +578,6 @@ describe('Activitylog Parser', () => {
         });
       });
       describe('when POST a page', () => {
-        it('should parse as CREATE if body does not have an id', async () => {
-          const semanticData = await getSemanticData({
-            method: 'POST',
-            url: '/api/pages',
-            body: '{"title":"Home","metadata":{"content":"foo"}}',
-          });
-          expect(semanticData).toEqual({
-            action: 'CREATE',
-            description: 'Created page',
-            name: 'Home',
-          });
-        });
         it('should beautify as UPDATE when id is provided', async () => {
           await testBeautified(
             {
@@ -601,6 +589,20 @@ describe('Activitylog Parser', () => {
               action: 'UPDATE',
               description: 'Updated page',
               name: 'Home (page123)',
+            }
+          );
+        });
+        it('should parse as CREATE if body does not have an id', async () => {
+          await testBeautified(
+            {
+              method: 'POST',
+              url: '/api/pages',
+              body: '{"title":"Home","metadata":{"content":"foo"}}',
+            },
+            {
+              action: 'CREATE',
+              description: 'Created page',
+              name: 'Home',
             }
           );
         });
