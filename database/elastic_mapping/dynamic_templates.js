@@ -6,7 +6,6 @@ const dynamicTemplates = [
       mapping: {
         type: 'string',
         index: true,
-        omit_norms: true,
         fielddata: { format: 'disabled' },
       },
     },
@@ -18,7 +17,6 @@ const dynamicTemplates = [
       mapping: {
         type: 'text',
         index: true,
-        omit_norms: true,
         analyzer: 'other',
         term_vector: 'with_positions_offsets',
       },
@@ -31,7 +29,6 @@ const dynamicTemplates = [
       mapping: {
         type: 'text',
         index: true,
-        omit_norms: true,
         analyzer: 'tokenizer',
         fields: {
           raw: { type: 'keyword' },

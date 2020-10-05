@@ -5,6 +5,7 @@ import errorLog from 'api/log/errorLog';
 import { entityDefaultDocument } from 'shared/entityDefaultDocument';
 import PromisePool from '@supercharge/promise-pool';
 import elastic from './elastic';
+import elasticMapFactory from './elasticMapFactory';
 
 export class IndexError extends Error {}
 
@@ -154,4 +155,20 @@ const indexEntities = async ({
   });
 };
 
-export { bulkIndex, indexEntities };
+const updateMapping = async (templates, elasticIndex) => {
+  const mapping = elasticMapFactory.mapping(templates);
+  const pipeline = elasticMapFactory.ingest(templates);
+  const aliases = elasticMapFactory.aliasses(templates);
+  try {
+    await elastic.indices.putMapping({ body: mapping, index: elasticIndex });
+    await elastic.ingest.putPipeline({
+      body: pipeline,
+      id: 'rename-pipeline',
+    });
+    await elastic.indices.putMapping({ body: aliases, index: elasticIndex });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export { bulkIndex, indexEntities, updateMapping };

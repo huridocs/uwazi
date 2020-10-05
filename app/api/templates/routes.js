@@ -1,29 +1,28 @@
 import Joi from 'joi';
 
 import settings from 'api/settings';
+import { updateMapping } from 'api/search/entitiesIndex';
+import { tenants } from 'api/tenants/tenantContext';
 
 import { validation } from '../utils';
 import needsAuthorization from '../auth/authMiddleware';
 import templates from './templates';
 
 export default app => {
-  app.post('/api/templates', needsAuthorization(), (req, res, next) => {
-    templates
-      .save(req.body, req.language)
-      .then(response => {
-        req.io.emitToCurrentTenant('templateChange', response);
-        return Promise.all([
-          response,
-          settings.updateFilterName(response._id.toString(), response.name),
-        ]);
-      })
-      .then(([response, updatedSettings]) => {
-        if (updatedSettings) {
-          req.io.emitToCurrentTenant('updateSettings', updatedSettings);
-        }
-        res.json(response);
-      })
-      .catch(next);
+  app.post('/api/templates', needsAuthorization(), async (req, res) => {
+    const response = await templates.save(req.body, req.language);
+
+    req.io.emitToCurrentTenant('templateChange', response);
+    const updatedSettings = settings.updateFilterName(response._id.toString(), response.name);
+    if (updatedSettings) {
+      req.io.emitToCurrentTenant('updateSettings', updatedSettings);
+    }
+
+    const templs = await templates.get();
+    const elasticIndex = tenants.current().indexName;
+    await updateMapping(templs, elasticIndex);
+
+    res.json(response);
   });
 
   app.post(

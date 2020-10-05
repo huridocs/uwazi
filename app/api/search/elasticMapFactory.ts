@@ -6,7 +6,6 @@ import { isArrayLiteralExpression } from 'typescript';
 const text = {
   type: 'text',
   index: true,
-  omit_norms: true,
   analyzer: 'tokenizer',
   fields: {
     raw: { type: 'keyword' },
@@ -18,7 +17,6 @@ const text = {
 const noSorttext = {
   type: 'text',
   index: true,
-  omit_norms: true,
   analyzer: 'tokenizer',
   term_vector: 'with_positions_offsets',
 };
@@ -51,33 +49,34 @@ const noSortNumber = {
   doc_values: true,
 };
 
+const alias = (path, key) => {
+  return {
+    type: 'alias',
+    path: `${path}.${key}`,
+  };
+};
+
 const textType = () => {
   return {
-    properties: {
-      label: text,
-      value: text,
-    },
+    label: text,
+    value: text,
   };
 };
 
 const dateType = () => {
   return {
-    properties: {
-      label: text,
-      value: date,
-    },
+    label: text,
+    value: date,
   };
 };
 
 const daterangeType = () => {
   return {
-    properties: {
-      label: text,
-      value: {
-        properties: {
-          from: date,
-          to: date,
-        },
+    label: text,
+    value: {
+      properties: {
+        from: date,
+        to: date,
       },
     },
   };
@@ -85,13 +84,11 @@ const daterangeType = () => {
 
 const geolocationType = () => {
   return {
-    properties: {
-      value: {
-        properties: {
-          label: text,
-          lat: noSortNumber,
-          lon: noSortNumber,
-        },
+    value: {
+      properties: {
+        label: text,
+        lat: noSortNumber,
+        lon: noSortNumber,
       },
     },
   };
@@ -99,20 +96,16 @@ const geolocationType = () => {
 
 const imageType = () => {
   return {
-    properties: {
-      value: noIndexText,
-    },
+    value: noIndexText,
   };
 };
 
 const linkType = () => {
   return {
-    properties: {
-      value: {
-        properties: {
-          label: text,
-          url: noIndexText,
-        },
+    value: {
+      properties: {
+        label: text,
+        url: noIndexText,
       },
     },
   };
@@ -120,18 +113,14 @@ const linkType = () => {
 
 const markdownType = () => {
   return {
-    properties: {
-      value: noSorttext,
-    },
+    value: noSorttext,
   };
 };
 
 const selectType = () => {
   return {
-    properties: {
-      label: text,
-      value: id,
-    },
+    label: text,
+    value: id,
   };
 };
 
@@ -141,19 +130,15 @@ const noMapping = () => {
 
 const numericType = () => {
   return {
-    properties: {
-      value: number,
-    },
+    value: number,
   };
 };
 
 const relationshipType = () => {
   return {
-    properties: {
-      label: text,
-      value: id,
-      type: noIndexText,
-    },
+    label: text,
+    value: id,
+    type: noIndexText,
   };
 };
 
@@ -177,20 +162,28 @@ const mappings = {
 };
 
 export default {
-  mapping: (template: TemplateSchema) => {
-    return template.properties?.reduce((map: any, property) => {
-      if (!property.name || !property.type) {
+  mapping: (templates: TemplateSchema[]) => {
+    const baseMappingObject = {
+      properties: {
+        metadata: {
+          properties: {},
+        },
+      },
+    };
+
+    return templates.reduce((baseMapping: any, template: TemplateSchema) => {
+      return template.properties?.reduce((map: any, property) => {
+        if (!property.name || !property.type) {
+          return map;
+        }
+
+        map.properties.metadata.properties[`${property.name}_${property.type}`] = {
+          properties: mappings[property.type](),
+        };
+
         return map;
-      }
-
-      map[property.name] = {
-        match: property.name,
-        match_mapping_type: 'string',
-        mapping: mappings[property.type](),
-      };
-
-      return map;
-    }, {});
+      }, baseMapping);
+    }, baseMappingObject);
   },
 
   aliasses: (templates: TemplateSchema[]) => {
@@ -207,16 +200,17 @@ export default {
         if (!property.name || !property.type) {
           return aliases;
         }
+        const mapping = mappings[property.type]();
+        const properties = Object.keys(mapping || {}).reduce((map: any, key) => {
+          map[key] = {
+            type: 'alias',
+            path: `metadata.${property.name}_${property.type}.${key}`,
+          };
 
-        aliases.properties.metadata.properties[`${property.name}_${property.type}.value`] = {
-          type: 'alias',
-          path: `metadata.${property.name}.value`,
-        };
+          return map;
+        }, {});
 
-        aliases.properties.metadata.properties[`${property.name}_${property.type}.label`] = {
-          type: 'alias',
-          path: `metadata.${property.name}.label`,
-        };
+        aliases.properties.metadata.properties[`${property.name}`] = { properties };
 
         return aliases;
       }, baseAlias);
@@ -236,8 +230,8 @@ export default {
 
         pipeline.processors.push({
           rename: {
-            field: property.name,
-            target_field: `${property.name}_${property.type}`,
+            field: `metadata.${property.name}`,
+            target_field: `metadata.${property.name}_${property.type}`,
           },
         });
 

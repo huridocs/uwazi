@@ -356,7 +356,7 @@ const processResponse = async (response, templates, dictionaries, language, filt
     result._id = hit._id;
     return result;
   });
-
+  console.log(rows);
   const sanitizedAggregations = await _sanitizeAggregations(
     response.body.aggregations.all,
     templates,
