@@ -165,15 +165,16 @@ const entryValues = {
 
 const getSemanticData = async data => {
   const action = `${data.method}${data.url}`;
-  const entryValue = entryValues[action];
-  if (entryValue) {
-    const activityEntry = await helpers.buildActivityEntry(entryValue, data);
-    return { ...activityEntry };
-  }
   if (action === 'MIGRATE') {
     return helpers.migrationLog(data);
   }
-  return { beautified: false };
+  const entryValue = entryValues[action] || {
+    desc: '',
+    extra: () => `${data.method}: ${data.url}`,
+    method: 'RAW',
+  };
+  const activityEntry = await helpers.buildActivityEntry(entryValue, data);
+  return { ...activityEntry };
 };
 
 export { getSemanticData };

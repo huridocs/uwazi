@@ -41,33 +41,24 @@ class ActivitylogRow extends Component {
       .locale('en')
       .format('LTS')}`;
     const semanticData = entry.get('semantic').toJS();
-
-    let description = (
+    const description = (
       <DescriptionWrapper entry={entry} toggleExpand={this.toggleExpand} expanded={expanded}>
-        <span className="activitylog-extra">
-          {entry.get('method')} : {entry.get('url')}
+        <span>
+          {semanticData.description && (
+            <span className="activitylog-prefix">{semanticData.description}</span>
+          )}
+          {semanticData.name && <span className="activitylog-name"> {semanticData.name}</span>}
+          {semanticData.extra && <span className="activitylog-extra"> {semanticData.extra}</span>}
         </span>
       </DescriptionWrapper>
     );
 
-    if (semanticData.beautified) {
-      description = (
-        <DescriptionWrapper entry={entry} toggleExpand={this.toggleExpand} expanded={expanded}>
-          <span>
-            <span className="activitylog-prefix">{semanticData.description}</span>
-            <span className="activitylog-name"> {semanticData.name}</span>
-            <span className="activitylog-extra"> {semanticData.extra}</span>
-          </span>
-        </DescriptionWrapper>
-      );
-    }
-
     return (
       <tr
-        className={semanticData.beautified ? 'activitylog-beautified' : 'activitylog-raw'}
+        className={semanticData.action === 'RAW' ? 'activitylog-raw' : 'activitylog-beautified'}
         key={entry.get('_id')}
       >
-        <td>{semanticData.beautified ? label(semanticData.action) : label('RAW')}</td>
+        <td>{label(semanticData.action)}</td>
         <td className={!entry.get('username') ? 'color-0' : ''}>
           {entry.get('username') || 'anonymous'}
         </td>

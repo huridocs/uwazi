@@ -15,7 +15,6 @@ export const methods = {
 const buildActivityLogEntry = builder => ({
   description: builder.description,
   action: builder.action || methods.update,
-  beautified: builder.beautified,
   ...(builder.name && { name: builder.name }),
   ...(builder.extra && { extra: builder.extra }),
 });
@@ -25,7 +24,6 @@ export class ActivityLogBuilder {
     this.description = entryValue.desc;
     this.data = data;
     this.action = entryValue.method ? entryValue.method : methods.update;
-    this.beautified = true;
     this.entryValue = entryValue;
   }
 
@@ -112,7 +110,7 @@ export const nameFunc = data => `${data.label} (${data.key})`;
 
 export const migrationLog = log => {
   const data = JSON.parse(log.body);
-  return typeParsers[data.type] ? typeParsers[data.type](data) : { beautified: false };
+  return typeParsers[data.type] ? typeParsers[data.type](data) : { action: 'RAW' };
 };
 
 export const templateName = data =>

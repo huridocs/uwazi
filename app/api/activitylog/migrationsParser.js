@@ -5,7 +5,6 @@ export const typeParsers = {
     const { title, propertyName, sharedId, migrationName } = logData;
 
     return {
-      beautified: true,
       action: methods.migrate,
       name: `${title} (${sharedId})`,
       extra: 'Must fix manually',

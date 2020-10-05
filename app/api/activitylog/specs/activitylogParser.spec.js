@@ -18,7 +18,6 @@ jest.mock('../migrationsParser', () => ({
     stubLogTypeParser: jest.fn().mockReturnValue({
       action: 'MIGRATE',
       description: 'Dummy log',
-      beautified: true,
     }),
   },
 }));
@@ -36,14 +35,17 @@ describe('Activitylog Parser', () => {
     const semanticData = await getSemanticData(log);
     expect(semanticData).toEqual({
       ...expected,
-      beautified: true,
     });
   }
 
   describe('getSemanticData', () => {
     it('should report as beautified: false if no translation present for the route', async () => {
-      const semanticData = await getSemanticData({ url: '/api/untraslated-route' });
-      expect(semanticData.beautified).toBe(false);
+      const semanticData = await getSemanticData({ method: 'POST', url: '/api/untraslated-route' });
+      expect(semanticData).toEqual({
+        action: 'RAW',
+        description: '',
+        extra: 'POST: /api/untraslated-route',
+      });
     });
 
     describe('routes: /api/entities and /api/documents', () => {
@@ -250,7 +252,6 @@ describe('Activitylog Parser', () => {
               body: '{"name":"Person","fields":[]}',
             },
             {
-              beautified: true,
               action: 'CREATE',
               description: 'Created template',
               name: 'Person',
@@ -266,7 +267,6 @@ describe('Activitylog Parser', () => {
               body: '{"_id":"tmp123","name":"Person","fields":[]}',
             },
             {
-              beautified: true,
               action: 'UPDATE',
               description: 'Updated template',
               name: 'Person (tmp123)',
@@ -285,7 +285,6 @@ describe('Activitylog Parser', () => {
               body: `{"_id":"${id}"}`,
             },
             {
-              beautified: true,
               action: 'UPDATE',
               description: 'Set default template',
               name: `Existing Template (${id})`,
@@ -302,7 +301,6 @@ describe('Activitylog Parser', () => {
               body: `{"_id":"${id}"}`,
             },
             {
-              beautified: true,
               action: 'UPDATE',
               description: 'Set default template',
               name: id,
@@ -371,7 +369,6 @@ describe('Activitylog Parser', () => {
               query: '{"_id":"thes123"}',
             },
             {
-              beautified: true,
               action: 'DELETE',
               description: 'Deleted thesaurus',
               name: 'thes123',
@@ -391,7 +388,6 @@ describe('Activitylog Parser', () => {
               body: '{"name":"Rel"}',
             },
             {
-              beautified: true,
               action: 'CREATE',
               description: 'Created relation type',
               name: 'Rel',
@@ -1045,7 +1041,7 @@ describe('Activitylog Parser', () => {
         });
       });
 
-      it('should report as beautified: false if a parser does NOT exist for the log type', async () => {
+      it('should report as RAW if a parser does NOT exist for the log type', async () => {
         const beautified = await getSemanticData({
           method: 'MIGRATE',
           url: '',
@@ -1053,7 +1049,7 @@ describe('Activitylog Parser', () => {
             type: 'nonExistentType',
           }),
         });
-        expect(beautified.beautified).toBe(false);
+        expect(beautified).toEqual({ action: 'RAW' });
       });
     });
   });

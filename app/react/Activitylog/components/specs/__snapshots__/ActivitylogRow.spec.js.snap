@@ -21,7 +21,8 @@ exports[`ActivitylogRow should render the component when not beautified 1`] = `
       entry={
         Immutable.Map {
           "semantic": Immutable.Map {
-            "beautified": false,
+            "action": "RAW",
+            "extra": "POST: /api/entities",
           },
           "url": "/api/entities",
           "method": "POST",
@@ -31,12 +32,13 @@ exports[`ActivitylogRow should render the component when not beautified 1`] = `
       expanded={false}
       toggleExpand={[Function]}
     >
-      <span
-        className="activitylog-extra"
-      >
-        POST
-         : 
-        /api/entities
+      <span>
+        <span
+          className="activitylog-extra"
+        >
+           
+          POST: /api/entities
+        </span>
       </span>
     </DescriptionWrapper>
   </td>

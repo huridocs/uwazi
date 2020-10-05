@@ -34,7 +34,7 @@ describe('ActivitylogRow', () => {
   beforeEach(() => {
     props = {
       entry: Immutable.fromJS({
-        semantic: { beautified: false },
+        semantic: { action: 'RAW', extra: 'POST: /api/entities' },
         url: '/api/entities',
         method: 'POST',
         time: '12345',
