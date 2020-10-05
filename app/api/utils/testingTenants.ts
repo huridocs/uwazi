@@ -30,7 +30,6 @@ const testingTenants = {
       attachments: '',
       customUploads: '',
       temporalFiles: '',
-      activityLog: '',
       ...partial,
     };
   },

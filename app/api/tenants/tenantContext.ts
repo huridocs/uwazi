@@ -1,7 +1,7 @@
 import { AsyncLocalStorage } from 'async_hooks';
 import { config } from 'api/config';
-import { TenantsModel } from './tenantsModel';
 import handleError from 'api/utils/handleError.js';
+import { TenantsModel } from './tenantsModel';
 
 export type Tenant = {
   name: string;
@@ -11,7 +11,6 @@ export type Tenant = {
   attachments: string;
   customUploads: string;
   temporalFiles: string;
-  activityLog: string;
 };
 
 class Tenants {

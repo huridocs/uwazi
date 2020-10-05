@@ -47,7 +47,7 @@ describe('activitylog', () => {
       });
     });
 
-    describe('filtering', () => {
+    describe('when filtering', () => {
       it('should filter by method', async () => {
         const { rows: entries } = await activitylog.get({ method: ['POST'] });
         expect(entries.length).toBe(1);

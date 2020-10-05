@@ -1,12 +1,6 @@
 import { Tenant } from './tenants/tenantContext';
 
-const {
-  ROOT_PATH,
-  UPLOADS_FOLDER,
-  CUSTOM_UPLOADS_FOLDER,
-  TEMPORAL_FILES_FOLDER,
-  ACTIVITY_LOG_FOLDER,
-} = process.env;
+const { ROOT_PATH, UPLOADS_FOLDER, CUSTOM_UPLOADS_FOLDER, TEMPORAL_FILES_FOLDER } = process.env;
 
 const rootPath = ROOT_PATH || `${__dirname}/../../`;
 
@@ -36,7 +30,6 @@ export const config = {
     attachments: UPLOADS_FOLDER || `${rootPath}/uploaded_documents/`,
     customUploads: CUSTOM_UPLOADS_FOLDER || `${rootPath}/custom_uploads/`,
     temporalFiles: TEMPORAL_FILES_FOLDER || `${rootPath}/temporal_files/`,
-    activityLog: ACTIVITY_LOG_FOLDER || `${rootPath}/activity_log/`,
   },
 
   redis: {

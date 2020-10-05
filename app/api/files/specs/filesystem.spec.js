@@ -23,10 +23,10 @@ describe('files', () => {
     });
   });
   describe('activityLogPath', () => {
-    it('should delete all files passed', async () => {
-      testingTenants.mockCurrentTenant({ name: 'default', activityLog: 'activity_log' });
+    it('should return the activity file name of the tenant in the log folder', async () => {
+      testingTenants.mockCurrentTenant({ name: 'default' });
       const logPath = await activityLogPath();
-      expect(logPath).toBe('activity_log/default_activity.log');
+      expect(logPath).toBe('log/default_activity.log');
     });
   });
 });

@@ -5,7 +5,7 @@ import activitylog from '../activitylog';
 
 jest.mock('api/files', () => ({
   appendFile: jest.fn(),
-  activityLogPath: jest.fn().mockImplementation(() => './activity_log/default_activity.log'),
+  activityLogPath: jest.fn().mockImplementation(() => './log/default_activity.log'),
 }));
 
 describe('activitylogMiddleware', () => {
@@ -61,7 +61,7 @@ describe('activitylogMiddleware', () => {
   it('should save the log entry on filesystem', () => {
     activitylogMiddleware(req, res, next);
     expect(appendFile).toHaveBeenCalledWith(
-      './activity_log/default_activity.log',
+      './log/default_activity.log',
       JSON.stringify({
         url: '/api/entities',
         method: 'POST',
