@@ -561,6 +561,22 @@ describe('Activitylog Parser', () => {
     });
 
     describe('routes: /api/pages', () => {
+      describe('method:DELETE', () => {
+        it('should beautify as DELETE', async () => {
+          await testBeautified(
+            {
+              method: 'DELETE',
+              url: '/api/pages',
+              query: '{"sharedId":"page123"}',
+            },
+            {
+              action: 'DELETE',
+              description: 'Deleted page',
+              name: 'page123',
+            }
+          );
+        });
+      });
       describe('when POST a page', () => {
         it('should parse as CREATE if body does not have an id', async () => {
           const semanticData = await getSemanticData({
@@ -589,24 +605,7 @@ describe('Activitylog Parser', () => {
           );
         });
       });
-      describe('method:DELETE', () => {
-        it('should beautify as DELETE', async () => {
-          await testBeautified(
-            {
-              method: 'DELETE',
-              url: '/api/pages',
-              query: '{"sharedId":"page123"}',
-            },
-            {
-              action: 'DELETE',
-              description: 'Deleted page',
-              name: 'page123',
-            }
-          );
-        });
-      });
     });
-
     describe('routes: /api/relationships', () => {
       describe('method:POST /bulk', () => {
         it('should beautify as UPDATE', async () => {

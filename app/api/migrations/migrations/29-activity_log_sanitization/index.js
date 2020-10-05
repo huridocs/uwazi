@@ -32,9 +32,16 @@ export default {
     );
 
     await db.collection('activitylogs').createIndex({ expireAt: 1 }, { expireAfterSeconds: 0 });
+    process.stdout.write('TTL index added over expireAt\r\n');
 
     const nextYear = date.addYearsToCurrentDate(1);
-    await db.collection('activitylogs').updateMany({}, { $set: { expireAt: nextYear } });
+    const updatedEntries = await db
+      .collection('activitylogs')
+      .updateMany({}, { $set: { expireAt: nextYear } });
+
+    process.stdout.write(
+      `${updatedEntries.result.n} activity log entries updated with expiration date\r\n`
+    );
 
     process.stdout.write('\r\n');
   },
