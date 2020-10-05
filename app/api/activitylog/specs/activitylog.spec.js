@@ -26,7 +26,7 @@ describe('activitylog', () => {
   });
 
   describe('get()', () => {
-    it('should return the entries, excluding certain routes (that should be logged, and not presented)', async () => {
+    it('should return all entries', async () => {
       const { rows: entries } = await activitylog.get();
       expect(entries.length).toBe(5);
     });
