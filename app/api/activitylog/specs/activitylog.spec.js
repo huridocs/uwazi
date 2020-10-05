@@ -49,9 +49,10 @@ describe('activitylog', () => {
 
     describe('when filtering', () => {
       it('should filter by method', async () => {
-        const { rows: entries } = await activitylog.get({ method: ['POST'] });
-        expect(entries.length).toBe(1);
-        expect(entries[0].method).toBe('POST');
+        const { rows } = await activitylog.get({ method: ['POST'] });
+        rows.forEach(row => {
+          expect(row.method).toBe('POST');
+        });
       });
 
       it('should filter by time', async () => {
