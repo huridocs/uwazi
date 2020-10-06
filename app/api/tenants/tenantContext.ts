@@ -16,13 +16,11 @@ export type Tenant = {
 class Tenants {
   storage = new AsyncLocalStorage<string>();
 
-  defaultTenantName = 'default';
-
   tenants: { [k: string]: Tenant };
 
   constructor() {
     this.tenants = {
-      [this.defaultTenantName]: { name: this.defaultTenantName, ...config.defaultTenant },
+      [config.defaultTenant.name]: config.defaultTenant,
     };
   }
 
@@ -42,9 +40,12 @@ class Tenants {
     });
   }
 
-  async run(cb: () => Promise<void>, tenantName?: string): Promise<void> {
+  async run(
+    cb: () => Promise<void>,
+    tenantName: string = config.defaultTenant.name
+  ): Promise<void> {
     return new Promise((resolve, reject) => {
-      this.storage.run(tenantName || this.defaultTenantName, () => {
+      this.storage.run(tenantName, () => {
         cb()
           .then(resolve)
           .catch(reject);
@@ -54,6 +55,7 @@ class Tenants {
 
   current() {
     const tenantName = this.storage.getStore();
+
     if (!tenantName) {
       throw new Error('There is no tenant on the current async context');
     }

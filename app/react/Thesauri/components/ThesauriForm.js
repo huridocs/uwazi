@@ -1,4 +1,3 @@
-/** @format */
 import ShowIf from 'app/App/ShowIf';
 import FormGroup from 'app/DocumentForm/components/FormGroup';
 import { BackButton } from 'app/Layout';
@@ -23,12 +22,12 @@ import { Icon } from 'UI';
 import { ThesauriFormItem } from './ThesauriFormItem';
 
 function sanitizeThesauri(thesaurus) {
-  const sanitizedThesauri = Object.assign({}, thesaurus);
+  const sanitizedThesauri = { ...thesaurus };
   sanitizedThesauri.values = sanitizedThesauri.values
     .filter(value => value.label)
     .filter(value => !value.values || value.values.length)
     .map(value => {
-      const _value = Object.assign({}, value);
+      const _value = { ...value };
       if (_value.values) {
         _value.values = _value.values.filter(_v => _v.label);
       }
@@ -64,26 +63,8 @@ export class ThesauriForm extends Component {
     this.fileFormRef = React.createRef();
   }
 
-  componentWillMount() {
+  componentDidMount() {
     this.firstLoad = true;
-  }
-
-  componentWillReceiveProps(props) {
-    props.thesauri.values.forEach((value, index) => {
-      if (
-        value.values &&
-        (!value.values.length || value.values[value.values.length - 1].label !== '')
-      ) {
-        props.addValue(index);
-      }
-    });
-
-    if (
-      !props.thesauri.values.length ||
-      props.thesauri.values[props.thesauri.values.length - 1].label !== ''
-    ) {
-      props.addValue();
-    }
   }
 
   componentDidUpdate(previousProps) {
@@ -91,15 +72,10 @@ export class ThesauriForm extends Component {
       this.firstLoad = false;
       return;
     }
-    const { values } = this.props.thesauri;
-    const previousValues = previousProps.thesauri.values;
-    const addedValue = values.length > previousProps.thesauri.values.length;
-    const lasValueIsGroup = values.length && values[values.length - 1].values;
-    const previousLasValueWasGroup =
-      previousValues.length && previousValues[previousValues.length - 1].values;
-    if (lasValueIsGroup && (!previousLasValueWasGroup || addedValue)) {
-      this.groups[this.groups.length - 1].focus();
-    }
+
+    this.addEmptyValueAtTheEnd();
+
+    this.focusIfWasGroup(previousProps);
   }
 
   componentWillUnmount() {
@@ -113,6 +89,36 @@ export class ThesauriForm extends Component {
 
   onImportClicked() {
     this.fileInputRef.current.click();
+  }
+
+  focusIfWasGroup(previousProps) {
+    const { values } = this.props.thesauri;
+    const previousValues = previousProps.thesauri.values;
+    const addedValue = values.length > previousProps.thesauri.values.length;
+    const lastValueIsGroup = values.length && values[values.length - 1].values;
+    const previousLastValueWasGroup =
+      previousValues.length && previousValues[previousValues.length - 1].values;
+    if (lastValueIsGroup && (!previousLastValueWasGroup || addedValue)) {
+      this.groups[this.groups.length - 1].focus();
+    }
+  }
+
+  addEmptyValueAtTheEnd() {
+    this.props.thesauri.values.forEach((value, index) => {
+      if (
+        value.values &&
+        (!value.values.length || value.values[value.values.length - 1].label !== '')
+      ) {
+        this.props.addValue(index);
+      }
+    });
+
+    if (
+      !this.props.thesauri.values.length ||
+      this.props.thesauri.values[this.props.thesauri.values.length - 1].label !== ''
+    ) {
+      this.props.addValue();
+    }
   }
 
   import() {
@@ -148,6 +154,7 @@ export class ThesauriForm extends Component {
     if (!isNew && !id) {
       return false;
     }
+
     this.groups = [];
     return (
       <div className="thesauri">

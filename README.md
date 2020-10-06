@@ -8,7 +8,7 @@
 [![Maintainability](https://api.codeclimate.com/v1/badges/8c98a251ca64daf434f2/maintainability)](https://codeclimate.com/github/huridocs/uwazi/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/8c98a251ca64daf434f2/test_coverage)](https://codeclimate.com/github/huridocs/uwazi/test_coverage)
 
-There are important stories within your documents. Uwazi helps you tell them. Uwazi is a free, open-source solution for organizing, analyzing and publishing your documents.
+Uwazi is an open-source document manager.
 
 [Uwazi](https://www.uwazi.io/) | [HURIDOCS](https://huridocs.org/)
 
@@ -18,34 +18,43 @@ Read the [user guide](https://github.com/huridocs/uwazi/wiki)
 
 - [Dependencies](#dependencies)
 - [Production](#production)
-  - [Production Configuration](#production-configuration-advanced)
-  - [Production Build](#production-build)
-  - [Initial State](#initial-state)
-  - [Production Run](#production-run)
-  - [Upgrading Uwazi](#upgrading-uwazi-migrations)
 - [Development](#development)
-  - [Development Run](#development-run)
-  - [Testing](#testing)
-    - [Unit and Integration tests](#unit-and-integration-tests)
-    - [End to End (e2e)](#end-to-end-e2e)
-- [Docker](#docker)
 
 # Dependencies
 
-- **NodeJs 14.6.x** For ease of update, use nvm: https://github.com/creationix/nvm
-- **ElasticSearch 7.6.2** https://www.elastic.co/guide/en/elasticsearch/reference/7.6/install-elasticsearch.html Please note that ElasticSearch requires java.  Follow the instructions to instal the package manually, and install v7.6.2.  v7.7.x and above are known to cause `HPE_HEADER_OVERFLOW` errors.  Please, ensure v7.6.2 only.
-  Probably need to disable ml module in the elastic search config file:
-  `xpack.ml.enabled: false`
-- **MongoDB 4.2** https://docs.mongodb.com/v4.2/installation/ .  If you have a previous version installed, please follow instructions on how to [upgrade here](https://docs.mongodb.com/manual/release-notes/4.2-upgrade-standalone/)
-- **Yarn** https://yarnpkg.com/en/docs/install
-- **pdftotext (Poppler)** tested to work on version 0.26 but its recommended to use the latest available for your platform https://poppler.freedesktop.org/. Make sure to **install libjpeg-dev** if you build from source.
+Before anything else you will need to install the application dependencies:
 
-Before anything else you will need to install the application dependencies.
-We also recommend changing some global settings:
+- **NodeJs 14.6.x** For ease of update, use nvm: https://github.com/creationix/nvm.
+- **ElasticSearch 7.9.1** https://www.elastic.co/guide/en/elasticsearch/reference/7.9/install-elasticsearch.html Please note that ElasticSearch requires java. Follow the instructions to instal the package manually, you also probably need to disable ml module in the ElasticSearch config file:
+  `xpack.ml.enabled: false`
+- **ICU Analysis Plugin (recommended)** [installation](https://www.elastic.co/guide/en/elasticsearch/plugins/current/analysis-icu.html#analysis-icu) Adds support for number sorting in texts and solves other language sorting nuances. This option is activated by setting the env var USE_ELASTIC_ICU=true before running the server (defaults to false/unset).
+- **MongoDB 4.2** https://docs.mongodb.com/v4.2/installation/ . If you have a previous version installed, please follow instructions on how to [upgrade here](https://docs.mongodb.com/manual/release-notes/4.2-upgrade-standalone/).
+- **Yarn** https://yarnpkg.com/en/docs/install.
+- **pdftotext (Poppler)** tested to work on version 0.86 but its recommended to use the latest available for your platform https://poppler.freedesktop.org/. Make sure to **install libjpeg-dev** if you build from source.
+
+and change some global settings:
 
 ```
 $ npm config set scripts-prepend-node-path auto
 ```
+
+# Production
+
+### Install/upgrade procedure
+
+1. Download and unpack the [latest stable](https://github.com/huridocs/uwazi/releases) code for production installs.
+2. Shutdown Uwazi if it is already running.
+3. `$ cd uwazi`.
+4. `$ yarn install` will download all node modules, it may take a while.
+5. `$ yarn blank-state` **important note**: the first time you run Uwazi, you will need to initialize the database with its default blank values. Do not run this command if you are upgrading existing projects as it will erase the entire database. Note that from this point on you need ElasticSearch and MongoDB running.
+6. `$ ./install.sh [destination_path]` if no `destination_path` is provided it will default to `./uwazi-production`.
+7. Start the server with `$ node [destination_path]/server.js`.
+
+By default, Uwazi runs on localhost on the port 3000, so point your browser to http://localhost:3000 and authenticate yourself with the default username "admin" and password "change this password now".
+
+It is advisable to create your own system service configuration. Check out the user guide for [more configuration options](https://github.com/huridocs/uwazi/wiki/Install-Uwazi-on-your-server).
+
+# Development
 
 If you want to use the latest development code:
 
@@ -53,14 +62,21 @@ If you want to use the latest development code:
 $ git clone https://github.com/huridocs/uwazi.git
 $ cd uwazi
 $ yarn install
+$ yarn blank-state
 ```
 
-If you just want to only use the latest stable release (recommended for production):
+If you want to download the Uwazi repository and also download the included git submodules, such as the `uwazi-fixtures`, which is used for running the end-to-end testing:
 
 ```
-$ git clone -b master --single-branch https://github.com/huridocs/uwazi.git
+$ git clone --recurse-submodules https://github.com/huridocs/uwazi.git
 $ cd uwazi
 $ yarn install
+```
+
+If the main Uwazi repository had already been cloned/downloaded and now you want to load its sub-modules, you can run
+
+```
+$ git submodule update --init
 ```
 
 There may be an issue with pngquant not running correctly. If you encounter this issue, you are probably missing library **libpng-dev**. Please run:
@@ -70,60 +86,6 @@ $ sudo rm -rf node_modules
 $ sudo apt-get install libpng-dev
 $ yarn install
 ```
-
-# Production
-
-### Production Build
-
-```
-$ yarn production-build
-```
-
-The first time you run Uwazi, you will need to initialize the database with its default blank values. Do no run this command for existing projects, as this will erase the entire database. Note that from this point you need ElasticSearch and MongoDB running.
-
-```
-$ yarn blank-state
-```
-
-Then start the server by typing:
-
-```
-$ yarn run-production
-```
-
-By default, Uwazi runs on localhost on the port 3000. So point your browser to http://localhost:3000 and authenticate yourself with the default username "admin" and password "change this password now".
-
-Check out the user guide for [more configuration options](https://github.com/huridocs/uwazi/wiki/Install-Uwazi-on-your-server).
-
-### Upgrading Uwazi and data migrations
-
-Updating Uwazi is pretty straight forward using git:
-
-```
-$ cd uwazi
-$ git pull
-$ yarn install
-$ yarn migrate
-$ yarn production-build
-$ yarn run-production
-```
-
-- If you are not using git, just download and overwrite the code in the Uwazi directory.
-- 'yarn install' will automatically add, remove or replace any changes in module dependecies.
-- 'yarn migrate' will track your last data version and, if needed, run a script over your data to modify it so that is up to date with your Uwazi version.
-
-### Environment Variables
-
-Uwazi supports the following environment variables to customize its deployment
-(`.env` is supported but not stored in the repository):
-
-- `DBHOST`: MongoDB hostname (default: `localhost`)
-- `DATABASE_NAME`: MongoDB instance name (default: `uwazi_development`)
-- `INDEX_NAME`: Elastic search index name (default: `DATABASE_NAME`)
-- `ELASTICSEARCH_URL`: ElasticSearch connection URL (default: `http://localhost:9200`)
-- `UPLOADS_FOLDER`: Folder on local filesystem where uploaded PDF and other files are written to (_TODO temporarily or permanently?_)
-
-# Development
 
 ### Development Run
 
@@ -145,7 +107,7 @@ $ yarn test
 
 This will run the entire test suite, both on server and client apps.
 
-If the api tests timeout, the issue might be with mongodb-memory-server. See https://github.com/nodkz/mongodb-memory-server/issues/204. Memory server explicitly depends on a version of MongoDB that depends on libcurl3, but Debian 10 and other OS's come with libcurl4 installed instead.
+If the API tests timeout, the issue might be with mongodb-memory-server. See https://github.com/nodkz/mongodb-memory-server/issues/204. Memory server explicitly depends on a version of MongoDB that depends on libcurl3, but Debian 10 and other OS's come with libcurl4 installed instead.
 
 To fix this, update node_modules/mongodb-memory-server-core/lib/util/MongoBinary.js#70.
 Set `exports.LATEST_VERSION = '4.3.3'` or a similar new version.
@@ -157,6 +119,7 @@ For End-to-End testing, we have a full set of fixtures that test the overall fun
 Running end to end tests require a running Uwazi app.
 
 Running tests with Nightmare
+
 ```
 $ yarn hot
 ```
@@ -173,7 +136,7 @@ Running tests with Puppeteer
 $ DATABASE_NAME=uwazi_e2e INDEX_NAME=uwazi_e2e yarn hot
 ```
 
-Then on a different console tab/session, run
+On a different console tab, run
 
 ```
 $ yarn e2e-puppeteer

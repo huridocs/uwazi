@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import Immutable from 'immutable';
-import rison from 'rison';
+import rison from 'rison-node';
 import queryString from 'query-string';
 
 import Loader from 'app/components/Elements/Loader';

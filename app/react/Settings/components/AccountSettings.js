@@ -13,6 +13,10 @@ import { t, I18NLink } from 'app/I18N';
 import { Icon } from 'UI';
 
 export class AccountSettings extends Component {
+  static getDerivedStateFromProps(props) {
+    return { email: props.user.email || '' };
+  }
+
   constructor(props, context) {
     super(props, context);
     this.state = {
@@ -26,10 +30,6 @@ export class AccountSettings extends Component {
     this.updatePassword = this.updatePassword.bind(this);
     this.updateEmail = this.updateEmail.bind(this);
     this.emailChange = this.emailChange.bind(this);
-  }
-
-  componentWillReceiveProps(props) {
-    this.setState({ email: props.user.email || '' });
   }
 
   passwordChange(e) {
@@ -47,7 +47,7 @@ export class AccountSettings extends Component {
     const { user, notify, setUser } = this.props;
 
     e.preventDefault();
-    const userData = Object.assign({}, user, { email });
+    const userData = { ...user, email };
     UsersAPI.save(new RequestParams(userData)).then(result => {
       notify(t('System', 'Email updated', null, false), 'success');
       setUser(Object.assign(userData, { _rev: result.rev }));
@@ -67,7 +67,7 @@ export class AccountSettings extends Component {
       return;
     }
 
-    UsersAPI.save(new RequestParams(Object.assign({}, user, { password }))).then(result => {
+    UsersAPI.save(new RequestParams({ ...user, password })).then(result => {
       notify(t('System', 'Password updated', null, false), 'success');
       setUser(Object.assign(user, { _rev: result.rev }));
     });

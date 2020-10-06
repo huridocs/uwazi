@@ -18,12 +18,11 @@ export default {
 
     return settings.get().then(({ languages }) => {
       const sharedId = ID();
-      const docs = languages.map(lang => {
-        const langDoc = Object.assign({}, doc);
-        langDoc.language = lang.key;
-        langDoc.sharedId = sharedId;
-        return langDoc;
-      });
+      const docs = languages.map(lang => ({
+        ...doc,
+        language: lang.key,
+        sharedId,
+      }));
 
       return model.saveMultiple(docs).then(() => this.getById(sharedId, language));
     });
@@ -63,10 +62,9 @@ export default {
       return this.get({ language: defaultLanguage }, null, { skip: offset, limit })
         .then(pages => {
           const savePages = pages.map(_page => {
-            const page = Object.assign({}, _page);
+            const page = { ..._page, language };
             delete page._id;
             delete page.__v;
-            page.language = language;
             return this.save(page);
           });
 

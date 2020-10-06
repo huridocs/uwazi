@@ -9,21 +9,27 @@ import LibraryLayout from 'app/Library/LibraryLayout';
 import { wrapDispatch } from 'app/Multireducer';
 import ImportProgress from 'app/Uploads/components/ImportProgress';
 import React from 'react';
+import { TableViewer } from 'app/Layout/TableViewer';
 
 export default class Library extends RouteHandler {
   constructor(props, context) {
     super(props, context);
     this.superComponentWillReceiveProps = super.componentWillReceiveProps;
+
+    const { dispatch } = context.store;
+    wrapDispatch(dispatch, 'library')(enterLibrary());
+    this.zoomIn = () => wrapDispatch(dispatch, 'library')(zoomIn());
+    this.zoomOut = () => wrapDispatch(dispatch, 'library')(zoomOut());
   }
 
   static renderTools() {
     return (
-      <React.Fragment>
+      <>
         <div className="searchBox">
           <SearchButton storeKey="library" />
         </div>
         <ImportProgress />
-      </React.Fragment>
+      </>
     );
   }
 
@@ -35,20 +41,13 @@ export default class Library extends RouteHandler {
     return nextProps.location.query.q !== this.props.location.query.q;
   }
 
-  componentWillMount() {
-    const { dispatch } = this.context.store;
-    wrapDispatch(dispatch, 'library')(enterLibrary());
-    this.zoomIn = () => wrapDispatch(dispatch, 'library')(zoomIn());
-    this.zoomOut = () => wrapDispatch(dispatch, 'library')(zoomOut());
-  }
-
   componentWillUnmount() {
     this.emptyState();
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (this.urlHasChanged(nextProps)) {
-      this.getClientState(nextProps);
+  componentDidUpdate(prevProps) {
+    if (this.urlHasChanged(prevProps)) {
+      this.getClientState(this.props);
     }
   }
 
@@ -58,10 +57,19 @@ export default class Library extends RouteHandler {
   }
 
   render() {
+    const tableViewMode = this.props.viewer === TableViewer;
     return (
-      <LibraryLayout>
-        <LibraryModeToggleButtons storeKey="library" zoomIn={this.zoomIn} zoomOut={this.zoomOut} />
-        <DocumentsList storeKey="library" />
+      <LibraryLayout
+        sidePanelMode={this.props.sidePanelMode}
+        noScrollable={this.props.noScrollable}
+      >
+        <LibraryModeToggleButtons
+          storeKey="library"
+          zoomIn={this.zoomIn}
+          zoomOut={this.zoomOut}
+          tableViewMode={tableViewMode}
+        />
+        <DocumentsList storeKey="library" CollectionViewer={this.props.viewer} />
       </LibraryLayout>
     );
   }

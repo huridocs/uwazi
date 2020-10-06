@@ -4,7 +4,6 @@
 /* eslint-disable max-statements */
 import React from 'react';
 import backend from 'fetch-mock';
-import 'jasmine-immutablejs-matchers';
 import { shallow } from 'enzyme';
 import Immutable from 'immutable';
 import moment from 'moment';
@@ -34,7 +33,7 @@ describe('RouteHandler', () => {
   let instance;
   const routeParams = { id: '123' };
   const headers = {};
-  const location = { pathname: '', query: { key: 'value' } };
+  const location = { pathname: '/en', query: { key: 'value' } };
   const languages = [
     { key: 'en', label: 'English', default: true },
     { key: 'es', label: 'Español' },
@@ -100,7 +99,7 @@ describe('RouteHandler', () => {
     });
   });
 
-  describe('componentWillReceiveProps', () => {
+  describe('componentDidUpdate', () => {
     let props;
     beforeEach(() => {
       props = {
@@ -113,13 +112,13 @@ describe('RouteHandler', () => {
     describe('when params change', () => {
       it('should request the clientState', () => {
         spyOn(instance, 'getClientState');
-        instance.componentWillReceiveProps(props);
+        component.setProps(props);
         expect(instance.getClientState).toHaveBeenCalledWith(props);
       });
 
       it('should call emptyState', () => {
         spyOn(instance, 'emptyState');
-        instance.componentWillReceiveProps(props);
+        instance.componentDidUpdate(props);
         expect(instance.emptyState).toHaveBeenCalled();
       });
     });
@@ -132,7 +131,7 @@ describe('RouteHandler', () => {
           location,
           routes: [{ path: '' }, { path: 'subpath' }],
         };
-        instance.componentWillReceiveProps(props);
+        component.setProps(props);
         expect(instance.getClientState).toHaveBeenCalledWith(props);
       });
     });
@@ -140,7 +139,7 @@ describe('RouteHandler', () => {
     describe('when params are the same', () => {
       it('should NOT request the clientState', () => {
         spyOn(instance, 'getClientState');
-        instance.componentWillReceiveProps({ params: { ...routeParams }, location });
+        component.setProps({ params: { ...routeParams }, location });
         expect(instance.getClientState).not.toHaveBeenCalled();
       });
     });

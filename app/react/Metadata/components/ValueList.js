@@ -4,10 +4,10 @@ import { Icon } from '../../Layout';
 
 const withIcon = v =>
   v.icon ? (
-    <React.Fragment>
+    <>
       <Icon className="item-icon item-icon-center" data={v.icon} />
       {v.value}
-    </React.Fragment>
+    </>
   ) : (
     v.value
   );

@@ -37,6 +37,10 @@ export function setAddToData(index, rightIndex) {
   return { type: types.SET_RELATIONSHIPS_ADD_TO_DATA, index, rightIndex };
 }
 
+export function updateRelationshipEntityData(entity) {
+  return { type: types.UPDATE_RELATIONSHIP_ENTITY_DATA, entity };
+}
+
 export function updateRightRelationshipType(index, rightIndex, _id) {
   return (dispatch, getState) => {
     const { hubs } = getState().relationships;
@@ -102,10 +106,7 @@ export function saveRelationships() {
     const apiCall = hubs.reduce(
       (apiActions, hubData) => {
         if (!hubData.hub && !hubData.deleted) {
-          const leftRelationship = Object.assign(
-            { entity: parentEntityId },
-            hubData.leftRelationship
-          );
+          const leftRelationship = { entity: parentEntityId, ...hubData.leftRelationship };
           const rightRelationships = hubData.rightRelationships.reduce(
             (relationships, rightGroup) => {
               if (!rightGroup.deleted) {
@@ -128,9 +129,11 @@ export function saveRelationships() {
           }
 
           if (hubData.modified && !hubData.deleted) {
-            apiActions.save.push(
-              Object.assign({ entity: parentEntityId, hub: hubData.hub }, hubData.leftRelationship)
-            );
+            apiActions.save.push({
+              entity: parentEntityId,
+              hub: hubData.hub,
+              ...hubData.leftRelationship,
+            });
           }
 
           hubData.rightRelationships.forEach(rightGroup => {
@@ -138,7 +141,7 @@ export function saveRelationships() {
               const deleted = rightGroup.deleted || r.deleted || r.moved;
 
               if (deleted && r._id) {
-                apiActions.delete.push(Object.assign({ _id: r._id, entity: r.entity }));
+                apiActions.delete.push({ _id: r._id, entity: r.entity });
               }
 
               const toSave = rightGroup.modified || !r._id;

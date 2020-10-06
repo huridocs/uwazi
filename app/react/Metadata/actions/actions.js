@@ -86,7 +86,7 @@ export function loadFetchedInReduxForm(form, entity, templates) {
   });
 
   const metadata = UnwrapMetadataObject(
-    resetMetadata(Object.assign({}, entity.metadata), template, { resetExisting: false }, template),
+    resetMetadata({ ...entity.metadata }, template, { resetExisting: false }, template),
     template
   );
 
@@ -112,7 +112,7 @@ export function loadInReduxForm(form, _entity, templates) {
 
 export function changeTemplate(form, templateId) {
   return (dispatch, getState) => {
-    const entity = Object.assign({}, getModel(getState(), form));
+    const entity = { ...getModel(getState(), form) };
     const { templates } = getState();
     const template = templates.find(t => t.get('_id') === templateId);
     const previousTemplate = templates.find(t => t.get('_id') === entity.template);

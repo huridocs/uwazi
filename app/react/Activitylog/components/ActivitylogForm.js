@@ -41,7 +41,7 @@ class ActivitylogForm extends Component {
     if (searchResults.get('remainingRows')) {
       const { query } = this.state;
       const lastResultTime = searchResults.getIn(['rows', -1, 'time']);
-      searchMore(Object.assign({}, query, { before: lastResultTime }));
+      searchMore({ ...query, before: lastResultTime });
     }
   }
 
@@ -71,7 +71,7 @@ class ActivitylogForm extends Component {
                 className="form-control"
                 model=".time"
                 id="time"
-                format="YYYY-MM-DD"
+                format="yyyy-MM-dd"
                 useTimezone
               />
             </div>

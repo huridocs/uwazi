@@ -1,16 +1,12 @@
 export default function() {
-  const hit = () =>
-    Object.assign(
-      {},
-      {
-        _index: 'uwazi',
-        _type: 'logs',
-        _id: 'id1',
-        _score: 0.05050901,
-        _source: {},
-        highlight: {},
-      }
-    );
+  const hit = () => ({
+    _index: 'uwazi',
+    _type: 'logs',
+    _id: 'id1',
+    _score: 0.05050901,
+    _source: {},
+    highlight: {},
+  });
 
   const result = {
     took: 7,
@@ -20,13 +16,15 @@ export default function() {
       successful: 5,
       failed: 0,
     },
-    hits: {
-      total: 10,
-      max_score: 0.05050901,
-      hits: [],
-    },
-    aggregations: {
-      all: {},
+    body: {
+      hits: {
+        total: 10,
+        max_score: 0.05050901,
+        hits: [],
+      },
+      aggregations: {
+        all: {},
+      },
     },
   };
 
@@ -36,7 +34,7 @@ export default function() {
     },
 
     withDocs(docs) {
-      result.hits.hits = [];
+      result.body.hits.hits = [];
       docs.forEach(doc => {
         const newHit = hit();
         newHit._id = doc._id;
@@ -47,15 +45,15 @@ export default function() {
           newHit.inner_hits = { fullText: doc.snippets };
           delete doc.snippets;
         }
-        result.hits.hits.push(newHit);
+        result.body.hits.hits.push(newHit);
       });
       return this;
     },
 
     withHighlights(highlights) {
       highlights.forEach((highlight, index) => {
-        if (result.hits.hits[index]) {
-          result.hits.hits[index].highlight = highlight;
+        if (result.body.hits.hits[index]) {
+          result.body.hits.hits[index].highlight = highlight;
         }
       });
       return this;

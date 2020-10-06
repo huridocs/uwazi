@@ -29,6 +29,7 @@ describe('Document', () => {
         pages: ['page1', 'page2', 'page3'],
         css: 'css',
       }),
+      references: Immutable.fromJS([{ reference: 'reference' }]),
     };
   });
 
@@ -141,16 +142,24 @@ describe('Document', () => {
     });
   });
 
-  describe('componentWillReceiveProps', () => {
-    it('should unset selection if different doc', () => {
+  describe('when document changes', () => {
+    it('should unset selection', () => {
       render();
+      instance.text = {
+        selected: jasmine.createSpy('selected'),
+        renderReferences: jasmine.createSpy('renderReferences'),
+        simulateSelection: jasmine.createSpy('simulateSelection'),
+        activate: jasmine.createSpy('activate'),
+      };
       expect(props.unsetSelection.calls.count()).toBe(1);
-      instance.componentWillReceiveProps({
+
+      component.setProps({
         doc: Immutable.fromJS({ _id: 'documentId' }),
         selectedSnippet: Immutable.fromJS({}),
       });
+
       expect(props.unsetSelection.calls.count()).toBe(1);
-      instance.componentWillReceiveProps({
+      component.setProps({
         doc: Immutable.fromJS({ _id: 'anotherId' }),
         selectedSnippet: Immutable.fromJS({}),
       });
@@ -158,11 +167,11 @@ describe('Document', () => {
     });
   });
 
-  describe('componentWillMount', () => {
+  describe('componentDidMount', () => {
     it('should unset selection', () => {
       render();
       expect(props.unsetSelection.calls.count()).toBe(1);
-      instance.componentWillMount();
+      instance.componentDidMount();
       expect(props.unsetSelection.calls.count()).toBe(2);
     });
   });
@@ -255,7 +264,7 @@ describe('Document', () => {
 
     describe('componentDidUpdate', () => {
       it('should simulateSelection', () => {
-        instance.componentDidUpdate();
+        instance.componentDidUpdate(props);
         expect(instance.text.simulateSelection).toHaveBeenCalledWith(
           { selection: 'selection' },
           props.forceSimulateSelection
@@ -263,7 +272,7 @@ describe('Document', () => {
       });
 
       it('should render the references', () => {
-        instance.componentDidUpdate();
+        instance.componentDidUpdate(props);
         expect(instance.text.renderReferences).toHaveBeenCalledWith([{ reference: 'reference' }]);
       });
     });

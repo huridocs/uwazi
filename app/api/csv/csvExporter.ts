@@ -6,7 +6,12 @@ import { PropertySchema } from 'shared/types/commonTypes';
 import { TemplateSchema } from 'shared/types/templateType';
 import translate, { getLocaleTranslation, getContext } from 'shared/translate';
 import translations from 'api/i18n/translations';
-import formatters from './typeFormatters';
+import {
+  formatters,
+  formatCreationDate,
+  formatDocuments,
+  formatAttachments,
+} from './typeFormatters';
 import { EntitySchema } from '../../shared/types/entityType';
 
 export type SearchResults = {
@@ -14,7 +19,7 @@ export type SearchResults = {
   totalRows: number;
   aggregations: {
     all: {
-      _types: {
+      _types?: {
         buckets: {
           key: string;
           // eslint-disable-next-line camelcase
@@ -45,8 +50,8 @@ type TemplatesCache = {
 export const getTypes = (searchResults: SearchResults, typesWhitelist: string[] = []) =>
   typesWhitelist.length
     ? typesWhitelist
-    : searchResults.aggregations.all._types.buckets
-        .filter(bucket => bucket.filtered.doc_count > 0)
+    : searchResults.aggregations.all
+        ._types!.buckets.filter(bucket => bucket.filtered.doc_count > 0)
         .map(bucket => bucket.key);
 
 const hasValue = (value: string) => value !== 'missing';
@@ -130,16 +135,13 @@ export const processCommonField = (
     case 'template':
       return rowTemplate.name;
     case 'creationDate':
-      return formatters.creationDate(row, options);
+      return formatCreationDate(row, options);
     case 'geolocation':
       return processGeolocationField(row, rowTemplate);
     case 'documents':
-      return formatters.documents(row.documents, options);
+      return formatDocuments(row);
     case 'attachments':
-      return formatters.attachments(
-        row.attachments.map((attachment: any) => ({ ...attachment, entityId: row._id })),
-        options
-      );
+      return formatAttachments(row);
     case 'published':
       return row.published ? 'Published' : 'Unpublished';
     default:

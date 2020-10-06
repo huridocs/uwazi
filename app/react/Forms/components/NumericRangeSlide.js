@@ -2,16 +2,18 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 
 export default class NumericRangeSlide extends Component {
+  static getDerivedStateFromProps({ value }) {
+    if (value) {
+      return { value };
+    }
+
+    return null;
+  }
+
   constructor(props) {
     super(props);
     this.state = { value: props.value };
     this.onChange = this.onChange.bind(this);
-  }
-
-  componentWillReceiveProps({ value }) {
-    if (value) {
-      this.setState({ value });
-    }
   }
 
   onChange(e) {
@@ -51,7 +53,7 @@ export default class NumericRangeSlide extends Component {
     const { min, max, step, prefix, minLabel, maxLabel } = this.props;
     const { value } = this.state;
     return (
-      <React.Fragment>
+      <>
         <div className="NumericRangeSlide">
           <input
             type="range"
@@ -68,7 +70,7 @@ export default class NumericRangeSlide extends Component {
           </div>
         </div>
         {this.renderTickMarksDatalist()}
-      </React.Fragment>
+      </>
     );
   }
 }

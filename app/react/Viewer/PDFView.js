@@ -29,7 +29,7 @@ class PDFView extends Component {
     this.onDocumentReady = this.onDocumentReady.bind(this);
   }
 
-  componentWillMount() {
+  componentDidMount() {
     if (this.props.location.query.searchTerm) {
       this.context.store.dispatch(actions.set('viewer.sidepanel.tab', 'text-search'));
     }
@@ -100,7 +100,7 @@ class PDFView extends Component {
     const page = Number(query.page || 1);
 
     return (
-      <React.Fragment>
+      <>
         <Helmet>{raw && <link rel="canonical" href={`${pathname}?page=${page}`} />}</Helmet>
         <Viewer
           raw={raw}
@@ -111,7 +111,7 @@ class PDFView extends Component {
           page={page}
           file={defaultDoc(this.props.entity)}
         />
-      </React.Fragment>
+      </>
     );
   }
 }

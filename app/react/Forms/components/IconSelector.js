@@ -1,57 +1,12 @@
-import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-
 import { iconNames } from 'UI/Icon/library';
-import { Icon } from 'UI';
-import countries from 'world-countries';
-import Flag from 'react-flags';
-
+import { CountryList } from 'UI';
 import DropdownList from './DropdownList';
+import IconSelectorItem from './IconSelectorItem';
 
-const style = { display: 'inline-block', width: '25px' };
-
-export class ListItem extends Component {
-  shouldComponentUpdate(nextProps) {
-    return this.props.item._id !== nextProps.item._id;
-  }
-
-  render() {
-    const { item } = this.props;
-    let icon = <span>No icon / flag</span>;
-    if (item.type === 'Icons') {
-      icon = (
-        <span style={style}>
-          <Icon icon={`${item._id}`} />
-        </span>
-      );
-    }
-
-    if (item.type === 'Flags') {
-      icon = (
-        <span style={style}>
-          <Flag
-            name={item._id}
-            format="png"
-            pngSize={16}
-            shiny
-            alt={`${item.label} flag`}
-            basePath="/flag-images"
-          />
-        </span>
-      );
-    }
-
-    return (
-      <span>
-        {icon}
-        {item.label}
-      </span>
-    );
-  }
-}
-
-export class IconSelector extends Component {
-  componentWillMount() {
+export default class IconSelector extends Component {
+  constructor(props) {
+    super(props);
     const listOptions = [{ _id: null, type: 'Empty' }]
       .concat(
         iconNames.map(icon => ({
@@ -61,14 +16,14 @@ export class IconSelector extends Component {
         }))
       )
       .concat(
-        countries.map(country => ({
-          _id: country.cca3,
+        Array.from(CountryList).map(country => ({
+          _id: country[1].cca3,
           type: 'Flags',
-          label: country.name.common,
+          label: country[1].label,
         }))
       );
 
-    this.setState({ listOptions });
+    this.state = { listOptions };
   }
 
   render() {
@@ -77,8 +32,8 @@ export class IconSelector extends Component {
         valueField="_id"
         textField="label"
         data={this.state.listOptions}
-        valueComponent={ListItem}
-        itemComponent={ListItem}
+        valueComponent={IconSelectorItem}
+        itemComponent={IconSelectorItem}
         defaultValue={this.state.listOptions[0]}
         filter="contains"
         groupBy="type"
@@ -87,9 +42,3 @@ export class IconSelector extends Component {
     );
   }
 }
-
-ListItem.propTypes = {
-  item: PropTypes.object,
-};
-
-export default IconSelector;

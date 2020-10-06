@@ -1,25 +1,21 @@
-import multer from 'multer';
-import { Application, Request, Response, NextFunction } from 'express';
+import { Application } from 'express';
 //@ts-ignore
 import debugLog from 'api/log/debugLog';
 import errorLog from 'api/log/errorLog';
 import { processDocument } from 'api/files/processDocument';
-import { uploadsPath, fileExists } from 'api/files/filesystem';
-
+import { uploadsPath, fileExists, customUploadsPath } from 'api/files/filesystem';
 import needsAuthorization from 'api/auth/authMiddleware';
-import storageConfig from 'api/files/storageConfig';
+import { uploadMiddleware } from 'api/files/uploadMiddleware';
+import { CSVLoader } from 'api/csv';
 import { files } from './files';
-import { validation, createError } from '../utils';
-
-const storage = multer.diskStorage(storageConfig);
-const upload = multer({ storage });
+import { validation, createError, handleError } from '../utils';
 
 export default (app: Application) => {
   app.post(
     '/api/files/upload/document',
     needsAuthorization(['admin', 'editor']),
-    upload.single('file'),
-    async (req: Request, res: Response, _next: NextFunction) => {
+    uploadMiddleware(uploadsPath),
+    async (req, res) => {
       try {
         req.getCurrentSessionSockets().emit('conversionStart', req.body.entity);
         const savedFile = await processDocument(req.body.entity, req.file);
@@ -38,8 +34,8 @@ export default (app: Application) => {
   app.post(
     '/api/files/upload/custom',
     needsAuthorization(['admin', 'editor']),
-    upload.single('file'),
-    (req: Request, res: Response, next: NextFunction) => {
+    uploadMiddleware(customUploadsPath),
+    (req, res, next) => {
       files
         .save({ ...req.file, type: 'custom' })
         .then(saved => {
@@ -49,18 +45,14 @@ export default (app: Application) => {
     }
   );
 
-  app.post(
-    '/api/files',
-    needsAuthorization(['admin', 'editor']),
-    (req: Request, res: Response, next: NextFunction) => {
-      files
-        .save(req.body)
-        .then(result => {
-          res.json(result);
-        })
-        .catch(next);
-    }
-  );
+  app.post('/api/files', needsAuthorization(['admin', 'editor']), (req, res, next) => {
+    files
+      .save(req.body)
+      .then(result => {
+        res.json(result);
+      })
+      .catch(next);
+  });
 
   app.get(
     '/api/files/:filename',
@@ -74,14 +66,23 @@ export default (app: Application) => {
       },
     }),
 
-    async (req: Request, res: Response, next: NextFunction) => {
+    async (req, res, next) => {
       try {
-        const [file = { filename: '' }] = await files.get({ filename: req.params.filename });
+        const [file = { filename: '', originalname: undefined }] = await files.get({
+          filename: req.params.filename,
+        });
 
         const filename = file.filename || '';
 
         if (!filename || !(await fileExists(uploadsPath(filename)))) {
           throw createError('file not found', 404);
+        }
+
+        if (file.originalname) {
+          res.setHeader(
+            'Content-Disposition',
+            `filename*=UTF-8''${encodeURIComponent(file.originalname)}`
+          );
         }
 
         res.sendFile(uploadsPath(filename));
@@ -106,7 +107,7 @@ export default (app: Application) => {
       },
     }),
 
-    async (req: Request, res: Response, next: NextFunction) => {
+    async (req, res, next) => {
       try {
         const [deletedFile] = await files.delete(req.query);
         const thumbnailFileName = `${deletedFile._id}.jpg`;
@@ -118,16 +119,57 @@ export default (app: Application) => {
     }
   );
 
-  app.get(
-    '/api/files',
-    needsAuthorization(['admin', 'editor']),
-    (req: Request, res: Response, next: NextFunction) => {
-      files
-        .get(req.query)
-        .then(result => {
-          res.json(result);
+  app.get('/api/files', needsAuthorization(['admin', 'editor']), (req, res, next) => {
+    files
+      .get(req.query)
+      .then(result => {
+        res.json(result);
+      })
+      .catch(next);
+  });
+
+  app.post(
+    '/api/import',
+
+    needsAuthorization(['admin']),
+
+    uploadMiddleware(),
+
+    validation.validateRequest({
+      properties: {
+        body: {
+          required: ['template'],
+          properties: {
+            template: { type: 'string' },
+          },
+        },
+      },
+    }),
+
+    (req, res) => {
+      const loader = new CSVLoader();
+      let loaded = 0;
+
+      loader.on('entityLoaded', () => {
+        loaded += 1;
+        req.getCurrentSessionSockets().emit('IMPORT_CSV_PROGRESS', loaded);
+      });
+
+      loader.on('loadError', error => {
+        req.getCurrentSessionSockets().emit('IMPORT_CSV_ERROR', handleError(error));
+      });
+
+      req.getCurrentSessionSockets().emit('IMPORT_CSV_START');
+      loader
+        .load(req.file.path, req.body.template, { language: req.language, user: req.user })
+        .then(() => {
+          req.getCurrentSessionSockets().emit('IMPORT_CSV_END');
         })
-        .catch(next);
+        .catch((e: Error) => {
+          req.getCurrentSessionSockets().emit('IMPORT_CSV_ERROR', handleError(e));
+        });
+
+      res.json('ok');
     }
   );
 };

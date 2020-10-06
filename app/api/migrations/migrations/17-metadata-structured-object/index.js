@@ -136,17 +136,16 @@ export default {
       .collection('templates')
       .find()
       .toArray();
-    const templatesByKey = templates.reduce(
-      (memo, t) => Object.assign({}, memo, { [t._id.toString()]: t }),
-      {}
-    );
+
+    const templatesByKey = templates.reduce((memo, t) => ({ ...memo, [t._id.toString()]: t }), {});
 
     const dictionaries = await db
       .collection('dictionaries')
       .find()
       .toArray();
+
     const dictionariesByKey = dictionaries.reduce(
-      (memo, t) => Object.assign({}, memo, { [t._id.toString()]: t }),
+      (memo, d) => ({ ...memo, [d._id.toString()]: d }),
       {}
     );
 

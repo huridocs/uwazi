@@ -1,6 +1,8 @@
 /* eslint-disable max-lines */
 import moment from 'moment';
-import typeFormatters, {
+import { formatDocuments, formatAttachments } from '../typeFormatters';
+import {
+  formatters as typeFormatters,
   formatFile,
   formatDate,
   formatAttachment,
@@ -46,6 +48,14 @@ const testEmptyField = (formatter: FormatterFunction) => {
   const field: any[] = [];
   const value = formatter(field, {});
   expect(value).toBe('');
+
+  const nullField: any[] = [
+    {
+      value: null,
+    },
+  ];
+  const nullValue = formatter(nullField, {});
+  expect(nullValue).toBe('');
 };
 
 const testSimple = (value: any, formatter: FormatterFunction, expected: any) => {
@@ -172,8 +182,11 @@ describe('csvExporter typeFormatters', () => {
   });
 
   it('should return the correct RELATIONSHIP value', () => {
-    const singleField = [{ label: 'Entity 1' }];
-    const multipleField = [{ label: 'Entity 1' }, { label: 'Entity 2' }];
+    const singleField = [{ label: 'Entity 1', value: null }];
+    const multipleField = [
+      { label: 'Entity 1', value: null },
+      { label: 'Entity 2', value: null },
+    ];
 
     const singleValue = typeFormatters.relationship(singleField, {});
     const multipleValue = typeFormatters.relationship(multipleField, {});
@@ -185,39 +198,44 @@ describe('csvExporter typeFormatters', () => {
 
   describe('FILES', () => {
     it('should return the correct DOCUMENTS value', () => {
-      const singleField = [{ filename: 'file1.pdf' }];
-      const multipleField = [{ filename: 'file1.pdf' }, { filename: 'file2.pdf' }];
+      const singleField = [{ filename: 'file1.pdf', value: null }];
+      const multipleField = [
+        { filename: 'file1.pdf', value: null },
+        { filename: 'file2.pdf', value: null },
+      ];
 
-      const singleValue = typeFormatters.documents(singleField, {});
-      const multipleValue = typeFormatters.documents(multipleField, {});
+      const singleValue = formatDocuments({ documents: singleField });
+      const multipleValue = formatDocuments({ documents: multipleField });
+      const emptyValue = formatDocuments({ documents: [] });
 
       expect(singleValue).toBe(formatFile('file1.pdf'));
       expect(multipleValue).toBe(`${formatFile('file1.pdf')}|${formatFile('file2.pdf')}`);
-      testEmptyField(typeFormatters.documents);
+      expect(emptyValue).toBe('');
     });
 
     it('should return the correct ATTACHMENTS value', () => {
-      const singleField = [{ filename: 'file1.pdf', entityId: 'entity1' }];
+      const singleField = [{ filename: 'file1.pdf', entityId: 'entity1', value: null }];
       const multipleField = [
-        { filename: 'file1.pdf', entityId: 'entity1' },
-        { filename: 'file2.pdf', entityId: 'entity1' },
+        { filename: 'file1.pdf', entityId: 'entity1', value: null },
+        { filename: 'file2.pdf', entityId: 'entity1', value: null },
       ];
 
-      const singleValue = typeFormatters.attachments(singleField, {});
-      const multipleValue = typeFormatters.attachments(multipleField, {});
+      const singleValue = formatAttachments({ attachments: singleField, _id: 'entity1' });
+      const multipleValue = formatAttachments({ attachments: multipleField, _id: 'entity1' });
+      const emptyValue = formatDocuments({ attachments: [], _id: 'entity1' });
 
       expect(singleValue).toBe(formatAttachment('file1.pdf', 'entity1'));
       expect(multipleValue).toBe(
         `${formatAttachment('file1.pdf', 'entity1')}|${formatAttachment('file2.pdf', 'entity1')}`
       );
-      testEmptyField(typeFormatters.attachments);
+      expect(emptyValue).toBe('');
     });
   });
 
   describe('HELPERS', () => {
     it('should format timestamps to the provided format', () => {
       const timestamp = 1585851003;
-      const format1 = 'YYYY/MM/DD';
+      const format1 = 'yyyy/MM/dd';
 
       const formatted1 = formatDate(timestamp, format1);
 

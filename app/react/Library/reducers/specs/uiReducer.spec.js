@@ -2,7 +2,6 @@ import Immutable from 'immutable';
 import * as types from 'app/Library/actions/actionTypes';
 
 import uiReducer from 'app/Library/reducers/uiReducer';
-import 'jasmine-immutablejs-matchers';
 
 describe('uiReducer', () => {
   const initialState = Immutable.fromJS({
@@ -12,6 +11,7 @@ describe('uiReducer', () => {
     selectedDocuments: [],
     filtersPanel: false,
     zoomLevel: 0,
+    tableViewColumns: Immutable.fromJS([]),
   });
 
   describe('when state is undefined', () => {
@@ -225,6 +225,133 @@ describe('uiReducer', () => {
       expect(changedState.get('zoomLevel')).toBe(-3);
       changedState = uiReducer(changedState, { type: types.ZOOM_OUT });
       expect(changedState.get('zoomLevel')).toBe(-3);
+    });
+  });
+
+  describe('SET_TABLE_VIEW_COLUMNS', () => {
+    describe('if new columns is an empty array', () => {
+      it('should not update state ', () => {
+        const previousState = Immutable.fromJS({ tableViewColumns: [{ name: 'column1' }] });
+        const newState = uiReducer(previousState, {
+          type: types.SET_TABLE_VIEW_COLUMNS,
+          columns: [],
+        });
+        expect(newState).toEqual(previousState);
+      });
+    });
+    describe('when there are no columns in initial state', () => {
+      const columns = [
+        {
+          label: 'Country',
+          name: 'country',
+          showInCard: true,
+        },
+        {
+          label: 'Birth date',
+          name: 'birth date',
+        },
+      ];
+      const selectableColumns = uiReducer(initialState, {
+        type: types.SET_TABLE_VIEW_COLUMNS,
+        columns,
+      }).get('tableViewColumns');
+      it('should not set as hidden columns with showInCard true', () => {
+        expect(selectableColumns.get(0).get('hidden')).toBe(false);
+      });
+      it('should set as hidden columns with showInCard false or undefined', () => {
+        expect(selectableColumns.get(1).get('hidden')).toBe(true);
+      });
+    });
+    describe('when there are previous columns in initial state', () => {
+      const initialColumnsState = Immutable.fromJS({
+        tableViewColumns: [
+          {
+            label: 'Country',
+            name: 'country',
+            showInCard: true,
+            hidden: true,
+          },
+          {
+            label: 'Birth date',
+            name: 'birth date',
+            hidden: false,
+          },
+          {
+            label: 'Other',
+            name: 'other',
+          },
+        ],
+      });
+      const columns = [
+        {
+          label: 'Country',
+          name: 'country',
+          showInCard: true,
+        },
+        {
+          label: 'Birth date',
+          name: 'birth date',
+        },
+      ];
+      const selectableColumns = uiReducer(initialColumnsState, {
+        type: types.SET_TABLE_VIEW_COLUMNS,
+        columns,
+      }).get('tableViewColumns');
+      it('should keep previous hidden value from initial state', () => {
+        expect(selectableColumns.get(0).get('hidden')).toBe(true);
+        expect(selectableColumns.get(1).get('hidden')).toBe(false);
+      });
+      it('should only keep new action columns', () => {
+        expect(selectableColumns.size).toBe(2);
+      });
+    });
+  });
+
+  describe('SET_TABLE_VIEW_COLUMN_HIDDEN', () => {
+    it('should update the hidden value of a column', () => {
+      const initialColumnsState = Immutable.fromJS({
+        tableViewColumns: [
+          {
+            name: 'country',
+            showInCard: true,
+            hidden: true,
+          },
+          {
+            name: 'birth date',
+            hidden: true,
+          },
+        ],
+      });
+      const selectableColumns = uiReducer(initialColumnsState, {
+        type: types.SET_TABLE_VIEW_COLUMN_HIDDEN,
+        name: 'birth date',
+        hidden: false,
+      }).get('tableViewColumns');
+      expect(selectableColumns.get(1).get('hidden')).toBe(false);
+    });
+  });
+
+  describe('SET_TABLE_VIEW_ALL_COLUMNS_HIDDEN', () => {
+    it('should update the hidden value of all columns', () => {
+      const initialColumnsState = Immutable.fromJS({
+        tableViewColumns: [
+          {
+            name: 'country',
+            showInCard: true,
+            hidden: false,
+          },
+          {
+            name: 'birth date',
+            hidden: true,
+          },
+        ],
+      });
+      const selectableColumns = uiReducer(initialColumnsState, {
+        type: types.SET_TABLE_VIEW_ALL_COLUMNS_HIDDEN,
+        hidden: false,
+      }).get('tableViewColumns');
+      expect(selectableColumns.get(0).get('hidden')).toBe(false);
+      expect(selectableColumns.get(1).get('hidden')).toBe(false);
     });
   });
 });

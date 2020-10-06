@@ -6,16 +6,13 @@ import DatePicker from './DatePicker';
 class DateRange extends Component {
   onChange(prop, propValue) {
     const { value, onChange } = this.props;
-    const state = Object.assign({}, value, { [prop]: propValue });
+    const state = { ...value, [prop]: propValue };
 
     onChange(state);
   }
 
   render() {
-    const { useTimezone } = this.props;
-    let { locale, format } = this.props;
-    locale = locale || 'en';
-    format = format || 'DD/MM/YYYY';
+    const { useTimezone, locale, format } = this.props;
     const { value } = this.props;
     const { from: stateFrom, to: stateTo } = value || { from: null, to: null };
 

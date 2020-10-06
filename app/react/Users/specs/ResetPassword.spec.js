@@ -17,6 +17,7 @@ describe('ResetPassword', () => {
     props = {
       resetPassword: jasmine.createSpy('resetPassword').and.returnValue({ then: cb => cb() }),
       params: { key: 'asd' },
+      routes: [],
     };
 
     context = { store: { getState: () => ({}) }, router: { location: '' } };

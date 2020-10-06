@@ -1,5 +1,5 @@
 export default function(obj, keys = []) {
-  const target = Object.assign({}, obj);
+  const target = { ...obj };
 
   keys.forEach(key => {
     delete target[key];

@@ -2,7 +2,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
 import PropTypes from 'prop-types';
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import { Map } from 'immutable';
 import { Icon } from 'UI';
 
@@ -104,11 +104,11 @@ export class LeftRelationship extends Component {
       return false;
     }
     return (
-      <Fragment>
+      <>
         {this.renderTrashButton(hub, index)}
         {this.renderRelationship()}
         {LeftRelationship.renderFigure()}
-      </Fragment>
+      </>
     );
   }
 }

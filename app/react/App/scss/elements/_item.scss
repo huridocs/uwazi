@@ -130,7 +130,7 @@ $item-padding: 15px;
 
 .item-icon {
   position: relative;
-  margin-right: 6px;
+  margin-right: 3px;
 }
 
 .item-private-icon {
@@ -430,9 +430,6 @@ $item-padding: 15px;
       margin-left: -3px;
     }
   }
-  .item-icon {
-    top: -1px;
-  }
 
   .markdown-viewer p,
   .markdown-viewer li {
@@ -597,9 +594,13 @@ $item-padding: 15px;
   position: relative;
   display: flex;
   width: 100%;
-  margin: 0 auto 15px;
+  margin: 80px auto 15px;
   padding: 0 0 0 15px;
   font-size: $f-size-sm;
+
+  @media (min-width: 768px) {
+    margin-top: 0;
+  }
 }
 
 .item-danger {

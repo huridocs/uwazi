@@ -310,9 +310,9 @@ describe('MultiSelect', () => {
     });
   });
 
-  describe('componentWillReceiveProps()', () => {
+  describe('component update props', () => {
     it('should set the filter in the state', () => {
-      instance.componentWillReceiveProps({ filter: 'Only this' });
+      component.setProps({ filter: 'Only this' });
       expect(instance.state.filter).toBe('Only this');
     });
   });

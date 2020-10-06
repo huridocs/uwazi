@@ -1,8 +1,5 @@
 import { fromJS as Immutable } from 'immutable';
-import * as matchers from 'jest-immutable-matchers';
 import multireducer from '../multireducer';
-
-jest.addMatchers(matchers);
 
 describe('multireducer', () => {
   const reducerKey = 'customKey';
@@ -18,13 +15,13 @@ describe('multireducer', () => {
   it('should execute actions with the customKey', () => {
     const action = { type: 'PUSH', value: '123', __reducerKey: 'customKey' };
     const resultState = wrapedReducer(Immutable([]), action);
-    expect(resultState).toEqualImmutable(Immutable(['123']));
+    expect(resultState.toJS()).toEqual(['123']);
   });
 
   it('should not execute actions without the customKey', () => {
     const action = { type: 'PUSH', value: '123' };
     const resultState = wrapedReducer(Immutable([]), action);
-    expect(resultState).toEqualImmutable(Immutable([]));
+    expect(resultState.toJS()).toEqual([]);
   });
 
   it('should execute @@redux/INIT action and return the state', () => {

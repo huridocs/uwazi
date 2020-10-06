@@ -76,7 +76,7 @@ function filterProps(showSubset) {
 }
 
 const Metadata = ({ metadata, compact, renderLabel, showSubset, highlight }) => (
-  <React.Fragment>
+  <>
     {metadata.filter(filterProps(showSubset)).map((prop, index) => {
       let type = prop.type ? prop.type : 'default';
       type = type === 'image' || type === 'media' ? 'multimedia' : type;
@@ -92,7 +92,7 @@ const Metadata = ({ metadata, compact, renderLabel, showSubset, highlight }) => 
         </dl>
       );
     })}
-  </React.Fragment>
+  </>
 );
 
 Metadata.defaultProps = {

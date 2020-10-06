@@ -58,15 +58,15 @@ describe('SearchBar (Entities)', () => {
     expect(props.searchReferences).toHaveBeenCalled();
   });
 
-  describe('componentWillReceiveProps', () => {
+  describe('componentUpdate', () => {
     beforeEach(() => {
       render();
     });
 
     it('should reset search term when changing the entity', () => {
-      instance.componentWillReceiveProps({ entityId: 'id1' });
+      component.setProps({ entityId: 'id1' });
       expect(props.searchReferences).not.toHaveBeenCalled();
-      instance.componentWillReceiveProps({ entityId: 'id2' });
+      component.setProps({ entityId: 'id2' });
       expect(formActions.change).toHaveBeenCalledWith('relationships/list/search.searchTerm', '');
     });
   });

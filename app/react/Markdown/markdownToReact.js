@@ -6,7 +6,7 @@ import mdContainer from 'markdown-it-container';
 import CustomComponents from './components';
 
 const components = Object.keys(CustomComponents).reduce(
-  (map, key) => Object.assign({}, map, { [key.toLowerCase()]: CustomComponents[key] }),
+  (map, key) => ({ ...map, [key.toLowerCase()]: CustomComponents[key] }),
   {}
 );
 const availableComponents = Object.keys(components);

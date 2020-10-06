@@ -1,5 +1,5 @@
 import React from 'react';
-import rison from 'rison';
+import rison from 'rison-node';
 
 import { actions } from 'app/BasicReducer';
 import { markdownDatasets } from 'app/Markdown';
@@ -93,11 +93,11 @@ class PageView extends RouteHandler {
 
   render() {
     return (
-      <React.Fragment>
+      <>
         <PageViewer />
         <ViewMetadataPanel storeKey="library" />
         <SelectMultiplePanelContainer storeKey="library" />
-      </React.Fragment>
+      </>
     );
   }
 }

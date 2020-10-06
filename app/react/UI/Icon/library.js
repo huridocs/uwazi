@@ -1,4 +1,5 @@
 import { library } from '@fortawesome/fontawesome-svg-core';
+import { faAlignJustify } from '@fortawesome/free-solid-svg-icons/faAlignJustify';
 import { faAngleLeft } from '@fortawesome/free-solid-svg-icons/faAngleLeft';
 import { faAngleRight } from '@fortawesome/free-solid-svg-icons/faAngleRight';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons/faArrowLeft';
@@ -89,8 +90,10 @@ import { faUserTimes } from '@fortawesome/free-solid-svg-icons/faUserTimes';
 import { faHandPaper } from '@fortawesome/free-solid-svg-icons/faHandPaper';
 import { saveAndNext } from './save-and-next';
 import { exportCsv } from './export-csv';
+import { copyFrom } from './copy-from';
 
 const icons = {
+  faAlignJustify,
   faAngleLeft,
   faAngleRight,
   faArrowLeft,
@@ -181,6 +184,7 @@ const icons = {
   faHandPaper,
   saveAndNext,
   exportCsv,
+  copyFrom,
 };
 
 export const loadIcons = () => {

@@ -87,13 +87,13 @@ export class SemanticSearchResults extends Component {
     return (
       <div className="row panels-layout">
         {isEmpty && (
-          <React.Fragment>
+          <>
             <p>Search not found</p>
             <Helmet title="Semantic search not found" />
-          </React.Fragment>
+          </>
         )}
         {!isEmpty && (
-          <React.Fragment>
+          <>
             <Helmet title={`${searchTerm} - Semantic search results`} />
             <main className="semantic-search-results-viewer document-viewer with-panel">
               <div>
@@ -145,7 +145,7 @@ export class SemanticSearchResults extends Component {
               searchId={searchId}
               formKey="semanticSearch.multipleEdit"
             />
-          </React.Fragment>
+          </>
         )}
       </div>
     );

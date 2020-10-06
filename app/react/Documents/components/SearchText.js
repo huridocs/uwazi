@@ -25,12 +25,12 @@ export class SearchText extends Component {
     }
   }
 
-  componentWillReceiveProps(nextProps) {
+  componentDidUpdate(prevProps) {
     if (
-      nextProps.searchTerm !== this.props.searchTerm ||
-      nextProps.doc.get('sharedId') !== this.props.doc.get('sharedId')
+      prevProps.searchTerm !== this.props.searchTerm ||
+      prevProps.doc.get('sharedId') !== this.props.doc.get('sharedId')
     ) {
-      this.searchSnippets(nextProps.searchTerm, nextProps.doc.get('sharedId'));
+      this.searchSnippets(this.props.searchTerm, this.props.doc.get('sharedId'));
     }
   }
 
@@ -126,6 +126,7 @@ export class SearchText extends Component {
 SearchText.propTypes = {
   snippets: PropTypes.shape({
     toJS: PropTypes.func,
+    get: PropTypes.func,
   }),
   storeKey: PropTypes.string,
   searchTerm: PropTypes.string,

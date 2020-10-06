@@ -30,8 +30,7 @@ describe('search schema', () => {
       await validation.validateRequest(searchSchema)(validSearch, null, expectValidSchema);
     });
     it('should support a number as a search term', async () => {
-      const query = Object.assign({}, validQuery, { searchTerm: 3 });
-      const validSearch = { query };
+      const validSearch = { query: { ...validQuery, searchTerm: 3 } };
       await validation.validateRequest(searchSchema)(validSearch, null, expectValidSchema);
     });
   });
@@ -42,8 +41,7 @@ describe('search schema', () => {
     }
 
     async function testInvalidProperty(invalidProperty: any) {
-      const query = Object.assign({}, validQuery, invalidProperty);
-      const invalidSearch = { query };
+      const invalidSearch = { query: { ...validQuery, ...invalidProperty } };
       await validation.validateRequest(searchSchema)(invalidSearch, null, expectInvalidSchema);
     }
 

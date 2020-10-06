@@ -51,6 +51,14 @@ abstract class MultiSelectBase<ValueType> extends Component<
 > {
   static defaultProps = defaultProps;
 
+  static getDerivedStateFromProps(props: any) {
+    if (props.filter) {
+      return { filter: props.filter };
+    }
+
+    return null;
+  }
+
   constructor(props: MultiSelectProps<ValueType>) {
     super(props);
     this.state = { showAll: props.showAll, ui: {}, filter: '' };
@@ -59,12 +67,6 @@ abstract class MultiSelectBase<ValueType> extends Component<
     this.showAll = this.showAll.bind(this);
     this.focusSearch = this.focusSearch.bind(this);
     this.searchInputRef = createRef<HTMLInputElement>();
-  }
-
-  componentWillReceiveProps(props: MultiSelectProps<ValueType>) {
-    if (props.filter) {
-      this.setState({ filter: props.filter });
-    }
   }
 
   abstract markChecked(value: ValueType, option: Option): ValueType;
@@ -289,7 +291,6 @@ abstract class MultiSelectBase<ValueType> extends Component<
 
   renderGroup(group: Option, index: number) {
     const { prefix } = this.props;
-    const _group = Object.assign({}, group, { results: group.results });
     return (
       <li key={index} className="multiselect-group">
         <div className="multiselectItem">
@@ -302,7 +303,7 @@ abstract class MultiSelectBase<ValueType> extends Component<
             onChange={this.changeGroup.bind(this, group)}
             checked={this.checked(group) !== SelectStates.OFF}
           />
-          {this.label(_group)}
+          {this.label({ ...group, results: group.results })}
         </div>
         <ShowIf if={this.showSubOptions(group)}>
           <ul className="multiselectChild is-active">

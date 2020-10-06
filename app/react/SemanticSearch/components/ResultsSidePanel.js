@@ -5,10 +5,10 @@ import DocumentResultsPanel from './DocumentResultsPanel';
 
 export function ResultsSidePanel() {
   return (
-    <React.Fragment>
+    <>
       <ResultsFiltersPanel storeKey="library" />
       <DocumentResultsPanel />
-    </React.Fragment>
+    </>
   );
 }
 

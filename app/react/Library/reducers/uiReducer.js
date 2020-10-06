@@ -10,6 +10,7 @@ const initialState = Immutable.fromJS({
   selectedDocuments: [],
   filtersPanel: false,
   zoomLevel: 0,
+  tableViewColumns: [],
 });
 
 export default function ui(state = initialState, action = {}) {
@@ -119,6 +120,38 @@ export default function ui(state = initialState, action = {}) {
   if (action.type === types.ZOOM_OUT) {
     const minLevel = -3;
     return state.set('zoomLevel', Math.max(state.get('zoomLevel') - 1, minLevel));
+  }
+
+  if (action.type === types.SET_TABLE_VIEW_COLUMNS) {
+    if (action.columns.length === 0) {
+      return state;
+    }
+    const columnsWithSelection = action.columns.map(column => {
+      const previousColumnState = state
+        .get('tableViewColumns')
+        .find(c => c.get('name') === column.name);
+
+      const previousHidden =
+        previousColumnState && previousColumnState.has('hidden')
+          ? previousColumnState.get('hidden')
+          : column.hidden;
+      const hidden = previousHidden !== undefined ? previousHidden : !column.showInCard;
+
+      return Object.assign(column, { hidden });
+    });
+
+    return state.set('tableViewColumns', Immutable.fromJS(columnsWithSelection));
+  }
+
+  if (action.type === types.SET_TABLE_VIEW_COLUMN_HIDDEN) {
+    const index = state.get('tableViewColumns').findIndex(c => c.get('name') === action.name);
+    return state.setIn(['tableViewColumns', index, 'hidden'], action.hidden);
+  }
+
+  if (action.type === types.SET_TABLE_VIEW_ALL_COLUMNS_HIDDEN) {
+    return state.update('tableViewColumns', columns =>
+      columns.map((c, index) => (index ? c.set('hidden', action.hidden) : c))
+    );
   }
 
   return Immutable.fromJS(state);

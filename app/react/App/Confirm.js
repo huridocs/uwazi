@@ -6,6 +6,14 @@ import Modal from 'app/Layout/Modal';
 import Loader from 'app/components/Elements/Loader';
 
 export class Confirm extends Component {
+  static getDerivedStateFromProps(newProps, state) {
+    if (newProps.accept !== state.accept) {
+      return { isOpen: true, accept: newProps.accept };
+    }
+
+    return null;
+  }
+
   constructor(props) {
     super(props);
     this.state = {
@@ -18,12 +26,6 @@ export class Confirm extends Component {
     this.cancel = this.cancel.bind(this);
     this.close = this.close.bind(this);
     this.handleInput = this.handleInput.bind(this);
-  }
-
-  componentWillReceiveProps(newProps) {
-    if (newProps.accept !== this.props.accept) {
-      this.setState({ isOpen: true });
-    }
   }
 
   close() {
@@ -56,10 +58,10 @@ export class Confirm extends Component {
 
   renderExtraConfirm() {
     return (
-      <React.Fragment>
+      <>
         <p> If you want to continue, please type &#39;{this.props.extraConfirmWord}&#39; </p>
         <input type="text" onChange={this.handleInput} value={this.state.confirmInputValue} />
-      </React.Fragment>
+      </>
     );
   }
 

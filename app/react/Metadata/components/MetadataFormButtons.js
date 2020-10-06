@@ -6,7 +6,7 @@ import { wrapDispatch } from 'app/Multireducer';
 
 import ShowIf from 'app/App/ShowIf';
 import { NeedAuthorization } from 'app/Auth';
-import { t, I18NLink } from 'app/I18N';
+import { Translate, I18NLink } from 'app/I18N';
 import { Icon } from 'UI';
 import { publish, unpublish } from 'app/Uploads/actions/uploadsActions';
 import entitiesUtils from 'app/Entities/utils/filterBaseProperties';
@@ -15,14 +15,16 @@ import * as actions from '../actions/actions';
 
 export class MetadataFormButtons extends Component {
   render() {
-    const { entityBeingEdited, exclusivelyViewButton, formName } = this.props;
+    const { entityBeingEdited, exclusivelyViewButton, formName, hideDelete } = this.props;
     const data = this.props.data.toJS();
 
     const ViewButton = (
       <I18NLink to={`entity/${data.sharedId}`}>
-        <button className="edit-metadata btn btn-primary">
+        <button type="button" className="edit-metadata btn btn-primary">
           <Icon icon="file" />
-          <span className="btn-label">{t('System', 'View')}</span>
+          <span className="btn-label">
+            <Translate>View</Translate>
+          </span>
         </button>
       </I18NLink>
     );
@@ -61,6 +63,7 @@ export class MetadataFormButtons extends Component {
         <NeedAuthorization roles={['admin', 'editor']}>
           <ShowIf if={!entityBeingEdited}>
             <button
+              type="button"
               onClick={() =>
                 this.props.loadInReduxForm(
                   this.props.formStatePath,
@@ -71,24 +74,31 @@ export class MetadataFormButtons extends Component {
               className="edit-metadata btn btn-primary"
             >
               <Icon icon="pencil-alt" />
-              <span className="btn-label">{t('System', 'Edit')}</span>
+              <span className="btn-label">
+                <Translate>Edit</Translate>
+              </span>
             </button>
           </ShowIf>
         </NeedAuthorization>
         <ShowIf if={entityBeingEdited}>
           <button
+            type="button"
             onClick={() => this.props.resetForm(this.props.formStatePath)}
             className="cancel-edit-metadata btn btn-primary"
           >
             <Icon icon="times" />
-            <span className="btn-label">{t('System', 'Cancel')}</span>
+            <span className="btn-label">
+              <Translate>Cancel</Translate>
+            </span>
           </button>
         </ShowIf>
         <ShowIf if={entityBeingEdited}>
-          <React.Fragment>
+          <>
             <button type="submit" form={formName} className="btn btn-success">
               <Icon icon="save" />
-              <span className="btn-label">{t('System', 'Save')}</span>
+              <span className="btn-label">
+                <Translate>Save</Translate>
+              </span>
             </button>
             <button
               type="button"
@@ -96,31 +106,43 @@ export class MetadataFormButtons extends Component {
               onClick={this.props.copyFrom}
             >
               <Icon icon="clone" />
-              <span className="btn-label">{t('System', 'Copy from')}</span>
+              <span className="btn-label">
+                <Translate>Copy From</Translate>
+              </span>
             </button>
-          </React.Fragment>
+          </>
         </ShowIf>
         <NeedAuthorization roles={['admin', 'editor']}>
-          <ShowIf if={!entityBeingEdited}>
-            <button className="delete-metadata btn btn-danger" onClick={this.props.delete}>
+          <ShowIf if={!entityBeingEdited && !hideDelete}>
+            <button
+              className="delete-metadata btn btn-danger"
+              type="button"
+              onClick={this.props.delete}
+            >
               <Icon icon="trash-alt" />
-              <span className="btn-label">{t('System', 'Delete')}</span>
+              <span className="btn-label">
+                <Translate>Delete</Translate>
+              </span>
             </button>
           </ShowIf>
         </NeedAuthorization>
         <NeedAuthorization roles={['admin', 'editor']}>
           <ShowIf if={!entityBeingEdited && canBePublished}>
-            <button className="publish btn btn-success" onClick={_publish}>
+            <button className="publish btn btn-success" type="button" onClick={_publish}>
               <Icon icon="paper-plane" />
-              <span className="btn-label">{t('System', 'Publish')}</span>
+              <span className="btn-label">
+                <Translate>Publish</Translate>
+              </span>
             </button>
           </ShowIf>
         </NeedAuthorization>
         <NeedAuthorization roles={['admin', 'editor']}>
           <ShowIf if={data.published}>
-            <button className="unpublish btn btn-warning" onClick={_unpublish}>
+            <button className="unpublish btn btn-warning" type="button" onClick={_unpublish}>
               <Icon icon="paper-plane" />
-              <span className="btn-label">{t('System', 'Unpublish')}</span>
+              <span className="btn-label">
+                <Translate>Unpublish</Translate>
+              </span>
             </button>
           </ShowIf>
         </NeedAuthorization>
@@ -135,6 +157,8 @@ MetadataFormButtons.contextTypes = {
 
 MetadataFormButtons.defaultProps = {
   entityBeingEdited: false,
+  includeViewButton: true,
+  hideDelete: false,
   formName: 'metadataForm',
   delete: () => {},
   copyFrom: () => {},
@@ -149,10 +173,11 @@ MetadataFormButtons.propTypes = {
   templates: PropTypes.object.isRequired,
   data: PropTypes.object.isRequired,
   entityBeingEdited: PropTypes.bool,
-  formStatePath: PropTypes.string,
+  formStatePath: PropTypes.string.isRequired,
   formName: PropTypes.string,
   includeViewButton: PropTypes.bool,
   exclusivelyViewButton: PropTypes.bool,
+  hideDelete: PropTypes.bool,
   copyFrom: PropTypes.func,
 };
 
