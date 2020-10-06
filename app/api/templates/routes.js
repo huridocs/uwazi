@@ -13,7 +13,7 @@ export default app => {
     const response = await templates.save(req.body, req.language);
 
     req.io.emitToCurrentTenant('templateChange', response);
-    const updatedSettings = settings.updateFilterName(response._id.toString(), response.name);
+    const updatedSettings = await settings.updateFilterName(response._id.toString(), response.name);
     if (updatedSettings) {
       req.io.emitToCurrentTenant('updateSettings', updatedSettings);
     }

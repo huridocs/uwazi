@@ -3,7 +3,9 @@ import request from '../app/shared/JSONRequest';
 import elasticMapping from './elastic_mapping/elastic_mapping';
 
 import { search } from '../app/api/search';
+import templatesModel from '../app/api/templates';
 import { IndexError } from '../app/api/search/entitiesIndex';
+import elasticMapFactory from './elastic_mapping/elasticMapFactory';
 import errorLog from '../app/api/log/errorLog';
 import { tenants } from 'api/tenants/tenantContext';
 import { DB } from 'api/odm';
@@ -76,8 +78,13 @@ const prepareIndex = async () => {
   }
   process.stdout.write(' [done]\n');
 
-  process.stdout.write(`Creating index ${config.defaultTenant.indexName}...`);
+  process.stdout.write(`Creating index ${config.defaultTenant.indexName}...\r\n`);
+  process.stdout.write(' - Base properties mapping\r\n');
   await request.put(getIndexUrl(), elasticMapping);
+  process.stdout.write(' - Custom templates mapping\r\n');
+  const templates = await templatesModel.get();
+  const templatesMapping = elasticMapFactory.mapping(templates);
+  await request.put(`${getIndexUrl()}/_mapping`, templatesMapping);
   process.stdout.write(' [done]\n');
 };
 

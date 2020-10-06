@@ -4,8 +4,9 @@ import entities from 'api/entities';
 import errorLog from 'api/log/errorLog';
 import { entityDefaultDocument } from 'shared/entityDefaultDocument';
 import PromisePool from '@supercharge/promise-pool';
+import { createError } from 'api/utils';
 import elastic from './elastic';
-import elasticMapFactory from './elasticMapFactory';
+import elasticMapFactory from '../../../database/elastic_mapping/elasticMapFactory';
 
 export class IndexError extends Error {}
 
@@ -71,7 +72,7 @@ const bulkIndex = async (docs, _action = 'index', elasticIndex) => {
     }
   });
 
-  const results = await elastic.bulk({ body, pipeline: 'rename-pipeline' });
+  const results = await elastic.bulk({ body });
 
   if (results.body.items) {
     handleErrors(results.body.items.filter(f => f.index.error));
@@ -157,17 +158,10 @@ const indexEntities = async ({
 
 const updateMapping = async (templates, elasticIndex) => {
   const mapping = elasticMapFactory.mapping(templates);
-  const pipeline = elasticMapFactory.ingest(templates);
-  const aliases = elasticMapFactory.aliasses(templates);
   try {
     await elastic.indices.putMapping({ body: mapping, index: elasticIndex });
-    await elastic.ingest.putPipeline({
-      body: pipeline,
-      id: 'rename-pipeline',
-    });
-    await elastic.indices.putMapping({ body: aliases, index: elasticIndex });
-  } catch (error) {
-    console.log(error);
+  } catch (e) {
+    throw createError(e, 400);
   }
 };
 

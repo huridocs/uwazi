@@ -23,73 +23,9 @@ const dynamicTemplates = [
     },
   },
   {
-    string_fields: {
-      match: '*',
-      match_mapping_type: 'string',
-      mapping: {
-        type: 'text',
-        index: true,
-        analyzer: 'tokenizer',
-        fields: {
-          raw: { type: 'keyword' },
-          sort: { type: 'text', fielddata: true, analyzer: 'string_sorter' },
-        },
-        term_vector: 'with_positions_offsets',
-      },
-    },
-  },
-  {
-    double_fields: {
-      match: '*',
-      match_mapping_type: 'double',
-      mapping: {
-        type: 'double',
-        doc_values: true,
-        fields: {
-          sort: { type: 'double' },
-        },
-      },
-    },
-  },
-  {
-    binary_fields: {
-      match: '*',
-      match_mapping_type: 'binary',
-      mapping: { type: 'binary', doc_values: true },
-    },
-  },
-  {
-    long_fields: {
-      match: '*',
-      match_mapping_type: 'long',
-      mapping: {
-        type: 'double',
-        doc_values: true,
-        fields: {
-          raw: { type: 'double', index: false },
-          sort: { type: 'double' },
-        },
-      },
-    },
-  },
-  {
-    date_fields: {
-      match: '*',
-      match_mapping_type: 'date',
-      mapping: { type: 'date', doc_values: true },
-    },
-  },
-  {
     relationships_fields: {
       path_match: 'relationships',
       mapping: { type: 'nested' },
-    },
-  },
-  {
-    geo_point_fields: {
-      match: '*_geolocation',
-      path_match: 'metadata.*',
-      mapping: { type: 'object' },
     },
   },
   {
@@ -111,6 +47,14 @@ const dynamicTemplates = [
       match_mapping_type: 'object',
       path_match: 'suggestedMetadata.*',
       mapping: { type: 'object' },
+    },
+  },
+  {
+    unmapped_fields: {
+      match: '*',
+      mapping: {
+        index: false,
+      },
     },
   },
 ];

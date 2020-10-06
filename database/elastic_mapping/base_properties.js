@@ -1,5 +1,5 @@
 import documentProperties from './document_properties';
-import textSorting from './text_sorting';
+import { text } from './mappings';
 
 const properties = {
   documents: documentProperties,
@@ -10,7 +10,7 @@ const properties = {
     type: 'text',
     index: true,
     fields: {
-      sort: textSorting,
+      sort: text,
       sayt: { type: 'search_as_you_type' },
     },
     term_vector: 'with_positions_offsets',
@@ -23,16 +23,6 @@ const properties = {
       sort: { type: 'date' },
     },
   },
-  geoip: {
-    type: 'object',
-    dynamic: true,
-    properties: {
-      ip: { type: 'ip', doc_values: true },
-      location: { type: 'geo_point', doc_values: true },
-      latitude: { type: 'float', doc_values: true },
-      longitude: { type: 'float', doc_values: true },
-    },
-  },
   attachments: {
     type: 'object',
     enabled: false,
@@ -42,6 +32,9 @@ const properties = {
     enabled: false,
   },
   language: {
+    type: 'keyword',
+  },
+  published: {
     type: 'keyword',
   },
   sharedId: {

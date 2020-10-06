@@ -24,38 +24,8 @@ describe('elasticMapFactory', () => {
 
   describe('mapping()', () => {
     it('should return a mapping based on a template', () => {
-      const mapping = elasticMapFactory.mapping(template);
+      const mapping = elasticMapFactory.mapping([template]);
       expect(mapping).toMatchSnapshot();
-    });
-  });
-
-  describe('aliases()', () => {
-    it('should return the alias config for the templates', () => {
-      const aliasesDefinition = elasticMapFactory.aliasses(templates);
-      expect(aliasesDefinition.properties.metadata.properties['name_text.value']).toEqual({
-        path: 'metadata.name.value',
-        type: 'alias',
-      });
-      expect(aliasesDefinition).toMatchSnapshot();
-    });
-  });
-
-  describe('ingest()', () => {
-    it('should return the alias config for the templates', () => {
-      const ingestpipeline = elasticMapFactory.ingest(templates);
-      expect(ingestpipeline.description).toBe('rename pipeline');
-
-      expect(ingestpipeline.processors[0]).toEqual({
-        rename: { field: 'name', target_field: 'name_text' },
-      });
-      expect(ingestpipeline.processors[1]).toEqual({
-        rename: {
-          field: 'date_of_birth',
-          target_field: 'date_of_birth_date',
-        },
-      });
-
-      expect(ingestpipeline).toMatchSnapshot();
     });
   });
 });
