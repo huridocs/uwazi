@@ -1,0 +1,21 @@
+name: Modules security check
+
+on: [push]
+
+jobs:
+  yarn-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Use Node.js 14.6.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: '14.6.x'
+      - uses: actions/checkout@v2
+      - name: Cache node modules
+        uses: actions/cache@v2
+        with:
+          path: ./node_modules
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+      - name: install dependencies
+        run: yarn install
+      - run: yarn audit --level high --groups dependencies || if [ $? -gt 8 ]; then exit 1; else exit 0; fi

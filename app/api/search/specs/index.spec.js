@@ -53,7 +53,7 @@ describe('index (search)', () => {
 
   describe('bulkIndex', () => {
     it('should update docs using the bulk functionality', done => {
-      spyOn(elastic, 'bulk').and.returnValue(Promise.resolve({ items: [] }));
+      spyOn(elastic, 'bulk').and.returnValue(Promise.resolve({ body: { items: [] } }));
       const toIndexDocs = [
         { _id: 'id1', title: 'test1', pdfInfo: 'Should not be included' },
         { _id: 'id2', title: 'test2', pdfInfo: 'Should not be included' },
@@ -69,7 +69,6 @@ describe('index (search)', () => {
               { index: { _index: elasticIndex, _id: 'id2' } },
               { title: 'test2', fullText: 'entity', documents: [] },
             ],
-            requestTimeout: 40000,
           });
           done();
         })
@@ -78,7 +77,7 @@ describe('index (search)', () => {
 
     describe('when docs have fullText', () => {
       it('should be indexed separatedly as a child of the doc', done => {
-        spyOn(elastic, 'bulk').and.returnValue(Promise.resolve({ items: [] }));
+        spyOn(elastic, 'bulk').and.returnValue(Promise.resolve({ body: { items: [] } }));
         const toIndexDocs = [
           {
             _id: 'id1',
@@ -130,7 +129,6 @@ describe('index (search)', () => {
                   fullText: { name: 'fullText', parent: 'id2' },
                 },
               ],
-              requestTimeout: 40000,
             });
             done();
           })
@@ -143,11 +141,13 @@ describe('index (search)', () => {
         beforeEach(() => {
           spyOn(elastic, 'bulk').and.returnValue(
             Promise.resolve({
-              items: [
-                { index: { _id: 'id1', error: { message: 'indexation error 1' } } },
-                { index: { _id: 'id2' } },
-                { index: { _id: 'id3', error: { message: 'indexation error 2' } } },
-              ],
+              body: {
+                items: [
+                  { index: { _id: 'id1', error: { message: 'indexation error 1' } } },
+                  { index: { _id: 'id2' } },
+                  { index: { _id: 'id3', error: { message: 'indexation error 2' } } },
+                ],
+              },
             })
           );
         });
@@ -195,7 +195,7 @@ describe('index (search)', () => {
 
   describe('bulkdelete', () => {
     it('should delete documents in a bulk action', done => {
-      spyOn(elastic, 'bulk').and.returnValue(Promise.resolve({ items: [] }));
+      spyOn(elastic, 'bulk').and.returnValue(Promise.resolve({ body: { items: [] } }));
       const entities = [
         { _id: 'id1', title: 'test1', pdfInfo: 'Should not be included' },
         { _id: 'id2', title: 'test2', pdfInfo: 'Should not be included' },

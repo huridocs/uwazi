@@ -35,12 +35,8 @@ interface MetadataTemplateProps {
   _id?: string;
 }
 
-const getTemplateDefaultColor = (allTemplates: List<TemplateSchema>, templateId: string) => {
-  if (!templateId) {
-    return COLORS[allTemplates.size % COLORS.length];
-  }
-  const index = allTemplates.findIndex((tpl: any) => tpl.get('_id') === templateId);
-  return COLORS[index % COLORS.length];
+const getTemplateDefaultColor = (allTemplates: List<TemplateSchema>, template: any) => {
+  return template.data.color ? template.data.color : COLORS[allTemplates.size % COLORS.length];
 };
 
 export class MetadataTemplate extends Component<MetadataTemplateProps> {
@@ -61,9 +57,9 @@ export class MetadataTemplate extends Component<MetadataTemplateProps> {
   }
 
   onSubmit = (_template: TemplateSchema) => {
-    const template = Object.assign({}, _template);
+    const template = { ..._template };
     template.properties = template.properties?.map(_prop => {
-      const prop = Object.assign({}, _prop);
+      const prop = { ..._prop };
       prop.label = _prop.label.trim();
       return prop;
     });
@@ -229,7 +225,7 @@ export const mapStateToProps = (
     properties: template.data.properties,
     templates: _templates,
     savingTemplate: template.uiState.get('savingTemplate'),
-    defaultColor: getTemplateDefaultColor(templates, template.data._id),
+    defaultColor: getTemplateDefaultColor(templates, template),
   };
 };
 

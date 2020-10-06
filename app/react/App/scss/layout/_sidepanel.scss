@@ -58,9 +58,6 @@ $c-sidebar: $c-white;
   h1 {
     font-size: $f-size-lg;
   }
-  .item-icon {
-    top: -2px;
-  }
   .item-icon.item-icon-center {
     & img {
       vertical-align: bottom;
@@ -288,6 +285,7 @@ $c-sidebar: $c-white;
 }
 
 .sidepanel-title {
+  position: relative;
   padding: 0 15px;
   margin: 0;
   font-weight: bold;

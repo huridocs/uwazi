@@ -12,6 +12,7 @@ import { connect } from 'react-redux';
 import { actions as formActions, Field } from 'react-redux-form';
 import { bindActionCreators } from 'redux';
 import { Icon } from 'UI';
+import { hideFilters } from 'app/Entities/actions/uiActions';
 import Export from './ExportButton';
 
 function toggleIncludeUnpublished(storeKey) {
@@ -31,7 +32,7 @@ export class LibraryFilters extends Component {
 
   render() {
     return (
-      <SidePanel className="library-filters" open={this.props.open}>
+      <SidePanel className="library-filters" mode={this.props.sidePanelMode} open={this.props.open}>
         <div className="sidepanel-footer">
           <span onClick={this.reset.bind(this)} className="btn btn-primary">
             <Icon icon="sync" />
@@ -44,7 +45,14 @@ export class LibraryFilters extends Component {
           <Export storeKey={this.props.storeKey} />
         </div>
         <div className="sidepanel-body">
-          <p className="sidepanel-title">{t('System', 'Filters configuration')}</p>
+          <p className="sidepanel-title">
+            {t('System', 'Filters configuration')}
+            {this.props.sidePanelMode === 'unpinned-mode' && (
+              <button type="button" className="closeSidepanel" onClick={this.props.hideFilters}>
+                <Icon icon="times" />
+              </button>
+            )}
+          </p>
           <NeedAuthorization>
             {!this.props.unpublished && (
               <Field
@@ -85,6 +93,8 @@ LibraryFilters.defaultProps = {
   open: false,
   unpublished: false,
   storeKey: 'library',
+  sidePanelMode: '',
+  hideFilters: () => {},
 };
 
 LibraryFilters.propTypes = {
@@ -93,6 +103,8 @@ LibraryFilters.propTypes = {
   open: PropTypes.bool,
   unpublished: PropTypes.bool,
   storeKey: PropTypes.string,
+  sidePanelMode: PropTypes.string,
+  hideFilters: PropTypes.func,
 };
 
 export function mapStateToProps(state, props) {
@@ -106,7 +118,7 @@ export function mapStateToProps(state, props) {
 
 function mapDispatchToProps(dispatch, props) {
   return bindActionCreators(
-    { resetFilters, toggleIncludeUnpublished },
+    { resetFilters, toggleIncludeUnpublished, hideFilters },
     wrapDispatch(dispatch, props.storeKey)
   );
 }

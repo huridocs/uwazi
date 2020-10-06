@@ -1,5 +1,3 @@
-/** @format */
-
 import superagent from 'superagent';
 import { actions as formActions } from 'react-redux-form';
 import { t } from 'app/I18N';
@@ -48,14 +46,12 @@ export function sortValues() {
   return (dispatch, getState) => {
     let values = getState().thesauri.data.values.slice(0);
     values = advancedSort(values, { property: 'label' });
-    values = values.map(_value => {
-      const value = Object.assign({}, _value);
-      if (value.values) {
-        value.values = value.values.slice(0);
-        value.values = advancedSort(value.values, { property: 'label' });
-      }
-      return value;
-    });
+    values = values.map(value => ({
+      ...value,
+      ...(value.values
+        ? { values: advancedSort(value.values.slice(0), { property: 'label' }) }
+        : {}),
+    }));
     dispatch(formActions.change('thesauri.data.values', values));
   };
 }
@@ -119,7 +115,7 @@ export function addValue(group) {
   return (dispatch, getState) => {
     const values = getState().thesauri.data.values.slice(0);
     if (group !== undefined) {
-      values[group] = Object.assign({}, values[group]);
+      values[group] = { ...values[group] };
       values[group].values = values[group].values.slice(0);
       values[group].values.push({ label: '', id: ID() });
     } else {
@@ -148,7 +144,7 @@ export function removeValue(index, groupIndex) {
   return (dispatch, getState) => {
     const values = getState().thesauri.data.values.slice(0);
     if (typeof groupIndex === 'number') {
-      values[groupIndex] = Object.assign({}, values[groupIndex]);
+      values[groupIndex] = { ...values[groupIndex] };
       values[groupIndex].values = values[groupIndex].values.slice(0);
       values[groupIndex].values.splice(index, 1);
     } else {

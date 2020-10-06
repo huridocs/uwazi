@@ -50,8 +50,8 @@ PropertyOption.propTypes = {
 };
 
 const optionSource = {
-  beginDrag(props) {
-    return Object.assign({}, props);
+  beginDrag({ ...props }) {
+    return props;
   },
 
   canDrag(props) {

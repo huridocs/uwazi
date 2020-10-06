@@ -29,7 +29,7 @@ class ConfirmButton extends Component {
 
   render() {
     return (
-      <React.Fragment>
+      <>
         <button onClick={this.openModal}>{this.props.children}</button>
         {this.state.showModal && (
           <ConfirmModal
@@ -39,7 +39,7 @@ class ConfirmButton extends Component {
             onCancel={this.closeModal}
           />
         )}
-      </React.Fragment>
+      </>
     );
   }
 }

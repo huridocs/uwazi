@@ -135,7 +135,7 @@ describe('entitiesIndex', () => {
         ],
       });
       await elasticTesting.reindex();
-      spyOn(elastic, 'bulk').and.returnValue(Promise.resolve([]));
+      spyOn(elastic, 'bulk').and.returnValue(Promise.resolve({ body: {} }));
       await search.indexEntities({ language: 'es' }, '', 2);
 
       const indexedEntities = flatten(flatten(elastic.bulk.calls.allArgs()).map(arg => arg.body))

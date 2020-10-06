@@ -15,7 +15,7 @@ export default class MultiDateRange extends Component {
 
   fromChange(index, value) {
     const values = this.state.values.slice();
-    values[index] = Object.assign({}, values[index]);
+    values[index] = { ...values[index] };
     values[index].from = value;
     this.setState({ values });
     this.props.onChange(values);
@@ -23,7 +23,7 @@ export default class MultiDateRange extends Component {
 
   toChange(index, value) {
     const values = this.state.values.slice();
-    values[index] = Object.assign({}, values[index]);
+    values[index] = { ...values[index] };
     values[index].to = value;
     this.setState({ values });
     this.props.onChange(values);

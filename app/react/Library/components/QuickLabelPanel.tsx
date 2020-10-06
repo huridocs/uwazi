@@ -85,7 +85,7 @@ export class QuickLabelPanelBase extends Component<QuickLabelPanelProps> {
 
   renderEditingButtons() {
     return (
-      <React.Fragment>
+      <>
         <button
           type="button"
           onClick={() => this.props.selectedDocumentsChanged()}
@@ -94,7 +94,7 @@ export class QuickLabelPanelBase extends Component<QuickLabelPanelProps> {
           <Icon icon="times" />
           <span className="btn-label">{t('System', 'Discard')}</span>
         </button>
-      </React.Fragment>
+      </>
     );
   }
 
@@ -104,7 +104,7 @@ export class QuickLabelPanelBase extends Component<QuickLabelPanelProps> {
         {({ isPristine }: { isPristine: boolean }) => {
           const btnClass = isPristine ? 'btn btn-default btn-disabled' : 'btn btn-default';
           return (
-            <React.Fragment>
+            <>
               {canBePublished && isPristine && (
                 <button type="button" className="publish btn btn-success" onClick={this.publish}>
                   <Icon icon="paper-plane" />
@@ -127,7 +127,7 @@ export class QuickLabelPanelBase extends Component<QuickLabelPanelProps> {
                 <Icon icon="save" />
                 <span className="btn-label">{t('System', 'Save document(s)')}</span>
               </button>
-            </React.Fragment>
+            </>
           );
         }}
       </StateSelector>

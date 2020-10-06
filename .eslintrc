@@ -3,12 +3,12 @@
   "env": {
     "browser": true,
     "node": true,
-    "jasmine": true,
     "jest": true,
+    "jasmine": true,
     "es6": true
   },
 
-  "plugins": ["react", "jasmine", "@typescript-eslint", "prettier"],
+  "plugins": ["react", "jest", "@typescript-eslint", "prettier"],
 
   "rules": {
     "prettier/prettier": ["error", { "requirePragma": false }],
@@ -26,7 +26,7 @@
     "newline-per-chained-call": "off",
     "no-prototype-builtins": "off",
     "implicit-arrow-linebreak": "off",
-    "jasmine/no-focused-tests": "error",
+    "jest/no-focused-tests": "error",
     "object-curly-spacing": ["warn", "always"],
     "max-len": ["error", 150],
     "no-unused-vars": [
@@ -42,6 +42,7 @@
 
     //all warns are activated by default if removed
     "prefer-promise-reject-errors": ["warn"],
+    "max-classes-per-file": ["warn"],
     "padded-blocks": ["warn"],
     "consistent-return": ["warn"],
     "prefer-const": ["warn"],
@@ -80,13 +81,16 @@
     "import/prefer-default-export": ["off"],
     "import/first": ["warn"],
     "import/newline-after-import": ["warn"],
-    "import/extensions": "never",
+    "import/extensions": "off",
     "import/no-unresolved": "off",
     "import/order": ["warn"],
     "import/named": ["warn"],
     "import/no-cycle": ["warn"],
+    "import/no-extraneous-dependencies": ["error", {"devDependencies": true}],
 
     //react
+    "react/static-property-placement": "off",
+    "react/no-deprecated": ["warn"],
     "react/self-closing-comp": ["warn"],
     "react/no-multi-comp": ["warn"],
     "react/jsx-closing-bracket-location": ["warn"],
@@ -94,10 +98,12 @@
     "react/jsx-indent": ["off"], // handled by prettier,
     "react/jsx-indent-props": ["warn"],
     "react/no-array-index-key": ["warn"],
+    "react/jsx-props-no-spreading": ["warn"],
     "react/jsx-first-prop-new-line": ["warn"],
     "react/no-unused-state": ["warn"],
     "react/jsx-wrap-multilines": ["off"], // handled by prettier,
     "react/jsx-curly-brace-presence": ["warn"],
+    "react/jsx-curly-newline": "off",
     "react/require-default-props": ["warn"],
     "react/forbid-prop-types": ["warn"],
     "react/jsx-no-bind": ["warn"],
@@ -114,6 +120,7 @@
     "import/no-useless-path-segments": ["warn"],
     "react/button-has-type": ["warn"],
     "react/no-access-state-in-setstate": ["warn"],
+    "react/jsx-pascal-case": ["warn"],
 
     //jsx-a11y
     "jsx-a11y/anchor-is-valid": ["warn"],
@@ -122,6 +129,7 @@
     "jsx-a11y/iframe-has-title": ["warn"],
     "jsx-a11y/tabindex-no-positive": ["warn"],
     "jsx-a11y/no-noninteractive-element-interactions": ["warn"],
+    "jsx-a11y/control-has-associated-label": ["warn"],
     "jsx-a11y/alt-text": ["warn"],
     "jsx-a11y/no-static-element-interactions": "off",
     "jsx-a11y/click-events-have-key-events": "off",
@@ -150,7 +158,15 @@
             "avoidEscape": true
           }
         ],
+        "no-shadow": "off",
+        "@typescript-eslint/no-shadow": ["error"],
+        "no-use-before-define": "off",
+        "@typescript-eslint/no-use-before-define": ["error"],
         "no-unused-vars": "off",
+
+        //https://github.com/typescript-eslint/typescript-eslint/issues/662
+        "no-undef": "off",
+
         "@typescript-eslint/no-unused-vars": [
           "error",
           {
@@ -175,7 +191,6 @@
           }
         ],
         // This is broken for ts, but circleci protects us.
-        "import/no-extraneous-dependencies": "off",
         "@typescript-eslint/no-floating-promises": "error",
         "@typescript-eslint/no-misused-promises": "error",
         "@typescript-eslint/promise-function-async": "error"

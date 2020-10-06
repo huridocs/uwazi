@@ -14,6 +14,7 @@ describe('SearchEntities', () => {
   beforeEach(() => {
     props = {
       onSelect: jasmine.createSpy('onSelect'),
+      onFinishSearch: jasmine.createSpy('onFinishedSearch'),
     };
     spyOn(api, 'get').and.returnValue(
       Promise.resolve({
@@ -41,6 +42,7 @@ describe('SearchEntities', () => {
         data: { fields: ['title'], includeUnpublished: true, searchTerm: 'test' },
         headers: {},
       });
+      expect(props.onFinishSearch).toHaveBeenCalledWith('test');
     });
   });
 
@@ -51,6 +53,16 @@ describe('SearchEntities', () => {
       const expectedEntity = { sharedId: '1234', title: '44' };
       click('1234', expectedEntity);
       expect(props.onSelect).toHaveBeenLastCalledWith(expectedEntity);
+    });
+  });
+
+  describe('when initial search provided', () => {
+    it('should should request for the entities after mounting', async () => {
+      component = shallow(<SearchEntities {...{ ...props, initialSearchTerm: 'test' }} />);
+      expect(api.get).toHaveBeenLastCalledWith('search', {
+        data: { fields: ['title'], includeUnpublished: true, searchTerm: 'test' },
+        headers: {},
+      });
     });
   });
 });

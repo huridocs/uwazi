@@ -1,13 +1,5 @@
-import {
-  Document,
-  DocumentQuery,
-  Schema,
-  FilterQuery,
-  UpdateQuery,
-  ModelUpdateOptions,
-} from 'mongoose';
-import { DeleteWriteOpResultObject, ObjectId } from 'mongodb';
-import { MultiTenantMongooseModel } from './MultiTenantMongooseModel';
+import { Document, DocumentQuery, Schema, FilterQuery } from 'mongoose';
+import { OdmModel } from './model';
 
 /** WithId<T> represents objects received from MongoDB, which are guaranteed to have
  *  the _id field populated, even though T always has _id? optional for validation reasons.
@@ -17,29 +9,6 @@ export type WithId<T> = T & {
 };
 
 export type UwaziFilterQuery<T> = FilterQuery<T> & { _id?: any };
-
-export interface OdmModel<T> {
-  db: MultiTenantMongooseModel<T>;
-  save: (data: Readonly<Partial<T>>) => Promise<WithId<T>>;
-  saveMultiple: (data: Readonly<Partial<T>>[]) => Promise<WithId<T>[]>;
-  updateMany: (
-    conditions: UwaziFilterQuery<T>,
-    doc: UpdateQuery<T>,
-    options?: ModelUpdateOptions
-  ) => any;
-
-  getById: (id: any | string | number, select?: any) => Promise<WithId<T> | null>;
-  get: (
-    query: UwaziFilterQuery<T>,
-    select?: string,
-    pagination?: {}
-  ) => DocumentQuery<(WithId<T> & Document)[], WithId<T> & Document>;
-
-  count: (condition: UwaziFilterQuery<T>) => Promise<number>;
-  delete: (
-    condition: UwaziFilterQuery<T> | ObjectId
-  ) => Promise<DeleteWriteOpResultObject['result']>;
-}
 
 export async function QueryForEach<T>(
   query: DocumentQuery<(WithId<T> & Document)[], WithId<T> & Document>,
@@ -52,6 +21,7 @@ export async function QueryForEach<T>(
     // eslint-disable-next-line no-await-in-loop
     const batch = await query
       .find()
+      // potentially slow on large collections !
       .skip(offset)
       .limit(batchSize);
     if (!batch || !batch.length) {

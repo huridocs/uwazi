@@ -6,7 +6,7 @@ interface NoticeState {
 }
 
 type NoticeProps = {
-  title: String | JSX.Element;
+  title: String;
   allowClose?: boolean;
 };
 

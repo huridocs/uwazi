@@ -51,7 +51,7 @@ describe('ActivitylogList', () => {
       },
     };
 
-    const fullProps = Object.assign({}, props, mapStateToProps(state));
+    const fullProps = { ...props, ...mapStateToProps(state) };
     component = shallow(<ActivitylogList.WrappedComponent {...fullProps} />);
   };
 

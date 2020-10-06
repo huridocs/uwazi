@@ -5,7 +5,7 @@ import { actions as formActions } from 'react-redux-form';
 import { actions } from 'app/BasicReducer';
 import { documentsApi } from 'app/Documents';
 import { browserHistory } from 'react-router';
-import rison from 'rison';
+import rison from 'rison-node';
 import referencesAPI from 'app/Viewer/referencesAPI';
 import { api as entitiesAPI } from 'app/Entities';
 import { toUrlParams } from 'shared/JSONRequest';
@@ -158,7 +158,10 @@ export function filterIsEmpty(value) {
 }
 
 export function processFilters(readOnlySearch, filters, limit, from) {
-  const search = Object.assign({ filters: {} }, readOnlySearch);
+  const search = {
+    filters: {},
+    ...readOnlySearch,
+  };
   search.filters = {};
 
   filters.properties.forEach(property => {
@@ -167,7 +170,7 @@ export function processFilters(readOnlySearch, filters, limit, from) {
     }
 
     if (property.filters) {
-      const searchFilter = Object.assign({}, readOnlySearch.filters[property.name]);
+      const searchFilter = { ...readOnlySearch.filters[property.name] };
       property.filters.forEach(filter => {
         if (filterIsEmpty(searchFilter[filter.name])) {
           delete searchFilter[filter.name];
@@ -234,9 +237,8 @@ export function searchDocuments(
     const searchParams = processFilters(currentSearch, currentFilters, limit, from);
     searchParams.searchTerm = state.search.searchTerm;
 
-    const currentSearchParams = rison.decode(
-      decodeURIComponent(browserHistory.getCurrentLocation().q || '()')
-    );
+    const { query } = browserHistory.getCurrentLocation();
+    const currentSearchParams = rison.decode(decodeURIComponent(query.q || '()'));
 
     if (searchParams.searchTerm && searchParams.searchTerm !== currentSearchParams.searchTerm) {
       searchParams.sort = '_score';
@@ -362,4 +364,23 @@ export function getAggregationSuggestions(storeKey, property, searchTerm) {
     query.unpublished = true;
   }
   return searchAPI.getAggregationSuggestions(new RequestParams({ query, property, searchTerm }));
+}
+
+export function setTableViewColumns(columns) {
+  return { type: types.SET_TABLE_VIEW_COLUMNS, columns };
+}
+
+export function setTableViewColumnHidden(name, hidden) {
+  return {
+    type: types.SET_TABLE_VIEW_COLUMN_HIDDEN,
+    name,
+    hidden,
+  };
+}
+
+export function setTableViewAllColumnsHidden(hidden) {
+  return {
+    type: types.SET_TABLE_VIEW_ALL_COLUMNS_HIDDEN,
+    hidden,
+  };
 }

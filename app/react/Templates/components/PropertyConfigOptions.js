@@ -43,7 +43,7 @@ class PropertyConfigOptions extends Component {
               </Tip>
             </PropertyConfigOption>
             {filter && (
-              <React.Fragment>
+              <>
                 <PropertyConfigOption
                   label="Default filter"
                   model={`template.data.properties[${index}].defaultfilter`}
@@ -66,7 +66,7 @@ class PropertyConfigOptions extends Component {
                     </Tip>
                   </PropertyConfigOption>
                 )}
-              </React.Fragment>
+              </>
             )}
           </div>
         )}

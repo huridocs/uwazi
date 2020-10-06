@@ -84,7 +84,7 @@ export class Viewer extends Component {
   prepareClassName() {
     const { panelIsOpen, targetDoc, showConnections } = this.props;
 
-    let className = 'document-viewer';
+    let className = 'document-viewer with-header';
 
     if (panelIsOpen) {
       className += ' with-panel is-active';
@@ -150,7 +150,7 @@ export class Viewer extends Component {
           <div className="content-header content-header-document">
             <div className="content-header-title">
               {sidepanelTab !== 'connections' && (
-                <React.Fragment>
+                <>
                   <PaginatorWithPage totalPages={file.totalPages} onPageChange={changePage} />
                   <CurrentLocationLink
                     onClick={!raw ? this.handlePlainTextClick : () => {}}
@@ -163,7 +163,7 @@ export class Viewer extends Component {
                       <Translate>Plain text</Translate>
                     )}
                   </CurrentLocationLink>
-                </React.Fragment>
+                </>
               )}
             </div>
           </div>

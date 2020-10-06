@@ -49,12 +49,12 @@ export class UsersList extends Component {
               <div>
                 <span>{user.get('username')}</span>
                 {user.get('using2fa') && (
-                  <React.Fragment>
+                  <>
                     &nbsp;&nbsp;&nbsp;
                     <span className="btn-xs btn-color btn-color-9">
                       <Icon icon="check" /> 2fa
                     </span>
-                  </React.Fragment>
+                  </>
                 )}
               </div>
               <div className="list-group-item-actions">

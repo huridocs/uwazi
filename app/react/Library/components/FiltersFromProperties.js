@@ -21,7 +21,7 @@ export const FiltersFromProperties = ({
   storeKey,
   ...props
 }) => (
-  <React.Fragment>
+  <>
     {properties.map(property => {
       const commonProps = {
         model: `.filters${modelPrefix}.${property.name}`,
@@ -84,7 +84,7 @@ export const FiltersFromProperties = ({
 
       return <FormGroup key={property.name}>{filter}</FormGroup>;
     })}
-  </React.Fragment>
+  </>
 );
 
 FiltersFromProperties.defaultProps = {

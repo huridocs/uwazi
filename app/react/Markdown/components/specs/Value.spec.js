@@ -12,7 +12,7 @@ describe('Value', () => {
     spyOn(markdownDatasets, 'getMetadataValue').and.returnValue('some metadata value');
     const props = { property: 'propValue' };
     const mappedProps = mapStateToProps('state', props);
-    const component = shallow(<ValueComponent {...Object.assign({}, props, mappedProps)} />);
+    const component = shallow(<ValueComponent {...{ ...props, ...mappedProps }} />);
 
     expect(markdownDatasets.getMetadataValue).toHaveBeenCalledWith('state', {
       property: 'propValue',
@@ -24,7 +24,7 @@ describe('Value', () => {
     spyOn(markdownDatasets, 'getMetadataValue').and.returnValue(undefinedValue);
     const props = { property: 'propValue2' };
     const mappedProps = mapStateToProps('state', props);
-    const component = shallow(<ValueComponent {...Object.assign({}, props, mappedProps)} />);
+    const component = shallow(<ValueComponent {...{ ...props, ...mappedProps }} />);
 
     expect(markdownDatasets.getMetadataValue).toHaveBeenCalledWith('state', {
       property: 'propValue2',

@@ -8,7 +8,7 @@ import Immutable from 'immutable';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import { mockID } from 'shared/uniqueID.js';
-import rison from 'rison';
+import rison from 'rison-node';
 import { RequestParams } from 'app/utils/RequestParams';
 
 import * as actions from 'app/Library/actions/libraryActions';
@@ -278,6 +278,25 @@ describe('libraryActions', () => {
         )(dispatch, getState);
         expect(browserHistory.push).toHaveBeenCalledWith(
           '/library/?view=chart&q=(from:0,limit:30,searchTerm:batman,sort:_score)'
+        );
+      });
+
+      it('should respect the sorting criteria when the search term has not changed and has value', () => {
+        browserHistory.getCurrentLocation.and.returnValue({
+          pathname: '/library',
+          query: { q: '(searchTerm:batman,sort:_score)' },
+          search: '?q=(searchTerm:%27batman%20begings%27)',
+        });
+        spyOn(browserHistory, 'push');
+        actions.searchDocuments(
+          {
+            search: { searchTerm: 'batman', sort: 'title', order: 'desc' },
+            filters: { properties: [] },
+          },
+          storeKey
+        )(dispatch, getState);
+        expect(browserHistory.push).toHaveBeenCalledWith(
+          '/library/?q=(from:0,limit:30,order:desc,searchTerm:batman,sort:title)'
         );
       });
     });

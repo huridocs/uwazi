@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     services:
       elasticsearch:
-        image: elasticsearch:7.4.1
+        image: elasticsearch:7.9.1
         ports:
           - 9200/tcp
         options: -e="discovery.type=single-node" --health-cmd="curl http://localhost:9200/_cluster/health" --health-interval=10s --health-timeout=5s --health-retries=10
@@ -31,7 +31,7 @@ jobs:
       - name: Run tests
         env:
           ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
-        run: ./node_modules/.bin/jest --coverage --maxWorkers=2
+        run: yarn test --coverage --maxWorkers=2
       - run: ./cc-test-reporter after-build --exit-code $? #send codecoverage
     env:
       CC_TEST_REPORTER_ID: 61434ccfc3eeb2ed7b9cfec1d61c4e0ca115a32c1eebfefe404d1ecb77d73358 #codelimate api key

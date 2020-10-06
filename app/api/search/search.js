@@ -264,18 +264,20 @@ const _sanitizeAggregationsStructure = (aggregations, limit) => {
 
     //grouped dictionary
     if (aggregation.buckets && !Array.isArray(aggregation.buckets)) {
-      aggregation.buckets = Object.keys(aggregation.buckets).map(key =>
-        Object.assign({ key }, aggregation.buckets[key])
-      );
+      aggregation.buckets = Object.keys(aggregation.buckets).map(key => ({
+        key,
+        ...aggregation.buckets[key],
+      }));
     }
 
     //nested
     if (!aggregation.buckets) {
       Object.keys(aggregation).forEach(key => {
         if (aggregation[key].buckets) {
-          const buckets = aggregation[key].buckets.map(option =>
-            Object.assign({ key: option.key }, option.filtered.total)
-          );
+          const buckets = aggregation[key].buckets.map(option => ({
+            key: option.key,
+            ...option.filtered.total,
+          }));
           result[key] = {
             type: 'nested',
             doc_count: aggregation[key].doc_count,
@@ -314,9 +316,9 @@ const _addAnyAggregation = (aggregations, filters, response) => {
         !keyFilters.filter(v => v !== 'any').length || keyFilters.find(v => v === 'missing');
 
       const anyCount =
-        (typeof response.hits.total === 'object'
-          ? response.hits.total.value
-          : response.hits.total) -
+        (typeof response.body.hits.total === 'object'
+          ? response.body.hits.total.value
+          : response.body.hits.total) -
         (missingBucket && filterNoneOrMissing ? missingBucket.filtered.doc_count : 0);
 
       aggregation.buckets.push({
@@ -347,7 +349,7 @@ const _sanitizeAggregations = async (
 };
 
 const processResponse = async (response, templates, dictionaries, language, filters) => {
-  const rows = response.hits.hits.map(hit => {
+  const rows = response.body.hits.hits.map(hit => {
     const result = hit._source;
     result._explanation = hit._explanation;
     result.snippets = snippetsFromSearchHit(hit);
@@ -356,7 +358,7 @@ const processResponse = async (response, templates, dictionaries, language, filt
   });
 
   const sanitizedAggregations = await _sanitizeAggregations(
-    response.aggregations.all,
+    response.body.aggregations.all,
     templates,
     dictionaries,
     language
@@ -366,7 +368,7 @@ const processResponse = async (response, templates, dictionaries, language, filt
 
   return {
     rows,
-    totalRows: response.hits.total.value,
+    totalRows: response.body.hits.total.value,
     aggregations: { all: aggregationsWithAny },
   };
 };
@@ -695,14 +697,14 @@ const instanceSearch = elasticIndex => ({
       index: elasticIndex || getCurrentTenantIndex(),
       body: query,
     });
-    if (response.hits.hits.length === 0) {
+    if (response.body.hits.hits.length === 0) {
       return {
         count: 0,
         metadata: [],
         fullText: [],
       };
     }
-    return snippetsFromSearchHit(response.hits.hits[0]);
+    return snippetsFromSearchHit(response.body.hits.hits[0]);
   },
 
   async indexEntities(query, select = '', limit, batchCallback = () => {}) {
@@ -771,7 +773,7 @@ const instanceSearch = elasticIndex => ({
       body,
     });
     const sanitizedAggregations = await _sanitizeAggregations(
-      response.aggregations.all,
+      response.body.aggregations.all,
       templates,
       dictionaries,
       language,
@@ -830,14 +832,14 @@ const instanceSearch = elasticIndex => ({
 
     const response = await elastic.search({ index: elasticIndex || getCurrentTenantIndex(), body });
 
-    const options = response.hits.hits.slice(0, preloadOptionsLimit).map(hit => ({
+    const options = response.body.hits.hits.slice(0, preloadOptionsLimit).map(hit => ({
       value: hit._source.sharedId,
       label: hit._source.title,
       template: hit._source.template,
       icon: hit._source.icon,
     }));
 
-    return { count: response.hits.hits.length, options };
+    return { count: response.body.hits.hits.length, options };
   },
 });
 
