@@ -68,7 +68,7 @@ const textType = () => {
 const dateType = () => {
   return {
     label: text,
-    value: date,
+    value: number,
   };
 };
 
@@ -77,8 +77,8 @@ const daterangeType = () => {
     label: text,
     value: {
       properties: {
-        from: date,
-        to: date,
+        from: number,
+        to: number,
       },
     },
   };
