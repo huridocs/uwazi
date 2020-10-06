@@ -10,7 +10,7 @@ const forceIndexingOfNumberBasedProperty = async search => {
   await search.indexEntities({ title: 'Entity with index Problems 1' }, '', 1);
 };
 
-const forceMappingToDouble = async elasticTesting => {
+const forceMappingToLong = async elasticTesting => {
   elasticTesting.putMapping({
     properties: {
       metadata: {
@@ -18,14 +18,14 @@ const forceMappingToDouble = async elasticTesting => {
           text_field: {
             properties: {
               value: {
-                type: 'double',
+                type: 'long',
                 fields: {
                   raw: {
-                    type: 'double',
+                    type: 'long',
                     index: false,
                   },
                   sort: {
-                    type: 'double',
+                    type: 'long',
                   },
                 },
               },
@@ -62,7 +62,7 @@ describe('entitiesIndex', () => {
     const loadFailingFixtures = async () => {
       await db.clearAllAndLoad(fixturesForIndexErrors);
       await elasticTesting.resetIndex();
-      await forceMappingToDouble(elasticTesting);
+      await forceMappingToLong(elasticTesting);
       // force indexing will ensure that all exceptions are mapper_parsing. Otherwise you get different kinds of exceptions
       await forceIndexingOfNumberBasedProperty(search);
       await elasticTesting.refresh();

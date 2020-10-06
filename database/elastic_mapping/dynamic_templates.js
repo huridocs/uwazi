@@ -6,7 +6,6 @@ const dynamicTemplates = [
       mapping: {
         type: 'string',
         index: true,
-        fielddata: { format: 'disabled' },
       },
     },
   },

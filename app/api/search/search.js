@@ -15,7 +15,7 @@ import documentQueryBuilder from './documentQueryBuilder';
 import elastic from './elastic';
 import entities from '../entities';
 import templatesModel from '../templates';
-import { bulkIndex, indexEntities } from './entitiesIndex';
+import { bulkIndex, indexEntities, updateMapping } from './entitiesIndex';
 import thesauri from '../thesauri';
 
 const getCurrentTenantIndex = () => tenants.current().indexName;
@@ -839,6 +839,11 @@ const instanceSearch = elasticIndex => ({
     }));
 
     return { count: response.body.hits.hits.length, options };
+  },
+
+  async updateTemplatesMapping() {
+    const templates = await templatesModel.get();
+    return updateMapping(templates, elasticIndex);
   },
 });
 

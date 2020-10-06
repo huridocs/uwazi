@@ -9,20 +9,27 @@ import needsAuthorization from '../auth/authMiddleware';
 import templates from './templates';
 
 export default app => {
-  app.post('/api/templates', needsAuthorization(), async (req, res) => {
-    const response = await templates.save(req.body, req.language);
+  app.post('/api/templates', needsAuthorization(), async (req, res, next) => {
+    try {
+      const response = await templates.save(req.body, req.language);
 
-    req.io.emitToCurrentTenant('templateChange', response);
-    const updatedSettings = await settings.updateFilterName(response._id.toString(), response.name);
-    if (updatedSettings) {
-      req.io.emitToCurrentTenant('updateSettings', updatedSettings);
+      req.io.emitToCurrentTenant('templateChange', response);
+      const updatedSettings = await settings.updateFilterName(
+        response._id.toString(),
+        response.name
+      );
+      if (updatedSettings) {
+        req.io.emitToCurrentTenant('updateSettings', updatedSettings);
+      }
+
+      const templs = await templates.get();
+      const elasticIndex = tenants.current().indexName;
+      await updateMapping(templs, elasticIndex);
+
+      res.json(response);
+    } catch (error) {
+      next(error);
     }
-
-    const templs = await templates.get();
-    const elasticIndex = tenants.current().indexName;
-    await updateMapping(templs, elasticIndex);
-
-    res.json(response);
   });
 
   app.post(
