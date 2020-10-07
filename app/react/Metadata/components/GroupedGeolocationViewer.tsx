@@ -36,46 +36,67 @@ export interface GroupedGeolocationViewerProps {
 const notLabeledOrMultiple = (member: GroupMember) =>
   member.value.length === 1 && !member.value[0].label;
 
-const renderMemberInfo = (templatesInfo: TemplatesInfo) => (member: GroupMember) =>
-  notLabeledOrMultiple(member) ? (
-    <dl key={`${member.translateContext}_${member.name}`}>
-      <dt />
-      <dd>
+const getFirstGroupInfo = (members: GroupMember[], templatesInfo: TemplatesInfo) => (
+  <dl>
+    <dt />
+    <dd>
+      {members.map(member => (
         <Pill
           key={`${member.value[0].lat}_${member.value[0].lon}`}
           color={templatesInfo[member.translateContext].color}
         >
           <Translate context={member.translateContext}>{member.label}</Translate>
         </Pill>
-      </dd>
-    </dl>
-  ) : (
-    <dl key={`${member.translateContext}_${member.name}`}>
-      <dt>
-        <span>
-          <Translate context={member.translateContext}>{member.label}</Translate>
-          <> (</>
-          <Translate>linked</Translate>
-          <> </>
-          <Translate context={member.translateContext}>
-            {templatesInfo[member.translateContext].name}
-          </Translate>
-          <>)</>
-        </span>
-      </dt>
-      <dd>
-        {member.value.map(value => (
-          <Pill
-            key={`${value.lat}_${value.lon}`}
-            color={templatesInfo[member.translateContext].color}
-          >
-            <Translate context={member.translateContext}>{value.label || ''}</Translate>
-          </Pill>
-        ))}
-      </dd>
-    </dl>
-  );
+      ))}
+    </dd>
+  </dl>
+);
 
+const getMultiMemberInfo = (templatesInfo: TemplatesInfo) => (member: GroupMember) => (
+  <dl key={`${member.translateContext}_${member.name}`}>
+    <dt>
+      <span>
+        <Translate context={member.translateContext}>{member.label}</Translate>
+        <> (</>
+        <Translate>linked</Translate>
+        <> </>
+        <Translate context={member.translateContext}>
+          {templatesInfo[member.translateContext].name}
+        </Translate>
+        <>)</>
+      </span>
+    </dt>
+    <dd>
+      {member.value.map(value => (
+        <Pill
+          key={`${value.lat}_${value.lon}`}
+          color={templatesInfo[member.translateContext].color}
+        >
+          <Translate context={member.translateContext}>{value.label || ''}</Translate>
+        </Pill>
+      ))}
+    </dd>
+  </dl>
+);
+
+const computeRenderMemberGroups = (members: GroupMember[], templatesInfo: TemplatesInfo) => {
+  const firstGroup: GroupMember[] = [];
+  const restOfGroups: GroupMember[] = [];
+
+  members.forEach(member => {
+    if (notLabeledOrMultiple(member)) {
+      firstGroup.push(member);
+    } else {
+      restOfGroups.push(member);
+    }
+  });
+
+  return [getFirstGroupInfo(firstGroup, templatesInfo)].concat(
+    restOfGroups.map(getMultiMemberInfo(templatesInfo))
+  );
+};
+
+// eslint-disable-next-line react/no-multi-comp
 const GroupedGeolocationViewerComponent = (props: GroupedGeolocationViewerProps) => {
   const markers = props.members.reduce<GeolocationMarker[]>((flat: GeolocationMarker[], member) => {
     if (notLabeledOrMultiple(member)) {
@@ -96,7 +117,7 @@ const GroupedGeolocationViewerComponent = (props: GroupedGeolocationViewerProps)
   return (
     <>
       <GeolocationViewer points={markers} onlyForCards={false} />
-      {props.members.map(renderMemberInfo(props.templatesInfo))}
+      {computeRenderMemberGroups(props.members, props.templatesInfo)}
     </>
   );
 };

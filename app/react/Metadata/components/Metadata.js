@@ -68,9 +68,15 @@ const showByType = (prop, compact) => {
 const computeGroup = (metadata, startIndex) => {
   const members = [];
   let index = startIndex;
+  let lastIndexInTemplate = metadata[index].indexInTemplate - 1;
 
-  while (index < metadata.length && metadata[index].type === 'geolocation') {
+  while (
+    index < metadata.length &&
+    metadata[index].type === 'geolocation' &&
+    metadata[index].indexInTemplate === lastIndexInTemplate + 1
+  ) {
     members.push(metadata[index]);
+    lastIndexInTemplate = metadata[index].indexInTemplate;
     index += 1;
   }
 
@@ -91,6 +97,7 @@ const groupAdjacentGeolocations = metadata => {
       index = i;
       groupedMetadata.push({
         type: 'geolocation_group',
+        label: members.length > 1 ? 'Combined geolocations' : '',
         members,
       });
     }
@@ -130,7 +137,7 @@ const Metadata = ({ metadata, compact, renderLabel, showSubset, highlight, group
             className={`metadata-type-${type} metadata-name-${prop.name} ${fullWidthClass} ${highlightClass}`}
             key={`${prop.name}_${index}`}
           >
-            {renderLabel(prop, <dt>{t(prop.translateContext, prop.label)}</dt>)}
+            {renderLabel(prop, <dt>{t(prop.translateContext || 'System', prop.label)}</dt>)}
             <dd className={prop.sortedBy ? 'item-current-sort' : ''}>
               {showByType(prop, compact)}
             </dd>

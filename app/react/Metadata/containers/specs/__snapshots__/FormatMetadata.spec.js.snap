@@ -30,6 +30,7 @@ exports[`FormatMetadata should unshift additional metadata if passed 1`] = `
         "and": "more",
       },
       Object {
+        "indexInTemplate": 0,
         "label": undefined,
         "name": "preview",
         "noLabel": false,

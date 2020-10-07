@@ -138,6 +138,7 @@ describe('Metadata', () => {
           label: 'Geolocation Label',
           value: [{ lat: 13, lon: 7 }],
           type: 'geolocation',
+          indexInTemplate: 0,
         },
         {
           translateContext: 'otherTranslateContext',
@@ -148,12 +149,7 @@ describe('Metadata', () => {
             { lat: 17, lon: 11, label: 'Two' },
           ],
           type: 'geolocation',
-        },
-        {
-          translateContext: 'oneTranslateContext',
-          label: 'Label',
-          value: 'string value',
-          name: 'label',
+          indexInTemplate: 1,
         },
         {
           translateContext: 'oneTranslateContext',
@@ -161,6 +157,7 @@ describe('Metadata', () => {
           label: 'Geolocation Label2',
           value: [{ lat: 19, lon: 13 }],
           type: 'geolocation',
+          indexInTemplate: 3,
         },
       ];
 
@@ -168,7 +165,7 @@ describe('Metadata', () => {
       const geoGroups = component.find('.metadata-type-geolocation_group');
       expect(geoGroups.length).toBe(2);
       expect(geoGroups.find({ members: [metadata[0], metadata[1]] }).length).toBe(1);
-      expect(geoGroups.find({ members: [metadata[3]] }).length).toBe(1);
+      expect(geoGroups.find({ members: [metadata[2]] }).length).toBe(1);
     });
   });
 
