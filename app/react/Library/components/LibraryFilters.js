@@ -47,11 +47,15 @@ export class LibraryFilters extends Component {
         <div className="sidepanel-body">
           <p className="sidepanel-title">
             {t('System', 'Filters configuration')}
-            {this.props.sidePanelMode === 'unpinned-mode' && (
-              <button type="button" className="closeSidepanel" onClick={this.props.hideFilters}>
-                <Icon icon="times" />
-              </button>
-            )}
+            <button
+              type="button"
+              className={`closeSidepanel ${
+                this.props.sidePanelMode === 'unpinned-mode' ? '' : 'only-mobile'
+              }`}
+              onClick={this.props.hideFilters}
+            >
+              <Icon icon="times" />
+            </button>
           </p>
           <NeedAuthorization>
             {!this.props.unpublished && (
