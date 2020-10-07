@@ -60,11 +60,11 @@ describe('GroupedGeolocationViewer', () => {
 
     const pills = component.find('Pill');
     expect(pills.get(0).props.color).toBe('red');
-    expect(pills.get(0).props.children).toBe('Geolocation Label');
+    expect(pills.get(0).props.children.props.children).toBe('Geolocation Label');
     expect(pills.get(1).props.color).toBe('blue');
-    expect(pills.get(1).props.children).toBe('One');
+    expect(pills.get(1).props.children.props.children).toBe('One');
     expect(pills.get(2).props.color).toBe('blue');
-    expect(pills.get(2).props.children).toBe('Two');
+    expect(pills.get(2).props.children.props.children).toBe('Two');
     expect(pills.length).toBe(3);
   });
 });
