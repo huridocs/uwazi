@@ -35,6 +35,27 @@ const dynamicTemplates = [
     },
   },
   {
+    nested_props: {
+      match_mapping_type: 'string',
+      path_match: '*_nested.value.*',
+      mapping: {
+        type: 'text',
+        fields: {
+          raw: {
+            type: 'keyword',
+          },
+          sort: {
+            type: 'text',
+            analyzer: 'string_sorter',
+            fielddata: true,
+          },
+        },
+        term_vector: 'with_positions_offsets',
+        analyzer: 'tokenizer',
+      },
+    },
+  },
+  {
     object_fields: {
       match_mapping_type: 'object',
       path_match: 'metadata.*',
