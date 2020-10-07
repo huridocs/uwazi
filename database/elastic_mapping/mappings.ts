@@ -31,7 +31,9 @@ const noIndexText = {
 
 const id = {
   type: 'keyword',
-  index: true,
+  fields: {
+    raw: { type: 'keyword' },
+  },
 };
 
 const date = {
@@ -164,4 +166,15 @@ const propertyMappings = {
   select: selectType,
 };
 
-export { propertyMappings, text, noSorttext, noIndexText, id, date, nested, number, noSortNumber };
+export {
+  propertyMappings,
+  text,
+  noSorttext,
+  noIndexText,
+  id,
+  date,
+  nested,
+  number,
+  noSortNumber,
+  textSortField,
+};

@@ -1,5 +1,5 @@
 import documentProperties from './document_properties';
-import { text } from './mappings';
+import { textSortField } from './mappings';
 
 const properties = {
   documents: documentProperties,
@@ -10,7 +10,7 @@ const properties = {
     type: 'text',
     index: true,
     fields: {
-      sort: text,
+      sort: textSortField,
       sayt: { type: 'search_as_you_type' },
     },
     term_vector: 'with_positions_offsets',
