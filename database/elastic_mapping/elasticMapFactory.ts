@@ -8,6 +8,9 @@ export default {
         metadata: {
           properties: {},
         },
+        suggestedMetadata: {
+          properties: {},
+        },
       },
     };
 
