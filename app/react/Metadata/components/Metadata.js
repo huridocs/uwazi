@@ -83,6 +83,23 @@ const computeGroup = (metadata, startIndex) => {
   return [members, index];
 };
 
+const getNewGroupedGeolocationField = members => {
+  if (members.length === 1) {
+    return {
+      type: 'geolocation_group',
+      label: members[0].label,
+      translateContext: members[0].translateContext,
+      members,
+    };
+  }
+
+  return {
+    type: 'geolocation_group',
+    label: 'Combined geolocations',
+    members,
+  };
+};
+
 const groupAdjacentGeolocations = metadata => {
   const groupedMetadata = [];
   let index = 0;
@@ -95,11 +112,7 @@ const groupAdjacentGeolocations = metadata => {
       const [members, i] = computeGroup(metadata, index);
 
       index = i;
-      groupedMetadata.push({
-        type: 'geolocation_group',
-        label: members.length > 1 ? 'Combined geolocations' : '',
-        members,
-      });
+      groupedMetadata.push(getNewGroupedGeolocationField(members));
     }
   }
 

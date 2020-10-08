@@ -113,6 +113,7 @@ dl.metadata-type-multimedia {
   }
 }
 
+dl.metadata-type-geolocation,
 dl.metadata-type-geolocation_group {
   .pill {
     background: #d9534e;
@@ -122,6 +123,11 @@ dl.metadata-type-geolocation_group {
     padding: 2px 8px;
     color: white;
     display: inline-block;
-    margin: 2px 4px;
+    margin: 2px 8px 2px 0;
+  }
+
+  .pills-container {
+    border-top: none;
+    padding: 10px 0 0 0;
   }
 }

@@ -37,7 +37,10 @@ const notLabeledOrMultiple = (member: GroupMember) =>
   member.value.length === 1 && !member.value[0].label;
 
 const getFirstGroupInfo = (members: GroupMember[], templatesInfo: TemplatesInfo) => (
-  <dl key={members.map(member => `${member.translateContext}_${member.name}`).join(',')}>
+  <dl
+    className="pills-container"
+    key={members.map(member => `${member.translateContext}_${member.name}`).join(',')}
+  >
     <dt />
     <dd>
       {members.map(member => (
@@ -53,7 +56,7 @@ const getFirstGroupInfo = (members: GroupMember[], templatesInfo: TemplatesInfo)
 );
 
 const getMultiMemberInfo = (templatesInfo: TemplatesInfo) => (member: GroupMember) => (
-  <dl key={`${member.translateContext}_${member.name}`}>
+  <dl className="pills-container" key={`${member.translateContext}_${member.name}`}>
     <dt>
       <span>
         <Translate context={member.translateContext}>{member.label}</Translate>
