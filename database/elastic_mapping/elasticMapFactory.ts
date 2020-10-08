@@ -17,9 +17,9 @@ export default {
           return map;
         }
 
-        map.properties.metadata.properties[property.name] = {
-          properties: propertyMappings[property.type](),
-        };
+        const fieldMapping = propertyMappings[property.type]();
+        map.properties.metadata.properties[property.name] = { properties: fieldMapping };
+        map.properties.suggestedMetadata.properties[property.name] = { properties: fieldMapping };
 
         return map;
       }, baseMapping);
