@@ -1,11 +1,10 @@
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import instrumentRoutes from 'api/utils/instrumentRoutes';
 import settings from 'api/settings/settings';
-import templates from '../templates';
-import templateRoutes from '../routes.js';
-
 import db from 'api/utils/testing_db';
 import * as entitiesIndex from 'api/search/entitiesIndex';
+import templates from '../templates';
+import templateRoutes from '../routes.js';
 
 const mocketSocketIo = () => ({
   emitToCurrentTenant: jasmine.createSpy('emitToCurrentTenant'),

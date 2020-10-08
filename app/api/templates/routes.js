@@ -23,8 +23,7 @@ export default app => {
       }
 
       const templs = await templates.get();
-      const elasticIndex = tenants.current().indexName;
-      await updateMapping(templs, elasticIndex);
+      await updateMapping(templs, tenants.current().indexName);
 
       res.json(response);
     } catch (error) {
