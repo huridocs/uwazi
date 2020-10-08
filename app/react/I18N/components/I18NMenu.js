@@ -29,11 +29,7 @@ class I18NMenu extends Component {
             onClick={toggleInlineEdit}
             aria-label={t('System', 'Add/edit translations', null, false)}
           >
-            <Icon
-              icon="language"
-              size="lg"
-              aria-label={t('System', 'Add/edit translations', null, false)}
-            />
+            <Icon icon="language" size="lg" />
           </button>
         </NeedAuthorization>
         {languages.count() > 1 &&
