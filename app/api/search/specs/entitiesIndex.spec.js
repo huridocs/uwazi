@@ -1,7 +1,6 @@
 import db from 'api/utils/testing_db';
 import instanceElasticTesting from 'api/utils/elastic_testing';
 import errorLog from 'api/log/errorLog';
-import entitiesIndex from '../entitiesIndex';
 import { instanceSearch } from '../search';
 import { fixtures as fixturesForIndexErrors } from './fixtures_elastic_errors';
 import elastic from '../elastic';

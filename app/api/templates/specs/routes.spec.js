@@ -136,7 +136,7 @@ describe('templates routes', () => {
         new Promise(resolve => resolve('updated settings'))
       );
 
-      const response = await routes.post('/api/templates', req);
+      await routes.post('/api/templates', req);
       expect(entitiesIndex.updateMapping).toHaveBeenCalledWith(aTemplate, 'index');
     });
 
