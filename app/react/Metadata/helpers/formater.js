@@ -24,7 +24,7 @@ const addSortedProperty = (templates, sortedProperty) =>
 
 const formatMetadataSortedProperty = (metadata, sortedProperty) =>
   metadata.map(prop => {
-    const newProp = Object.assign({}, prop);
+    const newProp = { ...prop };
     newProp.sortedBy = false;
     if (sortedProperty === `metadata.${prop.name}`) {
       newProp.sortedBy = true;
@@ -205,17 +205,14 @@ export default {
       propType = type;
       value = this.flattenInheritedMultiValue(value, type, thesauriValues, templateThesauris);
     }
-    return Object.assign(
-      {},
-      {
-        translateContext: template.get('_id'),
-        ...inheritedProperty.toJS(),
-        value,
-        label: property.get('label'),
-        type: propType,
-        onlyForCards: Boolean(options.onlyForCards),
-      }
-    );
+    return {
+      translateContext: template.get('_id'),
+      ...inheritedProperty.toJS(),
+      value,
+      label: property.get('label'),
+      type: propType,
+      onlyForCards: Boolean(options.onlyForCards),
+    };
   },
 
   flattenInheritedMultiValue(relationshipValues, type, thesauriValues, templateThesauris) {
@@ -296,18 +293,16 @@ export default {
     const template = templates.find(temp => temp.get('_id') === doc.template);
 
     if (!template || !thesauris.size) {
-      return Object.assign({}, doc, { metadata: [], documentType: '' });
+      return { ...doc, metadata: [], documentType: '' };
     }
 
     if (!doc.metadata) {
       doc.metadata = {};
     }
 
-    let metadata = this.filterProperties(
-      template,
-      options.onlyForCards,
-      options.sortedProperty
-    ).map(property =>
+    let metadata = this.filterProperties(template, options.onlyForCards, options.sortedProperty, {
+      excludePreview: options.excludePreview,
+    }).map(property =>
       this.applyTransformation(property, {
         doc,
         thesauris,
@@ -320,10 +315,7 @@ export default {
 
     metadata = conformSortedProperty(metadata, templates, doc, options.sortedProperty);
 
-    return Object.assign({}, doc, {
-      metadata: metadata.toJS(),
-      documentType: template.get('name'),
-    });
+    return { ...doc, metadata: metadata.toJS(), documentType: template.get('name') };
   },
 
   applyTransformation(property, { doc, thesauris, options, template, templates, relationships }) {
@@ -344,11 +336,11 @@ export default {
     const methodType = this[property.get('type')] ? property.get('type') : 'default';
 
     if ((value && value.length) || methodType === 'preview') {
-      return Object.assign(
-        {},
-        { translateContext: template.get('_id'), ...property.toJS() },
-        this[methodType](property, value, thesauris, { ...options, doc })
-      );
+      return {
+        translateContext: template.get('_id'),
+        ...property.toJS(),
+        ...this[methodType](property, value, thesauris, { ...options, doc }),
+      };
     }
 
     return {
@@ -360,8 +352,12 @@ export default {
     };
   },
 
-  filterProperties(template, onlyForCards, sortedProperty) {
+  filterProperties(template, onlyForCards, sortedProperty, options = {}) {
     return template.get('properties').filter(p => {
+      if (options.excludePreview && p.get('type') === 'preview') {
+        return false;
+      }
+
       if (!onlyForCards) {
         return true;
       }
@@ -369,6 +365,7 @@ export default {
       if (p.get('showInCard') || sortedProperty === `metadata.${p.get('name')}`) {
         return true;
       }
+
       return false;
     });
   },

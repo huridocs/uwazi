@@ -69,15 +69,13 @@ const determineMetadata = (entity, templatesById, thesauriById, translation) => 
           return results.concat([{ ...data, value, label }]);
         }, []);
 
-        return Object.assign({}, metadata, {
-          [property]: newEntries.length ? newEntries : [],
-        });
+        return { ...metadata, [property]: newEntries.length ? newEntries : [] };
       }
 
-      return Object.assign({}, metadata, { [property]: [] });
+      return { ...metadata, [property]: [] };
     }
 
-    return Object.assign({}, metadata, { [property]: entity.metadata[property] });
+    return { ...metadata, [property]: entity.metadata[property] };
   }, {});
 
   return { shouldProcess, newMetadata };
@@ -112,7 +110,7 @@ export default {
 
     const upadtedThesauri = await getDocumentsFrom('dictionaries');
     const thesauriById = upadtedThesauri.reduce(
-      (results, t) => Object.assign({}, results, { [t._id.toString()]: t }),
+      (results, t) => ({ ...results, [t._id.toString()]: t }),
       {}
     );
 
@@ -121,7 +119,7 @@ export default {
     const cursor = db.collection('entities').find({});
     const templates = await getDocumentsFrom('templates');
     const templatesById = templates.reduce(
-      (results, t) => Object.assign({}, results, { [t._id.toString()]: t }),
+      (results, t) => ({ ...results, [t._id.toString()]: t }),
       {}
     );
 

@@ -25,7 +25,7 @@ describe('FormConfigMultimedia', () => {
   });
 
   const render = () => {
-    const mappedProps = Object.assign({}, props, mapStateToProps(state, props));
+    const mappedProps = { ...props, ...mapStateToProps(state, props) };
     component = shallow(<FormConfigMultimedia.WrappedComponent {...mappedProps} />);
   };
 

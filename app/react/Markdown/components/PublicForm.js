@@ -68,10 +68,10 @@ class PublicForm extends Component {
   constructor(props) {
     super(props);
     this.handleSubmit = this.handleSubmit.bind(this);
-    this.validators = Object.assign(
-      { captcha: { required: val => val && val.length } },
-      validator.generate(props.template.toJS())
-    );
+    this.validators = {
+      captcha: { required: val => val && val.length },
+      ...validator.generate(props.template.toJS()),
+    };
     this.state = { submiting: false };
   }
 

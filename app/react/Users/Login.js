@@ -107,7 +107,7 @@ export class Login extends RouteHandler {
                 }}
               >
                 {!this.state.tokenRequired && (
-                  <React.Fragment>
+                  <>
                     <div
                       className={`form-group login-email${this.state.error ? ' has-error' : ''}`}
                     >
@@ -147,7 +147,7 @@ export class Login extends RouteHandler {
                         </span>
                       </div>
                     </div>
-                  </React.Fragment>
+                  </>
                 )}
                 {this.state.tokenRequired && (
                   <div
@@ -162,10 +162,10 @@ export class Login extends RouteHandler {
                       <div className="form-text">
                         <p>
                           {this.state.error2fa && (
-                            <React.Fragment>
+                            <>
                               <Icon icon="exclamation-triangle" />
                               <span>{t('System', 'Two-factor verification failed')}</span>
-                            </React.Fragment>
+                            </>
                           )}
                         </p>
                         <p>

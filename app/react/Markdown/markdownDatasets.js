@@ -67,8 +67,7 @@ const requestDatasets = (datasets, requestParams) =>
     })
   );
 
-const conformDatasets = sets =>
-  sets.reduce((memo, set) => Object.assign({}, memo, { [set.name]: set.data }), {});
+const conformDatasets = sets => sets.reduce((memo, set) => ({ ...memo, [set.name]: set.data }), {});
 
 const getAggregations = (state, { property, dataset = 'default' }) => {
   const data = state.page.datasets.get(dataset);

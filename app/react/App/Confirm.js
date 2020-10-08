@@ -58,10 +58,10 @@ export class Confirm extends Component {
 
   renderExtraConfirm() {
     return (
-      <React.Fragment>
+      <>
         <p> If you want to continue, please type &#39;{this.props.extraConfirmWord}&#39; </p>
         <input type="text" onChange={this.handleInput} value={this.state.confirmInputValue} />
-      </React.Fragment>
+      </>
     );
   }
 

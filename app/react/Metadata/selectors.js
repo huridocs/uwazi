@@ -24,8 +24,8 @@ const formatMetadata = createSelector(
   s => s.templates,
   indexedThesaurus,
   s => s.settings,
-  (_s, doc, sortProperty, references) => ({ doc, sortProperty, references }),
-  (templates, thesauris, settings, { doc, sortProperty, references }) => {
+  (_s, doc, sortProperty, references, options) => ({ doc, sortProperty, references, options }),
+  (templates, thesauris, settings, { doc, sortProperty, references, options }) => {
     const defaultDoc = entityDefaultDocument(
       doc.documents,
       doc.language,
@@ -48,7 +48,8 @@ const formatMetadata = createSelector(
       Object.assign(doc, { defaultDoc }),
       templates,
       thesauris,
-      references
+      references,
+      options
     ).metadata;
   }
 );

@@ -7,7 +7,7 @@ import React, { Component } from 'react';
 
 import { MetadataFormButtons, ShowMetadata } from 'app/Metadata';
 import { NeedAuthorization } from 'app/Auth';
-import { t } from 'app/I18N';
+import { t, Translate } from 'app/I18N';
 import { AttachmentsList } from 'app/Attachments';
 import { FileList } from 'app/Attachments/components/FileList';
 import Connections from 'app/Viewer/components/ConnectionsList';
@@ -112,7 +112,11 @@ export class DocumentSidePanel extends Component {
 
   renderHeader(tab, doc, isEntity) {
     if (this.state.copyFrom) {
-      return <div className="sidepanel-header" />;
+      return (
+        <div className="sidepanel-header">
+          <Translate>Copy properties to this entity from</Translate>:
+        </div>
+      );
     }
     const { excludeConnectionsTab, connectionsGroups, isTargetDoc, references } = this.props;
 
@@ -328,7 +332,7 @@ export class DocumentSidePanel extends Component {
               {(() => {
                 if (docBeingEdited && this.state.copyFrom) {
                   return (
-                    <React.Fragment>
+                    <>
                       <EntityForm
                         storeKey={this.props.storeKey}
                         initialTemplateId={this.initialTemplateId}
@@ -341,7 +345,7 @@ export class DocumentSidePanel extends Component {
                         formModel={this.props.formPath}
                         onCancel={this.toggleCopyFrom}
                       />
-                    </React.Fragment>
+                    </>
                   );
                 }
                 if (docBeingEdited) {

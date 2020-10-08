@@ -19,12 +19,12 @@ export const ItemSnippet = ({ snippets, onSnippetClick, template }) => {
   }
   /* eslint-disable react/no-danger */
   const snippetElement = (
-    <React.Fragment>
+    <>
       <div className="item-snippet-source">{source}</div>
       <div onClick={onSnippetClick} className="item-snippet">
         <SafeHTML>{content}</SafeHTML>
       </div>
-    </React.Fragment>
+    </>
   );
 
   if (snippets.count === 1) {

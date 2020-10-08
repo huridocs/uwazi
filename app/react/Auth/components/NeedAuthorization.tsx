@@ -7,7 +7,7 @@ type PropTypes = {
 };
 
 const NeedAuthorization: React.FC<PropTypes> = ({ authorized, children }: PropTypes) =>
-  authorized ? <React.Fragment>{children}</React.Fragment> : null;
+  authorized ? <>{children}</> : null;
 
 type mapStateProps = {
   roles: string[];

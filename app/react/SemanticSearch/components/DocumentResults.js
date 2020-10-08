@@ -98,7 +98,7 @@ export class DocumentResults extends Component {
     const documentViewUrl = doc.file ? `/document/${doc.sharedId}` : `/entity/${doc.sharedId}`;
 
     return (
-      <React.Fragment>
+      <>
         <div className="view">
           <div className="item-info">
             <div>
@@ -127,7 +127,7 @@ export class DocumentResults extends Component {
           </dl>
         </div>
         {this.renderSnippetsList(doc, snippets, documentViewUrl)}
-      </React.Fragment>
+      </>
     );
   }
 }
@@ -137,7 +137,17 @@ DocumentResults.defaultProps = {
 };
 
 DocumentResults.propTypes = {
-  doc: PropTypes.shape({ sharedId: PropTypes.string }).isRequired,
+  doc: PropTypes.shape({
+    title: PropTypes.string,
+    template: PropTypes.string,
+    sharedId: PropTypes.string,
+    file: PropTypes.object,
+    icon: PropTypes.object,
+    semanticSearch: PropTypes.shape({
+      totalResults: PropTypes.number,
+      results: PropTypes.array,
+    }),
+  }).isRequired,
   threshold: PropTypes.number.isRequired,
   selectSnippet: PropTypes.func.isRequired,
   template: PropTypes.instanceOf(Immutable.Map),

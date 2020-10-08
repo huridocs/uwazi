@@ -23,8 +23,8 @@ export default class NestedMultiselect extends Component {
   }
 
   onChange(key, optionsSelected) {
-    const values = Object.assign({}, this.state.values);
-    values[key] = optionsSelected;
+    const values = { ...this.state.values, [key]: optionsSelected };
+
     this.setState({ values });
     this.props.onChange(values);
   }
@@ -64,9 +64,7 @@ export default class NestedMultiselect extends Component {
   }
 
   selectAnyChange(key, e) {
-    const values = Object.assign({}, this.state.values);
-    values[`${key}any`] = e.target.checked;
-    values[key] = [];
+    const values = { ...this.state.values, [key]: [], [`${key}any`]: e.target.checked };
     this.setState({ values });
     this.props.onChange(values);
   }

@@ -1,4 +1,3 @@
-/* eslint-disable max-nested-callbacks
 /* eslint-disable max-statements */
 
 import Ajv from 'ajv';

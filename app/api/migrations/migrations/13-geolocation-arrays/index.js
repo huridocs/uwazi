@@ -13,10 +13,8 @@ export default {
       .collection('templates')
       .find()
       .toArray();
-    const templatesByKey = templates.reduce(
-      (memo, t) => Object.assign({}, memo, { [t._id.toString()]: t }),
-      {}
-    );
+
+    const templatesByKey = templates.reduce((memo, t) => ({ ...memo, [t._id.toString()]: t }), {});
 
     const templatesWithGeolocation = templates
       .filter(t => {
@@ -47,9 +45,9 @@ export default {
             propertyData.type === 'geolocation' &&
             !Array.isArray(entity.metadata[property])
           ) {
-            return Object.assign({}, metadata, { [property]: [entity.metadata[property]] });
+            return { ...metadata, [property]: [entity.metadata[property]] };
           }
-          return Object.assign({}, metadata, { [property]: entity.metadata[property] });
+          return { ...metadata, [property]: entity.metadata[property] };
         }, {});
 
         await db

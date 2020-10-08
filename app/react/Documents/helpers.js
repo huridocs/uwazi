@@ -7,7 +7,7 @@ export default {
     const template = templates.find(t => t._id === doc.template);
 
     if (!template || !thesauris.length) {
-      return Object.assign({}, doc, { metadata: [], documentType: '' });
+      return { ...doc, metadata: [], documentType: '' };
     }
 
     const metadata = template.properties.map(property => {
@@ -33,6 +33,6 @@ export default {
       return { label: property.label, value };
     });
 
-    return Object.assign({}, doc, { metadata, documentType: template.name });
+    return { ...doc, metadata, documentType: template.name };
   },
 };

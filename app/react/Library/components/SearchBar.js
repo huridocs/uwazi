@@ -25,7 +25,7 @@ export class SearchBar extends Component {
 
   resetSearch() {
     this.props.change(`${this.props.storeKey}.search.searchTerm`, '');
-    const search = Object.assign({}, this.props.search);
+    const search = { ...this.props.search };
     search.searchTerm = '';
     this.props.searchDocuments({ search }, this.props.storeKey);
   }
@@ -35,7 +35,7 @@ export class SearchBar extends Component {
   }
 
   submitSearch() {
-    const search = Object.assign({}, this.props.search);
+    const search = { ...this.props.search };
     this.props.searchDocuments({ search }, this.props.storeKey);
   }
 

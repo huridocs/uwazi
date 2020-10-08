@@ -22,11 +22,11 @@ class ToggleDisplay extends React.Component {
 
   render() {
     return (
-      <React.Fragment>
+      <>
         {!this.state.show && <button onClick={this.show}>{this.props.showLabel}</button>}
         {this.state.show && <button onClick={this.hide}>{this.props.hideLabel}</button>}
         {this.state.show && this.props.children}
-      </React.Fragment>
+      </>
     );
   }
 }

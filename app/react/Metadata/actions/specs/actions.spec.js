@@ -1,5 +1,3 @@
-/** @format */
-
 import * as reactReduxForm from 'react-redux-form';
 import Immutable from 'immutable';
 import configureMockStore from 'redux-mock-store';

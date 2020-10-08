@@ -22,12 +22,12 @@ import { Icon } from 'UI';
 import { ThesauriFormItem } from './ThesauriFormItem';
 
 function sanitizeThesauri(thesaurus) {
-  const sanitizedThesauri = Object.assign({}, thesaurus);
+  const sanitizedThesauri = { ...thesaurus };
   sanitizedThesauri.values = sanitizedThesauri.values
     .filter(value => value.label)
     .filter(value => !value.values || value.values.length)
     .map(value => {
-      const _value = Object.assign({}, value);
+      const _value = { ...value };
       if (_value.values) {
         _value.values = _value.values.filter(_v => _v.label);
       }

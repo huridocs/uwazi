@@ -25,7 +25,7 @@ describe('markdownDatasets', () => {
     beforeEach(() => {
       requestParams = new RequestParams({}, 'headers');
       spyOn(searchApi, 'search').and.callFake(params =>
-        Promise.resolve(Object.assign({ isSearch: true, headers: params.headers }, params.data))
+        Promise.resolve({ isSearch: true, headers: params.headers, ...params.data })
       );
       spyOn(entitiesApi, 'get').and.callFake(params =>
         Promise.resolve([{ isEntity: true, data: params.data, headers: params.headers }])

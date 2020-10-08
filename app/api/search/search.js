@@ -264,18 +264,20 @@ const _sanitizeAggregationsStructure = (aggregations, limit) => {
 
     //grouped dictionary
     if (aggregation.buckets && !Array.isArray(aggregation.buckets)) {
-      aggregation.buckets = Object.keys(aggregation.buckets).map(key =>
-        Object.assign({ key }, aggregation.buckets[key])
-      );
+      aggregation.buckets = Object.keys(aggregation.buckets).map(key => ({
+        key,
+        ...aggregation.buckets[key],
+      }));
     }
 
     //nested
     if (!aggregation.buckets) {
       Object.keys(aggregation).forEach(key => {
         if (aggregation[key].buckets) {
-          const buckets = aggregation[key].buckets.map(option =>
-            Object.assign({ key: option.key }, option.filtered.total)
-          );
+          const buckets = aggregation[key].buckets.map(option => ({
+            key: option.key,
+            ...option.filtered.total,
+          }));
           result[key] = {
             type: 'nested',
             doc_count: aggregation[key].doc_count,

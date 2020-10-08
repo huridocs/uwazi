@@ -331,4 +331,20 @@ mark.searchTerm {
       white-space: pre-line;
     }
   }
+
+  .search-box {
+    position: sticky;
+    top: 0;
+    margin: 0;
+    padding: 15px 15px 15px 15px;
+    width: 100%;
+    background: white;
+    border-bottom: solid 1px lightgrey;
+
+    .input-group {
+      svg {
+        top: 23px;
+      }
+    }
+  }
 }
