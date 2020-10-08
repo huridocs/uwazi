@@ -21,7 +21,6 @@ exports[`I18NMenu when there is only one language should only render the inline 
       type="button"
     >
       <Connect(Icon)
-        aria-label="Add/edit translations"
         icon="language"
         size="lg"
       />
