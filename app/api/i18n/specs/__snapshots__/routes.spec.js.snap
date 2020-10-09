@@ -76,8 +76,13 @@ Object {
             "values": Object {
               "patterns": Array [
                 Object {
-                  "regex": "/\\\\w+/",
                   "rule": Object {
+                    "invalids": Array [
+                      "",
+                    ],
+                    "type": "string",
+                  },
+                  "schema": Object {
                     "invalids": Array [
                       "",
                     ],
