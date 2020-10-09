@@ -79,19 +79,13 @@ export class UploadButton extends Component {
 
   renderButton(status = 'success', icon = 'paperclip', message = 'Upload new file') {
     return (
-      <label
-        htmlFor="upload-button-input"
-        className={`upload-button btn btn-${status}`}
-        tabIndex="0"
-        role="button"
-      >
+      <label htmlFor="upload-button-input" className={`upload-button btn btn-${status}`}>
         <Icon icon={icon} />
         <input
           onChange={this.onChange}
           type="file"
           accept="application/pdf"
           id="upload-button-input"
-          style={{ display: 'none' }}
         />
         &nbsp;
         <Translate>{message}</Translate>
