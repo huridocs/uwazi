@@ -37,7 +37,7 @@ export default app => {
                 id: Joi.string(),
                 label: Joi.string(),
                 type: Joi.string(),
-                values: Joi.object().pattern(/\w+/, Joi.string()),
+                values: Joi.object().pattern(Joi.string(), Joi.string()),
               })
             ),
         })
