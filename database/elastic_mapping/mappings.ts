@@ -62,21 +62,18 @@ const noSortNumber = {
 
 const textType = () => {
   return {
-    label: text,
     value: text,
   };
 };
 
 const dateType = () => {
   return {
-    label: text,
     value: number,
   };
 };
 
 const daterangeType = () => {
   return {
-    label: text,
     value: {
       properties: {
         from: number,
