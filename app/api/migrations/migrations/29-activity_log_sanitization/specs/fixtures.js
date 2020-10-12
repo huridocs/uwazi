@@ -69,5 +69,23 @@ export default {
       body: "{ entityId: 'entity1' }",
       method: 'POST',
     },
+    {
+      _id: testingDB.id(),
+      url: '/api/documents',
+      body: "{ entityId: 'entity1' }",
+      method: 'POST',
+    },
+    {
+      _id: testingDB.id(),
+      url: '/api/attachments/delete',
+      body: "{ entityId: 'entity1' }",
+      method: 'DELETE',
+    },
+    {
+      _id: testingDB.id(),
+      url: '/api/attachments/upload',
+      body: "{ entityId: 'entity1' }",
+      method: 'POST',
+    },
   ],
 };

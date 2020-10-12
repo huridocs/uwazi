@@ -29,50 +29,52 @@ describe('migration activity log sanitization', () => {
         .find({ method: { $in: ['GET', 'OPTIONS', 'HEAD'] } })
         .count();
 
+      expect(deletedMethods).toBe(0);
+    });
+
+    it('should keep all wanted entries', async () => {
       const remainingEntries = await testingDB.mongodb
         .collection('activitylogs')
         .find({ method: { $not: { $in: ['GET', 'OPTIONS', 'HEAD'] } } })
         .count();
-
-      expect(deletedMethods).toBe(0);
-      expect(remainingEntries).toBe(3);
+      expect(remainingEntries).toBe(6);
     });
 
     it('should remove activity entries with unwanted urls', async () => {
-      const ignoredEntries = await testingDB.mongodb
+      const unWantedEntries = await testingDB.mongodb
         .collection('activitylogs')
         .find({ url: { $in: IGNORED_ENDPOINTS } })
         .count();
 
-      expect(ignoredEntries).toBe(0);
+      expect(unWantedEntries).toBe(0);
     });
 
     it('should remove upload activity entries without body', async () => {
-      const ignoredEntries = await testingDB.mongodb
+      const unWantedEntries = await testingDB.mongodb
         .collection('activitylogs')
         .find({ url: { $in: BODY_REQUIRED_ENDPOINTS }, body: {} })
         .count();
 
-      expect(ignoredEntries).toBe(0);
+      expect(unWantedEntries).toBe(0);
     });
 
     it('should keep upload activity entries with body', async () => {
-      const ignoredEntries = await testingDB.mongodb
+      const remainingEntries = await testingDB.mongodb
         .collection('activitylogs')
-        .find({ url: { $in: BODY_REQUIRED_ENDPOINTS }, body: { entityId: 'entity1' } })
+        .find({ url: { $in: BODY_REQUIRED_ENDPOINTS }, body: "{ entityId: 'entity1' }" })
         .count();
 
-      expect(ignoredEntries).toBe(0);
+      expect(remainingEntries).toBe(2);
     });
 
     it('should set expireAt with a year upfront into remaining entries', async () => {
       const expireAt = date.addYearsToCurrentDate(1);
-      const ignoredEntries = await testingDB.mongodb
+      const unWantedEntries = await testingDB.mongodb
         .collection('activitylogs')
         .find({ expireAt })
         .count();
 
-      expect(ignoredEntries).toBe(3);
+      expect(unWantedEntries).toBe(6);
     });
   });
 });

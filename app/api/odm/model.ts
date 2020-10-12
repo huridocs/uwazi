@@ -74,7 +74,7 @@ export class OdmModel<T> {
 }
 
 export function instanceModel<T = any>(collectionName: string, schema: mongoose.Schema) {
-  const logHelper = createUpdateLogHelper(collectionName);
+  const logHelper = createUpdateLogHelper<T>(collectionName);
   const model = new OdmModel<T>(logHelper, collectionName, schema);
   models[collectionName] = model;
   return model;

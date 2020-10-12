@@ -39,7 +39,7 @@ describe('Activitylog Parser', () => {
   }
 
   describe('getSemanticData', () => {
-    it('should report as beautified: false if no translation present for the route', async () => {
+    it('should report as RAW if no translation present for the route', async () => {
       const semanticData = await getSemanticData({ method: 'POST', url: '/api/untraslated-route' });
       expect(semanticData).toEqual({
         action: 'RAW',
