@@ -2,6 +2,7 @@ export enum Methods {
   Create = 'CREATE',
   Update = 'UPDATE',
   Delete = 'DELETE',
+  Migrate = 'MIGRATE',
 }
 
 const buildActivityLogEntry = (builder: ActivityLogBuilder) => ({
