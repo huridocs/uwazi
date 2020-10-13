@@ -1,7 +1,5 @@
-/** @format */
-
 import instanceElasticTesting from 'api/utils/elastic_testing';
-
+import db from 'api/utils/testing_db';
 import { instanceSearch } from '../search';
 import elastic from '../elastic';
 import { fixturesTimeOut } from './fixtures_elastic';
@@ -12,8 +10,13 @@ describe('custom language analyzers', () => {
   const elasticTesting = instanceElasticTesting(elasticIndex, search);
 
   beforeAll(async () => {
+    db.clearAllAndLoad({});
     await elasticTesting.resetIndex();
   }, fixturesTimeOut);
+
+  afterAll(async () => {
+    await db.disconnect();
+  });
 
   describe('persian', () => {
     it('should index persian without errors', async () => {
