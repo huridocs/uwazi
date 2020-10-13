@@ -30,7 +30,8 @@ class I18NMenu extends Component {
       };
     });
     languageOptions.sort((a, b) => a.label.localeCompare(b.label));
-    
+    const currentLang = languageOptions.find(obj => obj._id === locale);
+
     return (
       <ul className="menuNav-I18NMenu" role="navigation" aria-label="Languages">
         <NeedAuthorization roles={['admin', 'editor']}>
@@ -50,6 +51,7 @@ class I18NMenu extends Component {
                 valueField="_id"
                 textField="label"
                 data={languageOptions}
+                value={currentLang}
                 placeholder="Choose language"
               />
             </div>
