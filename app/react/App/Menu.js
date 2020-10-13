@@ -63,6 +63,7 @@ export class Menu extends Component {
                   type="button"
                   onClick={this.props.showSemanticSearch}
                   className="menuNav-btn btn btn-default"
+                  aria-label={t('System', 'Semantic search', null, false)}
                 >
                   <Icon icon="flask" />
                   <span className="tab-link-tooltip">{t('System', 'Semantic search')}</span>
@@ -70,14 +71,22 @@ export class Menu extends Component {
               </li>
             </FeatureToggleSemanticSearch>
             <li className="menuNav-item">
-              <I18NLink to={this.libraryUrl()} className="menuNav-btn btn btn-default">
+              <I18NLink
+                to={this.libraryUrl()}
+                className="menuNav-btn btn btn-default"
+                aria-label={t('System', 'Public documents', null, false)}
+              >
                 <Icon icon="th" />
                 <span className="tab-link-tooltip">{t('System', 'Public documents')}</span>
               </I18NLink>
             </li>
             <NeedAuthorization roles={['admin', 'editor']}>
               <li className="menuNav-item">
-                <I18NLink to={this.uploadsUrl()} className="menuNav-btn btn btn-default">
+                <I18NLink
+                  to={this.uploadsUrl()}
+                  className="menuNav-btn btn btn-default"
+                  aria-label={t('System', 'Private documents', null, false)}
+                >
                   <span>
                     <Icon icon="cloud-upload-alt" />
                   </span>
@@ -87,7 +96,11 @@ export class Menu extends Component {
             </NeedAuthorization>
             <NeedAuthorization roles={['admin', 'editor']}>
               <li className="menuNav-item">
-                <I18NLink to="/settings/account" className="menuNav-btn btn btn-default">
+                <I18NLink
+                  to="/settings/account"
+                  className="menuNav-btn btn btn-default"
+                  aria-label={t('System', 'Account settings', null, false)}
+                >
                   <Icon icon="cog" />
                   <span className="tab-link-tooltip">{t('System', 'Account settings')}</span>
                 </I18NLink>
@@ -97,7 +110,11 @@ export class Menu extends Component {
               if (!user._id) {
                 return (
                   <li className="menuNav-item">
-                    <I18NLink to="/login" className="menuNav-btn btn btn-default">
+                    <I18NLink
+                      to="/login"
+                      className="menuNav-btn btn btn-default"
+                      aria-label={t('System', 'Sign in', null, false)}
+                    >
                       <Icon icon="power-off" />
                       <span className="tab-link-tooltip">{t('System', 'Sign in')}</span>
                     </I18NLink>
