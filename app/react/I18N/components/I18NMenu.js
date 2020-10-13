@@ -10,6 +10,10 @@ import { actions, t } from 'app/I18N';
 import DropdownList from 'app/Forms/components/DropdownList';
 
 class I18NMenu extends Component {
+  static reload(url) {
+    window.location.href = url;
+  }
+
   constructor(props) {
     super(props);
     this.onLanguageSelect = this.onLanguageSelect.bind(this);
