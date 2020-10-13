@@ -15,7 +15,7 @@ import documentQueryBuilder from './documentQueryBuilder';
 import elastic from './elastic';
 import entities from '../entities';
 import templatesModel from '../templates';
-import { bulkIndex, indexEntities } from './entitiesIndex';
+import { bulkIndex, indexEntities, updateMapping } from './entitiesIndex';
 import thesauri from '../thesauri';
 
 const getCurrentTenantIndex = () => tenants.current().indexName;
@@ -356,7 +356,6 @@ const processResponse = async (response, templates, dictionaries, language, filt
     result._id = hit._id;
     return result;
   });
-
   const sanitizedAggregations = await _sanitizeAggregations(
     response.body.aggregations.all,
     templates,
@@ -840,6 +839,11 @@ const instanceSearch = elasticIndex => ({
     }));
 
     return { count: response.body.hits.hits.length, options };
+  },
+
+  async updateTemplatesMapping() {
+    const templates = await templatesModel.get();
+    return updateMapping(templates, elasticIndex);
   },
 });
 

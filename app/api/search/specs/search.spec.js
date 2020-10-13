@@ -554,6 +554,7 @@ describe('search', () => {
           .then(([template2NestedAggs, nestedSearchFirstLevel]) => {
             const nestedAggs =
               template2NestedAggs.aggregations.all.nestedField_nested.nested1.buckets;
+
             expect(template2NestedAggs.rows.length).toBe(2);
             expect(nestedAggs.find(a => a.key === '3').filtered.total.filtered.doc_count).toBe(1);
             expect(nestedAggs.find(a => a.key === '4').filtered.total.filtered.doc_count).toBe(1);

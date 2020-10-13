@@ -4,7 +4,9 @@ import entities from 'api/entities';
 import errorLog from 'api/log/errorLog';
 import { entityDefaultDocument } from 'shared/entityDefaultDocument';
 import PromisePool from '@supercharge/promise-pool';
+import { createError } from 'api/utils';
 import elastic from './elastic';
+import elasticMapFactory from '../../../database/elastic_mapping/elasticMapFactory';
 
 export class IndexError extends Error {}
 
@@ -71,7 +73,6 @@ const bulkIndex = async (docs, _action = 'index', elasticIndex) => {
   });
 
   const results = await elastic.bulk({ body });
-
   if (results.body.items) {
     handleErrors(results.body.items.filter(f => f.index.error));
   }
@@ -154,4 +155,13 @@ const indexEntities = async ({
   });
 };
 
-export { bulkIndex, indexEntities };
+const updateMapping = async (templates, elasticIndex) => {
+  const mapping = elasticMapFactory.mapping(templates);
+  try {
+    await elastic.indices.putMapping({ body: mapping, index: elasticIndex });
+  } catch (e) {
+    throw createError(e, 400);
+  }
+};
+
+export { bulkIndex, indexEntities, updateMapping };
