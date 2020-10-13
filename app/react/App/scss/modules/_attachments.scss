@@ -143,3 +143,19 @@
     margin-top: 5px;
   }
 }
+
+#upload-button-input,
+#upload-attachment-all-input,
+#upload-attachment-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+}
+
+.upload-button:focus, 
+.upload-button:focus-within,
+label.add:focus,
+label.add:focus-within {
+  background: $c-type-19;
+  border-color: $c-black;
+}
