@@ -179,6 +179,7 @@ export class EntityViewer extends Component {
               type="button"
               className="closeSidepanel close-modal"
               onClick={this.closePanel.bind(this)}
+              aria-label="Close side panel"
             >
               <Icon icon="times" />
             </button>
@@ -191,13 +192,23 @@ export class EntityViewer extends Component {
             >
               <ul className="nav nav-tabs">
                 <li>
-                  <TabLink to="info">
+                  <TabLink
+                    to="info"
+                    role="button"
+                    tabIndex="0"
+                    aria-label={t('System', 'Info', null, false)}
+                  >
                     <Icon icon="info-circle" />
                     <span className="tab-link-tooltip">{t('System', 'Info')}</span>
                   </TabLink>
                 </li>
                 <li>
-                  <TabLink to="connections">
+                  <TabLink
+                    to="connections"
+                    role="button"
+                    tabIndex="0"
+                    aria-label={t('System', 'Connections', null, false)}
+                  >
                     <Icon icon="exchange-alt" />
                     <span className="connectionsNumber">{summary.totalConnections}</span>
                     <span className="tab-link-tooltip">{t('System', 'Connections')}</span>
