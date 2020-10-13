@@ -135,6 +135,7 @@ export class DocumentSidePanel extends Component {
           type="button"
           className="closeSidepanel close-modal"
           onClick={this.close.bind(this)}
+          aria-label="Close side panel"
         >
           <Icon icon="times" />
         </button>
@@ -144,7 +145,12 @@ export class DocumentSidePanel extends Component {
               if (!this.props.raw && doc.get('semanticSearch')) {
                 return (
                   <li>
-                    <TabLink to="semantic-search-results">
+                    <TabLink
+                      to="semantic-search-results"
+                      role="button"
+                      tabIndex="0"
+                      aria-label={t('System', 'Semantic search results', null, false)}
+                    >
                       <Icon icon="flask" />
                       <span className="tab-link-tooltip">
                         {t('System', 'Semantic search results')}
@@ -158,7 +164,12 @@ export class DocumentSidePanel extends Component {
               if (!this.props.raw) {
                 return (
                   <li>
-                    <TabLink to="text-search">
+                    <TabLink
+                      to="text-search"
+                      role="button"
+                      tabIndex="0"
+                      aria-label={t('System', 'Search text', null, false)}
+                    >
                       <SnippetsTab storeKey={this.props.storeKey} />
                     </TabLink>
                   </li>
@@ -169,7 +180,12 @@ export class DocumentSidePanel extends Component {
               if (!isEntity && !this.props.raw) {
                 return (
                   <li>
-                    <TabLink to="toc">
+                    <TabLink
+                      to="toc"
+                      role="button"
+                      tabIndex="0"
+                      aria-label={t('System', 'Table of Contents', null, false)}
+                    >
                       <Icon icon="font" />
                       <span className="tab-link-tooltip">{t('System', 'Table of Contents')}</span>
                     </TabLink>
@@ -182,7 +198,12 @@ export class DocumentSidePanel extends Component {
               if (!isEntity && !this.props.raw) {
                 return (
                   <li>
-                    <TabLink to="references">
+                    <TabLink
+                      to="references"
+                      role="button"
+                      tabIndex="0"
+                      aria-label={t('System', 'References', null, false)}
+                    >
                       <Icon icon="sitemap" />
                       <span className="connectionsNumber">{references.size}</span>
                       <span className="tab-link-tooltip">{t('System', 'References')}</span>
@@ -199,7 +220,13 @@ export class DocumentSidePanel extends Component {
               return <span />;
             })()}
             <li>
-              <TabLink to="metadata" default>
+              <TabLink
+                to="metadata"
+                default
+                role="button"
+                tabIndex="0"
+                aria-label={t('System', 'Info', null, false)}
+              >
                 <Icon icon="info-circle" />
                 <span className="tab-link-tooltip">{t('System', 'Info')}</span>
               </TabLink>
@@ -208,7 +235,12 @@ export class DocumentSidePanel extends Component {
               if (!isTargetDoc && !excludeConnectionsTab) {
                 return (
                   <li>
-                    <TabLink to="connections">
+                    <TabLink
+                      to="connections"
+                      role="button"
+                      tabIndex="0"
+                      aria-label={t('System', 'Connections', null, false)}
+                    >
                       <Icon icon="exchange-alt" />
                       <span className="connectionsNumber">{summary.totalConnections}</span>
                       <span className="tab-link-tooltip">{t('System', 'Connections')}</span>

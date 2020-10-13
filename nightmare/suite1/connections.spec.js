@@ -233,7 +233,7 @@ describe('Connections', () => {
   it('should render relations properly from "Batman Begins" side', done => {
     nightmare.connections
       .goTo('batman begins')
-      .waitToClick(selectors.connections.sidePanelViewEntityButton)
+      .waitToClick(selectors.connections.sidePanelViewEntityLink)
       .waitToClick(selectors.connections.documentViewerConnectionsTab)
       .connections.waitForRelationHubs()
       .connections.getRelationsObjet()
@@ -271,7 +271,7 @@ describe('Connections', () => {
   it('should go to "gotham attack" and check the new interpretations', done => {
     nightmare.connections
       .goTo('Gotham attack')
-      .waitToClick(selectors.connections.sidePanelViewEntityButton)
+      .waitToClick(selectors.connections.sidePanelViewEntityLink)
       .waitToClick(selectors.entityView.connectionsListView)
       .connections.waitForRelationHubs()
       .connections.getRelationsObjet()

@@ -86,7 +86,6 @@ export class UploadButton extends Component {
           type="file"
           accept="application/pdf"
           id="upload-button-input"
-          style={{ display: 'none' }}
         />
         &nbsp;
         <Translate>{message}</Translate>

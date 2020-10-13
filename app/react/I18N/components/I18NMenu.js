@@ -6,7 +6,7 @@ import React, { Component } from 'react';
 
 import { Icon } from 'UI';
 import { NeedAuthorization } from 'app/Auth';
-import { actions } from 'app/I18N';
+import { actions, t } from 'app/I18N';
 
 class I18NMenu extends Component {
   static reload(url) {
@@ -21,12 +21,13 @@ class I18NMenu extends Component {
     path = path.replace(regexp, '/');
 
     return (
-      <ul className="menuNav-I18NMenu">
+      <ul className="menuNav-I18NMenu" role="navigation" aria-label="Languages">
         <NeedAuthorization roles={['admin', 'editor']}>
           <button
             className={`menuNav-btn btn btn-default${i18nmode ? ' inlineEdit active' : ''}`}
             type="button"
             onClick={toggleInlineEdit}
+            aria-label={t('System', 'Add/edit translations', null, false)}
           >
             <Icon icon="language" size="lg" />
           </button>
@@ -34,10 +35,11 @@ class I18NMenu extends Component {
         {languages.count() > 1 &&
           languages.map(lang => {
             const key = lang.get('key');
+            const label = lang.get('label');
             const url = `/${key}${path}${path.match('document') ? '' : location.search}`;
             return (
               <li className={`menuNav-item${locale === key ? ' is-active' : ''}`} key={key}>
-                <a className="menuNav-btn btn btn-default" href={url}>
+                <a className="menuNav-btn btn btn-default" href={url} aria-label={label}>
                   {key}
                 </a>
               </li>
