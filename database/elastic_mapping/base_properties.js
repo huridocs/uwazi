@@ -9,6 +9,7 @@ const properties = {
   title: {
     type: 'text',
     index: true,
+    analyzer: 'other',
     fields: {
       sort: textSortField,
       sayt: { type: 'search_as_you_type' },
