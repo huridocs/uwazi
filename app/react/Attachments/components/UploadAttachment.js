@@ -33,7 +33,6 @@ export class UploadAttachment extends Component {
             onChange={this.onChangeAll.bind(this)}
             type="file"
             id="upload-attachment-all-input"
-            style={{ display: 'none' }}
           />
         </label>
       );
@@ -49,7 +48,6 @@ export class UploadAttachment extends Component {
             onChange={this.onChangeSingle.bind(this)}
             type="file"
             id="upload-attachment-input"
-            style={{ display: 'none' }}
           />
         </label>
         {uploadToAll}

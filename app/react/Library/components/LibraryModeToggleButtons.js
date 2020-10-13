@@ -34,11 +34,21 @@ export class LibraryModeToggleButtons extends Component {
             tableViewMode ? 'unpinned-mode' : ''
           }`}
         >
-          <button className="btn btn-default zoom-out" onClick={zoomOut} type="button">
+          <button
+            className="btn btn-default zoom-out"
+            onClick={zoomOut}
+            type="button"
+            aria-label={t('System', 'Zoom out library view', null, false)}
+          >
             <Icon icon="search-minus" />
             <span className="tab-link-tooltip">{t('System', 'Zoom out')}</span>
           </button>
-          <button className="btn btn-default zoom-in" onClick={zoomIn} type="button">
+          <button
+            className="btn btn-default zoom-in"
+            onClick={zoomIn}
+            type="button"
+            aria-label={t('System', 'Zoom in library view', null, false)}
+          >
             <Icon icon="search-plus" />
             <span className="tab-link-tooltip">{t('System', 'Zoom in')}</span>
           </button>
@@ -49,6 +59,7 @@ export class LibraryModeToggleButtons extends Component {
             to={`library${searchUrl}`}
             className="btn btn-default"
             activeClassName="is-active"
+            aria-label={t('System', 'library list view', null, false)}
           >
             <Icon icon="th" />
             <span className="tab-link-tooltip">{t('System', 'List view')}</span>
@@ -57,6 +68,7 @@ export class LibraryModeToggleButtons extends Component {
             to={`library/table${searchUrl}`}
             className="btn btn-default"
             activeClassName="is-active"
+            aria-label={t('System', 'library table view', null, false)}
           >
             <Icon icon="align-justify" />
             <span className="tab-link-tooltip">{t('System', 'Table view')}</span>
@@ -67,6 +79,7 @@ export class LibraryModeToggleButtons extends Component {
               to={`library/map${searchUrl}`}
               className="btn btn-default"
               activeClassName="is-active"
+              aria-label={t('System', 'library map view', null, false)}
             >
               <Icon icon="map-marker" />
               <span className="number-of-markers">{numberOfMarkersText}</span>
