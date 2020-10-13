@@ -10,7 +10,17 @@ import { actions, t } from 'app/I18N';
 import DropdownList from 'app/Forms/components/DropdownList';
 
 class I18NMenu extends Component {
-  
+  constructor(props) {
+    super(props);
+    this.onLanguageSelect = this.onLanguageSelect.bind(this);
+  }
+
+  onLanguageSelect(lang) {
+    if (this.props.locale === lang.key) {
+      window.location.href = lang.url;
+    }
+  }
+
   render() {
     const { languages, locale, location, i18nmode, toggleInlineEdit } = this.props;
 
@@ -52,6 +62,7 @@ class I18NMenu extends Component {
                 textField="label"
                 data={languageOptions}
                 value={currentLang}
+                onSelect={this.onLanguageSelect}
                 placeholder="Choose language"
               />
             </div>
