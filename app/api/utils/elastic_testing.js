@@ -5,6 +5,7 @@ export default (elasticIndex, search) => ({
   async resetIndex() {
     await elastic.indices.delete({ index: elasticIndex, ignore_unavailable: true });
     await elastic.indices.create({ index: elasticIndex, body: elasticMapping });
+    await search.updateTemplatesMapping();
     return this.refresh();
   },
 
