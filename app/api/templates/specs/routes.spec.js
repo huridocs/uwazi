@@ -1,6 +1,8 @@
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import instrumentRoutes from 'api/utils/instrumentRoutes';
 import settings from 'api/settings/settings';
+import db from 'api/utils/testing_db';
+import * as entitiesIndex from 'api/search/entitiesIndex';
 import templates from '../templates';
 import templateRoutes from '../routes.js';
 
@@ -11,8 +13,16 @@ const mocketSocketIo = () => ({
 describe('templates routes', () => {
   let routes;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     routes = instrumentRoutes(templateRoutes);
+    await db.clearAllAndLoad({
+      templates: [{ name: 'testing template', properties: [{ name: 'name', type: 'text' }] }],
+    });
+    spyOn(entitiesIndex, 'updateMapping').and.returnValue(Promise.resolve());
+  });
+
+  afterAll(async () => {
+    await db.disconnect();
   });
 
   describe('GET', () => {
@@ -21,8 +31,8 @@ describe('templates routes', () => {
       routes
         .get('/api/templates')
         .then(response => {
-          const docs = response.rows;
-          expect(docs).toBe('templates');
+          const tmpls = response.rows;
+          expect(tmpls).toBe('templates');
           done();
         })
         .catch(catchErrors(done));
@@ -110,6 +120,23 @@ describe('templates routes', () => {
         'updateSettings',
         'updated settings'
       );
+    });
+
+    it('should update the templates mapping', async () => {
+      const req = {
+        body: { name: 'created_template', properties: [{ label: 'fieldLabel' }] },
+        language: 'en',
+        io: mocketSocketIo(),
+      };
+
+      spyOn(templates, 'save').and.returnValue(new Promise(resolve => resolve(aTemplate)));
+      spyOn(templates, 'get').and.returnValue(new Promise(resolve => resolve(aTemplate)));
+      spyOn(settings, 'updateFilterName').and.returnValue(
+        new Promise(resolve => resolve('updated settings'))
+      );
+
+      await routes.post('/api/templates', req);
+      expect(entitiesIndex.updateMapping).toHaveBeenCalledWith(aTemplate, 'index');
     });
 
     describe('when there is an error', () => {
