@@ -48,7 +48,7 @@ class HideColumnsComponent extends React.Component<HideColumnsComponentProps> {
     const sortedColumns = [selectAllColumn].concat(
       shownColumns.concat(hiddenColumns).map((c: TableViewColumn) => ({ ...c, selectAll: false }))
     );
-
+    // console.log(sortedColumns);
     return (
       <div className="hidden-columns-dropdown">
         {/*

@@ -7,12 +7,10 @@ import React, { Component } from 'react';
 import { Icon } from 'UI';
 import { NeedAuthorization } from 'app/Auth';
 import { actions, t } from 'app/I18N';
+import DropdownList from 'app/Forms/components/DropdownList';
 
 class I18NMenu extends Component {
-  static reload(url) {
-    window.location.href = url;
-  }
-
+  
   render() {
     const { languages, locale, location, i18nmode, toggleInlineEdit } = this.props;
 
@@ -20,6 +18,19 @@ class I18NMenu extends Component {
     const regexp = new RegExp(`^/?${locale}/|^/?${locale}$`);
     path = path.replace(regexp, '/');
 
+    const languageOptions = languages.map(lang => {
+      const key = lang.get('key');
+      const label = lang.get('label');
+      const url = `/${key}${path}${path.match('document') ? '' : location.search}`;
+      return {
+        _id: key,
+        type: 'text',
+        label,
+        url,
+      };
+    });
+    languageOptions.sort((a, b) => a.label.localeCompare(b.label));
+    
     return (
       <ul className="menuNav-I18NMenu" role="navigation" aria-label="Languages">
         <NeedAuthorization roles={['admin', 'editor']}>
@@ -32,19 +43,18 @@ class I18NMenu extends Component {
             <Icon icon="language" size="lg" />
           </button>
         </NeedAuthorization>
-        {languages.count() > 1 &&
-          languages.map(lang => {
-            const key = lang.get('key');
-            const label = lang.get('label');
-            const url = `/${key}${path}${path.match('document') ? '' : location.search}`;
-            return (
-              <li className={`menuNav-item${locale === key ? ' is-active' : ''}`} key={key}>
-                <a className="menuNav-btn btn btn-default" href={url} aria-label={label}>
-                  {key}
-                </a>
-              </li>
-            );
-          })}
+        {languageOptions.count() > 1 && (
+          <div className="list-view-mode">
+            <div className="hidden-columns-dropdown">
+              <DropdownList
+                valueField="_id"
+                textField="label"
+                data={languageOptions}
+                placeholder="Choose language"
+              />
+            </div>
+          </div>
+        )}
       </ul>
     );
   }
