@@ -94,7 +94,10 @@ class TableRowComponent extends Component<TableRowProps> {
           const columnValue = getColumnValue(formattedEntity, columnValues, column);
           const columnKey = formattedEntity._id + column.name;
           return (
-            <td className={!index ? 'sticky-col' : ''} key={`column_${columnKey}`}>
+            <td
+              className={`${!index ? 'sticky-col' : ''} template-${formattedEntity.template}`}
+              key={`column_${columnKey}`}
+            >
               {this.renderCell(index, selected, columnValue)}
             </td>
           );

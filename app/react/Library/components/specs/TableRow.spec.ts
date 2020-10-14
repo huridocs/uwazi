@@ -112,24 +112,34 @@ describe('TableRow', () => {
     component = renderConnected(TableRow, props, storeState);
     instance = component.instance();
   }
+
   describe('columns format', () => {
     render();
     const renderedColumns = component.find(TableCell);
+    const renderedTDs = component.find('td');
+
     it('should render a column with the title of entity', () => {
       expect(renderedColumns.at(0).props().content.value).toBe('entity1');
+      expect(renderedTDs.at(0).props().className).toBe('sticky-col template-idTemplate1');
     });
+
     it('should render a column with the creation date with ll format', () => {
       expect(renderedColumns.at(1).props().content.value).toBe(formattedCreationDate);
+      expect(renderedTDs.at(1).props().className).toBe(' template-idTemplate1');
     });
+
     it('should render a column with the name of the template', () => {
       expect(renderedColumns.at(2).props().content.value).toBe('Template1');
     });
+
     it('should render a column with a date property with ll format', () => {
       expect(renderedColumns.at(3).props().content.value).toBe(formattedPropertyDate);
     });
+
     it('should render a column with the label of the thesaurus', () => {
       expect(renderedColumns.at(4).props().content.value).toBe('Colombia');
     });
+
     it('should not replace common properties with metadata properties', () => {
       expect(renderedColumns.at(5).props().content.value).toBe('Mrs');
     });
