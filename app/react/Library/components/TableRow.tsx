@@ -89,7 +89,7 @@ class TableRowComponent extends Component<TableRowProps> {
     });
 
     return (
-      <tr className={selected ? 'selected' : ''}>
+      <tr className={`template-${formattedEntity.template} ${selected ? 'selected' : ''}`}>
         {columns.map((column: TableViewColumn, index: number) => {
           const columnValue = getColumnValue(formattedEntity, columnValues, column);
           const columnKey = formattedEntity._id + column.name;
