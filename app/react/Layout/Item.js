@@ -42,7 +42,7 @@ export class Item extends Component {
         <div className="item-snippet">{additionalText}</div>
       </div>
     ) : null;
-    const baseClasName = `item-document template-${doc.template.toString()}`;
+    const baseClasName = `item-document template-${doc.template}`;
     const itemClassName = `${baseClasName} ${this.props.className || ''}`;
     const itemProps = {
       className: itemClassName,

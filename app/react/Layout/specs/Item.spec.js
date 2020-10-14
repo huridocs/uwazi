@@ -60,6 +60,12 @@ describe('Item', () => {
     expect(component.find(RowList.Item).props().active).toBe(true);
   });
 
+  it('should not fail on legacy entities without template', () => {
+    props.doc = props.doc.set('template', undefined);
+    render();
+    expect(component.find(RowList.Item).props().className).toContain('template-undefined');
+  });
+
   it('should replicate onClick, onMouseEnter and onMouseLeave behaviours of parent', () => {
     render();
     component.find(RowList.Item).simulate('click');
