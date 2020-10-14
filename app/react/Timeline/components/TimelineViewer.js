@@ -166,8 +166,8 @@ export class TimelineViewer extends Component {
     const years = {};
     references.forEach(reference => {
       const isDesiredTemplate = desiredTemplates.indexOf(reference.data.template !== -1);
-      const hasDate =
-        reference.data.metadata[dateProperties[reference.data.template]][0].value !== null;
+      const metadataProperty = reference.data.metadata[dateProperties[reference.data.template]];
+      const hasDate = metadataProperty[0] && metadataProperty[0].value !== null;
       if (isDesiredTemplate && hasDate) {
         assignDataToYear(
           years,
