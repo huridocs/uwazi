@@ -113,19 +113,25 @@ describe('TableRow', () => {
     instance = component.instance();
   }
 
+  describe('row format', () => {
+    render();
+    const renderedTR = component.find('tr');
+
+    it('should namespace the row with the template id', () => {
+      expect(renderedTR.at(0).props().className).toContain('template-idTemplate1');
+    });
+  });
+
   describe('columns format', () => {
     render();
     const renderedColumns = component.find(TableCell);
-    const renderedTDs = component.find('td');
 
     it('should render a column with the title of entity', () => {
       expect(renderedColumns.at(0).props().content.value).toBe('entity1');
-      expect(renderedTDs.at(0).props().className).toBe('sticky-col template-idTemplate1');
     });
 
     it('should render a column with the creation date with ll format', () => {
       expect(renderedColumns.at(1).props().content.value).toBe(formattedCreationDate);
-      expect(renderedTDs.at(1).props().className).toBe(' template-idTemplate1');
     });
 
     it('should render a column with the name of the template', () => {
