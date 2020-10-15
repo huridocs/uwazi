@@ -42,7 +42,8 @@ export class Item extends Component {
         <div className="item-snippet">{additionalText}</div>
       </div>
     ) : null;
-    const itemClassName = `item-document ${this.props.className || ''}`;
+    const baseClasName = `item-document template-${doc.template}`;
+    const itemClassName = `${baseClasName} ${this.props.className || ''}`;
     const itemProps = {
       className: itemClassName,
       onClick,

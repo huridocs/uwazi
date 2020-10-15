@@ -84,7 +84,7 @@ const Metadata = ({ metadata, compact, renderLabel, showSubset, highlight }) => 
       const fullWidthClass = prop.fullWidth ? 'full-width' : '';
       return (
         <dl
-          className={`metadata-type-${type} ${fullWidthClass} ${highlightClass}`}
+          className={`metadata-type-${type} metadata-name-${prop.name} ${fullWidthClass} ${highlightClass}`}
           key={`${prop.name}_${index}`}
         >
           {renderLabel(prop, <dt>{t(prop.translateContext, prop.label)}</dt>)}
