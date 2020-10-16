@@ -13,7 +13,14 @@ import { FormatMetadata } from '../containers/FormatMetadata';
 
 export class ShowMetadata extends Component {
   render() {
-    const { entity, showTitle, showType, relationships, showSubset } = this.props;
+    const {
+      entity,
+      showTitle,
+      showType,
+      relationships,
+      showSubset,
+      groupGeolocations,
+    } = this.props;
     let header = '';
     if (showTitle || showType) {
       let title = '';
@@ -48,13 +55,19 @@ export class ShowMetadata extends Component {
             </dd>
           </dl>
         </ShowIf>
-        <FormatMetadata entity={entity} relationships={relationships} showSubset={showSubset} />
+        <FormatMetadata
+          entity={entity}
+          relationships={relationships}
+          showSubset={showSubset}
+          groupGeolocations={groupGeolocations}
+        />
       </div>
     );
   }
 }
 ShowMetadata.defaultProps = {
   showSubset: undefined,
+  groupGeolocations: false,
 };
 
 ShowMetadata.propTypes = {
@@ -64,6 +77,7 @@ ShowMetadata.propTypes = {
   showTitle: PropTypes.bool,
   showType: PropTypes.bool,
   showSubset: PropTypes.arrayOf(PropTypes.string),
+  groupGeolocations: PropTypes.bool,
 };
 
 const mapStateToProps = ({ templates }) => ({ templates });

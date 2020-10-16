@@ -7,6 +7,7 @@ import { createSelector } from 'reselect';
 
 import { Select } from 'app/ReactReduxForms';
 import { Translate } from 'app/I18N';
+import { Icon } from 'app/UI';
 import PropertyConfigOptions from './PropertyConfigOptions';
 import PropertyConfigOption from './PropertyConfigOption';
 import Tip from '../../Layout/Tip';
@@ -29,6 +30,7 @@ export class FormConfigRelationship extends Component {
       showInheritOption,
       showInheritSelect,
       templateProperties,
+      inheritSelectPropertyType,
     } = this.props;
 
     const options = templates.toJS().filter(template => template._id !== templateId);
@@ -91,6 +93,14 @@ export class FormConfigRelationship extends Component {
             />
           </div>
         )}
+        {showInheritSelect && inheritSelectPropertyType === 'geolocation' && (
+          <div className="geolocation-grouping-alert">
+            <Icon icon="info-circle" />
+            <p>
+              <Translate>Adjacent geolocation properties will render on the same map</Translate>.
+            </p>
+          </div>
+        )}
         <PropertyConfigOptions index={index} type={type} />
       </div>
     );
@@ -104,6 +114,7 @@ FormConfigRelationship.defaultProps = {
   showInheritOption: false,
   showInheritSelect: false,
   templateId: null,
+  inheritSelectPropertyType: null,
 };
 
 FormConfigRelationship.propTypes = {
@@ -118,6 +129,7 @@ FormConfigRelationship.propTypes = {
   showInheritOption: PropTypes.bool,
   showInheritSelect: PropTypes.bool,
   templateId: PropTypes.string,
+  inheritSelectPropertyType: PropTypes.string,
 };
 
 const getTemplateProperties = createSelector(
@@ -129,6 +141,15 @@ const getTemplateProperties = createSelector(
   (templates, content) => {
     const targetTemplate = templates.find(t => t.get('_id') === content);
     return targetTemplate ? targetTemplate.get('properties').toJS() : [];
+  }
+);
+
+const getInheritSelectPropertyType = createSelector(
+  getTemplateProperties,
+  (state, props) => state.template.data.properties[props.index].inheritProperty,
+  (templateProperties, inheritedPropertyId) => {
+    const inheritedProperty = templateProperties.find(p => p._id === inheritedPropertyId);
+    return inheritedProperty && inheritedProperty.type;
   }
 );
 
@@ -159,6 +180,7 @@ export function mapStateToProps(state, props) {
         template.formState.properties[props.index].inherit.value &&
         templateProperties.length
     ),
+    inheritSelectPropertyType: getInheritSelectPropertyType(state, props),
     templateProperties,
     templateId: template.data._id,
     templates,
