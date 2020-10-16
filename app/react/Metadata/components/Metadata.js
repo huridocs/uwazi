@@ -132,7 +132,6 @@ function filterProps(showSubset) {
   };
 }
 
-
 const Metadata = ({ metadata, compact, renderLabel, showSubset, highlight, groupGeolocations }) => {
   const filteredMetadata = metadata.filter(filterProps(showSubset));
   const groupedMetadata = groupGeolocations
