@@ -135,6 +135,7 @@ export class EntityViewer extends Component {
                         entity={rawEntity}
                         showTitle={false}
                         showType={false}
+                        groupGeolocations
                       />
                       <FileList files={rawEntity.documents} entity={rawEntity} />
                       <AttachmentsList

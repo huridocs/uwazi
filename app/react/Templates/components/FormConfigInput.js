@@ -2,6 +2,8 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Field } from 'react-redux-form';
 import { connect } from 'react-redux';
+import { Icon } from 'app/UI';
+import { Translate } from 'app/I18N';
 import { checkErrorsOnLabel } from '../utils/checkErrorsOnLabel';
 
 import PropertyConfigOptions from './PropertyConfigOptions';
@@ -18,6 +20,14 @@ export class FormConfigInput extends Component {
             <input className="form-control" />
           </Field>
         </div>
+        {type === 'geolocation' && (
+          <div className="geolocation-grouping-alert">
+            <Icon icon="info-circle" />
+            <p>
+              <Translate>Adjacent geolocation properties will render on the same map</Translate>.
+            </p>
+          </div>
+        )}
         <PropertyConfigOptions index={index} type={type} canBeFilter={canBeFilter} />
       </div>
     );

@@ -212,6 +212,7 @@ export default {
       label: property.get('label'),
       type: propType,
       onlyForCards: Boolean(options.onlyForCards),
+      indexInTemplate: property.get('indexInTemplate'),
     };
   },
 
@@ -300,18 +301,24 @@ export default {
       doc.metadata = {};
     }
 
-    let metadata = this.filterProperties(template, options.onlyForCards, options.sortedProperty, {
-      excludePreview: options.excludePreview,
-    }).map(property =>
-      this.applyTransformation(property, {
-        doc,
-        thesauris,
-        options,
-        template,
-        templates,
-        relationships,
-      })
-    );
+    let metadata = template
+      .get('properties')
+      .map((p, index) => p.set('indexInTemplate', index))
+      .filter(
+        this.filterProperties(options.onlyForCards, options.sortedProperty, {
+          excludePreview: options.excludePreview,
+        })
+      )
+      .map(property =>
+        this.applyTransformation(property, {
+          doc,
+          thesauris,
+          options,
+          template,
+          templates,
+          relationships,
+        })
+      );
 
     metadata = conformSortedProperty(metadata, templates, doc, options.sortedProperty);
 
@@ -352,8 +359,8 @@ export default {
     };
   },
 
-  filterProperties(template, onlyForCards, sortedProperty, options = {}) {
-    return template.get('properties').filter(p => {
+  filterProperties(onlyForCards, sortedProperty, options = {}) {
+    return p => {
       if (options.excludePreview && p.get('type') === 'preview') {
         return false;
       }
@@ -367,6 +374,6 @@ export default {
       }
 
       return false;
-    });
+    };
   },
 };
