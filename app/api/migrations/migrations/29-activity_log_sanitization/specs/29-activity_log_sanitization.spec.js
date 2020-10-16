@@ -76,5 +76,20 @@ describe('migration activity log sanitization', () => {
 
       expect(unWantedEntries).toBe(6);
     });
+
+    it('should remove updatelog entries for activitylog', async () => {
+      const unWantedEntries = await testingDB.mongodb
+        .collection('updatelogs')
+        .find({ namespace: 'activitylog' })
+        .count();
+
+      const remainingEntries = await testingDB.mongodb
+        .collection('updatelogs')
+        .find({})
+        .count();
+
+      expect(unWantedEntries).toBe(0);
+      expect(remainingEntries).toBe(2);
+    });
   });
 });

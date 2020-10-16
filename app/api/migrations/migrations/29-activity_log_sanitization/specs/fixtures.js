@@ -88,4 +88,36 @@ export default {
       method: 'POST',
     },
   ],
+  updatelogs: [
+    {
+      _id: testingDB.id(),
+      namespace: 'translations',
+      deleted: false,
+      timestamp: 1602860773348.0,
+    },
+    {
+      _id: testingDB.id(),
+      namespace: 'activitylog',
+      deleted: false,
+      timestamp: 1602721307223.0,
+    },
+    {
+      _id: testingDB.id(),
+      namespace: 'templates',
+      deleted: true,
+      timestamp: 1602861088016.0,
+    },
+    {
+      _id: testingDB.id(),
+      namespace: 'activitylog',
+      deleted: false,
+      timestamp: 1602721534695.0,
+    },
+    {
+      _id: testingDB.id(),
+      namespace: 'activitylog',
+      deleted: false,
+      timestamp: 1602723020970.0,
+    },
+  ],
 };

@@ -31,6 +31,13 @@ export default {
       `${deletedUploadEntriesWithoutBody.result.n} activity log POST entries deleted with empty bodies\r\n`
     );
 
+    const deletedUpdateLogsForActivityLog = await db
+      .collection('updatelogs')
+      .deleteMany({ namespace: 'activitylog' });
+    process.stdout.write(
+      `${deletedUpdateLogsForActivityLog.result.n} updatelogs deleted for activitylog namespace\r\n`
+    );
+
     await db.collection('activitylogs').createIndex({ expireAt: 1 }, { expireAfterSeconds: 0 });
     process.stdout.write('TTL index added over expireAt\r\n');
 
