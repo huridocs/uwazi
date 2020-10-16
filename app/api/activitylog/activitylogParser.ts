@@ -17,7 +17,13 @@ const entryValues: { [key: string]: EntryValue } = {
   'POST/api/reupload': { desc: 'Re-uploaded document' },
   'POST/api/customisation/upload': { desc: 'Uploaded custom file', method: Methods.Create },
   'POST/api/import': { desc: 'Imported entities from file', method: Methods.Create },
-  'POST/api/public': { desc: 'Created entity coming from a public form', method: Methods.Create },
+  'POST/api/public': {
+    desc: 'Created entity coming from a public form',
+    method: Methods.Create,
+    nameField: 'title',
+    related: helpers.loadEntityFromPublicForm,
+    extra: helpers.extraTemplate,
+  },
   'POST/api/remotepublic': {
     desc: 'Submitted entity to a remote instance',
     method: Methods.Create,

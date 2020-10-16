@@ -906,11 +906,13 @@ describe('Activitylog Parser', () => {
             {
               method: 'POST',
               url: '/api/public',
-              body: '{}',
+              body: `{"entity":"{\\"title\\":\\"tres\\",\\"template\\":\\"${firstTemplate.toString()}\\"}"}`,
             },
             {
               action: 'CREATE',
               description: 'Created entity coming from a public form',
+              name: 'My entity',
+              extra: 'of type Existing Template',
             }
           );
         });

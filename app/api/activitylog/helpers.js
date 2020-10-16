@@ -29,6 +29,12 @@ export const migrationLog = log => {
 export const templateName = data =>
   data.templateData ? `${data.templateData.name} (${data._id})` : data._id;
 
+export const loadEntityFromPublicForm = async data => {
+  const entity = JSON.parse(data.entity);
+  const templateData = await templates.getById(entity.template);
+  return { ...data, templateData, title: entity.title };
+};
+
 export const loadTemplate = async data => {
   const templateData = await templates.getById(data.template || data._id);
   return { ...data, templateData };
