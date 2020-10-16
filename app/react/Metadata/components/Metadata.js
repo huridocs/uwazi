@@ -87,6 +87,7 @@ const getNewGroupedGeolocationField = members => {
   if (members.length === 1) {
     return {
       type: 'geolocation_group',
+      name: 'geolocation_group',
       label: members[0].label,
       translateContext: members[0].translateContext,
       members,

@@ -60,13 +60,12 @@ const getMultiMemberInfo = (templatesInfo: TemplatesInfo) => (member: GroupMembe
     <dt>
       <span>
         <Translate context={member.translateContext}>{member.label}</Translate>
-        <> (</>
-        <Translate>linked</Translate>
-        <> </>
+        {' ('}
+        <Translate>linked</Translate>{' '}
         <Translate context={member.translateContext}>
           {templatesInfo[member.translateContext].name}
         </Translate>
-        <>)</>
+        {') '}
       </span>
     </dt>
     <dd>
@@ -94,7 +93,7 @@ const computeRenderMemberGroups = (members: GroupMember[], templatesInfo: Templa
     }
   });
 
-  return [getFirstGroupInfo(firstGroup, templatesInfo)].concat(
+  return [firstGroup.length ? getFirstGroupInfo(firstGroup, templatesInfo) : null].concat(
     restOfGroups.map(getMultiMemberInfo(templatesInfo))
   );
 };

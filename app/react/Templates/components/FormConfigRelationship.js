@@ -97,10 +97,7 @@ export class FormConfigRelationship extends Component {
           <div className="geolocation-grouping-alert">
             <Icon icon="info-circle" />
             <p>
-              <Translate>
-                Grouping geolocation properties together will show them on the same map
-              </Translate>
-              .
+              <Translate>Adjacent geolocation properties will render on the same map</Translate>.
             </p>
           </div>
         )}
