@@ -53,11 +53,11 @@ export default class Map extends Component {
     this.setDefaultCoordinates();
 
     this.replaceKeysMapStyleJson();
-    const { markers } = this.props;
+
     this.setSize();
     const map = this.map.getMap();
     if (map) {
-      map.on('load', () => this.centerOnMarkers(markers));
+      map.on('load', () => this.centerOnMarkers(this.props.markers));
       map.on('moveend', e => {
         if (e.autoCentered) {
           this.setViewport(map);
@@ -280,7 +280,12 @@ export default class Map extends Component {
     }
     return (
       <Icon
-        style={{ position: 'relative', top: '-25px', right: '15px', color: '#d9534e' }}
+        style={{
+          position: 'relative',
+          top: '-25px',
+          right: '15px',
+          color: (marker.properties && marker.properties.color) || '#d9534e',
+        }}
         icon="map-marker"
         size="2x"
         fixedWidth

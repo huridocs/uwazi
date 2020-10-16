@@ -29,7 +29,7 @@ describe('Map', () => {
       longitude: -63,
       zoom: 8,
       markers: [
-        { latitude: 2, longitude: 32, properties: { info: 'Some info' } },
+        { latitude: 2, longitude: 32, properties: { info: 'Some info', color: 'red' } },
         { latitude: 23, longitude: 21 },
       ],
     };
@@ -71,10 +71,20 @@ describe('Map', () => {
           .find(Icon)
           .props().icon
       ).toBe('map-marker');
+      expect(
+        firstMarker()
+          .find(Icon)
+          .props().style.color
+      ).toBe('red');
       expect(firstMarker().props().longitude).toBe(32);
 
       expect(secondMarker().props().latitude).toBe(23);
       expect(secondMarker().props().longitude).toBe(21);
+      expect(
+        secondMarker()
+          .find(Icon)
+          .props().style.color
+      ).toBe('#d9534e');
     });
 
     it('should use custom renderMarker method', () => {

@@ -82,7 +82,11 @@ describe('ODM Model multi-tenant', () => {
         tenants.run(async () => {
           await testingModel.save({ name: 'document 1' });
         }, 'non-existent-tenant')
-      ).rejects.toEqual(new Error('tenant does not exists'));
+      ).rejects.toEqual(
+        new Error(
+          'the tenant set to run the current async context -> [non-existent-tenant] its not available in the current process'
+        )
+      );
     });
   });
 

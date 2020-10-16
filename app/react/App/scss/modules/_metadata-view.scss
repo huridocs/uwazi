@@ -89,6 +89,7 @@
     }
     .metadata-type-markdown,
     .metadata-type-geolocation,
+    .metadata-type-geolocation_group,
     .metadata-type-multimedia,
     .metadata-timeline-viewer {
       width: 100%;
@@ -109,5 +110,24 @@ dl.metadata-type-multimedia {
       max-width: calc(100% - 10px);
       margin: 5px;
     }
+  }
+}
+
+dl.metadata-type-geolocation,
+dl.metadata-type-geolocation_group {
+  .pill {
+    background: #d9534e;
+    border: 1px solid rgba(0, 0, 0, 0.25);
+    box-sizing: border-box;
+    border-radius: 26px;
+    padding: 2px 8px;
+    color: white;
+    display: inline-block;
+    margin: 2px 8px 2px 0;
+  }
+
+  .pills-container {
+    border-top: none;
+    padding: 10px 0 0 0;
   }
 }

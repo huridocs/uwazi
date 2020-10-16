@@ -11,7 +11,7 @@ describe('GeolocationViewer', () => {
     props = {
       points: [
         { lat: 13, lon: 7, label: 'home' },
-        { lat: 5, lon: 10, label: 'work' },
+        { lat: 5, lon: 10, label: 'work', color: 'red' },
         null,
         { lat: 23, lon: 8, label: '' },
       ],

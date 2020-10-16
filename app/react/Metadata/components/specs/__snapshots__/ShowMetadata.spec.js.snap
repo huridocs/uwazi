@@ -78,6 +78,7 @@ exports[`Metadata should render without timeline by default 1`] = `
   </ShowIf>
   <Connect(BaseFormatMetadata)
     entity={Object {}}
+    groupGeolocations={false}
   />
 </div>
 `;
