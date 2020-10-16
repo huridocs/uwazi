@@ -54,7 +54,6 @@ languages.getAll().forEach(language => {
     mapping: {
       type: 'text',
       index: true,
-      omit_norms: true,
       analyzer: `fulltext_${language}`,
       search_analyzer: `stop_${language}`,
       search_quote_analyzer: `fulltext_${language}`,

@@ -9,6 +9,7 @@ import path from 'path';
 import { attachmentsPath } from 'api/files/filesystem';
 import { uploadMiddleware } from 'api/files/uploadMiddleware';
 
+import activitylogMiddleware from 'api/activitylog/activitylogMiddleware';
 import attachments from './attachments';
 import { validation } from '../utils';
 import needsAuthorization from '../auth/authMiddleware';
@@ -96,6 +97,7 @@ export default app => {
     '/api/attachments/upload',
     needsAuthorization(['admin', 'editor']),
     uploadMiddleware(attachmentsPath),
+    activitylogMiddleware,
     validation.validateRequest(
       Joi.object()
         .keys({

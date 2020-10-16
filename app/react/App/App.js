@@ -8,7 +8,7 @@ import 'nprogress/nprogress.css';
 import 'flag-icon-css/sass/flag-icon.scss';
 import Notifications from 'app/Notifications';
 import Cookiepopup from 'app/App/Cookiepopup';
-import { TranslateForm } from 'app/I18N';
+import { TranslateForm, t } from 'app/I18N';
 
 import { Icon } from 'UI';
 
@@ -91,7 +91,11 @@ class App extends Component {
             </h1>
           </nav>
           <header>
-            <button className="menu-button" onClick={this.toggleMenu}>
+            <button
+              className="menu-button"
+              onClick={this.toggleMenu}
+              aria-label={t('System', 'Menu', null, false)}
+            >
               <Icon icon={MenuButtonIcon} />
             </button>
             <h1 className="logotype">

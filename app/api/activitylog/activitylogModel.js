@@ -10,6 +10,7 @@ const pagesSchema = new mongoose.Schema({
   body: String,
   username: String,
   user: { type: mongoose.Schema.Types.ObjectId, ref: 'users' },
+  expireAt: Date,
 });
 
 export default instanceModel('activitylog', pagesSchema);

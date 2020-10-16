@@ -2,6 +2,7 @@
 /* eslint-disable max-statements */
 
 import db from 'api/utils/testing_db';
+import { fileId } from 'api/activitylog/specs/fixturesParser';
 import fixtures, {
   firstTemplate,
   firstDoc,
@@ -17,7 +18,6 @@ jest.mock('../migrationsParser', () => ({
     stubLogTypeParser: jest.fn().mockReturnValue({
       action: 'MIGRATE',
       description: 'Dummy log',
-      beautified: true,
     }),
   },
 }));
@@ -35,14 +35,17 @@ describe('Activitylog Parser', () => {
     const semanticData = await getSemanticData(log);
     expect(semanticData).toEqual({
       ...expected,
-      beautified: true,
     });
   }
 
   describe('getSemanticData', () => {
-    it('should report as beautified: false if no translation present for the route', async () => {
-      const semanticData = await getSemanticData({ url: '/api/untraslated-route' });
-      expect(semanticData.beautified).toBe(false);
+    it('should report as RAW if no translation present for the route', async () => {
+      const semanticData = await getSemanticData({ method: 'POST', url: '/api/untraslated-route' });
+      expect(semanticData).toEqual({
+        action: 'RAW',
+        description: '',
+        extra: 'POST: /api/untraslated-route',
+      });
     });
 
     describe('routes: /api/entities and /api/documents', () => {
@@ -105,49 +108,6 @@ describe('Activitylog Parser', () => {
         });
       });
 
-      describe('method: POST /pdfInfo', () => {
-        it('should beautify as UPDATE and include document title', async () => {
-          const body = {
-            _id: firstDoc,
-            sharedId: firstDocSharedId,
-            pdfInfo: {},
-          };
-          await testBeautified(
-            {
-              method: 'POST',
-              url: '/api/documents/pdfInfo',
-              body: JSON.stringify(body),
-            },
-            {
-              action: 'UPDATE',
-              description: 'Processed document pdf',
-              name: `My Doc (${firstDocSharedId})`,
-              extra: 'Spanish (es) version',
-            }
-          );
-        });
-
-        it('should only include ids if document does not exist', async () => {
-          const body = {
-            _id: nonExistentId,
-            sharedId: 'deleted doc',
-            pdfInfo: {},
-          };
-          await testBeautified(
-            {
-              method: 'POST',
-              url: '/api/documents/pdfInfo',
-              body: JSON.stringify(body),
-            },
-            {
-              action: 'UPDATE',
-              description: 'Processed document pdf',
-              name: 'deleted doc',
-            }
-          );
-        });
-      });
-
       describe('method: DELETE', () => {
         it('should beautify as DELETE', async () => {
           await testBeautified(
@@ -155,6 +115,7 @@ describe('Activitylog Parser', () => {
               method: 'DELETE',
               url: '/api/documents',
               query: '{"sharedId":"o9e07m5ni3h"}',
+              body: '{}',
             },
             {
               action: 'DELETE',
@@ -172,6 +133,7 @@ describe('Activitylog Parser', () => {
               method: 'POST',
               url: '/api/entities/multipleupdate',
               body: '{"ids":["id1","id2"],"values":{}}',
+              query: '{}',
             },
             {
               action: 'UPDATE',
@@ -205,12 +167,15 @@ describe('Activitylog Parser', () => {
             {
               method: 'POST',
               url: '/api/attachments/upload',
-              body: '{}',
+              body: JSON.stringify({
+                entity: firstDocSharedId,
+              }),
               query: '{}',
             },
             {
               action: 'CREATE',
               description: 'Uploaded attachment',
+              name: 'My Doc',
             }
           );
         });
@@ -287,7 +252,6 @@ describe('Activitylog Parser', () => {
               body: '{"name":"Person","fields":[]}',
             },
             {
-              beautified: true,
               action: 'CREATE',
               description: 'Created template',
               name: 'Person',
@@ -303,7 +267,6 @@ describe('Activitylog Parser', () => {
               body: '{"_id":"tmp123","name":"Person","fields":[]}',
             },
             {
-              beautified: true,
               action: 'UPDATE',
               description: 'Updated template',
               name: 'Person (tmp123)',
@@ -322,7 +285,6 @@ describe('Activitylog Parser', () => {
               body: `{"_id":"${id}"}`,
             },
             {
-              beautified: true,
               action: 'UPDATE',
               description: 'Set default template',
               name: `Existing Template (${id})`,
@@ -339,7 +301,6 @@ describe('Activitylog Parser', () => {
               body: `{"_id":"${id}"}`,
             },
             {
-              beautified: true,
               action: 'UPDATE',
               description: 'Set default template',
               name: id,
@@ -367,20 +328,18 @@ describe('Activitylog Parser', () => {
     });
 
     describe('routes: /api/thesauris', () => {
-      describe('method:POST', () => {
-        it('should beautify as CREATE if no thesaurus id is found', async () => {
-          await testBeautified(
-            {
-              method: 'POST',
-              url: '/api/thesauris',
-              body: '{"name":"Things","values":[]}',
-            },
-            {
-              action: 'CREATE',
-              description: 'Created thesaurus',
-              name: 'Things',
-            }
-          );
+      describe('when POST a thesaurus data', () => {
+        it('should beautify as CREATE if no thesaurus id is present in the body', async () => {
+          const semanticData = await getSemanticData({
+            method: 'POST',
+            url: '/api/thesauris',
+            body: '{"name":"Things","values":[]}',
+          });
+          expect(semanticData).toEqual({
+            action: 'CREATE',
+            description: 'Created thesaurus',
+            name: 'Things',
+          });
         });
 
         it('should beautify as UPDATE if not thesauris id is found', async () => {
@@ -408,7 +367,6 @@ describe('Activitylog Parser', () => {
               query: '{"_id":"thes123"}',
             },
             {
-              beautified: true,
               action: 'DELETE',
               description: 'Deleted thesaurus',
               name: 'thes123',
@@ -419,7 +377,7 @@ describe('Activitylog Parser', () => {
     });
 
     describe('routes: /api/relationtypes', () => {
-      describe('method:POST', () => {
+      describe('when POST a relationtype', () => {
         it('should beautify as CREATE if no id is found', async () => {
           await testBeautified(
             {
@@ -428,7 +386,6 @@ describe('Activitylog Parser', () => {
               body: '{"name":"Rel"}',
             },
             {
-              beautified: true,
               action: 'CREATE',
               description: 'Created relation type',
               name: 'Rel',
@@ -604,36 +561,6 @@ describe('Activitylog Parser', () => {
     });
 
     describe('routes: /api/pages', () => {
-      describe('method:POST', () => {
-        it('should beautify as CREATE when id is not provided', async () => {
-          await testBeautified(
-            {
-              method: 'POST',
-              url: '/api/pages',
-              body: '{"title":"Home","metadata":{"content":"foo"}}',
-            },
-            {
-              action: 'CREATE',
-              description: 'Created page',
-              name: 'Home',
-            }
-          );
-        });
-        it('should beautify as UPDATE when id is provided', async () => {
-          await testBeautified(
-            {
-              method: 'POST',
-              url: '/api/pages',
-              body: '{"sharedId":"page123","title":"Home","metadata":{"content":"foo"}}',
-            },
-            {
-              action: 'UPDATE',
-              description: 'Updated page',
-              name: 'Home (page123)',
-            }
-          );
-        });
-      });
       describe('method:DELETE', () => {
         it('should beautify as DELETE', async () => {
           await testBeautified(
@@ -650,8 +577,37 @@ describe('Activitylog Parser', () => {
           );
         });
       });
+      describe('when POST a page', () => {
+        it('should beautify as UPDATE when id is provided', async () => {
+          await testBeautified(
+            {
+              method: 'POST',
+              url: '/api/pages',
+              body: '{"sharedId":"page123","title":"Home","metadata":{"content":"foo"}}',
+            },
+            {
+              action: 'UPDATE',
+              description: 'Updated page',
+              name: 'Home (page123)',
+            }
+          );
+        });
+        it('should parse as CREATE if body does not have an id', async () => {
+          await testBeautified(
+            {
+              method: 'POST',
+              url: '/api/pages',
+              body: '{"title":"Home","metadata":{"content":"foo"}}',
+            },
+            {
+              action: 'CREATE',
+              description: 'Created page',
+              name: 'Home',
+            }
+          );
+        });
+      });
     });
-
     describe('routes: /api/relationships', () => {
       describe('method:POST /bulk', () => {
         it('should beautify as UPDATE', async () => {
@@ -670,7 +626,7 @@ describe('Activitylog Parser', () => {
       });
     });
 
-    describe('routes: /api/users/new', () => {
+    describe('routes: /api/users', () => {
       it('should beautify as CREATE', async () => {
         await testBeautified(
           {
@@ -683,6 +639,22 @@ describe('Activitylog Parser', () => {
             description: 'Added new user',
             name: 'myuser',
             extra: 'with editor role',
+          }
+        );
+      });
+
+      it('should beautify as DELETE', async () => {
+        await testBeautified(
+          {
+            method: 'DELETE',
+            url: '/api/users',
+            body: '{"_id":"userId"}',
+            idField: '_id',
+          },
+          {
+            action: 'DELETE',
+            description: 'Delete user',
+            name: 'userId',
           }
         );
       });
@@ -934,11 +906,13 @@ describe('Activitylog Parser', () => {
             {
               method: 'POST',
               url: '/api/public',
-              body: '{}',
+              body: `{"entity":"{\\"title\\":\\"My entity\\",\\"template\\":\\"${firstTemplate.toString()}\\"}"}`,
             },
             {
               action: 'CREATE',
               description: 'Created entity coming from a public form',
+              name: 'My entity',
+              extra: 'of type Existing Template',
             }
           );
         });
@@ -954,6 +928,87 @@ describe('Activitylog Parser', () => {
             {
               action: 'CREATE',
               description: 'Submitted entity to a remote instance',
+            }
+          );
+        });
+      });
+    });
+
+    describe('routes: /api/files', () => {
+      describe('method: POST /api/files/upload/document', () => {
+        it('should beautify as CREATE and include entity title', async () => {
+          const body = {
+            entity: firstDocSharedId,
+          };
+          await testBeautified(
+            {
+              method: 'POST',
+              url: '/api/files/upload/document',
+              body: JSON.stringify(body),
+            },
+            {
+              action: 'CREATE',
+              description: 'Uploaded file',
+              name: 'My Doc',
+            }
+          );
+        });
+      });
+
+      describe('method: DELETE /api/files', () => {
+        it('should beautify as DELETE', async () => {
+          const body = {
+            _id: 'attach1',
+          };
+          await testBeautified(
+            {
+              method: 'DELETE',
+              url: '/api/files',
+              body: JSON.stringify(body),
+            },
+            {
+              action: 'DELETE',
+              description: 'Delete file',
+              name: 'attach1',
+            }
+          );
+        });
+      });
+
+      describe('method: POST /api/files', () => {
+        it('should beautify as UPDATE with file name for toc changes', async () => {
+          const body = {
+            _id: fileId,
+            toc: [{ range: { start: 9, end: 35 }, label: 'Content1' }],
+          };
+          await testBeautified(
+            {
+              method: 'POST',
+              url: '/api/files',
+              body: JSON.stringify(body),
+            },
+            {
+              action: 'UPDATE',
+              description: 'Updated file',
+              name: 'ToC, My File',
+            }
+          );
+        });
+        it('should beautify as UPDATE with file name for pdfinfo changes', async () => {
+          const body = {
+            _id: fileId,
+            pdfinfo: { 1: { chars: 0 } },
+          };
+          await testBeautified(
+            {
+              method: 'POST',
+              url: '/api/files',
+              body: JSON.stringify(body),
+            },
+            {
+              action: 'UPDATE',
+              description: 'Updated file',
+              name: 'Pdf info, My File',
             }
           );
         });
@@ -985,7 +1040,7 @@ describe('Activitylog Parser', () => {
         });
       });
 
-      it('should report as beautified: false if a parser does NOT exist for the log type', async () => {
+      it('should report as RAW if a parser does NOT exist for the log type', async () => {
         const beautified = await getSemanticData({
           method: 'MIGRATE',
           url: '',
@@ -993,7 +1048,7 @@ describe('Activitylog Parser', () => {
             type: 'nonExistentType',
           }),
         });
-        expect(beautified.beautified).toBe(false);
+        expect(beautified).toEqual({ action: 'RAW' });
       });
     });
   });

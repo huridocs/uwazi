@@ -5,6 +5,7 @@ const firstDoc = db.id();
 const firstDocSharedId = 'doc1';
 const firstSemanticSearch = db.id();
 const nonExistentId = db.id();
+const fileId = db.id();
 
 export default {
   activitylogs: [
@@ -30,7 +31,15 @@ export default {
     },
   ],
 
+  files: [
+    {
+      _id: fileId,
+      originalname: 'My File',
+      entity: firstDocSharedId,
+    },
+  ],
+
   semanticsearches: [{ _id: firstSemanticSearch, searchTerm: 'foo' }],
 };
 
-export { firstTemplate, firstDoc, firstDocSharedId, firstSemanticSearch, nonExistentId };
+export { firstTemplate, firstDoc, firstDocSharedId, firstSemanticSearch, nonExistentId, fileId };

@@ -26,12 +26,12 @@ describe('activitylog', () => {
   });
 
   describe('get()', () => {
-    it('should return the entries, excluding certain routes (that should be logged, and not presented)', async () => {
+    it('should return all entries', async () => {
       const { rows: entries } = await activitylog.get();
       expect(entries.length).toBe(5);
     });
 
-    it('should inlcude semantic info for each result', async () => {
+    it('should include semantic info for each result', async () => {
       const { rows: entries } = await activitylog.get();
       expect(activityLogParser.getSemanticData.calls.count()).toBe(5);
       expect(activityLogParser.getSemanticData).toHaveBeenCalledWith(
@@ -47,53 +47,62 @@ describe('activitylog', () => {
       });
     });
 
-    it('should filter by method', async () => {
-      const { rows: entries } = await activitylog.get({ method: ['POST'] });
-      expect(entries.length).toBe(1);
-      expect(entries[0].method).toBe('POST');
-    });
+    describe('when filtering', () => {
+      it('should filter by method', async () => {
+        const { rows } = await activitylog.get({ method: ['POST'] });
+        rows.forEach(row => {
+          expect(row.method).toBe('POST');
+        });
+      });
 
-    it('should filter by time', async () => {
-      let { rows: entries } = await activitylog.get({ time: { from: 5, to: 6 } });
-      expect(entries.length).toBe(2);
-      expect(entries[0].time).toBe(6000);
-      expect(entries[1].time).toBe(5000);
+      it('should filter by time', async () => {
+        let { rows: entries } = await activitylog.get({ time: { from: 5, to: 6 } });
+        expect(entries.length).toBe(2);
+        expect(entries[0].time).toBe(6000);
+        expect(entries[1].time).toBe(5000);
 
-      ({ rows: entries } = await activitylog.get({ time: { from: null } }));
-      expect(entries.length).toBe(5);
+        ({ rows: entries } = await activitylog.get({ time: { from: null } }));
+        expect(entries.length).toBe(5);
 
-      ({ rows: entries } = await activitylog.get({ time: { to: null } }));
-      expect(entries.length).toBe(5);
-    });
+        ({ rows: entries } = await activitylog.get({ time: { to: null } }));
+        expect(entries.length).toBe(5);
+      });
 
-    it('should filter by url', async () => {
-      const { rows: entries } = await activitylog.get({ url: 'entities' });
-      expect(entries.length).toBe(4);
-    });
+      it('should filter by url', async () => {
+        const { rows: entries } = await activitylog.get({ url: 'entities' });
+        expect(entries.length).toBe(4);
+      });
 
-    it('should filter by query', async () => {
-      const { rows: entries } = await activitylog.get({ query: '123' });
-      expect(entries.length).toBe(1);
-      expect(entries[0].query).toBe('{"sharedId":"123"}');
-    });
+      it('should filter by query', async () => {
+        const { rows: entries } = await activitylog.get({ query: '123' });
+        expect(entries.length).toBe(1);
+        expect(entries[0].query).toBe('{"sharedId":"123"}');
+      });
 
-    it('should filter by body', async () => {
-      const { rows: entries } = await activitylog.get({ body: 'Hello' });
-      expect(entries.length).toBe(1);
-      expect(entries[0].body).toBe('{"_id":"123","title":"Hello"}');
-    });
+      it('should filter by body', async () => {
+        const { rows: entries } = await activitylog.get({ body: 'Hello' });
+        expect(entries.length).toBe(1);
+        expect(entries[0].body).toBe('{"_id":"123","title":"Hello"}');
+      });
 
-    it('should filter by username', async () => {
-      const { rows: entries } = await activitylog.get({ username: 'admin' });
-      expect(entries.length).toBe(2);
-    });
+      it('should filter by username', async () => {
+        const { rows: entries } = await activitylog.get({ username: 'admin' });
+        expect(entries.length).toBe(2);
+      });
 
-    it('should allow a general find query of terms', async () => {
-      const { rows: entries } = await activitylog.get({ find: 'Hello' });
-      expect(entries.length).toBe(3);
-      expect(entries[0].time).toBe(8000);
-      expect(entries[1].time).toBe(6000);
-      expect(entries[2].time).toBe(5000);
+      it('should filter by anonymous user', async () => {
+        const { rows: entries } = await activitylog.get({ username: 'anonymous' });
+        expect(entries.length).toBe(2);
+        expect(entries[0].username).toBeUndefined();
+      });
+
+      it('should allow a general find query of terms', async () => {
+        const { rows: entries } = await activitylog.get({ find: 'Hello' });
+        expect(entries.length).toBe(3);
+        expect(entries[0].time).toBe(8000);
+        expect(entries[1].time).toBe(6000);
+        expect(entries[2].time).toBe(5000);
+      });
     });
 
     describe('Load More functionality', () => {

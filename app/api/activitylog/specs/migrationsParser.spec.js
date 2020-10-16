@@ -14,7 +14,6 @@ describe('migrationsParser', () => {
       description: '[migration-name] Error parsing property propertyName in',
       name: 'title (sharedId)',
       extra: 'Must fix manually',
-      beautified: true,
     });
   });
 });

@@ -38,7 +38,6 @@ exports[`ActivitylogList should render a table with the activity log entries and
             "query": "{}",
             "time": "2019-06-17T13:36:12.697Z",
             "semantic": Immutable.Map {
-              "beautified": true,
               "description": "created",
               "name": "Name",
               "action": "CREATE",

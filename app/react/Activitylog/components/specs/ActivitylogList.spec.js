@@ -10,7 +10,6 @@ describe('ActivitylogList', () => {
 
   const render = () => {
     const semantic = {
-      beautified: true,
       description: 'created',
       name: 'Name',
       action: 'CREATE',

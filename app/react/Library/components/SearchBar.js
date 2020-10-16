@@ -54,12 +54,13 @@ export class SearchBar extends Component {
               <input
                 type="text"
                 placeholder={t('System', 'Search', null, false)}
+                aria-label={t('System', 'Search text description', null, false)}
                 className="form-control"
                 autoComplete="off"
               />
-              <Icon icon="times" onClick={this.resetSearch} />
+              <Icon icon="times" onClick={this.resetSearch} aria-label="Reset Search input" />
             </Field>
-            <Icon icon="search" onClick={this.submitSearch} />
+            <Icon icon="search" onClick={this.submitSearch} aria-label="Search button" />
           </div>
           <FeatureToggleSemanticSearch>
             <button

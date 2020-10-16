@@ -156,6 +156,7 @@ describe('upload routes', () => {
   describe('/remotepublic', () => {
     let app;
     let remoteApp;
+    let remoteServer;
     beforeEach(() => {
       app = express();
       app.use((_req, _res, next) => {
@@ -165,19 +166,26 @@ describe('upload routes', () => {
       uploadRoutes(app);
     });
 
+    afterEach(async () => {
+      await remoteServer.close();
+    });
+
     it('should return the captcha and store its value in session', done => {
       remoteApp = express();
       remoteApp.post('/api/public', (_req, res) => {
-        expect(_req.headers.cookie).toBe('connect.ssid: 12n32ndi23j4hsj;');
-        res.json('ok');
+        res.json(_req.headers);
       });
 
-      const remoteServer = remoteApp.listen(54321, async () => {
-        await request(app)
+      remoteServer = remoteApp.listen(54321, async () => {
+        const response = await request(app)
           .post('/api/remotepublic')
           .send({ title: 'Title' })
+          .set('tenant', 'tenant')
           .expect(200);
-        remoteServer.close();
+
+        const headersOnRemote = JSON.parse(response.text);
+        expect(headersOnRemote.cookie).toBe('connect.ssid: 12n32ndi23j4hsj;');
+        expect(headersOnRemote.tenant).not.toBeDefined();
         done();
       });
     });

@@ -164,7 +164,7 @@ export default {
     minorVillianType:
       '#app > div.content > div > div > div > aside.side-panel.library-filters > div.sidepanel-body > div.documentTypes-selector.nested-selector > ul > li:nth-child(5) > label',
     resetFilters:
-      '#app > div.content > div > div > div > aside.side-panel.library-filters > div.sidepanel-footer > span',
+      '#app > div.content > div > div > div > aside.side-panel.library-filters > div.sidepanel-footer > .resetFilters',
     sidePanelCloseButton:
       '#app > div.content > div > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-header > button',
     sidePanelDocumentType:
@@ -315,8 +315,8 @@ export default {
     eventOption: 'li:nth-child(5)',
     interpretationOption: 'li:nth-child(6)',
 
-    sidePanelViewEntityButton:
-      '#app > div.content > div > div > aside.side-panel.connections-metadata.is-active > div.sidepanel-footer > span > a > button',
+    sidePanelViewEntityLink:
+      '#app > div.content > div > div > aside.side-panel.connections-metadata.is-active > div.sidepanel-footer > span > a',
     sidePanelSearchInput:
       '#app > div.content > div > div > aside.side-panel.create-reference.is-active > div.sidepanel-body div.search-box input',
     sidePanelDocuments:

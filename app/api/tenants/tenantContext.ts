@@ -1,7 +1,7 @@
 import { AsyncLocalStorage } from 'async_hooks';
 import { config } from 'api/config';
-import { TenantsModel } from './tenantsModel';
 import handleError from 'api/utils/handleError.js';
+import { TenantsModel } from './tenantsModel';
 
 export type Tenant = {
   name: string;
@@ -60,7 +60,9 @@ class Tenants {
       throw new Error('There is no tenant on the current async context');
     }
     if (!this.tenants[tenantName]) {
-      throw new Error('tenant does not exists');
+      throw new Error(
+        `the tenant set to run the current async context -> [${tenantName}] its not available in the current process`
+      );
     }
     return this.tenants[tenantName];
   }
