@@ -21,9 +21,9 @@ $c-sidebar: $c-white;
     right: -100%;
   }
 
-  .only-mobile { display: inline-block; };
-  @media (min-width: 769px) {
-    .only-mobile { display:none; }
+  .only-mobile { display: none; };
+  @media (max-width: 1023px) {
+    .only-mobile { display: inline-block; }
   }
   @media (min-width: 454px) {
     width: 400px;
