@@ -4,8 +4,9 @@ import { getSemanticData } from './activitylogParser';
 const prepareRegexpQueries = query => {
   const result = {};
 
-  result.url = query.url ? new RegExp(query.url) : { $ne: '/api/semantic-search/notify-updates' };
-
+  if (query.url) {
+    result.url = new RegExp(query.url);
+  }
   if (query.query) {
     result.query = new RegExp(query.query);
   }
@@ -80,7 +81,8 @@ export default {
     }
 
     if (query.username) {
-      mongoQuery.username = query.username;
+      mongoQuery.username =
+        query.username !== 'anonymous' ? query.username : { $in: [null, query.username] };
     }
 
     const limitQuery = getLimit(query);

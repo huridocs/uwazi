@@ -26,13 +26,5 @@ export default {
       time: 2000,
       username: 'admin',
     },
-    {
-      method: 'POST',
-      url: '/api/semantic-search/notify-updates',
-      query: '{}',
-      body: '{}',
-      time: 3000,
-      username: 'admin',
-    },
   ],
 };

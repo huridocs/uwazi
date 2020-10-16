@@ -11,15 +11,18 @@ exports[`ActivitylogRow should render the component when not beautified 1`] = `
       RAW
     </span>
   </td>
-  <td>
-    -
+  <td
+    className="color-0"
+  >
+    anonymous
   </td>
   <td>
     <DescriptionWrapper
       entry={
         Immutable.Map {
           "semantic": Immutable.Map {
-            "beautified": false,
+            "action": "RAW",
+            "extra": "POST: /api/entities",
           },
           "url": "/api/entities",
           "method": "POST",
@@ -29,12 +32,13 @@ exports[`ActivitylogRow should render the component when not beautified 1`] = `
       expanded={false}
       toggleExpand={[Function]}
     >
-      <span
-        className="activitylog-extra"
-      >
-        POST
-         : 
-        /api/entities
+      <span>
+        <span
+          className="activitylog-extra"
+        >
+           
+          POST: /api/entities
+        </span>
       </span>
     </DescriptionWrapper>
   </td>
@@ -57,7 +61,9 @@ exports[`ActivitylogRow when beautified should render the componet for the diffe
       CREATE
     </span>
   </td>
-  <td>
+  <td
+    className=""
+  >
     defined user
   </td>
   <td>
@@ -120,7 +126,9 @@ exports[`ActivitylogRow when beautified should render the componet for the diffe
       UPDATE
     </span>
   </td>
-  <td>
+  <td
+    className=""
+  >
     defined user
   </td>
   <td>
@@ -183,7 +191,9 @@ exports[`ActivitylogRow when beautified should render the componet for the diffe
       DELETE
     </span>
   </td>
-  <td>
+  <td
+    className=""
+  >
     defined user
   </td>
   <td>
@@ -246,7 +256,9 @@ exports[`ActivitylogRow when beautified should render the componet for the diffe
       MIGRATE
     </span>
   </td>
-  <td>
+  <td
+    className=""
+  >
     defined user
   </td>
   <td>
@@ -309,7 +321,9 @@ exports[`ActivitylogRow when beautified should render the componet for the diffe
       CUSTOM
     </span>
   </td>
-  <td>
+  <td
+    className=""
+  >
     defined user
   </td>
   <td>

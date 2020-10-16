@@ -131,5 +131,32 @@
     .suggestions-label {
       margin-top: 30px;
     }
+
+    & > div {
+      position: relative;
+    }
+
+    .geolocation-grouping-alert {
+      background: #FFF2D0;
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      box-sizing: border-box;
+      border-radius: 2px;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      padding: 6px 8px;
+      margin-bottom: 15px;
+
+      @media (min-width: 1023px) {
+        position: absolute;
+        width: 261px;
+        right: 0;
+      }
+
+      p {
+        font-size: 12px;
+        margin: 0 0 0 8px;
+      }
+    }
   }
 }

@@ -31,4 +31,11 @@ export default {
 
     return date;
   },
+
+  addYearsToCurrentDate(yearsToAdd) {
+    const newDate = new Date();
+    newDate.setHours(0, 0, 0, 0);
+    newDate.setFullYear(newDate.getFullYear() + yearsToAdd);
+    return newDate;
+  },
 };

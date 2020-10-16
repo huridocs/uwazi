@@ -8,6 +8,7 @@ import settings from 'api/settings';
 import { processDocument } from 'api/files/processDocument';
 import { uploadsPath, attachmentsPath, generateFileName } from 'api/files/filesystem';
 
+import activitylogMiddleware from 'api/activitylog/activitylogMiddleware';
 import { validation, createError } from '../utils';
 import captchaAuthorization from '../auth/captchaMiddleware';
 import { uploadMiddleware } from './uploadMiddleware';
@@ -30,6 +31,7 @@ const routes = app => {
     '/api/public',
     uploadMiddleware.multiple(),
     captchaAuthorization(),
+    activitylogMiddleware,
     (req, _res, next) => {
       try {
         req.body.entity = JSON.parse(req.body.entity);
@@ -109,9 +111,10 @@ const routes = app => {
         return '/api/public';
       },
       proxyReqOptDecorator(proxyReqOpts, srcReq) {
+        const { tenant, ...headers } = proxyReqOpts.headers;
         return {
           ...proxyReqOpts,
-          headers: { ...proxyReqOpts.headers, Cookie: srcReq.session.remotecookie },
+          headers: { ...headers, Cookie: srcReq.session.remotecookie },
         };
       },
     })(req, res, next);
