@@ -21,6 +21,7 @@ export const BODY_REQUIRED_ENDPOINTS = [
   '/api/files/upload/document',
   '/api/files/upload/custom',
   '/api/attachments/upload',
+  '/api/public',
 ];
 
 function mustBeLogged(baseurl, method, body) {
@@ -50,7 +51,7 @@ export default (req, _res, next) => {
       expireAt,
     };
     activitylog.save(entry);
-    appendFile(activityLogPath(), JSON.stringify(entry));
+    appendFile(activityLogPath(), `${JSON.stringify(entry)}\r\n`);
   }
   next();
 };

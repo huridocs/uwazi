@@ -58,7 +58,7 @@ describe('activitylogMiddleware', () => {
     activitylogMiddleware(req, res, next);
     expect(appendFile).toHaveBeenCalledWith(
       './log/default_activity.log',
-      JSON.stringify({
+      `${JSON.stringify({
         url: '/api/entities',
         method: 'POST',
         params: '{"some":"params"}',
@@ -68,7 +68,7 @@ describe('activitylogMiddleware', () => {
         username: 'admin',
         time: 1,
         expireAt: date.addYearsToCurrentDate(1),
-      })
+      })}\r\n`
     );
   });
 
