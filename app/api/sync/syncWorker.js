@@ -71,14 +71,14 @@ export default {
     const { sync } = await settings.get({}, { sync: 1 });
     if (sync) {
       const syncArray = Array.isArray(sync) ? sync : [sync];
-      await syncArray.reduce(async (prev, slaveConfig) => {
+      await syncArray.reduce(async (prev, targetConfig) => {
         await prev;
-        if (slaveConfig.active) {
-          const syncs = await syncsModel.find({ name: slaveConfig.name });
+        if (targetConfig.active) {
+          const syncs = await syncsModel.find({ name: targetConfig.name });
           if (syncs.length === 0) {
-            await syncsModel.create({ lastSync: 0, name: slaveConfig.name });
+            await syncsModel.create({ lastSync: 0, name: targetConfig.name });
           }
-          this.intervalSync(slaveConfig, interval);
+          this.intervalSync(targetConfig, interval);
         }
         return Promise.resolve();
       }, Promise.resolve());

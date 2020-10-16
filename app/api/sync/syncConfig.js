@@ -70,8 +70,8 @@ const getApprovedRelationtypes = async config => {
   return relationtypesConfig.concat(validTemplateRelationtypes);
 };
 
-export default async (config, slaveName) => {
-  const [{ lastSync }] = await syncsModel.find({ name: slaveName });
+export default async (config, targetName) => {
+  const [{ lastSync }] = await syncsModel.find({ name: targetName });
 
   return {
     lastSync,
