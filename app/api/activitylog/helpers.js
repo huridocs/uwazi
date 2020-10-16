@@ -1,73 +1,86 @@
-import semanticSearchModel from 'api/semanticsearch/model';
 import { allLanguages } from 'shared/languagesList';
-
-export const methods = {
-  create: 'CREATE',
-  update: 'UPDATE',
-  delete: 'DELETE',
-  migrate: 'MIGRATE',
-};
+import { typeParsers } from 'api/activitylog/migrationsParser';
+import templates from 'api/templates/templates';
+import entities from 'api/entities/entities';
+import { files } from 'api/files';
+import semanticSearchModel from 'api/semanticsearch/model';
 
 export const formatLanguage = langKey => {
   const lang = allLanguages.find(({ key }) => key === langKey);
   return lang ? `${lang.label} (${lang.key})` : langKey;
 };
 
-export const generateCreateUpdateBeautifier = (resourceName, idField, nameField) => async log => {
-  const data = JSON.parse(log.body);
-  const name = data[nameField];
+export const formatDataLanguage = data => formatLanguage(data.key);
 
-  const semantic = {
-    beautified: true,
-    name,
-  };
-
-  if (data[idField]) {
-    semantic.name = name ? `${name} (${data[idField]})` : `${data[idField]}`;
-    semantic.action = methods.update;
-    semantic.description = `Updated ${resourceName}`;
-  } else {
-    semantic.action = methods.create;
-    semantic.description = `Created ${resourceName}`;
-  }
-
-  return semantic;
+export const translationsName = data => {
+  const [context] = data.contexts;
+  return data.contexts.length === 1
+    ? `in ${context.label} (${context.id})`
+    : 'in multiple contexts';
 };
 
-export const generateDeleteBeautifier = (resourceName, idField) => async log => {
-  const data = JSON.parse(log.query);
+export const nameFunc = data => `${data.label} (${data.key})`;
 
-  return {
-    beautified: true,
-    action: methods.delete,
-    description: `Deleted ${resourceName}`,
-    name: data[idField],
-  };
+export const migrationLog = log => {
+  const data = JSON.parse(log.body);
+  return typeParsers[data.type] ? typeParsers[data.type](data) : { action: 'RAW' };
 };
 
-export const generatePlainDescriptionBeautifier = (
-  description,
-  action = methods.update
-) => async () => ({
-  beautified: true,
-  action,
-  description,
-});
+export const templateName = data =>
+  data.templateData ? `${data.templateData.name} (${data._id})` : data._id;
 
-export const generateSemanticSearchUpdateBeautifier = description => async log => {
-  const data = JSON.parse(log.body);
+export const loadEntityFromPublicForm = async data => {
+  const entity = JSON.parse(data.entity);
+  const templateData = await templates.getById(entity.template);
+  return { ...data, templateData, title: entity.title };
+};
+
+export const loadTemplate = async data => {
+  const templateData = await templates.getById(data.template || data._id);
+  return { ...data, templateData };
+};
+
+export const loadEntity = async data => {
+  const _id = data.entityId || data._id;
+  const sharedId = data.sharedId || data.entity;
+  const query = { ...(_id && { _id }), ...(sharedId && { sharedId }) };
+  const [entity] = await entities.get(query);
+  return { ...data, entity, title: entity ? entity.title : undefined };
+};
+
+export const loadFile = async data => {
+  const [file] = await files.get({ _id: data._id });
+  return { ...data, file, title: file.originalname ? file.originalname : undefined };
+};
+
+export const extraTemplate = data =>
+  `of type ${
+    data.templateData
+      ? data.templateData.name
+      : `(${data.template ? data.template.toString() : 'unassigned'})`
+  }`;
+
+export const extraAttachmentLanguage = data =>
+  data.entity
+    ? `of entity '${data.entity.title}' (${data.entity.sharedId}) ${formatLanguage(
+        data.entity.language
+      )} version`
+    : null;
+
+export const searchName = data =>
+  data.search ? `${data.search.searchTerm} (${data.searchId})` : data.searchId;
+
+export const loadSearch = async data => {
   const search = await semanticSearchModel.getById(data.searchId);
+  return { ...data, search };
+};
 
-  const semantic = {
-    beautified: true,
-    action: methods.update,
-    description,
-    name: data.searchId,
-  };
-
-  if (search) {
-    semantic.name = `${search.searchTerm} (${data.searchId})`;
+export const updatedFile = data => {
+  let name;
+  if (data.toc) {
+    name = 'ToC, ';
+  } else {
+    name = data.pdfinfo ? 'Pdf info, ' : '';
   }
-
-  return semantic;
+  return `${name}${data.title}`;
 };

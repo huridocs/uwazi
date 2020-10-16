@@ -6,6 +6,7 @@ import { processDocument } from 'api/files/processDocument';
 import { uploadsPath, fileExists, customUploadsPath } from 'api/files/filesystem';
 import needsAuthorization from 'api/auth/authMiddleware';
 import { uploadMiddleware } from 'api/files/uploadMiddleware';
+import activitylogMiddleware from 'api/activitylog/activitylogMiddleware';
 import { CSVLoader } from 'api/csv';
 import { files } from './files';
 import { validation, createError, handleError } from '../utils';
@@ -28,13 +29,15 @@ export default (app: Application) => {
         res.json(file);
         req.getCurrentSessionSockets().emit('conversionFailed', req.body.entity);
       }
-    }
+    },
+    activitylogMiddleware
   );
 
   app.post(
     '/api/files/upload/custom',
     needsAuthorization(['admin', 'editor']),
     uploadMiddleware(customUploadsPath),
+    activitylogMiddleware,
     (req, res, next) => {
       files
         .save({ ...req.file, type: 'custom' })
