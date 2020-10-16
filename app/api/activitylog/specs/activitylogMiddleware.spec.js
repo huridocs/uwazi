@@ -1,5 +1,13 @@
+import { appendFile } from 'api/files';
+import { IGNORED_ENDPOINTS } from 'api/activitylog/activitylogMiddleware';
+import date from 'api/utils/date';
 import activitylogMiddleware from '../activitylogMiddleware';
 import activitylog from '../activitylog';
+
+jest.mock('api/files', () => ({
+  appendFile: jest.fn(),
+  activityLogPath: jest.fn().mockImplementation(() => './log/default_activity.log'),
+}));
 
 describe('activitylogMiddleware', () => {
   let req;
@@ -35,6 +43,7 @@ describe('activitylogMiddleware', () => {
     activitylogMiddleware(req, res, next);
     expect(activitylog.save).toHaveBeenCalledWith({
       body: '{"title":"Hi"}',
+      expireAt: date.addYearsToCurrentDate(1),
       method: 'POST',
       params: '{"some":"params"}',
       query: '{"a":"query"}',
@@ -45,28 +54,43 @@ describe('activitylogMiddleware', () => {
     });
   });
 
-  it('should ignore NOT api calls', () => {
-    req.url = '/entities';
-    testActivityLogNotSaved();
+  it('should save the log entry on filesystem', () => {
+    activitylogMiddleware(req, res, next);
+    expect(appendFile).toHaveBeenCalledWith(
+      './log/default_activity.log',
+      `${JSON.stringify({
+        url: '/api/entities',
+        method: 'POST',
+        params: '{"some":"params"}',
+        query: '{"a":"query"}',
+        body: '{"title":"Hi"}',
+        user: 123,
+        username: 'admin',
+        time: 1,
+        expireAt: date.addYearsToCurrentDate(1),
+      })}\r\n`
+    );
   });
 
-  it('should ignore all GET requests', () => {
-    req.method = 'GET';
-    testActivityLogNotSaved();
-  });
+  describe('non registered entries', () => {
+    it('should ignore NOT api calls', () => {
+      req.url = '/entities';
+      testActivityLogNotSaved();
+    });
 
-  it('should ignore specific api calls', () => {
-    const urls = [
-      '/api/login',
-      '/api/users',
-      '/api/contact',
-      '/api/unlockaccount',
-      '/api/recoverpassword',
-      '/api/resetpassword',
-    ];
+    it.each(['GET', 'OPTIONS', 'HEAD'])('should ignore not desired method %s', method => {
+      req.method = method;
+      testActivityLogNotSaved();
+    });
 
-    urls.forEach(url => {
-      req.url = url;
+    it.each(IGNORED_ENDPOINTS)('should ignore calls to %s', endpoint => {
+      req.url = endpoint;
+      testActivityLogNotSaved();
+    });
+
+    it('should not log multipart post with no body', () => {
+      req.url = '/api/files/upload/document';
+      req.body = {};
       testActivityLogNotSaved();
     });
   });

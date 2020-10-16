@@ -25,4 +25,11 @@ describe('date helper', () => {
       );
     });
   });
+
+  describe('add years to current date', () => {
+    const today = new Date();
+    const nextYear = new Date(today.getFullYear() + 1, today.getMonth(), today.getDate());
+    const newDate = date.addYearsToCurrentDate(1);
+    expect(newDate).toEqual(nextYear);
+  });
 });
