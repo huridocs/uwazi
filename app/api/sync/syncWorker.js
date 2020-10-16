@@ -18,8 +18,8 @@ const timeout = async interval =>
 export default {
   stopped: false,
 
-  async syncronize({ url, config: _config }) {
-    const config = await syncConfig(_config);
+  async syncronize({ url, name, config: _config }) {
+    const config = await syncConfig(_config, name);
 
     const { lastSync } = config;
 
@@ -29,12 +29,12 @@ export default {
       await prev;
 
       if (change.deleted) {
-        return synchronizer.syncData(url, 'delete', change, { _id: change.mongoId });
+        return synchronizer.syncData(url, name, 'delete', change, { _id: change.mongoId });
       }
 
       const data = await config.shouldSync(change);
       if (data) {
-        return synchronizer.syncData(url, 'post', change, data, lastSync);
+        return synchronizer.syncData(url, name, 'post', change, data, lastSync);
       }
 
       return Promise.resolve();
@@ -69,12 +69,19 @@ export default {
 
   async start(interval) {
     const { sync } = await settings.get({}, { sync: 1 });
-    if (sync && sync.active) {
-      const syncs = await syncsModel.find();
-      if (syncs.length === 0) {
-        await syncsModel.create({ lastSync: 0 });
-      }
-      this.intervalSync(sync, interval);
+    if (sync) {
+      const syncArray = Array.isArray(sync) ? sync : [sync];
+      await syncArray.reduce(async (prev, slaveConfig) => {
+        await prev;
+        if (slaveConfig.active) {
+          const syncs = await syncsModel.find({ name: slaveConfig.name });
+          if (syncs.length === 0) {
+            await syncsModel.create({ lastSync: 0, name: slaveConfig.name });
+          }
+          this.intervalSync(slaveConfig, interval);
+        }
+        return Promise.resolve();
+      }, Promise.resolve());
     }
   },
 

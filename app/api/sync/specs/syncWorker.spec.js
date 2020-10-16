@@ -77,12 +77,14 @@ describe('syncWorker', () => {
   const syncWorkerWithConfig = async config =>
     syncWorker.syncronize({
       url: 'url',
+      name: 'slave1',
       config,
     });
 
-  const syncAllTemplates = async () =>
+  const syncAllTemplates = async (name = 'slave1') =>
     syncWorker.syncronize({
       url: 'url',
+      name,
       config: {
         templates: {
           [template1.toString()]: [],
@@ -513,8 +515,16 @@ describe('syncWorker', () => {
 
     it('should update lastSync timestamp with the last change', async () => {
       await syncAllTemplates();
-      const [{ lastSync }] = await syncsModel.find();
-      expect(lastSync).toBe(20000);
+      let [{ lastSync: lastSync1 }] = await syncsModel.find({ name: 'slave1' });
+      let [{ lastSync: lastSync3 }] = await syncsModel.find({ name: 'slave3' });
+      expect(lastSync1).toBe(20000);
+      expect(lastSync3).toBe(1000);
+
+      await syncsModel._updateMany({ name: 'slave3' }, { $set: { lastSync: 8999 } });
+      await syncAllTemplates('slave3');
+      [{ lastSync: lastSync1 }] = await syncsModel.find({ name: 'slave1' });
+      [{ lastSync: lastSync3 }] = await syncsModel.find({ name: 'slave3' });
+      expect(lastSync3).toBe(20000);
     });
 
     it('should update lastSync on each operation', async () => {
@@ -611,7 +621,7 @@ describe('syncWorker', () => {
   });
 
   describe('start', () => {
-    it('should not fail on sync not in settings', async () => {
+    it('should not fail when sync not in settings', async () => {
       await settingsModel.updateMany({}, { $unset: { sync: '' } });
       spyOn(syncWorker, 'intervalSync');
       const interval = 2000;
@@ -625,13 +635,19 @@ describe('syncWorker', () => {
       expect(thrown).not.toBeDefined();
     });
 
-    it('should lazy create lastSync entry if not exists', async () => {
-      await syncsModel.deleteMany({});
+    it('should lazy create lastSync entries if they not already exist', async () => {
+      await syncsModel.deleteMany({ name: 'slave3' });
 
       syncWorker.stop();
       await syncWorker.start();
-      const [{ lastSync }] = await syncsModel.find();
-      expect(lastSync).toBe(0);
+      const syncs = await syncsModel.find();
+      expect(syncs.length).toBe(2);
+      expect(syncs).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({ name: 'slave1', lastSync: 8999 }),
+          expect.objectContaining({ name: 'slave3', lastSync: 0 }),
+        ])
+      );
     });
 
     it('should get sync config and start the sync', async () => {
@@ -640,7 +656,7 @@ describe('syncWorker', () => {
 
       await syncWorker.start(interval);
       expect(syncWorker.intervalSync).toHaveBeenCalledWith(
-        { url: 'url', active: true, config: {} },
+        { url: 'url1', name: 'slave1', active: true, config: {} },
         interval
       );
     });

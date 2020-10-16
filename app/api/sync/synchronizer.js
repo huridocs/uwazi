@@ -29,13 +29,13 @@ const syncAttachments = async (url, data, lastSync) => {
 };
 
 const syncronizer = {
-  async syncData(url, action, change, data, lastSync) {
+  async syncData(url, name, action, change, data, lastSync) {
     await request[action](urljoin(url, 'api/sync'), { namespace: change.namespace, data });
     await syncAttachments(url, data, lastSync);
     if (change.namespace === 'files' && data.filename) {
       await uploadFile(url, data.filename);
     }
-    return syncsModel._updateMany({}, { $set: { lastSync: change.timestamp } });
+    return syncsModel._updateMany({ name }, { $set: { lastSync: change.timestamp } });
   },
 };
 
