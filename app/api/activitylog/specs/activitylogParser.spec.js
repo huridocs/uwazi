@@ -906,7 +906,7 @@ describe('Activitylog Parser', () => {
             {
               method: 'POST',
               url: '/api/public',
-              body: `{"entity":"{\\"title\\":\\"tres\\",\\"template\\":\\"${firstTemplate.toString()}\\"}"}`,
+              body: `{"entity":"{\\"title\\":\\"My entity\\",\\"template\\":\\"${firstTemplate.toString()}\\"}"}`,
             },
             {
               action: 'CREATE',
