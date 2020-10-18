@@ -599,14 +599,7 @@ const buildQuery = async (query, language, user, resources) => {
   if (query.sort) {
     const sortingProp = allUniqueProps.find(p => `metadata.${p.name}` === query.sort);
     if (sortingProp && sortingProp.type === 'select') {
-      const dictionary = dictionaries.find(d => d._id.toString() === sortingProp.content);
-      const translation = getLocaleTranslation(_translations, language);
-      const context = getContext(translation, dictionary._id.toString());
-      const keys = dictionary.values.reduce((result, value) => {
-        result[value.id] = translate(context, value.label, value.label);
-        return result;
-      }, {});
-      queryBuilder.sortByForeignKey(query.sort, keys, query.order);
+      queryBuilder.sort(query.sort, query.order, true);
     } else {
       queryBuilder.sort(query.sort, query.order);
     }
