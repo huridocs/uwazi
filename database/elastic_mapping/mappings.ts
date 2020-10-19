@@ -8,7 +8,6 @@ if (USE_ELASTIC_ICU === 'true') {
 
 const text = {
   type: 'text',
-  index: true,
   analyzer: 'tokenizer',
   fields: {
     raw: { type: 'text' },

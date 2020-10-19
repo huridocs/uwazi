@@ -5,6 +5,7 @@ import errorLog from 'api/log/errorLog';
 import { entityDefaultDocument } from 'shared/entityDefaultDocument';
 import PromisePool from '@supercharge/promise-pool';
 import { createError } from 'api/utils';
+import { objectEquals } from 'shared/objectEquals';
 import elastic from './elastic';
 import elasticMapFactory from '../../../database/elastic_mapping/elasticMapFactory';
 
@@ -164,4 +165,20 @@ const updateMapping = async (templates, elasticIndex) => {
   }
 };
 
-export { bulkIndex, indexEntities, updateMapping };
+const checkMapping = async (template, elasticIndex) => {
+  const errors = [];
+  const mapping = elasticMapFactory.mapping([template]);
+  const currentMapping = await elastic.indices.getMapping({ index: elasticIndex });
+  const mappedProps = currentMapping.body[elasticIndex].mappings.properties.metadata.properties;
+  const newMappedProps = mapping.properties.metadata.properties;
+
+  Object.keys(newMappedProps).forEach(key => {
+    if (!objectEquals(mappedProps[key], newMappedProps[key])) {
+      errors.push({ name: key });
+    }
+  });
+
+  return { errors, valid: !errors.length };
+};
+
+export { bulkIndex, indexEntities, updateMapping, checkMapping };

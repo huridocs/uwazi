@@ -4,6 +4,7 @@ import errorLog from 'api/log/errorLog';
 import { instanceSearch } from '../search';
 import { fixtures as fixturesForIndexErrors } from './fixtures_elastic_errors';
 import elastic from '../elastic';
+import { checkMapping, updateMapping } from '../entitiesIndex';
 
 const forceIndexingOfNumberBasedProperty = async search => {
   await search.indexEntities({ title: 'Entity with index Problems 1' }, '', 1);
@@ -76,6 +77,56 @@ describe('entitiesIndex', () => {
         expect.objectContaining({ title: 'titulo4' }),
         expect.objectContaining({ title: 'titulo5' }),
       ]);
+    });
+  });
+
+  describe('updateMapping', () => {
+    it('should update the mapping provided by the factory', async () => {
+      const templates = [
+        {
+          _id: '123',
+          name: 'test',
+          properties: [
+            { name: 'name', type: 'text' },
+            { name: 'dob', type: 'date' },
+            { name: 'country', type: 'select' },
+          ],
+        },
+      ];
+      await updateMapping(templates, elasticIndex);
+      const mapping = await elastic.indices.getMapping({ index: elasticIndex });
+      const mappedProps = mapping.body[elasticIndex].mappings.properties.metadata.properties;
+      expect(mappedProps.name).toMatchSnapshot();
+      expect(mappedProps.dob).toMatchSnapshot();
+      expect(mappedProps.country).toMatchSnapshot();
+    });
+  });
+
+  describe('checkMapping', () => {
+    it('should check mapping of a template vs current mapping', async () => {
+      const templateA = {
+        _id: '123',
+        name: 'template A',
+        properties: [
+          { name: 'name', type: 'text' },
+          { name: 'dob', type: 'date' },
+          { name: 'country', type: 'select' },
+        ],
+      };
+
+      const templateB = {
+        _id: '456',
+        name: 'template B',
+        properties: [{ name: 'name', type: 'text' }],
+      };
+
+      await updateMapping([templateA], elasticIndex);
+      let response = await checkMapping(templateB, elasticIndex);
+      expect(response).toEqual({ errors: [], valid: true });
+
+      templateB.properties[0].type = 'numeric';
+      response = await checkMapping(templateB, elasticIndex);
+      expect(response).toEqual({ errors: [{ name: 'name' }], valid: false });
     });
   });
 });

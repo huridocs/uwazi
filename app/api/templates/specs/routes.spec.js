@@ -19,6 +19,9 @@ describe('templates routes', () => {
       templates: [{ name: 'testing template', properties: [{ name: 'name', type: 'text' }] }],
     });
     spyOn(entitiesIndex, 'updateMapping').and.returnValue(Promise.resolve());
+    spyOn(entitiesIndex, 'checkMapping').and.returnValue(
+      Promise.resolve({ errors: [], valid: true })
+    );
   });
 
   afterAll(async () => {
@@ -191,6 +194,19 @@ describe('templates routes', () => {
           expect(req.io.emitToCurrentTenant).toHaveBeenCalledWith('templateChange', {
             name: 'oldDefault',
           });
+          done();
+        })
+        .catch(catchErrors(done));
+    });
+  });
+
+  describe('/api/templates/check_mapping', () => {
+    it('should check if a template is valid vs the current elasticsearch mapping', done => {
+      const req = { query: { _id: 'abc1', properties: [] }, io: mocketSocketIo() };
+      routes
+        .get('/api/templates/check_mapping', req)
+        .then(result => {
+          expect(result).toEqual({ errors: [], valid: true });
           done();
         })
         .catch(catchErrors(done));

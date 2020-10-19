@@ -1,7 +1,7 @@
 import Joi from 'joi';
 
 import settings from 'api/settings';
-import { updateMapping } from 'api/search/entitiesIndex';
+import { updateMapping, checkMapping } from 'api/search/entitiesIndex';
 import { tenants } from 'api/tenants/tenantContext';
 
 import { validation } from '../utils';
@@ -22,8 +22,7 @@ export default app => {
         req.io.emitToCurrentTenant('updateSettings', updatedSettings);
       }
 
-      const templs = await templates.get();
-      await updateMapping(templs, tenants.current().indexName);
+      await updateMapping([req.body], tenants.current().indexName);
 
       res.json(response);
     } catch (error) {
@@ -98,6 +97,27 @@ export default app => {
     (req, res, next) => {
       templates
         .countByThesauri(req.query._id)
+        .then(response => res.json(response))
+        .catch(next);
+    }
+  );
+
+  app.get(
+    '/api/templates/check_mapping',
+    needsAuthorization(),
+    validation.validateRequest({
+      properties: {
+        query: {
+          properties: {
+            _id: { type: 'string' },
+            name: { type: 'string' },
+            properties: { type: 'array', items: [{ type: 'object' }] },
+          },
+        },
+      },
+    }),
+    (req, res, next) => {
+      checkMapping(req.query, tenants.current().indexName)
         .then(response => res.json(response))
         .catch(next);
     }
