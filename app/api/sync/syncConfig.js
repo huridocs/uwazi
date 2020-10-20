@@ -280,7 +280,16 @@ export default async (config, targetName) => {
 
       if (change.namespace === 'entities' && data.metadata) {
         const templateData = await models.templates.getById(data.template);
-        const templateConfigProperties = templatesConfig[templateData._id.toString()].properties;
+        const templateConfig = templatesConfig[templateData._id.toString()];
+
+        if (templateConfig.filter) {
+          const filterFunction = new Function('data', templateConfig.filter);
+          if (!filterFunction.call({}, JSON.parse(JSON.stringify(data)))) {
+            return Promise.resolve();
+          }
+        }
+
+        const templateConfigProperties = templateConfig.properties;
         const validPropertyNames = templateData.properties.reduce((memo, property) => {
           if (templateConfigProperties.includes(property._id.toString())) {
             memo.push(property.name);

@@ -381,8 +381,10 @@ describe('syncWorker', () => {
     });
 
     describe('entities', () => {
-      it('should only sync entities belonging to a whitelisted template and properties and exclude non-templated entities', async () => {
-        await syncWorkerWithConfig({
+      let baseConfig;
+
+      beforeEach(() => {
+        baseConfig = {
           templates: {
             [template1.toString()]: [
               template1Property2.toString(),
@@ -391,7 +393,11 @@ describe('syncWorker', () => {
             ],
             [template2.toString()]: [],
           },
-        });
+        };
+      });
+
+      it('should only sync entities belonging to a whitelisted template and properties and exclude non-templated entities', async () => {
+        await syncWorkerWithConfig(baseConfig);
 
         const {
           calls: [entity1Call, entity2Call],
@@ -423,6 +429,39 @@ describe('syncWorker', () => {
         expect(request.post).not.toHaveBeenCalledWith('url/api/sync', {
           namespace: 'entities',
           data: expect.objectContaining({ title: 'not to sync' }),
+        });
+      });
+
+      describe('Filtering', () => {
+        let filterConfig;
+
+        beforeEach(() => {
+          filterConfig = { ...baseConfig, templates: { ...baseConfig.templates } };
+          filterConfig.templates[template1.toString()] = {
+            properties: baseConfig.templates[template1.toString()],
+            filter: 'return data.title === "another new entity";',
+          };
+        });
+
+        it('should allow filtering entities based on filter function', async () => {
+          await syncWorkerWithConfig(filterConfig);
+
+          const {
+            callsCount,
+            calls: [entity2Call],
+          } = getCallsToIds('entities', [newDoc2]);
+          expect(callsCount).toBe(1);
+          expect(entity2Call).toBeDefined();
+        });
+
+        it('should fail on error', async () => {
+          filterConfig.templates[template1.toString()].filter =
+            'return missing === "missing variable";';
+          try {
+            await syncWorkerWithConfig(filterConfig);
+          } catch (err) {
+            expect(err.message).toContain('missing');
+          }
         });
       });
     });
