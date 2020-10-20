@@ -28,7 +28,7 @@ describe('AccountSettings', () => {
   describe('change email', () => {
     it('should save the user with the new email and update the user.rev', () => {
       render();
-      component.setProps({ user: { email: 'newemail@uwazi.com', name: 'doe', using2fa: false } });
+      component.setState({ email: 'newemail@uwazi.com' });
       component
         .childAt(0)
         .find('form')
