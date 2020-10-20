@@ -26,7 +26,7 @@ describe('migration multiple sync', () => {
   };
 
   it('should have a delta number', () => {
-    expect(migration.delta).toBe(29);
+    expect(migration.delta).toBe(30);
   });
 
   it('should nest settings.sync in an array and name settings and syncs collection ', async () => {

@@ -1,5 +1,5 @@
 export default {
-  delta: 29,
+  delta: 30,
 
   name: 'multiple-sync',
 
