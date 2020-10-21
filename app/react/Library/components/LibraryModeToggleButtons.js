@@ -8,6 +8,7 @@ import { helper as mapHelper } from 'app/Map';
 import { showFilters } from 'app/Entities/actions/uiActions';
 import { bindActionCreators } from 'redux';
 import { wrapDispatch } from 'app/Multireducer';
+import { createSelector } from 'reselect';
 import { HiddenColumnsDropdown } from './HiddenColumnsDropdown';
 
 export class LibraryModeToggleButtons extends Component {
@@ -23,7 +24,6 @@ export class LibraryModeToggleButtons extends Component {
       tableViewMode,
     } = this.props;
     const numberOfMarkersText = numberOfMarkers.toString().length > 3 ? '99+' : numberOfMarkers;
-
     return (
       <div className="list-view-mode">
         {tableViewMode && (
@@ -123,9 +123,16 @@ LibraryModeToggleButtons.defaultProps = {
   showFilters: () => {},
 };
 
+export const encodedSearch = createSelector(
+  state => state.search,
+  state => state.filters,
+  (search, filters) => {
+    const params = processFilters(search, filters.toJS());
+    return encodeSearch(params);
+  }
+);
+
 export function mapStateToProps(state, props) {
-  const filters = state[props.storeKey].filters.toJS();
-  const params = processFilters(state[props.storeKey].search, filters);
   const { templates } = state;
   const showGeolocation = Boolean(
     templates.find(_t => _t.get('properties').find(p => p.get('type') === 'geolocation'))
@@ -135,7 +142,7 @@ export function mapStateToProps(state, props) {
     state.templates
   ).length;
   return {
-    searchUrl: encodeSearch(params),
+    searchUrl: encodedSearch(state[props.storeKey]),
     showGeolocation,
     numberOfMarkers,
     zoomLevel:
