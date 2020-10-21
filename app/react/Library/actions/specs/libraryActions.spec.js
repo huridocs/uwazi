@@ -111,6 +111,21 @@ describe('libraryActions', () => {
     it('should allow returning a rison query value, not appending the ?q= when other options may be found in the URL', () => {
       expect(actions.encodeSearch({ a: 1, b: 'z' }, false)).toBe('(a:1,b:z)');
     });
+
+    it('should keep the search term inside single quotes to avoid errors with rison', () => {
+      const toCode = {
+        searchTerm: 'a:b',
+        sort: '_score',
+        order: 'desc',
+        includeUnpublished: false,
+        unpublished: false,
+        allAggregations: false,
+      };
+      const encodedSearch = actions.encodeSearch(toCode, false);
+      const coded =
+        "(allAggregations:!f,includeUnpublished:!f,order:desc,searchTerm:'a%3Ab',sort:_score,unpublished:!f)";
+      expect(encodedSearch).toBe(coded);
+    });
   });
 
   describe('Zoom functions', () => {
@@ -242,7 +257,7 @@ describe('libraryActions', () => {
         actions.searchDocuments({ search, filters }, storeKey, limit)(dispatch, getState);
 
         expect(browserHistory.push).toHaveBeenCalledWith(
-          '/library/?view=chart&q=(filters:(author:batman,nested:nestedValue,select:selectValue),from:0,limit:60,searchTerm:batman,sort:_score,types:!(decision))' //eslint-disable-line
+          "/library/?view=chart&q=(filters:(author:batman,nested:nestedValue,select:selectValue),from:0,limit:60,searchTerm:'batman',sort:_score,types:!(decision))" //eslint-disable-line
         );
       });
 
@@ -277,7 +292,7 @@ describe('libraryActions', () => {
           storeKey
         )(dispatch, getState);
         expect(browserHistory.push).toHaveBeenCalledWith(
-          '/library/?view=chart&q=(from:0,limit:30,searchTerm:batman,sort:_score)'
+          "/library/?view=chart&q=(from:0,limit:30,searchTerm:'batman',sort:_score)"
         );
       });
 
@@ -296,7 +311,7 @@ describe('libraryActions', () => {
           storeKey
         )(dispatch, getState);
         expect(browserHistory.push).toHaveBeenCalledWith(
-          '/library/?q=(from:0,limit:30,order:desc,searchTerm:batman,sort:title)'
+          "/library/?q=(from:0,limit:30,order:desc,searchTerm:'batman',sort:title)"
         );
       });
     });
