@@ -84,9 +84,7 @@ function aggregationProperties(properties) {
         property.type === 'relationship' ||
         property.type === 'nested'
     )
-    .map(property => {
-      return { ...property, name: `${property.name}.value` };
-    });
+    .map(property => ({ ...property, name: `${property.name}.value` }));
 }
 
 function metadataSnippetsFromSearchHit(hit) {
@@ -171,12 +169,11 @@ function searchGeolocation(documentsQuery, templates) {
   documentsQuery.select(selectProps);
 }
 
-const _sanitizeAgregationNames = aggregations => {
-  return Object.keys(aggregations).reduce((allAggregations, key) => {
+const _sanitizeAgregationNames = aggregations =>
+  Object.keys(aggregations).reduce((allAggregations, key) => {
     const sanitizedKey = key.replace('.value', '');
     return Object.assign(allAggregations, { [sanitizedKey]: aggregations[key] });
   }, {});
-};
 
 const _getAggregationDictionary = async (aggregation, language, property, dictionaries) => {
   if (property.type === 'relationship') {
@@ -260,7 +257,7 @@ const _denormalizeAggregations = async (aggregations, templates, dictionaries, l
 const _sanitizeAggregationsStructure = (aggregations, limit) => {
   const result = {};
   Object.keys(aggregations).forEach(aggregationKey => {
-    let aggregation = aggregations[aggregationKey];
+    const aggregation = aggregations[aggregationKey];
 
     //grouped dictionary
     if (aggregation.buckets && !Array.isArray(aggregation.buckets)) {
@@ -555,26 +552,33 @@ const escapeElasticSearchQueryString = query => {
   }, query);
 };
 
-const _getTextFields = (query, templates) => {
-  return (
-    query.fields ||
-    propertiesHelper
-      .allUniqueProperties(templates)
-      .map(prop =>
-        ['text', 'markdown'].includes(prop.type)
-          ? `metadata.${prop.name}.value`
-          : `metadata.${prop.name}.label`
-      )
-      .concat(['title', 'fullText'])
-  );
-};
+const _getTextFields = (query, templates) =>
+  query.fields ||
+  propertiesHelper
+    .allUniqueProperties(templates)
+    .map(prop =>
+      ['text', 'markdown'].includes(prop.type)
+        ? `metadata.${prop.name}.value`
+        : `metadata.${prop.name}.label`
+    )
+    .concat(['title', 'fullText']);
+
+async function searchTypeFromSearchTermValidity(searchTerm) {
+  const validationResult = await elastic.indices.validateQuery({
+    body: { query: { query_string: { query: searchTerm } } },
+  });
+  return validationResult.body.valid ? 'query_string' : 'simple_query_string';
+}
 
 const buildQuery = async (query, language, user, resources) => {
   const [templates, dictionaries, _translations] = resources;
   const textFieldsToSearch = _getTextFields(query, templates);
   const elasticSearchTerm = query.searchTerm && escapeElasticSearchQueryString(query.searchTerm);
+  const searchTextType = elasticSearchTerm
+    ? await searchTypeFromSearchTermValidity(query.searchTerm)
+    : 'query_string';
   const queryBuilder = documentQueryBuilder()
-    .fullTextSearch(elasticSearchTerm, textFieldsToSearch, 2)
+    .fullTextSearch(elasticSearchTerm, textFieldsToSearch, 2, searchTextType)
     .filterByTemplate(query.types)
     .filterById(query.ids)
     .language(language);
@@ -680,13 +684,15 @@ const instanceSearch = elasticIndex => ({
     const templates = await templatesModel.get();
 
     const elasticSearchTerm = searchTerm && escapeElasticSearchQueryString(searchTerm);
-
+    const searchTextType = elasticSearchTerm
+      ? await searchTypeFromSearchTermValidity(searchTerm)
+      : 'query_string';
     const searchFields = propertiesHelper
       .textFields(templates)
       .map(prop => `metadata.${prop.name}.value`)
       .concat(['title', 'fullText']);
     const query = documentQueryBuilder()
-      .fullTextSearch(elasticSearchTerm, searchFields, 9999)
+      .fullTextSearch(elasticSearchTerm, searchFields, 9999, searchTextType)
       .includeUnpublished()
       .filterById(sharedId)
       .language(language)

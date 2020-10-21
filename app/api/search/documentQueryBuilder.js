@@ -1,8 +1,8 @@
 /* eslint-disable camelcase, max-lines */
 
+import { preloadOptionsSearch } from 'shared/config';
 import filterToMatch, { multiselectFilter } from './metadataMatchers';
 import { propertyToAggregation } from './metadataAggregations';
-import { preloadOptionsSearch } from 'shared/config';
 
 export default function() {
   const baseQuery = {
@@ -86,6 +86,7 @@ export default function() {
       term,
       fieldsToSearch = ['title', 'fullText'],
       number_of_fragments = 1,
+      searchTextType = 'query_string',
       type = 'fvh',
       fragment_size = 300
     ) {
@@ -97,7 +98,7 @@ export default function() {
       const fields = fieldsToSearch.filter(field => field !== 'fullText');
       if (fields.length) {
         should.push({
-          query_string: {
+          [searchTextType]: {
             query: term,
             fields,
             boost: 2,
@@ -136,7 +137,7 @@ export default function() {
               },
             },
             query: {
-              query_string: {
+              [searchTextType]: {
                 query: term,
                 fields: ['fullText_*'],
               },
