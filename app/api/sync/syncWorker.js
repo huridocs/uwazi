@@ -15,6 +15,9 @@ const timeout = async interval =>
     setTimeout(resolve, interval);
   });
 
+const updateSyncs = async (name, lastSync) =>
+  syncsModel._updateMany({ name }, { $set: { lastSync } });
+
 export default {
   stopped: false,
 
@@ -29,12 +32,15 @@ export default {
       await prev;
 
       if (change.deleted) {
-        return synchronizer.syncData(url, name, 'delete', change, { _id: change.mongoId });
+        await synchronizer.syncData({ url, change, data: { _id: change.mongoId } }, 'delete');
+        return updateSyncs(name, change.timestamp);
       }
 
       const data = await config.shouldSync(change);
+
       if (data) {
-        return synchronizer.syncData(url, name, 'post', change, data, lastSync);
+        await synchronizer.syncData({ url, change, data }, 'post', lastSync);
+        return updateSyncs(name, change.timestamp);
       }
 
       return Promise.resolve();
