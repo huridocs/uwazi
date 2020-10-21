@@ -11,12 +11,9 @@ import { notify as notifyAction } from 'app/Notifications/actions/notificationsA
 import { RequestParams } from 'app/utils/RequestParams';
 import { t, I18NLink } from 'app/I18N';
 import { Icon } from 'UI';
+import { createSelector } from 'reselect';
 
 export class AccountSettings extends Component {
-  static getDerivedStateFromProps(props) {
-    return { email: props.user.email || '' };
-  }
-
   constructor(props, context) {
     super(props, context);
     this.state = {
@@ -187,8 +184,13 @@ AccountSettings.propTypes = {
   setUser: PropTypes.func.isRequired,
 };
 
+export const selectUser = createSelector(
+  state => state.user,
+  user => user.toJS()
+);
+
 export function mapStateToProps(state) {
-  return { user: state.user.toJS() };
+  return { user: selectUser(state) };
 }
 
 function mapDispatchToProps(dispatch) {
