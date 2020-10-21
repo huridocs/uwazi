@@ -1,6 +1,7 @@
 import { models } from 'api/odm';
 import { model as updateLog } from 'api/updatelogs';
 import syncsModel from './syncsModel';
+import { ProcessNamespaces } from './processNamespaces';
 
 const sanitizeConfig = async config =>
   Object.keys(config).reduce(async (prev, key) => {
@@ -60,7 +61,7 @@ const getApprovedCollections = config => {
   return whitelistedCollections.filter(c => !blacklistedCollections.includes(c));
 };
 
-const getApprovedThesauris = async config =>
+const getApprovedThesauri = async config =>
   getValuesFromTemplateProperties(config, ['select', 'multiselect'], 'content');
 
 const getApprovedRelationtypes = async config => {
@@ -101,209 +102,24 @@ export default async (config, targetName) => {
       );
     },
 
-    isNamespaceInConfig(change, templatesConfig, whitelistedThesauri, whitelistedRelationtypes) {
-      if (change.namespace === 'templates' && !templatesConfig[change.mongoId.toString()]) {
-        return false;
-      }
-
-      if (
-        change.namespace === 'dictionaries' &&
-        !whitelistedThesauri.includes(change.mongoId.toString())
-      ) {
-        return false;
-      }
-
-      if (
-        change.namespace === 'relationtypes' &&
-        !whitelistedRelationtypes.includes(change.mongoId.toString())
-      ) {
-        return false;
-      }
-
-      return true;
-    },
-
     async shouldSync(change) {
       const templatesConfig = this.config.templates || {};
       const relationtypesConfig = this.config.relationtypes || [];
 
-      const whitelistedThesauri = await getApprovedThesauris(this.config);
+      const whitelistedThesauri = await getApprovedThesauri(this.config);
       const whitelistedRelationtypes = await getApprovedRelationtypes(this.config);
-      const namespaceInConfig = this.isNamespaceInConfig(
+      const processNamespaces = new ProcessNamespaces({
         change,
         templatesConfig,
+        relationtypesConfig,
         whitelistedThesauri,
-        whitelistedRelationtypes
-      );
+        whitelistedRelationtypes,
+      });
 
-      if (!namespaceInConfig) {
+      const { skip, data } = await processNamespaces.process();
+
+      if (skip) {
         return Promise.resolve();
-      }
-
-      let data = await models[change.namespace].getById(change.mongoId);
-
-      if (change.namespace === 'settings') {
-        data = { _id: data._id, languages: data.languages };
-      }
-
-      if (change.namespace === 'connections') {
-        const entitiesData = await models.entities.get({ sharedId: data.entity });
-        const entityTemplate = entitiesData[0].template.toString();
-
-        const belongsToValidEntity = Object.keys(templatesConfig).includes(entityTemplate);
-        if (!belongsToValidEntity) {
-          return Promise.resolve();
-        }
-
-        const belongsToWhitelistedType = relationtypesConfig.includes(
-          data.template ? data.template.toString() : null
-        );
-
-        const templateData = await models.templates.getById(entityTemplate);
-        const templateConfigProperties = templatesConfig[templateData._id.toString()].properties;
-        const templateHasValidRelationProperties = templateData.properties.reduce((isValid, p) => {
-          if (p.type === 'relationship' && templateConfigProperties.includes(p._id.toString())) {
-            return true;
-          }
-
-          return isValid;
-        }, false);
-
-        const isPossibleLeftMetadataRelationship =
-          templateHasValidRelationProperties && !data.template;
-
-        const hubOtherConnections = await models.connections.get({
-          hub: data.hub,
-          _id: { $ne: data._id },
-        });
-        const hubOtherEntities = await models.entities.get({
-          sharedId: { $in: hubOtherConnections.map(h => h.entity) },
-        });
-        const hubTemplateIds = hubOtherEntities.map(h => h.template.toString());
-        const hubWhitelistedTemplateIds = hubTemplateIds.filter(id =>
-          Object.keys(templatesConfig).includes(id)
-        );
-        const hubOtherTemplates = await models.templates.get({
-          _id: { $in: hubWhitelistedTemplateIds },
-        });
-        const isPosssbleRightMetadataRelationship = hubOtherTemplates.reduce(
-          (_isRightRelationship, template) => {
-            let isRightRelationship = _isRightRelationship;
-            template.properties.forEach(p => {
-              if (
-                p.type === 'relationship' &&
-                templatesConfig[template._id.toString()].properties.includes(p._id.toString())
-              ) {
-                const belongsToType =
-                  p.relationType.toString() === (data.template ? data.template.toString() : null);
-                const belongsToSpecificContent =
-                  p.content.toString() === templateData._id.toString();
-                const belongsToGenericContent = p.content === '';
-                if (belongsToType && (belongsToSpecificContent || belongsToGenericContent)) {
-                  isRightRelationship = true;
-                }
-              }
-            });
-
-            return isRightRelationship;
-          },
-          false
-        );
-
-        if (
-          !belongsToWhitelistedType &&
-          !isPossibleLeftMetadataRelationship &&
-          !isPosssbleRightMetadataRelationship
-        ) {
-          return Promise.resolve();
-        }
-      }
-
-      if (change.namespace === 'translations') {
-        const templatesData = await models.templates.get({
-          _id: { $in: Object.keys(templatesConfig) },
-        });
-
-        data.contexts = data.contexts
-          .map(_context => {
-            const context = _context;
-
-            const isSystem = context.id.toString() === 'System';
-            const isApprovedRelationtype = whitelistedRelationtypes.includes(context.id.toString());
-            const isApprovedThesauri = whitelistedThesauri.includes(context.id.toString());
-
-            if (isSystem || isApprovedRelationtype || isApprovedThesauri) {
-              return context;
-            }
-
-            if (Object.keys(templatesConfig).includes(context.id.toString())) {
-              const contextTemplate = templatesData.find(
-                t => t._id.toString() === context.id.toString()
-              );
-              const templateConfigProperties = templatesConfig[context.id.toString()].properties;
-              const approvedKeys = [contextTemplate.name].concat(
-                contextTemplate.properties
-                  .filter(p => templateConfigProperties.includes(p._id.toString()))
-                  .map(p => p.label)
-              );
-
-              context.values = (context.values || []).filter(v => approvedKeys.includes(v.key));
-              return context;
-            }
-
-            return null;
-          })
-          .filter(c => Boolean(c));
-      }
-
-      if (
-        change.namespace === 'entities' &&
-        !(data.template && Object.keys(templatesConfig).includes(data.template.toString()))
-      ) {
-        return Promise.resolve();
-      }
-
-      if (change.namespace === 'templates' && data.properties) {
-        const templateConfigProperties = templatesConfig[data._id.toString()].properties;
-        data.properties = data.properties.filter(property =>
-          templateConfigProperties.includes(property._id.toString())
-        );
-      }
-
-      if (change.namespace === 'files' && data.entity) {
-        const [entity] = await models.entities.get({ sharedId: data.entity });
-
-        if (!Object.keys(templatesConfig).includes(entity.template.toString())) {
-          return Promise.resolve();
-        }
-      }
-
-      if (change.namespace === 'entities' && data.metadata) {
-        const templateData = await models.templates.getById(data.template);
-        const templateConfig = templatesConfig[templateData._id.toString()];
-
-        if (templateConfig.filter) {
-          const filterFunction = new Function('data', templateConfig.filter);
-          if (!filterFunction.call({}, JSON.parse(JSON.stringify(data)))) {
-            return Promise.resolve();
-          }
-        }
-
-        const templateConfigProperties = templateConfig.properties;
-        const validPropertyNames = templateData.properties.reduce((memo, property) => {
-          if (templateConfigProperties.includes(property._id.toString())) {
-            memo.push(property.name);
-          }
-          return memo;
-        }, []);
-
-        data.metadata = Object.keys(data.metadata).reduce((_memo, propertyName) => {
-          const memo = _memo;
-          if (validPropertyNames.includes(propertyName)) {
-            memo[propertyName] = data.metadata[propertyName];
-          }
-          return memo;
-        }, {});
       }
 
       return data;
