@@ -1,11 +1,9 @@
-/** @format */
-
 import React from 'react';
 import { shallow } from 'enzyme';
-
+import Immutable from 'immutable';
 import UsersAPI from 'app/Users/UsersAPI';
 import { RequestParams } from 'app/utils/RequestParams';
-import { AccountSettings } from '../AccountSettings';
+import { AccountSettings, mapStateToProps } from '../AccountSettings';
 
 describe('AccountSettings', () => {
   let component;
@@ -28,7 +26,11 @@ describe('AccountSettings', () => {
   describe('change email', () => {
     it('should save the user with the new email and update the user.rev', () => {
       render();
-      component.setProps({ user: { email: 'newemail@uwazi.com', name: 'doe', using2fa: false } });
+      const input = component
+        .find('input')
+        .find({ type: 'email' })
+        .at(0);
+      input.simulate('change', { target: { value: 'newemail@uwazi.com' } });
       component
         .childAt(0)
         .find('form')
@@ -105,6 +107,22 @@ describe('AccountSettings', () => {
       props.user.using2fa = true;
       render();
       expect(component).toMatchSnapshot();
+    });
+  });
+
+  describe('mapStateToProps', () => {
+    let state;
+
+    beforeEach(() => {
+      state = {
+        user: Immutable.fromJS({ email: 'oldemail@uwazi.com', name: 'doe', using2fa: false }),
+      };
+    });
+
+    it('should map the logged user data', () => {
+      expect(mapStateToProps(state).user.email).toBe('oldemail@uwazi.com');
+      expect(mapStateToProps(state).user.name).toBe('doe');
+      expect(mapStateToProps(state).user.using2fa).toBe(false);
     });
   });
 });
