@@ -206,10 +206,11 @@ export function encodeSearch(_search, appendQ = true) {
   });
 
   if (search.searchTerm) {
-    search.searchTerm = encodeURIComponent(search.searchTerm).replace(/%20/g, ' ');
+    search.searchTerm = `${encodeURIComponent(search.searchTerm).replace(/%20/g, ' ')}:`;
   }
 
-  return appendQ ? `?q=${rison.encode(search)}` : rison.encode(search);
+  const encodedSearch = rison.encode(search).replace(/searchTerm:'([^:]+):'/, "searchTerm:'$1'");
+  return appendQ ? `?q=${encodedSearch}` : encodedSearch;
 }
 
 function setSearchInUrl(searchParams) {
