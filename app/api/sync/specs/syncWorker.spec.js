@@ -640,14 +640,11 @@ describe('syncWorker', () => {
 
       syncWorker.stop();
       await syncWorker.start();
-      const syncs = await syncsModel.find();
-      expect(syncs.length).toBe(2);
-      expect(syncs).toEqual(
-        expect.arrayContaining([
-          expect.objectContaining({ name: 'slave1', lastSync: 8999 }),
-          expect.objectContaining({ name: 'slave3', lastSync: 0 }),
-        ])
-      );
+      const syncs = await syncsModel.find().sort({ lastSync: 1 });
+      expect(syncs).toEqual([
+        expect.objectContaining({ name: 'slave3', lastSync: 0 }),
+        expect.objectContaining({ name: 'slave1', lastSync: 8999 }),
+      ]);
     });
 
     it('should get sync config and start the sync', async () => {
