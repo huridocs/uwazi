@@ -1,4 +1,12 @@
+/* eslint-disable max-lines */
 import { models } from 'api/odm';
+import {
+  SettingsSyncTemplateSchema,
+  SettingsSyncRelationtypesSchema,
+} from 'shared/types/settingsType';
+import { TemplateSchema as TemplateSchemaRaw } from 'shared/types/templateType';
+import { ObjectIdSchema } from 'shared/types/commonTypes';
+import { EntitySchema } from 'shared/types/entityType';
 
 const namespaces = [
   'settings',
@@ -13,28 +21,47 @@ const namespaces = [
 type NamespaceNames = typeof namespaces[number];
 type MethodNames = NamespaceNames | 'default';
 
+interface TemplateSchema extends TemplateSchemaRaw {
+  _id: ObjectIdSchema;
+}
+
 interface Options {
   change: { namespace: NamespaceNames; mongoId: any };
-  templatesConfig: any;
-  relationtypesConfig: any;
+  templatesConfig: {
+    [k: string]: SettingsSyncTemplateSchema;
+  };
+  relationtypesConfig: SettingsSyncRelationtypesSchema;
   whitelistedThesauri: Array<string>;
   whitelistedRelationtypes: Array<string>;
 }
+
+const getTemplate = async (template: string) => {
+  const templateData: TemplateSchema = await models.templates.getById(template);
+  if (!templateData._id) throw new Error('missing id');
+  return templateData;
+};
 
 const getEntityTemplate = async (sharedId: string) => {
   const entitiesData = await models.entities.get({ sharedId });
   return entitiesData[0].template.toString();
 };
 
-const extractAllowedMetadata = (data: any, templateData: any, templateConfig: any) => {
+const extractAllowedMetadata = (
+  data: any,
+  templateData: TemplateSchema,
+  templateConfig: SettingsSyncTemplateSchema
+) => {
   if (data.metadata) {
     const templateConfigProperties = templateConfig.properties;
-    const validPropertyNames = templateData.properties.reduce((memo: Array<any>, property: any) => {
-      if (templateConfigProperties.includes(property._id.toString())) {
-        memo.push(property.name);
-      }
-      return memo;
-    }, []);
+    const validPropertyNames = (templateData.properties || []).reduce(
+      (memo: Array<string>, property) => {
+        if (templateConfigProperties.includes((property._id || '').toString())) {
+          memo.push(property.name);
+        }
+        return memo;
+      },
+      []
+    );
 
     return Object.keys(data.metadata).reduce((prevMetadata, propertyName) => {
       if (validPropertyNames.includes(propertyName)) {
@@ -80,9 +107,9 @@ class ProcessNamespaces {
     return models[namespace].getById(mongoId);
   }
 
-  private async getTemplateDataAndConfig(data: any) {
-    const templateData = await models.templates.getById(data.template);
-    const templateConfig = this.templatesConfig[templateData._id.toString()];
+  private async getTemplateDataAndConfig(template: string) {
+    const templateData = await getTemplate(template);
+    const templateConfig = this.templatesConfig[templateData._id];
     return { templateData, templateConfig };
   }
 
@@ -94,17 +121,23 @@ class ProcessNamespaces {
     return Boolean(isSystem || isApprovedRelationtype || isApprovedThesauri);
   }
 
-  private isPossibleRightMetadataRel(data: any, templateData: any, hubOtherTemplates: any) {
-    return hubOtherTemplates.reduce((_isRightRelationship: any, template: any) => {
+  private isPossibleRightMetadataRel(
+    data: any,
+    templateData: TemplateSchema,
+    hubOtherTemplates: Array<TemplateSchema>
+  ) {
+    return hubOtherTemplates.reduce((_isRightRelationship: boolean, template) => {
       let isRightRelationship = _isRightRelationship;
-      template.properties.forEach((p: any) => {
+      (template.properties || []).forEach(p => {
         if (
           p.type === 'relationship' &&
+          p._id &&
           this.templatesConfig[template._id.toString()].properties.includes(p._id.toString())
         ) {
           const belongsToType =
-            p.relationType.toString() === (data.template ? data.template.toString() : null);
-          const belongsToSpecificContent = p.content.toString() === templateData._id.toString();
+            (p.relationType || '').toString() === (data.template ? data.template.toString() : null);
+          const belongsToSpecificContent =
+            (p.content || '').toString() === templateData._id.toString();
           const belongsToGenericContent = p.content === '';
           if (belongsToType && (belongsToSpecificContent || belongsToGenericContent)) {
             isRightRelationship = true;
@@ -118,27 +151,31 @@ class ProcessNamespaces {
 
   private async shouldSkipRel(
     data: any,
-    templateData: any,
-    templateHasValidRelationProperties: Boolean
+    templateData: TemplateSchema,
+    templateHasValidRelationProperties: boolean
   ) {
     const hubOtherConnections = await models.connections.get({
       hub: data.hub,
       _id: { $ne: data._id },
     });
-    const hubOtherEntities = await models.entities.get({
-      sharedId: { $in: hubOtherConnections.map(h => h.entity) },
-    });
-    const hubTemplateIds = hubOtherEntities.map(h => h.template.toString());
-    const hubWhitelistedTemplateIds = hubTemplateIds.filter((id: string) =>
-      this.templatesConfigKeys.includes(id)
+
+    const hubOtherEntities: Array<EntitySchema> = await models.entities.get(
+      { sharedId: { $in: hubOtherConnections.map(h => h.entity) } },
+      'template'
     );
-    const hubOtherTemplates = await models.templates.get({
+
+    const hubWhitelistedTemplateIds: Array<string> = hubOtherEntities
+      .map(h => (h.template || '').toString())
+      .filter(id => this.templatesConfigKeys.includes(id));
+
+    const hubOtherTemplates: Array<TemplateSchema> = await models.templates.get({
       _id: { $in: hubWhitelistedTemplateIds },
     });
 
     const belongsToWhitelistedType = this.relationtypesConfig.includes(
       data.template ? data.template.toString() : null
     );
+
     const isPossibleLeftMetadataRel = templateHasValidRelationProperties && !data.template;
     const isPossibleRightMetadataRel = this.isPossibleRightMetadataRel(
       data,
@@ -185,7 +222,7 @@ class ProcessNamespaces {
       return { skip: true };
     }
 
-    const { templateData, templateConfig } = await this.getTemplateDataAndConfig(data);
+    const { templateData, templateConfig } = await this.getTemplateDataAndConfig(data.template);
 
     if (templateConfig.filter) {
       // eslint-disable-next-line no-new-func
@@ -212,7 +249,7 @@ class ProcessNamespaces {
     const templateData = await models.templates.getById(entityTemplate);
     const templateConfigProps = this.templatesConfig[templateData._id.toString()].properties;
     const templateHasValidRelationProperties = templateData.properties.reduce(
-      (hasValid: Boolean, p: any) => {
+      (hasValid: boolean, p: any) => {
         const isValid = p.type === 'relationship' && templateConfigProps.includes(p._id.toString());
         return isValid || hasValid;
       },

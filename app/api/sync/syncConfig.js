@@ -11,7 +11,7 @@ const sanitizeConfig = async config =>
 
       sanitized.templates = Object.keys(config.templates).reduce((templates, templateId) => {
         if (templatesData.find(t => t._id.toString() === templateId)) {
-          const templateConfig = config.templates[templateId];
+          const templateConfig = config.templates[templateId] || { properties: [] };
           const isArray = Array.isArray(templateConfig);
           const configObject = isArray ? { properties: templateConfig } : templateConfig;
           return { ...templates, [templateId]: configObject };
