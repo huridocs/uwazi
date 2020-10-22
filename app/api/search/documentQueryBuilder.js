@@ -86,13 +86,13 @@ export default function() {
       term,
       fieldsToSearch = ['title', 'fullText'],
       number_of_fragments = 1,
-      searchTextType = 'query_string',
-      type = 'fvh',
-      fragment_size = 300
+      searchTextType = 'query_string'
     ) {
       if (!term) {
         return this;
       }
+      const type = 'fvh';
+      const fragment_size = 300;
       const should = [];
       const includeFullText = fieldsToSearch.includes('fullText');
       const fields = fieldsToSearch.filter(field => field !== 'fullText');
