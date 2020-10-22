@@ -1,4 +1,4 @@
-// eslint-disable max-lines
+/* eslint-disable max-lines */
 
 import db from 'api/utils/testing_db';
 
@@ -87,6 +87,11 @@ export default {
   syncs: [
     {
       lastSync: 8999,
+      name: 'slave1',
+    },
+    {
+      lastSync: 1000,
+      name: 'slave3',
     },
   ],
 
@@ -756,11 +761,26 @@ export default {
     {
       _id: settingsId,
       languages: [{ key: 'es', default: true }],
-      sync: {
-        url: 'url',
-        active: true,
-        config: {},
-      },
+      sync: [
+        {
+          url: 'url1',
+          name: 'slave1',
+          active: true,
+          config: {},
+        },
+        {
+          url: 'url2',
+          name: 'slave2',
+          active: false,
+          config: {},
+        },
+        {
+          url: 'url3',
+          name: 'slave3',
+          active: true,
+          config: {},
+        },
+      ],
     },
   ],
 

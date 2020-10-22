@@ -15,11 +15,14 @@ const timeout = async interval =>
     setTimeout(resolve, interval);
   });
 
+const updateSyncs = async (name, lastSync) =>
+  syncsModel._updateMany({ name }, { $set: { lastSync } });
+
 export default {
   stopped: false,
 
-  async syncronize({ url, config: _config }) {
-    const config = await syncConfig(_config);
+  async syncronize({ url, name, config: _config }) {
+    const config = await syncConfig(_config, name);
 
     const { lastSync } = config;
 
@@ -29,12 +32,15 @@ export default {
       await prev;
 
       if (change.deleted) {
-        return synchronizer.syncData(url, 'delete', change, { _id: change.mongoId });
+        await synchronizer.syncData({ url, change, data: { _id: change.mongoId } }, 'delete');
+        return updateSyncs(name, change.timestamp);
       }
 
       const data = await config.shouldSync(change);
+
       if (data) {
-        return synchronizer.syncData(url, 'post', change, data, lastSync);
+        await synchronizer.syncData({ url, change, data }, 'post', lastSync);
+        return updateSyncs(name, change.timestamp);
       }
 
       return Promise.resolve();
@@ -69,12 +75,19 @@ export default {
 
   async start(interval) {
     const { sync } = await settings.get({}, { sync: 1 });
-    if (sync && sync.active) {
-      const syncs = await syncsModel.find();
-      if (syncs.length === 0) {
-        await syncsModel.create({ lastSync: 0 });
-      }
-      this.intervalSync(sync, interval);
+    if (sync) {
+      const syncArray = Array.isArray(sync) ? sync : [sync];
+      await syncArray.reduce(async (prev, targetConfig) => {
+        await prev;
+        if (targetConfig.active) {
+          const syncs = await syncsModel.find({ name: targetConfig.name });
+          if (syncs.length === 0) {
+            await syncsModel.create({ lastSync: 0, name: targetConfig.name });
+          }
+          this.intervalSync(targetConfig, interval);
+        }
+        return Promise.resolve();
+      }, Promise.resolve());
     }
   },
 
