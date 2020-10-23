@@ -55,7 +55,7 @@ export default class Map extends Component {
     this.replaceKeysMapStyleJson();
 
     this.setSize();
-    const map = this.map.getMap();
+    const map = this.map && this.map.getMap();
     if (map) {
       map.on('load', () => this.centerOnMarkers(this.props.markers));
       map.on('moveend', e => {
@@ -136,8 +136,8 @@ export default class Map extends Component {
   setSize() {
     const { viewport } = this.state;
     const { width, height } = this.props;
-    viewport.width = width || this.container.offsetWidth;
-    viewport.height = height || this.container.offsetHeight;
+    viewport.width = width || (this.container && this.container.offsetWidth);
+    viewport.height = height || (this.container && this.container.offsetHeight);
     this.setState({ viewport });
   }
 
