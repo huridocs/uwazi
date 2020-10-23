@@ -506,25 +506,6 @@ const processGeolocationResults = (_results, templatesInheritedProperties, inher
   return results;
 };
 
-const escapeCharByRegex = (query, regex, char) => {
-  let escaped = query;
-
-  regex.lastIndex = 0;
-  let result = regex.exec(escaped);
-  while (result) {
-    const firstPart = escaped.substr(0, result.index);
-    const charCount = result[1] ? 2 : 1;
-    const secondPart = escaped.substr(result.index + charCount, query.length);
-    const replacement = `${charCount === 2 ? result[1] : ''}\\${char}`;
-
-    escaped = firstPart + replacement + secondPart;
-    regex.lastIndex = 0;
-    result = regex.exec(escaped);
-  }
-
-  return escaped;
-};
-
 const _getTextFields = (query, templates) =>
   query.fields ||
   propertiesHelper
