@@ -525,33 +525,6 @@ const escapeCharByRegex = (query, regex, char) => {
   return escaped;
 };
 
-const checkCharParity = (query, regex) => {
-  const indices = [];
-
-  regex.lastIndex = 0;
-  let result = regex.exec(query);
-  while (result) {
-    indices.push(result.index);
-    result = regex.exec(query);
-  }
-
-  return !(indices.length % 2 === 1);
-};
-
-const escapeElasticSearchQueryString = query => {
-  const charsRegex = {
-    '"': /([^\\])"|^"/g,
-    '/': /([^\\])\/|^\//g,
-  };
-
-  return Object.keys(charsRegex).reduce((escaped, char) => {
-    if (!checkCharParity(escaped, charsRegex[char])) {
-      return escapeCharByRegex(escaped, charsRegex[char], char);
-    }
-    return escaped;
-  }, query);
-};
-
 const _getTextFields = (query, templates) =>
   query.fields ||
   propertiesHelper
@@ -573,12 +546,11 @@ async function searchTypeFromSearchTermValidity(searchTerm) {
 const buildQuery = async (query, language, user, resources) => {
   const [templates, dictionaries, _translations] = resources;
   const textFieldsToSearch = _getTextFields(query, templates);
-  const elasticSearchTerm = query.searchTerm && escapeElasticSearchQueryString(query.searchTerm);
-  const searchTextType = elasticSearchTerm
+  const searchTextType = query.searchTerm
     ? await searchTypeFromSearchTermValidity(query.searchTerm)
     : 'query_string';
   const queryBuilder = documentQueryBuilder()
-    .fullTextSearch(elasticSearchTerm, textFieldsToSearch, 2, searchTextType)
+    .fullTextSearch(query.searchTerm, textFieldsToSearch, 2, searchTextType)
     .filterByTemplate(query.types)
     .filterById(query.ids)
     .language(language);
@@ -683,8 +655,7 @@ const instanceSearch = elasticIndex => ({
   async searchSnippets(searchTerm, sharedId, language) {
     const templates = await templatesModel.get();
 
-    const elasticSearchTerm = searchTerm && escapeElasticSearchQueryString(searchTerm);
-    const searchTextType = elasticSearchTerm
+    const searchTextType = searchTerm
       ? await searchTypeFromSearchTermValidity(searchTerm)
       : 'query_string';
     const searchFields = propertiesHelper
@@ -692,7 +663,7 @@ const instanceSearch = elasticIndex => ({
       .map(prop => `metadata.${prop.name}.value`)
       .concat(['title', 'fullText']);
     const query = documentQueryBuilder()
-      .fullTextSearch(elasticSearchTerm, searchFields, 9999, searchTextType)
+      .fullTextSearch(searchTerm, searchFields, 9999, searchTextType)
       .includeUnpublished()
       .filterById(sharedId)
       .language(language)
