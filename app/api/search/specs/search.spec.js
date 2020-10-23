@@ -822,4 +822,12 @@ describe('search', () => {
       fail('should not throw an exception', e.message);
     }
   });
+
+  it('should search a empty search term when the asked term is the * character', async () => {
+    try {
+      await search.search({ searchTerm: '*' }, 'es');
+    } catch (e) {
+      fail('should not throw an exception', e.message);
+    }
+  });
 });
