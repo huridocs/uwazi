@@ -75,6 +75,7 @@ describe('map helper', () => {
               inheritProperty: 't4p2',
             },
           ],
+          color: 'red',
         },
         {
           _id: 't2',
@@ -86,10 +87,12 @@ describe('map helper', () => {
               label: 'anotherGeoPropertyLabel',
             },
           ],
+          color: 'blue',
         },
         {
           _id: 't3',
           properties: [{ type: 'notGeolocation', name: 'notGeo' }],
+          color: 'green',
         },
         {
           _id: 't4',
@@ -109,6 +112,7 @@ describe('map helper', () => {
               label: 't4GeoPropertyLabel',
             },
           ],
+          color: 'yellow',
         },
       ]);
 
