@@ -122,8 +122,8 @@ const getInheritedMarkers = (template, entity, templates, color) => {
 
 const getEntityMarkers = (entity, templates) => {
   const template = templates.find(_t => _t.get('_id') === entity.get('template'));
-  const color = templates.indexOf(template);
   const templateJS = template.toJS();
+  const { color } = templateJS;
   const entityJS = entity.toJS();
 
   const propertyBasedMarkers = getPropertyBasedMarkers(templateJS, entityJS, color);

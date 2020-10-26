@@ -7,7 +7,7 @@ Array [
     "latitude": 7,
     "longitude": 13,
     "properties": Object {
-      "color": 0,
+      "color": "red",
       "entity": Object {
         "metadata": Object {
           "geoProperty": Array [
@@ -97,7 +97,7 @@ Array [
     "latitude": 13,
     "longitude": 7,
     "properties": Object {
-      "color": 0,
+      "color": "red",
       "entity": Object {
         "metadata": Object {
           "geoProperty": Array [
@@ -187,7 +187,7 @@ Array [
     "latitude": 5,
     "longitude": 13,
     "properties": Object {
-      "color": 0,
+      "color": "red",
       "entity": Object {
         "metadata": Object {
           "geoProperty": Array [
@@ -277,7 +277,7 @@ Array [
     "latitude": 23,
     "longitude": 1946,
     "properties": Object {
-      "color": 0,
+      "color": "red",
       "context": "t2",
       "entity": Object {
         "metadata": Object {
@@ -370,7 +370,7 @@ Array [
     "latitude": 2018,
     "longitude": 6,
     "properties": Object {
-      "color": 0,
+      "color": "red",
       "context": "t2",
       "entity": Object {
         "metadata": Object {
@@ -463,7 +463,7 @@ Array [
     "latitude": 1977,
     "longitude": 1982,
     "properties": Object {
-      "color": 0,
+      "color": "red",
       "context": "t2",
       "entity": Object {
         "metadata": Object {
@@ -556,7 +556,7 @@ Array [
     "latitude": 23,
     "longitude": 1946,
     "properties": Object {
-      "color": 0,
+      "color": "red",
       "context": "t4",
       "entity": Object {
         "metadata": Object {
@@ -649,7 +649,7 @@ Array [
     "latitude": 5,
     "longitude": 22,
     "properties": Object {
-      "color": 0,
+      "color": "red",
       "entity": Object {
         "metadata": Object {
           "geoProperty": Array [
@@ -676,7 +676,7 @@ Array [
     "latitude": 2018,
     "longitude": 6,
     "properties": Object {
-      "color": 1,
+      "color": "blue",
       "entity": Object {
         "metadata": Object {
           "anotherGeoProperty": Array [
@@ -700,7 +700,7 @@ Array [
     "latitude": 23,
     "longitude": 1946,
     "properties": Object {
-      "color": 1,
+      "color": "blue",
       "entity": Object {
         "metadata": Object {
           "anotherGeoProperty": Array [
@@ -723,7 +723,7 @@ Array [
     "latitude": 13,
     "longitude": 7,
     "properties": Object {
-      "color": 3,
+      "color": "yellow",
       "context": "t1",
       "entity": Object {
         "metadata": Object {
@@ -760,7 +760,7 @@ Array [
     "latitude": 7,
     "longitude": 13,
     "properties": Object {
-      "color": 0,
+      "color": "red",
       "entity": Object {
         "metadata": Object {
           "geoProperty": Array [
@@ -803,7 +803,7 @@ Array [
     "latitude": 13,
     "longitude": 7,
     "properties": Object {
-      "color": 0,
+      "color": "red",
       "entity": Object {
         "metadata": Object {
           "geoProperty": Array [
@@ -846,7 +846,7 @@ Array [
     "latitude": 5,
     "longitude": 13,
     "properties": Object {
-      "color": 0,
+      "color": "red",
       "entity": Object {
         "metadata": Object {
           "geoProperty": Array [
@@ -889,7 +889,7 @@ Array [
     "latitude": 5,
     "longitude": 22,
     "properties": Object {
-      "color": 0,
+      "color": "red",
       "entity": Object {
         "metadata": Object {
           "geoProperty": Array [
@@ -916,7 +916,7 @@ Array [
     "latitude": 2018,
     "longitude": 6,
     "properties": Object {
-      "color": 1,
+      "color": "blue",
       "entity": Object {
         "metadata": Object {
           "anotherGeoProperty": Array [

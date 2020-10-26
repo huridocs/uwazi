@@ -5,8 +5,6 @@ import urljoin from 'url-join';
 import request from 'shared/JSONRequest';
 import { uploadsPath } from 'api/files';
 
-import syncsModel from './syncsModel';
-
 const oneSecond = 1000;
 const readFile = util.promisify(fs.readFile);
 
@@ -29,13 +27,12 @@ const syncAttachments = async (url, data, lastSync) => {
 };
 
 const syncronizer = {
-  async syncData(url, action, change, data, lastSync) {
+  async syncData({ url, change, data }, action, lastSync) {
     await request[action](urljoin(url, 'api/sync'), { namespace: change.namespace, data });
     await syncAttachments(url, data, lastSync);
     if (change.namespace === 'files' && data.filename) {
       await uploadFile(url, data.filename);
     }
-    return syncsModel._updateMany({}, { $set: { lastSync: change.timestamp } });
   },
 };
 

@@ -1,4 +1,5 @@
 import React from 'react';
+import { t } from 'app/I18N';
 import colorScheme from './colorScheme';
 
 const compareStrings = (a, b) => a.label.toLowerCase().localeCompare(b.label.toLowerCase());
@@ -107,7 +108,7 @@ const formatDataForChart = (data, _property, formatOptions) => {
 
       return {
         id: item.key,
-        label: labelsMap[item.label] || item.label,
+        label: labelsMap[item.label] || t(formatOptions.context, item.label, null, false),
         results: item.filtered.doc_count,
       };
     })
