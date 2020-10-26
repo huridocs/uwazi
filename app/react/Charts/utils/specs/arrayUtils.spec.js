@@ -1,10 +1,17 @@
 /* eslint-disable max-statements */
 import React from 'react';
 import Immutable from 'immutable';
+import { t } from 'app/I18N';
 import colorScheme from '../colorScheme';
 import arrayUtils from '../arrayUtils';
 
 const { sortValues, formatPayload, formatDataForChart } = arrayUtils;
+
+jest.mock('app/I18N', () => ({
+  __esModule: true,
+  t: jest.fn(),
+  default: jest.fn(),
+}));
 
 describe('Array Utils', () => {
   describe('sortValues', () => {
@@ -50,6 +57,8 @@ describe('Array Utils', () => {
     let options;
 
     beforeEach(() => {
+      t.mockImplementation((_context, label) => label);
+
       data = Immutable.fromJS([
         { key: 'id1', label: 'Val 1', doc_count: 10, filtered: { doc_count: 3 } },
         { key: 'id3', label: 'Val 3', doc_count: 5, filtered: { doc_count: 4 } },
@@ -112,6 +121,14 @@ describe('Array Utils', () => {
     it('should allow mapping the labels to other values', () => {
       options.labelsMap = { 'Val 2': 'V2', 'Val 3': 'V3' };
       expectResults([{ id2: ['V2', 5] }, { id3: ['V3', 4] }, { id1: ['Val 1', 3] }]);
+    });
+
+    it('should translate the labels of the context', () => {
+      t.mockImplementation(() => 'translated Label');
+      const results = formatDataForChart(data, property, options);
+      expect(t).toHaveBeenCalledWith('contextId', 'Val 1', null, false);
+      const translatedLabels = results.filter(res => res.label === 'translated Label');
+      expect(translatedLabels.length).toBe(3);
     });
   });
 });
