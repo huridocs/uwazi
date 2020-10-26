@@ -83,15 +83,14 @@ export default function() {
     },
 
     fullTextSearch( // eslint-disable-line max-params
-      searchTerm,
+      term,
       fieldsToSearch = ['title', 'fullText'],
       number_of_fragments = 1,
       searchTextType = 'query_string'
     ) {
-      if (!searchTerm) {
+      if (!term || term === '*') {
         return this;
       }
-      const term = searchTerm !== '*' ? searchTerm : '';
       const type = 'fvh';
       const fragment_size = 300;
       const should = [];
