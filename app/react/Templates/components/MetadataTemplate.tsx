@@ -82,7 +82,8 @@ export class MetadataTemplate extends Component<MetadataTemplateProps> {
           return this.props.saveTemplate(template);
         },
         title: 'Template conflict',
-        message: `The field or fields [${fields}] has been previously used for a different type of data, in order to reuse those names, all your collection must be reindexed. This process may take several minutes, do you want to continue? `,
+        message: `The field or fields [${fields}] has been previously used for a different type of data,
+         in order to reuse those names, all your collection must be reindexed. This process may take several minutes, do you want to continue? `,
       });
       return;
     }
