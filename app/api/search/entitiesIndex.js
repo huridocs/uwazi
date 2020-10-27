@@ -178,6 +178,10 @@ const reindexAll = async (tmpls, searchInstance, elasticIndex) => {
 };
 
 const equalPropMapping = (mapA, mapB) => {
+  if (!mapA || !mapB) {
+    return true;
+  }
+
   const sameAmountOfProps =
     Object.keys(mapA.properties).length === Object.keys(mapB.properties).length;
   const sameProps = Object.keys(mapA.properties).reduce(
@@ -194,6 +198,7 @@ const checkMapping = async (template, elasticIndex) => {
   const mappedProps = currentMapping.body[elasticIndex].mappings.properties.metadata.properties;
   const newMappedProps = mapping.properties.metadata.properties;
   Object.keys(newMappedProps).forEach(key => {
+    console.log(key);
     if (!equalPropMapping(mappedProps[key], newMappedProps[key])) {
       errors.push({ name: template.properties.find(p => p.name === key).label });
     }
