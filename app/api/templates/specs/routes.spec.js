@@ -126,8 +126,9 @@ describe('templates routes', () => {
     });
 
     it('should update the templates mapping', async () => {
+      const template = { name: 'created_template', properties: [{ label: 'fieldLabel' }] };
       const req = {
-        body: { name: 'created_template', properties: [{ label: 'fieldLabel' }] },
+        body: template,
         language: 'en',
         io: mocketSocketIo(),
       };
@@ -139,7 +140,7 @@ describe('templates routes', () => {
       );
 
       await routes.post('/api/templates', req);
-      expect(entitiesIndex.updateMapping).toHaveBeenCalledWith(aTemplate, 'index');
+      expect(entitiesIndex.updateMapping).toHaveBeenCalledWith([template], 'index');
     });
 
     describe('when there is an error', () => {
@@ -147,7 +148,7 @@ describe('templates routes', () => {
         spyOn(templates, 'save').and.returnValue(Promise.reject(new Error('error')));
 
         try {
-          await routes.post('/api/templates');
+          await routes.post('/api/templates', { body: {} });
         } catch (error) {
           expect(error).toEqual(new Error('error'));
         }
@@ -202,9 +203,9 @@ describe('templates routes', () => {
 
   describe('/api/templates/check_mapping', () => {
     it('should check if a template is valid vs the current elasticsearch mapping', done => {
-      const req = { query: { _id: 'abc1', properties: [] }, io: mocketSocketIo() };
+      const req = { body: { _id: 'abc1', properties: [] }, io: mocketSocketIo() };
       routes
-        .get('/api/templates/check_mapping', req)
+        .post('/api/templates/check_mapping', req)
         .then(result => {
           expect(result).toEqual({ errors: [], valid: true });
           done();

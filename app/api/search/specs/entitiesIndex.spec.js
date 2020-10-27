@@ -4,7 +4,7 @@ import errorLog from 'api/log/errorLog';
 import { instanceSearch } from '../search';
 import { fixtures as fixturesForIndexErrors } from './fixtures_elastic_errors';
 import elastic from '../elastic';
-import { checkMapping, updateMapping } from '../entitiesIndex';
+import { checkMapping, updateMapping, reindexAll } from '../entitiesIndex';
 
 const forceIndexingOfNumberBasedProperty = async search => {
   await search.indexEntities({ title: 'Entity with index Problems 1' }, '', 1);
@@ -16,7 +16,14 @@ describe('entitiesIndex', () => {
   const elasticTesting = instanceElasticTesting(elasticIndex, search);
 
   beforeEach(async () => {
-    await db.clearAllAndLoad({});
+    await db.clearAllAndLoad({
+      entities: [
+        {
+          title: 'test',
+          metadata: {},
+        },
+      ],
+    });
     await elasticTesting.resetIndex();
   });
 
@@ -108,25 +115,51 @@ describe('entitiesIndex', () => {
         _id: '123',
         name: 'template A',
         properties: [
-          { name: 'name', type: 'text' },
-          { name: 'dob', type: 'date' },
-          { name: 'country', type: 'select' },
+          { name: 'name', type: 'text', label: 'Name' },
+          { name: 'dob', type: 'date', label: 'Date of birth' },
+          { name: 'country', type: 'select', label: 'Country' },
         ],
       };
 
       const templateB = {
         _id: '456',
         name: 'template B',
-        properties: [{ name: 'name', type: 'text' }],
+        properties: [{ name: 'dob', type: 'date', label: 'Date of birth' }],
       };
 
       await updateMapping([templateA], elasticIndex);
       let response = await checkMapping(templateB, elasticIndex);
       expect(response).toEqual({ errors: [], valid: true });
 
-      templateB.properties[0].type = 'numeric';
+      templateB.properties[0].type = 'text';
       response = await checkMapping(templateB, elasticIndex);
-      expect(response).toEqual({ errors: [{ name: 'name' }], valid: false });
+      expect(response).toEqual({ errors: [{ name: 'Date of birth' }], valid: false });
+    });
+  });
+
+  describe('reindexAll', () => {
+    it('should delete a field from the mapping', async () => {
+      const templateA = {
+        _id: '123',
+        name: 'template A',
+        properties: [
+          { name: 'name', type: 'text' },
+          { name: 'dob', type: 'date' },
+          { name: 'country', type: 'select' },
+        ],
+      };
+
+      await updateMapping([templateA], elasticIndex);
+      templateA.properties = [
+        { name: 'name', type: 'text' },
+        { name: 'country', type: 'select' },
+      ];
+      await reindexAll([templateA], search, elasticIndex);
+      const mapping = await elastic.indices.getMapping({ index: elasticIndex });
+
+      expect(
+        mapping.body[elasticIndex].mappings.properties.metadata.properties.dob
+      ).toBeUndefined();
     });
   });
 });

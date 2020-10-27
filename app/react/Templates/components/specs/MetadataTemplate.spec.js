@@ -10,6 +10,7 @@ import Immutable from 'immutable';
 import { shallow } from 'enzyme';
 import { modelReducer, formReducer, Field, Control } from 'react-redux-form';
 import { combineReducers, createStore } from 'redux';
+import api from 'app/Templates/TemplatesAPI';
 
 import {
   MetadataTemplate,
@@ -173,10 +174,11 @@ describe('MetadataTemplate', () => {
   });
 
   describe('onSubmit', () => {
-    it('should thrim the properties labels and then call props.saveTemplate', () => {
+    it('should thrim the properties labels and then call props.saveTemplate', async () => {
+      spyOn(api, 'validateMapping').and.returnValue({ errors: [], valid: true });
       const component = shallow(<MetadataTemplate {...props} />);
       const template = { properties: [{ label: ' trim me please ' }] };
-      component.instance().onSubmit(template);
+      await component.instance().onSubmit(template);
       expect(props.saveTemplate).toHaveBeenCalledWith({
         properties: [{ label: 'trim me please' }],
       });
