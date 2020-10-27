@@ -98,17 +98,20 @@ describe('MetadataTemplate', () => {
     return result;
   }
 
-  const props = {
-    backUrl: '',
-    _id: '123',
-    commonProperties: [],
-    properties: [],
-    connectDropTarget: x => x,
-    formState: { fields: {} },
-    templates: Immutable.fromJS([]),
-    saveTemplate: jasmine.createSpy('saveTemplate'),
-    defaultColor: '#112233',
-  };
+  let props;
+  beforeEach(() => {
+    props = {
+      backUrl: '',
+      _id: '123',
+      commonProperties: [],
+      properties: [],
+      connectDropTarget: x => x,
+      formState: { fields: {} },
+      templates: Immutable.fromJS([]),
+      saveTemplate: jasmine.createSpy('saveTemplate'),
+      defaultColor: '#112233',
+    };
+  });
 
   describe('render()', () => {
     it('should disable send button when saving the template', () => {
@@ -181,6 +184,25 @@ describe('MetadataTemplate', () => {
       await component.instance().onSubmit(template);
       expect(props.saveTemplate).toHaveBeenCalledWith({
         properties: [{ label: 'trim me please' }],
+      });
+    });
+
+    describe('when the mapping has con flicts', () => {
+      it('should ask for a reindex', async () => {
+        spyOn(api, 'validateMapping').and.returnValue({
+          errors: [{ name: 'Date of birth' }],
+          valid: false,
+        });
+        const context = { confirm: jasmine.createSpy('confirm') };
+
+        const component = shallow(<MetadataTemplate {...props} />, { context });
+        const template = { properties: [{ name: 'dob', type: 'date', label: 'Date of birth' }] };
+        await component.instance().onSubmit(template);
+        context.confirm.calls.mostRecent().args[0].accept();
+        expect(props.saveTemplate).toHaveBeenCalledWith({
+          properties: [{ name: 'dob', type: 'date', label: 'Date of birth' }],
+          reindex: true,
+        });
       });
     });
   });
