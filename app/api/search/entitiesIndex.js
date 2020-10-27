@@ -173,7 +173,6 @@ const reindexAll = async (tmpls, searchInstance, elasticIndex) => {
 
     return indexEntities({ query: {}, elasticIndex, searchInstance });
   } catch (e) {
-    console.log(e);
     throw createError(e, 400);
   }
 };
