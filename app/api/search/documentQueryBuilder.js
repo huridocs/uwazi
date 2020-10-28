@@ -88,7 +88,7 @@ export default function() {
       number_of_fragments = 1,
       searchTextType = 'query_string'
     ) {
-      if (!term || term === '*') {
+      if (!term) {
         return this;
       }
       const type = 'fvh';

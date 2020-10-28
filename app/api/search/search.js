@@ -104,10 +104,12 @@ function metadataSnippetsFromSearchHit(hit) {
 }
 
 function fullTextSnippetsFromSearchHit(hit) {
-  if (hit.inner_hits && hit.inner_hits.fullText.hits.hits.length) {
+  const hits =
+    hit.inner_hits && hit.inner_hits.fullText.hits.hits ? hit.inner_hits.fullText.hits.hits : [];
+  if (hits.length && hits[0].highlight) {
     const regex = /\[\[(\d+)\]\]/g;
 
-    const fullTextHighlights = hit.inner_hits.fullText.hits.hits[0].highlight;
+    const fullTextHighlights = hits[0].highlight;
     const fullTextLanguageKey = Object.keys(fullTextHighlights)[0];
     const fullTextSnippets = fullTextHighlights[fullTextLanguageKey].map(snippet => {
       const matches = regex.exec(snippet);
