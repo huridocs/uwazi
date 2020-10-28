@@ -3,7 +3,7 @@ import date from 'api/utils/date';
 
 import propertiesHelper from 'shared/comonProperties';
 
-import translate, { getLocaleTranslation, getContext } from 'shared/translate';
+import translate, { getContext, getLocaleTranslation } from 'shared/translate';
 import translations from 'api/i18n/translations';
 import { tenants } from 'api/tenants/tenantContext';
 
@@ -103,22 +103,31 @@ function metadataSnippetsFromSearchHit(hit) {
   return defaultSnippets;
 }
 
-function fullTextSnippetsFromSearchHit(hit) {
-  const hits =
-    hit.inner_hits && hit.inner_hits.fullText.hits.hits ? hit.inner_hits.fullText.hits.hits : [];
-  if (hits.length && hits[0].highlight) {
+function getSnippets() {
+  return snippet => {
     const regex = /\[\[(\d+)\]\]/g;
+    const matches = regex.exec(snippet);
+    return {
+      text: snippet.replace(regex, ''),
+      page: matches ? Number(matches[1]) : 0,
+    };
+  };
+}
 
+function getHits(hit) {
+  return hit.inner_hits &&
+    hit.inner_hits.fullText.hits.hits &&
+    hit.inner_hits.fullText.hits.hits.length > 0 &&
+    hit.inner_hits.fullText.hits.hits[0].highlight
+    ? hit.inner_hits.fullText.hits.hits
+    : undefined;
+}
+function fullTextSnippetsFromSearchHit(hit) {
+  const hits = getHits(hit);
+  if (hits) {
     const fullTextHighlights = hits[0].highlight;
     const fullTextLanguageKey = Object.keys(fullTextHighlights)[0];
-    const fullTextSnippets = fullTextHighlights[fullTextLanguageKey].map(snippet => {
-      const matches = regex.exec(snippet);
-      return {
-        text: snippet.replace(regex, ''),
-        page: matches ? Number(matches[1]) : 0,
-      };
-    });
-    return fullTextSnippets;
+    return fullTextHighlights[fullTextLanguageKey].map(getSnippets());
   }
   return [];
 }
