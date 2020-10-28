@@ -12,6 +12,21 @@ import { showSemanticSearch } from 'app/SemanticSearch/actions/actions';
 import { FeatureToggleSemanticSearch } from 'app/SemanticSearch/components/FeatureToggleSemanticSearch';
 import { Icon } from 'UI';
 
+const defaultLibraryOptionsToInfo = {
+  cards: {
+    url: 'library',
+    icon: 'th',
+  },
+  table: {
+    url: 'library/table',
+    icon: 'align-justify',
+  },
+  map: {
+    url: 'library/map',
+    icon: 'map-marker',
+  },
+};
+
 export class Menu extends Component {
   libraryUrl() {
     const { location, librarySearch, libraryFilters, defaultLibraryView } = this.props;
@@ -19,13 +34,7 @@ export class Menu extends Component {
     const params = processFilters(librarySearch, libraryFilters.toJS());
     params.searchTerm = searchTerm;
 
-    const optionToURL = {
-      cards: 'library',
-      table: 'library/table',
-      map: 'library/map',
-    };
-
-    return `/${optionToURL[defaultLibraryView]}/${encodeSearch(params)}`;
+    return `/${defaultLibraryOptionsToInfo[defaultLibraryView].url}/${encodeSearch(params)}`;
   }
 
   uploadsUrl() {
@@ -34,7 +43,7 @@ export class Menu extends Component {
   }
 
   render() {
-    const { links } = this.props;
+    const { links, defaultLibraryView } = this.props;
     const user = this.props.user.toJS();
 
     const navLinks = links.map(link => {
@@ -84,7 +93,7 @@ export class Menu extends Component {
                 className="menuNav-btn btn btn-default"
                 aria-label={t('System', 'Public documents', null, false)}
               >
-                <Icon icon="th" />
+                <Icon icon={defaultLibraryOptionsToInfo[defaultLibraryView].icon} />
                 <span className="tab-link-tooltip">{t('System', 'Public documents')}</span>
               </I18NLink>
             </li>
