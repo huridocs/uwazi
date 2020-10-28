@@ -30,6 +30,13 @@ export class CollectionSettings extends Component {
     ];
   }
 
+  static faviconOptions() {
+    return [
+      { label: "Uwazi's icon", value: false },
+      { label: 'Custom icon', value: true },
+    ];
+  }
+
   static dateFormatOptions(separator) {
     return [
       { label: 'Year, Month, Day', value: 0, separator },
@@ -85,6 +92,7 @@ export class CollectionSettings extends Component {
       props.settings.dateFormat && props.settings.dateFormat.includes('/') ? '/' : '-';
     const dateFormat = CollectionSettings.getDateFormatValue(settings.dateFormat, dateSeparator);
     const customLandingpage = Boolean(props.settings.home_page);
+    const customFavicon = Boolean(props.settings.favicon);
     const allowedPublicTemplatesString = settings.allowedPublicTemplates
       ? settings.allowedPublicTemplates.join(',')
       : '';
@@ -92,6 +100,7 @@ export class CollectionSettings extends Component {
       ...settings,
       dateSeparator,
       customLandingpage,
+      customFavicon,
       dateFormat,
       allowedPublicTemplatesString,
     };
@@ -103,6 +112,7 @@ export class CollectionSettings extends Component {
     delete settings.customLandingpage;
     delete settings.dateSeparator;
     delete settings.allowedPublicTemplatesString;
+    delete settings.customFavicon;
 
     settings.dateFormat = CollectionSettings.getDateFormatDatePicker(
       values.dateFormat,
@@ -111,6 +121,10 @@ export class CollectionSettings extends Component {
 
     if (!values.customLandingpage) {
       settings.home_page = '';
+    }
+
+    if (!values.customFavicon) {
+      settings.favicon = '';
     }
 
     settings.allowedPublicTemplates = values.allowedPublicTemplatesString
@@ -126,7 +140,7 @@ export class CollectionSettings extends Component {
 
   render() {
     const hostname = isClient ? window.location.origin : '';
-    const { dateSeparator, customLandingpage } = this.state;
+    const { dateSeparator, customLandingpage, customFavicon } = this.state;
     return (
       <div className="panel panel-default">
         <div className="panel-heading">
@@ -145,6 +159,40 @@ export class CollectionSettings extends Component {
               </label>
               <Control.text id="collection_name" model=".site_name" className="form-control" />
             </div>
+
+            <div className="form-group">
+              <span className="form-group-label">
+                <Translate>Favicon</Translate>
+              </span>
+              <RadioButtons options={CollectionSettings.faviconOptions()} model=".customFavicon" />
+              <div className="input-group">
+                <span disabled={!customFavicon} className="input-group-addon">
+                  {hostname}
+                </span>
+                <Control.text disabled={!customFavicon} model=".favicon" className="form-control" />
+              </div>
+            </div>
+            <div className="alert alert-info">
+              <Icon icon="star" size="2x" />
+              <div className="force-ltr">
+                The Favicon is the small icon that shows for your Uwazi instance in your browser's
+                tab when navigating and in your bookmarks.
+                <br />
+                <ul>
+                  <li>
+                    To use a custom Favicon upload it to custom uploads and include it's URL in the
+                    field above.
+                  </li>
+                  <li>
+                    Always use URLs relative to your site, starting with / and skipping the
+                    https://yoursite.com/.
+                  </li>
+                </ul>
+                <br />
+                You will need to reload the page after updating your Favicon.
+              </div>
+            </div>
+
             <div className="form-group">
               <span className="form-group-label">
                 <Translate>Private instance</Translate>
