@@ -14,10 +14,18 @@ import { Icon } from 'UI';
 
 export class Menu extends Component {
   libraryUrl() {
-    const { searchTerm } = this.props.location.query;
-    const params = processFilters(this.props.librarySearch, this.props.libraryFilters.toJS());
+    const { location, librarySearch, libraryFilters, defaultLibraryView } = this.props;
+    const { searchTerm } = location.query;
+    const params = processFilters(librarySearch, libraryFilters.toJS());
     params.searchTerm = searchTerm;
-    return `/library/${encodeSearch(params)}`;
+
+    const optionToURL = {
+      cards: 'library',
+      table: 'library/table',
+      map: 'library/map',
+    };
+
+    return `/${optionToURL[defaultLibraryView]}/${encodeSearch(params)}`;
   }
 
   uploadsUrl() {
@@ -134,6 +142,7 @@ export class Menu extends Component {
 
 Menu.defaultProps = {
   showSemanticSearch: () => {},
+  defaultLibraryView: 'cards',
 };
 
 Menu.propTypes = {
@@ -147,6 +156,7 @@ Menu.propTypes = {
   onClick: PropTypes.func,
   showSemanticSearch: PropTypes.func,
   links: PropTypes.object,
+  defaultLibraryView: PropTypes.string,
 };
 
 export function mapStateToProps({ user, settings, library, uploads }) {
@@ -158,6 +168,7 @@ export function mapStateToProps({ user, settings, library, uploads }) {
     uploadsFilters: uploads.filters,
     uploadsSelectedSorting: uploads.selectedSorting,
     links: settings.collection.get('links'),
+    defaultLibraryView: settings.collection.get('defaultLibraryView'),
   };
 }
 
