@@ -277,21 +277,6 @@ describe('thesauri', () => {
           })
         );
       });
-
-      describe('when the name of thesaurus is updated', () => {
-        it('should update the translations', async () => {
-          const data = { ...fixtures.dictionaries[1], name: 'new name' };
-          const response = await thesauri.save(data);
-          expect(translations.updateContext).toHaveBeenCalledWith(
-            response._id,
-            'new name',
-            { 'dictionary 2': 'new name' },
-            [],
-            { 'new name': 'new name', 'value 1': 'value 1', 'value 2': 'value 2' },
-            'Dictionary'
-          );
-        });
-      });
     });
 
     describe('validation', () => {
@@ -355,6 +340,23 @@ describe('thesauri', () => {
 
           expect(error).toBeDefined();
         });
+      });
+    });
+  });
+
+  describe('update', () => {
+    describe('when the name of thesaurus is updated', () => {
+      it('should update the translations', async () => {
+        const data = { ...fixtures.dictionaries[1], name: 'new name' };
+        const response = await thesauri.save(data);
+        data.values.push({ id: '1', label: 'value 1' });
+        await thesauri.save(data);
+        const allTranslations = await translations.get();
+        const context = allTranslations[0].contexts.find(c => c.id === response._id.toString());
+        const labels = Object.keys(context.values);
+        expect(labels.length).toBe(3);
+        expect(labels[0]).toBe('new name');
+        expect(labels[1]).toBe('value 1');
       });
     });
   });
