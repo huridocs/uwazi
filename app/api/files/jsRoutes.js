@@ -29,7 +29,7 @@ const routes = app => {
 
   app.post(
     '/api/public',
-    allowCors,
+    allowCors(),
     uploadMiddleware.multiple(),
     captchaAuthorization(),
     activitylogMiddleware,
