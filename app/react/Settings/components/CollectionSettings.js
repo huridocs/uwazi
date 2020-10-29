@@ -107,8 +107,22 @@ export class CollectionSettings extends Component {
     this.updateSettings = this.updateSettings.bind(this);
   }
 
+  static cleanEmptyValues(values) {
+    const settings = {};
+
+    if (!values.customLandingpage) {
+      settings.home_page = '';
+    }
+
+    if (!values.customFavicon) {
+      settings.favicon = '';
+    }
+
+    return settings;
+  }
+
   updateSettings(values) {
-    const settings = { ...values };
+    let settings = { ...values };
     delete settings.customLandingpage;
     delete settings.dateSeparator;
     delete settings.allowedPublicTemplatesString;
@@ -119,13 +133,7 @@ export class CollectionSettings extends Component {
       values.dateSeparator
     );
 
-    if (!values.customLandingpage) {
-      settings.home_page = '';
-    }
-
-    if (!values.customFavicon) {
-      settings.favicon = '';
-    }
+    settings = { ...settings, ...CollectionSettings.cleanEmptyValues(values) };
 
     settings.allowedPublicTemplates = values.allowedPublicTemplatesString
       ? values.allowedPublicTemplatesString.split(',')
@@ -175,21 +183,24 @@ export class CollectionSettings extends Component {
             <div className="alert alert-info">
               <Icon icon="star" size="2x" />
               <div className="force-ltr">
-                The Favicon is the small icon that shows for your Uwazi instance in your browser's
-                tab when navigating and in your bookmarks.
+                <Translate>
+                  Favicon is an icon that appears in the browser tab and bookmarks. If you want to
+                  change the Uwazi icon for your own
+                </Translate>
+                ,
                 <br />
                 <ul>
                   <li>
-                    To use a custom Favicon upload it to custom uploads and include it's URL in the
-                    field above.
+                    <Translate>upload it in Custom uploads and copy URL</Translate>
                   </li>
                   <li>
-                    Always use URLs relative to your site, starting with / and skipping the
-                    https://yoursite.com/.
+                    <Translate>
+                      choose &ldquo;custom icon&rdquo; and paste URL in the field above.
+                    </Translate>
                   </li>
                 </ul>
                 <br />
-                You will need to reload the page after updating your Favicon.
+                <Translate>You will need to reload the page after updating your Favicon.</Translate>
               </div>
             </div>
 
