@@ -93,7 +93,7 @@ export default {
     translationsSaveButton:
       '#app > div.content > div > div > div.settings-content > div > form > div.settings-footer > button',
     privateInstance:
-      '#app > div.content > div > div > div.settings-content > div > div.panel-body > form > div:nth-child(2) > div > label',
+      '#app > div.content > div > div > div.settings-content > div > div.panel-body > form > div:nth-child(4) > div > label',
     templatePropertiesList:
       '#app > div.content > div > div > div.settings-content > div > div > div.panel-body > div > main > div > form > ul',
   },
