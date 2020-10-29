@@ -10,7 +10,7 @@ import { uploadsPath, attachmentsPath, generateFileName } from 'api/files/filesy
 
 import activitylogMiddleware from 'api/activitylog/activitylogMiddleware';
 import { validation, createError } from '../utils';
-import captchaAuthorization from '../auth/captchaMiddleware';
+import { captchaAuthorization, allowCors } from '../auth';
 import { uploadMiddleware } from './uploadMiddleware';
 
 const storeFile = (pathFunction, file) =>
@@ -29,6 +29,7 @@ const routes = app => {
 
   app.post(
     '/api/public',
+    allowCors,
     uploadMiddleware.multiple(),
     captchaAuthorization(),
     activitylogMiddleware,
