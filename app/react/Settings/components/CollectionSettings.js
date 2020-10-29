@@ -85,6 +85,20 @@ export class CollectionSettings extends Component {
     );
   }
 
+  static cleanEmptyValues(values) {
+    const settings = {};
+
+    if (!values.customLandingpage) {
+      settings.home_page = '';
+    }
+
+    if (!values.customFavicon) {
+      settings.favicon = '';
+    }
+
+    return settings;
+  }
+
   constructor(props, context) {
     super(props, context);
     const { settings } = this.props;
@@ -105,20 +119,6 @@ export class CollectionSettings extends Component {
       allowedPublicTemplatesString,
     };
     this.updateSettings = this.updateSettings.bind(this);
-  }
-
-  static cleanEmptyValues(values) {
-    const settings = {};
-
-    if (!values.customLandingpage) {
-      settings.home_page = '';
-    }
-
-    if (!values.customFavicon) {
-      settings.favicon = '';
-    }
-
-    return settings;
   }
 
   updateSettings(values) {
