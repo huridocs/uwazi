@@ -349,14 +349,14 @@ describe('thesauri', () => {
       it('should update the translations', async () => {
         const data = { ...fixtures.dictionaries[1], name: 'new name' };
         const response = await thesauri.save(data);
-        data.values.push({ id: '1', label: 'value 1' });
+        data.values.push({ id: '3', label: 'value 3' });
         await thesauri.save(data);
         const allTranslations = await translations.get();
         const context = allTranslations[0].contexts.find(c => c.id === response._id.toString());
         const labels = Object.keys(context.values);
-        expect(labels.length).toBe(3);
+        expect(labels.length).toBe(4);
         expect(labels[0]).toBe('new name');
-        expect(labels[1]).toBe('value 1');
+        expect(labels[3]).toBe('value 3');
       });
     });
   });
