@@ -1,11 +1,11 @@
 /* eslint-disable max-statements, max-lines */
 
-import 'api/entities';
-import 'api/thesauri/dictionariesModel';
 import fs from 'fs';
+import backend from 'fetch-mock';
+
+import 'api/thesauri/dictionariesModel';
 import errorLog from 'api/log/errorLog';
 import 'api/relationships';
-import backend from 'fetch-mock';
 
 import db from 'api/utils/testing_db';
 import request from 'shared/JSONRequest';
@@ -439,7 +439,7 @@ describe('syncWorker', () => {
           filterConfig = { ...baseConfig, templates: { ...baseConfig.templates } };
           filterConfig.templates[template1.toString()] = {
             properties: baseConfig.templates[template1.toString()],
-            filter: 'return data.title === "another new entity";',
+            filter: { 'metadata.t1Property2': { $elemMatch: { value: 'another doc property 2' } } },
           };
         });
 
@@ -452,16 +452,6 @@ describe('syncWorker', () => {
           } = getCallsToIds('entities', [newDoc2]);
           expect(callsCount).toBe(1);
           expect(entity2Call).toBeDefined();
-        });
-
-        it('should fail on error', async () => {
-          filterConfig.templates[template1.toString()].filter =
-            'return missing === "missing variable";';
-          try {
-            await syncWorkerWithConfig(filterConfig);
-          } catch (err) {
-            expect(err.message).toContain('missing');
-          }
         });
       });
     });

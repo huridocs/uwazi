@@ -1,4 +1,5 @@
 /* eslint-disable max-lines */
+import sift from 'sift';
 import { models } from 'api/odm';
 import {
   SettingsSyncTemplateSchema,
@@ -225,9 +226,7 @@ class ProcessNamespaces {
     const { templateData, templateConfig } = await this.getTemplateDataAndConfig(data.template);
 
     if (templateConfig.filter) {
-      // eslint-disable-next-line no-new-func
-      const filterFunction = new Function('data', templateConfig.filter);
-      if (!filterFunction.call({}, JSON.parse(JSON.stringify(data)))) {
+      if (!sift(templateConfig.filter)(data)) {
         return { skip: true };
       }
     }
