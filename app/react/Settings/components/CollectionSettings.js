@@ -32,8 +32,8 @@ export class CollectionSettings extends Component {
 
   static faviconOptions() {
     return [
-      { label: "Uwazi's icon", value: false },
-      { label: 'Custom icon', value: true },
+      { label: "Uwazi's icon", value: 'uwaziIcon' },
+      { label: 'Custom icon', value: 'customIcon' },
     ];
   }
 
@@ -92,7 +92,7 @@ export class CollectionSettings extends Component {
       settings.home_page = '';
     }
 
-    if (!values.customFavicon) {
+    if (values.customFavicon !== 'customIcon') {
       settings.favicon = '';
     }
 
@@ -106,7 +106,7 @@ export class CollectionSettings extends Component {
       props.settings.dateFormat && props.settings.dateFormat.includes('/') ? '/' : '-';
     const dateFormat = CollectionSettings.getDateFormatValue(settings.dateFormat, dateSeparator);
     const customLandingpage = Boolean(props.settings.home_page);
-    const customFavicon = Boolean(props.settings.favicon);
+    const customFavicon = !settings.favicon || settings.favicon === '' ? 'uwaziIcon' : 'customIcon';
     const allowedPublicTemplatesString = settings.allowedPublicTemplates
       ? settings.allowedPublicTemplates.join(',')
       : '';
@@ -174,10 +174,14 @@ export class CollectionSettings extends Component {
               </span>
               <RadioButtons options={CollectionSettings.faviconOptions()} model=".customFavicon" />
               <div className="input-group">
-                <span disabled={!customFavicon} className="input-group-addon">
+                <span disabled={customFavicon !== 'customIcon'} className="input-group-addon">
                   {hostname}
                 </span>
-                <Control.text disabled={!customFavicon} model=".favicon" className="form-control" />
+                <Control.text
+                  disabled={customFavicon !== 'customIcon'}
+                  model=".favicon"
+                  className="form-control"
+                />
               </div>
             </div>
             <div className="alert alert-info">
