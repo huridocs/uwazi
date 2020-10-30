@@ -226,7 +226,7 @@ class ProcessNamespaces {
     const { templateData, templateConfig } = await this.getTemplateDataAndConfig(data.template);
 
     if (templateConfig.filter) {
-      if (!sift(templateConfig.filter)(data)) {
+      if (!sift(JSON.parse(templateConfig.filter))(data)) {
         return { skip: true };
       }
     }

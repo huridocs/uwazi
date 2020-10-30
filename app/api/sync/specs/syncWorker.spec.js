@@ -4,6 +4,7 @@ import fs from 'fs';
 import backend from 'fetch-mock';
 
 import 'api/thesauri/dictionariesModel';
+import { model as entitesModel } from 'api/entities';
 import errorLog from 'api/log/errorLog';
 import 'api/relationships';
 
@@ -439,7 +440,8 @@ describe('syncWorker', () => {
           filterConfig = { ...baseConfig, templates: { ...baseConfig.templates } };
           filterConfig.templates[template1.toString()] = {
             properties: baseConfig.templates[template1.toString()],
-            filter: { 'metadata.t1Property2': { $elemMatch: { value: 'another doc property 2' } } },
+            filter:
+              '{ "metadata.t1Property2": { "$elemMatch": { "value": "another doc property 2" } } }',
           };
         });
 
@@ -452,6 +454,22 @@ describe('syncWorker', () => {
           } = getCallsToIds('entities', [newDoc2]);
           expect(callsCount).toBe(1);
           expect(entity2Call).toBeDefined();
+        });
+
+        it('should fail on error', async () => {
+          filterConfig.templates[template1.toString()].filter = 'return missing;';
+          try {
+            await syncWorkerWithConfig(filterConfig);
+            fail('should not pass');
+          } catch (err) {
+            expect(err.message).toContain('JSON');
+          }
+        });
+
+        describe('When entity no longer passes filter', () => {
+          it('should delete target entities (and relationships)', async () => {
+            // async entitesModel.saveMultiple(new);
+          });
         });
       });
     });
