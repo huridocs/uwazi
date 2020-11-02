@@ -86,7 +86,10 @@ async function updateOptionsInEntities(current, thesauri) {
 
 const update = async thesauri => {
   const currentThesauri = await model.getById(thesauri._id);
-  if (JSON.stringify(thesauri.values) !== JSON.stringify(currentThesauri.values)) {
+  const valuesHaveChanged =
+    JSON.stringify(thesauri.values) !== JSON.stringify(currentThesauri.values);
+  const nameHasChanged = thesauri.name !== currentThesauri.name;
+  if (valuesHaveChanged || nameHasChanged) {
     await updateTranslation(currentThesauri, thesauri);
     await updateOptionsInEntities(currentThesauri, thesauri);
   }
