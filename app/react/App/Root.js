@@ -34,7 +34,17 @@ const googelFonts = (
   />
 );
 
-const headTag = (head, CSS, reduxData) => (
+const getFaviconURL = reduxData => {
+  const favicon = reduxData.settings.collection.get('favicon');
+
+  if (!favicon || favicon === '') {
+    return '/public/favicon.ico';
+  }
+
+  return favicon;
+};
+
+export const headTag = (head, CSS, reduxData) => (
   <head>
     {head.title.toComponent()}
     {head.meta.toComponent()}
@@ -48,7 +58,7 @@ const headTag = (head, CSS, reduxData) => (
       dangerouslySetInnerHTML={{ __html: reduxData.settings.collection.get('customCSS') }}
     />
     {googelFonts}
-    <link rel="shortcut icon" href="/public/favicon.ico" />
+    <link rel="shortcut icon" href={getFaviconURL(reduxData)} />
   </head>
 );
 
