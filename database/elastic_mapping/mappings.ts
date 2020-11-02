@@ -110,12 +110,6 @@ const linkType = () => {
   };
 };
 
-const markdownType = () => {
-  return {
-    value: noSorttext,
-  };
-};
-
 const selectType = () => {
   return {
     label: text,
@@ -150,7 +144,7 @@ const propertyMappings = {
   geolocation: geolocationType,
   image: imageType,
   link: linkType,
-  markdown: markdownType,
+  markdown: textType,
   media: imageType,
   multidate: dateType,
   multidaterange: daterangeType,
