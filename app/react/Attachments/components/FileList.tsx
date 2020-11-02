@@ -39,8 +39,27 @@ export class FileList extends Component<FileListProps> {
   }
 
   render() {
-    const { files } = this.props;
-
+    const { files, entity } = this.props;
+    const fileIndex = files.findIndex(file => {
+      let lang = 'en';
+      switch(file.language) {
+        case 'eng':
+          lang = 'en';
+          break;
+        case 'spa':
+          lang = 'es';
+          break;
+        case 'por':
+          lang = 'pt';
+          break;
+      }
+      return lang === entity.language;
+    });
+    if (fileIndex > -1) {
+      const temp = files[fileIndex];
+      files[fileIndex] = files[0];
+      files[0] = temp;
+    }
     return (
       <div className="filelist">
         <h2>

@@ -41,12 +41,13 @@ describe('FileList', () => {
     component = shallow(<FileList {...props} />);
   };
 
-  it('should render the files', () => {
+  it('should render the files starting with the correct file language', () => {
     render();
     const renderedFiles = component.find(File);
     expect(renderedFiles.length).toBe(2);
     expect(renderedFiles.at(0).props().file).toBe(file);
     expect(renderedFiles.at(1).props().file).toBe(file2);
+    expect(renderedFiles.at(0).props().file.language).toBe('eng');
   });
 
   it('should render an upload button', () => {
