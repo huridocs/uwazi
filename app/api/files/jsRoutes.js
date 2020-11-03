@@ -7,10 +7,11 @@ import { search } from 'api/search';
 import settings from 'api/settings';
 import { processDocument } from 'api/files/processDocument';
 import { uploadsPath, attachmentsPath, generateFileName } from 'api/files/filesystem';
-
+import cors from 'cors';
 import activitylogMiddleware from 'api/activitylog/activitylogMiddleware';
 import { validation, createError } from '../utils';
-import { captchaAuthorization, allowCors } from '../auth';
+import { captchaAuthorization } from '../auth';
+
 import { uploadMiddleware } from './uploadMiddleware';
 
 const storeFile = (pathFunction, file) =>
@@ -27,9 +28,17 @@ const storeFile = (pathFunction, file) =>
 const routes = app => {
   const socket = req => req.getCurrentSessionSockets();
 
+  const corsOptions = {
+    origin: true,
+    methods: 'POST',
+    credentials: true,
+    optionsSuccessStatus: 200,
+  };
+
+  app.options('/api/public', cors(corsOptions));
   app.post(
     '/api/public',
-    allowCors(),
+    cors(corsOptions),
     uploadMiddleware.multiple(),
     captchaAuthorization(),
     activitylogMiddleware,

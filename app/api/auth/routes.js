@@ -9,6 +9,7 @@ import settings from 'api/settings';
 import urljoin from 'url-join';
 import { DB } from 'api/odm';
 import { config } from 'api/config';
+import cors from 'cors';
 
 import { validation } from '../utils';
 
@@ -70,8 +71,14 @@ export default app => {
     res.redirect('/');
   });
 
-  app.get('/captcha', (req, res) => {
-    const captcha = svgCaptcha.create({ ignoreChars: '0OoiILl' });
+  const corsOptions = {
+    origin: true,
+    methods: 'GET',
+    credentials: true,
+    optionsSuccessStatus: 200,
+  };
+  app.get('/captcha', cors(corsOptions), (req, res) => {
+    const captcha = svgCaptcha.create({ ignoreChars: '0OoiILluvUV' });
     req.session.captcha = captcha.text;
     res.type('svg');
     res.send(captcha.data);
