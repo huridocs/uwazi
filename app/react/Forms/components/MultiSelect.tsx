@@ -146,6 +146,7 @@ abstract class MultiSelectBase<ValueType> extends Component<
     } else {
       value = this.markChecked(value, option);
     }
+    
     this.props.onChange(value);
   }
 
@@ -479,13 +480,13 @@ export default class MultiSelect extends MultiSelectBase<string[]> {
   }
 
   markUnchecked(value: string[], option: Option): string[] {
+    
     const opt = option[this.props.optionsValue];
     if (!value.includes(opt)) {
       return value;
     }
-    const newValue = value.slice(0);
-    newValue.splice(value.indexOf(opt));
-    return newValue;
+    
+    return value.filter(v => v !== opt);
   }
 
   getCheckedList(): string[] {

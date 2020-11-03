@@ -106,14 +106,19 @@ describe('MultiSelectTristate', () => {
     });
 
     it('it should remove options that were selected', () => {
-      props.value = { added: ['option1'], removed: [], originalFull: [], originalPartial: [] };
+      props.value = {
+        added: ['option1', 'option2'],
+        removed: [],
+        originalFull: [],
+        originalPartial: [],
+      };
       render();
       component
         .find('input[type="checkbox"]')
         .at(0)
         .simulate('change');
       expect(props.onChange).toHaveBeenCalledWith({
-        added: [],
+        added: ['option2'],
         removed: [],
         originalFull: [],
         originalPartial: [],
