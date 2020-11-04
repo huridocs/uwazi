@@ -43,7 +43,6 @@ export class FileList extends Component<FileListProps> {
     const { files, entity } = this.props;
     const fileIndex = files.findIndex(file => {
       const language = languageLib.get(file.language as string, 'ISO639_1');
-      console.log('Language returned: ', language);
       return language === entity.language;
     });
     if (fileIndex > -1) {
