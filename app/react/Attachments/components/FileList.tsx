@@ -40,7 +40,7 @@ export class FileList extends Component<FileListProps> {
   }
 
   orderFilesByLanguage(files: FileType[], systemLanguage: string) {
-    const orderedFiles = files;
+    const orderedFiles = [...files];
     const fileIndex = orderedFiles.findIndex(file => {
       const language = languageLib.get(file.language as string, 'ISO639_1');
       return language === systemLanguage;
