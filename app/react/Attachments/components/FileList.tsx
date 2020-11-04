@@ -7,6 +7,7 @@ import { EntitySchema } from 'shared/types/entityType';
 import UploadButton from 'app/Metadata/components/UploadButton';
 import { ConnectedFile as File } from './File';
 import { NeedAuthorization } from 'app/Auth';
+import languageLib from 'shared/languages';
 
 const defaultProps = {
   files: [],
@@ -41,21 +42,9 @@ export class FileList extends Component<FileListProps> {
   render() {
     const { files, entity } = this.props;
     const fileIndex = files.findIndex(file => {
-      let lang = '';
-      switch (file.language) {
-        case 'eng':
-          lang = 'en';
-          break;
-        case 'spa':
-          lang = 'es';
-          break;
-        case 'por':
-          lang = 'pt';
-          break;
-        default:
-          lang = 'en';
-      }
-      return lang === entity.language;
+      const language = languageLib.get(file.language as string, 'ISO639_1');
+      console.log('Language returned: ', language);
+      return language === entity.language;
     });
     if (fileIndex > -1) {
       const temp = files[fileIndex];
