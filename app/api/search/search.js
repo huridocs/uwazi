@@ -2,9 +2,6 @@
 import date from 'api/utils/date';
 
 import propertiesHelper from 'shared/comonProperties';
-
-import translate, { getContext, getLocaleTranslation } from 'shared/translate';
-import translations from 'api/i18n/translations';
 import { tenants } from 'api/tenants/tenantContext';
 
 import dictionariesModel from 'api/thesauri/dictionariesModel';
@@ -536,7 +533,7 @@ async function searchTypeFromSearchTermValidity(searchTerm) {
 }
 
 const buildQuery = async (query, language, user, resources) => {
-  const [templates, dictionaries, _translations] = resources;
+  const [templates, dictionaries] = resources;
   const textFieldsToSearch = _getTextFields(query, templates);
   const searchTextType = query.searchTerm
     ? await searchTypeFromSearchTermValidity(query.searchTerm)
@@ -567,14 +564,7 @@ const buildQuery = async (query, language, user, resources) => {
   if (query.sort) {
     const sortingProp = allUniqueProps.find(p => `metadata.${p.name}` === query.sort);
     if (sortingProp && sortingProp.type === 'select') {
-      const dictionary = dictionaries.find(d => d._id.toString() === sortingProp.content);
-      const translation = getLocaleTranslation(_translations, language);
-      const context = getContext(translation, dictionary._id.toString());
-      const keys = dictionary.values.reduce((result, value) => {
-        result[value.id] = translate(context, value.label, value.label);
-        return result;
-      }, {});
-      queryBuilder.sortByForeignKey(query.sort, keys, query.order);
+      queryBuilder.sort(query.sort, query.order, true);
     } else {
       queryBuilder.sort(query.sort, query.order);
     }
@@ -605,11 +595,7 @@ const buildQuery = async (query, language, user, resources) => {
 
 const instanceSearch = elasticIndex => ({
   async search(query, language, user) {
-    const resources = await Promise.all([
-      templatesModel.get(),
-      dictionariesModel.get(),
-      translations.get(),
-    ]);
+    const resources = await Promise.all([templatesModel.get(), dictionariesModel.get()]);
     const [templates, dictionaries] = resources;
     const queryBuilder = await buildQuery(query, language, user, resources);
     if (query.geolocation) {
@@ -708,16 +694,14 @@ const instanceSearch = elasticIndex => ({
   },
 
   async autocompleteAggregations(query, language, propertyName, searchTerm, user) {
-    const [templates, dictionaries, _translations] = await Promise.all([
+    const [templates, dictionaries] = await Promise.all([
       templatesModel.get(),
       dictionariesModel.get(),
-      translations.get(),
     ]);
 
     const queryBuilder = await buildQuery({ ...query, limit: 0 }, language, user, [
       templates,
       dictionaries,
-      _translations,
     ]);
 
     const property = propertiesHelper

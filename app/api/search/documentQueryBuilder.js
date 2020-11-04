@@ -190,31 +190,16 @@ export default function() {
       return this;
     },
 
-    sort(property, order = 'desc') {
+    sort(property, order = 'desc', sortByLabel = false) {
       if (property === '_score') {
         return baseQuery.sort.push('_score');
       }
       const sort = {};
-
-      const sortKey = property.includes('metadata') ? `${property}.value.sort` : `${property}.sort`;
-
+      const isAMetadataProperty = property.includes('metadata');
+      const sortingKey = sortByLabel ? 'label' : 'value';
+      const sortKey = isAMetadataProperty ? `${property}.${sortingKey}.sort` : `${property}.sort`;
       sort[sortKey] = { order, unmapped_type: 'boolean' };
 
-      baseQuery.sort.push(sort);
-      return this;
-    },
-
-    sortByForeignKey(property, keys, order = 'desc') {
-      const sort = {};
-      sort._script = {
-        order,
-        type: 'string',
-        script: {
-          params: { keys },
-          source: `try {params.keys[doc['${property}.sort'].value] != null ?
-          params.keys[doc['${property}.sort'].value] : '|'}catch(Exception e){'|'}`,
-        },
-      };
       baseQuery.sort.push(sort);
       return this;
     },

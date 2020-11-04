@@ -732,6 +732,16 @@ describe('search', () => {
     expect(entities.rows[0].title).toBe('metádata3');
   });
 
+  it('sort by denormalized values', async () => {
+    const entities = await search.search(
+      { types: [ids.templateMetadata1], order: 'desc', sort: 'metadata.select1' },
+      'en'
+    );
+    expect(entities.rows[2].title).toBe('Metadata2');
+    expect(entities.rows[1].title).toBe('metádata3');
+    expect(entities.rows[0].title).toBe('metadata1');
+  });
+
   it('should allow including unpublished documents if user', async () => {
     const { rows } = await search.search(
       {
