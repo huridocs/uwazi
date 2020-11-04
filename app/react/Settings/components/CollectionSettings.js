@@ -104,13 +104,10 @@ export class CollectionSettings extends Component {
       settings.favicon = '';
     }
 
-<<<<<<< HEAD
-=======
     if (!values.defaultLibraryView) {
       settings.defaultLibraryView = 'cards';
     }
 
->>>>>>> Initial changes for default library view
     return settings;
   }
 
