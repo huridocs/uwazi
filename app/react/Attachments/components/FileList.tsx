@@ -39,23 +39,29 @@ export class FileList extends Component<FileListProps> {
     );
   }
 
-  render() {
-    const { files, entity } = this.props;
-    const fileIndex = files.findIndex(file => {
+  orderFilesByLanguage(files: FileType[], systemLanguage: string) {
+    const orderedFiles = files;
+    const fileIndex = orderedFiles.findIndex(file => {
       const language = languageLib.get(file.language as string, 'ISO639_1');
-      return language === entity.language;
+      return language === systemLanguage;
     });
     if (fileIndex > -1) {
-      const temp = files[fileIndex];
-      files[fileIndex] = files[0];
-      files[0] = temp;
+      const temp = orderedFiles[fileIndex];
+      orderedFiles[fileIndex] = orderedFiles[0];
+      orderedFiles[0] = temp;
     }
+    return orderedFiles;
+  }
+
+  render() {
+    const { files, entity } = this.props;
+    const orderedFiles = this.orderFilesByLanguage(files, entity.language as string);
     return (
       <div className="filelist">
         <h2>
           <Translate>Documents</Translate>
         </h2>
-        <ul>{files.map((file, index) => this.renderFile(file, index))}</ul>
+        <ul>{orderedFiles.map((file, index) => this.renderFile(file, index))}</ul>
         <NeedAuthorization roles={['admin', 'editor']}>
           <UploadButton
             entitySharedId={this.props.entity.sharedId}
