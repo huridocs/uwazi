@@ -5,6 +5,7 @@ import { ConnectedFile as File } from '../File';
 import { FileType } from 'shared/types/fileType';
 import UploadButton from 'app/Metadata/components/UploadButton';
 import { EntitySchema } from 'shared/types/entityType';
+import languageLib from 'shared/languages';
 
 describe('FileList', () => {
   let component: ShallowWrapper<FileList>;
@@ -46,8 +47,10 @@ describe('FileList', () => {
     const renderedFiles = component.find(File);
     expect(renderedFiles.length).toBe(2);
     expect(renderedFiles.at(0).props().file).toBe(file);
-    expect(renderedFiles.at(1).props().file).toBe(file2);
-    expect(renderedFiles.at(0).props().file.language).toBe('eng');
+    expect(renderedFiles.at(1).props().file).toBe(file2); 
+    const firstFile = renderedFiles.at(0).props().file;
+    const language = languageLib.get(firstFile.language as string, 'ISO639_1');
+    expect(entity.language).toEqual(language);
   });
 
   it('should render an upload button', () => {
