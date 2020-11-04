@@ -47,7 +47,7 @@ describe('FileList', () => {
     const renderedFiles = component.find(File);
     expect(renderedFiles.length).toBe(2);
     expect(renderedFiles.at(0).props().file).toBe(file);
-    expect(renderedFiles.at(1).props().file).toBe(file2); 
+    expect(renderedFiles.at(1).props().file).toBe(file2);
     const firstFile = renderedFiles.at(0).props().file;
     const language = languageLib.get(firstFile.language as string, 'ISO639_1');
     expect(entity.language).toEqual(language);
