@@ -38,12 +38,12 @@ describe('FileList', () => {
     };
   });
 
-  const render = () => {
+  const render = (props: FileListProps) => {
     component = shallow(<FileList {...props} />);
   };
 
-  it('should render the files starting with the correct file language', () => {
-    render();
+  it('should render the files correctly', () => {
+    render(props);
     const renderedFiles = component.find(File);
     expect(renderedFiles.length).toBe(2);
     expect(renderedFiles.at(0).props().file).toBe(file);
@@ -53,8 +53,22 @@ describe('FileList', () => {
     expect(entity.language).toEqual(language);
   });
 
+  it('should render the files starting with the one with the system language', () => {
+    const firstFileLanguage = languageLib.get(props.files[0].language as string, 'ISO639_1');
+    if (firstFileLanguage === entity.language) {
+      const temp = props.files[0];
+      props.files[0] = props.files[props.files.length - 1];
+      props.files[props.files.length - 1] = temp;
+    }
+    render(props);
+    const renderedFiles = component.find(File);
+    const firstFile = renderedFiles.at(0).props().file;
+    const language = languageLib.get(firstFile.language as string, 'ISO639_1');
+    expect(entity.language).toEqual(language);
+  });
+
   it('should render an upload button', () => {
-    render();
+    render(props);
     const button = component.find(UploadButton);
     expect(button.props().entitySharedId).toBe(props.entity.sharedId);
   });
