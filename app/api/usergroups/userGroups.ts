@@ -4,14 +4,10 @@ import model from './userGroupsModel';
 
 export default {
   async get(query: any): Promise<UserGroupSchema[]> {
-    const usersModel = users.db.dbForCurrentTenant().model('users');
-    return model.get(query).populate({
-      path: 'members',
-      select: 'username',
-      model: usersModel,
-      options: { lean: true },
-    });
+    users.db.dbForCurrentTenant();
+    return model.get(query).populate('members');
   },
+
   async save(userGroup: UserGroupSchema) {
     return model.save(userGroup);
   },
