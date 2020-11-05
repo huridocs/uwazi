@@ -214,7 +214,7 @@ export const fixtures = {
       metadata: {
         field1: [{ value: 'joker' }],
         field2: [{ value: 'penguin' }],
-        select1: [{ value: 'EgyptID', label: 'Egypt' }],
+        select1: [{ value: 'EgyptID', label: 'Awesome Egypt' }],
         multiselect1: [{ value: 'EgyptID', label: 'Egypt' }],
         groupedDictionary: [{ value: 'GermanyID' }],
         daterange: [{ value: { from: 1579620135, to: 1611242535 } }],
@@ -230,7 +230,7 @@ export const fixtures = {
       published: true,
       user: userId,
       metadata: {
-        select1: [{ value: 'SpainID', label: 'Spain' }],
+        select1: [{ value: 'SpainID', label: 'Cool Spain' }],
         multiselect1: [{ value: 'SpainID', label: 'Spain' }],
         date: [{ value: 30000 }],
       },

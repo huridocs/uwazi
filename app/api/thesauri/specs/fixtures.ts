@@ -110,6 +110,23 @@ const fixtures: DBFixture = {
     },
   ],
   settings: [{ _id: testingDB.id(), languages: [{ key: 'es', default: true }] }],
+  translations: [
+    {
+      _id: testingDB.id(),
+      locale: 'en',
+      contexts: [
+        {
+          id: dictionaryId,
+          type: 'Dictionary',
+          values: [
+            { key: 'dictionary 2', value: 'dictionary 2' },
+            { key: 'value 1', value: 'value 1' },
+            { key: 'value 2', value: 'value 2' },
+          ],
+        },
+      ],
+    },
+  ],
 };
 
 export {
