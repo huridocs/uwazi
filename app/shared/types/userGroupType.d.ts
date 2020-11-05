@@ -10,11 +10,12 @@ export interface UserGroupSchema {
         [k: string]: unknown | undefined;
       };
   name: string;
-  users: {
+  members: {
     _id:
       | string
       | {
           [k: string]: unknown | undefined;
         };
+    username?: string;
   }[];
 }

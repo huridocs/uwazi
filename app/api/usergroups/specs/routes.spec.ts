@@ -55,7 +55,7 @@ describe('usergroups routes', () => {
   });
 
   describe('POST', () => {
-    const defaultUserGroup: any = { _id: 'group1', name: 'group 1', users: [] };
+    const defaultUserGroup: any = { _id: 'group1', name: 'group 1', members: [] };
     async function postUserGroup(userGroupData = defaultUserGroup) {
       return request(app)
         .post('/api/usergroups')
@@ -100,10 +100,10 @@ describe('usergroups routes', () => {
 
       it('should validate a user group that has an invalid user id', async () => {
         user = { username: 'user 1', role: 'admin' };
-        const response = await postUserGroup({ name: 'group 1', users: [{ _id: undefined }] });
+        const response = await postUserGroup({ name: 'group 1', members: [{ _id: undefined }] });
         expect(response.status).toBe(400);
         expect(response.body.errors[0].keyword).toBe('required');
-        expect(response.body.errors[0].dataPath).toBe('.body.users[0]');
+        expect(response.body.errors[0].dataPath).toBe('.body.members[0]');
         expect(response.body.error).toBe('validation failed');
       });
 
@@ -112,13 +112,13 @@ describe('usergroups routes', () => {
         const response = await postUserGroup({
           name: 'group 1',
           other: 'invalid',
-          users: [{ _id: 'user1', other: 'invalid1' }],
+          members: [{ _id: 'user1', other: 'invalid1' }],
         });
         expect(response.status).toBe(400);
         expect(response.body.errors[0].keyword).toBe('additionalProperties');
         expect(response.body.errors[0].dataPath).toBe('.body');
         expect(response.body.errors[1].keyword).toBe('additionalProperties');
-        expect(response.body.errors[1].dataPath).toBe('.body.users[0]');
+        expect(response.body.errors[1].dataPath).toBe('.body.members[0]');
         expect(response.body.error).toBe('validation failed');
       });
     });

@@ -20,9 +20,7 @@ export default (app: Application) => {
     validation.validateRequest({
       type: 'object',
       properties: {
-        body: {
-          ...userGroupSchema,
-        },
+        body: userGroupSchema,
       },
     }),
     async (req: Request, res: Response) => {

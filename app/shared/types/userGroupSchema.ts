@@ -9,17 +9,18 @@ export const userGroupSchema = {
   properties: {
     _id: objectIdSchema,
     name: { type: 'string' },
-    users: {
+    members: {
       type: 'array',
       items: {
         type: 'object',
         additionalProperties: false,
         properties: {
           _id: objectIdSchema,
+          username: { type: 'string' },
         },
         required: ['_id'],
       },
     },
   },
-  required: ['name', 'users'],
+  required: ['name', 'members'],
 };
