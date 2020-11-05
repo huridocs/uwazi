@@ -4,7 +4,7 @@ import { UserGroupSchema } from 'shared/types/userGroupType';
 
 const propsWithDBSpecifics = {
   name: { type: String, index: true },
-  usersb: [{ type: mongoose.Schema.Types.ObjectId, ref: 'users' }],
+  members: [{ type: mongoose.Schema.Types.ObjectId, ref: 'users' }],
 };
 
 const mongoSchema = new mongoose.Schema(propsWithDBSpecifics, {

@@ -5,7 +5,7 @@ const user1Id = db.id();
 const user2Id = db.id();
 
 export default {
-  usergroups: [{ _id: group1Id, name: 'Group 1', users: [{ _id: user1Id }] }],
+  usergroups: [{ _id: group1Id, name: 'Group 1', members: [user1Id] }],
   users: [
     {
       _id: user1Id,
