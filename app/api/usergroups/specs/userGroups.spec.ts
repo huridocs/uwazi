@@ -1,6 +1,8 @@
 import userGroups from 'api/usergroups/userGroups';
 import db from 'api/utils/testing_db';
-import fixtures, { group1Id, user1Id, user2Id } from './fixtures.js';
+import { models } from 'api/odm/models';
+import { UserGroupSchema } from 'shared/types/userGroupType';
+import fixtures, { group1Id, group2Id, user1Id, user2Id } from './fixtures.js';
 
 describe('userGroups', () => {
   beforeEach(async () => {
@@ -8,12 +10,15 @@ describe('userGroups', () => {
   });
 
   describe('get', () => {
-    it('should return user groups from model', async () => {
-      const groups = await userGroups.get({});
-      expect(groups[0]._id).toEqual(group1Id);
+    it('should return populated user groups from model', async () => {
+      const groups = await userGroups.get({}, '', { sort: { name: 1 } });
+      expect(groups[0]._id?.toString()).toBe(group1Id.toString());
       expect(groups[0].name).toBe('Group 1');
       expect(groups[0].members.length).toBe(1);
-      expect(groups[0].members[0].username).toBe('user1');
+      expect(groups[0].members[0].username).toBe('user2');
+      expect(groups[1]._id?.toString()).toBe(group2Id.toString());
+      expect(groups[1].members[0].username).toBe('user1');
+      expect(groups[1].members[1].username).toBe('user3');
     });
   });
 
@@ -25,26 +30,31 @@ describe('userGroups', () => {
       expect(savedUserGroup).toEqual(storedUserGroup);
     });
 
-    it('should create the added users of the group', async () => {
-      const userGroup1 = {
-        _id: group1Id,
-        name: 'Group 1',
-        members: [user1Id, user2Id],
+    it('should save the members, stripping non _id member info', async () => {
+      const userGroup1: UserGroupSchema = {
+        _id: group1Id.toString(),
+        name: 'Group 1 edited',
+        members: [{ _id: user1Id.toString(), username: 'wrong name' }, { _id: user2Id.toString() }],
       };
-      // @ts-ignore
+
       await userGroups.save(userGroup1);
-      const storedUserGroup = (await userGroups.get({ _id: group1Id, name: 'Group 1' }))[0];
-      expect(storedUserGroup.members.length).toBe(2);
-      expect(storedUserGroup.members[1]._id).toEqual(user2Id);
+      const storedUserGroups = await models.usergroups.get({
+        _id: group1Id,
+        name: 'Group 1 edited',
+      });
+
+      expect(storedUserGroups[0].members[0]._id.toString()).toBe(user1Id.toString());
+      expect(storedUserGroups[0].members[0].username).toBeUndefined();
+      expect(storedUserGroups[0].members[1]._id.toString()).toBe(user2Id.toString());
     });
 
-    it('should delete the removed users of the group', async () => {
-      const userGroup1 = {
-        _id: group1Id,
+    it('should allow empty members groups', async () => {
+      const userGroup1: UserGroupSchema = {
+        _id: group1Id.toString(),
         name: 'Group 1',
         members: [],
       };
-      // @ts-ignore
+
       await userGroups.save(userGroup1);
       const storedUserGroup = (await userGroups.get({ _id: group1Id, name: 'Group 1' }))[0];
       expect(storedUserGroup.members.length).toBe(0);

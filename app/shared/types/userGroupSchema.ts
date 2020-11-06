@@ -17,6 +17,8 @@ export const userGroupSchema = {
         properties: {
           _id: objectIdSchema,
           username: { type: 'string' },
+          role: { type: 'string' },
+          email: { type: 'string' },
         },
         required: ['_id'],
       },

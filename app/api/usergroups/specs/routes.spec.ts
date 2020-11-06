@@ -31,10 +31,13 @@ describe('usergroups routes', () => {
         .set('X-Requested-With', 'XMLHttpRequest');
       return response;
     }
+
     const groups = [{ name: 'group1' }];
+
     beforeEach(() => {
       spyOn(userGroups, 'get').and.returnValue(Promise.resolve(groups));
     });
+
     it('should query and return an array of existing user groups', async () => {
       user = { username: 'user 1', role: 'admin' };
       const response = await getUserGroups();
@@ -98,7 +101,7 @@ describe('usergroups routes', () => {
         expect(response.body.error).toBe('validation failed');
       });
 
-      it('should validate a user group that has an invalid user id', async () => {
+      it('should validate a user group that has an undefined user id', async () => {
         user = { username: 'user 1', role: 'admin' };
         const response = await postUserGroup({ name: 'group 1', members: [{ _id: undefined }] });
         expect(response.status).toBe(400);
