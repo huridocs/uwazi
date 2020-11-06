@@ -1,8 +1,8 @@
 import { Application, Request, Response } from 'express';
-import userGroups from 'api/usergroups/userGroups';
 import { needsAuthorization } from 'api/auth';
-import { validation } from 'api/utils';
 import { userGroupSchema } from 'shared/types/userGroupSchema';
+import { validation } from 'api/utils';
+import userGroups from './userGroups';
 
 export default (app: Application) => {
   app.get(
@@ -24,8 +24,8 @@ export default (app: Application) => {
       },
     }),
     async (req: Request, res: Response) => {
-      const updatedGroup = await userGroups.save(req.body);
-      res.json(updatedGroup);
+      const userGroup = await userGroups.save(req.body);
+      res.json(userGroup);
     }
   );
 };

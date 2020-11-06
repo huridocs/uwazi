@@ -17,5 +17,7 @@ export interface UserGroupSchema {
           [k: string]: unknown | undefined;
         };
     username?: string;
+    role?: string;
+    email?: string;
   }[];
 }
