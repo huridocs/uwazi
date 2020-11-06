@@ -322,7 +322,13 @@ export class CollectionSettings extends Component {
               <label className="form-group-label" htmlFor="collectionContactEmail">
                 <Translate>Contact email</Translate>
               </label>
-              <Control.text model=".contactEmail" className="form-control" />
+              <Control.text id="collectionContactEmail" model=".contactEmail" className="form-control" />
+            </div>
+            <div className="form-group">
+              <label className="form-group-label" htmlFor="collectionSenderEmail">
+                <Translate>Sender email</Translate>
+              </label>
+              <Control.text id="collectionSenderEmail" model=".senderEmail" className="form-control" />
             </div>
             <div className="form-group">
               <label className="form-group-label" htmlFor="collectionPublicFormDestination">

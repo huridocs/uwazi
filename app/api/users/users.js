@@ -52,7 +52,7 @@ const conformRecoverText = (options, _settings, domain, key, user) => {
   return response;
 };
 
-const sendAccountLockedEmail = (user, domain) => {
+const sendAccountLockedEmail = async (user, domain) => {
   const url = `${domain}/unlockaccount/${user.username}/${user.accountUnlockCode}`;
   const htmlLink = `<a href="${url}">${url}</a>`;
   const text =
@@ -62,8 +62,10 @@ const sendAccountLockedEmail = (user, domain) => {
     `${url}`;
   const html = `<p>${text.replace(url, htmlLink)}</p>`;
 
+  const settingsDetails = await settings.get();
+  const { senderEmail, siteName } = mailer.createSenderDetails(settingsDetails);
   const mailOptions = {
-    from: '"Uwazi" <no-reply@uwazi.io>',
+    from: `"${siteName}" <${senderEmail}>`,
     to: user.email,
     subject: 'Account locked',
     text,
@@ -244,7 +246,9 @@ export default {
       const user = _user[0];
       if (user) {
         return passwordRecoveriesModel.save({ key, user: user._id }).then(() => {
-          const mailOptions = { from: '"Uwazi" <no-reply@uwazi.io>', to: email };
+          const senderEmail = _settings.senderEmail !== undefined ? _settings.senderEmail : 'no-reply@uwazi.io';
+          const siteName = _settings.site_name !== undefined ? _settings.site_name : 'Uwazi';
+          const mailOptions = { from: `"${siteName}" <${senderEmail}>`, to: email };
           const mailTexts = conformRecoverText(options, _settings, domain, key, user);
           mailOptions.subject = mailTexts.subject;
           mailOptions.text = mailTexts.text;

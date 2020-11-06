@@ -61,6 +61,7 @@ export const settingsSchema = {
     site_name: { type: 'string' },
     favicon: { type: 'string' },
     contactEmail: { type: 'string' },
+    senderEmail: { type: 'string' },
     home_page: { type: 'string' },
     private: { type: 'boolean' },
     cookiepolicy: { type: 'boolean' },

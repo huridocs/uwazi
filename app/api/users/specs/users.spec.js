@@ -14,6 +14,7 @@ import fixtures, { userId, expectedKey, recoveryUserId } from './fixtures.js';
 import users from '../users.js';
 import passwordRecoveriesModel from '../passwordRecoveriesModel';
 import usersModel from '../usersModel';
+import { settingsModel } from 'api/settings/settingsModel';
 
 describe('Users', () => {
   beforeEach(done => {
@@ -387,10 +388,11 @@ describe('Users', () => {
   });
 
   describe('recoverPassword', () => {
-    it('should find the matching email create a recover password doc in the database and send an email', done => {
+    it('should find the matching email create a recover password doc in the database and send an email', async done => {
       spyOn(mailer, 'send').and.returnValue(Promise.resolve('OK'));
       spyOn(Date, 'now').and.returnValue(1000);
       const key = SHA256(`test@email.com${1000}`).toString();
+      const settings = await settingsModel.get();
       users
         .recoverPassword('test@email.com', 'domain')
         .then(response => {
@@ -399,8 +401,9 @@ describe('Users', () => {
         })
         .then(recoverPasswordDb => {
           expect(recoverPasswordDb[0].user.toString()).toBe(userId.toString());
+          const { senderEmail, siteName } = mailer.createSenderDetails(settings[0]);
           const expectedMailOptions = {
-            from: '"Uwazi" <no-reply@uwazi.io>',
+            from: `"${siteName}" <${senderEmail}>`,
             to: 'test@email.com',
             subject: 'Password set',
             text: `To set your password click on the following link:\ndomain/setpassword/${key}`,
@@ -411,11 +414,12 @@ describe('Users', () => {
         .catch(catchErrors(done));
     });
 
-    it('should personalize the mail if recover password process is part of a newly created user', done => {
+    it('should personalize the mail if recover password process is part of a newly created user', async done => {
       spyOn(mailer, 'send').and.returnValue(Promise.resolve('OK'));
       spyOn(Date, 'now').and.returnValue(1000);
 
       const key = SHA256(`peter@parker.com${1000}`).toString();
+      const settings = await settingsModel.get();
       let newUserId;
 
       users
@@ -433,8 +437,10 @@ describe('Users', () => {
         })
         .then(recoverPasswordDb => {
           expect(recoverPasswordDb[0].user.toString()).toBe(newUserId);
+          const senderEmail = settings[0].senderEmail !== undefined ? settings[0].senderEmail : 'no-reply@uwazi.io';
+          const siteName = settings[0].site_name !== undefined ? settings[0].site_name : 'Uwazi';
           const expectedMailOptions = {
-            from: '"Uwazi" <no-reply@uwazi.io>',
+            from: `"${siteName}" <${senderEmail}>`,
             to: 'peter@parker.com',
             subject: 'Welcome to Uwazi instance',
             text: `To set your password click on the following link:\ndomain/setpassword/${key}`,
