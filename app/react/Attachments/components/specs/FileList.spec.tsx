@@ -39,7 +39,6 @@ describe('FileList', () => {
   });
 
   const render = () => {
-    // eslint-disable-next-line react/jsx-props-no-spreading
     component = shallow(<FileList {...props} />);
   };
 

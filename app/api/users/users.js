@@ -1,6 +1,3 @@
-/* eslint-disable max-params */
-/* eslint-disable max-statements */
-/* eslint-disable max-lines */
 /** @format */
 
 import SHA256 from 'crypto-js/sha256';
@@ -20,8 +17,7 @@ const MAX_FAILED_LOGIN_ATTEMPTS = 6;
 
 const generateUnlockCode = () => crypto.randomBytes(32).toString('hex');
 
-// eslint-disable-next-line max-statements
-const conformRecoverText = (options, _settings, domain, key, user) => {
+function conformRecoverText(options, _settings, domain, key, user) {
   const response = {};
   if (!options.newUser) {
     response.subject = 'Password set';
@@ -52,9 +48,8 @@ const conformRecoverText = (options, _settings, domain, key, user) => {
       .replace(/\n{2,}/g, '</p><p>')
       .replace(/\n/g, '<br />')}</p>`;
   }
-
   return response;
-};
+}
 
 const sendAccountLockedEmail = (user, domain) => {
   const url = `${domain}/unlockaccount/${user.username}/${user.accountUnlockCode}`;
