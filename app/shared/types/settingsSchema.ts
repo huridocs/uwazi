@@ -59,6 +59,7 @@ export const settingsSchema = {
     __v: { type: 'number' },
     project: { type: 'string' },
     site_name: { type: 'string' },
+    favicon: { type: 'string' },
     contactEmail: { type: 'string' },
     home_page: { type: 'string' },
     private: { type: 'boolean' },
