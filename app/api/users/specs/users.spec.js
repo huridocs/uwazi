@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 /** @format */
 /* eslint-disable max-statements */
 
