@@ -1,11 +1,11 @@
 import React from 'react';
 import { shallow, ShallowWrapper } from 'enzyme';
-import { FileList, FileListProps } from '../FileList';
-import { ConnectedFile as File } from '../File';
 import { FileType } from 'shared/types/fileType';
 import UploadButton from 'app/Metadata/components/UploadButton';
 import { EntitySchema } from 'shared/types/entityType';
 import languageLib from 'shared/languages';
+import { ConnectedFile as File } from '../File';
+import { FileList, FileListProps } from '../FileList';
 
 describe('FileList', () => {
   let component: ShallowWrapper<FileList>;
@@ -38,12 +38,13 @@ describe('FileList', () => {
     };
   });
 
-  const render = (props: FileListProps) => {
+  const render = () => {
+    // eslint-disable-next-line react/jsx-props-no-spreading
     component = shallow(<FileList {...props} />);
   };
 
   it('should render the files correctly', () => {
-    render(props);
+    render();
     const renderedFiles = component.find(File);
     expect(renderedFiles.length).toBe(2);
     expect(renderedFiles.at(0).props().file).toBe(file);
@@ -54,21 +55,25 @@ describe('FileList', () => {
   });
 
   it('should render the files starting with the one with the system language', () => {
-    const firstFileLanguage = languageLib.get(props.files[0].language as string, 'ISO639_1');
-    if (firstFileLanguage === entity.language) {
-      const temp = props.files[0];
-      props.files[0] = props.files[props.files.length - 1];
-      props.files[props.files.length - 1] = temp;
-    }
-    render(props);
+    props.files = [file2, file];
+    render();
     const renderedFiles = component.find(File);
     const firstFile = renderedFiles.at(0).props().file;
     const language = languageLib.get(firstFile.language as string, 'ISO639_1');
     expect(entity.language).toEqual(language);
   });
 
+  it('should render the files even when there is not file with entity language', () => {
+    props.files = [file2, file2];
+    render();
+    const renderedFiles = component.find(File);
+    expect(renderedFiles.length).toBe(2);
+    expect(renderedFiles.at(0).props().file).toBe(file2);
+    expect(renderedFiles.at(1).props().file).toBe(file2);
+  });
+
   it('should render an upload button', () => {
-    render(props);
+    render();
     const button = component.find(UploadButton);
     expect(button.props().entitySharedId).toBe(props.entity.sharedId);
   });

@@ -1,3 +1,6 @@
+/* eslint-disable prefer-destructuring */
+/* eslint-disable class-methods-use-this */
+/* eslint-disable react/sort-comp */
 import React, { Component } from 'react';
 
 import { advancedSort } from 'app/utils/advancedSort';
@@ -5,9 +8,9 @@ import { Translate } from 'app/I18N';
 import { FileType } from 'shared/types/fileType';
 import { EntitySchema } from 'shared/types/entityType';
 import UploadButton from 'app/Metadata/components/UploadButton';
-import { ConnectedFile as File } from './File';
 import { NeedAuthorization } from 'app/Auth';
 import languageLib from 'shared/languages';
+import { ConnectedFile as File } from './File';
 
 const defaultProps = {
   files: [],
