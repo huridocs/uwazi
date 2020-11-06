@@ -20,16 +20,23 @@ const MongoStore = mongoConnect(session);
 export default app => {
   app.use(cookieParser());
 
-  app.use(
-    session({
-      secret: app.get('env') === 'production' ? uniqueID() : 'harvey&lola',
-      store: new MongoStore({
-        mongooseConnection: DB.connectionForDB(config.SHARED_DB),
-      }),
-      resave: false,
-      saveUninitialized: false,
-    })
-  );
+  const sessionConfig = {
+    secret: app.get('env') === 'production' ? uniqueID() : 'harvey&lola',
+    store: new MongoStore({
+      mongooseConnection: DB.connectionForDB(config.SHARED_DB),
+    }),
+    resave: false,
+    saveUninitialized: false,
+  };
+
+  if (config.corsCookie) {
+    sessionConfig.cookie = {
+      sameSite: 'none',
+      secure: true,
+    };
+  }
+
+  app.use(session(sessionConfig));
   app.use(passport.initialize());
   app.use(passport.session());
 

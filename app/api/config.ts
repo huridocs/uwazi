@@ -22,6 +22,7 @@ export const config = {
 
   multiTenant: process.env.MULTI_TENANT || false,
   clusterMode: CLUSTER_MODE,
+  corsCookie: process.env.ALLOW_CORS_COOKIES || false,
   defaultTenant: <Tenant>{
     name: 'default',
     dbName: process.env.DATABASE_NAME || 'uwazi_development',
