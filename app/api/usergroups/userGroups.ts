@@ -17,11 +17,7 @@ export default {
     userGroups.forEach((group, index) => {
       userGroups[index].members = group.members.map(m => {
         const user = usersFound.find(u => u._id.toString() === m._id.toString());
-        if (user) {
-          const { _id, username, role, email } = user;
-          return { _id, username, role, email };
-        }
-        return m;
+        return user || m;
       });
     });
 
