@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 /** @format */
 /* eslint-disable max-statements */
 
@@ -10,11 +11,11 @@ import db from 'api/utils/testing_db';
 
 import encryptPassword, { comparePasswords } from 'api/auth/encryptPassword';
 import * as usersUtils from 'api/auth2fa/usersUtils';
+import { settingsModel } from 'api/settings/settingsModel';
 import fixtures, { userId, expectedKey, recoveryUserId } from './fixtures.js';
 import users from '../users.js';
 import passwordRecoveriesModel from '../passwordRecoveriesModel';
 import usersModel from '../usersModel';
-import { settingsModel } from 'api/settings/settingsModel';
 
 describe('Users', () => {
   beforeEach(done => {
@@ -437,8 +438,7 @@ describe('Users', () => {
         })
         .then(recoverPasswordDb => {
           expect(recoverPasswordDb[0].user.toString()).toBe(newUserId);
-          const senderEmail = settings[0].senderEmail !== undefined ? settings[0].senderEmail : 'no-reply@uwazi.io';
-          const siteName = settings[0].site_name !== undefined ? settings[0].site_name : 'Uwazi';
+          const { senderEmail, siteName } = mailer.createSenderDetails(settings[0]);
           const expectedMailOptions = {
             from: `"${siteName}" <${senderEmail}>`,
             to: 'peter@parker.com',

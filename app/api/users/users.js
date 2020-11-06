@@ -1,3 +1,6 @@
+/* eslint-disable max-lines */
+/* eslint-disable max-params */
+/* eslint-disable max-statements */
 /** @format */
 
 import SHA256 from 'crypto-js/sha256';
@@ -246,8 +249,7 @@ export default {
       const user = _user[0];
       if (user) {
         return passwordRecoveriesModel.save({ key, user: user._id }).then(() => {
-          const senderEmail = _settings.senderEmail !== undefined ? _settings.senderEmail : 'no-reply@uwazi.io';
-          const siteName = _settings.site_name !== undefined ? _settings.site_name : 'Uwazi';
+          const { senderEmail, siteName } = mailer.createSenderDetails(_settings);
           const mailOptions = { from: `"${siteName}" <${senderEmail}>`, to: email };
           const mailTexts = conformRecoverText(options, _settings, domain, key, user);
           mailOptions.subject = mailTexts.subject;

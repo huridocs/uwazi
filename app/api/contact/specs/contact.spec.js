@@ -2,9 +2,9 @@
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import mailer from 'api/utils/mailer';
 import db from 'api/utils/testing_db';
+import { settingsModel } from 'api/settings/settingsModel';
 import fixtures from './fixtures.js';
 import contact from '../contact';
-import { settingsModel } from 'api/settings/settingsModel';
 
 describe('contact', () => {
   beforeEach(done => {
@@ -40,7 +40,7 @@ describe('contact', () => {
     it('should send email with the provided sender email and site name', async done => {
       const settings = {
         site_name: 'some site name',
-        senderEmail: 'sender@email.com'
+        senderEmail: 'sender@email.com',
       };
       const set = await settingsModel.get();
       const updated = Object.assign(set[0], { ...settings });

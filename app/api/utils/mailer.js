@@ -41,10 +41,13 @@ export default {
         .catch(reject);
     });
   },
-  createSenderDetails(settings) {
+  createSenderDetails(settingsDetails) {
     return {
-      senderEmail: settings.senderEmail !== undefined ? settings.senderEmail : 'no-reply@uwazi.io',
-      siteName: settings.site_name !== undefined ? settings.site_name : 'Uwazi'
-    }
-  }
+      senderEmail:
+        settingsDetails.senderEmail !== undefined
+          ? settingsDetails.senderEmail
+          : 'no-reply@uwazi.io',
+      siteName: settingsDetails.site_name !== undefined ? settingsDetails.site_name : 'Uwazi',
+    };
+  },
 };
