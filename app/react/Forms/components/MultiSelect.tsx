@@ -483,9 +483,7 @@ export default class MultiSelect extends MultiSelectBase<string[]> {
     if (!value.includes(opt)) {
       return value;
     }
-    const newValue = value.slice(0);
-    newValue.splice(value.indexOf(opt));
-    return newValue;
+    return value.filter(v => v !== opt);
   }
 
   getCheckedList(): string[] {
