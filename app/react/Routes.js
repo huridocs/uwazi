@@ -65,14 +65,38 @@ function enterOnLibrary(_nxtState, replace) {
   trackPage();
 }
 
+function getDefaultLibraryComponent(defaultLibraryView) {
+  switch (defaultLibraryView) {
+    case 'table':
+      return {
+        component: LibraryTable,
+        onEnter: enterOnLibrary,
+      };
+    case 'map':
+      return {
+        component: LibraryMap,
+        onEnter,
+      };
+    case 'cards':
+    default:
+      return {
+        component: Library,
+        onEnter: enterOnLibrary,
+      };
+  }
+}
+
 function getIndexRoute(_nextState, callBack) {
   const state = store.getState();
   const homePageSetting = state.settings.collection.get('home_page');
   const customHomePage = homePageSetting ? homePageSetting.split('/') : [];
   const isPageRoute = customHomePage.includes('page');
+  const defaultLibrary = getDefaultLibraryComponent(
+    state.settings.collection.get('defaultLibraryView')
+  );
 
   let pageId = '';
-  let component = Library;
+  let { component } = defaultLibrary;
   if (isPageRoute) {
     pageId = customHomePage[customHomePage.indexOf('page') + 1];
     component = props => <PageView {...props} params={{ sharedId: pageId }} />;
@@ -87,7 +111,7 @@ function getIndexRoute(_nextState, callBack) {
         replace(customHomePage.join('/'));
       }
       if (!homePageSetting) {
-        enterOnLibrary(nxtState, replace);
+        defaultLibrary.onEnter(nxtState, replace);
       }
     },
     customHomePageId: pageId,
