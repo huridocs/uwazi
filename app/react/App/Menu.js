@@ -12,7 +12,7 @@ import { showSemanticSearch } from 'app/SemanticSearch/actions/actions';
 import { FeatureToggleSemanticSearch } from 'app/SemanticSearch/components/FeatureToggleSemanticSearch';
 import { Icon } from 'UI';
 
-const defaultLibraryOptionsToInfo = {
+const libraryViewInfo = {
   cards: {
     url: 'library',
     icon: 'th',
@@ -34,7 +34,7 @@ export class Menu extends Component {
     const params = processFilters(librarySearch, libraryFilters.toJS());
     params.searchTerm = searchTerm;
 
-    return `/${defaultLibraryOptionsToInfo[defaultLibraryView].url}/${encodeSearch(params)}`;
+    return `/${libraryViewInfo[defaultLibraryView].url}/${encodeSearch(params)}`;
   }
 
   uploadsUrl() {
@@ -93,7 +93,7 @@ export class Menu extends Component {
                 className="menuNav-btn btn btn-default"
                 aria-label={t('System', 'Public documents', null, false)}
               >
-                <Icon icon={defaultLibraryOptionsToInfo[defaultLibraryView].icon} />
+                <Icon icon={libraryViewInfo[defaultLibraryView].icon} />
                 <span className="tab-link-tooltip">{t('System', 'Public documents')}</span>
               </I18NLink>
             </li>
