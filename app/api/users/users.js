@@ -1,8 +1,3 @@
-/* eslint-disable max-lines */
-/* eslint-disable max-params */
-/* eslint-disable max-statements */
-/** @format */
-
 import SHA256 from 'crypto-js/sha256';
 import crypto from 'crypto';
 

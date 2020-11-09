@@ -1,5 +1,3 @@
-/* eslint-disable max-lines */
-/** @format */
 /* eslint-disable max-statements */
 
 import { createError } from 'api/utils';
