@@ -20,7 +20,7 @@ const MAX_FAILED_LOGIN_ATTEMPTS = 6;
 
 const generateUnlockCode = () => crypto.randomBytes(32).toString('hex');
 
-const conformRecoverText = (options, _settings, domain, key, user) => {
+function conformRecoverText(options, _settings, domain, key, user) {
   const response = {};
   if (!options.newUser) {
     response.subject = 'Password set';
@@ -51,9 +51,8 @@ const conformRecoverText = (options, _settings, domain, key, user) => {
       .replace(/\n{2,}/g, '</p><p>')
       .replace(/\n/g, '<br />')}</p>`;
   }
-
   return response;
-};
+}
 
 const sendAccountLockedEmail = async (user, domain) => {
   const url = `${domain}/unlockaccount/${user.username}/${user.accountUnlockCode}`;
