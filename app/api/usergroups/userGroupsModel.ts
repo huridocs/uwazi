@@ -1,14 +1,12 @@
-import { instanceModel } from 'api/odm';
 import mongoose from 'mongoose';
+import { instanceModel } from 'api/odm';
 import { UserGroupSchema } from 'shared/types/userGroupType';
 
 const propsWithDBSpecifics = {
   name: { type: String, index: true },
-  members: [{ type: mongoose.Schema.Types.ObjectId, ref: 'users' }],
 };
 
 const mongoSchema = new mongoose.Schema(propsWithDBSpecifics, {
-  emitIndexErrors: true,
   strict: false,
 });
 
