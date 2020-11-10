@@ -62,6 +62,7 @@ export const settingsSchema = {
     favicon: { type: 'string' },
     contactEmail: { type: 'string' },
     home_page: { type: 'string' },
+    defaultLibraryView: { type: 'string' },
     private: { type: 'boolean' },
     cookiepolicy: { type: 'boolean' },
     mailerConfig: { type: 'string' },

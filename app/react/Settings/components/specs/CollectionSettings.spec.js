@@ -71,6 +71,7 @@ describe('CollectionSettings', () => {
         dateFormat: 'MM/dd/yyyy',
         home_page: '',
         favicon: '',
+        defaultLibraryView: 'cards',
         mailerConfig: 'config',
         matomoConfig: 'matomo',
         private: false,
