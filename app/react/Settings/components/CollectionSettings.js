@@ -37,6 +37,14 @@ export class CollectionSettings extends Component {
     ];
   }
 
+  static defaultLibraryOptions() {
+    return [
+      { label: 'Cards view', value: 'cards' },
+      { label: 'Table view', value: 'table' },
+      { label: 'Map view', value: 'map' },
+    ];
+  }
+
   static dateFormatOptions(separator) {
     return [
       { label: 'Year, Month, Day', value: 0, separator },
@@ -94,6 +102,10 @@ export class CollectionSettings extends Component {
 
     if (values.customFavicon !== 'customIcon') {
       settings.favicon = '';
+    }
+
+    if (!values.defaultLibraryView) {
+      settings.defaultLibraryView = 'cards';
     }
 
     return settings;
@@ -277,6 +289,15 @@ export class CollectionSettings extends Component {
                 Always use URLs relative to your site, starting with / and skipping the
                 https://yoursite.com/.
               </div>
+            </div>
+            <div className="form-group">
+              <span className="form-group-label">
+                <Translate>Default library view</Translate>
+              </span>
+              <RadioButtons
+                options={CollectionSettings.defaultLibraryOptions()}
+                model=".defaultLibraryView"
+              />
             </div>
             <div className="form-group">
               <label className="form-group-label" htmlFor="analyticsTrackingId">
