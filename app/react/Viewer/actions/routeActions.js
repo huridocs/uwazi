@@ -40,15 +40,15 @@ export async function requestViewerState(requestParams, globalResources) {
     ? await entitiesAPI.getRawPage(requestParams.set({ _id: defaultDoc._id, page }))
     : '';
 
-  // const references = await referencesAPI.get(
-  //   requestParams.set({ sharedId, file: doc.defaultDoc._id })
-  // );
+  const references = await referencesAPI.get(
+    requestParams.set({ sharedId, file: doc.defaultDoc._id, onlyTextReferences: true })
+  );
 
   return [
     setViewerState({
       documentViewer: {
         doc,
-        references: [],
+        references,
         relationTypes,
         rawText,
       },

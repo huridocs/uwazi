@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { t } from 'app/I18N';
 import { Icon } from 'UI';
-
+import { Warning } from 'app/Layout';
 import { closePanel, deactivateReference } from 'app/Viewer/actions/uiActions';
 import Connection from './Connection';
 
@@ -47,6 +47,12 @@ export class ConnectionsList extends Component {
 
     return (
       <div className="item-group">
+        {references.length > 299 && (
+          <Warning inline>
+            Text references are temporarily limited to a maximum of 300. We are currently working on
+            a fix for this issue.
+          </Warning>
+        )}
         {(() =>
           references.map(reference => (
             <Connection key={reference._id} readOnly={this.props.readOnly} reference={reference} />
