@@ -159,20 +159,33 @@ export default {
     return model.getById(id);
   },
 
-  async getDocumentHubs(entity, file) {
-    const ownRelations = await model.get({
-      entity,
-      $or: [
-        { $and: [{ file: { $exists: false } }] },
-        file ? { $and: [{ file: { $exists: true } }, { file }] } : {},
-      ],
-    });
+  async getDocumentHubs(entity, file, onlyTextReferences) {
+    let ownRelations;
+    if (onlyTextReferences) {
+      ownRelations = await model.get(
+        {
+          entity,
+          $and: [{ file: { $exists: true } }, { file }],
+        },
+        {},
+        { limit: 300 }
+      );
+    } else {
+      ownRelations = await model.get({
+        entity,
+        $or: [
+          { $and: [{ file: { $exists: false } }] },
+          file ? { $and: [{ file: { $exists: true } }, { file }] } : {},
+        ],
+      });
+    }
+
     const hubsIds = ownRelations.map(relationship => relationship.hub);
     return model.get({ hub: { $in: hubsIds } });
   },
 
-  getByDocument(sharedId, language, unpublished = true, file) {
-    return this.getDocumentHubs(sharedId, file).then(_relationships => {
+  getByDocument(sharedId, language, unpublished = true, file, onlyTextReferences = false) {
+    return this.getDocumentHubs(sharedId, file, onlyTextReferences).then(_relationships => {
       const connectedEntitiesSharedId = _relationships.map(relationship => relationship.entity);
       return entities
         .get({ sharedId: { $in: connectedEntitiesSharedId }, language }, [
@@ -192,6 +205,7 @@ export default {
             res[doc.sharedId] = doc;
             return res;
           }, {});
+
           let relationshipsCollection = new RelationshipCollection(..._relationships)
             .removeOtherLanguageTextReferences(connectedDocuments)
             .withConnectedData(connectedDocuments)

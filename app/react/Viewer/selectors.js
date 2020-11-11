@@ -48,6 +48,7 @@ const selectTargetDoc = createSelector(
   s => documentViewer(s).targetDoc,
   doc => doc
 );
+
 const selectTargetRefs = createSelector(
   s => documentViewer(s).targetDocReferences,
   references => references

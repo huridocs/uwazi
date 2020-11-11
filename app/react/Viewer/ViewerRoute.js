@@ -12,7 +12,9 @@ import { setReferences } from './actions/referencesActions';
 class ViewerRoute extends RouteHandler {
   static async requestState(requestParams, globalResources) {
     const { sharedId } = requestParams.data;
-    const [entity] = await EntitiesAPI.get(requestParams.set({ sharedId }));
+    const [entity] = await EntitiesAPI.get(
+      requestParams.set({ sharedId, omitRelationships: true })
+    );
 
     return entity.documents.length
       ? PDFView.requestState(requestParams, globalResources)
