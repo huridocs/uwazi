@@ -1,0 +1,54 @@
+.userManagementTabs {
+  position: relative;
+  margin-top: 15px;
+  border-bottom: 1px;
+  .tab-link {
+    display: inline-block;
+    padding: 5px 5px 0;
+    font-size: $f-size;
+    cursor: pointer;
+    border-bottom: 1px;
+    color: black;
+    &:hover {
+      color: $c-black;
+      border-bottom: 1px dotted $c-black;
+    }
+    &.tab-link-active {
+      color: $c-primary;
+      border-bottom: none;
+    }
+  }
+  .tab-content{
+    margin-top: 15px;
+  }
+}
+
+.group-list {
+  empty-cells: hide;
+  width: 100%;
+  white-space: nowrap;
+  border-collapse: separate;
+  border: 1px;
+  th,
+  td {
+    padding: 7px 10px;
+    font-size: $f-size;
+  }
+  th {
+    font-weight: bold;
+    border-bottom: 2px solid $c-grey-light;
+  }
+  tbody tr {
+    &:hover > td {
+      background-color: #f2f6fb;
+    }
+
+    &.selected > td {
+      background-color: #bed1ec;
+    }
+  }
+  tbody td {
+    border-bottom: 1px solid $c-grey-light;
+  }
+}
+
