@@ -184,12 +184,12 @@ describe('documentActions', () => {
         .get(`${APIURL}documents/search?searchTerm=term&fields=%5B%22field%22%5D`, {
           body: JSON.stringify('documents'),
         })
-        .get(`${APIURL}entities?sharedId=targetId`, {
+        .get(`${APIURL}entities?sharedId=targetId&omitRelationships=true`, {
           body: JSON.stringify({
             rows: [{ documents: [{ pdfInfo: 'test' }] }],
           }),
         })
-        .get(`${APIURL}entities?sharedId=docCalledWithWrongPDFFilename`, {
+        .get(`${APIURL}entities?sharedId=docCalledWithWrongPDFFilename&omitRelationships=true`, {
           body: JSON.stringify({
             rows: [
               {
@@ -206,12 +206,12 @@ describe('documentActions', () => {
             ],
           }),
         })
-        .get(`${APIURL}entities?sharedId=docWithPDFRdy`, {
+        .get(`${APIURL}entities?sharedId=docWithPDFRdy&omitRelationships=true`, {
           body: JSON.stringify({
             rows: [{ documents: [{ pdfInfo: 'processed pdf', _id: 'pdfReady' }] }],
           }),
         })
-        .get(`${APIURL}entities?sharedId=docWithPDFNotRdy`, {
+        .get(`${APIURL}entities?sharedId=docWithPDFNotRdy&omitRelationships=true`, {
           body: JSON.stringify({
             rows: [
               {
