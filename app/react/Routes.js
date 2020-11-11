@@ -65,34 +65,61 @@ function enterOnLibrary(_nxtState, replace) {
   trackPage();
 }
 
+function getDefaultLibraryComponent(defaultLibraryView) {
+  switch (defaultLibraryView) {
+    case 'table':
+      return {
+        component: LibraryTable,
+        onEnter: enterOnLibrary,
+      };
+    case 'map':
+      return {
+        component: LibraryMap,
+        onEnter,
+      };
+    case 'cards':
+    default:
+      return {
+        component: Library,
+        onEnter: enterOnLibrary,
+      };
+  }
+}
+
+function getPageIndexRoute(customHomePage) {
+  const pageId = customHomePage[customHomePage.indexOf('page') + 1];
+  const component = () => <PageView params={{ sharedId: pageId }} />;
+  component.requestState = requestParams =>
+    PageView.requestState(requestParams.set({ sharedId: pageId }));
+
+  return {
+    component,
+    customHomePageId: pageId,
+  };
+}
+
 function getIndexRoute(_nextState, callBack) {
   const state = store.getState();
   const homePageSetting = state.settings.collection.get('home_page');
   const customHomePage = homePageSetting ? homePageSetting.split('/') : [];
   const isPageRoute = customHomePage.includes('page');
 
-  let pageId = '';
-  let component = Library;
   if (isPageRoute) {
-    pageId = customHomePage[customHomePage.indexOf('page') + 1];
-    component = props => <PageView {...props} params={{ sharedId: pageId }} />;
-    component.requestState = requestParams =>
-      PageView.requestState(requestParams.set({ sharedId: pageId }));
+    return callBack(null, getPageIndexRoute(customHomePage));
   }
 
-  const indexRoute = {
-    component,
-    onEnter: (nxtState, replace) => {
-      if (!isPageRoute) {
+  if (homePageSetting) {
+    return callBack(null, {
+      onEnter: (_nxtState, replace) => {
         replace(customHomePage.join('/'));
-      }
-      if (!homePageSetting) {
-        enterOnLibrary(nxtState, replace);
-      }
-    },
-    customHomePageId: pageId,
-  };
-  callBack(null, indexRoute);
+      },
+    });
+  }
+
+  return callBack(
+    null,
+    getDefaultLibraryComponent(state.settings.collection.get('defaultLibraryView'))
+  );
 }
 
 const routes = (
