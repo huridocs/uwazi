@@ -63,6 +63,7 @@ export const settingsSchema = {
     contactEmail: { type: 'string' },
     senderEmail: { type: 'string' },
     home_page: { type: 'string' },
+    defaultLibraryView: { type: 'string' },
     private: { type: 'boolean' },
     cookiepolicy: { type: 'boolean' },
     mailerConfig: { type: 'string' },

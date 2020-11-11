@@ -8,6 +8,10 @@ describe('Menu', () => {
   let component;
   let props;
 
+  const render = () => {
+    component = shallow(<Menu {...props} />);
+  };
+
   beforeEach(() => {
     props = {
       user: Immutable.fromJS({}),
@@ -27,28 +31,47 @@ describe('Menu', () => {
     };
   });
 
-  const render = () => {
-    component = shallow(<Menu {...props} />);
-  };
+  describe('Links', () => {
+    it('Renders external and internal links', () => {
+      render();
 
-  it('Renders external and internal links', () => {
-    render();
+      const internalLink = component
+        .find('.menuNav-list')
+        .first()
+        .find(I18NLink);
+      expect(internalLink.length).toBe(3);
+      expect(internalLink.at(0).props().to).toBe('internal_url');
+      expect(internalLink.at(1).props().to).toBe('/');
+      expect(internalLink.at(2).props().to).toBe('/');
 
-    const internalLink = component
-      .find('.menuNav-list')
-      .first()
-      .find(I18NLink);
-    expect(internalLink.length).toBe(3);
-    expect(internalLink.at(0).props().to).toBe('internal_url');
-    expect(internalLink.at(1).props().to).toBe('/');
-    expect(internalLink.at(2).props().to).toBe('/');
+      const externalLink = component
+        .find('.menuNav-list')
+        .first()
+        .find('a');
+      expect(externalLink.length).toBe(1);
+      expect(externalLink.props().href).toBe('http://external_url');
+      expect(externalLink.props().target).toBe('_blank');
+    });
+  });
 
-    const externalLink = component
-      .find('.menuNav-list')
-      .first()
-      .find('a');
-    expect(externalLink.length).toBe(1);
-    expect(externalLink.props().href).toBe('http://external_url');
-    expect(externalLink.props().target).toBe('_blank');
+  describe('Default library view', () => {
+    it('should navigate to the cards view if no default view selected', () => {
+      render();
+
+      const libraryButton = component.find({ to: "/library/?q=(searchTerm:'asd')" });
+      expect(libraryButton.length).toBe(1);
+    });
+
+    it('should navigate to the selected default view', () => {
+      props = {
+        ...props,
+        defaultLibraryView: 'table',
+      };
+
+      render();
+
+      const libraryButton = component.find({ to: "/library/table/?q=(searchTerm:'asd')" });
+      expect(libraryButton.length).toBe(1);
+    });
   });
 });
