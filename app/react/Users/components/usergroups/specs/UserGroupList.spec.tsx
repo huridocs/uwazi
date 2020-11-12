@@ -7,11 +7,16 @@ describe('UserGroupList', () => {
   const defaultProps: UserGroupListProps = {
     userGroups: [group1, { _id: 'group2Id', name: 'Group 2', members: [] }],
     handleSelect: jasmine.createSpy('onClick'),
+    handleAddGroup: jasmine.createSpy('onClick'),
   };
   function render(args?: UserGroupListProps) {
     const props = { ...defaultProps, args };
     return shallow(
-      <UserGroupList userGroups={props.userGroups} handleSelect={props.handleSelect} />
+      <UserGroupList
+        userGroups={props.userGroups}
+        handleSelect={props.handleSelect}
+        handleAddGroup={props.handleAddGroup}
+      />
     );
   }
   describe('List of groups', () => {
@@ -36,7 +41,7 @@ describe('UserGroupList', () => {
       const component = render();
       const addGroupsButton = component.find('.settings-footer > button').at(0);
       addGroupsButton.simulate('click');
-      expect(defaultProps.handleSelect).toHaveBeenCalledWith();
+      expect(defaultProps.handleAddGroup).toHaveBeenCalledWith();
     });
   });
 });

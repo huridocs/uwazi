@@ -1,6 +1,8 @@
 import api from 'app/Users/components/usergroups/UserGroupsAPI';
 import { Dispatch } from 'redux';
 import { IStore } from 'app/istore';
+import { UserGroupSchema } from 'shared/types/userGroupType';
+import { RequestParams } from 'app/utils/RequestParams';
 import * as actions from '../actions';
 
 describe('User Groups actions', () => {
@@ -10,6 +12,7 @@ describe('User Groups actions', () => {
   beforeEach(() => {
     dispatch = jasmine.createSpy('dispatch');
     spyOn(api, 'getUserGroups').and.returnValue(Promise.resolve(userGroups));
+    spyOn(api, 'saveUserGroup').and.returnValue(Promise.resolve({ _id: 'group 1' }));
   });
 
   describe('Load user groups', () => {
@@ -17,6 +20,15 @@ describe('User Groups actions', () => {
       await actions.loadUserGroups()(dispatch);
       expect(api.getUserGroups).toHaveBeenCalledTimes(1);
       expect(dispatch).toHaveBeenCalledWith({ type: 'userGroups/SET', value: userGroups });
+    });
+  });
+
+  describe('Save user group', () => {
+    it('should dispatch the updated user group ', async () => {
+      const userGroup: UserGroupSchema = { name: 'new group', members: [] };
+      await actions.saveUserGroup(userGroup)(dispatch);
+      expect(api.saveUserGroup).toHaveBeenCalledWith(new RequestParams(userGroup));
+      expect(dispatch).toHaveBeenCalledWith({ type: 'userGroups/PUSH', value: { _id: 'group 1' } });
     });
   });
 });

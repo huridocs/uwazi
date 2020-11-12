@@ -51,4 +51,11 @@
     border-bottom: 1px solid $c-grey-light;
   }
 }
+.user-group-form {
+  .search-user{
+    width: 100%;
+    z-index: 1;
+    margin: 10px 0;
+  }
+}
 
