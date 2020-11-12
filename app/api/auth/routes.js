@@ -3,7 +3,6 @@ import cookieParser from 'cookie-parser';
 import mongoConnect from 'connect-mongo';
 import passport from 'passport';
 import session from 'express-session';
-import uniqueID from 'shared/uniqueID';
 import svgCaptcha from 'svg-captcha';
 import settings from 'api/settings';
 import urljoin from 'url-join';
@@ -21,7 +20,7 @@ export default app => {
 
   app.use(
     session({
-      secret: app.get('env') === 'production' ? uniqueID() : 'harvey&lola',
+      secret: app.get('env') === 'production' ? config.userSessionSecret : 'harvey&lola',
       store: new MongoStore({
         mongooseConnection: DB.connectionForDB(config.SHARED_DB),
       }),
