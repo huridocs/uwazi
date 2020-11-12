@@ -27,8 +27,8 @@ export const BODY_REQUIRED_ENDPOINTS = [
 function mustBeLogged(baseurl, method, body) {
   const isLoggedRequest =
     baseurl.includes('/api/') &&
-    !ignoredMethods.includes(method) &&
-    !IGNORED_ENDPOINTS.includes(baseurl);
+    ((!ignoredMethods.includes(method) && !IGNORED_ENDPOINTS.includes(baseurl)) ||
+      (baseurl === '/api/users' && method === 'DELETE'));
   const validBody = !BODY_REQUIRED_ENDPOINTS.includes(baseurl) || JSON.stringify(body) !== '{}';
   return isLoggedRequest && validBody;
 }

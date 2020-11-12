@@ -54,6 +54,23 @@ describe('activitylogMiddleware', () => {
     });
   });
 
+  it('should log api when user is deleted', () => {
+    req.url = '/api/users';
+    req.method = 'DELETE';
+    activitylogMiddleware(req, res, next);
+    expect(activitylog.save).toHaveBeenCalledWith({
+      body: '{"title":"Hi"}',
+      expireAt: date.addYearsToCurrentDate(1),
+      method: 'DELETE',
+      params: '{"some":"params"}',
+      query: '{"a":"query"}',
+      time: 1,
+      url: '/api/users',
+      user: 123,
+      username: 'admin',
+    });
+  });
+
   it('should save the log entry on filesystem', () => {
     activitylogMiddleware(req, res, next);
     expect(appendFile).toHaveBeenCalledWith(
