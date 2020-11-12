@@ -41,7 +41,7 @@ export async function requestViewerState(requestParams, globalResources) {
     : '';
 
   const references = await referencesAPI.get(
-    requestParams.set({ sharedId, file: doc.defaultDoc._id })
+    requestParams.set({ sharedId, file: doc.defaultDoc._id, onlyTextReferences: true })
   );
 
   return [
