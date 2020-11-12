@@ -1,4 +1,4 @@
-import { loadUserGroups as loadCourses } from 'app/Users/components/usergroups/actions/actions';
+import { loadUserGroups, saveUserGroup } from 'app/Users/components/usergroups/actions/actions';
 import { connect } from 'react-redux';
 import React, { useEffect, useState } from 'react';
 import { UserGroupList } from 'app/Users/components/usergroups/UserGroupList';
@@ -10,31 +10,48 @@ import { UserGroupSidePanel } from './UserGroupSidePanel';
 export interface UserGroupProps {
   userGroups: IImmutable<UserGroupSchema[]>;
   loadUserGroups: () => any;
+  saveUserGroup: (userGroup: UserGroupSchema) => any;
 }
 
-function UserGroups({ userGroups, loadUserGroups }: UserGroupProps) {
+function UserGroups({
+  userGroups,
+  loadUserGroups: loadGroups,
+  saveUserGroup: saveGroup,
+}: UserGroupProps) {
   const [sidePanelOpened, setSidePanelOpened] = useState(false);
+  const [selectedGroup, setSelectedGroup] = useState<UserGroupSchema>();
+  const list = userGroups ? userGroups.toJS() : [];
 
   useEffect(() => {
-    if (userGroups.size === 0) {
-      loadUserGroups().then();
+    if (userGroups === undefined || userGroups.size === 0) {
+      loadGroups().then();
     }
   }, []);
-  const list = userGroups.toJS();
-  function handleSelect() {
+
+  function handleSelect(userGroup: UserGroupSchema) {
+    setSelectedGroup(userGroup);
+    setSidePanelOpened(true);
+  }
+  function handleAddGroup() {
+    setSelectedGroup(undefined);
     setSidePanelOpened(true);
   }
   function closeSidePanel() {
+    setSelectedGroup(undefined);
     setSidePanelOpened(false);
   }
-  function handleSave(event: { preventDefault: () => void }) {
-    event.preventDefault();
+  function handleSave(userGroup: UserGroupSchema) {
+    saveGroup(userGroup);
   }
   return (
     <>
-      <UserGroupList userGroups={list} handleSelect={handleSelect} />
+      <UserGroupList
+        userGroups={list}
+        handleSelect={handleSelect}
+        handleAddGroup={handleAddGroup}
+      />
       <UserGroupSidePanel
-        userGroup={(list && list[0]) || {}}
+        userGroup={selectedGroup}
         opened={sidePanelOpened}
         closePanel={closeSidePanel}
         onSave={handleSave}
@@ -50,7 +67,8 @@ function mapStateToProps(state: IStore) {
 }
 
 const mapDispatchToProps = {
-  loadUserGroups: loadCourses,
+  loadUserGroups,
+  saveUserGroup,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(UserGroups);

@@ -25,17 +25,17 @@ describe('UserGroupSidePanel', () => {
     );
   }
   describe('Side panel opening', () => {
-    it('should be opened when opened prop is true', () => {
+    it('should set SidePanel as open if opened prop is true', () => {
       const component = render();
       const sidePanel = component.find(SidePanel).at(0);
       expect(sidePanel.props().open).toBe(true);
     });
-    /*
-    it('should call the closePanel method on X button click', () => {
+
+    it('should call the closePanel method on Discard Changes button click', () => {
       const component = render();
-      const closeButton = component.find('.closeSidepanel');
-      closeButton.simulate('click');
+      const discardChangesBtn = component.find({ id: 'discardChangesBtn' }).at(0);
+      discardChangesBtn.simulate('click');
       expect(defaultProps.closePanel).toHaveBeenCalled();
-    });*/
+    });
   });
 });

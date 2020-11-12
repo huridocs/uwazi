@@ -1,14 +1,18 @@
 import React, { useState } from 'react';
 import { UserGroupSchema } from 'shared/types/userGroupType';
 import { Icon } from 'UI';
-import { Translate } from 'app/I18N';
 
 export interface UserGroupListProps {
   userGroups: UserGroupSchema[];
-  handleSelect: (userGroup?: UserGroupSchema) => void;
+  handleSelect: (userGroup: UserGroupSchema) => void;
+  handleAddGroup: () => void;
 }
 
-const UserGroupListComponent = ({ userGroups, handleSelect }: UserGroupListProps) => {
+const UserGroupListComponent = ({
+  userGroups,
+  handleSelect,
+  handleAddGroup,
+}: UserGroupListProps) => {
   const [selectedId, setSelectedId] = useState();
   function selectRow(userGroup: UserGroupSchema) {
     setSelectedId(userGroup._id);
@@ -35,11 +39,9 @@ const UserGroupListComponent = ({ userGroups, handleSelect }: UserGroupListProps
         </tbody>
       </table>
       <div className="settings-footer">
-        <button className="btn btn-success" onClick={() => handleSelect()}>
+        <button type="button" className="btn btn-success" onClick={() => handleAddGroup()}>
           <Icon icon="plus" />
-          <span className="btn-label">
-            <Translate>Add group</Translate>
-          </span>
+          <span className="btn-label">Add group</span>
         </button>
       </div>
     </>
