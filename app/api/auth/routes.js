@@ -82,13 +82,13 @@ export default app => {
     const captcha = svgCaptcha.create({ ignoreChars: '0OoiILluvUV' });
     const storedCaptcha = await CaptchaModel.save({ captcha: captcha.text });
 
-    res.send({ svg: captcha.data, id: storedCaptcha._id.toString() });
+    res.json({ svg: captcha.data, id: storedCaptcha._id.toString() });
   });
 
   app.get('/api/remotecaptcha', async (_req, res) => {
     const { publicFormDestination } = await settings.get({}, { publicFormDestination: 1 });
-    const remoteResponse = await fetch(urljoin(publicFormDestination, '/captcha'));
+    const remoteResponse = await fetch(urljoin(publicFormDestination, '/api/captcha'));
 
-    remoteResponse.body.pipe(res);
+    res.json(remoteResponse.body);
   });
 };

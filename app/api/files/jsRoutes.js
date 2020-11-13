@@ -120,11 +120,11 @@ const routes = app => {
       proxyReqPathResolver() {
         return '/api/public';
       },
-      proxyReqOptDecorator(proxyReqOpts, srcReq) {
+      proxyReqOptDecorator(proxyReqOpts) {
         const { tenant, ...headers } = proxyReqOpts.headers;
         return {
           ...proxyReqOpts,
-          headers: { ...headers, Cookie: srcReq.session.remotecookie },
+          headers: { ...headers },
         };
       },
     })(req, res, next);

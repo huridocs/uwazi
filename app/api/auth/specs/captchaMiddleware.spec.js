@@ -37,8 +37,7 @@ describe('captchaMiddleware', () => {
 
   it('should return an error when the captcha does not match', async () => {
     const middleWare = captchaMiddleware();
-    req.body.captcha = '123';
-    req.cookies.captcha = 'wrongId';
+    req.body.captcha = JSON.stringify({ captcha: '123', id: 'wrongId' });
     await middleWare(req, res, next);
 
     expect(res.status).toHaveBeenCalledWith(403);
@@ -49,8 +48,7 @@ describe('captchaMiddleware', () => {
   describe('when the captcha matches', () => {
     it('should call next', async () => {
       const middleWare = captchaMiddleware();
-      req.body.captcha = 'k0n2170';
-      req.cookies.captcha = captchaId.toString();
+      req.body.captcha = JSON.stringify({ captcha: 'k0n2170', id: captchaId.toString() });
       await middleWare(req, res, next);
 
       expect(res.status).not.toHaveBeenCalled();
@@ -60,8 +58,7 @@ describe('captchaMiddleware', () => {
 
     it('should delete the captcha from the body', async () => {
       const middleWare = captchaMiddleware();
-      req.body.captcha = 'k0n2170';
-      req.cookies.captcha = captchaId.toString();
+      req.body.captcha = JSON.stringify({ captcha: 'k0n2170', id: captchaId.toString() });
       await middleWare(req, res, next);
 
       expect(req.body.captcha).not.toBeDefined();
@@ -69,8 +66,7 @@ describe('captchaMiddleware', () => {
 
     it('should delete the captcha from the data base', async () => {
       const middleWare = captchaMiddleware();
-      req.body.captcha = 'k0n2170';
-      req.cookies.captcha = captchaId.toString();
+      req.body.captcha = JSON.stringify({ captcha: 'k0n2170', id: captchaId.toString() });
       await middleWare(req, res, next);
       const captchas = await CaptchaModel.get();
       expect(captchas.length).toBe(0);
