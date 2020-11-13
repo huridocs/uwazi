@@ -16,7 +16,7 @@ export default (app: Application) => {
 
   app.post(
     '/api/usergroups',
-    needsAuthorization(['admin']),
+    //needsAuthorization(['admin']),
     validation.validateRequest({
       type: 'object',
       properties: {

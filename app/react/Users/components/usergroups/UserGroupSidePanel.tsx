@@ -28,12 +28,15 @@ const UserGroupSidePanelComponent = ({
   }
 
   function updateGroup() {}
+  function saveGroup() {
+    onSave({ ...userGroup, members: groupMembers });
+  }
 
   return (
     <SidePanel open={opened}>
       <div className="sidepanel-header">{userGroup._id ? 'Edit' : 'Add'} Group</div>
       <div className="sidepanel-body">
-        <form className="user-group-form" onSubmit={onSave}>
+        <form id="userGroupFrom" className="user-group-form" onSubmit={onSave}>
           <div id="name_field" className="form-group nested-selector">
             <label htmlFor="userGroup.name">Name of the group</label>
             <input
@@ -78,8 +81,8 @@ const UserGroupSidePanelComponent = ({
       </div>
       <div className="sidepanel-footer">
         <button
-          type="submit"
           id="discardChangesBtn"
+          type="button"
           className="btn btn-primary"
           onClick={closePanel}
           aria-label="Close side panel"
@@ -96,7 +99,7 @@ const UserGroupSidePanelComponent = ({
           <Icon icon="trash-alt" />
           <span className="btn-label">Delete Group</span>
         </button>
-        <button type="submit" form="tocForm" onClick={closePanel} className="btn btn-success">
+        <button type="submit" form="userGroupFrom" onClick={saveGroup} className="btn btn-success">
           <Icon icon="save" />
           <span className="btn-label">Save Group</span>
         </button>

@@ -31,4 +31,5 @@ export interface UserGroupSchema {
     role?: string;
     email?: string;
   }[];
+  __v?: number;
 }
