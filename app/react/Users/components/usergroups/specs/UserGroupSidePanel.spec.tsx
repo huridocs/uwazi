@@ -82,5 +82,14 @@ describe('UserGroupSidePanel', () => {
         expect(members.at(0).key()).toBe('user2');
       });
     });
+
+    describe('Saving user group', () => {
+      it('should call the save callback when submit', () => {
+        const component = render();
+        const saveChangesBtn = component.find({ type: 'submit' }).at(0);
+        saveChangesBtn.simulate('click');
+        expect(defaultProps.onSave).toHaveBeenCalledWith(defaultProps.userGroup);
+      });
+    });
   });
 });

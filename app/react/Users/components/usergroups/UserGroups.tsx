@@ -40,8 +40,8 @@ function UserGroups({
     setSelectedGroup(undefined);
     setSidePanelOpened(false);
   }
-  function handleSave(userGroup: UserGroupSchema) {
-    saveGroup(userGroup);
+  async function handleSave(userGroup: UserGroupSchema) {
+    await saveGroup(userGroup);
   }
   return (
     <>

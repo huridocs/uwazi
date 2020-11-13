@@ -26,6 +26,7 @@ export const userGroupSchema = {
         required: ['_id'],
       },
     },
+    __v: { type: 'number' },
   },
   required: ['name', 'members'],
 };
