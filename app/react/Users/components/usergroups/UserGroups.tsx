@@ -33,7 +33,7 @@ function UserGroups({
     setSidePanelOpened(true);
   }
   function handleAddGroup() {
-    setSelectedGroup(undefined);
+    setSelectedGroup({ name: '', members: [] });
     setSidePanelOpened(true);
   }
   function closeSidePanel() {
@@ -50,12 +50,14 @@ function UserGroups({
         handleSelect={handleSelect}
         handleAddGroup={handleAddGroup}
       />
-      <UserGroupSidePanel
-        userGroup={selectedGroup}
-        opened={sidePanelOpened}
-        closePanel={closeSidePanel}
-        onSave={handleSave}
-      />
+      {selectedGroup && (
+        <UserGroupSidePanel
+          userGroup={selectedGroup}
+          opened={sidePanelOpened}
+          closePanel={closeSidePanel}
+          onSave={handleSave}
+        />
+      )}
     </>
   );
 }

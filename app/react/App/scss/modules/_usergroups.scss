@@ -57,5 +57,12 @@
     z-index: 1;
     margin: 10px 0;
   }
+  .user-group-members{
+    margin: 10px 15px;
+    .user-group-member {
+      display: flex;
+      justify-content: space-between;
+    }
+  }
 }
 

@@ -2,6 +2,16 @@ import { objectIdSchema } from 'shared/types/commonSchemas';
 
 export const emitSchemaTypes = true;
 
+export const groupMemberSchema = {
+  type: 'object',
+  additionalProperties: false,
+  properties: {
+    _id: objectIdSchema,
+    username: { type: 'string' },
+    role: { type: 'string' },
+    email: { type: 'string' },
+  },
+};
 export const userGroupSchema = {
   $schema: 'http://json-schema.org/schema#',
   type: 'object',
@@ -12,14 +22,7 @@ export const userGroupSchema = {
     members: {
       type: 'array',
       items: {
-        type: 'object',
-        additionalProperties: false,
-        properties: {
-          _id: objectIdSchema,
-          username: { type: 'string' },
-          role: { type: 'string' },
-          email: { type: 'string' },
-        },
+        ...groupMemberSchema,
         required: ['_id'],
       },
     },

@@ -3,6 +3,17 @@
 
 import { ObjectIdSchema } from 'shared/types/commonTypes';
 
+export interface GroupMemberSchema {
+  _id?:
+    | string
+    | {
+        [k: string]: unknown | undefined;
+      };
+  username?: string;
+  role?: string;
+  email?: string;
+}
+
 export interface UserGroupSchema {
   _id?:
     | string
