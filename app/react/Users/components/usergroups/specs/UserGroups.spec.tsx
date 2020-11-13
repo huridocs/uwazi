@@ -71,10 +71,13 @@ describe('UserGroups', () => {
     });
   });
   describe('user group side panel', () => {
+    let listComponent: any;
+    beforeEach(() => {
+      render();
+      listComponent = component.find(UserGroupList).get(0);
+    });
     describe('open existing group', () => {
       it('should pass to the side panel the received user group', () => {
-        render();
-        const listComponent = component.find(UserGroupList).get(0);
         listComponent.props.handleSelect(userGroups[1]);
         component.update();
         const sidePanel = component.find(UserGroupSidePanel).get(0);
@@ -83,32 +86,27 @@ describe('UserGroups', () => {
       });
     });
     describe('create new group', () => {
-      it('should pass undefined as group to the side panel', () => {
-        render();
-        const listComponent = component.find(UserGroupList).get(0);
+      it('should pass an empty new group to the side panel', () => {
         listComponent.props.handleAddGroup();
         component.update();
         const sidePanel = component.find(UserGroupSidePanel).get(0);
-        expect(sidePanel.props.userGroup).toEqual(undefined);
+        expect(sidePanel.props.userGroup).toEqual({ name: '', members: [] });
         expect(sidePanel.props.opened).toEqual(true);
       });
     });
     describe('closing panel', () => {
-      it('should set opened param of side panel with as false', () => {
-        render();
-        const listComponent = component.find(UserGroupList).get(0);
+      it('should hide side panel if opened param is false', () => {
         listComponent.props.handleSelect(userGroups[1]);
         const sidePanel = component.find(UserGroupSidePanel).get(0);
         sidePanel.props.closePanel();
         component.update();
-        const updatedSidePanel = component.find(UserGroupSidePanel).get(0);
-        expect(updatedSidePanel.props.opened).toEqual(false);
-        expect(updatedSidePanel.props.userGroup).toEqual(undefined);
+        const updatedSidePanel = component.find(UserGroupSidePanel);
+        expect(updatedSidePanel.length).toEqual(0);
       });
     });
     describe('saving group', () => {
       it('should save the received user group', () => {
-        render();
+        listComponent.props.handleSelect(userGroups[1]);
         const updatedSidePanel = component.find(UserGroupSidePanel).get(0);
         updatedSidePanel.props.onSave(userGroups[1]);
         expect(saveUserGroup).toHaveBeenCalledWith(userGroups[1]);
