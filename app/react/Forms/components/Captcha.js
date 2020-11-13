@@ -1,41 +1,48 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import api from '../../utils/api';
 
 class Captcha extends Component {
   constructor(props) {
     super(props);
     this.onChange = this.onChange.bind(this);
     const { refresh, remote } = this.props;
-    const url = remote ? '/remotecaptcha' : '/captcha';
+    const url = remote ? 'remotecaptcha' : 'captcha';
     this.state = { captchaUrl: url };
     refresh(this.refresh.bind(this));
+    this.state = { svg: '', id: '' };
+  }
+
+  componentDidMount() {
+    this.refresh();
   }
 
   onChange(e) {
     const { onChange } = this.props;
-    onChange(e.target.value);
+    onChange({ captcha: e.target.value, id: this.state.id });
   }
 
-  refresh() {
+  async refresh() {
     const { remote } = this.props;
     const url = remote ? 'remotecaptcha' : 'captcha';
-    this.setState({ captchaUrl: `/${url}?v=${Math.random() * 1000}` });
+    const response = await api.get(url);
+    this.setState(response.json);
   }
 
   render() {
     const { value } = this.props;
-    const { captchaUrl } = this.state;
+    const { svg } = this.state;
     return (
       <div className="captcha">
-        <img src={captchaUrl} alt="captcha" />
-        <input className="form-control" onChange={this.onChange} value={value} />
+        <div dangerouslySetInnerHTML={{ __html: svg }} />
+        <input className="form-control" onChange={this.onChange} value={value.captcha} />
       </div>
     );
   }
 }
 
 Captcha.defaultProps = {
-  value: '',
+  value: { captcha: '', id: '' },
   refresh: () => {},
   remote: false,
 };

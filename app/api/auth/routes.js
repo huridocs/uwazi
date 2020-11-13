@@ -10,6 +10,7 @@ import urljoin from 'url-join';
 import { DB } from 'api/odm';
 import { config } from 'api/config';
 import cors from 'cors';
+import { CaptchaModel } from './CaptchaModel';
 
 import { validation } from '../utils';
 
@@ -28,13 +29,6 @@ export default app => {
     resave: false,
     saveUninitialized: false,
   };
-
-  if (config.corsCookie) {
-    sessionConfig.cookie = {
-      sameSite: 'none',
-      secure: true,
-    };
-  }
 
   app.use(session(sessionConfig));
   app.use(passport.initialize());
@@ -84,19 +78,17 @@ export default app => {
     credentials: true,
     optionsSuccessStatus: 200,
   };
-  app.get('/captcha', cors(corsOptions), (req, res) => {
+  app.get('/api/captcha', cors(corsOptions), async (_req, res) => {
     const captcha = svgCaptcha.create({ ignoreChars: '0OoiILluvUV' });
-    req.session.captcha = captcha.text;
-    res.type('svg');
-    res.send(captcha.data);
+    const storedCaptcha = await CaptchaModel.save({ captcha: captcha.text });
+
+    res.send({ svg: captcha.data, id: storedCaptcha._id.toString() });
   });
 
-  app.get('/remotecaptcha', async (req, res) => {
+  app.get('/api/remotecaptcha', async (_req, res) => {
     const { publicFormDestination } = await settings.get({}, { publicFormDestination: 1 });
     const remoteResponse = await fetch(urljoin(publicFormDestination, '/captcha'));
-    const [remotecookie] = remoteResponse.headers._headers['set-cookie'];
-    req.session.remotecookie = remotecookie;
-    res.type('svg');
+
     remoteResponse.body.pipe(res);
   });
 };

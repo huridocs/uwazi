@@ -1,56 +1,79 @@
+import db from 'api/utils/testing_db';
+import { catchErrors } from 'api/utils/jasmineHelpers';
 import captchaMiddleware from '../captchaMiddleware';
+import { CaptchaModel } from '../CaptchaModel';
 
 describe('captchaMiddleware', () => {
   let req;
   let res;
   let next;
-
-  beforeEach(() => {
-    req = { body: {}, session: {} };
+  let captchaId;
+  beforeEach(done => {
+    req = { body: {}, session: {}, cookies: {} };
     res = {
       status: jasmine.createSpy('status'),
       json: jasmine.createSpy('json'),
     };
     next = jasmine.createSpy('next');
+
+    captchaId = db.id();
+    const fixtures = {
+      captchas: [{ _id: captchaId, captcha: 'k0n2170' }],
+    };
+
+    db.clearAllAndLoad(fixtures)
+      .then(done)
+      .catch(catchErrors(done));
   });
 
-  it('should return an error when there is no captcha in the request', () => {
+  it('should return an error when there is no captcha in the request', async () => {
     const middleWare = captchaMiddleware();
-    middleWare(req, res, next);
+    await middleWare(req, res, next);
 
     expect(res.status).toHaveBeenCalledWith(403);
     expect(res.json).toHaveBeenCalledWith({ error: 'Captcha error', message: 'Forbidden' });
     expect(next).not.toHaveBeenCalled();
   });
 
-  it('should return an error when the captcha does not match', () => {
+  it('should return an error when the captcha does not match', async () => {
     const middleWare = captchaMiddleware();
     req.body.captcha = '123';
-    req.session.captcha = '456';
-    middleWare(req, res, next);
+    req.cookies.captcha = 'wrongId';
+    await middleWare(req, res, next);
 
     expect(res.status).toHaveBeenCalledWith(403);
     expect(res.json).toHaveBeenCalledWith({ error: 'Captcha error', message: 'Forbidden' });
     expect(next).not.toHaveBeenCalled();
   });
 
-  it('should call next when the captcha matches', () => {
-    const middleWare = captchaMiddleware();
-    req.body.captcha = '123';
-    req.session.captcha = '123';
-    middleWare(req, res, next);
+  describe('when the captcha matches', () => {
+    it('should call next', async () => {
+      const middleWare = captchaMiddleware();
+      req.body.captcha = 'k0n2170';
+      req.cookies.captcha = captchaId.toString();
+      await middleWare(req, res, next);
 
-    expect(res.status).not.toHaveBeenCalled();
-    expect(res.json).not.toHaveBeenCalled();
-    expect(next).toHaveBeenCalled();
-  });
+      expect(res.status).not.toHaveBeenCalled();
+      expect(res.json).not.toHaveBeenCalled();
+      expect(next).toHaveBeenCalled();
+    });
 
-  it('should delete the captcha from the body', () => {
-    const middleWare = captchaMiddleware();
-    req.body.captcha = '123';
-    req.session.captcha = '123';
-    middleWare(req, res, next);
+    it('should delete the captcha from the body', async () => {
+      const middleWare = captchaMiddleware();
+      req.body.captcha = 'k0n2170';
+      req.cookies.captcha = captchaId.toString();
+      await middleWare(req, res, next);
 
-    expect(req.body.captcha).not.toBeDefined();
+      expect(req.body.captcha).not.toBeDefined();
+    });
+
+    it('should delete the captcha from the data base', async () => {
+      const middleWare = captchaMiddleware();
+      req.body.captcha = 'k0n2170';
+      req.cookies.captcha = captchaId.toString();
+      await middleWare(req, res, next);
+      const captchas = await CaptchaModel.get();
+      expect(captchas.length).toBe(0);
+    });
   });
 });
