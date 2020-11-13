@@ -4,7 +4,7 @@ import activitylog from './activitylog';
 
 const ignoredMethods = ['GET', 'OPTIONS', 'HEAD'];
 export const IGNORED_ENDPOINTS = [
-  '/api/users',
+  // '/api/users',
   '/api/login',
   '/api/contact',
   '/api/unlockaccount',
@@ -27,8 +27,8 @@ export const BODY_REQUIRED_ENDPOINTS = [
 function mustBeLogged(baseurl, method, body) {
   const isLoggedRequest =
     baseurl.includes('/api/') &&
-    ((!ignoredMethods.includes(method) && !IGNORED_ENDPOINTS.includes(baseurl)) ||
-      (baseurl === '/api/users' && method === 'DELETE'));
+    !ignoredMethods.includes(method) &&
+    !IGNORED_ENDPOINTS.includes(baseurl);
   const validBody = !BODY_REQUIRED_ENDPOINTS.includes(baseurl) || JSON.stringify(body) !== '{}';
   return isLoggedRequest && validBody;
 }
@@ -39,6 +39,7 @@ export default (req, _res, next) => {
   if (mustBeLogged(baseurl, method, body)) {
     const time = Date.now();
     const expireAt = date.addYearsToCurrentDate(1);
+    if (body.password) body.password = '*****';
     const entry = {
       url: baseurl,
       method,
