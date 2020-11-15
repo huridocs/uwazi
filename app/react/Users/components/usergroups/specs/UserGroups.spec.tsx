@@ -105,11 +105,14 @@ describe('UserGroups', () => {
       });
     });
     describe('saving group', () => {
-      it('should save the received user group', () => {
+      it('should save the received user group', async () => {
         listComponent.props.handleSelect(userGroups[1]);
+        const groupToSave = { ...userGroups[1], name: 'new name' };
         const updatedSidePanel = component.find(UserGroupSidePanel).get(0);
-        updatedSidePanel.props.onSave(userGroups[1]);
-        expect(saveUserGroup).toHaveBeenCalledWith(userGroups[1]);
+        await updatedSidePanel.props.onSave(groupToSave);
+        component.update();
+        expect(saveUserGroup).toHaveBeenCalledWith(groupToSave);
+        expect(component.find(UserGroupSidePanel).length).toEqual(0);
       });
     });
   });

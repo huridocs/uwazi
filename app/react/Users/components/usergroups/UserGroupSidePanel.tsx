@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { UserGroupSchema, GroupMemberSchema } from 'shared/types/userGroupType';
 import { SidePanel } from 'app/Layout';
 import { Icon } from 'UI';
@@ -17,17 +17,25 @@ const UserGroupSidePanelComponent = ({
   closePanel,
   onSave,
 }: UserGroupSidePanelProps) => {
-  const [groupMembers, setGroupMembers] = useState(userGroup.members as GroupMemberSchema[]);
+  const [groupMembers, setGroupMembers] = useState<GroupMemberSchema[]>([]);
+  const [name, setName] = useState();
+
+  useEffect(() => {
+    setName(userGroup.name);
+    setGroupMembers([...userGroup.members]);
+  }, [userGroup]);
+
   function addUser(user: GroupMemberSchema) {
     setGroupMembers([...groupMembers, user]);
   }
   function removeUser(user: GroupMemberSchema) {
     const index = groupMembers.indexOf(user);
     groupMembers.splice(index, 1);
-    setGroupMembers([...groupMembers] as GroupMemberSchema[]);
+    setGroupMembers([...groupMembers]);
   }
-
-  function updateGroup() {}
+  function updateGroup(event: any) {
+    setName(event.value);
+  }
   function saveGroup() {
     onSave({ ...userGroup, members: groupMembers });
   }
@@ -36,14 +44,14 @@ const UserGroupSidePanelComponent = ({
     <SidePanel open={opened}>
       <div className="sidepanel-header">{userGroup._id ? 'Edit' : 'Add'} Group</div>
       <div className="sidepanel-body">
-        <form id="userGroupFrom" className="user-group-form" onSubmit={onSave}>
+        <form id="userGroupFrom" className="user-group-form">
           <div id="name_field" className="form-group nested-selector">
             <label htmlFor="userGroup.name">Name of the group</label>
             <input
               type="text"
               className="form-control"
               autoComplete="off"
-              value={userGroup.name}
+              value={name}
               onChange={updateGroup}
             />
           </div>
@@ -99,7 +107,7 @@ const UserGroupSidePanelComponent = ({
           <Icon icon="trash-alt" />
           <span className="btn-label">Delete Group</span>
         </button>
-        <button type="submit" form="userGroupFrom" onClick={saveGroup} className="btn btn-success">
+        <button type="button" form="userGroupFrom" onClick={saveGroup} className="btn btn-success">
           <Icon icon="save" />
           <span className="btn-label">Save Group</span>
         </button>

@@ -42,6 +42,7 @@ function UserGroups({
   }
   async function handleSave(userGroup: UserGroupSchema) {
     await saveGroup(userGroup);
+    closeSidePanel();
   }
   return (
     <>
