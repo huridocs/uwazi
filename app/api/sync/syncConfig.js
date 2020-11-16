@@ -116,13 +116,7 @@ export default async (config, targetName) => {
         whitelistedRelationtypes,
       });
 
-      const { skip, data } = await processNamespaces.process();
-
-      if (skip) {
-        return Promise.resolve();
-      }
-
-      return data;
+      return processNamespaces.process();
     },
   };
 };

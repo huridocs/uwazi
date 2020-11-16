@@ -467,7 +467,7 @@ describe('syncWorker', () => {
         });
 
         describe('When entity no longer passes filter', () => {
-          it('should delete target entities (and relationships)', async () => {
+          it('should delete target entities', async () => {
             // async entitesModel.saveMultiple(new);
           });
         });

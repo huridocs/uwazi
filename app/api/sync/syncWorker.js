@@ -36,14 +36,17 @@ export default {
         return updateSyncs(name, change.timestamp);
       }
 
-      const data = await config.shouldSync(change);
+      const { skip, data } = await config.shouldSync(change);
+
+      if (skip) {
+        await synchronizer.syncData({ url, change, data: { _id: change.mongoId } }, 'delete');
+      }
 
       if (data) {
         await synchronizer.syncData({ url, change, data }, 'post', lastSync);
-        return updateSyncs(name, change.timestamp);
       }
 
-      return Promise.resolve();
+      return updateSyncs(name, change.timestamp);
     }, Promise.resolve());
   },
 
