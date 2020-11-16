@@ -4,9 +4,9 @@ import settings from 'api/settings/settings';
 export default {
   async sendMessage({ email, name, message }) {
     const siteSettings = await settings.get();
-    const { senderEmail, siteName } = mailer.createSenderDetails(siteSettings);
+    const emailSender = mailer.createSenderDetails(siteSettings);
     const mailOptions = {
-      from: `"${siteName}" <${senderEmail}>`,
+      from: emailSender,
       to: siteSettings.contactEmail,
       subject: `Contact mesage from ${name} ${email}`,
       text: message,

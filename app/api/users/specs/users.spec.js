@@ -400,9 +400,9 @@ describe('Users', () => {
         })
         .then(recoverPasswordDb => {
           expect(recoverPasswordDb[0].user.toString()).toBe(userId.toString());
-          const { senderEmail, siteName } = mailer.createSenderDetails(settings[0]);
+          const emailSender = mailer.createSenderDetails(settings[0]);
           const expectedMailOptions = {
-            from: `"${siteName}" <${senderEmail}>`,
+            from: emailSender,
             to: 'test@email.com',
             subject: 'Password set',
             text: `To set your password click on the following link:\ndomain/setpassword/${key}`,
@@ -436,9 +436,9 @@ describe('Users', () => {
         })
         .then(recoverPasswordDb => {
           expect(recoverPasswordDb[0].user.toString()).toBe(newUserId);
-          const { senderEmail, siteName } = mailer.createSenderDetails(settings[0]);
+          const emailSender = mailer.createSenderDetails(settings[0]);
           const expectedMailOptions = {
-            from: `"${siteName}" <${senderEmail}>`,
+            from: emailSender,
             to: 'peter@parker.com',
             subject: 'Welcome to Uwazi instance',
             text: `To set your password click on the following link:\ndomain/setpassword/${key}`,
