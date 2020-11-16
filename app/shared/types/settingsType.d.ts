@@ -31,6 +31,7 @@ export interface Settings {
   project?: string;
   site_name?: string;
   contactEmail?: string;
+  senderEmail?: string;
   home_page?: string;
   private?: boolean;
   cookiepolicy?: boolean;
