@@ -1,18 +1,13 @@
 /**
  * @jest-environment jsdom
  */
-import React from 'react';
 import Immutable from 'immutable';
-import thunk from 'redux-thunk';
-import configureStore from 'redux-mock-store';
-import { Provider } from 'react-redux';
-import { mount } from 'enzyme';
 import { UserGroupSchema } from 'shared/types/userGroupType';
-import { renderConnected } from 'app/Templates/specs/utils/renderConnected';
+import { renderConnected, renderConnectedMount } from 'app/Templates/specs/utils/renderConnected';
 import { UserGroupList } from 'app/Users/components/usergroups/UserGroupList';
 import { loadUserGroups, saveUserGroup } from 'app/Users/components/usergroups/actions/actions';
-import UserGroups from 'app/Users/components/usergroups/UserGroups';
 import { UserGroupSidePanel } from 'app/Users/components/usergroups/UserGroupSidePanel';
+import UserGroups from 'app/Users/components/usergroups/UserGroups';
 
 jest.mock('app/Users/components/usergroups/actions/actions', () => ({
   loadUserGroups: jest.fn().mockReturnValue(async () => Promise.resolve()),
@@ -50,23 +45,14 @@ describe('UserGroups', () => {
   });
 
   describe('mapDispatchToProps', () => {
-    function renderWithMount(state: any) {
-      const mockStoreCreator = configureStore([thunk]);
-      const store = mockStoreCreator(state);
-      mount(
-        <Provider store={store}>
-          <UserGroups />
-        </Provider>
-      );
-    }
     it('Should fetch user groups if there are no groups loaded', () => {
       const state = { userGroups: Immutable.fromJS([]) };
-      renderWithMount(state);
+      renderConnectedMount(UserGroups, state);
       expect(loadUserGroups).toHaveBeenCalledTimes(1);
     });
     it('Should fetch user groups if initial state of groups is undefined', () => {
       const state = {};
-      renderWithMount(state);
+      renderConnectedMount(UserGroups, state);
       expect(loadUserGroups).toHaveBeenCalledTimes(2);
     });
   });

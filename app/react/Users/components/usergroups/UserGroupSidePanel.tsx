@@ -19,7 +19,6 @@ const UserGroupSidePanelComponent = ({
 }: UserGroupSidePanelProps) => {
   const [groupMembers, setGroupMembers] = useState<GroupMemberSchema[]>([]);
   const [name, setName] = useState();
-
   useEffect(() => {
     setName(userGroup.name);
     setGroupMembers([...userGroup.members]);
@@ -44,7 +43,7 @@ const UserGroupSidePanelComponent = ({
     <SidePanel open={opened}>
       <div className="sidepanel-header">{userGroup._id ? 'Edit' : 'Add'} Group</div>
       <div className="sidepanel-body">
-        <form id="userGroupFrom" className="user-group-form">
+        <form id="userGroupFrom" className="user-group-form" onSubmit={saveGroup}>
           <div id="name_field" className="form-group nested-selector">
             <label htmlFor="userGroup.name">Name of the group</label>
             <input
@@ -107,7 +106,7 @@ const UserGroupSidePanelComponent = ({
           <Icon icon="trash-alt" />
           <span className="btn-label">Delete Group</span>
         </button>
-        <button type="button" form="userGroupFrom" onClick={saveGroup} className="btn btn-success">
+        <button type="submit" form="userGroupFrom" className="btn btn-success">
           <Icon icon="save" />
           <span className="btn-label">Save Group</span>
         </button>

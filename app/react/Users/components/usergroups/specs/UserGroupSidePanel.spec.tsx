@@ -1,10 +1,12 @@
-import React from 'react';
-import { shallow } from 'enzyme';
+/**
+ * @jest-environment jsdom
+ */
+import { SidePanel } from 'app/Layout';
 import {
   UserGroupSidePanel,
   UserGroupSidePanelProps,
 } from 'app/Users/components/usergroups/UserGroupSidePanel';
-import { SidePanel } from 'app/Layout';
+import { renderConnectedMount } from 'app/Templates/specs/utils/renderConnected';
 
 describe('UserGroupSidePanel', () => {
   const defaultProps: UserGroupSidePanelProps = {
@@ -22,14 +24,7 @@ describe('UserGroupSidePanel', () => {
   };
   function render(args?: UserGroupSidePanelProps) {
     const props = { ...defaultProps, args };
-    return shallow(
-      <UserGroupSidePanel
-        userGroup={props.userGroup}
-        opened={props.opened}
-        closePanel={props.closePanel}
-        onSave={props.onSave}
-      />
-    );
+    return renderConnectedMount(UserGroupSidePanel, {}, props);
   }
   describe('Side panel opening', () => {
     it('should set SidePanel as open if opened prop is true', () => {
@@ -86,8 +81,9 @@ describe('UserGroupSidePanel', () => {
     describe('Saving user group', () => {
       it('should call the save callback when submit', () => {
         const component = render();
-        const saveChangesBtn = component.find({ type: 'submit' }).at(0);
-        saveChangesBtn.simulate('click');
+        const form = component.find('form').at(0);
+        form.simulate('submit');
+        component.update();
         expect(defaultProps.onSave).toHaveBeenCalledWith(defaultProps.userGroup);
       });
     });
