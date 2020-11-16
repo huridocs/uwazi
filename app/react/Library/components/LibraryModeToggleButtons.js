@@ -62,7 +62,7 @@ export class LibraryModeToggleButtons extends Component {
             aria-label={t('System', 'library list view', null, false)}
           >
             <Icon icon="th" />
-            <span className="tab-link-tooltip">{t('System', 'List view')}</span>
+            <span className="tab-link-tooltip">{t('System', 'Cards view')}</span>
           </I18NLink>
           <I18NLink
             to={`library/table${searchUrl}`}

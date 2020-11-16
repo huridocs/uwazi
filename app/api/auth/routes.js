@@ -3,7 +3,6 @@ import cookieParser from 'cookie-parser';
 import mongoConnect from 'connect-mongo';
 import passport from 'passport';
 import session from 'express-session';
-import uniqueID from 'shared/uniqueID';
 import svgCaptcha from 'svg-captcha';
 import settings from 'api/settings';
 import urljoin from 'url-join';
@@ -21,16 +20,17 @@ const MongoStore = mongoConnect(session);
 export default app => {
   app.use(cookieParser());
 
-  const sessionConfig = {
-    secret: app.get('env') === 'production' ? uniqueID() : 'harvey&lola',
-    store: new MongoStore({
-      mongooseConnection: DB.connectionForDB(config.SHARED_DB),
-    }),
-    resave: false,
-    saveUninitialized: false,
-  };
+  app.use(
+    session({
+      secret: app.get('env') === 'production' ? config.userSessionSecret : 'harvey&lola',
+      store: new MongoStore({
+        mongooseConnection: DB.connectionForDB(config.SHARED_DB),
+      }),
+      resave: false,
+      saveUninitialized: false,
+    })
+  );
 
-  app.use(session(sessionConfig));
   app.use(passport.initialize());
   app.use(passport.session());
 
