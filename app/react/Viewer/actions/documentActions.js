@@ -101,7 +101,9 @@ function getEntityDoc(entity, filename, defaultLanguage) {
 }
 
 export async function getDocument(requestParams, defaultLanguage, filename) {
-  const [entity] = (await api.get('entities', requestParams)).json.rows;
+  const [entity] = (
+    await api.get('entities', requestParams.add({ omitRelationships: true }))
+  ).json.rows;
 
   entity.defaultDoc = getEntityDoc(entity, filename, defaultLanguage);
   if (!isClient) return entity;
