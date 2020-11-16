@@ -1,10 +1,10 @@
-import { loadUserGroups, saveUserGroup } from 'app/Users/components/usergroups/actions/actions';
-import { connect } from 'react-redux';
 import React, { useEffect, useState } from 'react';
-import { UserGroupList } from 'app/Users/components/usergroups/UserGroupList';
-import { IStore } from 'app/istore';
-import { UserGroupSchema } from 'shared/types/userGroupType';
+import { connect } from 'react-redux';
 import { IImmutable } from 'shared/types/Immutable';
+import { UserGroupSchema } from 'shared/types/userGroupType';
+import { IStore } from 'app/istore';
+import { loadUserGroups, saveUserGroup } from 'app/Users/components/usergroups/actions/actions';
+import { UserGroupList } from 'app/Users/components/usergroups/UserGroupList';
 import { UserGroupSidePanel } from './UserGroupSidePanel';
 
 export interface UserGroupProps {
