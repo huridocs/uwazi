@@ -4,7 +4,7 @@ import { Settings } from 'shared/types/settingsType';
 
 const props = {
   autoexpire: { type: Date, expires: 36000, default: Date.now },
-  captcha: { type: String },
+  text: { type: String },
 };
 
 const mongoSchema = new mongoose.Schema(props, {

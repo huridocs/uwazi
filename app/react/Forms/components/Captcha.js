@@ -36,20 +36,20 @@ class Captcha extends Component {
     return (
       <div className="captcha">
         <div dangerouslySetInnerHTML={{ __html: svg }} />
-        <input className="form-control" onChange={this.onChange} value={value.captcha} />
+        <input className="form-control" onChange={this.onChange} value={value.text} />
       </div>
     );
   }
 }
 
 Captcha.defaultProps = {
-  value: { captcha: '', id: '' },
+  value: { text: '', id: '' },
   refresh: () => {},
   remote: false,
 };
 
 Captcha.propTypes = {
-  value: PropTypes.shape({ captcha: PropTypes.string, id: PropTypes.string }),
+  value: PropTypes.shape({ text: PropTypes.string, id: PropTypes.string }),
   onChange: PropTypes.func.isRequired,
   refresh: PropTypes.func,
   remote: PropTypes.bool,

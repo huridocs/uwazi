@@ -20,7 +20,7 @@ describe('captchaMiddleware', () => {
     captchaId = db.id();
 
     const fixtures = {
-      captchas: [{ _id: captchaId, captcha: 'k0n2170' }],
+      captchas: [{ _id: captchaId, text: 'k0n2170' }],
     };
 
     db.clearAllAndLoad(fixtures)
@@ -39,7 +39,7 @@ describe('captchaMiddleware', () => {
 
   it('should return an error when the captcha does not match', async () => {
     const middleWare = captchaMiddleware();
-    req.body.captcha = JSON.stringify({ captcha: '123', id: captchaId.toString() });
+    req.body.captcha = JSON.stringify({ text: '123', id: captchaId.toString() });
     await middleWare(req, res, next);
 
     expect(res.status).toHaveBeenCalledWith(403);
@@ -50,7 +50,7 @@ describe('captchaMiddleware', () => {
   describe('when the captcha matches', () => {
     it('should call next', async () => {
       const middleWare = captchaMiddleware();
-      req.body.captcha = JSON.stringify({ captcha: 'k0n2170', id: captchaId.toString() });
+      req.body.captcha = JSON.stringify({ text: 'k0n2170', id: captchaId.toString() });
       await middleWare(req, res, next);
 
       expect(res.status).not.toHaveBeenCalled();
@@ -60,7 +60,7 @@ describe('captchaMiddleware', () => {
 
     it('should delete the captcha from the body', async () => {
       const middleWare = captchaMiddleware();
-      req.body.captcha = JSON.stringify({ captcha: 'k0n2170', id: captchaId.toString() });
+      req.body.captcha = JSON.stringify({ text: 'k0n2170', id: captchaId.toString() });
       await middleWare(req, res, next);
 
       expect(req.body.captcha).not.toBeDefined();
@@ -68,7 +68,7 @@ describe('captchaMiddleware', () => {
 
     it('should delete the captcha from the data base', async () => {
       const middleWare = captchaMiddleware();
-      req.body.captcha = JSON.stringify({ captcha: 'k0n2170', id: captchaId.toString() });
+      req.body.captcha = JSON.stringify({ text: 'k0n2170', id: captchaId.toString() });
       await middleWare(req, res, next);
       const captchas = await CaptchaModel.get();
       expect(captchas.length).toBe(0);
