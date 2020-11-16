@@ -6,9 +6,8 @@ class Captcha extends Component {
   constructor(props) {
     super(props);
     this.onChange = this.onChange.bind(this);
-    const { refresh, remote } = this.props;
-    const url = remote ? 'remotecaptcha' : 'captcha';
-    this.state = { captchaUrl: url };
+    const { refresh } = this.props;
+
     refresh(this.refresh.bind(this));
     this.state = { svg: '', id: '' };
   }
@@ -26,12 +25,14 @@ class Captcha extends Component {
     const { remote } = this.props;
     const url = remote ? 'remotecaptcha' : 'captcha';
     const response = await api.get(url);
+
     this.setState(response.json);
   }
 
   render() {
     const { value } = this.props;
     const { svg } = this.state;
+
     return (
       <div className="captcha">
         <div dangerouslySetInnerHTML={{ __html: svg }} />

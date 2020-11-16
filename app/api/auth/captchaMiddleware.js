@@ -3,9 +3,9 @@ import { CaptchaModel } from './CaptchaModel';
 export default () => async (req, res, next) => {
   if (req.body && req.body.captcha) {
     const submitedCaptcha = JSON.parse(req.body.captcha);
-    const captcha = (await CaptchaModel.get({ captcha: submitedCaptcha.captcha }))[0];
+    const [captcha] = await CaptchaModel.get({ _id: submitedCaptcha.id });
 
-    if (captcha && captcha._id.toString() === submitedCaptcha.id) {
+    if (captcha && captcha.captcha === submitedCaptcha.captcha) {
       delete req.body.captcha;
       await CaptchaModel.delete(captcha);
       return next();

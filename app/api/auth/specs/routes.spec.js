@@ -109,7 +109,7 @@ describe('Auth Routes', () => {
       );
     });
 
-    it('should return the captcha and store its value in session', async () => {
+    it('should return the captcha', async () => {
       const req = { session: {} };
       const response = await routes.get('/api/remotecaptcha', req);
       expect(response).toEqual({ captcha: 'captchaSvg', id: '123' });

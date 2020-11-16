@@ -8,6 +8,7 @@ describe('captchaMiddleware', () => {
   let res;
   let next;
   let captchaId;
+
   beforeEach(done => {
     req = { body: {}, session: {}, cookies: {} };
     res = {
@@ -17,6 +18,7 @@ describe('captchaMiddleware', () => {
     next = jasmine.createSpy('next');
 
     captchaId = db.id();
+
     const fixtures = {
       captchas: [{ _id: captchaId, captcha: 'k0n2170' }],
     };
@@ -37,7 +39,7 @@ describe('captchaMiddleware', () => {
 
   it('should return an error when the captcha does not match', async () => {
     const middleWare = captchaMiddleware();
-    req.body.captcha = JSON.stringify({ captcha: '123', id: 'wrongId' });
+    req.body.captcha = JSON.stringify({ captcha: '123', id: captchaId.toString() });
     await middleWare(req, res, next);
 
     expect(res.status).toHaveBeenCalledWith(403);
