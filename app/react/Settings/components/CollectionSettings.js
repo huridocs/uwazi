@@ -362,7 +362,7 @@ export class CollectionSettings extends Component {
             <div className="alert alert-info">
               <div className="force-ltr">
                 You can configure the email that will appear as the sender when any email is sent to
-                the user. If this email is not set, "no-reply@uwazi.io" will be used instead.
+                the user. If this email is not set, “no-reply@uwazi.io” will be used instead.
               </div>
             </div>
             <div className="form-group">
