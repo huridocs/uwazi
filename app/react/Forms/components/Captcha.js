@@ -48,7 +48,7 @@ Captcha.defaultProps = {
 };
 
 Captcha.propTypes = {
-  value: PropTypes.shape({ svg: PropTypes.string, id: PropTypes.string }),
+  value: PropTypes.shape({ captcha: PropTypes.string, id: PropTypes.string }),
   onChange: PropTypes.func.isRequired,
   refresh: PropTypes.func,
   remote: PropTypes.bool,
