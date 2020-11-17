@@ -4,12 +4,19 @@ import { provenanceTypes } from 'shared/provenanceTypes';
 export const emitSchemaTypes = true;
 
 export const objectIdSchema = {
-  oneOf: [{ type: 'string' }, { type: 'object' }],
+  oneOf: [
+    { type: 'string' },
+    {
+      type: 'object',
+      tsType: 'ObjectId',
+    },
+  ],
 };
 
 export const attachmentSchema = {
   type: 'object',
   properties: {
+    _id: objectIdSchema,
     originalname: { type: 'string' },
     filename: { type: 'string' },
     mimetype: { type: 'string' },
