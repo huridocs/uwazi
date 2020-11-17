@@ -27,7 +27,7 @@ describe('settings', () => {
         .then(async () => settings.get())
         .then(result => {
           expect(result.site_name).toBe('My collection');
-          expect(result.custom.customNested).toBe('data');
+          expect(typeof result.custom === 'object' && result.custom.customNested).toBe('data');
           done();
         })
         .catch(catchErrors(done));
@@ -105,11 +105,11 @@ describe('settings', () => {
 
     describe('when there are filter groups', () => {
       it('should create translations for them', done => {
-        const config = {
+        const config: Settings = {
           site_name: 'My collection',
           filters: [
             { id: '1', name: 'Judge' },
-            { id: '2', name: 'Documents', items: [{ id: 3, name: 'Cause' }] },
+            { id: '2', name: 'Documents', items: [{ id: '3', name: 'Cause' }] },
           ],
         };
         settings

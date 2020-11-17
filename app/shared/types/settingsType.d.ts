@@ -50,7 +50,11 @@ export interface Settings {
   analyticsTrackingId?: string;
   matomoConfig?: string;
   dateFormat?: string;
-  custom?: unknown;
+  custom?:
+    | string
+    | {
+        [k: string]: unknown | undefined;
+      };
   customCSS?: string;
   mapTilerKey?: string;
   newNameGeneration?: true;

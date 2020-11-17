@@ -84,7 +84,7 @@ export const settingsSchema = {
     analyticsTrackingId: { type: 'string' },
     matomoConfig: { type: 'string' },
     dateFormat: { type: 'string' },
-    custom: {},
+    custom: { oneOf: [{ type: 'string' }, { type: 'object' }] },
     customCSS: { type: 'string' },
     mapTilerKey: { type: 'string' },
     newNameGeneration: { type: 'boolean', enum: [true] },
