@@ -95,24 +95,20 @@ describe('Auth Routes', () => {
       expect(response.id).toBeDefined();
 
       const captchas = await CaptchaModel.get();
-      expect(captchas[0].captcha).toBe('42');
+      expect(captchas[0].text).toBe('42');
     });
   });
 
   describe('/remotecaptcha', () => {
     beforeEach(() => {
       backend.restore();
-      backend.get(
-        'http://secret.place.io/api/captcha',
-        { body: { captcha: 'captchaSvg', id: '123' } },
-        { sendAsJson: false }
-      );
+      backend.get('http://secret.place.io/api/captcha', { text: 'captchaSvg', id: '123' });
     });
 
     it('should return the captcha', async () => {
       const req = { session: {} };
       const response = await routes.get('/api/remotecaptcha', req);
-      expect(response).toEqual({ captcha: 'captchaSvg', id: '123' });
+      expect(response).toEqual({ text: 'captchaSvg', id: '123' });
     });
   });
 });

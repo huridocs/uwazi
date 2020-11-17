@@ -9,6 +9,7 @@ import urljoin from 'url-join';
 import { DB } from 'api/odm';
 import { config } from 'api/config';
 import cors from 'cors';
+import request from 'shared/JSONRequest';
 import { CaptchaModel } from './CaptchaModel';
 
 import { validation } from '../utils';
@@ -88,8 +89,7 @@ export default app => {
 
   app.get('/api/remotecaptcha', async (_req, res) => {
     const { publicFormDestination } = await settings.get({}, { publicFormDestination: 1 });
-    const remoteResponse = await fetch(urljoin(publicFormDestination, '/api/captcha'));
-    console.log(remoteResponse);
-    res.json(remoteResponse);
+    const remoteResponse = await request.get(urljoin(publicFormDestination, '/api/captcha'));
+    res.json(remoteResponse.json);
   });
 };
