@@ -34,12 +34,16 @@ export default {
       _id: { $ne: entity._id },
     });
 
-    const attachmentToDelete = (entity.attachments || []).find(a => a._id.equals(attachmentId));
+    const attachmentToDelete = (entity.attachments || []).find(
+      a => a._id && a._id.toString() === attachmentId.toString()
+    );
 
     const [savedEntity] = await entities.saveMultiple([
       {
         ...entity,
-        attachments: (entity.attachments || []).filter(a => !a._id.equals(attachmentId)),
+        attachments: (entity.attachments || []).filter(
+          a => !(a._id && a._id.toString() === attachmentId.toString())
+        ),
       },
     ]);
 
