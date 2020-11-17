@@ -3,11 +3,19 @@
 
 import { ObjectIdSchema, LanguagesListSchema, GeolocationSchema } from 'shared/types/commonTypes';
 
+export interface ItemSchema {
+  id?: string;
+  name?: string;
+}
+
 export interface SettingsFilterSchema {
   _id?: ObjectIdSchema;
   id?: string;
   name?: string;
-  items?: unknown;
+  items?: {
+    id?: string;
+    name?: string;
+  }[];
 }
 
 export interface SettingsSyncSchema {
