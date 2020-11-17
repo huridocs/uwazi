@@ -88,9 +88,7 @@ function getDefaultLibraryComponent(defaultLibraryView) {
 
 function getPageIndexRoute(customHomePage) {
   const pageId = customHomePage[customHomePage.indexOf('page') + 1];
-  const component = props => (
-    <PageView routes={props.routes} location={props.location} params={{ sharedId: pageId }} />
-  );
+  const component = props => <PageView {...props} params={{ sharedId: pageId }} />;
   component.requestState = requestParams =>
     PageView.requestState(requestParams.set({ sharedId: pageId }));
 
