@@ -78,9 +78,10 @@ export default app => {
     credentials: true,
     optionsSuccessStatus: 200,
   };
+
   app.get('/api/captcha', cors(corsOptions), async (_req, res) => {
     const captcha = svgCaptcha.create({ ignoreChars: '0OoiILluvUV' });
-    const storedCaptcha = await CaptchaModel.save({ captcha: captcha.text });
+    const storedCaptcha = await CaptchaModel.save({ text: captcha.text });
 
     res.json({ svg: captcha.data, id: storedCaptcha._id.toString() });
   });
@@ -88,7 +89,7 @@ export default app => {
   app.get('/api/remotecaptcha', async (_req, res) => {
     const { publicFormDestination } = await settings.get({}, { publicFormDestination: 1 });
     const remoteResponse = await fetch(urljoin(publicFormDestination, '/api/captcha'));
-
-    res.json(remoteResponse.body);
+    console.log(remoteResponse);
+    res.json(remoteResponse);
   });
 };

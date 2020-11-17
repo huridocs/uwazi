@@ -18,7 +18,7 @@ class Captcha extends Component {
 
   onChange(e) {
     const { onChange } = this.props;
-    onChange({ captcha: e.target.value, id: this.state.id });
+    onChange({ text: e.target.value, id: this.state.id });
   }
 
   async refresh() {
