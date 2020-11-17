@@ -2,11 +2,14 @@ import moment from 'moment';
 import { MetadataObjectSchema } from 'shared/types/commonTypes';
 
 const defaultDateFormat = 'YYYY-MM-DD';
+
+const mapFormatToMoment = (format: string) => format.replace('dd', 'DD').replace('yyyy', 'YYYY');
+
 export const formatDate = (timestamp: number, format: string = defaultDateFormat) =>
   moment
     .unix(timestamp)
     .utc()
-    .format(format);
+    .format(mapFormatToMoment(format));
 
 export const formatFile = (fileName: string) => `/files/${fileName}`;
 
@@ -56,4 +59,4 @@ export const formatDocuments = (row: any) =>
 export const formatAttachments = (row: any) =>
   (row.attachments || []).map((item: any) => formatAttachment(item.filename, row._id)).join('|');
 export const formatCreationDate = (row: any, options: FormatterOptions) =>
-  moment.utc(row.creationDate).format(options.dateFormat || defaultDateFormat);
+  moment.utc(row.creationDate).format(mapFormatToMoment(options.dateFormat || defaultDateFormat));
