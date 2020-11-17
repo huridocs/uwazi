@@ -28,7 +28,7 @@ const joiPrettifier = (error, req) => {
 };
 
 const appendOriginalError = (message, originalError) =>
-  `${message}\nOriginal error: ${JSON.stringify(originalError, null, ' ')}`;
+  `${message}\noriginal error: ${JSON.stringify(originalError, null, ' ')}`;
 
 const obfuscateCredentials = req => {
   const obfuscated = req;
@@ -82,13 +82,30 @@ const prettifyError = (error, { req = {}, uncaught = false } = {}) => {
   return result;
 };
 
-const sendLog = (data, error, errorOptions) => {
-  if (data.code === 500) {
-    errorLog.error(appendOriginalError(data.prettyMessage, error), errorOptions);
-  } else if (data.code === 400) {
-    debugLog.debug({ pretty: data.prettyMessage, original: error });
+const getOriginalError = (data, error) => {
+  const original = data.original || error;
+
+  if (original instanceof Error) {
+    return original;
   }
-}
+
+  return null;
+};
+
+const sendLog = (data, error, errorOptions) => {
+  const originalError = getOriginalError(data, error);
+  if (data.code === 500) {
+    errorLog.error(
+      originalError ? appendOriginalError(data.prettyMessage, originalError) : data.prettyMessage,
+      errorOptions
+    );
+  } else if (data.code === 400) {
+    debugLog.debug({
+      pretty: data.prettyMessage,
+      ...(originalError ? { original: originalError } : {}),
+    });
+  }
+};
 
 export default (_error, { req = undefined, uncaught = false } = {}) => {
   const error = _error || new Error('undefined error occurred');
@@ -101,7 +118,7 @@ export default (_error, { req = undefined, uncaught = false } = {}) => {
   const result = prettifyError(error, { req, uncaught });
 
   const errorOptions = req ? { shouldBeMultiTenantContext: true } : {};
-  sendLog(result, result.original || error, errorOptions);
+  sendLog(result, error, errorOptions);
 
   delete result.original;
 
