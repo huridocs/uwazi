@@ -1,18 +1,18 @@
 import { preloadOptionsSearch } from 'shared/config';
 
 const aggregation = (key, should, filters) => ({
-  terms: {
-    field: key,
-    missing: 'missing',
-    size: preloadOptionsSearch,
+  filter: {
+    bool: {
+      should,
+      filter: filters,
+    },
   },
   aggregations: {
     filtered: {
-      filter: {
-        bool: {
-          should,
-          filter: filters,
-        },
+      terms: {
+        field: key,
+        missing: 'missing',
+        size: preloadOptionsSearch,
       },
     },
   },

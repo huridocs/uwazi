@@ -264,8 +264,22 @@ const _denormalizeAggregations = async (aggregations, templates, dictionaries, l
 
 const _sanitizeAggregationsStructure = (aggregations, limit) => {
   const result = {};
+
   Object.keys(aggregations).forEach(aggregationKey => {
     const aggregation = aggregations[aggregationKey];
+
+    if (aggregation.filtered) {
+      const bucketsWithResults = aggregation.filtered.buckets.filter(b => b.doc_count);
+      const missingBucket = bucketsWithResults.find(b => b.key === 'missing');
+      aggregation.count = bucketsWithResults.length;
+      aggregation.buckets = aggregation.filtered.buckets.slice(0, limit);
+      const bucketsIncludeMissing = aggregation.buckets.find(b => b.key === 'missing');
+      if (!bucketsIncludeMissing && missingBucket) {
+        aggregation.buckets = aggregation.buckets.slice(0, limit - 1);
+        aggregation.buckets.push(missingBucket);
+      }
+      delete aggregation.filtered;
+    }
 
     //grouped dictionary
     if (aggregation.buckets && !Array.isArray(aggregation.buckets)) {
@@ -292,17 +306,17 @@ const _sanitizeAggregationsStructure = (aggregations, limit) => {
       });
     }
 
-    if (aggregation.buckets) {
-      const bucketsWithResults = aggregation.buckets.filter(b => b.filtered.doc_count);
-      const missingBucket = bucketsWithResults.find(b => b.key === 'missing');
-      aggregation.count = bucketsWithResults.length;
-      aggregation.buckets = aggregation.buckets.slice(0, limit);
-      const bucketsIncludeMissing = aggregation.buckets.find(b => b.key === 'missing');
-      if (!bucketsIncludeMissing && missingBucket) {
-        aggregation.buckets = aggregation.buckets.slice(0, limit - 1);
-        aggregation.buckets.push(missingBucket);
-      }
-    }
+    // if (aggregation.buckets) {
+    //   const bucketsWithResults = aggregation.buckets.filter(b => b.filtered.doc_count);
+    //   const missingBucket = bucketsWithResults.find(b => b.key === 'missing');
+    //   aggregation.count = bucketsWithResults.length;
+    //   aggregation.buckets = aggregation.buckets.slice(0, limit);
+    //   const bucketsIncludeMissing = aggregation.buckets.find(b => b.key === 'missing');
+    //   if (!bucketsIncludeMissing && missingBucket) {
+    //     aggregation.buckets = aggregation.buckets.slice(0, limit - 1);
+    //     aggregation.buckets.push(missingBucket);
+    //   }
+    // }
 
     result[aggregationKey] = aggregation;
   });
@@ -324,7 +338,7 @@ const _addAnyAggregation = (aggregations, filters, response) => {
         (typeof response.body.hits.total === 'object'
           ? response.body.hits.total.value
           : response.body.hits.total) -
-        (missingBucket && filterNoneOrMissing ? missingBucket.filtered.doc_count : 0);
+        (missingBucket && filterNoneOrMissing ? missingBucket.doc_count : 0);
 
       aggregation.buckets.push({
         key: 'any',
@@ -732,12 +746,12 @@ const instanceSearch = elasticIndex => ({
       preloadOptionsSearch
     );
 
-    const options = sanitizedAggregations[propertyName].buckets
+    const options = sanitizedAggregations[propertyName].filtered.buckets
       .map(bucket => ({
         label: bucket.label,
         value: bucket.key,
         icon: bucket.icon,
-        results: bucket.filtered.doc_count,
+        results: bucket.doc_count,
       }))
       .filter(o => o.results);
 

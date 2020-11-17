@@ -71,7 +71,7 @@ const normalizeBucket = bucket => {
     id: bucket.key,
     value: bucket.key,
     label: bucket.label,
-    results: bucket.filtered.doc_count,
+    results: bucket.doc_count,
   };
 
   if (bucket.icon) {
