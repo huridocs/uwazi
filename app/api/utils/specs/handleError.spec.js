@@ -2,8 +2,8 @@ import errorLog from 'api/log/errorLog';
 import { createError } from 'api/utils';
 import debugLog from 'api/log/debugLog';
 
-import handleError from '../handleError';
 import { ConnectionError } from '@elastic/elasticsearch/lib/errors';
+import handleError from '../handleError';
 
 describe('handleError', () => {
   beforeEach(() => {
