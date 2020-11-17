@@ -1,5 +1,5 @@
 /* eslint-disable */
-import { testingDB as db,  DBFixture } from 'api/utils/testing_db';
+import { testingDB as db, DBFixture } from 'api/utils/testing_db';
 
 const batmanFinishesId = db.id();
 const syncPropertiesEntityId = db.id();
@@ -31,7 +31,7 @@ export const fixtures: DBFixture = {
       language: 'en',
       title: 'Batman finishes',
       published: true,
-      user: { username: 'username' },
+      user: 'username',
     },
     {
       _id: db.id(),
@@ -40,7 +40,7 @@ export const fixtures: DBFixture = {
       title: 'Penguin almost done',
       creationDate: 1,
       published: true,
-      user: { username: 'username' },
+      user: 'username',
       file: { filename: '8202c463d6158af8065022d9b5014ccb.pdf', fullText: 'fullText' },
       attachments: [{ filename: '8202c463d6158af8065022d9b5014ccc.pdf' }],
     },
@@ -52,7 +52,7 @@ export const fixtures: DBFixture = {
       creationDate: 1,
       published: true,
       metadata: { text: [{ value: 'test' }] },
-      user: { username: 'username' },
+      user: 'username',
     },
     //select/multiselect/date sync
     {
@@ -63,7 +63,7 @@ export const fixtures: DBFixture = {
       title: 'EN',
       published: true,
       metadata: { text: [{ value: 'text' }] },
-      user: { username: 'username' },
+      user: 'username',
     },
     {
       _id: db.id(),
@@ -74,7 +74,7 @@ export const fixtures: DBFixture = {
       creationDate: 1,
       published: true,
       metadata: { text: [{ value: 'text' }] },
-      user: { username: 'username' },
+      user: 'username',
     },
     {
       _id: db.id(),
@@ -85,7 +85,7 @@ export const fixtures: DBFixture = {
       creationDate: 1,
       published: true,
       metadata: { text: [{ value: 'text' }] },
-      user: { username: 'username' },
+      user: 'username',
     },
   ],
   settings: [
