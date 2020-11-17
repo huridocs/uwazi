@@ -1,12 +1,13 @@
 /* eslint-disable max-lines */
 import moment from 'moment';
-import { formatDocuments, formatAttachments } from '../typeFormatters';
 import {
   formatters as typeFormatters,
   formatFile,
   formatDate,
   formatAttachment,
   FormatterFunction,
+  formatDocuments,
+  formatAttachments,
 } from '../typeFormatters';
 
 let formatFn: any;
@@ -233,14 +234,13 @@ describe('csvExporter typeFormatters', () => {
   });
 
   describe('HELPERS', () => {
-    it('should format timestamps to the provided format', () => {
+    it('should format timestamps to the provided format, mapped to momentjs', () => {
       const timestamp = 1585851003;
-      const format1 = 'yyyy/MM/dd';
 
-      const formatted1 = formatDate(timestamp, format1);
+      const formatted1 = formatDate(timestamp, 'yyyy/MM/dd');
 
       expect(unixFn).toHaveBeenCalledWith(timestamp);
-      expect(formatFn).toHaveBeenCalledWith(format1);
+      expect(formatFn).toHaveBeenCalledWith('YYYY/MM/DD');
       expect(formatted1).toBe('1');
     });
 
