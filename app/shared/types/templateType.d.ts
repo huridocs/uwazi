@@ -10,5 +10,5 @@ export interface TemplateSchema {
   default?: boolean;
   commonProperties?: [PropertySchema, ...PropertySchema[]];
   properties?: PropertySchema[];
-  [k: string]: any | undefined;
+  [k: string]: unknown | undefined;
 }

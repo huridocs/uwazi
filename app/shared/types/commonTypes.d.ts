@@ -1,19 +1,17 @@
 /* eslint-disable */
 /**AUTO-GENERATED. RUN yarn emit-types to update.*/
+import { ObjectId } from 'mongodb';
 
-export type ObjectIdSchema =
-  | string
-  | {
-      [k: string]: any | undefined;
-    };
+export type ObjectIdSchema = string | ObjectId;
 
 export interface AttachmentSchema {
+  _id?: string | ObjectId;
   originalname?: string;
   filename?: string;
   mimetype?: string;
   timestamp?: number;
   size?: number;
-  [k: string]: any | undefined;
+  [k: string]: unknown | undefined;
 }
 
 export interface LinkSchema {
@@ -27,6 +25,7 @@ export interface DateRangeSchema {
 }
 
 export interface LanguageSchema {
+  _id?: string | ObjectId;
   label: string;
   key: string;
   rtl?: boolean;
@@ -34,6 +33,7 @@ export interface LanguageSchema {
 }
 
 export type LanguagesListSchema = {
+  _id?: string | ObjectId;
   label: string;
   key: string;
   rtl?: boolean;
@@ -60,7 +60,7 @@ export interface MetadataObjectSchema {
   suggestion_confidence?: number;
   suggestion_model?: string;
   provenance?: '' | 'BULK_ACCEPT';
-  [k: string]: any | undefined;
+  [k: string]: unknown | undefined;
 }
 
 export interface MetadataSchema {
@@ -71,7 +71,7 @@ export interface TocSchema {
   range?: {
     start?: number;
     end?: number;
-    [k: string]: any | undefined;
+    [k: string]: unknown | undefined;
   };
   label?: string;
   indentation?: number;
@@ -80,7 +80,7 @@ export interface TocSchema {
 export interface PropertySchema {
   id?: string;
   label: string;
-  name?: string;
+  name: string;
   isCommonProperty?: boolean;
   type:
     | 'date'
@@ -112,5 +112,5 @@ export interface PropertySchema {
   showInCard?: boolean;
   style?: string;
   nestedProperties?: string[];
-  [k: string]: any | undefined;
+  [k: string]: unknown | undefined;
 }

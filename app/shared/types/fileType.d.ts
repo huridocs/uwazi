@@ -4,11 +4,7 @@
 import { ObjectIdSchema, TocSchema } from 'shared/types/commonTypes';
 
 export interface FileType {
-  _id?:
-    | string
-    | {
-        [k: string]: any | undefined;
-      };
+  _id?: string | ObjectId;
   entity?: string;
   originalname?: string;
   filename?: string;
@@ -30,7 +26,7 @@ export interface FileType {
     range?: {
       start?: number;
       end?: number;
-      [k: string]: any | undefined;
+      [k: string]: unknown | undefined;
     };
     label?: string;
     indentation?: number;
