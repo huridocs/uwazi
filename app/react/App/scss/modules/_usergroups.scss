@@ -56,11 +56,18 @@
     width: 100%;
     z-index: 1;
     margin: 10px 0;
+    .form-group {
+      width: 100%;
+      .form-control{
+        width: 100%;
+      }
+    }
   }
   .user-group-members{
     margin: 10px 15px;
     .user-group-member {
       display: flex;
+      margin: 10px 0;
       justify-content: space-between;
     }
   }
