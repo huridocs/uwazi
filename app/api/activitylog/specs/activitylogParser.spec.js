@@ -658,6 +658,23 @@ describe('Activitylog Parser', () => {
           }
         );
       });
+
+      it('should beautify as UPDATE', async () => {
+        await testBeautified(
+          {
+            method: 'POST',
+            url: '/api/users',
+            body: '{"_id":"userId", "username": "somename"}',
+            idField: '_id',
+            nameField: 'username',
+          },
+          {
+            action: 'UPDATE',
+            description: 'Updated user',
+            name: 'somename (userId)',
+          }
+        );
+      });
     });
 
     describe('routes /api/references', () => {
