@@ -27,6 +27,9 @@ const joiPrettifier = (error, req) => {
   return errorMessage;
 };
 
+const appendOriginalError = (message, originalError) =>
+  `${message}\noriginal error: ${JSON.stringify(originalError, null, ' ')}`;
+
 const obfuscateCredentials = req => {
   const obfuscated = req;
   if (req.body && req.body.password) {
@@ -79,6 +82,31 @@ const prettifyError = (error, { req = {}, uncaught = false } = {}) => {
   return result;
 };
 
+const getOriginalError = (data, error) => {
+  const original = data.original || error;
+
+  if (original instanceof Error) {
+    return original;
+  }
+
+  return null;
+};
+
+const sendLog = (data, error, errorOptions) => {
+  const originalError = getOriginalError(data, error);
+  if (data.code === 500) {
+    errorLog.error(
+      originalError ? appendOriginalError(data.prettyMessage, originalError) : data.prettyMessage,
+      errorOptions
+    );
+  } else if (data.code === 400) {
+    debugLog.debug({
+      pretty: data.prettyMessage,
+      ...(originalError ? { original: originalError } : {}),
+    });
+  }
+};
+
 export default (_error, { req = undefined, uncaught = false } = {}) => {
   const error = _error || new Error('undefined error occurred');
   const responseToClientError = error.json;
@@ -89,16 +117,10 @@ export default (_error, { req = undefined, uncaught = false } = {}) => {
 
   const result = prettifyError(error, { req, uncaught });
 
-  let errorOptions = {};
-  if (req) {
-    errorOptions.shouldBeMultiTenantContext = true;
-  }
+  const errorOptions = req ? { shouldBeMultiTenantContext: true } : {};
+  sendLog(result, error, errorOptions);
 
-  if (result.code === 500) {
-    errorLog.error(result.prettyMessage, errorOptions);
-  } else if (result.code === 400) {
-    debugLog.debug(result.prettyMessage);
-  }
+  delete result.original;
 
   return result;
 };
