@@ -99,6 +99,10 @@ export class Document extends Component {
     this.componentDidUpdate();
   }
 
+  onTextSelection(selection) {
+    console.log(selection);
+  }
+
   renderPDF(file) {
     if (!(file._id && file.pdfInfo)) {
       return <Loader />;
@@ -107,6 +111,7 @@ export class Document extends Component {
     return (
       <PDF
         onPageChange={this.props.onPageChange}
+        onTextSelection={this.onTextSelection}
         onPDFReady={this.onDocumentReady}
         pdfInfo={file.pdfInfo}
         onLoad={this.pdfLoaded}
