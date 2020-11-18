@@ -1,8 +1,9 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+// Dissabling unused vars is just to remove annoying errors
+// eslint-disable-next-line no-unused-vars
 import { SelectionHandler, Highlight, SelectionRegion } from 'react-pdf-handler';
 import { advancedSort } from 'app/utils/advancedSort';
-import Immutable from 'immutable';
 
 import { isClient } from '../../utils';
 import PDFJS from '../PDFJS';
@@ -48,7 +49,6 @@ class PDF extends Component {
       nextProps.filename !== this.props.filename ||
       nextProps.pdfInfo !== this.props.pdfInfo ||
       nextProps.style !== this.props.style ||
-      nextProps.activeReference !== this.props.activeReference ||
       nextState.pdf !== this.state.pdf
     );
   }
@@ -156,28 +156,6 @@ class PDF extends Component {
     }
   }
 
-  highlightReference(connection, event) {
-    event.stopPropagation();
-    this.props.highlightReference(connection);
-  }
-
-  renderReferences(page) {
-    const references = this.props.references.toJS();
-    return references.map(r => {
-      const color = r._id === this.props.activeReference ? '#ffd84b' : '#feeeb4';
-      return (
-        <div
-          data-id={r._id}
-          key={r._id}
-          className="reference"
-          onClick={this.highlightReference.bind(this, r)}
-        >
-          <Highlight regionId={page} highlight={r.reference} color={color} />
-        </div>
-      );
-    });
-  }
-
   render() {
     return (
       <div
@@ -186,33 +164,23 @@ class PDF extends Component {
         }}
         style={this.props.style}
       >
-        <SelectionHandler
-          onTextSelection={this.props.onTextSelection}
-          onTextDeselection={this.props.onTextDeselection}
-        >
-          {(() => {
-            const pages = [];
-            for (let page = 1; page <= this.state.pdf.numPages; page += 1) {
-              pages.push(
-                <div className="page-wrapper" key={page}>
-                  <SelectionRegion regionId={page.toString()}>
-                    <PDFPage
-                      onUnload={this.pageUnloaded}
-                      onLoading={this.pageLoading}
-                      onVisible={this.onPageVisible}
-                      onHidden={this.onPageHidden}
-                      page={page}
-                      pdf={this.state.pdf}
-                    >
-                      {this.renderReferences(page.toString())}
-                    </PDFPage>
-                  </SelectionRegion>
-                </div>
-              );
-            }
-            return pages;
-          })()}
-        </SelectionHandler>
+        {(() => {
+          const pages = [];
+          for (let page = 1; page <= this.state.pdf.numPages; page += 1) {
+            pages.push(
+              <PDFPage
+                onUnload={this.pageUnloaded}
+                onLoading={this.pageLoading}
+                onVisible={this.onPageVisible}
+                onHidden={this.onPageHidden}
+                key={page}
+                page={page}
+                pdf={this.state.pdf}
+              />
+            );
+          }
+          return pages;
+        })()}
       </div>
     );
   }
@@ -223,26 +191,16 @@ PDF.defaultProps = {
   onPageChange: () => {},
   onPDFReady: () => {},
   style: {},
-  onTextSelection: () => {},
-  onTextDeselection: () => {},
-  references: Immutable.List(),
-  highlightReference: () => {},
-  activeReference: '',
 };
 
 PDF.propTypes = {
   onPageChange: PropTypes.func,
-  onTextSelection: PropTypes.func,
-  onTextDeselection: PropTypes.func,
   onPDFReady: PropTypes.func,
   file: PropTypes.string.isRequired,
   filename: PropTypes.string,
   onLoad: PropTypes.func.isRequired,
   pdfInfo: PropTypes.object,
   style: PropTypes.object,
-  references: PropTypes.instanceOf(Immutable.List),
-  highlightReference: PropTypes.func,
-  activeReference: PropTypes.string,
 };
 
 export default PDF;
