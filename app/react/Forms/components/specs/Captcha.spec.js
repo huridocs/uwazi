@@ -6,16 +6,28 @@ import Captcha from '../Captcha';
 describe('Captcha', () => {
   let component;
   let props;
+  let onChange;
 
   beforeEach(() => {
+    onChange = jest.fn();
     props = {
-      onChange: () => {},
+      onChange,
     };
   });
 
   const render = () => {
     component = shallow(<Captcha {...props} />);
   };
+
+  describe('onChange()', () => {
+    it('should return the user introduced text with the captcha id', async () => {
+      render();
+      component.setState({ id: '2df23daskj12' });
+      component.setProps({ value: { text: 'ab132' } });
+      component.find('input').simulate('change', { target: { value: 'ab1324' } });
+      expect(onChange).toHaveBeenLastCalledWith({ id: '2df23daskj12', text: 'ab1324' });
+    });
+  });
 
   describe('refresh()', () => {
     it('should return the refresh captcha method', async () => {
