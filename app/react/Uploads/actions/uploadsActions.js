@@ -114,7 +114,7 @@ export function publicSubmit(data, remote = false) {
         .post(remote ? `${APIURL}remotepublic` : `${APIURL}public`)
         .set('Accept', 'application/json')
         .set('X-Requested-With', 'XMLHttpRequest')
-        .field('captcha', data.captcha);
+        .field('captcha', JSON.stringify(data.captcha));
 
       if (data.file) {
         request.attach('file', data.file);

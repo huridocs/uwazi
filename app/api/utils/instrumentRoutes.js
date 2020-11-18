@@ -81,7 +81,7 @@ const executeRoute = (method, routePath, req = {}, res, next = () => {}, app, ru
 };
 
 export default (route, io) => {
-  const app = jasmine.createSpyObj('app', ['get', 'post', 'delete', 'use']);
+  const app = jasmine.createSpyObj('app', ['get', 'post', 'delete', 'use', 'options']);
   const originalValidateRequest = validation.validateRequest;
   spyOn(validation, 'validateRequest').and.callFake(schema => schema);
   route(app, io);

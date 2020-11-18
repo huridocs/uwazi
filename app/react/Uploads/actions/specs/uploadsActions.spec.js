@@ -156,7 +156,7 @@ describe('uploadsActions', () => {
           title: 'test',
           metadata: { prop: [{ value: 'value' }] },
           template: '123',
-          captcha: 23,
+          captcha: { captcha: 'f0r71tw0', id: '42' },
           file,
           attachments: [file, file],
         };
@@ -174,7 +174,10 @@ describe('uploadsActions', () => {
               metadata: { prop: [{ value: 'value' }] },
             })
           );
-          expect(mockUpload.field).toHaveBeenCalledWith('captcha', 23);
+          expect(mockUpload.field).toHaveBeenCalledWith(
+            'captcha',
+            JSON.stringify({ captcha: 'f0r71tw0', id: '42' })
+          );
           expect(mockUpload.attach).toHaveBeenCalledWith('file', file);
           expect(mockUpload.attach).toHaveBeenCalledWith('attachments[0]', file);
           expect(mockUpload.attach).toHaveBeenCalledWith('attachments[1]', file);
