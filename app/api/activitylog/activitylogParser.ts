@@ -3,6 +3,12 @@ import { nameFunc } from 'api/activitylog/helpers';
 import { buildActivityEntry, Methods, EntryValue } from 'api/activitylog/activityLogBuilder';
 
 const entryValues: { [key: string]: EntryValue } = {
+  'POST/api/users': {
+    desc: 'Updated user',
+    method: Methods.Update,
+    idField: '_id',
+    nameField: 'username',
+  },
   'POST/api/entities/multipleupdate': { desc: 'Updated multiple entities' },
   'POST/api/entities/bulkdelete': { desc: 'Deleted multiple entities', method: Methods.Delete },
   'POST/api/attachments/upload': {
