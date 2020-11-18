@@ -1,6 +1,8 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-
+// Dissabling unused vars is just to remove annoying errors
+// eslint-disable-next-line no-unused-vars
+import { SelectionHandler, Highlight, SelectionRegion } from 'react-pdf-handler';
 import { advancedSort } from 'app/utils/advancedSort';
 
 import { isClient } from '../../utils';
