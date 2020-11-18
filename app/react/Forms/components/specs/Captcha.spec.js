@@ -1,15 +1,17 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-
+import api from '../../../utils/api';
 import Captcha from '../Captcha';
 
 describe('Captcha', () => {
   let component;
   let props;
+  let onChange;
 
   beforeEach(() => {
+    onChange = jest.fn();
     props = {
-      onChange: () => {},
+      onChange,
     };
   });
 
@@ -17,23 +19,30 @@ describe('Captcha', () => {
     component = shallow(<Captcha {...props} />);
   };
 
-  it('should render a Captcha image with an input', () => {
-    render();
-    expect(component).toMatchSnapshot();
+  describe('onChange()', () => {
+    it('should return the user introduced text with the captcha id', async () => {
+      render();
+      component.setState({ id: '2df23daskj12' });
+      component.setProps({ value: { text: 'ab132' } });
+      component.find('input').simulate('change', { target: { value: 'ab1324' } });
+      expect(onChange).toHaveBeenLastCalledWith({ id: '2df23daskj12', text: 'ab1324' });
+    });
   });
 
   describe('refresh()', () => {
-    it('should return the refresh captcha method', done => {
+    it('should return the refresh captcha method', async () => {
       let refreshCaptcha;
       props.refresh = _refreshCaptcha => {
         refreshCaptcha = _refreshCaptcha;
       };
       render();
-      expect(component.find('img').props().src).toBe('/captcha');
-      refreshCaptcha();
-      component.update();
-      expect(component.find('img').props().src).not.toBe('/captcha');
-      done();
+      expect(component.find('div div').props().dangerouslySetInnerHTML).toEqual({ __html: '' });
+      spyOn(api, 'get').and.returnValue(Promise.resolve({ json: { svg: 'captchasvg', id: 2 } }));
+      await refreshCaptcha();
+
+      expect(component.find('div div').props().dangerouslySetInnerHTML).toEqual({
+        __html: 'captchasvg',
+      });
     });
   });
 });

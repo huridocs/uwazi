@@ -7,7 +7,7 @@ import db from 'api/utils/testing_db';
 import users from 'api/users/users';
 import svgCaptcha from 'svg-captcha';
 import backend from 'fetch-mock';
-import { Readable } from 'stream';
+import { CaptchaModel } from '../CaptchaModel';
 import authRoutes from '../routes';
 import fixtures from './fixtures.js';
 import instrumentRoutes from '../../utils/instrumentRoutes';
@@ -86,33 +86,29 @@ describe('Auth Routes', () => {
   });
 
   describe('/captcha', () => {
-    it('should return the captcha and store its value in session', async () => {
-      spyOn(svgCaptcha, 'create').and.returnValue({ data: 'captchaImage', text: 42 });
+    it('should return the captcha and store its value', async () => {
+      spyOn(svgCaptcha, 'create').and.returnValue({ data: 'captchaSvg', text: '42' });
       const req = { session: {} };
-      const response = await routes.get('/captcha', req);
-      expect(req.session.captcha).toBe(42);
-      expect(response).toBe('send:captchaImage');
+      const response = await routes.get('/api/captcha', req);
+
+      expect(response.svg).toBe('captchaSvg');
+      expect(response.id).toBeDefined();
+
+      const captchas = await CaptchaModel.get();
+      expect(captchas[0].text).toBe('42');
     });
   });
 
   describe('/remotecaptcha', () => {
     beforeEach(() => {
-      const stream = new Readable();
-      stream.push('captchaImage');
-      stream.push(null);
       backend.restore();
-      backend.get(
-        'http://secret.place.io/captcha',
-        { body: stream, headers: { 'set-cookie': ['connect.ssid: 12n32ndi23j4hsj;'] } },
-        { sendAsJson: false }
-      );
+      backend.get('http://secret.place.io/api/captcha', { text: 'captchaSvg', id: '123' });
     });
 
-    it('should return the captcha and store its value in session', async () => {
+    it('should return the captcha', async () => {
       const req = { session: {} };
-      const response = await routes.get('/remotecaptcha', req);
-      expect(req.session.remotecookie).toBe('connect.ssid: 12n32ndi23j4hsj;');
-      expect(response).toBe('captchaImage');
+      const response = await routes.get('/api/remotecaptcha', req);
+      expect(response).toEqual({ text: 'captchaSvg', id: '123' });
     });
   });
 });

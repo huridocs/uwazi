@@ -2,7 +2,7 @@
 
 export function wrapEntityMetadata(entity) {
   if (!entity.metadata) {
-    return entity;
+    return { ...entity };
   }
   const metadata = Object.keys(entity.metadata).reduce(
     (wrappedMo, key) => ({
