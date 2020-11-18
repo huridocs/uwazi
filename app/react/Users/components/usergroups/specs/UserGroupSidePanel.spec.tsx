@@ -51,13 +51,12 @@ describe('UserGroupSidePanel', () => {
 
   describe('Side panel opening', () => {
     it('should set SidePanel as open if opened prop is true', () => {
-      const sidePanel = component.find(SidePanel).at(0);
+      const sidePanel = component.find(SidePanel);
       expect(sidePanel.props().open).toBe(true);
     });
 
     it('should call the closePanel method on Discard Changes button click', () => {
-      const discardChangesBtn = component.find({ id: 'discardChangesBtn' }).at(0);
-      discardChangesBtn.simulate('click');
+      component.find({ id: 'discardChangesBtn' }).simulate('click');
       expect(defaultProps.closePanel).toHaveBeenCalled();
     });
   });
@@ -67,8 +66,8 @@ describe('UserGroupSidePanel', () => {
       const props = { ...defaultProps };
       props.userGroup = { name: 'NEW GROUP', members: [] };
       const wrapper = render(props);
-      const header = wrapper.find('.sidepanel-header').at(0);
-      const submitBtn = wrapper.find('#submitLabel').at(0);
+      const header = wrapper.find('.sidepanel-header');
+      const submitBtn = wrapper.find('#submitLabel');
       expect(header.props().children).toEqual('Add Group');
       expect(submitBtn.props().children).toEqual('Create Group');
     });
@@ -76,26 +75,20 @@ describe('UserGroupSidePanel', () => {
 
   describe('Editing user group', () => {
     it('should show the name of the received group', () => {
-      const nameInput = component
-        .find({ id: 'name_field' })
-        .find('input')
-        .at(0);
+      const nameInput = component.find({ id: 'name_field' }).find('input');
       expect(nameInput.props().value).toEqual(defaultProps.userGroup.name);
     });
 
     it('should show edition labels', () => {
-      const header = component.find('.sidepanel-header').at(0);
-      const submitBtn = component.find('#submitLabel').at(0);
+      const header = component.find('.sidepanel-header');
+      const submitBtn = component.find('#submitLabel');
       expect(header.props().children).toEqual('Edit Group');
       expect(submitBtn.props().children).toEqual('Save Group');
     });
 
     describe('User members', () => {
       it('should list all the team members', () => {
-        const members = component
-          .find('.user-group-members')
-          .at(0)
-          .children();
+        const members = component.find('.user-group-members').children();
         expect(members.length).toBe(2);
         expect(members.at(0).key()).toBe('user1');
         expect(members.at(1).key()).toBe('user2');
@@ -110,10 +103,7 @@ describe('UserGroupSidePanel', () => {
         });
 
         it('should remove the user if its remove button is clicked', () => {
-          const members = component
-            .find('.user-group-members')
-            .at(0)
-            .children();
+          const members = component.find('.user-group-members').children();
           expect(members.length).toBe(1);
           expect(members.at(0).key()).toBe('user2');
         });
@@ -132,13 +122,9 @@ describe('UserGroupSidePanel', () => {
     describe('Saving user group', () => {
       it('should call the save callback when submit', () => {
         const newName = 'GROUP 1';
-        const nameInput = component
-          .find({ id: 'name_field' })
-          .find('input')
-          .at(0);
+        const nameInput = component.find({ id: 'name_field' }).find('input');
         nameInput.simulate('change', { target: { value: newName } });
-        const form = component.find('form').at(0);
-        form.simulate('submit');
+        component.find('form').simulate('submit');
         expect(defaultProps.onSave).toHaveBeenCalledWith({
           ...defaultProps.userGroup,
           name: newName,
@@ -169,16 +155,13 @@ describe('UserGroupSidePanel', () => {
     });
 
     it('should add the selected users to the member list', () => {
-      const members = component
-        .find('.user-group-members')
-        .at(0)
-        .children();
+      const members = component.find('.user-group-members').children();
       expect(members.length).toBe(3);
       expect(members.at(2).key()).toBe('user3');
     });
 
     it('should save added user from available with member properties', () => {
-      const form = component.find('form').at(0);
+      const form = component.find('form');
       form.simulate('submit');
       component.update();
       const updatedUserGroup = defaultProps.userGroup;
