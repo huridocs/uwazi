@@ -1,8 +1,9 @@
 import api from 'app/Users/components/usergroups/UserGroupsAPI';
 import { Dispatch } from 'redux';
-import { IStore } from 'app/istore';
 import { UserGroupSchema } from 'shared/types/userGroupType';
+import { IStore } from 'app/istore';
 import { RequestParams } from 'app/utils/RequestParams';
+import { notificationActions } from 'app/Notifications';
 import * as actions from '../actions';
 
 describe('User Groups actions', () => {
@@ -16,11 +17,13 @@ describe('User Groups actions', () => {
     name: 'new group',
     members: [{ _id: 'user2' }],
   };
+
   let dispatch: Dispatch<IStore>;
 
   beforeEach(() => {
     dispatch = jasmine.createSpy('dispatch');
     spyOn(api, 'getUserGroups').and.returnValue(Promise.resolve(userGroups));
+    spyOn(notificationActions, 'notify').and.returnValue('NOTIFIED');
   });
 
   describe('Load user groups', () => {
@@ -33,21 +36,30 @@ describe('User Groups actions', () => {
 
   describe('Save user group', () => {
     describe('New user group', () => {
-      it('should dispatch a push action with a new user group ', async () => {
+      beforeEach(async () => {
         spyOn(api, 'saveUserGroup').and.returnValue(
           Promise.resolve({ ...newUserGroup, _id: 'group3' })
         );
         await actions.saveUserGroup(newUserGroup)(dispatch);
+      });
+
+      it('should dispatch a push action with a new user group ', () => {
         expect(api.saveUserGroup).toHaveBeenCalledWith(new RequestParams(newUserGroup));
         expect(dispatch).toHaveBeenCalledWith({
           type: 'userGroups/PUSH',
           value: { ...newUserGroup, _id: 'group3' },
         });
       });
+
+      it('should dispatch a notification of success', () => {
+        expect(notificationActions.notify).toHaveBeenCalledWith('Group created', 'success');
+      });
     });
+
     describe('Existing user group', () => {
-      it('should dispatch an update action keeping group members detail ', async () => {
-        const updatedGroup2 = {
+      let updatedGroup2: UserGroupSchema;
+      beforeEach(async () => {
+        updatedGroup2 = {
           ...group2,
           name: 'Group 2 updated',
           members: [{ _id: 'user1', username: 'User 1' }],
@@ -56,11 +68,18 @@ describe('User Groups actions', () => {
           Promise.resolve({ ...group2, name: 'Group 2 updated' })
         );
         await actions.saveUserGroup(updatedGroup2)(dispatch);
+      });
+
+      it('should dispatch an update action keeping group members detail ', () => {
         expect(api.saveUserGroup).toHaveBeenCalledWith(new RequestParams(updatedGroup2));
         expect(dispatch).toHaveBeenCalledWith({
           type: 'userGroups/UPDATE',
           value: updatedGroup2,
         });
+      });
+
+      it('should dispatch a notification of success', () => {
+        expect(notificationActions.notify).toHaveBeenCalledWith('Group updated', 'success');
       });
     });
   });
