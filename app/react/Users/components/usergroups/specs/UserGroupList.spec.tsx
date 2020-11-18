@@ -39,8 +39,7 @@ describe('UserGroupList', () => {
   describe('Add groups', () => {
     it('should open side panel with an empty creation form', () => {
       const component = render();
-      const addGroupsButton = component.find('.settings-footer > button').at(0);
-      addGroupsButton.simulate('click');
+      component.find('.settings-footer > button').simulate('click');
       expect(defaultProps.handleAddGroup).toHaveBeenCalledWith();
     });
   });
