@@ -13,9 +13,9 @@ describe('templates utils', () => {
       it('should sanitize the labels and append the type', async () => {
         await settings.save({});
         const result = await generateNamesAndIds([
-          { label: ' my prop ', type: 'text' },
-          { label: 'my^foreïgn$próp"', type: 'text' },
-          { label: ' my prop ', type: 'geolocation' },
+          { label: ' my prop ', name: '', type: 'text' },
+          { label: 'my^foreïgn$próp"', name: '', type: 'text' },
+          { label: ' my prop ', name: '', type: 'geolocation' },
         ]);
 
         expect(result[0].name).toBe('my_prop');
@@ -28,21 +28,21 @@ describe('templates utils', () => {
       it('should not contain the characters #, \\, /, *, ?, ", <, >, |, , :, ., and should be lowercase', async () => {
         await settings.save({ newNameGeneration: true });
         const result = await generateNamesAndIds([
-          { label: ' my prop ', type: 'text' },
-          { label: 'my^foreïgn$próp"', type: 'text' },
-          { label: ' my prop ', type: 'geolocation' },
-          { label: 'TEST#', type: 'text' },
-          { label: 'test\\', type: 'text' },
-          { label: 'test/', type: 'text' },
-          { label: '*test*', type: 'text' },
-          { label: 'test?', type: 'text' },
-          { label: 'test"', type: 'text' },
-          { label: 'test<', type: 'text' },
-          { label: 'test>', type: 'text' },
-          { label: 'test|', type: 'text' },
-          { label: 'te st ', type: 'text' },
-          { label: 'test: ', type: 'text' },
-          { label: 'te.st. ', type: 'text' },
+          { label: ' my prop ', name: '', type: 'text' },
+          { label: 'my^foreïgn$próp"', name: '', type: 'text' },
+          { label: ' my prop ', name: '', type: 'geolocation' },
+          { label: 'TEST#', name: '', type: 'text' },
+          { label: 'test\\', name: '', type: 'text' },
+          { label: 'test/', name: '', type: 'text' },
+          { label: '*test*', name: '', type: 'text' },
+          { label: 'test?', name: '', type: 'text' },
+          { label: 'test"', name: '', type: 'text' },
+          { label: 'test<', name: '', type: 'text' },
+          { label: 'test>', name: '', type: 'text' },
+          { label: 'test|', name: '', type: 'text' },
+          { label: 'te st ', name: '', type: 'text' },
+          { label: 'test: ', name: '', type: 'text' },
+          { label: 'te.st. ', name: '', type: 'text' },
         ]);
 
         expect(result).toEqual([
@@ -67,11 +67,11 @@ describe('templates utils', () => {
       it('should not start with _, -, +, $', async () => {
         await settings.save({ newNameGeneration: true });
         const result = await generateNamesAndIds([
-          { label: '.test ', type: 'text' },
-          { label: '_test', type: 'text' },
-          { label: '+test', type: 'text' },
-          { label: '$test', type: 'text' },
-          { label: '-test', type: 'text' },
+          { label: '.test ', name: '', type: 'text' },
+          { label: '_test', name: '', type: 'text' },
+          { label: '+test', name: '', type: 'text' },
+          { label: '$test', name: '', type: 'text' },
+          { label: '-test', name: '', type: 'text' },
         ]);
 
         expect(result).toEqual([
