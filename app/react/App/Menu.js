@@ -1,5 +1,3 @@
-/** @format */
-
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
@@ -11,21 +9,7 @@ import { processFilters, encodeSearch } from 'app/Library/actions/libraryActions
 import { showSemanticSearch } from 'app/SemanticSearch/actions/actions';
 import { FeatureToggleSemanticSearch } from 'app/SemanticSearch/components/FeatureToggleSemanticSearch';
 import { Icon } from 'UI';
-
-const libraryViewInfo = {
-  cards: {
-    url: 'library',
-    icon: 'th',
-  },
-  table: {
-    url: 'library/table',
-    icon: 'align-justify',
-  },
-  map: {
-    url: 'library/map',
-    icon: 'map-marker',
-  },
-};
+import { libraryViewInfo } from 'app/App/libraryViewInfo';
 
 export class Menu extends Component {
   libraryUrl() {
