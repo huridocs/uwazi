@@ -9,10 +9,12 @@ describe('Error', () => {
   });
 
   describe('when passing an instance of Error', () => {
-    it('should return an UwaziError with message and code', () => {
-      const error = createError(new Error('error message'), 500);
+    it('should return an UwaziError with message, code and the original instance', () => {
+      const instance = new Error('error message');
+      const error = createError(instance, 500);
       expect(error.message).toBe('error message');
       expect(error.code).toBe(500);
+      expect(error.original).toBe(instance);
     });
   });
 
