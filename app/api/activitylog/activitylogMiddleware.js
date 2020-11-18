@@ -4,7 +4,6 @@ import activitylog from './activitylog';
 
 const ignoredMethods = ['GET', 'OPTIONS', 'HEAD'];
 export const IGNORED_ENDPOINTS = [
-  // '/api/users',
   '/api/login',
   '/api/contact',
   '/api/unlockaccount',
