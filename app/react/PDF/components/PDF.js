@@ -164,23 +164,27 @@ class PDF extends Component {
         }}
         style={this.props.style}
       >
-        {(() => {
-          const pages = [];
-          for (let page = 1; page <= this.state.pdf.numPages; page += 1) {
-            pages.push(
-              <PDFPage
-                onUnload={this.pageUnloaded}
-                onLoading={this.pageLoading}
-                onVisible={this.onPageVisible}
-                onHidden={this.onPageHidden}
-                key={page}
-                page={page}
-                pdf={this.state.pdf}
-              />
-            );
-          }
-          return pages;
-        })()}
+        <SelectionHandler onTextSelection={this.props.onTextSelection}>
+          {(() => {
+            const pages = [];
+            for (let page = 1; page <= this.state.pdf.numPages; page += 1) {
+              pages.push(
+                <SelectionRegion regionId={page} key={page}>
+                  <PDFPage
+                    onUnload={this.pageUnloaded}
+                    onLoading={this.pageLoading}
+                    onVisible={this.onPageVisible}
+                    onHidden={this.onPageHidden}
+                    key={page}
+                    page={page}
+                    pdf={this.state.pdf}
+                  />
+                </SelectionRegion>
+              );
+            }
+            return pages;
+          })()}
+        </SelectionHandler>
       </div>
     );
   }
@@ -191,10 +195,12 @@ PDF.defaultProps = {
   onPageChange: () => {},
   onPDFReady: () => {},
   style: {},
+  onTextSelection: () => {},
 };
 
 PDF.propTypes = {
   onPageChange: PropTypes.func,
+  onTextSelection: PropTypes.func,
   onPDFReady: PropTypes.func,
   file: PropTypes.string.isRequired,
   filename: PropTypes.string,
