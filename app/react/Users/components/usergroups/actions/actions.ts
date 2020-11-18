@@ -1,8 +1,9 @@
 import { Dispatch } from 'redux';
+import { UserGroupSchema } from 'shared/types/userGroupType';
 import { IStore } from 'app/istore';
 import { actions } from 'app/BasicReducer';
-import { UserGroupSchema } from 'shared/types/userGroupType';
 import { RequestParams } from 'app/utils/RequestParams';
+import { notificationActions } from 'app/Notifications';
 import api from '../UserGroupsAPI';
 
 export function loadUserGroups() {
@@ -18,8 +19,10 @@ export function saveUserGroup(userGroup: UserGroupSchema) {
     const userGroupToDispatch = { ...savedUserGroup, members: userGroup.members };
     if (userGroup._id) {
       dispatch(actions.update('userGroups', userGroupToDispatch));
+      dispatch(notificationActions.notify('Group updated', 'success'));
     } else {
       dispatch(actions.push('userGroups', userGroupToDispatch));
+      dispatch(notificationActions.notify('Group created', 'success'));
     }
   };
 }
