@@ -12,12 +12,14 @@ test error",
 exports[`handleError when the body contains the user and password should not show them in the log 1`] = `
 Array [
   Array [
-    "
+    Object {
+      "pretty": "
 body: {
  \\"username\\": \\"########\\",
  \\"password\\": \\"########\\"
 }
 test error",
+    },
   ],
 ]
 `;

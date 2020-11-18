@@ -2,6 +2,7 @@ import errorLog from 'api/log/errorLog';
 import { createError } from 'api/utils';
 import debugLog from 'api/log/debugLog';
 
+import { ConnectionError } from '@elastic/elasticsearch/lib/errors';
 import handleError from '../handleError';
 
 describe('handleError', () => {
@@ -11,19 +12,36 @@ describe('handleError', () => {
   });
 
   describe('when error is instance of Error', () => {
-    it('should return the error with 500 code', () => {
+    it('should return the error with 500 code and not include the original error', () => {
       const errorInstance = new Error('error');
       const error = handleError(errorInstance);
 
       expect(error.code).toBe(500);
       expect(error.message).toEqual(errorInstance.stack);
+      expect(error.original).not.toBeDefined();
+    });
+
+    it('should correctly log the original error for ElasticSearch exceptions', () => {
+      const error = new ConnectionError('test error', { meta: 'some meta' });
+      handleError(error);
+
+      expect(errorLog.error).toHaveBeenCalledWith(
+        `\n${error.stack}
+original error: {
+ "name": "ConnectionError",
+ "meta": {
+  "meta": "some meta"
+ }
+}`,
+        {}
+      );
     });
 
     it('should log the error', () => {
       const error = new Error('error');
       handleError(error);
 
-      expect(errorLog.error).toHaveBeenCalledWith(`\n${error.stack}`, {});
+      expect(errorLog.error).toHaveBeenCalledWith(`\n${error.stack}\noriginal error: {}`, {});
     });
   });
 
@@ -102,7 +120,15 @@ describe('handleError', () => {
   describe('when error is 400', () => {
     it('should log it using debugLog', () => {
       handleError(createError('test error', 400));
-      expect(debugLog.debug).toHaveBeenCalledWith('\ntest error');
+      expect(debugLog.debug).toHaveBeenCalledWith({ pretty: '\ntest error' });
+    });
+
+    describe('and is instance of Error', () => {
+      it('should include the original error', () => {
+        const error = new Error('test error');
+        handleError(createError(error, 400));
+        expect(debugLog.debug).toHaveBeenCalledWith({ pretty: '\ntest error', original: error });
+      });
     });
   });
 

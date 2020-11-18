@@ -159,10 +159,6 @@ describe('upload routes', () => {
     let remoteServer;
     beforeEach(() => {
       app = express();
-      app.use((_req, _res, next) => {
-        _req.session = { remotecookie: 'connect.ssid: 12n32ndi23j4hsj;' }; //eslint-disable-line
-        next();
-      });
       uploadRoutes(app);
     });
 
@@ -170,7 +166,7 @@ describe('upload routes', () => {
       await remoteServer.close();
     });
 
-    it('should return the captcha and store its value in session', done => {
+    it('should return the captcha and store it', done => {
       remoteApp = express();
       remoteApp.post('/api/public', (_req, res) => {
         res.json(_req.headers);
@@ -184,7 +180,6 @@ describe('upload routes', () => {
           .expect(200);
 
         const headersOnRemote = JSON.parse(response.text);
-        expect(headersOnRemote.cookie).toBe('connect.ssid: 12n32ndi23j4hsj;');
         expect(headersOnRemote.tenant).not.toBeDefined();
         done();
       });
