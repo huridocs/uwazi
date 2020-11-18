@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import { IImmutable } from 'shared/types/Immutable';
-import { UserGroupSchema } from 'shared/types/userGroupType';
+import { GroupMemberSchema, UserGroupSchema } from 'shared/types/userGroupType';
 import { IStore } from 'app/istore';
 import { loadUserGroups, saveUserGroup } from 'app/Users/components/usergroups/actions/actions';
 import { UserGroupList } from 'app/Users/components/usergroups/UserGroupList';
@@ -9,18 +9,21 @@ import { UserGroupSidePanel } from './UserGroupSidePanel';
 
 export interface UserGroupProps {
   userGroups: IImmutable<UserGroupSchema[]>;
+  users: IImmutable<GroupMemberSchema[]>;
   loadUserGroups: () => any;
   saveUserGroup: (userGroup: UserGroupSchema) => any;
 }
 
 function UserGroups({
   userGroups,
+  users,
   loadUserGroups: loadGroups,
   saveUserGroup: saveGroup,
 }: UserGroupProps) {
   const [sidePanelOpened, setSidePanelOpened] = useState(false);
   const [selectedGroup, setSelectedGroup] = useState<UserGroupSchema>();
-  const list = userGroups ? userGroups.toJS() : [];
+  const groupList = userGroups ? userGroups.toJS() : [];
+  const userList = users ? users.toJS() : [];
 
   useEffect(() => {
     if (userGroups === undefined || userGroups.size === 0) {
@@ -47,13 +50,14 @@ function UserGroups({
   return (
     <>
       <UserGroupList
-        userGroups={list}
+        userGroups={groupList}
         handleSelect={handleSelect}
         handleAddGroup={handleAddGroup}
       />
       {selectedGroup && (
         <UserGroupSidePanel
           userGroup={selectedGroup}
+          users={userList}
           opened={sidePanelOpened}
           closePanel={closeSidePanel}
           onSave={handleSave}
@@ -63,9 +67,10 @@ function UserGroups({
   );
 }
 
-function mapStateToProps(state: IStore) {
+function mapStateToProps(state: IStore & { users: IImmutable<GroupMemberSchema[]> }) {
   return {
     userGroups: state.userGroups,
+    users: state.users,
   };
 }
 

@@ -1,15 +1,25 @@
 /**
  * @jest-environment jsdom
  */
+import Immutable from 'immutable';
 import { SidePanel } from 'app/Layout';
 import {
   UserGroupSidePanel,
   UserGroupSidePanelProps,
 } from 'app/Users/components/usergroups/UserGroupSidePanel';
 import { renderConnectedMount } from 'app/Templates/specs/utils/renderConnected';
+import { ReactWrapper } from 'enzyme';
+import React from 'react';
+import MultiSelect from 'app/Forms/components/MultiSelect';
 
 describe('UserGroupSidePanel', () => {
   const defaultProps: UserGroupSidePanelProps = {
+    users: [
+      { _id: 'user1', username: 'User 1' },
+      { _id: 'user2', username: 'User 2' },
+      { _id: 'user3', username: 'john smith' },
+      { _id: 'user4', username: 'maria rodriguez' },
+    ],
     userGroup: {
       _id: 'group1Id',
       name: 'Group 1',
@@ -22,28 +32,50 @@ describe('UserGroupSidePanel', () => {
     closePanel: jasmine.createSpy('onClick'),
     onSave: jasmine.createSpy('onSave'),
   };
+
+  let component: ReactWrapper<React.Component['props'], React.Component['state'], React.Component>;
+
   function render(args?: UserGroupSidePanelProps) {
-    const props = { ...defaultProps, args };
-    return renderConnectedMount(UserGroupSidePanel, {}, props);
+    const props = { ...defaultProps, ...args };
+    const state = {
+      locale: 'es',
+      inlineEdit: Immutable.fromJS({ inlineEdit: true }),
+      translations: Immutable.fromJS([{ _id: 1, locale: 'es', contexts: [] }]),
+    };
+    return renderConnectedMount(UserGroupSidePanel, state, props);
   }
+
+  beforeEach(() => {
+    component = render();
+  });
+
   describe('Side panel opening', () => {
     it('should set SidePanel as open if opened prop is true', () => {
-      const component = render();
       const sidePanel = component.find(SidePanel).at(0);
       expect(sidePanel.props().open).toBe(true);
     });
 
     it('should call the closePanel method on Discard Changes button click', () => {
-      const component = render();
       const discardChangesBtn = component.find({ id: 'discardChangesBtn' }).at(0);
       discardChangesBtn.simulate('click');
       expect(defaultProps.closePanel).toHaveBeenCalled();
     });
   });
 
+  describe('Create user group', () => {
+    it('should show creation labels', () => {
+      const props = { ...defaultProps };
+      props.userGroup = { name: 'NEW GROUP', members: [] };
+      const wrapper = render(props);
+      const header = wrapper.find('.sidepanel-header').at(0);
+      const submitBtn = wrapper.find('#submitLabel').at(0);
+      expect(header.props().children).toEqual('Add Group');
+      expect(submitBtn.props().children).toEqual('Create Group');
+    });
+  });
+
   describe('Editing user group', () => {
     it('should show the name of the received group', () => {
-      const component = render();
       const nameInput = component
         .find({ id: 'name_field' })
         .find('input')
@@ -51,9 +83,15 @@ describe('UserGroupSidePanel', () => {
       expect(nameInput.props().value).toEqual(defaultProps.userGroup.name);
     });
 
+    it('should show edition labels', () => {
+      const header = component.find('.sidepanel-header').at(0);
+      const submitBtn = component.find('#submitLabel').at(0);
+      expect(header.props().children).toEqual('Edit Group');
+      expect(submitBtn.props().children).toEqual('Save Group');
+    });
+
     describe('User members', () => {
       it('should list all the team members', () => {
-        const component = render();
         const members = component
           .find('.user-group-members')
           .at(0)
@@ -63,29 +101,89 @@ describe('UserGroupSidePanel', () => {
         expect(members.at(1).key()).toBe('user2');
       });
 
-      it('should remove the user if its remove button is clicked', () => {
-        const component = render();
-        const user1Comparison = (node: any) => node.key() === 'user1';
-        const memberDeleteBtn = component.findWhere(user1Comparison).find('button');
-        memberDeleteBtn.simulate('click');
-        component.update();
-        const members = component
-          .find('.user-group-members')
-          .at(0)
-          .children();
-        expect(members.length).toBe(1);
-        expect(members.at(0).key()).toBe('user2');
+      describe('Remove users', () => {
+        beforeEach(() => {
+          const user1Comparison = (node: any) => node.key() === 'user1';
+          const memberDeleteBtn = component.findWhere(user1Comparison).find('button');
+          memberDeleteBtn.simulate('click');
+          component.update();
+        });
+
+        it('should remove the user if its remove button is clicked', () => {
+          const members = component
+            .find('.user-group-members')
+            .at(0)
+            .children();
+          expect(members.length).toBe(1);
+          expect(members.at(0).key()).toBe('user2');
+        });
+
+        it('should include the removed user into available users', () => {
+          const availableUsers = component.find(MultiSelect);
+          expect(availableUsers.props().options).toEqual([
+            { _id: 'user1', username: 'User 1' },
+            { _id: 'user3', username: 'john smith' },
+            { _id: 'user4', username: 'maria rodriguez' },
+          ]);
+        });
       });
     });
 
     describe('Saving user group', () => {
       it('should call the save callback when submit', () => {
-        const component = render();
+        const newName = 'GROUP 1';
+        const nameInput = component
+          .find({ id: 'name_field' })
+          .find('input')
+          .at(0);
+        nameInput.simulate('change', { target: { value: newName } });
         const form = component.find('form').at(0);
         form.simulate('submit');
-        component.update();
-        expect(defaultProps.onSave).toHaveBeenCalledWith(defaultProps.userGroup);
+        expect(defaultProps.onSave).toHaveBeenCalledWith({
+          ...defaultProps.userGroup,
+          name: newName,
+        });
       });
+    });
+  });
+
+  describe('Available users', () => {
+    it('should list only users than are not members of groups', () => {
+      const availableUsers = component.find(MultiSelect);
+      expect(availableUsers.props().options).toEqual([
+        { _id: 'user3', username: 'john smith' },
+        { _id: 'user4', username: 'maria rodriguez' },
+      ]);
+    });
+  });
+
+  describe('Adding users to the group', () => {
+    beforeEach(() => {
+      const props = { ...defaultProps };
+      // @ts-ignore
+      props.users[2].using2fa = false;
+      component = render(props);
+      const availableUsers = component.find(MultiSelect);
+      availableUsers.props().onChange([props.users[2]._id]);
+      component.update();
+    });
+
+    it('should add the selected users to the member list', () => {
+      const members = component
+        .find('.user-group-members')
+        .at(0)
+        .children();
+      expect(members.length).toBe(3);
+      expect(members.at(2).key()).toBe('user3');
+    });
+
+    it('should save added user from available with member properties', () => {
+      const form = component.find('form').at(0);
+      form.simulate('submit');
+      component.update();
+      const updatedUserGroup = defaultProps.userGroup;
+      updatedUserGroup.members.push({ _id: 'user3', username: 'john smith' });
+      expect(defaultProps.onSave).toHaveBeenCalledWith(defaultProps.userGroup);
     });
   });
 });

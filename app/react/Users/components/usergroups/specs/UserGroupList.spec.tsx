@@ -10,7 +10,7 @@ describe('UserGroupList', () => {
     handleAddGroup: jasmine.createSpy('onClick'),
   };
   function render(args?: UserGroupListProps) {
-    const props = { ...defaultProps, args };
+    const props = { ...defaultProps, ...args };
     return shallow(
       <UserGroupList
         userGroups={props.userGroups}
