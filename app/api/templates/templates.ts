@@ -163,23 +163,22 @@ export default {
     return model.get(query);
   },
 
-  async setAsDefault(templateId: string) {
-    return this.get().then(async _templates => {
-      const templateToBeDefault = ensure<TemplateSchema>(
-        _templates.find(t => t._id.toString() === templateId)
-      );
-      const currentDefault = _templates.find(t => t.default);
-      ensure<TemplateSchema>(templateToBeDefault).default = true;
+  async setAsDefault(_id: string) {
+    const [templateToBeDefault] = await this.get({ _id });
+    const [currentDefault] = await this.get({ _id: { $nin: [_id] }, default: true });
+
+    if (templateToBeDefault) {
       let saveCurrentDefault = Promise.resolve({});
       if (currentDefault) {
-        currentDefault.default = false;
-        saveCurrentDefault = this.save(currentDefault, currentDefault.language);
+        saveCurrentDefault = model.save({
+          _id: currentDefault._id,
+          default: false,
+        });
       }
-      return Promise.all([
-        this.save(templateToBeDefault, templateToBeDefault.language),
-        saveCurrentDefault,
-      ]);
-    });
+      return Promise.all([model.save({ _id, default: true }), saveCurrentDefault]);
+    }
+
+    throw createError('Invalid ID');
   },
 
   async getById(templateId: ObjectID | string) {
