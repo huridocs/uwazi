@@ -2,12 +2,8 @@ import React from 'react';
 
 import { I18NLink } from 'app/I18N';
 import GeolocationViewer from 'app/Metadata/components/GeolocationViewer';
-import { MetadataObjectSchema, PropertySchema } from 'shared/types/commonTypes';
+import { LinkSchema, MetadataObjectSchema, PropertySchema } from 'shared/types/commonTypes';
 import MarkdownViewer from 'app/Markdown';
-
-interface FromattedMetadataObjectSchema extends MetadataObjectSchema {
-  url?: string;
-}
 
 export interface TableCellProps {
   content: FormattedMetadataValue;
@@ -15,7 +11,7 @@ export interface TableCellProps {
 }
 
 export interface FormattedMetadataValue extends PropertySchema {
-  value?: string | FromattedMetadataObjectSchema | FromattedMetadataObjectSchema[];
+  value?: string | MetadataObjectSchema | MetadataObjectSchema[];
 }
 
 const formatProperty = (prop: FormattedMetadataValue) => {
@@ -37,12 +33,8 @@ const formatProperty = (prop: FormattedMetadataValue) => {
       break;
     case 'link':
       result = (
-        <a
-          href={(prop.value as FromattedMetadataObjectSchema).url}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          {(prop.value as FromattedMetadataObjectSchema).label}
+        <a href={(prop.value as LinkSchema).url || ''} target="_blank" rel="noopener noreferrer">
+          {(prop.value as MetadataObjectSchema).label}
         </a>
       );
       break;
