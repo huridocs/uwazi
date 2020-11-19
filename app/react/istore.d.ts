@@ -57,10 +57,9 @@ export interface SettingsState {
   features?: { topicClassification: boolean };
 }
 
-export interface TableViewColumn extends Omit<PropertySchema, 'name'> {
+export interface TableViewColumn extends PropertySchema {
   hidden: boolean;
   translationContext?: string;
-  name?: string;
 }
 
 interface EntityDisplayState {
