@@ -5,13 +5,17 @@ import GeolocationViewer from 'app/Metadata/components/GeolocationViewer';
 import { MetadataObjectSchema, PropertySchema } from 'shared/types/commonTypes';
 import MarkdownViewer from 'app/Markdown';
 
+interface FromattedMetadataObjectSchema extends MetadataObjectSchema {
+  url?: string;
+}
+
 export interface TableCellProps {
   content: FormattedMetadataValue;
   zoomLevel: number;
 }
 
 export interface FormattedMetadataValue extends PropertySchema {
-  value?: string | MetadataObjectSchema | MetadataObjectSchema[];
+  value?: string | FromattedMetadataObjectSchema | FromattedMetadataObjectSchema[];
 }
 
 const formatProperty = (prop: FormattedMetadataValue) => {
@@ -34,11 +38,11 @@ const formatProperty = (prop: FormattedMetadataValue) => {
     case 'link':
       result = (
         <a
-          href={(prop.value as MetadataObjectSchema).url}
+          href={(prop.value as FromattedMetadataObjectSchema).url}
           target="_blank"
           rel="noopener noreferrer"
         >
-          {(prop.value as MetadataObjectSchema).label}
+          {(prop.value as FromattedMetadataObjectSchema).label}
         </a>
       );
       break;
