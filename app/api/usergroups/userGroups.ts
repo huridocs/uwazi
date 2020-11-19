@@ -28,4 +28,8 @@ export default {
     const members = userGroup.members.map(m => ({ _id: m._id }));
     return model.save({ ...userGroup, members });
   },
+
+  async delete(query: any) {
+    return model.delete(query);
+  },
 };

@@ -13,6 +13,8 @@ jest.mock(
 
 describe('usergroups routes', () => {
   let user: { username: string; role: string } | undefined;
+  const defaultUserGroup: any = { _id: 'group1', name: 'group 1', members: [] };
+
   function getUser() {
     return user;
   }
@@ -24,14 +26,27 @@ describe('usergroups routes', () => {
     }
   );
 
-  describe('GET', () => {
-    async function getUserGroups() {
-      const response: SuperTestResponse = await request(app)
-        .get('/api/usergroups')
-        .set('X-Requested-With', 'XMLHttpRequest');
-      return response;
-    }
+  async function getUserGroups(): Promise<SuperTestResponse> {
+    return request(app)
+      .get('/api/usergroups')
+      .set('X-Requested-With', 'XMLHttpRequest');
+  }
 
+  async function postUserGroup(userGroupData = defaultUserGroup): Promise<SuperTestResponse> {
+    return request(app)
+      .post('/api/usergroups')
+      .set('X-Requested-With', 'XMLHttpRequest')
+      .send(userGroupData);
+  }
+
+  async function deleteUserGroup(_id: string): Promise<SuperTestResponse> {
+    return request(app)
+      .delete('/api/usergroups')
+      .set('X-Requested-With', 'XMLHttpRequest')
+      .send({ _id });
+  }
+
+  describe('GET', () => {
     const groups = [{ name: 'group1' }];
 
     beforeEach(() => {
@@ -43,29 +58,9 @@ describe('usergroups routes', () => {
       const response = await getUserGroups();
       expect(response.body).toEqual(groups);
     });
-
-    it('should reject with unauthorized when user has not admin role', async () => {
-      user = { username: 'user 1', role: 'editor' };
-      const response = await getUserGroups();
-      expect(response.unauthorized).toBe(true);
-    });
-
-    it('should reject with unauthorized when there is no user', async () => {
-      user = undefined;
-      const response = await getUserGroups();
-      expect(response.unauthorized).toBe(true);
-    });
   });
 
   describe('POST', () => {
-    const defaultUserGroup: any = { _id: 'group1', name: 'group 1', members: [] };
-    async function postUserGroup(userGroupData = defaultUserGroup) {
-      return request(app)
-        .post('/api/usergroups')
-        .set('X-Requested-With', 'XMLHttpRequest')
-        .send(userGroupData);
-    }
-
     beforeEach(() => {
       const userGroup = { _id: 'group1', name: 'group 1' };
       spyOn(userGroups, 'save').and.returnValue(Promise.resolve(userGroup));
@@ -75,20 +70,6 @@ describe('usergroups routes', () => {
       user = { username: 'user 1', role: 'admin' };
       const response = await postUserGroup();
       expect(response.body._id).toEqual('group1');
-    });
-
-    describe('authorization', () => {
-      it('should reject with unauthorized when user has not admin role', async () => {
-        user = { username: 'user 1', role: 'editor' };
-        const response = await postUserGroup();
-        expect(response.unauthorized).toBe(true);
-      });
-
-      it('should reject with unauthorized when there is no user', async () => {
-        user = undefined;
-        const response = await postUserGroup();
-        expect(response.unauthorized).toBe(true);
-      });
     });
 
     describe('validation', () => {
@@ -125,5 +106,42 @@ describe('usergroups routes', () => {
         expect(response.body.error).toBe('validation failed');
       });
     });
+  });
+
+  describe('DELETE', () => {
+    it('should delete the user with the specified id', async () => {
+      spyOn(userGroups, 'delete').and.returnValue(Promise.resolve({ _id: 'user1' }));
+      const response = await deleteUserGroup('user1');
+      expect(response.status).toBe(200);
+      expect(response.text).toBe('{"_id":"user1"}');
+    });
+  });
+
+  describe('authorization', () => {
+    it.each([getUserGroups, postUserGroup, deleteUserGroup])(
+      'should reject with unauthorized when user has not admin role',
+      async (
+        endpointCall:
+          | (() => Promise<SuperTestResponse>)
+          | ((args?: any) => Promise<SuperTestResponse>)
+      ) => {
+        user = { username: 'user 1', role: 'editor' };
+        const response = await endpointCall();
+        expect(response.unauthorized).toBe(true);
+      }
+    );
+
+    it.each([getUserGroups, postUserGroup, deleteUserGroup])(
+      'should reject with unauthorized when there is no user',
+      async (
+        endpointCall:
+          | (() => Promise<SuperTestResponse>)
+          | ((args?: any) => Promise<SuperTestResponse>)
+      ) => {
+        user = undefined;
+        const response: request.Response = await endpointCall();
+        expect(response.unauthorized).toBe(true);
+      }
+    );
   });
 });

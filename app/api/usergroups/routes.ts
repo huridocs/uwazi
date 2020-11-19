@@ -28,4 +28,13 @@ export default (app: Application) => {
       res.json(userGroup);
     }
   );
+
+  app.delete(
+    '/api/usergroups',
+    needsAuthorization(['admin']),
+    async (req: Request, res: Response) => {
+      const deletedGroup = await userGroups.delete(req.body);
+      res.json(deletedGroup);
+    }
+  );
 };
