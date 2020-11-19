@@ -133,10 +133,12 @@ export const tocSchema = {
 export const propertySchema = {
   type: 'object',
   required: ['label', 'type', 'name'],
+  additionalProperties: false,
   requireContentForSelectFields: true,
   requireRelationTypeForRelationship: true,
   requireInheritPropertyForInheritingRelationship: true,
   properties: {
+    _id: objectIdSchema,
     id: { type: 'string' },
     label: { type: 'string', minLength: 1 },
     name: { type: 'string', minLength: 1 },
@@ -144,6 +146,7 @@ export const propertySchema = {
     type: { type: 'string', enum: Object.values(propertyTypes) },
     prioritySorting: { type: 'boolean' },
     content: { type: 'string' },
+    relationType: { type: 'string' },
     inherit: { type: 'boolean' },
     inheritProperty: { type: 'string', minLength: 1 },
     filter: { type: 'boolean' },

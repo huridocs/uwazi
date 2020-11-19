@@ -112,5 +112,4 @@ export interface PropertySchema {
   showInCard?: boolean;
   style?: string;
   nestedProperties?: string[];
-  [k: string]: unknown | undefined;
 }
