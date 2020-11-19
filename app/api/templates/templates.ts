@@ -133,7 +133,7 @@ export default {
       );
   },
 
-  async canDeleteProperty(template: ObjectID, property: ObjectID) {
+  async canDeleteProperty(template: ObjectID, property: ObjectID | string | undefined) {
     const tmps = await model.get();
     return tmps.every(iteratedTemplate =>
       (iteratedTemplate.properties || []).every(
@@ -142,7 +142,7 @@ export default {
           !iteratedProperty.inheritProperty ||
           !(
             iteratedProperty.content.toString() === template.toString() &&
-            iteratedProperty.inheritProperty.toString() === property.toString()
+            iteratedProperty.inheritProperty.toString() === (property || '').toString()
           )
       )
     );

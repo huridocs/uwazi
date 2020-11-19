@@ -139,7 +139,7 @@ ajv.addKeyword('cantDeleteInheritedProperties', {
       toRemoveProperties.map(async property => {
         const canDelete = await templates.canDeleteProperty(
           ensure<ObjectId>(template._id),
-          ensure<ObjectId>(property._id)
+          property._id
         );
 
         if (!canDelete) {
