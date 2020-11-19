@@ -81,6 +81,10 @@ interface ClientTemplateSchema extends TemplateSchema {
   _id: string;
 }
 
+export interface ClientEntitySchema extends EntitySchema {
+  documents?: [];
+}
+
 export interface IStore {
   library: EntityDisplayState;
   uploads: EntityDisplayState;
@@ -96,7 +100,7 @@ export interface IStore {
   };
   relationships: any;
   entityView: {
-    entity: IImmutable<EntitySchema>;
+    entity: IImmutable<ClientEntitySchema>;
     entityFormState: any;
     entityForm: any;
     uiState: IImmutable<{ tab: string }>;
