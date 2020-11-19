@@ -45,7 +45,7 @@ export const generateNamesAndIds = async (properties: PropertySchema[] = []) => 
   return generateIds(generateNames(properties, newNameGeneration));
 };
 
-interface PropertyOrThesaurusSchema
+export interface PropertyOrThesaurusSchema
   extends Partial<PropertySchema>,
     Partial<ThesaurusValueSchema> {}
 
@@ -84,8 +84,8 @@ const notIncludedIn = (propertyCollection: PropertyOrThesaurusSchema[]) => (
 ) => !propertyCollection.find(p => p.id === property.id);
 
 export function getDeletedProperties(
-  oldProperties: PropertySchema[] = [],
-  newProperties: PropertySchema[],
+  oldProperties: PropertyOrThesaurusSchema[] = [],
+  newProperties: PropertyOrThesaurusSchema[],
   prop: 'name' | 'label' = 'name'
 ) {
   return flattenProperties(oldProperties)
