@@ -1,6 +1,13 @@
+import uniqueID from 'shared/uniqueID';
 import { Tenant } from './tenants/tenantContext';
 
-const { ROOT_PATH, UPLOADS_FOLDER, CUSTOM_UPLOADS_FOLDER, TEMPORAL_FILES_FOLDER } = process.env;
+const {
+  ROOT_PATH,
+  UPLOADS_FOLDER,
+  CUSTOM_UPLOADS_FOLDER,
+  TEMPORAL_FILES_FOLDER,
+  USER_SESSION_SECRET,
+} = process.env;
 
 const rootPath = ROOT_PATH || `${__dirname}/../../`;
 
@@ -16,6 +23,8 @@ export const config = {
   rootPath,
 
   publicAssets: `${rootPath}/public/`,
+
+  userSessionSecret: USER_SESSION_SECRET || uniqueID(),
 
   // db for tenants list and sessions
   SHARED_DB: 'uwazi_shared_db',

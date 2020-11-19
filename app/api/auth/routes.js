@@ -3,12 +3,14 @@ import cookieParser from 'cookie-parser';
 import mongoConnect from 'connect-mongo';
 import passport from 'passport';
 import session from 'express-session';
-import uniqueID from 'shared/uniqueID';
 import svgCaptcha from 'svg-captcha';
 import settings from 'api/settings';
 import urljoin from 'url-join';
 import { DB } from 'api/odm';
 import { config } from 'api/config';
+import cors from 'cors';
+import request from 'shared/JSONRequest';
+import { CaptchaModel } from './CaptchaModel';
 
 import { validation } from '../utils';
 
@@ -21,7 +23,7 @@ export default app => {
 
   app.use(
     session({
-      secret: app.get('env') === 'production' ? uniqueID() : 'harvey&lola',
+      secret: app.get('env') === 'production' ? config.userSessionSecret : 'harvey&lola',
       store: new MongoStore({
         mongooseConnection: DB.connectionForDB(config.SHARED_DB),
       }),
@@ -29,6 +31,7 @@ export default app => {
       saveUninitialized: false,
     })
   );
+
   app.use(passport.initialize());
   app.use(passport.session());
 
@@ -70,19 +73,23 @@ export default app => {
     res.redirect('/');
   });
 
-  app.get('/captcha', (req, res) => {
-    const captcha = svgCaptcha.create({ ignoreChars: '0OoiILl' });
-    req.session.captcha = captcha.text;
-    res.type('svg');
-    res.send(captcha.data);
+  const corsOptions = {
+    origin: true,
+    methods: 'GET',
+    credentials: true,
+    optionsSuccessStatus: 200,
+  };
+
+  app.get('/api/captcha', cors(corsOptions), async (_req, res) => {
+    const captcha = svgCaptcha.create({ ignoreChars: '0OoiILluvUV' });
+    const storedCaptcha = await CaptchaModel.save({ text: captcha.text });
+
+    res.json({ svg: captcha.data, id: storedCaptcha._id.toString() });
   });
 
-  app.get('/remotecaptcha', async (req, res) => {
+  app.get('/api/remotecaptcha', async (_req, res) => {
     const { publicFormDestination } = await settings.get({}, { publicFormDestination: 1 });
-    const remoteResponse = await fetch(urljoin(publicFormDestination, '/captcha'));
-    const [remotecookie] = remoteResponse.headers._headers['set-cookie'];
-    req.session.remotecookie = remotecookie;
-    res.type('svg');
-    remoteResponse.body.pipe(res);
+    const remoteResponse = await request.get(urljoin(publicFormDestination, '/api/captcha'));
+    res.json(remoteResponse.json);
   });
 };

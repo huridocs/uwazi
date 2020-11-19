@@ -37,7 +37,7 @@ describe('migration activity log sanitization', () => {
         .collection('activitylogs')
         .find({ method: { $not: { $in: ['GET', 'OPTIONS', 'HEAD'] } } })
         .count();
-      expect(remainingEntries).toBe(6);
+      expect(remainingEntries).toBe(7);
     });
 
     it('should remove activity entries with unwanted urls', async () => {
@@ -74,7 +74,7 @@ describe('migration activity log sanitization', () => {
         .find({ expireAt })
         .count();
 
-      expect(unWantedEntries).toBe(6);
+      expect(unWantedEntries).toBe(7);
     });
 
     it('should remove updatelog entries for activitylog', async () => {

@@ -112,13 +112,13 @@ describe('MultiSelect', () => {
     });
 
     it('it should remove options that were selected', () => {
-      props.value = ['option1'];
+      props.value = ['option1', 'option2'];
       render();
       component
         .find('input[type="checkbox"]')
         .at(0)
         .simulate('change');
-      expect(props.onChange).toHaveBeenCalledWith([]);
+      expect(props.onChange).toHaveBeenCalledWith(['option2']);
     });
   });
 
