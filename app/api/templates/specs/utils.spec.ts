@@ -109,7 +109,7 @@ describe('templates utils', () => {
       expect(result).toEqual({ my_prop_two: 'my_fancy_new_name' });
     });
 
-    it('should work for sub values too', () => {
+    it('should work for sub values too (function is being used by relationships and thesauri)', () => {
       const oldProperties: PropertySchema[] = [
         { id: '1', name: 'my_prop', label: 'label', type: 'text' },
         {
@@ -126,6 +126,7 @@ describe('templates utils', () => {
         {
           id: '2',
           name: 'my_prop_two',
+
           values: [{ id: 3, name: 'I_changed' }],
           label: 'label',
           type: 'text',

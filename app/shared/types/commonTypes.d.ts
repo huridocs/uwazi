@@ -78,6 +78,7 @@ export interface TocSchema {
 }
 
 export interface PropertySchema {
+  _id?: string | ObjectId;
   id?: string;
   label: string;
   name: string;
@@ -101,6 +102,7 @@ export interface PropertySchema {
     | 'text';
   prioritySorting?: boolean;
   content?: string;
+  relationType?: string;
   inherit?: boolean;
   inheritProperty?: string;
   filter?: boolean;
@@ -112,4 +114,5 @@ export interface PropertySchema {
   showInCard?: boolean;
   style?: string;
   nestedProperties?: string[];
+  [k: string]: unknown | undefined;
 }
