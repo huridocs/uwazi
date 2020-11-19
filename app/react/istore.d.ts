@@ -77,13 +77,17 @@ interface EntityDisplayState {
   search: any;
 }
 
+interface ClientTemplateSchema extends TemplateSchema {
+  _id: string;
+}
+
 export interface IStore {
   library: EntityDisplayState;
   uploads: EntityDisplayState;
   template: {
     data: TemplateSchema;
   };
-  templates: IImmutable<TemplateSchema[]>;
+  templates: IImmutable<ClientTemplateSchema[]>;
   thesauris: IImmutable<ThesaurusSchema[]>;
   thesauri: {
     thesaurus: IImmutable<ThesaurusSchema>;
