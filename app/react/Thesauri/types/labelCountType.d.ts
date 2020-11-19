@@ -6,6 +6,7 @@ export interface LabelCountSchema {
   totalLabels: number;
   thesaurus: {
     propertyName: string;
+    values?: any;
     totalValues: {
       [k: string]: number | undefined;
     };
