@@ -60,4 +60,12 @@ describe('userGroups', () => {
       expect(storedUserGroup.members.length).toBe(0);
     });
   });
+
+  describe('delete', () => {
+    it('should delete the user group with by the specified id', async () => {
+      await userGroups.delete({ _id: group2Id.toString() });
+      const deletedUser = await userGroups.get({ _id: group2Id.toString() });
+      expect(deletedUser).toEqual([]);
+    });
+  });
 });
