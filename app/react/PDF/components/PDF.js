@@ -1,7 +1,5 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-// Dissabling unused vars is just to remove annoying errors
-// eslint-disable-next-line no-unused-vars
 import { SelectionHandler, Highlight, SelectionRegion } from 'react-pdf-handler';
 import { advancedSort } from 'app/utils/advancedSort';
 
@@ -32,6 +30,7 @@ class PDF extends Component {
     this.pageLoading = this.pageLoading.bind(this);
     this.onPageVisible = this.onPageVisible.bind(this);
     this.onPageHidden = this.onPageHidden.bind(this);
+    this.onTextSelection = this.onTextSelection.bind(this);
   }
 
   componentDidMount() {
@@ -49,7 +48,8 @@ class PDF extends Component {
       nextProps.filename !== this.props.filename ||
       nextProps.pdfInfo !== this.props.pdfInfo ||
       nextProps.style !== this.props.style ||
-      nextState.pdf !== this.state.pdf
+      nextState.pdf !== this.state.pdf ||
+      nextState.userTextSelection !== this.state.userTextSelection
     );
   }
 
@@ -156,7 +156,13 @@ class PDF extends Component {
     }
   }
 
+  async onTextSelection(textSelection) {
+    await this.setState({ userTextSelection: textSelection });
+    console.log(this.state);
+  }
+
   render() {
+    console.log(this.state);
     return (
       <div
         ref={ref => {
@@ -164,7 +170,7 @@ class PDF extends Component {
         }}
         style={this.props.style}
       >
-        <SelectionHandler onTextSelection={this.props.onTextSelection}>
+        <SelectionHandler onTextSelection={this.onTextSelection}>
           {(() => {
             const pages = [];
             for (let page = 1; page <= this.state.pdf.numPages; page += 1) {
@@ -178,7 +184,13 @@ class PDF extends Component {
                     key={page}
                     page={page}
                     pdf={this.state.pdf}
-                  />
+                  >
+                    {this.state.userTextSelection ? (
+                      <Highlight highlight={this.state.userTextSelection} />
+                    ) : (
+                      false
+                    )}
+                  </PDFPage>
                 </SelectionRegion>
               );
             }
@@ -195,12 +207,10 @@ PDF.defaultProps = {
   onPageChange: () => {},
   onPDFReady: () => {},
   style: {},
-  onTextSelection: () => {},
 };
 
 PDF.propTypes = {
   onPageChange: PropTypes.func,
-  onTextSelection: PropTypes.func,
   onPDFReady: PropTypes.func,
   file: PropTypes.string.isRequired,
   filename: PropTypes.string,
