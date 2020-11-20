@@ -1,7 +1,13 @@
 import db from 'api/utils/testing_db';
 import { PropertySchema } from 'shared/types/commonTypes';
 import settings from 'api/settings/settings';
-import { generateIds, getUpdatedNames, getDeletedProperties, generateNamesAndIds } from '../utils';
+import {
+  generateIds,
+  getUpdatedNames,
+  getDeletedProperties,
+  generateNamesAndIds,
+  PropertyOrThesaurusSchema,
+} from '../utils';
 
 describe('templates utils', () => {
   beforeEach(async () => {
@@ -13,9 +19,9 @@ describe('templates utils', () => {
       it('should sanitize the labels and append the type', async () => {
         await settings.save({});
         const result = await generateNamesAndIds([
-          { label: ' my prop ', type: 'text' },
-          { label: 'my^foreïgn$próp"', type: 'text' },
-          { label: ' my prop ', type: 'geolocation' },
+          { label: ' my prop ', name: '', type: 'text' },
+          { label: 'my^foreïgn$próp"', name: '', type: 'text' },
+          { label: ' my prop ', name: '', type: 'geolocation' },
         ]);
 
         expect(result[0].name).toBe('my_prop');
@@ -28,21 +34,21 @@ describe('templates utils', () => {
       it('should not contain the characters #, \\, /, *, ?, ", <, >, |, , :, ., and should be lowercase', async () => {
         await settings.save({ newNameGeneration: true });
         const result = await generateNamesAndIds([
-          { label: ' my prop ', type: 'text' },
-          { label: 'my^foreïgn$próp"', type: 'text' },
-          { label: ' my prop ', type: 'geolocation' },
-          { label: 'TEST#', type: 'text' },
-          { label: 'test\\', type: 'text' },
-          { label: 'test/', type: 'text' },
-          { label: '*test*', type: 'text' },
-          { label: 'test?', type: 'text' },
-          { label: 'test"', type: 'text' },
-          { label: 'test<', type: 'text' },
-          { label: 'test>', type: 'text' },
-          { label: 'test|', type: 'text' },
-          { label: 'te st ', type: 'text' },
-          { label: 'test: ', type: 'text' },
-          { label: 'te.st. ', type: 'text' },
+          { label: ' my prop ', name: '', type: 'text' },
+          { label: 'my^foreïgn$próp"', name: '', type: 'text' },
+          { label: ' my prop ', name: '', type: 'geolocation' },
+          { label: 'TEST#', name: '', type: 'text' },
+          { label: 'test\\', name: '', type: 'text' },
+          { label: 'test/', name: '', type: 'text' },
+          { label: '*test*', name: '', type: 'text' },
+          { label: 'test?', name: '', type: 'text' },
+          { label: 'test"', name: '', type: 'text' },
+          { label: 'test<', name: '', type: 'text' },
+          { label: 'test>', name: '', type: 'text' },
+          { label: 'test|', name: '', type: 'text' },
+          { label: 'te st ', name: '', type: 'text' },
+          { label: 'test: ', name: '', type: 'text' },
+          { label: 'te.st. ', name: '', type: 'text' },
         ]);
 
         expect(result).toEqual([
@@ -67,11 +73,11 @@ describe('templates utils', () => {
       it('should not start with _, -, +, $', async () => {
         await settings.save({ newNameGeneration: true });
         const result = await generateNamesAndIds([
-          { label: '.test ', type: 'text' },
-          { label: '_test', type: 'text' },
-          { label: '+test', type: 'text' },
-          { label: '$test', type: 'text' },
-          { label: '-test', type: 'text' },
+          { label: '.test ', name: '', type: 'text' },
+          { label: '_test', name: '', type: 'text' },
+          { label: '+test', name: '', type: 'text' },
+          { label: '$test', name: '', type: 'text' },
+          { label: '-test', name: '', type: 'text' },
         ]);
 
         expect(result).toEqual([
@@ -109,24 +115,25 @@ describe('templates utils', () => {
       expect(result).toEqual({ my_prop_two: 'my_fancy_new_name' });
     });
 
-    it('should work for sub values too', () => {
-      const oldProperties: PropertySchema[] = [
+    it('should work for sub values too (function is being used by relationships and thesauri)', () => {
+      const oldProperties: PropertyOrThesaurusSchema[] = [
         { id: '1', name: 'my_prop', label: 'label', type: 'text' },
         {
           id: '2',
           name: 'my_prop_two',
-          values: [{ id: 3, name: 'look_at_me' }],
+          values: [{ id: '3', label: 'look at me', name: 'look_at_me' }],
           label: 'label',
           type: 'text',
         },
       ];
 
-      const newProperties: PropertySchema[] = [
+      const newProperties: PropertyOrThesaurusSchema[] = [
         { id: '1', name: 'my_prop', label: 'label', type: 'text' },
         {
           id: '2',
           name: 'my_prop_two',
-          values: [{ id: 3, name: 'I_changed' }],
+
+          values: [{ id: '3', label: 'I changed', name: 'I_changed' }],
           label: 'label',
           type: 'text',
         },
@@ -152,22 +159,22 @@ describe('templates utils', () => {
     });
 
     it('should check sub values too', () => {
-      const oldProperties: PropertySchema[] = [
+      const oldProperties: PropertyOrThesaurusSchema[] = [
         { id: '1', name: 'my_prop', label: 'label', type: 'text' },
         {
           id: '2',
           name: 'my_prop_two',
-          values: [{ id: 3, name: 'boromir' }],
+          values: [{ id: '3', label: 'boromir', name: 'boromir' }],
           label: 'label',
           type: 'text',
         },
       ];
-      const newProperties: PropertySchema[] = [
+      const newProperties: PropertyOrThesaurusSchema[] = [
         { id: '2', name: 'my_prop_two', values: [], label: 'label', type: 'text' },
         {
           id: '4',
           name: 'vip',
-          values: [{ id: '1', name: 'my_prop' }],
+          values: [{ id: '1', label: 'my prop', name: 'my_prop' }],
           label: 'label',
           type: 'text',
         },

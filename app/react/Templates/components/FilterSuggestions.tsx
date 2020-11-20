@@ -5,8 +5,8 @@ import { Translate } from 'app/I18N';
 import { TemplateSchema } from 'shared/types/templateType';
 import { PropertySchema } from 'shared/types/commonTypes';
 import { IImmutable } from 'shared/types/Immutable';
-import { SimilarProperty, TemplateProperty } from './SimilarProperty';
 import { getCompatibleTypes } from 'shared/propertyTypes';
+import { SimilarProperty, TemplateProperty } from './SimilarProperty';
 
 interface MatchedProperty {
   template: string;
@@ -14,7 +14,7 @@ interface MatchedProperty {
 }
 
 class SharedProperties extends Component<FilterSuggestionsProps> {
-  getRelationTypeName(relationTypeId: string) {
+  getRelationTypeName(relationTypeId: string | undefined) {
     const relationType = relationTypeId
       ? this.props.relationTypes.toJS().find((r: any) => r._id === relationTypeId)
       : undefined;

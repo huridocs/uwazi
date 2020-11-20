@@ -35,6 +35,7 @@ export const thesaurusValueSchema = {
             type: 'string',
             minLength: 1,
           },
+          name: { type: 'string' },
         },
       },
     },

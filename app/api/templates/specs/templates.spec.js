@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 /* eslint-disable max-statements */
 
 import Ajv from 'ajv';
@@ -5,8 +6,8 @@ import { catchErrors } from 'api/utils/jasmineHelpers';
 import db from 'api/utils/testing_db';
 import documents from 'api/documents/documents.js';
 import entities from 'api/entities/entities.js';
-import templates from 'api/templates/templates';
 import translations from 'api/i18n/translations';
+import templates from '../templates';
 
 import fixtures, {
   templateToBeEditedId,
@@ -384,18 +385,24 @@ describe('templates', () => {
   });
 
   describe('setAsDefault()', () => {
-    beforeEach(() => {
-      spyOn(translations, 'updateContext');
+    it('should set the given ID as the default template and return the afected templates', async () => {
+      const [newDefault, oldDefault] = await templates.setAsDefault(
+        templateWithContents.toString()
+      );
+
+      expect(newDefault.name).toBe('content template');
+      expect(newDefault.default).toBe(true);
+      expect(oldDefault.name).toBe('template to be edited');
+      expect(oldDefault.default).toBe(false);
     });
-    it('should set the given ID as the default template', done => {
-      templates
-        .setAsDefault(templateWithContents.toString())
-        .then(([newDefault, oldDefault]) => {
-          expect(newDefault.name).toBe('content template');
-          expect(oldDefault.name).toBe('template to be edited');
-          done();
-        })
-        .catch(catchErrors(done));
+
+    it("should fail if id doesn't exist", async () => {
+      try {
+        await templates.setAsDefault(propertyToBeInherited);
+        fail('it should not pass');
+      } catch (err) {
+        expect(err.message).toContain('Invalid ID');
+      }
     });
   });
 

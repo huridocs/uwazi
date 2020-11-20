@@ -7,8 +7,6 @@ import { search } from 'api/search';
 import settings from 'api/settings';
 import * as filesystem from 'api/files/filesystem';
 import { EntitySchema } from 'shared/types/entityType';
-import { ensure } from 'shared/tsUtils';
-import { MetadataObjectSchema } from 'shared/types/commonTypes';
 
 import { CSVLoader } from '../csvLoader';
 import fixtures, { template1Id } from './fixtures';
@@ -76,12 +74,10 @@ describe('csvLoader languages', () => {
   it('should import translated metadata properties', async () => {
     const enText = imported
       .filter(e => e.language === 'en')
-      // eslint-disable-next-line camelcase
-      .map(i => ensure<MetadataObjectSchema>(i?.metadata?.text_label)[0].value);
+      .map(i => i?.metadata?.text_label?.[0].value);
     const esText = imported
       .filter(e => e.language === 'es')
-      // eslint-disable-next-line camelcase
-      .map(i => ensure<MetadataObjectSchema>(i?.metadata?.text_label)[0].value);
+      .map(i => i?.metadata?.text_label?.[0].value);
     expect(enText).toEqual(['text_en1', 'text_en2', 'text_en3']);
     expect(esText).toEqual(['text_es1', 'text_es2', 'text_es3']);
   });
