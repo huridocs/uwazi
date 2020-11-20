@@ -3,8 +3,12 @@ import { connect } from 'react-redux';
 import { IImmutable } from 'shared/types/Immutable';
 import { GroupMemberSchema, UserGroupSchema } from 'shared/types/userGroupType';
 import { IStore } from 'app/istore';
-import { loadUserGroups, saveUserGroup } from 'app/Users/components/usergroups/actions/actions';
 import { UserGroupList } from 'app/Users/components/usergroups/UserGroupList';
+import {
+  deleteUserGroup,
+  loadUserGroups,
+  saveUserGroup,
+} from 'app/Users/components/usergroups/actions/actions';
 import { UserGroupSidePanel } from './UserGroupSidePanel';
 
 export interface UserGroupProps {
@@ -12,6 +16,7 @@ export interface UserGroupProps {
   users: IImmutable<GroupMemberSchema[]>;
   loadUserGroups: () => any;
   saveUserGroup: (userGroup: UserGroupSchema) => any;
+  deleteUserGroup: (userGroup: UserGroupSchema) => any;
 }
 
 function UserGroups({
@@ -19,6 +24,7 @@ function UserGroups({
   users,
   loadUserGroups: loadGroups,
   saveUserGroup: saveGroup,
+  deleteUserGroup: deleteGroup,
 }: UserGroupProps) {
   const [sidePanelOpened, setSidePanelOpened] = useState(false);
   const [selectedGroup, setSelectedGroup] = useState<UserGroupSchema>();
@@ -31,28 +37,36 @@ function UserGroups({
     }
   }, []);
 
-  function handleSelect(userGroup: UserGroupSchema) {
-    setSelectedGroup(userGroup);
-    setSidePanelOpened(true);
-  }
-  function handleAddGroup() {
-    setSelectedGroup({ name: '', members: [] });
-    setSidePanelOpened(true);
-  }
   function closeSidePanel() {
     setSelectedGroup(undefined);
     setSidePanelOpened(false);
   }
-  async function handleSave(userGroup: UserGroupSchema) {
-    await saveGroup(userGroup);
-    closeSidePanel();
-  }
+
+  const handlers = {
+    handleSelect: (userGroup: UserGroupSchema) => {
+      setSelectedGroup(userGroup);
+      setSidePanelOpened(true);
+    },
+    handleAddGroup: () => {
+      setSelectedGroup({ name: '', members: [] });
+      setSidePanelOpened(true);
+    },
+    handleSave: async (userGroup: UserGroupSchema) => {
+      await saveGroup(userGroup);
+      closeSidePanel();
+    },
+    handleDelete: async (userGroup: UserGroupSchema) => {
+      await deleteGroup(userGroup);
+      closeSidePanel();
+    },
+  };
+
   return (
     <>
       <UserGroupList
         userGroups={groupList}
-        handleSelect={handleSelect}
-        handleAddGroup={handleAddGroup}
+        handleSelect={handlers.handleSelect}
+        handleAddGroup={handlers.handleAddGroup}
       />
       {selectedGroup && (
         <UserGroupSidePanel
@@ -60,7 +74,8 @@ function UserGroups({
           users={userList}
           opened={sidePanelOpened}
           closePanel={closeSidePanel}
-          onSave={handleSave}
+          onSave={handlers.handleSave}
+          onDelete={handlers.handleDelete}
         />
       )}
     </>
@@ -77,6 +92,7 @@ function mapStateToProps(state: IStore & { users: IImmutable<GroupMemberSchema[]
 const mapDispatchToProps = {
   loadUserGroups,
   saveUserGroup,
+  deleteUserGroup,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(UserGroups);

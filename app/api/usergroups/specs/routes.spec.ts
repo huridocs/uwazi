@@ -39,11 +39,11 @@ describe('usergroups routes', () => {
       .send(userGroupData);
   }
 
-  async function deleteUserGroup(_id: string): Promise<SuperTestResponse> {
+  async function deleteUserGroup(userGroupData = defaultUserGroup): Promise<SuperTestResponse> {
     return request(app)
       .delete('/api/usergroups')
       .set('X-Requested-With', 'XMLHttpRequest')
-      .send({ _id });
+      .query({ _id: userGroupData._id });
   }
 
   describe('GET', () => {
@@ -56,13 +56,14 @@ describe('usergroups routes', () => {
     it('should query and return an array of existing user groups', async () => {
       user = { username: 'user 1', role: 'admin' };
       const response = await getUserGroups();
+      expect(userGroups.get).toHaveBeenCalledWith({});
       expect(response.body).toEqual(groups);
     });
   });
 
   describe('POST', () => {
+    const userGroup = { _id: 'group1', name: 'group 1', members: [] };
     beforeEach(() => {
-      const userGroup = { _id: 'group1', name: 'group 1' };
       spyOn(userGroups, 'save').and.returnValue(Promise.resolve(userGroup));
     });
 
@@ -70,6 +71,7 @@ describe('usergroups routes', () => {
       user = { username: 'user 1', role: 'admin' };
       const response = await postUserGroup();
       expect(response.body._id).toEqual('group1');
+      expect(userGroups.save).toHaveBeenCalledWith(userGroup);
     });
 
     describe('validation', () => {
@@ -77,6 +79,7 @@ describe('usergroups routes', () => {
         user = { username: 'user 1', role: 'admin' };
         const response = await postUserGroup({ name: undefined });
         expect(response.status).toBe(400);
+        expect(userGroups.save).not.toHaveBeenCalled();
         expect(response.body.errors[0].keyword).toBe('required');
         expect(response.body.errors[0].dataPath).toBe('.body');
         expect(response.body.error).toBe('validation failed');
@@ -109,11 +112,21 @@ describe('usergroups routes', () => {
   });
 
   describe('DELETE', () => {
-    it('should delete the user with the specified id', async () => {
+    beforeEach(() => {
+      user = { username: 'user 1', role: 'admin' };
       spyOn(userGroups, 'delete').and.returnValue(Promise.resolve({ _id: 'user1' }));
-      const response = await deleteUserGroup('user1');
+    });
+    it('should delete the group with the specified query', async () => {
+      const response = await deleteUserGroup({ _id: 'group1' });
       expect(response.status).toBe(200);
+      expect(userGroups.delete).toHaveBeenCalledWith({ _id: 'group1' });
       expect(response.text).toBe('{"_id":"user1"}');
+    });
+    it('should not validate an object with invalid schema', async () => {
+      const response = await deleteUserGroup({});
+      expect(response.status).toBe(400);
+      expect(userGroups.delete).not.toHaveBeenCalled();
+      expect(response.body.errors[0].keyword).toBe('required');
     });
   });
 

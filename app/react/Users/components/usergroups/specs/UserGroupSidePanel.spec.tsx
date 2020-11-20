@@ -31,6 +31,7 @@ describe('UserGroupSidePanel', () => {
     opened: true,
     closePanel: jasmine.createSpy('onClick'),
     onSave: jasmine.createSpy('onSave'),
+    onDelete: jasmine.createSpy('onDelete'),
   };
 
   let component: ReactWrapper<React.Component['props'], React.Component['state'], React.Component>;
@@ -167,6 +168,20 @@ describe('UserGroupSidePanel', () => {
       const updatedUserGroup = defaultProps.userGroup;
       updatedUserGroup.members.push({ _id: 'user3', username: 'john smith' });
       expect(defaultProps.onSave).toHaveBeenCalledWith(defaultProps.userGroup);
+    });
+  });
+
+  describe('Deleting user group', () => {
+    it('should not call the delete callback when cancel deletion', () => {
+      component.find({ id: 'deleteBtn' }).simulate('click');
+      component.find('.cancel-button').simulate('click');
+      expect(defaultProps.onDelete).not.toHaveBeenCalled();
+    });
+
+    it('should call the delete callback when confirm deletion', () => {
+      component.find({ id: 'deleteBtn' }).simulate('click');
+      component.find('.confirm-button').simulate('click');
+      expect(defaultProps.onDelete).toHaveBeenCalledWith(defaultProps.userGroup);
     });
   });
 });

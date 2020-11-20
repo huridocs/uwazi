@@ -5,13 +5,18 @@ import Immutable from 'immutable';
 import { UserGroupSchema } from 'shared/types/userGroupType';
 import { renderConnected, renderConnectedMount } from 'app/Templates/specs/utils/renderConnected';
 import { UserGroupList } from 'app/Users/components/usergroups/UserGroupList';
-import { loadUserGroups, saveUserGroup } from 'app/Users/components/usergroups/actions/actions';
 import { UserGroupSidePanel } from 'app/Users/components/usergroups/UserGroupSidePanel';
 import UserGroups from 'app/Users/components/usergroups/UserGroups';
+import {
+  deleteUserGroup,
+  loadUserGroups,
+  saveUserGroup,
+} from 'app/Users/components/usergroups/actions/actions';
 
 jest.mock('app/Users/components/usergroups/actions/actions', () => ({
   loadUserGroups: jest.fn().mockReturnValue(async () => Promise.resolve()),
   saveUserGroup: jest.fn().mockReturnValue(async () => Promise.resolve()),
+  deleteUserGroup: jest.fn().mockReturnValue(async () => Promise.resolve()),
 }));
 
 describe('UserGroups', () => {
@@ -108,6 +113,16 @@ describe('UserGroups', () => {
         const updatedSidePanel = component.find(UserGroupSidePanel).get(0);
         await updatedSidePanel.props.onSave(groupToSave);
         expect(saveUserGroup).toHaveBeenCalledWith(groupToSave);
+        expect(component.find(UserGroupSidePanel).length).toEqual(0);
+      });
+    });
+
+    describe('deleting group', () => {
+      it('should delete the received user group', async () => {
+        listComponent.props.handleSelect(userGroups[1]);
+        const updatedSidePanel = component.find(UserGroupSidePanel).get(0);
+        await updatedSidePanel.props.onDelete(userGroups[1]);
+        expect(deleteUserGroup).toHaveBeenCalledWith(userGroups[1]);
         expect(component.find(UserGroupSidePanel).length).toEqual(0);
       });
     });

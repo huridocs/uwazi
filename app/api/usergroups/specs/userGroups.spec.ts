@@ -64,8 +64,9 @@ describe('userGroups', () => {
   describe('delete', () => {
     it('should delete the user group with by the specified id', async () => {
       await userGroups.delete({ _id: group2Id.toString() });
-      const deletedUser = await userGroups.get({ _id: group2Id.toString() });
-      expect(deletedUser).toEqual([]);
+      const groups = await userGroups.get({});
+      expect(groups.length).toBe(1);
+      expect(groups[0]._id).toEqual(group1Id);
     });
   });
 });

@@ -26,3 +26,11 @@ export function saveUserGroup(userGroup: UserGroupSchema) {
     }
   };
 }
+
+export function deleteUserGroup(userGroup: UserGroupSchema) {
+  return async (dispatch: Dispatch<IStore>) => {
+    await api.deleteUserGroup(new RequestParams({ _id: userGroup._id }));
+    dispatch(actions.remove('userGroups', userGroup));
+    dispatch(notificationActions.notify('Group deleted', 'success'));
+  };
+}
