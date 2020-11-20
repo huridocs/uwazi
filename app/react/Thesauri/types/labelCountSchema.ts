@@ -13,6 +13,7 @@ export const labelCountSchema = {
       required: ['propertyName', 'totalValues'],
       properties: {
         propertyName: { type: 'string' },
+        values: { type: 'array', tsType: 'any' },
         totalValues: {
           type: 'object',
           additionalProperties: {

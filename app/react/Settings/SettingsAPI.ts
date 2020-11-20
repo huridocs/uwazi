@@ -1,9 +1,17 @@
 import api from 'app/utils/api';
 import { RequestParams } from 'app/utils/RequestParams';
-import { Settings } from 'shared/types/settingsType';
+import { Settings, SettingsLinkSchema } from 'shared/types/settingsType';
+
+interface ClientSettingsLinkSchema extends SettingsLinkSchema {
+  localID?: string;
+}
+
+interface ClientSettingsSchema extends Omit<Settings, 'links'> {
+  links?: ClientSettingsLinkSchema[];
+}
 
 export default {
-  async save(settings: RequestParams<Settings>): Promise<Settings> {
+  async save(settings: RequestParams<ClientSettingsSchema>): Promise<Settings> {
     const processedSettings = settings.set({
       ...settings.data,
       links: settings.data?.links?.map(link => {

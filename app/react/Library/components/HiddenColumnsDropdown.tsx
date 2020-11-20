@@ -37,7 +37,7 @@ class HideColumnsComponent extends React.Component<HideColumnsComponentProps> {
     const hiddenColumns = columns.filter((c: TableViewColumn) => c.hidden);
     const shownColumns = columns.filter((c: TableViewColumn) => !c.hidden);
 
-    const selectAllColumn: SelectableColumn = {
+    const selectAllColumn: Partial<SelectableColumn> = {
       label: 'Show all',
       selectAll: true,
       indeterminate: hiddenColumns.length !== 0 && shownColumns.length !== 0,

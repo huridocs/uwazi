@@ -1,13 +1,13 @@
 import Ajv from 'ajv';
+import { ObjectId } from 'mongodb';
 import model from 'api/templates/templatesModel';
 import { ensure, wrapValidator } from 'shared/tsUtils';
 import { objectIdSchema, propertySchema } from 'shared/types/commonSchemas';
+import { getCompatibleTypes } from 'shared/propertyTypes';
 import templates from 'api/templates';
 
 import { TemplateSchema } from './templateType';
 import { PropertySchema } from './commonTypes';
-import { ObjectId } from 'mongodb';
-import { getCompatibleTypes } from 'shared/propertyTypes';
 
 export const emitSchemaTypes = true;
 
@@ -41,7 +41,7 @@ ajv.addKeyword('requireTitleProperty', {
 ajv.addKeyword('uniquePropertyFields', {
   errors: false,
   type: 'object',
-  validate(fields: string[], data: TemplateSchema) {
+  validate(fields: (keyof PropertySchema)[], data: TemplateSchema) {
     const uniqueValues: { [k: string]: Set<string> } = fields.reduce(
       (memo, field) => ({ ...memo, [field]: new Set() }),
       {}
@@ -52,7 +52,7 @@ ajv.addKeyword('uniquePropertyFields', {
     const errors: Ajv.ErrorObject[] = [];
     allProperties.forEach(property => {
       fields.forEach(field => {
-        const value = property[field] && property[field].toLowerCase().trim();
+        const value = property[field] && (property[field]?.toString() || '').toLowerCase().trim();
         if (value && uniqueValues[field].has(value)) {
           errors.push({
             keyword: 'uniquePropertyFields',
@@ -62,7 +62,7 @@ ajv.addKeyword('uniquePropertyFields', {
             dataPath: `.properties.${field}`,
           });
         }
-        uniqueValues[field].add(value);
+        uniqueValues[field].add(value || '');
       });
     });
 
@@ -77,7 +77,7 @@ ajv.addKeyword('uniquePropertyFields', {
 ajv.addKeyword('requireContentForSelectFields', {
   errors: false,
   type: 'object',
-  validate(schema: any, data: TemplateSchema) {
+  validate(schema: any, data: PropertySchema) {
     if (!schema) {
       return true;
     }
@@ -92,7 +92,7 @@ ajv.addKeyword('requireContentForSelectFields', {
 ajv.addKeyword('requireRelationTypeForRelationship', {
   errors: false,
   type: 'object',
-  validate(schema: any, data: TemplateSchema) {
+  validate(schema: any, data: PropertySchema) {
     if (!schema) {
       return true;
     }
@@ -129,7 +129,9 @@ ajv.addKeyword('cantDeleteInheritedProperties', {
 
     const toRemoveProperties = (currentTemplate.properties || []).filter(
       prop =>
-        !(template.properties || []).find(p => p._id && p._id.toString() === prop._id.toString())
+        !(template.properties || []).find(
+          p => p._id && p._id.toString() === (prop._id || '').toString()
+        )
     );
 
     const errors: Ajv.ErrorObject[] = [];
