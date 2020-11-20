@@ -129,7 +129,9 @@ class PDFPage extends Component {
           this.pageContainer = ref;
         }}
         style={style}
-      />
+      >
+        {this.props.children}
+      </div>
     );
   }
 }
