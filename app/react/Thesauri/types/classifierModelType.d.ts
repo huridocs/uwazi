@@ -8,7 +8,7 @@ export interface ClassifierModelSchema {
     bert: string;
     num_train?: number;
     num_test?: number;
-    [k: string]: any | undefined;
+    [k: string]: unknown | undefined;
   };
   completeness?: number;
   extraneous?: number;

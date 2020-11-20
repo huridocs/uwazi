@@ -11,6 +11,7 @@ export interface ThesaurusValueSchema {
     _id?: ObjectIdSchema;
     id?: string;
     label: string;
+    name?: string;
   }[];
 }
 
@@ -20,5 +21,5 @@ export interface ThesaurusSchema {
   name: string;
   enable_classification?: boolean;
   values?: ThesaurusValueSchema[];
-  [k: string]: any | undefined;
+  [k: string]: unknown | undefined;
 }

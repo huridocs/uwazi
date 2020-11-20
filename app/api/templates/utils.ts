@@ -1,6 +1,7 @@
 import uuid from 'node-uuid';
 import { PropertySchema } from 'shared/types/commonTypes';
 import settings from 'api/settings/settings';
+import { ThesaurusValueSchema } from 'shared/types/thesaurusType';
 
 const generateNewSafeName = (label: string) =>
   label
@@ -44,40 +45,48 @@ export const generateNamesAndIds = async (properties: PropertySchema[] = []) => 
   return generateIds(generateNames(properties, newNameGeneration));
 };
 
-const flattenProperties = (properties: PropertySchema[]) =>
-  properties.reduce<PropertySchema[]>((flatProps, p) => {
+export interface PropertyOrThesaurusSchema
+  extends Partial<PropertySchema>,
+    Partial<ThesaurusValueSchema> {}
+
+const flattenProperties = (properties: PropertyOrThesaurusSchema[]) =>
+  properties.reduce<PropertyOrThesaurusSchema[]>((flatProps, p) => {
     if (p.values) {
       return [...flatProps, ...p.values];
     }
+
     return [...flatProps, p];
   }, []);
 
 export function getUpdatedNames(
-  oldProperties: PropertySchema[] = [],
-  newProperties: PropertySchema[],
-  prop = 'name',
-  outKey = prop
+  oldProperties: PropertyOrThesaurusSchema[] = [],
+  newProperties: PropertyOrThesaurusSchema[],
+  prop: 'name' | 'label' = 'name',
+  outKey: 'name' | 'label' = prop
 ) {
-  const propertiesWithNewName: { [k: string]: string } = {};
+  const propertiesWithNewName: { [k: string]: string | undefined } = {};
 
   flattenProperties(oldProperties).forEach(property => {
     const newProperty = flattenProperties(newProperties).find(p => p.id === property.id);
-
     if (newProperty && newProperty[prop] !== property[prop]) {
-      propertiesWithNewName[property[outKey]] = newProperty[prop];
+      const key = property[outKey];
+      if (key) {
+        propertiesWithNewName[key] = newProperty[prop];
+      }
     }
   });
 
   return propertiesWithNewName;
 }
 
-const notIncludedIn = (propertyCollection: PropertySchema[]) => (property: PropertySchema) =>
-  !propertyCollection.find(p => p.id === property.id);
+const notIncludedIn = (propertyCollection: PropertyOrThesaurusSchema[]) => (
+  property: PropertyOrThesaurusSchema
+) => !propertyCollection.find(p => p.id === property.id);
 
 export function getDeletedProperties(
-  oldProperties: PropertySchema[] = [],
-  newProperties: PropertySchema[],
-  prop = 'name'
+  oldProperties: PropertyOrThesaurusSchema[] = [],
+  newProperties: PropertyOrThesaurusSchema[],
+  prop: 'name' | 'label' = 'name'
 ) {
   return flattenProperties(oldProperties)
     .filter(notIncludedIn(flattenProperties(newProperties)))

@@ -28,7 +28,7 @@ const defaultProps = {
 };
 
 const getColumnValue = (
-  formattedEntity: EntitySchema,
+  formattedEntity: { [k: string]: string },
   columnValues: Map<string, FormattedMetadataValue>,
   column: TableViewColumn
 ) => {
