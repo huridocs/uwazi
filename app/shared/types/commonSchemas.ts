@@ -140,6 +140,7 @@ export const propertySchema = {
   properties: {
     _id: objectIdSchema,
     id: { type: 'string' },
+    localID: { type: 'string' },
     label: { type: 'string', minLength: 1 },
     name: { type: 'string', minLength: 1 },
     isCommonProperty: { type: 'boolean' },

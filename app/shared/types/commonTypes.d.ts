@@ -80,6 +80,7 @@ export interface TocSchema {
 export interface PropertySchema {
   _id?: string | ObjectId;
   id?: string;
+  localID?: string;
   label: string;
   name: string;
   isCommonProperty?: boolean;
