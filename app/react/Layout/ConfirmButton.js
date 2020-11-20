@@ -30,7 +30,9 @@ class ConfirmButton extends Component {
   render() {
     return (
       <>
-        <button onClick={this.openModal}>{this.props.children}</button>
+        <button className={this.props.className} onClick={this.openModal}>
+          {this.props.children}
+        </button>
         {this.state.showModal && (
           <ConfirmModal
             message={this.props.message}
@@ -48,6 +50,7 @@ ConfirmButton.defaultProps = {
   children: '',
   message: 'Are you sure you want to continue?',
   title: 'Confirm action',
+  className: '',
   action: () => false,
 };
 
@@ -55,6 +58,7 @@ ConfirmButton.propTypes = {
   action: PropTypes.func,
   message: PropTypes.string,
   title: PropTypes.string,
+  className: PropTypes.string,
   children: PropTypes.oneOfType([
     PropTypes.arrayOf(PropTypes.node),
     PropTypes.node,

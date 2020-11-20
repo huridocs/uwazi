@@ -83,4 +83,23 @@ describe('User Groups actions', () => {
       });
     });
   });
+
+  describe('Delete user group', () => {
+    beforeEach(async () => {
+      spyOn(api, 'deleteUserGroup').and.returnValue(Promise.resolve(group2));
+      await actions.deleteUserGroup(group2)(dispatch);
+    });
+
+    it('should dispatch a remove action of the deleted user group', () => {
+      expect(api.deleteUserGroup).toHaveBeenCalledWith(new RequestParams({ _id: group2._id }));
+      expect(dispatch).toHaveBeenCalledWith({
+        type: 'userGroups/REMOVE',
+        value: group2,
+      });
+    });
+
+    it('should dispatch a notification of success', () => {
+      expect(notificationActions.notify).toHaveBeenCalledWith('Group deleted', 'success');
+    });
+  });
 });

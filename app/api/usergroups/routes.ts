@@ -32,8 +32,18 @@ export default (app: Application) => {
   app.delete(
     '/api/usergroups',
     needsAuthorization(['admin']),
+    validation.validateRequest({
+      properties: {
+        query: {
+          required: ['_id'],
+          properties: {
+            _id: { type: 'string' },
+          },
+        },
+      },
+    }),
     async (req: Request, res: Response) => {
-      const deletedGroup = await userGroups.delete(req.body);
+      const deletedGroup = await userGroups.delete(req.query);
       res.json(deletedGroup);
     }
   );

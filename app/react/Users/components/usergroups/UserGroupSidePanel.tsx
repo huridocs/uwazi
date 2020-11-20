@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { UserGroupSchema, GroupMemberSchema } from 'shared/types/userGroupType';
-import { SidePanel } from 'app/Layout';
+import { ConfirmButton, SidePanel } from 'app/Layout';
 import { Icon } from 'UI';
 import { t } from 'app/I18N';
 import MultiSelect from 'app/Forms/components/MultiSelect';
@@ -11,6 +11,7 @@ export interface UserGroupSidePanelProps {
   opened: boolean;
   closePanel: (event: any) => void;
   onSave: (event: any) => void;
+  onDelete: (event: any) => void;
 }
 
 const UserGroupSidePanelComponent = ({
@@ -19,6 +20,7 @@ const UserGroupSidePanelComponent = ({
   opened,
   closePanel,
   onSave,
+  onDelete,
 }: UserGroupSidePanelProps) => {
   const [groupMembers, setGroupMembers] = useState<GroupMemberSchema[]>([]);
   const [name, setName] = useState<string>();
@@ -64,6 +66,10 @@ const UserGroupSidePanelComponent = ({
   function saveGroup() {
     const groupToSave = { ...userGroup, name, members: groupMembers };
     onSave(groupToSave);
+  }
+
+  function deleteGroup() {
+    onDelete(userGroup);
   }
 
   return (
@@ -123,15 +129,10 @@ const UserGroupSidePanelComponent = ({
           <Icon icon="times" />
           <span className="btn-label">Discard Changes</span>
         </button>
-        <button
-          type="button"
-          className="btn btn-outline-danger"
-          value="Delete"
-          onClick={closePanel}
-        >
+        <ConfirmButton id="deleteBtn" className="btn btn-outline-danger" action={deleteGroup}>
           <Icon icon="trash-alt" />
           <span className="btn-label">Delete Group</span>
-        </button>
+        </ConfirmButton>
         <button type="submit" form="userGroupFrom" className="btn btn-success">
           <Icon icon="save" />
           <span id="submitLabel" className="btn-label">
