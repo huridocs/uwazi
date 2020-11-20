@@ -1,5 +1,3 @@
-/** @format */
-
 /* eslint-disable import/first,global-require,import/no-dynamic-require,no-console */
 require('dotenv').config();
 require('@babel/register')({ extensions: ['.js', '.jsx', '.ts', '.tsx'] });
@@ -18,6 +16,10 @@ const opts = {
   },
 };
 const banner = '/* eslint-disable */\n/**AUTO-GENERATED. RUN yarn emit-types to update.*/\n';
+
+const customImports = {
+  'app/shared/types/commonSchemas.ts': ["import { ObjectId } from 'mongodb';"],
+};
 
 const firstUp = name => name.charAt(0).toUpperCase() + name.slice(1);
 const typesFileName = file =>
@@ -38,13 +40,25 @@ const typeImports = matches => {
     const schemas = require(`./app/${file}`);
     let final = match.replace(file, typeFile);
     Object.entries(schemas).forEach(([name, schema]) => {
-      if (!name.match(/Schema/)) {
-        return '';
+      if (name.match(/Schema/)) {
+        final = final.replace(name, schema.title || firstUp(name));
       }
-      final = final.replace(name, schema.title || firstUp(name));
     });
     return `${res}\n${final}\n`;
   }, '');
+};
+
+const writeTypeFile = (file, commonImport, snippets) => {
+  const goodSnippets = snippets.filter(p => p);
+  if (goodSnippets.length) {
+    const typeFile = typesFileName(file);
+    const customImport = customImports[file] ? `${customImports[file].join('\n')}\n` : '';
+    console.log(`Emitting ${goodSnippets.length} types from ${file} to ${typeFile}.`);
+    fs.writeFileSync(
+      typeFile,
+      banner + customImport + commonImport + goodSnippets.reduce((res, s) => `${res}\n${s}`, '')
+    );
+  }
 };
 
 const emitSchemaTypes = async file => {
@@ -52,12 +66,13 @@ const emitSchemaTypes = async file => {
     if (!file.match(/Schema/) || file.match(/spec/)) {
       return;
     }
+
     const schemas = require(`./${file}`);
+
     if (!schemas.emitSchemaTypes) {
       return;
     }
-    const contents = fs.readFileSync(file).toString();
-    const commonImport = typeImports(contents.match(typeImportFindRegex));
+
     const snippets = await Promise.all(
       Object.entries(schemas).map(([name, schema]) => {
         if (!name.match(/Schema$/)) {
@@ -66,15 +81,10 @@ const emitSchemaTypes = async file => {
         return compile(schema, schema.title || firstUp(name), opts);
       })
     );
-    const goodSnippets = snippets.filter(p => p);
-    if (goodSnippets.length) {
-      const typeFile = typesFileName(file);
-      console.log(`Emitting ${goodSnippets.length} types from ${file} to ${typeFile}.`);
-      fs.writeFileSync(
-        typeFile,
-        banner + commonImport + goodSnippets.reduce((res, s) => `${res}\n${s}`, '')
-      );
-    }
+
+    const contents = fs.readFileSync(file).toString();
+
+    writeTypeFile(file, typeImports(contents.match(typeImportFindRegex)), snippets);
   } catch (err) {
     console.error(`Failed emitting types from ${file}: ${err}.`);
   }

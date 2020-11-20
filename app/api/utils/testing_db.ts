@@ -6,9 +6,9 @@ import { EntitySchema } from 'shared/types/entityType';
 import { DB } from 'api/odm';
 import { tenants } from 'api/tenants/tenantContext';
 import { setupTestUploadedPaths, testingUploadPaths } from 'api/files/filesystem';
+import { ThesaurusSchema } from 'shared/types/thesaurusType';
 
 import { testingTenants } from './testingTenants';
-import { ThesaurusSchema } from 'shared/types/thesaurusType';
 
 mongoose.Promise = Promise;
 mongoose.set('useFindAndModify', false);
