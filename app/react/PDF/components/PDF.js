@@ -158,11 +158,9 @@ class PDF extends Component {
 
   async onTextSelection(textSelection) {
     await this.setState({ userTextSelection: textSelection });
-    console.log(this.state);
   }
 
   render() {
-    console.log(this.state);
     return (
       <div
         ref={ref => {
@@ -175,23 +173,25 @@ class PDF extends Component {
             const pages = [];
             for (let page = 1; page <= this.state.pdf.numPages; page += 1) {
               pages.push(
-                <SelectionRegion regionId={page} key={page}>
-                  <PDFPage
-                    onUnload={this.pageUnloaded}
-                    onLoading={this.pageLoading}
-                    onVisible={this.onPageVisible}
-                    onHidden={this.onPageHidden}
-                    key={page}
-                    page={page}
-                    pdf={this.state.pdf}
-                  >
-                    {this.state.userTextSelection ? (
-                      <Highlight highlight={this.state.userTextSelection} />
-                    ) : (
-                      false
-                    )}
-                  </PDFPage>
-                </SelectionRegion>
+                <div className="page-wrapper">
+                  <SelectionRegion regionId={page} key={page}>
+                    <PDFPage
+                      onUnload={this.pageUnloaded}
+                      onLoading={this.pageLoading}
+                      onVisible={this.onPageVisible}
+                      onHidden={this.onPageHidden}
+                      key={page}
+                      page={page}
+                      pdf={this.state.pdf}
+                    >
+                      {this.state.userTextSelection ? (
+                        <Highlight highlight={this.state.userTextSelection} />
+                      ) : (
+                        false
+                      )}
+                    </PDFPage>
+                  </SelectionRegion>
+                </div>
               );
             }
             return pages;
