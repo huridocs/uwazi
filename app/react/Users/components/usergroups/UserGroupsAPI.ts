@@ -9,11 +9,11 @@ export default {
     return response.json;
   },
   async saveUserGroup(requestParams: RequestParams<UserGroupSchema>) {
-    const response = api.post('usergroups', requestParams);
+    const response = await api.post('usergroups', requestParams);
     return response.json;
   },
   async deleteUserGroup(requestParams: RequestParams<{ _id: ObjectIdSchema }>) {
-    const response = api.delete('usergroups', requestParams);
+    const response = await api.delete('usergroups', requestParams);
     return response.json;
   },
 };
