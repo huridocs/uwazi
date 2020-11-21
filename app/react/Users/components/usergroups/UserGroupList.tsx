@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { UserGroupSchema } from 'shared/types/userGroupType';
 import { Icon } from 'UI';
+import { UserGroupSchema } from 'shared/types/userGroupType';
 
 export interface UserGroupListProps {
   userGroups: UserGroupSchema[];

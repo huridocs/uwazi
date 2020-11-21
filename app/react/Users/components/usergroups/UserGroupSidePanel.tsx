@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { UserGroupSchema, GroupMemberSchema } from 'shared/types/userGroupType';
-import { ConfirmButton, SidePanel } from 'app/Layout';
 import { Icon } from 'UI';
+import { UserGroupSchema, GroupMemberSchema } from 'shared/types/userGroupType';
 import { t } from 'app/I18N';
+import { ConfirmButton, SidePanel } from 'app/Layout';
 import MultiSelect from 'app/Forms/components/MultiSelect';
 
 export interface UserGroupSidePanelProps {
