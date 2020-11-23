@@ -67,8 +67,8 @@ describe('UserGroupSidePanel', () => {
       const props = { ...defaultProps };
       props.userGroup = { name: 'NEW GROUP', members: [] };
       const wrapper = render(props);
-      const header = wrapper.find('.sidepanel-header');
-      const submitBtn = wrapper.find('#submitLabel');
+      const header = wrapper.find('.sidepanel-header').find('Connect(Translate)');
+      const submitBtn = wrapper.find('#submitLabel').find('Connect(Translate)');
       expect(header.props().children).toEqual('Add Group');
       expect(submitBtn.props().children).toEqual('Create Group');
     });
@@ -81,8 +81,8 @@ describe('UserGroupSidePanel', () => {
     });
 
     it('should show edition labels', () => {
-      const header = component.find('.sidepanel-header');
-      const submitBtn = component.find('#submitLabel');
+      const header = component.find('.sidepanel-header').find('Connect(Translate)');
+      const submitBtn = component.find('#submitLabel').find('Connect(Translate)');
       expect(header.props().children).toEqual('Edit Group');
       expect(submitBtn.props().children).toEqual('Save Group');
     });
