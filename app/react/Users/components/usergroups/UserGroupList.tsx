@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Icon } from 'UI';
 import { UserGroupSchema } from 'shared/types/userGroupType';
+import { Translate } from 'app/I18N';
 
 export interface UserGroupListProps {
   userGroups: UserGroupSchema[];
@@ -23,7 +24,9 @@ const UserGroupListComponent = ({
       <table className="group-list">
         <thead>
           <tr>
-            <th>Group</th>
+            <th>
+              <Translate>Groups</Translate>
+            </th>
           </tr>
         </thead>
         <tbody>
@@ -41,7 +44,9 @@ const UserGroupListComponent = ({
       <div className="settings-footer">
         <button type="button" className="btn btn-success" onClick={() => handleAddGroup()}>
           <Icon icon="plus" />
-          <span className="btn-label">Add group</span>
+          <span className="btn-label">
+            <Translate>Add group</Translate>
+          </span>
         </button>
       </div>
     </>

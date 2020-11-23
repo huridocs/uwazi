@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Icon } from 'UI';
 import { UserGroupSchema, GroupMemberSchema } from 'shared/types/userGroupType';
-import { t } from 'app/I18N';
+import { t, Translate } from 'app/I18N';
 import { ConfirmButton, SidePanel } from 'app/Layout';
 import MultiSelect from 'app/Forms/components/MultiSelect';
 
@@ -74,11 +74,15 @@ const UserGroupSidePanelComponent = ({
 
   return (
     <SidePanel open={opened}>
-      <div className="sidepanel-header">{`${userGroup._id ? 'Edit' : 'Add'} Group`}</div>
+      <div className="sidepanel-header">
+        <Translate>{`${userGroup._id ? 'Edit' : 'Add'} Group`}</Translate>
+      </div>
       <div className="sidepanel-body">
         <form id="userGroupFrom" className="user-group-form" onSubmit={saveGroup}>
           <div id="name_field" className="form-group nested-selector">
-            <label htmlFor="userGroup.name">Name of the group</label>
+            <label htmlFor="userGroup.name">
+              <Translate>Name of the group</Translate>
+            </label>
             <input
               type="text"
               className="form-control"
@@ -110,7 +114,9 @@ const UserGroupSidePanelComponent = ({
                   >
                     <Icon icon="trash-alt" />
                     &nbsp;
-                    <span>{t('System', 'Remove')}</span>
+                    <span>
+                      <Translate>Remove</Translate>
+                    </span>
                   </button>
                 </div>
               </div>
@@ -127,16 +133,20 @@ const UserGroupSidePanelComponent = ({
           aria-label="Close side panel"
         >
           <Icon icon="times" />
-          <span className="btn-label">Discard Changes</span>
+          <span className="btn-label">
+            <Translate>Discard Changes</Translate>
+          </span>
         </button>
         <ConfirmButton id="deleteBtn" className="btn btn-outline-danger" action={deleteGroup}>
           <Icon icon="trash-alt" />
-          <span className="btn-label">Delete Group</span>
+          <span className="btn-label">
+            <Translate>Delete Group</Translate>
+          </span>
         </ConfirmButton>
         <button type="submit" form="userGroupFrom" className="btn btn-success">
           <Icon icon="save" />
           <span id="submitLabel" className="btn-label">
-            {`${userGroup._id ? 'Save' : 'Create'} Group`}
+            <Translate>{`${userGroup._id ? 'Save' : 'Create'} Group`}</Translate>
           </span>
         </button>
       </div>
