@@ -71,6 +71,7 @@ describe('UserGroupSidePanel', () => {
       const submitBtn = wrapper.find('#saveChangesBtn').find('Connect(Translate)');
       expect(header.props().children).toEqual('Add Group');
       expect(submitBtn.props().children).toEqual('Create Group');
+      expect(wrapper.find('#deleteBtn').length).toBe(0);
     });
   });
 
