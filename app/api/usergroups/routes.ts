@@ -24,7 +24,6 @@ export default (app: Application) => {
         body: userGroupSchema,
       },
     }),
-    activitylogMiddleware,
     async (req: Request, res: Response) => {
       const userGroup = await userGroups.save(req.body);
       res.json(userGroup);
@@ -44,7 +43,6 @@ export default (app: Application) => {
         },
       },
     }),
-    activitylogMiddleware,
     async (req: Request, res: Response) => {
       const deletedGroup = await userGroups.delete(req.query);
       res.json(deletedGroup);

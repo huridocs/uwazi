@@ -1,7 +1,6 @@
 import { Application, NextFunction, Request, Response } from 'express';
 import { setUpApp } from 'api/utils/testingRoutes';
 import userGroupRoutes from 'api/usergroups/routes';
-import activitylogMiddleware from 'api/activitylog/activitylogMiddleware';
 import request, { Response as SuperTestResponse } from 'supertest';
 import userGroups from '../userGroups';
 
@@ -10,12 +9,6 @@ jest.mock(
   () => (_req: Request, _res: Response, next: NextFunction) => {
     next();
   }
-);
-
-jest.mock('api/activitylog/activitylogMiddleware', () =>
-  jest.fn().mockImplementation((_req: Request, _res: Response, next: NextFunction) => {
-    next();
-  })
 );
 
 describe('usergroups routes', () => {
@@ -161,20 +154,6 @@ describe('usergroups routes', () => {
         user = undefined;
         const response: request.Response = await endpointCall();
         expect(response.unauthorized).toBe(true);
-      }
-    );
-  });
-  describe('activityLog', () => {
-    it.each([postUserGroup, deleteUserGroup])(
-      'should register the call to the endpoint into the activity log',
-      async (
-        endpointCall:
-          | (() => Promise<SuperTestResponse>)
-          | ((args?: any) => Promise<SuperTestResponse>)
-      ) => {
-        user = { username: 'user 1', role: 'editor' };
-        await endpointCall();
-        expect(activitylogMiddleware).toHaveBeenCalled();
       }
     );
   });
