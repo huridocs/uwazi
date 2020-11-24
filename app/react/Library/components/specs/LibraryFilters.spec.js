@@ -14,6 +14,7 @@ describe('LibraryFilters', () => {
       open: true,
       resetFilters: _storeKey => {},
       toggleIncludeUnpublished: _storeKey => {},
+      hideFilters: () => {},
     };
   });
 
@@ -45,6 +46,21 @@ describe('LibraryFilters', () => {
       const state = mapStateToProps(store, { storeKey: 'library' });
 
       expect(state).toEqual({ open: true });
+    });
+  });
+
+  describe('closing button', () => {
+    it('should show button if sidePanelMode is unpinned-mode', () => {
+      props.sidePanelMode = 'unpinned-mode';
+      render();
+      const closeButton = component.find({ onClick: props.hideFilters });
+      expect(closeButton.find('.only-mobile').length).toBe(0);
+    });
+    it('should have only-mobile class if sidePanelMode is not unpinned-mode', () => {
+      props.sidePanelMode = '';
+      render();
+      const closeButton = component.find({ onClick: props.hideFilters });
+      expect(closeButton.find('.only-mobile').length).toBe(1);
     });
   });
 });
