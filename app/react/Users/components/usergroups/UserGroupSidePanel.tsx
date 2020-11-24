@@ -23,7 +23,7 @@ const UserGroupSidePanelComponent = ({
   onDelete,
 }: UserGroupSidePanelProps) => {
   const [groupMembers, setGroupMembers] = useState<GroupMemberSchema[]>([]);
-  const [name, setName] = useState<string>();
+  const [name, setName] = useState<string>('');
   const [availableUsers, setAvailableUsers] = useState<GroupMemberSchema[]>([]);
 
   function updateAvailableUsers(members: GroupMemberSchema[]) {
@@ -80,7 +80,7 @@ const UserGroupSidePanelComponent = ({
       <div className="sidepanel-body">
         <form id="userGroupFrom" className="user-group-form">
           <div id="name_field" className="form-group nested-selector">
-            <label htmlFor="userGroup.name">
+            <label>
               <Translate>Name of the group</Translate>
             </label>
             <input
