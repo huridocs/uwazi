@@ -2,6 +2,7 @@ import { Application, Request, Response } from 'express';
 import { needsAuthorization } from 'api/auth';
 import { userGroupSchema } from 'shared/types/userGroupSchema';
 import { validation } from 'api/utils';
+import activitylogMiddleware from 'api/activitylog/activitylogMiddleware';
 import userGroups from './userGroups';
 
 export default (app: Application) => {
@@ -23,6 +24,7 @@ export default (app: Application) => {
         body: userGroupSchema,
       },
     }),
+    activitylogMiddleware,
     async (req: Request, res: Response) => {
       const userGroup = await userGroups.save(req.body);
       res.json(userGroup);
@@ -42,6 +44,7 @@ export default (app: Application) => {
         },
       },
     }),
+    activitylogMiddleware,
     async (req: Request, res: Response) => {
       const deletedGroup = await userGroups.delete(req.query);
       res.json(deletedGroup);

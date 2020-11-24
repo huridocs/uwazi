@@ -932,6 +932,76 @@ describe('Activitylog Parser', () => {
       });
     });
 
+    describe('routes: /api/usergroups', () => {
+      describe('method: POST api/usergroups', () => {
+        it('should beautify as CREATE with extra members', async () => {
+          await testBeautified(
+            {
+              method: 'POST',
+              url: '/api/usergroups',
+              body: '{"name":"mygroup","members":[{"username":"User 1"}, {"username":"User 2"}]}',
+            },
+            {
+              action: 'CREATE',
+              description: 'Created user group',
+              name: 'mygroup',
+              extra: 'with members: User 1, User 2',
+            }
+          );
+        });
+
+        it('should beautify as CREATE without extra members', async () => {
+          await testBeautified(
+            {
+              method: 'POST',
+              url: '/api/usergroups',
+              body: '{"name":"mygroup","members":[]}',
+            },
+            {
+              action: 'CREATE',
+              description: 'Created user group',
+              name: 'mygroup',
+              extra: 'with no members',
+            }
+          );
+        });
+
+        it('should beautify as DELETE', async () => {
+          await testBeautified(
+            {
+              method: 'DELETE',
+              url: '/api/usergroups',
+              body: '{"_id":"usergroupId"}',
+              idField: '_id',
+            },
+            {
+              action: 'DELETE',
+              description: 'Delete user group',
+              name: 'usergroupId',
+            }
+          );
+        });
+
+        it('should beautify as UPDATE', async () => {
+          await testBeautified(
+            {
+              method: 'POST',
+              url: '/api/usergroups',
+              body:
+                '{"_id": "group1", "name":"mygroup","members":[{"username":"User 1"}, {"username":"User 2"}]}',
+              idField: '_id',
+              nameField: 'username',
+            },
+            {
+              action: 'UPDATE',
+              description: 'Updated user group',
+              name: 'mygroup (group1)',
+              extra: 'with members: User 1, User 2',
+            }
+          );
+        });
+      });
+    });
     describe('MIGRATIONS logs', () => {
       afterEach(() => {
         jest.resetAllMocks();
