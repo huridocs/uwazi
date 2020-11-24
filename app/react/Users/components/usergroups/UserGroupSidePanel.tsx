@@ -137,12 +137,14 @@ const UserGroupSidePanelComponent = ({
             <Translate>Discard Changes</Translate>
           </span>
         </button>
-        <ConfirmButton id="deleteBtn" className="btn btn-outline-danger" action={deleteGroup}>
-          <Icon icon="trash-alt" />
-          <span className="btn-label">
-            <Translate>Delete Group</Translate>
-          </span>
-        </ConfirmButton>
+        {userGroup._id && (
+          <ConfirmButton id="deleteBtn" className="btn btn-outline-danger" action={deleteGroup}>
+            <Icon icon="trash-alt" />
+            <span className="btn-label">
+              <Translate>Delete Group</Translate>
+            </span>
+          </ConfirmButton>
+        )}
         <button
           id="saveChangesBtn"
           type="button"
