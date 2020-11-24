@@ -68,7 +68,7 @@ describe('UserGroupSidePanel', () => {
       props.userGroup = { name: 'NEW GROUP', members: [] };
       const wrapper = render(props);
       const header = wrapper.find('.sidepanel-header').find('Connect(Translate)');
-      const submitBtn = wrapper.find('#submitLabel').find('Connect(Translate)');
+      const submitBtn = wrapper.find('#saveChangesBtn').find('Connect(Translate)');
       expect(header.props().children).toEqual('Add Group');
       expect(submitBtn.props().children).toEqual('Create Group');
     });
@@ -82,7 +82,7 @@ describe('UserGroupSidePanel', () => {
 
     it('should show edition labels', () => {
       const header = component.find('.sidepanel-header').find('Connect(Translate)');
-      const submitBtn = component.find('#submitLabel').find('Connect(Translate)');
+      const submitBtn = component.find('#saveChangesBtn').find('Connect(Translate)');
       expect(header.props().children).toEqual('Edit Group');
       expect(submitBtn.props().children).toEqual('Save Group');
     });
@@ -100,7 +100,6 @@ describe('UserGroupSidePanel', () => {
           const user1Comparison = (node: any) => node.key() === 'user1';
           const memberDeleteBtn = component.findWhere(user1Comparison).find('button');
           memberDeleteBtn.simulate('click');
-          component.update();
         });
 
         it('should remove the user if its remove button is clicked', () => {
@@ -121,11 +120,11 @@ describe('UserGroupSidePanel', () => {
     });
 
     describe('Saving user group', () => {
-      it('should call the save callback when submit', () => {
+      it('should call the save callback when save button is clicked', () => {
         const newName = 'GROUP 1';
         const nameInput = component.find({ id: 'name_field' }).find('input');
         nameInput.simulate('change', { target: { value: newName } });
-        component.find('form').simulate('submit');
+        component.find('#saveChangesBtn').simulate('click');
         expect(defaultProps.onSave).toHaveBeenCalledWith({
           ...defaultProps.userGroup,
           name: newName,
@@ -162,9 +161,7 @@ describe('UserGroupSidePanel', () => {
     });
 
     it('should save added user from available with member properties', () => {
-      const form = component.find('form');
-      form.simulate('submit');
-      component.update();
+      component.find('#saveChangesBtn').simulate('click');
       const updatedUserGroup = defaultProps.userGroup;
       updatedUserGroup.members.push({ _id: 'user3', username: 'john smith' });
       expect(defaultProps.onSave).toHaveBeenCalledWith(defaultProps.userGroup);

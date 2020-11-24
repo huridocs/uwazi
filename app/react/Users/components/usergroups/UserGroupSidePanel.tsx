@@ -78,7 +78,7 @@ const UserGroupSidePanelComponent = ({
         <Translate>{`${userGroup._id ? 'Edit' : 'Add'} Group`}</Translate>
       </div>
       <div className="sidepanel-body">
-        <form id="userGroupFrom" className="user-group-form" onSubmit={saveGroup}>
+        <form id="userGroupFrom" className="user-group-form">
           <div id="name_field" className="form-group nested-selector">
             <label htmlFor="userGroup.name">
               <Translate>Name of the group</Translate>
@@ -143,9 +143,15 @@ const UserGroupSidePanelComponent = ({
             <Translate>Delete Group</Translate>
           </span>
         </ConfirmButton>
-        <button type="submit" form="userGroupFrom" className="btn btn-success">
+        <button
+          id="saveChangesBtn"
+          type="button"
+          form="userGroupFrom"
+          className="btn btn-success"
+          onClick={saveGroup}
+        >
           <Icon icon="save" />
-          <span id="submitLabel" className="btn-label">
+          <span className="btn-label">
             <Translate>{`${userGroup._id ? 'Save' : 'Create'} Group`}</Translate>
           </span>
         </button>
