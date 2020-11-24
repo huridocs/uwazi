@@ -84,3 +84,8 @@ export const updatedFile = data => {
   }
   return `${name}${data.title}`;
 };
+
+export const groupMembers = data => {
+  const members = data.members.map(member => member.username).join(', ');
+  return members.length > 0 ? `with members: ${members}` : 'with no members';
+};

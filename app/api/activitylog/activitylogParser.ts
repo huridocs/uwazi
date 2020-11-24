@@ -174,6 +174,18 @@ const entryValues: { [key: string]: EntryValue } = {
     nameFunc: helpers.updatedFile,
   },
   'DELETE/api/users': { desc: 'Delete user', method: Methods.Delete, nameField: '_id' },
+  'POST/api/usergroups': {
+    desc: 'Created user group',
+    method: Methods.Create,
+    idField: '_id',
+    nameField: 'name',
+    extra: helpers.groupMembers,
+  },
+  'DELETE/api/usergroups': {
+    desc: 'Delete user group',
+    method: Methods.Delete,
+    nameField: '_id',
+  },
 };
 
 const getSemanticData = async (data: any) => {
