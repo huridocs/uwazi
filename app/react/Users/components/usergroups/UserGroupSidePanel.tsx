@@ -26,16 +26,19 @@ const UserGroupSidePanelComponent = ({
   const [name, setName] = useState<string>('');
   const [availableUsers, setAvailableUsers] = useState<GroupMemberSchema[]>([]);
 
+  const sortByName = (members: GroupMemberSchema[]) =>
+    members.sort((m1, m2) => (m1.username || '').localeCompare(m2.username || ''));
+
   function updateAvailableUsers(members: GroupMemberSchema[]) {
     const membersIds = members.map(member => member._id);
     const filteredUsers = users.filter((user: GroupMemberSchema) => !membersIds.includes(user._id));
-    setAvailableUsers(filteredUsers);
+    setAvailableUsers(sortByName(filteredUsers));
   }
 
   useEffect(() => {
     setName(userGroup.name);
-    setGroupMembers([...userGroup.members]);
-    updateAvailableUsers(userGroup.members);
+    setGroupMembers(sortByName([...userGroup.members]));
+    updateAvailableUsers(sortByName(userGroup.members));
   }, [userGroup]);
 
   function addUsers(userIds: string[]) {
@@ -98,8 +101,7 @@ const UserGroupSidePanelComponent = ({
               optionsLabel="username"
               optionsValue="_id"
               onChange={addUsers}
-              optionsToShow={0}
-              showAll
+              optionsToShow={5}
             />
           </div>
           <div className="user-group-members">
