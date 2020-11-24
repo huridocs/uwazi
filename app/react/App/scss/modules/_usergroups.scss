@@ -24,31 +24,40 @@
 }
 
 .group-list {
-  empty-cells: hide;
-  width: 100%;
-  white-space: nowrap;
-  border-collapse: separate;
-  border: 1px;
-  th,
-  td {
-    padding: 7px 10px;
-    font-size: $f-size;
-  }
-  th {
-    font-weight: bold;
-    border-bottom: 2px solid $c-grey-light;
-  }
-  tbody tr {
-    &:hover > td {
-      background-color: #f2f6fb;
+  table {
+    empty-cells: hide;
+    width: 100%;
+    white-space: nowrap;
+    border-collapse: separate;
+    border: 1px;
+    th,
+    td {
+      padding: 7px 10px;
+      font-size: $f-size;
     }
+    th {
+      font-weight: bold;
+      border-bottom: 2px solid $c-grey-light;
+    }
+    tbody tr {
+      &:hover > td {
+        background-color: #f2f6fb;
+      }
 
-    &.selected > td {
-      background-color: #bed1ec;
+      &.selected > td {
+        background-color: #bed1ec;
+      }
+    }
+    tbody td {
+      border-bottom: 1px solid $c-grey-light;
     }
   }
-  tbody td {
-    border-bottom: 1px solid $c-grey-light;
+  table.edition-mode{
+    width: calc(100% - 400px);
+  }
+
+  .settings-footer.edition-mode {
+    display: none;
   }
 }
 .user-group-form {

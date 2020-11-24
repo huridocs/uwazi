@@ -67,6 +67,7 @@ function UserGroups({
         userGroups={groupList}
         handleSelect={handlers.handleSelect}
         handleAddGroup={handlers.handleAddGroup}
+        className={sidePanelOpened ? 'edition-mode' : ''}
       />
       {selectedGroup && (
         <UserGroupSidePanel

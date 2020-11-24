@@ -7,12 +7,14 @@ export interface UserGroupListProps {
   userGroups: UserGroupSchema[];
   handleSelect: (userGroup: UserGroupSchema) => void;
   handleAddGroup: () => void;
+  className: string;
 }
 
 const UserGroupListComponent = ({
   userGroups,
   handleSelect,
   handleAddGroup,
+  className,
 }: UserGroupListProps) => {
   const [selectedId, setSelectedId] = useState();
   function selectRow(userGroup: UserGroupSchema) {
@@ -20,8 +22,8 @@ const UserGroupListComponent = ({
     handleSelect(userGroup);
   }
   return (
-    <>
-      <table className="group-list">
+    <div className="group-list">
+      <table className={className}>
         <thead>
           <tr>
             <th>
@@ -41,7 +43,7 @@ const UserGroupListComponent = ({
           ))}
         </tbody>
       </table>
-      <div className="settings-footer">
+      <div className={`settings-footer ${className}`}>
         <button type="button" className="btn btn-success" onClick={() => handleAddGroup()}>
           <Icon icon="plus" />
           <span className="btn-label">
@@ -49,7 +51,7 @@ const UserGroupListComponent = ({
           </span>
         </button>
       </div>
-    </>
+    </div>
   );
 };
 
