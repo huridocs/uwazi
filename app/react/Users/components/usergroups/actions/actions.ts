@@ -16,19 +16,15 @@ export function loadUserGroups() {
 
 export function saveUserGroup(userGroup: UserGroupSchema) {
   return async (dispatch: Dispatch<IStore>) => {
-    api
-      .saveUserGroup(new RequestParams(userGroup))
-      .then(savedUserGroup => {
-        const userGroupToDispatch = { ...savedUserGroup, members: userGroup.members };
-        if (userGroup._id) {
-          dispatch(actions.update('userGroups', userGroupToDispatch));
-          dispatch(notificationActions.notify('Group updated', 'success'));
-        } else {
-          dispatch(actions.push('userGroups', userGroupToDispatch));
-          dispatch(notificationActions.notify('Group created', 'success'));
-        }
-      })
-      .catch(() => dispatch(notificationActions.notify('Could not save the User Group', 'danger')));
+    const savedUserGroup = await api.saveUserGroup(new RequestParams(userGroup));
+    const userGroupToDispatch = { ...savedUserGroup, members: userGroup.members };
+    if (userGroup._id) {
+      dispatch(actions.update('userGroups', userGroupToDispatch));
+      dispatch(notificationActions.notify('Group updated', 'success'));
+    } else {
+      dispatch(actions.push('userGroups', userGroupToDispatch));
+      dispatch(notificationActions.notify('Group created', 'success'));
+    }
   };
 }
 
