@@ -15,8 +15,8 @@ export interface UserGroupProps {
   userGroups: IImmutable<UserGroupSchema[]>;
   users: IImmutable<GroupMemberSchema[]>;
   loadUserGroups: () => any;
-  saveUserGroup: (userGroup: UserGroupSchema) => any;
-  deleteUserGroup: (userGroup: UserGroupSchema) => any;
+  saveUserGroup: (userGroup: UserGroupSchema) => Promise<void>;
+  deleteUserGroup: (userGroup: UserGroupSchema) => Promise<void>;
 }
 
 function UserGroups({
