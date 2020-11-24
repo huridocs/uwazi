@@ -6,6 +6,15 @@ export const emitSchemaTypes = true;
 
 const ajv = Ajv({ allErrors: true });
 
+export const itemSchema = {
+  type: 'object',
+  additionalProperties: false,
+  properties: {
+    id: { type: 'string' },
+    name: { type: 'string' },
+  },
+};
+
 export const settingsFilterSchema = {
   type: 'object',
   additionalProperties: false,
@@ -14,7 +23,7 @@ export const settingsFilterSchema = {
     _id: objectIdSchema,
     id: { type: 'string' },
     name: { type: 'string' },
-    items: {},
+    items: { type: 'array', items: itemSchema },
   },
 };
 
@@ -75,7 +84,7 @@ export const settingsSchema = {
     analyticsTrackingId: { type: 'string' },
     matomoConfig: { type: 'string' },
     dateFormat: { type: 'string' },
-    custom: {},
+    custom: { oneOf: [{ type: 'string' }, { type: 'object' }] },
     customCSS: { type: 'string' },
     mapTilerKey: { type: 'string' },
     newNameGeneration: { type: 'boolean', enum: [true] },
