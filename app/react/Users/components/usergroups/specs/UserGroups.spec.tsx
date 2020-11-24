@@ -52,14 +52,29 @@ describe('UserGroups', () => {
   });
 
   describe('mapDispatchToProps', () => {
+    const renderWithTranslations = (state: any) => {
+      const defaultState = {
+        locale: 'en',
+        inlineEdit: Immutable.fromJS({ inlineEdit: true }),
+        translations: Immutable.fromJS([
+          {
+            locale: 'en',
+            contexts: [],
+          },
+        ]),
+      };
+      const stateToMap = { ...defaultState, state };
+      renderConnectedMount(UserGroups, stateToMap);
+    };
+
     it('Should fetch user groups if there are no groups loaded', () => {
       const state = { userGroups: Immutable.fromJS([]) };
-      renderConnectedMount(UserGroups, state);
+      renderWithTranslations(state);
       expect(loadUserGroups).toHaveBeenCalledTimes(1);
     });
     it('Should fetch user groups if initial state of groups is undefined', () => {
       const state = {};
-      renderConnectedMount(UserGroups, state);
+      renderWithTranslations(state);
       expect(loadUserGroups).toHaveBeenCalledTimes(2);
     });
   });
