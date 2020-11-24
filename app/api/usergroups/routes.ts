@@ -2,7 +2,6 @@ import { Application, Request, Response } from 'express';
 import { needsAuthorization } from 'api/auth';
 import { userGroupSchema } from 'shared/types/userGroupSchema';
 import { validation } from 'api/utils';
-import activitylogMiddleware from 'api/activitylog/activitylogMiddleware';
 import userGroups from './userGroups';
 
 export default (app: Application) => {
