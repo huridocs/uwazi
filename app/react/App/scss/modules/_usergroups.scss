@@ -74,6 +74,8 @@
   }
   .user-group-members{
     margin: 10px 15px;
+    height: 200px;
+    overflow-y: scroll;
     .user-group-member {
       display: flex;
       margin: 10px 0;

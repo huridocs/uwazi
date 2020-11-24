@@ -15,17 +15,17 @@ import MultiSelect from 'app/Forms/components/MultiSelect';
 describe('UserGroupSidePanel', () => {
   const defaultProps: UserGroupSidePanelProps = {
     users: [
-      { _id: 'user1', username: 'User 1' },
-      { _id: 'user2', username: 'User 2' },
-      { _id: 'user3', username: 'john smith' },
-      { _id: 'user4', username: 'maria rodriguez' },
+      { _id: 'user1', username: 'martha perez' },
+      { _id: 'user2', username: 'ana johnson' },
+      { _id: 'user3', username: 'maria rodriguez' },
+      { _id: 'user4', username: 'john smith' },
     ],
     userGroup: {
       _id: 'group1Id',
       name: 'Group 1',
       members: [
-        { _id: 'user1', username: 'User 1' },
-        { _id: 'user2', username: 'User 2' },
+        { _id: 'user1', username: 'martha perez' },
+        { _id: 'user2', username: 'ana johnson' },
       ],
     },
     opened: true,
@@ -89,11 +89,11 @@ describe('UserGroupSidePanel', () => {
     });
 
     describe('User members', () => {
-      it('should list all the team members', () => {
+      it('should list all the team members sorted alphabetically', () => {
         const members = component.find('.user-group-members').children();
         expect(members.length).toBe(2);
-        expect(members.at(0).key()).toBe('user1');
-        expect(members.at(1).key()).toBe('user2');
+        expect(members.at(0).key()).toBe('user2');
+        expect(members.at(1).key()).toBe('user1');
       });
 
       describe('Remove users', () => {
@@ -112,9 +112,9 @@ describe('UserGroupSidePanel', () => {
         it('should include the removed user into available users', () => {
           const availableUsers = component.find(MultiSelect);
           expect(availableUsers.props().options).toEqual([
-            { _id: 'user1', username: 'User 1' },
-            { _id: 'user3', username: 'john smith' },
-            { _id: 'user4', username: 'maria rodriguez' },
+            { _id: 'user4', username: 'john smith' },
+            { _id: 'user3', username: 'maria rodriguez' },
+            { _id: 'user1', username: 'martha perez' },
           ]);
         });
       });
@@ -138,8 +138,8 @@ describe('UserGroupSidePanel', () => {
     it('should list only users than are not members of groups', () => {
       const availableUsers = component.find(MultiSelect);
       expect(availableUsers.props().options).toEqual([
-        { _id: 'user3', username: 'john smith' },
-        { _id: 'user4', username: 'maria rodriguez' },
+        { _id: 'user4', username: 'john smith' },
+        { _id: 'user3', username: 'maria rodriguez' },
       ]);
     });
   });
@@ -152,10 +152,10 @@ describe('UserGroupSidePanel', () => {
       component = render(props);
       const availableUsers = component.find(MultiSelect);
       availableUsers.props().onChange([props.users[2]._id]);
-      component.update();
     });
 
     it('should add the selected users to the member list', () => {
+      component.update();
       const members = component.find('.user-group-members').children();
       expect(members.length).toBe(3);
       expect(members.at(2).key()).toBe('user3');
@@ -164,7 +164,7 @@ describe('UserGroupSidePanel', () => {
     it('should save added user from available with member properties', () => {
       component.find('#saveChangesBtn').simulate('click');
       const updatedUserGroup = defaultProps.userGroup;
-      updatedUserGroup.members.push({ _id: 'user3', username: 'john smith' });
+      updatedUserGroup.members.push({ _id: 'user3', username: 'maria rodriguez' });
       expect(defaultProps.onSave).toHaveBeenCalledWith(defaultProps.userGroup);
     });
   });
