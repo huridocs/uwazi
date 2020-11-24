@@ -2,6 +2,8 @@
  * @jest-environment jsdom
  */
 import Immutable from 'immutable';
+import { ReactElement } from 'react';
+import { ShallowWrapper } from 'enzyme';
 import { UserGroupSchema } from 'shared/types/userGroupType';
 import { renderConnected, renderConnectedMount } from 'app/Templates/specs/utils/renderConnected';
 import { UserGroupList } from 'app/Users/components/usergroups/UserGroupList';
@@ -20,7 +22,7 @@ jest.mock('app/Users/components/usergroups/actions/actions', () => ({
 }));
 
 describe('UserGroups', () => {
-  let component: any;
+  let component: ShallowWrapper;
   const userGroups: UserGroupSchema[] = [
     {
       _id: 'group1',
@@ -81,7 +83,7 @@ describe('UserGroups', () => {
   });
 
   describe('user group side panel', () => {
-    let listComponent: any;
+    let listComponent: ReactElement;
 
     beforeEach(() => {
       render();
