@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Icon } from 'UI';
 import { UserGroupSchema } from 'shared/types/userGroupType';
 import { Translate } from 'app/I18N';
+import { Pill } from 'app/Metadata/components/Pill';
 
 export interface UserGroupListProps {
   userGroups: UserGroupSchema[];
@@ -29,6 +30,9 @@ const UserGroupListComponent = ({
             <th>
               <Translate>Groups</Translate>
             </th>
+            <th align="center">
+              <Translate>Members</Translate>
+            </th>
           </tr>
         </thead>
         <tbody>
@@ -39,6 +43,14 @@ const UserGroupListComponent = ({
               onClick={() => selectRow(userGroup)}
             >
               <td>{userGroup.name}</td>
+              <td align="center">
+                <Pill color="white">
+                  <>
+                    <Icon icon="users" />
+                    {` ${userGroup.members.length}`}
+                  </>
+                </Pill>
+              </td>
             </tr>
           ))}
         </tbody>

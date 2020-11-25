@@ -52,6 +52,20 @@
       font-weight: bold;
       border-bottom: 2px solid $c-grey-light;
     }
+    th:nth-child(2){
+      text-align: center;
+    }
+    td {
+      .pill {
+        border: 1px solid rgba(0, 0, 0, 0.25);
+        box-sizing: border-box;
+        border-radius: 26px;
+        padding: 2px 8px;
+        display: inline-block;
+        margin: 2px 8px 2px 0;
+        font-size: smaller;
+      }
+    }
     tbody tr {
       &:hover > td {
         background-color: #f2f6fb;
