@@ -3,7 +3,6 @@ import { typeParsers } from 'api/activitylog/migrationsParser';
 import templates from 'api/templates/templates';
 import entities from 'api/entities/entities';
 import { files } from 'api/files';
-import semanticSearchModel from 'api/semanticsearch/model';
 
 export const formatLanguage = langKey => {
   const lang = allLanguages.find(({ key }) => key === langKey);
@@ -69,11 +68,6 @@ export const extraAttachmentLanguage = data =>
 
 export const searchName = data =>
   data.search ? `${data.search.searchTerm} (${data.searchId})` : data.searchId;
-
-export const loadSearch = async data => {
-  const search = await semanticSearchModel.getById(data.searchId);
-  return { ...data, search };
-};
 
 export const updatedFile = data => {
   let name;
