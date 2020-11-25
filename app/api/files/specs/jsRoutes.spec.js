@@ -25,7 +25,6 @@ describe('upload routes', () => {
   let routes;
   let req;
   let file;
-  let iosocket;
 
   const deleteAllFiles = cb => {
     const directory = `${__dirname}/uploads/`;
@@ -56,7 +55,6 @@ describe('upload routes', () => {
     deleteAllFiles(() => {
       spyOn(search, 'delete').and.returnValue(Promise.resolve());
       spyOn(search, 'indexEntities').and.returnValue(Promise.resolve());
-      iosocket = jasmine.createSpyObj('socket', ['emit']);
       routes = instrumentRoutes(uploadRoutes);
       file = {
         fieldname: 'file',
@@ -74,8 +72,6 @@ describe('upload routes', () => {
         headers: {},
         body: { document: 'sharedId1' },
         files: [file],
-        io: {},
-        getCurrentSessionSockets: () => ({ sockets: [iosocket], emit: iosocket.emit }),
       };
 
       db.clearAllAndLoad(fixtures)
@@ -114,8 +110,6 @@ describe('upload routes', () => {
           },
           files: [file, attachment],
           io: {},
-
-          getCurrentSessionSockets: () => ({ sockets: [iosocket], emit: iosocket.emit }),
         };
         done();
       });

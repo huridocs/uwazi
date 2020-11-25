@@ -7,7 +7,6 @@ import fixtures, {
   firstTemplate,
   firstDoc,
   firstDocSharedId,
-  firstSemanticSearch,
   nonExistentId,
 } from './fixturesParser';
 import { getSemanticData } from '../activitylogParser';
