@@ -13,12 +13,18 @@ export const UserManagement = () => {
     <div className="userManagementTabs">
       <Tabs selectedTab={selectedTab} renderActiveTabContentOnly handleSelect={handleSelect}>
         <div>
-          <TabLink to="users">
-            <Translate>Users</Translate>
-          </TabLink>
-          <TabLink to="usergroups">
-            <Translate>Groups</Translate>
-          </TabLink>
+          <ul className="nav">
+            <li>
+              <TabLink to="users">
+                <Translate>Users</Translate>
+              </TabLink>
+            </li>
+            <li>
+              <TabLink to="usergroups">
+                <Translate>Groups</Translate>
+              </TabLink>
+            </li>
+          </ul>
         </div>
         <TabContent for="users">
           <UsersList />
