@@ -22,27 +22,21 @@ const UserGroupSidePanelComponent = ({
   onSave,
   onDelete,
 }: UserGroupSidePanelProps) => {
-  const [groupMembers, setGroupMembers] = useState<GroupMemberSchema[]>([]);
-  const [name, setName] = useState<string>('');
-  const [availableUsers, setAvailableUsers] = useState<GroupMemberSchema[]>([]);
-
   const sortByName = (members: GroupMemberSchema[]) =>
     members.sort((m1, m2) => (m1.username || '').localeCompare(m2.username || ''));
-
-  function updateAvailableUsers(members: GroupMemberSchema[]) {
-    const membersIds = members.map(member => member._id);
-    const filteredUsers = users.filter((user: GroupMemberSchema) => !membersIds.includes(user._id));
-    setAvailableUsers(sortByName(filteredUsers));
-  }
+  const [groupMembers, setGroupMembers] = useState<GroupMemberSchema[]>([]);
+  const [name, setName] = useState<string>('');
+  const [values, setValues] = useState<string[]>([]);
+  const [availableUsers] = useState(sortByName(users));
 
   useEffect(() => {
     setName(userGroup.name);
-    setGroupMembers(sortByName([...userGroup.members]));
-    updateAvailableUsers(sortByName(userGroup.members));
+    setGroupMembers([...userGroup.members]);
+    setValues(userGroup.members.map(user => (user._id ? user._id.toString() : '')));
   }, [userGroup]);
 
-  function addUsers(userIds: string[]) {
-    const addedUsers = users
+  function changeMembers(userIds: string[]) {
+    const selectedUsers = users
       .filter((user: GroupMemberSchema) => userIds.includes(user._id as string))
       .map(user => ({
         _id: user._id,
@@ -50,16 +44,8 @@ const UserGroupSidePanelComponent = ({
         role: user.role,
         email: user.email,
       }));
-    const updatedMembers = groupMembers.concat(addedUsers);
-    setGroupMembers(updatedMembers);
-    updateAvailableUsers(updatedMembers);
-  }
-
-  function removeUser(user: GroupMemberSchema) {
-    const index = groupMembers.indexOf(user);
-    groupMembers.splice(index, 1);
-    setGroupMembers([...groupMembers]);
-    updateAvailableUsers(groupMembers);
+    setValues(selectedUsers.map(user => (user._id ? user._id.toString() : '')));
+    setGroupMembers(selectedUsers);
   }
 
   function updateGroup(event: any) {
@@ -94,35 +80,17 @@ const UserGroupSidePanelComponent = ({
               onChange={updateGroup}
             />
           </div>
-          <div className="search-box search-user nested-selector">
+          <div className="search-user">
             <MultiSelect
               placeholder={t('System', 'Add users', null, false)}
               options={availableUsers}
               optionsLabel="username"
               optionsValue="_id"
-              onChange={addUsers}
-              optionsToShow={5}
+              value={values}
+              onChange={changeMembers}
+              optionsToShow={8}
+              sortbyLabel
             />
-          </div>
-          <div className="user-group-members">
-            {groupMembers.map(member => (
-              <div key={member._id as string} className="user-group-member">
-                <div>{member.username}</div>
-                <div>
-                  <button
-                    type="button"
-                    onClick={() => removeUser(member)}
-                    className="btn btn-danger btn-xs template-remove"
-                  >
-                    <Icon icon="trash-alt" />
-                    &nbsp;
-                    <span>
-                      <Translate>Remove</Translate>
-                    </span>
-                  </button>
-                </div>
-              </div>
-            ))}
           </div>
         </form>
       </div>
