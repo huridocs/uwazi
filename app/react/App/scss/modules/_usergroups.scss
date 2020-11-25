@@ -1,7 +1,13 @@
 .userManagementTabs {
   position: relative;
   margin-top: 15px;
-  border-bottom: 1px;
+  .nav {
+    display: -webkit-flex;
+    display: flex;
+    list-style: none;
+    border-bottom: 1px solid $c-grey-light;
+    height: 28px;
+  }
   .tab-link {
     display: inline-block;
     padding: 5px 5px 0;
@@ -15,7 +21,14 @@
     }
     &.tab-link-active {
       color: $c-primary;
-      border-bottom: none;
+      border-top-left-radius: .25rem;
+      border-top-right-radius: .25rem;
+      border: 1px solid;
+      border-color: $c-grey-light $c-grey-light transparent;
+      background-color: white;
+    }
+    &:focus {
+      outline: none;
     }
   }
   .tab-content{
@@ -42,6 +55,7 @@
     tbody tr {
       &:hover > td {
         background-color: #f2f6fb;
+        cursor: pointer;
       }
 
       &.selected > td {
@@ -63,23 +77,14 @@
 .user-group-form {
   .search-user{
     width: 100%;
-    z-index: 1;
-    margin: 10px 0;
+    .multiselect {
+      margin: 0 15px ;
+    }
     .form-group {
       width: 100%;
       .form-control{
         width: 100%;
       }
-    }
-  }
-  .user-group-members{
-    margin: 10px 15px;
-    height: 200px;
-    overflow-y: scroll;
-    .user-group-member {
-      display: flex;
-      margin: 10px 0;
-      justify-content: space-between;
     }
   }
 }
