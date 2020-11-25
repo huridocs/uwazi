@@ -1,9 +1,17 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import { UserGroupList, UserGroupListProps } from 'app/Users/components/usergroups/UserGroupList';
+import { Pill } from 'app/Metadata/components/Pill';
 
 describe('UserGroupList', () => {
-  const group1 = { _id: 'group1Id', name: 'Group 1', members: [] };
+  const group1 = {
+    _id: 'group1Id',
+    name: 'Group 1',
+    members: [
+      { _id: 'user1', username: 'User 1' },
+      { _id: 'user2', username: 'User 2' },
+    ],
+  };
   const defaultProps: UserGroupListProps = {
     userGroups: [group1, { _id: 'group2Id', name: 'Group 2', members: [] }],
     handleSelect: jasmine.createSpy('onClick'),
@@ -26,6 +34,14 @@ describe('UserGroupList', () => {
       const component = render();
       const rows = component.find('tbody > tr');
       expect(rows.length).toBe(2);
+      const columns = rows.at(0).find('td');
+      expect(columns.at(0).props().children).toEqual('Group 1');
+      const membersColumn = columns
+        .find(Pill)
+        .at(0)
+        .children()
+        .at(1);
+      expect(membersColumn.text()).toEqual(' 2');
       const table = component.find('table');
       expect(table.get(0).props.className).toEqual('edition-mode');
     });
