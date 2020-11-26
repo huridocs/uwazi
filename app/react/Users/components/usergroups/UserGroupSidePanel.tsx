@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Icon } from 'UI';
+import { useForm } from 'react-hook-form';
 import { UserGroupSchema, GroupMemberSchema } from 'shared/types/userGroupType';
 import { t, Translate } from 'app/I18N';
 import { ConfirmButton, SidePanel } from 'app/Layout';
@@ -8,6 +9,7 @@ import MultiSelect from 'app/Forms/components/MultiSelect';
 export interface UserGroupSidePanelProps {
   userGroup: UserGroupSchema;
   users: GroupMemberSchema[];
+  userGroups: UserGroupSchema[];
   opened: boolean;
   closePanel: (event: any) => void;
   onSave: (event: any) => void;
@@ -17,6 +19,7 @@ export interface UserGroupSidePanelProps {
 const UserGroupSidePanelComponent = ({
   userGroup,
   users,
+  userGroups,
   opened,
   closePanel,
   onSave,
@@ -28,6 +31,7 @@ const UserGroupSidePanelComponent = ({
   const [name, setName] = useState<string>('');
   const [values, setValues] = useState<string[]>([]);
   const [availableUsers] = useState(sortByName(users));
+  const { register, handleSubmit, errors } = useForm();
 
   useEffect(() => {
     setName(userGroup.name);
@@ -52,6 +56,13 @@ const UserGroupSidePanelComponent = ({
     setName(event.target.value);
   }
 
+  const isDuplicated = (nameVal: string) =>
+    !userGroups.find(
+      group =>
+        group._id !== userGroup._id &&
+        group.name.trim().toLowerCase() === nameVal.trim().toLowerCase()
+    );
+
   function saveGroup() {
     const groupToSave = { ...userGroup, name, members: groupMembers };
     onSave(groupToSave);
@@ -67,7 +78,7 @@ const UserGroupSidePanelComponent = ({
         <Translate>{`${userGroup._id ? 'Edit' : 'Add'} Group`}</Translate>
       </div>
       <div className="sidepanel-body">
-        <form id="userGroupFrom" className="user-group-form">
+        <form id="userGroupFrom" className="user-group-form" onSubmit={handleSubmit(saveGroup)}>
           <div id="name_field" className="form-group nested-selector">
             <label>
               <Translate>Name of the group</Translate>
@@ -77,8 +88,18 @@ const UserGroupSidePanelComponent = ({
               className="form-control"
               autoComplete="off"
               value={name}
+              name="name"
               onChange={updateGroup}
+              ref={register({ required: true, validate: isDuplicated, maxLength: 256 })}
             />
+            {errors.name && (
+              <div className="validation-error">
+                <Icon icon="exclamation-triangle" size="xs" />
+                {errors.name.type === 'required' && 'Name is required.'}
+                {errors.name.type === 'validate' && 'Duplicated name.'}
+                {errors.name.type === 'maxLength' && 'Name is too large.'}
+              </div>
+            )}
           </div>
           <div className="search-user">
             <MultiSelect
@@ -115,15 +136,9 @@ const UserGroupSidePanelComponent = ({
             </span>
           </ConfirmButton>
         )}
-        <button
-          id="saveChangesBtn"
-          type="button"
-          form="userGroupFrom"
-          className="btn btn-success"
-          onClick={saveGroup}
-        >
+        <button id="saveChangesBtn" type="submit" form="userGroupFrom" className="btn btn-success">
           <Icon icon="save" />
-          <span className="btn-label">
+          <span id="submitLabel" className="btn-label">
             <Translate>{`${userGroup._id ? 'Save' : 'Create'} Group`}</Translate>
           </span>
         </button>
