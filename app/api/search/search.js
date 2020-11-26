@@ -11,6 +11,7 @@ import { preloadOptionsLimit, preloadOptionsSearch } from 'shared/config';
 import documentQueryBuilder from './documentQueryBuilder';
 import elastic from './elastic';
 import entities from '../entities';
+import entitiesModel from '../entities/entitiesModel';
 import templatesModel from '../templates';
 import { bulkIndex, indexEntities, updateMapping } from './entitiesIndex';
 import thesauri from '../thesauri';
@@ -183,16 +184,43 @@ const _sanitizeAgregationNames = aggregations =>
     return Object.assign(allAggregations, { [sanitizedKey]: aggregations[key] });
   }, {});
 
+const indexedDictionaryValues = dictionary =>
+  dictionary.values
+    .reduce((values, v) => {
+      if (v.values) {
+        return values.concat(v.values, [v]);
+      }
+      values.push(v);
+      return values;
+    }, [])
+    .reduce((v, value) => {
+      // eslint-disable-next-line no-param-reassign
+      v[value.id] = value;
+      return v;
+    }, {});
+
 const _getAggregationDictionary = async (aggregation, language, property, dictionaries) => {
   if (property.type === 'relationship') {
     const entitiesSharedId = aggregation.buckets.map(bucket => bucket.key);
 
-    const bucketEntities = await entities.get({ sharedId: { $in: entitiesSharedId }, language });
+    const bucketEntities = await entitiesModel.get(
+      {
+        sharedId: { $in: entitiesSharedId },
+        language,
+      },
+      {
+        sharedId: 1,
+        title: 1,
+        icon: 1,
+      }
+    );
 
-    return thesauri.entitiesToThesauri(bucketEntities);
+    const dictionary = thesauri.entitiesToThesauri(bucketEntities);
+    return [dictionary, indexedDictionaryValues(dictionary)];
   }
 
-  return dictionaries.find(dictionary => dictionary._id.toString() === property.content.toString());
+  const dictionary = dictionaries.find(d => d._id.toString() === property.content.toString());
+  return [dictionary, indexedDictionaryValues(dictionary)];
 };
 
 const _formatDictionaryWithGroupsAggregation = (aggregation, dictionary) => {
@@ -224,7 +252,7 @@ const _denormalizeAggregations = async (aggregations, templates, dictionaries, l
 
     const property = properties.find(prop => prop.name === key || `__${prop.name}` === key);
 
-    const dictionary = await _getAggregationDictionary(
+    const [dictionary, dictionaryValues] = await _getAggregationDictionary(
       aggregations[key],
       language,
       property,
@@ -234,14 +262,7 @@ const _denormalizeAggregations = async (aggregations, templates, dictionaries, l
     const buckets = aggregations[key].buckets
       .map(bucket => {
         const labelItem =
-          bucket.key === 'missing'
-            ? { label: 'No label' }
-            : dictionary.values
-                .reduce(
-                  (values, v) => (v.values ? values.concat(v.values, [v]) : values.concat(v)),
-                  []
-                )
-                .find(value => value.id === bucket.key, {});
+          bucket.key === 'missing' ? { label: 'No label' } : dictionaryValues[bucket.key];
 
         if (labelItem) {
           const { label, icon } = labelItem;

@@ -20,6 +20,11 @@ $c-sidebar: $c-white;
   &.is-hidden {
     right: -100%;
   }
+
+  .only-mobile { display: none; };
+  @media (max-width: 1023px) {
+    .only-mobile { display: inline-block; }
+  }
   @media (min-width: 454px) {
     width: 400px;
     &.is-hidden {
