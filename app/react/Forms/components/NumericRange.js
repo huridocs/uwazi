@@ -11,9 +11,19 @@ export default class NumericRange extends Component {
   }
 
   onChange(prop, value) {
-    const state = { ...this.state, [prop]: value };
-    this.setState(state);
-    this.props.onChange(state);
+    const newState = {
+      ...this.state,
+      [prop]: value,
+    };
+
+    this.setState(newState);
+
+    const { from, to } = newState;
+
+    this.props.onChange({
+      ...(from !== '' ? { from } : {}),
+      ...(to !== '' ? { to } : {}),
+    });
   }
 
   render() {
