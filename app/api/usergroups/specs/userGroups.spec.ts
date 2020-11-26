@@ -1,3 +1,4 @@
+import Ajv from 'ajv';
 import userGroups from 'api/usergroups/userGroups';
 import db from 'api/utils/testing_db';
 import { models } from 'api/odm/models';
@@ -58,6 +59,17 @@ describe('userGroups', () => {
       await userGroups.save(userGroup1);
       const storedUserGroup = (await userGroups.get({ _id: group1Id, name: 'Group 1' }))[0];
       expect(storedUserGroup.members.length).toBe(0);
+    });
+
+    it('should throw a validation error when the group has a duplicated name', async () => {
+      const newUserGroup = { name: 'Group 1', members: [] };
+      try {
+        await userGroups.save(newUserGroup);
+        fail('should throw a validation error');
+      } catch (e) {
+        expect(e).toBeInstanceOf(Ajv.ValidationError);
+        expect(e.errors[0].keyword).toEqual('uniqueName');
+      }
     });
   });
 

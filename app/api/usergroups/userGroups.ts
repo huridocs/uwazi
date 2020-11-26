@@ -1,5 +1,6 @@
 import users from 'api/users/users';
 import { UserGroupSchema } from 'shared/types/userGroupType';
+import { validateUserGroup } from 'api/usergroups/validateUserGroup';
 import model from './userGroupsModel';
 
 export default {
@@ -25,7 +26,9 @@ export default {
   },
 
   async save(userGroup: UserGroupSchema) {
+    await validateUserGroup(userGroup);
     const members = userGroup.members.map(m => ({ _id: m._id }));
+
     return model.save({ ...userGroup, members });
   },
 
