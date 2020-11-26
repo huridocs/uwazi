@@ -1,4 +1,4 @@
-import { Application, Request, Response } from 'express';
+import { Application, NextFunction, Request, Response } from 'express';
 import { needsAuthorization } from 'api/auth';
 import { userGroupSchema } from 'shared/types/userGroupSchema';
 import { validation } from 'api/utils';
@@ -23,9 +23,13 @@ export default (app: Application) => {
         body: userGroupSchema,
       },
     }),
-    async (req: Request, res: Response) => {
-      const userGroup = await userGroups.save(req.body);
-      res.json(userGroup);
+    async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        const userGroup = await userGroups.save(req.body);
+        res.json(userGroup);
+      } catch (e) {
+        next(e);
+      }
     }
   );
 

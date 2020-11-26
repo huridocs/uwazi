@@ -14,8 +14,10 @@ export const groupMemberSchema = {
 };
 export const userGroupSchema = {
   $schema: 'http://json-schema.org/schema#',
+  $async: true,
   type: 'object',
   additionalProperties: false,
+  uniqueName: true,
   properties: {
     _id: objectIdSchema,
     name: { type: 'string' },
