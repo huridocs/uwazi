@@ -87,6 +87,28 @@
   .settings-footer.edition-mode {
     display: none;
   }
+
+  .beta-feature {
+    .beta-alert {
+      text-align: right;
+      color: $c-type-15;
+      cursor: pointer;
+      float: right;
+      width: 100px;
+    }
+    .beta-tooltip{
+      display: none;
+    }
+    &:hover .beta-tooltip{
+      @include tooltip('left');
+      left: calc(100% - 420px);
+      top: 55px;
+      width: 320px;
+      display: block;
+      font-size: x-small;
+    }
+  }
+
 }
 .user-group-form {
   .search-user{
