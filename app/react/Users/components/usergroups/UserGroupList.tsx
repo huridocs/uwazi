@@ -18,12 +18,25 @@ const UserGroupListComponent = ({
   className,
 }: UserGroupListProps) => {
   const [selectedId, setSelectedId] = useState();
-  function selectRow(userGroup: UserGroupSchema) {
+  const addGroup = () => {
+    setSelectedId(undefined);
+    handleAddGroup();
+  };
+  const selectRow = (userGroup: UserGroupSchema) => {
     setSelectedId(userGroup._id);
     handleSelect(userGroup);
-  }
+  };
   return (
     <div className="group-list">
+      <div className="beta-feature">
+        <div className="beta-alert">
+          <Icon icon="info-circle" />
+          {' Beta feature'}
+        </div>
+        <span className="beta-tooltip">
+          This feature is part of access control levels, still under construction
+        </span>
+      </div>
       <table className={className}>
         <thead>
           <tr>
@@ -56,7 +69,7 @@ const UserGroupListComponent = ({
         </tbody>
       </table>
       <div className={`settings-footer ${className}`}>
-        <button type="button" className="btn btn-success" onClick={() => handleAddGroup()}>
+        <button type="button" className="btn btn-success" onClick={addGroup}>
           <Icon icon="plus" />
           <span className="btn-label">
             <Translate>Add group</Translate>
