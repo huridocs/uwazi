@@ -1,6 +1,7 @@
 /**
  * @jest-environment jsdom
  */
+import 'mutationobserver-shim';
 import Immutable from 'immutable';
 import { SidePanel } from 'app/Layout';
 import {
@@ -13,6 +14,14 @@ import React from 'react';
 import MultiSelect from 'app/Forms/components/MultiSelect';
 
 describe('UserGroupSidePanel', () => {
+  const userGroup = {
+    _id: 'group1Id',
+    name: 'Group 1',
+    members: [
+      { _id: 'user1', username: 'martha perez' },
+      { _id: 'user2', username: 'ana johnson' },
+    ],
+  };
   const defaultProps: UserGroupSidePanelProps = {
     users: [
       { _id: 'user1', username: 'martha perez' },
@@ -20,15 +29,9 @@ describe('UserGroupSidePanel', () => {
       { _id: 'user3', username: 'maria rodriguez' },
       { _id: 'user4', username: 'john smith' },
     ],
-    userGroup: {
-      _id: 'group1Id',
-      name: 'Group 1',
-      members: [
-        { _id: 'user1', username: 'martha perez' },
-        { _id: 'user2', username: 'ana johnson' },
-      ],
-    },
+    userGroup,
     opened: true,
+    userGroups: [{ ...userGroup }, { _id: 'group2Id', name: 'Group 2', members: [] }],
     closePanel: jasmine.createSpy('onClick'),
     onSave: jasmine.createSpy('onSave'),
     onDelete: jasmine.createSpy('onDelete'),
@@ -68,10 +71,24 @@ describe('UserGroupSidePanel', () => {
       props.userGroup = { name: 'NEW GROUP', members: [] };
       const wrapper = render(props);
       const header = wrapper.find('.sidepanel-header').find('Connect(Translate)');
-      const submitBtn = wrapper.find('#saveChangesBtn').find('Connect(Translate)');
+      const submitBtn = wrapper.find('#submitLabel').find('Connect(Translate)');
       expect(header.props().children).toEqual('Add Group');
       expect(submitBtn.props().children).toEqual('Create Group');
       expect(wrapper.find('#deleteBtn').length).toBe(0);
+    });
+    it('should not save if there is another group with the same name', () => {
+      const props = { ...defaultProps };
+      props.userGroup = { name: 'Group 1', members: [] };
+      const wrapper = render(props);
+      wrapper.find('form').simulate('submit');
+      expect(defaultProps.onSave).not.toBeCalled();
+    });
+    it('should not save if user group name is empty', () => {
+      const props = { ...defaultProps };
+      props.userGroup = { name: '', members: [] };
+      const wrapper = render(props);
+      wrapper.find('form').simulate('submit');
+      expect(defaultProps.onSave).not.toBeCalled();
     });
   });
 
@@ -83,7 +100,7 @@ describe('UserGroupSidePanel', () => {
 
     it('should show edition labels', () => {
       const header = component.find('.sidepanel-header').find('Connect(Translate)');
-      const submitBtn = component.find('#saveChangesBtn').find('Connect(Translate)');
+      const submitBtn = component.find('#submitLabel').find('Connect(Translate)');
       expect(header.props().children).toEqual('Edit Group');
       expect(submitBtn.props().children).toEqual('Save Group');
     });
@@ -118,14 +135,16 @@ describe('UserGroupSidePanel', () => {
       it('should call the save callback when save button is clicked', () => {
         const nameInput = component.find({ id: 'name_field' }).find('input');
         nameInput.simulate('change', { target: { value: 'GROUP 1' } });
-        component.find('#saveChangesBtn').simulate('click');
-        expect(defaultProps.onSave).toHaveBeenCalledWith({
-          _id: 'group1Id',
-          name: 'GROUP 1',
-          members: [
-            { _id: 'user1', username: 'martha perez' },
-            { _id: 'user2', username: 'ana johnson' },
-          ],
+        component.find('form').simulate('submit');
+        setImmediate(() => {
+          expect(defaultProps.onSave).toHaveBeenCalledWith({
+            _id: 'group1Id',
+            name: 'GROUP 1',
+            members: [
+              { _id: 'user1', username: 'martha perez' },
+              { _id: 'user2', username: 'ana johnson' },
+            ],
+          });
         });
       });
     });
@@ -149,16 +168,17 @@ describe('UserGroupSidePanel', () => {
     });
 
     it('should save selected users with member properties', () => {
-      component.update();
-      component.find('#saveChangesBtn').simulate('click');
-      expect(defaultProps.onSave).toHaveBeenCalledWith({
-        _id: 'group1Id',
-        name: 'Group 1',
-        members: [
-          { _id: 'user2', username: 'ana johnson' },
-          { _id: 'user4', username: 'john smith' },
-          { _id: 'user1', username: 'martha perez' },
-        ],
+      component.find('form').simulate('submit');
+      setImmediate(() => {
+        expect(defaultProps.onSave).toHaveBeenCalledWith({
+          _id: 'group1Id',
+          name: 'Group 1',
+          members: [
+            { _id: 'user2', username: 'ana johnson' },
+            { _id: 'user4', username: 'john smith' },
+            { _id: 'user1', username: 'martha perez' },
+          ],
+        });
       });
     });
   });

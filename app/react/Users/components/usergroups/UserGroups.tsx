@@ -73,6 +73,7 @@ function UserGroups({
         <UserGroupSidePanel
           userGroup={selectedGroup}
           users={userList}
+          userGroups={groupList}
           opened={sidePanelOpened}
           closePanel={closeSidePanel}
           onSave={handlers.handleSave}
