@@ -76,20 +76,17 @@ describe('UserGroupSidePanel', () => {
       expect(submitBtn.props().children).toEqual('Create Group');
       expect(wrapper.find('#deleteBtn').length).toBe(0);
     });
-    it('should not save if there is another group with the same name', () => {
-      const props = { ...defaultProps };
-      props.userGroup = { name: 'Group 1', members: [] };
-      const wrapper = render(props);
-      wrapper.find('form').simulate('submit');
-      expect(defaultProps.onSave).not.toBeCalled();
-    });
-    it('should not save if user group name is empty', () => {
-      const props = { ...defaultProps };
-      props.userGroup = { name: '', members: [] };
-      const wrapper = render(props);
-      wrapper.find('form').simulate('submit');
-      expect(defaultProps.onSave).not.toBeCalled();
-    });
+
+    it.each(['Group 1', ''])(
+      'should not save if there is another group with the same name',
+      (groupName: string) => {
+        const props = { ...defaultProps };
+        props.userGroup = { name: groupName, members: [] };
+        const wrapper = render(props);
+        wrapper.find('form').simulate('submit');
+        expect(defaultProps.onSave).not.toBeCalled();
+      }
+    );
   });
 
   describe('Editing user group', () => {
