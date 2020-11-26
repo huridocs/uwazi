@@ -95,9 +95,9 @@ const UserGroupSidePanelComponent = ({
             {errors.name && (
               <div className="validation-error">
                 <Icon icon="exclamation-triangle" size="xs" />
-                {errors.name.type === 'required' && 'Name is required.'}
-                {errors.name.type === 'validate' && 'Duplicated name.'}
-                {errors.name.type === 'maxLength' && 'Name is too large.'}
+                {errors.name.type === 'required' && t('System', 'Name is required', null, false)}
+                {errors.name.type === 'validate' && t('System', 'Duplicated name', null, false)}
+                {errors.name.type === 'maxLength' && t('System', 'Name is too long', null, false)}
               </div>
             )}
           </div>
