@@ -16,5 +16,14 @@ export default {
       type: 'date',
       prioritySorting: false,
     },
+    {
+      localID: 'commonEditDate',
+      label: 'Date modified',
+      name: 'editDate',
+      isCommonProperty: true,
+      type: 'date',
+      prioritySorting: false,
+      showInCard: true,
+    },
   ],
 };

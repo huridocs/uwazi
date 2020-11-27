@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Field } from 'react-redux-form';
 import { connect } from 'react-redux';
+import Tip from 'app/Layout/Tip';
 
 import PrioritySortingLabel from './PrioritySortingLabel';
 
@@ -43,6 +44,12 @@ export class FormConfigCommon extends Component {
           <input id={`prioritySorting${index}`} type="checkbox" />
           &nbsp;
           <PrioritySortingLabel htmlFor={`prioritySorting${index}`} />
+        </Field>
+        <Field model={`template.data.commonProperties[${this.getZeroIndex()}].showInCard`}>
+          <input id={`showInCard${index}`} type="checkbox" />
+          &nbsp;
+          <span>Show in cards</span>
+          <Tip>This property will appear in the library cards as part of the basic info.</Tip>
         </Field>
       </div>
     );
