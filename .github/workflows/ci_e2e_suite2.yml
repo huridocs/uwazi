@@ -28,6 +28,7 @@ jobs:
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
       - name: install dependencies
         run: yarn install
+      - run: sudo apt update
       - run: sudo apt-get install poppler-utils
       - name: Cache build
         id: cache-build
