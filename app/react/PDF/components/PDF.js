@@ -6,6 +6,7 @@ import { advancedSort } from 'app/utils/advancedSort';
 import { isClient } from '../../utils';
 import PDFJS from '../PDFJS';
 import PDFPage from './PDFPage.js';
+import Immutable from 'immutable';
 
 class PDF extends Component {
   static getDerivedStateFromProps(props, state) {
@@ -30,7 +31,6 @@ class PDF extends Component {
     this.pageLoading = this.pageLoading.bind(this);
     this.onPageVisible = this.onPageVisible.bind(this);
     this.onPageHidden = this.onPageHidden.bind(this);
-    this.onTextSelection = this.onTextSelection.bind(this);
   }
 
   componentDidMount() {
@@ -48,8 +48,7 @@ class PDF extends Component {
       nextProps.filename !== this.props.filename ||
       nextProps.pdfInfo !== this.props.pdfInfo ||
       nextProps.style !== this.props.style ||
-      nextState.pdf !== this.state.pdf ||
-      nextState.userTextSelection !== this.state.userTextSelection
+      nextState.pdf !== this.state.pdf
     );
   }
 
@@ -156,8 +155,10 @@ class PDF extends Component {
     }
   }
 
-  async onTextSelection(textSelection) {
-    await this.setState({ userTextSelection: textSelection });
+  renderReferences(page) {
+    const references = this.props.references.toJS();
+    console.log(references);
+    return references.map((r, i) => <Highlight key={i} regionId={page} highlight={r.reference} />);
   }
 
   render() {
@@ -168,27 +169,25 @@ class PDF extends Component {
         }}
         style={this.props.style}
       >
-        <SelectionHandler onTextSelection={this.onTextSelection}>
+        <SelectionHandler
+          onTextSelection={this.props.onTextSelection}
+          onTextDeselection={this.props.onTextDeselection}
+        >
           {(() => {
             const pages = [];
             for (let page = 1; page <= this.state.pdf.numPages; page += 1) {
               pages.push(
-                <div className="page-wrapper">
-                  <SelectionRegion regionId={page} key={page}>
+                <div className="page-wrapper" key={page}>
+                  <SelectionRegion regionId={page.toString()}>
                     <PDFPage
                       onUnload={this.pageUnloaded}
                       onLoading={this.pageLoading}
                       onVisible={this.onPageVisible}
                       onHidden={this.onPageHidden}
-                      key={page}
                       page={page}
                       pdf={this.state.pdf}
                     >
-                      {this.state.userTextSelection ? (
-                        <Highlight highlight={this.state.userTextSelection} />
-                      ) : (
-                        false
-                      )}
+                      {this.renderReferences(page.toString())}
                     </PDFPage>
                   </SelectionRegion>
                 </div>
@@ -207,16 +206,22 @@ PDF.defaultProps = {
   onPageChange: () => {},
   onPDFReady: () => {},
   style: {},
+  onTextSelection: () => {},
+  onTextDeselection: () => {},
+  references: Immutable.List(),
 };
 
 PDF.propTypes = {
   onPageChange: PropTypes.func,
+  onTextSelection: PropTypes.func,
+  onTextDeselection: PropTypes.func,
   onPDFReady: PropTypes.func,
   file: PropTypes.string.isRequired,
   filename: PropTypes.string,
   onLoad: PropTypes.func.isRequired,
   pdfInfo: PropTypes.object,
   style: PropTypes.object,
+  references: PropTypes.instanceOf(Immutable.List),
 };
 
 export default PDF;
