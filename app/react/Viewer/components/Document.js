@@ -21,6 +21,8 @@ export class Document extends Component {
     this.previousMostVisible = props.page;
     this.pdfLoaded = this.pdfLoaded.bind(this);
     this.onDocumentReady = this.onDocumentReady.bind(this);
+    this.onTextDeselection = this.onTextDeselection.bind(this);
+    this.onTextSelected = this.onTextSelected.bind(this);
   }
 
   componentDidMount() {
@@ -42,8 +44,12 @@ export class Document extends Component {
     highlightSnippet(this.props.selectedSnippet, this.props.searchTerm);
   }
 
-  onTextSelected() {
-    this.props.setSelection(this.text.getSelection(), this.props.file._id);
+  onTextSelected(textSelection) {
+    this.props.setSelection(textSelection, this.props.file._id);
+  }
+
+  onTextDeselection() {
+    this.props.unsetSelection();
   }
 
   onDocumentReady() {
@@ -99,7 +105,7 @@ export class Document extends Component {
     this.componentDidUpdate();
   }
 
-  renderPDF(file) {
+  renderPDF(file, references) {
     if (!(file._id && file.pdfInfo)) {
       return <Loader />;
     }
@@ -112,13 +118,16 @@ export class Document extends Component {
         onLoad={this.pdfLoaded}
         file={`${APIURL}files/${file.filename}`}
         filename={file.filename}
+        onTextSelection={this.onTextSelected}
+        onTextDeselection={this.onTextDeselection}
+        references={references}
       />
     );
   }
 
   render() {
     const doc = this.props.doc.toJS();
-    const { file } = this.props;
+    const { file, references } = this.props;
 
     const Header = this.props.header ? this.props.header : () => false;
     return (
@@ -128,12 +137,12 @@ export class Document extends Component {
           <div
             className="pages"
             ref={ref => (this.pagesContainer = ref)}
-            onMouseUp={this.handleMouseUp.bind(this)}
-            onTouchEnd={this.handleMouseUp.bind(this)}
+            // onMouseUp={this.handleMouseUp.bind(this)}
+            // onTouchEnd={this.handleMouseUp.bind(this)}
             onClick={this.handleClick.bind(this)}
             onMouseOver={this.handleOver.bind(this)}
           >
-            {this.renderPDF(file)}
+            {this.renderPDF(file, references)}
           </div>
         </div>
       </div>

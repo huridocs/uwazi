@@ -27,14 +27,7 @@ export class ConnectionsList extends Component {
   }
 
   render() {
-    const references = this.props.references
-      .toJS()
-      .sort((a, b) =>
-        a.reference.selectionRectangles[0].regionId === b.reference.selectionRectangles[0].regionId
-          ? a.reference.selectionRectangles[0].top - b.reference.selectionRectangles[0].top
-          : a.reference.selectionRectangles[0].regionId -
-            b.reference.selectionRectangles[0].regionId
-      );
+    const references = this.props.references.toJS();
 
     if (this.props.loading) {
       return false;

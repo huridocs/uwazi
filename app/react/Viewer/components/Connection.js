@@ -60,6 +60,7 @@ export class Connection extends Component {
 
   render() {
     const { reference } = this.props;
+    console.log(reference);
     let itemClass = '';
     const disabled = this.props.targetDoc && typeof reference.reference === 'undefined';
 
