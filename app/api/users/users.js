@@ -1,5 +1,3 @@
-/** @format */
-
 import SHA256 from 'crypto-js/sha256';
 import crypto from 'crypto';
 
@@ -17,7 +15,7 @@ const MAX_FAILED_LOGIN_ATTEMPTS = 6;
 
 const generateUnlockCode = () => crypto.randomBytes(32).toString('hex');
 
-const conformRecoverText = (options, _settings, domain, key, user) => {
+function conformRecoverText(options, _settings, domain, key, user) {
   const response = {};
   if (!options.newUser) {
     response.subject = 'Password set';
@@ -48,11 +46,10 @@ const conformRecoverText = (options, _settings, domain, key, user) => {
       .replace(/\n{2,}/g, '</p><p>')
       .replace(/\n/g, '<br />')}</p>`;
   }
-
   return response;
-};
+}
 
-const sendAccountLockedEmail = (user, domain) => {
+const sendAccountLockedEmail = async (user, domain) => {
   const url = `${domain}/unlockaccount/${user.username}/${user.accountUnlockCode}`;
   const htmlLink = `<a href="${url}">${url}</a>`;
   const text =
@@ -62,8 +59,10 @@ const sendAccountLockedEmail = (user, domain) => {
     `${url}`;
   const html = `<p>${text.replace(url, htmlLink)}</p>`;
 
+  const settingsDetails = await settings.get();
+  const emailSender = mailer.createSenderDetails(settingsDetails);
   const mailOptions = {
-    from: '"Uwazi" <no-reply@uwazi.io>',
+    from: emailSender,
     to: user.email,
     subject: 'Account locked',
     text,
@@ -244,7 +243,8 @@ export default {
       const user = _user[0];
       if (user) {
         return passwordRecoveriesModel.save({ key, user: user._id }).then(() => {
-          const mailOptions = { from: '"Uwazi" <no-reply@uwazi.io>', to: email };
+          const emailSender = mailer.createSenderDetails(_settings);
+          const mailOptions = { from: emailSender, to: email };
           const mailTexts = conformRecoverText(options, _settings, domain, key, user);
           mailOptions.subject = mailTexts.subject;
           mailOptions.text = mailTexts.text;

@@ -30,6 +30,21 @@ export class CollectionSettings extends Component {
     ];
   }
 
+  static faviconOptions() {
+    return [
+      { label: "Uwazi's icon", value: 'uwaziIcon' },
+      { label: 'Custom icon', value: 'customIcon' },
+    ];
+  }
+
+  static defaultLibraryOptions() {
+    return [
+      { label: 'Cards view', value: 'cards' },
+      { label: 'Table view', value: 'table' },
+      { label: 'Map view', value: 'map' },
+    ];
+  }
+
   static dateFormatOptions(separator) {
     return [
       { label: 'Year, Month, Day', value: 0, separator },
@@ -78,6 +93,24 @@ export class CollectionSettings extends Component {
     );
   }
 
+  static cleanEmptyValues(values) {
+    const settings = {};
+
+    if (!values.customLandingpage) {
+      settings.home_page = '';
+    }
+
+    if (values.customFavicon !== 'customIcon') {
+      settings.favicon = '';
+    }
+
+    if (!values.defaultLibraryView) {
+      settings.defaultLibraryView = 'cards';
+    }
+
+    return settings;
+  }
+
   constructor(props, context) {
     super(props, context);
     const { settings } = this.props;
@@ -85,6 +118,7 @@ export class CollectionSettings extends Component {
       props.settings.dateFormat && props.settings.dateFormat.includes('/') ? '/' : '-';
     const dateFormat = CollectionSettings.getDateFormatValue(settings.dateFormat, dateSeparator);
     const customLandingpage = Boolean(props.settings.home_page);
+    const customFavicon = !settings.favicon || settings.favicon === '' ? 'uwaziIcon' : 'customIcon';
     const allowedPublicTemplatesString = settings.allowedPublicTemplates
       ? settings.allowedPublicTemplates.join(',')
       : '';
@@ -92,6 +126,7 @@ export class CollectionSettings extends Component {
       ...settings,
       dateSeparator,
       customLandingpage,
+      customFavicon,
       dateFormat,
       allowedPublicTemplatesString,
     };
@@ -99,19 +134,18 @@ export class CollectionSettings extends Component {
   }
 
   updateSettings(values) {
-    const settings = { ...values };
+    let settings = { ...values };
     delete settings.customLandingpage;
     delete settings.dateSeparator;
     delete settings.allowedPublicTemplatesString;
+    delete settings.customFavicon;
 
     settings.dateFormat = CollectionSettings.getDateFormatDatePicker(
       values.dateFormat,
       values.dateSeparator
     );
 
-    if (!values.customLandingpage) {
-      settings.home_page = '';
-    }
+    settings = { ...settings, ...CollectionSettings.cleanEmptyValues(values) };
 
     settings.allowedPublicTemplates = values.allowedPublicTemplatesString
       ? values.allowedPublicTemplatesString.split(',')
@@ -126,7 +160,7 @@ export class CollectionSettings extends Component {
 
   render() {
     const hostname = isClient ? window.location.origin : '';
-    const { dateSeparator, customLandingpage } = this.state;
+    const { dateSeparator, customLandingpage, customFavicon } = this.state;
     return (
       <div className="panel panel-default">
         <div className="panel-heading">
@@ -145,6 +179,47 @@ export class CollectionSettings extends Component {
               </label>
               <Control.text id="collection_name" model=".site_name" className="form-control" />
             </div>
+
+            <div className="form-group">
+              <span className="form-group-label">
+                <Translate>Favicon</Translate>
+              </span>
+              <RadioButtons options={CollectionSettings.faviconOptions()} model=".customFavicon" />
+              <div className="input-group">
+                <span disabled={customFavicon !== 'customIcon'} className="input-group-addon">
+                  {hostname}
+                </span>
+                <Control.text
+                  disabled={customFavicon !== 'customIcon'}
+                  model=".favicon"
+                  className="form-control"
+                />
+              </div>
+            </div>
+            <div className="alert alert-info">
+              <Icon icon="star" size="2x" />
+              <div className="force-ltr">
+                <Translate>
+                  Favicon is an icon that appears in the browser tab and bookmarks. If you want to
+                  change the Uwazi icon for your own
+                </Translate>
+                ,
+                <br />
+                <ul>
+                  <li>
+                    <Translate>upload it in Custom uploads and copy URL</Translate>
+                  </li>
+                  <li>
+                    <Translate>
+                      choose &ldquo;custom icon&rdquo; and paste URL in the field above.
+                    </Translate>
+                  </li>
+                </ul>
+                <br />
+                <Translate>You will need to reload the page after updating your Favicon.</Translate>
+              </div>
+            </div>
+
             <div className="form-group">
               <span className="form-group-label">
                 <Translate>Private instance</Translate>
@@ -216,6 +291,15 @@ export class CollectionSettings extends Component {
               </div>
             </div>
             <div className="form-group">
+              <span className="form-group-label">
+                <Translate>Default library view</Translate>
+              </span>
+              <RadioButtons
+                options={CollectionSettings.defaultLibraryOptions()}
+                model=".defaultLibraryView"
+              />
+            </div>
+            <div className="form-group">
               <label className="form-group-label" htmlFor="analyticsTrackingId">
                 <Translate>Google Analytics ID</Translate>
               </label>
@@ -259,7 +343,27 @@ export class CollectionSettings extends Component {
               <label className="form-group-label" htmlFor="collectionContactEmail">
                 <Translate>Contact email</Translate>
               </label>
-              <Control.text model=".contactEmail" className="form-control" />
+              <Control.text
+                id="collectionContactEmail"
+                model=".contactEmail"
+                className="form-control"
+              />
+            </div>
+            <div className="form-group">
+              <label className="form-group-label" htmlFor="collectionSenderEmail">
+                <Translate>Sender email</Translate>
+              </label>
+              <Control.text
+                id="collectionSenderEmail"
+                model=".senderEmail"
+                className="form-control"
+              />
+            </div>
+            <div className="alert alert-info">
+              <div className="force-ltr">
+                You can configure the email that will appear as the sender when any email is sent to
+                the user. If this email is not set, “no-reply@uwazi.io” will be used instead.
+              </div>
             </div>
             <div className="form-group">
               <label className="form-group-label" htmlFor="collectionPublicFormDestination">

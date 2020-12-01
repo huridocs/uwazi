@@ -49,17 +49,17 @@ export default app => {
         _id: Joi.string().required(),
       })
     ),
-    (req, res, next) => {
-      templates
-        .setAsDefault(req.body._id)
-        .then(([newDefault, oldDefault]) => {
-          req.io.emitToCurrentTenant('templateChange', newDefault);
-          if (oldDefault) {
-            req.io.emitToCurrentTenant('templateChange', oldDefault);
-          }
-          res.json(newDefault);
-        })
-        .catch(next);
+    async (req, res, next) => {
+      try {
+        const [newDefault, oldDefault] = await templates.setAsDefault(req.body._id.toString());
+        req.io.emitToCurrentTenant('templateChange', newDefault);
+        if (oldDefault) {
+          req.io.emitToCurrentTenant('templateChange', oldDefault);
+        }
+        res.json(newDefault);
+      } catch (err) {
+        next(err);
+      }
     }
   );
 

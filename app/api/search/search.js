@@ -2,9 +2,6 @@
 import date from 'api/utils/date';
 
 import propertiesHelper from 'shared/comonProperties';
-
-import translate, { getLocaleTranslation, getContext } from 'shared/translate';
-import translations from 'api/i18n/translations';
 import { tenants } from 'api/tenants/tenantContext';
 
 import dictionariesModel from 'api/thesauri/dictionariesModel';
@@ -84,9 +81,7 @@ function aggregationProperties(properties) {
         property.type === 'relationship' ||
         property.type === 'nested'
     )
-    .map(property => {
-      return { ...property, name: `${property.name}.value` };
-    });
+    .map(property => ({ ...property, name: `${property.name}.value` }));
 }
 
 function metadataSnippetsFromSearchHit(hit) {
@@ -105,20 +100,31 @@ function metadataSnippetsFromSearchHit(hit) {
   return defaultSnippets;
 }
 
-function fullTextSnippetsFromSearchHit(hit) {
-  if (hit.inner_hits && hit.inner_hits.fullText.hits.hits.length) {
+function getSnippets() {
+  return snippet => {
     const regex = /\[\[(\d+)\]\]/g;
+    const matches = regex.exec(snippet);
+    return {
+      text: snippet.replace(regex, ''),
+      page: matches ? Number(matches[1]) : 0,
+    };
+  };
+}
 
-    const fullTextHighlights = hit.inner_hits.fullText.hits.hits[0].highlight;
+function getHits(hit) {
+  return hit.inner_hits &&
+    hit.inner_hits.fullText.hits.hits &&
+    hit.inner_hits.fullText.hits.hits.length > 0 &&
+    hit.inner_hits.fullText.hits.hits[0].highlight
+    ? hit.inner_hits.fullText.hits.hits
+    : undefined;
+}
+function fullTextSnippetsFromSearchHit(hit) {
+  const hits = getHits(hit);
+  if (hits) {
+    const fullTextHighlights = hits[0].highlight;
     const fullTextLanguageKey = Object.keys(fullTextHighlights)[0];
-    const fullTextSnippets = fullTextHighlights[fullTextLanguageKey].map(snippet => {
-      const matches = regex.exec(snippet);
-      return {
-        text: snippet.replace(regex, ''),
-        page: matches ? Number(matches[1]) : 0,
-      };
-    });
-    return fullTextSnippets;
+    return fullTextHighlights[fullTextLanguageKey].map(getSnippets());
   }
   return [];
 }
@@ -171,12 +177,11 @@ function searchGeolocation(documentsQuery, templates) {
   documentsQuery.select(selectProps);
 }
 
-const _sanitizeAgregationNames = aggregations => {
-  return Object.keys(aggregations).reduce((allAggregations, key) => {
+const _sanitizeAgregationNames = aggregations =>
+  Object.keys(aggregations).reduce((allAggregations, key) => {
     const sanitizedKey = key.replace('.value', '');
     return Object.assign(allAggregations, { [sanitizedKey]: aggregations[key] });
   }, {});
-};
 
 const _getAggregationDictionary = async (aggregation, language, property, dictionaries) => {
   if (property.type === 'relationship') {
@@ -260,7 +265,7 @@ const _denormalizeAggregations = async (aggregations, templates, dictionaries, l
 const _sanitizeAggregationsStructure = (aggregations, limit) => {
   const result = {};
   Object.keys(aggregations).forEach(aggregationKey => {
-    let aggregation = aggregations[aggregationKey];
+    const aggregation = aggregations[aggregationKey];
 
     //grouped dictionary
     if (aggregation.buckets && !Array.isArray(aggregation.buckets)) {
@@ -509,72 +514,32 @@ const processGeolocationResults = (_results, templatesInheritedProperties, inher
   return results;
 };
 
-const escapeCharByRegex = (query, regex, char) => {
-  let escaped = query;
+const _getTextFields = (query, templates) =>
+  query.fields ||
+  propertiesHelper
+    .allUniqueProperties(templates)
+    .map(prop =>
+      ['text', 'markdown'].includes(prop.type)
+        ? `metadata.${prop.name}.value`
+        : `metadata.${prop.name}.label`
+    )
+    .concat(['title', 'fullText']);
 
-  regex.lastIndex = 0;
-  let result = regex.exec(escaped);
-  while (result) {
-    const firstPart = escaped.substr(0, result.index);
-    const charCount = result[1] ? 2 : 1;
-    const secondPart = escaped.substr(result.index + charCount, query.length);
-    const replacement = `${charCount === 2 ? result[1] : ''}\\${char}`;
-
-    escaped = firstPart + replacement + secondPart;
-    regex.lastIndex = 0;
-    result = regex.exec(escaped);
-  }
-
-  return escaped;
-};
-
-const checkCharParity = (query, regex) => {
-  const indices = [];
-
-  regex.lastIndex = 0;
-  let result = regex.exec(query);
-  while (result) {
-    indices.push(result.index);
-    result = regex.exec(query);
-  }
-
-  return !(indices.length % 2 === 1);
-};
-
-const escapeElasticSearchQueryString = query => {
-  const charsRegex = {
-    '"': /([^\\])"|^"/g,
-    '/': /([^\\])\/|^\//g,
-  };
-
-  return Object.keys(charsRegex).reduce((escaped, char) => {
-    if (!checkCharParity(escaped, charsRegex[char])) {
-      return escapeCharByRegex(escaped, charsRegex[char], char);
-    }
-    return escaped;
-  }, query);
-};
-
-const _getTextFields = (query, templates) => {
-  return (
-    query.fields ||
-    propertiesHelper
-      .allUniqueProperties(templates)
-      .map(prop =>
-        ['text', 'markdown'].includes(prop.type)
-          ? `metadata.${prop.name}.value`
-          : `metadata.${prop.name}.label`
-      )
-      .concat(['title', 'fullText'])
-  );
-};
+async function searchTypeFromSearchTermValidity(searchTerm) {
+  const validationResult = await elastic.indices.validateQuery({
+    body: { query: { query_string: { query: searchTerm } } },
+  });
+  return validationResult.body.valid ? 'query_string' : 'simple_query_string';
+}
 
 const buildQuery = async (query, language, user, resources) => {
-  const [templates, dictionaries, _translations] = resources;
+  const [templates, dictionaries] = resources;
   const textFieldsToSearch = _getTextFields(query, templates);
-  const elasticSearchTerm = query.searchTerm && escapeElasticSearchQueryString(query.searchTerm);
+  const searchTextType = query.searchTerm
+    ? await searchTypeFromSearchTermValidity(query.searchTerm)
+    : 'query_string';
   const queryBuilder = documentQueryBuilder()
-    .fullTextSearch(elasticSearchTerm, textFieldsToSearch, 2)
+    .fullTextSearch(query.searchTerm, textFieldsToSearch, 2, searchTextType)
     .filterByTemplate(query.types)
     .filterById(query.ids)
     .language(language);
@@ -599,14 +564,7 @@ const buildQuery = async (query, language, user, resources) => {
   if (query.sort) {
     const sortingProp = allUniqueProps.find(p => `metadata.${p.name}` === query.sort);
     if (sortingProp && sortingProp.type === 'select') {
-      const dictionary = dictionaries.find(d => d._id.toString() === sortingProp.content);
-      const translation = getLocaleTranslation(_translations, language);
-      const context = getContext(translation, dictionary._id.toString());
-      const keys = dictionary.values.reduce((result, value) => {
-        result[value.id] = translate(context, value.label, value.label);
-        return result;
-      }, {});
-      queryBuilder.sortByForeignKey(query.sort, keys, query.order);
+      queryBuilder.sort(query.sort, query.order, true);
     } else {
       queryBuilder.sort(query.sort, query.order);
     }
@@ -637,11 +595,7 @@ const buildQuery = async (query, language, user, resources) => {
 
 const instanceSearch = elasticIndex => ({
   async search(query, language, user) {
-    const resources = await Promise.all([
-      templatesModel.get(),
-      dictionariesModel.get(),
-      translations.get(),
-    ]);
+    const resources = await Promise.all([templatesModel.get(), dictionariesModel.get()]);
     const [templates, dictionaries] = resources;
     const queryBuilder = await buildQuery(query, language, user, resources);
     if (query.geolocation) {
@@ -679,14 +633,15 @@ const instanceSearch = elasticIndex => ({
   async searchSnippets(searchTerm, sharedId, language) {
     const templates = await templatesModel.get();
 
-    const elasticSearchTerm = searchTerm && escapeElasticSearchQueryString(searchTerm);
-
+    const searchTextType = searchTerm
+      ? await searchTypeFromSearchTermValidity(searchTerm)
+      : 'query_string';
     const searchFields = propertiesHelper
       .textFields(templates)
       .map(prop => `metadata.${prop.name}.value`)
       .concat(['title', 'fullText']);
     const query = documentQueryBuilder()
-      .fullTextSearch(elasticSearchTerm, searchFields, 9999)
+      .fullTextSearch(searchTerm, searchFields, 9999, searchTextType)
       .includeUnpublished()
       .filterById(sharedId)
       .language(language)
@@ -739,16 +694,14 @@ const instanceSearch = elasticIndex => ({
   },
 
   async autocompleteAggregations(query, language, propertyName, searchTerm, user) {
-    const [templates, dictionaries, _translations] = await Promise.all([
+    const [templates, dictionaries] = await Promise.all([
       templatesModel.get(),
       dictionariesModel.get(),
-      translations.get(),
     ]);
 
     const queryBuilder = await buildQuery({ ...query, limit: 0 }, language, user, [
       templates,
       dictionaries,
-      _translations,
     ]);
 
     const property = propertiesHelper

@@ -6,7 +6,6 @@ import fs from 'fs';
 import * as filesystem from 'api/files/filesystem';
 import { FileType } from 'shared/types/fileType';
 import entities from 'api/entities';
-import { EntitySchema } from 'shared/types/entityType';
 
 import { CSVLoader } from '../csvLoader';
 import fixtures, { template1Id } from './fixtures';
@@ -103,24 +102,24 @@ describe('csvLoader zip file', () => {
   });
 
   it('should import the attachments asociated with each entity', async () => {
-    const importedEntities: EntitySchema = await entities.get();
+    const importedEntities = await entities.get();
 
-    expect(importedEntities[0].attachments.length).toBe(1);
-    expect(importedEntities[0].attachments[0]).toEqual(
+    expect(importedEntities[0].attachments?.length).toBe(1);
+    expect(importedEntities[0].attachments?.[0]).toEqual(
       expect.objectContaining({
         filename: 'generatedatt1.doc',
         originalname: 'att1.doc',
       })
     );
 
-    expect(importedEntities[1].attachments.length).toBe(2);
-    expect(importedEntities[1].attachments[0]).toEqual(
+    expect(importedEntities[1].attachments?.length).toBe(2);
+    expect(importedEntities[1].attachments?.[0]).toEqual(
       expect.objectContaining({
         filename: 'generatedatt1.doc',
         originalname: 'att1.doc',
       })
     );
-    expect(importedEntities[1].attachments[1]).toEqual(
+    expect(importedEntities[1].attachments?.[1]).toEqual(
       expect.objectContaining({
         filename: 'generatedatt2.jpg',
         originalname: 'att2.jpg',

@@ -28,7 +28,7 @@ const setReindexSettings = async (refreshInterval, numberOfReplicas, translogDur
 
 const restoreSettings = async () => {
   process.stdout.write('Restoring index settings...');
-  const result = setReindexSettings('1s', 1, 'request');
+  const result = setReindexSettings('1s', 0, 'request');
   process.stdout.write(' [done]\n');
   return result;
 };

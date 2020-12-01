@@ -1,3 +1,6 @@
+/* eslint-disable prefer-destructuring */
+/* eslint-disable class-methods-use-this */
+/* eslint-disable react/sort-comp */
 import React, { Component } from 'react';
 
 import { advancedSort } from 'app/utils/advancedSort';
@@ -5,8 +8,9 @@ import { Translate } from 'app/I18N';
 import { FileType } from 'shared/types/fileType';
 import { EntitySchema } from 'shared/types/entityType';
 import UploadButton from 'app/Metadata/components/UploadButton';
-import { ConnectedFile as File } from './File';
 import { NeedAuthorization } from 'app/Auth';
+import languageLib from 'shared/languages';
+import { ConnectedFile as File } from './File';
 
 const defaultProps = {
   files: [],
@@ -38,15 +42,29 @@ export class FileList extends Component<FileListProps> {
     );
   }
 
-  render() {
-    const { files } = this.props;
+  orderFilesByLanguage(files: FileType[], systemLanguage: string) {
+    const orderedFiles = [...files];
+    const fileIndex = orderedFiles.findIndex(file => {
+      const language = languageLib.get(file.language as string, 'ISO639_1');
+      return language === systemLanguage;
+    });
+    if (fileIndex > -1) {
+      const temp = orderedFiles[fileIndex];
+      orderedFiles[fileIndex] = orderedFiles[0];
+      orderedFiles[0] = temp;
+    }
+    return orderedFiles;
+  }
 
+  render() {
+    const { files, entity } = this.props;
+    const orderedFiles = this.orderFilesByLanguage(files, entity.language as string);
     return (
       <div className="filelist">
         <h2>
           <Translate>Documents</Translate>
         </h2>
-        <ul>{files.map((file, index) => this.renderFile(file, index))}</ul>
+        <ul>{orderedFiles.map((file, index) => this.renderFile(file, index))}</ul>
         <NeedAuthorization roles={['admin', 'editor']}>
           <UploadButton
             entitySharedId={this.props.entity.sharedId}

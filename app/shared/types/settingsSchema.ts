@@ -6,6 +6,15 @@ export const emitSchemaTypes = true;
 
 const ajv = Ajv({ allErrors: true });
 
+export const itemSchema = {
+  type: 'object',
+  additionalProperties: false,
+  properties: {
+    id: { type: 'string' },
+    name: { type: 'string' },
+  },
+};
+
 export const settingsFilterSchema = {
   type: 'object',
   additionalProperties: false,
@@ -14,7 +23,7 @@ export const settingsFilterSchema = {
     _id: objectIdSchema,
     id: { type: 'string' },
     name: { type: 'string' },
-    items: {},
+    items: { type: 'array', items: itemSchema },
   },
 };
 
@@ -59,8 +68,11 @@ export const settingsSchema = {
     __v: { type: 'number' },
     project: { type: 'string' },
     site_name: { type: 'string' },
+    favicon: { type: 'string' },
     contactEmail: { type: 'string' },
+    senderEmail: { type: 'string' },
     home_page: { type: 'string' },
+    defaultLibraryView: { type: 'string' },
     private: { type: 'boolean' },
     cookiepolicy: { type: 'boolean' },
     mailerConfig: { type: 'string' },
@@ -72,7 +84,7 @@ export const settingsSchema = {
     analyticsTrackingId: { type: 'string' },
     matomoConfig: { type: 'string' },
     dateFormat: { type: 'string' },
-    custom: {},
+    custom: { oneOf: [{ type: 'string' }, { type: 'object' }] },
     customCSS: { type: 'string' },
     mapTilerKey: { type: 'string' },
     newNameGeneration: { type: 'boolean', enum: [true] },

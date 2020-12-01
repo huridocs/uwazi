@@ -78,7 +78,13 @@ describe('relationships routes', () => {
       spyOn(relationships, 'getByDocument').and.returnValue(Promise.resolve('byDocument'));
 
       const response = await routes.get('/api/references/by_document/', req);
-      expect(relationships.getByDocument).toHaveBeenCalledWith('documentId', 'es', true, 'fileid');
+      expect(relationships.getByDocument).toHaveBeenCalledWith(
+        'documentId',
+        'es',
+        true,
+        'fileid',
+        undefined
+      );
       expect(response).toBe('byDocument');
     });
   });

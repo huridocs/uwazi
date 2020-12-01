@@ -3,10 +3,10 @@
 import Ajv from 'ajv';
 import db from 'api/utils/testing_db';
 import { propertyTypes } from 'shared/propertyTypes';
-import fixtures, { templateId, simpleTemplateId, nonExistentId } from './validatorFixtures';
 import { EntitySchema } from 'shared/types/entityType';
 import templates from 'api/templates';
 import { TemplateSchema } from 'shared/types/templateType';
+import fixtures, { templateId, simpleTemplateId, nonExistentId } from './validatorFixtures';
 
 import { validateEntity } from '../../../shared/types/entitySchema';
 import { customErrorMessages } from '../metadataValidators.js';
@@ -154,8 +154,8 @@ describe('entity schema', () => {
           const template: TemplateSchema = {
             name: 'template with required props',
             properties: [
-              { label: 'name', required: true, type: 'text' },
-              { label: 'markdown', required: true, type: 'markdown' },
+              { label: 'name', name: 'name', required: true, type: 'text' },
+              { label: 'markdown', name: 'markdown', required: true, type: 'markdown' },
             ],
             commonProperties: [{ name: 'title', label: 'title', type: 'text' }],
           };

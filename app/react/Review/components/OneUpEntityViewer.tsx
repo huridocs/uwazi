@@ -10,7 +10,7 @@ import { connectionsChanged, deleteConnection } from 'app/ConnectionsList/action
 import ContextMenu from 'app/ContextMenu';
 import { ShowSidepanelMenu } from 'app/Entities/components/ShowSidepanelMenu';
 import { t } from 'app/I18N';
-import { IStore, OneUpState } from 'app/istore';
+import { ClientEntitySchema, IStore, OneUpState } from 'app/istore';
 import { Icon as PropertyIcon, TemplateLabel } from 'app/Layout';
 import Tip from 'app/Layout/Tip';
 import { MetadataForm, ShowMetadata } from 'app/Metadata';
@@ -29,14 +29,13 @@ import { connect } from 'react-redux';
 import { TabContent, Tabs } from 'react-tabs-redux';
 import { bindActionCreators, Dispatch } from 'redux';
 import { PropertySchema } from 'shared/types/commonTypes';
-import { EntitySchema } from 'shared/types/entityType';
 import { IImmutable } from 'shared/types/Immutable';
 import { TemplateSchema } from 'shared/types/templateType';
 import { Icon } from 'UI';
 import { selectEntity, selectMlThesauri, selectOneUpState } from '../common';
 
 const defaultProps = {
-  entity: {} as EntitySchema,
+  entity: {} as ClientEntitySchema,
   relationships: Immutable.fromJS([]) as IImmutable<any>,
   templates: Immutable.fromJS([]) as IImmutable<TemplateSchema[]>,
   mlThesauri: [] as string[],
@@ -185,7 +184,7 @@ export class OneUpEntityViewerBase extends Component<
                           showType={false}
                           showSubset={this.nonMlProps()}
                         />
-                        <FileList files={entity.documentsdocuments} entity={entity} />
+                        <FileList files={entity.documents} entity={entity} />
                         <AttachmentsList
                           attachments={entity.attachments}
                           parentId={entity._id}

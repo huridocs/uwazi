@@ -122,6 +122,14 @@ describe('search', () => {
           .catch(catchErrors(done));
       });
     });
+
+    it('should return a simple query string for no valid lucene syntax', async () => {
+      try {
+        await search.searchSnippets('batman OR', ids.batmanFinishes, 'es');
+      } catch (e) {
+        fail('should not throw an exception', e.message);
+      }
+    });
   });
 
   it('should perform a fullTextSearch on passed fields', done => {
@@ -724,6 +732,16 @@ describe('search', () => {
     expect(entities.rows[0].title).toBe('metádata3');
   });
 
+  it('sort by denormalized values', async () => {
+    const entities = await search.search(
+      { types: [ids.templateMetadata1], order: 'desc', sort: 'metadata.select1' },
+      'en'
+    );
+    expect(entities.rows[2].title).toBe('Metadata2');
+    expect(entities.rows[1].title).toBe('metádata3');
+    expect(entities.rows[0].title).toBe('metadata1');
+  });
+
   it('should allow including unpublished documents if user', async () => {
     const { rows } = await search.search(
       {
@@ -805,5 +823,18 @@ describe('search', () => {
       expect(options[0].results).toBeDefined();
       expect(count).toBe(1);
     });
+  });
+
+  it('should return a simple query string for no valid lucene syntax', async () => {
+    try {
+      await search.search({ searchTerm: 'spanish OR', fields: ['title'] }, 'es');
+    } catch (e) {
+      fail('should not throw an exception', e.message);
+    }
+  });
+
+  it('should search a empty search term when the asked term is the * character', async () => {
+    const results = await search.search({ searchTerm: '*' }, 'es');
+    expect(results.rows.length).toBe(4);
   });
 });

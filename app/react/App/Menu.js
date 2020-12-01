@@ -1,5 +1,3 @@
-/** @format */
-
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
@@ -11,13 +9,16 @@ import { processFilters, encodeSearch } from 'app/Library/actions/libraryActions
 import { showSemanticSearch } from 'app/SemanticSearch/actions/actions';
 import { FeatureToggleSemanticSearch } from 'app/SemanticSearch/components/FeatureToggleSemanticSearch';
 import { Icon } from 'UI';
+import { libraryViewInfo } from 'app/App/libraryViewInfo';
 
 export class Menu extends Component {
   libraryUrl() {
-    const { searchTerm } = this.props.location.query;
-    const params = processFilters(this.props.librarySearch, this.props.libraryFilters.toJS());
+    const { location, librarySearch, libraryFilters, defaultLibraryView } = this.props;
+    const { searchTerm } = location.query;
+    const params = processFilters(librarySearch, libraryFilters.toJS());
     params.searchTerm = searchTerm;
-    return `/library/${encodeSearch(params)}`;
+
+    return `/${libraryViewInfo[defaultLibraryView].url}/${encodeSearch(params)}`;
   }
 
   uploadsUrl() {
@@ -26,7 +27,7 @@ export class Menu extends Component {
   }
 
   render() {
-    const { links } = this.props;
+    const { links, defaultLibraryView } = this.props;
     const user = this.props.user.toJS();
 
     const navLinks = links.map(link => {
@@ -76,7 +77,7 @@ export class Menu extends Component {
                 className="menuNav-btn btn btn-default"
                 aria-label={t('System', 'Public documents', null, false)}
               >
-                <Icon icon="th" />
+                <Icon icon={libraryViewInfo[defaultLibraryView].icon} />
                 <span className="tab-link-tooltip">{t('System', 'Public documents')}</span>
               </I18NLink>
             </li>
@@ -134,6 +135,7 @@ export class Menu extends Component {
 
 Menu.defaultProps = {
   showSemanticSearch: () => {},
+  defaultLibraryView: 'cards',
 };
 
 Menu.propTypes = {
@@ -147,6 +149,7 @@ Menu.propTypes = {
   onClick: PropTypes.func,
   showSemanticSearch: PropTypes.func,
   links: PropTypes.object,
+  defaultLibraryView: PropTypes.string,
 };
 
 export function mapStateToProps({ user, settings, library, uploads }) {
@@ -158,6 +161,7 @@ export function mapStateToProps({ user, settings, library, uploads }) {
     uploadsFilters: uploads.filters,
     uploadsSelectedSorting: uploads.selectedSorting,
     links: settings.collection.get('links'),
+    defaultLibraryView: settings.collection.get('defaultLibraryView'),
   };
 }
 
