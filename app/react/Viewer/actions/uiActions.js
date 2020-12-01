@@ -124,10 +124,8 @@ export function scrollTomark() {
   scroller.to('.document-viewer mark', '.document-viewer', { duration: 0 });
 }
 
-export function scrollTo(reference, docInfo, element = 'a') {
-  const page = Object.keys(docInfo).find(
-    pageNumber => docInfo[pageNumber].chars >= reference.range.start
-  );
+export function scrollTo(reference, _docInfo, element = 'a') {
+  const page = reference.selectionRectangles[0].regionId;
   if (
     window.document.querySelector(
       `.document-viewer ${element}[data-${reference._id}="${reference._id}"]`,

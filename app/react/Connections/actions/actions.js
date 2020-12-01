@@ -64,14 +64,14 @@ export function saveConnection(connection, callback = () => {}) {
     const sourceRelationship = {
       entity: connection.sourceDocument,
       template: null,
-      range: connection.sourceRange,
+      reference: connection.sourceRange,
       file: connection.sourceFile,
     };
 
     const targetRelationship = { entity: connection.targetDocument, template: connection.template };
     if (connection.targetRange && typeof connection.targetRange.start !== 'undefined') {
       Object.assign(targetRelationship, {
-        range: connection.targetRange,
+        reference: connection.targetRange,
         file: connection.targetFile,
       });
     }

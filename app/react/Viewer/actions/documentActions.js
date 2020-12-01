@@ -194,7 +194,7 @@ export function addToToc(textSelectedObject, currentToc) {
     };
 
     toc.push(tocElement);
-    toc = toc.sort((a, b) => a.range.start - b.range.start);
+    // toc = toc.sort((a, b) => a.range.start - b.range.start);
     dispatch(editToc(toc));
   };
 }
