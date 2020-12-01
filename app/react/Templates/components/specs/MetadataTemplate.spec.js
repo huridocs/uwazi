@@ -177,7 +177,7 @@ describe('MetadataTemplate', () => {
   });
 
   describe('onSubmit', () => {
-    it('should thrim the properties labels and then call props.saveTemplate', async () => {
+    it('should trim the properties labels and then call props.saveTemplate', async () => {
       spyOn(api, 'validateMapping').and.returnValue({ errors: [], valid: true });
       const component = shallow(<MetadataTemplate {...props} />);
       const template = { properties: [{ label: ' trim me please ' }] };

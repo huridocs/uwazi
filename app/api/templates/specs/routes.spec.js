@@ -202,15 +202,10 @@ describe('templates routes', () => {
   });
 
   describe('/api/templates/check_mapping', () => {
-    it('should check if a template is valid vs the current elasticsearch mapping', done => {
+    it('should check if a template is valid vs the current elasticsearch mapping', async () => {
       const req = { body: { _id: 'abc1', properties: [] }, io: mocketSocketIo() };
-      routes
-        .post('/api/templates/check_mapping', req)
-        .then(result => {
-          expect(result).toEqual({ errors: [], valid: true });
-          done();
-        })
-        .catch(catchErrors(done));
+      const result = await routes.post('/api/templates/check_mapping', req);
+      expect(result).toEqual({ errors: [], valid: true });
     });
   });
 });

@@ -138,6 +138,25 @@ describe('entitiesIndex', () => {
   });
 
   describe('reindexAll', () => {
+    it('should reindex the entities', async () => {
+      const entities = [
+        { title: 'title1', language: 'en' },
+        { title: 'titulo1', language: 'es' },
+        { title: 'title2', language: 'en' },
+        { title: 'titulo2', language: 'es' },
+      ];
+      await db.clearAllAndLoad({ entities });
+
+      spyOn(elastic, 'bulk').and.returnValue(Promise.resolve({ body: {} }));
+      await reindexAll([], search, elasticIndex);
+      const reindexRequest = elastic.bulk.calls.allArgs()[0][0];
+
+      expect(reindexRequest.body).toContainEqual(expect.objectContaining({ title: 'title1' }));
+      expect(reindexRequest.body).toContainEqual(expect.objectContaining({ title: 'titulo1' }));
+      expect(reindexRequest.body).toContainEqual(expect.objectContaining({ title: 'title2' }));
+      expect(reindexRequest.body).toContainEqual(expect.objectContaining({ title: 'titulo2' }));
+    });
+
     it('should delete a field from the mapping', async () => {
       const templateA = {
         _id: '123',
