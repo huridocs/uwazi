@@ -1,5 +1,3 @@
-/** @format */
-
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
@@ -62,6 +60,7 @@ export class Connection extends Component {
 
   render() {
     const { reference } = this.props;
+    console.log(reference);
     let itemClass = '';
     const disabled = this.props.targetDoc && typeof reference.range.start === 'undefined';
 
@@ -94,8 +93,8 @@ export class Connection extends Component {
         }`}
         data-id={reference._id}
         additionalText={
-          reference.associatedRelationship.range
-            ? reference.associatedRelationship.range.text
+          reference.associatedRelationship.reference
+            ? reference.associatedRelationship.reference.text
             : null
         }
         additionalMetadata={[

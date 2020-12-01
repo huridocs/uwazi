@@ -8,9 +8,10 @@ const relationshipsSchema = new mongoose.Schema({
   template: { type: mongoose.Schema.Types.ObjectId, ref: 'relationTypes', index: true },
   metadata: mongoose.Schema.Types.Mixed,
   file: String,
-  range: {
-    start: Number,
-    end: Number,
+  reference: {
+    selectionRectangles: [
+      { top: Number, left: Number, width: Number, height: Number, regionId: String },
+    ],
     text: String,
   },
 });

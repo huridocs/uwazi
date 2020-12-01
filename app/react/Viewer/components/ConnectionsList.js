@@ -27,11 +27,7 @@ export class ConnectionsList extends Component {
   }
 
   render() {
-    const references = this.props.references.toJS().sort((a, b) => {
-      const aStart = typeof a.range.start !== 'undefined' ? a.range.start : -1;
-      const bStart = typeof b.range.start !== 'undefined' ? b.range.start : -1;
-      return aStart - bStart;
-    });
+    const references = this.props.references.toJS();
 
     if (this.props.loading) {
       return false;

@@ -140,6 +140,7 @@ PDFPage.defaultProps = {
   getViewportContainer: () => (isClient ? document.querySelector('.document-viewer') : null),
   onVisible: () => {},
   onHidden: () => {},
+  children: [],
 };
 
 PDFPage.propTypes = {
@@ -150,6 +151,7 @@ PDFPage.propTypes = {
   onLoading: PropTypes.func.isRequired,
   onUnload: PropTypes.func.isRequired,
   pdf: PropTypes.object.isRequired,
+  children: PropTypes.node,
 };
 
 export default PDFPage;
