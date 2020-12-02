@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Field } from 'react-redux-form';
 import { connect } from 'react-redux';
+
 import PrioritySortingLabel from './PrioritySortingLabel';
 
 export class FormConfigCommon extends Component {
