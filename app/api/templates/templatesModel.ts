@@ -34,7 +34,6 @@ const mongoSchema = new mongoose.Schema({
       label: String,
       name: String,
       type: String,
-      showInCard: Boolean,
       prioritySorting: Boolean,
     }),
   ],
