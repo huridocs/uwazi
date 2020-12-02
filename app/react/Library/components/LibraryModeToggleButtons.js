@@ -87,18 +87,17 @@ export class LibraryModeToggleButtons extends Component {
             </I18NLink>
           )}
         </div>
-        {tableViewMode && (
-          <button
-            type="button"
-            className="btn btn-default toggle-button"
-            onClick={this.props.showFilters}
-          >
-            <Icon icon="filter" />
-            <span>
+        <div
+          className={`buttons-group toggle-button ${!tableViewMode ? ' only-mobile' : 'unpinned'}`}
+        >
+          <button type="button" className="btn btn-default" onClick={this.props.showFilters}>
+            <Icon icon="funnel-filter" />
+            <span className="filters-label">
               <Translate>Show filters</Translate>
             </span>
+            <span className="tab-link-tooltip">{t('System', 'Show filters')}</span>
           </button>
-        )}
+        </div>
       </div>
     );
   }
