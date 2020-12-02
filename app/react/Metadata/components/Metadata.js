@@ -128,7 +128,7 @@ function filterProps(showSubset) {
     if (Array.isArray(p.value)) {
       return p.value.length;
     }
-    return p.value || p.type === null;
+    return p.value || p.type === null || (p.type === 'numeric' && p.value === 0);
   };
 }
 
