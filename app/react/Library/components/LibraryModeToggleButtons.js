@@ -88,7 +88,7 @@ export class LibraryModeToggleButtons extends Component {
           )}
         </div>
         <div
-          className={`buttons-group toggle-button ${!tableViewMode ? ' only-mobile' : 'unpinned'}`}
+          className={`buttons-group toggle-button ${!tableViewMode ? 'only-mobile' : 'unpinned'}`}
         >
           <button type="button" className="btn btn-default" onClick={this.props.showFilters}>
             <Icon icon="funnel-filter" />
