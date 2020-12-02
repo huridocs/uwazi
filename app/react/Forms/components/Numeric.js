@@ -7,18 +7,21 @@ export default class Numeric extends Component {
   onChange(e) {
     const { value } = e.target;
     const { onChange } = this.props;
-    if (!value) {
-      return onChange('');
-    }
 
-    const numericValue = parseFloat(value);
+    const numericValue = value !== '' ? parseFloat(value) : '';
     return onChange(numericValue);
   }
 
   render() {
     const { value } = this.props;
     return (
-      <input className="form-control" onChange={this.onChange.bind(this)} value={value || ''} />
+      <input
+        type="number"
+        step="any"
+        className="form-control"
+        onChange={this.onChange.bind(this)}
+        value={value}
+      />
     );
   }
 }

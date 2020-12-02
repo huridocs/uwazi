@@ -161,6 +161,7 @@ describe('csvExporter typeFormatters', () => {
   describe('SIMPLE', () => {
     it('should return the correct NUMERIC value', () => {
       testSimple(1234, typeFormatters.numeric, 1234);
+      testSimple(0, typeFormatters.numeric, 0);
     });
 
     it('should return the correct TEXT value', () => {
