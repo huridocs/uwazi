@@ -16,6 +16,9 @@ export interface UserGroupSidePanelProps {
   onDelete: (event: any) => void;
 }
 
+const sortByName = (members: GroupMemberSchema[]) =>
+  members.sort((m1, m2) => (m1.username || '').localeCompare(m2.username || ''));
+
 const UserGroupSidePanelComponent = ({
   userGroup,
   users,
@@ -25,13 +28,11 @@ const UserGroupSidePanelComponent = ({
   onSave,
   onDelete,
 }: UserGroupSidePanelProps) => {
-  const sortByName = (members: GroupMemberSchema[]) =>
-    members.sort((m1, m2) => (m1.username || '').localeCompare(m2.username || ''));
   const [groupMembers, setGroupMembers] = useState<GroupMemberSchema[]>([]);
   const [name, setName] = useState<string>('');
   const [values, setValues] = useState<string[]>([]);
-  const [availableUsers] = useState(sortByName(users));
   const { register, handleSubmit, errors } = useForm();
+  const availableUsers = sortByName(users);
 
   useEffect(() => {
     setName(userGroup.name);
@@ -95,9 +96,9 @@ const UserGroupSidePanelComponent = ({
             {errors.name && (
               <div className="validation-error">
                 <Icon icon="exclamation-triangle" size="xs" />
-                {errors.name.type === 'required' && t('System', 'Name is required', null, false)}
-                {errors.name.type === 'validate' && t('System', 'Duplicated name', null, false)}
-                {errors.name.type === 'maxLength' && t('System', 'Name is too long', null, false)}
+                {errors.name.type === 'required' && <Translate>Name is required</Translate>}
+                {errors.name.type === 'validate' && <Translate>Duplicated name</Translate>}
+                {errors.name.type === 'maxLength' && <Translate>Name is too long</Translate>}
               </div>
             )}
           </div>

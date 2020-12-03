@@ -8,12 +8,12 @@ import { UserGroupSchema } from 'shared/types/userGroupType';
 import { renderConnected, renderConnectedMount } from 'app/Templates/specs/utils/renderConnected';
 import { UserGroupList } from 'app/Users/components/usergroups/UserGroupList';
 import { UserGroupSidePanel } from 'app/Users/components/usergroups/UserGroupSidePanel';
-import UserGroups from 'app/Users/components/usergroups/UserGroups';
 import {
   deleteUserGroup,
   loadUserGroups,
   saveUserGroup,
 } from 'app/Users/components/usergroups/actions/actions';
+import { UserGroups } from 'app/Users/components/usergroups/UserGroups';
 
 jest.mock('app/Users/components/usergroups/actions/actions', () => ({
   loadUserGroups: jest.fn().mockReturnValue(async () => Promise.resolve()),
