@@ -2,15 +2,15 @@
  * @jest-environment jsdom
  */
 import 'mutationobserver-shim';
+import React from 'react';
 import Immutable from 'immutable';
+import { ReactWrapper } from 'enzyme';
 import { SidePanel } from 'app/Layout';
 import {
   UserGroupSidePanel,
   UserGroupSidePanelProps,
 } from 'app/Users/components/usergroups/UserGroupSidePanel';
 import { renderConnectedMount } from 'app/Templates/specs/utils/renderConnected';
-import { ReactWrapper } from 'enzyme';
-import React from 'react';
 import MultiSelect from 'app/Forms/components/MultiSelect';
 
 describe('UserGroupSidePanel', () => {

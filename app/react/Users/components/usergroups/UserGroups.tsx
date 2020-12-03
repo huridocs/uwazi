@@ -71,6 +71,7 @@ const UserGroupsComponent = ({
       />
       {selectedGroup && (
         <UserGroupSidePanel
+          key={selectedGroup._id ? selectedGroup._id.toString() : ''}
           userGroup={selectedGroup}
           users={userList}
           userGroups={groupList}

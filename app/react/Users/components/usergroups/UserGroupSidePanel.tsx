@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Icon } from 'UI';
 import { useForm } from 'react-hook-form';
 import { GroupMemberSchema, UserGroupSchema } from 'shared/types/userGroupType';
@@ -19,6 +19,9 @@ export interface UserGroupSidePanelProps {
 const sortByName = (members: GroupMemberSchema[]) =>
   members.sort((m1, m2) => (m1.username || '').localeCompare(m2.username || ''));
 
+const mapUserIds = (users: GroupMemberSchema[]) =>
+  users.map(user => (user._id ? user._id.toString() : ''));
+
 const UserGroupSidePanelComponent = ({
   userGroup,
   users,
@@ -28,15 +31,10 @@ const UserGroupSidePanelComponent = ({
   onSave,
   onDelete,
 }: UserGroupSidePanelProps) => {
-  const [group, setGroup] = useState<UserGroupSchema>({ name: '', members: [] });
-  const [values, setValues] = useState<string[]>([]);
+  const [group, setGroup] = useState<UserGroupSchema>(userGroup);
+  const [values, setValues] = useState<string[]>(mapUserIds(userGroup.members));
   const { register, handleSubmit, errors } = useForm();
   const availableUsers = sortByName(users);
-
-  useEffect(() => {
-    setGroup(userGroup);
-    setValues(userGroup.members.map(user => (user._id ? user._id.toString() : '')));
-  }, [userGroup]);
 
   const updateMembers = (userIds: string[]) => {
     const selectedUsers: GroupMemberSchema[] = users
@@ -47,7 +45,7 @@ const UserGroupSidePanelComponent = ({
         role: user.role,
         email: user.email,
       }));
-    setValues(selectedUsers.map(user => (user._id ? user._id.toString() : '')));
+    setValues(mapUserIds(selectedUsers));
     setGroup({ ...group, members: [...selectedUsers] });
   };
 
