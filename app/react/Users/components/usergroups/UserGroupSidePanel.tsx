@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Icon } from 'UI';
 import { useForm } from 'react-hook-form';
-import { UserGroupSchema, GroupMemberSchema } from 'shared/types/userGroupType';
+import { GroupMemberSchema, UserGroupSchema } from 'shared/types/userGroupType';
 import { t, Translate } from 'app/I18N';
 import { ConfirmButton, SidePanel } from 'app/Layout';
 import MultiSelect from 'app/Forms/components/MultiSelect';
@@ -28,20 +28,18 @@ const UserGroupSidePanelComponent = ({
   onSave,
   onDelete,
 }: UserGroupSidePanelProps) => {
-  const [groupMembers, setGroupMembers] = useState<GroupMemberSchema[]>([]);
-  const [name, setName] = useState<string>('');
+  const [group, setGroup] = useState<UserGroupSchema>({ name: '', members: [] });
   const [values, setValues] = useState<string[]>([]);
   const { register, handleSubmit, errors } = useForm();
   const availableUsers = sortByName(users);
 
   useEffect(() => {
-    setName(userGroup.name);
-    setGroupMembers([...userGroup.members]);
+    setGroup(userGroup);
     setValues(userGroup.members.map(user => (user._id ? user._id.toString() : '')));
   }, [userGroup]);
 
-  function changeMembers(userIds: string[]) {
-    const selectedUsers = users
+  const updateMembers = (userIds: string[]) => {
+    const selectedUsers: GroupMemberSchema[] = users
       .filter((user: GroupMemberSchema) => userIds.includes(user._id as string))
       .map(user => ({
         _id: user._id,
@@ -50,28 +48,19 @@ const UserGroupSidePanelComponent = ({
         email: user.email,
       }));
     setValues(selectedUsers.map(user => (user._id ? user._id.toString() : '')));
-    setGroupMembers(selectedUsers);
-  }
+    setGroup({ ...group, members: [...selectedUsers] });
+  };
 
-  function updateGroup(event: any) {
-    setName(event.target.value);
-  }
+  const updateGroupName = (event: any) => {
+    setGroup({ ...group, name: event.target.value });
+  };
 
   const isDuplicated = (nameVal: string) =>
     !userGroups.find(
-      group =>
-        group._id !== userGroup._id &&
-        group.name.trim().toLowerCase() === nameVal.trim().toLowerCase()
+      existingGroup =>
+        existingGroup._id !== userGroup._id &&
+        existingGroup.name.trim().toLowerCase() === nameVal.trim().toLowerCase()
     );
-
-  function saveGroup() {
-    const groupToSave = { ...userGroup, name, members: groupMembers };
-    onSave(groupToSave);
-  }
-
-  function deleteGroup() {
-    onDelete(userGroup);
-  }
 
   return (
     <SidePanel open={opened}>
@@ -79,7 +68,11 @@ const UserGroupSidePanelComponent = ({
         <Translate>{`${userGroup._id ? 'Edit' : 'Add'} Group`}</Translate>
       </div>
       <div className="sidepanel-body">
-        <form id="userGroupFrom" className="user-group-form" onSubmit={handleSubmit(saveGroup)}>
+        <form
+          id="userGroupFrom"
+          className="user-group-form"
+          onSubmit={handleSubmit(() => onSave(group))}
+        >
           <div id="name_field" className="form-group nested-selector">
             <label>
               <Translate>Name of the group</Translate>
@@ -88,9 +81,9 @@ const UserGroupSidePanelComponent = ({
               type="text"
               className="form-control"
               autoComplete="off"
-              value={name}
+              value={group.name}
               name="name"
-              onChange={updateGroup}
+              onChange={updateGroupName}
               ref={register({ required: true, validate: isDuplicated, maxLength: 256 })}
             />
             {errors.name && (
@@ -109,7 +102,7 @@ const UserGroupSidePanelComponent = ({
               optionsLabel="username"
               optionsValue="_id"
               value={values}
-              onChange={changeMembers}
+              onChange={updateMembers}
               optionsToShow={8}
               sortbyLabel
             />
@@ -130,7 +123,11 @@ const UserGroupSidePanelComponent = ({
           </span>
         </button>
         {userGroup._id && (
-          <ConfirmButton id="deleteBtn" className="btn btn-outline-danger" action={deleteGroup}>
+          <ConfirmButton
+            id="deleteBtn"
+            className="btn btn-outline-danger"
+            action={() => onDelete(group)}
+          >
             <Icon icon="trash-alt" />
             <span className="btn-label">
               <Translate>Delete Group</Translate>

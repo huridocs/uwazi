@@ -11,6 +11,7 @@ export const groupMemberSchema = {
     role: { type: 'string' },
     email: { type: 'string' },
   },
+  required: ['_id'],
 };
 export const userGroupSchema = {
   $schema: 'http://json-schema.org/schema#',
@@ -25,7 +26,6 @@ export const userGroupSchema = {
       type: 'array',
       items: {
         ...groupMemberSchema,
-        required: ['_id'],
       },
     },
     __v: { type: 'number' },
