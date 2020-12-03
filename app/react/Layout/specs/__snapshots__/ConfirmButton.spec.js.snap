@@ -5,6 +5,7 @@ exports[`ConfirmButton on click onAccept should execute action and close modal 1
   <button
     className="class"
     onClick={[Function]}
+    type="button"
   >
     text
   </button>
@@ -16,6 +17,7 @@ exports[`ConfirmButton on click onCancel should should close modal 1`] = `
   <button
     className="class"
     onClick={[Function]}
+    type="button"
   >
     text
   </button>
@@ -27,6 +29,7 @@ exports[`ConfirmButton on click should render a Confirm modal 1`] = `
   <button
     className="class"
     onClick={[Function]}
+    type="button"
   >
     text
   </button>
@@ -46,6 +49,7 @@ exports[`ConfirmButton should render a button 1`] = `
   <button
     className="class"
     onClick={[Function]}
+    type="button"
   >
     text
   </button>

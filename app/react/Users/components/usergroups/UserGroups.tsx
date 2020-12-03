@@ -19,20 +19,20 @@ export interface UserGroupProps {
   deleteUserGroup: (userGroup: UserGroupSchema) => Promise<void>;
 }
 
-function UserGroups({
+const UserGroupsComponent = ({
   userGroups,
   users,
   loadUserGroups: loadGroups,
   saveUserGroup: saveGroup,
   deleteUserGroup: deleteGroup,
-}: UserGroupProps) {
+}: UserGroupProps) => {
   const [sidePanelOpened, setSidePanelOpened] = useState(false);
   const [selectedGroup, setSelectedGroup] = useState<UserGroupSchema>();
   const groupList = userGroups ? userGroups.toJS() : [];
   const userList = users ? users.toJS() : [];
 
   useEffect(() => {
-    if (userGroups === undefined || userGroups.size === 0) {
+    if (groupList.length === 0) {
       loadGroups().then();
     }
   }, []);
@@ -82,14 +82,12 @@ function UserGroups({
       )}
     </>
   );
-}
+};
 
-function mapStateToProps(state: IStore & { users: IImmutable<GroupMemberSchema[]> }) {
-  return {
-    userGroups: state.userGroups,
-    users: state.users,
-  };
-}
+const mapStateToProps = (state: IStore & { users: IImmutable<GroupMemberSchema[]> }) => ({
+  userGroups: state.userGroups,
+  users: state.users,
+});
 
 const mapDispatchToProps = {
   loadUserGroups,
@@ -97,4 +95,4 @@ const mapDispatchToProps = {
   deleteUserGroup,
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(UserGroups);
+export const UserGroups = connect(mapStateToProps, mapDispatchToProps)(UserGroupsComponent);

@@ -30,7 +30,7 @@ class ConfirmButton extends Component {
   render() {
     return (
       <>
-        <button className={this.props.className} onClick={this.openModal}>
+        <button type="button" className={this.props.className} onClick={this.openModal}>
           {this.props.children}
         </button>
         {this.state.showModal && (
