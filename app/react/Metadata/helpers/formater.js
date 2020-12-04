@@ -28,7 +28,7 @@ const formatMetadataSortedProperty = (metadata, sortedProperty) =>
     newProp.sortedBy = false;
     if (sortedProperty === `metadata.${prop.name}`) {
       newProp.sortedBy = true;
-      if (!prop.value) {
+      if (!prop.value && prop.value !== 0) {
         newProp.value = 'No value';
         newProp.translateContext = 'System';
       }

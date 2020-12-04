@@ -29,7 +29,7 @@ export class SearchButton extends Component {
     return (
       <a href="#" className={`search-button btn ${activeClass}`} onClick={toggle}>
         <div className="searchButton-open">
-          <Icon icon="filter" />
+          <Icon icon="funnel-filter" />
           <span>{t('System', 'Search')}...</span>
         </div>
       </a>

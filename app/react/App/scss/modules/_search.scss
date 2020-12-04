@@ -1,9 +1,8 @@
 .library-filters {
   z-index: 6;
-  top: 0;
+  top: $header-height;
   @media (min-width: 1024px) {
     z-index: 4;
-    top: $header-height;
     &.is-hidden:not(.unpinned-mode) {
       right: 0;
     }
