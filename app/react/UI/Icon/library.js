@@ -86,6 +86,7 @@ import { faEye } from '@fortawesome/free-solid-svg-icons/faEye';
 import { faArrowsAlt } from '@fortawesome/free-solid-svg-icons/faArrowsAlt';
 import { faEyeSlash } from '@fortawesome/free-solid-svg-icons/faEyeSlash';
 import { faUsers } from '@fortawesome/free-solid-svg-icons/faUsers';
+import { faUserPlus } from '@fortawesome/free-solid-svg-icons/faUserPlus';
 import { faUserTimes } from '@fortawesome/free-solid-svg-icons/faUserTimes';
 import { faHandPaper } from '@fortawesome/free-solid-svg-icons/faHandPaper';
 import { saveAndNext } from './save-and-next';
@@ -182,6 +183,7 @@ const icons = {
   faEyeSlash,
   faUsers,
   faUserTimes,
+  faUserPlus,
   faHandPaper,
   saveAndNext,
   exportCsv,

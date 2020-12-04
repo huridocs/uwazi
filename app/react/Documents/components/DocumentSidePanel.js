@@ -20,6 +20,7 @@ import { Icon } from 'UI';
 
 import * as viewerModule from 'app/Viewer';
 import { entityDefaultDocument } from 'shared/entityDefaultDocument';
+import { ShareEntityModal } from 'app/Metadata/components/ShareEntityModal';
 import SearchText from './SearchText';
 import ShowToc from './ShowToc';
 import SnippetsTab from './SnippetsTab';
@@ -30,10 +31,10 @@ export class DocumentSidePanel extends Component {
     this.selectTab = this.selectTab.bind(this);
     this.firstRender = true;
     this.state = { copyFrom: false, copyFromProps: [] };
-
     this.toggleCopyFrom = this.toggleCopyFrom.bind(this);
     this.onCopyFromSelect = this.onCopyFromSelect.bind(this);
     this.deleteDocument = this.deleteDocument.bind(this);
+    this.toggleSharing = this.toggleSharing.bind(this);
   }
 
   componentDidUpdate(prevProps) {
@@ -107,6 +108,12 @@ export class DocumentSidePanel extends Component {
   toggleCopyFrom() {
     this.setState(currentState => ({
       copyFrom: !currentState.copyFrom,
+    }));
+  }
+
+  toggleSharing() {
+    this.setState(currentState => ({
+      sharing: !currentState.sharing,
     }));
   }
 
@@ -301,6 +308,7 @@ export class DocumentSidePanel extends Component {
               includeViewButton={!docBeingEdited && readOnly}
               storeKey={this.props.storeKey}
               copyFrom={this.toggleCopyFrom}
+              share={this.toggleSharing}
             />
           </div>
         </ShowIf>
@@ -409,6 +417,7 @@ export class DocumentSidePanel extends Component {
                       parentSharedId={doc.get('sharedId')}
                       storeKey={this.props.storeKey}
                     />
+                    <ShareEntityModal isOpen={this.state.sharing} onClose={this.toggleSharing} />
                   </div>
                 );
               })()}

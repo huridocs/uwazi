@@ -29,6 +29,7 @@ describe('MetadataFormButtons', () => {
       includeViewButton: true,
       exclusivelyViewButton: false,
       copyFrom: jasmine.createSpy('copyFrom'),
+      share: jasmine.createSpy('share'),
     };
   });
 
@@ -115,6 +116,17 @@ describe('MetadataFormButtons', () => {
     it('should call the callback', () => {
       component.find('.copy-from-btn').simulate('click');
       expect(props.copyFrom).toHaveBeenCalled();
+    });
+  });
+
+  describe('Share', () => {
+    beforeEach(() => {
+      render();
+    });
+
+    it('should call the callback', () => {
+      component.find('.share-btn').simulate('click');
+      expect(props.share).toHaveBeenCalled();
     });
   });
 
