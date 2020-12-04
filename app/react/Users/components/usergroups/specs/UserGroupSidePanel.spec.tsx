@@ -32,7 +32,7 @@ describe('UserGroupSidePanel', () => {
     userGroup,
     opened: true,
     userGroups: [{ ...userGroup }, { _id: 'group2Id', name: 'Group 2', members: [] }],
-    closePanel: jasmine.createSpy('onClick'),
+    closePanel: jasmine.createSpy('closePanel'),
     onSave: jasmine.createSpy('onSave'),
     onDelete: jasmine.createSpy('onDelete'),
   };
