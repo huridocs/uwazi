@@ -1,16 +1,21 @@
 import Joi from 'joi';
 
 import settings from 'api/settings';
-import { updateMapping } from 'api/search/entitiesIndex';
+import { updateMapping, checkMapping, reindexAll } from 'api/search/entitiesIndex';
 import { tenants } from 'api/tenants/tenantContext';
+import { instanceSearch } from 'api/search/search';
 
 import { validation } from '../utils';
 import needsAuthorization from '../auth/authMiddleware';
 import templates from './templates';
+import { generateNamesAndIds } from './utils';
 
 export default app => {
   app.post('/api/templates', needsAuthorization(), async (req, res, next) => {
     try {
+      const { reindex } = req.body;
+      delete req.body.reindex;
+
       const response = await templates.save(req.body, req.language);
 
       req.io.emitToCurrentTenant('templateChange', response);
@@ -22,8 +27,13 @@ export default app => {
         req.io.emitToCurrentTenant('updateSettings', updatedSettings);
       }
 
-      const templs = await templates.get();
-      await updateMapping(templs, tenants.current().indexName);
+      if (reindex) {
+        const allTemplates = await templates.get();
+        const search = instanceSearch();
+        reindexAll(allTemplates, search, tenants.current().indexName);
+      } else {
+        await updateMapping([req.body], tenants.current().indexName);
+      }
 
       res.json(response);
     } catch (error) {
@@ -102,4 +112,12 @@ export default app => {
         .catch(next);
     }
   );
+
+  app.post('/api/templates/check_mapping', needsAuthorization(), async (req, res, next) => {
+    const template = req.body;
+    template.properties = await generateNamesAndIds(template.properties);
+    checkMapping(template, tenants.current().indexName)
+      .then(response => res.json(response))
+      .catch(next);
+  });
 };
