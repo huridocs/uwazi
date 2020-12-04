@@ -9,7 +9,7 @@ export default class Modal extends Component {
     return (
       <ReactModal
         style={style}
-        className={`modal-dialog modal-${type}`}
+        className={`modal-dialog modal-${type} ${this.props.className}`}
         isOpen={this.props.isOpen}
         contentLabel=""
         ariaHideApp={false}
@@ -26,6 +26,7 @@ Modal.propTypes = {
   isOpen: PropTypes.bool,
   type: PropTypes.string,
   children: childrenType,
+  className: PropTypes.string,
 };
 
 const Body = ({ children }) => <div className="modal-body">{children}</div>;
