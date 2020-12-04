@@ -46,6 +46,10 @@ const isValidGeolocation = value => isNumber(value.lat) && isNumber(value.lon);
 
 const validateRequiredProperty = (property, value) => {
   if (property.required) {
+    if (property.type === 'numeric') {
+      return (value[0] && value[0].value === 0) || !isEmpty(value);
+    }
+
     return !isEmpty(value);
   }
   return true;
