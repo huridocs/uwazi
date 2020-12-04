@@ -18,16 +18,16 @@ export default (app: Application) => {
     uploadMiddleware(uploadsPath),
     async (req, res) => {
       try {
-        req.getCurrentSessionSockets().emit('conversionStart', req.body.entity);
+        req.emitToSessionSocket('conversionStart', req.body.entity);
         const savedFile = await processDocument(req.body.entity, req.file);
         res.json(savedFile);
-        req.getCurrentSessionSockets().emit('documentProcessed', req.body.entity);
+        req.emitToSessionSocket('documentProcessed', req.body.entity);
       } catch (err) {
         errorLog.error(err);
         debugLog.debug(err);
         const [file] = await files.get({ filename: req.file.filename });
         res.json(file);
-        req.getCurrentSessionSockets().emit('conversionFailed', req.body.entity);
+        req.emitToSessionSocket('conversionFailed', req.body.entity);
       }
     },
     activitylogMiddleware
@@ -155,21 +155,21 @@ export default (app: Application) => {
 
       loader.on('entityLoaded', () => {
         loaded += 1;
-        req.getCurrentSessionSockets().emit('IMPORT_CSV_PROGRESS', loaded);
+        req.emitToSessionSocket('IMPORT_CSV_PROGRESS', loaded);
       });
 
       loader.on('loadError', error => {
-        req.getCurrentSessionSockets().emit('IMPORT_CSV_ERROR', handleError(error));
+        req.emitToSessionSocket('IMPORT_CSV_ERROR', handleError(error));
       });
 
-      req.getCurrentSessionSockets().emit('IMPORT_CSV_START');
+      req.emitToSessionSocket('IMPORT_CSV_START');
       loader
         .load(req.file.path, req.body.template, { language: req.language, user: req.user })
         .then(() => {
-          req.getCurrentSessionSockets().emit('IMPORT_CSV_END');
+          req.emitToSessionSocket('IMPORT_CSV_END');
         })
         .catch((e: Error) => {
-          req.getCurrentSessionSockets().emit('IMPORT_CSV_ERROR', handleError(e));
+          req.emitToSessionSocket('IMPORT_CSV_ERROR', handleError(e));
         });
 
       res.json('ok');
