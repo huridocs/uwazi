@@ -21,4 +21,8 @@ export default {
   delete(request) {
     return api.delete('templates', request).then(response => response.json);
   },
+
+  validateMapping(request) {
+    return api.post('templates/check_mapping', request).then(response => response.json);
+  },
 };

@@ -97,6 +97,10 @@ const sanitize = data => {
   return data;
 };
 
+export function validateMapping(template) {
+  return api.validateMapping(new RequestParams(template));
+}
+
 export function saveTemplate(data) {
   const template = sanitize(data);
   return dispatch => {

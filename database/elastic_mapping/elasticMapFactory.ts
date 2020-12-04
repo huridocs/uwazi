@@ -14,18 +14,21 @@ export default {
       },
     };
 
-    return templates.reduce((baseMapping: any, template: TemplateSchema) => {
-      return template.properties?.reduce((map: any, property) => {
-        if (!property.name || !property.type || property.type === 'preview') {
+    return templates.reduce(
+      (baseMapping: any, template: TemplateSchema) =>
+        template.properties?.reduce((_map: any, property) => {
+          const map = { ..._map };
+          if (!property.name || !property.type || property.type === 'preview') {
+            return map;
+          }
+
+          const fieldMapping = propertyMappings[property.type]();
+          map.properties.metadata.properties[property.name] = { properties: fieldMapping };
+          map.properties.suggestedMetadata.properties[property.name] = { properties: fieldMapping };
+
           return map;
-        }
-
-        const fieldMapping = propertyMappings[property.type]();
-        map.properties.metadata.properties[property.name] = { properties: fieldMapping };
-        map.properties.suggestedMetadata.properties[property.name] = { properties: fieldMapping };
-
-        return map;
-      }, baseMapping);
-    }, baseMappingObject);
+        }, baseMapping),
+      baseMappingObject
+    );
   },
 };
