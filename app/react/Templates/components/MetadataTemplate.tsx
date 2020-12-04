@@ -5,7 +5,12 @@ import ColorPicker from 'app/Forms/components/ColorPicker';
 import { I18NLink, t } from 'app/I18N';
 import { notificationActions } from 'app/Notifications';
 import { notify } from 'app/Notifications/actions/notificationsActions';
-import { addProperty, inserted, saveTemplate } from 'app/Templates/actions/templateActions';
+import {
+  addProperty,
+  inserted,
+  saveTemplate,
+  validateMapping,
+} from 'app/Templates/actions/templateActions';
 import MetadataProperty from 'app/Templates/components/MetadataProperty';
 import RemovePropertyConfirm from 'app/Templates/components/RemovePropertyConfirm';
 import { COLORS } from 'app/utils/colors';
@@ -42,6 +47,10 @@ const getTemplateDefaultColor = (allTemplates: List<TemplateSchema>, template: a
 export class MetadataTemplate extends Component<MetadataTemplateProps> {
   static propTypes: any;
 
+  static contextTypes = {
+    confirm: PropTypes.func,
+  };
+
   static defaultProps: MetadataTemplateProps = {
     notify,
     saveTemplate, // eslint-disable-line react/default-props-match-prop-types
@@ -56,13 +65,28 @@ export class MetadataTemplate extends Component<MetadataTemplateProps> {
     this.onSubmitFailed = this.onSubmitFailed.bind(this);
   }
 
-  onSubmit = (_template: TemplateSchema) => {
+  onSubmit = async (_template: TemplateSchema) => {
     const template = { ..._template };
     template.properties = template.properties?.map(_prop => {
       const prop = { ..._prop };
       prop.label = _prop.label.trim();
       return prop;
     });
+
+    const mappingValidation = await validateMapping(template);
+    if (!mappingValidation.valid) {
+      const fields = mappingValidation.errors.map((e: any) => e.name);
+      this.context.confirm({
+        accept: () => {
+          template.reindex = true;
+          return this.props.saveTemplate(template);
+        },
+        title: 'Template conflict',
+        message: `The field or fields [${fields}] have been previously used for a different type of data,
+         in order to reuse those names, all your collection must be reindexed. This process may take several minutes, do you want to continue? `,
+      });
+      return;
+    }
 
     this.props.saveTemplate(template);
   };

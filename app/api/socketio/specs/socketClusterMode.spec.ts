@@ -14,13 +14,18 @@ const closeServer = async (httpServer: Server) =>
     });
   });
 
-const connectSocket = async (port: number, tenant: string): Promise<SocketIOClient.Socket> =>
+const connectSocket = async (
+  port: number,
+  tenant: string,
+  session: string = ''
+): Promise<SocketIOClient.Socket> =>
   new Promise(resolve => {
     const socket = io.connect(`http://localhost:${port}`, {
       transports: ['websocket'],
       //@ts-ignore
       extraHeaders: {
         tenant,
+        ...(session ? { Cookie: `connect.sid=session:${session}` } : {}),
       },
     });
 
@@ -61,10 +66,10 @@ describe('socket middlewares setup', () => {
       res.json({});
     });
 
-    socket1 = await connectSocket(port, 'tenant1');
-    socket2 = await connectSocket(port, 'tenant1');
-    socket3 = await connectSocket(port, 'tenant2');
-    socket4 = await connectSocket(port, '');
+    socket1 = await connectSocket(port, 'tenant1', 'session1');
+    socket2 = await connectSocket(port, 'tenant1', 'session2');
+    socket3 = await connectSocket(port, 'tenant2', 'session3');
+    socket4 = await connectSocket(port, '', 'session4');
   });
 
   afterAll(async () => {
@@ -75,30 +80,36 @@ describe('socket middlewares setup', () => {
     await closeServer(server);
   });
 
-  const captureEvents = () => {
+  const captureEvents = (eventName: string = 'eventName') => {
     const events = { socket1: '', socket2: '', socket3: '', socket4: '' };
-    socket1.once('eventName', (data: string) => {
+    socket1.once(eventName, (data: string) => {
       events.socket1 = data;
     });
-    socket2.once('eventName', (data: string) => {
+    socket2.once(eventName, (data: string) => {
       events.socket2 = data;
     });
-    socket3.once('eventName', (data: string) => {
+    socket3.once(eventName, (data: string) => {
       events.socket3 = data;
     });
-    socket4.once('eventName', (data: string) => {
+    socket4.once(eventName, (data: string) => {
       events.socket4 = data;
     });
     return events;
   };
 
-  const requestTestRoute = async (tenant?: string) => {
-    const req = request(server).get('/api/test');
+  const requestTestRoute = async (
+    tenant?: string,
+    route: string = '/api/test',
+    session: string = ''
+  ) => {
+    const req = request(server).get(route);
+
+    if (session) {
+      await req.set('Cookie', `connect.sid=session:${session}`);
+    }
 
     if (tenant) {
-      req.set('tenant', tenant).catch(e => {
-        throw e;
-      });
+      await req.set('tenant', tenant);
     }
 
     return req.expect(response => {
@@ -137,7 +148,6 @@ describe('socket middlewares setup', () => {
   describe('when performing a request without a tenant', () => {
     it('should emit to sockets connected as the default tenant', async () => {
       const socketEvents = captureEvents();
-
       await requestTestRoute();
 
       expect(socketEvents.socket1).toBe('');
@@ -145,5 +155,46 @@ describe('socket middlewares setup', () => {
       expect(socketEvents.socket3).toBe('');
       expect(socketEvents.socket4).toBe('eventData');
     });
+  });
+
+  describe('emitToCurrentSession', () => {
+    beforeAll(() => {
+      app.get('/api/onlySender', (req, res) => {
+        req.emitToSessionSocket('onlySenderEvent', 'senderData');
+        res.json({});
+      });
+    });
+
+    it('should emit only to the initial sender session', async () => {
+      let socketEvents = captureEvents('onlySenderEvent');
+      await requestTestRoute('tenant1', '/api/onlySender', 'session1');
+
+      expect(socketEvents.socket1).toBe('senderData');
+      expect(socketEvents.socket2).toBe('');
+      expect(socketEvents.socket3).toBe('');
+      expect(socketEvents.socket4).toBe('');
+
+      expect(socketEvents).toEqual({
+        socket1: 'senderData',
+        socket2: '',
+        socket3: '',
+        socket4: '',
+      });
+
+      socketEvents = captureEvents('onlySenderEvent');
+      await requestTestRoute('tenant1', '/api/onlySender', 'session2');
+
+      expect(socketEvents).toEqual({
+        socket1: '',
+        socket2: 'senderData',
+        socket3: '',
+        socket4: '',
+      });
+    });
+  });
+
+  it('should not fail when not sending a cookie', async () => {
+    await connectSocket(port, 'tenant5');
+    await requestTestRoute('tenant5', '/api/onlySender');
   });
 });

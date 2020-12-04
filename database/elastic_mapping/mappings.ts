@@ -8,7 +8,6 @@ if (USE_ELASTIC_ICU === 'true') {
 
 const text = {
   type: 'text',
-  index: true,
   analyzer: 'tokenizer',
   fields: {
     raw: { type: 'text' },
@@ -19,7 +18,6 @@ const text = {
 
 const noSorttext = {
   type: 'text',
-  index: true,
   analyzer: 'tokenizer',
   term_vector: 'with_positions_offsets',
 };
