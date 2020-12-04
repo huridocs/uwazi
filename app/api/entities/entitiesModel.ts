@@ -33,6 +33,7 @@ const mongoSchema = new mongoose.Schema(
     metadata: mongoose.Schema.Types.Mixed,
     suggestedMetadata: mongoose.Schema.Types.Mixed,
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'users' },
+    permissions: mongoose.Schema.Types.Mixed,
   },
   { emitIndexErrors: true }
 );
