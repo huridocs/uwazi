@@ -4,7 +4,7 @@ import redis from 'redis';
 import redisAdapter from 'socket.io-redis';
 import cookie from 'cookie';
 import { Server } from 'http';
-import socketIo, { Server as SocketIoServer, Socket } from 'socket.io';
+import socketIo, { Server as SocketIoServer } from 'socket.io';
 import { Application, Request, Response, NextFunction } from 'express';
 import { config } from 'api/config';
 import { tenants } from 'api/tenants/tenantContext';
@@ -12,7 +12,7 @@ import { tenants } from 'api/tenants/tenantContext';
 declare global {
   namespace Express {
     export interface Request {
-      getCurrentSessionSockets: Function;
+      emitToSessionSocket: Function;
       io: SocketIoServer;
     }
   }
@@ -28,6 +28,10 @@ const setupSockets = (server: Server, app: Application) => {
 
   io.on('connection', socket => {
     socket.join(socket.request.headers.tenant || config.defaultTenant.name);
+    const socketCookie = cookie.parse(socket.request.headers.cookie || '');
+    if (socketCookie) {
+      socket.join(socketCookie['connect.sid']);
+    }
   });
 
   io.emitToCurrentTenant = (event, ...args) => {
@@ -52,45 +56,10 @@ const setupSockets = (server: Server, app: Application) => {
     next();
   });
 
-  type sessionSockets = {
-    sockets: Socket[];
-    emit: Function;
-  };
-
   app.use((req: Request, _res: Response, next: NextFunction) => {
-    req.getCurrentSessionSockets = () => {
-      const sessionSockets: sessionSockets = {
-        sockets: [],
-        emit(event: string, ...args: any[]) {
-          this.sockets.forEach(socket => {
-            socket.emit(event, ...args);
-          });
-        },
-      };
-
-      Object.keys(req.io.sockets.connected).reduce((sockets, socketId) => {
-        const socket = req.io.sockets.connected[socketId];
-
-        if (typeof socket.request.headers.cookie !== 'string') {
-          return sockets;
-        }
-
-        const socketCookie = cookie.parse(socket.request.headers.cookie);
-        let sessionId;
-
-        if (socketCookie['connect.sid']) {
-          [, sessionId] = socketCookie['connect.sid'].split('.')[0].split(':');
-        }
-
-        //@ts-ignore
-        if (sessionId === req.session.id) {
-          sockets.sockets.push(socket);
-        }
-
-        return sockets;
-      }, sessionSockets);
-
-      return sessionSockets;
+    req.emitToSessionSocket = (event: string, ...args: any[]) => {
+      const cookies = cookie.parse(req.get('cookie') || '');
+      io.to(cookies['connect.sid']).emit(event, ...args);
     };
 
     next();

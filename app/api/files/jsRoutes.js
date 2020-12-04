@@ -26,8 +26,6 @@ const storeFile = (pathFunction, file) =>
   });
 
 const routes = app => {
-  const socket = req => req.getCurrentSessionSockets();
-
   const corsOptions = {
     origin: true,
     methods: 'POST',
@@ -98,7 +96,7 @@ const routes = app => {
           storeFile(uploadsPath, file).then(async _file => {
             await processDocument(newEntity.sharedId, _file);
             await search.indexEntities({ sharedId: newEntity.sharedId }, '+fullText');
-            socket(req).emit('documentProcessed', newEntity.sharedId);
+            req.emitToSessionSocket('documentProcessed', newEntity.sharedId);
           });
         }
 

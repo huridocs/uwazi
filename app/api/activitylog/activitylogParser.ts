@@ -141,26 +141,6 @@ const entryValues: { [key: string]: EntryValue } = {
     nameField: 'username',
     extra: data => `with ${data.role} role`,
   },
-  'POST/api/semantic-search': {
-    desc: 'Started semantic search',
-    method: Methods.Create,
-    nameField: 'searchTerm',
-  },
-  'POST/api/semantic-search/stop': {
-    desc: 'Stopped semantic search',
-    nameFunc: helpers.searchName,
-    related: helpers.loadSearch,
-  },
-  'POST/api/semantic-search/resume': {
-    desc: 'Resumed semantic search',
-    nameFunc: helpers.searchName,
-    related: helpers.loadSearch,
-  },
-  'DELETE/api/semantic-search': {
-    desc: 'Deleted semantic search',
-    method: Methods.Delete,
-    nameField: 'searchId',
-  },
   'POST/api/files/upload/document': {
     desc: 'Uploaded file',
     method: Methods.Create,

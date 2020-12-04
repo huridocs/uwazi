@@ -14,7 +14,7 @@ const setUpApp = (
   const app: Application = express();
   app.use(bodyParser.json());
   app.use((req: Request, _res: Response, next: NextFunction) => {
-    req.getCurrentSessionSockets = () => ({ sockets: [iosocket], emit: iosocket.emit });
+    req.emitToSessionSocket = (event: string, ...args: any[]) => iosocket.emit(event, ...args);
     next();
   });
 
