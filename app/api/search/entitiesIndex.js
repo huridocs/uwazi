@@ -7,6 +7,7 @@ import PromisePool from '@supercharge/promise-pool';
 import { createError } from 'api/utils';
 import elastic from './elastic';
 import elasticMapFactory from '../../../database/elastic_mapping/elasticMapFactory';
+import elasticMapping from '../../../database/elastic_mapping/elastic_mapping';
 
 export class IndexError extends Error {}
 
@@ -155,8 +156,8 @@ const indexEntities = async ({
   });
 };
 
-const updateMapping = async (templates, elasticIndex) => {
-  const mapping = elasticMapFactory.mapping(templates);
+const updateMapping = async (tmpls, elasticIndex) => {
+  const mapping = elasticMapFactory.mapping(tmpls);
   try {
     await elastic.indices.putMapping({ body: mapping, index: elasticIndex });
   } catch (e) {
@@ -164,4 +165,45 @@ const updateMapping = async (templates, elasticIndex) => {
   }
 };
 
-export { bulkIndex, indexEntities, updateMapping };
+const reindexAll = async (tmpls, searchInstance, elasticIndex) => {
+  try {
+    await elastic.indices.delete({ index: elasticIndex });
+    await elastic.indices.create({ index: elasticIndex, body: elasticMapping });
+    await updateMapping(tmpls, elasticIndex);
+
+    return indexEntities({ query: {}, elasticIndex, searchInstance });
+  } catch (e) {
+    throw createError(e, 400);
+  }
+};
+
+const equalPropMapping = (mapA, mapB) => {
+  if (!mapA || !mapB) {
+    return true;
+  }
+
+  const sameAmountOfProps =
+    Object.keys(mapA.properties).length === Object.keys(mapB.properties).length;
+  const sameProps = Object.keys(mapA.properties).reduce(
+    (result, propKey) => result && mapA.properties[propKey].type === mapB.properties[propKey].type,
+    true
+  );
+  return sameAmountOfProps && sameProps;
+};
+
+const checkMapping = async (template, elasticIndex) => {
+  const errors = [];
+  const mapping = elasticMapFactory.mapping([template]);
+  const currentMapping = await elastic.indices.getMapping({ index: elasticIndex });
+  const mappedProps = currentMapping.body[elasticIndex].mappings.properties.metadata.properties;
+  const newMappedProps = mapping.properties.metadata.properties;
+  Object.keys(newMappedProps).forEach(key => {
+    if (!equalPropMapping(mappedProps[key], newMappedProps[key])) {
+      errors.push({ name: template.properties.find(p => p.name === key).label });
+    }
+  });
+
+  return { errors, valid: !errors.length };
+};
+
+export { bulkIndex, indexEntities, updateMapping, checkMapping, reindexAll };

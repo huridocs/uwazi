@@ -18,7 +18,6 @@ import { config } from './api/config';
 import vaultSync from './api/evidences_vault';
 
 import { migrator } from './api/migrations/migrator';
-import { workerManager as semanticSearchManager } from './api/semanticsearch';
 import settings from './api/settings';
 import syncWorker from './api/sync/syncWorker';
 import errorHandlingMiddleware from './api/utils/error_handling_middleware';
@@ -103,8 +102,6 @@ DB.connect(config.DBHOST, dbAuth).then(async () => {
         );
         process.exit();
       }
-
-      semanticSearchManager.start();
     });
   }
 
