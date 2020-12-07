@@ -185,16 +185,17 @@ export function addToToc(textSelectedObject, currentToc) {
       toc = currentToc;
     }
     const tocElement = {
-      range: {
-        start: textSelectedObject.sourceRange.start,
-        end: textSelectedObject.sourceRange.end,
-      },
+      selectionRectangles: textSelectedObject.sourceRange.selectionRectangles,
       label: textSelectedObject.sourceRange.text,
       indentation: 0,
     };
 
     toc.push(tocElement);
-    // toc = toc.sort((a, b) => a.range.start - b.range.start);
+    toc = toc.sort((a, b) =>
+      a.selectionRectangles[0].regionId === b.selectionRectangles[0].regionId
+        ? a.selectionRectangles[0].top - b.selectionRectangles[0].top
+        : a.selectionRectangles[0].regionId - b.selectionRectangles[0].regionId
+    );
     dispatch(editToc(toc));
   };
 }

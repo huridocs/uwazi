@@ -6,7 +6,6 @@ import React, { Component } from 'react';
 
 import Loader from 'app/components/Elements/Loader';
 import PDF from 'app/PDF';
-import Text from 'app/Viewer/utils/Text';
 import Immutable from 'immutable';
 import { highlightSnippet } from 'app/Viewer/actions/uiActions';
 
@@ -26,7 +25,6 @@ export class Document extends Component {
   }
 
   componentDidMount() {
-    this.text = Text(this.pagesContainer);
     this.props.unsetSelection();
   }
 
@@ -37,10 +35,6 @@ export class Document extends Component {
   }
 
   componentDidUpdate() {
-    this.text.renderReferences(this.props.references.toJS());
-    this.text.renderReferences(this.props.doc.toJS().toc || [], 'toc-ref', 'span');
-    this.text.simulateSelection(this.props.selection, this.props.forceSimulateSelection);
-    this.text.activate(this.props.activeReference);
     highlightSnippet(this.props.selectedSnippet, this.props.searchTerm);
   }
 
@@ -56,14 +50,8 @@ export class Document extends Component {
     this.props.onDocumentReady(this.props.doc);
   }
 
-  handleOver() {}
-
   handleClick(e) {
-    if (
-      e.target.className &&
-      e.target.className.indexOf('reference') !== -1 &&
-      !this.text.selected()
-    ) {
+    if (e.target.className && e.target.className.indexOf('reference') !== -1) {
       const references = this.props.references.toJS();
       return this.props.activateReference(
         references.find(r => r._id === e.target.getAttribute('data-id')),
@@ -76,19 +64,7 @@ export class Document extends Component {
     }
   }
 
-  handleMouseUp() {
-    if (this.props.disableTextSelection) {
-      return;
-    }
-
-    if (!this.text.selected()) {
-      this.props.unsetSelection();
-      return;
-    }
-    this.onTextSelected();
-  }
-
-  pdfLoaded(range) {
+  pdfLoaded() {
     if (this.props.doScrollToActive) {
       const references = this.props.references.toJS();
       this.props.scrollToActive(
@@ -99,11 +75,10 @@ export class Document extends Component {
       );
     }
 
-    this.text.reset();
-    this.text.reset('toc-ref');
-    this.text.range(range);
     this.componentDidUpdate();
   }
+
+  handleOver() {}
 
   renderPDF(file, references) {
     if (!(file._id && file.pdfInfo)) {
@@ -137,8 +112,6 @@ export class Document extends Component {
           <div
             className="pages"
             ref={ref => (this.pagesContainer = ref)}
-            // onMouseUp={this.handleMouseUp.bind(this)}
-            // onTouchEnd={this.handleMouseUp.bind(this)}
             onClick={this.handleClick.bind(this)}
             onMouseOver={this.handleOver.bind(this)}
           >

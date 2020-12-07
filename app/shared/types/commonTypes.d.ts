@@ -68,11 +68,14 @@ export interface MetadataSchema {
 }
 
 export interface TocSchema {
-  range?: {
-    start?: number;
-    end?: number;
+  selectionRectangles?: {
+    top?: number;
+    left?: number;
+    width?: number;
+    height?: number;
+    regionId?: string;
     [k: string]: unknown | undefined;
-  };
+  }[];
   label?: string;
   indentation?: number;
 }

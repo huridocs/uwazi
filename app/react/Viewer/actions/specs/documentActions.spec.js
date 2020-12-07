@@ -53,10 +53,21 @@ describe('documentActions', () => {
       spyOn(formActions, 'load').and.returnValue({ type: 'loadAction' });
       const reference = {
         sourceDocument: '123',
-        sourceRange: { start: 12, end: 23, text: 'Chapter 1' },
+        sourceRange: {
+          selectionRectangles: [{ top: 12, left: 23, hight: 42, width: 21, regionId: '1' }],
+          text: 'Chapter 1',
+        },
       };
-      const chapter1 = { range: { start: 12, end: 23 }, label: 'Chapter 1', indentation: 0 };
-      const chapter2 = { range: { start: 22, end: 43 }, label: 'Chapter 2', indentation: 0 };
+      const chapter1 = {
+        selectionRectangles: [{ top: 12, left: 23, hight: 42, width: 21, regionId: '1' }],
+        label: 'Chapter 1',
+        indentation: 0,
+      };
+      const chapter2 = {
+        selectionRectangles: [{ top: 22, left: 23, hight: 42, width: 21, regionId: '1' }],
+        label: 'Chapter 2',
+        indentation: 0,
+      };
 
       const expectedActions = [
         { type: 'documentViewer/tocBeingEdited/SET', value: true },
@@ -83,10 +94,22 @@ describe('documentActions', () => {
         spyOn(formActions, 'load').and.returnValue({ type: 'loadAction' });
         const reference = {
           sourceDocument: '123',
-          sourceRange: { start: 12, end: 23, text: 'Chapter 1' },
+          sourceRange: {
+            selectionRectangles: [{ top: 12, left: 23, hight: 42, width: 21, regionId: '1' }],
+            text: 'Chapter 1',
+          },
         };
-        const chapter1 = { range: { start: 12, end: 23 }, label: 'Chapter 1', indentation: 0 };
-        const chapter2 = { range: { start: 22, end: 43 }, label: 'Chapter 2', indentation: 0 };
+        const chapter1 = {
+          selectionRectangles: [{ top: 12, left: 23, hight: 42, width: 21, regionId: '1' }],
+          label: 'Chapter 1',
+          indentation: 0,
+        };
+        const chapter2 = {
+          selectionRectangles: [{ top: 22, left: 23, hight: 42, width: 21, regionId: '1' }],
+          label: 'Chapter 2',
+          indentation: 0,
+        };
+
         const expectedActions = [
           { type: 'documentViewer/tocBeingEdited/SET', value: true },
           { type: 'loadAction' },

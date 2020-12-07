@@ -232,7 +232,7 @@ describe('relationships', () => {
             entity: 'entity3',
             hub: hub2,
             template: relation2,
-            range: { text: 'changed text' },
+            reference: { text: 'changed text' },
           },
         ],
         delete: [{ _id: connectionID2 }, { _id: connectionID3 }],
@@ -242,7 +242,7 @@ describe('relationships', () => {
       expect(cleanSnapshot(response)).toMatchSnapshot();
 
       const savedReference = await relationships.getById(connectionID5);
-      expect(savedReference.range.text).toBe('changed text');
+      expect(savedReference.reference.text).toBe('changed text');
 
       const deletedReference2 = await relationships.getById(connectionID2);
       expect(deletedReference2).toBe(null);
