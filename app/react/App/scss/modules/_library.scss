@@ -147,26 +147,45 @@
     }
   }
 
+  @mixin mobileFilterBtn() {
+    .btn {
+      width: 40px;
+      .filters-label {
+        display: none;
+      }
+      &:hover .tab-link-tooltip {
+        display: block;
+      }
+    }
+  }
+
   .toggle-button {
-    padding: 8px;
-    left: 176.01px;
-    top: 0px;
-    height: 37px;
-
-    margin: 4px;
-    margin-left: 8px;
-
-    svg {
-      margin-right: 4px;
+    display: inline-block;
+    .btn {
+      border-radius: 4px;
+      height: 37px;
+      margin: 4px;
+      line-height: 1.75em;
     }
-
-    span {
-      display: none;
+    &.only-mobile {
+      @include mobileFilterBtn;
+      @media(min-width: 1023px) {
+        display: none;
+      }
     }
-
-    @media (min-width: 600px) {
-      span {
-        display: inline;
+    &.unpinned {
+      .btn {
+        width: 105px;
+        .filters-label {
+          display: inline-block;
+          margin-left: 4px;
+        }
+        .tab-link-tooltip {
+          display: none;
+        }
+      }
+      @media (max-width: 600px) {
+        @include mobileFilterBtn;
       }
     }
   }

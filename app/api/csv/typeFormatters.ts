@@ -48,7 +48,8 @@ export const formatters: {
   multidate: (field, options) => field.map(item => formatters.date([item], options)).join('|'),
   multidaterange: (field, options) =>
     field.map(item => formatters.daterange([item], options)).join('|'),
-  numeric: field => (field[0] && field[0].value ? <string>field[0].value : ''),
+  numeric: field =>
+    field[0] && (field[0].value || field[0].value === 0) ? <string>field[0].value : '',
   relationship: field => field.map(relationship => relationship.label).join('|'),
   text: field => (field[0] && field[0].value ? <string>field[0].value : ''),
   markdown: field => (field[0] && field[0].value ? <string>field[0].value : ''),

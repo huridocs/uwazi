@@ -19,6 +19,9 @@ describe('templates routes', () => {
       templates: [{ name: 'testing template', properties: [{ name: 'name', type: 'text' }] }],
     });
     spyOn(entitiesIndex, 'updateMapping').and.returnValue(Promise.resolve());
+    spyOn(entitiesIndex, 'checkMapping').and.returnValue(
+      Promise.resolve({ errors: [], valid: true })
+    );
   });
 
   afterAll(async () => {
@@ -123,8 +126,9 @@ describe('templates routes', () => {
     });
 
     it('should update the templates mapping', async () => {
+      const template = { name: 'created_template', properties: [{ label: 'fieldLabel' }] };
       const req = {
-        body: { name: 'created_template', properties: [{ label: 'fieldLabel' }] },
+        body: template,
         language: 'en',
         io: mocketSocketIo(),
       };
@@ -136,7 +140,7 @@ describe('templates routes', () => {
       );
 
       await routes.post('/api/templates', req);
-      expect(entitiesIndex.updateMapping).toHaveBeenCalledWith(aTemplate, 'index');
+      expect(entitiesIndex.updateMapping).toHaveBeenCalledWith([template], 'index');
     });
 
     describe('when there is an error', () => {
@@ -144,7 +148,7 @@ describe('templates routes', () => {
         spyOn(templates, 'save').and.returnValue(Promise.reject(new Error('error')));
 
         try {
-          await routes.post('/api/templates');
+          await routes.post('/api/templates', { body: {} });
         } catch (error) {
           expect(error).toEqual(new Error('error'));
         }
@@ -194,6 +198,14 @@ describe('templates routes', () => {
           done();
         })
         .catch(catchErrors(done));
+    });
+  });
+
+  describe('/api/templates/check_mapping', () => {
+    it('should check if a template is valid vs the current elasticsearch mapping', async () => {
+      const req = { body: { _id: 'abc1', properties: [] }, io: mocketSocketIo() };
+      const result = await routes.post('/api/templates/check_mapping', req);
+      expect(result).toEqual({ errors: [], valid: true });
     });
   });
 });
