@@ -4,7 +4,7 @@
 export type ObjectIdSchema =
   | string
   | {
-      [k: string]: any | undefined;
+      [k: string]: unknown | undefined;
     };
 
 export interface AttachmentSchema {
@@ -13,7 +13,7 @@ export interface AttachmentSchema {
   mimetype?: string;
   timestamp?: number;
   size?: number;
-  [k: string]: any | undefined;
+  [k: string]: unknown | undefined;
 }
 
 export interface LinkSchema {
@@ -27,6 +27,11 @@ export interface DateRangeSchema {
 }
 
 export interface LanguageSchema {
+  _id?:
+    | string
+    | {
+        [k: string]: unknown | undefined;
+      };
   label: string;
   key: string;
   rtl?: boolean;
@@ -34,6 +39,11 @@ export interface LanguageSchema {
 }
 
 export type LanguagesListSchema = {
+  _id?:
+    | string
+    | {
+        [k: string]: unknown | undefined;
+      };
   label: string;
   key: string;
   rtl?: boolean;
@@ -60,7 +70,7 @@ export interface MetadataObjectSchema {
   suggestion_confidence?: number;
   suggestion_model?: string;
   provenance?: '' | 'BULK_ACCEPT';
-  [k: string]: any | undefined;
+  [k: string]: unknown | undefined;
 }
 
 export interface MetadataSchema {
@@ -68,11 +78,14 @@ export interface MetadataSchema {
 }
 
 export interface TocSchema {
-  range?: {
-    start?: number;
-    end?: number;
-    [k: string]: any | undefined;
-  };
+  selectionRectangles?: {
+    top?: number;
+    left?: number;
+    width?: number;
+    height?: number;
+    regionId?: string;
+    [k: string]: unknown | undefined;
+  }[];
   label?: string;
   indentation?: number;
 }
@@ -80,7 +93,7 @@ export interface TocSchema {
 export interface PropertySchema {
   id?: string;
   label: string;
-  name?: string;
+  name: string;
   isCommonProperty?: boolean;
   type:
     | 'date'
@@ -112,5 +125,5 @@ export interface PropertySchema {
   showInCard?: boolean;
   style?: string;
   nestedProperties?: string[];
-  [k: string]: any | undefined;
+  [k: string]: unknown | undefined;
 }

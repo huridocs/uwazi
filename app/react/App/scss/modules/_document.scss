@@ -64,6 +64,10 @@
 }
 
 .document-viewer {
+  .highlight-rectangle {
+    cursor: pointer;
+  }
+
   a.reference {
     text-decoration: none !important;
     color: inherit;

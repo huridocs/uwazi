@@ -157,8 +157,11 @@ class PDF extends Component {
 
   renderReferences(page) {
     const references = this.props.references.toJS();
-    console.log(references);
-    return references.map((r, i) => <Highlight key={i} regionId={page} highlight={r.reference} />);
+    return references.map(r => (
+      <div data-id={r._id} key={r._id}>
+        <Highlight regionId={page} highlight={r.reference} />
+      </div>
+    ));
   }
 
   render() {

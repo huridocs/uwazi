@@ -21,12 +21,11 @@ export default {
 
   to(selector, parentSelector, opt = {}) {
     const options = this.getOptions(opt);
-    if (this.isVisible(selector, parentSelector)) {
-      return;
-    }
     const element = this.getElement(selector);
     const parent = this.getElement(parentSelector);
+
     if (!parent || !element) {
+      console.log('here');
       return;
     }
 
@@ -52,6 +51,12 @@ export default {
   animateScroll(_parent, scrollTop, options) {
     const parent = _parent;
     const start = Date.now();
+
+    if (options.duration < 2) {
+      parent.scrollTop = scrollTop;
+      return;
+    }
+
     const timeout = window.setInterval(() => {
       const t = (Date.now() - start) / options.duration;
       const multiplier = this[options.animation](t);
@@ -61,6 +66,7 @@ export default {
         window.clearInterval(timeout);
       }
     }, 25);
+
     return timeout;
   },
 

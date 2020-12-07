@@ -9,6 +9,6 @@ export interface LabelCountSchema {
     totalValues: {
       [k: string]: number | undefined;
     };
-    [k: string]: any | undefined;
+    [k: string]: unknown | undefined;
   };
 }

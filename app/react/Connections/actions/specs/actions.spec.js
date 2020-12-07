@@ -137,7 +137,10 @@ describe('Connections actions', () => {
       connection = {
         sourceDocument: 'sourceId',
         type: 'basic',
-        sourceRange: { start: 397, end: 422, text: 'source text' },
+        sourceRange: {
+          selectionRectangles: [{ top: 20, left: 42, height: 13, width: 84 }],
+          text: 'source text',
+        },
         targetDocument: 'targetId',
         template: 'relationTypeId',
       };
@@ -151,7 +154,10 @@ describe('Connections actions', () => {
             {
               entity: 'sourceId',
               template: null,
-              range: { start: 397, end: 422, text: 'source text' },
+              reference: {
+                selectionRectangles: [{ top: 20, left: 42, height: 13, width: 84 }],
+                text: 'source text',
+              },
             },
             { entity: 'targetId', template: 'relationTypeId' },
           ],
@@ -164,7 +170,10 @@ describe('Connections actions', () => {
     });
 
     it('should allow for targetted range connections (using the new hub format)', () => {
-      connection.targetRange = { start: 79, end: 125, text: 'target text' };
+      connection.targetRange = {
+        selectionRectangles: [{ top: 28, left: 12, height: 13, width: 84 }],
+        text: 'target text',
+      };
 
       const expectedParams = new RequestParams({
         delete: [],
@@ -173,12 +182,18 @@ describe('Connections actions', () => {
             {
               entity: 'sourceId',
               template: null,
-              range: { start: 397, end: 422, text: 'source text' },
+              reference: {
+                selectionRectangles: [{ top: 20, left: 42, height: 13, width: 84 }],
+                text: 'source text',
+              },
             },
             {
               entity: 'targetId',
               template: 'relationTypeId',
-              range: { start: 79, end: 125, text: 'target text' },
+              reference: {
+                selectionRectangles: [{ top: 28, left: 12, height: 13, width: 84 }],
+                text: 'target text',
+              },
             },
           ],
         ],

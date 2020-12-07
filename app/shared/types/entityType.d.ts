@@ -1,7 +1,7 @@
 /* eslint-disable */
 /**AUTO-GENERATED. RUN yarn emit-types to update.*/
 
-import { ObjectIdSchema, MetadataSchema, AttachmentSchema } from 'shared/types/commonTypes';
+import { ObjectIdSchema, MetadataSchema } from 'shared/types/commonTypes';
 
 export interface EntitySchema {
   _id?: ObjectIdSchema;
@@ -16,10 +16,17 @@ export interface EntitySchema {
     label?: string;
     type?: string;
   };
-  attachments?: AttachmentSchema[];
+  attachments?: {
+    originalname?: string;
+    filename?: string;
+    mimetype?: string;
+    timestamp?: number;
+    size?: number;
+    [k: string]: unknown | undefined;
+  }[];
   creationDate?: number;
   user?: ObjectIdSchema;
   metadata?: MetadataSchema;
   suggestedMetadata?: MetadataSchema;
-  [k: string]: any | undefined;
+  [k: string]: unknown | undefined;
 }

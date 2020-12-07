@@ -7,7 +7,7 @@ export interface FileType {
   _id?:
     | string
     | {
-        [k: string]: any | undefined;
+        [k: string]: unknown | undefined;
       };
   entity?: string;
   originalname?: string;
@@ -27,11 +27,14 @@ export interface FileType {
     [k: string]: string;
   };
   toc?: {
-    range?: {
-      start?: number;
-      end?: number;
-      [k: string]: any | undefined;
-    };
+    selectionRectangles?: {
+      top?: number;
+      left?: number;
+      width?: number;
+      height?: number;
+      regionId?: string;
+      [k: string]: unknown | undefined;
+    }[];
     label?: string;
     indentation?: number;
   }[];
