@@ -56,7 +56,15 @@ describe('Viewer uiActions', () => {
     });
 
     it('should scroll to active if goToActive is true', () => {
-      actions.scrollToActive({ _id: 'id' }, {}, '', true)(dispatch);
+      actions.scrollToActive(
+        {
+          _id: 'id',
+          reference: { selectionRectangles: [{ top: 40, regionId: '1' }], text: 'something' },
+        },
+        {},
+        '',
+        true
+      )(dispatch);
       expect(dispatch).toHaveBeenCalledWith({ type: types.GO_TO_ACTIVE, value: false });
     });
   });
@@ -70,7 +78,13 @@ describe('Viewer uiActions', () => {
     });
 
     it('should dispatch a ACTIVATE_REFERENCE with id', () => {
-      actions.activateReference({ _id: 'id' }, {})(dispatch);
+      actions.activateReference(
+        {
+          _id: 'id',
+          reference: { selectionRectangles: [{ top: 40, regionId: '1' }], text: 'something' },
+        },
+        {}
+      )(dispatch);
       expect(dispatch).toHaveBeenCalledWith({ type: types.ACTIVE_REFERENCE, reference: 'id' });
       expect(dispatch).toHaveBeenCalledWith({ type: types.OPEN_PANEL, panel: 'viewMetadataPanel' });
       expect(dispatch).toHaveBeenCalledWith({
@@ -80,7 +94,13 @@ describe('Viewer uiActions', () => {
     });
 
     it('should dispatch a SHOW_TAB references by default', () => {
-      actions.activateReference({ _id: 'id' }, {})(dispatch);
+      actions.activateReference(
+        {
+          _id: 'id',
+          reference: { selectionRectangles: [{ top: 40, regionId: '1' }], text: 'something' },
+        },
+        {}
+      )(dispatch);
       expect(dispatch).toHaveBeenCalledWith({
         type: 'viewer.sidepanel.tab/SET',
         value: 'references',
@@ -88,7 +108,14 @@ describe('Viewer uiActions', () => {
     });
 
     it('should dispatch a SHOW_TAB to a diferent tab if passed', () => {
-      actions.activateReference({ _id: 'id' }, {}, 'another tab')(dispatch);
+      actions.activateReference(
+        {
+          _id: 'id',
+          reference: { selectionRectangles: [{ top: 40, regionId: '1' }], text: 'something' },
+        },
+        {},
+        'another tab'
+      )(dispatch);
       expect(dispatch).toHaveBeenCalledWith({
         type: 'viewer.sidepanel.tab/SET',
         value: 'another tab',
@@ -96,7 +123,14 @@ describe('Viewer uiActions', () => {
     });
 
     it('should dispatch a SHOW_TAB references if Array is passed (when selecting a doc reference)', () => {
-      actions.activateReference({ _id: 'id' }, {}, [])(dispatch);
+      actions.activateReference(
+        {
+          _id: 'id',
+          reference: { selectionRectangles: [{ top: 40, regionId: '1' }], text: 'something' },
+        },
+        {},
+        []
+      )(dispatch);
       expect(dispatch).toHaveBeenCalledWith({
         type: 'viewer.sidepanel.tab/SET',
         value: 'references',
@@ -104,22 +138,36 @@ describe('Viewer uiActions', () => {
     });
 
     it('should goToActive on delayActivation', () => {
-      actions.activateReference({ _id: 'id' }, {}, [], true)(dispatch);
+      actions.activateReference(
+        {
+          _id: 'id',
+          reference: { selectionRectangles: [{ top: 40, regionId: '1' }], text: 'something' },
+        },
+        {},
+        [],
+        true
+      )(dispatch);
       expect(dispatch).toHaveBeenCalledWith(actions.goToActive());
     });
 
     it('should scroll to the elements', done => {
-      actions.activateReference({ _id: 'id' }, {})(dispatch);
+      actions.activateReference(
+        {
+          _id: 'id',
+          reference: { selectionRectangles: [{ top: 40, regionId: '1' }], text: 'something' },
+        },
+        {}
+      )(dispatch);
       setTimeout(() => {
         expect(scroller.to).toHaveBeenCalledWith(
-          '.document-viewer a[data-id="id"]',
+          '.document-viewer div#page-1',
           '.document-viewer',
-          { duration: 50 }
+          { duration: 1, dividerOffset: 1 }
         );
         expect(scroller.to).toHaveBeenCalledWith(
-          '.metadata-sidepanel .item-id',
-          '.metadata-sidepanel .sidepanel-body',
-          { duration: 50 }
+          '.document-viewer div#page-1',
+          '.document-viewer',
+          { duration: 100, offset: 30, dividerOffset: 1 }
         );
         done();
       });

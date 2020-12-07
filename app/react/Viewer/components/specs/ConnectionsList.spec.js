@@ -15,25 +15,37 @@ describe('ConnectionsList', () => {
           _id: 'ref1',
           relationType: 'rel1',
           associatedRelationship: { entityData: { _id: '1' } },
-          range: { start: 10, end: 20 },
+          reference: {
+            selectionRectangles: [{ top: 30, left: 20, height: 20, width: 42, regionId: '2' }],
+            text: '',
+          },
         },
         {
           _id: 'ref2',
           relationType: 'rel1',
           associatedRelationship: { entityData: { _id: '1' } },
-          range: { start: 0, end: 8 },
+          reference: {
+            selectionRectangles: [{ top: 5, left: 20, height: 20, width: 42, regionId: '1' }],
+            text: '',
+          },
         },
         {
           _id: 'ref3',
           relationType: 'rel1',
           associatedRelationship: { entityData: { _id: '1' } },
-          range: { start: 5, end: 8 },
+          reference: {
+            selectionRectangles: [{ top: 23, left: 20, height: 20, width: 42, regionId: '2' }],
+            text: '',
+          },
         },
         {
           _id: 'ref4',
           relationType: 'rel1',
           associatedRelationship: { entityData: { _id: '1' } },
-          range: { text: '' },
+          reference: {
+            selectionRectangles: [{ top: 0, left: 20, height: 20, width: 42, regionId: '1' }],
+            text: '',
+          },
         },
       ]),
       referencedDocuments: Immutable.fromJS([
