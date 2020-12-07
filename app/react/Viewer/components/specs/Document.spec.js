@@ -89,29 +89,28 @@ describe('Document', () => {
         expect(props.onClick).not.toHaveBeenCalled();
       });
     });
-  });
 
-  describe('highlightReference', () => {
-    beforeEach(() => {
-      props.references = Immutable.fromJS([{ reference: 'reference' }]);
-    });
+    describe('when the target is a reference', () => {
+      beforeEach(() => {
+        props.references = Immutable.fromJS([{ reference: 'reference' }]);
+      });
 
-    it('should activate the reference', () => {
-      const reference = { _id: 'referenceId', test: 'test' };
-      props.executeOnClickHandler = true;
-      props.references = Immutable.fromJS([reference]);
-      props.activateReference = jasmine.createSpy('activateReference');
-      render();
-      instance.text = { selected: jasmine.createSpy('selected').and.returnValue(false) };
-
-      component.instance().highlightReference(reference);
-
-      expect(props.activateReference).toHaveBeenCalledWith(
-        reference,
-        props.file.pdfInfo,
-        props.references.toJS()
-      );
-      expect(props.onClick).not.toHaveBeenCalled();
+      it('should activate the reference', () => {
+        props.executeOnClickHandler = true;
+        props.references = Immutable.fromJS([{ _id: 'referenceId', test: 'test' }]);
+        props.activateReference = jasmine.createSpy('activateReference');
+        render();
+        instance.text = { selected: jasmine.createSpy('selected').and.returnValue(false) };
+        component.find('.pages').simulate('click', {
+          target: { className: 'reference', getAttribute: () => 'referenceId' },
+        });
+        expect(props.activateReference).toHaveBeenCalledWith(
+          props.references.get(0).toJS(),
+          props.file.pdfInfo,
+          props.references.toJS()
+        );
+        expect(props.onClick).not.toHaveBeenCalled();
+      });
     });
   });
 

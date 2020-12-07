@@ -3,19 +3,11 @@
 
 import { ObjectIdSchema, LanguagesListSchema, GeolocationSchema } from 'shared/types/commonTypes';
 
-export interface ItemSchema {
-  id?: string;
-  name?: string;
-}
-
 export interface SettingsFilterSchema {
   _id?: ObjectIdSchema;
   id?: string;
   name?: string;
-  items?: {
-    id?: string;
-    name?: string;
-  }[];
+  items?: unknown;
 }
 
 export interface SettingsSyncSchema {
@@ -50,11 +42,7 @@ export interface Settings {
   analyticsTrackingId?: string;
   matomoConfig?: string;
   dateFormat?: string;
-  custom?:
-    | string
-    | {
-        [k: string]: unknown | undefined;
-      };
+  custom?: unknown;
   customCSS?: string;
   mapTilerKey?: string;
   newNameGeneration?: true;

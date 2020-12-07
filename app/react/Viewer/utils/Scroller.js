@@ -25,6 +25,7 @@ export default {
     const parent = this.getElement(parentSelector);
 
     if (!parent || !element) {
+      console.log('here');
       return;
     }
 
