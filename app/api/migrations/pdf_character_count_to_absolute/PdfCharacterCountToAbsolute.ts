@@ -10,7 +10,7 @@ import { AbsolutePositionLettersList, AbsolutePositionTag } from './AbsolutePosi
 
 export interface AbsolutePositionReference {
   text: string;
-  tags: AbsolutePositionTag[];
+  selectionRectangles: AbsolutePositionTag[];
 }
 
 export class PdfCharacterCountToAbsolute {
@@ -64,11 +64,11 @@ export class PdfCharacterCountToAbsolute {
     const existMatchByString = absolutePositionByStringMatch.length > 0;
 
     if (!existMatchByCharacterCount && !existMatchByString) {
-      return { text: label, tags: [] };
+      return { text: label, selectionRectangles: [] };
     }
 
     if (!existMatchByCharacterCount) {
-      return { text: label, tags: absolutePositionByStringMatch[0] };
+      return { text: label, selectionRectangles: absolutePositionByStringMatch[0] };
     }
 
     const closerAbsolutePositionStringMatch = PdfCharacterCountToAbsolute.getCloserStringMatchToTag(
@@ -77,7 +77,7 @@ export class PdfCharacterCountToAbsolute {
     );
 
     return {
-      tags:
+      selectionRectangles:
         closerAbsolutePositionStringMatch ||
         absolutePositionByCharacterCount ||
         absolutePositionByStringMatch[0],

@@ -51,8 +51,8 @@ describe('PdfCharacterCountToAbsolute', () => {
     const absolutePosition = characterCountToAbsoluteConversion.convert(shortLabel, 32347, 32352);
 
     expect(absolutePosition.text).toBe(shortLabel);
-    expect(absolutePosition.tags.length).toBe(1);
-    checkAbsoluteTag(absolutePosition.tags[0], {
+    expect(absolutePosition.selectionRectangles.length).toBe(1);
+    checkAbsoluteTag(absolutePosition.selectionRectangles[0], {
       pageNumber: 10,
       top: 506,
       left: 213,
@@ -76,8 +76,8 @@ describe('PdfCharacterCountToAbsolute', () => {
     );
 
     expect(absolutePosition.text).toBe(lastLabel);
-    expect(absolutePosition.tags.length).toBe(1);
-    checkAbsoluteTag(absolutePosition.tags[0], {
+    expect(absolutePosition.selectionRectangles.length).toBe(1);
+    checkAbsoluteTag(absolutePosition.selectionRectangles[0], {
       pageNumber: 24,
       top: 953,
       left: 200,
@@ -101,8 +101,8 @@ describe('PdfCharacterCountToAbsolute', () => {
     );
 
     expect(absolutePosition.text).toBe(specialCharactersString);
-    expect(absolutePosition.tags.length).toBe(1);
-    checkAbsoluteTag(absolutePosition.tags[0], {
+    expect(absolutePosition.selectionRectangles.length).toBe(1);
+    checkAbsoluteTag(absolutePosition.selectionRectangles[0], {
       pageNumber: 1,
       top: 1185,
       left: 85,
@@ -127,8 +127,8 @@ describe('PdfCharacterCountToAbsolute', () => {
     );
 
     expect(absolutePosition.text).toBe(longLabel);
-    expect(absolutePosition.tags.length).toBe(11);
-    checkAbsoluteTag(absolutePosition.tags[0], {
+    expect(absolutePosition.selectionRectangles.length).toBe(11);
+    checkAbsoluteTag(absolutePosition.selectionRectangles[0], {
       pageNumber: 3,
       top: 668,
       left: 132,
@@ -136,7 +136,7 @@ describe('PdfCharacterCountToAbsolute', () => {
       width: 20,
       text: '',
     });
-    checkAbsoluteTag(absolutePosition.tags[10], {
+    checkAbsoluteTag(absolutePosition.selectionRectangles[10], {
       pageNumber: 3,
       top: 707,
       left: 655,
@@ -160,9 +160,9 @@ describe('PdfCharacterCountToAbsolute', () => {
     );
 
     expect(absolutePosition.text).toBe(notFoundedLabel);
-    expect(absolutePosition.tags.length).toBe(4);
+    expect(absolutePosition.selectionRectangles.length).toBe(4);
 
-    checkAbsoluteTag(absolutePosition.tags[0], {
+    checkAbsoluteTag(absolutePosition.selectionRectangles[0], {
       pageNumber: 24,
       top: 177,
       left: 149,
@@ -170,7 +170,7 @@ describe('PdfCharacterCountToAbsolute', () => {
       width: 293,
       text: '',
     });
-    checkAbsoluteTag(absolutePosition.tags[1], {
+    checkAbsoluteTag(absolutePosition.selectionRectangles[1], {
       pageNumber: 24,
       top: 218,
       left: 213,
@@ -178,7 +178,7 @@ describe('PdfCharacterCountToAbsolute', () => {
       width: 513,
       text: '',
     });
-    checkAbsoluteTag(absolutePosition.tags[2], {
+    checkAbsoluteTag(absolutePosition.selectionRectangles[2], {
       pageNumber: 24,
       top: 236,
       left: 170,
@@ -202,9 +202,9 @@ describe('PdfCharacterCountToAbsolute', () => {
     );
 
     expect(absolutePosition.text).toBe(severalAppearancesString);
-    expect(absolutePosition.tags.length).toBe(1);
+    expect(absolutePosition.selectionRectangles.length).toBe(1);
 
-    checkAbsoluteTag(absolutePosition.tags[0], {
+    checkAbsoluteTag(absolutePosition.selectionRectangles[0], {
       pageNumber: 16,
       top: 308,
       left: 276,
@@ -228,9 +228,9 @@ describe('PdfCharacterCountToAbsolute', () => {
       48440
     );
 
-    expect(absolutePosition.tags.length).toBe(4);
+    expect(absolutePosition.selectionRectangles.length).toBe(4);
 
-    checkAbsoluteTag(absolutePosition.tags[0], {
+    checkAbsoluteTag(absolutePosition.selectionRectangles[0], {
       pageNumber: 14,
       top: 1155,
       left: 213,
@@ -238,7 +238,7 @@ describe('PdfCharacterCountToAbsolute', () => {
       width: 403,
       text: '',
     });
-    checkAbsoluteTag(absolutePosition.tags[1], {
+    checkAbsoluteTag(absolutePosition.selectionRectangles[1], {
       pageNumber: 15,
       top: 67,
       left: 730,
@@ -246,7 +246,7 @@ describe('PdfCharacterCountToAbsolute', () => {
       width: 80,
       text: '',
     });
-    checkAbsoluteTag(absolutePosition.tags[2], {
+    checkAbsoluteTag(absolutePosition.selectionRectangles[2], {
       pageNumber: 15,
       top: 1208,
       left: 794,
@@ -254,7 +254,7 @@ describe('PdfCharacterCountToAbsolute', () => {
       width: 13,
       text: '',
     });
-    checkAbsoluteTag(absolutePosition.tags[3], {
+    checkAbsoluteTag(absolutePosition.selectionRectangles[3], {
       pageNumber: 15,
       top: 110,
       left: 213,
@@ -277,7 +277,7 @@ describe('PdfCharacterCountToAbsolute', () => {
       48440
     );
 
-    checkAbsoluteTag(absolutePosition.tags[0], {
+    checkAbsoluteTag(absolutePosition.selectionRectangles[0], {
       pageNumber: 14,
       top: 1155,
       left: 213,
@@ -285,7 +285,7 @@ describe('PdfCharacterCountToAbsolute', () => {
       width: 403,
       text: '',
     });
-    checkAbsoluteTag(absolutePosition.tags[1], {
+    checkAbsoluteTag(absolutePosition.selectionRectangles[1], {
       pageNumber: 15,
       top: 67,
       left: 730,
@@ -293,7 +293,7 @@ describe('PdfCharacterCountToAbsolute', () => {
       width: 80,
       text: '',
     });
-    checkAbsoluteTag(absolutePosition.tags[2], {
+    checkAbsoluteTag(absolutePosition.selectionRectangles[2], {
       pageNumber: 15,
       top: 1208,
       left: 794,
@@ -301,7 +301,7 @@ describe('PdfCharacterCountToAbsolute', () => {
       width: 13,
       text: '',
     });
-    checkAbsoluteTag(absolutePosition.tags[3], {
+    checkAbsoluteTag(absolutePosition.selectionRectangles[3], {
       pageNumber: 15,
       top: 110,
       left: 213,
@@ -309,7 +309,7 @@ describe('PdfCharacterCountToAbsolute', () => {
       width: 40,
       text: '',
     });
-    checkAbsoluteTag(absolutePosition.tags[4], {
+    checkAbsoluteTag(absolutePosition.selectionRectangles[4], {
       pageNumber: 15,
       top: 110,
       left: 276,
@@ -331,7 +331,7 @@ describe('PdfCharacterCountToAbsolute', () => {
       999999,
       1000000
     );
-    expect(absolutePosition.tags.length).toBe(0);
+    expect(absolutePosition.selectionRectangles.length).toBe(0);
   });
 
   it('should return first string match when range outside document', async () => {
@@ -344,8 +344,8 @@ describe('PdfCharacterCountToAbsolute', () => {
     const absolutePosition = characterCountToAbsoluteConversion.convert(label, 999999, 1000000);
 
     expect(absolutePosition.text).toBe(label);
-    expect(absolutePosition.tags.length).toBe(1);
-    checkAbsoluteTag(absolutePosition.tags[0], {
+    expect(absolutePosition.selectionRectangles.length).toBe(1);
+    checkAbsoluteTag(absolutePosition.selectionRectangles[0], {
       pageNumber: 10,
       top: 506,
       left: 213,
@@ -365,9 +365,9 @@ describe('PdfCharacterCountToAbsolute', () => {
     await characterCountToAbsoluteConversion.loadPdf(pdfRelativePath, otherPdfInfo);
     const absolutePosition = characterCountToAbsoluteConversion.convert(label, 1213, 1269);
 
-    expect(absolutePosition.tags.length).toBe(3);
+    expect(absolutePosition.selectionRectangles.length).toBe(3);
 
-    checkAbsoluteTag(absolutePosition.tags[0], {
+    checkAbsoluteTag(absolutePosition.selectionRectangles[0], {
       pageNumber: 1,
       top: 810,
       left: 455,
@@ -375,7 +375,7 @@ describe('PdfCharacterCountToAbsolute', () => {
       width: 7,
       text: '',
     });
-    checkAbsoluteTag(absolutePosition.tags[1], {
+    checkAbsoluteTag(absolutePosition.selectionRectangles[1], {
       pageNumber: 1,
       top: 828,
       left: 319,
@@ -383,7 +383,7 @@ describe('PdfCharacterCountToAbsolute', () => {
       width: 279,
       text: '',
     });
-    checkAbsoluteTag(absolutePosition.tags[2], {
+    checkAbsoluteTag(absolutePosition.selectionRectangles[2], {
       pageNumber: 1,
       top: 846,
       left: 309,
