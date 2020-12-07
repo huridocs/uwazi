@@ -10,6 +10,7 @@ if (NODE_ENV === 'production') {
   try {
     require('./prod/app/server.js');
   } catch (err) {
+    require('@babel/register')({ extensions: ['.js', '.jsx', '.ts', '.tsx'] });
     require('./app/server.js');
   }
 } else {

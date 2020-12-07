@@ -3,7 +3,6 @@ import { actions } from 'app/BasicReducer';
 import { enterLibrary, unsetDocuments, zoomIn, zoomOut } from 'app/Library/actions/libraryActions';
 import DocumentsList from 'app/Library/components/DocumentsList';
 import LibraryModeToggleButtons from 'app/Library/components/LibraryModeToggleButtons';
-import SearchButton from 'app/Library/components/SearchButton';
 import requestState from 'app/Library/helpers/requestState';
 import LibraryLayout from 'app/Library/LibraryLayout';
 import { wrapDispatch } from 'app/Multireducer';
@@ -25,9 +24,6 @@ export default class Library extends RouteHandler {
   static renderTools() {
     return (
       <>
-        <div className="searchBox">
-          <SearchButton storeKey="library" />
-        </div>
         <ImportProgress />
       </>
     );

@@ -18,7 +18,6 @@ export default (app, server) => {
   require('./templates/routes').default(app);
   require('./search/deprecatedRoutes').default(app);
   require('./search/routes').default(app);
-  require('./semanticsearch/routes').default(app);
   require('./topicclassification/routes').default(app);
   require('./thesauri/routes').default(app);
   require('./relationtypes/routes').default(app);
