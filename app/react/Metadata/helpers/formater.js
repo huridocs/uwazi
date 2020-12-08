@@ -45,9 +45,22 @@ const addCreationDate = (result, doc) =>
     sortedBy: true,
   });
 
+const addModificationDate = (result, doc) =>
+  result.push({
+    value: moment.utc(doc.creationDate).format('ll'),
+    label: 'Date modified',
+    name: 'editDate',
+    translateContext: 'System',
+    sortedBy: true,
+  });
+
 const conformSortedProperty = (metadata, templates, doc, sortedProperty) => {
   const sortPropertyInMetadata = metadata.find(p => sortedProperty === `metadata.${p.name}`);
-  if (!sortPropertyInMetadata && sortedProperty !== 'creationDate') {
+  if (
+    !sortPropertyInMetadata &&
+    sortedProperty !== 'creationDate' &&
+    sortedProperty !== 'editDate'
+  ) {
     return metadata.push(addSortedProperty(templates, sortedProperty)).filter(p => p);
   }
 
@@ -55,6 +68,10 @@ const conformSortedProperty = (metadata, templates, doc, sortedProperty) => {
 
   if (sortedProperty === 'creationDate') {
     result = addCreationDate(result, doc);
+  }
+
+  if (sortedProperty === 'editDate') {
+    result = addModificationDate(result, doc);
   }
 
   return result;

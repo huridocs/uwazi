@@ -23,7 +23,6 @@ export default {
       isCommonProperty: true,
       type: 'date',
       prioritySorting: false,
-      showInCard: true,
     },
   ],
 };
