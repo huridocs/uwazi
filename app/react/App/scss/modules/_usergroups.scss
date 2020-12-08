@@ -1,0 +1,125 @@
+.userManagementTabs {
+  position: relative;
+  margin-top: 15px;
+  .nav {
+    display: flex;
+    list-style: none;
+    border-bottom: 1px solid $c-grey-light;
+    height: 28px;
+  }
+  .tab-link {
+    display: inline-block;
+    padding: 5px 5px 0;
+    font-size: $f-size;
+    cursor: pointer;
+    border-bottom: 1px;
+    color: black;
+    &:hover {
+      color: $c-black;
+      border-bottom: 1px dotted $c-black;
+    }
+    &.tab-link-active {
+      color: $c-primary;
+      border-top-left-radius: .25rem;
+      border-top-right-radius: .25rem;
+      border: 1px solid;
+      border-color: $c-grey-light $c-grey-light transparent;
+      background-color: white;
+    }
+    &:focus {
+      outline: none;
+    }
+  }
+  .tab-content{
+    margin-top: 15px;
+  }
+}
+
+.group-list {
+  table {
+    empty-cells: hide;
+    width: 100%;
+    white-space: nowrap;
+    border-collapse: separate;
+    border: 1px;
+    th,
+    td {
+      padding: 7px 10px;
+      font-size: $f-size;
+    }
+    th {
+      font-weight: bold;
+      border-bottom: 2px solid $c-grey-light;
+    }
+    th:nth-child(2){
+      text-align: center;
+    }
+    td {
+      .pill {
+        border: 1px solid rgba(0, 0, 0, 0.25);
+        box-sizing: border-box;
+        border-radius: 26px;
+        padding: 2px 8px;
+        display: inline-block;
+        margin: 2px 8px 2px 0;
+        font-size: smaller;
+      }
+    }
+    tbody tr {
+      &:hover > td {
+        background-color: #f2f6fb;
+        cursor: pointer;
+      }
+
+      &.selected > td {
+        background-color: #bed1ec;
+      }
+    }
+    tbody td {
+      border-bottom: 1px solid $c-grey-light;
+    }
+  }
+  table.edition-mode{
+    width: calc(100% - 400px);
+  }
+
+  .settings-footer.edition-mode {
+    display: none;
+  }
+
+  .beta-feature {
+    .beta-alert {
+      text-align: right;
+      color: $c-type-15;
+      cursor: pointer;
+      float: right;
+      width: 100px;
+    }
+    .beta-tooltip{
+      display: none;
+    }
+    &:hover .beta-tooltip{
+      @include tooltip('left');
+      left: calc(100% - 420px);
+      top: 55px;
+      width: 320px;
+      display: block;
+      font-size: x-small;
+    }
+  }
+
+}
+.user-group-form {
+  .search-user{
+    width: 100%;
+    .multiselect {
+      margin: 0 15px ;
+    }
+    .form-group {
+      width: 100%;
+      .form-control{
+        width: 100%;
+      }
+    }
+  }
+}

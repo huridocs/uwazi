@@ -13,6 +13,7 @@ describe('ConfirmButton', () => {
   beforeEach(() => {
     props = {
       action: jasmine.createSpy('action'),
+      className: 'class',
     };
   });
 

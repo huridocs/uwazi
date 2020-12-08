@@ -69,6 +69,7 @@ exports[`CustomUploads should render CustomUploads component with uploaded files
           </span>
           <ConfirmButton
             action={[Function]}
+            className=""
             message="Are you sure you want to continue?"
             title="Confirm action"
           >
@@ -95,6 +96,7 @@ exports[`CustomUploads should render CustomUploads component with uploaded files
           </span>
           <ConfirmButton
             action={[Function]}
+            className=""
             message="Are you sure you want to continue?"
             title="Confirm action"
           >
