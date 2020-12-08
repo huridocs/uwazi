@@ -1,18 +1,18 @@
 import { shallow, ShallowWrapper } from 'enzyme';
 import React, { ReactElement } from 'react';
-import { FieldOption } from '../MemberListItem';
 import { UserGroupsLookupField } from '../UserGroupsLookupField';
+import { MemberWithPermission } from '../../EntityPermisions';
 
 describe('UserGroupsLookupField', () => {
   let onChangeMock: (search: string) => void;
-  let onSelectMock: (value: FieldOption) => void;
+  let onSelectMock: (value: MemberWithPermission) => void;
 
   beforeEach(() => {
     onChangeMock = jest.fn();
     onSelectMock = jest.fn();
   });
 
-  const assertOption = (element: ReactElement, option: FieldOption) => {
+  const assertOption = (element: ReactElement, option: MemberWithPermission) => {
     expect(element.props.children[0].props.children.props.icon).toBe(
       option.type === 'user' ? 'user' : 'users'
     );
@@ -20,11 +20,12 @@ describe('UserGroupsLookupField', () => {
   };
 
   it('should render the options', () => {
-    const options: FieldOption[] = [
+    const options: MemberWithPermission[] = [
       {
         id: 'id',
         label: 'label',
         type: 'user',
+        level: 'read',
       },
       {
         id: 'id2',

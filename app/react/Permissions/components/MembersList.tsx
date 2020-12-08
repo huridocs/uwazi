@@ -1,34 +1,39 @@
 import React from 'react';
-import { MemberListItem, FieldOption } from './MemberListItem';
-import { MemebersListItemPermission } from './MemberListItemPermission';
+import { MemberWithPermission } from '../EntityPermisions';
+import { MemberListItem } from './MemberListItem';
+import { MemberListItemPermission } from './MemberListItemPermission';
 
-interface BasicMember extends FieldOption {
-  type: 'user';
-  role: 'editor' | 'admin';
-}
+export const MemebersList = ({
+  members,
+  onChange,
+}: {
+  members: MemberWithPermission[];
+  onChange: (members: MemberWithPermission[]) => void;
+}) => {
+  const onChangeHandler = (index: number) => (value: MemberWithPermission) => {
+    const newMembers = [...members];
+    newMembers[index] = value;
+    onChange(newMembers);
+  };
 
-interface UserMember extends FieldOption {
-  type: 'user';
-  role: 'user';
-  level?: 'read' | 'write' | 'mixed';
-}
+  const onDeleteHandler = (value: MemberWithPermission) => {
+    onChange(members.filter(m => m !== value));
+  };
 
-interface GroupMember extends FieldOption {
-  type: 'group';
-  level?: 'read' | 'write' | 'mixed';
-}
-
-export type MemberWithPermission = BasicMember | UserMember | GroupMember;
-
-export const MemebersList = ({ members }: { members: MemberWithPermission[] }) => (
-  <table className="members-list">
-    {members.map((member: any) => (
-      <tr>
-        <td>
-          <MemberListItem value={member} />
-        </td>
-        <MemebersListItemPermission role={member.role} level={member.level} />
-      </tr>
-    ))}
-  </table>
-);
+  return (
+    <table className="members-list">
+      {members.map((member, index) => (
+        <tr>
+          <td>
+            <MemberListItem value={member} />
+          </td>
+          <MemberListItemPermission
+            value={member}
+            onChange={onChangeHandler(index)}
+            onDelete={onDeleteHandler}
+          />
+        </tr>
+      ))}
+    </table>
+  );
+};

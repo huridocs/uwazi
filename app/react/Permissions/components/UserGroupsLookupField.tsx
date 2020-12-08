@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { Icon } from 'UI';
-import { FieldOption, MemberListItem } from './MemberListItem';
+import { MemberWithPermission } from '../EntityPermisions';
+import { MemberListItem } from './MemberListItem';
 
 interface UserGroupsLookupFieldProps {
   onChange: (search: string) => void;
-  onSelect: (value: FieldOption) => void;
+  onSelect: (value: MemberWithPermission) => void;
   value: string;
-  options: FieldOption[];
+  options: MemberWithPermission[];
 }
 
 export const UserGroupsLookupField = ({
@@ -77,7 +78,7 @@ export const UserGroupsLookupField = ({
       />
       {options.length ? (
         <ul role="listbox">
-          {options.map((result: FieldOption, index: number) => (
+          {options.map((result: MemberWithPermission, index: number) => (
             <li
               key={`${result.type}-${result.id}`}
               role="option"

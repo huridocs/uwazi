@@ -1,14 +1,9 @@
 import { Icon } from 'app/UI';
 import React from 'react';
-
-export interface FieldOption {
-  type: 'user' | 'group';
-  id: string;
-  label: string;
-}
+import { MemberWithPermission } from '../EntityPermisions';
 
 interface MemberListItemProps {
-  value: FieldOption;
+  value: MemberWithPermission;
 }
 
 export const MemberListItem = ({ value: { type, label } }: MemberListItemProps) => (

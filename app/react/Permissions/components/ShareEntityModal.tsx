@@ -3,42 +3,9 @@ import React, { useState, useEffect } from 'react';
 import { Icon } from 'UI';
 import { Translate } from 'app/I18N';
 import { UserGroupsLookupField } from './UserGroupsLookupField';
-import { MemebersList, MemberWithPermission } from './MembersList';
-import { FieldOption } from './MemberListItem';
-
-const data: any = [
-  {
-    type: 'user',
-    id: 'id1',
-    label: 'User name',
-    role: 'admin',
-  },
-  {
-    type: 'group',
-    id: 'id1',
-    label: 'Group name',
-    level: 'read',
-  },
-  {
-    type: 'group',
-    id: 'id2',
-    label: 'Group name 2',
-    level: 'write',
-  },
-  {
-    type: 'user',
-    id: 'id1',
-    label: 'User name',
-    role: 'editor',
-  },
-  {
-    type: 'user',
-    id: 'id1',
-    label: 'User name',
-    role: 'user',
-    level: 'read',
-  },
-];
+import { MemebersList } from './MembersList';
+import { MemberWithPermission } from '../EntityPermisions';
+import { searchMembers } from '../PermissionsAPI';
 
 export interface ShareEntityModalProps {
   isOpen: boolean;
@@ -48,20 +15,29 @@ export interface ShareEntityModalProps {
 
 export const ShareEntityModalComponent = ({ isOpen, onClose, onSave }: ShareEntityModalProps) => {
   const [search, setSearch] = useState('');
-  const [results, setResults] = useState([]);
-  const [assignments, setAssignments] = useState<Partial<MemberWithPermission>[]>([]);
+  const [results, setResults] = useState<MemberWithPermission[]>([]);
+  const [assignments, setAssignments] = useState<MemberWithPermission[]>([]);
+  const [dirty, setDirty] = useState(false);
 
   useEffect(() => {
     setAssignments([]);
+
+    return () => {
+      setAssignments([]);
+      setSearch('');
+      setResults([]);
+      setDirty(false);
+    };
   }, []);
 
-  const onChangeHandler = (value: string) => {
+  const onChangeHandler = async (value: string) => {
     setSearch(value);
-    setResults(value ? data.filter((elem: any) => elem.label.includes(value)) : []);
+    setResults(await searchMembers(value));
   };
 
-  const onSelectHandler = (value: FieldOption) => {
+  const onSelectHandler = (value: MemberWithPermission) => {
     setAssignments([...assignments, { ...value }]);
+    setDirty(true);
   };
 
   return (
@@ -82,24 +58,33 @@ export const ShareEntityModalComponent = ({ isOpen, onClose, onSave }: ShareEnti
           onSelect={onSelectHandler}
           options={results}
         />
-        <MemebersList members={assignments} />
+        <MemebersList
+          members={assignments}
+          onChange={value => {
+            setAssignments(value);
+            setDirty(true);
+          }}
+        />
       </Modal.Body>
 
-      {/*<Modal.Footer>
-        <button type="button" className="btn btn-default cancel-button" onClick={onClose}>
-          <Icon icon="times" />
-          <Translate>Discard changes</Translate>
-        </button>
-        <button type="button" className="btn confirm-button btn-success" onClick={onSave}>
-          <Icon icon="save" />
-          <Translate>Save changes</Translate>
-        </button>
-      </Modal.Footer>*/}
-      <Modal.Footer>
-        <button type="button" className="btn btn-default pristine" onClick={onClose}>
-          <Translate>Close</Translate>
-        </button>
-      </Modal.Footer>
+      {dirty ? (
+        <Modal.Footer>
+          <button type="button" className="btn btn-default cancel-button" onClick={onClose}>
+            <Icon icon="times" />
+            <Translate>Discard changes</Translate>
+          </button>
+          <button type="button" className="btn confirm-button btn-success" onClick={onSave}>
+            <Icon icon="save" />
+            <Translate>Save changes</Translate>
+          </button>
+        </Modal.Footer>
+      ) : (
+        <Modal.Footer>
+          <button type="button" className="btn btn-default pristine" onClick={onClose}>
+            <Translate>Close</Translate>
+          </button>
+        </Modal.Footer>
+      )}
     </Modal>
   );
 };
