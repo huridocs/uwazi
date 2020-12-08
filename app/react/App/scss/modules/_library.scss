@@ -141,10 +141,10 @@
             }
 
             .rw-list {
-              max-height: 340px;
+              max-height: 58vh;
 
-              @media(min-width: 600px) {
-                max-height: 700px;
+              @media(min-width: 700px) {
+                max-height: 72vh;
               }
             }
           }
