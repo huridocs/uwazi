@@ -20,7 +20,7 @@ import { Icon } from 'UI';
 
 import * as viewerModule from 'app/Viewer';
 import { entityDefaultDocument } from 'shared/entityDefaultDocument';
-import { ShareEntityModal } from 'app/Metadata/components/ShareEntityModal';
+import { ShareEntityModal } from 'app/Permissions/components/ShareEntityModal';
 import SearchText from './SearchText';
 import ShowToc from './ShowToc';
 import SnippetsTab from './SnippetsTab';
@@ -417,7 +417,11 @@ export class DocumentSidePanel extends Component {
                       parentSharedId={doc.get('sharedId')}
                       storeKey={this.props.storeKey}
                     />
-                    <ShareEntityModal isOpen={this.state.sharing} onClose={this.toggleSharing} />
+                    <ShareEntityModal
+                      key={doc.get('sharedId')}
+                      isOpen={this.state.sharing}
+                      onClose={this.toggleSharing}
+                    />
                   </div>
                 );
               })()}

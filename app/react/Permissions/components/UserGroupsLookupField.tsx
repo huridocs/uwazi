@@ -1,12 +1,12 @@
-import { setSelection } from 'app/Viewer/actions/selectionActions';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Icon } from 'UI';
+import { FieldOption, MemberListItem } from './MemberListItem';
 
 interface UserGroupsLookupFieldProps {
-  onChange: (search: string) => any;
-  onSelect: (value: any) => any;
+  onChange: (search: string) => void;
+  onSelect: (value: FieldOption) => void;
   value: string;
-  options: any[];
+  options: FieldOption[];
 }
 
 export const UserGroupsLookupField = ({
@@ -21,43 +21,49 @@ export const UserGroupsLookupField = ({
     setSelected(null);
   }, [value]);
 
-  const onChangeHandler = (event: any) => {
+  const onChangeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
     onChange(event.target.value);
   };
 
-  const getOnSelectHandler = (selection: number) => onSelect(options[selection]);
+  const getOnSelectHandler = (selection: number) => () => {
+    onSelect(options[selection]);
+    onChange('');
+  };
 
-  // eslint-disable-next-line max-statements
   const onKeyPressHandler = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === 'ArrowUp') {
-      event.preventDefault();
-      if (!selected) {
-        return setSelected(options.length - 1);
-      }
+    switch (event.key) {
+      case 'ArrowUp':
+        event.preventDefault();
+        if (!selected) {
+          setSelected(options.length - 1);
+        } else {
+          setSelected((selected - 1) % options.length);
+        }
 
-      return setSelected((selected - 1) % options.length);
+        break;
+      case 'ArrowDown':
+        event.preventDefault();
+        if (selected === null) {
+          setSelected(0);
+        } else {
+          setSelected((selected + 1) % options.length);
+        }
+
+        break;
+      case 'Enter':
+        event.preventDefault();
+        if (selected !== null) {
+          onSelect(options[selected]);
+          onChange('');
+        }
+        break;
+      case 'Escape':
+        event.preventDefault();
+        onChange('');
+        break;
+      default:
+        break;
     }
-
-    if (event.key === 'ArrowDown') {
-      event.preventDefault();
-      if (selected === null) {
-        return setSelected(0);
-      }
-
-      return setSelected((selected + 1) % options.length);
-    }
-
-    if (event.key === 'Enter' && selected !== null) {
-      event.preventDefault();
-      return onSelect(options[selected]);
-    }
-
-    if (event.key === 'Escape') {
-      event.preventDefault();
-      return onChange('');
-    }
-
-    return null;
   };
 
   return (
@@ -71,7 +77,7 @@ export const UserGroupsLookupField = ({
       />
       {options.length ? (
         <ul role="listbox">
-          {options.map((result: any, index: number) => (
+          {options.map((result: FieldOption, index: number) => (
             <li
               key={`${result.type}-${result.id}`}
               role="option"
@@ -79,10 +85,7 @@ export const UserGroupsLookupField = ({
               onClick={getOnSelectHandler(index)}
               className={index === selected ? 'selected' : ''}
             >
-              <div className="round-icon">
-                <Icon icon={result.type === 'user' ? 'user' : 'users'} />
-              </div>
-              <span>{result.label}</span>
+              <MemberListItem value={result} />
               <div className="press-enter-note">
                 <span>Press enter to add</span>
                 <Icon icon="level-down-alt" transform={{ rotate: 90 }} />

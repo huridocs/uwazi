@@ -1,6 +1,9 @@
 import React from 'react';
 import { shallow, ShallowWrapper } from 'enzyme';
-import { ShareEntityModal, ShareEntityModalProps } from 'app/Metadata/components/ShareEntityModal';
+import {
+  ShareEntityModal,
+  ShareEntityModalProps,
+} from 'app/Permissions/components/ShareEntityModal';
 
 describe('ShareEntityModal', () => {
   let component: ShallowWrapper;

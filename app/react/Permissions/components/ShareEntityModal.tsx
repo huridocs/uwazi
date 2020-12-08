@@ -1,24 +1,42 @@
 import Modal from 'app/Layout/Modal';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Icon } from 'UI';
 import { Translate } from 'app/I18N';
 import { UserGroupsLookupField } from './UserGroupsLookupField';
+import { MemebersList, MemberWithPermission } from './MembersList';
+import { FieldOption } from './MemberListItem';
 
 const data: any = [
   {
     type: 'user',
     id: 'id1',
     label: 'User name',
+    role: 'admin',
   },
   {
     type: 'group',
     id: 'id1',
     label: 'Group name',
+    level: 'read',
   },
   {
     type: 'group',
     id: 'id2',
     label: 'Group name 2',
+    level: 'write',
+  },
+  {
+    type: 'user',
+    id: 'id1',
+    label: 'User name',
+    role: 'editor',
+  },
+  {
+    type: 'user',
+    id: 'id1',
+    label: 'User name',
+    role: 'user',
+    level: 'read',
   },
 ];
 
@@ -31,10 +49,19 @@ export interface ShareEntityModalProps {
 export const ShareEntityModalComponent = ({ isOpen, onClose, onSave }: ShareEntityModalProps) => {
   const [search, setSearch] = useState('');
   const [results, setResults] = useState([]);
+  const [assignments, setAssignments] = useState<Partial<MemberWithPermission>[]>([]);
+
+  useEffect(() => {
+    setAssignments([]);
+  }, []);
 
   const onChangeHandler = (value: string) => {
     setSearch(value);
     setResults(value ? data.filter((elem: any) => elem.label.includes(value)) : []);
+  };
+
+  const onSelectHandler = (value: FieldOption) => {
+    setAssignments([...assignments, { ...value }]);
   };
 
   return (
@@ -52,12 +79,13 @@ export const ShareEntityModalComponent = ({ isOpen, onClose, onSave }: ShareEnti
         <UserGroupsLookupField
           value={search}
           onChange={onChangeHandler}
-          onSelect={console.log}
+          onSelect={onSelectHandler}
           options={results}
         />
+        <MemebersList members={assignments} />
       </Modal.Body>
 
-      <Modal.Footer>
+      {/*<Modal.Footer>
         <button type="button" className="btn btn-default cancel-button" onClick={onClose}>
           <Icon icon="times" />
           <Translate>Discard changes</Translate>
@@ -65,6 +93,11 @@ export const ShareEntityModalComponent = ({ isOpen, onClose, onSave }: ShareEnti
         <button type="button" className="btn confirm-button btn-success" onClick={onSave}>
           <Icon icon="save" />
           <Translate>Save changes</Translate>
+        </button>
+      </Modal.Footer>*/}
+      <Modal.Footer>
+        <button type="button" className="btn btn-default pristine" onClick={onClose}>
+          <Translate>Close</Translate>
         </button>
       </Modal.Footer>
     </Modal>
