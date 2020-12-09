@@ -5,3 +5,8 @@ export interface MemberWithPermission {
   role?: 'contributor' | 'editor' | 'admin';
   level?: 'read' | 'write' | 'mixed';
 }
+
+export interface ValidationError {
+  type: MemberWithPermission['type'];
+  id: MemberWithPermission['id'];
+}

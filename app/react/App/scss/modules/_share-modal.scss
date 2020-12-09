@@ -146,7 +146,17 @@
         height: 32px;
         width: 32px;
       }
+
+      select {
+        border: 1px solid #CCCCCC;
+        border-radius: 2px;
+        height: 32px;
+      }
     }
+  }
+
+  tr.validationError td select {
+    border-color: #EB5757;
   }
 } 
 

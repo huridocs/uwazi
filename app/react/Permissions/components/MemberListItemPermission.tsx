@@ -7,7 +7,9 @@ interface MemberListItemPermissionProps {
   onDelete: (value: MemberWithPermission) => void;
 }
 
-const hasLevel = (member: MemberWithPermission) => ['user', 'group'].includes(member.type);
+const hasLevel = (member: MemberWithPermission) =>
+  member.type === 'group' || member.role === 'contributor';
+const capitalize = (value: string) => value[0].toUpperCase() + value.slice(1);
 
 export const MemberListItemPermission = ({
   value,
@@ -21,14 +23,14 @@ export const MemberListItemPermission = ({
 
     return onChange({
       ...value,
-      ...(hasLevel(value) ? { level: event.target.value as 'read' | 'write' | 'mixed' } : {}),
+      ...(hasLevel(value) ? { level: event.target.value as MemberWithPermission['level'] } : {}),
     });
   };
 
   return (
     <>
       <td>
-        <span>{value.type !== 'group' ? value.role : ''}</span>
+        <span>{value.type !== 'group' ? capitalize(value.role || '') : ''}</span>
       </td>
       <td>
         {hasLevel(value) ? (
@@ -40,6 +42,7 @@ export const MemberListItemPermission = ({
             ) : null}
             <option value="read">Can see</option>
             <option value="write">Can edit</option>
+            <option disabled>───────</option>
             <option value="delete">Delete</option>
           </select>
         ) : null}

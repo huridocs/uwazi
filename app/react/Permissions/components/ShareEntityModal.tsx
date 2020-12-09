@@ -13,11 +13,28 @@ export interface ShareEntityModalProps {
   onSave: (event: any) => void;
 }
 
+const validate = (assignments: MemberWithPermission[]) =>
+  assignments
+    .map(item => {
+      if (item.type === 'group' || item.role === 'contributor') {
+        return item.level !== 'mixed'
+          ? null
+          : {
+              id: item.id,
+              type: item.type,
+            };
+      }
+
+      return null;
+    })
+    .filter(i => i);
+
 export const ShareEntityModalComponent = ({ isOpen, onClose, onSave }: ShareEntityModalProps) => {
   const [search, setSearch] = useState('');
   const [results, setResults] = useState<MemberWithPermission[]>([]);
   const [assignments, setAssignments] = useState<MemberWithPermission[]>([]);
   const [dirty, setDirty] = useState(false);
+  const [validationErrors, setValidationErrors] = useState<any[]>([]);
 
   useEffect(() => {
     setAssignments([]);
@@ -38,6 +55,16 @@ export const ShareEntityModalComponent = ({ isOpen, onClose, onSave }: ShareEnti
   const onSelectHandler = (value: MemberWithPermission) => {
     setAssignments([...assignments, { ...value }]);
     setDirty(true);
+  };
+
+  const onSaveHandler = () => {
+    const errors = validate(assignments);
+
+    if (errors) {
+      return setValidationErrors(errors);
+    }
+
+    return onSave(assignments);
   };
 
   return (
@@ -64,6 +91,7 @@ export const ShareEntityModalComponent = ({ isOpen, onClose, onSave }: ShareEnti
             setAssignments(value);
             setDirty(true);
           }}
+          validationErrors={validationErrors}
         />
       </Modal.Body>
 
@@ -73,7 +101,7 @@ export const ShareEntityModalComponent = ({ isOpen, onClose, onSave }: ShareEnti
             <Icon icon="times" />
             <Translate>Discard changes</Translate>
           </button>
-          <button type="button" className="btn confirm-button btn-success" onClick={onSave}>
+          <button type="button" className="btn confirm-button btn-success" onClick={onSaveHandler}>
             <Icon icon="save" />
             <Translate>Save changes</Translate>
           </button>

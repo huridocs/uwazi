@@ -17,6 +17,7 @@ export const UserGroupsLookupField = ({
   options,
 }: UserGroupsLookupFieldProps) => {
   const [selected, setSelected] = useState<number | null>(null);
+  const [show, setShow] = useState(false);
 
   useEffect(() => {
     setSelected(null);
@@ -74,9 +75,11 @@ export const UserGroupsLookupField = ({
         placeholder="Add people or groups"
         onChange={onChangeHandler}
         onKeyDown={onKeyPressHandler}
+        onBlur={() => setShow(false)}
+        onFocus={() => setShow(true)}
         value={value}
       />
-      {options.length ? (
+      {show && options.length ? (
         <ul role="listbox">
           {options.map((result: MemberWithPermission, index: number) => (
             <li
