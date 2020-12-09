@@ -1,13 +1,40 @@
 import db from 'api/utils/testing_db';
 
-const entity1Id = db.id();
-const entity2Id = db.id();
-const entity3Id = db.id();
+const idUserA = db.id();
+const idUserB = db.id();
+const idGroupA = db.id();
+const idGroupB = db.id();
+
+const userA = {
+  _id: idUserA,
+  username: 'UserA',
+  role: 'admin',
+  email: 'usera@domain.org',
+};
+
+const userB = {
+  _id: idUserB,
+  username: 'UserB',
+  role: 'editor',
+  email: 'userb@domain.org',
+};
+
+const groupA = {
+  _id: idGroupA,
+  name: 'GroupA',
+  members: [{ _id: idUserA }],
+};
+
+const groupB = {
+  _id: idGroupB,
+  name: 'GroupB',
+  members: [{ _id: idUserB }],
+};
 
 export default {
   entities: [
     {
-      _id: entity1Id,
+      _id: db.id(),
       sharedId: 'shared1',
       type: 'entity',
       language: 'en',
@@ -15,24 +42,24 @@ export default {
       published: true,
       permissions: [
         {
-          _id: 'userA',
+          _id: idUserA,
           type: 'user',
           permission: 'read',
         },
         {
-          _id: 'userA',
+          _id: idUserB,
           type: 'user',
           permission: 'write',
         },
         {
-          _id: 'groupA',
+          _id: idGroupA,
           type: 'group',
           permission: 'write',
         },
       ],
     },
     {
-      _id: entity2Id,
+      _id: db.id(),
       sharedId: 'shared2',
       type: 'entity',
       language: 'en',
@@ -42,7 +69,7 @@ export default {
       permissions: [{}],
     },
     {
-      _id: entity3Id,
+      _id: db.id(),
       sharedId: 'shared3',
       type: 'entity',
       language: 'en',
@@ -52,6 +79,8 @@ export default {
       isPublic: true,
     },
   ],
+  users: [{ ...userA }, { ...userB }],
+  usergroups: [{ ...groupA }, { ...groupB }],
 };
 
-export { entity1Id, entity2Id, entity3Id };
+export { userA, userB, groupA, groupB };
