@@ -73,4 +73,5 @@ export default combineReducers({
   metadata,
   oneUpReview,
   exportSearchResults,
+  userGroups: createReducer('userGroups', []),
 });

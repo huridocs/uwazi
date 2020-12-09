@@ -6,6 +6,7 @@ import { ThesaurusSchema } from 'shared/types/thesaurusType';
 import { PropertySchema } from 'shared/types/commonTypes';
 import { TemplateSchema } from 'shared/types/templateType';
 import { EntitySchema } from 'shared/types/entityType';
+import { UserGroupSchema } from 'shared/types/userGroupType';
 
 export interface TasksState {
   SyncState?: TaskStatus;
@@ -111,4 +112,5 @@ export interface IStore {
   settings: {
     collection: IImmutable<SettingsState>;
   };
+  userGroups: IImmutable<UserGroupSchema[]>;
 }
