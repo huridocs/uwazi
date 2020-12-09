@@ -72,7 +72,7 @@ describe('SortButtons', () => {
         ]);
         render();
 
-        expect(component.find('.Dropdown:not(.width-placeholder) li').length).toBe(3);
+        expect(component.find('.Dropdown:not(.width-placeholder) li').length).toBe(4);
 
         expect(
           component
@@ -110,7 +110,7 @@ describe('SortButtons', () => {
             .find('span')
             .last()
             .text()
-        ).toBe('Search relevance');
+        ).toBe('Date modified (Recently)');
       });
     });
 
