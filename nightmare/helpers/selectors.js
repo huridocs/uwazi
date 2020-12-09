@@ -134,7 +134,9 @@ export default {
     libraryMultiEditFirstInput:
       '#multiEdit > div:nth-child(2) > div:nth-child(1) > ul > li.wide > div > input',
     libraryMetadataPanel: '.side-panel.metadata-sidepanel',
-    searchInLibrary: '#app > div.content > header > div > a',
+    searchInUploads: '#app > div.content > header > div > a',
+    searchInLibrary:
+      '#app > div.content > div > div > div > main > div.list-view-mode > div.buttons-group.toggle-button.only-mobile > button',
     searchForm:
       '#app > div.content > div > div > div > aside.side-panel.library-filters > div.sidepanel-body > div.search-box > form',
     searchInput:

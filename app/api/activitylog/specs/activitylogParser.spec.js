@@ -7,7 +7,6 @@ import fixtures, {
   firstTemplate,
   firstDoc,
   firstDocSharedId,
-  firstSemanticSearch,
   nonExistentId,
 } from './fixturesParser';
 import { getSemanticData } from '../activitylogParser';
@@ -658,6 +657,23 @@ describe('Activitylog Parser', () => {
           }
         );
       });
+
+      it('should beautify as UPDATE', async () => {
+        await testBeautified(
+          {
+            method: 'POST',
+            url: '/api/users',
+            body: '{"_id":"userId", "username": "somename"}',
+            idField: '_id',
+            nameField: 'username',
+          },
+          {
+            action: 'UPDATE',
+            description: 'Updated user',
+            name: 'somename (userId)',
+          }
+        );
+      });
     });
 
     describe('routes /api/references', () => {
@@ -721,105 +737,6 @@ describe('Activitylog Parser', () => {
             description: 'Updated settings',
           }
         );
-      });
-    });
-
-    describe('routes: /api/semantic-search', () => {
-      describe('method:POST', () => {
-        it('should beautify as CREATE', async () => {
-          await testBeautified(
-            {
-              method: 'POST',
-              url: '/api/semantic-search',
-              body: '{"searchTerm":"test"}',
-            },
-            {
-              action: 'CREATE',
-              description: 'Started semantic search',
-              name: 'test',
-            }
-          );
-        });
-      });
-      describe('method:DELETE', () => {
-        it('should beautify as DELETE', async () => {
-          await testBeautified(
-            {
-              method: 'DELETE',
-              url: '/api/semantic-search',
-              query: '{"searchId":"search1"}',
-            },
-            {
-              action: 'DELETE',
-              description: 'Deleted semantic search',
-              name: 'search1',
-            }
-          );
-        });
-      });
-      describe('method:POST /stop', () => {
-        it('should beautify as UPDATE and mention search term', async () => {
-          const body = { searchId: firstSemanticSearch.toString() };
-          await testBeautified(
-            {
-              method: 'POST',
-              url: '/api/semantic-search/stop',
-              body: JSON.stringify(body),
-            },
-            {
-              action: 'UPDATE',
-              description: 'Stopped semantic search',
-              name: `foo (${firstSemanticSearch.toString()})`,
-            }
-          );
-        });
-        it('should only mention id if search no longer exists', async () => {
-          const body = { searchId: nonExistentId.toString() };
-          await testBeautified(
-            {
-              method: 'POST',
-              url: '/api/semantic-search/stop',
-              body: JSON.stringify(body),
-            },
-            {
-              action: 'UPDATE',
-              description: 'Stopped semantic search',
-              name: nonExistentId.toString(),
-            }
-          );
-        });
-      });
-      describe('method:POST /resume', () => {
-        it('should beautify as UPDATE and mention search term', async () => {
-          const body = { searchId: firstSemanticSearch.toString() };
-          await testBeautified(
-            {
-              method: 'POST',
-              url: '/api/semantic-search/resume',
-              body: JSON.stringify(body),
-            },
-            {
-              action: 'UPDATE',
-              description: 'Resumed semantic search',
-              name: `foo (${firstSemanticSearch.toString()})`,
-            }
-          );
-        });
-        it('should only mention id if search no longer exists', async () => {
-          const body = { searchId: nonExistentId.toString() };
-          await testBeautified(
-            {
-              method: 'POST',
-              url: '/api/semantic-search/resume',
-              body: JSON.stringify(body),
-            },
-            {
-              action: 'UPDATE',
-              description: 'Resumed semantic search',
-              name: nonExistentId.toString(),
-            }
-          );
-        });
       });
     });
 
@@ -1015,6 +932,76 @@ describe('Activitylog Parser', () => {
       });
     });
 
+    describe('routes: /api/usergroups', () => {
+      describe('method: POST api/usergroups', () => {
+        it('should beautify as CREATE with extra members', async () => {
+          await testBeautified(
+            {
+              method: 'POST',
+              url: '/api/usergroups',
+              body: '{"name":"mygroup","members":[{"username":"User 1"}, {"username":"User 2"}]}',
+            },
+            {
+              action: 'CREATE',
+              description: 'Created user group',
+              name: 'mygroup',
+              extra: 'with members: User 1, User 2',
+            }
+          );
+        });
+
+        it('should beautify as CREATE without extra members', async () => {
+          await testBeautified(
+            {
+              method: 'POST',
+              url: '/api/usergroups',
+              body: '{"name":"mygroup","members":[]}',
+            },
+            {
+              action: 'CREATE',
+              description: 'Created user group',
+              name: 'mygroup',
+              extra: 'with no members',
+            }
+          );
+        });
+
+        it('should beautify as DELETE', async () => {
+          await testBeautified(
+            {
+              method: 'DELETE',
+              url: '/api/usergroups',
+              body: '{"_id":"usergroupId"}',
+              idField: '_id',
+            },
+            {
+              action: 'DELETE',
+              description: 'Delete user group',
+              name: 'usergroupId',
+            }
+          );
+        });
+
+        it('should beautify as UPDATE', async () => {
+          await testBeautified(
+            {
+              method: 'POST',
+              url: '/api/usergroups',
+              body:
+                '{"_id": "group1", "name":"mygroup","members":[{"username":"User 1"}, {"username":"User 2"}]}',
+              idField: '_id',
+              nameField: 'username',
+            },
+            {
+              action: 'UPDATE',
+              description: 'Updated user group',
+              name: 'mygroup (group1)',
+              extra: 'with members: User 1, User 2',
+            }
+          );
+        });
+      });
+    });
     describe('MIGRATIONS logs', () => {
       afterEach(() => {
         jest.resetAllMocks();

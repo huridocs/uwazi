@@ -1,7 +1,7 @@
 import React from 'react';
-import { shallow } from 'enzyme';
+import { mount, ReactWrapper, shallow } from 'enzyme';
 import configureStore, { MockStore, MockStoreCreator } from 'redux-mock-store';
-import { Provider } from 'react-redux';
+import { ConnectedComponent, Provider } from 'react-redux';
 import thunk from 'redux-thunk';
 
 const middlewares = [thunk];
@@ -33,4 +33,17 @@ const renderConnected = (
     .dive();
 };
 
-export { renderConnected };
+const renderConnectedMount = (
+  Component: ConnectedComponent<any, any> | ((props: any) => any),
+  state: any = {},
+  props: any = {}
+): ReactWrapper<React.Component['props'], React.Component['state'], React.Component> => {
+  const store = mockStoreCreator(state);
+  return mount(
+    <Provider store={store}>
+      <Component {...props} />
+    </Provider>
+  );
+};
+
+export { renderConnected, renderConnectedMount };

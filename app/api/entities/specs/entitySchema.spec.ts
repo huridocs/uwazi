@@ -3,10 +3,10 @@
 import Ajv from 'ajv';
 import db from 'api/utils/testing_db';
 import { propertyTypes } from 'shared/propertyTypes';
-import fixtures, { templateId, simpleTemplateId, nonExistentId } from './validatorFixtures';
 import { EntitySchema } from 'shared/types/entityType';
 import templates from 'api/templates';
 import { TemplateSchema } from 'shared/types/templateType';
+import fixtures, { templateId, simpleTemplateId, nonExistentId } from './validatorFixtures';
 
 import { validateEntity } from '../../../shared/types/entitySchema';
 import { customErrorMessages } from '../metadataValidators.js';
@@ -154,32 +154,40 @@ describe('entity schema', () => {
           const template: TemplateSchema = {
             name: 'template with required props',
             properties: [
-              { label: 'name', required: true, type: 'text' },
-              { label: 'markdown', required: true, type: 'markdown' },
+              { label: 'name', name: 'name', required: true, type: 'text' },
+              { label: 'markdown', name: 'markdown', required: true, type: 'markdown' },
+              { label: 'numeric', name: 'numeric', required: true, type: 'numeric' },
             ],
             commonProperties: [{ name: 'title', label: 'title', type: 'text' }],
           };
-          template.properties = template.properties || [];
-          template.properties[0].required = true;
           const templateWithRequiredProps = await templates.save(template, 'en');
 
           let entity = createEntity({ template: templateWithRequiredProps._id });
           await expectError(entity, customErrorMessages.required, ".metadata['name']");
           entity = createEntity({
             template: templateWithRequiredProps._id,
-            meatadata: { name: [{ value: '' }] },
+            metadata: { name: [{ value: '' }] },
           });
           await expectError(entity, customErrorMessages.required, ".metadata['name']");
           entity = createEntity({
             template: templateWithRequiredProps._id,
-            meatadata: { name: [{ value: null }] },
+            metadata: { name: [{ value: null }] },
           });
           await expectError(entity, customErrorMessages.required, ".metadata['name']");
           entity = createEntity({
             template: templateWithRequiredProps._id,
-            meatadata: { markdown: [] },
+            metadata: { markdown: [] },
           });
           await expectError(entity, customErrorMessages.required, ".metadata['markdown']");
+          entity = createEntity({
+            template: templateWithRequiredProps._id,
+            metadata: {
+              name: [{ value: 'name' }],
+              markdown: [{ value: 'markdown' }],
+              numeric: [{ value: 0 }],
+            },
+          });
+          await validateEntity(entity);
         });
       });
 

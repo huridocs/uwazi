@@ -91,6 +91,7 @@ import { faHandPaper } from '@fortawesome/free-solid-svg-icons/faHandPaper';
 import { saveAndNext } from './save-and-next';
 import { exportCsv } from './export-csv';
 import { copyFrom } from './copy-from';
+import { funnelFilter } from './funnel-filter';
 
 const icons = {
   faAlignJustify,
@@ -185,6 +186,7 @@ const icons = {
   saveAndNext,
   exportCsv,
   copyFrom,
+  funnelFilter,
 };
 
 export const loadIcons = () => {

@@ -4,6 +4,10 @@ import { connect } from 'react-redux';
 import { I18NLink, t } from 'app/I18N';
 import { createSelector } from 'reselect';
 import { NeedAuthorization } from 'app/Auth';
+import { libraryViewInfo } from 'app/App/libraryViewInfo';
+
+const getLibraryURL = libraryView =>
+  libraryViewInfo[libraryView] ? `/${libraryViewInfo[libraryView].url}` : '/library';
 
 class Footer extends Component {
   render() {
@@ -32,7 +36,9 @@ class Footer extends Component {
           <li className="footer-nav_separator">&nbsp;</li>
 
           <li className="footer-nav_item">
-            <I18NLink to="/library">{t('System', 'Library')}</I18NLink>
+            <I18NLink to={getLibraryURL(this.props.defaultLibraryView)}>
+              {t('System', 'Library')}
+            </I18NLink>
           </li>
           <NeedAuthorization roles={['admin', 'editor']}>
             <li className="footer-nav_item">
@@ -63,6 +69,11 @@ class Footer extends Component {
 Footer.propTypes = {
   user: PropTypes.object,
   siteName: PropTypes.string,
+  defaultLibraryView: PropTypes.string,
+};
+
+Footer.defaultProps = {
+  defaultLibraryView: 'cards',
 };
 
 const selectUser = createSelector(
@@ -74,6 +85,7 @@ export function mapStateToProps(state) {
   return {
     user: selectUser(state),
     siteName: state.settings.collection.get('site_name'),
+    defaultLibraryView: state.settings.collection.get('defaultLibraryView'),
   };
 }
 

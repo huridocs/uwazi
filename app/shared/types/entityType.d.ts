@@ -21,5 +21,5 @@ export interface EntitySchema {
   user?: ObjectIdSchema;
   metadata?: MetadataSchema;
   suggestedMetadata?: MetadataSchema;
-  [k: string]: any | undefined;
+  [k: string]: unknown | undefined;
 }

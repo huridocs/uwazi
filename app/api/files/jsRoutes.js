@@ -7,10 +7,11 @@ import { search } from 'api/search';
 import settings from 'api/settings';
 import { processDocument } from 'api/files/processDocument';
 import { uploadsPath, attachmentsPath, generateFileName } from 'api/files/filesystem';
-
+import cors from 'cors';
 import activitylogMiddleware from 'api/activitylog/activitylogMiddleware';
 import { validation, createError } from '../utils';
-import captchaAuthorization from '../auth/captchaMiddleware';
+import { captchaAuthorization } from '../auth';
+
 import { uploadMiddleware } from './uploadMiddleware';
 
 const storeFile = (pathFunction, file) =>
@@ -25,10 +26,17 @@ const storeFile = (pathFunction, file) =>
   });
 
 const routes = app => {
-  const socket = req => req.getCurrentSessionSockets();
+  const corsOptions = {
+    origin: true,
+    methods: 'POST',
+    credentials: true,
+    optionsSuccessStatus: 200,
+  };
 
+  app.options('/api/public', cors(corsOptions));
   app.post(
     '/api/public',
+    cors(corsOptions),
     uploadMiddleware.multiple(),
     captchaAuthorization(),
     activitylogMiddleware,
@@ -88,7 +96,7 @@ const routes = app => {
           storeFile(uploadsPath, file).then(async _file => {
             await processDocument(newEntity.sharedId, _file);
             await search.indexEntities({ sharedId: newEntity.sharedId }, '+fullText');
-            socket(req).emit('documentProcessed', newEntity.sharedId);
+            req.emitToSessionSocket('documentProcessed', newEntity.sharedId);
           });
         }
 
@@ -110,11 +118,11 @@ const routes = app => {
       proxyReqPathResolver() {
         return '/api/public';
       },
-      proxyReqOptDecorator(proxyReqOpts, srcReq) {
+      proxyReqOptDecorator(proxyReqOpts) {
         const { tenant, ...headers } = proxyReqOpts.headers;
         return {
           ...proxyReqOpts,
-          headers: { ...headers, Cookie: srcReq.session.remotecookie },
+          headers: { ...headers },
         };
       },
     })(req, res, next);
