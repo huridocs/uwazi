@@ -3,11 +3,13 @@ import userGroups from 'api/usergroups/userGroups';
 
 export const contributors = {
   getContributors: async (filterTerm: string) => {
-    const matchedUsers = await users.get({
-      $or: [{ email: filterTerm }, { username: filterTerm }],
-    });
+    const exactFilterTerm = new RegExp(`^${filterTerm}$`, 'i');
+    const partialFilterTerm = new RegExp(`^${filterTerm}`, 'i');
 
-    const groups = await userGroups.get({});
+    const matchedUsers = await users.get({
+      $or: [{ email: exactFilterTerm }, { username: exactFilterTerm }],
+    });
+    const groups = await userGroups.get({ name: { $regex: partialFilterTerm } });
 
     const availableContributors: any[] = [];
 

@@ -12,6 +12,7 @@ describe('ShareEntityModal', () => {
     isOpen: true,
     onClose: jasmine.createSpy('onClose'),
     onSave: jasmine.createSpy('onSave'),
+    selectedEntities: [],
   };
   function render(args?: ShareEntityModalProps) {
     const props = { ...defaultProps, ...args };

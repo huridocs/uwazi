@@ -9,47 +9,48 @@ describe('contributors', () => {
 
   describe('getContributors', () => {
     describe('matched user', () => {
-      async function getAndAssertContributors(searchTerm: string, expectedUser: any) {
-        const availableContributors = await contributors.getContributors(searchTerm);
-        expect(availableContributors[0]).toEqual({
-          _id: expectedUser._id,
-          email: expectedUser.email,
-          label: expectedUser.username,
-          role: expectedUser.role,
+      function assertUserAsContributor(actualContributor: any, expectedContributor: any) {
+        expect(actualContributor).toEqual({
+          _id: expectedContributor._id,
+          email: expectedContributor.email,
+          label: expectedContributor.username,
+          role: expectedContributor.role,
           type: 'user',
-        });
-        expect(availableContributors[1]).toEqual({
-          _id: groupA._id,
-          label: groupA.name,
-          type: 'group',
-        });
-        expect(availableContributors[2]).toEqual({
-          _id: groupB._id,
-          label: groupB.name,
-          type: 'group',
         });
       }
 
-      it('should return exact matched by the username of the user and all existing groups', async () => {
-        await getAndAssertContributors('UserB', userB);
+      it('should return exact insensitive case matched by the username of the user and all existing groups', async () => {
+        const availableContributors = await contributors.getContributors('userB');
+        assertUserAsContributor(availableContributors[0], userB);
       });
 
       it('should return exact matched by the email of the user and all existing groups', async () => {
-        await getAndAssertContributors('usera@domain.org', userA);
+        const availableContributors = await contributors.getContributors('usera@domain.org');
+        assertUserAsContributor(availableContributors[0], userA);
       });
     });
 
     describe('not matched user', () => {
-      it('should return all existing groups', async () => {
-        const availableContributors = await contributors.getContributors('nouser');
+      it('should return all groups that contain the searchTerm', async () => {
+        const availableContributors = await contributors.getContributors('user1');
+        expect(availableContributors.length).toBe(1);
         expect(availableContributors[0]).toEqual({
-          _id: groupA._id,
-          label: groupA.name,
+          _id: groupB._id,
+          label: groupB.name,
+          type: 'group',
+        });
+      });
+
+      it('should return all existing groups', async () => {
+        const availableContributors = await contributors.getContributors('User');
+        expect(availableContributors[0]).toEqual({
+          _id: groupB._id,
+          label: groupB.name,
           type: 'group',
         });
         expect(availableContributors[1]).toEqual({
-          _id: groupB._id,
-          label: groupB.name,
+          _id: groupA._id,
+          label: groupA.name,
           type: 'group',
         });
       });

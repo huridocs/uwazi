@@ -9,7 +9,7 @@ interface MemberListProps {
   validationErrors: ValidationError[];
 }
 
-export const MemebersList = ({ members, onChange, validationErrors }: MemberListProps) => {
+export const MembersList = ({ members, onChange, validationErrors }: MemberListProps) => {
   const onChangeHandler = (index: number) => (value: MemberWithPermission) => {
     const newMembers = [...members];
     newMembers[index] = value;

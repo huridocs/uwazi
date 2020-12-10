@@ -1,6 +1,6 @@
 import { shallow } from 'enzyme';
 import React from 'react';
-import { MemebersList } from '../MembersList';
+import { MembersList } from '../MembersList';
 import { data } from './testData';
 import { MemberListItem } from '../MemberListItem';
 import { MemberListItemPermission } from '../MemberListItemPermission';
@@ -8,7 +8,7 @@ import { MemberListItemPermission } from '../MemberListItemPermission';
 describe('MemberList', () => {
   it('should render with the correct data', () => {
     const component = shallow(
-      <MemebersList members={data} onChange={() => {}} validationErrors={[]} />
+      <MembersList members={data} onChange={() => {}} validationErrors={[]} />
     );
 
     expect(component.find('tr').length).toBe(data.length);
@@ -23,7 +23,7 @@ describe('MemberList', () => {
     const reducedSet = data.slice(0, 2);
     const onChangeMock = jest.fn();
     const component = shallow(
-      <MemebersList members={reducedSet} onChange={onChangeMock} validationErrors={[]} />
+      <MembersList members={reducedSet} onChange={onChangeMock} validationErrors={[]} />
     );
     const permissionsComp = component
       .find(MemberListItemPermission)
@@ -39,7 +39,7 @@ describe('MemberList', () => {
     const reducedSet = data.slice(0, 2);
     const onChangeMock = jest.fn();
     const component = shallow(
-      <MemebersList members={reducedSet} onChange={onChangeMock} validationErrors={[]} />
+      <MembersList members={reducedSet} onChange={onChangeMock} validationErrors={[]} />
     );
     const permissionsComp = component
       .find(MemberListItemPermission)

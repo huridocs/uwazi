@@ -3,14 +3,15 @@ import React, { useState, useEffect } from 'react';
 import { Icon } from 'UI';
 import { Translate } from 'app/I18N';
 import { UserGroupsLookupField } from './UserGroupsLookupField';
-import { MemebersList } from './MembersList';
+import { MembersList } from './MembersList';
 import { MemberWithPermission } from '../EntityPermisions';
-import { searchMembers } from '../PermissionsAPI';
+import { loadGrantedPermissions, searchContributors } from '../PermissionsAPI';
 
 export interface ShareEntityModalProps {
   isOpen: boolean;
   onClose: (event: any) => void;
   onSave: (event: any) => void;
+  selectedEntities: string[];
 }
 
 const validate = (assignments: MemberWithPermission[]) =>
@@ -29,7 +30,12 @@ const validate = (assignments: MemberWithPermission[]) =>
     })
     .filter(i => i);
 
-export const ShareEntityModalComponent = ({ isOpen, onClose, onSave }: ShareEntityModalProps) => {
+export const ShareEntityModalComponent = ({
+  isOpen,
+  onClose,
+  onSave,
+  selectedEntities,
+}: ShareEntityModalProps) => {
   const [search, setSearch] = useState('');
   const [results, setResults] = useState<MemberWithPermission[]>([]);
   const [assignments, setAssignments] = useState<MemberWithPermission[]>([]);
@@ -37,7 +43,11 @@ export const ShareEntityModalComponent = ({ isOpen, onClose, onSave }: ShareEnti
   const [validationErrors, setValidationErrors] = useState<any[]>([]);
 
   useEffect(() => {
-    setAssignments([]);
+    loadGrantedPermissions(selectedEntities)
+      .then(permissions => {
+        setAssignments(permissions);
+      })
+      .catch(() => {});
 
     return () => {
       setAssignments([]);
@@ -49,7 +59,7 @@ export const ShareEntityModalComponent = ({ isOpen, onClose, onSave }: ShareEnti
 
   const onChangeHandler = async (value: string) => {
     setSearch(value);
-    setResults(await searchMembers(value));
+    setResults(await searchContributors(value));
   };
 
   const onSelectHandler = (value: MemberWithPermission) => {
@@ -85,7 +95,7 @@ export const ShareEntityModalComponent = ({ isOpen, onClose, onSave }: ShareEnti
           onSelect={onSelectHandler}
           options={results}
         />
-        <MemebersList
+        <MembersList
           members={assignments}
           onChange={value => {
             setAssignments(value);

@@ -21,13 +21,13 @@ const userB = {
 
 const groupA = {
   _id: idGroupA,
-  name: 'GroupA',
+  name: 'Users GroupA',
   members: [{ _id: idUserA }],
 };
 
 const groupB = {
   _id: idGroupB,
-  name: 'GroupB',
+  name: 'User1 GroupB',
   members: [{ _id: idUserB }],
 };
 
@@ -44,17 +44,17 @@ export default {
         {
           _id: idUserA,
           type: 'user',
-          permission: 'read',
+          level: 'read',
         },
         {
           _id: idUserB,
           type: 'user',
-          permission: 'write',
+          level: 'write',
         },
         {
           _id: idGroupA,
           type: 'group',
-          permission: 'write',
+          level: 'write',
         },
       ],
     },
