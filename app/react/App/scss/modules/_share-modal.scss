@@ -33,6 +33,14 @@
 
   .modal-body {
     min-height: 360px;
+
+    .validation-message {
+      color: #EB5757;
+      position: absolute;
+      right: 15px;
+      bottom: 0;
+      font-size: 14px;
+    }
   }
 
   .modal-footer {
@@ -82,10 +90,13 @@
     width: 100%;
     z-index: 1;
     position: absolute;
+    max-height: 48vh;
+    overflow: auto;
 
     li {
       padding: 4px 16px;
       display: flex;
+      cursor: pointer;
 
       &.selected {
         background-color: rgba(44, 86, 192, 0.1);
@@ -129,6 +140,10 @@
   }
 }
 
+.member-list-wrapper {
+  max-height: calc(100vh - 273px);
+  overflow: auto;
+}
 .members-list {
   border-collapse:separate; 
   border-spacing: 8px 12px;

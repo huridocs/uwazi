@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Icon } from 'UI';
 import { MemberWithPermission } from '../EntityPermisions';
 import { MemberListItem } from './MemberListItem';
@@ -27,8 +27,8 @@ export const UserGroupsLookupField = ({
     onChange(event.target.value);
   };
 
-  const getOnSelectHandler = (selection: number) => () => {
-    onSelect(options[selection]);
+  const getOnSelectHandler = (selection: MemberWithPermission) => () => {
+    onSelect(selection);
     onChange('');
   };
 
@@ -68,6 +68,8 @@ export const UserGroupsLookupField = ({
     }
   };
 
+  const optionsListRef = useRef(null);
+
   return (
     <div className="userGroupsLookupField">
       <input
@@ -75,18 +77,22 @@ export const UserGroupsLookupField = ({
         placeholder="Add people or groups"
         onChange={onChangeHandler}
         onKeyDown={onKeyPressHandler}
-        onBlur={() => setShow(false)}
+        onBlur={e => {
+          if (e.relatedTarget !== optionsListRef.current) {
+            setShow(false);
+          }
+        }}
         onFocus={() => setShow(true)}
         value={value}
       />
       {show && options.length ? (
-        <ul role="listbox">
+        <ul tabIndex={-1} role="listbox" ref={optionsListRef}>
           {options.map((result: MemberWithPermission, index: number) => (
             <li
               key={`${result.type}-${result.id}`}
               role="option"
               aria-selected={index === selected}
-              onClick={getOnSelectHandler(index)}
+              onClick={getOnSelectHandler(result)}
               className={index === selected ? 'selected' : ''}
             >
               <MemberListItem value={result} />
