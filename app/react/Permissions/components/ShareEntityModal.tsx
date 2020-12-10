@@ -63,7 +63,7 @@ export const ShareEntityModalComponent = ({
   };
 
   const onSelectHandler = (value: MemberWithPermission) => {
-    setAssignments([...assignments, { ...value }]);
+    setAssignments([...assignments, { ...value, level: value.level || 'read' }]);
     setDirty(true);
   };
 
@@ -95,14 +95,19 @@ export const ShareEntityModalComponent = ({
           onSelect={onSelectHandler}
           options={results}
         />
-        <MembersList
-          members={assignments}
-          onChange={value => {
-            setAssignments(value);
-            setDirty(true);
-          }}
-          validationErrors={validationErrors}
-        />
+        <div className="member-list-wrapper">
+          <MembersList
+            members={assignments}
+            onChange={value => {
+              setAssignments(value);
+              setDirty(true);
+            }}
+            validationErrors={validationErrors}
+          />
+        </div>
+        {validationErrors.length ? (
+          <span className="validation-message">Please select access level for marked users.</span>
+        ) : null}
       </Modal.Body>
 
       {dirty ? (

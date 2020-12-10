@@ -1,5 +1,5 @@
 import { shallow, ShallowWrapper } from 'enzyme';
-import React, { ReactElement } from 'react';
+import React from 'react';
 import { UserGroupsLookupField } from '../UserGroupsLookupField';
 import { MemberWithPermission } from '../../EntityPermisions';
 
@@ -11,13 +11,6 @@ describe('UserGroupsLookupField', () => {
     onChangeMock = jest.fn();
     onSelectMock = jest.fn();
   });
-
-  const assertOption = (element: ReactElement, option: MemberWithPermission) => {
-    expect(element.props.children[0].props.children.props.icon).toBe(
-      option.type === 'user' ? 'user' : 'users'
-    );
-    expect(element.props.children[1].props.children).toBe(option.label);
-  };
 
   it('should render the options', () => {
     const options: MemberWithPermission[] = [
@@ -43,10 +36,14 @@ describe('UserGroupsLookupField', () => {
       />
     );
 
-    const items = component.find('li');
+    component
+      .find('input')
+      .first()
+      .simulate('focus');
 
-    assertOption(items.get(0) as any, options[0]);
-    assertOption(items.get(1) as any, options[1]);
+    const items = component.find('li');
+    expect(items.find({ value: options[0] }).length).toBe(1);
+    expect(items.find({ value: options[1] }).length).toBe(1);
     expect(items.length).toBe(2);
   });
 
@@ -59,6 +56,11 @@ describe('UserGroupsLookupField', () => {
         options={[]}
       />
     );
+
+    component
+      .find('input')
+      .first()
+      .simulate('focus');
 
     component.find('input').simulate('change', { target: { value: 'new value' } });
 
@@ -80,6 +82,11 @@ describe('UserGroupsLookupField', () => {
         ]}
       />
     );
+
+    component
+      .find('input')
+      .first()
+      .simulate('focus');
 
     component.find('li').simulate('click');
 
@@ -125,6 +132,11 @@ describe('UserGroupsLookupField', () => {
           ]}
         />
       );
+
+      component
+        .find('input')
+        .first()
+        .simulate('focus');
     });
 
     it('should not trigger an event if Enter press with no seletion', () => {
