@@ -22,24 +22,24 @@ export class Document extends Component {
     this.onDocumentReady = this.onDocumentReady.bind(this);
     this.onTextDeselection = this.onTextDeselection.bind(this);
     this.onTextSelected = this.onTextSelected.bind(this);
+    this.handleClick = this.handleClick.bind(this);
+    this.highlightReference = this.highlightReference.bind(this);
   }
 
   componentDidMount() {
     this.props.unsetSelection();
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (this.props.doc.get('_id') !== nextProps.doc.get('_id')) {
+  componentDidUpdate(prevProps) {
+    if (prevProps && prevProps.doc.get('_id') !== this.props.doc.get('_id')) {
       this.props.unsetSelection();
     }
-  }
-
-  componentDidUpdate() {
     highlightSnippet(this.props.selectedSnippet, this.props.searchTerm);
   }
 
   onTextSelected(textSelection) {
     this.props.setSelection(textSelection, this.props.file._id);
+    return this.props.deactivateReference();
   }
 
   onTextDeselection() {
@@ -50,18 +50,15 @@ export class Document extends Component {
     this.props.onDocumentReady(this.props.doc);
   }
 
-  handleClick(e) {
-    if (e.target.className && e.target.className.indexOf('reference') !== -1) {
-      const references = this.props.references.toJS();
-      return this.props.activateReference(
-        references.find(r => r._id === e.target.getAttribute('data-id')),
-        this.props.file.pdfInfo,
-        references
-      );
-    }
+  handleClick() {
     if (this.props.executeOnClickHandler) {
       this.props.onClick();
     }
+  }
+
+  highlightReference(connection) {
+    const references = this.props.references.toJS();
+    return this.props.activateReference(connection, this.props.file.pdfInfo, references);
   }
 
   pdfLoaded() {
@@ -96,6 +93,8 @@ export class Document extends Component {
         onTextSelection={this.onTextSelected}
         onTextDeselection={this.onTextDeselection}
         references={references}
+        highlightReference={this.highlightReference}
+        activeReference={this.props.activeReference}
       />
     );
   }
@@ -104,7 +103,7 @@ export class Document extends Component {
     const doc = this.props.doc.toJS();
     const { file, references } = this.props;
 
-    const Header = this.props.header ? this.props.header : () => false;
+    const Header = this.props.header;
     return (
       <div>
         <div className={`_${doc._id} document ${this.props.className} ${determineDirection(file)}`}>
@@ -112,8 +111,8 @@ export class Document extends Component {
           <div
             className="pages"
             ref={ref => (this.pagesContainer = ref)}
-            onClick={this.handleClick.bind(this)}
             onMouseOver={this.handleOver.bind(this)}
+            onClick={this.handleClick}
           >
             {this.renderPDF(file, references)}
           </div>
@@ -131,6 +130,14 @@ Document.defaultProps = {
   searchTerm: '',
   page: 1,
   selectedSnippet: Immutable.fromJS({}),
+  deactivateReference: () => {},
+  header: () => false,
+  activateReference: () => {},
+  doScrollToActive: false,
+  scrollToActive: () => {},
+  activeReference: '',
+  className: '',
+  executeOnClickHandler: false,
 };
 
 Document.propTypes = {
@@ -153,8 +160,7 @@ Document.propTypes = {
   className: PropTypes.string,
   onClick: PropTypes.func,
   executeOnClickHandler: PropTypes.bool,
-  disableTextSelection: PropTypes.bool,
-  forceSimulateSelection: PropTypes.bool,
+  deactivateReference: PropTypes.func,
 };
 
 export default Document;

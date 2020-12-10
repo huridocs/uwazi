@@ -13,7 +13,6 @@ import {
   highlightReference,
   activateReference,
   selectReference,
-  deactivateReference,
 } from 'app/Viewer/actions/uiActions';
 import { Item } from 'app/Layout';
 import { createSelector } from 'reselect';
@@ -36,7 +35,8 @@ export class Connection extends Component {
         this.props.referencesSection
       );
     }
-    if (this.props.targetDoc && typeof reference.range.start !== 'undefined') {
+
+    if (this.props.targetDoc && typeof reference.reference !== 'undefined') {
       this.props.selectReference(reference, this.props.doc.defaultDoc.pdfInfo);
     }
   }
@@ -61,7 +61,7 @@ export class Connection extends Component {
   render() {
     const { reference } = this.props;
     let itemClass = '';
-    const disabled = this.props.targetDoc && typeof reference.range.start === 'undefined';
+    const disabled = this.props.targetDoc && typeof reference.reference === 'undefined';
 
     if (this.props.highlighted) {
       itemClass = 'relationship-hover';
@@ -171,7 +171,6 @@ function mapDispatchToProps(dispatch) {
       highlightReference,
       activateReference,
       selectReference,
-      deactivateReference,
       deleteReference,
     },
     dispatch
