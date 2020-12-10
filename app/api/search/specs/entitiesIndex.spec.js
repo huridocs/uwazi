@@ -135,6 +135,18 @@ describe('entitiesIndex', () => {
       response = await checkMapping(templateB, elasticIndex);
       expect(response).toEqual({ errors: [{ name: 'Date of birth' }], valid: false });
     });
+
+    describe('when the mapping is empty', () => {
+      it('should throw no errors', async () => {
+        const templateB = {
+          _id: '456',
+          name: 'template B',
+          properties: [{ name: 'dob', type: 'date', label: 'Date of birth' }],
+        };
+        const response = await checkMapping(templateB, elasticIndex);
+        expect(response).toEqual({ errors: [], valid: true });
+      });
+    });
   });
 
   describe('reindexAll', () => {
