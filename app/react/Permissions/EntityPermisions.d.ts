@@ -1,6 +1,6 @@
 export interface MemberWithPermission {
   type: 'user' | 'group';
-  id: string;
+  _id: string;
   label: string;
   role?: 'contributor' | 'editor' | 'admin';
   level?: 'read' | 'write' | 'mixed';
@@ -8,5 +8,5 @@ export interface MemberWithPermission {
 
 export interface ValidationError {
   type: MemberWithPermission['type'];
-  id: MemberWithPermission['id'];
+  _id: MemberWithPermission['_id'];
 }

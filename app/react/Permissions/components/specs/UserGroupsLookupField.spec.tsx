@@ -15,13 +15,13 @@ describe('UserGroupsLookupField', () => {
   it('should render the options', () => {
     const options: MemberWithPermission[] = [
       {
-        id: 'id',
+        _id: 'id',
         label: 'label',
         type: 'user',
         level: 'read',
       },
       {
-        id: 'id2',
+        _id: 'id2',
         label: 'label',
         type: 'group',
       },
@@ -75,7 +75,7 @@ describe('UserGroupsLookupField', () => {
         value=""
         options={[
           {
-            id: 'id',
+            _id: 'id',
             label: 'label',
             type: 'user',
           },
@@ -91,7 +91,7 @@ describe('UserGroupsLookupField', () => {
     component.find('li').simulate('click');
 
     expect(onSelectMock).toHaveBeenCalledWith({
-      id: 'id',
+      _id: 'id',
       label: 'label',
       type: 'user',
     });
@@ -110,22 +110,22 @@ describe('UserGroupsLookupField', () => {
           value=""
           options={[
             {
-              id: 'id1',
+              _id: 'id1',
               label: 'user',
               type: 'user',
             },
             {
-              id: 'id2',
+              _id: 'id2',
               label: 'group',
               type: 'group',
             },
             {
-              id: 'id3',
+              _id: 'id3',
               label: 'group2',
               type: 'group',
             },
             {
-              id: 'id4',
+              _id: 'id4',
               label: 'user2',
               type: 'user',
             },
@@ -185,16 +185,16 @@ describe('UserGroupsLookupField', () => {
       component.find('input').simulate('keydown', getEvent('Enter'));
 
       expect(onSelectMock).toHaveBeenCalledWith({
-        id: 'id1',
+        _id: 'id1',
         label: 'user',
         type: 'user',
       });
     });
 
-    it('should clear the input if Esc pressed', () => {
+    it('should hide the dropdown if Esc pressed', () => {
       component.find('input').simulate('keydown', getEvent('Escape'));
 
-      expect(onChangeMock).toHaveBeenCalledWith('');
+      expect(component.find('ul').length).toBe(0);
     });
   });
 });
