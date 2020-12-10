@@ -99,7 +99,8 @@ describe('Users', () => {
 
       it('should do the recover password process (as a new user)', done => {
         users
-          .newUser({
+          .newUser(
+            {
               username: 'spidey',
               email: 'peter@parker.com',
               password: 'mypass',
