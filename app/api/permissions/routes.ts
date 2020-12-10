@@ -9,6 +9,11 @@ export const permissionRoutes = (app: Application) => {
     res.json(req.body);
   });
 
+  app.get('/api/entities/permissions', async (req, res, _next) => {
+    const permissions = await entitiesPermissions.getEntitiesPermissions(req.query);
+    res.json(permissions);
+  });
+
   app.get(
     '/api/contributors',
     validation.validateRequest({

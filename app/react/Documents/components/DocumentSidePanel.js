@@ -421,6 +421,7 @@ export class DocumentSidePanel extends Component {
                       key={doc.get('sharedId')}
                       isOpen={this.state.sharing}
                       onClose={this.toggleSharing}
+                      selectedEntities={[doc.get('sharedId')]}
                     />
                   </div>
                 );

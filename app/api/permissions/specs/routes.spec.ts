@@ -33,6 +33,25 @@ describe('permissions routes', () => {
         expect(entitiesPermissions.setEntitiesPermissions).toHaveBeenCalled();
       });
     });
+
+    describe('GET', () => {
+      it('should get the permissions of requested entities', async () => {
+        spyOn(entitiesPermissions, 'getEntitiesPermissions').and.returnValue(
+          Promise.resolve([
+            {
+              _id: 'user1',
+              level: 'read',
+            },
+          ])
+        );
+        const response = await request(app)
+          .get('/api/entities/permissions')
+          .set('X-Requested-With', 'XMLHttpRequest')
+          .query({ ids: ['sharedId1', 'sharedId2'] });
+        expect(response.status).toBe(200);
+        expect(response.body).toEqual([{ _id: 'user1', level: 'read' }]);
+      });
+    });
   });
 
   describe('search for contributor to share with', () => {

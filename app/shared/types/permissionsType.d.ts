@@ -4,13 +4,17 @@
 import { ObjectIdSchema } from 'shared/types/commonTypes';
 
 export interface PermissionSchema {
-  _id: string | ObjectIdSchema;
-  type: string;
-  permission: string;
+  _id: ObjectIdSchema;
+  type: 'user' | 'group';
+  level: 'read' | 'write' | 'mixed';
 }
 
-export type PermissionsSchema = {
-  _id: string | ObjectIdSchema;
-  type: string;
-  permission: string;
-}[];
+export type PermissionsSchema = PermissionSchema[];
+
+export interface GrantedPermissionSchema {
+  _id: ObjectIdSchema;
+  type: 'user' | 'group';
+  level: 'read' | 'write' | 'mixed';
+  label: string;
+  role?: 'contributor' | 'editor' | 'admin';
+}
