@@ -195,7 +195,8 @@ const checkMapping = async (template, elasticIndex) => {
   const errors = [];
   const mapping = elasticMapFactory.mapping([template]);
   const currentMapping = await elastic.indices.getMapping({ index: elasticIndex });
-  const mappedProps = currentMapping.body[elasticIndex].mappings.properties.metadata.properties;
+  const mappedProps =
+    currentMapping.body[elasticIndex].mappings.properties.metadata.properties || {};
   const newMappedProps = mapping.properties.metadata.properties;
   Object.keys(newMappedProps).forEach(key => {
     if (!equalPropMapping(mappedProps[key], newMappedProps[key])) {
