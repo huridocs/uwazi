@@ -48,6 +48,7 @@ class PDF extends Component {
       nextProps.filename !== this.props.filename ||
       nextProps.pdfInfo !== this.props.pdfInfo ||
       nextProps.style !== this.props.style ||
+      nextProps.activeReference !== this.props.activeReference ||
       nextState.pdf !== this.state.pdf
     );
   }
@@ -155,13 +156,26 @@ class PDF extends Component {
     }
   }
 
+  highlightReference(connection, event) {
+    event.stopPropagation();
+    this.props.highlightReference(connection);
+  }
+
   renderReferences(page) {
     const references = this.props.references.toJS();
-    return references.map(r => (
-      <div data-id={r._id} key={r._id}>
-        <Highlight regionId={page} highlight={r.reference} />
-      </div>
-    ));
+    return references.map(r => {
+      const color = r._id === this.props.activeReference ? '#ffd84b' : '#feeeb4';
+      return (
+        <div
+          data-id={r._id}
+          key={r._id}
+          className="reference"
+          onClick={this.highlightReference.bind(this, r)}
+        >
+          <Highlight regionId={page} highlight={r.reference} color={color} />
+        </div>
+      );
+    });
   }
 
   render() {
@@ -212,6 +226,8 @@ PDF.defaultProps = {
   onTextSelection: () => {},
   onTextDeselection: () => {},
   references: Immutable.List(),
+  highlightReference: () => {},
+  activeReference: '',
 };
 
 PDF.propTypes = {
@@ -225,6 +241,8 @@ PDF.propTypes = {
   pdfInfo: PropTypes.object,
   style: PropTypes.object,
   references: PropTypes.instanceOf(Immutable.List),
+  highlightReference: PropTypes.func,
+  activeReference: PropTypes.string,
 };
 
 export default PDF;

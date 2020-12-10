@@ -14,16 +14,16 @@ import { DocumentCounter } from 'app/Layout/DocumentCounter';
 import { TilesViewer } from './TilesViewer';
 
 class DocumentsList extends Component {
+  static getDerivedStateFromProps() {
+    return { loading: false };
+  }
+
   constructor(props, context) {
     super(props, context);
     this.state = { loading: false };
     this.clickOnDocument = this.clickOnDocument.bind(this);
     this.selectAllDocuments = this.selectAllDocuments.bind(this);
     this.loadNextGroupOfEntities = this.loadNextGroupOfEntities.bind(this);
-  }
-
-  componentWillReceiveProps() {
-    this.setState({ loading: false });
   }
 
   loadMoreDocuments(amount, from) {

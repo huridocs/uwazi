@@ -178,9 +178,9 @@ export function scrollToActive(reference, docInfo, tab, doScroll) {
   };
 }
 
-export function selectReference(reference, docInfo) {
+export function selectReference(connection, docInfo) {
   return dispatch => {
-    dispatch(activateReference(reference, docInfo));
-    dispatch(setTargetSelection(reference.range));
+    dispatch(activateReference(connection, docInfo));
+    dispatch(setTargetSelection(connection.reference));
   };
 }
