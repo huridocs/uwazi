@@ -1,52 +1,62 @@
 import testingDB from 'api/utils/testing_db';
 
-const connectionId = testingDB.id();
+const firstConnectionId = testingDB.id();
+const secondConnectionId = testingDB.id();
 const documentId = testingDB.id();
 
 export default {
   files: [
     {
       _id: documentId,
-      filename: 'first_document.pdf',
+      filename: 'test.pdf',
       pdfInfo: {
         1: {
-          chars: 1813,
+          chars: 207,
         },
         2: {
-          chars: 5329,
+          chars: 327,
         },
         3: {
-          chars: 8911,
+          chars: 476,
         },
         4: {
-          chars: 13428,
-        },
-        5: {
-          chars: 17878,
-        },
-        6: {
-          chars: 22296,
-        },
-        7: {
-          chars: 25112,
-        },
-        8: {
-          chars: 25537,
+          chars: 582,
         },
       },
     },
   ],
   connections: [
     {
-      _id: connectionId,
+      _id: firstConnectionId,
+      range: {
+        start: 104,
+        end: 182,
+        text: 'Uwazi is an open-source solution for building and sharing document collections',
+      },
+      file: documentId,
+    },
+    {
+      _id: secondConnectionId,
+      range: {
+        start: 327,
+        end: 349,
+        text: 'BUILD A CUSTOM LIBRARY',
+      },
+      file: documentId,
+    },
+    {
+      _id: 'no file',
       range: {
         start: 1214,
         end: 1269,
-        text: 'SOLICITUD DE INTERPRETACIÓNY PROCEDIMIENTO ANTELA CORTE',
+        text: '',
       },
+    },
+    {
+      _id: 'no range',
       file: documentId,
     },
   ],
 };
 
-export { documentId, connectionId };
+export { documentId, firstConnectionId, secondConnectionId };

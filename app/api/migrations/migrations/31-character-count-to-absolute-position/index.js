@@ -4,6 +4,46 @@ import testingDB from 'api/utils/testing_db';
 import path from 'path';
 import { config } from 'api/config';
 
+const absolutePositionReferenceToTextSelection = absolutePositionReference => {
+  const textSelectionRectangles = absolutePositionReference.selectionRectangles.map(x => ({
+    left: x.left,
+    top: x.top,
+    width: x.width,
+    height: x.height,
+    pageNumber: x.pageNumber,
+  }));
+
+  const textSelection = {
+    text: absolutePositionReference.text,
+    selectionRectangles: textSelectionRectangles,
+  };
+  return textSelection;
+};
+
+async function convertToAbsolutePosition(connection, db) {
+  const files = await testingDB.mongodb
+    .collection('files')
+    .find({ _id: connection.file })
+    .toArray();
+
+  const filename = path.join(config.defaultTenant.uploadedDocuments, files[0].filename);
+  const pageEndingCharacterCount = Object.values(files[0].pdfInfo).map(x => x.chars);
+
+  const characterCountToAbsoluteConversion = new PdfCharacterCountToAbsolute();
+  await characterCountToAbsoluteConversion.loadPdf(filename, pageEndingCharacterCount);
+
+  const absolutePositionReference = characterCountToAbsoluteConversion.convert(
+    connection.range.text,
+    connection.range.start,
+    connection.range.end
+  );
+  const textSelection = absolutePositionReferenceToTextSelection(absolutePositionReference);
+
+  await db
+    .collection('connections')
+    .updateOne({ _id: connection._id }, { $set: { reference: textSelection } });
+}
+
 export default {
   delta: 31,
 
@@ -14,43 +54,11 @@ export default {
   async up(db) {
     process.stdout.write(`${this.name}...\r\n`);
     const cursor = db.collection('connections').find();
-    const characterCountToAbsoluteConversion = new PdfCharacterCountToAbsolute();
 
     while (await cursor.hasNext()) {
       const connection = await cursor.next();
       if (connection.file && connection.range) {
-        const files = await testingDB.mongodb
-          .collection('files')
-          .find({ _id: connection.file })
-          .toArray();
-
-        const filename = path.join(config.defaultTenant.uploadedDocuments, files[0].filename);
-        const pageEndingCharacterCount = Object.values(files[0].pdfInfo).map(x => x.chars);
-        await characterCountToAbsoluteConversion.loadPdf(filename, pageEndingCharacterCount);
-
-        const absolutePositionReference = characterCountToAbsoluteConversion.convert(
-          connection.range.text,
-          connection.range.start,
-          connection.range.end
-        );
-
-        const textSelectionRectangles = absolutePositionReference.selectionRectangles.map(x => ({
-          left: x.left,
-          top: x.top,
-          width: x.width,
-          height: x.height,
-          pageNumber: x.pageNumber,
-        }));
-
-        const textSelection = {
-          text: absolutePositionReference.text,
-          selectionRectangles: textSelectionRectangles,
-        };
-
-        absolutePositionReference.selectionRectangles = absolutePositionReference.selectionRectangles.map();
-        await db
-          .collection('connections')
-          .updateOne({ _id: connection._id }, { $set: { reference: textSelection } });
+        await convertToAbsolutePosition(connection, db);
       }
     }
 
