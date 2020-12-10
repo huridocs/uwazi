@@ -3,13 +3,13 @@ import users from 'api/users/users';
 import { GrantedPermissionSchema, PermissionsSchema } from 'shared/types/permissionsType';
 
 export const entitiesPermissions = {
-  setEntitiesPermissions: async (permissionsData: any) => {
+  setEntitiesPermissions: async (permissionsData: any, language: string) => {
     await entities.multipleUpdate(
       permissionsData.ids,
       {
         permissions: permissionsData.permissions,
       },
-      { language: 'en' }
+      { language }
     );
   },
   getEntitiesPermissions: async (query: any) => {

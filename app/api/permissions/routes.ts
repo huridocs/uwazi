@@ -5,7 +5,7 @@ import { validation } from 'api/utils';
 
 export const permissionRoutes = (app: Application) => {
   app.post('/api/entities/permissions', async (req, res, _next) => {
-    await entitiesPermissions.setEntitiesPermissions(req.body);
+    await entitiesPermissions.setEntitiesPermissions(req.body, req.language);
     res.json(req.body);
   });
 

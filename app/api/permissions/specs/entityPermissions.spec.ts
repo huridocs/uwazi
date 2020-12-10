@@ -14,7 +14,7 @@ describe('permissions', () => {
         ids: ['shared1', 'shared2'],
         permissions: [{ _id: 'user1', type: 'user', level: 'read' }],
       };
-      await entitiesPermissions.setEntitiesPermissions(permissionsData);
+      await entitiesPermissions.setEntitiesPermissions(permissionsData, 'en');
       const storedEntities = await entities.get();
       expect(storedEntities[0].permissions).toEqual(permissionsData.permissions);
       expect(storedEntities[1].permissions).toEqual(permissionsData.permissions);
