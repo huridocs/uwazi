@@ -26,22 +26,26 @@ async function convertToAbsolutePosition(connection, db) {
     .find({ _id: connection.file })
     .toArray();
 
-  const filename = path.join(config.defaultTenant.uploadedDocuments, files[0].filename);
-  const pageEndingCharacterCount = Object.values(files[0].pdfInfo).map(x => x.chars);
+  if (files[0].pdfInfo) {
+    const filename = path.join(config.defaultTenant.uploadedDocuments, files[0].filename);
+    const pageEndingCharacterCount = Object.values(files[0].pdfInfo).map(x => x.chars);
 
-  const characterCountToAbsoluteConversion = new PdfCharacterCountToAbsolute();
-  await characterCountToAbsoluteConversion.loadPdf(filename, pageEndingCharacterCount);
+    const characterCountToAbsoluteConversion = new PdfCharacterCountToAbsolute();
+    await characterCountToAbsoluteConversion.loadPdf(filename, pageEndingCharacterCount);
 
-  const absolutePositionReference = characterCountToAbsoluteConversion.convert(
-    connection.range.text,
-    connection.range.start,
-    connection.range.end
-  );
-  const textSelection = absolutePositionReferenceToTextSelection(absolutePositionReference);
+    const absolutePositionReference = characterCountToAbsoluteConversion.convert(
+      connection.range.text,
+      connection.range.start,
+      connection.range.end
+    );
+    const textSelection = absolutePositionReferenceToTextSelection(absolutePositionReference);
 
-  await db
-    .collection('connections')
-    .updateOne({ _id: connection._id }, { $set: { reference: textSelection } });
+    await db
+      .collection('connections')
+      .updateOne({ _id: connection._id }, { $set: { reference: textSelection } });
+  }
+
+  await db.collection('connections').updateOne({ _id: connection._id }, { $unset: { range: '' } });
 }
 
 export default {

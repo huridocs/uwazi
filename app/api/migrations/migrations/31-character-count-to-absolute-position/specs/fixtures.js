@@ -2,7 +2,9 @@ import testingDB from 'api/utils/testing_db';
 
 const firstConnectionId = testingDB.id();
 const secondConnectionId = testingDB.id();
+const noPdfInfoConnectionId = testingDB.id();
 const documentId = testingDB.id();
+const documentWithoutPdfInfoId = testingDB.id();
 
 export default {
   files: [
@@ -23,6 +25,11 @@ export default {
           chars: 582,
         },
       },
+    },
+    {
+      _id: documentWithoutPdfInfoId,
+      filename: 'test.pdf',
+      pdfInfo: null,
     },
   ],
   connections: [
@@ -56,7 +63,16 @@ export default {
       _id: 'no range',
       file: documentId,
     },
+    {
+      _id: noPdfInfoConnectionId,
+      range: {
+        start: 104,
+        end: 182,
+        text: 'Uwazi is an open-source solution for building and sharing document collections',
+      },
+      file: documentWithoutPdfInfoId,
+    },
   ],
 };
 
-export { documentId, firstConnectionId, secondConnectionId };
+export { documentId, firstConnectionId, secondConnectionId, noPdfInfoConnectionId };

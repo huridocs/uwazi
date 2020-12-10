@@ -2,7 +2,11 @@ import testingDB from 'api/utils/testing_db';
 import errorLog from 'api/log/errorLog';
 import { config } from 'api/config';
 import { catchErrors } from 'api/utils/jasmineHelpers';
-import fixtures, { documentWithTocId, documentWithVoidTocId } from './fixtures.js';
+import fixtures, {
+  documentWithTocId,
+  documentWithVoidTocId,
+  documentWithoutPdfInfoId,
+} from './fixtures.js';
 import migration from '../index.js';
 
 describe('migration toc-character-count-to-absolute-position', () => {
@@ -85,6 +89,21 @@ describe('migration toc-character-count-to-absolute-position', () => {
     const connections = await testingDB.mongodb
       .collection('files')
       .find({ _id: documentWithVoidTocId })
+      .toArray();
+
+    expect(connections).toEqual([
+      expect.objectContaining({
+        toc: [],
+      }),
+    ]);
+  });
+
+  it('should leave empty toc when no pdfinfo', async () => {
+    await migration.up(testingDB.mongodb);
+
+    const connections = await testingDB.mongodb
+      .collection('files')
+      .find({ _id: documentWithoutPdfInfoId })
       .toArray();
 
     expect(connections).toEqual([

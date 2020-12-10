@@ -6,6 +6,7 @@ import { config } from 'api/config';
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import {
   firstConnectionId,
+  noPdfInfoConnectionId,
   secondConnectionId,
 } from 'api/migrations/migrations/31-character-count-to-absolute-position/specs/fixtures';
 import fixtures from './fixtures.js';
@@ -61,6 +62,16 @@ describe('conversion of character count to absolute position', () => {
         },
       }),
     ]);
+
+    expect(connections).not.toEqual([
+      expect.objectContaining({
+        range: {
+          start: 104,
+          end: 182,
+          text: 'Uwazi is an open-source solution for building and sharing document collections',
+        },
+      }),
+    ]);
   });
 
   it('should convert the connections from other page', async () => {
@@ -84,6 +95,25 @@ describe('conversion of character count to absolute position', () => {
               width: 163,
             },
           ],
+        },
+      }),
+    ]);
+  });
+
+  it('should remove range when no pdfinfo', async () => {
+    await migration.up(testingDB.mongodb);
+
+    const connections = await testingDB.mongodb
+      .collection('connections')
+      .find({ _id: noPdfInfoConnectionId })
+      .toArray();
+
+    expect(connections).not.toEqual([
+      expect.objectContaining({
+        range: {
+          start: 104,
+          end: 182,
+          text: 'Uwazi is an open-source solution for building and sharing document collections',
         },
       }),
     ]);

@@ -50,8 +50,11 @@ export default {
 
     while (await cursor.hasNext()) {
       const file = await cursor.next();
-      if (file.toc) {
+      if (file.toc && file.pdfInfo) {
         await convertTocToAbsolutePosition(file, db);
+      }
+      if (file.toc && !file.pdfInfo) {
+        await db.collection('files').updateOne({ _id: file._id }, { $set: { toc: [] } });
       }
     }
 

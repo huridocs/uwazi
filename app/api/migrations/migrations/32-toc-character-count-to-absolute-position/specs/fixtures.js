@@ -3,6 +3,7 @@ import testingDB from 'api/utils/testing_db';
 const documentWithTocId = testingDB.id();
 const documentWithoutTocId = testingDB.id();
 const documentWithVoidTocId = testingDB.id();
+const documentWithoutPdfInfoId = testingDB.id();
 
 export default {
   files: [
@@ -87,7 +88,38 @@ export default {
       },
       toc: [],
     },
+    {
+      _id: documentWithoutPdfInfoId,
+      filename: 'test.pdf',
+      pdfInfo: null,
+      toc: [
+        {
+          range: {
+            start: 207,
+            end: 227,
+          },
+          label: 'PUBLISH WITH PURPOSE',
+          indentation: 0,
+        },
+        {
+          range: {
+            start: 327,
+            end: 349,
+          },
+          label: 'BUILD A CUSTOM LIBRARY',
+          indentation: 1,
+        },
+        {
+          range: {
+            start: 476,
+            end: 500,
+          },
+          label: 'DISCOVER NEW INFORMATION',
+          indentation: 2,
+        },
+      ],
+    }
   ],
 };
 
-export { documentWithTocId, documentWithVoidTocId };
+export { documentWithTocId, documentWithVoidTocId, documentWithoutPdfInfoId };
