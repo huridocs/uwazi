@@ -2,7 +2,6 @@ import SHA256 from 'crypto-js/sha256';
 import crypto from 'crypto';
 
 import { createError } from 'api/utils';
-// import random from 'shared/uniqueID';
 import encryptPassword, { comparePasswords } from 'api/auth/encryptPassword';
 import * as usersUtils from 'api/auth2fa/usersUtils';
 
