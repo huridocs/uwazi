@@ -3,6 +3,12 @@ import { nameFunc } from 'api/activitylog/helpers';
 import { buildActivityEntry, Methods, EntryValue } from 'api/activitylog/activityLogBuilder';
 
 const entryValues: { [key: string]: EntryValue } = {
+  'POST/api/users': {
+    desc: 'Updated user',
+    method: Methods.Update,
+    idField: '_id',
+    nameField: 'username',
+  },
   'POST/api/entities/multipleupdate': { desc: 'Updated multiple entities' },
   'POST/api/entities/bulkdelete': { desc: 'Deleted multiple entities', method: Methods.Delete },
   'POST/api/attachments/upload': {
@@ -135,26 +141,6 @@ const entryValues: { [key: string]: EntryValue } = {
     nameField: 'username',
     extra: data => `with ${data.role} role`,
   },
-  'POST/api/semantic-search': {
-    desc: 'Started semantic search',
-    method: Methods.Create,
-    nameField: 'searchTerm',
-  },
-  'POST/api/semantic-search/stop': {
-    desc: 'Stopped semantic search',
-    nameFunc: helpers.searchName,
-    related: helpers.loadSearch,
-  },
-  'POST/api/semantic-search/resume': {
-    desc: 'Resumed semantic search',
-    nameFunc: helpers.searchName,
-    related: helpers.loadSearch,
-  },
-  'DELETE/api/semantic-search': {
-    desc: 'Deleted semantic search',
-    method: Methods.Delete,
-    nameField: 'searchId',
-  },
   'POST/api/files/upload/document': {
     desc: 'Uploaded file',
     method: Methods.Create,
@@ -168,6 +154,18 @@ const entryValues: { [key: string]: EntryValue } = {
     nameFunc: helpers.updatedFile,
   },
   'DELETE/api/users': { desc: 'Delete user', method: Methods.Delete, nameField: '_id' },
+  'POST/api/usergroups': {
+    desc: 'Created user group',
+    method: Methods.Create,
+    idField: '_id',
+    nameField: 'name',
+    extra: helpers.groupMembers,
+  },
+  'DELETE/api/usergroups': {
+    desc: 'Delete user group',
+    method: Methods.Delete,
+    nameField: '_id',
+  },
 };
 
 const getSemanticData = async (data: any) => {

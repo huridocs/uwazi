@@ -19,7 +19,7 @@ describe('activitylogMiddleware', () => {
       method: 'POST',
       url: '/api/entities',
       query: { a: 'query' },
-      body: { title: 'Hi' },
+      body: { title: 'Hi', password: '12345' },
       user: { _id: 123, username: 'admin' },
       params: { some: 'params' },
     };
@@ -42,13 +42,30 @@ describe('activitylogMiddleware', () => {
   it('should log api calls', () => {
     activitylogMiddleware(req, res, next);
     expect(activitylog.save).toHaveBeenCalledWith({
-      body: '{"title":"Hi"}',
+      body: '{"title":"Hi","password":"*****"}',
       expireAt: date.addYearsToCurrentDate(1),
       method: 'POST',
       params: '{"some":"params"}',
       query: '{"a":"query"}',
       time: 1,
       url: '/api/entities',
+      user: 123,
+      username: 'admin',
+    });
+  });
+
+  it('should log api when user is deleted', () => {
+    req.url = '/api/users';
+    req.method = 'DELETE';
+    activitylogMiddleware(req, res, next);
+    expect(activitylog.save).toHaveBeenCalledWith({
+      body: '{"title":"Hi","password":"*****"}',
+      expireAt: date.addYearsToCurrentDate(1),
+      method: 'DELETE',
+      params: '{"some":"params"}',
+      query: '{"a":"query"}',
+      time: 1,
+      url: '/api/users',
       user: 123,
       username: 'admin',
     });
@@ -63,7 +80,7 @@ describe('activitylogMiddleware', () => {
         method: 'POST',
         params: '{"some":"params"}',
         query: '{"a":"query"}',
-        body: '{"title":"Hi"}',
+        body: '{"title":"Hi","password":"*****"}',
         user: 123,
         username: 'admin',
         time: 1,

@@ -4,7 +4,6 @@ import activitylog from './activitylog';
 
 const ignoredMethods = ['GET', 'OPTIONS', 'HEAD'];
 export const IGNORED_ENDPOINTS = [
-  '/api/users',
   '/api/login',
   '/api/contact',
   '/api/unlockaccount',
@@ -39,6 +38,7 @@ export default (req, _res, next) => {
   if (mustBeLogged(baseurl, method, body)) {
     const time = Date.now();
     const expireAt = date.addYearsToCurrentDate(1);
+    if (body.password) body.password = '*****';
     const entry = {
       url: baseurl,
       method,

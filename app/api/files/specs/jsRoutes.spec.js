@@ -25,7 +25,6 @@ describe('upload routes', () => {
   let routes;
   let req;
   let file;
-  let iosocket;
 
   const deleteAllFiles = cb => {
     const directory = `${__dirname}/uploads/`;
@@ -56,7 +55,6 @@ describe('upload routes', () => {
     deleteAllFiles(() => {
       spyOn(search, 'delete').and.returnValue(Promise.resolve());
       spyOn(search, 'indexEntities').and.returnValue(Promise.resolve());
-      iosocket = jasmine.createSpyObj('socket', ['emit']);
       routes = instrumentRoutes(uploadRoutes);
       file = {
         fieldname: 'file',
@@ -74,8 +72,6 @@ describe('upload routes', () => {
         headers: {},
         body: { document: 'sharedId1' },
         files: [file],
-        io: {},
-        getCurrentSessionSockets: () => ({ sockets: [iosocket], emit: iosocket.emit }),
       };
 
       db.clearAllAndLoad(fixtures)
@@ -114,8 +110,6 @@ describe('upload routes', () => {
           },
           files: [file, attachment],
           io: {},
-
-          getCurrentSessionSockets: () => ({ sockets: [iosocket], emit: iosocket.emit }),
         };
         done();
       });
@@ -159,10 +153,6 @@ describe('upload routes', () => {
     let remoteServer;
     beforeEach(() => {
       app = express();
-      app.use((_req, _res, next) => {
-        _req.session = { remotecookie: 'connect.ssid: 12n32ndi23j4hsj;' }; //eslint-disable-line
-        next();
-      });
       uploadRoutes(app);
     });
 
@@ -170,7 +160,7 @@ describe('upload routes', () => {
       await remoteServer.close();
     });
 
-    it('should return the captcha and store its value in session', done => {
+    it('should return the captcha and store it', done => {
       remoteApp = express();
       remoteApp.post('/api/public', (_req, res) => {
         res.json(_req.headers);
@@ -184,7 +174,6 @@ describe('upload routes', () => {
           .expect(200);
 
         const headersOnRemote = JSON.parse(response.text);
-        expect(headersOnRemote.cookie).toBe('connect.ssid: 12n32ndi23j4hsj;');
         expect(headersOnRemote.tenant).not.toBeDefined();
         done();
       });

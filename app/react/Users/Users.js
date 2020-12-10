@@ -2,9 +2,8 @@ import React from 'react';
 
 import RouteHandler from 'app/App/RouteHandler';
 import { actions } from 'app/BasicReducer';
+import { UserManagement } from 'app/Users/UserManagement';
 import UsersAPI from './UsersAPI';
-
-import UsersList from './components/UsersList';
 
 export class Users extends RouteHandler {
   static async requestState(requestParams) {
@@ -13,7 +12,7 @@ export class Users extends RouteHandler {
   }
 
   render() {
-    return <UsersList />;
+    return <UserManagement />;
   }
 }
 

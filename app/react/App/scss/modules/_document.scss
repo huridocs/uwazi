@@ -50,6 +50,7 @@
 .page-viewer,
 .library-viewer {
   position: relative;
+  overflow: auto;
 }
 
 .document-article {
