@@ -1,6 +1,7 @@
 import api from 'app/utils/api';
 import { RequestParams } from 'app/utils/RequestParams';
 import { MemberWithPermission } from './EntityPermisions';
+import { PermissionsSchema } from '../../shared/types/permissionsType';
 
 export const searchContributors = async (value: string): Promise<MemberWithPermission[]> => {
   const response = await api.get('contributors', new RequestParams({ filterTerm: value }));
@@ -9,5 +10,16 @@ export const searchContributors = async (value: string): Promise<MemberWithPermi
 
 export const loadGrantedPermissions = async (ids: string[]): Promise<MemberWithPermission[]> => {
   const response = await api.get('entities/permissions', new RequestParams({ id: ids[0] }));
+  return response.json;
+};
+
+export const savePermissions = async (ids: string[], permissions: PermissionsSchema) => {
+  const response = await api.post(
+    'entities/permissions',
+    new RequestParams({
+      ids,
+      permissions,
+    })
+  );
   return response.json;
 };

@@ -5,12 +5,12 @@ import { Translate } from 'app/I18N';
 import { UserGroupsLookupField } from './UserGroupsLookupField';
 import { MembersList } from './MembersList';
 import { MemberWithPermission } from '../EntityPermisions';
-import { loadGrantedPermissions, searchContributors } from '../PermissionsAPI';
+import { loadGrantedPermissions, searchContributors, savePermissions } from '../PermissionsAPI';
 
 export interface ShareEntityModalProps {
   isOpen: boolean;
-  onClose: (event: any) => void;
-  onSave: (event: any) => void;
+  onClose: () => void;
+  _onSave: () => void;
   selectedEntities: string[];
 }
 
@@ -33,7 +33,7 @@ const validate = (assignments: MemberWithPermission[]) =>
 export const ShareEntityModalComponent = ({
   isOpen,
   onClose,
-  onSave,
+  _onSave,
   selectedEntities,
 }: ShareEntityModalProps) => {
   const [search, setSearch] = useState('');
@@ -45,7 +45,8 @@ export const ShareEntityModalComponent = ({
   useEffect(() => {
     loadGrantedPermissions(selectedEntities)
       .then(permissions => {
-        setAssignments(permissions);
+        // @ts-ignore
+        setAssignments(permissions.map(p => ({ ...p, id: p._id })));
       })
       .catch(() => {});
 
@@ -63,18 +64,27 @@ export const ShareEntityModalComponent = ({
   };
 
   const onSelectHandler = (value: MemberWithPermission) => {
-    setAssignments([...assignments, { ...value, level: value.level || 'read' }]);
+    // @ts-ignore
+    setAssignments([...assignments, { ...value, id: value._id, level: value.level || 'read' }]);
     setDirty(true);
   };
 
-  const onSaveHandler = () => {
+  const onSaveHandler = async () => {
     const errors = validate(assignments);
 
-    if (errors) {
+    if (errors.length) {
       return setValidationErrors(errors);
     }
 
-    return onSave(assignments);
+    await savePermissions(
+      selectedEntities,
+      assignments.map(a => ({
+        _id: a.id,
+        type: a.type,
+        level: a.level!,
+      }))
+    );
+    return onClose();
   };
 
   return (
