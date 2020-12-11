@@ -19,6 +19,29 @@ describe('MemberList', () => {
     });
   });
 
+  it('should render the errors', () => {
+    const component = shallow(
+      <MembersList
+        members={data}
+        onChange={() => {}}
+        validationErrors={[
+          {
+            type: data[0].type,
+            _id: data[0]._id,
+          },
+        ]}
+      />
+    );
+
+    expect(
+      component
+        .find('tr')
+        .first()
+        .get(0)
+        .props.className.includes('validationError')
+    ).toBe(true);
+  });
+
   it('should call onChange when a row is deleted', () => {
     const reducedSet = data.slice(0, 2);
     const onChangeMock = jest.fn();

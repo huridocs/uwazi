@@ -97,6 +97,33 @@ describe('UserGroupsLookupField', () => {
     });
   });
 
+  it('should show/hide the dropdown when focusing/unfocusing', () => {
+    const component = shallow(
+      <UserGroupsLookupField
+        onChange={onChangeMock}
+        onSelect={onSelectMock}
+        value=""
+        options={[
+          {
+            _id: 'id',
+            label: 'label',
+            type: 'user',
+          },
+        ]}
+      />
+    );
+
+    const inputElem = component.find('input').first();
+
+    inputElem.simulate('focus');
+
+    expect(component.find('ul').length).toBe(1);
+
+    inputElem.simulate('blur', { relatedTarget: 'Some other target' });
+
+    expect(component.find('ul').length).toBe(0);
+  });
+
   describe('keyboard use', () => {
     let component: ShallowWrapper;
 
