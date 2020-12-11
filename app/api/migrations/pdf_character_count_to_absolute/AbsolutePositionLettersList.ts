@@ -72,7 +72,7 @@ export class AbsolutePositionLettersList {
     );
     const allTags: AbsolutePositionTag[] = [];
     for (let pageIndex: number = 0; pageIndex < pages.length; pageIndex += 1) {
-      let pageElements = pages[pageIndex].elements;
+      let pageElements = pages[pageIndex].elements || [];
 
       pageElements = pageElements
         .reduce(AbsolutePositionLettersList.removeXmlOneLevel(), [])

@@ -118,7 +118,7 @@ export default {
           indentation: 2,
         },
       ],
-    }
+    },
   ],
 };
 

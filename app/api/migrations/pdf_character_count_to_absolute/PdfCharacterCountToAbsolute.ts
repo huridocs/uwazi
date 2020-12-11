@@ -102,7 +102,7 @@ export class PdfCharacterCountToAbsolute {
   }
 
   async convertPdfToXML() {
-    await spawn('pdftohtml', ['-xml', '-i', this.pdfRelativePath, this.xmlRelativePath]);
+    await spawn('pdftohtml', ['-q', '-xml', '-i', this.pdfRelativePath, this.xmlRelativePath]);
   }
 
   async deleteXmlFile() {
