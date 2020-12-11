@@ -117,7 +117,9 @@ export const ShareEntityModalComponent = ({
           />
         </div>
         {validationErrors.length ? (
-          <span className="validation-message">Please select access level for marked users.</span>
+          <span className="validation-message">
+            <Translate>Please select access level for marked users</Translate>.
+          </span>
         ) : null}
       </Modal.Body>
 

@@ -6,7 +6,6 @@ import { MemberWithPermission } from '../../EntityPermisions';
 
 describe('MemberListItem', () => {
   describe('for each test element', () => {
-    // eslint-disable-next-line max-statements
     const assert = (component: ShallowWrapper, testMember: MemberWithPermission) => {
       if (testMember.type === 'group') {
         expect(component.find('select').length).toBe(1);
@@ -17,7 +16,7 @@ describe('MemberListItem', () => {
           component
             .find('span')
             .get(0)
-            .props.children.toLowerCase()
+            .props.children.props.children.toLowerCase()
         ).toBe(testMember.role);
 
         expect(component.find('select').length).toBe(1);

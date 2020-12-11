@@ -6,7 +6,7 @@ interface MemberListItemProps {
   value: MemberWithPermission;
 }
 
-export const MemberListItem = ({ value: { type, label } }: MemberListItemProps) => (
+export const MemberListItemInfo = ({ value: { type, label } }: MemberListItemProps) => (
   <div className="member-list-item">
     <div className="round-icon">
       <Icon icon={type === 'user' ? 'user' : 'users'} />

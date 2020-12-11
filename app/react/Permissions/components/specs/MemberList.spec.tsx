@@ -2,7 +2,7 @@ import { shallow } from 'enzyme';
 import React from 'react';
 import { MembersList } from '../MembersList';
 import { data } from './testData';
-import { MemberListItem } from '../MemberListItem';
+import { MemberListItemInfo } from '../MemberListItemInfo';
 import { MemberListItemPermission } from '../MemberListItemPermission';
 
 describe('MemberList', () => {
@@ -14,7 +14,7 @@ describe('MemberList', () => {
     expect(component.find('tr').length).toBe(data.length);
     data.forEach(member => {
       const row = component.find('tr');
-      expect(row.contains(<MemberListItem value={member} />));
+      expect(row.contains(<MemberListItemInfo value={member} />));
       expect(row.find(MemberListItemPermission).filter({ value: member }).length).toBe(1);
     });
   });

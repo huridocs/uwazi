@@ -1,7 +1,8 @@
+import { Translate } from 'app/I18N';
 import React, { useEffect, useRef, useState } from 'react';
 import { Icon } from 'UI';
 import { MemberWithPermission } from '../EntityPermisions';
-import { MemberListItem } from './MemberListItem';
+import { MemberListItemInfo } from './MemberListItemInfo';
 
 interface UserGroupsLookupFieldProps {
   onChange: (search: string) => void;
@@ -102,9 +103,11 @@ export const UserGroupsLookupField = ({
               onClick={getOnSelectHandler(result)}
               className={index === selected ? 'selected' : ''}
             >
-              <MemberListItem value={result} />
+              <MemberListItemInfo value={result} />
               <div className="press-enter-note">
-                <span>Press enter to add</span>
+                <span>
+                  <Translate>Press enter to add</Translate>
+                </span>
                 <Icon icon="level-down-alt" transform={{ rotate: 90 }} />
               </div>
             </li>

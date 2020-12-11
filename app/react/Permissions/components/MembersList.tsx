@@ -1,6 +1,6 @@
 import React from 'react';
 import { MemberWithPermission, ValidationError } from '../EntityPermisions';
-import { MemberListItem } from './MemberListItem';
+import { MemberListItemInfo } from './MemberListItemInfo';
 import { MemberListItemPermission } from './MemberListItemPermission';
 
 interface MemberListProps {
@@ -32,7 +32,7 @@ export const MembersList = ({ members, onChange, validationErrors }: MemberListP
             className={hasError(member) ? 'validationError' : ''}
           >
             <td>
-              <MemberListItem value={member} />
+              <MemberListItemInfo value={member} />
             </td>
             <MemberListItemPermission
               value={member}

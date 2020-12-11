@@ -1,3 +1,4 @@
+import { Translate } from 'app/I18N';
 import React from 'react';
 import { MemberWithPermission } from '../EntityPermisions';
 
@@ -28,7 +29,9 @@ export const MemberListItemPermission = ({
   return (
     <>
       <td>
-        <span>{value.type !== 'group' ? capitalize(value.role || '') : ''}</span>
+        <span>
+          {value.type !== 'group' ? <Translate>{capitalize(value.role || '')}</Translate> : ''}
+        </span>
       </td>
       <td>
         <select value={value.level} onChange={onChangeHandler}>
