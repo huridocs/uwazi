@@ -213,7 +213,8 @@ export class FiltersForm extends Component {
                           configure their order
                         </li>
                         <li>
-                          select &quot;Create group&quot; below to group filters under a label (e.g. &quot;Documents &quot;or &quot;People&quot;)
+                          select &quot;Create group&quot; below to group filters under a label e.g
+                          (&quot;Documents &quot;or &quot;People&quot;)
                         </li>
                       </ul>
                     </div>
