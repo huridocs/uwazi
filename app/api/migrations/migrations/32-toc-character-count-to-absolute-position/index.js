@@ -46,15 +46,19 @@ export default {
 
   async up(db) {
     process.stdout.write(`${this.name}...\r\n`);
+    let tocCount = 0;
     const cursor = db.collection('files').find();
 
     while (await cursor.hasNext()) {
       const file = await cursor.next();
-      if (file.toc && file.pdfInfo) {
+      if (file.toc && file.toc.length !== 0 && file.pdfInfo) {
+        tocCount += 1;
+        process.stdout.write(`${tocCount} converting to absolute position ${file.filename}\r\n`);
         await convertTocToAbsolutePosition(file, db);
       }
-      if (file.toc && !file.pdfInfo) {
+      if (file.toc && file.toc.length !== 0 && !file.pdfInfo) {
         await db.collection('files').updateOne({ _id: file._id }, { $set: { toc: [] } });
+        process.stdout.write(`No pdfinfo ${file.filename}\r\n`);
       }
     }
 

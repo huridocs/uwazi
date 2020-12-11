@@ -13,11 +13,10 @@ const absolutePositionReferenceToTextSelection = absolutePositionReference => {
     pageNumber: x.pageNumber,
   }));
 
-  const textSelection = {
+  return {
     text: absolutePositionReference.text,
     selectionRectangles: textSelectionRectangles,
   };
-  return textSelection;
 };
 
 async function convertToAbsolutePosition(connection, db) {

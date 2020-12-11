@@ -28,7 +28,8 @@ export class AbsolutePositionLettersList {
           width: currentValue.width,
           text: x,
         }));
-        return accumulator.concat(letters);
+        Array.prototype.push.apply(accumulator, letters);
+        return accumulator;
       },
       []
     );
@@ -42,13 +43,15 @@ export class AbsolutePositionLettersList {
     const absolutePositionsLists: AbsolutePositionTag[][] = [];
 
     for (let startRange = 0; startRange < this.letterListNoSpaces.length; startRange += 1) {
-      const endRange = startRange + labelNoSpaces.length;
-      const lettersToMatch = this.letterListNoSpaces.slice(startRange, endRange);
+      if (labelNoSpaces[0] === this.letterListNoSpaces[startRange].text) {
+        const endRange = startRange + labelNoSpaces.length;
+        const lettersToMatch = this.letterListNoSpaces.slice(startRange, endRange);
 
-      if (labelNoSpaces === lettersToMatch.map(x => x.text).join('')) {
-        absolutePositionsLists.push(
-          AbsolutePositionLettersList.lettersTagsToAbsolutePositionTags(lettersToMatch)
-        );
+        if (labelNoSpaces === lettersToMatch.map(x => x.text).join('')) {
+          absolutePositionsLists.push(
+            AbsolutePositionLettersList.lettersTagsToAbsolutePositionTags(lettersToMatch)
+          );
+        }
       }
     }
 
@@ -64,8 +67,10 @@ export class AbsolutePositionLettersList {
   }
 
   static fromXmlObject(xmlContentObject: any) {
-    const pages = xmlContentObject.elements[1].elements;
-    let allTags: AbsolutePositionTag[] = [];
+    const pages = xmlContentObject.elements[1].elements.filter(
+      (x: { attributes: { number: any } }) => x.attributes && x.attributes.number
+    );
+    const allTags: AbsolutePositionTag[] = [];
     for (let pageIndex: number = 0; pageIndex < pages.length; pageIndex += 1) {
       let pageElements = pages[pageIndex].elements;
 
@@ -76,6 +81,7 @@ export class AbsolutePositionLettersList {
         .reduce(AbsolutePositionLettersList.removeXmlOneLevel(), []);
 
       pageElements = pageElements.filter((x: { text: any }) => x.text);
+
       const pageTags: AbsolutePositionTag[] = pageElements.map(
         (x: { text: string; attributes: { top: any; left: any; height: any; width: any } }) => ({
           pageNumber: Number(pages[pageIndex].attributes.number),
@@ -86,7 +92,8 @@ export class AbsolutePositionLettersList {
           text: x.text.replace(/^\s+/g, ''),
         })
       );
-      allTags = allTags.concat(pageTags);
+
+      Array.prototype.push.apply(allTags, pageTags);
     }
 
     return new AbsolutePositionLettersList(allTags);
@@ -97,13 +104,16 @@ export class AbsolutePositionLettersList {
     currentValue: { elements: { attributes: any }[]; attributes: any }
   ) => {
     if (currentValue.elements && currentValue.elements.length > 0) {
-      return accumulator.concat(
+      Array.prototype.push.apply(
+        accumulator,
         currentValue.elements.map((x: { attributes: any }) => {
           const flatOneLevel = x;
           flatOneLevel.attributes = currentValue.attributes;
           return flatOneLevel;
         })
       );
+
+      return accumulator;
     }
     accumulator.push(currentValue);
     return accumulator;
