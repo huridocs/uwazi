@@ -1,8 +1,37 @@
 import entities from 'api/entities/entities';
 import users from 'api/users/users';
-import { GrantedPermissionSchema, PermissionsSchema } from 'shared/types/permissionsType';
-import { Roles } from 'shared/types/permissionsSchema';
+import {
+  GrantedPermissionSchema,
+  PermissionSchema,
+  PermissionsSchema,
+} from 'shared/types/permissionsType';
 import userGroups from 'api/usergroups/userGroups';
+import { GroupMemberSchema, UserGroupSchema } from 'shared/types/userGroupType';
+
+const addGrantedPermission = (
+  grantedPermissions: PermissionSchema[],
+  permission: PermissionSchema
+) => {
+  const grantedPermission = grantedPermissions.find(
+    gp => gp._id.toString() === permission._id.toString()
+  );
+  if (grantedPermission) {
+    if (grantedPermission.level !== permission.level) {
+      grantedPermission.level = 'mixed';
+    }
+  } else {
+    grantedPermissions.push(permission);
+  }
+};
+
+const setAdditionalData = (
+  peopleList: (GroupMemberSchema | UserGroupSchema)[],
+  permission: PermissionSchema,
+  additional: (data: GroupMemberSchema | UserGroupSchema) => {}
+) => {
+  const userData = peopleList.find(u => u._id!.toString() === permission._id.toString());
+  return userData ? { ...permission, ...additional(userData) } : undefined;
+};
 
 export const entitiesPermissions = {
   setEntitiesPermissions: async (permissionsData: any) => {
@@ -13,6 +42,7 @@ export const entitiesPermissions = {
     }));
     await entities.saveMultiple(toSave);
   },
+
   getEntitiesPermissions: async (query: any) => {
     const entitiesPermissionsData: PermissionsSchema[] = (
       await entities.get({ sharedId: { $in: query.id } }, { permissions: 1 })
@@ -20,50 +50,31 @@ export const entitiesPermissions = {
       .map(entity => entity.permissions as PermissionsSchema)
       .filter(p => p);
 
-    const groupsResult: GrantedPermissionSchema[] = [];
-    const usersResult: GrantedPermissionSchema[] = [];
+    const grantedPermissions: GrantedPermissionSchema[] = [];
     entitiesPermissionsData.forEach(permissions => {
       permissions.forEach(permission => {
-        if (permission.type === 'user') {
-          const userPermission = usersResult.find(user => user._id.toString() === permission._id);
-          if (userPermission) {
-            if (userPermission.level !== permission.level) {
-              userPermission.level = 'mixed';
-            }
-          } else {
-            usersResult.push(permission as GrantedPermissionSchema);
-          }
-        } else {
-          const groupPermission = groupsResult.find(
-            group => group._id.toString() === permission._id
-          );
-          if (groupPermission) {
-            if (groupPermission.level !== permission.level) {
-              groupPermission.level = 'mixed';
-            }
-          } else {
-            groupsResult.push(permission as GrantedPermissionSchema);
-          }
-        }
+        addGrantedPermission(grantedPermissions, permission);
       });
     });
-    const userIds = usersResult.map(user => user._id);
-    const usersData = await users.get({ _id: { $in: userIds } });
-    usersResult.forEach(user => {
-      const userData = usersData.find(u => u._id.equals(user._id));
-      if (userData && userData.username) {
-        user.label = userData.username;
-        user.role = <Roles>userData.role;
-      }
+
+    const grantedIds = entitiesPermissionsData.reduce(
+      (ids: string[], permissions: PermissionSchema[]) => {
+        permissions.forEach(permission => ids.push(permission._id.toString()));
+        return ids;
+      },
+      []
+    );
+
+    const usersData: GroupMemberSchema[] = await users.get({ _id: { $in: grantedIds } });
+    const groupsData: UserGroupSchema[] = await userGroups.get({ _id: { $in: grantedIds } });
+
+    return grantedPermissions.map(permission => {
+      const sourceData = permission.type === 'user' ? usersData : groupsData;
+      const additional =
+        permission.type === 'user'
+          ? (p: any) => ({ label: p.username, role: p.role })
+          : (g: any) => ({ label: g.name });
+      return setAdditionalData(sourceData, permission, additional);
     });
-    const groupIds = groupsResult.map(group => group._id);
-    const groupsData = await userGroups.get({ _id: { $in: groupIds } });
-    groupsResult.forEach(group => {
-      const groupData = groupsData.find(g => g._id!.toString() === group._id);
-      if (groupData) {
-        group.label = groupData.name;
-      }
-    });
-    return usersResult.concat(groupsResult);
   },
 };

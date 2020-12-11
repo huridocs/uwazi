@@ -2,13 +2,8 @@ import { objectIdSchema } from 'shared/types/commonSchemas';
 
 export const emitSchemaTypes = true;
 
-export enum Roles {
-  Contributor = 'contributor',
-  Editor = 'editor',
-  Admin = 'admin',
-}
 const permissionType = { type: 'string', enum: ['user', 'group'] };
-const permissionRole = { type: 'string', enum: Roles };
+const permissionRole = { type: 'string', enum: ['contributor', 'editor', 'admin'] };
 const permissionLevel = { type: 'string', enum: ['read', 'write', 'mixed'] };
 
 export const permissionSchema = {

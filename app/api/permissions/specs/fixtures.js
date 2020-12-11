@@ -62,7 +62,18 @@ const entity2 = {
   title: 'Entity 2',
   creationDate: 1,
   published: true,
-  permissions: [{}],
+  permissions: [
+    {
+      _id: idUserA,
+      type: 'user',
+      level: 'write',
+    },
+    {
+      _id: idGroupA,
+      type: 'group',
+      level: 'read',
+    },
+  ],
 };
 const entity3 = {
   sharedId: 'shared3',

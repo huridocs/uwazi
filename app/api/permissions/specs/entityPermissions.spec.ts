@@ -1,6 +1,6 @@
 import entities from 'api/entities/entities';
 import { entitiesPermissions } from 'api/permissions/entitiesPermissions';
-import fixtures, { userA } from 'api/permissions/specs/fixtures';
+import fixtures, { groupA, userA, userB } from 'api/permissions/specs/fixtures';
 import db from 'api/utils/testing_db';
 
 describe('permissions', () => {
@@ -36,12 +36,28 @@ describe('permissions', () => {
       const permissions = await entitiesPermissions.getEntitiesPermissions({
         id: ['shared1', 'shared2'],
       });
-      expect(permissions[0]).toEqual({
-        _id: userA._id,
-        label: userA.username,
-        level: 'read',
-        type: 'user',
-      });
+      expect(permissions).toEqual([
+        {
+          _id: userA._id,
+          label: userA.username,
+          role: userA.role,
+          level: 'mixed',
+          type: 'user',
+        },
+        {
+          _id: userB._id,
+          label: userB.username,
+          role: userB.role,
+          level: 'write',
+          type: 'user',
+        },
+        {
+          _id: groupA._id,
+          label: groupA.name,
+          level: 'mixed',
+          type: 'group',
+        },
+      ]);
     });
   });
 });
