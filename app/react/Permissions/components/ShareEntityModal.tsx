@@ -10,7 +10,6 @@ import { loadGrantedPermissions, searchContributors, savePermissions } from '../
 export interface ShareEntityModalProps {
   isOpen: boolean;
   onClose: () => void;
-  _onSave: () => void;
   selectedEntities: string[];
 }
 
@@ -21,7 +20,7 @@ const validate = (assignments: MemberWithPermission[]) =>
         return item.level !== 'mixed'
           ? null
           : {
-              id: item.id,
+              id: item._id,
               type: item.type,
             };
       }
@@ -33,7 +32,6 @@ const validate = (assignments: MemberWithPermission[]) =>
 export const ShareEntityModalComponent = ({
   isOpen,
   onClose,
-  _onSave,
   selectedEntities,
 }: ShareEntityModalProps) => {
   const [search, setSearch] = useState('');
@@ -45,7 +43,6 @@ export const ShareEntityModalComponent = ({
   useEffect(() => {
     loadGrantedPermissions(selectedEntities)
       .then(permissions => {
-        // @ts-ignore
         setAssignments(permissions.map(p => ({ ...p, id: p._id })));
       })
       .catch(() => {});
@@ -60,12 +57,16 @@ export const ShareEntityModalComponent = ({
 
   const onChangeHandler = async (value: string) => {
     setSearch(value);
-    setResults(await searchContributors(value));
+    setResults(
+      (await searchContributors(value)).filter(
+        r => !assignments.find(a => a._id === r._id && a.type === r.type)
+      )
+    );
   };
 
   const onSelectHandler = (value: MemberWithPermission) => {
-    // @ts-ignore
-    setAssignments([...assignments, { ...value, id: value._id, level: value.level || 'read' }]);
+    setAssignments([...assignments, { ...value, level: value.level || 'read' }]);
+    setResults(results.filter(r => !(value._id === r._id && value.type === r.type)));
     setDirty(true);
   };
 
@@ -79,7 +80,7 @@ export const ShareEntityModalComponent = ({
     await savePermissions(
       selectedEntities,
       assignments.map(a => ({
-        _id: a.id,
+        _id: a._id,
         type: a.type,
         level: a.level!,
       }))

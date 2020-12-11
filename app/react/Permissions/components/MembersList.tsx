@@ -21,25 +21,27 @@ export const MembersList = ({ members, onChange, validationErrors }: MemberListP
   };
 
   const hasError = (member: MemberWithPermission) =>
-    !!validationErrors.find(e => e.type === member.type && e.id === member.id);
+    !!validationErrors.find(e => e.type === member.type && e._id === member._id);
 
   return (
     <table className="members-list">
-      {members.map((member, index) => (
-        <tr
-          key={`${member.type}-${member.id}`}
-          className={hasError(member) ? 'validationError' : ''}
-        >
-          <td>
-            <MemberListItem value={member} />
-          </td>
-          <MemberListItemPermission
-            value={member}
-            onChange={onChangeHandler(index)}
-            onDelete={onDeleteHandler}
-          />
-        </tr>
-      ))}
+      <tbody>
+        {members.map((member, index) => (
+          <tr
+            key={`${member.type}-${member._id}`}
+            className={hasError(member) ? 'validationError' : ''}
+          >
+            <td>
+              <MemberListItem value={member} />
+            </td>
+            <MemberListItemPermission
+              value={member}
+              onChange={onChangeHandler(index)}
+              onDelete={onDeleteHandler}
+            />
+          </tr>
+        ))}
+      </tbody>
     </table>
   );
 };

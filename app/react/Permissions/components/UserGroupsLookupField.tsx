@@ -23,13 +23,18 @@ export const UserGroupsLookupField = ({
     setSelected(null);
   }, [value]);
 
+  useEffect(() => {
+    onChange('');
+  }, []);
+
   const onChangeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setShow(true);
     onChange(event.target.value);
   };
 
   const getOnSelectHandler = (selection: MemberWithPermission) => () => {
     onSelect(selection);
-    onChange('');
+    setShow(false);
   };
 
   const onKeyPressHandler = (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -56,12 +61,12 @@ export const UserGroupsLookupField = ({
         event.preventDefault();
         if (selected !== null) {
           onSelect(options[selected]);
-          onChange('');
+          setShow(false);
         }
         break;
       case 'Escape':
         event.preventDefault();
-        onChange('');
+        setShow(false);
         break;
       default:
         break;
@@ -82,14 +87,16 @@ export const UserGroupsLookupField = ({
             setShow(false);
           }
         }}
-        onFocus={() => setShow(true)}
+        onFocus={() => {
+          setShow(true);
+        }}
         value={value}
       />
       {show && options.length ? (
         <ul tabIndex={-1} role="listbox" ref={optionsListRef}>
           {options.map((result: MemberWithPermission, index: number) => (
             <li
-              key={`${result.type}-${result.id}`}
+              key={`${result.type}-${result._id}`}
               role="option"
               aria-selected={index === selected}
               onClick={getOnSelectHandler(result)}
