@@ -31,52 +31,80 @@ const groupB = {
   members: [{ _id: idUserB }],
 };
 
+const entity1 = {
+  sharedId: 'shared1',
+  type: 'entity',
+  language: 'en',
+  title: 'Entity 1',
+  published: true,
+  permissions: [
+    {
+      _id: idUserA,
+      type: 'user',
+      level: 'read',
+    },
+    {
+      _id: idUserB,
+      type: 'user',
+      level: 'write',
+    },
+    {
+      _id: idGroupA,
+      type: 'group',
+      level: 'write',
+    },
+  ],
+};
+const entity2 = {
+  sharedId: 'shared2',
+  type: 'entity',
+  language: 'en',
+  title: 'Entity 2',
+  creationDate: 1,
+  published: true,
+  permissions: [{}],
+};
+const entity3 = {
+  sharedId: 'shared3',
+  type: 'entity',
+  language: 'en',
+  title: 'Entity 3',
+  creationDate: 1,
+  published: true,
+  isPublic: true,
+};
+
 export default {
   entities: [
     {
+      ...entity1,
       _id: db.id(),
-      sharedId: 'shared1',
-      type: 'entity',
       language: 'en',
-      title: 'Entity 1',
-      published: true,
-      permissions: [
-        {
-          _id: idUserA,
-          type: 'user',
-          level: 'read',
-        },
-        {
-          _id: idUserB,
-          type: 'user',
-          level: 'write',
-        },
-        {
-          _id: idGroupA,
-          type: 'group',
-          level: 'write',
-        },
-      ],
     },
     {
+      ...entity1,
       _id: db.id(),
-      sharedId: 'shared2',
-      type: 'entity',
-      language: 'en',
-      title: 'Entity 2',
-      creationDate: 1,
-      published: true,
-      permissions: [{}],
+      language: 'es',
     },
     {
+      ...entity2,
       _id: db.id(),
-      sharedId: 'shared3',
-      type: 'entity',
+      language: 'es',
+    },
+    {
+      ...entity2,
+      _id: db.id(),
+      language: 'pr',
+    },
+    {
+      ...entity3,
+      _id: db.id(),
       language: 'en',
-      title: 'Entity 3',
-      creationDate: 1,
-      published: true,
-      isPublic: true,
+    },
+    {
+      ...entity3,
+      _id: db.id(),
+      language: 'pr',
     },
   ],
   users: [{ ...userA }, { ...userB }],
