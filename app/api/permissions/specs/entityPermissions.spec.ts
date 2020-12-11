@@ -9,16 +9,25 @@ describe('permissions', () => {
   });
 
   describe('set entities permissions', () => {
-    it('should update the specified entities with the passed permissions', async () => {
+    it('should update the specified entities with the passed permissions in all entities languages', async () => {
       const permissionsData = {
         ids: ['shared1', 'shared2'],
         permissions: [{ _id: 'user1', type: 'user', level: 'read' }],
       };
-      await entitiesPermissions.setEntitiesPermissions(permissionsData, 'en');
+      await entitiesPermissions.setEntitiesPermissions(permissionsData);
       const storedEntities = await entities.get();
-      expect(storedEntities[0].permissions).toEqual(permissionsData.permissions);
-      expect(storedEntities[1].permissions).toEqual(permissionsData.permissions);
-      expect(storedEntities[2].permissions).toBe(undefined);
+      const updateEntities = storedEntities.filter(entity =>
+        ['shared1', 'shared2'].includes(entity.sharedId!)
+      );
+      updateEntities.forEach(entity => {
+        expect(entity.permissions).toEqual(permissionsData.permissions);
+      });
+      const notUpdateEntities = storedEntities.filter(
+        entity => !['shared1', 'shared2'].includes(entity.sharedId!)
+      );
+      notUpdateEntities.forEach(entity => {
+        expect(entity.permissions).toBe(undefined);
+      });
     });
   });
 
