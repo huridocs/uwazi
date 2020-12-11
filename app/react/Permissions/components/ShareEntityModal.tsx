@@ -20,7 +20,7 @@ const validate = (assignments: MemberWithPermission[]) =>
         return item.level !== 'mixed'
           ? null
           : {
-              id: item._id,
+              _id: item._id,
               type: item.type,
             };
       }
