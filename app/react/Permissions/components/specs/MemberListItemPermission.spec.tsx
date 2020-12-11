@@ -20,20 +20,17 @@ describe('MemberListItem', () => {
             .props.children.toLowerCase()
         ).toBe(testMember.role);
 
-        if (testMember.role === 'contributor') {
-          expect(component.find('select').length).toBe(1);
+        expect(component.find('select').length).toBe(1);
 
-          const selectOptionForMixed = component.find('option').filter({ value: 'mixed' }).length;
-          if (testMember.level === 'mixed') {
-            expect(selectOptionForMixed).toBe(1);
-          } else {
-            expect(selectOptionForMixed).toBe(0);
-          }
+        const selectOptionForMixed = component.find('option').filter({ value: 'mixed' }).length;
+        if (testMember.level === 'mixed') {
+          expect(selectOptionForMixed).toBe(1);
         } else {
-          expect(component.find('select').length).toBe(0);
+          expect(selectOptionForMixed).toBe(0);
         }
       }
     };
+
     it.each([...data.keys()])('should render the correct role and access dropdown', member => {
       const testMember = data[member];
       const onChangeMock = jest.fn();
