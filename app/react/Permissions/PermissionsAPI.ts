@@ -8,8 +8,10 @@ export const searchContributors = async (value: string): Promise<MemberWithPermi
   return response.json;
 };
 
-export const loadGrantedPermissions = async (ids: string[]): Promise<MemberWithPermission[]> => {
-  const response = await api.get('entities/permissions', new RequestParams({ id: ids[0] }));
+export const loadGrantedPermissions = async (
+  sharedIds: string[]
+): Promise<MemberWithPermission[]> => {
+  const response = await api.get('entities/permissions', new RequestParams({ id: sharedIds }));
   return response.json;
 };
 

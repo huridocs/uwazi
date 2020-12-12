@@ -30,7 +30,7 @@ export class DocumentSidePanel extends Component {
     super(props);
     this.selectTab = this.selectTab.bind(this);
     this.firstRender = true;
-    this.state = { copyFrom: false, copyFromProps: [] };
+    this.state = { copyFrom: false, copyFromProps: [], sharing: false };
     this.toggleCopyFrom = this.toggleCopyFrom.bind(this);
     this.onCopyFromSelect = this.onCopyFromSelect.bind(this);
     this.deleteDocument = this.deleteDocument.bind(this);
@@ -421,7 +421,7 @@ export class DocumentSidePanel extends Component {
                       key={doc.get('sharedId')}
                       isOpen={this.state.sharing}
                       onClose={this.toggleSharing}
-                      selectedEntities={[doc.get('sharedId')]}
+                      sharedIds={[doc.get('sharedId')]}
                     />
                   </div>
                 );

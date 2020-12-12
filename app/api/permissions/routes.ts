@@ -10,7 +10,8 @@ export const permissionRoutes = (app: Application) => {
   });
 
   app.get('/api/entities/permissions', async (req, res, _next) => {
-    const permissions = await entitiesPermissions.getEntitiesPermissions(req.query);
+    const sharedIds = JSON.parse(req.query.id);
+    const permissions = await entitiesPermissions.getEntitiesPermissions(sharedIds);
     res.json(permissions);
   });
 

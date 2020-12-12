@@ -2,11 +2,11 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { ShareEntityModal } from 'app/Permissions/components/ShareEntityModal';
 import * as api from 'app/Permissions/PermissionsAPI';
+import { PermissionsSchema } from 'shared/types/permissionsType';
 import { UserGroupsLookupField } from '../UserGroupsLookupField';
 import { data } from './testData';
 import { MemberWithPermission, ValidationError } from '../../EntityPermisions';
 import { MembersList } from '../MembersList';
-import { PermissionsSchema } from '../../../../shared/types/permissionsType';
 
 describe('ShareEntityModal', () => {
   beforeAll(() => {
@@ -19,7 +19,7 @@ describe('ShareEntityModal', () => {
   });
 
   it('should trigger a search when the search changes', () => {
-    const component = shallow(<ShareEntityModal selectedEntities={[]} isOpen onClose={() => {}} />);
+    const component = shallow(<ShareEntityModal sharedIds={[]} isOpen onClose={() => {}} />);
     component.find(UserGroupsLookupField).simulate('change', 'searchTerm');
     expect(api.searchContributors).toHaveBeenCalledWith('searchTerm');
   });
@@ -32,7 +32,7 @@ describe('ShareEntityModal', () => {
       role: 'contributor',
       level: 'write',
     };
-    const component = shallow(<ShareEntityModal selectedEntities={[]} isOpen onClose={() => {}} />);
+    const component = shallow(<ShareEntityModal sharedIds={[]} isOpen onClose={() => {}} />);
     component.find(UserGroupsLookupField).simulate('select', testMember);
     expect(component.find(MembersList).get(0).props.members).toContainEqual(testMember);
   });
@@ -44,7 +44,7 @@ describe('ShareEntityModal', () => {
       label: 'User',
       role: 'contributor',
     };
-    const component = shallow(<ShareEntityModal selectedEntities={[]} isOpen onClose={() => {}} />);
+    const component = shallow(<ShareEntityModal sharedIds={[]} isOpen onClose={() => {}} />);
     component.find(UserGroupsLookupField).simulate('select', testMember);
     expect(component.find(MembersList).get(0).props.members).toContainEqual({
       ...testMember,
@@ -65,7 +65,7 @@ describe('ShareEntityModal', () => {
       type: 'user',
       _id: '1',
     };
-    const component = shallow(<ShareEntityModal selectedEntities={[]} isOpen onClose={() => {}} />);
+    const component = shallow(<ShareEntityModal sharedIds={[]} isOpen onClose={() => {}} />);
     component.find(UserGroupsLookupField).simulate('select', testMember);
     component.find('.btn-success').simulate('click');
     expect(api.savePermissions).not.toHaveBeenCalled();
@@ -95,11 +95,7 @@ describe('ShareEntityModal', () => {
     const onCloseMock = jest.fn();
 
     const component = shallow(
-      <ShareEntityModal
-        selectedEntities={['entityId1', 'entityId2']}
-        isOpen
-        onClose={onCloseMock}
-      />
+      <ShareEntityModal sharedIds={['entityId1', 'entityId2']} isOpen onClose={onCloseMock} />
     );
     component.find(UserGroupsLookupField).simulate('select', testMember);
     await component
@@ -118,7 +114,7 @@ describe('ShareEntityModal', () => {
       role: 'contributor',
       level: 'write',
     };
-    const component = shallow(<ShareEntityModal selectedEntities={[]} isOpen onClose={() => {}} />);
+    const component = shallow(<ShareEntityModal sharedIds={[]} isOpen onClose={() => {}} />);
     expect(component.find('Footer').get(0).props.children.type).toBe('button');
     component.find(UserGroupsLookupField).simulate('select', testMember);
     expect(component.find('Footer').get(0).props.children.length).toBe(2);

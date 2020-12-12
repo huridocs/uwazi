@@ -33,9 +33,7 @@ describe('permissions', () => {
 
   describe('get entities permissions', () => {
     it('should return the permissions of the requested entities', async () => {
-      const permissions = await entitiesPermissions.getEntitiesPermissions({
-        id: ['shared1', 'shared2'],
-      });
+      const permissions = await entitiesPermissions.getEntitiesPermissions(['shared1', 'shared2']);
       expect(permissions).toEqual([
         {
           _id: userA._id,

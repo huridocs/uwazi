@@ -10,7 +10,7 @@ import { loadGrantedPermissions, searchContributors, savePermissions } from '../
 export interface ShareEntityModalProps {
   isOpen: boolean;
   onClose: () => void;
-  selectedEntities: string[];
+  sharedIds: string[];
 }
 
 const validate = (assignments: MemberWithPermission[]) =>
@@ -32,7 +32,7 @@ const validate = (assignments: MemberWithPermission[]) =>
 export const ShareEntityModalComponent = ({
   isOpen,
   onClose,
-  selectedEntities,
+  sharedIds,
 }: ShareEntityModalProps) => {
   const [search, setSearch] = useState('');
   const [results, setResults] = useState<MemberWithPermission[]>([]);
@@ -41,7 +41,7 @@ export const ShareEntityModalComponent = ({
   const [validationErrors, setValidationErrors] = useState<any[]>([]);
 
   useEffect(() => {
-    loadGrantedPermissions(selectedEntities)
+    loadGrantedPermissions(sharedIds)
       .then(permissions => {
         setAssignments(permissions.map(p => ({ ...p, id: p._id })));
       })
@@ -78,7 +78,7 @@ export const ShareEntityModalComponent = ({
     }
 
     await savePermissions(
-      selectedEntities,
+      sharedIds,
       assignments.map(a => ({
         _id: a._id,
         type: a.type,

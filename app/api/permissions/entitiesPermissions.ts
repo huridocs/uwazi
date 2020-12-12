@@ -43,9 +43,9 @@ export const entitiesPermissions = {
     await entities.saveMultiple(toSave);
   },
 
-  getEntitiesPermissions: async (query: any) => {
+  getEntitiesPermissions: async (sharedIds: string[]) => {
     const entitiesPermissionsData: PermissionsSchema[] = (
-      await entities.get({ sharedId: { $in: query.id } }, { permissions: 1 })
+      await entities.get({ sharedId: { $in: sharedIds } }, { permissions: 1 })
     )
       .map(entity => entity.permissions as PermissionsSchema)
       .filter(p => p);
