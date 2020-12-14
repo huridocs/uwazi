@@ -109,19 +109,4 @@ describe('search routes', () => {
         .catch(catchErrors(done));
     });
   });
-
-  describe('/api/search/unpublished', () => {
-    it('should search', done => {
-      spyOn(search, 'getUploadsByUser').and.returnValue(new Promise(resolve => resolve('results')));
-      const req = { query: { searchTerm: 'test', id: 'id' }, language: 'es' };
-
-      routes
-        .get('/api/search/unpublished', req)
-        .then(response => {
-          expect(response).toEqual({ rows: 'results' });
-          done();
-        })
-        .catch(catchErrors(done));
-    });
-  });
 });

@@ -52,11 +52,4 @@ export default app => {
         .then(results => res.json(results))
         .catch(next)
   );
-
-  app.get('/api/search/unpublished', needsAuthorization(['admin', 'editor']), (req, res, next) => {
-    search
-      .getUploadsByUser(req.user, req.language)
-      .then(response => res.json({ rows: response }))
-      .catch(next);
-  });
 };

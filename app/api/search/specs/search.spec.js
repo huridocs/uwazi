@@ -45,16 +45,6 @@ describe('search', () => {
     await db.disconnect();
   });
 
-  describe('getUploadsByUser', () => {
-    it('should request all unpublished entities or documents for the user', async () => {
-      const user = { _id: ids.userId };
-      const response = await search.getUploadsByUser(user, 'en');
-
-      expect(response.length).toBe(2);
-      expect(response[0].title).toBe('unpublished');
-    });
-  });
-
   describe('searchSnippets', () => {
     it('perform a search on fullText of the document passed and return the snippets', async () => {
       const snippets = await search.searchSnippets('spanish', ids.batmanFinishes, 'es');

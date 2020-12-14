@@ -647,10 +647,6 @@ const instanceSearch = elasticIndex => ({
     return results;
   },
 
-  getUploadsByUser(user, language) {
-    return entities.get({ user: user._id, language, published: false });
-  },
-
   async searchSnippets(searchTerm, sharedId, language, user) {
     const templates = await templatesModel.get();
 
