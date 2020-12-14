@@ -53,7 +53,9 @@ export default {
       const file = await cursor.next();
       if (file.toc && file.toc.length !== 0 && file.pdfInfo) {
         tocCount += 1;
-        process.stdout.write(`${tocCount} converting to absolute position toc from file ${file.filename}\r\n`);
+        process.stdout.write(
+          `${tocCount} converting to absolute position toc from file ${file.filename}\r\n`
+        );
         await convertTocToAbsolutePosition(file, db);
       }
       if (file.toc && file.toc.length !== 0 && !file.pdfInfo) {
