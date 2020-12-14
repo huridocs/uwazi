@@ -1,6 +1,5 @@
 /* eslint-disable no-await-in-loop */
 import { PdfCharacterCountToAbsolute } from 'api/migrations/pdf_character_count_to_absolute/PdfCharacterCountToAbsolute';
-import testingDB from 'api/utils/testing_db';
 import path from 'path';
 import { config } from 'api/config';
 
@@ -20,7 +19,7 @@ const absolutePositionReferenceToTextSelection = absolutePositionReference => {
 };
 
 async function convertToAbsolutePosition(connection, db) {
-  const files = await testingDB.mongodb
+  const files = await db
     .collection('files')
     .find({ _id: connection.file })
     .toArray();
