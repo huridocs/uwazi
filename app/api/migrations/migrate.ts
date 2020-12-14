@@ -8,8 +8,19 @@ process.on('unhandledRejection', error => {
   throw error;
 });
 
+let dbAuth = {};
+
+if (process.env.DBUSER) {
+  dbAuth = {
+    auth: { authSource: 'admin' },
+    user: process.env.DBUSER,
+    pass: process.env.DBPASS,
+  };
+}
+
+
 const run = async () => {
-  await DB.connect();
+  await DB.connect(config.DBHOST, dbAuth);
   const { db } = await DB.connectionForDB(config.defaultTenant.dbName);
 
   await tenants.run(async () => {
