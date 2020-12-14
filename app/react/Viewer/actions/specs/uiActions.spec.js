@@ -180,7 +180,7 @@ describe('Viewer uiActions', () => {
 
     beforeEach(() => {
       dispatch = jasmine.createSpy('dispatch');
-      references = [{ _id: 'id1' }, { _id: 'id2', range: 'range' }];
+      references = [{ _id: 'id1' }, { _id: 'id2', reference: 'range' }];
       actions.selectReference(references[1], {})(dispatch);
       dispatch.calls.argsFor(0)[0](dispatch);
     });
