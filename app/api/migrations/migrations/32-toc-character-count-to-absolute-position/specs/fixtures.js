@@ -9,7 +9,7 @@ export default {
   files: [
     {
       _id: documentWithTocId,
-      filename: 'test.pdf',
+      filename: 'migration32.pdf',
       pdfInfo: {
         1: {
           chars: 207,
@@ -53,7 +53,7 @@ export default {
     },
     {
       _id: documentWithoutTocId,
-      filename: 'test.pdf',
+      filename: 'migration32.pdf',
       pdfInfo: {
         1: {
           chars: 207,
@@ -71,7 +71,7 @@ export default {
     },
     {
       _id: documentWithVoidTocId,
-      filename: 'test.pdf',
+      filename: 'migration32.pdf',
       pdfInfo: {
         1: {
           chars: 207,
@@ -90,7 +90,7 @@ export default {
     },
     {
       _id: documentWithoutPdfInfoId,
-      filename: 'test.pdf',
+      filename: 'migration32.pdf',
       pdfInfo: null,
       toc: [
         {

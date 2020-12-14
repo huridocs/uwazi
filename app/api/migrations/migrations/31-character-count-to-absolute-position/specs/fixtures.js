@@ -10,7 +10,7 @@ export default {
   files: [
     {
       _id: documentId,
-      filename: 'test.pdf',
+      filename: 'migration31.pdf',
       pdfInfo: {
         1: {
           chars: 207,
@@ -28,7 +28,7 @@ export default {
     },
     {
       _id: documentWithoutPdfInfoId,
-      filename: 'test.pdf',
+      filename: 'migration31.pdf',
       pdfInfo: null,
     },
   ],
