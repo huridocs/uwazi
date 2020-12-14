@@ -9,8 +9,16 @@ import * as os from 'os';
 import { AbsolutePositionLettersList, AbsolutePositionTag } from './AbsolutePositionLettersList';
 
 export interface AbsolutePositionReference {
+  pageHeight: number;
+  pageWidth: number;
   text: string;
   selectionRectangles: AbsolutePositionTag[];
+}
+
+export interface PageSize {
+  number: number;
+  width: number;
+  height: number;
 }
 
 const readXml = async (xmlRelativePath: string) => {
@@ -28,9 +36,12 @@ export class PdfCharacterCountToAbsolute {
 
   pdfRelativePath = '';
 
+  pageSizes: PageSize[];
+
   constructor() {
     this.lettersTags = new AbsolutePositionLettersList([]);
     this.pdfInfo = [];
+    this.pageSizes = [];
   }
 
   async loadPdf(pdfRelativePath: string, pagesEndingCharacterCount: number[]) {
@@ -59,6 +70,7 @@ export class PdfCharacterCountToAbsolute {
       process.stdout.write(`xml2json error ${pdfRelativePath} ${errorMessage}\r\n`);
     } else {
       await this.deleteXmlFile();
+      this.setPageSizes(xmlContentObject);
       this.lettersTags = AbsolutePositionLettersList.fromXmlObject(xmlContentObject);
     }
   }
@@ -122,11 +134,21 @@ export class PdfCharacterCountToAbsolute {
     const existMatchByString = absolutePositionByStringMatch.length > 0;
 
     if (!existMatchByCharacterCount && !existMatchByString) {
-      return { text: label, selectionRectangles: [] };
+      return {
+        text: label,
+        pageHeight: this.pageSizes[0].height,
+        pageWidth: this.pageSizes[0].width,
+        selectionRectangles: [],
+      };
     }
-
     if (!existMatchByCharacterCount) {
-      return { text: label, selectionRectangles: absolutePositionByStringMatch[0] };
+      const pageSize = this.getPageSize(absolutePositionByStringMatch[0][0].pageNumber);
+      return {
+        pageWidth: pageSize.width,
+        pageHeight: pageSize.height,
+        text: label,
+        selectionRectangles: absolutePositionByStringMatch[0],
+      };
     }
 
     const closerAbsolutePositionStringMatch = PdfCharacterCountToAbsolute.getCloserStringMatchToTag(
@@ -134,11 +156,16 @@ export class PdfCharacterCountToAbsolute {
       absolutePositionByCharacterCount[0]
     );
 
+    const selectionRectangles =
+      closerAbsolutePositionStringMatch ||
+      absolutePositionByCharacterCount ||
+      absolutePositionByStringMatch[0];
+    const pageSize = this.getPageSize(selectionRectangles[0].pageNumber);
+
     return {
-      selectionRectangles:
-        closerAbsolutePositionStringMatch ||
-        absolutePositionByCharacterCount ||
-        absolutePositionByStringMatch[0],
+      selectionRectangles,
+      pageWidth: pageSize.width,
+      pageHeight: pageSize.height,
       text: label,
     };
   }
@@ -172,5 +199,19 @@ export class PdfCharacterCountToAbsolute {
       startRangeMatchingPage,
       endRangeMatchingPage
     );
+  }
+
+  private setPageSizes(xmlContentObject: any) {
+    this.pageSizes = xmlContentObject.elements[1].elements
+      .filter((x: { attributes: { number: string } }) => x.attributes && x.attributes.number)
+      .map((page: { attributes: { number: string; width: string; height: string } }) => ({
+        number: parseInt(page.attributes.number, 10),
+        width: parseInt(page.attributes.width, 10),
+        height: parseInt(page.attributes.height, 10),
+      }));
+  }
+
+  private getPageSize(pageNumber: number) {
+    return this.pageSizes.filter(x => x.number === pageNumber)[0];
   }
 }

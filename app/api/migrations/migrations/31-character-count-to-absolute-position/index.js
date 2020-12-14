@@ -4,11 +4,12 @@ import path from 'path';
 import { config } from 'api/config';
 
 const absolutePositionReferenceToTextSelection = absolutePositionReference => {
+  const { pageHeight } = absolutePositionReference;
   const textSelectionRectangles = absolutePositionReference.selectionRectangles.map(x => ({
-    left: x.left,
-    top: x.top,
-    width: x.width,
-    height: x.height,
+    left: Math.round((1100 * x.left) / pageHeight),
+    top: Math.round((1100 * x.top) / pageHeight),
+    width: Math.round((1100 * x.width) / pageHeight),
+    height: Math.round((1100 * x.height) / pageHeight),
     pageNumber: x.pageNumber,
   }));
 

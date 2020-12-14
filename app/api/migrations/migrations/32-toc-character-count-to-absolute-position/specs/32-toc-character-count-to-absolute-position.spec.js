@@ -42,11 +42,11 @@ describe('migration toc-character-count-to-absolute-position', () => {
           {
             selectionRectangles: [
               {
-                height: 14,
-                left: 371,
+                height: 12,
+                left: 324,
                 pageNumber: 2,
-                top: 722,
-                width: 151,
+                top: 630,
+                width: 132,
               },
             ],
             label: 'PUBLISH WITH PURPOSE',
@@ -55,11 +55,11 @@ describe('migration toc-character-count-to-absolute-position', () => {
           {
             selectionRectangles: [
               {
-                height: 14,
-                left: 365,
+                height: 12,
+                left: 318,
                 pageNumber: 3,
-                top: 722,
-                width: 163,
+                top: 630,
+                width: 142,
               },
             ],
             label: 'BUILD A CUSTOM LIBRARY',
@@ -68,11 +68,11 @@ describe('migration toc-character-count-to-absolute-position', () => {
           {
             selectionRectangles: [
               {
-                height: 14,
-                left: 355,
+                height: 12,
+                left: 310,
                 pageNumber: 4,
-                top: 722,
-                width: 184,
+                top: 630,
+                width: 161,
               },
             ],
             label: 'DISCOVER NEW INFORMATION',

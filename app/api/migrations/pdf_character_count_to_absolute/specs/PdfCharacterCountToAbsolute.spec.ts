@@ -51,6 +51,8 @@ describe('PdfCharacterCountToAbsolute', () => {
     const absolutePosition = characterCountToAbsoluteConversion.convert(shortLabel, 32347, 32352);
 
     expect(absolutePosition.text).toBe(shortLabel);
+    expect(absolutePosition.pageWidth).toBe(892);
+    expect(absolutePosition.pageHeight).toBe(1263);
     expect(absolutePosition.selectionRectangles.length).toBe(1);
     checkAbsoluteTag(absolutePosition.selectionRectangles[0], {
       pageNumber: 10,
@@ -76,6 +78,8 @@ describe('PdfCharacterCountToAbsolute', () => {
     );
 
     expect(absolutePosition.text).toBe(lastLabel);
+    expect(absolutePosition.pageWidth).toBe(892);
+    expect(absolutePosition.pageHeight).toBe(1263);
     expect(absolutePosition.selectionRectangles.length).toBe(1);
     checkAbsoluteTag(absolutePosition.selectionRectangles[0], {
       pageNumber: 24,
@@ -367,6 +371,8 @@ describe('PdfCharacterCountToAbsolute', () => {
 
     expect(absolutePosition.selectionRectangles.length).toBe(3);
 
+    expect(absolutePosition.pageWidth).toBe(918);
+    expect(absolutePosition.pageHeight).toBe(1188);
     checkAbsoluteTag(absolutePosition.selectionRectangles[0], {
       pageNumber: 1,
       top: 810,

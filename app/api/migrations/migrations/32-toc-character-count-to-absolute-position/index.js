@@ -16,13 +16,13 @@ const convertTocToAbsolutePosition = async (file, db) => {
       x.range.start,
       x.range.end
     );
-
+    const { pageHeight } = absolutePositionReference;
     const textSelectionRectangles = absolutePositionReference.selectionRectangles.map(
       selectionRectangle => ({
-        left: selectionRectangle.left,
-        top: selectionRectangle.top,
-        width: selectionRectangle.width,
-        height: selectionRectangle.height,
+        left: Math.round((1100 * selectionRectangle.left) / pageHeight),
+        top: Math.round((1100 * selectionRectangle.top) / pageHeight),
+        width: Math.round((1100 * selectionRectangle.width) / pageHeight),
+        height: Math.round((1100 * selectionRectangle.height) / pageHeight),
         pageNumber: selectionRectangle.pageNumber,
       })
     );
