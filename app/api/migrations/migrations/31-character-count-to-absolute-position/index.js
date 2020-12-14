@@ -2,6 +2,7 @@
 import { PdfCharacterCountToAbsolute } from 'api/migrations/pdf_character_count_to_absolute/PdfCharacterCountToAbsolute';
 import path from 'path';
 import { config } from 'api/config';
+import { ObjectId } from 'mongodb';
 
 const absolutePositionReferenceToTextSelection = absolutePositionReference => {
   const { pageHeight } = absolutePositionReference;
@@ -10,7 +11,7 @@ const absolutePositionReferenceToTextSelection = absolutePositionReference => {
     top: Math.round((1100 * x.top) / pageHeight),
     width: Math.round((1100 * x.width) / pageHeight),
     height: Math.round((1100 * x.height) / pageHeight),
-    pageNumber: x.pageNumber,
+    regionId: x.pageNumber,
   }));
 
   return {
@@ -22,7 +23,7 @@ const absolutePositionReferenceToTextSelection = absolutePositionReference => {
 async function convertToAbsolutePosition(connection, db) {
   const files = await db
     .collection('files')
-    .find({ _id: connection.file })
+    .find({ _id: ObjectId(connection.file) })
     .toArray();
 
   if (files[0].pdfInfo) {
@@ -55,12 +56,17 @@ export default {
   description: 'Convert the character count of pdf references to absolute position',
 
   async up(db) {
+    let tocCount = 0;
     process.stdout.write(`${this.name}...\r\n`);
     const cursor = db.collection('connections').find();
 
     while (await cursor.hasNext()) {
       const connection = await cursor.next();
       if (connection.file && connection.range) {
+        tocCount += 1;
+        process.stdout.write(
+          `${tocCount} converting to absolute position connection ${connection._id} file ${connection.file}\r\n`
+        );
         await convertToAbsolutePosition(connection, db);
       }
     }

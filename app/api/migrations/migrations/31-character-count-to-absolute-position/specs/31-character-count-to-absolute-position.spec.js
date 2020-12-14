@@ -47,14 +47,14 @@ describe('conversion of character count to absolute position', () => {
             {
               height: 11,
               left: 28,
-              pageNumber: 1,
+              regionId: 1,
               top: 689,
               width: 26,
             },
             {
               height: 11,
               left: 55,
-              pageNumber: 1,
+              regionId: 1,
               top: 689,
               width: 323,
             },
@@ -90,7 +90,7 @@ describe('conversion of character count to absolute position', () => {
             {
               height: 12,
               left: 318,
-              pageNumber: 3,
+              regionId: 3,
               top: 630,
               width: 142,
             },

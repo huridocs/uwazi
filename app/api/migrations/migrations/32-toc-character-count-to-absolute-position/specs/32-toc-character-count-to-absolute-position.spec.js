@@ -44,7 +44,7 @@ describe('migration toc-character-count-to-absolute-position', () => {
               {
                 height: 12,
                 left: 324,
-                pageNumber: 2,
+                regionId: 2,
                 top: 630,
                 width: 132,
               },
@@ -57,7 +57,7 @@ describe('migration toc-character-count-to-absolute-position', () => {
               {
                 height: 12,
                 left: 318,
-                pageNumber: 3,
+                regionId: 3,
                 top: 630,
                 width: 142,
               },
@@ -70,7 +70,7 @@ describe('migration toc-character-count-to-absolute-position', () => {
               {
                 height: 12,
                 left: 310,
-                pageNumber: 4,
+                regionId: 4,
                 top: 630,
                 width: 161,
               },
