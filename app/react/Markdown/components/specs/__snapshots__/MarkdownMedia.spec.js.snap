@@ -18,6 +18,8 @@ exports[`MarkdownMedia render should render an iframe with the correct video id 
           },
           "facebook": Object {
             "appId": "1309697205772819",
+            "playerId": null,
+            "version": "v3.3",
           },
           "file": Object {
             "attributes": Object {},
@@ -27,7 +29,7 @@ exports[`MarkdownMedia render should render an iframe with the correct video id 
             "forceHLS": false,
             "forceVideo": false,
             "hlsOptions": Object {},
-            "hlsVersion": "0.10.1",
+            "hlsVersion": "0.13.1",
             "tracks": Array [],
           },
           "mixcloud": Object {
@@ -48,6 +50,7 @@ exports[`MarkdownMedia render should render an iframe with the correct video id 
           },
           "twitch": Object {
             "options": Object {},
+            "playerId": null,
           },
           "vimeo": Object {
             "playerOptions": Object {
@@ -159,6 +162,8 @@ exports[`MarkdownMedia render should use compact class name if compact prop is s
           },
           "facebook": Object {
             "appId": "1309697205772819",
+            "playerId": null,
+            "version": "v3.3",
           },
           "file": Object {
             "attributes": Object {},
@@ -168,7 +173,7 @@ exports[`MarkdownMedia render should use compact class name if compact prop is s
             "forceHLS": false,
             "forceVideo": false,
             "hlsOptions": Object {},
-            "hlsVersion": "0.10.1",
+            "hlsVersion": "0.13.1",
             "tracks": Array [],
           },
           "mixcloud": Object {
@@ -189,6 +194,7 @@ exports[`MarkdownMedia render should use compact class name if compact prop is s
           },
           "twitch": Object {
             "options": Object {},
+            "playerId": null,
           },
           "vimeo": Object {
             "playerOptions": Object {

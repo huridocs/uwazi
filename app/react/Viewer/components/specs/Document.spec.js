@@ -97,16 +97,17 @@ describe('Document', () => {
     });
 
     it('should activate the reference', () => {
+      const reference = { _id: 'referenceId', test: 'test' };
       props.executeOnClickHandler = true;
-      props.references = Immutable.fromJS([{ _id: 'referenceId', test: 'test' }]);
+      props.references = Immutable.fromJS([reference]);
       props.activateReference = jasmine.createSpy('activateReference');
       render();
       instance.text = { selected: jasmine.createSpy('selected').and.returnValue(false) };
-      component.find('.pages').simulate('click', {
-        target: { className: 'reference', getAttribute: () => 'referenceId' },
-      });
+
+      component.instance().highlightReference(reference);
+
       expect(props.activateReference).toHaveBeenCalledWith(
-        props.references.get(0).toJS(),
+        reference,
         props.file.pdfInfo,
         props.references.toJS()
       );
