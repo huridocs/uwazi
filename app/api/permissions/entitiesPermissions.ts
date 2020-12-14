@@ -1,28 +1,10 @@
 import entities from 'api/entities/entities';
 import users from 'api/users/users';
-import {
-  GrantedPermissionSchema,
-  PermissionSchema,
-  PermissionsSchema,
-} from 'shared/types/permissionsType';
 import userGroups from 'api/usergroups/userGroups';
+import { unique } from 'api/utils/filters';
+import { PermissionSchema, PermissionsSchema } from 'shared/types/permissionsType';
 import { GroupMemberSchema, UserGroupSchema } from 'shared/types/userGroupType';
-
-const addGrantedPermission = (
-  grantedPermissions: PermissionSchema[],
-  permission: PermissionSchema
-) => {
-  const grantedPermission = grantedPermissions.find(
-    gp => gp._id.toString() === permission._id.toString()
-  );
-  if (grantedPermission) {
-    if (grantedPermission.level !== permission.level) {
-      grantedPermission.level = 'mixed';
-    }
-  } else {
-    grantedPermissions.push(permission);
-  }
-};
+import { AccessLevels } from 'shared/types/permissionsSchema';
 
 const setAdditionalData = (
   peopleList: (GroupMemberSchema | UserGroupSchema)[],
@@ -46,35 +28,49 @@ export const entitiesPermissions = {
   getEntitiesPermissions: async (sharedIds: string[]) => {
     const entitiesPermissionsData: PermissionsSchema[] = (
       await entities.get({ sharedId: { $in: sharedIds } }, { permissions: 1 })
-    )
-      .map(entity => entity.permissions as PermissionsSchema)
-      .filter(p => p);
+    ).map(entity => entity.permissions as PermissionsSchema);
 
-    const grantedPermissions: GrantedPermissionSchema[] = [];
-    entitiesPermissionsData.forEach(permissions => {
-      permissions.forEach(permission => {
-        addGrantedPermission(grantedPermissions, permission);
+    const grantedPermissions: {
+      [k: string]: { permission: PermissionSchema; access: AccessLevels[] };
+    } = {};
+    entitiesPermissionsData
+      .filter(p => p)
+      .forEach(entityPermissions => {
+        entityPermissions.forEach(permission => {
+          const grantedPermission = grantedPermissions[permission._id.toString()];
+          if (grantedPermission) {
+            grantedPermission.access.push(permission.level);
+          } else {
+            grantedPermissions[permission._id.toString()] = {
+              permission,
+              access: [permission.level],
+            };
+          }
+        });
       });
-    });
 
-    const grantedIds = entitiesPermissionsData.reduce(
-      (ids: string[], permissions: PermissionSchema[]) => {
-        permissions.forEach(permission => ids.push(permission._id.toString()));
-        return ids;
-      },
-      []
-    );
+    const grantedIds = Object.keys(grantedPermissions);
+    const [usersData, groupsData] = await Promise.all([
+      users.get({ _id: { $in: grantedIds } }),
+      userGroups.get({ _id: { $in: grantedIds } }),
+    ]);
 
-    const usersData: GroupMemberSchema[] = await users.get({ _id: { $in: grantedIds } });
-    const groupsData: UserGroupSchema[] = await userGroups.get({ _id: { $in: grantedIds } });
-
-    return grantedPermissions.map(permission => {
-      const sourceData = permission.type === 'user' ? usersData : groupsData;
+    return Object.keys(grantedPermissions).map(id => {
+      const differentLevels = grantedPermissions[id].access.filter(unique);
+      const level =
+        grantedPermissions[id].access.length !== entitiesPermissionsData.length ||
+        differentLevels.length > 1
+          ? 'mixed'
+          : differentLevels[0];
+      const sourceData = grantedPermissions[id].permission.type === 'user' ? usersData : groupsData;
       const additional =
-        permission.type === 'user'
+        grantedPermissions[id].permission.type === 'user'
           ? (p: any) => ({ label: p.username, role: p.role })
           : (g: any) => ({ label: g.name });
-      return setAdditionalData(sourceData, permission, additional);
+      return {
+        ...setAdditionalData(sourceData, grantedPermissions[id].permission, additional),
+        level,
+      };
     });
   },
 };

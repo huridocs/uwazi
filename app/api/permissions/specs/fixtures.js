@@ -66,7 +66,7 @@ const entity2 = {
     {
       _id: idUserA,
       type: 'user',
-      level: 'write',
+      level: 'read',
     },
     {
       _id: idGroupA,
