@@ -8,6 +8,45 @@ import { AccessLevels, PermissionType } from 'shared/types/permissionSchema';
 import { PermissionSchema } from 'shared/types/permissionType';
 import { MemberWithPermission } from 'shared/types/entityPermisions';
 
+const setAdditionalData = (
+  peopleList: (GroupMemberSchema | UserGroupSchema)[],
+  permission: PermissionSchema,
+  additional: (data: GroupMemberSchema | UserGroupSchema) => {}
+) => {
+  const userData = peopleList.find(u => u._id!.toString() === permission._id.toString());
+  return userData ? { ...permission, ...additional(userData) } : undefined;
+};
+
+async function setAccessLevelAndPermissionData(
+  grantedPermissions: { [p: string]: { permission: PermissionSchema; access: AccessLevels[] } },
+  entitiesPermissionsData: (PermissionSchema[] | undefined)[]
+) {
+  const grantedIds = Object.keys(grantedPermissions);
+  const [usersData, groupsData] = await Promise.all([
+    users.get({ _id: { $in: grantedIds } }),
+    userGroups.get({ _id: { $in: grantedIds } }),
+  ]);
+
+  return Object.keys(grantedPermissions).map(id => {
+    const differentLevels = grantedPermissions[id].access.filter(unique);
+    const level =
+      grantedPermissions[id].access.length !== entitiesPermissionsData.length ||
+      differentLevels.length > 1
+        ? AccessLevels.MIXED
+        : differentLevels[0];
+    const sourceData =
+      grantedPermissions[id].permission.type === PermissionType.USER ? usersData : groupsData;
+    const additional =
+      grantedPermissions[id].permission.type.toString() === PermissionType.USER
+        ? (p: any) => ({ label: p.username, role: p.role })
+        : (g: any) => ({ label: g.name });
+    return {
+      ...setAdditionalData(sourceData, grantedPermissions[id].permission, additional),
+      level,
+    } as MemberWithPermission;
+  });
+}
+
 export const entitiesPermissions = {
   setEntitiesPermissions: async (permissionsData: any) => {
     const currentEntities = await entities.get({ sharedId: { $in: permissionsData.ids } });
@@ -52,42 +91,3 @@ export const entitiesPermissions = {
     );
   },
 };
-
-const setAdditionalData = (
-  peopleList: (GroupMemberSchema | UserGroupSchema)[],
-  permission: PermissionSchema,
-  additional: (data: GroupMemberSchema | UserGroupSchema) => {}
-) => {
-  const userData = peopleList.find(u => u._id!.toString() === permission._id.toString());
-  return userData ? { ...permission, ...additional(userData) } : undefined;
-};
-
-async function setAccessLevelAndPermissionData(
-  grantedPermissions: { [p: string]: { permission: PermissionSchema; access: AccessLevels[] } },
-  entitiesPermissionsData: (PermissionSchema[] | undefined)[]
-) {
-  const grantedIds = Object.keys(grantedPermissions);
-  const [usersData, groupsData] = await Promise.all([
-    users.get({ _id: { $in: grantedIds } }),
-    userGroups.get({ _id: { $in: grantedIds } }),
-  ]);
-
-  return Object.keys(grantedPermissions).map(id => {
-    const differentLevels = grantedPermissions[id].access.filter(unique);
-    const level =
-      grantedPermissions[id].access.length !== entitiesPermissionsData.length ||
-      differentLevels.length > 1
-        ? AccessLevels.MIXED
-        : differentLevels[0];
-    const sourceData =
-      grantedPermissions[id].permission.type === PermissionType.USER ? usersData : groupsData;
-    const additional =
-      grantedPermissions[id].permission.type.toString() === PermissionType.USER
-        ? (p: any) => ({ label: p.username, role: p.role })
-        : (g: any) => ({ label: g.name });
-    return {
-      ...setAdditionalData(sourceData, grantedPermissions[id].permission, additional),
-      level,
-    } as MemberWithPermission;
-  });
-}
