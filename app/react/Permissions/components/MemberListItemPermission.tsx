@@ -1,6 +1,6 @@
 import { Translate } from 'app/I18N';
 import React from 'react';
-import { MemberWithPermission } from 'shared/types/EntityPermisions';
+import { MemberWithPermission } from 'shared/types/entityPermisions';
 
 interface MemberListItemPermissionProps {
   value: MemberWithPermission;

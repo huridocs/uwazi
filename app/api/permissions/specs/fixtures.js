@@ -40,14 +40,14 @@ const entity1 = {
   published: true,
   permissions: [
     {
-      _id: idUserA,
-      type: PermissionType.USER,
-      level: AccessLevels.READ,
-    },
-    {
       _id: idUserB,
       type: PermissionType.USER,
       level: AccessLevels.WRITE,
+    },
+    {
+      _id: idUserA,
+      type: PermissionType.USER,
+      level: AccessLevels.READ,
     },
     {
       _id: idGroupA,

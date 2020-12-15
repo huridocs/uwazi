@@ -37,6 +37,12 @@ describe('permissions', () => {
       const permissions = await entitiesPermissions.getEntitiesPermissions(['shared1', 'shared2']);
       expect(permissions).toEqual([
         {
+          _id: groupA._id,
+          label: groupA.name,
+          level: AccessLevels.MIXED,
+          type: PermissionType.GROUP,
+        },
+        {
           _id: userA._id,
           label: userA.username,
           role: userA.role,
@@ -50,18 +56,18 @@ describe('permissions', () => {
           level: AccessLevels.MIXED,
           type: PermissionType.USER,
         },
-        {
-          _id: groupA._id,
-          label: groupA.name,
-          level: AccessLevels.MIXED,
-          type: PermissionType.GROUP,
-        },
       ]);
     });
 
     it('should return mixed permissions in case one of the entities does not have any', async () => {
       const permissions = await entitiesPermissions.getEntitiesPermissions(['shared1', 'shared3']);
       expect(permissions).toEqual([
+        {
+          _id: groupA._id,
+          label: groupA.name,
+          level: AccessLevels.MIXED,
+          type: PermissionType.GROUP,
+        },
         {
           _id: userA._id,
           label: userA.username,
@@ -75,12 +81,6 @@ describe('permissions', () => {
           role: userB.role,
           level: AccessLevels.MIXED,
           type: PermissionType.USER,
-        },
-        {
-          _id: groupA._id,
-          label: groupA.name,
-          level: AccessLevels.MIXED,
-          type: PermissionType.GROUP,
         },
       ]);
     });

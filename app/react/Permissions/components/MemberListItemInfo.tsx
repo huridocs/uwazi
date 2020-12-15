@@ -1,6 +1,6 @@
 import { Icon } from 'app/UI';
 import React from 'react';
-import { MemberWithPermission } from 'shared/types/EntityPermisions';
+import { MemberWithPermission } from 'shared/types/entityPermisions';
 import { PermissionType } from 'shared/types/permissionSchema';
 
 interface MemberListItemProps {

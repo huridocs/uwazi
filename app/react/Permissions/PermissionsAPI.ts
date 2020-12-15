@@ -1,7 +1,7 @@
 import api from 'app/utils/api';
 import { RequestParams } from 'app/utils/RequestParams';
 import { PermissionSchema } from 'shared/types/permissionType';
-import { MemberWithPermission } from 'shared/types/EntityPermisions';
+import { MemberWithPermission } from 'shared/types/entityPermisions';
 
 export const searchCollaborators = async (value: string): Promise<MemberWithPermission[]> => {
   const response = await api.get('collaborators', new RequestParams({ filterTerm: value }));

@@ -2,7 +2,7 @@ import Modal from 'app/Layout/Modal';
 import React, { useState, useEffect } from 'react';
 import { Icon } from 'UI';
 import { Translate } from 'app/I18N';
-import { MemberWithPermission } from 'shared/types/EntityPermisions';
+import { MemberWithPermission } from 'shared/types/entityPermisions';
 import { AccessLevels, PermissionType, UserRole } from 'shared/types/permissionSchema';
 import { UserGroupsLookupField } from './UserGroupsLookupField';
 import { MembersList } from './MembersList';

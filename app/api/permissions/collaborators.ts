@@ -1,7 +1,7 @@
 import users from 'api/users/users';
 import userGroups from 'api/usergroups/userGroups';
 import { PermissionType, UserRole } from 'shared/types/permissionSchema';
-import { MemberWithPermission } from 'shared/types/EntityPermisions';
+import { MemberWithPermission } from 'shared/types/entityPermisions';
 
 export const collaborators = {
   getCollaborators: async (filterTerm: string) => {

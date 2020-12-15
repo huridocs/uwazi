@@ -6,6 +6,7 @@ import { GroupMemberSchema, UserGroupSchema } from 'shared/types/userGroupType';
 import { EntitySchema } from 'shared/types/entityType';
 import { AccessLevels, PermissionType } from 'shared/types/permissionSchema';
 import { PermissionSchema } from 'shared/types/permissionType';
+import { MemberWithPermission } from 'shared/types/entityPermisions';
 
 const setAdditionalData = (
   peopleList: (GroupMemberSchema | UserGroupSchema)[],
@@ -56,7 +57,7 @@ export const entitiesPermissions = {
       userGroups.get({ _id: { $in: grantedIds } }),
     ]);
 
-    return Object.keys(grantedPermissions).map(id => {
+    const permissions: MemberWithPermission[] = Object.keys(grantedPermissions).map(id => {
       const differentLevels = grantedPermissions[id].access.filter(unique);
       const level =
         grantedPermissions[id].access.length !== entitiesPermissionsData.length ||
@@ -72,7 +73,11 @@ export const entitiesPermissions = {
       return {
         ...setAdditionalData(sourceData, grantedPermissions[id].permission, additional),
         level,
-      };
+      } as MemberWithPermission;
     });
+
+    return permissions.sort((a: MemberWithPermission, b: MemberWithPermission) =>
+      (a.type + a.label).localeCompare(b.type + b.label)
+    );
   },
 };

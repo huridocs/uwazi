@@ -1,5 +1,5 @@
 import React from 'react';
-import { MemberWithPermission } from 'shared/types/EntityPermisions';
+import { MemberWithPermission } from 'shared/types/entityPermisions';
 import { PermissionType } from 'shared/types/permissionSchema';
 import { ObjectIdSchema } from 'shared/types/commonTypes';
 import { MemberListItemInfo } from './MemberListItemInfo';
