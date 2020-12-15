@@ -84,7 +84,7 @@ describe('permissions routes', () => {
           .get('/api/entities/permissions')
           .set('X-Requested-With', 'XMLHttpRequest')
           .query({
-            id: JSON.stringify(['sharedId1', 'sharedId2']),
+            ids: JSON.stringify(['sharedId1', 'sharedId2']),
           });
         expect(response.status).toBe(200);
         expect(response.body).toEqual([{ _id: 'user1', level: 'read' }]);

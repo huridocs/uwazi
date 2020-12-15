@@ -11,7 +11,7 @@ export const searchContributors = async (value: string): Promise<MemberWithPermi
 export const loadGrantedPermissions = async (
   sharedIds: string[]
 ): Promise<MemberWithPermission[]> => {
-  const response = await api.get('entities/permissions', new RequestParams({ id: sharedIds }));
+  const response = await api.get('entities/permissions', new RequestParams({ ids: sharedIds }));
   return response.json;
 };
 
