@@ -1,5 +1,6 @@
 import users from 'api/users/users';
 import userGroups from 'api/usergroups/userGroups';
+import { PermissionType } from 'shared/types/permissionSchema';
 
 export const contributors = {
   getContributors: async (filterTerm: string) => {
@@ -16,7 +17,7 @@ export const contributors = {
     matchedUsers.forEach(user => {
       availableContributors.push({
         _id: user._id,
-        type: 'user',
+        type: PermissionType.USER,
         email: user.email,
         label: user.username,
         role: user.role,
@@ -26,7 +27,7 @@ export const contributors = {
     groups.forEach(group => {
       availableContributors.push({
         _id: group._id,
-        type: 'group',
+        type: PermissionType.GROUP,
         label: group.name,
       });
     });
