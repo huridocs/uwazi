@@ -1,6 +1,6 @@
 import api from 'app/utils/api';
 import { RequestParams } from 'app/utils/RequestParams';
-import { PermissionSchema } from 'shared/types/permissionsType';
+import { PermissionSchema } from 'shared/types/permissionType';
 import { MemberWithPermission } from './EntityPermisions';
 
 export const searchContributors = async (value: string): Promise<MemberWithPermission[]> => {
