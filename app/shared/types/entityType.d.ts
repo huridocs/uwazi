@@ -2,6 +2,7 @@
 /**AUTO-GENERATED. RUN yarn emit-types to update.*/
 
 import { ObjectIdSchema, MetadataSchema, AttachmentSchema } from 'shared/types/commonTypes';
+
 import { PermissionSchema } from 'shared/types/permissionType';
 
 export interface EntitySchema {

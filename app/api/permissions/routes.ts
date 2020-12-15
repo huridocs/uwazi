@@ -2,8 +2,8 @@ import { Application } from 'express';
 import { needsAuthorization } from 'api/auth';
 import { validation } from 'api/utils';
 import { entitiesPermissions } from 'api/permissions/entitiesPermissions';
-import { contributors } from 'api/permissions/contributors';
 import { permissionSchema } from 'shared/types/permissionSchema';
+import { collaborators } from 'api/permissions/collaborators';
 
 export const permissionRoutes = (app: Application) => {
   app.post(
@@ -36,7 +36,7 @@ export const permissionRoutes = (app: Application) => {
   });
 
   app.get(
-    '/api/contributors',
+    '/api/collaborators',
     validation.validateRequest({
       properties: {
         query: {
@@ -48,8 +48,8 @@ export const permissionRoutes = (app: Application) => {
       },
     }),
     async (req, res, _next) => {
-      const availableContributors = await contributors.getContributors(req.query.filterTerm);
-      res.json(availableContributors);
+      const availableCollaborators = await collaborators.getCollaborators(req.query.filterTerm);
+      res.json(availableCollaborators);
     }
   );
 };

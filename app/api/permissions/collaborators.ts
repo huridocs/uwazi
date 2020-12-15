@@ -1,9 +1,10 @@
 import users from 'api/users/users';
 import userGroups from 'api/usergroups/userGroups';
-import { PermissionType } from 'shared/types/permissionSchema';
+import { PermissionType, UserRole } from 'shared/types/permissionSchema';
+import { MemberWithPermission } from 'shared/types/EntityPermisions';
 
-export const contributors = {
-  getContributors: async (filterTerm: string) => {
+export const collaborators = {
+  getCollaborators: async (filterTerm: string) => {
     const exactFilterTerm = new RegExp(`^${filterTerm}$`, 'i');
     const partialFilterTerm = new RegExp(`^${filterTerm}`, 'i');
 
@@ -12,26 +13,25 @@ export const contributors = {
     });
     const groups = await userGroups.get({ name: { $regex: partialFilterTerm } });
 
-    const availableContributors: any[] = [];
+    const availableCollaborators: MemberWithPermission[] = [];
 
     matchedUsers.forEach(user => {
-      availableContributors.push({
+      availableCollaborators.push({
         _id: user._id,
         type: PermissionType.USER,
-        email: user.email,
-        label: user.username,
-        role: user.role,
+        label: user.username!,
+        role: user.role! as UserRole,
       });
     });
 
     groups.forEach(group => {
-      availableContributors.push({
-        _id: group._id,
+      availableCollaborators.push({
+        _id: group._id!.toString(),
         type: PermissionType.GROUP,
         label: group.name,
       });
     });
 
-    return availableContributors;
+    return availableCollaborators;
   },
 };

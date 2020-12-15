@@ -2,7 +2,7 @@ import api from 'app/utils/api';
 import {
   loadGrantedPermissions,
   savePermissions,
-  searchContributors,
+  searchCollaborators,
 } from 'app/Permissions/PermissionsAPI';
 import { AccessLevels, PermissionType } from 'shared/types/permissionSchema';
 
@@ -12,10 +12,10 @@ jest.mock('app/utils/api', () => ({
 }));
 
 describe('PermissionsAPI', () => {
-  describe('searchContributors', () => {
-    it('should call get method of constributors api', async () => {
-      const response = await searchContributors('User');
-      expect(api.get).toHaveBeenCalledWith('contributors', {
+  describe('searchCollaborators', () => {
+    it('should call get method of collaborators api', async () => {
+      const response = await searchCollaborators('User');
+      expect(api.get).toHaveBeenCalledWith('collaborators', {
         data: { filterTerm: 'User' },
         headers: {},
       });
@@ -24,7 +24,7 @@ describe('PermissionsAPI', () => {
   });
 
   describe('loadGrantedPermissions', () => {
-    it('should call get method of entities/permissions constributors api', async () => {
+    it('should call get method of entities/permissions collaborators api', async () => {
       const response = await loadGrantedPermissions(['shared1', 'shared2']);
       expect(api.get).toHaveBeenCalledWith('entities/permissions', {
         data: { ids: ['shared1', 'shared2'] },
@@ -35,7 +35,7 @@ describe('PermissionsAPI', () => {
   });
 
   describe('savePermissions', () => {
-    it('should call post method of entities/permissions constributors api', async () => {
+    it('should call post method of entities/permissions collaborators api', async () => {
       const ids = ['shared1', 'shared2'];
       const permissions = [{ _id: 'user1', type: PermissionType.GROUP, level: AccessLevels.MIXED }];
       const response = await savePermissions(ids, permissions);

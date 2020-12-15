@@ -1,17 +1,18 @@
 import { shallow, ShallowWrapper } from 'enzyme';
 import React from 'react';
+import { MemberWithPermission } from 'shared/types/EntityPermisions';
+import { AccessLevels, PermissionType } from 'shared/types/permissionSchema';
 import { data } from './testData';
 import { MemberListItemPermission } from '../MemberListItemPermission';
-import { MemberWithPermission } from '../../EntityPermisions';
 
 describe('MemberListItem', () => {
   describe('for each test element', () => {
     const assert = (component: ShallowWrapper, testMember: MemberWithPermission) => {
-      if (testMember.type === 'group') {
+      if (testMember.type === PermissionType.GROUP) {
         expect(component.find('select').length).toBe(1);
       }
 
-      if (testMember.type === 'user') {
+      if (testMember.type === PermissionType.USER) {
         expect(
           component
             .find('span')
@@ -21,8 +22,9 @@ describe('MemberListItem', () => {
 
         expect(component.find('select').length).toBe(1);
 
-        const selectOptionForMixed = component.find('option').filter({ value: 'mixed' }).length;
-        if (testMember.level === 'mixed') {
+        const selectOptionForMixed = component.find('option').filter({ value: AccessLevels.MIXED })
+          .length;
+        if (testMember.level === AccessLevels.MIXED) {
           expect(selectOptionForMixed).toBe(1);
         } else {
           expect(selectOptionForMixed).toBe(0);
@@ -58,11 +60,11 @@ describe('MemberListItem', () => {
     component
       .find('select')
       .get(0)
-      .props.onChange({ target: { value: 'write' } });
+      .props.onChange({ target: { value: AccessLevels.WRITE } });
 
     expect(onChangeMock).toHaveBeenCalledWith({
       ...data[1],
-      level: 'write',
+      level: AccessLevels.WRITE,
     });
     expect(onDeleteMock).not.toHaveBeenCalled();
   });

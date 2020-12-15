@@ -4,11 +4,11 @@ import templatesModel from 'api/templates/templatesModel';
 import { objectIdSchema, metadataSchema, attachmentSchema } from 'shared/types/commonSchemas';
 import { wrapValidator } from 'shared/tsUtils';
 import { validators, customErrorMessages } from 'api/entities/metadataValidators.js';
+import { permissionSchema } from 'shared/types/permissionSchema';
 import { EntitySchema } from './entityType';
 import { TemplateSchema } from './templateType';
 import { validateMetadataField } from './validateMetadataField';
 import { PropertySchema } from './commonTypes';
-import { permissionSchema } from './permissionSchema';
 
 export const emitSchemaTypes = true;
 

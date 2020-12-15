@@ -3,7 +3,7 @@ import { Application, NextFunction, Request, Response } from 'express';
 import { setUpApp } from 'api/utils/testingRoutes';
 import { permissionRoutes } from 'api/permissions/routes';
 import { entitiesPermissions } from 'api/permissions/entitiesPermissions';
-import { contributors } from 'api/permissions/contributors';
+import { collaborators } from 'api/permissions/collaborators';
 
 jest.mock(
   '../../utils/languageMiddleware.ts',
@@ -92,17 +92,17 @@ describe('permissions routes', () => {
     });
   });
 
-  describe('search for contributor to share with', () => {
+  describe('search for a collaborator to share with', () => {
     describe('GET', () => {
       beforeEach(() => {
-        spyOn(contributors, 'getContributors').and.returnValue(
+        spyOn(collaborators, 'getCollaborators').and.returnValue(
           Promise.resolve([{ _id: 'user1', type: 'user' }])
         );
       });
 
       it('should return the matched user and group list', async () => {
         const response = await request(app)
-          .get('/api/contributors')
+          .get('/api/collaborators')
           .set('X-Requested-With', 'XMLHttpRequest')
           .query({ filterTerm: 'username' });
         expect(response.status).toBe(200);
@@ -111,7 +111,7 @@ describe('permissions routes', () => {
 
       it('should not validate if no filterTerm is passed', async () => {
         const response = await request(app)
-          .get('/api/contributors')
+          .get('/api/collaborators')
           .set('X-Requested-With', 'XMLHttpRequest')
           .query({});
         expect(response.status).toBe(400);

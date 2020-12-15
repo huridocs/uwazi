@@ -1,7 +1,14 @@
 import React from 'react';
-import { MemberWithPermission, ValidationError } from '../EntityPermisions';
+import { MemberWithPermission } from 'shared/types/EntityPermisions';
+import { PermissionType } from 'shared/types/permissionSchema';
+import { ObjectIdSchema } from 'shared/types/commonTypes';
 import { MemberListItemInfo } from './MemberListItemInfo';
 import { MemberListItemPermission } from './MemberListItemPermission';
+
+export interface ValidationError {
+  type: PermissionType;
+  _id: ObjectIdSchema;
+}
 
 interface MemberListProps {
   members: MemberWithPermission[];

@@ -3,14 +3,16 @@ import { shallow } from 'enzyme';
 import { ShareEntityModal } from 'app/Permissions/components/ShareEntityModal';
 import * as api from 'app/Permissions/PermissionsAPI';
 import { PermissionSchema } from 'shared/types/permissionType';
+import { MemberWithPermission } from 'shared/types/entityPermisions';
+import { AccessLevels, PermissionType, UserRole } from 'shared/types/permissionSchema';
+import { ObjectIdSchema } from 'shared/types/commonTypes';
 import { UserGroupsLookupField } from '../UserGroupsLookupField';
 import { data } from './testData';
-import { MemberWithPermission, ValidationError } from '../../EntityPermisions';
 import { MembersList } from '../MembersList';
 
 describe('ShareEntityModal', () => {
   beforeAll(() => {
-    jest.spyOn(api, 'searchContributors').mockImplementation(async () => Promise.resolve(data));
+    jest.spyOn(api, 'searchCollaborators').mockImplementation(async () => Promise.resolve(data));
     jest.spyOn(api, 'savePermissions').mockImplementation(async () => Promise.resolve(null));
   });
 
@@ -21,16 +23,16 @@ describe('ShareEntityModal', () => {
   it('should trigger a search when the search changes', () => {
     const component = shallow(<ShareEntityModal sharedIds={[]} isOpen onClose={() => {}} />);
     component.find(UserGroupsLookupField).simulate('change', 'searchTerm');
-    expect(api.searchContributors).toHaveBeenCalledWith('searchTerm');
+    expect(api.searchCollaborators).toHaveBeenCalledWith('searchTerm');
   });
 
-  it('should add a memeber to the list when it is selected', () => {
+  it('should add a member to the list when it is selected', () => {
     const testMember: MemberWithPermission = {
       _id: '1',
-      type: 'user',
+      type: PermissionType.USER,
       label: 'User',
-      role: 'contributor',
-      level: 'write',
+      role: UserRole.COLLABORATOR,
+      level: AccessLevels.WRITE,
     };
     const component = shallow(<ShareEntityModal sharedIds={[]} isOpen onClose={() => {}} />);
     component.find(UserGroupsLookupField).simulate('select', testMember);
@@ -40,29 +42,32 @@ describe('ShareEntityModal', () => {
   it('should assign read permissions as default', () => {
     const testMember: MemberWithPermission = {
       _id: '1',
-      type: 'user',
+      type: PermissionType.USER,
       label: 'User',
-      role: 'contributor',
+      role: UserRole.COLLABORATOR,
     };
     const component = shallow(<ShareEntityModal sharedIds={[]} isOpen onClose={() => {}} />);
     component.find(UserGroupsLookupField).simulate('select', testMember);
     expect(component.find(MembersList).get(0).props.members).toContainEqual({
       ...testMember,
-      level: 'read',
+      level: AccessLevels.READ,
     });
   });
 
   it('should not save and show validation error if a member has mixed access permissions', () => {
     const testMember: MemberWithPermission = {
       _id: '1',
-      type: 'user',
+      type: PermissionType.USER,
       label: 'User',
-      role: 'contributor',
-      level: 'mixed',
+      role: UserRole.COLLABORATOR,
+      level: AccessLevels.MIXED,
     };
 
-    const testValidationError: ValidationError = {
-      type: 'user',
+    const testValidationError: {
+      type: PermissionType;
+      _id: ObjectIdSchema;
+    } = {
+      type: PermissionType.USER,
       _id: '1',
     };
     const component = shallow(<ShareEntityModal sharedIds={[]} isOpen onClose={() => {}} />);
@@ -78,17 +83,17 @@ describe('ShareEntityModal', () => {
   it('should save the permissions', async () => {
     const testMember: MemberWithPermission = {
       _id: '1',
-      type: 'user',
+      type: PermissionType.USER,
       label: 'User',
-      role: 'contributor',
-      level: 'read',
+      role: UserRole.COLLABORATOR,
+      level: AccessLevels.READ,
     };
 
     const sentPermissions: PermissionSchema[] = [
       {
         _id: '1',
-        type: 'user',
-        level: 'read',
+        type: PermissionType.USER,
+        level: AccessLevels.READ,
       },
     ];
 
@@ -109,10 +114,10 @@ describe('ShareEntityModal', () => {
   it('should show one "done" button on pristine, and two on dirty', () => {
     const testMember: MemberWithPermission = {
       _id: '1',
-      type: 'user',
+      type: PermissionType.USER,
       label: 'User',
-      role: 'contributor',
-      level: 'write',
+      role: UserRole.COLLABORATOR,
+      level: AccessLevels.WRITE,
     };
     const component = shallow(<ShareEntityModal sharedIds={[]} isOpen onClose={() => {}} />);
     expect(component.find('Footer').get(0).props.children.type).toBe('button');

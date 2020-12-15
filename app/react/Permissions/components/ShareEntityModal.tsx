@@ -2,10 +2,11 @@ import Modal from 'app/Layout/Modal';
 import React, { useState, useEffect } from 'react';
 import { Icon } from 'UI';
 import { Translate } from 'app/I18N';
+import { MemberWithPermission } from 'shared/types/EntityPermisions';
+import { AccessLevels, PermissionType, UserRole } from 'shared/types/permissionSchema';
 import { UserGroupsLookupField } from './UserGroupsLookupField';
 import { MembersList } from './MembersList';
-import { MemberWithPermission } from '../EntityPermisions';
-import { loadGrantedPermissions, searchContributors, savePermissions } from '../PermissionsAPI';
+import { loadGrantedPermissions, searchCollaborators, savePermissions } from '../PermissionsAPI';
 
 export interface ShareEntityModalProps {
   isOpen: boolean;
@@ -16,8 +17,8 @@ export interface ShareEntityModalProps {
 const validate = (assignments: MemberWithPermission[]) =>
   assignments
     .map(item => {
-      if (item.type === 'group' || item.role === 'contributor') {
-        return item.level !== 'mixed'
+      if (item.type === PermissionType.GROUP || item.role === UserRole.COLLABORATOR.toString()) {
+        return item.level !== AccessLevels.MIXED
           ? null
           : {
               _id: item._id,
@@ -58,7 +59,7 @@ export const ShareEntityModalComponent = ({
   const onChangeHandler = async (value: string) => {
     setSearch(value);
     setResults(
-      (await searchContributors(value)).filter(
+      (await searchCollaborators(value)).filter(
         r => !assignments.find(a => a._id === r._id && a.type === r.type)
       )
     );

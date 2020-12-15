@@ -31,7 +31,7 @@ export default {
       password: 'pass3',
       username: 'user3',
       email: 'user3@email.com',
-      role: 'contributor',
+      role: 'collaborator',
     },
   ],
 };

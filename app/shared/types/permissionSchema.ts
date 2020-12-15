@@ -13,6 +13,12 @@ export enum PermissionType {
   GROUP = 'group',
 }
 
+export enum UserRole {
+  ADMIN = 'admin',
+  EDITOR = 'editor',
+  COLLABORATOR = 'collaborator',
+}
+
 export const permissionType = { type: 'string', enum: Object.values(PermissionType) };
 export const permissionLevel = { type: 'string', enum: Object.values(AccessLevels) };
 
