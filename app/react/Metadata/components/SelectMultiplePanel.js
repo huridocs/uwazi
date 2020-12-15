@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { t, Translate } from 'app/I18N';
+import { t } from 'app/I18N';
 import { deleteEntities } from 'app/Entities/actions/actions';
 import * as metadataActions from 'app/Metadata/actions/actions';
 import { createSelector } from 'reselect';
@@ -14,9 +14,9 @@ import Immutable from 'immutable';
 import { Icon } from 'UI';
 import { NeedAuthorization } from 'app/Auth';
 import Export from 'app/Library/components/ExportButton';
-import { ShareEntityModal } from 'app/Permissions/components/ShareEntityModal';
 import MetadataForm from './MetadataForm';
 import comonTemplate from '../helpers/comonTemplate';
+import { ShareButton } from 'app/Permissions/components/ShareButton';
 
 const sortedTemplates = createSelector(
   s => s.templates,
@@ -40,7 +40,6 @@ export class SelectMultiplePanel extends Component {
     this.unpublish = this.unpublish.bind(this);
     this.changeTemplate = this.changeTemplate.bind(this);
     this.toggleSharing = this.toggleSharing.bind(this);
-    this.state = { sharing: false };
   }
 
   close() {
@@ -183,7 +182,7 @@ export class SelectMultiplePanel extends Component {
     }));
   }
 
-  renderListButtons(canBePublished, canBeUnPublished) {
+  renderListButtons(canBePublished, canBeUnPublished, sharedIds) {
     return (
       <>
         <NeedAuthorization roles={['admin', 'editor']}>
@@ -207,12 +206,7 @@ export class SelectMultiplePanel extends Component {
               <span className="btn-label">{t('System', 'Unpublish')}</span>
             </button>
           )}
-          <button className="btn btn-success share-btn" type="button" onClick={this.toggleSharing}>
-            <Icon icon="user-plus" />
-            <span className="btn-label">
-              <Translate>Share</Translate>
-            </span>
-          </button>
+          <ShareButton sharedIds={sharedIds} />
         </NeedAuthorization>
         <Export storeKey={this.props.storeKey} />
       </>
@@ -240,20 +234,24 @@ export class SelectMultiplePanel extends Component {
 
   render() {
     const { entitiesSelected, open, editing } = this.props;
-    const canBePublished = this.props.entitiesSelected.reduce((previousCan, entity) => {
-      const isEntity = !entity.get('file');
-      return (
-        previousCan &&
-        (entity.get('processed') || isEntity) &&
-        !entity.get('published') &&
-        !!entity.get('template')
-      );
-    }, true);
+    const canBePublished =
+      entitiesSelected.size &&
+      this.props.entitiesSelected.reduce((previousCan, entity) => {
+        const isEntity = !entity.get('file');
+        return (
+          previousCan &&
+          (entity.get('processed') || isEntity) &&
+          !entity.get('published') &&
+          !!entity.get('template')
+        );
+      }, true);
 
-    const canBeUnPublished = this.props.entitiesSelected.reduce(
-      (previousCan, entity) => previousCan && entity.get('published'),
-      true
-    );
+    const canBeUnPublished =
+      entitiesSelected.size &&
+      this.props.entitiesSelected.reduce(
+        (previousCan, entity) => previousCan && entity.get('published'),
+        true
+      );
 
     const sharedIds = entitiesSelected.map(entity => entity.get('sharedId'));
 
@@ -273,15 +271,9 @@ export class SelectMultiplePanel extends Component {
           {editing && this.renderEditingForm()}
         </div>
         <div className="sidepanel-footer">
-          {!editing && this.renderListButtons(canBePublished, canBeUnPublished)}
+          {!editing && this.renderListButtons(canBePublished, canBeUnPublished, sharedIds)}
           {editing && this.renderEditingButtons()}
         </div>
-        <ShareEntityModal
-          key={sharedIds.join()}
-          isOpen={this.state.sharing}
-          onClose={this.toggleSharing}
-          sharedIds={sharedIds}
-        />
       </SidePanel>
     );
   }

@@ -52,6 +52,19 @@ describe('ShareEntityModal', () => {
     });
   });
 
+  it('should update the assignments when deleting an item from the list', () => {
+    const testMember: MemberWithPermission = {
+      _id: '1',
+      type: 'user',
+      label: 'User',
+      role: 'contributor',
+    };
+    const component = shallow(<ShareEntityModal sharedIds={[]} isOpen onClose={() => {}} />);
+    component.find(UserGroupsLookupField).simulate('select', testMember);
+    component.find(MembersList).simulate('change', []);
+    expect(component.find(MembersList).get(0).props.members).toEqual([]);
+  });
+
   it('should not save and show validation error if a member has mixed access permissions', () => {
     const testMember: MemberWithPermission = {
       _id: '1',
@@ -120,10 +133,33 @@ describe('ShareEntityModal', () => {
     expect(component.find('Footer').get(0).props.children.length).toBe(2);
   });
 
-  it('should call onClose when clicking done or discard', () => {
-    expect(false);
+  it('should call onClose when clicking done', () => {
+    const onCloseMock = jest.fn();
+    const component = shallow(<ShareEntityModal sharedIds={[]} isOpen onClose={onCloseMock} />);
+    component.find('button.pristine').simulate('click');
+    expect(onCloseMock).toHaveBeenCalled();
   });
-  it('should update the assignments when deleting an item from the list', () => {
-    expect(false);
+
+  it('should close without saving when clicking discard', async () => {
+    const testMember: MemberWithPermission = {
+      _id: '1',
+      type: 'user',
+      label: 'User',
+      role: 'contributor',
+      level: 'read',
+    };
+
+    const onCloseMock = jest.fn();
+
+    const component = shallow(
+      <ShareEntityModal sharedIds={['entityId1']} isOpen onClose={onCloseMock} />
+    );
+    component.find(UserGroupsLookupField).simulate('select', testMember);
+    await component
+      .find('.cancel-button')
+      .get(0)
+      .props.onClick();
+    expect(api.savePermissions).not.toHaveBeenCalled();
+    expect(onCloseMock).toHaveBeenCalled();
   });
 });

@@ -20,7 +20,6 @@ import { Icon } from 'UI';
 
 import * as viewerModule from 'app/Viewer';
 import { entityDefaultDocument } from 'shared/entityDefaultDocument';
-import { ShareEntityModal } from 'app/Permissions/components/ShareEntityModal';
 import SearchText from './SearchText';
 import ShowToc from './ShowToc';
 import SnippetsTab from './SnippetsTab';
@@ -30,7 +29,7 @@ export class DocumentSidePanel extends Component {
     super(props);
     this.selectTab = this.selectTab.bind(this);
     this.firstRender = true;
-    this.state = { copyFrom: false, copyFromProps: [], sharing: false };
+    this.state = { copyFrom: false, copyFromProps: [] };
     this.toggleCopyFrom = this.toggleCopyFrom.bind(this);
     this.onCopyFromSelect = this.onCopyFromSelect.bind(this);
     this.deleteDocument = this.deleteDocument.bind(this);
@@ -308,7 +307,7 @@ export class DocumentSidePanel extends Component {
               includeViewButton={!docBeingEdited && readOnly}
               storeKey={this.props.storeKey}
               copyFrom={this.toggleCopyFrom}
-              share={this.toggleSharing}
+              sharedId={this.props.doc.get('sharedId')}
             />
           </div>
         </ShowIf>
@@ -416,12 +415,6 @@ export class DocumentSidePanel extends Component {
                       parentId={doc.get('_id')}
                       parentSharedId={doc.get('sharedId')}
                       storeKey={this.props.storeKey}
-                    />
-                    <ShareEntityModal
-                      key={doc.get('sharedId')}
-                      isOpen={this.state.sharing}
-                      onClose={this.toggleSharing}
-                      sharedIds={[doc.get('sharedId')]}
                     />
                   </div>
                 );

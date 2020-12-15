@@ -15,18 +15,14 @@ export interface ShareEntityModalProps {
 
 const validate = (assignments: MemberWithPermission[]) =>
   assignments
-    .map(item => {
-      if (item.type === 'group' || item.role === 'contributor') {
-        return item.level !== 'mixed'
-          ? null
-          : {
-              _id: item._id,
-              type: item.type,
-            };
-      }
-
-      return null;
-    })
+    .map(item =>
+      item.level !== 'mixed'
+        ? null
+        : {
+            _id: item._id,
+            type: item.type,
+          }
+    )
     .filter(i => i);
 
 export const ShareEntityModalComponent = ({

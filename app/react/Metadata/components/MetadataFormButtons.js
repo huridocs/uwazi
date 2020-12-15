@@ -12,6 +12,7 @@ import { publish, unpublish } from 'app/Uploads/actions/uploadsActions';
 import entitiesUtils from 'app/Entities/utils/filterBaseProperties';
 
 import * as actions from '../actions/actions';
+import { ShareButton } from 'app/Permissions/components/ShareButton';
 
 export class MetadataFormButtons extends Component {
   render() {
@@ -130,12 +131,7 @@ export class MetadataFormButtons extends Component {
         </NeedAuthorization>
         <NeedAuthorization roles={['admin', 'editor']}>
           <ShowIf if={!entityBeingEdited && !hideDelete}>
-            <button className="btn btn-success share-btn" type="button" onClick={this.props.share}>
-              <Icon icon="user-plus" />
-              <span className="btn-label">
-                <Translate>Share</Translate>
-              </span>
-            </button>
+            <ShareButton sharedIds={[this.props.sharedId]} />
           </ShowIf>
         </NeedAuthorization>
         <NeedAuthorization roles={['admin', 'editor']}>
@@ -191,7 +187,7 @@ MetadataFormButtons.propTypes = {
   exclusivelyViewButton: PropTypes.bool,
   hideDelete: PropTypes.bool,
   copyFrom: PropTypes.func,
-  share: PropTypes.func,
+  sharedId: PropTypes.func,
 };
 
 const mapStateToProps = ({ templates }) => ({ templates });
