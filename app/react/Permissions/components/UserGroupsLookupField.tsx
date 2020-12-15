@@ -1,7 +1,7 @@
 import { Translate } from 'app/I18N';
 import React, { useEffect, useRef, useState } from 'react';
 import { Icon } from 'UI';
-import { MemberWithPermission } from '../EntityPermisions';
+import { MemberWithPermission } from 'shared/types/entityPermisions';
 import { MemberListItemInfo } from './MemberListItemInfo';
 
 interface UserGroupsLookupFieldProps {

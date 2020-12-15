@@ -170,6 +170,7 @@ MetadataFormButtons.defaultProps = {
   formName: 'metadataForm',
   delete: () => {},
   copyFrom: () => {},
+  share: () => {},
 };
 
 MetadataFormButtons.propTypes = {

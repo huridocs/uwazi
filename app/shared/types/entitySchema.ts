@@ -4,11 +4,11 @@ import templatesModel from 'api/templates/templatesModel';
 import { objectIdSchema, metadataSchema, attachmentSchema } from 'shared/types/commonSchemas';
 import { wrapValidator } from 'shared/tsUtils';
 import { validators, customErrorMessages } from 'api/entities/metadataValidators.js';
+import { permissionSchema } from 'shared/types/permissionSchema';
 import { EntitySchema } from './entityType';
 import { TemplateSchema } from './templateType';
 import { validateMetadataField } from './validateMetadataField';
 import { PropertySchema } from './commonTypes';
-import { permissionsSchema } from './permissionsSchema';
 
 export const emitSchemaTypes = true;
 
@@ -120,6 +120,7 @@ export const entitySchema = {
     objectIdSchema,
     metadataSchema,
     attachmentSchema,
+    permissionSchema,
   },
   properties: {
     _id: objectIdSchema,
@@ -146,7 +147,10 @@ export const entitySchema = {
     user: objectIdSchema,
     metadata: metadataSchema,
     suggestedMetadata: metadataSchema,
-    permissions: permissionsSchema,
+    permissions: {
+      type: 'array',
+      items: permissionSchema,
+    },
   },
 };
 

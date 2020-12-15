@@ -1,4 +1,4 @@
-import { MemberWithPermission } from 'app/Permissions/EntityPermisions';
+import { MemberWithPermission } from 'shared/types/entityPermisions';
 
 export const data: MemberWithPermission[] = [
   {
@@ -29,7 +29,7 @@ export const data: MemberWithPermission[] = [
     type: 'user',
     _id: 'id1',
     label: 'User name 3',
-    role: 'contributor',
+    role: 'collaborator',
     level: 'mixed',
   },
 ];

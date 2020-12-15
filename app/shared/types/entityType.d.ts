@@ -3,6 +3,8 @@
 
 import { ObjectIdSchema, MetadataSchema, AttachmentSchema } from 'shared/types/commonTypes';
 
+import { PermissionSchema } from 'shared/types/permissionType';
+
 export interface EntitySchema {
   _id?: ObjectIdSchema;
   sharedId?: string;
@@ -21,5 +23,6 @@ export interface EntitySchema {
   user?: ObjectIdSchema;
   metadata?: MetadataSchema;
   suggestedMetadata?: MetadataSchema;
+  permissions?: PermissionSchema[];
   [k: string]: unknown | undefined;
 }

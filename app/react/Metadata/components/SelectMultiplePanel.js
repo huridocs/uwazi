@@ -132,6 +132,12 @@ export class SelectMultiplePanel extends Component {
     this.props.loadForm(this.props.formKey, this.props.template.toJS());
   }
 
+  toggleSharing() {
+    this.setState(currentState => ({
+      sharing: !currentState.sharing,
+    }));
+  }
+
   renderEditingForm() {
     const { formKey, thesauris } = this.props;
 
@@ -174,12 +180,6 @@ export class SelectMultiplePanel extends Component {
         </button>
       </NeedAuthorization>
     );
-  }
-
-  toggleSharing() {
-    this.setState(currentState => ({
-      sharing: !currentState.sharing,
-    }));
   }
 
   renderListButtons(canBePublished, canBeUnPublished, sharedIds) {

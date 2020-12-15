@@ -2,10 +2,11 @@ import Modal from 'app/Layout/Modal';
 import React, { useState, useEffect } from 'react';
 import { Icon } from 'UI';
 import { Translate } from 'app/I18N';
+import { MemberWithPermission } from 'shared/types/entityPermisions';
+import { AccessLevels } from 'shared/types/permissionSchema';
 import { UserGroupsLookupField } from './UserGroupsLookupField';
 import { MembersList } from './MembersList';
-import { MemberWithPermission } from '../EntityPermisions';
-import { loadGrantedPermissions, searchContributors, savePermissions } from '../PermissionsAPI';
+import { loadGrantedPermissions, searchCollaborators, savePermissions } from '../PermissionsAPI';
 
 export interface ShareEntityModalProps {
   isOpen: boolean;
@@ -16,7 +17,7 @@ export interface ShareEntityModalProps {
 const validate = (assignments: MemberWithPermission[]) =>
   assignments
     .map(item =>
-      item.level !== 'mixed'
+      item.level !== AccessLevels.MIXED
         ? null
         : {
             _id: item._id,
@@ -54,7 +55,7 @@ export const ShareEntityModalComponent = ({
   const onChangeHandler = async (value: string) => {
     setSearch(value);
     setResults(
-      (await searchContributors(value)).filter(
+      (await searchCollaborators(value)).filter(
         r => !assignments.find(a => a._id === r._id && a.type === r.type)
       )
     );

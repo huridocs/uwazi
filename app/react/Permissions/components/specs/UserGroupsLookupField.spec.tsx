@@ -1,7 +1,8 @@
 import { shallow, ShallowWrapper } from 'enzyme';
 import React from 'react';
+import { MemberWithPermission } from 'shared/types/entityPermisions';
+import { AccessLevels, PermissionType } from 'shared/types/permissionSchema';
 import { UserGroupsLookupField } from '../UserGroupsLookupField';
-import { MemberWithPermission } from '../../EntityPermisions';
 
 describe('UserGroupsLookupField', () => {
   let onChangeMock: (search: string) => void;
@@ -17,13 +18,13 @@ describe('UserGroupsLookupField', () => {
       {
         _id: 'id',
         label: 'label',
-        type: 'user',
-        level: 'read',
+        type: PermissionType.USER,
+        level: AccessLevels.READ,
       },
       {
         _id: 'id2',
         label: 'label',
-        type: 'group',
+        type: PermissionType.GROUP,
       },
     ];
 
@@ -77,7 +78,7 @@ describe('UserGroupsLookupField', () => {
           {
             _id: 'id',
             label: 'label',
-            type: 'user',
+            type: PermissionType.USER,
           },
         ]}
       />
@@ -93,7 +94,7 @@ describe('UserGroupsLookupField', () => {
     expect(onSelectMock).toHaveBeenCalledWith({
       _id: 'id',
       label: 'label',
-      type: 'user',
+      type: PermissionType.USER,
     });
   });
 
@@ -107,7 +108,7 @@ describe('UserGroupsLookupField', () => {
           {
             _id: 'id',
             label: 'label',
-            type: 'user',
+            type: PermissionType.USER,
           },
         ]}
       />
@@ -139,22 +140,22 @@ describe('UserGroupsLookupField', () => {
             {
               _id: 'id1',
               label: 'user',
-              type: 'user',
+              type: PermissionType.USER,
             },
             {
               _id: 'id2',
               label: 'group',
-              type: 'group',
+              type: PermissionType.GROUP,
             },
             {
               _id: 'id3',
               label: 'group2',
-              type: 'group',
+              type: PermissionType.GROUP,
             },
             {
               _id: 'id4',
               label: 'user2',
-              type: 'user',
+              type: PermissionType.USER,
             },
           ]}
         />
@@ -214,7 +215,7 @@ describe('UserGroupsLookupField', () => {
       expect(onSelectMock).toHaveBeenCalledWith({
         _id: 'id1',
         label: 'user',
-        type: 'user',
+        type: PermissionType.USER,
       });
     });
 

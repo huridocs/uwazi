@@ -1,5 +1,6 @@
 import { shallow } from 'enzyme';
 import React from 'react';
+import { AccessLevels, PermissionType } from 'shared/types/permissionSchema';
 import { MembersList } from '../MembersList';
 import { data } from './testData';
 import { MemberListItemInfo } from '../MemberListItemInfo';
@@ -26,7 +27,7 @@ describe('MemberList', () => {
         onChange={() => {}}
         validationErrors={[
           {
-            type: data[0].type,
+            type: data[0].type as PermissionType,
             _id: data[0]._id,
           },
         ]}
@@ -69,13 +70,13 @@ describe('MemberList', () => {
       .last()
       .dive();
 
-    permissionsComp.find('select').simulate('change', { target: { value: 'write' } });
+    permissionsComp.find('select').simulate('change', { target: { value: AccessLevels.WRITE } });
 
     expect(onChangeMock).toHaveBeenCalledWith([
       reducedSet[0],
       {
         ...reducedSet[1],
-        level: 'write',
+        level: AccessLevels.WRITE,
       },
     ]);
   });
