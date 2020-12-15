@@ -2,7 +2,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { ShareEntityModal } from 'app/Permissions/components/ShareEntityModal';
 import * as api from 'app/Permissions/PermissionsAPI';
-import { PermissionsSchema } from 'shared/types/permissionsType';
+import { PermissionSchema } from 'shared/types/permissionsType';
 import { UserGroupsLookupField } from '../UserGroupsLookupField';
 import { data } from './testData';
 import { MemberWithPermission, ValidationError } from '../../EntityPermisions';
@@ -84,7 +84,7 @@ describe('ShareEntityModal', () => {
       level: 'read',
     };
 
-    const sentPermissions: PermissionsSchema = [
+    const sentPermissions: PermissionSchema[] = [
       {
         _id: '1',
         type: 'user',

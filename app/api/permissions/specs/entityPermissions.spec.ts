@@ -2,6 +2,7 @@ import entities from 'api/entities/entities';
 import { entitiesPermissions } from 'api/permissions/entitiesPermissions';
 import fixtures, { groupA, userA, userB } from 'api/permissions/specs/fixtures';
 import db from 'api/utils/testing_db';
+import { AccessLevels, PermissionType } from 'shared/types/permissionSchema';
 
 describe('permissions', () => {
   beforeEach(async () => {
@@ -12,7 +13,7 @@ describe('permissions', () => {
     it('should update the specified entities with the passed permissions in all entities languages', async () => {
       const permissionsData = {
         ids: ['shared1', 'shared2'],
-        permissions: [{ _id: 'user1', type: 'user', level: 'read' }],
+        permissions: [{ _id: 'user1', type: PermissionType.USER, level: AccessLevels.READ }],
       };
       await entitiesPermissions.setEntitiesPermissions(permissionsData);
       const storedEntities = await entities.get();
@@ -39,21 +40,21 @@ describe('permissions', () => {
           _id: userA._id,
           label: userA.username,
           role: userA.role,
-          level: 'read',
-          type: 'user',
+          level: AccessLevels.READ,
+          type: PermissionType.USER,
         },
         {
           _id: userB._id,
           label: userB.username,
           role: userB.role,
-          level: 'mixed',
-          type: 'user',
+          level: AccessLevels.MIXED,
+          type: PermissionType.USER,
         },
         {
           _id: groupA._id,
           label: groupA.name,
-          level: 'mixed',
-          type: 'group',
+          level: AccessLevels.MIXED,
+          type: PermissionType.GROUP,
         },
       ]);
     });
@@ -65,21 +66,21 @@ describe('permissions', () => {
           _id: userA._id,
           label: userA.username,
           role: userA.role,
-          level: 'mixed',
-          type: 'user',
+          level: AccessLevels.MIXED,
+          type: PermissionType.USER,
         },
         {
           _id: userB._id,
           label: userB.username,
           role: userB.role,
-          level: 'mixed',
-          type: 'user',
+          level: AccessLevels.MIXED,
+          type: PermissionType.USER,
         },
         {
           _id: groupA._id,
           label: groupA.name,
-          level: 'mixed',
-          type: 'group',
+          level: AccessLevels.MIXED,
+          type: PermissionType.GROUP,
         },
       ]);
     });

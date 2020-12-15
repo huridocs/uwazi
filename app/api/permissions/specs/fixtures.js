@@ -1,4 +1,5 @@
 import db from 'api/utils/testing_db';
+import { AccessLevels, PermissionType } from 'shared/types/permissionSchema';
 
 const idUserA = db.id();
 const idUserB = db.id();
@@ -40,18 +41,18 @@ const entity1 = {
   permissions: [
     {
       _id: idUserA,
-      type: 'user',
-      level: 'read',
+      type: PermissionType.USER,
+      level: AccessLevels.READ,
     },
     {
       _id: idUserB,
-      type: 'user',
-      level: 'write',
+      type: PermissionType.USER,
+      level: AccessLevels.WRITE,
     },
     {
       _id: idGroupA,
-      type: 'group',
-      level: 'write',
+      type: PermissionType.GROUP,
+      level: AccessLevels.WRITE,
     },
   ],
 };
@@ -65,13 +66,13 @@ const entity2 = {
   permissions: [
     {
       _id: idUserA,
-      type: 'user',
-      level: 'read',
+      type: PermissionType.USER,
+      level: AccessLevels.READ,
     },
     {
       _id: idGroupA,
-      type: 'group',
-      level: 'read',
+      type: PermissionType.GROUP,
+      level: AccessLevels.READ,
     },
   ],
 };

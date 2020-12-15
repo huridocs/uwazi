@@ -2,6 +2,7 @@
 /**AUTO-GENERATED. RUN yarn emit-types to update.*/
 
 import { ObjectIdSchema, MetadataSchema, AttachmentSchema } from 'shared/types/commonTypes';
+import { PermissionSchema } from 'shared/types/permissionType';
 
 export interface EntitySchema {
   _id?: ObjectIdSchema;
@@ -21,5 +22,6 @@ export interface EntitySchema {
   user?: ObjectIdSchema;
   metadata?: MetadataSchema;
   suggestedMetadata?: MetadataSchema;
+  permissions?: PermissionSchema[];
   [k: string]: unknown | undefined;
 }

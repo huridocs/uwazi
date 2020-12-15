@@ -8,7 +8,7 @@ import { EntitySchema } from './entityType';
 import { TemplateSchema } from './templateType';
 import { validateMetadataField } from './validateMetadataField';
 import { PropertySchema } from './commonTypes';
-import { permissionsSchema } from './permissionsSchema';
+import { permissionSchema } from './permissionSchema';
 
 export const emitSchemaTypes = true;
 
@@ -120,6 +120,7 @@ export const entitySchema = {
     objectIdSchema,
     metadataSchema,
     attachmentSchema,
+    permissionSchema,
   },
   properties: {
     _id: objectIdSchema,
@@ -146,7 +147,10 @@ export const entitySchema = {
     user: objectIdSchema,
     metadata: metadataSchema,
     suggestedMetadata: metadataSchema,
-    permissions: permissionsSchema,
+    permissions: {
+      type: 'array',
+      items: permissionSchema,
+    },
   },
 };
 
