@@ -59,7 +59,7 @@ describe('ShareEntityModal', () => {
       _id: '1',
       type: 'user',
       label: 'User',
-      role: 'contributor',
+      role: UserRole.COLLABORATOR,
     };
     const component = shallow(<ShareEntityModal sharedIds={[]} isOpen onClose={() => {}} />);
     component.find(UserGroupsLookupField).simulate('select', testMember);
@@ -150,8 +150,8 @@ describe('ShareEntityModal', () => {
       _id: '1',
       type: 'user',
       label: 'User',
-      role: 'contributor',
-      level: 'read',
+      role: UserRole.COLLABORATOR,
+      level: AccessLevels.READ,
     };
 
     const onCloseMock = jest.fn();
