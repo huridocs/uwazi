@@ -13,24 +13,60 @@ jest.mock(
 );
 
 describe('permissions routes', () => {
+  let user: { username: string; role: string } | undefined;
+
+  function getUser() {
+    return user;
+  }
+
   const app: Application = setUpApp(
     permissionRoutes,
-    (_req: Request, _res: Response, next: NextFunction) => {
+    (req: Request, _res: Response, next: NextFunction) => {
+      (req as any).user = getUser();
       next();
     }
   );
 
   describe('entities', () => {
     describe('POST', () => {
-      it('should save the permissions ', async () => {
+      beforeEach(() => {
         spyOn(entitiesPermissions, 'setEntitiesPermissions').and.returnValue(Promise.resolve([]));
-        const permissionsData = { entities: [], permissions: [{}] };
+      });
+      it('should save the permissions ', async () => {
+        user = { username: 'user 1', role: 'admin' };
+        const permissionsData = {
+          ids: ['shared1'],
+          permissions: [{ _id: 'user1', type: 'user', level: 'read' }],
+        };
         const response = await request(app)
           .post('/api/entities/permissions')
           .set('X-Requested-With', 'XMLHttpRequest')
           .send(permissionsData);
         expect(response.status).toBe(200);
         expect(entitiesPermissions.setEntitiesPermissions).toHaveBeenCalled();
+      });
+
+      it('should invalidate if body does not fit the expected schema', async () => {
+        user = { username: 'user 1', role: 'admin' };
+        const permissionsData = { entities: [], permissions: [{}] };
+        const response = await request(app)
+          .post('/api/entities/permissions')
+          .set('X-Requested-With', 'XMLHttpRequest')
+          .send(permissionsData);
+        expect(response.status).toBe(400);
+      });
+
+      it('should not save if user is not authorized', async () => {
+        user = undefined;
+        const permissionsData = {
+          ids: ['shared1'],
+          permissions: [{ _id: 'user1', type: 'user', level: 'read' }],
+        };
+        const response = await request(app)
+          .post('/api/entities/permissions')
+          .set('X-Requested-With', 'XMLHttpRequest')
+          .send(permissionsData);
+        expect(response.unauthorized).toBe(true);
       });
     });
 
