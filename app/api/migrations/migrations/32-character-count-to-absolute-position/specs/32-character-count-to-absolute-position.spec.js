@@ -6,10 +6,8 @@ import { config } from 'api/config';
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import {
   documentId,
-  documentWithoutPdfInfoId,
   documentWithVoidTocId,
   firstConnectionId,
-  noPdfInfoConnectionId,
   secondConnectionId,
 } from 'api/migrations/migrations/32-character-count-to-absolute-position/specs/fixtures';
 
@@ -104,25 +102,6 @@ describe('conversion of character count to absolute position', () => {
     ]);
   });
 
-  it('should remove range when no pdfinfo', async () => {
-    await migration.up(testingDB.mongodb);
-
-    const connections = await testingDB.mongodb
-      .collection('connections')
-      .find({ _id: noPdfInfoConnectionId })
-      .toArray();
-
-    expect(connections).not.toEqual([
-      expect.objectContaining({
-        range: {
-          start: 104,
-          end: 182,
-          text: 'Uwazi is an open-source solution for building and sharing document collections',
-        },
-      }),
-    ]);
-  });
-
   it('should convert table of content to absolute position', async () => {
     await migration.up(testingDB.mongodb);
 
@@ -189,61 +168,6 @@ describe('conversion of character count to absolute position', () => {
     expect(connections).toEqual([
       expect.objectContaining({
         toc: [],
-      }),
-    ]);
-  });
-
-  it('should convert toc when no pdfInfo', async () => {
-    await migration.up(testingDB.mongodb);
-
-    const connections = await testingDB.mongodb
-      .collection('files')
-      .find({ _id: documentWithoutPdfInfoId })
-      .toArray();
-
-    expect(connections).toEqual([
-      expect.objectContaining({
-        toc: [
-          {
-            selectionRectangles: [
-              {
-                height: 12,
-                left: 324,
-                regionId: 2,
-                top: 630,
-                width: 132,
-              },
-            ],
-            label: 'PUBLISH WITH PURPOSE',
-            indentation: 0,
-          },
-          {
-            selectionRectangles: [
-              {
-                height: 12,
-                left: 318,
-                regionId: 3,
-                top: 630,
-                width: 142,
-              },
-            ],
-            label: 'BUILD A CUSTOM LIBRARY',
-            indentation: 1,
-          },
-          {
-            selectionRectangles: [
-              {
-                height: 12,
-                left: 310,
-                regionId: 4,
-                top: 630,
-                width: 161,
-              },
-            ],
-            label: 'DISCOVER NEW INFORMATION',
-            indentation: 2,
-          },
-        ],
       }),
     ]);
   });

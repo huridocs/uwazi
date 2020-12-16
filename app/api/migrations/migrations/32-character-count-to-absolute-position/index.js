@@ -2,7 +2,6 @@
 import { PdfCharacterCountToAbsolute } from 'api/migrations/pdf_character_count_to_absolute/PdfCharacterCountToAbsolute';
 import path from 'path';
 import { config } from 'api/config';
-import { PDFUtils } from 'app/PDF';
 
 async function getCharacterCountToAbsolutePositionConvertor(file) {
   const filename = path.join(config.defaultTenant.uploadedDocuments, file.filename);
@@ -59,17 +58,22 @@ async function convertConnectionsToAbsolutePosition(fileConvertor, file, db) {
       );
       const textSelection = absolutePositionReferenceToTextSelection(absolutePositionReference);
 
-      await db
-        .collection('connections')
-        .updateOne(
-          { _id: connections[i]._id },
-          { $set: { reference: textSelection }, $unset: { range: '' } }
-        );
+      await db.collection('connections').updateOne(
+        { _id: connections[i]._id },
+        {
+          $set: { reference: textSelection },
+          $unset: { range: '' },
+        }
+      );
     }
   }
 }
 
 async function existsRangesToConvert(db, file) {
+  if (!file.pdfInfo) {
+    return false;
+  }
+
   if (file.toc && file.toc.length !== 0) {
     return true;
   }
@@ -108,15 +112,9 @@ export default {
           `${tocCount} converting to absolute position file ${file.filename}\r\n`
         );
 
-        if (!file.pdfInfo || !file.pdfInfo[1]) {
-          file.pdfInfo = await PDFUtils.extractPDFInfo(
-            path.join(config.defaultTenant.uploadedDocuments, file.filename)
-          );
-          process.stdout.write('getting pdfInfo\r\n');
-        }
-
-        const fileConvertor = await getCharacterCountToAbsolutePositionConvertor(file);
         try {
+          const fileConvertor = await getCharacterCountToAbsolutePositionConvertor(file);
+
           if (file.toc && file.toc.length !== 0) {
             await convertTocToAbsolutePosition(fileConvertor, file, db);
           }
