@@ -20,6 +20,10 @@ export default {
       }),
     });
 
+    if (processedSettings.data?.home_page === '/') {
+      processedSettings.data.home_page = '';
+    }
+
     return api.post('settings', processedSettings).then((response: any) => response.json);
   },
 
