@@ -26,7 +26,6 @@ export const ShareButton = ({ sharedIds }: ShareButtonProps) => {
           sharedIds={sharedIds}
         />
       ) : null}
-      ;
     </>
   );
 };

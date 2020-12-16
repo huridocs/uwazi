@@ -24,7 +24,6 @@ export default function() {
         'uploaded',
         'published',
         'relationships',
-        'permissions',
       ],
     },
     from: 0,
