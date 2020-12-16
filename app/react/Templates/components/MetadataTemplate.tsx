@@ -96,10 +96,8 @@ export class MetadataTemplate extends Component<MetadataTemplateProps> {
   }
 
   render() {
-    
     const { connectDropTarget, defaultColor } = this.props;
     const commonProperties = this.props.commonProperties || [];
-    console.log(commonProperties)
     return (
       <div>
         <RemovePropertyConfirm />
