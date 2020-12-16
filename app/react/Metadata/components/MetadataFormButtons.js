@@ -187,7 +187,6 @@ MetadataFormButtons.propTypes = {
   exclusivelyViewButton: PropTypes.bool,
   hideDelete: PropTypes.bool,
   copyFrom: PropTypes.func,
-  sharedId: PropTypes.func,
 };
 
 const mapStateToProps = ({ templates }) => ({ templates });

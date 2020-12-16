@@ -8,6 +8,7 @@ import * as metadataActions from 'app/Metadata/actions/actions';
 import { createSelector } from 'reselect';
 import { wrapDispatch } from 'app/Multireducer';
 import { advancedSort } from 'app/utils/advancedSort';
+import { ShareButton } from 'app/Permissions/components/ShareButton';
 import TemplateLabel from 'app/Layout/TemplateLabel';
 import SidePanel from 'app/Layout/SidePanel';
 import Immutable from 'immutable';
@@ -16,7 +17,6 @@ import { NeedAuthorization } from 'app/Auth';
 import Export from 'app/Library/components/ExportButton';
 import MetadataForm from './MetadataForm';
 import comonTemplate from '../helpers/comonTemplate';
-import { ShareButton } from 'app/Permissions/components/ShareButton';
 
 const sortedTemplates = createSelector(
   s => s.templates,
