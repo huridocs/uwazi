@@ -41,6 +41,10 @@
       bottom: 0;
       font-size: 14px;
     }
+
+    .alert {
+      margin: 10px 0 0 0;
+    }
   }
 
   .modal-footer {
@@ -141,7 +145,8 @@
 }
 
 .member-list-wrapper {
-  max-height: calc(100vh - 273px);
+  max-height: calc(100vh - 333px);
+  min-height: 200px;
   overflow: auto;
 }
 .members-list {

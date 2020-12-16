@@ -4,6 +4,7 @@ import { Icon } from 'UI';
 import { Translate } from 'app/I18N';
 import { MemberWithPermission } from 'shared/types/entityPermisions';
 import { AccessLevels } from 'shared/types/permissionSchema';
+import { Warning } from 'app/Layout';
 import { UserGroupsLookupField } from './UserGroupsLookupField';
 import { MembersList } from './MembersList';
 import { loadGrantedPermissions, searchCollaborators, savePermissions } from '../PermissionsAPI';
@@ -118,6 +119,12 @@ export const ShareEntityModalComponent = ({
             <Translate>Please select access level for marked users</Translate>.
           </span>
         ) : null}
+        <Warning inline>
+          <Translate>
+            Administrator and Editor users have unrestricted access to this entity regardless of the
+            sharing configuration in this section.
+          </Translate>
+        </Warning>
       </Modal.Body>
 
       {dirty ? (
