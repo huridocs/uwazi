@@ -33,7 +33,7 @@ export const MemberListItemPermission = ({
       <option value="read">Can see</option>
       <option value="write">Can edit</option>
       <option disabled>───────</option>
-      <option value="delete">Delete</option>
+      <option value="delete">Remove</option>
     </select>
   );
 };
