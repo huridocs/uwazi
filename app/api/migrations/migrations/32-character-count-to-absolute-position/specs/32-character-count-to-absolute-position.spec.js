@@ -5,7 +5,9 @@ import errorLog from 'api/log/errorLog';
 import { config } from 'api/config';
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import {
-  documentId, documentWithoutPdfInfoId, documentWithVoidTocId,
+  documentId,
+  documentWithoutPdfInfoId,
+  documentWithVoidTocId,
   firstConnectionId,
   noPdfInfoConnectionId,
   secondConnectionId,
@@ -191,7 +193,7 @@ describe('conversion of character count to absolute position', () => {
     ]);
   });
 
-  it('should leave empty toc when no pdfinfo', async () => {
+  it('should convert toc when no pdfInfo', async () => {
     await migration.up(testingDB.mongodb);
 
     const connections = await testingDB.mongodb
@@ -201,7 +203,47 @@ describe('conversion of character count to absolute position', () => {
 
     expect(connections).toEqual([
       expect.objectContaining({
-        toc: [],
+        toc: [
+          {
+            selectionRectangles: [
+              {
+                height: 12,
+                left: 324,
+                regionId: 2,
+                top: 630,
+                width: 132,
+              },
+            ],
+            label: 'PUBLISH WITH PURPOSE',
+            indentation: 0,
+          },
+          {
+            selectionRectangles: [
+              {
+                height: 12,
+                left: 318,
+                regionId: 3,
+                top: 630,
+                width: 142,
+              },
+            ],
+            label: 'BUILD A CUSTOM LIBRARY',
+            indentation: 1,
+          },
+          {
+            selectionRectangles: [
+              {
+                height: 12,
+                left: 310,
+                regionId: 4,
+                top: 630,
+                width: 161,
+              },
+            ],
+            label: 'DISCOVER NEW INFORMATION',
+            indentation: 2,
+          },
+        ],
       }),
     ]);
   });

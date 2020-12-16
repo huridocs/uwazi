@@ -97,7 +97,6 @@ export default {
       _id: documentWithoutPdfInfoId,
       filename: 'migration32.pdf',
       type: 'document',
-      pdfInfo: null,
       toc: [
         {
           range: {

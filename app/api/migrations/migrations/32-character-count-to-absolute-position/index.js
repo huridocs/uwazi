@@ -2,6 +2,7 @@
 import { PdfCharacterCountToAbsolute } from 'api/migrations/pdf_character_count_to_absolute/PdfCharacterCountToAbsolute';
 import path from 'path';
 import { config } from 'api/config';
+import { PDFUtils } from 'app/PDF';
 
 async function getCharacterCountToAbsolutePositionConvertor(file) {
   const filename = path.join(config.defaultTenant.uploadedDocuments, file.filename);
@@ -43,20 +44,14 @@ const convertTocToAbsolutePosition = async (fileConvertor, file, db) => {
   await db.collection('files').updateOne({ _id: file._id }, { $set: { toc: absolutePositionToc } });
 };
 
-async function convertConnectionsToAbsolutePosition(nullableFileConvertor, file, db) {
+async function convertConnectionsToAbsolutePosition(fileConvertor, file, db) {
   const connections = await db
     .collection('connections')
     .find({ file: file._id.toString() })
     .toArray();
 
-  let fileConvertor = null;
-
   for (let i = 0; i < connections.length; i += 1) {
     if (connections[i].range) {
-      fileConvertor =
-        fileConvertor ||
-        nullableFileConvertor ||
-        (await getCharacterCountToAbsolutePositionConvertor(file));
       const absolutePositionReference = fileConvertor.convert(
         connections[i].range.text,
         connections[i].range.start,
@@ -74,21 +69,23 @@ async function convertConnectionsToAbsolutePosition(nullableFileConvertor, file,
   }
 }
 
-async function removeRangesFromToc(db, file) {
-  await db.collection('files').updateOne({ _id: file._id }, { $set: { toc: [] } });
-}
+async function existsRangesToConvert(db, file) {
+  if (file.toc && file.toc.length !== 0) {
+    return true;
+  }
 
-async function removeRangesFromConnections(db, file) {
   const connections = await db
     .collection('connections')
     .find({ file: file._id.toString() })
     .toArray();
 
   for (let i = 0; i < connections.length; i += 1) {
-    await db
-      .collection('connections')
-      .updateOne({ _id: connections[i]._id }, { $unset: { range: '' } });
+    if (connections[i].range) {
+      return true;
+    }
   }
+
+  return false;
 }
 
 export default {
@@ -106,26 +103,29 @@ export default {
     while (await cursor.hasNext()) {
       const file = await cursor.next();
       tocCount += 1;
-      if (file.pdfInfo) {
+      if (await existsRangesToConvert(db, file)) {
         process.stdout.write(
           `${tocCount} converting to absolute position file ${file.filename}\r\n`
         );
-        let nullableFileConvertor = null;
+
+        if (!file.pdfInfo || !file.pdfInfo[1]) {
+          file.pdfInfo = await PDFUtils.extractPDFInfo(
+            path.join(config.defaultTenant.uploadedDocuments, file.filename)
+          );
+          process.stdout.write('getting pdfInfo\r\n');
+        }
+
+        const fileConvertor = await getCharacterCountToAbsolutePositionConvertor(file);
         try {
           if (file.toc && file.toc.length !== 0) {
-            nullableFileConvertor = await getCharacterCountToAbsolutePositionConvertor(file);
-            await convertTocToAbsolutePosition(nullableFileConvertor, file, db);
+            await convertTocToAbsolutePosition(fileConvertor, file, db);
           }
 
-          await convertConnectionsToAbsolutePosition(nullableFileConvertor, file, db);
+          await convertConnectionsToAbsolutePosition(fileConvertor, file, db);
         } catch (e) {
           process.stdout.write(`${tocCount} PDF not allowed to be converted ${file.filename}\r\n`);
           pdfNotAllowedToBeConverted += ` ${file.filename}`;
         }
-      } else if (file.type === 'document') {
-        process.stdout.write(`${tocCount} no pdfinfo file ${file.filename}\r\n`);
-        await removeRangesFromToc(db, file);
-        await removeRangesFromConnections(db, file);
       }
     }
 
