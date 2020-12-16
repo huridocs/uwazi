@@ -14,7 +14,6 @@ describe('collaborators', () => {
         expect(actualContributor).toEqual({
           _id: expectedContributor._id,
           label: expectedContributor.username,
-          role: expectedContributor.role,
           type: PermissionType.USER,
         });
       }
