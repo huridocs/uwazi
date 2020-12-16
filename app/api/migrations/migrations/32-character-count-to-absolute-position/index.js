@@ -92,7 +92,7 @@ async function removeRangesFromConnections(db, file) {
 }
 
 export default {
-  delta: 31,
+  delta: 32,
 
   name: 'character-count-to-absolute-position',
 

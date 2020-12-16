@@ -11,7 +11,7 @@ export default {
   files: [
     {
       _id: documentId,
-      filename: 'migration31.pdf',
+      filename: 'migration32.pdf',
       type: 'document',
       pdfInfo: {
         1: {
@@ -56,7 +56,7 @@ export default {
     },
     {
       _id: 'document without toc id',
-      filename: 'migration31.pdf',
+      filename: 'migration32.pdf',
       type: 'document',
       pdfInfo: {
         1: {
@@ -75,7 +75,7 @@ export default {
     },
     {
       _id: documentWithVoidTocId,
-      filename: 'migration31.pdf',
+      filename: 'migration32.pdf',
       type: 'document',
       pdfInfo: {
         1: {
@@ -95,7 +95,7 @@ export default {
     },
     {
       _id: documentWithoutPdfInfoId,
-      filename: 'migration31.pdf',
+      filename: 'migration32.pdf',
       type: 'document',
       pdfInfo: null,
       toc: [

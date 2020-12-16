@@ -9,7 +9,7 @@ import {
   firstConnectionId,
   noPdfInfoConnectionId,
   secondConnectionId,
-} from 'api/migrations/migrations/31-character-count-to-absolute-position/specs/fixtures';
+} from 'api/migrations/migrations/32-character-count-to-absolute-position/specs/fixtures';
 
 import fixtures from './fixtures.js';
 import migration from '../index.js';
@@ -30,7 +30,7 @@ describe('conversion of character count to absolute position', () => {
   });
 
   it('should have a delta number', () => {
-    expect(migration.delta).toBe(31);
+    expect(migration.delta).toBe(32);
   });
 
   it('should convert the connections with ranges to absolute position', async () => {
