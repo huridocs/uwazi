@@ -92,6 +92,23 @@ async function existsRangesToConvert(db, file) {
   return false;
 }
 
+async function removeRangesFromToc(db, file) {
+  await db.collection('files').updateOne({ _id: file._id }, { $set: { toc: [] } });
+}
+
+async function removeRangesFromConnections(db, file) {
+  const connections = await db
+    .collection('connections')
+    .find({ file: file._id.toString() })
+    .toArray();
+
+  for (let i = 0; i < connections.length; i += 1) {
+    await db
+      .collection('connections')
+      .updateOne({ _id: connections[i]._id }, { $unset: { range: '', file: '' } });
+  }
+}
+
 export default {
   delta: 32,
 
@@ -121,6 +138,8 @@ export default {
 
           await convertConnectionsToAbsolutePosition(fileConvertor, file, db);
         } catch (e) {
+          await removeRangesFromToc(db, file);
+          await removeRangesFromConnections(db, file);
           process.stdout.write(`${tocCount} PDF not allowed to be converted ${file.filename}\r\n`);
           pdfNotAllowedToBeConverted += ` ${file.filename}`;
         }

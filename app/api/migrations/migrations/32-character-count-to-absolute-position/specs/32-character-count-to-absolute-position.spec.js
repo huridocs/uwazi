@@ -5,9 +5,11 @@ import errorLog from 'api/log/errorLog';
 import { config } from 'api/config';
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import {
+  connectionToMissingDocumentId,
   documentId,
   documentWithVoidTocId,
   firstConnectionId,
+  missingDocumentId,
   secondConnectionId,
 } from 'api/migrations/migrations/32-character-count-to-absolute-position/specs/fixtures';
 
@@ -160,15 +162,33 @@ describe('conversion of character count to absolute position', () => {
   it('should leave empty toc documents', async () => {
     await migration.up(testingDB.mongodb);
 
-    const connections = await testingDB.mongodb
+    const files = await testingDB.mongodb
       .collection('files')
       .find({ _id: documentWithVoidTocId })
       .toArray();
 
-    expect(connections).toEqual([
+    expect(files).toEqual([
       expect.objectContaining({
         toc: [],
       }),
     ]);
+  });
+
+  it('should empty toc and connections ranges when document fails', async () => {
+    await migration.up(testingDB.mongodb);
+
+    const files = await testingDB.mongodb
+      .collection('files')
+      .find({ _id: missingDocumentId })
+      .toArray();
+
+    const connections = await testingDB.mongodb
+      .collection('connections')
+      .find({ _id: connectionToMissingDocumentId })
+      .toArray();
+
+    expect(files[0].toc).toMatchObject([]);
+    expect(connections[0].range).toBe(undefined);
+    expect(connections[0].file).toBe(undefined);
   });
 });

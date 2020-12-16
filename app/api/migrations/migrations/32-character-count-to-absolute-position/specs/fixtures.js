@@ -4,6 +4,8 @@ const firstConnectionId = testingDB.id();
 const secondConnectionId = testingDB.id();
 const documentId = testingDB.id();
 const documentWithVoidTocId = testingDB.id();
+const missingDocumentId = testingDB.id();
+const connectionToMissingDocumentId = testingDB.id();
 
 export default {
   files: [
@@ -91,6 +93,26 @@ export default {
       },
       toc: [],
     },
+    {
+      _id: missingDocumentId,
+      filename: 'missingDocumentName.pdf',
+      type: 'document',
+      pdfInfo: {
+        1: {
+          chars: 207,
+        },
+        2: {
+          chars: 327,
+        },
+        3: {
+          chars: 476,
+        },
+        4: {
+          chars: 582,
+        },
+      },
+      toc: [],
+    },
   ],
   connections: [
     {
@@ -123,7 +145,23 @@ export default {
       _id: 'no range',
       file: documentId.toString(),
     },
+    {
+      _id: connectionToMissingDocumentId,
+      range: {
+        start: 104,
+        end: 182,
+        text: 'Uwazi is an open-source solution for building and sharing document collections',
+      },
+      file: missingDocumentId.toString(),
+    },
   ],
 };
 
-export { documentId, firstConnectionId, secondConnectionId, documentWithVoidTocId };
+export {
+  documentId,
+  firstConnectionId,
+  secondConnectionId,
+  documentWithVoidTocId,
+  missingDocumentId,
+  connectionToMissingDocumentId,
+};
