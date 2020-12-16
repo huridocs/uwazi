@@ -5,7 +5,6 @@ export const data: MemberWithPermission[] = [
     type: 'user',
     _id: 'id1',
     label: 'User name',
-    role: 'admin',
   },
   {
     type: 'group',
@@ -23,13 +22,11 @@ export const data: MemberWithPermission[] = [
     type: 'user',
     _id: 'id1',
     label: 'User name 2',
-    role: 'editor',
   },
   {
     type: 'user',
     _id: 'id1',
     label: 'User name 3',
-    role: 'collaborator',
     level: 'mixed',
   },
 ];

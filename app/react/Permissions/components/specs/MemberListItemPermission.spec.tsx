@@ -13,13 +13,6 @@ describe('MemberListItem', () => {
       }
 
       if (testMember.type === PermissionType.USER) {
-        expect(
-          component
-            .find('span')
-            .get(0)
-            .props.children.props.children.toLowerCase()
-        ).toBe(testMember.role);
-
         expect(component.find('select').length).toBe(1);
 
         const selectOptionForMixed = component.find('option').filter({ value: AccessLevels.MIXED })

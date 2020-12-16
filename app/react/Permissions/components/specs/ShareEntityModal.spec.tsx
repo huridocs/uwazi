@@ -4,7 +4,7 @@ import { ShareEntityModal } from 'app/Permissions/components/ShareEntityModal';
 import * as api from 'app/Permissions/PermissionsAPI';
 import { PermissionSchema } from 'shared/types/permissionType';
 import { MemberWithPermission } from 'shared/types/entityPermisions';
-import { AccessLevels, PermissionType, UserRole } from 'shared/types/permissionSchema';
+import { AccessLevels, PermissionType } from 'shared/types/permissionSchema';
 import { ObjectIdSchema } from 'shared/types/commonTypes';
 import { UserGroupsLookupField } from '../UserGroupsLookupField';
 import { data } from './testData';
@@ -31,7 +31,6 @@ describe('ShareEntityModal', () => {
       _id: '1',
       type: PermissionType.USER,
       label: 'User',
-      role: UserRole.COLLABORATOR,
       level: AccessLevels.WRITE,
     };
     const component = shallow(<ShareEntityModal sharedIds={[]} isOpen onClose={() => {}} />);
@@ -44,7 +43,6 @@ describe('ShareEntityModal', () => {
       _id: '1',
       type: PermissionType.USER,
       label: 'User',
-      role: UserRole.COLLABORATOR,
     };
     const component = shallow(<ShareEntityModal sharedIds={[]} isOpen onClose={() => {}} />);
     component.find(UserGroupsLookupField).simulate('select', testMember);
@@ -59,7 +57,6 @@ describe('ShareEntityModal', () => {
       _id: '1',
       type: 'user',
       label: 'User',
-      role: UserRole.COLLABORATOR,
     };
     const component = shallow(<ShareEntityModal sharedIds={[]} isOpen onClose={() => {}} />);
     component.find(UserGroupsLookupField).simulate('select', testMember);
@@ -72,7 +69,6 @@ describe('ShareEntityModal', () => {
       _id: '1',
       type: PermissionType.USER,
       label: 'User',
-      role: UserRole.COLLABORATOR,
       level: AccessLevels.MIXED,
     };
 
@@ -98,7 +94,6 @@ describe('ShareEntityModal', () => {
       _id: '1',
       type: PermissionType.USER,
       label: 'User',
-      role: UserRole.COLLABORATOR,
       level: AccessLevels.READ,
     };
 
@@ -129,7 +124,6 @@ describe('ShareEntityModal', () => {
       _id: '1',
       type: PermissionType.USER,
       label: 'User',
-      role: UserRole.COLLABORATOR,
       level: AccessLevels.WRITE,
     };
     const component = shallow(<ShareEntityModal sharedIds={[]} isOpen onClose={() => {}} />);
@@ -150,7 +144,6 @@ describe('ShareEntityModal', () => {
       _id: '1',
       type: 'user',
       label: 'User',
-      role: UserRole.COLLABORATOR,
       level: AccessLevels.READ,
     };
 

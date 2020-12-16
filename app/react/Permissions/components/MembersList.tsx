@@ -41,11 +41,13 @@ export const MembersList = ({ members, onChange, validationErrors }: MemberListP
             <td>
               <MemberListItemInfo value={member} />
             </td>
-            <MemberListItemPermission
-              value={member}
-              onChange={onChangeHandler(index)}
-              onDelete={onDeleteHandler}
-            />
+            <td>
+              <MemberListItemPermission
+                value={member}
+                onChange={onChangeHandler(index)}
+                onDelete={onDeleteHandler}
+              />
+            </td>
           </tr>
         ))}
       </tbody>

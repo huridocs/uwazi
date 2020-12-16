@@ -1,6 +1,6 @@
 import users from 'api/users/users';
 import userGroups from 'api/usergroups/userGroups';
-import { PermissionType, UserRole } from 'shared/types/permissionSchema';
+import { PermissionType } from 'shared/types/permissionSchema';
 import { MemberWithPermission } from 'shared/types/entityPermisions';
 
 export const collaborators = {
@@ -20,7 +20,6 @@ export const collaborators = {
         _id: user._id,
         type: PermissionType.USER,
         label: user.username!,
-        role: user.role! as UserRole,
       });
     });
 
