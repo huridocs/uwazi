@@ -7,6 +7,7 @@ import { I18NLink } from 'app/I18N';
 
 import { Icon } from 'UI';
 
+import { ShareButton } from 'app/Permissions/components/ShareButton';
 import { MetadataFormButtons } from '../MetadataFormButtons';
 
 describe('MetadataFormButtons', () => {
@@ -29,7 +30,6 @@ describe('MetadataFormButtons', () => {
       includeViewButton: true,
       exclusivelyViewButton: false,
       copyFrom: jasmine.createSpy('copyFrom'),
-      share: jasmine.createSpy('share'),
     };
   });
 
@@ -120,13 +120,18 @@ describe('MetadataFormButtons', () => {
   });
 
   describe('Share', () => {
-    beforeEach(() => {
+    it('should pass the sharedId to the share button', () => {
       render();
+      const shareBtn = component.find(ShareButton);
+      expect(shareBtn.parent().props().if).toBe(true);
+      expect(shareBtn.props().sharedIds).toEqual(['shId']);
     });
 
-    it('should call the callback', () => {
-      component.find('.share-btn').simulate('click');
-      expect(props.share).toHaveBeenCalled();
+    it('should not render share button', () => {
+      props.entityBeingEdited = true;
+      render();
+      const shareBtn = component.find(ShareButton);
+      expect(shareBtn.parent().props().if).toBe(false);
     });
   });
 

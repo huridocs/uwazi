@@ -307,7 +307,6 @@ export class DocumentSidePanel extends Component {
               includeViewButton={!docBeingEdited && readOnly}
               storeKey={this.props.storeKey}
               copyFrom={this.toggleCopyFrom}
-              sharedId={this.props.doc.get('sharedId')}
             />
           </div>
         </ShowIf>
