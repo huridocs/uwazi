@@ -24,12 +24,12 @@ export default {
     {
       _id: documentId,
       entity: entityId.toString(),
-      language: 'fr',
+      language: 'fra',
     },
     {
       _id: 'otherDocumentId',
       entity: entityId.toString(),
-      language: 'en',
+      language: 'eng',
     },
   ],
   connections: [

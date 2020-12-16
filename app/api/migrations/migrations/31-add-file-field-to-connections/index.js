@@ -1,10 +1,14 @@
 /* eslint-disable no-await-in-loop */
+import languages from 'shared/languages';
+
 const getDefaultLanguage = async db => {
   const settings = await db
     .collection('settings')
     .find()
     .toArray();
-  return settings[0].languages.filter(x => x.default)[0].key;
+
+  const languageKey = settings[0].languages.filter(x => x.default)[0].key;
+  return languages.data.filter(x => x.ISO639_1 === languageKey)[0].franc;
 };
 
 export default {
@@ -23,6 +27,7 @@ export default {
     while (await cursor.hasNext()) {
       const connection = await cursor.next();
       if (connection.range && !connection.file) {
+        process.stdout.write(`adding file to ${connection._id}\r\n`);
         const files = await db
           .collection('files')
           .find({ entity: connection.entity, language: defaultLanguage })
@@ -31,7 +36,6 @@ export default {
         await db
           .collection('connections')
           .updateOne({ _id: connection._id }, { $set: { file: files[0]._id.toString() } });
-        process.stdout.write(`adding file to ${connection._id}\r\n`);
       }
     }
   },
