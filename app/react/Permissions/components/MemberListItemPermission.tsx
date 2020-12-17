@@ -5,12 +5,14 @@ interface MemberListItemPermissionProps {
   value: MemberWithPermission;
   onChange: (value: MemberWithPermission) => void;
   onDelete: (value: MemberWithPermission) => void;
+  disabled?: boolean;
 }
 
 export const MemberListItemPermission = ({
   value,
   onChange,
   onDelete,
+  disabled,
 }: MemberListItemPermissionProps) => {
   const onChangeHandler = (event: React.ChangeEvent<HTMLSelectElement>) => {
     if (event.target.value === 'delete') {
@@ -24,7 +26,7 @@ export const MemberListItemPermission = ({
   };
 
   return (
-    <select value={value.level} onChange={onChangeHandler}>
+    <select value={value.level} onChange={onChangeHandler} disabled={disabled}>
       {value.level === 'mixed' ? (
         <option disabled value="mixed">
           Mixed access

@@ -61,7 +61,12 @@ describe('ShareEntityModal', () => {
     const component = shallow(<ShareEntityModal sharedIds={[]} isOpen onClose={() => {}} />);
     component.find(UserGroupsLookupField).simulate('select', testMember);
     component.find(MembersList).simulate('change', []);
-    expect(component.find(MembersList).get(0).props.members).toEqual([]);
+    expect(
+      component
+        .find(MembersList)
+        .get(0)
+        .props.members.filter((m: MemberWithPermission) => !!m._id)
+    ).toEqual([]);
   });
 
   it('should not save and show validation error if a member has mixed access permissions', () => {

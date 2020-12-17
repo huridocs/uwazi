@@ -2,7 +2,7 @@ import { shallow } from 'enzyme';
 import React from 'react';
 import { AccessLevels, PermissionType } from 'shared/types/permissionSchema';
 import { MembersList } from '../MembersList';
-import { data } from './testData';
+import { data, pseudoData } from './testData';
 import { MemberListItemInfo } from '../MemberListItemInfo';
 import { MemberListItemPermission } from '../MemberListItemPermission';
 
@@ -17,6 +17,21 @@ describe('MemberList', () => {
       const row = component.find('tr');
       expect(row.contains(<MemberListItemInfo value={member} />));
       expect(row.find(MemberListItemPermission).filter({ value: member }).length).toBe(1);
+    });
+  });
+
+  it('should render pseudoMembers with the correct data', () => {
+    const component = shallow(
+      <MembersList members={pseudoData} onChange={() => {}} validationErrors={[]} />
+    );
+
+    expect(component.find('tr').length).toBe(pseudoData.length);
+    pseudoData.forEach(member => {
+      const row = component.find('tr');
+      expect(row.contains(<MemberListItemInfo value={member} />));
+      expect(
+        row.find(MemberListItemPermission).filter({ value: member, disabled: true }).length
+      ).toBe(1);
     });
   });
 

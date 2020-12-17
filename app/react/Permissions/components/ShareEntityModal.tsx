@@ -27,6 +27,15 @@ const validate = (assignments: MemberWithPermission[]) =>
     )
     .filter(i => i);
 
+const pseudoMembers: MemberWithPermission[] = [
+  {
+    _id: '',
+    type: 'group',
+    label: 'Administrators and Editors',
+    level: 'write',
+  },
+];
+
 export const ShareEntityModalComponent = ({
   isOpen,
   onClose,
@@ -106,9 +115,9 @@ export const ShareEntityModalComponent = ({
         />
         <div className="member-list-wrapper">
           <MembersList
-            members={assignments}
+            members={pseudoMembers.concat(assignments)}
             onChange={value => {
-              setAssignments(value);
+              setAssignments(value.filter(m => m._id));
               setDirty(true);
             }}
             validationErrors={validationErrors}
@@ -119,12 +128,6 @@ export const ShareEntityModalComponent = ({
             <Translate>Please select access level for marked users</Translate>.
           </span>
         ) : null}
-        <Warning inline>
-          <Translate>
-            Administrator and Editor users have unrestricted access to this entity regardless of the
-            sharing configuration in this section.
-          </Translate>
-        </Warning>
       </Modal.Body>
 
       {dirty ? (

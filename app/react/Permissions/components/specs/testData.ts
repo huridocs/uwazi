@@ -30,3 +30,11 @@ export const data: MemberWithPermission[] = [
     level: 'mixed',
   },
 ];
+
+export const pseudoData: MemberWithPermission[] = [
+  {
+    type: 'user',
+    _id: '',
+    label: 'User name',
+  },
+];

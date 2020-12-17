@@ -78,4 +78,12 @@ describe('MemberListItem', () => {
     expect(onDeleteMock).toHaveBeenCalledWith(data[1]);
     expect(onChangeMock).not.toHaveBeenCalled();
   });
+
+  it('should render a disabled select if disabled', () => {
+    const component = shallow(
+      <MemberListItemPermission value={data[1]} onChange={() => {}} onDelete={() => {}} disabled />
+    );
+
+    expect(component.find('select').get(0).props.disabled).toBe(true);
+  });
 });

@@ -46,6 +46,7 @@ export const MembersList = ({ members, onChange, validationErrors }: MemberListP
                 value={member}
                 onChange={onChangeHandler(index)}
                 onDelete={onDeleteHandler}
+                disabled={!member._id}
               />
             </td>
           </tr>
