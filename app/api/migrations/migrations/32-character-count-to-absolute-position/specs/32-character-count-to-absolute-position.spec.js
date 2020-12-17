@@ -49,21 +49,34 @@ describe('conversion of character count to absolute position', () => {
       'Uwazi is an open-source solution for building and sharing document collections'
     );
 
-    expect(connections[0].reference.selectionRectangles[0]).toEqual({
-      height: 11,
-      left: 28,
-      regionId: 1,
-      top: 689,
-      width: 26,
-    });
+    expect(connections[0].reference.selectionRectangles.length).toBeGreaterThanOrEqual(1);
+    expect(connections[0].reference.selectionRectangles.length).toBeLessThanOrEqual(2);
 
-    expect(connections[0].reference.selectionRectangles[1]).toEqual({
-      height: 11,
-      left: 55,
-      regionId: 1,
-      top: 689,
-      width: 323,
-    });
+    if (connections[0].reference.selectionRectangles.length === 1) {
+      expect(connections[0].reference.selectionRectangles[0]).toEqual({
+        height: 11,
+        left: 28,
+        regionId: 1,
+        top: 689,
+        width: 349,
+      });
+    } else {
+      expect(connections[0].reference.selectionRectangles[0]).toEqual({
+        height: 11,
+        left: 28,
+        regionId: 1,
+        top: 689,
+        width: 26,
+      });
+
+      expect(connections[0].reference.selectionRectangles[1]).toEqual({
+        height: 11,
+        left: 55,
+        regionId: 1,
+        top: 689,
+        width: 323,
+      });
+    }
   });
 
   it('should convert the connections from other page', async () => {
