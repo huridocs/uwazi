@@ -32,7 +32,7 @@ describe('conversion of character count to absolute position', () => {
   });
 
   it('should have a delta number', () => {
-    expect(migration.delta).toBe(32);
+    expect(migration.delta).toEqual(32);
   });
 
   it('should convert the connections with ranges to absolute position', async () => {
@@ -43,39 +43,27 @@ describe('conversion of character count to absolute position', () => {
       .find({ _id: firstConnectionId })
       .toArray();
 
-    expect(connections).toEqual([
-      expect.objectContaining({
-        reference: {
-          text: 'Uwazi is an open-source solution for building and sharing document collections',
-          selectionRectangles: [
-            {
-              height: 11,
-              left: 28,
-              regionId: 1,
-              top: 689,
-              width: 26,
-            },
-            {
-              height: 11,
-              left: 55,
-              regionId: 1,
-              top: 689,
-              width: 323,
-            },
-          ],
-        },
-      }),
-    ]);
+    expect(connections[0].range).toEqual(undefined);
 
-    expect(connections).not.toEqual([
-      expect.objectContaining({
-        range: {
-          start: 104,
-          end: 182,
-          text: 'Uwazi is an open-source solution for building and sharing document collections',
-        },
-      }),
-    ]);
+    expect(connections[0].reference.text).toEqual(
+      'Uwazi is an open-source solution for building and sharing document collections'
+    );
+
+    expect(connections[0].reference.selectionRectangles[0]).toEqual({
+      height: 11,
+      left: 28,
+      regionId: 1,
+      top: 689,
+      width: 26,
+    });
+
+    expect(connections[0].reference.selectionRectangles[1]).toEqual({
+      height: 11,
+      left: 55,
+      regionId: 1,
+      top: 689,
+      width: 323,
+    });
   });
 
   it('should convert the connections from other page', async () => {
@@ -167,11 +155,7 @@ describe('conversion of character count to absolute position', () => {
       .find({ _id: documentWithVoidTocId })
       .toArray();
 
-    expect(files).toEqual([
-      expect.objectContaining({
-        toc: [],
-      }),
-    ]);
+    expect(files[0].toc).toEqual([]);
   });
 
   it('should empty toc and connections ranges when document fails', async () => {
@@ -188,7 +172,7 @@ describe('conversion of character count to absolute position', () => {
       .toArray();
 
     expect(files[0].toc).toMatchObject([]);
-    expect(connections[0].range).toBe(undefined);
-    expect(connections[0].file).toBe(undefined);
+    expect(connections[0].range).toEqual(undefined);
+    expect(connections[0].file).toEqual(undefined);
   });
 });
