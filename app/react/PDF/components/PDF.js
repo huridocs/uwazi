@@ -2,11 +2,11 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { SelectionHandler, Highlight, SelectionRegion } from 'react-pdf-handler';
 import { advancedSort } from 'app/utils/advancedSort';
+import Immutable from 'immutable';
 
 import { isClient } from '../../utils';
 import PDFJS from '../PDFJS';
 import PDFPage from './PDFPage.js';
-import Immutable from 'immutable';
 
 class PDF extends Component {
   static getDerivedStateFromProps(props, state) {
