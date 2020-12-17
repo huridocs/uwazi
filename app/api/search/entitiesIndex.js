@@ -186,13 +186,13 @@ const equalPropMapping = (mapA, mapB) => {
     Object.keys(mapA.properties).length === Object.keys(mapB.properties).length;
   const sameProps =
     Object.keys(mapA.properties).length === Object.keys(mapB.properties).length &&
-    Object.keys(mapA.properties).reduce((result, propKey) => {
-      return (
+    Object.keys(mapA.properties).reduce(
+      (result, propKey) =>
         result &&
         mapB.properties[propKey] &&
-        mapA.properties[propKey].type === mapB.properties[propKey].type
-      );
-    }, true);
+        mapA.properties[propKey].type === mapB.properties[propKey].type,
+      true
+    );
   return sameAmountOfProps && sameProps;
 };
 
