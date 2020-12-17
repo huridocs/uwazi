@@ -3,11 +3,10 @@ import React, { useState, useEffect } from 'react';
 import { Icon } from 'UI';
 import { Translate } from 'app/I18N';
 import { MemberWithPermission } from 'shared/types/entityPermisions';
-import { AccessLevels } from 'shared/types/permissionSchema';
-import { Warning } from 'app/Layout';
 import { UserGroupsLookupField } from './UserGroupsLookupField';
 import { MembersList } from './MembersList';
 import { loadGrantedPermissions, searchCollaborators, savePermissions } from '../PermissionsAPI';
+import { AccessLevels, MixedAccess } from '../../../shared/types/permissionSchema';
 
 export interface ShareEntityModalProps {
   isOpen: boolean;
@@ -18,7 +17,7 @@ export interface ShareEntityModalProps {
 const validate = (assignments: MemberWithPermission[]) =>
   assignments
     .map(item =>
-      item.level !== AccessLevels.MIXED
+      item.level !== MixedAccess.MIXED
         ? null
         : {
             _id: item._id,
@@ -32,7 +31,7 @@ const pseudoMembers: MemberWithPermission[] = [
     _id: '',
     type: 'group',
     label: 'Administrators and Editors',
-    level: 'write',
+    level: AccessLevels.WRITE,
   },
 ];
 
@@ -72,7 +71,7 @@ export const ShareEntityModalComponent = ({
   };
 
   const onSelectHandler = (value: MemberWithPermission) => {
-    setAssignments([...assignments, { ...value, level: value.level || 'read' }]);
+    setAssignments([...assignments, { ...value, level: value.level || AccessLevels.READ }]);
     setResults(results.filter(r => !(value._id === r._id && value.type === r.type)));
     setDirty(true);
   };
@@ -89,7 +88,7 @@ export const ShareEntityModalComponent = ({
       assignments.map(a => ({
         _id: a._id,
         type: a.type,
-        level: a.level!,
+        level: a.level as AccessLevels,
       }))
     );
     return onClose();

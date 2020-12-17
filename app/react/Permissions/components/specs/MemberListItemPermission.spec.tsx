@@ -4,6 +4,7 @@ import { MemberWithPermission } from 'shared/types/entityPermisions';
 import { AccessLevels, PermissionType } from 'shared/types/permissionSchema';
 import { data } from './testData';
 import { MemberListItemPermission } from '../MemberListItemPermission';
+import { MixedAccess } from '../../../../shared/types/permissionSchema';
 
 describe('MemberListItem', () => {
   describe('for each test element', () => {
@@ -15,9 +16,9 @@ describe('MemberListItem', () => {
       if (testMember.type === PermissionType.USER) {
         expect(component.find('select').length).toBe(1);
 
-        const selectOptionForMixed = component.find('option').filter({ value: AccessLevels.MIXED })
+        const selectOptionForMixed = component.find('option').filter({ value: MixedAccess.MIXED })
           .length;
-        if (testMember.level === AccessLevels.MIXED) {
+        if (testMember.level === MixedAccess.MIXED) {
           expect(selectOptionForMixed).toBe(1);
         } else {
           expect(selectOptionForMixed).toBe(0);

@@ -1,4 +1,6 @@
 import { MemberWithPermission } from 'shared/types/entityPermisions';
+import { AccessLevels } from 'shared/types/permissionSchema';
+import { MixedAccess } from '../../../../shared/types/permissionSchema';
 
 export const data: MemberWithPermission[] = [
   {
@@ -10,13 +12,13 @@ export const data: MemberWithPermission[] = [
     type: 'group',
     _id: 'id1',
     label: 'Group name',
-    level: 'read',
+    level: AccessLevels.READ,
   },
   {
     type: 'group',
     _id: 'id2',
     label: 'Group name 2',
-    level: 'write',
+    level: AccessLevels.WRITE,
   },
   {
     type: 'user',
@@ -27,7 +29,7 @@ export const data: MemberWithPermission[] = [
     type: 'user',
     _id: 'id1',
     label: 'User name 3',
-    level: 'mixed',
+    level: MixedAccess.MIXED,
   },
 ];
 

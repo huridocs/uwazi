@@ -5,8 +5,13 @@ export const emitSchemaTypes = true;
 export enum AccessLevels {
   READ = 'read',
   WRITE = 'write',
+}
+
+export enum MixedAccess {
   MIXED = 'mixed',
 }
+
+export type MixedAccessLevels = AccessLevels | MixedAccess;
 
 export enum PermissionType {
   USER = 'user',

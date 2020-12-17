@@ -6,5 +6,5 @@ import { ObjectIdSchema } from 'shared/types/commonTypes';
 export interface PermissionSchema {
   _id: ObjectIdSchema;
   type: 'user' | 'group';
-  level: 'read' | 'write' | 'mixed';
+  level: 'read' | 'write';
 }

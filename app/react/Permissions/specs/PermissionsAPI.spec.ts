@@ -5,6 +5,7 @@ import {
   searchCollaborators,
 } from 'app/Permissions/PermissionsAPI';
 import { AccessLevels, PermissionType } from 'shared/types/permissionSchema';
+import { MixedAccess } from '../../../shared/types/permissionSchema';
 
 jest.mock('app/utils/api', () => ({
   get: jest.fn().mockResolvedValue({ json: [{ _id: 'user1' }] }),
@@ -37,7 +38,7 @@ describe('PermissionsAPI', () => {
   describe('savePermissions', () => {
     it('should call post method of entities/permissions collaborators api', async () => {
       const ids = ['shared1', 'shared2'];
-      const permissions = [{ _id: 'user1', type: PermissionType.GROUP, level: AccessLevels.MIXED }];
+      const permissions = [{ _id: 'user1', type: PermissionType.GROUP, level: AccessLevels.READ }];
       const response = await savePermissions(ids, permissions);
       expect(api.post).toHaveBeenCalledWith('entities/permissions', {
         data: { ids, permissions },

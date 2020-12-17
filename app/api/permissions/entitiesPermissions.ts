@@ -7,6 +7,7 @@ import { EntitySchema } from 'shared/types/entityType';
 import { AccessLevels, PermissionType } from 'shared/types/permissionSchema';
 import { PermissionSchema } from 'shared/types/permissionType';
 import { MemberWithPermission } from 'shared/types/entityPermisions';
+import { MixedAccess } from '../../shared/types/permissionSchema';
 
 const setAdditionalData = (
   peopleList: (GroupMemberSchema | UserGroupSchema)[],
@@ -32,7 +33,7 @@ async function setAccessLevelAndPermissionData(
     const level =
       grantedPermissions[id].access.length !== entitiesPermissionsData.length ||
       differentLevels.length > 1
-        ? AccessLevels.MIXED
+        ? MixedAccess.MIXED
         : differentLevels[0];
     const sourceData =
       grantedPermissions[id].permission.type === PermissionType.USER ? usersData : groupsData;

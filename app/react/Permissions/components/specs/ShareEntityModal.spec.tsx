@@ -9,6 +9,7 @@ import { ObjectIdSchema } from 'shared/types/commonTypes';
 import { UserGroupsLookupField } from '../UserGroupsLookupField';
 import { data } from './testData';
 import { MembersList } from '../MembersList';
+import { MixedAccess } from '../../../../shared/types/permissionSchema';
 
 describe('ShareEntityModal', () => {
   beforeAll(() => {
@@ -74,7 +75,7 @@ describe('ShareEntityModal', () => {
       _id: '1',
       type: PermissionType.USER,
       label: 'User',
-      level: AccessLevels.MIXED,
+      level: MixedAccess.MIXED,
     };
 
     const testValidationError: {

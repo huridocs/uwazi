@@ -3,6 +3,7 @@ import { entitiesPermissions } from 'api/permissions/entitiesPermissions';
 import fixtures, { groupA, userA, userB } from 'api/permissions/specs/fixtures';
 import db from 'api/utils/testing_db';
 import { AccessLevels, PermissionType } from 'shared/types/permissionSchema';
+import { MixedAccess } from '../../../shared/types/permissionSchema';
 
 describe('permissions', () => {
   beforeEach(async () => {
@@ -39,7 +40,7 @@ describe('permissions', () => {
         {
           _id: groupA._id,
           label: groupA.name,
-          level: AccessLevels.MIXED,
+          level: MixedAccess.MIXED,
           type: PermissionType.GROUP,
         },
         {
@@ -53,7 +54,7 @@ describe('permissions', () => {
           _id: userB._id,
           label: userB.username,
           role: userB.role,
-          level: AccessLevels.MIXED,
+          level: MixedAccess.MIXED,
           type: PermissionType.USER,
         },
       ]);
@@ -65,21 +66,21 @@ describe('permissions', () => {
         {
           _id: groupA._id,
           label: groupA.name,
-          level: AccessLevels.MIXED,
+          level: MixedAccess.MIXED,
           type: PermissionType.GROUP,
         },
         {
           _id: userA._id,
           label: userA.username,
           role: userA.role,
-          level: AccessLevels.MIXED,
+          level: MixedAccess.MIXED,
           type: PermissionType.USER,
         },
         {
           _id: userB._id,
           label: userB.username,
           role: userB.role,
-          level: AccessLevels.MIXED,
+          level: MixedAccess.MIXED,
           type: PermissionType.USER,
         },
       ]);
