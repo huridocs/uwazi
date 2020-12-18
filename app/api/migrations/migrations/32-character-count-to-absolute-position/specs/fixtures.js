@@ -6,6 +6,7 @@ const documentId = testingDB.id();
 const documentWithVoidTocId = testingDB.id();
 const missingDocumentId = testingDB.id();
 const connectionToMissingDocumentId = testingDB.id();
+const connectionOutOfRangeId = testingDB.id();
 
 export default {
   files: [
@@ -154,6 +155,15 @@ export default {
       },
       file: missingDocumentId.toString(),
     },
+    {
+      _id: connectionOutOfRangeId,
+      range: {
+        start: 9999999,
+        end: 9999999,
+        text: 'no text match',
+      },
+      file: documentId.toString(),
+    },
   ],
 };
 
@@ -164,4 +174,5 @@ export {
   documentWithVoidTocId,
   missingDocumentId,
   connectionToMissingDocumentId,
+  connectionOutOfRangeId,
 };

@@ -19,12 +19,23 @@ const absolutePositionReferenceToTextSelection = absolutePositionReference => {
     top: Math.round((1100 * x.top) / pageHeight),
     width: Math.round((1100 * x.width) / pageHeight),
     height: Math.round((1100 * x.height) / pageHeight),
-    regionId: x.pageNumber,
+    regionId: x.pageNumber.toString(),
   }));
 
   return {
     text: absolutePositionReference.text,
-    selectionRectangles: textSelectionRectangles,
+    selectionRectangles:
+      textSelectionRectangles.length > 0
+        ? textSelectionRectangles
+        : [
+            {
+              left: 0,
+              top: 0,
+              width: 0,
+              height: 0,
+              regionId: '1',
+            },
+          ],
   };
 };
 

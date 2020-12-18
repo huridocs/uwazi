@@ -345,7 +345,7 @@ describe('PdfCharacterCountToAbsolute', () => {
 
     const characterCountToAbsoluteConversion = new PdfCharacterCountToAbsolute();
     await characterCountToAbsoluteConversion.loadPdf(pdfRelativePath, pdfInfo);
-    const absolutePosition = characterCountToAbsoluteConversion.convert(label, 999999, 1000000);
+    const absolutePosition = characterCountToAbsoluteConversion.convert(label, 999999, 999999);
 
     expect(absolutePosition.text).toBe(label);
     expect(absolutePosition.selectionRectangles.length).toBe(1);

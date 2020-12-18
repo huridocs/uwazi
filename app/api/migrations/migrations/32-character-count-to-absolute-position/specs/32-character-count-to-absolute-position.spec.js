@@ -5,6 +5,7 @@ import errorLog from 'api/log/errorLog';
 import { config } from 'api/config';
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import {
+  connectionOutOfRangeId,
   connectionToMissingDocumentId,
   documentId,
   documentWithVoidTocId,
@@ -56,7 +57,7 @@ describe('conversion of character count to absolute position', () => {
       expect(connections[0].reference.selectionRectangles[0]).toEqual({
         height: 11,
         left: 28,
-        regionId: 1,
+        regionId: '1',
         top: 689,
         width: 349,
       });
@@ -64,7 +65,7 @@ describe('conversion of character count to absolute position', () => {
       expect(connections[0].reference.selectionRectangles[0]).toEqual({
         height: 11,
         left: 28,
-        regionId: 1,
+        regionId: '1',
         top: 689,
         width: 26,
       });
@@ -72,7 +73,7 @@ describe('conversion of character count to absolute position', () => {
       expect(connections[0].reference.selectionRectangles[1]).toEqual({
         height: 11,
         left: 55,
-        regionId: 1,
+        regionId: '1',
         top: 689,
         width: 323,
       });
@@ -95,7 +96,7 @@ describe('conversion of character count to absolute position', () => {
             {
               height: 12,
               left: 318,
-              regionId: 3,
+              regionId: '3',
               top: 630,
               width: 142,
             },
@@ -103,6 +104,23 @@ describe('conversion of character count to absolute position', () => {
         },
       }),
     ]);
+  });
+
+  it('should manage connection with out of range reference', async () => {
+    await migration.up(testingDB.mongodb);
+
+    const connections = await testingDB.mongodb
+      .collection('connections')
+      .find({ _id: connectionOutOfRangeId })
+      .toArray();
+
+    expect(connections[0].reference.text).toEqual('no text match');
+    expect(connections[0].reference.selectionRectangles.length).toEqual(1);
+    expect(connections[0].reference.selectionRectangles[0].width).toEqual(0);
+    expect(connections[0].reference.selectionRectangles[0].height).toEqual(0);
+    expect(connections[0].reference.selectionRectangles[0].top).toEqual(0);
+    expect(connections[0].reference.selectionRectangles[0].left).toEqual(0);
+    expect(connections[0].reference.selectionRectangles[0].regionId).toEqual('1');
   });
 
   it('should convert table of content to absolute position', async () => {
@@ -121,7 +139,7 @@ describe('conversion of character count to absolute position', () => {
               {
                 height: 12,
                 left: 324,
-                regionId: 2,
+                regionId: '2',
                 top: 630,
                 width: 132,
               },
@@ -134,7 +152,7 @@ describe('conversion of character count to absolute position', () => {
               {
                 height: 12,
                 left: 318,
-                regionId: 3,
+                regionId: '3',
                 top: 630,
                 width: 142,
               },
@@ -147,7 +165,7 @@ describe('conversion of character count to absolute position', () => {
               {
                 height: 12,
                 left: 310,
-                regionId: 4,
+                regionId: '4',
                 top: 630,
                 width: 161,
               },
