@@ -1,13 +1,11 @@
 /* eslint-disable */
 /**AUTO-GENERATED. RUN yarn emit-types to update.*/
+import { ObjectId } from 'mongodb';
 
-export type ObjectIdSchema =
-  | string
-  | {
-      [k: string]: unknown | undefined;
-    };
+export type ObjectIdSchema = string | ObjectId;
 
 export interface AttachmentSchema {
+  _id?: string | ObjectId;
   originalname?: string;
   filename?: string;
   mimetype?: string;
@@ -27,11 +25,7 @@ export interface DateRangeSchema {
 }
 
 export interface LanguageSchema {
-  _id?:
-    | string
-    | {
-        [k: string]: unknown | undefined;
-      };
+  _id?: string | ObjectId;
   label: string;
   key: string;
   rtl?: boolean;
@@ -39,11 +33,7 @@ export interface LanguageSchema {
 }
 
 export type LanguagesListSchema = {
-  _id?:
-    | string
-    | {
-        [k: string]: unknown | undefined;
-      };
+  _id?: string | ObjectId;
   label: string;
   key: string;
   rtl?: boolean;
@@ -91,7 +81,9 @@ export interface TocSchema {
 }
 
 export interface PropertySchema {
+  _id?: string | ObjectId;
   id?: string;
+  localID?: string;
   label: string;
   name: string;
   isCommonProperty?: boolean;
@@ -114,6 +106,7 @@ export interface PropertySchema {
     | 'text';
   prioritySorting?: boolean;
   content?: string;
+  relationType?: string;
   inherit?: boolean;
   inheritProperty?: string;
   filter?: boolean;
@@ -125,5 +118,4 @@ export interface PropertySchema {
   showInCard?: boolean;
   style?: string;
   nestedProperties?: string[];
-  [k: string]: unknown | undefined;
 }

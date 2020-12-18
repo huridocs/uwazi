@@ -4,11 +4,7 @@
 import { ObjectIdSchema, TocSchema } from 'shared/types/commonTypes';
 
 export interface FileType {
-  _id?:
-    | string
-    | {
-        [k: string]: unknown | undefined;
-      };
+  _id?: ObjectIdSchema;
   entity?: string;
   originalname?: string;
   filename?: string;
@@ -26,18 +22,7 @@ export interface FileType {
      */
     [k: string]: string;
   };
-  toc?: {
-    selectionRectangles?: {
-      top?: number;
-      left?: number;
-      width?: number;
-      height?: number;
-      regionId?: string;
-      [k: string]: unknown | undefined;
-    }[];
-    label?: string;
-    indentation?: number;
-  }[];
+  toc?: TocSchema[];
   pdfInfo?: {
     /**
      * This interface was referenced by `undefined`'s JSON-Schema definition
