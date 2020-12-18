@@ -46,14 +46,12 @@ describe('permissions', () => {
         {
           _id: userA._id,
           label: userA.username,
-          role: userA.role,
           level: AccessLevels.READ,
           type: PermissionType.USER,
         },
         {
           _id: userB._id,
           label: userB.username,
-          role: userB.role,
           level: MixedAccess.MIXED,
           type: PermissionType.USER,
         },
@@ -72,14 +70,12 @@ describe('permissions', () => {
         {
           _id: userA._id,
           label: userA.username,
-          role: userA.role,
           level: MixedAccess.MIXED,
           type: PermissionType.USER,
         },
         {
           _id: userB._id,
           label: userB.username,
-          role: userB.role,
           level: MixedAccess.MIXED,
           type: PermissionType.USER,
         },

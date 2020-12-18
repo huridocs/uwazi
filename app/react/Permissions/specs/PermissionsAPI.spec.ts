@@ -5,7 +5,6 @@ import {
   searchCollaborators,
 } from 'app/Permissions/PermissionsAPI';
 import { AccessLevels, PermissionType } from 'shared/types/permissionSchema';
-import { MixedAccess } from '../../../shared/types/permissionSchema';
 
 jest.mock('app/utils/api', () => ({
   get: jest.fn().mockResolvedValue({ json: [{ _id: 'user1' }] }),

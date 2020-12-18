@@ -4,12 +4,11 @@ import { ShareEntityModal } from 'app/Permissions/components/ShareEntityModal';
 import * as api from 'app/Permissions/PermissionsAPI';
 import { PermissionSchema } from 'shared/types/permissionType';
 import { MemberWithPermission } from 'shared/types/entityPermisions';
-import { AccessLevels, PermissionType } from 'shared/types/permissionSchema';
+import { AccessLevels, PermissionType, MixedAccess } from 'shared/types/permissionSchema';
 import { ObjectIdSchema } from 'shared/types/commonTypes';
 import { UserGroupsLookupField } from '../UserGroupsLookupField';
 import { data } from './testData';
 import { MembersList } from '../MembersList';
-import { MixedAccess } from '../../../../shared/types/permissionSchema';
 
 describe('ShareEntityModal', () => {
   beforeAll(() => {

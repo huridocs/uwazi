@@ -3,10 +3,10 @@ import React, { useState, useEffect } from 'react';
 import { Icon } from 'UI';
 import { Translate } from 'app/I18N';
 import { MemberWithPermission } from 'shared/types/entityPermisions';
+import { AccessLevels, MixedAccess } from 'shared/types/permissionSchema';
 import { UserGroupsLookupField } from './UserGroupsLookupField';
 import { MembersList } from './MembersList';
 import { loadGrantedPermissions, searchCollaborators, savePermissions } from '../PermissionsAPI';
-import { AccessLevels, MixedAccess } from '../../../shared/types/permissionSchema';
 
 export interface ShareEntityModalProps {
   isOpen: boolean;

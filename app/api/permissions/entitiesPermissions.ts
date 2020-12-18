@@ -4,10 +4,9 @@ import userGroups from 'api/usergroups/userGroups';
 import { unique } from 'api/utils/filters';
 import { GroupMemberSchema, UserGroupSchema } from 'shared/types/userGroupType';
 import { EntitySchema } from 'shared/types/entityType';
-import { AccessLevels, PermissionType } from 'shared/types/permissionSchema';
+import { AccessLevels, PermissionType, MixedAccess } from 'shared/types/permissionSchema';
 import { PermissionSchema } from 'shared/types/permissionType';
 import { MemberWithPermission } from 'shared/types/entityPermisions';
-import { MixedAccess } from '../../shared/types/permissionSchema';
 
 const setAdditionalData = (
   peopleList: (GroupMemberSchema | UserGroupSchema)[],
@@ -39,7 +38,7 @@ async function setAccessLevelAndPermissionData(
       grantedPermissions[id].permission.type === PermissionType.USER ? usersData : groupsData;
     const additional =
       grantedPermissions[id].permission.type.toString() === PermissionType.USER
-        ? (p: any) => ({ label: p.username, role: p.role })
+        ? (p: any) => ({ label: p.username })
         : (g: any) => ({ label: g.name });
     return {
       ...setAdditionalData(sourceData, grantedPermissions[id].permission, additional),
