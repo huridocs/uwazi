@@ -11,6 +11,10 @@ describe('Share entities', () => {
     await page.goto(`${host}/library`);
   });
 
+  afterAll(async () => {
+    await page.reload();
+  });
+
   const getEntitiesCollaborators = async () =>
     page.$$eval('.members-list tr .member-list-item', items => items.map(item => item.textContent));
 

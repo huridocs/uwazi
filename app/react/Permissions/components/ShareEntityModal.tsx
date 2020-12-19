@@ -40,7 +40,6 @@ export const ShareEntityModalComponent = ({
   onClose,
   sharedIds,
 }: ShareEntityModalProps) => {
-  const [search, setSearch] = useState('');
   const [results, setResults] = useState<MemberWithPermission[]>([]);
   const [assignments, setAssignments] = useState<MemberWithPermission[]>([]);
   const [dirty, setDirty] = useState(false);
@@ -55,14 +54,12 @@ export const ShareEntityModalComponent = ({
 
     return () => {
       setAssignments([]);
-      setSearch('');
       setResults([]);
       setDirty(false);
     };
   }, []);
 
   const onChangeHandler = async (value: string) => {
-    setSearch(value);
     setResults(
       (await searchCollaborators(value)).filter(
         r => !assignments.find(a => a._id === r._id && a.type === r.type)
@@ -107,7 +104,6 @@ export const ShareEntityModalComponent = ({
 
       <Modal.Body>
         <UserGroupsLookupField
-          value={search}
           onChange={onChangeHandler}
           onSelect={onSelectHandler}
           options={results}

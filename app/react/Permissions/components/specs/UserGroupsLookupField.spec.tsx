@@ -29,12 +29,7 @@ describe('UserGroupsLookupField', () => {
     ];
 
     const component = shallow(
-      <UserGroupsLookupField
-        onChange={onChangeMock}
-        onSelect={onSelectMock}
-        value=""
-        options={options}
-      />
+      <UserGroupsLookupField onChange={onChangeMock} onSelect={onSelectMock} options={options} />
     );
 
     component
@@ -50,12 +45,7 @@ describe('UserGroupsLookupField', () => {
 
   it('should trigger onChange when typing', () => {
     const component = shallow(
-      <UserGroupsLookupField
-        onChange={onChangeMock}
-        onSelect={onSelectMock}
-        value=""
-        options={[]}
-      />
+      <UserGroupsLookupField onChange={onChangeMock} onSelect={onSelectMock} options={[]} />
     );
 
     component
@@ -64,8 +54,9 @@ describe('UserGroupsLookupField', () => {
       .simulate('focus');
 
     component.find('input').simulate('change', { target: { value: 'new value' } });
-
-    expect(onChangeMock).toHaveBeenCalledWith('new value');
+    setTimeout(() => {
+      expect(onChangeMock).toHaveBeenCalledWith('new value');
+    }, 400);
   });
 
   it('should trigger onSelect when clicking an option', () => {
@@ -73,7 +64,6 @@ describe('UserGroupsLookupField', () => {
       <UserGroupsLookupField
         onChange={onChangeMock}
         onSelect={onSelectMock}
-        value=""
         options={[
           {
             _id: 'id',
@@ -103,7 +93,6 @@ describe('UserGroupsLookupField', () => {
       <UserGroupsLookupField
         onChange={onChangeMock}
         onSelect={onSelectMock}
-        value=""
         options={[
           {
             _id: 'id',
@@ -135,7 +124,6 @@ describe('UserGroupsLookupField', () => {
         <UserGroupsLookupField
           onChange={onChangeMock}
           onSelect={onSelectMock}
-          value=""
           options={[
             {
               _id: 'id1',

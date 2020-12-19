@@ -7,30 +7,31 @@ import { MemberListItemInfo } from './MemberListItemInfo';
 interface UserGroupsLookupFieldProps {
   onChange: (search: string) => void;
   onSelect: (value: MemberWithPermission) => void;
-  value: string;
   options: MemberWithPermission[];
 }
 
 export const UserGroupsLookupField = ({
   onChange,
   onSelect,
-  value,
   options,
 }: UserGroupsLookupFieldProps) => {
   const [selected, setSelected] = useState<number | null>(null);
   const [show, setShow] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
-    setSelected(null);
-  }, [value]);
+    const handler = setTimeout(() => {
+      onChange(searchTerm);
+    }, 500);
 
-  useEffect(() => {
-    onChange('');
-  }, []);
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [searchTerm]);
 
   const onChangeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
     setShow(true);
-    onChange(event.target.value);
+    setSearchTerm(event.target.value);
   };
 
   const getOnSelectHandler = (selection: MemberWithPermission) => () => {
@@ -91,7 +92,7 @@ export const UserGroupsLookupField = ({
         onFocus={() => {
           setShow(true);
         }}
-        value={value}
+        value={searchTerm}
       />
       {show && options.length ? (
         <ul tabIndex={-1} role="listbox" ref={optionsListRef}>
