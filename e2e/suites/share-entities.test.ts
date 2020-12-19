@@ -1,6 +1,6 @@
 import insertFixtures from '../helpers/insertFixtures';
 import proxyMock from '../helpers/proxyMock';
-import { adminLogin } from '../helpers/login';
+import { adminLogin, logout } from '../helpers/login';
 import { host } from '../config';
 
 describe('Share entities', () => {
@@ -12,7 +12,7 @@ describe('Share entities', () => {
   });
 
   afterAll(async () => {
-    await page.reload();
+    await logout();
   });
 
   const getEntitiesCollaborators = async () =>
@@ -31,6 +31,7 @@ describe('Share entities', () => {
     await page.waitForSelector('.share-btn');
     await expect(page).toClick('button', { text: 'Share' });
     await expect(page).toClick('.userGroupsLookupField');
+    await page.waitForSelector('.userGroupsLookupField li .press-enter-note');
     const availableCollaborators = await page.$$eval(
       '.userGroupsLookupField li .member-list-item',
       items => items.map(item => item.textContent)
@@ -38,26 +39,16 @@ describe('Share entities', () => {
     expect(availableCollaborators).toEqual(['Activistas', 'Asesores legales']);
   });
 
-  it('Should not return data form partial user match', async () => {
-    await expect(page).toFill('.userGroupsLookupField', 'edit');
+  const selectLookupOption = async (searchTerm: string, option: string) => {
     await expect(page).toClick('.userGroupsLookupField');
-    const matchesCount = await page.$$eval(
-      '.userGroupsLookupField li .member-list-item',
-      items => items.length
-    );
-    expect(matchesCount).toBe(0);
-  });
-
-  // eslint-disable-next-line max-statements
-  it('Should update the permissions of an entity', async () => {
-    await expect(page).toClick('.userGroupsLookupField');
-    await expect(page).toFill('.userGroupsLookupField', 'editor');
+    await expect(page).toFill('.userGroupsLookupField', searchTerm);
     await page.waitForSelector('.userGroupsLookupField li .press-enter-note');
-    await expect(page).toClick('.userGroupsLookupField li .member-list-item', { text: 'editor' });
-    await expect(page).toFill('.userGroupsLookupField', 'Ase');
-    await expect(page).toClick('.userGroupsLookupField li .member-list-item', {
-      text: 'Asesores legales',
-    });
+    await expect(page).toClick('.userGroupsLookupField li .member-list-item', { text: option });
+  };
+
+  it('Should update the permissions of an entity', async () => {
+    await selectLookupOption('editor', 'editor');
+    await selectLookupOption('Ase', 'Asesores legales');
     const selectedCollaborators = await getEntitiesCollaborators();
     expect(selectedCollaborators).toEqual([
       'Administrators and Editors',

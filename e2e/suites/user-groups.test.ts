@@ -1,6 +1,6 @@
 import insertFixtures from '../helpers/insertFixtures';
 import proxyMock from '../helpers/proxyMock';
-import { adminLogin } from '../helpers/login';
+import { adminLogin, logout } from '../helpers/login';
 import { host } from '../config';
 
 describe('User groups', () => {
@@ -10,6 +10,10 @@ describe('User groups', () => {
     await adminLogin();
     await page.goto(`${host}/settings/users`);
     await expect(page).toClick('.tab-link', { text: 'Groups' });
+  });
+
+  afterAll(async () => {
+    await logout();
   });
 
   it('Should show a list of existing groups with the count of their members', async () => {

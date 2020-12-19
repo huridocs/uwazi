@@ -1,4 +1,7 @@
-import { shallow, ShallowWrapper } from 'enzyme';
+/**
+ * @jest-environment jsdom
+ */
+import { mount, shallow, ShallowWrapper } from 'enzyme';
 import React from 'react';
 import { MemberWithPermission } from 'shared/types/entityPermisions';
 import { AccessLevels, PermissionType } from 'shared/types/permissionSchema';
@@ -43,8 +46,8 @@ describe('UserGroupsLookupField', () => {
     expect(items.length).toBe(2);
   });
 
-  it('should trigger onChange when typing', () => {
-    const component = shallow(
+  it('should trigger onChange when typing', done => {
+    const component = mount(
       <UserGroupsLookupField onChange={onChangeMock} onSelect={onSelectMock} options={[]} />
     );
 
@@ -56,7 +59,8 @@ describe('UserGroupsLookupField', () => {
     component.find('input').simulate('change', { target: { value: 'new value' } });
     setTimeout(() => {
       expect(onChangeMock).toHaveBeenCalledWith('new value');
-    }, 400);
+      done();
+    }, 500);
   });
 
   it('should trigger onSelect when clicking an option', () => {
