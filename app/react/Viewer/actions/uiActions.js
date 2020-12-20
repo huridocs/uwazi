@@ -124,17 +124,17 @@ export function scrollTomark() {
   scroller.to('.document-viewer mark', '.document-viewer', { duration: 0 });
 }
 
-export function scrollTo(reference, _docInfo) {
+export async function scrollTo(reference, _docInfo) {
   const page = reference.selectionRectangles[0].regionId;
   const offset = reference.selectionRectangles[0].top - 10;
 
-  scroller.to(`.document-viewer div#page-${page}`, '.document-viewer', {
+  await scroller.to(`.document-viewer div#page-${page}`, '.document-viewer', {
     duration: 1,
     dividerOffset: 1,
   });
 
-  scroller.to(`.document-viewer div#page-${page}`, '.document-viewer', {
-    duration: 100,
+  await scroller.to(`.document-viewer div#page-${page}`, '.document-viewer', {
+    duration: 600,
     dividerOffset: 1,
     offset,
   });

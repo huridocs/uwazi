@@ -25,12 +25,12 @@ export default {
     const parent = this.getElement(parentSelector);
 
     if (!parent || !element) {
-      return;
+      return Promise.resolve();
     }
 
     const scrollTop = this.getTargetScrollTop(element, parent, options);
 
-    this.animateScroll(parent, scrollTop, options);
+    return this.animateScroll(parent, scrollTop, options);
   },
 
   getTargetScrollTop(element, parent, options) {
@@ -50,23 +50,25 @@ export default {
   animateScroll(_parent, scrollTop, options) {
     const parent = _parent;
     const start = Date.now();
-
-    if (options.duration < 2) {
-      parent.scrollTop = scrollTop;
-      return;
-    }
-
-    const timeout = window.setInterval(() => {
-      const t = (Date.now() - start) / options.duration;
-      const multiplier = this[options.animation](t);
-      parent.scrollTop += multiplier * (scrollTop - parent.scrollTop);
-      if (multiplier >= 0.9) {
+    return new Promise(resolve => {
+      if (options.duration < 2) {
         parent.scrollTop = scrollTop;
-        window.clearInterval(timeout);
+        resolve();
       }
-    }, 25);
 
-    return timeout;
+      const timeout = window.setInterval(() => {
+        const t = (Date.now() - start) / options.duration;
+        const multiplier = this[options.animation](t);
+        parent.scrollTop += multiplier * (scrollTop - parent.scrollTop);
+        if (multiplier >= 0.9) {
+          parent.scrollTop = scrollTop;
+          window.clearInterval(timeout);
+          resolve();
+        }
+      }, 25);
+
+      return timeout;
+    });
   },
 
   getOptions(options) {
