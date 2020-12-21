@@ -127,6 +127,10 @@ export default {
     await saveLinksTranslations(settings.links, currentSettings.links);
     await saveFiltersTranslations(settings.filters, currentSettings.filters);
 
+    if (settings.home_page && settings.home_page === '/') {
+      settings.home_page = '';
+    }
+
     const result = await settingsModel.save({ ...settings, _id: currentSettings._id });
 
     if (!currentSettings.newNameGeneration && settings.newNameGeneration) {
