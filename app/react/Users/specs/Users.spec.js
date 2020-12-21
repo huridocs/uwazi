@@ -1,7 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import UsersAPI from 'app/Users/UsersAPI';
-import UsersList from 'app/Users/components/UsersList';
+import { UserManagement } from 'app/Users/UserManagement';
 import { Users } from '../Users';
 
 describe('Users', () => {
@@ -28,7 +28,7 @@ describe('Users', () => {
 
   describe('render', () => {
     it('should render a UsersList', () => {
-      expect(component.find(UsersList).length).toBe(1);
+      expect(component.find(UserManagement).length).toBe(1);
     });
   });
 });
