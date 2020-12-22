@@ -1,6 +1,6 @@
 name: check-types
 
-on: [push]
+on: [push, pull_request]
 
 jobs:
   check-types:

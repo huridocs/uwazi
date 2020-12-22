@@ -1,6 +1,6 @@
 name: e2e puppeteer
 
-on: [push]
+on: [push, pull_request]
 
 jobs:
   e2e_test_puppeteer:
