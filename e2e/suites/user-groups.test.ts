@@ -50,7 +50,7 @@ describe('User groups', () => {
       await expect(page).toFill('#name_field > input', 'new name');
       await expect(page).toClick('.multiselectItem:nth-child(3)');
       await expect(page).toClick('#saveChangesBtn');
-      await page.waitForSelector('tbody tr:nth-child(2)');
+      await page.waitForSelector('.side-panel', { hidden: true });
       const groupRows = await page.$$eval('tbody tr', rows => rows.map(row => row.textContent));
       expect(groupRows).toEqual(['Activistas 2', 'new name 2']);
     });
