@@ -1,5 +1,5 @@
-import { Icon } from 'app/UI';
 import React from 'react';
+import { Icon } from 'app/UI';
 import { MemberWithPermission } from 'shared/types/entityPermisions';
 import { PermissionType } from 'shared/types/permissionSchema';
 

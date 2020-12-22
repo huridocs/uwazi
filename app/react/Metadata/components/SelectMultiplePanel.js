@@ -39,7 +39,6 @@ export class SelectMultiplePanel extends Component {
     this.publish = this.publish.bind(this);
     this.unpublish = this.unpublish.bind(this);
     this.changeTemplate = this.changeTemplate.bind(this);
-    this.toggleSharing = this.toggleSharing.bind(this);
   }
 
   close() {
@@ -130,12 +129,6 @@ export class SelectMultiplePanel extends Component {
 
   edit() {
     this.props.loadForm(this.props.formKey, this.props.template.toJS());
-  }
-
-  toggleSharing() {
-    this.setState(currentState => ({
-      sharing: !currentState.sharing,
-    }));
   }
 
   renderEditingForm() {

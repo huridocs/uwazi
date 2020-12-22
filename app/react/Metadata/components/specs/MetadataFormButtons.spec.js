@@ -1,5 +1,3 @@
-/** @format */
-
 import React from 'react';
 import { shallow } from 'enzyme';
 import { fromJS as immutable } from 'immutable';

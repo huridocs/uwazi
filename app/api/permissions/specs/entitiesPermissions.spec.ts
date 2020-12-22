@@ -1,9 +1,8 @@
+import db from 'api/utils/testing_db';
 import entities from 'api/entities/entities';
 import { entitiesPermissions } from 'api/permissions/entitiesPermissions';
+import { AccessLevels, PermissionType, MixedAccess } from 'shared/types/permissionSchema';
 import fixtures, { groupA, userA, userB } from 'api/permissions/specs/fixtures';
-import db from 'api/utils/testing_db';
-import { AccessLevels, PermissionType } from 'shared/types/permissionSchema';
-import { MixedAccess } from '../../../shared/types/permissionSchema';
 
 describe('permissions', () => {
   beforeEach(async () => {
@@ -24,10 +23,10 @@ describe('permissions', () => {
       updateEntities.forEach(entity => {
         expect(entity.permissions).toEqual(permissionsData.permissions);
       });
-      const notUpdateEntities = storedEntities.filter(
+      const notUpdatedEntities = storedEntities.filter(
         entity => !['shared1', 'shared2'].includes(entity.sharedId!)
       );
-      notUpdateEntities.forEach(entity => {
+      notUpdatedEntities.forEach(entity => {
         expect(entity.permissions).toBe(undefined);
       });
     });
