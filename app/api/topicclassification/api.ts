@@ -5,7 +5,7 @@ import {
   RPC_DEADLINE_MS,
   tcServer,
 } from 'api/config/topicClassification';
-import search from 'api/search/search';
+import { search } from 'api/search';
 import templates from 'api/templates';
 import { extractSequence } from 'api/topicclassification/common';
 import { ClassifierModelSchema } from 'app/Thesauri/types/classifierModelType';

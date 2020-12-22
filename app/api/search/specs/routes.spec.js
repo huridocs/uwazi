@@ -2,7 +2,7 @@ import entities from 'api/entities';
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import searchRoutes from '../deprecatedRoutes.js';
 import instrumentRoutes from '../../utils/instrumentRoutes';
-import search from '../search';
+import { search } from '../search';
 
 describe('search routes', () => {
   let routes;

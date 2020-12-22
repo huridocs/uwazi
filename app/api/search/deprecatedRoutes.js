@@ -1,9 +1,8 @@
 import Joi from 'joi';
 import entities from 'api/entities';
 import { searchSchema } from 'api/search/searchSchema';
-import search from './search';
+import { search } from './search';
 import { validation, parseQuery } from '../utils';
-import needsAuthorization from '../auth/authMiddleware';
 
 export default app => {
   app.get(
