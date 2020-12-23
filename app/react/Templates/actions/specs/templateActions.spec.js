@@ -155,6 +155,7 @@ describe('templateActions', () => {
               inherit: true,
               relationType: '1',
               content: '',
+              inserting: null,
             },
           ],
         };
