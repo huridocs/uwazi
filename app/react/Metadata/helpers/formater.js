@@ -47,7 +47,7 @@ const addCreationDate = (result, doc) =>
 
 const addModificationDate = (result, doc) =>
   result.push({
-    value: moment.utc(doc.creationDate).format('ll'),
+    value: moment.utc(doc.editDate).format('ll'),
     label: 'Date modified',
     name: 'editDate',
     translateContext: 'System',
