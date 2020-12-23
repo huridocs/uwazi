@@ -105,7 +105,7 @@ DB.connect(config.DBHOST, dbAuth).then(async () => {
     });
   }
 
-  const bindAddress = { true: '*.*.*.*' }[process.env.LOCALHOST_ONLY];
+  const bindAddress = { true: 'localhost' }[process.env.LOCALHOST_ONLY];
   const port = config.PORT;
 
   http.listen(port, bindAddress, async () => {
