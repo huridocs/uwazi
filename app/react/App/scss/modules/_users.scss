@@ -1,0 +1,30 @@
+.permissions-list {
+  width: 100%;
+
+  table {
+    empty-cells: hide;
+    white-space: nowrap;
+    border-collapse: separate;
+    border: 1px;
+
+  }
+  td {
+    padding: 7px 10px;
+    font-size: $f-size;
+  }
+  th {
+    font-weight: bold;
+    border-bottom: 2px solid $c-grey-light;
+  }
+  th:nth-child{
+    text-align: center;
+  }
+  tbody > tr > *:nth-last-child(1) { width:40%}
+  tbody > tr > *:nth-child(n+2) { width:20%}
+  tbody td {
+    border-bottom: 1px solid $c-grey-light;
+  }
+  td:not(:first-of-type) {
+    text-align: center;
+  }
+}

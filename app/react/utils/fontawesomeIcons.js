@@ -595,6 +595,7 @@ export const fontawesomeIcons = [
   'usd',
   'user',
   'user-md',
+  'user-check',
   'user-plus',
   'user-secret',
   'user-times',

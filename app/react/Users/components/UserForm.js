@@ -8,6 +8,7 @@ import { notEmpty } from 'app/Metadata/helpers/validator';
 import { FormGroup } from 'app/Forms';
 import { BackButton } from 'app/Layout';
 import { Icon } from 'UI';
+import { PermissionsList } from 'app/Users/components/PermissionsList';
 
 class UserForm extends Component {
   static formGroup(key, label, type = 'text') {
@@ -168,6 +169,7 @@ class UserForm extends Component {
               {UserForm.formGroup('username', t('System', 'Username'))}
               {UserForm.formGroup('email', t('System', 'Email'))}
               {UserForm.formGroup('password', t('System', 'Password'), 'password')}
+              <PermissionsList userRole=".role" />
               <FormGroup model=".role" className="form-group-radio">
                 <Field model=".role">
                   {t('System', 'Role')}
