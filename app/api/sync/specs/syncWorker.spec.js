@@ -468,7 +468,24 @@ describe('syncWorker', () => {
 
         describe('When entity no longer passes filter', () => {
           it('should delete target entities', async () => {
-            // async entitesModel.saveMultiple(new);
+            const nonMatchingEntity = {
+              title: 'another matching entity',
+              template: template1.toString(),
+              sharedId: 'entitytest.txt',
+              metadata: {
+                t1Property2: [{ value: 'will not pass filter' }],
+              },
+            };
+
+            const [savedEntity] = await entitesModel.saveMultiple([nonMatchingEntity]);
+
+            await syncWorkerWithConfig(filterConfig);
+
+            expectCallWith(
+              request.delete,
+              'entities',
+              expect.objectContaining({ _id: savedEntity._id })
+            );
           });
         });
       });
@@ -549,7 +566,7 @@ describe('syncWorker', () => {
       await syncAllTemplates();
 
       expect(request.post.calls.count()).toBe(13);
-      expect(request.delete.calls.count()).toBe(3);
+      expect(request.delete.calls.count()).toBe(26);
 
       request.post.calls.reset();
       request.delete.calls.reset();
@@ -564,14 +581,14 @@ describe('syncWorker', () => {
       await syncAllTemplates();
       let [{ lastSync: lastSync1 }] = await syncsModel.find({ name: 'slave1' });
       let [{ lastSync: lastSync3 }] = await syncsModel.find({ name: 'slave3' });
-      expect(lastSync1).toBe(20000);
+      expect(lastSync1).toBe(22000);
       expect(lastSync3).toBe(1000);
 
       await syncsModel._updateMany({ name: 'slave3' }, { $set: { lastSync: 8999 } });
       await syncAllTemplates('slave3');
       [{ lastSync: lastSync1 }] = await syncsModel.find({ name: 'slave1' });
       [{ lastSync: lastSync3 }] = await syncsModel.find({ name: 'slave3' });
-      expect(lastSync3).toBe(20000);
+      expect(lastSync3).toBe(22000);
     });
 
     it('should update lastSync on each operation', async () => {
