@@ -2,7 +2,6 @@ import SHA256 from 'crypto-js/sha256';
 import crypto from 'crypto';
 
 import { createError } from 'api/utils';
-import random from 'shared/uniqueID';
 import encryptPassword, { comparePasswords } from 'api/auth/encryptPassword';
 import * as usersUtils from 'api/auth2fa/usersUtils';
 
@@ -178,7 +177,7 @@ export default {
     }
     const _user = await model.save({
       ...user,
-      password: await encryptPassword(random()),
+      password: await encryptPassword(user.password),
       using2fa: undefined,
       secret: undefined,
     });
