@@ -36,7 +36,6 @@ export default (req, _res, next) => {
   const { url, method, params, query, body, user = {} } = req;
   const baseurl = url.split('?').shift();
   if (mustBeLogged(baseurl, method, body)) {
-    const time = Date.now();
     const expireAt = date.addYearsToCurrentDate(1);
     const bodyLog = { ...body };
     if (bodyLog.password) bodyLog.password = '*****';
@@ -48,7 +47,7 @@ export default (req, _res, next) => {
       body: JSON.stringify(bodyLog),
       user: user._id,
       username: user.username,
-      time,
+      time: Date.now(),
       expireAt,
     };
     activitylog.save(entry);
