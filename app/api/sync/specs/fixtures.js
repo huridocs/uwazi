@@ -199,6 +199,12 @@ export default {
       deleted: false,
     },
     {
+      timestamp: 9001,
+      namespace: 'entities',
+      mongoId: db.id(),
+      deleted: false,
+    },
+    {
       timestamp: 9003,
       namespace: 'entities',
       mongoId: newDoc10,

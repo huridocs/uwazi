@@ -105,12 +105,17 @@ class ProcessNamespaces {
 
   private async fetchData() {
     const { namespace, mongoId } = this.change;
-    return models[namespace].getById(mongoId);
+    const data = await models[namespace].getById(mongoId);
+    if (data) {
+      return models[namespace].getById(mongoId);
+    }
+
+    throw new Error('no data found');
   }
 
   private async getTemplateDataAndConfig(template: string) {
     const templateData = await getTemplate(template);
-    const templateConfig = this.templatesConfig[templateData._id];
+    const templateConfig = this.templatesConfig[templateData._id.toString()];
     return { templateData, templateConfig };
   }
 
@@ -333,7 +338,15 @@ class ProcessNamespaces {
     if (!namespaces.includes(namespace)) {
       method = 'default';
     }
-    return this[method]();
+
+    try {
+      return await this[method]();
+    } catch (err) {
+      if (err.message === 'no data found') {
+        return { skip: true };
+      }
+      throw err;
+    }
   }
 }
 

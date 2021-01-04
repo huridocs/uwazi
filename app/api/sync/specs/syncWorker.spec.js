@@ -566,7 +566,7 @@ describe('syncWorker', () => {
       await syncAllTemplates();
 
       expect(request.post.calls.count()).toBe(13);
-      expect(request.delete.calls.count()).toBe(26);
+      expect(request.delete.calls.count()).toBe(27);
 
       request.post.calls.reset();
       request.delete.calls.reset();
