@@ -21,12 +21,12 @@ const updateSyncs = async (name, lastSync) =>
 export default {
   stopped: false,
 
-  async syncronize({ url, name, config: _config }) {
+  async syncronize({ url, name, config: _config, batchSize }) {
     const config = await syncConfig(_config, name);
 
     const { lastSync } = config;
 
-    const lastChanges = await config.lastChanges();
+    const lastChanges = await config.lastChanges(batchSize);
 
     await lastChanges.reduce(async (prev, change) => {
       await prev;

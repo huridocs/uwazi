@@ -82,15 +82,31 @@ export default async (config, targetName) => {
 
     config: await sanitizeConfig(config),
 
-    async lastChanges() {
+    async lastChanges(initialBatchSize = 50) {
+      const approvedCollections = getApprovedCollections(this.config);
+      const firstBatch = await updateLog.find(
+        {
+          timestamp: { $gt: lastSync },
+          namespace: { $in: approvedCollections },
+        },
+        null,
+        {
+          sort: { timestamp: 1 },
+          limit: initialBatchSize,
+          lean: true,
+        }
+      );
+
+      if (!firstBatch.length) {
+        return [];
+      }
+
+      const endTimestamp = firstBatch[firstBatch.length - 1].timestamp;
+
       return updateLog.find(
         {
-          timestamp: {
-            $gt: lastSync,
-          },
-          namespace: {
-            $in: getApprovedCollections(this.config),
-          },
+          $and: [{ timestamp: { $gt: lastSync } }, { timestamp: { $lte: endTimestamp } }],
+          namespace: { $in: approvedCollections },
         },
         null,
         {

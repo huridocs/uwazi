@@ -82,10 +82,11 @@ describe('syncWorker', () => {
       config,
     });
 
-  const syncAllTemplates = async (name = 'slave1') =>
+  const syncAllTemplates = async (name = 'slave1', batchSize) =>
     syncWorker.syncronize({
       url: 'url',
       name,
+      batchSize,
       config: {
         templates: {
           [template1.toString()]: [],
@@ -589,6 +590,23 @@ describe('syncWorker', () => {
       [{ lastSync: lastSync1 }] = await syncsModel.find({ name: 'slave1' });
       [{ lastSync: lastSync3 }] = await syncsModel.find({ name: 'slave3' });
       expect(lastSync3).toBe(22000);
+    });
+
+    it('should allow smaller batches for large amount of changes (but process all identical timestamps)', async () => {
+      await syncAllTemplates('slave1', 2);
+      let [{ lastSync }] = await syncsModel.find({ name: 'slave1' });
+      expect(lastSync).toBe(9000);
+      expect(request.post.calls.count()).toBe(10);
+      expect(request.delete.calls.count()).toBe(1);
+
+      request.post.calls.reset();
+      request.delete.calls.reset();
+
+      await syncAllTemplates('slave1', 4);
+      [{ lastSync }] = await syncsModel.find({ name: 'slave1' });
+      expect(lastSync).toBe(9003);
+      expect(request.post.calls.count()).toBe(1);
+      expect(request.delete.calls.count()).toBe(3);
     });
 
     it('should update lastSync on each operation', async () => {
