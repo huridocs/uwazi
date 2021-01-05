@@ -19,7 +19,6 @@ export default {
         return linkWithoutLocalID;
       }),
     });
-
     return api.post('settings', processedSettings).then((response: any) => response.json);
   },
 

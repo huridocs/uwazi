@@ -101,14 +101,14 @@ function getPageIndexRoute(customHomePage) {
 function getIndexRoute(_nextState, callBack) {
   const state = store.getState();
   const homePageSetting = state.settings.collection.get('home_page');
-  const customHomePage = homePageSetting ? homePageSetting.split('/') : [];
+  const customHomePage = homePageSetting ? homePageSetting.split('/').filter(v => v) : [];
   const isPageRoute = customHomePage.includes('page');
 
   if (isPageRoute) {
     return callBack(null, getPageIndexRoute(customHomePage));
   }
 
-  if (homePageSetting) {
+  if (customHomePage.length) {
     return callBack(null, {
       onEnter: (_nxtState, replace) => {
         replace(customHomePage.join('/'));
