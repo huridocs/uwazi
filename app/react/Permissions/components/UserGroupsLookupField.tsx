@@ -19,7 +19,7 @@ export const UserGroupsLookupField = ({
   const [selected, setSelected] = useState<number | null>(null);
   const [show, setShow] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
-  const debouncedOnChange = useCallback(debounce(onChange, 400), [onChange]);
+  const debouncedOnChange = useCallback(debounce(onChange, 500), [onChange]);
 
   useEffect(() => {
     debouncedOnChange('');
