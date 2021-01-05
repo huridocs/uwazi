@@ -99,7 +99,15 @@ describe('Users', () => {
 
       it('should do the recover password process (as a new user)', done => {
         users
-          .newUser({ username: 'spidey', email: 'peter@parker.com', role: 'editor' }, domain)
+          .newUser(
+            {
+              username: 'spidey',
+              email: 'peter@parker.com',
+              password: 'mypass',
+              role: 'editor',
+            },
+            domain
+          )
           .then(() => users.get({ username: 'spidey' }))
           .then(([user]) => {
             expect(user.username).toBe('spidey');
@@ -148,6 +156,7 @@ describe('Users', () => {
           {
             username: 'without2fa',
             email: 'another@email.com',
+            password: 'mypass',
             role: 'editor',
             using2fa: true,
             secret: 'UNAUTHORIZED SECRET',
@@ -423,7 +432,7 @@ describe('Users', () => {
 
       users
         .newUser(
-          { username: 'spidey', email: 'peter@parker.com', role: 'editor' },
+          { username: 'spidey', email: 'peter@parker.com', password: 'mypass', role: 'editor' },
           'http://localhost'
         )
         .then(newUser => {
