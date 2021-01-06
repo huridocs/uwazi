@@ -5,7 +5,7 @@ import { actions } from 'app/BasicReducer';
 import { UserManagement } from 'app/Users/UserManagement';
 import UsersAPI from './UsersAPI';
 
-export class Users extends RouteHandler {
+export class OldUsers extends RouteHandler {
   static async requestState(requestParams) {
     const users = await UsersAPI.get(requestParams);
     return [actions.set('users', users)];
@@ -16,4 +16,4 @@ export class Users extends RouteHandler {
   }
 }
 
-export default Users;
+export default OldUsers;

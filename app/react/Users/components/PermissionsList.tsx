@@ -8,19 +8,23 @@ export interface PermissionsListProps {
 
 const permissionsByRole = [
   {
-    label: 'View entities',
-    roles: { admin: 'full', editor: 'full', collaborator: 'partial' },
-  },
-  {
     label: 'Create new entities and upload documents',
     roles: { admin: 'full', editor: 'full', collaborator: 'full' },
   },
   {
-    label: 'Edit properties of documents and entities',
+    label: 'Create table of contents',
+    roles: { admin: 'full', editor: 'full', collaborator: 'full' },
+  },
+  {
+    label: 'View entities',
     roles: { admin: 'full', editor: 'full', collaborator: 'partial' },
   },
   {
-    label: 'Delete documents and entities',
+    label: 'Edit metadata of entities',
+    roles: { admin: 'full', editor: 'full', collaborator: 'partial' },
+  },
+  {
+    label: 'Delete entities and documents',
     roles: { admin: 'full', editor: 'full', collaborator: 'partial' },
   },
   {
@@ -28,12 +32,8 @@ const permissionsByRole = [
     roles: { admin: 'full', editor: 'full', collaborator: 'partial' },
   },
   {
-    label: 'Share entities publicly',
+    label: 'Share entities with the public',
     roles: { admin: 'full', editor: 'full', collaborator: 'none' },
-  },
-  {
-    label: 'Create a table of contents',
-    roles: { admin: 'full', editor: 'full', collaborator: 'full' },
   },
   {
     label: 'Create connections and references',
@@ -64,7 +64,7 @@ const permissionsByRole = [
     roles: { admin: 'full', editor: 'none', collaborator: 'none' },
   },
   {
-    label: 'Name connections',
+    label: 'Create connection types',
     roles: { admin: 'full', editor: 'none', collaborator: 'none' },
   },
 ];

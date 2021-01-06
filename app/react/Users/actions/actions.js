@@ -26,3 +26,10 @@ export function newUser(user) {
       dispatch(notificationActions.notify('Created successfully.', 'success'));
     });
 }
+
+export function loadUsers() {
+  return async dispatch => {
+    const users = await UsersAPI.get(new RequestParams());
+    dispatch(basicActions.set('users', users));
+  };
+}
