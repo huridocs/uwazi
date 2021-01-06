@@ -104,13 +104,13 @@ describe('SortButtons', () => {
         expect(
           component
             .find('li')
-            .at(2)
+            .at(3)
             .children()
             .at(0)
             .find('span')
             .last()
             .text()
-        ).toBe('Date modified (Recently)');
+        ).toBe('Search relevance');
       });
     });
 
