@@ -1,6 +1,12 @@
 name: Modules security check
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - master
+      - development
+      - release
+  pull_request:
 
 jobs:
   yarn-audit:
