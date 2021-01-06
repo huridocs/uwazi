@@ -1,8 +1,7 @@
-/** @format */
-
 import Joi from 'joi';
 
 import { validation } from 'api/utils';
+import { userSchema } from 'shared/types/userSchema';
 import needsAuthorization from '../auth/authMiddleware';
 import users from './users';
 
@@ -38,18 +37,13 @@ export default app => {
   app.post(
     '/api/users/new',
     needsAuthorization(),
-    validation.validateRequest(
-      Joi.object()
-        .keys({
-          username: Joi.string().required(),
-          email: Joi.string().required(),
-          password: Joi.string(),
-          role: Joi.string()
-            .valid('admin', 'editor')
-            .required(),
-        })
-        .required()
-    ),
+    validation.validateRequest({
+      type: 'object',
+      properties: {
+        body: userSchema,
+      },
+      required: ['body'],
+    }),
     (req, res, next) => {
       users
         .newUser(req.body, getDomain(req))

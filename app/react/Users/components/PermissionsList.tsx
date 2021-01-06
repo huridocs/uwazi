@@ -2,10 +2,6 @@ import React from 'react';
 import { Translate } from 'app/I18N';
 import { Icon } from 'UI';
 
-export interface PermissionsListProps {
-  userRole: string;
-}
-
 const permissionsByRole = [
   {
     label: 'Create new entities and upload documents',
@@ -78,7 +74,7 @@ const permissionIcons = {
 type PermissionCellParams = 'full' | 'partial' | 'none';
 type userRoles = 'collaborator' | 'editor' | 'admin';
 
-export const PermissionsList = (props: PermissionsListProps) => (
+export const PermissionsList = () => (
   <table className="permissions-list">
     <thead>
       <tr>

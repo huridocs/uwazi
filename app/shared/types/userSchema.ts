@@ -8,16 +8,16 @@ export enum UserRole {
   COLLABORATOR = 'collaborator',
 }
 
-export const UserSchema = {
+export const userSchema = {
   type: 'object',
   additionalProperties: false,
   definitions: { objectIdSchema },
   properties: {
     _id: objectIdSchema,
     __v: { type: 'number' },
-    username: { type: 'string' },
+    username: { type: 'string', minLength: 1 },
     role: { type: 'string', enum: Object.values(UserRole) },
-    email: { type: 'string' },
+    email: { type: 'string', minLength: 1 },
     using2fa: { type: 'boolean' },
     groups: {
       type: 'array',
@@ -32,4 +32,5 @@ export const UserSchema = {
       },
     },
   },
+  required: ['username', 'role', 'email'],
 };
