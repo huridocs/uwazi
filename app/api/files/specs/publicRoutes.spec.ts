@@ -41,7 +41,7 @@ describe('public routes', () => {
   beforeEach(async () => {
     spyOn(search, 'indexEntities').and.returnValue(Promise.resolve());
     spyOn(Date, 'now').and.returnValue(1000);
-    spyOn(errorLog, 'error'); //just to avoid annoying console output
+    spyOn(errorLog, 'error');
     await db.clearAllAndLoad(fixtures);
     setupTestUploadedPaths();
   });
@@ -65,7 +65,7 @@ describe('public routes', () => {
       );
 
       const [newEntity] = await entities.get({ title: 'public submit' });
-      const attachments = newEntity.attachments || [];
+      const { attachments } = newEntity;
       expect(attachments).toEqual([expect.objectContaining({ originalname: 'attachment.txt' })]);
 
       const [uploadedFile] = await files.get({ entity: newEntity.sharedId });
@@ -73,7 +73,7 @@ describe('public routes', () => {
       expect(uploadedFile.status).toBe('ready');
 
       expect(await fileExists(uploadsPath(uploadedFile.filename))).toBe(true);
-      expect(await fileExists(attachmentsPath(attachments[0].filename))).toBe(true);
+      expect(await fileExists(attachmentsPath(attachments?.[0].filename))).toBe(true);
     });
 
     it('should send an email', async () => {
