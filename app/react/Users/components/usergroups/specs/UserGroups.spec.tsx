@@ -56,18 +56,7 @@ describe('UserGroups', () => {
 
   describe('mapDispatchToProps', () => {
     const renderWithTranslations = (state: any) => {
-      const defaultState = {
-        locale: 'en',
-        inlineEdit: Immutable.fromJS({ inlineEdit: true }),
-        translations: Immutable.fromJS([
-          {
-            locale: 'en',
-            contexts: [],
-          },
-        ]),
-      };
-      const stateToMap = { ...defaultState, state };
-      renderConnectedMount(UserGroups, stateToMap);
+      renderConnectedMount(UserGroups, state, {}, true);
     };
 
     it('Should fetch user groups if there are no groups loaded', () => {

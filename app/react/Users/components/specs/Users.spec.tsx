@@ -47,18 +47,7 @@ describe('Users', () => {
 
   describe('mapDispatchToProps', () => {
     const renderWithTranslations = (state: any) => {
-      const defaultState = {
-        locale: 'en',
-        inlineEdit: Immutable.fromJS({ inlineEdit: true }),
-        translations: Immutable.fromJS([
-          {
-            locale: 'en',
-            contexts: [],
-          },
-        ]),
-      };
-      const stateToMap = { ...defaultState, state };
-      renderConnectedMount(Users, stateToMap);
+      renderConnectedMount(Users, state, {}, true);
     };
 
     it('Should fetch users if there are no users loaded', () => {

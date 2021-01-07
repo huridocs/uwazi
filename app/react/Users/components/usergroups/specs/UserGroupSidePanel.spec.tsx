@@ -3,7 +3,6 @@
  */
 import 'mutationobserver-shim';
 import React from 'react';
-import Immutable from 'immutable';
 import { ReactWrapper } from 'enzyme';
 import { SidePanel } from 'app/Layout';
 import {
@@ -41,12 +40,7 @@ describe('UserGroupSidePanel', () => {
 
   function render(args?: UserGroupSidePanelProps) {
     const props = { ...defaultProps, ...args };
-    const state = {
-      locale: 'es',
-      inlineEdit: Immutable.fromJS({ inlineEdit: true }),
-      translations: Immutable.fromJS([{ _id: 1, locale: 'es', contexts: [] }]),
-    };
-    return renderConnectedMount(UserGroupSidePanel, state, props);
+    return renderConnectedMount(UserGroupSidePanel, {}, props, true);
   }
 
   beforeEach(() => {

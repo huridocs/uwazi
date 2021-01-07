@@ -3,7 +3,6 @@
  */
 import 'mutationobserver-shim';
 import React from 'react';
-import Immutable from 'immutable';
 import { ReactWrapper } from 'enzyme';
 import { SidePanel } from 'app/Layout';
 import { renderConnectedMount } from 'app/Templates/specs/utils/renderConnected';
@@ -37,12 +36,7 @@ describe('UserSidePanel', () => {
 
   function render(args?: UserSidePanelProps) {
     const props = { ...defaultProps, ...args };
-    const state = {
-      locale: 'es',
-      inlineEdit: Immutable.fromJS({ inlineEdit: true }),
-      translations: Immutable.fromJS([{ _id: 1, locale: 'es', contexts: [] }]),
-    };
-    return renderConnectedMount(UserSidePanel, state, props);
+    return renderConnectedMount(UserSidePanel, {}, props, true);
   }
 
   beforeEach(() => {
@@ -62,29 +56,21 @@ describe('UserSidePanel', () => {
   });
 
   describe('Edition of user', () => {
-    it.each([existingUser.username, ''])(
-      'should not save if there is an invalid name %s',
-      (username: string) => {
-        const props = { ...defaultProps };
-        props.user = { ...newUser, username };
-        const wrapper = render(props);
-        wrapper.find('form').simulate('submit');
-        expect(defaultProps.onSave).not.toBeCalled();
-      }
-    );
+    it.each([
+      { field: 'username', value: existingUser.username },
+      { field: 'username', value: '' },
+      { field: 'email', value: 'invalidEmail' },
+      { field: 'email', value: existingUser.email },
+      { field: 'email', value: '' },
+    ])('should not save if there is an invalid value %s', ({ field, value }) => {
+      const props = { ...defaultProps };
+      props.user = { ...newUser, [field]: value };
+      const wrapper = render(props);
+      wrapper.find('form').simulate('submit');
+      expect(defaultProps.onSave).not.toBeCalled();
+    });
 
-    it.each(['invalidEmail', existingUser.email, ''])(
-      'should not save if there is an invalid email %s',
-      (email: string) => {
-        const props = { ...defaultProps };
-        props.user = { ...newUser, email };
-        const wrapper = render(props);
-        wrapper.find('form').simulate('submit');
-        expect(defaultProps.onSave).not.toBeCalled();
-      }
-    );
-
-    it('should should the data of the passed user', () => {
+    it('should save the data of the passed user', () => {
       const emailInput = component.find({ id: 'email_field' }).find('input');
       expect(emailInput.props().value).toEqual(defaultProps.user.email);
       const roleInput = component.find({ id: 'role_field' }).find('select');

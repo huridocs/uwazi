@@ -32,8 +32,8 @@ export default {
     { site_name: 'Uwazi instance' }, // eslint-disable-line camelcase
   ],
   usergroups: [
-    { _id: group1Id, name: 'Group 1', members: [{ _id: recoveryUserId }] },
-    { _id: group2Id, name: 'Group 2', members: [{ _id: userId }] },
+    { _id: group1Id, name: 'Group 1', members: [{ _id: recoveryUserId.toString() }] },
+    { _id: group2Id, name: 'Group 2', members: [{ _id: userId.toString() }] },
   ],
 };
 

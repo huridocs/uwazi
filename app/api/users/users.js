@@ -5,8 +5,7 @@ import { createError } from 'api/utils';
 import encryptPassword, { comparePasswords } from 'api/auth/encryptPassword';
 import * as usersUtils from 'api/auth2fa/usersUtils';
 
-import userGroupsMembers from 'api/usergroups/userGroups';
-import { updateUserMemberships } from 'api/usergroups/userGroupsMembers';
+import { getByMemberIdList, updateUserMemberships } from 'api/usergroups/userGroupsMembers';
 import mailer from '../utils/mailer';
 import model from './usersModel';
 import passwordRecoveriesModel from './passwordRecoveriesModel';
@@ -200,7 +199,7 @@ export default {
     const users = await model.get(query, select);
     if (typeof select === 'string' && select.includes('+groups')) {
       const userIds = users.map(user => user._id.toString());
-      const groups = await userGroupsMembers.getByMemberIdList(userIds);
+      const groups = await getByMemberIdList(userIds);
       return users.map(user => {
         const memberships = groups
           .filter(group => group.members.find(member => member._id === user._id.toString()))
