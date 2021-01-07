@@ -12,7 +12,7 @@ import db from 'api/utils/testing_db';
 import request from 'shared/JSONRequest';
 import settings from 'api/settings';
 import { settingsModel } from 'api/settings/settingsModel';
-import { attachmentsPath } from 'api/files';
+import { attachmentsPath, customUploadsPath } from 'api/files';
 
 import fixtures, {
   settingsId,
@@ -64,6 +64,7 @@ describe('syncWorker', () => {
     fs.writeFileSync(attachmentsPath('test_attachment2.txt'), '');
     fs.writeFileSync(attachmentsPath('test.txt'), '');
     fs.writeFileSync(attachmentsPath('test2.txt'), '');
+    fs.writeFileSync(customUploadsPath('customUpload.gif'), '');
   });
 
   afterAll(async () => {
@@ -73,6 +74,7 @@ describe('syncWorker', () => {
     fs.unlinkSync(attachmentsPath('test_attachment2.txt'));
     fs.unlinkSync(attachmentsPath('test1.txt'));
     fs.unlinkSync(attachmentsPath('test2.txt'));
+    fs.unlinkSync(customUploadsPath('customUpload.gif'));
   });
 
   const syncWorkerWithConfig = async config =>
@@ -341,6 +343,15 @@ describe('syncWorker', () => {
       });
     });
 
+    const expectUploadFile = (url, filename, pathFunction = attachmentsPath, type = 'document') => {
+      expect(request.uploadFile).toHaveBeenCalledWith(
+        url,
+        filename,
+        fs.readFileSync(pathFunction(filename)),
+        type
+      );
+    };
+
     describe('uploadFile', () => {
       it('should upload attachments, documents and thumbnails belonging to entities that are allowed to sync', async () => {
         await syncWorkerWithConfig({
@@ -349,36 +360,14 @@ describe('syncWorker', () => {
           },
         });
 
-        expect(request.uploadFile.calls.count()).toBe(5);
+        expect(request.uploadFile.calls.count()).toBe(6);
 
-        expect(request.uploadFile).toHaveBeenCalledWith(
-          'url/api/sync/upload',
-          'test2.txt',
-          fs.readFileSync(attachmentsPath('test2.txt'))
-        );
-
-        expect(request.uploadFile).toHaveBeenCalledWith(
-          'url/api/sync/upload',
-          'test.txt',
-          fs.readFileSync(attachmentsPath('test.txt'))
-        );
-
-        expect(request.uploadFile).toHaveBeenCalledWith(
-          'url/api/sync/upload',
-          `${newDoc1.toString()}.jpg`,
-          fs.readFileSync(attachmentsPath(`${newDoc1.toString()}.jpg`))
-        );
-
-        expect(request.uploadFile).toHaveBeenCalledWith(
-          'url/api/sync/upload',
-          'test_attachment.txt',
-          fs.readFileSync(attachmentsPath('test_attachment.txt'))
-        );
-        expect(request.uploadFile).toHaveBeenCalledWith(
-          'url/api/sync/upload',
-          'test_attachment2.txt',
-          fs.readFileSync(attachmentsPath('test_attachment2.txt'))
-        );
+        expectUploadFile('url/api/sync/upload', 'test2.txt');
+        expectUploadFile('url/api/sync/upload', 'test.txt');
+        expectUploadFile('url/api/sync/upload', `${newDoc1.toString()}.jpg`);
+        expectUploadFile('url/api/sync/upload', 'test_attachment.txt');
+        expectUploadFile('url/api/sync/upload', 'test_attachment2.txt');
+        expectUploadFile('url/api/sync/upload', 'customUpload.gif', customUploadsPath, 'custom');
       });
     });
 
@@ -566,7 +555,7 @@ describe('syncWorker', () => {
     it('should process the log records newer than the last synced entity', async () => {
       await syncAllTemplates();
 
-      expect(request.post.calls.count()).toBe(13);
+      expect(request.post.calls.count()).toBe(14);
       expect(request.delete.calls.count()).toBe(27);
 
       request.post.calls.reset();
@@ -602,10 +591,10 @@ describe('syncWorker', () => {
       request.post.calls.reset();
       request.delete.calls.reset();
 
-      await syncAllTemplates('slave1', 4);
+      await syncAllTemplates('slave1', 5);
       [{ lastSync }] = await syncsModel.find({ name: 'slave1' });
       expect(lastSync).toBe(9003);
-      expect(request.post.calls.count()).toBe(1);
+      expect(request.post.calls.count()).toBe(2);
       expect(request.delete.calls.count()).toBe(3);
     });
 
