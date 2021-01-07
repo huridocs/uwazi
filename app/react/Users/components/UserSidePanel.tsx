@@ -35,7 +35,8 @@ const UserSidePanelComponent = ({
     !users.find(
       existingUser =>
         existingUser._id !== user._id &&
-        existingUser.username?.trim().toLowerCase() === nameVal.trim().toLowerCase()
+        (existingUser.username?.trim().toLowerCase() === nameVal.trim().toLowerCase() ||
+          existingUser.email?.trim().toLowerCase() === nameVal.trim().toLowerCase())
     );
 
   return (
@@ -56,8 +57,24 @@ const UserSidePanelComponent = ({
               value={userToSave.email}
               name="email"
               onChange={handleInputChange}
-              //ref={register({ required: true, validate: isDuplicated, maxLength: 256 })}
+              ref={register({
+                required: true,
+                validate: isDuplicated,
+                maxLength: 256,
+                pattern: {
+                  value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                  message: 'Invalid email address',
+                },
+              })}
             />
+            {errors.email && (
+              <div className="validation-error">
+                <Icon icon="exclamation-triangle" size="xs" />
+                {errors.email.type === 'required' && <Translate>Email is required</Translate>}
+                {errors.email.type === 'validate' && <Translate>Duplicated email</Translate>}
+                {errors.email.type === 'pattern' && <Translate>Invalid email</Translate>}
+              </div>
+            )}
           </div>
           <div id="role_field" className="form-group nested-selector">
             <label>
@@ -85,7 +102,12 @@ const UserSidePanelComponent = ({
               value={userToSave.username}
               name="username"
               onChange={handleInputChange}
-              ref={register({ required: true, validate: isDuplicated, maxLength: 256 })}
+              ref={register({
+                required: true,
+                validate: isDuplicated,
+                maxLength: 256,
+                minLength: 3,
+              })}
             />
             {errors.name && (
               <div className="validation-error">
@@ -93,6 +115,30 @@ const UserSidePanelComponent = ({
                 {errors.name.type === 'required' && <Translate>Name is required</Translate>}
                 {errors.name.type === 'validate' && <Translate>Duplicated name</Translate>}
                 {errors.name.type === 'maxLength' && <Translate>Name is too long</Translate>}
+                {errors.name.type === 'minLength' && <Translate>Name is too short</Translate>}
+              </div>
+            )}
+          </div>
+          <div id="password_field" className="form-group nested-selector">
+            <label>
+              <Translate>Password</Translate>
+            </label>
+            <input
+              type="password"
+              className="form-control"
+              autoComplete="off"
+              value={userToSave.password}
+              name="password"
+              onChange={handleInputChange}
+              ref={register({ required: !user._id, maxLength: 256 })}
+            />
+            {errors.password && (
+              <div className="validation-error">
+                <Icon icon="exclamation-triangle" size="xs" />
+                {errors.password.type === 'required' && <Translate>Password is required</Translate>}
+                {errors.password.type === 'maxLength' && (
+                  <Translate>Password is too long</Translate>
+                )}
               </div>
             )}
           </div>

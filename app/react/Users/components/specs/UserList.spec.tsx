@@ -7,20 +7,27 @@ import { UserList, UserListProps } from '../UserList';
 
 describe('UserList', () => {
   let component: ShallowWrapper;
-  const user2 = { _id: 'user2', username: 'User 2', using2fa: false };
+  const user2 = {
+    _id: 'user2',
+    username: 'User 2',
+    using2fa: false,
+    role: UserRole.EDITOR,
+    email: 'mail@test.test',
+  };
   const users: UserSchema[] = [
     {
       _id: 'user1',
       username: 'User 1',
       role: UserRole.EDITOR,
       using2fa: true,
+      email: 'mail@test.test',
       groups: [
         { _id: 'group1', name: 'Group1' },
         { _id: 'group1', name: 'Group2' },
       ],
     },
     user2,
-    { _id: 'user3', username: 'User 3' },
+    { _id: 'user3', username: 'User 3', role: UserRole.EDITOR, email: 'mail@test.test' },
   ];
   const defaultProps: UserListProps = {
     users,
@@ -59,7 +66,7 @@ describe('UserList', () => {
           .children()
           .at(1)
           .text()
-      ).toBe('Group1');
+      ).toBe(' Group1');
       expect(
         columns
           .at(3)
@@ -67,7 +74,7 @@ describe('UserList', () => {
           .children()
           .at(3)
           .text()
-      ).toBe('Group2');
+      ).toBe(' Group2');
     });
 
     it('should call handleSelect when a row is clicked', () => {

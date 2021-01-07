@@ -8,16 +8,26 @@ import { ReactWrapper } from 'enzyme';
 import { SidePanel } from 'app/Layout';
 import { renderConnectedMount } from 'app/Templates/specs/utils/renderConnected';
 import { UserSidePanel, UserSidePanelProps } from 'app/Users/components/UserSidePanel';
+import { UserRole } from 'shared/types/userSchema';
 
 describe('UserSidePanel', () => {
-  const user = {
+  const newUser = {
+    username: 'john smith',
+    email: 'john@test.test',
+    role: UserRole.EDITOR,
+    password: 'secretWord',
+  };
+  const existingUser = {
     _id: 'user1',
     username: 'juan ramirez',
     email: 'juanr@test.test',
+    role: UserRole.EDITOR,
+    password: 'secretWord',
   };
+
   const defaultProps: UserSidePanelProps = {
-    user,
-    users: [user],
+    user: existingUser,
+    users: [existingUser],
     opened: true,
     closePanel: jasmine.createSpy('closePanel'),
     onSave: jasmine.createSpy('onSave'),
@@ -52,11 +62,22 @@ describe('UserSidePanel', () => {
   });
 
   describe('Edition of user', () => {
-    it.each(['juan ramirez', ''])(
-      'should not save if there is an invalid name',
-      (userName: string) => {
+    it.each([existingUser.username, ''])(
+      'should not save if there is an invalid name %s',
+      (username: string) => {
         const props = { ...defaultProps };
-        props.user = { username: userName };
+        props.user = { ...newUser, username };
+        const wrapper = render(props);
+        wrapper.find('form').simulate('submit');
+        expect(defaultProps.onSave).not.toBeCalled();
+      }
+    );
+
+    it.each(['invalidEmail', existingUser.email, ''])(
+      'should not save if there is an invalid email %s',
+      (email: string) => {
+        const props = { ...defaultProps };
+        props.user = { ...newUser, email };
         const wrapper = render(props);
         wrapper.find('form').simulate('submit');
         expect(defaultProps.onSave).not.toBeCalled();
@@ -70,6 +91,8 @@ describe('UserSidePanel', () => {
       expect(roleInput.props().value).toEqual(defaultProps.user.role);
       const nameInput = component.find({ id: 'name_field' }).find('input');
       expect(nameInput.props().value).toEqual(defaultProps.user.username);
+      const passwordInput = component.find({ id: 'password_field' }).find('input');
+      expect(passwordInput.props().value).toEqual(defaultProps.user.password);
     });
   });
 });

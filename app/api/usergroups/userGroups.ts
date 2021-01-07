@@ -1,23 +1,24 @@
 import users from 'api/users/users';
-import { UserGroupSchema } from 'shared/types/userGroupType';
+import { GroupMemberSchema, UserGroupSchema } from 'shared/types/userGroupType';
 import { validateUserGroup } from 'api/usergroups/validateUserGroup';
+import { ObjectIdSchema } from 'shared/types/commonTypes';
 import model from './userGroupsModel';
 
 export default {
   async get(query: any, select: any = '', options = {}): Promise<UserGroupSchema[]> {
     const userGroups = await model.get(query, select, options);
     const usersInGroups = userGroups.reduce(
-      (memo: Array<String>, group) => memo.concat(group.members.map(g => g._id.toString())),
+      (memo: Array<String>, group) => memo.concat(group.members.map(g => g._id!.toString())),
       []
     );
-    const usersFound = await users.get(
+    const usersFound: GroupMemberSchema[] = await users.get(
       { _id: { $in: usersInGroups } },
       { username: 1, role: 1, email: 1 }
     );
 
     userGroups.forEach((group, index) => {
       userGroups[index].members = group.members.map(m => {
-        const user = usersFound.find(u => u._id.toString() === m._id.toString());
+        const user = usersFound.find(u => u._id?.toString() === m._id!.toString());
         return user || m;
       });
     });
@@ -34,5 +35,9 @@ export default {
 
   async delete(query: any) {
     return model.delete(query);
+  },
+
+  async getByMemberIdList(userIds: ObjectIdSchema[]) {
+    return model.get({ 'members._id': { $in: userIds } });
   },
 };

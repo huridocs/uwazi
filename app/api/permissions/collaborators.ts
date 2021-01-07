@@ -2,6 +2,7 @@ import users from 'api/users/users';
 import userGroups from 'api/usergroups/userGroups';
 import { PermissionType } from 'shared/types/permissionSchema';
 import { MemberWithPermission } from 'shared/types/entityPermisions';
+import { GroupMemberSchema } from 'shared/types/userGroupType';
 
 export const collaborators = {
   getCollaborators: async (filterTerm: string) => {
@@ -15,7 +16,7 @@ export const collaborators = {
 
     const availableCollaborators: MemberWithPermission[] = [];
 
-    matchedUsers.forEach(user => {
+    matchedUsers.forEach((user: GroupMemberSchema) => {
       availableCollaborators.push({
         _id: user._id,
         type: PermissionType.USER,

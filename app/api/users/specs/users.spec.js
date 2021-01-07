@@ -585,4 +585,19 @@ describe('Users', () => {
         });
     });
   });
+
+  describe('get', () => {
+    it('should return all users', async () => {
+      const userList = await users.get();
+      expect(userList.length).toBe(2);
+      expect(userList[0].groups).toBeUndefined();
+    });
+
+    it('should return all users with groups to which they belong', async () => {
+      const userList = await users.get({}, '+groups');
+      expect(userList.length).toBe(2);
+      expect(userList[0].groups[0].name).toBe('Group 2');
+      expect(userList[1].groups[0].name).toBe('Group 1');
+    });
+  });
 });

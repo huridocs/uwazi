@@ -11,20 +11,13 @@ export default app => {
     '/api/users',
 
     needsAuthorization(['admin', 'editor']),
-
-    validation.validateRequest(
-      Joi.object()
-        .keys({
-          _id: Joi.objectId().required(),
-          __v: Joi.number(),
-          username: Joi.string(),
-          email: Joi.string(),
-          password: Joi.string(),
-          role: Joi.string().valid('admin', 'editor'),
-          using2fa: Joi.boolean(),
-        })
-        .required()
-    ),
+    validation.validateRequest({
+      type: 'object',
+      properties: {
+        body: { ...userSchema, required: ['_id', 'username', 'role', 'email'] },
+      },
+      required: ['body'],
+    }),
 
     (req, res, next) => {
       users
@@ -40,7 +33,7 @@ export default app => {
     validation.validateRequest({
       type: 'object',
       properties: {
-        body: userSchema,
+        body: { ...userSchema, required: ['username', 'role', 'email', 'password'] },
       },
       required: ['body'],
     }),
@@ -107,7 +100,7 @@ export default app => {
 
   app.get('/api/users', needsAuthorization(), (_req, res, next) => {
     users
-      .get()
+      .get({}, '+groups')
       .then(response => res.json(response))
       .catch(next);
   });

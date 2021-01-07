@@ -13,6 +13,14 @@ jest.mock(
   }
 );
 
+const invalidCases = [
+  { field: 'role', value: 'invalid', keyword: 'enum' },
+  { field: 'role', value: undefined, keyword: 'required' },
+  { field: 'username', value: undefined, keyword: 'required' },
+  { field: 'username', value: '', keyword: 'minLength' },
+  { field: 'email', value: undefined, keyword: 'required' },
+  { field: 'email', value: '', keyword: 'minLength' },
+];
 describe('user routes', () => {
   let authenticatedUser: { username: string; role: string } | undefined;
   function getUser() {
@@ -26,31 +34,27 @@ describe('user routes', () => {
     }
   );
 
-  describe('validation', () => {
-    it.each([
-      { field: 'role', value: 'invalid', keyword: 'enum' },
-      { field: 'role', value: undefined, keyword: 'required' },
-      { field: 'username', value: undefined, keyword: 'required' },
-      { field: 'username', value: '', keyword: 'minLength' },
-      { field: 'email', value: undefined, keyword: 'required' },
-      { field: 'email', value: '', keyword: 'minLength' },
-    ])('should return a validation error if user data is not valid', async invalidData => {
-      authenticatedUser = { username: 'user 1', role: UserRole.ADMIN };
-      const newUser: UserSchema = {
-        username: 'New User',
-        role: UserRole.COLLABORATOR,
-        email: 'new@mail.test',
-      };
-      // @ts-ignore
-      newUser[invalidData.field] = invalidData.value;
-      const response = await request(app)
-        .post('/api/users/new')
-        .set('X-Requested-With', 'XMLHttpRequest')
-        .send(newUser);
-      expect(response.status).toBe(400);
-      expect(response.body.errors[0].keyword).toBe(invalidData.keyword);
-      expect(response.body.error).toBe('validation failed');
-    });
+  describe('validation new user', () => {
+    it.each(invalidCases)(
+      'should return a validation error if user data is not valid',
+      async invalidData => {
+        authenticatedUser = { username: 'user 1', role: UserRole.ADMIN };
+        const newUser: UserSchema = {
+          username: 'New User',
+          role: UserRole.COLLABORATOR,
+          email: 'new@mail.test',
+        };
+        // @ts-ignore
+        newUser[invalidData.field] = invalidData.value;
+        const response = await request(app)
+          .post('/api/users/new')
+          .set('X-Requested-With', 'XMLHttpRequest')
+          .send(newUser);
+        expect(response.status).toBe(400);
+        expect(response.body.errors[0].keyword).toBe(invalidData.keyword);
+        expect(response.body.error).toBe('validation failed');
+      }
+    );
 
     it('should validate a valid user data', async () => {
       authenticatedUser = { username: 'user 1', role: UserRole.ADMIN };
@@ -59,11 +63,53 @@ describe('user routes', () => {
         username: 'New User',
         role: UserRole.COLLABORATOR,
         email: 'new@mail.test',
+        password: 'secretpass',
       };
       const response = await request(app)
         .post('/api/users/new')
         .set('X-Requested-With', 'XMLHttpRequest')
         .send(newUser);
+      expect(response.status).toBe(200);
+    });
+  });
+
+  describe('validation save user', () => {
+    it.each(invalidCases)(
+      'should return a validation error if user data is not valid',
+      async invalidData => {
+        authenticatedUser = { username: 'user 1', role: UserRole.ADMIN };
+        const user: UserSchema = {
+          _id: 'user1',
+          username: 'User1',
+          role: UserRole.COLLABORATOR,
+          email: 'user@mail.test',
+        };
+        // @ts-ignore
+        user[invalidData.field] = invalidData.value;
+        const response = await request(app)
+          .post('/api/users')
+          .set('X-Requested-With', 'XMLHttpRequest')
+          .send(user);
+        expect(response.status).toBe(400);
+        expect(response.body.errors[0].keyword).toBe(invalidData.keyword);
+        expect(response.body.error).toBe('validation failed');
+      }
+    );
+
+    it('should validate a valid user data', async () => {
+      authenticatedUser = { username: 'user 1', role: UserRole.ADMIN };
+      spyOn(users, 'save').and.returnValue(Promise.resolve());
+      const user: UserSchema = {
+        _id: 'user1',
+        username: 'User1',
+        role: UserRole.COLLABORATOR,
+        email: 'user@mail.test',
+        password: 'secretPass',
+      };
+      const response = await request(app)
+        .post('/api/users')
+        .set('X-Requested-With', 'XMLHttpRequest')
+        .send(user);
       expect(response.status).toBe(200);
     });
   });

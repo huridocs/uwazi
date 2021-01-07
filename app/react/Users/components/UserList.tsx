@@ -63,7 +63,7 @@ export const UserListComponent = ({
                     <Pill key={group._id?.toString()} color="white">
                       <>
                         <Icon icon="users" />
-                        {group.name}
+                        {` ${group.name}`}
                       </>
                     </Pill>
                   ))}

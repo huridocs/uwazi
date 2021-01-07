@@ -8,8 +8,12 @@ const user3Id = db.id();
 
 export default {
   usergroups: [
-    { _id: group1Id, name: 'Group 1', members: [{ _id: user2Id }] },
-    { _id: group2Id, name: 'Group 2', members: [{ _id: user1Id }, { _id: user3Id }] },
+    { _id: group1Id, name: 'Group 1', members: [{ _id: user2Id.toString() }] },
+    {
+      _id: group2Id,
+      name: 'Group 2',
+      members: [{ _id: user1Id.toString() }, { _id: user3Id.toString() }],
+    },
   ],
   users: [
     {
