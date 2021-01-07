@@ -7,29 +7,41 @@ import { ObjectIdSchema } from 'shared/types/commonTypes';
 import { IStore } from 'app/istore';
 import { UserList } from 'app/Users/components/UserList';
 import { loadUsers, saveUser, deleteUser, newUser } from 'app/Users/actions/actions';
+import { loadUserGroups } from 'app/Users/components/usergroups/actions/actions';
 import { UserSidePanel } from 'app/Users/components/UserSidePanel';
+import { UserGroupSchema } from 'shared/types/userGroupType';
 
 export interface UserProps {
   users: IImmutable<UserSchema[]>;
+  userGroups: IImmutable<UserGroupSchema[]>;
   loadUsers: () => Promise<void>;
+  loadUserGroups: () => Promise<void>;
   newUser: (user: UserSchema) => Promise<void>;
   saveUser: (user: UserSchema) => Promise<void>;
   deleteUser: (user: { _id: ObjectIdSchema }) => Promise<void>;
 }
 const UsersComponent = ({
   users,
+  userGroups,
   loadUsers: loadAllUsers,
+  loadUserGroups: loadAllGroups,
   newUser: createUser,
   saveUser: saveUserData,
   deleteUser: deleteUserData,
 }: UserProps) => {
   const userList = users ? users.toJS() : [];
+  const userGroupList = userGroups ? userGroups.toJS() : [];
   const [selectedUser, setSelectedUser] = useState<UserSchema>();
   const [sidePanelOpened, setSidePanelOpened] = useState(false);
 
   useEffect(() => {
     if (userList.length === 0) {
       loadAllUsers()
+        .then()
+        .catch(() => {});
+    }
+    if (loadAllGroups.length === 0) {
+      loadAllGroups()
         .then()
         .catch(() => {});
     }
@@ -80,6 +92,7 @@ const UsersComponent = ({
           opened={sidePanelOpened}
           user={selectedUser}
           users={userList}
+          groups={userGroupList}
           onSave={handlers.handleSave}
           onDelete={handlers.handleDelete}
           closePanel={closeSidePanel}
@@ -91,6 +104,7 @@ const UsersComponent = ({
 
 const mapStateToProps = (state: IStore & { users: IImmutable<UserSchema[]> }) => ({
   users: state.users,
+  userGroups: state.userGroups,
 });
 
 const mapDispatchToProps = {
@@ -98,6 +112,7 @@ const mapDispatchToProps = {
   newUser,
   saveUser,
   deleteUser,
+  loadUserGroups,
 };
 
 export const Users = connect(mapStateToProps, mapDispatchToProps)(UsersComponent);

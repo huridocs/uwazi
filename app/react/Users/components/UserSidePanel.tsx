@@ -5,30 +5,54 @@ import { Translate } from 'app/I18N';
 import { ConfirmButton, SidePanel } from 'app/Layout';
 import { UserRole } from 'shared/types/userSchema';
 import { UserSchema } from 'shared/types/userType';
+import MultiSelect from 'app/Forms/components/MultiSelect';
+import { UserGroupSchema } from 'shared/types/userGroupType';
+import { ObjectIdSchema } from 'shared/types/commonTypes';
 
 export interface UserSidePanelProps {
   user: UserSchema;
   users: UserSchema[];
+  groups: UserGroupSchema[];
   opened: boolean;
   closePanel: (event: React.MouseEvent<HTMLButtonElement>) => void;
   onSave: (user: UserSchema) => void;
   onDelete: (user: UserSchema) => void;
 }
+
+const mapGroupIds = (groups: { _id: ObjectIdSchema; name: string }[]) =>
+  groups.map(group => (group._id ? group._id.toString() : ''));
+
 const UserSidePanelComponent = ({
   user,
   users,
+  groups,
   opened,
   closePanel,
   onSave,
   onDelete,
 }: UserSidePanelProps) => {
   const [userToSave, setUserToSave] = useState(user);
+  const [selectedGroups, setSelectedGroups] = useState(user.groups ? mapGroupIds(user.groups) : []);
+
   const { register, handleSubmit, errors } = useForm();
+
+  const availableGroups = groups;
 
   const handleInputChange = (event: React.SyntheticEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = event.currentTarget;
     const updatedUser = { ...userToSave, [name]: value };
     setUserToSave(updatedUser);
+  };
+
+  const onChangeHandler = (groupIds: string[]) => {
+    setSelectedGroups(groupIds);
+    const updatedGroups = groups
+      .filter(group => groupIds.includes(group._id as string))
+      .map(group => ({
+        _id: group._id!,
+        name: group.name,
+      }));
+    setUserToSave({ ...userToSave, groups: updatedGroups });
   };
 
   const isDuplicated = (nameVal: string) =>
@@ -141,6 +165,20 @@ const UserSidePanelComponent = ({
                 )}
               </div>
             )}
+          </div>
+          <div className="user-memberships">
+            <label>
+              <Translate>Groups</Translate>
+            </label>
+            <MultiSelect
+              options={availableGroups}
+              optionsLabel="name"
+              optionsValue="_id"
+              value={selectedGroups}
+              onChange={onChangeHandler}
+              optionsToShow={8}
+              sortbyLabel
+            />
           </div>
         </form>
       </div>

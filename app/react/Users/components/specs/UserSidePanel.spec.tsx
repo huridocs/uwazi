@@ -8,6 +8,7 @@ import { SidePanel } from 'app/Layout';
 import { renderConnectedMount } from 'app/Templates/specs/utils/renderConnected';
 import { UserSidePanel, UserSidePanelProps } from 'app/Users/components/UserSidePanel';
 import { UserRole } from 'shared/types/userSchema';
+import MultiSelect from 'app/Forms/components/MultiSelect';
 
 describe('UserSidePanel', () => {
   const newUser = {
@@ -23,10 +24,12 @@ describe('UserSidePanel', () => {
     role: UserRole.EDITOR,
     password: 'secretWord',
   };
-
+  const group1 = { _id: 'group1', name: 'Denunciantes', members: [] };
+  const group2 = { _id: 'group2', name: 'Asesores legales', members: [] };
   const defaultProps: UserSidePanelProps = {
     user: existingUser,
     users: [existingUser],
+    groups: [group1, group2],
     opened: true,
     closePanel: jasmine.createSpy('closePanel'),
     onSave: jasmine.createSpy('onSave'),
@@ -79,6 +82,13 @@ describe('UserSidePanel', () => {
       expect(nameInput.props().value).toEqual(defaultProps.user.username);
       const passwordInput = component.find({ id: 'password_field' }).find('input');
       expect(passwordInput.props().value).toEqual(defaultProps.user.password);
+    });
+  });
+
+  describe('Groups membership', () => {
+    it('should list all the available groups sorted alphabetically', () => {
+      const availableGroups = component.find(MultiSelect);
+      expect(availableGroups.props().options).toEqual([group1, group2]);
     });
   });
 });
