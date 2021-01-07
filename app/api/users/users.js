@@ -6,6 +6,7 @@ import encryptPassword, { comparePasswords } from 'api/auth/encryptPassword';
 import * as usersUtils from 'api/auth2fa/usersUtils';
 
 import userGroupsMembers from 'api/usergroups/userGroups';
+import { updateUserMemberships } from 'api/usergroups/userGroupsMembers';
 import mailer from '../utils/mailer';
 import model from './usersModel';
 import passwordRecoveriesModel from './passwordRecoveriesModel';
@@ -159,10 +160,16 @@ export default {
 
     const { using2fa, secret, ...userToSave } = user;
 
-    return model.save({
+    const updatedUser = await model.save({
       ...userToSave,
       password: user.password ? await encryptPassword(user.password) : userInTheDatabase.password,
     });
+
+    if (user.groups && user.groups.length > 0) {
+      await updateUserMemberships({ ...updatedUser, groups: user.groups });
+    }
+
+    return updatedUser;
   },
 
   async newUser(user, domain) {
@@ -182,6 +189,9 @@ export default {
       using2fa: undefined,
       secret: undefined,
     });
+    if (user.groups && user.groups.length > 0) {
+      await updateUserMemberships({ ..._user, groups: user.groups });
+    }
     await this.recoverPassword(user.email, domain, { newUser: true });
     return _user;
   },

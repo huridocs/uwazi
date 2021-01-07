@@ -10,7 +10,8 @@ import db from 'api/utils/testing_db';
 import encryptPassword, { comparePasswords } from 'api/auth/encryptPassword';
 import * as usersUtils from 'api/auth2fa/usersUtils';
 import { settingsModel } from 'api/settings/settingsModel';
-import fixtures, { userId, expectedKey, recoveryUserId } from './fixtures.js';
+import userGroups from 'api/usergroups/userGroups';
+import fixtures, { userId, expectedKey, recoveryUserId, group1Id, group2Id } from './fixtures.js';
 import users from '../users.js';
 import passwordRecoveriesModel from '../passwordRecoveriesModel';
 import usersModel from '../usersModel';
@@ -56,6 +57,26 @@ describe('Users', () => {
       const [updatedUser] = await usersModel.get({ _id: recoveryUserId }, '+secret');
       expect(updatedUser.using2fa).toBe(false);
       expect(updatedUser.secret).toBeUndefined();
+    });
+
+    const assertUserMembership = async updatedUser => {
+      const groups = await userGroups.get();
+      const membership1 = groups[0].members.find(
+        m => m._id.toString() === updatedUser._id.toString()
+      );
+      const membership2 = groups[1].members.find(
+        m => m._id.toString() === updatedUser._id.toString()
+      );
+      expect(membership1).not.toBeUndefined();
+      expect(membership2).not.toBeUndefined();
+    };
+    it('should update the membership of the saved user', async () => {
+      const userToUpdate = {
+        _id: userId.toString(),
+        groups: [{ _id: group1Id.toString() }, { _id: group2Id.toString() }],
+      };
+      const updatedUser = await users.save(userToUpdate, currentUser);
+      await assertUserMembership(updatedUser);
     });
 
     describe('when you try to change role', () => {
@@ -168,6 +189,21 @@ describe('Users', () => {
         const [createdUser] = await usersModel.get({ username: 'without2fa' }, '+secret');
         expect(createdUser.using2fa).toBe(false);
         expect(createdUser.secret).toBeUndefined();
+      });
+
+      it('should add the new user to the specified userGroups', async () => {
+        const createdUser = await users.newUser(
+          {
+            username: 'spidey',
+            email: 'peter@parker.com',
+            password: 'mypass',
+            role: 'editor',
+            groups: [{ _id: group1Id.toString() }, { _id: group2Id.toString() }],
+          },
+          domain
+        );
+
+        await assertUserMembership(createdUser);
       });
     });
   });

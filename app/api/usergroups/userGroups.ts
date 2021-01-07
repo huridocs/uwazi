@@ -1,7 +1,6 @@
 import users from 'api/users/users';
 import { GroupMemberSchema, UserGroupSchema } from 'shared/types/userGroupType';
 import { validateUserGroup } from 'api/usergroups/validateUserGroup';
-import { ObjectIdSchema } from 'shared/types/commonTypes';
 import model from './userGroupsModel';
 
 export default {
@@ -33,11 +32,20 @@ export default {
     return model.save({ ...userGroup, members });
   },
 
-  async delete(query: any) {
-    return model.delete(query);
+  async saveMultiple(userGroups: UserGroupSchema[]) {
+    const groupsToUpdate = userGroups.map(userGroup => {
+      const members = userGroup.members.map(m => ({ _id: m._id }));
+      return { ...userGroup, members };
+    });
+    await Promise.all(
+      groupsToUpdate.map(async group => {
+        await validateUserGroup(group);
+      })
+    );
+    return model.saveMultiple(userGroups);
   },
 
-  async getByMemberIdList(userIds: ObjectIdSchema[]) {
-    return model.get({ 'members._id': { $in: userIds } });
+  async delete(query: any) {
+    return model.delete(query);
   },
 };
