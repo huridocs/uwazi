@@ -29,6 +29,7 @@ import { tenants } from './api/tenants/tenantContext';
 import { multitenantMiddleware } from './api/utils/multitenantMiddleware';
 import { staticFilesMiddleware } from './api/utils/staticFilesMiddleware';
 import { customUploadsPath, uploadsPath } from './api/files/filesystem';
+import { appContextMiddleware } from 'api/utils/appContextMiddleware';
 
 mongoose.Promise = Promise;
 
@@ -56,6 +57,8 @@ app.use(compression());
 app.use(express.static(path.resolve(__dirname, '../dist'), { maxage }));
 app.use('/public', express.static(config.publicAssets));
 app.use(/\/((?!remotepublic).)*/, bodyParser.json({ limit: '1mb' }));
+
+app.use(appContextMiddleware);
 
 //////
 // this middleware should go just before any other that accesses to db
