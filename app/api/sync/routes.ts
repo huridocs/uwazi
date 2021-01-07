@@ -5,7 +5,7 @@ import { search } from 'api/search';
 
 import { Request, Application } from 'express';
 import { FileType } from 'shared/types/fileType';
-import { uploadsPath, uploadMiddleware } from 'api/files';
+import { uploadsPath, customUploadsPath, uploadMiddleware } from 'api/files';
 
 import { needsAuthorization } from '../auth';
 
@@ -71,7 +71,22 @@ export default (app: Application) => {
   app.post(
     '/api/sync/upload',
     needsAuthorization(['admin']),
-    uploadMiddleware(uploadsPath, storage),
+    async (req, res, next) => {
+      await new Promise((resolve, reject) => {
+        multer({ storage }).single('file')(req, res, err => {
+          if (!err) resolve('ok');
+          reject(err);
+        });
+      });
+
+      let pathFunction = uploadsPath;
+
+      if (req.body && req.body.type === 'custom') {
+        pathFunction = customUploadsPath;
+      }
+
+      await uploadMiddleware(pathFunction, storage)(req, res, next);
+    },
     (_req, res) => {
       res.json('ok');
     }
