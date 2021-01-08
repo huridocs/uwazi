@@ -6,15 +6,23 @@ import { propertyTypes } from 'shared/propertyTypes';
 import { EntitySchema } from 'shared/types/entityType';
 import templates from 'api/templates';
 import { TemplateSchema } from 'shared/types/templateType';
+import instanceElasticTesting from 'api/utils/elastic_testing';
+
+import { instanceSearch } from '../../search/search';
 import fixtures, { templateId, simpleTemplateId, nonExistentId } from './validatorFixtures';
 
 import { validateEntity } from '../../../shared/types/entitySchema';
 import { customErrorMessages } from '../metadataValidators.js';
 
+const elasticIndex = 'index';
+const search = instanceSearch(elasticIndex);
+const elasticTesting = instanceElasticTesting(elasticIndex, search);
+
 describe('entity schema', () => {
   beforeEach(async () => {
     //@ts-ignore
     await db.clearAllAndLoad(fixtures);
+    await elasticTesting.resetIndex();
   });
 
   afterAll(async () => {

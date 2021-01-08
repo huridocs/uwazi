@@ -7,7 +7,6 @@ import db from 'api/utils/testing_db';
 import documents from 'api/documents/documents.js';
 import entities from 'api/entities/entities.js';
 import translations from 'api/i18n/translations';
-import { testingTenants } from 'api/utils/testingTenants';
 import instanceElasticTesting from 'api/utils/elastic_testing';
 import elastic from 'api/search/elastic';
 
@@ -35,7 +34,6 @@ describe('templates', () => {
   });
 
   afterAll(async () => {
-    testingTenants.restoreCurrentFn();
     await db.disconnect();
   });
 
