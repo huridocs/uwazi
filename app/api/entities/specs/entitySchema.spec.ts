@@ -14,8 +14,8 @@ import { customErrorMessages } from '../metadataValidators.js';
 
 describe('entity schema', () => {
   beforeEach(async () => {
-    //@ts-ignore
     spyOn(entitiesIndex, 'updateMapping').and.returnValue(Promise.resolve());
+    //@ts-ignore
     await db.clearAllAndLoad(fixtures);
   });
 
