@@ -31,8 +31,6 @@ export default app => {
         const allTemplates = await templates.get();
         const search = instanceSearch();
         reindexAll(allTemplates, search, tenants.current().indexName);
-      } else {
-        await updateMapping([req.body], tenants.current().indexName);
       }
 
       res.json(response);
