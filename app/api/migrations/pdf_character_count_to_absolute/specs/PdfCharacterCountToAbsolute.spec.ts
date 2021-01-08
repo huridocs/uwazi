@@ -51,15 +51,15 @@ describe('PdfCharacterCountToAbsolute', () => {
     const absolutePosition = characterCountToAbsoluteConversion.convert(shortLabel, 32347, 32352);
 
     expect(absolutePosition.text).toBe(shortLabel);
-    expect(absolutePosition.pageWidth).toBe(892);
-    expect(absolutePosition.pageHeight).toBe(1263);
+    expect(absolutePosition.pageWidth).toBe(793);
+    expect(absolutePosition.pageHeight).toBe(1122);
     expect(absolutePosition.selectionRectangles.length).toBe(1);
     checkAbsoluteTag(absolutePosition.selectionRectangles[0], {
       pageNumber: 10,
-      top: 506,
-      left: 213,
-      height: 13,
-      width: 33,
+      top: 450,
+      left: 189,
+      height: 12,
+      width: 29,
       text: '',
     });
   });
@@ -78,15 +78,15 @@ describe('PdfCharacterCountToAbsolute', () => {
     );
 
     expect(absolutePosition.text).toBe(lastLabel);
-    expect(absolutePosition.pageWidth).toBe(892);
-    expect(absolutePosition.pageHeight).toBe(1263);
+    expect(absolutePosition.pageWidth).toBe(793);
+    expect(absolutePosition.pageHeight).toBe(1122);
     expect(absolutePosition.selectionRectangles.length).toBe(1);
     checkAbsoluteTag(absolutePosition.selectionRectangles[0], {
       pageNumber: 24,
-      top: 953,
-      left: 200,
-      height: 17,
-      width: 275,
+      top: 847,
+      left: 178,
+      height: 15,
+      width: 245,
       text: '',
     });
   });
@@ -108,10 +108,10 @@ describe('PdfCharacterCountToAbsolute', () => {
     expect(absolutePosition.selectionRectangles.length).toBe(1);
     checkAbsoluteTag(absolutePosition.selectionRectangles[0], {
       pageNumber: 1,
-      top: 1185,
-      left: 85,
-      height: 42,
-      width: 140,
+      top: 1054,
+      left: 76,
+      height: 37,
+      width: 125,
       text: '',
     });
   });
@@ -134,18 +134,18 @@ describe('PdfCharacterCountToAbsolute', () => {
     expect(absolutePosition.selectionRectangles.length).toBe(11);
     checkAbsoluteTag(absolutePosition.selectionRectangles[0], {
       pageNumber: 3,
-      top: 668,
-      left: 132,
-      height: 16,
-      width: 20,
+      top: 594,
+      left: 118,
+      height: 14,
+      width: 18,
       text: '',
     });
     checkAbsoluteTag(absolutePosition.selectionRectangles[10], {
       pageNumber: 3,
-      top: 707,
-      left: 655,
-      height: 13,
-      width: 70,
+      top: 628,
+      left: 583,
+      height: 12,
+      width: 62,
       text: '',
     });
   });
@@ -168,26 +168,26 @@ describe('PdfCharacterCountToAbsolute', () => {
 
     checkAbsoluteTag(absolutePosition.selectionRectangles[0], {
       pageNumber: 24,
-      top: 177,
-      left: 149,
-      height: 19,
-      width: 293,
+      top: 158,
+      left: 132,
+      height: 17,
+      width: 261,
       text: '',
     });
     checkAbsoluteTag(absolutePosition.selectionRectangles[1], {
       pageNumber: 24,
-      top: 218,
-      left: 213,
-      height: 13,
-      width: 513,
+      top: 194,
+      left: 189,
+      height: 12,
+      width: 456,
       text: '',
     });
     checkAbsoluteTag(absolutePosition.selectionRectangles[2], {
       pageNumber: 24,
-      top: 236,
-      left: 170,
-      height: 13,
-      width: 555,
+      top: 210,
+      left: 151,
+      height: 12,
+      width: 493,
       text: '',
     });
   });
@@ -210,10 +210,10 @@ describe('PdfCharacterCountToAbsolute', () => {
 
     checkAbsoluteTag(absolutePosition.selectionRectangles[0], {
       pageNumber: 16,
-      top: 308,
-      left: 276,
-      height: 13,
-      width: 449,
+      top: 274,
+      left: 246,
+      height: 12,
+      width: 399,
       text: '',
     });
   });
@@ -236,34 +236,29 @@ describe('PdfCharacterCountToAbsolute', () => {
 
     checkAbsoluteTag(absolutePosition.selectionRectangles[0], {
       pageNumber: 14,
-      top: 1155,
-      left: 213,
-      height: 13,
-      width: 403,
+      top: 1027,
+      left: 189,
+      height: 12,
+      width: 358,
       text: '',
     });
     checkAbsoluteTag(absolutePosition.selectionRectangles[1], {
       pageNumber: 15,
-      top: 67,
-      left: 730,
-      height: 12,
-      width: 80,
+      top: 60,
+      left: 649,
+      height: 11,
+      width: 71,
       text: '',
     });
     checkAbsoluteTag(absolutePosition.selectionRectangles[2], {
-      pageNumber: 15,
-      top: 1208,
-      left: 794,
-      height: 12,
-      width: 13,
-      text: '',
+        pageNumber: 15,top: 1074,left: 706,height: 11,width: 11,text: ''
     });
     checkAbsoluteTag(absolutePosition.selectionRectangles[3], {
       pageNumber: 15,
-      top: 110,
-      left: 213,
-      height: 13,
-      width: 40,
+      top: 98,
+      left: 189,
+      height: 12,
+      width: 36,
       text: '',
     });
   });
@@ -283,42 +278,42 @@ describe('PdfCharacterCountToAbsolute', () => {
 
     checkAbsoluteTag(absolutePosition.selectionRectangles[0], {
       pageNumber: 14,
-      top: 1155,
-      left: 213,
-      height: 13,
-      width: 403,
+      top: 1027,
+      left: 189,
+      height: 12,
+      width: 358,
       text: '',
     });
     checkAbsoluteTag(absolutePosition.selectionRectangles[1], {
       pageNumber: 15,
-      top: 67,
-      left: 730,
-      height: 12,
-      width: 80,
+      top: 60,
+      left: 649,
+      height: 11,
+      width: 71,
       text: '',
     });
     checkAbsoluteTag(absolutePosition.selectionRectangles[2], {
       pageNumber: 15,
-      top: 1208,
-      left: 794,
-      height: 12,
-      width: 13,
+      top: 1074,
+      left: 706,
+      height: 11,
+      width: 11,
       text: '',
     });
     checkAbsoluteTag(absolutePosition.selectionRectangles[3], {
       pageNumber: 15,
-      top: 110,
-      left: 213,
-      height: 13,
-      width: 40,
+      top: 98,
+      left: 189,
+      height: 12,
+      width: 36,
       text: '',
     });
     checkAbsoluteTag(absolutePosition.selectionRectangles[4], {
       pageNumber: 15,
-      top: 110,
-      left: 276,
-      height: 13,
-      width: 449,
+      top: 98,
+      left: 246,
+      height: 12,
+      width: 399,
       text: '',
     });
   });
@@ -351,10 +346,10 @@ describe('PdfCharacterCountToAbsolute', () => {
     expect(absolutePosition.selectionRectangles.length).toBe(1);
     checkAbsoluteTag(absolutePosition.selectionRectangles[0], {
       pageNumber: 10,
-      top: 506,
-      left: 213,
-      height: 13,
-      width: 33,
+      top: 450,
+      left: 189,
+      height: 12,
+      width: 29,
       text: '',
     });
   });
@@ -371,30 +366,25 @@ describe('PdfCharacterCountToAbsolute', () => {
 
     expect(absolutePosition.selectionRectangles.length).toBe(3);
 
-    expect(absolutePosition.pageWidth).toBe(918);
-    expect(absolutePosition.pageHeight).toBe(1188);
+    expect(absolutePosition.pageWidth).toBe(815);
+    expect(absolutePosition.pageHeight).toBe(1055);
     checkAbsoluteTag(absolutePosition.selectionRectangles[0], {
       pageNumber: 1,
-      top: 810,
-      left: 455,
-      height: 18,
-      width: 7,
+      top: 720,
+      left: 404,
+      height: 16,
+      width: 6,
       text: '',
     });
     checkAbsoluteTag(absolutePosition.selectionRectangles[1], {
-      pageNumber: 1,
-      top: 828,
-      left: 319,
-      height: 18,
-      width: 279,
-      text: '',
+        pageNumber: 1,top: 736,left: 283,height: 16,width: 248,text: ''
     });
     checkAbsoluteTag(absolutePosition.selectionRectangles[2], {
       pageNumber: 1,
-      top: 846,
-      left: 309,
-      height: 18,
-      width: 303,
+      top: 752,
+      left: 275,
+      height: 16,
+      width: 269,
       text: '',
     });
   });
