@@ -1,7 +1,7 @@
 import Joi from 'joi';
 
 import settings from 'api/settings';
-import { updateMapping, checkMapping, reindexAll } from 'api/search/entitiesIndex';
+import { checkMapping, reindexAll } from 'api/search/entitiesIndex';
 import { tenants } from 'api/tenants/tenantContext';
 import { instanceSearch } from 'api/search/search';
 
