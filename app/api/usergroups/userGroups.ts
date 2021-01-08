@@ -34,7 +34,7 @@ export default {
 
   async saveMultiple(userGroups: UserGroupSchema[]) {
     const groupsToUpdate = userGroups.map(userGroup => {
-      const members = userGroup.members.map(m => ({ _id: m._id }));
+      const members = userGroup.members.map(m => ({ _id: m._id.toString() }));
       return { ...userGroup, members };
     });
     await Promise.all(
@@ -42,7 +42,7 @@ export default {
         await validateUserGroup(group);
       })
     );
-    return model.saveMultiple(userGroups);
+    return model.saveMultiple(groupsToUpdate);
   },
 
   async delete(query: any) {
