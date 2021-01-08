@@ -38,6 +38,13 @@ class Tenants {
     });
   }
 
+  /**
+   * This is a proxy to the context run method using only the tenant information.
+   * It is here for backwards compatibility after refactoring.
+   * @param cb The callback to run in the context
+   * @param tenantName Tenant name
+   */
+  // eslint-disable-next-line class-methods-use-this
   async run(
     cb: () => Promise<void>,
     tenantName: string = config.defaultTenant.name

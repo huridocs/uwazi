@@ -10,6 +10,7 @@ import path from 'path';
 
 import { TaskProvider } from 'shared/tasks/tasks';
 
+import { appContextMiddleware } from 'api/utils/appContextMiddleware';
 import uwaziMessage from '../message';
 import apiRoutes from './api/api';
 import privateInstanceMiddleware from './api/auth/privateInstanceMiddleware';
@@ -29,7 +30,6 @@ import { tenants } from './api/tenants/tenantContext';
 import { multitenantMiddleware } from './api/utils/multitenantMiddleware';
 import { staticFilesMiddleware } from './api/utils/staticFilesMiddleware';
 import { customUploadsPath, uploadsPath } from './api/files/filesystem';
-import { appContextMiddleware } from 'api/utils/appContextMiddleware';
 
 mongoose.Promise = Promise;
 
