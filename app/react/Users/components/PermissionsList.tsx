@@ -1,6 +1,6 @@
 import React from 'react';
-import { Translate } from 'app/I18N';
 import { Icon } from 'UI';
+import { Translate } from 'app/I18N';
 import Modal from 'app/Layout/Modal';
 
 interface PermissionByRole {
@@ -131,7 +131,7 @@ export const PermissionsList = ({
         </tbody>
       </table>
       <div className="legend">
-        <span>Legend</span>
+        <Translate>Legend</Translate>
         <div className="legend-item">
           <Icon icon="user-check" className="label-info" />
           {'  '}
