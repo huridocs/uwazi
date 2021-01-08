@@ -33,7 +33,7 @@ export default app => {
     validation.validateRequest({
       type: 'object',
       properties: {
-        body: { ...userSchema, required: ['username', 'role', 'email', 'password'] },
+        body: { ...userSchema, required: ['username', 'role', 'email'] },
       },
       required: ['body'],
     }),

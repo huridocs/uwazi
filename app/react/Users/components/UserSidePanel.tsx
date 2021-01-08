@@ -154,12 +154,11 @@ const UserSidePanelComponent = ({
               value={userToSave.password}
               name="password"
               onChange={handleInputChange}
-              ref={register({ required: !user._id, maxLength: 256 })}
+              ref={register({ maxLength: 256 })}
             />
             {errors.password && (
               <div className="validation-error">
                 <Icon icon="exclamation-triangle" size="xs" />
-                {errors.password.type === 'required' && <Translate>Password is required</Translate>}
                 {errors.password.type === 'maxLength' && (
                   <Translate>Password is too long</Translate>
                 )}
