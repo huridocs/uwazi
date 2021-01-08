@@ -9,6 +9,7 @@ import { renderConnectedMount } from 'app/Templates/specs/utils/renderConnected'
 import { UserSidePanel, UserSidePanelProps } from 'app/Users/components/UserSidePanel';
 import { UserRole } from 'shared/types/userSchema';
 import MultiSelect from 'app/Forms/components/MultiSelect';
+import { PermissionsList } from 'app/Users/components/PermissionsList';
 
 describe('UserSidePanel', () => {
   const newUser = {
@@ -89,6 +90,19 @@ describe('UserSidePanel', () => {
     it('should list all the available groups sorted alphabetically', () => {
       const availableGroups = component.find(MultiSelect);
       expect(availableGroups.props().options).toEqual([group1, group2]);
+    });
+  });
+
+  describe('Role permissions info modal', () => {
+    it('should not show the permission modal by default', () => {
+      const permissionModal = component.find(PermissionsList);
+      expect(permissionModal.props().isOpen).toBe(false);
+    });
+    it('should open modal when role info button is clicked', () => {
+      const roleInfoButton = component.find('#role-info').at(0);
+      roleInfoButton.simulate('click');
+      const permissionModal = component.find(PermissionsList);
+      expect(permissionModal.props().isOpen).toBe(true);
     });
   });
 });

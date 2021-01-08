@@ -1,8 +1,17 @@
 import React from 'react';
 import { Translate } from 'app/I18N';
 import { Icon } from 'UI';
+import Modal from 'app/Layout/Modal';
 
-const permissionsByRole = [
+interface PermissionByRole {
+  label: string;
+  roles: {
+    admin: string;
+    editor: string;
+    collaborator: string;
+  };
+}
+const permissionsByRole: PermissionByRole[] = [
   {
     label: 'Create new entities and upload documents',
     roles: { admin: 'full', editor: 'full', collaborator: 'full' },
@@ -74,39 +83,66 @@ const permissionIcons = {
 type PermissionCellParams = 'full' | 'partial' | 'none';
 type userRoles = 'collaborator' | 'editor' | 'admin';
 
-export const PermissionsList = () => (
-  <table className="permissions-list">
-    <thead>
-      <tr>
-        <th>
-          <Translate>Permission</Translate>
-        </th>
-        <th>
-          <Translate>Collaborator</Translate>
-        </th>
-        <th>
-          <Translate>Editor</Translate>
-        </th>
-        <th>
-          <Translate>Admin</Translate>
-        </th>
-      </tr>
-    </thead>
-    <tbody>
-      {permissionsByRole.map(permission => (
-        <tr>
-          <td>{permission.label}</td>
-          {['collaborator', 'editor', 'admin'].map(role => {
-            const roleIcon =
-              permissionIcons[permission.roles[role as userRoles] as PermissionCellParams];
-            return (
-              <td>
-                <Icon icon={roleIcon.icon} className={roleIcon.className} />
-              </td>
-            );
-          })}
-        </tr>
-      ))}
-    </tbody>
-  </table>
+export interface PermissionsListProps {
+  isOpen: boolean;
+  onClose: () => void;
+  rolePermissions?: PermissionByRole[];
+}
+
+export const PermissionsList = ({
+  isOpen,
+  onClose,
+  rolePermissions = permissionsByRole,
+}: PermissionsListProps) => (
+  <Modal isOpen={isOpen} type="content" className="permissions-modal">
+    <Modal.Body>
+      <table className="permissions-list">
+        <thead>
+          <tr>
+            <th>
+              <Translate>Permission</Translate>
+            </th>
+            <th>
+              <Translate>Collaborator</Translate>
+            </th>
+            <th>
+              <Translate>Editor</Translate>
+            </th>
+            <th>
+              <Translate>Admin</Translate>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {rolePermissions.map(permission => (
+            <tr>
+              <td>{permission.label}</td>
+              {['collaborator', 'editor', 'admin'].map(role => {
+                const roleIcon =
+                  permissionIcons[permission.roles[role as userRoles] as PermissionCellParams];
+                return (
+                  <td>
+                    <Icon icon={roleIcon.icon} className={roleIcon.className} />
+                  </td>
+                );
+              })}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <div className="legend">
+        <span>Legend</span>
+        <div className="legend-item">
+          <Icon icon="user-check" className="label-info" />
+          {'  '}
+          <Translate>Permission on those entities explicitly shared with the user</Translate>
+        </div>
+      </div>
+    </Modal.Body>
+    <Modal.Footer>
+      <button type="button" className="btn btn-default pristine" onClick={onClose}>
+        <Translate>Close</Translate>
+      </button>
+    </Modal.Footer>
+  </Modal>
 );

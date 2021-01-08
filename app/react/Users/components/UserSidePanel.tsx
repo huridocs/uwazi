@@ -8,6 +8,7 @@ import { UserSchema } from 'shared/types/userType';
 import MultiSelect from 'app/Forms/components/MultiSelect';
 import { UserGroupSchema } from 'shared/types/userGroupType';
 import { ObjectIdSchema } from 'shared/types/commonTypes';
+import { PermissionsList } from 'app/Users/components/PermissionsList';
 
 export interface UserSidePanelProps {
   user: UserSchema;
@@ -32,6 +33,7 @@ const UserSidePanelComponent = ({
   onDelete,
 }: UserSidePanelProps) => {
   const [userToSave, setUserToSave] = useState(user);
+  const [permissionsModalOpened, setPermissionsModalOpened] = useState(false);
   const [selectedGroups, setSelectedGroups] = useState(user.groups ? mapGroupIds(user.groups) : []);
 
   const { register, handleSubmit, errors } = useForm();
@@ -62,6 +64,10 @@ const UserSidePanelComponent = ({
         (existingUser.username?.trim().toLowerCase() === nameVal.trim().toLowerCase() ||
           existingUser.email?.trim().toLowerCase() === nameVal.trim().toLowerCase())
     );
+
+  const togglePermissionList = () => {
+    setPermissionsModalOpened(!permissionsModalOpened);
+  };
 
   return (
     <SidePanel open={opened}>
@@ -101,9 +107,19 @@ const UserSidePanelComponent = ({
             )}
           </div>
           <div id="role_field" className="form-group nested-selector">
-            <label>
-              <Translate>Role</Translate>
-            </label>
+            <div>
+              <label>
+                <Translate>Role</Translate>
+              </label>
+              <button
+                id="role-info"
+                className="role-info"
+                type="button"
+                onClick={togglePermissionList}
+              >
+                <Icon icon="info-circle" />
+              </button>
+            </div>
             <select
               name="role"
               className="form-control"
@@ -180,6 +196,7 @@ const UserSidePanelComponent = ({
             />
           </div>
         </form>
+        <PermissionsList isOpen={permissionsModalOpened} onClose={togglePermissionList} />
       </div>
       <div className="sidepanel-footer">
         <button
