@@ -41,6 +41,7 @@ import { faHome } from '@fortawesome/free-solid-svg-icons/faHome';
 import { faImage } from '@fortawesome/free-solid-svg-icons/faImage';
 import { faInfoCircle } from '@fortawesome/free-solid-svg-icons/faInfoCircle';
 import { faLanguage } from '@fortawesome/free-solid-svg-icons/faLanguage';
+import { faKey } from '@fortawesome/free-solid-svg-icons/faKey';
 import { faLevelDownAlt } from '@fortawesome/free-solid-svg-icons/faLevelDownAlt';
 import { faLightbulb } from '@fortawesome/free-solid-svg-icons/faLightbulb';
 import { faLink } from '@fortawesome/free-solid-svg-icons/faLink';
@@ -92,6 +93,7 @@ import { faUserCheck } from '@fortawesome/free-solid-svg-icons/faUserCheck';
 import { faUserPlus } from '@fortawesome/free-solid-svg-icons/faUserPlus';
 import { faUserTimes } from '@fortawesome/free-solid-svg-icons/faUserTimes';
 import { faHandPaper } from '@fortawesome/free-solid-svg-icons/faHandPaper';
+import { twoFactorAuth } from 'UI/Icon/two-factor-auth';
 import { saveAndNext } from './save-and-next';
 import { exportCsv } from './export-csv';
 import { copyFrom } from './copy-from';
@@ -140,6 +142,7 @@ const icons = {
   faHome,
   faImage,
   faInfoCircle,
+  faKey,
   faLanguage,
   faLevelDownAlt,
   faLightbulb,
@@ -195,6 +198,7 @@ const icons = {
   exportCsv,
   copyFrom,
   funnelFilter,
+  twoFactorAuth,
 };
 
 export const loadIcons = () => {

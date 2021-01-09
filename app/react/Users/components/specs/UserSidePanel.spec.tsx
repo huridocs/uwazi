@@ -35,6 +35,8 @@ describe('UserSidePanel', () => {
     closePanel: jasmine.createSpy('closePanel'),
     onSave: jasmine.createSpy('onSave'),
     onDelete: jasmine.createSpy('onDelete'),
+    onReset2fa: jasmine.createSpy('onReset2fa'),
+    onResetPassword: jasmine.createSpy('onResetPassword'),
   };
   let component: ReactWrapper<React.Component['props'], React.Component['state'], React.Component>;
 
@@ -83,6 +85,30 @@ describe('UserSidePanel', () => {
       expect(nameInput.props().value).toEqual(defaultProps.user.username);
       const passwordInput = component.find({ id: 'password_field' }).find('input');
       expect(passwordInput.props().value).toEqual(defaultProps.user.password);
+    });
+  });
+
+  describe('Reset 2FA', () => {
+    it('should not show reset 2FA action button if user is not using 2fa', () => {
+      expect(component.find('#reset2faBtn').length).toBe(0);
+    });
+    describe('User using 2fa', () => {
+      it('should call the onReset2fa function when confirm reset 2fa', () => {
+        const props = { ...defaultProps };
+        props.user.using2fa = true;
+        component = render(props);
+        component.find('#reset2faBtn').simulate('click');
+        component.find('.confirm-button').simulate('click');
+        expect(defaultProps.onReset2fa).toHaveBeenCalled();
+      });
+    });
+  });
+
+  describe('Reset Password', () => {
+    it('should call the resetPasswordHandler function when confirm reset password', () => {
+      component.find('#resetPasswordBtn').simulate('click');
+      component.find('.confirm-button').simulate('click');
+      expect(defaultProps.onResetPassword).toHaveBeenCalled();
     });
   });
 

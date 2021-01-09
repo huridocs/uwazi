@@ -11,12 +11,7 @@ export interface UserListProps {
   className: string;
 }
 
-export const UserListComponent = ({
-  users,
-  handleSelect,
-  handleAddUser,
-  className,
-}: UserListProps) => {
+export const UserList = ({ users, handleSelect, handleAddUser, className }: UserListProps) => {
   const [selectedId, setSelectedId] = useState();
   const selectRow = (user: UserSchema) => {
     handleSelect(user);
@@ -53,7 +48,7 @@ export const UserListComponent = ({
               >
                 <td>{user.username}</td>
                 <td>
-                  <Pill color={protection ? 'lightgray' : 'green'}>{protection}</Pill>
+                  <Pill color={user.using2fa ? 'palegreen' : 'lightgray'}>{protection}</Pill>
                 </td>
                 <td>
                   <Pill color="white">{user.role}</Pill>
@@ -84,5 +79,3 @@ export const UserListComponent = ({
     </div>
   );
 };
-
-export const UserList = UserListComponent;

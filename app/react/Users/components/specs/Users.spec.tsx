@@ -10,6 +10,8 @@ import { Users } from 'app/Users/components/Users';
 import { UserList } from 'app/Users/components/UserList';
 import { loadUsers, saveUser, deleteUser, newUser } from 'app/Users/actions/actions';
 import { UserSidePanel } from 'app/Users/components/UserSidePanel';
+import { reset2fa } from 'app/Auth2fa/actions/actions';
+import { recoverPassword } from 'app/Auth/actions';
 import { UserRole } from 'shared/types/userSchema';
 
 jest.mock('app/Users/actions/actions', () => ({
@@ -17,6 +19,16 @@ jest.mock('app/Users/actions/actions', () => ({
   newUser: jest.fn().mockReturnValue(async () => Promise.resolve()),
   saveUser: jest.fn().mockReturnValue(async () => Promise.resolve()),
   deleteUser: jest.fn().mockReturnValue(async () => Promise.resolve()),
+  reset2fa: jest.fn().mockReturnValue(async () => Promise.resolve()),
+  recoverPassword: jest.fn().mockReturnValue(async () => Promise.resolve()),
+}));
+
+jest.mock('app/Auth2fa/actions/actions', () => ({
+  reset2fa: jest.fn().mockReturnValue(async () => Promise.resolve()),
+}));
+
+jest.mock('app/Auth/actions', () => ({
+  recoverPassword: jest.fn().mockReturnValue(async () => Promise.resolve()),
 }));
 
 describe('Users', () => {
@@ -25,10 +37,12 @@ describe('Users', () => {
     {
       _id: 'user1',
       username: 'User 1',
+      email: 'user1@email.test',
     },
     {
       _id: 'user2',
       username: 'User 2',
+      email: 'user2@email.test',
     },
   ];
   const storeState = {
@@ -111,6 +125,24 @@ describe('Users', () => {
         await updatedSidePanel.props.onDelete(users[1]);
         expect(deleteUser).toHaveBeenCalledWith({ _id: users[1]._id });
         expect(component.find(UserSidePanel).length).toEqual(0);
+      });
+    });
+
+    describe('reset 2FA', () => {
+      it('should call reset2fa action for selected user', async () => {
+        listComponent.props.handleSelect(users[1]);
+        const updatedSidePanel = component.find(UserSidePanel).get(0);
+        await updatedSidePanel.props.onReset2fa(users[1]);
+        expect(reset2fa).toHaveBeenCalledWith(users[1]);
+      });
+    });
+
+    describe('reset Password', () => {
+      it('should call resetPassword action for selected user', async () => {
+        listComponent.props.handleSelect(users[1]);
+        const updatedSidePanel = component.find(UserSidePanel).get(0);
+        await updatedSidePanel.props.onResetPassword(users[1]);
+        expect(recoverPassword).toHaveBeenCalledWith(users[1].email, expect.any(String));
       });
     });
   });

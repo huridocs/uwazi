@@ -11,7 +11,7 @@ export interface UserGroupListProps {
   className: string;
 }
 
-const UserGroupListComponent = ({
+export const UserGroupList = ({
   userGroups,
   handleSelect,
   handleAddGroup,
@@ -70,5 +70,3 @@ const UserGroupListComponent = ({
     </div>
   );
 };
-
-export const UserGroupList = UserGroupListComponent;

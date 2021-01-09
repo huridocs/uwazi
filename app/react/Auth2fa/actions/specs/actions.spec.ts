@@ -6,6 +6,7 @@ import { RequestParams } from 'app/utils/RequestParams';
 import { actions as basicActions } from 'app/BasicReducer';
 import { notificationActions } from 'app/Notifications';
 
+import { UserRole } from 'shared/types/userSchema';
 import * as actions from '../actions';
 import Auth2faAPI from '../../Auth2faAPI';
 
@@ -35,7 +36,12 @@ describe('Auth2fa Actions', () => {
 
   describe('reset2fa', () => {
     beforeEach(async () => {
-      const action = actions.reset2fa({ _id: '231', email: 'some@email.com' });
+      const action = actions.reset2fa({
+        _id: '231',
+        email: 'some@email.com',
+        username: 'user1',
+        role: UserRole.EDITOR,
+      });
       await action(dispatch);
     });
 

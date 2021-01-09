@@ -10,6 +10,8 @@ import { loadUsers, saveUser, deleteUser, newUser } from 'app/Users/actions/acti
 import { loadUserGroups } from 'app/Users/components/usergroups/actions/actions';
 import { UserSidePanel } from 'app/Users/components/UserSidePanel';
 import { UserGroupSchema } from 'shared/types/userGroupType';
+import { reset2fa } from 'app/Auth2fa/actions/actions';
+import { recoverPassword } from 'app/Auth/actions';
 
 export interface UserProps {
   users: IImmutable<UserSchema[]>;
@@ -19,6 +21,8 @@ export interface UserProps {
   newUser: (user: UserSchema) => Promise<void>;
   saveUser: (user: UserSchema) => Promise<void>;
   deleteUser: (user: { _id: ObjectIdSchema }) => Promise<void>;
+  reset2fa: (user: UserSchema) => Promise<void>;
+  recoverPassword: (email: string, message: string) => Promise<void>;
 }
 const UsersComponent = ({
   users,
@@ -28,6 +32,8 @@ const UsersComponent = ({
   newUser: createUser,
   saveUser: saveUserData,
   deleteUser: deleteUserData,
+  reset2fa: resetTwoFactorAuth,
+  recoverPassword: resetUserPassword,
 }: UserProps) => {
   const userList = users ? users.toJS() : [];
   const userGroupList = userGroups ? userGroups.toJS() : [];
@@ -76,6 +82,10 @@ const UsersComponent = ({
       setSelectedUser({ role: UserRole.COLLABORATOR, username: '', email: '' });
       setSidePanelOpened(true);
     },
+
+    handleResetPassword: async (user: UserSchema) => {
+      await resetUserPassword(user.email, 'Instructions to reset user password have been sent');
+    },
   };
 
   return (
@@ -95,7 +105,9 @@ const UsersComponent = ({
           groups={userGroupList}
           onSave={handlers.handleSave}
           onDelete={handlers.handleDelete}
+          onReset2fa={resetTwoFactorAuth}
           closePanel={closeSidePanel}
+          onResetPassword={handlers.handleResetPassword}
         />
       )}
     </>
@@ -113,6 +125,8 @@ const mapDispatchToProps = {
   saveUser,
   deleteUser,
   loadUserGroups,
+  reset2fa,
+  recoverPassword,
 };
 
 export const Users = connect(mapStateToProps, mapDispatchToProps)(UsersComponent);

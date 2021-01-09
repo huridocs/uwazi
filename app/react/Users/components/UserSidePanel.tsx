@@ -18,12 +18,14 @@ export interface UserSidePanelProps {
   closePanel: (event: React.MouseEvent<HTMLButtonElement>) => void;
   onSave: (user: UserSchema) => void;
   onDelete: (user: UserSchema) => void;
+  onReset2fa: (user: UserSchema) => void;
+  onResetPassword: (user: UserSchema) => void;
 }
 
 const mapGroupIds = (groups: { _id: ObjectIdSchema; name: string }[]) =>
   groups.map(group => (group._id ? group._id.toString() : ''));
 
-const UserSidePanelComponent = ({
+export const UserSidePanel = ({
   user,
   users,
   groups,
@@ -31,6 +33,8 @@ const UserSidePanelComponent = ({
   closePanel,
   onSave,
   onDelete,
+  onReset2fa,
+  onResetPassword,
 }: UserSidePanelProps) => {
   const [userToSave, setUserToSave] = useState(user);
   const [permissionsModalOpened, setPermissionsModalOpened] = useState(false);
@@ -223,6 +227,30 @@ const UserSidePanelComponent = ({
             </span>
           </ConfirmButton>
         )}
+        {user._id && user.using2fa && (
+          <ConfirmButton
+            id="reset2faBtn"
+            className="btn btn-outline-danger"
+            action={() => onReset2fa(user)}
+          >
+            <Icon icon="two-factor-auth" />
+            <span className="btn-label">
+              <Translate>Reset 2FA</Translate>
+            </span>
+          </ConfirmButton>
+        )}
+        {user._id && (
+          <ConfirmButton
+            id="resetPasswordBtn"
+            className="btn btn-outline-warning"
+            action={() => onResetPassword(user)}
+          >
+            <Icon icon="key" />
+            <span className="btn-label">
+              <Translate>Reset Password</Translate>
+            </span>
+          </ConfirmButton>
+        )}
         <button id="saveChangesBtn" type="submit" form="userFrom" className="btn btn-success">
           <Icon icon="save" />
           <span id="submitLabel" className="btn-label">
@@ -233,5 +261,3 @@ const UserSidePanelComponent = ({
     </SidePanel>
   );
 };
-
-export const UserSidePanel = UserSidePanelComponent;

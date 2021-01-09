@@ -22,7 +22,7 @@ const sortByName = (members: GroupMemberSchema[]) =>
 const mapUserIds = (users: GroupMemberSchema[]) =>
   users.map(user => (user._id ? user._id.toString() : ''));
 
-const UserGroupSidePanelComponent = ({
+export const UserGroupSidePanel = ({
   userGroup,
   users,
   userGroups,
@@ -142,5 +142,3 @@ const UserGroupSidePanelComponent = ({
     </SidePanel>
   );
 };
-
-export const UserGroupSidePanel = UserGroupSidePanelComponent;
