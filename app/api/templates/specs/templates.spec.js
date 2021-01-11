@@ -7,6 +7,10 @@ import db from 'api/utils/testing_db';
 import documents from 'api/documents/documents.js';
 import entities from 'api/entities/entities.js';
 import translations from 'api/i18n/translations';
+import instanceElasticTesting from 'api/utils/elastic_testing';
+import elastic from 'api/search/elastic';
+
+import { instanceSearch } from '../../search/search';
 import templates from '../templates';
 
 import fixtures, {
@@ -19,9 +23,14 @@ import fixtures, {
 } from './fixtures.js';
 
 describe('templates', () => {
+  const elasticIndex = 'index';
+  const search = instanceSearch(elasticIndex);
+  const elasticTesting = instanceElasticTesting(elasticIndex, search);
+
   beforeEach(async () => {
     spyOn(translations, 'addContext').and.returnValue(Promise.resolve());
     await db.clearAllAndLoad(fixtures);
+    await elasticTesting.resetIndex();
   });
 
   afterAll(async () => {
@@ -56,24 +65,51 @@ describe('templates', () => {
       ]);
     });
 
-    it('should create a template', done => {
+    it('should update the elastic mapping with the updated template', async () => {
+      const template = {
+        _id: templateToBeEditedId,
+        name: 'template to be edited',
+        commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
+        properties: [
+          {
+            name: 'new_mapped_prop',
+            label: 'new mapped prop',
+            type: 'text',
+          },
+        ],
+        default: true,
+      };
+
+      const mapping = await elastic.indices.getMapping({ index: elasticIndex });
+
+      await templates.save(template);
+      await elastic.indices.refresh({ index: elasticIndex });
+
+      const newMapping = await elastic.indices.getMapping({ index: elasticIndex });
+
+      expect(
+        mapping.body[elasticIndex].mappings.properties.metadata.properties.new_mapped_prop
+      ).toBeUndefined();
+
+      expect(
+        newMapping.body[elasticIndex].mappings.properties.metadata.properties.new_mapped_prop
+      ).toBeDefined();
+    });
+
+    it('should create a template', async () => {
       const newTemplate = {
         name: 'created_template',
         properties: [{ label: 'fieldLabel', type: 'text' }],
         commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
       };
 
-      templates
-        .save(newTemplate)
-        .then(() => templates.get())
-        .then(allTemplates => {
-          const newDoc = allTemplates.find(template => template.name === 'created_template');
+      await templates.save(newTemplate);
 
-          expect(newDoc.name).toBe('created_template');
-          expect(newDoc.properties[0].label).toEqual('fieldLabel');
-          done();
-        })
-        .catch(done.fail);
+      const allTemplates = await templates.get();
+      const newDoc = allTemplates.find(template => template.name === 'created_template');
+
+      expect(newDoc.name).toBe('created_template');
+      expect(newDoc.properties[0].label).toEqual('fieldLabel');
     });
 
     describe('when property content changes', () => {
@@ -124,7 +160,7 @@ describe('templates', () => {
         });
     });
 
-    it('should add it to translations with Entity type', done => {
+    it('should add it to translations with Entity type', async () => {
       const newTemplate = {
         name: 'created template',
         commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
@@ -134,22 +170,20 @@ describe('templates', () => {
         ],
       };
 
-      templates.save(newTemplate).then(response => {
-        const expectedValues = {
-          'created template': 'created template',
-          Title: 'Title',
-          'label 1': 'label 1',
-          'label 2': 'label 2',
-        };
+      const response = await templates.save(newTemplate);
+      const expectedValues = {
+        'created template': 'created template',
+        Title: 'Title',
+        'label 1': 'label 1',
+        'label 2': 'label 2',
+      };
 
-        expect(translations.addContext).toHaveBeenCalledWith(
-          response._id,
-          'created template',
-          expectedValues,
-          'Entity'
-        );
-        done();
-      });
+      expect(translations.addContext).toHaveBeenCalledWith(
+        response._id,
+        'created template',
+        expectedValues,
+        'Entity'
+      );
     });
 
     it('should assign a safe property name based on the label ', done => {
