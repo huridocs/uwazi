@@ -1,6 +1,7 @@
 /* eslint-disable */
 /**AUTO-GENERATED. RUN yarn emit-types to update.*/
-import { ObjectId } from 'mongodb';
+
+import { ObjectIdSchema } from 'shared/types/commonTypes';
 
 export interface GroupMemberSchema {
   _id: string | ObjectId;
@@ -10,10 +11,10 @@ export interface GroupMemberSchema {
 }
 
 export interface UserGroupSchema {
-  _id?: string | ObjectId;
+  _id?: ObjectIdSchema;
   name: string;
   members: {
-    _id: string | ObjectId;
+    _id: ObjectIdSchema;
     username?: string;
     role?: string;
     email?: string;

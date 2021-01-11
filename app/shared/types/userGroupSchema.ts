@@ -19,6 +19,7 @@ export const userGroupSchema = {
   type: 'object',
   additionalProperties: false,
   uniqueName: true,
+  definitions: { objectIdSchema },
   properties: {
     _id: objectIdSchema,
     name: { type: 'string' },
