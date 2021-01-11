@@ -6,6 +6,7 @@ import { propertyTypes } from 'shared/propertyTypes';
 import { EntitySchema } from 'shared/types/entityType';
 import templates from 'api/templates';
 import { TemplateSchema } from 'shared/types/templateType';
+import * as entitiesIndex from 'api/search/entitiesIndex';
 import fixtures, { templateId, simpleTemplateId, nonExistentId } from './validatorFixtures';
 
 import { validateEntity } from '../../../shared/types/entitySchema';
@@ -13,6 +14,7 @@ import { customErrorMessages } from '../metadataValidators.js';
 
 describe('entity schema', () => {
   beforeEach(async () => {
+    spyOn(entitiesIndex, 'updateMapping').and.returnValue(Promise.resolve());
     //@ts-ignore
     await db.clearAllAndLoad(fixtures);
   });

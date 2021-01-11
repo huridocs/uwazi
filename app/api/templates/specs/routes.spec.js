@@ -125,24 +125,6 @@ describe('templates routes', () => {
       );
     });
 
-    it('should update the templates mapping', async () => {
-      const template = { name: 'created_template', properties: [{ label: 'fieldLabel' }] };
-      const req = {
-        body: template,
-        language: 'en',
-        io: mocketSocketIo(),
-      };
-
-      spyOn(templates, 'save').and.returnValue(new Promise(resolve => resolve(aTemplate)));
-      spyOn(templates, 'get').and.returnValue(new Promise(resolve => resolve(aTemplate)));
-      spyOn(settings, 'updateFilterName').and.returnValue(
-        new Promise(resolve => resolve('updated settings'))
-      );
-
-      await routes.post('/api/templates', req);
-      expect(entitiesIndex.updateMapping).toHaveBeenCalledWith([template], 'index');
-    });
-
     describe('when there is an error', () => {
       it('should return the error in the response', async () => {
         spyOn(templates, 'save').and.returnValue(Promise.reject(new Error('error')));

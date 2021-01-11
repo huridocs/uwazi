@@ -1,7 +1,7 @@
 import Joi from 'joi';
 
 import settings from 'api/settings';
-import { updateMapping, checkMapping, reindexAll } from 'api/search/entitiesIndex';
+import { checkMapping, reindexAll } from 'api/search/entitiesIndex';
 import { tenants } from 'api/tenants/tenantContext';
 import { instanceSearch } from 'api/search/search';
 
@@ -31,8 +31,6 @@ export default app => {
         const allTemplates = await templates.get();
         const search = instanceSearch();
         reindexAll(allTemplates, search, tenants.current().indexName);
-      } else {
-        await updateMapping([req.body], tenants.current().indexName);
       }
 
       res.json(response);
