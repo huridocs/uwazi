@@ -39,7 +39,7 @@ describe('Copy from', () => {
     await page.waitFor(50); // wait for animation
     await expect(page).toFill('aside.connections-metadata div.search-box > div > input', 'artavia');
     await page.waitFor(50); // search delay
-    await expect(page).toClick('div.copy-from .item-info', { text: 'Artavia Murillo et al' });
+    await expect(page).toClick('div.copy-from .item-info', { text: 'Artavia Murillo y otros' });
     await expect(page).toClick('button', { text: 'Copy Highlighted' });
     await expect(page).toClick('.side-panel button', { text: 'Save' });
     await page.waitFor(50); // save delay
