@@ -47,4 +47,20 @@ describe('appContext', () => {
       );
     });
   });
+
+  describe('when outside a context', () => {
+    const error = new Error('Accessing nonexistent async context');
+
+    it('should throw on get', () => {
+      expect(() => {
+        appContext.get('somKey');
+      }).toThrow(error);
+    });
+
+    it('should throw on set', () => {
+      expect(() => {
+        appContext.set('somKey', 'someValue');
+      }).toThrow(error);
+    });
+  });
 });

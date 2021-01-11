@@ -15,7 +15,7 @@ const helperMiddleware = (req: Request, _res: Response, next: NextFunction) => {
   next();
 };
 
-describe('multitenant middleware', () => {
+describe('appcontext middleware', () => {
   it('should execute next middlewares inside an async context', async () => {
     const app: Application = express();
     app.use(appContextMiddleware);
