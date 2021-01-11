@@ -115,7 +115,7 @@ export const PermissionsList = ({
         </thead>
         <tbody>
           {rolePermissions.map(permission => (
-            <tr>
+            <tr key={permission.label}>
               <td>{permission.label}</td>
               {['collaborator', 'editor', 'admin'].map(role => {
                 const roleIcon =
