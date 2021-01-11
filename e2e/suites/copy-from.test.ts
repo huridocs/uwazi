@@ -55,33 +55,33 @@ describe('Copy from', () => {
     await expect(page).toClick('button', { text: 'Save' });
     await expect(page).toClick('.item-info', { text: 'Test title' });
     await page.waitFor(50); // animation
-    // await expect(page).toMatchElement(
-    //   '.side-panel.connections-metadata > div.sidepanel-body > div > dl:nth-child(3) dd',
-    //   {
-    //     text: 'Costa Rica',
-    //   }
-    // );
+    await expect(page).toMatchElement(
+      '.side-panel.connections-metadata > div.sidepanel-body > div > dl:nth-child(3) dd',
+      {
+        text: 'Costa Rica',
+      }
+    );
 
-    // await expect(page).toMatchElement(
-    //   '.side-panel.connections-metadata > div.sidepanel-body > div > dl:nth-child(4) dd',
-    //   {
-    //     text: 'Activo',
-    //   }
-    // );
+    await expect(page).toMatchElement(
+      '.side-panel.connections-metadata > div.sidepanel-body > div > dl:nth-child(4) dd',
+      {
+        text: 'Activo',
+      }
+    );
 
-    // await expect(page).toMatchElement(
-    //   '.side-panel.connections-metadata > div.sidepanel-body > div > dl:nth-child(5) dd',
-    //   {
-    //     text: 'Derechos reproductivos',
-    //   }
-    // );
+    await expect(page).toMatchElement(
+      '.side-panel.connections-metadata > div.sidepanel-body > div > dl:nth-child(5) dd',
+      {
+        text: 'Derechos reproductivos',
+      }
+    );
 
-    // await expect(page).toMatchElement(
-    //   '.side-panel.connections-metadata > div.sidepanel-body > div > dl:nth-child(8) dd',
-    //   {
-    //     text: 'Dec 19, 2011',
-    //   }
-    // );
+    await expect(page).toMatchElement(
+      '.side-panel.connections-metadata > div.sidepanel-body > div > dl:nth-child(8) dd',
+      {
+        text: 'Dec 19, 2011',
+      }
+    );
   });
 
   afterAll(async () => {
