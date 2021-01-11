@@ -70,6 +70,7 @@ const UsersComponent = ({
       } else {
         await createUser(user);
       }
+      await loadAllGroups();
       closeSidePanel();
     },
 

@@ -78,6 +78,15 @@ describe('Users', () => {
       const updatedUser = await users.save(userToUpdate, currentUser);
       await assertUserMembership(updatedUser);
     });
+    it('should remove all groups if user has not any', async () => {
+      const userToUpdate = {
+        _id: userId.toString(),
+        groups: [],
+      };
+      const updatedUser = await users.save(userToUpdate, currentUser);
+      const groups = await userGroups.get({ 'members._id': updatedUser._id.toString() });
+      expect(groups.length).toBe(0);
+    });
 
     describe('when you try to change role', () => {
       it('should be an admin', done => {

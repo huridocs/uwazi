@@ -164,7 +164,7 @@ export default {
       password: user.password ? await encryptPassword(user.password) : userInTheDatabase.password,
     });
 
-    if (user.groups && user.groups.length > 0) {
+    if (user.groups) {
       await updateUserMemberships({ ...updatedUser, groups: user.groups });
     }
 
