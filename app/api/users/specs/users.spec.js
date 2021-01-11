@@ -11,7 +11,14 @@ import encryptPassword, { comparePasswords } from 'api/auth/encryptPassword';
 import * as usersUtils from 'api/auth2fa/usersUtils';
 import { settingsModel } from 'api/settings/settingsModel';
 import userGroups from 'api/usergroups/userGroups';
-import fixtures, { userId, expectedKey, recoveryUserId, group1Id, group2Id } from './fixtures.js';
+import fixtures, {
+  userId,
+  expectedKey,
+  recoveryUserId,
+  group1Id,
+  group2Id,
+  userToDelete,
+} from './fixtures.js';
 import users from '../users.js';
 import passwordRecoveriesModel from '../passwordRecoveriesModel';
 import usersModel from '../usersModel';
@@ -613,34 +620,37 @@ describe('Users', () => {
         });
     });
 
-    it('should not allow to delete the last user', done => {
-      users
-        .delete(recoveryUserId.toString(), { _id: 'someone' })
-        .then(() => users.delete(userId.toString(), { _id: 'someone' }))
-        .then(() => {
-          done.fail('should throw an error');
-        })
-        .catch(error => {
-          expect(error).toEqual(createError('Can not delete last user', 403));
-          return users.getById(userId);
-        })
-        .then(user => {
-          expect(user).not.toBe(null);
-          done();
-        });
+    it('should not allow to delete the last user', async done => {
+      await users.delete(userToDelete.toString(), { _id: 'someone' });
+      await users.delete(recoveryUserId.toString(), { _id: 'someone' });
+      try {
+        await users.delete(userId.toString(), { _id: 'someone' });
+        done.fail('should throw an error');
+      } catch (error) {
+        expect(error).toEqual(createError('Can not delete last user', 403));
+        const user = await users.getById(userId);
+        expect(user).not.toBe(null);
+        done();
+      }
+    });
+
+    it('should delete the user in all the groups', async () => {
+      await users.delete(userToDelete.toString(), { _id: 'someone' });
+      const group = await userGroups.get({ name: 'Group 3' });
+      expect(group[0].members.length).toBe(0);
     });
   });
 
   describe('get', () => {
     it('should return all users', async () => {
       const userList = await users.get();
-      expect(userList.length).toBe(2);
+      expect(userList.length).toBe(3);
       expect(userList[0].groups).toBeUndefined();
     });
 
     it('should return all users with groups to which they belong', async () => {
       const userList = await users.get({}, '+groups');
-      expect(userList.length).toBe(2);
+      expect(userList.length).toBe(3);
       expect(userList[0].groups[0].name).toBe('Group 2');
       expect(userList[1].groups[0].name).toBe('Group 1');
     });

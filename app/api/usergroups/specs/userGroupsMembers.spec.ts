@@ -22,9 +22,8 @@ describe('userGroupsMembers', () => {
       const userToUpdate = {
         ...fixtures.users[0],
         role: UserRole.COLLABORATOR,
-        groups: [{ _id: group1Id.toString() }],
       };
-      await updateUserMemberships(userToUpdate);
+      await updateUserMemberships(userToUpdate, [{ _id: group1Id.toString() }]);
       const groups = await userGroups.get({}, { members: 1 });
       const newGroup1Members =
         groups.find(group => group._id!.toString() === group1Id.toString())?.members || [];

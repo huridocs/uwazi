@@ -165,7 +165,7 @@ export default {
     });
 
     if (user.groups) {
-      await updateUserMemberships({ ...updatedUser, groups: user.groups });
+      await updateUserMemberships(updatedUser, user.groups);
     }
 
     return updatedUser;
@@ -189,7 +189,7 @@ export default {
       secret: undefined,
     });
     if (user.groups && user.groups.length > 0) {
-      await updateUserMemberships({ ..._user, groups: user.groups });
+      await updateUserMemberships(_user, user.groups);
     }
     await this.recoverPassword(user.email, domain, { newUser: true });
     return _user;
@@ -217,18 +217,16 @@ export default {
     return model.getById(id, select);
   },
 
-  delete(_id, currentUser) {
+  async delete(_id, currentUser) {
     if (_id === currentUser._id.toString()) {
       return Promise.reject(createError('Can not delete yourself', 403));
     }
-
-    return model.count().then(count => {
-      if (count > 1) {
-        return model.delete({ _id });
-      }
-
-      return Promise.reject(createError('Can not delete last user', 403));
-    });
+    const count = await model.count();
+    if (count > 1) {
+      await updateUserMemberships({ _id }, []);
+      return model.delete({ _id });
+    }
+    return Promise.reject(createError('Can not delete last user', 403));
   },
 
   async login({ username, password, token }, domain) {

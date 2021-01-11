@@ -55,6 +55,8 @@ describe('Auth2fa Actions', () => {
           _id: '231',
           email: 'some@email.com',
           using2fa: false,
+          role: 'editor',
+          username: 'user1',
         });
         expect(dispatch).toHaveBeenCalledWith('USER UPDATED');
         expect(dispatch).toHaveBeenCalledWith('NOTIFIED');

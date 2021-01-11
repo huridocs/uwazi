@@ -16,6 +16,7 @@ import { UserRole } from 'shared/types/userSchema';
 
 jest.mock('app/Users/actions/actions', () => ({
   loadUsers: jest.fn().mockReturnValue(async () => Promise.resolve()),
+  loadUserGroups: jest.fn().mockReturnValue(async () => Promise.resolve()),
   newUser: jest.fn().mockReturnValue(async () => Promise.resolve()),
   saveUser: jest.fn().mockReturnValue(async () => Promise.resolve()),
   deleteUser: jest.fn().mockReturnValue(async () => Promise.resolve()),
@@ -29,6 +30,10 @@ jest.mock('app/Auth2fa/actions/actions', () => ({
 
 jest.mock('app/Auth/actions', () => ({
   recoverPassword: jest.fn().mockReturnValue(async () => Promise.resolve()),
+}));
+
+jest.mock('app/Users/components/usergroups/actions/actions', () => ({
+  loadUserGroups: jest.fn().mockReturnValue(async () => Promise.resolve()),
 }));
 
 describe('Users', () => {
