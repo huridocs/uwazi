@@ -3,6 +3,8 @@ import translations from 'api/i18n/translations';
 import createError from 'api/utils/Error';
 import { TemplateSchema } from 'shared/types/templateType';
 import { PropertySchema } from 'shared/types/commonTypes';
+import { updateMapping } from 'api/search/entitiesIndex';
+import { tenants } from 'api/tenants/tenantContext';
 import { ensure } from 'shared/tsUtils';
 import { ObjectID } from 'mongodb';
 
@@ -73,35 +75,44 @@ export default {
     /* eslint-enable no-param-reassign */
 
     await validateTemplate(template);
+    await this.swapNamesValidation(template);
+
+    await updateMapping([template], tenants.current().indexName);
 
     if (template._id) {
       return this._update(template, language);
     }
+
     return model
       .save(template)
       .then(async newTemplate => addTemplateTranslation(newTemplate).then(() => newTemplate));
   },
 
+  async swapNamesValidation(template: TemplateSchema) {
+    if (!template._id) {
+      return;
+    }
+    const current = await this.getById(ensure(template._id));
+
+    const currentTemplate = ensure<TemplateSchema>(current);
+    currentTemplate.properties = currentTemplate.properties || [];
+    currentTemplate.properties.forEach(prop => {
+      const swapingNameWithExistingProperty = (template.properties || []).find(
+        p => p.name === prop.name && p.id !== prop.id
+      );
+      if (swapingNameWithExistingProperty) {
+        throw createError(`Properties can't swap names: ${prop.name}`, 400);
+      }
+    });
+  },
+
   async _update(template: TemplateSchema, language: string) {
     let _currentTemplate: TemplateSchema;
     return this.getById(ensure(template._id))
-      .then(current => {
+      .then(async current => {
         const currentTemplate = ensure<TemplateSchema>(current);
-        currentTemplate.properties = currentTemplate.properties || []; // eslint-disable-line no-param-reassign
-        currentTemplate.properties.forEach(prop => {
-          const swapingNameWithExistingProperty = (template.properties || []).find(
-            p => p.name === prop.name && p.id !== prop.id
-          );
-          if (swapingNameWithExistingProperty) {
-            throw createError(`Properties can't swap names: ${prop.name}`, 400);
-          }
-        });
-
-        return currentTemplate;
+        return Promise.all([currentTemplate, updateTranslation(currentTemplate, template)]);
       })
-      .then(async currentTemplate =>
-        Promise.all([currentTemplate, updateTranslation(currentTemplate, template)])
-      )
       .then(([current]) => {
         const currentTemplate = ensure<TemplateSchema>(current);
         _currentTemplate = currentTemplate;
