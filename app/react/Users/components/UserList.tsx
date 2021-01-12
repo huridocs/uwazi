@@ -20,6 +20,7 @@ export const UserList = ({ users, handleSelect, handleAddUser, className }: User
     setSelectedId(undefined);
     handleAddUser();
   };
+  const sortedUsers = users.sort((a, b) => a.username.localeCompare(b.username));
   return (
     <div className="user-list">
       <table className={className}>
@@ -38,7 +39,7 @@ export const UserList = ({ users, handleSelect, handleAddUser, className }: User
           </th>
         </thead>
         <tbody>
-          {users.map((user: UserSchema) => {
+          {sortedUsers.map((user: UserSchema) => {
             const protection = user.using2fa ? 'Password + 2FA' : 'Password';
             return (
               <tr
@@ -72,7 +73,7 @@ export const UserList = ({ users, handleSelect, handleAddUser, className }: User
         <button type="button" className="btn btn-success" onClick={addUser}>
           <Icon icon="plus" />
           <span className="btn-label">
-            <Translate>Add User</Translate>
+            <Translate>Add user</Translate>
           </span>
         </button>
       </div>

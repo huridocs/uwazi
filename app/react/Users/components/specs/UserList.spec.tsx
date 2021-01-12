@@ -7,26 +7,27 @@ import { UserList, UserListProps } from '../UserList';
 
 describe('UserList', () => {
   let component: ShallowWrapper;
-  const user2 = {
-    _id: 'user2',
-    username: 'User 2',
-    using2fa: false,
-    role: UserRole.EDITOR,
-    email: 'mail@test.test',
-  };
+
   const users: UserSchema[] = [
     {
       _id: 'user1',
-      username: 'User 1',
+      username: 'Juan Gonzales',
       role: UserRole.EDITOR,
+      using2fa: false,
+      email: 'mail@test.test',
+      groups: [{ _id: 'group2', name: 'Group2' }],
+    },
+    {
+      _id: 'user2',
+      username: 'Ana Brown',
       using2fa: true,
+      role: UserRole.EDITOR,
       email: 'mail@test.test',
       groups: [
         { _id: 'group1', name: 'Group1' },
-        { _id: 'group1', name: 'Group2' },
+        { _id: 'group2', name: 'Group2' },
       ],
     },
-    user2,
     { _id: 'user3', username: 'User 3', role: UserRole.EDITOR, email: 'mail@test.test' },
   ];
   const defaultProps: UserListProps = {
@@ -44,7 +45,7 @@ describe('UserList', () => {
       const rows = component.find('tbody > tr');
       expect(rows.length).toBe(3);
       const columns = rows.at(0).find('td');
-      expect(columns.at(0).props().children).toEqual('User 1');
+      expect(columns.at(0).props().children).toEqual('Ana Brown');
       expect(
         columns
           .at(1)
@@ -80,7 +81,7 @@ describe('UserList', () => {
     it('should call handleSelect when a row is clicked', () => {
       const row = component.find('tbody > tr').at(1);
       row.simulate('click');
-      expect(defaultProps.handleSelect).toHaveBeenCalledWith(user2);
+      expect(defaultProps.handleSelect).toHaveBeenCalledWith(users[1]);
     });
   });
 });
