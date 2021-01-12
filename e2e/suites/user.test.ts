@@ -24,6 +24,7 @@ describe('User', () => {
     );
 
   it('Should list all the users', async () => {
+    await page.waitForSelector('tbody tr:nth-child(1)');
     const userRows = await getListRows();
     expect(userRows[0]).toEqual(['admin', 'Password', 'admin', ' Activistas']);
     expect(userRows[1]).toEqual(['editor', 'Password', 'editor', ' Activistas Asesores legales']);
@@ -58,8 +59,8 @@ describe('User', () => {
 
     it('Should update the name and groups of the user', async () => {
       await expect(page).toFill('#name_field > input', 'administrator');
-      await expect(page).toClick('.user-memberships li:nth-child(3)');
-      await expect(page).toClick('#saveChangesBtn');
+      await expect(page).toClick('li', { text: 'Asesores legales' });
+      await expect(page).toClick('button', { text: 'Save User' });
       await page.waitForSelector('.side-panel', { hidden: true });
       const userRows = await getListRows();
       expect(userRows[0]).toEqual([
@@ -77,8 +78,8 @@ describe('User', () => {
       await expect(page).toFill('#email_field > input', 'newuser@email.test');
       await expect(page).toFill('#password_field > input', 'collaboratorPass');
       await expect(page).toFill('#name_field > input', 'collaboratorUser');
-      await expect(page).toClick('.multiselectItem:nth-child(3)');
-      await expect(page).toClick('#saveChangesBtn');
+      await expect(page).toClick('li', { text: 'Asesores legales' });
+      await expect(page).toClick('button', { text: 'Create User' });
       await page.waitForSelector('tbody tr:nth-child(3)');
       const userRows = await getListRows();
       expect(userRows[1]).toEqual([
