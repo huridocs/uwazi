@@ -167,7 +167,7 @@ describe('Viewer uiActions', () => {
         expect(scroller.to).toHaveBeenCalledWith(
           '.document-viewer div#page-1',
           '.document-viewer',
-          { duration: 100, offset: 30, dividerOffset: 1 }
+          { duration: 600, offset: 30, dividerOffset: 1 }
         );
         done();
       });
