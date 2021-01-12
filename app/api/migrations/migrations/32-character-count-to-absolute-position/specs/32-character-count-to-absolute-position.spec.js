@@ -55,27 +55,27 @@ describe('conversion of character count to absolute position', () => {
 
     if (connections[0].reference.selectionRectangles.length === 1) {
       expect(connections[0].reference.selectionRectangles[0]).toEqual({
-        height: 11,
-        left: 28,
+        height: 12,
+        left: 29,
         regionId: '1',
-        top: 689,
-        width: 349,
+        top: 702,
+        width: 356,
       });
     } else {
       expect(connections[0].reference.selectionRectangles[0]).toEqual({
-        height: 11,
-        left: 28,
+        height: 12,
+        left: 29,
         regionId: '1',
-        top: 689,
-        width: 26,
+        top: 702,
+        width: 27,
       });
 
       expect(connections[0].reference.selectionRectangles[1]).toEqual({
-        height: 11,
-        left: 55,
+        height: 12,
+        left: 56,
         regionId: '1',
-        top: 689,
-        width: 323,
+        top: 702,
+        width: 328,
       });
     }
   });
@@ -95,10 +95,10 @@ describe('conversion of character count to absolute position', () => {
           selectionRectangles: [
             {
               height: 12,
-              left: 318,
+              left: 325,
               regionId: '3',
-              top: 630,
-              width: 142,
+              top: 642,
+              width: 145,
             },
           ],
         },
@@ -138,10 +138,10 @@ describe('conversion of character count to absolute position', () => {
             selectionRectangles: [
               {
                 height: 12,
-                left: 324,
+                left: 330,
                 regionId: '2',
-                top: 630,
-                width: 132,
+                top: 642,
+                width: 135,
               },
             ],
             label: 'PUBLISH WITH PURPOSE',
@@ -151,10 +151,10 @@ describe('conversion of character count to absolute position', () => {
             selectionRectangles: [
               {
                 height: 12,
-                left: 318,
+                left: 325,
                 regionId: '3',
-                top: 630,
-                width: 142,
+                top: 642,
+                width: 145,
               },
             ],
             label: 'BUILD A CUSTOM LIBRARY',
@@ -164,10 +164,10 @@ describe('conversion of character count to absolute position', () => {
             selectionRectangles: [
               {
                 height: 12,
-                left: 310,
+                left: 315,
                 regionId: '4',
-                top: 630,
-                width: 161,
+                top: 642,
+                width: 164,
               },
             ],
             label: 'DISCOVER NEW INFORMATION',

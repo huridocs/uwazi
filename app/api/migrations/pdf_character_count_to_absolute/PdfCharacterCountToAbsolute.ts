@@ -118,6 +118,8 @@ export class PdfCharacterCountToAbsolute {
       '-q',
       '-hidden',
       '-xml',
+      '-zoom',
+      '1.33333',
       '-i',
       this.pdfRelativePath,
       this.xmlRelativePath,
