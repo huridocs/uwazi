@@ -86,15 +86,16 @@ export function reorderProperty(originIndex, targetIndex) {
   };
 }
 
-const sanitize = data => {
-  data.properties = data.properties.map(_prop => {
+export const sanitize = data => {
+  const properties = data.properties.map(_prop => {
     const prop = { ..._prop };
     if (prop.inherit && !prop.content) {
       prop.inherit = false;
     }
+    delete prop.inserting;
     return prop;
   });
-  return data;
+  return { ...data, properties };
 };
 
 export function validateMapping(template) {
