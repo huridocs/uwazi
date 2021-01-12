@@ -563,7 +563,8 @@ const buildQuery = async (query, language, user, resources) => {
     .fullTextSearch(query.searchTerm, textFieldsToSearch, 2, searchTextType)
     .filterByTemplate(query.types)
     .filterById(query.ids)
-    .language(language);
+    .language(language)
+    .filterByPermissions(user);
 
   if (Number.isInteger(parseInt(query.from, 10))) {
     queryBuilder.from(query.from);

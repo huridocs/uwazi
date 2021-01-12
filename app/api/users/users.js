@@ -141,6 +141,16 @@ const sanitizeUser = user => {
   return sanitizedUser;
 };
 
+const populateGroupsOfUsers = async (user, groups) => {
+  const memberships = groups
+    .filter(group => group.members.find(member => member._id === user._id.toString()))
+    .map(group => ({
+      _id: group._id,
+      name: group.name,
+    }));
+  return { ...user, groups: memberships };
+};
+
 export default {
   async save(user, currentUser) {
     const [userInTheDatabase] = await model.get({ _id: user._id }, '+password');
@@ -200,21 +210,18 @@ export default {
     if (typeof select === 'string' && select.includes('+groups')) {
       const userIds = users.map(user => user._id.toString());
       const groups = await getByMemberIdList(userIds);
-      return users.map(user => {
-        const memberships = groups
-          .filter(group => group.members.find(member => member._id === user._id.toString()))
-          .map(group => ({
-            _id: group._id,
-            name: group.name,
-          }));
-        return { ...user, groups: memberships };
-      });
+      return Promise.all(users.map(user => populateGroupsOfUsers(user, groups)));
     }
     return users;
   },
 
-  getById(id, select = '') {
-    return model.getById(id, select);
+  async getById(id, select = '', includeGroups = false) {
+    const user = await model.getById(id, select);
+    if (includeGroups) {
+      const groups = await getByMemberIdList([user._id.toString()]);
+      return populateGroupsOfUsers(user, groups);
+    }
+    return user;
   },
 
   async delete(_id, currentUser) {

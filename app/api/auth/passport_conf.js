@@ -32,7 +32,7 @@ passport.deserializeUser((serializeUser, done) => {
     return done(null, false);
   }
 
-  users.getById(id, '-password').then(user => {
+  users.getById(id, '-password', true).then(user => {
     done(null, user);
   });
 });

@@ -337,5 +337,20 @@ export default function() {
       baseQuery.aggregations.all.aggregations = {};
       return this;
     },
+
+    filterByPermissions(user) {
+      if (user && user.role && !['admin', 'editor'].includes(user.role)) {
+        const permissionTargetId = user.groups
+          ? user.groups.map(group => group._id.toString())
+          : [];
+        permissionTargetId.push(user._id.toString());
+        baseQuery.query.bool.filter.push({
+          term: {
+            'permissions._id': user._id,
+          },
+        });
+      }
+      return this;
+    },
   };
 }
