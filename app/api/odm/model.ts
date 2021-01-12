@@ -6,7 +6,7 @@ import { createUpdateLogHelper, UpdateLogger } from './logHelper';
 const generateID = mongoose.Types.ObjectId;
 export { generateID };
 
-type DataType<T> = Readonly<Partial<T>> & { _id?: any };
+export type DataType<T> = Readonly<Partial<T>> & { _id?: any };
 
 export class OdmModel<T> {
   db: MultiTenantMongooseModel<T>;
@@ -22,9 +22,9 @@ export class OdmModel<T> {
     this.logHelper = logHelper;
   }
 
-  async save(data: DataType<T>) {
+  async save(data: DataType<T>, query?: any) {
     if (await this.documentExists(data)) {
-      const saved = await this.db.findOneAndUpdate({ _id: data._id }, data, {
+      const saved = await this.db.findOneAndUpdate(query || { _id: data._id }, data, {
         new: true,
       });
       if (saved === null) {

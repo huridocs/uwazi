@@ -63,7 +63,7 @@ export class MetadataFormButtons extends Component {
     return (
       <span>
         <ShowIf if={this.props.includeViewButton}>{ViewButton}</ShowIf>
-        <NeedAuthorization roles={['admin', 'editor']}>
+        <NeedAuthorization roles={['admin', 'editor', 'collaborator']}>
           <ShowIf if={!entityBeingEdited}>
             <button
               type="button"

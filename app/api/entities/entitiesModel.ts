@@ -1,4 +1,4 @@
-import { instanceModel } from 'api/odm';
+import { instanceModel } from 'api/odm/ModelWithPermissions';
 import mongoose from 'mongoose';
 import { MetadataObjectSchema, PropertyValueSchema } from 'shared/types/commonTypes';
 import { EntitySchema } from 'shared/types/entityType';

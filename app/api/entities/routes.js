@@ -9,7 +9,7 @@ import { validation } from '../utils';
 Joi.objectId = objectId(Joi);
 
 export default app => {
-  app.post('/api/entities', needsAuthorization(['admin', 'editor']), (req, res, next) =>
+  app.post('/api/entities', needsAuthorization(['admin', 'editor', 'collaborator']), (req, res, next) =>
     entities
       .save(req.body, { user: req.user, language: req.language })
       .then(response => {
