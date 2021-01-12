@@ -340,13 +340,13 @@ export default function() {
 
     filterByPermissions(user) {
       if (user && user.role && !['admin', 'editor'].includes(user.role)) {
-        const permissionTargetId = user.groups
+        const permissionTargetIds = user.groups
           ? user.groups.map(group => group._id.toString())
           : [];
-        permissionTargetId.push(user._id.toString());
+        permissionTargetIds.push(user._id.toString());
         baseQuery.query.bool.filter.push({
-          term: {
-            'permissions._id': user._id,
+          terms: {
+            'permissions._id': permissionTargetIds,
           },
         });
       }
