@@ -13,6 +13,7 @@ import { PDF, files } from 'api/files';
 import * as filesystem from 'api/files';
 import dictionariesModel from 'api/thesauri/dictionariesModel';
 import translate, { getContext } from 'shared/translate';
+import { AccessLevels, PermissionType } from 'shared/types/permissionSchema';
 import { deleteFiles, deleteUploadedFiles } from '../files/filesystem';
 import model from './entitiesModel';
 import { validateEntity } from '../../shared/types/entitySchema';
@@ -296,6 +297,13 @@ export default {
       doc.user = user._id;
       doc.creationDate = date.currentUTC();
       doc.published = false;
+      doc.permissions = [
+        {
+          _id: user._id.toString(),
+          type: PermissionType.USER,
+          level: AccessLevels.WRITE,
+        },
+      ];
     }
 
     const sharedId = doc.sharedId || ID();

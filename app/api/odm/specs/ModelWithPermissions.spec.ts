@@ -14,6 +14,7 @@ describe('ModelWithPermissions', () => {
   let model: ModelWithPermissions<any>;
   const testSchema = new mongoose.Schema({
     _id: String,
+    name: String,
     permissions: {
       type: 'array',
       items: permissionSchema,
@@ -21,7 +22,7 @@ describe('ModelWithPermissions', () => {
   });
   interface TestDoc {
     _id: string;
-    value?: string;
+    name?: string;
     permissions: PermissionSchema[];
   }
   const doc = {
@@ -37,8 +38,19 @@ describe('ModelWithPermissions', () => {
       await model.save(doc);
       expect(OdmModel.prototype.save).toHaveBeenCalledWith(doc, {
         _id: 'doc1',
-        permissions: { $elemMatch: { _id: 'user1', level: 'write' } },
+        permissions: { $elemMatch: { _id: { $in: ['user1'] }, level: 'write' } },
       });
+    });
+
+    it('should not add permissions filter if it is a new doc', async () => {
+      const newDoc = { name: 'newDoc' };
+      await model.save(newDoc);
+      expect(OdmModel.prototype.save).toHaveBeenCalledWith(
+        {
+          name: 'newDoc',
+        },
+        {}
+      );
     });
   });
 
@@ -48,7 +60,9 @@ describe('ModelWithPermissions', () => {
       expect(OdmModel.prototype.get).toHaveBeenCalledWith(
         {
           name: 'test',
-          permissions: { $elemMatch: { _id: 'user1', level: { $in: ['read', 'write'] } } },
+          permissions: {
+            $elemMatch: { _id: { $in: ['user1'] } },
+          },
         },
         'name',
         {}
@@ -61,7 +75,7 @@ describe('ModelWithPermissions', () => {
       await model.delete({ _id: 'doc1' });
       expect(OdmModel.prototype.delete).toHaveBeenCalledWith({
         _id: 'doc1',
-        permissions: { $elemMatch: { _id: 'user1', level: 'write' } },
+        permissions: { $elemMatch: { _id: { $in: ['user1'] }, level: 'write' } },
       });
     });
   });

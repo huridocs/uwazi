@@ -5,31 +5,33 @@ import { createUpdateLogHelper } from './logHelper';
 import { DataType, OdmModel } from './model';
 import { models, UwaziFilterQuery } from './models';
 
-const appendPermissionQuery = (query: any, level: any) => {
-  const levelCond =
-    level === AccessLevels.READ ? { $in: [AccessLevels.READ, AccessLevels.WRITE] } : level;
+const appendPermissionQuery = (query: UwaziFilterQuery<any>, level: AccessLevels) => {
+  const levelCond = level === AccessLevels.WRITE ? { level: AccessLevels.WRITE } : {};
   const user = getUserInContext();
+  const targetIds = [user._id];
   if (!['admin', 'editor'].includes(user.role)) {
     return {
       ...query,
-      permissions: { $elemMatch: { _id: user._id, level: levelCond } },
+      permissions: { $elemMatch: { _id: { $in: targetIds }, ...levelCond } },
     };
   }
-
   return query;
 };
 
 export class ModelWithPermissions<T> extends OdmModel<T> {
   async save(data: DataType<T>) {
-    return super.save(data, appendPermissionQuery({ _id: data._id }, 'write'));
+    const queryCondition = data._id
+      ? appendPermissionQuery({ _id: data._id }, AccessLevels.WRITE)
+      : {};
+    return super.save(data, queryCondition);
   }
 
   get(query: UwaziFilterQuery<T> = {}, select: any = '', options: {} = {}) {
-    return super.get(appendPermissionQuery(query, 'read'), select, options);
+    return super.get(appendPermissionQuery(query, AccessLevels.READ), select, options);
   }
 
   async delete(condition: any) {
-    return super.delete(appendPermissionQuery(condition, 'write'));
+    return super.delete(appendPermissionQuery(condition, AccessLevels.WRITE));
   }
 }
 
