@@ -4,6 +4,7 @@ import { setUpApp } from 'api/utils/testingRoutes';
 import { permissionRoutes } from 'api/permissions/routes';
 import { entitiesPermissions } from 'api/permissions/entitiesPermissions';
 import { collaborators } from 'api/permissions/collaborators';
+import { testingTenants } from 'api/utils/testingTenants';
 
 jest.mock(
   '../../utils/languageMiddleware.ts',
@@ -80,6 +81,48 @@ describe('permissions routes', () => {
           .set('X-Requested-With', 'XMLHttpRequest')
           .send(permissionsData);
         expect(response.unauthorized).toBe(true);
+      });
+    });
+
+    describe('Error Handling', () => {
+      beforeEach(() => {
+        testingTenants.mockCurrentTenant({ name: 'default' });
+      });
+      it('should handle errors on POST', async () => {
+        spyOn(entitiesPermissions, 'setEntitiesPermissions').and.throwError('error on save');
+        user = { username: 'user 1', role: 'admin' };
+        const permissionsData = {
+          ids: ['shared1'],
+          permissions: [{ _id: 'user1', type: 'user', level: 'read' }],
+        };
+        const response = await request(app)
+          .post('/api/entities/permissions')
+          .set('X-Requested-With', 'XMLHttpRequest')
+          .send(permissionsData);
+        expect(response.status).toBe(500);
+        expect(response.body.error).toContain('Error: error on save');
+      });
+      it('should handle errors on GET', async () => {
+        spyOn(entitiesPermissions, 'getEntitiesPermissions').and.throwError('error on get');
+        user = { username: 'user 1', role: 'admin' };
+        const response = await request(app)
+          .get('/api/entities/permissions')
+          .set('X-Requested-With', 'XMLHttpRequest')
+          .query({
+            ids: JSON.stringify(['sharedId1', 'sharedId2']),
+          });
+        expect(response.status).toBe(500);
+        expect(response.body.error).toContain('Error: error on get');
+      });
+      it('should handle errors on collaborators GET', async () => {
+        spyOn(collaborators, 'getCollaborators').and.throwError('error on get');
+        user = { username: 'user 1', role: 'admin' };
+        const response = await request(app)
+          .get('/api/collaborators')
+          .set('X-Requested-With', 'XMLHttpRequest')
+          .query({ filterTerm: 'username' });
+        expect(response.status).toBe(500);
+        expect(response.body.error).toContain('Error: error on get');
       });
     });
 

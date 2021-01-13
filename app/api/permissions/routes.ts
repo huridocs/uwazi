@@ -23,16 +23,24 @@ export const permissionRoutes = (app: Application) => {
         },
       },
     }),
-    async (req, res, _next) => {
-      await entitiesPermissions.setEntitiesPermissions(req.body);
-      res.json(req.body);
+    async (req, res, next) => {
+      try {
+        await entitiesPermissions.setEntitiesPermissions(req.body);
+        res.json(req.body);
+      } catch (err) {
+        next(err);
+      }
     }
   );
 
-  app.get('/api/entities/permissions', async (req, res, _next) => {
+  app.get('/api/entities/permissions', async (req, res, next) => {
     const sharedIds = JSON.parse(req.query.ids);
-    const permissions = await entitiesPermissions.getEntitiesPermissions(sharedIds);
-    res.json(permissions);
+    try {
+      const permissions = await entitiesPermissions.getEntitiesPermissions(sharedIds);
+      res.json(permissions);
+    } catch (err) {
+      next(err);
+    }
   });
 
   app.get(
@@ -47,9 +55,13 @@ export const permissionRoutes = (app: Application) => {
         },
       },
     }),
-    async (req, res, _next) => {
-      const availableCollaborators = await collaborators.getCollaborators(req.query.filterTerm);
-      res.json(availableCollaborators);
+    async (req, res, next) => {
+      try {
+        const availableCollaborators = await collaborators.getCollaborators(req.query.filterTerm);
+        res.json(availableCollaborators);
+      } catch (err) {
+        next(err);
+      }
     }
   );
 };

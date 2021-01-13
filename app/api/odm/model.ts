@@ -28,7 +28,7 @@ export class OdmModel<T> {
         new: true,
       });
       if (saved === null) {
-        throw Error('mongoose findOneAndUpdate should never return null!');
+        throw Error('No document was updated!');
       }
       await this.logHelper.upsertLogOne(saved);
       return saved.toObject() as WithId<T>;

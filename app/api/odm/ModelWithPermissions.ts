@@ -9,7 +9,7 @@ const appendPermissionQuery = (query: any, level: any) => {
   if (!['admin', 'editor'].includes(user.role)) {
     return {
       ...query,
-      permissions: { $elemMatch: { _id: getUserInContext()._id, level } },
+      permissions: { $elemMatch: { _id: user._id, level } },
     };
   }
 
