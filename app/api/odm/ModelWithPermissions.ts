@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 import { getUserInContext } from 'api/permissions/permissionsContext';
 import { createUpdateLogHelper } from './logHelper';
 import { DataType, OdmModel } from './model';
-import { models } from './models';
+import { models, UwaziFilterQuery } from './models';
 
 const appendPermissionQuery = (query: any, level: any) => {
   const user = getUserInContext();
@@ -19,6 +19,14 @@ const appendPermissionQuery = (query: any, level: any) => {
 export class ModelWithPermissions<T> extends OdmModel<T> {
   async save(data: DataType<T>) {
     return super.save(data, appendPermissionQuery({ _id: data._id }, 'write'));
+  }
+
+  get(query: UwaziFilterQuery<T> = {}, select: any = '', options: {} = {}) {
+    return super.get(appendPermissionQuery(query, 'read'), select, options);
+  }
+
+  async delete(condition: any) {
+    return super.delete(appendPermissionQuery(condition, 'write'));
   }
 }
 

@@ -1,4 +1,4 @@
-import { instanceModel } from 'api/odm/ModelWithPermissions';
+import { instanceModel, ModelWithPermissions } from 'api/odm/ModelWithPermissions';
 import mongoose from 'mongoose';
 import { AccessLevels, permissionSchema, PermissionType } from 'shared/types/permissionSchema';
 import { PermissionSchema } from 'shared/types/permissionType';
@@ -11,6 +11,7 @@ jest.mock('api/permissions/permissionsContext', () => ({
 }));
 
 describe('ModelWithPermissions', () => {
+  let model: ModelWithPermissions<any>;
   const testSchema = new mongoose.Schema({
     _id: String,
     permissions: {
@@ -23,20 +24,42 @@ describe('ModelWithPermissions', () => {
     value?: string;
     permissions: PermissionSchema[];
   }
+  const doc = {
+    _id: 'doc1',
+    permissions: [{ _id: 'user1', level: AccessLevels.WRITE, type: PermissionType.USER }],
+  };
 
+  beforeAll(() => {
+    model = instanceModel<TestDoc>('docs', testSchema);
+  });
   describe('save', () => {
-    jest
-      .spyOn(OdmModel.prototype, 'save')
-      .mockImplementation(async (_data, query) => Promise.resolve(query));
-
-    const model = instanceModel<TestDoc>('docs', testSchema);
     it('should add permissions filter to query', async () => {
-      const doc = {
-        _id: 'doc1',
-        permissions: [{ _id: 'user1', level: AccessLevels.WRITE, type: PermissionType.USER }],
-      };
       await model.save(doc);
       expect(OdmModel.prototype.save).toHaveBeenCalledWith(doc, {
+        _id: 'doc1',
+        permissions: { $elemMatch: { _id: 'user1', level: 'write' } },
+      });
+    });
+  });
+
+  describe('get', () => {
+    it('should add permissions filter to query', async () => {
+      await model.get({ name: 'test' }, 'name', {});
+      expect(OdmModel.prototype.get).toHaveBeenCalledWith(
+        {
+          name: 'test',
+          permissions: { $elemMatch: { _id: 'user1', level: 'read' } },
+        },
+        'name',
+        {}
+      );
+    });
+  });
+
+  describe('delete', () => {
+    it('should add permissions filter to query', async () => {
+      await model.delete({ _id: 'doc1' });
+      expect(OdmModel.prototype.delete).toHaveBeenCalledWith({
         _id: 'doc1',
         permissions: { $elemMatch: { _id: 'user1', level: 'write' } },
       });
