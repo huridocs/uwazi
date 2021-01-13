@@ -51,7 +51,7 @@ const indexEntities = async () => {
   let docsIndexed = 0;
   let pos = 0;
 
-  await search.indexEntities({}, '+fullText', 50, indexed => {
+  await search.indexEntities({}, '+fullText', 10, indexed => {
     process.stdout.write(
       `Indexing documents and entities... ${spinner[pos]} - ${docsIndexed} indexed\r`
     );
