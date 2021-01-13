@@ -48,7 +48,7 @@ describe('ModelWithPermissions', () => {
       expect(OdmModel.prototype.get).toHaveBeenCalledWith(
         {
           name: 'test',
-          permissions: { $elemMatch: { _id: 'user1', level: 'read' } },
+          permissions: { $elemMatch: { _id: 'user1', level: { $in: ['read', 'write'] } } },
         },
         'name',
         {}

@@ -1,15 +1,18 @@
 import mongoose from 'mongoose';
 import { getUserInContext } from 'api/permissions/permissionsContext';
+import { AccessLevels } from 'shared/types/permissionSchema';
 import { createUpdateLogHelper } from './logHelper';
 import { DataType, OdmModel } from './model';
 import { models, UwaziFilterQuery } from './models';
 
 const appendPermissionQuery = (query: any, level: any) => {
+  const levelCond =
+    level === AccessLevels.READ ? { $in: [AccessLevels.READ, AccessLevels.WRITE] } : level;
   const user = getUserInContext();
   if (!['admin', 'editor'].includes(user.role)) {
     return {
       ...query,
-      permissions: { $elemMatch: { _id: user._id, level } },
+      permissions: { $elemMatch: { _id: user._id, level: levelCond } },
     };
   }
 
