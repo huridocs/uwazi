@@ -20,9 +20,9 @@ const localSelectors = {
     '#app > div.content > div > div > div.settings-content > div > ul > li:nth-child(10) > a',
   templatesListItems: '#app > div.content > div > div > div.settings-content > div > ul > li',
   relationShipSelect:
-    '#app > div.content > div > div > div.settings-content > div > div > div.panel-body > div > main > div > form > ul > li:nth-child(7) > div.propery-form.expand > div > div:nth-child(2) > select',
+    '#app > div.content > div > div > div.settings-content > div > div > div.panel-body > div > main > div > form > ul > li:nth-child(8) > div.propery-form.expand > div > div:nth-child(2) > select',
   superPowersThesauriOption:
-    '#app > div.content > div > div > div.settings-content > div > div > div.panel-body > div > main > div > form > ul > li:nth-child(7) > div.propery-form.expand > div > div:nth-child(3) > select > option:nth-child(12)',
+    '#app > div.content > div > div > div.settings-content > div > div > div.panel-body > div > main > div > form > ul > li:nth-child(8) > div.propery-form.expand > div > div:nth-child(3) > select > option:nth-child(12)',
 };
 
 const propertySelector = index =>
@@ -37,8 +37,8 @@ const propertyNameSelector = index =>
   `#app > div.content > div > div > div.settings-content > div > div > div.panel-body > div > main > div > form > ul > li:nth-child(${index}) > div.propery-form.expand > div > div.form-group > div > input`;
 const deletePropertySelector = index =>
   `#app > div.content > div > div > div.settings-content > div > div > div.panel-body > div > main > div > form > ul > li:nth-child(${index}) div > button.btn.btn-danger.btn-xs.property-remove`;
-const textPropertyIndex = 3;
-const relationshipPropertyIndex = 7;
+const textPropertyIndex = 4;
+const relationshipPropertyIndex = 8;
 
 const nightmare = createNightmare();
 
