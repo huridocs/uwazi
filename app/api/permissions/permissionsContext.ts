@@ -1,4 +1,4 @@
-import { UserSchema } from '../../shared/types/userType';
+import { UserSchema } from 'shared/types/userType';
 
 export function getUserInContext(): UserSchema {
   return {
