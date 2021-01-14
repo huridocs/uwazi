@@ -22,7 +22,10 @@ jobs:
         ports:
           - 27017/tcp
     steps:
+      - name: Checkout reposistory
       - uses: actions/checkout@v2
+      - name: Checkout submodules
+      - run: git submodule update --init --recursive
       - name: Use Node.js 14.6.x
         uses: actions/setup-node@v1
         with:
