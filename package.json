@@ -56,6 +56,10 @@
       "app/jest.server.config.js"
     ]
   },
+  "resolutions": {
+    "lodash": "^4.17.20",
+    "bl": "^4.0.3"
+  },
   "dependencies": {
     "@babel/register": "7.11.5",
     "@elastic/elasticsearch": "^7.9.0",
