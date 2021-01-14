@@ -54,11 +54,6 @@ jobs:
       - name: build production
         if: steps.cache-build.outputs.cache-hit != 'true'
         run: yarn production-build
-      - name: checkout fixtures
-        uses: actions/checkout@v2
-        with:
-          repository: huridocs/uwazi-fixtures
-          path: uwazi-fixtures
       - run: yarn e2e-puppeteer-fixtures
         env:
           DBHOST: localhost:${{ job.services.mongodb.ports[27017] }}
