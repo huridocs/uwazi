@@ -1,7 +1,8 @@
 /*global page*/
 
 export default async () => {
-  await page.addStyleTag({ content : `
+  await page.addStyleTag({
+    content: `
       *,
       *::after,
       *::before {
@@ -11,5 +12,6 @@ export default async () => {
           animation-duration: 0s !important;
           animation-play-state: paused !important;
           caret-color: transparent !important;
-      }`});
+      }`,
+  });
 };
