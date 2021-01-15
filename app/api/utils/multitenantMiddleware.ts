@@ -1,12 +1,10 @@
 import { Request, Response, NextFunction } from 'express';
-import { tenants } from 'api/tenants/tenantContext';
+import { appContext } from 'api/utils/AppContext';
+import { config } from 'api/config';
 
 const multitenantMiddleware = (req: Request, _res: Response, next: NextFunction) => {
-  tenants
-    .run(async () => {
-      next();
-    }, req.get('tenant'))
-    .catch(next);
+  appContext.set('tenant', req.get('tenant') || config.defaultTenant.name);
+  next();
 };
 
 export { multitenantMiddleware };
