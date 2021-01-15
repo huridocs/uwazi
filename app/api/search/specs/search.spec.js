@@ -66,8 +66,9 @@ describe('search', () => {
     });
 
     it('perform a search on metadata and fullText and return the snippets', done => {
+      const user = { _id: 'userId' };
       search
-        .searchSnippets('gargoyles', ids.metadataSnippets, 'en')
+        .searchSnippets('gargoyles', ids.metadataSnippets, 'en', user)
         .then(snippets => {
           const titleSnippet = snippets.metadata.find(snippet => snippet.field === 'title');
           const fieldSnippet = snippets.metadata.find(
@@ -85,11 +86,22 @@ describe('search', () => {
         .catch(catchErrors(done));
     });
 
-    it('should perform the search on unpublished documents also', done => {
+    it('should include unpublished documents if logged in', done => {
+      const user = { _id: 'userId' };
       search
-        .searchSnippets('unpublished', 'unpublishedSharedId', 'en')
+        .searchSnippets('unpublished', 'unpublishedSharedId', 'en', user)
         .then(snippets => {
           expect(snippets.fullText.length).toBe(1);
+          done();
+        })
+        .catch(catchErrors(done));
+    });
+
+    it('should not include unpublished if not logged in', done => {
+      search
+        .searchSnippets('unpublished', 'unpublishedSharedId', 'en', undefined)
+        .then(snippets => {
+          expect(snippets.fullText.length).toBe(0);
           done();
         })
         .catch(catchErrors(done));
