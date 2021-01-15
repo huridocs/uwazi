@@ -1,6 +1,12 @@
 name: eslint
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - master
+      - development
+      - release
+  pull_request:
 
 jobs:
   eslint:
