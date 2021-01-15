@@ -86,25 +86,25 @@ describe('search', () => {
         .catch(catchErrors(done));
     });
 
-    it('should include unpublished documents if logged in', done => {
+    it('should include unpublished documents if logged in', async () => {
       const user = { _id: 'userId' };
-      search
-        .searchSnippets('unpublished', 'unpublishedSharedId', 'en', user)
-        .then(snippets => {
-          expect(snippets.fullText.length).toBe(1);
-          done();
-        })
-        .catch(catchErrors(done));
+      const snippets = await search.searchSnippets(
+        'unpublished',
+        'unpublishedSharedId',
+        'en',
+        user
+      );
+      expect(snippets.fullText.length).toBe(1);
     });
 
-    it('should not include unpublished if not logged in', done => {
-      search
-        .searchSnippets('unpublished', 'unpublishedSharedId', 'en', undefined)
-        .then(snippets => {
-          expect(snippets.fullText.length).toBe(0);
-          done();
-        })
-        .catch(catchErrors(done));
+    it('should not include unpublished if not logged in', async () => {
+      const snippets = await search.searchSnippets(
+        'unpublished',
+        'unpublishedSharedId',
+        'en',
+        undefined
+      );
+      expect(snippets.fullText.length).toBe(0);
     });
 
     describe('when document is not matched', () => {
