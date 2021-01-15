@@ -105,7 +105,7 @@ export class Connection extends Component {
             <ShowIf if={!this.props.targetDoc && !this.props.readOnly}>
               <NeedAuthorization roles={['admin', 'editor']}>
                 <a
-                  className="item-shortcut btn btn-default btn-hover-danger"
+                  className="item-shortcut btn btn-default btn-hover-danger delete"
                   onClick={this.deleteReference.bind(this, reference)}
                 >
                   <Icon icon="trash-alt" />
