@@ -6,7 +6,7 @@ import crypto from 'crypto';
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import mailer from 'api/utils/mailer';
 import db from 'api/utils/testing_db';
-import random from 'shared/uniqueID';
+import * as random from 'shared/uniqueID';
 
 import encryptPassword, { comparePasswords } from 'api/auth/encryptPassword';
 import * as usersUtils from 'api/auth2fa/usersUtils';
@@ -24,7 +24,8 @@ describe('Users', () => {
   });
 
   afterAll(done => {
-    db.disconnect().then(done);
+    done();
+    // db.disconnect().then(done);
   });
 
   describe('save', () => {
@@ -96,6 +97,11 @@ describe('Users', () => {
 
       beforeEach(() => {
         spyOn(users, 'recoverPassword').and.returnValue(Promise.resolve());
+        jest.spyOn(random, 'default').mockReturnValue('mypass');
+      });
+
+      afterEach(() => {
+        // random.mockRestore();
       });
 
       it('should do the recover password process (as a new user)', done => {
@@ -120,9 +126,7 @@ describe('Users', () => {
           .catch(catchErrors(done));
       });
 
-      it('should create a random password when none is provided', async () => {
-        const HelperFunctions = { random };
-        spyOn(HelperFunctions, 'random').and.returnValue('mypass');
+      it('should create a random password when none is provided', done => {
         users
           .newUser(
             {
@@ -133,8 +137,10 @@ describe('Users', () => {
             domain
           )
           .then(() => {
-            expect(HelperFunctions.random).toHaveBeenCalledTimes(1);
-          });
+            expect(random.default).toHaveBeenCalled();
+            done();
+          })
+          .catch(catchErrors(done));
       });
 
       it('should not allow repeat username', done => {
