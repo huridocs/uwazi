@@ -101,7 +101,7 @@ describe('templates routes', () => {
       const response = await routes.post('/api/templates', req);
 
       expect(response).toBe(aTemplate);
-      expect(templates.save).toHaveBeenCalledWith(req.body, req.language);
+      expect(templates.save).toHaveBeenCalledWith(req.body, req.language, true);
       expect(settings.updateFilterName).toHaveBeenCalledWith(aTemplate._id, aTemplate.name);
       expect(req.io.emitToCurrentTenant).toHaveBeenCalledWith('templateChange', aTemplate);
       expect(req.io.emitToCurrentTenant).toHaveBeenCalledWith('updateSettings', 'updated settings');

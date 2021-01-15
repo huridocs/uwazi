@@ -68,19 +68,22 @@ const updateTranslation = async (currentTemplate: TemplateSchema, template: Temp
 };
 
 export default {
-  async save(template: TemplateSchema, language: string) {
+  async save(template: TemplateSchema, language: string, reindex = true) {
     /* eslint-disable no-param-reassign */
     template.properties = template.properties || [];
     template.properties = await generateNamesAndIds(template.properties);
     /* eslint-enable no-param-reassign */
 
     await validateTemplate(template);
+
     await this.swapNamesValidation(template);
 
-    await updateMapping([template], tenants.current().indexName);
+    if (reindex) {
+      await updateMapping([template], tenants.current().indexName);
+    }
 
     if (template._id) {
-      return this._update(template, language);
+      return this._update(template, language, reindex);
     }
 
     return model
@@ -106,7 +109,7 @@ export default {
     });
   },
 
-  async _update(template: TemplateSchema, language: string) {
+  async _update(template: TemplateSchema, language: string, reindex = true) {
     let _currentTemplate: TemplateSchema;
     return this.getById(ensure(template._id))
       .then(async current => {
@@ -139,7 +142,7 @@ export default {
       .then(async () => model.save(template))
       .then(async savedTemplate =>
         entities
-          .updateMetadataProperties(template, _currentTemplate, language)
+          .updateMetadataProperties(template, _currentTemplate, language, reindex)
           .then(() => savedTemplate)
       );
   },
