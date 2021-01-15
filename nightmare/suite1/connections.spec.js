@@ -55,10 +55,10 @@ describe('Connections', () => {
 
   it('should add the perpetrators', done => {
     nightmare.connections
-      .sidePanelSearchAndSelect('joker')
+      .sidePanelSearchAndSelect({ searchTerm: 'joker', textOnDom: 'Super Villian' })
       .connections.sidePanelSearchAndSelect('scarecrow')
       .connections.sidePanelSearchAndSelect("Ra's al Ghul")
-      .connections.sidePanelSearchAndSelect('robin')
+      .connections.sidePanelSearchAndSelect({ searchTerm: 'robin', textOnDom: 'robin comic character' })
       .connections.sidePanelSearchAndSelect('Talia al Ghul')
       .connections.sidePanelSearchAndSelect('Cluemaster Wikipedia')
       .then(() => {
@@ -78,7 +78,7 @@ describe('Connections', () => {
 
   it('should add the heros', done => {
     nightmare.connections
-      .sidePanelSearchAndSelect('batman')
+      .sidePanelSearchAndSelect({ searchTerm: 'batman', textOnDom: 'batman comic character' })
       .connections.sidePanelSearchAndSelect('alfred pennyworth')
       .then(() => {
         done();

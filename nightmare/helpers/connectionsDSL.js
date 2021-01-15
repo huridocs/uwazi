@@ -157,9 +157,11 @@ Nightmare.action('connections', {
       .catch(done);
   },
   sidePanelSearchAndSelect(term, done) {
+    const searchTerm = term.searchTerm || term;
+    const textOnDom = term.textOnDom || term;
     this.connections
-      .sidepanelSearch(term)
-      .connections.sidepanelSelect(term)
+      .sidepanelSearch(searchTerm)
+      .connections.sidepanelSelect(textOnDom)
       .then(() => {
         done();
       })
@@ -167,43 +169,36 @@ Nightmare.action('connections', {
   },
   sidepanelSearch(term, done) {
     this.clearInput(selectors.connections.sidePanelSearchInput)
-      .write(selectors.connections.sidePanelSearchInput, term)
+      .write(selectors.connections.sidePanelSearchInput, `"${term}"`)
       .then(() => {
         done();
       })
       .catch(done);
   },
+
   sidepanelSelect(matchingTitle, done) {
-    this.wait(selectors.connections.sidePanelFirstDocument)
-      .wait(
-        (termToMatch, selector) => {
-          const element = document.querySelectorAll(selector)[0];
-          if (element) {
-            return element.innerText.toLowerCase().match(termToMatch.toLowerCase());
-          }
-          return false;
-        },
-        matchingTitle,
-        selectors.connections.sidePanelDocuments
-      )
-      .evaluate(
-        (toMatch, selector) => {
-          const helpers = document.__helpers;
-          const elements = helpers.querySelectorAll(selector);
-          let found;
-          elements.forEach(element => {
-            if (found) {
-              return;
-            }
-            if (element.innerText.toLowerCase() === toMatch.toLowerCase()) {
-              found = element;
-            }
-          });
-          found.click();
-        },
-        matchingTitle,
-        selectors.connections.sidePanelDocuments
-      )
+    this.wait(toMatch => {
+      const elements = document.querySelectorAll(
+        '#app > div.content > div > div > aside.side-panel.create-reference.is-active > div.sidepanel-body > div > div > div.item'
+      );
+
+      let found;
+      elements.forEach(element => {
+        if (found) {
+          return;
+        }
+        if (element.innerText.replace(/(\r\n|\n|\r)/gm, ' ').match(new RegExp(toMatch, 'i'))) {
+          found = element;
+        }
+      });
+
+      if (found) {
+        found.click();
+        return true;
+      }
+
+      return false;
+    }, matchingTitle)
       .then(() => {
         done();
       })
