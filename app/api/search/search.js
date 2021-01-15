@@ -651,7 +651,7 @@ const instanceSearch = elasticIndex => ({
     return entities.get({ user: user._id, language, published: false });
   },
 
-  async searchSnippets(searchTerm, sharedId, language) {
+  async searchSnippets(searchTerm, sharedId, language, user) {
     const templates = await templatesModel.get();
 
     const searchTextType = searchTerm
@@ -663,14 +663,16 @@ const instanceSearch = elasticIndex => ({
       .concat(['title', 'fullText']);
     const query = documentQueryBuilder()
       .fullTextSearch(searchTerm, searchFields, 9999, searchTextType)
-      .includeUnpublished()
       .filterById(sharedId)
-      .language(language)
-      .query();
+      .language(language);
+
+    if (user) {
+      query.includeUnpublished();
+    }
 
     const response = await elastic.search({
       index: elasticIndex || getCurrentTenantIndex(),
-      body: query,
+      body: query.query(),
     });
     if (response.body.hits.hits.length === 0) {
       return {
