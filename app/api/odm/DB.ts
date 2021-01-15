@@ -1,10 +1,5 @@
-import mongoose, { Connection } from 'mongoose';
+import mongoose, { Connection, ConnectionOptions } from 'mongoose';
 import { config } from 'api/config';
-
-type dbAuth = {
-  user: string;
-  pass: string;
-};
 
 let connection: Connection;
 
@@ -12,7 +7,7 @@ let connection: Connection;
 mongoose.set('useCreateIndex', true);
 
 const DB = {
-  async connect(uri: string = config.DBHOST, auth?: dbAuth) {
+  async connect(uri: string = config.DBHOST, auth?: ConnectionOptions) {
     connection = await mongoose.createConnection(uri, {
       ...auth,
       useUnifiedTopology: true,
