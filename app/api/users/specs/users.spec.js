@@ -6,6 +6,7 @@ import crypto from 'crypto';
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import mailer from 'api/utils/mailer';
 import db from 'api/utils/testing_db';
+import random from 'shared/uniqueID';
 
 import encryptPassword, { comparePasswords } from 'api/auth/encryptPassword';
 import * as usersUtils from 'api/auth2fa/usersUtils';
@@ -117,6 +118,23 @@ describe('Users', () => {
             done();
           })
           .catch(catchErrors(done));
+      });
+
+      it('should create a random password when none is provided', async () => {
+        const HelperFunctions = { random };
+        spyOn(HelperFunctions, 'random').and.returnValue('mypass');
+        users
+          .newUser(
+            {
+              username: 'someone',
+              email: 'someone@mailer.com',
+              role: 'admin',
+            },
+            domain
+          )
+          .then(() => {
+            expect(HelperFunctions.random).toHaveBeenCalledTimes(1);
+          });
       });
 
       it('should not allow repeat username', done => {
