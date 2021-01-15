@@ -4,11 +4,13 @@ import { host } from '../config';
 import { adminLogin, logout } from '../helpers/login';
 import proxyMock from '../helpers/proxyMock';
 import insertFixtures from '../helpers/insertFixtures';
+import disableTransitions from '../helpers/disableTransitions';
 
 describe('Login', () => {
   beforeAll(async () => {
     await insertFixtures();
     await proxyMock();
+    await disableTransitions();
   });
 
   it('Should login as admin', async () => {
