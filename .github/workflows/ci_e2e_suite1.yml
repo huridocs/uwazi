@@ -1,6 +1,12 @@
 name: e2e suite 1
 
-on: [push]
+on:
+  push:
+    branches:
+      - master
+      - development
+      - release
+  pull_request:
 
 jobs:
   e2e_test:
