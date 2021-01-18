@@ -24,8 +24,7 @@ describe('Users', () => {
   });
 
   afterAll(done => {
-    done();
-    // db.disconnect().then(done);
+    db.disconnect().then(done);
   });
 
   describe('save', () => {
@@ -98,10 +97,6 @@ describe('Users', () => {
       beforeEach(() => {
         spyOn(users, 'recoverPassword').and.returnValue(Promise.resolve());
         jest.spyOn(random, 'default').mockReturnValue('mypass');
-      });
-
-      afterEach(() => {
-        // random.mockRestore();
       });
 
       it('should do the recover password process (as a new user)', done => {
