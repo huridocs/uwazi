@@ -8,7 +8,6 @@ export default async () => {
     });
 
     console.log(result.stdout.toString());
-
   } catch (e) {
     console.log(e);
     process.exit(1);
