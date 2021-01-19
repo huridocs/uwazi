@@ -6,6 +6,7 @@ import { adminLogin, logout } from '../helpers/login';
 import proxyMock from '../helpers/proxyMock';
 import insertFixtures from '../helpers/insertFixtures';
 import { displayGraph } from '../helpers/graphs';
+import disableTransitions from '../helpers/disableTransitions';
 
 const localSelectors = {
   pageContentsInput:
@@ -24,6 +25,7 @@ describe('Graphs in Page', () => {
     await insertFixtures();
     await proxyMock();
     await adminLogin();
+    await disableTransitions();
   });
 
   it('should create a basic page', async () => {

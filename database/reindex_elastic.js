@@ -51,7 +51,7 @@ const indexEntities = async () => {
   let docsIndexed = 0;
   let pos = 0;
 
-  await search.indexEntities({}, '+fullText', 50, indexed => {
+  await search.indexEntities({}, '+fullText', 10, indexed => {
     process.stdout.write(
       `Indexing documents and entities... ${spinner[pos]} - ${docsIndexed} indexed\r`
     );
@@ -116,7 +116,17 @@ process.on('unhandledRejection', error => {
   throw error;
 });
 
-DB.connect().then(async () => {
+let dbAuth = {};
+
+if (process.env.DBUSER) {
+  dbAuth = {
+    auth: { authSource: 'admin' },
+    user: process.env.DBUSER,
+    pass: process.env.DBPASS,
+  };
+}
+
+DB.connect(config.DBHOST, dbAuth).then(async () => {
   const start = Date.now();
 
   await tenants.run(async () => {

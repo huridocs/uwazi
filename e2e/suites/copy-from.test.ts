@@ -3,6 +3,7 @@
 import { adminLogin, logout } from '../helpers/login';
 import proxyMock from '../helpers/proxyMock';
 import insertFixtures from '../helpers/insertFixtures';
+import disableTransitions from '../helpers/disableTransitions';
 import { host } from '../config';
 
 describe('Copy from', () => {
@@ -10,6 +11,7 @@ describe('Copy from', () => {
     await insertFixtures();
     await proxyMock();
     await adminLogin();
+    await disableTransitions();
     await page.goto(`${host}/library`);
   });
 
