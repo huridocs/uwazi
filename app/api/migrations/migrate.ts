@@ -1,3 +1,4 @@
+import { ConnectionOptions } from 'mongoose';
 import { DB } from 'api/odm';
 import { tenants } from 'api/tenants/tenantContext';
 import { config } from 'api/config';
@@ -8,8 +9,17 @@ process.on('unhandledRejection', error => {
   throw error;
 });
 
+let auth: ConnectionOptions;
+
+if (process.env.DBUSER) {
+  auth = {
+    user: process.env.DBUSER,
+    pass: process.env.DBPASS,
+  };
+}
+
 const run = async () => {
-  await DB.connect();
+  await DB.connect(config.DBHOST, auth);
   const { db } = await DB.connectionForDB(config.defaultTenant.dbName);
 
   await tenants.run(async () => {

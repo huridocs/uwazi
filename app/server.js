@@ -10,6 +10,7 @@ import path from 'path';
 
 import { TaskProvider } from 'shared/tasks/tasks';
 
+import { appContextMiddleware } from 'api/utils/appContextMiddleware';
 import uwaziMessage from '../message';
 import apiRoutes from './api/api';
 import privateInstanceMiddleware from './api/auth/privateInstanceMiddleware';
@@ -56,6 +57,8 @@ app.use(compression());
 app.use(express.static(path.resolve(__dirname, '../dist'), { maxage }));
 app.use('/public', express.static(config.publicAssets));
 app.use(/\/((?!remotepublic).)*/, bodyParser.json({ limit: '1mb' }));
+
+app.use(appContextMiddleware);
 
 //////
 // this middleware should go just before any other that accesses to db
