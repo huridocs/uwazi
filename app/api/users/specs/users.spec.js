@@ -133,6 +133,11 @@ describe('Users', () => {
           )
           .then(() => {
             expect(random.default).toHaveBeenCalled();
+            return users.get({ username: 'someone' });
+          })
+          .then(([user]) => {
+            expect(user.username).toEqual('someone');
+            expect(user.email).toEqual('someone@mailer.com');
             done();
           })
           .catch(catchErrors(done));
