@@ -69,34 +69,42 @@ describe('search', () => {
       expect(snippets.fullText[0].text).not.toMatch('[[34]]');
     });
 
-    it('perform a search on metadata and fullText and return the snippets', done => {
-      search
-        .searchSnippets('gargoyles', ids.metadataSnippets, 'en')
-        .then(snippets => {
-          const titleSnippet = snippets.metadata.find(snippet => snippet.field === 'title');
-          const fieldSnippet = snippets.metadata.find(
-            snippet => snippet.field === 'metadata.field1.value'
-          );
-          expect(snippets.count).toBe(3);
-          expect(snippets.metadata.length).toEqual(2);
-          expect(titleSnippet.texts.length).toBe(1);
-          expect(titleSnippet.texts[0]).toMatch('gargoyles');
-          expect(fieldSnippet.texts.length).toBe(1);
-          expect(fieldSnippet.texts[0]).toMatch('gargoyles');
-          expect(snippets.fullText.length).toBe(1);
-          done();
-        })
-        .catch(catchErrors(done));
+    it('perform a search on metadata and fullText and return the snippets', async () => {
+      const user = { _id: 'userId' };
+      const snippets = await search.searchSnippets('gargoyles', ids.metadataSnippets, 'en', user);
+
+      const titleSnippet = snippets.metadata.find(snippet => snippet.field === 'title');
+      const fieldSnippet = snippets.metadata.find(
+        snippet => snippet.field === 'metadata.field1.value'
+      );
+      expect(snippets.count).toBe(3);
+      expect(snippets.metadata.length).toEqual(2);
+      expect(titleSnippet.texts.length).toBe(1);
+      expect(titleSnippet.texts[0]).toMatch('gargoyles');
+      expect(fieldSnippet.texts.length).toBe(1);
+      expect(fieldSnippet.texts[0]).toMatch('gargoyles');
+      expect(snippets.fullText.length).toBe(1);
     });
 
-    it('should perform the search on unpublished documents also', done => {
-      search
-        .searchSnippets('unpublished', 'unpublishedSharedId', 'en')
-        .then(snippets => {
-          expect(snippets.fullText.length).toBe(1);
-          done();
-        })
-        .catch(catchErrors(done));
+    it('should include unpublished documents if logged in', async () => {
+      const user = { _id: 'userId' };
+      const snippets = await search.searchSnippets(
+        'unpublished',
+        'unpublishedSharedId',
+        'en',
+        user
+      );
+      expect(snippets.fullText.length).toBe(1);
+    });
+
+    it('should not include unpublished if not logged in', async () => {
+      const snippets = await search.searchSnippets(
+        'unpublished',
+        'unpublishedSharedId',
+        'en',
+        undefined
+      );
+      expect(snippets.fullText.length).toBe(0);
     });
 
     describe('when document is not matched', () => {

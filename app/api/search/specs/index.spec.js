@@ -38,6 +38,7 @@ describe('index (search)', () => {
           },
         ],
         language: 'en',
+        published: true,
       };
 
       await search.bulkIndex([entity], 'index', elasticIndex);
