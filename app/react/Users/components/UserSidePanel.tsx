@@ -131,7 +131,9 @@ export const UserSidePanel = ({
               value={userToSave.role}
             >
               {Object.values(UserRole).map(role => (
-                <option value={role}>{role}</option>
+                <option key={role} value={role}>
+                  {role}
+                </option>
               ))}
             </select>
           </div>

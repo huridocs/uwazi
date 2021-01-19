@@ -92,9 +92,6 @@ describe('User', () => {
 
     it('should be able to login with new user credentials', async () => {
       await logout();
-      await page.waitForSelector(
-        '#app > div.content > header > ul > li.menuActions > ul.menuNav-list > li:nth-child(2) > a'
-      );
       await login('collaboratorUser', 'collaboratorPass');
     });
   });
