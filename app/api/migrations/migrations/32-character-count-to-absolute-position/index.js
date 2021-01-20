@@ -21,6 +21,8 @@ const absolutePositionReferenceToTextSelection = absolutePositionReference => {
     regionId: x.pageNumber.toString(),
   }));
 
+  textSelectionRectangles.sort((a, b) => (a.top >= b.top ? 1 : -1));
+
   return {
     text: absolutePositionReference.text,
     selectionRectangles:
