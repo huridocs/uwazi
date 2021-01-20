@@ -2,6 +2,7 @@ import SHA256 from 'crypto-js/sha256';
 import crypto from 'crypto';
 
 import { createError } from 'api/utils';
+import random from 'shared/uniqueID';
 import encryptPassword, { comparePasswords } from 'api/auth/encryptPassword';
 import * as usersUtils from 'api/auth2fa/usersUtils';
 
@@ -175,9 +176,10 @@ export default {
     if (emailMatch.length) {
       return Promise.reject(createError('Email already exists', 409));
     }
+    const password = user.password ? user.password : random();
     const _user = await model.save({
       ...user,
-      password: await encryptPassword(user.password),
+      password: await encryptPassword(password),
       using2fa: undefined,
       secret: undefined,
     });
