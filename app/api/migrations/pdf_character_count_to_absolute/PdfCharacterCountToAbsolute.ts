@@ -198,8 +198,11 @@ export class PdfCharacterCountToAbsolute {
     const startingCharacterMatchingPage =
       Number(pagesCharacterCountBeforeMatchingPage.slice(-1)) + 1;
 
-    const startRangeMatchingPage = Math.max(startRange - startingCharacterMatchingPage);
-    const endRangeMatchingPage = endRange - startingCharacterMatchingPage;
+    const startRangeMatchingPage = Math.max(startRange - startingCharacterMatchingPage, 0);
+    const endRangeMatchingPage = Math.max(
+      endRange - startingCharacterMatchingPage,
+      startRangeMatchingPage + 1
+    );
 
     const pageNumber = pagesCharacterCountBeforeMatchingPage.length + 1;
 
