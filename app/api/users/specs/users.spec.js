@@ -121,26 +121,19 @@ describe('Users', () => {
           .catch(catchErrors(done));
       });
 
-      it('should create a random password when none is provided', done => {
-        users
-          .newUser(
-            {
-              username: 'someone',
-              email: 'someone@mailer.com',
-              role: 'admin',
-            },
-            domain
-          )
-          .then(() => {
-            expect(random.default).toHaveBeenCalled();
-            return users.get({ username: 'someone' });
-          })
-          .then(([user]) => {
-            expect(user.username).toEqual('someone');
-            expect(user.email).toEqual('someone@mailer.com');
-            done();
-          })
-          .catch(catchErrors(done));
+      it('should create a random password when none is provided', async () => {
+        await users.newUser(
+          {
+            username: 'someone',
+            email: 'someone@mailer.com',
+            role: 'admin',
+          },
+          domain
+        );
+
+        expect(random.default).toHaveBeenCalled();
+        const [user] = await users.get({ username: 'someone' }, '+password');
+        expect(await comparePasswords('mypass', user.password)).toBe(true);
       });
 
       it('should not allow repeat username', done => {
