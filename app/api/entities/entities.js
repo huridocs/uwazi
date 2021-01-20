@@ -297,13 +297,6 @@ export default {
       doc.user = user._id;
       doc.creationDate = date.currentUTC();
       doc.published = false;
-      doc.permissions = [
-        {
-          _id: user._id.toString(),
-          type: PermissionType.USER,
-          level: AccessLevels.WRITE,
-        },
-      ];
     }
 
     const sharedId = doc.sharedId || ID();

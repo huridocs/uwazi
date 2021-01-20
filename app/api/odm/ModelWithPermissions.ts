@@ -1,29 +1,50 @@
 import mongoose from 'mongoose';
 import { getUserInContext } from 'api/permissions/permissionsContext';
-import { AccessLevels } from 'shared/types/permissionSchema';
+import { AccessLevels, PermissionType } from 'shared/types/permissionSchema';
 import { createUpdateLogHelper } from './logHelper';
 import { DataType, OdmModel } from './model';
 import { models, UwaziFilterQuery } from './models';
 
-const appendPermissionQuery = (query: UwaziFilterQuery<any>, level: AccessLevels) => {
-  const levelCond = level === AccessLevels.WRITE ? { level: AccessLevels.WRITE } : {};
+export type PermissionsUwaziFilterQuery<T> = UwaziFilterQuery<T> & { published?: boolean };
+
+const appendPermissionData = <T>(data: T) => {
   const user = getUserInContext();
-  const targetIds = [user._id];
-  if (!['admin', 'editor'].includes(user.role)) {
-    return {
-      ...query,
-      permissions: { $elemMatch: { _id: { $in: targetIds }, ...levelCond } },
-    };
+  return {
+    ...data,
+    permissions: [
+      {
+        _id: user._id!.toString(),
+        type: PermissionType.USER,
+        level: AccessLevels.WRITE,
+      },
+    ],
+  };
+};
+
+const appendPermissionQuery = <T>(query: PermissionsUwaziFilterQuery<T>, level: AccessLevels) => {
+  const user = getUserInContext();
+  let permissionCond;
+  if (user) {
+    const targetIds = [user._id!.toString()];
+    if (!['admin', 'editor'].includes(user.role)) {
+      const levelCond = level === AccessLevels.WRITE ? { level: AccessLevels.WRITE } : {};
+      permissionCond = {
+        permissions: { $elemMatch: { _id: { $in: targetIds }, ...levelCond } },
+      };
+    }
+  } else if (level === AccessLevels.READ) {
+    permissionCond = { published: true };
+  } else {
+    permissionCond = { _id: null };
   }
-  return query;
+  return { ...query, ...permissionCond };
 };
 
 export class ModelWithPermissions<T> extends OdmModel<T> {
   async save(data: DataType<T>) {
-    const queryCondition = data._id
-      ? appendPermissionQuery({ _id: data._id }, AccessLevels.WRITE)
-      : {};
-    return super.save(data, queryCondition);
+    return data._id
+      ? super.save(data, appendPermissionQuery({ _id: data._id }, AccessLevels.WRITE))
+      : super.save(appendPermissionData(data));
   }
 
   get(query: UwaziFilterQuery<T> = {}, select: any = '', options: {} = {}) {

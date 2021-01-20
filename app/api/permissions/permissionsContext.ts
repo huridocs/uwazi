@@ -1,11 +1,7 @@
 import { UserSchema } from 'shared/types/userType';
+import { appContext } from 'api/utils/AppContext';
 
 export function getUserInContext(): UserSchema {
-  return {
-    _id: '5ffe111f3ab2080e1a80dd60',
-    username: 'col',
-    role: 'collaborator',
-    email: 'col@example.com',
-    groups: [],
-  };
+  const user = appContext.get('user') as UserSchema;
+  return user;
 }

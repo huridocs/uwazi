@@ -42,15 +42,13 @@ describe('ModelWithPermissions', () => {
       });
     });
 
-    it('should not add permissions filter if it is a new doc', async () => {
+    it('should add the user in the permissions property of the new doc', async () => {
       const newDoc = { name: 'newDoc' };
       await model.save(newDoc);
-      expect(OdmModel.prototype.save).toHaveBeenCalledWith(
-        {
-          name: 'newDoc',
-        },
-        {}
-      );
+      expect(OdmModel.prototype.save).toHaveBeenCalledWith({
+        name: 'newDoc',
+        permissions: [{ _id: 'user1', level: AccessLevels.WRITE, type: PermissionType.USER }],
+      });
     });
   });
 
