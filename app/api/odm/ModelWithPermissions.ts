@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 import { getUserInContext } from 'api/permissions/permissionsContext';
 import { AccessLevels, PermissionType } from 'shared/types/permissionSchema';
+import { UserSchema } from 'shared/types/userType';
 import { createUpdateLogHelper } from './logHelper';
 import { DataType, OdmModel } from './model';
 import { models, UwaziFilterQuery } from './models';
@@ -9,29 +10,39 @@ export type PermissionsUwaziFilterQuery<T> = UwaziFilterQuery<T> & { published?:
 
 const appendPermissionData = <T>(data: T) => {
   const user = getUserInContext();
-  return {
-    ...data,
-    permissions: [
-      {
-        _id: user._id!.toString(),
-        type: PermissionType.USER,
-        level: AccessLevels.WRITE,
-      },
-    ],
-  };
+  if (user) {
+    return {
+      ...data,
+      permissions: [
+        {
+          _id: user._id!.toString(),
+          type: PermissionType.USER,
+          level: AccessLevels.WRITE,
+        },
+      ],
+    };
+  }
+  return <T>{};
+};
+
+const addPermissionsCondition = (user: UserSchema, level: AccessLevels) => {
+  let permissionCond;
+  const targetIds = user.groups ? user.groups.map(group => group._id.toString()) : [];
+  targetIds.push(user._id!.toString());
+  if (!['admin', 'editor'].includes(user.role)) {
+    const levelCond = level === AccessLevels.WRITE ? { level: AccessLevels.WRITE } : {};
+    permissionCond = {
+      permissions: { $elemMatch: { _id: { $in: targetIds }, ...levelCond } },
+    };
+  }
+  return permissionCond;
 };
 
 const appendPermissionQuery = <T>(query: PermissionsUwaziFilterQuery<T>, level: AccessLevels) => {
   const user = getUserInContext();
   let permissionCond;
   if (user) {
-    const targetIds = [user._id!.toString()];
-    if (!['admin', 'editor'].includes(user.role)) {
-      const levelCond = level === AccessLevels.WRITE ? { level: AccessLevels.WRITE } : {};
-      permissionCond = {
-        permissions: { $elemMatch: { _id: { $in: targetIds }, ...levelCond } },
-      };
-    }
+    permissionCond = addPermissionsCondition(user, level);
   } else if (level === AccessLevels.READ) {
     permissionCond = { published: true };
   } else {

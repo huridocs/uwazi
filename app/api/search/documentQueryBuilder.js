@@ -341,7 +341,7 @@ export default function() {
 
     filterByPermissions() {
       const user = getUserInContext();
-      if (user && user._id && !['admin', 'editor'].includes(user.role)) {
+      if (user && !['admin', 'editor'].includes(user.role)) {
         const permissionTargetIds = user.groups
           ? user.groups.map(group => group._id.toString())
           : [];
