@@ -62,6 +62,10 @@ export class ModelWithPermissions<T> extends OdmModel<T> {
     return super.get(appendPermissionQuery(query, AccessLevels.READ), select, options);
   }
 
+  getInternal(query: UwaziFilterQuery<T> = {}, select: any = '') {
+    return super.get(query, select, {});
+  }
+
   async delete(condition: any) {
     return super.delete(appendPermissionQuery(condition, AccessLevels.WRITE));
   }

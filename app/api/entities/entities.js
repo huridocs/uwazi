@@ -13,7 +13,6 @@ import { PDF, files } from 'api/files';
 import * as filesystem from 'api/files';
 import dictionariesModel from 'api/thesauri/dictionariesModel';
 import translate, { getContext } from 'shared/translate';
-import { AccessLevels, PermissionType } from 'shared/types/permissionSchema';
 import { deleteFiles, deleteUploadedFiles } from '../files/filesystem';
 import model from './entitiesModel';
 import { validateEntity } from '../../shared/types/entitySchema';
@@ -377,6 +376,10 @@ export default {
 
   getWithoutDocuments(query, select, options = {}) {
     return model.get(query, select, options);
+  },
+
+  async getInternal(query, select) {
+    return model.getInternal(query, select);
   },
 
   async get(query, select, options = {}) {
