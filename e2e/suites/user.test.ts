@@ -43,7 +43,7 @@ describe('User', () => {
       await expect(page).toClick('td', { text: 'admin' });
       await assertInputValue('#email_field > input', 'admin@uwazi.com');
       await assertInputValue('#role_field > select', 'admin');
-      await assertInputValue('#name_field > input', 'admin');
+      await assertInputValue('#username_field > input', 'admin');
 
       const groups = await page.$$eval('.multiselectItem', items =>
         items.map(item => ({
@@ -58,7 +58,7 @@ describe('User', () => {
     });
 
     it('Should update the name and groups of the user', async () => {
-      await expect(page).toFill('#name_field > input', 'administrator');
+      await expect(page).toFill('#username_field > input', 'administrator');
       await expect(page).toClick('li', { text: 'Asesores legales' });
       await expect(page).toClick('button', { text: 'Save User' });
       await page.waitForSelector('.side-panel', { hidden: true });
@@ -77,7 +77,7 @@ describe('User', () => {
       await expect(page).toClick('button', { text: 'Add user' });
       await expect(page).toFill('#email_field > input', 'newuser@email.test');
       await expect(page).toFill('#password_field > input', 'collaboratorPass');
-      await expect(page).toFill('#name_field > input', 'collaboratorUser');
+      await expect(page).toFill('#username_field > input', 'collaboratorUser');
       await expect(page).toClick('li', { text: 'Asesores legales' });
       await expect(page).toClick('button', { text: 'Create User' });
       await page.waitForSelector('tbody tr:nth-child(3)');

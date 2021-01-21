@@ -142,6 +142,15 @@ const sanitizeUser = user => {
   return sanitizedUser;
 };
 
+function unauthorizedAction(user, userInTheDatabase, currentUser) {
+  return (
+    (user.hasOwnProperty('role') &&
+      user.role !== userInTheDatabase.role &&
+      currentUser.role !== 'admin') ||
+    (user._id !== currentUser._id.toString() && currentUser.role === 'collaborator')
+  );
+}
+
 export default {
   async save(user, currentUser) {
     const [userInTheDatabase] = await model.get({ _id: user._id }, '+password');
@@ -150,12 +159,7 @@ export default {
       return Promise.reject(createError('Can not change your own role', 403));
     }
 
-    if (
-      (user.hasOwnProperty('role') &&
-        user.role !== userInTheDatabase.role &&
-        currentUser.role !== 'admin') ||
-      (user._id !== currentUser._id.toString() && currentUser.role === 'collaborator')
-    ) {
+    if (unauthorizedAction(user, userInTheDatabase, currentUser)) {
       return Promise.reject(createError('Unauthorized', 403));
     }
 

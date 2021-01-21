@@ -121,7 +121,7 @@ export const PermissionsList = ({
                 const roleIcon =
                   permissionIcons[permission.roles[role as userRoles] as PermissionCellParams];
                 return (
-                  <td>
+                  <td key={role}>
                     <Icon icon={roleIcon.icon} className={roleIcon.className} />
                   </td>
                 );
