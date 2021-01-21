@@ -10,7 +10,7 @@ export default app => {
   app.post(
     '/api/users',
 
-    needsAuthorization(['admin', 'editor']),
+    needsAuthorization(['admin', 'editor', 'collaborator']),
     validation.validateRequest({
       type: 'object',
       properties: {

@@ -79,6 +79,7 @@ describe('Users', () => {
       expect(membership2).not.toBeUndefined();
     };
     it('should update the membership of the saved user', async () => {
+      currentUser = { _id: 'user2', role: 'admin' };
       const userToUpdate = {
         _id: userId.toString(),
         groups: [{ _id: group1Id.toString() }, { _id: group2Id.toString() }],
@@ -87,6 +88,7 @@ describe('Users', () => {
       await assertUserMembership(updatedUser);
     });
     it('should remove all groups if user has not any', async () => {
+      currentUser = { _id: 'user2', role: 'admin' };
       const userToUpdate = {
         _id: userId.toString(),
         groups: [],
@@ -94,6 +96,21 @@ describe('Users', () => {
       const updatedUser = await users.save(userToUpdate, currentUser);
       const groups = await userGroups.get({ 'members._id': updatedUser._id.toString() });
       expect(groups.length).toBe(0);
+    });
+
+    it('should throw an unauthorized error if a collaborator try to update another user', async () => {
+      try {
+        currentUser = { _id: 'user3', role: 'collaborator' };
+        const userToUpdate = {
+          _id: userId,
+          username: 'otherName',
+        };
+        await users.save(userToUpdate, currentUser);
+        fail('Should throw error');
+      } catch (e) {
+        expect(e.code).toBe(403);
+        expect(e.message).toEqual('Unauthorized');
+      }
     });
 
     describe('when you try to change role', () => {

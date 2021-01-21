@@ -71,6 +71,33 @@ describe('UserGroupSidePanel', () => {
       expect(wrapper.find('#deleteBtn').length).toBe(0);
     });
 
+    it.each<any>([
+      { field: 'name', value: userGroup.name, message: 'Duplicated name' },
+      { field: 'name', value: '', message: 'Name is required' },
+      { field: 'name', value: 'a'.repeat(55), message: 'Name is too long' },
+      { field: 'name', value: 'a', message: 'Name is too short' },
+    ])(
+      'should not save if there is an invalid value %s',
+      ({ field, value, message }, done: jest.DoneCallback) => {
+        const props = { ...defaultProps };
+        const newGroup = { name: 'NEW GROUP', members: [] };
+        props.userGroup = { ...newGroup, [field]: value };
+        const wrapper = render(props);
+        wrapper.find('form').simulate('submit');
+        setImmediate(() => {
+          wrapper.update();
+          const error = wrapper
+            .find({ id: `${field}_field` })
+            .children()
+            .find('div')
+            .at(0);
+          expect(defaultProps.onSave).not.toBeCalled();
+          expect(error.text()).toEqual(message);
+          done();
+        });
+      }
+    );
+
     it.each(['Group 1', ''])(
       'should not save if there is another group with the same name',
       (groupName: string) => {
@@ -123,8 +150,9 @@ describe('UserGroupSidePanel', () => {
     });
 
     describe('Saving user group', () => {
-      it('should call the save callback when save button is clicked', () => {
+      it('should call the save callback when save button is clicked', done => {
         const nameInput = component.find({ id: 'name_field' }).find('input');
+
         nameInput.simulate('change', { target: { value: 'GROUP 1' } });
         component.find('form').simulate('submit');
         setImmediate(() => {
@@ -136,6 +164,7 @@ describe('UserGroupSidePanel', () => {
               { _id: 'user2', username: 'ana johnson' },
             ],
           });
+          done();
         });
       });
     });
@@ -158,7 +187,7 @@ describe('UserGroupSidePanel', () => {
       expect(selectedUsers).toEqual(['user2', 'user4', 'user1']);
     });
 
-    it('should save selected users with member properties', () => {
+    it('should save the group with its members', done => {
       component.find('form').simulate('submit');
       setImmediate(() => {
         expect(defaultProps.onSave).toHaveBeenCalledWith({
@@ -170,6 +199,7 @@ describe('UserGroupSidePanel', () => {
             { _id: 'user1', username: 'martha perez' },
           ],
         });
+        done();
       });
     });
   });
