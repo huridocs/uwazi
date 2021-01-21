@@ -7,7 +7,6 @@ import { UserRole } from 'shared/types/userSchema';
 import { UserSchema } from 'shared/types/userType';
 import MultiSelect from 'app/Forms/components/MultiSelect';
 import { UserGroupSchema } from 'shared/types/userGroupType';
-import { ObjectIdSchema } from 'shared/types/commonTypes';
 import { PermissionsList } from 'app/Users/components/PermissionsList';
 
 export interface UserSidePanelProps {
@@ -22,9 +21,6 @@ export interface UserSidePanelProps {
   onResetPassword: (user: UserSchema) => void;
 }
 
-const mapGroupIds = (groups: { _id: ObjectIdSchema; name: string }[]) =>
-  groups.map(group => (group._id ? group._id.toString() : ''));
-
 export const UserSidePanel = ({
   user,
   users,
@@ -38,7 +34,9 @@ export const UserSidePanel = ({
 }: UserSidePanelProps) => {
   const [userToSave, setUserToSave] = useState(user);
   const [permissionsModalOpened, setPermissionsModalOpened] = useState(false);
-  const [selectedGroups, setSelectedGroups] = useState(user.groups ? mapGroupIds(user.groups) : []);
+  const [selectedGroups, setSelectedGroups] = useState(
+    user.groups ? user.groups.map(group => group._id!.toString()) : []
+  );
 
   const { register, handleSubmit, errors } = useForm();
 
@@ -137,7 +135,7 @@ export const UserSidePanel = ({
               ))}
             </select>
           </div>
-          <div id="name_field" className="form-group nested-selector">
+          <div id="username_field" className="form-group nested-selector">
             <label>
               <Translate>Username</Translate>
             </label>
@@ -151,17 +149,21 @@ export const UserSidePanel = ({
               ref={register({
                 required: true,
                 validate: isDuplicated,
-                maxLength: 256,
+                maxLength: 50,
                 minLength: 3,
               })}
             />
-            {errors.name && (
+            {errors.username && (
               <div className="validation-error">
                 <Icon icon="exclamation-triangle" size="xs" />
-                {errors.name.type === 'required' && <Translate>Name is required</Translate>}
-                {errors.name.type === 'validate' && <Translate>Duplicated name</Translate>}
-                {errors.name.type === 'maxLength' && <Translate>Name is too long</Translate>}
-                {errors.name.type === 'minLength' && <Translate>Name is too short</Translate>}
+                {errors.username.type === 'required' && <Translate>Username is required</Translate>}
+                {errors.username.type === 'validate' && <Translate>Duplicated username</Translate>}
+                {errors.username.type === 'maxLength' && (
+                  <Translate>Username is too long</Translate>
+                )}
+                {errors.username.type === 'minLength' && (
+                  <Translate>Username is too short</Translate>
+                )}
               </div>
             )}
           </div>
@@ -176,7 +178,7 @@ export const UserSidePanel = ({
               value={userToSave.password}
               name="password"
               onChange={handleInputChange}
-              ref={register({ maxLength: 256 })}
+              ref={register({ maxLength: 50 })}
             />
             {errors.password && (
               <div className="validation-error">

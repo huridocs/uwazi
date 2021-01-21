@@ -8,8 +8,8 @@ import { SidePanel } from 'app/Layout';
 import { renderConnectedMount } from 'app/Templates/specs/utils/renderConnected';
 import { UserSidePanel, UserSidePanelProps } from 'app/Users/components/UserSidePanel';
 import { UserRole } from 'shared/types/userSchema';
-import MultiSelect from 'app/Forms/components/MultiSelect';
 import { PermissionsList } from 'app/Users/components/PermissionsList';
+import MultiSelect from 'app/Forms/components/MultiSelect';
 
 describe('UserSidePanel', () => {
   const newUser = {
@@ -18,26 +18,17 @@ describe('UserSidePanel', () => {
     role: UserRole.EDITOR,
     password: 'secretWord',
   };
+  const group1 = { _id: 'group1', name: 'Denunciantes', members: [] };
+  const group2 = { _id: 'group2', name: 'Asesores legales', members: [] };
   const existingUser = {
     _id: 'user1',
     username: 'juan ramirez',
     email: 'juanr@test.test',
     role: UserRole.EDITOR,
     password: 'secretWord',
+    groups: [group1],
   };
-  const group1 = { _id: 'group1', name: 'Denunciantes', members: [] };
-  const group2 = { _id: 'group2', name: 'Asesores legales', members: [] };
-  const defaultProps: UserSidePanelProps = {
-    user: existingUser,
-    users: [existingUser],
-    groups: [group1, group2],
-    opened: true,
-    closePanel: jasmine.createSpy('closePanel'),
-    onSave: jasmine.createSpy('onSave'),
-    onDelete: jasmine.createSpy('onDelete'),
-    onReset2fa: jasmine.createSpy('onReset2fa'),
-    onResetPassword: jasmine.createSpy('onResetPassword'),
-  };
+  let defaultProps: UserSidePanelProps;
   let component: ReactWrapper<React.Component['props'], React.Component['state'], React.Component>;
 
   function render(args?: UserSidePanelProps) {
@@ -46,6 +37,17 @@ describe('UserSidePanel', () => {
   }
 
   beforeEach(() => {
+    defaultProps = {
+      user: existingUser,
+      users: [existingUser],
+      groups: [group1, group2],
+      opened: true,
+      closePanel: jasmine.createSpy('closePanel'),
+      onSave: jasmine.createSpy('onSave'),
+      onDelete: jasmine.createSpy('onDelete'),
+      onReset2fa: jasmine.createSpy('onReset2fa'),
+      onResetPassword: jasmine.createSpy('onResetPassword'),
+    };
     component = render();
   });
 
@@ -59,32 +61,64 @@ describe('UserSidePanel', () => {
       component.find({ id: 'discardChangesBtn' }).simulate('click');
       expect(defaultProps.closePanel).toHaveBeenCalled();
     });
-  });
 
-  describe('Edition of user', () => {
-    it.each([
-      { field: 'username', value: existingUser.username },
-      { field: 'username', value: '' },
-      { field: 'email', value: 'invalidEmail' },
-      { field: 'email', value: existingUser.email },
-      { field: 'email', value: '' },
-    ])('should not save if there is an invalid value %s', ({ field, value }) => {
-      const props = { ...defaultProps };
-      props.user = { ...newUser, [field]: value };
-      const wrapper = render(props);
-      wrapper.find('form').simulate('submit');
-      expect(defaultProps.onSave).not.toBeCalled();
-    });
-
-    it('should save the data of the passed user', () => {
+    it('should render the data of the passed user', () => {
       const emailInput = component.find({ id: 'email_field' }).find('input');
       expect(emailInput.props().value).toEqual(defaultProps.user.email);
       const roleInput = component.find({ id: 'role_field' }).find('select');
       expect(roleInput.props().value).toEqual(defaultProps.user.role);
-      const nameInput = component.find({ id: 'name_field' }).find('input');
+      const nameInput = component.find({ id: 'username_field' }).find('input');
       expect(nameInput.props().value).toEqual(defaultProps.user.username);
       const passwordInput = component.find({ id: 'password_field' }).find('input');
       expect(passwordInput.props().value).toEqual(defaultProps.user.password);
+    });
+  });
+
+  describe('Edition of user', () => {
+    it.each<any>([
+      { field: 'username', value: existingUser.username, message: 'Duplicated username' },
+      { field: 'username', value: '', message: 'Username is required' },
+      { field: 'username', value: 'a'.repeat(55), message: 'Username is too long' },
+      { field: 'username', value: 'a', message: 'Username is too short' },
+      { field: 'email', value: 'invalidEmail', message: 'Invalid email' },
+      { field: 'email', value: existingUser.email, message: 'Duplicated email' },
+      { field: 'email', value: '', message: 'Email is required' },
+      { field: 'password', value: 'a'.repeat(55), message: 'Password is too long' },
+    ])(
+      'should not save if there is an invalid value %s',
+      ({ field, value, message }, done: jest.DoneCallback) => {
+        const props = { ...defaultProps };
+        props.user = { ...newUser, [field]: value };
+        const wrapper = render(props);
+        wrapper.find('form').simulate('submit');
+
+        setImmediate(() => {
+          wrapper.update();
+          const error = wrapper
+            .find({ id: `${field}_field` })
+            .children()
+            .find('div')
+            .at(0);
+          expect(defaultProps.onSave).not.toBeCalled();
+          expect(error.text()).toEqual(message);
+          done();
+        });
+      }
+    );
+
+    it('should save the changes over the user', done => {
+      const emailInput = component.find({ id: 'email_field' }).find('input');
+      const fakeEvent = {
+        currentTarget: { name: 'email', value: 'newemail@test.test' },
+      };
+      // @ts-ignore
+      emailInput.prop('onChange')!(fakeEvent);
+      component.find('form').simulate('submit');
+      const savedUser = { ...existingUser, email: 'newemail@test.test' };
+      setImmediate(() => {
+        expect(defaultProps.onSave).toHaveBeenCalledWith(savedUser);
+        done();
+      });
     });
   });
 
@@ -117,6 +151,40 @@ describe('UserSidePanel', () => {
       const availableGroups = component.find(MultiSelect);
       expect(availableGroups.props().options).toEqual([group1, group2]);
     });
+
+    describe('adding a group', () => {
+      beforeEach(() => {
+        const groupsToCheck = component
+          .find(MultiSelect)
+          .find('input')
+          .at(1);
+        groupsToCheck.simulate('change');
+      });
+
+      it('should add a checked user to the selected users', () => {
+        const selectedGroups = component.find(MultiSelect).props().value;
+        expect(selectedGroups).toEqual(['group1', 'group2']);
+      });
+
+      it('should save the user with the groups she belongs to', done => {
+        component.find('form').simulate('submit');
+        setImmediate(() => {
+          expect(defaultProps.onSave).toHaveBeenCalledWith({
+            _id: 'user1',
+            email: 'juanr@test.test',
+            password: 'secretWord',
+            role: 'editor',
+            username: 'juan ramirez',
+            using2fa: true,
+            groups: [
+              { _id: 'group1', name: 'Denunciantes' },
+              { _id: 'group2', name: 'Asesores legales' },
+            ],
+          });
+          done();
+        });
+      });
+    });
   });
 
   describe('Role permissions info modal', () => {
@@ -129,6 +197,14 @@ describe('UserSidePanel', () => {
       roleInfoButton.simulate('click');
       const permissionModal = component.find(PermissionsList);
       expect(permissionModal.props().isOpen).toBe(true);
+    });
+  });
+
+  describe('Deleting user', () => {
+    it('should call the onDelete prop', () => {
+      component.find({ id: 'deleteBtn' }).simulate('click');
+      component.find('.confirm-button').simulate('click');
+      expect(defaultProps.onDelete).toHaveBeenCalledWith(defaultProps.user);
     });
   });
 });

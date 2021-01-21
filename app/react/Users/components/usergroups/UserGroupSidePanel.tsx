@@ -82,7 +82,12 @@ export const UserGroupSidePanel = ({
               value={group.name}
               name="name"
               onChange={updateGroupName}
-              ref={register({ required: true, validate: isDuplicated, maxLength: 256 })}
+              ref={register({
+                required: true,
+                validate: isDuplicated,
+                maxLength: 50,
+                minLength: 3,
+              })}
             />
             {errors.name && (
               <div className="validation-error">
@@ -90,6 +95,7 @@ export const UserGroupSidePanel = ({
                 {errors.name.type === 'required' && <Translate>Name is required</Translate>}
                 {errors.name.type === 'validate' && <Translate>Duplicated name</Translate>}
                 {errors.name.type === 'maxLength' && <Translate>Name is too long</Translate>}
+                {errors.name.type === 'minLength' && <Translate>Name is too short</Translate>}
               </div>
             )}
           </div>
