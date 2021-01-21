@@ -4,7 +4,6 @@ import entities from 'api/entities';
 import errorLog from 'api/log/errorLog';
 import { entityDefaultDocument } from 'shared/entityDefaultDocument';
 import PromisePool from '@supercharge/promise-pool';
-import { createError } from 'api/utils';
 import elastic from './elastic';
 import elasticMapFactory from '../../../database/elastic_mapping/elasticMapFactory';
 import elasticMapping from '../../../database/elastic_mapping/elastic_mapping';
@@ -158,23 +157,14 @@ const indexEntities = async ({
 
 const updateMapping = async (tmpls, elasticIndex) => {
   const mapping = elasticMapFactory.mapping(tmpls);
-  try {
-    await elastic.indices.putMapping({ body: mapping, index: elasticIndex });
-  } catch (e) {
-    throw createError(e, 400);
-  }
+  await elastic.indices.putMapping({ body: mapping, index: elasticIndex });
 };
 
 const reindexAll = async (tmpls, searchInstance, elasticIndex) => {
-  try {
-    await elastic.indices.delete({ index: elasticIndex });
-    await elastic.indices.create({ index: elasticIndex, body: elasticMapping });
-    await updateMapping(tmpls, elasticIndex);
-
-    return indexEntities({ query: {}, elasticIndex, searchInstance });
-  } catch (e) {
-    throw createError(e, 400);
-  }
+  await elastic.indices.delete({ index: elasticIndex });
+  await elastic.indices.create({ index: elasticIndex, body: elasticMapping });
+  await updateMapping(tmpls, elasticIndex);
+  return indexEntities({ query: {}, elasticIndex, searchInstance });
 };
 
 const equalPropMapping = (mapA, mapB) => {
