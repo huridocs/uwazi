@@ -57,15 +57,9 @@ const extractAllowedMetadata = (
 ) => {
   if (metadata) {
     const templateConfigProperties = templateConfig.properties;
-    const validPropertyNames = (templateData.properties || []).reduce(
-      (memo: Array<string>, property) => {
-        if (templateConfigProperties.includes((property._id || '').toString())) {
-          memo.push(property.name);
-        }
-        return memo;
-      },
-      []
-    );
+    const validPropertyNames = (templateData.properties || [])
+      .filter(p => templateConfigProperties.includes((p._id || '').toString()))
+      .map(p => p.name);
 
     return Object.keys(metadata).reduce((prevMetadata, propertyName) => {
       if (validPropertyNames.includes(propertyName)) {
