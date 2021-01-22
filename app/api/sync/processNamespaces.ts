@@ -1,13 +1,20 @@
 /* eslint-disable max-lines */
 import sift from 'sift';
-import { models } from 'api/odm';
+import { models, WithId } from 'api/odm';
 import {
   SettingsSyncTemplateSchema,
   SettingsSyncRelationtypesSchema,
+  Settings,
 } from 'shared/types/settingsType';
-import { TemplateSchema as TemplateSchemaRaw } from 'shared/types/templateType';
-import { ObjectIdSchema } from 'shared/types/commonTypes';
+import { TemplateSchema } from 'shared/types/templateType';
 import { EntitySchema } from 'shared/types/entityType';
+import { ensure } from 'shared/tsUtils';
+import { ObjectIdSchema } from 'shared/types/commonTypes';
+import templatesModel from 'api/templates/templatesModel';
+import entitiesModel from 'api/entities/entitiesModel';
+import { settingsModel } from 'api/settings/settingsModel';
+
+const noDataFound = 'NO_DATA_FOUND';
 
 const namespaces = [
   'settings',
@@ -22,12 +29,8 @@ const namespaces = [
 type NamespaceNames = typeof namespaces[number];
 type MethodNames = NamespaceNames | 'default';
 
-interface TemplateSchema extends TemplateSchemaRaw {
-  _id: ObjectIdSchema;
-}
-
 interface Options {
-  change: { namespace: NamespaceNames; mongoId: any };
+  change: { namespace: NamespaceNames; mongoId: ObjectIdSchema };
   templatesConfig: {
     [k: string]: SettingsSyncTemplateSchema;
   };
@@ -37,22 +40,22 @@ interface Options {
 }
 
 const getTemplate = async (template: string) => {
-  const templateData: TemplateSchema = await models.templates.getById(template);
-  if (!templateData._id) throw new Error('missing id');
+  const templateData = await templatesModel.getById(template);
+  if (!templateData?._id) throw new Error('missing id');
   return templateData;
 };
 
 const getEntityTemplate = async (sharedId: string) => {
-  const entitiesData = await models.entities.get({ sharedId });
-  return entitiesData[0].template.toString();
+  const entitiesData = await entitiesModel.get({ sharedId });
+  return entitiesData[0].template?.toString();
 };
 
 const extractAllowedMetadata = (
-  data: any,
-  templateData: TemplateSchema,
+  { metadata }: WithId<EntitySchema>,
+  templateData: WithId<TemplateSchema>,
   templateConfig: SettingsSyncTemplateSchema
 ) => {
-  if (data.metadata) {
+  if (metadata) {
     const templateConfigProperties = templateConfig.properties;
     const validPropertyNames = (templateData.properties || []).reduce(
       (memo: Array<string>, property) => {
@@ -64,9 +67,9 @@ const extractAllowedMetadata = (
       []
     );
 
-    return Object.keys(data.metadata).reduce((prevMetadata, propertyName) => {
+    return Object.keys(metadata).reduce((prevMetadata, propertyName) => {
       if (validPropertyNames.includes(propertyName)) {
-        return { ...prevMetadata, [propertyName]: data.metadata[propertyName] };
+        return { ...prevMetadata, [propertyName]: metadata[propertyName] };
       }
       return prevMetadata;
     }, {});
@@ -107,10 +110,10 @@ class ProcessNamespaces {
     const { namespace, mongoId } = this.change;
     const data = await models[namespace].getById(mongoId);
     if (data) {
-      return models[namespace].getById(mongoId);
+      return data;
     }
 
-    throw new Error('no data found');
+    throw new Error(noDataFound);
   }
 
   private async getTemplateDataAndConfig(template: string) {
@@ -129,8 +132,8 @@ class ProcessNamespaces {
 
   private isPossibleRightMetadataRel(
     data: any,
-    templateData: TemplateSchema,
-    hubOtherTemplates: Array<TemplateSchema>
+    templateData: WithId<TemplateSchema>,
+    hubOtherTemplates: WithId<TemplateSchema>[]
   ) {
     return hubOtherTemplates.reduce((_isRightRelationship: boolean, template) => {
       let isRightRelationship = _isRightRelationship;
@@ -157,7 +160,7 @@ class ProcessNamespaces {
 
   private async shouldSkipRel(
     data: any,
-    templateData: TemplateSchema,
+    templateData: WithId<TemplateSchema>,
     templateHasValidRelationProperties: boolean
   ) {
     const hubOtherConnections = await models.connections.get({
@@ -165,7 +168,7 @@ class ProcessNamespaces {
       _id: { $ne: data._id },
     });
 
-    const hubOtherEntities: Array<EntitySchema> = await models.entities.get(
+    const hubOtherEntities = await entitiesModel.get(
       { sharedId: { $in: hubOtherConnections.map(h => h.entity) } },
       'template'
     );
@@ -174,7 +177,7 @@ class ProcessNamespaces {
       .map(h => (h.template || '').toString())
       .filter(id => this.templatesConfigKeys.includes(id));
 
-    const hubOtherTemplates: Array<TemplateSchema> = await models.templates.get({
+    const hubOtherTemplates = await templatesModel.get({
       _id: { $in: hubWhitelistedTemplateIds },
     });
 
@@ -198,7 +201,8 @@ class ProcessNamespaces {
   }
 
   private async settings() {
-    const data = await this.fetchData();
+    const { mongoId } = this.change;
+    const data = ensure<WithId<Settings>>(await settingsModel.getById(mongoId), noDataFound);
     return { data: { _id: data._id, languages: data.languages } };
   }
 
@@ -209,12 +213,13 @@ class ProcessNamespaces {
       return { skip: true };
     }
 
-    const data = await this.fetchData();
+    const { mongoId } = this.change;
+    const data = ensure<WithId<TemplateSchema>>(await templatesModel.getById(mongoId), noDataFound);
 
     if (data.properties) {
       const templateConfigProperties = this.templatesConfig[data._id.toString()].properties;
-      data.properties = data.properties.filter((property: any) =>
-        templateConfigProperties.includes(property._id.toString())
+      data.properties = data.properties.filter(property =>
+        templateConfigProperties.includes(property._id?.toString() || '')
       );
     }
 
@@ -222,13 +227,16 @@ class ProcessNamespaces {
   }
 
   private async entities() {
-    const data = await this.fetchData();
+    const { mongoId } = this.change;
+    const data = ensure<WithId<EntitySchema>>(await entitiesModel.getById(mongoId), noDataFound);
 
     if (!(data.template && this.templatesConfigKeys.includes(data.template.toString()))) {
       return { skip: true };
     }
 
-    const { templateData, templateConfig } = await this.getTemplateDataAndConfig(data.template);
+    const { templateData, templateConfig } = await this.getTemplateDataAndConfig(
+      data.template.toString()
+    );
 
     if (templateConfig.filter) {
       if (!sift(JSON.parse(templateConfig.filter))(data)) {
@@ -245,16 +253,18 @@ class ProcessNamespaces {
     const data = await this.fetchData();
     const entityTemplate = await getEntityTemplate(data.entity);
 
-    const belongsToValidEntity = this.templatesConfigKeys.includes(entityTemplate);
-    if (!belongsToValidEntity) {
+    const belongsToValidEntity = this.templatesConfigKeys.includes(entityTemplate || '');
+    const templateData = await templatesModel.getById(entityTemplate);
+
+    if (!belongsToValidEntity || !templateData) {
       return { skip: true };
     }
 
-    const templateData = await models.templates.getById(entityTemplate);
     const templateConfigProps = this.templatesConfig[templateData._id.toString()].properties;
-    const templateHasValidRelationProperties = templateData.properties.reduce(
-      (hasValid: boolean, p: any) => {
-        const isValid = p.type === 'relationship' && templateConfigProps.includes(p._id.toString());
+    const templateHasValidRelationProperties = (templateData.properties || []).reduce(
+      (hasValid: boolean, p) => {
+        const isValid =
+          p.type === 'relationship' && templateConfigProps.includes(p._id?.toString() || '');
         return isValid || hasValid;
       },
       false
@@ -272,9 +282,9 @@ class ProcessNamespaces {
   private async files() {
     const data = await this.fetchData();
     if (data.entity) {
-      const [entity] = await models.entities.get({ sharedId: data.entity });
+      const [entity] = await entitiesModel.get({ sharedId: data.entity });
 
-      if (!this.templatesConfigKeys.includes(entity.template.toString())) {
+      if (!this.templatesConfigKeys.includes(entity.template?.toString() || '')) {
         return { skip: true };
       }
     }
@@ -300,7 +310,7 @@ class ProcessNamespaces {
 
   private async translations() {
     const data = await this.fetchData();
-    const templatesData = await models.templates.get({
+    const templatesData = await templatesModel.get({
       _id: { $in: this.templatesConfigKeys },
     });
 
@@ -311,14 +321,14 @@ class ProcessNamespaces {
         }
 
         if (this.templatesConfigKeys.includes(context.id.toString())) {
-          const contextTemplate = templatesData.find(
-            t => t._id.toString() === context.id.toString()
+          const contextTemplate = ensure<WithId<TemplateSchema>>(
+            templatesData.find(t => t._id.toString() === context.id.toString())
           );
           const templateConfigProperties = this.templatesConfig[context.id.toString()].properties;
           const approvedKeys = [contextTemplate.name].concat(
-            contextTemplate.properties
-              .filter((p: any) => templateConfigProperties.includes(p._id.toString()))
-              .map((p: any) => p.label)
+            (contextTemplate.properties || [])
+              .filter(p => templateConfigProperties.includes(p._id?.toString() || ''))
+              .map(p => p.label)
           );
 
           context.values = (context.values || []).filter((v: any) => approvedKeys.includes(v.key));
@@ -342,7 +352,7 @@ class ProcessNamespaces {
     try {
       return await this[method]();
     } catch (err) {
-      if (err.message === 'no data found') {
+      if (err.message === noDataFound) {
         return { skip: true };
       }
       throw err;
