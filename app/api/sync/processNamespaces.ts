@@ -54,23 +54,17 @@ const extractAllowedMetadata = (
   { metadata }: WithId<EntitySchema>,
   templateData: WithId<TemplateSchema>,
   templateConfig: SettingsSyncTemplateSchema
-) => {
-  if (metadata) {
-    const templateConfigProperties = templateConfig.properties;
-    const validPropertyNames = (templateData.properties || [])
-      .filter(p => templateConfigProperties.includes((p._id || '').toString()))
-      .map(p => p.name);
-
-    return Object.keys(metadata).reduce((prevMetadata, propertyName) => {
-      if (validPropertyNames.includes(propertyName)) {
-        return { ...prevMetadata, [propertyName]: metadata[propertyName] };
-      }
-      return prevMetadata;
-    }, {});
-  }
-
-  return undefined;
-};
+) =>
+  (templateData.properties || [])
+    .filter(p => templateConfig.properties.includes((p._id || '').toString()))
+    .map(p => p.name)
+    .reduce(
+      (prevMetadata, propertyName) => ({
+        ...prevMetadata,
+        [propertyName]: metadata?.[propertyName],
+      }),
+      {}
+    );
 
 class ProcessNamespaces {
   change: Options['change'];
