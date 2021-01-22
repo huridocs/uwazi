@@ -40,10 +40,19 @@ export default app => {
   app.get(
     '/api/search_snippets',
     validation.validateRequest(
-      Joi.object().keys({
-        searchTerm: Joi.string().allow(''),
-        id: Joi.string(),
-      }),
+      {
+        required: ['query'],
+        properties: {
+          query: {
+            type: 'object',
+            required: ['id'],
+            properties: {
+              searchTerm: { type: 'string', default: '' },
+              id: { type: 'string' },
+            },
+          },
+        },
+      },
       'query'
     ),
     (req, res, next) =>

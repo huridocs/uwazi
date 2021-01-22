@@ -20,22 +20,4 @@ Object {
 }
 `;
 
-exports[`search routes /api/search_snippets should have a validation schema 1`] = `
-Object {
-  "children": Object {
-    "id": Object {
-      "invalids": Array [
-        "",
-      ],
-      "type": "string",
-    },
-    "searchTerm": Object {
-      "type": "string",
-      "valids": Array [
-        "",
-      ],
-    },
-  },
-  "type": "object",
-}
-`;
+exports[`search routes /api/search_snippets should have a validation schema 1`] = `undefined`;
