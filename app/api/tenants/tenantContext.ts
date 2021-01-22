@@ -1,6 +1,6 @@
-import { AsyncLocalStorage } from 'async_hooks';
 import { config } from 'api/config';
 import handleError from 'api/utils/handleError.js';
+import { appContext } from 'api/utils/AppContext';
 import { TenantsModel } from './tenantsModel';
 
 export type Tenant = {
@@ -14,8 +14,6 @@ export type Tenant = {
 };
 
 class Tenants {
-  storage = new AsyncLocalStorage<string>();
-
   tenants: { [k: string]: Tenant };
 
   constructor() {
@@ -40,21 +38,24 @@ class Tenants {
     });
   }
 
+  /**
+   * This is a proxy to the context run method using only the tenant information.
+   * It is here for backwards compatibility after refactoring.
+   * @param cb The callback to run in the context
+   * @param tenantName Tenant name
+   */
+  // eslint-disable-next-line class-methods-use-this
   async run(
     cb: () => Promise<void>,
     tenantName: string = config.defaultTenant.name
   ): Promise<void> {
-    return new Promise((resolve, reject) => {
-      this.storage.run(tenantName, () => {
-        cb()
-          .then(resolve)
-          .catch(reject);
-      });
+    return appContext.run(cb, {
+      tenant: tenantName,
     });
   }
 
   current() {
-    const tenantName = this.storage.getStore();
+    const tenantName = <string>appContext.get('tenant');
 
     if (!tenantName) {
       throw new Error('There is no tenant on the current async context');

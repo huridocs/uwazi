@@ -10,6 +10,7 @@ import { testingTenants } from 'api/utils/testingTenants';
 import { multitenantMiddleware } from 'api/utils/multitenantMiddleware';
 
 import syncRoutes from '../routes';
+import { appContextMiddleware } from 'api/utils/appContextMiddleware';
 
 jest.mock(
   '../../auth/authMiddleware.ts',
@@ -33,6 +34,7 @@ describe('sync', () => {
       await deleteFile(uploadsPath('testUpload.txt'));
 
       const app = express();
+      app.use(appContextMiddleware);
       app.use(multitenantMiddleware);
       syncRoutes(app);
 
