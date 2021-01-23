@@ -59,7 +59,10 @@ async function denormalizeMetadata(metadata, entity, template, dictionariesByKey
         }
 
         if (prop.type === 'relationship') {
-          const partner = await model.get({ sharedId: elem.value, language: entity.language });
+          const partner = await model.getInternal({
+            sharedId: elem.value,
+            language: entity.language,
+          });
 
           if (partner && partner[0] && partner[0].title) {
             elem.label = partner[0].title;
