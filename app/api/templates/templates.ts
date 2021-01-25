@@ -4,7 +4,6 @@ import createError from 'api/utils/Error';
 import { TemplateSchema } from 'shared/types/templateType';
 import { PropertySchema } from 'shared/types/commonTypes';
 import { updateMapping } from 'api/search/entitiesIndex';
-import { tenants } from 'api/tenants/tenantContext';
 import { ensure } from 'shared/tsUtils';
 import { ObjectID } from 'mongodb';
 
@@ -77,7 +76,7 @@ export default {
     await validateTemplate(template);
     await this.swapNamesValidation(template);
 
-    await updateMapping([template], tenants.current().indexName);
+    await updateMapping([template]);
 
     if (template._id) {
       return this._update(template, language);

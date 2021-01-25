@@ -7,7 +7,7 @@ import { DB } from 'api/odm';
 import { tenants } from 'api/tenants/tenantContext';
 import { setupTestUploadedPaths, testingUploadPaths } from 'api/files/filesystem';
 import { ThesaurusSchema } from 'shared/types/thesaurusType';
-
+import { elasticTesting } from './elastic_testing';
 import { testingTenants } from './testingTenants';
 
 mongoose.Promise = Promise;
@@ -61,7 +61,7 @@ const testingDB: {
   disconnect: () => Promise<void>;
   id: (id?: string | undefined) => ObjectId;
   clear: (collections?: string[] | undefined) => Promise<void>;
-  clearAllAndLoad: (fixtures: DBFixture) => Promise<void>;
+  clearAllAndLoad: (fixtures: DBFixture, elasticIndex?: string) => Promise<void>;
   dbName: string;
 } = {
   mongodb: null,
@@ -115,9 +115,13 @@ const testingDB: {
     await fixturer.clear(mongodb, collections);
   },
 
-  async clearAllAndLoad(fixtures: DBFixture) {
+  async clearAllAndLoad(fixtures: DBFixture, elasticIndex?: string) {
     await this.connect();
     await fixturer.clearAllAndLoad(mongodb, fixtures);
+    if (elasticIndex) {
+      testingTenants.changeCurrentTenant({ indexName: elasticIndex });
+      await elasticTesting.reindex();
+    }
   },
 };
 
