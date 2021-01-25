@@ -1,12 +1,11 @@
 import * as topicClassification from 'api/config/topicClassification';
-import searchLib, { instanceSearch } from 'api/search/search';
-import instanceElasticTesting from 'api/utils/elastic_testing';
 import 'api/utils/jasmineHelpers';
 import { setUpApp } from 'api/utils/testingRoutes';
 import db from 'api/utils/testing_db';
 import { NextFunction } from 'express';
 import JSONRequest from 'shared/JSONRequest';
 import request from 'supertest';
+
 import testRoute from '../routes';
 import fixtures, { moviesId } from './fixtures';
 
@@ -71,15 +70,10 @@ function fakePost(url: string, data: any, _headers: any) {
 
 describe('topic classification routes', () => {
   const app = setUpApp(testRoute);
-  const elasticIndex = 'tc_routes_test';
-  const search = instanceSearch(elasticIndex);
-  const elasticTesting = instanceElasticTesting(elasticIndex, search);
 
   beforeEach(async () => {
-    await db.clearAllAndLoad(fixtures);
-    await elasticTesting.reindex();
-    // spyOn(searchLib, 'indexEntities').and.callFake(search.indexEntities);
-    spyOn(searchLib, 'search').and.callFake(search.search);
+    const elasticIndex = 'tc_routes_test';
+    await db.clearAllAndLoad(fixtures, elasticIndex);
     spyOn(JSONRequest, 'post').and.callFake(fakePost);
     spyOn(JSONRequest, 'get').and.callFake(fakeGet);
     spyOn(topicClassification, 'IsTopicClassificationReachable').and.returnValue(true);
@@ -103,6 +97,7 @@ describe('topic classification routes', () => {
         const response = await request(app)
           .post('/api/models/train')
           .send({ thesaurusId: moviesId });
+
         expect(response.body).toEqual(
           expect.objectContaining({ state: 'running', message: 'started training' })
         );
@@ -110,6 +105,7 @@ describe('topic classification routes', () => {
         const status = await request(app)
           .get('/api/models/train')
           .query({ thesaurus: 'Top movies' });
+
         expect(status.body).toEqual(
           expect.objectContaining({ state: 'done', message: 'done training' })
         );

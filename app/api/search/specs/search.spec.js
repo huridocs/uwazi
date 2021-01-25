@@ -1,58 +1,22 @@
 /* eslint-disable max-nested-callbacks, max-lines */
 import { elastic } from 'api/search';
-import { instanceSearch } from 'api/search/search';
+import { search } from 'api/search/search';
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import db from 'api/utils/testing_db';
-import { testingTenants } from 'api/utils/testingTenants';
-import instanceElasticTesting from 'api/utils/elastic_testing';
 import elasticResult from './elasticResult';
 import { fixtures as elasticFixtures, ids, fixturesTimeOut } from './fixtures_elastic';
 
 describe('search', () => {
   let result;
 
-  const elasticIndex = 'search_index_test';
-  const search = instanceSearch(elasticIndex);
-  const elasticTesting = instanceElasticTesting(elasticIndex, search);
-
   beforeAll(async () => {
-    result = elasticResult()
-      .withDocs([
-        {
-          title: 'doc1',
-          _id: 'id1',
-          snippets: {
-            hits: {
-              hits: [
-                {
-                  highlight: {
-                    fullText: [],
-                  },
-                },
-              ],
-            },
-          },
-        },
-      ])
-      .toObject();
-
-    await db.clearAllAndLoad(elasticFixtures);
-    testingTenants.changeCurrentTenant({ indexName: elasticIndex });
-    await elasticTesting.reindex();
+    result = elasticResult().toObject();
+    const elasticIndex = 'search_index_test';
+    await db.clearAllAndLoad(elasticFixtures, elasticIndex);
   }, fixturesTimeOut);
 
   afterAll(async () => {
     await db.disconnect();
-  });
-
-  describe('getUploadsByUser', () => {
-    it('should request all unpublished entities or documents for the user', async () => {
-      const user = { _id: ids.userId };
-      const response = await search.getUploadsByUser(user, 'en');
-
-      expect(response.length).toBe(2);
-      expect(response[0].title).toBe('unpublished');
-    });
   });
 
   describe('searchSnippets', () => {
@@ -140,17 +104,14 @@ describe('search', () => {
     });
   });
 
-  it('should perform a fullTextSearch on passed fields', done => {
-    Promise.all([
+  it('should perform a fullTextSearch on passed fields', async () => {
+    const [resultsNotFound, resultsFound] = await Promise.all([
       search.search({ searchTerm: 'spanish', fields: ['title'] }, 'es'),
       search.search({ searchTerm: 'Batman', fields: ['title'] }, 'es'),
-    ])
-      .then(([resultsNotFound, resultsFound]) => {
-        expect(resultsNotFound.rows.length).toBe(0);
-        expect(resultsFound.rows.length).toBe(2);
-        done();
-      })
-      .catch(catchErrors(done));
+    ]);
+
+    expect(resultsNotFound.rows.length).toBe(0);
+    expect(resultsFound.rows.length).toBe(2);
   });
 
   it('should perform a fullTextSearch on fullText and title', done => {
