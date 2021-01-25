@@ -83,7 +83,7 @@ const bulkIndex = async (docs, _action = 'index', elasticIndex) => {
 const getEntitiesToIndex = async (query, stepIndex, limit, select) => {
   const thisQuery = { ...query };
   thisQuery._id = !thisQuery._id ? { $gte: stepIndex } : thisQuery._id;
-  return entities.get(thisQuery, '', {
+  return entities.getInternal(thisQuery, '', {
     limit,
     documentsFullText: select && select.includes('+fullText'),
   });
