@@ -27,18 +27,6 @@ describe('SearchAPI', () => {
 
   afterEach(() => backend.restore());
 
-  describe('unpublished', () => {
-    it('should request unpublished', done => {
-      searchAPI
-        .unpublished()
-        .then(response => {
-          expect(response).toEqual('uploads');
-          done();
-        })
-        .catch(done.fail);
-    });
-  });
-
   describe('list()', () => {
     it('should request documents list', done => {
       const requestParams = new RequestParams({ keys: ['1', '2'] });

@@ -1,17 +1,11 @@
-import instanceElasticTesting from 'api/utils/elastic_testing';
 import db from 'api/utils/testing_db';
-import { instanceSearch } from '../search';
-import elastic from '../elastic';
+import { elasticClient } from '../elastic';
 import { fixturesTimeOut } from './fixtures_elastic';
 
 describe('custom language analyzers', () => {
   const elasticIndex = 'analyzers_index_test';
-  const search = instanceSearch(elasticIndex);
-  const elasticTesting = instanceElasticTesting(elasticIndex, search);
-
   beforeAll(async () => {
-    db.clearAllAndLoad({});
-    await elasticTesting.resetIndex();
+    await db.clearAllAndLoad({}, elasticIndex);
   }, fixturesTimeOut);
 
   afterAll(async () => {
@@ -26,7 +20,7 @@ describe('custom language analyzers', () => {
 از کالس انجام دهيد تا براي خواندن و نوشتن در کالس آماده باشيد. وقت کالس بايد صرف تمرين شود، نه شنيدن سخنراني
 استادتان.`;
 
-      await elastic.index({
+      await elasticClient.index({
         index: elasticIndex,
         type: '_doc',
         body: { fullText_persian: persianText },

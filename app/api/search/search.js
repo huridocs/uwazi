@@ -1,22 +1,17 @@
 /* eslint-disable max-lines */
 import date from 'api/utils/date';
-
 import propertiesHelper from 'shared/comonProperties';
-import { tenants } from 'api/tenants/tenantContext';
-
 import dictionariesModel from 'api/thesauri/dictionariesModel';
 import { createError } from 'api/utils';
 import { filterOptions } from 'shared/optionsUtils';
 import { preloadOptionsLimit, preloadOptionsSearch } from 'shared/config';
 import documentQueryBuilder from './documentQueryBuilder';
-import elastic from './elastic';
+import { elastic } from './elastic';
 import entities from '../entities';
 import entitiesModel from '../entities/entitiesModel';
 import templatesModel from '../templates';
 import { bulkIndex, indexEntities, updateMapping } from './entitiesIndex';
 import thesauri from '../thesauri';
-
-const getCurrentTenantIndex = () => tenants.current().indexName;
 
 function processFilters(filters, properties) {
   return Object.keys(filters || {}).reduce((res, filterName) => {
@@ -614,7 +609,7 @@ const buildQuery = async (query, language, user, resources) => {
   return queryBuilder;
 };
 
-const instanceSearch = elasticIndex => ({
+const search = {
   async search(query, language, user) {
     const resources = await Promise.all([templatesModel.get(), dictionariesModel.get()]);
     const [templates, dictionaries] = resources;
@@ -625,7 +620,7 @@ const instanceSearch = elasticIndex => ({
 
     // queryBuilder.query() is the actual call
     return elastic
-      .search({ index: elasticIndex || getCurrentTenantIndex(), body: queryBuilder.query() })
+      .search({ body: queryBuilder.query() })
       .then(response => processResponse(response, templates, dictionaries, language, query.filters))
       .catch(e => {
         throw createError(e, 400);
@@ -645,10 +640,6 @@ const instanceSearch = elasticIndex => ({
     }
 
     return results;
-  },
-
-  getUploadsByUser(user, language) {
-    return entities.get({ user: user._id, language, published: false });
   },
 
   async searchSnippets(searchTerm, sharedId, language, user) {
@@ -671,9 +662,9 @@ const instanceSearch = elasticIndex => ({
     }
 
     const response = await elastic.search({
-      index: elasticIndex || getCurrentTenantIndex(),
       body: query.query(),
     });
+
     if (response.body.hits.hits.length === 0) {
       return {
         count: 0,
@@ -690,30 +681,29 @@ const instanceSearch = elasticIndex => ({
       select,
       limit,
       batchCallback,
-      elasticIndex: elasticIndex || getCurrentTenantIndex(),
       searchInstance: this,
     });
   },
 
-  async bulkIndex(docs, action = 'index', index = elasticIndex) {
-    return bulkIndex(docs, action, index);
+  async bulkIndex(docs, action = 'index') {
+    return bulkIndex(docs, action);
   },
 
   bulkDelete(docs) {
     const body = docs.map(doc => ({
-      delete: { _index: elasticIndex || getCurrentTenantIndex(), _id: doc._id },
+      delete: { _id: doc._id },
     }));
     return elastic.bulk({ body });
   },
 
   delete(entity) {
     const id = entity._id.toString();
-    return elastic.delete({ index: elasticIndex || getCurrentTenantIndex(), id });
+    return elastic.delete({ id });
   },
 
   deleteLanguage(language) {
     const query = { query: { match: { language } } };
-    return elastic.deleteByQuery({ index: elasticIndex || getCurrentTenantIndex(), body: query });
+    return elastic.deleteByQuery({ body: query });
   },
 
   async autocompleteAggregations(query, language, propertyName, searchTerm, user) {
@@ -744,9 +734,9 @@ const instanceSearch = elasticIndex => ({
     });
 
     const response = await elastic.search({
-      index: elasticIndex || getCurrentTenantIndex(),
       body,
     });
+
     const sanitizedAggregations = await _sanitizeAggregations(
       response.body.aggregations.all,
       templates,
@@ -805,7 +795,7 @@ const instanceSearch = elasticIndex => ({
       });
     }
 
-    const response = await elastic.search({ index: elasticIndex || getCurrentTenantIndex(), body });
+    const response = await elastic.search({ body });
 
     const options = response.body.hits.hits.slice(0, preloadOptionsLimit).map(hit => ({
       value: hit._source.sharedId,
@@ -819,10 +809,8 @@ const instanceSearch = elasticIndex => ({
 
   async updateTemplatesMapping() {
     const templates = await templatesModel.get();
-    return updateMapping(templates, elasticIndex);
+    return updateMapping(templates);
   },
-});
+};
 
-export { instanceSearch };
-
-export default instanceSearch();
+export { search };

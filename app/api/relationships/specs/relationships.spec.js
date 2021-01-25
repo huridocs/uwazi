@@ -29,7 +29,7 @@ import fixtures, {
   template,
 } from './fixtures';
 import relationships from '../relationships';
-import search from '../../search/search';
+import { search } from '../../search';
 
 describe('relationships', () => {
   beforeEach(done => {
