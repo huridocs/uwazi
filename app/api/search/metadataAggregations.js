@@ -167,3 +167,10 @@ export const propertyToAggregation = (property, dictionaries, baseQuery, suggest
 
   return aggregation(path, should, filters);
 };
+
+export const generatedTocAggregations = baseQuery => {
+  const path = 'generatedToc.raw';
+  const filters = extractFilters(baseQuery, path);
+  const { should } = baseQuery.query.bool;
+  return aggregation(path, should, filters);
+};
