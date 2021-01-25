@@ -7,7 +7,7 @@ import { generateID } from 'api/odm';
 import { createError } from 'api/utils';
 
 import model from './model';
-import search from '../search/search';
+import { search } from '../search';
 import { generateNamesAndIds } from '../templates/utils';
 
 import { filterRelevantRelationships, groupRelationships } from './groupByRelationships';
