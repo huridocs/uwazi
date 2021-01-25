@@ -26,6 +26,7 @@ export const fileSchema = {
     type: { type: 'string', enum: ['custom', 'document', 'thumbnail'] },
     status: { type: 'string', enum: ['processing', 'failed', 'ready'] },
     totalPages: { type: 'number' },
+    generatedToc: { type: 'boolean' },
     fullText: {
       type: 'object',
       additionalProperties: false,

@@ -2,7 +2,7 @@
 
 import { preloadOptionsSearch } from 'shared/config';
 import filterToMatch, { multiselectFilter } from './metadataMatchers';
-import { propertyToAggregation } from './metadataAggregations';
+import { propertyToAggregation, generatedTocAggregations } from './metadataAggregations';
 
 export default function() {
   const baseQuery = {
@@ -40,6 +40,7 @@ export default function() {
     aggregations: {
       all: {
         global: {},
+        customAggregations: {},
         aggregations: {
           _types: {
             terms: {
@@ -241,8 +242,13 @@ export default function() {
       return this;
     },
 
+    generatedTOCAggregations() {
+      baseQuery.aggregations.all.customAggregations.generatedToc = generatedTocAggregations(baseQuery);
+    },
+
     aggregations(properties, dictionaries) {
       properties.forEach(property => {
+        // console.log(JSON.stringify(propertyToAggregation(property, dictionaries, baseQuery), null, ' '));
         baseQuery.aggregations.all.aggregations[property.name] = propertyToAggregation(
           property,
           dictionaries,

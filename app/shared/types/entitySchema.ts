@@ -144,6 +144,7 @@ export const entitySchema = {
     creationDate: { type: 'number' },
     user: objectIdSchema,
     metadata: metadataSchema,
+    systemMetadata: metadataSchema,
     suggestedMetadata: metadataSchema,
   },
 };

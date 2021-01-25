@@ -20,6 +20,7 @@ export interface EntitySchema {
   creationDate?: number;
   user?: ObjectIdSchema;
   metadata?: MetadataSchema;
+  systemMetadata?: MetadataSchema;
   suggestedMetadata?: MetadataSchema;
   [k: string]: unknown | undefined;
 }
