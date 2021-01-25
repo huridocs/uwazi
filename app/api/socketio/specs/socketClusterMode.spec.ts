@@ -6,6 +6,7 @@ import { multitenantMiddleware } from 'api/utils/multitenantMiddleware';
 import { tenants, Tenant } from 'api/tenants/tenantContext';
 
 import { setupSockets } from '../setupSockets';
+import { appContextMiddleware } from 'api/utils/appContextMiddleware';
 
 const closeServer = async (httpServer: Server) =>
   new Promise(resolve => {
@@ -55,6 +56,7 @@ const app: Application = express();
 describe('socket middlewares setup', () => {
   beforeAll(async () => {
     server = await createServer(app, port);
+    app.use(appContextMiddleware);
     app.use(multitenantMiddleware);
     setupSockets(server, app);
 
