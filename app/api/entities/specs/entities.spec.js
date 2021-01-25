@@ -24,6 +24,10 @@ import fixtures, {
   unpublishedDocId,
 } from './fixtures.js';
 
+jest.mock('api/permissions/permissionsContext', () => ({
+  getUserInContext: jest.fn().mockReturnValue({ _id: 'user1', role: 'admin' }),
+}));
+
 describe('entities', () => {
   beforeEach(async () => {
     spyOn(search, 'delete').and.returnValue(Promise.resolve());

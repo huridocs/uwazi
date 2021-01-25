@@ -188,7 +188,7 @@ export default {
     return this.getDocumentHubs(sharedId, file, onlyTextReferences).then(_relationships => {
       const connectedEntitiesSharedId = _relationships.map(relationship => relationship.entity);
       return entities
-        .get({ sharedId: { $in: connectedEntitiesSharedId }, language }, [
+        .getInternal({ sharedId: { $in: connectedEntitiesSharedId }, language }, [
           'template',
           'creationDate',
           'title',

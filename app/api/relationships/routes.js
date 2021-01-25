@@ -74,7 +74,9 @@ export default app => {
       'query'
     ),
     (req, res, next) => {
-      const unpublished = Boolean(req.user && ['admin', 'editor'].includes(req.user.role));
+      const unpublished = Boolean(
+        req.user && ['admin', 'editor', 'collaborator'].includes(req.user.role)
+      );
       relationships
         .getByDocument(
           req.query.sharedId,
