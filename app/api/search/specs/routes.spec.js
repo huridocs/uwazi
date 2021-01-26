@@ -1,5 +1,8 @@
+import request from 'supertest';
 import entities from 'api/entities';
 import { catchErrors } from 'api/utils/jasmineHelpers';
+import { setUpApp } from 'api/utils/testingRoutes';
+import { testingDB } from 'api/utils/testing_db';
 import searchRoutes from '../deprecatedRoutes.js';
 import instrumentRoutes from '../../utils/instrumentRoutes';
 import search from '../search';
@@ -87,8 +90,20 @@ describe('search routes', () => {
   });
 
   describe('/api/search_snippets', () => {
-    it('should have a validation schema', () => {
-      expect(routes.get.validation('/api/search_snippets')).toMatchSnapshot();
+    const app = setUpApp(searchRoutes);
+
+    it('should have a validation schema', async () => {
+      await testingDB.clearAllAndLoad({
+        settings: [
+          {
+            languages: [{ key: 'es', default: true }, { key: 'pt' }, { key: 'en' }],
+          },
+        ],
+      });
+      const response = await request(app)
+        .get('/api/search_snippets?searchTerm=test')
+        .send({});
+      expect(response.text).toMatch(/should have required property 'id'/);
     });
 
     it('should search', done => {

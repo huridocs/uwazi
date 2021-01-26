@@ -13,13 +13,13 @@ const setUpApp = (
 ): Application => {
   const app: Application = express();
   app.use(bodyParser.json());
+  customMiddleware.forEach(middlewareElement => app.use(middlewareElement));
   app.use((req: Request, _res: Response, next: NextFunction) => {
     req.emitToSessionSocket = (event: string, ...args: any[]) => iosocket.emit(event, ...args);
     next();
   });
 
   app.use(languageMiddleware);
-  customMiddleware.forEach(middlewareElement => app.use(middlewareElement));
 
   route(app);
   app.use(errorHandlingMiddleware);
