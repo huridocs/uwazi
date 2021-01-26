@@ -17,7 +17,6 @@ import { actions as relationshipActions } from 'app/Relationships';
 import { RequestParams } from 'app/utils/RequestParams';
 import * as actions from '../documentActions';
 import * as types from '../actionTypes';
-import { PDFUtils } from '../../../PDF';
 
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);

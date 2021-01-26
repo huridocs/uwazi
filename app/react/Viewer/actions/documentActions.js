@@ -4,18 +4,15 @@ import * as types from 'app/Viewer/actions/actionTypes';
 import * as connectionsTypes from 'app/Connections/actions/actionTypes';
 import { entityDefaultDocument } from 'shared/entityDefaultDocument';
 
-import { APIURL } from 'app/config.js';
 import { actions } from 'app/BasicReducer';
 import { actions as formActions } from 'react-redux-form';
 import { documentsApi } from 'app/Documents';
 import { notificationActions } from 'app/Notifications';
 import { removeDocument, unselectAllDocuments } from 'app/Library/actions/libraryActions';
-import { isClient } from 'app/utils';
 import { actions as relationshipActions } from 'app/Relationships';
 import { RequestParams } from 'app/utils/RequestParams';
 import * as selectionActions from './selectionActions';
 import * as uiActions from './uiActions';
-import { PDFUtils } from '../../PDF';
 import sortTextSelections from '../utils/sortTextSelections';
 
 export function setDocument(document, html) {

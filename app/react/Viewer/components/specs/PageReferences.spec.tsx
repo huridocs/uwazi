@@ -1,5 +1,5 @@
 import React from 'react';
-import { shallow, ShallowWrapper } from 'enzyme';
+import { shallow } from 'enzyme';
 import Immutable from 'immutable';
 import { Highlight } from 'react-pdf-handler';
 import { Provider } from 'react-redux';

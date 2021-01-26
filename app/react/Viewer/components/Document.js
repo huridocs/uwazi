@@ -78,7 +78,7 @@ export class Document extends Component {
 
   handleOver() {}
 
-  renderPDF(file, references) {
+  renderPDF(file) {
     if (!(file._id && file.pdfInfo)) {
       return <Loader />;
     }
@@ -101,7 +101,7 @@ export class Document extends Component {
 
   render() {
     const doc = this.props.doc.toJS();
-    const { file, references } = this.props;
+    const { file } = this.props;
 
     const Header = this.props.header;
     return (
@@ -114,7 +114,7 @@ export class Document extends Component {
             onMouseOver={this.handleOver.bind(this)}
             onClick={this.handleClick}
           >
-            {this.renderPDF(file, references)}
+            {this.renderPDF(file)}
           </div>
         </div>
       </div>

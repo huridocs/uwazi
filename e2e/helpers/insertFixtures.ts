@@ -3,7 +3,7 @@ import { spawn } from 'child-process-promise';
 export default async () => {
   try {
     console.log('Applying fixtures...');
-    const result = await spawn('yarn', ['e2e-puppeteer-fixtures'], {
+    await spawn('yarn', ['e2e-puppeteer-fixtures'], {
       capture: ['stdout', 'stderr'],
     });
   } catch (e) {
