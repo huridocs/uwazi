@@ -3048,10 +3048,6 @@ base@^0.11.1:
     mixin-deep "^1.2.0"
     pascalcase "^0.1.1"
 
-batarange@0.2.0:
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/batarange/-/batarange-0.2.0.tgz#c989922c4da5174c6db1178649489ff9be8a0853"
-
 bcrypt-pbkdf@^1.0.0:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/bcrypt-pbkdf/-/bcrypt-pbkdf-1.0.2.tgz#a4301d389b6a43f9b67ff3ca11a3f6637e360e9e"

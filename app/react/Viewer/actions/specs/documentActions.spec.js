@@ -295,28 +295,6 @@ describe('documentActions', () => {
         expect(doc.documents[0].filename).not.toBe('filenam');
         expect(doc.defaultDoc).toEqual({});
       });
-
-      describe('when the doc does not have the pdf processed', () => {
-        it('should process it and save it before it gets returned', async () => {
-          spyOn(PDFUtils, 'extractPDFInfo').and.returnValue(Promise.resolve('test'));
-          const expected = {
-            sharedId: 'shared',
-            _id: 'pdfNotReady',
-            defaultDoc: expect.objectContaining({ _id: 'pdfNotReady' }),
-            documents: [{ _id: 'pdfNotReady', pdfInfo: 'test' }],
-          };
-          spyOn(api, 'post').and.returnValue(Promise.resolve({ json: expected.documents[0] }));
-          const requestParams = new RequestParams({ sharedId: 'docWithPDFNotRdy' });
-
-          const doc = await actions.getDocument(requestParams);
-          expect(PDFUtils.extractPDFInfo).toHaveBeenCalledWith(`${APIURL}files/filename`);
-          expect(api.post).toHaveBeenCalledWith('documents/pdfInfo', {
-            data: { _id: 'pdfNotReady', pdfInfo: 'test' },
-            headers: {},
-          });
-          expect(expected).toEqual(doc);
-        });
-      });
     });
 
     describe('saveToc', () => {

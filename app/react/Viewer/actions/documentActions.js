@@ -107,22 +107,7 @@ export async function getDocument(requestParams, defaultLanguage, filename) {
   ).json.rows;
 
   entity.defaultDoc = getEntityDoc(entity, filename, defaultLanguage);
-  if (!isClient) return entity;
-  if (Object.keys(entity.defaultDoc).length === 0 || entity.defaultDoc.pdfInfo) return entity;
-
-  const pdfInfo = await PDFUtils.extractPDFInfo(`${APIURL}files/${entity.defaultDoc.filename}`);
-  const processedDoc = await api
-    .post('documents/pdfInfo', new RequestParams({ _id: entity.defaultDoc._id, pdfInfo }))
-    .then(res => res.json);
-
-  return {
-    ...entity,
-    defaultDoc: processedDoc,
-    documents: entity.documents.map(d => {
-      if (d._id === processedDoc._id) return processedDoc;
-      return d;
-    }),
-  };
+  return entity;
 }
 
 export function loadTargetDocument(sharedId) {
