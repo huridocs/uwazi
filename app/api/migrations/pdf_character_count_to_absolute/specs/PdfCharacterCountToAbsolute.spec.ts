@@ -41,6 +41,29 @@ const checkAbsoluteTag = (tag: AbsolutePositionTag, tagExpected: AbsolutePositio
 };
 
 describe('PdfCharacterCountToAbsolute', () => {
+  it('should convert first label to absolute position', async () => {
+    const pdfRelativePath =
+      'app/api/migrations/pdf_character_count_to_absolute/specs/pdf_to_be_converted.pdf';
+    const firstLabel = 'first label';
+
+    const characterCountToAbsoluteConversion = new PdfCharacterCountToAbsolute();
+    await characterCountToAbsoluteConversion.loadPdf(pdfRelativePath, pdfInfo);
+    const absolutePosition = characterCountToAbsoluteConversion.convert(firstLabel, 0, 1);
+
+    expect(absolutePosition.text).toBe(firstLabel);
+    expect(absolutePosition.pageWidth).toBe(793);
+    expect(absolutePosition.pageHeight).toBe(1122);
+    expect(absolutePosition.selectionRectangles.length).toBe(1);
+    checkAbsoluteTag(absolutePosition.selectionRectangles[0], {
+      pageNumber: 1,
+      top: 1035,
+      left: 76,
+      height: 12,
+      width: 90,
+      text: 'G',
+    });
+  });
+
   it('should convert short label to absolute position', async () => {
     const pdfRelativePath =
       'app/api/migrations/pdf_character_count_to_absolute/specs/pdf_to_be_converted.pdf';
