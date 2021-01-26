@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { SelectionHandler, Highlight, SelectionRegion } from 'react-pdf-handler';
+import { SelectionHandler, SelectionRegion } from 'react-pdf-handler';
 import { advancedSort } from 'app/utils/advancedSort';
 import Immutable from 'immutable';
 
@@ -161,23 +161,6 @@ class PDF extends Component {
     this.props.highlightReference(connection);
   }
 
-  renderReferences(page) {
-    const references = this.props.references.toJS();
-    return references.map(r => {
-      const color = r._id === this.props.activeReference ? '#ffd84b' : '#feeeb4';
-      return (
-        <div
-          data-id={r._id}
-          key={r._id}
-          className="reference"
-          onClick={this.highlightReference.bind(this, r)}
-        >
-          <Highlight regionId={page} highlight={r.reference} color={color} />
-        </div>
-      );
-    });
-  }
-
   render() {
     return (
       <div
@@ -203,9 +186,8 @@ class PDF extends Component {
                       onHidden={this.onPageHidden}
                       page={page}
                       pdf={this.state.pdf}
-                    >
-                      {this.renderReferences(page.toString())}
-                    </PDFPage>
+                      highlightReference={this.props.highlightReference}
+                    />
                   </SelectionRegion>
                 </div>
               );
@@ -225,9 +207,7 @@ PDF.defaultProps = {
   style: {},
   onTextSelection: () => {},
   onTextDeselection: () => {},
-  references: Immutable.List(),
   highlightReference: () => {},
-  activeReference: '',
 };
 
 PDF.propTypes = {
@@ -240,9 +220,7 @@ PDF.propTypes = {
   onLoad: PropTypes.func.isRequired,
   pdfInfo: PropTypes.object,
   style: PropTypes.object,
-  references: PropTypes.instanceOf(Immutable.List),
   highlightReference: PropTypes.func,
-  activeReference: PropTypes.string,
 };
 
 export default PDF;

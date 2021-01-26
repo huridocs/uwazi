@@ -39,6 +39,7 @@ export function addReference(references, docInfo, delayActivation) {
 }
 
 export function saveTargetRangedReference(connection, targetRange, targetFile, onCreate) {
+  console.log(connection);
   return (dispatch, getState) => {
     if (targetRange.text) {
       dispatch(actions.unset('viewer/targetDocReferences'));

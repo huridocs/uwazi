@@ -16,6 +16,7 @@ import { RequestParams } from 'app/utils/RequestParams';
 import * as selectionActions from './selectionActions';
 import * as uiActions from './uiActions';
 import { PDFUtils } from '../../PDF';
+import sortTextSelections from '../utils/sortTextSelections';
 
 export function setDocument(document, html) {
   return {
@@ -191,11 +192,7 @@ export function addToToc(textSelectedObject, currentToc) {
     };
 
     toc.push(tocElement);
-    toc = toc.sort((a, b) => {
-      return a.selectionRectangles[0].regionId === b.selectionRectangles[0].regionId
-        ? a.selectionRectangles[0].top - b.selectionRectangles[0].top
-        : a.selectionRectangles[0].regionId - b.selectionRectangles[0].regionId;
-    });
+    toc = toc.sort(sortTextSelections);
     dispatch(editToc(toc));
   };
 }

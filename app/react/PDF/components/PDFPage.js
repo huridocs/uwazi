@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import { isClient } from 'app/utils';
 
 import PDFJS, { textLayerFactory } from '../PDFJS';
+import { PageReferences } from 'app/Viewer/components/PageReferences';
 
 class PDFPage extends Component {
   componentDidMount() {
@@ -36,6 +37,7 @@ class PDFPage extends Component {
         this.props.onUnload(this.props.page);
       }
       this.rendered = false;
+      this.setState({ rendered: false });
     }
   }
 
@@ -81,16 +83,25 @@ class PDFPage extends Component {
     }
   }
 
+  renderReferences() {
+    if (this.rendered) {
+      return <PageReferences page={this.props.page} onClick={this.props.highlightReference} />;
+    }
+  }
+
   renderPage() {
     if (!this.rendered && this.pdfPageView) {
       this.props.onLoading(this.props.page);
       this.pdfPageView.draw().catch(e => e);
       this.rendered = true;
+      this.setState({ rendered: true });
+
       return;
     }
     if (!this.rendered) {
       this.props.onLoading(this.props.page);
       this.rendered = true;
+      this.setState({ rendered: true });
       this.props.pdf.getPage(this.props.page).then(page => {
         const scale = 1;
 
@@ -130,7 +141,7 @@ class PDFPage extends Component {
         }}
         style={style}
       >
-        {this.props.children}
+        {this.renderReferences()}
       </div>
     );
   }
@@ -140,7 +151,7 @@ PDFPage.defaultProps = {
   getViewportContainer: () => (isClient ? document.querySelector('.document-viewer') : null),
   onVisible: () => {},
   onHidden: () => {},
-  children: [],
+  highlightReference: () => {},
 };
 
 PDFPage.propTypes = {
@@ -151,7 +162,7 @@ PDFPage.propTypes = {
   onLoading: PropTypes.func.isRequired,
   onUnload: PropTypes.func.isRequired,
   pdf: PropTypes.object.isRequired,
-  children: PropTypes.node,
+  highlightReference: PropTypes.func,
 };
 
 export default PDFPage;
