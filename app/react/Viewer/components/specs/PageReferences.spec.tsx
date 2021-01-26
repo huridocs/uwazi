@@ -22,7 +22,7 @@ describe('FormConfigInput', () => {
   const render = () => {
     const store = mockStoreCreator({
       documentViewer: {
-        uiState: { activeReference: '2' },
+        uiState: Immutable.fromJS({ activeReference: '2' }),
         references: Immutable.fromJS([
           { _id: '1', reference: { selectionRectangles: [{ regionId: '2' }] } },
           { _id: '2', reference: { selectionRectangles: [{ regionId: '3' }] } },
