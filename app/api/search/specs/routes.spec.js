@@ -2,7 +2,7 @@ import entities from 'api/entities';
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import searchRoutes from '../deprecatedRoutes.js';
 import instrumentRoutes from '../../utils/instrumentRoutes';
-import search from '../search';
+import { search } from '../search';
 
 describe('search routes', () => {
   let routes;
@@ -93,28 +93,17 @@ describe('search routes', () => {
 
     it('should search', done => {
       spyOn(search, 'searchSnippets').and.returnValue(new Promise(resolve => resolve('results')));
-      const req = { query: { searchTerm: 'test', id: 'id' }, language: 'es' };
+      const req = {
+        query: { searchTerm: 'test', id: 'id' },
+        language: 'es',
+        user: { _id: 'userId' },
+      };
 
       routes
         .get('/api/search_snippets', req)
         .then(response => {
           expect(response).toEqual('results');
-          expect(search.searchSnippets).toHaveBeenCalledWith('test', 'id', 'es');
-          done();
-        })
-        .catch(catchErrors(done));
-    });
-  });
-
-  describe('/api/search/unpublished', () => {
-    it('should search', done => {
-      spyOn(search, 'getUploadsByUser').and.returnValue(new Promise(resolve => resolve('results')));
-      const req = { query: { searchTerm: 'test', id: 'id' }, language: 'es' };
-
-      routes
-        .get('/api/search/unpublished', req)
-        .then(response => {
-          expect(response).toEqual({ rows: 'results' });
+          expect(search.searchSnippets).toHaveBeenCalledWith('test', 'id', 'es', req.user);
           done();
         })
         .catch(catchErrors(done));

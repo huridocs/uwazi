@@ -2,10 +2,10 @@ import languagesUtil from 'shared/languages';
 import languages from 'shared/languagesList';
 import entities from 'api/entities';
 import errorLog from 'api/log/errorLog';
+import { tenants } from 'api/tenants';
 import { entityDefaultDocument } from 'shared/entityDefaultDocument';
 import PromisePool from '@supercharge/promise-pool';
-import { createError } from 'api/utils';
-import elastic from './elastic';
+import { elastic } from './elastic';
 import elasticMapFactory from '../../../database/elastic_mapping/elasticMapFactory';
 import elasticMapping from '../../../database/elastic_mapping/elastic_mapping';
 
@@ -42,7 +42,7 @@ function setFullTextSettings(defaultDocument, id, body, doc) {
   delete doc.fullText;
 }
 
-const bulkIndex = async (docs, _action = 'index', elasticIndex) => {
+const bulkIndex = async (docs, _action = 'index') => {
   const body = [];
   // eslint-disable-next-line max-statements
   docs.forEach(doc => {
@@ -51,7 +51,7 @@ const bulkIndex = async (docs, _action = 'index', elasticIndex) => {
     const id = doc._id.toString();
     ['_id', '_rev', 'pdfInfo'].forEach(e => delete docBody[e]);
     const action = {};
-    action[_action] = { _index: elasticIndex, _id: id };
+    action[_action] = { _id: id };
     if (_action === 'update') {
       docBody = { doc: docBody };
     }
@@ -67,7 +67,7 @@ const bulkIndex = async (docs, _action = 'index', elasticIndex) => {
 
     if (defaultDocument.fullText) {
       body.push({
-        [_action]: { _index: elasticIndex, _id: `${id}_fullText`, routing: id },
+        [_action]: { _id: `${id}_fullText`, routing: id },
       });
       setFullTextSettings(defaultDocument, id, body, doc);
     }
@@ -91,8 +91,8 @@ const getEntitiesToIndex = async (query, stepIndex, limit, select) => {
 };
 
 const bulkIndexAndCallback = async assets => {
-  const { searchInstance, entitiesToIndex, elasticIndex, batchCallback, totalRows } = assets;
-  await searchInstance.bulkIndex(entitiesToIndex, 'index', elasticIndex);
+  const { searchInstance, entitiesToIndex, batchCallback, totalRows } = assets;
+  await searchInstance.bulkIndex(entitiesToIndex, 'index');
   return batchCallback(entitiesToIndex.length, totalRows);
 };
 
@@ -107,7 +107,7 @@ const getSteps = async (query, limit) => {
 
 /*eslint max-statements: ["error", 20]*/
 const indexBatch = async (totalRows, options) => {
-  const { query, select, limit, batchCallback, elasticIndex, searchInstance } = options;
+  const { query, select, limit, batchCallback, searchInstance } = options;
   const steps = await getSteps(query, limit);
 
   const promisePool = new PromisePool();
@@ -120,7 +120,6 @@ const indexBatch = async (totalRows, options) => {
         await bulkIndexAndCallback({
           searchInstance,
           entitiesToIndex,
-          elasticIndex,
           batchCallback,
           totalRows,
         });
@@ -142,7 +141,6 @@ const indexEntities = async ({
   select = '',
   limit = 50,
   batchCallback = () => {},
-  elasticIndex,
   searchInstance,
 }) => {
   const totalRows = await entities.count(query);
@@ -151,30 +149,20 @@ const indexEntities = async ({
     select,
     limit,
     batchCallback,
-    elasticIndex,
     searchInstance,
   });
 };
 
-const updateMapping = async (tmpls, elasticIndex) => {
+const updateMapping = async tmpls => {
   const mapping = elasticMapFactory.mapping(tmpls);
-  try {
-    await elastic.indices.putMapping({ body: mapping, index: elasticIndex });
-  } catch (e) {
-    throw createError(e, 400);
-  }
+  await elastic.indices.putMapping({ body: mapping });
 };
 
-const reindexAll = async (tmpls, searchInstance, elasticIndex) => {
-  try {
-    await elastic.indices.delete({ index: elasticIndex });
-    await elastic.indices.create({ index: elasticIndex, body: elasticMapping });
-    await updateMapping(tmpls, elasticIndex);
-
-    return indexEntities({ query: {}, elasticIndex, searchInstance });
-  } catch (e) {
-    throw createError(e, 400);
-  }
+const reindexAll = async (tmpls, searchInstance) => {
+  await elastic.indices.delete();
+  await elastic.indices.create({ body: elasticMapping });
+  await updateMapping(tmpls);
+  return indexEntities({ query: {}, searchInstance });
 };
 
 const equalPropMapping = (mapA, mapB) => {
@@ -191,10 +179,11 @@ const equalPropMapping = (mapA, mapB) => {
   return sameAmountOfProps && sameProps;
 };
 
-const checkMapping = async (template, elasticIndex) => {
+const checkMapping = async template => {
   const errors = [];
   const mapping = elasticMapFactory.mapping([template]);
-  const currentMapping = await elastic.indices.getMapping({ index: elasticIndex });
+  const currentMapping = await elastic.indices.getMapping();
+  const elasticIndex = tenants.current().indexName;
   const mappedProps =
     currentMapping.body[elasticIndex].mappings.properties.metadata.properties || {};
   const newMappedProps = mapping.properties.metadata.properties;
