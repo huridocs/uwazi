@@ -6,8 +6,6 @@ export default async () => {
     const result = await spawn('yarn', ['e2e-puppeteer-fixtures'], {
       capture: ['stdout', 'stderr'],
     });
-
-    console.log(result.stdout.toString());
   } catch (e) {
     console.log(e);
     process.exit(1);

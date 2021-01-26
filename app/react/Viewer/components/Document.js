@@ -93,7 +93,6 @@ export class Document extends Component {
         filename={file.filename}
         onTextSelection={this.onTextSelected}
         onTextDeselection={this.onTextDeselection}
-        references={references}
         highlightReference={this.highlightReference}
         activeReference={this.props.activeReference}
       />
