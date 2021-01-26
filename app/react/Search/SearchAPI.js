@@ -6,11 +6,6 @@ export default {
     return api.get(url, requestParams).then(response => response.json);
   },
 
-  unpublished() {
-    const url = 'search/unpublished';
-    return api.get(url).then(response => response.json.rows);
-  },
-
   searchSnippets(requestParams) {
     const url = 'search_snippets';
     return api.get(url, requestParams).then(response => response.json);

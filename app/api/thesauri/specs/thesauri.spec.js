@@ -3,7 +3,7 @@
 import translations from 'api/i18n/translations';
 import templates from 'api/templates/templates';
 import entities from 'api/entities/entities';
-import search from 'api/search/search';
+import { search } from 'api/search';
 import { catchErrors } from 'api/utils/jasmineHelpers';
 
 import db from 'api/utils/testing_db';

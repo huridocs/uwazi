@@ -1,7 +1,7 @@
 import multer from 'multer';
 
 import { models } from 'api/odm';
-import search from 'api/search/search';
+import { search } from 'api/search';
 
 import { Request, Application } from 'express';
 import { FileType } from 'shared/types/fileType';
