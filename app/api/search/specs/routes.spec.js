@@ -5,7 +5,7 @@ import { setUpApp } from 'api/utils/testingRoutes';
 import { testingDB } from 'api/utils/testing_db';
 import searchRoutes from '../deprecatedRoutes.js';
 import instrumentRoutes from '../../utils/instrumentRoutes';
-import search from '../search';
+import { search } from '../search';
 
 describe('search routes', () => {
   let routes;
@@ -119,21 +119,6 @@ describe('search routes', () => {
         .then(response => {
           expect(response).toEqual('results');
           expect(search.searchSnippets).toHaveBeenCalledWith('test', 'id', 'es', req.user);
-          done();
-        })
-        .catch(catchErrors(done));
-    });
-  });
-
-  describe('/api/search/unpublished', () => {
-    it('should search', done => {
-      spyOn(search, 'getUploadsByUser').and.returnValue(new Promise(resolve => resolve('results')));
-      const req = { query: { searchTerm: 'test', id: 'id' }, language: 'es' };
-
-      routes
-        .get('/api/search/unpublished', req)
-        .then(response => {
-          expect(response).toEqual({ rows: 'results' });
           done();
         })
         .catch(catchErrors(done));
