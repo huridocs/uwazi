@@ -109,9 +109,9 @@ export interface IStore {
   };
   documentViewer: {
     references: IImmutable<ConnectionSchema[]>;
-    uiState: {
+    uiState: IImmutable<{
       activeReference: string;
-    };
+    }>;
   };
   oneUpReview: {
     state?: IImmutable<OneUpState>;

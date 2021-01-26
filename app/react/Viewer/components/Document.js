@@ -57,6 +57,7 @@ export class Document extends Component {
   }
 
   highlightReference(connection) {
+    console.log(connection);
     const references = this.props.references.toJS();
     return this.props.activateReference(connection, this.props.file.pdfInfo, references);
   }

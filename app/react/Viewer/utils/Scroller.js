@@ -51,11 +51,6 @@ export default {
     const parent = _parent;
     const start = Date.now();
     return new Promise(resolve => {
-      if (options.duration < 2) {
-        parent.scrollTop = scrollTop;
-        resolve();
-      }
-
       const timeout = window.setInterval(() => {
         const t = (Date.now() - start) / options.duration;
         const multiplier = this[options.animation](t);

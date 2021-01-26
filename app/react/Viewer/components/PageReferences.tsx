@@ -10,10 +10,14 @@ export interface PageReferencesProps {
   references: { [key: string]: ConnectionSchema[] | undefined };
   page: string;
   activeReference: string;
-  onClick: () => {};
+  onClick: (c: ConnectionSchema) => {};
 }
 
 export class PageReferencesComponent extends Component<PageReferencesProps> {
+  onClick(connection: ConnectionSchema) {
+    this.props.onClick(connection);
+  }
+
   render() {
     return (
       <>
@@ -21,12 +25,16 @@ export class PageReferencesComponent extends Component<PageReferencesProps> {
           const color = r._id === this.props.activeReference ? '#ffd84b' : '#feeeb4';
 
           return (
-            <div data-id={r._id} key={r._id} className="reference">
+            <div
+              data-id={r._id}
+              key={r._id}
+              className="reference"
+              onClick={this.onClick.bind(this, r)}
+            >
               <Highlight
                 regionId={this.props.page.toString()}
                 highlight={r.reference}
                 color={color}
-                onclick={this.props.onClick}
               />
             </div>
           );
@@ -66,9 +74,11 @@ const indexdReferences = createSelector(
       )
 );
 
-const mapStateToProps = (state: IStore) => ({
-  references: indexdReferences(state),
-  activeReference: state.documentViewer.uiState.activeReference,
-});
+const mapStateToProps = (state: IStore) => {
+  return {
+    references: indexdReferences(state),
+    activeReference: state.documentViewer.uiState.get('activeReference'),
+  };
+};
 
 export const PageReferences = connect(mapStateToProps)(PageReferencesComponent);
