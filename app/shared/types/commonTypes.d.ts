@@ -74,7 +74,6 @@ export interface TocSchema {
     width?: number;
     height?: number;
     regionId?: string;
-    [k: string]: unknown | undefined;
   }[];
   label?: string;
   indentation?: number;

@@ -122,6 +122,7 @@ export const tocSchema = {
       type: 'array',
       items: {
         type: 'object',
+        additionalProperties: false,
         properties: {
           top: { type: 'number' },
           left: { type: 'number' },
