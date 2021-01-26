@@ -7,7 +7,7 @@ import db from 'api/utils/testing_db';
 import entitiesModel from 'api/entities/entitiesModel';
 import fs from 'fs';
 import relationships from 'api/relationships';
-import search from 'api/search/search';
+import { search } from 'api/search';
 import { uploadsPath } from 'api/files/filesystem';
 
 import entities from '../entities.js';
@@ -314,7 +314,6 @@ describe('entities', () => {
         expect(relatedEntity.metadata.enemies[1].label).toBe('translated2');
       });
 
-      /*eslint-disable */
       it('should index entities changed after propagating label change', async () => {
         const doc = {
           _id: shared2,
@@ -1025,7 +1024,7 @@ describe('entities', () => {
 
     describe('when database deletion throws an error', () => {
       it('should reindex the documents', async () => {
-        spyOn(entitiesModel, 'delete').and.callFake(() => Promise.reject('error'));
+        spyOn(entitiesModel, 'delete').and.callFake(() => Promise.reject(new Error('error')));
         let error;
         try {
           await entities.delete('shared');

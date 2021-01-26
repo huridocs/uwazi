@@ -1,30 +1,20 @@
 import db from 'api/utils/testing_db';
-import instanceElasticTesting from 'api/utils/elastic_testing';
+import { elasticTesting } from 'api/utils/elastic_testing';
 import errorLog from 'api/log/errorLog';
-import { instanceSearch } from '../search';
+import { search } from '../search';
 import { fixtures as fixturesForIndexErrors } from './fixtures_elastic_errors';
-import elastic from '../elastic';
+import { elastic } from '../elastic';
 import { checkMapping, updateMapping, reindexAll } from '../entitiesIndex';
 
-const forceIndexingOfNumberBasedProperty = async search => {
+const forceIndexingOfNumberBasedProperty = async () => {
   await search.indexEntities({ title: 'Entity with index Problems 1' }, '', 1);
 };
 
 describe('entitiesIndex', () => {
   const elasticIndex = 'index_for_entities_index_testing';
-  const search = instanceSearch(elasticIndex);
-  const elasticTesting = instanceElasticTesting(elasticIndex, search);
 
   beforeEach(async () => {
-    await db.clearAllAndLoad({
-      entities: [
-        {
-          title: 'test',
-          metadata: {},
-        },
-      ],
-    });
-    await elasticTesting.resetIndex();
+    await db.clearAllAndLoad({}, elasticIndex);
   });
 
   afterAll(async () => {
@@ -36,7 +26,7 @@ describe('entitiesIndex', () => {
       await db.clearAllAndLoad(fixturesForIndexErrors);
       await elasticTesting.resetIndex();
       // force indexing will ensure that all exceptions are mapper_parsing. Otherwise you get different kinds of exceptions
-      await forceIndexingOfNumberBasedProperty(search);
+      await forceIndexingOfNumberBasedProperty();
       await elasticTesting.refresh();
     };
 
@@ -52,8 +42,6 @@ describe('entitiesIndex', () => {
   });
 
   describe('indexEntities by query', () => {
-    const flatten = array => [].concat(...array);
-
     it('should only index the entities that match the query', async () => {
       await db.clearAllAndLoad({
         entities: [
@@ -69,13 +57,11 @@ describe('entitiesIndex', () => {
           { title: 'titulo5', language: 'es' },
         ],
       });
-      await elasticTesting.reindex();
-      spyOn(elastic, 'bulk').and.returnValue(Promise.resolve({ body: {} }));
-      await search.indexEntities({ language: 'es' }, '', 2);
 
-      const indexedEntities = flatten(flatten(elastic.bulk.calls.allArgs()).map(arg => arg.body))
-        .filter(bulkElement => !bulkElement.index)
-        .sort((a, b) => a.title.localeCompare(b.title));
+      await search.indexEntities({ language: 'es' }, '', 2);
+      await elasticTesting.refresh();
+
+      const indexedEntities = await elasticTesting.getIndexedEntities();
 
       expect(indexedEntities).toEqual([
         expect.objectContaining({ title: 'titulo1' }),
@@ -100,8 +86,8 @@ describe('entitiesIndex', () => {
           ],
         },
       ];
-      await updateMapping(templates, elasticIndex);
-      const mapping = await elastic.indices.getMapping({ index: elasticIndex });
+      await updateMapping(templates);
+      const mapping = await elastic.indices.getMapping();
       const mappedProps = mapping.body[elasticIndex].mappings.properties.metadata.properties;
       expect(mappedProps.name).toMatchSnapshot();
       expect(mappedProps.dob).toMatchSnapshot();
@@ -127,12 +113,12 @@ describe('entitiesIndex', () => {
         properties: [{ name: 'dob', type: 'date', label: 'Date of birth' }],
       };
 
-      await updateMapping([templateA], elasticIndex);
-      let response = await checkMapping(templateB, elasticIndex);
+      await updateMapping([templateA]);
+      let response = await checkMapping(templateB);
       expect(response).toEqual({ errors: [], valid: true });
 
       templateB.properties[0].type = 'text';
-      response = await checkMapping(templateB, elasticIndex);
+      response = await checkMapping(templateB);
       expect(response).toEqual({ errors: [{ name: 'Date of birth' }], valid: false });
     });
 
@@ -143,7 +129,7 @@ describe('entitiesIndex', () => {
           name: 'template B',
           properties: [{ name: 'dob', type: 'date', label: 'Date of birth' }],
         };
-        const response = await checkMapping(templateB, elasticIndex);
+        const response = await checkMapping(templateB);
         expect(response).toEqual({ errors: [], valid: true });
       });
     });
@@ -157,16 +143,20 @@ describe('entitiesIndex', () => {
         { title: 'title2', language: 'en' },
         { title: 'titulo2', language: 'es' },
       ];
+
       await db.clearAllAndLoad({ entities });
+      await search.indexEntities({});
+      await elasticTesting.refresh();
 
-      spyOn(elastic, 'bulk').and.returnValue(Promise.resolve({ body: {} }));
-      await reindexAll([], search, elasticIndex);
-      const reindexRequest = elastic.bulk.calls.allArgs()[0][0];
+      await reindexAll([], search);
+      await elasticTesting.refresh();
 
-      expect(reindexRequest.body).toContainEqual(expect.objectContaining({ title: 'title1' }));
-      expect(reindexRequest.body).toContainEqual(expect.objectContaining({ title: 'titulo1' }));
-      expect(reindexRequest.body).toContainEqual(expect.objectContaining({ title: 'title2' }));
-      expect(reindexRequest.body).toContainEqual(expect.objectContaining({ title: 'titulo2' }));
+      expect(await elasticTesting.getIndexedEntities('')).toEqual([
+        expect.objectContaining({ title: 'title1' }),
+        expect.objectContaining({ title: 'titulo1' }),
+        expect.objectContaining({ title: 'title2' }),
+        expect.objectContaining({ title: 'titulo2' }),
+      ]);
     });
 
     it('should delete a field from the mapping', async () => {
@@ -180,13 +170,13 @@ describe('entitiesIndex', () => {
         ],
       };
 
-      await updateMapping([templateA], elasticIndex);
+      await updateMapping([templateA]);
       templateA.properties = [
         { name: 'name', type: 'text' },
         { name: 'country', type: 'select' },
       ];
-      await reindexAll([templateA], search, elasticIndex);
-      const mapping = await elastic.indices.getMapping({ index: elasticIndex });
+      await reindexAll([templateA], search);
+      const mapping = await elastic.indices.getMapping();
 
       expect(
         mapping.body[elasticIndex].mappings.properties.metadata.properties.dob
