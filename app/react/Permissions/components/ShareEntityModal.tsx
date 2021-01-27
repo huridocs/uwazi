@@ -80,14 +80,14 @@ export const ShareEntityModalComponent = ({
       return setValidationErrors(errors);
     }
 
-    await savePermissions(
-      sharedIds,
-      assignments.map(a => ({
+    await savePermissions({
+      ids: sharedIds,
+      permissions: assignments.map(a => ({
         _id: a._id,
         type: a.type,
         level: a.level as AccessLevels,
-      }))
-    );
+      })),
+    });
     return onClose();
   };
 

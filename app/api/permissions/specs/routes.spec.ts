@@ -43,7 +43,7 @@ describe('permissions routes', () => {
           .set('X-Requested-With', 'XMLHttpRequest')
           .send(permissionsData);
         expect(response.status).toBe(200);
-        expect(entitiesPermissions.set).toHaveBeenCalled();
+        expect(entitiesPermissions.set).toHaveBeenCalledWith(permissionsData);
       });
 
       it('should invalidate if body does not fit the expected schema', async () => {

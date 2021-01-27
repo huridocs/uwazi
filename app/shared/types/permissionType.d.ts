@@ -8,3 +8,12 @@ export interface PermissionSchema {
   type: 'user' | 'group';
   level: 'read' | 'write';
 }
+
+export interface PermissionsDataSchema {
+  ids: string[];
+  permissions: {
+    _id: ObjectIdSchema;
+    type: 'user' | 'group';
+    level: 'read' | 'write';
+  }[];
+}

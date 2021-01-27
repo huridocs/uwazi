@@ -2,7 +2,7 @@ import { Application } from 'express';
 import { needsAuthorization } from 'api/auth';
 import { parseQuery, validation } from 'api/utils';
 import { entitiesPermissions } from 'api/permissions/entitiesPermissions';
-import { permissionSchema } from 'shared/types/permissionSchema';
+import { permissionsDataSchema } from 'shared/types/permissionSchema';
 import { collaborators } from 'api/permissions/collaborators';
 
 export const permissionRoutes = (app: Application) => {
@@ -12,14 +12,7 @@ export const permissionRoutes = (app: Application) => {
     validation.validateRequest({
       properties: {
         body: {
-          required: ['ids', 'permissions'],
-          properties: {
-            ids: { type: 'array', items: { type: 'string' } },
-            permissions: {
-              type: 'array',
-              items: permissionSchema,
-            },
-          },
+          ...permissionsDataSchema,
         },
       },
     }),
