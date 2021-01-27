@@ -1,14 +1,14 @@
+import { testingDB } from 'api/utils/testing_db';
+import { fixtures, groupA, groupB, userA, userB } from 'api/permissions/specs/fixtures';
 import { collaborators } from 'api/permissions/collaborators';
-import fixtures, { groupA, groupB, userA, userB } from 'api/permissions/specs/fixtures';
-import db from 'api/utils/testing_db';
-import { PermissionType } from '../../../shared/types/permissionSchema';
+import { PermissionType } from 'shared/types/permissionSchema';
 
 describe('collaborators', () => {
   beforeEach(async () => {
-    await db.clearAllAndLoad(fixtures);
+    await testingDB.clearAllAndLoad(fixtures);
   });
 
-  describe('getCollaborators', () => {
+  describe('search', () => {
     describe('matched user', () => {
       function assertUserAsCollaborator(actualContributor: any, expectedContributor: any) {
         expect(actualContributor).toEqual({
@@ -19,19 +19,19 @@ describe('collaborators', () => {
       }
 
       it('should return exact insensitive case matched by the username', async () => {
-        const availableCollaborators = await collaborators.getCollaborators('userB');
+        const availableCollaborators = await collaborators.search('userB');
         assertUserAsCollaborator(availableCollaborators[0], userB);
       });
 
       it('should return exact matched by the email of the user', async () => {
-        const availableCollaborators = await collaborators.getCollaborators('usera@domain.org');
+        const availableCollaborators = await collaborators.search('usera@domain.org');
         assertUserAsCollaborator(availableCollaborators[0], userA);
       });
     });
 
     describe('not matched user', () => {
       it('should return all groups that start with the searchTerm', async () => {
-        const availableCollaborators = await collaborators.getCollaborators('user1');
+        const availableCollaborators = await collaborators.search('user1');
         expect(availableCollaborators.length).toBe(1);
         expect(availableCollaborators[0]).toEqual({
           _id: groupB._id.toString(),
@@ -41,7 +41,7 @@ describe('collaborators', () => {
       });
 
       it('should return all existing groups', async () => {
-        const availableCollaborators = await collaborators.getCollaborators('User');
+        const availableCollaborators = await collaborators.search('User');
         expect(availableCollaborators[0]).toEqual({
           _id: groupB._id.toString(),
           label: groupB.name,

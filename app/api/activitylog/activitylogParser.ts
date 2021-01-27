@@ -171,7 +171,7 @@ const entryValues: { [key: string]: EntryValue } = {
     method: Methods.Update,
     related: helpers.loadPermissionsData,
     nameFunc: helpers.entitiesNames,
-    extra: helpers.permissionData,
+    extra: helpers.loadAllowedUsersAndGroups,
   },
 };
 

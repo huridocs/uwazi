@@ -30,7 +30,7 @@ describe('permissions routes', () => {
   describe('entities', () => {
     describe('POST', () => {
       beforeEach(() => {
-        spyOn(entitiesPermissions, 'setEntitiesPermissions').and.returnValue(Promise.resolve([]));
+        spyOn(entitiesPermissions, 'set').and.returnValue(Promise.resolve([]));
       });
       it('should save the permissions ', async () => {
         user = { username: 'user 1', role: 'admin' };
@@ -43,7 +43,7 @@ describe('permissions routes', () => {
           .set('X-Requested-With', 'XMLHttpRequest')
           .send(permissionsData);
         expect(response.status).toBe(200);
-        expect(entitiesPermissions.setEntitiesPermissions).toHaveBeenCalled();
+        expect(entitiesPermissions.set).toHaveBeenCalled();
       });
 
       it('should invalidate if body does not fit the expected schema', async () => {
@@ -85,7 +85,7 @@ describe('permissions routes', () => {
 
     describe('GET', () => {
       it('should get the permissions of requested entities', async () => {
-        spyOn(entitiesPermissions, 'getEntitiesPermissions').and.returnValue(
+        spyOn(entitiesPermissions, 'get').and.returnValue(
           Promise.resolve([
             {
               _id: 'user1',
@@ -108,7 +108,7 @@ describe('permissions routes', () => {
   describe('search for a collaborator to share with', () => {
     describe('GET', () => {
       beforeEach(() => {
-        spyOn(collaborators, 'getCollaborators').and.returnValue(
+        spyOn(collaborators, 'search').and.returnValue(
           Promise.resolve([{ _id: 'user1', type: 'user' }])
         );
       });

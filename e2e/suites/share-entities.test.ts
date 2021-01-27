@@ -2,6 +2,7 @@ import insertFixtures from '../helpers/insertFixtures';
 import proxyMock from '../helpers/proxyMock';
 import { adminLogin, logout } from '../helpers/login';
 import { host } from '../config';
+import disableTransitions from '../helpers/disableTransitions';
 
 describe('Share entities', () => {
   beforeAll(async () => {
@@ -9,6 +10,7 @@ describe('Share entities', () => {
     await proxyMock();
     await adminLogin();
     await page.goto(`${host}/library`);
+    await disableTransitions();
   });
 
   afterAll(async () => {
@@ -87,23 +89,8 @@ describe('Share entities', () => {
     await page.waitForSelector('.share-modal', { hidden: true });
   });
 
-  const waitForTransitionEnd = async (selector: any) =>
-    page.evaluate(
-      async (element: any) =>
-        new Promise(resolve => {
-          const transition = document.querySelector(element);
-          const onEnd = () => {
-            transition.removeEventListener('transitionend', onEnd);
-            resolve();
-          };
-          transition.addEventListener('transitionend', onEnd);
-        }),
-      selector
-    );
-
   it('Should open the share modal for multiple selection', async () => {
     await expect(page).toClick('button', { text: 'Select all' });
-    await waitForTransitionEnd('.multi-edit');
     await expect(page).toClick('.is-active .share-btn', { text: 'Share' });
     await page.waitForSelector('.members-list tr:nth-child(2)');
     const loadedCollaborators = await getEntitiesCollaborators();
