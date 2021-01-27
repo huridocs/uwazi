@@ -31,7 +31,7 @@ describe('permissions routes', () => {
   describe('entities', () => {
     describe('POST', () => {
       beforeEach(() => {
-        spyOn(entitiesPermissions, 'setEntitiesPermissions').and.returnValue(Promise.resolve([]));
+        spyOn(entitiesPermissions, 'set').and.returnValue(Promise.resolve([]));
       });
       it('should save the permissions ', async () => {
         user = { username: 'user 1', role: 'admin' };
@@ -44,7 +44,7 @@ describe('permissions routes', () => {
           .set('X-Requested-With', 'XMLHttpRequest')
           .send(permissionsData);
         expect(response.status).toBe(200);
-        expect(entitiesPermissions.setEntitiesPermissions).toHaveBeenCalled();
+        expect(entitiesPermissions.set).toHaveBeenCalledWith(permissionsData);
       });
 
       it('should invalidate if body does not fit the expected schema', async () => {
@@ -89,7 +89,7 @@ describe('permissions routes', () => {
         testingTenants.mockCurrentTenant({ name: 'default' });
       });
       it('should handle errors on POST', async () => {
-        spyOn(entitiesPermissions, 'setEntitiesPermissions').and.throwError('error on save');
+        spyOn(entitiesPermissions, 'set').and.throwError('error on save');
         user = { username: 'user 1', role: 'admin' };
         const permissionsData = {
           ids: ['shared1'],
@@ -103,7 +103,7 @@ describe('permissions routes', () => {
         expect(response.body.error).toContain('Error: error on save');
       });
       it('should handle errors on GET', async () => {
-        spyOn(entitiesPermissions, 'getEntitiesPermissions').and.throwError('error on get');
+        spyOn(entitiesPermissions, 'get').and.throwError('error on get');
         user = { username: 'user 1', role: 'admin' };
         const response = await request(app)
           .get('/api/entities/permissions')
@@ -114,8 +114,8 @@ describe('permissions routes', () => {
         expect(response.status).toBe(500);
         expect(response.body.error).toContain('Error: error on get');
       });
-      it('should handle errors on collaborators GET', async () => {
-        spyOn(collaborators, 'getCollaborators').and.throwError('error on get');
+      it('should handle errors on collaborators search', async () => {
+        spyOn(collaborators, 'search').and.throwError('error on get');
         user = { username: 'user 1', role: 'admin' };
         const response = await request(app)
           .get('/api/collaborators')
@@ -128,7 +128,7 @@ describe('permissions routes', () => {
 
     describe('GET', () => {
       it('should get the permissions of requested entities', async () => {
-        spyOn(entitiesPermissions, 'getEntitiesPermissions').and.returnValue(
+        spyOn(entitiesPermissions, 'get').and.returnValue(
           Promise.resolve([
             {
               _id: 'user1',
@@ -151,7 +151,7 @@ describe('permissions routes', () => {
   describe('search for a collaborator to share with', () => {
     describe('GET', () => {
       beforeEach(() => {
-        spyOn(collaborators, 'getCollaborators').and.returnValue(
+        spyOn(collaborators, 'search').and.returnValue(
           Promise.resolve([{ _id: 'user1', type: 'user' }])
         );
       });

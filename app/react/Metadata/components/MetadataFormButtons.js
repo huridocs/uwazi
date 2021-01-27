@@ -130,9 +130,7 @@ export class MetadataFormButtons extends Component {
           </ShowIf>
         </NeedAuthorization>
         <NeedAuthorization roles={['admin', 'editor', 'collaborator']}>
-          <ShowIf if={!entityBeingEdited && !hideDelete}>
-            <ShareButton sharedIds={[data.sharedId]} />
-          </ShowIf>
+          {!entityBeingEdited && !hideDelete && <ShareButton sharedIds={[data.sharedId]} />}
         </NeedAuthorization>
         <NeedAuthorization roles={['admin', 'editor']}>
           <ShowIf if={!entityBeingEdited && canBePublished}>

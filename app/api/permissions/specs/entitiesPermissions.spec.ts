@@ -1,12 +1,12 @@
-import db from 'api/utils/testing_db';
+import { testingDB } from 'api/utils/testing_db';
 import entities from 'api/entities/entities';
 import { entitiesPermissions } from 'api/permissions/entitiesPermissions';
 import { AccessLevels, PermissionType, MixedAccess } from 'shared/types/permissionSchema';
-import fixtures, { groupA, userA, userB } from 'api/permissions/specs/fixtures';
+import { fixtures, groupA, userA, userB } from 'api/permissions/specs/fixtures';
 
 describe('permissions', () => {
   beforeEach(async () => {
-    await db.clearAllAndLoad(fixtures);
+    await testingDB.clearAllAndLoad(fixtures);
   });
 
   describe('set entities permissions', () => {
@@ -15,7 +15,7 @@ describe('permissions', () => {
         ids: ['shared1', 'shared2'],
         permissions: [{ _id: 'user1', type: PermissionType.USER, level: AccessLevels.READ }],
       };
-      await entitiesPermissions.setEntitiesPermissions(permissionsData);
+      await entitiesPermissions.set(permissionsData);
       const storedEntities = await entities.get();
       const updateEntities = storedEntities.filter(entity =>
         ['shared1', 'shared2'].includes(entity.sharedId!)
@@ -34,7 +34,7 @@ describe('permissions', () => {
 
   describe('get entities permissions', () => {
     it('should return the permissions of the requested entities', async () => {
-      const permissions = await entitiesPermissions.getEntitiesPermissions(['shared1', 'shared2']);
+      const permissions = await entitiesPermissions.get(['shared1', 'shared2']);
       expect(permissions).toEqual([
         {
           _id: groupA._id,
@@ -58,7 +58,7 @@ describe('permissions', () => {
     });
 
     it('should return mixed permissions in case one of the entities does not have any', async () => {
-      const permissions = await entitiesPermissions.getEntitiesPermissions(['shared1', 'shared3']);
+      const permissions = await entitiesPermissions.get(['shared1', 'shared3']);
       expect(permissions).toEqual([
         {
           _id: groupA._id,

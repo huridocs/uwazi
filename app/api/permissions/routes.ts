@@ -1,8 +1,8 @@
 import { Application } from 'express';
 import { needsAuthorization } from 'api/auth';
-import { validation } from 'api/utils';
+import { parseQuery, validation } from 'api/utils';
 import { entitiesPermissions } from 'api/permissions/entitiesPermissions';
-import { permissionSchema } from 'shared/types/permissionSchema';
+import { permissionsDataSchema } from 'shared/types/permissionSchema';
 import { collaborators } from 'api/permissions/collaborators';
 
 export const permissionRoutes = (app: Application) => {
@@ -12,20 +12,13 @@ export const permissionRoutes = (app: Application) => {
     validation.validateRequest({
       properties: {
         body: {
-          required: ['ids', 'permissions'],
-          properties: {
-            ids: { type: 'array', items: { type: 'string' } },
-            permissions: {
-              type: 'array',
-              items: permissionSchema,
-            },
-          },
+          ...permissionsDataSchema,
         },
       },
     }),
     async (req, res, next) => {
       try {
-        await entitiesPermissions.setEntitiesPermissions(req.body);
+        await entitiesPermissions.set(req.body);
         res.json(req.body);
       } catch (err) {
         next(err);
@@ -33,10 +26,9 @@ export const permissionRoutes = (app: Application) => {
     }
   );
 
-  app.get('/api/entities/permissions', async (req, res, next) => {
-    const sharedIds = JSON.parse(req.query.ids);
+  app.get('/api/entities/permissions', parseQuery, async (req, res, next) => {
     try {
-      const permissions = await entitiesPermissions.getEntitiesPermissions(sharedIds);
+      const permissions = await entitiesPermissions.get(req.query.ids);
       res.json(permissions);
     } catch (err) {
       next(err);
@@ -57,7 +49,7 @@ export const permissionRoutes = (app: Application) => {
     }),
     async (req, res, next) => {
       try {
-        const availableCollaborators = await collaborators.getCollaborators(req.query.filterTerm);
+        const availableCollaborators = await collaborators.search(req.query.filterTerm);
         res.json(availableCollaborators);
       } catch (err) {
         next(err);

@@ -1,4 +1,4 @@
-import db from 'api/utils/testing_db';
+import db, { DBFixture } from 'api/utils/testing_db';
 import { AccessLevels, PermissionType } from 'shared/types/permissionSchema';
 
 const idUserA = db.id();
@@ -86,7 +86,7 @@ const entity3 = {
   isPublic: true,
 };
 
-export default {
+const fixtures: DBFixture = {
   entities: [
     {
       ...entity1,
@@ -123,4 +123,4 @@ export default {
   usergroups: [{ ...groupA }, { ...groupB }],
 };
 
-export { userA, userB, groupA, groupB };
+export { fixtures, userA, userB, groupA, groupB };
