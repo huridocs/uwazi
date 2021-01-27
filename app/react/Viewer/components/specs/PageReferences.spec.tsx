@@ -22,12 +22,18 @@ describe('FormConfigInput', () => {
   const render = () => {
     const store = mockStoreCreator({
       documentViewer: {
+        doc: Immutable.fromJS({ sharedId: 'ab42' }),
         uiState: Immutable.fromJS({ activeReference: '2' }),
         references: Immutable.fromJS([
-          { _id: '1', reference: { selectionRectangles: [{ regionId: '2' }] } },
-          { _id: '2', reference: { selectionRectangles: [{ regionId: '3' }] } },
-          { _id: '3', reference: { selectionRectangles: [{ regionId: '3' }, { regionId: '4' }] } },
-          { _id: '4', reference: { selectionRectangles: [{ regionId: '5' }] } },
+          { _id: '1', entity: 'ab42', reference: { selectionRectangles: [{ regionId: '2' }] } },
+          { _id: '2', entity: 'ab42', reference: { selectionRectangles: [{ regionId: '3' }] } },
+          {
+            _id: '3',
+            entity: 'ab42',
+            reference: { selectionRectangles: [{ regionId: '3' }, { regionId: '4' }] },
+          },
+          { _id: '4', entity: 'ab42', reference: { selectionRectangles: [{ regionId: '5' }] } },
+          { _id: '4', entity: 'ce87', reference: { selectionRectangles: [{ regionId: '3' }] } },
         ]),
       },
     });

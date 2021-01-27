@@ -5,7 +5,6 @@ import { ConnectionSchema } from 'shared/types/connectionType';
 import { createSelector } from 'reselect';
 import { Highlight } from 'react-pdf-handler';
 import { unique } from 'shared/filterUnique';
-import { selectTargetReferences } from '../selectors';
 
 export interface PageReferencesProps {
   references: { [key: string]: ConnectionSchema[] | undefined };
