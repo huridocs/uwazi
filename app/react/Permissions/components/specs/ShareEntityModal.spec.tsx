@@ -120,7 +120,10 @@ describe('ShareEntityModal', () => {
       .find('.btn-success')
       .get(0)
       .props.onClick();
-    expect(api.savePermissions).toHaveBeenCalledWith(['entityId1', 'entityId2'], sentPermissions);
+    expect(api.savePermissions).toHaveBeenCalledWith({
+      ids: ['entityId1', 'entityId2'],
+      permissions: sentPermissions,
+    });
     expect(onCloseMock).toHaveBeenCalled();
   });
 

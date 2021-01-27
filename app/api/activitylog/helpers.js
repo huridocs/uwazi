@@ -105,7 +105,7 @@ function getNameOfAllowedPeople(source, field) {
   };
 }
 
-export const permissionData = data => {
+export const loadAllowedUsersAndGroups = data => {
   const usersPermissions = data.permissions.filter(p => p.type === PermissionType.USER);
   const groupsPermissions = data.permissions.filter(p => p.type === PermissionType.GROUP);
   const grantedUsers = usersPermissions

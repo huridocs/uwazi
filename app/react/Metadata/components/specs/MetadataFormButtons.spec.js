@@ -121,15 +121,13 @@ describe('MetadataFormButtons', () => {
     it('should pass the sharedId to the share button', () => {
       render();
       const shareBtn = component.find(ShareButton);
-      expect(shareBtn.parent().props().if).toBe(true);
       expect(shareBtn.props().sharedIds).toEqual(['shId']);
     });
 
     it('should not render share button', () => {
       props.entityBeingEdited = true;
       render();
-      const shareBtn = component.find(ShareButton);
-      expect(shareBtn.parent().props().if).toBe(false);
+      expect(component.find(ShareButton).length).toBe(0);
     });
   });
 

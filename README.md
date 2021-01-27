@@ -8,13 +8,13 @@
 [![Maintainability](https://api.codeclimate.com/v1/badges/8c98a251ca64daf434f2/maintainability)](https://codeclimate.com/github/huridocs/uwazi/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/8c98a251ca64daf434f2/test_coverage)](https://codeclimate.com/github/huridocs/uwazi/test_coverage)
 
-Uwazi is an open-source document manager.
+Uwazi is a flexible database application to capture and organise collections of information with a particular focus on document management. HURIDOCS started Uwazi and is supporting dozens of human rights organisations globally to use the tool.
 
 [Uwazi](https://www.uwazi.io/) | [HURIDOCS](https://huridocs.org/)
 
 Read the [user guide](https://github.com/huridocs/uwazi/wiki)
 
-# Intallation guide
+# Installation guide
 
 - [Dependencies](#dependencies)
 - [Production](#production)

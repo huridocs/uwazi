@@ -5,7 +5,7 @@ import { MemberWithPermission } from 'shared/types/entityPermisions';
 import { GroupMemberSchema } from 'shared/types/userGroupType';
 
 export const collaborators = {
-  getCollaborators: async (filterTerm: string) => {
+  search: async (filterTerm: string) => {
     const exactFilterTerm = new RegExp(`^${filterTerm}$`, 'i');
     const partialFilterTerm = new RegExp(`^${filterTerm}`, 'i');
 

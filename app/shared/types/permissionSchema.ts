@@ -32,3 +32,17 @@ export const permissionSchema = {
   },
   required: ['_id', 'type', 'level'],
 };
+
+export const permissionsDataSchema = {
+  type: 'object',
+  additionalProperties: false,
+  definitions: { objectIdSchema },
+  properties: {
+    ids: { type: 'array', items: { type: 'string' } },
+    permissions: {
+      type: 'array',
+      items: permissionSchema,
+    },
+  },
+  required: ['ids', 'permissions'],
+};

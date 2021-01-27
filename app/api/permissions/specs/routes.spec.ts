@@ -4,6 +4,7 @@ import { setUpApp } from 'api/utils/testingRoutes';
 import { permissionRoutes } from 'api/permissions/routes';
 import { entitiesPermissions } from 'api/permissions/entitiesPermissions';
 import { collaborators } from 'api/permissions/collaborators';
+import { testingTenants } from 'api/utils/testingTenants';
 
 jest.mock(
   '../../utils/languageMiddleware.ts',
@@ -30,7 +31,7 @@ describe('permissions routes', () => {
   describe('entities', () => {
     describe('POST', () => {
       beforeEach(() => {
-        spyOn(entitiesPermissions, 'setEntitiesPermissions').and.returnValue(Promise.resolve([]));
+        spyOn(entitiesPermissions, 'set').and.returnValue(Promise.resolve([]));
       });
       it('should save the permissions ', async () => {
         user = { username: 'user 1', role: 'admin' };
@@ -43,7 +44,7 @@ describe('permissions routes', () => {
           .set('X-Requested-With', 'XMLHttpRequest')
           .send(permissionsData);
         expect(response.status).toBe(200);
-        expect(entitiesPermissions.setEntitiesPermissions).toHaveBeenCalled();
+        expect(entitiesPermissions.set).toHaveBeenCalledWith(permissionsData);
       });
 
       it('should invalidate if body does not fit the expected schema', async () => {
@@ -83,9 +84,51 @@ describe('permissions routes', () => {
       });
     });
 
+    describe('Error Handling', () => {
+      beforeEach(() => {
+        testingTenants.mockCurrentTenant({ name: 'default' });
+      });
+      it('should handle errors on POST', async () => {
+        spyOn(entitiesPermissions, 'set').and.throwError('error on save');
+        user = { username: 'user 1', role: 'admin' };
+        const permissionsData = {
+          ids: ['shared1'],
+          permissions: [{ _id: 'user1', type: 'user', level: 'read' }],
+        };
+        const response = await request(app)
+          .post('/api/entities/permissions')
+          .set('X-Requested-With', 'XMLHttpRequest')
+          .send(permissionsData);
+        expect(response.status).toBe(500);
+        expect(response.body.error).toContain('Error: error on save');
+      });
+      it('should handle errors on GET', async () => {
+        spyOn(entitiesPermissions, 'get').and.throwError('error on get');
+        user = { username: 'user 1', role: 'admin' };
+        const response = await request(app)
+          .get('/api/entities/permissions')
+          .set('X-Requested-With', 'XMLHttpRequest')
+          .query({
+            ids: JSON.stringify(['sharedId1', 'sharedId2']),
+          });
+        expect(response.status).toBe(500);
+        expect(response.body.error).toContain('Error: error on get');
+      });
+      it('should handle errors on collaborators search', async () => {
+        spyOn(collaborators, 'search').and.throwError('error on get');
+        user = { username: 'user 1', role: 'admin' };
+        const response = await request(app)
+          .get('/api/collaborators')
+          .set('X-Requested-With', 'XMLHttpRequest')
+          .query({ filterTerm: 'username' });
+        expect(response.status).toBe(500);
+        expect(response.body.error).toContain('Error: error on get');
+      });
+    });
+
     describe('GET', () => {
       it('should get the permissions of requested entities', async () => {
-        spyOn(entitiesPermissions, 'getEntitiesPermissions').and.returnValue(
+        spyOn(entitiesPermissions, 'get').and.returnValue(
           Promise.resolve([
             {
               _id: 'user1',
@@ -108,7 +151,7 @@ describe('permissions routes', () => {
   describe('search for a collaborator to share with', () => {
     describe('GET', () => {
       beforeEach(() => {
-        spyOn(collaborators, 'getCollaborators').and.returnValue(
+        spyOn(collaborators, 'search').and.returnValue(
           Promise.resolve([{ _id: 'user1', type: 'user' }])
         );
       });
