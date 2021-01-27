@@ -5,6 +5,7 @@ import { ConnectionSchema } from 'shared/types/connectionType';
 import { createSelector } from 'reselect';
 import { Highlight } from 'react-pdf-handler';
 import { unique } from 'shared/filterUnique';
+import { selectTargetReferences } from '../selectors';
 
 export interface PageReferencesProps {
   references: { [key: string]: ConnectionSchema[] | undefined };
@@ -44,13 +45,18 @@ export class PageReferencesComponent extends Component<PageReferencesProps> {
   }
 }
 
-const indexdReferences = createSelector(
+const indexdReferencesByPage = createSelector(
   (state: IStore) => state.documentViewer.references,
-  references =>
+  (state: IStore) => state.documentViewer.doc,
+  (references, doc) =>
     references
       .toJS()
       .reduce(
         (mappedReferences: { [key: string]: ConnectionSchema[] }, connection: ConnectionSchema) => {
+          if (doc.get('sharedId') !== connection.entity) {
+            return mappedReferences;
+          }
+
           const regionIds = (connection.reference?.selectionRectangles || [])
             .map(selection => selection.regionId)
             .filter(unique);
@@ -76,7 +82,7 @@ const indexdReferences = createSelector(
 
 const mapStateToProps = (state: IStore) => {
   return {
-    references: indexdReferences(state),
+    references: indexdReferencesByPage(state),
     activeReference: state.documentViewer.uiState.get('activeReference'),
   };
 };

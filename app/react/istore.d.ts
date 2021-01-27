@@ -109,6 +109,7 @@ export interface IStore {
   };
   documentViewer: {
     references: IImmutable<ConnectionSchema[]>;
+    doc: IImmutable<EntitySchema>;
     uiState: IImmutable<{
       activeReference: string;
     }>;
