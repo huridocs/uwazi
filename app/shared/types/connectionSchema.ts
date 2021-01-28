@@ -16,22 +16,7 @@ export const connectionSchema = {
     entityData: entitySchema,
     reference: {
       type: 'object',
-      properties: {
-        text: 'string',
-        selectionRectangles: {
-          type: 'array',
-          items: {
-            type: 'object',
-            properties: {
-              top: { type: 'number' },
-              left: { type: 'number' },
-              width: { type: 'number' },
-              height: { type: 'number' },
-              regionId: { type: 'string' },
-            },
-          },
-        },
-      },
+      tsType: 'TextSelection',
     },
   },
 };

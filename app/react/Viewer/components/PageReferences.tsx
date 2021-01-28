@@ -23,6 +23,11 @@ export class PageReferencesComponent extends Component<PageReferencesProps> {
       <>
         {(this.props.references[this.props.page] || []).map((r: ConnectionSchema) => {
           const color = r._id === this.props.activeReference ? '#ffd84b' : '#feeeb4';
+
+          if (!r.reference) {
+            return false;
+          }
+
           return (
             <div
               data-id={r._id}

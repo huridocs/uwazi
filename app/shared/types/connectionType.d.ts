@@ -1,5 +1,6 @@
 /* eslint-disable */
 /**AUTO-GENERATED. RUN yarn emit-types to update.*/
+import { TextSelection } from 'react-pdf-handler';
 
 import { ObjectIdSchema } from 'shared/types/commonTypes';
 
@@ -103,16 +104,5 @@ export interface ConnectionSchema {
     };
     [k: string]: unknown | undefined;
   };
-  reference?: {
-    text?: unknown;
-    selectionRectangles?: {
-      top?: number;
-      left?: number;
-      width?: number;
-      height?: number;
-      regionId?: string;
-      [k: string]: unknown | undefined;
-    }[];
-    [k: string]: unknown | undefined;
-  };
+  reference?: TextSelection;
 }
