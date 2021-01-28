@@ -54,7 +54,7 @@ const justText = text => <div className="relationship-metadata">{conformQuote(te
 
 const HubRelationshipMetadata = props => {
   const { relationship, relationTypes, thesauris } = props;
-  const text = relationship.getIn(['range', 'text']);
+  const text = relationship.getIn(['reference', 'text']);
   const metadata = relationship.get('metadata');
 
   if (metadata && metadata.size) {

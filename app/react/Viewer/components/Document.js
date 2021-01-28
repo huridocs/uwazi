@@ -79,7 +79,7 @@ export class Document extends Component {
   handleOver() {}
 
   renderPDF(file) {
-    if (!(file._id && file.pdfInfo)) {
+    if (!file._id) {
       return <Loader />;
     }
 
