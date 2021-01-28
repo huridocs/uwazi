@@ -6,18 +6,18 @@ import { ObjectIdSchema } from 'shared/types/commonTypes';
 import { EntitySchema } from 'shared/types/entityType';
 
 export interface ConnectionSchema {
-  _id?: string | ObjectId;
-  hub?: string | ObjectId;
-  template?: string | ObjectId;
-  file?: string | ObjectId;
+  _id?: ObjectIdSchema;
+  hub?: ObjectIdSchema;
+  template?: ObjectIdSchema;
+  file?: ObjectIdSchema;
   entity?: unknown;
   entityData?: {
-    _id?: string | ObjectId;
+    _id?: ObjectIdSchema;
     sharedId?: string;
     language?: string;
     mongoLanguage?: string;
     title?: string;
-    template?: string | ObjectId;
+    template?: ObjectIdSchema;
     published?: boolean;
     icon?: {
       _id?: string | null;
@@ -25,7 +25,7 @@ export interface ConnectionSchema {
       type?: string;
     };
     attachments?: {
-      _id?: string | ObjectId;
+      _id?: ObjectIdSchema;
       originalname?: string;
       filename?: string;
       mimetype?: string;
@@ -34,7 +34,7 @@ export interface ConnectionSchema {
       [k: string]: unknown | undefined;
     }[];
     creationDate?: number;
-    user?: string | ObjectId;
+    user?: ObjectIdSchema;
     metadata?: {
       [k: string]:
         | {

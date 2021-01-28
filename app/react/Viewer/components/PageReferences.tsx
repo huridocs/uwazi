@@ -23,11 +23,10 @@ export class PageReferencesComponent extends Component<PageReferencesProps> {
       <>
         {(this.props.references[this.props.page] || []).map((r: ConnectionSchema) => {
           const color = r._id === this.props.activeReference ? '#ffd84b' : '#feeeb4';
-
           return (
             <div
               data-id={r._id}
-              key={r._id}
+              key={r._id?.toString()}
               className="reference"
               onClick={this.onClick.bind(this, r)}
             >
