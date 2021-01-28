@@ -343,12 +343,11 @@ describe('syncWorker', () => {
       });
     });
 
-    const expectUploadFile = (url, filename, pathFunction = attachmentsPath, type = 'document') => {
+    const expectUploadFile = (url, filename, pathFunction = attachmentsPath) => {
       expect(request.uploadFile).toHaveBeenCalledWith(
         url,
         filename,
-        fs.readFileSync(pathFunction(filename)),
-        type
+        fs.readFileSync(pathFunction(filename))
       );
     };
 
@@ -367,7 +366,7 @@ describe('syncWorker', () => {
         expectUploadFile('url/api/sync/upload', `${newDoc1.toString()}.jpg`);
         expectUploadFile('url/api/sync/upload', 'test_attachment.txt');
         expectUploadFile('url/api/sync/upload', 'test_attachment2.txt');
-        expectUploadFile('url/api/sync/upload', 'customUpload.gif', customUploadsPath, 'custom');
+        expectUploadFile('url/api/sync/upload/custom', 'customUpload.gif', customUploadsPath);
       });
     });
 

@@ -71,22 +71,16 @@ export default (app: Application) => {
   app.post(
     '/api/sync/upload',
     needsAuthorization(['admin']),
-    async (req, res, next) => {
-      await new Promise((resolve, reject) => {
-        multer({ storage }).single('file')(req, res, err => {
-          if (!err) resolve('ok');
-          reject(err);
-        });
-      });
+    uploadMiddleware(uploadsPath, storage),
+    (_req, res) => {
+      res.json('ok');
+    }
+  );
 
-      let pathFunction = uploadsPath;
-
-      if (req.body && req.body.type === 'custom') {
-        pathFunction = customUploadsPath;
-      }
-
-      await uploadMiddleware(pathFunction, storage)(req, res, next);
-    },
+  app.post(
+    '/api/sync/upload/custom',
+    needsAuthorization(['admin']),
+    uploadMiddleware(customUploadsPath, storage),
     (_req, res) => {
       res.json('ok');
     }

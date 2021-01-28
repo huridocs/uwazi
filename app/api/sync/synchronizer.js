@@ -10,14 +10,16 @@ const readFile = util.promisify(fs.readFile);
 
 const uploadFile = async (url, filename, type = 'document') => {
   let pathFunction = uploadsPath;
+  let apiEndpoint = 'api/sync/upload';
 
   if (type === 'custom') {
     pathFunction = customUploadsPath;
+    apiEndpoint = 'api/sync/upload/custom';
   }
 
   const filepath = pathFunction(filename);
   const file = await readFile(filepath);
-  return request.uploadFile(urljoin(url, 'api/sync/upload'), filename, file, type);
+  return request.uploadFile(urljoin(url, apiEndpoint), filename, file);
 };
 
 const syncAttachments = async (url, data, lastSync) => {
