@@ -1,6 +1,5 @@
 import { propertyTypes } from 'shared/propertyTypes';
 import { provenanceTypes } from 'shared/provenanceTypes';
-import { entitySchema } from 'shared/types/entitySchema';
 
 export const emitSchemaTypes = true;
 
