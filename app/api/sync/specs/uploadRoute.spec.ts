@@ -14,9 +14,9 @@ import {
 } from 'api/files';
 import { testingTenants } from 'api/utils/testingTenants';
 import { multitenantMiddleware } from 'api/utils/multitenantMiddleware';
+import { appContextMiddleware } from 'api/utils/appContextMiddleware';
 
 import syncRoutes from '../routes';
-import { appContextMiddleware } from 'api/utils/appContextMiddleware';
 
 jest.mock(
   '../../auth/authMiddleware.ts',
@@ -38,11 +38,14 @@ describe('sync', () => {
 
     let app: Express;
 
-    beforeEach(async () => {
+    beforeEach(() => {
       app = express();
       app.use(appContextMiddleware);
       app.use(multitenantMiddleware);
       syncRoutes(app);
+    });
+
+    afterEach(async () => {
       await deleteFile(uploadsPath('testUpload.txt'));
       await deleteFile(customUploadsPath('testUpload.txt'));
     });
@@ -67,8 +70,7 @@ describe('sync', () => {
 
       expect(response.status).toBe(200);
 
-      const properlyUploaded = await fileExists(customUploadsPath('testUpload.txt'));
-      expect(properlyUploaded).toBeTruthy();
+      expect(await fileExists(customUploadsPath('testUpload.txt'))).toBeTruthy();
     });
   });
 });
