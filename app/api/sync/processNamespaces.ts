@@ -6,13 +6,15 @@ import {
   SettingsSyncRelationtypesSchema,
   Settings,
 } from 'shared/types/settingsType';
-import { TemplateSchema } from 'shared/types/templateType';
-import { EntitySchema } from 'shared/types/entityType';
 import { ensure } from 'shared/tsUtils';
 import { ObjectIdSchema } from 'shared/types/commonTypes';
-import templatesModel from 'api/templates/templatesModel';
-import entitiesModel from 'api/entities/entitiesModel';
 import { settingsModel } from 'api/settings/settingsModel';
+import templatesModel from 'api/templates/templatesModel';
+import { TemplateSchema } from 'shared/types/templateType';
+import entitiesModel from 'api/entities/entitiesModel';
+import { EntitySchema } from 'shared/types/entityType';
+import filesModel from 'api/files/filesModel';
+import { FileType } from 'shared/types/fileType';
 
 const noDataFound = 'NO_DATA_FOUND';
 
@@ -268,7 +270,9 @@ class ProcessNamespaces {
   }
 
   private async files() {
-    const data = await this.fetchData();
+    const { mongoId } = this.change;
+    const data = ensure<WithId<FileType>>(await filesModel.getById(mongoId), noDataFound);
+
     if (data.entity) {
       const [entity] = await entitiesModel.get({ sharedId: data.entity });
 
