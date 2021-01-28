@@ -11937,7 +11937,7 @@ react-onclickoutside@^6.9.0:
 
 react-pdf-handler@huridocs/react-pdf-renderer:
   version "1.0.0"
-  resolved "https://codeload.github.com/huridocs/react-pdf-renderer/tar.gz/79acdd68dd92295ad532f136251953781fe37a71"
+  resolved "https://codeload.github.com/huridocs/react-pdf-renderer/tar.gz/0e1056721bc0b318365b91a348813bfedd48e206"
 
 react-player@^1.11.1:
   version "1.11.1"
