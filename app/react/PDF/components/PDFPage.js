@@ -5,6 +5,11 @@ import { PageReferences } from 'app/Viewer/components/PageReferences';
 import PDFJS, { textLayerFactory } from '../PDFJS';
 
 class PDFPage extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { rendered: false };
+  }
+
   componentDidMount() {
     this.scrollCallback = this.scroll.bind(this);
 
