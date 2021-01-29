@@ -53,7 +53,7 @@ describe('FormConfigInput', () => {
     expect(hihglights.length).toBe(2);
 
     const firstHighlightProps: any = hihglights.at(0).props();
-    expect(firstHighlightProps.page).toBe('3');
+    expect(firstHighlightProps.regionId).toBe('3');
     expect(firstHighlightProps.color).toBe('#ffd84b');
 
     const secondHighlightProps: any = hihglights.at(1).props();
