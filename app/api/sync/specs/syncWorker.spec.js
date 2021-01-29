@@ -1,17 +1,18 @@
 /* eslint-disable max-statements, max-lines */
 
-import 'api/entities';
-import 'api/thesauri/dictionariesModel';
 import fs from 'fs';
+import backend from 'fetch-mock';
+
+import 'api/thesauri/dictionariesModel';
+import { model as entitesModel } from 'api/entities';
 import errorLog from 'api/log/errorLog';
 import 'api/relationships';
-import backend from 'fetch-mock';
 
 import db from 'api/utils/testing_db';
 import request from 'shared/JSONRequest';
 import settings from 'api/settings';
 import { settingsModel } from 'api/settings/settingsModel';
-import { attachmentsPath } from 'api/files';
+import { attachmentsPath, customUploadsPath } from 'api/files';
 
 import fixtures, {
   settingsId,
@@ -63,6 +64,7 @@ describe('syncWorker', () => {
     fs.writeFileSync(attachmentsPath('test_attachment2.txt'), '');
     fs.writeFileSync(attachmentsPath('test.txt'), '');
     fs.writeFileSync(attachmentsPath('test2.txt'), '');
+    fs.writeFileSync(customUploadsPath('customUpload.gif'), '');
   });
 
   afterAll(async () => {
@@ -72,6 +74,7 @@ describe('syncWorker', () => {
     fs.unlinkSync(attachmentsPath('test_attachment2.txt'));
     fs.unlinkSync(attachmentsPath('test1.txt'));
     fs.unlinkSync(attachmentsPath('test2.txt'));
+    fs.unlinkSync(customUploadsPath('customUpload.gif'));
   });
 
   const syncWorkerWithConfig = async config =>
@@ -81,10 +84,11 @@ describe('syncWorker', () => {
       config,
     });
 
-  const syncAllTemplates = async (name = 'slave1') =>
+  const syncAllTemplates = async (name = 'slave1', batchSize) =>
     syncWorker.syncronize({
       url: 'url',
       name,
+      batchSize,
       config: {
         templates: {
           [template1.toString()]: [],
@@ -339,6 +343,14 @@ describe('syncWorker', () => {
       });
     });
 
+    const expectUploadFile = (url, filename, pathFunction = attachmentsPath) => {
+      expect(request.uploadFile).toHaveBeenCalledWith(
+        url,
+        filename,
+        fs.readFileSync(pathFunction(filename))
+      );
+    };
+
     describe('uploadFile', () => {
       it('should upload attachments, documents and thumbnails belonging to entities that are allowed to sync', async () => {
         await syncWorkerWithConfig({
@@ -347,42 +359,22 @@ describe('syncWorker', () => {
           },
         });
 
-        expect(request.uploadFile.calls.count()).toBe(5);
+        expect(request.uploadFile.calls.count()).toBe(6);
 
-        expect(request.uploadFile).toHaveBeenCalledWith(
-          'url/api/sync/upload',
-          'test2.txt',
-          fs.readFileSync(attachmentsPath('test2.txt'))
-        );
-
-        expect(request.uploadFile).toHaveBeenCalledWith(
-          'url/api/sync/upload',
-          'test.txt',
-          fs.readFileSync(attachmentsPath('test.txt'))
-        );
-
-        expect(request.uploadFile).toHaveBeenCalledWith(
-          'url/api/sync/upload',
-          `${newDoc1.toString()}.jpg`,
-          fs.readFileSync(attachmentsPath(`${newDoc1.toString()}.jpg`))
-        );
-
-        expect(request.uploadFile).toHaveBeenCalledWith(
-          'url/api/sync/upload',
-          'test_attachment.txt',
-          fs.readFileSync(attachmentsPath('test_attachment.txt'))
-        );
-        expect(request.uploadFile).toHaveBeenCalledWith(
-          'url/api/sync/upload',
-          'test_attachment2.txt',
-          fs.readFileSync(attachmentsPath('test_attachment2.txt'))
-        );
+        expectUploadFile('url/api/sync/upload', 'test2.txt');
+        expectUploadFile('url/api/sync/upload', 'test.txt');
+        expectUploadFile('url/api/sync/upload', `${newDoc1.toString()}.jpg`);
+        expectUploadFile('url/api/sync/upload', 'test_attachment.txt');
+        expectUploadFile('url/api/sync/upload', 'test_attachment2.txt');
+        expectUploadFile('url/api/sync/upload/custom', 'customUpload.gif', customUploadsPath);
       });
     });
 
     describe('entities', () => {
-      it('should only sync entities belonging to a whitelisted template and properties and exclude non-templated entities', async () => {
-        await syncWorkerWithConfig({
+      let baseConfig;
+
+      beforeEach(() => {
+        baseConfig = {
           templates: {
             [template1.toString()]: [
               template1Property2.toString(),
@@ -391,7 +383,11 @@ describe('syncWorker', () => {
             ],
             [template2.toString()]: [],
           },
-        });
+        };
+      });
+
+      it('should only sync entities belonging to a whitelisted template and properties and exclude non-templated entities', async () => {
+        await syncWorkerWithConfig(baseConfig);
 
         const {
           calls: [entity1Call, entity2Call],
@@ -423,6 +419,63 @@ describe('syncWorker', () => {
         expect(request.post).not.toHaveBeenCalledWith('url/api/sync', {
           namespace: 'entities',
           data: expect.objectContaining({ title: 'not to sync' }),
+        });
+      });
+
+      describe('Filtering', () => {
+        let filterConfig;
+
+        beforeEach(() => {
+          filterConfig = { ...baseConfig, templates: { ...baseConfig.templates } };
+          filterConfig.templates[template1.toString()] = {
+            properties: baseConfig.templates[template1.toString()],
+            filter:
+              '{ "metadata.t1Property2": { "$elemMatch": { "value": "another doc property 2" } } }',
+          };
+        });
+
+        it('should allow filtering entities based on filter function', async () => {
+          await syncWorkerWithConfig(filterConfig);
+
+          const {
+            callsCount,
+            calls: [entity2Call],
+          } = getCallsToIds('entities', [newDoc2]);
+          expect(callsCount).toBe(1);
+          expect(entity2Call).toBeDefined();
+        });
+
+        it('should fail on error', async () => {
+          filterConfig.templates[template1.toString()].filter = 'return missing;';
+          try {
+            await syncWorkerWithConfig(filterConfig);
+            fail('should not pass');
+          } catch (err) {
+            expect(err.message).toContain('JSON');
+          }
+        });
+
+        describe('When entity no longer passes filter', () => {
+          it('should delete target entities', async () => {
+            const nonMatchingEntity = {
+              title: 'another matching entity',
+              template: template1.toString(),
+              sharedId: 'entitytest.txt',
+              metadata: {
+                t1Property2: [{ value: 'will not pass filter' }],
+              },
+            };
+
+            const [savedEntity] = await entitesModel.saveMultiple([nonMatchingEntity]);
+
+            await syncWorkerWithConfig(filterConfig);
+
+            expectCallWith(
+              request.delete,
+              'entities',
+              expect.objectContaining({ _id: savedEntity._id })
+            );
+          });
         });
       });
     });
@@ -501,8 +554,8 @@ describe('syncWorker', () => {
     it('should process the log records newer than the last synced entity', async () => {
       await syncAllTemplates();
 
-      expect(request.post.calls.count()).toBe(13);
-      expect(request.delete.calls.count()).toBe(3);
+      expect(request.post.calls.count()).toBe(14);
+      expect(request.delete.calls.count()).toBe(27);
 
       request.post.calls.reset();
       request.delete.calls.reset();
@@ -517,14 +570,31 @@ describe('syncWorker', () => {
       await syncAllTemplates();
       let [{ lastSync: lastSync1 }] = await syncsModel.find({ name: 'slave1' });
       let [{ lastSync: lastSync3 }] = await syncsModel.find({ name: 'slave3' });
-      expect(lastSync1).toBe(20000);
+      expect(lastSync1).toBe(22000);
       expect(lastSync3).toBe(1000);
 
       await syncsModel._updateMany({ name: 'slave3' }, { $set: { lastSync: 8999 } });
       await syncAllTemplates('slave3');
       [{ lastSync: lastSync1 }] = await syncsModel.find({ name: 'slave1' });
       [{ lastSync: lastSync3 }] = await syncsModel.find({ name: 'slave3' });
-      expect(lastSync3).toBe(20000);
+      expect(lastSync3).toBe(22000);
+    });
+
+    it('should allow smaller batches for large amount of changes (but process all identical timestamps)', async () => {
+      await syncAllTemplates('slave1', 2);
+      let [{ lastSync }] = await syncsModel.find({ name: 'slave1' });
+      expect(lastSync).toBe(9000);
+      expect(request.post.calls.count()).toBe(10);
+      expect(request.delete.calls.count()).toBe(1);
+
+      request.post.calls.reset();
+      request.delete.calls.reset();
+
+      await syncAllTemplates('slave1', 5);
+      [{ lastSync }] = await syncsModel.find({ name: 'slave1' });
+      expect(lastSync).toBe(9003);
+      expect(request.post.calls.count()).toBe(2);
+      expect(request.delete.calls.count()).toBe(3);
     });
 
     it('should update lastSync on each operation', async () => {
