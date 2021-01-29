@@ -50,10 +50,23 @@ export const ShareEntityModalComponent = ({
   const [dirty, setDirty] = useState(false);
   const [validationErrors, setValidationErrors] = useState<any[]>([]);
 
+  const searchAndLoadCollabs = async (
+    searchTerm: string,
+    currentAssignments: MemberWithPermission[]
+  ) => {
+    const collaborators = await searchCollaborators(searchTerm);
+    setResults(
+      collaborators.filter(r => !currentAssignments.find(a => a._id === r._id && a.type === r.type))
+    );
+  };
+
   useEffect(() => {
     loadGrantedPermissions(sharedIds)
       .then(permissions => {
-        setAssignments(permissions.map(p => ({ ...p, id: p._id })));
+        const loadedAssignments = permissions.map(p => ({ ...p, id: p._id }));
+        setAssignments(loadedAssignments);
+
+        searchAndLoadCollabs('', loadedAssignments).catch(() => {});
       })
       .catch(() => {});
 
@@ -65,11 +78,7 @@ export const ShareEntityModalComponent = ({
   }, []);
 
   const onChangeHandler = async (value: string) => {
-    setResults(
-      (await searchCollaborators(value)).filter(
-        r => !assignments.find(a => a._id === r._id && a.type === r.type)
-      )
-    );
+    await searchAndLoadCollabs(value, assignments);
   };
 
   const onSelectHandler = (value: MemberWithPermission) => {
