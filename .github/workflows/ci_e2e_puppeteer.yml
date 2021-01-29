@@ -1,6 +1,12 @@
 name: e2e puppeteer
 
-on: [push]
+on:
+  push:
+    branches:
+      - master
+      - development
+      - release
+  pull_request:
 
 jobs:
   e2e_test_puppeteer:
@@ -16,7 +22,10 @@ jobs:
         ports:
           - 27017/tcp
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout reposistory
+        uses: actions/checkout@v2
+      - name: Checkout submodules
+        run: git submodule update --init --recursive
       - name: Use Node.js 14.6.x
         uses: actions/setup-node@v1
         with:
@@ -45,11 +54,6 @@ jobs:
       - name: build production
         if: steps.cache-build.outputs.cache-hit != 'true'
         run: yarn production-build
-      - name: checkout fixtures
-        uses: actions/checkout@v2
-        with:
-          repository: huridocs/uwazi-fixtures
-          path: uwazi-fixtures
       - run: yarn e2e-puppeteer-fixtures
         env:
           DBHOST: localhost:${{ job.services.mongodb.ports[27017] }}

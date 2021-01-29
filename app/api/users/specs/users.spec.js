@@ -6,6 +6,7 @@ import crypto from 'crypto';
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import mailer from 'api/utils/mailer';
 import db from 'api/utils/testing_db';
+import * as random from 'shared/uniqueID';
 
 import encryptPassword, { comparePasswords } from 'api/auth/encryptPassword';
 import * as usersUtils from 'api/auth2fa/usersUtils';
@@ -95,11 +96,20 @@ describe('Users', () => {
 
       beforeEach(() => {
         spyOn(users, 'recoverPassword').and.returnValue(Promise.resolve());
+        jest.spyOn(random, 'default').mockReturnValue('mypass');
       });
 
       it('should do the recover password process (as a new user)', done => {
         users
-          .newUser({ username: 'spidey', email: 'peter@parker.com', role: 'editor' }, domain)
+          .newUser(
+            {
+              username: 'spidey',
+              email: 'peter@parker.com',
+              password: 'mypass',
+              role: 'editor',
+            },
+            domain
+          )
           .then(() => users.get({ username: 'spidey' }))
           .then(([user]) => {
             expect(user.username).toBe('spidey');
@@ -109,6 +119,21 @@ describe('Users', () => {
             done();
           })
           .catch(catchErrors(done));
+      });
+
+      it('should create a random password when none is provided', async () => {
+        await users.newUser(
+          {
+            username: 'someone',
+            email: 'someone@mailer.com',
+            role: 'admin',
+          },
+          domain
+        );
+
+        expect(random.default).toHaveBeenCalled();
+        const [user] = await users.get({ username: 'someone' }, '+password');
+        expect(await comparePasswords('mypass', user.password)).toBe(true);
       });
 
       it('should not allow repeat username', done => {
@@ -148,6 +173,7 @@ describe('Users', () => {
           {
             username: 'without2fa',
             email: 'another@email.com',
+            password: 'mypass',
             role: 'editor',
             using2fa: true,
             secret: 'UNAUTHORIZED SECRET',
@@ -423,7 +449,7 @@ describe('Users', () => {
 
       users
         .newUser(
-          { username: 'spidey', email: 'peter@parker.com', role: 'editor' },
+          { username: 'spidey', email: 'peter@parker.com', password: 'mypass', role: 'editor' },
           'http://localhost'
         )
         .then(newUser => {

@@ -48,7 +48,7 @@ export default app => {
     ),
     (req, res, next) =>
       search
-        .searchSnippets(req.query.searchTerm, req.query.id, req.language)
+        .searchSnippets(req.query.searchTerm, req.query.id, req.language, req.user)
         .then(results => res.json(results))
         .catch(next)
   );

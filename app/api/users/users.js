@@ -176,9 +176,10 @@ export default {
     if (emailMatch.length) {
       return Promise.reject(createError('Email already exists', 409));
     }
+    const password = user.password ? user.password : random();
     const _user = await model.save({
       ...user,
-      password: await encryptPassword(random()),
+      password: await encryptPassword(password),
       using2fa: undefined,
       secret: undefined,
     });
