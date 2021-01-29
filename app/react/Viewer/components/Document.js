@@ -38,6 +38,9 @@ export class Document extends Component {
   }
 
   onTextSelected(textSelection) {
+    if (this.props.disableTextSelection) {
+      return;
+    }
     const selectionRectangles = textSelection.selectionRectangles.map(
       ({ regionId, ...otherProps }) => ({ ...otherProps, page: regionId })
     );
@@ -150,6 +153,7 @@ Document.propTypes = {
   selectedSnippet: PropTypes.instanceOf(Immutable.Map),
   setSelection: PropTypes.func,
   unsetSelection: PropTypes.func,
+  disableTextSelection: PropTypes.bool,
   header: PropTypes.func,
   searchTerm: PropTypes.string,
   page: PropTypes.number,
