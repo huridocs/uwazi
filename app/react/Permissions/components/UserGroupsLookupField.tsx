@@ -21,10 +21,6 @@ export const UserGroupsLookupField = ({
   const [searchTerm, setSearchTerm] = useState('');
   const debouncedOnChange = useCallback(debounce(onChange, 500), [onChange]);
 
-  useEffect(() => {
-    debouncedOnChange('');
-  }, []);
-
   const onChangeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
     setShow(true);
     setSearchTerm(event.target.value);
