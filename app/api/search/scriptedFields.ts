@@ -8,9 +8,9 @@ export const writeAccessField = (params: WriteAccessFieldParams) => ({
       if ( params['_source']['permissions'] == null ) {
         return false;
       }
-      
-      for (int i = 0; i < params['_source']['permissions'].length; ++i) {
-        if ( 
+
+      for ( int i = 0; i < params['_source']['permissions'].length; ++i ) {
+        if (
           params.ids.contains(params['_source']['permissions'][i]['_id'])
           && params['_source']['permissions'][i]['level'] == 'write'
         ) {

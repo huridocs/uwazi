@@ -40,7 +40,7 @@ export default function() {
     },
     script_fields: {
       write_access: writeAccessField({
-        user: getUserInContext() && getUserInContext()._id.toString(),
+        ids: getUserInContext() ? [getUserInContext()._id.toString()] : [],
       }),
     },
     sort: [],

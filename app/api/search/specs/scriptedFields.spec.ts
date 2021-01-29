@@ -148,5 +148,32 @@ describe('Elastic search scripted fields', () => {
 
       expect(response.body.result).toBe('false');
     });
+
+    it('should return FALSE if no user or groups provided', async () => {
+      const groupID = 'somegroup';
+
+      const fieldForDocument = injectSource<WriteAccessFieldParams>(writeAccessField, {
+        permissions: [
+          {
+            _id: userID,
+            type: 'user',
+            level: 'read',
+          },
+          {
+            _id: groupID,
+            type: 'group',
+            level: 'read',
+          },
+        ],
+      });
+
+      const response = await elasticClient.scriptsPainlessExecute({
+        body: {
+          ...fieldForDocument({ ids: [] }),
+        },
+      });
+
+      expect(response.body.result).toBe('false');
+    });
   });
 });
