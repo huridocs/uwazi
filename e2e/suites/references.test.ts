@@ -66,7 +66,7 @@ describe('Entities', () => {
 
   it('should delete de created reference', async () => {
     await expect(page).toClick('.side-panel .references .item-actions .delete');
-    await expect(page).toClick('.modal-content .btn-danger');
+    await expect(page).toClick('button', { text: 'Accept' });
 
     await expect(page).not.toMatchElement('.side-panel.is-active .item-snippet', {
       text: 'Uwazi Heroes Investigation',
