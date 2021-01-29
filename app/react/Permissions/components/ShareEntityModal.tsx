@@ -4,14 +4,18 @@ import { Icon } from 'UI';
 import { Translate } from 'app/I18N';
 import { MemberWithPermission } from 'shared/types/entityPermisions';
 import { AccessLevels, MixedAccess } from 'shared/types/permissionSchema';
+import { saveEntitiesPermissions } from 'app/Permissions/actions/actions';
+import { connect } from 'react-redux';
+import { PermissionsDataSchema } from 'shared/types/permissionType';
 import { UserGroupsLookupField } from './UserGroupsLookupField';
 import { MembersList } from './MembersList';
-import { loadGrantedPermissions, searchCollaborators, savePermissions } from '../PermissionsAPI';
+import { loadGrantedPermissions, searchCollaborators } from '../PermissionsAPI';
 
 export interface ShareEntityModalProps {
   isOpen: boolean;
   onClose: () => void;
   sharedIds: string[];
+  saveEntitiesPermissions: (permissionsData: PermissionsDataSchema) => Promise<void>;
 }
 
 const validate = (assignments: MemberWithPermission[]) =>
@@ -39,6 +43,7 @@ export const ShareEntityModalComponent = ({
   isOpen,
   onClose,
   sharedIds,
+  saveEntitiesPermissions: savePermissions,
 }: ShareEntityModalProps) => {
   const [results, setResults] = useState<MemberWithPermission[]>([]);
   const [assignments, setAssignments] = useState<MemberWithPermission[]>([]);
@@ -147,4 +152,8 @@ export const ShareEntityModalComponent = ({
   );
 };
 
-export const ShareEntityModal = ShareEntityModalComponent;
+const mapDispatchToProps = {
+  saveEntitiesPermissions,
+};
+
+export const ShareEntityModal = connect(null, mapDispatchToProps)(ShareEntityModalComponent);

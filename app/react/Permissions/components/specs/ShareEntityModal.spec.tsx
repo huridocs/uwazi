@@ -1,27 +1,42 @@
-import React from 'react';
-import { shallow } from 'enzyme';
+import { ShallowWrapper } from 'enzyme';
 import { ShareEntityModal } from 'app/Permissions/components/ShareEntityModal';
-import * as api from 'app/Permissions/PermissionsAPI';
 import { PermissionSchema } from 'shared/types/permissionType';
 import { MemberWithPermission } from 'shared/types/entityPermisions';
 import { AccessLevels, PermissionType, MixedAccess } from 'shared/types/permissionSchema';
 import { ObjectIdSchema } from 'shared/types/commonTypes';
+import { renderConnected } from 'app/Templates/specs/utils/renderConnected';
+import * as api from 'app/Permissions/PermissionsAPI';
+import { saveEntitiesPermissions } from 'app/Permissions/actions/actions';
 import { UserGroupsLookupField } from '../UserGroupsLookupField';
-import { data } from './testData';
 import { MembersList } from '../MembersList';
+import { data } from './testData';
+
+jest.mock('app/Permissions/actions/actions', () => ({
+  saveEntitiesPermissions: jest.fn().mockReturnValue(async () => Promise.resolve()),
+}));
 
 describe('ShareEntityModal', () => {
+  let component: ShallowWrapper;
+  const defaultProps = {
+    sharedIds: ['entityId1', 'entityId2'],
+    isOpen: true,
+    onClose: jest.fn(),
+  };
+
+  function render(props: any) {
+    component = renderConnected(ShareEntityModal, props, {});
+  }
+
   beforeAll(() => {
     jest.spyOn(api, 'searchCollaborators').mockImplementation(async () => Promise.resolve(data));
-    jest.spyOn(api, 'savePermissions').mockImplementation(async () => Promise.resolve(null));
   });
 
   beforeEach(() => {
     jest.clearAllMocks();
+    render(defaultProps);
   });
 
   it('should trigger a search when the search changes', () => {
-    const component = shallow(<ShareEntityModal sharedIds={[]} isOpen onClose={() => {}} />);
     component.find(UserGroupsLookupField).simulate('change', 'searchTerm');
     expect(api.searchCollaborators).toHaveBeenCalledWith('searchTerm');
   });
@@ -33,7 +48,6 @@ describe('ShareEntityModal', () => {
       label: 'User',
       level: AccessLevels.WRITE,
     };
-    const component = shallow(<ShareEntityModal sharedIds={[]} isOpen onClose={() => {}} />);
     component.find(UserGroupsLookupField).simulate('select', testMember);
     expect(component.find(MembersList).get(0).props.members).toContainEqual(testMember);
   });
@@ -44,7 +58,6 @@ describe('ShareEntityModal', () => {
       type: PermissionType.USER,
       label: 'User',
     };
-    const component = shallow(<ShareEntityModal sharedIds={[]} isOpen onClose={() => {}} />);
     component.find(UserGroupsLookupField).simulate('select', testMember);
     expect(component.find(MembersList).get(0).props.members).toContainEqual({
       ...testMember,
@@ -58,7 +71,6 @@ describe('ShareEntityModal', () => {
       type: 'user',
       label: 'User',
     };
-    const component = shallow(<ShareEntityModal sharedIds={[]} isOpen onClose={() => {}} />);
     component.find(UserGroupsLookupField).simulate('select', testMember);
     component.find(MembersList).simulate('change', []);
     expect(
@@ -84,10 +96,9 @@ describe('ShareEntityModal', () => {
       type: PermissionType.USER,
       _id: '1',
     };
-    const component = shallow(<ShareEntityModal sharedIds={[]} isOpen onClose={() => {}} />);
     component.find(UserGroupsLookupField).simulate('select', testMember);
     component.find('.btn-success').simulate('click');
-    expect(api.savePermissions).not.toHaveBeenCalled();
+    expect(saveEntitiesPermissions).not.toHaveBeenCalled();
     expect(component.find(MembersList).get(0).props.validationErrors).toEqual([
       testValidationError,
     ]);
@@ -110,21 +121,16 @@ describe('ShareEntityModal', () => {
       },
     ];
 
-    const onCloseMock = jest.fn();
-
-    const component = shallow(
-      <ShareEntityModal sharedIds={['entityId1', 'entityId2']} isOpen onClose={onCloseMock} />
-    );
     component.find(UserGroupsLookupField).simulate('select', testMember);
     await component
       .find('.btn-success')
       .get(0)
       .props.onClick();
-    expect(api.savePermissions).toHaveBeenCalledWith({
+    expect(saveEntitiesPermissions).toHaveBeenCalledWith({
       ids: ['entityId1', 'entityId2'],
       permissions: sentPermissions,
     });
-    expect(onCloseMock).toHaveBeenCalled();
+    expect(defaultProps.onClose).toHaveBeenCalled();
   });
 
   it('should show one "done" button on pristine, and two on dirty', () => {
@@ -134,17 +140,14 @@ describe('ShareEntityModal', () => {
       label: 'User',
       level: AccessLevels.WRITE,
     };
-    const component = shallow(<ShareEntityModal sharedIds={[]} isOpen onClose={() => {}} />);
     expect(component.find('Footer').get(0).props.children.type).toBe('button');
     component.find(UserGroupsLookupField).simulate('select', testMember);
     expect(component.find('Footer').get(0).props.children.length).toBe(2);
   });
 
   it('should call onClose when clicking done', () => {
-    const onCloseMock = jest.fn();
-    const component = shallow(<ShareEntityModal sharedIds={[]} isOpen onClose={onCloseMock} />);
     component.find('button.pristine').simulate('click');
-    expect(onCloseMock).toHaveBeenCalled();
+    expect(defaultProps.onClose).toHaveBeenCalled();
   });
 
   it('should close without saving when clicking discard', async () => {
@@ -155,17 +158,12 @@ describe('ShareEntityModal', () => {
       level: AccessLevels.READ,
     };
 
-    const onCloseMock = jest.fn();
-
-    const component = shallow(
-      <ShareEntityModal sharedIds={['entityId1']} isOpen onClose={onCloseMock} />
-    );
     component.find(UserGroupsLookupField).simulate('select', testMember);
     await component
       .find('.cancel-button')
       .get(0)
       .props.onClick();
-    expect(api.savePermissions).not.toHaveBeenCalled();
-    expect(onCloseMock).toHaveBeenCalled();
+    expect(saveEntitiesPermissions).not.toHaveBeenCalled();
+    expect(defaultProps.onClose).toHaveBeenCalled();
   });
 });

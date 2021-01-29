@@ -1,6 +1,5 @@
 import { MemberWithPermission } from 'shared/types/entityPermisions';
-import { AccessLevels } from 'shared/types/permissionSchema';
-import { MixedAccess } from '../../../../shared/types/permissionSchema';
+import { AccessLevels, MixedAccess } from 'shared/types/permissionSchema';
 
 export const data: MemberWithPermission[] = [
   {
