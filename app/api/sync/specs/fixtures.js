@@ -82,6 +82,7 @@ const file2 = db.id();
 const file3 = db.id();
 const file4 = db.id();
 const file5 = db.id();
+const customUpload = db.id();
 
 export default {
   syncs: [
@@ -196,6 +197,12 @@ export default {
       timestamp: 9000,
       namespace: 'entities',
       mongoId: newDoc6,
+      deleted: false,
+    },
+    {
+      timestamp: 9001,
+      namespace: 'entities',
+      mongoId: db.id(),
       deleted: false,
     },
     {
@@ -354,6 +361,12 @@ export default {
       mongoId: file5,
       deleted: false,
     },
+    {
+      timestamp: 9001,
+      namespace: 'files',
+      mongoId: customUpload,
+      deleted: false,
+    },
   ],
 
   files: [
@@ -381,6 +394,11 @@ export default {
       _id: file5,
       entity: 'newDoc3SharedId',
       filename: `${newDoc1.toString()}.jpg`,
+    },
+    {
+      _id: customUpload,
+      filename: 'customUpload.gif',
+      type: 'custom',
     },
   ],
 

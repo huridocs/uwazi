@@ -72,7 +72,7 @@ const appendFile = promisify(fs.appendFile);
 
 const fileExists = async (filePath: FilePath): Promise<boolean> =>
   new Promise((resolve, reject) => {
-    fs.stat(filePath, err => {
+    fs.access(filePath, err => {
       if (err === null) {
         resolve(true);
       }
