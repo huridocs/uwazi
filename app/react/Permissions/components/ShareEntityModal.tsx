@@ -45,9 +45,20 @@ export const ShareEntityModalComponent = ({
   sharedIds,
   saveEntitiesPermissions: savePermissions,
 }: ShareEntityModalProps) => {
+  const [assignments, setAssignments] = useState<MemberWithPermission[]>();
   const [results, setResults] = useState<MemberWithPermission[]>([]);
-  const [assignments, setAssignments] = useState<MemberWithPermission[]>([]);
   const [dirty, setDirty] = useState(false);
+
+  async function searchAndFilterCollaborators(value: string) {
+    if (assignments) {
+      setResults(
+        (await searchCollaborators(value)).filter(
+          r => !assignments.find(a => a._id === r._id && a.type === r.type)
+        )
+      );
+    }
+  }
+
   const [validationErrors, setValidationErrors] = useState<any[]>([]);
 
   useEffect(() => {
@@ -64,35 +75,39 @@ export const ShareEntityModalComponent = ({
     };
   }, []);
 
+  useEffect(() => {
+    searchAndFilterCollaborators('')
+      .then()
+      .catch(() => {});
+  }, [assignments]);
+
   const onChangeHandler = async (value: string) => {
-    setResults(
-      (await searchCollaborators(value)).filter(
-        r => !assignments.find(a => a._id === r._id && a.type === r.type)
-      )
-    );
+    await searchAndFilterCollaborators(value);
   };
 
   const onSelectHandler = (value: MemberWithPermission) => {
-    setAssignments([...assignments, { ...value, level: value.level || AccessLevels.READ }]);
+    setAssignments([...assignments!, { ...value, level: value.level || AccessLevels.READ }]);
     setResults(results.filter(r => !(value._id === r._id && value.type === r.type)));
     setDirty(true);
   };
 
   const onSaveHandler = async () => {
-    const errors = validate(assignments);
+    if (assignments) {
+      const errors = validate(assignments);
 
-    if (errors.length) {
-      return setValidationErrors(errors);
+      if (errors.length) {
+        return setValidationErrors(errors);
+      }
+
+      await savePermissions({
+        ids: sharedIds,
+        permissions: assignments.map(a => ({
+          _id: a._id,
+          type: a.type,
+          level: a.level as AccessLevels,
+        })),
+      });
     }
-
-    await savePermissions({
-      ids: sharedIds,
-      permissions: assignments.map(a => ({
-        _id: a._id,
-        type: a.type,
-        level: a.level as AccessLevels,
-      })),
-    });
     return onClose();
   };
 
@@ -114,14 +129,16 @@ export const ShareEntityModalComponent = ({
           options={results}
         />
         <div className="member-list-wrapper">
-          <MembersList
-            members={pseudoMembers.concat(assignments)}
-            onChange={value => {
-              setAssignments(value.filter(m => m._id));
-              setDirty(true);
-            }}
-            validationErrors={validationErrors}
-          />
+          {assignments && (
+            <MembersList
+              members={pseudoMembers.concat(assignments)}
+              onChange={value => {
+                setAssignments(value.filter(m => m._id));
+                setDirty(true);
+              }}
+              validationErrors={validationErrors}
+            />
+          )}
         </div>
         {validationErrors.length ? (
           <span className="validation-message">
