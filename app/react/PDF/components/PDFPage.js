@@ -26,17 +26,16 @@ class PDFPage extends Component {
   }
 
   scroll() {
-    if (this.pageShouldRender() && !this.rendered) {
+    if (this.pageShouldRender() && !this.state.rendered) {
       this.renderPage();
     }
 
     if (!this.pageShouldRender() && this.pdfPageView) {
       this.pdfPageView.cancelRendering();
       this.pdfPageView.destroy();
-      if (this.rendered) {
+      if (this.state.rendered) {
         this.props.onUnload(this.props.page);
       }
-      this.rendered = false;
       this.setState({ rendered: false });
     }
   }
@@ -84,23 +83,21 @@ class PDFPage extends Component {
   }
 
   renderReferences() {
-    if (this.rendered) {
+    if (this.state.rendered) {
       return <PageReferences page={this.props.page} onClick={this.props.highlightReference} />;
     }
   }
 
   renderPage() {
-    if (!this.rendered && this.pdfPageView) {
+    if (!this.state.rendered && this.pdfPageView) {
       this.props.onLoading(this.props.page);
       this.pdfPageView.draw().catch(e => e);
-      this.rendered = true;
       this.setState({ rendered: true });
 
       return;
     }
-    if (!this.rendered) {
+    if (!this.state.rendered) {
       this.props.onLoading(this.props.page);
-      this.rendered = true;
       this.setState({ rendered: true });
       this.props.pdf.getPage(this.props.page).then(page => {
         const scale = 1;
