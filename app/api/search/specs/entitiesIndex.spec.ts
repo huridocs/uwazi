@@ -123,6 +123,7 @@ describe('entitiesIndex', () => {
       ];
 
       response = await checkMapping(templateB);
+
       expect(response).toEqual({
         errors: [{ name: 'Date of birth' }, { name: 'Country' }],
         valid: false,
