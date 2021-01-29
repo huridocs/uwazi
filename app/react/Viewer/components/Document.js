@@ -157,7 +157,6 @@ Document.propTypes = {
   doScrollToActive: PropTypes.bool,
   scrollToActive: PropTypes.func,
   activeReference: PropTypes.string,
-  selection: PropTypes.object,
   references: PropTypes.object,
   className: PropTypes.string,
   onClick: PropTypes.func,

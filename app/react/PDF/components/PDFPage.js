@@ -86,6 +86,8 @@ class PDFPage extends Component {
     if (this.state.rendered) {
       return <PageReferences page={this.props.page} onClick={this.props.highlightReference} />;
     }
+
+    return false;
   }
 
   renderPage() {

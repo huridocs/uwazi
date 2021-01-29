@@ -125,7 +125,7 @@ export function scrollTomark() {
 }
 
 export async function scrollTo(reference, _docInfo) {
-  const page = reference.selectionRectangles[0].page;
+  const { page } = reference.selectionRectangles[0];
   const offset = reference.selectionRectangles[0].top - 10;
 
   await scroller.to(`.document-viewer div#page-${page}`, '.document-viewer', {
