@@ -4,10 +4,14 @@ import { connect } from 'react-redux';
 type PropTypes = {
   authorized: boolean;
   children: React.ReactNode;
+  write?: any[];
 };
 
-const NeedAuthorization: React.FC<PropTypes> = ({ authorized, children }: PropTypes) =>
-  authorized ? <>{children}</> : null;
+const checkWritePermissions = (entities: any[]) =>
+  entities.reduce((memo, entity) => memo && entity.write_access, true);
+
+const NeedAuthorization: React.FC<PropTypes> = ({ authorized, children, write }: PropTypes) =>
+  authorized || (write && checkWritePermissions(write)) ? <>{children}</> : null;
 
 type mapStateProps = {
   roles: string[];

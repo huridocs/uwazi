@@ -4,6 +4,7 @@ import { preloadOptionsSearch } from 'shared/config';
 import { getUserInContext } from 'api/permissions/permissionsContext';
 import filterToMatch, { multiselectFilter } from './metadataMatchers';
 import { propertyToAggregation } from './metadataAggregations';
+import { writeAccessField } from 'api/search/scriptedFields';
 
 export default function() {
   const baseQuery = {
@@ -25,6 +26,7 @@ export default function() {
         'uploaded',
         'published',
         'relationships',
+        'write_access',
       ],
     },
     from: 0,
@@ -35,6 +37,11 @@ export default function() {
         must_not: [],
         filter: [{ term: { published: true } }],
       },
+    },
+    script_fields: {
+      write_access: writeAccessField({
+        user: getUserInContext() && getUserInContext()._id.toString(),
+      }),
     },
     sort: [],
     aggregations: {

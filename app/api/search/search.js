@@ -372,9 +372,11 @@ const _sanitizeAggregations = async (
 const processResponse = async (response, templates, dictionaries, language, filters) => {
   const rows = response.body.hits.hits.map(hit => {
     const result = hit._source;
+    const [canWrite] = hit.fields.write_access;
     result._explanation = hit._explanation;
     result.snippets = snippetsFromSearchHit(hit);
     result._id = hit._id;
+    result.write_access = canWrite;
     return result;
   });
   const sanitizedAggregations = await _sanitizeAggregations(
