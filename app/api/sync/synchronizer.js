@@ -3,15 +3,23 @@ import util from 'util';
 import urljoin from 'url-join';
 
 import request from 'shared/JSONRequest';
-import { uploadsPath } from 'api/files';
+import { customUploadsPath, uploadsPath } from 'api/files';
 
 const oneSecond = 1000;
 const readFile = util.promisify(fs.readFile);
 
-const uploadFile = async (url, filename) => {
-  const filepath = uploadsPath(filename);
+const uploadFile = async (url, filename, type = 'document') => {
+  let pathFunction = uploadsPath;
+  let apiEndpoint = 'api/sync/upload';
+
+  if (type === 'custom') {
+    pathFunction = customUploadsPath;
+    apiEndpoint = 'api/sync/upload/custom';
+  }
+
+  const filepath = pathFunction(filename);
   const file = await readFile(filepath);
-  return request.uploadFile(urljoin(url, 'api/sync/upload'), filename, file);
+  return request.uploadFile(urljoin(url, apiEndpoint), filename, file);
 };
 
 const syncAttachments = async (url, data, lastSync) => {
@@ -31,7 +39,7 @@ const syncronizer = {
     await request[action](urljoin(url, 'api/sync'), { namespace: change.namespace, data });
     await syncAttachments(url, data, lastSync);
     if (change.namespace === 'files' && data.filename) {
-      await uploadFile(url, data.filename);
+      await uploadFile(url, data.filename, data.type);
     }
   },
 };

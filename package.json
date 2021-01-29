@@ -154,6 +154,7 @@
     "rtlcss": "^2.6.0",
     "sanitize-filename": "^1.6.3",
     "serialize-javascript": "^5.0.1",
+    "sift": "^13.3.5",
     "socket.io": "^2.3.0",
     "socket.io-client": "^2.3.0",
     "socket.io-redis": "^5.4.0",
