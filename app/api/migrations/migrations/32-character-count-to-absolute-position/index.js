@@ -18,7 +18,7 @@ const absolutePositionReferenceToTextSelection = absolutePositionReference => {
     top: x.top,
     width: x.width,
     height: x.height,
-    regionId: x.pageNumber.toString(),
+    page: x.pageNumber.toString(),
   }));
 
   textSelectionRectangles.sort((a, b) => (a.top >= b.top ? 1 : -1));
@@ -34,7 +34,7 @@ const absolutePositionReferenceToTextSelection = absolutePositionReference => {
               top: 0,
               width: 0,
               height: 0,
-              regionId: '1',
+              page: '1',
             },
           ],
   };
@@ -47,7 +47,7 @@ function isWrongConversion(textSelection) {
       wrongConversion ||
       (textSelection.selectionRectangles[i].left === 0 &&
         textSelection.selectionRectangles[i].top === 0 &&
-        textSelection.selectionRectangles[i].regionId === '1');
+        textSelection.selectionRectangles[i].page === '1');
   }
 
   return wrongConversion;

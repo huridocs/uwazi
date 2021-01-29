@@ -10,7 +10,7 @@ const relationshipsSchema = new mongoose.Schema({
   file: String,
   reference: {
     selectionRectangles: [
-      { top: Number, left: Number, width: Number, height: Number, regionId: String },
+      { top: Number, left: Number, width: Number, height: Number, page: String },
     ],
     text: String,
   },

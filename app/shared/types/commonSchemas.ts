@@ -128,7 +128,7 @@ export const tocSchema = {
           left: { type: 'number' },
           width: { type: 'number' },
           height: { type: 'number' },
-          regionId: { type: 'string' },
+          page: { type: 'string' },
         },
       },
     },

@@ -53,17 +53,17 @@ describe('documentActions', () => {
       const reference = {
         sourceDocument: '123',
         sourceRange: {
-          selectionRectangles: [{ top: 12, left: 23, hight: 42, width: 21, regionId: '1' }],
+          selectionRectangles: [{ top: 12, left: 23, hight: 42, width: 21, page: '1' }],
           text: 'Chapter 1',
         },
       };
       const chapter1 = {
-        selectionRectangles: [{ top: 12, left: 23, hight: 42, width: 21, regionId: '1' }],
+        selectionRectangles: [{ top: 12, left: 23, hight: 42, width: 21, page: '1' }],
         label: 'Chapter 1',
         indentation: 0,
       };
       const chapter2 = {
-        selectionRectangles: [{ top: 22, left: 23, hight: 42, width: 21, regionId: '1' }],
+        selectionRectangles: [{ top: 22, left: 23, hight: 42, width: 21, page: '1' }],
         label: 'Chapter 2',
         indentation: 0,
       };
@@ -94,17 +94,17 @@ describe('documentActions', () => {
         const reference = {
           sourceDocument: '123',
           sourceRange: {
-            selectionRectangles: [{ top: 12, left: 23, hight: 42, width: 21, regionId: '1' }],
+            selectionRectangles: [{ top: 12, left: 23, hight: 42, width: 21, page: '1' }],
             text: 'Chapter 1',
           },
         };
         const chapter1 = {
-          selectionRectangles: [{ top: 12, left: 23, hight: 42, width: 21, regionId: '1' }],
+          selectionRectangles: [{ top: 12, left: 23, hight: 42, width: 21, page: '1' }],
           label: 'Chapter 1',
           indentation: 0,
         };
         const chapter2 = {
-          selectionRectangles: [{ top: 22, left: 23, hight: 42, width: 21, regionId: '1' }],
+          selectionRectangles: [{ top: 22, left: 23, hight: 42, width: 21, page: '1' }],
           label: 'Chapter 2',
           indentation: 0,
         };

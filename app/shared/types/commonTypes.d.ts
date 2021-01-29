@@ -2,8 +2,6 @@
 /**AUTO-GENERATED. RUN yarn emit-types to update.*/
 import { ObjectId } from 'mongodb';
 
-import { EntitySchema } from 'shared/types/entityType';
-
 export type ObjectIdSchema = string | ObjectId;
 
 export interface AttachmentSchema {
@@ -75,7 +73,7 @@ export interface TocSchema {
     left?: number;
     width?: number;
     height?: number;
-    regionId?: string;
+    page?: string;
   }[];
   label?: string;
   indentation?: number;

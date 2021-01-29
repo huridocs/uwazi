@@ -59,7 +59,7 @@ describe('Viewer uiActions', () => {
       actions.scrollToActive(
         {
           _id: 'id',
-          reference: { selectionRectangles: [{ top: 40, regionId: '1' }], text: 'something' },
+          reference: { selectionRectangles: [{ top: 40, page: '1' }], text: 'something' },
         },
         {},
         '',
@@ -81,7 +81,7 @@ describe('Viewer uiActions', () => {
       actions.activateReference(
         {
           _id: 'id',
-          reference: { selectionRectangles: [{ top: 40, regionId: '1' }], text: 'something' },
+          reference: { selectionRectangles: [{ top: 40, page: '1' }], text: 'something' },
         },
         {}
       )(dispatch);
@@ -97,7 +97,7 @@ describe('Viewer uiActions', () => {
       actions.activateReference(
         {
           _id: 'id',
-          reference: { selectionRectangles: [{ top: 40, regionId: '1' }], text: 'something' },
+          reference: { selectionRectangles: [{ top: 40, page: '1' }], text: 'something' },
         },
         {}
       )(dispatch);
@@ -111,7 +111,7 @@ describe('Viewer uiActions', () => {
       actions.activateReference(
         {
           _id: 'id',
-          reference: { selectionRectangles: [{ top: 40, regionId: '1' }], text: 'something' },
+          reference: { selectionRectangles: [{ top: 40, page: '1' }], text: 'something' },
         },
         {},
         'another tab'
@@ -126,7 +126,7 @@ describe('Viewer uiActions', () => {
       actions.activateReference(
         {
           _id: 'id',
-          reference: { selectionRectangles: [{ top: 40, regionId: '1' }], text: 'something' },
+          reference: { selectionRectangles: [{ top: 40, page: '1' }], text: 'something' },
         },
         {},
         []
@@ -141,7 +141,7 @@ describe('Viewer uiActions', () => {
       actions.activateReference(
         {
           _id: 'id',
-          reference: { selectionRectangles: [{ top: 40, regionId: '1' }], text: 'something' },
+          reference: { selectionRectangles: [{ top: 40, page: '1' }], text: 'something' },
         },
         {},
         [],
@@ -154,7 +154,7 @@ describe('Viewer uiActions', () => {
       actions.activateReference(
         {
           _id: 'id',
-          reference: { selectionRectangles: [{ top: 40, regionId: '1' }], text: 'something' },
+          reference: { selectionRectangles: [{ top: 40, page: '1' }], text: 'something' },
         },
         {}
       )(dispatch);

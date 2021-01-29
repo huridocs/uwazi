@@ -19,6 +19,7 @@ export class PageReferencesComponent extends Component<PageReferencesProps> {
   }
 
   render() {
+    /* @ts-ignore */
     return (
       <>
         {(this.props.references[this.props.page] || []).map((r: ConnectionSchema) => {
@@ -60,21 +61,21 @@ const indexdReferencesByPage = createSelector(
             return mappedReferences;
           }
 
-          const regionIds = (connection.reference?.selectionRectangles || [])
-            .map(selection => selection.regionId)
+          const pages = (connection.reference?.selectionRectangles || [])
+            .map(selection => selection.page)
             .filter(unique);
 
-          regionIds.forEach(regionId => {
-            if (!regionId) {
+          pages.forEach(page => {
+            if (!page) {
               return;
             }
 
-            if (!mappedReferences[regionId]) {
+            if (!mappedReferences[page]) {
               // eslint-disable-next-line no-param-reassign
-              mappedReferences[regionId] = [];
+              mappedReferences[page] = [];
             }
 
-            mappedReferences[regionId].push(connection);
+            mappedReferences[page].push(connection);
           });
 
           return mappedReferences;

@@ -1,6 +1,5 @@
 /* eslint-disable */
 /**AUTO-GENERATED. RUN yarn emit-types to update.*/
-import { TextSelection } from 'react-pdf-handler';
 
 import { ObjectIdSchema } from 'shared/types/commonTypes';
 
@@ -11,7 +10,7 @@ export interface ConnectionSchema {
   hub?: ObjectIdSchema;
   template?: ObjectIdSchema;
   file?: ObjectIdSchema;
-  entity?: unknown;
+  entity?: string;
   entityData?: {
     _id?: ObjectIdSchema;
     sharedId?: string;
@@ -104,5 +103,14 @@ export interface ConnectionSchema {
     };
     [k: string]: unknown | undefined;
   };
-  reference?: TextSelection;
+  reference?: {
+    text: string;
+    selectionRectangles: {
+      top: number;
+      left: number;
+      width: number;
+      height: number;
+      page: string;
+    }[];
+  };
 }

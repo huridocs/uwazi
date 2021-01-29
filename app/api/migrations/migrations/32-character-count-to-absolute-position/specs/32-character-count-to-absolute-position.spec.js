@@ -57,7 +57,7 @@ describe('conversion of character count to absolute position', () => {
       expect(connections[0].reference.selectionRectangles[0]).toEqual({
         height: 12,
         left: 29,
-        regionId: '1',
+        page: '1',
         top: 702,
         width: 356,
       });
@@ -65,7 +65,7 @@ describe('conversion of character count to absolute position', () => {
       expect(connections[0].reference.selectionRectangles[0]).toEqual({
         height: 12,
         left: 29,
-        regionId: '1',
+        page: '1',
         top: 702,
         width: 27,
       });
@@ -73,7 +73,7 @@ describe('conversion of character count to absolute position', () => {
       expect(connections[0].reference.selectionRectangles[1]).toEqual({
         height: 12,
         left: 56,
-        regionId: '1',
+        page: '1',
         top: 702,
         width: 328,
       });
@@ -96,7 +96,7 @@ describe('conversion of character count to absolute position', () => {
             {
               height: 12,
               left: 325,
-              regionId: '3',
+              page: '3',
               top: 642,
               width: 145,
             },
@@ -120,7 +120,7 @@ describe('conversion of character count to absolute position', () => {
     expect(connections[0].reference.selectionRectangles[0].height).toEqual(0);
     expect(connections[0].reference.selectionRectangles[0].top).toEqual(0);
     expect(connections[0].reference.selectionRectangles[0].left).toEqual(0);
-    expect(connections[0].reference.selectionRectangles[0].regionId).toEqual('1');
+    expect(connections[0].reference.selectionRectangles[0].page).toEqual('1');
   });
 
   it('should convert table of content to absolute position', async () => {
@@ -139,7 +139,7 @@ describe('conversion of character count to absolute position', () => {
               {
                 height: 12,
                 left: 330,
-                regionId: '2',
+                page: '2',
                 top: 642,
                 width: 135,
               },
@@ -152,7 +152,7 @@ describe('conversion of character count to absolute position', () => {
               {
                 height: 12,
                 left: 325,
-                regionId: '3',
+                page: '3',
                 top: 642,
                 width: 145,
               },
@@ -165,7 +165,7 @@ describe('conversion of character count to absolute position', () => {
               {
                 height: 12,
                 left: 315,
-                regionId: '4',
+                page: '4',
                 top: 642,
                 width: 164,
               },

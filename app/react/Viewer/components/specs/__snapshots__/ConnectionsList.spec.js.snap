@@ -19,7 +19,7 @@ exports[`ConnectionsList should merge and render references in order with the pr
             Object {
               "height": 20,
               "left": 20,
-              "regionId": "1",
+              "page": "1",
               "top": 0,
               "width": 42,
             },
@@ -45,7 +45,7 @@ exports[`ConnectionsList should merge and render references in order with the pr
             Object {
               "height": 20,
               "left": 20,
-              "regionId": "1",
+              "page": "1",
               "top": 5,
               "width": 42,
             },
@@ -71,7 +71,7 @@ exports[`ConnectionsList should merge and render references in order with the pr
             Object {
               "height": 20,
               "left": 20,
-              "regionId": "2",
+              "page": "2",
               "top": 23,
               "width": 42,
             },
@@ -97,7 +97,7 @@ exports[`ConnectionsList should merge and render references in order with the pr
             Object {
               "height": 20,
               "left": 20,
-              "regionId": "2",
+              "page": "2",
               "top": 30,
               "width": 42,
             },

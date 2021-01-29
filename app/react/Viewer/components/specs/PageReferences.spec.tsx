@@ -25,15 +25,15 @@ describe('FormConfigInput', () => {
         doc: Immutable.fromJS({ sharedId: 'ab42' }),
         uiState: Immutable.fromJS({ activeReference: '2' }),
         references: Immutable.fromJS([
-          { _id: '1', entity: 'ab42', reference: { selectionRectangles: [{ regionId: '2' }] } },
-          { _id: '2', entity: 'ab42', reference: { selectionRectangles: [{ regionId: '3' }] } },
+          { _id: '1', entity: 'ab42', reference: { selectionRectangles: [{ page: '2' }] } },
+          { _id: '2', entity: 'ab42', reference: { selectionRectangles: [{ page: '3' }] } },
           {
             _id: '3',
             entity: 'ab42',
-            reference: { selectionRectangles: [{ regionId: '3' }, { regionId: '4' }] },
+            reference: { selectionRectangles: [{ page: '3' }, { page: '4' }] },
           },
-          { _id: '4', entity: 'ab42', reference: { selectionRectangles: [{ regionId: '5' }] } },
-          { _id: '4', entity: 'ce87', reference: { selectionRectangles: [{ regionId: '3' }] } },
+          { _id: '4', entity: 'ab42', reference: { selectionRectangles: [{ page: '5' }] } },
+          { _id: '4', entity: 'ce87', reference: { selectionRectangles: [{ page: '3' }] } },
         ]),
       },
     });
@@ -53,7 +53,7 @@ describe('FormConfigInput', () => {
     expect(hihglights.length).toBe(2);
 
     const firstHighlightProps: any = hihglights.at(0).props();
-    expect(firstHighlightProps.regionId).toBe('3');
+    expect(firstHighlightProps.page).toBe('3');
     expect(firstHighlightProps.color).toBe('#ffd84b');
 
     const secondHighlightProps: any = hihglights.at(1).props();

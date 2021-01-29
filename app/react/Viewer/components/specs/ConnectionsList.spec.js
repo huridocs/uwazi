@@ -16,7 +16,7 @@ describe('ConnectionsList', () => {
           relationType: 'rel1',
           associatedRelationship: { entityData: { _id: '1' } },
           reference: {
-            selectionRectangles: [{ top: 30, left: 20, height: 20, width: 42, regionId: '2' }],
+            selectionRectangles: [{ top: 30, left: 20, height: 20, width: 42, page: '2' }],
             text: '',
           },
         },
@@ -25,7 +25,7 @@ describe('ConnectionsList', () => {
           relationType: 'rel1',
           associatedRelationship: { entityData: { _id: '1' } },
           reference: {
-            selectionRectangles: [{ top: 5, left: 20, height: 20, width: 42, regionId: '1' }],
+            selectionRectangles: [{ top: 5, left: 20, height: 20, width: 42, page: '1' }],
             text: '',
           },
         },
@@ -34,7 +34,7 @@ describe('ConnectionsList', () => {
           relationType: 'rel1',
           associatedRelationship: { entityData: { _id: '1' } },
           reference: {
-            selectionRectangles: [{ top: 23, left: 20, height: 20, width: 42, regionId: '2' }],
+            selectionRectangles: [{ top: 23, left: 20, height: 20, width: 42, page: '2' }],
             text: '',
           },
         },
@@ -43,7 +43,7 @@ describe('ConnectionsList', () => {
           relationType: 'rel1',
           associatedRelationship: { entityData: { _id: '1' } },
           reference: {
-            selectionRectangles: [{ top: 0, left: 20, height: 20, width: 42, regionId: '1' }],
+            selectionRectangles: [{ top: 0, left: 20, height: 20, width: 42, page: '1' }],
             text: '',
           },
         },

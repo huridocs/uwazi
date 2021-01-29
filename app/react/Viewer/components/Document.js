@@ -38,7 +38,10 @@ export class Document extends Component {
   }
 
   onTextSelected(textSelection) {
-    this.props.setSelection(textSelection, this.props.file._id);
+    const selectionRectangles = textSelection.selectionRectangles.map(
+      ({ regionId, ...otherProps }) => ({ ...otherProps, page: regionId })
+    );
+    this.props.setSelection({ ...textSelection, selectionRectangles }, this.props.file._id);
     return this.props.deactivateReference();
   }
 
@@ -57,7 +60,6 @@ export class Document extends Component {
   }
 
   highlightReference(connection) {
-    console.log(connection);
     const references = this.props.references.toJS();
     return this.props.activateReference(connection, this.props.file.pdfInfo, references);
   }

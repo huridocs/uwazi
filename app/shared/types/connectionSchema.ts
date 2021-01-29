@@ -12,11 +12,30 @@ export const connectionSchema = {
     hub: objectIdSchema,
     template: objectIdSchema,
     file: objectIdSchema,
-    entity: 'string',
+    entity: { type: 'string' },
     entityData: entitySchema,
     reference: {
       type: 'object',
-      tsType: 'TextSelection',
+      additionalProperties: false,
+      required: ['text', 'selectionRectangles'],
+      properties: {
+        text: { type: 'string' },
+        selectionRectangles: {
+          type: 'array',
+          items: {
+            type: 'object',
+            additionalProperties: false,
+            required: ['top', 'left', 'width', 'height', 'page'],
+            properties: {
+              top: { type: 'number' },
+              left: { type: 'number' },
+              width: { type: 'number' },
+              height: { type: 'number' },
+              page: { type: 'string' },
+            },
+          },
+        },
+      },
     },
   },
 };
