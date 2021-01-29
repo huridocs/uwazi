@@ -133,22 +133,7 @@ class PDF extends Component {
     }, null);
 
     if (allConsecutives) {
-      const { pdfInfo } = this.props;
-      const start = pdfInfo[
-        Math.min.apply(
-          null,
-          Object.keys(this.pagesLoaded).map(n => parseInt(n, 10))
-        ) - 1
-      ] || { chars: 0 };
-      const end = pdfInfo[
-        Math.max.apply(
-          null,
-          Object.keys(this.pagesLoaded).map(n => parseInt(n, 10))
-        )
-      ] || { chars: 0 };
       this.props.onLoad({
-        start: start.chars,
-        end: end.chars,
         pages,
       });
     }

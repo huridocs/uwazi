@@ -43,10 +43,8 @@ describe('PublishDocument', () => {
   beforeAll(async () => insertFixtures());
   afterAll(async () => nightmare.end());
 
-  describe('login', () => {
-    it('should log in as admin then click the uploads nav button', done => {
-      loginAsAdminAndGoToUploads(nightmare, catchErrors, done);
-    });
+  it('should log in as admin then click the uploads nav button', done => {
+    loginAsAdminAndGoToUploads(nightmare, catchErrors, done);
   });
 
   it('should fill a document metadata and publish it', done => {
@@ -73,7 +71,7 @@ describe('PublishDocument', () => {
   });
 
   describe('metadata editing', () => {
-    it('should log in as admin and go into the document viewer for the desired entity', done => {
+    it('should select the correct entity', done => {
       const title = 'Wolverine';
 
       nightmare
@@ -124,28 +122,30 @@ describe('PublishDocument', () => {
     });
   });
 
-  it('should go to library and change the document type', done => {
-    nightmare
-      .waitForTheEntityToBeIndexed()
-      .click(selectors.navigation.libraryNavButton)
-      .waitToClick(selectors.libraryView.libraryFirstDocument)
-      .waitToClick(selectors.libraryView.editEntityButton)
-      .wait(selectors.newEntity.form.type)
-      .select(selectors.newEntity.form.type, '58ad7d240d44252fee4e6201')
-      .waitToClick(selectors.libraryView.saveButton)
-      .waitForTheEntityToBeIndexed()
-      .refresh()
-      .waitToClick(selectors.libraryView.libraryFirstDocument)
-      .getInnerText(selectors.libraryView.sidePanelDocumentType)
-      .then(text => {
-        expect(text).toBe('Test Document');
-        return nightmare
-          .click(selectors.libraryView.deleteButton)
-          .waitToClick(selectors.libraryView.deleteButtonConfirmation)
-          .waitForTheEntityToBeIndexed()
-          .then(() => {
-            done();
-          });
-      });
+  describe('chnge type', () => {
+    it('should go to library and change the document type', done => {
+      nightmare
+        .waitForTheEntityToBeIndexed()
+        .click(selectors.navigation.libraryNavButton)
+        .waitToClick(selectors.libraryView.libraryFirstDocument)
+        .waitToClick(selectors.libraryView.editEntityButton)
+        .wait(selectors.newEntity.form.type)
+        .select(selectors.newEntity.form.type, '58ad7d240d44252fee4e6201')
+        .waitToClick(selectors.libraryView.saveButton)
+        .waitForTheEntityToBeIndexed()
+        .refresh()
+        .waitToClick(selectors.libraryView.libraryFirstDocument)
+        .getInnerText(selectors.libraryView.sidePanelDocumentType)
+        .then(text => {
+          expect(text).toBe('Test Document');
+          return nightmare
+            .click(selectors.libraryView.deleteButton)
+            .waitToClick(selectors.libraryView.deleteButtonConfirmation)
+            .waitForTheEntityToBeIndexed()
+            .then(() => {
+              done();
+            });
+        });
+    });
   });
 });
