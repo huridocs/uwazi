@@ -104,7 +104,6 @@ exports[`HubRelationshipMetadata should render the metadata correctly when text 
               icon="quote-left"
             />
           </span>
-          Some quoted text
           <span
             className="quoteIconEnd"
           >
