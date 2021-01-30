@@ -170,7 +170,7 @@ const equalPropMapping = (mapA, mapB) => {
     return true;
   }
 
-  const sameProps =
+  return (
     Object.keys(mapA.properties).length === Object.keys(mapB.properties).length &&
     Object.keys(mapA.properties).reduce(
       (result, propKey) =>
@@ -178,8 +178,8 @@ const equalPropMapping = (mapA, mapB) => {
         mapB.properties[propKey] &&
         mapA.properties[propKey].type === mapB.properties[propKey].type,
       true
-    );
-  return sameProps;
+    )
+  );
 };
 
 const checkMapping = async template => {
