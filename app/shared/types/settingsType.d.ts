@@ -18,12 +18,32 @@ export interface SettingsFilterSchema {
   }[];
 }
 
+export interface SettingsSyncTemplateSchema {
+  properties: string[];
+  filter?: string;
+}
+
+export type SettingsSyncRelationtypesSchema = string[];
+
 export interface SettingsSyncSchema {
   url?: string;
   active?: boolean;
   username?: boolean;
   password?: boolean;
-  config?: unknown;
+  config?: {
+    templates?: {
+      [k: string]:
+        | (
+            | {
+                properties: string[];
+                filter?: string;
+              }
+            | string[]
+          )
+        | undefined;
+    };
+    relationTypes?: string[];
+  };
 }
 
 export interface SettingsLinkSchema {

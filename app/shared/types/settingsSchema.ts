@@ -27,6 +27,20 @@ export const settingsFilterSchema = {
   },
 };
 
+export const settingsSyncTemplateSchema = {
+  type: 'object',
+  required: ['properties'],
+  properties: {
+    properties: { items: { type: 'string' } },
+    filter: { type: 'string' },
+  },
+  additionalProperties: false,
+};
+
+export const settingsSyncRelationtypesSchema = {
+  items: { type: 'string' },
+};
+
 export const settingsSyncSchema = {
   type: 'object',
   additionalProperties: false,
@@ -35,7 +49,19 @@ export const settingsSyncSchema = {
     active: { type: 'boolean' },
     username: { type: 'boolean' },
     password: { type: 'boolean' },
-    config: {},
+    config: {
+      type: 'object',
+      properties: {
+        templates: {
+          type: 'object',
+          additionalProperties: {
+            anyOf: [settingsSyncTemplateSchema, { type: 'array', items: { type: 'string' } }],
+          },
+        },
+        relationTypes: settingsSyncRelationtypesSchema,
+      },
+      additionalProperties: false,
+    },
   },
 };
 
