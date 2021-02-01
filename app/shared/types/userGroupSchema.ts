@@ -20,15 +20,13 @@ export const userGroupSchema = {
   type: 'object',
   additionalProperties: false,
   uniqueName: true,
-  definitions: { objectIdSchema },
+  definitions: { objectIdSchema, groupMemberSchema },
   properties: {
     _id: objectIdSchema,
     name: { type: 'string' },
     members: {
       type: 'array',
-      items: {
-        ...groupMemberSchema,
-      },
+      items: groupMemberSchema,
     },
     __v: { type: 'number' },
   },

@@ -1,5 +1,3 @@
-/** @format */
-
 import React from 'react';
 import { shallow } from 'enzyme';
 import { fromJS as immutable } from 'immutable';
@@ -7,6 +5,7 @@ import { I18NLink } from 'app/I18N';
 
 import { Icon } from 'UI';
 
+import { ShareButton } from 'app/Permissions/components/ShareButton';
 import { MetadataFormButtons } from '../MetadataFormButtons';
 
 describe('MetadataFormButtons', () => {
@@ -115,6 +114,20 @@ describe('MetadataFormButtons', () => {
     it('should call the callback', () => {
       component.find('.copy-from-btn').simulate('click');
       expect(props.copyFrom).toHaveBeenCalled();
+    });
+  });
+
+  describe('Share', () => {
+    it('should pass the sharedId to the share button', () => {
+      render();
+      const shareBtn = component.find(ShareButton);
+      expect(shareBtn.props().sharedIds).toEqual(['shId']);
+    });
+
+    it('should not render share button', () => {
+      props.entityBeingEdited = true;
+      render();
+      expect(component.find(ShareButton).length).toBe(0);
     });
   });
 

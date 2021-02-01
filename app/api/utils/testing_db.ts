@@ -7,6 +7,7 @@ import { DB } from 'api/odm';
 import { tenants } from 'api/tenants/tenantContext';
 import { setupTestUploadedPaths, testingUploadPaths } from 'api/files/filesystem';
 import { ThesaurusSchema } from 'shared/types/thesaurusType';
+import { UserGroupSchema } from 'shared/types/userGroupType';
 import { elasticTesting } from './elastic_testing';
 import { testingTenants } from './testingTenants';
 
@@ -21,6 +22,7 @@ export type DBFixture = {
   files?: FileType[];
   entities?: EntitySchema[];
   dictionaries?: ThesaurusSchema[];
+  usergroups?: UserGroupSchema[];
   [k: string]: any;
 };
 

@@ -3,7 +3,7 @@ import userGroups from 'api/usergroups/userGroups';
 import db from 'api/utils/testing_db';
 import { models } from 'api/odm/models';
 import { UserGroupSchema } from 'shared/types/userGroupType';
-import fixtures, { group1Id, group2Id, user1Id, user2Id } from './fixtures.js';
+import { fixtures, group1Id, group2Id, user1Id, user2Id } from './fixtures';
 
 describe('userGroups', () => {
   beforeEach(async () => {

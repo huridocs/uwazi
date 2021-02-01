@@ -11,6 +11,7 @@ import { Icon } from 'UI';
 import { publish, unpublish } from 'app/Uploads/actions/uploadsActions';
 import entitiesUtils from 'app/Entities/utils/filterBaseProperties';
 
+import { ShareButton } from 'app/Permissions/components/ShareButton';
 import * as actions from '../actions/actions';
 
 export class MetadataFormButtons extends Component {
@@ -127,6 +128,9 @@ export class MetadataFormButtons extends Component {
               </span>
             </button>
           </ShowIf>
+        </NeedAuthorization>
+        <NeedAuthorization roles={['admin', 'editor']}>
+          {!entityBeingEdited && !hideDelete && <ShareButton sharedIds={[data.sharedId]} />}
         </NeedAuthorization>
         <NeedAuthorization roles={['admin', 'editor']}>
           <ShowIf if={!entityBeingEdited && canBePublished}>

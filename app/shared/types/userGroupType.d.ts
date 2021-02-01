@@ -13,11 +13,6 @@ export interface GroupMemberSchema {
 export interface UserGroupSchema {
   _id?: ObjectIdSchema;
   name: string;
-  members: {
-    _id: ObjectIdSchema;
-    username?: string;
-    role?: string;
-    email?: string;
-  }[];
+  members: GroupMemberSchema[];
   __v?: number;
 }

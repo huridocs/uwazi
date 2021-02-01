@@ -30,10 +30,10 @@ export class DocumentSidePanel extends Component {
     this.selectTab = this.selectTab.bind(this);
     this.firstRender = true;
     this.state = { copyFrom: false, copyFromProps: [] };
-
     this.toggleCopyFrom = this.toggleCopyFrom.bind(this);
     this.onCopyFromSelect = this.onCopyFromSelect.bind(this);
     this.deleteDocument = this.deleteDocument.bind(this);
+    this.toggleSharing = this.toggleSharing.bind(this);
   }
 
   componentDidUpdate(prevProps) {
@@ -107,6 +107,12 @@ export class DocumentSidePanel extends Component {
   toggleCopyFrom() {
     this.setState(currentState => ({
       copyFrom: !currentState.copyFrom,
+    }));
+  }
+
+  toggleSharing() {
+    this.setState(currentState => ({
+      sharing: !currentState.sharing,
     }));
   }
 

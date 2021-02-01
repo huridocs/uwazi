@@ -8,6 +8,7 @@ import * as metadataActions from 'app/Metadata/actions/actions';
 import { createSelector } from 'reselect';
 import { wrapDispatch } from 'app/Multireducer';
 import { advancedSort } from 'app/utils/advancedSort';
+import { ShareButton } from 'app/Permissions/components/ShareButton';
 import TemplateLabel from 'app/Layout/TemplateLabel';
 import SidePanel from 'app/Layout/SidePanel';
 import Immutable from 'immutable';
@@ -174,7 +175,33 @@ export class SelectMultiplePanel extends Component {
     );
   }
 
-  renderListButtons(canBePublished, canBeUnPublished) {
+  canBePublished() {
+    return this.props.entitiesSelected.reduce((previousCan, entity) => {
+      const isEntity = !entity.get('file');
+      return (
+        previousCan &&
+        (entity.get('processed') || isEntity) &&
+        !entity.get('published') &&
+        !!entity.get('template')
+      );
+    }, true);
+  }
+
+  canBeUnPublished() {
+    return (
+      this.props.entitiesSelected.size &&
+      this.props.entitiesSelected.reduce(
+        (previousCan, entity) => previousCan && entity.get('published'),
+        true
+      )
+    );
+  }
+
+  sharedIds() {
+    return this.props.entitiesSelected.map(entity => entity.get('sharedId'));
+  }
+
+  renderListButtons() {
     return (
       <>
         <NeedAuthorization roles={['admin', 'editor']}>
@@ -186,18 +213,19 @@ export class SelectMultiplePanel extends Component {
             <Icon icon="trash-alt" />
             <span className="btn-label">{t('System', 'Delete')}</span>
           </button>
-          {canBePublished && (
+          {this.canBePublished() && (
             <button type="button" className="publish btn btn-success" onClick={this.publish}>
               <Icon icon="paper-plane" />
               <span className="btn-label">{t('System', 'Publish')}</span>
             </button>
           )}
-          {canBeUnPublished && (
+          {this.canBeUnPublished() && (
             <button type="button" className="unpublish btn btn-warning" onClick={this.unpublish}>
               <Icon icon="paper-plane" />
               <span className="btn-label">{t('System', 'Unpublish')}</span>
             </button>
           )}
+          <ShareButton sharedIds={this.sharedIds()} />
         </NeedAuthorization>
         <Export storeKey={this.props.storeKey} />
       </>
@@ -225,21 +253,6 @@ export class SelectMultiplePanel extends Component {
 
   render() {
     const { entitiesSelected, open, editing } = this.props;
-    const canBePublished = this.props.entitiesSelected.reduce((previousCan, entity) => {
-      const isEntity = !entity.get('file');
-      return (
-        previousCan &&
-        (entity.get('processed') || isEntity) &&
-        !entity.get('published') &&
-        !!entity.get('template')
-      );
-    }, true);
-
-    const canBeUnPublished = this.props.entitiesSelected.reduce(
-      (previousCan, entity) => previousCan && entity.get('published'),
-      true
-    );
-
     return (
       <SidePanel open={open} className="multi-edit">
         <div className="sidepanel-header">
@@ -256,7 +269,7 @@ export class SelectMultiplePanel extends Component {
           {editing && this.renderEditingForm()}
         </div>
         <div className="sidepanel-footer">
-          {!editing && this.renderListButtons(canBePublished, canBeUnPublished)}
+          {!editing && this.renderListButtons()}
           {editing && this.renderEditingButtons()}
         </div>
       </SidePanel>

@@ -2,7 +2,10 @@ import { allLanguages } from 'shared/languagesList';
 import { typeParsers } from 'api/activitylog/migrationsParser';
 import templates from 'api/templates/templates';
 import entities from 'api/entities/entities';
+import users from 'api/users/users';
+import userGroups from 'api/usergroups/userGroups';
 import { files } from 'api/files';
+import { PermissionType } from 'shared/types/permissionSchema';
 
 export const formatLanguage = langKey => {
   const lang = allLanguages.find(({ key }) => key === langKey);
@@ -66,9 +69,6 @@ export const extraAttachmentLanguage = data =>
       )} version`
     : null;
 
-export const searchName = data =>
-  data.search ? `${data.search.searchTerm} (${data.searchId})` : data.searchId;
-
 export const updatedFile = data => {
   let name;
   if (data.toc) {
@@ -82,4 +82,40 @@ export const updatedFile = data => {
 export const groupMembers = data => {
   const members = data.members.map(member => member.username).join(', ');
   return members.length > 0 ? `with members: ${members}` : 'with no members';
+};
+
+export const loadPermissionsData = async data => {
+  const updateEntities = await entities.get({ sharedId: { $in: data.ids } }, { title: 1 });
+  const permissionsIds = data.permissions.map(pu => pu._id);
+  const allowedUsers = await users.get({ _id: { $in: permissionsIds } }, { username: 1 });
+  const allowedGroups = await userGroups.get(
+    { _id: { $in: permissionsIds } },
+    { name: 1, members: 1 }
+  );
+
+  return { ...data, entities: updateEntities, users: allowedUsers, userGroups: allowedGroups };
+};
+
+export const entitiesNames = data => data.entities.map(e => e.title).join(', ');
+
+function getNameOfAllowedPeople(source, field) {
+  return p => {
+    const people = source.find(u => u._id.toString() === p._id);
+    return `${people ? people[field] : people._id} - ${p.level}`;
+  };
+}
+
+export const loadAllowedUsersAndGroups = data => {
+  const usersPermissions = data.permissions.filter(p => p.type === PermissionType.USER);
+  const groupsPermissions = data.permissions.filter(p => p.type === PermissionType.GROUP);
+  const grantedUsers = usersPermissions
+    .map(getNameOfAllowedPeople(data.users, 'username'))
+    .join(', ');
+  const grantedNames = groupsPermissions
+    .map(getNameOfAllowedPeople(data.userGroups, 'name'))
+    .join(', ');
+
+  return ` with permissions for${grantedUsers.length ? ` USERS: ${grantedUsers};` : ''}${
+    grantedNames.length ? ` GROUPS: ${grantedNames}` : ''
+  }`;
 };

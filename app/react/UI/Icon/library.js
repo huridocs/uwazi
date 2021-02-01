@@ -41,6 +41,7 @@ import { faHome } from '@fortawesome/free-solid-svg-icons/faHome';
 import { faImage } from '@fortawesome/free-solid-svg-icons/faImage';
 import { faInfoCircle } from '@fortawesome/free-solid-svg-icons/faInfoCircle';
 import { faLanguage } from '@fortawesome/free-solid-svg-icons/faLanguage';
+import { faLevelDownAlt } from '@fortawesome/free-solid-svg-icons/faLevelDownAlt';
 import { faLightbulb } from '@fortawesome/free-solid-svg-icons/faLightbulb';
 import { faLink } from '@fortawesome/free-solid-svg-icons/faLink';
 import { faList } from '@fortawesome/free-solid-svg-icons/faList';
@@ -85,7 +86,9 @@ import { faVideo } from '@fortawesome/free-solid-svg-icons/faVideo';
 import { faEye } from '@fortawesome/free-solid-svg-icons/faEye';
 import { faArrowsAlt } from '@fortawesome/free-solid-svg-icons/faArrowsAlt';
 import { faEyeSlash } from '@fortawesome/free-solid-svg-icons/faEyeSlash';
+import { faUser } from '@fortawesome/free-solid-svg-icons/faUser';
 import { faUsers } from '@fortawesome/free-solid-svg-icons/faUsers';
+import { faUserPlus } from '@fortawesome/free-solid-svg-icons/faUserPlus';
 import { faUserTimes } from '@fortawesome/free-solid-svg-icons/faUserTimes';
 import { faHandPaper } from '@fortawesome/free-solid-svg-icons/faHandPaper';
 import { saveAndNext } from './save-and-next';
@@ -137,6 +140,7 @@ const icons = {
   faImage,
   faInfoCircle,
   faLanguage,
+  faLevelDownAlt,
   faLightbulb,
   faLink,
   faList,
@@ -180,8 +184,10 @@ const icons = {
   faVideo,
   faEye,
   faEyeSlash,
+  faUser,
   faUsers,
   faUserTimes,
+  faUserPlus,
   faHandPaper,
   saveAndNext,
   exportCsv,

@@ -1,4 +1,4 @@
-import db from 'api/utils/testing_db';
+import db, { DBFixture } from 'api/utils/testing_db';
 
 const group1Id = db.id();
 const group2Id = db.id();
@@ -6,7 +6,7 @@ const user1Id = db.id();
 const user2Id = db.id();
 const user3Id = db.id();
 
-export default {
+const fixtures: DBFixture = {
   usergroups: [
     { _id: group1Id, name: 'Group 1', members: [{ _id: user2Id }] },
     { _id: group2Id, name: 'Group 2', members: [{ _id: user1Id }, { _id: user3Id }] },
@@ -31,9 +31,9 @@ export default {
       password: 'pass3',
       username: 'user3',
       email: 'user3@email.com',
-      role: 'contributor',
+      role: 'collaborator',
     },
   ],
 };
 
-export { group1Id, group2Id, user1Id, user2Id, user3Id };
+export { fixtures, group1Id, group2Id, user1Id, user2Id, user3Id };
