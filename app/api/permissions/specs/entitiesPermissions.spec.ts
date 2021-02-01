@@ -30,6 +30,22 @@ describe('permissions', () => {
         expect(entity.permissions).toBe(undefined);
       });
     });
+
+    it('should invalidate if permissions are duplicated', async () => {
+      const permissionsData = {
+        ids: ['shared1'],
+        permissions: [
+          { _id: 'user1', type: 'user', level: 'write' },
+          { _id: 'user1', type: 'user', level: 'read' },
+        ],
+      };
+      try {
+        await entitiesPermissions.set(permissionsData);
+        fail('should throw error');
+      } catch (e) {
+        expect(e.errors[0].keyword).toEqual('duplicatedPermissions');
+      }
+    });
   });
 
   describe('get entities permissions', () => {
