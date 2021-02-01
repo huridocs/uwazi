@@ -126,7 +126,7 @@ export function scrollTomark() {
 
 export async function scrollTo(connection, _docInfo) {
   const { page } = connection.reference.selectionRectangles[0];
-  const offset = -10;
+  const offset = -30;
 
   await scroller.to(`.document-viewer div#page-${page}`, '.document-viewer', {
     duration: 1,
