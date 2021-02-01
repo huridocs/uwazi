@@ -13,41 +13,28 @@ export interface PageReferencesProps {
   onClick: (c: ConnectionSchema) => {};
 }
 
-export class PageReferencesComponent extends Component<PageReferencesProps> {
-  onClick(connection: ConnectionSchema) {
-    this.props.onClick(connection);
-  }
+export const PageReferencesComponent = (props: PageReferencesProps) => (
+  <>
+    {(props.references[props.page] || []).map((r: ConnectionSchema) => {
+      const color = r._id === props.activeReference ? '#ffd84b' : '#feeeb4';
 
-  render() {
-    /* @ts-ignore */
-    return (
-      <>
-        {(this.props.references[this.props.page] || []).map((r: ConnectionSchema) => {
-          const color = r._id === this.props.activeReference ? '#ffd84b' : '#feeeb4';
+      if (!r.reference) {
+        return false;
+      }
 
-          if (!r.reference) {
-            return false;
-          }
-
-          return (
-            <div
-              data-id={r._id}
-              key={r._id?.toString()}
-              className="reference"
-              onClick={this.onClick.bind(this, r)}
-            >
-              <Highlight
-                regionId={this.props.page.toString()}
-                highlight={r.reference}
-                color={color}
-              />
-            </div>
-          );
-        })}
-      </>
-    );
-  }
-}
+      return (
+        <div
+          data-id={r._id}
+          key={r._id?.toString()}
+          className="reference"
+          onClick={props.onClick.bind(this, r)}
+        >
+          <Highlight regionId={props.page.toString()} highlight={r.reference} color={color} />
+        </div>
+      );
+    })}
+  </>
+);
 
 const indexdReferencesByPage = createSelector(
   (state: IStore) =>
@@ -90,11 +77,9 @@ const indexdReferencesByPage = createSelector(
       )
 );
 
-const mapStateToProps = (state: IStore) => {
-  return {
-    references: indexdReferencesByPage(state),
-    activeReference: state.documentViewer.uiState.get('activeReference'),
-  };
-};
+const mapStateToProps = (state: IStore) => ({
+  references: indexdReferencesByPage(state),
+  activeReference: state.documentViewer.uiState.get('activeReference'),
+});
 
 export const PageReferences = connect(mapStateToProps)(PageReferencesComponent);
