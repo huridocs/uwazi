@@ -7,7 +7,7 @@ import { Icon } from 'UI';
 import { Warning } from 'app/Layout';
 import { closePanel, deactivateReference } from 'app/Viewer/actions/uiActions';
 import Connection from './Connection';
-import sortTextSelections from '../utils/sortTextSelections';
+import { sortTextSelections } from '../utils/sortTextSelections';
 
 import 'app/Viewer/scss/viewReferencesPanel.scss';
 

@@ -13,7 +13,7 @@ import { actions as relationshipActions } from 'app/Relationships';
 import { RequestParams } from 'app/utils/RequestParams';
 import * as selectionActions from './selectionActions';
 import * as uiActions from './uiActions';
-import sortTextSelections from '../utils/sortTextSelections';
+import { sortTextSelections } from '../utils/sortTextSelections';
 
 export function setDocument(document, html) {
   return {
