@@ -475,7 +475,7 @@ export default {
   },
 
   /** Rebuild relationship-based metadata objects as {value = id, label: title}. */
-  async updateMetdataFromRelationships(entities, language, reindex) {
+  async updateMetdataFromRelationships(entities, language, reindex = true) {
     const entitiesToReindex = [];
     const _templates = await templates.get();
     await Promise.all(
@@ -551,6 +551,7 @@ export default {
     return this.bulkUpdateMetadataFromRelationships(
       { template: template._id, language },
       language,
+      200,
       reindex
     );
   },
