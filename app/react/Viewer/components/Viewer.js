@@ -252,7 +252,7 @@ Viewer.propTypes = {
   panelIsOpen: PropTypes.bool,
   addReference: PropTypes.func,
   targetDoc: PropTypes.bool,
-  // TEST!!!!!!!!
+  // TEST!!!!!!!?
   sidepanelTab: PropTypes.string,
   loadTargetDocument: PropTypes.func,
   showConnections: PropTypes.bool,
