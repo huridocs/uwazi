@@ -106,11 +106,7 @@ describe('Document', () => {
 
       component.instance().highlightReference(reference);
 
-      expect(props.activateReference).toHaveBeenCalledWith(
-        reference,
-        props.file.pdfInfo,
-        props.references.toJS()
-      );
+      expect(props.activateReference).toHaveBeenCalledWith(reference, props.file.pdfInfo);
       expect(props.onClick).not.toHaveBeenCalled();
     });
   });

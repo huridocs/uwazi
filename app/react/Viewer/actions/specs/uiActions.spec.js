@@ -164,10 +164,13 @@ describe('Viewer uiActions', () => {
           '.document-viewer',
           { duration: 1, dividerOffset: 1 }
         );
-        expect(scroller.to).toHaveBeenCalledWith(
-          '.document-viewer div#page-1',
+
+        expect(
+          scroller.to
+        ).toHaveBeenCalledWith(
+          '.document-viewer [data-id="id"] .highlight-rectangle',
           '.document-viewer',
-          { duration: 600, offset: 30, dividerOffset: 1 }
+          { duration: 50, offset: -30, dividerOffset: 1 }
         );
         done();
       });

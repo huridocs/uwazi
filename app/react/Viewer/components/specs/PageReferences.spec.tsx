@@ -24,6 +24,8 @@ describe('FormConfigInput', () => {
       documentViewer: {
         doc: Immutable.fromJS({ sharedId: 'ab42' }),
         uiState: Immutable.fromJS({ activeReference: '2' }),
+        targetDoc: Immutable.fromJS({}),
+        targetDocReferences: Immutable.fromJS([]),
         references: Immutable.fromJS([
           { _id: '1', entity: 'ab42', reference: { selectionRectangles: [{ page: '2' }] } },
           { _id: '2', entity: 'ab42', reference: { selectionRectangles: [{ page: '3' }] } },
