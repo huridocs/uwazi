@@ -43,7 +43,7 @@ const extendedMetadata = (relationship, text, relationTypes, thesauris) => {
           conformDl({
             label: t('System', 'Text'),
             name: 'text',
-            value: conformQuote(relationship.getIn(['range', 'text'])),
+            value: conformQuote(text),
           })}
       </div>
     </div>
