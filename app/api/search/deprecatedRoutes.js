@@ -1,9 +1,8 @@
 import Joi from 'joi';
 import entities from 'api/entities';
 import { searchSchema } from 'api/search/searchSchema';
-import search from './search';
+import { search } from './search';
 import { validation, parseQuery } from '../utils';
-import needsAuthorization from '../auth/authMiddleware';
 
 export default app => {
   app.get(
@@ -40,23 +39,25 @@ export default app => {
   app.get(
     '/api/search_snippets',
     validation.validateRequest(
-      Joi.object().keys({
-        searchTerm: Joi.string().allow(''),
-        id: Joi.string(),
-      }),
+      {
+        required: ['query'],
+        properties: {
+          query: {
+            type: 'object',
+            required: ['id'],
+            properties: {
+              searchTerm: { type: 'string', default: '' },
+              id: { type: 'string' },
+            },
+          },
+        },
+      },
       'query'
     ),
     (req, res, next) =>
       search
-        .searchSnippets(req.query.searchTerm, req.query.id, req.language)
+        .searchSnippets(req.query.searchTerm, req.query.id, req.language, req.user)
         .then(results => res.json(results))
         .catch(next)
   );
-
-  app.get('/api/search/unpublished', needsAuthorization(['admin', 'editor']), (req, res, next) => {
-    search
-      .getUploadsByUser(req.user, req.language)
-      .then(response => res.json({ rows: response }))
-      .catch(next);
-  });
 };

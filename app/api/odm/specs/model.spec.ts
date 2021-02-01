@@ -43,7 +43,8 @@ describe('ODM Model', () => {
   };
 
   it('should register all the models to the requirable models hashmap', () => {
-    expect(models).toEqual({});
+    expect(models.tempSchema).toBeUndefined();
+    expect(models.anotherSchema).toBeUndefined();
     const model1 = instanceTestingModel('tempSchema', testSchema);
     const model2 = instanceTestingModel('anotherSchema', new mongoose.Schema({ name: String }));
 

@@ -1,8 +1,11 @@
+import request from 'supertest';
 import entities from 'api/entities';
 import { catchErrors } from 'api/utils/jasmineHelpers';
+import { setUpApp } from 'api/utils/testingRoutes';
+import { testingDB } from 'api/utils/testing_db';
 import searchRoutes from '../deprecatedRoutes.js';
 import instrumentRoutes from '../../utils/instrumentRoutes';
-import search from '../search';
+import { search } from '../search';
 
 describe('search routes', () => {
   let routes;
@@ -87,34 +90,35 @@ describe('search routes', () => {
   });
 
   describe('/api/search_snippets', () => {
-    it('should have a validation schema', () => {
-      expect(routes.get.validation('/api/search_snippets')).toMatchSnapshot();
+    const app = setUpApp(searchRoutes);
+
+    it('should have a validation schema', async () => {
+      await testingDB.clearAllAndLoad({
+        settings: [
+          {
+            languages: [{ key: 'es', default: true }, { key: 'pt' }, { key: 'en' }],
+          },
+        ],
+      });
+      const response = await request(app)
+        .get('/api/search_snippets?searchTerm=test')
+        .send({});
+      expect(response.text).toMatch(/should have required property 'id'/);
     });
 
     it('should search', done => {
       spyOn(search, 'searchSnippets').and.returnValue(new Promise(resolve => resolve('results')));
-      const req = { query: { searchTerm: 'test', id: 'id' }, language: 'es' };
+      const req = {
+        query: { searchTerm: 'test', id: 'id' },
+        language: 'es',
+        user: { _id: 'userId' },
+      };
 
       routes
         .get('/api/search_snippets', req)
         .then(response => {
           expect(response).toEqual('results');
-          expect(search.searchSnippets).toHaveBeenCalledWith('test', 'id', 'es');
-          done();
-        })
-        .catch(catchErrors(done));
-    });
-  });
-
-  describe('/api/search/unpublished', () => {
-    it('should search', done => {
-      spyOn(search, 'getUploadsByUser').and.returnValue(new Promise(resolve => resolve('results')));
-      const req = { query: { searchTerm: 'test', id: 'id' }, language: 'es' };
-
-      routes
-        .get('/api/search/unpublished', req)
-        .then(response => {
-          expect(response).toEqual({ rows: 'results' });
+          expect(search.searchSnippets).toHaveBeenCalledWith('test', 'id', 'es', req.user);
           done();
         })
         .catch(catchErrors(done));
