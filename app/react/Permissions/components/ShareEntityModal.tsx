@@ -4,14 +4,18 @@ import { Icon } from 'UI';
 import { Translate } from 'app/I18N';
 import { MemberWithPermission } from 'shared/types/entityPermisions';
 import { AccessLevels, MixedAccess } from 'shared/types/permissionSchema';
+import { saveEntitiesPermissions } from 'app/Permissions/actions/actions';
+import { connect } from 'react-redux';
+import { PermissionsDataSchema } from 'shared/types/permissionType';
 import { UserGroupsLookupField } from './UserGroupsLookupField';
 import { MembersList } from './MembersList';
-import { loadGrantedPermissions, searchCollaborators, savePermissions } from '../PermissionsAPI';
+import { loadGrantedPermissions, searchCollaborators } from '../PermissionsAPI';
 
 export interface ShareEntityModalProps {
   isOpen: boolean;
   onClose: () => void;
   sharedIds: string[];
+  saveEntitiesPermissions: (permissionsData: PermissionsDataSchema) => Promise<void>;
 }
 
 const validate = (assignments: MemberWithPermission[]) =>
@@ -39,16 +43,30 @@ export const ShareEntityModalComponent = ({
   isOpen,
   onClose,
   sharedIds,
+  saveEntitiesPermissions: savePermissions,
 }: ShareEntityModalProps) => {
   const [results, setResults] = useState<MemberWithPermission[]>([]);
   const [assignments, setAssignments] = useState<MemberWithPermission[]>([]);
   const [dirty, setDirty] = useState(false);
   const [validationErrors, setValidationErrors] = useState<any[]>([]);
 
+  const searchAndLoadCollabs = async (
+    searchTerm: string,
+    currentAssignments: MemberWithPermission[]
+  ) => {
+    const collaborators = await searchCollaborators(searchTerm);
+    setResults(
+      collaborators.filter(r => !currentAssignments.find(a => a._id === r._id && a.type === r.type))
+    );
+  };
+
   useEffect(() => {
     loadGrantedPermissions(sharedIds)
       .then(permissions => {
-        setAssignments(permissions.map(p => ({ ...p, id: p._id })));
+        const loadedAssignments = permissions.map(p => ({ ...p, id: p._id }));
+        setAssignments(loadedAssignments);
+
+        searchAndLoadCollabs('', loadedAssignments).catch(() => {});
       })
       .catch(() => {});
 
@@ -60,11 +78,7 @@ export const ShareEntityModalComponent = ({
   }, []);
 
   const onChangeHandler = async (value: string) => {
-    setResults(
-      (await searchCollaborators(value)).filter(
-        r => !assignments.find(a => a._id === r._id && a.type === r.type)
-      )
-    );
+    await searchAndLoadCollabs(value, assignments);
   };
 
   const onSelectHandler = (value: MemberWithPermission) => {
@@ -147,4 +161,8 @@ export const ShareEntityModalComponent = ({
   );
 };
 
-export const ShareEntityModal = ShareEntityModalComponent;
+const mapDispatchToProps = {
+  saveEntitiesPermissions,
+};
+
+export const ShareEntityModal = connect(null, mapDispatchToProps)(ShareEntityModalComponent);

@@ -25,18 +25,20 @@ export const UserList = ({ users, handleSelect, handleAddUser, className }: User
     <div className="user-list">
       <table className={className}>
         <thead>
-          <th>
-            <Translate>Name</Translate>
-          </th>
-          <th>
-            <Translate>Protection</Translate>
-          </th>
-          <th>
-            <Translate>Role</Translate>
-          </th>
-          <th>
-            <Translate>Groups</Translate>
-          </th>
+          <tr>
+            <th>
+              <Translate>Name</Translate>
+            </th>
+            <th>
+              <Translate>Protection</Translate>
+            </th>
+            <th>
+              <Translate>Role</Translate>
+            </th>
+            <th>
+              <Translate>Groups</Translate>
+            </th>
+          </tr>
         </thead>
         <tbody>
           {sortedUsers.map((user: UserSchema) => {

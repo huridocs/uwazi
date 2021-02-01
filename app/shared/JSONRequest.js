@@ -117,6 +117,7 @@ export default {
 
   delete: (url, data, headers) => _fetch(url, data, 'DELETE', headers),
 
+  // TEST!!! Fully untested function
   uploadFile: (url, filename, file) =>
     new Promise((resolve, reject) => {
       superagent

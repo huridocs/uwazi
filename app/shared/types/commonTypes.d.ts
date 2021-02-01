@@ -78,7 +78,7 @@ export interface TocSchema {
 }
 
 export interface PropertySchema {
-  _id?: string | ObjectId;
+  _id?: ObjectIdSchema;
   id?: string;
   localID?: string;
   label: string;

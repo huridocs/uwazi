@@ -1,5 +1,5 @@
 import { Translate } from 'app/I18N';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import { Icon } from 'UI';
 import { MemberWithPermission } from 'shared/types/entityPermisions';
 import debounce from 'app/utils/debounce';
@@ -20,10 +20,6 @@ export const UserGroupsLookupField = ({
   const [show, setShow] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const debouncedOnChange = useCallback(debounce(onChange, 500), [onChange]);
-
-  useEffect(() => {
-    debouncedOnChange('');
-  }, []);
 
   const onChangeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
     setShow(true);
