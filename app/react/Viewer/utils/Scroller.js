@@ -20,6 +20,9 @@ export default {
   },
 
   to(selector, parentSelector, opt = {}) {
+    if (this.isVisible(selector, parentSelector)) {
+      return Promise.resolve();
+    }
     const options = this.getOptions(opt);
     const element = this.getElement(selector);
     const parent = this.getElement(parentSelector);
@@ -27,9 +30,7 @@ export default {
     if (!parent || !element) {
       return Promise.resolve();
     }
-
     const scrollTop = this.getTargetScrollTop(element, parent, options);
-
     return this.animateScroll(parent, scrollTop, options);
   },
 

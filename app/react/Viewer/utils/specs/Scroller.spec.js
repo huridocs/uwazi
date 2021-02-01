@@ -94,8 +94,10 @@ describe('scroller', () => {
 
   describe('to()', () => {
     it('should scroll the parent to make the element visible', done => {
+      jest.spyOn(scroller, 'isVisible').mockReturnValue(false);
       scroller.to('li:nth-child(2)', 'ul', { duration: 0 });
       window.setTimeout(() => {
+        expect(scroller.isVisible).toHaveBeenCalledWith('li:nth-child(2)', 'ul');
         expect(document.querySelector('ul').scrollTop).toBe(140);
         cleanDom();
         done();

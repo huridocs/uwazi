@@ -124,20 +124,24 @@ export function scrollTomark() {
   scroller.to('.document-viewer mark', '.document-viewer', { duration: 0 });
 }
 
-export async function scrollTo(reference, _docInfo) {
-  const { page } = reference.selectionRectangles[0];
-  const offset = reference.selectionRectangles[0].top - 10;
+export async function scrollTo(connection, _docInfo) {
+  const { page } = connection.reference.selectionRectangles[0];
+  const offset = -10;
 
   await scroller.to(`.document-viewer div#page-${page}`, '.document-viewer', {
     duration: 1,
     dividerOffset: 1,
   });
 
-  await scroller.to(`.document-viewer div#page-${page}`, '.document-viewer', {
-    duration: 600,
-    dividerOffset: 1,
-    offset,
-  });
+  await scroller.to(
+    `.document-viewer [data-id="${connection._id}"] .highlight-rectangle`,
+    '.document-viewer',
+    {
+      duration: 50,
+      dividerOffset: 1,
+      offset,
+    }
+  );
 }
 
 export function selectSnippet(page, snippet) {
@@ -163,7 +167,7 @@ export function activateReference(connection, docInfo, tab, delayActivation = fa
     dispatch(actions.set('viewer.sidepanel.tab', tabName));
     if (!delayActivation) {
       setTimeout(() => {
-        scrollTo(connection.reference, docInfo);
+        scrollTo(connection, docInfo);
       });
     }
   };
