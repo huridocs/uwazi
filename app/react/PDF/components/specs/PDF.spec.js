@@ -170,7 +170,7 @@ describe('PDF', () => {
   });
 
   describe('onLoad', () => {
-    it('should be called when there is no pages loading with the range of characters being rendered', () => {
+    it('should be called when there is no pages loading', () => {
       render();
       instance.setState({ pdf: { numPages: 5 } });
       instance.pageLoaded(1);
