@@ -103,7 +103,7 @@ describe('entitiesIndex', () => {
         properties: [
           { name: 'name', type: 'text', label: 'Name' },
           { name: 'dob', type: 'date', label: 'Date of birth' },
-          { name: 'country', type: 'select', label: 'Country' },
+          { name: 'country', type: 'relationship', label: 'Country' },
         ],
       };
 
@@ -117,9 +117,17 @@ describe('entitiesIndex', () => {
       let response = await checkMapping(templateB);
       expect(response).toEqual({ errors: [], valid: true });
 
-      templateB.properties[0].type = 'text';
+      templateB.properties = [
+        { name: 'dob', type: 'text', label: 'Date of birth' },
+        { name: 'country', type: 'select', label: 'Country' },
+      ];
+
       response = await checkMapping(templateB);
-      expect(response).toEqual({ errors: [{ name: 'Date of birth' }], valid: false });
+
+      expect(response).toEqual({
+        errors: [{ name: 'Date of birth' }, { name: 'Country' }],
+        valid: false,
+      });
     });
 
     describe('when the mapping is empty', () => {
