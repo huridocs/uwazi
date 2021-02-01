@@ -50,8 +50,14 @@ export class PageReferencesComponent extends Component<PageReferencesProps> {
 }
 
 const indexdReferencesByPage = createSelector(
-  (state: IStore) => state.documentViewer.references,
-  (state: IStore) => state.documentViewer.doc,
+  (state: IStore) =>
+    state.documentViewer.targetDocReferences.size
+      ? state.documentViewer.targetDocReferences
+      : state.documentViewer.references,
+  (state: IStore) =>
+    state.documentViewer.targetDoc.get('_id')
+      ? state.documentViewer.targetDoc
+      : state.documentViewer.doc,
   (references, doc) =>
     references
       .toJS()
