@@ -155,6 +155,7 @@ class PDF extends Component {
         <SelectionHandler
           onTextSelection={this.props.onTextSelection}
           onTextDeselection={this.props.onTextDeselection}
+          elementTagsToAvoid={['DIV']}
         >
           {(() => {
             const pages = [];
