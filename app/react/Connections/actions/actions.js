@@ -69,7 +69,7 @@ export function saveConnection(connection, callback = () => {}) {
     };
 
     const targetRelationship = { entity: connection.targetDocument, template: connection.template };
-    if (connection.targetRange && typeof connection.targetRange.selectionRectangles.length) {
+    if (connection.targetRange) {
       Object.assign(targetRelationship, {
         reference: connection.targetRange,
         file: connection.targetFile,
