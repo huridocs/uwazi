@@ -63,7 +63,7 @@ export class MetadataFormButtons extends Component {
     return (
       <span>
         <ShowIf if={this.props.includeViewButton}>{ViewButton}</ShowIf>
-        <NeedAuthorization roles={['admin', 'editor', 'collaborator']}>
+        <NeedAuthorization roles={['admin', 'editor']} orWriteAccessTo={[data]}>
           <ShowIf if={!entityBeingEdited}>
             <button
               type="button"
@@ -115,7 +115,7 @@ export class MetadataFormButtons extends Component {
             </button>
           </>
         </ShowIf>
-        <NeedAuthorization roles={['admin', 'editor', 'collaborator']}>
+        <NeedAuthorization roles={['admin', 'editor']} orWriteAccessTo={[data]}>
           <ShowIf if={!entityBeingEdited && !hideDelete}>
             <button
               className="delete-metadata btn btn-danger"
@@ -129,7 +129,7 @@ export class MetadataFormButtons extends Component {
             </button>
           </ShowIf>
         </NeedAuthorization>
-        <NeedAuthorization roles={['admin', 'editor']} write={[data]}>
+        <NeedAuthorization roles={['admin', 'editor']} orWriteAccessTo={[data]}>
           {!entityBeingEdited && !hideDelete && <ShareButton sharedIds={[data.sharedId]} />}
         </NeedAuthorization>
         <NeedAuthorization roles={['admin', 'editor']}>

@@ -1,28 +1,55 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { connect } from 'react-redux';
 
 type PropTypes = {
   authorized: boolean;
   children: React.ReactNode;
-  write?: any[];
+  roles?: string[];
+  orWriteAccessTo?: any[];
+  user: any;
 };
 
-const checkWritePermissions = (entities: any[]) =>
-  entities.reduce((memo, entity) => memo && entity.write_access, true);
+const checkWritePermissions = (entities: any[] = [], user?: any) =>
+  user
+    ? entities.reduce<boolean>((memo, entity) => {
+        if (entity.permissions) {
+          const idsWithWritePermissions = entity.permissions
+            .filter((p: any) => p.level === 'write')
+            .map((p: any) => p._id);
 
-const NeedAuthorization: React.FC<PropTypes> = ({ authorized, children, write }: PropTypes) =>
-  authorized || (write && checkWritePermissions(write)) ? <>{children}</> : null;
+          for (let i = 0; i < idsWithWritePermissions.length; i += 1) {
+            if (
+              idsWithWritePermissions[i] === user.get('_id') ||
+              user.groups?.find((g: any) => g._id === idsWithWritePermissions[i])
+            ) {
+              return memo && true;
+            }
+          }
 
-type mapStateProps = {
-  roles: string[];
+          return false;
+        }
+
+        return memo && !!entity.write_access;
+      }, !!entities.length)
+    : false;
+
+const checkRole = (roles: string[] = ['admin'], user: any) =>
+  !!(user.get('_id') && roles.includes(user.get('role')));
+
+const NeedAuthorization: React.FC<PropTypes> = ({
+  children,
+  roles,
+  orWriteAccessTo,
+  user,
+}: PropTypes) => {
+  const authorized = useMemo(
+    () => checkRole(roles, user) || checkWritePermissions(orWriteAccessTo, user),
+    [user, roles, orWriteAccessTo]
+  );
+
+  return authorized ? <>{children}</> : null;
 };
 
-export function mapStateToProps({ user }: any, props: mapStateProps) {
-  const roles = props.roles || ['admin'];
-  return {
-    authorized: !!(user.get('_id') && roles.includes(user.get('role'))),
-  };
-}
+const mapStateToProps = ({ user }: any) => ({ user });
 
 export default connect(mapStateToProps)(NeedAuthorization);
-export { NeedAuthorization };
