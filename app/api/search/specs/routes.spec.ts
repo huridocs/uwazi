@@ -4,25 +4,17 @@ import { Application } from 'express';
 import db from 'api/utils/testing_db';
 
 import { setUpApp } from 'api/utils/testingRoutes';
-import instanceElasticTesting from 'api/utils/elastic_testing';
-import { instanceSearch } from 'api/search/search';
 import searchRoutes from 'api/search/routes.ts';
-import { testingTenants } from 'api/utils/testingTenants';
 
 import { fixtures, ids, fixturesTimeOut } from './fixtures_elastic';
 
-const elasticIndex = 'search_lookup_index_test';
-const search = instanceSearch(elasticIndex);
-const elasticTesting = instanceElasticTesting(elasticIndex, search);
-
 describe('Search routes', () => {
   const app: Application = setUpApp(searchRoutes);
+  const elasticIndex = 'search_lookup_index_test';
 
   beforeAll(async () => {
     //@ts-ignore
-    await db.clearAllAndLoad(fixtures);
-    await elasticTesting.reindex();
-    testingTenants.changeCurrentTenant({ indexName: elasticIndex });
+    await db.clearAllAndLoad(fixtures, elasticIndex);
   }, fixturesTimeOut);
 
   afterAll(async () => db.disconnect());
@@ -50,6 +42,7 @@ describe('Search routes', () => {
       let res: SuperTestResponse = await request(app)
         .get('/api/search/lookup')
         .query({ searchTerm: 'en', templates: '[]' });
+
       expect(res.body.options.length).toBe(4);
 
       res = await request(app)
@@ -87,7 +80,7 @@ describe('Search routes', () => {
         .get('/api/search/lookupaggregation')
         .query({ query: JSON.stringify(query), searchTerm: 'Bat', property: 'relationship' });
 
-      const options = res.body.options;
+      const { options } = res.body;
 
       expect(options.length).toBe(1);
       expect(options[0].value).toBeDefined();

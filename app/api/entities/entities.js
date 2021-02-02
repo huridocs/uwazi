@@ -5,7 +5,7 @@ import ID from 'shared/uniqueID';
 import { propertyTypes } from 'shared/propertyTypes';
 import date from 'api/utils/date';
 import relationships from 'api/relationships/relationships';
-import search from 'api/search/search';
+import { search } from 'api/search';
 import templates from 'api/templates/templates';
 import translationsModel from 'api/i18n/translations';
 import path from 'path';
@@ -357,7 +357,7 @@ export default {
   },
 
   /** Bulk rebuild relationship-based metadata objects as {value = id, label: title}. */
-  async bulkUpdateMetadataFromRelationships(query, language, limit = 200) {
+  async bulkUpdateMetadataFromRelationships(query, language, limit = 200, reindex = true) {
     const process = async (offset, totalRows) => {
       if (offset >= totalRows) {
         return;
@@ -366,7 +366,8 @@ export default {
       const entities = await this.get(query, 'sharedId', { skip: offset, limit });
       await this.updateMetdataFromRelationships(
         entities.map(entity => entity.sharedId),
-        language
+        language,
+        reindex
       );
       await process(offset + limit, totalRows);
     };
@@ -474,7 +475,7 @@ export default {
   },
 
   /** Rebuild relationship-based metadata objects as {value = id, label: title}. */
-  async updateMetdataFromRelationships(entities, language) {
+  async updateMetdataFromRelationships(entities, language, reindex = true) {
     const entitiesToReindex = [];
     const _templates = await templates.get();
     await Promise.all(
@@ -507,11 +508,14 @@ export default {
         }
       })
     );
-    await search.indexEntities({ sharedId: { $in: entitiesToReindex } });
+
+    if (reindex) {
+      await search.indexEntities({ sharedId: { $in: entitiesToReindex } });
+    }
   },
 
   /** Handle property deletion and renames. */
-  async updateMetadataProperties(template, currentTemplate, language) {
+  async updateMetadataProperties(template, currentTemplate, language, reindex = true) {
     const actions = { $rename: {}, $unset: {} };
     template.properties = await generateNamesAndIds(template.properties);
     template.properties.forEach(property => {
@@ -540,10 +544,16 @@ export default {
       await model.updateMany({ template: template._id }, actions);
     }
 
-    if (!template.properties.find(p => p.type === propertyTypes.relationship)) {
+    if (!template.properties.find(p => p.type === propertyTypes.relationship) && reindex) {
       return search.indexEntities({ template: template._id });
     }
-    return this.bulkUpdateMetadataFromRelationships({ template: template._id, language }, language);
+
+    return this.bulkUpdateMetadataFromRelationships(
+      { template: template._id, language },
+      language,
+      200,
+      reindex
+    );
   },
 
   async deleteFiles(deletedDocs) {

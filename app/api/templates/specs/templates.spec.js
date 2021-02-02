@@ -7,10 +7,8 @@ import db from 'api/utils/testing_db';
 import documents from 'api/documents/documents.js';
 import entities from 'api/entities/entities.js';
 import translations from 'api/i18n/translations';
-import instanceElasticTesting from 'api/utils/elastic_testing';
-import elastic from 'api/search/elastic';
+import { elasticClient } from 'api/search/elastic';
 
-import { instanceSearch } from '../../search/search';
 import templates from '../templates';
 
 import fixtures, {
@@ -24,13 +22,10 @@ import fixtures, {
 
 describe('templates', () => {
   const elasticIndex = 'index';
-  const search = instanceSearch(elasticIndex);
-  const elasticTesting = instanceElasticTesting(elasticIndex, search);
 
   beforeEach(async () => {
     spyOn(translations, 'addContext').and.returnValue(Promise.resolve());
-    await db.clearAllAndLoad(fixtures);
-    await elasticTesting.resetIndex();
+    await db.clearAllAndLoad(fixtures, elasticIndex);
   });
 
   afterAll(async () => {
@@ -80,12 +75,12 @@ describe('templates', () => {
         default: true,
       };
 
-      const mapping = await elastic.indices.getMapping({ index: elasticIndex });
+      const mapping = await elasticClient.indices.getMapping({ index: elasticIndex });
 
       await templates.save(template);
-      await elastic.indices.refresh({ index: elasticIndex });
+      await elasticClient.indices.refresh({ index: elasticIndex });
 
-      const newMapping = await elastic.indices.getMapping({ index: elasticIndex });
+      const newMapping = await elasticClient.indices.getMapping({ index: elasticIndex });
 
       expect(
         mapping.body[elasticIndex].mappings.properties.metadata.properties.new_mapped_prop
@@ -248,7 +243,12 @@ describe('templates', () => {
         templates
           .save(toSave, 'en')
           .then(() => {
-            expect(entities.updateMetadataProperties).toHaveBeenCalledWith(toSave, template, 'en');
+            expect(entities.updateMetadataProperties).toHaveBeenCalledWith(
+              toSave,
+              template,
+              'en',
+              true
+            );
             done();
           })
           .catch(catchErrors(done));

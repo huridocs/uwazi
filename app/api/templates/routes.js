@@ -2,8 +2,7 @@ import Joi from 'joi';
 
 import settings from 'api/settings';
 import { checkMapping, reindexAll } from 'api/search/entitiesIndex';
-import { tenants } from 'api/tenants/tenantContext';
-import { instanceSearch } from 'api/search/search';
+import { search } from 'api/search';
 
 import { validation } from '../utils';
 import needsAuthorization from '../auth/authMiddleware';
@@ -16,8 +15,7 @@ export default app => {
       const { reindex } = req.body;
       delete req.body.reindex;
 
-      const response = await templates.save(req.body, req.language);
-
+      const response = await templates.save(req.body, req.language, !reindex);
       req.io.emitToCurrentTenant('templateChange', response);
       const updatedSettings = await settings.updateFilterName(
         response._id.toString(),
@@ -29,10 +27,8 @@ export default app => {
 
       if (reindex) {
         const allTemplates = await templates.get();
-        const search = instanceSearch();
-        reindexAll(allTemplates, search, tenants.current().indexName);
+        reindexAll(allTemplates, search);
       }
-
       res.json(response);
     } catch (error) {
       next(error);
@@ -114,7 +110,7 @@ export default app => {
   app.post('/api/templates/check_mapping', needsAuthorization(), async (req, res, next) => {
     const template = req.body;
     template.properties = await generateNamesAndIds(template.properties);
-    checkMapping(template, tenants.current().indexName)
+    checkMapping(template)
       .then(response => res.json(response))
       .catch(next);
   });

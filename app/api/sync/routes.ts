@@ -1,11 +1,11 @@
 import multer from 'multer';
 
 import { models } from 'api/odm';
-import search from 'api/search/search';
+import { search } from 'api/search';
 
 import { Request, Application } from 'express';
 import { FileType } from 'shared/types/fileType';
-import { uploadsPath, uploadMiddleware } from 'api/files';
+import { uploadsPath, customUploadsPath, uploadMiddleware } from 'api/files';
 
 import { needsAuthorization } from '../auth';
 
@@ -72,6 +72,15 @@ export default (app: Application) => {
     '/api/sync/upload',
     needsAuthorization(['admin']),
     uploadMiddleware(uploadsPath, storage),
+    (_req, res) => {
+      res.json('ok');
+    }
+  );
+
+  app.post(
+    '/api/sync/upload/custom',
+    needsAuthorization(['admin']),
+    uploadMiddleware(customUploadsPath, storage),
     (_req, res) => {
       res.json('ok');
     }

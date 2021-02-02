@@ -9,6 +9,11 @@ describe('files', () => {
     fs.writeFileSync(`${__dirname}/file2`, '');
   });
 
+  afterAll(() => {
+    fs.unlinkSync(`${__dirname}/file1`);
+    fs.unlinkSync(`${__dirname}/file2`);
+  });
+
   describe('deleteFiles', () => {
     it('should delete all files passed', async () => {
       await deleteFiles([`${__dirname}/file1`, `${__dirname}/file2`]);

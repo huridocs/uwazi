@@ -21,12 +21,12 @@ const updateSyncs = async (name, lastSync) =>
 export default {
   stopped: false,
 
-  async syncronize({ url, name, config: _config }) {
+  async syncronize({ url, name, config: _config, batchSize }) {
     const config = await syncConfig(_config, name);
 
     const { lastSync } = config;
 
-    const lastChanges = await config.lastChanges();
+    const lastChanges = await config.lastChanges(batchSize);
 
     await lastChanges.reduce(async (prev, change) => {
       await prev;
@@ -36,14 +36,17 @@ export default {
         return updateSyncs(name, change.timestamp);
       }
 
-      const data = await config.shouldSync(change);
+      const { skip, data } = await config.shouldSync(change);
+
+      if (skip) {
+        await synchronizer.syncData({ url, change, data: { _id: change.mongoId } }, 'delete');
+      }
 
       if (data) {
         await synchronizer.syncData({ url, change, data }, 'post', lastSync);
-        return updateSyncs(name, change.timestamp);
       }
 
-      return Promise.resolve();
+      return updateSyncs(name, change.timestamp);
     }, Promise.resolve());
   },
 

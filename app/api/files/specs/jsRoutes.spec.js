@@ -5,7 +5,7 @@ import { catchErrors } from 'api/utils/jasmineHelpers';
 import db from 'api/utils/testing_db';
 import entities from 'api/entities';
 import { settingsModel } from 'api/settings/settingsModel';
-import search from 'api/search/search';
+import { search } from 'api/search';
 import request from 'supertest';
 import express from 'express';
 
