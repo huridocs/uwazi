@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { FunctionComponent } from 'react';
 import { connect } from 'react-redux';
 import { IStore } from 'app/istore';
 import { ConnectionSchema } from 'shared/types/connectionType';
@@ -13,7 +13,9 @@ export interface PageReferencesProps {
   onClick: (c: ConnectionSchema) => {};
 }
 
-export const PageReferencesComponent = (props: PageReferencesProps) => (
+export const PageReferencesComponent: FunctionComponent<PageReferencesProps> = (
+  props: PageReferencesProps
+) => (
   <>
     {(props.references[props.page] || []).map((r: ConnectionSchema) => {
       const color = r._id === props.activeReference ? '#ffd84b' : '#feeeb4';
@@ -21,15 +23,19 @@ export const PageReferencesComponent = (props: PageReferencesProps) => (
       if (!r.reference) {
         return false;
       }
+      const selectionRectangles = r.reference.selectionRectangles.map(
+        ({ page, ...otherProps }) => ({ regionId: page, ...otherProps })
+      );
+      const highlight = { ...r.reference, selectionRectangles };
 
       return (
         <div
           data-id={r._id}
           key={r._id?.toString()}
           className="reference"
-          onClick={props.onClick.bind(this, r)}
+          onClick={props.onClick.bind(null, r)}
         >
-          <Highlight regionId={props.page.toString()} highlight={r.reference} color={color} />
+          <Highlight regionId={props.page.toString()} highlight={highlight} color={color} />
         </div>
       );
     })}

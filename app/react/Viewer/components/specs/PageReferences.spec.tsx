@@ -56,6 +56,7 @@ describe('FormConfigInput', () => {
 
     const firstHighlightProps: any = hihglights.at(0).props();
     expect(firstHighlightProps.regionId).toBe('3');
+    expect(firstHighlightProps.highlight).toEqual({ selectionRectangles: [{ regionId: '3' }] });
     expect(firstHighlightProps.color).toBe('#ffd84b');
 
     const secondHighlightProps: any = hihglights.at(1).props();
