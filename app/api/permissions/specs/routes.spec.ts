@@ -70,22 +70,6 @@ describe('permissions routes', () => {
         expect(response.status).toBe(400);
       });
 
-      it('should invalidate if permissions are duplicated', async () => {
-        user = { username: 'user 1', role: 'admin' };
-        const permissionsData = {
-          ids: ['shared1'],
-          permissions: [
-            { _id: 'user1', type: 'user', level: 'write' },
-            { _id: 'user1', type: 'user', level: 'read' },
-          ],
-        };
-        const response = await request(app)
-          .post('/api/entities/permissions')
-          .set('X-Requested-With', 'XMLHttpRequest')
-          .send(permissionsData);
-        expect(response.body.validations[0].keyword).toEqual('duplicatedPermissions');
-      });
-
       it('should not save if user is not authorized', async () => {
         user = undefined;
         const permissionsData = {

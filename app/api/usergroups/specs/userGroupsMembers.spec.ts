@@ -2,7 +2,7 @@ import { testingDB } from 'api/utils/testing_db';
 import { getByMemberIdList, updateUserMemberships } from 'api/usergroups/userGroupsMembers';
 import { UserRole } from 'shared/types/userSchema';
 import userGroups from 'api/usergroups/userGroups';
-import fixtures, { group1Id, group2Id, user1Id } from './fixtures.js';
+import { fixtures, group1Id, group2Id, user1Id } from './fixtures';
 
 describe('userGroupsMembers', () => {
   beforeEach(async () => {
