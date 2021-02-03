@@ -20,6 +20,7 @@ describe('Document', () => {
       PDFReady: jasmine.createSpy('PDFReady'),
       unsetSelection: jasmine.createSpy('unsetSelection'),
       onClick: jasmine.createSpy('onClick'),
+      deactivateReference: jasmine.createSpy('deactivateReference'),
       doc: Immutable.fromJS({ _id: 'documentId', documents: [{ pdfInfo: { test: 'pdfInfo' } }] }),
       file: { language: 'eng', _id: 'fileId', pdfInfo: { test: 'pdfInfo' } },
       onDocumentReady: jasmine.createSpy('onDocumentReady'),
@@ -151,6 +152,48 @@ describe('Document', () => {
       expect(props.unsetSelection.calls.count()).toBe(1);
       instance.componentDidMount();
       expect(props.unsetSelection.calls.count()).toBe(2);
+    });
+  });
+
+  describe('onTextSelected', () => {
+    it('should set the selection changing regionId to page', () => {
+      render();
+
+      const textSelection = {
+        text: 'Wham Bam Shang-A-Lang',
+        selectionRectangles: [
+          { regionId: '51', top: 186, left: 27, width: 23, height: 12 },
+          { regionId: '52', top: 231, left: 47, width: 11, height: 89 },
+        ],
+      };
+
+      instance.onTextSelected(textSelection);
+      expect(props.setSelection).toHaveBeenCalledWith(
+        {
+          selectionRectangles: [
+            { height: 12, left: 27, page: '51', top: 186, width: 23 },
+            { height: 89, left: 47, page: '52', top: 231, width: 11 },
+          ],
+          text: 'Wham Bam Shang-A-Lang',
+        },
+        'fileId'
+      );
+    });
+
+    it('should deactivate any active reference', () => {
+      render();
+      instance.onTextSelected({ selectionRectangles: [] });
+      expect(props.deactivateReference).toHaveBeenCalled();
+    });
+
+    describe('when textSelection is disabled', () => {
+      it('should do nothing', () => {
+        props.disableTextSelection = true;
+        render();
+        instance.onTextSelected({ selectionRectangles: [] });
+        expect(props.setSelection).not.toHaveBeenCalled();
+        expect(props.deactivateReference).not.toHaveBeenCalled();
+      });
     });
   });
 });
