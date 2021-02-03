@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
-import { I18NLink, t } from 'app/I18N';
+import { I18NLink, t, Translate } from 'app/I18N';
 import { NeedAuthorization } from 'app/Auth';
+import { Icon } from 'app/UI';
 
 export class SettingsNavigation extends Component {
   render() {
@@ -89,10 +90,10 @@ export class SettingsNavigation extends Component {
             </div>
           </div>
         </NeedAuthorization>
-        <NeedAuthorization roles={['admin']}>
-          <div className="panel panel-default">
-            <div className="panel-heading">{t('System', 'Tools')}</div>
-            <div className="list-group">
+        <div className="panel panel-default">
+          <div className="panel-heading">{t('System', 'Tools')}</div>
+          <div className="list-group">
+            <NeedAuthorization roles={['admin']}>
               <I18NLink
                 to="settings/activitylog"
                 activeClassName="active"
@@ -100,9 +101,19 @@ export class SettingsNavigation extends Component {
               >
                 {t('System', 'Activity log')}
               </I18NLink>
-            </div>
+            </NeedAuthorization>
+            <a
+              className="list-group-item"
+              href="http://uwazi.readthedocs.io/en/latest/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <span>
+                <Translate>Documentation</Translate> <Icon icon="external-link-alt" />
+              </span>
+            </a>
           </div>
-        </NeedAuthorization>
+        </div>
       </div>
     );
   }
