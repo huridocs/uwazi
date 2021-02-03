@@ -72,10 +72,10 @@ describe('conversion of character count to absolute position', () => {
 
       expect(connections[0].reference.selectionRectangles[1]).toEqual({
         height: 12,
-        left: 56,
+        left: 58,
         page: '1',
         top: 702,
-        width: 328,
+        width: 326,
       });
     }
   });
@@ -98,7 +98,7 @@ describe('conversion of character count to absolute position', () => {
               left: 325,
               page: '3',
               top: 642,
-              width: 145,
+              width: 144,
             },
           ],
         },
@@ -141,7 +141,7 @@ describe('conversion of character count to absolute position', () => {
                 left: 330,
                 page: '2',
                 top: 642,
-                width: 135,
+                width: 134,
               },
             ],
             label: 'PUBLISH WITH PURPOSE',
@@ -154,7 +154,7 @@ describe('conversion of character count to absolute position', () => {
                 left: 325,
                 page: '3',
                 top: 642,
-                width: 145,
+                width: 144,
               },
             ],
             label: 'BUILD A CUSTOM LIBRARY',

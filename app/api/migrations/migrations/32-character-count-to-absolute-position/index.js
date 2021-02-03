@@ -189,6 +189,7 @@ export default {
         } catch (e) {
           await removeRangesFromToc(db, file);
           await removeRangesFromConnections(db, file);
+          process.stderr.write(e.stack);
           process.stdout.write(`${fileCount} PDF not allowed to be converted ${file.filename}\r\n`);
           pdfNotAllowedToBeConverted.push(file.filename);
         }
