@@ -9,8 +9,6 @@ import * as os from 'os';
 import { AbsolutePositionLettersList, AbsolutePositionTag } from './AbsolutePositionLettersList';
 
 export interface AbsolutePositionReference {
-  pageHeight: number;
-  pageWidth: number;
   text: string;
   selectionRectangles: AbsolutePositionTag[];
 }
@@ -34,12 +32,14 @@ export class PdfCharacterCountToAbsolute {
 
   xmlRelativePath = '';
 
+  htmlRelativePath = '';
+
   pdfRelativePath = '';
 
   pageSizes: PageSize[];
 
   constructor() {
-    this.lettersTags = new AbsolutePositionLettersList([]);
+    this.lettersTags = new AbsolutePositionLettersList([], []);
     this.pdfInfo = [];
     this.pageSizes = [];
   }
@@ -51,8 +51,15 @@ export class PdfCharacterCountToAbsolute {
     await this.convertPdfToXML();
 
     let xmlContentString = await readXml(this.xmlRelativePath);
+    const htmlWordContentString = await readXml(this.htmlRelativePath);
     let xmlContentObject = null;
+    let htmlContentObject = null;
     let errorMessage = '';
+
+    try {
+      htmlContentObject = JSON.parse(convert.xml2json(htmlWordContentString));
+    } catch (e) {}
+
     for (let iterations = 0; iterations < 300; iterations += 1) {
       try {
         xmlContentObject = JSON.parse(convert.xml2json(xmlContentString));
@@ -70,8 +77,10 @@ export class PdfCharacterCountToAbsolute {
       process.stdout.write(`xml2json error ${pdfRelativePath} ${errorMessage}\r\n`);
     } else {
       await this.deleteXmlFile();
-      this.setPageSizes(xmlContentObject);
-      this.lettersTags = AbsolutePositionLettersList.fromXmlObject(xmlContentObject);
+      this.lettersTags = AbsolutePositionLettersList.fromXmlObject(
+        xmlContentObject,
+        htmlContentObject
+      );
     }
   }
 
@@ -111,6 +120,7 @@ export class PdfCharacterCountToAbsolute {
   setXmlRelativePath() {
     const fileName = path.basename(this.pdfRelativePath).replace('.pdf', '.xml');
     this.xmlRelativePath = `${os.tmpdir()}/${fileName}`;
+    this.htmlRelativePath = `${os.tmpdir()}/${fileName.replace('.xml', '.html')}`;
   }
 
   async convertPdfToXML() {
@@ -124,14 +134,21 @@ export class PdfCharacterCountToAbsolute {
       this.pdfRelativePath,
       this.xmlRelativePath,
     ]);
+
+    await spawn('pdftotext', ['-q', '-bbox', '-raw', this.pdfRelativePath, this.htmlRelativePath]);
   }
 
   async deleteXmlFile() {
     const unlink = promisify(fs.unlink);
     await unlink(this.xmlRelativePath);
+    await unlink(this.htmlRelativePath);
   }
 
-  convert(label: string, startRange: number, endRange: number): AbsolutePositionReference {
+  convertToAbsolutePosition(
+    label: string,
+    startRange: number,
+    endRange: number
+  ): AbsolutePositionReference {
     const absolutePositionByStringMatch = this.lettersTags.getAbsolutePositionByStringMatch(label);
 
     const absolutePositionByCharacterCount = this.getAbsolutePositionByCharacterCount(
@@ -145,36 +162,31 @@ export class PdfCharacterCountToAbsolute {
     if (!existMatchByCharacterCount && !existMatchByString) {
       return {
         text: label,
-        pageHeight: this.pageSizes[0].height,
-        pageWidth: this.pageSizes[0].width,
         selectionRectangles: [],
       };
     }
     if (!existMatchByCharacterCount) {
-      const pageSize = this.getPageSize(absolutePositionByStringMatch[0][0].pageNumber);
       return {
-        pageWidth: pageSize.width,
-        pageHeight: pageSize.height,
         text: label,
-        selectionRectangles: absolutePositionByStringMatch[0],
+        selectionRectangles:
+          this.lettersTags.getWordsAbsolutePositions(absolutePositionByStringMatch[0]) || [],
       };
     }
 
-    const closerAbsolutePositionStringMatch = PdfCharacterCountToAbsolute.getCloserStringMatchToTag(
-      absolutePositionByStringMatch,
-      absolutePositionByCharacterCount[0]
+    const closerAbsolutePositionStringMatch = this.lettersTags.getWordsAbsolutePositions(
+      PdfCharacterCountToAbsolute.getCloserStringMatchToTag(
+        absolutePositionByStringMatch,
+        absolutePositionByCharacterCount[0]
+      )
     );
 
     const selectionRectangles =
       closerAbsolutePositionStringMatch ||
       absolutePositionByCharacterCount ||
       absolutePositionByStringMatch[0];
-    const pageSize = this.getPageSize(selectionRectangles[0].pageNumber);
 
     return {
       selectionRectangles,
-      pageWidth: pageSize.width,
-      pageHeight: pageSize.height,
       text: label,
     };
   }
@@ -211,19 +223,5 @@ export class PdfCharacterCountToAbsolute {
       startRangeMatchingPage,
       endRangeMatchingPage
     );
-  }
-
-  private setPageSizes(xmlContentObject: any) {
-    this.pageSizes = xmlContentObject.elements[1].elements
-      .filter((x: { attributes: { number: string } }) => x.attributes && x.attributes.number)
-      .map((page: { attributes: { number: string; width: string; height: string } }) => ({
-        number: parseInt(page.attributes.number, 10),
-        width: parseInt(page.attributes.width, 10),
-        height: parseInt(page.attributes.height, 10),
-      }));
-  }
-
-  private getPageSize(pageNumber: number) {
-    return this.pageSizes.filter(x => x.number === pageNumber)[0];
   }
 }

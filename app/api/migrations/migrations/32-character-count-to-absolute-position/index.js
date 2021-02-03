@@ -57,7 +57,11 @@ const convertTocToAbsolutePosition = async (fileConvertor, file, db) => {
   let wrongConversion = false;
 
   const absolutePositionToc = file.toc.map(x => {
-    const absolutePositionReference = fileConvertor.convert(x.label, x.range.start, x.range.end);
+    const absolutePositionReference = fileConvertor.convertToAbsolutePosition(
+      x.label,
+      x.range.start,
+      x.range.end
+    );
     const textSelection = absolutePositionReferenceToTextSelection(absolutePositionReference);
 
     wrongConversion = wrongConversion || isWrongConversion(textSelection);
@@ -81,7 +85,7 @@ async function convertConnectionsToAbsolutePosition(fileConvertor, file, db) {
 
   for (let i = 0; i < connections.length; i += 1) {
     if (connections[i].range) {
-      const absolutePositionReference = fileConvertor.convert(
+      const absolutePositionReference = fileConvertor.convertToAbsolutePosition(
         connections[i].range.text,
         connections[i].range.start,
         connections[i].range.end
@@ -191,7 +195,7 @@ export default {
       }
     }
 
-    process.stdout.write(`PDFs not converted:\r\n${pdfNotAllowedToBeConverted.join('\r\n')}\r\n`);
-    process.stdout.write(`PDFs wrong conversions:\r\n${pdfWithWrongConversions.join('\r\n')}\r\n`);
+    process.stderr.write(`PDFs not converted:\r\n${pdfNotAllowedToBeConverted.join('\r\n')}\r\n`);
+    process.stderr.write(`PDFs wrong conversions:\r\n${pdfWithWrongConversions.join('\r\n')}\r\n`);
   },
 };
