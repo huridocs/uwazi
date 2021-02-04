@@ -20,10 +20,11 @@ export default {
   },
 
   to(selector, parentSelector, opt = {}) {
-    if (this.isVisible(selector, parentSelector)) {
+    const options = this.getOptions(opt);
+    if (this.isVisible(selector, parentSelector) && !options.force) {
       return Promise.resolve();
     }
-    const options = this.getOptions(opt);
+
     const element = this.getElement(selector);
     const parent = this.getElement(parentSelector);
 
@@ -68,7 +69,13 @@ export default {
   },
 
   getOptions(options) {
-    const defaultOptions = { duration: 400, offset: 0, animation: 'easeIn', dividerOffset: 2 };
+    const defaultOptions = {
+      duration: 400,
+      offset: 0,
+      animation: 'easeIn',
+      dividerOffset: 2,
+      force: false,
+    };
     return Object.assign(defaultOptions, options);
   },
 

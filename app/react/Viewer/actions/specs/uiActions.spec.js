@@ -1,5 +1,6 @@
 /**
  * @jest-environment jsdom
+ *
  */
 import Immutable from 'immutable';
 
@@ -7,6 +8,7 @@ import Marker from 'app/Viewer/utils/Marker.js';
 import * as actions from 'app/Viewer/actions/uiActions';
 import scroller from 'app/Viewer/utils/Scroller';
 import * as types from 'app/Viewer/actions/actionTypes';
+import e from 'express';
 
 describe('Viewer uiActions', () => {
   describe('closePanel()', () => {
@@ -209,6 +211,30 @@ describe('Viewer uiActions', () => {
       expect(dispatch).toHaveBeenCalledWith({ type: types.RESET_REFERENCE_CREATION });
       expect(dispatch).toHaveBeenCalledWith({ type: 'viewer/targetDoc/UNSET' });
       expect(dispatch).toHaveBeenCalledWith({ type: 'viewer/targetDocHTML/UNSET' });
+    });
+  });
+
+  describe('scrollToToc', () => {
+    it('should scroll do the pageof the toc, with an offset to the toc position', async () => {
+      spyOn(scroller, 'to').and.returnValue(Promise.resolve());
+      await actions.scrollToToc({
+        text: 'The hammer to fall',
+        selectionRectangles: [
+          {
+            page: '1',
+            top: 458,
+            left: 127,
+            height: 24,
+            width: 289,
+          },
+        ],
+      });
+
+      expect(scroller.to).toHaveBeenLastCalledWith(
+        '.document-viewer div#page-1',
+        '.document-viewer',
+        { dividerOffset: 1, duration: 1, force: true, offset: 458 }
+      );
     });
   });
 
