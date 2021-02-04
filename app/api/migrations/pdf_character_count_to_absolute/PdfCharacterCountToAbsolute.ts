@@ -137,6 +137,7 @@ export class PdfCharacterCountToAbsolute {
     await spawn('pdftohtml', [
       '-q',
       '-hidden',
+      '-nodrm',
       '-xml',
       '-zoom',
       '1.33333',
