@@ -59,7 +59,7 @@ describe('conversion of character count to absolute position', () => {
         left: 29,
         page: '1',
         top: 702,
-        width: 356,
+        width: 355,
       });
     } else {
       expect(connections[0].reference.selectionRectangles[0]).toEqual({
