@@ -51,21 +51,9 @@ export class PdfCharacterCountToAbsolute {
     this.pdfInfo = pagesEndingCharacterCount;
     this.setXmlRelativePath();
 
-    let xmlContentObject;
-    let htmlContentObject;
-    try {
-      await this.convertPdfToXML();
-      xmlContentObject = this.convertToJson(await readXml(this.xmlPath));
-      htmlContentObject = this.convertToJson(await readXml(this.htmlPath));
-    } catch (e) {
-      process.stdout.write('sanitizePdf\n');
-
-      await this.sanitizePdf();
-      await this.convertPdfToXML();
-
-      xmlContentObject = this.convertToJson(await readXml(this.xmlPath));
-      htmlContentObject = this.convertToJson(await readXml(this.htmlPath));
-    }
+    await this.convertPdfToXML();
+    const xmlContentObject = this.convertToJson(await readXml(this.xmlPath));
+    const htmlContentObject = this.convertToJson(await readXml(this.htmlPath));
 
     await this.deleteXmlFile();
     this.lettersTags = AbsolutePositionLettersList.fromXmlObject(
@@ -158,19 +146,6 @@ export class PdfCharacterCountToAbsolute {
     ]);
 
     await spawn('pdftotext', ['-q', '-bbox', '-raw', this.pdfPath, this.htmlPath]);
-  }
-
-  async sanitizePdf() {
-    await spawn('gs', [
-      '-q',
-      '-o',
-      this.pdfSanitizedPath,
-      '-sDEVICE=pdfwrite',
-      '-dPDFSETTINGS=/prepress',
-      this.pdfPath,
-    ]);
-
-    this.pdfPath = this.pdfSanitizedPath;
   }
 
   async deleteXmlFile() {
