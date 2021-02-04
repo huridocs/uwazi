@@ -30,11 +30,13 @@ export class PdfCharacterCountToAbsolute {
 
   pdfInfo: number[];
 
-  xmlRelativePath = '';
+  xmlPath = '';
 
-  htmlRelativePath = '';
+  htmlPath = '';
 
-  pdfRelativePath = '';
+  pdfPath = '';
+
+  pdfSanitizedPath = '';
 
   pageSizes: PageSize[];
 
@@ -45,13 +47,13 @@ export class PdfCharacterCountToAbsolute {
   }
 
   async loadPdf(pdfRelativePath: string, pagesEndingCharacterCount: number[]) {
-    this.pdfRelativePath = pdfRelativePath;
+    this.pdfPath = pdfRelativePath;
     this.pdfInfo = pagesEndingCharacterCount;
     this.setXmlRelativePath();
     await this.convertPdfToXML();
 
-    let xmlContentString = await readXml(this.xmlRelativePath);
-    const htmlWordContentString = await readXml(this.htmlRelativePath);
+    let xmlContentString = await readXml(this.xmlPath);
+    const htmlWordContentString = await readXml(this.htmlPath);
     let xmlContentObject = null;
     let htmlContentObject = null;
     let errorMessage = '';
@@ -118,12 +120,21 @@ export class PdfCharacterCountToAbsolute {
   }
 
   setXmlRelativePath() {
-    const fileName = path.basename(this.pdfRelativePath).replace('.pdf', '.xml');
-    this.xmlRelativePath = `${os.tmpdir()}/${fileName}`;
-    this.htmlRelativePath = `${os.tmpdir()}/${fileName.replace('.xml', '.html')}`;
+    const fileName = path.basename(this.pdfPath);
+    this.pdfSanitizedPath = `${os.tmpdir()}/${fileName}`;
+    this.xmlPath = `${os.tmpdir()}/${fileName.replace('.pdf', '.xml')}`;
+    this.htmlPath = `${os.tmpdir()}/${fileName.replace('.pdf', '.html')}`;
   }
 
   async convertPdfToXML() {
+    await spawn('gs', [
+      '-o',
+      this.pdfSanitizedPath,
+      '-sDEVICE=pdfwrite',
+      '-dPDFSETTINGS=/prepress',
+      this.pdfPath,
+    ]);
+
     await spawn('pdftohtml', [
       '-q',
       '-hidden',
@@ -131,17 +142,18 @@ export class PdfCharacterCountToAbsolute {
       '-zoom',
       '1.33333',
       '-i',
-      this.pdfRelativePath,
-      this.xmlRelativePath,
+      this.pdfSanitizedPath,
+      this.xmlPath,
     ]);
 
-    await spawn('pdftotext', ['-q', '-bbox', '-raw', this.pdfRelativePath, this.htmlRelativePath]);
+    await spawn('pdftotext', ['-q', '-bbox', '-raw', this.pdfSanitizedPath, this.htmlPath]);
   }
 
   async deleteXmlFile() {
     const unlink = promisify(fs.unlink);
-    await unlink(this.xmlRelativePath);
-    await unlink(this.htmlRelativePath);
+    await unlink(this.xmlPath);
+    await unlink(this.htmlPath);
+    await unlink(this.pdfSanitizedPath);
   }
 
   convertToAbsolutePosition(

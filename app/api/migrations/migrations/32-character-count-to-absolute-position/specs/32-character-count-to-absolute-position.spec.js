@@ -63,18 +63,18 @@ describe('conversion of character count to absolute position', () => {
       });
     } else {
       expect(connections[0].reference.selectionRectangles[0]).toEqual({
-        height: 12,
+        height: 13,
         left: 29,
         page: '1',
-        top: 702,
+        top: 701,
         width: 27,
       });
 
       expect(connections[0].reference.selectionRectangles[1]).toEqual({
-        height: 12,
+        height: 13,
         left: 58,
         page: '1',
-        top: 702,
+        top: 701,
         width: 326,
       });
     }
@@ -94,10 +94,10 @@ describe('conversion of character count to absolute position', () => {
           text: 'BUILD A CUSTOM LIBRARY',
           selectionRectangles: [
             {
-              height: 12,
+              height: 14,
               left: 325,
               page: '3',
-              top: 642,
+              top: 641,
               width: 144,
             },
           ],
@@ -137,10 +137,10 @@ describe('conversion of character count to absolute position', () => {
           {
             selectionRectangles: [
               {
-                height: 12,
+                height: 14,
                 left: 330,
                 page: '2',
-                top: 642,
+                top: 641,
                 width: 134,
               },
             ],
@@ -150,10 +150,10 @@ describe('conversion of character count to absolute position', () => {
           {
             selectionRectangles: [
               {
-                height: 12,
+                height: 14,
                 left: 325,
                 page: '3',
-                top: 642,
+                top: 641,
                 width: 144,
               },
             ],
@@ -163,10 +163,10 @@ describe('conversion of character count to absolute position', () => {
           {
             selectionRectangles: [
               {
-                height: 12,
+                height: 14,
                 left: 315,
                 page: '4',
-                top: 642,
+                top: 641,
                 width: 164,
               },
             ],

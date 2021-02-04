@@ -130,13 +130,21 @@ describe('PdfCharacterCountToAbsolute', () => {
     );
 
     expect(absolutePosition.text).toBe(lastLabel);
-    expect(absolutePosition.selectionRectangles.length).toBe(1);
+    expect(absolutePosition.selectionRectangles.length).toBe(2);
     checkAbsoluteTag(absolutePosition.selectionRectangles[0], {
       pageNumber: 24,
-      top: 847,
+      top: 846,
       left: 178,
-      height: 15,
-      width: 245,
+      height: 18,
+      width: 4,
+      text: '',
+    });
+    checkAbsoluteTag(absolutePosition.selectionRectangles[1], {
+      pageNumber: 24,
+      top: 850,
+      left: 189,
+      height: 12,
+      width: 230,
       text: '',
     });
   });
@@ -160,7 +168,7 @@ describe('PdfCharacterCountToAbsolute', () => {
       pageNumber: 1,
       top: 1054,
       left: 76,
-      height: 37,
+      height: 31,
       width: 125,
       text: '',
     });
@@ -218,7 +226,7 @@ describe('PdfCharacterCountToAbsolute', () => {
 
     checkAbsoluteTag(absolutePosition.selectionRectangles[0], {
       pageNumber: 24,
-      top: 158,
+      top: 157,
       left: 132,
       height: 17,
       width: 261,
@@ -286,7 +294,7 @@ describe('PdfCharacterCountToAbsolute', () => {
 
     checkAbsoluteTag(absolutePosition.selectionRectangles[0], {
       pageNumber: 14,
-      top: 1027,
+      top: 1026,
       left: 189,
       height: 12,
       width: 354,
@@ -333,7 +341,7 @@ describe('PdfCharacterCountToAbsolute', () => {
 
     checkAbsoluteTag(absolutePosition.selectionRectangles[0], {
       pageNumber: 14,
-      top: 1027,
+      top: 1026,
       left: 189,
       height: 12,
       width: 358,
@@ -431,25 +439,25 @@ describe('PdfCharacterCountToAbsolute', () => {
 
     checkAbsoluteTag(absolutePosition.selectionRectangles[0], {
       pageNumber: 1,
-      top: 720,
+      top: 723,
       left: 404,
-      height: 16,
+      height: 14,
       width: 6,
       text: '',
     });
     checkAbsoluteTag(absolutePosition.selectionRectangles[1], {
       pageNumber: 1,
-      top: 736,
+      top: 739,
       left: 283,
-      height: 16,
+      height: 14,
       width: 248,
       text: '',
     });
     checkAbsoluteTag(absolutePosition.selectionRectangles[2], {
       pageNumber: 1,
-      top: 752,
+      top: 755,
       left: 275,
-      height: 16,
+      height: 14,
       width: 265,
       text: '',
     });
