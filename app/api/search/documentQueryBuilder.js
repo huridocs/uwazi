@@ -13,6 +13,7 @@ export default function() {
         'icon',
         'processed',
         'creationDate',
+        'editDate',
         'template',
         'metadata',
         'type',

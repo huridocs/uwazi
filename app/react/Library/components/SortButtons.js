@@ -173,6 +173,11 @@ export class SortButtons extends Component {
             search,
             type: 'date',
           })}
+          {this.createSortItem('editDate', 'editDate', 'System', 'Date modified', {
+            isActive: search.sort === 'editDate',
+            search,
+            type: 'date',
+          })}
           {search.searchTerm && (
             <li
               key="relevance"

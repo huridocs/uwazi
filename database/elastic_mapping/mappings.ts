@@ -125,6 +125,7 @@ const numericType = () => {
 
 const relationshipType = () => {
   return {
+    icon: { type: 'object', enabled: false },
     label: text,
     value: id,
     type: noIndexText,
