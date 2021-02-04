@@ -55,10 +55,10 @@ describe('conversion of character count to absolute position', () => {
 
     if (connections[0].reference.selectionRectangles.length === 1) {
       expect(connections[0].reference.selectionRectangles[0]).toEqual({
-        height: 12,
+        height: 13,
         left: 29,
         page: '1',
-        top: 702,
+        top: 701,
         width: 355,
       });
     } else {

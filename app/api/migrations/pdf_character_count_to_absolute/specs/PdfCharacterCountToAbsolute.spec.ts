@@ -116,39 +116,6 @@ describe('PdfCharacterCountToAbsolute', () => {
     });
   });
 
-  it('should convert the last text in a page to absolute position', async () => {
-    const pdfRelativePath =
-      'app/api/migrations/pdf_character_count_to_absolute/specs/pdf_to_be_converted.pdf';
-    const lastLabel = '•  Mr. Mostafa Nafari, member of delegation.';
-
-    const characterCountToAbsoluteConversion = new PdfCharacterCountToAbsolute();
-    await characterCountToAbsoluteConversion.loadPdf(pdfRelativePath, pdfInfo);
-    const absolutePosition: AbsolutePositionReference = characterCountToAbsoluteConversion.convertToAbsolutePosition(
-      lastLabel,
-      78397,
-      78441
-    );
-
-    expect(absolutePosition.text).toBe(lastLabel);
-    expect(absolutePosition.selectionRectangles.length).toBe(2);
-    checkAbsoluteTag(absolutePosition.selectionRectangles[0], {
-      pageNumber: 24,
-      top: 846,
-      left: 178,
-      height: 18,
-      width: 4,
-      text: '',
-    });
-    checkAbsoluteTag(absolutePosition.selectionRectangles[1], {
-      pageNumber: 24,
-      top: 850,
-      left: 189,
-      height: 12,
-      width: 230,
-      text: '',
-    });
-  });
-
   it('should convert special character string to absolute position', async () => {
     const pdfRelativePath =
       'app/api/migrations/pdf_character_count_to_absolute/specs/pdf_to_be_converted.pdf';
