@@ -112,11 +112,14 @@ export class PdfCharacterCountToAbsolute {
       if (!line.includes('</a>')) {
         sanitizedContentString = sanitizedContentString.replace(line, this.sanitizeLine(line));
       }
-      if (line.includes('<fontspec')) {
-        sanitizedContentString = sanitizedContentString.replace(line, '<fontspec />');
+    });
+
+    sanitizedContentString.split('\n').forEach(x => {
+      if (x.includes('<fontspec')) {
+        sanitizedContentString = sanitizedContentString.replace(x, '<fontspec />');
       }
-      if (line.charAt(0) !== ' ' && line.charAt(0) !== '<') {
-        sanitizedContentString = sanitizedContentString.replace(line, '<fontspec />');
+      if (x.charAt(0) === '"') {
+        sanitizedContentString = sanitizedContentString.replace(x, '<fontspec />');
       }
     });
 
