@@ -112,6 +112,12 @@ export class PdfCharacterCountToAbsolute {
       if (!line.includes('</a>')) {
         sanitizedContentString = sanitizedContentString.replace(line, this.sanitizeLine(line));
       }
+      if (line.includes('<fontspec')) {
+        sanitizedContentString = sanitizedContentString.replace(line, '<fontspec />');
+      }
+      if (line.charAt(0) !== ' ' && line.charAt(0) !== '<') {
+        sanitizedContentString = sanitizedContentString.replace(line, '<fontspec />');
+      }
     });
 
     const errorLineNumber = parseInt(errorMessage.split('Line: ')[1].split('Column')[0], 10);
