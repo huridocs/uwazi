@@ -123,6 +123,61 @@ exports[`SortButtons Sort options should use templates sortable properties as op
       </li>
       <li
         className="Dropdown-option "
+        key="editDate"
+      >
+        <a
+          className="Dropdown-option__item "
+          onClick={[Function]}
+        >
+          <span>
+            Date modified
+             (
+            Recently
+            )
+          </span>
+          <ShowIf
+            if={false}
+          >
+            <Connect(Icon)
+              icon="caret-down"
+            />
+          </ShowIf>
+          <ShowIf
+            if={false}
+          >
+            <Connect(Icon)
+              icon="caret-up"
+            />
+          </ShowIf>
+        </a>
+        <a
+          className="Dropdown-option__item "
+          onClick={[Function]}
+        >
+          <span>
+            Date modified
+             (
+            Least recently
+            )
+          </span>
+          <ShowIf
+            if={false}
+          >
+            <Connect(Icon)
+              icon="caret-down"
+            />
+          </ShowIf>
+          <ShowIf
+            if={false}
+          >
+            <Connect(Icon)
+              icon="caret-up"
+            />
+          </ShowIf>
+        </a>
+      </li>
+      <li
+        className="Dropdown-option "
         key="metadata.date"
       >
         <a
@@ -440,6 +495,61 @@ exports[`SortButtons Sort options should use templates sortable properties as op
         >
           <span>
             Date added
+             (
+            Least recently
+            )
+          </span>
+          <ShowIf
+            if={false}
+          >
+            <Connect(Icon)
+              icon="caret-down"
+            />
+          </ShowIf>
+          <ShowIf
+            if={false}
+          >
+            <Connect(Icon)
+              icon="caret-up"
+            />
+          </ShowIf>
+        </a>
+      </li>
+      <li
+        className="Dropdown-option "
+        key="editDate"
+      >
+        <a
+          className="Dropdown-option__item "
+          onClick={[Function]}
+        >
+          <span>
+            Date modified
+             (
+            Recently
+            )
+          </span>
+          <ShowIf
+            if={false}
+          >
+            <Connect(Icon)
+              icon="caret-down"
+            />
+          </ShowIf>
+          <ShowIf
+            if={false}
+          >
+            <Connect(Icon)
+              icon="caret-up"
+            />
+          </ShowIf>
+        </a>
+        <a
+          className="Dropdown-option__item "
+          onClick={[Function]}
+        >
+          <span>
+            Date modified
              (
             Least recently
             )
@@ -808,6 +918,61 @@ exports[`SortButtons Sort options when relevance sorting is active and there is 
       </li>
       <li
         className="Dropdown-option "
+        key="editDate"
+      >
+        <a
+          className="Dropdown-option__item "
+          onClick={[Function]}
+        >
+          <span>
+            Date modified
+             (
+            Recently
+            )
+          </span>
+          <ShowIf
+            if={false}
+          >
+            <Connect(Icon)
+              icon="caret-down"
+            />
+          </ShowIf>
+          <ShowIf
+            if={false}
+          >
+            <Connect(Icon)
+              icon="caret-up"
+            />
+          </ShowIf>
+        </a>
+        <a
+          className="Dropdown-option__item "
+          onClick={[Function]}
+        >
+          <span>
+            Date modified
+             (
+            Least recently
+            )
+          </span>
+          <ShowIf
+            if={false}
+          >
+            <Connect(Icon)
+              icon="caret-down"
+            />
+          </ShowIf>
+          <ShowIf
+            if={false}
+          >
+            <Connect(Icon)
+              icon="caret-up"
+            />
+          </ShowIf>
+        </a>
+      </li>
+      <li
+        className="Dropdown-option "
         key="metadata.date"
       >
         <a
@@ -1125,6 +1290,61 @@ exports[`SortButtons Sort options when relevance sorting is active and there is 
         >
           <span>
             Date added
+             (
+            Least recently
+            )
+          </span>
+          <ShowIf
+            if={false}
+          >
+            <Connect(Icon)
+              icon="caret-down"
+            />
+          </ShowIf>
+          <ShowIf
+            if={false}
+          >
+            <Connect(Icon)
+              icon="caret-up"
+            />
+          </ShowIf>
+        </a>
+      </li>
+      <li
+        className="Dropdown-option "
+        key="editDate"
+      >
+        <a
+          className="Dropdown-option__item "
+          onClick={[Function]}
+        >
+          <span>
+            Date modified
+             (
+            Recently
+            )
+          </span>
+          <ShowIf
+            if={false}
+          >
+            <Connect(Icon)
+              icon="caret-down"
+            />
+          </ShowIf>
+          <ShowIf
+            if={false}
+          >
+            <Connect(Icon)
+              icon="caret-up"
+            />
+          </ShowIf>
+        </a>
+        <a
+          className="Dropdown-option__item "
+          onClick={[Function]}
+        >
+          <span>
+            Date modified
              (
             Least recently
             )

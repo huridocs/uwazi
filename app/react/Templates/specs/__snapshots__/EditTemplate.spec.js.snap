@@ -28,6 +28,14 @@ Array [
           "prioritySorting": false,
           "type": "date",
         },
+        Object {
+          "isCommonProperty": true,
+          "label": "Date modified",
+          "localID": "commonEditDate",
+          "name": "editDate",
+          "prioritySorting": false,
+          "type": "date",
+        },
       ],
       "properties": Array [
         Object {

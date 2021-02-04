@@ -72,7 +72,7 @@ describe('EditTemplate', () => {
       const request = new RequestParams({ templateId: 'abc2' });
       const actions = await EditTemplate.requestState(request);
       const template = actions[0].value;
-      expect(template.commonProperties.length).toBe(2);
+      expect(template.commonProperties.length).toBe(3);
       expect(template.commonProperties[0].label).toBe('Title');
     });
 
@@ -80,7 +80,7 @@ describe('EditTemplate', () => {
       const request = new RequestParams({ templateId: 'abc3' });
       const actions = await EditTemplate.requestState(request);
       const template = actions[0].value;
-      expect(template.commonProperties.length).toBe(2);
+      expect(template.commonProperties.length).toBe(3);
       expect(template.commonProperties[0].label).toBe('Title');
     });
 
