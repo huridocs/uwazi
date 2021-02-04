@@ -2,7 +2,6 @@ import React, { useMemo } from 'react';
 import { connect } from 'react-redux';
 
 type PropTypes = {
-  authorized: boolean;
   children: React.ReactNode;
   roles?: string[];
   orWriteAccessTo?: any[];
@@ -29,7 +28,7 @@ const checkWritePermissions = (entities: any[] = [], user?: any) =>
           return false;
         }
 
-        return memo && !!entity.write_access;
+        return false;
       }, !!entities.length)
     : false;
 

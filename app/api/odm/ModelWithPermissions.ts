@@ -2,11 +2,15 @@ import mongoose from 'mongoose';
 import { getUserInContext } from 'api/permissions/permissionsContext';
 import { AccessLevels, PermissionType } from 'shared/types/permissionSchema';
 import { UserSchema } from 'shared/types/userType';
+import { checkWritePermissions } from 'shared/permissionsUtils';
 import { createUpdateLogHelper } from './logHelper';
 import { DataType, OdmModel } from './model';
-import { models, UwaziFilterQuery } from './models';
+import { models, UwaziFilterQuery, WithId } from './models';
 
 export type PermissionsUwaziFilterQuery<T> = UwaziFilterQuery<T> & { published?: boolean };
+export interface DocumentWithPermissions {
+  permissions: PermissionType[];
+}
 
 const appendPermissionData = <T>(data: T) => {
   const user = getUserInContext();
@@ -51,6 +55,21 @@ const appendPermissionQuery = <T>(query: PermissionsUwaziFilterQuery<T>, level: 
   return { ...query, ...permissionCond };
 };
 
+const filterPermissionsData = (user: UserSchema) => (elem: any) => {
+  if (elem === null || !elem.length) {
+    return elem;
+  }
+
+  const writeAccess: boolean = checkWritePermissions(user, elem[0].permissions);
+
+  if (!writeAccess) {
+    // eslint-disable-next-line no-param-reassign
+    delete elem[0].permissions;
+  }
+
+  return elem;
+};
+
 export class ModelWithPermissions<T> extends OdmModel<T> {
   async save(data: DataType<T>) {
     return data._id
@@ -59,7 +78,8 @@ export class ModelWithPermissions<T> extends OdmModel<T> {
   }
 
   get(query: UwaziFilterQuery<T> = {}, select: any = '', options: {} = {}) {
-    return super.get(appendPermissionQuery(query, AccessLevels.READ), select, options);
+    const results = super.get(appendPermissionQuery(query, AccessLevels.READ), select, options);
+    return results.map(filterPermissionsData(getUserInContext()));
   }
 
   getInternal(query: UwaziFilterQuery<T> = {}, select: any = '') {

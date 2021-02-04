@@ -107,7 +107,12 @@ describe('NeedAuthorization', () => {
               },
               {
                 _id: 'otherEntity',
-                write_access: true,
+                permissions: [
+                  {
+                    _id: 'userId',
+                    level: 'write',
+                  },
+                ],
               },
             ],
           };
@@ -133,7 +138,12 @@ describe('NeedAuthorization', () => {
               },
               {
                 _id: 'otherEntity',
-                write_access: true,
+                permissions: [
+                  {
+                    _id: 'userId',
+                    level: 'write',
+                  },
+                ],
               },
             ],
           };
@@ -165,7 +175,12 @@ describe('NeedAuthorization', () => {
               },
               {
                 _id: 'otherEntity',
-                write_access: true,
+                permissions: [
+                  {
+                    _id: 'userId',
+                    level: 'write',
+                  },
+                ],
               },
             ],
           };
@@ -197,7 +212,12 @@ describe('NeedAuthorization', () => {
               },
               {
                 _id: 'otherEntity',
-                write_access: true,
+                permissions: [
+                  {
+                    _id: 'userId',
+                    level: 'write',
+                  },
+                ],
               },
             ],
           };
@@ -227,7 +247,12 @@ describe('NeedAuthorization', () => {
           orWriteAccessTo: [
             {
               _id: 'otherEntity',
-              write_access: true,
+              permissions: [
+                {
+                  _id: 'userId',
+                  level: 'write',
+                },
+              ],
             },
           ],
         };

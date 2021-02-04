@@ -12,6 +12,8 @@ import entitiesModel from '../entities/entitiesModel';
 import templatesModel from '../templates';
 import { bulkIndex, indexEntities, updateMapping } from './entitiesIndex';
 import thesauri from '../thesauri';
+import { getUserInContext } from 'api/permissions/permissionsContext';
+import { checkWritePermissions } from 'shared/permissionsUtils';
 
 function processFilters(filters, properties) {
   return Object.keys(filters || {}).reduce((res, filterName) => {
@@ -369,14 +371,22 @@ const _sanitizeAggregations = async (
   return _denormalizeAggregations(sanitizedAggregationNames, templates, dictionaries, language);
 };
 
+const permissionsInformation = (hit, user) => {
+  const { permissions } = hit._source;
+
+  const canWrite = checkWritePermissions(user, permissions);
+
+  return canWrite ? permissions : undefined;
+};
+
 const processResponse = async (response, templates, dictionaries, language, filters) => {
+  const user = getUserInContext();
   const rows = response.body.hits.hits.map(hit => {
     const result = hit._source;
-    const [canWrite] = hit.fields.write_access;
     result._explanation = hit._explanation;
     result.snippets = snippetsFromSearchHit(hit);
     result._id = hit._id;
-    result.write_access = canWrite;
+    result.permissions = permissionsInformation(hit, user);
     return result;
   });
   const sanitizedAggregations = await _sanitizeAggregations(
