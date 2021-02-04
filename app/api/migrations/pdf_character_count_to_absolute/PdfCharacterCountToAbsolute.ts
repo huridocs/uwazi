@@ -50,26 +50,21 @@ export class PdfCharacterCountToAbsolute {
     this.pdfPath = pdfRelativePath;
     this.pdfInfo = pagesEndingCharacterCount;
     this.setXmlRelativePath();
-    let xmlContentString;
-    let htmlWordContentString;
+
     let xmlContentObject;
     let htmlContentObject;
     try {
       await this.convertPdfToXML();
-
-      xmlContentString = await readXml(this.xmlPath);
-      htmlWordContentString = await readXml(this.htmlPath);
-      xmlContentObject = JSON.parse(convert.xml2json(xmlContentString));
-      htmlContentObject = JSON.parse(convert.xml2json(htmlWordContentString));
+      xmlContentObject = this.convertToJson(await readXml(this.xmlPath));
+      htmlContentObject = this.convertToJson(await readXml(this.htmlPath));
     } catch (e) {
+      process.stdout.write('sanitizePdf\n');
+
       await this.sanitizePdf();
-      this.pdfPath = this.pdfSanitizedPath;
       await this.convertPdfToXML();
 
-      xmlContentString = await readXml(this.xmlPath);
-      htmlWordContentString = await readXml(this.htmlPath);
-      xmlContentObject = JSON.parse(convert.xml2json(xmlContentString));
-      htmlContentObject = JSON.parse(convert.xml2json(htmlWordContentString));
+      xmlContentObject = this.convertToJson(await readXml(this.xmlPath));
+      htmlContentObject = this.convertToJson(await readXml(this.htmlPath));
     }
 
     await this.deleteXmlFile();
@@ -77,6 +72,61 @@ export class PdfCharacterCountToAbsolute {
       xmlContentObject,
       htmlContentObject
     );
+  }
+
+  private convertToJson(contentString: string) {
+    let errorMessage;
+    let contentObject;
+    for (let iterations = 0; iterations < 300; iterations += 1) {
+      try {
+        contentObject = JSON.parse(convert.xml2json(contentString));
+      } catch (e) {
+        errorMessage = e.toString();
+        contentString = this.removeFailingLines(errorMessage, contentString);
+      }
+
+      if (contentObject) {
+        break;
+      }
+    }
+
+    if (!contentObject) {
+      throw new Error(`xml2json error ${errorMessage}\r\n`);
+    }
+    return contentObject;
+  }
+
+  private sanitizeLine(line: string) {
+    if (!line.includes('<text')) {
+      return line;
+    }
+
+    return `${line.split('>')[0]}>${line.split('>')[1].split('<')[0]}</text>`;
+  }
+
+  private removeFailingLines(errorMessage: string, xmlContentString: string) {
+    let sanitizedContentString = xmlContentString;
+    const matches = sanitizedContentString.match(/<text.*<a href=".*<\/text>/g) || [];
+
+    matches.forEach(line => {
+      if (!line.includes('</a>')) {
+        sanitizedContentString = sanitizedContentString.replace(line, this.sanitizeLine(line));
+      }
+    });
+
+    const errorLineNumber = parseInt(errorMessage.split('Line: ')[1].split('Column')[0], 10);
+    const problematicLine1 = xmlContentString.split('\n')[errorLineNumber - 1];
+    const problematicLine2 = xmlContentString.split('\n')[errorLineNumber];
+
+    sanitizedContentString = sanitizedContentString.replace(
+      problematicLine1,
+      this.sanitizeLine(problematicLine1)
+    );
+    sanitizedContentString = sanitizedContentString.replace(
+      problematicLine2,
+      this.sanitizeLine(problematicLine2)
+    );
+    return sanitizedContentString;
   }
 
   setXmlRelativePath() {
@@ -103,12 +153,15 @@ export class PdfCharacterCountToAbsolute {
 
   async sanitizePdf() {
     await spawn('gs', [
+      '-q',
       '-o',
       this.pdfSanitizedPath,
       '-sDEVICE=pdfwrite',
       '-dPDFSETTINGS=/prepress',
       this.pdfPath,
     ]);
+
+    this.pdfPath = this.pdfSanitizedPath;
   }
 
   async deleteXmlFile() {
