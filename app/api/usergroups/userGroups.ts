@@ -7,7 +7,7 @@ export default {
   async get(query: any, select: any = '', options = {}): Promise<UserGroupSchema[]> {
     const userGroups = await model.get(query, select, options);
     const usersInGroups = userGroups.reduce(
-      (memo: Array<String>, group) => memo.concat(group.members.map(g => g._id!.toString())),
+      (memo: Array<String>, group) => memo.concat(group.members.map(g => g._id.toString())),
       []
     );
     const usersFound: GroupMemberSchema[] = await users.get(
@@ -16,10 +16,9 @@ export default {
     );
 
     userGroups.forEach((group, index) => {
-      userGroups[index].members = group.members.map(m => {
-        const user = usersFound.find(u => u._id?.toString() === m._id!.toString());
-        return user || m;
-      });
+      userGroups[index].members = group.members.map(
+        m => usersFound.find(u => u._id.toString() === m._id.toString()) || m
+      );
     });
 
     return userGroups;

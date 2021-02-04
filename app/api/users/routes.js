@@ -1,5 +1,3 @@
-import Joi from 'joi';
-
 import { validation } from 'api/utils';
 import { userSchema } from 'shared/types/userSchema';
 import needsAuthorization from '../auth/authMiddleware';
@@ -14,7 +12,7 @@ export default app => {
     validation.validateRequest({
       type: 'object',
       properties: {
-        body: { ...userSchema, required: ['_id', 'username', 'role', 'email'] },
+        body: userSchema,
       },
       required: ['body'],
     }),
@@ -33,7 +31,7 @@ export default app => {
     validation.validateRequest({
       type: 'object',
       properties: {
-        body: { ...userSchema, required: ['username', 'role', 'email'] },
+        body: userSchema,
       },
       required: ['body'],
     }),
@@ -47,14 +45,20 @@ export default app => {
 
   app.post(
     '/api/unlockaccount',
-    validation.validateRequest(
-      Joi.object()
-        .keys({
-          username: Joi.string().required(),
-          code: Joi.string().required(),
-        })
-        .required()
-    ),
+    validation.validateRequest({
+      type: 'object',
+      properties: {
+        body: {
+          type: 'object',
+          properties: {
+            username: { type: 'string' },
+            code: { type: 'string' },
+          },
+          required: ['username', 'code'],
+        },
+      },
+      required: ['body'],
+    }),
     (req, res, next) => {
       users
         .unlockAccount(req.body)
@@ -65,13 +69,19 @@ export default app => {
 
   app.post(
     '/api/recoverpassword',
-    validation.validateRequest(
-      Joi.object()
-        .keys({
-          email: Joi.string().required(),
-        })
-        .required()
-    ),
+    validation.validateRequest({
+      type: 'object',
+      properties: {
+        body: {
+          type: 'object',
+          properties: {
+            email: { type: 'string', minLength: 3 },
+          },
+          required: ['email'],
+        },
+      },
+      required: ['body'],
+    }),
     (req, res, next) => {
       users
         .recoverPassword(req.body.email, getDomain(req))
@@ -82,14 +92,20 @@ export default app => {
 
   app.post(
     '/api/resetpassword',
-    validation.validateRequest(
-      Joi.object()
-        .keys({
-          key: Joi.string().required(),
-          password: Joi.string().required(),
-        })
-        .required()
-    ),
+    validation.validateRequest({
+      type: 'object',
+      properties: {
+        body: {
+          type: 'object',
+          properties: {
+            key: { type: 'string' },
+            password: { type: 'string' },
+          },
+          required: ['key', 'password'],
+        },
+      },
+      required: ['body'],
+    }),
     (req, res, next) => {
       users
         .resetPassword(req.body)
@@ -108,14 +124,16 @@ export default app => {
   app.delete(
     '/api/users',
     needsAuthorization(),
-    validation.validateRequest(
-      Joi.object()
-        .keys({
-          _id: Joi.string().required(),
-        })
-        .required(),
-      'query'
-    ),
+    validation.validateRequest({
+      properties: {
+        query: {
+          required: ['_id'],
+          properties: {
+            _id: { type: 'string' },
+          },
+        },
+      },
+    }),
     (req, res, next) => {
       users
         .delete(req.query._id, req.user)

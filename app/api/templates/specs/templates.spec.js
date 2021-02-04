@@ -243,7 +243,12 @@ describe('templates', () => {
         templates
           .save(toSave, 'en')
           .then(() => {
-            expect(entities.updateMetadataProperties).toHaveBeenCalledWith(toSave, template, 'en');
+            expect(entities.updateMetadataProperties).toHaveBeenCalledWith(
+              toSave,
+              template,
+              'en',
+              true
+            );
             done();
           })
           .catch(catchErrors(done));
