@@ -147,7 +147,7 @@ function unauthorizedAction(user, userInTheDatabase, currentUser) {
     (user.hasOwnProperty('role') &&
       user.role !== userInTheDatabase.role &&
       currentUser.role !== 'admin') ||
-    (user._id !== currentUser._id.toString() && currentUser.role === 'collaborator')
+    (user._id !== currentUser._id.toString() && currentUser.role !== 'admin')
   );
 }
 
@@ -155,12 +155,12 @@ export default {
   async save(user, currentUser) {
     const [userInTheDatabase] = await model.get({ _id: user._id }, '+password');
 
-    if (user._id === currentUser._id.toString() && user.role !== currentUser.role) {
-      return Promise.reject(createError('Can not change your own role', 403));
-    }
-
     if (unauthorizedAction(user, userInTheDatabase, currentUser)) {
       return Promise.reject(createError('Unauthorized', 403));
+    }
+
+    if (user._id === currentUser._id.toString() && user.role !== currentUser.role) {
+      return Promise.reject(createError('Can not change your own role', 403));
     }
 
     const { using2fa, secret, ...userToSave } = user;
