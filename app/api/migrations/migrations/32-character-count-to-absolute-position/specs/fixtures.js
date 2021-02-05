@@ -114,6 +114,79 @@ export default {
       },
       toc: [],
     },
+    {
+      _id: 'no pdf Info',
+      filename: 'nopdfinfo.pdf',
+      type: 'document',
+      toc: [
+        {
+          range: {
+            start: 1,
+            end: 2,
+          },
+          label: 'nopdfinfo',
+          indentation: 0,
+        },
+      ],
+    },
+    {
+      _id: 'all 0 pdf Info',
+      filename: 'all0pdfinfo.pdf',
+      type: 'document',
+      toc: [
+        {
+          range: {
+            start: 1,
+            end: 2,
+          },
+          label: 'nopdfinfo',
+          indentation: 0,
+        },
+      ],
+      pdfInfo: {
+        1: {
+          chars: 0,
+        },
+        2: {
+          chars: 0,
+        },
+        3: {
+          chars: 0,
+        },
+        4: {
+          chars: 0,
+        },
+      },
+    },
+    {
+      _id: 'outofrangetoc',
+      filename: 'migration32.pdf',
+      type: 'document',
+      pdfInfo: {
+        1: {
+          chars: 207,
+        },
+        2: {
+          chars: 327,
+        },
+        3: {
+          chars: 476,
+        },
+        4: {
+          chars: 582,
+        },
+      },
+      toc: [
+        {
+          range: {
+            start: 99999,
+            end: 99999,
+          },
+          label: 'WRONG',
+          indentation: 0,
+        },
+      ],
+    },
   ],
   connections: [
     {
