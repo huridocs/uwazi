@@ -182,16 +182,18 @@ export default {
 
         if (!isValidPdfInfo(file.pdfInfo)) {
           pdfNotAllowedToBeConverted.push(`${file.filename} wrong pdfinfo`);
-          process.stdout.write(`${fileCount} wrong pdfinfo \r\n`);
         } else {
           try {
+            const lastCharacter = Math.max(
+              ...Object.keys(file.pdfInfo).map(x => file.pdfInfo[x].chars)
+            );
             const fileConvertor = await getCharacterCountToAbsolutePositionConvertor(file);
 
             if (file.toc && file.toc.length !== 0) {
               const wrongToc = await convertTocToAbsolutePosition(fileConvertor, file, db);
               if (wrongToc.length > 0) {
                 wrongConversions.push(`${file.filename} wrong TOC entries: ${wrongToc.length}`);
-                wrongConversions.push(wrongToc.join('|'));
+                wrongConversions.push(`Last character ${lastCharacter} ${wrongToc.join('|')}`);
               }
             }
 
@@ -204,7 +206,7 @@ export default {
               wrongConversions.push(
                 `${file.filename} wrong connections: ${wrongConnection.length}`
               );
-              wrongConversions.push(wrongConnection.join('|'));
+              wrongConversions.push(`Last character ${lastCharacter} ${wrongConnection.join('|')}`);
             }
           } catch (e) {
             await removeRangesFromToc(db, file);
