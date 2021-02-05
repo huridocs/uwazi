@@ -20,6 +20,7 @@ export const attachmentSchema = {
     originalname: { type: 'string' },
     filename: { type: 'string' },
     mimetype: { type: 'string' },
+    url: { type: 'string' },
     timestamp: { type: 'number' },
     size: { type: 'number' },
   },
