@@ -99,7 +99,7 @@ describe('Users', () => {
     });
 
     it.each(['collaborator', 'editor'])(
-      'should throw an unauthorized error if a non admin user try to update another user',
+      'should throw an unauthorized error if a %s user tries to update another user',
       async role => {
         try {
           currentUser = { _id: 'user3', role };
