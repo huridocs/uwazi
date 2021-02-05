@@ -158,7 +158,7 @@ export class SelectMultiplePanel extends Component {
 
   renderEditingButtons() {
     return (
-      <NeedAuthorization roles={['admin', 'editor']}>
+      <NeedAuthorization roles={['admin', 'editor', 'collaborator']}>
         <button
           type="button"
           onClick={this.cancel}
@@ -204,7 +204,7 @@ export class SelectMultiplePanel extends Component {
   renderListButtons() {
     return (
       <>
-        <NeedAuthorization roles={['admin', 'editor']}>
+        <NeedAuthorization roles={['admin', 'editor', 'collaborator']}>
           <button type="button" onClick={this.edit} className="edit btn btn-primary">
             <Icon icon="pencil-alt" />
             <span className="btn-label">{t('System', 'Edit')}</span>

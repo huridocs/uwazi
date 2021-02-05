@@ -1,7 +1,7 @@
 /* eslint-disable camelcase, max-lines */
 
 import { preloadOptionsSearch } from 'shared/config';
-import { getUserInContext } from 'api/permissions/permissionsContext';
+import { permissionsContext } from 'api/permissions/permissionsContext';
 import filterToMatch, { multiselectFilter } from './metadataMatchers';
 import { propertyToAggregation } from './metadataAggregations';
 
@@ -341,7 +341,7 @@ export default function() {
     },
 
     filterByPermissions() {
-      const user = getUserInContext();
+      const user = permissionsContext.getUserInContext();
       if (user && !['admin', 'editor'].includes(user.role)) {
         const permissionTargetIds = user.groups
           ? user.groups.map(group => group._id.toString())

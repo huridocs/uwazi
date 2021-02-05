@@ -7,7 +7,9 @@ import elasticResult from './elasticResult';
 import { fixtures as elasticFixtures, ids, fixturesTimeOut } from './fixtures_elastic';
 
 jest.mock('api/permissions/permissionsContext', () => ({
-  getUserInContext: jest.fn().mockReturnValue({ _id: 'user1', role: 'admin' }),
+  permissionsContext: {
+    getUserInContext: jest.fn().mockReturnValue({ _id: 'user1', role: 'admin' }),
+  },
 }));
 
 describe('search', () => {

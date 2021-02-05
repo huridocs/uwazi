@@ -10,6 +10,7 @@ import relationships from 'api/relationships';
 import { search } from 'api/search';
 import { uploadsPath } from 'api/files/filesystem';
 
+import { permissionsContext } from 'api/permissions/permissionsContext';
 import entities from '../entities.js';
 import fixtures, {
   batmanFinishesId,
@@ -24,16 +25,13 @@ import fixtures, {
   unpublishedDocId,
 } from './fixtures.js';
 
-jest.mock('api/permissions/permissionsContext', () => ({
-  getUserInContext: jest.fn().mockReturnValue({ _id: 'user1', role: 'admin' }),
-}));
-
 describe('entities', () => {
   beforeEach(async () => {
     spyOn(search, 'delete').and.returnValue(Promise.resolve());
     spyOn(search, 'indexEntities').and.returnValue(Promise.resolve());
     spyOn(search, 'bulkIndex').and.returnValue(Promise.resolve());
     spyOn(search, 'bulkDelete').and.returnValue(Promise.resolve());
+    spyOn(permissionsContext, 'getUserInContext').and.returnValue({ _id: 'user1', role: 'admin' });
     await db.clearAllAndLoad(fixtures);
   });
 
@@ -854,6 +852,44 @@ describe('entities', () => {
           }),
         })
       );
+    });
+
+    it('should return error if user does not have write permissions over entities', async () => {
+      permissionsContext.getUserInContext.and.returnValue({
+        _id: 'user1',
+        role: 'collaborator',
+        groups: [],
+      });
+      try {
+        await entities.multipleUpdate(
+          ['shared1', 'other'],
+          {
+            published: false,
+          },
+          { language: 'en' }
+        );
+        fail('Should throw error');
+      } catch (e) {
+        expect(e.message).toContain('permissions');
+      }
+    });
+
+    it('should update entities if user has permissions on them', async () => {
+      permissionsContext.getUserInContext.and.returnValue({
+        _id: 'user2',
+        role: 'collaborator',
+        groups: [{ _id: 'group1' }],
+      });
+
+      const updated = await entities.multipleUpdate(
+        ['shared1', 'other'],
+        {
+          published: false,
+        },
+        { language: 'en' }
+      );
+
+      expect(updated).toContain('permissions');
     });
   });
 

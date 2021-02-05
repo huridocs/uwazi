@@ -5,6 +5,8 @@ import dictionariesModel from 'api/thesauri/dictionariesModel';
 import { createError } from 'api/utils';
 import { filterOptions } from 'shared/optionsUtils';
 import { preloadOptionsLimit, preloadOptionsSearch } from 'shared/config';
+import { permissionsContext } from 'api/permissions/permissionsContext';
+import { checkWritePermissions } from 'shared/permissionsUtils';
 import documentQueryBuilder from './documentQueryBuilder';
 import { elastic } from './elastic';
 import entities from '../entities';
@@ -12,8 +14,6 @@ import entitiesModel from '../entities/entitiesModel';
 import templatesModel from '../templates';
 import { bulkIndex, indexEntities, updateMapping } from './entitiesIndex';
 import thesauri from '../thesauri';
-import { getUserInContext } from 'api/permissions/permissionsContext';
-import { checkWritePermissions } from 'shared/permissionsUtils';
 
 function processFilters(filters, properties) {
   return Object.keys(filters || {}).reduce((res, filterName) => {
@@ -380,7 +380,7 @@ const permissionsInformation = (hit, user) => {
 };
 
 const processResponse = async (response, templates, dictionaries, language, filters) => {
-  const user = getUserInContext();
+  const user = permissionsContext.getUserInContext();
   const rows = response.body.hits.hits.map(hit => {
     const result = hit._source;
     result._explanation = hit._explanation;

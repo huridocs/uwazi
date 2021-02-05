@@ -1,7 +1,7 @@
 import { AccessLevels } from 'shared/types/permissionSchema';
 import documentQueryBuilder from 'api/search/documentQueryBuilder';
-import * as permissionsContext from 'api/permissions/permissionsContext';
 import { UserRole } from 'shared/types/userSchema';
+import { permissionsContext } from 'api/permissions/permissionsContext';
 
 describe('documentQueryBuilder', () => {
   describe('filterByPermissions', () => {

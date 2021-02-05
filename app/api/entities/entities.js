@@ -13,9 +13,12 @@ import { PDF, files } from 'api/files';
 import * as filesystem from 'api/files';
 import dictionariesModel from 'api/thesauri/dictionariesModel';
 import translate, { getContext } from 'shared/translate';
+import { unique } from 'api/utils/filters';
+import { AccessLevels } from 'shared/types/permissionSchema';
+import { permissionsContext } from 'api/permissions/permissionsContext';
+import { validateEntity } from 'shared/types/entitySchema';
 import { deleteFiles, deleteUploadedFiles } from '../files/filesystem';
 import model from './entitiesModel';
-import { validateEntity } from '../../shared/types/entitySchema';
 import settings from '../settings';
 
 /** Repopulate metadata object .label from thesauri and relationships. */
@@ -286,6 +289,26 @@ function updateMetadataWithDiff(metadata, diffMetadata) {
   return newMetadata;
 }
 
+const validateWritePermissions = (ids, entitiesToUpdate) => {
+  const user = permissionsContext.getUserInContext();
+  if (!['admin', 'editor'].includes(user.role)) {
+    const userIds = user.groups.map(g => g._id.toString());
+    userIds.push(user._id.toString());
+
+    const allowedEntitiesToUpdate = entitiesToUpdate.filter(e => {
+      const writeGranted = e.permissions
+        .filter(p => p.level === AccessLevels.WRITE)
+        .map(p => p._id)
+        .filter(id => userIds.includes(id));
+      return writeGranted.length > 0;
+    });
+    const uniqueIdsLength = allowedEntitiesToUpdate.map(e => e.sharedId).filter(unique).length;
+    if (uniqueIdsLength !== ids.length) {
+      throw Error('Have not permissions granted to update the requested entities');
+    }
+  }
+};
+
 export default {
   denormalizeMetadata,
   sanitize,
@@ -437,9 +460,15 @@ export default {
 
   async multipleUpdate(ids, values, params) {
     const { diffMetadata = {}, ...pureValues } = values;
+
+    const entitiesToUpdate = await this.get({ sharedId: { $in: ids } });
+    validateWritePermissions(ids, entitiesToUpdate);
     await Promise.all(
       ids.map(async id => {
-        const entity = await this.getById(id, params.language);
+        const entity = await entitiesToUpdate.find(
+          e => e.sharedId === id && e.language === params.language
+        );
+
         if (entity) {
           await this.save(
             {

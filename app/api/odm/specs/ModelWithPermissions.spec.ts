@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 import { AccessLevels, permissionSchema, PermissionType } from 'shared/types/permissionSchema';
 import { PermissionSchema } from 'shared/types/permissionType';
 import { OdmModel } from 'api/odm/model';
-import * as permissionsContext from 'api/permissions/permissionsContext';
+import { permissionsContext } from 'api/permissions/permissionsContext';
 
 jest.mock('api/odm/model');
 

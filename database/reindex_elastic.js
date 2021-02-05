@@ -1,12 +1,12 @@
 import { config } from 'api/config';
 import { tenants } from 'api/tenants/tenantContext';
 import { DB } from 'api/odm';
-import { setCommandContext } from 'api/permissions/permissionsContext';
+import { permissionsContext } from 'api/permissions/permissionsContext';
 import { IndexError } from 'api/search/entitiesIndex';
+import { search } from 'api/search';
 import request from '../app/shared/JSONRequest';
 import elasticMapping from './elastic_mapping/elastic_mapping';
 
-import { search } from '../app/api/search';
 import templatesModel from '../app/api/templates';
 import elasticMapFactory from './elastic_mapping/elasticMapFactory';
 import errorLog from '../app/api/log/errorLog';
@@ -132,7 +132,7 @@ DB.connect(config.DBHOST, dbAuth).then(async () => {
 
   await tenants.run(async () => {
     try {
-      setCommandContext();
+      permissionsContext.setCommandContext();
       await prepareIndex();
       await tweakSettingsForPerformmance();
       await reindex();

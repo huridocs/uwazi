@@ -37,7 +37,7 @@ export default app => {
 
   app.post(
     '/api/entities/multipleupdate',
-    needsAuthorization(['admin', 'editor']),
+    needsAuthorization(['admin', 'editor', 'collaborator']),
     (req, res, next) =>
       entities
         .multipleUpdate(req.body.ids, req.body.values, { user: req.user, language: req.language })

@@ -1,5 +1,6 @@
 /* eslint-disable max-len */
 import db from 'api/utils/testing_db';
+import { AccessLevels, PermissionType } from 'shared/types/permissionSchema';
 
 const batmanFinishesId = db.id();
 const syncPropertiesEntityId = db.id();
@@ -158,6 +159,10 @@ export default {
           { icon: null, label: 'shouldNotChange1', type: 'entity', value: 'shared1' },
         ],
       },
+      permissions: [
+        { _id: 'user1', level: AccessLevels.READ, type: PermissionType.USER },
+        { _id: 'user2', level: AccessLevels.WRITE, type: PermissionType.USER },
+      ],
     },
     {
       sharedId: 'other',
@@ -181,6 +186,10 @@ export default {
       title: 'EN',
       published: true,
       metadata: { property1: [{ value: 'text' }] },
+      permissions: [
+        { _id: 'user1', level: AccessLevels.WRITE, type: PermissionType.USER },
+        { _id: 'group1', level: AccessLevels.WRITE, type: PermissionType.GROUP },
+      ],
     },
     {
       _id: db.id(),

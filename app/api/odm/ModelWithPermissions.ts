@@ -1,11 +1,11 @@
 import mongoose from 'mongoose';
-import { getUserInContext } from 'api/permissions/permissionsContext';
+import { permissionsContext } from 'api/permissions/permissionsContext';
 import { AccessLevels, PermissionType } from 'shared/types/permissionSchema';
 import { UserSchema } from 'shared/types/userType';
 import { checkWritePermissions } from 'shared/permissionsUtils';
 import { createUpdateLogHelper } from './logHelper';
 import { DataType, OdmModel } from './model';
-import { models, UwaziFilterQuery, WithId } from './models';
+import { models, UwaziFilterQuery } from './models';
 
 export type PermissionsUwaziFilterQuery<T> = UwaziFilterQuery<T> & { published?: boolean };
 export interface DocumentWithPermissions {
@@ -13,7 +13,7 @@ export interface DocumentWithPermissions {
 }
 
 const appendPermissionData = <T>(data: T) => {
-  const user = getUserInContext();
+  const user = permissionsContext.getUserInContext();
   if (user) {
     return {
       ...data,
@@ -43,7 +43,7 @@ const addPermissionsCondition = (user: UserSchema, level: AccessLevels) => {
 };
 
 const appendPermissionQuery = <T>(query: PermissionsUwaziFilterQuery<T>, level: AccessLevels) => {
-  const user = getUserInContext();
+  const user = permissionsContext.getUserInContext();
   let permissionCond;
   if (user) {
     permissionCond = addPermissionsCondition(user, level);
@@ -60,6 +60,7 @@ const filterPermissionsData = (user: UserSchema) => (elem: any) => {
     return elem;
   }
 
+  //only take the element 0
   const writeAccess: boolean = checkWritePermissions(user, elem[0].permissions);
 
   if (!writeAccess) {
@@ -79,7 +80,7 @@ export class ModelWithPermissions<T> extends OdmModel<T> {
 
   get(query: UwaziFilterQuery<T> = {}, select: any = '', options: {} = {}) {
     const results = super.get(appendPermissionQuery(query, AccessLevels.READ), select, options);
-    return results.map(filterPermissionsData(getUserInContext()));
+    return results.map(filterPermissionsData(permissionsContext.getUserInContext()));
   }
 
   getInternal(query: UwaziFilterQuery<T> = {}, select: any = '') {
