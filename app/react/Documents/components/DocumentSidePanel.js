@@ -8,7 +8,7 @@ import React, { Component } from 'react';
 import { MetadataFormButtons, ShowMetadata } from 'app/Metadata';
 import { NeedAuthorization } from 'app/Auth';
 import { t, Translate } from 'app/I18N';
-import { AttachmentsList } from 'app/Attachments';
+import { AttachmentsList, AttachmentsModal } from 'app/Attachments';
 import { FileList } from 'app/Attachments/components/FileList';
 import Connections from 'app/Viewer/components/ConnectionsList';
 import { ConnectionsGroups } from 'app/ConnectionsList';
@@ -29,11 +29,13 @@ export class DocumentSidePanel extends Component {
     super(props);
     this.selectTab = this.selectTab.bind(this);
     this.firstRender = true;
-    this.state = { copyFrom: false, copyFromProps: [] };
+    this.state = { copyFrom: false, copyFromProps: [], isOpen: true };
 
     this.toggleCopyFrom = this.toggleCopyFrom.bind(this);
     this.onCopyFromSelect = this.onCopyFromSelect.bind(this);
     this.deleteDocument = this.deleteDocument.bind(this);
+    this.closeModal = this.closeModal.bind(this);
+    this.openModal = this.openModal.bind(this);
   }
 
   componentDidUpdate(prevProps) {
@@ -88,6 +90,14 @@ export class DocumentSidePanel extends Component {
     this.props.resetForm(this.props.formPath);
     this.props.closePanel();
     this.setState({ copyFrom: false });
+  }
+
+  closeModal() {
+    this.setState({ isOpen: false });
+  }
+
+  openModal() {
+    this.setState({ isOpen: true });
   }
 
   close() {
@@ -289,146 +299,173 @@ export class DocumentSidePanel extends Component {
         : 'metadata-sidepanel';
 
     return (
-      <SidePanel open={this.props.open} className={className}>
-        {this.renderHeader(tab, doc, isEntity)}
-        <ShowIf if={(this.props.tab === 'metadata' || !this.props.tab) && !this.state.copyFrom}>
-          <div className="sidepanel-footer">
-            <MetadataFormButtons
-              delete={this.deleteDocument}
-              data={this.props.doc}
-              formStatePath={this.props.formPath}
-              entityBeingEdited={docBeingEdited}
-              includeViewButton={!docBeingEdited && readOnly}
-              storeKey={this.props.storeKey}
-              copyFrom={this.toggleCopyFrom}
-            />
-          </div>
-        </ShowIf>
-
-        <NeedAuthorization roles={['admin', 'editor']}>
-          <ShowIf if={this.props.tab === 'toc' && this.props.tocBeingEdited}>
+      <>
+        <SidePanel open={this.props.open} className={className}>
+          {this.renderHeader(tab, doc, isEntity)}
+          <ShowIf if={(this.props.tab === 'metadata' || !this.props.tab) && !this.state.copyFrom}>
             <div className="sidepanel-footer">
-              <button type="submit" form="tocForm" className="edit-toc btn btn-success">
-                <Icon icon="save" />
-                <span className="btn-label">Save</span>
-              </button>
-            </div>
-          </ShowIf>
-        </NeedAuthorization>
-
-        <NeedAuthorization roles={['admin', 'editor']}>
-          <ShowIf if={this.props.tab === 'toc' && !this.props.tocBeingEdited && !readOnly}>
-            <div className="sidepanel-footer">
-              <button
-                onClick={() => this.props.editToc(this.props.file.toc || [])}
-                className="edit-toc btn btn-success"
-              >
-                <Icon icon="pencil-alt" />
-                <span className="btn-label">Edit</span>
-              </button>
-            </div>
-          </ShowIf>
-        </NeedAuthorization>
-
-        <div className="sidepanel-body">
-          <Tabs selectedTab={this.props.tab || 'metadata'}>
-            <TabContent for="text-search" className="text-search">
-              <SearchText
-                doc={doc}
+              <MetadataFormButtons
+                delete={this.deleteDocument}
+                data={this.props.doc}
+                formStatePath={this.props.formPath}
+                entityBeingEdited={docBeingEdited}
+                includeViewButton={!docBeingEdited && readOnly}
                 storeKey={this.props.storeKey}
-                searchTerm={this.props.searchTerm}
+                copyFrom={this.toggleCopyFrom}
               />
-            </TabContent>
-            <TabContent for="toc" className="toc">
-              <ShowIf if={!this.props.tocBeingEdited}>
-                <ShowToc
-                  toc={defaultDocumentToC}
-                  pdfInfo={this.props.file.pdfInfo}
-                  readOnly={readOnly}
+            </div>
+          </ShowIf>
+
+          <NeedAuthorization roles={['admin', 'editor']}>
+            <ShowIf if={this.props.tab === 'toc' && this.props.tocBeingEdited}>
+              <div className="sidepanel-footer">
+                <button type="submit" form="tocForm" className="edit-toc btn btn-success">
+                  <Icon icon="save" />
+                  <span className="btn-label">Save</span>
+                </button>
+              </div>
+            </ShowIf>
+          </NeedAuthorization>
+
+          <NeedAuthorization roles={['admin', 'editor']}>
+            <ShowIf if={this.props.tab === 'toc' && !this.props.tocBeingEdited && !readOnly}>
+              <div className="sidepanel-footer">
+                <button
+                  onClick={() => this.props.editToc(this.props.file.toc || [])}
+                  className="edit-toc btn btn-success"
+                >
+                  <Icon icon="pencil-alt" />
+                  <span className="btn-label">Edit</span>
+                </button>
+              </div>
+            </ShowIf>
+          </NeedAuthorization>
+
+          <div className="sidepanel-body">
+            <Tabs selectedTab={this.props.tab || 'metadata'}>
+              <TabContent for="text-search" className="text-search">
+                <SearchText
+                  doc={doc}
+                  storeKey={this.props.storeKey}
+                  searchTerm={this.props.searchTerm}
                 />
-              </ShowIf>
-              <ShowIf if={this.props.tocBeingEdited}>
-                <TocForm
-                  removeEntry={this.props.removeFromToc}
-                  indent={this.props.indentTocElement}
-                  onSubmit={this.props.saveToc}
-                  model="documentViewer.tocForm"
-                  state={this.props.tocFormState}
-                  toc={this.props.tocForm}
-                  file={this.props.file}
-                />
-              </ShowIf>
-            </TabContent>
-            <TabContent for="metadata" className="metadata">
-              {(() => {
-                if (docBeingEdited && this.state.copyFrom) {
-                  return (
-                    <>
+              </TabContent>
+              <TabContent for="toc" className="toc">
+                <ShowIf if={!this.props.tocBeingEdited}>
+                  <ShowToc
+                    toc={defaultDocumentToC}
+                    pdfInfo={this.props.file.pdfInfo}
+                    readOnly={readOnly}
+                  />
+                </ShowIf>
+                <ShowIf if={this.props.tocBeingEdited}>
+                  <TocForm
+                    removeEntry={this.props.removeFromToc}
+                    indent={this.props.indentTocElement}
+                    onSubmit={this.props.saveToc}
+                    model="documentViewer.tocForm"
+                    state={this.props.tocFormState}
+                    toc={this.props.tocForm}
+                    file={this.props.file}
+                  />
+                </ShowIf>
+              </TabContent>
+              <TabContent for="metadata" className="metadata">
+                {(() => {
+                  if (docBeingEdited && this.state.copyFrom) {
+                    return (
+                      <>
+                        <EntityForm
+                          storeKey={this.props.storeKey}
+                          initialTemplateId={this.initialTemplateId}
+                          highlightedProps={this.state.copyFromProps}
+                        />
+                        <CopyFromEntity
+                          originalEntity={this.props.formData}
+                          templates={this.props.templates}
+                          onSelect={this.onCopyFromSelect}
+                          formModel={this.props.formPath}
+                          onCancel={this.toggleCopyFrom}
+                        />
+                      </>
+                    );
+                  }
+                  if (docBeingEdited) {
+                    return (
                       <EntityForm
                         storeKey={this.props.storeKey}
                         initialTemplateId={this.initialTemplateId}
-                        highlightedProps={this.state.copyFromProps}
                       />
-                      <CopyFromEntity
-                        originalEntity={this.props.formData}
-                        templates={this.props.templates}
-                        onSelect={this.onCopyFromSelect}
-                        formModel={this.props.formPath}
-                        onCancel={this.toggleCopyFrom}
-                      />
-                    </>
-                  );
-                }
-                if (docBeingEdited) {
+                    );
+                  }
                   return (
-                    <EntityForm
-                      storeKey={this.props.storeKey}
-                      initialTemplateId={this.initialTemplateId}
-                    />
+                    <div>
+                      <ShowMetadata
+                        relationships={relationships}
+                        entity={this.props.doc.toJS()}
+                        showTitle
+                        showType
+                        groupGeolocations
+                      />
+                      <FileList
+                        files={documents}
+                        storeKey={this.props.storeKey}
+                        entity={doc.toJS()}
+                      />
+                      <AttachmentsList
+                        attachments={attachments}
+                        isTargetDoc={isTargetDoc}
+                        isDocumentAttachments={Boolean(doc.get('file'))}
+                        parentId={doc.get('_id')}
+                        parentSharedId={doc.get('sharedId')}
+                        storeKey={this.props.storeKey}
+                      />
+
+                      <div
+                        style={{
+                          display: 'flex',
+                          alignItems: 'flex-start',
+                          justifyContent: 'space-between',
+                          paddingRight: '15px',
+                          paddingTop: '8px',
+                          borderTop: '1px solid #f2f2f4',
+                          marginBottom: '64px',
+                        }}
+                      >
+                        <h2 style={{ margin: 0 }}>{t('System', 'Supporting Files')}</h2>
+                        <NeedAuthorization roles={['admin', 'editor']}>
+                          <button
+                            type="button"
+                            onClick={this.openModal}
+                            className="upload-button btn btn-success attachments-modal-trigger"
+                          >
+                            <Icon icon="plus" />
+                            &nbsp; Add supporting file
+                          </button>
+                        </NeedAuthorization>
+                      </div>
+                    </div>
                   );
-                }
-                return (
-                  <div>
-                    <ShowMetadata
-                      relationships={relationships}
-                      entity={this.props.doc.toJS()}
-                      showTitle
-                      showType
-                      groupGeolocations
-                    />
-                    <FileList
-                      files={documents}
-                      storeKey={this.props.storeKey}
-                      entity={doc.toJS()}
-                    />
-                    <AttachmentsList
-                      attachments={attachments}
-                      isTargetDoc={isTargetDoc}
-                      isDocumentAttachments={Boolean(doc.get('file'))}
-                      parentId={doc.get('_id')}
-                      parentSharedId={doc.get('sharedId')}
-                      storeKey={this.props.storeKey}
-                    />
-                  </div>
-                );
-              })()}
-            </TabContent>
-            <TabContent for="references" className="references">
-              <Connections
-                referencesSection="references"
-                references={references}
-                readOnly={readOnly}
-              />
-            </TabContent>
-            <TabContent for="connections">
-              <ConnectionsGroups />
-            </TabContent>
-            <TabContent for="semantic-search-results">
-              <DocumentSemanticSearchResults doc={this.props.doc.toJS()} />
-            </TabContent>
-          </Tabs>
-        </div>
-      </SidePanel>
+                })()}
+              </TabContent>
+              <TabContent for="references" className="references">
+                <Connections
+                  referencesSection="references"
+                  references={references}
+                  readOnly={readOnly}
+                />
+              </TabContent>
+              <TabContent for="connections" className="connections">
+                <ConnectionsGroups />
+              </TabContent>
+              <TabContent for="semantic-search-results">
+                <DocumentSemanticSearchResults doc={this.props.doc.toJS()} />
+              </TabContent>
+            </Tabs>
+          </div>
+        </SidePanel>
+        <AttachmentsModal isOpen={this.state.isOpen} onClose={this.closeModal} />
+      </>
     );
   }
 }
