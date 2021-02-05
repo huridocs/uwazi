@@ -111,6 +111,12 @@ export class PdfCharacterCountToAbsolute {
       }
     });
 
+    sanitizedContentString = sanitizedContentString.replace(/<i>/g, '');
+    sanitizedContentString = sanitizedContentString.replace(/<\/i>/g, '');
+
+    sanitizedContentString = sanitizedContentString.replace(/<b>/g, '');
+    sanitizedContentString = sanitizedContentString.replace(/<\/b>/g, '');
+
     const errorLineNumber = parseInt(errorMessage.split('Line: ')[1].split('Column')[0], 10);
     const problematicLine1 = xmlContentString.split('\n')[errorLineNumber - 1];
     const problematicLine2 = xmlContentString.split('\n')[errorLineNumber];
