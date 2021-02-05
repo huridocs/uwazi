@@ -98,20 +98,23 @@ describe('Users', () => {
       expect(groups.length).toBe(0);
     });
 
-    it('should throw an unauthorized error if a collaborator try to update another user', async () => {
-      try {
-        currentUser = { _id: 'user3', role: 'collaborator' };
-        const userToUpdate = {
-          _id: userId,
-          username: 'otherName',
-        };
-        await users.save(userToUpdate, currentUser);
-        fail('Should throw error');
-      } catch (e) {
-        expect(e.code).toBe(403);
-        expect(e.message).toEqual('Unauthorized');
+    it.each(['collaborator', 'editor'])(
+      'should throw an unauthorized error if a non admin user try to update another user',
+      async role => {
+        try {
+          currentUser = { _id: 'user3', role };
+          const userToUpdate = {
+            _id: userId,
+            username: 'otherName',
+          };
+          await users.save(userToUpdate, currentUser);
+          fail('Should throw error');
+        } catch (e) {
+          expect(e.code).toBe(403);
+          expect(e.message).toEqual('Unauthorized');
+        }
       }
-    });
+    );
 
     describe('when you try to change role', () => {
       it('should be an admin', done => {
