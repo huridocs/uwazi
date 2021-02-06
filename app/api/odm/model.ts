@@ -28,7 +28,7 @@ export class OdmModel<T> {
         new: true,
       });
       if (saved === null) {
-        throw Error('No document was updated!');
+        throw Error('The document was not updated!');
       }
       await this.logHelper.upsertLogOne(saved);
       return saved.toObject() as WithId<T>;

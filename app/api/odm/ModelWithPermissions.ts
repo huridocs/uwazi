@@ -26,7 +26,7 @@ const appendPermissionData = <T>(data: T) => {
       ],
     };
   }
-  return <T>{};
+  throw Error('Unauthorized');
 };
 
 const addPermissionsCondition = (user: UserSchema, level: AccessLevels) => {
@@ -36,7 +36,10 @@ const addPermissionsCondition = (user: UserSchema, level: AccessLevels) => {
   if (!['admin', 'editor'].includes(user.role)) {
     const levelCond = level === AccessLevels.WRITE ? { level: AccessLevels.WRITE } : {};
     permissionCond = {
-      permissions: { $elemMatch: { _id: { $in: targetIds }, ...levelCond } },
+      $or: [
+        { permissions: { $elemMatch: { _id: { $in: targetIds }, ...levelCond } } },
+        { published: true },
+      ],
     };
   }
   return permissionCond;
