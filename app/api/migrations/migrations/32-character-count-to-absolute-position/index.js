@@ -175,47 +175,48 @@ export default {
     while (await cursor.hasNext()) {
       const file = await cursor.next();
       fileCount += 1;
-      if (await existsRangesToConvert(db, file)) {
-        process.stdout.write(
-          `${fileCount} converting to absolute position file ${file.filename}\r\n`
-        );
+      try {
+        if (await existsRangesToConvert(db, file)) {
+          process.stdout.write(
+            `${fileCount} converting to absolute position file ${file.filename}\r\n`
+          );
 
-        if (!isValidPdfInfo(file.pdfInfo)) {
-          pdfNotAllowedToBeConverted.push(`${file.filename} wrong pdfinfo`);
-        } else {
-          try {
-            const lastCharacter = Math.max(
-              ...Object.keys(file.pdfInfo).map(x => file.pdfInfo[x].chars)
-            );
-            const fileConvertor = await getCharacterCountToAbsolutePositionConvertor(file);
-
-            if (file.toc && file.toc.length !== 0) {
-              const wrongToc = await convertTocToAbsolutePosition(fileConvertor, file, db);
-              if (wrongToc.length > 0) {
-                wrongConversions.push(`${file.filename} wrong TOC entries: ${wrongToc.length}`);
-                wrongConversions.push(`Last character ${lastCharacter} ${wrongToc.join('|')}`);
-              }
+          if (!isValidPdfInfo(file.pdfInfo)) {
+            wrongConversions.push(`Warning: ${file.filename} wrong pdfinfo`);
+            if (!file.pdfInfo) {
+              file.pdfInfo = { 1: { chars: 0 } };
             }
+          }
 
-            const wrongConnection = await convertConnectionsToAbsolutePosition(
-              fileConvertor,
-              file,
-              db
-            );
-            if (wrongConnection.length > 0) {
-              wrongConversions.push(
-                `${file.filename} wrong connections: ${wrongConnection.length}`
-              );
-              wrongConversions.push(`Last character ${lastCharacter} ${wrongConnection.join('|')}`);
+          const lastCharacter = Math.max(
+            ...Object.keys(file.pdfInfo).map(x => file.pdfInfo[x].chars)
+          );
+          const fileConvertor = await getCharacterCountToAbsolutePositionConvertor(file);
+
+          if (file.toc && file.toc.length !== 0) {
+            const wrongToc = await convertTocToAbsolutePosition(fileConvertor, file, db);
+            if (wrongToc.length > 0) {
+              wrongConversions.push(`${file.filename} wrong TOC entries: ${wrongToc.length}`);
+              wrongConversions.push(`Last character ${lastCharacter} ${wrongToc.join('|')}`);
             }
-          } catch (e) {
-            await removeRangesFromToc(db, file);
-            await removeRangesFromConnections(db, file);
-            process.stderr.write(e.stack);
-            process.stdout.write(`${fileCount} PDF not converted ${file.filename}\r\n`);
-            pdfNotAllowedToBeConverted.push(file.filename);
+          }
+
+          const wrongConnection = await convertConnectionsToAbsolutePosition(
+            fileConvertor,
+            file,
+            db
+          );
+          if (wrongConnection.length > 0) {
+            wrongConversions.push(`${file.filename} wrong connections: ${wrongConnection.length}`);
+            wrongConversions.push(`Last character ${lastCharacter} ${wrongConnection.join('|')}`);
           }
         }
+      } catch (e) {
+        await removeRangesFromToc(db, file);
+        await removeRangesFromConnections(db, file);
+        process.stderr.write(`${e.stack}\r\n`);
+        process.stderr.write(`${fileCount} PDF not converted ${file.filename}\r\n`);
+        pdfNotAllowedToBeConverted.push(file.filename);
       }
     }
 
