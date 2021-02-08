@@ -1,16 +1,101 @@
 .attachments-modal {
-    &-header {
-        padding: 4px 0 24px 0;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
+  &-header {
+    padding: 4px 0 24px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 
-        h4 {
-            margin: 0;
+    h4 {
+      margin: 0;
+    }
+  }
+
+  &-close {
+    display: flex;
+    align-items: center;
+    padding: 5px 8px 4px 8px;
+    border: 1px solid #555555;
+    border-radius: 2px;
+    background: #ffffff;
+
+    svg {
+      margin-right: 4px;
+    }
+
+    span {
+      line-height: 1;
+    }
+  }
+
+  &-trigger {
+    border-radius: 2px;
+  }
+
+  &-content {
+    flex: 1;
+
+    > div {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+  }
+
+  &-tabs {
+    display: flex;
+    padding: 0;
+    width: 100%;
+    border-bottom: 1px solid #ddd;
+
+    .tab-link {
+      display: inline-block;
+      margin: 0 0 -1px;
+      padding: 8px 16px;
+      border: 1px solid transparent;
+      cursor: pointer;
+
+      &-active {
+        border: 1px solid #dddddd;
+        border-bottom-color: #ffffff;
+      }
+    }
+
+    &-content {
+      flex: 1;
+
+      .tab-content {
+        padding: 24px 0;
+        height: 100%;
+
+        &.centered {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-direction: column;
         }
-    }
 
-    &-trigger {
-        border-radius: 2px;
+        .wrapper-web {
+          width: 100%;
+          max-width: 350px;
+
+          input,
+          .form-group {
+            margin-bottom: 4px;
+          }
+
+          .btn {
+            width: 100%;
+          }
+
+          .has-feedback .feedback-icon {
+            position: absolute;
+            top: 7px;
+            right: 7px;
+            width: 17px;
+            color: #2c56c0;
+          }
+        }
+      }
     }
+  }
 }
