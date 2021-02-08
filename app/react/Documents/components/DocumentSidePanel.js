@@ -464,7 +464,12 @@ export class DocumentSidePanel extends Component {
             </Tabs>
           </div>
         </SidePanel>
-        <AttachmentsModal isOpen={this.state.isOpen} onClose={this.closeModal} />
+        <AttachmentsModal
+          isOpen={this.state.isOpen}
+          onClose={this.closeModal}
+          entity={doc.get('_id')}
+          storeKey={this.props.storeKey}
+        />
       </>
     );
   }

@@ -1,17 +1,45 @@
-import React from 'react';
+import React, { useRef } from 'react';
+import { connect } from 'react-redux';
 import ReactModal from 'react-modal';
 import { Tabs, TabLink, TabContent } from 'react-tabs-redux';
+import { Translate } from 'app/I18N';
 
 import { NeedAuthorization } from 'app/Auth';
 import { Icon } from 'app/UI';
 
+import { uploadAttachment } from '../actions/actions';
+
 interface AttachmentsModalProps {
   isOpen: boolean;
+  entity: string;
+  storeKey: string;
   onClose(): void;
+  uploadAttachment: (entity: any, file: any, __reducerKey: any, options?: {}) => void;
 }
 
 // eslint-disable-next-line react/prop-types
-const AttachmentsModal: React.FC<AttachmentsModalProps> = ({ isOpen, onClose }) => {
+const AttachmentsModal: React.FC<AttachmentsModalProps> = ({
+  isOpen,
+  entity,
+  storeKey,
+  onClose,
+  uploadAttachment,
+}) => {
+  const inputFileRef = useRef<HTMLInputElement | null>(null);
+
+  const handleUploadButtonClicked = () => {
+    if (inputFileRef.current) {
+      inputFileRef.current.click();
+    }
+  };
+
+  const handleInputFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files) {
+      const file = event.target.files[0];
+      uploadAttachment(entity, file, storeKey);
+    }
+  };
+
   return (
     <NeedAuthorization roles={['admin', 'editor']}>
       <ReactModal
@@ -20,7 +48,9 @@ const AttachmentsModal: React.FC<AttachmentsModalProps> = ({ isOpen, onClose }) 
         overlayClassName="attachments-modal-overlay"
       >
         <div className="attachments-modal-header">
-          <h4>Supporting files</h4>
+          <h4>
+            <Translate>Supporting files</Translate>
+          </h4>
 
           <button type="button" onClick={onClose} className="attachments-modal-close">
             <Icon icon="times" />
@@ -30,22 +60,31 @@ const AttachmentsModal: React.FC<AttachmentsModalProps> = ({ isOpen, onClose }) 
         <div className="attachments-modal-content">
           <Tabs renderActiveTabContentOnly>
             <div className="attachments-modal-tabs">
-              <TabLink to="uploadComputer">Upload from computer</TabLink>
-              <TabLink to="uploadWeb">Add from web</TabLink>
+              <TabLink to="uploadComputer">
+                <Translate>Upload from computer</Translate>
+              </TabLink>
+              <TabLink to="uploadWeb">
+                <Translate>Add from web</Translate>
+              </TabLink>
             </div>
 
             <div className="attachments-modal-tabs-content">
               <TabContent for="uploadComputer" className="tab-content centered">
                 <button
                   type="button"
-                  onClick={() => {}}
+                  onClick={handleUploadButtonClicked}
                   className="btn btn-success attachments-modal-file-triggger"
                 >
                   <Icon icon="link" />
-                  &nbsp; Upload and select file
+                  &nbsp; <Translate>Upload and select file</Translate>
                 </button>
-
-                <span>Drag and drop file in this window to upload </span>
+                <input
+                  type="file"
+                  onChange={handleInputFileChange}
+                  style={{ display: 'none' }}
+                  ref={inputFileRef}
+                />
+                <Translate>Drag and drop file in this window to upload </Translate>
               </TabContent>
               <TabContent for="uploadWeb" className="tab-content centered">
                 <div className="wrapper-web">
@@ -68,7 +107,7 @@ const AttachmentsModal: React.FC<AttachmentsModalProps> = ({ isOpen, onClose }) 
                     className="btn btn-success attachments-modal-file-triggger"
                   >
                     <Icon icon="link" />
-                    &nbsp; Add resource
+                    &nbsp; <Translate>Add resource</Translate>
                   </button>
                 </div>
               </TabContent>
@@ -80,4 +119,8 @@ const AttachmentsModal: React.FC<AttachmentsModalProps> = ({ isOpen, onClose }) 
   );
 };
 
-export default AttachmentsModal;
+const mapDispatchToProps = {
+  uploadAttachment,
+};
+
+export default connect(null, mapDispatchToProps)(AttachmentsModal);
