@@ -48,6 +48,21 @@ export default (app: Application) => {
     }
   );
 
+  app.post(
+    '/api/files/upload/attachment',
+    needsAuthorization(['admin', 'editor']),
+    uploadMiddleware(uploadsPath),
+    activitylogMiddleware,
+    (req, res, next) => {
+      files
+        .save({ ...req.file, ...req.body, type: 'attachment' })
+        .then(saved => {
+          res.json(saved);
+        })
+        .catch(next);
+    }
+  );
+
   app.post('/api/files', needsAuthorization(['admin', 'editor']), (req, res, next) => {
     files
       .save(req.body)

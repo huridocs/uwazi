@@ -386,12 +386,13 @@ export default {
 
     const setDocs = Promise.all(
       entities.map(async entity => {
-        const documents = await files.get(
-          { entity: entity.sharedId, type: 'document' },
+        const entityFiles = await files.get(
+          { entity: entity.sharedId },
           (documentsFullText ? '+fullText ' : ' ') + (withPdfInfo ? '+pdfInfo' : '')
         );
 
-        entity.documents = documents;
+        entity.documents = entityFiles.filter(f => (f.type = 'document'));
+        entity.attachments = entityFiles.filter(f => (f.type = 'attachment'));
         return entity;
       })
     );
