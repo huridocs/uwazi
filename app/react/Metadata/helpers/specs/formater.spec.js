@@ -257,6 +257,7 @@ describe('metadata formater', () => {
     let text;
     let markdown;
     let creationDate;
+    let editDate;
     let image;
     let preview;
     let media;
@@ -339,6 +340,8 @@ describe('metadata formater', () => {
 
     describe('when sort property passed', () => {
       let date;
+      const prepareMetadata = dateString =>
+        formater.prepareMetadataForCard(doc, templates, thesauris, dateString).metadata;
       it('should process also the sorted property even if its not a "showInCard"', () => {
         data = formater.prepareMetadataForCard(doc, templates, thesauris, 'metadata.date');
         [text, date, markdown] = data.metadata;
@@ -367,8 +370,16 @@ describe('metadata formater', () => {
 
       describe('when sort property is creationDate', () => {
         it('should add it as a value to show', () => {
-          data = formater.prepareMetadataForCard(doc, templates, thesauris, 'creationDate');
-          [text, markdown, image, preview, media, geolocation, link, creationDate] = data.metadata;
+          [
+            text,
+            markdown,
+            image,
+            preview,
+            media,
+            geolocation,
+            link,
+            creationDate,
+          ] = prepareMetadata('creationDate');
           expect(text.sortedBy).toBe(false);
           expect(markdown.sortedBy).toBe(false);
           assessBasicProperties(creationDate, [
@@ -378,6 +389,18 @@ describe('metadata formater', () => {
             'Jan 1, 1970',
           ]);
           expect(creationDate.sortedBy).toBe(true);
+        });
+      });
+
+      describe('when sort property is editDate', () => {
+        it('should add it as a value to show', () => {
+          [text, markdown, image, preview, media, geolocation, link, editDate] = prepareMetadata(
+            'editDate'
+          );
+          expect(text.sortedBy).toBe(false);
+          expect(markdown.sortedBy).toBe(false);
+          assessBasicProperties(editDate, ['Date modified', 'editDate', 'System', 'Jan 1, 1970']);
+          expect(editDate.sortedBy).toBe(true);
         });
       });
 

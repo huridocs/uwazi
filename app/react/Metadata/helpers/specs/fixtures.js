@@ -7,6 +7,7 @@ export const doc = {
   template: 'templateID',
   title: 'Rude awakening',
   creationDate: 0,
+  editDate: 0,
   file: {
     filename: 'filename.pdf',
   },
