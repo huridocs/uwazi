@@ -2,15 +2,16 @@ import mongoose from 'mongoose';
 import { permissionsContext } from 'api/permissions/permissionsContext';
 import { AccessLevels, PermissionType } from 'shared/types/permissionSchema';
 import { UserSchema } from 'shared/types/userType';
-import { checkWritePermissions } from 'shared/permissionsUtils';
+import { PermissionSchema } from 'shared/types/permissionType';
+import { ObjectIdSchema } from 'shared/types/commonTypes';
 import { createUpdateLogHelper } from './logHelper';
 import { DataType, OdmModel } from './model';
 import { models, UwaziFilterQuery } from './models';
 
-export type PermissionsUwaziFilterQuery<T> = UwaziFilterQuery<T> & { published?: boolean };
-export interface DocumentWithPermissions {
-  permissions: PermissionType[];
-}
+export type PermissionsUwaziFilterQuery<T> = UwaziFilterQuery<T> & {
+  published?: boolean;
+  permissions?: PermissionSchema[];
+};
 
 const appendPermissionData = <T>(data: T) => {
   const user = permissionsContext.getUserInContext();
@@ -29,15 +30,20 @@ const appendPermissionData = <T>(data: T) => {
   throw Error('Unauthorized');
 };
 
+export const getUserPermissionIds = (user: UserSchema) => {
+  const userIds = user.groups ? user.groups.map(group => group._id.toString()) : [];
+  userIds.push(user._id!.toString());
+  return userIds;
+};
+
 const addPermissionsCondition = (user: UserSchema, level: AccessLevels) => {
-  let permissionCond;
-  const targetIds = user.groups ? user.groups.map(group => group._id.toString()) : [];
-  targetIds.push(user._id!.toString());
+  let permissionCond = {};
   if (!['admin', 'editor'].includes(user.role)) {
+    const userIds = getUserPermissionIds(permissionsContext.getUserInContext());
     const levelCond = level === AccessLevels.WRITE ? { level: AccessLevels.WRITE } : {};
     permissionCond = {
       $or: [
-        { permissions: { $elemMatch: { _id: { $in: targetIds }, ...levelCond } } },
+        { permissions: { $elemMatch: { _id: { $in: userIds }, ...levelCond } } },
         { published: true },
       ],
     };
@@ -58,20 +64,51 @@ const appendPermissionQuery = <T>(query: PermissionsUwaziFilterQuery<T>, level: 
   return { ...query, ...permissionCond };
 };
 
-const filterPermissionsData = (user: UserSchema) => (elem: any) => {
-  if (elem === null || !elem.length) {
-    return elem;
+function checkPermissionAccess<T>(
+  elem: T & { permissions?: PermissionSchema[] },
+  userIds: ObjectIdSchema[],
+  level: AccessLevels = AccessLevels.WRITE
+) {
+  const hasAccessLevel = (p: PermissionSchema) =>
+    level === AccessLevels.WRITE
+      ? p.level === AccessLevels.WRITE && userIds.includes(p._id)
+      : userIds.includes(p._id);
+
+  const hasAccess = elem.permissions && elem.permissions.find(p => hasAccessLevel(p)) !== undefined;
+  if (!hasAccess) {
+    return { ...elem, permissions: undefined };
   }
-
-  //only take the element 0
-  const writeAccess: boolean = checkWritePermissions(user, elem[0].permissions);
-
-  if (!writeAccess) {
-    // eslint-disable-next-line no-param-reassign
-    delete elem[0].permissions;
-  }
-
   return elem;
+}
+
+const filterPermissionsData = (data: any) => {
+  const user = permissionsContext.getUserInContext();
+  let filteredData = data;
+  if (user && !['admin', 'editor'].includes(user.role)) {
+    if (Array.isArray(data) && data.length > 0) {
+      const userIds = getUserPermissionIds(user);
+      filteredData = data.map(elem => checkPermissionAccess(elem, userIds));
+    }
+  }
+  return filteredData;
+};
+
+const controlPermissionsData = <T>(data: T & { published?: boolean }) => {
+  const user = permissionsContext.getUserInContext();
+  let controlledData = null;
+  if (user) {
+    if (['admin', 'editor'].includes(user.role)) {
+      controlledData = data;
+    } else {
+      const doc = checkPermissionAccess(data, getUserPermissionIds(user), AccessLevels.READ);
+      if (doc.permissions) {
+        controlledData = { ...data, permissions: undefined };
+      }
+    }
+  } else if (data.published) {
+    controlledData = { ...data, permissions: undefined };
+  }
+  return controlledData;
 };
 
 export class ModelWithPermissions<T> extends OdmModel<T> {
@@ -83,11 +120,16 @@ export class ModelWithPermissions<T> extends OdmModel<T> {
 
   get(query: UwaziFilterQuery<T> = {}, select: any = '', options: {} = {}) {
     const results = super.get(appendPermissionQuery(query, AccessLevels.READ), select, options);
-    return results.map(filterPermissionsData(permissionsContext.getUserInContext()));
+    return results.map(filterPermissionsData);
   }
 
-  getInternal(query: UwaziFilterQuery<T> = {}, select: any = '') {
-    return super.get(query, select, {});
+  getInternal(query: UwaziFilterQuery<T> = {}, select: any = '', options: {} = {}) {
+    return super.get(query, select, options);
+  }
+
+  async getById(id: any, select?: any) {
+    const doc = await this.db.findById(id, select ? `${select}, +permissions` : select);
+    return doc ? controlPermissionsData(doc) : null;
   }
 
   async delete(condition: any) {

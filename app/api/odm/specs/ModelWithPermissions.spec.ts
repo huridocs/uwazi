@@ -24,6 +24,7 @@ describe('ModelWithPermissions', () => {
   const writeDocId = testingDB.id();
   const deleteDocId = testingDB.id();
   const otherOwnerId = testingDB.id();
+  const public1Id = testingDB.id();
   const testdocs = [
     {
       _id: readDocId,
@@ -37,7 +38,7 @@ describe('ModelWithPermissions', () => {
       permissions: [{ _id: 'user1', type: PermissionType.USER, level: AccessLevels.WRITE }],
     },
     {
-      _id: testingDB.id(),
+      _id: public1Id,
       name: 'public 1',
       published: true,
     },
@@ -68,16 +69,6 @@ describe('ModelWithPermissions', () => {
     },
   ];
   beforeAll(async () => {
-    jest.spyOn(permissionsContext, 'getUserInContext').mockReturnValue({
-      _id: 'user1',
-      username: 'User 1',
-      email: 'user@test.test',
-      role: 'collaborator',
-      groups: [
-        { _id: 'group1', name: 'Group 1' },
-        { _id: 'group2', name: 'Group 2' },
-      ],
-    });
     connection = await testingDB.connect();
     model = instanceModel<TestDoc>('docs', testSchema);
     await connection.collection('docs').insertMany(testdocs);
@@ -89,17 +80,61 @@ describe('ModelWithPermissions', () => {
 
   describe('logged user', () => {
     describe('collaborator user', () => {
+      beforeAll(async () => {
+        jest.spyOn(permissionsContext, 'getUserInContext').mockReturnValue({
+          _id: 'user1',
+          username: 'User 1',
+          email: 'user@test.test',
+          role: 'collaborator',
+          groups: [
+            { _id: 'group1', name: 'Group 1' },
+            { _id: 'group2', name: 'Group 2' },
+          ],
+        });
+      });
+
       describe('get', () => {
-        it('should return entities shared with the user or his groups and public entities', async () => {
-          const results: TestDoc[] = await model.get({}, 'name', {});
+        let results: TestDoc[];
+        beforeEach(async () => {
+          results = await model.get({}, null, {});
+          results = results.sort((a, b) => a.name!.localeCompare(b.name!));
+        });
+        it('should return entities shared with the user or his groups and public entities', () => {
           expect(results.length).toBe(6);
-          const names = results.map(r => r.name!).sort((a, b) => a.localeCompare(b));
-          expect(names[0]).toBe('docToDelete');
-          expect(names[1]).toBe('public 1');
-          expect(names[2]).toBe('public 2');
-          expect(names[3]).toBe('readDoc');
-          expect(names[4]).toBe('shared with group');
-          expect(names[5]).toBe('writeDoc');
+
+          expect(results[0].name).toBe('docToDelete');
+          expect(results[1].name).toBe('public 1');
+          expect(results[2].name).toBe('public 2');
+          expect(results[3].name).toBe('readDoc');
+          expect(results[4].name).toBe('shared with group');
+          expect(results[5].name).toBe('writeDoc');
+        });
+
+        it('should exclude the permissions property from the non write allowed documents', () => {
+          expect(results[0].permissions.length).toBe(1);
+          expect(results[1].permissions).toBeUndefined();
+          expect(results[2].permissions).toBeUndefined();
+          expect(results[3].permissions).toBeUndefined();
+          expect(results[4].permissions).toBeUndefined();
+          expect(results[5].permissions.length).toBe(1);
+        });
+      });
+
+      describe('getById', () => {
+        it('should return a read only entity without permissions', async () => {
+          const doc = await model.getById(readDocId, '+name');
+          expect(doc.name).toBe('readDoc');
+          expect(doc.permissions).toBeUndefined();
+        });
+
+        it('should not return a no shared entity', async () => {
+          const doc = await model.getById(otherOwnerId, '+name');
+          expect(doc).toBeNull();
+        });
+
+        it('should return null if there is no entity', async () => {
+          const doc = await model.getById(testingDB.id());
+          expect(doc).toBeNull();
         });
       });
 
@@ -139,6 +174,42 @@ describe('ModelWithPermissions', () => {
           expect(result.deletedCount).toBe(0);
         });
       });
+
+      describe('getInternal', () => {
+        it('should return the matched documents no matter their permissions', async () => {
+          const results = await model.getInternal();
+          expect(results.length).toBe(8);
+          expect(results[0].permissions.length).toBe(1);
+        });
+      });
+    });
+
+    describe('admin & editor roles', () => {
+      beforeAll(async () => {
+        jest.spyOn(permissionsContext, 'getUserInContext').mockReturnValue({
+          _id: 'admin1',
+          username: 'Admin 1',
+          email: 'admin@test.test',
+          role: 'admin',
+          groups: [{ _id: 'group2', name: 'Group 2' }],
+        });
+      });
+
+      describe('get', () => {
+        it('should return all matched documents with their permissions', async () => {
+          const results = await model.get({}, null, {});
+          expect(results.length).toBe(8);
+          expect(results[0].permissions.length).toBe(1);
+        });
+      });
+
+      describe('getById', () => {
+        it('should return an entity with its permissions', async () => {
+          const doc = await model.getById(otherOwnerId, '+name');
+          expect(doc.name).toEqual('no shared with user');
+          expect(doc.permissions.length).toBe(1);
+        });
+      });
     });
   });
 
@@ -174,6 +245,17 @@ describe('ModelWithPermissions', () => {
         expect(results.length).toBe(2);
         expect(results[0].name).toEqual('public 1');
         expect(results[1].name).toEqual('public 2');
+      });
+
+      it('should return a public entity without permissions property', async () => {
+        const doc = await model.getById(public1Id, '+name');
+        expect(doc.name).toEqual('public 1');
+        expect(doc.permissionsContext).toBeUndefined();
+      });
+
+      it('should not return a non public entity', async () => {
+        const doc = await model.getById(readDocId, '+name');
+        expect(doc).toBeNull();
       });
     });
   });
