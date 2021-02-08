@@ -110,7 +110,7 @@ export class SettingsNavigation extends Component {
             </NeedAuthorization>
             <a
               className="list-group-item"
-              href="http://uwazi.readthedocs.io/en/latest/"
+              href="https://uwazi.readthedocs.io/en/latest/"
               target="_blank"
               rel="noopener noreferrer"
             >
