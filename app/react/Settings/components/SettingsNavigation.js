@@ -8,7 +8,9 @@ export class SettingsNavigation extends Component {
     return (
       <div>
         <div className="panel panel-default">
-          <div className="panel-heading"><Translate>Settings</Translate></div>
+          <div className="panel-heading">
+            <Translate>Settings</Translate>
+          </div>
           <div className="list-group">
             <I18NLink to="settings/account" activeClassName="active" className="list-group-item">
               <Translate>Account</Translate>
@@ -64,7 +66,9 @@ export class SettingsNavigation extends Component {
         </div>
         <NeedAuthorization>
           <div className="panel panel-default">
-            <div className="panel-heading"><Translate>Metadata</Translate></div>
+            <div className="panel-heading">
+              <Translate>Metadata</Translate>
+            </div>
             <div className="list-group">
               <I18NLink
                 to="settings/templates"
@@ -91,7 +95,9 @@ export class SettingsNavigation extends Component {
           </div>
         </NeedAuthorization>
         <div className="panel panel-default">
-          <div className="panel-heading"><Translate>Tools</Translate></div>
+          <div className="panel-heading">
+            <Translate>Tools</Translate>
+          </div>
           <div className="list-group">
             <NeedAuthorization roles={['admin']}>
               <I18NLink
