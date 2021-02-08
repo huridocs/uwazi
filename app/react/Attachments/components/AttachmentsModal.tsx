@@ -1,4 +1,4 @@
-import React, { CSSProperties } from 'react';
+import React from 'react';
 import ReactModal from 'react-modal';
 import { Tabs, TabLink, TabContent } from 'react-tabs-redux';
 
@@ -14,7 +14,11 @@ interface AttachmentsModalProps {
 const AttachmentsModal: React.FC<AttachmentsModalProps> = ({ isOpen, onClose }) => {
   return (
     <NeedAuthorization roles={['admin', 'editor']}>
-      <ReactModal isOpen={isOpen} style={modalStyle}>
+      <ReactModal
+        isOpen={isOpen}
+        className="attachments-modal"
+        overlayClassName="attachments-modal-overlay"
+      >
         <div className="attachments-modal-header">
           <h4>Supporting files</h4>
 
@@ -74,25 +78,6 @@ const AttachmentsModal: React.FC<AttachmentsModalProps> = ({ isOpen, onClose }) 
       </ReactModal>
     </NeedAuthorization>
   );
-};
-
-const modalStyle = {
-  overlay: {
-    zIndex: 100,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-  },
-  content: {
-    display: 'flex',
-    flexDirection: 'column' as CSSProperties['flexDirection'],
-    width: '80vw',
-    height: '70vh',
-    top: '50%',
-    left: '50%',
-    right: 'auto',
-    bottom: 'auto',
-    marginRight: '-50%',
-    transform: 'translate(-50%, -50%)',
-  },
 };
 
 export default AttachmentsModal;
