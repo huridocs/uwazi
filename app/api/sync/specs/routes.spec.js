@@ -1,7 +1,7 @@
 import 'api/utils/jasmineHelpers';
 
 import { models } from 'api/odm';
-import search from 'api/search/search';
+import { search } from 'api/search';
 
 import instrumentRoutes from '../../utils/instrumentRoutes';
 import syncRoutes from '../routes';
