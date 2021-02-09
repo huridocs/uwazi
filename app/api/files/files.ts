@@ -17,7 +17,6 @@ export const files = {
 
   async delete(query: any = {}) {
     const toDeleteFiles: FileType[] = await model.get(query);
-
     await model.delete(query);
     if (toDeleteFiles.length > 0) {
       await connections.delete({ file: { $in: toDeleteFiles.map(f => f._id?.toString()) } });
