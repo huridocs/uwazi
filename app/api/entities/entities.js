@@ -391,8 +391,8 @@ export default {
           (documentsFullText ? '+fullText ' : ' ') + (withPdfInfo ? '+pdfInfo' : '')
         );
 
-        entity.documents = entityFiles.filter(f => (f.type = 'document'));
-        entity.attachments = entityFiles.filter(f => (f.type = 'attachment'));
+        entity.documents = entityFiles.filter(f => f.type === 'document');
+        entity.attachments = entityFiles.filter(f => f.type === 'attachment');
         return entity;
       })
     );
