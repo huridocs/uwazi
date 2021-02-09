@@ -2,6 +2,7 @@
 import Ajv from 'ajv';
 import templatesModel from 'api/templates/templatesModel';
 import { objectIdSchema, metadataSchema, attachmentSchema } from 'shared/types/commonSchemas';
+import { fileSchema } from 'shared/types/fileSchema';
 import { wrapValidator } from 'shared/tsUtils';
 import { validators, customErrorMessages } from 'api/entities/metadataValidators.js';
 import { EntitySchema } from './entityType';
@@ -118,7 +119,7 @@ export const entitySchema = {
   definitions: {
     objectIdSchema,
     metadataSchema,
-    attachmentSchema,
+    fileSchema,
   },
   properties: {
     _id: objectIdSchema,
@@ -139,7 +140,11 @@ export const entitySchema = {
     },
     attachments: {
       type: 'array',
-      items: attachmentSchema,
+      items: fileSchema,
+    },
+    documents: {
+      type: 'array',
+      items: fileSchema,
     },
     creationDate: { type: 'number' },
     user: objectIdSchema,

@@ -3,6 +3,8 @@
 
 import { ObjectIdSchema, MetadataSchema, AttachmentSchema } from 'shared/types/commonTypes';
 
+import { FileType } from 'shared/types/fileType';
+
 export interface EntitySchema {
   _id?: ObjectIdSchema;
   sharedId?: string;
@@ -16,7 +18,8 @@ export interface EntitySchema {
     label?: string;
     type?: string;
   };
-  attachments?: AttachmentSchema[];
+  attachments?: FileType[];
+  documents?: FileType[];
   creationDate?: number;
   user?: ObjectIdSchema;
   metadata?: MetadataSchema;

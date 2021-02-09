@@ -20,8 +20,10 @@ export const fixtures: DBFixture = {
       entity: 'shared',
       filename: '8202c463d6158af8065022d9b5014cc1.pdf',
       originalname: 'Batman original.jpg',
+      type: 'document',
     },
-    { entity: 'shared', filename: '8202c463d6158af8065022d9b5014ccb.pdf' },
+    { entity: 'shared', filename: '8202c463d6158af8065022d9b5014ccb.pdf', type: 'document' },
+    { entity: 'shared', filename: '8202c463d6158af8065022d9b5014ccc.pdf', type: 'attachment' },
   ],
   entities: [
     {
@@ -42,7 +44,6 @@ export const fixtures: DBFixture = {
       published: true,
       user: 'username',
       file: { filename: '8202c463d6158af8065022d9b5014ccb.pdf', fullText: 'fullText' },
-      attachments: [{ filename: '8202c463d6158af8065022d9b5014ccc.pdf' }],
     },
     {
       _id: db.id(),
@@ -89,7 +90,10 @@ export const fixtures: DBFixture = {
     },
   ],
   settings: [
-    { _id: db.id(), languages: [{ key: 'es' }, { key: 'pt' }, { key: 'en', default: true }] },
+    {
+      _id: db.id(),
+      languages: [{ key: 'es' }, { key: 'pt' }, { key: 'en', default: true }],
+    },
   ],
   templates: [
     {
@@ -106,7 +110,12 @@ export const fixtures: DBFixture = {
     },
   ],
   connections: [
-    { _id: referenceId, title: 'reference1', sourceDocument: 'shared', template: 'relation1' },
+    {
+      _id: referenceId,
+      title: 'reference1',
+      sourceDocument: 'shared',
+      template: 'relation1',
+    },
     {
       _id: db.id(),
       title: 'reference2',
