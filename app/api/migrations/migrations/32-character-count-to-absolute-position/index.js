@@ -65,7 +65,7 @@ const convertTocToAbsolutePosition = async (fileConvertor, file, db) => {
     const textSelection = absolutePositionReferenceToTextSelection(absolutePositionReference);
 
     if (isWrongConversion(textSelection)) {
-      wrongConversion.push(`${x.label}, ${x.range.start}, ${x.range.end}`);
+      wrongConversion.push(`${x.label}\t${x.range.start}\t${x.range.end}`);
     }
 
     return {
@@ -97,7 +97,7 @@ async function convertConnectionsToAbsolutePosition(fileConvertor, file, db) {
 
       if (isWrongConversion(textSelection)) {
         wrongConversion.push(
-          `${connections[i].range.text}, ${connections[i].range.start}, ${connections[i].range.end}`
+          `${connections[i].range.text}\t${connections[i].range.start}\t${connections[i].range.end}`
         );
       }
 
@@ -134,20 +134,29 @@ async function existsRangesToConvert(db, file) {
 }
 
 async function removeRangesFromToc(db, file) {
+  const removedTocs = [];
+  if (file.toc && file.toc.length > 0) {
+    removedTocs.push(...file.toc.map(x => `${x.label}\t${x.range.start}\t${x.range.end}`));
+  }
   await db.collection('files').updateOne({ _id: file._id }, { $set: { toc: [] } });
+  return removedTocs;
 }
 
 async function removeRangesFromConnections(db, file) {
+  const removedConnection = [];
   const connections = await db
     .collection('connections')
     .find({ file: file._id.toString() })
     .toArray();
 
   for (let i = 0; i < connections.length; i += 1) {
+    const connection = `${connections[i].range.text}\t${connections[i].range.start}\t${connections[i].range.end}`;
+    removedConnection.push(connection);
     await db
       .collection('connections')
       .updateOne({ _id: connections[i]._id }, { $unset: { range: '', file: '' } });
   }
+  return removedConnection;
 }
 
 function isValidPdfInfo(pdfInfo) {
@@ -159,6 +168,13 @@ function isValidPdfInfo(pdfInfo) {
   );
 }
 
+function getWrongConversions(wrongConversions, type, file) {
+  const entityName = file.entity;
+  const fileName = file.filename;
+
+  return wrongConversions.map(x => `Entity\t${entityName}\tFile\t${fileName}\t${type}\t${x}`);
+}
+
 export default {
   delta: 32,
 
@@ -167,38 +183,30 @@ export default {
   description: 'Convert the character count of pdf references to absolute position',
 
   async up(db) {
-    process.stdout.write(`${this.name}...\r\n`);
-    let fileCount = 0;
+    process.stdout.write(`${this.name}...\n`);
+    let conversionsNumber = 0;
     const cursor = db.collection('files').find();
-    const pdfNotAllowedToBeConverted = [];
     const wrongConversions = [];
     while (await cursor.hasNext()) {
       const file = await cursor.next();
-      fileCount += 1;
       try {
         if (await existsRangesToConvert(db, file)) {
+          conversionsNumber += 1;
           process.stdout.write(
-            `${fileCount} converting to absolute position file ${file.filename}\r\n`
+            `${conversionsNumber} converting to absolute position file ${file.filename}\n`
           );
 
           if (!isValidPdfInfo(file.pdfInfo)) {
-            wrongConversions.push(`Warning: ${file.filename} wrong pdfinfo`);
+            process.stderr.write(`Warning: ${file.filename} wrong pdfinfo`);
             if (!file.pdfInfo) {
               file.pdfInfo = { 1: { chars: 0 } };
             }
           }
 
-          const lastCharacter = Math.max(
-            ...Object.keys(file.pdfInfo).map(x => file.pdfInfo[x].chars)
-          );
           const fileConvertor = await getCharacterCountToAbsolutePositionConvertor(file);
-
           if (file.toc && file.toc.length !== 0) {
-            const wrongToc = await convertTocToAbsolutePosition(fileConvertor, file, db);
-            if (wrongToc.length > 0) {
-              wrongConversions.push(`${file.filename} wrong TOC entries: ${wrongToc.length}`);
-              wrongConversions.push(`Last character ${lastCharacter} ${wrongToc.join('|')}`);
-            }
+            const wrongTocs = await convertTocToAbsolutePosition(fileConvertor, file, db);
+            wrongConversions.push(...getWrongConversions(wrongTocs, 'TOC', file));
           }
 
           const wrongConnection = await convertConnectionsToAbsolutePosition(
@@ -206,23 +214,25 @@ export default {
             file,
             db
           );
-          if (wrongConnection.length > 0) {
-            wrongConversions.push(`${file.filename} wrong connections: ${wrongConnection.length}`);
-            wrongConversions.push(`Last character ${lastCharacter} ${wrongConnection.join('|')}`);
-          }
+
+          wrongConversions.push(...getWrongConversions(wrongConnection, 'CONNECTION', file));
         }
       } catch (e) {
-        await removeRangesFromToc(db, file);
-        await removeRangesFromConnections(db, file);
         process.stderr.write(`${e.stack}\r\n`);
-        process.stderr.write(`${fileCount} PDF not converted ${file.filename}\r\n`);
-        pdfNotAllowedToBeConverted.push(file.filename);
+        process.stderr.write(`${file.filename} ${conversionsNumber} total conversions `);
+
+        const wrongTocs = await removeRangesFromToc(db, file);
+        const wrongConnection = await removeRangesFromConnections(db, file);
+
+        wrongConversions.push(...getWrongConversions(wrongTocs, 'TOC', file));
+        wrongConversions.push(...getWrongConversions(wrongConnection, 'CONNECTION', file));
       }
     }
 
-    process.stderr.write(`PDFs not converted:\r\n${pdfNotAllowedToBeConverted.join('\r\n')}\r\n`);
-    process.stderr.write(`PDFs wrong conversions:\r\n${wrongConversions.join('\r\n')}\r\n`);
+    process.stderr.write(`\n\nTotal files converted: ${conversionsNumber}\n`);
+    process.stderr.write(`Wrong conversions number: ${wrongConversions.length}\n`);
+    process.stderr.write(`${wrongConversions.join('\n')}\n`);
 
-    return `${wrongConversions} ${pdfNotAllowedToBeConverted}`;
+    return `${wrongConversions}`;
   },
 };

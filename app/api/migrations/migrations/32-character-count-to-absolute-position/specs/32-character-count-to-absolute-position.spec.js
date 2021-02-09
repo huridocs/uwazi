@@ -105,15 +105,6 @@ describe('conversion of character count to absolute position', () => {
     ]);
   });
 
-  it('should show entities without pdfinfo', async () => {
-    const output = await migration.up(testingDB.mongodb);
-
-    console.log(output);
-
-    expect(output).toContain('nopdfinfo.pdf wrong pdfinfo');
-    expect(output).toContain('all0pdfinfo.pdf wrong pdfinfo');
-  });
-
   it('should manage connection with out of range reference', async () => {
     const output = await migration.up(testingDB.mongodb);
 
@@ -122,8 +113,7 @@ describe('conversion of character count to absolute position', () => {
       .find({ _id: connectionOutOfRangeId })
       .toArray();
 
-    expect(output).toContain('migration32.pdf wrong connections: 1');
-    expect(output).toContain('no text match, 9999999, 9999999');
+    expect(output).toContain('Entity\tundefined\tFile\tmigration32.pdf\tCONNECTION\tno text match\t9999999\t9999999');
     expect(connections[0].reference.text).toEqual('no text match');
     expect(connections[0].reference.selectionRectangles.length).toEqual(1);
     expect(connections[0].reference.selectionRectangles[0].width).toEqual(0);
@@ -135,8 +125,7 @@ describe('conversion of character count to absolute position', () => {
 
   it('should manage toc with out of range reference', async () => {
     const output = await migration.up(testingDB.mongodb);
-    expect(output).toContain('migration32.pdf wrong TOC entries: 1');
-    expect(output).toContain('WRONG, 99999, 99999');
+    expect(output).toContain('Entity\tentity1\tFile\tmigration32.pdf\tTOC\tWRONG\t99999\t99999');
   });
 
   it('should convert table of content to absolute position', async () => {

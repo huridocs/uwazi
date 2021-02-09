@@ -162,6 +162,7 @@ export default {
       _id: 'outofrangetoc',
       filename: 'migration32.pdf',
       type: 'document',
+      entity: 'entity1',
       pdfInfo: {
         1: {
           chars: 207,
