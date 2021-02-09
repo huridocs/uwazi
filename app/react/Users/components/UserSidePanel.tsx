@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Icon } from 'UI';
-import { Translate } from 'app/I18N';
+import { t, Translate } from 'app/I18N';
 import { ConfirmButton, SidePanel } from 'app/Layout';
 import { UserRole } from 'shared/types/userSchema';
 import { UserSchema } from 'shared/types/userType';
@@ -59,7 +59,7 @@ export const UserSidePanel = ({
     setUserToSave({ ...userToSave, groups: updatedGroups });
   };
 
-  const isDuplicated = (nameVal: string) =>
+  const isUnique = (nameVal: string) =>
     !users.find(
       existingUser =>
         existingUser._id !== user._id &&
@@ -70,6 +70,8 @@ export const UserSidePanel = ({
   const togglePermissionList = () => {
     setPermissionsModalOpened(!permissionsModalOpened);
   };
+
+  const userRoles = Object.values(UserRole).map(role => t('System', role, null, false));
 
   return (
     <SidePanel open={opened}>
@@ -83,7 +85,7 @@ export const UserSidePanel = ({
               <Translate>Email</Translate>
             </label>
             <input
-              type="text"
+              type="email"
               className="form-control"
               autoComplete="off"
               value={userToSave.email}
@@ -91,12 +93,8 @@ export const UserSidePanel = ({
               onChange={handleInputChange}
               ref={register({
                 required: true,
-                validate: isDuplicated,
+                validate: isUnique,
                 maxLength: 256,
-                pattern: {
-                  value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                  message: 'Invalid email address',
-                },
               })}
             />
             {errors.email && (
@@ -128,7 +126,7 @@ export const UserSidePanel = ({
               onChange={handleInputChange}
               value={userToSave.role}
             >
-              {Object.values(UserRole).map(role => (
+              {userRoles.map(role => (
                 <option key={role} value={role}>
                   {role}
                 </option>
@@ -148,7 +146,7 @@ export const UserSidePanel = ({
               onChange={handleInputChange}
               ref={register({
                 required: true,
-                validate: isDuplicated,
+                validate: isUnique,
                 maxLength: 50,
                 minLength: 3,
               })}
@@ -178,7 +176,6 @@ export const UserSidePanel = ({
               value={userToSave.password}
               name="password"
               onChange={handleInputChange}
-              ref={register({ maxLength: 50 })}
             />
             {errors.password && (
               <div className="validation-error">

@@ -40,7 +40,7 @@ describe('mailer', () => {
     });
   });
 
-  describe('non environment', () => {
+  describe('non prod environment', () => {
     it('should use a fake transport and mailer', async () => {
       process.env.DATABASE_NAME = 'uwazi_e2e';
       jest.spyOn(FakeMailer.prototype, 'sendMail').mockImplementation(mockedSendMail);

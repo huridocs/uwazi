@@ -80,10 +80,8 @@ describe('UserSidePanel', () => {
       { field: 'username', value: '', message: 'Username is required' },
       { field: 'username', value: 'a'.repeat(55), message: 'Username is too long' },
       { field: 'username', value: 'a', message: 'Username is too short' },
-      { field: 'email', value: 'invalidEmail', message: 'Invalid email' },
       { field: 'email', value: existingUser.email, message: 'Duplicated email' },
       { field: 'email', value: '', message: 'Email is required' },
-      { field: 'password', value: 'a'.repeat(55), message: 'Password is too long' },
     ])(
       'should not save if there is an invalid value %s',
       ({ field, value, message }, done: jest.DoneCallback) => {
@@ -161,7 +159,7 @@ describe('UserSidePanel', () => {
         groupsToCheck.simulate('change');
       });
 
-      it('should add a checked user to the selected users', () => {
+      it('should add the checked group of MultiSelect to the list of selectedGroups', () => {
         const selectedGroups = component.find(MultiSelect).props().value;
         expect(selectedGroups).toEqual(['group1', 'group2']);
       });

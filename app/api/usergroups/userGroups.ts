@@ -15,13 +15,12 @@ export default {
       { username: 1, role: 1, email: 1 }
     );
 
-    userGroups.forEach((group, index) => {
-      userGroups[index].members = group.members.map(
+    return userGroups.map(group => ({
+      ...group,
+      members: group.members.map(
         m => usersFound.find(u => u._id.toString() === m._id.toString()) || m
-      );
-    });
-
-    return userGroups;
+      ),
+    }));
   },
 
   async save(userGroup: UserGroupSchema) {

@@ -48,12 +48,13 @@ describe('User', () => {
       const groups = await page.$$eval('.multiselectItem', items =>
         items.map(item => ({
           checked: (<HTMLInputElement>item.children[0]).checked,
-          username: item.textContent,
+          groupName: item.textContent,
         }))
       );
-      expect(groups[0].username).toEqual('Activistas');
+      expect(groups.length).toBe(2);
+      expect(groups[0].groupName).toEqual('Activistas');
       expect(groups[0].checked).toBe(true);
-      expect(groups[1].username).toEqual('Asesores legales');
+      expect(groups[1].groupName).toEqual('Asesores legales');
       expect(groups[1].checked).toBe(false);
     });
 

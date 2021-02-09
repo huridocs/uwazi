@@ -53,7 +53,7 @@ export const UserGroupSidePanel = ({
     setGroup({ ...group, name: event.target.value });
   };
 
-  const isDuplicated = (nameVal: string) =>
+  const isUnique = (nameVal: string) =>
     !userGroups.find(
       existingGroup =>
         existingGroup._id !== userGroup._id &&
@@ -84,7 +84,7 @@ export const UserGroupSidePanel = ({
               onChange={updateGroupName}
               ref={register({
                 required: true,
-                validate: isDuplicated,
+                validate: isUnique,
                 maxLength: 50,
                 minLength: 3,
               })}

@@ -41,7 +41,7 @@ describe('UserList', () => {
     beforeEach(() => {
       component = shallow(<UserList {...defaultProps} />);
     });
-    it('Should list all existing users into a table', () => {
+    it('Should list all existing users into a table ordered by username', () => {
       const rows = component.find('tbody > tr');
       expect(rows.length).toBe(3);
       const columns = rows.at(0).find('td');
@@ -80,8 +80,12 @@ describe('UserList', () => {
 
     it('should call handleSelect when a row is clicked', () => {
       const row = component.find('tbody > tr').at(1);
+      expect(row.props().className).toBe('');
       row.simulate('click');
+      component.update();
       expect(defaultProps.handleSelect).toHaveBeenCalledWith(users[1]);
+      const updatedRow = component.find('tbody > tr').at(1);
+      expect(updatedRow.props().className).toBe('selected');
     });
   });
 });

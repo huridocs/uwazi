@@ -666,7 +666,12 @@ describe('Users', () => {
       } catch (error) {
         expect(error).toEqual(createError('Can not delete last user', 403));
         const user = await users.getById(userId);
-        expect(user).not.toBe(null);
+        expect(user).toEqual({
+          _id: userId,
+          email: 'test@email.com',
+          role: 'admin',
+          username: 'username',
+        });
         done();
       }
     });
@@ -679,10 +684,11 @@ describe('Users', () => {
   });
 
   describe('get', () => {
-    it('should return all users', async () => {
+    it('should return all users without group data', async () => {
       const userList = await users.get();
       expect(userList.length).toBe(3);
-      expect(userList[0].groups).toBeUndefined();
+      const groupData = userList.filter(u => u.groups !== undefined);
+      expect(groupData.length).toBe(0);
     });
 
     it('should return all users with groups to which they belong', async () => {

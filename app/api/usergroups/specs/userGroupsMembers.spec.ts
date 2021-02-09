@@ -18,7 +18,7 @@ describe('userGroupsMembers', () => {
   });
 
   describe('updateUserMemberships', () => {
-    it('should return the groups that contains the asked member ids', async () => {
+    it('should update the groups adding or removing the userId according the new groups passed', async () => {
       const userToUpdate = {
         ...fixtures.users[0],
         role: UserRole.COLLABORATOR,

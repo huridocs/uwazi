@@ -92,7 +92,7 @@ describe('User actions', () => {
   describe('loadUsers', () => {
     it('should dispatch the fetched users', async () => {
       await actions.loadUsers()(dispatch);
-      expect(api.get).toHaveBeenCalledTimes(1);
+      expect(api.get).toHaveBeenCalledWith({ data: undefined, headers: {} });
       expect(dispatch).toHaveBeenCalledWith('USERS SET');
     });
   });
