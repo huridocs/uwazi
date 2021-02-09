@@ -1,13 +1,15 @@
-import React, { useRef } from 'react';
+import React, { DragEvent, useRef } from 'react';
 import { connect } from 'react-redux';
 import ReactModal from 'react-modal';
 import { Tabs, TabLink, TabContent } from 'react-tabs-redux';
-import { Translate } from 'app/I18N';
+import Dropzone from 'react-dropzone';
 
+import { Translate } from 'app/I18N';
 import { NeedAuthorization } from 'app/Auth';
 import { Icon } from 'app/UI';
 
 import { uploadAttachment } from '../actions/actions';
+import setReduxState from 'app/Library/helpers/setReduxState';
 
 interface AttachmentsModalProps {
   isOpen: boolean;
@@ -35,9 +37,20 @@ const AttachmentsModal: React.FC<AttachmentsModalProps> = ({
 
   const handleInputFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
-      const file = event.target.files[0];
-      uploadAttachment(entity, file, storeKey);
+      [...event.target.files].forEach(file => {
+        uploadAttachment(entity, file, storeKey);
+      });
     }
+  };
+
+  const handleDropFiles = (
+    accepted: File[],
+    rejected: File[],
+    event: DragEvent<HTMLDivElement>
+  ) => {
+    accepted.forEach(file => {
+      uploadAttachment(entity, file, storeKey);
+    });
   };
 
   return (
@@ -70,21 +83,24 @@ const AttachmentsModal: React.FC<AttachmentsModalProps> = ({
 
             <div className="attachments-modal-tabs-content">
               <TabContent for="uploadComputer" className="tab-content centered">
-                <button
-                  type="button"
-                  onClick={handleUploadButtonClicked}
-                  className="btn btn-success attachments-modal-file-triggger"
-                >
-                  <Icon icon="link" />
-                  &nbsp; <Translate>Upload and select file</Translate>
-                </button>
-                <input
-                  type="file"
-                  onChange={handleInputFileChange}
-                  style={{ display: 'none' }}
-                  ref={inputFileRef}
-                />
-                <Translate>Drag and drop file in this window to upload </Translate>
+                <Dropzone disableClick onDrop={handleDropFiles}>
+                  <button
+                    type="button"
+                    onClick={handleUploadButtonClicked}
+                    className="btn btn-success attachments-modal-file-triggger"
+                  >
+                    <Icon icon="link" />
+                    &nbsp; <Translate>Upload and select file</Translate>
+                  </button>
+                  <input
+                    type="file"
+                    onChange={handleInputFileChange}
+                    style={{ display: 'none' }}
+                    ref={inputFileRef}
+                    multiple
+                  />
+                  <Translate>Drag and drop file in this window to upload </Translate>
+                </Dropzone>
               </TabContent>
               <TabContent for="uploadWeb" className="tab-content centered">
                 <div className="wrapper-web">

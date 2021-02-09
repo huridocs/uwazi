@@ -29,7 +29,7 @@ export class DocumentSidePanel extends Component {
     super(props);
     this.selectTab = this.selectTab.bind(this);
     this.firstRender = true;
-    this.state = { copyFrom: false, copyFromProps: [], isOpen: true };
+    this.state = { copyFrom: false, copyFromProps: [], isAttachmentModalOpen: false };
 
     this.toggleCopyFrom = this.toggleCopyFrom.bind(this);
     this.onCopyFromSelect = this.onCopyFromSelect.bind(this);
@@ -93,11 +93,11 @@ export class DocumentSidePanel extends Component {
   }
 
   closeModal() {
-    this.setState({ isOpen: false });
+    this.setState({ isAttachmentModalOpen: false });
   }
 
   openModal() {
-    this.setState({ isOpen: true });
+    this.setState({ isAttachmentModalOpen: true });
   }
 
   close() {
@@ -465,7 +465,7 @@ export class DocumentSidePanel extends Component {
           </div>
         </SidePanel>
         <AttachmentsModal
-          isOpen={this.state.isOpen}
+          isOpen={this.state.isAttachmentModalOpen}
           onClose={this.closeModal}
           entity={doc.get('_id')}
           storeKey={this.props.storeKey}

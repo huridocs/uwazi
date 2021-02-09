@@ -71,6 +71,7 @@
     "@fortawesome/react-fontawesome": "^0.1.11",
     "@loadable/component": "^5.13.1",
     "@supercharge/promise-pool": "^1.2.0",
+    "@types/react-dropzone": "^4.2.2",
     "@types/react-modal": "^3.12.0",
     "ajv": "^6.12.3",
     "ajv-keywords": "^3.4.1",
