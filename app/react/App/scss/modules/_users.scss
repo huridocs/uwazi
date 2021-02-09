@@ -1,3 +1,7 @@
+@import '../../scss/config/colors';
+@import '../../scss/config/typography';
+@import '../../scss/elements/pill';
+
 .user-list {
   table {
     width: 100%;
@@ -12,15 +16,7 @@
       width: 20%;
       padding: 7px 10px;
       font-size: $f-size;
-      .pill {
-        border: 1px solid rgba(0, 0, 0, 0.25);
-        box-sizing: border-box;
-        border-radius: 26px;
-        padding: 2px 8px;
-        display: inline-block;
-        margin: 2px 8px 2px 0;
-        font-size: smaller;
-      }
+      @include pillItem;
     }
     tbody tr {
       &:hover > td {

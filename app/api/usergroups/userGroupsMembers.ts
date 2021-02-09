@@ -10,23 +10,22 @@ export const updateUserMemberships = async (
   user: GroupMemberSchema,
   groups: { _id: ObjectIdSchema }[]
 ) => {
-  const currentGroups = await getByMemberIdList([user._id.toString()]);
-  const groupsOfUser = groups.map(group => group._id);
-  const actualGroupsIds = groupsOfUser || [];
+  const storedUserGroups = await getByMemberIdList([user._id.toString()]);
+  const newGroupsIds = groups.map(group => group._id) || [];
   const groupsToUpdate: UserGroupSchema[] = [];
 
-  currentGroups.forEach(currentGroup => {
-    const actualGroup = actualGroupsIds.find(groupId => groupId === currentGroup._id.toString());
-    if (!actualGroup) {
-      const groupToUpdate = { ...currentGroup };
-      groupToUpdate.members = currentGroup.members.filter(
+  storedUserGroups.forEach(storedGroup => {
+    const keptGroup = newGroupsIds.find(groupId => groupId === storedGroup._id.toString());
+    if (!keptGroup) {
+      const groupToUpdate = { ...storedGroup };
+      groupToUpdate.members = storedGroup.members.filter(
         m => m._id.toString() !== user._id.toString()
       );
       groupsToUpdate.push(groupToUpdate);
     }
   });
-  const missingGroupsIds = actualGroupsIds.filter(
-    groupId => !currentGroups.find(currentGroup => currentGroup._id.toString() === groupId)
+  const missingGroupsIds = newGroupsIds.filter(
+    groupId => !storedUserGroups.find(storedGroup => storedGroup._id.toString() === groupId)
   );
   const missingGroups = await userGroups.get({ _id: { $in: missingGroupsIds } });
   missingGroups.forEach(group => {

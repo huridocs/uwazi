@@ -2,6 +2,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { PermissionsList } from 'app/Users/components/PermissionsList';
 import { Icon } from 'UI';
+import { Translate } from 'app/I18N';
 
 describe('PermissionsList', () => {
   it('should show a list of permissions by role', () => {
@@ -17,7 +18,12 @@ describe('PermissionsList', () => {
     );
     const rows = component.find('tbody > tr');
     const columns = rows.at(0).find('td');
-    expect(columns.at(0).props().children).toEqual('permission description');
+    expect(
+      columns
+        .find(Translate)
+        .at(0)
+        .props().children
+    ).toContain('permission description');
     expect(
       columns
         .find(Icon)

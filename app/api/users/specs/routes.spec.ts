@@ -4,14 +4,13 @@ import request from 'supertest';
 import { NextFunction, Request, Response } from 'express';
 import { UserRole } from 'shared/types/userSchema';
 import { UserSchema } from 'shared/types/userType';
+import { testingTenants } from 'api/utils/testingTenants';
 import userRoutes from '../routes.js';
 import users from '../users.js';
-import { testingTenants } from '../../utils/testingTenants';
 
 jest.mock(
   '../../utils/languageMiddleware.ts',
-  () => (req: Request, _res: Response, next: NextFunction) => {
-    (req as any).user = { username: 'user 1', role: 'admin' };
+  () => (_req: Request, _res: Response, next: NextFunction) => {
     next();
   }
 );
@@ -134,7 +133,7 @@ describe('users routes', () => {
         expect(response.body.errors[0].keyword).toEqual(keyword);
       });
 
-      it('should call users update with the body email', async () => {
+      it('should call recoverPassword with the body email', async () => {
         spyOn(users, 'recoverPassword').and.returnValue(Promise.resolve());
         const response = await request(app)
           .post('/api/recoverpassword')

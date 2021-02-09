@@ -133,6 +133,7 @@ export default app => {
           },
         },
       },
+      required: ['query'],
     }),
     (req, res, next) => {
       users

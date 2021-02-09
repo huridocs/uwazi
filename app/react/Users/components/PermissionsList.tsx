@@ -116,7 +116,9 @@ export const PermissionsList = ({
         <tbody>
           {rolePermissions.map(permission => (
             <tr key={permission.label}>
-              <td>{permission.label}</td>
+              <td>
+                <Translate>{permission.label}</Translate>
+              </td>
               {['collaborator', 'editor', 'admin'].map(role => {
                 const roleIcon =
                   permissionIcons[permission.roles[role as userRoles] as PermissionCellParams];

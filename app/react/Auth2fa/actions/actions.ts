@@ -1,4 +1,3 @@
-/** @format */
 import { Dispatch } from 'redux';
 
 import { actions } from 'app/BasicReducer';

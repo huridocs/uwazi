@@ -15,6 +15,7 @@ export const UserList = ({ users, handleSelect, handleAddUser, className }: User
   const [selectedId, setSelectedId] = useState();
   const selectRow = (user: UserSchema) => {
     handleSelect(user);
+    setSelectedId(user._id);
   };
   const addUser = () => {
     setSelectedId(undefined);

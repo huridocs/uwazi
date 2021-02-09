@@ -129,9 +129,7 @@ const routes = (
       <Route path="2fa" component={Configure2fa} />
       <Route path="collection" component={CollectionSettings} />
       <Route path="navlinks" component={NavlinksSettings} />
-      <Route path="users">
-        <IndexRoute component={UserManagement} />
-      </Route>
+      <Route path="users" component={UserManagement} />
       <Route path="pages">
         <IndexRoute component={Pages} />
         <Route path="new" component={NewPage} />
