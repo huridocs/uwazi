@@ -230,5 +230,11 @@ describe('markdownDatasets', () => {
         markdownDatasets.getMetadataValue(state, { dataset: 'non_existent_dataset' })
       ).toBeUndefined();
     });
+
+    it('should not throw a TypeError if the property does not exist', () => {
+      expect(()=> {
+        markdownDatasets.getMetadataValue(state, { property: 'iDontExist' })
+      }).not.toThrow();
+    });
   });
 });
