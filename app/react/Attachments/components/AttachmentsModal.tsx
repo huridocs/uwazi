@@ -9,7 +9,6 @@ import { NeedAuthorization } from 'app/Auth';
 import { Icon } from 'app/UI';
 
 import { uploadAttachment } from '../actions/actions';
-import setReduxState from 'app/Library/helpers/setReduxState';
 
 interface AttachmentsModalProps {
   isOpen: boolean;
@@ -58,21 +57,21 @@ const AttachmentsModal: React.FC<AttachmentsModalProps> = ({
       <ReactModal
         isOpen={isOpen}
         className="attachments-modal"
-        overlayClassName="attachments-modal-overlay"
+        overlayClassName="attachments-modal__overlay"
       >
-        <div className="attachments-modal-header">
+        <div className="attachments-modal__header">
           <h4>
             <Translate>Supporting files</Translate>
           </h4>
 
-          <button type="button" onClick={onClose} className="attachments-modal-close">
+          <button type="button" onClick={onClose} className="attachments-modal__close">
             <Icon icon="times" />
             <span>Cancel</span>
           </button>
         </div>
-        <div className="attachments-modal-content">
+        <div className="attachments-modal__content">
           <Tabs renderActiveTabContentOnly>
-            <div className="attachments-modal-tabs">
+            <div className="attachments-modal__tabs">
               <TabLink to="uploadComputer">
                 <Translate>Upload from computer</Translate>
               </TabLink>
@@ -81,13 +80,17 @@ const AttachmentsModal: React.FC<AttachmentsModalProps> = ({
               </TabLink>
             </div>
 
-            <div className="attachments-modal-tabs-content">
+            <div className="attachments-modal__tabs-content">
               <TabContent for="uploadComputer" className="tab-content centered">
-                <Dropzone disableClick onDrop={handleDropFiles}>
+                <Dropzone
+                  disableClick
+                  onDrop={handleDropFiles}
+                  className="attachments-modal__dropzone"
+                >
                   <button
                     type="button"
                     onClick={handleUploadButtonClicked}
-                    className="btn btn-success attachments-modal-file-triggger"
+                    className="btn btn-success"
                   >
                     <Icon icon="link" />
                     &nbsp; <Translate>Upload and select file</Translate>
@@ -99,7 +102,12 @@ const AttachmentsModal: React.FC<AttachmentsModalProps> = ({
                     ref={inputFileRef}
                     multiple
                   />
-                  <Translate>Drag and drop file in this window to upload </Translate>
+                  <h4 className="dropzone-title">
+                    <Translate>Drag and drop one or more files in this window to upload </Translate>
+                  </h4>
+                  <Translate>
+                    For better performance, upload in batches of 50 or less files.
+                  </Translate>
                 </Dropzone>
               </TabContent>
               <TabContent for="uploadWeb" className="tab-content centered">
@@ -117,11 +125,7 @@ const AttachmentsModal: React.FC<AttachmentsModalProps> = ({
                     placeholder="Title"
                   />
 
-                  <button
-                    type="button"
-                    onClick={() => {}}
-                    className="btn btn-success attachments-modal-file-triggger"
-                  >
+                  <button type="button" onClick={() => {}} className="btn btn-success">
                     <Icon icon="link" />
                     &nbsp; <Translate>Add resource</Translate>
                   </button>

@@ -421,6 +421,7 @@ export class DocumentSidePanel extends Component {
                         storeKey={this.props.storeKey}
                       />
 
+                      {/* TODO: This is for demo purposes, move to style */}
                       <div
                         style={{
                           display: 'flex',
@@ -432,8 +433,10 @@ export class DocumentSidePanel extends Component {
                           marginBottom: '64px',
                         }}
                       >
-                        <h2 style={{ margin: 0 }}>{t('System', 'Supporting Files')}</h2>
                         <NeedAuthorization roles={['admin', 'editor']}>
+                          <h2 style={{ margin: 0 }}>
+                            <Translate>Supporting Files</Translate>
+                          </h2>
                           <button
                             type="button"
                             onClick={this.openModal}
