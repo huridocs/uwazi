@@ -2,20 +2,17 @@
 import { elastic } from 'api/search';
 import { search } from 'api/search/search';
 import { catchErrors } from 'api/utils/jasmineHelpers';
+import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
 import db from 'api/utils/testing_db';
 import elasticResult from './elasticResult';
 import { fixtures as elasticFixtures, ids, fixturesTimeOut } from './fixtures_elastic';
 
-jest.mock('api/permissions/permissionsContext', () => ({
-  permissionsContext: {
-    getUserInContext: jest.fn().mockReturnValue({ _id: 'user1', role: 'admin' }),
-  },
-}));
-
 describe('search', () => {
   let result;
+  const userFactory = new UserInContextMockFactory();
 
   beforeAll(async () => {
+    userFactory.mock({ _id: 'user1', role: 'admin' });
     result = elasticResult().toObject();
     const elasticIndex = 'search_index_test';
     await db.clearAllAndLoad(elasticFixtures, elasticIndex);
@@ -23,6 +20,7 @@ describe('search', () => {
 
   afterAll(async () => {
     await db.disconnect();
+    userFactory.restore();
   });
 
   describe('searchSnippets', () => {
