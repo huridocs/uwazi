@@ -169,8 +169,10 @@ export const propertyToAggregation = (property, dictionaries, baseQuery, suggest
 };
 
 export const generatedTocAggregations = baseQuery => {
-  const path = 'generatedToc.raw';
+  const path = 'generatedToc';
   const filters = extractFilters(baseQuery, path);
   const { should } = baseQuery.query.bool;
-  return aggregation(path, should, filters);
+  const agg = aggregation(path, should, filters);
+  agg.terms.missing = 'false';
+  return agg;
 };

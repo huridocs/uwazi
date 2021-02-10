@@ -195,6 +195,9 @@ const indexedDictionaryValues = dictionary =>
     }, {});
 
 const _getAggregationDictionary = async (aggregation, language, property, dictionaries) => {
+  if (!property) {
+    return [{values: []}, {}];
+  }
   if (property.type === 'relationship') {
     const entitiesSharedId = aggregation.buckets.map(bucket => bucket.key);
 
@@ -241,7 +244,7 @@ const _denormalizeAggregations = async (aggregations, templates, dictionaries, l
   const properties = propertiesHelper.allUniqueProperties(templates);
   return Object.keys(aggregations).reduce(async (denormaLizedAgregationsPromise, key) => {
     const denormaLizedAgregations = await denormaLizedAgregationsPromise;
-    if (!aggregations[key].buckets || key === '_types' || aggregations[key].type === 'nested') {
+    if (!aggregations[key].buckets || key === '_types' || aggregations[key].type === 'nested' || key === 'generatedToc') {
       return Object.assign(denormaLizedAgregations, { [key]: aggregations[key] });
     }
 
@@ -377,6 +380,7 @@ const processResponse = async (response, templates, dictionaries, language, filt
     result._id = hit._id;
     return result;
   });
+
   const sanitizedAggregations = await _sanitizeAggregations(
     response.body.aggregations.all,
     templates,
@@ -618,6 +622,10 @@ const search = {
       searchGeolocation(queryBuilder, templates);
     }
 
+    if (query.aggregateGeneratedToc) {
+      queryBuilder.generatedTOCAggregations();
+    }
+
     // queryBuilder.query() is the actual call
     return elastic
       .search({ body: queryBuilder.query() })
@@ -675,7 +683,7 @@ const search = {
     return snippetsFromSearchHit(response.body.hits.hits[0]);
   },
 
-  async indexEntities(query, select = '', limit, batchCallback = () => {}) {
+  async indexEntities(query, select = '', limit, batchCallback = () => { }) {
     return indexEntities({
       query,
       select,

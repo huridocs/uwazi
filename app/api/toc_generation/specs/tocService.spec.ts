@@ -54,11 +54,11 @@ describe('tocService', () => {
       expect(entitiesIndexed).toEqual([
         expect.objectContaining({
           title: 'pdf1entity',
-          systemMetadata: { generatedToc: [{ value: true }] },
+          generatedToc: true,
         }),
         expect.objectContaining({
           title: 'pdf3entity',
-          systemMetadata: { generatedToc: [{ value: true }] },
+          generatedToc: true,
         }),
       ]);
     });

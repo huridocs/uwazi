@@ -15,6 +15,7 @@ const mongoSchema = new mongoose.Schema(
     title: { type: String, required: true },
     template: { type: mongoose.Schema.Types.ObjectId, ref: 'templates', index: true },
     published: Boolean,
+    generatedToc: Boolean,
     icon: new mongoose.Schema({
       _id: String,
       label: String,
@@ -32,7 +33,6 @@ const mongoSchema = new mongoose.Schema(
     creationDate: Number,
     editDate: Number,
     metadata: mongoose.Schema.Types.Mixed,
-    systemMetadata: mongoose.Schema.Types.Mixed,
     suggestedMetadata: mongoose.Schema.Types.Mixed,
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'users' },
   },

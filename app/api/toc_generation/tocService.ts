@@ -28,7 +28,7 @@ const tocService = {
     return entities.saveMultiple(
       parentEntities.map(entity => ({
         ...entity,
-        systemMetadata: { ...(entity.systemMetadata || {}), generatedToc: [{ value: true }] },
+        generatedToc: true,
       }))
     );
   },
