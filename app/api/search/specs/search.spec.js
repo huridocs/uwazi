@@ -163,6 +163,15 @@ describe('search', () => {
       .catch(catchErrors(done));
   });
 
+  it('should return generatedToc aggregations when requested for', async () => {
+    const response = await search.search({ aggregateGeneratedToc: true }, 'es');
+
+    const aggregations = response.aggregations.all.generatedToc.buckets;
+
+    expect(aggregations.find(a => a.key === 'false').filtered.doc_count).toBe(3);
+    expect(aggregations.find(a => a.key === 'true').filtered.doc_count).toBe(1);
+  });
+
   it('should return aggregations when searching by 2 terms', done => {
     search
       .search({ searchTerm: 'english document' }, 'es')

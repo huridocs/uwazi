@@ -2,6 +2,7 @@ export const searchSchema = {
   properties: {
     query: {
       properties: {
+        aggregateGeneratedToc: { type: 'boolean' },
         filters: { type: 'object' },
         types: { type: 'array', items: [{ type: 'string' }] },
         _types: { type: 'array', items: [{ type: 'string' }] },

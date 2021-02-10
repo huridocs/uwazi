@@ -92,6 +92,7 @@ export const fixtures = {
       title: 'Batman finishes es',
       published: true,
       user: userId,
+      generatedToc: true,
       metadata: {
         relationship: [
           { value: batmanBegins, label: 'Batman begins es' },
@@ -115,6 +116,7 @@ export const fixtures = {
       language: 'es',
       title: 'Batman begins es',
       published: true,
+      generatedToc: false,
       user: userId,
     },
     {
@@ -176,10 +178,7 @@ export const fixtures = {
         field2: [{ value: 'bane' }],
         select1: [{ value: 'EgyptID', label: 'Egypt' }],
         rich_text: [{ value: 'rich' }],
-        multiselect1: [
-          { value: 'EgyptID', label: 'Egypt' },
-          { value: 'SpainID', label: 'Spain' },
-        ],
+        multiselect1: [{ value: 'EgyptID', label: 'Egypt' }, { value: 'SpainID', label: 'Spain' }],
         groupedDictionary: [{ value: 'GermanyID' }],
         nestedField_nested: [{ value: { nested1: ['1', '2', '3'] } }],
         city_geolocation: [{ value: { lat: 1, lon: 2 } }],
@@ -437,10 +436,7 @@ export const fixtures = {
         {
           label: 'Europe',
           id: 'EuropeID',
-          values: [
-            { label: 'Germany', id: 'GermanyID' },
-            { label: 'France', id: 'franceID' },
-          ],
+          values: [{ label: 'Germany', id: 'GermanyID' }, { label: 'France', id: 'franceID' }],
         },
       ],
     },
