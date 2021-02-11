@@ -137,7 +137,7 @@ export const PermissionsList = ({
         <div className="legend-item">
           <Icon icon="user-check" className="label-info" />
           {'  '}
-          <Translate>Permission on those entities explicitly shared with the user</Translate>
+          <Translate>Permission on entities explicitly shared with the user</Translate>
         </div>
       </div>
     </Modal.Body>
