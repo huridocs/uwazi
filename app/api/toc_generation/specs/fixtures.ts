@@ -54,6 +54,7 @@ const fixtures: DBFixture = {
       entity: 'shared3',
       type: 'document',
       filename: 'pdf3.pdf',
+      toc: [],
       originalname: 'originalPdf4.pdf',
       language: 'es',
     },

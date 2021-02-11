@@ -6,10 +6,10 @@ import { fixtures } from './fixtures';
 import { tocService } from '../tocService';
 
 describe('tocService', () => {
+  const service = tocService('url');
   beforeAll(async () => {
-    // const elasticIndex = 'toc.service.index';
-    // await testingDB.clearAllAndLoad(fixtures, elasticIndex);
-    spyOn(request, 'uploadFile').and.callFake(async (_url, filename) => {
+    spyOn(request, 'uploadFile').and.callFake(async (url, filename) => {
+      expect(url).toBe('url');
       if (filename === 'pdf1.pdf') {
         return Promise.resolve([{ label: 'section1 pdf1' }]);
       }
@@ -29,13 +29,13 @@ describe('tocService', () => {
       const elasticIndex = 'toc.service.index';
       await testingDB.clearAllAndLoad(fixtures, elasticIndex);
       await elasticTesting.resetIndex();
-      await tocService.processNext();
-      await tocService.processNext();
+      await service.processNext();
+      await service.processNext();
       await elasticTesting.refresh();
     });
 
     it('should not fail when there is no more to process', async () => {
-      await expect(tocService.processNext()).resolves.not.toThrow();
+      await expect(service.processNext()).resolves.not.toThrow();
     });
 
     it('should send the next pdfFile and save toc generated', async () => {
