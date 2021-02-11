@@ -4,7 +4,7 @@ import { UserSchema } from '../../shared/types/userType';
 export class UserInContextMockFactory {
   spy: jest.SpyInstance | undefined;
 
-  mock(user: UserSchema) {
+  mock(user?: UserSchema) {
     this.spy = jest.spyOn(permissionsContext, 'getUserInContext').mockReturnValue(user);
   }
 
