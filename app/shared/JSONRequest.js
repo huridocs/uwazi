@@ -126,8 +126,8 @@ export default {
         .set('X-Requested-With', 'XMLHttpRequest')
         .set('Cookie', cookie || '')
         .attach('file', file, filename)
-        .then(() => {
-          resolve();
+        .then(response => {
+          resolve(response.body);
         })
         .catch(err => {
           reject(err);

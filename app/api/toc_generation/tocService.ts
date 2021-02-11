@@ -2,23 +2,26 @@ import { files, uploadsPath } from 'api/files';
 import request from 'shared/JSONRequest';
 import entities from 'api/entities';
 
-const tocService = {
+const tocService = (serviceUrl: string) => ({
   async processNext() {
     const [nextFile] = await files.get(
-      { toc: { $exists: false }, type: 'document', filename: { $exists: true } },
+      {
+        $or: [{ toc: { $size: 0 } }, { toc: { $exists: false } }],
+        type: 'document',
+        filename: { $exists: true },
+      },
       '',
       {
         sort: { _id: 1 },
         limit: 1,
       }
     );
-
     if (!nextFile) {
       return null;
     }
 
     const toc = await request.uploadFile(
-      'url_toc_service',
+      serviceUrl,
       nextFile.filename,
       uploadsPath(nextFile.filename)
     );
@@ -34,6 +37,6 @@ const tocService = {
       false
     );
   },
-};
+});
 
 export { tocService };
