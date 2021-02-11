@@ -2,7 +2,6 @@ import entities from 'api/entities';
 import { search } from 'api/search';
 import entitiesModel from 'api/entities/entitiesModel';
 import { processDocument } from 'api/files/processDocument';
-import { processAttachmentAllLanguages } from 'api/attachments/routes';
 import { RawEntity } from 'api/csv/entityRow';
 import { TemplateSchema } from 'shared/types/templateType';
 import { MetadataSchema, PropertySchema } from 'shared/types/commonTypes';
@@ -11,7 +10,7 @@ import { EntitySchema } from 'shared/types/entityType';
 import { ensure } from 'shared/tsUtils';
 
 import typeParsers from './typeParsers';
-import { attachmentsPath } from 'api/files';
+import { attachmentsPath, files } from 'api/files';
 
 const parse = async (toImportEntity: RawEntity, prop: PropertySchema) =>
   typeParsers[prop.type]
@@ -58,6 +57,8 @@ const importEntity = async (
   importFile: ImportFile,
   { user = {}, language }: Options
 ) => {
+  const attachments = toImportEntity.attachments;
+  delete entityObject.attachments;
   const eo = await entityObject(toImportEntity, template, { language });
   const entity = await entities.save(eo, { user, language }, true, false);
 
@@ -66,13 +67,11 @@ const importEntity = async (
     await processDocument(entity.sharedId, file);
   }
 
-  if (toImportEntity.attachments && entity.sharedId) {
+  if (attachments && entity.sharedId) {
     await toImportEntity.attachments.split('|').reduce(async (promise, attachment) => {
       await promise;
-      await processAttachmentAllLanguages(
-        entity,
-        await importFile.extractFile(attachment, attachmentsPath())
-      );
+      const attachmentFile = await importFile.extractFile(attachment, attachmentsPath());
+      return files.save({ ...attachmentFile, entity: entity.sharedId, type: 'attachment' });
     }, Promise.resolve());
   }
 
