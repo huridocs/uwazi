@@ -64,13 +64,17 @@ describe('UserSidePanel', () => {
 
     it('should render the data of the passed user', () => {
       const emailInput = component.find({ id: 'email_field' }).find('input');
-      expect(emailInput.props().value).toEqual(defaultProps.user.email);
+      expect((emailInput.getDOMNode() as HTMLInputElement).value).toEqual(defaultProps.user.email);
       const roleInput = component.find({ id: 'role_field' }).find('select');
-      expect(roleInput.props().value).toEqual(defaultProps.user.role);
+      expect((roleInput.getDOMNode() as HTMLInputElement).value).toEqual(defaultProps.user.role);
       const nameInput = component.find({ id: 'username_field' }).find('input');
-      expect(nameInput.props().value).toEqual(defaultProps.user.username);
+      expect((nameInput.getDOMNode() as HTMLInputElement).value).toEqual(
+        defaultProps.user.username
+      );
       const passwordInput = component.find({ id: 'password_field' }).find('input');
-      expect(passwordInput.props().value).toEqual(defaultProps.user.password);
+      expect((passwordInput.getDOMNode() as HTMLInputElement).value).toEqual(
+        defaultProps.user.password
+      );
     });
   });
 
@@ -105,14 +109,28 @@ describe('UserSidePanel', () => {
     );
 
     it('should save the changes over the user', done => {
-      const emailInput = component.find({ id: 'email_field' }).find('input');
-      const fakeEvent = {
-        currentTarget: { name: 'email', value: 'newemail@test.test' },
-      };
+      const emailInput = component
+        .find({ id: 'email_field' })
+        .find('input')
+        .at(0);
       // @ts-ignore
-      emailInput.prop('onChange')!(fakeEvent);
+      emailInput.instance().value = 'newemail@test.test';
+      emailInput.simulate('change');
       component.find('form').simulate('submit');
-      const savedUser = { ...existingUser, email: 'newemail@test.test' };
+      const savedUser = {
+        _id: 'user1',
+        email: 'newemail@test.test',
+        groups: [
+          {
+            _id: 'group1',
+            name: 'Denunciantes',
+          },
+        ],
+        password: 'secretWord',
+        role: 'editor',
+        username: 'juan ramirez',
+        using2fa: '',
+      };
       setImmediate(() => {
         expect(defaultProps.onSave).toHaveBeenCalledWith(savedUser);
         done();
@@ -173,7 +191,7 @@ describe('UserSidePanel', () => {
             password: 'secretWord',
             role: 'editor',
             username: 'juan ramirez',
-            using2fa: true,
+            using2fa: 'true',
             groups: [
               { _id: 'group1', name: 'Denunciantes' },
               { _id: 'group2', name: 'Asesores legales' },

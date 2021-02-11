@@ -16,17 +16,21 @@ export function deleteUser(user: { _id: ObjectIdSchema }) {
 }
 
 export function saveUser(user: UserSchema) {
-  return (dispatch: Dispatch<IStore>) =>
-    UsersAPI.save(new RequestParams(user)).then(() => {
-      dispatch(basicActions.update('users', user));
-      dispatch(notificationActions.notify('Saved successfully.', 'success'));
-    });
+  return async (dispatch: Dispatch<IStore>) => {
+    await UsersAPI.save(new RequestParams(user));
+    const userToNotify = { ...user };
+    delete userToNotify.password;
+    dispatch(basicActions.update('users', userToNotify));
+    dispatch(notificationActions.notify('Saved successfully.', 'success'));
+  };
 }
 
 export function newUser(user: UserSchema) {
   return async (dispatch: Dispatch<IStore>) => {
     const createdUser = await UsersAPI.new(new RequestParams(user));
-    dispatch(basicActions.push('users', { ...user, ...createdUser }));
+    const userToNotify = { ...user, ...createdUser };
+    delete userToNotify.password;
+    dispatch(basicActions.push('users', userToNotify));
     dispatch(notificationActions.notify('Created successfully.', 'success'));
   };
 }

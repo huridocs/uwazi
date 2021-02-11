@@ -66,9 +66,13 @@ const UsersComponent = ({
     },
 
     handleSave: async (user: UserSchema) => {
+      if (!user.password) {
+        delete user.password;
+      }
       if (user._id) {
         await saveUserData(user);
       } else {
+        delete user._id;
         await createUser(user);
       }
       await loadAllGroups();

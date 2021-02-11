@@ -32,31 +32,22 @@ export const UserSidePanel = ({
   onReset2fa,
   onResetPassword,
 }: UserSidePanelProps) => {
-  const [userToSave, setUserToSave] = useState(user);
   const [permissionsModalOpened, setPermissionsModalOpened] = useState(false);
   const [selectedGroups, setSelectedGroups] = useState(
     user.groups ? user.groups.map(group => group._id!.toString()) : []
   );
-
-  const { register, handleSubmit, errors } = useForm();
-
+  const defaultValues = { ...user };
+  const { register, handleSubmit, errors } = useForm({ defaultValues });
   const availableGroups = groups;
 
-  const handleInputChange = (event: React.SyntheticEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = event.currentTarget;
-    const updatedUser = { ...userToSave, [name]: value };
-    setUserToSave(updatedUser);
-  };
-
-  const onChangeHandler = (groupIds: string[]) => {
-    setSelectedGroups(groupIds);
+  const saveUser = (userToSave: UserSchema) => {
     const updatedGroups = groups
-      .filter(group => groupIds.includes(group._id as string))
+      .filter(group => selectedGroups.includes(group._id as string))
       .map(group => ({
         _id: group._id!,
         name: group.name,
       }));
-    setUserToSave({ ...userToSave, groups: updatedGroups });
+    onSave({ ...userToSave, groups: updatedGroups });
   };
 
   const isUnique = (nameVal: string) =>
@@ -79,7 +70,10 @@ export const UserSidePanel = ({
         <Translate>{`${user._id ? 'Edit' : 'Add'} User`}</Translate>
       </div>
       <div className="sidepanel-body">
-        <form id="userFrom" className="user-form" onSubmit={handleSubmit(() => onSave(userToSave))}>
+        <form id="userFrom" className="user-form" onSubmit={handleSubmit(saveUser)}>
+          <input type="hidden" name="_id" ref={register} />
+          <input type="hidden" name="using2fa" ref={register} />
+
           <div id="email_field" className="form-group nested-selector">
             <label>
               <Translate>Email</Translate>
@@ -88,9 +82,7 @@ export const UserSidePanel = ({
               type="email"
               className="form-control"
               autoComplete="off"
-              value={userToSave.email}
               name="email"
-              onChange={handleInputChange}
               ref={register({
                 required: true,
                 validate: isUnique,
@@ -120,12 +112,7 @@ export const UserSidePanel = ({
                 <Icon icon="info-circle" />
               </button>
             </div>
-            <select
-              name="role"
-              className="form-control"
-              onChange={handleInputChange}
-              value={userToSave.role}
-            >
+            <select name="role" className="form-control" ref={register}>
               {userRoles.map(role => (
                 <option key={role} value={role}>
                   {role}
@@ -141,9 +128,7 @@ export const UserSidePanel = ({
               type="text"
               className="form-control"
               autoComplete="off"
-              value={userToSave.username}
               name="username"
-              onChange={handleInputChange}
               ref={register({
                 required: true,
                 validate: isUnique,
@@ -173,9 +158,8 @@ export const UserSidePanel = ({
               type="password"
               className="form-control"
               autoComplete="off"
-              value={userToSave.password}
               name="password"
-              onChange={handleInputChange}
+              ref={register({ maxLength: 50 })}
             />
             {errors.password && (
               <div className="validation-error">
@@ -195,7 +179,9 @@ export const UserSidePanel = ({
               optionsLabel="name"
               optionsValue="_id"
               value={selectedGroups}
-              onChange={onChangeHandler}
+              onChange={groupIds => {
+                setSelectedGroups(groupIds);
+              }}
               optionsToShow={8}
               sortbyLabel
             />

@@ -50,14 +50,15 @@ describe('User actions', () => {
     const email = 'peter@parker.com';
 
     it('should create a new user', async () => {
-      const newUser = { username, email, role: UserRole.EDITOR };
+      const newUser = { username, email, role: UserRole.EDITOR, password: 'pass' };
       await actions.newUser(newUser)(dispatch);
       expect(api.new).toHaveBeenCalledWith(
-        new RequestParams({ username, email, role: UserRole.EDITOR })
+        new RequestParams({ username, email, role: UserRole.EDITOR, password: 'pass' })
       );
+      const storedUser = { _id: 'newUserId', username, email, role: UserRole.EDITOR };
       expect(dispatch).toHaveBeenCalledWith({
         type: 'users/PUSH',
-        value: { ...newUser, _id: 'newUserId' },
+        value: { ...storedUser },
       });
     });
 
@@ -74,6 +75,9 @@ describe('User actions', () => {
           .saveUser({ username, email, role: UserRole.EDITOR })(dispatch)
           .then(() => {
             done();
+          })
+          .catch(e => {
+            fail(e);
           });
       });
 
@@ -83,7 +87,6 @@ describe('User actions', () => {
           email,
           role: UserRole.EDITOR,
         });
-        expect(dispatch).toHaveBeenCalledWith('USER UPDATED');
         expect(dispatch).toHaveBeenCalledWith('NOTIFIED');
       });
     });
