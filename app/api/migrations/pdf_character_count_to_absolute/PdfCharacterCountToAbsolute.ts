@@ -94,9 +94,17 @@ export class PdfCharacterCountToAbsolute {
 
   private removeFailingLines(errorMessage: string, xmlContentString: string) {
     let sanitizedContentString = xmlContentString;
-    const matches = sanitizedContentString.match(/<text.*<a href=".*<\/text>/g) || [];
+    const anchorsMatches = sanitizedContentString.match(/<text.*<a href=".*<\/text>/g) || [];
 
-    matches.forEach(line => {
+    anchorsMatches.forEach(line => {
+      if (!line.includes('</a>')) {
+        sanitizedContentString = sanitizedContentString.replace(line, this.sanitizeLine(line));
+      }
+    });
+
+    const anchorsNotClosedMatches = sanitizedContentString.match(/<text.*<a href=".*\n/g) || [];
+
+    anchorsNotClosedMatches.forEach(line => {
       if (!line.includes('</a>')) {
         sanitizedContentString = sanitizedContentString.replace(line, this.sanitizeLine(line));
       }
@@ -118,17 +126,14 @@ export class PdfCharacterCountToAbsolute {
     sanitizedContentString = sanitizedContentString.replace(/<\/b>/g, '');
 
     const errorLineNumber = parseInt(errorMessage.split('Line: ')[1].split('Column')[0], 10);
-    const problematicLine1 = xmlContentString.split('\n')[errorLineNumber - 1];
-    const problematicLine2 = xmlContentString.split('\n')[errorLineNumber];
+    const lines = sanitizedContentString.split('\n');
+    const problematicLines = [
+      lines[errorLineNumber - 2],
+      lines[errorLineNumber - 1],
+      lines[errorLineNumber],
+    ];
+    problematicLines.forEach(x => sanitizedContentString.replace(x, this.sanitizeLine(x)));
 
-    sanitizedContentString = sanitizedContentString.replace(
-      problematicLine1,
-      this.sanitizeLine(problematicLine1)
-    );
-    sanitizedContentString = sanitizedContentString.replace(
-      problematicLine2,
-      this.sanitizeLine(problematicLine2)
-    );
     return sanitizedContentString;
   }
 
