@@ -24,12 +24,14 @@ const tocService = {
     );
 
     await files.save({ ...nextFile, toc, generatedToc: true });
-    const parentEntities = await entities.get({ sharedId: nextFile.entity }, { language: 1 });
-    return entities.saveMultiple(
-      parentEntities.map(entity => ({
+    const [entity] = await entities.get({ sharedId: nextFile.entity }, {});
+    return entities.save(
+      {
         ...entity,
         generatedToc: true,
-      }))
+      },
+      { user: {}, language: nextFile.language },
+      false
     );
   },
 };

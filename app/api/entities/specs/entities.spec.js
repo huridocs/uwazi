@@ -340,7 +340,7 @@ describe('entities', () => {
       });
     });
 
-    describe('when published/template property changes', () => {
+    describe('when published/template/generatedToc property changes', () => {
       it('should replicate the change for all the languages', done => {
         const doc = {
           _id: batmanFinishesId,
@@ -348,6 +348,7 @@ describe('entities', () => {
           metadata: {},
           published: false,
           template: templateId,
+          generatedToc: true,
         };
 
         entities
@@ -364,8 +365,10 @@ describe('entities', () => {
             expect(docES.template).toBeDefined();
 
             expect(docES.published).toBe(false);
+            expect(docES.generatedToc).toBe(true);
             expect(docES.template.equals(templateId)).toBe(true);
             expect(docEN.published).toBe(false);
+            expect(docEN.generatedToc).toBe(true);
             expect(docEN.template.equals(templateId)).toBe(true);
             done();
           })

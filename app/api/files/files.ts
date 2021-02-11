@@ -1,6 +1,7 @@
 import { deleteUploadedFiles } from 'api/files/filesystem';
 import connections from 'api/relationships';
 import { search } from 'api/search';
+import entities from 'api/entities';
 
 import model from './filesModel';
 import { validateFile } from '../../shared/types/fileSchema';
@@ -29,5 +30,29 @@ export const files = {
     }
 
     return toDeleteFiles;
+  },
+
+  async tocReviewed(_id: string) {
+    const savedFile = await files.save({ _id, generatedToc: false });
+    const sameEntityFiles = await files.get({ entity: savedFile.entity }, { generatedToc: 1 });
+    const [entity] = await entities.get({
+      sharedId: savedFile.entity,
+      language: savedFile.language,
+    });
+
+    await entities.save(
+      {
+        _id: entity._id,
+        sharedId: entity.sharedId,
+        template: entity.template,
+        generatedToc: sameEntityFiles.reduce<boolean>(
+          (generated, file) => generated || Boolean(file.generatedToc),
+          false
+        ),
+      },
+      { user: {}, language: savedFile.language }
+    );
+
+    return savedFile;
   },
 };
