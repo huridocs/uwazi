@@ -3,7 +3,7 @@ import { Application } from 'express';
 import debugLog from 'api/log/debugLog';
 import errorLog from 'api/log/errorLog';
 import { processDocument } from 'api/files/processDocument';
-import { uploadsPath, fileExists, customUploadsPath } from 'api/files/filesystem';
+import { uploadsPath, fileExists, customUploadsPath, attachments } from 'api/files/filesystem';
 import needsAuthorization from 'api/auth/authMiddleware';
 import { uploadMiddleware } from 'api/files/uploadMiddleware';
 import activitylogMiddleware from 'api/activitylog/activitylogMiddleware';
@@ -51,7 +51,7 @@ export default (app: Application) => {
   app.post(
     '/api/files/upload/attachment',
     needsAuthorization(['admin', 'editor']),
-    uploadMiddleware(uploadsPath),
+    uploadMiddleware(attachments),
     activitylogMiddleware,
     (req, res, next) => {
       files
