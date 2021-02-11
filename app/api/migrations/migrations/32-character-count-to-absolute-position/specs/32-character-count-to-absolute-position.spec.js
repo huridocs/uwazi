@@ -113,7 +113,9 @@ describe('conversion of character count to absolute position', () => {
       .find({ _id: connectionOutOfRangeId })
       .toArray();
 
-    expect(output).toContain('Entity\tundefined\tFile\tmigration32.pdf\tCONNECTION\tno text match\t9999999\t9999999');
+    expect(output).toContain(
+      'Entity\tundefined\tFile\tmigration32.pdf\tCONNECTION\tno text match\t9999999\t9999999'
+    );
     expect(connections[0].reference.text).toEqual('no text match');
     expect(connections[0].reference.selectionRectangles.length).toEqual(1);
     expect(connections[0].reference.selectionRectangles[0].width).toEqual(0);
