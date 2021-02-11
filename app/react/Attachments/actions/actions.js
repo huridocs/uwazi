@@ -44,7 +44,7 @@ export function uploadAttachment(entity, file, __reducerKey, options = {}) {
   return dispatch => {
     dispatch({ type: types.START_UPLOAD_ATTACHMENT, entity });
     superagent
-      .post(`${APIURL}attachments/upload`)
+      .post(`${APIURL}files/upload/attachment`)
       .set('Accept', 'application/json')
       .set('X-Requested-With', 'XMLHttpRequest')
       .field('entityId', entity)
