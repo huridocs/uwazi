@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 /* eslint-disable no-param-reassign,max-statements */
 
 import { generateNamesAndIds } from 'api/templates/utils';
@@ -309,6 +310,19 @@ const validateWritePermissions = (ids, entitiesToUpdate) => {
   }
 };
 
+const withDocuments = (entities, documentsFullText, withPdfInfo) =>
+  Promise.all(
+    entities.map(async entity => {
+      const documents = await files.get(
+        { entity: entity.sharedId, type: 'document' },
+        (documentsFullText ? '+fullText ' : ' ') + (withPdfInfo ? '+pdfInfo' : '')
+      );
+
+      entity.documents = documents;
+      return entity;
+    })
+  );
+
 export default {
   denormalizeMetadata,
   sanitize,
@@ -405,26 +419,18 @@ export default {
     return model.get(query, select, options);
   },
 
-  async getInternal(query, select) {
-    return model.getInternal(query, select);
+  async getInternal(query, select, options) {
+    const { documentsFullText, withPdfInfo, ...restOfOptions } = options;
+    const entities = await model.getInternal(query, select, restOfOptions);
+
+    return withDocuments(entities, documentsFullText, withPdfInfo);
   },
 
   async get(query, select, options = {}) {
     const { documentsFullText, withPdfInfo, ...restOfOptions } = options;
     const entities = await model.get(query, select, restOfOptions);
 
-    const setDocs = Promise.all(
-      entities.map(async entity => {
-        const documents = await files.get(
-          { entity: entity.sharedId, type: 'document' },
-          (documentsFullText ? '+fullText ' : ' ') + (withPdfInfo ? '+pdfInfo' : '')
-        );
-
-        entity.documents = documents;
-        return entity;
-      })
-    );
-    return setDocs;
+    return withDocuments(entities, documentsFullText, withPdfInfo);
   },
 
   async getWithRelationships(query, select, pagination) {
