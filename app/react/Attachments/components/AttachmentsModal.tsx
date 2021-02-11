@@ -106,7 +106,7 @@ const AttachmentsModal: React.FC<AttachmentsModalProps> = ({
                         style={{ display: 'none' }}
                         ref={inputFileRef}
                       />
-                      <h4 className="dropzone-title">
+                      <h4 className="attachments-modal__dropzone-title">
                         <Translate>Drag and drop file in this window to upload </Translate>
                       </h4>
                     </>
@@ -116,9 +116,7 @@ const AttachmentsModal: React.FC<AttachmentsModalProps> = ({
                         className="progress-bar progress-bar-success attachments-modal-progress-bar"
                         role="progressbar"
                         style={{ width: `${getPercentage}%` }}
-                      >
-                        {getPercentage}
-                      </div>
+                      />
                     </div>
                   )}
                 </Dropzone>

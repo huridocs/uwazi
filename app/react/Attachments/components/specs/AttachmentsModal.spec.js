@@ -15,7 +15,7 @@ describe('Attachments Modal', () => {
     );
   };
 
-  it('should pass isOpen props', () => {
+  it('Should pass isOpen props to attachments modal.', () => {
     render({ isOpen: false });
     expect(component.find(ReactModal).props().isOpen).toBe(false);
     render({ isOpen: true });

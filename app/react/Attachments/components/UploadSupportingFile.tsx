@@ -21,9 +21,8 @@ const UploadSupportingFile: React.FC<UploadSupportingFileProps> = props => {
   const openModal = () => setModalOpen(true);
   const closeModal = () => setModalOpen(false);
 
+  // Get percentage number
   const getPercentage = progress.get(entity);
-
-  console.log(getPercentage);
 
   return (
     <div>
@@ -34,12 +33,12 @@ const UploadSupportingFile: React.FC<UploadSupportingFileProps> = props => {
           className="upload-button btn btn-success attachments-modal-trigger"
         >
           <Icon icon="plus" />
-          <Translate>Add supporting file</Translate>
+          &nbsp; <Translate>Add supporting file</Translate>
         </button>
       ) : (
         <div className="btn btn-default btn-disabled">
-          <Translate>Uploading </Translate>
-          <span>{getPercentage}%</span>
+          <Translate>Uploading</Translate>
+          <span>&nbsp;{getPercentage}%</span>
         </div>
       )}
 
@@ -54,10 +53,9 @@ const UploadSupportingFile: React.FC<UploadSupportingFileProps> = props => {
   );
 };
 
-export function mapStateToProps({ attachments, settings }: { attachments: any; settings: any }) {
+export function mapStateToProps({ attachments }: { attachments: any }) {
   return {
     progress: attachments.progress,
-    languages: settings.collection.get('languages'),
   };
 }
 

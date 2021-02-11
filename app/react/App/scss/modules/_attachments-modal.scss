@@ -90,12 +90,6 @@
       padding: 24px 0;
       height: 100%;
 
-      h4 {
-        margin-top: 32px;
-        margin-bottom: 4px;
-        font-size: $f-size-lg;
-      }
-
       &.centered {
         display: flex;
         align-items: center;
@@ -135,6 +129,12 @@
     align-items: center;
     justify-content: center;
     flex-direction: column;
+
+    &-title {
+      margin-top: 24px;
+      margin-bottom: 4px;
+      font-size: $f-size-lg;
+    }
   }
 
   &-trigger {
