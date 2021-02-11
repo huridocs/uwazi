@@ -116,7 +116,14 @@ export default {
 
   getMetadataValue(state, { property, dataset = 'default' }) {
     const data = state.page.datasets.get(dataset);
-    const mos = data ? data.getIn(['metadata', property]).toJS() : [];
+    let mos = [];
+    if (data) {
+      if (data.hasIn(['metadata', property])) {
+        mos = data.getIn(['metadata', property]).toJS();
+      }
+    } else {
+      mos = [];
+    }
     return mos && mos.length && mos[0].value ? Number(mos[0].value) : undefined;
   },
 };

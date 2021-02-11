@@ -232,8 +232,8 @@ describe('markdownDatasets', () => {
     });
 
     it('should not throw a TypeError if the property does not exist', () => {
-      expect(()=> {
-        markdownDatasets.getMetadataValue(state, { property: 'iDontExist' })
+      expect(() => {
+        markdownDatasets.getMetadataValue(state, { property: 'non_existing_property' });
       }).not.toThrow();
     });
   });
