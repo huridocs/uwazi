@@ -1,5 +1,6 @@
 import { RequestParams } from '@elastic/elasticsearch';
 import { RequestBody } from '@elastic/elasticsearch/lib/Transport';
+import { Aggregations } from 'shared/types/Aggregations.d.ts';
 
 interface ShardsResponse {
   total: number;
@@ -42,7 +43,7 @@ export interface SearchResponse<T> {
       sort?: string[];
     }>;
   };
-  aggregations?: any;
+  aggregations?: Aggregations;
 }
 
 export type IndicesDelete = Omit<RequestParams.IndicesDelete, 'index'>;

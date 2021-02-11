@@ -119,7 +119,7 @@ DB.connect(config.DBHOST, dbAuth).then(async () => {
 
         const { evidencesVault, features } = await settings.get();
         if (evidencesVault && evidencesVault.token && evidencesVault.template) {
-          console.info('==> 📥 evidences vault config detected, started sync ....');
+          console.info('==> 📥  evidences vault config detected, started sync ....');
           repeater.start(
             () => vaultSync.sync(evidencesVault.token, evidencesVault.template),
             10000

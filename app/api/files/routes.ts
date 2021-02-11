@@ -73,7 +73,7 @@ export default (app: Application) => {
     }),
     async (req, res, next) => {
       try {
-        res.json(await files.tocReviewed(req.body.fileId));
+        res.json(await files.tocReviewed(req.body.fileId, req.language));
       } catch (e) {
         next(e);
       }

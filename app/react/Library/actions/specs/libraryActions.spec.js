@@ -48,9 +48,12 @@ describe('libraryActions', () => {
 
     beforeEach(() => {
       dispatch = jasmine.createSpy('dispatch');
-      getState = jasmine
-        .createSpy('getState')
-        .and.returnValue({ library: { filters: Immutable.fromJS(filters), search: {} } });
+      getState = jasmine.createSpy('getState').and.returnValue({
+        settings: {
+          collection: Immutable.Map({}),
+        },
+        library: { filters: Immutable.fromJS(filters), search: {} },
+      });
     });
 
     it('should dispatch a SET_LIBRARY_TEMPLATES action ', () => {
@@ -178,15 +181,24 @@ describe('libraryActions', () => {
             {
               name: 'relationshipfilter',
               type: 'relationshipfilter',
-              filters: [
-                { name: 'status', type: 'select' },
-                { name: 'empty', type: 'date' },
-              ],
+              filters: [{ name: 'status', type: 'select' }, { name: 'empty', type: 'date' }],
             },
           ],
           documentTypes: ['decision'],
         };
-        store = { library: { filters: Immutable.fromJS(state), search: { searchTerm: 'batman' } } };
+        store = {
+          settings: {
+            collection: Immutable.Map({}),
+          },
+          library: {
+            filters: Immutable.fromJS(state),
+            search: {
+              searchTerm: 'batman',
+              customFilters: { property: { values: ['value'] } },
+              filters: {},
+            },
+          },
+        };
         spyOn(browserHistory, 'getCurrentLocation').and.returnValue({
           pathname: '/library',
           query: { view: 'chart' },
@@ -258,6 +270,16 @@ describe('libraryActions', () => {
 
         expect(browserHistory.push).toHaveBeenCalledWith(
           "/library/?view=chart&q=(filters:(author:batman,nested:nestedValue,select:selectValue),from:0,limit:60,searchTerm:'batman',sort:_score,types:!(decision))" //eslint-disable-line
+        );
+      });
+
+      it('should use customFilters from the current search on the store', () => {
+        const limit = 60;
+        spyOn(browserHistory, 'push');
+        actions.searchDocuments({}, storeKey, limit)(dispatch, getState);
+
+        expect(browserHistory.push).toHaveBeenCalledWith(
+          "/library/?view=chart&q=(customFilters:(property:(values:!(value))),filters:(),from:0,limit:60,searchTerm:'batman',sort:_score,types:!(decision))" //eslint-disable-line
         );
       });
 
@@ -365,10 +387,7 @@ describe('libraryActions', () => {
           },
           {
             type: types.UPDATE_DOCUMENTS,
-            docs: [
-              { sharedId: '1', metadataResponse },
-              { sharedId: '2', metadataResponse },
-            ],
+            docs: [{ sharedId: '1', metadataResponse }, { sharedId: '2', metadataResponse }],
           },
         ];
         const store = mockStore({});

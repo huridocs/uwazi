@@ -32,12 +32,11 @@ export const files = {
     return toDeleteFiles;
   },
 
-  async tocReviewed(_id: string) {
+  async tocReviewed(_id: string, language: string) {
     const savedFile = await files.save({ _id, generatedToc: false });
     const sameEntityFiles = await files.get({ entity: savedFile.entity }, { generatedToc: 1 });
     const [entity] = await entities.get({
       sharedId: savedFile.entity,
-      language: savedFile.language,
     });
 
     await entities.save(
@@ -50,7 +49,7 @@ export const files = {
           false
         ),
       },
-      { user: {}, language: savedFile.language }
+      { user: {}, language }
     );
 
     return savedFile;

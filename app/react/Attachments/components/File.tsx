@@ -10,6 +10,7 @@ import { APIURL } from 'app/config.js';
 import { LocalForm, Control } from 'react-redux-form';
 import { updateFile, deleteFile } from 'app/Attachments/actions/actions';
 import { wrapDispatch } from 'app/Multireducer';
+import { TocGeneratedLabel } from 'app/ToggledFeatures/tocGeneration';
 import { NeedAuthorization } from 'app/Auth';
 import { EntitySchema } from 'shared/types/entityType';
 import { ViewDocumentLink } from './ViewDocumentLink';
@@ -102,7 +103,10 @@ export class File extends Component<FileProps, FileState> {
       <div>
         <div className="file-language">
           <Translate>{language ? transformLanguage(language) || '' : ''}</Translate>
-        </div>{' '}
+        </div>
+        <TocGeneratedLabel file={this.props.file}>
+          <Translate>ML TOC</Translate>
+        </TocGeneratedLabel>
         <a
           href={`${APIURL}files/${filename}`}
           target="_blank"
@@ -206,4 +210,7 @@ export class File extends Component<FileProps, FileState> {
 const mapDispatchToProps = (dispatch: Dispatch<{}>, props: FileProps) =>
   bindActionCreators({ updateFile, deleteFile }, wrapDispatch(dispatch, props.storeKey));
 
-export const ConnectedFile = connect(null, mapDispatchToProps)(File);
+export const ConnectedFile = connect(
+  null,
+  mapDispatchToProps
+)(File);

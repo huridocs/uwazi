@@ -16,6 +16,8 @@ import ShowIf from 'app/App/ShowIf';
 import SidePanel from 'app/Layout/SidePanel';
 import DocumentSemanticSearchResults from 'app/SemanticSearch/components/DocumentResults';
 import { CopyFromEntity } from 'app/Metadata/components/CopyFromEntity';
+import { FeatureToggle } from 'app/components/Elements/FeatureToggle';
+import { TocGeneratedLabel, ReviewTocButton } from 'app/ToggledFeatures/tocGeneration';
 import { Icon } from 'UI';
 
 import * as viewerModule from 'app/Viewer';
@@ -321,11 +323,14 @@ export class DocumentSidePanel extends Component {
             <div className="sidepanel-footer">
               <button
                 onClick={() => this.props.editToc(this.props.file.toc || [])}
-                className="edit-toc btn btn-success"
+                className="edit-toc btn btn-info"
               >
                 <Icon icon="pencil-alt" />
                 <span className="btn-label">Edit</span>
               </button>
+              <ReviewTocButton file={this.props.file}>
+                <Translate>Mark as Reviewed</Translate>
+              </ReviewTocButton>
             </div>
           </ShowIf>
         </NeedAuthorization>
@@ -340,6 +345,14 @@ export class DocumentSidePanel extends Component {
               />
             </TabContent>
             <TabContent for="toc" className="toc">
+              <div className="tocHeader">
+                <h1>
+                  <Translate>Table of contents</Translate>
+                </h1>
+                <TocGeneratedLabel file={this.props.file}>
+                  <Translate>auto-created ⓘ </Translate>
+                </TocGeneratedLabel>
+              </div>
               <ShowIf if={!this.props.tocBeingEdited}>
                 <ShowToc
                   toc={defaultDocumentToC}
