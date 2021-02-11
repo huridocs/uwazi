@@ -60,13 +60,19 @@ const AttachmentsModal: React.FC<AttachmentsModalProps> = ({
         isOpen={isOpen}
         className="attachments-modal"
         overlayClassName="attachments-modal__overlay"
+        ariaHideApp={false}
       >
         <div className="attachments-modal__header">
           <h4>
             <Translate>Supporting files</Translate>
           </h4>
 
-          <button type="button" onClick={onClose} className="attachments-modal__close">
+          <button
+            type="button"
+            onClick={onClose}
+            className="attachments-modal__close"
+            disabled={getPercentage !== undefined}
+          >
             <Icon icon="times" />
             <span>Cancel</span>
           </button>
