@@ -29,13 +29,11 @@ export class DocumentSidePanel extends Component {
     super(props);
     this.selectTab = this.selectTab.bind(this);
     this.firstRender = true;
-    this.state = { copyFrom: false, copyFromProps: [], isAttachmentModalOpen: false };
+    this.state = { copyFrom: false, copyFromProps: [] };
 
     this.toggleCopyFrom = this.toggleCopyFrom.bind(this);
     this.onCopyFromSelect = this.onCopyFromSelect.bind(this);
     this.deleteDocument = this.deleteDocument.bind(this);
-    this.closeModal = this.closeModal.bind(this);
-    this.openModal = this.openModal.bind(this);
   }
 
   componentDidUpdate(prevProps) {
@@ -90,14 +88,6 @@ export class DocumentSidePanel extends Component {
     this.props.resetForm(this.props.formPath);
     this.props.closePanel();
     this.setState({ copyFrom: false });
-  }
-
-  closeModal() {
-    this.setState({ isAttachmentModalOpen: false });
-  }
-
-  openModal() {
-    this.setState({ isAttachmentModalOpen: true });
   }
 
   close() {
@@ -421,7 +411,7 @@ export class DocumentSidePanel extends Component {
                         storeKey={this.props.storeKey}
                       />
 
-                      {/* TODO: This is for demo purposes, move to style */}
+                      {/* TODO: This is for demo purposes, move to style
                       <div
                         style={{
                           display: 'flex',
@@ -446,7 +436,7 @@ export class DocumentSidePanel extends Component {
                             &nbsp; Add supporting file
                           </button>
                         </NeedAuthorization>
-                      </div>
+                      </div> */}
                     </div>
                   );
                 })()}
@@ -467,12 +457,12 @@ export class DocumentSidePanel extends Component {
             </Tabs>
           </div>
         </SidePanel>
-        <AttachmentsModal
+        {/* <AttachmentsModal
           isOpen={this.state.isAttachmentModalOpen}
           onClose={this.closeModal}
           entity={doc.get('_id')}
           storeKey={this.props.storeKey}
-        />
+        /> */}
       </>
     );
   }

@@ -16,6 +16,7 @@ interface AttachmentsModalProps {
   storeKey: string;
   onClose(): void;
   uploadAttachment: (entity: any, file: any, __reducerKey: any, options?: {}) => void;
+  getPercentage?: number;
 }
 
 // eslint-disable-next-line react/prop-types
@@ -25,6 +26,7 @@ const AttachmentsModal: React.FC<AttachmentsModalProps> = ({
   storeKey,
   onClose,
   uploadAttachment,
+  getPercentage,
 }) => {
   const inputFileRef = useRef<HTMLInputElement | null>(null);
 
@@ -86,28 +88,39 @@ const AttachmentsModal: React.FC<AttachmentsModalProps> = ({
                   disableClick
                   onDrop={handleDropFiles}
                   className="attachments-modal__dropzone"
+                  multiple={false}
                 >
-                  <button
-                    type="button"
-                    onClick={handleUploadButtonClicked}
-                    className="btn btn-success"
-                  >
-                    <Icon icon="link" />
-                    &nbsp; <Translate>Upload and select file</Translate>
-                  </button>
-                  <input
-                    type="file"
-                    onChange={handleInputFileChange}
-                    style={{ display: 'none' }}
-                    ref={inputFileRef}
-                    multiple
-                  />
-                  <h4 className="dropzone-title">
-                    <Translate>Drag and drop one or more files in this window to upload </Translate>
-                  </h4>
-                  <Translate>
-                    For better performance, upload in batches of 50 or less files.
-                  </Translate>
+                  {getPercentage === undefined ? (
+                    <>
+                      <button
+                        type="button"
+                        onClick={handleUploadButtonClicked}
+                        className="btn btn-success"
+                      >
+                        <Icon icon="link" />
+                        &nbsp; <Translate>Upload and select file</Translate>
+                      </button>
+                      <input
+                        type="file"
+                        onChange={handleInputFileChange}
+                        style={{ display: 'none' }}
+                        ref={inputFileRef}
+                      />
+                      <h4 className="dropzone-title">
+                        <Translate>Drag and drop file in this window to upload </Translate>
+                      </h4>
+                    </>
+                  ) : (
+                    <div className="progress attachments-modal-progress">
+                      <div
+                        className="progress-bar progress-bar-success attachments-modal-progress-bar"
+                        role="progressbar"
+                        style={{ width: `${getPercentage}%` }}
+                      >
+                        {getPercentage}
+                      </div>
+                    </div>
+                  )}
                 </Dropzone>
               </TabContent>
               <TabContent for="uploadWeb" className="tab-content centered">

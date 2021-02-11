@@ -3,6 +3,7 @@
   display: flex;
   flex-direction: column;
   width: 95vw;
+  max-width: 1440px;
   height: 95vh;
   top: 50%;
   left: 50%;
@@ -143,5 +144,22 @@
   @include desktop {
     width: 80vw;
     height: 70vh;
+  }
+
+  &-progress {
+    width: 400px;
+    height: 32px;
+  }
+
+  &-progress-bar {
+    width: 59%;
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    text-align: center;
+    font-size: 16px;
+    white-space: nowrap;
+    text-align: center;
+    justify-content: center;
   }
 }
