@@ -13,7 +13,6 @@ const fixtures: DBFixture = {
     {
       _id: uploadId,
       entity: 'sharedId1',
-      language: 'es',
       generatedToc: true,
       originalname: 'upload1',
       filename: fileName1,
@@ -22,7 +21,6 @@ const fixtures: DBFixture = {
     {
       _id: uploadId2,
       generatedToc: true,
-      language: 'es',
       entity: 'sharedId1',
       filename: 'fileNotInDisk',
     },

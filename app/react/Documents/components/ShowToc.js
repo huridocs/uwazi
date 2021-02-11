@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { scrollToToc } from 'app/Viewer/actions/uiActions';
 import Immutable from 'immutable';
 import ShowIf from 'app/App/ShowIf';
-import { t } from 'app/I18N';
+import { t, Translate} from 'app/I18N';
 import { Icon } from 'UI';
 
 export class ShowToc extends Component {
@@ -65,4 +65,7 @@ function mapDispatchToProps() {
   return { scrollToToc };
 }
 
-export default connect(null, mapDispatchToProps)(ShowToc);
+export default connect(
+  null,
+  mapDispatchToProps
+)(ShowToc);

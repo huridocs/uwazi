@@ -24,10 +24,7 @@ describe('filterActions', () => {
   let filtersState;
 
   beforeEach(() => {
-    libraryFilters = [
-      { name: 'author', filter: true },
-      { name: 'country', filter: true },
-    ];
+    libraryFilters = [{ name: 'author', filter: true }, { name: 'country', filter: true }];
     search = { searchTerm: '', filters: { author: 'RR Martin', country: '' } };
     filtersState = {
       documentTypes,
@@ -36,6 +33,9 @@ describe('filterActions', () => {
     };
 
     store = {
+      settings: {
+        collection: Immutable.Map({}),
+      },
       library: {
         filters: Immutable.fromJS(filtersState),
         search,

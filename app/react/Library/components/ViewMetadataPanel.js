@@ -9,6 +9,7 @@ import { actions } from 'app/Metadata';
 import { deleteDocument, searchSnippets } from 'app/Library/actions/libraryActions';
 import { deleteEntity } from 'app/Entities/actions/actions';
 import { wrapDispatch } from 'app/Multireducer';
+import { entityDefaultDocument } from 'shared/entityDefaultDocument';
 import modals from 'app/Modals';
 
 import {
@@ -22,9 +23,18 @@ const getTemplates = state => state.templates;
 
 const mapStateToProps = (state, props) => {
   const library = state[props.storeKey];
+  const doc = library.ui.get('selectedDocuments').first() || Immutable.fromJS({ documents: [] });
+  const defaultLanguage = state.settings.collection.get('languages').find(l => l.get('defautl'));
+  const file = entityDefaultDocument(
+    doc.get('documents').toJS(),
+    doc.get('language'),
+    defaultLanguage
+  );
+
   return {
     open: library.ui.get('selectedDocuments').size === 1,
-    doc: library.ui.get('selectedDocuments').first() || Immutable.fromJS({}),
+    doc,
+    file,
     references: library.sidepanel.references,
     tab: library.sidepanel.tab,
     docBeingEdited: !!Object.keys(library.sidepanel.metadata).length,

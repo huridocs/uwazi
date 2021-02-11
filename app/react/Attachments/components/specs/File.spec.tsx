@@ -2,8 +2,8 @@ import React from 'react';
 import { shallow, ShallowWrapper } from 'enzyme';
 import { LocalForm } from 'react-redux-form';
 import { FileType } from 'shared/types/fileType';
-import { File, FileProps } from '../File';
 import { Translate } from 'app/I18N';
+import { File, FileProps } from '../File';
 
 describe('file', () => {
   let component: ShallowWrapper<File>;
@@ -32,6 +32,7 @@ describe('file', () => {
   });
 
   const render = () => {
+    //eslint-disable-next-line react/jsx-props-no-spreading
     component = shallow(<File {...props} />, { context });
   };
 

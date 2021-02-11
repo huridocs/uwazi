@@ -33,26 +33,17 @@ describe('library helper', () => {
   const thesauris = [
     {
       _id: 'abc1',
-      values: [
-        { id: 1, value: 'value1' },
-        { id: 2, value: 'value2' },
-      ],
+      values: [{ id: 1, value: 'value1' }, { id: 2, value: 'value2' }],
     },
     {
       _id: 'thesauri2',
       type: 'template',
-      values: [
-        { id: 3, value: 'value3' },
-        { id: 4, value: 'value4' },
-      ],
+      values: [{ id: 3, value: 'value3' }, { id: 4, value: 'value4' }],
     },
     {
       _id: 'thesauri3',
       type: 'template',
-      values: [
-        { id: 5, value: 'value5' },
-        { id: 6, value: 'value6' },
-      ],
+      values: [{ id: 5, value: 'value5' }, { id: 6, value: 'value6' }],
     },
   ];
 
@@ -83,10 +74,14 @@ describe('library helper', () => {
         sort: 'sort',
         types: ['3'],
         filters: { country: 'countryValue', rich: 'search' },
+        customFilters: {
+          property: { values: ['value'] },
+        },
       };
 
       const state = libraryHelper.URLQueryToState(query, templates);
       expect(state.properties.length).toBe(1);
+      expect(state.search.customFilters).toEqual(query.customFilters);
       expect(state.search.filters.country).toBe('countryValue');
       expect(state.search.filters.rich).toBe('search');
       expect(state.search.searchTerm).toBe('searchTerm');
@@ -146,10 +141,7 @@ describe('library helper', () => {
           filter: true,
           type: 'select',
           content: 'abc1',
-          options: [
-            { id: 1, value: 'value1' },
-            { id: 2, value: 'value2' },
-          ],
+          options: [{ id: 1, value: 'value1' }, { id: 2, value: 'value2' }],
         },
         { name: 'date', filter: true, type: 'text' },
       ];
