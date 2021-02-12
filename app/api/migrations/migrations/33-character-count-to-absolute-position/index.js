@@ -176,7 +176,7 @@ function getWrongConversions(wrongConversions, type, file) {
 }
 
 export default {
-  delta: 32,
+  delta: 33,
 
   name: 'character-count-to-absolute-position',
 

@@ -12,7 +12,7 @@ import {
   firstConnectionId,
   missingDocumentId,
   secondConnectionId,
-} from 'api/migrations/migrations/32-character-count-to-absolute-position/specs/fixtures';
+} from 'api/migrations/migrations/33-character-count-to-absolute-position/specs/fixtures';
 
 import fixtures from './fixtures.js';
 import migration from '../index.js';
@@ -33,7 +33,7 @@ describe('conversion of character count to absolute position', () => {
   });
 
   it('should have a delta number', () => {
-    expect(migration.delta).toEqual(32);
+    expect(migration.delta).toEqual(33);
   });
 
   it('should convert the connections with ranges to absolute position', async () => {
@@ -114,7 +114,7 @@ describe('conversion of character count to absolute position', () => {
       .toArray();
 
     expect(output).toContain(
-      'Entity\tundefined\tFile\tmigration32.pdf\tCONNECTION\tno text match\t9999999\t9999999'
+      'Entity\tundefined\tFile\tmigration33.pdf\tCONNECTION\tno text match\t9999999\t9999999'
     );
     expect(connections[0].reference.text).toEqual('no text match');
     expect(connections[0].reference.selectionRectangles.length).toEqual(1);
@@ -127,7 +127,7 @@ describe('conversion of character count to absolute position', () => {
 
   it('should manage toc with out of range reference', async () => {
     const output = await migration.up(testingDB.mongodb);
-    expect(output).toContain('Entity\tentity1\tFile\tmigration32.pdf\tTOC\tWRONG\t99999\t99999');
+    expect(output).toContain('Entity\tentity1\tFile\tmigration33.pdf\tTOC\tWRONG\t99999\t99999');
   });
 
   it('should convert table of content to absolute position', async () => {
