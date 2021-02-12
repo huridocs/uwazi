@@ -19,7 +19,6 @@ import mailer from 'api/utils/mailer';
 
 import { routes } from '../jsRoutes';
 import { fixtures, templateId } from './fixtures';
-import { files } from '../files';
 
 jest.mock(
   '../../auth/authMiddleware.ts',

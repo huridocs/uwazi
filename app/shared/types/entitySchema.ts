@@ -1,7 +1,7 @@
 /* eslint-disable max-statements */
 import Ajv from 'ajv';
 import templatesModel from 'api/templates/templatesModel';
-import { objectIdSchema, metadataSchema, attachmentSchema } from 'shared/types/commonSchemas';
+import { objectIdSchema, metadataSchema } from 'shared/types/commonSchemas';
 import { fileSchema } from 'shared/types/fileSchema';
 import { wrapValidator } from 'shared/tsUtils';
 import { validators, customErrorMessages } from 'api/entities/metadataValidators.js';

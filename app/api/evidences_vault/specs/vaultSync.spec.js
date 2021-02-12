@@ -2,7 +2,6 @@ import path from 'path';
 import moment from 'moment';
 import db from 'api/utils/testing_db';
 import entities from 'api/entities';
-import { files } from 'api/files/files';
 import { search } from 'api/search';
 import { deleteFile, getFileContent } from 'api/files/filesystem';
 
