@@ -55,6 +55,9 @@ const UserGroupsComponent = ({
       setSidePanelOpened(true);
     },
     handleSave: async (userGroup: UserGroupSchema) => {
+      if (!userGroup._id) {
+        delete userGroup._id;
+      }
       await saveGroup(userGroup);
       await loadAllUsers();
       closeSidePanel();

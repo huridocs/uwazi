@@ -31,26 +31,18 @@ export const UserGroupSidePanel = ({
   onSave,
   onDelete,
 }: UserGroupSidePanelProps) => {
-  const [group, setGroup] = useState<UserGroupSchema>(userGroup);
-  const [values, setValues] = useState<string[]>(mapUserIds(userGroup.members));
-  const { register, handleSubmit, errors } = useForm();
+  const [selectedUsers, setSelectedUsers] = useState<string[]>(mapUserIds(userGroup.members));
+  const { register, handleSubmit, errors } = useForm({ defaultValues: userGroup });
   const availableUsers = sortByName(users);
 
-  const updateMembers = (userIds: string[]) => {
-    const selectedUsers: GroupMemberSchema[] = users
-      .filter((user: GroupMemberSchema) => userIds.includes(user._id as string))
+  const saveGroup = (groupToSave: UserGroupSchema) => {
+    const updatedMembers: GroupMemberSchema[] = users
+      .filter((user: GroupMemberSchema) => selectedUsers.includes(user._id as string))
       .map(user => ({
         _id: user._id,
         username: user.username,
-        role: user.role,
-        email: user.email,
       }));
-    setValues(mapUserIds(selectedUsers));
-    setGroup({ ...group, members: [...selectedUsers] });
-  };
-
-  const updateGroupName = (event: any) => {
-    setGroup({ ...group, name: event.target.value });
+    onSave({ ...groupToSave, members: [...updatedMembers] });
   };
 
   const isUnique = (nameVal: string) =>
@@ -66,11 +58,8 @@ export const UserGroupSidePanel = ({
         <Translate>{`${userGroup._id ? 'Edit' : 'Add'} Group`}</Translate>
       </div>
       <div className="sidepanel-body">
-        <form
-          id="userGroupFrom"
-          className="user-group-form"
-          onSubmit={handleSubmit(() => onSave(group))}
-        >
+        <form id="userGroupFrom" className="user-group-form" onSubmit={handleSubmit(saveGroup)}>
+          <input type="hidden" name="_id" ref={register} />
           <div id="name_field" className="form-group nested-selector">
             <label>
               <Translate>Name of the group</Translate>
@@ -79,9 +68,7 @@ export const UserGroupSidePanel = ({
               type="text"
               className="form-control"
               autoComplete="off"
-              value={group.name}
               name="name"
-              onChange={updateGroupName}
               ref={register({
                 required: true,
                 validate: isUnique,
@@ -105,8 +92,10 @@ export const UserGroupSidePanel = ({
               options={availableUsers}
               optionsLabel="username"
               optionsValue="_id"
-              value={values}
-              onChange={updateMembers}
+              value={selectedUsers}
+              onChange={usersIds => {
+                setSelectedUsers(usersIds);
+              }}
               optionsToShow={8}
               sortbyLabel
             />
@@ -130,7 +119,7 @@ export const UserGroupSidePanel = ({
           <ConfirmButton
             id="deleteBtn"
             className="btn btn-outline-danger"
-            action={() => onDelete(group)}
+            action={() => onDelete(userGroup)}
           >
             <Icon icon="trash-alt" />
             <span className="btn-label">

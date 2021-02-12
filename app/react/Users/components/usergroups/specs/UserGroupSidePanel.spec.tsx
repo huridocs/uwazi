@@ -113,7 +113,9 @@ describe('UserGroupSidePanel', () => {
   describe('Editing user group', () => {
     it('should show the name of the received group', () => {
       const nameInput = component.find({ id: 'name_field' }).find('input');
-      expect(nameInput.props().value).toEqual(defaultProps.userGroup.name);
+      expect((nameInput.getDOMNode() as HTMLInputElement).value).toEqual(
+        defaultProps.userGroup.name
+      );
     });
 
     it('should show edition labels', () => {
@@ -152,16 +154,17 @@ describe('UserGroupSidePanel', () => {
     describe('Saving user group', () => {
       it('should call the save callback when save button is clicked', done => {
         const nameInput = component.find({ id: 'name_field' }).find('input');
-
-        nameInput.simulate('change', { target: { value: 'GROUP 1' } });
+        // @ts-ignore
+        nameInput.instance().value = 'GROUP 1';
+        nameInput.simulate('change');
         component.find('form').simulate('submit');
         setImmediate(() => {
           expect(defaultProps.onSave).toHaveBeenCalledWith({
             _id: 'group1Id',
             name: 'GROUP 1',
             members: [
-              { _id: 'user1', username: 'martha perez' },
               { _id: 'user2', username: 'ana johnson' },
+              { _id: 'user1', username: 'martha perez' },
             ],
           });
           done();
@@ -184,7 +187,7 @@ describe('UserGroupSidePanel', () => {
 
     it('should add a checked user to the selected users', () => {
       const selectedUsers = component.find(MultiSelect).props().value;
-      expect(selectedUsers).toEqual(['user2', 'user4', 'user1']);
+      expect(selectedUsers).toEqual(['user1', 'user2', 'user4']);
     });
 
     it('should save the group with its members', done => {
