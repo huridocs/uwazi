@@ -12,7 +12,8 @@ import { uploadAttachment } from '../actions/actions';
 
 interface AttachmentsModalProps {
   isOpen: boolean;
-  entity: string;
+  entitySharedId: string;
+  entityId: string;
   storeKey: string;
   onClose(): void;
   uploadAttachment(entity: any, file: any, __reducerKey: any, options?: {}): void;
@@ -22,7 +23,7 @@ interface AttachmentsModalProps {
 // eslint-disable-next-line react/prop-types
 const AttachmentsModal: React.FC<AttachmentsModalProps> = ({
   isOpen,
-  entity,
+  entitySharedId,
   storeKey,
   onClose,
   uploadAttachment,
@@ -39,7 +40,7 @@ const AttachmentsModal: React.FC<AttachmentsModalProps> = ({
   const handleInputFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
       [...event.target.files].forEach(file => {
-        uploadAttachment(entity, file, storeKey);
+        uploadAttachment(entitySharedId, file, storeKey);
       });
     }
   };
@@ -50,7 +51,7 @@ const AttachmentsModal: React.FC<AttachmentsModalProps> = ({
     event: DragEvent<HTMLDivElement>
   ) => {
     accepted.forEach(file => {
-      uploadAttachment(entity, file, storeKey);
+      uploadAttachment(entitySharedId, file, storeKey);
     });
   };
 

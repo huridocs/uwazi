@@ -3,10 +3,9 @@ import React, { Component } from 'react';
 
 import { advancedSort } from 'app/utils/advancedSort';
 import { Translate } from 'app/I18N';
-
 import { NeedAuthorization } from 'app/Auth';
 import Attachment from 'app/Attachments/components/Attachment';
-import UploadAttachment from 'app/Attachments/components/UploadAttachment';
+
 import UploadSupportingFile from './UploadSupportingFile';
 
 export default class AttachmentsList extends Component {
@@ -25,7 +24,11 @@ export default class AttachmentsList extends Component {
           <div className="attachment-add">
             {/* TODO: This is an old upload attachment button */}
             {/* <UploadAttachment entity={this.props.parentId} storeKey={storeKey} /> */}
-            <UploadSupportingFile entity={this.props.parentId} storeKey={storeKey} />
+            <UploadSupportingFile
+              entitySharedId={this.props.parentSharedId}
+              entityId={this.props.parentId}
+              storeKey={storeKey}
+            />
           </div>
         </NeedAuthorization>
       );

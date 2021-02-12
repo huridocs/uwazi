@@ -9,20 +9,21 @@ import { uploadAttachment } from '../actions/actions';
 import AttachmentsModal from './AttachmentsModal';
 
 interface UploadSupportingFileProps {
-  entity: string;
+  entityId: string;
+  entitySharedId: string;
   storeKey: string;
   progress?: any;
 }
 
 const UploadSupportingFile: React.FC<UploadSupportingFileProps> = props => {
-  const { entity, storeKey, progress } = props;
+  const { entitySharedId, entityId, storeKey, progress } = props;
   const [modalOpen, setModalOpen] = useState(false);
 
   const openModal = () => setModalOpen(true);
   const closeModal = () => setModalOpen(false);
 
   // Get percentage number
-  const getPercentage = progress.get(entity);
+  const getPercentage = progress.get(entitySharedId);
 
   return (
     <>
@@ -45,7 +46,8 @@ const UploadSupportingFile: React.FC<UploadSupportingFileProps> = props => {
       <AttachmentsModal
         isOpen={modalOpen}
         onClose={closeModal}
-        entity={entity}
+        entitySharedId={entitySharedId}
+        entityId={entityId}
         storeKey={storeKey}
         getPercentage={getPercentage}
       />
@@ -59,8 +61,8 @@ export function mapStateToProps({ attachments }: { attachments: any }) {
   };
 }
 
-export function mapDispatchToProps(dispatch: any) {
-  return bindActionCreators({ uploadAttachment }, dispatch);
-}
+export const mapDispatchToProps = {
+  uploadAttachment,
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(UploadSupportingFile);

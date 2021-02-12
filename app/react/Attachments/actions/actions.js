@@ -47,8 +47,7 @@ export function uploadAttachment(entity, file, __reducerKey, options = {}) {
       .post(`${APIURL}files/upload/attachment`)
       .set('Accept', 'application/json')
       .set('X-Requested-With', 'XMLHttpRequest')
-      .field('entityId', entity)
-      .field('allLanguages', Boolean(options.allLanguages))
+      .field('entity', entity)
       .attach('file', file, file.name)
       .on('progress', data => {
         dispatch({ type: types.ATTACHMENT_PROGRESS, entity, progress: Math.floor(data.percent) });
