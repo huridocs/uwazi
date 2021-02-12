@@ -1,11 +1,21 @@
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import Immutable from 'immutable';
-
+import { createSelector } from 'reselect';
 import { getMarkers } from './helper';
 
-export const MarkersComponent = ({ children, entities, templates }) =>
-  children(getMarkers(entities, templates));
+const selectMarkers = createSelector(
+  state => ({
+    entities: state.entities,
+    templates: state.templates,
+  }),
+  ({ entities, templates }) => {
+    console.log(entities);
+    return getMarkers(entities, templates);
+  }
+);
+
+export const MarkersComponent = ({ children, markers }) => children(markers);
 
 MarkersComponent.defaultProps = {
   entities: Immutable.List(),
@@ -17,6 +27,9 @@ MarkersComponent.propTypes = {
   entities: PropTypes.instanceOf(Immutable.List),
 };
 
-export const mapStateToProps = ({ templates }) => ({ templates });
+export const mapStateToProps = state => ({
+  markers: selectMarkers(state),
+  templates: state.templates,
+});
 
 export default connect(mapStateToProps)(MarkersComponent);

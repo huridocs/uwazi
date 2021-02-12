@@ -131,15 +131,26 @@ export const encodedSearch = createSelector(
   }
 );
 
+const numberOfMarkersSelector = createSelector(
+  ({ state, storeKey }) => ({
+    entities: state[storeKey].markers.get('rows'),
+    templates: state.templates,
+  }),
+  ({ entities, templates }) => mapHelper.getMarkers(entities, templates).length
+);
+
 export function mapStateToProps(state, props) {
   const { templates } = state;
   const showGeolocation = Boolean(
     templates.find(_t => _t.get('properties').find(p => p.get('type') === 'geolocation'))
   );
-  const numberOfMarkers = mapHelper.getMarkers(
-    state[props.storeKey].markers.get('rows'),
-    state.templates
-  ).length;
+
+  const numberOfMarkers = numberOfMarkersSelector({ state, storeKey: props.storeKey });
+  // mapHelper.getMarkers(
+  //   state[props.storeKey].markers.get('rows'),
+  //   state.templates
+  // ).length;
+
   return {
     searchUrl: encodedSearch(state[props.storeKey]),
     showGeolocation,
