@@ -8,6 +8,7 @@ import { UserGroupSchema } from 'shared/types/userGroupType';
 import { renderConnected, renderConnectedMount } from 'app/Templates/specs/utils/renderConnected';
 import { UserGroupList } from 'app/Users/components/usergroups/UserGroupList';
 import { UserGroupSidePanel } from 'app/Users/components/usergroups/UserGroupSidePanel';
+import { loadUsers } from 'app/Users/actions/actions';
 import {
   deleteUserGroup,
   loadUserGroups,
@@ -19,6 +20,10 @@ jest.mock('app/Users/components/usergroups/actions/actions', () => ({
   loadUserGroups: jest.fn().mockReturnValue(async () => Promise.resolve()),
   saveUserGroup: jest.fn().mockReturnValue(async () => Promise.resolve()),
   deleteUserGroup: jest.fn().mockReturnValue(async () => Promise.resolve()),
+}));
+
+jest.mock('app/Users/actions/actions', () => ({
+  loadUsers: jest.fn().mockReturnValue(async () => Promise.resolve()),
 }));
 
 describe('UserGroups', () => {
@@ -122,6 +127,7 @@ describe('UserGroups', () => {
         const updatedSidePanel = component.find(UserGroupSidePanel).get(0);
         await updatedSidePanel.props.onSave(groupToSave);
         expect(saveUserGroup).toHaveBeenCalledWith(groupToSave);
+        expect(loadUsers).toHaveBeenCalledWith();
         expect(component.find(UserGroupSidePanel).length).toEqual(0);
       });
     });
@@ -132,6 +138,7 @@ describe('UserGroups', () => {
         const updatedSidePanel = component.find(UserGroupSidePanel).get(0);
         await updatedSidePanel.props.onDelete(userGroups[1]);
         expect(deleteUserGroup).toHaveBeenCalledWith(userGroups[1]);
+        expect(loadUsers).toHaveBeenCalledWith();
         expect(component.find(UserGroupSidePanel).length).toEqual(0);
       });
     });
