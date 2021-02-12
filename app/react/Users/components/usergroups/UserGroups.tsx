@@ -9,6 +9,7 @@ import {
   loadUserGroups,
   saveUserGroup,
 } from 'app/Users/components/usergroups/actions/actions';
+import { loadUsers } from 'app/Users/actions/actions';
 import { UserGroupSidePanel } from './UserGroupSidePanel';
 
 export interface UserGroupProps {
@@ -17,6 +18,7 @@ export interface UserGroupProps {
   loadUserGroups: () => any;
   saveUserGroup: (userGroup: UserGroupSchema) => Promise<void>;
   deleteUserGroup: (userGroup: UserGroupSchema) => Promise<void>;
+  loadUsers: () => Promise<void>;
 }
 
 const UserGroupsComponent = ({
@@ -25,6 +27,7 @@ const UserGroupsComponent = ({
   loadUserGroups: loadGroups,
   saveUserGroup: saveGroup,
   deleteUserGroup: deleteGroup,
+  loadUsers: loadAllUsers,
 }: UserGroupProps) => {
   const [sidePanelOpened, setSidePanelOpened] = useState(false);
   const [selectedGroup, setSelectedGroup] = useState<UserGroupSchema>();
@@ -52,11 +55,16 @@ const UserGroupsComponent = ({
       setSidePanelOpened(true);
     },
     handleSave: async (userGroup: UserGroupSchema) => {
+      if (!userGroup._id) {
+        delete userGroup._id;
+      }
       await saveGroup(userGroup);
+      await loadAllUsers();
       closeSidePanel();
     },
     handleDelete: async (userGroup: UserGroupSchema) => {
       await deleteGroup(userGroup);
+      await loadAllUsers();
       closeSidePanel();
     },
   };
@@ -91,6 +99,7 @@ const mapStateToProps = (state: IStore & { users: IImmutable<GroupMemberSchema[]
 });
 
 const mapDispatchToProps = {
+  loadUsers,
   loadUserGroups,
   saveUserGroup,
   deleteUserGroup,

@@ -73,6 +73,28 @@ describe('userGroups', () => {
     });
   });
 
+  describe('save multiple', () => {
+    it('should save a list of user groups', async () => {
+      const userGroup1: UserGroupSchema = {
+        _id: group1Id.toString(),
+        name: 'Group 1 M',
+        members: [{ _id: user1Id.toString(), username: 'User 1' }],
+      };
+      const userGroup2: UserGroupSchema = {
+        _id: group2Id.toString(),
+        name: 'Group 2 M',
+        members: [{ _id: user2Id.toString(), username: 'User 2' }],
+      };
+      await userGroups.saveMultiple([userGroup1, userGroup2]);
+      const storedUserGroups: UserGroupSchema[] = await models.usergroups.get({});
+      expect(storedUserGroups[0].name).toBe('Group 1 M');
+      expect(storedUserGroups[0].members[0]._id).toEqual(user1Id.toString());
+      expect(storedUserGroups[0].members[0].username).toBeUndefined();
+      expect(storedUserGroups[1].name).toBe('Group 2 M');
+      expect(storedUserGroups[1].members[0]._id).toEqual(user2Id.toString());
+      expect(storedUserGroups[1].members[0].username).toBeUndefined();
+    });
+  });
   describe('delete', () => {
     it('should delete the user group with by the specified id', async () => {
       await userGroups.delete({ _id: group2Id.toString() });

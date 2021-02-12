@@ -23,6 +23,7 @@
 @import 'elements/map';
 @import 'elements/numeric-range-slide';
 @import 'elements/qrcode';
+@import 'elements/pill';
 
 @import 'layout/app';
 @import 'layout/header';
@@ -66,6 +67,7 @@
 @import 'modules/review';
 @import 'modules/usergroups';
 @import 'modules/share-modal';
+@import 'modules/users';
 
 @import '../../Timeline/scss/timeline';
 @import 'utilities/utilities';

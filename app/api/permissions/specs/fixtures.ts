@@ -5,6 +5,7 @@ const idUserA = db.id();
 const idUserB = db.id();
 const idGroupA = db.id();
 const idGroupB = db.id();
+const nonExistingGroup = db.id();
 
 const userA = {
   _id: idUserA,
@@ -71,6 +72,11 @@ const entity2 = {
     },
     {
       _id: idGroupA,
+      type: PermissionType.GROUP,
+      level: AccessLevels.READ,
+    },
+    {
+      _id: nonExistingGroup,
       type: PermissionType.GROUP,
       level: AccessLevels.READ,
     },

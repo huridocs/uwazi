@@ -13,7 +13,10 @@ describe('permissions', () => {
     it('should update the specified entities with the passed permissions in all entities languages', async () => {
       const permissionsData = {
         ids: ['shared1', 'shared2'],
-        permissions: [{ _id: 'user1', type: PermissionType.USER, level: AccessLevels.READ }],
+        permissions: [
+          { _id: 'user1', type: PermissionType.USER, level: AccessLevels.READ },
+          { _id: 'user2', type: PermissionType.USER, level: AccessLevels.WRITE },
+        ],
       };
       await entitiesPermissions.set(permissionsData);
       const storedEntities = await entities.get();
@@ -29,6 +32,22 @@ describe('permissions', () => {
       notUpdatedEntities.forEach(entity => {
         expect(entity.permissions).toBe(undefined);
       });
+    });
+
+    it('should invalidate if permissions are duplicated', async () => {
+      const permissionsData = {
+        ids: ['shared1'],
+        permissions: [
+          { _id: 'user1', type: 'user', level: 'write' },
+          { _id: 'user1', type: 'user', level: 'read' },
+        ],
+      };
+      try {
+        await entitiesPermissions.set(permissionsData);
+        fail('should throw error');
+      } catch (e) {
+        expect(e.errors[0].keyword).toEqual('duplicatedPermissions');
+      }
     });
   });
 

@@ -81,7 +81,7 @@ export class Menu extends Component {
                 <span className="tab-link-tooltip">{t('System', 'Public documents')}</span>
               </I18NLink>
             </li>
-            <NeedAuthorization roles={['admin', 'editor']}>
+            <NeedAuthorization roles={['admin', 'editor', 'collaborator']}>
               <li className="menuNav-item">
                 <I18NLink
                   to={this.uploadsUrl()}
@@ -95,7 +95,7 @@ export class Menu extends Component {
                 </I18NLink>
               </li>
             </NeedAuthorization>
-            <NeedAuthorization roles={['admin', 'editor']}>
+            <NeedAuthorization roles={['admin', 'editor', 'collaborator']}>
               <li className="menuNav-item">
                 <I18NLink
                   to="/settings/account"

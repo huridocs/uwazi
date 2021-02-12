@@ -41,6 +41,7 @@ import { faHome } from '@fortawesome/free-solid-svg-icons/faHome';
 import { faImage } from '@fortawesome/free-solid-svg-icons/faImage';
 import { faInfoCircle } from '@fortawesome/free-solid-svg-icons/faInfoCircle';
 import { faLanguage } from '@fortawesome/free-solid-svg-icons/faLanguage';
+import { faKey } from '@fortawesome/free-solid-svg-icons/faKey';
 import { faLevelDownAlt } from '@fortawesome/free-solid-svg-icons/faLevelDownAlt';
 import { faLightbulb } from '@fortawesome/free-solid-svg-icons/faLightbulb';
 import { faLink } from '@fortawesome/free-solid-svg-icons/faLink';
@@ -88,9 +89,11 @@ import { faArrowsAlt } from '@fortawesome/free-solid-svg-icons/faArrowsAlt';
 import { faEyeSlash } from '@fortawesome/free-solid-svg-icons/faEyeSlash';
 import { faUser } from '@fortawesome/free-solid-svg-icons/faUser';
 import { faUsers } from '@fortawesome/free-solid-svg-icons/faUsers';
+import { faUserCheck } from '@fortawesome/free-solid-svg-icons/faUserCheck';
 import { faUserPlus } from '@fortawesome/free-solid-svg-icons/faUserPlus';
 import { faUserTimes } from '@fortawesome/free-solid-svg-icons/faUserTimes';
 import { faHandPaper } from '@fortawesome/free-solid-svg-icons/faHandPaper';
+import { twoFactorAuth } from 'UI/Icon/two-factor-auth';
 import { saveAndNext } from './save-and-next';
 import { exportCsv } from './export-csv';
 import { copyFrom } from './copy-from';
@@ -139,6 +142,7 @@ const icons = {
   faHome,
   faImage,
   faInfoCircle,
+  faKey,
   faLanguage,
   faLevelDownAlt,
   faLightbulb,
@@ -188,11 +192,13 @@ const icons = {
   faUsers,
   faUserTimes,
   faUserPlus,
+  faUserCheck,
   faHandPaper,
   saveAndNext,
   exportCsv,
   copyFrom,
   funnelFilter,
+  twoFactorAuth,
 };
 
 export const loadIcons = () => {

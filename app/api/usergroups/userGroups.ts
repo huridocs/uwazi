@@ -1,5 +1,5 @@
 import users from 'api/users/users';
-import { UserGroupSchema } from 'shared/types/userGroupType';
+import { GroupMemberSchema, UserGroupSchema } from 'shared/types/userGroupType';
 import { validateUserGroup } from 'api/usergroups/validateUserGroup';
 import model from './userGroupsModel';
 
@@ -10,19 +10,17 @@ export default {
       (memo: Array<String>, group) => memo.concat(group.members.map(g => g._id.toString())),
       []
     );
-    const usersFound = await users.get(
+    const usersFound: GroupMemberSchema[] = await users.get(
       { _id: { $in: usersInGroups } },
       { username: 1, role: 1, email: 1 }
     );
 
-    userGroups.forEach((group, index) => {
-      userGroups[index].members = group.members.map(m => {
-        const user = usersFound.find(u => u._id.toString() === m._id.toString());
-        return user || m;
-      });
-    });
-
-    return userGroups;
+    return userGroups.map(group => ({
+      ...group,
+      members: group.members.map(
+        m => usersFound.find(u => u._id.toString() === m._id.toString()) || m
+      ),
+    }));
   },
 
   async save(userGroup: UserGroupSchema) {
@@ -30,6 +28,19 @@ export default {
     const members = userGroup.members.map(m => ({ _id: m._id }));
 
     return model.save({ ...userGroup, members });
+  },
+
+  async saveMultiple(userGroups: UserGroupSchema[]) {
+    const groupsToUpdate = userGroups.map(userGroup => {
+      const members = userGroup.members.map(m => ({ _id: m._id.toString() }));
+      return { ...userGroup, members };
+    });
+    await Promise.all(
+      groupsToUpdate.map(async group => {
+        await validateUserGroup(group);
+      })
+    );
+    return model.saveMultiple(groupsToUpdate);
   },
 
   async delete(query: any) {

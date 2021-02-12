@@ -11,7 +11,15 @@ import * as random from 'shared/uniqueID';
 import encryptPassword, { comparePasswords } from 'api/auth/encryptPassword';
 import * as usersUtils from 'api/auth2fa/usersUtils';
 import { settingsModel } from 'api/settings/settingsModel';
-import fixtures, { userId, expectedKey, recoveryUserId } from './fixtures.js';
+import userGroups from 'api/usergroups/userGroups';
+import fixtures, {
+  userId,
+  expectedKey,
+  recoveryUserId,
+  group1Id,
+  group2Id,
+  userToDelete,
+} from './fixtures.js';
 import users from '../users.js';
 import passwordRecoveriesModel from '../passwordRecoveriesModel';
 import usersModel from '../usersModel';
@@ -58,6 +66,55 @@ describe('Users', () => {
       expect(updatedUser.using2fa).toBe(false);
       expect(updatedUser.secret).toBeUndefined();
     });
+
+    const assertUserMembership = async updatedUser => {
+      const groups = await userGroups.get();
+      const membership1 = groups[0].members.find(
+        m => m._id.toString() === updatedUser._id.toString()
+      );
+      const membership2 = groups[1].members.find(
+        m => m._id.toString() === updatedUser._id.toString()
+      );
+      expect(membership1).not.toBeUndefined();
+      expect(membership2).not.toBeUndefined();
+    };
+    it('should update the membership of the saved user', async () => {
+      currentUser = { _id: 'user2', role: 'admin' };
+      const userToUpdate = {
+        _id: userId.toString(),
+        groups: [{ _id: group1Id.toString() }, { _id: group2Id.toString() }],
+      };
+      const updatedUser = await users.save(userToUpdate, currentUser);
+      await assertUserMembership(updatedUser);
+    });
+    it('should remove all groups if user has not any', async () => {
+      currentUser = { _id: 'user2', role: 'admin' };
+      const userToUpdate = {
+        _id: userId.toString(),
+        groups: [],
+      };
+      const updatedUser = await users.save(userToUpdate, currentUser);
+      const groups = await userGroups.get({ 'members._id': updatedUser._id.toString() });
+      expect(groups.length).toBe(0);
+    });
+
+    it.each(['collaborator', 'editor'])(
+      'should throw an unauthorized error if a %s user tries to update another user',
+      async role => {
+        try {
+          currentUser = { _id: 'user3', role };
+          const userToUpdate = {
+            _id: userId,
+            username: 'otherName',
+          };
+          await users.save(userToUpdate, currentUser);
+          fail('Should throw error');
+        } catch (e) {
+          expect(e.code).toBe(403);
+          expect(e.message).toEqual('Unauthorized');
+        }
+      }
+    );
 
     describe('when you try to change role', () => {
       it('should be an admin', done => {
@@ -185,6 +242,21 @@ describe('Users', () => {
         const [createdUser] = await usersModel.get({ username: 'without2fa' }, '+secret');
         expect(createdUser.using2fa).toBe(false);
         expect(createdUser.secret).toBeUndefined();
+      });
+
+      it('should add the new user to the specified userGroups', async () => {
+        const createdUser = await users.newUser(
+          {
+            username: 'spidey',
+            email: 'peter@parker.com',
+            password: 'mypass',
+            role: 'editor',
+            groups: [{ _id: group1Id.toString() }, { _id: group2Id.toString() }],
+          },
+          domain
+        );
+
+        await assertUserMembership(createdUser);
       });
     });
   });
@@ -585,21 +657,45 @@ describe('Users', () => {
         });
     });
 
-    it('should not allow to delete the last user', done => {
-      users
-        .delete(recoveryUserId.toString(), { _id: 'someone' })
-        .then(() => users.delete(userId.toString(), { _id: 'someone' }))
-        .then(() => {
-          done.fail('should throw an error');
-        })
-        .catch(error => {
-          expect(error).toEqual(createError('Can not delete last user', 403));
-          return users.getById(userId);
-        })
-        .then(user => {
-          expect(user).not.toBe(null);
-          done();
+    it('should not allow to delete the last user', async done => {
+      await users.delete(userToDelete.toString(), { _id: 'someone' });
+      await users.delete(recoveryUserId.toString(), { _id: 'someone' });
+      try {
+        await users.delete(userId.toString(), { _id: 'someone' });
+        done.fail('should throw an error');
+      } catch (error) {
+        expect(error).toEqual(createError('Can not delete last user', 403));
+        const user = await users.getById(userId);
+        expect(user).toEqual({
+          _id: userId,
+          email: 'test@email.com',
+          role: 'admin',
+          username: 'username',
         });
+        done();
+      }
+    });
+
+    it('should delete the user in all the groups', async () => {
+      await users.delete(userToDelete.toString(), { _id: 'someone' });
+      const group = await userGroups.get({ name: 'Group 3' });
+      expect(group[0].members.length).toBe(0);
+    });
+  });
+
+  describe('get', () => {
+    it('should return all users without group data', async () => {
+      const userList = await users.get();
+      expect(userList.length).toBe(3);
+      const groupData = userList.filter(u => u.groups !== undefined);
+      expect(groupData.length).toBe(0);
+    });
+
+    it('should return all users with groups to which they belong', async () => {
+      const userList = await users.get({}, '+groups');
+      expect(userList.length).toBe(3);
+      expect(userList[0].groups[0].name).toBe('Group 2');
+      expect(userList[1].groups[0].name).toBe('Group 1');
     });
   });
 });

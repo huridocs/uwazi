@@ -229,7 +229,7 @@ function handleRoute(res, renderProps, req) {
 
 const allowedRoute = (user = {}, url) => {
   const isAdmin = user.role === 'admin';
-  const isEditor = user.role === 'editor';
+  const isAuthenticatedUser = ['editor', 'collaborator'].includes(user.role);
   const authRoutes = ['/uploads', '/settings/account'];
 
   const adminRoutes = [
@@ -256,7 +256,7 @@ const allowedRoute = (user = {}, url) => {
 
   return (
     (isAdminRoute && isAdmin) ||
-    (isAuthRoute && (isAdmin || isEditor)) ||
+    (isAuthRoute && (isAdmin || isAuthenticatedUser)) ||
     (!isAdminRoute && !isAuthRoute)
   );
 };

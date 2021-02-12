@@ -4,7 +4,12 @@ import userGroups from 'api/usergroups/userGroups';
 import { unique } from 'api/utils/filters';
 import { GroupMemberSchema, UserGroupSchema } from 'shared/types/userGroupType';
 import { EntitySchema } from 'shared/types/entityType';
-import { AccessLevels, PermissionType, MixedAccess } from 'shared/types/permissionSchema';
+import {
+  AccessLevels,
+  PermissionType,
+  MixedAccess,
+  validateUniquePermissions,
+} from 'shared/types/permissionSchema';
 import { PermissionSchema } from 'shared/types/permissionType';
 import { MemberWithPermission } from 'shared/types/entityPermisions';
 
@@ -27,7 +32,7 @@ async function setAccessLevelAndPermissionData(
     userGroups.get({ _id: { $in: grantedIds } }),
   ]);
 
-  return Object.keys(grantedPermissions).map(id => {
+  const permissionsData = Object.keys(grantedPermissions).map(id => {
     const differentLevels = grantedPermissions[id].access.filter(unique);
     const level =
       grantedPermissions[id].access.length !== entitiesPermissionsData.length ||
@@ -45,11 +50,15 @@ async function setAccessLevelAndPermissionData(
       level,
     } as MemberWithPermission;
   });
+
+  return permissionsData.filter(p => p._id !== undefined);
 }
 
 export const entitiesPermissions = {
   set: async (permissionsData: any) => {
+    await validateUniquePermissions(permissionsData);
     const currentEntities = await entities.get({ sharedId: { $in: permissionsData.ids } }, '_id');
+
     const toSave = currentEntities.map(entity => ({
       _id: entity._id,
       permissions: permissionsData.permissions,

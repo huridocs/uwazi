@@ -3,7 +3,7 @@ import { needsAuthorization } from 'api/auth';
 import { parseQuery, validation } from 'api/utils';
 import { entitiesPermissions } from 'api/permissions/entitiesPermissions';
 import { collaborators } from 'api/permissions/collaborators';
-import { permissionsDataSchema, validateUniquePermissions } from 'shared/types/permissionSchema';
+import { permissionsDataSchema } from 'shared/types/permissionSchema';
 
 export const permissionRoutes = (app: Application) => {
   app.post(
@@ -18,7 +18,6 @@ export const permissionRoutes = (app: Application) => {
     }),
     async (req, res, next) => {
       try {
-        await validateUniquePermissions(req.body);
         await entitiesPermissions.set(req.body);
         res.json(req.body);
       } catch (err) {

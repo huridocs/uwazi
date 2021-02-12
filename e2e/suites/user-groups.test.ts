@@ -24,7 +24,7 @@ describe('User groups', () => {
 
   describe('Edition of user group', () => {
     beforeEach(async () => {
-      await expect(page).toClick('tbody tr:nth-child(2)');
+      await expect(page).toClick('td', { text: 'Asesores legales' });
     });
 
     it('Should open a side panel with the detail of the selected group', async () => {
@@ -48,8 +48,8 @@ describe('User groups', () => {
 
     it('Should update the name and members of the group', async () => {
       await expect(page).toFill('#name_field > input', 'new name');
-      await expect(page).toClick('.multiselectItem:nth-child(3)');
-      await expect(page).toClick('#saveChangesBtn');
+      await expect(page).toClick('li', { text: 'admin' });
+      await expect(page).toClick('button', { text: 'Save Group' });
       await page.waitForSelector('.side-panel', { hidden: true });
       const groupRows = await page.$$eval('tbody tr', rows => rows.map(row => row.textContent));
       expect(groupRows).toEqual(['Activistas 2', 'new name 2']);
@@ -60,8 +60,8 @@ describe('User groups', () => {
     it('Should create a new user group', async () => {
       await expect(page).toClick('button', { text: 'Add group' });
       await expect(page).toFill('#name_field > input', 'New group');
-      await expect(page).toClick('.multiselectItem:nth-child(2)');
-      await expect(page).toClick('#saveChangesBtn');
+      await expect(page).toClick('li', { text: 'admin' });
+      await expect(page).toClick('button', { text: 'Create Group' });
       await page.waitForSelector('tbody tr:nth-child(3)');
       const groupRows = await page.$$eval('tbody tr', rows => rows.map(row => row.textContent));
       expect(groupRows).toEqual(['Activistas 2', 'new name 2', 'New group 1']);
