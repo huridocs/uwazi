@@ -69,6 +69,7 @@ const UsersComponent = ({
       if (!user.password) {
         delete user.password;
       }
+      delete user.using2fa;
       if (user._id) {
         await saveUserData(user);
       } else {

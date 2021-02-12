@@ -32,7 +32,7 @@ async function setAccessLevelAndPermissionData(
     userGroups.get({ _id: { $in: grantedIds } }),
   ]);
 
-  return Object.keys(grantedPermissions).map(id => {
+  const permissionsData = Object.keys(grantedPermissions).map(id => {
     const differentLevels = grantedPermissions[id].access.filter(unique);
     const level =
       grantedPermissions[id].access.length !== entitiesPermissionsData.length ||
@@ -50,6 +50,8 @@ async function setAccessLevelAndPermissionData(
       level,
     } as MemberWithPermission;
   });
+
+  return permissionsData.filter(p => p._id !== undefined);
 }
 
 export const entitiesPermissions = {
