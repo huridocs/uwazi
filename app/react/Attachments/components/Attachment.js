@@ -18,6 +18,7 @@ import {
   submitForm,
   resetForm,
 } from '../actions/actions';
+import { Translate } from 'app/I18N';
 
 const getExtension = filename => filename.substr(filename.lastIndexOf('.') + 1);
 
@@ -53,6 +54,36 @@ const conformThumbnail = (file, item) => {
 };
 
 export class Attachment extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { dropdownMenuOpen: false };
+
+    this.toggleDropdown = this.toggleDropdown.bind(this);
+    this.handleClickOutside = this.handleClickOutside.bind(this);
+  }
+
+  myRef = React.createRef();
+
+  componentDidMount() {
+    document.addEventListener('mousedown', this.handleClickOutside);
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener('mousedown', this.handleClickOutside);
+  }
+
+  handleClickOutside = e => {
+    if (!this.myRef.current.contains(e.target)) {
+      this.setState({ dropdownMenuOpen: false });
+    }
+  };
+
+  toggleDropdown = () => {
+    this.setState(prevState => ({
+      dropdownMenuOpen: !prevState.dropdownMenuOpen,
+    }));
+  };
+
   deleteAttachment(attachment) {
     this.context.confirm({
       accept: () => {
@@ -150,6 +181,47 @@ export class Attachment extends Component {
       <div className="attachment">
         {name}
         {buttons}
+
+        <div className="dropdown attachments-dropdown">
+          <button
+            className="btn btn-default dropdown-toggle attachments-dropdown-toggle"
+            type="button"
+            id="dropdownMenu1"
+            data-toggle="dropdown"
+            aria-haspopup="true"
+            aria-expanded="true"
+            onClick={this.toggleDropdown}
+          >
+            <Icon icon="pencil-alt" />
+          </button>
+          <ul
+            className="dropdown-menu dropdown-menu-right"
+            aria-labelledby="dropdownMenu1"
+            style={{ display: this.state.dropdownMenuOpen ? 'block' : 'none' }}
+            ref={this.myRef}
+          >
+            <li>
+              <a href="#">
+                <Icon icon="link" /> <Translate>Copy link</Translate>
+              </a>
+            </li>
+            <li>
+              <a href="#">
+                <Icon icon="link" /> <Translate>Download</Translate>
+              </a>
+            </li>
+            <li>
+              <a href="#" onClick={this.props.loadForm.bind(this, model, file)}>
+                <Icon icon="pencil-alt" /> <Translate>Rename</Translate>
+              </a>
+            </li>
+            <li>
+              <a href="#" onClick={this.deleteAttachment.bind(this, file)}>
+                <Icon icon="trash-alt" /> <Translate>Delete</Translate>
+              </a>
+            </li>
+          </ul>
+        </div>
       </div>
     );
   }

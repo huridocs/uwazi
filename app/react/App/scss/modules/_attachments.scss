@@ -176,4 +176,16 @@ label.add:focus-within {
       }
     }
   }
+
+  &-dropdown {
+    margin-left: 4px;
+
+    &-toggle {
+      border-radius: 15px;
+      min-width: 30px;
+      height: 30px;
+      padding: 0;
+      text-align: center;
+    }
+  }
 }
