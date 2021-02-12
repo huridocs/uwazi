@@ -36,8 +36,7 @@ export const UserSidePanel = ({
   const [selectedGroups, setSelectedGroups] = useState(
     user.groups ? user.groups.map(group => group._id!.toString()) : []
   );
-  const defaultValues = { ...user };
-  const { register, handleSubmit, errors } = useForm({ defaultValues });
+  const { register, handleSubmit, errors } = useForm({ defaultValues: user });
   const availableGroups = groups;
 
   const saveUser = (userToSave: UserSchema) => {
