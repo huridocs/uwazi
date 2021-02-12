@@ -132,11 +132,9 @@ export const encodedSearch = createSelector(
 );
 
 const numberOfMarkersSelector = createSelector(
-  ({ state, storeKey }) => ({
-    entities: state[storeKey].markers.get('rows'),
-    templates: state.templates,
-  }),
-  ({ entities, templates }) => mapHelper.getMarkers(entities, templates).length
+  ({ state, storeKey }) => state[storeKey].markers.get('rows'),
+  ({ state }) => state.templates,
+  (entities, templates) => mapHelper.getMarkers(entities, templates).length
 );
 
 export function mapStateToProps(state, props) {

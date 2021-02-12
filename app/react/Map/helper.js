@@ -75,14 +75,17 @@ const getPropertyBasedMarkers = (template, entity) => {
   if (geolocationProps.length && metadata) {
     const [...properties] = metadata.keys();
     properties.forEach(property => {
-      if (geolocationPropNames.includes(property) && metadata[property]) {
+      if (geolocationPropNames.includes(property) && metadata.has(property)) {
         const label = geolocationProps.find(p => p.get('name') === property).get('label');
-        metadata[property]
-          .filter(mo => mo.value)
-          .forEach(({ value: point }) => {
-            const { lat, lon } = point;
+        metadata
+          .get(property)
+          .filter(mo => mo.get('value'))
+          .forEach(point => {
+            const lat = point.getIn(['value', 'lat']);
+            const lon = point.getIn(['value', 'lon']);
+
             markers.push({
-              properties: { entity, color, info: point.label },
+              properties: { entity: entity.toJS(), color, info: point.getIn(['value', 'label']) },
               latitude: lat,
               longitude: lon,
               label,
@@ -121,24 +124,26 @@ const getInheritedMarkers = (template, entity, templates) => {
   if (inheritedGeolocationProps.length && metadata) {
     const [...metadataProperties] = metadata.keys();
     metadataProperties.forEach(property => {
-      if (inheritedGeolocationPropNames.includes(property) && metadata[property]) {
+      if (inheritedGeolocationPropNames.includes(property) && metadata.has(property)) {
         const { label, content: context } = inheritedGeolocationProps.find(
           p => p.name === property
         );
-        metadata[property].forEach(relatedProperty => {
-          if (relatedProperty.inherit_geolocation) {
+        metadata.get(property).forEach(relatedProperty => {
+          if (relatedProperty.has('inherit_geolocation')) {
             // conditional is a quick hack to prevent app crash
             relatedProperty
               .get('inherit_geolocation')
-              .filter(mo => mo.value)
-              .forEach(({ value: point }) => {
-                const { lat, lon } = point;
+              .filter(mo => mo.get('value'))
+              .forEach(point => {
+                console.log(point.toJS());
+                const lat = point.getIn(['value', 'lat']);
+                const lon = point.getIn(['value', 'lon']);
                 const properties = {
-                  entity,
+                  entity: entity.toJS(),
                   color,
-                  info: point.label,
+                  info: point.getIn(['value', 'label']),
                   inherited: true,
-                  label: relatedProperty.label,
+                  label: relatedProperty.get('label'),
                   context,
                 };
                 markers.push({ properties, latitude: lat, longitude: lon, label });
@@ -157,20 +162,16 @@ const getEntityMarkers = (entity, templates) => {
 
   const propertyBasedMarkers = getPropertyBasedMarkers(template, entity);
   const inheritedMarkers = getInheritedMarkers(template, entity, templates);
+  console.log('inheritedMarkers:', inheritedMarkers);
 
   return _mergeArrays(propertyBasedMarkers, inheritedMarkers);
 };
 
-const getMarkers = (entities, templates) => {
-  const markers = [];
-  console.time('Markers');
-  entities.forEach(entity => {
-    const entityMarkers = getEntityMarkers(entity, templates); //).toJS().filter(m => m);
-    markers.push(entityMarkers);
-  });
-  console.timeEnd('Markers');
-  return markers;
-};
+const getMarkers = (entities, templates) =>
+  entities.reduce((markers, entity) => {
+    const entityMarkers = getEntityMarkers(entity, templates);
+    return markers.concat(entityMarkers);
+  }, []);
 
 const TRANSITION_PROPS = {
   transitionDuration: 0,
