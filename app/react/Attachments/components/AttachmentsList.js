@@ -34,9 +34,12 @@ export default class AttachmentsList extends Component {
     const attachments = AttachmentsList.arrangeFiles(this.props.attachments);
     return (
       <div className="attachments-list-parent">
-        <h2>
-          <Translate>Supporting files</Translate>
-        </h2>
+        <div className="attachments-list-header">
+          <h2>
+            <Translate>Supporting files</Translate>
+          </h2>
+          {uploadAttachmentButton}
+        </div>
         <div className="attachments-list">
           {attachments.map((file, index) => (
             <Attachment
@@ -50,7 +53,6 @@ export default class AttachmentsList extends Component {
             />
           ))}
         </div>
-        {uploadAttachmentButton}
       </div>
     );
   }

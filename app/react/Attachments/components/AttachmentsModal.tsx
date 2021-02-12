@@ -15,7 +15,7 @@ interface AttachmentsModalProps {
   entity: string;
   storeKey: string;
   onClose(): void;
-  uploadAttachment: (entity: any, file: any, __reducerKey: any, options?: {}) => void;
+  uploadAttachment(entity: any, file: any, __reducerKey: any, options?: {}): void;
   getPercentage?: number;
 }
 

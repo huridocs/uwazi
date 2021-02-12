@@ -24,10 +24,8 @@ const UploadSupportingFile: React.FC<UploadSupportingFileProps> = props => {
   // Get percentage number
   const getPercentage = progress.get(entity);
 
-  console.log(getPercentage);
-
   return (
-    <div>
+    <>
       {getPercentage === undefined ? (
         <button
           type="button"
@@ -51,7 +49,7 @@ const UploadSupportingFile: React.FC<UploadSupportingFileProps> = props => {
         storeKey={storeKey}
         getPercentage={getPercentage}
       />
-    </div>
+    </>
   );
 };
 
