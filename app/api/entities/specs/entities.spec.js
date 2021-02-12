@@ -102,6 +102,7 @@ describe('entities', () => {
       expect(createdDocumentEs.user.equals(user._id)).toBe(true);
       expect(createdDocumentEs.published).toBe(false);
       expect(createdDocumentEs.creationDate).toEqual(universalTime);
+      expect(createdDocumentEs.editDate).toEqual(universalTime);
 
       expect(createdDocumentEn.title).toBe(doc.title);
       expect(createdDocumentEn.user.equals(user._id)).toBe(true);
@@ -152,21 +153,28 @@ describe('entities', () => {
         .catch(catchErrors(done));
     });
 
-    it('should return updated entity', done => {
+    it('should return updated entity with updated editDate', done => {
+      const updateTime = 2;
       const doc = {
         title: 'the dark knight',
         fullText: { 0: 'the full text!' },
         metadata: { data: [{ value: 'should not be here' }] },
       };
+
       const user = { _id: db.id() };
 
       entities
         .save(doc, { user, language: 'en' })
-        .then(createdDocument =>
-          entities.save({ ...createdDocument, title: 'updated title' }, { user, language: 'en' })
-        )
+        .then(createdDocument => {
+          spyOn(date, 'currentUTC').and.returnValue(updateTime);
+          return entities.save(
+            { ...createdDocument, title: 'updated title' },
+            { user, language: 'en' }
+          );
+        })
         .then(updatedDocument => {
           expect(updatedDocument.title).toBe('updated title');
+          expect(updatedDocument.editDate).toEqual(updateTime);
           done();
         })
         .catch(catchErrors(done));

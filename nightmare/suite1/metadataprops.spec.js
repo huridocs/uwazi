@@ -22,9 +22,9 @@ describe('metadata properties', () => {
     templateProperties:
       '#app > div.content > div > div > div.settings-content > div > div > div.panel-body > div > aside > div > ul > li',
     relationshipPropertyType:
-      '#app > div.content > div > div > div.settings-content > div > div > div.panel-body > div > main > div > form > ul > li:nth-child(7) > div.propery-form.expand > div > div:nth-child(2) > select',
+      '#app > div.content > div > div > div.settings-content > div > div > div.panel-body > div > main > div > form > ul > li:nth-child(8) > div.propery-form.expand > div > div:nth-child(2) > select',
     editRelationshipProperty:
-      '#app > div.content > div > div > div.settings-content > div > div > div.panel-body > div > main > div > form > ul > li:nth-child(7) > div.list-group-item > div > button.btn.btn-default.btn-xs.property-edit',
+      '#app > div.content > div > div > div.settings-content > div > div > div.panel-body > div > main > div > form > ul > li:nth-child(8) > div.list-group-item > div > button.btn.btn-default.btn-xs.property-edit',
     form: {
       text: '#metadataForm > div:nth-child(3) > div:nth-child(1) > ul > li.wide > div > input',
       numeric: '#metadataForm > div:nth-child(3) > div:nth-child(2) > ul > li.wide > input',

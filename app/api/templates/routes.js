@@ -15,8 +15,7 @@ export default app => {
       const { reindex } = req.body;
       delete req.body.reindex;
 
-      const response = await templates.save(req.body, req.language);
-
+      const response = await templates.save(req.body, req.language, !reindex);
       req.io.emitToCurrentTenant('templateChange', response);
       const updatedSettings = await settings.updateFilterName(
         response._id.toString(),
@@ -30,7 +29,6 @@ export default app => {
         const allTemplates = await templates.get();
         reindexAll(allTemplates, search);
       }
-
       res.json(response);
     } catch (error) {
       next(error);
