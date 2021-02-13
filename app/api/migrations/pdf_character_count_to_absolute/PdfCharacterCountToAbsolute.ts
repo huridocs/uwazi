@@ -30,11 +30,13 @@ export class PdfCharacterCountToAbsolute {
 
   pdfInfo: number[];
 
-  xmlRelativePath = '';
+  xmlPath = '';
 
-  htmlRelativePath = '';
+  htmlPath = '';
 
-  pdfRelativePath = '';
+  pdfPath = '';
+
+  pdfSanitizedPath = '';
 
   pageSizes: PageSize[];
 
@@ -45,43 +47,41 @@ export class PdfCharacterCountToAbsolute {
   }
 
   async loadPdf(pdfRelativePath: string, pagesEndingCharacterCount: number[]) {
-    this.pdfRelativePath = pdfRelativePath;
+    this.pdfPath = pdfRelativePath;
     this.pdfInfo = pagesEndingCharacterCount;
     this.setXmlRelativePath();
+
     await this.convertPdfToXML();
+    const xmlContentObject = this.convertToJson(await readXml(this.xmlPath));
+    const htmlContentObject = this.convertToJson(await readXml(this.htmlPath));
 
-    let xmlContentString = await readXml(this.xmlRelativePath);
-    const htmlWordContentString = await readXml(this.htmlRelativePath);
-    let xmlContentObject = null;
-    let htmlContentObject = null;
-    let errorMessage = '';
+    await this.deleteXmlFile();
+    this.lettersTags = AbsolutePositionLettersList.fromXmlObject(
+      xmlContentObject,
+      htmlContentObject
+    );
+  }
 
-    try {
-      htmlContentObject = JSON.parse(convert.xml2json(htmlWordContentString));
-    } catch (e) {}
-
+  private convertToJson(contentString: string) {
+    let errorMessage;
+    let contentObject;
     for (let iterations = 0; iterations < 300; iterations += 1) {
       try {
-        xmlContentObject = JSON.parse(convert.xml2json(xmlContentString));
+        contentObject = JSON.parse(convert.xml2json(contentString));
       } catch (e) {
         errorMessage = e.toString();
-        xmlContentString = this.removeFailingLines(errorMessage, xmlContentString);
+        contentString = this.removeFailingLines(errorMessage, contentString);
       }
 
-      if (xmlContentObject !== null) {
+      if (contentObject) {
         break;
       }
     }
 
-    if (xmlContentObject === null) {
-      process.stdout.write(`xml2json error ${pdfRelativePath} ${errorMessage}\r\n`);
-    } else {
-      await this.deleteXmlFile();
-      this.lettersTags = AbsolutePositionLettersList.fromXmlObject(
-        xmlContentObject,
-        htmlContentObject
-      );
+    if (!contentObject) {
+      throw new Error(`xml2json error ${errorMessage}\r\n`);
     }
+    return contentObject;
   }
 
   private sanitizeLine(line: string) {
@@ -94,54 +94,87 @@ export class PdfCharacterCountToAbsolute {
 
   private removeFailingLines(errorMessage: string, xmlContentString: string) {
     let sanitizedContentString = xmlContentString;
-    const matches = sanitizedContentString.match(/<text.*<a href=".*<\/text>/g) || [];
+    const anchorsMatches = sanitizedContentString.match(/<text.*<a href=".*<\/text>/g) || [];
 
-    matches.forEach(line => {
+    anchorsMatches.forEach(line => {
       if (!line.includes('</a>')) {
         sanitizedContentString = sanitizedContentString.replace(line, this.sanitizeLine(line));
       }
     });
 
-    const errorLineNumber = parseInt(errorMessage.split('Line: ')[1].split('Column')[0], 10);
-    const problematicLine1 = xmlContentString.split('\n')[errorLineNumber - 1];
-    const problematicLine2 = xmlContentString.split('\n')[errorLineNumber];
+    const anchorsNotClosedMatches = sanitizedContentString.match(/<text.*<a href=".*\n/g) || [];
 
-    sanitizedContentString = sanitizedContentString.replace(
-      problematicLine1,
-      this.sanitizeLine(problematicLine1)
+    anchorsNotClosedMatches.forEach(line => {
+      if (!line.includes('</a>')) {
+        sanitizedContentString = sanitizedContentString.replace(line, this.sanitizeLine(line));
+      }
+    });
+
+    sanitizedContentString.split('\n').forEach(x => {
+      if (x.includes('<fontspec')) {
+        sanitizedContentString = sanitizedContentString.replace(x, '<fontspec />');
+      }
+      if (x.charAt(0) === '"') {
+        sanitizedContentString = sanitizedContentString.replace(x, '<fontspec />');
+      }
+    });
+
+    sanitizedContentString = sanitizedContentString.replace(/<i>/g, '');
+    sanitizedContentString = sanitizedContentString.replace(/<\/i>/g, '');
+
+    sanitizedContentString = sanitizedContentString.replace(/<b>/g, '');
+    sanitizedContentString = sanitizedContentString.replace(/<\/b>/g, '');
+
+    const errorLineNumber = parseInt(errorMessage.split('Line: ')[1].split('Column')[0], 10);
+    const lines = sanitizedContentString.split('\n');
+    const problematicLines = [
+      lines[errorLineNumber - 2],
+      lines[errorLineNumber - 1],
+      lines[errorLineNumber],
+    ];
+    const escapeRegex = (lineText: string) =>
+      lineText.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&');
+    problematicLines.forEach(
+      x =>
+        (sanitizedContentString = sanitizedContentString.replace(
+          new RegExp(escapeRegex(x), 'g'),
+          this.sanitizeLine(x)
+        ))
     );
-    sanitizedContentString = sanitizedContentString.replace(
-      problematicLine2,
-      this.sanitizeLine(problematicLine2)
-    );
+
     return sanitizedContentString;
   }
 
   setXmlRelativePath() {
-    const fileName = path.basename(this.pdfRelativePath).replace('.pdf', '.xml');
-    this.xmlRelativePath = `${os.tmpdir()}/${fileName}`;
-    this.htmlRelativePath = `${os.tmpdir()}/${fileName.replace('.xml', '.html')}`;
+    const fileName = path.basename(this.pdfPath);
+    this.pdfSanitizedPath = `${os.tmpdir()}/${fileName}`;
+    this.xmlPath = `${os.tmpdir()}/${fileName.replace('.pdf', '.xml')}`;
+    this.htmlPath = `${os.tmpdir()}/${fileName.replace('.pdf', '.html')}`;
   }
 
   async convertPdfToXML() {
     await spawn('pdftohtml', [
       '-q',
       '-hidden',
+      '-nodrm',
       '-xml',
       '-zoom',
       '1.33333',
       '-i',
-      this.pdfRelativePath,
-      this.xmlRelativePath,
+      this.pdfPath,
+      this.xmlPath,
     ]);
 
-    await spawn('pdftotext', ['-q', '-bbox', '-raw', this.pdfRelativePath, this.htmlRelativePath]);
+    await spawn('pdftotext', ['-q', '-bbox', '-raw', this.pdfPath, this.htmlPath]);
   }
 
   async deleteXmlFile() {
     const unlink = promisify(fs.unlink);
-    await unlink(this.xmlRelativePath);
-    await unlink(this.htmlRelativePath);
+    await unlink(this.xmlPath);
+    await unlink(this.htmlPath);
+    if (fs.existsSync(this.pdfSanitizedPath)) {
+      await unlink(this.pdfSanitizedPath);
+    }
   }
 
   convertToAbsolutePosition(

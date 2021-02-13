@@ -21,7 +21,7 @@ describe('migration add-file-field-to-connections', () => {
   });
 
   it('should have a delta number', () => {
-    expect(migration.delta).toBe(31);
+    expect(migration.delta).toBe(32);
   });
 
   it('should add file field to connection', async () => {

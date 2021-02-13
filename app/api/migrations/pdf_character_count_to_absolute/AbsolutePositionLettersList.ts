@@ -120,7 +120,9 @@ export class AbsolutePositionLettersList {
         .reduce(AbsolutePositionLettersList.removeXmlOneLevel(), [])
         .reduce(AbsolutePositionLettersList.removeXmlOneLevel(), []);
 
-      pageElements = pageElements.filter((x: { text: any }) => x.text);
+      pageElements = pageElements.filter(
+        (x: { text: any; attributes: any }) => x.text && x.attributes && x.attributes.top
+      );
 
       const pageTags: AbsolutePositionTag[] = pageElements.map(
         (x: { text: string; attributes: { top: any; left: any; height: any; width: any } }) => ({

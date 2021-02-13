@@ -116,31 +116,6 @@ describe('PdfCharacterCountToAbsolute', () => {
     });
   });
 
-  it('should convert the last text in a page to absolute position', async () => {
-    const pdfRelativePath =
-      'app/api/migrations/pdf_character_count_to_absolute/specs/pdf_to_be_converted.pdf';
-    const lastLabel = '•  Mr. Mostafa Nafari, member of delegation.';
-
-    const characterCountToAbsoluteConversion = new PdfCharacterCountToAbsolute();
-    await characterCountToAbsoluteConversion.loadPdf(pdfRelativePath, pdfInfo);
-    const absolutePosition: AbsolutePositionReference = characterCountToAbsoluteConversion.convertToAbsolutePosition(
-      lastLabel,
-      78397,
-      78441
-    );
-
-    expect(absolutePosition.text).toBe(lastLabel);
-    expect(absolutePosition.selectionRectangles.length).toBe(1);
-    checkAbsoluteTag(absolutePosition.selectionRectangles[0], {
-      pageNumber: 24,
-      top: 847,
-      left: 178,
-      height: 15,
-      width: 245,
-      text: '',
-    });
-  });
-
   it('should convert special character string to absolute position', async () => {
     const pdfRelativePath =
       'app/api/migrations/pdf_character_count_to_absolute/specs/pdf_to_be_converted.pdf';
@@ -160,7 +135,7 @@ describe('PdfCharacterCountToAbsolute', () => {
       pageNumber: 1,
       top: 1054,
       left: 76,
-      height: 37,
+      height: 31,
       width: 125,
       text: '',
     });
@@ -218,7 +193,7 @@ describe('PdfCharacterCountToAbsolute', () => {
 
     checkAbsoluteTag(absolutePosition.selectionRectangles[0], {
       pageNumber: 24,
-      top: 158,
+      top: 157,
       left: 132,
       height: 17,
       width: 261,
@@ -286,7 +261,7 @@ describe('PdfCharacterCountToAbsolute', () => {
 
     checkAbsoluteTag(absolutePosition.selectionRectangles[0], {
       pageNumber: 14,
-      top: 1027,
+      top: 1026,
       left: 189,
       height: 12,
       width: 354,
@@ -333,7 +308,7 @@ describe('PdfCharacterCountToAbsolute', () => {
 
     checkAbsoluteTag(absolutePosition.selectionRectangles[0], {
       pageNumber: 14,
-      top: 1027,
+      top: 1026,
       left: 189,
       height: 12,
       width: 358,
@@ -431,25 +406,25 @@ describe('PdfCharacterCountToAbsolute', () => {
 
     checkAbsoluteTag(absolutePosition.selectionRectangles[0], {
       pageNumber: 1,
-      top: 720,
+      top: 723,
       left: 404,
-      height: 16,
+      height: 14,
       width: 6,
       text: '',
     });
     checkAbsoluteTag(absolutePosition.selectionRectangles[1], {
       pageNumber: 1,
-      top: 736,
+      top: 739,
       left: 283,
-      height: 16,
+      height: 14,
       width: 248,
       text: '',
     });
     checkAbsoluteTag(absolutePosition.selectionRectangles[2], {
       pageNumber: 1,
-      top: 752,
+      top: 755,
       left: 275,
-      height: 16,
+      height: 14,
       width: 265,
       text: '',
     });

@@ -8,7 +8,6 @@ import Marker from 'app/Viewer/utils/Marker.js';
 import * as actions from 'app/Viewer/actions/uiActions';
 import scroller from 'app/Viewer/utils/Scroller';
 import * as types from 'app/Viewer/actions/actionTypes';
-import e from 'express';
 
 describe('Viewer uiActions', () => {
   describe('closePanel()', () => {

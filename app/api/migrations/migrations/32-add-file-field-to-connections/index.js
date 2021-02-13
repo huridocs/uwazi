@@ -12,7 +12,7 @@ const getDefaultLanguage = async db => {
 };
 
 export default {
-  delta: 31,
+  delta: 32,
 
   name: 'add-file-field-to-connections',
 
