@@ -58,7 +58,6 @@ ShowToc.defaultProps = {
 ShowToc.propTypes = {
   toc: PropTypes.array,
   readOnly: PropTypes.bool,
-  pdfInfo: PropTypes.object,
   scrollToToc: PropTypes.func,
 };
 
