@@ -5,14 +5,9 @@ import { createSelector } from 'reselect';
 import { getMarkers } from './helper';
 
 const selectMarkers = createSelector(
-  state => ({
-    entities: state.entities,
-    templates: state.templates,
-  }),
-  ({ entities, templates }) => {
-    console.log(entities);
-    return getMarkers(entities, templates);
-  }
+  state => state.entities,
+  state => state.templates,
+  (entities, templates) => getMarkers(entities, templates)
 );
 
 export const MarkersComponent = ({ children, markers }) => children(markers);
