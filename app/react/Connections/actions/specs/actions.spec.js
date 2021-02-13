@@ -18,7 +18,14 @@ describe('Connections actions', () => {
     mockID();
     store = mockStore({});
     spyOn(api, 'get').and.returnValue(
-      Promise.resolve({ json: { rows: [{ type: 'entity' }, { type: 'doc' }] } })
+      Promise.resolve({
+        json: {
+          rows: [
+            { title: 'Southern Nights', documents: [], attachments: [] },
+            { title: 'elenore', documents: [{ originalName: 'The Turtles' }], attachments: [] },
+          ],
+        },
+      })
     );
     spyOn(api, 'post').and.callFake(url => {
       if (url === 'relationships/bulk') {
@@ -42,20 +49,27 @@ describe('Connections actions', () => {
         actions.immidiateSearch(store.dispatch, 'term').then(() => {
           const expectedAction = {
             type: 'connections/searchResults/SET',
-            value: [{ type: 'entity' }, { type: 'doc' }],
+            value: [
+              { title: 'Southern Nights', documents: [], attachments: [] },
+              { title: 'elenore', documents: [{ originalName: 'The Turtles' }], attachments: [] },
+            ],
           };
           expect(store.getActions()).toContainEqual(expectedAction);
           done();
         });
       });
 
-      it('should not include entities if targetRanged', done => {
-        actions.immidiateSearch(store.dispatch, 'term', 'targetRanged').then(() => {
-          expect(store.getActions()).toContainEqual({
-            type: 'connections/searchResults/SET',
-            value: [{ type: 'doc' }],
+      describe('when doing a reference to a paragraph', () => {
+        it('should not include entities without documents', done => {
+          actions.immidiateSearch(store.dispatch, 'term', 'targetRanged').then(() => {
+            expect(store.getActions()).toContainEqual({
+              type: 'connections/searchResults/SET',
+              value: [
+                { attachments: [], documents: [{ originalName: 'The Turtles' }], title: 'elenore' },
+              ],
+            });
+            done();
           });
-          done();
         });
       });
     });

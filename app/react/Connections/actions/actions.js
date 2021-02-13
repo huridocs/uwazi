@@ -15,7 +15,7 @@ export function immidiateSearch(dispatch, searchTerm, connectionType) {
   return api.get('search', requestParams).then(response => {
     let results = response.json.rows;
     if (connectionType === 'targetRanged') {
-      results = results.filter(r => r.type !== 'entity');
+      results = results.filter(r => r.documents.length);
     }
     dispatch(actions.set('connections/searchResults', results));
   });
