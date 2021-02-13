@@ -152,6 +152,14 @@ export async function scrollTo(connection) {
       offset,
     }
   );
+
+  await scroller.to(
+    `.metadata-sidepanel .item-${connection._id}`,
+    '.metadata-sidepanel .sidepanel-body',
+    {
+      duration: 50,
+    }
+  );
 }
 
 export function selectSnippet(page, snippet) {
