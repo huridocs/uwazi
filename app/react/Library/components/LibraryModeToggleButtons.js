@@ -144,10 +144,6 @@ export function mapStateToProps(state, props) {
   );
 
   const numberOfMarkers = numberOfMarkersSelector({ state, storeKey: props.storeKey });
-  // mapHelper.getMarkers(
-  //   state[props.storeKey].markers.get('rows'),
-  //   state.templates
-  // ).length;
 
   return {
     searchUrl: encodedSearch(state[props.storeKey]),
