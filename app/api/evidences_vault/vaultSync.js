@@ -21,36 +21,40 @@ const dateProp = template => template.properties.find(p => p.type === propertyTy
 
 const isNumber = value => typeof value === 'number';
 
-const updateMetadata = async (_createdEntity, template, videoId = '', imageId = '') => {
+const updateMetadata = async (_createdEntity, template, video, image) => {
   const createdEntity = { ..._createdEntity };
 
-  createdEntity.metadata[mediaProp(template)] = [{ value: videoId.toString() }];
-  createdEntity.metadata[imageProp(template)] = [{ value: imageId.toString() }];
+  if (video) {
+    createdEntity.metadata[mediaProp(template)] = [{ value: `api/files/${video.filename}` }];
+  }
+
+  if (image) {
+    createdEntity.metadata[imageProp(template)] = [{ value: `api/files/${image.filename}` }];
+  }
 
   return entities.save(createdEntity, { language: 'en', user: {} });
 };
 
 const saveAttachments = async (entitySharedId, evidence, json, video, screenshot) => {
-  let videoId;
-  let imageId;
+  let videoAttachment;
+  let imageAttachment;
+
   if (video) {
-    const videoFile = await files.save({
+    videoAttachment = await files.save({
       entity: entitySharedId,
       filename: `${evidence.request}.mp4`,
       originalname: `${json.title}.mp4`,
       type: 'attachment',
     });
-    videoId = videoFile._id;
   }
 
   if (screenshot) {
-    const imageFile = await files.save({
+    imageAttachment = await files.save({
       entity: entitySharedId,
       filename: `${evidence.request}.png`,
       originalname: `${json.title}.png`,
       type: 'attachment',
     });
-    imageId = imageFile._id;
   }
 
   await files.save({
@@ -60,7 +64,7 @@ const saveAttachments = async (entitySharedId, evidence, json, video, screenshot
     type: 'attachment',
   });
 
-  return { videoId, imageId };
+  return { videoAttachment, imageAttachment };
 };
 
 const prepareEntity = (json, evidence, template) => {
@@ -93,7 +97,7 @@ const createEntityFromEvidence = async (evidence, template) => {
   const entity = prepareEntity(json, evidence, template);
 
   const createdEntity = await entities.save(entity, { language: 'en', user: {} });
-  const { videoId, imageId } = await saveAttachments(
+  const { videoAttachment, imageAttachment } = await saveAttachments(
     createdEntity.sharedId,
     evidence,
     json,
@@ -101,7 +105,7 @@ const createEntityFromEvidence = async (evidence, template) => {
     screenshot
   );
 
-  await updateMetadata(createdEntity, template, videoId, imageId);
+  await updateMetadata(createdEntity, template, videoAttachment, imageAttachment);
 };
 
 const vaultSync = {
