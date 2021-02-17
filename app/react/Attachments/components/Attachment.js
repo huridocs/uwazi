@@ -10,6 +10,8 @@ import { Translate } from 'app/I18N';
 import AttachmentForm from 'app/Attachments/components/AttachmentForm';
 import { wrapDispatch } from 'app/Multireducer';
 import { Icon } from 'UI';
+import { notify } from 'app/Notifications/actions/notificationsActions';
+import { store } from 'app/store';
 
 import {
   deleteAttachment,
@@ -82,11 +84,11 @@ export class Attachment extends Component {
     }
   };
 
-  toggleDropdown = () => {
+  toggleDropdown() {
     this.setState(prevState => ({
       dropdownMenuOpen: !prevState.dropdownMenuOpen,
     }));
-  };
+  }
 
   deleteAttachment(attachment) {
     this.context.confirm({
@@ -98,6 +100,11 @@ export class Attachment extends Component {
     });
   }
 
+  toggleRename(model, file) {
+    this.props.loadForm.bind(this, model, file)();
+    this.toggleDropdown();
+  }
+
   copyToClipboard(text, event) {
     event.preventDefault();
     const dummy = document.createElement('textarea');
@@ -106,6 +113,9 @@ export class Attachment extends Component {
     dummy.select();
     document.execCommand('copy');
     document.body.removeChild(dummy);
+
+    store.dispatch(notify('Copied to clipboard', 'success'));
+    this.toggleDropdown();
   }
 
   render() {
@@ -195,12 +205,12 @@ export class Attachment extends Component {
                 </a>
               </li>
               <li>
-                <a href={item.downloadHref} target="_blank">
+                <a href={item.downloadHref} target="_blank" download>
                   <Icon icon="link" /> <Translate>Download</Translate>
                 </a>
               </li>
               <li>
-                <a href="#" onClick={this.props.loadForm.bind(this, model, file)}>
+                <a href="#" onClick={this.toggleRename.bind(this, model, file)}>
                   <Icon icon="pencil-alt" /> <Translate>Rename</Translate>
                 </a>
               </li>

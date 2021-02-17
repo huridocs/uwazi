@@ -410,33 +410,6 @@ export class DocumentSidePanel extends Component {
                         parentSharedId={doc.get('sharedId')}
                         storeKey={this.props.storeKey}
                       />
-
-                      {/* TODO: This is for demo purposes, move to style
-                      <div
-                        style={{
-                          display: 'flex',
-                          alignItems: 'flex-start',
-                          justifyContent: 'space-between',
-                          paddingRight: '15px',
-                          paddingTop: '8px',
-                          borderTop: '1px solid #f2f2f4',
-                          marginBottom: '64px',
-                        }}
-                      >
-                        <NeedAuthorization roles={['admin', 'editor']}>
-                          <h2 style={{ margin: 0 }}>
-                            <Translate>Supporting Files</Translate>
-                          </h2>
-                          <button
-                            type="button"
-                            onClick={this.openModal}
-                            className="upload-button btn btn-success attachments-modal-trigger"
-                          >
-                            <Icon icon="plus" />
-                            &nbsp; Add supporting file
-                          </button>
-                        </NeedAuthorization>
-                      </div> */}
                     </div>
                   );
                 })()}
@@ -457,12 +430,6 @@ export class DocumentSidePanel extends Component {
             </Tabs>
           </div>
         </SidePanel>
-        {/* <AttachmentsModal
-          isOpen={this.state.isAttachmentModalOpen}
-          onClose={this.closeModal}
-          entity={doc.get('_id')}
-          storeKey={this.props.storeKey}
-        /> */}
       </>
     );
   }
