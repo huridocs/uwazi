@@ -8,7 +8,7 @@ import React, { Component } from 'react';
 import { MetadataFormButtons, ShowMetadata } from 'app/Metadata';
 import { NeedAuthorization } from 'app/Auth';
 import { t, Translate } from 'app/I18N';
-import { AttachmentsList, AttachmentsModal } from 'app/Attachments';
+import { AttachmentsList } from 'app/Attachments';
 import { FileList } from 'app/Attachments/components/FileList';
 import Connections from 'app/Viewer/components/ConnectionsList';
 import { ConnectionsGroups } from 'app/ConnectionsList';
