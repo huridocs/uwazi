@@ -17,7 +17,7 @@ const localSelectors = {
   pageTitleInput:
     '#app > div.content > div > div > div.settings-content > div > form > div.panel.panel-default > div.metadataTemplate-heading.panel-heading > div > div > input',
   pageContentsInput:
-    '#app > div.content > div > div > div.settings-content > div > form > div.panel.panel-default > div.panel-body.page-viewer.document-viewer > div > div.tab-content.tab-content-visible > textarea',
+    '#app > div.content > div > div > div.settings-content > div > form > div.panel.panel-default > div.panel-body.page-viewer.document-viewer > div > div.tab-content-visible > textarea',
   customHomePageRadio:
     '.settings-content #collectionSettingsForm .form-group:nth-child(7) .radio:nth-child(2) input[type=radio]',
   customHomePageInput: '.settings-content #collectionSettingsForm input[name="local.home_page"]',

@@ -9,7 +9,7 @@ import HubRelationshipMetadata, { mapStateToProps } from '../HubRelationshipMeta
 describe('HubRelationshipMetadata', () => {
   let props;
   let template;
-  let range;
+  let reference;
   let metadata;
 
   beforeEach(() => {
@@ -32,7 +32,7 @@ describe('HubRelationshipMetadata', () => {
       relationship: fromJS({ template }),
     });
 
-    range = { text: 'Some quoted text' };
+    reference = { text: 'Some quoted text' };
     metadata = {
       propertyA: [{ value: 'Value B' }],
       propertyB: [{ value: 'Value B' }],
@@ -50,7 +50,7 @@ describe('HubRelationshipMetadata', () => {
   });
 
   it('should render the text quote correctly', () => {
-    props.relationship = fromJS({ range });
+    props.relationship = fromJS({ reference });
     testSnapshot();
   });
 
@@ -60,7 +60,7 @@ describe('HubRelationshipMetadata', () => {
   });
 
   it('should render the metadata correctly when text is also present', () => {
-    props.relationship = fromJS({ template, range, metadata });
+    props.relationship = fromJS({ template, reference, metadata });
     testSnapshot();
   });
 });

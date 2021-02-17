@@ -1,10 +1,15 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { isClient } from 'app/utils';
-
+import { PageReferences } from 'app/Viewer/components/PageReferences';
 import PDFJS, { textLayerFactory } from '../PDFJS';
 
 class PDFPage extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { rendered: false };
+  }
+
   componentDidMount() {
     this.scrollCallback = this.scroll.bind(this);
 
@@ -25,17 +30,17 @@ class PDFPage extends Component {
   }
 
   scroll() {
-    if (this.pageShouldRender() && !this.rendered) {
+    if (this.pageShouldRender() && !this.state.rendered) {
       this.renderPage();
     }
 
     if (!this.pageShouldRender() && this.pdfPageView) {
       this.pdfPageView.cancelRendering();
       this.pdfPageView.destroy();
-      if (this.rendered) {
+      if (this.state.rendered) {
         this.props.onUnload(this.props.page);
       }
-      this.rendered = false;
+      this.setState({ rendered: false });
     }
   }
 
@@ -81,16 +86,25 @@ class PDFPage extends Component {
     }
   }
 
+  renderReferences() {
+    if (this.state.rendered) {
+      return <PageReferences page={this.props.page} onClick={this.props.highlightReference} />;
+    }
+
+    return false;
+  }
+
   renderPage() {
-    if (!this.rendered && this.pdfPageView) {
+    if (!this.state.rendered && this.pdfPageView) {
       this.props.onLoading(this.props.page);
       this.pdfPageView.draw().catch(e => e);
-      this.rendered = true;
+      this.setState({ rendered: true });
+
       return;
     }
-    if (!this.rendered) {
+    if (!this.state.rendered) {
       this.props.onLoading(this.props.page);
-      this.rendered = true;
+      this.setState({ rendered: true });
       this.props.pdf.getPage(this.props.page).then(page => {
         const scale = 1;
 
@@ -129,7 +143,9 @@ class PDFPage extends Component {
           this.pageContainer = ref;
         }}
         style={style}
-      />
+      >
+        {this.renderReferences()}
+      </div>
     );
   }
 }
@@ -138,6 +154,7 @@ PDFPage.defaultProps = {
   getViewportContainer: () => (isClient ? document.querySelector('.document-viewer') : null),
   onVisible: () => {},
   onHidden: () => {},
+  highlightReference: () => {},
 };
 
 PDFPage.propTypes = {
@@ -148,6 +165,7 @@ PDFPage.propTypes = {
   onLoading: PropTypes.func.isRequired,
   onUnload: PropTypes.func.isRequired,
   pdf: PropTypes.object.isRequired,
+  highlightReference: PropTypes.func,
 };
 
 export default PDFPage;

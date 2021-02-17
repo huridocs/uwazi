@@ -18,7 +18,14 @@ describe('Connections actions', () => {
     mockID();
     store = mockStore({});
     spyOn(api, 'get').and.returnValue(
-      Promise.resolve({ json: { rows: [{ type: 'entity' }, { type: 'doc' }] } })
+      Promise.resolve({
+        json: {
+          rows: [
+            { title: 'Southern Nights', documents: [], attachments: [] },
+            { title: 'elenore', documents: [{ originalName: 'The Turtles' }], attachments: [] },
+          ],
+        },
+      })
     );
     spyOn(api, 'post').and.callFake(url => {
       if (url === 'relationships/bulk') {
@@ -42,20 +49,27 @@ describe('Connections actions', () => {
         actions.immidiateSearch(store.dispatch, 'term').then(() => {
           const expectedAction = {
             type: 'connections/searchResults/SET',
-            value: [{ type: 'entity' }, { type: 'doc' }],
+            value: [
+              { title: 'Southern Nights', documents: [], attachments: [] },
+              { title: 'elenore', documents: [{ originalName: 'The Turtles' }], attachments: [] },
+            ],
           };
           expect(store.getActions()).toContainEqual(expectedAction);
           done();
         });
       });
 
-      it('should not include entities if targetRanged', done => {
-        actions.immidiateSearch(store.dispatch, 'term', 'targetRanged').then(() => {
-          expect(store.getActions()).toContainEqual({
-            type: 'connections/searchResults/SET',
-            value: [{ type: 'doc' }],
+      describe('when doing a reference to a paragraph', () => {
+        it('should not include entities without documents', done => {
+          actions.immidiateSearch(store.dispatch, 'term', 'targetRanged').then(() => {
+            expect(store.getActions()).toContainEqual({
+              type: 'connections/searchResults/SET',
+              value: [
+                { attachments: [], documents: [{ originalName: 'The Turtles' }], title: 'elenore' },
+              ],
+            });
+            done();
           });
-          done();
         });
       });
     });
@@ -137,7 +151,10 @@ describe('Connections actions', () => {
       connection = {
         sourceDocument: 'sourceId',
         type: 'basic',
-        sourceRange: { start: 397, end: 422, text: 'source text' },
+        sourceRange: {
+          selectionRectangles: [{ top: 20, left: 42, height: 13, width: 84 }],
+          text: 'source text',
+        },
         targetDocument: 'targetId',
         template: 'relationTypeId',
       };
@@ -151,7 +168,10 @@ describe('Connections actions', () => {
             {
               entity: 'sourceId',
               template: null,
-              range: { start: 397, end: 422, text: 'source text' },
+              reference: {
+                selectionRectangles: [{ top: 20, left: 42, height: 13, width: 84 }],
+                text: 'source text',
+              },
             },
             { entity: 'targetId', template: 'relationTypeId' },
           ],
@@ -164,7 +184,10 @@ describe('Connections actions', () => {
     });
 
     it('should allow for targetted range connections (using the new hub format)', () => {
-      connection.targetRange = { start: 79, end: 125, text: 'target text' };
+      connection.targetRange = {
+        selectionRectangles: [{ top: 28, left: 12, height: 13, width: 84 }],
+        text: 'target text',
+      };
 
       const expectedParams = new RequestParams({
         delete: [],
@@ -173,12 +196,18 @@ describe('Connections actions', () => {
             {
               entity: 'sourceId',
               template: null,
-              range: { start: 397, end: 422, text: 'source text' },
+              reference: {
+                selectionRectangles: [{ top: 20, left: 42, height: 13, width: 84 }],
+                text: 'source text',
+              },
             },
             {
               entity: 'targetId',
               template: 'relationTypeId',
-              range: { start: 79, end: 125, text: 'target text' },
+              reference: {
+                selectionRectangles: [{ top: 28, left: 12, height: 13, width: 84 }],
+                text: 'target text',
+              },
             },
           ],
         ],

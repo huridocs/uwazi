@@ -54,9 +54,9 @@ exports[`RelationshipsGraphEdit when relationships have text references with ran
               "entityData": Immutable.Map {
                 "sharedId": "sharedId2",
               },
-              "range": Immutable.Map {
-                "start": 100,
-                "end": 200,
+              "reference": Immutable.Map {
+                "text": "Hu ha!",
+                "selectionRectangles": Immutable.List [],
               },
             }
           }
@@ -70,9 +70,9 @@ exports[`RelationshipsGraphEdit when relationships have text references with ran
               "entityData": Immutable.Map {
                 "sharedId": "sharedId2",
               },
-              "range": Immutable.Map {
-                "start": 100,
-                "end": 200,
+              "reference": Immutable.Map {
+                "text": "Hu ha!",
+                "selectionRectangles": Immutable.List [],
               },
             }
           }
@@ -206,9 +206,9 @@ exports[`RelationshipsGraphEdit when relationships have text references with ran
               "entityData": Immutable.Map {
                 "sharedId": "sharedId3",
               },
-              "range": Immutable.Map {
-                "start": 50,
-                "end": 120,
+              "reference": Immutable.Map {
+                "text": ":D",
+                "selectionRectangles": Immutable.List [],
               },
             }
           }
@@ -222,9 +222,9 @@ exports[`RelationshipsGraphEdit when relationships have text references with ran
               "entityData": Immutable.Map {
                 "sharedId": "sharedId3",
               },
-              "range": Immutable.Map {
-                "start": 50,
-                "end": 120,
+              "reference": Immutable.Map {
+                "text": ":D",
+                "selectionRectangles": Immutable.List [],
               },
             }
           }

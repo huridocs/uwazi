@@ -4,18 +4,16 @@ import * as types from 'app/Viewer/actions/actionTypes';
 import * as connectionsTypes from 'app/Connections/actions/actionTypes';
 import { entityDefaultDocument } from 'shared/entityDefaultDocument';
 
-import { APIURL } from 'app/config.js';
 import { actions } from 'app/BasicReducer';
 import { actions as formActions } from 'react-redux-form';
 import { documentsApi } from 'app/Documents';
 import { notificationActions } from 'app/Notifications';
 import { removeDocument, unselectAllDocuments } from 'app/Library/actions/libraryActions';
-import { isClient } from 'app/utils';
 import { actions as relationshipActions } from 'app/Relationships';
 import { RequestParams } from 'app/utils/RequestParams';
 import * as selectionActions from './selectionActions';
 import * as uiActions from './uiActions';
-import { PDFUtils } from '../../PDF';
+import { sortTextSelections } from '../utils/sortTextSelections';
 
 export function setDocument(document, html) {
   return {
@@ -106,22 +104,7 @@ export async function getDocument(requestParams, defaultLanguage, filename) {
   ).json.rows;
 
   entity.defaultDoc = getEntityDoc(entity, filename, defaultLanguage);
-  if (!isClient) return entity;
-  if (Object.keys(entity.defaultDoc).length === 0 || entity.defaultDoc.pdfInfo) return entity;
-
-  const pdfInfo = await PDFUtils.extractPDFInfo(`${APIURL}files/${entity.defaultDoc.filename}`);
-  const processedDoc = await api
-    .post('documents/pdfInfo', new RequestParams({ _id: entity.defaultDoc._id, pdfInfo }))
-    .then(res => res.json);
-
-  return {
-    ...entity,
-    defaultDoc: processedDoc,
-    documents: entity.documents.map(d => {
-      if (d._id === processedDoc._id) return processedDoc;
-      return d;
-    }),
-  };
+  return entity;
 }
 
 export function loadTargetDocument(sharedId) {
@@ -185,16 +168,13 @@ export function addToToc(textSelectedObject, currentToc) {
       toc = currentToc;
     }
     const tocElement = {
-      range: {
-        start: textSelectedObject.sourceRange.start,
-        end: textSelectedObject.sourceRange.end,
-      },
+      selectionRectangles: textSelectedObject.sourceRange.selectionRectangles,
       label: textSelectedObject.sourceRange.text,
       indentation: 0,
     };
 
     toc.push(tocElement);
-    toc = toc.sort((a, b) => a.range.start - b.range.start);
+    toc = toc.sort(sortTextSelections);
     dispatch(editToc(toc));
   };
 }

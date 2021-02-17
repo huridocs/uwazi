@@ -21,18 +21,18 @@ export default {
 
   to(selector, parentSelector, opt = {}) {
     const options = this.getOptions(opt);
-    if (this.isVisible(selector, parentSelector)) {
-      return;
+    if (this.isVisible(selector, parentSelector) && !options.force) {
+      return Promise.resolve();
     }
+
     const element = this.getElement(selector);
     const parent = this.getElement(parentSelector);
+
     if (!parent || !element) {
-      return;
+      return Promise.resolve();
     }
-
     const scrollTop = this.getTargetScrollTop(element, parent, options);
-
-    this.animateScroll(parent, scrollTop, options);
+    return this.animateScroll(parent, scrollTop, options);
   },
 
   getTargetScrollTop(element, parent, options) {
@@ -52,20 +52,30 @@ export default {
   animateScroll(_parent, scrollTop, options) {
     const parent = _parent;
     const start = Date.now();
-    const timeout = window.setInterval(() => {
-      const t = (Date.now() - start) / options.duration;
-      const multiplier = this[options.animation](t);
-      parent.scrollTop += multiplier * (scrollTop - parent.scrollTop);
-      if (multiplier >= 0.9) {
-        parent.scrollTop = scrollTop;
-        window.clearInterval(timeout);
-      }
-    }, 25);
-    return timeout;
+    return new Promise(resolve => {
+      const timeout = window.setInterval(() => {
+        const t = (Date.now() - start) / options.duration;
+        const multiplier = this[options.animation](t);
+        parent.scrollTop += multiplier * (scrollTop - parent.scrollTop);
+        if (multiplier >= 0.9) {
+          parent.scrollTop = scrollTop;
+          window.clearInterval(timeout);
+          resolve();
+        }
+      }, 25);
+
+      return timeout;
+    });
   },
 
   getOptions(options) {
-    const defaultOptions = { duration: 400, offset: 0, animation: 'easeIn', dividerOffset: 2 };
+    const defaultOptions = {
+      duration: 400,
+      offset: 0,
+      animation: 'easeIn',
+      dividerOffset: 2,
+      force: false,
+    };
     return Object.assign(defaultOptions, options);
   },
 

@@ -74,23 +74,23 @@ describe('Entity zone', () => {
           firstSighting:
             '#metadataForm > div:nth-child(3) > div:nth-child(6) > ul > li.wide > div > div > input',
           whoIsHe:
-            '#metadataForm > div:nth-child(3) > div:nth-child(7) > ul > li.wide > div > div.tab-content.tab-content-visible > textarea',
+            '#metadataForm > div:nth-child(3) > div:nth-child(7) > ul > li.wide > div > div.tab-content-visible > textarea',
         },
         viewer: {
           realName:
-            '#app > div.content > div > div > main > div > div.tab-content.tab-content-visible > div > div > div.view > dl:nth-child(1) > dd',
+            '#app > div.content > div > div > main > div > div.tab-content-visible > div > div > div.view > dl:nth-child(1) > dd',
           age:
-            '#app > div.content > div > div > main > div > div.tab-content.tab-content-visible > div > div > div.view > dl.metadata-type-numeric > dd',
+            '#app > div.content > div > div > main > div > div.tab-content-visible > div > div > div.view > dl.metadata-type-numeric > dd',
           knownAccomplices:
-            '#app > div.content > div > div > main > div > div.tab-content.tab-content-visible > div > div > div.view > dl > dd > ul > li > a',
+            '#app > div.content > div > div > main > div > div.tab-content-visible > div > div > div.view > dl > dd > ul > li > a',
           mainSuperpower:
-            '#app > div.content > div > div > main > div > div.tab-content.tab-content-visible > div > div > div.view > dl:nth-child(4) > dd',
+            '#app > div.content > div > div > main > div > div.tab-content-visible > div > div > div.view > dl:nth-child(4) > dd',
           superpowers:
-            '#app > div.content > div > div > main > div > div.tab-content.tab-content-visible > div > div > div.view > dl:nth-child(5) > dd > ul',
+            '#app > div.content > div > div > main > div > div.tab-content-visible > div > div > div.view > dl:nth-child(5) > dd > ul',
           firstSight:
-            '#app > div.content > div > div > main > div > div.tab-content.tab-content-visible > div > div > div.view > dl:nth-child(6) > dd',
+            '#app > div.content > div > div > main > div > div.tab-content-visible > div > div > div.view > dl:nth-child(6) > dd',
           whoIsHe:
-            '#app > div.content > div > div > main > div > div.tab-content.tab-content-visible > div > div > div.view > dl:nth-child(7) > dd > div > p',
+            '#app > div.content > div > div > main > div > div.tab-content-visible > div > div > div.view > dl:nth-child(7) > dd > div > p',
         },
       };
 

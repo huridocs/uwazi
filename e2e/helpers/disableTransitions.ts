@@ -1,5 +1,5 @@
 /*global page*/
-
+//Login reloads the page, and will remove this styles. Use after login.
 export default async () => {
   await page.addStyleTag({
     content: `
