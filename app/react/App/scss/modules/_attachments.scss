@@ -178,7 +178,7 @@ label.add:focus-within {
   }
 
   &-dropdown {
-    margin-left: 4px;
+    margin-left: 10px;
 
     &-toggle {
       border-radius: 15px;
@@ -186,6 +186,22 @@ label.add:focus-within {
       height: 30px;
       padding: 0;
       text-align: center;
+    }
+
+    .dropdown-menu {
+      top: 0;
+    }
+
+    .dropdown-menu > li > a {
+      padding: 5px 14px;
+
+      &.is--delete {
+        color: #b2452d;
+      }
+
+      svg {
+        margin-right: 3px;
+      }
     }
   }
 }

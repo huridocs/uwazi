@@ -205,7 +205,7 @@ export class Attachment extends Component {
                 </a>
               </li>
               <li>
-                <a href="#" onClick={this.deleteAttachment.bind(this, file)}>
+                <a href="#" onClick={this.deleteAttachment.bind(this, file)} className="is--delete">
                   <Icon icon="trash-alt" /> <Translate>Delete</Translate>
                 </a>
               </li>
