@@ -65,11 +65,15 @@ export class Attachment extends Component {
   myRef = React.createRef();
 
   componentDidMount() {
-    document.addEventListener('mousedown', this.handleClickOutside);
+    typeof document !== undefined
+      ? document.addEventListener('mousedown', this.handleClickOutside)
+      : null;
   }
 
   componentWillUnmount() {
-    document.removeEventListener('mousedown', this.handleClickOutside);
+    typeof document !== undefined
+      ? document.removeEventListener('mousedown', this.handleClickOutside)
+      : null;
   }
 
   handleClickOutside = e => {
@@ -172,17 +176,16 @@ export class Attachment extends Component {
             <button
               className="btn btn-default dropdown-toggle attachments-dropdown-toggle"
               type="button"
-              id="dropdownMenu1"
+              id="attachment-dropdown-actions"
               data-toggle="dropdown"
               aria-haspopup="true"
-              aria-expanded="true"
               onClick={this.toggleDropdown}
             >
               <Icon icon="pencil-alt" />
             </button>
             <ul
               className="dropdown-menu dropdown-menu-right"
-              aria-labelledby="dropdownMenu1"
+              aria-labelledby="attachment-dropdown-actions"
               style={{ display: this.state.dropdownMenuOpen ? 'block' : 'none' }}
               ref={this.myRef}
             >

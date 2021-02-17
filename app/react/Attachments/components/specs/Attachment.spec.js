@@ -1,3 +1,7 @@
+/**
+ * @jest-environment jsdom
+ */
+
 import React from 'react';
 import { shallow } from 'enzyme';
 
@@ -95,28 +99,28 @@ describe('Attachment', () => {
 
       expect(props.submitForm).toHaveBeenCalledWith('model', 'storeKey');
     });
-  });
 
-  it('should include an authorized delete button for each file', () => {
-    render();
-    const deleteButton = component
-      .find('.attachment-buttons')
-      .find('button')
-      .at(1);
+    it('should include an authorized delete button for each file', () => {
+      render();
+      const deleteButton = component
+        .find('.attachment-buttons')
+        .find('button')
+        .at(1);
 
-    expect(
-      deleteButton
-        .parents()
-        .at(2)
-        .is(NeedAuthorization)
-    ).toBe(true);
-    expect(deleteButton.parent().props().if).toBe(true);
+      expect(
+        deleteButton
+          .parents()
+          .at(2)
+          .is(NeedAuthorization)
+      ).toBe(true);
+      expect(deleteButton.parent().props().if).toBe(true);
 
-    deleteButton.simulate('click');
-    expect(context.confirm).toHaveBeenCalled();
+      deleteButton.simulate('click');
+      expect(context.confirm).toHaveBeenCalled();
 
-    context.confirm.calls.argsFor(0)[0].accept();
-    expect(props.deleteAttachment).toHaveBeenCalledWith('parentId', file, 'storeKey');
+      context.confirm.calls.argsFor(0)[0].accept();
+      expect(props.deleteAttachment).toHaveBeenCalledWith('parentId', file, 'storeKey');
+    });
   });
 
   it('should hold a thumbnail for PDFs and valid images', () => {
