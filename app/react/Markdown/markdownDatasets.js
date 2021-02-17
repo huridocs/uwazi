@@ -11,11 +11,11 @@ import entitiesApi from 'app/Entities/EntitiesAPI';
 
 const conformUrl = ({ url = '', geolocation = false }) => {
   const { q } = queryString.parse(url.substring(url.indexOf('?')));
+
   if (!q) {
-    const defaultValue = { allAggregations: true, limit: 0 };
-    if (geolocation) {
-      defaultValue.geolocation = true;
-    }
+    const defaultValue = geolocation
+      ? { allAggregations: true, limit: 0, geolocation: true }
+      : { allAggregations: true, limit: 0 };
 
     return defaultValue;
   }
