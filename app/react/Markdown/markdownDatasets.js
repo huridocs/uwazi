@@ -1,5 +1,3 @@
-/** @format */
-
 import HtmlParser from 'htmlparser2/lib/Parser';
 import queryString from 'query-string';
 import rison from 'rison-node';
@@ -116,7 +114,8 @@ export default {
 
   getMetadataValue(state, { property, dataset = 'default' }) {
     const data = state.page.datasets.get(dataset);
-    const propertyExists = data ? data.hasIn(['metadata', property]) : false;
+    //const propertyExists = data ? data.hasIn(['metadata', property]) : false;
+    const propertyExists = data && data.hasIn(['metadata', property]);
     const mos = propertyExists ? data.getIn(['metadata', property]).toJS() : [];
     return mos && mos.length && mos[0].value ? Number(mos[0].value) : undefined;
   },
