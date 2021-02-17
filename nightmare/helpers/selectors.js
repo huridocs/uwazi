@@ -105,11 +105,11 @@ export default {
     libraryFirstDocumentSnippet:
       '#app > div.content > div > div > div > main > div > div > div.item-group > div:nth-child(1) > div.item-info > div.item-snippet-wrapper > div.item-snippet',
     librarySidePanelSnippet:
-      '#app > div.content > div > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > ul.snippet-list > li.snippet-list-item',
+      '#app > div.content > div > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content-visible > div > ul.snippet-list > li.snippet-list-item',
     librarySidePanelFirstSnippet:
-      '#app > div.content > div > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > ul.snippet-list > li:nth-child(1)',
+      '#app > div.content > div > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content-visible > div > ul.snippet-list > li:nth-child(1)',
     librarySidePanelSecondSnippet:
-      '#app > div.content > div > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > ul.snippet-list > li:nth-child(2)',
+      '#app > div.content > div > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content-visible > div > ul.snippet-list > li:nth-child(2)',
     libraryFirstDocumentTitle:
       '#app > div.content > div > div > div > main > div > div > div.item-group > div:nth-child(1) > div.item-info > div',
     librarySecondDocument:
@@ -170,22 +170,22 @@ export default {
     sidePanelCloseButton:
       '#app > div.content > div > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-header > button',
     sidePanelDocumentType:
-      '#app > div.content > div > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div.view > div > span',
+      '#app > div.content > div > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content-visible > div > div.view > div > span',
   },
   documentView: {
     searchTextTab:
       '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-header > div > ul > li:nth-child(1) > div',
     searchTextInput:
-      '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > form > div > div > div > input',
+      '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content-visible > div > form > div > div > div > input',
     searchTextForm:
-      '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div > form',
+      '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content-visible > div > div > form',
     viewerFirstDocumentSnippet:
-      '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > ul > li:nth-child(1)',
+      '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content-visible > div > ul > li:nth-child(1)',
     viewerSidePanelFirstSnippet:
-      '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > ul > li:nth-child(2)',
+      '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content-visible > div > ul > li:nth-child(2)',
     viewer: '#app > div.content > div > div > main',
     sidePanelTitle:
-      '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div.view > div > div > h1',
+      '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content-visible > div > div.view > div > div > h1',
     documentPage: '.page',
     documentPageFirstParagraph: '#page-1 > div > div.textLayer > span:nth-child(1)',
     createParagraphLinkButton:
@@ -206,7 +206,7 @@ export default {
     saveConnectionButton:
       '#app > div.content > div > div > main > div > div > div > div:nth-child(1) > div.ContextMenu.ContextMenu-center > button',
     activeConnection:
-      '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div',
+      '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content-visible > div > div',
     editButton:
       '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-footer > span > button.edit-metadata.btn.btn-primary',
     saveButton:
@@ -217,27 +217,27 @@ export default {
       '#app > div.content > div > div > div.ContextMenu.ContextMenu-bottom > div > div',
     metadataForm: '#metadataForm',
     unlinkIcon:
-      '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div > div.item-actions > div.item-shortcut-group > a.item-shortcut.btn.btn-default.btn-hover-danger',
+      '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content-visible > div > div > div.item-actions > div.item-shortcut-group > a.item-shortcut.btn.btn-default.btn-hover-danger',
     sidePanelInfoTab:
       '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-header > div > ul > li:nth-child(5) > div',
     sidePanelFirstDocumentTitle:
-      '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div.filelist > ul > li > div > div.file-originalname',
+      '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content-visible > div > div.filelist > ul > li > div > div.file-originalname',
     sidePanelFirstDocumentEditButton:
-      '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div.filelist > ul > li > div > div:nth-child(2) > button',
+      '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content-visible > div > div.filelist > ul > li > div > div:nth-child(2) > button',
     fileFormInput: '#originalname',
     fileFormSubmit:
-      '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div.filelist > ul > li > form > div > div:nth-child(4) > button',
+      '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content-visible > div > div.filelist > ul > li > form > div > div:nth-child(4) > button',
     fileFormCancel:
-      '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div.filelist > ul > li > form > div > div:nth-child(5) > button',
+      '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content-visible > div > div.filelist > ul > li > form > div > div:nth-child(5) > button',
     sidePanelFirstAttachmentTitle:
-      '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div:nth-child(2) > div:nth-child(1) > div > div > a > span > span',
+      '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content-visible > div > div:nth-child(2) > div:nth-child(1) > div > div > a > span > span',
     sidePanelFirstAttachmentEditTitleButton:
-      '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div:nth-child(2) > div:nth-child(1) > div > div > div > div > button:nth-child(1)',
+      '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content-visible > div > div:nth-child(2) > div:nth-child(1) > div > div > div > div > button:nth-child(1)',
     attachmentFormInput: '#attachmentForm > div > div > input',
     attachmentFormSubmit:
-      '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div:nth-child(2) > div:nth-child(1) > div > div > div.attachment-buttons > div > button.item-shortcut.btn.btn-success',
+      '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content-visible > div > div:nth-child(2) > div:nth-child(1) > div > div > div.attachment-buttons > div > button.item-shortcut.btn.btn-success',
     attachmentFormCancel:
-      '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div:nth-child(2) > div:nth-child(1) > div > div > div.attachment-buttons > div > button.item-shortcut.btn.btn-primary',
+      '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content-visible > div > div:nth-child(2) > div:nth-child(1) > div > div > div.attachment-buttons > div > button.item-shortcut.btn.btn-primary',
     tocPannelLink:
       '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-header > div > ul > li:nth-child(2) > div',
     tocPannel: '.toc',
@@ -254,12 +254,12 @@ export default {
     metadataFormTitle: '#metadataForm > div:nth-child(1) > ul > li.wide > div > textarea',
     metadataFormType: '#metadataForm > div:nth-child(2) > ul > li.wide > select',
     firstAttachmentTitle:
-      '#app > div.content > div > div > main > div > div.tab-content.tab-content-visible > div > div > div.attachments-list-parent > div.attachments-list > div > a > span > span:nth-child(1)',
+      '#app > div.content > div > div > main > div > div.tab-content-visible > div > div > div.attachments-list-parent > div.attachments-list > div > a > span > span:nth-child(1)',
     firstAttachmentEditTitleButton:
-      '#app > div.content > div > div > main > div > div.tab-content.tab-content-visible > div > div > div.attachments-list-parent > div.attachments-list > div > div > div > button:nth-child(1)',
+      '#app > div.content > div > div > main > div > div.tab-content-visible > div > div > div.attachments-list-parent > div.attachments-list > div > div > div > button:nth-child(1)',
     attachmentFormInput: '#attachmentForm > div > div > input',
     attachmentFormSubmit:
-      '#app > div.content > div > div > main > div > div.tab-content.tab-content-visible > div > div > div.attachments-list-parent > div.attachments-list > div > div.attachment-buttons > div > button.item-shortcut.btn.btn-success',
+      '#app > div.content > div > div > main > div > div.tab-content-visible > div > div > div.attachments-list-parent > div.attachments-list > div > div.attachment-buttons > div > button.item-shortcut.btn.btn-success',
     conectionsTabLink:
       '#app > div.content > div > div > div > div.content-header-tabs > ul > li:nth-child(2) > div',
     connectionsListView:
@@ -299,18 +299,18 @@ export default {
     saveButton:
       '#app > div.content > div > div > div.sidepanel-footer > span > button.btn.btn-success',
     newRelationshipButton:
-      '#app > div.content > div > div > main > div > div.tab-content.tab-content-visible > div > div > div.relationships-graph div.leftRelationshipType button.relationships-new',
+      '#app > div.content > div > div > main > div > div.tab-content-visible > div > div > div.relationships-graph div.leftRelationshipType button.relationships-new',
 
     sortMenu:
-      '#app > div.content > div > div > main > div > div.tab-content.tab-content-visible > div > div > div.sort-by.centered > div.sort-buttons > div:nth-child(2) > ul > li.Dropdown-option.is-active > a:nth-child(1)',
+      '#app > div.content > div > div > main > div > div.tab-content-visible > div > div > div.sort-by.centered > div.sort-buttons > div:nth-child(2) > ul > li.Dropdown-option.is-active > a:nth-child(1)',
     searchInput:
-      '#app > div.content > div > div > main > div > div.tab-content.tab-content-visible > div > div > div.search-list.centered > div > form > div > div > input',
+      '#app > div.content > div > div > main > div > div.tab-content-visible > div > div > div.search-list.centered > div > form > div > div > input',
 
     documentViewerConnectionsTab:
       '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-header > div > ul > li:nth-child(6) > div',
 
     rightHandRelationships:
-      '#app > div.content > div > div > main > div > div.tab-content.tab-content-visible > div > div > div.relationships-graph > div:nth-child(2) > div:nth-child(1) > div.rightRelationships div.rightRelationshipsTypeGroup',
+      '#app > div.content > div > div > main > div > div.tab-content-visible > div > div > div.relationships-graph > div:nth-child(2) > div:nth-child(1) > div.rightRelationships div.rightRelationshipsTypeGroup',
 
     rightHandPerpetratorOption: 'li:nth-child(2)',
     rightHandHerosOption: 'li:nth-child(4)',
@@ -350,25 +350,25 @@ export default {
       firstSighting:
         '#metadataForm > div:nth-child(3) > div:nth-child(6) > ul > li.wide > div > div > input',
       whoIsHe:
-        '#metadataForm > div:nth-child(3) > div:nth-child(7) > ul > li.wide > div > div.tab-content.tab-content-visible > textarea',
+        '#metadataForm > div:nth-child(3) > div:nth-child(7) > ul > li.wide > div > div.tab-content-visible > textarea',
     },
     viewer: {
       title:
-        '#app > div.content > div > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div.view > div > div > h1',
+        '#app > div.content > div > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content-visible > div > div.view > div > div > h1',
       realName:
-        '#app > div.content > div > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div.view > dl:nth-child(2) > dd',
+        '#app > div.content > div > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content-visible > div > div.view > dl:nth-child(2) > dd',
       age:
-        '#app > div.content > div > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div.view > dl:nth-child(3) > dd',
+        '#app > div.content > div > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content-visible > div > div.view > dl:nth-child(3) > dd',
       knownAccomplices:
-        '#app > div.content > div > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div > dl:nth-child(4) > dd > ul > li > a',
+        '#app > div.content > div > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content-visible > div > div > dl:nth-child(4) > dd > ul > li > a',
       mainSuperpower:
-        '#app > div.content > div > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div.view > dl:nth-child(5) > dd',
+        '#app > div.content > div > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content-visible > div > div.view > dl:nth-child(5) > dd',
       superpowers:
-        '#app > div.content > div > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div.view > dl:nth-child(6) > dd > ul',
+        '#app > div.content > div > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content-visible > div > div.view > dl:nth-child(6) > dd > ul',
       firstSight:
-        '#app > div.content > div > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div.view > dl:nth-child(7) > dd',
+        '#app > div.content > div > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content-visible > div > div.view > dl:nth-child(7) > dd',
       whoIsHe:
-        '#app > div.content > div > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div > dl:nth-child(8) > dd > div > p',
+        '#app > div.content > div > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content-visible > div > div > dl:nth-child(8) > dd > div > p',
     },
   },
   review: {
@@ -395,7 +395,7 @@ export default {
     secondMultiSelectItemSelected:
       '#sidePanelMetadataForm > div > div > ul > li:nth-child(3) > ul > li:nth-child(3) > label > span.multiselectItem-icon > svg.checkbox-checked',
     titleLabel:
-      '#app > div.content > div > div > div > main > div.entity-viewer > div > div.tab-content.tab-content-visible > div > div > div.content-header-title > h1',
+      '#app > div.content > div > div > div > main > div.entity-viewer > div > div.tab-content-visible > div > div > div.content-header-title > h1',
     titleEditBox: '#fullEditMetadataForm > div.form-group > ul > li.wide > div > textarea',
     discardButtonDisabled:
       '#app > div.content > div > div > div > main > div.content-footer > button.cancel-edit-metadata.btn-disabled',

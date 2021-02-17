@@ -6,7 +6,7 @@ const documentViewer = s => s.documentViewer;
 function isRelationshipAReference(doc, reference) {
   return (
     reference.get('entity') === doc.get('sharedId') &&
-    typeof reference.getIn(['range', 'start']) !== 'undefined'
+    typeof reference.getIn(['reference', 'text']) !== 'undefined'
   );
 }
 
