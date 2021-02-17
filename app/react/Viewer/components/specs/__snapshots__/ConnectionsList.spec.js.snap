@@ -14,7 +14,16 @@ exports[`ConnectionsList should merge and render references in order with the pr
             "_id": "1",
           },
         },
-        "range": Object {
+        "reference": Object {
+          "selectionRectangles": Array [
+            Object {
+              "height": 20,
+              "left": 20,
+              "page": "1",
+              "top": 0,
+              "width": 42,
+            },
+          ],
           "text": "",
         },
         "relationType": "rel1",
@@ -31,9 +40,17 @@ exports[`ConnectionsList should merge and render references in order with the pr
             "_id": "1",
           },
         },
-        "range": Object {
-          "end": 8,
-          "start": 0,
+        "reference": Object {
+          "selectionRectangles": Array [
+            Object {
+              "height": 20,
+              "left": 20,
+              "page": "1",
+              "top": 5,
+              "width": 42,
+            },
+          ],
+          "text": "",
         },
         "relationType": "rel1",
       }
@@ -49,9 +66,17 @@ exports[`ConnectionsList should merge and render references in order with the pr
             "_id": "1",
           },
         },
-        "range": Object {
-          "end": 8,
-          "start": 5,
+        "reference": Object {
+          "selectionRectangles": Array [
+            Object {
+              "height": 20,
+              "left": 20,
+              "page": "2",
+              "top": 23,
+              "width": 42,
+            },
+          ],
+          "text": "",
         },
         "relationType": "rel1",
       }
@@ -67,9 +92,17 @@ exports[`ConnectionsList should merge and render references in order with the pr
             "_id": "1",
           },
         },
-        "range": Object {
-          "end": 20,
-          "start": 10,
+        "reference": Object {
+          "selectionRectangles": Array [
+            Object {
+              "height": 20,
+              "left": 20,
+              "page": "2",
+              "top": 30,
+              "width": 42,
+            },
+          ],
+          "text": "",
         },
         "relationType": "rel1",
       }

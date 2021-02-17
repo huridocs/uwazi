@@ -1,5 +1,6 @@
 /**
  * @jest-environment jsdom
+ *
  */
 import Immutable from 'immutable';
 
@@ -56,7 +57,15 @@ describe('Viewer uiActions', () => {
     });
 
     it('should scroll to active if goToActive is true', () => {
-      actions.scrollToActive({ _id: 'id' }, {}, '', true)(dispatch);
+      actions.scrollToActive(
+        {
+          _id: 'id',
+          reference: { selectionRectangles: [{ top: 40, page: '1' }], text: 'something' },
+        },
+        {},
+        '',
+        true
+      )(dispatch);
       expect(dispatch).toHaveBeenCalledWith({ type: types.GO_TO_ACTIVE, value: false });
     });
   });
@@ -70,7 +79,13 @@ describe('Viewer uiActions', () => {
     });
 
     it('should dispatch a ACTIVATE_REFERENCE with id', () => {
-      actions.activateReference({ _id: 'id' }, {})(dispatch);
+      actions.activateReference(
+        {
+          _id: 'id',
+          reference: { selectionRectangles: [{ top: 40, page: '1' }], text: 'something' },
+        },
+        {}
+      )(dispatch);
       expect(dispatch).toHaveBeenCalledWith({ type: types.ACTIVE_REFERENCE, reference: 'id' });
       expect(dispatch).toHaveBeenCalledWith({ type: types.OPEN_PANEL, panel: 'viewMetadataPanel' });
       expect(dispatch).toHaveBeenCalledWith({
@@ -80,7 +95,13 @@ describe('Viewer uiActions', () => {
     });
 
     it('should dispatch a SHOW_TAB references by default', () => {
-      actions.activateReference({ _id: 'id' }, {})(dispatch);
+      actions.activateReference(
+        {
+          _id: 'id',
+          reference: { selectionRectangles: [{ top: 40, page: '1' }], text: 'something' },
+        },
+        {}
+      )(dispatch);
       expect(dispatch).toHaveBeenCalledWith({
         type: 'viewer.sidepanel.tab/SET',
         value: 'references',
@@ -88,7 +109,14 @@ describe('Viewer uiActions', () => {
     });
 
     it('should dispatch a SHOW_TAB to a diferent tab if passed', () => {
-      actions.activateReference({ _id: 'id' }, {}, 'another tab')(dispatch);
+      actions.activateReference(
+        {
+          _id: 'id',
+          reference: { selectionRectangles: [{ top: 40, page: '1' }], text: 'something' },
+        },
+        {},
+        'another tab'
+      )(dispatch);
       expect(dispatch).toHaveBeenCalledWith({
         type: 'viewer.sidepanel.tab/SET',
         value: 'another tab',
@@ -96,7 +124,14 @@ describe('Viewer uiActions', () => {
     });
 
     it('should dispatch a SHOW_TAB references if Array is passed (when selecting a doc reference)', () => {
-      actions.activateReference({ _id: 'id' }, {}, [])(dispatch);
+      actions.activateReference(
+        {
+          _id: 'id',
+          reference: { selectionRectangles: [{ top: 40, page: '1' }], text: 'something' },
+        },
+        {},
+        []
+      )(dispatch);
       expect(dispatch).toHaveBeenCalledWith({
         type: 'viewer.sidepanel.tab/SET',
         value: 'references',
@@ -104,22 +139,39 @@ describe('Viewer uiActions', () => {
     });
 
     it('should goToActive on delayActivation', () => {
-      actions.activateReference({ _id: 'id' }, {}, [], true)(dispatch);
+      actions.activateReference(
+        {
+          _id: 'id',
+          reference: { selectionRectangles: [{ top: 40, page: '1' }], text: 'something' },
+        },
+        {},
+        [],
+        true
+      )(dispatch);
       expect(dispatch).toHaveBeenCalledWith(actions.goToActive());
     });
 
     it('should scroll to the elements', done => {
-      actions.activateReference({ _id: 'id' }, {})(dispatch);
+      actions.activateReference(
+        {
+          _id: 'id',
+          reference: { selectionRectangles: [{ top: 40, page: '1' }], text: 'something' },
+        },
+        {}
+      )(dispatch);
       setTimeout(() => {
         expect(scroller.to).toHaveBeenCalledWith(
-          '.document-viewer a[data-id="id"]',
+          '.document-viewer div#page-1',
           '.document-viewer',
-          { duration: 50 }
+          { duration: 1, dividerOffset: 1 }
         );
-        expect(scroller.to).toHaveBeenCalledWith(
-          '.metadata-sidepanel .item-id',
-          '.metadata-sidepanel .sidepanel-body',
-          { duration: 50 }
+
+        expect(
+          scroller.to
+        ).toHaveBeenCalledWith(
+          '.document-viewer [data-id="id"] .highlight-rectangle',
+          '.document-viewer',
+          { duration: 50, offset: -30, dividerOffset: 1 }
         );
         done();
       });
@@ -132,7 +184,7 @@ describe('Viewer uiActions', () => {
 
     beforeEach(() => {
       dispatch = jasmine.createSpy('dispatch');
-      references = [{ _id: 'id1' }, { _id: 'id2', range: 'range' }];
+      references = [{ _id: 'id1' }, { _id: 'id2', reference: 'range' }];
       actions.selectReference(references[1], {})(dispatch);
       dispatch.calls.argsFor(0)[0](dispatch);
     });
@@ -158,6 +210,30 @@ describe('Viewer uiActions', () => {
       expect(dispatch).toHaveBeenCalledWith({ type: types.RESET_REFERENCE_CREATION });
       expect(dispatch).toHaveBeenCalledWith({ type: 'viewer/targetDoc/UNSET' });
       expect(dispatch).toHaveBeenCalledWith({ type: 'viewer/targetDocHTML/UNSET' });
+    });
+  });
+
+  describe('scrollToToc', () => {
+    it('should scroll do the pageof the toc, with an offset to the toc position', async () => {
+      spyOn(scroller, 'to').and.returnValue(Promise.resolve());
+      await actions.scrollToToc({
+        text: 'The hammer to fall',
+        selectionRectangles: [
+          {
+            page: '1',
+            top: 458,
+            left: 127,
+            height: 24,
+            width: 289,
+          },
+        ],
+      });
+
+      expect(scroller.to).toHaveBeenLastCalledWith(
+        '.document-viewer div#page-1',
+        '.document-viewer',
+        { dividerOffset: 1, duration: 1, force: true, offset: 458 }
+      );
     });
   });
 

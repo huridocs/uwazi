@@ -170,7 +170,7 @@ describe('PDF', () => {
   });
 
   describe('onLoad', () => {
-    it('should be called when there is no pages loading with the range of characters being rendered', () => {
+    it('should be called when there is no pages loading', () => {
       render();
       instance.setState({ pdf: { numPages: 5 } });
       instance.pageLoaded(1);
@@ -179,7 +179,7 @@ describe('PDF', () => {
       instance.pageLoaded(3);
       expect(props.onLoad).not.toHaveBeenCalled();
       instance.pageLoaded(2);
-      expect(props.onLoad).toHaveBeenCalledWith({ start: 0, end: 30, pages: [1, 2, 3] });
+      expect(props.onLoad).toHaveBeenCalledWith({ pages: [1, 2, 3] });
     });
 
     it('should be called when a pages is unloaded', () => {
@@ -192,7 +192,7 @@ describe('PDF', () => {
       props.onLoad.calls.reset();
       instance.pageUnloaded(3);
 
-      expect(props.onLoad).toHaveBeenCalledWith({ start: 0, end: 20, pages: [1, 2] });
+      expect(props.onLoad).toHaveBeenCalledWith({ pages: [1, 2] });
     });
   });
 });

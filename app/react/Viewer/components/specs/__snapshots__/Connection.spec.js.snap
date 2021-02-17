@@ -27,7 +27,7 @@ exports[`Connection should render the reference 1`] = `
           }
         >
           <a
-            className="item-shortcut btn btn-default btn-hover-danger"
+            className="item-shortcut btn btn-default btn-hover-danger delete"
             onClick={[Function]}
           >
             <Connect(Icon)
