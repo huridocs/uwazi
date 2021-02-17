@@ -44,7 +44,7 @@ export default function manageAttachmentsReducer(
 
     if (
       action.type === attachmentsTypes.ATTACHMENT_DELETED &&
-      getId(state, setInArray) === action.entity
+      getSharedId(state, setInArray) === action.entity
     ) {
       const attachments = getAttachments(state, setInArray);
       return state.setIn(

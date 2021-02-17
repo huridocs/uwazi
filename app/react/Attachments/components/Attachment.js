@@ -30,7 +30,7 @@ const getItemOptions = (parentId, filename) => {
   options.icon = 'paperclip';
   options.deletable = true;
   options.replaceable = false;
-  options.downloadHref = `/api/attachments/download?_id=${parentId}&file=${filename}`;
+  options.downloadHref = `/api/files/download?_id=${parentId}&file=${filename}`;
 
   return options;
 };
@@ -93,7 +93,7 @@ export class Attachment extends Component {
   deleteAttachment(attachment) {
     this.context.confirm({
       accept: () => {
-        this.props.deleteAttachment(this.props.parentId, attachment, this.props.storeKey);
+        this.props.deleteAttachment(this.props.parentSharedId, attachment, this.props.storeKey);
       },
       title: 'Confirm delete',
       message: this.props.deleteMessage,
@@ -205,7 +205,7 @@ export class Attachment extends Component {
                 </a>
               </li>
               <li>
-                <a href={item.downloadHref} target="_blank" download>
+                <a href={item.downloadHref} target="_blank">
                   <Icon icon="link" /> <Translate>Download</Translate>
                 </a>
               </li>
@@ -235,6 +235,7 @@ Attachment.propTypes = {
   deleteMessage: PropTypes.string,
   file: PropTypes.object,
   parentId: PropTypes.string,
+  parentSharedId: PropTypes.string,
   storeKey: PropTypes.string,
   model: PropTypes.string,
   readOnly: PropTypes.bool,

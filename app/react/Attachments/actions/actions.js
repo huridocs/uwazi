@@ -68,9 +68,8 @@ export function renameAttachment(entityId, form, __reducerKey, file) {
   return dispatch =>
     api
       .post(
-        'attachments/rename',
+        'files',
         new RequestParams({
-          entityId,
           _id: file._id,
           originalname: file.originalname,
           language: file.language,
@@ -88,23 +87,21 @@ export function renameAttachment(entityId, form, __reducerKey, file) {
       });
 }
 
-export function deleteAttachment(entityId, attachment, __reducerKey) {
+export function deleteAttachment(entitySharedId, attachment, __reducerKey) {
   return async dispatch => {
-    const { json: updatedEntity } = await api.delete(
-      'attachments/delete',
+    await api.delete(
+      'files',
       new RequestParams({
-        attachmentId: attachment._id,
+        _id: attachment._id,
       })
     );
     dispatch({
       type: types.ATTACHMENT_DELETED,
-      entity: entityId,
+      entity: entitySharedId,
       file: attachment,
       __reducerKey,
     });
 
-    dispatch(updateEntity(updatedEntity));
-    await dispatch(selectSingleDocument(updatedEntity));
     dispatch(notify('Attachment deleted', 'success'));
   };
 }

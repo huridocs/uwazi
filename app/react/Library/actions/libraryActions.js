@@ -258,6 +258,7 @@ export function elementCreated(doc) {
 }
 
 export function updateEntity(updatedDoc) {
+  console.log('updatedDoc', updatedDoc);
   return { type: types.UPDATE_DOCUMENT, doc: updatedDoc };
 }
 
