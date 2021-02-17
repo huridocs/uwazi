@@ -168,7 +168,7 @@ describe('search', () => {
 
     const aggregations = response.aggregations.all.generatedToc.buckets;
 
-    expect(aggregations.find(a => a.key === 'false').filtered.doc_count).toBe(3);
+    expect(aggregations.find(a => a.key === 'false').filtered.doc_count).toBe(2);
     expect(aggregations.find(a => a.key === 'true').filtered.doc_count).toBe(1);
   });
 
@@ -775,6 +775,21 @@ describe('search', () => {
         true
       );
       expect(optionsUnpublished.length).toBe(1);
+    });
+  });
+
+  describe('customFilters', () => {
+    it('should filter by the values passed', async () => {
+      const query = {
+        customFilters: {
+          generatedToc: {
+            values: ['true'],
+          },
+        },
+      };
+
+      const { rows } = await search.search(query, 'en');
+      expect(rows).toEqual([expect.objectContaining({ title: 'Batman finishes en' })]);
     });
   });
 

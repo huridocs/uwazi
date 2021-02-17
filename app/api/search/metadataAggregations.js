@@ -137,6 +137,7 @@ const extractFilters = (baseQuery, path) => {
       (!match.terms || (match.terms && !match.terms[path])) &&
       (!match.bool ||
         !match.bool.should ||
+        !match.bool.should[1] ||
         !match.bool.should[1].terms ||
         !match.bool.should[1].terms[path])
   );
@@ -173,6 +174,6 @@ export const generatedTocAggregations = baseQuery => {
   const filters = extractFilters(baseQuery, path);
   const { should } = baseQuery.query.bool;
   const agg = aggregation(path, should, filters);
-  agg.terms.missing = 'false';
+  // agg.terms.missing = 'false';
   return agg;
 };
