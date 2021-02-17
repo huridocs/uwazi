@@ -1,5 +1,3 @@
-/** @format */
-
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
@@ -15,7 +13,6 @@ import {
   highlightReference,
   activateReference,
   selectReference,
-  deactivateReference,
 } from 'app/Viewer/actions/uiActions';
 import { Item } from 'app/Layout';
 import { createSelector } from 'reselect';
@@ -38,7 +35,8 @@ export class Connection extends Component {
         this.props.referencesSection
       );
     }
-    if (this.props.targetDoc && typeof reference.range.start !== 'undefined') {
+
+    if (this.props.targetDoc && typeof reference.reference !== 'undefined') {
       this.props.selectReference(reference, this.props.doc.defaultDoc.pdfInfo);
     }
   }
@@ -63,7 +61,7 @@ export class Connection extends Component {
   render() {
     const { reference } = this.props;
     let itemClass = '';
-    const disabled = this.props.targetDoc && typeof reference.range.start === 'undefined';
+    const disabled = this.props.targetDoc && typeof reference.reference === 'undefined';
 
     if (this.props.highlighted) {
       itemClass = 'relationship-hover';
@@ -94,8 +92,8 @@ export class Connection extends Component {
         }`}
         data-id={reference._id}
         additionalText={
-          reference.associatedRelationship.range
-            ? reference.associatedRelationship.range.text
+          reference.associatedRelationship.reference
+            ? reference.associatedRelationship.reference.text
             : null
         }
         additionalMetadata={[
@@ -107,7 +105,7 @@ export class Connection extends Component {
             <ShowIf if={!this.props.targetDoc && !this.props.readOnly}>
               <NeedAuthorization roles={['admin', 'editor']}>
                 <a
-                  className="item-shortcut btn btn-default btn-hover-danger"
+                  className="item-shortcut btn btn-default btn-hover-danger delete"
                   onClick={this.deleteReference.bind(this, reference)}
                 >
                   <Icon icon="trash-alt" />
@@ -173,7 +171,6 @@ function mapDispatchToProps(dispatch) {
       highlightReference,
       activateReference,
       selectReference,
-      deactivateReference,
       deleteReference,
     },
     dispatch

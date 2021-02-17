@@ -48,12 +48,13 @@ RadioButtons.defaultProps = {
   optionsValue: 'value',
   prefix: '',
   renderLabel: undefined,
+  value: null,
 };
 
 RadioButtons.propTypes = {
   onChange: PropTypes.func.isRequired,
   options: PropTypes.array.isRequired,
-  value: PropTypes.any.isRequired,
+  value: PropTypes.any,
   optionsValue: PropTypes.string,
   optionsLabel: PropTypes.string,
   prefix: PropTypes.string,
