@@ -4,6 +4,17 @@ export const searchSchema = {
       properties: {
         aggregateGeneratedToc: { type: 'boolean' },
         filters: { type: 'object' },
+        customFilters: {
+          type: 'object',
+          properties: {
+            generatedToc: {
+              type: 'object',
+              properties: {
+                values: { type: 'array', items: [{ type: 'boolean' }] },
+              },
+            },
+          },
+        },
         types: { type: 'array', items: [{ type: 'string' }] },
         _types: { type: 'array', items: [{ type: 'string' }] },
         fields: { type: 'array', items: [{ type: 'string' }] },

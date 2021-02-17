@@ -607,6 +607,7 @@ const buildQuery = async (query, language, user, resources) => {
   const filters = processFilters(query.filters, [...allUniqueProps, ...properties]);
   // this is where the query filters are built
   queryBuilder.filterMetadata(filters);
+  queryBuilder.customFilters(query.customFilters);
   // this is where the query aggregations are built
   queryBuilder.aggregations(aggregations, dictionaries);
 
@@ -626,7 +627,6 @@ const search = {
       queryBuilder.generatedTOCAggregations();
     }
 
-    // queryBuilder.query() is the actual call
     return elastic
       .search({ body: queryBuilder.query() })
       .then(response => processResponse(response, templates, dictionaries, language, query.filters))

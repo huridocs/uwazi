@@ -72,6 +72,7 @@ export const fixtures = {
       language: 'en',
       title: 'Batman finishes en',
       published: true,
+      generatedToc: true,
       user: userId,
       metadata: {
         relationship: [
@@ -153,6 +154,7 @@ export const fixtures = {
       language: 'es',
       title: 'template1 title es',
       published: true,
+      generatedToc: false,
       user: userId,
     },
     {

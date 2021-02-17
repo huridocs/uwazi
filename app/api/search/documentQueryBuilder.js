@@ -1,7 +1,7 @@
 /* eslint-disable camelcase, max-lines */
 
 import { preloadOptionsSearch } from 'shared/config';
-import filterToMatch, { multiselectFilter } from './metadataMatchers';
+import filterToMatch, { textFilter, multiselectFilter } from './metadataMatchers';
 import { propertyToAggregation, generatedTocAggregations } from './metadataAggregations';
 
 export default function() {
@@ -229,6 +229,17 @@ export default function() {
       if (match.bool.should.length) {
         addFullTextFilter(match);
       }
+    },
+
+    customFilters(filters = {}) {
+      Object.keys(filters).forEach(key => {
+        if (filters[key].values.length) {
+          addFilter({
+            terms: { [key]: filters[key].values },
+          });
+        }
+      });
+      return this;
     },
 
     filterMetadata(filters = []) {
