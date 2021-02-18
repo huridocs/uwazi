@@ -21,7 +21,7 @@ import {
   resetForm,
 } from '../actions/actions';
 
-const getExtension = filename => filename.substr(filename.lastIndexOf('.') + 1);
+const getExtension = filename => (filename ? filename.substr(filename.lastIndexOf('.') + 1) : '');
 
 const getItemOptions = (parentId, filename) => {
   const options = {};
@@ -125,7 +125,7 @@ export class Attachment extends Component {
 
     let name = (
       <a className="attachment-link" href={item.downloadHref}>
-        {conformThumbnail(file, item)}
+        {file.filename ? conformThumbnail(file, item) : null}
         <span className="attachment-name">
           <span>{file.originalname}</span>
           <ShowIf if={Boolean(sizeString)}>

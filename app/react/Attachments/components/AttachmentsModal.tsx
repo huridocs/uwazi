@@ -1,14 +1,15 @@
-import React, { DragEvent, useRef } from 'react';
+import React, { DragEvent, useRef, useState } from 'react';
 import { connect } from 'react-redux';
 import ReactModal from 'react-modal';
 import { Tabs, TabLink, TabContent } from 'react-tabs-redux';
 import Dropzone from 'react-dropzone';
+import { LocalForm } from 'react-redux-form';
 
 import { Translate } from 'app/I18N';
 import { NeedAuthorization } from 'app/Auth';
 import { Icon } from 'app/UI';
 
-import { uploadAttachment } from '../actions/actions';
+import { uploadAttachment, uploadAttachmentFromUrl } from '../actions/actions';
 
 interface AttachmentsModalProps {
   isOpen: boolean;
@@ -17,7 +18,13 @@ interface AttachmentsModalProps {
   storeKey: string;
   onClose(): void;
   uploadAttachment(entity: any, file: any, __reducerKey: any, options?: {}): void;
+  uploadAttachmentFromUrl(entity: any, name: any, url: any, __reducerKey: any): void;
   getPercentage?: number;
+}
+
+interface AttachmentUrlForm {
+  url: string;
+  name: string;
 }
 
 // eslint-disable-next-line react/prop-types
@@ -27,9 +34,12 @@ const AttachmentsModal: React.FC<AttachmentsModalProps> = ({
   storeKey,
   onClose,
   uploadAttachment,
+  uploadAttachmentFromUrl,
   getPercentage,
 }) => {
   const inputFileRef = useRef<HTMLInputElement | null>(null);
+
+  const [urlForm, setUrlForm] = useState<AttachmentUrlForm>({ url: '', name: '' });
 
   const handleUploadButtonClicked = () => {
     if (inputFileRef.current) {
@@ -53,6 +63,16 @@ const AttachmentsModal: React.FC<AttachmentsModalProps> = ({
     accepted.forEach(file => {
       uploadAttachment(entitySharedId, file, storeKey);
     });
+  };
+
+  const handleInputTextChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    event.persist();
+    setUrlForm(old => ({ ...old, [event.target.name]: event.target.value }));
+  };
+
+  const handleSubmitUrlForm = (formModelData: any) => {
+    console.log(formModelData);
+    uploadAttachmentFromUrl(entitySharedId, urlForm.name, urlForm.url, storeKey);
   };
 
   return (
@@ -130,23 +150,33 @@ const AttachmentsModal: React.FC<AttachmentsModalProps> = ({
               </TabContent>
               <TabContent for="uploadWeb" className="tab-content centered">
                 <div className="wrapper-web">
-                  <div className="form-group has-feedback">
-                    <input type="text" className="form-control" placeholder="Paste URL here" />
-                    <Icon icon="info-circle" class="feedback-icon" />
-                  </div>
+                  <LocalForm onSubmit={handleSubmitUrlForm}>
+                    <div className="form-group has-feedback">
+                      <input
+                        type="text"
+                        className="form-control"
+                        placeholder="Paste URL here"
+                        name="url"
+                        onChange={handleInputTextChange}
+                        value={urlForm.url}
+                      />
+                      <Icon icon="info-circle" className="feedback-icon" />
+                    </div>
 
-                  <input
-                    type="text"
-                    onChange={() => {}}
-                    value=""
-                    className="form-control"
-                    placeholder="Title"
-                  />
+                    <input
+                      type="text"
+                      className="form-control"
+                      placeholder="Title"
+                      name="name"
+                      onChange={handleInputTextChange}
+                      value={urlForm.name}
+                    />
 
-                  <button type="button" onClick={() => {}} className="btn btn-success">
-                    <Icon icon="link" />
-                    &nbsp; <Translate>Add resource</Translate>
-                  </button>
+                    <button type="submit" className="btn btn-success">
+                      <Icon icon="link" />
+                      &nbsp; <Translate>Add resource</Translate>
+                    </button>
+                  </LocalForm>
                 </div>
               </TabContent>
             </div>
@@ -159,6 +189,7 @@ const AttachmentsModal: React.FC<AttachmentsModalProps> = ({
 
 const mapDispatchToProps = {
   uploadAttachment,
+  uploadAttachmentFromUrl,
 };
 
 export default connect(null, mapDispatchToProps)(AttachmentsModal);
