@@ -3,13 +3,18 @@ import { connect } from 'react-redux';
 import ReactModal from 'react-modal';
 import { Tabs, TabLink, TabContent } from 'react-tabs-redux';
 import Dropzone from 'react-dropzone';
-import { LocalForm } from 'react-redux-form';
+import { LocalForm, Field } from 'react-redux-form';
 
 import { Translate } from 'app/I18N';
 import { NeedAuthorization } from 'app/Auth';
 import { Icon } from 'app/UI';
 
 import { uploadAttachment, uploadAttachmentFromUrl } from '../actions/actions';
+
+const validators = {
+  name: { required: (val: any) => !!val && val.trim() !== '' },
+  url: { required: (val: any) => !!val && val.trim() !== '' },
+};
 
 interface AttachmentsModalProps {
   isOpen: boolean;
@@ -20,11 +25,6 @@ interface AttachmentsModalProps {
   uploadAttachment(entity: any, file: any, __reducerKey: any, options?: {}): void;
   uploadAttachmentFromUrl(entity: any, name: any, url: any, __reducerKey: any): void;
   getPercentage?: number;
-}
-
-interface AttachmentUrlForm {
-  url: string;
-  name: string;
 }
 
 // eslint-disable-next-line react/prop-types
@@ -38,8 +38,6 @@ const AttachmentsModal: React.FC<AttachmentsModalProps> = ({
   getPercentage,
 }) => {
   const inputFileRef = useRef<HTMLInputElement | null>(null);
-
-  const [urlForm, setUrlForm] = useState<AttachmentUrlForm>({ url: '', name: '' });
 
   const handleUploadButtonClicked = () => {
     if (inputFileRef.current) {
@@ -65,14 +63,8 @@ const AttachmentsModal: React.FC<AttachmentsModalProps> = ({
     });
   };
 
-  const handleInputTextChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    event.persist();
-    setUrlForm(old => ({ ...old, [event.target.name]: event.target.value }));
-  };
-
   const handleSubmitUrlForm = (formModelData: any) => {
-    console.log(formModelData);
-    uploadAttachmentFromUrl(entitySharedId, urlForm.name, urlForm.url, storeKey);
+    uploadAttachmentFromUrl(entitySharedId, formModelData.name, formModelData.url, storeKey);
   };
 
   return (
@@ -150,27 +142,17 @@ const AttachmentsModal: React.FC<AttachmentsModalProps> = ({
               </TabContent>
               <TabContent for="uploadWeb" className="tab-content centered">
                 <div className="wrapper-web">
-                  <LocalForm onSubmit={handleSubmitUrlForm}>
+                  <LocalForm onSubmit={handleSubmitUrlForm} model="urlForm" validators={validators}>
                     <div className="form-group has-feedback">
-                      <input
-                        type="text"
-                        className="form-control"
-                        placeholder="Paste URL here"
-                        name="url"
-                        onChange={handleInputTextChange}
-                        value={urlForm.url}
-                      />
+                      <Field model=".url">
+                        <input type="text" className="form-control" placeholder="Paste URL here" />
+                      </Field>
                       <Icon icon="info-circle" className="feedback-icon" />
                     </div>
 
-                    <input
-                      type="text"
-                      className="form-control"
-                      placeholder="Title"
-                      name="name"
-                      onChange={handleInputTextChange}
-                      value={urlForm.name}
-                    />
+                    <Field model=".name">
+                      <input type="text" className="form-control" placeholder="Title" />
+                    </Field>
 
                     <button type="submit" className="btn btn-success">
                       <Icon icon="link" />
