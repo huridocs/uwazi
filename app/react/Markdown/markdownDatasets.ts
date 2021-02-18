@@ -50,7 +50,7 @@ const parseDatasets = markdown => {
   return result;
 };
 
-const requestDatasets = (datasets, requestParams) =>
+const requestDatasets = async (datasets, requestParams) =>
   Promise.all(
     Object.keys(datasets).map(name => {
       if (datasets[name].query) {
