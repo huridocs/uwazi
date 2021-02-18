@@ -175,9 +175,9 @@ describe('ModelWithPermissions', () => {
         });
       });
 
-      describe('getInternal', () => {
+      describe('getWithUnrestrictedAccess', () => {
         it('should return the matched documents no matter their permissions', async () => {
-          const results = await model.getInternal();
+          const results = await model.getWithUnrestrictedAccess();
           expect(results.length).toBe(8);
           expect(results[0].permissions.length).toBe(1);
         });

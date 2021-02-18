@@ -68,11 +68,8 @@ export class OdmModel<T> {
     if (mongoose.Types.ObjectId.isValid(condition)) {
       cond = { _id: condition };
     }
-    const result = await this.db.deleteMany(cond);
-    if (result.deletedCount && result.deletedCount > 0) {
-      await this.logHelper.upsertLogMany(cond, true);
-    }
-    return result;
+    await this.logHelper.upsertLogMany(cond, true);
+    return this.db.deleteMany(cond);
   }
 }
 

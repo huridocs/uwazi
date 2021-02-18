@@ -161,16 +161,6 @@ function unauthorizedAction(user, userInTheDatabase, currentUser) {
   );
 }
 
-const populateGroupsOfUsers = async (user, groups) => {
-  const memberships = groups
-    .filter(group => group.members.find(member => member._id === user._id.toString()))
-    .map(group => ({
-      _id: group._id,
-      name: group.name,
-    }));
-  return { ...user, groups: memberships };
-};
-
 export default {
   async save(user, currentUser) {
     const [userInTheDatabase] = await model.get({ _id: user._id }, '+password');

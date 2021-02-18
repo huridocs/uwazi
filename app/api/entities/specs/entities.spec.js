@@ -11,6 +11,7 @@ import { search } from 'api/search';
 import { uploadsPath } from 'api/files/filesystem';
 
 import { permissionsContext } from 'api/permissions/permissionsContext';
+import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
 import entities from '../entities.js';
 import fixtures, {
   batmanFinishesId,
@@ -26,6 +27,8 @@ import fixtures, {
 } from './fixtures.js';
 
 describe('entities', () => {
+  const userFactory = new UserInContextMockFactory();
+
   beforeEach(async () => {
     spyOn(search, 'delete').and.returnValue(Promise.resolve());
     spyOn(search, 'indexEntities').and.returnValue(Promise.resolve());
@@ -855,7 +858,7 @@ describe('entities', () => {
     });
 
     it('should return error if user does not have write permissions over entities', async () => {
-      permissionsContext.getUserInContext.and.returnValue({
+      userFactory.mock({
         _id: 'user1',
         role: 'collaborator',
         groups: [],
@@ -875,7 +878,7 @@ describe('entities', () => {
     });
 
     it('should update entities if user has permissions on them', async () => {
-      permissionsContext.getUserInContext.and.returnValue({
+      userFactory.mock({
         _id: 'user2',
         role: 'collaborator',
         groups: [{ _id: 'group1' }],
@@ -889,7 +892,7 @@ describe('entities', () => {
         { language: 'en' }
       );
 
-      expect(updated).toContain('permissions');
+      expect(updated.find(e => e.published)).toBeUndefined();
     });
   });
 

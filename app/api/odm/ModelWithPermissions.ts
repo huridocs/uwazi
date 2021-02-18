@@ -39,7 +39,7 @@ export const getUserPermissionIds = (user: UserSchema) => {
 const addPermissionsCondition = (user: UserSchema, level: AccessLevels) => {
   let permissionCond = {};
   if (!['admin', 'editor'].includes(user.role)) {
-    const userIds = getUserPermissionIds(permissionsContext.getUserInContext());
+    const userIds = getUserPermissionIds(user);
     const levelCond = level === AccessLevels.WRITE ? { level: AccessLevels.WRITE } : {};
     permissionCond = {
       $or: [
@@ -123,7 +123,7 @@ export class ModelWithPermissions<T> extends OdmModel<T> {
     return results.map(filterPermissionsData);
   }
 
-  getInternal(query: UwaziFilterQuery<T> = {}, select: any = '', options: {} = {}) {
+  getWithUnrestrictedAccess(query: UwaziFilterQuery<T> = {}, select: any = '', options: {} = {}) {
     return super.get(query, select, options);
   }
 

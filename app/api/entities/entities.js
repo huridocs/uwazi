@@ -63,7 +63,7 @@ async function denormalizeMetadata(metadata, entity, template, dictionariesByKey
         }
 
         if (prop.type === 'relationship') {
-          const partner = await model.getInternal({
+          const partner = await model.getWithUnrestrictedAccess({
             sharedId: elem.value,
             language: entity.language,
           });
@@ -297,7 +297,7 @@ const validateWritePermissions = (ids, entitiesToUpdate) => {
     userIds.push(user._id.toString());
 
     const allowedEntitiesToUpdate = entitiesToUpdate.filter(e => {
-      const writeGranted = e.permissions
+      const writeGranted = (e.permissions || [])
         .filter(p => p.level === AccessLevels.WRITE)
         .map(p => p._id)
         .filter(id => userIds.includes(id));
@@ -419,11 +419,15 @@ export default {
     return model.get(query, select, options);
   },
 
-  async getInternal(query, select, options) {
+  async getInternal(query, select, options = {}) {
     const { documentsFullText, withPdfInfo, ...restOfOptions } = options;
-    const entities = await model.getInternal(query, select, restOfOptions);
+    const entities = await model.getWithUnrestrictedAccess(query, select, restOfOptions);
 
     return withDocuments(entities, documentsFullText, withPdfInfo);
+  },
+
+  async getWithUnrestrictedAccess(query, select, options) {
+    return model.getWithUnrestrictedAccess(query, select, options);
   },
 
   async get(query, select, options = {}) {
@@ -467,7 +471,7 @@ export default {
   async multipleUpdate(ids, values, params) {
     const { diffMetadata = {}, ...pureValues } = values;
 
-    const entitiesToUpdate = await this.get({ sharedId: { $in: ids } });
+    const entitiesToUpdate = await this.getWithUnrestrictedAccess({ sharedId: { $in: ids } });
     validateWritePermissions(ids, entitiesToUpdate);
     await Promise.all(
       ids.map(async id => {

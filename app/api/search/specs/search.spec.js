@@ -14,7 +14,6 @@ describe('search', () => {
   const userFactory = new UserInContextMockFactory();
 
   beforeAll(async () => {
-    userFactory.mock(editorUser); //TODO: move to testing_db.clearAllAndLoad
     result = elasticResult().toObject();
     const elasticIndex = 'search_index_test';
     await db.clearAllAndLoad(elasticFixtures, elasticIndex);
