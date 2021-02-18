@@ -1,4 +1,4 @@
-import HtmlParser from 'htmlparser2/lib/Parser';
+import HtmlParser from 'htmlparser2';
 import queryString from 'query-string';
 import rison from 'rison-node';
 import Big from 'big.js';
