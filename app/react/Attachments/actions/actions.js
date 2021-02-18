@@ -68,7 +68,7 @@ export function uploadAttachmentFromUrl(entity, name, url, __reducerKey) {
   return dispatch => {
     dispatch({ type: types.START_UPLOAD_ATTACHMENT, entity });
     api
-      .post('files', new RequestParams({ originalName: name, url, entity, type: 'attachment' }))
+      .post('files', new RequestParams({ originalname: name, url, entity, type: 'attachment' }))
       .then(newFile => {
         dispatch({ type: types.ATTACHMENT_COMPLETE, entity, file: newFile.json, __reducerKey });
         dispatch(notify('Attachment uploaded', 'success'));
