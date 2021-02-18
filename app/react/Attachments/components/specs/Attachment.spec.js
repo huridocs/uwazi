@@ -5,7 +5,6 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 
-import { NeedAuthorization } from 'app/Auth';
 import AttachmentForm from 'app/Attachments/components/AttachmentForm';
 
 import { Icon } from 'UI';

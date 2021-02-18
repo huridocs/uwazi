@@ -1,4 +1,4 @@
-import React, { DragEvent, useRef, useState } from 'react';
+import React, { useRef } from 'react';
 import { connect } from 'react-redux';
 import ReactModal from 'react-modal';
 import { Tabs, TabLink, TabContent } from 'react-tabs-redux';
@@ -53,11 +53,7 @@ const AttachmentsModal: React.FC<AttachmentsModalProps> = ({
     }
   };
 
-  const handleDropFiles = (
-    accepted: File[],
-    rejected: File[],
-    event: DragEvent<HTMLDivElement>
-  ) => {
+  const handleDropFiles = (accepted: File[]) => {
     accepted.forEach(file => {
       uploadAttachment(entitySharedId, file, storeKey);
     });

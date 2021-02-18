@@ -40,7 +40,7 @@ export function deleteFile(file, entity) {
   };
 }
 
-export function uploadAttachment(entity, file, __reducerKey, options = {}) {
+export function uploadAttachment(entity, file, __reducerKey) {
   return dispatch => {
     dispatch({ type: types.START_UPLOAD_ATTACHMENT, entity });
     superagent
