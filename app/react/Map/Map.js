@@ -415,7 +415,7 @@ Map.defaultProps = {
 };
 
 Map.propTypes = {
-  markers: PropTypes.arrayOf(Immutable.Map()),
+  markers: PropTypes.arrayOf(PropTypes.object),
   latitude: PropTypes.number,
   longitude: PropTypes.number,
   zoom: PropTypes.number,
