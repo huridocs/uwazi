@@ -1,5 +1,8 @@
 import HtmlParser from 'htmlparser2';
 import queryString from 'query-string';
+//rison-node types are not correct and cannot be imported
+//--> https://github.com/w33ble/rison-node/issues/1)
+//@ts-ignore
 import rison from 'rison-node';
 import Big from 'big.js';
 
