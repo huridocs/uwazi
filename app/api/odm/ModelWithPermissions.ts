@@ -13,8 +13,7 @@ export type PermissionsUwaziFilterQuery<T> = UwaziFilterQuery<T> & {
   permissions?: PermissionSchema[];
 };
 
-const appendPermissionData = <T>(data: T) => {
-  const user = permissionsContext.getUserInContext();
+const appendPermissionData = <T>(data: DataType<T>, user: UserSchema | undefined) => {
   if (user) {
     return {
       ...data,
@@ -51,8 +50,11 @@ const addPermissionsCondition = (user: UserSchema, level: AccessLevels) => {
   return permissionCond;
 };
 
-const appendPermissionQuery = <T>(query: PermissionsUwaziFilterQuery<T>, level: AccessLevels) => {
-  const user = permissionsContext.getUserInContext();
+const appendPermissionQuery = <T>(
+  query: PermissionsUwaziFilterQuery<T>,
+  level: AccessLevels,
+  user: UserSchema | undefined
+) => {
   let permissionCond;
   if (user) {
     permissionCond = addPermissionsCondition(user, level);
@@ -81,8 +83,7 @@ function checkPermissionAccess<T>(
   return elem;
 }
 
-const filterPermissionsData = (data: any) => {
-  const user = permissionsContext.getUserInContext();
+const filterPermissionsData = <T>(data: T[], user: UserSchema | undefined) => {
   let filteredData = data;
   if (user && !['admin', 'editor'].includes(user.role)) {
     if (Array.isArray(data) && data.length > 0) {
@@ -113,14 +114,20 @@ const controlPermissionsData = <T>(data: T & { published?: boolean }) => {
 
 export class ModelWithPermissions<T> extends OdmModel<T> {
   async save(data: DataType<T>) {
+    const user = permissionsContext.getUserInContext();
     return data._id
-      ? super.save(data, appendPermissionQuery({ _id: data._id }, AccessLevels.WRITE))
-      : super.save(appendPermissionData(data));
+      ? super.save(data, appendPermissionQuery({ _id: data._id }, AccessLevels.WRITE, user))
+      : super.save(appendPermissionData(data, user));
   }
 
   get(query: UwaziFilterQuery<T> = {}, select: any = '', options: {} = {}) {
-    const results = super.get(appendPermissionQuery(query, AccessLevels.READ), select, options);
-    return results.map(filterPermissionsData);
+    const user = permissionsContext.getUserInContext();
+    const results = super.get(
+      appendPermissionQuery(query, AccessLevels.READ, user),
+      select,
+      options
+    );
+    return results.map(data => filterPermissionsData(data, user));
   }
 
   getWithUnrestrictedAccess(query: UwaziFilterQuery<T> = {}, select: any = '', options: {} = {}) {
@@ -133,7 +140,8 @@ export class ModelWithPermissions<T> extends OdmModel<T> {
   }
 
   async delete(condition: any) {
-    return super.delete(appendPermissionQuery(condition, AccessLevels.WRITE));
+    const user = permissionsContext.getUserInContext();
+    return super.delete(appendPermissionQuery(condition, AccessLevels.WRITE, user));
   }
 }
 
