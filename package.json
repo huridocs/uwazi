@@ -220,7 +220,6 @@
     "@types/react-tabs-redux": "^4.0.0",
     "@types/recharts": "^1.8.3",
     "@types/redux-mock-store": "^1.0.1",
-    "@types/rison": "^0.0.6",
     "@types/socket.io": "^2.1.11",
     "@types/socket.io-client": "^1.4.33",
     "@types/supertest": "2.0.10",
