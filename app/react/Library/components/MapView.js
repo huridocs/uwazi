@@ -69,7 +69,7 @@ export class MapView extends Component {
             <b>{markers.get('totalRows')}</b> {t('System', 'documents')}
           </span>
         </div>
-        <Markers entities={markers.get('rows')}>
+        <Markers entities={markers.get('rows')} storeKey={storeKey}>
           {processedMarkers => (
             <Map
               ref={ref => {

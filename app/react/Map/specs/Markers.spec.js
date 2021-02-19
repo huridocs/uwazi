@@ -23,7 +23,7 @@ describe('Markers component', () => {
     const resultMarkers = [];
 
     shallow(
-      <MarkersComponent {...props} entities={entities}>
+      <MarkersComponent {...props} entities={entities} storeKey="library">
         {markers => markers.map(m => resultMarkers.push(m))}
       </MarkersComponent>
     );

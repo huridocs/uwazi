@@ -5,8 +5,8 @@ import { createSelector } from 'reselect';
 import { getMarkers } from './helper';
 
 const selectMarkers = createSelector(
-  state => state.entities,
-  state => state.templates,
+  ({ state, storeKey }) => state[storeKey].markers.get('rows'),
+  ({ state }) => state.templates,
   (entities, templates) => getMarkers(entities, templates)
 );
 
@@ -18,12 +18,13 @@ MarkersComponent.defaultProps = {
 
 MarkersComponent.propTypes = {
   children: PropTypes.func.isRequired,
+  storeKey: PropTypes.string.isRequired,
   templates: PropTypes.instanceOf(Immutable.List).isRequired,
   entities: PropTypes.instanceOf(Immutable.List),
 };
 
-export const mapStateToProps = state => ({
-  markers: selectMarkers(state),
+export const mapStateToProps = (state, props) => ({
+  markers: selectMarkers({ state, storeKey: props.storeKey }),
   templates: state.templates,
 });
 
