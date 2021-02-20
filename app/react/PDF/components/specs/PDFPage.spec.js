@@ -90,7 +90,7 @@ describe('PDFPage', () => {
         };
         instance.renderPage();
         expect(instance.pdfPageView.draw).toHaveBeenCalled();
-        expect(instance.rendered).toBe(true);
+        expect(instance.state.rendered).toBe(true);
         expect(props.onLoading).toHaveBeenCalledWith(props.page);
       });
     });
@@ -98,7 +98,7 @@ describe('PDFPage', () => {
     describe('when its not rendered and no pdfPageView exists', () => {
       it('should create pdfPageView object and render the page', done => {
         render();
-        instance.rendered = false;
+        instance.state.rendered = false;
         const pdfPageViewPrototype = {
           setPdfPage: jest.fn(),
           draw: jest.fn().mockReturnValueOnce(Promise.resolve()),
@@ -112,7 +112,7 @@ describe('PDFPage', () => {
 
         setTimeout(() => {
           expect(props.onLoading).toHaveBeenCalledWith(props.page);
-          expect(instance.rendered).toBe(true);
+          expect(instance.state.rendered).toBe(true);
           expect(pdfPageViewPrototype.setPdfPage).toHaveBeenCalled();
           expect(pdfPageViewPrototype.draw).toHaveBeenCalled();
           done();
@@ -190,18 +190,18 @@ describe('PDFPage', () => {
         instance.scroll();
         expect(instance.pdfPageView.cancelRendering).toHaveBeenCalled();
         expect(instance.pdfPageView.destroy).toHaveBeenCalled();
-        expect(instance.rendered).toBe(false);
+        expect(instance.state.rendered).toBe(false);
       });
 
       describe('when its rendered', () => {
         it('should call onUnload with the pageNumber and set rendered property to false', () => {
           render();
           instance.pdfPageView = jasmine.createSpyObj(['cancelRendering', 'destroy']);
-          instance.rendered = true;
+          instance.state.rendered = true;
           spyOn(instance, 'pageShouldRender').and.returnValue(false);
           instance.scroll();
           expect(props.onUnload).toHaveBeenCalledWith(props.page);
-          expect(instance.rendered).toBe(false);
+          expect(instance.state.rendered).toBe(false);
         });
       });
     });

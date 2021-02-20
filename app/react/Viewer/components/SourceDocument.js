@@ -7,6 +7,7 @@ import {
   highlightReference,
   activateReference,
   scrollToActive,
+  deactivateReference,
 } from 'app/Viewer/actions/uiActions';
 import Document from 'app/Viewer/components/Document';
 import { createSelector } from 'reselect';
@@ -48,6 +49,7 @@ function mapDispatchToProps(dispatch) {
     highlightReference,
     activateReference,
     scrollToActive,
+    deactivateReference,
   };
   return bindActionCreators(actions, dispatch);
 }

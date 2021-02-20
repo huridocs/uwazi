@@ -43,7 +43,7 @@ describe('FullTextSearch zone', () => {
           return nightmare.evaluate(
             () =>
               document.querySelectorAll(
-                '#app > div.content > div > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > ul.snippet-list > li.snippet-list-item'
+                '#app > div.content > div > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content-visible > div > ul.snippet-list > li.snippet-list-item'
               )[1].innerText
           );
         })
@@ -71,7 +71,7 @@ describe('FullTextSearch zone', () => {
         return nightmare.evaluate(
           () =>
             document.querySelectorAll(
-              '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > ul.snippet-list > li.snippet-list-item'
+              '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content-visible > div > ul.snippet-list > li.snippet-list-item'
             )[1].innerText
         );
       })

@@ -15,7 +15,7 @@ describe('Connection', () => {
         _id: 'ref1',
         relationType: 'rel1',
         associatedRelationship: { entityData: { _id: '1' } },
-        range: { start: 10, end: 20 },
+        reference: { selectionRectangles: [], text: 'hello' },
       },
       referencedDocuments: Immutable.fromJS([
         { title: 'doc1', _id: '1' },
@@ -44,7 +44,7 @@ describe('Connection', () => {
 
   it('should disable all-document connections if targetDocument', () => {
     props.targetDoc = true;
-    props.reference.range = {};
+    delete props.reference.reference;
     render();
 
     expect(component.find(Item).get(0).props.className).toContain('disabled');
@@ -129,7 +129,7 @@ describe('Connection', () => {
       describe('when connection is to the entire document', () => {
         it('should not select it', () => {
           props.targetDoc = true;
-          props.reference.range = {};
+          delete props.reference.reference;
           render();
           component
             .find(Item)

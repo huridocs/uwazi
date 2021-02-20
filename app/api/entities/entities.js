@@ -345,6 +345,7 @@ export default {
       templates.get({ default: true }),
     ]);
     let docTemplate = template;
+    doc.editDate = date.currentUTC();
     if (doc.sharedId) {
       await this.updateEntity(this.sanitize(doc, template), template);
     } else {

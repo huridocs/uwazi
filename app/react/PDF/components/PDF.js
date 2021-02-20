@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-
+import { SelectionHandler, SelectionRegion } from 'react-pdf-handler';
 import { advancedSort } from 'app/utils/advancedSort';
 
 import { isClient } from '../../utils';
@@ -133,25 +133,15 @@ class PDF extends Component {
     }, null);
 
     if (allConsecutives) {
-      const { pdfInfo } = this.props;
-      const start = pdfInfo[
-        Math.min.apply(
-          null,
-          Object.keys(this.pagesLoaded).map(n => parseInt(n, 10))
-        ) - 1
-      ] || { chars: 0 };
-      const end = pdfInfo[
-        Math.max.apply(
-          null,
-          Object.keys(this.pagesLoaded).map(n => parseInt(n, 10))
-        )
-      ] || { chars: 0 };
       this.props.onLoad({
-        start: start.chars,
-        end: end.chars,
         pages,
       });
     }
+  }
+
+  highlightReference(connection, event) {
+    event.stopPropagation();
+    this.props.highlightReference(connection);
   }
 
   render() {
@@ -162,23 +152,33 @@ class PDF extends Component {
         }}
         style={this.props.style}
       >
-        {(() => {
-          const pages = [];
-          for (let page = 1; page <= this.state.pdf.numPages; page += 1) {
-            pages.push(
-              <PDFPage
-                onUnload={this.pageUnloaded}
-                onLoading={this.pageLoading}
-                onVisible={this.onPageVisible}
-                onHidden={this.onPageHidden}
-                key={page}
-                page={page}
-                pdf={this.state.pdf}
-              />
-            );
-          }
-          return pages;
-        })()}
+        <SelectionHandler
+          onTextSelection={this.props.onTextSelection}
+          onTextDeselection={this.props.onTextDeselection}
+          elementTagsToAvoid={['DIV']}
+        >
+          {(() => {
+            const pages = [];
+            for (let page = 1; page <= this.state.pdf.numPages; page += 1) {
+              pages.push(
+                <div className="page-wrapper" key={page}>
+                  <SelectionRegion regionId={page.toString()}>
+                    <PDFPage
+                      onUnload={this.pageUnloaded}
+                      onLoading={this.pageLoading}
+                      onVisible={this.onPageVisible}
+                      onHidden={this.onPageHidden}
+                      page={page}
+                      pdf={this.state.pdf}
+                      highlightReference={this.props.highlightReference}
+                    />
+                  </SelectionRegion>
+                </div>
+              );
+            }
+            return pages;
+          })()}
+        </SelectionHandler>
       </div>
     );
   }
@@ -189,16 +189,22 @@ PDF.defaultProps = {
   onPageChange: () => {},
   onPDFReady: () => {},
   style: {},
+  onTextSelection: () => {},
+  onTextDeselection: () => {},
+  highlightReference: () => {},
 };
 
 PDF.propTypes = {
   onPageChange: PropTypes.func,
+  onTextSelection: PropTypes.func,
+  onTextDeselection: PropTypes.func,
   onPDFReady: PropTypes.func,
   file: PropTypes.string.isRequired,
   filename: PropTypes.string,
   onLoad: PropTypes.func.isRequired,
   pdfInfo: PropTypes.object,
   style: PropTypes.object,
+  highlightReference: PropTypes.func,
 };
 
 export default PDF;

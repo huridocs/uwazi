@@ -13,28 +13,6 @@ export default app => {
       .catch(next)
   );
 
-  app.post(
-    '/api/documents/pdfInfo',
-    validation.validateRequest(
-      Joi.object()
-        .keys({
-          _id: Joi.objectId(),
-          pdfInfo: Joi.object().pattern(
-            Joi.number(),
-            Joi.object().keys({
-              chars: Joi.number(),
-            })
-          ),
-        })
-        .required()
-    ),
-    (req, res, next) =>
-      documents
-        .savePDFInfo(req.body._id, req.body.pdfInfo)
-        .then(doc => res.json(doc))
-        .catch(next)
-  );
-
   app.get(
     '/api/documents/count_by_template',
     validation.validateRequest(

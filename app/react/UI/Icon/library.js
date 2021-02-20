@@ -93,6 +93,7 @@ import { faUserCheck } from '@fortawesome/free-solid-svg-icons/faUserCheck';
 import { faUserPlus } from '@fortawesome/free-solid-svg-icons/faUserPlus';
 import { faUserTimes } from '@fortawesome/free-solid-svg-icons/faUserTimes';
 import { faHandPaper } from '@fortawesome/free-solid-svg-icons/faHandPaper';
+import { faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons/faExternalLinkAlt';
 import { twoFactorAuth } from 'UI/Icon/two-factor-auth';
 import { saveAndNext } from './save-and-next';
 import { exportCsv } from './export-csv';
@@ -194,6 +195,7 @@ const icons = {
   faUserPlus,
   faUserCheck,
   faHandPaper,
+  faExternalLinkAlt,
   saveAndNext,
   exportCsv,
   copyFrom,

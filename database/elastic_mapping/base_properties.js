@@ -38,11 +38,23 @@ const properties = {
       sort: { type: 'date' },
     },
   },
+  editDate: {
+    type: 'date',
+    format: 'epoch_millis',
+    fields: {
+      raw: { type: 'date', index: false },
+      sort: { type: 'date' },
+    },
+  },
   attachments: {
     type: 'object',
     enabled: false,
   },
   icon: {
+    type: 'object',
+    enabled: false,
+  },
+  toc: {
     type: 'object',
     enabled: false,
   },

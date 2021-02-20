@@ -2,7 +2,7 @@
 
 exports[`ViewDocButton should render a view button poiting to the doc url with the searchTerm if pressent 1`] = `
 <Connect(I18NLink)
-  className="btn btn-default btn-xs"
+  className="btn btn-default btn-xs view-doc"
   onClick={[Function]}
   to="/entity/123"
 >
@@ -17,7 +17,7 @@ exports[`ViewDocButton should render a view button poiting to the doc url with t
 
 exports[`ViewDocButton should render a view button poiting to the doc url with the searchTerm if pressent 2`] = `
 <Connect(I18NLink)
-  className="btn btn-default btn-xs"
+  className="btn btn-default btn-xs view-doc"
   onClick={[Function]}
   to="/entity/123?searchTerm=something"
 >
@@ -32,7 +32,7 @@ exports[`ViewDocButton should render a view button poiting to the doc url with t
 
 exports[`ViewDocButton when targetReference is provided should render view button with reference id in the url query 1`] = `
 <Connect(I18NLink)
-  className="btn btn-default btn-xs"
+  className="btn btn-default btn-xs view-doc"
   onClick={[Function]}
   to="/entity/123?ref=ref1"
 >
@@ -47,7 +47,7 @@ exports[`ViewDocButton when targetReference is provided should render view butto
 
 exports[`ViewDocButton when targetReference is provided should render view button with reference id in the url query 2`] = `
 <Connect(I18NLink)
-  className="btn btn-default btn-xs"
+  className="btn btn-default btn-xs view-doc"
   onClick={[Function]}
   to="/entity/123?searchTerm=something&ref=ref1"
 >
