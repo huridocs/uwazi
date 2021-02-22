@@ -1,20 +1,23 @@
 import React, { Component } from 'react';
-import { I18NLink, t } from 'app/I18N';
+import { I18NLink, Translate } from 'app/I18N';
 import { NeedAuthorization } from 'app/Auth';
+import { Icon } from 'app/UI';
 
 export class SettingsNavigation extends Component {
   render() {
     return (
       <div>
         <div className="panel panel-default">
-          <div className="panel-heading">{t('System', 'Settings')}</div>
+          <div className="panel-heading">
+            <Translate>Settings</Translate>
+          </div>
           <div className="list-group">
             <I18NLink to="settings/account" activeClassName="active" className="list-group-item">
-              {t('System', 'Account')}
+              <Translate>Account</Translate>
             </I18NLink>
             <NeedAuthorization>
               <I18NLink to="settings/users" activeClassName="active" className="list-group-item">
-                {t('System', 'Users')}
+                <Translate>Users</Translate>
               </I18NLink>
             </NeedAuthorization>
             <NeedAuthorization>
@@ -23,17 +26,17 @@ export class SettingsNavigation extends Component {
                 activeClassName="active"
                 className="list-group-item"
               >
-                {t('System', 'Collection')}
+                <Translate>Collection</Translate>
               </I18NLink>
             </NeedAuthorization>
             <NeedAuthorization>
               <I18NLink to="settings/navlinks" activeClassName="active" className="list-group-item">
-                {t('System', 'Menu')}
+                <Translate>Menu</Translate>
               </I18NLink>
             </NeedAuthorization>
             <NeedAuthorization>
               <I18NLink to="settings/pages" activeClassName="active" className="list-group-item">
-                {t('System', 'Pages')}
+                <Translate>Pages</Translate>
               </I18NLink>
             </NeedAuthorization>
             <NeedAuthorization>
@@ -42,7 +45,7 @@ export class SettingsNavigation extends Component {
                 activeClassName="active"
                 className="list-group-item"
               >
-                {t('System', 'Languages')}
+                <Translate>Languages</Translate>
               </I18NLink>
             </NeedAuthorization>
             <NeedAuthorization>
@@ -51,58 +54,72 @@ export class SettingsNavigation extends Component {
                 activeClassName="active"
                 className="list-group-item"
               >
-                {t('System', 'Translations')}
+                <Translate>Translations</Translate>
               </I18NLink>
             </NeedAuthorization>
             <NeedAuthorization>
               <I18NLink to="settings/filters" activeClassName="active" className="list-group-item">
-                {t('System', 'Filters configuration')}
+                <Translate>Filters configuration</Translate>
               </I18NLink>
             </NeedAuthorization>
           </div>
         </div>
         <NeedAuthorization>
           <div className="panel panel-default">
-            <div className="panel-heading">{t('System', 'Metadata')}</div>
+            <div className="panel-heading">
+              <Translate>Metadata</Translate>
+            </div>
             <div className="list-group">
               <I18NLink
                 to="settings/templates"
                 activeClassName="active"
                 className="list-group-item"
               >
-                {t('System', 'Templates')}
+                <Translate>Templates</Translate>
               </I18NLink>
               <I18NLink
                 to="settings/dictionaries"
                 activeClassName="active"
                 className="list-group-item"
               >
-                {t('System', 'Thesauri')}
+                <Translate>Thesauri</Translate>
               </I18NLink>
               <I18NLink
                 to="settings/connections"
                 activeClassName="active"
                 className="list-group-item"
               >
-                {t('System', 'Relationship types')}
+                <Translate>Relationship types</Translate>
               </I18NLink>
             </div>
           </div>
         </NeedAuthorization>
-        <NeedAuthorization roles={['admin']}>
-          <div className="panel panel-default">
-            <div className="panel-heading">{t('System', 'Tools')}</div>
-            <div className="list-group">
+        <div className="panel panel-default">
+          <div className="panel-heading">
+            <Translate>Tools</Translate>
+          </div>
+          <div className="list-group">
+            <NeedAuthorization roles={['admin']}>
               <I18NLink
                 to="settings/activitylog"
                 activeClassName="active"
                 className="list-group-item"
               >
-                {t('System', 'Activity log')}
+                <Translate>Activity log</Translate>
               </I18NLink>
-            </div>
+            </NeedAuthorization>
+            <a
+              className="list-group-item"
+              href="https://uwazi.readthedocs.io/en/latest/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <span>
+                <Translate>Documentation</Translate> <Icon icon="external-link-alt" />
+              </span>
+            </a>
           </div>
-        </NeedAuthorization>
+        </div>
       </div>
     );
   }

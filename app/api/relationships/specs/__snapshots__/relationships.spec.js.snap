@@ -25,7 +25,8 @@ Array [
         "type": "entity",
       },
       "hub": "hub2",
-      "range": Object {
+      "reference": Object {
+        "selectionRectangles": Array [],
         "text": "changed text",
       },
       "template": "relation2",

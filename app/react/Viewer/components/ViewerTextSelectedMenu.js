@@ -19,19 +19,25 @@ export class ViewerTextSelectedMenu extends Component {
     return (
       <div className={this.props.active ? 'active' : ''}>
         <ShowIf if={this.props.hasRelationTypes}>
-          <div className="btn btn-primary" onClick={this.showPanel.bind(this, 'targetRanged')}>
+          <div
+            className="btn btn-primary connect-to-p"
+            onClick={this.showPanel.bind(this, 'targetRanged')}
+          >
             <span className="ContextMenu-tooltip">Connect to a paragraph</span>
             <Icon icon="paragraph" />
           </div>
         </ShowIf>
         <ShowIf if={this.props.hasRelationTypes}>
-          <div className="btn btn-primary" onClick={this.showPanel.bind(this, 'ranged')}>
+          <div
+            className="btn btn-primary connect-to-d"
+            onClick={this.showPanel.bind(this, 'ranged')}
+          >
             <span className="ContextMenu-tooltip">Connect to a document</span>
             <Icon icon="file" />
           </div>
         </ShowIf>
         <div
-          className="btn btn-primary"
+          className="btn btn-primary add-toc"
           onClick={this.props.addToToc.bind(null, this.props.reference.toJS(), this.props.file.toc)}
         >
           <span className="ContextMenu-tooltip">Add to table of contents</span>

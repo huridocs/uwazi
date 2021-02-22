@@ -51,7 +51,11 @@ export class ViewDocButton extends Component {
     }
 
     return (
-      <I18NLink to={documentViewUrl} className="btn btn-default btn-xs" onClick={this.onClick}>
+      <I18NLink
+        to={documentViewUrl}
+        className="btn btn-default btn-xs view-doc"
+        onClick={this.onClick}
+      >
         <Icon icon="angle-right" directionAware /> {t('System', 'View')}
       </I18NLink>
     );

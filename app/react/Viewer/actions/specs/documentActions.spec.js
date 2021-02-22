@@ -17,7 +17,6 @@ import { actions as relationshipActions } from 'app/Relationships';
 import { RequestParams } from 'app/utils/RequestParams';
 import * as actions from '../documentActions';
 import * as types from '../actionTypes';
-import { PDFUtils } from '../../../PDF';
 
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
@@ -53,10 +52,21 @@ describe('documentActions', () => {
       spyOn(formActions, 'load').and.returnValue({ type: 'loadAction' });
       const reference = {
         sourceDocument: '123',
-        sourceRange: { start: 12, end: 23, text: 'Chapter 1' },
+        sourceRange: {
+          selectionRectangles: [{ top: 12, left: 23, hight: 42, width: 21, page: '1' }],
+          text: 'Chapter 1',
+        },
       };
-      const chapter1 = { range: { start: 12, end: 23 }, label: 'Chapter 1', indentation: 0 };
-      const chapter2 = { range: { start: 22, end: 43 }, label: 'Chapter 2', indentation: 0 };
+      const chapter1 = {
+        selectionRectangles: [{ top: 12, left: 23, hight: 42, width: 21, page: '1' }],
+        label: 'Chapter 1',
+        indentation: 0,
+      };
+      const chapter2 = {
+        selectionRectangles: [{ top: 22, left: 23, hight: 42, width: 21, page: '1' }],
+        label: 'Chapter 2',
+        indentation: 0,
+      };
 
       const expectedActions = [
         { type: 'documentViewer/tocBeingEdited/SET', value: true },
@@ -83,10 +93,22 @@ describe('documentActions', () => {
         spyOn(formActions, 'load').and.returnValue({ type: 'loadAction' });
         const reference = {
           sourceDocument: '123',
-          sourceRange: { start: 12, end: 23, text: 'Chapter 1' },
+          sourceRange: {
+            selectionRectangles: [{ top: 12, left: 23, hight: 42, width: 21, page: '1' }],
+            text: 'Chapter 1',
+          },
         };
-        const chapter1 = { range: { start: 12, end: 23 }, label: 'Chapter 1', indentation: 0 };
-        const chapter2 = { range: { start: 22, end: 43 }, label: 'Chapter 2', indentation: 0 };
+        const chapter1 = {
+          selectionRectangles: [{ top: 12, left: 23, hight: 42, width: 21, page: '1' }],
+          label: 'Chapter 1',
+          indentation: 0,
+        };
+        const chapter2 = {
+          selectionRectangles: [{ top: 22, left: 23, hight: 42, width: 21, page: '1' }],
+          label: 'Chapter 2',
+          indentation: 0,
+        };
+
         const expectedActions = [
           { type: 'documentViewer/tocBeingEdited/SET', value: true },
           { type: 'loadAction' },
@@ -271,28 +293,6 @@ describe('documentActions', () => {
         const doc = await actions.getDocument(requestParams, 'en', 'filenam');
         expect(doc.documents[0].filename).not.toBe('filenam');
         expect(doc.defaultDoc).toEqual({});
-      });
-
-      describe('when the doc does not have the pdf processed', () => {
-        it('should process it and save it before it gets returned', async () => {
-          spyOn(PDFUtils, 'extractPDFInfo').and.returnValue(Promise.resolve('test'));
-          const expected = {
-            sharedId: 'shared',
-            _id: 'pdfNotReady',
-            defaultDoc: expect.objectContaining({ _id: 'pdfNotReady' }),
-            documents: [{ _id: 'pdfNotReady', pdfInfo: 'test' }],
-          };
-          spyOn(api, 'post').and.returnValue(Promise.resolve({ json: expected.documents[0] }));
-          const requestParams = new RequestParams({ sharedId: 'docWithPDFNotRdy' });
-
-          const doc = await actions.getDocument(requestParams);
-          expect(PDFUtils.extractPDFInfo).toHaveBeenCalledWith(`${APIURL}files/filename`);
-          expect(api.post).toHaveBeenCalledWith('documents/pdfInfo', {
-            data: { _id: 'pdfNotReady', pdfInfo: 'test' },
-            headers: {},
-          });
-          expect(expected).toEqual(doc);
-        });
       });
     });
 

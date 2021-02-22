@@ -40,6 +40,10 @@ const properties = {
     type: 'object',
     enabled: false,
   },
+  toc: {
+    type: 'object',
+    enabled: false,
+  },
   language: {
     type: 'keyword',
   },

@@ -118,11 +118,18 @@ export const tocSchema = {
   type: 'object',
   additionalProperties: false,
   properties: {
-    range: {
-      type: 'object',
-      properties: {
-        start: { type: 'number' },
-        end: { type: 'number' },
+    selectionRectangles: {
+      type: 'array',
+      items: {
+        type: 'object',
+        additionalProperties: false,
+        properties: {
+          top: { type: 'number' },
+          left: { type: 'number' },
+          width: { type: 'number' },
+          height: { type: 'number' },
+          page: { type: 'string' },
+        },
       },
     },
     label: { type: 'string' },

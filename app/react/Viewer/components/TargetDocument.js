@@ -2,7 +2,11 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
 import { setTargetSelection, unsetTargetSelection } from 'app/Viewer/actions/selectionActions';
-import { highlightReference, selectReference } from 'app/Viewer/actions/uiActions';
+import {
+  highlightReference,
+  selectReference,
+  deactivateReference,
+} from 'app/Viewer/actions/uiActions';
 import { selectTargetDoc, selectTargetReferences } from '../selectors';
 
 import Document from './Document';
@@ -34,6 +38,7 @@ function mapDispatchToProps(dispatch) {
       unsetSelection: unsetTargetSelection,
       highlightReference,
       activateReference: selectReference,
+      deactivateReference,
     },
     dispatch
   );

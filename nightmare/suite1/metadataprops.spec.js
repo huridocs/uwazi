@@ -16,7 +16,7 @@ describe('metadata properties', () => {
 
   const localSelectors = {
     viewer:
-      '#app > div.content > div > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div.view',
+      '#app > div.content > div > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content-visible > div > div.view',
     propertiesButtons: index =>
       `#app > div.content > div > div > div.settings-content > div > div > div.panel-body > div > aside > div > ul > li:nth-child(${index}) > button`,
     templateProperties:
@@ -71,7 +71,7 @@ describe('metadata properties', () => {
       multidaterangeRemoveDateTwo:
         '#metadataForm > div:nth-child(3) > div:nth-child(9) > ul > li.wide > div > div:nth-child(2) > div > button',
       richText:
-        '#metadataForm > div:nth-child(3) > div:nth-child(10) > ul > li.wide > div > div.tab-content.tab-content-visible > textarea',
+        '#metadataForm > div:nth-child(3) > div:nth-child(10) > ul > li.wide > div > div.tab-content-visible > textarea',
       linkLabel:
         '#metadataForm > div:nth-child(3) > div:nth-child(11) > ul > li.wide > div > div > div:nth-child(1) > input',
       linkUrl:
