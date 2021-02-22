@@ -84,7 +84,6 @@ export function renameAttachment(entityId, form, __reducerKey, file) {
         new RequestParams({
           _id: file._id,
           originalname: file.originalname,
-          language: file.language,
         })
       )
       .then(renamedFile => {

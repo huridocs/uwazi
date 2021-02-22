@@ -103,19 +103,11 @@ describe('Attachment', () => {
       render();
       const deleteButton = component.find('.dropdown-menu').find('.is--delete');
 
-      // expect(
-      //   deleteButton
-      //     .parents()
-      //     .at(2)
-      //     .is(NeedAuthorization)
-      // ).toBe(true);
-      // expect(deleteButton.parent().props().if).toBe(true);
-
       deleteButton.simulate('click');
       expect(context.confirm).toHaveBeenCalled();
 
       context.confirm.calls.argsFor(0)[0].accept();
-      expect(props.deleteAttachment).toHaveBeenCalledWith('parentId', file, 'storeKey');
+      expect(props.deleteAttachment).toHaveBeenCalledWith('parentSharedId', file, 'storeKey');
     });
   });
 
@@ -133,13 +125,13 @@ describe('Attachment', () => {
     props.file.filename = 'image.jpg';
     render();
     expect(component.find('.attachment-thumbnail img').props().src).toBe(
-      '/api/attachments/download?_id=parentId&file=image.jpg'
+      '/api/files/download?_id=parentId&file=image.jpg'
     );
 
     props.file.filename = 'image.JPG';
     render();
     expect(component.find('.attachment-thumbnail img').props().src).toBe(
-      '/api/attachments/download?_id=parentId&file=image.JPG'
+      '/api/files/download?_id=parentId&file=image.JPG'
     );
 
     props.file.filename = 'image.doc';
@@ -150,7 +142,7 @@ describe('Attachment', () => {
   it('should allow downloading the attachment', () => {
     render();
     expect(component.find('.attachment-link').props().href).toBe(
-      '/api/attachments/download?_id=parentId&file=filename.ext'
+      '/api/files/download?_id=parentId&file=filename.ext'
     );
   });
 
