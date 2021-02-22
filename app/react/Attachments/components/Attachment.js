@@ -62,9 +62,8 @@ export class Attachment extends Component {
     this.toggleDropdown = this.toggleDropdown.bind(this);
     this.handleClickOutside = this.handleClickOutside.bind(this);
     this.copyToClipboard = this.copyToClipboard.bind(this);
+    this.myRef = React.createRef();
   }
-
-  myRef = React.createRef();
 
   componentDidMount() {
     typeof document !== undefined
