@@ -23,7 +23,7 @@ import {
 
 const getExtension = filename => (filename ? filename.substr(filename.lastIndexOf('.') + 1) : '');
 
-const getItemOptions = (parentId, filename) => {
+const getItemOptions = (parentId, filename, url) => {
   const options = {};
   options.itemClassName = '';
   options.typeClassName = 'empty';
@@ -31,6 +31,7 @@ const getItemOptions = (parentId, filename) => {
   options.deletable = true;
   options.replaceable = false;
   options.downloadHref = `/api/files/download?_id=${parentId}&file=${filename}`;
+  options.url = url;
 
   return options;
 };
@@ -104,11 +105,11 @@ export class Attachment extends Component {
     this.toggleDropdown();
   }
 
-  copyToClipboard(text, event) {
+  copyToClipboard(item, event) {
     event.preventDefault();
     const dummy = document.createElement('textarea');
     document.body.appendChild(dummy);
-    dummy.value = window.location.origin + text;
+    dummy.value = item.url || window.location.origin + item.downloadHref;
     dummy.select();
     document.execCommand('copy');
     document.body.removeChild(dummy);
@@ -120,10 +121,10 @@ export class Attachment extends Component {
   render() {
     const { file, parentId, model, storeKey, parentSharedId } = this.props;
     const sizeString = file.size ? filesize(file.size) : '';
-    const item = getItemOptions(parentId, file.filename);
+    const item = getItemOptions(parentId, file.filename, file.url);
 
     let name = (
-      <a className="attachment-link" href={item.downloadHref}>
+      <a className="attachment-link" href={item.url || item.downloadHref}>
         {file.filename ? conformThumbnail(file, item) : null}
         <span className="attachment-name">
           <span>{file.originalname}</span>
@@ -139,7 +140,7 @@ export class Attachment extends Component {
     if (this.props.beingEdited && !this.props.readOnly) {
       name = (
         <div className="attachment-link">
-          {conformThumbnail(file, item)}
+          {file.filename ? conformThumbnail(file, item) : null}
           <span className="attachment-name">
             <AttachmentForm
               model={this.props.model}
@@ -176,9 +177,9 @@ export class Attachment extends Component {
     }
 
     return (
-      <NeedAuthorization roles={['admin', 'editor']}>
-        <div className="attachment">
-          {name}
+      <div className="attachment">
+        {name}
+        <NeedAuthorization roles={['admin', 'editor']}>
           {buttons}
 
           <div className="dropdown attachments-dropdown">
@@ -199,12 +200,12 @@ export class Attachment extends Component {
               ref={this.myRef}
             >
               <li>
-                <a href="#" onClick={e => this.copyToClipboard(item.downloadHref, e)}>
+                <a href="#" onClick={e => this.copyToClipboard(item, e)}>
                   <Icon icon="link" /> <Translate>Copy link</Translate>
                 </a>
               </li>
               <li>
-                <a href={item.downloadHref} target="_blank">
+                <a href={item.url || item.downloadHref} target="_blank">
                   <Icon icon="link" /> <Translate>Download</Translate>
                 </a>
               </li>
@@ -220,8 +221,8 @@ export class Attachment extends Component {
               </li>
             </ul>
           </div>
-        </div>
-      </NeedAuthorization>
+        </NeedAuthorization>
+      </div>
     );
   }
 }
