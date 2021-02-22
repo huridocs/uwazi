@@ -118,7 +118,7 @@ export class Attachment extends Component {
   }
 
   render() {
-    const { file, parentId, model, storeKey } = this.props;
+    const { file, parentId, model, storeKey, parentSharedId } = this.props;
     const sizeString = file.size ? filesize(file.size) : '';
     const item = getItemOptions(parentId, file.filename);
 
@@ -143,7 +143,7 @@ export class Attachment extends Component {
           <span className="attachment-name">
             <AttachmentForm
               model={this.props.model}
-              onSubmit={this.props.renameAttachment.bind(this, parentId, model, storeKey)}
+              onSubmit={this.props.renameAttachment.bind(this, parentSharedId, model, storeKey)}
             />
           </span>
         </div>
