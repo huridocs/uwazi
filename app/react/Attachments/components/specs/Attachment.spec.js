@@ -65,9 +65,15 @@ describe('Attachment', () => {
       ).not.toContain('Human name 1');
 
       const submit = component.find(AttachmentForm).props().onSubmit;
-      submit();
+      const newFile = { originalname: 'something new' };
+      submit(newFile);
 
-      expect(props.renameAttachment).toHaveBeenCalledWith('parentId', 'model', 'storeKey');
+      expect(props.renameAttachment).toHaveBeenCalledWith(
+        'parentSharedId',
+        'model',
+        'storeKey',
+        newFile
+      );
     });
 
     it('should have a cancel edit button', () => {

@@ -79,10 +79,9 @@ export class Attachment extends Component {
     }
   }
 
-  handleClickOutside(e) {
-    if (!this.myRef.current.contains(e.target)) {
-      this.setState({ dropdownMenuOpen: false });
-    }
+  onRenameSubmit(newFile) {
+    const { parentSharedId, model, storeKey } = this.props;
+    this.props.renameAttachment(parentSharedId, model, storeKey, newFile);
   }
 
   toggleDropdown() {
@@ -119,9 +118,10 @@ export class Attachment extends Component {
     this.toggleDropdown();
   }
 
-  onRenameSubmit(newFile) {
-    const { parentSharedId, model, storeKey } = this.props;
-    this.props.renameAttachment(parentSharedId, model, storeKey, newFile);
+  handleClickOutside(e) {
+    if (!this.myRef.current.contains(e.target)) {
+      this.setState({ dropdownMenuOpen: false });
+    }
   }
 
   render() {
