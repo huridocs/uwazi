@@ -7,23 +7,24 @@ import { mapStateToProps, MarkersComponent } from '../Markers.js';
 import * as helper from '../helper';
 
 describe('Markers component', () => {
-  const state = { templates: Immutable.fromJS(['templates']) };
+  const externalTemplates = Immutable.fromJS(['templates']);
+  const state = { templates: externalTemplates };
   const entities = Immutable.fromJS(['entities']);
 
-  let props;
+  let props = { entities };
 
   beforeEach(() => {
     spyOn(helper, 'getMarkers').and.callFake((_entities, templates) =>
       _entities.toJS().concat(templates.toJS())
     );
-    props = mapStateToProps(state);
+    props = mapStateToProps(state, props);
   });
 
   it('should return processed markers from entities and templates', () => {
     const resultMarkers = [];
 
     shallow(
-      <MarkersComponent {...props} entities={entities} storeKey="library">
+      <MarkersComponent {...props} entities={entities} templates={externalTemplates}>
         {markers => markers.map(m => resultMarkers.push(m))}
       </MarkersComponent>
     );
