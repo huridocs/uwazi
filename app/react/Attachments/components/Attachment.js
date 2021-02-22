@@ -68,15 +68,15 @@ export class Attachment extends Component {
   }
 
   componentDidMount() {
-    typeof document !== undefined
-      ? document.addEventListener('mousedown', this.handleClickOutside)
-      : null;
+    if (typeof document !== 'undefined') {
+      document.addEventListener('mousedown', this.handleClickOutside);
+    }
   }
 
   componentWillUnmount() {
-    typeof document !== undefined
-      ? document.removeEventListener('mousedown', this.handleClickOutside)
-      : null;
+    if (typeof document !== 'undefined') {
+      document.removeEventListener('mousedown', this.handleClickOutside);
+    }
   }
 
   handleClickOutside(e) {
