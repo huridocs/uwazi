@@ -185,7 +185,10 @@ export default {
   async up(db) {
     process.stdout.write(`${this.name}...\n`);
     let conversionsNumber = 0;
-    const cursor = db.collection('files').find();
+    const cursor = db
+      .collection('files')
+      .find()
+      .addCursorFlag('noCursorTimeout', true);
     const wrongConversions = [];
     while (await cursor.hasNext()) {
       const file = await cursor.next();
@@ -233,6 +236,7 @@ export default {
     process.stderr.write(`Wrong conversions number: ${wrongConversions.length}\n`);
     process.stderr.write(`${wrongConversions.join('\n')}\n`);
 
+    cursor.close();
     return `${wrongConversions}`;
   },
 };
