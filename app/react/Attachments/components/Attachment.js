@@ -79,11 +79,11 @@ export class Attachment extends Component {
       : null;
   }
 
-  handleClickOutside = e => {
+  handleClickOutside(e) {
     if (!this.myRef.current.contains(e.target)) {
       this.setState({ dropdownMenuOpen: false });
     }
-  };
+  }
 
   toggleDropdown() {
     this.setState(prevState => ({
