@@ -35,3 +35,5 @@ custom_uploads/*
 .idea
 .env
 test
+app/api/files/specs/file1
+app/api/files/specs/file2

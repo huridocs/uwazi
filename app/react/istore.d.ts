@@ -7,6 +7,7 @@ import { PropertySchema } from 'shared/types/commonTypes';
 import { TemplateSchema } from 'shared/types/templateType';
 import { EntitySchema } from 'shared/types/entityType';
 import { UserGroupSchema } from 'shared/types/userGroupType';
+import { ConnectionSchema } from 'shared/types/connectionType';
 
 export interface TasksState {
   SyncState?: TaskStatus;
@@ -105,6 +106,15 @@ export interface IStore {
     entityFormState: any;
     entityForm: any;
     uiState: IImmutable<{ tab: string }>;
+  };
+  documentViewer: {
+    references: IImmutable<ConnectionSchema[]>;
+    targetDocReferences: IImmutable<ConnectionSchema[]>;
+    doc: IImmutable<EntitySchema>;
+    targetDoc: IImmutable<EntitySchema>;
+    uiState: IImmutable<{
+      activeReference: string;
+    }>;
   };
   oneUpReview: {
     state?: IImmutable<OneUpState>;

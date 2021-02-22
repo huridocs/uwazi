@@ -72,7 +72,7 @@ describe('SortButtons', () => {
         ]);
         render();
 
-        expect(component.find('.Dropdown:not(.width-placeholder) li').length).toBe(3);
+        expect(component.find('.Dropdown:not(.width-placeholder) li').length).toBe(4);
 
         expect(
           component
@@ -104,7 +104,7 @@ describe('SortButtons', () => {
         expect(
           component
             .find('li')
-            .at(2)
+            .at(3)
             .children()
             .at(0)
             .find('span')

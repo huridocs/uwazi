@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { scrollTo } from 'app/Viewer/actions/uiActions';
+import { scrollToToc } from 'app/Viewer/actions/uiActions';
 import Immutable from 'immutable';
 import ShowIf from 'app/App/ShowIf';
 import { t } from 'app/I18N';
@@ -10,7 +10,7 @@ import { Icon } from 'UI';
 export class ShowToc extends Component {
   scrollTo(tocElement, e) {
     e.preventDefault();
-    this.props.scrollTo(tocElement.toJS(), this.props.pdfInfo, 'span');
+    this.props.scrollToToc(tocElement.toJS());
   }
 
   render() {
@@ -58,12 +58,11 @@ ShowToc.defaultProps = {
 ShowToc.propTypes = {
   toc: PropTypes.array,
   readOnly: PropTypes.bool,
-  pdfInfo: PropTypes.object,
-  scrollTo: PropTypes.func,
+  scrollToToc: PropTypes.func,
 };
 
 function mapDispatchToProps() {
-  return { scrollTo };
+  return { scrollToToc };
 }
 
 export default connect(null, mapDispatchToProps)(ShowToc);
