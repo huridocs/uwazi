@@ -55,7 +55,7 @@ export default function manageAttachmentsReducer(
 
     if (
       action.type === attachmentsTypes.ATTACHMENT_RENAMED &&
-      getId(state, setInArray) === action.entity
+      getSharedId(state, setInArray) === action.entity
     ) {
       if (getId(state, setInArray) === action.file._id) {
         return state.setIn(setInArray.concat(['file']), Immutable(action.file));
