@@ -190,6 +190,7 @@
     "@types/big.js": "^6.0.2",
     "@types/child-process-promise": "^2.2.1",
     "@types/cookie": "^0.4.0",
+    "@types/domhandler": "^2.4.1",
     "@types/enzyme": "3.10.0",
     "@types/enzyme-adapter-react-16": "1.0.2",
     "@types/expect-puppeteer": "^4.4.1",

@@ -9,9 +9,9 @@ import markdownDatasets from '../markdownDatasets';
 import fixtures from './fixtures';
 
 describe('markdownDatasets', () => {
-  let requestParams;
+  let requestParams: RequestParams;
 
-  const getTestState = method => {
+  const getTestState = (method: keyof typeof fixtures) => {
     const { dataset1, dataset2 } = fixtures[method];
 
     return {
@@ -24,13 +24,13 @@ describe('markdownDatasets', () => {
   describe('request', () => {
     beforeEach(() => {
       requestParams = new RequestParams({}, 'headers');
-      spyOn(searchApi, 'search').and.callFake(params =>
+      spyOn(searchApi, 'search').and.callFake(async params =>
         Promise.resolve({ isSearch: true, headers: params.headers, ...params.data })
       );
-      spyOn(entitiesApi, 'get').and.callFake(params =>
+      spyOn(entitiesApi, 'get').and.callFake(async params =>
         Promise.resolve([{ isEntity: true, data: params.data, headers: params.headers }])
       );
-      spyOn(api, 'get').and.callFake((url, pasedRequestParams) =>
+      spyOn(api, 'get').and.callFake(async (url, pasedRequestParams) =>
         Promise.resolve({ json: { url, headers: pasedRequestParams.headers } })
       );
     });
@@ -38,7 +38,7 @@ describe('markdownDatasets', () => {
     it('should not fetch anything if no datasets defined', async () => {
       const markdown = 'no datasets defined';
 
-      const datasets = await markdownDatasets.fetch(markdown);
+      const datasets = await markdownDatasets.fetch(markdown, requestParams);
 
       expect(searchApi.search).not.toHaveBeenCalled();
       expect(datasets).toEqual({});
@@ -164,6 +164,7 @@ describe('markdownDatasets', () => {
     it('should return null when dataset do not exists', () => {
       const aggregations = markdownDatasets.getAggregations(state, {
         dataset: 'non_existent_dataset',
+        property: undefined,
       });
       expect(aggregations).toBeUndefined();
     });
@@ -172,7 +173,12 @@ describe('markdownDatasets', () => {
   describe('getAggregation', () => {
     const state = getTestState('getAggregation');
 
-    const expectAggregation = options => expect(markdownDatasets.getAggregation(state, options));
+    const expectAggregation = (options: {
+      property?: string;
+      uniqueValues?: string;
+      value?: string;
+      dataset?: string;
+    }) => expect(markdownDatasets.getAggregation(state, options));
 
     describe('when uniqueValues', () => {
       it('should return a count of all buckets of the property filtering zeros out', () => {
@@ -181,7 +187,6 @@ describe('markdownDatasets', () => {
 
       it('should return null when dataset do not exists', () => {
         const aggregation = markdownDatasets.getAggregation(state, {
-          uniqueValues: 'true',
           dataset: 'non_existent_dataset',
         });
         expect(aggregation).toBeUndefined();
@@ -227,7 +232,10 @@ describe('markdownDatasets', () => {
 
     it('should return undefined when dataset does not exist', () => {
       expect(
-        markdownDatasets.getMetadataValue(state, { dataset: 'non_existent_dataset' })
+        markdownDatasets.getMetadataValue(state, {
+          property: undefined,
+          dataset: 'non_existent_dataset',
+        })
       ).toBeUndefined();
     });
 
