@@ -1,3 +1,5 @@
+/* eslint-disable react/prop-types */
+
 import React, { useRef } from 'react';
 import { connect } from 'react-redux';
 import ReactModal from 'react-modal';
@@ -27,7 +29,6 @@ interface AttachmentsModalProps {
   getPercentage?: number;
 }
 
-// eslint-disable-next-line react/prop-types
 const AttachmentsModal: React.FC<AttachmentsModalProps> = ({
   isOpen,
   entitySharedId,
