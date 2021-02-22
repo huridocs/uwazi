@@ -57,7 +57,7 @@ const markersToStyleFormat = markers =>
 
 const noop = () => {};
 
-const extractMarkers = (entity, geolocationProps, metadata, color, type) => {
+const extractMarkers = ({ entity, geolocationProps, metadata, color, type }) => {
   const markers = [];
   const geolocationPropNames = geolocationProps.map(prop => prop.get('name'));
 
@@ -118,7 +118,7 @@ const getPropertyBasedMarkers = (template, entity) => {
     property => property.get('type') === 'geolocation'
   );
 
-  return extractMarkers(entity, geolocationProps, metadata, color, 'PropertyBased');
+  return extractMarkers({ entity, geolocationProps, metadata, color, type: 'PropertyBased' });
 };
 
 const getInheritedMarkers = (template, entity, templates) => {
@@ -139,7 +139,7 @@ const getInheritedMarkers = (template, entity, templates) => {
     return false;
   });
 
-  return extractMarkers(entity, geolocationProps, metadata, color, 'Inherited');
+  return extractMarkers({ entity, geolocationProps, metadata, color, type: 'Inherited' });
 };
 
 const getEntityMarkers = (entity, templates) => {
