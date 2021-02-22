@@ -64,7 +64,7 @@ export class Attachment extends Component {
     this.handleClickOutside = this.handleClickOutside.bind(this);
     this.copyToClipboard = this.copyToClipboard.bind(this);
     this.myRef = React.createRef();
-    this.onSubmitRename = this.onSubmitRename.bind(this);
+    this.onRenameSubmit = this.onRenameSubmit.bind(this);
   }
 
   componentDidMount() {
