@@ -162,12 +162,10 @@ const getEntityMarkers = (entity, templates) => {
 };
 
 const getMarkers = (entities, templates) => {
-  console.time('Markers');
   const m = entities.reduce((markers, entity) => {
     const entityMarkers = getEntityMarkers(entity, templates);
     return _mergeArrays(markers, entityMarkers);
   }, []);
-  console.timeEnd('Markers');
   return m;
 };
 
