@@ -64,6 +64,7 @@ export class Attachment extends Component {
     this.handleClickOutside = this.handleClickOutside.bind(this);
     this.copyToClipboard = this.copyToClipboard.bind(this);
     this.myRef = React.createRef();
+    this.onSubmitRename = this.onSubmitRename.bind(this);
   }
 
   componentDidMount() {
@@ -118,8 +119,13 @@ export class Attachment extends Component {
     this.toggleDropdown();
   }
 
+  onRenameSubmit(newFile) {
+    const { parentSharedId, model, storeKey } = this.props;
+    this.props.renameAttachment(parentSharedId, model, storeKey, newFile);
+  }
+
   render() {
-    const { file, parentId, model, storeKey, parentSharedId } = this.props;
+    const { file, parentId, model, storeKey } = this.props;
     const sizeString = file.size ? filesize(file.size) : '';
     const item = getItemOptions(parentId, file.filename, file.url);
 
@@ -142,10 +148,7 @@ export class Attachment extends Component {
         <div className="attachment-link">
           {file.filename ? conformThumbnail(file, item) : null}
           <span className="attachment-name">
-            <AttachmentForm
-              model={this.props.model}
-              onSubmit={this.props.renameAttachment.bind(this, parentSharedId, model, storeKey)}
-            />
+            <AttachmentForm model={this.props.model} onSubmit={this.onRenameSubmit} />
           </span>
         </div>
       );

@@ -77,6 +77,7 @@ export function uploadAttachmentFromUrl(entity, name, url, __reducerKey) {
 }
 
 export function renameAttachment(entityId, form, __reducerKey, file) {
+  console.log('file', file);
   return dispatch =>
     api
       .post(
