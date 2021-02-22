@@ -22,8 +22,8 @@ MarkersComponent.propTypes = {
   entities: PropTypes.instanceOf(Immutable.List),
 };
 
-export const mapStateToProps = (state, props) => ({
-  markers: selectMarkers({ state, entities: props.entities }),
+export const mapStateToProps = (state, ownProps) => ({
+  markers: selectMarkers({ state, entities: ownProps.entities }),
   templates: state.templates,
 });
 

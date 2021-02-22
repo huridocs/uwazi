@@ -215,7 +215,6 @@ describe('map helper', () => {
 
       it('should include inherited properties', () => {
         const processedMarkers = getMarkers(entities, templates);
-        console.log(processedMarkers);
         expect(processedMarkers.length).toBe(11);
         expect(processedMarkers).toMatchSnapshot();
       });
