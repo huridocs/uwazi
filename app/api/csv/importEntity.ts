@@ -58,7 +58,7 @@ const importEntity = async (
   { user = {}, language }: Options
 ) => {
   const attachments = toImportEntity.attachments;
-  delete entityObject.attachments;
+  delete toImportEntity.attachments;
   const eo = await entityObject(toImportEntity, template, { language });
   const entity = await entities.save(eo, { user, language }, true, false);
 
@@ -68,7 +68,7 @@ const importEntity = async (
   }
 
   if (attachments && entity.sharedId) {
-    await toImportEntity.attachments.split('|').reduce(async (promise, attachment) => {
+    await attachments.split('|').reduce(async (promise: Promise<any>, attachment) => {
       await promise;
       const attachmentFile = await importFile.extractFile(attachment, attachmentsPath());
       return files.save({ ...attachmentFile, entity: entity.sharedId, type: 'attachment' });
