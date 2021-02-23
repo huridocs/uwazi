@@ -96,12 +96,15 @@ class DocumentsList extends Component {
         )
       : undefined;
 
+    const hiddenConnections = totalConnections - (connections ? connections.totalRows : 0);
+
     const counter = (
       <DocumentCounter
         selectedEntitiesCount={this.props.selectedDocuments.size}
         entityListCount={this.props.documents.get('rows').size}
         entityTotal={documents.get('totalRows')}
         totalConnectionsCount={totalConnections}
+        hiddenConnectionsCount={hiddenConnections}
       />
     );
 
