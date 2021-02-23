@@ -15,12 +15,12 @@ export class SettingsNavigation extends Component {
             <I18NLink to="settings/account" activeClassName="active" className="list-group-item">
               <Translate>Account</Translate>
             </I18NLink>
-            <NeedAuthorization>
+            <NeedAuthorization roles={['admin']}>
               <I18NLink to="settings/users" activeClassName="active" className="list-group-item">
                 <Translate>Users</Translate>
               </I18NLink>
             </NeedAuthorization>
-            <NeedAuthorization>
+            <NeedAuthorization roles={['admin']}>
               <I18NLink
                 to="settings/collection"
                 activeClassName="active"
@@ -29,17 +29,17 @@ export class SettingsNavigation extends Component {
                 <Translate>Collection</Translate>
               </I18NLink>
             </NeedAuthorization>
-            <NeedAuthorization>
+            <NeedAuthorization roles={['admin']}>
               <I18NLink to="settings/navlinks" activeClassName="active" className="list-group-item">
                 <Translate>Menu</Translate>
               </I18NLink>
             </NeedAuthorization>
-            <NeedAuthorization>
+            <NeedAuthorization roles={['admin']}>
               <I18NLink to="settings/pages" activeClassName="active" className="list-group-item">
                 <Translate>Pages</Translate>
               </I18NLink>
             </NeedAuthorization>
-            <NeedAuthorization>
+            <NeedAuthorization roles={['admin']}>
               <I18NLink
                 to="settings/languages"
                 activeClassName="active"
@@ -48,7 +48,7 @@ export class SettingsNavigation extends Component {
                 <Translate>Languages</Translate>
               </I18NLink>
             </NeedAuthorization>
-            <NeedAuthorization>
+            <NeedAuthorization roles={['admin']}>
               <I18NLink
                 to="settings/translations"
                 activeClassName="active"
@@ -57,14 +57,14 @@ export class SettingsNavigation extends Component {
                 <Translate>Translations</Translate>
               </I18NLink>
             </NeedAuthorization>
-            <NeedAuthorization>
+            <NeedAuthorization roles={['admin']}>
               <I18NLink to="settings/filters" activeClassName="active" className="list-group-item">
                 <Translate>Filters configuration</Translate>
               </I18NLink>
             </NeedAuthorization>
           </div>
         </div>
-        <NeedAuthorization>
+        <NeedAuthorization roles={['admin']}>
           <div className="panel panel-default">
             <div className="panel-heading">
               <Translate>Metadata</Translate>
