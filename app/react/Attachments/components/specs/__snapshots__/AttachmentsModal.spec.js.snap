@@ -1,0 +1,361 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Attachments Modal Should match render of upload form 1`] = `
+<Modal
+  ariaHideApp={false}
+  bodyOpenClassName="ReactModal__Body--open"
+  className="attachments-modal"
+  closeTimeoutMS={0}
+  isOpen={false}
+  overlayClassName="attachments-modal__overlay"
+  parentSelector={[Function]}
+  portalClassName="ReactModalPortal"
+  shouldCloseOnEsc={true}
+  shouldCloseOnOverlayClick={true}
+  shouldFocusAfterRender={true}
+  shouldReturnFocusAfterClose={true}
+>
+  <div
+    className="attachments-modal__header"
+  >
+    <h4>
+      <Connect(Translate)>
+        Supporting files
+      </Connect(Translate)>
+    </h4>
+    <button
+      className="attachments-modal__close"
+      disabled={false}
+      type="button"
+    >
+      <Connect(Icon)
+        icon="times"
+      />
+      <span>
+        Cancel
+      </span>
+    </button>
+  </div>
+  <div
+    className="attachments-modal__content"
+  >
+    <Tabs
+      renderActiveTabContentOnly={true}
+    >
+      <div
+        className="attachments-modal__tabs"
+      >
+        <TabLink
+          className="modal-tab-1"
+          to="uploadComputer"
+        >
+          <Connect(Translate)>
+            Upload from computer
+          </Connect(Translate)>
+        </TabLink>
+        <TabLink
+          className="modal-tab-2"
+          to="uploadWeb"
+        >
+          <Connect(Translate)>
+            Add from web
+          </Connect(Translate)>
+        </TabLink>
+      </div>
+      <div
+        className="attachments-modal__tabs-content"
+      >
+        <TabContent
+          className="tab-content centered"
+          for="uploadComputer"
+        >
+          <t
+            className="attachments-modal__dropzone"
+            disableClick={true}
+            disablePreview={false}
+            disabled={false}
+            maxSize={Infinity}
+            minSize={0}
+            multiple={false}
+            onDrop={[Function]}
+            preventDropOnDocument={true}
+          >
+            <button
+              className="btn btn-success"
+              onClick={[Function]}
+              type="button"
+            >
+              <Connect(Icon)
+                icon="link"
+              />
+                
+              <Connect(Translate)>
+                Upload and select file
+              </Connect(Translate)>
+            </button>
+            <input
+              onChange={[Function]}
+              style={
+                Object {
+                  "display": "none",
+                }
+              }
+              type="file"
+            />
+            <h4
+              className="attachments-modal__dropzone-title"
+            >
+              <Connect(Translate)>
+                Drag and drop file in this window to upload 
+              </Connect(Translate)>
+            </h4>
+          </t>
+        </TabContent>
+        <TabContent
+          className="tab-content centered"
+          for="uploadWeb"
+        >
+          <div
+            className="wrapper-web"
+          >
+            <LocalForm
+              initialState={Object {}}
+              model="urlForm"
+              onSubmit={[Function]}
+              validators={
+                Object {
+                  "name": Object {
+                    "required": [Function],
+                  },
+                  "url": Object {
+                    "required": [Function],
+                  },
+                }
+              }
+            >
+              <div
+                className="form-group has-feedback"
+              >
+                <Modeled(Connect(Field))
+                  model=".url"
+                >
+                  <input
+                    className="form-control web-attachment-url"
+                    placeholder="Paste URL here"
+                    type="text"
+                  />
+                </Modeled(Connect(Field))>
+                <Connect(Icon)
+                  className="feedback-icon"
+                  icon="info-circle"
+                />
+              </div>
+              <Modeled(Connect(Field))
+                model=".name"
+              >
+                <input
+                  className="form-control web-attachment-name"
+                  placeholder="Title"
+                  type="text"
+                />
+              </Modeled(Connect(Field))>
+              <button
+                className="btn btn-success"
+                type="submit"
+              >
+                <Connect(Icon)
+                  icon="link"
+                />
+                  
+                <Connect(Translate)>
+                  Add resource
+                </Connect(Translate)>
+              </button>
+            </LocalForm>
+          </div>
+        </TabContent>
+      </div>
+    </Tabs>
+  </div>
+</Modal>
+`;
+
+exports[`Attachments Modal Should match render of web form 1`] = `
+<Modal
+  ariaHideApp={false}
+  bodyOpenClassName="ReactModal__Body--open"
+  className="attachments-modal"
+  closeTimeoutMS={0}
+  isOpen={false}
+  overlayClassName="attachments-modal__overlay"
+  parentSelector={[Function]}
+  portalClassName="ReactModalPortal"
+  shouldCloseOnEsc={true}
+  shouldCloseOnOverlayClick={true}
+  shouldFocusAfterRender={true}
+  shouldReturnFocusAfterClose={true}
+>
+  <div
+    className="attachments-modal__header"
+  >
+    <h4>
+      <Connect(Translate)>
+        Supporting files
+      </Connect(Translate)>
+    </h4>
+    <button
+      className="attachments-modal__close"
+      disabled={false}
+      type="button"
+    >
+      <Connect(Icon)
+        icon="times"
+      />
+      <span>
+        Cancel
+      </span>
+    </button>
+  </div>
+  <div
+    className="attachments-modal__content"
+  >
+    <Tabs
+      renderActiveTabContentOnly={true}
+    >
+      <div
+        className="attachments-modal__tabs"
+      >
+        <TabLink
+          className="modal-tab-1"
+          to="uploadComputer"
+        >
+          <Connect(Translate)>
+            Upload from computer
+          </Connect(Translate)>
+        </TabLink>
+        <TabLink
+          className="modal-tab-2"
+          to="uploadWeb"
+        >
+          <Connect(Translate)>
+            Add from web
+          </Connect(Translate)>
+        </TabLink>
+      </div>
+      <div
+        className="attachments-modal__tabs-content"
+      >
+        <TabContent
+          className="tab-content centered"
+          for="uploadComputer"
+        >
+          <t
+            className="attachments-modal__dropzone"
+            disableClick={true}
+            disablePreview={false}
+            disabled={false}
+            maxSize={Infinity}
+            minSize={0}
+            multiple={false}
+            onDrop={[Function]}
+            preventDropOnDocument={true}
+          >
+            <button
+              className="btn btn-success"
+              onClick={[Function]}
+              type="button"
+            >
+              <Connect(Icon)
+                icon="link"
+              />
+                
+              <Connect(Translate)>
+                Upload and select file
+              </Connect(Translate)>
+            </button>
+            <input
+              onChange={[Function]}
+              style={
+                Object {
+                  "display": "none",
+                }
+              }
+              type="file"
+            />
+            <h4
+              className="attachments-modal__dropzone-title"
+            >
+              <Connect(Translate)>
+                Drag and drop file in this window to upload 
+              </Connect(Translate)>
+            </h4>
+          </t>
+        </TabContent>
+        <TabContent
+          className="tab-content centered"
+          for="uploadWeb"
+        >
+          <div
+            className="wrapper-web"
+          >
+            <LocalForm
+              initialState={Object {}}
+              model="urlForm"
+              onSubmit={[Function]}
+              validators={
+                Object {
+                  "name": Object {
+                    "required": [Function],
+                  },
+                  "url": Object {
+                    "required": [Function],
+                  },
+                }
+              }
+            >
+              <div
+                className="form-group has-feedback"
+              >
+                <Modeled(Connect(Field))
+                  model=".url"
+                >
+                  <input
+                    className="form-control web-attachment-url"
+                    placeholder="Paste URL here"
+                    type="text"
+                  />
+                </Modeled(Connect(Field))>
+                <Connect(Icon)
+                  className="feedback-icon"
+                  icon="info-circle"
+                />
+              </div>
+              <Modeled(Connect(Field))
+                model=".name"
+              >
+                <input
+                  className="form-control web-attachment-name"
+                  placeholder="Title"
+                  type="text"
+                />
+              </Modeled(Connect(Field))>
+              <button
+                className="btn btn-success"
+                type="submit"
+              >
+                <Connect(Icon)
+                  icon="link"
+                />
+                  
+                <Connect(Translate)>
+                  Add resource
+                </Connect(Translate)>
+              </button>
+            </LocalForm>
+          </div>
+        </TabContent>
+      </div>
+    </Tabs>
+  </div>
+</Modal>
+`;
