@@ -125,7 +125,7 @@ export class Attachment extends Component {
   }
 
   render() {
-    const { file, parentId, model, storeKey } = this.props;
+    const { file, model, storeKey } = this.props;
     const sizeString = file.size ? filesize(file.size) : '';
     const item = getItemOptions(file.filename, file.url);
     let name = (
@@ -236,7 +236,6 @@ Attachment.defaultProps = {
 Attachment.propTypes = {
   deleteMessage: PropTypes.string,
   file: PropTypes.object,
-  parentId: PropTypes.string,
   parentSharedId: PropTypes.string,
   storeKey: PropTypes.string,
   model: PropTypes.string,
