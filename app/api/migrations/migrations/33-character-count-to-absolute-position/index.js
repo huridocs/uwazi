@@ -119,15 +119,15 @@ async function existsRangesToConvert(db, file) {
     return true;
   }
 
-  const connections = await db
-    .collection('connections')
-    .find({ file: file._id.toString() })
-    .toArray();
+  const connections = (
+    await db
+      .collection('connections')
+      .find({ entity: file.entity, range: { $exists: true } })
+      .toArray()
+  ).filter(c => c.file === file._id.toString());
 
-  for (let i = 0; i < connections.length; i += 1) {
-    if (connections[i].range) {
-      return true;
-    }
+  if (connections.length) {
+    return true;
   }
 
   return false;
