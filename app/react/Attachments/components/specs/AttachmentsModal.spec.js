@@ -36,6 +36,4 @@ describe('Attachments Modal', () => {
 
     expect(component).toMatchSnapshot();
   });
-
-  
 });

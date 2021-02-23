@@ -32,7 +32,7 @@ exports[`Attachments Modal Should match render of upload form 1`] = `
         icon="times"
       />
       <span>
-        Cancel
+        Close
       </span>
     </button>
   </div>
@@ -212,7 +212,7 @@ exports[`Attachments Modal Should match render of web form 1`] = `
         icon="times"
       />
       <span>
-        Cancel
+        Close
       </span>
     </button>
   </div>
