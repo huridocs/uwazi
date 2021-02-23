@@ -84,7 +84,7 @@ const AttachmentsModal: React.FC<AttachmentsModalProps> = ({
             disabled={getPercentage !== undefined}
           >
             <Icon icon="times" />
-            <span>Cancel</span>
+            <span>Close</span>
           </button>
         </div>
         <div className="attachments-modal__content">

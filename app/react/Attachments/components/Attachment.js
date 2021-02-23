@@ -23,21 +23,21 @@ import {
 
 const getExtension = filename => (filename ? filename.substr(filename.lastIndexOf('.') + 1) : '');
 
-const getItemOptions = (parentId, filename, url) => {
+const getItemOptions = (filename, url) => {
   const options = {};
   options.itemClassName = '';
   options.typeClassName = 'empty';
   options.icon = 'paperclip';
   options.deletable = true;
   options.replaceable = false;
-  options.downloadHref = `/api/files/download?_id=${parentId}&file=${filename}`;
+  options.downloadHref = `/api/files/${filename}`;
   options.url = url;
 
   return options;
 };
 
 const conformThumbnail = (file, item) => {
-  const acceptedThumbnailExtensions = ['png', 'gif', 'jpg'];
+  const acceptedThumbnailExtensions = ['png', 'gif', 'jpg', 'jpeg'];
   let thumbnail = null;
 
   if (getExtension(file.filename) === 'pdf') {
@@ -127,8 +127,7 @@ export class Attachment extends Component {
   render() {
     const { file, parentId, model, storeKey } = this.props;
     const sizeString = file.size ? filesize(file.size) : '';
-    const item = getItemOptions(parentId, file.filename, file.url);
-
+    const item = getItemOptions(file.filename, file.url);
     let name = (
       <a className="attachment-link" href={item.url || item.downloadHref}>
         {file.filename ? conformThumbnail(file, item) : null}

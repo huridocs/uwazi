@@ -130,15 +130,11 @@ describe('Attachment', () => {
 
     props.file.filename = 'image.jpg';
     render();
-    expect(component.find('.attachment-thumbnail img').props().src).toBe(
-      '/api/files/download?_id=parentId&file=image.jpg'
-    );
+    expect(component.find('.attachment-thumbnail img').props().src).toBe('/api/files/image.jpg');
 
     props.file.filename = 'image.JPG';
     render();
-    expect(component.find('.attachment-thumbnail img').props().src).toBe(
-      '/api/files/download?_id=parentId&file=image.JPG'
-    );
+    expect(component.find('.attachment-thumbnail img').props().src).toBe('/api/files/image.JPG');
 
     props.file.filename = 'image.doc';
     render();
@@ -147,9 +143,7 @@ describe('Attachment', () => {
 
   it('should allow downloading the attachment', () => {
     render();
-    expect(component.find('.attachment-link').props().href).toBe(
-      '/api/files/download?_id=parentId&file=filename.ext'
-    );
+    expect(component.find('.attachment-link').props().href).toBe('/api/files/filename.ext');
   });
 
   describe('mapStateToProps', () => {
