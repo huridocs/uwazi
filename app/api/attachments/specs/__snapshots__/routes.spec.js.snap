@@ -1,9 +1,5 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Attachments Routes /download should fail when attachment does not exist 1`] = `"received is not a function"`;
-
-exports[`Attachments Routes /download should fail when entity does not exists 1`] = `"received is not a function"`;
-
 exports[`Attachments Routes /download should have a validation schema 1`] = `
 Object {
   "children": Object {
