@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
@@ -474,26 +475,6 @@ export class CollectionSettings extends Component {
               </>
             )}
           </LocalForm>
-          <h2>
-            <Translate>Advanced customizations</Translate>
-          </h2>
-          <div>
-            <Link
-              to="/settings/customisation"
-              href="/settings/customisation"
-              className="btn btn-default"
-            >
-              <Translate>Custom Styles</Translate>
-            </Link>
-            &nbsp;
-            <Link
-              to="/settings/custom-uploads"
-              href="/settings/custom-uploads"
-              className="btn btn-default"
-            >
-              <Translate>Custom Uploads</Translate>
-            </Link>
-          </div>
           <div className="settings-footer">
             <button type="submit" form="collectionSettingsForm" className="btn btn-success">
               <Icon icon="save" />

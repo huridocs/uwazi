@@ -107,6 +107,20 @@ export class SettingsNavigation extends Component {
               >
                 <Translate>Activity log</Translate>
               </I18NLink>
+              <I18NLink
+                to="/settings/customisation"
+                activeClassName="active"
+                className="list-group-item"
+              >
+                <Translate>Global CSS</Translate>
+              </I18NLink>
+              <I18NLink
+                to="/settings/custom-uploads"
+                activeClassName="active"
+                className="list-group-item"
+              >
+                <Translate>Uploads</Translate>
+              </I18NLink>
             </NeedAuthorization>
             <a
               className="list-group-item"
