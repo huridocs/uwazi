@@ -64,12 +64,14 @@ export class SettingsNavigation extends Component {
             </NeedAuthorization>
           </div>
         </div>
-        <NeedAuthorization roles={['admin']}>
-          <div className="panel panel-default">
+        <div className="panel panel-default">
+          <NeedAuthorization roles={['admin']}>
             <div className="panel-heading">
               <Translate>Metadata</Translate>
             </div>
-            <div className="list-group">
+          </NeedAuthorization>
+          <div className="list-group">
+            <NeedAuthorization roles={['admin']}>
               <I18NLink
                 to="settings/templates"
                 activeClassName="active"
@@ -77,6 +79,8 @@ export class SettingsNavigation extends Component {
               >
                 <Translate>Templates</Translate>
               </I18NLink>
+            </NeedAuthorization>
+            <NeedAuthorization roles={['admin']}>
               <I18NLink
                 to="settings/dictionaries"
                 activeClassName="active"
@@ -84,6 +88,8 @@ export class SettingsNavigation extends Component {
               >
                 <Translate>Thesauri</Translate>
               </I18NLink>
+            </NeedAuthorization>
+            <NeedAuthorization roles={['admin']}>
               <I18NLink
                 to="settings/connections"
                 activeClassName="active"
@@ -91,10 +97,9 @@ export class SettingsNavigation extends Component {
               >
                 <Translate>Relationship types</Translate>
               </I18NLink>
-            </div>
+            </NeedAuthorization>
           </div>
-        </NeedAuthorization>
-        <div className="panel panel-default">
+
           <div className="panel-heading">
             <Translate>Tools</Translate>
           </div>
