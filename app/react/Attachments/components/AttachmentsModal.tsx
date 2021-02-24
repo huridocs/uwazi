@@ -88,10 +88,10 @@ const AttachmentsModal: React.FC<AttachmentsModalProps> = ({
       <div className="attachments-modal__content">
         <Tabs renderActiveTabContentOnly>
           <div className="attachments-modal__tabs">
-            <TabLink to="uploadComputer" className="modal-tab-1">
+            <TabLink to="uploadComputer" className="tab-link modal-tab-1">
               <Translate>Upload from computer</Translate>
             </TabLink>
-            <TabLink to="uploadWeb" className="modal-tab-2">
+            <TabLink to="uploadWeb" className="tab-link modal-tab-2">
               <Translate>Add from web</Translate>
             </TabLink>
           </div>
