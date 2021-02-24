@@ -26,6 +26,7 @@ exports[`Attachments Modal Should match render of upload form 1`] = `
     <button
       className="attachments-modal__close"
       disabled={false}
+      onClick={[Function]}
       type="button"
     >
       <Connect(Icon)
@@ -206,6 +207,7 @@ exports[`Attachments Modal Should match render of web form 1`] = `
     <button
       className="attachments-modal__close"
       disabled={false}
+      onClick={[Function]}
       type="button"
     >
       <Connect(Icon)

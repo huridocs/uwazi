@@ -1,8 +1,10 @@
 import React from 'react';
 import thunk from 'redux-thunk';
 import { shallow } from 'enzyme';
-import configureMockStore from 'redux-mock-store';
+import { LocalForm } from 'react-redux-form';
 import ReactModal from 'react-modal';
+import configureMockStore from 'redux-mock-store';
+import { Provider } from 'react-redux';
 
 import AttachmentsModal from '../AttachmentsModal';
 
@@ -11,9 +13,25 @@ const store = mockStore({});
 
 describe('Attachments Modal', () => {
   let component;
+  let props;
 
-  const render = (props = {}) => {
-    component = shallow(<AttachmentsModal {...props} store={store} />).dive();
+  beforeEach(() => {
+    props = {
+      entitySharedId: '123',
+      storeKey: '456',
+      onClose: jasmine.createSpy('onClose'),
+      uploadAttachmentFromUrl: jasmine.createSpy('uploadAttachmentFromUrl'),
+    };
+  });
+
+  const render = (otherProps = {}) => {
+    component = shallow(
+      <Provider store={store}>
+        <AttachmentsModal {...props} {...otherProps} />
+      </Provider>
+    )
+      .dive({ context: { store } })
+      .dive();
   };
 
   it('Should pass isOpen props to attachments modal.', () => {
@@ -35,5 +53,23 @@ describe('Attachments Modal', () => {
     component.find('.modal-tab-2').simulate('click');
 
     expect(component).toMatchSnapshot();
+  });
+
+  it('Should submit web form', () => {
+    render();
+
+    component.find('.modal-tab-2').simulate('click');
+    component.find(LocalForm).simulate('submit', { url: 'http://test.test', name: 'testName' });
+
+    expect(props.uploadAttachmentFromUrl).toHaveBeenCalled();
+  });
+
+  it('Should call onClose', () => {
+    render();
+
+    const closeButton = component.find('.attachments-modal__close');
+    closeButton.simulate('click');
+
+    expect(props.onClose).toHaveBeenCalled();
   });
 });
