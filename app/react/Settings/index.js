@@ -1,7 +1,7 @@
 /** @format */
 /* eslint-disable import/no-named-as-default */
 import AccountSettings from './components/AccountSettings';
-import CollectionSettings from './components/CollectionSettings';
+import { CollectionSettings } from './components/CollectionSettingsV2';
 import Customisation from './components/Customisation';
 import EntityTypesList from './components/EntityTypesList';
 import FiltersForm from './components/FiltersForm';
