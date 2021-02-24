@@ -1,6 +1,3 @@
-/* eslint-disable max-statements */
-/** @format */
-
 const _mergeArrays = (first, second) => {
   let bigArray;
   let smallArray;
