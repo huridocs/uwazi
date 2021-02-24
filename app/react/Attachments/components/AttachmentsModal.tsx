@@ -28,7 +28,7 @@ interface AttachmentsModalProps {
   getPercentage?: number;
 }
 
-const AttachmentsModal: React.FC<AttachmentsModalProps> = ({
+export const AttachmentsModalCmp: React.FC<AttachmentsModalProps> = ({
   isOpen,
   entitySharedId,
   storeKey,
@@ -176,4 +176,4 @@ const mapDispatchToProps = {
   uploadAttachmentFromUrl,
 };
 
-export default connect(null, mapDispatchToProps)(AttachmentsModal);
+export default connect(null, mapDispatchToProps)(AttachmentsModalCmp);

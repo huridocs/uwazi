@@ -6,7 +6,7 @@ import ReactModal from 'react-modal';
 import configureMockStore from 'redux-mock-store';
 import { Provider } from 'react-redux';
 
-import AttachmentsModal from '../AttachmentsModal';
+import AttachmentsModal, { AttachmentsModalCmp } from '../AttachmentsModal';
 
 const mockStore = configureMockStore([thunk]);
 const store = mockStore({});
@@ -27,10 +27,9 @@ describe('Attachments Modal', () => {
   const render = (otherProps = {}) => {
     component = shallow(
       <Provider store={store}>
-        <AttachmentsModal {...props} {...otherProps} />
+        <AttachmentsModalCmp {...props} {...otherProps} />
       </Provider>
     )
-      .dive({ context: { store } })
       .dive();
   };
 

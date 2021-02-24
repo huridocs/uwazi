@@ -47,7 +47,7 @@ exports[`Attachments Modal Should match render of upload form 1`] = `
         className="attachments-modal__tabs"
       >
         <TabLink
-          className="modal-tab-1"
+          className="tab-link modal-tab-1"
           to="uploadComputer"
         >
           <Connect(Translate)>
@@ -55,7 +55,7 @@ exports[`Attachments Modal Should match render of upload form 1`] = `
           </Connect(Translate)>
         </TabLink>
         <TabLink
-          className="modal-tab-2"
+          className="tab-link modal-tab-2"
           to="uploadWeb"
         >
           <Connect(Translate)>
@@ -228,7 +228,7 @@ exports[`Attachments Modal Should match render of web form 1`] = `
         className="attachments-modal__tabs"
       >
         <TabLink
-          className="modal-tab-1"
+          className="tab-link modal-tab-1"
           to="uploadComputer"
         >
           <Connect(Translate)>
@@ -236,7 +236,7 @@ exports[`Attachments Modal Should match render of web form 1`] = `
           </Connect(Translate)>
         </TabLink>
         <TabLink
-          className="modal-tab-2"
+          className="tab-link modal-tab-2"
           to="uploadWeb"
         >
           <Connect(Translate)>
