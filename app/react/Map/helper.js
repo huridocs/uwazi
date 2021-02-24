@@ -54,8 +54,51 @@ const markersToStyleFormat = markers =>
 
 const noop = () => {};
 
-const extractMarkers = ({ entity, geolocationProps, metadata, color, type }) => {
+const extractPropertyBasedMarkers = (entity, geolocationProp, propertyMetadata, color) => {
   const markers = [];
+  propertyMetadata
+    .filter(mo => mo.get('value'))
+    .forEach(point => {
+      markers.push({
+        properties: { entity: entity.toJS(), color, info: point.getIn(['value', 'label']) },
+        latitude: point.getIn(['value', 'lat']),
+        longitude: point.getIn(['value', 'lon']),
+        label: geolocationProp.get('label'),
+      });
+    });
+  return markers;
+};
+
+const extractInheritedMarkers = (entity, geolocationProp, propertyMetadata, color) => {
+  const markers = [];
+  propertyMetadata.forEach(relatedProperty => {
+    if (relatedProperty.has('inherit_geolocation')) {
+      // conditional is a quick hack to prevent app crash
+      relatedProperty
+        .get('inherit_geolocation')
+        .filter(mo => mo.get('value'))
+        .forEach(point => {
+          markers.push({
+            properties: {
+              entity: entity.toJS(),
+              color,
+              info: point.getIn(['value', 'label']),
+              inherited: true,
+              label: relatedProperty.get('label'),
+              context: geolocationProp.get('content'),
+            },
+            latitude: point.getIn(['value', 'lat']),
+            longitude: point.getIn(['value', 'lon']),
+            label: geolocationProp.get('label'),
+          });
+        });
+    }
+  });
+  return markers;
+};
+
+const extractMarkers = ({ entity, geolocationProps, metadata, color, type }) => {
+  let markers = [];
   const geolocationPropNames = geolocationProps.map(prop => prop.get('name'));
 
   if (geolocationProps.size && metadata) {
@@ -65,40 +108,15 @@ const extractMarkers = ({ entity, geolocationProps, metadata, color, type }) => 
         const geolocationProp = geolocationProps.find(p => p.get('name') === property);
         const propertyMetadata = metadata.get(property);
         if (type === 'PropertyBased') {
-          propertyMetadata
-            .filter(mo => mo.get('value'))
-            .forEach(point => {
-              markers.push({
-                properties: { entity: entity.toJS(), color, info: point.getIn(['value', 'label']) },
-                latitude: point.getIn(['value', 'lat']),
-                longitude: point.getIn(['value', 'lon']),
-                label: geolocationProp.get('label'),
-              });
-            });
+          markers = _mergeArrays(
+            markers,
+            extractPropertyBasedMarkers(entity, geolocationProp, propertyMetadata, color)
+          );
         } else {
-          propertyMetadata.forEach(relatedProperty => {
-            if (relatedProperty.has('inherit_geolocation')) {
-              // conditional is a quick hack to prevent app crash
-              relatedProperty
-                .get('inherit_geolocation')
-                .filter(mo => mo.get('value'))
-                .forEach(point => {
-                  markers.push({
-                    properties: {
-                      entity: entity.toJS(),
-                      color,
-                      info: point.getIn(['value', 'label']),
-                      inherited: true,
-                      label: relatedProperty.get('label'),
-                      context: geolocationProp.get('content'),
-                    },
-                    latitude: point.getIn(['value', 'lat']),
-                    longitude: point.getIn(['value', 'lon']),
-                    label: geolocationProp.get('label'),
-                  });
-                });
-            }
-          });
+          markers = _mergeArrays(
+            markers,
+            extractInheritedMarkers(entity, geolocationProp, propertyMetadata, color)
+          );
         }
       }
     });
