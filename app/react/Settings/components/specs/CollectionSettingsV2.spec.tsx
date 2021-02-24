@@ -7,6 +7,5 @@ describe('Collection settings', () => {
 
   it('should allow custom landing page', () => {
     component = shallow(<CollectionSettings />);
-    expect(component);
   });
 });
