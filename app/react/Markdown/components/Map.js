@@ -34,7 +34,7 @@ export const MapComponent = props => {
   return (
     <div className={`Map ${classname}`}>
       {data ? (
-        <Markers entities={data} storeKey="library">
+        <Markers entities={data}>
           {markers => (
             <Map
               markers={markers}
