@@ -44,6 +44,17 @@ describe('EntityViewer', () => {
             { _id: 't3', count: 3 },
           ],
         },
+        { key: 'g3', templates: [{ _id: 't4', count: 1 }] },
+      ]),
+      hubs: Immutable.fromJS([
+        {
+          hub: '1',
+          rightRelationships: [{ template: null }, { template: 'g1' }],
+        },
+        {
+          hub: '2',
+          rightRelationships: [{ template: null }, { template: 'g2' }],
+        },
       ]),
       deleteConnection: jasmine.createSpy('deleteConnection'),
       startNewConnection: jasmine.createSpy('startNewConnection'),
@@ -60,7 +71,21 @@ describe('EntityViewer', () => {
   it('should render the ConnectionsGroups', () => {
     render();
 
-    expect(component.find(ConnectionsGroups).length).toBe(1);
+    const connectionsGroups = component.find(ConnectionsGroups);
+    expect(connectionsGroups.length).toBe(1);
+    expect(connectionsGroups.props().connectionsGroups.size).toEqual(2);
+    expect(
+      connectionsGroups
+        .props()
+        .connectionsGroups.get(0)
+        .get('key')
+    ).toEqual('g1');
+    expect(
+      connectionsGroups
+        .props()
+        .connectionsGroups.get(1)
+        .get('key')
+    ).toEqual('g2');
   });
 
   it('should render the ConnectionsList passing deleteConnection as prop', () => {

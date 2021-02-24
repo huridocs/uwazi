@@ -271,6 +271,7 @@ export class DocumentSidePanel extends Component {
       isTargetDoc,
       relationships,
       defaultLanguage,
+      connectionsGroups,
     } = this.props;
 
     const TocForm = this.props.tocFormComponent;
@@ -427,7 +428,7 @@ export class DocumentSidePanel extends Component {
               />
             </TabContent>
             <TabContent for="connections">
-              <ConnectionsGroups />
+              <ConnectionsGroups connectionsGroups={connectionsGroups} />
             </TabContent>
             <TabContent for="semantic-search-results">
               <DocumentSemanticSearchResults doc={this.props.doc.toJS()} />
