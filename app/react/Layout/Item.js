@@ -55,9 +55,12 @@ export class Item extends Component {
     };
 
     const userGroups = (user.get('groups') || []).map(g => g.get('_id'));
-    const canEdit = doc.permissions.find(
-      ({ level, _id }) => level === 'write' && (_id === user.get('_id') || userGroups.includes(_id))
-    );
+    const canEdit =
+      doc.permissions &&
+      doc.permissions.find(
+        ({ level, _id }) =>
+          level === 'write' && (_id === user.get('_id') || userGroups.includes(_id))
+      );
 
     return (
       <RowList.Item {...itemProps}>

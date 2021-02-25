@@ -161,7 +161,6 @@ describe('Item', () => {
         title: 'doc title',
         template: 'templateId',
         creationDate: 123,
-        permissions: [],
       });
 
       render();
