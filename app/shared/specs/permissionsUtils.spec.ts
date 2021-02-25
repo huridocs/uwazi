@@ -1,9 +1,26 @@
+import { UserRole } from 'shared/types/userSchema';
 import { UserSchema } from '../types/userType';
 import { PermissionSchema } from '../types/permissionType';
 import { checkWritePermissions } from '../permissionsUtils';
 
 describe('Permissions utils', () => {
   describe('checkWritePermissions', () => {
+    it.each([UserRole.ADMIN, UserRole.EDITOR])(
+      'should return TRUE if the user has %s role',
+      role => {
+        const user: UserSchema = {
+          username: 'someuser',
+          _id: 'someuser',
+          email: 'someuser@example.com',
+          role,
+        };
+
+        const permissions: PermissionSchema[] = [];
+
+        expect(checkWritePermissions(user, permissions)).toBe(true);
+      }
+    );
+
     it('should return TRUE if the user has WRITE permissions in the permissions set', () => {
       const user: UserSchema = {
         username: 'someuser',

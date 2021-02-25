@@ -9,6 +9,10 @@ export const checkWritePermissions = (
     return false;
   }
 
+  if (['admin', 'editor'].includes(user.role)) {
+    return true;
+  }
+
   const ids = permissions ? permissions.filter(p => p.level === 'write').map(p => p._id) : [];
   const userIds = [user._id!.toString(), ...(user.groups || []).map(g => g._id)];
 
