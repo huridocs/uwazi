@@ -1,7 +1,22 @@
 .collection-settings {
+  .form-element {
+    display: flex;
+  }
+
   .property-description {
-    width: 500px;
     text-align: left;
+    font-size: medium;
+    width: 400px;
+    transform: translateX(15px) translateY(100%);
+    z-index: 1;
+
+    &::after {
+      top: 0;
+      right: auto;
+      bottom: auto;
+      left: 0;
+      transform: translateX(-75%) translateY(55%) rotate(0.25turn);
+    }
   }
 }
 

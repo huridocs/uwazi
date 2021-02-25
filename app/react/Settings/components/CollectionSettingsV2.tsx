@@ -19,10 +19,18 @@ export const CollectionSettings = () => (
   <div className="collection-settings">
     <h1>Collection</h1>
     <h2>General</h2>
-    <div>
+
+    <div className="form-element">
+      <SettingsLabel>
+        <span>Collection name</span>
+      </SettingsLabel>
+      <input type="text" />
+    </div>
+
+    <div className="form-element">
       <SettingsLabel>
         <span>Use custom landing page</span>
-        <Tip>{CollectionSettingsTips.landingPageTip}</Tip>
+        <Tip icon="info-circle">{CollectionSettingsTips.landingPageTip}</Tip>
       </SettingsLabel>
       <ToggleChildren toggled={false}>
         <input type="text" />
