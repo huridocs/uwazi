@@ -6,7 +6,7 @@ import ReactModal from 'react-modal';
 import configureMockStore from 'redux-mock-store';
 import { Provider } from 'react-redux';
 
-import AttachmentsModal, { AttachmentsModalCmp } from '../AttachmentsModal';
+import { AttachmentsModalCmp } from '../AttachmentsModal';
 
 const mockStore = configureMockStore([thunk]);
 const store = mockStore({});
@@ -29,8 +29,7 @@ describe('Attachments Modal', () => {
       <Provider store={store}>
         <AttachmentsModalCmp {...props} {...otherProps} />
       </Provider>
-    )
-      .dive();
+    ).dive();
   };
 
   it('Should pass isOpen props to attachments modal.', () => {
