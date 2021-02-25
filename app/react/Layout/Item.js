@@ -34,6 +34,7 @@ export class Item extends Component {
       additionalIcon,
       additionalText,
       buttons,
+      user,
     } = this.props;
 
     const doc = this.props.doc.toJS();
@@ -52,6 +53,11 @@ export class Item extends Component {
       active,
       tabIndex: '1',
     };
+
+    const userGroups = (user.get('groups') || []).map(g => g.get('_id'));
+    const canEdit = doc.permissions.find(
+      ({ level, _id }) => level === 'write' && (_id === user.get('_id') || userGroups.includes(_id))
+    );
 
     return (
       <RowList.Item {...itemProps}>
@@ -75,8 +81,11 @@ export class Item extends Component {
           />
         </div>
         <ItemFooter>
-          {doc.template ? <TemplateLabel template={doc.template} /> : false}
-          {doc.published ? '' : <Tip icon="eye-slash">This entity is not public.</Tip>}
+          <div>
+            {doc.template ? <TemplateLabel template={doc.template} /> : false}
+            {canEdit ? <Tip icon="pencil-alt">You can edit this property</Tip> : ''}
+            {doc.published ? '' : <Tip icon="eye-slash">This entity is not public.</Tip>}
+          </div>
           {this.props.labels}
           {buttons}
         </ItemFooter>
@@ -98,6 +107,7 @@ Item.defaultProps = {
 };
 
 Item.propTypes = {
+  user: PropTypes.object,
   templates: PropTypes.object,
   thesauris: PropTypes.object,
   search: PropTypes.object,
@@ -124,10 +134,10 @@ Item.defaultProps = {
   titleProperty: 'title',
 };
 
-export const mapStateToProps = ({ templates, thesauris }, ownProps) => {
+export const mapStateToProps = ({ templates, thesauris, user }, ownProps) => {
   const search = ownProps.searchParams;
   const _templates = ownProps.templates || templates;
-  return { templates: _templates, thesauris, search };
+  return { templates: _templates, thesauris, search, user };
 };
 
 export default connect(mapStateToProps)(Item);

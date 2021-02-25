@@ -522,6 +522,19 @@ $item-padding: 15px;
     margin-right: 8px;
     text-overflow: ellipsis;
   }
+
+  .property-help {
+    border: 1px solid #2b56c1;
+    color: #2b56c1;
+    border-radius: 33px;
+    background-color: #e5eefe;
+    width: 19px;
+    height: 19px;
+    display: inline-block;
+    text-align: center;
+    line-height: 19px;
+    font-size: 11px;
+  }
 }
 
 .item-shortcut {

@@ -9,6 +9,7 @@ exports[`Item when doc have snippets should render ItemSnippet including doc, sn
         "_id": "icon",
         "type": "Icons",
       },
+      "permissions": Array [],
       "snippets": Object {
         "count": 1,
         "fullText": Array [
