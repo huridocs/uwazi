@@ -1,10 +1,18 @@
+.collection-settings {
+  .property-description {
+    width: 500px;
+    text-align: left;
+  }
+}
+
+/*ORIGINAL*/
 .settings {
   display: -webkit-flex;
   display: flex;
   -webkit-flex-wrap: wrap;
   flex-wrap: wrap;
   overflow: auto;
-  @media(min-width: 1024px) {
+  @media (min-width: 1024px) {
     -webkit-flex-wrap: nowrap;
     flex-wrap: nowrap;
   }
@@ -15,13 +23,13 @@
   width: 100%;
 }
 
-@media(min-width: 1024px) {
+@media (min-width: 1024px) {
   .settings-navigation {
     width: 250px;
     height: 100%;
     overflow-y: auto;
     border-right: 1px solid $c-grey-light;
-}
+  }
 
   .settings-content {
     position: relative;
@@ -141,8 +149,8 @@
   text-align: center;
   white-space: nowrap;
   z-index: 4;
-  @media(min-width: 1024px) {
-    right: calc((100% - 400px)/2);
+  @media (min-width: 1024px) {
+    right: calc((100% - 400px) / 2);
   }
 
   .btn {
@@ -235,7 +243,8 @@
     padding-top: 12px;
     padding-bottom: 13px;
     padding-left: 2px;
-    .form-group, input {
+    .form-group,
+    input {
       margin: 0;
     }
     .form-group {
@@ -287,7 +296,7 @@
 
         span {
           font-weight: bold;
-          font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+          font-family: Menlo, Monaco, Consolas, 'Courier New', monospace;
           background-color: $c-grey-lighten;
           padding: 4px 8px;
           border-radius: 3px;
@@ -336,7 +345,10 @@
   .panel-body {
     flex: 1;
 
-    form, div, label, textarea {
+    form,
+    div,
+    label,
+    textarea {
       height: 100%;
       width: 100%;
     }
