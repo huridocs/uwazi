@@ -14,19 +14,20 @@ export type PermissionsUwaziFilterQuery<T> = UwaziFilterQuery<T> & {
 };
 
 const appendPermissionData = <T>(data: DataType<T>, user: UserSchema | undefined) => {
-  if (user) {
-    return {
-      ...data,
-      permissions: [
-        {
-          _id: user._id!.toString(),
-          type: PermissionType.USER,
-          level: AccessLevels.WRITE,
-        },
-      ],
-    };
+  if (!user) {
+    return data;
   }
-  throw Error('Unauthorized');
+
+  return {
+    ...data,
+    permissions: [
+      {
+        _id: user._id!.toString(),
+        type: PermissionType.USER,
+        level: AccessLevels.WRITE,
+      },
+    ],
+  };
 };
 
 export const getUserPermissionIds = (user: UserSchema) => {

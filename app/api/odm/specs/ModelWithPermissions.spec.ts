@@ -229,13 +229,14 @@ describe('ModelWithPermissions', () => {
         }
       });
 
-      it('should not create a new doc', async () => {
-        try {
-          await model.save({ name: 'new document' });
-          fail('Should throw error');
-        } catch (e) {
-          expect(e.message).toContain('Unauthorized');
-        }
+      it('should create a new doc without permissions', async () => {
+        const saved = await model.save({ name: 'newDoc' });
+        expect(saved).toEqual(
+          expect.objectContaining({
+            name: 'newDoc',
+            permissions: [],
+          })
+        );
       });
     });
 

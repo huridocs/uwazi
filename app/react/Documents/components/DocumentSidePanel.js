@@ -295,6 +295,7 @@ export class DocumentSidePanel extends Component {
         ? 'metadata-sidepanel two-columns'
         : 'metadata-sidepanel';
 
+    const document = this.props.doc.toJS();
     return (
       <SidePanel open={this.props.open} className={className}>
         {this.renderHeader(tab, doc, isEntity)}
@@ -312,7 +313,7 @@ export class DocumentSidePanel extends Component {
           </div>
         </ShowIf>
 
-        <NeedAuthorization roles={['admin', 'editor']}>
+        <NeedAuthorization roles={['admin', 'editor']} orWriteAccessTo={[document]}>
           <ShowIf if={this.props.tab === 'toc' && this.props.tocBeingEdited}>
             <div className="sidepanel-footer">
               <button type="submit" form="tocForm" className="edit-toc btn btn-success">
@@ -323,7 +324,7 @@ export class DocumentSidePanel extends Component {
           </ShowIf>
         </NeedAuthorization>
 
-        <NeedAuthorization roles={['admin', 'editor']}>
+        <NeedAuthorization roles={['admin', 'editor']} orWriteAccessTo={[document]}>
           <ShowIf if={this.props.tab === 'toc' && !this.props.tocBeingEdited && !readOnly}>
             <div className="sidepanel-footer">
               <button
@@ -398,7 +399,7 @@ export class DocumentSidePanel extends Component {
                   <div>
                     <ShowMetadata
                       relationships={relationships}
-                      entity={this.props.doc.toJS()}
+                      entity={document}
                       showTitle
                       showType
                       groupGeolocations
@@ -431,7 +432,7 @@ export class DocumentSidePanel extends Component {
               <ConnectionsGroups connectionsGroups={connectionsGroups} />
             </TabContent>
             <TabContent for="semantic-search-results">
-              <DocumentSemanticSearchResults doc={this.props.doc.toJS()} />
+              <DocumentSemanticSearchResults doc={document} />
             </TabContent>
           </Tabs>
         </div>
