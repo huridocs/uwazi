@@ -131,7 +131,7 @@ export class ModelWithPermissions<T> extends OdmModel<T> {
     return results.map(data => filterPermissionsData(data, user));
   }
 
-  getWithUnrestrictedAccess(query: UwaziFilterQuery<T> = {}, select: any = '', options: {} = {}) {
+  getUnrestricted(query: UwaziFilterQuery<T> = {}, select: any = '', options: {} = {}) {
     return super.get(query, select, options);
   }
 

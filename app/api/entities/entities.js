@@ -63,7 +63,7 @@ async function denormalizeMetadata(metadata, entity, template, dictionariesByKey
         }
 
         if (prop.type === 'relationship') {
-          const partner = await model.getWithUnrestrictedAccess({
+          const partner = await model.getUnrestricted({
             sharedId: elem.value,
             language: entity.language,
           });
@@ -422,13 +422,13 @@ export default {
 
   async getInternal(query, select, options = {}) {
     const { documentsFullText, withPdfInfo, ...restOfOptions } = options;
-    const entities = await model.getWithUnrestrictedAccess(query, select, restOfOptions);
+    const entities = await model.getUnrestricted(query, select, restOfOptions);
 
     return withDocuments(entities, documentsFullText, withPdfInfo);
   },
 
-  async getWithUnrestrictedAccess(query, select, options) {
-    return model.getWithUnrestrictedAccess(query, select, options);
+  async getUnrestricted(query, select, options) {
+    return model.getUnrestricted(query, select, options);
   },
 
   async get(query, select, options = {}) {
@@ -472,7 +472,7 @@ export default {
   async multipleUpdate(ids, values, params) {
     const { diffMetadata = {}, ...pureValues } = values;
 
-    const entitiesToUpdate = await this.getWithUnrestrictedAccess({ sharedId: { $in: ids } });
+    const entitiesToUpdate = await this.getUnrestricted({ sharedId: { $in: ids } });
     validateWritePermissions(ids, entitiesToUpdate);
     await Promise.all(
       ids.map(async id => {
@@ -518,11 +518,7 @@ export default {
       ...(onlyPublished ? { published: true } : {}),
     };
     const queryLimit = limit ? { limit } : {};
-    return model.getWithUnrestrictedAccess(
-      query,
-      ['title', 'icon', 'file', 'sharedId'],
-      queryLimit
-    );
+    return model.getUnrestricted(query, ['title', 'icon', 'file', 'sharedId'], queryLimit);
   },
 
   /** Rebuild relationship-based metadata objects as {value = id, label: title}. */

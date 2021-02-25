@@ -46,7 +46,7 @@ export const loadEntity = async data => {
   const _id = data.entityId || data._id;
   const sharedId = data.sharedId || data.entity;
   const query = { ...(_id && { _id }), ...(sharedId && { sharedId }) };
-  const [entity] = await entities.getWithUnrestrictedAccess(query);
+  const [entity] = await entities.getUnrestricted(query);
   return { ...data, entity, title: entity ? entity.title : undefined };
 };
 
@@ -85,7 +85,7 @@ export const groupMembers = data => {
 };
 
 export const loadPermissionsData = async data => {
-  const updateEntities = await entities.getWithUnrestrictedAccess(
+  const updateEntities = await entities.getUnrestricted(
     { sharedId: { $in: data.ids } },
     { title: 1 }
   );
