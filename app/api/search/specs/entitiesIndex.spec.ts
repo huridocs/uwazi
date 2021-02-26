@@ -1,6 +1,8 @@
 import db from 'api/utils/testing_db';
 import { elasticTesting } from 'api/utils/elastic_testing';
 import errorLog from 'api/log/errorLog';
+import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
+import { UserRole } from 'shared/types/userSchema';
 import { search } from '../search';
 import { fixtures as fixturesForIndexErrors } from './fixtures_elastic_errors';
 import { elastic } from '../elastic';
@@ -12,6 +14,7 @@ const forceIndexingOfNumberBasedProperty = async () => {
 
 describe('entitiesIndex', () => {
   const elasticIndex = 'index_for_entities_index_testing';
+  const userFactory = new UserInContextMockFactory();
 
   beforeEach(async () => {
     await db.clearAllAndLoad({}, elasticIndex);
@@ -153,6 +156,13 @@ describe('entitiesIndex', () => {
       ];
 
       await db.clearAllAndLoad({ entities });
+      userFactory.mock({
+        _id: 'user1',
+        username: 'collaborator',
+        role: UserRole.COLLABORATOR,
+        email: 'col@test.com',
+      });
+
       await search.indexEntities({});
       await elasticTesting.refresh();
 

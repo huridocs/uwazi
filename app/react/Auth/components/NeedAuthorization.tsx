@@ -1,5 +1,7 @@
 import React, { useMemo } from 'react';
 import { connect } from 'react-redux';
+import { ObjectIdSchema } from 'shared/types/commonTypes';
+import { PermissionSchema } from 'shared/types/permissionType';
 
 type PropTypes = {
   children: React.ReactNode;
@@ -8,29 +10,28 @@ type PropTypes = {
   user: any;
 };
 
-const checkWritePermissions = (entities: any[] = [], user?: any) =>
-  user
-    ? entities.reduce<boolean>((memo, entity) => {
-        if (entity.permissions) {
-          const idsWithWritePermissions = entity.permissions
-            .filter((p: any) => p.level === 'write')
-            .map((p: any) => p._id);
+const checkWritePermissions = (entities: any[] = [], user?: any) => {
+  let granted = user !== undefined && user.has('role') && entities.length > 0;
+  let i = 0;
+  while (granted && i < entities.length) {
+    const entity = entities[i];
+    i += 1;
+    if (entity.permissions) {
+      const idsWithWritePermissions = entity.permissions
+        .filter((p: PermissionSchema) => p.level === 'write')
+        .map((p: PermissionSchema) => p._id);
 
-          for (let i = 0; i < idsWithWritePermissions.length; i += 1) {
-            if (
-              idsWithWritePermissions[i] === user.get('_id') ||
-              user.groups?.find((g: any) => g._id === idsWithWritePermissions[i])
-            ) {
-              return memo && true;
-            }
-          }
-
-          return false;
-        }
-
-        return false;
-      }, !!entities.length)
-    : false;
+      granted =
+        idsWithWritePermissions.find(
+          (id: ObjectIdSchema) =>
+            id === user.get('_id') || user.groups?.find((g: any) => g._id === id)
+        ) !== undefined;
+    } else {
+      granted = false;
+    }
+  }
+  return granted;
+};
 
 const checkRole = (roles: string[] = ['admin'], user: any) =>
   !!(user.get('_id') && roles.includes(user.get('role')));

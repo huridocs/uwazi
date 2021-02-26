@@ -7,7 +7,6 @@ describe('documentQueryBuilder', () => {
   describe('filterByPermissions', () => {
     describe('when there is not a logged user', () => {
       it('should only return public entities', () => {
-        // @ts-ignore
         jest.spyOn(permissionsContext, 'getUserInContext').mockReturnValue(undefined);
         const query = documentQueryBuilder()
           .filterByPermissions()

@@ -417,10 +417,10 @@ export default {
   },
 
   getWithoutDocuments(query, select, options = {}) {
-    return model.get(query, select, options);
+    return model.getUnrestricted(query, select, options);
   },
 
-  async getInternal(query, select, options = {}) {
+  async getUnrestrictedWithDocuments(query, select, options = {}) {
     const { documentsFullText, withPdfInfo, ...restOfOptions } = options;
     const entities = await model.getUnrestricted(query, select, restOfOptions);
 

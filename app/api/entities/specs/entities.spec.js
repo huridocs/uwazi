@@ -12,6 +12,7 @@ import { uploadsPath } from 'api/files/filesystem';
 
 import { permissionsContext } from 'api/permissions/permissionsContext';
 import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
+import { UserRole } from 'shared/types/userSchema';
 import entities from '../entities.js';
 import fixtures, {
   batmanFinishesId,
@@ -35,7 +36,7 @@ describe('entities', () => {
     spyOn(search, 'bulkIndex').and.returnValue(Promise.resolve());
     spyOn(search, 'bulkDelete').and.returnValue(Promise.resolve());
     spyOn(permissionsContext, 'getUserInContext').and.returnValue({ _id: 'user1', role: 'admin' });
-    await db.clearAllAndLoad(fixtures);
+    await db.setupFixturesAndContext(fixtures);
   });
 
   afterAll(async () => {
@@ -712,12 +713,18 @@ describe('entities', () => {
 
   describe('denormalize', () => {
     it('should denormalize entity with missing metadata labels', async () => {
+      userFactory.mock({
+        _id: 'user1',
+        username: 'collaborator',
+        role: UserRole.COLLABORATOR,
+      });
       const entity = (await entities.get({ sharedId: 'shared', language: 'en' }))[0];
       entity.metadata.friends[0].label = '';
       const denormalized = await entities.denormalize(entity, { user: 'dummy', language: 'en' });
       expect(denormalized.metadata.friends[0].label).toBe('shared2title');
     });
   });
+
   describe('countByTemplate', () => {
     it('should return how many entities using the template passed', async () => {
       const count = await entities.countByTemplate(templateId);

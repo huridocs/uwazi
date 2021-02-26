@@ -8,14 +8,13 @@ describe('NeedAuthorization', () => {
   let store;
   const render = () => renderConnected(connected, props, store);
 
+  const writePermission = [{ _id: 'userId', level: 'write' }];
+
   describe('role based', () => {
     describe('when logged in', () => {
       beforeEach(() => {
         store = {
-          user: Immutable.fromJS({
-            _id: 'userId',
-            role: 'editor',
-          }),
+          user: Immutable.fromJS({ _id: 'userId', role: 'editor' }),
         };
       });
 
@@ -30,7 +29,7 @@ describe('NeedAuthorization', () => {
         expect(component.text()).toBe('to render if auth');
       });
 
-      it('should NOT render children if doesnt user have role', () => {
+      it('should NOT render children if user doesnt have role', () => {
         props = {
           children: 'to render if auth',
           roles: ['admin'],
@@ -42,16 +41,11 @@ describe('NeedAuthorization', () => {
       });
 
       it('should use "admin" if no role provided', () => {
-        props = {
-          children: 'to render if auth',
-        };
+        props = { children: 'to render if auth' };
 
         const componentDeny = render();
 
-        store.user = Immutable.fromJS({
-          _id: 'userId',
-          role: 'admin',
-        });
+        store.user = Immutable.fromJS({ _id: 'userId', role: 'admin' });
         const componentAllow = render();
 
         expect(componentDeny.text()).not.toBe('to render if auth');
@@ -61,16 +55,11 @@ describe('NeedAuthorization', () => {
 
     describe('when not logged in', () => {
       beforeEach(() => {
-        store = {
-          user: Immutable.fromJS({}),
-        };
+        store = { user: Immutable.fromJS({}) };
       });
 
       it('should not render children if no user', () => {
-        props = {
-          children: 'to render if auth',
-          roles: [],
-        };
+        props = { children: 'to render if auth', roles: [] };
 
         const component = render();
 
@@ -98,27 +87,15 @@ describe('NeedAuthorization', () => {
             orWriteAccessTo: [
               {
                 _id: 'someEntity',
-                permissions: [
-                  {
-                    _id: 'userId',
-                    level: 'write',
-                  },
-                ],
+                permissions: writePermission,
               },
               {
                 _id: 'otherEntity',
-                permissions: [
-                  {
-                    _id: 'userId',
-                    level: 'write',
-                  },
-                ],
+                permissions: writePermission,
               },
             ],
           };
-
           const component = render();
-
           expect(component.text()).toBe('to render if auth');
         });
 
@@ -138,12 +115,23 @@ describe('NeedAuthorization', () => {
               },
               {
                 _id: 'otherEntity',
-                permissions: [
-                  {
-                    _id: 'userId',
-                    level: 'write',
-                  },
-                ],
+                permissions: writePermission,
+              },
+            ],
+          };
+
+          const component = render();
+
+          expect(component.text()).not.toBe('to render if auth');
+        });
+
+        it('should not render children if entities has not permissions data', () => {
+          props = {
+            children: 'to render if auth',
+            roles: [],
+            orWriteAccessTo: [
+              {
+                _id: 'someEntity',
               },
             ],
           };
@@ -175,12 +163,7 @@ describe('NeedAuthorization', () => {
               },
               {
                 _id: 'otherEntity',
-                permissions: [
-                  {
-                    _id: 'userId',
-                    level: 'write',
-                  },
-                ],
+                permissions: writePermission,
               },
             ],
           };
@@ -203,21 +186,11 @@ describe('NeedAuthorization', () => {
             orWriteAccessTo: [
               {
                 _id: 'someEntity',
-                permissions: [
-                  {
-                    _id: 'groupId',
-                    level: 'read',
-                  },
-                ],
+                permissions: [{ _id: 'groupId', level: 'read' }],
               },
               {
                 _id: 'otherEntity',
-                permissions: [
-                  {
-                    _id: 'userId',
-                    level: 'write',
-                  },
-                ],
+                permissions: writePermission,
               },
             ],
           };
@@ -247,12 +220,7 @@ describe('NeedAuthorization', () => {
           orWriteAccessTo: [
             {
               _id: 'otherEntity',
-              permissions: [
-                {
-                  _id: 'userId',
-                  level: 'write',
-                },
-              ],
+              permissions: writePermission,
             },
           ],
         };

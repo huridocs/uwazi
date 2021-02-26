@@ -98,7 +98,7 @@ const validateRelationshipForeignIds = async (
     const valueIds = value.map(v => v.value);
 
     const entityIds = (
-      await entities.getInternal(
+      await entities.getUnrestrictedWithDocuments(
         {
           sharedId: { $in: valueIds },
           ...(property.content && { template: property.content }),

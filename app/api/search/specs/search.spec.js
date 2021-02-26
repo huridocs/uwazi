@@ -16,7 +16,7 @@ describe('search', () => {
   beforeAll(async () => {
     result = elasticResult().toObject();
     const elasticIndex = 'search_index_test';
-    await db.clearAllAndLoad(elasticFixtures, elasticIndex);
+    await db.setupFixturesAndContext(elasticFixtures, elasticIndex);
     userFactory.restore();
   }, fixturesTimeOut);
 
