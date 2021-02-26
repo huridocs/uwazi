@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Tip } from 'app/Layout';
 import { Translate, t } from 'app/I18N';
 import { useForm } from 'react-hook-form';
@@ -29,9 +29,12 @@ const connector = connect(mapStateToProps, mapDispatchToProps);
 type mappedProps = ConnectedProps<typeof connector>;
 
 const CollectionSettings = ({ collectionSettings, setSettings, notify }: mappedProps) => {
+  const [dateSeparator, setDateSeparator] = useState('/');
+
   const collectionSettingsObject = collectionSettings.toJS();
 
   const save = (newCollectionSettings: SettingsState) => {
+    console.log(collectionSettingsObject);
     console.log({ ...collectionSettingsObject, ...newCollectionSettings });
     setSettings({ ...collectionSettingsObject, ...newCollectionSettings });
     notify(t('System', 'Settings updated', null, false), 'success');
@@ -86,16 +89,27 @@ const CollectionSettings = ({ collectionSettings, setSettings, notify }: mappedP
           </SettingsLabel>
           <div>
             <Translate>Separator</Translate>
-            <select name="" className="selector">
+            <select
+              name=""
+              className="selector"
+              onChange={event => {
+                setDateSeparator(event.target.value);
+              }}
+            >
               <option value="/">/</option>
               <option value="-">-</option>
             </select>
             <Translate>Format</Translate>
-            <select name="dateFormat" className="selector">
-              <option value="dd/mm/yyyy">31/12/1980</option>
-              <option value="mm/dd/yyyy">12/31/1980</option>
-              <option value="yyyyy/mm/dd">1980/12/31</option>
-              <option value="yyyy/dd/mm">1980/31/12</option>
+            <select name="dateFormat" className="selector" ref={register}>
+              <option value={`yyyy${dateSeparator}MM${dateSeparator}dd`}>
+                Year, Month, Day 2021{`${dateSeparator}`}02{`${dateSeparator}`}26
+              </option>
+              <option value={`dd${dateSeparator}MM${dateSeparator}yyyy`}>
+                Day, Month, Year 26{`${dateSeparator}`}02{`${dateSeparator}`}2021
+              </option>
+              <option value={`MM${dateSeparator}dd${dateSeparator}YYYY`}>
+                Month, Day, Year 02{`${dateSeparator}`}26{`${dateSeparator}`}2021
+              </option>
             </select>
           </div>
         </div>
