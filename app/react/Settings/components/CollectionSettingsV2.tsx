@@ -8,6 +8,7 @@ import { IStore, SettingsState } from 'app/istore';
 
 import { actions } from 'app/BasicReducer';
 import { notificationActions } from 'app/Notifications';
+import { Select } from 'app/Forms';
 import { ToggleChildren } from './ToggleChildren';
 import { SettingsLabel } from './SettingsLabel';
 import * as CollectionSettingsTips from './collectionSettingsTips';
@@ -81,8 +82,22 @@ const CollectionSettings = ({ collectionSettings, setSettings, notify }: mappedP
 
         <div className="form-element">
           <SettingsLabel>
-            <span>Date format</span>
+            <Translate>Date format</Translate>
           </SettingsLabel>
+          <div>
+            <Translate>Separator</Translate>
+            <select name="" className="selector">
+              <option value="/">/</option>
+              <option value="-">-</option>
+            </select>
+            <Translate>Format</Translate>
+            <select name="dateFormat" className="selector">
+              <option value="dd/mm/yyyy">31/12/1980</option>
+              <option value="mm/dd/yyyy">12/31/1980</option>
+              <option value="yyyyy/mm/dd">1980/12/31</option>
+              <option value="yyyy/dd/mm">1980/31/12</option>
+            </select>
+          </div>
         </div>
 
         <div className="form-element">
