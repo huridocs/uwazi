@@ -1,9 +1,11 @@
+/* eslint-disable max-lines */
 import { Tabs, TabLink, TabContent } from 'react-tabs-redux';
 import { browserHistory } from 'react-router';
 import { connect } from 'react-redux';
 import Immutable from 'immutable';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import './scss/toc.scss';
 
 import { MetadataFormButtons, ShowMetadata } from 'app/Metadata';
 import { NeedAuthorization } from 'app/Auth';
@@ -16,7 +18,6 @@ import ShowIf from 'app/App/ShowIf';
 import SidePanel from 'app/Layout/SidePanel';
 import DocumentSemanticSearchResults from 'app/SemanticSearch/components/DocumentResults';
 import { CopyFromEntity } from 'app/Metadata/components/CopyFromEntity';
-import { FeatureToggle } from 'app/components/Elements/FeatureToggle';
 import { TocGeneratedLabel, ReviewTocButton } from 'app/ToggledFeatures/tocGeneration';
 import { Icon } from 'UI';
 
@@ -348,10 +349,10 @@ export class DocumentSidePanel extends Component {
               <div className="tocHeader">
                 <h1>
                   <Translate>Table of contents</Translate>
+                  <TocGeneratedLabel file={this.props.file} className="autoCreatedLabel">
+                    <Translate>auto-created ⓘ </Translate>
+                  </TocGeneratedLabel>
                 </h1>
-                <TocGeneratedLabel file={this.props.file}>
-                  <Translate>auto-created ⓘ </Translate>
-                </TocGeneratedLabel>
               </div>
               <ShowIf if={!this.props.tocBeingEdited}>
                 <ShowToc
