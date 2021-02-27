@@ -119,7 +119,7 @@ export default app => {
 
   app.delete(
     '/api/entities',
-    needsAuthorization(['admin', 'editor']),
+    needsAuthorization(['admin', 'editor', 'collaborator']),
     validation.validateRequest(
       Joi.object()
         .keys({

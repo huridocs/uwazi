@@ -1,4 +1,4 @@
-import { Tabs, TabLink, TabContent } from 'react-tabs-redux';
+import { TabContent, TabLink, Tabs } from 'react-tabs-redux';
 import { browserHistory } from 'react-router';
 import { connect } from 'react-redux';
 import Immutable from 'immutable';
@@ -124,9 +124,11 @@ export class DocumentSidePanel extends Component {
         </div>
       );
     }
-    const { excludeConnectionsTab, connectionsGroups, isTargetDoc, references } = this.props;
+    const { excludeConnectionsTab, connectionsGroups, isTargetDoc, references, hubs } = this.props;
 
-    const summary = connectionsGroups.reduce(
+    const visibleConnectionGroups = this.filterVisibleConnections(connectionsGroups, hubs);
+
+    const summary = visibleConnectionGroups.reduce(
       (summaryData, g) => {
         g.get('templates').forEach(template => {
           summaryData.totalConnections += template.get('count');
@@ -261,6 +263,16 @@ export class DocumentSidePanel extends Component {
     );
   }
 
+  filterVisibleConnections(connectionsGroups, hubs) {
+    return connectionsGroups.filter(
+      group =>
+        hubs.findIndex(
+          h =>
+            h.get('rightRelationships').findIndex(r => r.get('template') === group.get('key')) >= 0
+        ) >= 0
+    );
+  }
+
   render() {
     const {
       doc,
@@ -272,6 +284,7 @@ export class DocumentSidePanel extends Component {
       relationships,
       defaultLanguage,
       connectionsGroups,
+      hubs,
     } = this.props;
 
     const TocForm = this.props.tocFormComponent;
@@ -296,6 +309,7 @@ export class DocumentSidePanel extends Component {
         : 'metadata-sidepanel';
 
     const document = this.props.doc.toJS();
+    const visibleConnectionGroups = this.filterVisibleConnections(connectionsGroups, hubs);
     return (
       <SidePanel open={this.props.open} className={className}>
         {this.renderHeader(tab, doc, isEntity)}
@@ -429,7 +443,7 @@ export class DocumentSidePanel extends Component {
               />
             </TabContent>
             <TabContent for="connections">
-              <ConnectionsGroups connectionsGroups={connectionsGroups} />
+              <ConnectionsGroups connectionsGroups={visibleConnectionGroups} />
             </TabContent>
             <TabContent for="semantic-search-results">
               <DocumentSemanticSearchResults doc={document} />
@@ -477,6 +491,7 @@ DocumentSidePanel.propTypes = {
   deleteDocument: PropTypes.func.isRequired,
   resetForm: PropTypes.func.isRequired,
   connectionsGroups: PropTypes.instanceOf(Immutable.List).isRequired,
+  hubs: PropTypes.instanceOf(Immutable.List).isRequired,
   references: PropTypes.instanceOf(Immutable.List),
   relationships: PropTypes.instanceOf(Immutable.List),
   tocFormState: PropTypes.instanceOf(Object),
@@ -518,6 +533,7 @@ export const mapStateToProps = (state, ownProps) => {
     references,
     excludeConnectionsTab: Boolean(ownProps.references),
     connectionsGroups: state.relationships.list.connectionsGroups,
+    hubs: state.relationships.hubs,
     relationships: ownProps.references,
     defaultLanguage,
     templates: state.templates,

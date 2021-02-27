@@ -132,7 +132,7 @@ export class MetadataFormButtons extends Component {
         <NeedAuthorization roles={['admin', 'editor']} orWriteAccessTo={[data]}>
           {!entityBeingEdited && !hideDelete && <ShareButton sharedIds={[data.sharedId]} />}
         </NeedAuthorization>
-        <NeedAuthorization roles={['admin', 'editor']}>
+        <NeedAuthorization roles={['admin', 'editor']} orWriteAccessTo={[data]}>
           <ShowIf if={!entityBeingEdited && canBePublished}>
             <button className="publish btn btn-success" type="button" onClick={_publish}>
               <Icon icon="paper-plane" />
@@ -142,7 +142,7 @@ export class MetadataFormButtons extends Component {
             </button>
           </ShowIf>
         </NeedAuthorization>
-        <NeedAuthorization roles={['admin', 'editor']}>
+        <NeedAuthorization roles={['admin', 'editor']} orWriteAccessTo={[data]}>
           <ShowIf if={data.published}>
             <button className="unpublish btn btn-warning" type="button" onClick={_unpublish}>
               <Icon icon="paper-plane" />
