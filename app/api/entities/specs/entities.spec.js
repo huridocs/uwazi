@@ -765,6 +765,19 @@ describe('entities', () => {
       expect(docs[4].title).toBe('value2');
       expect(docs[5].title).toBe('value0');
     });
+
+    it('should return all entities (including unpublished) if required and user is a collaborator', async () => {
+      userFactory.mock({
+        _id: 'user1',
+        role: 'collaborator',
+        groups: [],
+      });
+      const docs = await entities.getByTemplate(templateId, 'en', false);
+      expect(docs.length).toBe(3);
+      expect(docs[0].title).toBe('Batman finishes');
+      expect(docs[1].title).toBe('Unpublished entity');
+      expect(docs[2].title).toBe('EN');
+    });
   });
 
   describe('multipleUpdate()', () => {

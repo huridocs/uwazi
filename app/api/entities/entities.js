@@ -518,7 +518,7 @@ export default {
       ...(onlyPublished ? { published: true } : {}),
     };
     const queryLimit = limit ? { limit } : {};
-    return model.getUnrestricted(query, ['title', 'icon', 'file', 'sharedId'], queryLimit);
+    return model.get(query, ['title', 'icon', 'file', 'sharedId'], queryLimit);
   },
 
   /** Rebuild relationship-based metadata objects as {value = id, label: title}. */
