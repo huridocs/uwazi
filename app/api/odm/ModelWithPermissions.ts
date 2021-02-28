@@ -131,6 +131,11 @@ export class ModelWithPermissions<T> extends OdmModel<T> {
     return results.map(data => filterPermissionsData(data, user));
   }
 
+  async count(query: UwaziFilterQuery<T> = {}) {
+    const user = permissionsContext.getUserInContext();
+    return super.count(appendPermissionQuery(query, AccessLevels.READ, user));
+  }
+
   getUnrestricted(query: UwaziFilterQuery<T> = {}, select: any = '', options: {} = {}) {
     return super.get(query, select, options);
   }

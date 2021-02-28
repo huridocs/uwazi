@@ -182,6 +182,13 @@ describe('ModelWithPermissions', () => {
           expect(results[0].permissions.length).toBe(1);
         });
       });
+
+      describe('count', () => {
+        it('should return the count of entities shared with the user or his groups and public entities', async () => {
+          const result = await model.count({});
+          expect(result).toBe(6);
+        });
+      });
     });
 
     describe('admin & editor roles', () => {
@@ -208,6 +215,13 @@ describe('ModelWithPermissions', () => {
           const doc = await model.getById(otherOwnerId, '+name');
           expect(doc.name).toEqual('no shared with user');
           expect(doc.permissions.length).toBe(1);
+        });
+      });
+
+      describe('count', () => {
+        it('should return the count of all entities', async () => {
+          const result = await model.count({});
+          expect(result).toBe(8);
         });
       });
     });
