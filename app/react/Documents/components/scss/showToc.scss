@@ -13,13 +13,31 @@
         height: 28px;
 
         &:hover {
-          background-color: $c-info-light;
+          background-color: #E2E7F4;
+;
         }
         a:hover {
           text-decoration: none;
         };
         a {
           padding-left: 4px;
+
+          @if $i == 0 {
+            font-weight: 500;
+            font-size: 16px;
+            line-height: 18.75px;
+            color: #444;
+          } @else if $i == 1 {
+            font-weight: 400;
+            font-size: 14px;
+            line-height: 16.41px;
+            color: #333;
+          } @else if $i == 2 {
+            font-weight: 400;
+            font-size: 14px;
+            line-height: 16.41px;
+            color: #555;
+          }
         }
       }
     }

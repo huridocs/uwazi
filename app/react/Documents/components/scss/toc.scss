@@ -2,17 +2,28 @@
 
 .tocHeader {
   & {
-    padding-left: 5px;
+    padding-left: 5px !important;
   }
 
   h1 {
+    :first-child {
+      height: 23px;
+      font-weight: 500;
+      font-size: 20px;
+      line-height: 23.44px;
+    }
+
     span.label-generatedToc {
-      margin-left: 10px;
-      padding: 1px 6px 1px 6px;
-      font-size: 8px;
-      border: 1px solid $c-info-dark;
-      border-radius: 20px;
-      background-color: $c-info-light;
+      .translation {
+        margin-left: 10px;
+        padding: 2px 8px 2px 8px;
+        font-size: 10px;
+        border: 1px solid rgba(0, 0, 0, 0.15);
+        border-radius: 100px;
+        background-color: #CBE0FF;
+        width: 100px;
+        height: 18px;
+      }
     }
   }
 }
