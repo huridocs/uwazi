@@ -8,6 +8,7 @@ import { TemplateSchema } from 'shared/types/templateType';
 import { EntitySchema } from 'shared/types/entityType';
 import { UserGroupSchema } from 'shared/types/userGroupType';
 import { ConnectionSchema } from 'shared/types/connectionType';
+import { Settings } from 'shared/types/settingsType';
 
 export interface TasksState {
   SyncState?: TaskStatus;
@@ -55,9 +56,9 @@ export interface OneUpState {
   reviewThesaurusValues: string[];
 }
 
-export interface SettingsState {
-  features?: { topicClassification: boolean };
-}
+// export interface SettingsState {
+//   features?: { topicClassification: boolean };
+// }
 
 export interface TableViewColumn extends PropertySchema {
   hidden: boolean;
@@ -120,7 +121,7 @@ export interface IStore {
     state?: IImmutable<OneUpState>;
   };
   settings: {
-    collection: IImmutable<SettingsState>;
+    collection: IImmutable<Settings>;
   };
   userGroups: IImmutable<UserGroupSchema[]>;
 }

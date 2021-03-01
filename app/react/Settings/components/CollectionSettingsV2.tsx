@@ -4,14 +4,20 @@ import { Translate, t } from 'app/I18N';
 import { useForm } from 'react-hook-form';
 import { connect, ConnectedProps } from 'react-redux';
 import { Dispatch, bindActionCreators } from 'redux';
-import { IStore, SettingsState } from 'app/istore';
+import { IStore } from 'app/istore';
+import { Settings } from 'shared/types/settingsType';
 
 import { actions } from 'app/BasicReducer';
 import { notificationActions } from 'app/Notifications';
-import { Select } from 'app/Forms';
 import { ToggleChildren } from './ToggleChildren';
 import { SettingsLabel } from './SettingsLabel';
 import * as CollectionSettingsTips from './collectionSettingsTips';
+
+interface ToggledStatus {
+  /* eslint-disable camelcase */
+  home_page?: boolean;
+  /* eslint-enable camelcase */
+}
 
 const mapStateToProps = ({ settings }: IStore) => ({ collectionSettings: settings.collection });
 
@@ -29,20 +35,24 @@ const connector = connect(mapStateToProps, mapDispatchToProps);
 type mappedProps = ConnectedProps<typeof connector>;
 
 const CollectionSettings = ({ collectionSettings, setSettings, notify }: mappedProps) => {
-  const [dateSeparator, setDateSeparator] = useState('/');
+  const toggledStatusDefaults: ToggledStatus = {};
+
+  const [dateSeparator, setDateSeparator] = useState('-');
+  const [toggledStatus, setToggledStatus] = useState(toggledStatusDefaults);
 
   const collectionSettingsObject = collectionSettings.toJS();
 
-  const save = (newCollectionSettings: SettingsState) => {
+  const save = (newCollectionSettings: Settings) => {
     console.log(collectionSettingsObject);
     console.log({ ...collectionSettingsObject, ...newCollectionSettings });
     setSettings({ ...collectionSettingsObject, ...newCollectionSettings });
     notify(t('System', 'Settings updated', null, false), 'success');
   };
 
-  const { register, handleSubmit } = useForm({
+  const { register, handleSubmit, watch, setValue } = useForm({
     defaultValues: collectionSettingsObject,
   });
+
   return (
     <div className="panel panel-default collection-settings">
       <form id="collectionSettings" className="" onSubmit={handleSubmit(save)}>
@@ -64,6 +74,9 @@ const CollectionSettings = ({ collectionSettings, setSettings, notify }: mappedP
           <SettingsLabel>
             <Translate>Custom favicon</Translate>
             <Tip icon="info-circle">{CollectionSettingsTips.customFavIcon}</Tip>
+            <ToggleChildren toggled={false}>
+              <input type="text" name="favicon" ref={register} />
+            </ToggleChildren>
           </SettingsLabel>
         </div>
 
@@ -72,8 +85,26 @@ const CollectionSettings = ({ collectionSettings, setSettings, notify }: mappedP
             <Translate>Use custom landing page</Translate>
             <Tip icon="info-circle">{CollectionSettingsTips.landingPageTip}</Tip>
           </SettingsLabel>
-          <ToggleChildren toggled={false}>
-            <input type="text" />
+          {/* <ToggleButton
+            checked={Boolean(watch('home_page'))}
+            onClick={() => {
+              setValue('home_page', '');
+            }}
+          />
+
+          <input type="text" name="home_page" ref={register} /> */}
+          <ToggleChildren
+            toggled={Boolean(toggledStatus.home_page || watch('home_page'))}
+            onToggleOn={() => {
+              setToggledStatus({ ...toggledStatus, home_page: true });
+            }}
+            onToggleOff={() => {
+              setToggledStatus({ ...toggledStatus, home_page: false });
+              setValue('home_page', '');
+              console.log('called');
+            }}
+          >
+            <input type="text" name="home_page" ref={register} />
           </ToggleChildren>
         </div>
 
@@ -81,6 +112,10 @@ const CollectionSettings = ({ collectionSettings, setSettings, notify }: mappedP
           <SettingsLabel>
             <Translate>Default view</Translate>
           </SettingsLabel>
+          <select name="defaultLibraryView" className="selector" ref={register}>
+            <option value="cards">Card view</option>
+            <option value="list">List view</option>
+          </select>
         </div>
 
         <div className="form-element">
@@ -90,14 +125,14 @@ const CollectionSettings = ({ collectionSettings, setSettings, notify }: mappedP
           <div>
             <Translate>Separator</Translate>
             <select
-              name=""
               className="selector"
               onChange={event => {
                 setDateSeparator(event.target.value);
               }}
+              defaultValue="-"
             >
-              <option value="/">/</option>
               <option value="-">-</option>
+              <option value="/">/</option>
             </select>
             <Translate>Format</Translate>
             <select name="dateFormat" className="selector" ref={register}>
@@ -181,6 +216,9 @@ const CollectionSettings = ({ collectionSettings, setSettings, notify }: mappedP
             <input type="text" />
           </ToggleChildren>
         </div>
+        <button type="submit" className="btn btn-success">
+          <Translate>Save</Translate>
+        </button>
       </form>
     </div>
   );
