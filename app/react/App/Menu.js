@@ -74,7 +74,7 @@ export class Menu extends Component {
             <li className="menuNav-item">
               <I18NLink
                 to={this.libraryUrl()}
-                className="menuNav-btn btn btn-default"
+                className="menuNav-btn btn btn-default public-documents"
                 aria-label={t('System', 'Public documents', null, false)}
               >
                 <Icon icon={libraryViewInfo[defaultLibraryView].icon} />
@@ -85,7 +85,7 @@ export class Menu extends Component {
               <li className="menuNav-item">
                 <I18NLink
                   to={this.uploadsUrl()}
-                  className="menuNav-btn btn btn-default"
+                  className="menuNav-btn btn btn-default private-documents"
                   aria-label={t('System', 'Private documents', null, false)}
                 >
                   <span>
@@ -99,7 +99,7 @@ export class Menu extends Component {
               <li className="menuNav-item">
                 <I18NLink
                   to="/settings/account"
-                  className="menuNav-btn btn btn-default"
+                  className="menuNav-btn btn btn-default settings"
                   aria-label={t('System', 'Account settings', null, false)}
                 >
                   <Icon icon="cog" />
