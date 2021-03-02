@@ -3,9 +3,9 @@ import { ToggleButton } from 'app/UI';
 
 export interface ToggleChildrenProps {
   children?: JSX.Element[] | JSX.Element | string;
+  toggled: boolean;
   onToggleOff?: () => void;
   onToggleOn?: () => void;
-  toggled: boolean;
 }
 
 export const ToggleChildren = ({

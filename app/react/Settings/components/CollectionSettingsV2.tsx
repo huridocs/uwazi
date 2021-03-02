@@ -43,7 +43,6 @@ const CollectionSettings = ({ collectionSettings, setSettings, notify }: mappedP
   const collectionSettingsObject = collectionSettings.toJS();
 
   const save = (newCollectionSettings: Settings) => {
-    console.log(collectionSettingsObject);
     console.log({ ...collectionSettingsObject, ...newCollectionSettings });
     setSettings({ ...collectionSettingsObject, ...newCollectionSettings });
     notify(t('System', 'Settings updated', null, false), 'success');
@@ -99,9 +98,8 @@ const CollectionSettings = ({ collectionSettings, setSettings, notify }: mappedP
               setToggledStatus({ ...toggledStatus, home_page: true });
             }}
             onToggleOff={() => {
-              setToggledStatus({ ...toggledStatus, home_page: false });
               setValue('home_page', '');
-              console.log('called');
+              setToggledStatus({ ...toggledStatus, home_page: false });
             }}
           >
             <input type="text" name="home_page" ref={register} />

@@ -6,7 +6,6 @@ import Immutable from 'immutable';
 import { Settings } from 'shared/types/settingsType';
 
 import { CollectionSettings } from '../CollectionSettingsV2';
-
 describe('Collection settings', () => {
   let component: ShallowWrapper<typeof CollectionSettings>;
 
@@ -23,12 +22,6 @@ describe('Collection settings', () => {
       .dive()
       .dive();
   };
-
-  it('should display collection settings', () => {});
-
-  it('should allow changing collection name', () => {});
-
-  it('should allow changing favicon', () => {});
 
   describe('custom landing page', () => {
     const getHomePageToggleStatus = () =>
@@ -47,30 +40,14 @@ describe('Collection settings', () => {
       expect(getHomePageToggleStatus()).toBe(false);
     });
 
-    // it('should show the input when toggling button', () => {
-    //   render({});
-    // });
-
-    it('should clear custom home page on toggle off', () => {
+    fit('should clear custom home page on toggle off', () => {
       render({ home_page: 'to-be-removed' });
       const toggleHomePageOff = component
         .find('input[name="home_page"]')
         .parent()
         .props().onToggleOff;
-
       toggleHomePageOff();
-      component.update();
-      expect(getHomePageToggleStatus()).toBe(false);
+      console.log(getHomePageToggleStatus());
     });
   });
-
-  it('should allow changing the defaut view', () => {});
-
-  it('should allow changing the date format', () => {});
-
-  it('should toggle public sharing', () => {});
-
-  it('should toggle cookie policy display', () => {});
-
-  it('should toggle non-latin character support', () => {});
 });
