@@ -10,7 +10,6 @@ import activitylogMiddleware from 'api/activitylog/activitylogMiddleware';
 import { CSVLoader } from 'api/csv';
 import { files } from './files';
 import { validation, createError, handleError } from '../utils';
-import entities from 'api/entities';
 
 export default (app: Application) => {
   app.post(

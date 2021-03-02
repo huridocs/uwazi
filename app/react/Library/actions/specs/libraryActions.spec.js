@@ -181,7 +181,10 @@ describe('libraryActions', () => {
             {
               name: 'relationshipfilter',
               type: 'relationshipfilter',
-              filters: [{ name: 'status', type: 'select' }, { name: 'empty', type: 'date' }],
+              filters: [
+                { name: 'status', type: 'select' },
+                { name: 'empty', type: 'date' },
+              ],
             },
           ],
           documentTypes: ['decision'],
@@ -387,7 +390,10 @@ describe('libraryActions', () => {
           },
           {
             type: types.UPDATE_DOCUMENTS,
-            docs: [{ sharedId: '1', metadataResponse }, { sharedId: '2', metadataResponse }],
+            docs: [
+              { sharedId: '1', metadataResponse },
+              { sharedId: '2', metadataResponse },
+            ],
           },
         ];
         const store = mockStore({});

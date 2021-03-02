@@ -128,7 +128,4 @@ function mapDispatchToProps(dispatch, props) {
   return bindActionCreators({ searchDocuments }, wrapDispatch(dispatch, props.storeKey));
 }
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(FiltersForm);
+export default connect(mapStateToProps, mapDispatchToProps)(FiltersForm);

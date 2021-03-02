@@ -7,7 +7,7 @@ import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import Immutable from 'immutable';
 import { mockID } from 'shared/uniqueID.js';
-import { ClientEntitySchema, IStore } from 'app/istore';
+import { ClientEntitySchema } from 'app/istore';
 import { tocGenerationActions } from '../actions';
 
 const middlewares = [thunk];

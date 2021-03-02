@@ -43,7 +43,11 @@ describe('search schema', () => {
 
     async function testInvalidProperty(invalidProperty: any) {
       const invalidSearch = { query: { ...validQuery, ...invalidProperty } };
-      await validation.validateRequest(searchParamsSchema)(invalidSearch, null, expectInvalidSchema);
+      await validation.validateRequest(searchParamsSchema)(
+        invalidSearch,
+        null,
+        expectInvalidSchema
+      );
     }
 
     it('should be invalid if allAgregations is not a boolean value', async () => {

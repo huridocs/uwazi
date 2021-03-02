@@ -210,7 +210,4 @@ export class File extends Component<FileProps, FileState> {
 const mapDispatchToProps = (dispatch: Dispatch<{}>, props: FileProps) =>
   bindActionCreators({ updateFile, deleteFile }, wrapDispatch(dispatch, props.storeKey));
 
-export const ConnectedFile = connect(
-  null,
-  mapDispatchToProps
-)(File);
+export const ConnectedFile = connect(null, mapDispatchToProps)(File);

@@ -12,7 +12,6 @@ import { toUrlParams } from 'shared/JSONRequest';
 import { RequestParams } from 'app/utils/RequestParams';
 import { store } from 'app/store';
 import searchAPI from 'app/Search/SearchAPI';
-import { tocGenerationUtils } from 'app/ToggledFeatures/tocGeneration';
 import { selectedDocumentsChanged, maybeSaveQuickLabels } from './quickLabelActions';
 
 export function enterLibrary() {

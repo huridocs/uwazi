@@ -244,7 +244,12 @@ const _denormalizeAggregations = async (aggregations, templates, dictionaries, l
   const properties = propertiesHelper.allUniqueProperties(templates);
   return Object.keys(aggregations).reduce(async (denormaLizedAgregationsPromise, key) => {
     const denormaLizedAgregations = await denormaLizedAgregationsPromise;
-    if (!aggregations[key].buckets || key === '_types' || aggregations[key].type === 'nested' || key === 'generatedToc') {
+    if (
+      !aggregations[key].buckets ||
+      key === '_types' ||
+      aggregations[key].type === 'nested' ||
+      key === 'generatedToc'
+    ) {
       return Object.assign(denormaLizedAgregations, { [key]: aggregations[key] });
     }
 
@@ -683,7 +688,7 @@ const search = {
     return snippetsFromSearchHit(response.body.hits.hits[0]);
   },
 
-  async indexEntities(query, select = '', limit, batchCallback = () => { }) {
+  async indexEntities(query, select = '', limit, batchCallback = () => {}) {
     return indexEntities({
       query,
       select,

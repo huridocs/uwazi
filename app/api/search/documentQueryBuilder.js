@@ -1,7 +1,7 @@
 /* eslint-disable camelcase, max-lines */
 
 import { preloadOptionsSearch } from 'shared/config';
-import filterToMatch, { textFilter, multiselectFilter } from './metadataMatchers';
+import filterToMatch, { multiselectFilter } from './metadataMatchers';
 import { propertyToAggregation, generatedTocAggregations } from './metadataAggregations';
 
 export default function() {
