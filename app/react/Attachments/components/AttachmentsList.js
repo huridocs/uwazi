@@ -22,8 +22,6 @@ export default class AttachmentsList extends Component {
       uploadAttachmentButton = (
         <NeedAuthorization roles={['admin', 'editor']}>
           <div className="attachment-add">
-            {/* TODO: This is an old upload attachment button */}
-            {/* <UploadAttachment entity={this.props.parentId} storeKey={storeKey} /> */}
             <UploadSupportingFile
               entitySharedId={this.props.parentSharedId}
               entityId={this.props.parentId}
