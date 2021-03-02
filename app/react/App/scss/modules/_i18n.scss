@@ -1,10 +1,10 @@
 .translation.active {
-  border-bottom: 2px dashed $c-active-feature;
+  border-bottom: 2px dashed $c-type-9;
   cursor: pointer;
 }
 
 .menuNav-btn.inlineEdit.active {
-  border-color: $c-active-feature;
+  border-color: $c-type-9;
   background-color: $c-white;
 }
 
@@ -19,6 +19,7 @@
     display: inline-block;
     width: 44px;
     height: 24px;
+    margin-right: 14px;
 
     &-input {
       opacity: 0;
