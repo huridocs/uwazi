@@ -139,9 +139,22 @@ describe('Share entities', () => {
     await page.waitForSelector('.share-modal', { hidden: true });
   });
 
+  it('should share other entities with the collaborator via the group', async () => {
+    await expect(page).toClick('.item-document', {
+      text: 'Artavia Murillo y otros. Resolución del Presidente de la Corte de 6 de agosto de 2012',
+    });
+    await page.waitForSelector('.share-btn');
+    await expect(page).toClick('button', { text: 'Share' });
+    await selectLookupOption('Ase', 'Asesores legales');
+    await expect(page).toSelect('select', 'Can edit');
+    await expect(page).toClick('button', { text: 'Save changes' });
+    await page.waitForSelector('.share-modal', { hidden: true });
+  });
+
   it('should be able to see and edit entities as a collaborator', async () => {
     await logout();
     await login('colla', 'borator');
+    await page.waitFor('.item-document');
     const entities = await page.$$('.item-document');
     expect(entities.length).toBe(3);
   });

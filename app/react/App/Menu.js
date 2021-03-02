@@ -99,7 +99,7 @@ export class Menu extends Component {
               <li className="menuNav-item">
                 <I18NLink
                   to="/settings/account"
-                  className="menuNav-btn btn btn-default settings"
+                  className="menuNav-btn btn btn-default settings-section"
                   aria-label={t('System', 'Account settings', null, false)}
                 >
                   <Icon icon="cog" />
