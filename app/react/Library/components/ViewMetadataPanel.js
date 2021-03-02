@@ -26,7 +26,7 @@ const mapStateToProps = (state, props) => {
   const doc = library.ui.get('selectedDocuments').first() || Immutable.fromJS({ documents: [] });
   const defaultLanguage = state.settings.collection.get('languages').find(l => l.get('defautl'));
   const file = entityDefaultDocument(
-    doc.get('documents').toJS(),
+    doc.get('documents') ? doc.get('documents').toJS() : [{}],
     doc.get('language'),
     defaultLanguage
   );
