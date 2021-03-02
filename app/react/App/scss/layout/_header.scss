@@ -15,7 +15,7 @@ header {
     font-weight: 300;
     margin: 0;
     width: calc(100% - 2 * 54px);
-    @media(min-width: 454px) {
+    @media (min-width: 454px) {
       padding: 0 15px;
       width: auto;
       max-width: 320px;
@@ -54,7 +54,7 @@ header {
     } @else {
       color: $c-white;
     }
-    @media(min-width: 1024px) {
+    @media (min-width: 1024px) {
       display: none;
     }
     @media print {
@@ -68,7 +68,7 @@ header {
   }
 }
 
-@media(min-width: 1024px) {
+@media (min-width: 1024px) {
   .menuActions {
     display: -webkit-flex;
     display: flex;
@@ -81,7 +81,7 @@ header {
   padding: 0;
   margin: 0;
   list-style: none;
-  @media(max-width: 1023px) {
+  @media (max-width: 1023px) {
     position: fixed;
     left: -400px;
     width: 400px;
@@ -89,14 +89,14 @@ header {
     height: calc(100% - 50px);
     background: $c-theme;
     max-width: 90%;
-    border-top: 1px solid transparentize($c-black, .6);
+    border-top: 1px solid transparentize($c-black, 0.6);
     overflow: auto;
     transition: all 225ms;
     &.is-active {
       left: 0px;
     }
   }
-  @media(min-width: 1024px) {
+  @media (min-width: 1024px) {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -111,7 +111,7 @@ header {
     list-style: none;
     padding: 0;
     margin: 0;
-    @media(min-width: 1024px) {
+    @media (min-width: 1024px) {
       overflow: hidden;
       white-space: nowrap;
     }
@@ -128,13 +128,13 @@ header {
   position: relative;
   padding: 0;
   width: 100%;
-  @media(min-width: 1024px) {
+  @media (min-width: 1024px) {
     display: inline-block;
     width: auto;
     min-width: $header-height;
   }
 
-  &:hover .tab-link-tooltip{
+  &:hover .tab-link-tooltip {
     display: block;
   }
 }
@@ -150,11 +150,11 @@ header {
   padding: 0 15px;
   background-color: transparent;
 
-  @media(max-width: 1023px) {
+  @media (max-width: 1023px) {
     padding-left: $header-height + 15px;
     text-align: left;
   }
-  @media(max-width: 453px) {
+  @media (max-width: 453px) {
     padding-left: $header-height;
   }
 
@@ -178,7 +178,6 @@ header {
   }
 }
 
-
 .menuActions {
   .menuNav-list {
     @media (min-width: 1024px) {
@@ -198,7 +197,6 @@ header {
     .Dropdown-option {
       padding-right: 5px;
     }
-
   }
   .Dropdown:not(.is-active) {
     .Dropdown-label {
@@ -220,11 +218,10 @@ header {
 .menuNav-I18NMenu {
   display: flex;
   text-transform: uppercase;
-  border-top: 1px solid transparentize($c-black, .6);
-  @media(min-width: 1024px) {
-    float: left;
+  border-top: 1px solid transparentize($c-black, 0.6);
+  @media (min-width: 1024px) {
     border-top: 0;
-    border-right: 1px solid transparentize($c-black, .6);
+    border-right: 1px solid transparentize($c-black, 0.6);
   }
 
   .menuNav-btn {

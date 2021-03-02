@@ -21,31 +21,43 @@ class I18NMenu extends Component {
     path = path.replace(regexp, '/');
 
     return (
-      <ul className="menuNav-I18NMenu" role="navigation" aria-label="Languages">
+      <div className="translation-menu">
         <NeedAuthorization roles={['admin', 'editor']}>
-          <button
+          <label className="translation-switch">
+            <input
+              type="checkbox"
+              className="translation-switch-input"
+              aria-label={t('System', 'Add/edit translations', null, false)}
+              onChange={toggleInlineEdit}
+              checked={!!i18nmode}
+            />
+            <span className="translation-switch-slider" />
+          </label>
+          {/* <button
             className={`menuNav-btn btn btn-default${i18nmode ? ' inlineEdit active' : ''}`}
             type="button"
             onClick={toggleInlineEdit}
             aria-label={t('System', 'Add/edit translations', null, false)}
           >
             <Icon icon="language" size="lg" />
-          </button>
+          </button> */}
         </NeedAuthorization>
-        {languages.count() > 1 &&
-          languages.map(lang => {
-            const key = lang.get('key');
-            const label = lang.get('label');
-            const url = `/${key}${path}${path.match('document') ? '' : location.search}`;
-            return (
-              <li className={`menuNav-item${locale === key ? ' is-active' : ''}`} key={key}>
-                <a className="menuNav-btn btn btn-default" href={url} aria-label={label}>
-                  {key}
-                </a>
-              </li>
-            );
-          })}
-      </ul>
+        <ul className="menuNav-I18NMenu" role="navigation" aria-label="Languages">
+          {languages.count() > 1 &&
+            languages.map(lang => {
+              const key = lang.get('key');
+              const label = lang.get('label');
+              const url = `/${key}${path}${path.match('document') ? '' : location.search}`;
+              return (
+                <li className={`menuNav-item${locale === key ? ' is-active' : ''}`} key={key}>
+                  <a className="menuNav-btn btn btn-default" href={url} aria-label={label}>
+                    {key}
+                  </a>
+                </li>
+              );
+            })}
+        </ul>
+      </div>
     );
   }
 }

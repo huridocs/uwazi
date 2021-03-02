@@ -1,10 +1,8 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`I18NMenu when there is only one language should only render the inline translation button 1`] = `
-<ul
-  aria-label="Languages"
-  className="menuNav-I18NMenu"
-  role="navigation"
+<div
+  className="translation-menu"
 >
   <Connect(NeedAuthorization)
     roles={
@@ -14,17 +12,25 @@ exports[`I18NMenu when there is only one language should only render the inline 
       ]
     }
   >
-    <button
-      aria-label="Add/edit translations"
-      className="menuNav-btn btn btn-default"
-      onClick={[Function]}
-      type="button"
+    <label
+      className="translation-switch"
     >
-      <Connect(Icon)
-        icon="language"
-        size="lg"
+      <input
+        aria-label="Add/edit translations"
+        checked={false}
+        className="translation-switch-input"
+        onChange={[Function]}
+        type="checkbox"
       />
-    </button>
+      <span
+        className="translation-switch-slider"
+      />
+    </label>
   </Connect(NeedAuthorization)>
-</ul>
+  <ul
+    aria-label="Languages"
+    className="menuNav-I18NMenu"
+    role="navigation"
+  />
+</div>
 `;
