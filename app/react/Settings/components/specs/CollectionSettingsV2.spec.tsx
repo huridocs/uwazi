@@ -1,6 +1,5 @@
-import 'jsdom-global/register';
 import React from 'react';
-import { mount, shallow, ShallowWrapper } from 'enzyme';
+import { shallow, ShallowWrapper } from 'enzyme';
 import configureStore, { MockStore, MockStoreCreator } from 'redux-mock-store';
 import { Provider } from 'react-redux';
 import Immutable from 'immutable';
@@ -9,11 +8,13 @@ import { Settings } from 'shared/types/settingsType';
 import { CollectionSettings } from '../CollectionSettingsV2';
 
 describe('Collection settings', () => {
+  let store: MockStore<object>;
   let component: ShallowWrapper<typeof CollectionSettings>;
 
   const mockStoreCreator: MockStoreCreator<object> = configureStore<object>([]);
+
   const render = (collectionSettings: Settings) => {
-    const store: MockStore<object> = mockStoreCreator({
+    store = mockStoreCreator({
       settings: { collection: Immutable.fromJS(collectionSettings) },
     });
     component = shallow(
@@ -53,15 +54,17 @@ describe('Collection settings', () => {
     });
 
     fit('should clear custom home page on toggle off', () => {
-      console.log(CollectionSettings);
-      const mountedComponent = mount(<CollectionSettings.WrappedComponent />);
-      console.log(mountedComponent);
-      // render({ home_page: 'to-be-removed' });
-      // const toggleHomePageOff = component
-      //   .find('input[name="home_page"]')
-      //   .parent()
-      //   .props().onToggleOff;
-      // toggleHomePageOff();
+      render({ home_page: 'to-be-removed' });
+      const toggleHomePageOff = component
+        .find('input[name="home_page"]')
+        .parent()
+        .props().onToggleOff;
+
+      toggleHomePageOff();
+
+      component.find('form').simulate('submit');
+
+      console.log(store.getActions());
       // console.log(getHomePageToggleStatus());
     });
   });
