@@ -4,7 +4,7 @@ export interface ToggleButtonProps {
   checked: boolean;
   onClick: () => void;
 }
-export const ToggleButton = ({ checked, onClick }: ToggleButtonProps) => (
+export const ToggleButton = ({ id, checked, onClick }: ToggleButtonProps) => (
   <label className="toggleButton">
     <input type="checkbox" checked={checked} onChange={onClick} />
     <span className="slider" />

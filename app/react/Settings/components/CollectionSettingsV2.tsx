@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
+import { Dispatch, bindActionCreators } from 'redux';
+import { connect, ConnectedProps } from 'react-redux';
+import { Settings } from 'shared/types/settingsType';
 import { Tip } from 'app/Layout';
 import { Translate, t } from 'app/I18N';
-import { useForm } from 'react-hook-form';
-import { connect, ConnectedProps } from 'react-redux';
-import { Dispatch, bindActionCreators } from 'redux';
 import { IStore } from 'app/istore';
-import { Settings } from 'shared/types/settingsType';
-
+import { useForm } from 'react-hook-form';
 import { actions } from 'app/BasicReducer';
 import { notificationActions } from 'app/Notifications';
+import { ToggleButton } from 'app/UI';
+
 import { ToggleChildren } from './ToggleChildren';
 import { SettingsLabel } from './SettingsLabel';
 import * as CollectionSettingsTips from './collectionSettingsTips';
@@ -139,11 +140,18 @@ const CollectionSettings = ({ collectionSettings, setSettings, notify }: mappedP
           </div>
         </div>
 
-        <div className="form-element">
+        <div className="form-element" id="private-instance">
           <SettingsLabel>
             <Translate>Allow public sharing</Translate>
             <Tip icon="info-circle">{CollectionSettingsTips.publicSharing}</Tip>
           </SettingsLabel>
+          <ToggleButton
+            checked={!watch('private')}
+            onClick={() => {
+              setValue('private', 'false');
+            }}
+          />
+          <input type="text" ref={register} name="private" />
           {/* <ToggleChildren
             toggled={!(toggledStatus.private || watch('private'))}
             showChildren={false}

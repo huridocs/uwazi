@@ -6,6 +6,7 @@ import Immutable from 'immutable';
 import { Settings } from 'shared/types/settingsType';
 
 import { CollectionSettings } from '../CollectionSettingsV2';
+import { ToggleButton } from 'app/UI';
 
 describe('Collection settings', () => {
   let store: MockStore<object>;
@@ -53,7 +54,7 @@ describe('Collection settings', () => {
       expect(getHomePageToggleStatus()).toBe(true);
     });
 
-    fit('should clear custom home page on toggle off', () => {
+    it('should clear custom home page on toggle off', () => {
       render({ home_page: 'to-be-removed' });
       const toggleHomePageOff = component
         .find('input[name="home_page"]')
@@ -66,6 +67,32 @@ describe('Collection settings', () => {
 
       console.log(store.getActions());
       // console.log(getHomePageToggleStatus());
+    });
+  });
+
+  describe('allow public sharing', () => {
+    const getPublicSharingStatus = () =>
+      component
+        .find('#private-instance')
+        .children('ToggleButton')
+        .props().checked;
+
+    it('should be toggled if instance is not allowed to public share', () => {
+      render({ private: true });
+      expect(getPublicSharingStatus()).toBe(false);
+    });
+
+    it('should be untoggled if instance is allowed to public share', () => {
+      render({ private: false });
+      expect(getPublicSharingStatus()).toBe(true);
+    });
+
+    fit('it should changed to public on button click', () => {
+      render({ private: true });
+    });
+
+    fit('it should changed to private on button click', () => {
+      render({ private: false });
     });
   });
 });
