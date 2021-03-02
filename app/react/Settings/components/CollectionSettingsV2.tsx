@@ -46,6 +46,7 @@ const CollectionSettings = ({ collectionSettings, setSettings, notify }: mappedP
   const [toggledStatus, setToggledStatus] = useState(toggledStatusDefaults);
 
   const save = (newCollectionSettings: Settings) => {
+    console.log('Me llega al save:');
     console.log({ ...collectionSettingsObject, ...newCollectionSettings });
     setSettings({ ...collectionSettingsObject, ...newCollectionSettings });
     notify(t('System', 'Settings updated', null, false), 'success');
@@ -88,13 +89,9 @@ const CollectionSettings = ({ collectionSettings, setSettings, notify }: mappedP
             <Tip icon="info-circle">{CollectionSettingsTips.landingPageTip}</Tip>
           </SettingsLabel>
           <ToggleChildren
-            toggled={Boolean(toggledStatus.home_page || watch('home_page'))}
-            onToggleOn={() => {
-              setToggledStatus({ ...toggledStatus, home_page: true });
-            }}
+            toggled={Boolean(watch('home_page'))}
             onToggleOff={() => {
               setValue('home_page', '');
-              setToggledStatus({ ...toggledStatus, home_page: false });
             }}
           >
             <input type="text" name="home_page" ref={register} />
