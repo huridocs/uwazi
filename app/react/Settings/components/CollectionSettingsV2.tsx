@@ -16,6 +16,7 @@ import * as CollectionSettingsTips from './collectionSettingsTips';
 interface ToggledStatus {
   /* eslint-disable camelcase */
   home_page?: boolean;
+  private?: boolean;
   /* eslint-enable camelcase */
 }
 
@@ -84,14 +85,6 @@ const CollectionSettings = ({ collectionSettings, setSettings, notify }: mappedP
             <Translate>Use custom landing page</Translate>
             <Tip icon="info-circle">{CollectionSettingsTips.landingPageTip}</Tip>
           </SettingsLabel>
-          {/* <ToggleButton
-            checked={Boolean(watch('home_page'))}
-            onClick={() => {
-              setValue('home_page', '');
-            }}
-          />
-
-          <input type="text" name="home_page" ref={register} /> */}
           <ToggleChildren
             toggled={Boolean(toggledStatus.home_page || watch('home_page'))}
             onToggleOn={() => {
@@ -152,7 +145,20 @@ const CollectionSettings = ({ collectionSettings, setSettings, notify }: mappedP
             <Translate>Allow public sharing</Translate>
             <Tip icon="info-circle">{CollectionSettingsTips.publicSharing}</Tip>
           </SettingsLabel>
-          <ToggleChildren toggled={false} />
+          <ToggleChildren
+            toggled={!(toggledStatus.private || watch('private'))}
+            showChildren={false}
+            onToggleOn={() => {
+              setValue('private', false);
+              setToggledStatus({ ...toggledStatus, private: false });
+            }}
+            onToggleOff={() => {
+              setValue('private', true);
+              setToggledStatus({ ...toggledStatus, private: true });
+            }}
+          >
+            <input ref={register} name="private" />
+          </ToggleChildren>
         </div>
 
         <div className="form-element">

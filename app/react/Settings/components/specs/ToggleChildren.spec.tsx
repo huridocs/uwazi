@@ -24,4 +24,16 @@ describe('Toggle children', () => {
     );
     expect(component.find('.toggle-children-children').text()).toBe('Content');
   });
+
+  it('should not display children if showChildren is false', () => {
+    component = shallow(
+      <ToggleChildren toggled showChildren={false}>
+        <p>Content</p>
+      </ToggleChildren>
+    );
+    expect(component.find('.toggle-children-children').prop('style')).toHaveProperty(
+      'display',
+      'none'
+    );
+  });
 });

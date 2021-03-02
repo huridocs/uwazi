@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import { ToggleButton } from 'app/UI';
 
 export interface ToggleChildrenProps {
-  children?: JSX.Element[] | JSX.Element | string;
   toggled: boolean;
+  children?: JSX.Element[] | JSX.Element | string;
+  showChildren?: boolean;
   onToggleOff?: () => void;
   onToggleOn?: () => void;
 }
@@ -11,6 +12,7 @@ export interface ToggleChildrenProps {
 export const ToggleChildren = ({
   children,
   toggled = false,
+  showChildren = true,
   onToggleOff = () => {},
   onToggleOn = () => {},
 }: ToggleChildrenProps) => {
@@ -30,7 +32,10 @@ export const ToggleChildren = ({
       <div className="toggle-children-button">
         <ToggleButton onClick={handleClick} checked={isToggled} />
       </div>
-      <div className="toggle-children-children" style={{ display: isToggled ? 'block' : 'none' }}>
+      <div
+        className="toggle-children-children"
+        style={{ display: isToggled && showChildren ? 'block' : 'none' }}
+      >
         {children}
       </div>
     </>
