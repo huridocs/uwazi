@@ -80,7 +80,7 @@ interface EntityDisplayState {
   search: any;
 }
 
-interface ClientTemplateSchema extends TemplateSchema {
+export interface ClientTemplateSchema extends TemplateSchema {
   _id: string;
 }
 
