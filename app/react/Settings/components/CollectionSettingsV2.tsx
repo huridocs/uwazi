@@ -38,10 +38,12 @@ type mappedProps = ConnectedProps<typeof connector>;
 const CollectionSettings = ({ collectionSettings, setSettings, notify }: mappedProps) => {
   const toggledStatusDefaults: ToggledStatus = {};
 
+  const collectionSettingsObject = collectionSettings.toJS();
+
+  const getDate = collectionSettingsObject.dateFormat;
+
   const [dateSeparator, setDateSeparator] = useState('-');
   const [toggledStatus, setToggledStatus] = useState(toggledStatusDefaults);
-
-  const collectionSettingsObject = collectionSettings.toJS();
 
   const save = (newCollectionSettings: Settings) => {
     console.log({ ...collectionSettingsObject, ...newCollectionSettings });
@@ -145,7 +147,7 @@ const CollectionSettings = ({ collectionSettings, setSettings, notify }: mappedP
             <Translate>Allow public sharing</Translate>
             <Tip icon="info-circle">{CollectionSettingsTips.publicSharing}</Tip>
           </SettingsLabel>
-          <ToggleChildren
+          {/* <ToggleChildren
             toggled={!(toggledStatus.private || watch('private'))}
             showChildren={false}
             onToggleOn={() => {
@@ -158,7 +160,7 @@ const CollectionSettings = ({ collectionSettings, setSettings, notify }: mappedP
             }}
           >
             <input ref={register} name="private" />
-          </ToggleChildren>
+          </ToggleChildren> */}
         </div>
 
         <div className="form-element">

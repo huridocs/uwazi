@@ -12,7 +12,6 @@ export interface ToggleChildrenProps {
 export const ToggleChildren = ({
   children,
   toggled = false,
-  showChildren = true,
   onToggleOff = () => {},
   onToggleOn = () => {},
 }: ToggleChildrenProps) => {
@@ -32,10 +31,7 @@ export const ToggleChildren = ({
       <div className="toggle-children-button">
         <ToggleButton onClick={handleClick} checked={isToggled} />
       </div>
-      <div
-        className="toggle-children-children"
-        style={{ display: isToggled && showChildren ? 'block' : 'none' }}
-      >
+      <div className="toggle-children-children" style={{ display: isToggled ? 'block' : 'none' }}>
         {children}
       </div>
     </>

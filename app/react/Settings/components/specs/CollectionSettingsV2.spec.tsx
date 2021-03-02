@@ -1,11 +1,13 @@
+import 'jsdom-global/register';
 import React from 'react';
-import { shallow, ShallowWrapper } from 'enzyme';
+import { mount, shallow, ShallowWrapper } from 'enzyme';
 import configureStore, { MockStore, MockStoreCreator } from 'redux-mock-store';
 import { Provider } from 'react-redux';
 import Immutable from 'immutable';
 import { Settings } from 'shared/types/settingsType';
 
 import { CollectionSettings } from '../CollectionSettingsV2';
+
 describe('Collection settings', () => {
   let component: ShallowWrapper<typeof CollectionSettings>;
 
@@ -40,14 +42,27 @@ describe('Collection settings', () => {
       expect(getHomePageToggleStatus()).toBe(false);
     });
 
-    fit('should clear custom home page on toggle off', () => {
-      render({ home_page: 'to-be-removed' });
-      const toggleHomePageOff = component
+    it('should show the input on toggle on', () => {
+      render({});
+      const toggleHomePageOn = component
         .find('input[name="home_page"]')
         .parent()
-        .props().onToggleOff;
-      toggleHomePageOff();
-      console.log(getHomePageToggleStatus());
+        .props().onToggleOn;
+      toggleHomePageOn();
+      expect(getHomePageToggleStatus()).toBe(true);
+    });
+
+    fit('should clear custom home page on toggle off', () => {
+      console.log(CollectionSettings);
+      const mountedComponent = mount(<CollectionSettings.WrappedComponent />);
+      console.log(mountedComponent);
+      // render({ home_page: 'to-be-removed' });
+      // const toggleHomePageOff = component
+      //   .find('input[name="home_page"]')
+      //   .parent()
+      //   .props().onToggleOff;
+      // toggleHomePageOff();
+      // console.log(getHomePageToggleStatus());
     });
   });
 });
