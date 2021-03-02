@@ -23,7 +23,6 @@ const UploadSupportingFile: React.FC<UploadSupportingFileProps> = props => {
   const openModal = () => setModalOpen(true);
   const closeModal = () => setModalOpen(false);
 
-  // Get percentage number
   const getPercentage = progress.get(entitySharedId);
 
   return (
