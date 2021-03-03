@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import React from 'react';
 import { Dispatch, bindActionCreators } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
@@ -49,6 +50,7 @@ const CollectionSettings = ({
   register('private');
   register('allowedPublicTemplates');
   register('mapStartingPoint');
+  register('cookiepolicy');
 
   const save = (newCollectionSettings: Settings) => {
     console.log({ ...collectionSettingsObject, ...newCollectionSettings });
@@ -143,16 +145,26 @@ const CollectionSettings = ({
             <Translate>Show cookie policy</Translate>
             <Tip icon="info-circle">{CollectionSettingsTips.cookiePolicy}</Tip>
           </SettingsLabel>
-          <ToggleChildren toggled={false} />
+          <ToggleButton
+            checked={Boolean(watch('cookiepolicy'))}
+            onClick={() => {
+              setValue('cookiepolicy', !getValues('cookiepolicy'));
+            }}
+          />
         </div>
 
-        <div className="form-element">
+        {/* <div className="form-element">
           <SettingsLabel>
             <Translate>Non-latin characters support</Translate>
             <Tip icon="info-circle">{CollectionSettingsTips.characterSupport}</Tip>
           </SettingsLabel>
-          <ToggleChildren toggled={false} />
-        </div>
+          <ToggleButton
+            checked={Boolean(watch(''))}
+            onClick={() => {
+              setValue('', !getValues(''));
+            }}
+          />
+        </div> */}
 
         <h2>
           <Translate>Website analytics</Translate>
@@ -163,8 +175,13 @@ const CollectionSettings = ({
             <Translate>Google Analytics</Translate>
             <Tip icon="info-circle">{CollectionSettingsTips.analytics}</Tip>
           </SettingsLabel>
-          <ToggleChildren toggled={false}>
-            <input type="text" />
+          <ToggleChildren
+            toggled={Boolean(watch('analyticsTrackingId'))}
+            onToggleOff={() => {
+              setValue('analyticsTrackingId', '');
+            }}
+          >
+            <input type="text" name="analyticsTrackingId" ref={register} />
           </ToggleChildren>
         </div>
 
@@ -173,18 +190,50 @@ const CollectionSettings = ({
             <Translate>Motomo Analytics</Translate>
             <Tip icon="info-circle">{CollectionSettingsTips.analytics}</Tip>
           </SettingsLabel>
-          <ToggleChildren toggled={false}>
-            <input type="text" />
+          <ToggleChildren
+            toggled={Boolean(watch('matomoConfig'))}
+            onToggleOff={() => {
+              setValue('matomoConfig', '');
+            }}
+          >
+            <input type="text" name="matomoConfig" ref={register} />
           </ToggleChildren>
         </div>
 
         <h2>
           <Translate>Forms and email configuration</Translate>
         </h2>
+
+        <div className="form-element" id="public-enpoints">
+          <SettingsLabel>
+            <Translate>Contact Form</Translate>
+            <Tip icon="info-circle">{CollectionSettingsTips.emails[0]}</Tip>
+          </SettingsLabel>
+          <ToggleChildren
+            toggled={Boolean(watch('contactEmail') || watch('senderEmail'))}
+            onToggleOff={() => {
+              setValue('contactEmail', '');
+              setValue('senderEmail', '');
+            }}
+          >
+            <SettingsLabel>
+              <Translate>Receiving email</Translate>
+              <Tip icon="info-circle">{CollectionSettingsTips.emails[1]}}</Tip>
+            </SettingsLabel>
+            <input type="text" ref={register} name="contactEmail" />
+
+            <SettingsLabel>
+              <Translate>Sending email</Translate>
+              <Tip icon="info-circle">{CollectionSettingsTips.emails[2]}}</Tip>
+            </SettingsLabel>
+            <input type="text" ref={register} name="senderEmail" placeholder="no-reply@uwazi.io" />
+          </ToggleChildren>
+        </div>
+
         <div className="form-element" id="public-enpoints">
           <SettingsLabel>
             <Translate>Public Endpoints</Translate>
-            <Tip icon="info-circle">{CollectionSettingsTips.publicForm}</Tip>
+            <Tip icon="info-circle">{CollectionSettingsTips.publicForm[0]}</Tip>
           </SettingsLabel>
           <ToggleChildren
             toggled={Boolean(
@@ -198,14 +247,14 @@ const CollectionSettings = ({
             <div>
               <SettingsLabel>
                 <Translate>Public Form destination URL</Translate>
-                <Tip icon="info-circle">{CollectionSettingsTips.publicForm}</Tip>
+                <Tip icon="info-circle">{CollectionSettingsTips.publicForm[1]}</Tip>
               </SettingsLabel>
               <input type="text" name="publicFormDestination" ref={register} />
             </div>
             <div>
               <SettingsLabel>
                 <Translate>Whitelisted Templates</Translate>
-                <Tip icon="info-circle">{CollectionSettingsTips.publicForm}</Tip>
+                <Tip icon="info-circle">{CollectionSettingsTips.publicForm[2]}</Tip>
               </SettingsLabel>
               <MultiSelect
                 value={watch('allowedPublicTemplates')}

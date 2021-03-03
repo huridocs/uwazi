@@ -31,15 +31,27 @@ export const customFavIcon = (
 );
 
 export const publicSharing = (
-  <>
-    Allow administrators and editors to share entities publicly. Visitors to your Uwazi will be able
-    to see this entities without logging in.
-  </>
+  <>Check to make this instance private (only logged users access the data)</>
 );
 
 export const cookiePolicy = (
   <>This option will show a notification about the use of cookies in your instance.</>
 );
+
+export const emails = [
+  <>
+    Here you can set up the contact email and the email that appears when Uwazi sends a notification
+    to a user
+  </>,
+  <>
+    If you have added a contact form on one of your pages, this is the email address that receives
+    the information from that form.
+  </>,
+  <>
+    You can configure the email that will appear as the sender when any email is sent to the user.
+    If this email is not set, “no-reply@uwazi.io” will be used instead.
+  </>,
+];
 
 export const characterSupport = (
   <>
@@ -66,4 +78,11 @@ export const analytics = (
 
 export const mapAxis = <>Set the default starting point for your geolocation properties.</>;
 
-export const publicForm = <>Placeholder text.</>;
+export const publicForm = [
+  <>Here you can configure the public form destination and the whitelisted templates</>,
+  <>You can configure the URL of a different Uwazi to receive the submits from your Public Form</>,
+  <>
+    If you wish to include a public form on your page, you must white-list the template by selecting
+    it from the list.
+  </>,
+];
