@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Dispatch, bindActionCreators } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
 import { Settings } from 'shared/types/settingsType';
@@ -9,7 +9,7 @@ import { useForm } from 'react-hook-form';
 import { actions } from 'app/BasicReducer';
 import { notificationActions } from 'app/Notifications';
 import { ToggleButton } from 'app/UI';
-import { MultiSelect } from 'app/Forms';
+import { MultiSelect, Geolocation } from 'app/Forms';
 
 import { ToggleChildren } from './ToggleChildren';
 import { SettingsLabel } from './SettingsLabel';
@@ -48,6 +48,7 @@ const CollectionSettings = ({
 
   register('private');
   register('allowedPublicTemplates');
+  register('mapStartingPoint');
 
   const save = (newCollectionSettings: Settings) => {
     console.log({ ...collectionSettingsObject, ...newCollectionSettings });
@@ -113,7 +114,6 @@ const CollectionSettings = ({
             <Translate>Date format</Translate>
           </SettingsLabel>
           <div>
-            <Translate>Format</Translate>
             <select name="dateFormat" className="selector" ref={register}>
               <option value="yyyy/MM/dd">2021/02/26 (Year, Month, Day)</option>
               <option value="dd/MM/yyyy">26/02/2021 (Day, Month, Year)</option>
@@ -181,7 +181,7 @@ const CollectionSettings = ({
         <h2>
           <Translate>Forms and email configuration</Translate>
         </h2>
-        <div className="form-element">
+        <div className="form-element" id="public-enpoints">
           <SettingsLabel>
             <Translate>Public Endpoints</Translate>
             <Tip icon="info-circle">{CollectionSettingsTips.publicForm}</Tip>
@@ -226,19 +226,20 @@ const CollectionSettings = ({
         </h2>
         <div className="form-element">
           <SettingsLabel>
-            <Translate>Set starting location</Translate>
+            <Translate>Custom starting location</Translate>
             <Tip icon="info-circle">{CollectionSettingsTips.mapAxis}</Tip>
           </SettingsLabel>
-          <ToggleChildren toggled={false}>
-            <Translate>Longitude</Translate>
-            <input type="text" />
-            <Translate>Latitude</Translate>
-            <input type="text" />
-          </ToggleChildren>
+          <Geolocation
+            onChange={(values: Settings['mapStartingPoint']) => {
+              setValue('mapStartingPoint', values);
+            }}
+          />
         </div>
-        <button type="submit" className="btn btn-success">
-          <Translate>Save</Translate>
-        </button>
+        <div>
+          <button type="submit" className="btn btn-success">
+            <Translate>Save</Translate>
+          </button>
+        </div>
       </form>
     </div>
   );
