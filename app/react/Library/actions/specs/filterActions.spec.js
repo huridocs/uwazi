@@ -36,6 +36,9 @@ describe('filterActions', () => {
     };
 
     store = {
+      settings: {
+        collection: Immutable.Map({}),
+      },
       library: {
         filters: Immutable.fromJS(filtersState),
         search,

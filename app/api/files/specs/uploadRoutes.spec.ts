@@ -16,7 +16,7 @@ import { setUpApp, socketEmit, iosocket } from 'api/utils/testingRoutes';
 import { FileType } from 'shared/types/fileType';
 import entities from 'api/entities';
 
-import { fixtures, templateId } from './fixtures';
+import { fixtures, templateId, importTemplate } from './fixtures';
 import { files } from '../files';
 import uploadRoutes from '../routes';
 
@@ -72,7 +72,10 @@ describe('upload routes', () => {
       expect(iosocket.emit).toHaveBeenCalledWith('conversionStart', 'sharedId1');
       expect(iosocket.emit).toHaveBeenCalledWith('documentProcessed', 'sharedId1');
 
-      const [upload] = await files.get({ entity: 'sharedId1' }, '+fullText');
+      const [upload] = await files.get(
+        { originalname: 'f2082bf51b6ef839690485d7153e847a.pdf' },
+        '+fullText'
+      );
 
       expect(upload).toEqual(
         expect.objectContaining({
@@ -105,14 +108,14 @@ describe('upload routes', () => {
       it('should detect English documents and store the result', async () => {
         await uploadDocument('uploads/eng.pdf');
 
-        const [upload] = await files.get({ entity: 'sharedId1' });
+        const [upload] = await files.get({ originalname: 'eng.pdf' });
         expect(upload.language).toBe('eng');
       }, 10000);
 
       it('should detect Spanish documents and store the result', async () => {
         await uploadDocument('uploads/spn.pdf');
 
-        const [upload] = await files.get({ entity: 'sharedId1' });
+        const [upload] = await files.get({ originalname: 'spn.pdf' });
         expect(upload.language).toBe('spa');
       });
     });
@@ -126,7 +129,7 @@ describe('upload routes', () => {
             .attach('file', path.join(__dirname, 'uploads/invalid_document.txt'))
         );
 
-        const [upload] = await files.get({ entity: 'sharedId1' }, '+fullText');
+        const [upload] = await files.get({ originalname: 'invalid_document.txt' }, '+fullText');
         expect(upload.status).toBe('failed');
       });
 
@@ -176,7 +179,7 @@ describe('upload routes', () => {
       await socketEmit('IMPORT_CSV_END', async () =>
         request(app)
           .post('/api/import')
-          .field('template', templateId.toString())
+          .field('template', importTemplate.toString())
           .attach('file', `${__dirname}/uploads/importcsv.csv`)
       );
 
@@ -184,7 +187,7 @@ describe('upload routes', () => {
       expect(iosocket.emit).toHaveBeenCalledWith('IMPORT_CSV_PROGRESS', 1);
       expect(iosocket.emit).toHaveBeenCalledWith('IMPORT_CSV_PROGRESS', 2);
 
-      const imported = await entities.get({ template: templateId });
+      const imported = await entities.get({ template: importTemplate });
       expect(imported).toEqual([
         expect.objectContaining({ title: 'imported entity one' }),
         expect.objectContaining({ title: 'imported entity two' }),

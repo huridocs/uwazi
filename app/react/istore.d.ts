@@ -9,6 +9,7 @@ import { EntitySchema } from 'shared/types/entityType';
 import { UserGroupSchema } from 'shared/types/userGroupType';
 import { ConnectionSchema } from 'shared/types/connectionType';
 import { Settings } from 'shared/types/settingsType';
+import { FileType } from 'shared/types/fileType';
 
 export interface TasksState {
   SyncState?: TaskStatus;
@@ -84,8 +85,12 @@ export interface ClientTemplateSchema extends TemplateSchema {
   _id: string;
 }
 
+export interface ClientFile extends FileType {
+  _id: string;
+}
+
 export interface ClientEntitySchema extends EntitySchema {
-  documents?: [];
+  documents?: ClientFile[];
 }
 
 export interface IStore {
@@ -111,8 +116,8 @@ export interface IStore {
   documentViewer: {
     references: IImmutable<ConnectionSchema[]>;
     targetDocReferences: IImmutable<ConnectionSchema[]>;
-    doc: IImmutable<EntitySchema>;
-    targetDoc: IImmutable<EntitySchema>;
+    doc: IImmutable<ClientEntitySchema>;
+    targetDoc: IImmutable<ClientEntitySchema>;
     uiState: IImmutable<{
       activeReference: string;
     }>;

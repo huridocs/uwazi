@@ -19,6 +19,7 @@ export interface ConnectionSchema {
     title?: string;
     template?: ObjectIdSchema;
     published?: boolean;
+    generatedToc?: boolean;
     icon?: {
       _id?: string | null;
       label?: string;
@@ -42,6 +43,7 @@ export interface ConnectionSchema {
               | null
               | string
               | number
+              | boolean
               | {
                   label?: string | null;
                   url?: string | null;
@@ -75,6 +77,7 @@ export interface ConnectionSchema {
               | null
               | string
               | number
+              | boolean
               | {
                   label?: string | null;
                   url?: string | null;
