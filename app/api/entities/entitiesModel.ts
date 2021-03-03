@@ -20,15 +20,6 @@ const mongoSchema = new mongoose.Schema(
       label: String,
       type: String,
     }),
-    attachments: [
-      {
-        originalname: String,
-        filename: String,
-        mimetype: String,
-        timestamp: Number,
-        size: Number,
-      },
-    ],
     creationDate: Number,
     editDate: Number,
     metadata: mongoose.Schema.Types.Mixed,

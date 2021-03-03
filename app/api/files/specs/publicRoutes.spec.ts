@@ -2,6 +2,7 @@ import path from 'path';
 import os from 'os';
 import request from 'supertest';
 import { Application, Request, Response, NextFunction } from 'express';
+import { EntityWithFilesSchema } from 'shared/types/entityType';
 
 import { search } from 'api/search';
 import db from 'api/utils/testing_db';
@@ -63,7 +64,9 @@ describe('public routes', () => {
           .expect(200)
       );
 
-      const [newEntity] = await entities.get({ title: 'public submit' });
+      const [newEntity] = (await entities.get({
+        title: 'public submit',
+      })) as EntityWithFilesSchema[];
 
       const [attachment] = newEntity.attachments!;
       expect(attachment).toEqual(expect.objectContaining({ originalname: 'attachment.txt' }));

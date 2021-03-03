@@ -119,7 +119,6 @@ export const entitySchema = {
   definitions: {
     objectIdSchema,
     metadataSchema,
-    fileSchema,
   },
   properties: {
     _id: objectIdSchema,
@@ -138,19 +137,36 @@ export const entitySchema = {
         type: { type: 'string' },
       },
     },
-    attachments: {
-      type: 'array',
-      items: fileSchema,
-    },
-    documents: {
-      type: 'array',
-      items: fileSchema,
-    },
     creationDate: { type: 'number' },
     user: objectIdSchema,
     metadata: metadataSchema,
     suggestedMetadata: metadataSchema,
   },
+};
+
+export const entityWithFilesSchema = {
+  type: 'object',
+
+  definitions: {
+    fileSchema,
+    objectIdSchema,
+    metadataSchema,
+  },
+  allOf: [
+    entitySchema,
+    {
+      properties: {
+        attachments: {
+          type: 'array',
+          items: fileSchema,
+        },
+        documents: {
+          type: 'array',
+          items: fileSchema,
+        },
+      },
+    },
+  ],
 };
 
 export const validateEntity = wrapValidator(ajv.compile(entitySchema));
