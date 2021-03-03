@@ -101,32 +101,36 @@ export class File extends Component<FileProps, FileState> {
     const { language, filename = '' } = this.props.file;
     return (
       <div>
-        <div className="file-language">
-          <Translate>{language ? transformLanguage(language) || '' : ''}</Translate>
+        <div>
+          <span className="badge">
+            <Translate>{language ? transformLanguage(language) || '' : ''}</Translate>
+          </span>
+          <TocGeneratedLabel file={this.props.file}>
+            <Translate>ML TOC</Translate>
+          </TocGeneratedLabel>
         </div>
-        <TocGeneratedLabel file={this.props.file}>
-          <Translate>ML TOC</Translate>
-        </TocGeneratedLabel>
-        <a
-          href={`${APIURL}files/${filename}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="file-download btn btn-outline-secondary"
-        >
-          <Icon icon="cloud-download-alt" />
-          &nbsp;
-          <Translate>Download</Translate>
-        </a>
-        <NeedAuthorization roles={['admin', 'editor']}>
-          <button type="button" className="file-edit btn btn-outline-success" onClick={this.edit}>
-            <Icon icon="pencil-alt" />
+        <div>
+          <a
+            href={`${APIURL}files/${filename}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="file-download btn btn-outline-secondary"
+          >
+            <Icon icon="cloud-download-alt" />
             &nbsp;
-            <Translate>Edit</Translate>
-          </button>
-        </NeedAuthorization>
-        <ViewDocumentLink filename={filename} entity={this.props.entity}>
-          <Translate>View</Translate>
-        </ViewDocumentLink>
+            <Translate>Download</Translate>
+          </a>
+          <NeedAuthorization roles={['admin', 'editor']}>
+            <button type="button" className="file-edit btn btn-outline-success" onClick={this.edit}>
+              <Icon icon="pencil-alt" />
+              &nbsp;
+              <Translate>Edit</Translate>
+            </button>
+          </NeedAuthorization>
+          <ViewDocumentLink filename={filename} entity={this.props.entity}>
+            <Translate>View</Translate>
+          </ViewDocumentLink>
+        </div>
       </div>
     );
   }

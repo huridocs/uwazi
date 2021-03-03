@@ -1,29 +1,22 @@
-@import "../../../App/scss/config/_colors.scss";
+@import '../../../App/scss/config/_colors.scss';
 
 .tocHeader {
-  & {
-    padding-left: 5px !important;
-  }
-
   h1 {
-    :first-child {
-      height: 23px;
-      font-weight: 500;
-      font-size: 20px;
-      line-height: 23.44px;
-    }
+    display: inline-block;
+    height: 23px;
+    font-weight: 500;
+    font-size: 20px;
+    line-height: 23.44px;
+  }
+}
 
-    span.label-generatedToc {
-      .translation {
-        margin-left: 10px;
-        padding: 2px 8px 2px 8px;
-        font-size: 10px;
-        border: 1px solid rgba(0, 0, 0, 0.15);
-        border-radius: 100px;
-        background-color: #CBE0FF;
-        width: 100px;
-        height: 18px;
-      }
-    }
+.file, .tocHeader {
+  .badge {
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    border-radius: 100px;
+    background-color: #CBE0FF;
+    color: #444444;
+    font-weight: normal;
+    margin-right: 5px;
   }
 }

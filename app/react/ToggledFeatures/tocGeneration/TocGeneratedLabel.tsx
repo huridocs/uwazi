@@ -9,6 +9,6 @@ export interface TocGeneratedLabelProps {
 
 export const TocGeneratedLabel = ({ file, children }: TocGeneratedLabelProps) => (
   <FeatureToggle feature="tocGeneration">
-    {file.generatedToc && <span className="label-generatedToc">{children}</span>}
+    {file.generatedToc && <span className="badge">{children}</span>}
   </FeatureToggle>
 );

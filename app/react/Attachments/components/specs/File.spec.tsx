@@ -42,7 +42,7 @@ describe('file', () => {
     expect(title).toBe('Human_name_1.pdf');
 
     const language = component
-      .find('.file-language')
+      .find('.badge')
       .find(Translate)
       .props().children;
     expect(language).toBe('english');

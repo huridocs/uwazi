@@ -324,7 +324,7 @@ export class DocumentSidePanel extends Component {
             <div className="sidepanel-footer">
               <button
                 onClick={() => this.props.editToc(this.props.file.toc || [])}
-                className="edit-toc btn btn-info"
+                className="edit-toc btn btn-primary"
               >
                 <Icon icon="pencil-alt" />
                 <span className="btn-label">Edit</span>
@@ -348,11 +348,12 @@ export class DocumentSidePanel extends Component {
             <TabContent for="toc" className="toc">
               <div className="tocHeader">
                 <h1>
-                  <Translate>Table of contents</Translate>
-                  <TocGeneratedLabel file={this.props.file} className="autoCreatedLabel">
-                    <Translate>auto-created ⓘ </Translate>
-                  </TocGeneratedLabel>
+                  <Translate>Table of contents </Translate>
                 </h1>
+                &nbsp;
+                <TocGeneratedLabel file={this.props.file}>
+                  <Translate>auto-created ⓘ </Translate>
+                </TocGeneratedLabel>
               </div>
               <ShowIf if={!this.props.tocBeingEdited}>
                 <ShowToc

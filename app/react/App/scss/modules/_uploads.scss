@@ -87,9 +87,14 @@
     list-style: none;
   }
 
+  .upload-button {
+    margin-left: 15px;
+  }
+
   .btn {
     border-radius: 2px;
-    margin-left: 15px;
+    margin-right: 15px;
+    margin-top: 15px;
   }
 }
 
@@ -97,21 +102,9 @@
 .file-form {
   padding: 15px;
   border-bottom: 1px solid #f4f4f4;
-  .btn {
-    float: right;
-  }
 
   &-originalname {
     margin-bottom: 15px;
-  }
-
-  &-language {
-    background: #fff6da;
-    border: 1px solid rgba(0, 0, 0, 0.15);
-    box-sizing: border-box;
-    border-radius: 4px;
-    display: inline-block;
-    padding: 3px;
   }
 
   &-failed {

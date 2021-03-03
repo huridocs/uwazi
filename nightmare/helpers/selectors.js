@@ -223,7 +223,7 @@ export default {
     sidePanelFirstDocumentTitle:
       '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content-visible > div > div.filelist > ul > li > div > div.file-originalname',
     sidePanelFirstDocumentEditButton:
-      '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content-visible > div > div.filelist > ul > li > div > div:nth-child(2) > button',
+      '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.metadata.tab-content-visible > div > div.filelist > ul > li > div > div:nth-child(2) > div:nth-child(2) > button',
     fileFormInput: '#originalname',
     fileFormSubmit:
       '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content-visible > div > div.filelist > ul > li > form > div > div:nth-child(4) > button',

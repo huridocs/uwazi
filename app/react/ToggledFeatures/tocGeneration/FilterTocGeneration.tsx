@@ -34,7 +34,7 @@ const options = (aggregations: Aggregations = { all: {} }) => [
 export const FilterTocGeneration = ({ onChange, aggregations }: FilterTocGenerationProps) => (
   <NeedAuthorization roles={['admin']}>
     <FeatureToggle feature="tocGeneration">
-      <FormGroup key="generatedToc">
+      <FormGroup key="generatedToc" className="admin-filter">
         <SelectFilter
           model=".customFilters.generatedToc"
           prefix="generatedToc"

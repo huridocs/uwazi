@@ -22,7 +22,9 @@ exports[`ThesauriForm render should render DragAndDropContainer with thesauri it
       <div
         className="panel-heading"
       >
-        <FormGroup>
+        <FormGroup
+          className=""
+        >
           <Modeled(Connect(Field))
             model=".name"
           >
