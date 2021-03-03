@@ -1,4 +1,6 @@
 import { files, uploadsPath } from 'api/files';
+import { prettifyError } from 'api/utils/handleError';
+import errorLog from 'api/log/errorLog';
 import request from 'shared/JSONRequest';
 import entities from 'api/entities';
 
@@ -16,26 +18,28 @@ const tocService = (serviceUrl: string) => ({
         limit: 1,
       }
     );
-    if (!nextFile) {
-      return null;
+
+    try {
+      if (nextFile) {
+        const toc = await request.uploadFile(
+          serviceUrl,
+          nextFile.filename,
+          uploadsPath(nextFile.filename)
+        );
+        await files.save({ ...nextFile, toc, generatedToc: true });
+        const [entity] = await entities.get({ sharedId: nextFile.entity }, {});
+        await entities.save(
+          {
+            ...entity,
+            generatedToc: true,
+          },
+          { user: {}, language: nextFile.language },
+          false
+        );
+      }
+    } catch (e) {
+      errorLog.error(prettifyError(e).prettyMessage);
     }
-
-    const toc = await request.uploadFile(
-      serviceUrl,
-      nextFile.filename,
-      uploadsPath(nextFile.filename)
-    );
-
-    await files.save({ ...nextFile, toc, generatedToc: true });
-    const [entity] = await entities.get({ sharedId: nextFile.entity }, {});
-    return entities.save(
-      {
-        ...entity,
-        generatedToc: true,
-      },
-      { user: {}, language: nextFile.language },
-      false
-    );
   },
 });
 

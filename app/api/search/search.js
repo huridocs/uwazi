@@ -195,9 +195,6 @@ const indexedDictionaryValues = dictionary =>
     }, {});
 
 const _getAggregationDictionary = async (aggregation, language, property, dictionaries) => {
-  if (!property) {
-    return [{values: []}, {}];
-  }
   if (property.type === 'relationship') {
     const entitiesSharedId = aggregation.buckets.map(bucket => bucket.key);
 
