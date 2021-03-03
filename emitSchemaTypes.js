@@ -61,6 +61,21 @@ const writeTypeFile = (file, commonImport, snippets) => {
   }
 };
 
+const writeSchema = async (schemas, file) => {
+  const snippets = await Promise.all(
+    Object.entries(schemas).map(([name, schema]) => {
+      if (!name.match(/Schema$/)) {
+        return '';
+      }
+      return compile(schema, schema.title || firstUp(name), opts);
+    })
+  );
+
+  const contents = fs.readFileSync(file).toString();
+
+  writeTypeFile(file, typeImports(contents.match(typeImportFindRegex)), snippets);
+};
+
 const emitSchemaTypes = async file => {
   try {
     if (file.match(/spec/)) {
@@ -74,18 +89,7 @@ const emitSchemaTypes = async file => {
         return;
       }
 
-      const snippets = await Promise.all(
-        Object.entries(schemas).map(([name, schema]) => {
-          if (!name.match(/Schema$/)) {
-            return '';
-          }
-          return compile(schema, schema.title || firstUp(name), opts);
-        })
-      );
-
-      const contents = fs.readFileSync(file).toString();
-
-      writeTypeFile(file, typeImports(contents.match(typeImportFindRegex)), snippets);
+      writeSchema(schemas, file);
     }
   } catch (err) {
     console.error(`Failed emitting types from ${file}: ${err}.`);

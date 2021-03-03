@@ -9,7 +9,7 @@ export interface SearchParams {
     };
     customFilters?: {
       generatedToc?: {
-        values?: [] | [string];
+        values?: [] | [boolean];
       };
     };
     types?: [] | [string];
