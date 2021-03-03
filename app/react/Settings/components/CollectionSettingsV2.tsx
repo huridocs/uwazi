@@ -4,24 +4,21 @@ import { connect, ConnectedProps } from 'react-redux';
 import { Settings } from 'shared/types/settingsType';
 import { Tip } from 'app/Layout';
 import { Translate, t } from 'app/I18N';
-import { IStore } from 'app/istore';
+import { IStore, ClientTemplateSchema } from 'app/istore';
 import { useForm } from 'react-hook-form';
 import { actions } from 'app/BasicReducer';
 import { notificationActions } from 'app/Notifications';
 import { ToggleButton } from 'app/UI';
+import { MultiSelect } from 'app/Forms';
 
 import { ToggleChildren } from './ToggleChildren';
 import { SettingsLabel } from './SettingsLabel';
 import * as CollectionSettingsTips from './collectionSettingsTips';
 
-interface ToggledStatus {
-  /* eslint-disable camelcase */
-  home_page?: boolean;
-  private?: boolean;
-  /* eslint-enable camelcase */
-}
-
-const mapStateToProps = ({ settings }: IStore) => ({ collectionSettings: settings.collection });
+const mapStateToProps = ({ settings, templates }: IStore) => ({
+  collectionSettings: settings.collection,
+  templates,
+});
 
 const mapDispatchToProps = (dispatch: Dispatch<{}>) =>
   bindActionCreators(
@@ -36,26 +33,27 @@ const connector = connect(mapStateToProps, mapDispatchToProps);
 
 type mappedProps = ConnectedProps<typeof connector>;
 
-const CollectionSettings = ({ collectionSettings, setSettings, notify }: mappedProps) => {
-  const toggledStatusDefaults: ToggledStatus = {};
-
+const CollectionSettings = ({
+  collectionSettings,
+  templates,
+  setSettings,
+  notify,
+}: mappedProps) => {
   const collectionSettingsObject = collectionSettings.toJS();
+  const templatesObject: ClientTemplateSchema[] = templates.toJS();
 
-  const getDate = collectionSettingsObject.dateFormat;
+  const { register, handleSubmit, watch, setValue, getValues } = useForm({
+    defaultValues: collectionSettingsObject,
+  });
 
-  const [dateSeparator, setDateSeparator] = useState('-');
-  const [toggledStatus, setToggledStatus] = useState(toggledStatusDefaults);
+  register('private');
+  register('allowedPublicTemplates');
 
   const save = (newCollectionSettings: Settings) => {
-    console.log('Me llega al save:');
     console.log({ ...collectionSettingsObject, ...newCollectionSettings });
     setSettings({ ...collectionSettingsObject, ...newCollectionSettings });
     notify(t('System', 'Settings updated', null, false), 'success');
   };
-
-  const { register, handleSubmit, watch, setValue } = useForm({
-    defaultValues: collectionSettingsObject,
-  });
 
   return (
     <div className="panel panel-default collection-settings">
@@ -78,10 +76,10 @@ const CollectionSettings = ({ collectionSettings, setSettings, notify }: mappedP
           <SettingsLabel>
             <Translate>Custom favicon</Translate>
             <Tip icon="info-circle">{CollectionSettingsTips.customFavIcon}</Tip>
-            <ToggleChildren toggled={false}>
-              <input type="text" name="favicon" ref={register} />
-            </ToggleChildren>
           </SettingsLabel>
+          <ToggleChildren toggled={false}>
+            <input type="text" name="favicon" ref={register} />
+          </ToggleChildren>
         </div>
 
         <div className="form-element">
@@ -104,8 +102,9 @@ const CollectionSettings = ({ collectionSettings, setSettings, notify }: mappedP
             <Translate>Default view</Translate>
           </SettingsLabel>
           <select name="defaultLibraryView" className="selector" ref={register}>
-            <option value="cards">Card view</option>
-            <option value="list">List view</option>
+            <option value="cards">Cards</option>
+            <option value="table">Table</option>
+            <option value="map">Map</option>
           </select>
         </div>
 
@@ -114,58 +113,29 @@ const CollectionSettings = ({ collectionSettings, setSettings, notify }: mappedP
             <Translate>Date format</Translate>
           </SettingsLabel>
           <div>
-            <Translate>Separator</Translate>
-            <select
-              className="selector"
-              onChange={event => {
-                setDateSeparator(event.target.value);
-              }}
-              defaultValue="-"
-            >
-              <option value="-">-</option>
-              <option value="/">/</option>
-            </select>
             <Translate>Format</Translate>
             <select name="dateFormat" className="selector" ref={register}>
-              <option value={`yyyy${dateSeparator}MM${dateSeparator}dd`}>
-                Year, Month, Day 2021{`${dateSeparator}`}02{`${dateSeparator}`}26
-              </option>
-              <option value={`dd${dateSeparator}MM${dateSeparator}yyyy`}>
-                Day, Month, Year 26{`${dateSeparator}`}02{`${dateSeparator}`}2021
-              </option>
-              <option value={`MM${dateSeparator}dd${dateSeparator}YYYY`}>
-                Month, Day, Year 02{`${dateSeparator}`}26{`${dateSeparator}`}2021
-              </option>
+              <option value="yyyy/MM/dd">2021/02/26 (Year, Month, Day)</option>
+              <option value="dd/MM/yyyy">26/02/2021 (Day, Month, Year)</option>
+              <option value="MM/dd/yyyy">02/26/2021 (Month, Day, Year)</option>
+              <option value="yyyy-MM-dd">2021-02-26 (Year, Month, Day)</option>
+              <option value="dd-MM-yyyy">26-02-2021 (Day, Month, Year)</option>
+              <option value="MM-dd-yyyy">02-26-2021 (Month, Day, Year)</option>
             </select>
           </div>
         </div>
 
-        <div className="form-element" id="private-instance">
+        <div className="form-element" id="form-property-private">
           <SettingsLabel>
-            <Translate>Allow public sharing</Translate>
+            <Translate>Private Instance</Translate>
             <Tip icon="info-circle">{CollectionSettingsTips.publicSharing}</Tip>
           </SettingsLabel>
           <ToggleButton
-            checked={!watch('private')}
+            checked={Boolean(watch('private'))}
             onClick={() => {
-              setValue('private', 'false');
+              setValue('private', !getValues('private'));
             }}
           />
-          <input type="text" ref={register} name="private" />
-          {/* <ToggleChildren
-            toggled={!(toggledStatus.private || watch('private'))}
-            showChildren={false}
-            onToggleOn={() => {
-              setValue('private', false);
-              setToggledStatus({ ...toggledStatus, private: false });
-            }}
-            onToggleOff={() => {
-              setValue('private', true);
-              setToggledStatus({ ...toggledStatus, private: true });
-            }}
-          >
-            <input ref={register} name="private" />
-          </ToggleChildren> */}
         </div>
 
         <div className="form-element">
@@ -209,8 +179,47 @@ const CollectionSettings = ({ collectionSettings, setSettings, notify }: mappedP
         </div>
 
         <h2>
-          <Translate>Form and email configuration</Translate>
+          <Translate>Forms and email configuration</Translate>
         </h2>
+        <div className="form-element">
+          <SettingsLabel>
+            <Translate>Public Endpoints</Translate>
+            <Tip icon="info-circle">{CollectionSettingsTips.publicForm}</Tip>
+          </SettingsLabel>
+          <ToggleChildren
+            toggled={Boolean(
+              (watch('allowedPublicTemplates') || []).length || watch('publicFormDestination')
+            )}
+            onToggleOff={() => {
+              setValue('publicFormDestination', '');
+              setValue('allowedPublicTemplates', []);
+            }}
+          >
+            <div>
+              <SettingsLabel>
+                <Translate>Public Form destination URL</Translate>
+                <Tip icon="info-circle">{CollectionSettingsTips.publicForm}</Tip>
+              </SettingsLabel>
+              <input type="text" name="publicFormDestination" ref={register} />
+            </div>
+            <div>
+              <SettingsLabel>
+                <Translate>Whitelisted Templates</Translate>
+                <Tip icon="info-circle">{CollectionSettingsTips.publicForm}</Tip>
+              </SettingsLabel>
+              <MultiSelect
+                value={watch('allowedPublicTemplates')}
+                options={templatesObject.map(template => ({
+                  label: template.name,
+                  value: template._id,
+                }))}
+                onChange={newValues => {
+                  setValue('allowedPublicTemplates', newValues);
+                }}
+              />
+            </div>
+          </ToggleChildren>
+        </div>
 
         <h2>
           <Translate>Maps</Translate>

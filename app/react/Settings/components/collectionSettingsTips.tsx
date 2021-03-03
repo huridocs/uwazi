@@ -25,6 +25,7 @@ export const customFavIcon = (
   <>
     Favicon is an icon that appears in the browser tab and bookmarks.
     <br />
+    <br />
     You will need to reload the page after updating your Favicon.
   </>
 );
@@ -64,3 +65,5 @@ export const analytics = (
 );
 
 export const mapAxis = <>Set the default starting point for your geolocation properties.</>;
+
+export const publicForm = <>Placeholder text.</>;
