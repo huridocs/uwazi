@@ -51,6 +51,7 @@ const CollectionSettings = ({
   register('allowedPublicTemplates');
   register('mapStartingPoint');
   register('cookiepolicy');
+  register('newNameGeneration');
 
   const save = (newCollectionSettings: Settings) => {
     console.log({ ...collectionSettingsObject, ...newCollectionSettings });
@@ -80,7 +81,12 @@ const CollectionSettings = ({
             <Translate>Custom favicon</Translate>
             <Tip icon="info-circle">{CollectionSettingsTips.customFavIcon}</Tip>
           </SettingsLabel>
-          <ToggleChildren toggled={false}>
+          <ToggleChildren
+            toggled={Boolean(watch('favicon'))}
+            onToggleOff={() => {
+              setValue('favicon', '');
+            }}
+          >
             <input type="text" name="favicon" ref={register} />
           </ToggleChildren>
         </div>
@@ -152,19 +158,20 @@ const CollectionSettings = ({
             }}
           />
         </div>
-
-        {/* <div className="form-element">
-          <SettingsLabel>
-            <Translate>Non-latin characters support</Translate>
-            <Tip icon="info-circle">{CollectionSettingsTips.characterSupport}</Tip>
-          </SettingsLabel>
-          <ToggleButton
-            checked={Boolean(watch(''))}
-            onClick={() => {
-              setValue('', !getValues(''));
-            }}
-          />
-        </div> */}
+        {!collectionSettingsObject.newNameGeneration && (
+          <div className="form-element">
+            <SettingsLabel>
+              <Translate>Non-latin characters support</Translate>
+              <Tip icon="info-circle">{CollectionSettingsTips.characterSupport}</Tip>
+            </SettingsLabel>
+            <ToggleButton
+              checked={Boolean(watch('newNameGeneration'))}
+              onClick={() => {
+                setValue('newNameGeneration', !getValues('newNameGeneration'));
+              }}
+            />
+          </div>
+        )}
 
         <h2>
           <Translate>Website analytics</Translate>
