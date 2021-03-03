@@ -173,7 +173,5 @@ export const generatedTocAggregations = baseQuery => {
   const path = 'generatedToc';
   const filters = extractFilters(baseQuery, path);
   const { should } = baseQuery.query.bool;
-  const agg = aggregation(path, should, filters);
-  // agg.terms.missing = 'false';
-  return agg;
+  return aggregation(path, should, filters);
 };
