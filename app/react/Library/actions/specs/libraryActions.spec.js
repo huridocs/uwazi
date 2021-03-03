@@ -160,6 +160,7 @@ describe('libraryActions', () => {
 
     afterEach(() => backend.restore());
 
+    //eslint-disable-next-line max-statements
     describe('searchDocuments', () => {
       let store;
       let getState;
