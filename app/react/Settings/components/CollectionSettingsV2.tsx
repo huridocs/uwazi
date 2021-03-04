@@ -105,7 +105,7 @@ const CollectionSettings = ({
           <ToggleChildren
             toggled={Boolean(watch('home_page'))}
             onToggleOff={() => {
-              setValue('home_page', undefined);
+              setValue('home_page', '');
             }}
           >
             <input type="text" name="home_page" ref={register} />
@@ -217,7 +217,7 @@ const CollectionSettings = ({
           <Translate>Forms and email configuration</Translate>
         </h2>
 
-        <div className="form-element" id="public-enpoints">
+        <div className="form-element">
           <SettingsLabel>
             <Translate>Contact Form</Translate>
             <Tip icon="info-circle">{CollectionSettingsTips.emails[0]}</Tip>

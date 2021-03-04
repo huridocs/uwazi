@@ -1,6 +1,8 @@
 .collection-settings {
   .form-element {
     display: flex;
+
+    padding: 5px 0 5px 0;
   }
 
   .property-description {
@@ -135,8 +137,8 @@
 
   .panel-heading {
     background-color: transparent;
-    font-size: $f-size-xl;
-    font-weight: 300;
+    font-size: $f-size-xxl;
+    font-weight: 400;
 
     input {
       font-size: $f-size-xl;
@@ -145,8 +147,8 @@
 
   h2 {
     padding: 16px 0;
-    font-size: $f-size-lg;
-    font-weight: 300;
+    font-size: $f-size-xl;
+    font-weight: 500;
     border-bottom: 1px solid $c-grey-light;
   }
 
