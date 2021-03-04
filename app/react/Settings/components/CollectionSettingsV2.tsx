@@ -106,7 +106,7 @@ const CollectionSettings = ({
         </SettingsFormElement>
 
         <SettingsFormElement label="Default view">
-          <div className="col-xs-3 col-no-gutters">
+          <div className="col-xs-12 col-lg-3 col-no-gutters">
             <select name="defaultLibraryView" className="form-control" ref={register}>
               <option value="cards">Cards</option>
               <option value="table">Table</option>
@@ -116,7 +116,7 @@ const CollectionSettings = ({
         </SettingsFormElement>
 
         <SettingsFormElement label="Date format">
-          <div className="col-xs-3 col-no-gutters">
+          <div className="col-xs-12 col-lg-3 col-no-gutters">
             <select name="dateFormat" className="form-control" ref={register}>
               <option value="yyyy/MM/dd">2021/02/26 (Year, Month, Day)</option>
               <option value="dd/MM/yyyy">26/02/2021 (Day, Month, Year)</option>

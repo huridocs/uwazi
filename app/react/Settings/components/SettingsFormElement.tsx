@@ -15,8 +15,8 @@ export type ComponentProps = {
 const SettingsFormElement = ({
   label,
   tip,
-  labelClassName = 'col-xs-2',
-  inputsClassName = 'col-xs-10',
+  labelClassName = 'col-xs-12 col-lg-2',
+  inputsClassName = 'col-xs-12 col-lg-10',
   children,
 }: ComponentProps) => (
   <div className="form-element row">
