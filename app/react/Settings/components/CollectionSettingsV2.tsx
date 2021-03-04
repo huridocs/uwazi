@@ -60,10 +60,9 @@ const CollectionSettings = ({
       ...collectionSettingsObject,
       ...newCollectionSettings,
     });
-    await SettingsAPI.save(saveParameters).then(result => {
-      setSettings(result);
-      notify(t('System', 'Settings updated', null, false), 'success');
-    });
+    const result = await SettingsAPI.save(saveParameters);
+    setSettings(result);
+    notify(t('System', 'Settings updated', null, false), 'success');
   };
 
   return (
@@ -106,7 +105,7 @@ const CollectionSettings = ({
           <ToggleChildren
             toggled={Boolean(watch('home_page'))}
             onToggleOff={() => {
-              setValue('home_page', '');
+              setValue('home_page', undefined);
             }}
           >
             <input type="text" name="home_page" ref={register} />
@@ -301,17 +300,10 @@ const CollectionSettings = ({
 
         <div className="form-element">
           <SettingsLabel>
-            <Translate>Custom MapTiler</Translate>
+            <Translate>MapTiler key</Translate>
             <Tip icon="info-circle">{CollectionSettingsTips.mapTiler}</Tip>
           </SettingsLabel>
-          <ToggleChildren
-            toggled={Boolean(watch('mapTilerKey'))}
-            onToggleOff={() => {
-              setValue('mapTilerKey', '');
-            }}
-          >
-            <input type="text" name="mapTilerKey" ref={register} placeholder="Enter your API key" />
-          </ToggleChildren>
+          <input type="text" name="mapTilerKey" ref={register} placeholder="Enter your API key" />
         </div>
 
         <div>
