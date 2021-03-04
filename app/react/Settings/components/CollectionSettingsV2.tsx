@@ -11,6 +11,8 @@ import { actions } from 'app/BasicReducer';
 import { notificationActions } from 'app/Notifications';
 import { ToggleButton } from 'app/UI';
 import { MultiSelect, Geolocation } from 'app/Forms';
+import { RequestParams } from 'app/utils/RequestParams';
+import SettingsAPI from 'app/Settings/SettingsAPI';
 
 import { ToggleChildren } from './ToggleChildren';
 import { SettingsLabel } from './SettingsLabel';
@@ -54,9 +56,19 @@ const CollectionSettings = ({
   register('newNameGeneration');
 
   const save = (newCollectionSettings: Settings) => {
-    console.log({ ...collectionSettingsObject, ...newCollectionSettings });
-    setSettings({ ...collectionSettingsObject, ...newCollectionSettings });
-    notify(t('System', 'Settings updated', null, false), 'success');
+    const saveParameters = new RequestParams({
+      ...collectionSettingsObject,
+      ...newCollectionSettings,
+    });
+    console.log(saveParameters);
+    SettingsAPI.save(saveParameters)
+      .then(result => {
+        setSettings(result);
+        notify(t('System', 'Settings updated', null, false), 'success');
+      })
+      .catch(e => {
+        notify(e);
+      });
   };
 
   return (
@@ -291,6 +303,22 @@ const CollectionSettings = ({
             }}
           />
         </div>
+
+        <div className="form-element">
+          <SettingsLabel>
+            <Translate>Custom MapTiler</Translate>
+            <Tip icon="info-circle">{CollectionSettingsTips.mapTiler}</Tip>
+          </SettingsLabel>
+          <ToggleChildren
+            toggled={Boolean(watch('mapTilerKey'))}
+            onToggleOff={() => {
+              setValue('mapTilerKey', '');
+            }}
+          >
+            <input type="text" name="mapTilerKey" ref={register} placeholder="Enter your API key" />
+          </ToggleChildren>
+        </div>
+
         <div>
           <button type="submit" className="btn btn-success">
             <Translate>Save</Translate>

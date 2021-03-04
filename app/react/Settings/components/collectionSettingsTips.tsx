@@ -86,3 +86,5 @@ export const publicForm = [
     it from the list.
   </>,
 ];
+
+export const mapTiler = <>You can set your own MapTiler API key</>;
