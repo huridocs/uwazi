@@ -30,25 +30,93 @@ describe('migration remove-_id-from-filter-items', () => {
   });
 
   it('should ignore items without _id property', async () => {
-    const filters = [
+    const settings = [
       {
-        items: [
+        filters: [
           {
-            id: 'someid',
-          },
-          {
-            id: 'someotherid',
+            items: [
+              {
+                id: 'someid',
+              },
+              {
+                id: 'someotherid',
+              },
+            ],
           },
         ],
       },
     ];
-    await testingDB.clearAllAndLoad({ settings: [...filters] });
+    await testingDB.clearAllAndLoad({ settings });
     await migration.up(testingDB.mongodb);
-    const settings = await testingDB.mongodb
+    const savedSettings = await testingDB.mongodb
       .collection('settings')
       .find({})
       .toArray();
 
-    expect(settings).toEqual(filters);
+    expect(savedSettings).toEqual(settings);
+  });
+
+  it('should ignore collections without filters', async () => {
+    const settings = [
+      {
+        _id: 'someid',
+        site_name: 'some name',
+      },
+    ];
+
+    await testingDB.clearAllAndLoad({ settings });
+    await migration.up(testingDB.mongodb);
+    const savedSettings = await testingDB.mongodb
+      .collection('settings')
+      .find({})
+      .toArray();
+
+    expect(savedSettings).toEqual(settings);
+  });
+
+  it('should ignore filters without items', async () => {
+    const settings = [
+      {
+        filters: [
+          {
+            _id: 'somefilterid',
+            id: 'someotherid',
+            name: 'somename',
+          },
+        ],
+      },
+    ];
+
+    await testingDB.clearAllAndLoad({ settings });
+    await migration.up(testingDB.mongodb);
+    const savedSettings = await testingDB.mongodb
+      .collection('settings')
+      .find({})
+      .toArray();
+
+    expect(savedSettings).toEqual(settings);
+  });
+
+  it('should ignore filters with empty items', async () => {
+    const settings = [
+      {
+        filters: [
+          {
+            _id: 'somefilterid',
+            id: 'someotherid',
+            name: 'somename',
+            items: [],
+          },
+        ],
+      },
+    ];
+    await testingDB.clearAllAndLoad({ settings });
+    await migration.up(testingDB.mongodb);
+    const savedSettings = await testingDB.mongodb
+      .collection('settings')
+      .find({})
+      .toArray();
+
+    expect(savedSettings).toEqual(settings);
   });
 });
