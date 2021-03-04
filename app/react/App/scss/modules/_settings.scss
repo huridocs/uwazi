@@ -2,6 +2,54 @@
   .form-element.row {
     margin: 0;
     padding: 5px 0 5px 0;
+
+    &:hover {
+      background-color: #efefef;
+    }
+
+    .row {
+      padding-top: 0px;
+      padding-bottom: 10px;
+    }
+  }
+
+  .inline-form-label {
+    font-size: 16px;
+    line-height: 32px;
+
+    &.larger-label {
+      padding-left: 15px;
+      padding-right: 15px;
+      width: 250px;
+      float: left;
+    }
+  }
+
+  .form-element-inputs {
+    display: flex;
+
+    &.smaller-inputs {
+      padding-left: 15px;
+      padding-right: 15px;
+    }
+
+    .col-no-gutters {
+      margin-left: -15px;
+      margin-right: -15px;
+    }
+
+    .multiselect {
+      margin-top: -8px;
+    }
+  }
+
+  .toggle-children-button {
+    margin-top: 2px;
+    margin-right: 15px;
+  }
+
+  .toggle-children-children {
+    flex: 1;
   }
 
   .property-description {
@@ -138,6 +186,8 @@
     background-color: transparent;
     font-size: $f-size-xxl;
     font-weight: 400;
+    padding-left: 0;
+    padding-right: 0;
 
     input {
       font-size: $f-size-xl;

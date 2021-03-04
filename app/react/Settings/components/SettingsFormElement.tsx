@@ -4,19 +4,28 @@ import { Tip } from 'app/Layout';
 
 import { SettingsLabel } from './SettingsLabel';
 
-interface ComponentProps {
+export type ComponentProps = {
   label: string;
-  tip?: React.ReactNode;
   children: React.ReactNode;
-}
+  tip?: React.ReactNode;
+  labelClassName?: string;
+  inputsClassName?: string;
+};
 
-const SettingsFormElement = ({ label, tip, children }: ComponentProps) => (
+const SettingsFormElement = ({
+  label,
+  tip,
+  labelClassName = 'col-xs-2',
+  inputsClassName = 'col-xs-10',
+  children,
+}: ComponentProps) => (
   <div className="form-element row">
-    <SettingsLabel className="col-xs-2">
+    <SettingsLabel className={labelClassName}>
       <Translate>{label}</Translate>
       {tip && <Tip icon="info-circle">{tip}</Tip>}
     </SettingsLabel>
-    <div className="form-element-inputs col-xs-10">{children}</div>
+    <div className={`form-element-inputs ${inputsClassName}`}>{children}</div>
   </div>
 );
+
 export { SettingsFormElement };

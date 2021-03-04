@@ -75,7 +75,7 @@ const CollectionSettings = ({
         </h2>
 
         <SettingsFormElement label="Collection name">
-          <input type="text" name="site_name" ref={register} />
+          <input type="text" name="site_name" ref={register} className="form-control" />
         </SettingsFormElement>
 
         <SettingsFormElement label="Custom favicon" tip={tips.customFavIcon}>
@@ -85,7 +85,7 @@ const CollectionSettings = ({
               setValue('favicon', '');
             }}
           >
-            <input type="text" name="favicon" ref={register} />
+            <input type="text" name="favicon" ref={register} className="form-control" />
           </ToggleChildren>
         </SettingsFormElement>
 
@@ -96,27 +96,36 @@ const CollectionSettings = ({
               setValue('home_page', '');
             }}
           >
-            <input type="text" name="home_page" ref={register} />
+            <div className="input-group">
+              <span className="input-group-addon" id="basic-addon1">
+                https://yourdomain
+              </span>
+              <input type="text" className="form-control" name="home_page" ref={register} />
+            </div>
           </ToggleChildren>
         </SettingsFormElement>
 
         <SettingsFormElement label="Default view">
-          <select name="defaultLibraryView" className="selector" ref={register}>
-            <option value="cards">Cards</option>
-            <option value="table">Table</option>
-            <option value="map">Map</option>
-          </select>
+          <div className="col-xs-3 col-no-gutters">
+            <select name="defaultLibraryView" className="form-control" ref={register}>
+              <option value="cards">Cards</option>
+              <option value="table">Table</option>
+              <option value="map">Map</option>
+            </select>
+          </div>
         </SettingsFormElement>
 
         <SettingsFormElement label="Date format">
-          <select name="dateFormat" className="selector" ref={register}>
-            <option value="yyyy/MM/dd">2021/02/26 (Year, Month, Day)</option>
-            <option value="dd/MM/yyyy">26/02/2021 (Day, Month, Year)</option>
-            <option value="MM/dd/yyyy">02/26/2021 (Month, Day, Year)</option>
-            <option value="yyyy-MM-dd">2021-02-26 (Year, Month, Day)</option>
-            <option value="dd-MM-yyyy">26-02-2021 (Day, Month, Year)</option>
-            <option value="MM-dd-yyyy">02-26-2021 (Month, Day, Year)</option>
-          </select>
+          <div className="col-xs-3 col-no-gutters">
+            <select name="dateFormat" className="form-control" ref={register}>
+              <option value="yyyy/MM/dd">2021/02/26 (Year, Month, Day)</option>
+              <option value="dd/MM/yyyy">26/02/2021 (Day, Month, Year)</option>
+              <option value="MM/dd/yyyy">02/26/2021 (Month, Day, Year)</option>
+              <option value="yyyy-MM-dd">2021-02-26 (Year, Month, Day)</option>
+              <option value="dd-MM-yyyy">26-02-2021 (Day, Month, Year)</option>
+              <option value="MM-dd-yyyy">02-26-2021 (Month, Day, Year)</option>
+            </select>
+          </div>
         </SettingsFormElement>
 
         <SettingsFormElement label="Private Instance" tip={tips.publicSharing}>
@@ -159,7 +168,7 @@ const CollectionSettings = ({
               setValue('analyticsTrackingId', '');
             }}
           >
-            <input type="text" name="analyticsTrackingId" ref={register} />
+            <input type="text" name="analyticsTrackingId" ref={register} className="form-control" />
           </ToggleChildren>
         </SettingsFormElement>
 
@@ -170,7 +179,7 @@ const CollectionSettings = ({
               setValue('matomoConfig', '');
             }}
           >
-            <input type="text" name="matomoConfig" ref={register} />
+            <input type="text" name="matomoConfig" ref={register} className="form-control" />
           </ToggleChildren>
         </SettingsFormElement>
 
@@ -187,7 +196,7 @@ const CollectionSettings = ({
             }}
           >
             <SettingsFormElement label="Receiving email" tip={tips.emails[1]}>
-              <input type="text" ref={register} name="contactEmail" />
+              <input type="text" ref={register} name="contactEmail" className="form-control" />
             </SettingsFormElement>
 
             <SettingsFormElement label="Sending email" tip={tips.emails[2]}>
@@ -196,6 +205,7 @@ const CollectionSettings = ({
                 ref={register}
                 name="senderEmail"
                 placeholder="no-reply@uwazi.io"
+                className="form-control"
               />
             </SettingsFormElement>
           </ToggleChildren>
@@ -211,11 +221,26 @@ const CollectionSettings = ({
               setValue('allowedPublicTemplates', []);
             }}
           >
-            <SettingsFormElement label="Public Form destination URL" tip={tips.publicForm[1]}>
-              <input type="text" name="publicFormDestination" ref={register} />
+            <SettingsFormElement
+              label="Public Form submit URL"
+              tip={tips.publicForm[1]}
+              labelClassName="larger-label"
+              inputsClassName="smaller-inputs"
+            >
+              <input
+                type="text"
+                name="publicFormDestination"
+                ref={register}
+                className="form-control"
+              />
             </SettingsFormElement>
 
-            <SettingsFormElement label="Whitelisted Templates" tip={tips.publicForm[2]}>
+            <SettingsFormElement
+              label="Whitelisted Templates"
+              tip={tips.publicForm[2]}
+              labelClassName="larger-label"
+              inputsClassName="smaller-inputs"
+            >
               <MultiSelect
                 value={watch('allowedPublicTemplates')}
                 options={templatesObject.map(template => ({
@@ -235,15 +260,17 @@ const CollectionSettings = ({
         </h2>
 
         <SettingsFormElement label="Custom starting location" tip={tips.mapAxis}>
-          <Geolocation
-            onChange={(values: Settings['mapStartingPoint']) => {
-              setValue('mapStartingPoint', values);
-            }}
-          />
+          <div className="settings-map">
+            <Geolocation
+              onChange={(values: Settings['mapStartingPoint']) => {
+                setValue('mapStartingPoint', values);
+              }}
+            />
+          </div>
         </SettingsFormElement>
 
         <SettingsFormElement label="MapTiler key" tip={tips.mapTiler}>
-          <input type="text" name="mapTilerKey" ref={register} placeholder="Enter your API key" />
+          <input type="text" name="mapTilerKey" ref={register} className="form-control" />
         </SettingsFormElement>
 
         <div>
