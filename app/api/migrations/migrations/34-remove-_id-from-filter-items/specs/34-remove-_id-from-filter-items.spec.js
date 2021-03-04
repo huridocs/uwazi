@@ -28,4 +28,27 @@ describe('migration remove-_id-from-filter-items', () => {
     expect(item2).not.toHaveProperty('_id');
     expect(item3).not.toHaveProperty('_id');
   });
+
+  it('should ignore items without _id property', async () => {
+    const filters = [
+      {
+        items: [
+          {
+            id: 'someid',
+          },
+          {
+            id: 'someotherid',
+          },
+        ],
+      },
+    ];
+    await testingDB.clearAllAndLoad({ settings: [...filters] });
+    await migration.up(testingDB.mongodb);
+    const settings = await testingDB.mongodb
+      .collection('settings')
+      .find({})
+      .toArray();
+
+    expect(settings).toEqual(filters);
+  });
 });
