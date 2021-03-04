@@ -40,7 +40,7 @@ const conformThumbnail = (file, item) => {
   const acceptedThumbnailExtensions = ['png', 'gif', 'jpg', 'jpeg'];
   let thumbnail = null;
 
-  if (getExtension(file.filename) === 'pdf') {
+  if (file.filename && getExtension(file.filename) === 'pdf') {
     thumbnail = (
       <span>
         <Icon icon="file-pdf" /> pdf
@@ -48,7 +48,18 @@ const conformThumbnail = (file, item) => {
     );
   }
 
-  if (acceptedThumbnailExtensions.indexOf(getExtension(file.filename.toLowerCase())) !== -1) {
+  if (file.url) {
+    thumbnail = (
+      <span>
+        <Icon icon="link" />
+      </span>
+    );
+  }
+
+  if (
+    file.filename &&
+    acceptedThumbnailExtensions.indexOf(getExtension(file.filename.toLowerCase())) !== -1
+  ) {
     thumbnail = <img src={item.downloadHref} alt={file.filename} />;
   }
 
@@ -130,7 +141,7 @@ export class Attachment extends Component {
     const item = getItemOptions(file.filename, file.url);
     let name = (
       <a className="attachment-link" href={item.url || item.downloadHref}>
-        {file.filename ? conformThumbnail(file, item) : null}
+        {conformThumbnail(file, item)}
         <span className="attachment-name">
           <span>{file.originalname}</span>
           <ShowIf if={Boolean(sizeString)}>
@@ -145,7 +156,7 @@ export class Attachment extends Component {
     if (this.props.beingEdited && !this.props.readOnly) {
       name = (
         <div className="attachment-link">
-          {file.filename ? conformThumbnail(file, item) : null}
+          {conformThumbnail(file, item)}
           <span className="attachment-name">
             <AttachmentForm model={this.props.model} onSubmit={this.onRenameSubmit} />
           </span>
