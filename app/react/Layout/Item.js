@@ -78,7 +78,11 @@ export class Item extends Component {
         <ItemFooter>
           <span>
             {doc.template ? <TemplateLabel template={doc.template} /> : false}
-            {doc.published ? '' : <Tip icon="lock">This entity is restricted.</Tip>}
+            {doc.published ? (
+              ''
+            ) : (
+              <Tip icon="lock">This entity is restricted from public view.</Tip>
+            )}
           </span>
           {this.props.labels}
           {buttons}
