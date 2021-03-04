@@ -1,7 +1,7 @@
 import React from 'react';
 
 export interface SettingsLabelProps {
-  children: JSX.Element[] | JSX.Element;
+  children: React.ReactNode;
   className?: string;
 }
 

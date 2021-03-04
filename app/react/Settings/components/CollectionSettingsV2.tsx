@@ -3,7 +3,6 @@ import React from 'react';
 import { Dispatch, bindActionCreators } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
 import { Settings } from 'shared/types/settingsType';
-import { Tip } from 'app/Layout';
 import { Translate, t } from 'app/I18N';
 import { IStore, ClientTemplateSchema } from 'app/istore';
 import { useForm } from 'react-hook-form';
@@ -15,8 +14,8 @@ import { RequestParams } from 'app/utils/RequestParams';
 import SettingsAPI from 'app/Settings/SettingsAPI';
 
 import { ToggleChildren } from './ToggleChildren';
-import { SettingsLabel } from './SettingsLabel';
-import * as CollectionSettingsTips from './collectionSettingsTips';
+import * as tips from './collectionSettingsTips';
+import { SettingsFormElement } from './SettingsFormElement';
 
 const mapStateToProps = ({ settings, templates }: IStore) => ({
   collectionSettings: settings.collection,
@@ -75,37 +74,22 @@ const CollectionSettings = ({
           <Translate>General</Translate>
         </h2>
 
-        <div className="form-element row">
-          <SettingsLabel className="col-xs-2">
-            <Translate>Collection name</Translate>
-          </SettingsLabel>
-          <div className="form-element-inputs col-xs-10">
-            <input type="text" name="site_name" ref={register} />
-          </div>
-        </div>
+        <SettingsFormElement label="Collection name">
+          <input type="text" name="site_name" ref={register} />
+        </SettingsFormElement>
 
-        <div className="form-element">
-          <SettingsLabel>
-            <Translate>Custom favicon</Translate>
-            <Tip icon="info-circle">{CollectionSettingsTips.customFavIcon}</Tip>
-          </SettingsLabel>
-          <div className="form-element-inputs">
-            <ToggleChildren
-              toggled={Boolean(watch('favicon'))}
-              onToggleOff={() => {
-                setValue('favicon', '');
-              }}
-            >
-              <input type="text" name="favicon" ref={register} />
-            </ToggleChildren>
-          </div>
-        </div>
+        <SettingsFormElement label="Custom favicon" tip={tips.customFavIcon}>
+          <ToggleChildren
+            toggled={Boolean(watch('favicon'))}
+            onToggleOff={() => {
+              setValue('favicon', '');
+            }}
+          >
+            <input type="text" name="favicon" ref={register} />
+          </ToggleChildren>
+        </SettingsFormElement>
 
-        <div className="form-element">
-          <SettingsLabel>
-            <Translate>Use custom landing page</Translate>
-            <Tip icon="info-circle">{CollectionSettingsTips.landingPageTip}</Tip>
-          </SettingsLabel>
+        <SettingsFormElement label="Use custom landing page" tip={tips.landingPageTip}>
           <ToggleChildren
             toggled={Boolean(watch('home_page'))}
             onToggleOff={() => {
@@ -114,84 +98,61 @@ const CollectionSettings = ({
           >
             <input type="text" name="home_page" ref={register} />
           </ToggleChildren>
-        </div>
+        </SettingsFormElement>
 
-        <div className="form-element">
-          <SettingsLabel>
-            <Translate>Default view</Translate>
-          </SettingsLabel>
+        <SettingsFormElement label="Default view">
           <select name="defaultLibraryView" className="selector" ref={register}>
             <option value="cards">Cards</option>
             <option value="table">Table</option>
             <option value="map">Map</option>
           </select>
-        </div>
+        </SettingsFormElement>
 
-        <div className="form-element">
-          <SettingsLabel>
-            <Translate>Date format</Translate>
-          </SettingsLabel>
-          <div>
-            <select name="dateFormat" className="selector" ref={register}>
-              <option value="yyyy/MM/dd">2021/02/26 (Year, Month, Day)</option>
-              <option value="dd/MM/yyyy">26/02/2021 (Day, Month, Year)</option>
-              <option value="MM/dd/yyyy">02/26/2021 (Month, Day, Year)</option>
-              <option value="yyyy-MM-dd">2021-02-26 (Year, Month, Day)</option>
-              <option value="dd-MM-yyyy">26-02-2021 (Day, Month, Year)</option>
-              <option value="MM-dd-yyyy">02-26-2021 (Month, Day, Year)</option>
-            </select>
-          </div>
-        </div>
+        <SettingsFormElement label="Date format">
+          <select name="dateFormat" className="selector" ref={register}>
+            <option value="yyyy/MM/dd">2021/02/26 (Year, Month, Day)</option>
+            <option value="dd/MM/yyyy">26/02/2021 (Day, Month, Year)</option>
+            <option value="MM/dd/yyyy">02/26/2021 (Month, Day, Year)</option>
+            <option value="yyyy-MM-dd">2021-02-26 (Year, Month, Day)</option>
+            <option value="dd-MM-yyyy">26-02-2021 (Day, Month, Year)</option>
+            <option value="MM-dd-yyyy">02-26-2021 (Month, Day, Year)</option>
+          </select>
+        </SettingsFormElement>
 
-        <div className="form-element" id="form-property-private">
-          <SettingsLabel>
-            <Translate>Private Instance</Translate>
-            <Tip icon="info-circle">{CollectionSettingsTips.publicSharing}</Tip>
-          </SettingsLabel>
+        <SettingsFormElement label="Private Instance" tip={tips.publicSharing}>
           <ToggleButton
             checked={Boolean(watch('private'))}
             onClick={() => {
               setValue('private', !getValues('private'));
             }}
           />
-        </div>
+        </SettingsFormElement>
 
-        <div className="form-element">
-          <SettingsLabel>
-            <Translate>Show cookie policy</Translate>
-            <Tip icon="info-circle">{CollectionSettingsTips.cookiePolicy}</Tip>
-          </SettingsLabel>
+        <SettingsFormElement label="Show cookie policy" tip={tips.cookiePolicy}>
           <ToggleButton
             checked={Boolean(watch('cookiepolicy'))}
             onClick={() => {
               setValue('cookiepolicy', !getValues('cookiepolicy'));
             }}
           />
-        </div>
+        </SettingsFormElement>
+
         {!collectionSettingsObject.newNameGeneration && (
-          <div className="form-element">
-            <SettingsLabel>
-              <Translate>Non-latin characters support</Translate>
-              <Tip icon="info-circle">{CollectionSettingsTips.characterSupport}</Tip>
-            </SettingsLabel>
+          <SettingsFormElement label="Non-latin characters support" tip={tips.characterSupport}>
             <ToggleButton
               checked={Boolean(watch('newNameGeneration'))}
               onClick={() => {
                 setValue('newNameGeneration', !getValues('newNameGeneration'));
               }}
             />
-          </div>
+          </SettingsFormElement>
         )}
 
         <h2>
           <Translate>Website analytics</Translate>
         </h2>
 
-        <div className="form-element">
-          <SettingsLabel>
-            <Translate>Google Analytics</Translate>
-            <Tip icon="info-circle">{CollectionSettingsTips.analytics}</Tip>
-          </SettingsLabel>
+        <SettingsFormElement label="Google Analytics" tip={tips.analytics}>
           <ToggleChildren
             toggled={Boolean(watch('analyticsTrackingId'))}
             onToggleOff={() => {
@@ -200,13 +161,9 @@ const CollectionSettings = ({
           >
             <input type="text" name="analyticsTrackingId" ref={register} />
           </ToggleChildren>
-        </div>
+        </SettingsFormElement>
 
-        <div className="form-element">
-          <SettingsLabel>
-            <Translate>Motomo Analytics</Translate>
-            <Tip icon="info-circle">{CollectionSettingsTips.analytics}</Tip>
-          </SettingsLabel>
+        <SettingsFormElement label="Motomo Analytics" tip={tips.analytics}>
           <ToggleChildren
             toggled={Boolean(watch('matomoConfig'))}
             onToggleOff={() => {
@@ -215,17 +172,13 @@ const CollectionSettings = ({
           >
             <input type="text" name="matomoConfig" ref={register} />
           </ToggleChildren>
-        </div>
+        </SettingsFormElement>
 
         <h2>
           <Translate>Forms and email configuration</Translate>
         </h2>
 
-        <div className="form-element">
-          <SettingsLabel>
-            <Translate>Contact Form</Translate>
-            <Tip icon="info-circle">{CollectionSettingsTips.emails[0]}</Tip>
-          </SettingsLabel>
+        <SettingsFormElement label="Contact Form" tip={tips.emails[0]}>
           <ToggleChildren
             toggled={Boolean(watch('contactEmail') || watch('senderEmail'))}
             onToggleOff={() => {
@@ -233,25 +186,22 @@ const CollectionSettings = ({
               setValue('senderEmail', '');
             }}
           >
-            <SettingsLabel>
-              <Translate>Receiving email</Translate>
-              <Tip icon="info-circle">{CollectionSettingsTips.emails[1]}</Tip>
-            </SettingsLabel>
-            <input type="text" ref={register} name="contactEmail" />
+            <SettingsFormElement label="Receiving email" tip={tips.emails[1]}>
+              <input type="text" ref={register} name="contactEmail" />
+            </SettingsFormElement>
 
-            <SettingsLabel>
-              <Translate>Sending email</Translate>
-              <Tip icon="info-circle">{CollectionSettingsTips.emails[2]}</Tip>
-            </SettingsLabel>
-            <input type="text" ref={register} name="senderEmail" placeholder="no-reply@uwazi.io" />
+            <SettingsFormElement label="Sending email" tip={tips.emails[2]}>
+              <input
+                type="text"
+                ref={register}
+                name="senderEmail"
+                placeholder="no-reply@uwazi.io"
+              />
+            </SettingsFormElement>
           </ToggleChildren>
-        </div>
+        </SettingsFormElement>
 
-        <div className="form-element" id="public-enpoints">
-          <SettingsLabel>
-            <Translate>Public Endpoints</Translate>
-            <Tip icon="info-circle">{CollectionSettingsTips.publicForm[0]}</Tip>
-          </SettingsLabel>
+        <SettingsFormElement label="Public Endpoints" tip={tips.publicForm[0]}>
           <ToggleChildren
             toggled={Boolean(
               (watch('allowedPublicTemplates') || []).length || watch('publicFormDestination')
@@ -261,18 +211,11 @@ const CollectionSettings = ({
               setValue('allowedPublicTemplates', []);
             }}
           >
-            <div>
-              <SettingsLabel>
-                <Translate>Public Form destination URL</Translate>
-                <Tip icon="info-circle">{CollectionSettingsTips.publicForm[1]}</Tip>
-              </SettingsLabel>
+            <SettingsFormElement label="Public Form destination URL" tip={tips.publicForm[1]}>
               <input type="text" name="publicFormDestination" ref={register} />
-            </div>
-            <div>
-              <SettingsLabel>
-                <Translate>Whitelisted Templates</Translate>
-                <Tip icon="info-circle">{CollectionSettingsTips.publicForm[2]}</Tip>
-              </SettingsLabel>
+            </SettingsFormElement>
+
+            <SettingsFormElement label="Whitelisted Templates" tip={tips.publicForm[2]}>
               <MultiSelect
                 value={watch('allowedPublicTemplates')}
                 options={templatesObject.map(template => ({
@@ -283,32 +226,25 @@ const CollectionSettings = ({
                   setValue('allowedPublicTemplates', newValues);
                 }}
               />
-            </div>
+            </SettingsFormElement>
           </ToggleChildren>
-        </div>
+        </SettingsFormElement>
 
         <h2>
           <Translate>Maps</Translate>
         </h2>
-        <div className="form-element">
-          <SettingsLabel>
-            <Translate>Custom starting location</Translate>
-            <Tip icon="info-circle">{CollectionSettingsTips.mapAxis}</Tip>
-          </SettingsLabel>
+
+        <SettingsFormElement label="Custom starting location" tip={tips.mapAxis}>
           <Geolocation
             onChange={(values: Settings['mapStartingPoint']) => {
               setValue('mapStartingPoint', values);
             }}
           />
-        </div>
+        </SettingsFormElement>
 
-        <div className="form-element">
-          <SettingsLabel>
-            <Translate>MapTiler key</Translate>
-            <Tip icon="info-circle">{CollectionSettingsTips.mapTiler}</Tip>
-          </SettingsLabel>
+        <SettingsFormElement label="MapTiler key" tip={tips.mapTiler}>
           <input type="text" name="mapTilerKey" ref={register} placeholder="Enter your API key" />
-        </div>
+        </SettingsFormElement>
 
         <div>
           <button type="submit" className="btn btn-success">
