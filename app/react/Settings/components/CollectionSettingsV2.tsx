@@ -75,11 +75,13 @@ const CollectionSettings = ({
           <Translate>General</Translate>
         </h2>
 
-        <div className="form-element">
-          <SettingsLabel>
+        <div className="form-element row">
+          <SettingsLabel className="col-xs-2">
             <Translate>Collection name</Translate>
           </SettingsLabel>
-          <input type="text" name="site_name" ref={register} />
+          <div className="form-element-inputs col-xs-10">
+            <input type="text" name="site_name" ref={register} />
+          </div>
         </div>
 
         <div className="form-element">
@@ -87,14 +89,16 @@ const CollectionSettings = ({
             <Translate>Custom favicon</Translate>
             <Tip icon="info-circle">{CollectionSettingsTips.customFavIcon}</Tip>
           </SettingsLabel>
-          <ToggleChildren
-            toggled={Boolean(watch('favicon'))}
-            onToggleOff={() => {
-              setValue('favicon', '');
-            }}
-          >
-            <input type="text" name="favicon" ref={register} />
-          </ToggleChildren>
+          <div className="form-element-inputs">
+            <ToggleChildren
+              toggled={Boolean(watch('favicon'))}
+              onToggleOff={() => {
+                setValue('favicon', '');
+              }}
+            >
+              <input type="text" name="favicon" ref={register} />
+            </ToggleChildren>
+          </div>
         </div>
 
         <div className="form-element">
