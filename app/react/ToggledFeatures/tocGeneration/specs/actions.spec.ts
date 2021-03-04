@@ -13,6 +13,14 @@ import { tocGenerationActions } from '../actions';
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
 
+const createDoc = (generatedToc: boolean, fileId: string): ClientEntitySchema => ({
+  name: 'doc',
+  _id: 'id',
+  sharedId: 'sharedId',
+  defaultDoc: { _id: fileId, generatedToc },
+  documents: [{ _id: fileId, generatedToc }],
+});
+
 describe('reviewToc', () => {
   it('should store the document with the response of reviewToc', done => {
     mockID();
@@ -26,37 +34,8 @@ describe('reviewToc', () => {
       type: 'reloadRelationships',
     });
 
-    const doc: ClientEntitySchema = {
-      name: 'doc',
-      _id: 'id',
-      sharedId: 'sharedId',
-      defaultDoc: {
-        _id: fileId,
-        generatedToc: true,
-      },
-      documents: [
-        {
-          _id: fileId,
-          generatedToc: true,
-        },
-      ],
-    };
-
-    const updatedEntity = {
-      name: 'doc',
-      _id: 'id',
-      sharedId: 'sharedId',
-      defaultDoc: {
-        _id: fileId,
-        generatedToc: false,
-      },
-      documents: [
-        {
-          _id: fileId,
-          generatedToc: false,
-        },
-      ],
-    };
+    const doc = createDoc(true, fileId);
+    const updatedEntity = createDoc(false, fileId);
 
     const expectedActions = [
       { type: 'rrf/reset', model: 'documentViewer.sidepanel.metadata' },

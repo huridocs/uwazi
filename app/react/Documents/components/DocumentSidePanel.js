@@ -1,4 +1,3 @@
-/* eslint-disable max-lines */
 import { Tabs, TabLink, TabContent } from 'react-tabs-redux';
 import { browserHistory } from 'react-router';
 import { connect } from 'react-redux';

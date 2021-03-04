@@ -376,6 +376,21 @@ describe('entities', () => {
       });
     });
 
+    describe('when generatedToc is undefined', () => {
+      it('should not replicate the value to all languages', async () => {
+        const doc = { _id: batmanFinishesId, sharedId: 'shared', generatedToc: true };
+        await entities.save(doc, { language: 'en' });
+        await entities.save({ _id: batmanFinishesId, sharedId: 'shared' }, { language: 'en' });
+        const [docES, docEN] = await Promise.all([
+          entities.getById('shared', 'es'),
+          entities.getById('shared', 'en'),
+        ]);
+
+        expect(docES.generatedToc).toBe(true);
+        expect(docEN.generatedToc).toBe(true);
+      });
+    });
+
     it('should sync select/multiselect/dates/multidate/multidaterange/numeric', done => {
       const doc = {
         _id: syncPropertiesEntityId,

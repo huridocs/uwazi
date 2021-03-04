@@ -29,6 +29,7 @@ describe('libraryActions', () => {
   const aggregations = [{ prop: { buckets: [] } }];
   const templates = [{ name: 'Decision' }, { name: 'Ruling' }];
   const thesauris = [{ _id: 'abc1' }];
+  let getState;
 
   describe('setDocuments', () => {
     it('should return a SET_DOCUMENTS action ', () => {
@@ -40,7 +41,6 @@ describe('libraryActions', () => {
   describe('setTemplates', () => {
     const documentTypes = ['typea'];
     let dispatch;
-    let getState;
     const filters = {
       documentTypes,
       properties: ['library properties'],
@@ -160,10 +160,8 @@ describe('libraryActions', () => {
 
     afterEach(() => backend.restore());
 
-    //eslint-disable-next-line max-statements
     describe('searchDocuments', () => {
       let store;
-      let getState;
       let state;
       const storeKey = 'library';
       beforeEach(() => {

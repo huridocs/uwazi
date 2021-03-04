@@ -164,7 +164,7 @@ async function updateEntity(entity, _template) {
         d.template = entity.template;
       }
 
-      if (typeof entity.template !== 'undefined') {
+      if (typeof entity.generatedToc !== 'undefined') {
         d.generatedToc = entity.generatedToc;
       }
       return model.save(d);

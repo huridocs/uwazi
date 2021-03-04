@@ -4,11 +4,11 @@ import { FileType } from 'shared/types/fileType';
 
 export interface TocGeneratedLabelProps {
   file: FileType;
-  children: JSX.Element | string;
+  children: React.ReactChild;
 }
 
 export const TocGeneratedLabel = ({ file, children }: TocGeneratedLabelProps) => (
   <FeatureToggle feature="tocGeneration">
-    {file.generatedToc && <span className="badge">{children}</span>}
+    {file.generatedToc && <div className="badge">{children}</div>}
   </FeatureToggle>
 );

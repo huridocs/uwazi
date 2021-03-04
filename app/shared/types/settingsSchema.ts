@@ -135,7 +135,7 @@ export const settingsSchema = {
         _id: { type: 'string' },
         tocGeneration: {
           type: 'object',
-          required: ['active', 'url'],
+          required: ['url'],
           additionalProperties: false,
           properties: {
             url: { type: 'string' },
