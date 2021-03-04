@@ -55,20 +55,15 @@ const CollectionSettings = ({
   register('cookiepolicy');
   register('newNameGeneration');
 
-  const save = (newCollectionSettings: Settings) => {
+  const save = async (newCollectionSettings: Settings) => {
     const saveParameters = new RequestParams({
       ...collectionSettingsObject,
       ...newCollectionSettings,
     });
-    console.log(saveParameters);
-    SettingsAPI.save(saveParameters)
-      .then(result => {
-        setSettings(result);
-        notify(t('System', 'Settings updated', null, false), 'success');
-      })
-      .catch(e => {
-        notify(e);
-      });
+    await SettingsAPI.save(saveParameters).then(result => {
+      setSettings(result);
+      notify(t('System', 'Settings updated', null, false), 'success');
+    });
   };
 
   return (
@@ -237,13 +232,13 @@ const CollectionSettings = ({
           >
             <SettingsLabel>
               <Translate>Receiving email</Translate>
-              <Tip icon="info-circle">{CollectionSettingsTips.emails[1]}}</Tip>
+              <Tip icon="info-circle">{CollectionSettingsTips.emails[1]}</Tip>
             </SettingsLabel>
             <input type="text" ref={register} name="contactEmail" />
 
             <SettingsLabel>
               <Translate>Sending email</Translate>
-              <Tip icon="info-circle">{CollectionSettingsTips.emails[2]}}</Tip>
+              <Tip icon="info-circle">{CollectionSettingsTips.emails[2]}</Tip>
             </SettingsLabel>
             <input type="text" ref={register} name="senderEmail" placeholder="no-reply@uwazi.io" />
           </ToggleChildren>
