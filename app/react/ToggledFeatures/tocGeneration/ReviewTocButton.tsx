@@ -23,7 +23,7 @@ const ReviewTocButton = ({ file, onClick, children }: ComponentProps) => (
   <FeatureToggle feature="tocGeneration">
     {file.generatedToc && (
       <button type="button" onClick={() => onClick(file._id)} className="edit-toc btn btn-success">
-        <Icon icon="pencil-alt" />
+        <Icon icon="tasks" />
         <span className="btn-label">{children}</span>
       </button>
     )}
