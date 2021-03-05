@@ -1,5 +1,3 @@
-/* eslint-disable react/prop-types */
-
 import React, { useRef } from 'react';
 import { connect } from 'react-redux';
 import ReactModal from 'react-modal';
@@ -27,7 +25,7 @@ interface AttachmentsModalProps {
   getPercentage?: number;
 }
 
-export const AttachmentsModalCmp: React.FC<AttachmentsModalProps> = ({
+export const AttachmentsModalCmp = ({
   isOpen,
   entitySharedId,
   storeKey,
@@ -35,7 +33,7 @@ export const AttachmentsModalCmp: React.FC<AttachmentsModalProps> = ({
   uploadAttachment: uploadAttachmentProp,
   uploadAttachmentFromUrl: uploadAttachmentFromUrlProp,
   getPercentage,
-}) => {
+}: AttachmentsModalProps) => {
   const inputFileRef = useRef<HTMLInputElement | null>(null);
 
   const handleUploadButtonClicked = () => {
