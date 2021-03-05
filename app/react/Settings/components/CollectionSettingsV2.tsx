@@ -8,7 +8,7 @@ import { IStore, ClientTemplateSchema } from 'app/istore';
 import { useForm } from 'react-hook-form';
 import { actions } from 'app/BasicReducer';
 import { notificationActions } from 'app/Notifications';
-import { ToggleButton } from 'app/UI';
+import { Icon, ToggleButton } from 'app/UI';
 import { MultiSelect, Geolocation } from 'app/Forms';
 import { RequestParams } from 'app/utils/RequestParams';
 import SettingsAPI from 'app/Settings/SettingsAPI';
@@ -272,13 +272,16 @@ const CollectionSettings = ({
         <SettingsFormElement label="MapTiler key" tip={tips.mapTiler}>
           <input type="text" name="mapTilerKey" ref={register} className="form-control" />
         </SettingsFormElement>
-
-        <div>
-          <button type="submit" className="btn btn-success">
-            <Translate>Save</Translate>
-          </button>
-        </div>
       </form>
+
+      <div className="settings-footer">
+        <button type="submit" form="collectionSettings" className="btn btn-success">
+          <Icon icon="save" />
+          <span className="btn-label">
+            <Translate>Save</Translate>
+          </span>
+        </button>
+      </div>
     </div>
   );
 };

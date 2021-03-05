@@ -110,6 +110,10 @@
 .settings-content {
   padding: 15px;
 
+  form {
+    margin-bottom: 100px;
+  }
+
   .panel-heading {
     background-color: transparent;
     font-size: $f-size-xxl;
