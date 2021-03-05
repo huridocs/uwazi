@@ -7,7 +7,7 @@ import { Translate } from 'app/I18N';
 import { Icon } from 'UI';
 
 import { uploadAttachment } from '../actions/actions';
-import AttachmentsModal from './AttachmentsModal';
+import { AttachmentsModal } from './AttachmentsModal';
 
 interface UploadSupportingFileProps {
   entityId: string;

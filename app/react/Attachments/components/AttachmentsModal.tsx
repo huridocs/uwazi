@@ -176,4 +176,4 @@ const mapDispatchToProps = {
   uploadAttachmentFromUrl,
 };
 
-export default connect(null, mapDispatchToProps)(AttachmentsModalCmp);
+export const AttachmentsModal = connect(null, mapDispatchToProps)(AttachmentsModalCmp);
