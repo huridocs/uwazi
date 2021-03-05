@@ -117,7 +117,7 @@ export default {
 
   delete: (url, data, headers) => _fetch(url, data, 'DELETE', headers),
 
-  // TEST!!! Fully untested function
+  // TEST!!!! Fully untested function
   uploadFile: (url, filename, file) =>
     new Promise((resolve, reject) => {
       superagent
@@ -127,7 +127,7 @@ export default {
         .set('Cookie', cookie || '')
         .attach('file', file, filename)
         .then(response => {
-          resolve(response.body);
+          resolve(response);
         })
         .catch(err => {
           reject(err);
