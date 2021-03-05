@@ -18,14 +18,16 @@ const localSelectors = {
     '#app > div.content > div > div > div.settings-content > div > form > div.panel.panel-default > div.metadataTemplate-heading.panel-heading > div > div > input',
   pageContentsInput:
     '#app > div.content > div > div > div.settings-content > div > form > div.panel.panel-default > div.panel-body.page-viewer.document-viewer > div > div.tab-content-visible > textarea',
-  customHomePageRadio:
-    '.settings-content #collectionSettingsForm .form-group:nth-child(7) .radio:nth-child(2) input[type=radio]',
-  customHomePageInput: '.settings-content #collectionSettingsForm input[name="local.home_page"]',
+  customLandingPageToggle:
+    '#collectionSettings > div:nth-child(5) > div > div.toggle-children-button > label',
+  customLandingPageInput:
+    '#collectionSettings > div:nth-child(5) > div > div.toggle-children-children > div > input',
   collectionSaveButton: '.settings-content .settings-footer .btn-success',
   customStylesButton:
-    '#app > div.content > div > div > div.settings-content > div > div.panel-body > div:nth-child(3) > a:nth-child(1)',
+    '#app > div.content > div > div > div.settings-navigation > div > div:nth-child(2) > div:nth-child(4) > a:nth-child(2)',
   customStylesInput: '#custom_css',
-  customStylesUpdateButton: '.settings-content .settings-footer .btn-success',
+  customStylesUpdateButton:
+    '#app > div.content > div > div > div.settings-content > div > div.panel-body > form > div.settings-footer > button',
   pageViewer: '.page-viewer .main-wrapper .markdown-viewer',
 };
 
@@ -99,9 +101,9 @@ describe('custom home page and styles path path', () => {
     it('should create a custom home page link', done => {
       nightmare
         .waitToClick(localSelectors.collectionButton)
-        .waitToClick(localSelectors.customHomePageRadio)
-        .clearInput(localSelectors.customHomePageInput)
-        .write(localSelectors.customHomePageInput, pageUrl)
+        .waitToClick(localSelectors.customLandingPageToggle)
+        .clearInput(localSelectors.customLandingPageInput)
+        .write(localSelectors.customLandingPageInput, pageUrl)
         .waitToClick(localSelectors.collectionSaveButton)
         .then(() => {
           done();
@@ -113,7 +115,6 @@ describe('custom home page and styles path path', () => {
   describe('Create custom css', () => {
     it('should create custom css', done => {
       nightmare
-        .waitToClick(localSelectors.collectionButton)
         .waitToClick(localSelectors.customStylesButton)
         .wait(1000)
         .write(localSelectors.customStylesInput, customStyles)

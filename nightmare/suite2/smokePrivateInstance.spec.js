@@ -13,34 +13,36 @@ describe('Private instance', () => {
   afterAll(async () => nightmare.end());
 
   describe('login', () => {
-    it('should log in as admin then click the settings nav button', (done) => {
+    it('should log in as admin then click the settings nav button', done => {
       loginAsAdminAndGoToSettings(nightmare, catchErrors, done);
     });
   });
 
   describe('Set as private', () => {
-    it('should go to settings and set the instance as private', (done) => {
+    it('should go to settings and set the instance as private', done => {
       nightmare
-      .waitToClick(selectors.settingsView.collectionButton)
-      .waitToClick(selectors.settingsView.privateInstance)
-      .waitToClick(selectors.settingsView.saveCollectionButton)
-      .waitToClick('.alert.alert-success')
-      .then(() => { done(); })
-      .catch(catchErrors(done));
+        .waitToClick(selectors.settingsView.collectionButton)
+        .waitToClick(selectors.settingsView.privateInstance)
+        .waitToClick(selectors.settingsView.saveCollectionButton)
+        .waitToClick('.alert.alert-success')
+        .then(() => {
+          done();
+        })
+        .catch(catchErrors(done));
     });
   });
 
   describe('When loged out', () => {
-    it('should redirect to login', (done) => {
+    it('should redirect to login', done => {
       nightmare
-      .waitToClick(selectors.settingsView.accountButton)
-      .waitToClick(selectors.settingsView.logoutButton)
-      .url()
-      .then((url) => {
-        expect(url).toBe(`${config.host}/login`);
-        done();
-      })
-      .catch(catchErrors(done));
+        .waitToClick(selectors.settingsView.accountButton)
+        .waitToClick(selectors.settingsView.logoutButton)
+        .url()
+        .then(url => {
+          expect(url).toBe(`${config.host}/login`);
+          done();
+        })
+        .catch(catchErrors(done));
     });
   });
 });
