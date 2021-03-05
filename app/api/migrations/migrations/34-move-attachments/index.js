@@ -1,6 +1,6 @@
 /* eslint-disable no-await-in-loop */
 export default {
-  delta: 31,
+  delta: 34,
 
   name: 'move-attachments',
 

@@ -14,7 +14,7 @@ describe('migration move-attachments', () => {
   });
 
   it('should have a delta number', () => {
-    expect(migration.delta).toBe(31);
+    expect(migration.delta).toBe(34);
   });
 
   it('should create one file enty per unique attachment', async () => {
