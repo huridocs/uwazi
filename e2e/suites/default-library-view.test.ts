@@ -17,7 +17,7 @@ describe('Entities', () => {
   it('Should set the default library view to Table', async () => {
     await expect(page).toClick('a', { text: 'Account settings' });
     await expect(page).toClick('span', { text: 'Collection' });
-    await expect(page).toClick('#table');
+    await expect(page).toSelect('select[name="defaultLibraryView"]', 'Table');
     await expect(page).toMatchElement('button', { text: 'Save' });
     await expect(page).toClick('button', { text: 'Save' });
     await page.waitForSelector(
