@@ -4,7 +4,6 @@ import configureStore, { MockStore, MockStoreCreator } from 'redux-mock-store';
 import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
 import Immutable from 'immutable';
-import { actions } from 'app/BasicReducer';
 import SettingsAPI from 'app/Settings/SettingsAPI';
 import { RequestParams } from 'app/utils/RequestParams';
 import { Settings } from 'shared/types/settingsType';
@@ -18,7 +17,6 @@ describe('Collection settings', () => {
   let store: MockStore<object>;
   let component: ShallowWrapper<typeof CollectionSettings>;
   let saveAPIMock: jasmine.Spy;
-  let actionsSetMock: jasmine.Spy;
 
   const mockStoreCreator: MockStoreCreator<object> = configureStore<object>(middlewares);
 
@@ -27,10 +25,7 @@ describe('Collection settings', () => {
       .createSpy('save')
       .and.returnValue(Promise.resolve({ savedSettings: true }));
 
-    actionsSetMock = jasmine.createSpy('set');
-
     spyOn(SettingsAPI, 'save').and.callFake(saveAPIMock);
-    spyOn(actions, 'set').and.callFake(actionsSetMock);
   });
 
   const render = (collectionSettings: Settings) => {
@@ -46,7 +41,7 @@ describe('Collection settings', () => {
         <CollectionSettings />
       </Provider>
     )
-      .dive()
+      .dive({ context: { store } })
       .dive();
   };
 
@@ -56,7 +51,14 @@ describe('Collection settings', () => {
       render(formData);
       await component.find('form').simulate('submit');
       expect(saveAPIMock).toHaveBeenCalledWith(new RequestParams(formData));
-      expect(actionsSetMock).toHaveBeenCalledWith('settings/collection', { savedSettings: true });
+      expect(store.getActions()).toEqual(
+        expect.arrayContaining([
+          {
+            type: 'settings/collection/SET',
+            value: { savedSettings: true },
+          },
+        ])
+      );
     });
   });
 
