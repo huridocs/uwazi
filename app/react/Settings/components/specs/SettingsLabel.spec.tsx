@@ -14,12 +14,12 @@ describe('Settings Label', () => {
     );
   };
 
-  it('should wrap children inside propper div', () => {
+  it('should wrap children inside a label element', () => {
     render();
-    expect(component.find('div').props().className).toBe('inline-form-label ');
+    expect(component.find('label').props().className).toBe('inline-form-label ');
     expect(
       component
-        .find('div')
+        .find('label')
         .children()
         .at(0)
         .text()
@@ -28,6 +28,6 @@ describe('Settings Label', () => {
 
   it('should add passed className if found', () => {
     render('col-3');
-    expect(component.find('div').props().className).toContain('col-3');
+    expect(component.find('label').props().className).toContain('col-3');
   });
 });

@@ -6,5 +6,5 @@ export interface SettingsLabelProps {
 }
 
 export const SettingsLabel = ({ children, className }: SettingsLabelProps) => (
-  <div className={`inline-form-label ${className}`}>{children}</div>
+  <label className={`inline-form-label ${className}`}>{children}</label>
 );

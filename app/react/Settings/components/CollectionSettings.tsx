@@ -262,6 +262,7 @@ const CollectionSettings = ({
         <SettingsFormElement label="Custom starting location" tip={tips.mapAxis}>
           <div className="settings-map">
             <Geolocation
+              value={watch('mapStartingPoint')}
               onChange={(values: Settings['mapStartingPoint']) => {
                 setValue('mapStartingPoint', values);
               }}

@@ -2,18 +2,36 @@ import React from 'react';
 import { shallow, ShallowWrapper } from 'enzyme';
 import configureStore, { MockStore, MockStoreCreator } from 'redux-mock-store';
 import { Provider } from 'react-redux';
+import thunk from 'redux-thunk';
 import Immutable from 'immutable';
+import { actions } from 'app/BasicReducer';
+import SettingsAPI from 'app/Settings/SettingsAPI';
+import { RequestParams } from 'app/utils/RequestParams';
 import { Settings } from 'shared/types/settingsType';
 
 import { MultiSelect } from 'app/Forms';
-import { ToggleChildren } from '../ToggleChildren';
-import { CollectionSettings } from '../CollectionSettingsV2';
+import { CollectionSettings } from '../CollectionSettings';
+
+const middlewares = [thunk];
 
 describe('Collection settings', () => {
   let store: MockStore<object>;
   let component: ShallowWrapper<typeof CollectionSettings>;
+  let saveAPIMock: jasmine.Spy;
+  let actionsSetMock: jasmine.Spy;
 
-  const mockStoreCreator: MockStoreCreator<object> = configureStore<object>([]);
+  const mockStoreCreator: MockStoreCreator<object> = configureStore<object>(middlewares);
+
+  beforeEach(() => {
+    saveAPIMock = jasmine
+      .createSpy('save')
+      .and.returnValue(Promise.resolve({ savedSettings: true }));
+
+    actionsSetMock = jasmine.createSpy('set');
+
+    spyOn(SettingsAPI, 'save').and.callFake(saveAPIMock);
+    spyOn(actions, 'set').and.callFake(actionsSetMock);
+  });
 
   const render = (collectionSettings: Settings) => {
     store = mockStoreCreator({
@@ -31,6 +49,16 @@ describe('Collection settings', () => {
       .dive()
       .dive();
   };
+
+  describe('on submit', () => {
+    it('should properly save the values', async () => {
+      const formData = { home_page: 'custom home page', private: true };
+      render(formData);
+      await component.find('form').simulate('submit');
+      expect(saveAPIMock).toHaveBeenCalledWith(new RequestParams(formData));
+      expect(actionsSetMock).toHaveBeenCalledWith('settings/collection', { savedSettings: true });
+    });
+  });
 
   describe('custom landing page', () => {
     const getHomePageToggleStatus = () =>

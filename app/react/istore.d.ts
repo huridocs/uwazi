@@ -57,10 +57,6 @@ export interface OneUpState {
   reviewThesaurusValues: string[];
 }
 
-// export interface SettingsState {
-//   features?: { topicClassification: boolean };
-// }
-
 export interface TableViewColumn extends PropertySchema {
   hidden: boolean;
   translationContext?: string;
