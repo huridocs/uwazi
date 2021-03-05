@@ -25,11 +25,11 @@ const updateMetadata = async (_createdEntity, template, video, image) => {
   const createdEntity = { ..._createdEntity };
 
   if (video) {
-    createdEntity.metadata[mediaProp(template)] = [{ value: `api/files/${video.filename}` }];
+    createdEntity.metadata[mediaProp(template)] = [{ value: `/api/files/${video.filename}` }];
   }
 
   if (image) {
-    createdEntity.metadata[imageProp(template)] = [{ value: `api/files/${image.filename}` }];
+    createdEntity.metadata[imageProp(template)] = [{ value: `/api/files/${image.filename}` }];
   }
 
   return entities.save(createdEntity, { language: 'en', user: {} });
