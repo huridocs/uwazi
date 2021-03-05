@@ -20,7 +20,6 @@ const validators = {
 interface AttachmentsModalProps {
   isOpen: boolean;
   entitySharedId: string;
-  entityId: string;
   storeKey: string;
   onClose(): void;
   uploadAttachment(entity: any, file: any, __reducerKey: any, options?: {}): void;
