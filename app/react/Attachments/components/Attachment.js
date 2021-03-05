@@ -36,36 +36,6 @@ const getItemOptions = (filename, url) => {
   return options;
 };
 
-const conformThumbnail = (file, item) => {
-  const acceptedThumbnailExtensions = ['png', 'gif', 'jpg', 'jpeg'];
-  let thumbnail = null;
-
-  if (file.filename && getExtension(file.filename) === 'pdf') {
-    thumbnail = (
-      <span>
-        <Icon icon="file-pdf" /> pdf
-      </span>
-    );
-  }
-
-  if (file.url) {
-    thumbnail = (
-      <span>
-        <Icon icon="link" />
-      </span>
-    );
-  }
-
-  if (
-    file.filename &&
-    acceptedThumbnailExtensions.indexOf(getExtension(file.filename.toLowerCase())) !== -1
-  ) {
-    thumbnail = <img src={item.downloadHref} alt={file.filename} />;
-  }
-
-  return <div className="attachment-thumbnail">{thumbnail}</div>;
-};
-
 export class Attachment extends Component {
   constructor(props) {
     super(props);
@@ -76,6 +46,37 @@ export class Attachment extends Component {
     this.copyToClipboard = this.copyToClipboard.bind(this);
     this.myRef = React.createRef();
     this.onRenameSubmit = this.onRenameSubmit.bind(this);
+    this.toggleRename = this.toggleRename.bind(this);
+  }
+
+  static conformThumbnail(file, item) {
+    const acceptedThumbnailExtensions = ['png', 'gif', 'jpg', 'jpeg'];
+    let thumbnail = null;
+
+    if (file.filename && getExtension(file.filename) === 'pdf') {
+      thumbnail = (
+        <span>
+          <Icon icon="file-pdf" /> pdf
+        </span>
+      );
+    }
+
+    if (file.url) {
+      thumbnail = (
+        <span>
+          <Icon icon="link" />
+        </span>
+      );
+    }
+
+    if (
+      file.filename &&
+      acceptedThumbnailExtensions.indexOf(getExtension(file.filename.toLowerCase())) !== -1
+    ) {
+      thumbnail = <img src={item.downloadHref} alt={file.filename} />;
+    }
+
+    return <div className="attachment-thumbnail">{thumbnail}</div>;
   }
 
   componentDidMount() {
@@ -111,13 +112,13 @@ export class Attachment extends Component {
     });
   }
 
-  toggleRename(model, file) {
+  toggleRename() {
+    const { file, model } = this.props;
     this.props.loadForm.bind(this, model, file)();
     this.toggleDropdown();
   }
 
-  copyToClipboard(item, event) {
-    event.preventDefault();
+  copyToClipboard(item) {
     const dummy = document.createElement('textarea');
     document.body.appendChild(dummy);
     dummy.value = item.url || window.location.origin + item.downloadHref;
@@ -135,13 +136,18 @@ export class Attachment extends Component {
     }
   }
 
+  resetForm() {
+    const { model } = this.props;
+    this.props.resetForm(model);
+  }
+
   render() {
     const { file, model, storeKey } = this.props;
     const sizeString = file.size ? filesize(file.size) : '';
     const item = getItemOptions(file.filename, file.url);
     let name = (
       <a className="attachment-link" href={item.url || item.downloadHref}>
-        {conformThumbnail(file, item)}
+        {Attachment.conformThumbnail(file, item)}
         <span className="attachment-name">
           <span>{file.originalname}</span>
           <ShowIf if={Boolean(sizeString)}>
@@ -156,7 +162,7 @@ export class Attachment extends Component {
     if (this.props.beingEdited && !this.props.readOnly) {
       name = (
         <div className="attachment-link">
-          {conformThumbnail(file, item)}
+          {Attachment.conformThumbnail(file, item)}
           <span className="attachment-name">
             <AttachmentForm model={this.props.model} onSubmit={this.onRenameSubmit} />
           </span>
@@ -213,9 +219,9 @@ export class Attachment extends Component {
               ref={this.myRef}
             >
               <li>
-                <a href="#" onClick={e => this.copyToClipboard(item, e)}>
+                <button type="button" onClick={e => this.copyToClipboard(item)}>
                   <Icon icon="link" /> <Translate>Copy link</Translate>
-                </a>
+                </button>
               </li>
               <li>
                 <a href={item.url || item.downloadHref} target="_blank">
@@ -223,14 +229,18 @@ export class Attachment extends Component {
                 </a>
               </li>
               <li>
-                <a href="#" onClick={this.toggleRename.bind(this, model, file)}>
+                <button type="button" onClick={this.toggleRename}>
                   <Icon icon="pencil-alt" /> <Translate>Rename</Translate>
-                </a>
+                </button>
               </li>
               <li>
-                <a href="#" onClick={this.deleteAttachment.bind(this, file)} className="is--delete">
+                <button
+                  type="button"
+                  onClick={this.deleteAttachment.bind(this, file)}
+                  className="is--delete"
+                >
                   <Icon icon="trash-alt" /> <Translate>Delete</Translate>
-                </a>
+                </button>
               </li>
             </ul>
           </div>

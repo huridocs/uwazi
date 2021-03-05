@@ -190,17 +190,23 @@ label.add:focus-within {
 
     .dropdown-menu {
       top: 0;
-    }
 
-    .dropdown-menu > li > a {
-      padding: 5px 14px;
+      li {
+        a,
+        button {
+          padding: 5px 14px;
+          border: none;
+          background-color: transparent;
+          color: #333333;
 
-      &.is--delete {
-        color: #b2452d;
-      }
+          &.is--delete {
+            color: #b2452d;
+          }
 
-      svg {
-        margin-right: 3px;
+          svg {
+            margin-right: 3px;
+          }
+        }
       }
     }
   }
