@@ -135,7 +135,7 @@ describe('Item', () => {
       component
         .find(ItemFooter)
         .find('div')
-        .at(1)
+        .at(0)
         .text()
     ).toContain('Buttons');
   });

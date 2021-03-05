@@ -54,14 +54,6 @@ export class Item extends Component {
       tabIndex: '1',
     };
 
-    const userGroups = (user.get('groups') || []).map(g => g.get('_id'));
-    const canEdit =
-      doc.permissions &&
-      doc.permissions.find(
-        ({ level, _id }) =>
-          level === 'write' && (_id === user.get('_id') || userGroups.includes(_id))
-      );
-
     return (
       <RowList.Item {...itemProps}>
         {this.props.itemHeader}
@@ -84,11 +76,14 @@ export class Item extends Component {
           />
         </div>
         <ItemFooter>
-          <div>
+          <span>
             {doc.template ? <TemplateLabel template={doc.template} /> : false}
-            {canEdit ? <Tip icon="pencil-alt">You can edit this property</Tip> : ''}
-            {doc.published ? '' : <Tip icon="eye-slash">This entity is not public.</Tip>}
-          </div>
+            {doc.published ? (
+              ''
+            ) : (
+              <Tip icon="lock">This entity is restricted from public view.</Tip>
+            )}
+          </span>
           {this.props.labels}
           {buttons}
         </ItemFooter>
