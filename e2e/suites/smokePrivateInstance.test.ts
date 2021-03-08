@@ -1,0 +1,34 @@
+import { adminLogin, logout } from '../helpers/login';
+import { host } from '../config';
+import proxyMock from '../helpers/proxyMock';
+import insertFixtures from '../helpers/insertFixtures';
+import disableTransitions from '../helpers/disableTransitions';
+
+describe('Private instance', () => {
+  beforeAll(async () => {
+    await insertFixtures();
+    await proxyMock();
+    await disableTransitions();
+  });
+
+  it('should log in as admin, go to account settings, then collection settings', async () => {
+    await adminLogin();
+    await expect(page).toMatchElement('span', { text: 'Account' });
+    await expect(page).toClick('a', { text: 'Account settings' });
+    await expect(page).toClick('a', { text: 'Collection' });
+  });
+
+  it('should toggle the private instance button and save', async () => {
+    await expect(page).toClick(
+      //CSS selector for Private Instance toggle button
+      'div.form-element:nth-child(8) > div:nth-child(2) > label:nth-child(1)'
+    );
+    await expect(page).toClick('button', { text: 'Save' });
+  });
+
+  it('shoud log out and be redirected to login page instead of library page', async () => {
+    await logout();
+    await page.goto(`${host}/library`);
+    await expect(page).toMatch('Login');
+  });
+});
