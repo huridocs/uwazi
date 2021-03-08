@@ -47,7 +47,6 @@ const UploadSupportingFile: React.FC<UploadSupportingFileProps> = props => {
         isOpen={modalOpen}
         onClose={closeModal}
         entitySharedId={entitySharedId}
-        entityId={entityId}
         storeKey={storeKey}
         getPercentage={getPercentage}
       />
