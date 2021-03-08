@@ -73,7 +73,10 @@ describe('Share entities', () => {
       'editor',
       'Asesores legales',
     ]);
-    await expect(page).toSelect('select', 'Can edit');
+    await expect(page).toSelect(
+      '.member-list-wrapper  tr:nth-child(2) > td:nth-child(2) > select',
+      'Can edit'
+    );
     await page.waitForSelector('.confirm-button');
     await expect(page).toClick('button', {
       text: 'Save changes',
@@ -134,7 +137,10 @@ describe('Share entities', () => {
     await page.waitForSelector('.share-btn');
     await expect(page).toClick('button', { text: 'Share' });
     await selectLookupOption('colla', 'colla');
-    await expect(page).toSelect('select', 'Can edit');
+    await expect(page).toSelect(
+      '.member-list-wrapper  tr:nth-child(2) > td:nth-child(2) > select',
+      'Can edit'
+    );
     await expect(page).toClick('button', { text: 'Save changes' });
     await page.waitForSelector('.share-modal', { hidden: true });
   });
@@ -146,10 +152,29 @@ describe('Share entities', () => {
     await page.waitForSelector('.share-btn');
     await expect(page).toClick('button', { text: 'Share' });
     await selectLookupOption('Ase', 'Asesores legales');
-    await expect(page).toSelect('select', 'Can edit');
+    await expect(page).toSelect(
+      '.member-list-wrapper  tr:nth-child(2) > td:nth-child(2) > select',
+      'Can edit'
+    );
     await expect(page).toClick('button', { text: 'Save changes' });
     await page.waitForSelector('.share-modal', { hidden: true });
   });
+
+  const checkCanEdit = async (docSelector: string, can = true) => {
+    await expect(page).toClick('.item-document', {
+      text: docSelector,
+    });
+
+    if (can) {
+      await expect(page).toMatchElement('.metadata-sidepanel button.edit-metadata', {
+        text: 'Edit',
+      });
+    } else {
+      await expect(page).not.toMatchElement('.metadata-sidepanel button.edit-metadata', {
+        text: 'Edit',
+      });
+    }
+  };
 
   it('should be able to see and edit entities as a collaborator', async () => {
     await logout();
@@ -157,5 +182,25 @@ describe('Share entities', () => {
     await page.waitFor('.item-document');
     const entities = await page.$$('.item-document');
     expect(entities.length).toBe(3);
+    await checkCanEdit(
+      'Artavia Murillo y otros. Resolución de la CorteIDH de 26 de febrero de 2016',
+      false
+    );
+    await checkCanEdit(
+      'Artavia Murillo y otros. Resolución de la Corte IDH de 31 de marzo de 2014'
+    );
+    await checkCanEdit(
+      'Artavia Murillo y otros. Resolución del Presidente de la Corte de 6 de agosto de 2012'
+    );
+  });
+
+  it('should be able to edit a save', async () => {
+    await expect(page).toClick('button', { text: 'Edit' });
+    await expect(page).toFill('textarea[name="library.sidepanel.metadata.title"]', 'Edited title');
+    await expect(page).toClick('button', { text: 'Save' });
+    await page.waitFor('.item-document');
+    await expect(page).toMatchElement('.item-document .item-info > div > span', {
+      text: 'Edited title',
+    });
   });
 });
