@@ -20,12 +20,12 @@ const filteredAggregation = (aggregations: Aggregations, key: string) => {
 
 const options = (aggregations: Aggregations = { all: {} }) => [
   {
-    label: 'Automatically generated',
+    label: t('System', 'Automatically generated'),
     value: true,
     results: filteredAggregation(aggregations, 'true'),
   },
   {
-    label: 'Reviewed',
+    label: t('System', 'Reviewed'),
     value: false,
     results: filteredAggregation(aggregations, 'false'),
   },
