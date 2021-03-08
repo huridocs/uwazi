@@ -1,4 +1,4 @@
-import { adminLogin, logout } from '../helpers/login';
+import { adminLogin } from '../helpers/login';
 import { host } from '../config';
 import proxyMock from '../helpers/proxyMock';
 import insertFixtures from '../helpers/insertFixtures';
