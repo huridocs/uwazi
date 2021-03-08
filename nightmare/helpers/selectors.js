@@ -255,7 +255,7 @@ export default {
     firstAttachmentTitle:
       '#app > div.content > div > div > main > div > div.tab-content-visible > div > div > div.attachments-list-parent > div.attachments-list > div > a > span > span:nth-child(1)',
     firstAttachmentEditTitleButton:
-      '#app > div.content > div > div > main > div > div.tab-content-visible > div > div > div.attachments-list-parent > div.attachments-list > div > div > div > button:nth-child(1)',
+      '#app > div.content > div > div > main > div > div.tab-content.tab-content-visible > div > div > div.attachments-list-parent > div.attachments-list > div > div > ul > li:nth-child(3) > button',
     attachmentFormInput: '#attachmentForm > div > div > input',
     attachmentFormSubmit:
       '#app > div.content > div > div > main > div > div.tab-content-visible > div > div > div.attachments-list-parent > div.attachments-list > div > div.attachment-buttons > div > button.item-shortcut.btn.btn-success',

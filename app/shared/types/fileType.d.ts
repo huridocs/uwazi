@@ -12,7 +12,8 @@ export interface FileType {
   size?: number;
   creationDate?: number;
   language?: string;
-  type?: 'custom' | 'document' | 'thumbnail';
+  type?: 'custom' | 'document' | 'thumbnail' | 'attachment';
+  url?: string;
   status?: 'processing' | 'failed' | 'ready';
   totalPages?: number;
   generatedToc?: boolean;

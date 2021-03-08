@@ -2,6 +2,7 @@ import path from 'path';
 import os from 'os';
 import request from 'supertest';
 import { Application, Request, Response, NextFunction } from 'express';
+import { EntityWithFilesSchema } from 'shared/types/entityType';
 
 import { search } from 'api/search';
 import db from 'api/utils/testing_db';
@@ -19,7 +20,6 @@ import mailer from 'api/utils/mailer';
 
 import { routes } from '../jsRoutes';
 import { fixtures, templateId } from './fixtures';
-import { files } from '../files';
 
 jest.mock(
   '../../auth/authMiddleware.ts',
@@ -64,16 +64,19 @@ describe('public routes', () => {
           .expect(200)
       );
 
-      const [newEntity] = await entities.get({ title: 'public submit' });
-      const { attachments } = newEntity;
-      expect(attachments).toEqual([expect.objectContaining({ originalname: 'attachment.txt' })]);
+      const [newEntity] = (await entities.get({
+        title: 'public submit',
+      })) as EntityWithFilesSchema[];
 
-      const [uploadedFile] = await files.get({ entity: newEntity.sharedId });
-      expect(uploadedFile.originalname).toBe('12345.test.pdf');
-      expect(uploadedFile.status).toBe('ready');
+      const [attachment] = newEntity.attachments!;
+      expect(attachment).toEqual(expect.objectContaining({ originalname: 'attachment.txt' }));
+      expect(await fileExists(attachmentsPath(attachment.filename))).toBe(true);
 
-      expect(await fileExists(uploadsPath(uploadedFile.filename))).toBe(true);
-      expect(await fileExists(attachmentsPath(attachments?.[0].filename))).toBe(true);
+      const [document] = newEntity.documents!;
+      expect(document).toEqual(
+        expect.objectContaining({ originalname: '12345.test.pdf', status: 'ready' })
+      );
+      expect(await fileExists(uploadsPath(document.filename))).toBe(true);
     });
 
     it('should send an email', async () => {
