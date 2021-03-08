@@ -16,6 +16,7 @@ export interface FileType {
   url?: string;
   status?: 'processing' | 'failed' | 'ready';
   totalPages?: number;
+  generatedToc?: boolean;
   fullText?: {
     /**
      * This interface was referenced by `undefined`'s JSON-Schema definition

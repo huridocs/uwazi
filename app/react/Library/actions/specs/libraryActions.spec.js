@@ -29,6 +29,7 @@ describe('libraryActions', () => {
   const aggregations = [{ prop: { buckets: [] } }];
   const templates = [{ name: 'Decision' }, { name: 'Ruling' }];
   const thesauris = [{ _id: 'abc1' }];
+  let getState;
 
   describe('setDocuments', () => {
     it('should return a SET_DOCUMENTS action ', () => {
@@ -40,7 +41,6 @@ describe('libraryActions', () => {
   describe('setTemplates', () => {
     const documentTypes = ['typea'];
     let dispatch;
-    let getState;
     const filters = {
       documentTypes,
       properties: ['library properties'],
@@ -48,9 +48,12 @@ describe('libraryActions', () => {
 
     beforeEach(() => {
       dispatch = jasmine.createSpy('dispatch');
-      getState = jasmine
-        .createSpy('getState')
-        .and.returnValue({ library: { filters: Immutable.fromJS(filters), search: {} } });
+      getState = jasmine.createSpy('getState').and.returnValue({
+        settings: {
+          collection: Immutable.Map({}),
+        },
+        library: { filters: Immutable.fromJS(filters), search: {} },
+      });
     });
 
     it('should dispatch a SET_LIBRARY_TEMPLATES action ', () => {
@@ -159,7 +162,6 @@ describe('libraryActions', () => {
 
     describe('searchDocuments', () => {
       let store;
-      let getState;
       let state;
       const storeKey = 'library';
       beforeEach(() => {
@@ -186,7 +188,19 @@ describe('libraryActions', () => {
           ],
           documentTypes: ['decision'],
         };
-        store = { library: { filters: Immutable.fromJS(state), search: { searchTerm: 'batman' } } };
+        store = {
+          settings: {
+            collection: Immutable.Map({}),
+          },
+          library: {
+            filters: Immutable.fromJS(state),
+            search: {
+              searchTerm: 'batman',
+              customFilters: { property: { values: ['value'] } },
+              filters: {},
+            },
+          },
+        };
         spyOn(browserHistory, 'getCurrentLocation').and.returnValue({
           pathname: '/library',
           query: { view: 'chart' },
@@ -258,6 +272,16 @@ describe('libraryActions', () => {
 
         expect(browserHistory.push).toHaveBeenCalledWith(
           "/library/?view=chart&q=(filters:(author:batman,nested:nestedValue,select:selectValue),from:0,limit:60,searchTerm:'batman',sort:_score,types:!(decision))" //eslint-disable-line
+        );
+      });
+
+      it('should use customFilters from the current search on the store', () => {
+        const limit = 60;
+        spyOn(browserHistory, 'push');
+        actions.searchDocuments({}, storeKey, limit)(dispatch, getState);
+
+        expect(browserHistory.push).toHaveBeenCalledWith(
+          "/library/?view=chart&q=(customFilters:(property:(values:!(value))),filters:(),from:0,limit:60,searchTerm:'batman',sort:_score,types:!(decision))" //eslint-disable-line
         );
       });
 

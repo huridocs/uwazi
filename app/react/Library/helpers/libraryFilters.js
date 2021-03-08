@@ -56,6 +56,7 @@ function URLQueryToState(query, templates, _thesauris, _relationTypes, forcedPro
     search: {
       searchTerm,
       filters,
+      customFilters: query.customFilters,
       sort,
       order,
       userSelectedSorting,

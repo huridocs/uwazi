@@ -72,6 +72,28 @@ export default (app: Application) => {
       .catch(next);
   });
 
+  app.post(
+    '/api/files/tocReviewed',
+    needsAuthorization(['admin', 'editor']),
+    validation.validateRequest({
+      properties: {
+        body: {
+          required: ['fileId'],
+          properties: {
+            fileId: { type: 'string' },
+          },
+        },
+      },
+    }),
+    async (req, res, next) => {
+      try {
+        res.json(await files.tocReviewed(req.body.fileId, req.language));
+      } catch (e) {
+        next(e);
+      }
+    }
+  );
+
   app.get(
     '/api/files/:filename',
     validation.validateRequest({

@@ -90,6 +90,7 @@ import { faUsers } from '@fortawesome/free-solid-svg-icons/faUsers';
 import { faUserTimes } from '@fortawesome/free-solid-svg-icons/faUserTimes';
 import { faHandPaper } from '@fortawesome/free-solid-svg-icons/faHandPaper';
 import { faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons/faExternalLinkAlt';
+import { faTasks } from '@fortawesome/free-solid-svg-icons/faTasks';
 import { saveAndNext } from './save-and-next';
 import { exportCsv } from './export-csv';
 import { copyFrom } from './copy-from';
@@ -188,6 +189,7 @@ const icons = {
   faHandPaper,
   faExternalLinkAlt,
   saveAndNext,
+  faTasks,
   exportCsv,
   copyFrom,
   funnelFilter,

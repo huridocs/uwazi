@@ -84,6 +84,7 @@ export const propertyValueSchema = {
     { type: 'null' },
     { type: 'string' },
     { type: 'number' },
+    { type: 'boolean' },
     linkSchema,
     dateRangeSchema,
     latLonSchema,

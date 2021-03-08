@@ -20,7 +20,9 @@ exports[`ThesauriFormGroup render should render group field and DragAndDropConta
   className="group"
   key="group-1"
 >
-  <FormGroup>
+  <FormGroup
+    className=""
+  >
     <Modeled(Connect(Field))
       model="thesauri.data.values[1].label"
     >

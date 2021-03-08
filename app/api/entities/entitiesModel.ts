@@ -15,6 +15,7 @@ const mongoSchema = new mongoose.Schema(
     title: { type: String, required: true },
     template: { type: mongoose.Schema.Types.ObjectId, ref: 'templates', index: true },
     published: Boolean,
+    generatedToc: Boolean,
     icon: new mongoose.Schema({
       _id: String,
       label: String,

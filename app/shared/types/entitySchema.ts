@@ -128,6 +128,7 @@ export const entitySchema = {
     title: { type: 'string', minLength: 1, stringMeetsLuceneMaxLimit: true },
     template: objectIdSchema,
     published: { type: 'boolean' },
+    generatedToc: { type: 'boolean' },
     icon: {
       type: 'object',
       additionalProperties: false,

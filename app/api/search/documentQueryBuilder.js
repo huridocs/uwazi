@@ -2,7 +2,7 @@
 
 import { preloadOptionsSearch } from 'shared/config';
 import filterToMatch, { multiselectFilter } from './metadataMatchers';
-import { propertyToAggregation } from './metadataAggregations';
+import { propertyToAggregation, generatedTocAggregations } from './metadataAggregations';
 
 export default function() {
   const baseQuery = {
@@ -231,6 +231,17 @@ export default function() {
       }
     },
 
+    customFilters(filters = {}) {
+      Object.keys(filters).forEach(key => {
+        if (filters[key].values.length) {
+          addFilter({
+            terms: { [key]: filters[key].values },
+          });
+        }
+      });
+      return this;
+    },
+
     filterMetadata(filters = []) {
       filters.forEach(filter => {
         const match = filterToMatch(filter, filter.suggested ? 'suggestedMetadata' : 'metadata');
@@ -239,6 +250,10 @@ export default function() {
         }
       });
       return this;
+    },
+
+    generatedTOCAggregations() {
+      baseQuery.aggregations.all.aggregations.generatedToc = generatedTocAggregations(baseQuery);
     },
 
     aggregations(properties, dictionaries) {

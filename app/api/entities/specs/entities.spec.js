@@ -340,7 +340,7 @@ describe('entities', () => {
       });
     });
 
-    describe('when published/template property changes', () => {
+    describe('when published/template/generatedToc property changes', () => {
       it('should replicate the change for all the languages', done => {
         const doc = {
           _id: batmanFinishesId,
@@ -348,6 +348,7 @@ describe('entities', () => {
           metadata: {},
           published: false,
           template: templateId,
+          generatedToc: true,
         };
 
         entities
@@ -364,12 +365,29 @@ describe('entities', () => {
             expect(docES.template).toBeDefined();
 
             expect(docES.published).toBe(false);
+            expect(docES.generatedToc).toBe(true);
             expect(docES.template.equals(templateId)).toBe(true);
             expect(docEN.published).toBe(false);
+            expect(docEN.generatedToc).toBe(true);
             expect(docEN.template.equals(templateId)).toBe(true);
             done();
           })
           .catch(catchErrors(done));
+      });
+    });
+
+    describe('when generatedToc is undefined', () => {
+      it('should not replicate the value to all languages', async () => {
+        const doc = { _id: batmanFinishesId, sharedId: 'shared', generatedToc: true };
+        await entities.save(doc, { language: 'en' });
+        await entities.save({ _id: batmanFinishesId, sharedId: 'shared' }, { language: 'en' });
+        const [docES, docEN] = await Promise.all([
+          entities.getById('shared', 'es'),
+          entities.getById('shared', 'en'),
+        ]);
+
+        expect(docES.generatedToc).toBe(true);
+        expect(docEN.generatedToc).toBe(true);
       });
     });
 

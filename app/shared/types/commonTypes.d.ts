@@ -53,7 +53,15 @@ export type GeolocationSchema = {
   lon: number;
 }[];
 
-export type PropertyValueSchema = null | string | number | LinkSchema | DateRangeSchema | LatLonSchema | LatLonSchema[];
+export type PropertyValueSchema =
+  | null
+  | string
+  | number
+  | boolean
+  | LinkSchema
+  | DateRangeSchema
+  | LatLonSchema
+  | LatLonSchema[];
 
 export interface MetadataObjectSchema {
   value: PropertyValueSchema;
