@@ -307,61 +307,42 @@ export class DocumentSidePanel extends Component {
               />
             </div>
           </ShowIf>
-        <NeedAuthorization roles={['admin', 'editor']}>
-          <ShowIf if={this.props.tab === 'toc' && !this.props.tocBeingEdited && !readOnly}>
-            <div className="sidepanel-footer">
-              <button
-                onClick={() => this.props.editToc(this.props.file.toc || [])}
-                className="edit-toc btn btn-primary"
-              >
-                <Icon icon="pencil-alt" />
-                <span className="btn-label">Edit</span>
-              </button>
-              <ReviewTocButton file={this.props.file}>
-                <Translate>Mark as Reviewed</Translate>
-              </ReviewTocButton>
-            </div>
-          </ShowIf>
-        </NeedAuthorization>
-
-        <div className="sidepanel-body">
-          <Tabs selectedTab={this.props.tab || 'metadata'}>
-            <TabContent for="text-search" className="text-search">
-              <SearchText
-                doc={doc}
-                storeKey={this.props.storeKey}
-                searchTerm={this.props.searchTerm}
-              />
-            </TabContent>
-            <TabContent for="toc" className="toc">
-              <div className="tocHeader">
-                <h1>
-                  <Translate>Table of contents </Translate>
-                </h1>
-                &nbsp;
-                <TocGeneratedLabel file={this.props.file}>
-                  <Translate>auto-created ⓘ </Translate>
-                </TocGeneratedLabel>
+          <NeedAuthorization roles={['admin', 'editor']}>
+            <ShowIf if={this.props.tab === 'toc' && !this.props.tocBeingEdited && !readOnly}>
+              <div className="sidepanel-footer">
+                <button
+                  onClick={() => this.props.editToc(this.props.file.toc || [])}
+                  className="edit-toc btn btn-primary"
+                >
+                  <Icon icon="pencil-alt" />
+                  <span className="btn-label">Edit</span>
+                </button>
+                <ReviewTocButton file={this.props.file}>
+                  <Translate>Mark as Reviewed</Translate>
+                </ReviewTocButton>
               </div>
-              <ShowIf if={!this.props.tocBeingEdited}>
-                <ShowToc
-                  toc={defaultDocumentToC}
-                  pdfInfo={this.props.file.pdfInfo}
-                  readOnly={readOnly}
-                />
-              </ShowIf>
-              <ShowIf if={this.props.tocBeingEdited}>
-                <TocForm
-                  removeEntry={this.props.removeFromToc}
-                  indent={this.props.indentTocElement}
-                  onSubmit={this.props.saveToc}
-                  model="documentViewer.tocForm"
-                  state={this.props.tocFormState}
-                  toc={this.props.tocForm}
-                  file={this.props.file}
+            </ShowIf>
+          </NeedAuthorization>
+
+          <div className="sidepanel-body">
+            <Tabs selectedTab={this.props.tab || 'metadata'}>
+              <TabContent for="text-search" className="text-search">
+                <SearchText
+                  doc={doc}
+                  storeKey={this.props.storeKey}
+                  searchTerm={this.props.searchTerm}
                 />
               </TabContent>
               <TabContent for="toc" className="toc">
+                <div className="tocHeader">
+                  <h1>
+                    <Translate>Table of contents </Translate>
+                  </h1>
+                  &nbsp;
+                  <TocGeneratedLabel file={this.props.file}>
+                    <Translate>auto-created ⓘ </Translate>
+                  </TocGeneratedLabel>
+                </div>
                 <ShowIf if={!this.props.tocBeingEdited}>
                   <ShowToc
                     toc={defaultDocumentToC}
