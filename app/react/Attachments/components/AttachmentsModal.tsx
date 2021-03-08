@@ -15,7 +15,7 @@ const validators = {
   url: { required: (val: any) => !!val && val.trim() !== '' },
 };
 
-interface AttachmentsModalProps {
+export interface AttachmentsModalProps {
   isOpen: boolean;
   entitySharedId: string;
   storeKey: string;

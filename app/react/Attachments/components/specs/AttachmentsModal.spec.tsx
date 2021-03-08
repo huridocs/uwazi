@@ -1,19 +1,19 @@
 import React from 'react';
 import thunk from 'redux-thunk';
-import { shallow } from 'enzyme';
+import { shallow, ShallowWrapper } from 'enzyme';
 import { LocalForm } from 'react-redux-form';
 import ReactModal from 'react-modal';
 import configureMockStore from 'redux-mock-store';
 import { Provider } from 'react-redux';
 
-import { AttachmentsModalCmp } from '../AttachmentsModal';
+import { AttachmentsModalCmp, AttachmentsModalProps } from '../AttachmentsModal';
 
 const mockStore = configureMockStore([thunk]);
 const store = mockStore({});
 
 describe('Attachments Modal', () => {
-  let component;
-  let props;
+  let component: ShallowWrapper;
+  let props: AttachmentsModalProps;
 
   beforeEach(() => {
     props = {
@@ -21,6 +21,8 @@ describe('Attachments Modal', () => {
       storeKey: '456',
       onClose: jasmine.createSpy('onClose'),
       uploadAttachmentFromUrl: jasmine.createSpy('uploadAttachmentFromUrl'),
+      isOpen: true,
+      uploadAttachment: jasmine.createSpy('uploadAttachment'),
     };
   });
 
