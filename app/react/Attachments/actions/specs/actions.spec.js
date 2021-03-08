@@ -60,19 +60,13 @@ describe('Attachments actions', () => {
       ];
 
       store.dispatch(actions.uploadAttachment('sharedId', file, 'storeKey'));
-      expect(mockUpload.field).toHaveBeenCalledWith('entityId', 'sharedId');
-      expect(mockUpload.field).toHaveBeenCalledWith('allLanguages', false);
+      expect(mockUpload.field).toHaveBeenCalledWith('entity', 'sharedId');
       expect(mockUpload.attach).toHaveBeenCalledWith('file', file, file.name);
 
       mockUpload.emit('progress', { percent: 55.1 });
       mockUpload.emit('progress', { percent: 65 });
       mockUpload.emit('response', { text: '{"text": "file"}' });
       expect(store.getActions()).toEqual(expectedActions);
-    });
-
-    it('should upload the file to all languages if option passed', () => {
-      store.dispatch(actions.uploadAttachment('id', file, 'storeKey', { allLanguages: true }));
-      expect(mockUpload.field).toHaveBeenCalledWith('allLanguages', true);
     });
   });
 
@@ -83,7 +77,7 @@ describe('Attachments actions', () => {
       mockID();
     });
 
-    it('should call on attachments/rename, with entity, file id and originalname', () => {
+    it('should call on files, with entity, file id and originalname', () => {
       store.dispatch(
         actions.renameAttachment('id', 'form', 'storeKey', {
           _id: 'fid',
@@ -102,12 +96,10 @@ describe('Attachments actions', () => {
       ];
 
       const expectedParams = new RequestParams({
-        entityId: 'id',
         _id: 'fid',
         originalname: 'originalname',
-        language: 'spa',
       });
-      expect(api.post).toHaveBeenCalledWith('attachments/rename', expectedParams);
+      expect(api.post).toHaveBeenCalledWith('files', expectedParams);
       expect(store.getActions()).toEqual(expectedActions);
     });
   });
@@ -125,9 +117,9 @@ describe('Attachments actions', () => {
         )(dispatch)
         .then(() => {
           expect(api.delete).toHaveBeenCalledWith(
-            'attachments/delete',
+            'files',
             new RequestParams({
-              attachmentId: 'attachmentId',
+              _id: 'attachmentId',
             })
           );
           expect(dispatch).toHaveBeenCalledWith({

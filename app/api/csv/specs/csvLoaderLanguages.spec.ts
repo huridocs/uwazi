@@ -89,12 +89,10 @@ describe('csvLoader languages', () => {
 
   it('should import attachment files', async () => {
     const [{ attachments: enAttachments }] = await entities.get({
-      attachments: { $exists: true },
       language: 'en',
     });
 
     const [{ attachments: esAttachments }] = await entities.get({
-      attachments: { $exists: true },
       language: 'es',
     });
 

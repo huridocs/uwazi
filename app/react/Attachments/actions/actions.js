@@ -40,15 +40,14 @@ export function deleteFile(file, entity) {
   };
 }
 
-export function uploadAttachment(entity, file, __reducerKey, options = {}) {
+export function uploadAttachment(entity, file, __reducerKey) {
   return dispatch => {
     dispatch({ type: types.START_UPLOAD_ATTACHMENT, entity });
     superagent
-      .post(`${APIURL}attachments/upload`)
+      .post(`${APIURL}files/upload/attachment`)
       .set('Accept', 'application/json')
       .set('X-Requested-With', 'XMLHttpRequest')
-      .field('entityId', entity)
-      .field('allLanguages', Boolean(options.allLanguages))
+      .field('entity', entity)
       .attach('file', file, file.name)
       .on('progress', data => {
         dispatch({ type: types.ATTACHMENT_PROGRESS, entity, progress: Math.floor(data.percent) });
@@ -65,16 +64,26 @@ export function uploadAttachment(entity, file, __reducerKey, options = {}) {
   };
 }
 
+export function uploadAttachmentFromUrl(entity, name, url, __reducerKey) {
+  return dispatch => {
+    dispatch({ type: types.START_UPLOAD_ATTACHMENT, entity });
+    api
+      .post('files', new RequestParams({ originalname: name, url, entity, type: 'attachment' }))
+      .then(newFile => {
+        dispatch({ type: types.ATTACHMENT_COMPLETE, entity, file: newFile.json, __reducerKey });
+        dispatch(notify('Attachment uploaded', 'success'));
+      });
+  };
+}
+
 export function renameAttachment(entityId, form, __reducerKey, file) {
   return dispatch =>
     api
       .post(
-        'attachments/rename',
+        'files',
         new RequestParams({
-          entityId,
           _id: file._id,
           originalname: file.originalname,
-          language: file.language,
         })
       )
       .then(renamedFile => {
@@ -89,23 +98,21 @@ export function renameAttachment(entityId, form, __reducerKey, file) {
       });
 }
 
-export function deleteAttachment(entityId, attachment, __reducerKey) {
+export function deleteAttachment(entitySharedId, attachment, __reducerKey) {
   return async dispatch => {
-    const { json: updatedEntity } = await api.delete(
-      'attachments/delete',
+    await api.delete(
+      'files',
       new RequestParams({
-        attachmentId: attachment._id,
+        _id: attachment._id,
       })
     );
     dispatch({
       type: types.ATTACHMENT_DELETED,
-      entity: entityId,
+      entity: entitySharedId,
       file: attachment,
       __reducerKey,
     });
 
-    dispatch(updateEntity(updatedEntity));
-    await dispatch(selectSingleDocument(updatedEntity));
     dispatch(notify('Attachment deleted', 'success'));
   };
 }

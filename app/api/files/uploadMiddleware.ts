@@ -17,6 +17,9 @@ const defaultStorage = multer.diskStorage({
 });
 
 const move = async (req: Request, filePath: pathFunction) => {
+  if (!req.file) {
+    return;
+  }
   const oldPath = path.join(req.file.destination, req.file.filename);
   const newPath = filePath(req.file.filename);
   await copyFile(oldPath, newPath);

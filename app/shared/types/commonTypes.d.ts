@@ -9,6 +9,7 @@ export interface AttachmentSchema {
   originalname?: string;
   filename?: string;
   mimetype?: string;
+  url?: string;
   timestamp?: number;
   size?: number;
   [k: string]: unknown | undefined;

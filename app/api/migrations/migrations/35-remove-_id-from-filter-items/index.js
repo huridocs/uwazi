@@ -1,5 +1,5 @@
 export default {
-  delta: 34,
+  delta: 35,
 
   name: 'remove-_id-from-filter-items',
 

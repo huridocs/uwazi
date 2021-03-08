@@ -13,7 +13,7 @@ describe('migration remove-_id-from-filter-items', () => {
   });
 
   it('should have a delta number', () => {
-    expect(migration.delta).toBe(34);
+    expect(migration.delta).toBe(35);
   });
 
   it('should remove _id field from filter items', async () => {
