@@ -1,4 +1,4 @@
-import { adminLogin } from '../helpers/login';
+import { adminLogin, logout } from '../helpers/login';
 import { host } from '../config';
 import proxyMock from '../helpers/proxyMock';
 import insertFixtures from '../helpers/insertFixtures';
@@ -16,6 +16,10 @@ describe('Custom home page and styles', () => {
     await insertFixtures();
     await proxyMock();
     await disableTransitions();
+  });
+
+  afterAll(async () => {
+    await logout();
   });
 
   it('should log in and create add page', async () => {
