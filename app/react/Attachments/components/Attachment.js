@@ -37,18 +37,6 @@ const getItemOptions = (filename, url) => {
 };
 
 export class Attachment extends Component {
-  constructor(props) {
-    super(props);
-    this.state = { dropdownMenuOpen: false };
-
-    this.toggleDropdown = this.toggleDropdown.bind(this);
-    this.handleClickOutside = this.handleClickOutside.bind(this);
-    this.copyToClipboard = this.copyToClipboard.bind(this);
-    this.myRef = React.createRef();
-    this.onRenameSubmit = this.onRenameSubmit.bind(this);
-    this.toggleRename = this.toggleRename.bind(this);
-  }
-
   static conformThumbnail(file, item) {
     const acceptedThumbnailExtensions = ['png', 'gif', 'jpg', 'jpeg'];
     let thumbnail = null;
@@ -77,6 +65,18 @@ export class Attachment extends Component {
     }
 
     return <div className="attachment-thumbnail">{thumbnail}</div>;
+  }
+
+  constructor(props) {
+    super(props);
+    this.state = { dropdownMenuOpen: false };
+
+    this.toggleDropdown = this.toggleDropdown.bind(this);
+    this.handleClickOutside = this.handleClickOutside.bind(this);
+    this.copyToClipboard = this.copyToClipboard.bind(this);
+    this.myRef = React.createRef();
+    this.onRenameSubmit = this.onRenameSubmit.bind(this);
+    this.toggleRename = this.toggleRename.bind(this);
   }
 
   componentDidMount() {
@@ -224,7 +224,7 @@ export class Attachment extends Component {
                 </button>
               </li>
               <li>
-                <a href={item.url || item.downloadHref} target="_blank">
+                <a href={item.url || item.downloadHref} target="_blank" rel="noopener noreferrer">
                   <Icon icon="link" /> <Translate>Download</Translate>
                 </a>
               </li>
