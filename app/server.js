@@ -30,6 +30,7 @@ import { tenants } from './api/tenants/tenantContext';
 import { multitenantMiddleware } from './api/utils/multitenantMiddleware';
 import { staticFilesMiddleware } from './api/utils/staticFilesMiddleware';
 import { customUploadsPath, uploadsPath } from './api/files/filesystem';
+import { tocService } from './api/toc_generation/tocService';
 
 mongoose.Promise = Promise;
 
@@ -40,7 +41,7 @@ const http = Server(app);
 
 const uncaughtError = error => {
   handleError(error, { uncaught: true });
-  process.exit(1);
+  throw error;
 };
 
 process.on('unhandledRejection', uncaughtError);
@@ -116,13 +117,19 @@ DB.connect(config.DBHOST, dbAuth).then(async () => {
       if (!config.multiTenant && !config.clusterMode) {
         syncWorker.start();
 
-        const { evidencesVault } = await settings.get();
+        const { evidencesVault, features } = await settings.get();
         if (evidencesVault && evidencesVault.token && evidencesVault.template) {
-          console.info('==> 📥 evidences vault config detected, started sync ....');
+          console.info('==> 📥  evidences vault config detected, started sync ....');
           repeater.start(
             () => vaultSync.sync(evidencesVault.token, evidencesVault.template),
             10000
           );
+        }
+
+        if (features && features.tocGeneration && features.tocGeneration.url) {
+          console.info('==> 🗂️ automatically generating TOCs using external service');
+          const service = tocService(features.tocGeneration.url);
+          repeater.start(() => service.processNext(), 10000);
         }
 
         repeater.start(

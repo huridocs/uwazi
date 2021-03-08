@@ -30,6 +30,7 @@ describe('static requestState()', () => {
   };
   const globalResources = {
     templates: Immutable.fromJS(templates),
+    settings: { collection: Immutable.fromJS({ features: {} }) },
     thesauris: Immutable.fromJS(thesauris),
     relationTypes: Immutable.fromJS(relationTypes),
   };

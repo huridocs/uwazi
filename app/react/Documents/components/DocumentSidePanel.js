@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import Immutable from 'immutable';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import './scss/toc.scss';
 
 import { MetadataFormButtons, ShowMetadata } from 'app/Metadata';
 import { NeedAuthorization } from 'app/Auth';
@@ -16,6 +17,7 @@ import ShowIf from 'app/App/ShowIf';
 import SidePanel from 'app/Layout/SidePanel';
 import DocumentSemanticSearchResults from 'app/SemanticSearch/components/DocumentResults';
 import { CopyFromEntity } from 'app/Metadata/components/CopyFromEntity';
+import { TocGeneratedLabel, ReviewTocButton } from 'app/ToggledFeatures/tocGeneration';
 import { Icon } from 'UI';
 
 import * as viewerModule from 'app/Viewer';
@@ -321,11 +323,14 @@ export class DocumentSidePanel extends Component {
             <div className="sidepanel-footer">
               <button
                 onClick={() => this.props.editToc(this.props.file.toc || [])}
-                className="edit-toc btn btn-success"
+                className="edit-toc btn btn-primary"
               >
                 <Icon icon="pencil-alt" />
                 <span className="btn-label">Edit</span>
               </button>
+              <ReviewTocButton file={this.props.file}>
+                <Translate>Mark as Reviewed</Translate>
+              </ReviewTocButton>
             </div>
           </ShowIf>
         </NeedAuthorization>
@@ -340,6 +345,15 @@ export class DocumentSidePanel extends Component {
               />
             </TabContent>
             <TabContent for="toc" className="toc">
+              <div className="tocHeader">
+                <h1>
+                  <Translate>Table of contents </Translate>
+                </h1>
+                &nbsp;
+                <TocGeneratedLabel file={this.props.file}>
+                  <Translate>auto-created ⓘ </Translate>
+                </TocGeneratedLabel>
+              </div>
               <ShowIf if={!this.props.tocBeingEdited}>
                 <ShowToc
                   toc={defaultDocumentToC}

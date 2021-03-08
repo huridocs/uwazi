@@ -137,6 +137,7 @@ const extractFilters = (baseQuery, path) => {
       (!match.terms || (match.terms && !match.terms[path])) &&
       (!match.bool ||
         !match.bool.should ||
+        !match.bool.should[1] ||
         !match.bool.should[1].terms ||
         !match.bool.should[1].terms[path])
   );
@@ -165,5 +166,12 @@ export const propertyToAggregation = (property, dictionaries, baseQuery, suggest
     return aggregationWithGroupsOfOptions(path, should, filters, dictionary);
   }
 
+  return aggregation(path, should, filters);
+};
+
+export const generatedTocAggregations = baseQuery => {
+  const path = 'generatedToc';
+  const filters = extractFilters(baseQuery, path);
+  const { should } = baseQuery.query.bool;
   return aggregation(path, should, filters);
 };
