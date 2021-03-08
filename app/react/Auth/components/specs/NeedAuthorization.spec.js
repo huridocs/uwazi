@@ -141,12 +141,16 @@ describe('NeedAuthorization', () => {
           expect(component.text()).not.toBe('to render if auth');
         });
 
-        it('should render children if user has write acces to all entities through groups', () => {
-          store.user.groups = [
-            {
-              _id: 'groupId',
-            },
-          ];
+        it('should render children if user has write access to all entities through groups', () => {
+          store.user = Immutable.fromJS({
+            _id: 'userId',
+            role: 'collaborator',
+            groups: [
+              {
+                _id: 'groupId',
+              },
+            ],
+          });
 
           props = {
             children: 'to render if auth',
@@ -174,11 +178,15 @@ describe('NeedAuthorization', () => {
         });
 
         it('should not render children if user lacks write access because of a group', () => {
-          store.user.groups = [
-            {
-              _id: 'groupId',
-            },
-          ];
+          store.user = Immutable.fromJS({
+            _id: 'userId',
+            role: 'collaborator',
+            groups: [
+              {
+                _id: 'groupId',
+              },
+            ],
+          });
 
           props = {
             children: 'to render if auth',

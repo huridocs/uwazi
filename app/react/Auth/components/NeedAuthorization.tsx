@@ -24,7 +24,7 @@ const checkWritePermissions = (entities: any[] = [], user?: any) => {
       granted =
         idsWithWritePermissions.find(
           (id: ObjectIdSchema) =>
-            id === user.get('_id') || user.groups?.find((g: any) => g._id === id)
+            id === user.get('_id') || user.get('groups')?.find((g: any) => g.get('_id') === id)
         ) !== undefined;
     } else {
       granted = false;

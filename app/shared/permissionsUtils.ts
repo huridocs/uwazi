@@ -13,8 +13,10 @@ export const checkWritePermissions = (
     return true;
   }
 
-  const ids = permissions ? permissions.filter(p => p.level === 'write').map(p => p._id) : [];
-  const userIds = [user._id!.toString(), ...(user.groups || []).map(g => g._id)];
+  const ids = permissions
+    ? permissions.filter(p => p.level === 'write').map(p => p._id.toString())
+    : [];
+  const userIds = [user._id!.toString(), ...(user.groups || []).map(g => g._id.toString())];
 
   return !!ids.find(p => userIds.includes(p));
 };
