@@ -219,7 +219,7 @@ export class Attachment extends Component {
               ref={this.myRef}
             >
               <li>
-                <button type="button" onClick={e => this.copyToClipboard(item)}>
+                <button type="button" onClick={() => this.copyToClipboard(item)}>
                   <Icon icon="link" /> <Translate>Copy link</Translate>
                 </button>
               </li>
