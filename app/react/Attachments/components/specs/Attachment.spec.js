@@ -1,7 +1,10 @@
+/**
+ * @jest-environment jsdom
+ */
+
 import React from 'react';
 import { shallow } from 'enzyme';
 
-import { NeedAuthorization } from 'app/Auth';
 import AttachmentForm from 'app/Attachments/components/AttachmentForm';
 
 import { Icon } from 'UI';
@@ -62,9 +65,15 @@ describe('Attachment', () => {
       ).not.toContain('Human name 1');
 
       const submit = component.find(AttachmentForm).props().onSubmit;
-      submit();
+      const newFile = { originalname: 'something new' };
+      submit(newFile);
 
-      expect(props.renameAttachment).toHaveBeenCalledWith('parentId', 'model', 'storeKey');
+      expect(props.renameAttachment).toHaveBeenCalledWith(
+        'parentSharedId',
+        'model',
+        'storeKey',
+        newFile
+      );
     });
 
     it('should have a cancel edit button', () => {
@@ -95,28 +104,17 @@ describe('Attachment', () => {
 
       expect(props.submitForm).toHaveBeenCalledWith('model', 'storeKey');
     });
-  });
 
-  it('should include an authorized delete button for each file', () => {
-    render();
-    const deleteButton = component
-      .find('.attachment-buttons')
-      .find('button')
-      .at(1);
+    it('should include an authorized delete button for each file', () => {
+      render();
+      const deleteButton = component.find('.dropdown-menu').find('.is--delete');
 
-    expect(
-      deleteButton
-        .parents()
-        .at(2)
-        .is(NeedAuthorization)
-    ).toBe(true);
-    expect(deleteButton.parent().props().if).toBe(true);
+      deleteButton.simulate('click');
+      expect(context.confirm).toHaveBeenCalled();
 
-    deleteButton.simulate('click');
-    expect(context.confirm).toHaveBeenCalled();
-
-    context.confirm.calls.argsFor(0)[0].accept();
-    expect(props.deleteAttachment).toHaveBeenCalledWith('parentId', file, 'storeKey');
+      context.confirm.calls.argsFor(0)[0].accept();
+      expect(props.deleteAttachment).toHaveBeenCalledWith('parentSharedId', file, 'storeKey');
+    });
   });
 
   it('should hold a thumbnail for PDFs and valid images', () => {
@@ -132,15 +130,11 @@ describe('Attachment', () => {
 
     props.file.filename = 'image.jpg';
     render();
-    expect(component.find('.attachment-thumbnail img').props().src).toBe(
-      '/api/attachments/download?_id=parentId&file=image.jpg'
-    );
+    expect(component.find('.attachment-thumbnail img').props().src).toBe('/api/files/image.jpg');
 
     props.file.filename = 'image.JPG';
     render();
-    expect(component.find('.attachment-thumbnail img').props().src).toBe(
-      '/api/attachments/download?_id=parentId&file=image.JPG'
-    );
+    expect(component.find('.attachment-thumbnail img').props().src).toBe('/api/files/image.JPG');
 
     props.file.filename = 'image.doc';
     render();
@@ -149,9 +143,7 @@ describe('Attachment', () => {
 
   it('should allow downloading the attachment', () => {
     render();
-    expect(component.find('.attachment-link').props().href).toBe(
-      '/api/attachments/download?_id=parentId&file=filename.ext'
-    );
+    expect(component.find('.attachment-link').props().href).toBe('/api/files/filename.ext');
   });
 
   describe('mapStateToProps', () => {

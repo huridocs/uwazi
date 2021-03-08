@@ -140,4 +140,25 @@ describe('files routes', () => {
       });
     });
   });
+
+  describe('POST/files/attachment', () => {
+    it('should save file on the body', async () => {
+      const entityId = db.id();
+      await request(app)
+        .post('/api/files/upload/attachment')
+        .send({
+          originalname: 'Dont bring me down - 1979',
+          url: 'https://en.wikipedia.org/wiki/Electric_Light_Orchestra',
+          entity: entityId,
+        });
+
+      const [attachment] = await files.get({ entity: entityId.toString() });
+      expect(attachment).toEqual(
+        expect.objectContaining({
+          originalname: 'Dont bring me down - 1979',
+          type: 'attachment',
+        })
+      );
+    });
+  });
 });

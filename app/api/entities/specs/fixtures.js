@@ -73,6 +73,7 @@ export default {
       entity: 'shared',
       filename: '8202c463d6158af8065022d9b5014ccc.pdf',
       language: 'pt',
+      type: 'attachment',
     },
     {
       entity: 'shared1',
@@ -130,7 +131,6 @@ export default {
       title: 'Penguin almost done',
       creationDate: 1,
       published: true,
-      attachments: [{ filename: '8202c463d6158af8065022d9b5014ccc.pdf' }],
     },
     {
       _id: docId2,

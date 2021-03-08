@@ -19,6 +19,7 @@ const banner = '/* eslint-disable */\n/**AUTO-GENERATED. RUN yarn emit-types to 
 
 const customImports = {
   'app/shared/types/commonSchemas.ts': ["import { ObjectId } from 'mongodb';"],
+  'app/shared/types/connectionSchema.ts': ["import { FileType } from 'shared/types/fileType';"],
 };
 
 const firstUp = name => name.charAt(0).toUpperCase() + name.slice(1);

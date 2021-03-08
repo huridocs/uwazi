@@ -1,7 +1,8 @@
 /* eslint-disable max-statements */
 import Ajv from 'ajv';
 import templatesModel from 'api/templates/templatesModel';
-import { objectIdSchema, metadataSchema, attachmentSchema } from 'shared/types/commonSchemas';
+import { objectIdSchema, metadataSchema } from 'shared/types/commonSchemas';
+import { fileSchema } from 'shared/types/fileSchema';
 import { wrapValidator } from 'shared/tsUtils';
 import { validators, customErrorMessages } from 'api/entities/metadataValidators.js';
 import { EntitySchema } from './entityType';
@@ -118,7 +119,6 @@ export const entitySchema = {
   definitions: {
     objectIdSchema,
     metadataSchema,
-    attachmentSchema,
   },
   properties: {
     _id: objectIdSchema,
@@ -138,15 +138,36 @@ export const entitySchema = {
         type: { type: 'string' },
       },
     },
-    attachments: {
-      type: 'array',
-      items: attachmentSchema,
-    },
     creationDate: { type: 'number' },
     user: objectIdSchema,
     metadata: metadataSchema,
     suggestedMetadata: metadataSchema,
   },
+};
+
+export const entityWithFilesSchema = {
+  type: 'object',
+
+  definitions: {
+    fileSchema,
+    objectIdSchema,
+    metadataSchema,
+  },
+  allOf: [
+    entitySchema,
+    {
+      properties: {
+        attachments: {
+          type: 'array',
+          items: fileSchema,
+        },
+        documents: {
+          type: 'array',
+          items: fileSchema,
+        },
+      },
+    },
+  ],
 };
 
 export const validateEntity = wrapValidator(ajv.compile(entitySchema));
