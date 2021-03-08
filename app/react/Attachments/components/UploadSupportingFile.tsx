@@ -1,5 +1,3 @@
-/* eslint-disable react/prop-types */
-
 import React, { useState } from 'react';
 import { connect } from 'react-redux';
 
@@ -10,14 +8,13 @@ import { uploadAttachment } from '../actions/actions';
 import { AttachmentsModal } from './AttachmentsModal';
 
 interface UploadSupportingFileProps {
-  entityId: string;
   entitySharedId: string;
   storeKey: string;
   progress?: any;
 }
 
-const UploadSupportingFile: React.FC<UploadSupportingFileProps> = props => {
-  const { entitySharedId, entityId, storeKey, progress } = props;
+const UploadSupportingFile = (props: UploadSupportingFileProps) => {
+  const { entitySharedId, storeKey, progress } = props;
   const [modalOpen, setModalOpen] = useState(false);
 
   const openModal = () => setModalOpen(true);
