@@ -5,21 +5,28 @@ const entityEnId = db.id();
 const uploadId = db.id();
 const uploadId2 = db.id();
 const templateId = db.id();
+const importTemplate = db.id();
 const fileName1 = 'f2082bf51b6ef839690485d7153e847a.pdf';
 
 const fixtures: DBFixture = {
   files: [
     {
       _id: uploadId,
-      entity: 'entity',
+      entity: 'sharedId1',
+      generatedToc: true,
       originalname: 'upload1',
       filename: fileName1,
       type: 'custom',
     },
     {
       _id: uploadId2,
-      entity: 'entity',
+      generatedToc: true,
+      entity: 'sharedId1',
       filename: 'fileNotInDisk',
+    },
+    {
+      entity: 'sharedId1',
+      filename: 'fileWithoutTocFlag',
     },
     { _id: db.id(), filename: 'fileNotOnDisk' },
     { _id: db.id(), originalname: 'upload2', type: 'custom' },
@@ -36,11 +43,21 @@ const fixtures: DBFixture = {
       sharedId: 'sharedId1',
       language: 'es',
       title: 'Gadgets 01 ES',
-      toc: [{ _id: db.id(), label: 'existingToc' }],
+      generatedToc: true,
+      template: templateId,
     },
-    { _id: entityEnId, sharedId: 'sharedId1', language: 'en', title: 'Gadgets 01 EN' },
+    {
+      _id: entityEnId,
+      template: templateId,
+      sharedId: 'sharedId1',
+      language: 'en',
+      title: 'Gadgets 01 EN',
+    },
   ],
-  templates: [{ _id: templateId, default: true, name: 'mydoc', properties: [] }],
+  templates: [
+    { _id: templateId, default: true, name: 'mydoc', properties: [] },
+    { _id: importTemplate, default: true, name: 'import', properties: [] },
+  ],
   settings: [
     {
       _id: db.id(),
@@ -51,4 +68,13 @@ const fixtures: DBFixture = {
   ],
 };
 
-export { fixtures, entityId, entityEnId, fileName1, uploadId, uploadId2, templateId };
+export {
+  fixtures,
+  entityId,
+  entityEnId,
+  fileName1,
+  uploadId,
+  uploadId2,
+  templateId,
+  importTemplate,
+};

@@ -15,6 +15,7 @@ export interface FileType {
   type?: 'custom' | 'document' | 'thumbnail';
   status?: 'processing' | 'failed' | 'ready';
   totalPages?: number;
+  generatedToc?: boolean;
   fullText?: {
     /**
      * This interface was referenced by `undefined`'s JSON-Schema definition

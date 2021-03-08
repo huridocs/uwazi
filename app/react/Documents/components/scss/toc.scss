@@ -1,0 +1,20 @@
+.tocHeader {
+  h1 {
+    display: inline-block;
+    height: 23px;
+    font-weight: 500;
+    font-size: 20px;
+    line-height: 23.44px;
+  }
+}
+
+.file, .tocHeader {
+  .badge {
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    border-radius: 100px;
+    background-color: #CBE0FF;
+    color: #444444;
+    font-weight: normal;
+    margin-right: 5px;
+  }
+}

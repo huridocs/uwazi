@@ -1,6 +1,6 @@
 import { ValidationError } from 'ajv';
 import { validation } from 'api/utils';
-import { searchSchema } from '../searchSchema';
+import { searchParamsSchema } from 'shared/types/searchParams';
 
 describe('search schema', () => {
   const validQuery = {
@@ -27,11 +27,12 @@ describe('search schema', () => {
 
     it('should not have validation errors for valid search', async () => {
       const validSearch = { validQuery };
-      await validation.validateRequest(searchSchema)(validSearch, null, expectValidSchema);
+      await validation.validateRequest(searchParamsSchema)(validSearch, null, expectValidSchema);
     });
+
     it('should support a number as a search term', async () => {
       const validSearch = { query: { ...validQuery, searchTerm: 3 } };
-      await validation.validateRequest(searchSchema)(validSearch, null, expectValidSchema);
+      await validation.validateRequest(searchParamsSchema)(validSearch, null, expectValidSchema);
     });
   });
 
@@ -42,7 +43,11 @@ describe('search schema', () => {
 
     async function testInvalidProperty(invalidProperty: any) {
       const invalidSearch = { query: { ...validQuery, ...invalidProperty } };
-      await validation.validateRequest(searchSchema)(invalidSearch, null, expectInvalidSchema);
+      await validation.validateRequest(searchParamsSchema)(
+        invalidSearch,
+        null,
+        expectInvalidSchema
+      );
     }
 
     it('should be invalid if allAgregations is not a boolean value', async () => {

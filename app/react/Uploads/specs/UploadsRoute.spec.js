@@ -26,6 +26,7 @@ describe('UploadsRoute', () => {
   ];
   const globalResources = {
     templates: Immutable(templates),
+    settings: { collection: Immutable({ features: {} }) },
     thesauris: Immutable([]),
     relationTypes: Immutable([]),
   };
