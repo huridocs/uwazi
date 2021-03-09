@@ -7,6 +7,8 @@ import ShowIf from 'app/App/ShowIf';
 import { t } from 'app/I18N';
 import { Icon } from 'UI';
 
+import './scss/showToc.scss';
+
 export class ShowToc extends Component {
   scrollTo(tocElement, e) {
     e.preventDefault();
@@ -38,6 +40,9 @@ export class ShowToc extends Component {
                   onClick={this.scrollTo.bind(this, tocElement)}
                 >
                   {tocElement.get('label')}
+                  <span className="page-number">
+                    {tocElement.getIn(['selectionRectangles', 0]).get('page')}
+                  </span>
                 </a>
               </ShowIf>
               <ShowIf if={this.props.readOnly}>

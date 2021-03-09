@@ -12,7 +12,7 @@ Uwazi is a flexible database application to capture and organise collections of 
 
 [Uwazi](https://www.uwazi.io/) | [HURIDOCS](https://huridocs.org/)
 
-Read the [user guide](https://github.com/huridocs/uwazi/wiki)
+Read the [user guide](https://uwazi.readthedocs.io/en/latest/)
 
 # Installation guide
 

@@ -2,14 +2,16 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-
 import filesize from 'filesize';
+
 import { NeedAuthorization } from 'app/Auth';
 import ShowIf from 'app/App/ShowIf';
-
+import { Translate } from 'app/I18N';
 import AttachmentForm from 'app/Attachments/components/AttachmentForm';
 import { wrapDispatch } from 'app/Multireducer';
 import { Icon } from 'UI';
+import { notify } from 'app/Notifications/actions/notificationsActions';
+import { store } from 'app/store';
 
 import {
   deleteAttachment,
@@ -19,58 +21,133 @@ import {
   resetForm,
 } from '../actions/actions';
 
-const getExtension = filename => filename.substr(filename.lastIndexOf('.') + 1);
+const getExtension = filename => (filename ? filename.substr(filename.lastIndexOf('.') + 1) : '');
 
-const getItemOptions = (parentId, filename) => {
+const getItemOptions = (filename, url) => {
   const options = {};
   options.itemClassName = '';
   options.typeClassName = 'empty';
   options.icon = 'paperclip';
   options.deletable = true;
   options.replaceable = false;
-  options.downloadHref = `/api/attachments/download?_id=${parentId}&file=${filename}`;
+  options.downloadHref = `/api/files/${filename}`;
+  options.url = url;
 
   return options;
 };
 
-const conformThumbnail = (file, item) => {
-  const acceptedThumbnailExtensions = ['png', 'gif', 'jpg'];
-  let thumbnail = null;
-
-  if (getExtension(file.filename) === 'pdf') {
-    thumbnail = (
-      <span>
-        <Icon icon="file-pdf" /> pdf
-      </span>
-    );
-  }
-
-  if (acceptedThumbnailExtensions.indexOf(getExtension(file.filename.toLowerCase())) !== -1) {
-    thumbnail = <img src={item.downloadHref} alt={file.filename} />;
-  }
-
-  return <div className="attachment-thumbnail">{thumbnail}</div>;
-};
-
 export class Attachment extends Component {
+  static conformThumbnail(file, item) {
+    const acceptedThumbnailExtensions = ['png', 'gif', 'jpg', 'jpeg'];
+    let thumbnail = null;
+
+    if (file.filename && getExtension(file.filename) === 'pdf') {
+      thumbnail = (
+        <span>
+          <Icon icon="file-pdf" /> pdf
+        </span>
+      );
+    }
+
+    if (file.url) {
+      thumbnail = (
+        <span>
+          <Icon icon="link" />
+        </span>
+      );
+    }
+
+    if (
+      file.filename &&
+      acceptedThumbnailExtensions.indexOf(getExtension(file.filename.toLowerCase())) !== -1
+    ) {
+      thumbnail = <img src={item.downloadHref} alt={file.filename} />;
+    }
+
+    return <div className="attachment-thumbnail">{thumbnail}</div>;
+  }
+
+  constructor(props) {
+    super(props);
+    this.state = { dropdownMenuOpen: false };
+
+    this.toggleDropdown = this.toggleDropdown.bind(this);
+    this.handleClickOutside = this.handleClickOutside.bind(this);
+    this.copyToClipboard = this.copyToClipboard.bind(this);
+    this.myRef = React.createRef();
+    this.onRenameSubmit = this.onRenameSubmit.bind(this);
+    this.toggleRename = this.toggleRename.bind(this);
+  }
+
+  componentDidMount() {
+    if (typeof document !== 'undefined') {
+      document.addEventListener('mousedown', this.handleClickOutside);
+    }
+  }
+
+  componentWillUnmount() {
+    if (typeof document !== 'undefined') {
+      document.removeEventListener('mousedown', this.handleClickOutside);
+    }
+  }
+
+  onRenameSubmit(newFile) {
+    const { parentSharedId, model, storeKey } = this.props;
+    this.props.renameAttachment(parentSharedId, model, storeKey, newFile);
+  }
+
+  toggleDropdown() {
+    this.setState(prevState => ({
+      dropdownMenuOpen: !prevState.dropdownMenuOpen,
+    }));
+  }
+
   deleteAttachment(attachment) {
     this.context.confirm({
       accept: () => {
-        this.props.deleteAttachment(this.props.parentId, attachment, this.props.storeKey);
+        this.props.deleteAttachment(this.props.parentSharedId, attachment, this.props.storeKey);
       },
       title: 'Confirm delete',
       message: this.props.deleteMessage,
     });
   }
 
-  render() {
-    const { file, parentId, model, storeKey } = this.props;
-    const sizeString = file.size ? filesize(file.size) : '';
-    const item = getItemOptions(parentId, file.filename);
+  toggleRename() {
+    const { file, model } = this.props;
+    this.props.loadForm.bind(this, model, file)();
+    this.toggleDropdown();
+  }
 
+  copyToClipboard(item) {
+    const dummy = document.createElement('textarea');
+    document.body.appendChild(dummy);
+    dummy.value = item.url || window.location.origin + item.downloadHref;
+    dummy.select();
+    document.execCommand('copy');
+    document.body.removeChild(dummy);
+
+    store.dispatch(notify('Copied to clipboard', 'success'));
+    this.toggleDropdown();
+  }
+
+  handleClickOutside(e) {
+    if (!this.myRef.current.contains(e.target)) {
+      this.setState({ dropdownMenuOpen: false });
+    }
+  }
+
+  resetForm() {
+    const { model } = this.props;
+    this.props.resetForm(model);
+  }
+
+  render() {
+    const { file, model, storeKey } = this.props;
+    const sizeString = file.size ? filesize(file.size) : '';
+    const item = getItemOptions(file.filename, file.url);
     let name = (
-      <a className="attachment-link" href={item.downloadHref}>
-        {conformThumbnail(file, item)}
+      <a className="attachment-link" href={item.url || item.downloadHref}>
+        {Attachment.conformThumbnail(file, item)}
         <span className="attachment-name">
           <span>{file.originalname}</span>
           <ShowIf if={Boolean(sizeString)}>
@@ -80,42 +157,14 @@ export class Attachment extends Component {
       </a>
     );
 
-    let buttons = (
-      <div>
-        <NeedAuthorization roles={['admin', 'editor']}>
-          <div className="attachment-buttons">
-            <ShowIf if={!this.props.readOnly}>
-              <button
-                type="button"
-                className="item-shortcut btn btn-default"
-                onClick={this.props.loadForm.bind(this, model, file)}
-              >
-                <Icon icon="pencil-alt" />
-              </button>
-            </ShowIf>
-            <ShowIf if={item.deletable && !this.props.readOnly}>
-              <button
-                type="button"
-                className="item-shortcut btn btn-default btn-hover-danger"
-                onClick={this.deleteAttachment.bind(this, file)}
-              >
-                <Icon icon="trash-alt" />
-              </button>
-            </ShowIf>
-          </div>
-        </NeedAuthorization>
-      </div>
-    );
+    let buttons = null;
 
     if (this.props.beingEdited && !this.props.readOnly) {
       name = (
         <div className="attachment-link">
-          {conformThumbnail(file, item)}
+          {Attachment.conformThumbnail(file, item)}
           <span className="attachment-name">
-            <AttachmentForm
-              model={this.props.model}
-              onSubmit={this.props.renameAttachment.bind(this, parentId, model, storeKey)}
-            />
+            <AttachmentForm model={this.props.model} onSubmit={this.onRenameSubmit} />
           </span>
         </div>
       );
@@ -149,7 +198,53 @@ export class Attachment extends Component {
     return (
       <div className="attachment">
         {name}
-        {buttons}
+        <NeedAuthorization roles={['admin', 'editor']}>
+          {buttons}
+
+          <div className="dropdown attachments-dropdown">
+            <button
+              className="btn btn-default dropdown-toggle attachments-dropdown-toggle"
+              type="button"
+              id="attachment-dropdown-actions"
+              data-toggle="dropdown"
+              aria-haspopup="true"
+              onClick={this.toggleDropdown}
+            >
+              <Icon icon="pencil-alt" />
+            </button>
+            <ul
+              className="dropdown-menu dropdown-menu-right"
+              aria-labelledby="attachment-dropdown-actions"
+              style={{ display: this.state.dropdownMenuOpen ? 'block' : 'none' }}
+              ref={this.myRef}
+            >
+              <li>
+                <button type="button" onClick={() => this.copyToClipboard(item)}>
+                  <Icon icon="link" /> <Translate>Copy link</Translate>
+                </button>
+              </li>
+              <li>
+                <a href={item.url || item.downloadHref} target="_blank" rel="noopener noreferrer">
+                  <Icon icon="link" /> <Translate>Download</Translate>
+                </a>
+              </li>
+              <li>
+                <button type="button" onClick={this.toggleRename}>
+                  <Icon icon="pencil-alt" /> <Translate>Rename</Translate>
+                </button>
+              </li>
+              <li>
+                <button
+                  type="button"
+                  onClick={this.deleteAttachment.bind(this, file)}
+                  className="is--delete"
+                >
+                  <Icon icon="trash-alt" /> <Translate>Delete</Translate>
+                </button>
+              </li>
+            </ul>
+          </div>
+        </NeedAuthorization>
       </div>
     );
   }
@@ -162,7 +257,7 @@ Attachment.defaultProps = {
 Attachment.propTypes = {
   deleteMessage: PropTypes.string,
   file: PropTypes.object,
-  parentId: PropTypes.string,
+  parentSharedId: PropTypes.string,
   storeKey: PropTypes.string,
   model: PropTypes.string,
   readOnly: PropTypes.bool,

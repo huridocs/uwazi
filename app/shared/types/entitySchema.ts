@@ -1,7 +1,8 @@
 /* eslint-disable max-statements */
 import Ajv from 'ajv';
 import templatesModel from 'api/templates/templatesModel';
-import { objectIdSchema, metadataSchema, attachmentSchema } from 'shared/types/commonSchemas';
+import { objectIdSchema, metadataSchema } from 'shared/types/commonSchemas';
+import { fileSchema } from 'shared/types/fileSchema';
 import { wrapValidator } from 'shared/tsUtils';
 import { validators, customErrorMessages } from 'api/entities/metadataValidators.js';
 import { permissionSchema } from 'shared/types/permissionSchema';
@@ -119,7 +120,6 @@ export const entitySchema = {
   definitions: {
     objectIdSchema,
     metadataSchema,
-    attachmentSchema,
     permissionSchema,
   },
   properties: {
@@ -130,6 +130,7 @@ export const entitySchema = {
     title: { type: 'string', minLength: 1, stringMeetsLuceneMaxLimit: true },
     template: objectIdSchema,
     published: { type: 'boolean' },
+    generatedToc: { type: 'boolean' },
     icon: {
       type: 'object',
       additionalProperties: false,
@@ -138,10 +139,6 @@ export const entitySchema = {
         label: { type: 'string' },
         type: { type: 'string' },
       },
-    },
-    attachments: {
-      type: 'array',
-      items: attachmentSchema,
     },
     creationDate: { type: 'number' },
     user: objectIdSchema,
@@ -152,6 +149,31 @@ export const entitySchema = {
       items: permissionSchema,
     },
   },
+};
+
+export const entityWithFilesSchema = {
+  type: 'object',
+
+  definitions: {
+    fileSchema,
+    objectIdSchema,
+    metadataSchema,
+  },
+  allOf: [
+    entitySchema,
+    {
+      properties: {
+        attachments: {
+          type: 'array',
+          items: fileSchema,
+        },
+        documents: {
+          type: 'array',
+          items: fileSchema,
+        },
+      },
+    },
+  ],
 };
 
 export const validateEntity = wrapValidator(ajv.compile(entitySchema));

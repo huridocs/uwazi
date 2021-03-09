@@ -170,6 +170,10 @@ async function updateEntity(entity, _template) {
       if (typeof entity.template !== 'undefined') {
         d.template = entity.template;
       }
+
+      if (typeof entity.generatedToc !== 'undefined') {
+        d.generatedToc = entity.generatedToc;
+      }
       return model.save(d);
     })
   );
@@ -313,12 +317,13 @@ const validateWritePermissions = (ids, entitiesToUpdate) => {
 const withDocuments = (entities, documentsFullText, withPdfInfo) =>
   Promise.all(
     entities.map(async entity => {
-      const documents = await files.get(
-        { entity: entity.sharedId, type: 'document' },
+      const entityFiles = await files.get(
+        { entity: entity.sharedId },
         (documentsFullText ? '+fullText ' : ' ') + (withPdfInfo ? '+pdfInfo' : '')
       );
 
-      entity.documents = documents;
+      entity.documents = entityFiles.filter(f => f.type === 'document');
+      entity.attachments = entityFiles.filter(f => f.type === 'attachment');
       return entity;
     })
   );

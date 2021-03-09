@@ -1,5 +1,3 @@
-/** @format */
-
 import HtmlParser from 'htmlparser2/lib/Parser';
 import queryString from 'query-string';
 import rison from 'rison-node';
@@ -11,11 +9,11 @@ import entitiesApi from 'app/Entities/EntitiesAPI';
 
 const conformUrl = ({ url = '', geolocation = false }) => {
   const { q } = queryString.parse(url.substring(url.indexOf('?')));
+
   if (!q) {
-    const defaultValue = { allAggregations: true, limit: 0 };
-    if (geolocation) {
-      defaultValue.geolocation = true;
-    }
+    const defaultValue = geolocation
+      ? { allAggregations: true, limit: 0, geolocation: true }
+      : { allAggregations: true, limit: 0 };
 
     return defaultValue;
   }
@@ -116,7 +114,8 @@ export default {
 
   getMetadataValue(state, { property, dataset = 'default' }) {
     const data = state.page.datasets.get(dataset);
-    const mos = data ? data.getIn(['metadata', property]).toJS() : [];
+    const propertyExists = data && data.hasIn(['metadata', property]);
+    const mos = propertyExists ? data.getIn(['metadata', property]).toJS() : [];
     return mos && mos.length && mos[0].value ? Number(mos[0].value) : undefined;
   },
 };

@@ -1,5 +1,6 @@
 /* eslint-disable */
 /**AUTO-GENERATED. RUN yarn emit-types to update.*/
+import { FileType } from 'shared/types/fileType';
 
 import { ObjectIdSchema } from 'shared/types/commonTypes';
 
@@ -19,20 +20,12 @@ export interface ConnectionSchema {
     title?: string;
     template?: ObjectIdSchema;
     published?: boolean;
+    generatedToc?: boolean;
     icon?: {
       _id?: string | null;
       label?: string;
       type?: string;
     };
-    attachments?: {
-      _id?: ObjectIdSchema;
-      originalname?: string;
-      filename?: string;
-      mimetype?: string;
-      timestamp?: number;
-      size?: number;
-      [k: string]: unknown | undefined;
-    }[];
     creationDate?: number;
     user?: ObjectIdSchema;
     metadata?: {
@@ -42,6 +35,7 @@ export interface ConnectionSchema {
               | null
               | string
               | number
+              | boolean
               | {
                   label?: string | null;
                   url?: string | null;
@@ -75,6 +69,7 @@ export interface ConnectionSchema {
               | null
               | string
               | number
+              | boolean
               | {
                   label?: string | null;
                   url?: string | null;

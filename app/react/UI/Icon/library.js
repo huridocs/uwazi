@@ -35,6 +35,7 @@ import { faFile } from '@fortawesome/free-solid-svg-icons/faFile';
 import { faFlask } from '@fortawesome/free-solid-svg-icons/faFlask';
 import { faFilter } from '@fortawesome/free-solid-svg-icons/faFilter';
 import { faFilePdf } from '@fortawesome/free-solid-svg-icons/faFilePdf';
+import { faFileImage } from '@fortawesome/free-solid-svg-icons/faFileImage';
 import { faFont } from '@fortawesome/free-solid-svg-icons/faFont';
 import { faGavel } from '@fortawesome/free-solid-svg-icons/faGavel';
 import { faHome } from '@fortawesome/free-solid-svg-icons/faHome';
@@ -96,6 +97,7 @@ import { faHandPaper } from '@fortawesome/free-solid-svg-icons/faHandPaper';
 import { faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons/faExternalLinkAlt';
 import { twoFactorAuth } from 'UI/Icon/two-factor-auth';
 import { infoCircleHollow } from 'UI/Icon/info-circle-hollow';
+import { faTasks } from '@fortawesome/free-solid-svg-icons/faTasks';
 import { saveAndNext } from './save-and-next';
 import { exportCsv } from './export-csv';
 import { copyFrom } from './copy-from';
@@ -139,6 +141,7 @@ const icons = {
   faFile,
   faFilter,
   faFilePdf,
+  faFileImage,
   faFont,
   faGavel,
   faHome,
@@ -198,6 +201,7 @@ const icons = {
   faHandPaper,
   faExternalLinkAlt,
   saveAndNext,
+  faTasks,
   exportCsv,
   copyFrom,
   funnelFilter,

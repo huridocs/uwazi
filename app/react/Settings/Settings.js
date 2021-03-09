@@ -11,7 +11,7 @@ import Helmet from 'react-helmet';
 import { resolveTemplateProp } from 'app/Settings/utils/resolveProperty';
 import { getReadyToReviewSuggestionsQuery } from 'app/Settings/utils/suggestions';
 
-import SettingsNav from './components/SettingsNavigation';
+import { SettingsNavigation } from './components/SettingsNavigation';
 import SettingsAPI from './SettingsAPI';
 
 export class Settings extends RouteHandler {
@@ -71,7 +71,7 @@ export class Settings extends RouteHandler {
       <div className="row settings">
         <Helmet title="Settings" />
         <div className="settings-navigation">
-          <SettingsNav />
+          <SettingsNavigation />
         </div>
         <div className="settings-content">{this.props.children}</div>
       </div>

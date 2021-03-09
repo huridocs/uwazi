@@ -12,9 +12,11 @@ export interface FileType {
   size?: number;
   creationDate?: number;
   language?: string;
-  type?: 'custom' | 'document' | 'thumbnail';
+  type?: 'custom' | 'document' | 'thumbnail' | 'attachment';
+  url?: string;
   status?: 'processing' | 'failed' | 'ready';
   totalPages?: number;
+  generatedToc?: boolean;
   fullText?: {
     /**
      * This interface was referenced by `undefined`'s JSON-Schema definition

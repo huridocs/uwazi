@@ -1,5 +1,3 @@
-/** @format */
-
 export default {
   getRows: {
     dataset1: { rows: 'rows dataset 1' },

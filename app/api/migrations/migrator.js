@@ -47,4 +47,4 @@ const migrator = {
   },
 };
 
-export { migrator };
+export { migrator, getMigrations, sortByDelta };

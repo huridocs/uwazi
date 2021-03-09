@@ -3,7 +3,7 @@ import { Application } from 'express';
 import debugLog from 'api/log/debugLog';
 import errorLog from 'api/log/errorLog';
 import { processDocument } from 'api/files/processDocument';
-import { uploadsPath, fileExists, customUploadsPath } from 'api/files/filesystem';
+import { uploadsPath, fileExists, customUploadsPath, attachmentsPath } from 'api/files/filesystem';
 import needsAuthorization from 'api/auth/authMiddleware';
 import { uploadMiddleware } from 'api/files/uploadMiddleware';
 import activitylogMiddleware from 'api/activitylog/activitylogMiddleware';
@@ -49,6 +49,21 @@ export default (app: Application) => {
   );
 
   app.post(
+    '/api/files/upload/attachment',
+    needsAuthorization(['admin', 'editor', 'collaborator']),
+    uploadMiddleware(attachmentsPath),
+    activitylogMiddleware,
+    (req, res, next) => {
+      files
+        .save({ ...req.file, ...req.body, type: 'attachment' })
+        .then(saved => {
+          res.json(saved);
+        })
+        .catch(next);
+    }
+  );
+
+  app.post(
     '/api/files',
     needsAuthorization(['admin', 'editor', 'collaborator']),
     (req, res, next) => {
@@ -58,6 +73,28 @@ export default (app: Application) => {
           res.json(result);
         })
         .catch(next);
+    }
+  );
+
+  app.post(
+    '/api/files/tocReviewed',
+    needsAuthorization(['admin', 'editor']),
+    validation.validateRequest({
+      properties: {
+        body: {
+          required: ['fileId'],
+          properties: {
+            fileId: { type: 'string' },
+          },
+        },
+      },
+    }),
+    async (req, res, next) => {
+      try {
+        res.json(await files.tocReviewed(req.body.fileId, req.language));
+      } catch (e) {
+        next(e);
+      }
     }
   );
 
