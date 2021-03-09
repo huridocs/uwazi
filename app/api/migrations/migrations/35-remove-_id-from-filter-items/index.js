@@ -7,18 +7,27 @@ export default {
 
   async up(db) {
     process.stdout.write(`${this.name}...\r\n`);
-    await db.collection('settings').updateMany(
-      {
-        filters: {
-          $exists: true,
-          $ne: [],
-          $elemMatch: {
-            items: { $exists: true },
-          },
-        },
-      },
-      { $unset: { 'filters.$[].items.$[]._id': 1 } },
-      { multi: true }
-    );
+    const [settings] = await db
+      .collection('settings')
+      .find()
+      .toArray();
+
+    const { filters } = settings;
+    if (!filters) {
+      return;
+    }
+
+    const updatedFilters = filters.map(f => {
+      if (f.items) {
+        f.items = f.items.map(item => {
+          delete item._id;
+          return item;
+        });
+      }
+
+      return f;
+    });
+
+    await db.collection('settings').updateOne({}, { $set: { filters: updatedFilters } });
   },
 };

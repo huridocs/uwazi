@@ -102,10 +102,13 @@ describe('migration remove-_id-from-filter-items', () => {
       {
         filters: [
           {
-            _id: 'somefilterid',
             id: 'someotherid',
             name: 'somename',
             items: [],
+          },
+          {
+            id: 'someotherid',
+            name: 'somename',
           },
         ],
       },
