@@ -15,7 +15,7 @@ export function immidiateSearch(dispatch, searchTerm, connectionType) {
   return api.get('search', requestParams).then(response => {
     let results = response.json.rows;
     if (connectionType === 'targetRanged') {
-      results = results.filter(r => r.type !== 'entity');
+      results = results.filter(r => r.documents.length);
     }
     dispatch(actions.set('connections/searchResults', results));
   });
@@ -64,14 +64,14 @@ export function saveConnection(connection, callback = () => {}) {
     const sourceRelationship = {
       entity: connection.sourceDocument,
       template: null,
-      range: connection.sourceRange,
+      reference: connection.sourceRange,
       file: connection.sourceFile,
     };
 
     const targetRelationship = { entity: connection.targetDocument, template: connection.template };
-    if (connection.targetRange && typeof connection.targetRange.start !== 'undefined') {
+    if (connection.targetRange) {
       Object.assign(targetRelationship, {
-        range: connection.targetRange,
+        reference: connection.targetRange,
         file: connection.targetFile,
       });
     }

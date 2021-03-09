@@ -40,6 +40,13 @@ describe('getFieldLabel', () => {
       field = 'title';
       expect(runGetLabel()).toEqual(t(template._id, 'Name'));
     });
+    describe('when template is not defined', () => {
+      it('should return the input field', () => {
+        template = undefined;
+        field = 'title';
+        expect(runGetLabel()).toEqual('title');
+      });
+    });
   });
 
   describe('when field is not in template', () => {

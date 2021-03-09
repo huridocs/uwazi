@@ -12,7 +12,7 @@ Uwazi is a flexible database application to capture and organise collections of 
 
 [Uwazi](https://www.uwazi.io/) | [HURIDOCS](https://huridocs.org/)
 
-Read the [user guide](https://github.com/huridocs/uwazi/wiki)
+Read the [user guide](https://uwazi.readthedocs.io/en/latest/)
 
 # Installation guide
 
@@ -47,7 +47,7 @@ $ npm config set scripts-prepend-node-path auto
 3. `$ cd uwazi`.
 4. `$ yarn install` will download all node modules, it may take a while.
 5. `$ yarn blank-state` **important note**: the first time you run Uwazi, you will need to initialize the database with its default blank values. Do not run this command if you are upgrading existing projects as it will erase the entire database. Note that from this point on you need ElasticSearch and MongoDB running.
-6. `$ ./install.sh [destination_path]` if no `destination_path` is provided it will default to `./uwazi-production`.
+6. `$ ./install.sh [destination_path]` if no `destination_path` is provided it will default to `./prod`.
 7. Start the server with `$ node [destination_path]/server.js`.
 
 By default, Uwazi runs on localhost on the port 3000, so point your browser to http://localhost:3000 and authenticate yourself with the default username "admin" and password "change this password now".

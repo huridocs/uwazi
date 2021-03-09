@@ -16,15 +16,15 @@ describe('metadata properties', () => {
 
   const localSelectors = {
     viewer:
-      '#app > div.content > div > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div.view',
+      '#app > div.content > div > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content-visible > div > div.view',
     propertiesButtons: index =>
       `#app > div.content > div > div > div.settings-content > div > div > div.panel-body > div > aside > div > ul > li:nth-child(${index}) > button`,
     templateProperties:
       '#app > div.content > div > div > div.settings-content > div > div > div.panel-body > div > aside > div > ul > li',
     relationshipPropertyType:
-      '#app > div.content > div > div > div.settings-content > div > div > div.panel-body > div > main > div > form > ul > li:nth-child(7) > div.propery-form.expand > div > div:nth-child(2) > select',
+      '#app > div.content > div > div > div.settings-content > div > div > div.panel-body > div > main > div > form > ul > li:nth-child(8) > div.propery-form.expand > div > div:nth-child(2) > select',
     editRelationshipProperty:
-      '#app > div.content > div > div > div.settings-content > div > div > div.panel-body > div > main > div > form > ul > li:nth-child(7) > div.list-group-item > div > button.btn.btn-default.btn-xs.property-edit',
+      '#app > div.content > div > div > div.settings-content > div > div > div.panel-body > div > main > div > form > ul > li:nth-child(8) > div.list-group-item > div > button.btn.btn-default.btn-xs.property-edit',
     form: {
       text: '#metadataForm > div:nth-child(3) > div:nth-child(1) > ul > li.wide > div > input',
       numeric: '#metadataForm > div:nth-child(3) > div:nth-child(2) > ul > li.wide > input',
@@ -71,7 +71,7 @@ describe('metadata properties', () => {
       multidaterangeRemoveDateTwo:
         '#metadataForm > div:nth-child(3) > div:nth-child(9) > ul > li.wide > div > div:nth-child(2) > div > button',
       richText:
-        '#metadataForm > div:nth-child(3) > div:nth-child(10) > ul > li.wide > div > div.tab-content.tab-content-visible > textarea',
+        '#metadataForm > div:nth-child(3) > div:nth-child(10) > ul > li.wide > div > div.tab-content-visible > textarea',
       linkLabel:
         '#metadataForm > div:nth-child(3) > div:nth-child(11) > ul > li.wide > div > div > div:nth-child(1) > input',
       linkUrl:

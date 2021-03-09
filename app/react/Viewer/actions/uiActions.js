@@ -124,48 +124,42 @@ export function scrollTomark() {
   scroller.to('.document-viewer mark', '.document-viewer', { duration: 0 });
 }
 
-export function scrollTo(reference, docInfo, element = 'a') {
-  const page = Object.keys(docInfo).find(
-    pageNumber => docInfo[pageNumber].chars >= reference.range.start
-  );
-  if (
-    window.document.querySelector(
-      `.document-viewer ${element}[data-${reference._id}="${reference._id}"]`,
-      '.document-viewer'
-    )
-  ) {
-    scroller.to(
-      `.document-viewer ${element}[data-${reference._id}="${reference._id}"]`,
-      '.document-viewer',
-      { duration: 50 }
-    );
-  } else {
-    const scroll = scroller.to(`.document-viewer div#page-${page}`, '.document-viewer', {
-      duration: 0,
-      dividerOffset: 1,
-    });
-
-    events.on('referenceRendered', renderedReference => {
-      if (
-        renderedReference.ids.includes(reference._id) &&
-        window.document.querySelector(
-          `.document-viewer ${element}[data-${reference._id}="${reference._id}"]`,
-          '.document-viewer'
-        )
-      ) {
-        window.clearInterval(scroll);
-        scroller.to(
-          `.document-viewer ${element}[data-${reference._id}="${reference._id}"]`,
-          '.document-viewer',
-          { duration: 50 }
-        );
-        events.removeAllListeners('referenceRendered');
-      }
-    });
-  }
-  scroller.to(`.metadata-sidepanel .item-${reference._id}`, '.metadata-sidepanel .sidepanel-body', {
-    duration: 50,
+export async function scrollToToc(toc) {
+  const { page, top: offset } = toc.selectionRectangles[0];
+  await scroller.to(`.document-viewer div#page-${page}`, '.document-viewer', {
+    duration: 1,
+    dividerOffset: 1,
+    offset,
+    force: true,
   });
+}
+
+export async function scrollTo(connection) {
+  const { page } = connection.reference.selectionRectangles[0];
+  const offset = -30;
+
+  await scroller.to(`.document-viewer div#page-${page}`, '.document-viewer', {
+    duration: 1,
+    dividerOffset: 1,
+  });
+
+  await scroller.to(
+    `.document-viewer [data-id="${connection._id}"] .highlight-rectangle`,
+    '.document-viewer',
+    {
+      duration: 50,
+      dividerOffset: 1,
+      offset,
+    }
+  );
+
+  await scroller.to(
+    `.metadata-sidepanel .item-${connection._id}`,
+    '.metadata-sidepanel .sidepanel-body',
+    {
+      duration: 50,
+    }
+  );
 }
 
 export function selectSnippet(page, snippet) {
@@ -178,12 +172,12 @@ export function selectSnippet(page, snippet) {
   };
 }
 
-export function activateReference(reference, docInfo, tab, delayActivation = false) {
+export function activateReference(connection, docInfo, tab, delayActivation = false) {
   const tabName = tab && !Array.isArray(tab) ? tab : 'references';
   events.removeAllListeners('referenceRendered');
 
   return dispatch => {
-    dispatch({ type: types.ACTIVE_REFERENCE, reference: reference._id });
+    dispatch({ type: types.ACTIVE_REFERENCE, reference: connection._id });
     if (delayActivation) {
       dispatch(goToActive());
     }
@@ -191,7 +185,7 @@ export function activateReference(reference, docInfo, tab, delayActivation = fal
     dispatch(actions.set('viewer.sidepanel.tab', tabName));
     if (!delayActivation) {
       setTimeout(() => {
-        scrollTo(reference, docInfo);
+        scrollTo(connection, docInfo);
       });
     }
   };
@@ -206,9 +200,9 @@ export function scrollToActive(reference, docInfo, tab, doScroll) {
   };
 }
 
-export function selectReference(reference, docInfo) {
+export function selectReference(connection, docInfo) {
   return dispatch => {
-    dispatch(activateReference(reference, docInfo));
-    dispatch(setTargetSelection(reference.range));
+    dispatch(activateReference(connection, docInfo));
+    dispatch(setTargetSelection(connection.reference));
   };
 }

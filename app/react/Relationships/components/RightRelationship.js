@@ -16,7 +16,6 @@ import HubRelationshipMetadata from './HubRelationshipMetadata';
 export class RightRelationship extends Component {
   constructor(props) {
     super(props);
-
     this.updateRightRelationshipType = this.updateRightRelationshipType.bind(this);
     this.toggleRemoveRightRelationshipGroup = this.toggleRemoveRightRelationshipGroup.bind(this);
     this.toggleRemoveEntity = this.toggleRemoveEntity.bind(this);
@@ -151,7 +150,7 @@ export class RightRelationship extends Component {
                       doc={relationship.get('entityData')}
                       searchParams={search}
                       onClick={this.onClick}
-                      targetReference={relationship.get('range') ? relationship : null}
+                      targetReference={relationship.get('reference') ? relationship : null}
                     />
                     <HubRelationshipMetadata relationship={relationship} />
                   </div>

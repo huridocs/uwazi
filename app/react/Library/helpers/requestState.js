@@ -5,6 +5,7 @@ import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
 import rison from 'rison-node';
 import { getThesaurusPropertyNames } from 'shared/commonTopicClassification';
 import { setTableViewColumns } from 'app/Library/actions/libraryActions';
+import { tocGenerationUtils } from 'app/ToggledFeatures/tocGeneration';
 import { wrapDispatch } from 'app/Multireducer';
 import { getTableColumns } from './tableColumns';
 import setReduxState from './setReduxState.js';
@@ -36,12 +37,17 @@ export function processQuery(params, globalResources, key) {
   }
 
   const { userSelectedSorting, ...sanitizedQuery } = query;
-  return sanitizedQuery;
+  return tocGenerationUtils.aggregations(
+    sanitizedQuery,
+    globalResources.settings.collection.toJS()
+  );
 }
 
 export default function requestState(request, globalResources, calculateTableColumns = false) {
   const docsQuery = processQuery(request.data, globalResources, 'library');
-  const documentsRequest = request.set(docsQuery);
+  const documentsRequest = request.set(
+    tocGenerationUtils.aggregations(docsQuery, globalResources.settings.collection.toJS())
+  );
   const markersRequest = request.set({ ...docsQuery, geolocation: true });
 
   return Promise.all([api.search(documentsRequest), api.search(markersRequest)]).then(

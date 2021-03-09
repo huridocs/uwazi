@@ -9,6 +9,7 @@ export interface AttachmentSchema {
   originalname?: string;
   filename?: string;
   mimetype?: string;
+  url?: string;
   timestamp?: number;
   size?: number;
   [k: string]: unknown | undefined;
@@ -52,7 +53,15 @@ export type GeolocationSchema = {
   lon: number;
 }[];
 
-export type PropertyValueSchema = null | string | number | LinkSchema | DateRangeSchema | LatLonSchema | LatLonSchema[];
+export type PropertyValueSchema =
+  | null
+  | string
+  | number
+  | boolean
+  | LinkSchema
+  | DateRangeSchema
+  | LatLonSchema
+  | LatLonSchema[];
 
 export interface MetadataObjectSchema {
   value: PropertyValueSchema;
@@ -68,11 +77,13 @@ export interface MetadataSchema {
 }
 
 export interface TocSchema {
-  range?: {
-    start?: number;
-    end?: number;
-    [k: string]: unknown | undefined;
-  };
+  selectionRectangles?: {
+    top?: number;
+    left?: number;
+    width?: number;
+    height?: number;
+    page?: string;
+  }[];
   label?: string;
   indentation?: number;
 }

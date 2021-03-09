@@ -3,276 +3,6 @@
 exports[`map helper getMarkers() Inheritance should include inherited properties 1`] = `
 Array [
   Object {
-    "label": "geoPropertyLabel",
-    "latitude": 7,
-    "longitude": 13,
-    "properties": Object {
-      "color": "red",
-      "entity": Object {
-        "metadata": Object {
-          "geoProperty": Array [
-            Object {
-              "value": Object {
-                "lat": 7,
-                "lon": 13,
-              },
-            },
-            Object {
-              "value": Object {
-                "label": "home",
-                "lat": 13,
-                "lon": 7,
-              },
-            },
-          ],
-          "inheritedGeo1": Array [
-            Object {
-              "inherit_geolocation": Array [
-                Object {
-                  "value": Object {
-                    "lat": 23,
-                    "lon": 1946,
-                  },
-                },
-              ],
-              "label": "e5 Label",
-              "value": "e5",
-            },
-            Object {
-              "inherit_geolocation": Array [
-                Object {
-                  "value": Object {
-                    "lat": 2018,
-                    "lon": 6,
-                  },
-                },
-                Object {
-                  "value": Object {
-                    "label": "inherited label",
-                    "lat": 1977,
-                    "lon": 1982,
-                  },
-                },
-              ],
-              "label": "e4 Label",
-              "value": "e4",
-            },
-          ],
-          "inheritedGeo2": Array [
-            Object {
-              "inherit_geolocation": Array [
-                Object {
-                  "value": Object {
-                    "lat": 23,
-                    "lon": 1946,
-                  },
-                },
-              ],
-              "label": "e5 Label",
-              "value": "e5",
-            },
-          ],
-          "secondGeoProperty": Array [
-            Object {
-              "value": Object {
-                "lat": 5,
-                "lon": 13,
-              },
-            },
-          ],
-          "text": Array [
-            Object {
-              "value": "text value",
-            },
-          ],
-        },
-        "sharedId": "e1",
-        "template": "t1",
-      },
-      "info": undefined,
-    },
-  },
-  Object {
-    "label": "geoPropertyLabel",
-    "latitude": 13,
-    "longitude": 7,
-    "properties": Object {
-      "color": "red",
-      "entity": Object {
-        "metadata": Object {
-          "geoProperty": Array [
-            Object {
-              "value": Object {
-                "lat": 7,
-                "lon": 13,
-              },
-            },
-            Object {
-              "value": Object {
-                "label": "home",
-                "lat": 13,
-                "lon": 7,
-              },
-            },
-          ],
-          "inheritedGeo1": Array [
-            Object {
-              "inherit_geolocation": Array [
-                Object {
-                  "value": Object {
-                    "lat": 23,
-                    "lon": 1946,
-                  },
-                },
-              ],
-              "label": "e5 Label",
-              "value": "e5",
-            },
-            Object {
-              "inherit_geolocation": Array [
-                Object {
-                  "value": Object {
-                    "lat": 2018,
-                    "lon": 6,
-                  },
-                },
-                Object {
-                  "value": Object {
-                    "label": "inherited label",
-                    "lat": 1977,
-                    "lon": 1982,
-                  },
-                },
-              ],
-              "label": "e4 Label",
-              "value": "e4",
-            },
-          ],
-          "inheritedGeo2": Array [
-            Object {
-              "inherit_geolocation": Array [
-                Object {
-                  "value": Object {
-                    "lat": 23,
-                    "lon": 1946,
-                  },
-                },
-              ],
-              "label": "e5 Label",
-              "value": "e5",
-            },
-          ],
-          "secondGeoProperty": Array [
-            Object {
-              "value": Object {
-                "lat": 5,
-                "lon": 13,
-              },
-            },
-          ],
-          "text": Array [
-            Object {
-              "value": "text value",
-            },
-          ],
-        },
-        "sharedId": "e1",
-        "template": "t1",
-      },
-      "info": "home",
-    },
-  },
-  Object {
-    "label": "secondGeoPropertyLabel",
-    "latitude": 5,
-    "longitude": 13,
-    "properties": Object {
-      "color": "red",
-      "entity": Object {
-        "metadata": Object {
-          "geoProperty": Array [
-            Object {
-              "value": Object {
-                "lat": 7,
-                "lon": 13,
-              },
-            },
-            Object {
-              "value": Object {
-                "label": "home",
-                "lat": 13,
-                "lon": 7,
-              },
-            },
-          ],
-          "inheritedGeo1": Array [
-            Object {
-              "inherit_geolocation": Array [
-                Object {
-                  "value": Object {
-                    "lat": 23,
-                    "lon": 1946,
-                  },
-                },
-              ],
-              "label": "e5 Label",
-              "value": "e5",
-            },
-            Object {
-              "inherit_geolocation": Array [
-                Object {
-                  "value": Object {
-                    "lat": 2018,
-                    "lon": 6,
-                  },
-                },
-                Object {
-                  "value": Object {
-                    "label": "inherited label",
-                    "lat": 1977,
-                    "lon": 1982,
-                  },
-                },
-              ],
-              "label": "e4 Label",
-              "value": "e4",
-            },
-          ],
-          "inheritedGeo2": Array [
-            Object {
-              "inherit_geolocation": Array [
-                Object {
-                  "value": Object {
-                    "lat": 23,
-                    "lon": 1946,
-                  },
-                },
-              ],
-              "label": "e5 Label",
-              "value": "e5",
-            },
-          ],
-          "secondGeoProperty": Array [
-            Object {
-              "value": Object {
-                "lat": 5,
-                "lon": 13,
-              },
-            },
-          ],
-          "text": Array [
-            Object {
-              "value": "text value",
-            },
-          ],
-        },
-        "sharedId": "e1",
-        "template": "t1",
-      },
-      "info": undefined,
-    },
-  },
-  Object {
     "label": "Inherited Property Label 1",
     "latitude": 23,
     "longitude": 1946,
@@ -642,6 +372,276 @@ Array [
       "info": undefined,
       "inherited": true,
       "label": "e5 Label",
+    },
+  },
+  Object {
+    "label": "geoPropertyLabel",
+    "latitude": 7,
+    "longitude": 13,
+    "properties": Object {
+      "color": "red",
+      "entity": Object {
+        "metadata": Object {
+          "geoProperty": Array [
+            Object {
+              "value": Object {
+                "lat": 7,
+                "lon": 13,
+              },
+            },
+            Object {
+              "value": Object {
+                "label": "home",
+                "lat": 13,
+                "lon": 7,
+              },
+            },
+          ],
+          "inheritedGeo1": Array [
+            Object {
+              "inherit_geolocation": Array [
+                Object {
+                  "value": Object {
+                    "lat": 23,
+                    "lon": 1946,
+                  },
+                },
+              ],
+              "label": "e5 Label",
+              "value": "e5",
+            },
+            Object {
+              "inherit_geolocation": Array [
+                Object {
+                  "value": Object {
+                    "lat": 2018,
+                    "lon": 6,
+                  },
+                },
+                Object {
+                  "value": Object {
+                    "label": "inherited label",
+                    "lat": 1977,
+                    "lon": 1982,
+                  },
+                },
+              ],
+              "label": "e4 Label",
+              "value": "e4",
+            },
+          ],
+          "inheritedGeo2": Array [
+            Object {
+              "inherit_geolocation": Array [
+                Object {
+                  "value": Object {
+                    "lat": 23,
+                    "lon": 1946,
+                  },
+                },
+              ],
+              "label": "e5 Label",
+              "value": "e5",
+            },
+          ],
+          "secondGeoProperty": Array [
+            Object {
+              "value": Object {
+                "lat": 5,
+                "lon": 13,
+              },
+            },
+          ],
+          "text": Array [
+            Object {
+              "value": "text value",
+            },
+          ],
+        },
+        "sharedId": "e1",
+        "template": "t1",
+      },
+      "info": undefined,
+    },
+  },
+  Object {
+    "label": "geoPropertyLabel",
+    "latitude": 13,
+    "longitude": 7,
+    "properties": Object {
+      "color": "red",
+      "entity": Object {
+        "metadata": Object {
+          "geoProperty": Array [
+            Object {
+              "value": Object {
+                "lat": 7,
+                "lon": 13,
+              },
+            },
+            Object {
+              "value": Object {
+                "label": "home",
+                "lat": 13,
+                "lon": 7,
+              },
+            },
+          ],
+          "inheritedGeo1": Array [
+            Object {
+              "inherit_geolocation": Array [
+                Object {
+                  "value": Object {
+                    "lat": 23,
+                    "lon": 1946,
+                  },
+                },
+              ],
+              "label": "e5 Label",
+              "value": "e5",
+            },
+            Object {
+              "inherit_geolocation": Array [
+                Object {
+                  "value": Object {
+                    "lat": 2018,
+                    "lon": 6,
+                  },
+                },
+                Object {
+                  "value": Object {
+                    "label": "inherited label",
+                    "lat": 1977,
+                    "lon": 1982,
+                  },
+                },
+              ],
+              "label": "e4 Label",
+              "value": "e4",
+            },
+          ],
+          "inheritedGeo2": Array [
+            Object {
+              "inherit_geolocation": Array [
+                Object {
+                  "value": Object {
+                    "lat": 23,
+                    "lon": 1946,
+                  },
+                },
+              ],
+              "label": "e5 Label",
+              "value": "e5",
+            },
+          ],
+          "secondGeoProperty": Array [
+            Object {
+              "value": Object {
+                "lat": 5,
+                "lon": 13,
+              },
+            },
+          ],
+          "text": Array [
+            Object {
+              "value": "text value",
+            },
+          ],
+        },
+        "sharedId": "e1",
+        "template": "t1",
+      },
+      "info": "home",
+    },
+  },
+  Object {
+    "label": "secondGeoPropertyLabel",
+    "latitude": 5,
+    "longitude": 13,
+    "properties": Object {
+      "color": "red",
+      "entity": Object {
+        "metadata": Object {
+          "geoProperty": Array [
+            Object {
+              "value": Object {
+                "lat": 7,
+                "lon": 13,
+              },
+            },
+            Object {
+              "value": Object {
+                "label": "home",
+                "lat": 13,
+                "lon": 7,
+              },
+            },
+          ],
+          "inheritedGeo1": Array [
+            Object {
+              "inherit_geolocation": Array [
+                Object {
+                  "value": Object {
+                    "lat": 23,
+                    "lon": 1946,
+                  },
+                },
+              ],
+              "label": "e5 Label",
+              "value": "e5",
+            },
+            Object {
+              "inherit_geolocation": Array [
+                Object {
+                  "value": Object {
+                    "lat": 2018,
+                    "lon": 6,
+                  },
+                },
+                Object {
+                  "value": Object {
+                    "label": "inherited label",
+                    "lat": 1977,
+                    "lon": 1982,
+                  },
+                },
+              ],
+              "label": "e4 Label",
+              "value": "e4",
+            },
+          ],
+          "inheritedGeo2": Array [
+            Object {
+              "inherit_geolocation": Array [
+                Object {
+                  "value": Object {
+                    "lat": 23,
+                    "lon": 1946,
+                  },
+                },
+              ],
+              "label": "e5 Label",
+              "value": "e5",
+            },
+          ],
+          "secondGeoProperty": Array [
+            Object {
+              "value": Object {
+                "lat": 5,
+                "lon": 13,
+              },
+            },
+          ],
+          "text": Array [
+            Object {
+              "value": "text value",
+            },
+          ],
+        },
+        "sharedId": "e1",
+        "template": "t1",
+      },
+      "info": undefined,
     },
   },
   Object {

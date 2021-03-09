@@ -20,6 +20,7 @@ export const attachmentSchema = {
     originalname: { type: 'string' },
     filename: { type: 'string' },
     mimetype: { type: 'string' },
+    url: { type: 'string' },
     timestamp: { type: 'number' },
     size: { type: 'number' },
   },
@@ -83,6 +84,7 @@ export const propertyValueSchema = {
     { type: 'null' },
     { type: 'string' },
     { type: 'number' },
+    { type: 'boolean' },
     linkSchema,
     dateRangeSchema,
     latLonSchema,
@@ -118,11 +120,18 @@ export const tocSchema = {
   type: 'object',
   additionalProperties: false,
   properties: {
-    range: {
-      type: 'object',
-      properties: {
-        start: { type: 'number' },
-        end: { type: 'number' },
+    selectionRectangles: {
+      type: 'array',
+      items: {
+        type: 'object',
+        additionalProperties: false,
+        properties: {
+          top: { type: 'number' },
+          left: { type: 'number' },
+          width: { type: 'number' },
+          height: { type: 'number' },
+          page: { type: 'string' },
+        },
       },
     },
     label: { type: 'string' },

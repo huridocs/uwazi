@@ -102,6 +102,7 @@ describe('entities', () => {
       expect(createdDocumentEs.user.equals(user._id)).toBe(true);
       expect(createdDocumentEs.published).toBe(false);
       expect(createdDocumentEs.creationDate).toEqual(universalTime);
+      expect(createdDocumentEs.editDate).toEqual(universalTime);
 
       expect(createdDocumentEn.title).toBe(doc.title);
       expect(createdDocumentEn.user.equals(user._id)).toBe(true);
@@ -152,21 +153,28 @@ describe('entities', () => {
         .catch(catchErrors(done));
     });
 
-    it('should return updated entity', done => {
+    it('should return updated entity with updated editDate', done => {
+      const updateTime = 2;
       const doc = {
         title: 'the dark knight',
         fullText: { 0: 'the full text!' },
         metadata: { data: [{ value: 'should not be here' }] },
       };
+
       const user = { _id: db.id() };
 
       entities
         .save(doc, { user, language: 'en' })
-        .then(createdDocument =>
-          entities.save({ ...createdDocument, title: 'updated title' }, { user, language: 'en' })
-        )
+        .then(createdDocument => {
+          spyOn(date, 'currentUTC').and.returnValue(updateTime);
+          return entities.save(
+            { ...createdDocument, title: 'updated title' },
+            { user, language: 'en' }
+          );
+        })
         .then(updatedDocument => {
           expect(updatedDocument.title).toBe('updated title');
+          expect(updatedDocument.editDate).toEqual(updateTime);
           done();
         })
         .catch(catchErrors(done));
@@ -332,7 +340,7 @@ describe('entities', () => {
       });
     });
 
-    describe('when published/template property changes', () => {
+    describe('when published/template/generatedToc property changes', () => {
       it('should replicate the change for all the languages', done => {
         const doc = {
           _id: batmanFinishesId,
@@ -340,6 +348,7 @@ describe('entities', () => {
           metadata: {},
           published: false,
           template: templateId,
+          generatedToc: true,
         };
 
         entities
@@ -356,12 +365,29 @@ describe('entities', () => {
             expect(docES.template).toBeDefined();
 
             expect(docES.published).toBe(false);
+            expect(docES.generatedToc).toBe(true);
             expect(docES.template.equals(templateId)).toBe(true);
             expect(docEN.published).toBe(false);
+            expect(docEN.generatedToc).toBe(true);
             expect(docEN.template.equals(templateId)).toBe(true);
             done();
           })
           .catch(catchErrors(done));
+      });
+    });
+
+    describe('when generatedToc is undefined', () => {
+      it('should not replicate the value to all languages', async () => {
+        const doc = { _id: batmanFinishesId, sharedId: 'shared', generatedToc: true };
+        await entities.save(doc, { language: 'en' });
+        await entities.save({ _id: batmanFinishesId, sharedId: 'shared' }, { language: 'en' });
+        const [docES, docEN] = await Promise.all([
+          entities.getById('shared', 'es'),
+          entities.getById('shared', 'en'),
+        ]);
+
+        expect(docES.generatedToc).toBe(true);
+        expect(docEN.generatedToc).toBe(true);
       });
     });
 

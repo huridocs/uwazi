@@ -19,6 +19,7 @@ const banner = '/* eslint-disable */\n/**AUTO-GENERATED. RUN yarn emit-types to 
 
 const customImports = {
   'app/shared/types/commonSchemas.ts': ["import { ObjectId } from 'mongodb';"],
+  'app/shared/types/connectionSchema.ts': ["import { FileType } from 'shared/types/fileType';"],
 };
 
 const firstUp = name => name.charAt(0).toUpperCase() + name.slice(1);
@@ -61,30 +62,36 @@ const writeTypeFile = (file, commonImport, snippets) => {
   }
 };
 
+const writeSchema = async (schemas, file) => {
+  const snippets = await Promise.all(
+    Object.entries(schemas).map(([name, schema]) => {
+      if (!name.match(/Schema$/)) {
+        return '';
+      }
+      return compile(schema, schema.title || firstUp(name), opts);
+    })
+  );
+
+  const contents = fs.readFileSync(file).toString();
+
+  writeTypeFile(file, typeImports(contents.match(typeImportFindRegex)), snippets);
+};
+
 const emitSchemaTypes = async file => {
   try {
-    if (!file.match(/Schema/) || file.match(/spec/)) {
+    if (file.match(/spec/)) {
       return;
     }
 
-    const schemas = require(`./${file}`);
+    if (file.match(/shared\/types/) || file.match(/Schema/)) {
+      const schemas = require(`./${file}`);
 
-    if (!schemas.emitSchemaTypes) {
-      return;
+      if (!schemas.emitSchemaTypes) {
+        return;
+      }
+
+      writeSchema(schemas, file);
     }
-
-    const snippets = await Promise.all(
-      Object.entries(schemas).map(([name, schema]) => {
-        if (!name.match(/Schema$/)) {
-          return '';
-        }
-        return compile(schema, schema.title || firstUp(name), opts);
-      })
-    );
-
-    const contents = fs.readFileSync(file).toString();
-
-    writeTypeFile(file, typeImports(contents.match(typeImportFindRegex)), snippets);
   } catch (err) {
     console.error(`Failed emitting types from ${file}: ${err}.`);
   }
