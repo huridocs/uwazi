@@ -6,10 +6,17 @@ interface EntityCounterProps {
   entityListCount: number;
   entityTotal: number;
   totalConnectionsCount: number;
+  maxedTotalEntities: string;
 }
 
 export const DocumentCounter = (props: EntityCounterProps) => {
-  const { totalConnectionsCount, selectedEntitiesCount, entityListCount, entityTotal } = props;
+  const {
+    totalConnectionsCount,
+    selectedEntitiesCount,
+    entityListCount,
+    entityTotal,
+    maxedTotalEntities,
+  } = props;
   const counter =
     totalConnectionsCount === undefined ? (
       <>
@@ -19,13 +26,18 @@ export const DocumentCounter = (props: EntityCounterProps) => {
           </>
         )}
         <b> {entityListCount} </b> <Translate>shown of</Translate>
-        <b> {entityTotal} </b> <Translate>documents</Translate>
+        <b>
+          {' '}
+          {entityTotal}
+          {maxedTotalEntities === 'gte' && '+'}{' '}
+        </b>{' '}
+        <Translate>documents</Translate>
       </>
     ) : (
       <>
         <b>{totalConnectionsCount} </b>
         <Translate>connections</Translate>, <b>{entityTotal} </b>
-        {<Translate>documents</Translate>}
+        <Translate>documents</Translate>
       </>
     );
 

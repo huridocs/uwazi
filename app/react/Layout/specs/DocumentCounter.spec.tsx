@@ -9,6 +9,7 @@ describe('DocumentCounter', () => {
     entityListCount: 5,
     entityTotal: 100,
     totalConnectionsCount: 3,
+    maxedTotalEntities: 'eq',
   };
   const render = () => {
     component = shallow(<DocumentCounter {...props} />);
