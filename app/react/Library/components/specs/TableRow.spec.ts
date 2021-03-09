@@ -11,9 +11,11 @@ import { EntitySchema } from 'shared/types/entityType';
 describe('TableRow', () => {
   const formattedCreationDate = 'Jul 23, 2020';
   const formattedPropertyDate = 'May 20, 2019';
+
   let component: any;
   let instance: any;
   let entity: EntitySchema;
+
   const commonColumns = [
     {
       label: 'Title1',
@@ -53,8 +55,8 @@ describe('TableRow', () => {
   const clickOnDocumentSpy = jasmine.createSpy('clickOnDocument');
 
   function render() {
-    const timestampCreation = Date.parse(formattedCreationDate).valueOf();
-    const timestampProperty = Math.floor(Date.parse(formattedPropertyDate).valueOf() / 1000);
+    const timestampCreation = Date.UTC(2020, 6, 23).valueOf();
+    const timestampProperty = Math.floor(Date.UTC(2019, 4, 20).valueOf() / 1000);
     const storeState = {
       library: { ui: Immutable.fromJS({ selectedDocuments: [{ _id: 'selectedEntity1' }] }) },
       thesauris: Immutable.fromJS([
