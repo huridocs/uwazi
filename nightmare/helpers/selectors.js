@@ -72,7 +72,7 @@ export default {
     saveConnectionButton:
       '#app > div.content > div > div > div.settings-content > div > div > div.panel-body > div > main > div > form > div.settings-footer > button',
     saveCollectionButton:
-      '#app > div.content > div > div > div.settings-content > div > div.panel-body > div.settings-footer > button',
+      '#app > div.content > div > div > div.settings-content > div > div > button',
     dictionaryNameForm: '#thesauriName',
     connectionNameForm:
       '#app > div.content > div > div > div.settings-content > div > div > div.panel-body > div > main > div > form > div.metadataTemplate-heading > div > div > input',
@@ -92,8 +92,7 @@ export default {
       '#app > div.content > div > div > div.settings-content > div > form > div.panel.panel-default > ul > li:nth-child(3) > div:nth-child(3) > div > div > input',
     translationsSaveButton:
       '#app > div.content > div > div > div.settings-content > div > form > div.settings-footer > button',
-    privateInstance:
-      '#app > div.content > div > div > div.settings-content > div > div.panel-body > form > div:nth-child(4) > div > label',
+    privateInstance: '#collectionSettings > div:nth-child(8) > div > label',
     templatePropertiesList:
       '#app > div.content > div > div > div.settings-content > div > div > div.panel-body > div > main > div > form > ul',
   },
@@ -288,7 +287,7 @@ export default {
     libraryNavButton:
       '#app > div.content > header > ul > li.menuActions > ul > li:nth-child(1) > a',
     settingsNavButton:
-      '#app > div.content > header > ul > li.menuActions > ul > li:nth-child(3) > a',
+      '#app > div.content > header > ul > li.menuActions > ul.menuNav-list > li:nth-child(3) > a',
     spanish:
       '#app > div.content > header > ul > li.menuActions > ul.menuNav-I18NMenu > li:nth-child(2) > a',
     english:
