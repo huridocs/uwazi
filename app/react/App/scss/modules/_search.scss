@@ -233,6 +233,16 @@
   display: none;
 }
 
+.admin-filter {
+  span, label {
+    color: #2B56C1;
+  }
+
+  input {
+    border: #2B56C1;
+  }
+}
+
 .search__filter {
   list-style-type: none;
   margin: 0;

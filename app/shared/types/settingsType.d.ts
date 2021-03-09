@@ -84,7 +84,9 @@ export interface Settings {
   links?: SettingsLinkSchema[];
   features?: {
     _id?: string;
-    semanticSearch?: boolean;
+    tocGeneration?: {
+      url: string;
+    };
     topicClassification?: boolean;
     favorites?: boolean;
     [k: string]: unknown | undefined;

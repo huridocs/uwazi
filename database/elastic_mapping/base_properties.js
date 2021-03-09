@@ -64,6 +64,9 @@ const properties = {
       sort: { type: 'keyword' },
     },
   },
+  generatedToc: {
+    type: 'keyword',
+  },
   type: {
     type: 'keyword',
   },

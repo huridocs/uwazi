@@ -6,6 +6,7 @@ import mailer from 'api/utils/mailer';
 import { search } from 'api/search';
 import settings from 'api/settings';
 import { processDocument } from 'api/files/processDocument';
+import { files } from 'api/files/files';
 import { uploadsPath, attachmentsPath, generateFileName } from 'api/files/filesystem';
 import cors from 'cors';
 import activitylogMiddleware from 'api/activitylog/activitylogMiddleware';
@@ -71,43 +72,49 @@ const routes = app => {
       },
     }),
     async (req, res, next) => {
-      try {
-        const { allowedPublicTemplates } = await settings.get();
-        const { entity, email } = req.body;
+      const { allowedPublicTemplates } = await settings.get();
+      const { entity, email } = req.body;
 
-        if (!allowedPublicTemplates || !allowedPublicTemplates.includes(entity.template)) {
-          next(createError('Unauthorized public template', 403));
-          return;
-        }
-
-        entity.attachments = [];
-        if (req.files.length) {
-          await Promise.all(
-            req.files
-              .filter(file => file.fieldname.includes('attachment'))
-              .map(file =>
-                storeFile(attachmentsPath, file).then(_file => entity.attachments.push(_file))
-              )
-          );
-        }
-        const newEntity = await entities.save(entity, { user: {}, language: req.language });
-        const file = req.files.find(_file => _file.fieldname.includes('file'));
-        if (file) {
-          storeFile(uploadsPath, file).then(async _file => {
-            await processDocument(newEntity.sharedId, _file);
-            await search.indexEntities({ sharedId: newEntity.sharedId }, '+fullText');
-            req.emitToSessionSocket('documentProcessed', newEntity.sharedId);
-          });
-        }
-
-        if (email) {
-          await mailer.send(email);
-        }
-
-        res.json(newEntity);
-      } catch (err) {
-        next(err);
+      if (!allowedPublicTemplates || !allowedPublicTemplates.includes(entity.template)) {
+        next(createError('Unauthorized public template', 403));
+        return;
       }
+
+      const newEntity = await entities.save(entity, { user: {}, language: req.language });
+
+      const attachments = [];
+      if (req.files.length) {
+        await Promise.all(
+          req.files
+            .filter(file => file.fieldname.includes('attachment'))
+            .map(file =>
+              storeFile(attachmentsPath, file).then(_file =>
+                attachments.push({
+                  ..._file,
+                  entity: newEntity.sharedId,
+                  type: 'attachment',
+                })
+              )
+            )
+        );
+      }
+
+      await Promise.all(attachments.map(attachment => files.save(attachment)));
+
+      const file = req.files.find(_file => _file.fieldname.includes('file'));
+      if (file) {
+        storeFile(uploadsPath, file).then(async _file => {
+          await processDocument(newEntity.sharedId, _file);
+          await search.indexEntities({ sharedId: newEntity.sharedId }, '+fullText');
+          req.emitToSessionSocket('documentProcessed', newEntity.sharedId);
+        });
+      }
+
+      if (email) {
+        await mailer.send(email);
+      }
+
+      res.json(newEntity);
     }
   );
 

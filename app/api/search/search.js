@@ -241,7 +241,12 @@ const _denormalizeAggregations = async (aggregations, templates, dictionaries, l
   const properties = propertiesHelper.allUniqueProperties(templates);
   return Object.keys(aggregations).reduce(async (denormaLizedAgregationsPromise, key) => {
     const denormaLizedAgregations = await denormaLizedAgregationsPromise;
-    if (!aggregations[key].buckets || key === '_types' || aggregations[key].type === 'nested') {
+    if (
+      !aggregations[key].buckets ||
+      key === '_types' ||
+      aggregations[key].type === 'nested' ||
+      key === 'generatedToc'
+    ) {
       return Object.assign(denormaLizedAgregations, { [key]: aggregations[key] });
     }
 
@@ -377,6 +382,7 @@ const processResponse = async (response, templates, dictionaries, language, filt
     result._id = hit._id;
     return result;
   });
+
   const sanitizedAggregations = await _sanitizeAggregations(
     response.body.aggregations.all,
     templates,
@@ -603,6 +609,7 @@ const buildQuery = async (query, language, user, resources) => {
   const filters = processFilters(query.filters, [...allUniqueProps, ...properties]);
   // this is where the query filters are built
   queryBuilder.filterMetadata(filters);
+  queryBuilder.customFilters(query.customFilters);
   // this is where the query aggregations are built
   queryBuilder.aggregations(aggregations, dictionaries);
 
@@ -618,7 +625,10 @@ const search = {
       searchGeolocation(queryBuilder, templates);
     }
 
-    // queryBuilder.query() is the actual call
+    if (query.aggregateGeneratedToc) {
+      queryBuilder.generatedTOCAggregations();
+    }
+
     return elastic
       .search({ body: queryBuilder.query() })
       .then(response => processResponse(response, templates, dictionaries, language, query.filters))

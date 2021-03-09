@@ -133,7 +133,14 @@ export const settingsSchema = {
       type: 'object',
       properties: {
         _id: { type: 'string' },
-        semanticSearch: { type: 'boolean' },
+        tocGeneration: {
+          type: 'object',
+          required: ['url'],
+          additionalProperties: false,
+          properties: {
+            url: { type: 'string' },
+          },
+        },
         topicClassification: { type: 'boolean' },
         favorites: { type: 'boolean' },
       },

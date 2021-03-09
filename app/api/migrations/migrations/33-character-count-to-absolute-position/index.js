@@ -119,15 +119,15 @@ async function existsRangesToConvert(db, file) {
     return true;
   }
 
-  const connections = await db
-    .collection('connections')
-    .find({ file: file._id.toString() })
-    .toArray();
+  const connections = (
+    await db
+      .collection('connections')
+      .find({ entity: file.entity, range: { $exists: true } })
+      .toArray()
+  ).filter(c => c.file === file._id.toString());
 
-  for (let i = 0; i < connections.length; i += 1) {
-    if (connections[i].range) {
-      return true;
-    }
+  if (connections.length) {
+    return true;
   }
 
   return false;
@@ -185,7 +185,10 @@ export default {
   async up(db) {
     process.stdout.write(`${this.name}...\n`);
     let conversionsNumber = 0;
-    const cursor = db.collection('files').find();
+    const cursor = db
+      .collection('files')
+      .find()
+      .addCursorFlag('noCursorTimeout', true);
     const wrongConversions = [];
     while (await cursor.hasNext()) {
       const file = await cursor.next();
@@ -233,6 +236,7 @@ export default {
     process.stderr.write(`Wrong conversions number: ${wrongConversions.length}\n`);
     process.stderr.write(`${wrongConversions.join('\n')}\n`);
 
+    cursor.close();
     return `${wrongConversions}`;
   },
 };

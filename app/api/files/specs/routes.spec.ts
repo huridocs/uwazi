@@ -12,6 +12,7 @@ import { FileType } from 'shared/types/fileType';
 import { fixtures, uploadId, uploadId2 } from './fixtures';
 import { files } from '../files';
 import uploadRoutes from '../routes';
+import entities from 'api/entities';
 
 jest.mock(
   '../../auth/authMiddleware.ts',
@@ -47,7 +48,7 @@ describe('files routes', () => {
     });
 
     it('should reindex all entities that are related to the saved file', async () => {
-      expect(search.indexEntities).toHaveBeenCalledWith({ sharedId: 'entity' }, '+fullText');
+      expect(search.indexEntities).toHaveBeenCalledWith({ sharedId: 'sharedId1' }, '+fullText');
     });
   });
 
@@ -85,7 +86,7 @@ describe('files routes', () => {
         .query({ _id: uploadId2.toString() });
 
       expect(search.indexEntities).toHaveBeenCalledWith(
-        { sharedId: { $in: ['entity'] } },
+        { sharedId: { $in: ['sharedId1'] } },
         '+fullText'
       );
     });
@@ -106,6 +107,58 @@ describe('files routes', () => {
         .query({ _id: { test: 'test' } });
 
       expect(response.body.errors[0].message).toBe('should be string');
+    });
+
+    describe('api/files/tocReviewed', () => {
+      it('should set tocGenerated to false on the file', async () => {
+        const response: SuperTestResponse = await request(app)
+          .post('/api/files/tocReviewed')
+          .set('content-language', 'es')
+          .send({ fileId: uploadId.toString() });
+
+        const [file] = await files.get({ _id: uploadId });
+        expect(file.generatedToc).toBe(false);
+        expect(response.body.entity).toBe('sharedId1');
+      });
+
+      it('should set tocGenerated to false on the entity when all associated files are false', async () => {
+        await request(app)
+          .post('/api/files/tocReviewed')
+          .send({ fileId: uploadId.toString() })
+          .expect(200);
+
+        let [entity] = await entities.get({ sharedId: 'sharedId1' });
+        expect(entity.generatedToc).toBe(true);
+
+        await request(app)
+          .post('/api/files/tocReviewed')
+          .send({ fileId: uploadId2.toString() })
+          .expect(200);
+
+        [entity] = await entities.get({ sharedId: 'sharedId1' });
+        expect(entity.generatedToc).toBe(false);
+      });
+    });
+  });
+
+  describe('POST/files/attachment', () => {
+    it('should save file on the body', async () => {
+      const entityId = db.id();
+      await request(app)
+        .post('/api/files/upload/attachment')
+        .send({
+          originalname: 'Dont bring me down - 1979',
+          url: 'https://en.wikipedia.org/wiki/Electric_Light_Orchestra',
+          entity: entityId,
+        });
+
+      const [attachment] = await files.get({ entity: entityId.toString() });
+      expect(attachment).toEqual(
+        expect.objectContaining({
+          originalname: 'Dont bring me down - 1979',
+          type: 'attachment',
+        })
+      );
     });
   });
 });

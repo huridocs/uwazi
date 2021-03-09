@@ -72,7 +72,7 @@ export default {
     saveConnectionButton:
       '#app > div.content > div > div > div.settings-content > div > div > div.panel-body > div > main > div > form > div.settings-footer > button',
     saveCollectionButton:
-      '#app > div.content > div > div > div.settings-content > div > div.panel-body > div.settings-footer > button',
+      '#app > div.content > div > div > div.settings-content > div > div > button',
     dictionaryNameForm: '#thesauriName',
     connectionNameForm:
       '#app > div.content > div > div > div.settings-content > div > div > div.panel-body > div > main > div > form > div.metadataTemplate-heading > div > div > input',
@@ -92,8 +92,7 @@ export default {
       '#app > div.content > div > div > div.settings-content > div > form > div.panel.panel-default > ul > li:nth-child(3) > div:nth-child(3) > div > div > input',
     translationsSaveButton:
       '#app > div.content > div > div > div.settings-content > div > form > div.settings-footer > button',
-    privateInstance:
-      '#app > div.content > div > div > div.settings-content > div > div.panel-body > form > div:nth-child(4) > div > label',
+    privateInstance: '#collectionSettings > div:nth-child(8) > div > label',
     templatePropertiesList:
       '#app > div.content > div > div > div.settings-content > div > div > div.panel-body > div > main > div > form > ul',
   },
@@ -223,7 +222,7 @@ export default {
     sidePanelFirstDocumentTitle:
       '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content-visible > div > div.filelist > ul > li > div > div.file-originalname',
     sidePanelFirstDocumentEditButton:
-      '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content-visible > div > div.filelist > ul > li > div > div:nth-child(2) > button',
+      '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.metadata.tab-content-visible > div > div.filelist > ul > li > div > div:nth-child(2) > div:nth-child(2) > button',
     fileFormInput: '#originalname',
     fileFormSubmit:
       '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content-visible > div > div.filelist > ul > li > form > div > div:nth-child(4) > button',
@@ -256,7 +255,7 @@ export default {
     firstAttachmentTitle:
       '#app > div.content > div > div > main > div > div.tab-content-visible > div > div > div.attachments-list-parent > div.attachments-list > div > a > span > span:nth-child(1)',
     firstAttachmentEditTitleButton:
-      '#app > div.content > div > div > main > div > div.tab-content-visible > div > div > div.attachments-list-parent > div.attachments-list > div > div > div > button:nth-child(1)',
+      '#app > div.content > div > div > main > div > div.tab-content.tab-content-visible > div > div > div.attachments-list-parent > div.attachments-list > div > div > ul > li:nth-child(3) > button',
     attachmentFormInput: '#attachmentForm > div > div > input',
     attachmentFormSubmit:
       '#app > div.content > div > div > main > div > div.tab-content-visible > div > div > div.attachments-list-parent > div.attachments-list > div > div.attachment-buttons > div > button.item-shortcut.btn.btn-success',
@@ -288,7 +287,7 @@ export default {
     libraryNavButton:
       '#app > div.content > header > ul > li.menuActions > ul > li:nth-child(1) > a',
     settingsNavButton:
-      '#app > div.content > header > ul > li.menuActions > ul > li:nth-child(3) > a',
+      '#app > div.content > header > ul > li.menuActions > ul.menuNav-list > li:nth-child(3) > a',
     spanish:
       '#app > div.content > header > ul > li.menuActions > ul.menuNav-I18NMenu > li:nth-child(2) > a',
     english:

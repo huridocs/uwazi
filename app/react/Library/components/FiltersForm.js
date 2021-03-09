@@ -11,6 +11,7 @@ import { t } from 'app/I18N';
 import { wrapDispatch } from 'app/Multireducer';
 import debounce from 'app/utils/debounce';
 import libraryHelper from 'app/Library/helpers/libraryFilters';
+import { FilterTocGeneration } from 'app/ToggledFeatures/tocGeneration';
 
 import Filters from './FiltersFromProperties';
 
@@ -97,6 +98,7 @@ export class FiltersForm extends Component {
             translationContext={translationContext}
             storeKey={this.props.storeKey}
           />
+          <FilterTocGeneration onChange={this.activateAutoSearch} aggregations={aggregations} />
         </Form>
       </div>
     );

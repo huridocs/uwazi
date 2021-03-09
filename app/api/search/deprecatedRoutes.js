@@ -1,6 +1,6 @@
 import Joi from 'joi';
 import entities from 'api/entities';
-import { searchSchema } from 'api/search/searchSchema';
+import { searchParamsSchema } from 'shared/types/searchParams';
 import { search } from './search';
 import { validation, parseQuery } from '../utils';
 
@@ -25,7 +25,7 @@ export default app => {
   app.get(
     '/api/search',
     parseQuery,
-    validation.validateRequest(searchSchema),
+    validation.validateRequest(searchParamsSchema),
 
     (req, res, next) => {
       const action = req.query.geolocation ? 'searchGeolocations' : 'search';

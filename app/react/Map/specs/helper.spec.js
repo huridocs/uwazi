@@ -216,6 +216,11 @@ describe('map helper', () => {
       it('should include inherited properties', () => {
         const processedMarkers = getMarkers(entities, templates);
         expect(processedMarkers.length).toBe(11);
+        expect(processedMarkers).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({ properties: expect.objectContaining({ inherited: true }) }),
+          ])
+        );
         expect(processedMarkers).toMatchSnapshot();
       });
     });

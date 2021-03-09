@@ -13,7 +13,7 @@ function getMetadataFieldLabel(field, template) {
 
 export default function getFieldLabel(field, template) {
   const _template = template && template.toJS ? template.toJS() : template;
-  if (field === 'title') {
+  if (field === 'title' && _template) {
     return getTitleLabel(_template);
   }
   if (field.startsWith('metadata.') && _template) {

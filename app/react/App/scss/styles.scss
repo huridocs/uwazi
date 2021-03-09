@@ -24,6 +24,7 @@
 @import 'elements/numeric-range-slide';
 @import 'elements/qrcode';
 @import 'elements/pill';
+@import 'elements/toggleButton';
 
 @import 'layout/app';
 @import 'layout/header';
@@ -45,6 +46,7 @@
 @import 'modules/toc';
 @import 'modules/entity';
 @import 'modules/attachments';
+@import 'modules/attachments-modal';
 @import 'modules/metadata-creator';
 @import 'modules/metadata-view';
 @import 'modules/semantic-search';

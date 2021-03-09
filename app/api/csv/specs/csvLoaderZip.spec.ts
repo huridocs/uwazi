@@ -11,6 +11,7 @@ import { CSVLoader } from '../csvLoader';
 import fixtures, { template1Id } from './fixtures';
 
 import { createTestingZip } from './helpers';
+import { EntityWithFilesSchema } from 'shared/types/entityType';
 
 const removeTestingZip = async () =>
   new Promise(resolve => {
@@ -102,7 +103,7 @@ describe('csvLoader zip file', () => {
   });
 
   it('should import the attachments asociated with each entity', async () => {
-    const importedEntities = await entities.get();
+    const importedEntities = (await entities.get()) as EntityWithFilesSchema[];
 
     expect(importedEntities[0].attachments?.length).toBe(1);
     expect(importedEntities[0].attachments?.[0]).toEqual(

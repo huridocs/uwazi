@@ -32,7 +32,7 @@ describe('manageAttachmentsReducer', () => {
 
     beforeEach(() => {
       action = { entity: 'eId' };
-      state = Immutable.fromJS({ _id: 'eId' });
+      state = Immutable.fromJS({ sharedId: 'eId' });
     });
 
     describe('When ATTACHMENT_COMPLETE', () => {
@@ -69,7 +69,7 @@ describe('manageAttachmentsReducer', () => {
     describe('When ATTACHMENT_RENAMED', () => {
       it('should rename the document file originalname', () => {
         action.type = 'ATTACHMENT_RENAMED';
-        action.file = { _id: 'eId', originalname: 'new name' };
+        action.file = { sharedId: 'eId', originalname: 'new name' };
         state = state.set('file', Immutable.fromJS({ originalname: 'original name' }));
 
         const file = manageAttachmentsReducer()(state, action)
@@ -107,7 +107,7 @@ describe('manageAttachmentsReducer', () => {
 
     beforeEach(() => {
       action = { entity: 'eId' };
-      state = Immutable.fromJS({ selectedDocuments: [{ _id: 'eId' }] });
+      state = Immutable.fromJS({ selectedDocuments: [{ sharedId: 'eId' }] });
     });
 
     describe('When ATTACHMENT_COMPLETE', () => {
@@ -148,7 +148,7 @@ describe('manageAttachmentsReducer', () => {
     describe('When ATTACHMENT_RENAMED', () => {
       it('should rename the document file originalname', () => {
         action.type = 'ATTACHMENT_RENAMED';
-        action.file = { _id: 'eId', originalname: 'new name' };
+        action.file = { sharedId: 'eId', originalname: 'new name' };
         state = state.setIn(
           ['selectedDocuments', 0, 'file'],
           Immutable.fromJS({ originalname: 'original name' })
