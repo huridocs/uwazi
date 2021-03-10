@@ -6,7 +6,6 @@ on:
       - master
       - development
       - release
-      - fix-github-pipeline
   pull_request:
 
 jobs:
