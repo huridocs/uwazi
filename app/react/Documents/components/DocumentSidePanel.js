@@ -18,6 +18,7 @@ import SidePanel from 'app/Layout/SidePanel';
 import DocumentSemanticSearchResults from 'app/SemanticSearch/components/DocumentResults';
 import { CopyFromEntity } from 'app/Metadata/components/CopyFromEntity';
 import { TocGeneratedLabel, ReviewTocButton } from 'app/ToggledFeatures/tocGeneration';
+import { MediaModal } from 'app/Attachments/components/MediaModal';
 import { Icon } from 'UI';
 
 import * as viewerModule from 'app/Viewer';
@@ -422,6 +423,8 @@ export class DocumentSidePanel extends Component {
                         parentSharedId={doc.get('sharedId')}
                         storeKey={this.props.storeKey}
                       />
+
+                      <MediaModal />
                     </div>
                   );
                 })()}
