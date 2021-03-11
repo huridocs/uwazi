@@ -13,6 +13,7 @@ import { fixtures, uploadId, uploadId2 } from './fixtures';
 import { files } from '../files';
 import uploadRoutes from '../routes';
 import entities from 'api/entities';
+import JSONRequest from 'shared/JSONRequest';
 
 jest.mock(
   '../../auth/authMiddleware.ts',
@@ -49,6 +50,24 @@ describe('files routes', () => {
 
     it('should reindex all entities that are related to the saved file', async () => {
       expect(search.indexEntities).toHaveBeenCalledWith({ sharedId: 'sharedId1' }, '+fullText');
+    });
+
+    describe('when external url file', () => {
+      it('should request and store the mimetype', async () => {
+        const headers = new Headers();
+        headers.set('content-type', 'image/png');
+
+        jest
+          .spyOn(JSONRequest, 'head')
+          .mockResolvedValue({ json: () => {}, headers, status: 200, cookie: null });
+
+        await request(app)
+          .post('/api/files')
+          .send({ url: 'http://awesomecats.org/ahappycat.png', originalname: 'A Happy Cat' });
+
+        const [file]: FileType[] = await files.get({ originalname: 'A Happy Cat' });
+        expect(file.mimetype).toBe('image/png');
+      });
     });
   });
 
@@ -148,7 +167,6 @@ describe('files routes', () => {
         .post('/api/files/upload/attachment')
         .send({
           originalname: 'Dont bring me down - 1979',
-          url: 'https://en.wikipedia.org/wiki/Electric_Light_Orchestra',
           entity: entityId,
         });
 

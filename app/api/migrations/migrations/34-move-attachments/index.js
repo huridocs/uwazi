@@ -15,7 +15,7 @@ export default {
       const entity = await cursor.next();
 
       await Promise.all(
-        entity.attachments.map(async ({ filename, originalname }) =>
+        entity.attachments.map(async ({ filename, originalname, mimetype }) =>
           db.collection('files').update(
             { filename },
             {
@@ -23,6 +23,7 @@ export default {
               filename,
               originalname,
               type: 'attachment',
+              mimetype,
             },
             { upsert: true }
           )
