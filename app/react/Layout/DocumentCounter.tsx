@@ -6,7 +6,7 @@ interface EntityCounterProps {
   entityListCount: number;
   entityTotal: number;
   totalConnectionsCount: number;
-  maxedTotalEntities: string;
+  hitsTotalRelation: string;
 }
 
 export const DocumentCounter = (props: EntityCounterProps) => {
@@ -15,7 +15,7 @@ export const DocumentCounter = (props: EntityCounterProps) => {
     selectedEntitiesCount,
     entityListCount,
     entityTotal,
-    maxedTotalEntities,
+    hitsTotalRelation,
   } = props;
   const counter =
     totalConnectionsCount === undefined ? (
@@ -29,7 +29,7 @@ export const DocumentCounter = (props: EntityCounterProps) => {
         <b>
           {' '}
           {entityTotal}
-          {maxedTotalEntities === 'gte' && '+'}{' '}
+          {hitsTotalRelation === 'gte' && '+'}{' '}
         </b>{' '}
         <Translate>documents</Translate>
       </>

@@ -9,7 +9,7 @@ describe('DocumentCounter', () => {
     entityListCount: 5,
     entityTotal: 100,
     totalConnectionsCount: 3,
-    maxedTotalEntities: 'gte',
+    hitsTotalRelation: 'gte',
   };
   const render = () => {
     component = shallow(<DocumentCounter {...props} />);
@@ -35,7 +35,7 @@ describe('DocumentCounter', () => {
       expect(component.children().get(8).props.children).toBe('documents');
     });
 
-    it('should show a + sign next to the total entities when maxedTotalEntities has the gte flag', () => {
+    it('should show a + sign next to the total entities when hitsTotalRelation has the gte flag', () => {
       expect(component.children().get(6).props.children).toContain('+');
     });
   });
