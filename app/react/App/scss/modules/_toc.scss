@@ -1,5 +1,10 @@
 .toc {
-  padding: 15px;
+  padding: 0px 15px 15px 15px;
+}
+
+div.tocHeader {
+  padding-left: 15px;
+  border-bottom: 1px solid #f4f4f4;
 }
 
 .toc-view{

@@ -4,7 +4,7 @@
   -webkit-flex-wrap: wrap;
   flex-wrap: wrap;
   overflow: auto;
-  @media(min-width: 1024px) {
+  @media (min-width: 1024px) {
     -webkit-flex-wrap: nowrap;
     flex-wrap: nowrap;
   }
@@ -15,13 +15,13 @@
   width: 100%;
 }
 
-@media(min-width: 1024px) {
+@media (min-width: 1024px) {
   .settings-navigation {
     width: 250px;
     height: 100%;
     overflow-y: auto;
     border-right: 1px solid $c-grey-light;
-}
+  }
 
   .settings-content {
     position: relative;
@@ -110,10 +110,16 @@
 .settings-content {
   padding: 15px;
 
+  form {
+    margin-bottom: 100px;
+  }
+
   .panel-heading {
     background-color: transparent;
-    font-size: $f-size-xl;
-    font-weight: 300;
+    font-size: $f-size-xxl;
+    font-weight: 400;
+    padding-left: 0;
+    padding-right: 0;
 
     input {
       font-size: $f-size-xl;
@@ -122,8 +128,8 @@
 
   h2 {
     padding: 16px 0;
-    font-size: $f-size-lg;
-    font-weight: 300;
+    font-size: $f-size-xl;
+    font-weight: 500;
     border-bottom: 1px solid $c-grey-light;
   }
 
@@ -141,8 +147,8 @@
   text-align: center;
   white-space: nowrap;
   z-index: 4;
-  @media(min-width: 1024px) {
-    right: calc((100% - 400px)/2);
+  @media (min-width: 1024px) {
+    right: calc((100% - 400px) / 2);
   }
 
   .btn {
@@ -235,7 +241,8 @@
     padding-top: 12px;
     padding-bottom: 13px;
     padding-left: 2px;
-    .form-group, input {
+    .form-group,
+    input {
       margin: 0;
     }
     .form-group {
@@ -287,7 +294,7 @@
 
         span {
           font-weight: bold;
-          font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+          font-family: Menlo, Monaco, Consolas, 'Courier New', monospace;
           background-color: $c-grey-lighten;
           padding: 4px 8px;
           border-radius: 3px;
@@ -336,7 +343,10 @@
   .panel-body {
     flex: 1;
 
-    form, div, label, textarea {
+    form,
+    div,
+    label,
+    textarea {
       height: 100%;
       width: 100%;
     }
@@ -356,5 +366,91 @@
     font-weight: bold;
     font-size: $f-size;
     letter-spacing: 0.05em;
+  }
+}
+
+.collection-settings {
+  .form-element.row {
+    margin: 0;
+    padding: 5px 0 15px 0;
+
+    &:hover {
+      background-color: #efefef;
+    }
+
+    .row {
+      padding-top: 0px;
+      padding-bottom: 10px;
+    }
+  }
+
+  .inline-form-label {
+    font-size: 16px;
+    line-height: 32px;
+
+    &.larger-label {
+      padding-left: 15px;
+      padding-right: 15px;
+      width: 250px;
+      float: left;
+    }
+  }
+
+  .form-element-inputs {
+    display: block;
+
+    &.smaller-inputs {
+      padding-left: 15px;
+      padding-right: 15px;
+    }
+
+    .col-no-gutters {
+      margin-left: -15px;
+      margin-right: -15px;
+    }
+
+    .multiselect {
+      margin-top: -8px;
+    }
+  }
+
+  .toggle-children-button {
+    margin-top: 2px;
+    margin-right: 15px;
+    margin-bottom: 5px;
+  }
+
+  .toggle-children-children {
+    flex: 1;
+  }
+
+  .property-description {
+    text-align: left;
+    font-size: medium;
+    width: 400px;
+    transform: translateX(15px) translateY(100%);
+    z-index: 9;
+
+    &::after {
+      top: 0;
+      right: auto;
+      bottom: auto;
+      left: 0;
+      transform: translateX(-75%) translateY(55%) rotate(0.25turn);
+    }
+  }
+
+  @media (min-width: 768px) {
+    .form-element.row {
+      padding: 5px 0 5px 0;
+    }
+
+    .form-element-inputs {
+      display: flex;
+    }
+
+    .toggle-children-button {
+      margin-bottom: 0px;
+    }
   }
 }

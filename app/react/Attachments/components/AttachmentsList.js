@@ -2,11 +2,11 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 
 import { advancedSort } from 'app/utils/advancedSort';
-import { t } from 'app/I18N';
-
+import { Translate } from 'app/I18N';
 import { NeedAuthorization } from 'app/Auth';
 import Attachment from 'app/Attachments/components/Attachment';
-import UploadAttachment from 'app/Attachments/components/UploadAttachment';
+
+import UploadSupportingFile from './UploadSupportingFile';
 
 export default class AttachmentsList extends Component {
   static arrangeFiles(files = []) {
@@ -22,7 +22,7 @@ export default class AttachmentsList extends Component {
       uploadAttachmentButton = (
         <NeedAuthorization roles={['admin', 'editor']}>
           <div className="attachment-add">
-            <UploadAttachment entity={this.props.parentId} storeKey={storeKey} />
+            <UploadSupportingFile entitySharedId={this.props.parentSharedId} storeKey={storeKey} />
           </div>
         </NeedAuthorization>
       );
@@ -31,7 +31,12 @@ export default class AttachmentsList extends Component {
     const attachments = AttachmentsList.arrangeFiles(this.props.attachments);
     return (
       <div className="attachments-list-parent">
-        <h2>{t('System', 'Attachments')}</h2>
+        <div className="attachments-list-header">
+          <h2>
+            <Translate>Supporting files</Translate>
+          </h2>
+          {uploadAttachmentButton}
+        </div>
         <div className="attachments-list">
           {attachments.map((file, index) => (
             <Attachment
@@ -45,7 +50,6 @@ export default class AttachmentsList extends Component {
             />
           ))}
         </div>
-        {uploadAttachmentButton}
       </div>
     );
   }

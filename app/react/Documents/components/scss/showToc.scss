@@ -1,0 +1,57 @@
+.toc {
+  padding-left: 5px !important;
+  padding-right: 5px !important;
+
+  ul.toc-view {
+    li.toc-indent-0,
+    li.toc-indent-1,
+    li.toc.indent-2 {
+      border-radius: 2px;
+
+      a:hover {
+        text-decoration: none;
+      };
+    }
+
+    li.toc-indent-0 {
+      a {
+        font-weight: 500;
+        font-size: 16px;
+        line-height: 18.75px;
+        color: #444;
+      }
+    }
+
+    li.toc-indent-1 {
+      a {
+        font-weight: 400;
+        font-size: 14px;
+        line-height: 16.41px;
+        color: #333;
+      }
+    }
+
+    li.toc-indent-2 {
+      a {
+        font-weight: 400;
+        font-size: 14px;
+        line-height: 16.41px;
+        color: #555;
+      }
+    }
+
+    li.toc-indent-0:hover,
+    li.toc-indent-1:hover,
+    li.toc.indent-2:hover {
+      background-color: #E2E7F4;
+    }
+  }
+}
+
+.page-number {
+  position: relative;
+  float: right;
+  font-weight: normal;
+  padding-right: 4px;
+}
+

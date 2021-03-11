@@ -83,10 +83,14 @@ describe('library helper', () => {
         sort: 'sort',
         types: ['3'],
         filters: { country: 'countryValue', rich: 'search' },
+        customFilters: {
+          property: { values: ['value'] },
+        },
       };
 
       const state = libraryHelper.URLQueryToState(query, templates);
       expect(state.properties.length).toBe(1);
+      expect(state.search.customFilters).toEqual(query.customFilters);
       expect(state.search.filters.country).toBe('countryValue');
       expect(state.search.filters.rich).toBe('search');
       expect(state.search.searchTerm).toBe('searchTerm');

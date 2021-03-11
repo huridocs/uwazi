@@ -1,0 +1,170 @@
+.attachments-modal {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  width: 95vw;
+  max-width: 1440px;
+  height: 95vh;
+  top: 50%;
+  left: 50%;
+  right: auto;
+  bottom: auto;
+  margin-right: -50%;
+  transform: translate(-50%, -50%);
+  background: $c-white;
+  padding: 16px 24px;
+  outline: none;
+
+  &__overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 100;
+  }
+
+  &__header {
+    padding: 4px 0 24px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    h4 {
+      margin: 0;
+    }
+  }
+
+  &__close {
+    display: flex;
+    align-items: center;
+    padding: 5px 8px 4px 8px;
+    border: 1px solid #555555;
+    border-radius: 2px;
+    background: $c-white;
+
+    svg {
+      margin-right: 4px;
+    }
+
+    span {
+      line-height: 1;
+    }
+
+    &:disabled,
+    .disabled {
+      opacity: 0.5;
+    }
+  }
+
+  &__content {
+    flex: 1;
+
+    > div {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+  }
+
+  &__tabs {
+    display: flex;
+    padding: 0;
+    width: 100%;
+    border-bottom: 1px solid #dddddd;
+
+    .tab-link {
+      display: inline-block;
+      margin: 0 0 -1px;
+      padding: 8px 16px;
+      border-bottom-color: transparent;
+      cursor: pointer;
+
+      &-active {
+        border: 1px solid #dddddd;
+        border-bottom-color: $c-white;
+      }
+    }
+  }
+
+  &__tabs-content {
+    flex: 1;
+
+    .tab-content {
+      padding: 24px 0;
+      height: 100%;
+
+      &.centered {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .wrapper-web {
+        width: 100%;
+        max-width: 350px;
+
+        input,
+        .form-group {
+          margin-bottom: 4px;
+        }
+
+        .btn {
+          width: 100%;
+        }
+
+        .has-feedback .feedback-icon {
+          position: absolute;
+          top: 7px;
+          right: 7px;
+          width: 17px;
+          color: $c-primary;
+        }
+      }
+    }
+  }
+
+  &__dropzone {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+
+    &-title {
+      margin-top: 24px;
+      margin-bottom: 4px;
+      font-size: $f-size-lg;
+    }
+  }
+
+  &-trigger {
+    border-radius: 2px;
+  }
+
+  @include desktop {
+    width: 80vw;
+    height: 70vh;
+  }
+
+  &-progress {
+    width: 400px;
+    height: 32px;
+  }
+
+  &-progress-bar {
+    width: 59%;
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    text-align: center;
+    font-size: 16px;
+    white-space: nowrap;
+    text-align: center;
+    justify-content: center;
+  }
+}

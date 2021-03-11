@@ -249,6 +249,8 @@ export function searchDocuments(
       dispatch(actions.set(`${storeKey}.selectedSorting`, currentSearch));
     }
 
+    searchParams.customFilters = currentSearch.customFilters;
+
     setSearchInUrl(searchParams);
   };
 }

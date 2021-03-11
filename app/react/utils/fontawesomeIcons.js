@@ -223,6 +223,7 @@ export const fontawesomeIcons = [
   'file-image-o',
   'file-o',
   'file-pdf-o',
+  'file-image-o',
   'file-powerpoint-o',
   'file-text',
   'file-text-o',

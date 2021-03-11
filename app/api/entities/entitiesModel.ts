@@ -15,20 +15,12 @@ const mongoSchema = new mongoose.Schema(
     title: { type: String, required: true },
     template: { type: mongoose.Schema.Types.ObjectId, ref: 'templates', index: true },
     published: Boolean,
+    generatedToc: Boolean,
     icon: new mongoose.Schema({
       _id: String,
       label: String,
       type: String,
     }),
-    attachments: [
-      {
-        originalname: String,
-        filename: String,
-        mimetype: String,
-        timestamp: Number,
-        size: Number,
-      },
-    ],
     creationDate: Number,
     editDate: Number,
     metadata: mongoose.Schema.Types.Mixed,
