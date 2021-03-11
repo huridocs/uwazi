@@ -1,11 +1,11 @@
 import { Translate } from 'app/I18N';
 import React from 'react';
 
-interface EntityCounterProps {
+export interface EntityCounterProps {
   selectedEntitiesCount: number;
   entityListCount: number;
   entityTotal: number;
-  totalConnectionsCount: number;
+  totalConnectionsCount?: number;
   hitsTotalRelation: string;
 }
 
@@ -17,6 +17,7 @@ export const DocumentCounter = (props: EntityCounterProps) => {
     entityTotal,
     hitsTotalRelation,
   } = props;
+  const totalEntitiesValue = <b> {`${entityTotal}${hitsTotalRelation === 'gte' ? '+' : ''}`} </b>;
   const counter =
     totalConnectionsCount === undefined ? (
       <>
@@ -26,14 +27,13 @@ export const DocumentCounter = (props: EntityCounterProps) => {
           </>
         )}
         <b> {entityListCount} </b> <Translate>shown of</Translate>
-        <b> {entityTotal}</b>
-        <b>{hitsTotalRelation === 'gte' && '+'} </b>
+        {totalEntitiesValue}
         <Translate>documents</Translate>
       </>
     ) : (
       <>
         <b>{totalConnectionsCount} </b>
-        <Translate>connections</Translate>, <b>{entityTotal} </b>
+        <Translate>connections</Translate>, {totalEntitiesValue}
         <Translate>documents</Translate>
       </>
     );
