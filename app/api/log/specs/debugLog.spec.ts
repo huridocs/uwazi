@@ -1,9 +1,6 @@
 import winston from 'winston';
 import * as Transport from 'winston-transport';
 
-// No idea why this is needed, but failing without.
-import '../errorLog';
-
 import { tenants } from 'api/tenants';
 import { createDebugLog } from '../debugLog';
 
