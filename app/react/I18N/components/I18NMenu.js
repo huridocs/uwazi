@@ -4,7 +4,6 @@ import { withRouter } from 'react-router';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 
-import { Icon } from 'UI';
 import { NeedAuthorization } from 'app/Auth';
 import { actions, t } from 'app/I18N';
 
