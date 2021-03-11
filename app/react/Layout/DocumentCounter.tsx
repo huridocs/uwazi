@@ -26,11 +26,8 @@ export const DocumentCounter = (props: EntityCounterProps) => {
           </>
         )}
         <b> {entityListCount} </b> <Translate>shown of</Translate>
-        <b>
-          {' '}
-          {entityTotal}
-          {hitsTotalRelation === 'gte' && '+'}{' '}
-        </b>{' '}
+        <b> {entityTotal}</b>
+        <b>{hitsTotalRelation === 'gte' && '+'} </b>
         <Translate>documents</Translate>
       </>
     ) : (
