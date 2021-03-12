@@ -1,4 +1,7 @@
+/* eslint-disable max-statements */
 import { Application, NextFunction, Request, Response } from 'express';
+import testingDB from 'api/utils/testing_db';
+
 import { setUpApp } from 'api/utils/testingRoutes';
 import userGroupRoutes from 'api/usergroups/routes';
 import request, { Response as SuperTestResponse } from 'supertest';
@@ -15,9 +18,16 @@ describe('usergroups routes', () => {
   let user: { username: string; role: string } | undefined;
   const defaultUserGroup: any = { _id: 'group1', name: 'group 1', members: [] };
 
-  function getUser() {
-    return user;
-  }
+  beforeAll(async () => {
+    await testingDB.connect();
+  });
+
+  afterAll(async () => {
+    await testingDB.disconnect();
+  });
+
+  const getUser = () => user;
+
   const app: Application = setUpApp(
     userGroupRoutes,
     (req: Request, _res: Response, next: NextFunction) => {

@@ -1,4 +1,5 @@
 import request from 'supertest';
+import { testingDB } from 'api/utils/testing_db';
 import { setUpApp } from 'api/utils/testingRoutes';
 import contactRoutes from '../routes.js';
 import contact from '../contact';
@@ -9,6 +10,14 @@ jest.mock('../../utils/languageMiddleware.ts', () => (_req, _res, next) => {
 
 describe('contact', () => {
   const app = setUpApp(contactRoutes);
+
+  beforeAll(async () => {
+    await testingDB.connect();
+  });
+
+  afterAll(async () => {
+    await testingDB.disconnect();
+  });
 
   describe('POST', () => {
     let body;
