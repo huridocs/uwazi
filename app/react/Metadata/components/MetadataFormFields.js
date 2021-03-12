@@ -9,6 +9,7 @@ import { Field } from 'react-redux-form';
 import { propertyTypes } from 'shared/propertyTypes';
 import { getSuggestions } from 'app/Metadata/actions/actions';
 import { Translate } from 'app/I18N';
+import { Icon } from 'UI';
 import {
   DatePicker,
   DateRange,
@@ -25,6 +26,7 @@ import {
   LookupMultiSelect,
 } from '../../ReactReduxForms';
 import MultipleEditionFieldWarning from './MultipleEditionFieldWarning';
+import { MediaModal } from './MediaModal';
 
 export const translateOptions = thesauri =>
   thesauri
@@ -43,11 +45,28 @@ export const translateOptions = thesauri =>
     .toJS();
 
 export class MetadataFormFields extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { openMediaModal: false };
+
+    this.handleOpenMediaModal = this.handleOpenMediaModal.bind(this);
+    this.handleCloseMediaModal = this.handleCloseMediaModal.bind(this);
+  }
+
+  handleOpenMediaModal() {
+    this.setState({ openMediaModal: true });
+  }
+
+  handleCloseMediaModal() {
+    this.setState({ openMediaModal: false });
+  }
+
   getField(property, _model, thesauris) {
     let thesauri;
     let totalPossibleOptions = 0;
     const { dateFormat, version, entityThesauris } = this.props;
     const propertyType = property.type;
+
     switch (propertyType) {
       case 'select':
         thesauri = thesauris.find(opt => opt.get('_id').toString() === property.content.toString());
@@ -144,6 +163,12 @@ export class MetadataFormFields extends Component {
               <textarea rows="6" className="form-control" />
             </Field>
             &nbsp;<em>URL (address for image or media file)</em>
+            <br />
+            <button type="button" onClick={this.handleOpenMediaModal} className="btn btn-success">
+              <Icon icon="plus" />
+              <Translate>Select image</Translate>
+            </button>
+            <MediaModal isOpen={this.state.openMediaModal} onClose={this.handleCloseMediaModal} />
           </div>
         );
       case 'preview':

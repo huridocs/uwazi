@@ -6,16 +6,15 @@ import { Tabs, TabLink, TabContent } from 'react-tabs-redux';
 import { Translate } from 'app/I18N';
 import { Icon } from 'app/UI';
 
-import { uploadAttachment, uploadAttachmentFromUrl } from '../actions/actions';
-
 export interface MediaModalProps {
-  isOpen?: boolean;
+  isOpen: boolean;
+  onClose: () => void;
 }
 
-export const MediaModalCmp = ({ isOpen }: MediaModalProps) => {
+export const MediaModalCmp = ({ isOpen, onClose }: MediaModalProps) => {
   return (
     <ReactModal
-      isOpen={true}
+      isOpen={isOpen}
       className="attachments-modal"
       overlayClassName="attachments-modal__overlay"
       ariaHideApp={false}
@@ -25,13 +24,7 @@ export const MediaModalCmp = ({ isOpen }: MediaModalProps) => {
           <Translate>Supporting files</Translate>
         </h4>
 
-        <button
-          type="button"
-          onClick={() => {
-            return true;
-          }}
-          className="attachments-modal__close"
-        >
+        <button type="button" onClick={onClose} className="attachments-modal__close">
           <Icon icon="times" />
           <span>Close</span>
         </button>
@@ -123,9 +116,6 @@ export const MediaModalCmp = ({ isOpen }: MediaModalProps) => {
   );
 };
 
-const mapDispatchToProps = {
-  uploadAttachment,
-  uploadAttachmentFromUrl,
-};
+const mapDispatchToProps = {};
 
 export const MediaModal = connect(null, mapDispatchToProps)(MediaModalCmp);
