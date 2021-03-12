@@ -3,7 +3,11 @@
 import { preloadOptionsSearch } from 'shared/config';
 import { permissionsContext } from 'api/permissions/permissionsContext';
 import filterToMatch, { multiselectFilter } from './metadataMatchers';
-import { propertyToAggregation, generatedTocAggregations } from './metadataAggregations';
+import {
+  propertyToAggregation,
+  generatedTocAggregations,
+  permissionsLevelAgreggations,
+} from './metadataAggregations';
 
 export default function() {
   const baseQuery = {
@@ -256,6 +260,10 @@ export default function() {
 
     generatedTOCAggregations() {
       baseQuery.aggregations.all.aggregations.generatedToc = generatedTocAggregations(baseQuery);
+    },
+
+    permissionsLevelAgreggations() {
+      baseQuery.aggregations.all.aggregations.permissions = permissionsLevelAgreggations(baseQuery);
     },
 
     aggregations(properties, dictionaries) {

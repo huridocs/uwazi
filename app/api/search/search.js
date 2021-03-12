@@ -247,7 +247,8 @@ const _denormalizeAggregations = async (aggregations, templates, dictionaries, l
       !aggregations[key].buckets ||
       key === '_types' ||
       aggregations[key].type === 'nested' ||
-      key === 'generatedToc'
+      key === 'generatedToc' ||
+      key === 'permissions'
     ) {
       return Object.assign(denormaLizedAgregations, { [key]: aggregations[key] });
     }
@@ -637,6 +638,10 @@ const search = {
     const queryBuilder = await buildQuery(query, language, user, resources);
     if (query.geolocation) {
       searchGeolocation(queryBuilder, templates);
+    }
+
+    if (query.permissionsByLevel) {
+      queryBuilder.permissionsLevelAgreggations();
     }
 
     if (query.aggregateGeneratedToc) {

@@ -6,6 +6,7 @@ import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
 import db from 'api/utils/testing_db';
 import elasticResult from './elasticResult';
 import { fixtures as elasticFixtures, ids, fixturesTimeOut } from './fixtures_elastic';
+import { permissionsLevelFixtures } from './permissionsLevelFixtures';
 
 const editorUser = { _id: 'userId', role: 'editor' };
 
@@ -186,7 +187,29 @@ describe('search', () => {
     expect(aggregations.find(a => a.key === 'false').filtered.doc_count).toBe(2);
     expect(aggregations.find(a => a.key === 'true').filtered.doc_count).toBe(1);
   });
+  /* XXX */
+  it('should return permissions agregated by level type', async () => {
+    await db.setupFixturesAndContext(permissionsLevelFixtures, 'permissionslevelfixtures');
 
+    const response = await search.search({ permissionsByLevel: true }, 'es');
+    const aggregations = response.aggregations.all.permissions.buckets;
+
+    expect(aggregations.find(a => a.key === 'read').filtered.doc_count).toBe(2);
+    expect(aggregations.find(a => a.key === 'write').filtered.doc_count).toBe(1);
+  });
+
+  fit('should return permissions by user id', async () => {
+    userFactory.mock({ _id: 'User2' });
+    await db.setupFixturesAndContext(permissionsLevelFixtures, 'permissionslevelfixtures');
+
+    const response = await search.search({ permissionsByLevel: true }, 'es');
+    const aggregations = response.aggregations.all.permissions.buckets;
+
+    expect(aggregations.find(a => a.key === 'read').filtered.doc_count).toBe(1);
+    expect(aggregations.find(a => a.key === 'write').filtered.doc_count).toBe(0);
+  });
+
+  /* XXX */
   it('should return aggregations when searching by 2 terms', done => {
     userFactory.mock(undefined);
     search

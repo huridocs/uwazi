@@ -175,3 +175,10 @@ export const generatedTocAggregations = baseQuery => {
   const { should } = baseQuery.query.bool;
   return aggregation(path, should, filters);
 };
+
+export const permissionsLevelAgreggations = baseQuery => {
+  const path = 'permissions.level';
+  const filters = extractFilters(baseQuery, path);
+  const { should } = baseQuery.query.bool;
+  return aggregation(path, should, filters);
+};
