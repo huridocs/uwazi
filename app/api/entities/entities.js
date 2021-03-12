@@ -303,7 +303,7 @@ const validateWritePermissions = (ids, entitiesToUpdate) => {
     const allowedEntitiesToUpdate = entitiesToUpdate.filter(e => {
       const writeGranted = (e.permissions || [])
         .filter(p => p.level === AccessLevels.WRITE)
-        .map(p => p._id)
+        .map(p => p.refId)
         .filter(id => userIds.includes(id));
       return writeGranted.length > 0;
     });

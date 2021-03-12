@@ -3,7 +3,7 @@ import { MixedAccessLevels } from './permissionSchema';
 
 export interface MemberWithPermission {
   type: 'user' | 'group';
-  _id: ObjectIdSchema;
+  refId: ObjectIdSchema;
   label: string;
   level?: MixedAccessLevels;
 }

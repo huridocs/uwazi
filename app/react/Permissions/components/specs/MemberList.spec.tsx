@@ -43,7 +43,7 @@ describe('MemberList', () => {
         validationErrors={[
           {
             type: data[0].type as PermissionType,
-            _id: data[0]._id,
+            refId: data[0].refId,
           },
         ]}
       />

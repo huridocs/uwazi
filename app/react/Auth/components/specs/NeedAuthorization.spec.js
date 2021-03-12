@@ -8,7 +8,7 @@ describe('NeedAuthorization', () => {
   let store;
   const render = () => renderConnected(connected, props, store);
 
-  const writePermission = [{ _id: 'userId', level: 'write' }];
+  const writePermission = [{ refId: 'userId', level: 'write' }];
 
   describe('role based', () => {
     describe('when logged in', () => {
@@ -108,13 +108,13 @@ describe('NeedAuthorization', () => {
                 _id: 'someEntity',
                 permissions: [
                   {
-                    _id: 'userId',
+                    refId: 'userId',
                     level: 'read',
                   },
                 ],
               },
               {
-                _id: 'otherEntity',
+                refId: 'otherEntity',
                 permissions: writePermission,
               },
             ],
@@ -131,7 +131,7 @@ describe('NeedAuthorization', () => {
             roles: [],
             orWriteAccessTo: [
               {
-                _id: 'someEntity',
+                refId: 'someEntity',
               },
             ],
           };
@@ -160,7 +160,7 @@ describe('NeedAuthorization', () => {
                 _id: 'someEntity',
                 permissions: [
                   {
-                    _id: 'groupId',
+                    refId: 'groupId',
                     level: 'write',
                   },
                 ],
@@ -194,7 +194,7 @@ describe('NeedAuthorization', () => {
             orWriteAccessTo: [
               {
                 _id: 'someEntity',
-                permissions: [{ _id: 'groupId', level: 'read' }],
+                permissions: [{ refId: 'groupId', level: 'read' }],
               },
               {
                 _id: 'otherEntity',

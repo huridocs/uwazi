@@ -19,13 +19,13 @@ describe('UserGroupsLookupField', () => {
   it('should render the options', () => {
     const options: MemberWithPermission[] = [
       {
-        _id: 'id',
+        refId: 'id',
         label: 'label',
         type: PermissionType.USER,
         level: AccessLevels.READ,
       },
       {
-        _id: 'id2',
+        refId: 'id2',
         label: 'label',
         type: PermissionType.GROUP,
       },
@@ -70,7 +70,7 @@ describe('UserGroupsLookupField', () => {
         onSelect={onSelectMock}
         options={[
           {
-            _id: 'id',
+            refId: 'id',
             label: 'label',
             type: PermissionType.USER,
           },
@@ -86,7 +86,7 @@ describe('UserGroupsLookupField', () => {
     component.find('li').simulate('click');
 
     expect(onSelectMock).toHaveBeenCalledWith({
-      _id: 'id',
+      refId: 'id',
       label: 'label',
       type: PermissionType.USER,
     });
@@ -99,7 +99,7 @@ describe('UserGroupsLookupField', () => {
         onSelect={onSelectMock}
         options={[
           {
-            _id: 'id',
+            refId: 'id',
             label: 'label',
             type: PermissionType.USER,
           },
@@ -130,22 +130,22 @@ describe('UserGroupsLookupField', () => {
           onSelect={onSelectMock}
           options={[
             {
-              _id: 'id1',
+              refId: 'id1',
               label: 'user',
               type: PermissionType.USER,
             },
             {
-              _id: 'id2',
+              refId: 'id2',
               label: 'group',
               type: PermissionType.GROUP,
             },
             {
-              _id: 'id3',
+              refId: 'id3',
               label: 'group2',
               type: PermissionType.GROUP,
             },
             {
-              _id: 'id4',
+              refId: 'id4',
               label: 'user2',
               type: PermissionType.USER,
             },
@@ -205,7 +205,7 @@ describe('UserGroupsLookupField', () => {
       component.find('input').simulate('keydown', getEvent('Enter'));
 
       expect(onSelectMock).toHaveBeenCalledWith({
-        _id: 'id1',
+        refId: 'id1',
         label: 'user',
         type: PermissionType.USER,
       });

@@ -18,7 +18,7 @@ export const collaborators = {
 
     matchedUsers.forEach((user: GroupMemberSchema) => {
       availableCollaborators.push({
-        _id: user._id,
+        refId: user._id,
         type: PermissionType.USER,
         label: user.username!,
       });
@@ -26,7 +26,7 @@ export const collaborators = {
 
     groups.forEach(group => {
       availableCollaborators.push({
-        _id: group._id!.toString(),
+        refId: group._id!.toString(),
         type: PermissionType.GROUP,
         label: group.name,
       });

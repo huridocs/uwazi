@@ -12,7 +12,7 @@ describe('collaborators', () => {
     describe('matched user', () => {
       function assertUserAsCollaborator(actualContributor: any, expectedContributor: any) {
         expect(actualContributor).toEqual({
-          _id: expectedContributor._id,
+          refId: expectedContributor._id,
           label: expectedContributor.username,
           type: PermissionType.USER,
         });
@@ -34,7 +34,7 @@ describe('collaborators', () => {
         const availableCollaborators = await collaborators.search('user1');
         expect(availableCollaborators.length).toBe(1);
         expect(availableCollaborators[0]).toEqual({
-          _id: groupB._id.toString(),
+          refId: groupB._id.toString(),
           label: groupB.name,
           type: PermissionType.GROUP,
         });
@@ -43,12 +43,12 @@ describe('collaborators', () => {
       it('should return all existing groups', async () => {
         const availableCollaborators = await collaborators.search('User');
         expect(availableCollaborators[0]).toEqual({
-          _id: groupB._id.toString(),
+          refId: groupB._id.toString(),
           label: groupB.name,
           type: PermissionType.GROUP,
         });
         expect(availableCollaborators[1]).toEqual({
-          _id: groupA._id.toString(),
+          refId: groupA._id.toString(),
           label: groupA.name,
           type: PermissionType.GROUP,
         });

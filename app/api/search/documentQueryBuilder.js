@@ -365,7 +365,7 @@ export default function() {
         permissionTargetIds.push(user._id.toString());
         baseQuery.query.bool.filter.push({
           terms: {
-            'permissions._id': permissionTargetIds,
+            'permissions.refId': permissionTargetIds,
           },
         });
       }

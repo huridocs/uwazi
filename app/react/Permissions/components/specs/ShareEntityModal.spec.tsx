@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 import { ShallowWrapper } from 'enzyme';
 import { ShareEntityModal } from 'app/Permissions/components/ShareEntityModal';
 import { PermissionSchema } from 'shared/types/permissionType';
@@ -43,7 +44,7 @@ describe('ShareEntityModal', () => {
 
   it('should add a member to the list when it is selected', () => {
     const testMember: MemberWithPermission = {
-      _id: '1',
+      refId: '1',
       type: PermissionType.USER,
       label: 'User',
       level: AccessLevels.WRITE,
@@ -54,7 +55,7 @@ describe('ShareEntityModal', () => {
 
   it('should assign read permissions as default', () => {
     const testMember: MemberWithPermission = {
-      _id: '1',
+      refId: '1',
       type: PermissionType.USER,
       label: 'User',
     };
@@ -67,7 +68,7 @@ describe('ShareEntityModal', () => {
 
   it('should update the assignments when deleting an item from the list', () => {
     const testMember: MemberWithPermission = {
-      _id: '1',
+      refId: '1',
       type: 'user',
       label: 'User',
     };
@@ -77,13 +78,13 @@ describe('ShareEntityModal', () => {
       component
         .find(MembersList)
         .get(0)
-        .props.members.filter((m: MemberWithPermission) => !!m._id)
+        .props.members.filter((m: MemberWithPermission) => !!m.refId)
     ).toEqual([]);
   });
 
   it('should not save and show validation error if a member has mixed access permissions', () => {
     const testMember: MemberWithPermission = {
-      _id: '1',
+      refId: '1',
       type: PermissionType.USER,
       label: 'User',
       level: MixedAccess.MIXED,
@@ -91,10 +92,10 @@ describe('ShareEntityModal', () => {
 
     const testValidationError: {
       type: PermissionType;
-      _id: ObjectIdSchema;
+      refId: ObjectIdSchema;
     } = {
       type: PermissionType.USER,
-      _id: '1',
+      refId: '1',
     };
     component.find(UserGroupsLookupField).simulate('select', testMember);
     component.find('.btn-success').simulate('click');
@@ -107,7 +108,7 @@ describe('ShareEntityModal', () => {
 
   it('should save the permissions', async () => {
     const testMember: MemberWithPermission = {
-      _id: '1',
+      refId: '1',
       type: PermissionType.USER,
       label: 'User',
       level: AccessLevels.READ,
@@ -115,7 +116,7 @@ describe('ShareEntityModal', () => {
 
     const sentPermissions: PermissionSchema[] = [
       {
-        _id: '1',
+        refId: '1',
         type: PermissionType.USER,
         level: AccessLevels.READ,
       },
@@ -135,7 +136,7 @@ describe('ShareEntityModal', () => {
 
   it('should show one "done" button on pristine, and two on dirty', () => {
     const testMember: MemberWithPermission = {
-      _id: '1',
+      refId: '1',
       type: PermissionType.USER,
       label: 'User',
       level: AccessLevels.WRITE,
@@ -152,7 +153,7 @@ describe('ShareEntityModal', () => {
 
   it('should close without saving when clicking discard', async () => {
     const testMember: MemberWithPermission = {
-      _id: '1',
+      refId: '1',
       type: 'user',
       label: 'User',
       level: AccessLevels.READ,

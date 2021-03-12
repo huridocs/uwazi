@@ -3,7 +3,7 @@ import { textSortField } from './mappings';
 
 const PermissionProperties = {
   properties: {
-    _id: {
+    refId: {
       type: 'keyword',
     },
     level: {

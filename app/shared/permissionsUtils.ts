@@ -14,7 +14,7 @@ export const checkWritePermissions = (
   }
 
   const ids = permissions
-    ? permissions.filter(p => p.level === 'write').map(p => p._id.toString())
+    ? permissions.filter(p => p.level === 'write').map(p => p.refId.toString())
     : [];
   const userIds = [user._id!.toString(), ...(user.groups || []).map(g => g._id.toString())];
 

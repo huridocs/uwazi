@@ -37,7 +37,7 @@ describe('permissions routes', () => {
         user = { username: 'user 1', role: 'admin' };
         const permissionsData = {
           ids: ['shared1'],
-          permissions: [{ _id: 'user1', type: 'user', level: 'read' }],
+          permissions: [{ refId: 'user1', type: 'user', level: 'read' }],
         };
         const response = await request(app)
           .post('/api/entities/permissions')
@@ -61,7 +61,7 @@ describe('permissions routes', () => {
         user = { username: 'user 1', role: 'admin' };
         const permissionsData = {
           ids: ['shared1'],
-          permissions: [{ _id: 'user1', type: 'user', level: 'mixed' }],
+          permissions: [{ refId: 'user1', type: 'user', level: 'mixed' }],
         };
         const response = await request(app)
           .post('/api/entities/permissions')
@@ -74,7 +74,7 @@ describe('permissions routes', () => {
         user = undefined;
         const permissionsData = {
           ids: ['shared1'],
-          permissions: [{ _id: 'user1', type: 'user', level: 'read' }],
+          permissions: [{ refId: 'user1', type: 'user', level: 'read' }],
         };
         const response = await request(app)
           .post('/api/entities/permissions')
@@ -93,7 +93,7 @@ describe('permissions routes', () => {
         user = { username: 'user 1', role: 'admin' };
         const permissionsData = {
           ids: ['shared1'],
-          permissions: [{ _id: 'user1', type: 'user', level: 'read' }],
+          permissions: [{ refId: 'user1', type: 'user', level: 'read' }],
         };
         const response = await request(app)
           .post('/api/entities/permissions')
@@ -131,7 +131,7 @@ describe('permissions routes', () => {
         spyOn(entitiesPermissions, 'get').and.returnValue(
           Promise.resolve([
             {
-              _id: 'user1',
+              refId: 'user1',
               level: 'read',
             },
           ])
@@ -143,7 +143,7 @@ describe('permissions routes', () => {
             ids: JSON.stringify(['sharedId1', 'sharedId2']),
           });
         expect(response.status).toBe(200);
-        expect(response.body).toEqual([{ _id: 'user1', level: 'read' }]);
+        expect(response.body).toEqual([{ refId: 'user1', level: 'read' }]);
       });
     });
   });
@@ -152,7 +152,7 @@ describe('permissions routes', () => {
     describe('GET', () => {
       beforeEach(() => {
         spyOn(collaborators, 'search').and.returnValue(
-          Promise.resolve([{ _id: 'user1', type: 'user' }])
+          Promise.resolve([{ refId: 'user1', type: 'user' }])
         );
       });
 
@@ -162,7 +162,7 @@ describe('permissions routes', () => {
           .set('X-Requested-With', 'XMLHttpRequest')
           .query({ filterTerm: 'username' });
         expect(response.status).toBe(200);
-        expect(response.body).toEqual([{ _id: 'user1', type: 'user' }]);
+        expect(response.body).toEqual([{ refId: 'user1', type: 'user' }]);
       });
 
       it('should not validate if no filterTerm is passed', async () => {

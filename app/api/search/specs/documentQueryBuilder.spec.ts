@@ -54,7 +54,7 @@ describe('documentQueryBuilder', () => {
                 term: { published: true },
               },
               {
-                terms: { 'permissions._id': ['group1', 'group2', 'user1'] },
+                terms: { 'permissions.refId': ['group1', 'group2', 'user1'] },
               },
             ]);
           }

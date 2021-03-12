@@ -41,17 +41,17 @@ const entity1 = {
   published: true,
   permissions: [
     {
-      _id: idUserB,
+      refId: idUserB,
       type: PermissionType.USER,
       level: AccessLevels.WRITE,
     },
     {
-      _id: idUserA,
+      refId: idUserA,
       type: PermissionType.USER,
       level: AccessLevels.READ,
     },
     {
-      _id: idGroupA,
+      refId: idGroupA,
       type: PermissionType.GROUP,
       level: AccessLevels.WRITE,
     },
@@ -66,17 +66,17 @@ const entity2 = {
   published: true,
   permissions: [
     {
-      _id: idUserA,
+      refId: idUserA,
       type: PermissionType.USER,
       level: AccessLevels.READ,
     },
     {
-      _id: idGroupA,
+      refId: idGroupA,
       type: PermissionType.GROUP,
       level: AccessLevels.READ,
     },
     {
-      _id: nonExistingGroup,
+      refId: nonExistingGroup,
       type: PermissionType.GROUP,
       level: AccessLevels.READ,
     },

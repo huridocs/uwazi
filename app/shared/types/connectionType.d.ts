@@ -96,6 +96,11 @@ export interface ConnectionSchema {
           }[]
         | undefined;
     };
+    permissions?: {
+      refId: ObjectIdSchema;
+      type: 'user' | 'group';
+      level: 'read' | 'write';
+    }[];
     [k: string]: unknown | undefined;
   };
   reference?: {

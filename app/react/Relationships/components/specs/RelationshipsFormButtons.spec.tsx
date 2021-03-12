@@ -49,7 +49,7 @@ describe('RelationshipsFormButtons', () => {
     saving: false,
     parentEntity: Immutable.fromJS({
       _id: 'entity1',
-      permissions: [{ _id: collaboratorUser._id, level: AccessLevels.WRITE }],
+      permissions: [{ refId: collaboratorUser._id, level: AccessLevels.WRITE }],
     }),
     edit: () => {},
     save: () => {},

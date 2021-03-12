@@ -22,7 +22,7 @@ const appendPermissionData = <T>(data: DataType<T>, user: UserSchema | undefined
     ...data,
     permissions: [
       {
-        _id: user._id!.toString(),
+        refId: user._id!.toString(),
         type: PermissionType.USER,
         level: AccessLevels.WRITE,
       },
@@ -43,7 +43,7 @@ const addPermissionsCondition = (user: UserSchema, level: AccessLevels) => {
     const levelCond = level === AccessLevels.WRITE ? { level: AccessLevels.WRITE } : {};
     permissionCond = {
       $or: [
-        { permissions: { $elemMatch: { _id: { $in: userIds }, ...levelCond } } },
+        { permissions: { $elemMatch: { refId: { $in: userIds }, ...levelCond } } },
         { published: true },
       ],
     };
@@ -74,8 +74,8 @@ function checkPermissionAccess<T>(
 ) {
   const hasAccessLevel = (p: PermissionSchema) =>
     level === AccessLevels.WRITE
-      ? p.level === AccessLevels.WRITE && userIds.includes(p._id)
-      : userIds.includes(p._id);
+      ? p.level === AccessLevels.WRITE && userIds.includes(p.refId)
+      : userIds.includes(p.refId);
 
   const hasAccess = elem.permissions && elem.permissions.find(p => hasAccessLevel(p)) !== undefined;
   if (!hasAccess) {

@@ -19,7 +19,7 @@ const checkWritePermissions = (entities: any[] = [], user?: any) => {
     if (entity.permissions) {
       const idsWithWritePermissions = entity.permissions
         .filter((p: PermissionSchema) => p.level === 'write')
-        .map((p: PermissionSchema) => p._id);
+        .map((p: PermissionSchema) => p.refId);
 
       granted =
         idsWithWritePermissions.find(

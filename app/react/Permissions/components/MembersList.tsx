@@ -7,7 +7,7 @@ import { MemberListItemPermission } from './MemberListItemPermission';
 
 export interface ValidationError {
   type: PermissionType;
-  _id: ObjectIdSchema;
+  refId: ObjectIdSchema;
 }
 
 interface MemberListProps {
@@ -28,14 +28,14 @@ export const MembersList = ({ members, onChange, validationErrors }: MemberListP
   };
 
   const hasError = (member: MemberWithPermission) =>
-    !!validationErrors.find(e => e.type === member.type && e._id === member._id);
+    !!validationErrors.find(e => e.type === member.type && e.refId === member.refId);
 
   return (
     <table className="members-list">
       <tbody>
         {members.map((member, index) => (
           <tr
-            key={`${member.type}-${member._id}`}
+            key={`${member.type}-${member.refId}`}
             className={hasError(member) ? 'validationError' : ''}
           >
             <td>
@@ -46,7 +46,7 @@ export const MembersList = ({ members, onChange, validationErrors }: MemberListP
                 value={member}
                 onChange={onChangeHandler(index)}
                 onDelete={onDeleteHandler}
-                disabled={!member._id}
+                disabled={!member.refId}
               />
             </td>
           </tr>

@@ -30,12 +30,12 @@ describe('ModelWithPermissions', () => {
       _id: readDocId,
       name: 'readDoc',
       published: false,
-      permissions: [{ _id: 'user1', type: PermissionType.USER, level: AccessLevels.READ }],
+      permissions: [{ refId: 'user1', type: PermissionType.USER, level: AccessLevels.READ }],
     },
     {
       _id: writeDocId,
       name: 'writeDoc',
-      permissions: [{ _id: 'user1', type: PermissionType.USER, level: AccessLevels.WRITE }],
+      permissions: [{ refId: 'user1', type: PermissionType.USER, level: AccessLevels.WRITE }],
     },
     {
       _id: public1Id,
@@ -45,7 +45,7 @@ describe('ModelWithPermissions', () => {
     {
       _id: otherOwnerId,
       name: 'no shared with user',
-      permissions: [{ _id: 'user2', type: PermissionType.USER, level: AccessLevels.WRITE }],
+      permissions: [{ refId: 'user2', type: PermissionType.USER, level: AccessLevels.WRITE }],
     },
     {
       _id: testingDB.id(),
@@ -55,12 +55,12 @@ describe('ModelWithPermissions', () => {
     {
       _id: testingDB.id(),
       name: 'shared with group',
-      permissions: [{ _id: 'group2', type: PermissionType.GROUP, level: AccessLevels.READ }],
+      permissions: [{ refId: 'group2', type: PermissionType.GROUP, level: AccessLevels.READ }],
     },
     {
       _id: deleteDocId,
       name: 'docToDelete',
-      permissions: [{ _id: 'user1', type: PermissionType.USER, level: AccessLevels.WRITE }],
+      permissions: [{ refId: 'user1', type: PermissionType.USER, level: AccessLevels.WRITE }],
     },
     {
       _id: testingDB.id(),
@@ -158,7 +158,7 @@ describe('ModelWithPermissions', () => {
           expect(saved).toEqual(
             expect.objectContaining({
               name: 'newDoc',
-              permissions: [{ _id: 'user1', type: 'user', level: 'write' }],
+              permissions: [{ refId: 'user1', type: 'user', level: 'write' }],
             })
           );
         });

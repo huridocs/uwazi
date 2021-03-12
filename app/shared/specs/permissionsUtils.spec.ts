@@ -31,12 +31,12 @@ describe('Permissions utils', () => {
 
       const permissions: PermissionSchema[] = [
         {
-          _id: 'someuser',
+          refId: 'someuser',
           type: 'user',
           level: 'write',
         },
         {
-          _id: 'someotheruser',
+          refId: 'someotheruser',
           type: 'user',
           level: 'read',
         },
@@ -55,12 +55,12 @@ describe('Permissions utils', () => {
 
       const permissions: PermissionSchema[] = [
         {
-          _id: 'someuser',
+          refId: 'someuser',
           type: 'user',
           level: 'read',
         },
         {
-          _id: 'someotheruser',
+          refId: 'someotheruser',
           type: 'user',
           level: 'write',
         },
@@ -79,7 +79,7 @@ describe('Permissions utils', () => {
 
       const permissions: PermissionSchema[] = [
         {
-          _id: 'someotheruser',
+          refId: 'someotheruser',
           type: 'user',
           level: 'write',
         },
@@ -104,17 +104,17 @@ describe('Permissions utils', () => {
 
       const permissions: PermissionSchema[] = [
         {
-          _id: 'someuser',
+          refId: 'someuser',
           type: 'user',
           level: 'read',
         },
         {
-          _id: 'somegroup',
+          refId: 'somegroup',
           type: 'group',
           level: 'write',
         },
         {
-          _id: 'someotheruser',
+          refId: 'someotheruser',
           type: 'user',
           level: 'read',
         },
@@ -127,7 +127,7 @@ describe('Permissions utils', () => {
       expect(
         checkWritePermissions(undefined, [
           {
-            _id: 'someuser',
+            refId: 'someuser',
             type: 'user',
             level: 'read',
           },

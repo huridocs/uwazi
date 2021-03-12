@@ -160,8 +160,8 @@ export default {
         ],
       },
       permissions: [
-        { _id: 'user1', level: AccessLevels.READ, type: PermissionType.USER },
-        { _id: 'user2', level: AccessLevels.WRITE, type: PermissionType.USER },
+        { refId: 'user1', level: AccessLevels.READ, type: PermissionType.USER },
+        { refId: 'user2', level: AccessLevels.WRITE, type: PermissionType.USER },
       ],
     },
     {
@@ -187,8 +187,8 @@ export default {
       published: true,
       metadata: { property1: [{ value: 'text' }] },
       permissions: [
-        { _id: 'user1', level: AccessLevels.WRITE, type: PermissionType.USER },
-        { _id: 'group1', level: AccessLevels.WRITE, type: PermissionType.GROUP },
+        { refId: 'user1', level: AccessLevels.WRITE, type: PermissionType.USER },
+        { refId: 'group1', level: AccessLevels.WRITE, type: PermissionType.GROUP },
       ],
     },
     {

@@ -91,7 +91,7 @@ export const UserGroupsLookupField = ({
         <ul tabIndex={-1} role="listbox" ref={optionsListRef}>
           {options.map((result: MemberWithPermission, index: number) => (
             <li
-              key={`${result.type}-${result._id}`}
+              key={`${result.type}-${result.refId}`}
               role="option"
               aria-selected={index === selected}
               onClick={getOnSelectHandler(result)}
