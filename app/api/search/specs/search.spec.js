@@ -199,8 +199,8 @@ describe('search', () => {
   });
 
   fit('should return permissions by user id', async () => {
-    userFactory.mock({ _id: 'User2' });
     await db.setupFixturesAndContext(permissionsLevelFixtures, 'permissionslevelfixtures');
+    userFactory.mock({ _id: 'User2' });
 
     const response = await search.search({ permissionsByLevel: true }, 'es');
     const aggregations = response.aggregations.all.permissions.buckets;

@@ -2,6 +2,7 @@ import documentProperties from './document_properties';
 import { textSortField } from './mappings';
 
 const PermissionProperties = {
+  type: 'nested',
   properties: {
     refId: {
       type: 'keyword',
