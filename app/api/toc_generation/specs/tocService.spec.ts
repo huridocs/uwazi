@@ -22,6 +22,9 @@ describe('tocService', () => {
       if (filename === 'pdf3.pdf') {
         return Promise.resolve({ text: JSON.stringify([{ label: 'section1 pdf3' }]) });
       }
+      if (filename === 'pdf5.pdf') {
+        return Promise.resolve({ text: JSON.stringify([{ label: 'section1 pdf5' }]) });
+      }
       throw new Error(`this file is not supposed to be sent for toc generation ${filename}`);
     });
 
@@ -44,6 +47,7 @@ describe('tocService', () => {
   it('should send the next pdfFile and save toc generated', async () => {
     await service.processNext();
     await service.processNext();
+    await service.processNext();
 
     let [fileProcessed] = await files.get({ filename: 'pdf1.pdf' });
     expect(fileProcessed.toc).toEqual([{ label: 'section1 pdf1' }]);
@@ -55,6 +59,7 @@ describe('tocService', () => {
   });
 
   it('should reindex the affected entities', async () => {
+    await service.processNext();
     await service.processNext();
     await service.processNext();
     await elasticTesting.refresh();
@@ -69,6 +74,16 @@ describe('tocService', () => {
       expect.objectContaining({
         title: 'pdf3entity',
         generatedToc: true,
+      }),
+      expect.objectContaining({
+        title: 'pdf5entity',
+        generatedToc: true,
+        language: 'es',
+      }),
+      expect.objectContaining({
+        title: 'pdf5entity',
+        generatedToc: true,
+        language: 'en',
       }),
     ]);
   });

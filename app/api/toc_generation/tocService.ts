@@ -20,7 +20,7 @@ const saveToc = async (file: FileType, toc: TocSchema[]) => {
       ...entity,
       generatedToc: true,
     },
-    { user: {}, language: file.language },
+    { user: {}, language: entity.language },
     false
   );
 };
