@@ -31,6 +31,11 @@ export default {
       entity: entityId.toString(),
       language: 'eng',
     },
+    {
+      _id: 'otherDocumentIdJapanese',
+      entity: entityId.toString(),
+      language: 'other',
+    },
   ],
   connections: [
     {

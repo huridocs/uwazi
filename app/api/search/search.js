@@ -407,6 +407,7 @@ const processResponse = async (response, templates, dictionaries, language, filt
   return {
     rows,
     totalRows: response.body.hits.total.value,
+    relation: response.body.hits.total.relation,
     aggregations: { all: aggregationsWithAny },
   };
 };

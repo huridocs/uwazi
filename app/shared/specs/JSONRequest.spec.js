@@ -303,4 +303,21 @@ describe('JSONRequest', () => {
       });
     });
   });
+
+  describe('head', () => {
+    it('should request the headers for the given url', async () => {
+      const mockresponse = {
+        body: JSON.stringify({ text: 'hey' }),
+      };
+      backend
+        .restore()
+        .head('http://localhost:3000/hello', JSON.stringify({ response: mockresponse }));
+
+      const response = await request.head('http://localhost:3000/hello');
+      const { method } = backend.calls()[0][1];
+
+      expect(method).toBe('HEAD');
+      expect(response.headers).toBeDefined();
+    });
+  });
 });

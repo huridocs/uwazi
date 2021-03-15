@@ -91,13 +91,14 @@ const _fetch = (url, data, method, _headers) => {
       // Failed .json() parsing usually indicates a non-success http status,
       // so we rather return that failure status than throw our own parsin
       // error.
-      return Promise.all([res.json().catch(() => ({})), setCookie]);
+      return Promise.all([res.json().catch(() => ({})), setCookie, res.headers]);
     })
-    .then(([json, setCookie]) => {
+    .then(([json, setCookie, responseHeaders]) => {
       const processedResponse = {
         json,
         status: response.status,
         cookie: setCookie,
+        headers: responseHeaders,
       };
 
       if (response.status > 399) {
@@ -116,6 +117,8 @@ export default {
   get: (url, data, headers) => _fetch(url, data, 'GET', headers),
 
   delete: (url, data, headers) => _fetch(url, data, 'DELETE', headers),
+
+  head: (url, data, headers) => _fetch(url, data, 'HEAD', headers),
 
   // TEST!!!! Fully untested function
   uploadFile: (url, filename, file) =>
