@@ -63,7 +63,7 @@ export default (app: Application) => {
     }
   );
 
-  app.post('/api/files', needsAuthorization(['admin', 'editor']), (req, res, next) => {
+  app.post('/api/files', needsAuthorization(['admin', 'editor']), async (req, res, next) => {
     files
       .save(req.body)
       .then(result => {

@@ -120,14 +120,15 @@ original error: {
   describe('when error is 400', () => {
     it('should log it using debugLog', () => {
       handleError(createError('test error', 400));
-      expect(debugLog.debug).toHaveBeenCalledWith({ pretty: '\ntest error' });
+      expect(debugLog.debug.calls.mostRecent().args[0]).toContain('test error');
     });
 
     describe('and is instance of Error', () => {
       it('should include the original error', () => {
         const error = new Error('test error');
+        error.name = 'Original error';
         handleError(createError(error, 400));
-        expect(debugLog.debug).toHaveBeenCalledWith({ pretty: '\ntest error', original: error });
+        expect(debugLog.debug.calls.mostRecent().args[0]).toContain('Original error');
       });
     });
   });
