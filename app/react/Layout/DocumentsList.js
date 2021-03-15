@@ -101,6 +101,7 @@ class DocumentsList extends Component {
         selectedEntitiesCount={this.props.selectedDocuments.size}
         entityListCount={this.props.documents.get('rows').size}
         entityTotal={documents.get('totalRows')}
+        hitsTotalRelation={documents.get('relation')}
         totalConnectionsCount={totalConnections}
       />
     );

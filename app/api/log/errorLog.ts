@@ -1,32 +1,34 @@
 import winston from 'winston';
 import GrayLogTransport from './GrayLogTransport';
-import formatMessage from './formatMessage';
+import { formatter } from './infoFormat';
 
 let DATABASE_NAME = 'localhost';
 let LOGS_DIR = './log';
 
-const formatter = winston.format.printf(info => formatMessage(info, DATABASE_NAME));
+interface ExtendedLogger extends winston.Logger {
+  closeGraylog?: () => void;
+}
 
 const createFileTransport = () =>
   new winston.transports.File({
     filename: `${LOGS_DIR}/error.log`,
     handleExceptions: true,
     level: 'error',
-    format: winston.format.combine(winston.format.timestamp(), formatter),
+    format: formatter(DATABASE_NAME),
   });
 
 const createConsoleTransport = () =>
   new winston.transports.Console({
     handleExceptions: true,
     level: 'error',
-    format: winston.format.combine(winston.format.timestamp(), formatter),
+    format: formatter(DATABASE_NAME),
   });
 
 export const createErrorLog = () => {
   DATABASE_NAME = process.env.DATABASE_NAME ? process.env.DATABASE_NAME : 'localhost';
   LOGS_DIR = process.env.LOGS_DIR ? process.env.LOGS_DIR : './log';
 
-  const logger = winston.createLogger({
+  const logger: ExtendedLogger = winston.createLogger({
     transports: [createFileTransport(), createConsoleTransport()],
   });
 
@@ -36,10 +38,11 @@ export const createErrorLog = () => {
 
   if (process.env.USE_GRAYLOG) {
     const graylogTransport = new GrayLogTransport({
-      format: winston.format.combine(winston.format.timestamp(), formatter),
+      format: formatter(DATABASE_NAME),
       instance_name: DATABASE_NAME,
       server: process.env.USE_GRAYLOG,
     });
+    //@ts-ignore
     logger.add(graylogTransport);
     logger.closeGraylog = graylogTransport.graylog.close.bind(graylogTransport.graylog);
   }

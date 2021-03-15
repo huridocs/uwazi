@@ -1,4 +1,3 @@
-/* eslint-disable prefer-template */
 import debugLog from 'api/log/debugLog';
 import errorLog from 'api/log/errorLog';
 import Ajv from 'ajv';
@@ -14,15 +13,18 @@ const ajvPrettifier = error => {
 };
 
 const joiPrettifier = (error, req) => {
-  const errorMessage =
-    (req.originalUrl ? `\nurl: ${req.originalUrl}` : '') +
-    (req.body && Object.keys(req.body).length
+  const url = req.originalUrl ? `\nurl: ${req.originalUrl}` : '';
+  const body =
+    req.body && Object.keys(req.body).length
       ? `\nbody: ${JSON.stringify(req.body, null, ' ')}`
-      : '') +
-    (req.query && Object.keys(req.query).length
+      : '';
+  const query =
+    req.query && Object.keys(req.query).length
       ? `\nquery: ${JSON.stringify(req.query, null, ' ')}`
-      : '') +
-    `\n${error.message || JSON.stringify(error.json)}`;
+      : '';
+  const errorString = `\n${error.message || JSON.stringify(error.json)}`;
+
+  const errorMessage = `${url}${body}${query}${errorString}`;
 
   return errorMessage;
 };
@@ -43,6 +45,7 @@ const obfuscateCredentials = req => {
   return obfuscated;
 };
 
+// eslint-disable-next-line max-statements
 const prettifyError = (error, { req = {}, uncaught = false } = {}) => {
   let result = error;
 
@@ -100,10 +103,10 @@ const sendLog = (data, error, errorOptions) => {
       errorOptions
     );
   } else if (data.code === 400) {
-    debugLog.debug({
-      pretty: data.prettyMessage,
-      ...(originalError ? { original: originalError } : {}),
-    });
+    debugLog.debug(
+      originalError ? appendOriginalError(data.prettyMessage, originalError) : data.prettyMessage,
+      errorOptions
+    );
   }
 };
 
