@@ -31,17 +31,20 @@ export const FiltersFromProperties = ({
 
       const propertyOptions = property.options
         ? property.options.map(option => {
-            const translatedSubOptions = option.options
-              ? option.options.map(subOption => ({
-                  ...subOption,
-                  label: t(property.content, subOption.label, undefined, false),
-                }))
-              : undefined;
-            return {
+            const finalTranslatedOption = {
               ...option,
-              options: translatedSubOptions,
               label: t(property.content, option.label, undefined, false),
             };
+
+            if (option.options) {
+              const translatedSubOptions = option.options.map(subOption => ({
+                ...subOption,
+                label: t(property.content, subOption.label, undefined, false),
+              }));
+              finalTranslatedOption.options = translatedSubOptions;
+            }
+
+            return finalTranslatedOption;
           })
         : [];
 
