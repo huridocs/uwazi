@@ -70,8 +70,8 @@ export const permissionsLevelFixtures: DBFixture = {
       language: 'es',
       published: true,
       permissions: [
-        { level: 'write', _id: users.user3._id, type: 'user' },
         { level: 'write', _id: users.user2._id, type: 'user' },
+        { level: 'write', _id: users.user3._id, type: 'user' },
         { level: 'write', _id: group2, type: 'group' },
         { level: 'write', _id: group1, type: 'group' },
       ],
