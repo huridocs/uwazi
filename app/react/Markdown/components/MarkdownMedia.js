@@ -77,6 +77,7 @@ MarkdownMedia.defaultProps = {
 
 MarkdownMedia.propTypes = {
   compact: PropTypes.bool,
+  config: PropTypes.string.isRequired,
 };
 
 export default MarkdownMedia;
