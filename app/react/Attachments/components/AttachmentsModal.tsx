@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import ReactModal from 'react-modal';
 import { Tabs, TabLink, TabContent } from 'react-tabs-redux';
 import Dropzone from 'react-dropzone';
-import { LocalForm, Field } from 'react-redux-form';
+import { actions as formActions, LocalForm, Field } from 'react-redux-form';
 
 import { Translate } from 'app/I18N';
 import { Icon } from 'app/UI';
@@ -35,6 +35,7 @@ export const AttachmentsModalCmp = ({
   getPercentage,
 }: AttachmentsModalProps) => {
   const inputFileRef = useRef<HTMLInputElement | null>(null);
+  let formDispatch: Function = () => {};
 
   const handleUploadButtonClicked = () => {
     if (inputFileRef.current) {
@@ -56,8 +57,13 @@ export const AttachmentsModalCmp = ({
     });
   };
 
+  const attachDispatch = (dispatch: Function) => {
+    formDispatch = dispatch;
+  };
+
   const handleSubmitUrlForm = (formModelData: any) => {
     uploadAttachmentFromUrlProp(entitySharedId, formModelData.name, formModelData.url, storeKey);
+    formDispatch(formActions.reset('urlForm'));
   };
 
   return (
@@ -134,7 +140,12 @@ export const AttachmentsModalCmp = ({
             </TabContent>
             <TabContent for="uploadWeb" className="tab-content centered">
               <div className="wrapper-web">
-                <LocalForm onSubmit={handleSubmitUrlForm} model="urlForm" validators={validators}>
+                <LocalForm
+                  getDispatch={(dispatch: Function) => attachDispatch(dispatch)}
+                  onSubmit={handleSubmitUrlForm}
+                  model="urlForm"
+                  validators={validators}
+                >
                   <div className="form-group has-feedback">
                     <Field model=".url">
                       <input
