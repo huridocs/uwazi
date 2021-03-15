@@ -9,9 +9,16 @@ import { Icon } from 'app/UI';
 export interface MediaModalProps {
   isOpen: boolean;
   onClose: () => void;
+  selectedDocument: any;
 }
 
-export const MediaModalCmp = ({ isOpen, onClose }: MediaModalProps) => {
+export const MediaModalCmp = ({ isOpen, onClose, selectedDocument }: MediaModalProps) => {
+  const { attachments } = selectedDocument;
+
+  const getAttachmentUrl = (attachment: any) => {
+    return attachment.url || window.location.origin + `/api/files/${attachment.filename}`;
+  };
+
   return (
     <ReactModal
       isOpen={isOpen}
@@ -41,71 +48,21 @@ export const MediaModalCmp = ({ isOpen, onClose }: MediaModalProps) => {
             <TabContent for="selectFromFiles" className="tab-content">
               <div className="media-grid container">
                 <div className="row">
-                  <div className="media-grid-item">
-                    <div className="media-grid-card">
-                      <div className="media-grid-card-header">
-                        <h5>media video.mp4</h5>
-                        <span>12 MB</span>
-                      </div>
-                      <div className="media-grid-card-content">
-                        <div className="media">
-                          <img src="https://picsum.photos/200" />
+                  {attachments.map((attachment: any, key: number) => (
+                    <div className="media-grid-item" key={`attachment_${key}`}>
+                      <div className="media-grid-card">
+                        <div className="media-grid-card-header">
+                          <h5>{attachment.originalname}</h5>
+                          <span>12 MB</span>
+                        </div>
+                        <div className="media-grid-card-content">
+                          <div className="media">
+                            <img src={getAttachmentUrl(attachment)} />
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                  <div className="media-grid-item">
-                    <div className="media-grid-card">
-                      <div className="media-grid-card-header">
-                        <h5>media video.mp4</h5>
-                        <span>12 MB</span>
-                      </div>
-                      <div className="media-grid-card-content">
-                        <div className="media">
-                          <img src="https://picsum.photos/200" />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="media-grid-item">
-                    <div className="media-grid-card">
-                      <div className="media-grid-card-header">
-                        <h5>media video.mp4</h5>
-                        <span>12 MB</span>
-                      </div>
-                      <div className="media-grid-card-content">
-                        <div className="media">
-                          <img src="https://picsum.photos/200" />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="media-grid-item">
-                    <div className="media-grid-card">
-                      <div className="media-grid-card-header">
-                        <h5>media video.mp4</h5>
-                        <span>12 MB</span>
-                      </div>
-                      <div className="media-grid-card-content">
-                        <div className="media">
-                          <img src="https://picsum.photos/200" />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="media-grid-item">
-                    <div className="media-grid-card">
-                      <div className="media-grid-card-header">
-                        <h5>media video.mp4</h5>
-                        <span>12 MB</span>
-                      </div>
-                      <div className="media-grid-card-content">
-                        <div className="media">
-                          <img src="https://picsum.photos/200" />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                  ))}
                 </div>
               </div>
             </TabContent>
@@ -116,6 +73,14 @@ export const MediaModalCmp = ({ isOpen, onClose }: MediaModalProps) => {
   );
 };
 
+const mapStateToProps = (state: any, ownProps: any) => {
+  const { selectedDocuments } = state.library.ui.toJS();
+
+  return {
+    selectedDocument: selectedDocuments[0] || { attachments: [] },
+  };
+};
+
 const mapDispatchToProps = {};
 
-export const MediaModal = connect(null, mapDispatchToProps)(MediaModalCmp);
+export const MediaModal = connect(mapStateToProps, mapDispatchToProps)(MediaModalCmp);
