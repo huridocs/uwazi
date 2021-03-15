@@ -299,8 +299,15 @@ const _sanitizeAggregationsStructure = (aggregations, limit) => {
       }));
     }
 
+    //permissions
+    if (aggregationKey === 'nestedPermissions') {
+      result.permissions = {
+        buckets: aggregation.filtered.buckets.map(b => ({ key: b.key, filtered: { doc_count: b.filteredByUser.uniqueEntities.doc_count } }))
+      };
+    }
+
     //nested
-    if (!aggregation.buckets) {
+    if (!aggregation.buckets && aggregationKey !== 'nestedPermissions') {
       Object.keys(aggregation).forEach(key => {
         if (aggregation[key].buckets) {
           const buckets = aggregation[key].buckets.map(option => ({
@@ -397,7 +404,7 @@ const processResponse = async (response, templates, dictionaries, language, filt
   });
 
   const sanitizedAggregations = await _sanitizeAggregations(
-    response.body.aggregations.all,
+    response.body.aggregations.all.permissions,
     templates,
     dictionaries,
     language
@@ -704,7 +711,7 @@ const search = {
     return snippetsFromSearchHit(response.body.hits.hits[0]);
   },
 
-  async indexEntities(query, select = '', limit, batchCallback = () => {}) {
+  async indexEntities(query, select = '', limit, batchCallback = () => { }) {
     return indexEntities({
       query,
       select,

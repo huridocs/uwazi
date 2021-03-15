@@ -180,5 +180,50 @@ export const permissionsLevelAgreggations = baseQuery => {
   const path = 'permissions.level';
   const filters = extractFilters(baseQuery, path);
   const { should } = baseQuery.query.bool;
-  return aggregation(path, should, filters);
+
+  const baseFilters = filters.filter((f) => {
+    return !(f.terms && f.terms['permissions._id']);
+  });
+
+  const permissionsFilter = filters.filter((f) => {
+    return (f.terms && f.terms['permissions._id']);
+  });
+
+  const aggs = {
+    filter: {
+      bool: {
+        should,
+        filter: baseFilters
+      },
+    },
+    aggregations: {
+      nestedPermissions: {
+        nested: { path: 'permissions' },
+        aggregations: {
+          filtered: {
+            terms: {
+              field: path,
+              size: preloadOptionsSearch,
+            },
+            aggregations: {
+              filteredByUser: {
+                filter: {
+                  bool: {
+                    filter: permissionsFilter
+                  }
+                },
+                aggregations: {
+                  uniqueEntities: {
+                    reverse_nested: {}
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  };
+
+  return aggs;
 };

@@ -263,10 +263,7 @@ export default function() {
     },
 
     permissionsLevelAgreggations() {
-      baseQuery.aggregations.all.aggregations.nestedPermissions = {
-        nested: { path: 'permissions' },
-        aggregations: { permissions: permissionsLevelAgreggations(baseQuery) },
-      };
+      baseQuery.aggregations.all.aggregations.permissions = permissionsLevelAgreggations(baseQuery);
     },
 
     aggregations(properties, dictionaries) {
