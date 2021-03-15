@@ -31,7 +31,7 @@ describe('Permissions aggregations', () => {
     response = await search.search({ permissionsByLevel: true }, 'es');
     aggregations = response.aggregations.all.permissions.buckets;
     expect(aggregations.find(a => a.key === 'read').filtered.doc_count).toBe(1);
-    expect(aggregations.find(a => a.key === 'write').filtered.doc_count).toBe(0);
+    expect(aggregations.find(a => a.key === 'write').filtered.doc_count).toBe(1);
   });
 
   it('should return aggregations of permission level filtered per current users group', async () => {
@@ -39,7 +39,7 @@ describe('Permissions aggregations', () => {
 
     response = await search.search({ permissionsByLevel: true }, 'es');
     aggregations = response.aggregations.all.permissions.buckets;
-    expect(aggregations.find(a => a.key === 'read').filtered.doc_count).toBe(2);
+    expect(aggregations.find(a => a.key === 'read').filtered.doc_count).toBe(3);
     expect(aggregations.find(a => a.key === 'write').filtered.doc_count).toBe(2);
   });
 });
