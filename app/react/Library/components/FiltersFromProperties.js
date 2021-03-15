@@ -36,7 +36,7 @@ export const FiltersFromProperties = ({
                   ...subOption,
                   label: t(property.content, subOption.label, undefined, false),
                 }))
-              : [];
+              : undefined;
             return {
               ...option,
               options: translatedSubOptions,
