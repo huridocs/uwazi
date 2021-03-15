@@ -51,7 +51,7 @@ export const DocumentCounter = (props: EntityCounterProps) => {
           )
         </>
       )}
-      , <b>{entityTotal} </b>
+      , <b>{totalEntitiesValue} </b>
       <Translate>documents</Translate>
     </>
   );
