@@ -29,7 +29,6 @@ describe('Item', () => {
         sharedId: 'sharedId',
         creationDate: 123,
         snippets: [],
-        permissions: [],
       }),
       active: true,
       className: 'custom-class',
@@ -41,7 +40,6 @@ describe('Item', () => {
       buttons: <div>Buttons</div>,
       templates: Immutable([]),
       thesauris: Immutable([]),
-      user: Immutable({}),
     };
   });
 
@@ -174,7 +172,6 @@ describe('Item', () => {
         template: 'templateId',
         creationDate: 123,
         snippets: [],
-        permissions: [],
       });
 
       render();
@@ -190,7 +187,6 @@ describe('Item', () => {
         title: 'doc title',
         template: 'templateId',
         creationDate: 123,
-        permissions: [],
         snippets: {
           count: 1,
           metadata: [],

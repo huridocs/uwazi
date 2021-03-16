@@ -104,7 +104,6 @@ Item.defaultProps = {
 };
 
 Item.propTypes = {
-  user: PropTypes.object,
   templates: PropTypes.object,
   thesauris: PropTypes.object,
   search: PropTypes.object,
@@ -131,10 +130,10 @@ Item.defaultProps = {
   titleProperty: 'title',
 };
 
-export const mapStateToProps = ({ templates, thesauris, user }, ownProps) => {
+export const mapStateToProps = ({ templates, thesauris }, ownProps) => {
   const search = ownProps.searchParams;
   const _templates = ownProps.templates || templates;
-  return { templates: _templates, thesauris, search, user };
+  return { templates: _templates, thesauris, search };
 };
 
 export default connect(mapStateToProps)(Item);
