@@ -50,6 +50,7 @@ describe('permissions routes', () => {
       it('should invalidate if body does not fit the expected schema', async () => {
         user = { username: 'user 1', role: 'admin' };
         const permissionsData = { entities: [], permissions: [{}] };
+        testingTenants.mockCurrentTenant({ name: 'default' });
         const response = await request(app)
           .post('/api/entities/permissions')
           .set('X-Requested-With', 'XMLHttpRequest')

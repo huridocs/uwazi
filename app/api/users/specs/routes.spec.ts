@@ -70,6 +70,10 @@ describe('users routes', () => {
       });
 
       describe('validation', () => {
+        beforeAll(() => {
+          testingTenants.mockCurrentTenant({ name: 'default' });
+        });
+
         it.each(invalidUserProperties)(
           'should invalidate if there is an invalid property',
           async ({ field, value, dataPath, keyword }) => {
@@ -103,6 +107,10 @@ describe('users routes', () => {
       });
 
       describe('validation', () => {
+        beforeAll(() => {
+          testingTenants.mockCurrentTenant({ name: 'default' });
+        });
+
         it.each(invalidUserProperties)(
           'should invalidate if there is an invalid property',
           async ({ field, value, dataPath, keyword }) => {
@@ -121,6 +129,10 @@ describe('users routes', () => {
     });
 
     describe('/recoverpassword', () => {
+      beforeAll(() => {
+        testingTenants.mockCurrentTenant({ name: 'default' });
+      });
+
       it.each([
         { value: undefined, keyword: 'required' },
         { value: 'a', keyword: 'minLength' },
