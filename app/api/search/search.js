@@ -647,7 +647,7 @@ const search = {
       searchGeolocation(queryBuilder, templates);
     }
 
-    if (query.permissionsByLevel) {
+    if (query.aggregatePermissionsByLevel) {
       queryBuilder.permissionsLevelAgreggations();
     }
 
