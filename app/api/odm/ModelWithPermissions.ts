@@ -93,26 +93,20 @@ const filterPermissionsData = <T>(data: T[], user: UserSchema | undefined) => {
   return filteredData;
 };
 
-const controlPermissionsData = <T>(data: T & { published?: boolean }) => {
-  const user = permissionsContext.getUserInContext();
-  let controlledData = null;
+const controlPermissionsData = <T>(data: T & { published?: boolean }, user?: UserSchema) => {
   if (user) {
     if (['admin', 'editor'].includes(user.role)) {
-      controlledData = data;
-    } else {
-      const doc = checkPermissionAccess(
-        data,
-        getUserPermissionIds(user as WithId<UserSchema>),
-        AccessLevels.READ
-      );
-      if (doc.permissions) {
-        controlledData = { ...data, permissions: undefined };
-      }
+      return data;
     }
-  } else if (data.published) {
-    controlledData = { ...data, permissions: undefined };
+
+    return checkPermissionAccess(
+      data,
+      getUserPermissionIds(user as WithId<UserSchema>),
+      AccessLevels.WRITE
+    );
   }
-  return controlledData;
+
+  return { ...data, permissions: undefined };
 };
 
 export class ModelWithPermissions<T> extends OdmModel<T> {
@@ -130,7 +124,9 @@ export class ModelWithPermissions<T> extends OdmModel<T> {
       select,
       options
     );
-    return results.map(data => filterPermissionsData(data, user));
+    return select && select.includes('+permissions')
+      ? results.map(data => filterPermissionsData(data, user))
+      : results;
   }
 
   async count(query: UwaziFilterQuery<T> = {}) {
@@ -142,9 +138,18 @@ export class ModelWithPermissions<T> extends OdmModel<T> {
     return super.get(query, select, options);
   }
 
-  async getById(id: any, select?: any) {
-    const doc = await this.db.findById(id, select ? `${select}, +permissions` : select);
-    return doc ? controlPermissionsData(doc) : null;
+  async getById(id: any, select?: string) {
+    const user = permissionsContext.getUserInContext();
+    const doc = await this.db.findOne(
+      appendPermissionQuery({ _id: id || null }, AccessLevels.READ, user),
+      select
+    );
+
+    if (doc && select && select.includes('+permissions')) {
+      return controlPermissionsData(doc, user);
+    }
+
+    return doc;
   }
 
   async delete(condition: any) {

@@ -18,6 +18,7 @@ describe('ModelWithPermissions', () => {
     permissions: {
       type: 'array',
       items: permissionSchema,
+      select: false,
     },
     fixed: Boolean,
   });
@@ -103,7 +104,7 @@ describe('ModelWithPermissions', () => {
       describe('get', () => {
         let results: TestDoc[];
         beforeEach(async () => {
-          results = await model.get({}, null, {});
+          results = await model.get({}, '+permissions', {});
           results = results.sort((a, b) => a.name!.localeCompare(b.name!));
         });
         it('should return entities shared with the user or his groups and public entities', () => {
@@ -125,6 +126,13 @@ describe('ModelWithPermissions', () => {
           expect(results[4].permissions).toBeUndefined();
           expect(results[5].permissions.length).toBe(1);
         });
+
+        it('should note include the permissions by default', async () => {
+          results = await model.get({}, null, {});
+          results.forEach(result => {
+            expect(result.permissions).toBeUndefined();
+          });
+        });
       });
 
       describe('getById', () => {
@@ -142,6 +150,14 @@ describe('ModelWithPermissions', () => {
         it('should return null if there is no entity', async () => {
           const doc = await model.getById(testingDB.id());
           expect(doc).toBeNull();
+        });
+
+        it('should exclude the permissions property from the non write allowed documents when asked for', async () => {
+          const resultWithPermission = await model.getById(writeDocId, '+permissions');
+          expect(resultWithPermission.permissions.length).toBe(1);
+
+          const resultNoPermissions = await model.getById(readDocId, '+permissions');
+          expect(resultNoPermissions.permissions).toBeUndefined();
         });
       });
 
@@ -208,7 +224,6 @@ describe('ModelWithPermissions', () => {
         it('should return the matched documents no matter their permissions', async () => {
           const results = await model.getUnrestricted({ fixed: true });
           expect(results.length).toBe(7);
-          expect(results[0].permissions.length).toBe(1);
         });
       });
 
@@ -233,7 +248,7 @@ describe('ModelWithPermissions', () => {
 
       describe('get', () => {
         it('should return all matched documents with their permissions', async () => {
-          const results = await model.get({ fixed: true }, null, {});
+          const results = await model.get({ fixed: true }, '+permissions', {});
           expect(results.length).toBe(7);
           expect(results[0].permissions.length).toBe(1);
         });
@@ -241,7 +256,7 @@ describe('ModelWithPermissions', () => {
 
       describe('getById', () => {
         it('should return an entity with its permissions', async () => {
-          const doc = await model.getById(otherOwnerId, '+name');
+          const doc = await model.getById(otherOwnerId, '+name +permissions');
           expect(doc.name).toEqual('no shared with user');
           expect(doc.permissions.length).toBe(1);
         });

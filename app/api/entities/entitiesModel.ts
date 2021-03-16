@@ -26,7 +26,7 @@ const mongoSchema = new mongoose.Schema(
     metadata: mongoose.Schema.Types.Mixed,
     suggestedMetadata: mongoose.Schema.Types.Mixed,
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'users' },
-    permissions: mongoose.Schema.Types.Mixed,
+    permissions: { type: mongoose.Schema.Types.Mixed, select: false },
   },
   { emitIndexErrors: true }
 );
