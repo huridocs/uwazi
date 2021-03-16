@@ -8,7 +8,8 @@ const getDefaultLanguage = async db => {
     .toArray();
 
   const languageKey = settings[0].languages.filter(x => x.default)[0].key;
-  return languages.data.filter(x => x.ISO639_1 === languageKey)[0].franc;
+  const language = languages.data.filter(x => x.ISO639_1 === languageKey)[0];
+  return language ? language.franc : 'other';
 };
 
 export default {

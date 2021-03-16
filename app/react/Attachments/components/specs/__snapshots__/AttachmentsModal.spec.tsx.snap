@@ -120,6 +120,7 @@ exports[`Attachments Modal Should match render of upload form 1`] = `
             className="wrapper-web"
           >
             <LocalForm
+              getDispatch={[Function]}
               initialState={Object {}}
               model="urlForm"
               onSubmit={[Function]}
@@ -301,6 +302,7 @@ exports[`Attachments Modal Should match render of web form 1`] = `
             className="wrapper-web"
           >
             <LocalForm
+              getDispatch={[Function]}
               initialState={Object {}}
               model="urlForm"
               onSubmit={[Function]}
