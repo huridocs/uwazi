@@ -300,14 +300,12 @@ const _sanitizeAggregationsStructure = (aggregations, limit) => {
     }
 
     //permissions
-    if (aggregationKey === 'nestedPermissions') {
-      result.permissions = {
-        buckets: aggregation.filtered.buckets.map(b => ({ key: b.key, filtered: { doc_count: b.filteredByUser.uniqueEntities.doc_count } }))
-      };
+    if (aggregationKey === 'permissions') {
+      aggregation.buckets = aggregation.nestedPermissions.filtered.buckets.map(b => ({ key: b.key, filtered: { doc_count: b.filteredByUser.uniqueEntities.doc_count } }))
     }
 
     //nested
-    if (!aggregation.buckets && aggregationKey !== 'nestedPermissions') {
+    if (!aggregation.buckets && aggregationKey) {
       Object.keys(aggregation).forEach(key => {
         if (aggregation[key].buckets) {
           const buckets = aggregation[key].buckets.map(option => ({
@@ -323,7 +321,7 @@ const _sanitizeAggregationsStructure = (aggregations, limit) => {
       });
     }
 
-    if (aggregation.buckets) {
+    if (aggregation.buckets && aggregationKey) {
       const bucketsWithResults = aggregation.buckets.filter(b => b.filtered.doc_count);
       const missingBucket = bucketsWithResults.find(b => b.key === 'missing');
       aggregation.count = bucketsWithResults.length;
@@ -337,6 +335,7 @@ const _sanitizeAggregationsStructure = (aggregations, limit) => {
 
     result[aggregationKey] = aggregation;
   });
+
   return result;
 };
 
@@ -404,7 +403,7 @@ const processResponse = async (response, templates, dictionaries, language, filt
   });
 
   const sanitizedAggregations = await _sanitizeAggregations(
-    response.body.aggregations.all.permissions,
+    response.body.aggregations.all,
     templates,
     dictionaries,
     language
