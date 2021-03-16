@@ -11,6 +11,7 @@ import { UserGroupSchema } from 'shared/types/userGroupType';
 import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
 import { elasticTesting } from './elastic_testing';
 import { testingTenants } from './testingTenants';
+import { ObjectIdSchema } from 'shared/types/commonTypes';
 
 mongoose.Promise = Promise;
 mongoose.set('useFindAndModify', false);
@@ -62,7 +63,7 @@ const testingDB: {
   mongodb: Db | null;
   connect: (options?: { defaultTenant: boolean } | undefined) => Promise<Connection>;
   disconnect: () => Promise<void>;
-  id: (id?: string | undefined) => ObjectId;
+  id: (id?: string | undefined) => ObjectIdSchema;
   clear: (collections?: string[] | undefined) => Promise<void>;
   clearAllAndLoad: (fixtures: DBFixture, elasticIndex?: string) => Promise<void>;
   dbName: string;

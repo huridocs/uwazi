@@ -4,10 +4,10 @@ import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
 
 import { fixturesTimeOut } from './fixtures_elastic';
 import { permissionsLevelFixtures, users, group1, group2 } from './permissionsLevelFixtures';
+import { Aggregations, AggregationBucket } from 'shared/types/Aggregations';
 
 describe('Permissions aggregations', () => {
-  let response;
-  let aggregations;
+  let buckets: AggregationBucket[];
   const userFactory = new UserInContextMockFactory();
 
   beforeAll(async () => {
@@ -20,26 +20,29 @@ describe('Permissions aggregations', () => {
     userFactory.restore();
   });
 
+  const performSearch = async (query: any, language: string): Promise<AggregationBucket[]> => {
+    const response = await search.search(query, language);
+    const aggs = response.aggregations as Aggregations;
+    return aggs.all.permissions.buckets;
+  };
+
   it('should return aggregations of permission level filtered per current user', async () => {
     userFactory.mock(users.user1);
-    response = await search.search({ permissionsByLevel: true }, 'es');
-    aggregations = response.aggregations.all.permissions.buckets;
-    expect(aggregations.find(a => a.key === 'read').filtered.doc_count).toBe(2);
-    expect(aggregations.find(a => a.key === 'write').filtered.doc_count).toBe(1);
+    buckets = await performSearch({ permissionsByLevel: true }, 'es');
+    expect(buckets.find(a => a.key === 'read')?.filtered.doc_count).toBe(2);
+    expect(buckets.find(a => a.key === 'write')?.filtered.doc_count).toBe(1);
 
     userFactory.mock(users.user2);
-    response = await search.search({ permissionsByLevel: true }, 'es');
-    aggregations = response.aggregations.all.permissions.buckets;
-    expect(aggregations.find(a => a.key === 'read').filtered.doc_count).toBe(1);
-    expect(aggregations.find(a => a.key === 'write').filtered.doc_count).toBe(1);
+    buckets = await performSearch({ permissionsByLevel: true }, 'es');
+    expect(buckets.find(a => a.key === 'read')?.filtered.doc_count).toBe(1);
+    expect(buckets.find(a => a.key === 'write')?.filtered.doc_count).toBe(1);
   });
 
   it('should return aggregations of permission level filtered per current users group', async () => {
-    userFactory.mock({ _id: users.user3._id, groups: [{ _id: group1 }, { _id: group2 }] });
+    userFactory.mock({ ...users.user3, groups: [{ _id: group1, name: 'group1' }, { _id: group2, name: 'group2' }] });
 
-    response = await search.search({ permissionsByLevel: true }, 'es');
-    aggregations = response.aggregations.all.permissions.buckets;
-    expect(aggregations.find(a => a.key === 'read').filtered.doc_count).toBe(3);
-    expect(aggregations.find(a => a.key === 'write').filtered.doc_count).toBe(2);
+    buckets = await performSearch({ permissionsByLevel: true }, 'es');
+    expect(buckets.find(a => a.key === 'read')?.filtered.doc_count).toBe(3);
+    expect(buckets.find(a => a.key === 'write')?.filtered.doc_count).toBe(2);
   });
 });

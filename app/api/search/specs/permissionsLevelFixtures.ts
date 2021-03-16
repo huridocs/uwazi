@@ -1,19 +1,26 @@
 import { testingDB, DBFixture } from 'api/utils/testing_db';
+import { UserSchema } from 'shared/types/userType';
+import { ObjectIdSchema } from 'shared/types/commonTypes';
 
-const users = {
+const users: { [key: string]: UserSchema & { _id: ObjectIdSchema } }= {
   user1: {
-    _id: 'User1',
+    _id: testingDB.id(),
     username: 'User 1',
     role: 'collaborator',
     email: 'one@test.com',
   },
   user2: {
-    _id: 'User2',
+    _id: testingDB.id(),
     username: 'User 2',
     role: 'collaborator',
     email: 'two@test.com',
   },
-  user3: { _id: testingDB.id() },
+  user3: {
+    _id: testingDB.id(),
+    username: 'User 3',
+    role: 'collaborator',
+    email: 'three@test.com',
+  },
 };
 const group1 = testingDB.id();
 const group2 = testingDB.id();
