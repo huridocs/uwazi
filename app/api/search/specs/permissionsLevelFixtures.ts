@@ -2,7 +2,7 @@ import { testingDB, DBFixture } from 'api/utils/testing_db';
 import { UserSchema } from 'shared/types/userType';
 import { ObjectIdSchema } from 'shared/types/commonTypes';
 
-const users: { [key: string]: UserSchema & { _id: ObjectIdSchema } }= {
+const users: { [key: string]: UserSchema & { _id: ObjectIdSchema } } = {
   user1: {
     _id: testingDB.id(),
     username: 'User 1',
