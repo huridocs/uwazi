@@ -642,7 +642,9 @@ describe('syncWorker', () => {
           syncWorker.stop();
         }
         syncCalls += 1;
-        return Promise.reject({ status: 500, message: 'error' }); // eslint-disable-line prefer-promise-reject-errors
+        const responseError = new Error('error');
+        responseError.status = 500;
+        return Promise.reject(responseError);
       });
 
       const interval = 0;
@@ -651,7 +653,7 @@ describe('syncWorker', () => {
       expect(syncWorker.syncronize).toHaveBeenCalledTimes(3);
     });
 
-    it('should login when a sync response its "Unauthorized"', async () => {
+    it('should login when a sync response is "Unauthorized"', async () => {
       spyOn(syncWorker, 'login').and.returnValue(Promise.resolve());
       let syncCalls = 0;
       spyOn(syncWorker, 'syncronize').and.callFake(() => {
@@ -659,33 +661,52 @@ describe('syncWorker', () => {
           syncWorker.stop();
         }
         syncCalls += 1;
-        return Promise.reject({ status: 401, message: 'error' }); // eslint-disable-line prefer-promise-reject-errors
+        const responseError = new Error('error');
+        responseError.status = 401;
+        return Promise.reject(responseError);
       });
 
       const interval = 0;
-      await syncWorker.intervalSync(
-        { url: 'url', username: 'configUser', password: 'configPassword' },
-        interval
-      );
-      expect(syncWorker.login).toHaveBeenCalledWith('url', 'configUser', 'configPassword');
+      const syncConfig = { url: 'url', username: 'configUser', password: 'configPassword' };
+      await syncWorker.intervalSync(syncConfig, interval);
+      expect(syncWorker.login).toHaveBeenCalledWith(syncConfig);
     });
   });
 
   describe('login', () => {
-    it('should login to the target api and set the cookie', async () => {
-      backend.restore();
-      backend.post('http://localhost/api/login', {
-        body: '{}',
-        headers: { 'set-cookie': 'cookie' },
+    const username = 'username';
+    const password = 'password';
+
+    const mockLoginPost = (url, cookie) => {
+      backend.post(url, (_url, opts) => {
+        if (opts.body === JSON.stringify({ username, password })) {
+          return {
+            body: '{}',
+            headers: { 'set-cookie': cookie },
+          };
+        }
+
+        throw new Error('Username and Password passed incorrectly');
       });
-      spyOn(request, 'cookie');
-      await syncWorker.login('http://localhost', 'username', 'password');
-      expect(request.cookie).toHaveBeenCalledWith('cookie');
+    };
+
+    it('should login to the target api and store the login credentials for that service', async () => {
+      backend.restore();
+
+      mockLoginPost('http://localhost/api/login', 'cookie1');
+      mockLoginPost('http://anotherhost/api/login', 'cookie2');
+
+      await syncWorker.login({ url: 'http://localhost', name: 'service1', username, password });
+      await syncWorker.login({ url: 'http://anotherhost', name: 'service2', username, password });
+
+      expect(errorLog.error).not.toHaveBeenCalled();
+      expect(syncWorker.cookies.service1).toBe('cookie1');
+      expect(syncWorker.cookies.service2).toBe('cookie2');
     });
 
     it('should catch errors and log them', async () => {
       spyOn(request, 'post').and.callFake(() => Promise.reject(new Error('post failed')));
-      await syncWorker.login('http://localhost', 'username', 'password');
+      await syncWorker.login({ url: 'http://localhost', name: 'service', username, password });
       expect(errorLog.error.calls.argsFor(0)[0]).toMatch('post failed');
     });
   });

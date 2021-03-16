@@ -20,6 +20,7 @@ const updateSyncs = async (name, lastSync) =>
 
 export default {
   stopped: false,
+  cookies: {},
 
   async syncronize({ url, name, config: _config, batchSize }) {
     const config = await syncConfig(_config, name);
@@ -58,7 +59,7 @@ export default {
       await this.syncronize(config);
     } catch (e) {
       if (e.status === 401) {
-        await this.login(config.url, config.username, config.password);
+        await this.login(config);
       } else {
         errorLog.error(prettifyError(e).prettyMessage);
       }
@@ -67,10 +68,10 @@ export default {
     await this.intervalSync(config, interval);
   },
 
-  async login(url, username, password) {
+  async login({ url, username, password, name }) {
     try {
       const response = await request.post(urljoin(url, 'api/login'), { username, password });
-      request.cookie(response.cookie);
+      this.cookies[name] = response.cookie;
     } catch (e) {
       errorLog.error(prettifyError(e).prettyMessage);
     }
