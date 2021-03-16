@@ -90,6 +90,19 @@ describe('permissions routes', () => {
           .send(permissionsData);
         expect(response.unauthorized).toBe(true);
       });
+
+      it.each(['admin', 'editor', 'collaborator'])('should authorized the role %s', async role => {
+        user = { username: 'user 1', role };
+        const permissionsData = {
+          ids: ['shared1'],
+          permissions: [{ refId: 'user1', type: 'user', level: 'read' }],
+        };
+        const response = await request(app)
+          .post('/api/entities/permissions')
+          .set('X-Requested-With', 'XMLHttpRequest')
+          .send(permissionsData);
+        expect(response.status).toBe(200);
+      });
     });
 
     describe('Error Handling', () => {

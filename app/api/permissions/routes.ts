@@ -8,7 +8,7 @@ import { permissionsDataSchema } from 'shared/types/permissionSchema';
 export const permissionRoutes = (app: Application) => {
   app.post(
     '/api/entities/permissions',
-    needsAuthorization(['admin', 'editor']),
+    needsAuthorization(['admin', 'editor', 'collaborator']),
     validation.validateRequest({
       properties: {
         body: {
