@@ -117,6 +117,34 @@ describe('FiltersFromProperties', () => {
       expect(component.get(0).props.options[0].label).toBe('translatedOption');
       expect(component.get(1).props.options[0].label).toBe('translatedOption');
     });
+
+    it('should translate the options of filter with nested thesauris', () => {
+      props.properties = [
+        {
+          content: 'thesaurus1',
+          name: 'selectFilter',
+          label: 'selectLabel',
+          type: 'select',
+          options: [{ label: 'option1', options: [{ label: 'suboption1' }] }],
+        },
+        {
+          content: 'thesaurus2',
+          name: 'relationshipFilter',
+          label: 'relationshipLabel',
+          type: 'relationship',
+          options: [{ label: 'option2', options: [{ label: 'suboption2' }] }],
+        },
+      ];
+      props.translationContext = 'oneContext';
+      t.mockImplementation(() => 'translatedOption');
+      const component = shallow(<FiltersFromProperties {...props} />).find(SelectFilter);
+      const _text = undefined;
+      const returnComponent = false;
+      expect(t).toHaveBeenCalledWith('thesaurus1', 'suboption1', _text, returnComponent);
+      expect(t).toHaveBeenCalledWith('thesaurus2', 'suboption2', _text, returnComponent);
+      expect(component.get(0).props.options[0].options[0].label).toBe('translatedOption');
+      expect(component.get(1).props.options[0].options[0].label).toBe('translatedOption');
+    });
   });
 
   describe('when type is date, multidate, multidaterange or daterange', () => {
