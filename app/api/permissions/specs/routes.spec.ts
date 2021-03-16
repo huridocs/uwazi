@@ -4,7 +4,7 @@ import { setUpApp } from 'api/utils/testingRoutes';
 import { permissionRoutes } from 'api/permissions/routes';
 import { entitiesPermissions } from 'api/permissions/entitiesPermissions';
 import { collaborators } from 'api/permissions/collaborators';
-import { testingTenants } from 'api/utils/testingTenants';
+import testingDB from 'api/utils/testing_db';
 
 jest.mock(
   '../../utils/languageMiddleware.ts',
@@ -28,6 +28,14 @@ describe('permissions routes', () => {
     }
   );
 
+  beforeAll(async () => {
+    await testingDB.connect();
+  });
+
+  afterAll(async () => {
+    await testingDB.disconnect();
+  });
+
   describe('entities', () => {
     describe('POST', () => {
       beforeEach(() => {
@@ -50,7 +58,6 @@ describe('permissions routes', () => {
       it('should invalidate if body does not fit the expected schema', async () => {
         user = { username: 'user 1', role: 'admin' };
         const permissionsData = { entities: [], permissions: [{}] };
-        testingTenants.mockCurrentTenant({ name: 'default' });
         const response = await request(app)
           .post('/api/entities/permissions')
           .set('X-Requested-With', 'XMLHttpRequest')
@@ -86,9 +93,6 @@ describe('permissions routes', () => {
     });
 
     describe('Error Handling', () => {
-      beforeEach(() => {
-        testingTenants.mockCurrentTenant({ name: 'default' });
-      });
       it('should handle errors on POST', async () => {
         spyOn(entitiesPermissions, 'set').and.throwError('error on save');
         user = { username: 'user 1', role: 'admin' };

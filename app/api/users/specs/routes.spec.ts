@@ -4,7 +4,7 @@ import request from 'supertest';
 import { NextFunction, Request, Response } from 'express';
 import { UserRole } from 'shared/types/userSchema';
 import { UserSchema } from 'shared/types/userType';
-import { testingTenants } from 'api/utils/testingTenants';
+import testingDB from 'api/utils/testing_db';
 import userRoutes from '../routes.js';
 import users from '../users.js';
 
@@ -41,6 +41,14 @@ describe('users routes', () => {
     next();
   });
 
+  beforeAll(async () => {
+    await testingDB.connect();
+  });
+
+  afterAll(async () => {
+    await testingDB.disconnect();
+  });
+
   beforeEach(() => {
     currentUser = {
       _id: 'admin1',
@@ -70,10 +78,6 @@ describe('users routes', () => {
       });
 
       describe('validation', () => {
-        beforeAll(() => {
-          testingTenants.mockCurrentTenant({ name: 'default' });
-        });
-
         it.each(invalidUserProperties)(
           'should invalidate if there is an invalid property',
           async ({ field, value, dataPath, keyword }) => {
@@ -107,10 +111,6 @@ describe('users routes', () => {
       });
 
       describe('validation', () => {
-        beforeAll(() => {
-          testingTenants.mockCurrentTenant({ name: 'default' });
-        });
-
         it.each(invalidUserProperties)(
           'should invalidate if there is an invalid property',
           async ({ field, value, dataPath, keyword }) => {
@@ -129,10 +129,6 @@ describe('users routes', () => {
     });
 
     describe('/recoverpassword', () => {
-      beforeAll(() => {
-        testingTenants.mockCurrentTenant({ name: 'default' });
-      });
-
       it.each([
         { value: undefined, keyword: 'required' },
         { value: 'a', keyword: 'minLength' },
@@ -160,7 +156,6 @@ describe('users routes', () => {
 
       it('should return an error if recover password fails', async () => {
         spyOn(users, 'recoverPassword').and.throwError('error on recoverPassword');
-        testingTenants.mockCurrentTenant({ name: 'default' });
         const response = await request(app)
           .post('/api/recoverpassword')
           .set('X-Requested-With', 'XMLHttpRequest')
