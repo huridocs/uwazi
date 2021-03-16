@@ -30,10 +30,22 @@ export const FiltersFromProperties = ({
       };
 
       const propertyOptions = property.options
-        ? property.options.map(option => ({
-            ...option,
-            label: t(property.content, option.label, undefined, false),
-          }))
+        ? property.options.map(option => {
+            const finalTranslatedOption = {
+              ...option,
+              label: t(property.content, option.label, undefined, false),
+            };
+
+            if (option.options) {
+              const translatedSubOptions = option.options.map(subOption => ({
+                ...subOption,
+                label: t(property.content, subOption.label, undefined, false),
+              }));
+              finalTranslatedOption.options = translatedSubOptions;
+            }
+
+            return finalTranslatedOption;
+          })
         : [];
 
       let filter = <TextFilter {...commonProps} />;
