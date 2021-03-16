@@ -32,14 +32,12 @@ describe('ModelWithPermissions', () => {
       name: 'readDoc',
       published: false,
       permissions: [{ refId: 'user1', type: PermissionType.USER, level: AccessLevels.READ }],
-      permissions: [{ _id: 'user1', type: PermissionType.USER, level: AccessLevels.READ }],
       fixed: true,
     },
     {
       _id: writeDocId,
       name: 'writeDoc',
       permissions: [{ refId: 'user1', type: PermissionType.USER, level: AccessLevels.WRITE }],
-      permissions: [{ _id: 'user1', type: PermissionType.USER, level: AccessLevels.WRITE }],
       fixed: true,
     },
     {
@@ -52,7 +50,6 @@ describe('ModelWithPermissions', () => {
       _id: otherOwnerId,
       name: 'no shared with user',
       permissions: [{ refId: 'user2', type: PermissionType.USER, level: AccessLevels.WRITE }],
-      permissions: [{ _id: 'user2', type: PermissionType.USER, level: AccessLevels.WRITE }],
       fixed: true,
     },
     {
@@ -64,14 +61,12 @@ describe('ModelWithPermissions', () => {
       _id: testingDB.id(),
       name: 'shared with group',
       permissions: [{ refId: 'group2', type: PermissionType.GROUP, level: AccessLevels.READ }],
-      permissions: [{ _id: 'group2', type: PermissionType.GROUP, level: AccessLevels.READ }],
       fixed: true,
     },
     {
       _id: deleteDocId,
       name: 'docToDelete',
       permissions: [{ refId: 'user1', type: PermissionType.USER, level: AccessLevels.WRITE }],
-      permissions: [{ _id: 'user1', type: PermissionType.USER, level: AccessLevels.WRITE }],
     },
     {
       _id: testingDB.id(),
