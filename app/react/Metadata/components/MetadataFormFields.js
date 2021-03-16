@@ -47,10 +47,11 @@ export const translateOptions = thesauri =>
 export class MetadataFormFields extends Component {
   constructor(props) {
     super(props);
-    this.state = { openMediaModal: false };
+    this.state = { openMediaModal: false, selectedAttachmentId: null };
 
     this.handleOpenMediaModal = this.handleOpenMediaModal.bind(this);
     this.handleCloseMediaModal = this.handleCloseMediaModal.bind(this);
+    this.handleImageChange = this.handleImageChange.bind(this);
   }
 
   handleOpenMediaModal() {
@@ -59,6 +60,10 @@ export class MetadataFormFields extends Component {
 
   handleCloseMediaModal() {
     this.setState({ openMediaModal: false });
+  }
+
+  handleImageChange(id) {
+    this.setState({ selectedAttachmentId: id });
   }
 
   getField(property, _model, thesauris) {
@@ -168,7 +173,12 @@ export class MetadataFormFields extends Component {
               <Icon icon="plus" />
               <Translate>Select image</Translate>
             </button>
-            <MediaModal isOpen={this.state.openMediaModal} onClose={this.handleCloseMediaModal} />
+            <MediaModal
+              isOpen={this.state.openMediaModal}
+              onClose={this.handleCloseMediaModal}
+              onChange={this.handleImageChange}
+              selectedId={this.state.selectedAttachmentId}
+            />
           </div>
         );
       case 'preview':
