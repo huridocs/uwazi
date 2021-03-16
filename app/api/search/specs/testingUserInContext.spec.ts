@@ -16,10 +16,6 @@ describe('UserInContextMockFactory', () => {
     factory = new UserInContextMockFactory();
   });
 
-  it('should be instantiable', () => {
-    expect(factory).toBeInstanceOf(UserInContextMockFactory);
-  });
-
   it('should mock the getUserInContext function to return user', () => {
     factory.mock(user);
     expect(permissionsContext.getUserInContext()).toBe(user);

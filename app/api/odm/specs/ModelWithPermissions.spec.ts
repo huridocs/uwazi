@@ -19,6 +19,7 @@ describe('ModelWithPermissions', () => {
       type: 'array',
       items: permissionSchema,
     },
+    fixed: Boolean,
   });
   const readDocId = testingDB.id();
   const writeDocId = testingDB.id();
@@ -31,41 +32,52 @@ describe('ModelWithPermissions', () => {
       name: 'readDoc',
       published: false,
       permissions: [{ refId: 'user1', type: PermissionType.USER, level: AccessLevels.READ }],
+      permissions: [{ _id: 'user1', type: PermissionType.USER, level: AccessLevels.READ }],
+      fixed: true,
     },
     {
       _id: writeDocId,
       name: 'writeDoc',
       permissions: [{ refId: 'user1', type: PermissionType.USER, level: AccessLevels.WRITE }],
+      permissions: [{ _id: 'user1', type: PermissionType.USER, level: AccessLevels.WRITE }],
+      fixed: true,
     },
     {
       _id: public1Id,
       name: 'public 1',
       published: true,
+      fixed: true,
     },
     {
       _id: otherOwnerId,
       name: 'no shared with user',
       permissions: [{ refId: 'user2', type: PermissionType.USER, level: AccessLevels.WRITE }],
+      permissions: [{ _id: 'user2', type: PermissionType.USER, level: AccessLevels.WRITE }],
+      fixed: true,
     },
     {
       _id: testingDB.id(),
       name: 'no shared',
-      published: false,
+      fixed: true,
     },
     {
       _id: testingDB.id(),
       name: 'shared with group',
       permissions: [{ refId: 'group2', type: PermissionType.GROUP, level: AccessLevels.READ }],
+      permissions: [{ _id: 'group2', type: PermissionType.GROUP, level: AccessLevels.READ }],
+      fixed: true,
     },
     {
       _id: deleteDocId,
       name: 'docToDelete',
       permissions: [{ refId: 'user1', type: PermissionType.USER, level: AccessLevels.WRITE }],
+      permissions: [{ _id: 'user1', type: PermissionType.USER, level: AccessLevels.WRITE }],
     },
     {
       _id: testingDB.id(),
       name: 'public 2',
       published: true,
+      fixed: true,
     },
   ];
   beforeAll(async () => {
@@ -140,13 +152,19 @@ describe('ModelWithPermissions', () => {
 
       describe('save', () => {
         it('should save the data if user has permissions on the document', async () => {
-          const saved = await model.save({ _id: writeDocId.toString(), name: 'writeDocUpdated' });
+          const saved = await model.save({
+            _id: writeDocId.toString(),
+            name: 'writeDocUpdated',
+          });
           expect(saved.name).toEqual('writeDocUpdated');
         });
 
         it('should not save the data if user has not permissions on the document', async () => {
           try {
-            await model.save({ _id: readDocId.toString(), name: 'readDocUpdated' });
+            await model.save({
+              _id: readDocId.toString(),
+              name: 'readDocUpdated',
+            });
             fail('Should throw error');
           } catch (e) {
             expect(e.message).toContain('not updated');
@@ -159,6 +177,22 @@ describe('ModelWithPermissions', () => {
             expect.objectContaining({
               name: 'newDoc',
               permissions: [{ refId: 'user1', type: 'user', level: 'write' }],
+            })
+          );
+        });
+
+        it('should keep the existing permissions for a cloned entity with permissions ', async () => {
+          const permissions = [
+            { _id: 'user3', type: PermissionType.USER, level: AccessLevels.READ },
+          ];
+          const saved = await model.save({
+            name: 'clonedDoc',
+            permissions,
+          });
+          expect(saved).toEqual(
+            expect.objectContaining({
+              name: 'clonedDoc',
+              permissions,
             })
           );
         });
@@ -177,16 +211,16 @@ describe('ModelWithPermissions', () => {
 
       describe('getUnrestricted', () => {
         it('should return the matched documents no matter their permissions', async () => {
-          const results = await model.getUnrestricted();
-          expect(results.length).toBe(8);
+          const results = await model.getUnrestricted({ fixed: true });
+          expect(results.length).toBe(7);
           expect(results[0].permissions.length).toBe(1);
         });
       });
 
       describe('count', () => {
         it('should return the count of entities shared with the user or his groups and public entities', async () => {
-          const result = await model.count({});
-          expect(result).toBe(6);
+          const result = await model.count({ fixed: true });
+          expect(result).toBe(5);
         });
       });
     });
@@ -204,8 +238,8 @@ describe('ModelWithPermissions', () => {
 
       describe('get', () => {
         it('should return all matched documents with their permissions', async () => {
-          const results = await model.get({}, null, {});
-          expect(results.length).toBe(8);
+          const results = await model.get({ fixed: true }, null, {});
+          expect(results.length).toBe(7);
           expect(results[0].permissions.length).toBe(1);
         });
       });
@@ -220,8 +254,8 @@ describe('ModelWithPermissions', () => {
 
       describe('count', () => {
         it('should return the count of all entities', async () => {
-          const result = await model.count({});
-          expect(result).toBe(8);
+          const result = await model.count({ fixed: true });
+          expect(result).toBe(7);
         });
       });
     });
@@ -229,7 +263,6 @@ describe('ModelWithPermissions', () => {
 
   describe('no logged user', () => {
     beforeAll(() => {
-      // @ts-ignore
       jest.spyOn(permissionsContext, 'getUserInContext').mockReturnValue(undefined);
     });
 

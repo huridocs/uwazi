@@ -27,7 +27,6 @@ describe('search', () => {
 
   describe('searchSnippets', () => {
     it('perform a search on fullText of the document passed and return the snippets', async () => {
-      userFactory.mock();
       const snippets = await search.searchSnippets('spanish', ids.batmanFinishes, 'es');
 
       expect(snippets.fullText.length).toBe(1);
@@ -37,7 +36,6 @@ describe('search', () => {
     });
 
     it('perform a search on metadata and fullText and return the snippets', async () => {
-      userFactory.mock(editorUser);
       const snippets = await search.searchSnippets(
         'gargoyles',
         ids.metadataSnippets,
@@ -59,7 +57,6 @@ describe('search', () => {
     });
 
     it('should include unpublished documents if logged in', async () => {
-      userFactory.mock(editorUser);
       const snippets = await search.searchSnippets(
         'unpublished',
         'unpublishedSharedId',
@@ -312,7 +309,6 @@ describe('search', () => {
       'en'
     );
 
-    userFactory.mock(editorUser);
     const unpublished = await search.search(
       { types: [ids.templateMetadata1, ids.templateMetadata2], unpublished: true },
       'en',
@@ -330,7 +326,6 @@ describe('search', () => {
   });
 
   it('should filter by daterange metadata', async () => {
-    userFactory.mock(editorUser);
     let entities = await search.search(
       {
         types: [ids.templateMetadata1],
@@ -413,7 +408,6 @@ describe('search', () => {
         { types: [ids.templateMetadata1, ids.templateMetadata2] },
         'en'
       );
-      userFactory.mock(editorUser);
       const template1Unpublished = await search.search(
         { types: [ids.templateMetadata1], unpublished: true },
         'en',
@@ -752,7 +746,6 @@ describe('search', () => {
   });
 
   it('should allow including unpublished documents if user', async () => {
-    userFactory.mock(editorUser);
     const { rows } = await search.search(
       {
         searchTerm: '',
@@ -831,7 +824,6 @@ describe('search', () => {
 
   describe('autocompleteAggregations()', () => {
     it('should return a list of options matching by label and options related to the matching one', async () => {
-      userFactory.mock(editorUser);
       const query = {
         types: [ids.templateMetadata1, ids.templateMetadata2],
         filters: {},

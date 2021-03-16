@@ -6,7 +6,7 @@ import { PermissionSchema } from 'shared/types/permissionType';
 import { ObjectIdSchema } from 'shared/types/commonTypes';
 import { createUpdateLogHelper } from './logHelper';
 import { DataType, OdmModel } from './model';
-import { models, UwaziFilterQuery } from './models';
+import { models, UwaziFilterQuery, WithId } from './models';
 
 export type PermissionsUwaziFilterQuery<T> = UwaziFilterQuery<T> & {
   published?: boolean;
@@ -30,13 +30,13 @@ const appendPermissionData = <T>(data: DataType<T>, user: UserSchema | undefined
   };
 };
 
-export const getUserPermissionIds = (user: UserSchema) => {
+export const getUserPermissionIds = (user: WithId<UserSchema>) => {
   const userIds = user.groups ? user.groups.map(group => group._id.toString()) : [];
-  userIds.push(user._id!.toString());
+  userIds.push(user._id.toString());
   return userIds;
 };
 
-const addPermissionsCondition = (user: UserSchema, level: AccessLevels) => {
+const addPermissionsCondition = (user: WithId<UserSchema>, level: AccessLevels) => {
   let permissionCond = {};
   if (!['admin', 'editor'].includes(user.role)) {
     const userIds = getUserPermissionIds(user);
@@ -56,13 +56,11 @@ const appendPermissionQuery = <T>(
   level: AccessLevels,
   user: UserSchema | undefined
 ) => {
-  let permissionCond;
+  let permissionCond: {} = { _id: null };
   if (user) {
-    permissionCond = addPermissionsCondition(user, level);
+    permissionCond = addPermissionsCondition(user as WithId<UserSchema>, level);
   } else if (level === AccessLevels.READ) {
     permissionCond = { published: true };
-  } else {
-    permissionCond = { _id: null };
   }
   return { ...query, ...permissionCond };
 };
@@ -88,7 +86,7 @@ const filterPermissionsData = <T>(data: T[], user: UserSchema | undefined) => {
   let filteredData = data;
   if (user && !['admin', 'editor'].includes(user.role)) {
     if (Array.isArray(data) && data.length > 0) {
-      const userIds = getUserPermissionIds(user);
+      const userIds = getUserPermissionIds(user as WithId<UserSchema>);
       filteredData = data.map(elem => checkPermissionAccess(elem, userIds));
     }
   }
@@ -102,7 +100,11 @@ const controlPermissionsData = <T>(data: T & { published?: boolean }) => {
     if (['admin', 'editor'].includes(user.role)) {
       controlledData = data;
     } else {
-      const doc = checkPermissionAccess(data, getUserPermissionIds(user), AccessLevels.READ);
+      const doc = checkPermissionAccess(
+        data,
+        getUserPermissionIds(user as WithId<UserSchema>),
+        AccessLevels.READ
+      );
       if (doc.permissions) {
         controlledData = { ...data, permissions: undefined };
       }
@@ -114,9 +116,9 @@ const controlPermissionsData = <T>(data: T & { published?: boolean }) => {
 };
 
 export class ModelWithPermissions<T> extends OdmModel<T> {
-  async save(data: DataType<T>) {
+  async save(data: DataType<T & { permissions?: PermissionSchema[] }>) {
     const user = permissionsContext.getUserInContext();
-    return data._id
+    return data._id || data.permissions
       ? super.save(data, appendPermissionQuery({ _id: data._id }, AccessLevels.WRITE, user))
       : super.save(appendPermissionData(data, user));
   }

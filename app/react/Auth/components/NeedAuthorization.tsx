@@ -2,15 +2,17 @@ import React, { useMemo } from 'react';
 import { connect } from 'react-redux';
 import { ObjectIdSchema } from 'shared/types/commonTypes';
 import { PermissionSchema } from 'shared/types/permissionType';
+import { EntitySchema } from 'shared/types/entityType';
+import { UserSchema } from 'shared/types/userType';
 
 type PropTypes = {
   children: React.ReactNode;
   roles?: string[];
-  orWriteAccessTo?: any[];
-  user: any;
+  orWriteAccessTo?: EntitySchema[];
+  user: UserSchema;
 };
 
-const checkWritePermissions = (entities: any[] = [], user?: any) => {
+const checkWritePermissions = (entities: EntitySchema[] = [], user?: any) => {
   let granted = user !== undefined && user.has('role') && entities.length > 0;
   let i = 0;
   while (granted && i < entities.length) {

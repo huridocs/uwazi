@@ -34,7 +34,6 @@ export class Item extends Component {
       additionalIcon,
       additionalText,
       buttons,
-      user,
     } = this.props;
 
     const doc = this.props.doc.toJS();
