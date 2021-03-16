@@ -372,8 +372,19 @@ export default function() {
           : [];
         permissionTargetIds.push(user._id.toString());
         baseQuery.query.bool.filter.push({
-          terms: {
-            'permissions.refId': permissionTargetIds,
+          nested: {
+            path: 'permissions',
+            query: {
+              bool: {
+                must: [
+                  {
+                    terms: {
+                      'permissions.refId': permissionTargetIds,
+                    },
+                  },
+                ],
+              },
+            },
           },
         });
       }

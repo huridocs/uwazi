@@ -33,8 +33,8 @@ export const permissionsLevelFixtures: DBFixture = {
       language: 'es',
       published: true,
       permissions: [
-        { level: 'read', _id: users.user1._id, type: 'user' },
-        { level: 'read', _id: group1, type: 'group' },
+        { level: 'read', refId: users.user1._id, type: 'user' },
+        { level: 'read', refId: group1, type: 'group' },
       ],
     },
     {
@@ -43,8 +43,8 @@ export const permissionsLevelFixtures: DBFixture = {
       language: 'es',
       published: true,
       permissions: [
-        { level: 'read', _id: users.user1._id, type: 'user' },
-        { level: 'read', _id: group1, type: 'group' },
+        { level: 'read', refId: users.user1._id, type: 'user' },
+        { level: 'read', refId: group1, type: 'group' },
       ],
     },
     {
@@ -53,10 +53,10 @@ export const permissionsLevelFixtures: DBFixture = {
       language: 'es',
       published: true,
       permissions: [
-        { level: 'write', _id: users.user1._id, type: 'user' },
-        { level: 'read', _id: users.user2._id, type: 'user' },
-        { level: 'write', _id: users.user3._id, type: 'user' },
-        { level: 'read', _id: group1, type: 'group' },
+        { level: 'write', refId: users.user1._id, type: 'user' },
+        { level: 'read', refId: users.user2._id, type: 'user' },
+        { level: 'write', refId: users.user3._id, type: 'user' },
+        { level: 'read', refId: group1, type: 'group' },
       ],
     },
     {
@@ -65,10 +65,10 @@ export const permissionsLevelFixtures: DBFixture = {
       language: 'en',
       published: true,
       permissions: [
-        { level: 'write', _id: users.user1._id, type: 'user' },
-        { level: 'read', _id: users.user2._id, type: 'user' },
-        { level: 'write', _id: users.user3._id, type: 'user' },
-        { level: 'read', _id: group1, type: 'group' },
+        { level: 'write', refId: users.user1._id, type: 'user' },
+        { level: 'read', refId: users.user2._id, type: 'user' },
+        { level: 'write', refId: users.user3._id, type: 'user' },
+        { level: 'read', refId: group1, type: 'group' },
       ],
     },
     {
@@ -77,10 +77,10 @@ export const permissionsLevelFixtures: DBFixture = {
       language: 'es',
       published: true,
       permissions: [
-        { level: 'write', _id: users.user2._id, type: 'user' },
-        { level: 'write', _id: users.user3._id, type: 'user' },
-        { level: 'write', _id: group2, type: 'group' },
-        { level: 'write', _id: group1, type: 'group' },
+        { level: 'write', refId: users.user2._id, type: 'user' },
+        { level: 'write', refId: users.user3._id, type: 'user' },
+        { level: 'write', refId: group2, type: 'group' },
+        { level: 'write', refId: group1, type: 'group' },
       ],
     },
   ],

@@ -1,3 +1,4 @@
+import { stringify } from 'query-string';
 import { preloadOptionsSearch } from 'shared/config';
 
 const aggregation = (key, should, filters) => ({
@@ -181,19 +182,15 @@ export const permissionsLevelAgreggations = baseQuery => {
   const filters = extractFilters(baseQuery, path);
   const { should } = baseQuery.query.bool;
 
-  const baseFilters = filters.filter((f) => {
-    return !(f.terms && f.terms['permissions._id']);
-  });
+  const baseFilters = filters.filter(f => !(f.nested && f.nested.path === 'permissions'));
 
-  const permissionsFilter = filters.filter((f) => {
-    return (f.terms && f.terms['permissions._id']);
-  });
+  const permissionsFilter = filters.filter(f => f.nested && f.nested.path === 'permissions');
 
   const aggs = {
     filter: {
       bool: {
         should,
-        filter: baseFilters
+        filter: baseFilters,
       },
     },
     aggregations: {
@@ -209,20 +206,20 @@ export const permissionsLevelAgreggations = baseQuery => {
               filteredByUser: {
                 filter: {
                   bool: {
-                    filter: permissionsFilter
-                  }
+                    filter: permissionsFilter[0].nested.query.bool.must,
+                  },
                 },
                 aggregations: {
                   uniqueEntities: {
-                    reverse_nested: {}
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
+                    reverse_nested: {},
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
   };
 
   return aggs;
