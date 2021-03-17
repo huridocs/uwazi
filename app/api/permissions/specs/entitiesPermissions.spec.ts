@@ -9,6 +9,10 @@ describe('permissions', () => {
     await testingDB.clearAllAndLoad(fixtures);
   });
 
+  afterAll(async () => {
+    await testingDB.disconnect();
+  });
+
   describe('set entities permissions', () => {
     it('should update the specified entities with the passed permissions in all entities languages', async () => {
       const permissionsData = {
