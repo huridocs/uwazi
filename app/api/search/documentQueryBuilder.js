@@ -241,16 +241,19 @@ export default function() {
       Object.keys(filters).forEach(key => {
         if (filters[key].values.length) {
           if (key === 'permissions.level') {
-
             const user = permissionsContext.getUserInContext();
             const permissionTargetIds = user.groups
               ? user.groups.map(group => group._id.toString())
               : [];
             permissionTargetIds.push(user._id.toString());
 
-            const permissionsFilter = baseQuery.query.bool.filter.find(f => f.nested && f.nested.path === 'permissions');
+            const permissionsFilter = baseQuery.query.bool.filter.find(
+              f => f.nested && f.nested.path === 'permissions'
+            );
             if (permissionsFilter) {
-              permissionsFilter.nested.query.bool.must.push({ terms: { 'permissions.level': filters[key].values } })
+              permissionsFilter.nested.query.bool.must.push({
+                terms: { 'permissions.level': filters[key].values },
+              });
             } else {
               addFilter({
                 nested: {
@@ -274,8 +277,7 @@ export default function() {
                 },
               });
             }
-          }
-          else {
+          } else {
             addFilter({
               terms: { [key]: filters[key].values },
             });
