@@ -186,9 +186,7 @@ export const permissionsLevelAgreggations = baseQuery => {
   const baseFilters = filters.filter(f => !(f.nested && f.nested.path === 'permissions'));
 
   const user = permissionsContext.getUserInContext();
-  const permissionTargetIds = user.groups
-    ? user.groups.map(group => group._id.toString())
-    : [];
+  const permissionTargetIds = user.groups ? user.groups.map(group => group._id.toString()) : [];
   permissionTargetIds.push(user._id.toString());
 
   const aggs = {
@@ -217,7 +215,7 @@ export const permissionsLevelAgreggations = baseQuery => {
                           'permissions.refId': permissionTargetIds,
                         },
                       },
-                    ]
+                    ],
                   },
                 },
                 aggregations: {

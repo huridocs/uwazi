@@ -19,7 +19,7 @@ export const searchParamsSchema = {
                 values: { type: 'array', items: [{ type: 'boolean' }] },
               },
             },
-            "permissions.level": {
+            'permissions.level': {
               type: 'object',
               additionalProperties: false,
               properties: {
