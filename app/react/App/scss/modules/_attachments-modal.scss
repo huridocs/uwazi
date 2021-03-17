@@ -60,6 +60,7 @@
 
   &__content {
     flex: 1;
+    overflow: hidden;
 
     > div {
       display: flex;
@@ -90,9 +91,11 @@
 
   &__tabs-content {
     flex: 1;
+    overflow: auto;
+    overflow-x: hidden;
 
     .tab-content {
-      padding: 24px 0;
+      padding: 24px 0 0 0;
       height: 100%;
 
       &.centered {
@@ -136,11 +139,22 @@
         }
 
         &-item {
-          width: 25%;
-          flex-basis: 25%;
+          width: 100%;
+          flex-basis: 100%;
           margin-bottom: 15px;
           padding-left: 10px;
           padding-right: 10px;
+          cursor: pointer;
+
+          @media (min-width: 768px) {
+            width: 33.3333%;
+            flex-basis: 33.3333%;
+          }
+
+          @media (min-width: 1024px) {
+            width: 25%;
+            flex-basis: 25%;
+          }
         }
 
         &-card {
@@ -148,6 +162,11 @@
           border: 1px solid #dddddd;
           box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.15);
           padding: 6px;
+
+          &.active {
+            border-color: $c-type-9;
+            border-width: 2px;
+          }
 
           &-header {
             h5 {
@@ -166,7 +185,7 @@
           }
 
           &-content {
-            padding-top: 100%;
+            padding-top: 85%;
             position: relative;
             overflow: hidden;
 
@@ -182,6 +201,25 @@
                 object-fit: contain;
                 object-position: center;
                 width: 100%;
+                height: 100%;
+                background-color: #fafafa;
+              }
+
+              .video-container {
+                height: 100%;
+
+                > div:first-child {
+                  padding-bottom: initial;
+                  overflow: initial;
+                  height: 100%;
+                  display: flex;
+                  margin-top: 0 !important;
+                  margin-bottom: 0 !important;
+
+                  .react-player {
+                    height: auto !important;
+                  }
+                }
               }
             }
           }

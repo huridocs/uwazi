@@ -56,7 +56,10 @@ export const MediaModalCmp = ({
           </div>
 
           <div className="attachments-modal__tabs-content">
-            <TabContent for="selectFromFiles" className="tab-content">
+            <TabContent
+              for="selectFromFiles"
+              className="tab-content attachments-modal__tabs-content"
+            >
               <div className="media-grid container">
                 <div className="row">
                   {attachments.map((attachment, key) => (
@@ -65,7 +68,11 @@ export const MediaModalCmp = ({
                       key={`attachment_${key}`}
                       onClick={handleAttachmentClick(attachment._id!)}
                     >
-                      <div className="media-grid-card">
+                      <div
+                        className={`${'media-grid-card'} ${
+                          attachment._id === selectedId ? 'active' : ''
+                        }`}
+                      >
                         <div className="media-grid-card-header">
                           <h5>{attachment.originalname}</h5>
                           {!!attachment.size && <span>{filesize(attachment.size)}</span>}
