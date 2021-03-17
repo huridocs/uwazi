@@ -31,7 +31,7 @@ const appendPermissionData = <T>(data: DataType<T>, user: UserSchema | undefined
 };
 
 const requestingPermissions = (select: any) =>
-  select && select.includes && select.includes('+permissions');
+  select && ((select.includes && select.includes('+permissions')) || select.permissions === 1);
 
 export const getUserPermissionIds = (user: WithId<UserSchema>) => {
   const userIds = user.groups ? user.groups.map(group => group._id.toString()) : [];

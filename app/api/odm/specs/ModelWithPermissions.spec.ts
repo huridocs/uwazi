@@ -102,33 +102,41 @@ describe('ModelWithPermissions', () => {
       });
 
       describe('get', () => {
-        let results: TestDoc[];
-        beforeEach(async () => {
-          results = await model.get({}, '+permissions', {});
-          results = results.sort((a, b) => a.name!.localeCompare(b.name!));
-        });
-        it('should return entities shared with the user or his groups and public entities', () => {
-          expect(results.length).toBe(6);
+        describe('+permissions', () => {
+          let results: TestDoc[];
+          beforeEach(async () => {
+            results = await model.get({}, '+permissions', {});
+            results = results.sort((a, b) => a.name!.localeCompare(b.name!));
+          });
 
-          expect(results[0].name).toBe('docToDelete');
-          expect(results[1].name).toBe('public 1');
-          expect(results[2].name).toBe('public 2');
-          expect(results[3].name).toBe('readDoc');
-          expect(results[4].name).toBe('shared with group');
-          expect(results[5].name).toBe('writeDoc');
+          it('should return entities shared with the user or his groups and public entities', () => {
+            expect(results.length).toBe(6);
+            expect(results[0].name).toBe('docToDelete');
+            expect(results[1].name).toBe('public 1');
+            expect(results[2].name).toBe('public 2');
+            expect(results[3].name).toBe('readDoc');
+            expect(results[4].name).toBe('shared with group');
+            expect(results[5].name).toBe('writeDoc');
+          });
+
+          it('should exclude the permissions property from the non write allowed documents', () => {
+            expect(results[0].permissions.length).toBe(1);
+            expect(results[1].permissions).toBeUndefined();
+            expect(results[2].permissions).toBeUndefined();
+            expect(results[3].permissions).toBeUndefined();
+            expect(results[4].permissions).toBeUndefined();
+            expect(results[5].permissions.length).toBe(1);
+          });
         });
 
-        it('should exclude the permissions property from the non write allowed documents', () => {
-          expect(results[0].permissions.length).toBe(1);
-          expect(results[1].permissions).toBeUndefined();
-          expect(results[2].permissions).toBeUndefined();
-          expect(results[3].permissions).toBeUndefined();
-          expect(results[4].permissions).toBeUndefined();
-          expect(results[5].permissions.length).toBe(1);
+        it('should filter permissions when they was asked with select', async () => {
+          const results = await model.get({}, { permissions: 1 }, {});
+          const docsWithPermissions = results.filter(doc => doc.permissions !== undefined);
+          expect(docsWithPermissions.length).toBe(2);
         });
 
-        it('should note include the permissions by default', async () => {
-          results = await model.get({}, null, {});
+        it('should not include the permissions by default', async () => {
+          const results = await model.get({}, null, {});
           results.forEach(result => {
             expect(result.permissions).toBeUndefined();
           });
