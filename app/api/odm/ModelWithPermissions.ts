@@ -148,7 +148,7 @@ export class ModelWithPermissions<T> extends OdmModel<T> {
       select
     );
 
-    if (doc && select && select.includes('+permissions')) {
+    if (doc && requestingPermissions(select)) {
       return controlPermissionsData(doc, user);
     }
 
