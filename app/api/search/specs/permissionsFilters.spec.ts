@@ -44,15 +44,30 @@ describe('Permissions filters', () => {
       it('should return only entitites that i can see and match the filter', async () => {
         userFactory.mock(users.user2);
         const query = {
-          customFilters: {
-            "permissions.level": {
-              values: ['write'],
-            },
-          },
+          customFilters: { "permissions.level": { values: ['write'] } },
         };
 
         const { rows } = await search.search(query, 'es');
         expect(rows).toEqual([
+          expect.objectContaining({ title: 'ent4' }),
+        ]);
+      });
+
+      it('should return entities that admin/editor have explicit permissions', async () => {
+        userFactory.mock(users.adminUser);
+        const query = {
+          customFilters: { "permissions.level": { values: ['write'] } },
+        };
+
+        const { rows: adminRows } = await search.search(query, 'es');
+        expect(adminRows).toEqual([
+          expect.objectContaining({ title: 'ent2' }),
+          expect.objectContaining({ title: 'ent4' }),
+        ]);
+
+        userFactory.mock(users.editorUser);
+        const { rows: editorRows } = await search.search(query, 'es');
+        expect(editorRows).toEqual([
           expect.objectContaining({ title: 'ent4' }),
         ]);
       });
@@ -90,6 +105,18 @@ describe('Permissions filters', () => {
       buckets = await performSearch();
       expect(buckets.find(a => a.key === 'read')?.filtered.doc_count).toBe(3);
       expect(buckets.find(a => a.key === 'write')?.filtered.doc_count).toBe(2);
+    });
+
+    it('should also work when user is admin/editor', async () => {
+      userFactory.mock(users.adminUser);
+      buckets = await performSearch();
+      expect(buckets.find(a => a.key === 'read')?.filtered.doc_count).toBe(1);
+      expect(buckets.find(a => a.key === 'write')?.filtered.doc_count).toBe(2);
+
+      userFactory.mock(users.editorUser);
+      buckets = await performSearch();
+      expect(buckets.find(a => a.key === 'read')?.filtered.doc_count).toBe(1);
+      expect(buckets.find(a => a.key === 'write')?.filtered.doc_count).toBe(1);
     });
   });
 });

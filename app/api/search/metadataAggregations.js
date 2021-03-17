@@ -1,5 +1,6 @@
 import { stringify } from 'query-string';
 import { preloadOptionsSearch } from 'shared/config';
+import { permissionsContext } from 'api/permissions/permissionsContext';
 
 const aggregation = (key, should, filters) => ({
   terms: {
@@ -184,7 +185,11 @@ export const permissionsLevelAgreggations = baseQuery => {
 
   const baseFilters = filters.filter(f => !(f.nested && f.nested.path === 'permissions'));
 
-  const permissionsFilter = filters.filter(f => f.nested && f.nested.path === 'permissions');
+  const user = permissionsContext.getUserInContext();
+  const permissionTargetIds = user.groups
+    ? user.groups.map(group => group._id.toString())
+    : [];
+  permissionTargetIds.push(user._id.toString());
 
   const aggs = {
     filter: {
@@ -206,7 +211,13 @@ export const permissionsLevelAgreggations = baseQuery => {
               filteredByUser: {
                 filter: {
                   bool: {
-                    filter: permissionsFilter[0].nested.query.bool.must,
+                    filter: [
+                      {
+                        terms: {
+                          'permissions.refId': permissionTargetIds,
+                        },
+                      },
+                    ]
                   },
                 },
                 aggregations: {
