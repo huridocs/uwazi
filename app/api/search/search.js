@@ -301,7 +301,10 @@ const _sanitizeAggregationsStructure = (aggregations, limit) => {
 
     //permissions
     if (aggregationKey === 'permissions') {
-      aggregation.buckets = aggregation.nestedPermissions.filtered.buckets.map(b => ({ key: b.key, filtered: { doc_count: b.filteredByUser.uniqueEntities.doc_count } }))
+      aggregation.buckets = aggregation.nestedPermissions.filtered.buckets.map(b => ({
+        key: b.key,
+        filtered: { doc_count: b.filteredByUser.uniqueEntities.doc_count },
+      }));
     }
 
     //nested
@@ -710,7 +713,7 @@ const search = {
     return snippetsFromSearchHit(response.body.hits.hits[0]);
   },
 
-  async indexEntities(query, select = '', limit, batchCallback = () => { }) {
+  async indexEntities(query, select = '', limit, batchCallback = () => {}) {
     return indexEntities({
       query,
       select,

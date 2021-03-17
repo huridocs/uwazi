@@ -9,7 +9,7 @@ export interface AggregationBucket {
 export interface Aggregations {
   all: {
     [key: string]: {
-      buckets: AggregationBucket[]
+      buckets: AggregationBucket[];
     };
   };
 }

@@ -89,7 +89,8 @@ export default function() {
       return baseQuery;
     },
 
-    fullTextSearch( // eslint-disable-line max-params
+    // eslint-disable-next-line max-statements
+    fullTextSearch(
       term,
       fieldsToSearch = ['title', 'fullText'],
       number_of_fragments = 1,

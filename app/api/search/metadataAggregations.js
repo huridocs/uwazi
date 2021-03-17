@@ -1,4 +1,3 @@
-import { stringify } from 'query-string';
 import { preloadOptionsSearch } from 'shared/config';
 import { permissionsContext } from 'api/permissions/permissionsContext';
 

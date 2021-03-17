@@ -44,19 +44,17 @@ describe('Permissions filters', () => {
       it('should return only entitites that i can see and match the filter', async () => {
         userFactory.mock(users.user2);
         const query = {
-          customFilters: { "permissions.level": { values: ['write'] } },
+          customFilters: { 'permissions.level': { values: ['write'] } },
         };
 
         const { rows } = await search.search(query, 'es');
-        expect(rows).toEqual([
-          expect.objectContaining({ title: 'ent4' }),
-        ]);
+        expect(rows).toEqual([expect.objectContaining({ title: 'ent4' })]);
       });
 
       it('should return entities that admin/editor have explicit permissions', async () => {
         userFactory.mock(users.adminUser);
         const query = {
-          customFilters: { "permissions.level": { values: ['write'] } },
+          customFilters: { 'permissions.level': { values: ['write'] } },
         };
 
         const { rows: adminRows } = await search.search(query, 'es');
@@ -67,9 +65,7 @@ describe('Permissions filters', () => {
 
         userFactory.mock(users.editorUser);
         const { rows: editorRows } = await search.search(query, 'es');
-        expect(editorRows).toEqual([
-          expect.objectContaining({ title: 'ent4' }),
-        ]);
+        expect(editorRows).toEqual([expect.objectContaining({ title: 'ent4' })]);
       });
     });
   });
