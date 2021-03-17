@@ -4,7 +4,6 @@
 import Immutable from 'immutable';
 import { ReactElement } from 'react';
 import { ShallowWrapper } from 'enzyme';
-import { GroupMemberSchema } from 'shared/types/userGroupType';
 import { renderConnected, renderConnectedMount } from 'app/Templates/specs/utils/renderConnected';
 import { Users } from 'app/Users/components/Users';
 import { UserList } from 'app/Users/components/UserList';
@@ -13,6 +12,7 @@ import { UserSidePanel } from 'app/Users/components/UserSidePanel';
 import { reset2fa } from 'app/Auth2fa/actions/actions';
 import { recoverPassword } from 'app/Auth/actions';
 import { UserRole } from 'shared/types/userSchema';
+import { UserSchema } from 'shared/types/userType';
 
 jest.mock('app/Users/actions/actions', () => ({
   loadUsers: jest.fn().mockReturnValue(async () => Promise.resolve()),
@@ -38,16 +38,18 @@ jest.mock('app/Users/components/usergroups/actions/actions', () => ({
 
 describe('Users', () => {
   let component: ShallowWrapper;
-  const users: GroupMemberSchema[] = [
+  const users: UserSchema[] = [
     {
       _id: 'user1',
       username: 'User 1',
       email: 'user1@email.test',
+      role: UserRole.EDITOR,
     },
     {
       _id: 'user2',
       username: 'User 2',
       email: 'user2@email.test',
+      role: UserRole.EDITOR,
     },
   ];
   const storeState = {
