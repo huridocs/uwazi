@@ -57,7 +57,10 @@ async function setAccessLevelAndPermissionData(
 export const entitiesPermissions = {
   set: async (permissionsData: any) => {
     await validateUniquePermissions(permissionsData);
-    const currentEntities = await entities.get({ sharedId: { $in: permissionsData.ids } }, '_id');
+    const currentEntities = await entities.get(
+      { sharedId: { $in: permissionsData.ids } },
+      '_id,+permissions'
+    );
 
     const toSave = currentEntities.map(entity => ({
       _id: entity._id,

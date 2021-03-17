@@ -477,7 +477,7 @@ export default {
   async multipleUpdate(ids, values, params) {
     const { diffMetadata = {}, ...pureValues } = values;
 
-    const entitiesToUpdate = await this.getUnrestricted({ sharedId: { $in: ids } });
+    const entitiesToUpdate = await this.getUnrestricted({ sharedId: { $in: ids } }, '+permissions');
     validateWritePermissions(ids, entitiesToUpdate);
     await Promise.all(
       ids.map(async id => {

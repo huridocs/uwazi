@@ -19,7 +19,7 @@ describe('permissions', () => {
         ],
       };
       await entitiesPermissions.set(permissionsData);
-      const storedEntities = await entities.get();
+      const storedEntities = await entities.get({}, { sharedId: 1, permissions: 1 });
       const updateEntities = storedEntities.filter(entity =>
         ['shared1', 'shared2'].includes(entity.sharedId!)
       );

@@ -30,6 +30,9 @@ const appendPermissionData = <T>(data: DataType<T>, user: UserSchema | undefined
   };
 };
 
+const requestingPermissions = (select: any) =>
+  select && select.includes && select.includes('+permissions');
+
 export const getUserPermissionIds = (user: WithId<UserSchema>) => {
   const userIds = user.groups ? user.groups.map(group => group._id.toString()) : [];
   userIds.push(user._id.toString());
@@ -124,7 +127,7 @@ export class ModelWithPermissions<T> extends OdmModel<T> {
       select,
       options
     );
-    return select && select.includes('+permissions')
+    return requestingPermissions(select)
       ? results.map(data => filterPermissionsData(data, user))
       : results;
   }
