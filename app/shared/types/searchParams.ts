@@ -6,6 +6,7 @@ export const searchParamsSchema = {
       additionalProperties: false,
       properties: {
         aggregateGeneratedToc: { type: 'boolean' },
+        aggregatePermissionsByLevel: { type: 'boolean' },
         filters: { type: 'object' },
         customFilters: {
           additionalProperties: false,
@@ -16,6 +17,13 @@ export const searchParamsSchema = {
               additionalProperties: false,
               properties: {
                 values: { type: 'array', items: [{ type: 'boolean' }] },
+              },
+            },
+            "permissions.level": {
+              type: 'object',
+              additionalProperties: false,
+              properties: {
+                values: { type: 'array', items: [{ type: 'string' }] },
               },
             },
           },

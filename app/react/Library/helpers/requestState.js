@@ -37,16 +37,22 @@ export function processQuery(params, globalResources, key) {
   }
 
   const { userSelectedSorting, ...sanitizedQuery } = query;
-  return tocGenerationUtils.aggregations(
-    sanitizedQuery,
-    globalResources.settings.collection.toJS()
-  );
+  // return tocGenerationUtils.aggregations(
+  //   sanitizedQuery,
+  //   globalResources.settings.collection.toJS()
+  // );
+
+  return {
+    ...tocGenerationUtils.aggregations(sanitizedQuery, globalResources.settings.collection.toJS()),
+    ...(globalResources.user ? { aggregatePermissionsByLevel: true } : {})
+  }
+
 }
 
 export default function requestState(request, globalResources, calculateTableColumns = false) {
   const docsQuery = processQuery(request.data, globalResources, 'library');
   const documentsRequest = request.set(
-    tocGenerationUtils.aggregations(docsQuery, globalResources.settings.collection.toJS())
+    tocGenerationUtils.aggregations(docsQuery, globalResources.settings.collection.toJS()),
   );
   const markersRequest = request.set({ ...docsQuery, geolocation: true });
 

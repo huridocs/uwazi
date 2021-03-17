@@ -12,8 +12,31 @@ import { wrapDispatch } from 'app/Multireducer';
 import debounce from 'app/utils/debounce';
 import libraryHelper from 'app/Library/helpers/libraryFilters';
 import { FilterTocGeneration } from 'app/ToggledFeatures/tocGeneration';
+import { NeedAuthorization } from 'app/Auth';
+import FormGroup from 'app/DocumentForm/components/FormGroup';
+import SelectFilter from 'app/Library/components/SelectFilter';
 
 import Filters from './FiltersFromProperties';
+
+const filteredAggregation = (aggregations, key) => {
+  const bucket = (aggregations?.all?.permissions?.buckets || []).find(a => a.key === key) || {
+    filtered: { doc_count: 0 },
+  };
+  return bucket.filtered.doc_count;
+};
+
+const options = (aggregations) => [
+  {
+    label: t('System', 'Write'),
+    value: 'write',
+    results: filteredAggregation(aggregations, 'write'),
+  },
+  {
+    label: t('System', 'Read'),
+    value: 'read',
+    results: filteredAggregation(aggregations, 'read'),
+  },
+];
 
 export class FiltersForm extends Component {
   constructor(props) {
@@ -92,6 +115,20 @@ export class FiltersForm extends Component {
         })()}
 
         <Form model={model} id="filtersForm" onSubmit={this.submit} onChange={this.onChange}>
+
+          <NeedAuthorization roles={['admin', 'editor', 'collaborator']}>
+            <FormGroup key="permissions.level" className="admin-filter">
+              <SelectFilter
+                model=".customFilters['permissions.level']"
+                prefix="permissions.level"
+                label={t('System', 'permissions')}
+                onChange={this.activateAutoSearch}
+                options={options(aggregations)}
+                showBoolSwitch={false}
+              />
+            </FormGroup>
+          </NeedAuthorization>
+
           <Filters
             onChange={this.activateAutoSearch}
             properties={fields}
