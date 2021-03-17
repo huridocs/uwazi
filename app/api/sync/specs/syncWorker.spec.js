@@ -79,14 +79,14 @@ describe('syncWorker', () => {
 
   const syncWorkerWithConfig = async config =>
     syncWorker.syncronize({
-      url: 'url',
+      url: 'url-slave1',
       name: 'slave1',
       config,
     });
 
   const syncAllTemplates = async (name = 'slave1', batchSize) =>
     syncWorker.syncronize({
-      url: 'url',
+      url: `url-${name}`,
       name,
       batchSize,
       config: {
@@ -98,12 +98,18 @@ describe('syncWorker', () => {
       },
     });
 
-  const expectCallToEqual = (call, namespace, data) => {
-    expect(call).toEqual(['url/api/sync', { namespace, data }]);
+  const expectCallToEqual = (call, namespace, data, name = 'slave1') => {
+    expect(call).toEqual([
+      [`url-${name}/api/sync`, { namespace, data }, { cookie: `${name} cookie` }],
+    ]);
   };
 
-  const expectCallWith = (spy, namespace, data) => {
-    expect(spy).toHaveBeenCalledWith('url/api/sync', { namespace, data });
+  const expectCallWith = (spy, namespace, data, name = 'slave1') => {
+    expect(spy).toHaveBeenCalledWith(
+      `url-${name}/api/sync`,
+      { namespace, data },
+      { cookie: `${name} cookie` }
+    );
   };
 
   const getCallsToIds = (namespace, ids) => {
@@ -112,16 +118,26 @@ describe('syncWorker', () => {
       .filter(args => args[1].namespace === namespace);
     return {
       calls: ids.map(id =>
-        namespaceCallsOnly.find(c => c[1].data._id.toString() === id.toString())
+        namespaceCallsOnly.filter(c => c[1].data._id.toString() === id.toString())
       ),
       callsCount: namespaceCallsOnly.length,
     };
   };
 
   describe('syncronize', () => {
+    const expectedCookies = { 'url-slave1': 'slave1 cookie', 'url-slave3': 'slave3 cookie' };
+
+    const ensureHeaders = (url, _data, headers) => {
+      const domain = url.split('/')[0];
+      return headers.cookie === expectedCookies[domain]
+        ? Promise.resolve()
+        : Promise.reject(new Error('wrong headers'));
+    };
+
     beforeEach(() => {
-      spyOn(request, 'post').and.returnValue(Promise.resolve());
-      spyOn(request, 'delete').and.returnValue(Promise.resolve());
+      syncWorker.cookies = { slave1: 'slave1 cookie', slave3: 'slave3 cookie' };
+      spyOn(request, 'post').and.callFake(ensureHeaders);
+      spyOn(request, 'delete').and.callFake(ensureHeaders);
     });
 
     it('should sanitize the config to prevent deleted values to affect the process', async () => {
@@ -293,7 +309,7 @@ describe('syncWorker', () => {
         const {
           calls: [translation1Call],
         } = getCallsToIds('translations', [translation1]);
-        const { contexts } = translation1Call[1].data;
+        const { contexts } = translation1Call[0][1].data;
 
         expect(contexts.find(c => c.id === 'System').values).toEqual([
           { key: 'Sytem Key', value: 'System Value' },
@@ -316,7 +332,7 @@ describe('syncWorker', () => {
         const {
           calls: [translation1Call],
         } = getCallsToIds('translations', [translation1]);
-        const { contexts } = translation1Call[1].data;
+        const { contexts } = translation1Call[0][1].data;
 
         expect(contexts.find(c => c.id.toString() === template1.toString()).values).toEqual([
           { key: 'template1', value: 'template1T' },
@@ -343,11 +359,12 @@ describe('syncWorker', () => {
       });
     });
 
-    const expectUploadFile = (url, filename, pathFunction = attachmentsPath) => {
+    const expectUploadFile = (path, filename, pathFunction = attachmentsPath, name = 'slave1') => {
       expect(request.uploadFile).toHaveBeenCalledWith(
-        url,
+        `url-${name}${path}`,
         filename,
-        fs.readFileSync(pathFunction(filename))
+        fs.readFileSync(pathFunction(filename)),
+        `${name} cookie`
       );
     };
 
@@ -361,12 +378,12 @@ describe('syncWorker', () => {
 
         expect(request.uploadFile.calls.count()).toBe(6);
 
-        expectUploadFile('url/api/sync/upload', 'test2.txt');
-        expectUploadFile('url/api/sync/upload', 'test.txt');
-        expectUploadFile('url/api/sync/upload', `${newDoc1.toString()}.jpg`);
-        expectUploadFile('url/api/sync/upload', 'test_attachment.txt');
-        expectUploadFile('url/api/sync/upload', 'test_attachment2.txt');
-        expectUploadFile('url/api/sync/upload/custom', 'customUpload.gif', customUploadsPath);
+        expectUploadFile('/api/sync/upload', 'test2.txt');
+        expectUploadFile('/api/sync/upload', 'test.txt');
+        expectUploadFile('/api/sync/upload', `${newDoc1.toString()}.jpg`);
+        expectUploadFile('/api/sync/upload', 'test_attachment.txt');
+        expectUploadFile('/api/sync/upload', 'test_attachment2.txt');
+        expectUploadFile('/api/sync/upload/custom', 'customUpload.gif', customUploadsPath);
       });
     });
 
@@ -573,11 +590,16 @@ describe('syncWorker', () => {
       expect(lastSync1).toBe(22000);
       expect(lastSync3).toBe(1000);
 
+      request.post.calls.reset();
+
       await syncsModel._updateMany({ name: 'slave3' }, { $set: { lastSync: 8999 } });
       await syncAllTemplates('slave3');
       [{ lastSync: lastSync1 }] = await syncsModel.find({ name: 'slave1' });
       [{ lastSync: lastSync3 }] = await syncsModel.find({ name: 'slave3' });
+      expect(lastSync1).toBe(22000);
       expect(lastSync3).toBe(22000);
+
+      expectCallWith(request.post, 'entities', expect.objectContaining({ _id: newDoc2 }), 'slave3');
     });
 
     it('should allow smaller batches for large amount of changes (but process all identical timestamps)', async () => {

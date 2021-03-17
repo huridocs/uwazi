@@ -33,18 +33,28 @@ export default {
       await prev;
 
       if (change.deleted) {
-        await synchronizer.syncData({ url, change, data: { _id: change.mongoId } }, 'delete');
+        await synchronizer.syncData(
+          { url, change, data: { _id: change.mongoId }, cookie: this.cookies[name] },
+          'delete'
+        );
         return updateSyncs(name, change.timestamp);
       }
 
       const { skip, data } = await config.shouldSync(change);
 
       if (skip) {
-        await synchronizer.syncData({ url, change, data: { _id: change.mongoId } }, 'delete');
+        await synchronizer.syncData(
+          { url, change, data: { _id: change.mongoId }, cookie: this.cookies[name] },
+          'delete'
+        );
       }
 
       if (data) {
-        await synchronizer.syncData({ url, change, data }, 'post', lastSync);
+        await synchronizer.syncData(
+          { url, change, data, cookie: this.cookies[name] },
+          'post',
+          lastSync
+        );
       }
 
       return updateSyncs(name, change.timestamp);
