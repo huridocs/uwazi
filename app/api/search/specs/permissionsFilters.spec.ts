@@ -39,6 +39,24 @@ describe('Permissions filters', () => {
       const { rows } = await search.search(query, 'es');
       expect(rows).toEqual([]);
     });
+
+    describe('when filtering by permissions level', () => {
+      it('should return only entitites that i can see and match the filter', async () => {
+        userFactory.mock(users.user2);
+        const query = {
+          customFilters: {
+            "permissions.level": {
+              values: ['write'],
+            },
+          },
+        };
+
+        const { rows } = await search.search(query, 'es');
+        expect(rows).toEqual([
+          expect.objectContaining({ title: 'ent4' }),
+        ]);
+      });
+    });
   });
 
   describe('aggregations', () => {

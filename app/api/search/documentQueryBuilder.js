@@ -240,9 +240,15 @@ export default function() {
     customFilters(filters = {}) {
       Object.keys(filters).forEach(key => {
         if (filters[key].values.length) {
-          addFilter({
-            terms: { [key]: filters[key].values },
-          });
+          if (key === 'permissions.level') {
+            const permissionsFilter = baseQuery.query.bool.filter.filter(f => f.nested && f.nested.path === 'permissions');
+            permissionsFilter[0].nested.query.bool.must.push({ terms:{ 'permissions.level': filters[key].values } })
+          }
+          else {
+            addFilter({
+              terms: { [key]: filters[key].values },
+            });
+          }
         }
       });
       return this;
