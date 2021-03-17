@@ -1,16 +1,18 @@
 import users from 'api/users/users';
-import { GroupMemberSchema, UserGroupSchema } from 'shared/types/userGroupType';
+import { UserGroupSchema } from 'shared/types/userGroupType';
 import { validateUserGroup } from 'api/usergroups/validateUserGroup';
+import { UserSchema } from 'shared/types/userType';
+import { WithId } from 'api/odm';
 import model from './userGroupsModel';
 
 export default {
-  async get(query: any, select: any = '', options = {}): Promise<UserGroupSchema[]> {
+  async get(query: any, select: any = '', options = {}) {
     const userGroups = await model.get(query, select, options);
     const usersInGroups = userGroups.reduce(
       (memo: Array<String>, group) => memo.concat(group.members.map(g => g._id.toString())),
       []
     );
-    const usersFound: GroupMemberSchema[] = await users.get(
+    const usersFound: WithId<UserSchema>[] = await users.get(
       { _id: { $in: usersInGroups } },
       { username: 1, role: 1, email: 1 }
     );

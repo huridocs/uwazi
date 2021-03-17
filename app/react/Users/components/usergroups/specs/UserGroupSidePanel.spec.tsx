@@ -162,10 +162,7 @@ describe('UserGroupSidePanel', () => {
           expect(defaultProps.onSave).toHaveBeenCalledWith({
             _id: 'group1Id',
             name: 'GROUP 1',
-            members: [
-              { _id: 'user2', username: 'ana johnson' },
-              { _id: 'user1', username: 'martha perez' },
-            ],
+            members: [{ _id: 'user2' }, { _id: 'user1' }],
           });
           done();
         });
@@ -196,11 +193,7 @@ describe('UserGroupSidePanel', () => {
         expect(defaultProps.onSave).toHaveBeenCalledWith({
           _id: 'group1Id',
           name: 'Group 1',
-          members: [
-            { _id: 'user2', username: 'ana johnson' },
-            { _id: 'user4', username: 'john smith' },
-            { _id: 'user1', username: 'martha perez' },
-          ],
+          members: [{ _id: 'user2' }, { _id: 'user4' }, { _id: 'user1' }],
         });
         done();
       });

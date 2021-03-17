@@ -64,7 +64,7 @@ describe('User Groups actions', () => {
         updatedGroup2 = {
           ...group2,
           name: 'Group 2 updated',
-          members: [{ _id: 'user1', username: 'User 1' }],
+          members: [{ _id: 'user1' }],
         };
         spyOn(api, 'saveGroup').and.returnValue(
           Promise.resolve({ ...group2, name: 'Group 2 updated' })

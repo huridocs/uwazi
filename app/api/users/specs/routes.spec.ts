@@ -5,6 +5,7 @@ import { NextFunction, Request, Response } from 'express';
 import { UserRole } from 'shared/types/userSchema';
 import { UserSchema } from 'shared/types/userType';
 import testingDB from 'api/utils/testing_db';
+import errorLog from 'api/log/errorLog';
 import userRoutes from '../routes.js';
 import users from '../users.js';
 
@@ -129,6 +130,17 @@ describe('users routes', () => {
     });
 
     describe('/recoverpassword', () => {
+      let originalSilent: boolean | undefined;
+
+      beforeAll(() => {
+        originalSilent = errorLog.transports[1].silent;
+        errorLog.transports[1].silent = true;
+      });
+
+      afterAll(() => {
+        errorLog.transports[1].silent = originalSilent;
+      });
+
       it.each([
         { value: undefined, keyword: 'required' },
         { value: 'a', keyword: 'minLength' },

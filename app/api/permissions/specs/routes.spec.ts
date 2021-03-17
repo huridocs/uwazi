@@ -5,6 +5,7 @@ import { permissionRoutes } from 'api/permissions/routes';
 import { entitiesPermissions } from 'api/permissions/entitiesPermissions';
 import { collaborators } from 'api/permissions/collaborators';
 import testingDB from 'api/utils/testing_db';
+import errorLog from 'api/log/errorLog';
 
 jest.mock(
   '../../utils/languageMiddleware.ts',
@@ -106,6 +107,17 @@ describe('permissions routes', () => {
     });
 
     describe('Error Handling', () => {
+      let originalSilent: boolean | undefined;
+
+      beforeAll(() => {
+        originalSilent = errorLog.transports[1].silent;
+        errorLog.transports[1].silent = true;
+      });
+
+      afterAll(() => {
+        errorLog.transports[1].silent = originalSilent;
+      });
+
       it('should handle errors on POST', async () => {
         spyOn(entitiesPermissions, 'set').and.throwError('error on save');
         user = { username: 'user 1', role: 'admin' };
