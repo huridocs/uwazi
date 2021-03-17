@@ -54,8 +54,19 @@ describe('documentQueryBuilder', () => {
                 term: { published: true },
               },
               {
-                terms: { 'permissions.refId': ['group1', 'group2', 'user1'] },
-              },
+                nested: {
+                  path: 'permissions',
+                  query: {
+                    bool: {
+                      must: [
+                        {
+                          terms: { 'permissions.refId': ['group1', 'group2', 'user1'] },
+                        },
+                      ]
+                    }
+                  }
+                }
+              }
             ]);
           }
         );
