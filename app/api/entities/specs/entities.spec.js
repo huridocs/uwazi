@@ -1231,8 +1231,12 @@ describe('entities', () => {
       await entities.saveMultiple([{ _id: docId1, file: {} }]);
 
       await entities.addLanguage('ab', 2);
-      const newEntities = await entities.get({ language: 'ab' });
+      const newEntities = await entities.get({ language: 'ab' }, '+permissions');
       expect(newEntities.length).toBe(11);
+
+      const fromCheckPermissions = fixtures.entities.find(e => e.title === 'Unpublished entity ES');
+      const toCheckPermissions = newEntities.find(e => e.title === 'Unpublished entity ES');
+      expect(toCheckPermissions.permissions).toEqual(fromCheckPermissions.permissions);
     });
   });
 

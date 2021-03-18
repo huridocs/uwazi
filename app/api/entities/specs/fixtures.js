@@ -175,6 +175,10 @@ export default {
           { icon: null, label: 'translated2', type: 'entity', value: 'shared1' },
         ],
       },
+      permissions: [
+        { refId: 'user1', level: AccessLevels.READ, type: PermissionType.USER },
+        { refId: 'user2', level: AccessLevels.WRITE, type: PermissionType.USER },
+      ],
     },
     //select/multiselect/date sync
     {
