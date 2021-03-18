@@ -21,7 +21,7 @@ export interface MediaModalProps {
 export const MediaModalCmp = ({
   isOpen,
   onClose,
-  attachments,
+  attachments = [],
   onChange,
   selectedId,
 }: MediaModalProps) => {
@@ -95,18 +95,6 @@ export const MediaModalCmp = ({
   );
 };
 
-const mapStateToProps = (state: any, ownProps: any) => {
-  const { selectedDocuments } = state.library.ui.toJS();
-
-  const attachments: AttachmentSchema[] = selectedDocuments[0]
-    ? selectedDocuments[0].attachments
-    : [];
-
-  return {
-    attachments,
-  };
-};
-
 const mapDispatchToProps = {};
 
-export const MediaModal = connect(mapStateToProps, mapDispatchToProps)(MediaModalCmp);
+export const MediaModal = connect(null, mapDispatchToProps)(MediaModalCmp);

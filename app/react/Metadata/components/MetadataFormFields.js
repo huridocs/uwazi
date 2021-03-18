@@ -8,6 +8,7 @@ import { connect } from 'react-redux';
 import { Field } from 'react-redux-form';
 import { propertyTypes } from 'shared/propertyTypes';
 import { getSuggestions } from 'app/Metadata/actions/actions';
+import { RenderAttachment } from 'app/Attachments/components/RenderAttachment';
 import { Translate } from 'app/I18N';
 import { Icon } from 'UI';
 import {
@@ -47,7 +48,7 @@ export const translateOptions = thesauri =>
 export class MetadataFormFields extends Component {
   constructor(props) {
     super(props);
-    this.state = { openMediaModal: false, selectedAttachmentId: null };
+    this.state = { openMediaModal: false, selectedAttachmentId: null, selectedImage: null };
 
     this.handleOpenMediaModal = this.handleOpenMediaModal.bind(this);
     this.handleCloseMediaModal = this.handleCloseMediaModal.bind(this);
@@ -63,14 +64,17 @@ export class MetadataFormFields extends Component {
   }
 
   handleImageChange(id) {
-    this.setState({ selectedAttachmentId: id });
+    const selectedImage = this.props.attachments.find(a => a._id === id);
+    this.setState({ selectedAttachmentId: id, selectedImage });
   }
 
   getField(property, _model, thesauris) {
     let thesauri;
     let totalPossibleOptions = 0;
-    const { dateFormat, version, entityThesauris } = this.props;
+    const { dateFormat, version, entityThesauris, attachments } = this.props;
     const propertyType = property.type;
+
+    const selectedImage = attachments.find(a => a._id === this.state.selectedAttachmentId);
 
     switch (propertyType) {
       case 'select':
@@ -164,20 +168,19 @@ export class MetadataFormFields extends Component {
       case 'image':
         return (
           <div>
-            <Field model={_model}>
-              <textarea rows="6" className="form-control" />
-            </Field>
-            &nbsp;<em>URL (address for image or media file)</em>
-            <br />
             <button type="button" onClick={this.handleOpenMediaModal} className="btn btn-success">
               <Icon icon="plus" />
               <Translate>Select image</Translate>
             </button>
+
+            {!!selectedImage && <RenderAttachment attachment={selectedImage} />}
+
             <MediaModal
               isOpen={this.state.openMediaModal}
               onClose={this.handleCloseMediaModal}
               onChange={this.handleImageChange}
               selectedId={this.state.selectedAttachmentId}
+              attachments={attachments}
             />
           </div>
         );
@@ -274,11 +277,19 @@ MetadataFormFields.propTypes = {
   version: PropTypes.string,
   entityThesauris: PropTypes.instanceOf(Immutable.Map),
   highlightedProps: PropTypes.arrayOf(PropTypes.string),
+  attachments: PropTypes.arrayOf(PropTypes.object),
 };
 
-export const mapStateToProps = state => ({
-  dateFormat: state.settings.collection.get('dateFormat'),
-  entityThesauris: state.entityThesauris,
-});
+export const mapStateToProps = state => {
+  const { selectedDocuments } = state.library.ui.toJS();
+
+  const attachments = selectedDocuments[0] ? selectedDocuments[0].attachments : [];
+
+  return {
+    dateFormat: state.settings.collection.get('dateFormat'),
+    entityThesauris: state.entityThesauris,
+    attachments,
+  };
+};
 
 export default connect(mapStateToProps)(MetadataFormFields);
