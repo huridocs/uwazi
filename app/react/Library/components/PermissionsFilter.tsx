@@ -3,7 +3,8 @@ import SelectFilter from 'app/Library/components/SelectFilter';
 import FormGroup from 'app/DocumentForm/components/FormGroup';
 import { Aggregations } from 'shared/types/Aggregations';
 import { NeedAuthorization } from 'app/Auth';
-import { t } from 'app/I18N';
+import { t, Translate } from 'app/I18N';
+import { Icon } from 'app/UI';
 
 export interface PermissionsFilterProps {
   onChange: () => void;
@@ -19,12 +20,24 @@ const filteredAggregation = (aggregations: Aggregations, key: string) => {
 
 const options = (aggregations: Aggregations) => [
   {
-    label: t('System', 'Write'),
+    label: (
+      <>
+        <Icon icon="pencil-alt" />
+        &nbsp;
+        <Translate>Can edit</Translate>
+      </>
+    ),
     value: 'write',
     results: filteredAggregation(aggregations, 'write'),
   },
   {
-    label: t('System', 'Read'),
+    label: (
+      <>
+        <Icon icon="file" />
+        &nbsp;
+        <Translate>Can view</Translate>
+      </>
+    ),
     value: 'read',
     results: filteredAggregation(aggregations, 'read'),
   },
@@ -36,7 +49,6 @@ export const PermissionsFilter = ({ onChange, aggregations }: PermissionsFilterP
       <SelectFilter
         model=".customFilters['permissions.level']"
         prefix="permissions.level"
-        label={t('System', 'Permissions')}
         onChange={onChange}
         options={options(aggregations)}
         showBoolSwitch={false}
