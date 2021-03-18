@@ -9,6 +9,19 @@ import {
   permissionsLevelAgreggations,
 } from './metadataAggregations';
 
+const nested = (filters, path) => {
+  return {
+    nested: {
+      path,
+      query: {
+        bool: {
+          must: filters,
+        },
+      },
+    },
+  };
+};
+
 export default function() {
   const baseQuery = {
     explain: false,
@@ -242,12 +255,6 @@ export default function() {
       Object.keys(filters).forEach(key => {
         if (filters[key].values.length) {
           if (key === 'permissions.level') {
-            const user = permissionsContext.getUserInContext();
-            const permissionTargetIds = user.groups
-              ? user.groups.map(group => group._id.toString())
-              : [];
-            permissionTargetIds.push(user._id.toString());
-
             const permissionsFilter = baseQuery.query.bool.filter.find(
               f => f.nested && f.nested.path === 'permissions'
             );
@@ -256,27 +263,15 @@ export default function() {
                 terms: { 'permissions.level': filters[key].values },
               });
             } else {
-              addFilter({
-                nested: {
-                  path: 'permissions',
-                  query: {
-                    bool: {
-                      must: [
-                        {
-                          terms: {
-                            'permissions.refId': permissionTargetIds,
-                          },
-                        },
-                        {
-                          terms: {
-                            'permissions.level': filters[key].values,
-                          },
-                        },
-                      ],
-                    },
-                  },
-                },
-              });
+              addFilter(
+                nested(
+                  [
+                    { terms: { 'permissions.refId': permissionsContext.permissionsRefIds() } },
+                    { terms: { 'permissions.level': filters[key].values } },
+                  ],
+                  'permissions'
+                )
+              );
             }
           } else {
             addFilter({
@@ -407,26 +402,12 @@ export default function() {
     filterByPermissions() {
       const user = permissionsContext.getUserInContext();
       if (user && !['admin', 'editor'].includes(user.role)) {
-        const permissionTargetIds = user.groups
-          ? user.groups.map(group => group._id.toString())
-          : [];
-        permissionTargetIds.push(user._id.toString());
-        baseQuery.query.bool.filter.push({
-          nested: {
-            path: 'permissions',
-            query: {
-              bool: {
-                must: [
-                  {
-                    terms: {
-                      'permissions.refId': permissionTargetIds,
-                    },
-                  },
-                ],
-              },
-            },
-          },
-        });
+        baseQuery.query.bool.filter.push(
+          nested(
+            [{ terms: { 'permissions.refId': permissionsContext.permissionsRefIds() } }],
+            'permissions'
+          )
+        );
       }
       return this;
     },
