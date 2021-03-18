@@ -20,7 +20,7 @@ const nested = (filters, path) => ({
   },
 });
 
-export default function() {
+export default function () {
   const baseQuery = {
     explain: false,
     _source: {
@@ -250,22 +250,24 @@ export default function() {
     },
 
     customFilters(filters = {}) {
-      Object.keys(filters).forEach(key => {
-        if (key === 'permissions.level') {
-          addFilter(
-            nested(
-              [
-                { terms: { 'permissions.refId': permissionsContext.permissionsRefIds() } },
-                { terms: { 'permissions.level': filters[key].values } },
-              ],
-              'permissions'
-            )
-          );
-          return;
-        }
+      Object.keys(filters)
+        .filter(key => filters[key].values.length)
+        .forEach(key => {
+          if (key === 'permissions.level') {
+            addFilter(
+              nested(
+                [
+                  { terms: { 'permissions.refId': permissionsContext.permissionsRefIds() } },
+                  { terms: { 'permissions.level': filters[key].values } },
+                ],
+                'permissions'
+              )
+            );
+            return;
+          }
 
-        addFilter({ terms: { [key]: filters[key].values } });
-      });
+          addFilter({ terms: { [key]: filters[key].values } });
+        });
       return this;
     },
 
