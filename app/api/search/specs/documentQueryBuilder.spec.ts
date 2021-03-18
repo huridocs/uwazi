@@ -60,12 +60,6 @@ describe('documentQueryBuilder', () => {
           }
         );
       });
-      describe('when user has not permission on the entities', () => {
-        it.each([
-          AccessLevels.READ,
-          AccessLevels.WRITE,
-        ])('should only return entities shared with her', () => {});
-      });
     });
   });
 });
