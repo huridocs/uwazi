@@ -1,4 +1,6 @@
 import request from 'shared/JSONRequest';
+import { attachmentsPath } from 'api/files/filesystem';
+import { execSync } from 'child_process';
 
 export default {
   delta: 36,
@@ -19,7 +21,12 @@ export default {
         // eslint-disable-next-line no-await-in-loop
         const response = await request.head(file.url);
         const mimetype = response.headers.get('content-type') || undefined;
-
+        db.collection('files').updateOne({ _id: file._id }, { $set: { mimetype } });
+      }
+      if (file.filename && file.type === 'attachment' && !file.mimetype) {
+        const mimetype = execSync(`file --mime-type -b "${attachmentsPath(file.filename)}"`)
+          .toString()
+          .trim();
         db.collection('files').updateOne({ _id: file._id }, { $set: { mimetype } });
       }
     }
