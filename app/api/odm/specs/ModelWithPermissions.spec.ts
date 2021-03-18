@@ -1,6 +1,6 @@
 import { PermissionSchema } from 'shared/types/permissionType';
 import { AccessLevels, permissionSchema, PermissionType } from 'shared/types/permissionSchema';
-import { instanceModel, ModelWithPermissions } from 'api/odm/ModelWithPermissions';
+import { instanceModelWithPermissions, ModelWithPermissions } from 'api/odm/ModelWithPermissions';
 import { permissionsContext } from 'api/permissions/permissionsContext';
 import testingDB from 'api/utils/testing_db';
 import * as mongoose from 'mongoose';
@@ -78,7 +78,7 @@ describe('ModelWithPermissions', () => {
   ];
   beforeAll(async () => {
     connection = await testingDB.connect();
-    model = instanceModel<TestDoc>('docs', testSchema);
+    model = instanceModelWithPermissions<TestDoc>('docs', testSchema);
     await connection.collection('docs').insertMany(testdocs);
   });
 

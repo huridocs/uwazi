@@ -1,4 +1,4 @@
-import { instanceModel } from 'api/odm/ModelWithPermissions';
+import { instanceModelWithPermissions } from 'api/odm/ModelWithPermissions';
 import mongoose from 'mongoose';
 import { MetadataObjectSchema, PropertyValueSchema } from 'shared/types/commonTypes';
 import { EntitySchema } from 'shared/types/entityType';
@@ -33,7 +33,7 @@ const mongoSchema = new mongoose.Schema(
 
 mongoSchema.index({ title: 'text' }, { language_override: 'mongoLanguage' });
 
-const Model = instanceModel<EntitySchema>('entities', mongoSchema);
+const Model = instanceModelWithPermissions<EntitySchema>('entities', mongoSchema);
 
 const supportedLanguages = [
   'da',
