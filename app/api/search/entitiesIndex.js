@@ -84,7 +84,7 @@ const bulkIndex = async (docs, _action = 'index') => {
 const getEntitiesToIndex = async (query, stepIndex, limit, select) => {
   const thisQuery = { ...query };
   thisQuery._id = !thisQuery._id ? { $gte: stepIndex } : thisQuery._id;
-  return entities.getUnrestrictedWithDocuments(thisQuery, '', {
+  return entities.getUnrestrictedWithDocuments(thisQuery, '+permissions', {
     limit,
     documentsFullText: select && select.includes('+fullText'),
   });
