@@ -101,22 +101,4 @@ describe('documents', () => {
       expect(await fileExists(uploadsPath('8202c463d6158af8065022d9b5014ccc.pdf'))).toBe(false);
     });
   });
-
-  describe('pdfInfo', () => {
-    it('should save pdfInfo and return it or just return it if already existed', async () => {
-      const testingPdfInfo = {
-        1: { chars: 10 },
-        2: { chars: 20 },
-      };
-      const pdfInfoNOTPresent = await documents.savePDFInfo(document1, testingPdfInfo);
-      expect(pdfInfoNOTPresent.pdfInfo).toBe(testingPdfInfo);
-      const pdfInfoStored = await files.get(document1, '+pdfInfo');
-      expect(pdfInfoStored[0].pdfInfo).toEqual(testingPdfInfo);
-
-      spyOn(files, 'save').and.callThrough();
-      const pdfInfoPresent = await documents.savePDFInfo(document1, testingPdfInfo);
-      expect(files.save).not.toHaveBeenCalled();
-      expect(pdfInfoPresent.pdfInfo).toEqual(testingPdfInfo);
-    });
-  });
 });
