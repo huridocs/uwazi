@@ -20,7 +20,7 @@ const nested = (filters, path) => ({
   },
 });
 
-export default function () {
+export default function() {
   const baseQuery = {
     explain: false,
     _source: {

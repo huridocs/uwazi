@@ -6,10 +6,9 @@ import relationships from 'api/relationships';
 import entities from 'api/entities';
 import { search } from 'api/search';
 import db from 'api/utils/testing_db';
-import { files } from 'api/files';
 import { fileExists, uploadsPath } from 'api/files/filesystem';
 
-import { fixtures, document1 } from './fixtures';
+import { fixtures } from './fixtures';
 import { documents } from '../documents.js';
 
 describe('documents', () => {
