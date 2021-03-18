@@ -114,4 +114,21 @@ describe('migration populate-mimetype-on-attachments', () => {
       'file --mime-type -b "/some/path/to/file.pdf"'
     );
   });
+  it('should not update mimetype if type is not attachment in internal attachments', async () => {
+    const fixturesWithFilenames = {
+      files: [
+        {
+          filename: 'somename.pdf',
+          type: 'document',
+        },
+      ],
+    };
+    await testingDB.clearAllAndLoad(fixturesWithFilenames);
+    execSyncMock.and.returnValue('application/pdf');
+    attachmentPathMock.and.returnValue('/some/path/to/file.pdf');
+    await migration.up(testingDB.mongodb);
+
+    expect(attachmentMethods.attachmentsPath).not.toHaveBeenCalledWith();
+    expect(childProcess.execSync).not.toHaveBeenCalledWith();
+  });
 });
