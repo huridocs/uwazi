@@ -6,11 +6,7 @@ export const permissionsContext = {
 
   permissionsRefIds() {
     const user = this.getUserInContext();
-    const permissionTargetIds = user?.groups ? user.groups.map(group => group._id.toString()) : [];
-    if (user?._id) {
-      permissionTargetIds.push(user._id.toString());
-    }
-    return permissionTargetIds;
+    return [...(user?.groups || []).map(g => g._id.toString()), user?._id];
   },
 
   setCommandContext: () => {
