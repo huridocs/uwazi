@@ -308,7 +308,7 @@ const _sanitizeAggregationsStructure = (aggregations, limit) => {
     }
 
     //nested
-    if (!aggregation.buckets && aggregationKey) {
+    if (!aggregation.buckets) {
       Object.keys(aggregation).forEach(key => {
         if (aggregation[key].buckets) {
           const buckets = aggregation[key].buckets.map(option => ({
@@ -324,7 +324,7 @@ const _sanitizeAggregationsStructure = (aggregations, limit) => {
       });
     }
 
-    if (aggregation.buckets && aggregationKey) {
+    if (aggregation.buckets) {
       const bucketsWithResults = aggregation.buckets.filter(b => b.filtered.doc_count);
       const missingBucket = bucketsWithResults.find(b => b.key === 'missing');
       aggregation.count = bucketsWithResults.length;
