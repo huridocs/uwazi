@@ -46,9 +46,11 @@ describe('documentQueryBuilder', () => {
                 { _id: 'group2', name: 'Group 2' },
               ],
             });
+
             const query = documentQueryBuilder()
               .filterByPermissions()
               .query();
+
             expect(query.query.bool.filter).toEqual([
               {
                 term: { published: true },
@@ -62,11 +64,11 @@ describe('documentQueryBuilder', () => {
                         {
                           terms: { 'permissions.refId': ['group1', 'group2', 'user1'] },
                         },
-                      ]
-                    }
-                  }
-                }
-              }
+                      ],
+                    },
+                  },
+                },
+              },
             ]);
           }
         );

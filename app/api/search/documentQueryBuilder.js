@@ -9,18 +9,16 @@ import {
   permissionsLevelAgreggations,
 } from './metadataAggregations';
 
-const nested = (filters, path) => {
-  return {
-    nested: {
-      path,
-      query: {
-        bool: {
-          must: filters,
-        },
+const nested = (filters, path) => ({
+  nested: {
+    path,
+    query: {
+      bool: {
+        must: filters,
       },
     },
-  };
-};
+  },
+});
 
 export default function() {
   const baseQuery = {
