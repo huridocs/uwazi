@@ -1,18 +1,27 @@
 import testingDB from 'api/utils/testing_db';
 import request from 'shared/JSONRequest';
+import * as attachmentMethods from 'api/files/filesystem';
+import childProcess from 'child_process';
 import migration from '../index.js';
 import fixtures from './fixtures.js';
 
 describe('migration populate-mimetype-on-attachments', () => {
   let headRequestMock;
+  let attachmentPathMock;
+  let execSyncMock;
+
   beforeEach(async () => {
     spyOn(process.stdout, 'write');
     headRequestMock = spyOn(request, 'head');
+    attachmentPathMock = spyOn(attachmentMethods, 'attachmentsPath');
+    execSyncMock = spyOn(childProcess, 'execSync');
     await testingDB.clearAllAndLoad(fixtures);
   });
 
   afterAll(async () => {
     headRequestMock.mockRestore();
+    attachmentPathMock.mockRestore();
+    execSyncMock.mockRestore();
     await testingDB.disconnect();
   });
 
@@ -47,7 +56,7 @@ describe('migration populate-mimetype-on-attachments', () => {
     expect(files[1].mimetype).toEqual('mimetype2');
   });
 
-  it('should not change the value of mimetype if it already exists', async () => {
+  it('should not change the value of mimetype if it already exists in external attachments', async () => {
     const fixturesWithMimetype = {
       files: [
         {
@@ -61,5 +70,48 @@ describe('migration populate-mimetype-on-attachments', () => {
     const file = await testingDB.mongodb.collection('files').findOne({});
 
     expect(file.mimetype).toEqual(fixturesWithMimetype.files[0].mimetype);
+  });
+
+  it('should not change if value of mimetype already exists in internal attachments', async () => {
+    const fixturesWithFilenames = {
+      files: [
+        {
+          filename: 'somename.pdf',
+          mimetype: 'application/pdf',
+          type: 'attachment',
+        },
+      ],
+    };
+    await testingDB.clearAllAndLoad(fixturesWithFilenames);
+    attachmentPathMock.and.returnValue('/some/path/to/file.pdf');
+    execSyncMock.and.returnValue('application/pdf');
+    await migration.up(testingDB.mongodb);
+
+    const file = await testingDB.mongodb.collection('files').findOne({});
+    expect(file.mimetype).toEqual(fixturesWithFilenames.files[0].mimetype);
+  });
+
+  it('should update mimetype if filename exists in internal attachments', async () => {
+    const fixturesWithFilenames = {
+      files: [
+        {
+          filename: 'somename.pdf',
+          type: 'attachment',
+        },
+      ],
+    };
+    await testingDB.clearAllAndLoad(fixturesWithFilenames);
+    execSyncMock.and.returnValue('application/pdf');
+    attachmentPathMock.and.returnValue('/some/path/to/file.pdf');
+    await migration.up(testingDB.mongodb);
+
+    const file = await testingDB.mongodb.collection('files').findOne({});
+    expect(file.mimetype).toEqual('application/pdf');
+    expect(attachmentMethods.attachmentsPath).toHaveBeenCalledWith(
+      fixturesWithFilenames.files[0].filename
+    );
+    expect(childProcess.execSync).toHaveBeenCalledWith(
+      'file --mime-type -b "/some/path/to/file.pdf"'
+    );
   });
 });
