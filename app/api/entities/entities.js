@@ -829,9 +829,13 @@ export default {
   },
 
   async addLanguage(language, limit = 50) {
-    const [lanuageTranslationAlreadyExists] = await this.get({ locale: language }, null, {
-      limit: 1,
-    });
+    const [lanuageTranslationAlreadyExists] = await this.getUnrestrictedWithDocuments(
+      { locale: language },
+      null,
+      {
+        limit: 1,
+      }
+    );
     if (lanuageTranslationAlreadyExists) {
       return;
     }
@@ -844,10 +848,14 @@ export default {
         return;
       }
 
-      const entities = await this.get({ language: defaultLanguage }, '', {
-        skip: offset,
-        limit,
-      });
+      const entities = await this.getUnrestrictedWithDocuments(
+        { language: defaultLanguage },
+        '+permissions',
+        {
+          skip: offset,
+          limit,
+        }
+      );
       const newLanguageEntities = await this.generateNewEntitiesForLanguage(entities, language);
       const newSavedEntities = await this.saveMultiple(newLanguageEntities);
       await newSavedEntities.reduce(async (previous, entity) => {
