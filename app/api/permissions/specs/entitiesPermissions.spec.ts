@@ -3,6 +3,14 @@ import entities from 'api/entities/entities';
 import { entitiesPermissions } from 'api/permissions/entitiesPermissions';
 import { AccessLevels, PermissionType, MixedAccess } from 'shared/types/permissionSchema';
 import { fixtures, groupA, userA, userB } from 'api/permissions/specs/fixtures';
+import { PermissionsDataSchema } from '../../../shared/types/permissionType';
+
+const publicPermission = {
+  _id: 'public',
+  label: 'Public',
+  type: PermissionType.PUBLIC,
+  level: AccessLevels.READ,
+};
 
 describe('permissions', () => {
   beforeEach(async () => {
@@ -15,7 +23,7 @@ describe('permissions', () => {
 
   describe('set entities permissions', () => {
     it('should update the specified entities with the passed permissions in all entities languages', async () => {
-      const permissionsData = {
+      const permissionsData: PermissionsDataSchema = {
         ids: ['shared1', 'shared2'],
         permissions: [
           { refId: 'user1', type: PermissionType.USER, level: AccessLevels.READ },
@@ -39,7 +47,7 @@ describe('permissions', () => {
     });
 
     it('should invalidate if permissions are duplicated', async () => {
-      const permissionsData = {
+      const permissionsData: PermissionsDataSchema = {
         ids: ['shared1'],
         permissions: [
           { refId: 'user1', type: 'user', level: 'write' },
@@ -53,6 +61,32 @@ describe('permissions', () => {
         expect(e.errors[0].keyword).toEqual('duplicatedPermissions');
       }
     });
+
+    describe('share publicly', () => {
+      it('should save the entity with the publish field set to the correct value', async () => {
+        const permissionsData: PermissionsDataSchema = {
+          ids: ['shared1', 'shared2'],
+          permissions: [{ _id: 'user1', type: 'user', level: 'write' }],
+        };
+
+        await entitiesPermissions.set(permissionsData);
+        let storedEntities = await entities.get({ sharedId: 'shared1' });
+
+        storedEntities.forEach(entity => {
+          expect(entity.permissions).toEqual(permissionsData.permissions);
+          expect(entity.published).toBe(false);
+        });
+
+        permissionsData.permissions.push({ _id: 'public', type: 'public', level: 'read' });
+        await entitiesPermissions.set(permissionsData);
+        storedEntities = await entities.get({ sharedId: 'shared1' });
+
+        storedEntities.forEach(entity => {
+          expect(entity.permissions).toEqual([permissionsData.permissions[0]]);
+          expect(entity.published).toBe(true);
+        });
+      });
+    });
   });
 
   describe('get entities permissions', () => {
@@ -65,6 +99,7 @@ describe('permissions', () => {
           level: MixedAccess.MIXED,
           type: PermissionType.GROUP,
         },
+        publicPermission,
         {
           refId: userA._id,
           label: userA.username,
@@ -89,6 +124,7 @@ describe('permissions', () => {
           level: MixedAccess.MIXED,
           type: PermissionType.GROUP,
         },
+        publicPermission,
         {
           refId: userA._id,
           label: userA.username,
@@ -102,6 +138,25 @@ describe('permissions', () => {
           type: PermissionType.USER,
         },
       ]);
+    });
+
+    describe('publicly shared', () => {
+      it('should return a permission of type "public" and level "mixed" if the entities are published and unpublished', async () => {
+        const permissions = await entitiesPermissions.get(['shared1', 'shared4']);
+        expect(permissions).toEqual(
+          expect.arrayContaining([{ ...publicPermission, level: MixedAccess.MIXED }])
+        );
+      });
+
+      it('should return a permission of type "public" and level "read" if the entity is published', async () => {
+        const permissions = await entitiesPermissions.get(['shared1']);
+        expect(permissions).toEqual(expect.arrayContaining([publicPermission]));
+      });
+
+      it('should NOT return a permission of type "public" if the entity is not published', async () => {
+        const permissions = await entitiesPermissions.get(['shared4']);
+        expect(permissions).toEqual([]);
+      });
     });
   });
 });
