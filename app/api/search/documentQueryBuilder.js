@@ -251,32 +251,20 @@ export default function() {
 
     customFilters(filters = {}) {
       Object.keys(filters).forEach(key => {
-        if (filters[key].values.length) {
-          if (key === 'permissions.level') {
-            const permissionsFilter = baseQuery.query.bool.filter.find(
-              f => f.nested && f.nested.path === 'permissions'
-            );
-            if (permissionsFilter) {
-              permissionsFilter.nested.query.bool.must.push({
-                terms: { 'permissions.level': filters[key].values },
-              });
-            } else {
-              addFilter(
-                nested(
-                  [
-                    { terms: { 'permissions.refId': permissionsContext.permissionsRefIds() } },
-                    { terms: { 'permissions.level': filters[key].values } },
-                  ],
-                  'permissions'
-                )
-              );
-            }
-          } else {
-            addFilter({
-              terms: { [key]: filters[key].values },
-            });
-          }
+        if (key === 'permissions.level') {
+          addFilter(
+            nested(
+              [
+                { terms: { 'permissions.refId': permissionsContext.permissionsRefIds() } },
+                { terms: { 'permissions.level': filters[key].values } },
+              ],
+              'permissions'
+            )
+          );
+          return;
         }
+
+        addFilter({ terms: { [key]: filters[key].values } });
       });
       return this;
     },
