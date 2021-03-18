@@ -3,7 +3,7 @@ import SelectFilter from 'app/Library/components/SelectFilter';
 import FormGroup from 'app/DocumentForm/components/FormGroup';
 import { Aggregations } from 'shared/types/Aggregations';
 import { NeedAuthorization } from 'app/Auth';
-import { t, Translate } from 'app/I18N';
+import { Translate } from 'app/I18N';
 import { Icon } from 'app/UI';
 
 export interface PermissionsFilterProps {
