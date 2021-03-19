@@ -121,13 +121,13 @@ export default {
   head: (url, data, headers) => _fetch(url, data, 'HEAD', headers),
 
   // TEST!!!! Fully untested function
-  uploadFile: (url, filename, file) =>
+  uploadFile: (url, filename, file, _cookie) =>
     new Promise((resolve, reject) => {
       superagent
         .post(url)
         .set('Accept', 'application/json')
         .set('X-Requested-With', 'XMLHttpRequest')
-        .set('Cookie', cookie || '')
+        .set('Cookie', _cookie || cookie || '')
         .attach('file', file, filename)
         .then(response => {
           resolve(response);
