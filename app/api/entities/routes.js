@@ -100,7 +100,10 @@ export default app => {
       const action = omitRelationships ? 'get' : 'getWithRelationships';
       const published = req.user ? {} : { published: true };
       const language = req.language ? { language: req.language } : {};
-      entities[action]({ ...query, ...published, ...language }, {}, { limit: 1, withPdfInfo })
+      entities[action]({ ...query, ...published, ...language }, '+permissions', {
+        limit: 1,
+        withPdfInfo,
+      })
         .then(_entities => {
           if (!_entities.length) {
             res.status(404);

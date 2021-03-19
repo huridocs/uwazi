@@ -361,7 +361,7 @@ export default {
       }
       await this.createEntity(this.sanitize(doc, docTemplate), languages, sharedId);
     }
-    const [entity] = await this.getWithRelationships({ sharedId, language });
+    const [entity] = await this.getWithRelationships({ sharedId, language }, '+permissions');
     if (updateRelationships) {
       await relationships.saveEntityBasedReferences(entity, language);
     }

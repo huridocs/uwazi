@@ -1,6 +1,7 @@
 /* eslint-disable max-len */
 import db from 'api/utils/testing_db';
 import { AccessLevels, PermissionType } from 'shared/types/permissionSchema';
+import { UserRole } from 'shared/types/userSchema';
 
 const batmanFinishesId = db.id();
 const syncPropertiesEntityId = db.id();
@@ -132,6 +133,7 @@ export default {
       title: 'Penguin almost done',
       creationDate: 1,
       published: true,
+      permissions: [{ refId: 'user1', type: PermissionType.USER, level: UserRole.COLLABORATOR }],
     },
     {
       _id: docId2,
