@@ -3,7 +3,7 @@ import SelectFilter from 'app/Library/components/SelectFilter';
 import FormGroup from 'app/DocumentForm/components/FormGroup';
 import { Aggregations } from 'shared/types/aggregations';
 import { NeedAuthorization } from 'app/Auth';
-import { Translate } from 'app/I18N';
+import { t, Translate } from 'app/I18N';
 import { Icon } from 'app/UI';
 
 export interface PermissionsFilterProps {
@@ -49,6 +49,7 @@ export const PermissionsFilter = ({ onChange, aggregations }: PermissionsFilterP
       <SelectFilter
         model=".customFilters['permissions.level']"
         prefix="permissions.level"
+        label={t('System', 'Permissions')}
         onChange={onChange}
         options={options(aggregations)}
         showBoolSwitch={false}
