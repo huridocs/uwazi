@@ -53,6 +53,7 @@ export class MetadataFormFields extends Component {
     this.handleOpenMediaModal = this.handleOpenMediaModal.bind(this);
     this.handleCloseMediaModal = this.handleCloseMediaModal.bind(this);
     this.handleImageChange = this.handleImageChange.bind(this);
+    this.handleImageChangeRemove = this.handleImageChangeRemove.bind(this);
   }
 
   handleOpenMediaModal() {
@@ -66,6 +67,10 @@ export class MetadataFormFields extends Component {
   handleImageChange(id) {
     const selectedImage = this.props.attachments.find(a => a._id === id);
     this.setState({ selectedAttachmentId: id, selectedImage });
+  }
+
+  handleImageChangeRemove() {
+    this.setState({ selectedAttachmentId: null, selectedImage: null });
   }
 
   getField(property, _model, thesauris) {
@@ -167,13 +172,24 @@ export class MetadataFormFields extends Component {
       case 'media':
       case 'image':
         return (
-          <div>
-            <button type="button" onClick={this.handleOpenMediaModal} className="btn btn-success">
-              <Icon icon="plus" />
-              <Translate>Select image</Translate>
-            </button>
-
+          <div className="search__filter--selected__media">
             {!!selectedImage && <RenderAttachment attachment={selectedImage} />}
+
+            <div className="search__filter--selected__media-toolbar">
+              <button type="button" onClick={this.handleOpenMediaModal} className="btn btn-success">
+                <Icon icon="plus" /> <Translate>Select supporting file</Translate>
+              </button>
+
+              {!!selectedImage && (
+                <button
+                  type="button"
+                  onClick={this.handleImageChangeRemove}
+                  className="btn btn-danger "
+                >
+                  <Icon icon="trash-alt" />
+                </button>
+              )}
+            </div>
 
             <MediaModal
               isOpen={this.state.openMediaModal}
