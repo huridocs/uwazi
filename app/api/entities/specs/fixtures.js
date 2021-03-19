@@ -34,7 +34,7 @@ const relationType4 = db.id();
 const uploadId1 = db.id();
 const uploadId2 = db.id();
 
-const permissions = [{ _id: 'userId', level: AccessLevels.WRITE, type: PermissionType.USER }];
+const permissions = [{ refId: 'userId', level: AccessLevels.WRITE, type: PermissionType.USER }];
 
 export default {
   files: [

@@ -1232,7 +1232,7 @@ describe('entities', () => {
 
       await entities.addLanguage('ab', 2);
       const newEntities = await entities.get({ language: 'ab' }, '+permissions');
-      expect(newEntities.length).toBe(11);
+      expect(newEntities.length).toBe(12);
 
       const fromCheckPermissions = fixtures.entities.find(e => e.title === 'Unpublished entity ES');
       const toCheckPermissions = newEntities.find(e => e.title === 'Unpublished entity ES');
