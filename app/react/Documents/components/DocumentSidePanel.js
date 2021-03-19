@@ -377,18 +377,21 @@ export class DocumentSidePanel extends Component {
                   if (docBeingEdited && this.state.copyFrom) {
                     return (
                       <>
-                        <EntityForm
-                          storeKey={this.props.storeKey}
-                          initialTemplateId={this.initialTemplateId}
-                          highlightedProps={this.state.copyFromProps}
-                        />
-                        <CopyFromEntity
-                          originalEntity={this.props.formData}
-                          templates={this.props.templates}
-                          onSelect={this.onCopyFromSelect}
-                          formModel={this.props.formPath}
-                          onCancel={this.toggleCopyFrom}
-                        />
+                        <div className="tab-content tab-content-visible">
+                          <EntityForm
+                            storeKey={this.props.storeKey}
+                            initialTemplateId={this.initialTemplateId}
+                            highlightedProps={this.state.copyFromProps}
+                          />
+
+                          <CopyFromEntity
+                            originalEntity={this.props.formData}
+                            templates={this.props.templates}
+                            onSelect={this.onCopyFromSelect}
+                            formModel={this.props.formPath}
+                            onCancel={this.toggleCopyFrom}
+                          />
+                        </div>
                       </>
                     );
                   }
