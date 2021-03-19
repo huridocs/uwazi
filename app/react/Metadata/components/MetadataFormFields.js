@@ -44,40 +44,11 @@ export const translateOptions = thesauri =>
     .toJS();
 
 export class MetadataFormFields extends Component {
-  constructor(props) {
-    super(props);
-    this.state = { openMediaModal: false, selectedAttachmentId: null, selectedImage: null };
-
-    this.handleOpenMediaModal = this.handleOpenMediaModal.bind(this);
-    this.handleCloseMediaModal = this.handleCloseMediaModal.bind(this);
-    this.handleImageChange = this.handleImageChange.bind(this);
-    this.handleImageChangeRemove = this.handleImageChangeRemove.bind(this);
-  }
-
-  handleOpenMediaModal() {
-    this.setState({ openMediaModal: true });
-  }
-
-  handleCloseMediaModal() {
-    this.setState({ openMediaModal: false });
-  }
-
-  handleImageChange(id) {
-    const selectedImage = this.props.attachments.find(a => a._id === id);
-    this.setState({ selectedAttachmentId: id, selectedImage });
-  }
-
-  handleImageChangeRemove() {
-    this.setState({ selectedAttachmentId: null, selectedImage: null });
-  }
-
   getField(property, _model, thesauris) {
     let thesauri;
     let totalPossibleOptions = 0;
     const { dateFormat, version, entityThesauris, attachments } = this.props;
     const propertyType = property.type;
-
-    const selectedImage = attachments.find(a => a._id === this.state.selectedAttachmentId);
 
     switch (propertyType) {
       case 'select':
