@@ -184,7 +184,7 @@ export const permissionsLevelAgreggations = baseQuery => {
 
   const baseFilters = filters.filter(f => !(f.nested && f.nested.path === 'permissions'));
 
-  const aggs = {
+  return {
     filter: {
       bool: {
         should,
@@ -225,6 +225,4 @@ export const permissionsLevelAgreggations = baseQuery => {
       },
     },
   };
-
-  return aggs;
 };
