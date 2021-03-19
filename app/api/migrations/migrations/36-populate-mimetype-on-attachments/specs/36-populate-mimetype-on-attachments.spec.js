@@ -128,7 +128,9 @@ describe('migration populate-mimetype-on-attachments', () => {
     attachmentPathMock.and.returnValue('/some/path/to/file.pdf');
     await migration.up(testingDB.mongodb);
 
-    expect(attachmentMethods.attachmentsPath).not.toHaveBeenCalledWith();
-    expect(childProcess.execSync).not.toHaveBeenCalledWith();
+    expect(attachmentMethods.attachmentsPath).not.toHaveBeenCalledWith(
+      fixturesWithFilenames.files[0].filename
+    );
+    expect(childProcess.execSync).not.toHaveBeenCalledWith('/some/path/to/file.pdf');
   });
 });
