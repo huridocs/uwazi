@@ -5,7 +5,7 @@ import ReactModal from 'react-modal';
 import configureMockStore from 'redux-mock-store';
 import { Provider } from 'react-redux';
 
-import { MediaModalCmp, MediaModalProps } from '../MediaModal';
+import { MediaModal, MediaModalProps } from '../MediaModal';
 
 const mockStore = configureMockStore([thunk]);
 const store = mockStore({});
@@ -27,7 +27,7 @@ describe('Attachments Modal', () => {
   const render = (otherProps = {}) => {
     component = shallow(
       <Provider store={store}>
-        <MediaModalCmp {...props} {...otherProps} />
+        <MediaModal {...props} {...otherProps} />
       </Provider>
     ).dive();
   };
