@@ -8,9 +8,7 @@ import { connect } from 'react-redux';
 import { Field } from 'react-redux-form';
 import { propertyTypes } from 'shared/propertyTypes';
 import { getSuggestions } from 'app/Metadata/actions/actions';
-import { RenderAttachment } from 'app/Attachments/components/RenderAttachment';
 import { Translate } from 'app/I18N';
-import { Icon } from 'UI';
 import {
   DatePicker,
   DateRange,
@@ -25,9 +23,9 @@ import {
   Numeric,
   Select,
   LookupMultiSelect,
+  MediaField,
 } from '../../ReactReduxForms';
 import MultipleEditionFieldWarning from './MultipleEditionFieldWarning';
-import { MediaModal } from './MediaModal';
 
 export const translateOptions = thesauri =>
   thesauri
@@ -171,35 +169,7 @@ export class MetadataFormFields extends Component {
         return <LinkField model={_model} />;
       case 'media':
       case 'image':
-        return (
-          <div className="search__filter--selected__media">
-            {!!selectedImage && <RenderAttachment attachment={selectedImage} />}
-
-            <div className="search__filter--selected__media-toolbar">
-              <button type="button" onClick={this.handleOpenMediaModal} className="btn btn-success">
-                <Icon icon="plus" /> <Translate>Select supporting file</Translate>
-              </button>
-
-              {!!selectedImage && (
-                <button
-                  type="button"
-                  onClick={this.handleImageChangeRemove}
-                  className="btn btn-danger "
-                >
-                  <Icon icon="trash-alt" />
-                </button>
-              )}
-            </div>
-
-            <MediaModal
-              isOpen={this.state.openMediaModal}
-              onClose={this.handleCloseMediaModal}
-              onChange={this.handleImageChange}
-              selectedId={this.state.selectedAttachmentId}
-              attachments={attachments}
-            />
-          </div>
-        );
+        return <MediaField model={_model} attachments={attachments} />;
       case 'preview':
         return (
           <div>

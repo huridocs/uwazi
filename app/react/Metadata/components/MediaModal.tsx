@@ -18,7 +18,7 @@ export interface MediaModalProps {
   selectedId: string | ObjectId | null;
 }
 
-export const MediaModalCmp = ({
+export const MediaModal = ({
   isOpen,
   onClose,
   attachments = [],
@@ -94,7 +94,3 @@ export const MediaModalCmp = ({
     </ReactModal>
   );
 };
-
-const mapDispatchToProps = {};
-
-export const MediaModal = connect(null, mapDispatchToProps)(MediaModalCmp);

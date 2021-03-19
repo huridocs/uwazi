@@ -33,3 +33,4 @@ export const Geolocation = props => <Control component={forms.Geolocation} {...p
 export const LinkField = props => <Control component={forms.LinkField} {...props} />;
 export const NestedMultiselect = props => <forms.NestedMultiselect {...props} />;
 export const FormGroup = props => <forms.FormGroup {...props} />;
+export const MediaField = props => <Control component={forms.MediaField} {...props} />;
