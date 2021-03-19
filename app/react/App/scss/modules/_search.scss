@@ -484,6 +484,11 @@
   color: $c-grey-dark;
   max-width: calc(100% - 50px);
 
+  svg {
+    font-size: $f-size-xs;
+    width: 1.1em !important;
+  }
+
   .multiselectItem-label:hover & {
     border-bottom: 1px solid;
     margin-bottom: -1px;
