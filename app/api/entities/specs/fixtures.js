@@ -1,7 +1,6 @@
 /* eslint-disable max-len */
 import db from 'api/utils/testing_db';
 import { AccessLevels, PermissionType } from 'shared/types/permissionSchema';
-import { UserRole } from 'shared/types/userSchema';
 
 const batmanFinishesId = db.id();
 const syncPropertiesEntityId = db.id();
