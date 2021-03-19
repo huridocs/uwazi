@@ -35,7 +35,6 @@ const users: { [key: string]: UserSchema & { _id: ObjectIdSchema } } = {
   },
 };
 const group1 = testingDB.id();
-const group2 = testingDB.id();
 
 export const permissionsLevelFixtures: DBFixture = {
   entities: [
@@ -95,7 +94,6 @@ export const permissionsLevelFixtures: DBFixture = {
       permissions: [
         { level: 'write', refId: users.user2._id, type: 'user' },
         { level: 'write', refId: users.user3._id, type: 'user' },
-        { level: 'write', refId: group2, type: 'group' },
         { level: 'write', refId: group1, type: 'group' },
         { level: 'write', refId: users.adminUser._id, type: 'user' },
         { level: 'write', refId: users.editorUser._id, type: 'user' },
@@ -122,4 +120,4 @@ export const permissionsLevelFixtures: DBFixture = {
   ],
 };
 
-export { users, group1, group2 };
+export { users, group1 };

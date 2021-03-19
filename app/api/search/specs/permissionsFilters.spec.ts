@@ -32,7 +32,7 @@ describe('Permissions filters', () => {
       ]);
     });
 
-    it('should not return entities for witch the user does not have permissions', async () => {
+    it('should not return entities for wich the user does not have permissions', async () => {
       userFactory.mock(users.user2);
       const query = { searchTerm: 'ent1' };
 
@@ -77,25 +77,24 @@ describe('Permissions filters', () => {
       return aggs.all.permissions.buckets;
     };
 
-    it('should return aggregations of permission level filtered per current user', async () => {
-      userFactory.mock(users.user1);
-      buckets = await performSearch();
-      expect(buckets.find(a => a.key === 'read')?.filtered.doc_count).toBe(2);
-      expect(buckets.find(a => a.key === 'write')?.filtered.doc_count).toBe(1);
-
-      userFactory.mock(users.user2);
-      buckets = await performSearch();
-      expect(buckets.find(a => a.key === 'read')?.filtered.doc_count).toBe(1);
-      expect(buckets.find(a => a.key === 'write')?.filtered.doc_count).toBe(1);
-    });
+    it.each`
+      user           | expect1 | expect2
+      ${users.user1} | ${2}    | ${1}
+      ${users.user2} | ${1}    | ${1}
+    `(
+      'should return aggregations of permission level filtered per current user',
+      async ({ user, expect1, expect2 }) => {
+        userFactory.mock(user);
+        buckets = await performSearch();
+        expect(buckets.find(a => a.key === 'read')?.filtered.doc_count).toBe(expect1);
+        expect(buckets.find(a => a.key === 'write')?.filtered.doc_count).toBe(expect2);
+      }
+    );
 
     it('should return aggregations of permission level filtered per current users group', async () => {
       userFactory.mock({
         ...users.user3,
-        groups: [
-          { _id: group1, name: 'group1' },
-          { _id: group2, name: 'group2' },
-        ],
+        groups: [{ _id: group1, name: 'group1' }],
       });
 
       buckets = await performSearch();
