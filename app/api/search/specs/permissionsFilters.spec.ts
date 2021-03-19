@@ -2,9 +2,9 @@ import db from 'api/utils/testing_db';
 import { search } from 'api/search/search';
 import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
 
-import { Aggregations, AggregationBucket } from 'shared/types/Aggregations';
+import { Aggregations, AggregationBucket } from 'shared/types/aggregations';
 import { fixturesTimeOut } from './fixtures_elastic';
-import { permissionsLevelFixtures, users, group1, group2 } from './permissionsFiltersFixtures';
+import { permissionsLevelFixtures, users, group1 } from './permissionsFiltersFixtures';
 
 describe('Permissions filters', () => {
   let buckets: AggregationBucket[];
