@@ -4,12 +4,16 @@
 export interface SearchParams {
   query?: {
     aggregateGeneratedToc?: boolean;
+    aggregatePermissionsByLevel?: boolean;
     filters?: {
       [k: string]: unknown | undefined;
     };
     customFilters?: {
       generatedToc?: {
         values?: [] | [boolean];
+      };
+      'permissions.level'?: {
+        values?: [] | [string];
       };
     };
     types?: [] | [string];
