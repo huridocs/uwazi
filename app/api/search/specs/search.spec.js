@@ -831,7 +831,7 @@ describe('search', () => {
       };
 
       const { rows } = await search.search(query, 'en');
-      expect(rows.length).not.toBe(0);
+      expect(rows.length).toBe(13);
     });
   });
 

@@ -245,10 +245,8 @@ const _denormalizeAggregations = async (aggregations, templates, dictionaries, l
     const denormaLizedAgregations = await denormaLizedAgregationsPromise;
     if (
       !aggregations[key].buckets ||
-      key === '_types' ||
       aggregations[key].type === 'nested' ||
-      key === 'generatedToc' ||
-      key === 'permissions'
+      ['_types', 'generatedToc', 'permissions'].includes(key)
     ) {
       return Object.assign(denormaLizedAgregations, { [key]: aggregations[key] });
     }
