@@ -652,7 +652,7 @@ const search = {
     }
 
     if (query.aggregateGeneratedToc) {
-      queryBuilder.generatedTOCAggregations();
+      queryBuilder.generatedTocAggregations();
     }
 
     return elastic

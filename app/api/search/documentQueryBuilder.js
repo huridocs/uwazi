@@ -281,7 +281,7 @@ export default function() {
       return this;
     },
 
-    generatedTOCAggregations() {
+    generatedTocAggregations() {
       baseQuery.aggregations.all.aggregations.generatedToc = generatedTocAggregations(baseQuery);
     },
 
