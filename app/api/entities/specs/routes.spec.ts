@@ -8,7 +8,7 @@ import routes from 'api/entities/routes';
 import { AccessLevels, PermissionType } from 'shared/types/permissionSchema';
 import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
 import { UserRole } from 'shared/types/userSchema';
-import fixtures from './fixtures';
+import fixtures, { permissions } from './fixtures';
 
 jest.mock(
   '../../auth/authMiddleware.ts',
@@ -55,9 +55,9 @@ describe('entities routes', () => {
     it('return asked entities with permissions', async () => {
       const response: SuperTestResponse = await request(app)
         .get('/api/entities')
-        .query({ sharedId: 'shared' });
-      const { permissions } = fixtures.entities[0];
-      expect(response.body.rows[0].documents[0].permissions).toEqual(permissions);
+        .query({ sharedId: 'sharedPerm' });
+      expect(response.body.rows[0].permissions.length).toBe(1);
+      expect(response.body.rows[0].permissions).toEqual(permissions);
     });
   });
 

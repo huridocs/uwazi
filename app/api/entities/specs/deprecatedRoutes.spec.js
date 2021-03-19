@@ -177,7 +177,7 @@ describe('entities', () => {
               language: 'lang',
               published: true,
             },
-            {},
+            '+permissions',
             { limit: 1 }
           );
           expect(response).toEqual({ rows: expectedEntity });
@@ -235,7 +235,7 @@ describe('entities', () => {
           language: 'lang',
           published: true,
         },
-        {},
+        '+permissions',
         { limit: 1 }
       );
     });

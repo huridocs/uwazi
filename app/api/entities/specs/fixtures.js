@@ -34,6 +34,8 @@ const relationType4 = db.id();
 const uploadId1 = db.id();
 const uploadId2 = db.id();
 
+const permissions = [{ _id: 'userId', level: AccessLevels.WRITE, type: PermissionType.USER }];
+
 export default {
   files: [
     {
@@ -133,7 +135,6 @@ export default {
       title: 'Penguin almost done',
       creationDate: 1,
       published: true,
-      permissions: [{ refId: 'user1', type: PermissionType.USER, level: UserRole.COLLABORATOR }],
     },
     {
       _id: docId2,
@@ -363,6 +364,13 @@ export default {
       language: 'en',
       sharedId: 'value1',
     },
+    {
+      _id: db.id(),
+      sharedId: 'sharedPerm',
+      title: 'Entity With Permissions',
+      language: 'es',
+      permissions,
+    },
   ],
   settings: [
     { _id: db.id(), languages: [{ key: 'es', default: true }, { key: 'pt' }, { key: 'en' }] },
@@ -518,4 +526,5 @@ export {
   unpublishedDocId,
   uploadId1,
   uploadId2,
+  permissions,
 };
