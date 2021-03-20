@@ -198,7 +198,7 @@ export class Attachment extends Component {
     return (
       <div className="attachment">
         {name}
-        <NeedAuthorization roles={['admin', 'editor']}>
+        <NeedAuthorization roles={['admin', 'editor', 'collaborator']}>
           {buttons}
 
           <div className="dropdown attachments-dropdown">

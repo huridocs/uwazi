@@ -76,4 +76,10 @@ describe('FileList', () => {
     const button = component.find(UploadButton);
     expect(button.props().entitySharedId).toBe(props.entity.sharedId);
   });
+
+  it('should check authorization roles to upload files', () => {
+    render();
+    const button = component.find(UploadButton);
+    expect(button.parent().props().roles).toEqual(['admin', 'editor', 'collaborator']);
+  });
 });

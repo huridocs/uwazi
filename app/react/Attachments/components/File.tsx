@@ -120,7 +120,7 @@ export class File extends Component<FileProps, FileState> {
             &nbsp;
             <Translate>Download</Translate>
           </a>
-          <NeedAuthorization roles={['admin', 'editor']}>
+          <NeedAuthorization roles={['admin', 'editor', 'collaborator']}>
             <button type="button" className="file-edit btn btn-outline-success" onClick={this.edit}>
               <Icon icon="pencil-alt" />
               &nbsp;

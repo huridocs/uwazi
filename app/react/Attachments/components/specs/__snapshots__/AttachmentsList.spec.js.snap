@@ -36,6 +36,7 @@ exports[`AttachmentsList should render a sorted list of attachments (files) 1`] 
         Array [
           "admin",
           "editor",
+          "collaborator",
         ]
       }
     >
@@ -72,6 +73,7 @@ exports[`AttachmentsList when files is empty should add button in Downloads sect
         Array [
           "admin",
           "editor",
+          "collaborator",
         ]
       }
     >
@@ -108,6 +110,7 @@ exports[`AttachmentsList when files is empty should render nothing if user not l
         Array [
           "admin",
           "editor",
+          "collaborator",
         ]
       }
     >
