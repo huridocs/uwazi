@@ -29,6 +29,11 @@ export default {
           name: templateUtils.safeName('numeric label'),
         },
         {
+          type: propertyTypes.image,
+          label: 'image label',
+          name: templateUtils.safeName('image label'),
+        },
+        {
           type: propertyTypes.select,
           label: 'select label',
           name: templateUtils.safeName('select label'),
