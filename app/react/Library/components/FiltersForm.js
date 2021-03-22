@@ -65,6 +65,19 @@ export class FiltersForm extends Component {
 
     return (
       <div className="filters-box">
+        <Form model={model} id="filtersForm" onSubmit={this.submit} onChange={this.onChange}>
+          <PermissionsFilter onChange={this.activateAutoSearch} aggregations={aggregations} />
+
+          <Filters
+            onChange={this.activateAutoSearch}
+            properties={fields}
+            translationContext={translationContext}
+            storeKey={this.props.storeKey}
+          />
+
+          <FilterTocGeneration onChange={this.activateAutoSearch} aggregations={aggregations} />
+        </Form>
+
         {(() => {
           const activeTypes = templates.filter(template =>
             documentTypes.includes(template.get('_id'))
@@ -91,19 +104,6 @@ export class FiltersForm extends Component {
 
           return null;
         })()}
-
-        <Form model={model} id="filtersForm" onSubmit={this.submit} onChange={this.onChange}>
-          <PermissionsFilter onChange={this.activateAutoSearch} aggregations={aggregations} />
-
-          <Filters
-            onChange={this.activateAutoSearch}
-            properties={fields}
-            translationContext={translationContext}
-            storeKey={this.props.storeKey}
-          />
-
-          <FilterTocGeneration onChange={this.activateAutoSearch} aggregations={aggregations} />
-        </Form>
       </div>
     );
   }
