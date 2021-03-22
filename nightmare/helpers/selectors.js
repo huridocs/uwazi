@@ -147,7 +147,7 @@ export default {
     firstEntityViewButton:
       '#app > div.content > div > div > div > main > div > div > div.item-group > div:nth-child(1) > div.item-actions > div:nth-child(2) > a',
     documentTypeFilter:
-      '#app > div.content > div > div > div > aside.side-panel.library-filters > div.sidepanel-body > div.documentTypes-selector > ul > li:nth-child(4) > label > span.multiselectItem-name',
+      '#app > div.content > div > div > div >aside.library-filters > .sidepanel-body > .filters-box > #filtersForm > div.documentTypes-selector > ul > li:nth-child(4) > label > span.multiselectItem-name',
     editEntityButton:
       '#app > div.content > div > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-footer > span > button.edit-metadata.btn.btn-primary',
     saveButton:
