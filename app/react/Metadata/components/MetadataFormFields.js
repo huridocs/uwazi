@@ -26,6 +26,7 @@ import {
   MediaField,
 } from '../../ReactReduxForms';
 import MultipleEditionFieldWarning from './MultipleEditionFieldWarning';
+import { MediaModalType } from './MediaModal';
 
 export const translateOptions = thesauri =>
   thesauri
@@ -139,8 +140,9 @@ export class MetadataFormFields extends Component {
       case 'link':
         return <LinkField model={_model} />;
       case 'media':
+        return <MediaField model={_model} attachments={attachments} type={MediaModalType.Media} />;
       case 'image':
-        return <MediaField model={_model} attachments={attachments} />;
+        return <MediaField model={_model} attachments={attachments} type={MediaModalType.Image} />;
       case 'preview':
         return (
           <div>

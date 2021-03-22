@@ -1,3 +1,4 @@
+import { RenderAttachment } from 'app/Attachments/components/RenderAttachment';
 import { I18NLink, t } from 'app/I18N';
 import { Icon } from 'app/Layout';
 import MarkdownViewer from 'app/Markdown';
@@ -7,7 +8,7 @@ import React from 'react';
 import GeolocationViewer from './GeolocationViewer';
 import ValueList from './ValueList';
 
-const showByType = (prop, compact) => {
+const showByType = (prop, compact, attachments) => {
   let result = prop.value;
   switch (prop.type) {
     case null:
@@ -24,17 +25,9 @@ const showByType = (prop, compact) => {
       );
       break;
     case 'image':
-      result = (
-        <img
-          key={prop.value}
-          className={`multimedia-img ${prop.style}`}
-          src={prop.value}
-          alt={prop.label}
-        />
-      );
-      break;
     case 'media':
-      result = <MarkdownViewer markdown={`{media}(${prop.value})`} compact />;
+      const attachment = attachments.find(a => a._id === prop.value) || null;
+      result = attachment && <RenderAttachment attachment={attachment} />;
       break;
     case 'geolocation':
       result = <GeolocationViewer points={prop.value} onlyForCards={Boolean(prop.onlyForCards)} />;
@@ -132,7 +125,15 @@ function filterProps(showSubset) {
   };
 }
 
-const Metadata = ({ metadata, compact, renderLabel, showSubset, highlight, groupGeolocations }) => {
+const Metadata = ({
+  metadata,
+  compact,
+  renderLabel,
+  showSubset,
+  highlight,
+  groupGeolocations,
+  attachments,
+}) => {
   const filteredMetadata = metadata.filter(filterProps(showSubset));
   const groupedMetadata = groupGeolocations
     ? groupAdjacentGeolocations(filteredMetadata)
@@ -152,7 +153,7 @@ const Metadata = ({ metadata, compact, renderLabel, showSubset, highlight, group
           >
             {renderLabel(prop, <dt>{t(prop.translateContext || 'System', prop.label)}</dt>)}
             <dd className={prop.sortedBy ? 'item-current-sort' : ''}>
-              {showByType(prop, compact)}
+              {showByType(prop, compact, attachments)}
             </dd>
           </dl>
         );
@@ -192,6 +193,7 @@ Metadata.propTypes = {
   renderLabel: PropTypes.func,
   showSubset: PropTypes.arrayOf(PropTypes.string),
   groupGeolocations: PropTypes.bool,
+  attachments: PropTypes.arrayOf(PropTypes.object),
 };
 
 export default Metadata;

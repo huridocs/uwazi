@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import ReactModal from 'react-modal';
 import { Tabs, TabLink, TabContent } from 'react-tabs-redux';
 import filesize from 'filesize';
@@ -9,12 +9,17 @@ import { Icon } from 'app/UI';
 import { RenderAttachment } from 'app/Attachments/components/RenderAttachment';
 import { ObjectId } from 'mongodb';
 
+export enum MediaModalType {
+  Image,
+  Media,
+}
 export interface MediaModalProps {
   isOpen: boolean;
   onClose: () => void;
   attachments: AttachmentSchema[];
   onChange: (id: string | ObjectId) => void;
   selectedId: string | ObjectId | null;
+  type?: MediaModalType;
 }
 
 export const MediaModal = ({
@@ -23,7 +28,21 @@ export const MediaModal = ({
   attachments = [],
   onChange,
   selectedId,
+  type,
 }: MediaModalProps) => {
+  const filteredAttachments = useMemo(() => {
+    switch (type) {
+      case MediaModalType.Image:
+        return attachments.filter(a => a.mimetype && a.mimetype.includes('image'));
+      case MediaModalType.Media:
+        return attachments.filter(
+          a => a.mimetype && (a.mimetype.includes('video') || a.mimetype.includes('audio'))
+        );
+    }
+
+    return attachments;
+  }, [attachments, type]);
+
   const handleAttachmentClick = (id: string | ObjectId) => () => {
     onChange(id);
     onClose();
@@ -61,7 +80,7 @@ export const MediaModal = ({
             >
               <div className="media-grid container">
                 <div className="row">
-                  {attachments.map((attachment, key) => (
+                  {filteredAttachments.map((attachment, key) => (
                     <div
                       className="media-grid-item"
                       key={`attachment_${key}`}

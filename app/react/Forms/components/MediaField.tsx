@@ -5,15 +5,16 @@ import { AttachmentSchema } from 'shared/types/commonTypes';
 import { RenderAttachment } from 'app/Attachments/components/RenderAttachment';
 import { Translate } from 'app/I18N';
 import { Icon } from 'app/UI';
-import { MediaModal } from 'app/Metadata/components/MediaModal';
+import { MediaModal, MediaModalType } from 'app/Metadata/components/MediaModal';
 
 interface MediaFieldProps {
   attachments: AttachmentSchema[];
   value: string | ObjectId | null;
+  type?: MediaModalType;
   onChange: (val: string | ObjectId | null) => void;
 }
 
-const MediaField = ({ attachments, value, onChange }: MediaFieldProps) => {
+const MediaField = ({ attachments, value, onChange, type }: MediaFieldProps) => {
   const [openModal, setOpenModal] = useState(false);
 
   const selectedImage = useMemo(() => attachments.find(a => a._id === value), [attachments, value]);
@@ -48,6 +49,7 @@ const MediaField = ({ attachments, value, onChange }: MediaFieldProps) => {
         onChange={onChange}
         selectedId={value}
         attachments={attachments}
+        type={type}
       />
     </div>
   );
