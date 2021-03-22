@@ -22,8 +22,7 @@ export default {
         const response = await request.head(file.url);
         const mimetype = response.headers.get('content-type') || undefined;
         db.collection('files').updateOne({ _id: file._id }, { $set: { mimetype } });
-      }
-      if (file.filename && file.type === 'attachment' && !file.mimetype) {
+      } else if (file.filename && file.type === 'attachment' && !file.mimetype) {
         const mimetype = execSync(`file --mime-type -b "${attachmentsPath(file.filename)}"`)
           .toString()
           .trim();
