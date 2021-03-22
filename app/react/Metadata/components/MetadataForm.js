@@ -101,6 +101,7 @@ export class MetadataForm extends Component {
       multipleEdition,
       showSubset,
       version,
+      storeKey,
       highlightedProps,
     } = this.props;
 
@@ -152,6 +153,7 @@ export class MetadataForm extends Component {
           showSubset={showSubset}
           version={version}
           highlightedProps={highlightedProps}
+          storeKey={storeKey}
         />
       </Form>
     );

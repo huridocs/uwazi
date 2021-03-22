@@ -48,8 +48,11 @@ export class MetadataFormFields extends Component {
   getField(property, _model, thesauris) {
     let thesauri;
     let totalPossibleOptions = 0;
-    const { dateFormat, version, entityThesauris, attachments } = this.props;
+    const { dateFormat, version, entityThesauris, ui } = this.props;
     const propertyType = property.type;
+
+    const { selectedDocuments } = ui.toJS();
+    const attachments = selectedDocuments[0] ? selectedDocuments[0].attachments : [];
 
     switch (propertyType) {
       case 'select':
@@ -236,18 +239,16 @@ MetadataFormFields.propTypes = {
   version: PropTypes.string,
   entityThesauris: PropTypes.instanceOf(Immutable.Map),
   highlightedProps: PropTypes.arrayOf(PropTypes.string),
-  attachments: PropTypes.arrayOf(PropTypes.object),
+  ui: PropTypes.object,
 };
 
-export const mapStateToProps = state => {
-  const { selectedDocuments } = state.library.ui.toJS();
-
-  const attachments = selectedDocuments[0] ? selectedDocuments[0].attachments : [];
+export const mapStateToProps = (state, ownProps) => {
+  const { storeKey } = ownProps;
 
   return {
     dateFormat: state.settings.collection.get('dateFormat'),
     entityThesauris: state.entityThesauris,
-    attachments,
+    ui: state[storeKey].ui,
   };
 };
 

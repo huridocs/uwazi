@@ -57,12 +57,19 @@ BaseFormatMetadata.propTypes = {
   sortedProperty: PropTypes.string,
   excludePreview: PropTypes.bool,
   attachments: PropTypes.arrayOf(PropTypes.object),
+  storeKey: PropTypes.string,
 };
 
-export function mapStateToProps(state, { entity, sortedProperty = '' }) {
-  const { selectedDocuments } = state.library.ui.toJS();
+export function mapStateToProps(state, props) {
+  const { entity, sortedProperty = '', storeKey = '' } = props;
 
-  const attachments = selectedDocuments[0] ? selectedDocuments[0].attachments : [];
+  const store = state[storeKey];
+  let attachments = [];
+  
+  if (store) {
+    const { selectedDocuments } = store.ui.toJS();
+    attachments = selectedDocuments[0] ? selectedDocuments[0].attachments : [];
+  }
 
   return {
     templates: state.templates,

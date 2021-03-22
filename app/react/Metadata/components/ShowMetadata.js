@@ -20,6 +20,7 @@ export class ShowMetadata extends Component {
       relationships,
       showSubset,
       groupGeolocations,
+      storeKey,
     } = this.props;
     let header = '';
     if (showTitle || showType) {
@@ -60,6 +61,7 @@ export class ShowMetadata extends Component {
           relationships={relationships}
           showSubset={showSubset}
           groupGeolocations={groupGeolocations}
+          storeKey={storeKey}
         />
       </div>
     );
@@ -78,6 +80,7 @@ ShowMetadata.propTypes = {
   showType: PropTypes.bool,
   showSubset: PropTypes.arrayOf(PropTypes.string),
   groupGeolocations: PropTypes.bool,
+  storeKey: PropTypes.string,
 };
 
 const mapStateToProps = ({ templates }) => ({ templates });

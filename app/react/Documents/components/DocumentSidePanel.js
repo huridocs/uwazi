@@ -408,6 +408,7 @@ export class DocumentSidePanel extends Component {
                         showTitle
                         showType
                         groupGeolocations
+                        storeKey={this.props.storeKey}
                       />
                       <FileList
                         files={documents}
