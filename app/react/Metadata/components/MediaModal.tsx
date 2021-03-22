@@ -38,9 +38,9 @@ export const MediaModal = ({
         return attachments.filter(
           a => a.mimetype && (a.mimetype.includes('video') || a.mimetype.includes('audio'))
         );
+      default:
+        return attachments;
     }
-
-    return attachments;
   }, [attachments, type]);
 
   const handleAttachmentClick = (id: string | ObjectId) => () => {

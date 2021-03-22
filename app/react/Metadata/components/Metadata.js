@@ -8,7 +8,7 @@ import React from 'react';
 import GeolocationViewer from './GeolocationViewer';
 import ValueList from './ValueList';
 
-const showByType = (prop, compact, attachments) => {
+const showByType = (prop, compact, attachments = []) => {
   let result = prop.value;
   switch (prop.type) {
     case null:
@@ -25,10 +25,11 @@ const showByType = (prop, compact, attachments) => {
       );
       break;
     case 'image':
-    case 'media':
+    case 'media': {
       const attachment = attachments.find(a => a._id === prop.value) || null;
       result = attachment && <RenderAttachment attachment={attachment} />;
       break;
+    }
     case 'geolocation':
       result = <GeolocationViewer points={prop.value} onlyForCards={Boolean(prop.onlyForCards)} />;
       break;
