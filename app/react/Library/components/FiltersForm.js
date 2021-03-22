@@ -6,11 +6,12 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Icon } from 'UI';
 
+import debounce from 'app/utils/debounce';
+import libraryHelper from 'app/Library/helpers/libraryFilters';
+import DocumentTypesList from 'app/Library/components/DocumentTypesList';
 import { searchDocuments } from 'app/Library/actions/libraryActions';
 import { t } from 'app/I18N';
 import { wrapDispatch } from 'app/Multireducer';
-import debounce from 'app/utils/debounce';
-import libraryHelper from 'app/Library/helpers/libraryFilters';
 import { FilterTocGeneration } from 'app/ToggledFeatures/tocGeneration';
 import { PermissionsFilter } from './PermissionsFilter';
 
@@ -67,6 +68,10 @@ export class FiltersForm extends Component {
       <div className="filters-box">
         <Form model={model} id="filtersForm" onSubmit={this.submit} onChange={this.onChange}>
           <PermissionsFilter onChange={this.activateAutoSearch} aggregations={aggregations} />
+
+          <div className="documentTypes-selector nested-selector">
+            <DocumentTypesList storeKey={this.props.storeKey} />
+          </div>
 
           <Filters
             onChange={this.activateAutoSearch}

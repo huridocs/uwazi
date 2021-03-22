@@ -3,7 +3,6 @@ import { t } from 'app/I18N';
 import SidePanel from 'app/Layout/SidePanel';
 import { resetFilters } from 'app/Library/actions/filterActions';
 import { searchDocuments } from 'app/Library/actions/libraryActions';
-import DocumentTypesList from 'app/Library/components/DocumentTypesList';
 import FiltersForm from 'app/Library/components/FiltersForm';
 import { wrapDispatch } from 'app/Multireducer';
 import PropTypes from 'prop-types';
@@ -88,9 +87,6 @@ export class LibraryFilters extends Component {
             )}
           </NeedAuthorization>
 
-          <div className="documentTypes-selector nested-selector">
-            <DocumentTypesList storeKey={this.props.storeKey} />
-          </div>
           <FiltersForm storeKey={this.props.storeKey} />
         </div>
       </SidePanel>
