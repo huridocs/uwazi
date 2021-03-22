@@ -161,9 +161,9 @@ export default {
     documentAfterLoadMore:
       '#app > div.content > div > div > div > main > div > div > div.item-group > div:nth-child(31)',
     superVillianType:
-      '#app > div.content > div > div > div > aside.side-panel.library-filters > div.sidepanel-body > div.documentTypes-selector.nested-selector > ul > li:nth-child(2) > label',
+      '#app > div.content > div > div > div > aside.side-panel.library-filters > .sidepanel-body > .filters-box > #filtersForm > .documentTypes-selector > ul > li:nth-child(2) > label',
     minorVillianType:
-      '#app > div.content > div > div > div > aside.side-panel.library-filters > div.sidepanel-body > div.documentTypes-selector.nested-selector > ul > li:nth-child(5) > label',
+      '#app > div.content > div > div > div > aside.side-panel.library-filters > .sidepanel-body > .filters-box > #filtersForm > .documentTypes-selector > ul > li:nth-child(5) > label',
     resetFilters:
       '#app > div.content > div > div > div > aside.side-panel.library-filters > div.sidepanel-footer > .resetFilters',
     sidePanelCloseButton:
