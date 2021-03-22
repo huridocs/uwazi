@@ -3,7 +3,6 @@ import request from 'shared/JSONRequest';
 import * as attachmentMethods from 'api/files/filesystem';
 import childProcess from 'child_process';
 import migration from '../index.js';
-import fixtures from './fixtures.js';
 
 describe('migration populate-mimetype-on-attachments', () => {
   let headRequestMock;
@@ -15,7 +14,6 @@ describe('migration populate-mimetype-on-attachments', () => {
     headRequestMock = spyOn(request, 'head');
     attachmentPathMock = spyOn(attachmentMethods, 'attachmentsPath');
     execSyncMock = spyOn(childProcess, 'execSync');
-    await testingDB.clearAllAndLoad(fixtures);
   });
 
   afterAll(async () => {
@@ -30,6 +28,9 @@ describe('migration populate-mimetype-on-attachments', () => {
   });
 
   it('should populate mimetype with Content-Type', async () => {
+    const fixtures = {
+      files: [{ url: 'some/file/path.jpg' }, { url: 'some/other/path.jpg' }],
+    }
     await testingDB.clearAllAndLoad(fixtures);
     const headers = {
       get: jest
