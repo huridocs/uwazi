@@ -4,17 +4,13 @@ import createNightmare from '../helpers/nightmare';
 import selectors from '../helpers/selectors.js';
 import insertFixtures from '../helpers/insertFixtures';
 
+const powersFilterBasePath = '#filtersForm > div.form-group:nth-child(2) >  ul > .wide > ul >';
 selectors.libraryView.filters = {
-  firstPower:
-    '#filtersForm > div.form-group:nth-child(2) >  ul > .wide > ul > li:nth-child(2) > label > .multiselectItem-name',
-  secondPower:
-    '#filtersForm > div.form-group:nth-child(2) >  ul > .wide > ul > li:nth-child(3) > label > .multiselectItem-name',
-  thirdPorwer:
-    '#filtersForm > div.form-group:nth-child(2) >  ul > .wide > ul > li:nth-child(4) > label > .multiselectItem-name',
-  fifthPower:
-    '#filtersForm > div.form-group:nth-child(2) >  ul > .wide > ul > li:nth-child(5) > label > .multiselectItem-name',
-  sixthPower:
-    '#filtersForm > div.form-group:nth-child(2) >  ul > .wide > ul > li:nth-child(6) > label > .multiselectItem-name',
+  firstPower: `${powersFilterBasePath} li:nth-child(2) > label > .multiselectItem-name`,
+  secondPower: `${powersFilterBasePath} li:nth-child(3) > label > .multiselectItem-name`,
+  thirdPorwer: `${powersFilterBasePath} li:nth-child(4) > label > .multiselectItem-name`,
+  fifthPower: `${powersFilterBasePath} li:nth-child(5) > label > .multiselectItem-name`,
+  sixthPower: `${powersFilterBasePath} li:nth-child(6) > label > .multiselectItem-name`,
   superPowers: '#filtersForm > div:nth-child(2) > ul > li.wide > ul > li',
   superPowersAndOrSwitch: '#filtersForm > div:nth-child(2) > ul > li:nth-child(1) > div > label',
   superPowerMoreButton:
