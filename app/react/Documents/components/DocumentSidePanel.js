@@ -278,7 +278,8 @@ export class DocumentSidePanel extends Component {
 
     const TocForm = this.props.tocFormComponent;
 
-    const { attachments, documents, language, defaultDoc } = doc.toJS();
+    const entity = doc.toJS();
+    const { attachments, documents, language, defaultDoc } = entity;
 
     const isEntity = !documents || !documents.length;
     const defaultDocumentToC =
@@ -314,7 +315,7 @@ export class DocumentSidePanel extends Component {
               />
             </div>
           </ShowIf>
-          <NeedAuthorization roles={['admin', 'editor']} orWriteAccessTo={[this.props.doc.toJS()]}>
+          <NeedAuthorization roles={['admin', 'editor']} orWriteAccessTo={[entity]}>
             <ShowIf if={this.props.tab === 'toc' && this.props.tocBeingEdited}>
               <div className="sidepanel-footer">
                 <button type="submit" form="tocForm" className="edit-toc btn btn-success">
@@ -411,16 +412,12 @@ export class DocumentSidePanel extends Component {
                     <div>
                       <ShowMetadata
                         relationships={relationships}
-                        entity={this.props.doc.toJS()}
+                        entity={entity}
                         showTitle
                         showType
                         groupGeolocations
                       />
-                      <FileList
-                        files={documents}
-                        storeKey={this.props.storeKey}
-                        entity={doc.toJS()}
-                      />
+                      <FileList files={documents} storeKey={this.props.storeKey} entity={entity} />
                       <AttachmentsList
                         attachments={attachments}
                         isTargetDoc={isTargetDoc}
@@ -428,6 +425,7 @@ export class DocumentSidePanel extends Component {
                         parentId={doc.get('_id')}
                         parentSharedId={doc.get('sharedId')}
                         storeKey={this.props.storeKey}
+                        entity={entity}
                       />
                     </div>
                   );
@@ -444,7 +442,7 @@ export class DocumentSidePanel extends Component {
                 <ConnectionsGroups connectionsGroups={this.props.connectionsGroups} />
               </TabContent>
               <TabContent for="semantic-search-results">
-                <DocumentSemanticSearchResults doc={this.props.doc.toJS()} />
+                <DocumentSemanticSearchResults doc={entity} />
               </TabContent>
             </Tabs>
           </div>

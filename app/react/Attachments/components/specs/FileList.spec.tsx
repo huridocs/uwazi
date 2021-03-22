@@ -80,6 +80,7 @@ describe('FileList', () => {
   it('should check authorization roles to upload files', () => {
     render();
     const button = component.find(UploadButton);
-    expect(button.parent().props().roles).toEqual(['admin', 'editor', 'collaborator']);
+    expect(button.parent().props().roles).toEqual(['admin', 'editor']);
+    expect(button.parent().props().orWriteAccessTo).toEqual([props.entity]);
   });
 });

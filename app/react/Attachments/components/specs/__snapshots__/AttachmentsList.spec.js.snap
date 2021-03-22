@@ -32,11 +32,17 @@ exports[`AttachmentsList should render a sorted list of attachments (files) 1`] 
       </Connect(Translate)>
     </h2>
     <Connect(NeedAuthorization)
+      orWriteAccessTo={
+        Array [
+          Object {
+            "sharedId": "parentId",
+          },
+        ]
+      }
       roles={
         Array [
           "admin",
           "editor",
-          "collaborator",
         ]
       }
     >
@@ -69,11 +75,17 @@ exports[`AttachmentsList when files is empty should add button in Downloads sect
       </Connect(Translate)>
     </h2>
     <Connect(NeedAuthorization)
+      orWriteAccessTo={
+        Array [
+          Object {
+            "sharedId": "parentId",
+          },
+        ]
+      }
       roles={
         Array [
           "admin",
           "editor",
-          "collaborator",
         ]
       }
     >
@@ -106,11 +118,17 @@ exports[`AttachmentsList when files is empty should render nothing if user not l
       </Connect(Translate)>
     </h2>
     <Connect(NeedAuthorization)
+      orWriteAccessTo={
+        Array [
+          Object {
+            "sharedId": "parentId",
+          },
+        ]
+      }
       roles={
         Array [
           "admin",
           "editor",
-          "collaborator",
         ]
       }
     >

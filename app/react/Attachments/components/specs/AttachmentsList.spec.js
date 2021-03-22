@@ -23,6 +23,7 @@ describe('AttachmentsList', () => {
       isDocumentAttachments: false,
       readOnly: false,
       storeKey: 'storeKey',
+      entity: { sharedId: 'parentId' },
     };
   });
 
@@ -63,12 +64,12 @@ describe('AttachmentsList', () => {
 
   it('should check authorization roles to upload files', () => {
     render();
-    const button = component.find(UploadSupportingFile);
-    expect(
-      button
-        .parents()
-        .at(1)
-        .props().roles
-    ).toEqual(['admin', 'editor', 'collaborator']);
+    const authorizationProps = component
+      .find(UploadSupportingFile)
+      .parents()
+      .at(1)
+      .props();
+    expect(authorizationProps.roles).toEqual(['admin', 'editor']);
+    expect(authorizationProps.orWriteAccessTo).toEqual([props.entity]);
   });
 });

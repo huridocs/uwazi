@@ -142,7 +142,7 @@ export class Attachment extends Component {
   }
 
   render() {
-    const { file, model, storeKey } = this.props;
+    const { file, model, storeKey, entity } = this.props;
     const sizeString = file.size ? filesize(file.size) : '';
     const item = getItemOptions(file.filename, file.url);
     let name = (
@@ -172,7 +172,7 @@ export class Attachment extends Component {
       buttons = (
         <div className="attachment-buttons">
           <div className="item-shortcut-group">
-            <NeedAuthorization roles={['admin', 'editor']}>
+            <NeedAuthorization roles={['admin', 'editor']} orWriteAccessTo={[entity]}>
               <button
                 type="button"
                 className="item-shortcut btn btn-primary"
@@ -181,7 +181,7 @@ export class Attachment extends Component {
                 <Icon icon="times" />
               </button>
             </NeedAuthorization>
-            <NeedAuthorization roles={['admin', 'editor']}>
+            <NeedAuthorization roles={['admin', 'editor']} orWriteAccessTo={[entity]}>
               <button
                 type="button"
                 className="item-shortcut btn btn-success"
@@ -198,7 +198,7 @@ export class Attachment extends Component {
     return (
       <div className="attachment">
         {name}
-        <NeedAuthorization roles={['admin', 'editor', 'collaborator']}>
+        <NeedAuthorization roles={['admin', 'editor']} orWriteAccessTo={[entity]}>
           {buttons}
 
           <div className="dropdown attachments-dropdown">
@@ -252,6 +252,7 @@ export class Attachment extends Component {
 
 Attachment.defaultProps = {
   deleteMessage: 'Are you sure you want to delete this attachment?',
+  entity: null,
 };
 
 Attachment.propTypes = {
@@ -267,6 +268,7 @@ Attachment.propTypes = {
   loadForm: PropTypes.func,
   submitForm: PropTypes.func,
   resetForm: PropTypes.func,
+  entity: PropTypes.object,
 };
 
 Attachment.contextTypes = {
