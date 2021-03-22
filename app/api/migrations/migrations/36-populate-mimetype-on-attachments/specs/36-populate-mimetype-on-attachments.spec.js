@@ -30,7 +30,7 @@ describe('migration populate-mimetype-on-attachments', () => {
   it('should populate mimetype with Content-Type', async () => {
     const fixtures = {
       files: [{ url: 'some/file/path.jpg' }, { url: 'some/other/path.jpg' }],
-    }
+    };
     await testingDB.clearAllAndLoad(fixtures);
     const headers = {
       get: jest
