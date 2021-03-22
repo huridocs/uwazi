@@ -1,5 +1,3 @@
-/** @format */
-
 import entitiesUtil from 'app/Entities/utils/filterBaseProperties';
 import { Select as SimpleSelect } from 'app/Forms';
 import { I18NLink, t, Translate } from 'app/I18N';
