@@ -6,7 +6,7 @@ import { fixtures, groupA, userA, userB } from 'api/permissions/specs/fixtures';
 import { PermissionsDataSchema } from '../../../shared/types/permissionType';
 
 const publicPermission = {
-  _id: 'public',
+  refId: 'public',
   label: 'Public',
   type: PermissionType.PUBLIC,
   level: AccessLevels.READ,
@@ -30,8 +30,9 @@ describe('permissions', () => {
           { refId: 'user2', type: PermissionType.USER, level: AccessLevels.WRITE },
         ],
       };
-      await entitiesPermissions.set(permissionsData);
+      await entitiesPermissions.set(permissionsData, { role: 'collaborator' });
       const storedEntities = await entities.get({}, { sharedId: 1, permissions: 1 });
+
       const updateEntities = storedEntities.filter(entity =>
         ['shared1', 'shared2'].includes(entity.sharedId!)
       );
@@ -55,7 +56,7 @@ describe('permissions', () => {
         ],
       };
       try {
-        await entitiesPermissions.set(permissionsData);
+        await entitiesPermissions.set(permissionsData, { role: 'collaborator' });
         fail('should throw error');
       } catch (e) {
         expect(e.errors[0].keyword).toEqual('duplicatedPermissions');
@@ -66,25 +67,40 @@ describe('permissions', () => {
       it('should save the entity with the publish field set to the correct value', async () => {
         const permissionsData: PermissionsDataSchema = {
           ids: ['shared1', 'shared2'],
-          permissions: [{ _id: 'user1', type: 'user', level: 'write' }],
+          permissions: [{ refId: 'user1', type: 'user', level: 'write' }],
         };
 
-        await entitiesPermissions.set(permissionsData);
-        let storedEntities = await entities.get({ sharedId: 'shared1' });
+        await entitiesPermissions.set(permissionsData, { role: 'admin' });
+        let storedEntities = await entities.get({ sharedId: 'shared1' }, '+permissions');
 
         storedEntities.forEach(entity => {
           expect(entity.permissions).toEqual(permissionsData.permissions);
           expect(entity.published).toBe(false);
         });
 
-        permissionsData.permissions.push({ _id: 'public', type: 'public', level: 'read' });
-        await entitiesPermissions.set(permissionsData);
-        storedEntities = await entities.get({ sharedId: 'shared1' });
+        permissionsData.permissions.push({ refId: 'public', type: 'public', level: 'read' });
+        await entitiesPermissions.set(permissionsData, { role: 'admin' });
+        storedEntities = await entities.get({ sharedId: 'shared1' }, '+permissions');
 
         storedEntities.forEach(entity => {
           expect(entity.permissions).toEqual([permissionsData.permissions[0]]);
           expect(entity.published).toBe(true);
         });
+      });
+
+      it('should throw if non admin/editor changes the publishing status', async () => {
+        const permissionsData: PermissionsDataSchema = {
+          ids: ['shared1'],
+          permissions: [{ refId: 'user1', type: 'user', level: 'write' }, publicPermission],
+        };
+
+        try {
+          await entitiesPermissions.set(permissionsData, { role: 'collaborator' });
+          fail('should throw forbidden exception');
+        } catch (e) {
+          const storedEntities = await entities.get({ sharedId: 'shared1' });
+          expect(storedEntities[0].published).toBe(true);
+        }
       });
     });
   });

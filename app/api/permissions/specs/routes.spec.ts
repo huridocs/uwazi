@@ -46,7 +46,10 @@ describe('permissions routes', () => {
         user = { username: 'user 1', role: 'admin' };
         const permissionsData = {
           ids: ['shared1'],
-          permissions: [{ refId: 'user1', type: 'user', level: 'read' }],
+          permissions: [
+            { refId: 'user1', type: 'user', level: 'read' },
+            { refId: 'public', type: 'public', level: 'read' },
+          ],
         };
         const response = await request(app)
           .post('/api/entities/permissions')
