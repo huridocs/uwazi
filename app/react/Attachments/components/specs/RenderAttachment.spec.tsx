@@ -94,7 +94,10 @@ describe('RenderAttachment', () => {
 
       it('should render a MarkdownMedia component', () => {
         const video: ShallowWrapper<typeof MarkdownMedia> = component.find(MarkdownMedia);
-        expect(video.props().config).toBe('(http://awesomecats.org/ahappycat.mp4)');
+        expect(video.props()).toEqual({
+          config: '(http://awesomecats.org/ahappycat.mp4)',
+          compact: false,
+        });
       });
     });
 
@@ -111,7 +114,7 @@ describe('RenderAttachment', () => {
 
       it('should render a tag image with the url of the image', () => {
         const video: ShallowWrapper<typeof MarkdownMedia> = component.find(MarkdownMedia);
-        expect(video.props().config).toBe('(/api/files/4h4ppyc47.mp4)');
+        expect(video.props()).toEqual({ config: '(/api/files/4h4ppyc47.mp4)', compact: false });
       });
     });
 
@@ -129,7 +132,10 @@ describe('RenderAttachment', () => {
 
       it('should render a tag image with the url of the image', () => {
         const video: ShallowWrapper<typeof MarkdownMedia> = component.find(MarkdownMedia);
-        expect(video.props().config).toBe('(http://reacplayer.valid.url?w=happycat)');
+        expect(video.props()).toEqual({
+          config: '(http://reacplayer.valid.url?w=happycat)',
+          compact: false,
+        });
       });
     });
   });
