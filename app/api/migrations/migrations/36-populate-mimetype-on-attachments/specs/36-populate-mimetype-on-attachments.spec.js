@@ -134,4 +134,34 @@ describe('migration populate-mimetype-on-attachments', () => {
     );
     expect(childProcess.execSync).not.toHaveBeenCalledWith('/some/path/to/file.pdf');
   });
+  it('should not use local attachment if url field is present', async () => {
+    const mixedFixtures = {
+      files: [
+        {
+          filename: 'somename.pdf',
+          type: 'attachment',
+          url: '/some/url/to/file.something',
+        },
+      ],
+    };
+    await testingDB.clearAllAndLoad(mixedFixtures);
+    const headers = {
+      get: jest
+        .fn()
+        .mockReturnValueOnce('application/pdf')
+        .mockReturnValueOnce('mimetype2'),
+    };
+    headRequestMock.and.returnValue(
+      Promise.resolve({
+        headers,
+      })
+    );
+    execSyncMock.and.returnValue('application/pdf');
+    attachmentPathMock.and.returnValue('/some/path/to/file.pdf');
+    await migration.up(testingDB.mongodb);
+
+    expect(attachmentMethods.attachmentsPath).not.toHaveBeenCalled();
+    expect(childProcess.execSync).not.toHaveBeenCalled();
+    expect(request.head).toHaveBeenCalledWith(mixedFixtures.files[0].url);
+  });
 });
