@@ -6,27 +6,27 @@ import insertFixtures from '../helpers/insertFixtures';
 
 selectors.libraryView.filters = {
   firstPower:
-    '#filtersForm > div:nth-child(1) > ul > li.wide > ul > li:nth-child(2) > label > span.multiselectItem-name',
+    '#filtersForm > div.form-group:nth-child(2) >  ul > .wide > ul > li:nth-child(2) > label > .multiselectItem-name',
   secondPower:
-    '#filtersForm > div:nth-child(1) > ul > li.wide > ul > li:nth-child(3) > label > span.multiselectItem-name',
+    '#filtersForm > div.form-group:nth-child(2) >  ul > .wide > ul > li:nth-child(3) > label > .multiselectItem-name',
   thirdPorwer:
-    '#filtersForm > div:nth-child(1) > ul > li.wide > ul > li:nth-child(4) > label > span.multiselectItem-name',
-  sixthPower:
-    '#filtersForm > div:nth-child(1) > ul > li.wide > ul > li:nth-child(6) > label > span.multiselectItem-name',
+    '#filtersForm > div.form-group:nth-child(2) >  ul > .wide > ul > li:nth-child(4) > label > .multiselectItem-name',
   fifthPower:
-    '#filtersForm > div:nth-child(1) > ul > li.wide > ul > li:nth-child(5) > label > span.multiselectItem-name',
-  superPowers: '#filtersForm > div:nth-child(1) > ul > li.wide > ul > li',
-  superPowersAndOrSwitch: '#filtersForm > div:nth-child(1) > ul > li:nth-child(1) > div > label',
+    '#filtersForm > div.form-group:nth-child(2) >  ul > .wide > ul > li:nth-child(5) > label > .multiselectItem-name',
+  sixthPower:
+    '#filtersForm > div.form-group:nth-child(2) >  ul > .wide > ul > li:nth-child(6) > label > .multiselectItem-name',
+  superPowers: '#filtersForm > div:nth-child(2) > ul > li.wide > ul > li',
+  superPowersAndOrSwitch: '#filtersForm > div:nth-child(2) > ul > li:nth-child(1) > div > label',
   superPowerMoreButton:
-    '#filtersForm > div:nth-child(1) > ul > li.wide > ul > .multiselectActions button',
+    '#filtersForm > div:nth-child(2) > ul > li.wide > ul > .multiselectActions button',
   searchButton:
-    '#app > div.content > div > div > aside.side-panel.library-filters > div.sidepanel-footer > button',
+    '#app > div.content > div > div > div > aside.side-panel.library-filters > div.sidepanel-footer > .btn-success',
   planetsConqueredFrom: '#filtersForm div.Numeric__From > input',
   planetsConqueredTo: '#filtersForm div.Numeric__To > input',
   dobFrom:
-    '#filtersForm > div:nth-child(4) > ul > li.wide > div > div.DatePicker__From > div > div > input',
+    '#filtersForm > div:nth-child(5) > ul > li.wide > div > div.DatePicker__From > div > div > input',
   dobTo:
-    '#filtersForm > div:nth-child(4) > ul > li.wide > div > div.DatePicker__To > div > div > input',
+    '#filtersForm > div:nth-child(5) > ul > li.wide > div > div.DatePicker__To > div > div > input',
 };
 
 const nightmare = createNightmare().gotoLibrary();
