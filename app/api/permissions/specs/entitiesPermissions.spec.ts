@@ -9,17 +9,21 @@ describe('permissions', () => {
     await testingDB.clearAllAndLoad(fixtures);
   });
 
+  afterAll(async () => {
+    await testingDB.disconnect();
+  });
+
   describe('set entities permissions', () => {
     it('should update the specified entities with the passed permissions in all entities languages', async () => {
       const permissionsData = {
         ids: ['shared1', 'shared2'],
         permissions: [
-          { _id: 'user1', type: PermissionType.USER, level: AccessLevels.READ },
-          { _id: 'user2', type: PermissionType.USER, level: AccessLevels.WRITE },
+          { refId: 'user1', type: PermissionType.USER, level: AccessLevels.READ },
+          { refId: 'user2', type: PermissionType.USER, level: AccessLevels.WRITE },
         ],
       };
       await entitiesPermissions.set(permissionsData);
-      const storedEntities = await entities.get();
+      const storedEntities = await entities.get({}, { sharedId: 1, permissions: 1 });
       const updateEntities = storedEntities.filter(entity =>
         ['shared1', 'shared2'].includes(entity.sharedId!)
       );
@@ -38,8 +42,8 @@ describe('permissions', () => {
       const permissionsData = {
         ids: ['shared1'],
         permissions: [
-          { _id: 'user1', type: 'user', level: 'write' },
-          { _id: 'user1', type: 'user', level: 'read' },
+          { refId: 'user1', type: 'user', level: 'write' },
+          { refId: 'user1', type: 'user', level: 'read' },
         ],
       };
       try {
@@ -56,19 +60,19 @@ describe('permissions', () => {
       const permissions = await entitiesPermissions.get(['shared1', 'shared2']);
       expect(permissions).toEqual([
         {
-          _id: groupA._id,
+          refId: groupA._id,
           label: groupA.name,
           level: MixedAccess.MIXED,
           type: PermissionType.GROUP,
         },
         {
-          _id: userA._id,
+          refId: userA._id,
           label: userA.username,
           level: AccessLevels.READ,
           type: PermissionType.USER,
         },
         {
-          _id: userB._id,
+          refId: userB._id,
           label: userB.username,
           level: MixedAccess.MIXED,
           type: PermissionType.USER,
@@ -80,19 +84,19 @@ describe('permissions', () => {
       const permissions = await entitiesPermissions.get(['shared1', 'shared3']);
       expect(permissions).toEqual([
         {
-          _id: groupA._id,
+          refId: groupA._id,
           label: groupA.name,
           level: MixedAccess.MIXED,
           type: PermissionType.GROUP,
         },
         {
-          _id: userA._id,
+          refId: userA._id,
           label: userA.username,
           level: MixedAccess.MIXED,
           type: PermissionType.USER,
         },
         {
-          _id: userB._id,
+          refId: userB._id,
           label: userB.username,
           level: MixedAccess.MIXED,
           type: PermissionType.USER,

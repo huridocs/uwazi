@@ -8,6 +8,7 @@ import { tenants } from 'api/tenants/tenantContext';
 import { setupTestUploadedPaths, testingUploadPaths } from 'api/files/filesystem';
 import { ThesaurusSchema } from 'shared/types/thesaurusType';
 import { UserGroupSchema } from 'shared/types/userGroupType';
+import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
 import { elasticTesting } from './elastic_testing';
 import { testingTenants } from './testingTenants';
 
@@ -65,6 +66,7 @@ const testingDB: {
   clear: (collections?: string[] | undefined) => Promise<void>;
   clearAllAndLoad: (fixtures: DBFixture, elasticIndex?: string) => Promise<void>;
   dbName: string;
+  setupFixturesAndContext: (fixtures: DBFixture, elasticIndex?: string) => Promise<void>;
 } = {
   mongodb: null,
   dbName: '',
@@ -117,13 +119,21 @@ const testingDB: {
     await fixturer.clear(mongodb, collections);
   },
 
-  async clearAllAndLoad(fixtures: DBFixture, elasticIndex?: string) {
+  async setupFixturesAndContext(fixtures: DBFixture, elasticIndex?: string) {
     await this.connect();
     await fixturer.clearAllAndLoad(mongodb, fixtures);
+    new UserInContextMockFactory().mockEditorUser();
     if (elasticIndex) {
       testingTenants.changeCurrentTenant({ indexName: elasticIndex });
       await elasticTesting.reindex();
     }
+  },
+
+  /**
+   * @deprecated
+   */
+  async clearAllAndLoad(fixtures: DBFixture, elasticIndex?: string) {
+    await this.setupFixturesAndContext(fixtures, elasticIndex);
   },
 };
 

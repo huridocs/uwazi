@@ -684,6 +684,20 @@ describe('Users', () => {
     });
   });
 
+  describe('getById', () => {
+    it('should return the asked user without password or groups', async () => {
+      const user = await users.getById(userId);
+      expect(user.username).toBe('username');
+      expect(user.password).toBe(undefined);
+      expect(user.groups).toBe(undefined);
+    });
+    it('should return the asked user with groups if asked for', async () => {
+      const user = await users.getById(userId, '-password', true);
+      expect(user.username).toBe('username');
+      expect(user.groups[0].name).toBe('Group 2');
+    });
+  });
+
   describe('get', () => {
     it('should return all users without group data', async () => {
       const userList = await users.get();

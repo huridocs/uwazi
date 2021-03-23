@@ -4,7 +4,8 @@ import { setUpApp } from 'api/utils/testingRoutes';
 import { permissionRoutes } from 'api/permissions/routes';
 import { entitiesPermissions } from 'api/permissions/entitiesPermissions';
 import { collaborators } from 'api/permissions/collaborators';
-import { testingTenants } from 'api/utils/testingTenants';
+import testingDB from 'api/utils/testing_db';
+import errorLog from 'api/log/errorLog';
 
 jest.mock(
   '../../utils/languageMiddleware.ts',
@@ -28,6 +29,14 @@ describe('permissions routes', () => {
     }
   );
 
+  beforeAll(async () => {
+    await testingDB.connect();
+  });
+
+  afterAll(async () => {
+    await testingDB.disconnect();
+  });
+
   describe('entities', () => {
     describe('POST', () => {
       beforeEach(() => {
@@ -37,7 +46,7 @@ describe('permissions routes', () => {
         user = { username: 'user 1', role: 'admin' };
         const permissionsData = {
           ids: ['shared1'],
-          permissions: [{ _id: 'user1', type: 'user', level: 'read' }],
+          permissions: [{ refId: 'user1', type: 'user', level: 'read' }],
         };
         const response = await request(app)
           .post('/api/entities/permissions')
@@ -61,7 +70,7 @@ describe('permissions routes', () => {
         user = { username: 'user 1', role: 'admin' };
         const permissionsData = {
           ids: ['shared1'],
-          permissions: [{ _id: 'user1', type: 'user', level: 'mixed' }],
+          permissions: [{ refId: 'user1', type: 'user', level: 'mixed' }],
         };
         const response = await request(app)
           .post('/api/entities/permissions')
@@ -74,7 +83,7 @@ describe('permissions routes', () => {
         user = undefined;
         const permissionsData = {
           ids: ['shared1'],
-          permissions: [{ _id: 'user1', type: 'user', level: 'read' }],
+          permissions: [{ refId: 'user1', type: 'user', level: 'read' }],
         };
         const response = await request(app)
           .post('/api/entities/permissions')
@@ -82,18 +91,39 @@ describe('permissions routes', () => {
           .send(permissionsData);
         expect(response.unauthorized).toBe(true);
       });
+
+      it.each(['admin', 'editor', 'collaborator'])('should authorized the role %s', async role => {
+        user = { username: 'user 1', role };
+        const permissionsData = {
+          ids: ['shared1'],
+          permissions: [{ refId: 'user1', type: 'user', level: 'read' }],
+        };
+        const response = await request(app)
+          .post('/api/entities/permissions')
+          .set('X-Requested-With', 'XMLHttpRequest')
+          .send(permissionsData);
+        expect(response.status).toBe(200);
+      });
     });
 
     describe('Error Handling', () => {
-      beforeEach(() => {
-        testingTenants.mockCurrentTenant({ name: 'default' });
+      let originalSilent: boolean | undefined;
+
+      beforeAll(() => {
+        originalSilent = errorLog.transports[1].silent;
+        errorLog.transports[1].silent = true;
       });
+
+      afterAll(() => {
+        errorLog.transports[1].silent = originalSilent;
+      });
+
       it('should handle errors on POST', async () => {
         spyOn(entitiesPermissions, 'set').and.throwError('error on save');
         user = { username: 'user 1', role: 'admin' };
         const permissionsData = {
           ids: ['shared1'],
-          permissions: [{ _id: 'user1', type: 'user', level: 'read' }],
+          permissions: [{ refId: 'user1', type: 'user', level: 'read' }],
         };
         const response = await request(app)
           .post('/api/entities/permissions')
@@ -131,7 +161,7 @@ describe('permissions routes', () => {
         spyOn(entitiesPermissions, 'get').and.returnValue(
           Promise.resolve([
             {
-              _id: 'user1',
+              refId: 'user1',
               level: 'read',
             },
           ])
@@ -143,7 +173,7 @@ describe('permissions routes', () => {
             ids: JSON.stringify(['sharedId1', 'sharedId2']),
           });
         expect(response.status).toBe(200);
-        expect(response.body).toEqual([{ _id: 'user1', level: 'read' }]);
+        expect(response.body).toEqual([{ refId: 'user1', level: 'read' }]);
       });
     });
   });
@@ -152,7 +182,7 @@ describe('permissions routes', () => {
     describe('GET', () => {
       beforeEach(() => {
         spyOn(collaborators, 'search').and.returnValue(
-          Promise.resolve([{ _id: 'user1', type: 'user' }])
+          Promise.resolve([{ refId: 'user1', type: 'user' }])
         );
       });
 
@@ -162,7 +192,7 @@ describe('permissions routes', () => {
           .set('X-Requested-With', 'XMLHttpRequest')
           .query({ filterTerm: 'username' });
         expect(response.status).toBe(200);
-        expect(response.body).toEqual([{ _id: 'user1', type: 'user' }]);
+        expect(response.body).toEqual([{ refId: 'user1', type: 'user' }]);
       });
 
       it('should not validate if no filterTerm is passed', async () => {

@@ -96,6 +96,7 @@ import { faUserTimes } from '@fortawesome/free-solid-svg-icons/faUserTimes';
 import { faHandPaper } from '@fortawesome/free-solid-svg-icons/faHandPaper';
 import { faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons/faExternalLinkAlt';
 import { twoFactorAuth } from 'UI/Icon/two-factor-auth';
+import { infoCircleHollow } from 'UI/Icon/info-circle-hollow';
 import { faTasks } from '@fortawesome/free-solid-svg-icons/faTasks';
 import { saveAndNext } from './save-and-next';
 import { exportCsv } from './export-csv';
@@ -205,6 +206,7 @@ const icons = {
   copyFrom,
   funnelFilter,
   twoFactorAuth,
+  infoCircleHollow,
 };
 
 export const loadIcons = () => {

@@ -195,7 +195,6 @@ describe('csvLoader', () => {
 
   describe('when sharedId is provided', () => {
     it('should update the entitiy', async () => {
-      entities.save.mockRestore();
       const entity = await entities.save(
         { title: 'entity4444', template: template1Id },
         { user: {}, language: 'en' }

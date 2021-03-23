@@ -2,7 +2,8 @@ import users from 'api/users/users';
 import userGroups from 'api/usergroups/userGroups';
 import { PermissionType } from 'shared/types/permissionSchema';
 import { MemberWithPermission } from 'shared/types/entityPermisions';
-import { GroupMemberSchema } from 'shared/types/userGroupType';
+import { UserSchema } from 'shared/types/userType';
+import { WithId } from 'api/odm';
 
 export const collaborators = {
   search: async (filterTerm: string) => {
@@ -16,9 +17,9 @@ export const collaborators = {
 
     const availableCollaborators: MemberWithPermission[] = [];
 
-    matchedUsers.forEach((user: GroupMemberSchema) => {
+    matchedUsers.forEach((user: WithId<UserSchema>) => {
       availableCollaborators.push({
-        _id: user._id,
+        refId: user._id,
         type: PermissionType.USER,
         label: user.username!,
       });
@@ -26,7 +27,7 @@ export const collaborators = {
 
     groups.forEach(group => {
       availableCollaborators.push({
-        _id: group._id!.toString(),
+        refId: group._id!.toString(),
         type: PermissionType.GROUP,
         label: group.name,
       });

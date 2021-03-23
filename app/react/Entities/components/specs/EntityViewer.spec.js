@@ -44,6 +44,45 @@ describe('EntityViewer', () => {
             { _id: 't3', count: 3 },
           ],
         },
+        { key: 'g3', templates: [{ _id: 't4', count: 4 }] },
+        {
+          key: 'g4',
+          templates: [
+            { _id: 't2', count: 5 },
+            { _id: 't6', count: 6 },
+          ],
+        },
+        {
+          key: 'g5',
+          templates: [{ _id: 't6', count: 6 }],
+        },
+      ]),
+      hubs: Immutable.fromJS([
+        {
+          hub: '1',
+          rightRelationships: [
+            { template: 'g1', relationships: [{ entityData: { template: 't1' } }] },
+          ],
+        },
+        {
+          hub: '2',
+          rightRelationships: [
+            { template: 'g2', relationships: [{ entityData: { template: 't2' } }] },
+            { template: 'g2', relationships: [{ entityData: { template: 't3' } }] },
+          ],
+        },
+        {
+          hub: '4',
+          rightRelationships: [
+            { template: 'g4', relationships: [{ entityData: { template: 't2' } }] },
+          ],
+        },
+        {
+          hub: '5',
+          rightRelationships: [
+            { template: 'g5', relationships: [{ entityData: { template: 't6' } }] },
+          ],
+        },
       ]),
       deleteConnection: jasmine.createSpy('deleteConnection'),
       startNewConnection: jasmine.createSpy('startNewConnection'),
@@ -60,7 +99,45 @@ describe('EntityViewer', () => {
   it('should render the ConnectionsGroups', () => {
     render();
 
-    expect(component.find(ConnectionsGroups).length).toBe(1);
+    const connectionsGroups = component.find(ConnectionsGroups);
+    expect(connectionsGroups.length).toBe(1);
+    expect(connectionsGroups.props().connectionsGroups.size).toEqual(4);
+    expect(
+      connectionsGroups
+        .props()
+        .connectionsGroups.get(0)
+        .get('key')
+    ).toEqual('g1');
+    expect(
+      connectionsGroups
+        .props()
+        .connectionsGroups.get(1)
+        .get('key')
+    ).toEqual('g2');
+    expect(
+      connectionsGroups
+        .props()
+        .connectionsGroups.get(2)
+        .get('key')
+    ).toEqual('g4');
+    expect(
+      connectionsGroups
+        .props()
+        .connectionsGroups.get(2)
+        .get('templates').size
+    ).toEqual(1);
+    expect(
+      connectionsGroups
+        .props()
+        .connectionsGroups.get(3)
+        .get('key')
+    ).toEqual('g5');
+    expect(
+      connectionsGroups
+        .props()
+        .connectionsGroups.get(3)
+        .get('templates').size
+    ).toEqual(1);
   });
 
   it('should render the ConnectionsList passing deleteConnection as prop', () => {

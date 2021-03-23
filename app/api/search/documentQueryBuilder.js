@@ -1,6 +1,7 @@
 /* eslint-disable camelcase, max-lines */
 
 import { preloadOptionsSearch } from 'shared/config';
+import { permissionsContext } from 'api/permissions/permissionsContext';
 import filterToMatch, { multiselectFilter } from './metadataMatchers';
 import { propertyToAggregation, generatedTocAggregations } from './metadataAggregations';
 
@@ -25,6 +26,7 @@ export default function() {
         'uploaded',
         'published',
         'relationships',
+        'permissions',
       ],
     },
     from: 0,
@@ -351,6 +353,22 @@ export default function() {
 
     resetAggregations() {
       baseQuery.aggregations.all.aggregations = {};
+      return this;
+    },
+
+    filterByPermissions() {
+      const user = permissionsContext.getUserInContext();
+      if (user && !['admin', 'editor'].includes(user.role)) {
+        const permissionTargetIds = user.groups
+          ? user.groups.map(group => group._id.toString())
+          : [];
+        permissionTargetIds.push(user._id.toString());
+        baseQuery.query.bool.filter.push({
+          terms: {
+            'permissions.refId': permissionTargetIds,
+          },
+        });
+      }
       return this;
     },
   };

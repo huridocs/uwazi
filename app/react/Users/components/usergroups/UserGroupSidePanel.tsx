@@ -5,10 +5,11 @@ import { GroupMemberSchema, UserGroupSchema } from 'shared/types/userGroupType';
 import { t, Translate } from 'app/I18N';
 import { ConfirmButton, SidePanel } from 'app/Layout';
 import MultiSelect from 'app/Forms/components/MultiSelect';
+import { UserSchema } from 'shared/types/userType';
 
 export interface UserGroupSidePanelProps {
   userGroup: UserGroupSchema;
-  users: GroupMemberSchema[];
+  users: Partial<UserSchema>[];
   userGroups: UserGroupSchema[];
   opened: boolean;
   closePanel: (event: any) => void;
@@ -16,7 +17,7 @@ export interface UserGroupSidePanelProps {
   onDelete: (event: any) => void;
 }
 
-const sortByName = (members: GroupMemberSchema[]) =>
+const sortByName = (members: Partial<UserSchema>[]) =>
   members.sort((m1, m2) => (m1.username || '').localeCompare(m2.username || ''));
 
 const mapUserIds = (users: GroupMemberSchema[]) =>
@@ -36,11 +37,10 @@ export const UserGroupSidePanel = ({
   const availableUsers = sortByName(users);
 
   const saveGroup = (groupToSave: UserGroupSchema) => {
-    const updatedMembers: GroupMemberSchema[] = users
-      .filter((user: GroupMemberSchema) => selectedUsers.includes(user._id as string))
+    const updatedMembers = users
+      .filter((user: Partial<UserSchema>) => selectedUsers.includes(user._id as string))
       .map(user => ({
         _id: user._id,
-        username: user.username,
       }));
     onSave({ ...groupToSave, members: [...updatedMembers] });
   };

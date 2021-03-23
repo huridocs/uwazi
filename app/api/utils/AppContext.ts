@@ -9,7 +9,9 @@ class AppContext {
 
   private getContextObject() {
     const data = this.storage.getStore();
-    if (!data) throw new Error('Accessing nonexistent async context');
+    if (!data) {
+      throw new Error('Accessing nonexistent async context');
+    }
     return data;
   }
 

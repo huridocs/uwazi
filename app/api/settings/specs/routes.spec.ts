@@ -1,4 +1,5 @@
 import request from 'supertest';
+import { permissionsContext } from 'api/permissions/permissionsContext';
 import { NextFunction, Application } from 'express';
 import { setUpApp } from 'api/utils/testingRoutes';
 import db from 'api/utils/testing_db';
@@ -48,6 +49,15 @@ describe('Settings routes', () => {
     });
 
     describe('newNameGeneration', () => {
+      beforeEach(() => {
+        jest.spyOn(permissionsContext, 'getUserInContext').mockReturnValue({
+          _id: 'user1',
+          username: 'User 1',
+          email: 'user@test.test',
+          role: 'admin',
+        });
+      });
+
       it('should migrate all entity names when newNameGeneration is saved as true', async () => {
         await request(app)
           .post('/api/settings')

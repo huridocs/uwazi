@@ -24,7 +24,7 @@ const validate = (assignments: MemberWithPermission[]) =>
       item.level !== MixedAccess.MIXED
         ? null
         : {
-            _id: item._id,
+            refId: item.refId,
             type: item.type,
           }
     )
@@ -32,7 +32,7 @@ const validate = (assignments: MemberWithPermission[]) =>
 
 const pseudoMembers: MemberWithPermission[] = [
   {
-    _id: '',
+    refId: '',
     type: 'group',
     label: 'Administrators and Editors',
     level: AccessLevels.WRITE,
@@ -56,14 +56,16 @@ export const ShareEntityModalComponent = ({
   ) => {
     const collaborators = await searchCollaborators(searchTerm);
     setResults(
-      collaborators.filter(r => !currentAssignments.find(a => a._id === r._id && a.type === r.type))
+      collaborators.filter(
+        r => !currentAssignments.find(a => a.refId === r.refId && a.type === r.type)
+      )
     );
   };
 
   useEffect(() => {
     loadGrantedPermissions(sharedIds)
       .then(permissions => {
-        const loadedAssignments = permissions.map(p => ({ ...p, id: p._id }));
+        const loadedAssignments = permissions.map(p => ({ ...p, refId: p.refId }));
         setAssignments(loadedAssignments);
 
         searchAndLoadCollabs('', loadedAssignments).catch(() => {});
@@ -83,7 +85,7 @@ export const ShareEntityModalComponent = ({
 
   const onSelectHandler = (value: MemberWithPermission) => {
     setAssignments([...assignments, { ...value, level: value.level || AccessLevels.READ }]);
-    setResults(results.filter(r => !(value._id === r._id && value.type === r.type)));
+    setResults(results.filter(r => !(value.refId === r.refId && value.type === r.type)));
     setDirty(true);
   };
 
@@ -97,7 +99,7 @@ export const ShareEntityModalComponent = ({
     await savePermissions({
       ids: sharedIds,
       permissions: assignments.map(a => ({
-        _id: a._id,
+        refId: a.refId,
         type: a.type,
         level: a.level as AccessLevels,
       })),
@@ -126,7 +128,7 @@ export const ShareEntityModalComponent = ({
           <MembersList
             members={pseudoMembers.concat(assignments)}
             onChange={value => {
-              setAssignments(value.filter(m => m._id));
+              setAssignments(value.filter(m => m.refId));
               setDirty(true);
             }}
             validationErrors={validationErrors}

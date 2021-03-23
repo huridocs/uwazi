@@ -30,6 +30,44 @@ import { deleteEntity } from '../actions/actions';
 import { showTab } from '../actions/uiActions';
 import EntityForm from '../containers/EntityForm';
 
+const filterVisibleConnections = (connectionsGroups, hubs) =>
+  connectionsGroups
+    .map(group => {
+      const relationsForRelType = hubs.reduce((memo, hub) => {
+        const relations = hub
+          .get('rightRelationships')
+          .filter(r => r.get('template') === group.get('key'))
+          .reduce((memo2, r) => memo2.concat(r.get('relationships').toJS()), []);
+
+        if (!relations.length) {
+          return memo;
+        }
+
+        return memo.concat(relations);
+      }, []);
+
+      if (!relationsForRelType.length) {
+        return null;
+      }
+
+      const entityTemplates = relationsForRelType.map(r => r.entityData.template);
+
+      const filteredTemplates = group
+        .get('templates')
+        .map(temp => {
+          if (entityTemplates.includes(temp.get('_id'))) {
+            return temp;
+          }
+          return null;
+        })
+        .filter(temp => temp);
+
+      const groupWithFilteredTemplates = group.set('templates', filteredTemplates);
+
+      return groupWithFilteredTemplates;
+    })
+    .filter(g => g);
+
 export class EntityViewer extends Component {
   constructor(props, context) {
     super(props, context);
@@ -89,11 +127,13 @@ export class EntityViewer extends Component {
   }
 
   render() {
-    const { entity, entityBeingEdited, tab, connectionsGroups, relationships } = this.props;
+    const { entity, entityBeingEdited, tab, connectionsGroups, hubs, relationships } = this.props;
+
+    const visibleConnectionGroups = filterVisibleConnections(connectionsGroups, hubs);
     const { panelOpen, copyFrom, copyFromProps } = this.state;
     const selectedTab = tab;
     const rawEntity = entity.toJS();
-    const summary = connectionsGroups.reduce(
+    const summary = visibleConnectionGroups.reduce(
       (summaryData, g) => {
         g.get('templates').forEach(template => {
           summaryData.totalConnections += template.get('count');
@@ -229,7 +269,7 @@ export class EntityViewer extends Component {
               <TabContent
                 for={selectedTab === 'info' || selectedTab === 'connections' ? selectedTab : 'none'}
               >
-                <ConnectionsGroups />
+                <ConnectionsGroups connectionsGroups={visibleConnectionGroups} />
               </TabContent>
             </Tabs>
           </div>
@@ -283,6 +323,7 @@ EntityViewer.propTypes = {
   entity: PropTypes.instanceOf(Immutable.Map).isRequired,
   entityBeingEdited: PropTypes.bool,
   connectionsGroups: PropTypes.object,
+  hubs: PropTypes.object,
   relationTypes: PropTypes.array,
   deleteEntity: PropTypes.func.isRequired,
   connectionsChanged: PropTypes.func,
@@ -308,6 +349,7 @@ const mapStateToProps = state => ({
   templates: state.templates,
   relationships: state.entityView.entity.get('relations'),
   connectionsGroups: state.relationships.list.connectionsGroups,
+  hubs: state.relationships.hubs,
   entityBeingEdited: !!state.entityView.entityForm._id,
   tab: state.entityView.uiState.get('tab'),
   library: state.library,

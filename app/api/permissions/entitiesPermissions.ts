@@ -18,7 +18,7 @@ const setAdditionalData = (
   permission: PermissionSchema,
   additional: (data: GroupMemberSchema | UserGroupSchema) => {}
 ) => {
-  const userData = peopleList.find(u => u._id!.toString() === permission._id.toString());
+  const userData = peopleList.find(u => u._id!.toString() === permission.refId.toString());
   return userData ? { ...permission, ...additional(userData) } : undefined;
 };
 
@@ -51,13 +51,16 @@ async function setAccessLevelAndPermissionData(
     } as MemberWithPermission;
   });
 
-  return permissionsData.filter(p => p._id !== undefined);
+  return permissionsData.filter(p => p.refId !== undefined);
 }
 
 export const entitiesPermissions = {
   set: async (permissionsData: any) => {
     await validateUniquePermissions(permissionsData);
-    const currentEntities = await entities.get({ sharedId: { $in: permissionsData.ids } }, '_id');
+    const currentEntities = await entities.get(
+      { sharedId: { $in: permissionsData.ids } },
+      '_id,+permissions'
+    );
 
     const toSave = currentEntities.map(entity => ({
       _id: entity._id,
@@ -78,11 +81,11 @@ export const entitiesPermissions = {
       .filter(p => p)
       .forEach(entityPermissions => {
         entityPermissions!.forEach(permission => {
-          const grantedPermission = grantedPermissions[permission._id.toString()];
+          const grantedPermission = grantedPermissions[permission.refId.toString()];
           if (grantedPermission) {
             grantedPermission.access.push(permission.level as AccessLevels);
           } else {
-            grantedPermissions[permission._id.toString()] = {
+            grantedPermissions[permission.refId.toString()] = {
               permission,
               access: [permission.level as AccessLevels],
             };

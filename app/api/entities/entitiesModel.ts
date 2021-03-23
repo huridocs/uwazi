@@ -1,4 +1,4 @@
-import { instanceModel } from 'api/odm';
+import { instanceModelWithPermissions } from 'api/odm/ModelWithPermissions';
 import mongoose from 'mongoose';
 import { MetadataObjectSchema, PropertyValueSchema } from 'shared/types/commonTypes';
 import { EntitySchema } from 'shared/types/entityType';
@@ -26,14 +26,14 @@ const mongoSchema = new mongoose.Schema(
     metadata: mongoose.Schema.Types.Mixed,
     suggestedMetadata: mongoose.Schema.Types.Mixed,
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'users' },
-    permissions: mongoose.Schema.Types.Mixed,
+    permissions: { type: mongoose.Schema.Types.Mixed, select: false },
   },
   { emitIndexErrors: true }
 );
 
 mongoSchema.index({ title: 'text' }, { language_override: 'mongoLanguage' });
 
-const Model = instanceModel<EntitySchema>('entities', mongoSchema);
+const Model = instanceModelWithPermissions<EntitySchema>('entities', mongoSchema);
 
 const supportedLanguages = [
   'da',

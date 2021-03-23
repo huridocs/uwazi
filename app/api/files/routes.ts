@@ -50,7 +50,7 @@ export default (app: Application) => {
 
   app.post(
     '/api/files/upload/attachment',
-    needsAuthorization(['admin', 'editor']),
+    needsAuthorization(['admin', 'editor', 'collaborator']),
     uploadMiddleware(attachmentsPath),
     activitylogMiddleware,
     (req, res, next) => {
@@ -63,14 +63,18 @@ export default (app: Application) => {
     }
   );
 
-  app.post('/api/files', needsAuthorization(['admin', 'editor']), async (req, res, next) => {
-    files
-      .save(req.body)
-      .then(result => {
-        res.json(result);
-      })
-      .catch(next);
-  });
+  app.post(
+    '/api/files',
+    needsAuthorization(['admin', 'editor', 'collaborator']),
+    (req, res, next) => {
+      files
+        .save(req.body)
+        .then(result => {
+          res.json(result);
+        })
+        .catch(next);
+    }
+  );
 
   app.post(
     '/api/files/tocReviewed',

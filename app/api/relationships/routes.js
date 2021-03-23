@@ -1,17 +1,19 @@
-/** @format */
-
 import Joi from 'joi';
 import relationships from './relationships.js';
 import { validation } from '../utils';
 import needsAuthorization from '../auth/authMiddleware';
 
 export default app => {
-  app.post('/api/relationships/bulk', needsAuthorization(['admin', 'editor']), (req, res, next) => {
-    relationships
-      .bulk(req.body, req.language)
-      .then(response => res.json(response))
-      .catch(next);
-  });
+  app.post(
+    '/api/relationships/bulk',
+    needsAuthorization(['admin', 'editor', 'collaborator']),
+    (req, res, next) => {
+      relationships
+        .bulk(req.body, req.language)
+        .then(response => res.json(response))
+        .catch(next);
+    }
+  );
 
   app.post(
     '/api/references',
@@ -74,7 +76,9 @@ export default app => {
       'query'
     ),
     (req, res, next) => {
-      const unpublished = Boolean(req.user && ['admin', 'editor'].includes(req.user.role));
+      const unpublished = Boolean(
+        req.user && ['admin', 'editor', 'collaborator'].includes(req.user.role)
+      );
       relationships
         .getByDocument(
           req.query.sharedId,

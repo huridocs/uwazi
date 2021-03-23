@@ -37,7 +37,9 @@ describe('PermissionsAPI', () => {
   describe('savePermissions', () => {
     it('should call post method of entities/permissions collaborators api', async () => {
       const ids = ['shared1', 'shared2'];
-      const permissions = [{ _id: 'user1', type: PermissionType.GROUP, level: AccessLevels.READ }];
+      const permissions = [
+        { refId: 'user1', type: PermissionType.GROUP, level: AccessLevels.READ },
+      ];
       const response = await savePermissions({ ids, permissions });
       expect(api.post).toHaveBeenCalledWith('entities/permissions', {
         data: { ids, permissions },

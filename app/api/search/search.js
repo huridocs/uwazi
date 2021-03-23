@@ -5,6 +5,8 @@ import dictionariesModel from 'api/thesauri/dictionariesModel';
 import { createError } from 'api/utils';
 import { filterOptions } from 'shared/optionsUtils';
 import { preloadOptionsLimit, preloadOptionsSearch } from 'shared/config';
+import { permissionsContext } from 'api/permissions/permissionsContext';
+import { checkWritePermissions } from 'shared/permissionsUtils';
 import documentQueryBuilder from './documentQueryBuilder';
 import { elastic } from './elastic';
 import entities from '../entities';
@@ -374,12 +376,22 @@ const _sanitizeAggregations = async (
   return _denormalizeAggregations(sanitizedAggregationNames, templates, dictionaries, language);
 };
 
+const permissionsInformation = (hit, user) => {
+  const { permissions } = hit._source;
+
+  const canWrite = checkWritePermissions(user, permissions);
+
+  return canWrite ? permissions : undefined;
+};
+
 const processResponse = async (response, templates, dictionaries, language, filters) => {
+  const user = permissionsContext.getUserInContext();
   const rows = response.body.hits.hits.map(hit => {
     const result = hit._source;
     result._explanation = hit._explanation;
     result.snippets = snippetsFromSearchHit(hit);
     result._id = hit._id;
+    result.permissions = permissionsInformation(hit, user);
     return result;
   });
 
@@ -565,7 +577,8 @@ const buildQuery = async (query, language, user, resources) => {
     .fullTextSearch(query.searchTerm, textFieldsToSearch, 2, searchTextType)
     .filterByTemplate(query.types)
     .filterById(query.ids)
-    .language(language);
+    .language(language)
+    .filterByPermissions(user);
 
   if (Number.isInteger(parseInt(query.from, 10))) {
     queryBuilder.from(query.from);

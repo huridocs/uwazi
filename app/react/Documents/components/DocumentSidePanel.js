@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { Tabs, TabLink, TabContent } from 'react-tabs-redux';
 import { browserHistory } from 'react-router';
 import { connect } from 'react-redux';
@@ -313,7 +314,7 @@ export class DocumentSidePanel extends Component {
               />
             </div>
           </ShowIf>
-          <NeedAuthorization roles={['admin', 'editor']}>
+          <NeedAuthorization roles={['admin', 'editor']} orWriteAccessTo={[this.props.doc.toJS()]}>
             <ShowIf if={this.props.tab === 'toc' && this.props.tocBeingEdited}>
               <div className="sidepanel-footer">
                 <button type="submit" form="tocForm" className="edit-toc btn btn-success">
@@ -440,7 +441,7 @@ export class DocumentSidePanel extends Component {
                 />
               </TabContent>
               <TabContent for="connections" className="connections">
-                <ConnectionsGroups />
+                <ConnectionsGroups connectionsGroups={this.props.connectionsGroups} />
               </TabContent>
               <TabContent for="semantic-search-results">
                 <DocumentSemanticSearchResults doc={this.props.doc.toJS()} />

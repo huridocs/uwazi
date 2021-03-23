@@ -32,18 +32,18 @@ export const permissionSchema = {
   additionalProperties: false,
   definitions: { objectIdSchema },
   properties: {
-    _id: objectIdSchema,
+    refId: objectIdSchema,
     type: permissionType,
     level: permissionLevel,
   },
-  required: ['_id', 'type', 'level'],
+  required: ['refId', 'type', 'level'],
 };
 
 ajv.addKeyword('uniqueIds', {
   type: 'object',
   errors: true,
   validate: (fields: any, data: PermissionsDataSchema) => {
-    const allowedIds = data.permissions.map(item => item._id);
+    const allowedIds = data.permissions.map(item => item.refId);
     const uniqueIds = allowedIds.filter(unique);
     if (allowedIds.length !== uniqueIds.length) {
       throw new Ajv.ValidationError([

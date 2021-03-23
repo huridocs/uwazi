@@ -4,6 +4,7 @@ import db from 'api/utils/testing_db';
 import entities from 'api/entities/entities';
 import errorLog from 'api/log/errorLog';
 
+import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
 import fixtures, {
   connectionID1,
   connectionID2,
@@ -52,6 +53,12 @@ describe('relationships', () => {
     };
 
     it('should return all the relationships of a document', async () => {
+      const userFactory = new UserInContextMockFactory();
+      userFactory.mock({
+        _id: 'user1',
+        role: 'collaborator',
+        groups: [],
+      });
       const result = await relationships.getByDocument('entity2', 'en');
       expect(result.length).toBe(12);
       const entity1Connection = result.find(connection => connection.entity === 'entity1');

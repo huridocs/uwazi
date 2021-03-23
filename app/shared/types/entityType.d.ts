@@ -37,6 +37,7 @@ export type EntityWithFilesSchema = {
   title?: string;
   template?: ObjectIdSchema;
   published?: boolean;
+  generatedToc?: boolean;
   icon?: {
     _id?: string | null;
     label?: string;
@@ -46,6 +47,11 @@ export type EntityWithFilesSchema = {
   user?: ObjectIdSchema;
   metadata?: MetadataSchema;
   suggestedMetadata?: MetadataSchema;
+  permissions?: {
+    refId: ObjectIdSchema;
+    type: 'user' | 'group';
+    level: 'read' | 'write';
+  }[];
   [k: string]: unknown | undefined;
 } & {
   attachments?: FileType[];
