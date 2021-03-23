@@ -47,8 +47,6 @@ describe('relationship', () => {
       templateProp
     );
 
-    afterAll(async () => db.disconnect());
-
     value2 = await typeParsers.relationship(
       { relationship_prop: 'value1|value2', language: 'en' },
       templateProp
@@ -72,6 +70,8 @@ describe('relationship', () => {
 
     entitiesRelated = await entities.get({ template: templateToRelateId, language: 'en' });
   });
+
+  afterAll(async () => db.disconnect());
 
   it('should create entities and return the ids', async () => {
     expect(entitiesRelated[0].title).toBe('value1');
