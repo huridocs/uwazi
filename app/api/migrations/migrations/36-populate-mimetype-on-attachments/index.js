@@ -1,6 +1,5 @@
 import request from 'shared/JSONRequest';
 import { attachmentsPath } from 'api/files/filesystem';
-// import { execSync } from 'child_process';
 import mime from 'mime-types';
 
 export default {

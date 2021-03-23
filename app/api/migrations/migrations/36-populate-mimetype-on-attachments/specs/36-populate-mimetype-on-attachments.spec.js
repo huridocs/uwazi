@@ -1,14 +1,12 @@
 import testingDB from 'api/utils/testing_db';
 import request from 'shared/JSONRequest';
 import * as attachmentMethods from 'api/files/filesystem';
-import childProcess from 'child_process';
 import mime from 'mime-types';
 import migration from '../index.js';
 
 describe('migration populate-mimetype-on-attachments', () => {
   let headRequestMock;
   let attachmentPathMock;
-  let execSyncMock;
   let mimeMock;
 
   beforeEach(async () => {
