@@ -4,10 +4,20 @@ import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
 
 import { Aggregations, AggregationBucket } from 'shared/types/aggregations';
 import { fixturesTimeOut } from './fixtures_elastic';
-import { permissionsLevelFixtures, users, group1 } from './permissionsFiltersFixtures';
+import {
+  permissionsLevelFixtures,
+  users,
+  group1,
+  template1Id,
+  template2Id,
+  template3Id,
+} from './permissionsFiltersFixtures';
 
 describe('Permissions filters', () => {
   let buckets: AggregationBucket[];
+
+  const user3WithGroups = { ...users.user3, groups: [{ _id: group1.toString() }] };
+
   const userFactory = new UserInContextMockFactory();
 
   beforeAll(async () => {
@@ -32,7 +42,7 @@ describe('Permissions filters', () => {
       ]);
     });
 
-    it('should not return entities for wich the user does not have permissions', async () => {
+    it('should not return entities for which the user does not have permissions', async () => {
       userFactory.mock(users.user2);
       const query = { searchTerm: 'ent1' };
 
@@ -41,7 +51,7 @@ describe('Permissions filters', () => {
     });
 
     describe('when filtering by permissions level', () => {
-      it('should return only entitites that i can see and match the filter', async () => {
+      it('should return only entities that I can see and match the filter', async () => {
         userFactory.mock(users.user2);
         const query = {
           customFilters: { 'permissions.level': { values: ['write'] } },
@@ -70,7 +80,7 @@ describe('Permissions filters', () => {
     });
   });
 
-  describe('aggregations', () => {
+  describe('permissions aggregations based on access level ', () => {
     const performSearch = async (): Promise<AggregationBucket[]> => {
       const response = await search.search({ aggregatePermissionsByLevel: true }, 'es');
       const aggs = response.aggregations as Aggregations;
@@ -78,9 +88,12 @@ describe('Permissions filters', () => {
     };
 
     it.each`
-      user           | expect1 | expect2
-      ${users.user1} | ${2}    | ${1}
-      ${users.user2} | ${1}    | ${1}
+      user                | expect1 | expect2
+      ${users.user1}      | ${2}    | ${1}
+      ${users.user2}      | ${1}    | ${1}
+      ${user3WithGroups}  | ${3}    | ${2}
+      ${users.adminUser}  | ${1}    | ${2}
+      ${users.editorUser} | ${1}    | ${1}
     `(
       'should return aggregations of permission level filtered per current user',
       async ({ user, expect1, expect2 }) => {
@@ -90,28 +103,32 @@ describe('Permissions filters', () => {
         expect(buckets.find(a => a.key === 'write')?.filtered.doc_count).toBe(expect2);
       }
     );
+  });
 
-    it('should return aggregations of permission level filtered per current users group', async () => {
-      userFactory.mock({
-        ...users.user3,
-        groups: [{ _id: group1, name: 'group1' }],
-      });
+  describe('type aggregations based on read access to entities', () => {
+    it.each`
+      user                | template1Count | template2Count | template3Count
+      ${users.user1}      | ${2}           | ${1}           | ${0}
+      ${users.user2}      | ${1}           | ${0}           | ${1}
+      ${user3WithGroups}  | ${2}           | ${1}           | ${1}
+      ${users.editorUser} | ${2}           | ${1}           | ${1}
+    `(
+      'should return aggregations of matched entities having into account read permission',
+      async ({ user, template1Count, template2Count, template3Count }) => {
+        userFactory.mock(user);
+        const response = await search.search({}, 'es');
+        const typesBuckets = (response.aggregations as Aggregations).all._types.buckets;
 
-      buckets = await performSearch();
-      expect(buckets.find(a => a.key === 'read')?.filtered.doc_count).toBe(3);
-      expect(buckets.find(a => a.key === 'write')?.filtered.doc_count).toBe(2);
-    });
-
-    it('should also work when user is admin/editor', async () => {
-      userFactory.mock(users.adminUser);
-      buckets = await performSearch();
-      expect(buckets.find(a => a.key === 'read')?.filtered.doc_count).toBe(1);
-      expect(buckets.find(a => a.key === 'write')?.filtered.doc_count).toBe(2);
-
-      userFactory.mock(users.editorUser);
-      buckets = await performSearch();
-      expect(buckets.find(a => a.key === 'read')?.filtered.doc_count).toBe(1);
-      expect(buckets.find(a => a.key === 'write')?.filtered.doc_count).toBe(1);
-    });
+        expect(typesBuckets.find(a => a.key === template1Id.toString())?.filtered.doc_count).toBe(
+          template1Count
+        );
+        expect(typesBuckets.find(a => a.key === template2Id.toString())?.filtered.doc_count).toBe(
+          template2Count
+        );
+        expect(typesBuckets.find(a => a.key === template3Id.toString())?.filtered.doc_count).toBe(
+          template3Count
+        );
+      }
+    );
   });
 });

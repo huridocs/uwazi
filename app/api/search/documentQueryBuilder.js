@@ -390,7 +390,7 @@ export default function() {
     filterByPermissions() {
       const user = permissionsContext.getUserInContext();
       if (user && !['admin', 'editor'].includes(user.role)) {
-        baseQuery.query.bool.filter.push(
+        addFilter(
           nested(
             [{ terms: { 'permissions.refId': permissionsContext.permissionsRefIds() } }],
             'permissions'
