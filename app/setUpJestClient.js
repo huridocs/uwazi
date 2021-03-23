@@ -4,6 +4,14 @@ const Adapter = require('enzyme-adapter-react-16');
 
 configure({ adapter: new Adapter() });
 
+const warn = console.warn.bind(console);
+console.warn = function(message) {
+  if (message.match('UNSAFE_')) {
+    return;
+  }
+  warn(message);
+};
+
 const error = console.error.bind(console);
 console.error = function(message) {
   if (message.match('/api/i18n/systemKeys')) {
