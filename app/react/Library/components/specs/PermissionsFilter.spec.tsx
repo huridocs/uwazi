@@ -30,4 +30,21 @@ describe('Permissions Filter', () => {
       expect.objectContaining({ value: 'read', results: 3 }),
     ]);
   });
+
+  describe('when the sum of all aggregations is 0', () => {
+    it('should not render anything ', async () => {
+      render({
+        all: {
+          permissions: {
+            buckets: [
+              { key: 'read', filtered: { doc_count: 0 } },
+              { key: 'write', filtered: { doc_count: 0 } },
+            ],
+          },
+        },
+      });
+
+      expect(component.children().length).toBe(0);
+    });
+  });
 });

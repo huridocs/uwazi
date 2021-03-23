@@ -3,7 +3,7 @@ import SelectFilter from 'app/Library/components/SelectFilter';
 import FormGroup from 'app/DocumentForm/components/FormGroup';
 import { Aggregations } from 'shared/types/aggregations';
 import { NeedAuthorization } from 'app/Auth';
-import { t, Translate } from 'app/I18N';
+import { Translate } from 'app/I18N';
 import { Icon } from 'app/UI';
 
 export interface PermissionsFilterProps {
@@ -18,7 +18,7 @@ const filteredAggregation = (aggregations: Aggregations, key: string) => {
   return bucket.filtered.doc_count;
 };
 
-const options = (aggregations: Aggregations) => [
+const generateOptions = (aggregations: Aggregations) => [
   {
     label: (
       <>
@@ -43,17 +43,23 @@ const options = (aggregations: Aggregations) => [
   },
 ];
 
-export const PermissionsFilter = ({ onChange, aggregations }: PermissionsFilterProps) => (
-  <NeedAuthorization roles={['admin', 'editor', 'collaborator']}>
-    <FormGroup key="permissions.level" className="admin-filter">
-      <SelectFilter
-        model=".customFilters['permissions.level']"
-        prefix="permissions.level"
-        label={t('System', 'Permissions')}
-        onChange={onChange}
-        options={options(aggregations)}
-        showBoolSwitch={false}
-      />
-    </FormGroup>
-  </NeedAuthorization>
-);
+export const PermissionsFilter = ({ onChange, aggregations }: PermissionsFilterProps) => {
+  const options = generateOptions(aggregations);
+  const totalAggs = options.reduce((total, o) => total + o.results, 0);
+  if (totalAggs === 0) {
+    return null;
+  }
+  return (
+    <NeedAuthorization roles={['admin', 'editor', 'collaborator']}>
+      <FormGroup key="permissions.level" className="admin-filter">
+        <SelectFilter
+          model=".customFilters['permissions.level']"
+          prefix="permissions.level"
+          onChange={onChange}
+          options={options}
+          showBoolSwitch={false}
+        />
+      </FormGroup>
+    </NeedAuthorization>
+  );
+};
