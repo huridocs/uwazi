@@ -10,7 +10,7 @@ import { MediaModal, MediaModalProps, MediaModalType } from '../MediaModal';
 const mockStore = configureMockStore([thunk]);
 const store = mockStore({});
 
-describe('Attachments Modal', () => {
+describe('Media Modal', () => {
   let component: ShallowWrapper;
   let props: MediaModalProps;
 
