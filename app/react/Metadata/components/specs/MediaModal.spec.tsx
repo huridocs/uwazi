@@ -5,7 +5,7 @@ import ReactModal from 'react-modal';
 import configureMockStore from 'redux-mock-store';
 import { Provider } from 'react-redux';
 
-import { MediaModal, MediaModalProps } from '../MediaModal';
+import { MediaModal, MediaModalProps, MediaModalType } from '../MediaModal';
 
 const mockStore = configureMockStore([thunk]);
 const store = mockStore({});
@@ -20,7 +20,7 @@ describe('Attachments Modal', () => {
       onChange: jasmine.createSpy('onChange'),
       isOpen: true,
       attachments: [],
-      selectedId: '1',
+      selectedId: null,
     };
   });
 
@@ -46,5 +46,55 @@ describe('Attachments Modal', () => {
     closeButton.simulate('click');
 
     expect(props.onClose).toHaveBeenCalled();
+  });
+
+  it('Should select attachment', () => {
+    const jpgAttachment = { _id: 123, filename: 'test.jpg', size: 1234 };
+    render({ attachments: [jpgAttachment] });
+
+    const firstAttachment = component.find('.media-grid-item');
+    firstAttachment.simulate('click');
+
+    expect(props.onClose).toHaveBeenCalled();
+  });
+
+  it('Should show only images', () => {
+    const videoAttachment = { _id: 123, filename: 'video.mp4', size: 1234, mimetype: 'video/mp4' };
+    const jpgAttachment = { _id: 456, filename: 'test.jpg', size: 1234, mimetype: 'image/jpg' };
+
+    render({ attachments: [jpgAttachment, videoAttachment], type: MediaModalType.Image });
+
+    const attachments = component.find('.media-grid-item');
+
+    expect(attachments.length).toBe(1);
+  });
+
+  it('Should show only media', () => {
+    const videoAttachment = { _id: 123, filename: 'video.mp4', size: 1234, mimetype: 'video/mp4' };
+    const jpgAttachment = { _id: 456, filename: 'test.jpg', size: 1234, mimetype: 'image/jpg' };
+
+    render({ attachments: [jpgAttachment, videoAttachment], type: MediaModalType.Media });
+
+    const attachments = component.find('.media-grid-item');
+
+    expect(attachments.length).toBe(1);
+  });
+
+  it('Should show empty message', () => {
+    render();
+
+    const msg = component.find('.empty-attachments-message');
+
+    expect(msg.length).toBe(1);
+  });
+
+  it('Should have selected attachment', () => {
+    const jpgAttachment = { _id: 456, filename: 'test.jpg', size: 1234, mimetype: 'image/jpg' };
+
+    render({ attachments: [jpgAttachment], selectedId: jpgAttachment._id });
+
+    const selectedAttachment = component.find('.media-grid .active');
+
+    expect(selectedAttachment.length).toBe(1);
   });
 });

@@ -2,12 +2,12 @@ import React, { useMemo } from 'react';
 import ReactModal from 'react-modal';
 import { Tabs, TabLink, TabContent } from 'react-tabs-redux';
 import filesize from 'filesize';
+import { ObjectId } from 'mongodb';
 
 import { AttachmentSchema } from 'shared/types/commonTypes';
 import { Translate } from 'app/I18N';
 import { Icon } from 'app/UI';
 import { RenderAttachment } from 'app/Attachments/components/RenderAttachment';
-import { ObjectId } from 'mongodb';
 
 export enum MediaModalType {
   Image,
@@ -76,35 +76,43 @@ export const MediaModal = ({
           <div className="attachments-modal__tabs-content">
             <TabContent
               for="selectFromFiles"
-              className="tab-content attachments-modal__tabs-content"
+              className={`tab-content attachments-modal__tabs-content ${
+                !filteredAttachments.length ? 'centered' : ''
+              }`}
             >
-              <div className="media-grid container">
-                <div className="row">
-                  {filteredAttachments.map((attachment, key) => (
-                    <div
-                      className="media-grid-item"
-                      key={`attachment_${key}`}
-                      onClick={handleAttachmentClick(attachment._id!)}
-                    >
+              {filteredAttachments.length > 0 ? (
+                <div className="media-grid container">
+                  <div className="row">
+                    {filteredAttachments.map((attachment, key) => (
                       <div
-                        className={`${'media-grid-card'} ${
-                          attachment._id === selectedId ? 'active' : ''
-                        }`}
+                        className="media-grid-item"
+                        key={`attachment_${key}`}
+                        onClick={handleAttachmentClick(attachment._id!)}
                       >
-                        <div className="media-grid-card-header">
-                          <h5>{attachment.originalname}</h5>
-                          {!!attachment.size && <span>{filesize(attachment.size)}</span>}
-                        </div>
-                        <div className="media-grid-card-content">
-                          <div className="media">
-                            <RenderAttachment attachment={attachment} />
+                        <div
+                          className={`${'media-grid-card'} ${
+                            attachment._id === selectedId ? 'active' : ''
+                          }`}
+                        >
+                          <div className="media-grid-card-header">
+                            <h5>{attachment.originalname}</h5>
+                            {!!attachment.size && <span>{filesize(attachment.size)}</span>}
+                          </div>
+                          <div className="media-grid-card-content">
+                            <div className="media">
+                              <RenderAttachment attachment={attachment} />
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
-              </div>
+              ) : (
+                <h4 className="empty-attachments-message">
+                  <Translate>No attachments </Translate>
+                </h4>
+              )}
             </TabContent>
           </div>
         </Tabs>
