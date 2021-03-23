@@ -820,6 +820,19 @@ describe('search', () => {
       const { rows } = await search.search(query, 'en');
       expect(rows).toEqual([expect.objectContaining({ title: 'Batman finishes en' })]);
     });
+
+    it('when values is empty should not filter', async () => {
+      const query = {
+        customFilters: {
+          generatedToc: {
+            values: [],
+          },
+        },
+      };
+
+      const { rows } = await search.search(query, 'en');
+      expect(rows.length).toBe(13);
+    });
   });
 
   describe('autocompleteAggregations()', () => {

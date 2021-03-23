@@ -245,9 +245,8 @@ const _denormalizeAggregations = async (aggregations, templates, dictionaries, l
     const denormaLizedAgregations = await denormaLizedAgregationsPromise;
     if (
       !aggregations[key].buckets ||
-      key === '_types' ||
       aggregations[key].type === 'nested' ||
-      key === 'generatedToc'
+      ['_types', 'generatedToc', 'permissions'].includes(key)
     ) {
       return Object.assign(denormaLizedAgregations, { [key]: aggregations[key] });
     }
@@ -298,6 +297,14 @@ const _sanitizeAggregationsStructure = (aggregations, limit) => {
       }));
     }
 
+    //permissions
+    if (aggregationKey === 'permissions') {
+      aggregation.buckets = aggregation.nestedPermissions.filtered.buckets.map(b => ({
+        key: b.key,
+        filtered: { doc_count: b.filteredByUser.uniqueEntities.doc_count },
+      }));
+    }
+
     //nested
     if (!aggregation.buckets) {
       Object.keys(aggregation).forEach(key => {
@@ -329,6 +336,7 @@ const _sanitizeAggregationsStructure = (aggregations, limit) => {
 
     result[aggregationKey] = aggregation;
   });
+
   return result;
 };
 
@@ -639,8 +647,12 @@ const search = {
       searchGeolocation(queryBuilder, templates);
     }
 
+    if (query.aggregatePermissionsByLevel) {
+      queryBuilder.permissionsLevelAgreggations();
+    }
+
     if (query.aggregateGeneratedToc) {
-      queryBuilder.generatedTOCAggregations();
+      queryBuilder.generatedTocAggregations();
     }
 
     return elastic

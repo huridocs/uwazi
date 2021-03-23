@@ -46,15 +46,28 @@ describe('documentQueryBuilder', () => {
                 { _id: 'group2', name: 'Group 2' },
               ],
             });
+
             const query = documentQueryBuilder()
               .filterByPermissions()
               .query();
+
             expect(query.query.bool.filter).toEqual([
               {
                 term: { published: true },
               },
               {
-                terms: { 'permissions.refId': ['group1', 'group2', 'user1'] },
+                nested: {
+                  path: 'permissions',
+                  query: {
+                    bool: {
+                      must: [
+                        {
+                          terms: { 'permissions.refId': ['group1', 'group2', 'user1'] },
+                        },
+                      ],
+                    },
+                  },
+                },
               },
             ]);
           }

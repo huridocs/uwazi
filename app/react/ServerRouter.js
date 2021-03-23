@@ -191,6 +191,7 @@ function handleRoute(res, renderProps, req) {
 
       return Promise.all([
         routeProps.requestState(requestParams, {
+          user: Immutable(user.json),
           templates: Immutable(globalResources.templates),
           thesauris: Immutable(globalResources.thesauris),
           relationTypes: Immutable(globalResources.relationTypes),

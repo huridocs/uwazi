@@ -3,7 +3,22 @@
 import { preloadOptionsSearch } from 'shared/config';
 import { permissionsContext } from 'api/permissions/permissionsContext';
 import filterToMatch, { multiselectFilter } from './metadataMatchers';
-import { propertyToAggregation, generatedTocAggregations } from './metadataAggregations';
+import {
+  propertyToAggregation,
+  generatedTocAggregations,
+  permissionsLevelAgreggations,
+} from './metadataAggregations';
+
+const nested = (filters, path) => ({
+  nested: {
+    path,
+    query: {
+      bool: {
+        must: filters,
+      },
+    },
+  },
+});
 
 export default function() {
   const baseQuery = {
@@ -85,7 +100,8 @@ export default function() {
       return baseQuery;
     },
 
-    fullTextSearch( // eslint-disable-line max-params
+    // eslint-disable-next-line max-statements
+    fullTextSearch(
       term,
       fieldsToSearch = ['title', 'fullText'],
       number_of_fragments = 1,
@@ -234,13 +250,24 @@ export default function() {
     },
 
     customFilters(filters = {}) {
-      Object.keys(filters).forEach(key => {
-        if (filters[key].values.length) {
-          addFilter({
-            terms: { [key]: filters[key].values },
-          });
-        }
-      });
+      Object.keys(filters)
+        .filter(key => filters[key].values.length)
+        .forEach(key => {
+          if (key === 'permissions.level') {
+            addFilter(
+              nested(
+                [
+                  { terms: { 'permissions.refId': permissionsContext.permissionsRefIds() } },
+                  { terms: { 'permissions.level': filters[key].values } },
+                ],
+                'permissions'
+              )
+            );
+            return;
+          }
+
+          addFilter({ terms: { [key]: filters[key].values } });
+        });
       return this;
     },
 
@@ -254,8 +281,12 @@ export default function() {
       return this;
     },
 
-    generatedTOCAggregations() {
+    generatedTocAggregations() {
       baseQuery.aggregations.all.aggregations.generatedToc = generatedTocAggregations(baseQuery);
+    },
+
+    permissionsLevelAgreggations() {
+      baseQuery.aggregations.all.aggregations.permissions = permissionsLevelAgreggations(baseQuery);
     },
 
     aggregations(properties, dictionaries) {
@@ -359,15 +390,12 @@ export default function() {
     filterByPermissions() {
       const user = permissionsContext.getUserInContext();
       if (user && !['admin', 'editor'].includes(user.role)) {
-        const permissionTargetIds = user.groups
-          ? user.groups.map(group => group._id.toString())
-          : [];
-        permissionTargetIds.push(user._id.toString());
-        baseQuery.query.bool.filter.push({
-          terms: {
-            'permissions.refId': permissionTargetIds,
-          },
-        });
+        baseQuery.query.bool.filter.push(
+          nested(
+            [{ terms: { 'permissions.refId': permissionsContext.permissionsRefIds() } }],
+            'permissions'
+          )
+        );
       }
       return this;
     },
