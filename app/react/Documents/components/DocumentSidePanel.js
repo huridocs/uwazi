@@ -325,7 +325,7 @@ export class DocumentSidePanel extends Component {
               </div>
             </ShowIf>
           </NeedAuthorization>
-          <NeedAuthorization roles={['admin', 'editor']}>
+          <NeedAuthorization roles={['admin', 'editor']} orWriteAccessTo={[entity]}>
             <ShowIf if={this.props.tab === 'toc' && !this.props.tocBeingEdited && !readOnly}>
               <div className="sidepanel-footer">
                 <button
