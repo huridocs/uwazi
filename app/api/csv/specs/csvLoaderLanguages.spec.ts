@@ -25,7 +25,7 @@ describe('csvLoader languages', () => {
 
   beforeAll(async () => {
     await db.clearAllAndLoad(fixtures);
-    filesystem.setupTestUploadedPaths();
+    await filesystem.setupTestUploadedPaths('csvLoader');
     spyOn(search, 'indexEntities').and.returnValue(Promise.resolve());
 
     const { languages = [] } = await settings.get();
@@ -84,7 +84,10 @@ describe('csvLoader languages', () => {
 
   it('should import translated files', async () => {
     const importedFiles = await files.get({ type: 'document' });
-    expect(importedFiles.map(f => f.filename)).toEqual(['generatedLang2.pdf', 'generatedLang1.pdf']);
+    expect(importedFiles.map(f => f.filename)).toEqual([
+      'generatedLang2.pdf',
+      'generatedLang1.pdf',
+    ]);
   });
 
   it('should import attachment files', async () => {
