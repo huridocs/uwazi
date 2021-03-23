@@ -92,6 +92,8 @@ describe('search routes', () => {
   describe('/api/search_snippets', () => {
     const app = setUpApp(searchRoutes);
 
+    afterAll(async () => testingDB.disconnect());
+
     it('should have a validation schema', async () => {
       await testingDB.clearAllAndLoad({
         settings: [

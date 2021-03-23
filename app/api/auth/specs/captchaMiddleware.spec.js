@@ -28,6 +28,8 @@ describe('captchaMiddleware', () => {
       .catch(catchErrors(done));
   });
 
+  afterAll(async () => db.disconnect());
+
   it('should return an error when there is no captcha in the request', async () => {
     const middleWare = captchaMiddleware();
     await middleWare(req, res, next);
