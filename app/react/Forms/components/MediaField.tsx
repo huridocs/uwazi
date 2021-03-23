@@ -14,7 +14,7 @@ interface MediaFieldProps {
   onChange: (val: string | ObjectId | null) => void;
 }
 
-const MediaField = ({ attachments, value, onChange, type }: MediaFieldProps) => {
+const MediaField = ({ attachments = [], value, onChange, type }: MediaFieldProps) => {
   const [openModal, setOpenModal] = useState(false);
 
   const selectedImage = useMemo(() => attachments.find(a => a._id === value), [attachments, value]);
