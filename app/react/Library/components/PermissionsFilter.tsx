@@ -27,6 +27,7 @@ const generateOptions = (aggregations: Aggregations) => [
         <Translate>Can edit</Translate>
       </>
     ),
+    title: 'Can edit',
     value: 'write',
     results: filteredAggregation(aggregations, 'write'),
   },
@@ -38,6 +39,7 @@ const generateOptions = (aggregations: Aggregations) => [
         <Translate>Can view</Translate>
       </>
     ),
+    title: 'Can view',
     value: 'read',
     results: filteredAggregation(aggregations, 'read'),
   },
