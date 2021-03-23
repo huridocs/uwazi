@@ -1,13 +1,14 @@
 import request from 'shared/JSONRequest';
 import { attachmentsPath } from 'api/files/filesystem';
-import { execSync } from 'child_process';
+// import { execSync } from 'child_process';
+import mime from 'mime-types';
 
 export default {
   delta: 36,
 
   name: 'populate-mimetype-to-attachment',
 
-  description: 'Populates mimetype of an attachment from a url ',
+  description: 'Populates mimetype of an attachment from a url',
 
   async up(db) {
     process.stdout.write(`${this.name}...\r\n`);
@@ -23,9 +24,7 @@ export default {
         const mimetype = response.headers.get('content-type') || undefined;
         db.collection('files').updateOne({ _id: file._id }, { $set: { mimetype } });
       } else if (file.filename && file.type === 'attachment' && !file.mimetype) {
-        const mimetype = execSync(`file --mime-type -b "${attachmentsPath(file.filename)}"`)
-          .toString()
-          .trim();
+        const mimetype = mime.lookup(attachmentsPath(file.filename));
         db.collection('files').updateOne({ _id: file._id }, { $set: { mimetype } });
       }
     }

@@ -2,24 +2,26 @@ import testingDB from 'api/utils/testing_db';
 import request from 'shared/JSONRequest';
 import * as attachmentMethods from 'api/files/filesystem';
 import childProcess from 'child_process';
+import mime from 'mime-types';
 import migration from '../index.js';
 
 describe('migration populate-mimetype-on-attachments', () => {
   let headRequestMock;
   let attachmentPathMock;
   let execSyncMock;
+  let mimeMock;
 
   beforeEach(async () => {
     spyOn(process.stdout, 'write');
     headRequestMock = spyOn(request, 'head');
     attachmentPathMock = spyOn(attachmentMethods, 'attachmentsPath');
-    execSyncMock = spyOn(childProcess, 'execSync');
+    mimeMock = spyOn(mime, 'lookup');
   });
 
   afterAll(async () => {
     headRequestMock.mockRestore();
     attachmentPathMock.mockRestore();
-    execSyncMock.mockRestore();
+    mimeMock.mockRestore();
     await testingDB.disconnect();
   });
 
@@ -85,7 +87,7 @@ describe('migration populate-mimetype-on-attachments', () => {
     };
     await testingDB.clearAllAndLoad(fixturesWithFilenames);
     attachmentPathMock.and.returnValue('/some/path/to/file.pdf');
-    execSyncMock.and.returnValue('application/pdf');
+    mimeMock.and.returnValue('application/pdf');
     await migration.up(testingDB.mongodb);
 
     const file = await testingDB.mongodb.collection('files').findOne({});
@@ -102,7 +104,7 @@ describe('migration populate-mimetype-on-attachments', () => {
       ],
     };
     await testingDB.clearAllAndLoad(fixturesWithFilenames);
-    execSyncMock.and.returnValue('application/pdf');
+    mimeMock.and.returnValue('application/pdf');
     attachmentPathMock.and.returnValue('/some/path/to/file.pdf');
     await migration.up(testingDB.mongodb);
 
@@ -111,9 +113,7 @@ describe('migration populate-mimetype-on-attachments', () => {
     expect(attachmentMethods.attachmentsPath).toHaveBeenCalledWith(
       fixturesWithFilenames.files[0].filename
     );
-    expect(childProcess.execSync).toHaveBeenCalledWith(
-      'file --mime-type -b "/some/path/to/file.pdf"'
-    );
+    expect(mime.lookup).toHaveBeenCalledWith('/some/path/to/file.pdf');
   });
   it('should not update mimetype if type is not attachment in internal attachments', async () => {
     const fixturesWithFilenames = {
@@ -125,14 +125,14 @@ describe('migration populate-mimetype-on-attachments', () => {
       ],
     };
     await testingDB.clearAllAndLoad(fixturesWithFilenames);
-    execSyncMock.and.returnValue('application/pdf');
+    mimeMock.and.returnValue('application/pdf');
     attachmentPathMock.and.returnValue('/some/path/to/file.pdf');
     await migration.up(testingDB.mongodb);
 
     expect(attachmentMethods.attachmentsPath).not.toHaveBeenCalledWith(
       fixturesWithFilenames.files[0].filename
     );
-    expect(childProcess.execSync).not.toHaveBeenCalledWith('/some/path/to/file.pdf');
+    expect(mime.lookup).not.toHaveBeenCalledWith('/some/path/to/file.pdf');
   });
   it('should not use local attachment if url field is present', async () => {
     const mixedFixtures = {
@@ -156,12 +156,12 @@ describe('migration populate-mimetype-on-attachments', () => {
         headers,
       })
     );
-    execSyncMock.and.returnValue('application/pdf');
+    mimeMock.and.returnValue('application/pdf');
     attachmentPathMock.and.returnValue('/some/path/to/file.pdf');
     await migration.up(testingDB.mongodb);
 
     expect(attachmentMethods.attachmentsPath).not.toHaveBeenCalled();
-    expect(childProcess.execSync).not.toHaveBeenCalled();
+    expect(mime.lookup).not.toHaveBeenCalled();
     expect(request.head).toHaveBeenCalledWith(mixedFixtures.files[0].url);
   });
 });
