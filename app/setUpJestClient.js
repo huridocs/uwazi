@@ -22,6 +22,10 @@ console.error = function(message) {
 
 process.env.__testingEnvironment = true;
 
+process.on('unhandledRejection', err => {
+  fail(err);
+});
+
 jasmine.createSpyObj = (name, methodNames) => {
   let names = methodNames;
   if (Array.isArray(name)) {
