@@ -33,6 +33,12 @@ export const collaborators = {
       });
     });
 
+    availableCollaborators.push({
+      refId: 'public',
+      type: 'public',
+      label: 'Public',
+    });
+
     return availableCollaborators;
   },
 };
