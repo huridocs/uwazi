@@ -4,7 +4,7 @@ import entities from './entities';
 import templates from '../templates/templates';
 import thesauri from '../thesauri/thesauri';
 import needsAuthorization from '../auth/authMiddleware';
-import { validation } from '../utils';
+import { parseQuery, validation } from '../utils';
 
 Joi.objectId = objectId(Joi);
 
@@ -84,26 +84,33 @@ export default app => {
 
   app.get(
     '/api/entities',
-    validation.validateRequest(
-      Joi.object()
-        .keys({
-          sharedId: Joi.string(),
-          _id: Joi.string(),
-          omitRelationships: Joi.any(),
-          withPdfInfo: Joi.string(),
-        })
-        .required(),
-      'query'
-    ),
+    parseQuery,
+    validation.validateRequest({
+      properties: {
+        query: {
+          properties: {
+            sharedId: { type: 'string' },
+            _id: { type: 'string' },
+            withPdf: { type: 'string' },
+            omitRelationships: { type: 'string' },
+            include: { type: 'array', items: [{ type: 'string', enum: ['permissions'] }] },
+          },
+        },
+      },
+    }),
     (req, res, next) => {
-      const { omitRelationships, withPdfInfo, ...query } = req.query;
+      const { omitRelationships, withPdfInfo, include = [], ...query } = req.query;
       const action = omitRelationships ? 'get' : 'getWithRelationships';
       const published = req.user ? {} : { published: true };
       const language = req.language ? { language: req.language } : {};
-      entities[action]({ ...query, ...published, ...language }, '+permissions', {
-        limit: 1,
-        withPdfInfo,
-      })
+      entities[action](
+        { ...query, ...published, ...language },
+        include.map(field => `+${field}`).join(' '),
+        {
+          limit: 1,
+          withPdfInfo,
+        }
+      )
         .then(_entities => {
           if (!_entities.length) {
             res.status(404);

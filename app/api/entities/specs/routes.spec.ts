@@ -55,7 +55,8 @@ describe('entities routes', () => {
     it('return asked entities with permissions', async () => {
       const response: SuperTestResponse = await request(app)
         .get('/api/entities')
-        .query({ sharedId: 'sharedPerm' });
+        .query({ sharedId: 'sharedPerm', include: JSON.stringify(['permissions']) });
+
       expect(response.body.rows[0].permissions.length).toBe(1);
       expect(response.body.rows[0].permissions).toEqual(permissions);
     });
