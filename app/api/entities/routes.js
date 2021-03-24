@@ -92,7 +92,7 @@ export default app => {
             sharedId: { type: 'string' },
             _id: { type: 'string' },
             withPdf: { type: 'string' },
-            omitRelationships: { type: 'string' },
+            omitRelationships: { type: 'boolean' },
             include: { type: 'array', items: [{ type: 'string', enum: ['permissions'] }] },
           },
         },

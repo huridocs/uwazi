@@ -5,6 +5,7 @@ import { notificationActions } from 'app/Notifications';
 import { referencesActions } from 'app/Viewer';
 import { RequestParams } from 'app/utils/RequestParams';
 import SearchApi from 'app/Search/SearchAPI';
+import EntitiesApi from '../../Entities/EntitiesAPI';
 
 import * as types from './actionTypes';
 import * as uiActions from './uiActions';
@@ -168,9 +169,7 @@ export function saveRelationships() {
       .then(response =>
         Promise.all([
           response,
-          api
-            .get('entities', new RequestParams({ sharedId: parentEntityId }))
-            .then(r => r.json.rows[0]),
+          EntitiesApi.get(new RequestParams({ sharedId: parentEntityId })).then(([r]) => r),
           reloadRelationships(parentEntityId)(dispatch, getState),
         ])
       )

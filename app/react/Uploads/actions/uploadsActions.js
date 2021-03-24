@@ -11,6 +11,7 @@ import { RequestParams } from 'app/utils/RequestParams';
 
 import { APIURL } from '../../config.js';
 import api from '../../utils/api';
+import EntitiesApi from '../../Entities/EntitiesAPI';
 
 export function enterUploads() {
   return {
@@ -183,8 +184,7 @@ export function uploadDocument(docId, file) {
 
 export function documentProcessed(sharedId, __reducerKey) {
   return dispatch => {
-    api.get('entities', new RequestParams({ sharedId })).then(response => {
-      const doc = response.json.rows[0];
+    EntitiesApi.get(new RequestParams({ sharedId })).then(([doc]) => {
       dispatch({ type: libraryTypes.UPDATE_DOCUMENT, doc, __reducerKey });
       dispatch({ type: libraryTypes.UNSELECT_ALL_DOCUMENTS, __reducerKey });
       dispatch({ type: libraryTypes.SELECT_DOCUMENT, doc, __reducerKey });
