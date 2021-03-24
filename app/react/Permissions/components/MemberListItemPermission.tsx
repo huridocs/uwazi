@@ -34,7 +34,9 @@ export const MemberListItemPermission = ({
         </option>
       ) : null}
       <option value="read">{t('System', 'Can see', null, false)}</option>
-      <option value="write">{t('System', 'Can edit', null, false)}</option>
+      {value.type !== 'public' ? (
+        <option value="write">{t('System', 'Can edit', null, false)}</option>
+      ) : null}
       <option disabled>───────</option>
       <option value="delete">{t('System', 'Remove', null, false)}</option>
     </select>
