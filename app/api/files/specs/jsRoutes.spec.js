@@ -26,10 +26,9 @@ describe('upload routes', () => {
   let routes;
   let req;
   let file;
+  const directory = `${__dirname}/uploads/upload_routes`;
 
   const deleteAllFiles = async cb => {
-    const directory = `${__dirname}/uploads/upload_routes`;
-    await createDirIfNotExists(directory);
     const dontDeleteFiles = [
       'import.zip',
       'eng.pdf',
@@ -54,6 +53,7 @@ describe('upload routes', () => {
   };
 
   beforeEach(async done => {
+    await createDirIfNotExists(directory);
     await deleteAllFiles(() => {
       spyOn(search, 'delete').and.returnValue(Promise.resolve());
       spyOn(search, 'indexEntities').and.returnValue(Promise.resolve());
@@ -84,8 +84,8 @@ describe('upload routes', () => {
   });
 
   describe('api/public', () => {
-    beforeEach(done => {
-      deleteAllFiles(() => {
+    beforeEach(async done => {
+      await deleteAllFiles(() => {
         spyOn(Date, 'now').and.returnValue(1000);
         spyOn(mailer, 'send');
         const buffer = fs.readFileSync(`${__dirname}/12345.test.pdf`);
@@ -182,8 +182,8 @@ describe('upload routes', () => {
     });
   });
 
-  afterAll(done => {
-    deleteAllFiles(() => {
+  afterAll(async done => {
+    await deleteAllFiles(() => {
       db.disconnect().then(done);
     });
   });
