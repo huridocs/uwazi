@@ -4,6 +4,7 @@ import debounce from 'app/utils/debounce';
 import { notificationActions } from 'app/Notifications';
 import { referencesActions } from 'app/Viewer';
 import { RequestParams } from 'app/utils/RequestParams';
+import SearchApi from 'app/Search/SearchAPI';
 
 import * as types from './actionTypes';
 import * as uiActions from './uiActions';
@@ -201,8 +202,7 @@ export function immidiateSearch(dispatch, searchTerm) {
     includeUnpublished: true,
   });
 
-  return api.get('search', requestParams).then(response => {
-    const results = response.json.rows;
+  return SearchApi.search(requestParams).then(({ rows: results }) => {
     dispatch(actions.set('relationships/searchResults', results));
   });
 }

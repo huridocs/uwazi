@@ -1,5 +1,3 @@
-/** @format */
-
 export class RequestParams<DataT = any> {
   data?: DataT = undefined;
 
