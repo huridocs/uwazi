@@ -44,13 +44,6 @@ async function deleteFiles(files: FilePath[]) {
   return Promise.all(files.map(async file => deleteFile(file)));
 }
 
-const testingUploadPaths = {
-  uploadedDocuments: `${__dirname}/specs/uploads/`,
-  attachments: `${__dirname}/specs/uploads/`,
-  customUploads: `${__dirname}/specs/uploads/`,
-  temporalFiles: `${__dirname}/specs/uploads/`,
-};
-
 const createDirIfNotExists = async (dirPath: string) => {
   try {
     await asyncFS.mkdir(dirPath);
@@ -64,11 +57,12 @@ const createDirIfNotExists = async (dirPath: string) => {
 const generateUploadsPath = async (subPath: string) => {
   if (subPath) {
     await createDirIfNotExists(`${__dirname}/specs/uploads/${subPath}`);
+    await createDirIfNotExists(`${__dirname}/specs/customUploads/${subPath}`);
   }
   return {
     uploadedDocuments: `${__dirname}/specs/uploads/${subPath}`,
     attachments: `${__dirname}/specs/uploads/${subPath}`,
-    customUploads: `${__dirname}/specs/uploads/${subPath}`,
+    customUploads: `${__dirname}/specs/customUploads/${subPath}`,
     temporalFiles: `${__dirname}/specs/uploads/${subPath}`,
   };
 };
@@ -144,7 +138,6 @@ const getFileContent = async (fileName: FilePath): Promise<string> =>
 
 export {
   setupTestUploadedPaths,
-  testingUploadPaths,
   deleteUploadedFiles,
   createDirIfNotExists,
   deleteFiles,
