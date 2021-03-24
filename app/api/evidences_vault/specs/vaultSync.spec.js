@@ -113,7 +113,7 @@ describe('vaultSync', () => {
       );
 
       expect(imported[0].metadata.screenshot[0]).toEqual({
-        value: firstPngAttachment._id.toString(),
+        value: '/api/files/1.png',
       });
 
       const secondPngAttachment = imported[1].attachments.find(a => a.filename.match(/png/));
@@ -124,7 +124,7 @@ describe('vaultSync', () => {
       );
 
       expect(imported[1].metadata.screenshot[0]).toEqual({
-        value: secondPngAttachment._id.toString(),
+        value: '/api/files/2.png',
       });
     });
 
@@ -142,18 +142,18 @@ describe('vaultSync', () => {
       );
 
       expect(imported[0].metadata.video[0]).toEqual({
-        value: firstMp4Attachment._id.toString(),
+        value: '/api/files/1.mp4',
       });
 
-      const secondMp4Attachment = imported[1].attachments.find(a => a.filename.match(/mp4/));
-      expect(secondMp4Attachment).toEqual(
+      const secondPngAttachment = imported[1].attachments.find(a => a.filename.match(/mp4/));
+      expect(secondPngAttachment).toEqual(
         expect.objectContaining({
           filename: '2.mp4',
         })
       );
 
       expect(imported[1].metadata.video[0]).toEqual({
-        value: secondMp4Attachment._id.toString(),
+        value: '/api/files/2.mp4',
       });
     });
   });
@@ -176,10 +176,12 @@ describe('vaultSync', () => {
     await mockVault(evidences);
     await vaultSync.sync(token, templateId);
     const imported = await entities.get();
+
     expect(await getFileContent('1.mp4')).toBe('this is a fake video');
 
-    expect(imported[1].metadata.video).toEqual([{ value: '' }]);
-    expect(imported[1].metadata.screenshot).toEqual([{ value: '' }]);
+    expect(imported.map(e => e.metadata.video[0].value)).toEqual(['/api/files/1.mp4', '']);
+
+    expect(imported.map(e => e.metadata.screenshot[0].value)).toEqual(['/api/files/1.png', '']);
 
     expect(imported[0].attachments).toEqual([
       expect.objectContaining({ filename: '1.mp4' }),

@@ -1,6 +1,5 @@
 import db from 'api/utils/testing_db';
 import entities from 'api/entities';
-import { files } from 'api/files';
 import path from 'path';
 import translations from 'api/i18n';
 import { search } from 'api/search';
@@ -62,7 +61,6 @@ describe('csvLoader', () => {
       expect(metadataImported).toEqual([
         'text_label',
         'numeric_label',
-        'image_label',
         'select_label',
         'not_defined_type',
         'geolocation_geolocation',
@@ -94,21 +92,6 @@ describe('csvLoader', () => {
         });
       });
     });
-
-    it('should generate attachments from image and media fields urls', async () => {
-      await db.clearAllAndLoad(fixtures);
-      await loader.load(csvFile, template1Id, { user: { username: 'user' }, language: 'en' });
-      const importedEntities = await entities.get();
-      const attachments = await files.get({ type: 'attachment' });
-
-      expect(attachments.length).toBe(2);
-      const firstAttachment = attachments.find(a => a.url === 'http://awesomecats.org/havery.png');
-
-      const firstEntityWithImage = importedEntities.find(e => e.title === 'title1');
-      expect(firstEntityWithImage.metadata.image_label[0].value).toBe(
-        firstAttachment._id.toString()
-      );
-    });
   });
 
   describe('on error', () => {
@@ -133,7 +116,6 @@ describe('csvLoader', () => {
       await db.clearAllAndLoad(fixtures);
       jest
         .spyOn(entities, 'save')
-        .mockImplementationOnce(({ title }) => Promise.resolve({ title }))
         .mockImplementationOnce(({ title }) => Promise.resolve({ title }))
         .mockImplementationOnce(({ title }) => Promise.reject(new Error(`error-${title}`)));
 
