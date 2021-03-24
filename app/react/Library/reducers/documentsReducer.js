@@ -69,15 +69,28 @@ export default function documents(state = initialState, action = {}) {
     return Immutable.fromJS(initialState);
   }
 
-  if (action.type === types.REMOVE_DOCUMENTS) {
-    return action.docs.reduce((_state, doc) => {
-      const docIndex = _state.get('rows').findIndex(_doc => _doc.get('_id') === doc._id);
+  const removeDocuments = (items, currentState, getFilter) =>
+    items.reduce((_state, item) => {
+      const docIndex = _state.get('rows').findIndex(getFilter(item));
 
       if (docIndex >= 0) {
         return _state.deleteIn(['rows', docIndex]);
       }
       return _state;
-    }, state);
+    }, currentState);
+
+  if (action.type === types.REMOVE_DOCUMENTS) {
+    const getFilterByObjectWithId = itemToSearch => candidateItem =>
+      candidateItem.get('_id') === itemToSearch._id;
+
+    return removeDocuments(action.docs, state, getFilterByObjectWithId);
+  }
+
+  if (action.type === types.REMOVE_DOCUMENTS_SHAREDIDS) {
+    const getFilterBySharedId = sharedIdToSearch => candidateItem =>
+      candidateItem.get('sharedId') === sharedIdToSearch;
+
+    return removeDocuments(action.sharedIds, state, getFilterBySharedId);
   }
 
   return Immutable.fromJS(state);
