@@ -376,7 +376,7 @@ export class DocumentSidePanel extends Component {
                 {(() => {
                   if (docBeingEdited && this.state.copyFrom) {
                     return (
-                      <div className="tab-content tab-content-visible">
+                      <div className="side-panel-container">
                         <EntityForm
                           storeKey={this.props.storeKey}
                           initialTemplateId={this.initialTemplateId}
