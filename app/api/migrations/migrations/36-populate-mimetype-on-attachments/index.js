@@ -23,7 +23,7 @@ export default {
         const mimetype = response.headers.get('content-type') || undefined;
         db.collection('files').updateOne({ _id: file._id }, { $set: { mimetype } });
       } else if (file.filename && file.type === 'attachment' && !file.mimetype) {
-        const mimetype = mime.lookup(attachmentsPath(file.filename));
+        const mimetype = mime.lookup(attachmentsPath(file.filename)) || undefined;
         db.collection('files').updateOne({ _id: file._id }, { $set: { mimetype } });
       }
     }
