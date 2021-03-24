@@ -38,6 +38,7 @@ import { faFilePdf } from '@fortawesome/free-solid-svg-icons/faFilePdf';
 import { faFileImage } from '@fortawesome/free-solid-svg-icons/faFileImage';
 import { faFont } from '@fortawesome/free-solid-svg-icons/faFont';
 import { faGavel } from '@fortawesome/free-solid-svg-icons/faGavel';
+import { faGlobe } from '@fortawesome/free-solid-svg-icons/faGlobe';
 import { faHome } from '@fortawesome/free-solid-svg-icons/faHome';
 import { faImage } from '@fortawesome/free-solid-svg-icons/faImage';
 import { faInfoCircle } from '@fortawesome/free-solid-svg-icons/faInfoCircle';
@@ -144,6 +145,7 @@ const icons = {
   faFileImage,
   faFont,
   faGavel,
+  faGlobe,
   faHome,
   faImage,
   faInfoCircle,
