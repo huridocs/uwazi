@@ -65,7 +65,7 @@ export class FileList extends Component<FileListProps> {
           <Translate>Documents</Translate>
         </h2>
         <ul>{orderedFiles.map((file, index) => this.renderFile(file, index))}</ul>
-        <NeedAuthorization roles={['admin', 'editor']}>
+        <NeedAuthorization roles={['admin', 'editor']} orWriteAccessTo={[entity]}>
           <UploadButton
             entitySharedId={this.props.entity.sharedId}
             storeKey={this.props.storeKey}

@@ -90,7 +90,7 @@ export class File extends Component<FileProps, FileState> {
           &nbsp;
           <Translate>Conversion failed</Translate>
         </div>
-        <NeedAuthorization roles={['admin', 'editor']}>
+        <NeedAuthorization roles={['admin', 'editor']} orWriteAccessTo={[this.props.entity]}>
           {this.renderDeleteButton()}
         </NeedAuthorization>
       </div>
@@ -120,7 +120,7 @@ export class File extends Component<FileProps, FileState> {
             &nbsp;
             <Translate>Download</Translate>
           </a>
-          <NeedAuthorization roles={['admin', 'editor']}>
+          <NeedAuthorization roles={['admin', 'editor']} orWriteAccessTo={[this.props.entity]}>
             <button type="button" className="file-edit btn btn-outline-success" onClick={this.edit}>
               <Icon icon="pencil-alt" />
               &nbsp;
