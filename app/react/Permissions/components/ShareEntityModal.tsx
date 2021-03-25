@@ -15,7 +15,11 @@ export interface ShareEntityModalProps {
   isOpen: boolean;
   onClose: () => void;
   sharedIds: string[];
-  saveEntitiesPermissions: (permissionsData: PermissionsDataSchema) => Promise<void>;
+  saveEntitiesPermissions: (
+    permissionsData: PermissionsDataSchema,
+    storeKey: string
+  ) => Promise<void>;
+  storeKey: string;
 }
 
 const validate = (assignments: MemberWithPermission[]) =>
@@ -44,6 +48,7 @@ export const ShareEntityModalComponent = ({
   onClose,
   sharedIds,
   saveEntitiesPermissions: savePermissions,
+  storeKey,
 }: ShareEntityModalProps) => {
   const [results, setResults] = useState<MemberWithPermission[]>([]);
   const [assignments, setAssignments] = useState<MemberWithPermission[]>([]);
@@ -96,14 +101,17 @@ export const ShareEntityModalComponent = ({
       return setValidationErrors(errors);
     }
 
-    await savePermissions({
-      ids: sharedIds,
-      permissions: assignments.map(a => ({
-        refId: a.refId,
-        type: a.type,
-        level: a.level as AccessLevels,
-      })),
-    });
+    await savePermissions(
+      {
+        ids: sharedIds,
+        permissions: assignments.map(a => ({
+          refId: a.refId,
+          type: a.type,
+          level: a.level as AccessLevels,
+        })),
+      },
+      storeKey
+    );
     return onClose();
   };
 
