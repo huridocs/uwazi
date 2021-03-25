@@ -14,6 +14,7 @@ import { fixtures, templateId } from './fixtures';
 import instrumentRoutes from '../../utils/instrumentRoutes';
 import uploadRoutes from '../jsRoutes.js';
 import errorLog from '../../log/errorLog';
+import { createDirIfNotExists } from '../filesystem';
 
 const mockExport = jest.fn();
 jest.mock('api/csv/csvExporter', () =>
@@ -25,9 +26,9 @@ describe('upload routes', () => {
   let routes;
   let req;
   let file;
+  const directory = `${__dirname}/uploads/upload_routes`;
 
-  const deleteAllFiles = cb => {
-    const directory = `${__dirname}/uploads/`;
+  const deleteAllFiles = async cb => {
     const dontDeleteFiles = [
       'import.zip',
       'eng.pdf',
@@ -51,8 +52,9 @@ describe('upload routes', () => {
     });
   };
 
-  beforeEach(done => {
-    deleteAllFiles(() => {
+  beforeEach(async done => {
+    await createDirIfNotExists(directory);
+    await deleteAllFiles(() => {
       spyOn(search, 'delete').and.returnValue(Promise.resolve());
       spyOn(search, 'indexEntities').and.returnValue(Promise.resolve());
       routes = instrumentRoutes(uploadRoutes);
@@ -82,8 +84,8 @@ describe('upload routes', () => {
   });
 
   describe('api/public', () => {
-    beforeEach(done => {
-      deleteAllFiles(() => {
+    beforeEach(async done => {
+      await deleteAllFiles(() => {
         spyOn(Date, 'now').and.returnValue(1000);
         spyOn(mailer, 'send');
         const buffer = fs.readFileSync(`${__dirname}/12345.test.pdf`);
@@ -180,8 +182,8 @@ describe('upload routes', () => {
     });
   });
 
-  afterAll(done => {
-    deleteAllFiles(() => {
+  afterAll(async done => {
+    await deleteAllFiles(() => {
       db.disconnect().then(done);
     });
   });
