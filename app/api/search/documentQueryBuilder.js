@@ -41,7 +41,6 @@ export default function() {
         'uploaded',
         'published',
         'relationships',
-        'permissions',
       ],
     },
     from: 0,
@@ -173,6 +172,11 @@ export default function() {
 
     select(fields) {
       baseQuery._source.include = fields;
+      return this;
+    },
+
+    include(fields = []) {
+      baseQuery._source.include = baseQuery._source.include.concat(fields);
       return this;
     },
 
