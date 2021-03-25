@@ -35,6 +35,9 @@ const users: { [key: string]: UserSchema & { _id: ObjectIdSchema } } = {
   },
 };
 const group1 = testingDB.id();
+const template1Id = testingDB.id();
+const template2Id = testingDB.id();
+const template3Id = testingDB.id();
 
 export const permissionsLevelFixtures: DBFixture = {
   entities: [
@@ -43,6 +46,7 @@ export const permissionsLevelFixtures: DBFixture = {
       shareId: 'ent1',
       language: 'es',
       published: true,
+      template: template1Id,
       permissions: [
         { level: 'read', refId: users.user1._id, type: 'user' },
         { level: 'read', refId: group1, type: 'group' },
@@ -54,6 +58,7 @@ export const permissionsLevelFixtures: DBFixture = {
       shareId: 'ent2',
       language: 'es',
       published: true,
+      template: template2Id,
       permissions: [
         { level: 'read', refId: users.user1._id, type: 'user' },
         { level: 'read', refId: group1, type: 'group' },
@@ -65,6 +70,7 @@ export const permissionsLevelFixtures: DBFixture = {
       shareId: 'ent3',
       language: 'es',
       published: true,
+      template: template1Id,
       permissions: [
         { level: 'write', refId: users.user1._id, type: 'user' },
         { level: 'read', refId: users.user2._id, type: 'user' },
@@ -78,6 +84,7 @@ export const permissionsLevelFixtures: DBFixture = {
       shareId: 'ent3',
       language: 'en',
       published: true,
+      template: template1Id,
       permissions: [
         { level: 'write', refId: users.user1._id, type: 'user' },
         { level: 'read', refId: users.user2._id, type: 'user' },
@@ -91,6 +98,7 @@ export const permissionsLevelFixtures: DBFixture = {
       shareId: 'ent4',
       language: 'es',
       published: true,
+      template: template3Id,
       permissions: [
         { level: 'write', refId: users.user2._id, type: 'user' },
         { level: 'write', refId: users.user3._id, type: 'user' },
@@ -120,4 +128,4 @@ export const permissionsLevelFixtures: DBFixture = {
   ],
 };
 
-export { users, group1 };
+export { users, group1, template1Id, template2Id, template3Id };
