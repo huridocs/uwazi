@@ -582,6 +582,7 @@ const buildQuery = async (query, language, user, resources) => {
     ? await searchTypeFromSearchTermValidity(query.searchTerm)
     : 'query_string';
   const queryBuilder = documentQueryBuilder()
+    .include(query.include)
     .fullTextSearch(query.searchTerm, textFieldsToSearch, 2, searchTextType)
     .filterByTemplate(query.types)
     .filterById(query.ids)

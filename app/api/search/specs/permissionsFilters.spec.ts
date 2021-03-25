@@ -30,6 +30,59 @@ describe('Permissions filters', () => {
     userFactory.restore();
   });
 
+  describe('when selecting permissions', () => {
+    describe('when user is admin/editor', () => {
+      it.each([users.adminUser, users.editorUser])(
+        'should return all permissions for the entity',
+        async user => {
+          userFactory.mock(user);
+          const query = {
+            include: ['permissions'],
+            searchTerm: 'ent3 ent4',
+          };
+
+          const { rows } = await search.search(query, 'es');
+          expect(rows[0].permissions).toEqual([
+            { level: 'write', refId: users.user2._id.toString(), type: 'user' },
+            { level: 'write', refId: users.user3._id.toString(), type: 'user' },
+            { level: 'write', refId: group1.toString(), type: 'group' },
+            { level: 'write', refId: users.adminUser._id.toString(), type: 'user' },
+            { level: 'write', refId: users.editorUser._id.toString(), type: 'user' },
+          ]);
+
+          expect(rows[1].permissions).toEqual([
+            { level: 'write', refId: users.user1._id.toString(), type: 'user' },
+            { level: 'read', refId: users.user2._id.toString(), type: 'user' },
+            { level: 'write', refId: users.user3._id.toString(), type: 'user' },
+            { level: 'read', refId: group1.toString(), type: 'group' },
+            { level: 'read', refId: users.adminUser._id.toString(), type: 'user' },
+          ]);
+        }
+      );
+    });
+
+    describe('when user is a collaborator', () => {
+      it('should return only allowed to see permissions', async () => {
+        userFactory.mock(users.user2);
+        const query = {
+          include: ['permissions'],
+        };
+
+        const { rows } = await search.search(query, 'es');
+        expect(rows).toEqual([
+          expect.objectContaining({
+            permissions: expect.arrayContaining([]),
+          }),
+          expect.objectContaining({
+            permissions: expect.arrayContaining([
+              { level: 'write', refId: users.user2._id.toString(), type: 'user' },
+            ]),
+          }),
+        ]);
+      });
+    });
+  });
+
   describe('filters', () => {
     it('should return results based on what the user is allowed to see', async () => {
       userFactory.mock(users.user2);

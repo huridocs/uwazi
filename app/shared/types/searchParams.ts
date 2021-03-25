@@ -31,6 +31,7 @@ export const searchParamsSchema = {
         types: { type: 'array', items: [{ type: 'string' }] },
         _types: { type: 'array', items: [{ type: 'string' }] },
         fields: { type: 'array', items: [{ type: 'string' }] },
+        include: { type: 'array', items: [{ type: 'string' }] },
         allAggregations: { type: 'boolean' },
         aggregations: { type: 'string' },
         order: { type: 'string', enum: ['asc', 'desc'] },

@@ -1,8 +1,7 @@
-/** @format */
-
 import { APIURL } from 'app/config.js';
 import backend from 'fetch-mock';
 import { RequestParams } from 'app/utils/RequestParams';
+import api from 'app/utils/api';
 import entitiesAPI from '../EntitiesAPI';
 
 describe('EntitiesAPI', () => {
@@ -17,7 +16,9 @@ describe('EntitiesAPI', () => {
   beforeEach(() => {
     backend.restore();
     backend
-      .get(`${APIURL}entities?param=1`, { body: JSON.stringify({ rows: arrayResponse }) })
+      .get(`${APIURL}entities?param=1&include=%5B%22permissions%22%5D`, {
+        body: JSON.stringify({ rows: arrayResponse }),
+      })
       .get(`${APIURL}entities/search`, { body: JSON.stringify(searchResponse) })
       .get(`${APIURL}documents/page?sharedId=sharedId&page=2`, {
         body: JSON.stringify(page2Text),
@@ -30,8 +31,10 @@ describe('EntitiesAPI', () => {
       .get(`${APIURL}entities/search?searchTerm=Batman&joker=true`, {
         body: JSON.stringify(filteredSearchResult),
       })
-      .get(`${APIURL}entities?_id=documentId`, { body: JSON.stringify({ rows: singleResponse }) })
-      .get(`${APIURL}entities?param1=1&_id=documentId`, {
+      .get(`${APIURL}entities?_id=documentId&include=%5B%22permissions%22%5D`, {
+        body: JSON.stringify({ rows: singleResponse }),
+      })
+      .get(`${APIURL}entities?param1=1&_id=documentId&include=%5B%22permissions%22%5D`, {
         body: JSON.stringify({ rows: paramedResponse }),
       })
       .delete(`${APIURL}entities?sharedId=id`, {
@@ -74,6 +77,22 @@ describe('EntitiesAPI', () => {
       const request = new RequestParams({ param: '1' });
       const response = await entitiesAPI.get(request);
       expect(response).toEqual(arrayResponse);
+    });
+
+    describe('should include permissions', () => {
+      it('should request for the thesauri', async () => {
+        spyOn(api, 'get').and.returnValue(Promise.resolve({ json: { rows: [] } }));
+        let request = new RequestParams({ _id: 'documentId' });
+        await entitiesAPI.get(request);
+        expect(api.get).toHaveBeenCalledWith('entities', request.add({ include: ['permissions'] }));
+
+        request = new RequestParams({ _id: 'documentId', include: ['include'] });
+        await entitiesAPI.get(request);
+        expect(api.get).toHaveBeenCalledWith(
+          'entities',
+          request.add({ include: ['include', 'permissions'] })
+        );
+      });
     });
 
     describe('when passing an id', () => {

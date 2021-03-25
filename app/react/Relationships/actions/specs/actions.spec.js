@@ -3,6 +3,7 @@ import configureMockStore from 'redux-mock-store';
 import { fromJS as Immutable } from 'immutable';
 import { mockID } from 'shared/uniqueID.js';
 import { RequestParams } from 'app/utils/RequestParams';
+import SearchApi from 'app/Search/SearchAPI';
 
 import api from 'app/utils/api';
 import * as types from '../actionTypes';
@@ -560,16 +561,15 @@ describe('Relationships actions', () => {
 
     beforeEach(() => {
       store = mockStore({});
-      spyOn(api, 'get').and.returnValue(
-        Promise.resolve({ json: { rows: [{ type: 'entity' }, { type: 'doc' }] } })
+      spyOn(SearchApi, 'search').and.returnValue(
+        Promise.resolve({ rows: [{ type: 'entity' }, { type: 'doc' }] })
       );
     });
 
     describe('immidiateSearch', () => {
       it('should search for connectable entities', () => {
         actions.immidiateSearch(store.dispatch, 'term');
-        expect(api.get).toHaveBeenCalledWith(
-          'search',
+        expect(SearchApi.search).toHaveBeenCalledWith(
           new RequestParams({ searchTerm: 'term', fields: ['title'], includeUnpublished: true })
         );
         expect(store.getActions()).toContainEqual({ type: 'SEARCHING_RELATIONSHIPS' });
@@ -596,12 +596,11 @@ describe('Relationships actions', () => {
           type: 'relationships/searchTerm/SET',
           value: 'term',
         });
-        expect(api.get).not.toHaveBeenCalled();
+        expect(SearchApi.search).not.toHaveBeenCalled();
 
         jasmine.clock().tick(400);
 
-        expect(api.get).toHaveBeenCalledWith(
-          'search',
+        expect(SearchApi.search).toHaveBeenCalledWith(
           new RequestParams({ searchTerm: 'term', fields: ['title'], includeUnpublished: true })
         );
         jasmine.clock().uninstall();
