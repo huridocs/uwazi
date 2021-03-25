@@ -20,6 +20,7 @@ import migration from '../index.js';
 describe('conversion of character count to absolute position', () => {
   beforeEach(done => {
     spyOn(process.stdout, 'write');
+    spyOn(process.stderr, 'write');
     spyOn(errorLog, 'error');
     config.defaultTenant.uploadedDocuments = __dirname;
     testingDB

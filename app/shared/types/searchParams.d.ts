@@ -19,6 +19,7 @@ export interface SearchParams {
     types?: [] | [string];
     _types?: [] | [string];
     fields?: [] | [string];
+    include?: [] | [string];
     allAggregations?: boolean;
     aggregations?: string;
     order?: 'asc' | 'desc';

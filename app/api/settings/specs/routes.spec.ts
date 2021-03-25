@@ -24,7 +24,8 @@ describe('Settings routes', () => {
 
   beforeEach(async () => {
     spyOn(search, 'indexEntities').and.returnValue(Promise.resolve());
-    await db.clearAllAndLoad(fixtures);
+    const elasticIndex = 'settings_index';
+    await db.clearAllAndLoad(fixtures, elasticIndex);
   });
 
   afterAll(async () => db.disconnect());

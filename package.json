@@ -112,6 +112,7 @@
     "mark.js": "^8.11.1",
     "markdown-it": "11.0.0",
     "markdown-it-container": "3.0.0",
+    "mime-types": "^2.1.29",
     "moment": "2.27.0",
     "moment-timezone": "0.5.31",
     "mongodb": "^3.6.2",

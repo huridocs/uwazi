@@ -3,6 +3,7 @@ import { notificationActions } from 'app/Notifications';
 import api from 'app/utils/api';
 import debounce from 'app/utils/debounce';
 import { RequestParams } from 'app/utils/RequestParams';
+import SearchApi from 'app/Search/SearchAPI';
 
 import * as types from './actionTypes';
 import * as uiActions from './uiActions';
@@ -12,8 +13,8 @@ export function immidiateSearch(dispatch, searchTerm, connectionType) {
 
   const requestParams = new RequestParams({ searchTerm, fields: ['title'] });
 
-  return api.get('search', requestParams).then(response => {
-    let results = response.json.rows;
+  return SearchApi.search(requestParams).then(({ rows }) => {
+    let results = rows;
     if (connectionType === 'targetRanged') {
       results = results.filter(r => r.documents.length);
     }

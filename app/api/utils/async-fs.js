@@ -11,4 +11,5 @@ export default {
   rename: promisify(fs.rename),
   readFile: promisify(fs.readFile),
   readdir: promisify(fs.readdir),
+  mkdir: promisify(fs.mkdir),
 };
