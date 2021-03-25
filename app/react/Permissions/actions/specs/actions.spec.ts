@@ -13,9 +13,16 @@ describe('Permissions actions', () => {
 
   beforeEach(() => {
     dispatch = jasmine.createSpy('dispatch');
-    spyOn(api, 'savePermissions').and.returnValue(Promise.resolve({}));
+    spyOn(api, 'savePermissions').and.callFake(async param => Promise.resolve(param));
     spyOn(notificationActions, 'notify').and.returnValue('NOTIFIED');
   });
+
+  const getStateMock = (state?: any) => () =>
+    <IStore>state || {
+      library: {
+        search: {},
+      },
+    };
 
   describe('Save permissions', () => {
     it('should dispatch a notification of success', async () => {
@@ -23,22 +30,105 @@ describe('Permissions actions', () => {
         ids: ['sharedId1'],
         permissions: [],
       };
-      await actions.saveEntitiesPermissions(permissionsData, 'library')(dispatch);
+      await actions.saveEntitiesPermissions(permissionsData, 'library')(dispatch, getStateMock());
       expect(notificationActions.notify).toHaveBeenCalledWith('Update success', 'success');
     });
 
-    it('should remove the entities from the library/uploads when changing permissions', async () => {
-      const permissionsData: PermissionsDataSchema = {
-        ids: ['sharedId1'],
-        permissions: [],
-      };
-      await actions.saveEntitiesPermissions(permissionsData, 'library')(dispatch);
-      expect(dispatch).toHaveBeenCalledWith(
-        expect.objectContaining({
-          type: REMOVE_DOCUMENTS_SHAREDIDS,
-          sharedIds: ['sharedId1'],
-        })
+    describe('for LIBRARY', () => {
+      it('should remove documents after unpublishing', async () => {
+        const permissionsData: PermissionsDataSchema = {
+          ids: ['sharedId1'],
+          permissions: [],
+        };
+
+        const stateLibrary = {
+          library: {
+            search: {
+              unpublished: false,
+              includeUnpublished: false,
+            },
+          },
+        };
+
+        await actions.saveEntitiesPermissions(permissionsData, 'library')(
+          dispatch,
+          getStateMock(stateLibrary)
+        );
+
+        expect(dispatch).toHaveBeenCalledWith(
+          expect.objectContaining({
+            type: REMOVE_DOCUMENTS_SHAREDIDS,
+            sharedIds: ['sharedId1'],
+          })
+        );
+      });
+
+      it.each([true, false])(
+        'should update documents publishing after change if including unpublished',
+        async withPublic => {
+          const permissionsData: PermissionsDataSchema = {
+            ids: ['sharedId1'],
+            permissions: withPublic ? [{ refId: 'public', type: 'public', level: 'read' }] : [],
+          };
+
+          const stateLibrary = {
+            library: {
+              search: {
+                unpublished: false,
+                includeUnpublished: withPublic,
+              },
+            },
+          };
+
+          await actions.saveEntitiesPermissions(permissionsData, 'library')(
+            dispatch,
+            getStateMock(stateLibrary)
+          );
+
+          expect(dispatch).toHaveBeenCalledWith(
+            expect.objectContaining({
+              type: 'UPDATE_DOCUMENTS_PUBLISHED',
+              sharedIds: ['sharedId1'],
+              published: false,
+            })
+          );
+
+          expect(dispatch).not.toHaveBeenCalledWith(
+            expect.objectContaining({
+              type: REMOVE_DOCUMENTS_SHAREDIDS,
+            })
+          );
+        }
       );
+    });
+
+    describe('for UPLOADS', () => {
+      it('should remove documents after publishing', async () => {
+        const permissionsData: PermissionsDataSchema = {
+          ids: ['sharedId1'],
+          permissions: [{ refId: 'public', type: 'public', level: 'read' }],
+        };
+
+        const stateUploads = {
+          uploads: {
+            search: {
+              unpublished: true,
+            },
+          },
+        };
+
+        await actions.saveEntitiesPermissions(permissionsData, 'uploads')(
+          dispatch,
+          getStateMock(stateUploads)
+        );
+
+        expect(dispatch).toHaveBeenCalledWith(
+          expect.objectContaining({
+            type: REMOVE_DOCUMENTS_SHAREDIDS,
+            sharedIds: ['sharedId1'],
+          })
+        );
+      });
     });
   });
 });
