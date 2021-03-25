@@ -14,6 +14,7 @@ import { PermissionSchema } from 'shared/types/permissionType';
 import { MemberWithPermission } from 'shared/types/entityPermisions';
 import { PermissionsDataSchema } from '../../shared/types/permissionType';
 import { User } from '../users/usersModel';
+import { permissionsContext } from './permissionsContext';
 
 const setAdditionalData = (
   peopleList: (GroupMemberSchema | UserGroupSchema)[],
@@ -76,8 +77,10 @@ const publishingChanged = (newPublishedValue: boolean, currentEntities: EntitySc
   }, false);
 
 export const entitiesPermissions = {
-  set: async (permissionsData: PermissionsDataSchema, user: User) => {
+  set: async (permissionsData: PermissionsDataSchema) => {
     await validateUniquePermissions(permissionsData);
+
+    const user = permissionsContext.getUserInContext()
 
     const currentEntities = await entities.get(
       { sharedId: { $in: permissionsData.ids } },
@@ -88,7 +91,7 @@ export const entitiesPermissions = {
     const published = permissionsData.permissions.findIndex(p => p.type === 'public') > -1;
 
     if (
-      !['admin', 'editor'].includes(user.role!) &&
+      !['admin', 'editor'].includes(user!.role) &&
       publishingChanged(published, currentEntities)
     ) {
       throw new Error('Insuficient permissions to share/unshare publicly');

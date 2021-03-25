@@ -18,7 +18,7 @@ export const permissionRoutes = (app: Application) => {
     }),
     async (req, res, next) => {
       try {
-        await entitiesPermissions.set(req.body, req.user);
+        await entitiesPermissions.set(req.body);
         res.json(req.body);
       } catch (err) {
         next(err);

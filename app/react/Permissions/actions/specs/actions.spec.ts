@@ -2,7 +2,10 @@ import { Dispatch } from 'redux';
 import { IStore } from 'app/istore';
 import { notificationActions } from 'app/Notifications';
 import { PermissionsDataSchema } from 'shared/types/permissionType';
-import { REMOVE_DOCUMENTS_SHAREDIDS, UPDATE_DOCUMENTS_PUBLISHED } from 'app/Library/actions/actionTypes';
+import {
+  REMOVE_DOCUMENTS_SHAREDIDS,
+  UPDATE_DOCUMENTS_PUBLISHED,
+} from 'app/Library/actions/actionTypes';
 import * as api from '../../PermissionsAPI';
 import * as actions from '../actions';
 
