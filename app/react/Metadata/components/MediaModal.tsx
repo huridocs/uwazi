@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import ReactModal from 'react-modal';
+import { Field, LocalForm } from 'react-redux-form';
 import { Tabs, TabLink, TabContent } from 'react-tabs-redux';
 import filesize from 'filesize';
 
@@ -7,6 +8,10 @@ import { AttachmentSchema } from 'shared/types/commonTypes';
 import { Translate } from 'app/I18N';
 import { Icon } from 'app/UI';
 import { RenderAttachment } from 'app/Attachments/components/RenderAttachment';
+
+const validators = {
+  url: { required: (val: any) => !!val && val.trim() !== '' },
+};
 
 export enum MediaModalType {
   Image,
@@ -47,6 +52,11 @@ export const MediaModal = ({
     onClose();
   };
 
+  const handleSubmitFromUrl = (formData: { url: string }) => {
+    onChange(formData.url);
+    onClose();
+  };
+
   return (
     <ReactModal
       isOpen={isOpen}
@@ -69,6 +79,9 @@ export const MediaModal = ({
           <div className="attachments-modal__tabs">
             <TabLink to="selectFromFiles" className="tab-link modal-tab-1">
               <Translate>Select from files</Translate>
+            </TabLink>
+            <TabLink to="addFromUrl" className="tab-link modal-tab-2">
+              <Translate>Add from url</Translate>
             </TabLink>
           </div>
 
@@ -115,6 +128,30 @@ export const MediaModal = ({
                   <Translate>No attachments </Translate>
                 </h4>
               )}
+            </TabContent>
+            <TabContent
+              for="addFromUrl"
+              className="tab-content attachments-modal__tabs-content centered"
+            >
+              <div className="wrapper-web">
+                <LocalForm onSubmit={handleSubmitFromUrl} model="urlForm" validators={validators}>
+                  <div className="form-group has-feedback">
+                    <Field model=".url">
+                      <input
+                        type="text"
+                        className="form-control web-attachment-url"
+                        placeholder="Paste URL here"
+                      />
+                    </Field>
+                    <Icon icon="info-circle" className="feedback-icon" />
+                  </div>
+
+                  <button type="submit" className="btn btn-success">
+                    <Icon icon="link" />
+                    &nbsp; <Translate>Add</Translate>
+                  </button>
+                </LocalForm>
+              </div>
             </TabContent>
           </div>
         </Tabs>

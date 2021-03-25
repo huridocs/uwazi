@@ -53,7 +53,7 @@ export class MetadataFormFields extends Component {
 
     const { selectedDocuments } = ui.toJS();
     const attachments = selectedDocuments[0] ? selectedDocuments[0].attachments : [];
-    console.log(attachments);
+
     switch (propertyType) {
       case 'select':
         thesauri = thesauris.find(opt => opt.get('_id').toString() === property.content.toString());
