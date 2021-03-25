@@ -21,11 +21,18 @@ export default {
         // eslint-disable-next-line no-await-in-loop
         const response = await request.head(file.url);
         const mimetype = response.headers.get('content-type') || undefined;
-        db.collection('files').updateOne({ _id: file._id }, { $set: { mimetype } });
+        // eslint-disable-next-line no-await-in-loop
+        await this.updateFile(db, file, mimetype);
       } else if (file.filename && file.type === 'attachment' && !file.mimetype) {
         const mimetype = mime.lookup(attachmentsPath(file.filename)) || undefined;
-        db.collection('files').updateOne({ _id: file._id }, { $set: { mimetype } });
+        // eslint-disable-next-line no-await-in-loop
+        await this.updateFile(db, file, mimetype);
       }
+    }
+  },
+  async updateFile(db, file, mimetype) {
+    if (mimetype) {
+      await db.collection('files').updateOne({ _id: file._id }, { $set: { mimetype } });
     }
   },
 };
