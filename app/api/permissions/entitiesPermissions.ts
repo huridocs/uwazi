@@ -13,7 +13,6 @@ import {
 import { PermissionSchema } from 'shared/types/permissionType';
 import { MemberWithPermission } from 'shared/types/entityPermisions';
 import { PermissionsDataSchema } from '../../shared/types/permissionType';
-import { User } from '../users/usersModel';
 import { permissionsContext } from './permissionsContext';
 
 const setAdditionalData = (
@@ -80,7 +79,7 @@ export const entitiesPermissions = {
   set: async (permissionsData: PermissionsDataSchema) => {
     await validateUniquePermissions(permissionsData);
 
-    const user = permissionsContext.getUserInContext()
+    const user = permissionsContext.getUserInContext();
 
     const currentEntities = await entities.get(
       { sharedId: { $in: permissionsData.ids } },
