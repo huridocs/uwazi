@@ -21,4 +21,7 @@
 
 .side-panel-container {
   display: flex;
+  .copy-from {
+    border-left: 1px solid #d7d7dc;
+  }
 }
