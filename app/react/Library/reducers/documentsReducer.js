@@ -29,6 +29,14 @@ export default function documents(state = initialState, action = {}) {
     }, state);
   }
 
+  if (action.type === types.UPDATE_DOCUMENTS_PUBLISHED) {
+    return action.sharedIds.reduce((_state, sharedId) => {
+      const docIndex = state.get('rows').findIndex(_doc => _doc.get('sharedId') === sharedId);
+
+      return _state.setIn(['rows', docIndex, 'published'], action.published);
+    }, state);
+  }
+
   if (action.type === types.ELEMENT_CREATED) {
     return state.update('rows', rows => rows.insert(0, Immutable.fromJS(action.doc)));
   }

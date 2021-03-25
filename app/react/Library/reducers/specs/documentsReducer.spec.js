@@ -218,4 +218,29 @@ describe('documentsReducer', () => {
       });
     });
   });
+
+  describe('UPDATE_DOCUMENTS_PUBLISHED', () => {
+    it('update the entities with the provided publishing status', () => {
+      const currentState = Immutable.fromJS({
+        rows: [
+          { title: '1', _id: 1, sharedId: 'shared1', published: false },
+          { title: '2', _id: 2, sharedId: 'shared2', published: false },
+          { title: '3', _id: 3, sharedId: 'shared3', published: false },
+        ],
+      });
+      const newState = documentsReducer(currentState, {
+        type: types.UPDATE_DOCUMENTS_PUBLISHED,
+        sharedIds: ['shared2', 'shared3'],
+        published: true,
+      });
+
+      expect(newState.toJS()).toEqual({
+        rows: [
+          { title: '1', _id: 1, sharedId: 'shared1', published: false },
+          { title: '2', _id: 2, sharedId: 'shared2', published: true },
+          { title: '3', _id: 3, sharedId: 'shared3', published: true },
+        ],
+      });
+    });
+  });
 });

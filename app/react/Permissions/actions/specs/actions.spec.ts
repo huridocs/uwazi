@@ -2,7 +2,7 @@ import { Dispatch } from 'redux';
 import { IStore } from 'app/istore';
 import { notificationActions } from 'app/Notifications';
 import { PermissionsDataSchema } from 'shared/types/permissionType';
-import { REMOVE_DOCUMENTS_SHAREDIDS } from 'app/Library/actions/actionTypes';
+import { REMOVE_DOCUMENTS_SHAREDIDS, UPDATE_DOCUMENTS_PUBLISHED } from 'app/Library/actions/actionTypes';
 import * as api from '../../PermissionsAPI';
 import * as actions from '../actions';
 
@@ -75,7 +75,7 @@ describe('Permissions actions', () => {
             library: {
               search: {
                 unpublished: false,
-                includeUnpublished: withPublic,
+                includeUnpublished: true,
               },
             },
           };
@@ -87,9 +87,9 @@ describe('Permissions actions', () => {
 
           expect(dispatch).toHaveBeenCalledWith(
             expect.objectContaining({
-              type: 'UPDATE_DOCUMENTS_PUBLISHED',
+              type: UPDATE_DOCUMENTS_PUBLISHED,
               sharedIds: ['sharedId1'],
-              published: false,
+              published: withPublic,
             })
           );
 
