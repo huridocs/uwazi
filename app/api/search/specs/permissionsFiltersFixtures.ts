@@ -45,7 +45,6 @@ export const permissionsLevelFixtures: DBFixture = {
       title: 'ent1',
       shareId: 'ent1',
       language: 'es',
-      published: true,
       template: template1Id,
       permissions: [
         { level: 'read', refId: users.user1._id, type: 'user' },
@@ -57,7 +56,6 @@ export const permissionsLevelFixtures: DBFixture = {
       title: 'ent2',
       shareId: 'ent2',
       language: 'es',
-      published: true,
       template: template2Id,
       permissions: [
         { level: 'read', refId: users.user1._id, type: 'user' },
@@ -69,7 +67,6 @@ export const permissionsLevelFixtures: DBFixture = {
       title: 'ent3',
       shareId: 'ent3',
       language: 'es',
-      published: true,
       template: template1Id,
       permissions: [
         { level: 'write', refId: users.user1._id, type: 'user' },
@@ -83,7 +80,6 @@ export const permissionsLevelFixtures: DBFixture = {
       title: 'ent3',
       shareId: 'ent3',
       language: 'en',
-      published: true,
       template: template1Id,
       permissions: [
         { level: 'write', refId: users.user1._id, type: 'user' },
@@ -97,7 +93,6 @@ export const permissionsLevelFixtures: DBFixture = {
       title: 'ent4',
       shareId: 'ent4',
       language: 'es',
-      published: true,
       template: template3Id,
       permissions: [
         { level: 'write', refId: users.user2._id, type: 'user' },

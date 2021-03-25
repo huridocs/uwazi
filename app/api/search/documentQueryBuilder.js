@@ -204,9 +204,9 @@ export default function() {
     },
 
     includeUnpublished() {
-      const matchPulished = baseQuery.query.bool.filter[0].bool.should[0].term.published;
-      if (matchPulished) {
-        baseQuery.query.bool.filter[0].bool.should = [];
+      const shouldFilter = baseQuery.query.bool.filter[0].bool.should[0];
+      if (shouldFilter.term && shouldFilter.term.published) {
+        delete baseQuery.query.bool.filter[0].bool.should.splice(shouldFilter, 1);
       }
       return this;
     },
@@ -398,12 +398,11 @@ export default function() {
     filterByPermissions() {
       const user = permissionsContext.getUserInContext();
       if (user && !['admin', 'editor'].includes(user.role)) {
-        addFilter(
-          nested(
-            [{ terms: { 'permissions.refId': permissionsContext.permissionsRefIds() } }],
-            'permissions'
-          )
+        const permissionsFilter = nested(
+          [{ terms: { 'permissions.refId': permissionsContext.permissionsRefIds() } }],
+          'permissions'
         );
+        baseQuery.query.bool.filter[0].bool.should.push(permissionsFilter);
       }
       return this;
     },
