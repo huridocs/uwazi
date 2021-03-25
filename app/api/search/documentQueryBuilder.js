@@ -21,20 +21,6 @@ const nested = (filters, path) => ({
 });
 
 export default function() {
-  const defaultFilter = [
-    {
-      bool: {
-        should: [
-          {
-            term: {
-              published: true,
-            },
-          },
-        ],
-      },
-    },
-  ];
-
   const baseQuery = {
     explain: false,
     _source: {
@@ -64,7 +50,7 @@ export default function() {
       bool: {
         must: [{ bool: { should: [] } }],
         must_not: [],
-        filter: defaultFilter,
+        filter: [{ term: { published: true } }],
       },
     },
     sort: [],
@@ -83,7 +69,7 @@ export default function() {
                 filter: {
                   bool: {
                     must: [{ bool: { should: [] } }],
-                    filter: defaultFilter,
+                    filter: [{ match: { published: true } }],
                   },
                 },
               },
@@ -198,15 +184,21 @@ export default function() {
     },
 
     onlyUnpublished() {
-      baseQuery.query.bool.filter[0].bool.should[0].term.published = false;
-      aggregations._types.aggregations.filtered.filter.bool.filter[0].bool.should[0].term.published = false;
+      baseQuery.query.bool.filter[0].term.published = false;
+      aggregations._types.aggregations.filtered.filter.bool.filter[0].match.published = false;
       return this;
     },
 
     includeUnpublished() {
-      const matchPulished = baseQuery.query.bool.filter[0].bool.should[0].term.published;
-      if (matchPulished) {
-        baseQuery.query.bool.filter[0].bool.should = [];
+      const matchPulished = baseQuery.query.bool.filter.findIndex(i => i.term && i.term.published);
+      if (matchPulished >= 0) {
+        baseQuery.query.bool.filter.splice(matchPulished, 1);
+      }
+      const aggPulished = aggregations._types.aggregations.filtered.filter.bool.filter.findIndex(
+        i => i.match && i.match.published
+      );
+      if (aggPulished >= 0) {
+        aggregations._types.aggregations.filtered.filter.bool.filter.splice(aggPulished, 1);
       }
       return this;
     },
