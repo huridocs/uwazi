@@ -1,14 +1,14 @@
-import { RenderAttachment } from 'app/Attachments/components/RenderAttachment';
 import { I18NLink, t } from 'app/I18N';
 import { Icon } from 'app/Layout';
 import MarkdownViewer from 'app/Markdown';
+import MarkdownMedia from 'app/Markdown/components/MarkdownMedia';
 import { GroupedGeolocationViewer } from 'app/Metadata/components/GroupedGeolocationViewer';
 import PropTypes from 'prop-types';
 import React from 'react';
 import GeolocationViewer from './GeolocationViewer';
 import ValueList from './ValueList';
 
-const showByType = (prop, compact, attachments = []) => {
+const showByType = (prop, compact) => {
   let result = prop.value;
   switch (prop.type) {
     case null:
@@ -25,9 +25,10 @@ const showByType = (prop, compact, attachments = []) => {
       );
       break;
     case 'image':
+      result = prop.value && <img src={prop.value} />;
+      break;
     case 'media': {
-      const attachment = attachments.find(a => a._id === prop.value) || null;
-      result = attachment && <RenderAttachment attachment={attachment} />;
+      result = prop.value && <MarkdownMedia config={prop.value} />;
       break;
     }
     case 'geolocation':
@@ -154,7 +155,7 @@ const Metadata = ({
           >
             {renderLabel(prop, <dt>{t(prop.translateContext || 'System', prop.label)}</dt>)}
             <dd className={prop.sortedBy ? 'item-current-sort' : ''}>
-              {showByType(prop, compact, attachments)}
+              {showByType(prop, compact)}
             </dd>
           </dl>
         );
@@ -194,7 +195,6 @@ Metadata.propTypes = {
   renderLabel: PropTypes.func,
   showSubset: PropTypes.arrayOf(PropTypes.string),
   groupGeolocations: PropTypes.bool,
-  attachments: PropTypes.arrayOf(PropTypes.object),
 };
 
 export default Metadata;

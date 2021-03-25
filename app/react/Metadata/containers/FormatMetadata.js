@@ -22,7 +22,6 @@ const BaseFormatMetadata = ({
       })
     )}
     compact={!!sortedProperty}
-    attachments={attachments}
     {...removeUneededProps(props)}
   />
 );
@@ -56,20 +55,11 @@ BaseFormatMetadata.propTypes = {
   ),
   sortedProperty: PropTypes.string,
   excludePreview: PropTypes.bool,
-  attachments: PropTypes.arrayOf(PropTypes.object),
   storeKey: PropTypes.string,
 };
 
 export function mapStateToProps(state, props) {
-  const { entity, sortedProperty = '', storeKey = '' } = props;
-
-  const store = state[storeKey];
-  let attachments = [];
-  
-  if (store) {
-    const { selectedDocuments } = store.ui.toJS();
-    attachments = selectedDocuments[0] ? selectedDocuments[0].attachments : [];
-  }
+  const { entity, sortedProperty = '' } = props;
 
   return {
     templates: state.templates,
@@ -77,7 +67,6 @@ export function mapStateToProps(state, props) {
     settings: state.settings.collection,
     entity,
     sortedProperty,
-    attachments,
   };
 }
 

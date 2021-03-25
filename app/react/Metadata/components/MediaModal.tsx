@@ -2,7 +2,6 @@ import React, { useMemo } from 'react';
 import ReactModal from 'react-modal';
 import { Tabs, TabLink, TabContent } from 'react-tabs-redux';
 import filesize from 'filesize';
-import { ObjectId } from 'mongodb';
 
 import { AttachmentSchema } from 'shared/types/commonTypes';
 import { Translate } from 'app/I18N';
@@ -17,8 +16,8 @@ export interface MediaModalProps {
   isOpen: boolean;
   onClose: () => void;
   attachments: AttachmentSchema[];
-  onChange: (id: string | ObjectId) => void;
-  selectedId: string | ObjectId | null;
+  onChange: (id: string) => void;
+  selectedUrl: string | null;
   type?: MediaModalType;
 }
 
@@ -27,7 +26,7 @@ export const MediaModal = ({
   onClose,
   attachments = [],
   onChange,
-  selectedId,
+  selectedUrl,
   type,
 }: MediaModalProps) => {
   const filteredAttachments = useMemo(() => {
@@ -43,8 +42,8 @@ export const MediaModal = ({
     }
   }, [attachments, type]);
 
-  const handleAttachmentClick = (id: string | ObjectId) => () => {
-    onChange(id);
+  const handleAttachmentClick = (url: string) => () => {
+    onChange(url);
     onClose();
   };
 
@@ -83,29 +82,32 @@ export const MediaModal = ({
               {filteredAttachments.length > 0 ? (
                 <div className="media-grid container">
                   <div className="row">
-                    {filteredAttachments.map((attachment, key) => (
-                      <div
-                        className="media-grid-item"
-                        key={`attachment_${key}`}
-                        onClick={handleAttachmentClick(attachment._id!)}
-                      >
+                    {filteredAttachments.map((attachment, key) => {
+                      const attachmentUrl = attachment.url || `/api/files/${attachment.filename}`;
+                      return (
                         <div
-                          className={`${'media-grid-card'} ${
-                            attachment._id === selectedId ? 'active' : ''
-                          }`}
+                          className="media-grid-item"
+                          key={`attachment_${key}`}
+                          onClick={handleAttachmentClick(attachmentUrl)}
                         >
-                          <div className="media-grid-card-header">
-                            <h5>{attachment.originalname}</h5>
-                            {!!attachment.size && <span>{filesize(attachment.size)}</span>}
-                          </div>
-                          <div className="media-grid-card-content">
-                            <div className="media">
-                              <RenderAttachment attachment={attachment} />
+                          <div
+                            className={`${'media-grid-card'} ${
+                              attachmentUrl === selectedUrl ? 'active' : ''
+                            }`}
+                          >
+                            <div className="media-grid-card-header">
+                              <h5>{attachment.originalname}</h5>
+                              {!!attachment.size && <span>{filesize(attachment.size)}</span>}
+                            </div>
+                            <div className="media-grid-card-content">
+                              <div className="media">
+                                <RenderAttachment attachment={attachment} />
+                              </div>
                             </div>
                           </div>
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
               ) : (

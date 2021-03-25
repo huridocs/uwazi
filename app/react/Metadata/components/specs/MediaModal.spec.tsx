@@ -20,7 +20,7 @@ describe('Media Modal', () => {
       onChange: jasmine.createSpy('onChange'),
       isOpen: true,
       attachments: [],
-      selectedId: null,
+      selectedUrl: null,
     };
   });
 
@@ -91,7 +91,7 @@ describe('Media Modal', () => {
   it('Should have selected attachment', () => {
     const jpgAttachment = { _id: 456, filename: 'test.jpg', size: 1234, mimetype: 'image/jpg' };
 
-    render({ attachments: [jpgAttachment], selectedId: jpgAttachment._id });
+    render({ attachments: [jpgAttachment], selectedUrl: '/api/files/test.jpg' });
 
     const selectedAttachment = component.find('.media-grid .active');
 
