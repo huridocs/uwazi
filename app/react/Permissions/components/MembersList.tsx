@@ -1,7 +1,9 @@
+/* eslint-disable react/no-multi-comp */
 import React from 'react';
 import { MemberWithPermission } from 'shared/types/entityPermisions';
 import { PermissionType } from 'shared/types/permissionSchema';
 import { ObjectIdSchema } from 'shared/types/commonTypes';
+import { NeedAuthorization } from 'app/Auth';
 import { MemberListItemInfo } from './MemberListItemInfo';
 import { MemberListItemPermission } from './MemberListItemPermission';
 
@@ -15,6 +17,13 @@ interface MemberListProps {
   onChange: (members: MemberWithPermission[]) => void;
   validationErrors: ValidationError[];
 }
+
+const notShowPublicToCollab = (member: MemberWithPermission, children: any) =>
+  member.type === 'public' ? (
+    <NeedAuthorization roles={['admin', 'editor']}>{children}</NeedAuthorization>
+  ) : (
+    children
+  );
 
 export const MembersList = ({ members, onChange, validationErrors }: MemberListProps) => {
   const onChangeHandler = (index: number) => (value: MemberWithPermission) => {
@@ -42,12 +51,15 @@ export const MembersList = ({ members, onChange, validationErrors }: MemberListP
               <MemberListItemInfo value={member} />
             </td>
             <td>
-              <MemberListItemPermission
-                value={member}
-                onChange={onChangeHandler(index)}
-                onDelete={onDeleteHandler}
-                disabled={!member.refId}
-              />
+              {notShowPublicToCollab(
+                member,
+                <MemberListItemPermission
+                  value={member}
+                  onChange={onChangeHandler(index)}
+                  onDelete={onDeleteHandler}
+                  disabled={!member.refId}
+                />
+              )}
             </td>
           </tr>
         ))}
