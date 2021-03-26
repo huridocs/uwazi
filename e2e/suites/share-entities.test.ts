@@ -17,6 +17,12 @@ describe('Share entities', () => {
     await logout();
   });
 
+  const titleEntity1 =
+    'Resolución de la Corte IDH. Supervisión de cumplimiento de Sentencia de 29 de junio de 2005';
+  const titleEntity2 = 'Applicability of Article 65 of the American Convention on Human Rights';
+  const titleEntity3 = 'Article 65 of the American Convention on Human Rights';
+  const titleEntity4 = 'Aitken';
+
   const getEntitiesCollaborators = async () =>
     page.$$eval('.members-list tr .member-list-item', items => items.map(item => item.textContent));
 
@@ -28,7 +34,7 @@ describe('Share entities', () => {
     });
   };
 
-  it('should create a colaborator in the shared User Group', async () => {
+  it('should create a collaborator in the shared User Group', async () => {
     await expect(page).toClick('button', { text: 'Add user' });
     await expect(page).toFill('input[name=email]', 'rock@stone.com');
     await expect(page).toFill('input[name=username]', 'colla');
@@ -40,9 +46,9 @@ describe('Share entities', () => {
   });
 
   it('Should list available collaborators of an entity', async () => {
-    await expect(page).toClick('a.public-documents');
+    await expect(page).toClick('a.private-documents');
     await expect(page).toClick('.item-document', {
-      text: 'Artavia Murillo y otros',
+      text: titleEntity1,
     });
     await page.waitForSelector('.share-btn');
     await expect(page).toClick('button', { text: 'Share' });
@@ -86,7 +92,7 @@ describe('Share entities', () => {
 
   it('Should not keep previous entity data', async () => {
     await expect(page).toClick('.item-document', {
-      text: 'Apitz Barbera y otros.',
+      text: titleEntity2,
     });
     await expect(page).toClick('button', { text: 'Share' });
     await expect(page).toClick('.userGroupsLookupField');
@@ -98,7 +104,7 @@ describe('Share entities', () => {
 
   it('Should load saved permissions for each entity', async () => {
     await expect(page).toClick('.item-document', {
-      text: 'Artavia Murillo y otros. Resolución de la CorteIDH de 26 de febrero de 2016',
+      text: titleEntity1,
     });
     await expect(page).toClick('button', { text: 'Share' });
     await page.waitForSelector('.members-list tr:nth-child(2) .member-list-item');
@@ -132,7 +138,7 @@ describe('Share entities', () => {
 
   it('should share other entities with the collaborator', async () => {
     await expect(page).toClick('.item-document', {
-      text: 'Artavia Murillo y otros. Resolución de la Corte IDH de 31 de marzo de 2014',
+      text: titleEntity3,
     });
     await page.waitForSelector('.share-btn');
     await expect(page).toClick('button', { text: 'Share' });
@@ -147,7 +153,7 @@ describe('Share entities', () => {
 
   it('should share other entities with the collaborator via the group', async () => {
     await expect(page).toClick('.item-document', {
-      text: 'Artavia Murillo y otros. Resolución del Presidente de la Corte de 6 de agosto de 2012',
+      text: titleEntity4,
     });
     await page.waitForSelector('.share-btn');
     await expect(page).toClick('button', { text: 'Share' });
@@ -179,24 +185,21 @@ describe('Share entities', () => {
   it('should be able to see and edit entities as a collaborator', async () => {
     await logout();
     await login('colla', 'borator');
+    await expect(page).toClick('a.private-documents');
     await page.waitFor('.item-document');
     const entities = await page.$$('.item-document');
     expect(entities.length).toBe(3);
-    await checkCanEdit(
-      'Artavia Murillo y otros. Resolución de la CorteIDH de 26 de febrero de 2016',
-      false
-    );
-    await checkCanEdit(
-      'Artavia Murillo y otros. Resolución de la Corte IDH de 31 de marzo de 2014'
-    );
-    await checkCanEdit(
-      'Artavia Murillo y otros. Resolución del Presidente de la Corte de 6 de agosto de 2012'
-    );
+    await checkCanEdit(titleEntity1, false);
+    await checkCanEdit(titleEntity3);
+    await checkCanEdit(titleEntity4);
   });
 
   it('should be able to edit a save', async () => {
+    await expect(page).toClick('.item-document', {
+      text: titleEntity4,
+    });
     await expect(page).toClick('button', { text: 'Edit' });
-    await expect(page).toFill('textarea[name="library.sidepanel.metadata.title"]', 'Edited title');
+    await expect(page).toFill('textarea[name="uploads.sidepanel.metadata.title"]', 'Edited title');
     await expect(page).toClick('button', { text: 'Save' });
     await page.waitFor('.item-document');
     await expect(page).toMatchElement('.item-document .item-info > div > span', {
