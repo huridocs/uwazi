@@ -31,7 +31,7 @@ export default class AttachmentsList extends Component {
     const attachments = AttachmentsList.arrangeFiles(this.props.attachments);
     return (
       <div className="attachments-list-parent">
-        <div className="attachments-list-header">
+        <div className="attachments-list-header" style={{ alignItems: 'center' }}>
           <h2>
             <Translate>Supporting files</Translate>
           </h2>
