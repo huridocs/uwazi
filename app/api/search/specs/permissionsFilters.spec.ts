@@ -40,9 +40,10 @@ describe('Permissions filters', () => {
           const query = {
             include: ['permissions'],
             searchTerm: 'ent3 ent4',
+            includeUnpublished: true,
           };
 
-          const { rows } = await search.search(query, 'es');
+          const { rows } = await search.search(query, 'es', user);
           expect(rows[0].permissions).toEqual([
             { level: 'write', refId: users.user2._id.toString(), type: 'user' },
             { level: 'write', refId: users.user3._id.toString(), type: 'user' },
@@ -166,8 +167,11 @@ describe('Permissions filters', () => {
 
   describe('type aggregations based on read access to entities', () => {
     it.each`
-      user           | template1Count | template2Count | template3Count
-      ${users.user1} | ${2}           | ${1}           | ${0}
+      user                | template1Count | template2Count | template3Count
+      ${users.user1}      | ${2}           | ${1}           | ${0}
+      ${users.user2}      | ${1}           | ${0}           | ${1}
+      ${user3WithGroups}  | ${2}           | ${1}           | ${1}
+      ${users.editorUser} | ${2}           | ${1}           | ${1}
     `(
       'should return aggregations of matched entities having into account read permission',
       async ({ user, template1Count, template2Count, template3Count }) => {
