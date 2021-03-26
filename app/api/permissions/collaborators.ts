@@ -4,6 +4,7 @@ import { PermissionType } from 'shared/types/permissionSchema';
 import { MemberWithPermission } from 'shared/types/entityPermisions';
 import { UserSchema } from 'shared/types/userType';
 import { WithId } from 'api/odm';
+import { permissionsContext } from './permissionsContext';
 
 export const collaborators = {
   search: async (filterTerm: string) => {
@@ -33,11 +34,15 @@ export const collaborators = {
       });
     });
 
-    availableCollaborators.push({
-      refId: 'public',
-      type: 'public',
-      label: 'Public',
-    });
+    const user = permissionsContext.getUserInContext();
+
+    if (user && ['admin', 'editor'].includes(user.role)) {
+      availableCollaborators.push({
+        refId: 'public',
+        type: 'public',
+        label: 'Public',
+      });
+    }
 
     return availableCollaborators;
   },

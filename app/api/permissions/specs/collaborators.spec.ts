@@ -2,6 +2,7 @@ import { testingDB } from 'api/utils/testing_db';
 import { fixtures, groupA, groupB, userA, userB } from 'api/permissions/specs/fixtures';
 import { collaborators } from 'api/permissions/collaborators';
 import { PermissionType } from 'shared/types/permissionSchema';
+import { UserInContextMockFactory } from '../../utils/testingUserInContext';
 
 describe('collaborators', () => {
   beforeEach(async () => {
@@ -69,6 +70,23 @@ describe('collaborators', () => {
         });
         assertPublicOption(availableCollaborators);
       });
+    });
+
+    it('should not include "public" if user is collaborator', async () => {
+      new UserInContextMockFactory().mock({
+        _id: 'collab',
+        role: 'collaborator',
+        email: 'collab',
+        username: 'collab',
+      });
+
+      expect(await collaborators.search('User')).not.toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            type: 'public',
+          }),
+        ])
+      );
     });
   });
 });
