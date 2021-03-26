@@ -77,7 +77,7 @@ export class UploadButton extends Component {
     }
   }
 
-  renderButton(status = 'success', icon = 'paperclip', message = 'Upload PDFs') {
+  renderButton(status = 'success', icon = 'paperclip', message = 'Upload PDF') {
     return (
       <label htmlFor="upload-button-input" className={`upload-button btn btn-${status}`}>
         <Icon icon={icon} />

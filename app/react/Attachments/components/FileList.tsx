@@ -11,6 +11,7 @@ import UploadButton from 'app/Metadata/components/UploadButton';
 import { NeedAuthorization } from 'app/Auth';
 import languageLib from 'shared/languages';
 import { ConnectedFile as File } from './File';
+import './scss/filelist.scss';
 
 const defaultProps = {
   files: [],
@@ -61,16 +62,20 @@ export class FileList extends Component<FileListProps> {
     const orderedFiles = this.orderFilesByLanguage(files, entity.language as string);
     return (
       <div className="filelist">
-        <h2>
-          <Translate>Documents</Translate>
-        </h2>
+        <div className="filelist-header">
+          <h2>
+            <Translate>Primary Documents</Translate>
+          </h2>
+          <div>
+            <NeedAuthorization roles={['admin', 'editor']}>
+              <UploadButton
+                entitySharedId={this.props.entity.sharedId}
+                storeKey={this.props.storeKey}
+              />
+            </NeedAuthorization>
+          </div>
+        </div>
         <ul>{orderedFiles.map((file, index) => this.renderFile(file, index))}</ul>
-        <NeedAuthorization roles={['admin', 'editor']}>
-          <UploadButton
-            entitySharedId={this.props.entity.sharedId}
-            storeKey={this.props.storeKey}
-          />
-        </NeedAuthorization>
       </div>
     );
   }

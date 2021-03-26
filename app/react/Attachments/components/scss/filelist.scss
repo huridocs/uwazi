@@ -1,0 +1,9 @@
+.filelist-header {
+  display: flex;
+  justify-content: space-between;
+  div {
+    label {
+      width: 155px;
+    }
+  }
+}
