@@ -70,10 +70,10 @@ async function setAccessLevelAndPermissionData(
 }
 
 const publishingChanged = (newPublishedValue: boolean, currentEntities: EntitySchema[]) =>
-  currentEntities.reduce((changed, entity) => {
-    const currentEntityPublished = !!entity.published;
-    return changed || currentEntityPublished !== newPublishedValue;
-  }, false);
+  currentEntities.reduce(
+    (changed, entity) => changed || !!entity.published !== newPublishedValue,
+    false
+  );
 
 export const entitiesPermissions = {
   set: async (permissionsData: PermissionsDataSchema) => {
@@ -83,7 +83,7 @@ export const entitiesPermissions = {
 
     const currentEntities = await entities.get(
       { sharedId: { $in: permissionsData.ids } },
-      '_id,+permissions'
+      { published: 1, permissions: 1 }
     );
 
     const nonPublicPermissions = permissionsData.permissions.filter(p => p.type !== 'public');

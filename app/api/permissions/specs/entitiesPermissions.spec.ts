@@ -37,19 +37,22 @@ describe('permissions', () => {
         permissions: [
           { refId: 'user1', type: PermissionType.USER, level: AccessLevels.READ },
           { refId: 'user2', type: PermissionType.USER, level: AccessLevels.WRITE },
+          publicPermission,
         ],
       };
 
       mockCollab();
 
       await entitiesPermissions.set(permissionsData);
-      const storedEntities = await entities.get({}, { sharedId: 1, permissions: 1 });
+      const storedEntities = await entities.getUnrestricted({}, 'sharedId +permissions');
 
       const updateEntities = storedEntities.filter(entity =>
         ['shared1', 'shared2'].includes(entity.sharedId!)
       );
       updateEntities.forEach(entity => {
-        expect(entity.permissions).toEqual(permissionsData.permissions);
+        expect(entity.permissions).toEqual(
+          permissionsData.permissions.filter(p => p.type !== 'public')
+        );
       });
       const notUpdatedEntities = storedEntities.filter(
         entity => !['shared1', 'shared2'].includes(entity.sharedId!)
@@ -107,7 +110,7 @@ describe('permissions', () => {
       it('should throw if non admin/editor changes the publishing status', async () => {
         const permissionsData: PermissionsDataSchema = {
           ids: ['shared1'],
-          permissions: [{ refId: 'user1', type: 'user', level: 'write' }, publicPermission],
+          permissions: [{ refId: 'user1', type: 'user', level: 'write' }],
         };
 
         mockCollab();
