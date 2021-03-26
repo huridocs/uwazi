@@ -10,7 +10,7 @@ interface MemberListItemProps {
 const iconsMap = {
   [PermissionType.USER]: 'user',
   [PermissionType.GROUP]: 'users',
-  [PermissionType.PUBLIC]: 'globe',
+  [PermissionType.PUBLIC]: 'globe-africa',
 };
 
 export const MemberListItemInfo = ({ value: { type, label } }: MemberListItemProps) => (
