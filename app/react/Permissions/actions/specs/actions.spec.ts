@@ -37,6 +37,43 @@ describe('Permissions actions', () => {
       expect(notificationActions.notify).toHaveBeenCalledWith('Update success', 'success');
     });
 
+    it.each([true, false])(
+      'should not remove nor update documents if publishing/unpublishing status not changing',
+      async inLibrary => {
+        const permissionsData: PermissionsDataSchema = {
+          ids: ['sharedId1'],
+          permissions: inLibrary ? [{ refId: 'public', type: 'public', level: 'read' }] : [],
+        };
+
+        const stateLibrary = {
+          [inLibrary ? 'library' : 'uploads']: {
+            search: {
+              unpublished: !inLibrary,
+              includeUnpublished: false,
+            },
+          },
+        };
+
+        await actions.saveEntitiesPermissions(permissionsData, inLibrary ? 'library' : 'uploads')(
+          dispatch,
+          getStateMock(stateLibrary)
+        );
+
+        expect(dispatch).not.toHaveBeenCalledWith(
+          expect.objectContaining({
+            type: REMOVE_DOCUMENTS_SHAREDIDS,
+            sharedIds: ['sharedId1'],
+          })
+        );
+        expect(dispatch).not.toHaveBeenCalledWith(
+          expect.objectContaining({
+            type: UPDATE_DOCUMENTS_PUBLISHED,
+            sharedIds: ['sharedId1'],
+          })
+        );
+      }
+    );
+
     describe('for LIBRARY', () => {
       it('should remove documents after unpublishing', async () => {
         const permissionsData: PermissionsDataSchema = {

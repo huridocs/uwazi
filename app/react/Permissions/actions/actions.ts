@@ -22,15 +22,19 @@ export function saveEntitiesPermissions(permissionsData: PermissionsDataSchema, 
     ].search;
 
     const notShowingPublicAndPrivate = showingUnpublished || !includeUnpublished;
+    const toMoveFromCollection = showingUnpublished === newPublishingStatus;
+
     const wrappedDispatch = wrapDispatch(dispatch, storeKey);
 
     if (notShowingPublicAndPrivate) {
-      wrappedDispatch({
-        type: REMOVE_DOCUMENTS_SHAREDIDS,
-        sharedIds: permissionsData.ids,
-      });
+      if (toMoveFromCollection) {
+        wrappedDispatch({
+          type: REMOVE_DOCUMENTS_SHAREDIDS,
+          sharedIds: permissionsData.ids,
+        });
 
-      wrappedDispatch(unselectAllDocuments());
+        wrappedDispatch(unselectAllDocuments());
+      }
     } else {
       wrappedDispatch({
         type: UPDATE_DOCUMENTS_PUBLISHED,
