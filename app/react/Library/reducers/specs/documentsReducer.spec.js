@@ -199,7 +199,10 @@ describe('documentsReducer', () => {
         sharedIds: ['shared2', 'shared3'],
       });
 
-      expect(newState.toJS()).toEqual({ rows: [{ title: '1', _id: 1, sharedId: 'shared1' }], totalRows: 1 });
+      expect(newState.toJS()).toEqual({
+        rows: [{ title: '1', _id: 1, sharedId: 'shared1' }],
+        totalRows: 1,
+      });
     });
 
     describe('when the document is not in the list', () => {
@@ -216,7 +219,10 @@ describe('documentsReducer', () => {
           sharedIds: ['shared2', 'shared3'],
         });
 
-        expect(newState.toJS()).toEqual({ rows: [{ title: '1', _id: 1, sharedId: 'shared1' }], totalRows: 1 });
+        expect(newState.toJS()).toEqual({
+          rows: [{ title: '1', _id: 1, sharedId: 'shared1' }],
+          totalRows: 1,
+        });
       });
     });
   });
