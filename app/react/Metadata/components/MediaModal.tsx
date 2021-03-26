@@ -17,6 +17,11 @@ export enum MediaModalType {
   Image,
   Media,
 }
+
+enum MediaModalTab {
+  SelectFromFile = 'SelectFromFile',
+  AddFromUrl = 'AddFromUrl',
+}
 export interface MediaModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -46,6 +51,20 @@ export const MediaModal = ({
         return attachments;
     }
   }, [attachments, type]);
+
+  const attachmentsUrls = useMemo(() => attachments.map(a => a.url || `/api/files/${a.filename}`), [
+    attachments,
+  ]);
+
+  const defaultTab = useMemo(() => {
+    if (!selectedUrl) {
+      return MediaModalTab.SelectFromFile;
+    }
+
+    const selectedAttachmentIndex = attachmentsUrls.findIndex(url => url === selectedUrl);
+
+    return selectedAttachmentIndex === -1 ? MediaModalTab.AddFromUrl : MediaModalTab.SelectFromFile;
+  }, [selectedUrl, attachments]);
 
   const handleAttachmentClick = (url: string) => () => {
     onChange(url);
@@ -77,17 +96,25 @@ export const MediaModal = ({
       <div className="attachments-modal__content">
         <Tabs renderActiveTabContentOnly>
           <div className="attachments-modal__tabs">
-            <TabLink to="selectFromFiles" className="tab-link modal-tab-1">
+            <TabLink
+              to={MediaModalTab.SelectFromFile}
+              className="tab-link modal-tab-1"
+              default={defaultTab === MediaModalTab.SelectFromFile}
+            >
               <Translate>Select from files</Translate>
             </TabLink>
-            <TabLink to="addFromUrl" className="tab-link modal-tab-2">
+            <TabLink
+              to={MediaModalTab.AddFromUrl}
+              className="tab-link modal-tab-2"
+              default={defaultTab === MediaModalTab.AddFromUrl}
+            >
               <Translate>Add from url</Translate>
             </TabLink>
           </div>
 
           <div className="attachments-modal__tabs-content">
             <TabContent
-              for="selectFromFiles"
+              for={MediaModalTab.SelectFromFile}
               className={`tab-content attachments-modal__tabs-content ${
                 !filteredAttachments.length ? 'centered' : ''
               }`}
@@ -130,11 +157,16 @@ export const MediaModal = ({
               )}
             </TabContent>
             <TabContent
-              for="addFromUrl"
+              for={MediaModalTab.AddFromUrl}
               className="tab-content attachments-modal__tabs-content centered"
             >
               <div className="wrapper-web">
-                <LocalForm onSubmit={handleSubmitFromUrl} model="urlForm" validators={validators}>
+                <LocalForm
+                  onSubmit={handleSubmitFromUrl}
+                  model="urlForm"
+                  validators={validators}
+                  initialState={{ url: defaultTab === MediaModalTab.AddFromUrl ? selectedUrl : '' }}
+                >
                   <div className="form-group has-feedback">
                     <Field model=".url">
                       <input
