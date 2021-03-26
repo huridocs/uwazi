@@ -77,12 +77,16 @@ export default function documents(state = initialState, action = {}) {
     return Immutable.fromJS(initialState);
   }
 
-  const removeDocuments = (items, currentState, getFilter) =>
+  const removeDocuments = (items, currentState, getFilter, updateTotalRows = false) =>
     items.reduce((_state, item) => {
       const docIndex = _state.get('rows').findIndex(getFilter(item));
 
       if (docIndex >= 0) {
-        return _state.deleteIn(['rows', docIndex]);
+        const newState = _state.deleteIn(['rows', docIndex]);
+        if (!updateTotalRows) {
+          return newState;
+        }
+        return newState.set('totalRows', newState.get('totalRows') - 1);
       }
       return _state;
     }, currentState);
@@ -98,7 +102,7 @@ export default function documents(state = initialState, action = {}) {
     const getFilterBySharedId = sharedIdToSearch => candidateItem =>
       candidateItem.get('sharedId') === sharedIdToSearch;
 
-    return removeDocuments(action.sharedIds, state, getFilterBySharedId);
+    return removeDocuments(action.sharedIds, state, getFilterBySharedId, true);
   }
 
   return Immutable.fromJS(state);

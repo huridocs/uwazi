@@ -192,13 +192,14 @@ describe('documentsReducer', () => {
           { title: '2', _id: 2, sharedId: 'shared2' },
           { title: '3', _id: 3, sharedId: 'shared3' },
         ],
+        totalRows: 3,
       });
       const newState = documentsReducer(currentState, {
         type: types.REMOVE_DOCUMENTS_SHAREDIDS,
         sharedIds: ['shared2', 'shared3'],
       });
 
-      expect(newState.toJS()).toEqual({ rows: [{ title: '1', _id: 1, sharedId: 'shared1' }] });
+      expect(newState.toJS()).toEqual({ rows: [{ title: '1', _id: 1, sharedId: 'shared1' }], totalRows: 1 });
     });
 
     describe('when the document is not in the list', () => {
@@ -208,13 +209,14 @@ describe('documentsReducer', () => {
             { title: '1', _id: 1, sharedId: 'shared1' },
             { title: '2', _id: 2, sharedId: 'shared2' },
           ],
+          totalRows: 2,
         });
         const newState = documentsReducer(currentState, {
           type: types.REMOVE_DOCUMENTS_SHAREDIDS,
           sharedIds: ['shared2', 'shared3'],
         });
 
-        expect(newState.toJS()).toEqual({ rows: [{ title: '1', _id: 1, sharedId: 'shared1' }] });
+        expect(newState.toJS()).toEqual({ rows: [{ title: '1', _id: 1, sharedId: 'shared1' }], totalRows: 1 });
       });
     });
   });
@@ -227,6 +229,7 @@ describe('documentsReducer', () => {
           { title: '2', _id: 2, sharedId: 'shared2', published: false },
           { title: '3', _id: 3, sharedId: 'shared3', published: false },
         ],
+        totalRows: 3,
       });
       const newState = documentsReducer(currentState, {
         type: types.UPDATE_DOCUMENTS_PUBLISHED,
@@ -240,6 +243,7 @@ describe('documentsReducer', () => {
           { title: '2', _id: 2, sharedId: 'shared2', published: true },
           { title: '3', _id: 3, sharedId: 'shared3', published: true },
         ],
+        totalRows: 3,
       });
     });
   });
