@@ -25,10 +25,17 @@ const showByType = (prop, compact) => {
       );
       break;
     case 'image':
-      result = prop.value && <img src={prop.value} />;
+      result = prop.value && (
+        <img
+          key={prop.value}
+          className={`multimedia-img ${prop.style}`}
+          src={prop.value}
+          alt={prop.label}
+        />
+      );
       break;
     case 'media': {
-      result = prop.value && <MarkdownMedia config={prop.value} />;
+      result = prop.value && <MarkdownViewer markdown={`{media}(${prop.value})`} compact />;
       break;
     }
     case 'geolocation':
