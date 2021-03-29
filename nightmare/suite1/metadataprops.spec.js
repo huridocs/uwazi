@@ -174,6 +174,7 @@ describe('metadata properties', () => {
       .getInnerText(localSelectors.properties.text)
       .then(text => {
         expect(text).toBe('demo text');
+
         return nightmare.getInnerText(localSelectors.properties.numeric);
       })
       .then(numeric => {
@@ -185,6 +186,7 @@ describe('metadata properties', () => {
         return nightmare.getInnerText(localSelectors.properties.multiselect);
       })
       .then(multiselect => {
+        multiselect;
         expect(multiselect).toBe('This\n');
         return nightmare.getInnerText(localSelectors.properties.relationship);
       })
@@ -214,9 +216,6 @@ describe('metadata properties', () => {
       })
       .then(text => {
         expect(text).toBe('Huridocs');
-        return nightmare
-          .wait(localSelectors.properties.image)
-          .wait(localSelectors.properties.media);
       });
   }, 60000);
 

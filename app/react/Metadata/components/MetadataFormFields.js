@@ -9,6 +9,7 @@ import { Field } from 'react-redux-form';
 import { propertyTypes } from 'shared/propertyTypes';
 import { getSuggestions } from 'app/Metadata/actions/actions';
 import { Translate } from 'app/I18N';
+import { createSelector } from 'reselect';
 import {
   DatePicker,
   DateRange,
@@ -50,6 +51,8 @@ export class MetadataFormFields extends Component {
     let totalPossibleOptions = 0;
     const { dateFormat, version, entityThesauris, attachments } = this.props;
     const propertyType = property.type;
+
+    const plainAttachments = attachments.toJS();
 
     switch (propertyType) {
       case 'select':
@@ -140,9 +143,13 @@ export class MetadataFormFields extends Component {
       case 'link':
         return <LinkField model={_model} />;
       case 'media':
-        return <MediaField model={_model} attachments={attachments} type={MediaModalType.Media} />;
+        return (
+          <MediaField model={_model} attachments={plainAttachments} type={MediaModalType.Media} />
+        );
       case 'image':
-        return <MediaField model={_model} attachments={attachments} type={MediaModalType.Image} />;
+        return (
+          <MediaField model={_model} attachments={plainAttachments} type={MediaModalType.Image} />
+        );
       case 'preview':
         return (
           <div>
@@ -223,6 +230,7 @@ MetadataFormFields.defaultProps = {
   version: undefined,
   showSubset: undefined,
   entityThesauris: Immutable.fromJS({}),
+  attachments: Immutable.fromJS([]),
   highlightedProps: [],
 };
 
@@ -236,7 +244,7 @@ MetadataFormFields.propTypes = {
   version: PropTypes.string,
   entityThesauris: PropTypes.instanceOf(Immutable.Map),
   highlightedProps: PropTypes.arrayOf(PropTypes.string),
-  attachments: PropTypes.arrayOf(PropTypes.object),
+  attachments: PropTypes.instanceOf(Immutable.List),
 };
 
 export const mapStateToProps = (state, ownProps) => {
@@ -244,11 +252,11 @@ export const mapStateToProps = (state, ownProps) => {
 
   let attachments = [];
   if (storeKey) {
-    const { selectedDocuments } = state[storeKey].ui.toJS();
-    attachments = selectedDocuments[0] ? selectedDocuments[0].attachments : [];
+    const selectedDocuments = state[storeKey].ui.get('selectedDocuments');
+    attachments = selectedDocuments.size ? selectedDocuments.get(0).get('attachments') : undefined;
   } else {
-    const entity = state.entityView.entity.toJS();
-    attachments = entity.attachments;
+    const entity = state.entityView.entity;
+    attachments = entity.get('attachments');
   }
 
   return {
