@@ -45,6 +45,7 @@ export const permissionsLevelFixtures: DBFixture = {
       title: 'ent1',
       shareId: 'ent1',
       language: 'es',
+      published: false,
       template: template1Id,
       permissions: [
         { level: 'read', refId: users.user1._id, type: 'user' },
@@ -56,6 +57,7 @@ export const permissionsLevelFixtures: DBFixture = {
       title: 'ent2',
       shareId: 'ent2',
       language: 'es',
+      published: false,
       template: template2Id,
       permissions: [
         { level: 'read', refId: users.user1._id, type: 'user' },
@@ -67,6 +69,7 @@ export const permissionsLevelFixtures: DBFixture = {
       title: 'ent3',
       shareId: 'ent3',
       language: 'es',
+      published: false,
       template: template1Id,
       permissions: [
         { level: 'write', refId: users.user1._id, type: 'user' },
@@ -80,6 +83,7 @@ export const permissionsLevelFixtures: DBFixture = {
       title: 'ent3',
       shareId: 'ent3',
       language: 'en',
+      published: false,
       template: template1Id,
       permissions: [
         { level: 'write', refId: users.user1._id, type: 'user' },
@@ -93,6 +97,7 @@ export const permissionsLevelFixtures: DBFixture = {
       title: 'ent4',
       shareId: 'ent4',
       language: 'es',
+      published: false,
       template: template3Id,
       permissions: [
         { level: 'write', refId: users.user2._id, type: 'user' },
@@ -101,6 +106,22 @@ export const permissionsLevelFixtures: DBFixture = {
         { level: 'write', refId: users.adminUser._id, type: 'user' },
         { level: 'write', refId: users.editorUser._id, type: 'user' },
       ],
+    },
+    {
+      title: 'entPublic1',
+      shareId: 'ent_public1',
+      language: 'es',
+      published: true,
+      template: template1Id,
+      permissions: [{ level: 'write', refId: users.user2._id, type: 'user' }],
+    },
+    {
+      title: 'entPublic2',
+      shareId: 'ent_public2',
+      language: 'es',
+      published: true,
+      template: template3Id,
+      permissions: [{ level: 'write', refId: users.user3._id, type: 'user' }],
     },
   ],
 

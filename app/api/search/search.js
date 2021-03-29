@@ -587,7 +587,7 @@ const buildQuery = async (query, language, user, resources) => {
     .filterByTemplate(query.types)
     .filterById(query.ids)
     .language(language)
-    .filterByPermissions(user);
+    .filterByPermissions(query.published);
 
   if (Number.isInteger(parseInt(query.from, 10))) {
     queryBuilder.from(query.from);
@@ -598,7 +598,7 @@ const buildQuery = async (query, language, user, resources) => {
   }
 
   if (query.includeUnpublished && user && !query.unpublished) {
-    queryBuilder.includeUnpublished();
+    queryBuilder.includeUnpublished(user);
   }
 
   if (query.unpublished && user) {
@@ -695,7 +695,7 @@ const search = {
       .language(language);
 
     if (user) {
-      query.includeUnpublished();
+      query.includeUnpublished(user);
     }
 
     const response = await elastic.search({

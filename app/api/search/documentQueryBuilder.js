@@ -202,15 +202,18 @@ export default function() {
     },
 
     onlyUnpublished() {
-      baseQuery.query.bool.filter[0].bool.should[0].term.published = false;
-      aggregations._types.aggregations.filtered.filter.bool.filter[0].bool.should[0].term.published = false;
+      baseQuery.query.bool.filter[0].bool.must = baseQuery.query.bool.filter[0].bool.should;
+      baseQuery.query.bool.filter[0].bool.must[0].term.published = false;
+      delete baseQuery.query.bool.filter[0].bool.should;
       return this;
     },
 
-    includeUnpublished() {
-      const shouldFilter = baseQuery.query.bool.filter[0].bool.should[0];
-      if (shouldFilter.term && shouldFilter.term.published) {
-        delete baseQuery.query.bool.filter[0].bool.should.splice(shouldFilter, 1);
+    includeUnpublished(user) {
+      if (user && ['admin', 'editor'].includes(user.role)) {
+        const shouldFilter = baseQuery.query.bool.filter[0].bool.should[0];
+        if (shouldFilter.term && shouldFilter.term.published) {
+          delete baseQuery.query.bool.filter[0].bool.should.splice(shouldFilter, 1);
+        }
       }
       return this;
     },
@@ -399,7 +402,10 @@ export default function() {
       return this;
     },
 
-    filterByPermissions() {
+    filterByPermissions(onlyPublished) {
+      if (onlyPublished) {
+        return this;
+      }
       const user = permissionsContext.getUserInContext();
       if (user && !['admin', 'editor'].includes(user.role)) {
         const permissionsFilter = nested(
