@@ -1,7 +1,6 @@
 import { I18NLink, t } from 'app/I18N';
 import { Icon } from 'app/Layout';
 import MarkdownViewer from 'app/Markdown';
-import MarkdownMedia from 'app/Markdown/components/MarkdownMedia';
 import { GroupedGeolocationViewer } from 'app/Metadata/components/GroupedGeolocationViewer';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -134,15 +133,7 @@ function filterProps(showSubset) {
   };
 }
 
-const Metadata = ({
-  metadata,
-  compact,
-  renderLabel,
-  showSubset,
-  highlight,
-  groupGeolocations,
-  attachments,
-}) => {
+const Metadata = ({ metadata, compact, renderLabel, showSubset, highlight, groupGeolocations }) => {
   const filteredMetadata = metadata.filter(filterProps(showSubset));
   const groupedMetadata = groupGeolocations
     ? groupAdjacentGeolocations(filteredMetadata)

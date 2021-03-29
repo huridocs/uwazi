@@ -9,7 +9,6 @@ import { Field } from 'react-redux-form';
 import { propertyTypes } from 'shared/propertyTypes';
 import { getSuggestions } from 'app/Metadata/actions/actions';
 import { Translate } from 'app/I18N';
-import { createSelector } from 'reselect';
 import {
   DatePicker,
   DateRange,

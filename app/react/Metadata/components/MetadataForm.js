@@ -189,6 +189,7 @@ MetadataForm.propTypes = {
   version: PropTypes.string,
   componentWillUnmount: PropTypes.func,
   highlightedProps: PropTypes.arrayOf(PropTypes.string),
+  storeKey: PropTypes.string.isRequired,
 };
 
 function mapDispatchToProps(dispatch) {
