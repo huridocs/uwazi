@@ -10,8 +10,7 @@ import { Icon } from 'app/UI';
 import { RenderAttachment } from 'app/Attachments/components/RenderAttachment';
 
 const validators = {
-  value: { required: (val: any) => !!val && val.trim() !== '' },
-  label: { required: (val: any) => !!val && val.trim() !== '' },
+  url: { required: (val: any) => !!val && val.trim() !== '' },
 };
 
 export enum MediaModalType {
@@ -23,17 +22,12 @@ enum MediaModalTab {
   SelectFromFile = 'SelectFromFile',
   AddFromUrl = 'AddFromUrl',
 }
-
-export interface MediaModalForm {
-  label: string;
-  value: string;
-}
 export interface MediaModalProps {
   isOpen: boolean;
   onClose: () => void;
   attachments: AttachmentSchema[];
-  onChange: (data: MediaModalForm) => void;
-  selectedValue: MediaModalForm | null;
+  onChange: (id: string) => void;
+  selectedUrl: string | null;
   type?: MediaModalType;
 }
 
@@ -42,7 +36,7 @@ export const MediaModal = ({
   onClose,
   attachments = [],
   onChange,
-  selectedValue,
+  selectedUrl,
   type,
 }: MediaModalProps) => {
   const filteredAttachments = useMemo(() => {
@@ -63,22 +57,22 @@ export const MediaModal = ({
   ]);
 
   const defaultTab = useMemo(() => {
-    if (!selectedValue) {
+    if (!selectedUrl) {
       return MediaModalTab.SelectFromFile;
     }
 
-    const selectedAttachmentIndex = attachmentsUrls.findIndex(url => url === selectedValue.value);
+    const selectedAttachmentIndex = attachmentsUrls.findIndex(url => url === selectedUrl);
 
     return selectedAttachmentIndex === -1 ? MediaModalTab.AddFromUrl : MediaModalTab.SelectFromFile;
-  }, [selectedValue, attachments]);
+  }, [selectedUrl, attachments]);
 
-  const handleAttachmentClick = (value: string, label: string) => () => {
-    onChange({ value, label });
+  const handleAttachmentClick = (url: string) => () => {
+    onChange(url);
     onClose();
   };
 
-  const handleSubmitFromUrl = (formData: MediaModalForm) => {
-    onChange(formData);
+  const handleSubmitFromUrl = (formData: { url: string }) => {
+    onChange(formData.url);
     onClose();
   };
 
@@ -134,14 +128,11 @@ export const MediaModal = ({
                         <div
                           className="media-grid-item"
                           key={`attachment_${key}`}
-                          onClick={handleAttachmentClick(
-                            attachmentUrl,
-                            attachment.originalname || ''
-                          )}
+                          onClick={handleAttachmentClick(attachmentUrl)}
                         >
                           <div
                             className={`${'media-grid-card'} ${
-                              selectedValue && attachmentUrl === selectedValue.value ? 'active' : ''
+                              attachmentUrl === selectedUrl ? 'active' : ''
                             }`}
                           >
                             <div className="media-grid-card-header">
@@ -174,28 +165,17 @@ export const MediaModal = ({
                   onSubmit={handleSubmitFromUrl}
                   model="urlForm"
                   validators={validators}
-                  initialState={{
-                    value: defaultTab === MediaModalTab.AddFromUrl ? selectedValue!.value : '',
-                    label: defaultTab === MediaModalTab.AddFromUrl ? selectedValue!.label : '',
-                  }}
+                  initialState={{ url: defaultTab === MediaModalTab.AddFromUrl ? selectedUrl : '' }}
                 >
                   <div className="form-group has-feedback">
-                    <Field model=".value">
+                    <Field model=".url">
                       <input
                         type="text"
                         className="form-control web-attachment-url"
                         placeholder="Paste URL here"
                       />
                     </Field>
-                  </div>
-                  <div className="form-group has-feedback">
-                    <Field model=".label">
-                      <input
-                        type="text"
-                        className="form-control web-attachment-url"
-                        placeholder="Enter label"
-                      />
-                    </Field>
+                    <Icon icon="info-circle" className="feedback-icon" />
                   </div>
 
                   <button type="submit" className="btn btn-success">

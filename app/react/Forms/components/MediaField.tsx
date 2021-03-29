@@ -3,14 +3,14 @@ import React, { useState } from 'react';
 import { AttachmentSchema } from 'shared/types/commonTypes';
 import { Translate } from 'app/I18N';
 import { Icon } from 'app/UI';
-import { MediaModal, MediaModalForm, MediaModalType } from 'app/Metadata/components/MediaModal';
+import { MediaModal, MediaModalType } from 'app/Metadata/components/MediaModal';
 import MarkdownMedia from 'app/Markdown/components/MarkdownMedia';
 
 interface MediaFieldProps {
   attachments: AttachmentSchema[];
-  value: MediaModalForm | null;
+  value: string | null;
   type?: MediaModalType;
-  onChange: (val: MediaModalForm | null) => void;
+  onChange: (val: string | null) => void;
 }
 
 const MediaField = ({ attachments = [], value, onChange, type }: MediaFieldProps) => {
@@ -27,11 +27,7 @@ const MediaField = ({ attachments = [], value, onChange, type }: MediaFieldProps
   return (
     <div className="search__filter--selected__media">
       {value &&
-        (type === MediaModalType.Image ? (
-          <img src={value.value} />
-        ) : (
-          <MarkdownMedia config={value.value} />
-        ))}
+        (type === MediaModalType.Image ? <img src={value} /> : <MarkdownMedia config={value} />)}
 
       <div className="search__filter--selected__media-toolbar">
         <button type="button" onClick={() => setOpenModal(true)} className="btn btn-success">
@@ -49,7 +45,7 @@ const MediaField = ({ attachments = [], value, onChange, type }: MediaFieldProps
         isOpen={openModal}
         onClose={handleCloseMediaModal}
         onChange={onChange}
-        selectedValue={value}
+        selectedUrl={value}
         attachments={attachments}
         type={type}
       />
