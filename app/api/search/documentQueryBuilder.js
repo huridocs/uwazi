@@ -208,7 +208,8 @@ export default function() {
       return this;
     },
 
-    includeUnpublished(user) {
+    includeUnpublished() {
+      const user = permissionsContext.getUserInContext();
       if (user && ['admin', 'editor'].includes(user.role)) {
         const shouldFilter = baseQuery.query.bool.filter[0].bool.should[0];
         if (shouldFilter.term && shouldFilter.term.published) {

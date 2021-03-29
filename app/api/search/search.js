@@ -598,7 +598,7 @@ const buildQuery = async (query, language, user, resources) => {
   }
 
   if (query.includeUnpublished && user && !query.unpublished) {
-    queryBuilder.includeUnpublished(user);
+    queryBuilder.includeUnpublished();
   }
 
   if (query.unpublished && user) {
@@ -695,7 +695,7 @@ const search = {
       .language(language);
 
     if (user) {
-      query.includeUnpublished(user);
+      query.includeUnpublished();
     }
 
     const response = await elastic.search({
