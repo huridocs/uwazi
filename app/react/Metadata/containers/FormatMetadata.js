@@ -38,6 +38,7 @@ BaseFormatMetadata.propTypes = {
     metadata: PropTypes.object,
   }).isRequired,
   relationships: PropTypes.object,
+  attachments: PropTypes.arrayOf(PropTypes.object),
   additionalMetadata: PropTypes.arrayOf(
     PropTypes.shape({
       label: PropTypes.string,
