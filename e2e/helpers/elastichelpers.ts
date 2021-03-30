@@ -1,5 +1,8 @@
 import superagent from 'superagent';
 
 export async function refreshIndex() {
-  return superagent.post('http://localhost:9200/uwazi_e2e/_refresh');
+  const elasticSearchServer = process.env.ELASTICSEARCH_URL || 'http://localhost:9200';
+  const index = process.env.INDEX_NAME || 'uwazi_e2e';
+
+  return superagent.post(`${elasticSearchServer}/${index}/_refresh`);
 }
