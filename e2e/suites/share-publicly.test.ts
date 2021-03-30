@@ -3,6 +3,7 @@ import proxyMock from '../helpers/proxyMock';
 import { adminLogin, logout, login } from '../helpers/login';
 import { host } from '../config';
 import disableTransitions from '../helpers/disableTransitions';
+import { refreshIndex } from '../helpers/elastichelpers';
 
 const selectLookupOption = async (
   searchTerm: string,
@@ -68,13 +69,13 @@ describe('Share entities', () => {
     );
     await expect(page).toClick('button', { text: 'Save changes' });
     await page.waitForSelector('.share-modal', { hidden: true });
+    await refreshIndex();
     await expect(page).not.toMatchElement('.item-document', {
       text: 'Artavia Murillo y otros. Resolución del Presidente de la Corte de 6 de agosto de 2012',
     });
   });
 
   it('should share entities publicly', async () => {
-    await page.waitFor(500); //Wait for ES to index
     await expect(page).toClick('a.private-documents');
     await expect(page).toClick('.item-document', {
       text: 'Artavia Murillo y otros. Resolución del Presidente de la Corte de 6 de agosto de 2012',
@@ -84,6 +85,7 @@ describe('Share entities', () => {
     await selectLookupOption('', 'Public');
     await expect(page).toClick('button', { text: 'Save changes' });
     await page.waitForSelector('.share-modal', { hidden: true });
+    await refreshIndex();
     await page.waitFor('.item-document');
     await expect(page).not.toMatchElement('.item-document', {
       text: 'Artavia Murillo y otros. Resolución del Presidente de la Corte de 6 de agosto de 2012',
@@ -92,7 +94,6 @@ describe('Share entities', () => {
 
   it('should not be able to unshare entities publicly as a collaborator', async () => {
     await logout();
-    await page.waitFor(500); //Wait for ES to index
     await login('colla', 'borator');
     await disableTransitions();
     await page.waitFor('.item-document');
@@ -113,7 +114,7 @@ describe('Share entities', () => {
     await expect(page).toFill('textarea[name="uploads.sidepanel.metadata.title"]', 'Test title');
     await expect(page).toMatchElement('button', { text: 'Save' });
     await expect(page).toClick('button', { text: 'Save' });
-    await page.waitFor(500); //Wait for ES to index
+    await refreshIndex();
     await expect(page).toClick('.item-document', {
       text: 'Test title',
     });
