@@ -10,6 +10,7 @@ import { Icon } from 'UI';
 
 import { Item } from 'app/Layout';
 import { is, Map } from 'immutable';
+import helpers from 'app/Documents/helpers';
 
 export class Doc extends Component {
   shouldComponentUpdate(nextProps) {
@@ -67,7 +68,7 @@ export class Doc extends Component {
 
   render() {
     const { className, additionalText, targetReference } = this.props;
-    const doc = this.props.doc.toJS();
+    const doc = helpers.performantDocToJSWithoutRelations(this.props.doc);
     const { sharedId, file, processed } = doc;
 
     let itemConnections = null;

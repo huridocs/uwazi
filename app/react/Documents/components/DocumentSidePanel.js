@@ -25,6 +25,7 @@ import { entityDefaultDocument } from 'shared/entityDefaultDocument';
 import SearchText from './SearchText';
 import ShowToc from './ShowToc';
 import SnippetsTab from './SnippetsTab';
+import helpers from '../helpers';
 
 export class DocumentSidePanel extends Component {
   constructor(props) {
@@ -271,7 +272,8 @@ export class DocumentSidePanel extends Component {
 
     const TocForm = this.props.tocFormComponent;
 
-    const { attachments, documents, language, defaultDoc } = doc.toJS();
+    const jsDoc = helpers.performantDocToJSWithoutRelations(doc);
+    const { attachments, documents, language, defaultDoc } = jsDoc;
 
     const isEntity = !documents || !documents.length;
     const defaultDocumentToC =
@@ -404,16 +406,12 @@ export class DocumentSidePanel extends Component {
                     <div>
                       <ShowMetadata
                         relationships={relationships}
-                        entity={this.props.doc.toJS()}
+                        entity={jsDoc}
                         showTitle
                         showType
                         groupGeolocations
                       />
-                      <FileList
-                        files={documents}
-                        storeKey={this.props.storeKey}
-                        entity={doc.toJS()}
-                      />
+                      <FileList files={documents} storeKey={this.props.storeKey} entity={jsDoc} />
                       <AttachmentsList
                         attachments={attachments}
                         isTargetDoc={isTargetDoc}
@@ -437,7 +435,7 @@ export class DocumentSidePanel extends Component {
                 <ConnectionsGroups />
               </TabContent>
               <TabContent for="semantic-search-results">
-                <DocumentSemanticSearchResults doc={this.props.doc.toJS()} />
+                <DocumentSemanticSearchResults doc={jsDoc} />
               </TabContent>
             </Tabs>
           </div>
