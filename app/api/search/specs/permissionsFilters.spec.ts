@@ -191,9 +191,7 @@ describe('Permissions filters', () => {
 
   describe('public entities', () => {
     describe('when query published and user is a collaborator/editor', () => {
-      it.each([users.user1, users.editorUser])('should see only public entities', async user => {
-        userFactory.mock(user);
-        const query = { published: true };
+      async function queryAndCheckOnlyPublished(query: {}) {
         const { rows, aggregations } = await search.search(query, 'es', users.user2);
         const typesBuckets = (aggregations as Aggregations).all._types.buckets;
         expect(rows).toEqual([
@@ -202,6 +200,18 @@ describe('Permissions filters', () => {
         ]);
         expect(getAggregationCountByType(typesBuckets, template1Id)).toBe(1);
         expect(getAggregationCountByType(typesBuckets, template3Id)).toBe(1);
+      }
+
+      it.each([users.user1, users.editorUser])('should see only public entities', async user => {
+        userFactory.mock(user);
+        const query = { published: true };
+        await queryAndCheckOnlyPublished(query);
+      });
+
+      it.each([users.user1, users.editorUser])('should see only public entities', async user => {
+        userFactory.mock(user);
+        const query = { unpublished: false, includeUnpublished: false };
+        await queryAndCheckOnlyPublished(query);
       });
     });
 

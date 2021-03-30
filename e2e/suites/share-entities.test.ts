@@ -22,6 +22,7 @@ describe('Share entities', () => {
   const titleEntity2 = 'Applicability of Article 65 of the American Convention on Human Rights';
   const titleEntity3 = 'Article 65 of the American Convention on Human Rights';
   const titleEntity4 = 'Aitken';
+  const titlePublic1 = 'Artavia Murillo y otros. Resolución de la Corte IDH de 31 de marzo de 2014';
 
   const getEntitiesCollaborators = async () =>
     page.$$eval('.members-list tr .member-list-item', items => items.map(item => item.textContent));
@@ -204,6 +205,22 @@ describe('Share entities', () => {
     await page.waitFor('.item-document');
     await expect(page).toMatchElement('.item-document .item-info > div > span', {
       text: 'Edited title',
+    });
+  });
+
+  it('should be able to see only published entities', async () => {
+    await expect(page).toClick('a.public-documents');
+    await page.waitFor('.item-document');
+    await expect(page).toFill(
+      'input[name="library.search.searchTerm"]',
+      '"Resolución de la Corte IDH."'
+    );
+    await expect(page).toClick('[aria-label="Search button"]');
+    await page.waitForSelector('#nprogress', { hidden: true });
+    const entities = await page.$$('.item-document');
+    await expect(entities.length).toBe(1);
+    await expect(page).toMatchElement('.item-document .item-info > div > span', {
+      text: titlePublic1,
     });
   });
 });
