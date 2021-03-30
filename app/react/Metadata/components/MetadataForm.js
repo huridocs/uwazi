@@ -171,6 +171,7 @@ MetadataForm.defaultProps = {
   changeTemplate: () => {},
   onSubmit: () => {},
   highlightedProps: [],
+  storeKey: '',
 };
 
 MetadataForm.propTypes = {
@@ -189,7 +190,7 @@ MetadataForm.propTypes = {
   version: PropTypes.string,
   componentWillUnmount: PropTypes.func,
   highlightedProps: PropTypes.arrayOf(PropTypes.string),
-  storeKey: PropTypes.string.isRequired,
+  storeKey: PropTypes.string,
 };
 
 function mapDispatchToProps(dispatch) {

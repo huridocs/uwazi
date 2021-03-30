@@ -249,11 +249,19 @@ MetadataFormFields.propTypes = {
 export const mapStateToProps = (state, ownProps) => {
   const { storeKey } = ownProps;
 
-  let attachments = [];
-  if (storeKey) {
+  let attachments = Immutable.fromJS([]);
+
+  if (storeKey === 'library' || storeKey === 'uploads') {
     const selectedDocuments = state[storeKey].ui.get('selectedDocuments');
     attachments = selectedDocuments.size ? selectedDocuments.get(0).get('attachments') : undefined;
-  } else {
+  }
+
+  if (storeKey === 'documentView') {
+    const entity = state.documentView.doc;
+    attachments = entity.get('attachments');
+  }
+
+  if (!storeKey) {
     const entity = state.entityView.entity;
     attachments = entity.get('attachments');
   }
