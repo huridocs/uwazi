@@ -26,7 +26,7 @@ describe('csvLoader zip file', () => {
     const zip = path.join(__dirname, '/zipData/test.zip');
     const loader = new CSVLoader();
     await db.clearAllAndLoad(fixtures);
-    filesystem.setupTestUploadedPaths();
+    await filesystem.setupTestUploadedPaths('csvLoaderZip');
     await createTestingZip(
       [
         path.join(__dirname, '/zipData/test.csv'),

@@ -79,14 +79,14 @@ describe('syncWorker', () => {
 
   const syncWorkerWithConfig = async config =>
     syncWorker.syncronize({
-      url: 'url',
+      url: 'url-slave1',
       name: 'slave1',
       config,
     });
 
   const syncAllTemplates = async (name = 'slave1', batchSize) =>
     syncWorker.syncronize({
-      url: 'url',
+      url: `url-${name}`,
       name,
       batchSize,
       config: {
@@ -98,12 +98,18 @@ describe('syncWorker', () => {
       },
     });
 
-  const expectCallToEqual = (call, namespace, data) => {
-    expect(call).toEqual(['url/api/sync', { namespace, data }]);
+  const expectCallToEqual = (call, namespace, data, name = 'slave1') => {
+    expect(call).toEqual([
+      [`url-${name}/api/sync`, { namespace, data }, { cookie: `${name} cookie` }],
+    ]);
   };
 
-  const expectCallWith = (spy, namespace, data) => {
-    expect(spy).toHaveBeenCalledWith('url/api/sync', { namespace, data });
+  const expectCallWith = (spy, namespace, data, name = 'slave1') => {
+    expect(spy).toHaveBeenCalledWith(
+      `url-${name}/api/sync`,
+      { namespace, data },
+      { cookie: `${name} cookie` }
+    );
   };
 
   const getCallsToIds = (namespace, ids) => {
@@ -112,16 +118,26 @@ describe('syncWorker', () => {
       .filter(args => args[1].namespace === namespace);
     return {
       calls: ids.map(id =>
-        namespaceCallsOnly.find(c => c[1].data._id.toString() === id.toString())
+        namespaceCallsOnly.filter(c => c[1].data._id.toString() === id.toString())
       ),
       callsCount: namespaceCallsOnly.length,
     };
   };
 
   describe('syncronize', () => {
+    const expectedCookies = { 'url-slave1': 'slave1 cookie', 'url-slave3': 'slave3 cookie' };
+
+    const ensureHeaders = (url, _data, headers) => {
+      const domain = url.split('/')[0];
+      return headers.cookie === expectedCookies[domain]
+        ? Promise.resolve()
+        : Promise.reject(new Error('wrong headers'));
+    };
+
     beforeEach(() => {
-      spyOn(request, 'post').and.returnValue(Promise.resolve());
-      spyOn(request, 'delete').and.returnValue(Promise.resolve());
+      syncWorker.cookies = { slave1: 'slave1 cookie', slave3: 'slave3 cookie' };
+      spyOn(request, 'post').and.callFake(ensureHeaders);
+      spyOn(request, 'delete').and.callFake(ensureHeaders);
     });
 
     it('should sanitize the config to prevent deleted values to affect the process', async () => {
@@ -209,7 +225,7 @@ describe('syncWorker', () => {
     });
 
     describe('thesauris (dictionaries collection)', () => {
-      it('should sync whitelisted thesauris through template configs (deleting even non whitelisted ones)', async () => {
+      it('should sync whitelisted thesauris through template configs (deleting non-whitelisted ones)', async () => {
         await syncWorkerWithConfig({
           templates: {
             [template1.toString()]: [
@@ -293,7 +309,7 @@ describe('syncWorker', () => {
         const {
           calls: [translation1Call],
         } = getCallsToIds('translations', [translation1]);
-        const { contexts } = translation1Call[1].data;
+        const { contexts } = translation1Call[0][1].data;
 
         expect(contexts.find(c => c.id === 'System').values).toEqual([
           { key: 'Sytem Key', value: 'System Value' },
@@ -316,12 +332,13 @@ describe('syncWorker', () => {
         const {
           calls: [translation1Call],
         } = getCallsToIds('translations', [translation1]);
-        const { contexts } = translation1Call[1].data;
+        const { contexts } = translation1Call[0][1].data;
 
         expect(contexts.find(c => c.id.toString() === template1.toString()).values).toEqual([
           { key: 'template1', value: 'template1T' },
           { key: 't1Relationship1L', value: 't1Relationship1T' },
           { key: 't1Thesauri3MultiSelectL', value: 't1Thesauri3MultiSelectT' },
+          { key: 'Template Title', value: 'Template Title translated' },
         ]);
         expect(contexts.find(c => c.id.toString() === template2.toString()).values).toEqual([
           { key: 'template2', value: 'template2T' },
@@ -343,11 +360,12 @@ describe('syncWorker', () => {
       });
     });
 
-    const expectUploadFile = (url, filename, pathFunction = attachmentsPath) => {
+    const expectUploadFile = (path, filename, pathFunction = attachmentsPath, name = 'slave1') => {
       expect(request.uploadFile).toHaveBeenCalledWith(
-        url,
+        `url-${name}${path}`,
         filename,
-        fs.readFileSync(pathFunction(filename))
+        fs.readFileSync(pathFunction(filename)),
+        `${name} cookie`
       );
     };
 
@@ -361,12 +379,12 @@ describe('syncWorker', () => {
 
         expect(request.uploadFile.calls.count()).toBe(6);
 
-        expectUploadFile('url/api/sync/upload', 'test2.txt');
-        expectUploadFile('url/api/sync/upload', 'test.txt');
-        expectUploadFile('url/api/sync/upload', `${newDoc1.toString()}.jpg`);
-        expectUploadFile('url/api/sync/upload', 'test_attachment.txt');
-        expectUploadFile('url/api/sync/upload', 'test_attachment2.txt');
-        expectUploadFile('url/api/sync/upload/custom', 'customUpload.gif', customUploadsPath);
+        expectUploadFile('/api/sync/upload', 'test2.txt');
+        expectUploadFile('/api/sync/upload', 'test.txt');
+        expectUploadFile('/api/sync/upload', `${newDoc1.toString()}.jpg`);
+        expectUploadFile('/api/sync/upload', 'test_attachment.txt');
+        expectUploadFile('/api/sync/upload', 'test_attachment2.txt');
+        expectUploadFile('/api/sync/upload/custom', 'customUpload.gif', customUploadsPath);
       });
     });
 
@@ -573,11 +591,16 @@ describe('syncWorker', () => {
       expect(lastSync1).toBe(22000);
       expect(lastSync3).toBe(1000);
 
+      request.post.calls.reset();
+
       await syncsModel._updateMany({ name: 'slave3' }, { $set: { lastSync: 8999 } });
       await syncAllTemplates('slave3');
       [{ lastSync: lastSync1 }] = await syncsModel.find({ name: 'slave1' });
       [{ lastSync: lastSync3 }] = await syncsModel.find({ name: 'slave3' });
+      expect(lastSync1).toBe(22000);
       expect(lastSync3).toBe(22000);
+
+      expectCallWith(request.post, 'entities', expect.objectContaining({ _id: newDoc2 }), 'slave3');
     });
 
     it('should allow smaller batches for large amount of changes (but process all identical timestamps)', async () => {
@@ -642,7 +665,9 @@ describe('syncWorker', () => {
           syncWorker.stop();
         }
         syncCalls += 1;
-        return Promise.reject({ status: 500, message: 'error' }); // eslint-disable-line prefer-promise-reject-errors
+        const responseError = new Error('error');
+        responseError.status = 500;
+        return Promise.reject(responseError);
       });
 
       const interval = 0;
@@ -651,7 +676,7 @@ describe('syncWorker', () => {
       expect(syncWorker.syncronize).toHaveBeenCalledTimes(3);
     });
 
-    it('should login when a sync response its "Unauthorized"', async () => {
+    it('should login when a sync response is "Unauthorized"', async () => {
       spyOn(syncWorker, 'login').and.returnValue(Promise.resolve());
       let syncCalls = 0;
       spyOn(syncWorker, 'syncronize').and.callFake(() => {
@@ -659,33 +684,52 @@ describe('syncWorker', () => {
           syncWorker.stop();
         }
         syncCalls += 1;
-        return Promise.reject({ status: 401, message: 'error' }); // eslint-disable-line prefer-promise-reject-errors
+        const responseError = new Error('error');
+        responseError.status = 401;
+        return Promise.reject(responseError);
       });
 
       const interval = 0;
-      await syncWorker.intervalSync(
-        { url: 'url', username: 'configUser', password: 'configPassword' },
-        interval
-      );
-      expect(syncWorker.login).toHaveBeenCalledWith('url', 'configUser', 'configPassword');
+      const syncConfig = { url: 'url', username: 'configUser', password: 'configPassword' };
+      await syncWorker.intervalSync(syncConfig, interval);
+      expect(syncWorker.login).toHaveBeenCalledWith(syncConfig);
     });
   });
 
   describe('login', () => {
-    it('should login to the target api and set the cookie', async () => {
-      backend.restore();
-      backend.post('http://localhost/api/login', {
-        body: '{}',
-        headers: { 'set-cookie': 'cookie' },
+    const username = 'username';
+    const password = 'password';
+
+    const mockLoginPost = (url, cookie) => {
+      backend.post(url, (_url, opts) => {
+        if (opts.body === JSON.stringify({ username, password })) {
+          return {
+            body: '{}',
+            headers: { 'set-cookie': cookie },
+          };
+        }
+
+        throw new Error('Username and Password passed incorrectly');
       });
-      spyOn(request, 'cookie');
-      await syncWorker.login('http://localhost', 'username', 'password');
-      expect(request.cookie).toHaveBeenCalledWith('cookie');
+    };
+
+    it('should login to the target api and store the login credentials for that service', async () => {
+      backend.restore();
+
+      mockLoginPost('http://localhost/api/login', 'cookie1');
+      mockLoginPost('http://anotherhost/api/login', 'cookie2');
+
+      await syncWorker.login({ url: 'http://localhost', name: 'service1', username, password });
+      await syncWorker.login({ url: 'http://anotherhost', name: 'service2', username, password });
+
+      expect(errorLog.error).not.toHaveBeenCalled();
+      expect(syncWorker.cookies.service1).toBe('cookie1');
+      expect(syncWorker.cookies.service2).toBe('cookie2');
     });
 
     it('should catch errors and log them', async () => {
       spyOn(request, 'post').and.callFake(() => Promise.reject(new Error('post failed')));
-      await syncWorker.login('http://localhost', 'username', 'password');
+      await syncWorker.login({ url: 'http://localhost', name: 'service', username, password });
       expect(errorLog.error.calls.argsFor(0)[0]).toMatch('post failed');
     });
   });

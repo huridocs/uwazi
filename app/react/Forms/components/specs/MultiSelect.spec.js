@@ -85,6 +85,17 @@ describe('MultiSelect', () => {
     expect(component).toMatchSnapshot();
   });
 
+  it('should use title property if present', () => {
+    props.options[1].title = 'this should be the title';
+    render();
+    expect(component.find('li.multiselectItem').map(li => li.prop('title'))).toEqual([
+      'Option1',
+      'this should be the title',
+      'Group option1',
+      'Group option2',
+    ]);
+  });
+
   it('should not render an empty group', () => {
     props.options.push({ label: 'Empty Group', value: 'empty', options: [] });
     render();

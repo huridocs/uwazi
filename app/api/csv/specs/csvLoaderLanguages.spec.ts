@@ -25,7 +25,7 @@ describe('csvLoader languages', () => {
 
   beforeAll(async () => {
     await db.clearAllAndLoad(fixtures);
-    filesystem.setupTestUploadedPaths();
+    await filesystem.setupTestUploadedPaths('csvLoader');
     spyOn(search, 'indexEntities').and.returnValue(Promise.resolve());
 
     const { languages = [] } = await settings.get();
@@ -40,7 +40,7 @@ describe('csvLoader languages', () => {
       'testLanguages.zip'
     );
     const csv = path.join(__dirname, 'zipData/testLanguages.zip');
-    spyOn(filesystem, 'generateFileName').and.callFake(file => `generated${file.originalname}`);
+    spyOn(filesystem, 'generateFileName').and.callFake(file => `generatedLang${file.originalname}`);
     await loader.load(csv, template1Id, { language: 'en', user: {} });
 
     imported = await entities.get();
@@ -50,8 +50,8 @@ describe('csvLoader languages', () => {
     const generatedImages = (await files.get({})).map(u => u._id.toString());
 
     await filesystem.deleteFiles([
-      filesystem.uploadsPath('generated1.pdf'),
-      filesystem.uploadsPath('generated2.pdf'),
+      filesystem.uploadsPath('generatedLang1.pdf'),
+      filesystem.uploadsPath('generatedLang2.pdf'),
       filesystem.uploadsPath(`${generatedImages[0]}.jpg`),
       filesystem.uploadsPath(`${generatedImages[1]}.jpg`),
       filesystem.uploadsPath(`${generatedImages[2]}.jpg`),
@@ -84,7 +84,10 @@ describe('csvLoader languages', () => {
 
   it('should import translated files', async () => {
     const importedFiles = await files.get({ type: 'document' });
-    expect(importedFiles.map(f => f.filename)).toEqual(['generated2.pdf', 'generated1.pdf']);
+    expect(importedFiles.map(f => f.filename)).toEqual([
+      'generatedLang2.pdf',
+      'generatedLang1.pdf',
+    ]);
   });
 
   it('should import attachment files', async () => {
@@ -98,19 +101,19 @@ describe('csvLoader languages', () => {
 
     expect(enAttachments).toEqual([
       expect.objectContaining({
-        filename: 'generated1.pdf',
+        filename: 'generatedLang1.pdf',
       }),
       expect.objectContaining({
-        filename: 'generated2.pdf',
+        filename: 'generatedLang2.pdf',
       }),
     ]);
 
     expect(esAttachments).toEqual([
       expect.objectContaining({
-        filename: 'generated1.pdf',
+        filename: 'generatedLang1.pdf',
       }),
       expect.objectContaining({
-        filename: 'generated2.pdf',
+        filename: 'generatedLang2.pdf',
       }),
     ]);
   });

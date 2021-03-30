@@ -8,9 +8,9 @@ describe('static file middleware', () => {
   const app: Application = express();
   app.get('/static-files/:fileName', staticFilesMiddleware([uploadsPath, attachmentsPath]));
 
-  beforeEach(() => {
+  beforeEach(async () => {
     testingTenants.mockCurrentTenant({ name: 'default' });
-    setupTestUploadedPaths();
+    await setupTestUploadedPaths();
   });
 
   it('should return file requested', async () => {

@@ -317,11 +317,16 @@ class ProcessNamespaces {
             templatesData.find(t => t._id.toString() === context.id.toString())
           );
           const templateConfigProperties = this.templatesConfig[context.id.toString()].properties;
-          const approvedKeys = [contextTemplate.name].concat(
-            (contextTemplate.properties || [])
-              .filter(p => templateConfigProperties.includes(p._id?.toString() || ''))
-              .map(p => p.label)
-          );
+          const templateTitle = contextTemplate.commonProperties?.find(p => p.name === 'title')
+            ?.label;
+
+          const approvedKeys = [contextTemplate.name, templateTitle]
+            .concat(
+              (contextTemplate.properties || [])
+                .filter(p => templateConfigProperties.includes(p._id?.toString() || ''))
+                .map(p => p.label)
+            )
+            .filter(k => Boolean(k));
 
           context.values = (context.values || []).filter((v: any) => approvedKeys.includes(v.key));
           return context;

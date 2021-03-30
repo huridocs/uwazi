@@ -17,8 +17,11 @@ describe('search', () => {
     result = elasticResult().toObject();
     const elasticIndex = 'search_index_test';
     await db.setupFixturesAndContext(elasticFixtures, elasticIndex);
-    userFactory.restore();
   }, fixturesTimeOut);
+
+  beforeEach(async () => {
+    userFactory.mockEditorUser();
+  });
 
   afterAll(async () => {
     await db.disconnect();
@@ -819,6 +822,19 @@ describe('search', () => {
 
       const { rows } = await search.search(query, 'en');
       expect(rows).toEqual([expect.objectContaining({ title: 'Batman finishes en' })]);
+    });
+
+    it('when values is empty should not filter', async () => {
+      const query = {
+        customFilters: {
+          generatedToc: {
+            values: [],
+          },
+        },
+      };
+
+      const { rows } = await search.search(query, 'en');
+      expect(rows.length).toBe(13);
     });
   });
 

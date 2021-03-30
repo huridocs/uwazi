@@ -13,7 +13,7 @@
   position: relative;
   display: block;
   max-width: 100%;
-  
+
   @media (min-width: 768px) {
     max-width: calc(100% - 550px);
     width: 632px;
@@ -484,8 +484,14 @@
   color: $c-grey-dark;
   max-width: calc(100% - 50px);
 
+  svg {
+    font-size: $f-size-xs;
+    width: 1.1em !important;
+  }
+
   .multiselectItem-label:hover & {
-    text-decoration: underline;
+    border-bottom: 1px solid;
+    margin-bottom: -1px;
   }
 }
 

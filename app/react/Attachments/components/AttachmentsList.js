@@ -14,13 +14,13 @@ export default class AttachmentsList extends Component {
   }
 
   render() {
-    const { parentId, parentSharedId, readOnly, storeKey } = this.props;
+    const { parentId, parentSharedId, readOnly, storeKey, entity } = this.props;
     const forcedReadOnly = readOnly || Boolean(this.props.isTargetDoc);
 
     let uploadAttachmentButton = null;
     if (!this.props.isTargetDoc) {
       uploadAttachmentButton = (
-        <NeedAuthorization roles={['admin', 'editor']}>
+        <NeedAuthorization roles={['admin', 'editor']} orWriteAccessTo={[entity]}>
           <div className="attachment-add">
             <UploadSupportingFile entitySharedId={this.props.parentSharedId} storeKey={storeKey} />
           </div>
@@ -47,6 +47,7 @@ export default class AttachmentsList extends Component {
               storeKey={storeKey}
               parentSharedId={parentSharedId}
               isSourceDocument={false}
+              entity={entity}
             />
           ))}
         </div>
@@ -62,6 +63,7 @@ AttachmentsList.defaultProps = {
   parentId: null,
   parentSharedId: null,
   storeKey: '',
+  entity: null,
 };
 
 AttachmentsList.propTypes = {
@@ -71,6 +73,7 @@ AttachmentsList.propTypes = {
   readOnly: PropTypes.bool,
   isTargetDoc: PropTypes.bool,
   storeKey: PropTypes.string,
+  entity: PropTypes.object,
 };
 
 AttachmentsList.contextTypes = {

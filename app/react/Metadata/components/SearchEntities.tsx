@@ -7,7 +7,7 @@ import debounce from 'app/utils/debounce';
 import { RequestParams } from 'app/utils/RequestParams';
 import { IImmutable } from 'shared/types/Immutable';
 import Immutable from 'immutable';
-import api from 'app/utils/api';
+import SearchApi from 'app/Search/SearchAPI';
 
 export type SearchEntitiesProps = {
   onSelect: Function;
@@ -48,18 +48,15 @@ export class SearchEntities extends Component<SearchEntitiesProps, SearchEntitie
       includeUnpublished: true,
     });
 
-    interface ApiResponse {
-      json: { rows: [EntitySchema] };
-    }
-
-    return api.get('search', requestParams).then((response: ApiResponse) => {
-      const searchResults = response.json.rows;
-      this.setState({
-        searchResults: Immutable.fromJS(searchResults),
-        searching: false,
-      });
-      this.props.onFinishSearch(searchTerm);
-    });
+    return SearchApi.search(requestParams).then(
+      ({ rows: searchResults }: { rows: EntitySchema }) => {
+        this.setState({
+          searchResults: Immutable.fromJS(searchResults),
+          searching: false,
+        });
+        this.props.onFinishSearch(searchTerm);
+      }
+    );
   }
 
   onChange(e: React.ChangeEvent<HTMLInputElement>) {

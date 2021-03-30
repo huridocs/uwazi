@@ -16,13 +16,15 @@ export default {
 
       await Promise.all(
         entity.attachments.map(async ({ filename, originalname }) =>
-          db.collection('files').update(
+          db.collection('files').updateMany(
             { filename },
             {
-              entity: entity.sharedId,
-              filename,
-              originalname,
-              type: 'attachment',
+              $set: {
+                entity: entity.sharedId,
+                filename,
+                originalname,
+                type: 'attachment',
+              },
             },
             { upsert: true }
           )
@@ -32,7 +34,7 @@ export default {
       process.stdout.write(`-> processed: ${index} \r`);
       index += 1;
     }
-    db.collection('entities').update({}, { $unset: { attachments: 1 } }, { multi: true });
+    await db.collection('entities').updateMany({}, { $unset: { attachments: 1 } }, { multi: true });
     process.stdout.write('\r\n');
   },
 };

@@ -207,6 +207,18 @@ describe('NeedAuthorization', () => {
 
           expect(component.text()).not.toBe('to render if auth');
         });
+
+        it('should not render children if entity is null', () => {
+          props = {
+            children: 'to render if auth',
+            roles: [],
+            orWriteAccessTo: [null],
+          };
+
+          const component = render();
+
+          expect(component.text()).not.toBe('to render if auth');
+        });
       });
     });
   });

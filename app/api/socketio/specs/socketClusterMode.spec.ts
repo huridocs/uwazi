@@ -196,7 +196,8 @@ describe('socket middlewares setup', () => {
   });
 
   it('should not fail when not sending a cookie', async () => {
-    await connectSocket(port, 'tenant5');
+    const socket5 = await connectSocket(port, 'tenant5');
     await requestTestRoute('tenant5', '/api/onlySender');
+    socket5.disconnect();
   });
 });
