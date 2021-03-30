@@ -581,13 +581,14 @@ const buildQuery = async (query, language, user, resources) => {
   const searchTextType = query.searchTerm
     ? await searchTypeFromSearchTermValidity(query.searchTerm)
     : 'query_string';
+  const onlyPublished = query.published || !(query.includeUnpublished || query.unpublished);
   const queryBuilder = documentQueryBuilder()
     .include(query.include)
     .fullTextSearch(query.searchTerm, textFieldsToSearch, 2, searchTextType)
     .filterByTemplate(query.types)
     .filterById(query.ids)
     .language(language)
-    .filterByPermissions(user);
+    .filterByPermissions(onlyPublished);
 
   if (Number.isInteger(parseInt(query.from, 10))) {
     queryBuilder.from(query.from);

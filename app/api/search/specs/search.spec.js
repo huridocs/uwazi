@@ -17,8 +17,11 @@ describe('search', () => {
     result = elasticResult().toObject();
     const elasticIndex = 'search_index_test';
     await db.setupFixturesAndContext(elasticFixtures, elasticIndex);
-    userFactory.restore();
   }, fixturesTimeOut);
+
+  beforeEach(async () => {
+    userFactory.mockEditorUser();
+  });
 
   afterAll(async () => {
     await db.disconnect();
