@@ -59,7 +59,7 @@ describe('Share entities', () => {
       '.userGroupsLookupField li .member-list-item',
       items => items.map(item => item.textContent)
     );
-    expect(availableCollaborators).toEqual(['Activistas', 'Asesores legales']);
+    expect(availableCollaborators).toEqual(['Activistas', 'Asesores legales', 'Public']);
   });
 
   const selectLookupOption = async (searchTerm: string, option: string) => {
@@ -77,12 +77,11 @@ describe('Share entities', () => {
     const selectedCollaborators = await getEntitiesCollaborators();
     expect(selectedCollaborators).toEqual([
       'Administrators and Editors',
-      'Public',
       'editor',
       'Asesores legales',
     ]);
     await expect(page).toSelect(
-      '.member-list-wrapper  tr:nth-child(3) > td:nth-child(2) > select',
+      '.member-list-wrapper  tr:nth-child(2) > td:nth-child(2) > select',
       'Can edit'
     );
     await page.waitForSelector('.confirm-button');
@@ -99,7 +98,7 @@ describe('Share entities', () => {
     await expect(page).toClick('button', { text: 'Share' });
     await expect(page).toClick('.userGroupsLookupField');
     await page.waitForSelector('.members-list tr:nth-child(1) .member-list-item');
-    expect(await getEntitiesCollaborators()).toEqual(['Administrators and Editors', 'Public']);
+    expect(await getEntitiesCollaborators()).toEqual(['Administrators and Editors']);
     await expect(page).toClick('button', { text: 'Close' });
     await page.waitForSelector('.share-modal', { hidden: true });
   });
@@ -108,13 +107,11 @@ describe('Share entities', () => {
     await expect(page).toClick('.item-document', {
       text: titleEntity1,
     });
-
     await expect(page).toClick('button', { text: 'Share' });
     await page.waitForSelector('.members-list tr:nth-child(2) .member-list-item');
     expect(await getEntitiesCollaborators()).toEqual([
       'Administrators and Editors',
       'Asesores legales',
-      'Public',
       'editor',
     ]);
     checkAccessOfPersons(['Can edit', 'Can see', 'Can edit']);
@@ -132,11 +129,10 @@ describe('Share entities', () => {
     expect(loadedCollaborators).toEqual([
       'Administrators and Editors',
       'Asesores legales',
-      'Public',
       'editor',
     ]);
 
-    checkAccessOfPersons(['Can edit', 'Mixed access', 'Can see', 'Mixed access']);
+    checkAccessOfPersons(['Can edit', 'Mixed access', 'Mixed access']);
     await expect(page).toClick('button', { text: 'Close' });
     await page.waitForSelector('.share-modal', { hidden: true });
   });
@@ -149,7 +145,7 @@ describe('Share entities', () => {
     await expect(page).toClick('button', { text: 'Share' });
     await selectLookupOption('colla', 'colla');
     await expect(page).toSelect(
-      '.member-list-wrapper  tr:nth-child(3) > td:nth-child(2) > select',
+      '.member-list-wrapper  tr:nth-child(2) > td:nth-child(2) > select',
       'Can edit'
     );
     await expect(page).toClick('button', { text: 'Save changes' });
@@ -164,7 +160,7 @@ describe('Share entities', () => {
     await expect(page).toClick('button', { text: 'Share' });
     await selectLookupOption('Ase', 'Asesores legales');
     await expect(page).toSelect(
-      '.member-list-wrapper  tr:nth-child(3) > td:nth-child(2) > select',
+      '.member-list-wrapper  tr:nth-child(2) > td:nth-child(2) > select',
       'Can edit'
     );
     await expect(page).toClick('button', { text: 'Save changes' });
