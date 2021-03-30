@@ -59,9 +59,7 @@ BaseFormatMetadata.propTypes = {
   storeKey: PropTypes.string,
 };
 
-export function mapStateToProps(state, props) {
-  const { entity, sortedProperty = '' } = props;
-
+export function mapStateToProps(state, { entity, sortedProperty = '' }) {
   return {
     templates: state.templates,
     thesauris: state.thesauris,
