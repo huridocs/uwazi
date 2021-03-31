@@ -12,37 +12,39 @@ import {
 import { unselectAllDocuments } from 'app/Library/actions/libraryActions';
 import { PermissionType } from '../../../shared/types/permissionSchema';
 
-export function saveEntitiesPermissions(permissionsData: PermissionsDataSchema, storeKey: string) {
+export function saveEntitiesPermissions(permissionsData: PermissionsDataSchema, storeKey?: string) {
   return async (dispatch: Dispatch<IStore>, getState: () => IStore) => {
     const response = await savePermissions(permissionsData);
 
-    const newPublishingStatus =
-      response.permissions.findIndex(p => p.type === PermissionType.PUBLIC) >= 0;
+    if (storeKey) {
+      const newPublishingStatus =
+        response.permissions.findIndex(p => p.type === PermissionType.PUBLIC) >= 0;
 
-    const { unpublished: showingUnpublished, includeUnpublished } = getState()[
-      storeKey as 'library' | 'uploads'
-    ].search;
+      const { unpublished: showingUnpublished, includeUnpublished } = getState()[
+        storeKey as 'library' | 'uploads'
+      ].search;
 
-    const notShowingPublicAndPrivate = showingUnpublished || !includeUnpublished;
-    const toMoveFromCollection = showingUnpublished === newPublishingStatus;
+      const notShowingPublicAndPrivate = showingUnpublished || !includeUnpublished;
+      const toMoveFromCollection = showingUnpublished === newPublishingStatus;
 
-    const wrappedDispatch = wrapDispatch(dispatch, storeKey);
+      const wrappedDispatch = wrapDispatch(dispatch, storeKey);
 
-    if (notShowingPublicAndPrivate) {
-      if (toMoveFromCollection) {
+      if (notShowingPublicAndPrivate) {
+        if (toMoveFromCollection) {
+          wrappedDispatch({
+            type: REMOVE_DOCUMENTS_SHAREDIDS,
+            sharedIds: permissionsData.ids,
+          });
+
+          wrappedDispatch(unselectAllDocuments());
+        }
+      } else {
         wrappedDispatch({
-          type: REMOVE_DOCUMENTS_SHAREDIDS,
+          type: UPDATE_DOCUMENTS_PUBLISHED,
           sharedIds: permissionsData.ids,
+          published: newPublishingStatus,
         });
-
-        wrappedDispatch(unselectAllDocuments());
       }
-    } else {
-      wrappedDispatch({
-        type: UPDATE_DOCUMENTS_PUBLISHED,
-        sharedIds: permissionsData.ids,
-        published: newPublishingStatus,
-      });
     }
 
     dispatch(notificationActions.notify('Update success', 'success'));

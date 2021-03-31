@@ -6,9 +6,9 @@ import {
   REMOVE_DOCUMENTS_SHAREDIDS,
   UPDATE_DOCUMENTS_PUBLISHED,
 } from 'app/Library/actions/actionTypes';
+import { PUBLIC_PERMISSION } from 'api/permissions/publicPermission';
 import * as api from '../../PermissionsAPI';
 import * as actions from '../actions';
-import { PUBLIC_PERMISSION } from 'api/permissions/publicPermission';
 
 jest.mock('app/Users/components/usergroups/UserGroupsAPI');
 
@@ -74,6 +74,26 @@ describe('Permissions actions', () => {
         );
       }
     );
+
+    it('should not fail and only dispatch a notification if no storekey', async () => {
+      const permissionsData: PermissionsDataSchema = {
+        ids: ['sharedId1'],
+        permissions: [],
+      };
+      await actions.saveEntitiesPermissions(permissionsData)(dispatch, getStateMock());
+      expect(dispatch).not.toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: REMOVE_DOCUMENTS_SHAREDIDS,
+          sharedIds: ['sharedId1'],
+        })
+      );
+      expect(dispatch).not.toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: UPDATE_DOCUMENTS_PUBLISHED,
+          sharedIds: ['sharedId1'],
+        })
+      );
+    });
 
     describe('for LIBRARY', () => {
       it('should remove documents after unpublishing', async () => {
