@@ -49,13 +49,14 @@ describe('permissions routes', () => {
           ids: ['shared1'],
           permissions: [
             { refId: 'user1', type: 'user', level: 'read' },
-            { ...PUBLIC_PERMISSION, level: 'read' },
+            { ...PUBLIC_PERMISSION, level: 'read', label: undefined },
           ],
         };
         const response = await request(app)
           .post('/api/entities/permissions')
           .set('X-Requested-With', 'XMLHttpRequest')
           .send(permissionsData);
+
         expect(response.status).toBe(200);
         expect(entitiesPermissions.set).toHaveBeenCalledWith(permissionsData);
       });
