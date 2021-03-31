@@ -3,6 +3,7 @@ import proxyMock from '../helpers/proxyMock';
 import { adminLogin, logout, login } from '../helpers/login';
 import { host } from '../config';
 import disableTransitions from '../helpers/disableTransitions';
+import { expectDocumentCountAfterSearch } from 'e2e/helpers/elastichelpers';
 
 describe('Share entities', () => {
   beforeAll(async () => {
@@ -217,9 +218,7 @@ describe('Share entities', () => {
       '"Resolución de la Corte IDH."'
     );
     await expect(page).toClick('[aria-label="Search button"]');
-    await page.waitForFunction('document.querySelectorAll(".item-document").length === 1');
-    const entities = await page.$$('.item-document');
-    expect(entities.length).toBe(1);
+    await expectDocumentCountAfterSearch(page, 1);
     await expect(page).toMatchElement('.item-document .item-info > div > span', {
       text: titlePublic1,
     });
