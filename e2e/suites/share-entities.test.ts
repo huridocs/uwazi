@@ -217,7 +217,7 @@ describe('Share entities', () => {
       '"Resolución de la Corte IDH."'
     );
     await expect(page).toClick('[aria-label="Search button"]');
-    await page.waitForResponse(response => response.url().includes('api/search'));
+    await page.waitForFunction('document.querySelectorAll(".item-document").length === 1');
     const entities = await page.$$('.item-document');
     expect(entities.length).toBe(1);
     await expect(page).toMatchElement('.item-document .item-info > div > span', {
