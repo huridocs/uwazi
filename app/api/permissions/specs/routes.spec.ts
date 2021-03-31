@@ -6,6 +6,7 @@ import { entitiesPermissions } from 'api/permissions/entitiesPermissions';
 import { collaborators } from 'api/permissions/collaborators';
 import testingDB from 'api/utils/testing_db';
 import errorLog from 'api/log/errorLog';
+import { PUBLIC_PERMISSION } from '../publicPermission';
 
 jest.mock(
   '../../utils/languageMiddleware.ts',
@@ -48,7 +49,7 @@ describe('permissions routes', () => {
           ids: ['shared1'],
           permissions: [
             { refId: 'user1', type: 'user', level: 'read' },
-            { refId: 'public', type: 'public', level: 'read' },
+            { ...PUBLIC_PERMISSION, level: 'read' },
           ],
         };
         const response = await request(app)

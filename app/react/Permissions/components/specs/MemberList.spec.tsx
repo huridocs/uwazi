@@ -19,7 +19,7 @@ describe('MemberList', () => {
       expect(row.contains(<MemberListItemInfo value={member} />));
       const dropdown = row.find(MemberListItemPermission).filter({ value: member });
       expect(dropdown.length).toBe(1);
-      expect(dropdown.parent().is(NeedAuthorization)).toBe(member.type === 'public');
+      expect(dropdown.parent().is(NeedAuthorization)).toBe(member.type === PermissionType.PUBLIC);
     });
   });
 

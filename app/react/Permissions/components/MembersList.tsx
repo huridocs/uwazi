@@ -19,7 +19,7 @@ interface MemberListProps {
 }
 
 const notShowPublicToCollab = (member: MemberWithPermission, children: any) =>
-  member.type === 'public' ? (
+  member.type === PermissionType.PUBLIC ? (
     <NeedAuthorization roles={['admin', 'editor']}>{children}</NeedAuthorization>
   ) : (
     children

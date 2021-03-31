@@ -5,11 +5,10 @@ import { AccessLevels, PermissionType, MixedAccess } from 'shared/types/permissi
 import { fixtures, groupA, userA, userB } from 'api/permissions/specs/fixtures';
 import { PermissionsDataSchema } from '../../../shared/types/permissionType';
 import { UserInContextMockFactory } from '../../utils/testingUserInContext';
+import { PUBLIC_PERMISSION } from '../publicPermission';
 
 const publicPermission = {
-  refId: 'public',
-  label: 'Public',
-  type: PermissionType.PUBLIC,
+  ...PUBLIC_PERMISSION,
   level: AccessLevels.READ,
 };
 
@@ -51,7 +50,7 @@ describe('permissions', () => {
       );
       updateEntities.forEach(entity => {
         expect(entity.permissions).toEqual(
-          permissionsData.permissions.filter(p => p.type !== 'public')
+          permissionsData.permissions.filter(p => p.type !== PermissionType.PUBLIC)
         );
       });
       const notUpdatedEntities = storedEntities.filter(
@@ -97,7 +96,7 @@ describe('permissions', () => {
           expect(entity.published).toBe(false);
         });
 
-        permissionsData.permissions.push({ refId: 'public', type: 'public', level: 'read' });
+        permissionsData.permissions.push({ ...PUBLIC_PERMISSION, level: 'read' });
         await entitiesPermissions.set(permissionsData);
         storedEntities = await entities.get({ sharedId: 'shared1' }, '+permissions');
 

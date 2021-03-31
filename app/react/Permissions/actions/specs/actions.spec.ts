@@ -8,6 +8,7 @@ import {
 } from 'app/Library/actions/actionTypes';
 import * as api from '../../PermissionsAPI';
 import * as actions from '../actions';
+import { PUBLIC_PERMISSION } from 'api/permissions/publicPermission';
 
 jest.mock('app/Users/components/usergroups/UserGroupsAPI');
 
@@ -42,7 +43,7 @@ describe('Permissions actions', () => {
       async inLibrary => {
         const permissionsData: PermissionsDataSchema = {
           ids: ['sharedId1'],
-          permissions: inLibrary ? [{ refId: 'public', type: 'public', level: 'read' }] : [],
+          permissions: inLibrary ? [{ ...PUBLIC_PERMISSION, level: 'read' }] : [],
         };
 
         const stateLibrary = {
@@ -108,7 +109,7 @@ describe('Permissions actions', () => {
         async withPublic => {
           const permissionsData: PermissionsDataSchema = {
             ids: ['sharedId1'],
-            permissions: withPublic ? [{ refId: 'public', type: 'public', level: 'read' }] : [],
+            permissions: withPublic ? [{ ...PUBLIC_PERMISSION, level: 'read' }] : [],
           };
 
           const stateLibrary = {
@@ -146,7 +147,7 @@ describe('Permissions actions', () => {
       it('should remove documents after publishing', async () => {
         const permissionsData: PermissionsDataSchema = {
           ids: ['sharedId1'],
-          permissions: [{ refId: 'public', type: 'public', level: 'read' }],
+          permissions: [{ ...PUBLIC_PERMISSION, level: 'read' }],
         };
 
         const stateUploads = {

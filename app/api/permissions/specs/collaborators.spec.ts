@@ -3,6 +3,7 @@ import { fixtures, groupA, groupB, userA, userB } from 'api/permissions/specs/fi
 import { collaborators } from 'api/permissions/collaborators';
 import { PermissionType } from 'shared/types/permissionSchema';
 import { UserInContextMockFactory } from '../../utils/testingUserInContext';
+import { PUBLIC_PERMISSION } from '../publicPermission';
 
 describe('collaborators', () => {
   beforeEach(async () => {
@@ -11,15 +12,7 @@ describe('collaborators', () => {
 
   describe('search', () => {
     function assertPublicOption(results: any[]) {
-      expect(results).toEqual(
-        expect.arrayContaining([
-          {
-            refId: 'public',
-            type: 'public',
-            label: 'Public',
-          },
-        ])
-      );
+      expect(results).toEqual(expect.arrayContaining([PUBLIC_PERMISSION]));
     }
 
     describe('matched user', () => {
@@ -83,7 +76,7 @@ describe('collaborators', () => {
       expect(await collaborators.search('User')).not.toEqual(
         expect.arrayContaining([
           expect.objectContaining({
-            type: 'public',
+            type: PermissionType.PUBLIC,
           }),
         ])
       );

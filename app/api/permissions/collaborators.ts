@@ -5,6 +5,7 @@ import { MemberWithPermission } from 'shared/types/entityPermisions';
 import { UserSchema } from 'shared/types/userType';
 import { WithId } from 'api/odm';
 import { permissionsContext } from './permissionsContext';
+import { PUBLIC_PERMISSION } from './publicPermission';
 
 export const collaborators = {
   search: async (filterTerm: string) => {
@@ -38,9 +39,7 @@ export const collaborators = {
 
     if (user && ['admin', 'editor'].includes(user.role)) {
       availableCollaborators.push({
-        refId: 'public',
-        type: 'public',
-        label: 'Public',
+        ...PUBLIC_PERMISSION,
       });
     }
 

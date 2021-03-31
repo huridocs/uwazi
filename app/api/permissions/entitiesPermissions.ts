@@ -14,6 +14,7 @@ import { PermissionSchema } from 'shared/types/permissionType';
 import { MemberWithPermission } from 'shared/types/entityPermisions';
 import { PermissionsDataSchema } from '../../shared/types/permissionType';
 import { permissionsContext } from './permissionsContext';
+import { PUBLIC_PERMISSION } from './publicPermission';
 
 const setAdditionalData = (
   peopleList: (GroupMemberSchema | UserGroupSchema)[],
@@ -59,9 +60,7 @@ async function setAccessLevelAndPermissionData(
 
   if (publishedEntities) {
     permissionsData.push({
-      refId: 'public',
-      type: 'public',
-      label: 'Public',
+      ...PUBLIC_PERMISSION,
       level: totalEntities === publishedEntities ? AccessLevels.READ : MixedAccess.MIXED,
     });
   }
@@ -86,8 +85,11 @@ export const entitiesPermissions = {
       { published: 1, permissions: 1 }
     );
 
-    const nonPublicPermissions = permissionsData.permissions.filter(p => p.type !== 'public');
-    const published = permissionsData.permissions.findIndex(p => p.type === 'public') > -1;
+    const nonPublicPermissions = permissionsData.permissions.filter(
+      p => p.type !== PermissionType.PUBLIC
+    );
+    const published =
+      permissionsData.permissions.findIndex(p => p.type === PermissionType.PUBLIC) > -1;
 
     if (
       !['admin', 'editor'].includes(user!.role) &&
