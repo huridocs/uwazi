@@ -3,7 +3,7 @@ import proxyMock from '../helpers/proxyMock';
 import { adminLogin, logout, login } from '../helpers/login';
 import { host } from '../config';
 import disableTransitions from '../helpers/disableTransitions';
-import { expectDocumentCountAfterSearch } from 'e2e/helpers/elastichelpers';
+import { expectDocumentCountAfterSearch } from '../helpers/elastichelpers';
 
 describe('Share entities', () => {
   beforeAll(async () => {
