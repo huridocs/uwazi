@@ -186,6 +186,7 @@ describe('Share entities', () => {
   it('should be able to see and edit entities as a collaborator', async () => {
     await logout();
     await login('colla', 'borator');
+    await disableTransitions();
     await expect(page).toClick('a.private-documents');
     await page.waitFor('.item-document');
     const entities = await page.$$('.item-document');
@@ -216,9 +217,9 @@ describe('Share entities', () => {
       '"Resolución de la Corte IDH."'
     );
     await expect(page).toClick('[aria-label="Search button"]');
-    await page.waitForSelector('#nprogress', { hidden: true });
+    await page.waitForResponse(response => response.url().includes('api/search'));
     const entities = await page.$$('.item-document');
-    await expect(entities.length).toBe(1);
+    expect(entities.length).toBe(1);
     await expect(page).toMatchElement('.item-document .item-info > div > span', {
       text: titlePublic1,
     });
