@@ -122,12 +122,12 @@ export const MediaModal = ({
               {filteredAttachments.length > 0 ? (
                 <div className="media-grid container">
                   <div className="row">
-                    {filteredAttachments.map((attachment, key) => {
+                    {filteredAttachments.map(attachment => {
                       const attachmentUrl = attachment.url || `/api/files/${attachment.filename}`;
                       return (
                         <div
                           className="media-grid-item"
-                          key={`attachment_${key}`}
+                          key={`attachment_${attachment._id}`}
                           onClick={handleAttachmentClick(attachmentUrl)}
                         >
                           <div

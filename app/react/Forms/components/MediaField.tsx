@@ -27,7 +27,11 @@ const MediaField = ({ attachments = [], value, onChange, type }: MediaFieldProps
   return (
     <div className="search__filter--selected__media">
       {value &&
-        (type === MediaModalType.Image ? <img src={value} /> : <MarkdownMedia config={value} />)}
+        (type === MediaModalType.Image ? (
+          <img src={value} alt="" />
+        ) : (
+          <MarkdownMedia config={value} />
+        ))}
 
       <div className="search__filter--selected__media-toolbar">
         <button type="button" onClick={() => setOpenModal(true)} className="btn btn-success">

@@ -4,6 +4,7 @@ import { shallow, ShallowWrapper } from 'enzyme';
 import ReactModal from 'react-modal';
 import configureMockStore from 'redux-mock-store';
 import { Provider } from 'react-redux';
+import { RenderAttachment } from 'app/Attachments/components/RenderAttachment';
 
 import { MediaModal, MediaModalProps, MediaModalType } from '../MediaModal';
 
@@ -55,6 +56,7 @@ describe('Media Modal', () => {
     const firstAttachment = component.find('.media-grid-item');
     firstAttachment.simulate('click');
 
+    expect(props.onChange).toHaveBeenCalledWith('/api/files/test.jpg');
     expect(props.onClose).toHaveBeenCalled();
   });
 
@@ -64,7 +66,8 @@ describe('Media Modal', () => {
 
     render({ attachments: [jpgAttachment, videoAttachment], type: MediaModalType.Image });
 
-    const attachments = component.find('.media-grid-item');
+    const attachments = component.find(RenderAttachment);
+    expect(attachments.at(0).props().attachment).toEqual(jpgAttachment);
 
     expect(attachments.length).toBe(1);
   });
@@ -75,7 +78,8 @@ describe('Media Modal', () => {
 
     render({ attachments: [jpgAttachment, videoAttachment], type: MediaModalType.Media });
 
-    const attachments = component.find('.media-grid-item');
+    const attachments = component.find(RenderAttachment);
+    expect(attachments.at(0).props().attachment).toEqual(videoAttachment);
 
     expect(attachments.length).toBe(1);
   });

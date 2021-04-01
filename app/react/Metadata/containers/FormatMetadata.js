@@ -12,7 +12,6 @@ const BaseFormatMetadata = ({
   sortedProperty,
   entity,
   relationships,
-  attachments,
   ...props
 }) => (
   <Metadata
@@ -38,7 +37,6 @@ BaseFormatMetadata.propTypes = {
     metadata: PropTypes.object,
   }).isRequired,
   relationships: PropTypes.object,
-  attachments: PropTypes.arrayOf(PropTypes.object),
   additionalMetadata: PropTypes.arrayOf(
     PropTypes.shape({
       label: PropTypes.string,
@@ -56,7 +54,6 @@ BaseFormatMetadata.propTypes = {
   ),
   sortedProperty: PropTypes.string,
   excludePreview: PropTypes.bool,
-  storeKey: PropTypes.string,
 };
 
 export function mapStateToProps(state, props) {

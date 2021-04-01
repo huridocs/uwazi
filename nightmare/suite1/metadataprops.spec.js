@@ -186,7 +186,6 @@ describe('metadata properties', () => {
         return nightmare.getInnerText(localSelectors.properties.multiselect);
       })
       .then(multiselect => {
-        multiselect;
         expect(multiselect).toBe('This\n');
         return nightmare.getInnerText(localSelectors.properties.relationship);
       })
