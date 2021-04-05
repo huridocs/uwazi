@@ -3,6 +3,10 @@
 import moment from 'moment';
 
 export default {
+  performantDocToJSWithoutRelations(doc) {
+    return doc.delete('relations').toJS();
+  },
+
   prepareMetadata(doc, templates, thesauris) {
     const template = templates.find(t => t._id === doc.template);
 
