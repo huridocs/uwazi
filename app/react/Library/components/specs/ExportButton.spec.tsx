@@ -47,6 +47,11 @@ describe('ExportButton', () => {
 
       expect(actions.exportDocuments).toHaveBeenCalledWith('library');
     });
+
+    it('should have the custom class btn-export', () => {
+      render();
+      expect(component.find('.btn-export').length).toBe(1);
+    });
   });
 
   describe('when processing', () => {
