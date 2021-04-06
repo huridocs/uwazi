@@ -1,9 +1,11 @@
 import React from 'react';
 import thunk from 'redux-thunk';
+import { LocalForm } from 'react-redux-form';
 import { shallow, ShallowWrapper } from 'enzyme';
 import ReactModal from 'react-modal';
 import configureMockStore from 'redux-mock-store';
 import { Provider } from 'react-redux';
+
 import { RenderAttachment } from 'app/Attachments/components/RenderAttachment';
 
 import { MediaModal, MediaModalProps, MediaModalType } from '../MediaModal';
@@ -49,7 +51,7 @@ describe('Media Modal', () => {
     expect(props.onClose).toHaveBeenCalled();
   });
 
-  it('Should select attachment', () => {
+  it('Should select attachment with filename', () => {
     const jpgAttachment = { _id: 123, filename: 'test.jpg', size: 1234 };
     render({ attachments: [jpgAttachment] });
 
@@ -57,6 +59,18 @@ describe('Media Modal', () => {
     firstAttachment.simulate('click');
 
     expect(props.onChange).toHaveBeenCalledWith('/api/files/test.jpg');
+    expect(props.onClose).toHaveBeenCalled();
+  });
+
+  it('Should select attachment with url', () => {
+    const testUrl = 'http://test.test/test.jpg';
+    const jpgAttachment = { _id: 123, url: testUrl, size: 1234 };
+    render({ attachments: [jpgAttachment] });
+
+    const firstAttachment = component.find('.media-grid-item');
+    firstAttachment.simulate('click');
+
+    expect(props.onChange).toHaveBeenCalledWith(testUrl);
     expect(props.onClose).toHaveBeenCalled();
   });
 
@@ -100,5 +114,18 @@ describe('Media Modal', () => {
     const selectedAttachment = component.find('.media-grid .active');
 
     expect(selectedAttachment.length).toBe(1);
+  });
+
+  it('Should upload file from url', () => {
+    render();
+
+    const testAttachment = 'http://test.test/test.jpg';
+
+    component.find('.modal-tab-2').simulate('click');
+
+    component.find(LocalForm).simulate('submit', { url: testAttachment });
+
+    expect(props.onChange).toHaveBeenCalledWith(testAttachment);
+    expect(props.onClose).toHaveBeenCalled();
   });
 });

@@ -10,7 +10,7 @@ import { Icon } from 'app/UI';
 import { RenderAttachment } from 'app/Attachments/components/RenderAttachment';
 
 const validators = {
-  url: { required: (val: any) => !!val && val.trim() !== '' },
+  url: { required: (val: string) => !!val && val.trim() !== '' },
 };
 
 export enum MediaModalType {
