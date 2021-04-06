@@ -569,6 +569,7 @@ export default {
     {
       _id: template1,
       name: 'template1',
+      commonProperties: [{ label: 'Template Title', name: 'title' }],
       properties: [
         {
           _id: template1Property1,
@@ -724,6 +725,7 @@ export default {
             { key: 't1Relationship2L', value: 't1Relationship2T' },
             { key: 't1Thesauri2SelectL', value: 't1Thesauri2SelectT' },
             { key: 't1Thesauri3MultiSelectL', value: 't1Thesauri3MultiSelectT' },
+            { key: 'Template Title', value: 'Template Title translated' },
           ],
         },
         {
