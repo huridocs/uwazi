@@ -50,6 +50,7 @@ describe('errorLog', () => {
     process.env.LOGS_DIR = './some_dir';
 
     const anErrorLog = createErrorLog();
+    spyOn(anErrorLog.transports[1], 'log');
 
     expect(anErrorLog.transports[0].dirname).toBe('./some_dir');
     expect(anErrorLog.transports[0].filename).toBe('error.log');

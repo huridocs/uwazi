@@ -21,7 +21,7 @@ import fixtures, {
 } from './fixtures.js';
 
 describe('templates', () => {
-  const elasticIndex = 'index';
+  const elasticIndex = 'templates_spec_index';
 
   beforeEach(async () => {
     spyOn(translations, 'addContext').and.returnValue(Promise.resolve());

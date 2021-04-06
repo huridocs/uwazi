@@ -104,13 +104,16 @@ export class Document extends Component {
   }
 
   render() {
-    const doc = this.props.doc.toJS();
     const { file } = this.props;
 
     const Header = this.props.header;
     return (
       <div>
-        <div className={`_${doc._id} document ${this.props.className} ${determineDirection(file)}`}>
+        <div
+          className={`_${this.props.doc.get('_id')} document ${
+            this.props.className
+          } ${determineDirection(file)}`}
+        >
           <Header />
           <div
             className="pages"

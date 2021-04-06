@@ -1,6 +1,6 @@
 import url from 'url';
 
-import { RawEntity } from 'api/csv/entityRow.js';
+import { RawEntity } from 'api/csv/entityRow';
 import { PropertySchema, MetadataObjectSchema } from 'shared/types/commonTypes';
 import { ensure } from 'shared/tsUtils';
 

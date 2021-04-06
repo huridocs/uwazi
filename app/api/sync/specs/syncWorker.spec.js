@@ -225,7 +225,7 @@ describe('syncWorker', () => {
     });
 
     describe('thesauris (dictionaries collection)', () => {
-      it('should sync whitelisted thesauris through template configs (deleting even non whitelisted ones)', async () => {
+      it('should sync whitelisted thesauris through template configs (deleting non-whitelisted ones)', async () => {
         await syncWorkerWithConfig({
           templates: {
             [template1.toString()]: [
@@ -338,6 +338,7 @@ describe('syncWorker', () => {
           { key: 'template1', value: 'template1T' },
           { key: 't1Relationship1L', value: 't1Relationship1T' },
           { key: 't1Thesauri3MultiSelectL', value: 't1Thesauri3MultiSelectT' },
+          { key: 'Template Title', value: 'Template Title translated' },
         ]);
         expect(contexts.find(c => c.id.toString() === template2.toString()).values).toEqual([
           { key: 'template2', value: 'template2T' },
