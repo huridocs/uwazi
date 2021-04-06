@@ -20,8 +20,8 @@ export interface UserGroupSidePanelProps {
 const sortByName = (members: Partial<UserSchema>[]) =>
   members.sort((m1, m2) => (m1.username || '').localeCompare(m2.username || ''));
 
-const mapUserIds = (users: GroupMemberSchema[]) =>
-  users.map(user => (user._id ? user._id.toString() : ''));
+const mapUserIds = (members: GroupMemberSchema[]) =>
+  members.map(member => (member.refId ? member.refId.toString() : ''));
 
 export const UserGroupSidePanel = ({
   userGroup,
@@ -40,7 +40,7 @@ export const UserGroupSidePanel = ({
     const updatedMembers = users
       .filter((user: Partial<UserSchema>) => selectedUsers.includes(user._id as string))
       .map(user => ({
-        _id: user._id,
+        refId: user._id,
       }));
     onSave({ ...groupToSave, members: [...updatedMembers] });
   };

@@ -2,15 +2,13 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { UserGroupList, UserGroupListProps } from 'app/Users/components/usergroups/UserGroupList';
 import { Pill } from 'app/Metadata/components/Pill';
+import { UserGroupSchema } from 'shared/types/userGroupType';
 
 describe('UserGroupList', () => {
-  const group1 = {
+  const group1: UserGroupSchema = {
     _id: 'group1Id',
     name: 'Group 1',
-    members: [
-      { _id: 'user1', username: 'User 1' },
-      { _id: 'user2', username: 'User 2' },
-    ],
+    members: [{ refId: 'user1' }, { refId: 'user2' }],
   };
   const defaultProps: UserGroupListProps = {
     userGroups: [group1, { _id: 'group2Id', name: 'Group 2', members: [] }],

@@ -20,7 +20,7 @@ describe('userGroupsMembers', () => {
   describe('updateUserMemberships', () => {
     it('should update the groups adding or removing the userId according the new groups passed', async () => {
       const userToUpdate = {
-        ...fixtures.users[0],
+        _id: fixtures.users[0]._id,
         role: UserRole.COLLABORATOR,
       };
       await updateUserMemberships(userToUpdate, [{ _id: group1Id.toString() }]);
@@ -30,10 +30,10 @@ describe('userGroupsMembers', () => {
       const newGroup2Members =
         groups.find(group => group._id!.toString() === group2Id.toString())?.members || [];
       expect(
-        newGroup1Members.find(m => m._id.toString() === userToUpdate._id.toString())
+        newGroup1Members.find(m => m.refId.toString() === userToUpdate._id.toString())
       ).not.toBeUndefined();
       expect(
-        newGroup2Members.find(m => m._id.toString() === userToUpdate._id.toString())
+        newGroup2Members.find(m => m.refId.toString() === userToUpdate._id.toString())
       ).toBeUndefined();
     });
   });

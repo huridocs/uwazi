@@ -24,13 +24,13 @@ const userB = {
 const groupA = {
   _id: idGroupA,
   name: 'Users GroupA',
-  members: [{ _id: idUserA }],
+  members: [{ refId: idUserA }],
 };
 
 const groupB = {
   _id: idGroupB,
   name: 'User1 GroupB',
-  members: [{ _id: idUserB }],
+  members: [{ refId: idUserB }],
 };
 
 const entity1 = {

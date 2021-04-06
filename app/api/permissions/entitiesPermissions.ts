@@ -12,14 +12,17 @@ import {
 } from 'shared/types/permissionSchema';
 import { PermissionSchema } from 'shared/types/permissionType';
 import { MemberWithPermission } from 'shared/types/entityPermisions';
+import { ObjectIdSchema } from 'shared/types/commonTypes';
 
 const setAdditionalData = (
-  peopleList: (GroupMemberSchema | UserGroupSchema)[],
+  referencedList: { _id: ObjectIdSchema }[],
   permission: PermissionSchema,
-  additional: (data: GroupMemberSchema | UserGroupSchema) => {}
+  additional: (data: { _id: ObjectIdSchema }) => {}
 ) => {
-  const userData = peopleList.find(u => u._id!.toString() === permission.refId.toString());
-  return userData ? { ...permission, ...additional(userData) } : undefined;
+  const referencedData = referencedList.find(
+    u => u._id!.toString() === permission.refId.toString()
+  );
+  return referencedData ? { ...permission, ...additional(referencedData) } : undefined;
 };
 
 async function setAccessLevelAndPermissionData(
