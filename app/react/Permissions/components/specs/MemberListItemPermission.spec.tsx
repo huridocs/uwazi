@@ -8,20 +8,18 @@ import { data } from './testData';
 describe('MemberListItem', () => {
   describe('for each test element', () => {
     const assert = (component: ShallowWrapper, testMember: MemberWithPermission) => {
-      if (testMember.type === PermissionType.GROUP) {
-        expect(component.find('select').length).toBe(1);
+      expect(component.find('select').length).toBe(1);
+
+      const selectOptionForMixed = component.find('option').filter({ value: MixedAccess.MIXED })
+        .length;
+      if (testMember.level === MixedAccess.MIXED) {
+        expect(selectOptionForMixed).toBe(1);
+      } else {
+        expect(selectOptionForMixed).toBe(0);
       }
 
-      if (testMember.type === PermissionType.USER) {
-        expect(component.find('select').length).toBe(1);
-
-        const selectOptionForMixed = component.find('option').filter({ value: MixedAccess.MIXED })
-          .length;
-        if (testMember.level === MixedAccess.MIXED) {
-          expect(selectOptionForMixed).toBe(1);
-        } else {
-          expect(selectOptionForMixed).toBe(0);
-        }
+      if (testMember.type === PermissionType.PUBLIC) {
+        expect(component.find('option').filter({ value: AccessLevels.WRITE }).length).toBe(0);
       }
     };
 

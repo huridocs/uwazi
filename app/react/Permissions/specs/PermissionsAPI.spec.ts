@@ -8,7 +8,12 @@ import { AccessLevels, PermissionType } from 'shared/types/permissionSchema';
 
 jest.mock('app/utils/api', () => ({
   get: jest.fn().mockResolvedValue({ json: [{ _id: 'user1' }] }),
-  post: jest.fn().mockResolvedValue({ json: { code: 200 } }),
+  post: jest.fn().mockResolvedValue({
+    json: {
+      ids: ['shared1', 'shared2'],
+      permissions: [{ refId: 'user1', type: 'group', level: 'read' }],
+    },
+  }),
 }));
 
 describe('PermissionsAPI', () => {
@@ -45,7 +50,7 @@ describe('PermissionsAPI', () => {
         data: { ids, permissions },
         headers: {},
       });
-      expect(response.code).toBe(200);
+      expect(response).toEqual(expect.objectContaining({ ids, permissions }));
     });
   });
 });

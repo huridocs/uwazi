@@ -15,7 +15,9 @@ export const loadGrantedPermissions = async (
   return response.json;
 };
 
-export const savePermissions = async (permissionsData: PermissionsDataSchema) => {
+export const savePermissions = async (
+  permissionsData: PermissionsDataSchema
+): Promise<PermissionsDataSchema> => {
   const response = await api.post('entities/permissions', new RequestParams(permissionsData));
   return response.json;
 };

@@ -1,6 +1,7 @@
 import React from 'react';
 import { MemberWithPermission } from 'shared/types/entityPermisions';
 import { t } from 'app/I18N';
+import { PermissionType } from '../../../shared/types/permissionSchema';
 
 interface MemberListItemPermissionProps {
   value: MemberWithPermission;
@@ -34,7 +35,9 @@ export const MemberListItemPermission = ({
         </option>
       ) : null}
       <option value="read">{t('System', 'Can see', null, false)}</option>
-      <option value="write">{t('System', 'Can edit', null, false)}</option>
+      {value.type !== PermissionType.PUBLIC ? (
+        <option value="write">{t('System', 'Can edit', null, false)}</option>
+      ) : null}
       <option disabled>───────</option>
       <option value="delete">{t('System', 'Remove', null, false)}</option>
     </select>

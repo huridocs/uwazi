@@ -5,9 +5,10 @@ import { ShareEntityModal } from './ShareEntityModal';
 
 interface ShareButtonProps {
   sharedIds: string[];
+  storeKey: string;
 }
 
-export const ShareButton = ({ sharedIds }: ShareButtonProps) => {
+export const ShareButton = ({ sharedIds, storeKey }: ShareButtonProps) => {
   const [sharing, setSharing] = useState(false);
 
   return (
@@ -24,6 +25,7 @@ export const ShareButton = ({ sharedIds }: ShareButtonProps) => {
           isOpen
           onClose={() => setSharing(false)}
           sharedIds={sharedIds}
+          storeKey={storeKey}
         />
       ) : null}
     </>

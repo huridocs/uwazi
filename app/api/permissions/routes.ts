@@ -37,6 +37,7 @@ export const permissionRoutes = (app: Application) => {
 
   app.get(
     '/api/collaborators',
+    needsAuthorization(['admin', 'editor', 'collaborator']),
     validation.validateRequest({
       properties: {
         query: {

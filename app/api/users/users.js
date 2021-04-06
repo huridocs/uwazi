@@ -224,7 +224,7 @@ export default {
 
   async getById(id, select = '', includeGroups = false) {
     const user = await model.getById(id, select);
-    if (includeGroups) {
+    if (includeGroups && user) {
       const groups = await getByMemberIdList([user._id.toString()]);
       return populateGroupsOfUsers(user, groups);
     }

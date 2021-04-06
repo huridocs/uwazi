@@ -7,10 +7,16 @@ interface MemberListItemProps {
   value: MemberWithPermission;
 }
 
+const iconsMap = {
+  [PermissionType.USER]: 'user',
+  [PermissionType.GROUP]: 'users',
+  [PermissionType.PUBLIC]: 'globe-africa',
+};
+
 export const MemberListItemInfo = ({ value: { type, label } }: MemberListItemProps) => (
   <div className="member-list-item">
     <div className="round-icon">
-      <Icon icon={type === PermissionType.USER ? 'user' : 'users'} />
+      <Icon icon={iconsMap[type]} />
     </div>
     <span>{label}</span>
   </div>

@@ -231,7 +231,7 @@ export class SelectMultiplePanel extends Component {
               <span className="btn-label">{t('System', 'Unpublish')}</span>
             </button>
           )}
-          <ShareButton sharedIds={this.sharedIds()} />
+          <ShareButton sharedIds={this.sharedIds()} storeKey={this.props.storeKey} />
         </NeedAuthorization>
         <Export storeKey={this.props.storeKey} />
       </>

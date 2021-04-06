@@ -1,3 +1,4 @@
+import { PUBLIC_PERMISSION } from 'api/permissions/publicPermission';
 import { MemberWithPermission } from 'shared/types/entityPermisions';
 import { AccessLevels, MixedAccess } from 'shared/types/permissionSchema';
 
@@ -28,6 +29,10 @@ export const data: MemberWithPermission[] = [
     type: 'user',
     refId: 'id1',
     label: 'User name 3',
+    level: MixedAccess.MIXED,
+  },
+  {
+    ...PUBLIC_PERMISSION,
     level: MixedAccess.MIXED,
   },
 ];

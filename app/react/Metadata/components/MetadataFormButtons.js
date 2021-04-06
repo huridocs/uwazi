@@ -130,7 +130,9 @@ export class MetadataFormButtons extends Component {
           </ShowIf>
         </NeedAuthorization>
         <NeedAuthorization roles={['admin', 'editor']} orWriteAccessTo={[data]}>
-          {!entityBeingEdited && !hideDelete && <ShareButton sharedIds={[data.sharedId]} />}
+          {!entityBeingEdited && !hideDelete && (
+            <ShareButton sharedIds={[data.sharedId]} storeKey={this.props.storeKey} />
+          )}
         </NeedAuthorization>
         <NeedAuthorization roles={['admin', 'editor']} orWriteAccessTo={[data]}>
           <ShowIf if={!entityBeingEdited && canBePublished}>
@@ -168,6 +170,7 @@ MetadataFormButtons.defaultProps = {
   formName: 'metadataForm',
   delete: () => {},
   copyFrom: () => {},
+  storeKey: undefined,
 };
 
 MetadataFormButtons.propTypes = {
@@ -185,6 +188,7 @@ MetadataFormButtons.propTypes = {
   exclusivelyViewButton: PropTypes.bool,
   hideDelete: PropTypes.bool,
   copyFrom: PropTypes.func,
+  storeKey: PropTypes.string,
 };
 
 const mapStateToProps = ({ templates }) => ({ templates });
