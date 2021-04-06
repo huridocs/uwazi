@@ -26,7 +26,10 @@ export enum PermissionType {
 }
 
 export const permissionType = { type: 'string', enum: Object.values(PermissionType) };
-export const permissionLevel = { type: 'string', enum: Object.values(AccessLevels) };
+export const permissionLevel = {
+  type: 'string',
+  enum: Object.values({ ...AccessLevels, ...MixedAccess }),
+};
 
 export const permissionSchema = {
   type: 'object',

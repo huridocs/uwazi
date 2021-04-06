@@ -74,6 +74,21 @@ const publishingChanged = (newPublishedValue: boolean, currentEntities: EntitySc
     false
   );
 
+const replaceMixedAccess = (entity: EntitySchema, newPermissions: PermissionSchema[]) =>
+  newPermissions
+    .map(newPermission => {
+      if (newPermission.level !== MixedAccess.MIXED) return newPermission;
+
+      return entity.permissions?.find(p => p.refId.toString() === newPermission.refId.toString());
+    })
+    .filter(p => p);
+
+const getPublishingQuery = (newPublicPermission?: PermissionSchema) => {
+  if (newPublicPermission && newPublicPermission.level === MixedAccess.MIXED) return {};
+
+  return { published: !!newPublicPermission };
+};
+
 export const entitiesPermissions = {
   set: async (permissionsData: PermissionsDataSchema) => {
     await validateUniquePermissions(permissionsData);
@@ -88,21 +103,24 @@ export const entitiesPermissions = {
     const nonPublicPermissions = permissionsData.permissions.filter(
       p => p.type !== PermissionType.PUBLIC
     );
-    const published =
-      permissionsData.permissions.findIndex(p => p.type === PermissionType.PUBLIC) > -1;
+    const publicPermission = permissionsData.permissions.find(
+      p => p.type === PermissionType.PUBLIC
+    );
 
     if (
       !['admin', 'editor'].includes(user!.role) &&
-      publishingChanged(published, currentEntities)
+      publicPermission?.level !== MixedAccess.MIXED &&
+      publishingChanged(!!publicPermission, currentEntities)
     ) {
       throw new Error('Insuficient permissions to share/unshare publicly');
     }
 
     const toSave = currentEntities.map(entity => ({
       _id: entity._id,
-      permissions: nonPublicPermissions,
-      published,
+      permissions: replaceMixedAccess(entity, nonPublicPermissions),
+      ...getPublishingQuery(publicPermission),
     }));
+
     await entities.saveMultiple(toSave);
   },
 
