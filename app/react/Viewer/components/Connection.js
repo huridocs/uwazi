@@ -16,11 +16,15 @@ import {
 } from 'app/Viewer/actions/uiActions';
 import { Item } from 'app/Layout';
 import { createSelector } from 'reselect';
+import helpers from 'app/Documents/helpers';
 
 const selectDoc = createSelector(
   s => s.documentViewer.targetDoc,
   s => s.documentViewer.doc,
-  (targetDoc, doc) => (targetDoc.get('_id') ? targetDoc.toJS() : doc.toJS())
+  (targetDoc, doc) =>
+    targetDoc.get('_id')
+      ? helpers.performantDocToJSWithoutRelations(targetDoc)
+      : helpers.performantDocToJSWithoutRelations(doc)
 );
 
 export class Connection extends Component {
