@@ -19,8 +19,6 @@ describe('MetadataFormButtons', () => {
       loadInReduxForm: jasmine.createSpy('loadInReduxForm'),
       resetForm: jasmine.createSpy('resetForm'),
       delete: jasmine.createSpy('delete'),
-      publish: jasmine.createSpy('publish'),
-      unpublish: jasmine.createSpy('unpublish'),
       data: immutable({ test: 'test', sharedId: 'shId', file: {} }),
       templates: immutable([{ test: 'test' }]),
       formName: 'FormName',
@@ -128,34 +126,6 @@ describe('MetadataFormButtons', () => {
       props.entityBeingEdited = true;
       render();
       expect(component.find(ShareButton).length).toBe(0);
-    });
-  });
-
-  describe('publish', () => {
-    beforeEach(() => {
-      render();
-    });
-
-    it('should reset the form', () => {
-      component.find('.publish').simulate('click', { stopPropagation: () => {} });
-      expect(context.confirm).toHaveBeenCalled();
-      const confirm = context.confirm.calls.allArgs()[0][0];
-      confirm.accept();
-      expect(props.publish).toHaveBeenCalled();
-    });
-  });
-
-  describe('unpublish', () => {
-    beforeEach(() => {
-      render();
-    });
-
-    it('should reset the form', () => {
-      component.find('.unpublish').simulate('click', { stopPropagation: () => {} });
-      expect(context.confirm).toHaveBeenCalled();
-      const confirm = context.confirm.calls.allArgs()[0][0];
-      confirm.accept();
-      expect(props.unpublish).toHaveBeenCalled();
     });
   });
 
