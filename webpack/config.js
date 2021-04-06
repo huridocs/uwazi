@@ -32,7 +32,7 @@ module.exports = production => {
       path: outputPath,
       publicPath: '/',
       filename: `[name]${jsChunkHashName}.js`,
-      chunkFilename: '[name].bundle.js',
+      chunkFilename: `[name]${jsChunkHashName}.bundle.js`,
     },
     resolve: {
       extensions: ['*', '.webpack.js', '.web.js', '.js', '.tsx', '.ts'],
