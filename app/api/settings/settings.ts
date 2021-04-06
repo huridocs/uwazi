@@ -107,14 +107,15 @@ function removeTemplate(filters: SettingsFilterSchema[], templateId: ObjectIdSch
 
 function setDefaults(storedSettings: Settings[]) {
   const [settings] = storedSettings;
-  if (settings) {
-    settings.mapTilerKey = settings.mapTilerKey || DEFAULT_MAP_TILER_KEY;
-    settings.mapStartingPoint =
-      settings.mapStartingPoint && settings.mapStartingPoint.length
-        ? settings.mapStartingPoint
-        : DEFAULT_MAP_STARTING_POINT;
-  }
-  return settings || {};
+  if (!settings) return {};
+
+  settings.mapTilerKey = settings.mapTilerKey || DEFAULT_MAP_TILER_KEY;
+  settings.mapStartingPoint =
+    settings.mapStartingPoint && settings.mapStartingPoint.length
+      ? settings.mapStartingPoint
+      : DEFAULT_MAP_STARTING_POINT;
+
+  return settings;
 }
 
 export default {
