@@ -8,6 +8,7 @@ import { AttachmentSchema } from 'shared/types/commonTypes';
 import { Translate } from 'app/I18N';
 import { Icon } from 'app/UI';
 import { RenderAttachment } from 'app/Attachments/components/RenderAttachment';
+import Tip from 'app/Layout/Tip';
 
 const validators = {
   url: { required: (val: string) => !!val && val.trim() !== '' },
@@ -175,12 +176,19 @@ export const MediaModal = ({
                         placeholder="Paste URL here"
                       />
                     </Field>
-                    <Icon icon="info-circle" className="feedback-icon" />
+                    <Tip icon="info-circle" position="right">
+                      <p>To get resource from web:</p>
+                      <p>
+                        1. Right-click an image or video on the web and copy the image's URL.
+                        Altenatively websites offers share button whereyou can get URL.
+                      </p>
+                      <p>2. Return here and paste the URL in this field (Ctrl+V or Command+V)</p>
+                    </Tip>
                   </div>
 
                   <button type="submit" className="btn btn-success">
                     <Icon icon="link" />
-                    &nbsp; <Translate>Add</Translate>
+                    &nbsp; <Translate>Add resource</Translate>
                   </button>
                 </LocalForm>
               </div>
