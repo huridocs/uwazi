@@ -4,7 +4,7 @@ import ReactModal from 'react-modal';
 import { Tabs, TabLink, TabContent } from 'react-tabs-redux';
 import Dropzone from 'react-dropzone';
 import { actions as formActions, LocalForm, Field } from 'react-redux-form';
-
+import Tip from 'app/Layout/Tip';
 import { Translate } from 'app/I18N';
 import { Icon } from 'app/UI';
 
@@ -154,7 +154,14 @@ export const AttachmentsModalCmp = ({
                         placeholder="Paste URL here"
                       />
                     </Field>
-                    <Icon icon="info-circle" className="feedback-icon" />
+                    <Tip icon="info-circle" position="right">
+                      <p>To get resource from web:</p>
+                      <p>
+                        1. Right-click an image or video on the web and copy the image's URL.
+                        Altenatively websites offers share button whereyou can get URL.
+                      </p>
+                      <p>2. Return here and paste the URL in this field (Ctrl+V or Command+V)</p>
+                    </Tip>
                   </div>
 
                   <Field model=".name">
