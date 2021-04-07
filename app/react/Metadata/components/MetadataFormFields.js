@@ -23,8 +23,10 @@ import {
   Numeric,
   Select,
   LookupMultiSelect,
+  MediaField,
 } from '../../ReactReduxForms';
 import MultipleEditionFieldWarning from './MultipleEditionFieldWarning';
+import { MediaModalType } from './MediaModal';
 
 export const translateOptions = thesauri =>
   thesauri
@@ -46,8 +48,11 @@ export class MetadataFormFields extends Component {
   getField(property, _model, thesauris) {
     let thesauri;
     let totalPossibleOptions = 0;
-    const { dateFormat, version, entityThesauris } = this.props;
+    const { dateFormat, version, entityThesauris, attachments } = this.props;
     const propertyType = property.type;
+
+    const plainAttachments = attachments.toJS();
+
     switch (propertyType) {
       case 'select':
         thesauri = thesauris.find(opt => opt.get('_id').toString() === property.content.toString());
@@ -137,14 +142,12 @@ export class MetadataFormFields extends Component {
       case 'link':
         return <LinkField model={_model} />;
       case 'media':
+        return (
+          <MediaField model={_model} attachments={plainAttachments} type={MediaModalType.Media} />
+        );
       case 'image':
         return (
-          <div>
-            <Field model={_model}>
-              <textarea rows="6" className="form-control" />
-            </Field>
-            &nbsp;<em>URL (address for image or media file)</em>
-          </div>
+          <MediaField model={_model} attachments={plainAttachments} type={MediaModalType.Image} />
         );
       case 'preview':
         return (
@@ -226,6 +229,7 @@ MetadataFormFields.defaultProps = {
   version: undefined,
   showSubset: undefined,
   entityThesauris: Immutable.fromJS({}),
+  attachments: Immutable.fromJS([]),
   highlightedProps: [],
 };
 
@@ -239,11 +243,34 @@ MetadataFormFields.propTypes = {
   version: PropTypes.string,
   entityThesauris: PropTypes.instanceOf(Immutable.Map),
   highlightedProps: PropTypes.arrayOf(PropTypes.string),
+  attachments: PropTypes.instanceOf(Immutable.List),
 };
 
-export const mapStateToProps = state => ({
-  dateFormat: state.settings.collection.get('dateFormat'),
-  entityThesauris: state.entityThesauris,
-});
+export const mapStateToProps = (state, ownProps) => {
+  const { storeKey } = ownProps;
+
+  let attachments = Immutable.fromJS([]);
+
+  if (storeKey === 'library' || storeKey === 'uploads') {
+    const selectedDocuments = state[storeKey].ui.get('selectedDocuments');
+    attachments = selectedDocuments.size ? selectedDocuments.get(0).get('attachments') : undefined;
+  }
+
+  if (storeKey === 'documentView') {
+    const entity = state.documentView.doc;
+    attachments = entity.get('attachments');
+  }
+
+  if (!storeKey) {
+    const entity = state.entityView.entity;
+    attachments = entity.get('attachments');
+  }
+
+  return {
+    dateFormat: state.settings.collection.get('dateFormat'),
+    entityThesauris: state.entityThesauris,
+    attachments,
+  };
+};
 
 export default connect(mapStateToProps)(MetadataFormFields);

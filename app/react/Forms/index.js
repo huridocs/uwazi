@@ -20,7 +20,7 @@ import Switcher from './components/Switcher';
 import Geolocation from './components/Geolocation';
 import LinkField from './components/LinkField';
 import FormValue from './components/FormValue';
-
+import MediaField from './components/MediaField';
 export * from './components/MultiSuggest';
 
 export {
@@ -47,4 +47,5 @@ export {
   LinkField,
   FormValue,
   LookupMultiSelect,
+  MediaField,
 };
