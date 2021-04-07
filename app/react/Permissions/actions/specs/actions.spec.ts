@@ -75,6 +75,43 @@ describe('Permissions actions', () => {
       }
     );
 
+    it.each([true, false])(
+      'should not remove nor update documents if public permission has mixed access',
+      async inLibrary => {
+        const permissionsData: PermissionsDataSchema = {
+          ids: ['sharedId1'],
+          permissions: [{ ...PUBLIC_PERMISSION, level: 'mixed' }],
+        };
+
+        const stateLibrary = {
+          [inLibrary ? 'library' : 'uploads']: {
+            search: {
+              unpublished: !inLibrary,
+              includeUnpublished: false,
+            },
+          },
+        };
+
+        await actions.saveEntitiesPermissions(permissionsData, inLibrary ? 'library' : 'uploads')(
+          dispatch,
+          getStateMock(stateLibrary)
+        );
+
+        expect(dispatch).not.toHaveBeenCalledWith(
+          expect.objectContaining({
+            type: REMOVE_DOCUMENTS_SHAREDIDS,
+            sharedIds: ['sharedId1'],
+          })
+        );
+        expect(dispatch).not.toHaveBeenCalledWith(
+          expect.objectContaining({
+            type: UPDATE_DOCUMENTS_PUBLISHED,
+            sharedIds: ['sharedId1'],
+          })
+        );
+      }
+    );
+
     it('should not fail and only dispatch a notification if no storekey', async () => {
       const permissionsData: PermissionsDataSchema = {
         ids: ['sharedId1'],

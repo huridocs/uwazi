@@ -3,13 +3,14 @@ import React, { useState, useEffect } from 'react';
 import { Icon } from 'UI';
 import { Translate } from 'app/I18N';
 import { MemberWithPermission } from 'shared/types/entityPermisions';
-import { AccessLevels, MixedAccess } from 'shared/types/permissionSchema';
+import { AccessLevels } from 'shared/types/permissionSchema';
 import { saveEntitiesPermissions } from 'app/Permissions/actions/actions';
 import { connect } from 'react-redux';
 import { PermissionsDataSchema } from 'shared/types/permissionType';
 import { UserGroupsLookupField } from './UserGroupsLookupField';
 import { MembersList } from './MembersList';
 import { loadGrantedPermissions, searchCollaborators } from '../PermissionsAPI';
+import { MixedAccessLevels } from '../../../shared/types/permissionSchema';
 
 export interface ShareEntityModalProps {
   isOpen: boolean;
@@ -23,16 +24,7 @@ export interface ShareEntityModalProps {
 }
 
 const validate = (assignments: MemberWithPermission[]) =>
-  assignments
-    .map(item =>
-      item.level !== MixedAccess.MIXED
-        ? null
-        : {
-            refId: item.refId,
-            type: item.type,
-          }
-    )
-    .filter(i => i);
+  assignments.map(_item => null).filter(i => i);
 
 const pseudoMembers: MemberWithPermission[] = [
   {
@@ -107,7 +99,7 @@ export const ShareEntityModalComponent = ({
         permissions: assignments.map(a => ({
           refId: a.refId,
           type: a.type,
-          level: a.level as AccessLevels,
+          level: a.level as MixedAccessLevels,
         })),
       },
       storeKey
@@ -139,7 +131,6 @@ export const ShareEntityModalComponent = ({
               setAssignments(value.filter(m => m.refId));
               setDirty(true);
             }}
-            validationErrors={validationErrors}
           />
         </div>
         {validationErrors.length ? (
