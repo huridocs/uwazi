@@ -242,7 +242,7 @@ describe('documentActions', () => {
             }),
           }
         )
-        .get(`${APIURL}entities?sharedId=docWithPDFNotRdy&omitRelationships=true`, {
+        .get(`${APIURL}entities?sharedId=docWithPDFNotRdy`, {
           body: JSON.stringify({
             rows: [
               {
