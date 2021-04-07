@@ -242,34 +242,6 @@ describe('documentActions', () => {
             }),
           }
         )
-        .get(`${APIURL}entities?sharedId=docWithPDFNotRdy&omitRelationships=true`, {
-        .get(`${APIURL}entities?sharedId=targetId&omitRelationships=true`, {
-          body: JSON.stringify({
-            rows: [{ documents: [{ pdfInfo: 'test' }] }],
-          }),
-        })
-        .get(`${APIURL}entities?sharedId=docCalledWithWrongPDFFilename&omitRelationships=true`, {
-          body: JSON.stringify({
-            rows: [
-              {
-                _id: 'pdfCalledWithWrongFilename',
-                sharedId: 'shared',
-                documents: [
-                  {
-                    _id: 'pdfCalledWithWrongFilename',
-                    filename: 'filename',
-                    pdfInfo: 'processed pdf',
-                  },
-                ],
-              },
-            ],
-          }),
-        })
-        .get(`${APIURL}entities?sharedId=docWithPDFRdy&omitRelationships=true`, {
-          body: JSON.stringify({
-            rows: [{ documents: [{ pdfInfo: 'processed pdf', _id: 'pdfReady' }] }],
-          }),
-        })
         .get(`${APIURL}entities?sharedId=docWithPDFNotRdy`, {
           body: JSON.stringify({
             rows: [
