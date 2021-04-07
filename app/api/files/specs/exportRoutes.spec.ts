@@ -5,12 +5,19 @@ import { search } from 'api/search';
 import db from 'api/utils/testing_db';
 import csvExporter from 'api/csv/csvExporter';
 import * as filesystem from 'api/files/filesystem';
+import { NextFunction, Request, Response } from 'express';
 
 import routes from '../exportRoutes';
-import { NextFunction, Request, Response } from 'express';
 import { User } from '../../users/usersModel';
 
 jest.mock('api/csv/csvExporter');
+
+jest.mock(
+  '../../auth/authMiddleware.ts',
+  () => () => (_req: Request, _res: Response, next: NextFunction) => {
+    next();
+  }
+);
 
 function assertDownloaded(res: any) {
   expect(res.header['content-type'].match(/text\/csv/)).not.toBe(null);
@@ -60,12 +67,13 @@ describe('export routes', () => {
     };
 
     it('should fetch, process and download the search results', async () => {
+      spyOn(search, 'search').and.returnValue({ rows: ['searchresults'] });
+      spyOn(filesystem, 'temporalFilesPath').and.returnValue('exportRutesTest-A.csv');
+
       const app = setUpApp(
         routes,
         fakeRequestAugmenterMiddleware({ username: 'someuser' }, 'somelanguage')
       );
-      spyOn(search, 'search').and.returnValue({ rows: ['searchresults'] });
-      spyOn(filesystem, 'temporalFilesPath').and.returnValue('exportRutesTest-A.csv');
 
       const res = await request(app)
         .get('/api/export')
@@ -79,7 +87,6 @@ describe('export routes', () => {
           unpublished: '',
           includeUnpublished: '',
         });
-
       assertDownloaded(res);
       expect(search.search).toHaveBeenCalledWith(
         {
@@ -99,5 +106,7 @@ describe('export routes', () => {
         language: 'somelanguage',
       });
     });
+
+    it('should not allow logged out users to export csv without a captcha', async () => {});
   });
 });
