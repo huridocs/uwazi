@@ -696,6 +696,11 @@ describe('Users', () => {
       expect(user.username).toBe('username');
       expect(user.groups[0].name).toBe('Group 2');
     });
+
+    it('should not fail if asking for groups but user does not exist', async () => {
+      const user = await users.getById(db.id(), '-password', true);
+      expect(user).toBe(null);
+    });
   });
 
   describe('get', () => {

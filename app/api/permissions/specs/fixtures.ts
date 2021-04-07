@@ -82,6 +82,7 @@ const entity2 = {
     },
   ],
 };
+
 const entity3 = {
   sharedId: 'shared3',
   type: 'entity',
@@ -89,7 +90,15 @@ const entity3 = {
   title: 'Entity 3',
   creationDate: 1,
   published: true,
-  isPublic: true,
+};
+
+const entity4 = {
+  sharedId: 'shared4',
+  type: 'entity',
+  language: 'en',
+  title: 'Entity 4',
+  creationDate: 1,
+  published: false,
 };
 
 const fixtures: DBFixture = {
@@ -123,6 +132,11 @@ const fixtures: DBFixture = {
       ...entity3,
       _id: db.id(),
       language: 'pr',
+    },
+    {
+      ...entity4,
+      _id: db.id(),
+      language: 'en',
     },
   ],
   users: [{ ...userA }, { ...userB }],

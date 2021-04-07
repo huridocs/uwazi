@@ -22,6 +22,7 @@ describe('ShareEntityModal', () => {
     sharedIds: ['entityId1', 'entityId2'],
     isOpen: true,
     onClose: jest.fn(),
+    storeKey: 'library',
   };
 
   function render(props: any) {
@@ -127,10 +128,13 @@ describe('ShareEntityModal', () => {
       .find('.btn-success')
       .get(0)
       .props.onClick();
-    expect(saveEntitiesPermissions).toHaveBeenCalledWith({
-      ids: ['entityId1', 'entityId2'],
-      permissions: sentPermissions,
-    });
+    expect(saveEntitiesPermissions).toHaveBeenCalledWith(
+      {
+        ids: ['entityId1', 'entityId2'],
+        permissions: sentPermissions,
+      },
+      'library'
+    );
     expect(defaultProps.onClose).toHaveBeenCalled();
   });
 

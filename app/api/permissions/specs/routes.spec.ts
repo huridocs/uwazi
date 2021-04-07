@@ -6,6 +6,7 @@ import { entitiesPermissions } from 'api/permissions/entitiesPermissions';
 import { collaborators } from 'api/permissions/collaborators';
 import testingDB from 'api/utils/testing_db';
 import errorLog from 'api/log/errorLog';
+import { PUBLIC_PERMISSION } from '../publicPermission';
 
 jest.mock(
   '../../utils/languageMiddleware.ts',
@@ -46,12 +47,16 @@ describe('permissions routes', () => {
         user = { username: 'user 1', role: 'admin' };
         const permissionsData = {
           ids: ['shared1'],
-          permissions: [{ refId: 'user1', type: 'user', level: 'read' }],
+          permissions: [
+            { refId: 'user1', type: 'user', level: 'read' },
+            { ...PUBLIC_PERMISSION, level: 'read', label: undefined },
+          ],
         };
         const response = await request(app)
           .post('/api/entities/permissions')
           .set('X-Requested-With', 'XMLHttpRequest')
           .send(permissionsData);
+
         expect(response.status).toBe(200);
         expect(entitiesPermissions.set).toHaveBeenCalledWith(permissionsData);
       });

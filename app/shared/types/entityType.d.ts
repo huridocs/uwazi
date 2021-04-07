@@ -49,7 +49,7 @@ export type EntityWithFilesSchema = {
   suggestedMetadata?: MetadataSchema;
   permissions?: {
     refId: ObjectIdSchema;
-    type: 'user' | 'group';
+    type: 'user' | 'group' | 'public';
     level: 'read' | 'write';
   }[];
   [k: string]: unknown | undefined;

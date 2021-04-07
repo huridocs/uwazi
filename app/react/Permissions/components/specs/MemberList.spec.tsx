@@ -1,6 +1,7 @@
 import { shallow } from 'enzyme';
 import React from 'react';
 import { AccessLevels, PermissionType } from 'shared/types/permissionSchema';
+import { NeedAuthorization } from 'app/Auth';
 import { MembersList } from '../MembersList';
 import { data, pseudoData } from './testData';
 import { MemberListItemInfo } from '../MemberListItemInfo';
@@ -16,7 +17,9 @@ describe('MemberList', () => {
     data.forEach(member => {
       const row = component.find('tr');
       expect(row.contains(<MemberListItemInfo value={member} />));
-      expect(row.find(MemberListItemPermission).filter({ value: member }).length).toBe(1);
+      const dropdown = row.find(MemberListItemPermission).filter({ value: member });
+      expect(dropdown.length).toBe(1);
+      expect(dropdown.parent().is(NeedAuthorization)).toBe(member.type === PermissionType.PUBLIC);
     });
   });
 

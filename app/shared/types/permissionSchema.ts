@@ -22,6 +22,7 @@ export type MixedAccessLevels = AccessLevels | MixedAccess;
 export enum PermissionType {
   USER = 'user',
   GROUP = 'group',
+  PUBLIC = 'public',
 }
 
 export const permissionType = { type: 'string', enum: Object.values(PermissionType) };
