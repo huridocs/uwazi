@@ -2,7 +2,6 @@ import entities from 'api/entities/entities';
 import users from 'api/users/users';
 import userGroups from 'api/usergroups/userGroups';
 import { unique } from 'api/utils/filters';
-import { GroupMemberSchema, UserGroupSchema } from 'shared/types/userGroupType';
 import { EntitySchema } from 'shared/types/entityType';
 import {
   AccessLevels,
