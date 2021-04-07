@@ -1,3 +1,5 @@
+/* eslint-disable react/no-multi-comp */
+/* eslint-disable max-statements */
 import Modal from 'app/Layout/Modal';
 import React, { useState, useEffect } from 'react';
 import { Icon } from 'UI';
@@ -10,7 +12,11 @@ import { PermissionsDataSchema } from 'shared/types/permissionType';
 import { UserGroupsLookupField } from './UserGroupsLookupField';
 import { MembersList } from './MembersList';
 import { loadGrantedPermissions, searchCollaborators } from '../PermissionsAPI';
-import { MixedAccessLevels } from '../../../shared/types/permissionSchema';
+import {
+  MixedAccessLevels,
+  PermissionType,
+  permissionLevel,
+} from '../../../shared/types/permissionSchema';
 
 export interface ShareEntityModalProps {
   isOpen: boolean;
@@ -23,9 +29,6 @@ export interface ShareEntityModalProps {
   storeKey: string;
 }
 
-const validate = (assignments: MemberWithPermission[]) =>
-  assignments.map(_item => null).filter(i => i);
-
 const pseudoMembers: MemberWithPermission[] = [
   {
     refId: '',
@@ -34,6 +37,28 @@ const pseudoMembers: MemberWithPermission[] = [
     level: AccessLevels.WRITE,
   },
 ];
+
+const findPublicPermission = (permissions: MemberWithPermission[]) =>
+  permissions.find(p => p.type === PermissionType.PUBLIC);
+
+const getWarningMessage = (publishingLevel: MixedAccessLevels | false) =>
+  !publishingLevel ? (
+    <>
+      <Translate>Caution: the selected entities will be </Translate>
+      <b>
+        <Translate>private</Translate>
+      </b>
+      . <Translate>Only allowed users will be able to see them</Translate>
+    </>
+  ) : (
+    <>
+      <Translate>Caution: the selected entities will be </Translate>
+      <b>
+        <Translate>public</Translate>
+      </b>
+      . <Translate>Anyone will be able to see them</Translate>
+    </>
+  );
 
 export const ShareEntityModalComponent = ({
   isOpen,
@@ -45,7 +70,7 @@ export const ShareEntityModalComponent = ({
   const [results, setResults] = useState<MemberWithPermission[]>([]);
   const [assignments, setAssignments] = useState<MemberWithPermission[]>([]);
   const [dirty, setDirty] = useState(false);
-  const [validationErrors, setValidationErrors] = useState<any[]>([]);
+  const [originalPublicLevel, setOriginalPublicLevel] = useState<MixedAccessLevels | false>(false);
 
   const searchAndLoadCollabs = async (
     searchTerm: string,
@@ -65,6 +90,9 @@ export const ShareEntityModalComponent = ({
         const loadedAssignments = permissions.map(p => ({ ...p, refId: p.refId }));
         setAssignments(loadedAssignments);
 
+        const publicPermission = findPublicPermission(permissions);
+        setOriginalPublicLevel(publicPermission?.level || false);
+
         searchAndLoadCollabs('', loadedAssignments).catch(() => {});
       })
       .catch(() => {});
@@ -73,6 +101,7 @@ export const ShareEntityModalComponent = ({
       setAssignments([]);
       setResults([]);
       setDirty(false);
+      setOriginalPublicLevel(false);
     };
   }, []);
 
@@ -87,12 +116,6 @@ export const ShareEntityModalComponent = ({
   };
 
   const onSaveHandler = async () => {
-    const errors = validate(assignments);
-
-    if (errors.length) {
-      return setValidationErrors(errors);
-    }
-
     await savePermissions(
       {
         ids: sharedIds,
@@ -106,6 +129,9 @@ export const ShareEntityModalComponent = ({
     );
     return onClose();
   };
+
+  const members = pseudoMembers.concat(assignments);
+  const currentPublicLevel = findPublicPermission(members)?.level || false;
 
   return (
     <Modal isOpen={isOpen} type="content" className="share-modal">
@@ -126,17 +152,15 @@ export const ShareEntityModalComponent = ({
         />
         <div className="member-list-wrapper">
           <MembersList
-            members={pseudoMembers.concat(assignments)}
+            members={members}
             onChange={value => {
               setAssignments(value.filter(m => m.refId));
               setDirty(true);
             }}
           />
         </div>
-        {validationErrors.length ? (
-          <span className="validation-message">
-            <Translate>Please select access level for marked users</Translate>.
-          </span>
+        {originalPublicLevel !== currentPublicLevel ? (
+          <span className="validation-message">{getWarningMessage(currentPublicLevel)}.</span>
         ) : null}
       </Modal.Body>
 

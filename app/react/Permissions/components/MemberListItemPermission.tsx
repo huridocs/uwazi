@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { MemberWithPermission } from 'shared/types/entityPermisions';
 import { t } from 'app/I18N';
-import { PermissionType } from '../../../shared/types/permissionSchema';
+import { MixedAccess } from 'shared/types/permissionSchema';
+import { PermissionType, AccessLevels } from '../../../shared/types/permissionSchema';
 
 interface MemberListItemPermissionProps {
   value: MemberWithPermission;
@@ -16,6 +17,8 @@ export const MemberListItemPermission = ({
   onDelete,
   disabled,
 }: MemberListItemPermissionProps) => {
+  const [stillIncludeMixed] = useState(value.level === MixedAccess.MIXED);
+
   const onChangeHandler = (event: React.ChangeEvent<HTMLSelectElement>) => {
     if (event.target.value === 'delete') {
       return onDelete(value);
@@ -29,14 +32,12 @@ export const MemberListItemPermission = ({
 
   return (
     <select value={value.level} onChange={onChangeHandler} disabled={disabled}>
-      {value.level === 'mixed' ? (
-        <option disabled value="mixed">
-          {t('System', 'Mixed access', null, false)}
-        </option>
+      {stillIncludeMixed ? (
+        <option value={MixedAccess.MIXED}>{t('System', 'Mixed access', null, false)}</option>
       ) : null}
-      <option value="read">{t('System', 'Can see', null, false)}</option>
+      <option value={AccessLevels.READ}>{t('System', 'Can see', null, false)}</option>
       {value.type !== PermissionType.PUBLIC ? (
-        <option value="write">{t('System', 'Can edit', null, false)}</option>
+        <option value={AccessLevels.WRITE}>{t('System', 'Can edit', null, false)}</option>
       ) : null}
       <option disabled>───────</option>
       <option value="delete">{t('System', 'Remove', null, false)}</option>
