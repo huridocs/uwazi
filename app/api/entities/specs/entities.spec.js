@@ -347,7 +347,7 @@ describe('entities', () => {
     });
 
     describe('when published/template/generatedToc property changes', () => {
-      it('should replicate the change for all the languages', done => {
+      it('should replicate the change for all the languages and ignore the published field', done => {
         const doc = {
           _id: batmanFinishesId,
           sharedId: 'shared',
@@ -370,10 +370,10 @@ describe('entities', () => {
             expect(docEN.template).toBeDefined();
             expect(docES.template).toBeDefined();
 
-            expect(docES.published).toBe(false);
+            expect(docES.published).toBe(true);
             expect(docES.generatedToc).toBe(true);
             expect(docES.template.equals(templateId)).toBe(true);
-            expect(docEN.published).toBe(false);
+            expect(docEN.published).toBe(true);
             expect(docEN.generatedToc).toBe(true);
             expect(docEN.template.equals(templateId)).toBe(true);
             done();
@@ -820,7 +820,7 @@ describe('entities', () => {
           sharedId: 'shared',
           language: 'en',
           icon: { label: 'test' },
-          published: false,
+          published: true,
           metadata: expect.objectContaining(metadata),
         })
       );
@@ -831,7 +831,7 @@ describe('entities', () => {
           sharedId: 'shared1',
           language: 'en',
           icon: { label: 'test' },
-          published: false,
+          published: true,
           metadata: expect.objectContaining(metadata),
         })
       );
@@ -872,7 +872,7 @@ describe('entities', () => {
           sharedId: 'shared',
           language: 'en',
           icon: { label: 'test' },
-          published: false,
+          published: true,
           metadata: expect.objectContaining({
             multiselect: [
               {
@@ -933,12 +933,12 @@ describe('entities', () => {
       const updated = await entities.multipleUpdate(
         ['shared1', 'other'],
         {
-          published: false,
+          title: 'test title',
         },
         { language: 'en' }
       );
 
-      expect(updated.find(e => e.published)).toBeUndefined();
+      expect(updated.find(e => e.title !== 'test title')).toBeUndefined();
     });
   });
 

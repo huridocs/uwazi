@@ -12,11 +12,7 @@ import { PermissionsDataSchema } from 'shared/types/permissionType';
 import { UserGroupsLookupField } from './UserGroupsLookupField';
 import { MembersList } from './MembersList';
 import { loadGrantedPermissions, searchCollaborators } from '../PermissionsAPI';
-import {
-  MixedAccessLevels,
-  PermissionType,
-  permissionLevel,
-} from '../../../shared/types/permissionSchema';
+import { MixedAccessLevels, PermissionType } from '../../../shared/types/permissionSchema';
 
 export interface ShareEntityModalProps {
   isOpen: boolean;
