@@ -26,8 +26,8 @@ const searchRoutes = (app: Application) => {
           query: {
             bool: {
               filter: [{ term: { language: { value: language } } }],
-              must: query.filter?.searchQuery
-                ? [{ query_string: { query: query.filter.searchQuery } }]
+              must: query.filter?.searchString
+                ? [{ query_string: { query: query.filter.searchString } }]
                 : [],
             },
           },

@@ -7,7 +7,7 @@ export const SearchQuerySchema = {
       type: 'object',
       additionalProperties: false,
       properties: {
-        searchQuery: { anyOf: [{ type: 'string' }, { type: 'number' }] },
+        searchString: { anyOf: [{ type: 'string' }, { type: 'number' }] },
       },
     },
   },

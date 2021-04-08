@@ -53,7 +53,7 @@ describe('entities routes', () => {
     it('should return entities that match the searchQuey', async () => {
       const { body } = await request(app)
         .get('/api/v2/entities')
-        .query({ filter: { searchQuery: 'search' } })
+        .query({ filter: { searchString: 'search' } })
         .expect(200);
 
       expect(body.data).toEqual([

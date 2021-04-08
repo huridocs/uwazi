@@ -3,6 +3,6 @@
 
 export interface SearchQuery {
   filter?: {
-    searchQuery?: string | number;
+    searchString?: string | number;
   };
 }
