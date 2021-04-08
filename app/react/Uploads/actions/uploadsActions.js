@@ -198,62 +198,6 @@ export function documentProcessError(sharedId) {
   return { type: types.DOCUMENT_PROCESS_ERROR, sharedId };
 }
 
-export function publishEntity(entity) {
-  return async dispatch => {
-    const response = await api.post('entities', new RequestParams({ ...entity, published: true }));
-    dispatch(notificationActions.notify('Entity published', 'success'));
-    dispatch({ type: types.REMOVE_DOCUMENT, doc: entity });
-    dispatch(basicActions.set('entityView/entity', response.json));
-    await dispatch(unselectAllDocuments());
-  };
-}
-
-export function publishDocument(doc) {
-  return async dispatch => {
-    const response = await api.post('documents', new RequestParams({ ...doc, published: true }));
-    dispatch(notificationActions.notify('Document published', 'success'));
-    dispatch({ type: types.REMOVE_DOCUMENT, doc });
-    dispatch(basicActions.set('viewer/doc', response.json));
-    await dispatch(unselectAllDocuments());
-  };
-}
-
-export function unpublishEntity(entity) {
-  return async dispatch => {
-    const response = await api.post(
-      'entities',
-      new RequestParams({ _id: entity._id, sharedId: entity.sharedId, published: false })
-    );
-    dispatch(notificationActions.notify('Entity unpublished', 'success'));
-    dispatch({ type: types.REMOVE_DOCUMENT, doc: entity });
-    dispatch(basicActions.set('entityView/entity', response.json));
-    await dispatch(unselectAllDocuments());
-  };
-}
-
-export function unpublishDocument(doc) {
-  return async dispatch => {
-    const response = await api.post(
-      'documents',
-      new RequestParams({ _id: doc._id, sharedId: doc.sharedId, published: false })
-    );
-    dispatch(notificationActions.notify('Document unpublished', 'success'));
-    dispatch({ type: types.REMOVE_DOCUMENT, doc });
-    dispatch(basicActions.set('viewer/doc', response.json));
-    await dispatch(unselectAllDocuments());
-  };
-}
-
-export function publish(entity) {
-  return dispatch =>
-    !entity.file ? dispatch(publishEntity(entity)) : dispatch(publishDocument(entity));
-}
-
-export function unpublish(entity) {
-  return dispatch =>
-    !entity.file ? dispatch(unpublishEntity(entity)) : dispatch(unpublishDocument(entity));
-}
-
 export function conversionComplete(docId) {
   return {
     type: types.CONVERSION_COMPLETE,

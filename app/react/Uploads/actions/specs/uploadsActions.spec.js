@@ -318,33 +318,5 @@ describe('uploadsActions', () => {
         });
       });
     });
-
-    describe('publishDocument', () => {
-      it('should save the document with published:true and dispatch notification on success', done => {
-        const document = { name: 'doc', _id: 'abc1' };
-
-        const expectedActions = [
-          {
-            type: notificationsTypes.NOTIFY,
-            notification: { message: 'Document published', type: 'success', id: 'unique_id' },
-          },
-          { type: types.REMOVE_DOCUMENT, doc: document },
-          { type: 'viewer/doc/SET', value: { testBackendResult: 'ok' } },
-          { type: 'UNSELECT_ALL_DOCUMENTS' },
-        ];
-        const store = mockStore({});
-
-        store
-          .dispatch(actions.publishDocument(document))
-          .then(() => {
-            expect(backend.lastOptions().body).toEqual(
-              JSON.stringify({ name: 'doc', _id: 'abc1', published: true })
-            );
-            expect(store.getActions()).toEqual(expectedActions);
-          })
-          .then(done)
-          .catch(done.fail);
-      });
-    });
   });
 });
