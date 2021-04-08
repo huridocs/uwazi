@@ -17,7 +17,7 @@ const searchRoutes = (app: Application) => {
       query: SearchQuerySchema,
     }),
     async (req: UwaziRequest<SearchQuery>, res, _next) => {
-      const { query } = req;
+      const { query, language } = req;
       const response = await elastic.search({
         body: {
           _source: {
@@ -25,10 +25,10 @@ const searchRoutes = (app: Application) => {
           },
           query: {
             bool: {
+              filter: [{ term: { language: { value: language } } }],
               must: query.filter?.searchQuery
                 ? [{ query_string: { query: query.filter.searchQuery } }]
                 : [],
-              filter: [{ term: { language: { value: 'en' } } }],
             },
           },
         },
