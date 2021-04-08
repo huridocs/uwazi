@@ -190,6 +190,17 @@ describe('ModelWithPermissions', () => {
           }
         });
 
+        it('should save the data if unrestricted is true even if user has not permissions on the document', async () => {
+          const saved = await model.save(
+            {
+              _id: readDocId.toString(),
+              name: 'readDocUpdated',
+            },
+            true
+          );
+          expect(saved.name).toEqual('readDocUpdated');
+        });
+
         it('should add the user in the permissions property of the new doc', async () => {
           const saved = await model.save({ name: 'newDoc' });
           expect(saved).toEqual(

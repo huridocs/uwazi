@@ -106,7 +106,7 @@ const FIELD_TYPES_TO_SYNC = [
   propertyTypes.numeric,
 ];
 
-async function updateEntity(entity, _template) {
+async function updateEntity(entity, _template, unrestricted = false) {
   const docLanguages = await this.getAllLanguages(entity.sharedId);
   if (
     docLanguages[0].template &&
@@ -144,7 +144,7 @@ async function updateEntity(entity, _template) {
             template
           );
         }
-        return model.save(toSave);
+        return model.save(toSave, unrestricted);
       }
 
       if (entity.metadata) {
@@ -174,7 +174,7 @@ async function updateEntity(entity, _template) {
       if (typeof entity.generatedToc !== 'undefined') {
         d.generatedToc = entity.generatedToc;
       }
-      return model.save(d);
+      return model.save(d, unrestricted);
     })
   );
 }
@@ -555,7 +555,7 @@ export default {
           });
           if (relationshipProperties.length) {
             entitiesToReindex.push(entity.sharedId);
-            await this.updateEntity(this.sanitize(entity, template), template);
+            await this.updateEntity(this.sanitize(entity, template), template, true);
           }
         }
       })

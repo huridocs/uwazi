@@ -113,11 +113,16 @@ const controlPermissionsData = <T>(data: T & { published?: boolean }, user?: Use
 };
 
 export class ModelWithPermissions<T> extends OdmModel<T> {
-  async save(data: DataType<T & { permissions?: PermissionSchema[] }>) {
+  async save(data: DataType<T & { permissions?: PermissionSchema[] }>, unrestricted = false) {
     const user = permissionsContext.getUserInContext();
-    return data._id || data.permissions
-      ? super.save(data, appendPermissionQuery({ _id: data._id }, AccessLevels.WRITE, user))
-      : super.save(appendPermissionData(data, user));
+    if (data._id || data.permissions) {
+      const idCond = { _id: data._id };
+      const query = !unrestricted
+        ? appendPermissionQuery(idCond, AccessLevels.WRITE, user)
+        : idCond;
+      return super.save(data, query);
+    }
+    return super.save(appendPermissionData(data, user));
   }
 
   get(query: UwaziFilterQuery<T> = {}, select: any = '', options: {} = {}) {
