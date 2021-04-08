@@ -1,4 +1,5 @@
 import { Application, Request } from 'express';
+
 import { elastic } from 'api/search/elastic';
 import validateRequest from 'api/utils/validateRequest';
 import { parseQuery } from 'api/utils';
@@ -9,6 +10,16 @@ interface UwaziRequest<T> extends Request {
   query: T;
 }
 
+interface Links {
+  self: string | null;
+  first?: string | null;
+}
+
+interface UwaziResponse {
+  data: any;
+  links?: Links;
+}
+
 const searchRoutes = (app: Application) => {
   app.get(
     '/api/v2/entities',
@@ -17,8 +28,10 @@ const searchRoutes = (app: Application) => {
       query: SearchQuerySchema,
     }),
     async (req: UwaziRequest<SearchQuery>, res, _next) => {
-      const { query, language } = req;
-      const response = await elastic.search({
+      const { query, language, url } = req;
+      const links: Links = { self: url };
+
+      const elasticQuery = {
         body: {
           _source: {
             include: ['title', 'template', 'sharedId', 'language'],
@@ -31,16 +44,31 @@ const searchRoutes = (app: Application) => {
                 : [],
             },
           },
+          from: 0,
+          size: 300,
         },
-      });
+      };
 
-      res.json({
+      if (query.page?.limit) {
+        elasticQuery.body.size = query.page.limit;
+      }
+
+      const response = await elastic.search(elasticQuery);
+
+      if (query.page?.limit) {
+        links.first = url;
+      }
+
+      const APIResponse: UwaziResponse = {
         data: response.body.hits.hits.map(h => {
           const entity = h._source;
           entity._id = h._id;
           return entity;
         }),
-      });
+        links,
+      };
+
+      res.json(APIResponse);
     }
   );
 };
