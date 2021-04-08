@@ -32,7 +32,7 @@ describe('entities routes', () => {
 
       expect(body.data).toEqual([
         expect.objectContaining({ _id: entity1en.toString(), title: 'title to search' }),
-        expect.objectContaining({ _id: entity2en.toString(), title: 'does not match' }),
+        expect.objectContaining({ _id: entity2en.toString(), title: 'title does not match' }),
         expect.objectContaining({ _id: entity3en.toString(), title: 'title to search 2' }),
       ]);
     });
@@ -45,21 +45,45 @@ describe('entities routes', () => {
 
       expect(body.data).toEqual([
         expect.objectContaining({ _id: entity1es.toString(), title: 'titulo to search' }),
-        expect.objectContaining({ _id: entity2es.toString(), title: 'does not match' }),
-        expect.objectContaining({ _id: entity3es.toString(), title: 'titulo to search 2' }),
+        expect.objectContaining({ _id: entity2es.toString(), title: 'title does not match' }),
+        expect.objectContaining({ _id: entity3es.toString(), title: 'title without busqueda' }),
       ]);
     });
 
     it('should return entities that match the searchQuey', async () => {
-      const { body } = await request(app)
+      const { body: bodyEn } = await request(app)
         .get('/api/v2/entities')
         .query({ filter: { searchString: 'search' } })
         .expect(200);
 
-      expect(body.data).toEqual([
+      expect(bodyEn.data).toEqual([
         expect.objectContaining({ title: 'title to search' }),
         expect.objectContaining({ title: 'title to search 2' }),
       ]);
+
+      const { body: bodyEs } = await request(app)
+        .get('/api/v2/entities')
+        .query({ filter: { searchString: 'search' } })
+        .set('content-language', 'es')
+        .expect(200);
+
+      expect(bodyEs.data).toEqual([expect.objectContaining({ title: 'titulo to search' })]);
+    });
+
+    it('should allow limiting the results and return pagination links', async () => {
+      const { body } = await request(app)
+        .get('/api/v2/entities')
+        .query({ filter: { searchString: 'title' }, page: { limit: 2 } });
+
+      expect(body.data).toEqual([
+        expect.objectContaining({ _id: entity1en.toString() }),
+        expect.objectContaining({ _id: entity2en.toString() }),
+      ]);
+
+      const expectedUrl = '/api/v2/entities?filter%5BsearchString%5D=title&page%5Blimit%5D=2';
+
+      expect(body.links.self).toBe(expectedUrl);
+      expect(body.links.first).toBe(expectedUrl);
     });
   });
 });
