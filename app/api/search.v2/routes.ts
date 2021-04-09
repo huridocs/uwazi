@@ -10,14 +10,12 @@ interface UwaziRequest<T> extends Request {
   query: T;
 }
 
-interface Links {
-  self: string | null;
-  first?: string | null;
-}
-
 interface UwaziResponse {
   data: any;
-  links?: Links;
+  links?: {
+    self: string;
+    first?: string | null;
+  };
 }
 
 const searchRoutes = (app: Application) => {
@@ -29,7 +27,7 @@ const searchRoutes = (app: Application) => {
     }),
     async (req: UwaziRequest<SearchQuery>, res, _next) => {
       const { query, language, url } = req;
-      const links: Links = { self: url };
+      const links: UwaziResponse['links'] = { self: url };
 
       const elasticQuery = {
         body: {

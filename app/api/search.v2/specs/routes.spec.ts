@@ -25,16 +25,23 @@ describe('entities routes', () => {
   afterAll(async () => testingDB.disconnect());
 
   describe('GET', () => {
-    it('should return all entities for the default language', async () => {
+    it('should return all entities for the default language and required links', async () => {
       const { body } = await request(app)
         .get('/api/v2/entities')
         .expect(200);
 
       expect(body.data).toEqual([
-        expect.objectContaining({ _id: entity1en.toString(), title: 'title to search' }),
+        expect.objectContaining({
+          _id: entity1en.toString(),
+          title: 'title to search',
+          sharedId: 'entity1SharedId',
+          language: 'en',
+        }),
         expect.objectContaining({ _id: entity2en.toString(), title: 'title does not match' }),
         expect.objectContaining({ _id: entity3en.toString(), title: 'title to search 2' }),
       ]);
+
+      expect(body.links.self).toBe('/api/v2/entities');
     });
 
     it('should return all entities for the passed language', async () => {
@@ -45,7 +52,12 @@ describe('entities routes', () => {
 
       expect(body.data).toEqual([
         expect.objectContaining({ _id: entity1es.toString(), title: 'titulo to search' }),
-        expect.objectContaining({ _id: entity2es.toString(), title: 'title does not match' }),
+        expect.objectContaining({
+          _id: entity2es.toString(),
+          title: 'title does not match',
+          sharedId: 'entity2SharedId',
+          language: 'es',
+        }),
         expect.objectContaining({ _id: entity3es.toString(), title: 'title without busqueda' }),
       ]);
     });
@@ -70,7 +82,7 @@ describe('entities routes', () => {
       expect(bodyEs.data).toEqual([expect.objectContaining({ title: 'titulo to search' })]);
     });
 
-    it('should allow limiting the results and return pagination links', async () => {
+    it('should allow limiting the results and return required links', async () => {
       const { body } = await request(app)
         .get('/api/v2/entities')
         .query({ filter: { searchString: 'title' }, page: { limit: 2 } });
@@ -82,7 +94,6 @@ describe('entities routes', () => {
 
       const expectedUrl = '/api/v2/entities?filter%5BsearchString%5D=title&page%5Blimit%5D=2';
 
-      expect(body.links.self).toBe(expectedUrl);
       expect(body.links.first).toBe(expectedUrl);
     });
   });
