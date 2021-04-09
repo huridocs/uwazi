@@ -3,7 +3,7 @@ import proxyMock from '../helpers/proxyMock';
 import { adminLogin, logout, login } from '../helpers/login';
 import { host } from '../config';
 import disableTransitions from '../helpers/disableTransitions';
-import { refreshIndex } from '../helpers/elastichelpers';
+import { expectDocumentCountAfterSearch, refreshIndex } from '../helpers/elastichelpers';
 
 const selectLookupOption = async (
   searchTerm: string,
@@ -22,6 +22,15 @@ const selectLookupOption = async (
       text: option,
     });
   }
+};
+
+const countPrivateEntities = async () =>
+  page.$$eval('.item-document .fa-lock', items => items.length);
+
+const reLogin = async (username: string, password: string) => {
+  await logout();
+  await login(username, password);
+  await disableTransitions();
 };
 
 describe('Share entities', () => {
@@ -121,5 +130,32 @@ describe('Share entities', () => {
     await page.waitForSelector('.share-btn');
     await expect(page).toClick('button', { text: 'Share' });
     await selectLookupOption('', 'Public', false);
+  });
+
+  it('should show mixed access', async () => {
+    await reLogin('admin', 'admin');
+    await expect(page).toClick('.multiselectItem-name', {
+      text: 'Include unpublished documents',
+    });
+    await expect(page).toFill('input[name="library.search.searchTerm"]', 'test 2016');
+    await expect(page).toClick('[aria-label="Search button"]');
+    await expectDocumentCountAfterSearch(page, 3);
+    await expect(page).toClick('button', { text: 'Select all' });
+    await expect(page).toClick('.is-active .share-btn', {
+      text: 'Share',
+    });
+    await page.waitForSelector('.members-list tr:nth-child(2)');
+    await expect(page).toMatchElement('.members-list tr:nth-child(2) select', {
+      text: 'Mixed access',
+    });
+  });
+
+  it('should keep publishing status if mixed access selected', async () => {
+    await expect(page).toSelect('.member-list-wrapper  tr:nth-child(3) select', 'Can see');
+    await expect(page).toClick('button', { text: 'Save changes' });
+    await refreshIndex();
+    await page.reload();
+    await expectDocumentCountAfterSearch(page, 3);
+    expect(await countPrivateEntities()).toBe(1);
   });
 });
