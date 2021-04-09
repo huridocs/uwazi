@@ -89,7 +89,7 @@ export const loadPermissionsData = async data => {
     { sharedId: { $in: data.ids } },
     { title: 1 }
   );
-  const permissionsIds = data.permissions.map(pu => pu._id);
+  const permissionsIds = data.permissions.map(pu => pu.refId);
   const allowedUsers = await users.get({ _id: { $in: permissionsIds } }, { username: 1 });
   const allowedGroups = await userGroups.get(
     { _id: { $in: permissionsIds } },
@@ -103,8 +103,8 @@ export const entitiesNames = data => data.entities.map(e => e.title).join(', ');
 
 function getNameOfAllowedPeople(source, field) {
   return p => {
-    const people = source.find(u => u._id.toString() === p._id);
-    return `${people ? people[field] : people._id} - ${p.level}`;
+    const people = source.find(u => u._id.toString() === p.refId);
+    return `${people && people[field] ? people[field] : p.refId} - ${p.level}`;
   };
 }
 
