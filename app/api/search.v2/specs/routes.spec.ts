@@ -92,7 +92,7 @@ describe('entities routes', () => {
         expect.objectContaining({ _id: entity2en.toString() }),
       ]);
 
-      const expectedUrl = '/api/v2/entities?filter%5BsearchString%5D=title&page%5Blimit%5D=2';
+      const expectedUrl = encodeURI('/api/v2/entities?filter[searchString]=title&page[limit]=2');
 
       expect(body.links.first).toBe(expectedUrl);
     });
