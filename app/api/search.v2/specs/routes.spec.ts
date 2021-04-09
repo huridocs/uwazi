@@ -62,7 +62,7 @@ describe('entities routes', () => {
       ]);
     });
 
-    it('should return entities that match the searchQuey', async () => {
+    it('should return entities that match the searchString', async () => {
       const { body: bodyEn } = await request(app)
         .get('/api/v2/entities')
         .query({ filter: { searchString: 'search' } })
