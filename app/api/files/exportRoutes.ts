@@ -4,7 +4,7 @@ import errorLog from 'api/log/errorLog';
 import { search } from 'api/search';
 import { CSVExporter } from 'api/csv';
 import settings from 'api/settings';
-import { needsAuthorization } from 'api/auth';
+import captchaMiddleware from 'api/auth/captchaMiddleware';
 import { temporalFilesPath, generateFileName } from './filesystem';
 import { validation } from '../utils';
 
@@ -23,7 +23,8 @@ export default (app: Application) => {
 
   app.get(
     '/api/export',
-    needsAuthorization(['admin', 'editor']),
+    async (req: Request, res: Response, next: NextFunction) =>
+      req.user ? next() : captchaMiddleware()(req, res, next),
     validation.validateRequest({
       properties: {
         query: {

@@ -6,16 +6,16 @@ import db from 'api/utils/testing_db';
 import csvExporter from 'api/csv/csvExporter';
 import * as filesystem from 'api/files/filesystem';
 import { NextFunction, Request, Response } from 'express';
-// import authMiddleware from 'api/auth/authMiddleware';
+import authMiddleware from 'api/auth/authMiddleware';
 
 import routes from '../exportRoutes';
 import { User } from '../../users/usersModel';
 
 jest.mock('api/csv/csvExporter');
 
-// jest.mock('../../auth/authMiddleware.ts');
+jest.mock('../../auth/authMiddleware.ts');
 
-// const mockedAuthMiddleware = authMiddleware as jest.MockedFunction<typeof authMiddleware>;
+const mockedAuthMiddleware = authMiddleware as jest.MockedFunction<typeof authMiddleware>;
 
 function assertDownloaded(res: any) {
   expect(res.header['content-type'].match(/text\/csv/)).not.toBe(null);
@@ -65,11 +65,11 @@ describe('export routes', () => {
     };
 
     it('should fetch, process and download the search results', async () => {
-      // mockedAuthMiddleware.mockImplementation(
-      //   () => (_req: Request, _res: Response, next: NextFunction) => {
-      //     next();
-      //   }
-      // );
+      mockedAuthMiddleware.mockImplementation(
+        () => (_req: Request, _res: Response, next: NextFunction) => {
+          next();
+        }
+      );
       spyOn(search, 'search').and.returnValue({ rows: ['searchresults'] });
       spyOn(filesystem, 'temporalFilesPath').and.returnValue('exportRutesTest-A.csv');
 
@@ -111,11 +111,6 @@ describe('export routes', () => {
     });
 
     it('should not allow logged out users to export csv without a captcha', async () => {
-      // mockedAuthMiddleware.mockImplementation(() => (_req: Request, _res: Response) => {
-      //   _res.status(401);
-      //   return _res.json({ error: 'Unauthorized', message: 'Unauthorized' });
-      // });
-
       const app = setUpApp(
         routes,
         fakeRequestAugmenterMiddleware({ username: '' }, 'somelanguage')
