@@ -7,6 +7,7 @@ import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
 
 import { FeatureToggle } from 'app/components/Elements/FeatureToggle';
 import { FavoriteBanner } from 'app/Favorites';
+import helpers from 'app/Documents/helpers';
 
 import { RowList, ItemFooter } from './Lists';
 import DocumentLanguage from './DocumentLanguage';
@@ -36,7 +37,7 @@ export class Item extends Component {
       buttons,
     } = this.props;
 
-    const doc = this.props.doc.toJS();
+    const doc = helpers.performantDocToJSWithoutRelations(this.props.doc);
     const Snippet = additionalText ? (
       <div className="item-snippet-wrapper">
         <div className="item-snippet">{additionalText}</div>

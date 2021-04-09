@@ -26,6 +26,7 @@ import { entityDefaultDocument } from 'shared/entityDefaultDocument';
 import SearchText from './SearchText';
 import ShowToc from './ShowToc';
 import SnippetsTab from './SnippetsTab';
+import helpers from '../helpers';
 
 export class DocumentSidePanel extends Component {
   constructor(props) {
@@ -278,8 +279,8 @@ export class DocumentSidePanel extends Component {
 
     const TocForm = this.props.tocFormComponent;
 
-    const entity = doc.toJS();
-    const { attachments, documents, language, defaultDoc } = entity;
+    const jsDoc = helpers.performantDocToJSWithoutRelations(doc);
+    const { attachments, documents, language, defaultDoc } = jsDoc;
 
     const isEntity = !documents || !documents.length;
     const defaultDocumentToC =
@@ -315,7 +316,7 @@ export class DocumentSidePanel extends Component {
               />
             </div>
           </ShowIf>
-          <NeedAuthorization roles={['admin', 'editor']} orWriteAccessTo={[entity]}>
+          <NeedAuthorization roles={['admin', 'editor']} orWriteAccessTo={[jsDoc]}>
             <ShowIf if={this.props.tab === 'toc' && this.props.tocBeingEdited}>
               <div className="sidepanel-footer">
                 <button type="submit" form="tocForm" className="edit-toc btn btn-success">
@@ -325,7 +326,7 @@ export class DocumentSidePanel extends Component {
               </div>
             </ShowIf>
           </NeedAuthorization>
-          <NeedAuthorization roles={['admin', 'editor']} orWriteAccessTo={[entity]}>
+          <NeedAuthorization roles={['admin', 'editor']} orWriteAccessTo={[jsDoc]}>
             <ShowIf if={this.props.tab === 'toc' && !this.props.tocBeingEdited && !readOnly}>
               <div className="sidepanel-footer">
                 <button
@@ -412,12 +413,12 @@ export class DocumentSidePanel extends Component {
                     <div>
                       <ShowMetadata
                         relationships={relationships}
-                        entity={entity}
+                        entity={jsDoc}
                         showTitle
                         showType
                         groupGeolocations
                       />
-                      <FileList files={documents} storeKey={this.props.storeKey} entity={entity} />
+                      <FileList files={documents} storeKey={this.props.storeKey} entity={jsDoc} />
                       <AttachmentsList
                         attachments={attachments}
                         isTargetDoc={isTargetDoc}
@@ -425,7 +426,7 @@ export class DocumentSidePanel extends Component {
                         parentId={doc.get('_id')}
                         parentSharedId={doc.get('sharedId')}
                         storeKey={this.props.storeKey}
-                        entity={entity}
+                        entity={jsDoc}
                       />
                     </div>
                   );
@@ -442,7 +443,7 @@ export class DocumentSidePanel extends Component {
                 <ConnectionsGroups connectionsGroups={this.props.connectionsGroups} />
               </TabContent>
               <TabContent for="semantic-search-results">
-                <DocumentSemanticSearchResults doc={entity} />
+                <DocumentSemanticSearchResults doc={jsDoc} />
               </TabContent>
             </Tabs>
           </div>
