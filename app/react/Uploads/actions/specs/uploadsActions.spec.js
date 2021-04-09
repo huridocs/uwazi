@@ -8,7 +8,6 @@ import { mockID } from 'shared/uniqueID.js';
 import * as actions from 'app/Uploads/actions/uploadsActions';
 import backend from 'fetch-mock';
 import configureMockStore from 'redux-mock-store';
-import * as notificationsTypes from 'app/Notifications/actions/actionTypes';
 import * as types from 'app/Uploads/actions/actionTypes';
 
 import api from '../../../utils/api';
