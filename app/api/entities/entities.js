@@ -123,6 +123,7 @@ async function updateEntity(entity, _template, unrestricted = false) {
     .filter(p => p.type.match(FIELD_TYPES_TO_SYNC.join('|')))
     .map(p => p.name);
   const currentDoc = docLanguages.find(d => d._id.toString() === entity._id.toString());
+  const saveFunc = !unrestricted ? model.save : model.saveUnrestricted;
   return Promise.all(
     docLanguages.map(async d => {
       if (d._id.toString() === entity._id.toString()) {
@@ -144,7 +145,7 @@ async function updateEntity(entity, _template, unrestricted = false) {
             template
           );
         }
-        return model.save(toSave, unrestricted);
+        return saveFunc(toSave);
       }
 
       if (entity.metadata) {
@@ -174,7 +175,7 @@ async function updateEntity(entity, _template, unrestricted = false) {
       if (typeof entity.generatedToc !== 'undefined') {
         d.generatedToc = entity.generatedToc;
       }
-      return model.save(d, unrestricted);
+      return saveFunc(d);
     })
   );
 }

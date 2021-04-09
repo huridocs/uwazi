@@ -207,6 +207,10 @@ export default {
       creationDate: 1,
       published: true,
       metadata: { property1: [{ value: 'text' }] },
+      permissions: [
+        { refId: 'user1', level: AccessLevels.WRITE, type: PermissionType.USER },
+        { refId: 'group1', level: AccessLevels.WRITE, type: PermissionType.GROUP },
+      ],
     },
     {
       _id: db.id(),
@@ -218,6 +222,10 @@ export default {
       creationDate: 1,
       published: true,
       metadata: { property1: [{ value: 'text' }] },
+      permissions: [
+        { refId: 'user1', level: AccessLevels.WRITE, type: PermissionType.USER },
+        { refId: 'group1', level: AccessLevels.WRITE, type: PermissionType.GROUP },
+      ],
     },
     //docs to change metadata property names
     {

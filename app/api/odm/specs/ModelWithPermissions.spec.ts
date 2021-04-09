@@ -178,7 +178,7 @@ describe('ModelWithPermissions', () => {
           expect(saved.name).toEqual('writeDocUpdated');
         });
 
-        it('should not save the data if user has not permissions on the document', async () => {
+        it('should not save the data if user has not permissions on a private document', async () => {
           try {
             await model.save({
               _id: readDocId.toString(),
@@ -190,14 +190,23 @@ describe('ModelWithPermissions', () => {
           }
         });
 
-        it('should save the data if unrestricted is true even if user has not permissions on the document', async () => {
-          const saved = await model.save(
-            {
-              _id: readDocId.toString(),
-              name: 'readDocUpdated',
-            },
-            true
-          );
+        it('should not save the data if user has not permissions on a public document', async () => {
+          try {
+            await model.save({
+              _id: public1Id,
+              name: 'update public',
+            });
+            fail('Should throw error');
+          } catch (e) {
+            expect(e.message).toContain('not updated');
+          }
+        });
+
+        it('should save unrestricted even if user has not permissions on the document', async () => {
+          const saved = await model.saveUnrestricted({
+            _id: readDocId.toString(),
+            name: 'readDocUpdated',
+          });
           expect(saved.name).toEqual('readDocUpdated');
         });
 

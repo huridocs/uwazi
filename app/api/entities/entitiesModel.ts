@@ -67,6 +67,9 @@ const setMongoLanguage = (doc: EntitySchema) => {
 };
 
 const modelSaveRaw = Model.save.bind(Model);
-Model.save = async (doc, unrestricted = false) => modelSaveRaw(setMongoLanguage(doc), unrestricted);
+Model.save = async doc => modelSaveRaw(setMongoLanguage(doc));
+
+const modelSaveUnrestrictedRaw = Model.saveUnrestricted.bind(Model);
+Model.saveUnrestricted = async doc => modelSaveUnrestrictedRaw(setMongoLanguage(doc));
 
 export default Model;

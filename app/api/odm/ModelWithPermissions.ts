@@ -43,13 +43,15 @@ const addPermissionsCondition = (user: WithId<UserSchema>, level: AccessLevels) 
   let permissionCond = {};
   if (!['admin', 'editor'].includes(user.role)) {
     const userIds = getUserPermissionIds(user);
-    const levelCond = level === AccessLevels.WRITE ? { level: AccessLevels.WRITE } : {};
-    permissionCond = {
-      $or: [
-        { permissions: { $elemMatch: { refId: { $in: userIds }, ...levelCond } } },
-        { published: true },
-      ],
-    };
+    if (level === AccessLevels.WRITE) {
+      permissionCond = {
+        permissions: { $elemMatch: { refId: { $in: userIds }, level: AccessLevels.WRITE } },
+      };
+    } else {
+      permissionCond = {
+        $or: [{ permissions: { $elemMatch: { refId: { $in: userIds } } } }, { published: true }],
+      };
+    }
   }
   return permissionCond;
 };
@@ -113,16 +115,15 @@ const controlPermissionsData = <T>(data: T & { published?: boolean }, user?: Use
 };
 
 export class ModelWithPermissions<T> extends OdmModel<T> {
-  async save(data: DataType<T & { permissions?: PermissionSchema[] }>, unrestricted = false) {
+  async save(data: DataType<T & { permissions?: PermissionSchema[] }>) {
     const user = permissionsContext.getUserInContext();
-    if (data._id || data.permissions) {
-      const idCond = { _id: data._id };
-      const query = !unrestricted
-        ? appendPermissionQuery(idCond, AccessLevels.WRITE, user)
-        : idCond;
-      return super.save(data, query);
-    }
-    return super.save(appendPermissionData(data, user));
+    return data._id || data.permissions
+      ? super.save(data, appendPermissionQuery({ _id: data._id }, AccessLevels.WRITE, user))
+      : super.save(appendPermissionData(data, user));
+  }
+
+  async saveUnrestricted(data: DataType<T & { permissions?: PermissionSchema[] }>) {
+    return data._id || data.permissions ? super.save(data, { _id: data._id }) : super.save(data);
   }
 
   get(query: UwaziFilterQuery<T> = {}, select: any = '', options: {} = {}) {

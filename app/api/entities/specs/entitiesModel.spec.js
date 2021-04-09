@@ -1,6 +1,4 @@
 import { catchErrors } from 'api/utils/jasmineHelpers';
-import { permissionsContext } from 'api/permissions/permissionsContext';
-import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
 import entitiesModel from '../entitiesModel';
 import testingDB from '../../utils/testing_db';
 
@@ -84,18 +82,5 @@ describe('entitiesModel', () => {
         done();
       })
       .catch(catchErrors(done));
-  });
-
-  describe('saving from collaborator with unrestricted option', () => {
-    it('should update and entity if unrestricted is true', async () => {
-      const userFactory = new UserInContextMockFactory();
-      const createdDoc = await entitiesModel.save({ title: 'docES' });
-      userFactory.mock(undefined);
-      const updatedDoc = await entitiesModel.save(
-        { _id: createdDoc._id, title: 'docESUpdated' },
-        true
-      );
-      expect(updatedDoc.title).toEqual('docESUpdated');
-    });
   });
 });
