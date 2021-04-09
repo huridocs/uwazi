@@ -137,15 +137,13 @@ describe('permissions routes', () => {
         expect(response.status).toBe(500);
         expect(response.body.error).toContain('Error: error on save');
       });
-      it('should handle errors on GET', async () => {
+      it('should handle errors on PUT', async () => {
         spyOn(entitiesPermissions, 'get').and.throwError('error on get');
         user = { username: 'user 1', role: 'admin' };
         const response = await request(app)
-          .get('/api/entities/permissions')
+          .put('/api/entities/permissions')
           .set('X-Requested-With', 'XMLHttpRequest')
-          .query({
-            ids: JSON.stringify(['sharedId1', 'sharedId2']),
-          });
+          .send(['sharedId1', 'sharedId2']);
         expect(response.status).toBe(500);
         expect(response.body.error).toContain('Error: error on get');
       });
@@ -161,8 +159,9 @@ describe('permissions routes', () => {
       });
     });
 
-    describe('GET', () => {
-      it('should get the permissions of requested entities', async () => {
+    describe('PUT', () => {
+      it('should get the permissions by an array of entities ids', async () => {
+        user = { username: 'user 1', role: 'admin' };
         spyOn(entitiesPermissions, 'get').and.returnValue(
           Promise.resolve([
             {
@@ -172,11 +171,9 @@ describe('permissions routes', () => {
           ])
         );
         const response = await request(app)
-          .get('/api/entities/permissions')
+          .put('/api/entities/permissions')
           .set('X-Requested-With', 'XMLHttpRequest')
-          .query({
-            ids: JSON.stringify(['sharedId1', 'sharedId2']),
-          });
+          .send(['sharedId1', 'sharedId2']);
         expect(response.status).toBe(200);
         expect(response.body).toEqual([{ refId: 'user1', level: 'read' }]);
       });
