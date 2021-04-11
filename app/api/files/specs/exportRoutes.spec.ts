@@ -127,6 +127,7 @@ describe('export routes', () => {
         });
 
       expect(res.header['content-type'].match(/text\/csv/)).toBe(null);
+      expect(res.status).toBe(403);
     });
   });
 });
