@@ -111,10 +111,7 @@ describe('export routes', () => {
     });
 
     it('should not allow logged out users to export csv without a captcha', async () => {
-      const app = setUpApp(
-        routes,
-        fakeRequestAugmenterMiddleware({ username: '' }, 'somelanguage')
-      );
+      const app = setUpApp(routes);
 
       const res = await request(app)
         .get('/api/export')
