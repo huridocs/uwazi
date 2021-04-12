@@ -42,6 +42,10 @@ exports[`TemplateCreator Property Options should include document specific optio
               className="list-group property-options-list"
             >
               <Connect(DragSource(PropertyOption))
+                label="ID Generator"
+                type="id"
+              />
+              <Connect(DragSource(PropertyOption))
                 label="Text"
                 type="text"
               />
@@ -159,6 +163,10 @@ exports[`TemplateCreator Property Options should include most common options by 
             <ul
               className="list-group property-options-list"
             >
+              <Connect(DragSource(PropertyOption))
+                label="ID Generator"
+                type="id"
+              />
               <Connect(DragSource(PropertyOption))
                 label="Text"
                 type="text"

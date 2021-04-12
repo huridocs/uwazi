@@ -50,6 +50,7 @@ export class TemplateCreator extends Component {
                       <i>Properties</i>
                     </div>
                     <ul className="list-group property-options-list">
+                      <PropertyOption label="ID Generator" type="id" />
                       <PropertyOption label="Text" type="text" />
                       <PropertyOption label="Numeric" type="numeric" />
                       <PropertyOption
