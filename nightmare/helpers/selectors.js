@@ -272,8 +272,8 @@ export default {
       '#app > div.content > div > div > div.content-header > div > button:nth-child(2)',
     saveButton:
       '#app > div.content > div > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-footer > span > button.btn.btn-success',
-    publishButton:
-      '#app > div.content > div > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-footer > span > button.publish.btn.btn-success',
+    shareButton:
+      '#app > div.content > div > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-footer > span > button.btn.btn-success.share-btn',
     multiPublishButton:
       '#app > div.content > div > div > div > aside.side-panel.multi-edit.is-active > div.sidepanel-footer > button.publish.btn.btn-success',
     acceptPublishModel:
