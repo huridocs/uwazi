@@ -6,6 +6,7 @@ import ExportButton, { ExportButtonProps } from 'app/Library/components/ExportBu
 import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
 import Immutable from 'immutable';
+import { Captcha } from 'app/Forms';
 import * as actions from '../../actions/exportActions';
 
 describe('ExportButton', () => {
@@ -31,6 +32,7 @@ describe('ExportButton', () => {
       };
       store = mockStore({
         exportSearchResults: { exportSearchResultsProcessing: Immutable.fromJS(false) },
+        user: Immutable.fromJS({ id_: '1234' }),
       });
     });
 
@@ -61,6 +63,7 @@ describe('ExportButton', () => {
       };
       store = mockStore({
         exportSearchResults: { exportSearchResultsProcessing: Immutable.fromJS(true) },
+        user: Immutable.fromJS({}),
       });
     });
 
@@ -73,6 +76,12 @@ describe('ExportButton', () => {
       spyOn(actions, 'exportDocuments').and.returnValue(() => {});
       render();
       expect(actions.exportDocuments).not.toHaveBeenCalled();
+    });
+
+    fit('should ask for a captcha if there is no user in the store', () => {
+      render();
+      component.find('.btn').simulate('click');
+      expect(component.contains(<Captcha onChange={() => {}} />)).toBe(true);
     });
   });
 });
