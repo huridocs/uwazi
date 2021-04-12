@@ -5,8 +5,8 @@ import thunk from 'redux-thunk';
 import ExportButton, { ExportButtonProps } from 'app/Library/components/ExportButton';
 import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
+import Modal from 'app/Layout/Modal';
 import Immutable from 'immutable';
-import { Captcha } from 'app/Forms';
 import * as actions from '../../actions/exportActions';
 
 describe('ExportButton', () => {
@@ -32,7 +32,7 @@ describe('ExportButton', () => {
       };
       store = mockStore({
         exportSearchResults: { exportSearchResultsProcessing: Immutable.fromJS(false) },
-        user: Immutable.fromJS({ id_: '1234' }),
+        user: Immutable.fromJS({ _id: '1234' }),
       });
     });
 
@@ -78,10 +78,10 @@ describe('ExportButton', () => {
       expect(actions.exportDocuments).not.toHaveBeenCalled();
     });
 
-    fit('should ask for a captcha if there is no user in the store', () => {
+    it('should show captcha modal if there is no user in the store', () => {
       render();
       component.find('.btn').simulate('click');
-      expect(component.contains(<Captcha onChange={() => {}} />)).toBe(true);
+      expect(component.find(Modal).length).toBe(1);
     });
   });
 });
