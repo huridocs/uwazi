@@ -50,7 +50,6 @@ export class TemplateCreator extends Component {
                       <i>Properties</i>
                     </div>
                     <ul className="list-group property-options-list">
-                      <PropertyOption label="ID Generator" type="id" />
                       <PropertyOption label="Text" type="text" />
                       <PropertyOption label="Numeric" type="numeric" />
                       <PropertyOption
@@ -91,6 +90,7 @@ export class TemplateCreator extends Component {
                       {this.props.project === 'cejil' && (
                         <PropertyOption label="Violated articles" type="nested" />
                       )}
+                      <PropertyOption label="Generated ID" type="generatedid" />
                     </ul>
                     {this.props.noRelationtypes && (
                       <div className="alert alert-warning">

@@ -37,7 +37,13 @@ describe('templates', () => {
       const newTemplate = {
         name: 'created_template',
         commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
-        properties: [{ label: 'fieldLabel', type: 'text' }],
+        properties: [
+          { label: 'fieldLabel', type: 'text' },
+          {
+            label: 'Generated ID',
+            type: 'generatedid',
+          },
+        ],
       };
 
       const template = await templates.save(newTemplate);

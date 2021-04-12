@@ -42,10 +42,6 @@ exports[`TemplateCreator Property Options should include document specific optio
               className="list-group property-options-list"
             >
               <Connect(DragSource(PropertyOption))
-                label="ID Generator"
-                type="id"
-              />
-              <Connect(DragSource(PropertyOption))
                 label="Text"
                 type="text"
               />
@@ -107,6 +103,10 @@ exports[`TemplateCreator Property Options should include document specific optio
               <Connect(DragSource(PropertyOption))
                 label="Geolocation"
                 type="geolocation"
+              />
+              <Connect(DragSource(PropertyOption))
+                label="Generated ID"
+                type="generatedid"
               />
             </ul>
             <div
@@ -164,10 +164,6 @@ exports[`TemplateCreator Property Options should include most common options by 
               className="list-group property-options-list"
             >
               <Connect(DragSource(PropertyOption))
-                label="ID Generator"
-                type="id"
-              />
-              <Connect(DragSource(PropertyOption))
                 label="Text"
                 type="text"
               />
@@ -229,6 +225,10 @@ exports[`TemplateCreator Property Options should include most common options by 
               <Connect(DragSource(PropertyOption))
                 label="Geolocation"
                 type="geolocation"
+              />
+              <Connect(DragSource(PropertyOption))
+                label="Generated ID"
+                type="generatedid"
               />
             </ul>
             <div

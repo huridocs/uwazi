@@ -17,6 +17,7 @@ describe('elasticMapFactory', () => {
         { label: 'Photo', name: 'photo', type: 'image' },
         { label: 'External profile', name: 'external_profile', type: 'link' },
         { label: 'Number of incidents', name: 'number_of_incidents', type: 'numeric' },
+        { label: 'Generated Id', name: 'generated_id', type: 'generatedid' },
       ],
     };
     templates = [template];

@@ -1,0 +1,414 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`elasticMapFactory mapping() should return a mapping based on a template 1`] = `
+Object {
+  "properties": Object {
+    "metadata": Object {
+      "properties": Object {
+        "country": Object {
+          "properties": Object {
+            "label": Object {
+              "analyzer": "tokenizer",
+              "fields": Object {
+                "raw": Object {
+                  "type": "text",
+                },
+                "sort": Object {
+                  "analyzer": "string_sorter",
+                  "fielddata": true,
+                  "type": "text",
+                },
+              },
+              "term_vector": "with_positions_offsets",
+              "type": "text",
+            },
+            "value": Object {
+              "fields": Object {
+                "raw": Object {
+                  "type": "keyword",
+                },
+              },
+              "type": "keyword",
+            },
+          },
+        },
+        "date_of_birth": Object {
+          "properties": Object {
+            "value": Object {
+              "doc_values": true,
+              "fields": Object {
+                "raw": Object {
+                  "index": false,
+                  "type": "double",
+                },
+                "sort": Object {
+                  "type": "double",
+                },
+              },
+              "type": "double",
+            },
+          },
+        },
+        "external_profile": Object {
+          "properties": Object {
+            "value": Object {
+              "properties": Object {
+                "label": Object {
+                  "analyzer": "tokenizer",
+                  "fields": Object {
+                    "raw": Object {
+                      "type": "text",
+                    },
+                    "sort": Object {
+                      "analyzer": "string_sorter",
+                      "fielddata": true,
+                      "type": "text",
+                    },
+                  },
+                  "term_vector": "with_positions_offsets",
+                  "type": "text",
+                },
+                "url": Object {
+                  "index": false,
+                  "type": "text",
+                },
+              },
+            },
+          },
+        },
+        "generated_id": Object {
+          "properties": Object {
+            "value": Object {
+              "analyzer": "tokenizer",
+              "fields": Object {
+                "raw": Object {
+                  "type": "text",
+                },
+                "sort": Object {
+                  "analyzer": "string_sorter",
+                  "fielddata": true,
+                  "type": "text",
+                },
+              },
+              "term_vector": "with_positions_offsets",
+              "type": "text",
+            },
+          },
+        },
+        "name": Object {
+          "properties": Object {
+            "value": Object {
+              "analyzer": "tokenizer",
+              "fields": Object {
+                "raw": Object {
+                  "type": "text",
+                },
+                "sort": Object {
+                  "analyzer": "string_sorter",
+                  "fielddata": true,
+                  "type": "text",
+                },
+              },
+              "term_vector": "with_positions_offsets",
+              "type": "text",
+            },
+          },
+        },
+        "number_of_incidents": Object {
+          "properties": Object {
+            "value": Object {
+              "doc_values": true,
+              "fields": Object {
+                "raw": Object {
+                  "index": false,
+                  "type": "double",
+                },
+                "sort": Object {
+                  "type": "double",
+                },
+              },
+              "type": "double",
+            },
+          },
+        },
+        "photo": Object {
+          "properties": Object {
+            "value": Object {
+              "index": false,
+              "type": "text",
+            },
+          },
+        },
+        "prisonLocation": Object {
+          "properties": Object {
+            "value": Object {
+              "properties": Object {
+                "label": Object {
+                  "analyzer": "tokenizer",
+                  "fields": Object {
+                    "raw": Object {
+                      "type": "text",
+                    },
+                    "sort": Object {
+                      "analyzer": "string_sorter",
+                      "fielddata": true,
+                      "type": "text",
+                    },
+                  },
+                  "term_vector": "with_positions_offsets",
+                  "type": "text",
+                },
+                "lat": Object {
+                  "doc_values": true,
+                  "type": "double",
+                },
+                "lon": Object {
+                  "doc_values": true,
+                  "type": "double",
+                },
+              },
+            },
+          },
+        },
+        "years_in_prison": Object {
+          "properties": Object {
+            "value": Object {
+              "properties": Object {
+                "from": Object {
+                  "doc_values": true,
+                  "fields": Object {
+                    "raw": Object {
+                      "index": false,
+                      "type": "double",
+                    },
+                    "sort": Object {
+                      "type": "double",
+                    },
+                  },
+                  "type": "double",
+                },
+                "to": Object {
+                  "doc_values": true,
+                  "fields": Object {
+                    "raw": Object {
+                      "index": false,
+                      "type": "double",
+                    },
+                    "sort": Object {
+                      "type": "double",
+                    },
+                  },
+                  "type": "double",
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    "suggestedMetadata": Object {
+      "properties": Object {
+        "country": Object {
+          "properties": Object {
+            "label": Object {
+              "analyzer": "tokenizer",
+              "fields": Object {
+                "raw": Object {
+                  "type": "text",
+                },
+                "sort": Object {
+                  "analyzer": "string_sorter",
+                  "fielddata": true,
+                  "type": "text",
+                },
+              },
+              "term_vector": "with_positions_offsets",
+              "type": "text",
+            },
+            "value": Object {
+              "fields": Object {
+                "raw": Object {
+                  "type": "keyword",
+                },
+              },
+              "type": "keyword",
+            },
+          },
+        },
+        "date_of_birth": Object {
+          "properties": Object {
+            "value": Object {
+              "doc_values": true,
+              "fields": Object {
+                "raw": Object {
+                  "index": false,
+                  "type": "double",
+                },
+                "sort": Object {
+                  "type": "double",
+                },
+              },
+              "type": "double",
+            },
+          },
+        },
+        "external_profile": Object {
+          "properties": Object {
+            "value": Object {
+              "properties": Object {
+                "label": Object {
+                  "analyzer": "tokenizer",
+                  "fields": Object {
+                    "raw": Object {
+                      "type": "text",
+                    },
+                    "sort": Object {
+                      "analyzer": "string_sorter",
+                      "fielddata": true,
+                      "type": "text",
+                    },
+                  },
+                  "term_vector": "with_positions_offsets",
+                  "type": "text",
+                },
+                "url": Object {
+                  "index": false,
+                  "type": "text",
+                },
+              },
+            },
+          },
+        },
+        "generated_id": Object {
+          "properties": Object {
+            "value": Object {
+              "analyzer": "tokenizer",
+              "fields": Object {
+                "raw": Object {
+                  "type": "text",
+                },
+                "sort": Object {
+                  "analyzer": "string_sorter",
+                  "fielddata": true,
+                  "type": "text",
+                },
+              },
+              "term_vector": "with_positions_offsets",
+              "type": "text",
+            },
+          },
+        },
+        "name": Object {
+          "properties": Object {
+            "value": Object {
+              "analyzer": "tokenizer",
+              "fields": Object {
+                "raw": Object {
+                  "type": "text",
+                },
+                "sort": Object {
+                  "analyzer": "string_sorter",
+                  "fielddata": true,
+                  "type": "text",
+                },
+              },
+              "term_vector": "with_positions_offsets",
+              "type": "text",
+            },
+          },
+        },
+        "number_of_incidents": Object {
+          "properties": Object {
+            "value": Object {
+              "doc_values": true,
+              "fields": Object {
+                "raw": Object {
+                  "index": false,
+                  "type": "double",
+                },
+                "sort": Object {
+                  "type": "double",
+                },
+              },
+              "type": "double",
+            },
+          },
+        },
+        "photo": Object {
+          "properties": Object {
+            "value": Object {
+              "index": false,
+              "type": "text",
+            },
+          },
+        },
+        "prisonLocation": Object {
+          "properties": Object {
+            "value": Object {
+              "properties": Object {
+                "label": Object {
+                  "analyzer": "tokenizer",
+                  "fields": Object {
+                    "raw": Object {
+                      "type": "text",
+                    },
+                    "sort": Object {
+                      "analyzer": "string_sorter",
+                      "fielddata": true,
+                      "type": "text",
+                    },
+                  },
+                  "term_vector": "with_positions_offsets",
+                  "type": "text",
+                },
+                "lat": Object {
+                  "doc_values": true,
+                  "type": "double",
+                },
+                "lon": Object {
+                  "doc_values": true,
+                  "type": "double",
+                },
+              },
+            },
+          },
+        },
+        "years_in_prison": Object {
+          "properties": Object {
+            "value": Object {
+              "properties": Object {
+                "from": Object {
+                  "doc_values": true,
+                  "fields": Object {
+                    "raw": Object {
+                      "index": false,
+                      "type": "double",
+                    },
+                    "sort": Object {
+                      "type": "double",
+                    },
+                  },
+                  "type": "double",
+                },
+                "to": Object {
+                  "doc_values": true,
+                  "fields": Object {
+                    "raw": Object {
+                      "index": false,
+                      "type": "double",
+                    },
+                    "sort": Object {
+                      "type": "double",
+                    },
+                  },
+                  "type": "double",
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+`;

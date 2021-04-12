@@ -17,5 +17,5 @@ export default {
   media: 'video',
   geolocation: 'map-marker',
   link: 'link',
-  id: 'fingerprint',
+  generatedid: 'fingerprint',
 };
