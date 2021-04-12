@@ -111,7 +111,8 @@ export interface PropertySchema {
     | 'preview'
     | 'relationship'
     | 'select'
-    | 'text';
+    | 'text'
+    | 'generatedid';
   prioritySorting?: boolean;
   content?: string;
   relationType?: string;

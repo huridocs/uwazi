@@ -24,7 +24,7 @@ export default {
   media: defaultParser,
   markdown: defaultParser,
   text: defaultParser,
-
+  generatedid: defaultParser,
   geolocation,
   select,
   multiselect,
