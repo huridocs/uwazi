@@ -156,6 +156,7 @@ export class MetadataFormFields extends Component {
           </div>
         );
       case 'text':
+      case 'generatedid':
         return (
           <Field model={_model}>
             <input type="text" className="form-control" />
@@ -262,7 +263,7 @@ export const mapStateToProps = (state, ownProps) => {
   }
 
   if (!storeKey) {
-    const entity = state.entityView.entity;
+    const { entity } = state.entityView;
     attachments = entity.get('attachments');
   }
 

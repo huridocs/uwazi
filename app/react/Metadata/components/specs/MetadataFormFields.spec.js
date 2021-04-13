@@ -13,21 +13,10 @@ describe('MetadataFormFields with one entity to edit ', () => {
 
   beforeEach(() => {
     fieldsTemplate = [
-      {
-        name: 'field1',
-        label: 'label1',
-      },
-      {
-        name: 'field2',
-        label: 'label2',
-        type: 'relationship',
-        content: '2',
-      },
-      {
-        name: 'field3',
-        label: 'label3',
-        type: 'date',
-      },
+      { name: 'field1', label: 'label1' },
+      { name: 'field2', label: 'label2', type: 'relationship', content: '2' },
+      { name: 'field3', label: 'label3', type: 'date' },
+      { name: 'field4', label: 'label4', type: 'generatedid' },
     ];
 
     props = {
@@ -98,5 +87,9 @@ describe('MetadataFormFields with one entity to edit ', () => {
 
     const datepicker = component.find(DatePicker);
     expect(datepicker.length).toBe(1);
+
+    const generatedIdField = component.findWhere(node => node.props().model === '.metadata.field4');
+    const generatedIdInput = generatedIdField.find('input');
+    expect(generatedIdInput.length).toBe(1);
   });
 });
