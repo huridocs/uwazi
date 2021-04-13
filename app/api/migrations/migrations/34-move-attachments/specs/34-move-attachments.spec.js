@@ -22,14 +22,10 @@ describe('migration move-attachments', () => {
     const attachments = await testingDB.mongodb
       .collection('files')
       .find({ type: 'attachment' })
+      .sort({ originalname: 1 })
       .toArray();
 
     expect(attachments).toEqual([
-      expect.objectContaining({
-        originalname: 'The chain',
-        filename: 'thechain.mp3',
-        entity: 'fleet_wood',
-      }),
       expect.objectContaining({
         originalname: 'Dont let me down',
         filename: 'dontletmedown.mp3',
@@ -39,6 +35,11 @@ describe('migration move-attachments', () => {
         originalname: 'Strange magic',
         filename: 'strangemagic.mp3',
         entity: 'electric_light_orchestra',
+      }),
+      expect.objectContaining({
+        originalname: 'The chain',
+        filename: 'thechain.mp3',
+        entity: 'fleet_wood',
       }),
     ]);
   });

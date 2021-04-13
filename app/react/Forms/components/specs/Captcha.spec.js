@@ -16,6 +16,7 @@ describe('Captcha', () => {
   });
 
   const render = () => {
+    spyOn(api, 'get').and.returnValue(Promise.resolve({ json: { svg: '', id: 2 } }));
     component = shallow(<Captcha {...props} />);
   };
 
@@ -37,9 +38,9 @@ describe('Captcha', () => {
       };
       render();
       expect(component.find('div div').props().dangerouslySetInnerHTML).toEqual({ __html: '' });
-      spyOn(api, 'get').and.returnValue(Promise.resolve({ json: { svg: 'captchasvg', id: 2 } }));
-      await refreshCaptcha();
 
+      api.get.and.returnValue(Promise.resolve({ json: { svg: 'captchasvg', id: 2 } }));
+      await refreshCaptcha();
       expect(component.find('div div').props().dangerouslySetInnerHTML).toEqual({
         __html: 'captchasvg',
       });

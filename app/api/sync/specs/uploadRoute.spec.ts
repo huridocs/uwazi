@@ -28,9 +28,9 @@ jest.mock(
 
 describe('sync', () => {
   describe('sync/upload', () => {
-    beforeAll(() => {
+    beforeAll(async () => {
       testingTenants.mockCurrentTenant({});
-      setupTestUploadedPaths();
+      await setupTestUploadedPaths('sync');
     });
 
     afterAll(() => {

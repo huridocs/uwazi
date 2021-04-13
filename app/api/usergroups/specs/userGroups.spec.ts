@@ -10,6 +10,8 @@ describe('userGroups', () => {
     await db.clearAllAndLoad(fixtures);
   });
 
+  afterAll(async () => db.disconnect());
+
   describe('get', () => {
     it('should return populated user groups from model', async () => {
       const groups = await userGroups.get({}, '', { sort: { name: 1 } });

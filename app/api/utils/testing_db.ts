@@ -4,8 +4,7 @@ import { Db, ObjectId } from 'mongodb';
 import { FileType } from 'shared/types/fileType';
 import { EntitySchema } from 'shared/types/entityType';
 import { DB } from 'api/odm';
-import { tenants } from 'api/tenants/tenantContext';
-import { setupTestUploadedPaths, testingUploadPaths } from 'api/files/filesystem';
+import { setupTestUploadedPaths } from 'api/files/filesystem';
 import { ThesaurusSchema } from 'shared/types/thesaurusType';
 import { elasticTesting } from './elastic_testing';
 import { testingTenants } from './testingTenants';
@@ -78,21 +77,12 @@ const testingDB: {
       this.dbName = await mongod.getDbName();
 
       if (options.defaultTenant) {
-        tenants.add(
-          testingTenants.createTenant({
-            name: this.dbName,
-            dbName: this.dbName,
-            indexName: 'index',
-            ...testingUploadPaths,
-          })
-        );
-
         testingTenants.mockCurrentTenant({
           name: this.dbName,
           dbName: this.dbName,
           indexName: 'index',
         });
-        setupTestUploadedPaths();
+        await setupTestUploadedPaths();
       }
     }
 
