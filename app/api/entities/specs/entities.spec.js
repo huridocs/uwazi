@@ -10,7 +10,6 @@ import relationships from 'api/relationships';
 import { search } from 'api/search';
 import { uploadsPath } from 'api/files/filesystem';
 
-import { permissionsContext } from 'api/permissions/permissionsContext';
 import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
 import { UserRole } from 'shared/types/userSchema';
 import entities from '../entities.js';
@@ -35,7 +34,6 @@ describe('entities', () => {
     spyOn(search, 'indexEntities').and.returnValue(Promise.resolve());
     spyOn(search, 'bulkIndex').and.returnValue(Promise.resolve());
     spyOn(search, 'bulkDelete').and.returnValue(Promise.resolve());
-    spyOn(permissionsContext, 'getUserInContext').and.returnValue({ _id: 'user1', role: 'admin' });
     await db.setupFixturesAndContext(fixtures);
   });
 
@@ -566,6 +564,24 @@ describe('entities', () => {
         multiselect: [],
         select: [],
         numeric: [],
+      });
+    });
+
+    describe('unrestricted for collaborator', () => {
+      it('should save the entity with unrestricted access', async () => {
+        userFactory.mock({
+          _id: 'user1',
+          role: UserRole.COLLABORATOR,
+          username: 'User 1',
+          email: 'col@test.com',
+        });
+
+        await entities.updateMetdataFromRelationships(['shared'], 'en');
+        const updatedEntity = await entities.getById('shared', 'en');
+        expect(updatedEntity.metadata.friends).toEqual([
+          { icon: null, type: 'entity', label: 'shared2title', value: 'shared2' },
+        ]);
+        userFactory.mockEditorUser();
       });
     });
   });
