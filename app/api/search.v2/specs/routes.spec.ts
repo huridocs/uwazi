@@ -15,7 +15,7 @@ import {
   entity3es,
 } from './fixturesTitleSearch';
 
-describe('entities routes', () => {
+describe('entities get searchString', () => {
   const app: Application = setUpApp(searchRoutes);
 
   beforeAll(async () => {
@@ -95,6 +95,17 @@ describe('entities routes', () => {
       const expectedUrl = encodeURI('/api/v2/entities?filter[searchString]=title&page[limit]=2');
 
       expect(body.links.first).toBe(expectedUrl);
+    });
+
+    it('should still search with simple query for no valid lucene syntax', async () => {
+      const { body } = await request(app)
+        .get('/api/v2/entities')
+        .query({ filter: { searchString: 'title OR' }, page: { limit: 2 } });
+
+      expect(body.data).toEqual([
+        expect.objectContaining({ _id: entity1en.toString() }),
+        expect.objectContaining({ _id: entity2en.toString() }),
+      ]);
     });
   });
 });

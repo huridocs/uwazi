@@ -6,7 +6,14 @@ export const permissionsContext = {
 
   permissionsRefIds() {
     const user = this.getUserInContext();
-    return [...(user?.groups || []).map(g => g._id.toString()), user?._id];
+    return [...(user?.groups || []).map(g => g._id.toString()), user?._id?.toString()].filter(
+      (v): v is string => !!v
+    );
+  },
+
+  needsPermissionCheck() {
+    const user = this.getUserInContext();
+    return !['admin', 'editor'].includes(user?.role || '');
   },
 
   setCommandContext: () => {

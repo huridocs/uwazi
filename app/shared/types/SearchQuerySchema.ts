@@ -13,6 +13,7 @@ export const SearchQuerySchema = {
       additionalProperties: false,
       properties: {
         searchString: { anyOf: [{ type: 'string' }, { type: 'number' }] },
+        published: { type: 'boolean' },
       },
     },
   },
