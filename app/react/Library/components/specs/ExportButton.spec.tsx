@@ -98,9 +98,7 @@ describe('ExportButton', () => {
       spyOn(actions, 'exportDocuments').and.returnValue(() => {});
       render();
       component.find('.btn').simulate('click');
-      component
-        .find(LocalForm)
-        .simulate('submit', { value: { captcha: { text: 'abcde', id: '1234' } } });
+      component.find(LocalForm).simulate('submit', { captcha: { text: 'abcde', id: '1234' } });
       expect(actions.exportDocuments).toHaveBeenCalledWith('library', {
         text: 'abcde',
         id: '1234',

@@ -44,7 +44,7 @@ function extractFileName(contentDisposition: string) {
   return contentDisposition.substring(startIndex, endIndex);
 }
 
-export function exportDocuments(storeKey: string) {
+export function exportDocuments(storeKey: string, captcha?: object) {
   return async (dispatch: Dispatch<any>, getState: any) => {
     const state = getState()[storeKey];
     const { search, filters } = state;
