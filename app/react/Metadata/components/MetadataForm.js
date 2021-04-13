@@ -1,5 +1,3 @@
-/** @format */
-
 import entitiesUtil from 'app/Entities/utils/filterBaseProperties';
 import { Select as SimpleSelect } from 'app/Forms';
 import { I18NLink, t, Translate } from 'app/I18N';
@@ -103,6 +101,7 @@ export class MetadataForm extends Component {
       multipleEdition,
       showSubset,
       version,
+      storeKey,
       highlightedProps,
     } = this.props;
 
@@ -154,6 +153,7 @@ export class MetadataForm extends Component {
           showSubset={showSubset}
           version={version}
           highlightedProps={highlightedProps}
+          storeKey={storeKey}
         />
       </Form>
     );
@@ -171,6 +171,7 @@ MetadataForm.defaultProps = {
   changeTemplate: () => {},
   onSubmit: () => {},
   highlightedProps: [],
+  storeKey: '',
 };
 
 MetadataForm.propTypes = {
@@ -189,6 +190,7 @@ MetadataForm.propTypes = {
   version: PropTypes.string,
   componentWillUnmount: PropTypes.func,
   highlightedProps: PropTypes.arrayOf(PropTypes.string),
+  storeKey: PropTypes.string,
 };
 
 function mapDispatchToProps(dispatch) {
