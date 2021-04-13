@@ -125,23 +125,6 @@ export const permissionsLevelFixtures: DBFixture = {
     },
   ],
 
-  users: [
-    {
-      _id: users.user3._id,
-      username: 'group1 user',
-    },
-  ],
-  usergroups: [
-    {
-      _id: group1,
-      name: 'Group1',
-      members: [
-        {
-          _id: users.user3._id,
-        },
-      ],
-    },
-  ],
   settings: [{ languages: [{ key: 'es', default: true }, { key: 'en' }] }],
 };
 

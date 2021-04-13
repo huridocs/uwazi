@@ -7,5 +7,6 @@ export interface SearchQuery {
   };
   filter?: {
     searchString?: string | number;
+    published?: boolean;
   };
 }

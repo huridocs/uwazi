@@ -1,15 +1,12 @@
-import { Application, Request } from 'express';
+import { Application, Request, Response } from 'express';
 
 import { elastic } from 'api/search/elastic';
 import validateRequest from 'api/utils/validateRequest';
 import { parseQuery } from 'api/utils';
 import { SearchQuerySchema } from 'shared/types/SearchQuerySchema';
 import { SearchQuery } from 'shared/types/SearchQueryType';
-import { permissionsContext } from 'api/permissions/permissionsContext';
 
-interface UwaziRequest<T> extends Request {
-  query: T;
-}
+import { buildQuery } from './buildQuery';
 
 interface UwaziResponse {
   data: any;
@@ -19,16 +16,11 @@ interface UwaziResponse {
   };
 }
 
-const nested = (filters, path) => ({
-  nested: {
-    path,
-    query: {
-      bool: {
-        must: filters,
-      },
-    },
-  },
-});
+interface UwaziReq<T> extends Request {
+  query: T;
+}
+
+type UwaziRes = Omit<Response, 'json'> & { json(data: UwaziResponse): Response };
 
 const searchRoutes = (app: Application) => {
   app.get(
@@ -37,55 +29,22 @@ const searchRoutes = (app: Application) => {
     validateRequest({
       query: SearchQuerySchema,
     }),
-    async (req: UwaziRequest<SearchQuery>, res, _next) => {
+    async (req: UwaziReq<SearchQuery>, res: UwaziRes, _next) => {
       const { query, language, url } = req;
       const { filter = {} } = query;
 
-      const user = permissionsContext.getUserInContext();
-      const needsPermissions = !['admin', 'editor'].includes((user || {}).role);
-      const elasticQuery = {
-        body: {
-          _source: {
-            includes: ['title', 'template', 'sharedId', 'language'],
-          },
-          query: {
-            bool: {
-              filter: [
-                { term: { language } },
-                ...(!user || filter.published ? [{ term: { published: true } }] : []),
-                ...(user && needsPermissions && filter.published === undefined
-                  ? [
-                      {
-                        bool: {
-                          should: [
-                            { term: { published: true } },
-                            nested(
-                              [
-                                {
-                                  terms: {
-                                    'permissions.refId': permissionsContext.permissionsRefIds(),
-                                  },
-                                },
-                              ],
-                              'permissions'
-                            ),
-                          ],
-                        },
-                      },
-                    ]
-                  : []),
-              ],
-              must: filter.searchString ? [{ query_string: { query: filter.searchString } }] : [],
-            },
-          },
-          from: 0,
-          size: query.page?.limit || 300,
-        },
-      };
+      //should parse query do this?
+      if (filter.published === 'false') {
+        filter.published = false;
+      }
+      if (filter.published === 'true') {
+        filter.published = true;
+      }
+      //
 
-      const response = await elastic.search(elasticQuery);
+      const response = await elastic.search({ body: await buildQuery(query, language) });
 
-      const APIResponse: UwaziResponse = {
+      res.json({
         data: response.body.hits.hits.map(h => {
           const entity = h._source;
           entity._id = h._id;
@@ -95,9 +54,7 @@ const searchRoutes = (app: Application) => {
           self: url,
           first: query.page?.limit ? url : undefined,
         },
-      };
-
-      res.json(APIResponse);
+      });
     }
   );
 };

@@ -8,7 +8,7 @@ import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
 import { searchRoutes } from '../routes';
 import { permissionsLevelFixtures, users } from './permissionsFiltersFixtures';
 
-describe('entities routes', () => {
+describe('entities GET permissions + published filter', () => {
   const app: Application = setUpApp(searchRoutes);
   const userFactory = new UserInContextMockFactory();
 
@@ -19,42 +19,12 @@ describe('entities routes', () => {
   afterAll(async () => testingDB.disconnect());
 
   describe('GET/public entities', () => {
-    describe('for not logged in users', () => {
+    describe('when user is not logged in', () => {
       it('should only see published entities', async () => {
         userFactory.mock(undefined);
         const { body } = await request(app)
           .get('/api/v2/entities')
           .expect(200);
-
-        expect(body.data).toEqual([
-          expect.objectContaining({ title: 'entPublic1' }),
-          expect.objectContaining({ title: 'entPublic2' }),
-        ]);
-      });
-      it('should not return anything when filtering by publish false', async () => {
-        userFactory.mock(undefined);
-        const { body } = await request(app)
-          .get('/api/v2/entities')
-          .query({ filter: { published: false } })
-          .expect(200);
-
-        expect(body.data).toEqual([]);
-      });
-    });
-
-    describe('when querying published true', () => {
-      it.each`
-        user
-        ${users.user1}
-        ${users.editorUser}
-        ${users.adminUser}
-      `('should only see published entities ($user.role)', async ({ user }) => {
-        userFactory.mock(user);
-        const query = { filter: { published: true } };
-
-        const { body } = await request(app)
-          .get('/api/v2/entities')
-          .query(query);
 
         expect(body.data).toEqual([
           expect.objectContaining({ title: 'entPublic1' }),
@@ -83,7 +53,7 @@ describe('entities routes', () => {
         user
         ${users.adminUser}
         ${users.editorUser}
-      `('should only see published entities ($user.role)', async ({ user }) => {
+      `('should see all entities ($user.role)', async ({ user }) => {
         userFactory.mock(user);
 
         const { body } = await request(app).get('/api/v2/entities');
@@ -96,6 +66,77 @@ describe('entities routes', () => {
           expect.objectContaining({ title: 'entPublic1' }),
           expect.objectContaining({ title: 'entPublic2' }),
         ]);
+      });
+    });
+
+    describe('when filtering published: true', () => {
+      it.each`
+        user
+        ${users.user1}
+        ${users.editorUser}
+        ${users.adminUser}
+      `('should only see published entities ($user.role)', async ({ user }) => {
+        userFactory.mock(user);
+        const query = { filter: { published: true } };
+
+        const { body } = await request(app)
+          .get('/api/v2/entities')
+          .query(query);
+
+        expect(body.data).toEqual([
+          expect.objectContaining({ title: 'entPublic1' }),
+          expect.objectContaining({ title: 'entPublic2' }),
+        ]);
+      });
+    });
+
+    describe('when filtering published: false', () => {
+      describe('non logged in users', () => {
+        it('should not return any results', async () => {
+          userFactory.mock(undefined);
+          const { body } = await request(app)
+            .get('/api/v2/entities')
+            .query({ filter: { published: false } })
+            .expect(200);
+
+          expect(body.data).toEqual([]);
+        });
+      });
+
+      describe('when user is collaborator', () => {
+        it('should only see authorized entities', async () => {
+          userFactory.mock(users.user2);
+
+          const { body } = await request(app)
+            .get('/api/v2/entities')
+            .query({ filter: { published: false } });
+
+          expect(body.data).toEqual([
+            expect.objectContaining({ title: 'ent3' }),
+            expect.objectContaining({ title: 'ent4' }),
+          ]);
+        });
+      });
+
+      describe('when user is admin/editor', () => {
+        it.each`
+          user
+          ${users.adminUser}
+          ${users.editorUser}
+        `('should see only published: false entities ($user.role)', async ({ user }) => {
+          userFactory.mock(user);
+
+          const { body } = await request(app)
+            .get('/api/v2/entities')
+            .query({ filter: { published: false } });
+
+          expect(body.data).toEqual([
+            expect.objectContaining({ title: 'ent1' }),
+            expect.objectContaining({ title: 'ent2' }),
+            expect.objectContaining({ title: 'ent3' }),
+            expect.objectContaining({ title: 'ent4' }),
+          ]);
+        });
       });
     });
   });
