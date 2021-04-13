@@ -2,7 +2,6 @@ import entities from 'api/entities/entities';
 import users from 'api/users/users';
 import userGroups from 'api/usergroups/userGroups';
 import { unique } from 'api/utils/filters';
-import { GroupMemberSchema, UserGroupSchema } from 'shared/types/userGroupType';
 import { EntitySchema } from 'shared/types/entityType';
 import {
   AccessLevels,
@@ -10,19 +9,21 @@ import {
   MixedAccess,
   validateUniquePermissions,
 } from 'shared/types/permissionSchema';
-import { PermissionSchema } from 'shared/types/permissionType';
+import { PermissionSchema, PermissionsDataSchema } from 'shared/types/permissionType';
 import { MemberWithPermission } from 'shared/types/entityPermisions';
-import { PermissionsDataSchema } from '../../shared/types/permissionType';
+import { ObjectIdSchema } from 'shared/types/commonTypes';
 import { permissionsContext } from './permissionsContext';
 import { PUBLIC_PERMISSION } from './publicPermission';
 
 const setAdditionalData = (
-  peopleList: (GroupMemberSchema | UserGroupSchema)[],
+  referencedList: { _id: ObjectIdSchema }[],
   permission: PermissionSchema,
-  additional: (data: GroupMemberSchema | UserGroupSchema) => {}
+  additional: (data: { _id: ObjectIdSchema }) => {}
 ) => {
-  const userData = peopleList.find(u => u._id!.toString() === permission.refId.toString());
-  return userData ? { ...permission, ...additional(userData) } : undefined;
+  const referencedData = referencedList.find(
+    u => u._id!.toString() === permission.refId.toString()
+  );
+  return referencedData ? { ...permission, ...additional(referencedData) } : undefined;
 };
 
 async function setAccessLevelAndPermissionData(

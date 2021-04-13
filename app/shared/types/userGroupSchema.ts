@@ -7,9 +7,9 @@ export const groupMemberSchema = {
   additionalProperties: false,
   definitions: { objectIdSchema },
   properties: {
-    _id: objectIdSchema,
+    refId: objectIdSchema,
   },
-  required: ['_id'],
+  required: ['refId'],
 };
 export const userGroupSchema = {
   $schema: 'http://json-schema.org/schema#',

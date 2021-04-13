@@ -4,7 +4,7 @@
 import { ObjectIdSchema } from 'shared/types/commonTypes';
 
 export interface GroupMemberSchema {
-  _id: ObjectIdSchema;
+  refId: ObjectIdSchema;
 }
 
 export interface UserGroupSchema {

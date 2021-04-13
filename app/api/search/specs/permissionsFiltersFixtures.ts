@@ -137,7 +137,7 @@ export const permissionsLevelFixtures: DBFixture = {
       name: 'Group1',
       members: [
         {
-          _id: users.user3._id,
+          refId: users.user3._id,
         },
       ],
     },
