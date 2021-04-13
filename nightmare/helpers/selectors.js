@@ -274,8 +274,8 @@ export default {
       '#app > div.content > div > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-footer > span > button.btn.btn-success',
     shareButton:
       '#app > div.content > div > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-footer > span > button.btn.btn-success.share-btn',
-    multiPublishButton:
-      '#app > div.content > div > div > div > aside.side-panel.multi-edit.is-active > div.sidepanel-footer > button.publish.btn.btn-success',
+    multiShareButton:
+      '#app > div.content > div > div > div > aside.side-panel.multi-edit.is-active > div.sidepanel-footer > button.btn.btn-success.share-btn',
     acceptPublishModel:
       'body > div.ReactModalPortal > div > div > div > div.modal-footer > button.btn.confirm-button.btn-success',
     metadataPanel: '.side-panel.metadata-sidepanel',

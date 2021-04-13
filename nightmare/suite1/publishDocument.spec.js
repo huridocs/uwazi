@@ -59,19 +59,7 @@ describe('PublishDocument', () => {
       .write(selectors.doc.form.superPowersSearch, 'regen')
       .waitToClick(selectors.doc.form.suporPowers.regeneration)
       .click(selectors.libraryView.saveButton)
-      .waitToClick(selectors.uploadsView.shareButton)
-      .wait(500)
-      .evaluate(
-        selector => document.querySelector(selector).focus(),
-        '.share-modal .userGroupsLookupField input'
-      )
-      .evaluate(
-        selector => document.querySelector(selector).click(),
-        '.userGroupsLookupField > ul > li:last-child'
-      )
-      .waitToClick('.share-modal  button.confirm-button')
-      .wait('.alert.alert-success')
-      .waitToClick('.alert.alert-success')
+      .shareWithPublic('shareButton')
       .then(done);
   });
 
