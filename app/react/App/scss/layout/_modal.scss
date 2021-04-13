@@ -3,6 +3,9 @@
 @import "../../scss/config/_typography.scss";
 
 .modal-dialog {
+	max-height: 90%;
+	overflow-y: scroll;
+
 	.btn-default {
 		opacity: 0.5;
 	}
