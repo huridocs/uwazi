@@ -13,7 +13,7 @@ describe('MetadataFormFields with one entity to edit ', () => {
 
   beforeEach(() => {
     fieldsTemplate = [
-      { name: 'field1', label: 'label1' },
+      { name: 'field1', label: 'label1', type: 'text' },
       { name: 'field2', label: 'label2', type: 'relationship', content: '2' },
       { name: 'field3', label: 'label3', type: 'date' },
       { name: 'field4', label: 'label4', type: 'generatedid' },
@@ -77,9 +77,8 @@ describe('MetadataFormFields with one entity to edit ', () => {
 
   it('should render dynamic fields based on the template selected', () => {
     render();
-    const inputField = component.findWhere(node => node.props().model === '.metadata.field1');
-    const input = inputField.find('input');
-    expect(input).toBeDefined();
+    const inputField = component.find('[model=".metadata.field1"]').find('input');
+    expect(inputField.length).toBe(1);
 
     const multiselect = component.find(LookupMultiSelect);
     expect(multiselect.props().options).toEqual(props.thesauris.toJS()[0].values);
@@ -88,8 +87,7 @@ describe('MetadataFormFields with one entity to edit ', () => {
     const datepicker = component.find(DatePicker);
     expect(datepicker.length).toBe(1);
 
-    const generatedIdField = component.findWhere(node => node.props().model === '.metadata.field4');
-    const generatedIdInput = generatedIdField.find('input');
+    const generatedIdInput = component.find('[model=".metadata.field4"]').find('input');
     expect(generatedIdInput.length).toBe(1);
   });
 });
