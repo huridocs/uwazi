@@ -226,6 +226,28 @@ describe('exportActions', () => {
           throw e;
         });
     });
+
+    it('should dispatch a correct notification if the captcha is invalid', done => {
+      const dispatch = jest.fn();
+      const getState = jest.fn(() => state);
+
+      mockSuperAgent(apiResponse, { status: 403 });
+
+      spyOn(notifications, 'notify');
+
+      actions
+        .exportDocuments('library')(dispatch, getState)
+        .then(() => {
+          expect(notifications.notify).toHaveBeenCalledWith(
+            expect.stringContaining('captcha'),
+            'danger'
+          );
+          done();
+        })
+        .catch(e => {
+          throw e;
+        });
+    });
   });
 
   describe('endExport', () => {

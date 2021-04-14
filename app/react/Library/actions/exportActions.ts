@@ -81,7 +81,11 @@ export function exportDocuments(storeKey: string, captcha?: CaptchaValue) {
       })
       .catch(err => {
         clearState(dispatch);
-        dispatch(notify(t('System', 'An error has occured during data export'), 'danger'));
+        if (err.status === 403) {
+          dispatch(notify(t('System', 'Invalid captcha'), 'danger'));
+        } else {
+          dispatch(notify(t('System', 'An error has occured during data export'), 'danger'));
+        }
         return err;
       });
   };
