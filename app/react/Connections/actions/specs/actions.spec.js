@@ -1,10 +1,10 @@
 import configureMockStore from 'redux-mock-store';
+import qs from 'qs';
 import thunk from 'redux-thunk';
 import api from 'app/utils/api';
 import { RequestParams } from 'app/utils/RequestParams';
 import { mockID } from 'shared/uniqueID.js';
 import * as notificationsTypes from 'app/Notifications/actions/actionTypes';
-import SearchApi from 'app/Search/SearchAPI';
 import * as actions from '../actions';
 
 const middlewares = [thunk];
@@ -17,12 +17,14 @@ describe('Connections actions', () => {
   beforeEach(() => {
     mockID();
     store = mockStore({});
-    spyOn(SearchApi, 'search').and.returnValue(
+    spyOn(api, 'get').and.returnValue(
       Promise.resolve({
-        rows: [
-          { title: 'Southern Nights', documents: [], attachments: [] },
-          { title: 'elenore', documents: [{ originalName: 'The Turtles' }], attachments: [] },
-        ],
+        json: {
+          data: [
+            { title: 'Southern Nights', documents: [], attachments: [] },
+            { title: 'elenore', documents: [{ originalName: 'The Turtles' }], attachments: [] },
+          ],
+        },
       })
     );
     spyOn(api, 'post').and.callFake(url => {
@@ -38,8 +40,10 @@ describe('Connections actions', () => {
     describe('immidiateSearch', () => {
       it('should search for connections', () => {
         actions.immidiateSearch(store.dispatch, 'term');
-        const expectedParams = new RequestParams({ searchTerm: 'term', fields: ['title'] });
-        expect(SearchApi.search).toHaveBeenCalledWith(expectedParams);
+        const expectedParams = new RequestParams(
+          qs.stringify({ filter: { searchString: 'title:(term)' } })
+        );
+        expect(api.get).toHaveBeenCalledWith('v2/entities', expectedParams);
         expect(store.getActions()).toContainEqual({ type: 'SEARCHING_CONNECTIONS' });
       });
 
@@ -81,12 +85,13 @@ describe('Connections actions', () => {
           type: 'connections/searchTerm/SET',
           value: 'term',
         });
-        expect(SearchApi.search).not.toHaveBeenCalled();
+        expect(api.get).not.toHaveBeenCalled();
 
         jasmine.clock().tick(400);
 
-        expect(SearchApi.search).toHaveBeenCalledWith(
-          new RequestParams({ searchTerm: 'term', fields: ['title'] })
+        expect(api.get).toHaveBeenCalledWith(
+          'v2/entities',
+          new RequestParams(qs.stringify({ filter: { searchString: 'title:(term)' } }))
         );
         jasmine.clock().uninstall();
       });
@@ -96,9 +101,7 @@ describe('Connections actions', () => {
   describe('startNewConnection', () => {
     it('should perform an immediate empty search', () => {
       actions.startNewConnection('type', 'sourceId')(store.dispatch);
-      expect(SearchApi.search).toHaveBeenCalledWith(
-        new RequestParams({ searchTerm: '', fields: ['title'] })
-      );
+      expect(api.get).toHaveBeenCalledWith('v2/entities', new RequestParams(''));
     });
 
     it('should restore default search term and open the panel', done => {
