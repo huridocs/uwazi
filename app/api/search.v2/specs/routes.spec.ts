@@ -3,6 +3,7 @@ import { setUpApp } from 'api/utils/testingRoutes';
 import request from 'supertest';
 
 import { testingDB } from 'api/utils/testing_db';
+import { elastic } from 'api/search';
 
 import { searchRoutes } from '../routes';
 import {

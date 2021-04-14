@@ -12,6 +12,10 @@ export default {
     return api.get(url, requestParams).then(response => response.json);
   },
 
+  searchV2(requestParams = new RequestParams()) {
+    return api.get('v2/entities', requestParams).then(response => response.json);
+  },
+
   search(requestParams = new RequestParams()) {
     const params = requestParams.add({
       include:
