@@ -7,10 +7,10 @@ function getCaptchaValue(req: Request): CaptchaValue | null {
     return JSON.parse(req.body.captcha);
   }
 
-  if (req.headers['Captcha-text'] && req.headers['Captcha-id']) {
+  if (req.get('Captcha-text') && req.get('Captcha-id')) {
     return {
-      id: req.headers['Captcha-id'] as string,
-      text: req.headers['Captcha-text'] as string,
+      id: req.get('Captcha-id') as string,
+      text: req.get('Captcha-text') as string,
     };
   }
 

@@ -5,6 +5,8 @@ import captchaMiddleware from '../captchaMiddleware';
 import { CaptchaModel } from '../CaptchaModel';
 import { ObjectIdSchema } from '../../../shared/types/commonTypes';
 
+const getMock = jest.fn().mockReturnValue(undefined);
+
 describe('captchaMiddleware', () => {
   let req: any;
   let res: any;
@@ -12,7 +14,7 @@ describe('captchaMiddleware', () => {
   let captchaId: ObjectIdSchema;
 
   beforeEach(done => {
-    req = { body: {}, session: {}, cookies: {}, headers: {} };
+    req = { body: {}, session: {}, cookies: {}, get: getMock };
     res = {
       status: jasmine.createSpy('status'),
       json: jasmine.createSpy('json'),
@@ -80,8 +82,14 @@ describe('captchaMiddleware', () => {
 
     it('should look for the captcha in the headers', async () => {
       const middleWare = captchaMiddleware();
-      req.headers['Captcha-text'] = 'k0n2170';
-      req.headers['Captcha-id'] = captchaId.toString();
+      getMock.mockImplementation(
+        (key: string) =>
+          ({
+            'Captcha-text': 'k0n2170',
+            'Captcha-id': captchaId.toString(),
+          }[key])
+      );
+
       await middleWare(req, res, next);
 
       expect(res.status).not.toHaveBeenCalled();
