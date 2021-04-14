@@ -8,6 +8,7 @@ import { exportDocuments } from 'app/Library/actions/exportActions';
 import { User } from 'api/users/usersModel';
 import Modal from 'app/Layout/Modal';
 import { LocalForm } from 'react-redux-form';
+import { CaptchaValue } from 'shared/types/Captcha';
 import { Captcha, FormGroup } from 'app/ReactReduxForms';
 import { ExportStore } from '../reducers/ExportStoreType';
 
@@ -15,7 +16,7 @@ export type ExportButtonProps = {
   processing: boolean;
   storeKey: string;
   user: User;
-  exportDocuments: (keyStore: string, captcha?: object) => any;
+  exportDocuments: (keyStore: string, captcha?: CaptchaValue) => any;
 };
 
 class ExportButton extends Component<ExportButtonProps, { modal: boolean }> {
@@ -35,7 +36,7 @@ class ExportButton extends Component<ExportButtonProps, { modal: boolean }> {
     }
   }
 
-  exportWithCaptcha(values: { [captcha: string]: object }) {
+  exportWithCaptcha(values: { captcha: CaptchaValue }) {
     if (!this.props.processing) {
       this.props.exportDocuments(this.props.storeKey, values.captcha);
     }
