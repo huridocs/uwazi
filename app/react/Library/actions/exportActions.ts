@@ -5,9 +5,10 @@ import { notify } from 'app/Notifications/actions/notificationsActions';
 import { t } from 'app/I18N';
 import { Dispatch } from 'redux';
 import { IImmutable } from 'shared/types/Immutable';
+import { CaptchaValue } from 'shared/types/Captcha';
+import { EntitySchema } from 'shared/types/entityType';
 import { processFilters } from './libraryActions';
 import { ExportStore } from '../reducers/ExportStoreType';
-import { EntitySchema } from '../../../shared/types/entityType';
 
 export function triggerLocalDownload(content: string, fileName: string) {
   const url: string = window.URL.createObjectURL(new Blob([content]));
@@ -44,7 +45,8 @@ function extractFileName(contentDisposition: string) {
   return contentDisposition.substring(startIndex, endIndex);
 }
 
-export function exportDocuments(storeKey: string, captcha?: object) {
+export function exportDocuments(storeKey: string, captcha?: CaptchaValue) {
+  // eslint-disable-next-line max-statements
   return async (dispatch: Dispatch<any>, getState: any) => {
     const state = getState()[storeKey];
     const { search, filters } = state;
@@ -61,10 +63,23 @@ export function exportDocuments(storeKey: string, captcha?: object) {
 
     if (storeKey === 'uploads') finalSearchParams.unpublished = true;
     dispatch(actions.set('exportSearchResultsProcessing', true));
-    superagent
+    const request = superagent
       .get(`/api/export${toUrlParams(finalSearchParams)}`)
       .set('Accept', 'text/csv')
-      .set('X-Requested-With', 'XMLHttpRequest')
+      .set('X-Requested-With', 'XMLHttpRequest');
+
+    if (captcha) {
+      request
+        .set('Captcha-text', captcha.text)
+        .set('Captcha-id', captcha.id)
+        .catch(err => {
+          clearState(dispatch);
+          dispatch(notify(t('System', 'An error has occured during data export'), 'danger'));
+          return err;
+        });
+    }
+
+    request
       .then(response => {
         const fileName = extractFileName(response.header['content-disposition']);
         dispatch(actions.set('exportSearchResultsContent', response.text));
