@@ -28,8 +28,10 @@ const mockSuperAgent = (response?: any, err?: any) => {
     cb(response);
     return mockUpload;
   });
-  spyOn(mockUpload, 'set').and.returnValue(mockUpload);
+  const requestSet = spyOn(mockUpload, 'set').and.returnValue(mockUpload);
   spyOn(superagent, 'get').and.returnValue(mockUpload);
+
+  return { requestSet };
 };
 
 const generateState = () => ({
@@ -116,6 +118,15 @@ describe('exportActions', () => {
         done();
       });
     };
+
+    it('should set the captcha values in the header if there is a captcha', done => {
+      const { requestSet } = mockSuperAgent(apiResponse);
+      store.dispatch(actions.exportDocuments('library', { text: 'CFcD', id: '1234' })).then(() => {
+        expect(requestSet).toHaveBeenCalledWith('Captcha-text', 'CFcD');
+        expect(requestSet).toHaveBeenCalledWith('Captcha-id', '1234');
+        done();
+      });
+    });
 
     it('should set the processing flag in the store', done => {
       mockSuperAgent(apiResponse);
