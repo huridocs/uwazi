@@ -26,7 +26,7 @@ class ExportButton extends Component<ExportButtonProps, { modal: boolean }> {
     };
     this.export = this.export.bind(this);
     this.showModal = this.showModal.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
+    this.exportWithCaptcha = this.exportWithCaptcha.bind(this);
   }
 
   export() {
@@ -35,15 +35,15 @@ class ExportButton extends Component<ExportButtonProps, { modal: boolean }> {
     }
   }
 
-  showModal() {
-    this.setState({ modal: true });
-  }
-
-  handleSubmit(values: { [captcha: string]: object }) {
+  exportWithCaptcha(values: { [captcha: string]: object }) {
     if (!this.props.processing) {
       this.props.exportDocuments(this.props.storeKey, values.captcha);
     }
     this.setState({ modal: false });
+  }
+
+  showModal() {
+    this.setState({ modal: true });
   }
 
   render() {
@@ -62,13 +62,26 @@ class ExportButton extends Component<ExportButtonProps, { modal: boolean }> {
           <span className="btn-label">{t('System', 'Export CSV')}</span>
         </button>
         {this.state.modal && (
-          <Modal isOpen>
-            <LocalForm onSubmit={this.handleSubmit}>
+          <Modal isOpen type="export">
+            <LocalForm onSubmit={this.exportWithCaptcha}>
               <FormGroup key="captcha" model=".captcha">
-                <Translate>Captcha</Translate>
+                <h2>
+                  <Translate>Exporting entities to CSV</Translate>
+                </h2>
+                <Translate>
+                  Please type in letters and numbers from the image to start the export.
+                </Translate>
                 <Captcha remote={false} model=".captcha" />
               </FormGroup>
-              <input type="submit" className="btn btn-success" value="Submit" />
+              <input
+                type="button"
+                className="btn"
+                onClick={() => {
+                  this.setState({ modal: false });
+                }}
+                value="Cancel"
+              />
+              <input type="submit" className="btn btn-success" value="Export" />
             </LocalForm>
           </Modal>
         )}
