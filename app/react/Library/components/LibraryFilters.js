@@ -42,7 +42,7 @@ export class LibraryFilters extends Component {
             <div className="filter-buttons">
               <div
                 className={`clear-button ${
-                  this.props.sidePanelMode === 'unpinned-mode' ? '' : 'push-right'
+                  this.props.sidePanelMode !== 'unpinned-mode' ? '' : 'push-right'
                 }`}
                 onClick={this.reset.bind(this)}
               >
