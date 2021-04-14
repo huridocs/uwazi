@@ -84,10 +84,10 @@ describe('captchaMiddleware', () => {
       const middleWare = captchaMiddleware();
       getMock.mockImplementation(
         (key: string) =>
-          ({
+          (<{ [key: string]: string }>{
             'Captcha-text': 'k0n2170',
             'Captcha-id': captchaId.toString(),
-          }[key])
+          })[key]
       );
 
       await middleWare(req, res, next);
