@@ -1,16 +1,18 @@
 import db from 'api/utils/testing_db';
 import { catchErrors } from 'api/utils/jasmineHelpers';
+import { NextFunction } from 'express';
 import captchaMiddleware from '../captchaMiddleware';
 import { CaptchaModel } from '../CaptchaModel';
+import { ObjectIdSchema } from '../../../shared/types/commonTypes';
 
 describe('captchaMiddleware', () => {
-  let req;
-  let res;
-  let next;
-  let captchaId;
+  let req: any;
+  let res: any;
+  let next: NextFunction;
+  let captchaId: ObjectIdSchema;
 
   beforeEach(done => {
-    req = { body: {}, session: {}, cookies: {} };
+    req = { body: {}, session: {}, cookies: {}, headers: {} };
     res = {
       status: jasmine.createSpy('status'),
       json: jasmine.createSpy('json'),
@@ -74,6 +76,17 @@ describe('captchaMiddleware', () => {
       await middleWare(req, res, next);
       const captchas = await CaptchaModel.get();
       expect(captchas.length).toBe(0);
+    });
+
+    it('should look for the captcha in the headers', async () => {
+      const middleWare = captchaMiddleware();
+      req.headers['Captcha-text'] = 'k0n2170';
+      req.headers['Captcha-id'] = captchaId.toString();
+      await middleWare(req, res, next);
+
+      expect(res.status).not.toHaveBeenCalled();
+      expect(res.json).not.toHaveBeenCalled();
+      expect(next).toHaveBeenCalled();
     });
   });
 });
