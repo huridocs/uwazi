@@ -63,20 +63,13 @@ export function exportDocuments(storeKey: string, captcha?: CaptchaValue) {
 
     if (storeKey === 'uploads') finalSearchParams.unpublished = true;
     dispatch(actions.set('exportSearchResultsProcessing', true));
-    const request = superagent
+    let request = superagent
       .get(`/api/export${toUrlParams(finalSearchParams)}`)
       .set('Accept', 'text/csv')
       .set('X-Requested-With', 'XMLHttpRequest');
 
     if (captcha) {
-      request
-        .set('Captcha-text', captcha.text)
-        .set('Captcha-id', captcha.id)
-        .catch(err => {
-          clearState(dispatch);
-          dispatch(notify(t('System', 'An error has occured during data export'), 'danger'));
-          return err;
-        });
+      request = request.set('Captcha-text', captcha.text).set('Captcha-id', captcha.id);
     }
 
     request
