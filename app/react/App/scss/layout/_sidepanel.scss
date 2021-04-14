@@ -300,6 +300,35 @@ $c-sidebar: $c-white;
   line-height: 50px;
   height: 50px;
   border-bottom: 1px solid #d7d7dc;
+  display: flex;
+  flex-flow: row nowrap;
+
+  div:nth-child(1) {
+    width: 65%;
+  }
+  div:nth-child(2) {
+    width: 35%
+  }
+    .filter-buttons {
+
+      .clear-button {
+        text-decoration: none;
+        letter-spacing: normal;
+        font-weight: normal;
+        display: inline;
+        text-transform: capitalize;
+        border: 1px solid rgb(204, 204, 204);
+        padding: 3px;
+        cursor: pointer;
+        border-radius: 2px;
+      }
+
+      @media(min-width: 1020px) {
+        .push-right {
+          margin-left: 30px;
+        }
+      }
+    }
 }
 
 .item.readOnly {
