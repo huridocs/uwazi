@@ -45,8 +45,35 @@ function extractFileName(contentDisposition: string) {
   return contentDisposition.substring(startIndex, endIndex);
 }
 
+const requestHandler = (params: any, dispatch: Dispatch<any>, captcha?: CaptchaValue) => {
+  let request = superagent
+    .get(`/api/export${toUrlParams(params)}`)
+    .set('Accept', 'text/csv')
+    .set('X-Requested-With', 'XMLHttpRequest');
+
+  if (captcha) {
+    request = request.set('Captcha-text', captcha.text).set('Captcha-id', captcha.id);
+  }
+
+  request
+    .then(response => {
+      const fileName = extractFileName(response.header['content-disposition']);
+      dispatch(actions.set('exportSearchResultsContent', response.text));
+      dispatch(actions.set('exportSearchResultsFileName', fileName));
+      dispatch(exportEnd());
+    })
+    .catch(err => {
+      clearState(dispatch);
+      if (err.status === 403) {
+        dispatch(notify(t('System', 'Invalid captcha'), 'danger'));
+      } else {
+        dispatch(notify(t('System', 'An error has occured during data export'), 'danger'));
+      }
+      return err;
+    });
+};
+
 export function exportDocuments(storeKey: string, captcha?: CaptchaValue) {
-  // eslint-disable-next-line max-statements
   return async (dispatch: Dispatch<any>, getState: any) => {
     const state = getState()[storeKey];
     const { search, filters } = state;
@@ -62,31 +89,9 @@ export function exportDocuments(storeKey: string, captcha?: CaptchaValue) {
     }
 
     if (storeKey === 'uploads') finalSearchParams.unpublished = true;
+
     dispatch(actions.set('exportSearchResultsProcessing', true));
-    let request = superagent
-      .get(`/api/export${toUrlParams(finalSearchParams)}`)
-      .set('Accept', 'text/csv')
-      .set('X-Requested-With', 'XMLHttpRequest');
 
-    if (captcha) {
-      request = request.set('Captcha-text', captcha.text).set('Captcha-id', captcha.id);
-    }
-
-    request
-      .then(response => {
-        const fileName = extractFileName(response.header['content-disposition']);
-        dispatch(actions.set('exportSearchResultsContent', response.text));
-        dispatch(actions.set('exportSearchResultsFileName', fileName));
-        dispatch(exportEnd());
-      })
-      .catch(err => {
-        clearState(dispatch);
-        if (err.status === 403) {
-          dispatch(notify(t('System', 'Invalid captcha'), 'danger'));
-        } else {
-          dispatch(notify(t('System', 'An error has occured during data export'), 'danger'));
-        }
-        return err;
-      });
+    requestHandler(finalSearchParams, dispatch, captcha);
   };
 }
