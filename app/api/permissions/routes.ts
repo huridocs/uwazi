@@ -4,7 +4,6 @@ import { validation } from 'api/utils';
 import { entitiesPermissions } from 'api/permissions/entitiesPermissions';
 import { collaborators } from 'api/permissions/collaborators';
 import { permissionsDataSchema } from 'shared/types/permissionSchema';
-import { objectIdSchema } from 'shared/types/commonSchemas';
 
 export const permissionRoutes = (app: Application) => {
   app.post(
