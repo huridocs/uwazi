@@ -15,6 +15,7 @@ import {
   entity2es,
   entity3es,
 } from './fixturesTitleSearch';
+import errorLog from 'api/log/errorLog';
 
 describe('entities get searchString', () => {
   const app: Application = setUpApp(searchRoutes);
@@ -107,6 +108,17 @@ describe('entities get searchString', () => {
         expect.objectContaining({ _id: entity1en.toString() }),
         expect.objectContaining({ _id: entity2en.toString() }),
       ]);
+    });
+
+    describe('Error handling', () => {
+      it('should handle errors on POST', async () => {
+        spyOn(elastic, 'search').and.throwError('Error for test');
+        spyOn(errorLog, 'error');
+        const { body, status } = await request(app).get('/api/v2/entities');
+
+        expect(status).toBe(500);
+        expect(body.error).toContain('Error for test');
+      });
     });
   });
 });
