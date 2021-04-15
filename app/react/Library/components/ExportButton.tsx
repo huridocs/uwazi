@@ -64,25 +64,32 @@ class ExportButton extends Component<ExportButtonProps, { modal: boolean }> {
         </button>
         {this.state.modal && (
           <Modal isOpen type="export">
-            <LocalForm onSubmit={this.exportWithCaptcha}>
+            <LocalForm
+              onSubmit={this.exportWithCaptcha}
+              validators={{ captcha: { required: (val: any) => val && val.text.length } }}
+            >
               <FormGroup key="captcha" model=".captcha">
-                <h2>
+                <h3>
                   <Translate>Exporting entities to CSV</Translate>
-                </h2>
-                <Translate>
-                  Please type in letters and numbers from the image to start the export.
-                </Translate>
+                </h3>
+                <p>
+                  <Translate>
+                    Please type in letters and numbers from the image to start the export.
+                  </Translate>
+                </p>
                 <Captcha remote={false} model=".captcha" />
               </FormGroup>
-              <input
-                type="button"
-                className="btn"
-                onClick={() => {
-                  this.setState({ modal: false });
-                }}
-                value="Cancel"
-              />
-              <input type="submit" className="btn btn-success" value="Export" />
+              <div className="buttons">
+                <input
+                  type="button"
+                  className="btn"
+                  onClick={() => {
+                    this.setState({ modal: false });
+                  }}
+                  value="Cancel"
+                />
+                <input type="submit" className="btn btn-success" value="Export" />
+              </div>
             </LocalForm>
           </Modal>
         )}
