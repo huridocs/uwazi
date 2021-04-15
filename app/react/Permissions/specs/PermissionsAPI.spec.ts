@@ -33,7 +33,7 @@ describe('PermissionsAPI', () => {
     it('should call put method of entities/permissions collaborators api', async () => {
       const response = await loadGrantedPermissions(['shared1', 'shared2']);
       expect(api.put).toHaveBeenCalledWith('entities/permissions', {
-        data: ['shared1', 'shared2'],
+        data: { sharedIds: ['shared1', 'shared2'] },
         headers: {},
       });
       expect(response).toEqual([{ refId: 'user1', type: 'group', level: 'read' }]);

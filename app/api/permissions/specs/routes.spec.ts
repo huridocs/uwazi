@@ -143,7 +143,7 @@ describe('permissions routes', () => {
         const response = await request(app)
           .put('/api/entities/permissions')
           .set('X-Requested-With', 'XMLHttpRequest')
-          .send(['sharedId1', 'sharedId2']);
+          .send({ sharedIds: ['sharedId1', 'sharedId2'] });
         expect(response.status).toBe(500);
         expect(response.body.error).toContain('Error: error on get');
       });
@@ -173,9 +173,26 @@ describe('permissions routes', () => {
         const response = await request(app)
           .put('/api/entities/permissions')
           .set('X-Requested-With', 'XMLHttpRequest')
-          .send(['sharedId1', 'sharedId2']);
+          .send({ sharedIds: ['sharedId1', 'sharedId2'] });
         expect(response.status).toBe(200);
         expect(response.body).toEqual([{ refId: 'user1', level: 'read' }]);
+      });
+
+      it('should invalidate if data is not valid', async () => {
+        user = { username: 'user 1', role: 'admin' };
+        spyOn(entitiesPermissions, 'get').and.returnValue(
+          Promise.resolve([
+            {
+              refId: 'user1',
+              level: 'read',
+            },
+          ])
+        );
+        const response = await request(app)
+          .put('/api/entities/permissions')
+          .set('X-Requested-With', 'XMLHttpRequest')
+          .send(['sharedId1', 'sharedId2']);
+        expect(response.status).toBe(400);
       });
     });
   });

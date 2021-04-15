@@ -4,6 +4,7 @@ import { validation } from 'api/utils';
 import { entitiesPermissions } from 'api/permissions/entitiesPermissions';
 import { collaborators } from 'api/permissions/collaborators';
 import { permissionsDataSchema } from 'shared/types/permissionSchema';
+import { objectIdSchema } from 'shared/types/commonSchemas';
 
 export const permissionRoutes = (app: Application) => {
   app.post(
@@ -29,9 +30,23 @@ export const permissionRoutes = (app: Application) => {
   app.put(
     '/api/entities/permissions/',
     needsAuthorization(['admin', 'editor', 'collaborator']),
+    validation.validateRequest({
+      properties: {
+        body: {
+          type: 'object',
+          additionalProperties: false,
+          definitions: { objectIdSchema },
+          properties: {
+            sharedIds: { type: 'array', items: { type: 'string' } },
+          },
+          required: ['sharedIds'],
+        },
+      },
+    }),
     async (req, res, next) => {
       try {
-        const permissions = await entitiesPermissions.get(req.body);
+        const { sharedIds } = req.body;
+        const permissions = await entitiesPermissions.get(sharedIds);
         res.json(permissions);
       } catch (err) {
         next(err);
