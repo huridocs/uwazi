@@ -286,7 +286,8 @@ export default {
     uploadsNavButton:
       '#app > div.content > header > ul > li.menuActions > ul > li:nth-child(2) > a',
     libraryNavButton:
-      '#app > div.content > header > ul > li.menuActions > ul > li:nth-child(1) > a',
+      '#app > div.content > header > ul > li.menuActions > ul:nth-child(2) > li:nth-child(1) > a',
+      // '#app > div.content > header > ul > li.menuActions > ul > li:nth-child(1) > a',
     settingsNavButton:
       '#app > div.content > header > ul > li.menuActions > ul.menuNav-list > li:nth-child(3) > a',
     spanish:
