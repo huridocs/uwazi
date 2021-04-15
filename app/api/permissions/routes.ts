@@ -35,7 +35,6 @@ export const permissionRoutes = (app: Application) => {
         body: {
           type: 'object',
           additionalProperties: false,
-          definitions: { objectIdSchema },
           properties: {
             sharedIds: { type: 'array', items: { type: 'string' } },
           },
