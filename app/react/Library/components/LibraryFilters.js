@@ -37,7 +37,7 @@ export class LibraryFilters extends Component {
           <Export storeKey={this.props.storeKey} />
         </div>
         <div className="sidepanel-body">
-          <p className="sidepanel-title">
+          <div className="sidepanel-title">
             <div>{t('System', 'Filters configuration')}</div>
             <div className="filter-buttons">
               <div
@@ -60,7 +60,7 @@ export class LibraryFilters extends Component {
                 <Icon icon="times" />
               </button>
             </div>
-          </p>
+          </div>
           <NeedAuthorization>
             {!this.props.unpublished && (
               <Field
