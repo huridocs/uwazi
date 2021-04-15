@@ -1011,8 +1011,8 @@ describe('Activitylog Parser', () => {
               method: 'POST',
               url: '/api/entities/permissions',
               body: `${`${`{"ids":["${firstDocSharedId}"],"permissions":` +
-                '[{"_id":"'}${groupId}","type":"group","level":"read"}, ` +
-                '{"_id":"'}${userId}","type":"user","level":"write"}]}`,
+                '[{"refId":"'}${groupId}","type":"group","level":"read"}, ` +
+                '{"refId":"'}${userId}","type":"user","level":"write"}]}`,
             },
             {
               action: 'UPDATE',

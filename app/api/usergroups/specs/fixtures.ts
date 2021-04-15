@@ -8,11 +8,11 @@ const user3Id = db.id();
 
 const fixtures: DBFixture = {
   usergroups: [
-    { _id: group1Id, name: 'Group 1', members: [{ _id: user2Id.toString() }] },
+    { _id: group1Id, name: 'Group 1', members: [{ refId: user2Id.toString() }] },
     {
       _id: group2Id,
       name: 'Group 2',
-      members: [{ _id: user1Id.toString() }, { _id: user3Id.toString() }],
+      members: [{ refId: user1Id.toString() }, { refId: user3Id.toString() }],
     },
   ],
   users: [

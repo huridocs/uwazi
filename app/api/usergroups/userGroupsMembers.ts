@@ -1,13 +1,13 @@
 import { ObjectIdSchema } from 'shared/types/commonTypes';
-import { GroupMemberSchema, UserGroupSchema } from 'shared/types/userGroupType';
+import { UserGroupSchema } from 'shared/types/userGroupType';
 import userGroups from 'api/usergroups/userGroups';
 import model from './userGroupsModel';
 
 export const getByMemberIdList = (userIds: ObjectIdSchema[]) =>
-  model.get({ 'members._id': { $in: userIds } });
+  model.get({ 'members.refId': { $in: userIds } });
 
 export const updateUserMemberships = async (
-  user: GroupMemberSchema,
+  user: { _id: ObjectIdSchema },
   groups: { _id: ObjectIdSchema }[]
 ) => {
   const storedUserGroups = await getByMemberIdList([user._id.toString()]);
@@ -19,7 +19,7 @@ export const updateUserMemberships = async (
     if (!keptGroup) {
       const groupToUpdate = { ...storedGroup };
       groupToUpdate.members = storedGroup.members.filter(
-        m => m._id.toString() !== user._id.toString()
+        m => m.refId.toString() !== user._id.toString()
       );
       groupsToUpdate.push(groupToUpdate);
     }
@@ -29,7 +29,7 @@ export const updateUserMemberships = async (
   );
   const missingGroups = await userGroups.get({ _id: { $in: missingGroupsIds } });
   missingGroups.forEach(group => {
-    group.members.push(user);
+    group.members.push({ refId: user._id });
     groupsToUpdate.push(group);
   });
   await userGroups.saveMultiple(groupsToUpdate);

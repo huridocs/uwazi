@@ -71,10 +71,10 @@ describe('Users', () => {
     const assertUserMembership = async updatedUser => {
       const groups = await userGroups.get();
       const membership1 = groups[0].members.find(
-        m => m._id.toString() === updatedUser._id.toString()
+        m => m.refId.toString() === updatedUser._id.toString()
       );
       const membership2 = groups[1].members.find(
-        m => m._id.toString() === updatedUser._id.toString()
+        m => m.refId.toString() === updatedUser._id.toString()
       );
       expect(membership1).not.toBeUndefined();
       expect(membership2).not.toBeUndefined();

@@ -106,7 +106,7 @@ const FIELD_TYPES_TO_SYNC = [
   propertyTypes.numeric,
 ];
 
-async function updateEntity(entity, _template) {
+async function updateEntity(entity, _template, unrestricted = false) {
   const docLanguages = await this.getAllLanguages(entity.sharedId);
   if (
     docLanguages[0].template &&
@@ -123,6 +123,7 @@ async function updateEntity(entity, _template) {
     .filter(p => p.type.match(FIELD_TYPES_TO_SYNC.join('|')))
     .map(p => p.name);
   const currentDoc = docLanguages.find(d => d._id.toString() === entity._id.toString());
+  const saveFunc = !unrestricted ? model.save : model.saveUnrestricted;
   return Promise.all(
     docLanguages.map(async d => {
       if (d._id.toString() === entity._id.toString()) {
@@ -144,7 +145,7 @@ async function updateEntity(entity, _template) {
             template
           );
         }
-        return model.save(toSave);
+        return saveFunc(toSave);
       }
 
       if (entity.metadata) {
@@ -174,7 +175,7 @@ async function updateEntity(entity, _template) {
       if (typeof entity.generatedToc !== 'undefined') {
         d.generatedToc = entity.generatedToc;
       }
-      return model.save(d);
+      return saveFunc(d);
     })
   );
 }
@@ -555,7 +556,7 @@ export default {
           });
           if (relationshipProperties.length) {
             entitiesToReindex.push(entity.sharedId);
-            await this.updateEntity(this.sanitize(entity, template), template);
+            await this.updateEntity(this.sanitize(entity, template), template, true);
           }
         }
       })

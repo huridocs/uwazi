@@ -38,9 +38,9 @@ export default {
     { site_name: 'Uwazi instance' }, // eslint-disable-line camelcase
   ],
   usergroups: [
-    { _id: group1Id, name: 'Group 1', members: [{ _id: recoveryUserId.toString() }] },
-    { _id: group2Id, name: 'Group 2', members: [{ _id: userId.toString() }] },
-    { _id: db.id(), name: 'Group 3', members: [{ _id: userToDelete.toString() }] },
+    { _id: group1Id, name: 'Group 1', members: [{ refId: recoveryUserId.toString() }] },
+    { _id: group2Id, name: 'Group 2', members: [{ refId: userId.toString() }] },
+    { _id: db.id(), name: 'Group 3', members: [{ refId: userToDelete.toString() }] },
   ],
 };
 

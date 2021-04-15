@@ -53,7 +53,7 @@ export default {
     {
       _id: groupId,
       name: 'Group 1',
-      members: [{ _id: userId }],
+      members: [{ refId: userId }],
     },
   ],
 };

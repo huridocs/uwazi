@@ -144,7 +144,7 @@ const sanitizeUser = user => {
 
 const populateGroupsOfUsers = async (user, groups) => {
   const memberships = groups
-    .filter(group => group.members.find(member => member._id === user._id.toString()))
+    .filter(group => group.members.find(member => member.refId === user._id.toString()))
     .map(group => ({
       _id: group._id,
       name: group.name,

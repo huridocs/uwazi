@@ -3,8 +3,8 @@ import entities from 'api/entities/entities';
 import { entitiesPermissions } from 'api/permissions/entitiesPermissions';
 import { AccessLevels, PermissionType, MixedAccess } from 'shared/types/permissionSchema';
 import { fixtures, groupA, userA, userB } from 'api/permissions/specs/fixtures';
-import { PermissionsDataSchema } from '../../../shared/types/permissionType';
-import { UserInContextMockFactory } from '../../utils/testingUserInContext';
+import { PermissionsDataSchema } from 'shared/types/permissionType';
+import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
 import { PUBLIC_PERMISSION } from '../publicPermission';
 
 const publicPermission = {
@@ -39,12 +39,9 @@ describe('permissions', () => {
           publicPermission,
         ],
       };
-
-      mockCollab();
-
       await entitiesPermissions.set(permissionsData);
+      mockCollab();
       const storedEntities = await entities.getUnrestricted({}, 'sharedId +permissions');
-
       const updateEntities = storedEntities.filter(entity =>
         ['shared1', 'shared2'].includes(entity.sharedId!)
       );

@@ -111,7 +111,7 @@ describe('usergroups routes', () => {
         const response = await postUserGroup({
           name: 'group 1',
           other: 'invalid',
-          members: [{ _id: 'user1', other: 'invalid1' }],
+          members: [{ refId: 'user1', other: 'invalid1' }],
         });
         expect(response.status).toBe(400);
         expect(response.body.errors[0].keyword).toBe('additionalProperties');
