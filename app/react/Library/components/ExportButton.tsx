@@ -10,12 +10,13 @@ import Modal from 'app/Layout/Modal';
 import { LocalForm } from 'react-redux-form';
 import { CaptchaValue } from 'shared/types/Captcha';
 import { Captcha, FormGroup } from 'app/ReactReduxForms';
+import { IImmutable } from 'shared/types/Immutable';
 import { ExportStore } from '../reducers/ExportStoreType';
 
 export type ExportButtonProps = {
   processing: boolean;
   storeKey: string;
-  user: User;
+  user: IImmutable<User>;
   exportDocuments: (keyStore: string, captcha?: CaptchaValue) => any;
 };
 
@@ -52,7 +53,7 @@ class ExportButton extends Component<ExportButtonProps, { modal: boolean }> {
       <>
         <button
           type="button"
-          onClick={this.props.user._id ? this.export : this.showModal}
+          onClick={this.props.user.get('_id') ? this.export : this.showModal}
           className={`btn btn-primary btn-export ${this.props.processing ? 'btn-disabled' : ''}`}
         >
           {!this.props.processing ? (
@@ -105,7 +106,7 @@ function mapDispatchToProps(dispatch: Dispatch<any>, props: Pick<ExportButtonPro
 function mapStateToProps(state: ExportStore) {
   return {
     processing: state.exportSearchResults.exportSearchResultsProcessing,
-    user: state.user.toJS(),
+    user: state.user,
   };
 }
 
