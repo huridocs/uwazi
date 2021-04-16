@@ -731,7 +731,7 @@ describe('entities', () => {
       expect(denormalized.metadata.friends[0].label).toBe('shared2title');
     });
 
-    fit('should denormalize inherited metadata', async () => {
+    it('should denormalize inherited metadata', async () => {
       const entity = (await entities.get({ sharedId: 'shared', language: 'en' }))[0];
 
       const denormalized = await entities.denormalize(entity, { user: 'dummy', language: 'en' });
