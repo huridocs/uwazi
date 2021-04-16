@@ -8,6 +8,7 @@ import { AccessLevels, PermissionType } from 'shared/types/permissionSchema';
 
 jest.mock('app/utils/api', () => ({
   get: jest.fn().mockResolvedValue({ json: [{ _id: 'user1' }] }),
+  put: jest.fn().mockResolvedValue({ json: [{ refId: 'user1', type: 'group', level: 'read' }] }),
   post: jest.fn().mockResolvedValue({
     json: {
       ids: ['shared1', 'shared2'],
@@ -29,13 +30,13 @@ describe('PermissionsAPI', () => {
   });
 
   describe('loadGrantedPermissions', () => {
-    it('should call get method of entities/permissions collaborators api', async () => {
+    it('should call put method of entities/permissions collaborators api', async () => {
       const response = await loadGrantedPermissions(['shared1', 'shared2']);
-      expect(api.get).toHaveBeenCalledWith('entities/permissions', {
-        data: { ids: ['shared1', 'shared2'] },
+      expect(api.put).toHaveBeenCalledWith('entities/permissions', {
+        data: { sharedIds: ['shared1', 'shared2'] },
         headers: {},
       });
-      expect(response).toEqual([{ _id: 'user1' }]);
+      expect(response).toEqual([{ refId: 'user1', type: 'group', level: 'read' }]);
     });
   });
 

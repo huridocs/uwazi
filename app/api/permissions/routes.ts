@@ -1,6 +1,6 @@
 import { Application } from 'express';
 import { needsAuthorization } from 'api/auth';
-import { parseQuery, validation } from 'api/utils';
+import { validation } from 'api/utils';
 import { entitiesPermissions } from 'api/permissions/entitiesPermissions';
 import { collaborators } from 'api/permissions/collaborators';
 import { permissionsDataSchema } from 'shared/types/permissionSchema';
@@ -26,14 +26,31 @@ export const permissionRoutes = (app: Application) => {
     }
   );
 
-  app.get('/api/entities/permissions', parseQuery, async (req, res, next) => {
-    try {
-      const permissions = await entitiesPermissions.get(req.query.ids);
-      res.json(permissions);
-    } catch (err) {
-      next(err);
+  app.put(
+    '/api/entities/permissions/',
+    needsAuthorization(['admin', 'editor', 'collaborator']),
+    validation.validateRequest({
+      properties: {
+        body: {
+          type: 'object',
+          additionalProperties: false,
+          properties: {
+            sharedIds: { type: 'array', items: { type: 'string' } },
+          },
+          required: ['sharedIds'],
+        },
+      },
+    }),
+    async (req, res, next) => {
+      try {
+        const { sharedIds } = req.body;
+        const permissions = await entitiesPermissions.get(sharedIds);
+        res.json(permissions);
+      } catch (err) {
+        next(err);
+      }
     }
-  });
+  );
 
   app.get(
     '/api/collaborators',
