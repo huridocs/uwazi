@@ -36,8 +36,6 @@ export class SelectMultiplePanel extends Component {
     this.cancel = this.cancel.bind(this);
     this.save = this.save.bind(this);
     this.edit = this.edit.bind(this);
-    this.publish = this.publish.bind(this);
-    this.unpublish = this.unpublish.bind(this);
     this.changeTemplate = this.changeTemplate.bind(this);
   }
 
@@ -88,26 +86,6 @@ export class SelectMultiplePanel extends Component {
         this.props.unselectAllDocuments();
         this.props.resetForm(this.props.formKey);
       });
-  }
-
-  publish() {
-    this.context.confirm({
-      accept: () => {
-        this.props.multipleUpdate(this.props.entitiesSelected, { published: true });
-      },
-      title: t('System', 'Confirm', null, false),
-      message: t('System', 'Confirm publish multiple items', null, false),
-      type: 'success',
-    });
-  }
-
-  unpublish() {
-    this.context.confirm({
-      accept: () => this.props.multipleUpdate(this.props.entitiesSelected, { published: false }),
-      title: t('System', 'Confirm', null, false),
-      message: t('System', 'Confirm unpublish multiple items', null, false),
-      type: 'success',
-    });
   }
 
   changeTemplate(_formModel, template) {
@@ -178,28 +156,6 @@ export class SelectMultiplePanel extends Component {
     );
   }
 
-  canBePublished() {
-    return this.props.entitiesSelected.reduce((previousCan, entity) => {
-      const isEntity = !entity.get('file');
-      return (
-        previousCan &&
-        (entity.get('processed') || isEntity) &&
-        !entity.get('published') &&
-        !!entity.get('template')
-      );
-    }, true);
-  }
-
-  canBeUnPublished() {
-    return (
-      this.props.entitiesSelected.size &&
-      this.props.entitiesSelected.reduce(
-        (previousCan, entity) => previousCan && entity.get('published'),
-        true
-      )
-    );
-  }
-
   sharedIds() {
     return this.props.entitiesSelected.map(entity => entity.get('sharedId'));
   }
@@ -219,18 +175,6 @@ export class SelectMultiplePanel extends Component {
             <Icon icon="trash-alt" />
             <span className="btn-label">{t('System', 'Delete')}</span>
           </button>
-          {this.canBePublished() && (
-            <button type="button" className="publish btn btn-success" onClick={this.publish}>
-              <Icon icon="paper-plane" />
-              <span className="btn-label">{t('System', 'Publish')}</span>
-            </button>
-          )}
-          {this.canBeUnPublished() && (
-            <button type="button" className="unpublish btn btn-warning" onClick={this.unpublish}>
-              <Icon icon="paper-plane" />
-              <span className="btn-label">{t('System', 'Unpublish')}</span>
-            </button>
-          )}
           <ShareButton sharedIds={this.sharedIds()} storeKey={this.props.storeKey} />
         </NeedAuthorization>
         <Export storeKey={this.props.storeKey} />
