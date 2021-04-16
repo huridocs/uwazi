@@ -730,7 +730,18 @@ describe('entities', () => {
       const denormalized = await entities.denormalize(entity, { user: 'dummy', language: 'en' });
       expect(denormalized.metadata.friends[0].label).toBe('shared2title');
     });
+
+    fit('should denormalize inherited metadata', async () => {
+      const entity = (await entities.get({ sharedId: 'shared', language: 'en' }))[0];
+
+      const denormalized = await entities.denormalize(entity, { user: 'dummy', language: 'en' });
+      expect(denormalized.metadata.enemies[0].inheritedValue).toEqual([
+        { value: 'something to b e inherited' },
+      ]);
+      expect(denormalized.metadata.enemies[0].inheritedType).toBe('text');
+    });
   });
+
   describe('countByTemplate', () => {
     it('should return how many entities using the template passed', async () => {
       const count = await entities.countByTemplate(templateId);
