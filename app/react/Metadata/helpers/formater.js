@@ -192,26 +192,21 @@ export default {
     return { label: property.get('label'), name: property.get('name'), value: sortedValues };
   },
 
-  inherit(property, thesauriValues = [], thesauris, options, templates, relationships) {
+  inherit(property, propValue = [], thesauris, options, templates) {
     const template = templates.find(templ => templ.get('_id') === property.get('content'));
     const inheritedProperty = template
       .get('properties')
       .find(p => p.get('_id') === property.get('inheritProperty'));
-    const methodType = this[inheritedProperty.get('type')]
-      ? inheritedProperty.get('type')
-      : 'default';
+
     const type = inheritedProperty.get('type');
-    let value = thesauriValues.map(referencedEntity => {
-      const name = inheritedProperty.get('name');
-      const reference = relationships.toJS().find(r => r.entity === referencedEntity.value) || {
-        entityData: { metadata: {} },
-      };
-      const metadata = reference.entityData.metadata ? reference.entityData.metadata : {};
-      if (metadata[name] || type === 'preview') {
-        return this[methodType](inheritedProperty, metadata[name], thesauris, options, templates);
+    const methodType = this[type] ? type : 'default';
+
+    let value = propValue.map(v => {
+      if (v.inheritedValue) {
+        return this[methodType](inheritedProperty, v.inheritedValue, thesauris, options, templates);
       }
 
-      return { value: metadata[name] };
+      return { value: v.inheritedValue };
     });
 
     let propType = 'inherit';
@@ -220,8 +215,9 @@ export default {
         _thesauri => _thesauri.get('_id') === template.get('_id')
       );
       propType = type;
-      value = this.flattenInheritedMultiValue(value, type, thesauriValues, templateThesauris);
+      value = this.flattenInheritedMultiValue(value, type, propValue, templateThesauris);
     }
+
     return {
       translateContext: template.get('_id'),
       ...inheritedProperty.toJS(),
@@ -342,19 +338,12 @@ export default {
     return { ...doc, metadata: metadata.toJS(), documentType: template.get('name') };
   },
 
-  applyTransformation(property, { doc, thesauris, options, template, templates, relationships }) {
+  applyTransformation(property, { doc, thesauris, options, template, templates }) {
     const value = doc.metadata[property.get('name')];
     const showInCard = property.get('showInCard');
 
-    if (property.get('inherit') && relationships) {
-      return this.inherit(
-        property,
-        value,
-        thesauris,
-        { ...options, doc },
-        templates,
-        relationships
-      );
+    if (property.get('inherit')) {
+      return this.inherit(property, value, thesauris, { ...options, doc }, templates);
     }
 
     const methodType = this[property.get('type')] ? property.get('type') : 'default';
