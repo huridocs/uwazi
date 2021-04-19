@@ -1,0 +1,52 @@
+import db from 'api/utils/testing_db';
+const templateId = db.id();
+const templateId2 = db.id();
+const inheritPropertyId = db.id();
+export default {
+  entities: [
+    {
+      template: templateId,
+      title: 'test_doc',
+      sharedId: '123ABC',
+      metadata: { friend: [{ value: '456DEF', label: 'test_doc 2' }] },
+      language: 'en',
+    },
+    {
+      template: templateId2,
+      title: 'test_doc 2',
+      sharedId: '456DEF',
+      metadata: { name: [{ value: 'Bocata Tun' }] },
+      language: 'en',
+    },
+    {
+      title: 'Im gona break everything',
+    },
+    {
+      title: 'Try to break it harder',
+      template: 'whats a template?',
+    },
+    {
+      title: 'There is only zull',
+      template: templateId,
+    },
+  ],
+  templates: [
+    {
+      _id: templateId,
+      properties: [
+        {
+          type: 'relationship',
+          relationType: 'something',
+          inherit: true,
+          content: templateId2,
+          inheritProperty: inheritPropertyId,
+          name: 'friend',
+        },
+      ],
+    },
+    {
+      _id: templateId2,
+      properties: [{ _id: inheritPropertyId, type: 'text', name: 'name' }],
+    },
+  ],
+};
