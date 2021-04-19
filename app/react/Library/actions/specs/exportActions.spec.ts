@@ -28,8 +28,10 @@ const mockSuperAgent = (response?: any, err?: any) => {
     cb(response);
     return mockUpload;
   });
-  spyOn(mockUpload, 'set').and.returnValue(mockUpload);
+  const requestSet = spyOn(mockUpload, 'set').and.returnValue(mockUpload);
   spyOn(superagent, 'get').and.returnValue(mockUpload);
+
+  return { requestSet };
 };
 
 const generateState = () => ({
@@ -116,6 +118,15 @@ describe('exportActions', () => {
         done();
       });
     };
+
+    it('should set the captcha values in the header if there is a captcha', done => {
+      const { requestSet } = mockSuperAgent(apiResponse);
+      store.dispatch(actions.exportDocuments('library', { text: 'CFcD', id: '1234' })).then(() => {
+        expect(requestSet).toHaveBeenCalledWith('Captcha-text', 'CFcD');
+        expect(requestSet).toHaveBeenCalledWith('Captcha-id', '1234');
+        done();
+      });
+    });
 
     it('should set the processing flag in the store', done => {
       mockSuperAgent(apiResponse);
@@ -209,6 +220,28 @@ describe('exportActions', () => {
             value: '',
           });
           expect(notifications.notify).toHaveBeenCalled();
+          done();
+        })
+        .catch(e => {
+          throw e;
+        });
+    });
+
+    it('should dispatch a correct notification if the captcha is invalid', done => {
+      const dispatch = jest.fn();
+      const getState = jest.fn(() => state);
+
+      mockSuperAgent(apiResponse, { status: 403 });
+
+      spyOn(notifications, 'notify');
+
+      actions
+        .exportDocuments('library')(dispatch, getState)
+        .then(() => {
+          expect(notifications.notify).toHaveBeenCalledWith(
+            expect.stringContaining('captcha'),
+            'danger'
+          );
           done();
         })
         .catch(e => {

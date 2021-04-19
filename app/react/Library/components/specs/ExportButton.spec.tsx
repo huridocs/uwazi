@@ -5,7 +5,9 @@ import thunk from 'redux-thunk';
 import ExportButton, { ExportButtonProps } from 'app/Library/components/ExportButton';
 import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
+import Modal from 'app/Layout/Modal';
 import Immutable from 'immutable';
+import { LocalForm } from 'react-redux-form';
 import * as actions from '../../actions/exportActions';
 
 describe('ExportButton', () => {
@@ -31,6 +33,7 @@ describe('ExportButton', () => {
       };
       store = mockStore({
         exportSearchResults: { exportSearchResultsProcessing: Immutable.fromJS(false) },
+        user: Immutable.fromJS({ _id: '1234' }),
       });
     });
 
@@ -47,6 +50,11 @@ describe('ExportButton', () => {
 
       expect(actions.exportDocuments).toHaveBeenCalledWith('library');
     });
+
+    it('should have the custom class btn-export', () => {
+      render();
+      expect(component.find('.btn-export').length).toBe(1);
+    });
   });
 
   describe('when processing', () => {
@@ -56,6 +64,7 @@ describe('ExportButton', () => {
       };
       store = mockStore({
         exportSearchResults: { exportSearchResultsProcessing: Immutable.fromJS(true) },
+        user: Immutable.fromJS({}),
       });
     });
 
@@ -68,6 +77,32 @@ describe('ExportButton', () => {
       spyOn(actions, 'exportDocuments').and.returnValue(() => {});
       render();
       expect(actions.exportDocuments).not.toHaveBeenCalled();
+    });
+
+    it('should show captcha modal if there is no user in the store', () => {
+      render();
+      component.find('.btn').simulate('click');
+      expect(component.find(Modal).length).toBe(1);
+    });
+  });
+
+  describe('when sending', () => {
+    beforeEach(() => {
+      store = mockStore({
+        exportSearchResults: { exportSearchResultsProcessing: Immutable.fromJS(false) },
+        user: Immutable.fromJS({}),
+      });
+    });
+
+    it('should add a captcha when user is not logged in', () => {
+      spyOn(actions, 'exportDocuments').and.returnValue(() => {});
+      render();
+      component.find('.btn').simulate('click');
+      component.find(LocalForm).simulate('submit', { captcha: { text: 'abcde', id: '1234' } });
+      expect(actions.exportDocuments).toHaveBeenCalledWith('library', {
+        text: 'abcde',
+        id: '1234',
+      });
     });
   });
 });
