@@ -1,0 +1,11 @@
+.filelist-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  div {
+    label {
+      width: 162px;
+      margin-top: 5px;
+    }
+  }
+}
