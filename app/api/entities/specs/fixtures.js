@@ -314,7 +314,7 @@ export default {
       language: 'en',
       title: 'shared2title',
       metadata: {
-        property1: [{ value: 'something to b e inherited' }],
+        property1: [{ value: 'something to be inherited' }],
       },
     },
     { sharedId: 'source2', language: 'en' },

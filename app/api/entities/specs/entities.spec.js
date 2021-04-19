@@ -736,7 +736,7 @@ describe('entities', () => {
 
       const denormalized = await entities.denormalize(entity, { user: 'dummy', language: 'en' });
       expect(denormalized.metadata.enemies[0].inheritedValue).toEqual([
-        { value: 'something to b e inherited' },
+        { value: 'something to be inherited' },
       ]);
       expect(denormalized.metadata.enemies[0].inheritedType).toBe('text');
     });
