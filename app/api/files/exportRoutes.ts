@@ -2,11 +2,11 @@ import { Application, Request, Response, NextFunction } from 'express';
 import { createWriteStream, unlink } from 'fs';
 import errorLog from 'api/log/errorLog';
 import { search } from 'api/search';
-import { validation } from '../utils';
-import { isArray } from 'util';
-import { temporalFilesPath, generateFileName } from './filesystem';
 import { CSVExporter } from 'api/csv';
 import settings from 'api/settings';
+import captchaMiddleware from 'api/auth/captchaMiddleware';
+import { temporalFilesPath, generateFileName } from './filesystem';
+import { validation } from '../utils';
 
 export default (app: Application) => {
   const parseQueryProperty = (query: any, property: string) =>
@@ -23,6 +23,8 @@ export default (app: Application) => {
 
   app.get(
     '/api/export',
+    async (req: Request, res: Response, next: NextFunction) =>
+      req.user ? next() : captchaMiddleware()(req, res, next),
     validation.validateRequest({
       properties: {
         query: {
@@ -42,6 +44,7 @@ export default (app: Application) => {
         },
       },
     }),
+    // eslint-disable-next-line max-statements
     async (req: Request, res: Response, next: NextFunction) => {
       const temporalFilePath = temporalFilesPath(generateFileName({ originalname: 'export.csv' }));
       try {
@@ -52,7 +55,7 @@ export default (app: Application) => {
         req.query.allAggregations = parseQueryProperty(req.query, 'allAggregations');
 
         req.query.ids = parseQueryProperty(req.query, 'ids');
-        if (!isArray(req.query.ids)) delete req.query.ids;
+        if (!Array.isArray(req.query.ids)) delete req.query.ids;
 
         const results = await search.search(req.query, req.language, req.user);
         // eslint-disable-next-line camelcase
