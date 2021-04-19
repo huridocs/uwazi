@@ -4,7 +4,6 @@ import { ShareEntityModal } from 'app/Permissions/components/ShareEntityModal';
 import { PermissionSchema } from 'shared/types/permissionType';
 import { MemberWithPermission } from 'shared/types/entityPermisions';
 import { AccessLevels, PermissionType, MixedAccess } from 'shared/types/permissionSchema';
-import { ObjectIdSchema } from 'shared/types/commonTypes';
 import { renderConnected } from 'app/Templates/specs/utils/renderConnected';
 import * as api from 'app/Permissions/PermissionsAPI';
 import { saveEntitiesPermissions } from 'app/Permissions/actions/actions';
@@ -83,7 +82,7 @@ describe('ShareEntityModal', () => {
     ).toEqual([]);
   });
 
-  it('should not save and show validation error if a member has mixed access permissions', () => {
+  it('should allow mixed access level', () => {
     const testMember: MemberWithPermission = {
       refId: '1',
       type: PermissionType.USER,
@@ -91,20 +90,21 @@ describe('ShareEntityModal', () => {
       level: MixedAccess.MIXED,
     };
 
-    const testValidationError: {
-      type: PermissionType;
-      refId: ObjectIdSchema;
-    } = {
-      type: PermissionType.USER,
-      refId: '1',
-    };
     component.find(UserGroupsLookupField).simulate('select', testMember);
     component.find('.btn-success').simulate('click');
-    expect(saveEntitiesPermissions).not.toHaveBeenCalled();
-    expect(component.find(MembersList).get(0).props.validationErrors).toEqual([
-      testValidationError,
-    ]);
-    expect(component.find('.validation-message').length).toBe(1);
+    expect(saveEntitiesPermissions).toHaveBeenCalledWith(
+      {
+        ids: ['entityId1', 'entityId2'],
+        permissions: [
+          {
+            refId: '1',
+            type: PermissionType.USER,
+            level: MixedAccess.MIXED,
+          },
+        ],
+      },
+      'library'
+    );
   });
 
   it('should save the permissions', async () => {

@@ -50,7 +50,7 @@ export type EntityWithFilesSchema = {
   permissions?: {
     refId: ObjectIdSchema;
     type: 'user' | 'group' | 'public';
-    level: 'read' | 'write';
+    level: 'read' | 'write' | 'mixed';
   }[];
   [k: string]: unknown | undefined;
 } & {

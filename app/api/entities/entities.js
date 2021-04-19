@@ -135,6 +135,9 @@ async function updateEntity(entity, _template, unrestricted = false) {
           await this.renameRelatedEntityInMetadata({ ...currentDoc, ...entity });
         }
         const toSave = { ...entity };
+
+        toSave.published = d.published;
+
         if (entity.metadata) {
           toSave.metadata = await denormalizeMetadata(entity.metadata, entity, template);
         }
@@ -162,10 +165,6 @@ async function updateEntity(entity, _template, unrestricted = false) {
           d.suggestedMetadata[p] = entity.suggestedMetadata[p] || [];
         });
         d.suggestedMetadata = await denormalizeMetadata(d.suggestedMetadata, d, template);
-      }
-
-      if (typeof entity.published !== 'undefined') {
-        d.published = entity.published;
       }
 
       if (typeof entity.template !== 'undefined') {

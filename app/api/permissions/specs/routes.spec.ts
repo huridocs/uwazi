@@ -71,19 +71,6 @@ describe('permissions routes', () => {
         expect(response.status).toBe(400);
       });
 
-      it('should invalidate if permission level is mixed', async () => {
-        user = { username: 'user 1', role: 'admin' };
-        const permissionsData = {
-          ids: ['shared1'],
-          permissions: [{ refId: 'user1', type: 'user', level: 'mixed' }],
-        };
-        const response = await request(app)
-          .post('/api/entities/permissions')
-          .set('X-Requested-With', 'XMLHttpRequest')
-          .send(permissionsData);
-        expect(response.status).toBe(400);
-      });
-
       it('should not save if user is not authorized', async () => {
         user = undefined;
         const permissionsData = {

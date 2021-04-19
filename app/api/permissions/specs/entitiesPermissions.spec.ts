@@ -76,6 +76,58 @@ describe('permissions', () => {
       }
     });
 
+    it('should preserve permission level if mixed access passed', async () => {
+      const permissionsData: PermissionsDataSchema = {
+        ids: ['shared2', 'shared4'],
+        permissions: [
+          {
+            refId: userA._id,
+            type: PermissionType.USER,
+            level: AccessLevels.WRITE,
+          },
+          {
+            refId: groupA._id,
+            type: PermissionType.GROUP,
+            level: MixedAccess.MIXED,
+          },
+          { ...publicPermission, level: MixedAccess.MIXED },
+        ],
+      };
+
+      await entitiesPermissions.set(permissionsData);
+
+      const storedEntities = await entities.getUnrestricted(
+        { sharedId: { $in: permissionsData.ids } },
+        'sharedId published +permissions'
+      );
+
+      expect(storedEntities[0].permissions?.length).toBe(2);
+      expect(storedEntities[0].permissions).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            refId: userA._id,
+            level: AccessLevels.WRITE,
+          }),
+          expect.objectContaining({
+            refId: groupA._id,
+            level: AccessLevels.READ,
+          }),
+        ])
+      );
+      expect(storedEntities[0].published).toBe(true);
+
+      expect(storedEntities[2].permissions?.length).toBe(1);
+      expect(storedEntities[2].permissions).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            refId: userA._id,
+            level: AccessLevels.WRITE,
+          }),
+        ])
+      );
+      expect(storedEntities[2].published).toBe(false);
+    });
+
     describe('share publicly', () => {
       it('should save the entity with the publish field set to the correct value', async () => {
         const permissionsData: PermissionsDataSchema = {

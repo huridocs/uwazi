@@ -35,11 +35,15 @@
     min-height: 360px;
 
     .validation-message {
-      color: #EB5757;
       position: absolute;
-      right: 15px;
-      bottom: 0;
+      bottom: 15px;
       font-size: 14px;
+      width: calc(100% - 30px);
+      background: #FEDC93;
+      border: 1px solid #FFAE00;
+      box-sizing: border-box;
+      border-radius: 4px;
+      padding: 8px;
     }
 
     .alert {

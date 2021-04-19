@@ -6,7 +6,7 @@ import { ObjectIdSchema } from 'shared/types/commonTypes';
 export interface PermissionSchema {
   refId: ObjectIdSchema;
   type: 'user' | 'group' | 'public';
-  level: 'read' | 'write';
+  level: 'read' | 'write' | 'mixed';
 }
 
 export interface PermissionsDataSchema {
@@ -14,6 +14,6 @@ export interface PermissionsDataSchema {
   permissions: {
     refId: ObjectIdSchema;
     type: 'user' | 'group' | 'public';
-    level: 'read' | 'write';
+    level: 'read' | 'write' | 'mixed';
   }[];
 }

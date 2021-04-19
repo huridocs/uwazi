@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 /* eslint import/no-extraneous-dependencies: ["error", {"peerDependencies": true}] */
 
 import Nightmare from 'nightmare';
@@ -406,13 +407,10 @@ Nightmare.action('waitForText', function waitForText(selector, done) {
 
 Nightmare.action('waitForTextMatch', function waitForTextMatch(selector, matchWord, done) {
   this.wait(
-    (elementToSelect, word) => {
-      return (
-        document.querySelector(elementToSelect) &&
-        document.querySelector(elementToSelect).innerText &&
-        document.querySelector(elementToSelect).innerText.match(word)
-      );
-    },
+    (elementToSelect, word) =>
+      document.querySelector(elementToSelect) &&
+      document.querySelector(elementToSelect).innerText &&
+      document.querySelector(elementToSelect).innerText.match(word),
     selector,
     matchWord
   )
@@ -636,4 +634,23 @@ Nightmare.action('clickLink', function clickLink(label, done) {
   }, label).then(() => {
     done();
   });
+});
+
+Nightmare.action('shareWithPublic', function shareWithPublic(selectorKey, done) {
+  this.waitToClick(selectors.uploadsView[selectorKey])
+    .wait(500)
+    .evaluate(
+      selector => document.querySelector(selector).focus(),
+      '.share-modal .userGroupsLookupField input'
+    )
+    .evaluate(
+      selector => document.querySelector(selector).click(),
+      '.userGroupsLookupField > ul > li:last-child'
+    )
+    .waitToClick('.share-modal  button.confirm-button')
+    .waitToClick('.alert.alert-success')
+    .waitToDisapear('.alert.alert-success')
+    .then(() => {
+      done();
+    });
 });

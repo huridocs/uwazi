@@ -9,9 +9,7 @@ import { MemberListItemPermission } from '../MemberListItemPermission';
 
 describe('MemberList', () => {
   it('should render with the correct data', () => {
-    const component = shallow(
-      <MembersList members={data} onChange={() => {}} validationErrors={[]} />
-    );
+    const component = shallow(<MembersList members={data} onChange={() => {}} />);
 
     expect(component.find('tr').length).toBe(data.length);
     data.forEach(member => {
@@ -24,9 +22,7 @@ describe('MemberList', () => {
   });
 
   it('should render pseudoMembers with the correct data', () => {
-    const component = shallow(
-      <MembersList members={pseudoData} onChange={() => {}} validationErrors={[]} />
-    );
+    const component = shallow(<MembersList members={pseudoData} onChange={() => {}} />);
 
     expect(component.find('tr').length).toBe(pseudoData.length);
     pseudoData.forEach(member => {
@@ -38,35 +34,10 @@ describe('MemberList', () => {
     });
   });
 
-  it('should render the errors', () => {
-    const component = shallow(
-      <MembersList
-        members={data}
-        onChange={() => {}}
-        validationErrors={[
-          {
-            type: data[0].type as PermissionType,
-            refId: data[0].refId,
-          },
-        ]}
-      />
-    );
-
-    expect(
-      component
-        .find('tr')
-        .first()
-        .get(0)
-        .props.className.includes('validationError')
-    ).toBe(true);
-  });
-
   it('should call onChange when a row is deleted', () => {
     const reducedSet = data.slice(0, 2);
     const onChangeMock = jest.fn();
-    const component = shallow(
-      <MembersList members={reducedSet} onChange={onChangeMock} validationErrors={[]} />
-    );
+    const component = shallow(<MembersList members={reducedSet} onChange={onChangeMock} />);
     const permissionsComp = component
       .find(MemberListItemPermission)
       .last()
@@ -80,9 +51,7 @@ describe('MemberList', () => {
   it('should call onChange when a row is updated', () => {
     const reducedSet = data.slice(0, 2);
     const onChangeMock = jest.fn();
-    const component = shallow(
-      <MembersList members={reducedSet} onChange={onChangeMock} validationErrors={[]} />
-    );
+    const component = shallow(<MembersList members={reducedSet} onChange={onChangeMock} />);
     const permissionsComp = component
       .find(MemberListItemPermission)
       .last()
