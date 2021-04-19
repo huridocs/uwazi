@@ -511,7 +511,7 @@ describe('entities', () => {
       };
       const user = { _id: db.id() };
 
-      await entities.save(doc, { user, language: 'es' });
+      await entities.save(doc, { user, language: 'es' }, false);
       await new Promise(resolve => setTimeout(resolve, 3000));
       expect(entities.updateMetdataFromRelationships).not.toHaveBeenCalled();
     });

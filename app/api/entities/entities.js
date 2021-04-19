@@ -139,6 +139,7 @@ async function updateEntity(entity, _template) {
         ) {
           await this.renameRelatedEntityInMetadata({ ...currentDoc, ...entity });
         }
+
         const toSave = { ...entity };
         if (entity.metadata) {
           toSave.metadata = await denormalizeMetadata(entity.metadata, entity, template);
@@ -336,12 +337,19 @@ export default {
     const [entity] = await this.getWithRelationships({ sharedId, language });
     if (updateRelationships) {
       await relationships.saveEntityBasedReferences(entity, language);
+      await this.updateDenormalizedMetadataInRelatedEntities(entity);
     }
     if (index) {
       await search.indexEntities({ sharedId }, '+fullText');
     }
 
     return entity;
+  },
+
+  async updateDenormalizedMetadataInRelatedEntities(entity) {
+    const related = await relationships.getByDocument(entity.sharedId, entity.language);
+    const sharedIds = related.map(r => r.entityData.sharedId);
+    await this.updateMetdataFromRelationships(sharedIds, entity.language);
   },
 
   async denormalize(_doc, { user, language }) {
@@ -515,10 +523,12 @@ export default {
                 (!property.content || r.entityData.template.toString() === property.content)
             );
 
-            entity.metadata[property.name] = relationshipsGoingToThisProperty.map(r => ({
-              value: r.entity,
-              label: r.entityData.title,
-            }));
+            entity.metadata[property.name] = relationshipsGoingToThisProperty.map(r => {
+              return {
+                value: r.entity,
+                label: r.entityData.title,
+              };
+            });
           });
           if (relationshipProperties.length) {
             entitiesToReindex.push(entity.sharedId);

@@ -92,10 +92,11 @@ export default {
 
   getSelectOptions(option, thesauri) {
     let value = '';
-    const { icon } = option;
+    let icon;
 
     if (option) {
       value = option.label || option.value;
+      icon = option.icon;
     }
 
     let url;
