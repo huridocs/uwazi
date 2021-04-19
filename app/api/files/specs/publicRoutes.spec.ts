@@ -29,7 +29,7 @@ jest.mock(
 );
 
 jest.mock(
-  '../../auth/captchaMiddleware.js',
+  '../../auth/captchaMiddleware.ts',
   () => () => (_req: Request, _res: Response, next: NextFunction) => {
     next();
   }

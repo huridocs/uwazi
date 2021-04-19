@@ -5,9 +5,10 @@ import { notify } from 'app/Notifications/actions/notificationsActions';
 import { t } from 'app/I18N';
 import { Dispatch } from 'redux';
 import { IImmutable } from 'shared/types/Immutable';
+import { CaptchaValue } from 'shared/types/Captcha';
+import { EntitySchema } from 'shared/types/entityType';
 import { processFilters } from './libraryActions';
 import { ExportStore } from '../reducers/ExportStoreType';
-import { EntitySchema } from '../../../shared/types/entityType';
 
 export function triggerLocalDownload(content: string, fileName: string) {
   const url: string = window.URL.createObjectURL(new Blob([content]));
@@ -44,7 +45,35 @@ function extractFileName(contentDisposition: string) {
   return contentDisposition.substring(startIndex, endIndex);
 }
 
-export function exportDocuments(storeKey: string) {
+const requestHandler = (params: any, dispatch: Dispatch<any>, captcha?: CaptchaValue) => {
+  let request = superagent
+    .get(`/api/export${toUrlParams(params)}`)
+    .set('Accept', 'text/csv')
+    .set('X-Requested-With', 'XMLHttpRequest');
+
+  if (captcha) {
+    request = request.set('Captcha-text', captcha.text).set('Captcha-id', captcha.id);
+  }
+
+  request
+    .then(response => {
+      const fileName = extractFileName(response.header['content-disposition']);
+      dispatch(actions.set('exportSearchResultsContent', response.text));
+      dispatch(actions.set('exportSearchResultsFileName', fileName));
+      dispatch(exportEnd());
+    })
+    .catch(err => {
+      clearState(dispatch);
+      if (err.status === 403) {
+        dispatch(notify(t('System', 'Invalid captcha'), 'danger'));
+      } else {
+        dispatch(notify(t('System', 'An error has occured during data export'), 'danger'));
+      }
+      return err;
+    });
+};
+
+export function exportDocuments(storeKey: string, captcha?: CaptchaValue) {
   return async (dispatch: Dispatch<any>, getState: any) => {
     const state = getState()[storeKey];
     const { search, filters } = state;
@@ -60,21 +89,9 @@ export function exportDocuments(storeKey: string) {
     }
 
     if (storeKey === 'uploads') finalSearchParams.unpublished = true;
+
     dispatch(actions.set('exportSearchResultsProcessing', true));
-    superagent
-      .get(`/api/export${toUrlParams(finalSearchParams)}`)
-      .set('Accept', 'text/csv')
-      .set('X-Requested-With', 'XMLHttpRequest')
-      .then(response => {
-        const fileName = extractFileName(response.header['content-disposition']);
-        dispatch(actions.set('exportSearchResultsContent', response.text));
-        dispatch(actions.set('exportSearchResultsFileName', fileName));
-        dispatch(exportEnd());
-      })
-      .catch(err => {
-        clearState(dispatch);
-        dispatch(notify(t('System', 'An error has occured during data export'), 'danger'));
-        return err;
-      });
+
+    requestHandler(finalSearchParams, dispatch, captcha);
   };
 }
