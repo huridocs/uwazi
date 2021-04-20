@@ -50,8 +50,8 @@ export default {
 
                   elem.inheritedValue = partner.metadata[inheritedProperty.name];
                   elem.inheritedType = inheritedProperty.type;
-                  return elem;
                 }
+                return elem;
               })
             );
 
