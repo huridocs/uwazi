@@ -1,14 +1,16 @@
-@import "../../scss/config/_colors.scss";
-@import "../../scss/config/_materials.scss";
-@import "../../scss/config/_typography.scss";
+@import '../../scss/config/_colors.scss';
+@import '../../scss/config/_materials.scss';
+@import '../../scss/config/_typography.scss';
 
 .modal-dialog {
-	max-height: 90%;
-	overflow-y: scroll;
+  max-height: 90%;
+  overflow-y: auto;
+  margin-left: auto;
+  margin-right: auto;
 
-	.btn-default {
-		opacity: 0.5;
-	}
+  .btn-default {
+    opacity: 0.5;
+  }
 
   &:focus {
     outline: none;
@@ -16,20 +18,52 @@
 }
 
 .modal-content {
-	border-radius: 0;
-	border: 0;
+  border-radius: 0;
+  border: 0;
   box-shadow: $box-shadow;
 }
 
 .modal-success {
-	border-left: 5px solid #8BC74C;
+  border-left: 5px solid #8bc74c;
 }
 .modal-info {
-	border-left: 5px solid #cce5ff;
+  border-left: 5px solid #cce5ff;
 }
 .modal-warning {
-	border-left: 5px solid orange;
+  border-left: 5px solid orange;
 }
 .modal-danger {
-	border-left: 5px solid #ED353D;
+  border-left: 5px solid #ed353d;
+}
+.modal-export {
+  max-width: 350px;
+  .modal-content {
+    padding: 10px;
+    border-radius: 4px;
+    border: 0;
+    box-shadow: $box-shadow;
+  }
+  h3 {
+    text-align: center;
+  }
+  p {
+    margin: 10px;
+  }
+  .captcha {
+    text-align: center;
+    max-width: 200px;
+    margin: auto;
+  }
+  .buttons {
+    padding: 10px;
+    display: flex;
+    justify-content: center;
+    input {
+      width: 130px;
+      border: 1px solid rgba(0, 0, 0, 0.4);
+    }
+    input.btn:nth-child(1) {
+      margin-right: 10px;
+    }
+  }
 }
