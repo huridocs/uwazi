@@ -55,7 +55,7 @@ export default {
               })
             );
 
-            entity.metadata[prop.name] = denormalizedValue;
+            entity.metadata[prop.name] = denormalizedValue.filter(v => v);
           }
         })
       );
