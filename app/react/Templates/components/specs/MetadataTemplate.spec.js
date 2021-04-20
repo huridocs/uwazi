@@ -19,6 +19,7 @@ import {
 } from 'app/Templates/components/MetadataTemplate';
 import MetadataProperty from 'app/Templates/components/MetadataProperty';
 import { dragSource } from 'app/Templates/components/PropertyOption';
+import { ViewTemplateAsPage } from '../ViewTemplateAsPage';
 
 function sourceTargetTestContext(Target, Source, actions) {
   return DragDropContext(TestBackend)(
@@ -131,6 +132,11 @@ describe('MetadataTemplate', () => {
     it('should render template color field', () => {
       const component = shallow(<MetadataTemplate {...props} />);
       expect(component.find(Control).first()).toMatchSnapshot();
+    });
+
+    it('should render a ViewTemplateAsPage component', () => {
+      const component = shallow(<MetadataTemplate {...props} />);
+      expect(component.contains(<ViewTemplateAsPage />)).toBe(true);
     });
 
     describe('when fields is empty', () => {
