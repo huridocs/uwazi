@@ -309,26 +309,26 @@ $c-sidebar: $c-white;
   div:nth-child(2) {
     width: 35%
   }
-    .filter-buttons {
+  .filter-buttons {
 
-      .clear-button {
-        text-decoration: none;
-        letter-spacing: normal;
-        font-weight: normal;
-        display: inline;
-        text-transform: capitalize;
-        border: 1px solid rgb(204, 204, 204);
-        padding: 3px;
-        cursor: pointer;
-        border-radius: 2px;
-      }
+    .clear-button {
+      text-decoration: none;
+      letter-spacing: normal;
+      font-weight: normal;
+      display: inline;
+      text-transform: capitalize;
+      border: 1px solid rgb(204, 204, 204);
+      padding: 3px;
+      cursor: pointer;
+      border-radius: 2px;
+    }
 
-      @media(min-width: 1020px) {
-        .push-right {
-          margin-left: 30px;
-        }
+    @media(min-width: 1020px) {
+      .push-right {
+        margin-left: 30px;
       }
     }
+  }
 }
 
 .item.readOnly {
