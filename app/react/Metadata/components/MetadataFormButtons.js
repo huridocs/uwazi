@@ -104,7 +104,7 @@ export class MetadataFormButtons extends Component {
           </ShowIf>
         </NeedAuthorization>
         <NeedAuthorization roles={['admin', 'editor']} orWriteAccessTo={[data]}>
-          {!entityBeingEdited && !hideDelete && (
+          {!entityBeingEdited && !hideDelete && data && data.sharedId && (
             <ShareButton sharedIds={[data.sharedId]} storeKey={this.props.storeKey} />
           )}
         </NeedAuthorization>

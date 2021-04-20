@@ -127,6 +127,12 @@ describe('MetadataFormButtons', () => {
       render();
       expect(component.find(ShareButton).length).toBe(0);
     });
+
+    it('should not render share button if no data', () => {
+      props.data = props.data.set('sharedId', null);
+      render();
+      expect(component.find(ShareButton).length).toBe(0);
+    });
   });
 
   describe('exclusivelyViewButton', () => {
