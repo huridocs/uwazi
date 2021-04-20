@@ -1,6 +1,6 @@
 import { Application, Request, Response, NextFunction } from 'express';
 //@ts-ignore
-import boolParser from 'express-query-boolean';
+import queryTypes from 'query-types';
 
 import { elastic } from 'api/search/elastic';
 import validateRequest from 'api/utils/validateRequest';
@@ -36,7 +36,7 @@ const captureError = (
 const searchRoutes = (app: Application) => {
   app.get(
     '/api/v2/entities',
-    boolParser(),
+    queryTypes.middleware(),
     validateRequest({
       query: SearchQuerySchema,
     }),
