@@ -24,6 +24,7 @@ import { bindActionCreators } from 'redux';
 import { PropertySchema } from 'shared/types/commonTypes';
 import { Icon } from 'UI';
 
+import { ViewTemplateAsPage } from './ViewTemplateAsPage';
 import validator from './ValidateTemplate'; // eslint-disable-line import/no-named-as-default, import/no-named-as-default-member
 
 interface MetadataTemplateProps {
@@ -113,6 +114,7 @@ export class MetadataTemplate extends Component<MetadataTemplateProps> {
             this.props._id
           )}
         >
+          <ViewTemplateAsPage />
           <div className="metadataTemplate-heading">
             <FormGroup model=".name">
               <Field model=".name">
