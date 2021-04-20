@@ -16,7 +16,7 @@ describe('migration denormalize-inherited', () => {
     expect(migration.delta).toBe(38);
   });
 
-  it('should fail', async () => {
+  it('should denormalize inherited data', async () => {
     await migration.up(testingDB.mongodb);
     const [denormalizedEntity] = await testingDB.mongodb
       .collection('entities')
@@ -29,6 +29,26 @@ describe('migration denormalize-inherited', () => {
         inheritedValue: [{ value: 'Bocata Tun' }],
         label: 'test_doc 2',
         value: '456DEF',
+      },
+      {
+        inheritedType: 'text',
+        inheritedValue: [],
+        label: 'test_doc 3',
+        value: '789ZXY',
+      },
+    ]);
+
+    const [denormalizedEntityWithoutValues] = await testingDB.mongodb
+      .collection('entities')
+      .find({ title: 'test_doc 4' })
+      .toArray();
+
+    expect(denormalizedEntityWithoutValues.metadata.friend).toEqual([
+      {
+        inheritedType: 'text',
+        inheritedValue: [],
+        label: 'test_doc 5',
+        value: '789ABC',
       },
     ]);
   });

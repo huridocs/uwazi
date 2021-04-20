@@ -8,14 +8,43 @@ export default {
       template: templateId,
       title: 'test_doc',
       sharedId: '123ABC',
-      metadata: { friend: [{ value: '456DEF', label: 'test_doc 2' }] },
+      metadata: {
+        friend: [
+          { value: '456DEF', label: 'test_doc 2' },
+          { value: '789ZXY', label: 'test_doc 3' },
+        ],
+      },
       language: 'en',
     },
+
     {
       template: templateId2,
       title: 'test_doc 2',
       sharedId: '456DEF',
       metadata: { name: [{ value: 'Bocata Tun' }] },
+      language: 'en',
+    },
+    {
+      template: templateId2,
+      title: 'test_doc 3',
+      sharedId: '789ZXY',
+      metadata: { name: [] },
+      language: 'en',
+    },
+    {
+      template: templateId,
+      title: 'test_doc 4',
+      sharedId: '498ABC',
+      metadata: {
+        friend: [{ value: '789ABC', label: 'test_doc 5' }],
+      },
+      language: 'en',
+    },
+    {
+      template: templateId2,
+      title: 'test_doc 5',
+      sharedId: '789ABC',
+      metadata: {},
       language: 'en',
     },
     {
