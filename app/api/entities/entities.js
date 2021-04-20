@@ -523,12 +523,10 @@ export default {
                 (!property.content || r.entityData.template.toString() === property.content)
             );
 
-            entity.metadata[property.name] = relationshipsGoingToThisProperty.map(r => {
-              return {
-                value: r.entity,
-                label: r.entityData.title,
-              };
-            });
+            entity.metadata[property.name] = relationshipsGoingToThisProperty.map(r => ({
+              value: r.entity,
+              label: r.entityData.title,
+            }));
           });
           if (relationshipProperties.length) {
             entitiesToReindex.push(entity.sharedId);
