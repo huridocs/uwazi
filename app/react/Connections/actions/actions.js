@@ -8,7 +8,7 @@ import { RequestParams } from 'app/utils/RequestParams';
 import * as types from './actionTypes';
 import * as uiActions from './uiActions';
 
-export function immidiateSearch(dispatch, searchString, connectionType) {
+export function immediateSearch(dispatch, searchString, connectionType) {
   dispatch(uiActions.searching());
 
   const requestParams = new RequestParams(
@@ -26,7 +26,7 @@ export function immidiateSearch(dispatch, searchString, connectionType) {
   });
 }
 
-const debouncedSearch = debounce(immidiateSearch, 400);
+const debouncedSearch = debounce(immediateSearch, 400);
 
 export function search(searchTerm, connectionType) {
   return dispatch => {
@@ -37,7 +37,7 @@ export function search(searchTerm, connectionType) {
 
 export function startNewConnection(connectionType, sourceDocument) {
   return dispatch =>
-    immidiateSearch(dispatch, '', connectionType).then(() => {
+    immediateSearch(dispatch, '', connectionType).then(() => {
       dispatch(actions.set('connections/searchTerm', ''));
       dispatch(uiActions.openPanel(connectionType, sourceDocument));
     });

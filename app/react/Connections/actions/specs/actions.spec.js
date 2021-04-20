@@ -37,9 +37,9 @@ describe('Connections actions', () => {
   });
 
   describe('Search-related actions', () => {
-    describe('immidiateSearch', () => {
+    describe('immediateSearch', () => {
       it('should search for connections', () => {
-        actions.immidiateSearch(store.dispatch, 'term');
+        actions.immediateSearch(store.dispatch, 'term');
         const expectedParams = new RequestParams(
           qs.stringify({ filter: { searchString: 'title:(term)' } })
         );
@@ -48,7 +48,7 @@ describe('Connections actions', () => {
       });
 
       it('should set the results upon response', done => {
-        actions.immidiateSearch(store.dispatch, 'term').then(() => {
+        actions.immediateSearch(store.dispatch, 'term').then(() => {
           const expectedAction = {
             type: 'connections/searchResults/SET',
             value: [
@@ -63,7 +63,7 @@ describe('Connections actions', () => {
 
       describe('when doing a reference to a paragraph', () => {
         it('should not include entities without documents', done => {
-          actions.immidiateSearch(store.dispatch, 'term', 'targetRanged').then(() => {
+          actions.immediateSearch(store.dispatch, 'term', 'targetRanged').then(() => {
             expect(store.getActions()).toContainEqual({
               type: 'connections/searchResults/SET',
               value: [
