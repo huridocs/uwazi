@@ -114,7 +114,6 @@ export class MetadataTemplate extends Component<MetadataTemplateProps> {
             this.props._id
           )}
         >
-          <ViewTemplateAsPage />
           <div className="metadataTemplate-heading">
             <FormGroup model=".name">
               <Field model=".name">
@@ -132,7 +131,7 @@ export class MetadataTemplate extends Component<MetadataTemplateProps> {
               />
             )}
           </div>
-
+          <ViewTemplateAsPage />
           <ShowIf if={!this.props.relationType}>
             {connectDropTarget(
               <ul className="metadataTemplate-list list-group">
