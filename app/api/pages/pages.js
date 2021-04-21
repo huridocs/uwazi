@@ -6,7 +6,7 @@ import model from './pagesModel';
 import settings from '../settings';
 
 export default {
-  save(doc, user, language) {
+  async save(doc, user, language) {
     if (!doc.sharedId) {
       doc.user = user._id;
       doc.creationDate = date.currentUTC();
@@ -16,16 +16,16 @@ export default {
       return model.save(doc);
     }
 
-    return settings.get().then(({ languages }) => {
-      const sharedId = ID();
-      const docs = languages.map(lang => ({
-        ...doc,
-        language: lang.key,
-        sharedId,
-      }));
+    const { languages } = await settings.get();
+    const sharedId = ID();
+    const docs = languages.map(lang => ({
+      ...doc,
+      language: lang.key,
+      sharedId,
+    }));
 
-      return model.saveMultiple(docs).then(() => this.getById(sharedId, language));
-    });
+    await model.saveMultiple(docs);
+    return this.getById(sharedId, language);
   },
 
   get(query, select) {

@@ -1,0 +1,101 @@
+import { catchErrors } from 'api/utils/jasmineHelpers';
+import { mockID } from 'shared/uniqueID';
+import date from 'api/utils/date.js';
+import db from 'api/utils/testing_db';
+
+import fixtures, { pageToUpdate } from './fixtures.js';
+import pages from '../pages.js';
+
+describe('pages', () => {
+  beforeEach(done => {
+    db.clearAllAndLoad(fixtures)
+      .then(done)
+      .catch(catchErrors(done));
+  });
+
+  afterAll(async () => {
+    await db.disconnect();
+  });
+
+  describe('save', () => {
+    it('should create a new document with logged user id and UTC date for each language', async () => {
+      spyOn(date, 'currentUTC').and.returnValue(1);
+      mockID('sharedid');
+
+      const doc = { title: 'Batman begins' };
+      const user = { _id: db.id() };
+
+      const result = await pages.save(doc, user, 'es');
+      const [es, en, pt] = await Promise.all([
+        pages.getById(result.sharedId, 'es', 'title creationDate user'),
+        pages.getById(result.sharedId, 'en', 'title creationDate user'),
+        pages.getById(result.sharedId, 'pt', 'title creationDate user'),
+      ]);
+
+      expect([es.title, en.title, pt.title]).toEqual([doc.title, doc.title, doc.title]);
+      expect(es.user?.toString()).toBe(user._id.toString());
+      expect(es.creationDate).toEqual(1);
+    });
+
+    it('should return the newly created page', async () => {
+      const page = { title: 'the dark knight' };
+      const user = { _id: db.id() };
+
+      const createdPage = await pages.save(page, user, 'es');
+
+      expect(createdPage._id.toString()).toBeDefined();
+      expect(createdPage.title).toBe(page.title);
+      expect(createdPage.language).toBe('es');
+
+      const [pageInDB] = await pages.get(createdPage._id, 'creationDate user');
+
+      expect(pageInDB.user?.toString()).toBe(user._id.toString());
+    });
+
+    describe('when updating', () => {
+      it('should not assign again user and creation date and partial update data', async () => {
+        spyOn(date, 'currentUTC').and.returnValue(10);
+
+        const modifiedDoc = await pages.save(
+          { _id: pageToUpdate, sharedId: '1', title: 'Edited title' },
+          'another_user'
+        );
+
+        expect(modifiedDoc.title).toBe('Edited title');
+
+        const [doc] = await pages.get(modifiedDoc._id, 'creationDate user');
+
+        expect(doc.user).not.toBe('another_user');
+        expect(doc.creationDate).toBe(1);
+      });
+    });
+  });
+
+  describe('delete', () => {
+    it('should delete the document in all languages', async () => {
+      const sharedId = '1';
+      await pages.delete(sharedId);
+      const result = await pages.get({ sharedId });
+      expect(result.length).toBe(0);
+    });
+  });
+
+  describe('addLanguage()', () => {
+    it('should duplicate all the pages from the default language to the new one', async () => {
+      await pages.addLanguage('ab');
+      const newPages = await pages.get({ language: 'ab' });
+      expect(newPages.length).toBe(2);
+    });
+  });
+
+  describe('getById', () => {
+    it('Throws 404 error on unexistent id', async () => {
+      expect.assertions(1);
+      try {
+        await pages.getById('unexistent_id');
+      } catch (error) {
+        expect(error.code).toBe(404);
+      }
+    });
+  });
+});
