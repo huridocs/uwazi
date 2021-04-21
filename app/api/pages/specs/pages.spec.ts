@@ -3,8 +3,8 @@ import { mockID } from 'shared/uniqueID';
 import date from 'api/utils/date.js';
 import db from 'api/utils/testing_db';
 
-import fixtures, { pageToUpdate } from './fixtures.js';
-import pages from '../pages.js';
+import fixtures, { pageToUpdate } from './fixtures';
+import pages from '../pages';
 
 describe('pages', () => {
   beforeEach(done => {
@@ -18,23 +18,35 @@ describe('pages', () => {
   });
 
   describe('save', () => {
-    it('should create a new document with logged user id and UTC date for each language', async () => {
+    it('should create a new page with logged user id and UTC date for each language', async () => {
       spyOn(date, 'currentUTC').and.returnValue(1);
       mockID('sharedid');
 
-      const doc = { title: 'Batman begins' };
+      const page = { title: 'Batman begins' };
       const user = { _id: db.id() };
 
-      const result = await pages.save(doc, user, 'es');
+      const result = await pages.save(page, user, 'es');
+      const sharedId = result.sharedId || '';
       const [es, en, pt] = await Promise.all([
-        pages.getById(result.sharedId, 'es', 'title creationDate user'),
-        pages.getById(result.sharedId, 'en', 'title creationDate user'),
-        pages.getById(result.sharedId, 'pt', 'title creationDate user'),
+        pages.getById(sharedId, 'es', 'title creationDate user'),
+        pages.getById(sharedId, 'en', 'title creationDate user'),
+        pages.getById(sharedId, 'pt', 'title creationDate user'),
       ]);
 
-      expect([es.title, en.title, pt.title]).toEqual([doc.title, doc.title, doc.title]);
+      expect([es.title, en.title, pt.title]).toEqual([page.title, page.title, page.title]);
       expect(es.user?.toString()).toBe(user._id.toString());
       expect(es.creationDate).toEqual(1);
+    });
+
+    it('should fail if new page saved but no user passed', async () => {
+      expect.assertions(1);
+      const page = { title: 'Batman returns' };
+
+      try {
+        await pages.save(page);
+      } catch (err) {
+        expect(err.message).toBe('missing user');
+      }
     });
 
     it('should return the newly created page', async () => {
@@ -58,7 +70,7 @@ describe('pages', () => {
 
         const modifiedDoc = await pages.save(
           { _id: pageToUpdate, sharedId: '1', title: 'Edited title' },
-          'another_user'
+          { username: 'another_user' }
         );
 
         expect(modifiedDoc.title).toBe('Edited title');
@@ -72,7 +84,7 @@ describe('pages', () => {
   });
 
   describe('delete', () => {
-    it('should delete the document in all languages', async () => {
+    it('should delete the page in all languages', async () => {
       const sharedId = '1';
       await pages.delete(sharedId);
       const result = await pages.get({ sharedId });
@@ -89,7 +101,7 @@ describe('pages', () => {
   });
 
   describe('getById', () => {
-    it('Throws 404 error on unexistent id', async () => {
+    it('should throws 404 error on unexistent id', async () => {
       expect.assertions(1);
       try {
         await pages.getById('unexistent_id');
