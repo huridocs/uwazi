@@ -9,7 +9,7 @@ on:
   pull_request:
 
 jobs:
-  check-types:
+  check-emitted-types:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
