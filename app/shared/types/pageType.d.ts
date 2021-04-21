@@ -11,7 +11,6 @@ export interface PageSchema {
   creationDate?: number;
   metadata?: {
     _id?: ObjectIdSchema;
-    content?: string;
     script?: string;
   };
   user?: ObjectIdSchema;
