@@ -147,7 +147,7 @@ export default {
     firstEntityViewButton:
       '#app > div.content > div > div > div > main > div > div > div.item-group > div:nth-child(1) > div.item-actions > div:nth-child(2) > a',
     documentTypeFilter:
-      '#app > div.content > div > div > div >aside.library-filters > .sidepanel-body > .filters-box > #filtersForm > div.documentTypes-selector > ul > li:nth-child(4) > label > span.multiselectItem-name',
+      '#app > div.content > div > div > div > aside.side-panel.library-filters > div.sidepanel-body > div.documentTypes-selector > ul > li:nth-child(4) > label > span.multiselectItem-name',
     editEntityButton:
       '#app > div.content > div > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-footer > span > button.edit-metadata.btn.btn-primary',
     saveButton:
@@ -161,11 +161,11 @@ export default {
     documentAfterLoadMore:
       '#app > div.content > div > div > div > main > div > div > div.item-group > div:nth-child(31)',
     superVillianType:
-      '#app > div.content > div > div > div > aside.side-panel.library-filters > .sidepanel-body > .filters-box > #filtersForm > .documentTypes-selector > ul > li:nth-child(2) > label',
+      '#app > div.content > div > div > div > aside.side-panel.library-filters > div.sidepanel-body > div > ul > li:nth-child(2) > label',
     minorVillianType:
-      '#app > div.content > div > div > div > aside.side-panel.library-filters > .sidepanel-body > .filters-box > #filtersForm > .documentTypes-selector > ul > li:nth-child(5) > label',
+      '#app > div.content > div > div > div > aside.side-panel.library-filters > div.sidepanel-body > div > ul > li:nth-child(5) > label',
     resetFilters:
-      '#app > div.content > div > div > div > aside.side-panel.library-filters > div.sidepanel-footer > .resetFilters',
+      '#app > div.content > div > div > div > aside.side-panel.library-filters > div.sidepanel-body > div.sidepanel-title > div.filter-buttons > div.clear-button',
     sidePanelCloseButton:
       '#app > div.content > div > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-header > button',
     sidePanelDocumentType:
@@ -285,7 +285,7 @@ export default {
     uploadsNavButton:
       '#app > div.content > header > ul > li.menuActions > ul > li:nth-child(2) > a',
     libraryNavButton:
-      '#app > div.content > header > ul > li.menuActions > ul > li:nth-child(1) > a',
+      '#app > div.content > header > ul > li.menuActions > ul.menuNav-list > li:nth-child(1) > a',
     settingsNavButton:
       '#app > div.content > header > ul > li.menuActions > ul.menuNav-list > li:nth-child(3) > a',
     spanish:

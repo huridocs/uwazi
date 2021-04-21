@@ -33,34 +33,33 @@ export class LibraryFilters extends Component {
     return (
       <SidePanel className="library-filters" mode={this.props.sidePanelMode} open={this.props.open}>
         <div className="sidepanel-footer">
-          <button
-            type="button"
-            onClick={this.reset.bind(this)}
-            className="btn btn-primary resetFilters"
-          >
-            <Icon icon="sync" />
-            <span className="btn-label">{t('System', 'Reset')}</span>
-          </button>
-          <button type="submit" form="filtersForm" className="btn btn-success">
-            <Icon icon="search" />
-            <span className="btn-label">{t('System', 'Search')}</span>
-          </button>
           <Export storeKey={this.props.storeKey} />
         </div>
         <div className="sidepanel-body">
-          <p className="sidepanel-title">
-            {t('System', 'Filters configuration')}
-            <button
-              type="button"
-              className={`closeSidepanel ${
-                this.props.sidePanelMode === 'unpinned-mode' ? '' : 'only-mobile'
-              }`}
-              onClick={this.props.hideFilters}
-              aria-label="Close side panel"
-            >
-              <Icon icon="times" />
-            </button>
-          </p>
+          <div className="sidepanel-title">
+            <div>{t('System', 'Filters configuration')}</div>
+            <div className="filter-buttons">
+              <div
+                className={`clear-button ${
+                  this.props.sidePanelMode === 'unpinned-mode' ? '' : 'push-right'
+                }`}
+                onClick={this.reset.bind(this)}
+              >
+                <Icon icon="times" />
+                &nbsp;Clear Filters
+              </div>
+              <button
+                type="button"
+                className={`closeSidepanel ${
+                  this.props.sidePanelMode === 'unpinned-mode' ? '' : 'only-mobile'
+                }`}
+                onClick={this.props.hideFilters}
+                aria-label="Close side panel"
+              >
+                <Icon icon="times" />
+              </button>
+            </div>
+          </div>
           <NeedAuthorization>
             {!this.props.unpublished && (
               <Field
