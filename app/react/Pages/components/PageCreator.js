@@ -1,4 +1,4 @@
-import { Form, Field } from 'react-redux-form';
+import { Form, Field, Control } from 'react-redux-form';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -50,9 +50,13 @@ export class PageCreator extends Component {
             <div className="panel-body page-viewer document-viewer">
               <div>
                 <Translate>Enable this page to be used as an entity view page: </Translate>
-                <span model=".entityView">
-                  <ToggleButton checked={Boolean(page.data.entityView)} onClick={() => {}} />
-                </span>
+                <Control
+                  model=".entityView"
+                  component={ToggleButton}
+                  mapProps={{
+                    checked: page.data.entityView,
+                  }}
+                />
               </div>
               <ShowIf if={Boolean(page.data._id)}>
                 <div className="alert alert-info">
