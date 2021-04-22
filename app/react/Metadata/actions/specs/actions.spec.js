@@ -193,7 +193,7 @@ describe('Metadata Actions', () => {
           powers: [],
           enemies: [],
           color: '',
-          id: expect.stringMatching(/^[a-zA-Z0-9\-]{12}$/),
+          id: expect.stringMatching(/^[a-zA-Z0-9-]{12}$/),
         },
       });
 

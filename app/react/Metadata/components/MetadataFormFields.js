@@ -174,7 +174,10 @@ export class MetadataFormFields extends Component {
       .filter(thes => !!thes.get('enable_classification'))
       .map(thes => thes.get('_id'))
       .toJS();
-    const fields = template.get('properties').toJS();
+    let fields = template.get('properties').toJS();
+    if (model === 'publicform') {
+      fields = fields.filter(field => field.type !== 'generatedid');
+    }
     const templateID = template.get('_id');
 
     return (

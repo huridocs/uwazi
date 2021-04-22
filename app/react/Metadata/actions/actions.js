@@ -38,6 +38,7 @@ const defaultValueByType = type => {
       if (!['date', 'geolocation', 'link'].includes(type)) {
         return '';
       }
+      return undefined;
   }
 };
 

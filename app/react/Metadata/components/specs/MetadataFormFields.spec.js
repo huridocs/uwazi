@@ -56,8 +56,9 @@ describe('MetadataFormFields with one entity to edit ', () => {
     };
   });
 
-  const render = () => {
-    component = shallow(<MetadataFormFields {...props} />);
+  const render = args => {
+    const componentProps = { ...props, ...args };
+    component = shallow(<MetadataFormFields {...componentProps} />);
   };
 
   it('should pass the field state to every fields and MultipleEditionFieldWarning', () => {
@@ -89,5 +90,11 @@ describe('MetadataFormFields with one entity to edit ', () => {
 
     const generatedIdInput = component.find('[model=".metadata.field4"]').find('input');
     expect(generatedIdInput.length).toBe(1);
+  });
+
+  it('should not render fields with type generatedId if model is publicform', () => {
+    render({ model: 'publicform' });
+    const generatedIdInput = component.find('[model=".metadata.field4"]').find('input');
+    expect(generatedIdInput.length).toBe(0);
   });
 });
