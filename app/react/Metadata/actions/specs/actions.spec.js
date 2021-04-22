@@ -182,13 +182,20 @@ describe('Metadata Actions', () => {
           { name: 'powers', content: '1', type: 'multiselect' },
           { name: 'enemies', content: '2', type: 'multiselect' },
           { name: 'color', type: 'text', required: true },
+          { name: 'id', type: 'generatedid' },
         ],
       };
 
-      const expectedModel = {
+      const expectedModel = expect.objectContaining({
         template: '1',
-        metadata: { year: '', powers: [], enemies: [], color: '' },
-      };
+        metadata: {
+          year: '',
+          powers: [],
+          enemies: [],
+          color: '',
+          id: expect.stringMatching(/^[a-zA-Z0-9\-]{12}$/),
+        },
+      });
 
       const dispatch = jasmine.createSpy('dispatch');
       actions.loadTemplate('formNamespace', template)(dispatch);

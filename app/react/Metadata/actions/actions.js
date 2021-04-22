@@ -5,9 +5,10 @@ import { api } from 'app/Entities';
 import { notificationActions } from 'app/Notifications';
 import { removeDocuments, unselectAllDocuments } from 'app/Library/actions/libraryActions';
 import { RequestParams } from 'app/utils/RequestParams';
-import emptyTemplate from '../helpers/defaultTemplate';
 import searchAPI from 'app/Search/SearchAPI';
 import { actions } from 'app/BasicReducer';
+import { IDGenerator } from 'shared/IDGenerator';
+import emptyTemplate from '../helpers/defaultTemplate';
 
 export function resetReduxForm(form) {
   return formActions.reset(form);
@@ -21,6 +22,25 @@ const propertyExists = (property, previousTemplate) =>
     )
   );
 
+const defaultValueByType = type => {
+  switch (type) {
+    case 'daterange':
+      return { from: null, to: null };
+    case 'generatedid':
+      return IDGenerator.generateID(3, 4, 4);
+    case 'multiselect':
+    case 'relationship':
+    case 'nested':
+    case 'multidate':
+    case 'multidaterange':
+      return [];
+    default:
+      if (!['date', 'geolocation', 'link'].includes(type)) {
+        return '';
+      }
+  }
+};
+
 export const resetMetadata = (metadata, template, options, previousTemplate) => {
   const resetedMetadata = {};
   template.properties.forEach(property => {
@@ -33,17 +53,9 @@ export const resetMetadata = (metadata, template, options, previousTemplate) => 
     if (!resetValue) {
       resetedMetadata[property.name] = metadata[property.name];
     }
-    if (resetValue && !['date', 'geolocation', 'link'].includes(type)) {
-      resetedMetadata[name] = '';
-    }
-    if (resetValue && type === 'daterange') {
-      resetedMetadata[name] = { from: null, to: null };
-    }
-    if (
-      resetValue &&
-      ['multiselect', 'relationship', 'nested', 'multidate', 'multidaterange'].includes(type)
-    ) {
-      resetedMetadata[name] = [];
+    if (resetValue) {
+      const defaultValue = defaultValueByType(type);
+      if (defaultValue !== undefined) resetedMetadata[name] = defaultValue;
     }
   });
   return resetedMetadata;
