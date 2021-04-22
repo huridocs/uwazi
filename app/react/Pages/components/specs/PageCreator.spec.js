@@ -65,6 +65,12 @@ describe('PageCreator', () => {
           .parent()
           .props().model
       ).toBe('.metadata.script');
+      expect(
+        component
+          .find('ToggleButton')
+          .parent()
+          .props().model
+      ).toBe('.entityView');
     });
 
     describe('when Title is invalid', () => {
