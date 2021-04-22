@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 import { instanceModel } from 'api/odm';
-import { PageSchema } from 'shared/types/pageType';
+import { PageType } from 'shared/types/pageType';
 
 const propsWithDBSpecifics = {
   creationDate: { type: Number, select: false },
@@ -11,6 +11,6 @@ const mongoSchema = new mongoose.Schema(propsWithDBSpecifics, {
   strict: false,
 });
 
-const Model = instanceModel<PageSchema>('pages', mongoSchema);
+const Model = instanceModel<PageType>('pages', mongoSchema);
 
 export default Model;
