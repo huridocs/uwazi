@@ -9,6 +9,8 @@ import { Field } from 'react-redux-form';
 import { propertyTypes } from 'shared/propertyTypes';
 import { getSuggestions } from 'app/Metadata/actions/actions';
 import { Translate } from 'app/I18N';
+
+import { IDGenerator } from 'shared/IDGenerator';
 import {
   DatePicker,
   DateRange,
@@ -155,8 +157,16 @@ export class MetadataFormFields extends Component {
             <em>This content is automatically generated</em>
           </div>
         );
-      case 'text':
       case 'generatedid':
+        return (
+          <Field
+            model={_model}
+            parser={value => (!value ? IDGenerator.generateID(3, 4, 4) : value)}
+          >
+            <input type="text" className="form-control" />
+          </Field>
+        );
+      case 'text':
         return (
           <Field model={_model}>
             <input type="text" className="form-control" />

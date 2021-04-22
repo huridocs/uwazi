@@ -5,7 +5,8 @@ describe('IDGenerator', () => {
   describe('generateId', () => {
     const generateAssertedID = (characterLength = 2, numericLength = 4, extraLength = 0) => {
       const generatedId = IDGenerator.generateID(characterLength, numericLength, extraLength);
-      expect(generatedId.length).toBe(characterLength + numericLength + Math.min(extraLength, 13));
+      const extraExpectedLength = extraLength > 0 ? Math.min(extraLength, 13) + 1 : 0;
+      expect(generatedId.length).toBe(characterLength + numericLength + extraExpectedLength);
       const characterPart = generatedId.substr(0, characterLength);
       const numericPart = generatedId.substr(characterLength, numericLength);
       expect(parseFloat(characterPart)).toBe(NaN);
@@ -39,12 +40,12 @@ describe('IDGenerator', () => {
 
     it.each`
       letters | numbers | extra | output
-      ${-2}   | ${4}    | ${2}  | ${6}
-      ${2}    | ${-4}   | ${2}  | ${4}
+      ${-2}   | ${4}    | ${2}  | ${7}
+      ${2}    | ${-4}   | ${2}  | ${5}
       ${2}    | ${3}    | ${-4} | ${5}
-      ${2}    | ${3}    | ${20} | ${18}
-      ${30}   | ${4}    | ${2}  | ${19}
-      ${30}   | ${40}   | ${20} | ${39}
+      ${2}    | ${3}    | ${20} | ${19}
+      ${30}   | ${4}    | ${2}  | ${20}
+      ${30}   | ${40}   | ${20} | ${40}
     `(
       'should generate a random ID even with lengths outside 0..13',
       ({ letters, numbers, extra, output }) => {

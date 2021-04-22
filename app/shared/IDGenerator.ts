@@ -12,7 +12,7 @@ const IDGenerator = {
     const timestamp = Date.now().toString();
     const extraPart =
       extraLength > 0
-        ? timestamp.substr(timestamp.length - limitedLength(extraLength), timestamp.length)
+        ? `-${timestamp.substr(timestamp.length - limitedLength(extraLength), timestamp.length)}`
         : '';
     return characterPart + numericPart + extraPart;
   },

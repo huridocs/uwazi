@@ -87,7 +87,8 @@ describe('MetadataFormFields with one entity to edit ', () => {
     const datepicker = component.find(DatePicker);
     expect(datepicker.length).toBe(1);
 
-    const generatedIdInput = component.find('[model=".metadata.field4"]').find('input');
+    const generatedIdField = component.find('[model=".metadata.field4"]').at(0);
+    const generatedIdInput = generatedIdField.find('input');
     expect(generatedIdInput.length).toBe(1);
   });
 });
