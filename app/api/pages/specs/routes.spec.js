@@ -2,7 +2,7 @@ import { catchErrors } from 'api/utils/jasmineHelpers';
 
 import instrumentRoutes from '../../utils/instrumentRoutes';
 import pages from '../pages';
-import pagesRoutes from '../routes.js';
+import pagesRoutes from '../routes';
 
 describe('Pages Routes', () => {
   let routes;
@@ -40,10 +40,6 @@ describe('Pages Routes', () => {
   });
 
   describe('/api/pages', () => {
-    it('should have a validation schema', () => {
-      expect(routes.post.validation('/api/pages')).toMatchSnapshot();
-    });
-
     it('should ask pages model for the page in the current locale', done => {
       const req = {
         query: { sharedId: '123' },

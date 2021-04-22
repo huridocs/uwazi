@@ -7,7 +7,7 @@ export const PageSchema = {
   $async: true,
   type: 'object',
   additionalProperties: false,
-  title: 'PageSchema',
+  title: 'PageType',
   definitions: { objectIdSchema },
   properties: {
     _id: objectIdSchema,

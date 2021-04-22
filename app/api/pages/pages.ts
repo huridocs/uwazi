@@ -2,13 +2,13 @@ import { createError } from 'api/utils';
 import ID from 'shared/uniqueID';
 import date from 'api/utils/date.js';
 import { UwaziFilterQuery } from 'api/odm';
-import { PageSchema } from 'shared/types/pageType';
+import { PageType } from 'shared/types/pageType';
 import { User } from 'api/users/usersModel';
 
 import model from './pagesModel';
 import settings from '../settings';
 
-const assignUserAndDate = (page: PageSchema, user?: User) => {
+const assignUserAndDate = (page: PageType, user?: User) => {
   if (!user) {
     throw new Error('missing user');
   }
@@ -20,7 +20,7 @@ const assignUserAndDate = (page: PageSchema, user?: User) => {
 };
 
 export default {
-  async save(_page: PageSchema, user?: User, language?: string) {
+  async save(_page: PageType, user?: User, language?: string) {
     let page = { ..._page };
     if (!page.sharedId) {
       page = assignUserAndDate(page, user);
@@ -42,7 +42,7 @@ export default {
     return this.getById(sharedId, language);
   },
 
-  get(query: UwaziFilterQuery<PageSchema>, select?: string) {
+  get(query: UwaziFilterQuery<PageType>, select?: string) {
     return model.get(query, select);
   },
 

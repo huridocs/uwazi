@@ -3,7 +3,7 @@
 
 import { ObjectIdSchema } from 'shared/types/commonTypes';
 
-export interface PageSchema {
+export interface PageType {
   _id?: ObjectIdSchema;
   title: string;
   language?: string;
@@ -11,6 +11,7 @@ export interface PageSchema {
   creationDate?: number;
   metadata?: {
     _id?: ObjectIdSchema;
+    content?: string;
     script?: string;
   };
   user?: ObjectIdSchema;
