@@ -31,6 +31,7 @@ const relationType3 = db.id();
 const relationType4 = db.id();
 const uploadId1 = db.id();
 const uploadId2 = db.id();
+const inheritedProperty = db.id();
 
 export default {
   files: [
@@ -312,7 +313,9 @@ export default {
       sharedId: 'shared2',
       language: 'en',
       title: 'shared2title',
-      metadata: {},
+      metadata: {
+        property1: [{ value: 'something to be inherited' }],
+      },
     },
     { sharedId: 'source2', language: 'en' },
     {
@@ -358,7 +361,7 @@ export default {
       name: 'template_test',
       properties: [
         { type: 'text', name: 'text' },
-        { type: 'text', name: 'property1' },
+        { _id: inheritedProperty, type: 'text', name: 'property1' },
         { type: 'text', name: 'property2' },
         { type: 'text', name: 'description' },
         { type: 'select', name: 'select', content: dictionary },
@@ -377,6 +380,8 @@ export default {
           name: 'enemies',
           relationType: relationType4,
           content: templateId.toString(),
+          inherit: true,
+          inheritProperty: inheritedProperty,
         },
         { type: 'nested', name: 'field_nested' },
         { type: 'numeric', name: 'numeric' },
