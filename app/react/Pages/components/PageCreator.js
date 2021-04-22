@@ -11,8 +11,9 @@ import {
 } from 'app/Pages/actions/pageActions';
 import ShowIf from 'app/App/ShowIf';
 import { BackButton } from 'app/Layout';
-import { Icon } from 'UI';
+import { Icon, ToggleButton } from 'UI';
 
+import { Translate } from 'app/I18N';
 import validator from './ValidatePage';
 
 export class PageCreator extends Component {
@@ -47,6 +48,12 @@ export class PageCreator extends Component {
               </div>
             </div>
             <div className="panel-body page-viewer document-viewer">
+              <div>
+                <Translate>Enable this page to be used as an entity view page: </Translate>
+                <span model=".entityView">
+                  <ToggleButton checked={Boolean(page.data.entityView)} onClick={() => {}} />
+                </span>
+              </div>
               <ShowIf if={Boolean(page.data._id)}>
                 <div className="alert alert-info">
                   <Icon icon="angle-right" /> {pageUrl}
