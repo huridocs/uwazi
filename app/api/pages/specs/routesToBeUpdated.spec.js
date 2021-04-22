@@ -4,7 +4,7 @@ import instrumentRoutes from '../../utils/instrumentRoutes';
 import pages from '../pages';
 import pagesRoutes from '../routes';
 
-describe('Pages Routes', () => {
+describe('Pages Routes (to be updated)', () => {
   let routes;
 
   beforeEach(() => {

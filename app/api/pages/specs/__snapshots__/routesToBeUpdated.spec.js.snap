@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Pages Routes DELETE should have a validation schema 1`] = `
+exports[`Pages Routes (to be updated) DELETE should have a validation schema 1`] = `
 Object {
   "children": Object {
     "sharedId": Object {
@@ -17,7 +17,7 @@ Object {
 }
 `;
 
-exports[`Pages Routes GET /api/pages should have a validation schema 1`] = `
+exports[`Pages Routes (to be updated) GET /api/pages should have a validation schema 1`] = `
 Object {
   "children": Object {
     "sharedId": Object {

@@ -1,6 +1,7 @@
 import Joi from 'joi';
 import { Application, NextFunction, Request, Response } from 'express';
 
+import { PageSchema } from 'shared/types/pageSchema';
 import { validation } from 'api/utils';
 
 import needsAuthorization from '../auth/authMiddleware';
@@ -10,6 +11,13 @@ export default (app: Application) => {
   app.post(
     '/api/pages',
     needsAuthorization(['admin']),
+
+    validation.validateRequest({
+      type: 'object',
+      properties: {
+        body: PageSchema,
+      },
+    }),
 
     (req: Request, res: Response, next: NextFunction) => {
       pages
