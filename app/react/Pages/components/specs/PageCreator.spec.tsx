@@ -105,7 +105,7 @@ describe('PageCreator', () => {
   describe('on componentWillUnmount', () => {
     beforeEach(() => {
       render();
-      component.instance().componentWillUnmount();
+      component.unmount();
     });
 
     it('should reset the page', () => {

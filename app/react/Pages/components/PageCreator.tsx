@@ -1,5 +1,5 @@
 import { Form, Field, Control } from 'react-redux-form';
-import { bindActionCreators } from 'redux';
+import { bindActionCreators, Dispatch } from 'redux';
 import { connect } from 'react-redux';
 import React, { Component } from 'react';
 
@@ -159,7 +159,7 @@ function mapStateToProps({ page }) {
   return { page, formState: page.formState, savingPage: page.uiState.get('savingPage') };
 }
 
-function mapDispatchToProps(dispatch) {
+function mapDispatchToProps(dispatch: Dispatch<PageCreatorProps>) {
   return bindActionCreators({ resetPage: resetPageAction, savePage: savePageAction }, dispatch);
 }
 
