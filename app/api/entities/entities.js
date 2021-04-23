@@ -495,6 +495,7 @@ export default {
                 { ...entity.metadata, ...pureValues.metadata },
                 diffMetadata
               ),
+              permissions: entity.permissions || [],
             },
             params,
             true,
