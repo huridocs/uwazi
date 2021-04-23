@@ -1023,8 +1023,7 @@ describe('Activitylog Parser', () => {
               action: 'UPDATE',
               description: 'Updated permissions on entity',
               name: 'My Doc',
-              extra:
-                ' with permissions for USERS: User 1 - write; GROUPS: Group 1 - read; and PUBLIC',
+              extra: ' with permissions for USERS: User 1 - write; GROUPS: Group 1 - read; PUBLIC',
             }
           );
         });

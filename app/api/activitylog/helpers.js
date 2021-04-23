@@ -129,5 +129,5 @@ export const loadAllowedUsersAndGroups = data => {
 
   return ` with permissions for${grantedUsers.length ? ` USERS: ${grantedUsers};` : ''}${
     grantedNames.length ? ` GROUPS: ${grantedNames}` : ''
-  }${data.public ? '; and PUBLIC' : ''}`;
+  }${data.public ? '; PUBLIC' : ''}`;
 };
