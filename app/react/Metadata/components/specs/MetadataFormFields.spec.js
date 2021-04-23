@@ -92,9 +92,11 @@ describe('MetadataFormFields with one entity to edit ', () => {
     expect(generatedIdInput.length).toBe(1);
   });
 
-  it('should not render fields with type generatedId if model is publicform', () => {
+  it('should hide fields with type generatedId if model is publicform', () => {
     render({ model: 'publicform' });
+    const generatedIdField = component.find('[model=".metadata.field4"]').at(0);
+    expect(generatedIdField.props().className).toBe(' hidden ');
     const generatedIdInput = component.find('[model=".metadata.field4"]').find('input');
-    expect(generatedIdInput.length).toBe(0);
+    expect(generatedIdInput.props().defaultValue.length).toBe(11);
   });
 });
