@@ -34,6 +34,7 @@ describe('Metadata Actions', () => {
             { name: 'test' },
             { name: 'newProp' },
             { name: 'testRelation', type: 'relationship' },
+            { name: 'id', type: 'generatedid' },
           ],
         },
       ];
@@ -123,7 +124,11 @@ describe('Metadata Actions', () => {
 
       const template = {
         _id: 'newTemplate',
-        properties: [{ name: 'test' }, { name: 'newProp', type: 'nested' }],
+        properties: [
+          { name: 'test' },
+          { name: 'newProp', type: 'nested' },
+          { name: 'id', type: 'generatedid' },
+        ],
       };
       state = {
         templates: Immutable.fromJS([
@@ -158,7 +163,11 @@ describe('Metadata Actions', () => {
           _id: 'entityId',
           title: 'test',
           template: 'newTemplate',
-          metadata: { test: [{ value: 'test' }], newProp: [] },
+          metadata: {
+            test: [{ value: 'test' }],
+            newProp: [],
+            id: expect.stringMatching(/^[a-zA-Z0-9-]{12}$/),
+          },
         };
         expect(dispatch).toHaveBeenCalledWith('formReset');
         expect(reactReduxForm.actions.reset).toHaveBeenCalledWith('formNamespace');
@@ -179,6 +188,7 @@ describe('Metadata Actions', () => {
         _id: '1',
         properties: [
           { name: 'year', type: 'numeric' },
+          { name: 'dates', type: 'daterange' },
           { name: 'powers', content: '1', type: 'multiselect' },
           { name: 'enemies', content: '2', type: 'multiselect' },
           { name: 'color', type: 'text', required: true },
@@ -186,16 +196,16 @@ describe('Metadata Actions', () => {
         ],
       };
 
-      const expectedModel = expect.objectContaining({
+      const expectedModel = {
         template: '1',
         metadata: {
           year: '',
           powers: [],
           enemies: [],
           color: '',
-          id: expect.stringMatching(/^[a-zA-Z0-9-]{12}$/),
+          dates: { from: null, to: null },
         },
-      });
+      };
 
       const dispatch = jasmine.createSpy('dispatch');
       actions.loadTemplate('formNamespace', template)(dispatch);

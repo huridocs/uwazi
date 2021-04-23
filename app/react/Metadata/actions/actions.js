@@ -22,12 +22,12 @@ const propertyExists = (property, previousTemplate) =>
     )
   );
 
-const defaultValueByType = type => {
+const defaultValueByType = (type, options) => {
   switch (type) {
     case 'daterange':
       return { from: null, to: null };
     case 'generatedid':
-      return IDGenerator.generateID(3, 4, 4);
+      return !options.resetExisting ? IDGenerator.generateID(3, 4, 4) : undefined;
     case 'multiselect':
     case 'relationship':
     case 'nested':
@@ -55,7 +55,7 @@ export const resetMetadata = (metadata, template, options, previousTemplate) => 
       resetedMetadata[property.name] = metadata[property.name];
     }
     if (resetValue) {
-      const defaultValue = defaultValueByType(type);
+      const defaultValue = defaultValueByType(type, options);
       if (defaultValue !== undefined) resetedMetadata[name] = defaultValue;
     }
   });

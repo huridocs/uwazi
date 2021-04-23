@@ -162,7 +162,9 @@ export class MetadataFormFields extends Component {
             <input
               type="text"
               className="form-control"
-              defaultValue={formModel === 'publicform' ? IDGenerator.generateID(2, 4, 4) : ''}
+              defaultValue={
+                formModel === 'publicform' ? IDGenerator.generateID(2, 4, 4) : undefined
+              }
             />
           </Field>
         );
