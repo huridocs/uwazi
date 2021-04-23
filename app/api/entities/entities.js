@@ -107,7 +107,7 @@ const FIELD_TYPES_TO_SYNC = [
 ];
 
 async function updateEntity(entity, _template, unrestricted = false) {
-  const docLanguages = await this.getAllLanguages(entity.sharedId);
+  const docLanguages = await this.getAllLanguages(entity.sharedId, '+permissions');
   if (
     docLanguages[0].template &&
     entity.template &&
@@ -137,6 +137,7 @@ async function updateEntity(entity, _template, unrestricted = false) {
         const toSave = { ...entity };
 
         toSave.published = d.published;
+        toSave.permissions = d.permissions;
 
         if (entity.metadata) {
           toSave.metadata = await denormalizeMetadata(entity.metadata, entity, template);
@@ -507,8 +508,8 @@ export default {
     return this.get({ sharedId: { $in: ids }, language: params.language });
   },
 
-  getAllLanguages(sharedId) {
-    return model.get({ sharedId });
+  getAllLanguages(sharedId, select) {
+    return model.get({ sharedId }, select);
   },
 
   countByTemplate(template, language) {
