@@ -1,7 +1,6 @@
 import { Form, Field, Control } from 'react-redux-form';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 
 import { MarkDown } from 'app/ReactReduxForms';
@@ -16,7 +15,26 @@ import { Icon, ToggleButton } from 'UI';
 import { Translate } from 'app/I18N';
 import validator from './ValidatePage';
 
-export class PageCreator extends Component {
+export interface PageCreatorProps {
+  resetPage: () => {};
+  savePage: () => {};
+  savingPage: boolean;
+  formState: { [key: string]: { [key: string]: any } };
+  page: {
+    data: {
+      _id: string;
+      title: string;
+      metadata: {
+        content?: string;
+      };
+      language: string;
+      sharedId: string;
+      entityView: boolean;
+    };
+  };
+}
+
+export class PageCreator extends Component<PageCreatorProps> {
   componentWillUnmount() {
     const { resetPage } = this.props;
     resetPage();
@@ -53,9 +71,7 @@ export class PageCreator extends Component {
                 <Control
                   model=".entityView"
                   component={ToggleButton}
-                  mapProps={{
-                    checked: page.data.entityView,
-                  }}
+                  checked={page.data.entityView}
                 />
               </div>
               <ShowIf if={Boolean(page.data._id)}>
@@ -99,7 +115,9 @@ export class PageCreator extends Component {
               </div>
               <div>
                 <div>
-                  <span className="form-group-label">Page Javascript</span>
+                  <span className="form-group-label">
+                    <Translate>Page Javascript</Translate>
+                  </span>
                 </div>
                 <div className="alert alert-warning">
                   <Icon icon="exclamation-triangle" size="2x" />
@@ -136,14 +154,6 @@ export class PageCreator extends Component {
     );
   }
 }
-
-PageCreator.propTypes = {
-  resetPage: PropTypes.func,
-  savePage: PropTypes.func,
-  page: PropTypes.object,
-  formState: PropTypes.object,
-  savingPage: PropTypes.bool,
-};
 
 function mapStateToProps({ page }) {
   return { page, formState: page.formState, savingPage: page.uiState.get('savingPage') };

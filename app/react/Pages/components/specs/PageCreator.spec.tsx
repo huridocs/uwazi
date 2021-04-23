@@ -1,25 +1,43 @@
 import React from 'react';
-import { shallow } from 'enzyme';
+import { shallow, ShallowWrapper } from 'enzyme';
 
-import { Form, Field } from 'react-redux-form';
+import { Form, Field, Control } from 'react-redux-form';
 import { MarkDown } from 'app/ReactReduxForms';
-import { PageCreator } from '../PageCreator';
+import { PageCreator, PageCreatorProps } from '../PageCreator';
 
 describe('PageCreator', () => {
-  let component;
-  let props;
+  let component: ShallowWrapper<PageCreator>;
+  let props: PageCreatorProps;
 
   beforeEach(() => {
     props = {
-      page: { data: { title: 'Page title', metadata: {} } },
+      page: {
+        data: {
+          _id: '',
+          title: 'Page title',
+          metadata: {},
+          language: 'en',
+          sharedId: '',
+          entityView: false,
+        },
+      },
       formState: { title: {}, $form: { errors: {} } },
       savePage: jasmine.createSpy('savePage'),
       resetPage: jasmine.createSpy('deletePage'),
+      savingPage: false,
     };
   });
 
   const render = () => {
-    component = shallow(<PageCreator {...props} />);
+    component = shallow(
+      <PageCreator
+        page={props.page}
+        formState={props.formState}
+        savePage={props.savePage}
+        resetPage={props.resetPage}
+        savingPage={props.savingPage}
+      />
+    );
   };
 
   describe('render', () => {
@@ -65,12 +83,7 @@ describe('PageCreator', () => {
           .parent()
           .props().model
       ).toBe('.metadata.script');
-      expect(
-        component
-          .find('ToggleButton')
-          .parent()
-          .props().model
-      ).toBe('.entityView');
+      expect(component.find(Control).props().model).toBe('.entityView');
     });
 
     describe('when Title is invalid', () => {
