@@ -5,7 +5,6 @@ import thunk from 'redux-thunk';
 import { mockID } from 'shared/uniqueID.js';
 import { api } from 'app/Entities';
 import { RequestParams } from 'app/utils/RequestParams';
-
 import * as actions from '../actions';
 
 const middlewares = [thunk];
@@ -96,11 +95,7 @@ describe('Metadata Actions', () => {
       it('should set the first template', async () => {
         await actions.loadInReduxForm('formNamespace', doc, templates)(dispatch);
 
-        const expectedDoc = {
-          title: 'test',
-          metadata: {},
-          template: 'templateId1',
-        };
+        const expectedDoc = { title: 'test', metadata: {}, template: 'templateId1' };
         expect(dispatch).toHaveBeenCalledWith('formreset');
         expect(dispatch).toHaveBeenCalledWith('formload');
         expect(reactReduxForm.actions.reset).toHaveBeenCalledWith('formNamespace');
@@ -171,9 +166,7 @@ describe('Metadata Actions', () => {
         };
         expect(dispatch).toHaveBeenCalledWith('formReset');
         expect(reactReduxForm.actions.reset).toHaveBeenCalledWith('formNamespace');
-
         jasmine.clock().tick(0);
-
         expect(dispatch).toHaveBeenCalledWith('formLoad');
         expect(reactReduxForm.actions.load).toHaveBeenCalledWith('formNamespace', expectedDoc);
       });

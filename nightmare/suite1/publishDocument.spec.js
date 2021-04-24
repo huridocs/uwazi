@@ -10,7 +10,7 @@ const nightmare = createNightmare();
 selectors.doc = {
   form: {
     title: '#metadataForm > div:nth-child(1) > ul > li.wide > div > textarea',
-    type: '#metadataForm > div.form-group.undefined > ul > li.wide > select',
+    type: '#metadataForm > div.form-group > ul > li.wide > select',
     company: '#metadataForm > div:nth-child(3) > div:nth-child(1) > ul > li.wide > div > input',
     superPowersSearch:
       '#metadataForm > div:nth-child(3) > div:nth-child(4) > ul > li.wide > ul > li:nth-child(1) > div > input',
@@ -54,19 +54,6 @@ describe('PublishDocument', () => {
       .clearInput(selectors.doc.form.title)
       .write(selectors.doc.form.title, 'Wolverine')
       .select(selectors.doc.form.type, comicCharacter)
-      .write(selectors.doc.form.company, 'Marvel Comics')
-      .waitToClick(selectors.doc.form.nemesis.daneryl)
-      .write(selectors.doc.form.superPowersSearch, 'regen')
-      .waitToClick(selectors.doc.form.suporPowers.regeneration)
-      .click(selectors.libraryView.saveButton)
-      .waitToClick(selectors.uploadsView.publishButton)
-      .waitToClick(selectors.uploadsView.acceptPublishModel)
-      .wait('.alert.alert-success')
-      .isVisible('.alert.alert-success')
-      .then(result => {
-        expect(result).toBe(true);
-        return nightmare.waitToClick('.alert.alert-success');
-      })
       .then(done);
   });
 
