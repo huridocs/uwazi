@@ -54,6 +54,19 @@ describe('PublishDocument', () => {
       .clearInput(selectors.doc.form.title)
       .write(selectors.doc.form.title, 'Wolverine')
       .select(selectors.doc.form.type, comicCharacter)
+      .write(selectors.doc.form.company, 'Marvel Comics')
+      .waitToClick(selectors.doc.form.nemesis.daneryl)
+      .write(selectors.doc.form.superPowersSearch, 'regen')
+      .waitToClick(selectors.doc.form.suporPowers.regeneration)
+      .click(selectors.libraryView.saveButton)
+      .waitToClick(selectors.uploadsView.publishButton)
+      .waitToClick(selectors.uploadsView.acceptPublishModel)
+      .wait('.alert.alert-success')
+      .isVisible('.alert.alert-success')
+      .then(result => {
+        expect(result).toBe(true);
+        return nightmare.waitToClick('.alert.alert-success');
+      })
       .then(done);
   });
 
