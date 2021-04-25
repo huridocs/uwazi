@@ -7,6 +7,7 @@ import { MarkDown } from 'app/ReactReduxForms';
 import {
   resetPage as resetPageAction,
   savePage as savePageAction,
+  updateValue as updateValueAction,
 } from 'app/Pages/actions/pageActions';
 import ShowIf from 'app/App/ShowIf';
 import { BackButton } from 'app/Layout';
@@ -18,6 +19,7 @@ import validator from './ValidatePage';
 export interface PageCreatorProps {
   resetPage: () => {};
   savePage: () => {};
+  updateValue: (model: string, value: any) => {};
   savingPage: boolean;
   formState: { [key: string]: { [key: string]: any } };
   page: {
@@ -41,7 +43,7 @@ export class PageCreator extends Component<PageCreatorProps> {
   }
 
   render() {
-    const { formState, page, savePage, savingPage } = this.props;
+    const { formState, page, savePage, updateValue, savingPage } = this.props;
     const backUrl = '/settings/pages';
     const pageUrl = `/page/${page.data.sharedId}`;
 
@@ -71,7 +73,10 @@ export class PageCreator extends Component<PageCreatorProps> {
                 <Control
                   model=".entityView"
                   component={ToggleButton}
-                  checked={page.data.entityView}
+                  checked={Boolean(page.data.entityView)}
+                  onClick={() => {
+                    updateValue('.entityView', !page.data.entityView);
+                  }}
                 />
               </div>
               <ShowIf if={Boolean(page.data._id)}>
@@ -160,7 +165,10 @@ function mapStateToProps({ page }) {
 }
 
 function mapDispatchToProps(dispatch: Dispatch<PageCreatorProps>) {
-  return bindActionCreators({ resetPage: resetPageAction, savePage: savePageAction }, dispatch);
+  return bindActionCreators(
+    { resetPage: resetPageAction, savePage: savePageAction, updateValue: updateValueAction },
+    dispatch
+  );
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(PageCreator);
