@@ -14,6 +14,12 @@ export function resetPage() {
   };
 }
 
+export function updateValue(model, value) {
+  return dispatch => {
+    dispatch(formActions.change(`page.data${model}`, value));
+  };
+}
+
 export function savePage(data) {
   return dispatch => {
     dispatch({ type: types.SAVING_PAGE });
