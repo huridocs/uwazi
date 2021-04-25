@@ -12,7 +12,7 @@ import api from 'app/Pages/PagesAPI';
 import * as actions from '../pageActions';
 
 describe('Page actions', () => {
-  let dispatch;
+  let dispatch: jasmine.Spy;
 
   beforeEach(() => {
     dispatch = jasmine.createSpy('dispatch');
@@ -80,7 +80,7 @@ describe('Page actions', () => {
     });
     describe('on error', () => {
       it('should dispatch page saved', done => {
-        api.save.and.callFake(() => Promise.reject(new Error()));
+        api.save.and.callFake(async () => Promise.reject(new Error()));
         actions
           .savePage('data')(dispatch)
           .then(() => {
