@@ -22,6 +22,7 @@ describe('Page actions', () => {
     spyOn(api, 'delete').and.returnValue(Promise.resolve());
     spyOn(formActions, 'reset').and.returnValue('PAGE DATA RESET');
     spyOn(formActions, 'merge').and.returnValue('PAGE DATA MERGED');
+    spyOn(formActions, 'change').and.returnValue('MODEL VALUE UPDATED');
     spyOn(basicActions, 'remove').and.returnValue('PAGE REMOVED');
     spyOn(notificationActions, 'notify').and.returnValue('NOTIFIED');
     spyOn(browserHistory, 'push');
@@ -110,6 +111,14 @@ describe('Page actions', () => {
         expect(basicActions.remove).toHaveBeenCalledWith('pages', data);
         expect(dispatch).toHaveBeenCalledWith('PAGE REMOVED');
       });
+    });
+  });
+
+  describe('updateValue', () => {
+    it('should update the model with the provided value', () => {
+      actions.updateValue('.modelName', 'someValue')(dispatch);
+      expect(formActions.change).toHaveBeenCalledWith('page.data.modelName', 'someValue');
+      expect(dispatch).toHaveBeenCalledWith('MODEL VALUE UPDATED');
     });
   });
 });
