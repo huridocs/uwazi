@@ -24,6 +24,7 @@ describe('PageCreator', () => {
       formState: { title: {}, $form: { errors: {} } },
       savePage: jasmine.createSpy('savePage'),
       resetPage: jasmine.createSpy('deletePage'),
+      updateValue: jasmine.createSpy('updateValue'),
       savingPage: false,
     };
   });
@@ -35,6 +36,7 @@ describe('PageCreator', () => {
         formState={props.formState}
         savePage={props.savePage}
         resetPage={props.resetPage}
+        updateValue={props.updateValue}
         savingPage={props.savingPage}
       />
     );
