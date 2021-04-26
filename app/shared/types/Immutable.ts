@@ -15,4 +15,7 @@ export type IImmutable<T> = T extends string
   : {
       toJS(): T;
       get<Field extends keyof T>(_field: Field): IImmutable<T[Field]>;
+      filter(
+        fn: (listElement: IImmutable<T>) => boolean | undefined
+      ): Immutable.List<IImmutable<T>>;
     };
