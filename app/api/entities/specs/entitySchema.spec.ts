@@ -58,7 +58,7 @@ describe('entity schema', () => {
       );
     };
 
-    it('should allow ObjectId for _id fields', async () => {
+    fit('should allow ObjectId for _id fields', async () => {
       const entity = createEntity({
         _id: db.id(),
         user: db.id(),
