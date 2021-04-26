@@ -40,16 +40,16 @@ describe('Page actions', () => {
 
   describe('savePage', () => {
     it('should dispatch a saving page and save the data', () => {
-      actions.savePage('data')(dispatch);
+      actions.savePage({ title: 'A title' })(dispatch);
       expect(dispatch.calls.count()).toBe(1);
       expect(dispatch).toHaveBeenCalledWith({ type: 'SAVING_PAGE' });
-      expect(api.save).toHaveBeenCalledWith(new RequestParams('data'));
+      expect(api.save).toHaveBeenCalledWith(new RequestParams({ title: 'A title' }));
     });
 
     describe('upon success', () => {
       beforeEach(done => {
         actions
-          .savePage('data')(dispatch)
+          .savePage({ title: 'A title' })(dispatch)
           .then(() => {
             done();
           });
@@ -84,7 +84,7 @@ describe('Page actions', () => {
       it('should dispatch page saved', done => {
         apiSave.and.callFake(async () => Promise.reject(new Error()));
         actions
-          .savePage('data')(dispatch)
+          .savePage({ title: 'A title' })(dispatch)
           .then(() => {
             expect(dispatch).toHaveBeenCalledWith({ type: 'PAGE_SAVED', data: {} });
             done();
@@ -94,7 +94,7 @@ describe('Page actions', () => {
   });
 
   describe('deletePage', () => {
-    const data = { sharedId: 'page1', _id: 'id' };
+    const data = { sharedId: 'page1', _id: 'id', title: 'A title' };
     it('should delete the page', () => {
       actions.deletePage(data)(dispatch);
       expect(api.delete).toHaveBeenCalledWith(new RequestParams({ sharedId: 'page1' }));
